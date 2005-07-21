@@ -1,0 +1,684 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en">
+<head>
+<!-- #BeginTemplate "/Templates/Bare.dwt" --><!-- DW6 -->
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=ISO-8859-1">
+  <link rel="STYLESHEET" type="text/css" href="/styles/home.css">
+<!-- #BeginEditable "Head" -->
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=ISO-8859-1">
+  <link rel="STYLESHEET" type="text/css" href="/styles/home.css">
+  <title>openEHR Specification Project</title>
+<!-- #EndEditable -->
+</head>
+<body>
+<!-- #BeginEditable "Body" -->
+<h2 style="text-align: center;" class="mainhead">The <span
+ style="font-style: italic;">open</span>EHR Reference ADL Parser Home
+Page<br>
+</h2>
+<hr style="width: 100%; height: 2px;">
+<h3>Description</h3>
+<p>The <span style="font-style: italic;">open</span>EHR adl_ref_parser
+repository contains the reference&nbsp;
+implementation of the openEHR ADL (Archetype Definition Language). It
+also contains tools based on the parse, enabling GUI viewing of ADL
+archetypes, testing of archetypes and so on. It also includes a
+complete Java (JNI) wrapping of the reference parser, enabling it to be
+used in a Java application.<br>
+</p>
+<p>The ADL (Archetype Definition Language - specification) reference
+tools project has as its aim to develop tools which implement:</p>
+<ul>
+  <li>the <span style="font-weight: bold;">reference ADL parser</span>,
+including various ADL serialisers (to
+HTML, XML etc)<br>
+  </li>
+  <li><span style="font-weight: bold;">adl_validator</span>: a test
+application for ADL</li>
+  <li><span style="font-weight: bold;">adl_workbench</span>: an ADL
+viewer</li>
+</ul>
+<h3>Vital Statistics</h3>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 255); width: 200px;"><span
+ style="font-weight: bold;">Development Team</span><br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 204);">Thomas
+Beale (Ocean/UCL)<br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 255); width: 200px;"><span
+ style="font-weight: bold;">ARB change managed</span><br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 204);">Yes<br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 255);"><span
+ style="font-weight: bold;">Deliverables</span><br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 204);"><a
+ href="/repositories/adl_ref_parser-dev/latest/distribution/index.html">Latest
+release</a><br>
+      <a
+ href="http://www.openehr.org/repositories/adl_ref_parser-release_table.html">BitKeeper
+release page</a><br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 255);"><span
+ style="font-weight: bold;">Problem Reports (PRs)<br>
+Change Requests (CRs)</span><br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 204);"><a
+ href="http://coruscant.chime.ucl.ac.uk:8200/openEHR_Collector/projects/reference_implementations/adlrefparser/PR/folder_contents">PRs</a><br>
+      <a
+ href="http://coruscant.chime.ucl.ac.uk:8200/openEHR_Collector/projects/reference_implementations/adlrefparser/CR/folder_contents">CRs</a>
+(Read-only outside team)<br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 255);"><span
+ style="font-weight: bold;"><br>
+      <br>
+Key Documents</span><br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 204);">
+      <ul>
+        <li><a
+ href="/repositories/adl_ref_parser-dev/latest/distribution/tools/windows/adl_workbench/RELEASE_NOTES.txt">release
+notes</a></li>
+        <li><a
+ href="/repositories/adl_ref_parser-dev/latest/distribution/tools/windows/adl_workbench/README.txt">detailed
+installation
+instructions</a></li>
+        <li><a
+ href="http://www.oceaninformatics.biz/work_bench/help/ht_start.htm">online
+help</a></li>
+      </ul>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 255);"><span
+ style="font-weight: bold;"><br>
+      <br>
+      <br>
+Download and Install</span><br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 204);">
+      <ol>
+        <li>Download <a
+ href="file:///repositories/adl_ref_parser-dev/latest/distribution/tools/windows/adl_workbench.tgz">windows
+binaries</a> (use winzip or <a
+ href="http://prdownloads.sourceforge.net/sevenzip/7z313.exe">7zip</a>
+to undo them)<br>
+        </li>
+        <li>Download the latest <a
+ href="file:///repositories/archetype-dev/archetype-dev-latest.tgz"><span
+ style="font-style: italic;">open</span>EHR sample archetypes</a>
+(older ones may not work)<br>
+        </li>
+        <li>Start the adl_workbench.exe application</li>
+        <li>In the option dialog, set the path to the 'archetypes'
+directory in the <span style="font-style: italic;">open</span>EHR
+archetypes tree just downloaded</li>
+        <li>Start browsing archetypes</li>
+      </ol>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 255); width: 200px;"><span
+ style="font-weight: bold;">Status</span><br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 204);"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<h3>News</h3>
+<ul>
+  <li><span style="font-weight: bold;">27/June/2005</span>: latest
+release implements class level invariants.<br>
+    <span style="font-weight: bold;"></span></li>
+  <li><span style="font-weight: bold;">02/June/2005</span>: Proposal
+for ADL archetypes to be dADL documents. Compare <a
+ href="/repositories/archetype-dev/latest/adl/archetypes/openehr/ehr/entry/observation/openEHR-EHR-OBSERVATION.visual.v1.adl">a
+current ADL file</a> to <a
+ href="openEHR-EHR-OBSERVATION.visual.new.adl">same archetype in dADL
+form</a>.<br>
+    <span style="font-weight: bold;"></span></li>
+  <li><span style="font-weight: bold;">30/May/2005</span>: Generic dADL
+/ data tree structure processor; ARCHETYPE_DESCRIPTION now visible in
+GUI and dotNet interface. <br>
+    <span style="font-weight: bold;"></span></li>
+  <li><span style="font-weight: bold;">05/May/2005</span>: assumed
+values implemented. See CR-000142. <br>
+    <span style="font-weight: bold;"></span></li>
+  <li><span style="font-weight: bold;">23/March/2005</span>: 168
+functions of the parser have been JNI-wrapped. A java test program
+shows how to use the parser to create an archetype in memory.<br>
+  </li>
+  <li><span style="font-weight: bold;">25/February/2005</span>: the
+parser has been upgraded to the new dADL syntax. This affects all
+archetypes! The parser will still read old style dADL, but when
+"save-as ADL" is used, will always save in new style dADL. Users should
+upgrade their archetypes by this method.<br>
+  </li>
+  <li><span style="font-weight: bold;">19/September/2004</span>:
+In this release, the GUI of the ADL workbench has been overhauled, and
+is more friendly.
+Screenshots: <a href="adl_workbench-sep2004-startup.JPG">startup
+screen</a>, <a href="adl_workbench-sep2004-node-map.JPG">node
+map</a>, <a href="adl_workbench-sep2004-paths.JPG">path
+map</a>. New support for
+custom domain types, such as <a
+ href="http://www.openehr.org/repositories/archetype-dev/latest/adl/archetypes/test/clinical_types/adl-test-entry.c_quantity.draft.html">C_QUANTITY</a>.
+    <br>
+    <span style="font-weight: bold;"></span></li>
+  <li><span style="font-weight: bold;">07/August/2004</span>:
+latest
+release of workbench adds an archetype explorer on the left hand
+side. Abstract OWL output is in the pipeline, after collaborative work
+between Ocean Informatics and the group at the <a
+ href="http://mbbnet.umn.edu/labs/mayolbi.html">Laboratory for
+Biomedical Informatics</a> at Mayo Clinic, Minnesota, US, with ongoing
+e-collaboration .with University Manchester UK, and University of
+Seville, Spain.<br>
+    <span style="font-weight: bold;"></span></li>
+  <li><span style="font-weight: bold;">30/July/2004</span>: new
+release of ADL workbench and DLLs. Workbench contains a convenient
+explorer control. <a href="adl_workbench1.JPG">Screenshot.<br>
+    </a><span style="font-weight: bold;"></span></li>
+  <li><span style="font-weight: bold;">05/May/2004</span>:
+uploaded ADL
+software, re-engineered to models in ADL
+1.2 draft document. See release
+notes for workbench and dotNet toolkit.</li>
+</ul>
+<ol>
+</ol>
+<ul>
+</ul>
+<h3>To Do</h3>
+<p>The following release will implement ADL 2.0.</p>
+<table cellspacing="2" cellpadding="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr>
+      <td colspan="4" rowspan="1"
+ style="vertical-align: top; background-color: rgb(153, 153, 255);">
+      <h3 style="text-align: center;">Release 2.0 of ADL - end July 2005<br>
+      </h3>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; font-weight: bold; font-family: helvetica,arial,sans-serif; background-color: rgb(204, 204, 255);"><small>Job<br>
+      </small></td>
+      <td
+ style="vertical-align: top; font-weight: bold; font-family: helvetica,arial,sans-serif; background-color: rgb(204, 204, 255);"><small>Description<br>
+      </small></td>
+      <td
+ style="vertical-align: top; font-weight: bold; font-family: helvetica,arial,sans-serif; background-color: rgb(204, 204, 255);"><small>Resources<br>
+      </small></td>
+      <td
+ style="vertical-align: top; font-weight: bold; font-family: helvetica,arial,sans-serif; background-color: rgb(204, 204, 255);"><small>Status</small></td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>Make
+ontology section<br>
+proper dADL<br>
+      </small></td>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>Currently,
+ontology section expresses terms with hard-wired attribute names, e.g.
+&lt;description = &lt;"xxxx"&gt; text = &lt;"yyyy"&gt;&gt;. But the
+actual structures used in the ARCHETYPE_ONTOLOGY class in the AOM are
+hash tables. If the ontology is converted to the form
+&lt;["description"] = &lt;"xxx"&gt; ["text"] = &lt;"yyy"&gt;&gt; then
+it will be automatically procesible into and out of object form by a
+generic object conversion facility (already implemented in the Eiffel
+worlbench using the DT_OBJECT_CONVERTER classes).</small><br>
+      </td>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small><br>
+      </small></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>Implement
+_items<br>
+special attribute for<br>
+generic structures<br>
+      </small></td>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>Instead
+of the current ADL 1.2 specification for nested generics, make all
+generic structures (hash tables and lists) use a pseudo attribute
+"_items" to represent the list contents. This will mean altering the
+"items" attributes in the ontology section of archetypes to "_items".</small><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>Implement
+invariant section<br>
+      </small></td>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>Invariants
+should be in a separate top-level section of the archetype</small><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">done<br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>Make
+entire archetype<br>
+a dADL document<br>
+      </small></td>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>Serialise
+and parse archetypes as dADL documents; remove the special ADL syntax.
+This will facilitate the proper representation of attributes such as
+concept, original_language, translations, adl_version, encoding and
+revision_history. All of these should correspond exactly to the
+relevant parts of the AOM; they can therefore be generically processed
+by a single parser.</small><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>dADL
+&lt;-&gt; XML conversion<br>
+      </small></td>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>Conversion
+of archetypes and and out of XML should be done by going via dADL; the
+theory is the same as for YATL, an abstract syntax for reasoning about
+tree-shaped data.<br>
+      </small></td>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small><br>
+      </small></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>align
+with CEN MetaKnow meta-data and HL7 templates meta-data.<br>
+      </small></td>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>The
+current UML model of archetypes does not include a model of the
+"description" section - currently anything goes. A new model has been
+produced which takes into account the CEN MetaKnow specification, and
+the HL7 Templates proposal. Modelling this properly (cf what is in
+these proposals) will cause the addition of a new section to an
+archetype, called
+"revision history" - this would be a dADL section.<br>
+      </small></td>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>
+      </small><br>
+      </td>
+      <td style="vertical-align: top;">done - <br>
+01/Jun/2005<br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>Provide
+object interface to archetype description <br>
+      </small></td>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small><br>
+      </small></td>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small><br>
+      </small></td>
+      <td style="vertical-align: top;">done - 30/May/05<br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>Generic
+dADL serialiser/deserialiser<br>
+      </small></td>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>Implement
+generic traversal serialiser for dADL.<br>
+      </small></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">done - 30/May/05<br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>CR-000142.
+      <span style="font-family: monospace;"></span>Implement
+assumed values<br>
+      </small></td>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small><br>
+      </small></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">Done<br>
+05/05/2005<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<p>The following table describes other development tasks currently
+foreseen.</p>
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2"
+ cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(153, 153, 255);"
+ rowspan="1" colspan="4">
+      <h3 style="text-align: center;">Release xxx</h3>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; font-weight: bold; font-family: helvetica,arial,sans-serif; background-color: rgb(204, 204, 255);"><small>Job<br>
+      </small></td>
+      <td
+ style="vertical-align: top; font-weight: bold; font-family: helvetica,arial,sans-serif; background-color: rgb(204, 204, 255);"><small>Description<br>
+      </small></td>
+      <td
+ style="vertical-align: top; font-weight: bold; font-family: helvetica,arial,sans-serif; background-color: rgb(204, 204, 255);"><small>Resources<br>
+      </small></td>
+      <td
+ style="vertical-align: top; font-weight: bold; font-family: helvetica,arial,sans-serif; background-color: rgb(204, 204, 255);"><small>Status</small></td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>folding
+HTML<br>
+      </small></td>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>Currently,
+the HTML serialiser output is static, colourised HTML. However, it
+would be convenient to be able to generate a folding form, especially
+for large archetypes, since this would allow better visual exploration
+with just a web browser.<br>
+      </small><small>This
+should be a fairly simple job. It&nbsp; requires copying the existing
+HTML serialiser and making a "folding HTML" serialiser, which outputs
+the correct HTML for each folding node point in the structure.</small><br>
+      </td>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small><br>
+      </small></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>schema-based
+XML serialiser<br>
+      </small></td>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>The
+XML schema for ADL needs to be developed, based on the emerging UML
+model of archetypes (the UML model of ADL can be seen in the ADL
+specification).<br>
+      </small></td>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small><br>
+      </small></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>API
+serialiser<br>
+      </small></td>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>Generates
+a piece of API for a given archetype.<br>
+      </small></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>abstract
+OWL<br>
+serialiser<br>
+      </small></td>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>OWL
+abstract syntax serialiser, based on mapping defined by UCL/Manchester<br>
+      </small></td>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small><br>
+      </small></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>add
+model-based validation<br>
+      </small></td>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>The
+current tools do not validate against reference models, only in terms
+of ADL itself. Reference model validation can be added by adding a
+module which can read a formal expression of any reference model
+(however: this itself is a problem, since XMI is problematic; what is
+needed is an abstract syntax of UML) and validate the class and
+attribute names, as well as other constraints in an ADL archetype
+against it.<br>
+      </small></td>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small><br>
+      </small></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>Library
+viewer<br>
+      </small></td>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>Provide
+a way of viewing a library of ADL archetypes, whether in a database,
+web repository, or simply as files on the file system.<br>
+      </small></td>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small><br>
+      </small></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>Specialisation
+comparator<br>
+      </small></td>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>Provide
+a way of comparing two archetypes where one is supposed to be a
+specialisation of the other.<br>
+      </small></td>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small><br>
+      </small></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>Archetype/data
+comparator<br>
+      </small></td>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>Provide
+simple stand-alone tools for validating data against an archetype.<br>
+      </small></td>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small><br>
+      </small></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>Unicode<br>
+      </small></td>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>Support
+unicode. Internally - as unicode strings; in ADL using XML/ISO
+character code text encoding<br>
+      </small></td>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>Runtime
+ontology<br>
+merge<br>
+      </small></td>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>Do
+runtime ontology merge for locale, e.g. "en-us"&nbsp; on top of "en"<br>
+      </small></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>Get
+rid of unused codes for current level of specialisation<br>
+      </small></td>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>xxx<br>
+      </small></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>Define
+transform of<br>
+archetype path &lt;-&gt; Xpath<br>
+      </small></td>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>xxx<br>
+      </small></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>Term_bindings
+to paths<br>
+      </small></td>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>Terms
+need to be bindable to path expressions, such as //[at2003],
+/xxx/yyy/[at2003] etc<br>
+      </small></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>Test
+unbounded intervals<br>
+      </small></td>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>a_real
+= mCADL_Factory.create_real_interval_make_unbounded()<br>
+&nbsp;&nbsp;
+cadlQuantity.add_unit_constraint(openehr.base_net.Create.STRING.make_from_cil(unit_constraint.Unit),
+a_real) results in magnitude = &lt;|&lt;= 0.0|&gt;; should be {|*|}???<br>
+      </small></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>Allow
+Real numbers as Quantities without units???<br>
+      </small></td>
+      <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>What
+is the use case?<br>
+      </small></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<hr style="width: 100%; height: 2px;">
+<small><span style="font-family: courier new,courier,monospace;">$LastChangedDate$
+$LastChangedRevision$</span></small><br>
+<!-- #EndEditable --><!-- #End --><!-- #EndTemplate -->
+<br>
+<br>
+</body>
+</html>

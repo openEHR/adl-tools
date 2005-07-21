@@ -1,0 +1,63 @@
+
+ADL dotNet Toolkit Release Notes
+--------------------------------
+
+Version
+	Last Change: $Date$
+
+
+interim release cset 1.57 - 23 Jun 2005
+
+	- enhancements:
+		- see release notes for workbench
+
+		- functions "create_expr_binary_operator_xxx" etc replaced by one function 
+			create_expr_binary_operator_node (an_operator: INTEGER; h_a_left_operand, 
+									h_a_right_operand: INTEGER): INTEGER
+			-- REQUIRE
+			-- an_operator_exists: {OPERATOR_KIND}.is_valid_operator(an_operator)
+			-- a_left_operand_exists: a_left_operand /= void
+			-- a_right_operand_exists: a_right_operand /= void
+
+		- functions "create_expr_unary_operator_xxx" etc replaced by one function 
+			create_expr_unary_operator_node (an_operator: INTEGER; 
+										h_an_operand: INTEGER): INTEGER
+
+			codes for an_operator argument given in openEHR AOM specification
+
+	- bugs:
+		- some bugs remain in the java wrapping; compiles ok, but runtime errors at 
+		  assertion building. 
+		  
+		- More functions need to be wrapped for ARCHETYPE_DESCRIPTION, adding invariants
+		  to ARCHETYPE etc.
+
+interim release cset 1.38 - 19 Jan 2005
+
+	- complete JNI wrapping for ADL parser. 
+	- Many fixes in parser.
+	- see http://www.deepthought.com.au for documentation on JNI wrapping
+	  for Eiffel / C.
+	- it is now recommended that users download the BitKeeper repository for
+	  this project, since it contains the proper java directory structure.
+	- this directory still contains the correct DLL, but will be replaced in
+	  the near future by a proper distribution server.
+
+interim release cset 1.27 - 19 September 2004
+
+	- see adl_workbench release notes for general details.
+
+	- enhancements
+
+		- finished inline dADL support for C_DOMAIN_TYPE subtypes;
+		  correctly serialises now; use of parantheses corrected
+
+minor update - 12 September 2004 (cset 1.23)
+
+	- added openehr_version:STRING function to exposed interface
+
+Initial release - 20 August 2004
+
+	- initial version exposes only basic interface. Tested with Sun Java
+	  JDK 1.5beta, Windows.
+

@@ -40,8 +40,6 @@ feature -- Element Change
 
 	set_enter_action(handle: RUNTIME_METHOD_HANDLE) is
 			-- turn a C# function into an Eiffel agent
-		require
-			Handle_exists: handle /= Void
 		local
 			omap: ARRAY[INTEGER]
 			args: TUPLE[SYSTEM_OBJECT, OG_ITEM, INTEGER]			
@@ -50,13 +48,15 @@ feature -- Element Change
 			create args
 			args.put(call_target, 1)
 			omap := <<2, 3>>
-			enter_action.set_rout_disp(handle, args, omap)
+			
+-- the following call has to be re-enabled to make this routine work
+-- previously I did it by changing the export status of the 
+-- ISE ROUTINE.set_rout_disp feature...but that's not good!
+--			enter_action.set_rout_disp(handle, args, omap)
 		end
 		
 	set_exit_action(handle: RUNTIME_METHOD_HANDLE) is
 			-- turn a C# function into an Eiffel agent
-		require
-			Handle_exists: handle /= Void
 		local
 			omap: ARRAY[INTEGER]
 			args: TUPLE[SYSTEM_OBJECT, OG_ITEM, INTEGER]
@@ -65,7 +65,10 @@ feature -- Element Change
 			create args
 			args.put(call_target, 1)
 			omap := <<2, 3>>
-			exit_action.set_rout_disp(handle, args, omap)
+-- the following call has to be re-enabled to make this routine work
+-- previously I did it by changing the export status of the 
+-- ISE ROUTINE.set_rout_disp feature...but that's not good!
+--			exit_action.set_rout_disp(handle, args, omap)
 		end
 		
 feature -- Iteration

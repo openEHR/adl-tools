@@ -1,0 +1,135 @@
+
+ADL dotNet Toolkit Release Notes
+--------------------------------
+
+Version
+	Last Change: $Date$
+
+	+++++++++++++++ move to subversion +++++++++++++
+
+interim release BitKeeper cset 1.57 - 23 Jun 2005
+
+	- enhancements
+		- see archetype workbench release notes
+
+		- in ASSERTION_FACTORY: 
+		  functions "create_expr_unary_operator_xxx" etc replaced by one function 
+
+			create_expr_unary_operator_node(an_operator: OPERATOR_KIND; 
+						an_operand: EXPR_ITEM): EXPR_UNARY_OPERATOR
+					-- operators with one operand, e.g. not x, -5 etc
+				require
+					an_operator_exists: an_operator /= Void
+					an_operand_exists: an_operand /= Void
+
+		  functions "create_expr_binary_operator_xxx" etc replaced by one function 
+
+			create_expr_binary_operator_node(an_operator: OPERATOR_KIND; a_left_operand, 
+							a_right_operand: EXPR_ITEM): EXPR_BINARY_OPERATOR is
+					-- operators with boolean results, e.g.
+					-- and, or, xor, etc
+				require
+					an_operator_exists: an_operator /= Void
+					a_left_operand_exists: a_left_operand /= Void
+					a_right_operand_exists: a_right_operand /= Void
+
+		- the new classes OPERATOR_KIND and OPERATOR_TYPES are added. To make a call to 
+		  one of the above functions, an OPERATOR_KIND object needs to be created using
+		  the c# syntax which has the effect of doing OPERATOR_KIND.make(integer value)
+		  or OPERATOR_KIND.make_from_string(string value)
+
+release 'arch_desc' BitKeeper cset 1.56 - 19/June/2005
+
+	- enhancements
+		- see archetype workbench release notes.
+
+		- implemented ARCHETYPE_DESCRIPTION class, parsing, and 
+		  set routines. Created an example test class to show creation of an archetype
+		  description.
+
+interim release BitKeeper cset 1.46 - 05 May 2005
+
+	- see adl_workbench release notes for general details.
+
+	- enhancements
+		- implemented assumed_value in primitive and domain types
+	
+interim release BitKeeper cset 1.27 - 19 September 2004
+
+	- see adl_workbench release notes for general details.
+
+	- enhancements
+
+		- finished inline dADL support for C_DOMAIN_TYPE subtypes;
+		  correctly serialises now; use of parantheses corrected
+
+interim release BitKeeper cset 1.32 - 29 July 2004
+
+	- see adl_workbench release notes for general details.
+
+	- CADL_FACTORY class routine create_archetype_slot replaced
+	  by two routines create_archetype_slot_anonymous and 
+	  create_archetype_slot_identified
+
+interim release BitKeeper cset 1.25 - 05 May 2004
+
+	- see adl_workbench release notes for general details.
+
+	- Renaming and re-arrangement of all classes and some attributes, as
+	  follows:
+
+	  ------------- CADL classes -----------------------------
+	  CADL_ITEM 		-> 	ARCHETYPE_CONSTRAINT
+
+	  CADL_OBJECT_ITEM	->	C_OBJECT
+	  					type_name -> rm_type_name
+
+	  CADL_NODE				removed
+
+	  CADL_REL_NODE		->	C_ATTRIBUTE
+	  					attr_name -> rm_attr_name
+
+	  CADL_CARDINALITY	->	CARDINALITY
+	  CADL_OBJECT_NODE_REF	->	ARCHETYPE_INTERNAL_REF
+
+	  CADL_OBJECT_NODE 
+	  	with is_archetype_ref = True ->	ARCHETYPE_SLOT
+		with is_archetype_ref = False ->	C_COMPLEX_OBJECT
+
+	  CADL_OBJECT_TERM_REF with is_reference = True
+	  				->	CONSTRAINT_REF
+	  CADL_OBJECT_TERM_REF with is_reference = False
+	  				->	C_CODED_TERM
+
+	  CADL_OBJECT_SIMPLE	->	C_PRIMITIVE_OBJECT
+	  C_SIMPLE			->	C_PRIMITIVE
+
+	  ADL_ASSERTION		->	ASSERTION
+
+	  ------------- DADL classes -----------------------------
+	  DADL_ITEM				->	DT_ITEM
+	  DADL_NODE					removed
+	  DADL_OBJECT_ITEM		->	DT_OBJECT_ITEM
+	  						type_name -> rm_type_name
+
+	  DADL_REL_NODE			->	DT_ATTRIBUTE_NODE
+	  						attr_name -> rm_attr_name
+
+	  DADL_OBJECT_NODE		->	DT_COMPLEX_OBJECT_NODE
+	  DADL_OBJECT_LEAF		->	DT_OBJECT_LEAF
+	  DADL_OBJECT_QUERY		->	DT_OBJECT_QUERY
+	  DADL_OBJECT_SIMPLE		->	DT_PRIMITIVE_OBJECT
+	  DADL_OBJECT_SIMPLE_LIST	->	DT_PRIMITIVE_OBJECT_LIST
+	  DADL_OBJECT_SIMPLE_INTERVAL	->	DT_PRIMITIVE_OBJECT_INTERVAL
+
+	  ------------- DotNet classes -----------------------------
+	  DOTNET_CADL_TREE_ITERATOR	->	DOTNET_ARCHETYPE_ITERATOR
+
+	  ----------------------------------------------------------
+
+"mar2004" Release - 31 Mar 2004
+
+	- created as a separate toolkit. The DLLs have the complete
+	  functionality of the ADL reference parser, including serialisation to
+	  XML, HTML and ADL.  See ADL workbench for details of functionality.
+
