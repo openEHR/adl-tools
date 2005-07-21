@@ -1,0 +1,54 @@
+3.10  Units Used in Chemical and Biochemical Laboratories
+
+      name     kind of quantity  print    c/s     c/i    Mvalue definition
+ equivalents                    eq     eq       EQ       Y1     mol
+ osmole
+ (dissolved                     osm    osm      OSM      Y1     mol
+ particles)
+
+ pH            acidity          pH     [pH]     [PH]     N*     pH(1
+                                                                mol/l)
+ gram percent                   g%     g%       G%       Y1     g/dl
+
+ Svedberg unit sedimentation    S      [S]      [S]      N1     10*-13.s
+               coefficient
+ high power    view area in
+ field         microscope       HPF    [HPF]    [HPF]    N1     1
+ low power     view area in
+ field         microscope       LPF    [LPF]    [LPF]    N100   1
+
+ katal         catalytic        kat    kat      KAT      Y1     mol/s
+               activity
+
+ Unit          catalytic        U      U        U        Y1     umol/min
+               activity
+ international
+ unit                           i.U.   [iU]     [IU]     Y1     1
+ arbitary unit                  arb. U [arb'U]  [ARB'U]  N1     1
+ United States
+ Pharmacopeia                   U.S.P. [USP'U]  [USP'U]  N1     1
+ unit
+               {it
+               anticardiolipin         [GPL'U]  [GPL'U]  N1     1
+               IgG}
+
+               anticardiolipin         [MPL'U]  [MPL'U]  N1     1
+               IgM
+
+               anticardiolipin         [APL'U]  [APL'U]  N1     1
+               IgA
+
+ Bethesda unit factor VIII             [beth'U] [BETH'U] N1     1
+               inhibitor
+
+ Todd unit     antistreptolysin        [todd'U] [TODD'U] N1     1
+               O
+ Dye unit      amylase                 [dye'U]  [DYE'U]  N1     1
+ Somogyi unit  amylase                 [smgy'U] [SMGY'U] N1     1
+ Bodansky unit phosphatase             [bdsk'U] [BDSK'U] N1     1
+ King-Armstrong
+ unit          phosphatase             [ka'U]   [KA'U]   N1     1
+ Kunkel unit                           [knk'U]  [KNK'U]  N1     1
+ Mac Lagan unit                        [mclg'U] [MCLG'U] N1     1
+ tuberculin
+ unit          tuberculin              [tb'U]   [TB'U]   N1     1

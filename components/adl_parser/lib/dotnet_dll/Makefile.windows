@@ -1,0 +1,11 @@
+all: finalized
+
+finalized: clean
+	ec -batch -ace ace.ace -finalize -c_compile
+	cd EIFGEN/F_code
+	copy *.dll %OPENEHR%\ref_impl_eiffel\distrib\lib\adl_dotnet
+
+clean:
+	del /q /s *.epr
+	rmdir /q /s EIFGEN
+

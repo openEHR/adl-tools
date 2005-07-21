@@ -1,0 +1,7 @@
+# profile for VB language for generate_version script
+
+file_extension = ".vb"
+class_header = "class OPENEHR_VERSION"
+feature_decl = "	public version as String = "$substr"\n"
+class_footer =  "end class"
+newline = "\n"

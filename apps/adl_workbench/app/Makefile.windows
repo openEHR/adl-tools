@@ -1,0 +1,18 @@
+all: finalized
+
+wkbench: clean
+	ec -batch -ace ace.ace -freeze -c_compile
+
+finalized: clean
+	ec -batch -ace ace.ace -finalize -c_compile
+	cd EIFGEN\F_code
+	copy *.exe %OPENEHR%\ref_impl_eiffel\distrib\bin
+	
+	cd ..\W_code
+	finish_freezing -silent
+	cd ..\..
+
+clean:
+	del /q /s *.epr
+	rmdir /q /s EIFGEN
+

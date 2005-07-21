@@ -1,0 +1,35 @@
+3.4  Natural Units (Constants)
+
+     name       kind of     print    c/s      c/i   M    value       definition
+               quantity
+ velocity of
+ light       velocity     c        [c]      [C]     Y 299792458   m/s
+ Planck                                               6.6260755 ×
+ constant                 h        [h]      [H]     Y 10-34       J.s
+
+ Boltzman                                             1.380658 ×
+ constant                 k        [k]      [K]     Y 10-23       J/K
+
+ permittivity             [Image]0                    8.854187817
+ of vacuum                         [eps_0]  [eps_0] Y × 10-12     F/m
+ permeability             µ0
+ of vacuum                         [mu_0]   [mu_0]  Y 1           4.[pi].10*-7.N/A2
+ elementary                                           1.60217733
+ charge      el. charge   e        [e]      [E]     Y × 10-19     C
+
+ electron                 m e                         9.1093897 ×
+ mass        mass                  [m_e]    [M_E]   Y 10-28       g
+                                                      1.6726231 ×
+ proton mass mass         m p      [m_p]    [M_P]   Y 10-24       g
+
+ Newtonian                                            6.67259 ×
+ constant of              G        [G]      [GC]    Y 10-11       m3.kg-1.s-2
+ gravitation
+ acceleration
+ of free fallacceleration gn       [g]      [G]     Y 9.80665     m/s2
+ (standard)
+ atmosphere
+ (standard)  pressure     atm      atm      ATM     N 101325      Pa
+ light-year  length       l.y.     [ly]     [LY]    Y 1           [c].a_j
+ gram-force  force        gf       gf       GF      Y 1           g.[g]
+ pound force force        lbf      [lbf_av] [LBF_AV]N 1           [lb_av].[g]

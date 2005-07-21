@@ -1,0 +1,18 @@
+#
+# this should work but does not
+#
+# DIRS = adl_validator adl_workbench test
+# 
+# $(DIRS): 
+# 	pushd $@ & nmake -f makefile.windows & popd
+# 
+# all: $(DIRS)
+# 
+
+all: app1 app2
+
+app1:
+ 	pushd adl_cmd_line\app & nmake -f makefile.windows & popd
+
+app2:
+ 	pushd adl_workbench\app & nmake -f makefile.windows & popd

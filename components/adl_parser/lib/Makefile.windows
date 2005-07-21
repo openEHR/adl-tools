@@ -1,0 +1,10 @@
+#
+# 
+
+all: app1 app2
+
+app1:
+ 	pushd dotnet_dll & nmake -f makefile.windows & popd
+
+app2:
+ 	pushd java_lib & nmake -f makefile.windows & popd

@@ -1,0 +1,127 @@
+system
+	"adl_cmd_line"
+
+root
+	adl_cmd_line: make
+
+default
+	document (".")
+	precompiled ("$ISE_EIFFEL\precomp\spec\$ISE_PLATFORM\base")
+	assertion (require)
+	disabled_debug (yes)
+	disabled_debug ("adl_invariant")
+	disabled_debug ("adl_parse")
+	disabled_debug ("adl_tree")
+	disabled_debug ("dadl_parse")
+	disabled_debug ("exclude list")
+	disabled_debug ("gelex")
+	disabled_debug ("geyacc")
+	disabled_debug ("include list")
+	disabled_debug ("og_path_parse")
+	line_generation (no)
+	profile (no)
+	trace (no)
+	check_vape (no)
+	console_application (yes)
+	syntax_warning (no)
+	address_expression (no)
+	array_optimization (no)
+	dead_code_removal (no)
+	dynamic_runtime (no)
+	exception_trace (no)
+	inlining (no)
+	multithreaded (no)
+
+
+cluster
+	all app:		"$OPENEHR\ref_impl_eiffel\apps\adl_cmd_line\src"
+		exclude
+			".svn"; 
+		default
+			assertion (no)
+			assertion (require)
+			assertion (ensure)
+		end
+
+	all version:		"$OPENEHR\ref_impl_eiffel\libraries\version"
+		exclude
+			".svn"; 
+		end
+
+	all adl_parser:		"$OPENEHR\ref_impl_eiffel\components\adl_parser\src"
+		exclude
+			".svn"; 
+		default
+			assertion (no)
+			assertion (require)
+			assertion (ensure)
+		end
+
+	all openehr:		"$OPENEHR\ref_impl_eiffel\libraries\openehr\src"
+		exclude
+			".svn"; 
+		default
+			assertion (no)
+			assertion (require)
+			assertion (ensure)
+			assertion (invariant)
+		visible
+			C_CODED_TERM
+				end
+			C_ORDINAL
+				end
+			C_QUANTITY
+				end
+		end
+
+	all common_libs:		"$OPENEHR\ref_impl_eiffel\libraries\common_libs\src"
+		exclude
+			".svn"; 
+		default
+			assertion (no)
+			assertion (require)
+			assertion (ensure)
+			assertion (invariant)
+		end
+
+
+	library ut_support:		"$GOBO\library\utility"
+
+	library kl_kernel:		"$GOBO\library\kernel"
+		exclude
+			spec; 
+		end
+
+	library kl_kernel_spec:		"$GOBO\library\kernel\spec\ise"
+
+	library kl_lexical:		"$GOBO\library\lexical"
+
+	library kl_parse:		"$GOBO\library\parse"
+
+	library gobo_structure:		"$GOBO\library\structure"
+
+	library regexp:		"$GOBO\library\regexp"
+
+	library design_pattern:		"$GOBO\library\pattern"
+
+	library base:		"$ISE_EIFFEL\library\base"
+		exclude
+			"table_eiffel3"; "desc"; 
+		end
+
+	time:		"$ISE_EIFFEL\library\time"
+
+	time_format (time):		"$\format"
+
+	library time_format_english (time_format):		"$\en-int"
+
+external
+
+	include_path:
+		"$(ISE_EIFFEL)\library\wel\spec\windows\include",
+		"$(GOBO)\library\kernel\include"
+
+	object:
+		"$(ISE_EIFFEL)\library\wel\spec\$(ISE_C_COMPILER)\lib\wel.lib"
+
+end

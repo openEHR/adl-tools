@@ -1,0 +1,38 @@
+;
+;	component:   "openEHR Reusable Libraries"
+;	description: "[
+;			 Database of unit tables, designed on the basis of the Unified Code for Units
+;	             of Measure (UCUM), developed by Gunther Schadow and Clement J. McDonald of
+;			 The Regenstrief Institute For Health Care, Indianapolis.
+;			 Published at http://aurora.rg.iupui.edu/UCUM.
+;	             ]"
+;	keywords:    "units, UCUM"
+;
+;	author:      "Thomas Beale"
+;	support:     "Ocean Informatics <support@OceanInformatics.biz>"
+;	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
+;	license:     "See notice at bottom of class"
+;
+;	file:        "$Source$"
+;	revision:    "$Revision$"
+;	last_change: "$Date$"
+;
+; NOTE: in the original, the case-sensitive and case-insensitive strings for 
+; pi, ppt, ppm, ppb, pptr all had "[]", i.e. were treated as suffixes according to the 
+; UCUM syntax definition. However, this makes parsing difficult, since suffixes are
+; expected to follow a unit.
+;
+[identification]
+GROUP_NAME = Dimensionless Units
+
+[units]
+;
+;NAME:PROPERTY:CASE_SENSITIVE:CASE_INSENSITIVE:METRIC:VALUE:DEFINITION
+;
+ten = ten:ten, for arbitrary powers:10*:10*:N:10:1
+pi = pi:the number pi:pi:PI:N:3.1415926:1
+percent = percent:percent:%:%:N:1:10^-2
+ppt = ppt:parts per thousand:ppth:PPTH:N:1:10^-3
+ppm = ppm:parts per million:ppm:PPM:N:1:10^-6
+ppb = ppb:parts per billion:ppb:PPB:N:1:10^-9
+pptr = pptr:parts per trillion:pptr:PPTR:N:1:10^-12

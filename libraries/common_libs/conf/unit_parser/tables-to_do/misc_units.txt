@@ -1,0 +1,22 @@
+3.12  Miscellaneous Units
+
+     name        kind of  print   c/s       c/i   M value    definition
+                quantity
+ stere         volume     st    st       STR      Y 1     m3
+ Ångström      length     Å     Ao       AO       N 0.1   nm
+
+ barn          area       b     b        BRN      N 100   fm2
+               (action)
+ atmosphere
+ (technical)   pressure   at    att      ATT      N 1     kgf/cm2
+ psi           pressure   psi   [psi]    [PSI]    N 1     [lbf_av]/[in\_i]2
+
+ circle        plane      circ  circ     CIRC     N 2     [pi].rad
+               angle
+
+ spere         solid      sph   sph      SPH      N 4     [pi].sr
+               angle
+ carat                    ctm
+ (metric)      mass             [car_m]  [CAR_M]  N 0.2   g
+ carat (of                ctAu
+ gold alloys)                   [car_Au] [CAR_AU] N 1     /24

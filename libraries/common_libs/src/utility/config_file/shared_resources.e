@@ -1,0 +1,310 @@
+indexing
+	component:   "openEHR Reusable Libraries"
+	description: "Shared access to a .ini style configuration file."
+	keywords:    "config, resources"
+
+	author:      "Thomas Beale"
+	support:     "Ocean Informatics <support@OceanInformatics.biz>"
+	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	license:     "See notice at bottom of class"
+
+	file:        "$URL$"
+	revision:    "$LastChangedRevision$"
+	last_change: "$LastChangedDate$"
+
+class SHARED_RESOURCES
+
+feature -- Initialisation
+
+	initialise_resource_config_file_name(str:STRING) is
+		require
+			File_name_exists: str /= Void and then not str.is_empty
+		do
+			resource_config_file_name.append(str)
+		ensure
+			resource_config_file_name.is_equal(str)
+		end
+
+feature -- Access
+
+	resource_value(a_category, a_resource_name:STRING): STRING is
+			-- get the value for a_resource_name, in 'a_category'
+		require
+			Valid_category: a_category /= Void and then not a_category.is_empty
+			Valid_resource_name: a_resource_name /= Void and then not a_resource_name.is_empty
+		do
+			Result := resource_config_file.resource_value(a_category, a_resource_name)
+		ensure
+			Result_not_void: Result /= Void
+		end
+
+	resource_value_list(a_category, a_resource_name:STRING):ARRAYED_LIST[STRING] is
+			-- List of items specified in file setting
+			-- of the form of a comma-separated list.
+		require
+			Valid_category: a_category /= Void and then not a_category.is_empty
+			Valid_resource_name: a_resource_name /= Void and then not a_resource_name.is_empty
+		do
+			Result := resource_config_file.resource_value_list(a_category, a_resource_name)
+		end
+
+	resource_category_values(a_category:STRING): HASH_TABLE[STRING,STRING] is
+			-- get all name/value pairs in 'a_category'
+		require
+			Valid_category: a_category /= Void and then not a_category.is_empty
+		do
+			Result := resource_config_file.resource_category_values(a_category)
+		ensure
+			Result_not_void: Result /= Void
+		end
+
+feature -- Environment
+
+	resource_config_file_name:STRING is
+			-- name of configuration file from which settings are read
+		once
+			create Result.make(0)
+		end
+
+	execution_environment: EXECUTION_ENVIRONMENT is
+	    once
+	        create Result
+	    end
+
+	startup_directory: STRING is
+			-- directory application started in
+		once
+			 Result := execution_environment.current_working_directory
+		end
+
+	os_directory_separator: CHARACTER is
+	    once
+			Result := operating_environment.directory_separator
+	    end
+
+	application_home_directory:STRING is 
+			-- application home directory
+		once 
+			create Result.make(0)
+		end
+
+	application_name:STRING is
+	    once
+			create Result.make(0)
+			Result.append(execution_environment.command_line.argument(0).mirrored)
+
+			if Result.has(os_directory_separator) then
+			    Result.keep_head(Result.index_of(os_directory_separator, 1)-1)
+			end
+
+			Result.mirror
+	    end
+
+	current_working_directory:STRING is
+		once
+			Result := execution_environment.current_working_directory
+		end
+
+feature -- Element Change
+
+	record_resource_request(a_category, a_resource_name:STRING) is
+		require
+			Valid_category: a_category /= Void and then not a_category.is_empty
+			Valid_resource_name: a_resource_name /= Void and then not a_resource_name.is_empty
+		local
+			res_table:HASH_TABLE[STRING,STRING]
+		do
+			res_table := resource_config_file.requested_resources.item(a_category) 
+			if res_table /= Void then
+				if not res_table.has(a_resource_name) then
+					res_table.put("------", a_resource_name)
+				end
+			else
+				create res_table.make(0)
+				res_table.put("-------", a_resource_name)
+				resource_config_file.requested_resources.put(res_table, a_category)
+			end
+		end
+
+	set_resource_value(a_category, a_resource_name, a_value:STRING) is
+		require
+			Valid_category: a_category /= Void and then not a_category.is_empty
+			Valid_resource_name: a_resource_name /= Void and then not a_resource_name.is_empty
+			Valid_value: a_value /= Void and then not a_value.is_empty
+		do
+			resource_config_file.set_resource_value(a_category, a_resource_name, a_value)			
+		end
+	
+feature -- Conversion
+
+	substitute_env_vars(s:STRING): STRING is
+			-- expand the environment variables, delimited by a '$' and any 
+			-- non alphanumeric character except underscore, or end of string, 
+			-- in the string s
+		local
+			i, p,q: INTEGER
+			var_name, var_val: STRING
+			c: CHARACTER
+		do
+			Result := s.twin
+			from
+				p := s.index_of('$', 1)
+				q := p+1
+			until
+				p = 0
+			loop
+				from
+					i := q
+				until
+					i = 0
+				loop
+					c := s.item(i)
+					if (c >= 'a' and c <= 'z') or else 
+						(c >= 'A' and c <= 'Z') or else
+						(c >= '0' and c <= '9') or else
+						c = '_' then
+						q := q + 1
+						i := i + 1
+						if i > s.count then
+							i := 0
+							q := s.count
+						end
+					else
+						i := 0
+					end
+				end
+				
+				var_name := s.substring(p+1, q)
+				var_val := execution_environment.get(var_name)
+				if var_val /= Void then
+					Result.replace_substring_all("$" + var_name, var_val)
+				end
+				p := s.index_of('$', q)
+			end
+		end
+		
+feature -- Output
+
+	resources_as_list: ARRAYED_LIST[STRING] is
+			-- list of resources configured for application, in format:
+			--         category        res_name                res_val
+		do
+			Result := res_to_list(resources)
+		ensure
+			Result_exists: Result /= Void
+		end
+
+	resources_requested_as_list: ARRAYED_LIST[STRING] is
+			-- list of resources requested by application, in format:
+			--         category        res_name                res_val
+		do
+			Result := res_to_list(requested_resources)
+		ensure
+			Result_exists: Result /= Void
+		end
+
+feature -- Persistence
+
+	save_resources is
+			-- save current resource settings in file
+			-- of same name as application, with extnsion '.cfg'
+		do
+			resource_config_file.write_file
+		end
+		
+feature {NONE} -- Implementation
+
+	resources: HASH_TABLE[HASH_TABLE[STRING,STRING], STRING] is
+		do
+			Result := resource_config_file.resources
+		end
+
+	requested_resources: HASH_TABLE[HASH_TABLE[STRING,STRING],STRING] is
+		do
+			Result := resource_config_file.requested_resources
+		end
+
+	res_to_list (res: HASH_TABLE[HASH_TABLE[STRING,STRING],STRING]): ARRAYED_LIST[STRING] is
+			-- actual resources read in resource file; result in format
+			--         category        res_name                res_val
+        local
+			str:STRING
+			resource_list:HASH_TABLE[STRING,STRING]
+		do
+			create Result.make(0)
+
+			from
+				res.start
+			until
+				res.off
+			loop
+				resource_list := res.item_for_iteration.twin
+				str := res.key_for_iteration.twin
+				str.prepend_string("CATEGORY: -------- ")
+				str.append(" --------")
+				Result.extend(str)
+
+				from
+					resource_list.start
+				until
+					resource_list.off
+				loop
+					str := "    "
+					str.append(resource_list.key_for_iteration)
+					str.append(" = ")
+					str.append(resource_list.item_for_iteration)
+					Result.extend(str)
+					resource_list.forth
+				end
+
+				res.forth
+			end
+		ensure
+			Result_exists: Result /= Void
+		end
+
+feature {NONE} -- Implementation
+
+	resource_config_file: CONFIG_FILE_ACCESS is
+		once
+			create Result.make(resource_config_file_name)
+		end
+
+end
+
+--|
+--| ***** BEGIN LICENSE BLOCK *****
+--| Version: MPL 1.1/GPL 2.0/LGPL 2.1
+--|
+--| The contents of this file are subject to the Mozilla Public License Version
+--| 1.1 (the 'License'); you may not use this file except in compliance with
+--| the License. You may obtain a copy of the License at
+--| http://www.mozilla.org/MPL/
+--|
+--| Software distributed under the License is distributed on an 'AS IS' basis,
+--| WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+--| for the specific language governing rights and limitations under the
+--| License.
+--|
+--| The Original Code is shared_resources.e.
+--|
+--| The Initial Developer of the Original Code is Thomas Beale.
+--| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| the Initial Developer. All Rights Reserved.
+--|
+--| Contributor(s):
+--|
+--| Alternatively, the contents of this file may be used under the terms of
+--| either the GNU General Public License Version 2 or later (the 'GPL'), or
+--| the GNU Lesser General Public License Version 2.1 or later (the 'LGPL'),
+--| in which case the provisions of the GPL or the LGPL are applicable instead
+--| of those above. If you wish to allow use of your version of this file only
+--| under the terms of either the GPL or the LGPL, and not to allow others to
+--| use your version of this file under the terms of the MPL, indicate your
+--| decision by deleting the provisions above and replace them with the notice
+--| and other provisions required by the GPL or the LGPL. If you do not delete
+--| the provisions above, a recipient may use your version of this file under
+--| the terms of any one of the MPL, the GPL or the LGPL.
+--|
+--| ***** END LICENSE BLOCK *****
+--|

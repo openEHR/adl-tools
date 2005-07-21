@@ -1,0 +1,155 @@
+
+openehr_rm_test: system execution failed.
+Following is the set of recorded exceptions:
+
+-------------------------------------------------------------------------------
+Class / Object      Routine                Nature of exception           Effect
+-------------------------------------------------------------------------------
+SPLASH_WINDOW       upper_bar @1           background_color_not_void:   
+<000000000332FB90>  (From EV_WINDOW)       Class invariant violated.     Fail
+-------------------------------------------------------------------------------
+SPLASH_WINDOW       upper_bar                                           
+<000000000332FB90>  (From EV_WINDOW)       Routine failure.              Fail
+-------------------------------------------------------------------------------
+EV_DIALOG_IMP       extra_minimum_width @5                              
+<0000000003337C50>  (From EV_TITLED_WINDOW_IMP)
+                                           Routine failure.              Fail
+-------------------------------------------------------------------------------
+EV_DIALOG_IMP       compute_minimum_size @2
+<0000000003337C50>  (From EV_TITLED_WINDOW_IMP)
+                                           Routine failure.              Fail
+-------------------------------------------------------------------------------
+EV_DIALOG_IMP       minimum_width @7                                    
+<0000000003337C50>  (From EV_SIZEABLE_CONTAINER_IMP)
+                                           Routine failure.              Fail
+-------------------------------------------------------------------------------
+EV_DIALOG_IMP       width @1                                            
+<0000000003337C50>  (From EV_WIDGET_IMP)   Routine failure.              Fail
+-------------------------------------------------------------------------------
+EV_DIALOG_IMP       insert @2                                           
+<0000000003337C50>  (From EV_WINDOW_IMP)   Routine failure.              Fail
+-------------------------------------------------------------------------------
+EV_DIALOG_IMP       replace @3                                          
+<0000000003337C50>  (From EV_SINGLE_CHILD_CONTAINER_IMP)
+                                           Routine failure.              Fail
+-------------------------------------------------------------------------------
+EV_DIALOG_IMP       extend @2                                           
+<0000000003337C50>  (From EV_CELL_I)       Routine failure.              Fail
+-------------------------------------------------------------------------------
+SPLASH_WINDOW       extend @8                                           
+<000000000332FB90>  (From EV_CONTAINER)    Routine failure.              Fail
+-------------------------------------------------------------------------------
+SPLASH_WINDOW       initialize @28                                      
+<000000000332FB90>  (From EV_MESSAGE_DIALOG)
+                                           Routine failure.              Fail
+-------------------------------------------------------------------------------
+SPLASH_WINDOW       default_create @6                                   
+<000000000332FB90>  (From EV_ANY)          Routine failure.              Fail
+-------------------------------------------------------------------------------
+SPLASH_WINDOW       make_with_text @2                                   
+<000000000332FB90>  (From EV_MESSAGE_DIALOG)
+                                           Routine failure.              Fail
+-------------------------------------------------------------------------------
+SPLASH_WINDOW       make @1                                             
+<000000000332FB90>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+APPLICATION         make_and_launch @4                                  
+<0000000003310048>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+APPLICATION         root's creation                                     
+<0000000003310048>                         Routine failure.              Exit
+-------------------------------------------------------------------------------
+
+
+openehr_rm_test: PANIC: caught signal #11 (Segmentation violation) -- Giving up...
+
+openehr_rm_test: system execution failed.
+Following is the set of recorded exceptions:
+
+-------------------------------------------------------------------------------
+Class / Object      Routine                Nature of exception           Effect
+-------------------------------------------------------------------------------
+SPLASH_WINDOW       upper_bar @1           background_color_not_void:   
+<0000000003384598>  (From EV_WINDOW)       Class invariant violated.     Fail
+-------------------------------------------------------------------------------
+SPLASH_WINDOW       upper_bar                                           
+<0000000003384598>  (From EV_WINDOW)       Routine failure.              Fail
+-------------------------------------------------------------------------------
+EV_DIALOG_IMP       extra_minimum_width @5                              
+<000000000338C658>  (From EV_TITLED_WINDOW_IMP)
+                                           Routine failure.              Fail
+-------------------------------------------------------------------------------
+EV_DIALOG_IMP       compute_minimum_size @2
+<000000000338C658>  (From EV_TITLED_WINDOW_IMP)
+                                           Routine failure.              Fail
+-------------------------------------------------------------------------------
+EV_DIALOG_IMP       minimum_width @7                                    
+<000000000338C658>  (From EV_SIZEABLE_CONTAINER_IMP)
+                                           Routine failure.              Fail
+-------------------------------------------------------------------------------
+EV_DIALOG_IMP       width @1                                            
+<000000000338C658>  (From EV_WIDGET_IMP)   Routine failure.              Fail
+-------------------------------------------------------------------------------
+EV_DIALOG_IMP       insert @2                                           
+<000000000338C658>  (From EV_WINDOW_IMP)   Routine failure.              Fail
+-------------------------------------------------------------------------------
+EV_DIALOG_IMP       replace @3                                          
+<000000000338C658>  (From EV_SINGLE_CHILD_CONTAINER_IMP)
+                                           Routine failure.              Fail
+-------------------------------------------------------------------------------
+EV_DIALOG_IMP       extend @2                                           
+<000000000338C658>  (From EV_CELL_I)       Routine failure.              Fail
+-------------------------------------------------------------------------------
+SPLASH_WINDOW       extend @8                                           
+<0000000003384598>  (From EV_CONTAINER)    Routine failure.              Fail
+-------------------------------------------------------------------------------
+SPLASH_WINDOW       initialize @28                                      
+<0000000003384598>  (From EV_MESSAGE_DIALOG)
+                                           Routine failure.              Fail
+-------------------------------------------------------------------------------
+SPLASH_WINDOW       default_create @6                                   
+<0000000003384598>  (From EV_ANY)          Routine failure.              Fail
+-------------------------------------------------------------------------------
+SPLASH_WINDOW       make_with_text @2                                   
+<0000000003384598>  (From EV_MESSAGE_DIALOG)
+                                           Routine failure.              Fail
+-------------------------------------------------------------------------------
+SPLASH_WINDOW       make @1                                             
+<0000000003384598>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+APPLICATION         make_and_launch @4                                  
+<0000000003310048>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+APPLICATION         root's creation                                     
+<0000000003310048>                         Routine failure.              Exit
+-------------------------------------------------------------------------------
+
+
+openehr_rm_test: PANIC: caught signal #11 (Segmentation violation) -- Giving up...
+
+openehr_rm_test: system execution failed.
+Following is the set of recorded exceptions:
+
+-------------------------------------------------------------------------------
+Class / Object      Routine                Nature of exception           Effect
+-------------------------------------------------------------------------------
+SPLASH_WINDOW       is_destroyed @5        is_destroyed:                
+<0000000003384598>  (From EV_ANY)          Feature call on void target.  Fail
+-------------------------------------------------------------------------------
+SPLASH_WINDOW       is_destroyed @1                                     
+<0000000003384598>  (From EV_ANY)          Routine failure.              Fail
+-------------------------------------------------------------------------------
+SPLASH_WINDOW       set_background_color @5
+                                           not_destroyed:
+<0000000003384598>  (From EV_MESSAGE_DIALOG)
+                                           Precondition violated.        Fail
+-------------------------------------------------------------------------------
+SPLASH_WINDOW       make @1                                             
+<0000000003384598>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+APPLICATION         make_and_launch @4                                  
+<0000000003310048>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+APPLICATION         root's creation                                     
+<0000000003310048>                         Routine failure.              Exit
+-------------------------------------------------------------------------------

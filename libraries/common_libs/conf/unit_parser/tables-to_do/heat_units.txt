@@ -1,0 +1,67 @@
+3.8  Other Units for Heat and Temperature
+
+       name         kind of    print    c/s      c/i   M     value     definition
+                    quantity
+
+ degree Fahrenheittemperature °F      [degF]   [DEGF]  N *             degf(5
+                                                                       K/9)
+ calorie (15 °C)  energy      cal15°C cal_[15] CAL_[15]Y 4.18580       J
+
+ calorie (20 °C)  energy      cal20°C cal_[20] CAL_[20]Y 4.18190       J
+
+ calorie (mean)   energy      calm    cal_m    CAL_M   Y 4.19002       J
+ calorie (intl.               calIT
+ table)           energy              cal_IT   CAL_IT  Y 4.1868        J
+ calorie                      calth
+ (thermochemical) energy              cal_th   CAL_TH  Y 4.184         J
+ calorie (usual)  energy      cal     cal      CAL     Y 1             cal_th
+ Calorie
+ (nutrition)      energy      Cal     [Cal]    [CAL]   N 1             kcal_th
+ British thermal              Btu39°F
+ unit (39 °F)     energy              [Btu_39] [BTU_39]N 1.05967       kJ
+ Btu (59 °F)      energy      Btu59°F [Btu_59] [BTU_59]N 1.05480       kJ
+
+ Btu (60 °F)      energy      Btu60°F [Btu_60] [BTU_60]N 1.05468       kJ
+
+ Btu (mean)       energy      Btum    [Btu_m]  [BTU_M] N 1.05587       kJ
+
+ Btu (intl. table)energy      BtuIT   [Btu_IT] [BTU_IT]N 1.05505585262 kJ
+ Btu                          Btuth
+ (thermochemical) energy              [Btu_th] [BTU_TH]N 1.054350      kJ
+ Btu (usual)      energy      btu     [Btu]    [BTU]   N 1             [Btu_th]
+
+3.9  Units Used in Clinical Medicine
+
+    name       kind of    print    c/s        c/i    M   value    definition
+              quantity
+ meter of
+ water      pressure     m H2O  m[H2O]     M[H2O]    Y 9.80665  kPa
+ column
+ meter of
+ mercury    pressure     m Hg   m[Hg]      M[HG]     Y 133.3220 kPa
+ column
+ inch of
+ water      pressure     in H2O [in_i'H2O] [IN_I'H2O]N 1        m[H2O].[in_i]/m
+ column
+ inch of
+ mercury    pressure     in Hg  [in_i'Hg]  [IN_i'HG] N 1        m[Hg].[in_i]/m
+ column
+ peripheral
+ vascular
+ resistance              P.R.U. [PRU]      [PRU]     N 1        mm[Hg].s/ml
+ unit
+
+ diopter    refraction   dpt    [diop]     [DIOP]    N 1        /m
+            of a lens
+
+ mesh       (lineic             [mesh_i]   [MESH_I]  N 1        /[in_i]
+            number)
+ Charrière  gauge of
+ (french)   catheters    Ch     [Ch]       [CH]      N 1        mm/[pi]
+ drop       volume       drp    [drp]      [DRP]     N 1        ml/12
+ Hounsfield x-ray
+ unit       attenuation  HF     [hnsf'U]   [HNSF'U]  N 1        1
+            metabolic
+ metabolic  cost of
+ equivalent physical     MET    [MET]      [MET]     N 3.5      mL/min/kg
+            activity

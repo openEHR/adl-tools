@@ -1,0 +1,20 @@
+3.6.3  British Imperial Lengths
+
+     name       kind of   print   c/s       c/i    M   value    definition
+               quantity
+ inch         length           [in_br]   [IN_BR]   N 2.539998  cm
+ foot         length           [ft_br]   [FT_BR]   N 12        [in_br]
+ foot         length           [rd_br]   [RD_BR]   N 16.5      [ft_br]
+ chain
+ (Gunter's    length           [ch_br]   [CH_BR]   N 4         [rd_br]
+ chain)
+ link (for
+ Gunter's     length           [lk_br]   [LK_BR]   N 1         [ch_br]/100
+ chain)
+ fathom       length           [fth_br]  [FTH_BR]  N 6         [ft_br]
+ pace         length           [pc_br]   [PC_BR]   N 2.5       [ft_br]
+ yard         length           [yd_br]   [YD_BR]   N 3         [ft_br]
+ mile         length           [mi_br]   [MI_BR]   N 5280      [ft_br]
+ nautic mile  length           [nmi_br]  [NMI_BR]  N 6080      [ft_br]
+ knot         velocity         [kn_br]   [KN_BR]   N 1         [nmi_br]/h
+ acre         area             [acr_br]  [ACR_BR]  N 4840      [yd_br]2

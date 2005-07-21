@@ -1,0 +1,14 @@
+3.6.5  British Imperial Volumes
+
+    name       kind of    print    c/s       c/i    M  value    definition
+              quantity
+ gallon    volume               [gal_br]  [GAL_BR] N  4.54609  l
+ bushel    volume               [pk_br]   [PK_BR]  N  2        [gal_br]
+ peck      volume               [bu_br]   [BU_BR]  N  4        [pk_br]
+ quart     volume               [qt_br]   [QT_BR]  N  1        [gal_br]/4
+ pint      volume               [pt_br]   [PT_BR]  N  1        [qt_br]/2
+ gill      volume               [gil_br]  [GIL_BR] N  1        [pt_br]/4
+ fluid
+ ounce     volume               [foz_br]  [FOZ_BR] N  1        [gil_br]/5
+ fluid dramvolume               [fdr_br]  [FDR_BR] N  1        [foz_br]/8
+ minim     volume               [min_br]  [MIN_BR] N  1        [fdr_br]/60

@@ -1,0 +1,339 @@
+Terminals which are not used:
+
+	SYM_OPEN_PAREN
+	SYM_CLOSE_PAREN
+
+
+Grammar
+
+rule 1 input -> units
+rule 2 input -> error
+rule 3 units -> units_expression
+rule 4 units -> units_expression annotation
+rule 5 units_expression -> units_item
+rule 6 units_expression -> units_expression '*' units_item
+rule 7 units_expression -> units_expression '/' units_item
+rule 8 units_item -> unit_ref
+rule 9 units_item -> unit_ref '^' integer_value
+rule 10 unit_ref -> V_IDENTIFIER
+rule 11 unit_ref -> V_IDENTIFIER suffix
+rule 12 annotation -> SYM_START_ANNOT V_IDENTIFIER SYM_END_ANNOT
+rule 13 suffix -> SYM_START_SUFFIX V_IDENTIFIER SYM_END_SUFFIX
+rule 14 integer_value -> V_INTEGER
+rule 15 integer_value -> '+' V_INTEGER
+rule 16 integer_value -> '-' V_INTEGER
+
+Terminals, with rules where they appear
+
+$ (token 0)
+error (token 256) 2
+$undefined. (token 257)
+V_INTEGER (token 258) 14 15 16
+V_IDENTIFIER (token 259) 10 11 12 13
+SYM_OPEN_PAREN (token 260)
+SYM_CLOSE_PAREN (token 261)
+SYM_START_SUFFIX (token 262) 13
+SYM_END_SUFFIX (token 263) 13
+SYM_START_ANNOT (token 264) 12
+SYM_END_ANNOT (token 265) 12
+'+' (token 43) 15
+'-' (token 45) 16
+'/' (token 47) 7
+'*' (token 42) 6
+'^' (token 94) 9
+
+Nonterminals, with rules where they appear
+
+input (0) on left: 1 2
+units (1) on left: 3 4, on right: 1
+units_expression (2) on left: 5 6 7, on right: 3 4 6 7
+annotation (3) on left: 12, on right: 4
+units_item (4) on left: 8 9, on right: 5 6 7
+unit_ref (5) on left: 10 11, on right: 8 9
+integer_value (6) on left: 14 15 16, on right: 9
+suffix (7) on left: 13, on right: 11
+
+
+state 0
+
+	input  ->  . units   (rule 1)
+	input  ->  . error   (rule 2)
+	units  ->  . units_expression   (rule 3)
+	units  ->  . units_expression annotation   (rule 4)
+	units_expression  ->  . units_item   (rule 5)
+	units_expression  ->  . units_expression '*' units_item   (rule 6)
+	units_expression  ->  . units_expression '/' units_item   (rule 7)
+	units_item  ->  . unit_ref   (rule 8)
+	units_item  ->  . unit_ref '^' integer_value   (rule 9)
+	unit_ref  ->  . V_IDENTIFIER   (rule 10)
+	unit_ref  ->  . V_IDENTIFIER suffix   (rule 11)
+
+	V_IDENTIFIER	shift, and go to state 1
+	error	shift, and go to state 2
+
+	units	go to state 3
+	units_expression	go to state 4
+	units_item	go to state 5
+	unit_ref	go to state 6
+	input	go to state 26
+
+
+
+state 1
+
+	unit_ref  ->  V_IDENTIFIER .   (rule 10)
+	unit_ref  ->  V_IDENTIFIER . suffix   (rule 11)
+	suffix  ->  . SYM_START_SUFFIX V_IDENTIFIER SYM_END_SUFFIX   (rule 13)
+
+	SYM_START_SUFFIX	shift, and go to state 7
+
+	$default	reduce using rule 10 (unit_ref)
+
+	suffix	go to state 8
+
+
+
+state 2
+
+	input  ->  error .   (rule 2)
+
+	$default	reduce using rule 2 (input)
+
+
+
+state 3
+
+	input  ->  units .   (rule 1)
+
+	$default	reduce using rule 1 (input)
+
+
+
+state 4
+
+	units  ->  units_expression .   (rule 3)
+	units  ->  units_expression . annotation   (rule 4)
+	units_expression  ->  units_expression . '*' units_item   (rule 6)
+	units_expression  ->  units_expression . '/' units_item   (rule 7)
+	annotation  ->  . SYM_START_ANNOT V_IDENTIFIER SYM_END_ANNOT   (rule 12)
+
+	'*'	shift, and go to state 9
+	'/'	shift, and go to state 10
+	SYM_START_ANNOT	shift, and go to state 11
+
+	$default	reduce using rule 3 (units)
+
+	annotation	go to state 12
+
+
+
+state 5
+
+	units_expression  ->  units_item .   (rule 5)
+
+	$default	reduce using rule 5 (units_expression)
+
+
+
+state 6
+
+	units_item  ->  unit_ref .   (rule 8)
+	units_item  ->  unit_ref . '^' integer_value   (rule 9)
+
+	'^'	shift, and go to state 13
+
+	$default	reduce using rule 8 (units_item)
+
+
+
+state 7
+
+	suffix  ->  SYM_START_SUFFIX . V_IDENTIFIER SYM_END_SUFFIX   (rule 13)
+
+	V_IDENTIFIER	shift, and go to state 14
+
+
+
+state 8
+
+	unit_ref  ->  V_IDENTIFIER suffix .   (rule 11)
+
+	$default	reduce using rule 11 (unit_ref)
+
+
+
+state 9
+
+	units_expression  ->  units_expression '*' . units_item   (rule 6)
+	units_item  ->  . unit_ref   (rule 8)
+	units_item  ->  . unit_ref '^' integer_value   (rule 9)
+	unit_ref  ->  . V_IDENTIFIER   (rule 10)
+	unit_ref  ->  . V_IDENTIFIER suffix   (rule 11)
+
+	V_IDENTIFIER	shift, and go to state 1
+
+	units_item	go to state 15
+	unit_ref	go to state 6
+
+
+
+state 10
+
+	units_expression  ->  units_expression '/' . units_item   (rule 7)
+	units_item  ->  . unit_ref   (rule 8)
+	units_item  ->  . unit_ref '^' integer_value   (rule 9)
+	unit_ref  ->  . V_IDENTIFIER   (rule 10)
+	unit_ref  ->  . V_IDENTIFIER suffix   (rule 11)
+
+	V_IDENTIFIER	shift, and go to state 1
+
+	units_item	go to state 16
+	unit_ref	go to state 6
+
+
+
+state 11
+
+	annotation  ->  SYM_START_ANNOT . V_IDENTIFIER SYM_END_ANNOT   (rule 12)
+
+	V_IDENTIFIER	shift, and go to state 17
+
+
+
+state 12
+
+	units  ->  units_expression annotation .   (rule 4)
+
+	$default	reduce using rule 4 (units)
+
+
+
+state 13
+
+	units_item  ->  unit_ref '^' . integer_value   (rule 9)
+	integer_value  ->  . V_INTEGER   (rule 14)
+	integer_value  ->  . '+' V_INTEGER   (rule 15)
+	integer_value  ->  . '-' V_INTEGER   (rule 16)
+
+	'-'	shift, and go to state 18
+	'+'	shift, and go to state 19
+	V_INTEGER	shift, and go to state 20
+
+	integer_value	go to state 21
+
+
+
+state 14
+
+	suffix  ->  SYM_START_SUFFIX V_IDENTIFIER . SYM_END_SUFFIX   (rule 13)
+
+	SYM_END_SUFFIX	shift, and go to state 22
+
+
+
+state 15
+
+	units_expression  ->  units_expression '*' units_item .   (rule 6)
+
+	$default	reduce using rule 6 (units_expression)
+
+
+
+state 16
+
+	units_expression  ->  units_expression '/' units_item .   (rule 7)
+
+	$default	reduce using rule 7 (units_expression)
+
+
+
+state 17
+
+	annotation  ->  SYM_START_ANNOT V_IDENTIFIER . SYM_END_ANNOT   (rule 12)
+
+	SYM_END_ANNOT	shift, and go to state 23
+
+
+
+state 18
+
+	integer_value  ->  '-' . V_INTEGER   (rule 16)
+
+	V_INTEGER	shift, and go to state 24
+
+
+
+state 19
+
+	integer_value  ->  '+' . V_INTEGER   (rule 15)
+
+	V_INTEGER	shift, and go to state 25
+
+
+
+state 20
+
+	integer_value  ->  V_INTEGER .   (rule 14)
+
+	$default	reduce using rule 14 (integer_value)
+
+
+
+state 21
+
+	units_item  ->  unit_ref '^' integer_value .   (rule 9)
+
+	$default	reduce using rule 9 (units_item)
+
+
+
+state 22
+
+	suffix  ->  SYM_START_SUFFIX V_IDENTIFIER SYM_END_SUFFIX .   (rule 13)
+
+	$default	reduce using rule 13 (suffix)
+
+
+
+state 23
+
+	annotation  ->  SYM_START_ANNOT V_IDENTIFIER SYM_END_ANNOT .   (rule 12)
+
+	$default	reduce using rule 12 (annotation)
+
+
+
+state 24
+
+	integer_value  ->  '-' V_INTEGER .   (rule 16)
+
+	$default	reduce using rule 16 (integer_value)
+
+
+
+state 25
+
+	integer_value  ->  '+' V_INTEGER .   (rule 15)
+
+	$default	reduce using rule 15 (integer_value)
+
+
+
+state 26
+
+
+	$	go to state 27
+
+
+
+state 27
+
+
+	$	go to state 28
+
+
+
+state 28
+
+
+	$default	accept

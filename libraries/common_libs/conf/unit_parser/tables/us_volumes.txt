@@ -1,0 +1,43 @@
+;
+;	component:   "openEHR Reusable Libraries"
+;	description: "[
+;			 Database of unit tables, designed on the basis of the Unified Code for Units
+;	             of Measure (UCUM), developed by Gunther Schadow and Clement J. McDonald of
+;			 The Regenstrief Institute For Health Care, Indianapolis.
+;			 Published at http://aurora.rg.iupui.edu/UCUM.
+;	             ]"
+;	keywords:    "units, UCUM"
+;
+;	author:      "Thomas Beale"
+;	support:     "Ocean Informatics <support@OceanInformatics.biz>"
+;	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
+;	license:     "See notice at bottom of class"
+;
+;	file:        "$Source$"
+;	revision:    "$Revision$"
+;	last_change: "$Date$"
+
+[identification]
+GROUP_NAME = U.S. Capacity and Dry Measures (Volumes)
+
+[units]
+;
+;NAME = NAME:PROPERTY:CASE_SENSITIVE:CASE_INSENSITIVE:METRIC:VALUE:DEFINITION
+;
+queen_anne_gallon (fluid) = gallon (Queen Anne's wine):volume:gal_us:GAL_US:N:231:in_i3 gallon
+barrel = barrel:volume:bbl_us:BBL_US:N:42:gal_us
+quart = quart:volume:qt_us:QT_US:N:1:gal_us/4
+pint = pint:volume:pt_us:PT_US:N:1:qt_us/2
+gill = gill:volume:gil_us:GIL_US:N:1:pt_us/4
+ounce = fluid ounce:volume:oz fl foz_us:FOZ_US:N:1:gil_us/4
+dram = fluid dram:volume:fdr_us:FDR_US:N:1:foz_us/8
+minim = minim (fluid):volume:min_us:MIN_US:N:1:fdr_us/60
+cord = cord (fluid):volume:crd_us:CRD_US:N:128:ft_i3
+bushel = bushel (dry):volume:bu_us:BU_US:N:2150.42:in_i3
+winchester_gallon = winchester gallon(historical) (dry):volume:gal_wi:GAL_WI:N:1:bu_us/8 
+peck = peck (dry):volume:pk_us:PK_US:N:1:bu_us/4
+dry_quart = dry quart:volume:dqt_us:DQT_US:N:1:pk_us/8
+dry_pint = dry pint:volume:dpt_us:DPT_US:N:1:dqt_us/2
+tablespoon = tablespoon:volume:tbs_us:TBS_US:N:1:foz_us/2
+teaspoon = teaspoon:volume:tsp_us:TSP_US:N:1:tbs_us/3
+cup = cup:volume:cup_us:CUP_US:N:16:tbs_us
