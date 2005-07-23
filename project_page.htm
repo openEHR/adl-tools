@@ -2,47 +2,26 @@
 <html lang="en">
 <head>
 <!-- #BeginTemplate "/Templates/Bare.dwt" --><!-- DW6 -->
-  <meta http-equiv="Content-Type"
- content="text/html; charset=ISO-8859-1">
-  <link rel="STYLESHEET" type="text/css" href="/styles/home.css">
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="Content-Type">
+  <link href="/styles/home.css" type="text/css" rel="STYLESHEET">
 <!-- #BeginEditable "Head" -->
-  <meta http-equiv="Content-Type"
- content="text/html; charset=ISO-8859-1">
-  <link rel="STYLESHEET" type="text/css" href="/styles/home.css">
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="Content-Type">
+  <link href="/styles/home.css" type="text/css" rel="STYLESHEET">
   <title>openEHR Specification Project</title>
 <!-- #EndEditable -->
 </head>
 <body>
 <!-- #BeginEditable "Body" -->
-<h2 style="text-align: center;" class="mainhead">The <span
+<h2 class="mainhead" style="text-align: center;">The <span
  style="font-style: italic;">open</span>EHR Reference ADL Parser Home
 Page<br>
 </h2>
 <hr style="width: 100%; height: 2px;">
-<h3>Description</h3>
-<p>The <span style="font-style: italic;">open</span>EHR adl_ref_parser
-repository contains the reference&nbsp;
-implementation of the openEHR ADL (Archetype Definition Language). It
-also contains tools based on the parse, enabling GUI viewing of ADL
-archetypes, testing of archetypes and so on. It also includes a
-complete Java (JNI) wrapping of the reference parser, enabling it to be
-used in a Java application.<br>
-</p>
-<p>The ADL (Archetype Definition Language - specification) reference
-tools project has as its aim to develop tools which implement:</p>
-<ul>
-  <li>the <span style="font-weight: bold;">reference ADL parser</span>,
-including various ADL serialisers (to
-HTML, XML etc)<br>
-  </li>
-  <li><span style="font-weight: bold;">adl_validator</span>: a test
-application for ADL</li>
-  <li><span style="font-weight: bold;">adl_workbench</span>: an ADL
-viewer</li>
-</ul>
 <h3>Vital Statistics</h3>
-<table cellpadding="2" cellspacing="2" border="1"
- style="text-align: left; width: 100%;">
+<table style="text-align: left; width: 100%;" border="1" cellspacing="2"
+ cellpadding="2">
   <tbody>
     <tr>
       <td
@@ -69,12 +48,17 @@ Beale (Ocean/UCL)<br>
  style="font-weight: bold;">Deliverables</span><br>
       </td>
       <td
- style="vertical-align: top; background-color: rgb(255, 255, 204);"><a
- href="/repositories/adl_ref_parser-dev/latest/distribution/index.html">Latest
-release</a><br>
-      <a
- href="http://www.openehr.org/repositories/adl_ref_parser-release_table.html">BitKeeper
-release page</a><br>
+ style="vertical-align: top; background-color: rgb(255, 255, 204);">
+      <ul>
+        <li><a href="http://www.openehr.org/wsvn/ref_impl_eiffel/?sc=0">Subversion
+repository web view</a></li>
+        <li>Subversion repository URL: <a
+ href="http://svn.openehr.org/ref_impl_eiffel/">http://svn.openehr.org/ref_impl_eiffel/</a><br>
+        </li>
+        <li>Latest
+binary release (under construction)<br>
+        </li>
+      </ul>
       </td>
     </tr>
     <tr>
@@ -101,13 +85,11 @@ Key Documents</span><br>
       <td
  style="vertical-align: top; background-color: rgb(255, 255, 204);">
       <ul>
-        <li><a
- href="/repositories/adl_ref_parser-dev/latest/distribution/tools/windows/adl_workbench/RELEASE_NOTES.txt">release
-notes</a></li>
-        <li><a
- href="/repositories/adl_ref_parser-dev/latest/distribution/tools/windows/adl_workbench/README.txt">detailed
+        <li>release
+notes</li>
+        <li>detailed
 installation
-instructions</a></li>
+instructions</li>
         <li><a
  href="http://www.oceaninformatics.biz/work_bench/help/ht_start.htm">online
 help</a></li>
@@ -125,14 +107,13 @@ Download and Install</span><br>
       <td
  style="vertical-align: top; background-color: rgb(255, 255, 204);">
       <ol>
-        <li>Download <a
- href="file:///repositories/adl_ref_parser-dev/latest/distribution/tools/windows/adl_workbench.tgz">windows
-binaries</a> (use winzip or <a
+        <li>Download windows
+binaries (use winzip or <a
  href="http://prdownloads.sourceforge.net/sevenzip/7z313.exe">7zip</a>
 to undo them)<br>
         </li>
         <li>Download the latest <a
- href="file:///repositories/archetype-dev/archetype-dev-latest.tgz"><span
+ href="http://svn.openehr.org/knowledge/"><span
  style="font-style: italic;">open</span>EHR sample archetypes</a>
 (older ones may not work)<br>
         </li>
@@ -155,6 +136,27 @@ archetypes tree just downloaded</li>
     </tr>
   </tbody>
 </table>
+<h3>Description</h3>
+<p>The <span style="font-style: italic;">open</span>EHR adl_ref_parser
+repository contains the reference&nbsp;
+implementation of the openEHR ADL (Archetype Definition Language). It
+also contains tools based on the parse, enabling GUI viewing of ADL
+archetypes, testing of archetypes and so on. It also includes a
+complete Java (JNI) wrapping of the reference parser, enabling it to be
+used in a Java application.<br>
+</p>
+<p>The ADL (Archetype Definition Language - specification) reference
+tools project has as its aim to develop tools which implement:</p>
+<ul>
+  <li>the <span style="font-weight: bold;">reference ADL parser</span>,
+including various ADL serialisers (to
+HTML, XML etc)<br>
+  </li>
+  <li><span style="font-weight: bold;">adl_validator</span>: a test
+application for ADL</li>
+  <li><span style="font-weight: bold;">adl_workbench</span>: an ADL
+viewer</li>
+</ul>
 <h3>News</h3>
 <ul>
   <li><span style="font-weight: bold;">27/June/2005</span>: latest
@@ -162,7 +164,7 @@ release implements class level invariants.<br>
     <span style="font-weight: bold;"></span></li>
   <li><span style="font-weight: bold;">02/June/2005</span>: Proposal
 for ADL archetypes to be dADL documents. Compare <a
- href="/repositories/archetype-dev/latest/adl/archetypes/openehr/ehr/entry/observation/openEHR-EHR-OBSERVATION.visual.v1.adl">a
+ href="http://svn.openehr.org/knowledge/archetypes/dev/adl/openehr/ehr/entry/observation/openEHR-EHR-OBSERVATION.visual.v1.adl">a
 current ADL file</a> to <a
  href="openEHR-EHR-OBSERVATION.visual.new.adl">same archetype in dADL
 form</a>.<br>
@@ -221,12 +223,13 @@ notes for workbench and dotNet toolkit.</li>
 </ul>
 <h3>To Do</h3>
 <p>The following release will implement ADL 2.0.</p>
-<table cellspacing="2" cellpadding="2" border="1"
- style="text-align: left; width: 100%;">
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2"
+ cellspacing="2">
   <tbody>
     <tr>
-      <td colspan="4" rowspan="1"
- style="vertical-align: top; background-color: rgb(153, 153, 255);">
+      <td
+ style="vertical-align: top; background-color: rgb(153, 153, 255);"
+ rowspan="1" colspan="4">
       <h3 style="text-align: center;">Release 2.0 of ADL - end July 2005<br>
       </h3>
       </td>
@@ -408,13 +411,12 @@ assumed values<br>
 <br>
 <p>The following table describes other development tasks currently
 foreseen.</p>
-<table style="text-align: left; width: 100%;" border="1" cellpadding="2"
- cellspacing="2">
+<table cellspacing="2" cellpadding="2" border="1"
+ style="text-align: left; width: 100%;">
   <tbody>
     <tr>
-      <td
- style="vertical-align: top; background-color: rgb(153, 153, 255);"
- rowspan="1" colspan="4">
+      <td colspan="4" rowspan="1"
+ style="vertical-align: top; background-color: rgb(153, 153, 255);">
       <h3 style="text-align: center;">Release xxx</h3>
       </td>
     </tr>
