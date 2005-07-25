@@ -30,12 +30,27 @@ default
 	exception_trace (no)
 	inlining (no)
 	multithreaded (no)
-	shared_library_definition ("C:\project\openehr\ref_impl_eiffel\components\adl_parser\lib\java_lib\adl_jni_wrapper.def")
+	shared_library_definition ("C:\project\openehr\implem-dev\tools\eiffel\adl_workbench\shared_lib\java_lib\adl_jni_wrapper.def")
+
 
 cluster
-	all adl_parser:		"$OPENEHR\ref_impl_eiffel\components\adl_parser\src"
+	openehr_root:		"$OPENEHR"
+
+
+	openehr_spec (openehr_root):		"$\spec-dev\architecture\computable\eiffel"
+
+	openehr_impl (openehr_root):		"$\implem-dev"
+
+	adl_root (openehr_impl):		"$\tools\eiffel\adl_workbench"
+
+	app (adl_root):		"$\shared_lib\java_lib"
 		exclude
-			".svn"; 
+			"SCCS"; 
+		end
+
+	all adl_lib (adl_root):		"$\library"
+		exclude
+			"SCCS"; 
 		visible
 			adl_interface
 				end
@@ -43,28 +58,25 @@ cluster
 				end
 		end
 
-	all version:		"$OPENEHR\ref_impl_eiffel\libraries\version"
+	all openehr_rm (openehr_spec):		"$\rm"
 		exclude
-			".svn"; 
+			"SCCS"; 
 		end
 
-	all openehr:		"$OPENEHR\ref_impl_eiffel\libraries\openehr\src"
+	all openehr_am (openehr_spec):		"$\am"
 		exclude
-			".svn"; 
-		visible
-			C_CODED_TERM
-				end
-			C_ORDINAL
-				end
-			C_QUANTITY
-				end
+			"SCCS"; "archetype"; 
 		end
 
-	all common_libs:		"$OPENEHR\ref_impl_eiffel\libraries\common_libs\src"
+	all openehr_kernel_factory (openehr_impl):		"$\reference\eiffel\kernel\factory"
 		exclude
-			".svn"; 
+			"SCCS"; 
 		end
 
+	all openehr_library (openehr_impl):		"$\library\eiffel"
+		exclude
+			"SCCS"; "test"; 
+		end
 
 	library ut_support:		"$GOBO\library\utility"
 
@@ -100,9 +112,9 @@ external
 
 	include_path:
 		"$(GOBO)\library\kernel\include",
-		"$(OPENEHR)\ref_impl_eiffel\components\adl_parser\src\java\jni_c"
+		"$(OPENEHR)\implem-dev\tools\eiffel\adl_workbench\shared_lib\java_lib\c"
 
 	object:
-		"$(OPENEHR)\ref_impl_eiffel\components\adl_parser\src\java\jni_c\adl_jni_wrapper.lib"
+		"$(OPENEHR)\implem-dev\tools\eiffel\adl_workbench\shared_lib\java_lib\c\adl_jni_wrapper.lib"
 
 end

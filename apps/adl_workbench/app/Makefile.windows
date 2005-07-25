@@ -5,10 +5,12 @@ wkbench: clean
 
 finalized: clean
 	ec -batch -ace ace.ace -finalize -c_compile
-	cd EIFGEN\F_code
-	copy *.exe %OPENEHR%\ref_impl_eiffel\distrib\bin
+	copy /Y EIFGEN\F_code\*.exe %OPENEHR%\oe_distrib\windows\adl_workbench\bin
+	copy /Y news.txt %OPENEHR%\oe_distrib\windows\adl_workbench
+	copy /Y R*.txt %OPENEHR%\oe_distrib\windows\adl_workbench
+	copy /Y icons %OPENEHR%\oe_distrib\windows\adl_workbench\bin\icons
 	
-	cd ..\W_code
+	cd EIFGEN\W_code
 	finish_freezing -silent
 	cd ..\..
 

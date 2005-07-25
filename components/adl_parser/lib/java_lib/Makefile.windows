@@ -10,8 +10,9 @@ relink:
 		$(OPENEHR)\$(REPOSITORY)\components\adl_parser\lib\java_lib\EIFGEN\F_code\ADL_JAVA_LIB.def
 	cd EIFGEN\F_code 
 	finish_freezing -silent
-	copy *.dll $(OPENEHR)\$(REPOSITORY)\distrib\lib
-	copy *.exp $(OPENEHR)\$(REPOSITORY)\distrib\lib
+	copy *.dll $(OPENEHR)\oe_distrib\windows\adl_parser\lib
+	copy *.exp $(OPENEHR)\oe_distrib\windows\adl_parser\lib
+	copy *.txt $(OPENEHR)\oe_distrib\windows\adl_parser
 	cd ..\..
 
 clean:

@@ -5,6 +5,14 @@ ADL dotNet Toolkit Release Notes
 Version
 	Last Change: $Date$
 
+interim release Subversion revision 3 - 23 July 2005
+
+	- changes:
+	  library package structure significantly improved. Note that this will 
+	  mean that .Net users will see that many classes are in a new namespace.
+	  The main change is that the am package is now populated as described in
+	  the Archetype Object Model (AOM) documentation.
+
 	+++++++++++++++ move to subversion +++++++++++++
 
 interim release BitKeeper cset 1.57 - 23 Jun 2005
@@ -13,7 +21,8 @@ interim release BitKeeper cset 1.57 - 23 Jun 2005
 		- see archetype workbench release notes
 
 		- in ASSERTION_FACTORY: 
-		  functions "create_expr_unary_operator_xxx" etc replaced by one function 
+		  functions "create_expr_unary_operator_xxx" etc replaced by one 
+		  function:
 
 			create_expr_unary_operator_node(an_operator: OPERATOR_KIND; 
 						an_operand: EXPR_ITEM): EXPR_UNARY_OPERATOR
@@ -22,10 +31,12 @@ interim release BitKeeper cset 1.57 - 23 Jun 2005
 					an_operator_exists: an_operator /= Void
 					an_operand_exists: an_operand /= Void
 
-		  functions "create_expr_binary_operator_xxx" etc replaced by one function 
+		  functions "create_expr_binary_operator_xxx" etc replaced by one 
+		  function:
 
-			create_expr_binary_operator_node(an_operator: OPERATOR_KIND; a_left_operand, 
-							a_right_operand: EXPR_ITEM): EXPR_BINARY_OPERATOR is
+			create_expr_binary_operator_node(an_operator: OPERATOR_KIND; 
+				a_left_operand, a_right_operand: EXPR_ITEM): 
+									EXPR_BINARY_OPERATOR is
 					-- operators with boolean results, e.g.
 					-- and, or, xor, etc
 				require
@@ -33,10 +44,11 @@ interim release BitKeeper cset 1.57 - 23 Jun 2005
 					a_left_operand_exists: a_left_operand /= Void
 					a_right_operand_exists: a_right_operand /= Void
 
-		- the new classes OPERATOR_KIND and OPERATOR_TYPES are added. To make a call to 
-		  one of the above functions, an OPERATOR_KIND object needs to be created using
-		  the c# syntax which has the effect of doing OPERATOR_KIND.make(integer value)
-		  or OPERATOR_KIND.make_from_string(string value)
+		- the new classes OPERATOR_KIND and OPERATOR_TYPES are added. To 
+		  make a call to one of the above functions, an OPERATOR_KIND 
+		  object needs to be created using the c# syntax which has the 
+		  effect of doing OPERATOR_KIND.make(integer value) or 
+		  OPERATOR_KIND.make_from_string(string value)
 
 release 'arch_desc' BitKeeper cset 1.56 - 19/June/2005
 
@@ -44,8 +56,8 @@ release 'arch_desc' BitKeeper cset 1.56 - 19/June/2005
 		- see archetype workbench release notes.
 
 		- implemented ARCHETYPE_DESCRIPTION class, parsing, and 
-		  set routines. Created an example test class to show creation of an archetype
-		  description.
+		  set routines. Created an example test class to show creation of 
+		  an archetype description.
 
 interim release BitKeeper cset 1.46 - 05 May 2005
 
