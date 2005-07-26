@@ -9,9 +9,9 @@ indexing
 	copyright:   "Copyright (c) 2005 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
-	file:        "$Source: C:/project/openehr/spec-dev/architecture/computable/eiffel/rm/support/SCCS/s.external_environment_access.e $"
-	revision:    "$Revision$"
-	last_change: "$Date: 05/06/27 12:42:51+01:00 $"
+	file:        "$URL$"
+	revision:    "$LastChangedRevision$"
+	last_change: "$LastChangedDate$"
 
 class EXTERNAL_ENVIRONMENT_ACCESS
 

@@ -12,9 +12,9 @@ indexing
 	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
-	file:        "$Source: C:/project/openehr/spec-dev/architecture/computable/eiffel/rm/ehr_extract/SCCS/s.x_folder.e $"
-	revision:    "$Revision$"
-	last_change: "$Date: 04/07/15 12:09:40+10:00 $"
+	file:        "$URL$"
+	revision:    "$LastChangedRevision$"
+	last_change: "$LastChangedDate$"
 
 class X_FOLDER
 

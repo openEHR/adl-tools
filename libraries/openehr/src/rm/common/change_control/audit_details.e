@@ -13,9 +13,9 @@ indexing
 	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
-	file:        "$Source: C:/project/openehr/spec-dev/architecture/computable/eiffel/rm/common/change_control/SCCS/s.audit_details.e $"
-	revision:    "$Revision$"
-	last_change: "$Date: 05/06/27 12:42:12+01:00 $"
+	file:        "$URL$"
+	revision:    "$LastChangedRevision$"
+	last_change: "$LastChangedDate$"
 
 class AUDIT_DETAILS
 

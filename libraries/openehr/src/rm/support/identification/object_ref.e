@@ -17,9 +17,9 @@ indexing
 	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
-	file:        "$Source: C:/project/openehr/spec-dev/architecture/computable/eiffel/rm/support/identification/SCCS/s.object_ref.e $"
-	revision:    "$Revision$"
-	last_change: "$Date: 05/02/17 22:23:18+00:00 $"
+	file:        "$URL$"
+	revision:    "$LastChangedRevision$"
+	last_change: "$LastChangedDate$"
 
 class OBJECT_REF
 

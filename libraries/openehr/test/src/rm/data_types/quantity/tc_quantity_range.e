@@ -9,9 +9,9 @@ indexing
 	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
-	file:        "$Source: C:/project/openehr/spec-dev/architecture/computable/eiffel/test/rm/data_types/quantity/SCCS/s.tc_quantity_range.e $"
-	revision:    "$Revision$"
-	last_change: "$Date: 04/07/15 12:09:44+10:00 $"
+	file:        "$URL$"
+	revision:    "$LastChangedRevision$"
+	last_change: "$LastChangedDate$"
 
 class TC_DV_INTERVAL
 

@@ -58,6 +58,11 @@ cluster
 			".svn"; 
 		end
 
+	all vendor_fixes:		"$OPENEHR\ref_impl_eiffel\libraries\vendor-fixes"
+		exclude
+			".svn"; 
+		end
+
 	all openehr:		"$OPENEHR\ref_impl_eiffel\libraries\openehr\src"
 		exclude
 			".svn"; 
@@ -113,8 +118,6 @@ cluster
 	time:		"$ISE_EIFFEL\library\time"
 
 	time_format (time):		"$\format"
-
-	library time_format_english (time_format):		"$\english"
 
 external
 

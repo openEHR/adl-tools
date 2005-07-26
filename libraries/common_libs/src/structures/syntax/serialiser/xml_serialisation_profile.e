@@ -7,9 +7,9 @@ indexing
 	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$Source"
-	revision:    "$Revision"
-	last_change: "$Date"
+	file:        "$URL$"
+	revision:    "$LastChangedRevision$"
+	last_change: "$LastChangedDate$"
 
 deferred class XML_SERIALISATION_PROFILE
 

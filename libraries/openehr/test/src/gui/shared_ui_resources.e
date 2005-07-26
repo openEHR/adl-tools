@@ -7,9 +7,9 @@ indexing
 	copyright:   "Copyright (c) 2003-2004 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$Source"
-	revision:    "$Revision"
-	last_change: "$Date"
+	file:        "$URL$"
+	revision:    "$LastChangedRevision$"
+	last_change: "$LastChangedDate$"
 
 class SHARED_UI_RESOURCES
 

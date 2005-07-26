@@ -12,9 +12,9 @@ indexing
 	copyright:   "Copyright (c) 2000-2005 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
-	file:        "$Source: C:/project/openehr/spec-dev/architecture/computable/eiffel/rm/data_types/quantity/date_time/SCCS/s.dv_partial_date.e $"
-	revision:    "$Revision$"
-	last_change: "$Date: 05/02/17 22:23:04+00:00 $"
+	file:        "$URL$"
+	revision:    "$LastChangedRevision$"
+	last_change: "$LastChangedDate$"
 
 class DV_PARTIAL_DATE
 

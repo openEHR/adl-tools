@@ -68,6 +68,11 @@ cluster
 			assertion (invariant)
 		end
 
+	all vendor_fixes:		"$OPENEHR\ref_impl_eiffel\libraries\vendor-fixes"
+		exclude
+			".svn"; 
+		end
+
 	library ut_support:		"$GOBO\library\utility"
 
 	library kl_kernel:		"$GOBO\library\kernel"
@@ -95,8 +100,6 @@ cluster
 	time:		"$ISE_EIFFEL\library\time"
 
 	time_format (time):		"$\format"
-
-	library time_format_english (time_format):		"$\en-int"
 
 external
 

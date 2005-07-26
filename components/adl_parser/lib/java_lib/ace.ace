@@ -48,6 +48,11 @@ cluster
 			".svn"; 
 		end
 
+	all vendor_fixes:		"$OPENEHR\ref_impl_eiffel\libraries\vendor-fixes"
+		exclude
+			".svn"; 
+		end
+
 	all openehr:		"$OPENEHR\ref_impl_eiffel\libraries\openehr\src"
 		exclude
 			".svn"; 
