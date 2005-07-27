@@ -1,6 +1,6 @@
 indexing
 	description: "Objects that provide access to constants loaded from files."
-	date: "$Date: 2003/10/18 01:44:23 $"
+	date: "$Date$"
 	revision: "$Revision$"
 
 class
