@@ -1,231 +1,340 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html lang="en">
 <head>
-  <title>openEHR Specification Project</title>
+
+  <meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type" />
+  <title>openEHR Eiffel Implementation Project</title>
+
+
+  <link rel="stylesheet" href="http://www.openehr.org/styles/oe.css" type="text/css" />
+
 </head>
+
+
 <body>
-<h2 style="text-align: center;" class="mainhead">The <span
- style="font-style: italic;">open</span>EHR Eiffel Reference Project<br>
-</h2>
-<hr style="width: 100%; height: 2px;">
-<h3>Vital Statistics</h3>
-<table cellpadding="2" cellspacing="2" border="1"
- style="text-align: left; width: 100%;">
+
+<h1>The <span style="font-style: italic;">open</span>EHR
+Eiffel Reference Implementation Project
+</h1>
+
+<hr style="width: 100%; height: 2px;" />
+<h2>Vital Statistics</h2>
+
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+
   <tbody>
-    <tr>
-      <td
- style="vertical-align: top; background-color: rgb(204, 204, 255); width: 200px;"><span
- style="font-weight: bold;">Development Team</span><br>
+
+    <tr style="font-weight: normal;" class="table_cell_top_heading table_cell_left_heading footer">
+
+      <td colspan="2" rowspan="1" style="vertical-align: top; width: 200px; background-color: rgb(204, 204, 255);">
+      <p class="table_cell_top_heading">Eiffel Reference
+Implementation of <span style="font-style: italic;">open</span>EHR</p>
+
       </td>
-      <td
- style="vertical-align: top; background-color: rgb(255, 255, 204);">Thomas
-Beale (Ocean/UCL)<br>
-      </td>
+
     </tr>
+
     <tr>
-      <td
- style="vertical-align: top; background-color: rgb(204, 204, 255); width: 200px;"><span
- style="font-weight: bold;">Language(s) &amp; <br>
-Technologies</span><br>
+
+      <td class="table_cell_left_heading" style="vertical-align: top; width: 200px; background-color: rgb(255, 255, 204);">
+      <p class="table_cell_left_heading">Language(s)
+&amp; <br />
+
+Technologies</p>
+
       </td>
-      <td
- style="vertical-align: top; background-color: rgb(255, 255, 204);">ISE
+
+      <td style="vertical-align: top; background-color: rgb(255, 255, 229);">
+      <p>ISE
 (ECMA) Eiffel; currently only builds for Windows; code is portable to
-any platform.<br>
+any platform.</p>
+
       </td>
+
     </tr>
+
     <tr>
-      <td
- style="vertical-align: top; background-color: rgb(204, 204, 255); width: 200px;"><span
- style="font-weight: bold;">ARB change managed</span><br>
+
+      <td class="table_cell_left_heading" style="vertical-align: top; width: 200px; background-color: rgb(255, 255, 204);">
+      <p class="table_cell_left_heading">ARB change managed</p>
+
       </td>
-      <td
- style="vertical-align: top; background-color: rgb(255, 255, 204);">Yes<br>
+
+      <td style="vertical-align: top; background-color: rgb(255, 255, 229);">
+      <p>Yes</p>
+
       </td>
+
     </tr>
+
     <tr>
-      <td
- style="vertical-align: top; background-color: rgb(204, 204, 255);"><span
- style="font-weight: bold;"><br>
-Source repository</span><br>
+
+      <td class="table_cell_left_heading" style="vertical-align: top; background-color: rgb(255, 255, 204);">
+      <p><br />
+
+Source repository</p>
+
       </td>
-      <td
- style="vertical-align: top; background-color: rgb(255, 255, 204);">
+
+      <td style="vertical-align: top; background-color: rgb(255, 255, 229);">
       <ul>
+
         <li><a href="http://www.openehr.org/wsvn/ref_impl_eiffel/?sc=0">Subversion
 repository web view</a></li>
-        <li>Subversion repository name = <span
- style="font-weight: bold;">ref_impl_eiffel</span>; URL:</li>
-        <ul>
-          <li>top: <a href="http://svn.openehr.org/ref_impl_eiffel/">http://svn.openehr.org/ref_impl_eiffel/</a></li>
-          <li>usual developer URL: <a
- href="http://svn.openehr.org/ref_impl_eiffel/TRUNK">http://svn.openehr.org/ref_impl_eiffel/TRUNK</a></li>
-          <li>other apps &amp; libraries: use <a
- href="http://www.openehr.org/wsvn/ref_impl_eiffel/?sc=0">web view</a>
-to search<br>
-          </li>
-        </ul>
+
+        <li>Subversion repository name = <span style="font-weight: bold;">ref_impl_eiffel</span>;
+URL:
+          <ul>
+
+            <li>top: <a href="http://svn.openehr.org/ref_impl_eiffel/">http://svn.openehr.org/ref_impl_eiffel/</a></li>
+
+            <li>usual developer URL: <a href="http://svn.openehr.org/ref_impl_eiffel/TRUNK">http://svn.openehr.org/ref_impl_eiffel/TRUNK</a></li>
+
+            <li>other apps &amp; libraries: use <a href="http://www.openehr.org/wsvn/ref_impl_eiffel/?sc=0">web
+view</a>
+to search </li>
+
+          </ul>
+
+        </li>
+
       </ul>
+
       </td>
+
     </tr>
+
     <tr>
-      <td
- style="vertical-align: top; background-color: rgb(204, 204, 255);"><span
- style="font-weight: bold;"><br>
-      <br>
-Downloads</span><br>
+
+      <td class="table_cell_left_heading" style="vertical-align: top; background-color: rgb(255, 255, 204);">
+      <p><br />
+
+      <br />
+
+      <span class="table_cell_left_heading">Downloads</span></p>
+
       </td>
-      <td
- style="vertical-align: top; background-color: rgb(255, 255, 204);">
-      <table cellpadding="2" cellspacing="2" border="0"
- style="text-align: left; width: 100%;">
+
+      <td style="vertical-align: top; background-color: rgb(255, 255, 229);">
+      <table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
+
         <tbody>
+
           <tr>
-            <td style="vertical-align: top;"><span
- style="font-weight: bold;">ADL parser</span><br>
+
+            <td style="vertical-align: top;"><span style="font-weight: bold;">ADL parser</span><br />
+
             </td>
-            <td style="vertical-align: top;"><br>
+
+            <td style="vertical-align: top;"><br />
+
             </td>
-            <td style="vertical-align: top;"><a
- href="http://my.openehr.org/wsvn/oe_distrib/windows/adl_parser/RELEASE_NOTES.txt?op=file&amp;rev=0&amp;sc=0">RELEASE_NOTEs.txt</a><br>
+
+            <td style="vertical-align: top;"><a href="http://my.openehr.org/wsvn/oe_distrib/windows/adl_parser/RELEASE_NOTES.txt?op=file&amp;rev=0&amp;sc=0">RELEASE_NOTEs.txt</a><br />
+
             </td>
-            <td style="vertical-align: top;"><br>
+
+            <td style="vertical-align: top;"><br />
+
             </td>
+
           </tr>
+
           <tr>
-            <td style="vertical-align: top;"><span
- style="font-weight: bold;">adl .Net component</span><br>
-(windows DLL)<br>
+
+            <td style="vertical-align: top;"><span style="font-weight: bold;">adl .Net component</span><br />
+
+(windows DLL)<br />
+
             </td>
-            <td style="vertical-align: top;"><a
- href="http://my.openehr.org/wsvn/oe_distrib/windows/adl_parser/README-dotnet.txt?op=file&amp;rev=0&amp;sc=0">README.txt</a></td>
-            <td style="vertical-align: top;"><a
- href="http://my.openehr.org/wsvn/oe_distrib/windows/adl_parser/RELEASE_NOTES-dotnet.txt?op=file&amp;rev=0&amp;sc=0">RELEASE_NOTES.txt</a><br>
+
+            <td style="vertical-align: top;"><a href="http://my.openehr.org/wsvn/oe_distrib/windows/adl_parser/README-dotnet.txt?op=file&amp;rev=0&amp;sc=0">README.txt</a></td>
+
+            <td style="vertical-align: top;"><a href="http://my.openehr.org/wsvn/oe_distrib/windows/adl_parser/RELEASE_NOTES-dotnet.txt?op=file&amp;rev=0&amp;sc=0">RELEASE_NOTES.txt</a><br />
+
             </td>
-            <td style="vertical-align: top;"><a
- href="http://my.openehr.org/wsvn/oe_distrib/windows/adl_parser/?rev=0&amp;sc=0">download</a><br>
+
+            <td style="vertical-align: top;"><a href="http://my.openehr.org/wsvn/oe_distrib/windows/adl_parser/?rev=0&amp;sc=0">download</a><br />
+
             </td>
+
           </tr>
+
           <tr>
-            <td style="vertical-align: top;"><span
- style="font-weight: bold;">adl Java component</span> <br>
-(windows DLL - <br>
+
+            <td style="vertical-align: top;"><span style="font-weight: bold;">adl Java component</span> <br />
+
+(windows DLL - <br />
+
 JNI wrapping of Eiffel)</td>
-            <td style="vertical-align: top;"><a
- href="http://my.openehr.org/wsvn/oe_distrib/windows/adl_parser/README-java.txt?op=file&amp;rev=0&amp;sc=0">README.txt</a></td>
-            <td style="vertical-align: top;"><a
- href="http://my.openehr.org/wsvn/oe_distrib/windows/adl_parser/RELEASE_NOTES-java.txt?op=file&amp;rev=0&amp;sc=0">RELEASE_NOTES.txt</a></td>
-            <td style="vertical-align: top;"><a
- href="http://my.openehr.org/wsvn/oe_distrib/windows/adl_parser/?rev=0&amp;sc=0">download</a></td>
+
+            <td style="vertical-align: top;"><a href="http://my.openehr.org/wsvn/oe_distrib/windows/adl_parser/README-java.txt?op=file&amp;rev=0&amp;sc=0">README.txt</a></td>
+
+            <td style="vertical-align: top;"><a href="http://my.openehr.org/wsvn/oe_distrib/windows/adl_parser/RELEASE_NOTES-java.txt?op=file&amp;rev=0&amp;sc=0">RELEASE_NOTES.txt</a></td>
+
+            <td style="vertical-align: top;"><a href="http://my.openehr.org/wsvn/oe_distrib/windows/adl_parser/?rev=0&amp;sc=0">download</a></td>
+
           </tr>
+
           <tr>
-            <td style="vertical-align: top;"><span
- style="font-weight: bold;">adl_workbench</span> &amp; <br>
-            <span style="font-weight: bold;">adl_cmd_line</span><br>
-(windows .exes)<br>
+
+            <td style="vertical-align: top;"><span style="font-weight: bold;">adl_workbench</span>
+&amp; <br />
+
+            <span style="font-weight: bold;">adl_cmd_line</span><br />
+
+(windows .exes)<br />
+
             </td>
-            <td style="vertical-align: top;"><a
- href="http://my.openehr.org/wsvn/oe_distrib/windows/adl_workbench/README.txt?op=file&amp;rev=0&amp;sc=0">README.txt</a><br>
-            <a
- href="http://www.oceaninformatics.biz/work_bench/help/ht_start.htm">online
-help</a><br>
+
+            <td style="vertical-align: top;"><a href="http://my.openehr.org/wsvn/oe_distrib/windows/adl_workbench/README.txt?op=file&amp;rev=0&amp;sc=0">README.txt</a><br />
+
+            <a href="http://www.oceaninformatics.biz/work_bench/help/ht_start.htm">online
+help</a><br />
+
             </td>
-            <td style="vertical-align: top;"><a
- href="http://my.openehr.org/wsvn/oe_distrib/windows/adl_workbench/RELEASE_NOTES.txt?op=file&amp;rev=0&amp;sc=0">RELEASE_NOTES.txt</a></td>
-            <td style="vertical-align: top;"><a
- href="http://my.openehr.org/wsvn/oe_distrib/windows/adl_workbench/?rev=0&amp;sc=0">download</a><br>
+
+            <td style="vertical-align: top;"><a href="http://my.openehr.org/wsvn/oe_distrib/windows/adl_workbench/RELEASE_NOTES.txt?op=file&amp;rev=0&amp;sc=0">RELEASE_NOTES.txt</a></td>
+
+            <td style="vertical-align: top;"><a href="http://my.openehr.org/wsvn/oe_distrib/windows/adl_workbench/?rev=0&amp;sc=0">download</a><br />
+
             </td>
+
           </tr>
+
         </tbody>
       </table>
-      <br>
+
+      <br />
+
       </td>
+
     </tr>
+
     <tr>
-      <td
- style="vertical-align: top; background-color: rgb(204, 204, 255);"><span
- style="font-weight: bold;">Problem Reports (PRs)<br>
-Change Requests (CRs)</span><br>
+
+      <td class="table_cell_left_heading" style="vertical-align: top; background-color: rgb(255, 255, 204);">
+      <p>Problem
+Reports (PRs)<br />
+
+Change Requests (CRs)</p>
+
       </td>
-      <td
- style="vertical-align: top; background-color: rgb(255, 255, 204);">
+
+      <td style="vertical-align: top; background-color: rgb(255, 255, 229);">
       <ul>
-        <li><a
- href="http://coruscant.chime.ucl.ac.uk:8200/openEHR_Collector/projects/reference_implementations/adlrefparser/PR/folder_contents">PRs</a></li>
-        <li><a
- href="http://coruscant.chime.ucl.ac.uk:8200/openEHR_Collector/projects/reference_implementations/adlrefparser/CR/folder_contents">CRs</a><br>
+
+        <li><a href="http://coruscant.chime.ucl.ac.uk:8200/openEHR_Collector/projects/reference_implementations/adlrefparser/PR/folder_contents">PRs</a></li>
+
+        <li><a href="http://coruscant.chime.ucl.ac.uk:8200/openEHR_Collector/projects/reference_implementations/adlrefparser/CR/folder_contents">CRs</a>
         </li>
+
       </ul>
+
       </td>
+
     </tr>
+
     <tr>
-      <td
- style="vertical-align: top; background-color: rgb(204, 204, 255); width: 200px;"><span
- style="font-weight: bold;">Status</span><br>
+
+      <td class="table_cell_left_heading" style="vertical-align: top; width: 200px; background-color: rgb(255, 255, 204);">
+      <p class="table_cell_left_heading">Status</p>
+
       </td>
-      <td
- style="vertical-align: top; background-color: rgb(255, 255, 204);"><br>
+
+      <td style="vertical-align: top; background-color: rgb(255, 255, 229);"><br />
+
       </td>
+
     </tr>
+
   </tbody>
 </table>
-<h3>Description</h3>
-<p>The <span style="font-style: italic;">open</span>EHR <span
- style="font-weight: bold;">ref_impl_eiffel</span> repository contains
+
+<h2>Description</h2>
+
+<p>The <span style="font-style: italic;">open</span>EHR
+<span style="font-weight: bold;">ref_impl_eiffel</span>
+repository contains
 the reference&nbsp;
 implementation of the <span style="font-style: italic;">open</span>EHR
 reference model. In it are implementations of all the specifications,
 in the form of libraries, as well as binary components and applications
-built from the libraries.<br>
-</p>
-<h4>Adl tools - adl_workbench, ADL parser DLLs</h4>
+built from the libraries.</p>
+
+<h3>Adl tools - adl_workbench, ADL parser DLLs</h3>
+
 <p>This part of the repository contains libraries and tools
 implementing the Archetype Definition Language (ADL). It also includes
 a
 complete Java (JNI) wrapping of the reference parser, enabling it to be
-used in a Java application.<br>
-</p>
-<p>The ADL (Archetype Definition Language - specification) reference
+used in a Java application.</p>
+
+<p>The ADL (Archetype Definition Language - specification)
+reference
 tools project has as its aim to develop tools which implement:</p>
+
 <ul>
-  <li>the <span style="font-weight: bold;">reference ADL parser</span>,
+
+  <li>the <span style="font-weight: bold;">reference
+ADL parser</span>,
 including various ADL serialisers (to
-HTML, XML etc)<br>
-  </li>
-  <li><span style="font-weight: bold;">adl_validator</span>: a test
+HTML, XML etc) </li>
+
+  <li><span style="font-weight: bold;">adl_validator</span>:
+a test
 application for ADL</li>
-  <li><span style="font-weight: bold;">adl_workbench</span>: an ADL
+
+  <li><span style="font-weight: bold;">adl_workbench</span>:
+an ADL
 viewer</li>
+
 </ul>
+
 <h3>News</h3>
+
 <ul>
-  <li><span style="font-weight: bold;">27/June/2005</span>: latest
-release implements class level invariants.<br>
+
+  <li><span style="font-weight: bold;">27/June/2005</span>:
+latest
+release implements class level invariants.<br />
+
     <span style="font-weight: bold;"></span></li>
-  <li><span style="font-weight: bold;">02/June/2005</span>: Proposal
-for ADL archetypes to be dADL documents. Compare <a
- href="http://svn.openehr.org/knowledge/archetypes/dev/adl/openehr/ehr/entry/observation/openEHR-EHR-OBSERVATION.visual.v1.adl">a
-current ADL file</a> to <a
- href="openEHR-EHR-OBSERVATION.visual.new.adl">same archetype in dADL
-form</a>.<br>
+
+  <li><span style="font-weight: bold;">02/June/2005</span>:
+Proposal
+for ADL archetypes to be dADL documents. Compare <a href="http://svn.openehr.org/knowledge/archetypes/dev/adl/openehr/ehr/entry/observation/openEHR-EHR-OBSERVATION.visual.v1.adl">a
+current ADL file</a> to <a href="openEHR-EHR-OBSERVATION.visual.new.adl">same archetype
+in dADL
+form</a>.<br />
+
     <span style="font-weight: bold;"></span></li>
-  <li><span style="font-weight: bold;">30/May/2005</span>: Generic dADL
+
+  <li><span style="font-weight: bold;">30/May/2005</span>:
+Generic dADL
 / data tree structure processor; ARCHETYPE_DESCRIPTION now visible in
-GUI and dotNet interface. <br>
+GUI and dotNet interface. <br />
+
     <span style="font-weight: bold;"></span></li>
-  <li><span style="font-weight: bold;">05/May/2005</span>: assumed
-values implemented. See CR-000142. <br>
+
+  <li><span style="font-weight: bold;">05/May/2005</span>:
+assumed
+values implemented. See CR-000142. <br />
+
     <span style="font-weight: bold;"></span></li>
-  <li><span style="font-weight: bold;">23/March/2005</span>: 168
+
+  <li><span style="font-weight: bold;">23/March/2005</span>:
+168
 functions of the parser have been JNI-wrapped. A java test program
-shows how to use the parser to create an archetype in memory.<br>
-  </li>
-  <li><span style="font-weight: bold;">25/February/2005</span>: the
+shows how to use the parser to create an archetype in memory. </li>
+
+  <li><span style="font-weight: bold;">25/February/2005</span>:
+the
 parser has been upgraded to the new dADL syntax. This affects all
 archetypes! The parser will still read old style dADL, but when
 "save-as ADL" is used, will always save in new style dADL. Users should
-upgrade their archetypes by this method.<br>
-  </li>
+upgrade their archetypes by this method. </li>
+
   <li><span style="font-weight: bold;">19/September/2004</span>:
 In this release, the GUI of the ADL workbench has been overhauled, and
 is more friendly.
@@ -233,493 +342,720 @@ Screenshots: <a href="adl_workbench-sep2004-startup.JPG">startup
 screen</a>, <a href="adl_workbench-sep2004-node-map.JPG">node
 map</a>, <a href="adl_workbench-sep2004-paths.JPG">path
 map</a>. New support for
-custom domain types, such as <a
- href="http://www.openehr.org/repositories/archetype-dev/latest/adl/archetypes/test/clinical_types/adl-test-entry.c_quantity.draft.html">C_QUANTITY</a>.
-    <br>
+custom domain types, such as <a href="http://www.openehr.org/repositories/archetype-dev/latest/adl/archetypes/test/clinical_types/adl-test-entry.c_quantity.draft.html">C_QUANTITY</a>.
+    <br />
+
     <span style="font-weight: bold;"></span></li>
+
   <li><span style="font-weight: bold;">07/August/2004</span>:
 latest
 release of workbench adds an archetype explorer on the left hand
 side. Abstract OWL output is in the pipeline, after collaborative work
-between Ocean Informatics and the group at the <a
- href="http://mbbnet.umn.edu/labs/mayolbi.html">Laboratory for
-Biomedical Informatics</a> at Mayo Clinic, Minnesota, US, with ongoing
+between Ocean Informatics and the group at the <a href="http://mbbnet.umn.edu/labs/mayolbi.html">Laboratory
+for
+Biomedical Informatics</a> at Mayo Clinic, Minnesota, US, with
+ongoing
 e-collaboration .with University Manchester UK, and University of
-Seville, Spain.<br>
+Seville, Spain.<br />
+
     <span style="font-weight: bold;"></span></li>
-  <li><span style="font-weight: bold;">30/July/2004</span>: new
+
+  <li><span style="font-weight: bold;">30/July/2004</span>:
+new
 release of ADL workbench and DLLs. Workbench contains a convenient
-explorer control. <a href="adl_workbench1.JPG">Screenshot.<br>
+explorer control. <a href="adl_workbench1.JPG">Screenshot.
     </a><span style="font-weight: bold;"></span></li>
+
   <li><span style="font-weight: bold;">05/May/2004</span>:
 uploaded ADL
 software, re-engineered to models in ADL
 1.2 draft document. See release
 notes for workbench and dotNet toolkit.</li>
+
 </ul>
+
 <ol>
+
 </ol>
+
 <ul>
+
 </ul>
-<h3>To Do</h3>
+
+<h2>To Do</h2>
+
 <p>The following release will implement ADL 2.0.</p>
-<table cellspacing="2" cellpadding="2" border="1"
- style="text-align: left; width: 100%;">
+
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+
   <tbody>
+
     <tr>
-      <td colspan="4" rowspan="1"
- style="vertical-align: top; background-color: rgb(153, 153, 255);">
-      <h3 style="text-align: center;">Release 2.0 of ADL - end July 2005<br>
-      </h3>
+
+      <td colspan="4" rowspan="1" style="vertical-align: top; background-color: rgb(204, 204, 255);">
+      <p class="table_cell_top_heading">Release 2.0 of ADL
+- end July 2005 </p>
+
       </td>
+
     </tr>
+
     <tr>
-      <td
- style="vertical-align: top; font-weight: bold; font-family: helvetica,arial,sans-serif; background-color: rgb(204, 204, 255);"><small>Job<br>
-      </small></td>
-      <td
- style="vertical-align: top; font-weight: bold; font-family: helvetica,arial,sans-serif; background-color: rgb(204, 204, 255);"><small>Description<br>
-      </small></td>
-      <td
- style="vertical-align: top; font-weight: bold; font-family: helvetica,arial,sans-serif; background-color: rgb(204, 204, 255);"><small>Resources<br>
-      </small></td>
-      <td
- style="vertical-align: top; font-weight: bold; font-family: helvetica,arial,sans-serif; background-color: rgb(204, 204, 255);"><small>Status</small></td>
+
+      <td style="vertical-align: top; font-weight: bold; font-family: helvetica,arial,sans-serif; background-color: rgb(204, 204, 255);">
+      <p class="table_cell_top_heading">Job</p>
+
+      </td>
+
+      <td style="vertical-align: top; font-weight: bold; font-family: helvetica,arial,sans-serif; background-color: rgb(204, 204, 255);">
+      <p class="table_cell_top_heading">Description</p>
+
+      </td>
+
+      <td style="vertical-align: top; font-weight: bold; font-family: helvetica,arial,sans-serif; background-color: rgb(204, 204, 255);">
+      <p class="table_cell_top_heading">Resources</p>
+
+      </td>
+
+      <td style="vertical-align: top; font-weight: bold; font-family: helvetica,arial,sans-serif; background-color: rgb(204, 204, 255);">
+      <p class="table_cell_top_heading">Status</p>
+
+      </td>
+
     </tr>
+
     <tr>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>Make
-ontology section<br>
-proper dADL<br>
-      </small></td>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>Currently,
+
+      <td class="" style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);">
+      <p class="table_cell_left_heading">Make
+ontology section <br />
+
+proper dADL</p>
+
+      </td>
+
+      <td style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 229);">Currently,
 ontology section expresses terms with hard-wired attribute names, e.g.
-&lt;description = &lt;"xxxx"&gt; text = &lt;"yyyy"&gt;&gt;. But the
+&lt;description = &lt;"xxxx"&gt; text =
+&lt;"yyyy"&gt;&gt;. But the
 actual structures used in the ARCHETYPE_ONTOLOGY class in the AOM are
 hash tables. If the ontology is converted to the form
-&lt;["description"] = &lt;"xxx"&gt; ["text"] = &lt;"yyy"&gt;&gt; then
+&lt;["description"] = &lt;"xxx"&gt; ["text"] =
+&lt;"yyy"&gt;&gt; then
 it will be automatically procesible into and out of object form by a
 generic object conversion facility (already implemented in the Eiffel
-worlbench using the DT_OBJECT_CONVERTER classes).</small><br>
-      </td>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small><br>
+worlbench using the DT_OBJECT_CONVERTER classes).<big><br />
+
+      </big></td>
+
+      <td style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 229);"><small>
       </small></td>
-      <td style="vertical-align: top;"><br>
+
+      <td style="vertical-align: top; background-color: rgb(255, 255, 229);"><br />
+
       </td>
+
     </tr>
+
     <tr>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>Implement
-_items<br>
-special attribute for<br>
-generic structures<br>
-      </small></td>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>Instead
+
+      <td class="" style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);">
+      <p class="table_cell_left_heading">Implement
+_items <br />
+
+special attribute for <br />
+
+generic structures</p>
+
+      </td>
+
+      <td style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 229);">Instead
 of the current ADL 1.2 specification for nested generics, make all
 generic structures (hash tables and lists) use a pseudo attribute
 "_items" to represent the list contents. This will mean altering the
-"items" attributes in the ontology section of archetypes to "_items".</small><br>
+"items" attributes in the ontology section of archetypes to "_items".<big><br />
+
+      </big></td>
+
+      <td style="vertical-align: top; background-color: rgb(255, 255, 229);"><br />
+
       </td>
-      <td style="vertical-align: top;"><br>
+
+      <td style="vertical-align: top; background-color: rgb(255, 255, 229);"><br />
+
       </td>
-      <td style="vertical-align: top;"><br>
-      </td>
+
     </tr>
+
     <tr>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>Implement
-invariant section<br>
-      </small></td>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>Invariants
-should be in a separate top-level section of the archetype</small><br>
+
+      <td class="table_cell_left_heading" style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);">
+      <p>Implement
+invariant section</p>
+
       </td>
-      <td style="vertical-align: top;"><br>
+
+      <td style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 229);">Invariants
+should be in a separate top-level section of the archetype<big><br />
+
+      </big></td>
+
+      <td style="vertical-align: top; background-color: rgb(255, 255, 229);"><br />
+
       </td>
-      <td style="vertical-align: top;">done<br>
+
+      <td style="vertical-align: top; background-color: rgb(255, 255, 229);">done<br />
+
       </td>
+
     </tr>
+
     <tr>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>Make
-entire archetype<br>
-a dADL document<br>
-      </small></td>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>Serialise
+
+      <td class="table_cell_left_heading" style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);">
+      <p>Make
+entire archetype <br />
+
+a dADL document</p>
+
+      </td>
+
+      <td style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 229);">Serialise
 and parse archetypes as dADL documents; remove the special ADL syntax.
 This will facilitate the proper representation of attributes such as
 concept, original_language, translations, adl_version, encoding and
 revision_history. All of these should correspond exactly to the
 relevant parts of the AOM; they can therefore be generically processed
-by a single parser.</small><br>
+by a single parser.<big><br />
+
+      </big></td>
+
+      <td style="vertical-align: top; background-color: rgb(255, 255, 229);"><br />
+
       </td>
-      <td style="vertical-align: top;"><br>
+
+      <td style="vertical-align: top; background-color: rgb(255, 255, 229);"><br />
+
       </td>
-      <td style="vertical-align: top;"><br>
-      </td>
+
     </tr>
+
     <tr>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>dADL
-&lt;-&gt; XML conversion<br>
-      </small></td>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>Conversion
+
+      <td class="table_cell_left_heading" style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);">
+      <p>dADL
+&lt;-&gt; XML conversion</p>
+
+      </td>
+
+      <td style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 229);">Conversion
 of archetypes and and out of XML should be done by going via dADL; the
 theory is the same as for YATL, an abstract syntax for reasoning about
-tree-shaped data.<br>
+tree-shaped data. </td>
+
+      <td style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 229);"><small>
       </small></td>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small><br>
-      </small></td>
-      <td style="vertical-align: top;"><br>
+
+      <td style="vertical-align: top; background-color: rgb(255, 255, 229);"><br />
+
       </td>
+
     </tr>
+
     <tr>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>align
-with CEN MetaKnow meta-data and HL7 templates meta-data.<br>
-      </small></td>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>The
+
+      <td class="table_cell_left_heading" style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);">
+      <p>align
+with CEN MetaKnow meta-data and HL7 templates meta-data.</p>
+
+      </td>
+
+      <td style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 229);">The
 current UML model of archetypes does not include a model of the
 "description" section - currently anything goes. A new model has been
 produced which takes into account the CEN MetaKnow specification, and
 the HL7 Templates proposal. Modelling this properly (cf what is in
 these proposals) will cause the addition of a new section to an
 archetype, called
-"revision history" - this would be a dADL section.<br>
-      </small></td>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>
-      </small><br>
+"revision history" - this would be a dADL section. </td>
+
+      <td style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 229);"><small>
+      </small><br />
+
       </td>
-      <td style="vertical-align: top;">done - <br>
-01/Jun/2005<br>
+
+      <td style="vertical-align: top; background-color: rgb(255, 255, 229);">done
+- <br />
+
+01/Jun/2005<br />
+
       </td>
+
     </tr>
+
     <tr>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>Provide
-object interface to archetype description <br>
-      </small></td>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small><br>
-      </small></td>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small><br>
-      </small></td>
-      <td style="vertical-align: top;">done - 30/May/05<br>
+
+      <td class="table_cell_left_heading" style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);">
+      <p>Provide
+object interface to archetype description </p>
+
       </td>
+
+      <td style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 229);">
+      </td>
+
+      <td style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 229);"><small>
+      </small></td>
+
+      <td style="vertical-align: top; background-color: rgb(255, 255, 229);">done
+- 30/May/05<br />
+
+      </td>
+
     </tr>
+
     <tr>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>Generic
-dADL serialiser/deserialiser<br>
-      </small></td>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>Implement
-generic traversal serialiser for dADL.<br>
-      </small></td>
-      <td style="vertical-align: top;"><br>
+
+      <td class="table_cell_left_heading" style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);">
+      <p>Generic
+dADL serialiser/deserialiser</p>
+
       </td>
-      <td style="vertical-align: top;">done - 30/May/05<br>
+
+      <td style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 229);">Implement
+generic traversal serialiser for dADL. </td>
+
+      <td style="vertical-align: top; background-color: rgb(255, 255, 229);"><br />
+
       </td>
+
+      <td style="vertical-align: top; background-color: rgb(255, 255, 229);">done
+- 30/May/05<br />
+
+      </td>
+
     </tr>
+
     <tr>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>CR-000142.
-      <span style="font-family: monospace;"></span>Implement
-assumed values<br>
-      </small></td>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small><br>
-      </small></td>
-      <td style="vertical-align: top;"><br>
+
+      <td class="table_cell_left_heading" style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);">
+      <p>CR-000142. <span style="font-family: monospace;"></span>Implement
+assumed values</p>
+
       </td>
-      <td style="vertical-align: top;">Done<br>
-05/05/2005<br>
+
+      <td style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 229);">
       </td>
+
+      <td style="vertical-align: top; background-color: rgb(255, 255, 229);"><br />
+
+      </td>
+
+      <td style="vertical-align: top; background-color: rgb(255, 255, 229);">Done<br />
+
+05/05/2005<br />
+
+      </td>
+
     </tr>
+
   </tbody>
 </table>
-<br>
-<p>The following table describes other development tasks currently
+
+<br />
+
+<p>The following table describes other development tasks
+currently
 foreseen.</p>
-<table style="text-align: left; width: 100%;" border="1" cellpadding="2"
- cellspacing="2">
+
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+
   <tbody>
+
     <tr>
-      <td
- style="vertical-align: top; background-color: rgb(153, 153, 255);"
- rowspan="1" colspan="4">
-      <h3 style="text-align: center;">Release xxx</h3>
+
+      <td style="vertical-align: top; background-color: rgb(204, 204, 255);" rowspan="1" colspan="4">
+      <p class="table_cell_top_heading">Release xxx</p>
+
       </td>
+
     </tr>
+
     <tr>
-      <td
- style="vertical-align: top; font-weight: bold; font-family: helvetica,arial,sans-serif; background-color: rgb(204, 204, 255);"><small>Job<br>
-      </small></td>
-      <td
- style="vertical-align: top; font-weight: bold; font-family: helvetica,arial,sans-serif; background-color: rgb(204, 204, 255);"><small>Description<br>
-      </small></td>
-      <td
- style="vertical-align: top; font-weight: bold; font-family: helvetica,arial,sans-serif; background-color: rgb(204, 204, 255);"><small>Resources<br>
-      </small></td>
-      <td
- style="vertical-align: top; font-weight: bold; font-family: helvetica,arial,sans-serif; background-color: rgb(204, 204, 255);"><small>Status</small></td>
+
+      <td class="table_cell_top_heading" style="vertical-align: top; font-weight: bold; font-family: helvetica,arial,sans-serif; background-color: rgb(204, 204, 255);"><big>
+      </big>
+      <p class="table_cell_top_heading">Job </p>
+
+      <big> </big></td>
+
+      <td class="table_cell_top_heading" style="vertical-align: top; font-weight: bold; font-family: helvetica,arial,sans-serif; background-color: rgb(204, 204, 255);"><big>
+      </big>
+      <p class="table_cell_top_heading">Description </p>
+
+      <big> </big></td>
+
+      <td class="table_cell_top_heading" style="vertical-align: top; font-weight: bold; font-family: helvetica,arial,sans-serif; background-color: rgb(204, 204, 255);"><big>
+      </big>
+      <p>Resources </p>
+
+      <big> </big></td>
+
+      <td class="table_cell_top_heading" style="vertical-align: top; font-weight: bold; font-family: helvetica,arial,sans-serif; background-color: rgb(204, 204, 255);"><big>
+      </big>
+      <p>Status</p>
+
+      <big> </big></td>
+
     </tr>
+
     <tr>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>folding
-HTML<br>
-      </small></td>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>Currently,
+
+      <td class="table_cell_left_heading" style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);">
+      <p>folding
+HTML</p>
+
+      </td>
+
+      <td style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 230);">Currently,
 the HTML serialiser output is static, colourised HTML. However, it
 would be convenient to be able to generate a folding form, especially
 for large archetypes, since this would allow better visual exploration
-with just a web browser.<br>
-      </small><small>This
-should be a fairly simple job. It&nbsp; requires copying the existing
+with just a web browser. This
+should be a fairly simple job. It&nbsp; requires copying the
+existing
 HTML serialiser and making a "folding HTML" serialiser, which outputs
-the correct HTML for each folding node point in the structure.</small><br>
+the correct HTML for each folding node point in the structure.<br />
+
       </td>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small><br>
+
+      <td style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 230);"><small>
       </small></td>
-      <td style="vertical-align: top;"><br>
+
+      <td style="vertical-align: top; background-color: rgb(255, 255, 230);"><br />
+
       </td>
+
     </tr>
+
     <tr>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>schema-based
-XML serialiser<br>
-      </small></td>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>The
+
+      <td class="table_cell_left_heading" style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);">
+      <p>schema-based
+XML serialiser</p>
+
+      </td>
+
+      <td style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 230);">The
 XML schema for ADL needs to be developed, based on the emerging UML
 model of archetypes (the UML model of ADL can be seen in the ADL
-specification).<br>
+specification). </td>
+
+      <td style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 230);"><small>
       </small></td>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small><br>
-      </small></td>
-      <td style="vertical-align: top;"><br>
+
+      <td style="vertical-align: top; background-color: rgb(255, 255, 230);"><br />
+
       </td>
+
     </tr>
+
     <tr>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>API
-serialiser<br>
-      </small></td>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>Generates
-a piece of API for a given archetype.<br>
-      </small></td>
-      <td style="vertical-align: top;"><br>
+
+      <td class="table_cell_left_heading" style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);">
+      <p>API
+serialiser</p>
+
       </td>
-      <td style="vertical-align: top;"><br>
+
+      <td style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 230);">Generates
+a piece of API for a given archetype. </td>
+
+      <td style="vertical-align: top; background-color: rgb(255, 255, 230);"><br />
+
       </td>
+
+      <td style="vertical-align: top; background-color: rgb(255, 255, 230);"><br />
+
+      </td>
+
     </tr>
+
     <tr>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>abstract
-OWL<br>
-serialiser<br>
-      </small></td>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>OWL
-abstract syntax serialiser, based on mapping defined by UCL/Manchester<br>
-      </small></td>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small><br>
-      </small></td>
-      <td style="vertical-align: top;"><br>
+
+      <td class="table_cell_left_heading" style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);">
+      <p>abstract
+OWL <br />
+
+serialiser</p>
+
       </td>
-    </tr>
-    <tr>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>add
-model-based validation<br>
+
+      <td style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 230);">OWL
+abstract syntax serialiser, based on mapping defined by UCL/Manchester </td>
+
+      <td style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 230);"><small>
       </small></td>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>The
+
+      <td style="vertical-align: top; background-color: rgb(255, 255, 230);"><br />
+
+      </td>
+
+    </tr>
+
+    <tr>
+
+      <td class="table_cell_left_heading" style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);">
+      <p>add
+model-based validation</p>
+
+      </td>
+
+      <td style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 230);">The
 current tools do not validate against reference models, only in terms
 of ADL itself. Reference model validation can be added by adding a
 module which can read a formal expression of any reference model
 (however: this itself is a problem, since XMI is problematic; what is
 needed is an abstract syntax of UML) and validate the class and
 attribute names, as well as other constraints in an ADL archetype
-against it.<br>
+against it. </td>
+
+      <td style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 230);"><small>
       </small></td>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small><br>
-      </small></td>
-      <td style="vertical-align: top;"><br>
+
+      <td style="vertical-align: top; background-color: rgb(255, 255, 230);"><br />
+
       </td>
+
     </tr>
+
     <tr>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>Library
-viewer<br>
-      </small></td>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>Provide
+
+      <td class="table_cell_left_heading" style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);">
+      <p>Library
+viewer</p>
+
+      </td>
+
+      <td style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 230);">Provide
 a way of viewing a library of ADL archetypes, whether in a database,
-web repository, or simply as files on the file system.<br>
+web repository, or simply as files on the file system. </td>
+
+      <td style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 230);"><small>
       </small></td>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small><br>
-      </small></td>
-      <td style="vertical-align: top;"><br>
+
+      <td style="vertical-align: top; background-color: rgb(255, 255, 230);"><br />
+
       </td>
+
     </tr>
+
     <tr>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>Specialisation
-comparator<br>
-      </small></td>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>Provide
+
+      <td class="table_cell_left_heading" style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);">
+      <p>Specialisation
+comparator</p>
+
+      </td>
+
+      <td style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 230);">Provide
 a way of comparing two archetypes where one is supposed to be a
-specialisation of the other.<br>
+specialisation of the other. </td>
+
+      <td style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 230);"><small>
       </small></td>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small><br>
-      </small></td>
-      <td style="vertical-align: top;"><br>
+
+      <td style="vertical-align: top; background-color: rgb(255, 255, 230);"><br />
+
       </td>
+
     </tr>
+
     <tr>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>Archetype/data
-comparator<br>
-      </small></td>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>Provide
-simple stand-alone tools for validating data against an archetype.<br>
-      </small></td>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small><br>
-      </small></td>
-      <td style="vertical-align: top;"><br>
+
+      <td class="table_cell_left_heading" style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);">
+      <p>Archetype/data
+comparator</p>
+
       </td>
-    </tr>
-    <tr>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>Unicode<br>
+
+      <td style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 230);">Provide
+simple stand-alone tools for validating data against an archetype. </td>
+
+      <td style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 230);"><small>
       </small></td>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>Support
+
+      <td style="vertical-align: top; background-color: rgb(255, 255, 230);"><br />
+
+      </td>
+
+    </tr>
+
+    <tr>
+
+      <td class="table_cell_left_heading" style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);">
+      <p>Unicode</p>
+
+      </td>
+
+      <td style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 230);">Support
 unicode. Internally - as unicode strings; in ADL using XML/ISO
-character code text encoding<br>
-      </small></td>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><br>
+character code text encoding </td>
+
+      <td style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 230);"><br />
+
       </td>
-      <td style="vertical-align: top;"><br>
+
+      <td style="vertical-align: top; background-color: rgb(255, 255, 230);"><br />
+
       </td>
+
     </tr>
+
     <tr>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>Runtime
-ontology<br>
-merge<br>
-      </small></td>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>Do
-runtime ontology merge for locale, e.g. "en-us"&nbsp; on top of "en"<br>
-      </small></td>
-      <td style="vertical-align: top;"><br>
+
+      <td class="table_cell_left_heading" style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);">
+      <p>Runtime
+ontology<br />
+
+merge</p>
+
       </td>
-      <td style="vertical-align: top;"><br>
+
+      <td style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 230);">Do
+runtime ontology merge for locale, e.g. "en-us"&nbsp; on top of
+"en" </td>
+
+      <td style="vertical-align: top; background-color: rgb(255, 255, 230);"><br />
+
       </td>
+
+      <td style="vertical-align: top; background-color: rgb(255, 255, 230);"><br />
+
+      </td>
+
     </tr>
+
     <tr>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>Get
-rid of unused codes for current level of specialisation<br>
-      </small></td>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>xxx<br>
-      </small></td>
-      <td style="vertical-align: top;"><br>
+
+      <td class="table_cell_left_heading" style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);">
+      <p>Get
+rid of unused codes for current level of specialisation</p>
+
       </td>
-      <td style="vertical-align: top;"><br>
+
+      <td style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 230);">xxx
       </td>
+
+      <td style="vertical-align: top; background-color: rgb(255, 255, 230);"><br />
+
+      </td>
+
+      <td style="vertical-align: top; background-color: rgb(255, 255, 230);"><br />
+
+      </td>
+
     </tr>
+
     <tr>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>Define
-transform of<br>
-archetype path &lt;-&gt; Xpath<br>
-      </small></td>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>xxx<br>
-      </small></td>
-      <td style="vertical-align: top;"><br>
+
+      <td class="table_cell_left_heading" style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);">
+      <p>Define
+transform of archetype path &lt;-&gt; Xpath</p>
+
       </td>
-      <td style="vertical-align: top;"><br>
+
+      <td style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 230);">xxx
       </td>
+
+      <td style="vertical-align: top; background-color: rgb(255, 255, 230);"><br />
+
+      </td>
+
+      <td style="vertical-align: top; background-color: rgb(255, 255, 230);"><br />
+
+      </td>
+
     </tr>
+
     <tr>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>Term_bindings
-to paths<br>
-      </small></td>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>Terms
+
+      <td class="table_cell_left_heading" style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);">
+      <p>Term_bindings
+to paths</p>
+
+      </td>
+
+      <td style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 230);">Terms
 need to be bindable to path expressions, such as //[at2003],
-/xxx/yyy/[at2003] etc<br>
-      </small></td>
-      <td style="vertical-align: top;"><br>
+/xxx/yyy/[at2003] etc </td>
+
+      <td style="vertical-align: top; background-color: rgb(255, 255, 230);"><br />
+
       </td>
-      <td style="vertical-align: top;"><br>
+
+      <td style="vertical-align: top; background-color: rgb(255, 255, 230);"><br />
+
       </td>
+
     </tr>
+
     <tr>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>Test
-unbounded intervals<br>
-      </small></td>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>a_real
-= mCADL_Factory.create_real_interval_make_unbounded()<br>
+
+      <td class="table_cell_left_heading" style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);">
+      <p>Test
+unbounded intervals</p>
+
+      </td>
+
+      <td style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 230);">a_real
+= mCADL_Factory.create_real_interval_make_unbounded()<br />
+
 &nbsp;&nbsp;
 cadlQuantity.add_unit_constraint(openehr.base_net.Create.STRING.make_from_cil(unit_constraint.Unit),
-a_real) results in magnitude = &lt;|&lt;= 0.0|&gt;; should be {|*|}???<br>
-      </small></td>
-      <td style="vertical-align: top;"><br>
+a_real) results in magnitude = &lt;|&lt;= 0.0|&gt;; should
+be {|*|}??? </td>
+
+      <td style="vertical-align: top; background-color: rgb(255, 255, 230);"><br />
+
       </td>
-      <td style="vertical-align: top;"><br>
+
+      <td style="vertical-align: top; background-color: rgb(255, 255, 230);"><br />
+
       </td>
+
     </tr>
+
     <tr>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);"><small>Allow
-Real numbers as Quantities without units???<br>
-      </small></td>
-      <td
- style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><small>What
-is the use case?<br>
-      </small></td>
-      <td style="vertical-align: top;"><br>
+
+      <td class="table_cell_left_heading" style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 204);">
+      <p>Allow
+Real numbers as Quantities without units???</p>
+
       </td>
-      <td style="vertical-align: top;"><br>
+
+      <td style="vertical-align: top; font-family: helvetica,arial,sans-serif; background-color: rgb(255, 255, 230);">What
+is the use case? </td>
+
+      <td style="vertical-align: top; background-color: rgb(255, 255, 230);"><br />
+
       </td>
+
+      <td style="vertical-align: top; background-color: rgb(255, 255, 230);"><br />
+
+      </td>
+
     </tr>
+
   </tbody>
 </table>
-<br>
-<hr style="width: 100%; height: 2px;">
-<small><span style="font-family: courier new,courier,monospace;">$LastChangedDate$
-$LastChangedRevision$</span></small><br>
-<br>
-<br>
+
+<br />
+
+<hr style="width: 100%; height: 2px;" />
+<p class="footer">$LastChangedDate: 2005-07-27 17:13:57
++0100 (Wed, 27 Jul 2005) $
+$LastChangedRevision$</p>
+
 </body>
 </html>
