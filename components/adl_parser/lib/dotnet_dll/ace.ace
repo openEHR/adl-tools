@@ -25,7 +25,7 @@ default
 	cls_compliant (yes)
 	dotnet_naming_convention (no)
 	use_cluster_name_as_namespace (yes)
-	use_all_cluster_name_as_namespace (no)
+	use_all_cluster_name_as_namespace (yes)
 	msil_generation_type ("dll")
 	namespace ("openehr")
 	company ("Ocean Informatics")
