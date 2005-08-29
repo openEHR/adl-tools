@@ -1,37 +1,86 @@
 indexing
 	component:   "openEHR Archetype Project"
-	description: "Test case for archetype creation"
-	keywords:    "test, ADL, CADL"
+	description: "Test case for archetype parse, simulating call from java"
+	keywords:    "test, ADL, java"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2005 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class SHARED_TEST_ENV
+class TC_JS_ARCHETYPE_PARSE
 	
 inherit
-	SHARED_ADL_INTERFACE
+	TEST_CASE
+		export
+			{NONE} all
+		end
 
-	SHARED_C_ADL_INTERFACE
-	
+	SHARED_TEST_ENV
+		export
+			{NONE} all
+		end
+		
+create
+	make
+
+feature -- Initialisation
+
+	make(arg:ANY) is
+	    do
+	    end
+
 feature -- Access
 
-	serialise_format: STRING is "adl"
+	title: STRING is "Test Archetype Create"
 	
-feature -- Conversion
-
-	print_list (a_list: LIST[STRING]):STRING is
-		do
+	infile: STRING is 
+		once
 			create Result.make(0)
-			from a_list.start until a_list.off loop
-				Result.append(a_list.item)
-				Result.append("%N")
-				a_list.forth
+			Result.append("openEHR-EHR-OBSERVATION.blood_pressure.v1.adl")
+		end
+	
+	outfile: STRING is 
+		once
+			create Result.make(0)
+			Result.append("openEHR-EHR-OBSERVATION.blood_pressure.v1.html")
+		end	
+
+feature -- testing
+
+	execute is
+		local
+			c_status, c_infile, c_outfile, c_format: C_STRING
+		do
+			create c_infile.make (infile)
+			create c_outfile.make (outfile)
+			create c_format.make("html")
+			c_adl_interface.open_adl_file(c_infile.item)
+
+			create c_status.make_by_pointer (c_adl_interface.status)
+			if c_adl_interface.archetype_source_loaded then
+				io.put_string("Loaded " + infile + "; status: " + c_status.string + "%N")
+	
+				c_adl_interface.parse_archetype
+				create c_status.make_by_pointer (c_adl_interface.status)
+				if c_adl_interface.parse_succeeded then
+					c_adl_interface.save_archetype(c_outfile.item, c_format.item)
+	
+					if c_adl_interface.save_succeeded then
+						io.put_string("Saved to " + outfile + "%N")
+					else
+						create c_status.make_by_pointer (c_adl_interface.status)
+						io.put_string("failed to serialise; status = " + c_status.string + "%N")
+					end
+				else
+					io.put_string("failed to parse; status = " + c_status.string + "%N")
+				end				
+			else
+				io.put_string("Unable to load " + infile + " because of " + c_status.string + "%N")
 			end
 		end
 	
@@ -51,7 +100,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is shared_test_env.e.
+--| The Original Code is tc_archetype_create.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

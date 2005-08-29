@@ -1,41 +1,85 @@
 indexing
 	component:   "openEHR Archetype Project"
-	description: "Test case for archetype creation"
-	keywords:    "test, ADL, CADL"
-
+	description: "[
+		`	 Archetype node populator: when an archetype is read in,
+			 its nodes need to be included in the Java interface Hash
+			 map, keyed by integer handle ids.
+			 ]"
+	keywords:    "archetype, constraint, definition"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2005 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class SHARED_TEST_ENV
-	
+class C_ARCHETYPE_NODE_POPULATOR
+   
 inherit
-	SHARED_ADL_INTERFACE
-
-	SHARED_C_ADL_INTERFACE
-	
-feature -- Access
-
-	serialise_format: STRING is "adl"
-	
-feature -- Conversion
-
-	print_list (a_list: LIST[STRING]):STRING is
-		do
-			create Result.make(0)
-			from a_list.start until a_list.off loop
-				Result.append(a_list.item)
-				Result.append("%N")
-				a_list.forth
-			end
+	SHARED_ADL_OBJECTS
+		export
+			{NONE} all
 		end
 	
+	CONSTRAINT_MODEL_TREE_ITERATOR
+
+create
+	make
+
+feature -- Initialisation
+
+	make(a_target: C_COMPLEX_OBJECT) is 
+			-- create a new manager targetted to the parse tree `a_target'
+		require
+			Target_exists: a_target /= Void
+		do
+			set_target(a_target)
+		end
+
+feature -- Access
+
+	root_handle: INTEGER
+			-- handle of root node
+			
+feature {NONE} -- Implementation
+	
+	node_enter_action(a_node: OG_ITEM; indent_level: INTEGER) is
+		local
+			l_c_object: C_OBJECT
+			l_c_complex_object: C_COMPLEX_OBJECT
+			l_handle: INTEGER
+			l_c_attribute: C_ATTRIBUTE
+		do
+			l_c_object ?= a_node.content_item
+			if l_c_object /= Void then
+				l_handle := adl_objects.new_handle
+			--	put_c_object(l_c_object, l_handle)
+				l_c_complex_object ?= l_c_object
+				if l_c_complex_object /= Void then
+					if root_handle = 0 then
+						root_handle := l_handle
+					end
+					put_c_complex_object(l_c_complex_object, l_handle)
+					from 
+						l_c_complex_object.attributes.start
+					until
+						l_c_complex_object.attributes.off
+					loop
+						put_c_attribute(l_c_complex_object.attributes.item, adl_objects.new_handle)
+						l_c_complex_object.attributes.forth
+					end
+				end
+			end
+		end
+
+	node_exit_action(a_node: OG_ITEM; indent_level: INTEGER) is
+		do
+		end
+
 end
+
 
 --|
 --| ***** BEGIN LICENSE BLOCK *****
@@ -51,7 +95,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is shared_test_env.e.
+--| The Original Code is cadl_serialiser_mgr.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

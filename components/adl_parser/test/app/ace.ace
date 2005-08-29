@@ -8,6 +8,7 @@ default
 	document (".")
 	precompiled ("$ISE_EIFFEL\precomp\spec\$ISE_PLATFORM\base")
 	assertion (require)
+	working_directory ("C:\project\openehr\ref_impl_eiffel\components\adl_parser\test\src\java_simulator")
 	disabled_debug (yes)
 	disabled_debug ("adl_invariant")
 	disabled_debug ("adl_parse")
@@ -18,11 +19,11 @@ default
 	disabled_debug ("geyacc")
 	disabled_debug ("include list")
 	disabled_debug ("og_path_parse")
+	disabled_debug ("refactor_fixme")
 	debug (no)
 	line_generation (no)
 	profile (no)
 	trace (no)
-	override_cluster ("openehr_library")
 	check_vape (no)
 	console_application (yes)
 	syntax_warning (no)
@@ -33,6 +34,7 @@ default
 	exception_trace (no)
 	inlining (no)
 	multithreaded (no)
+
 
 cluster
 	all app:		"$OPENEHR\ref_impl_eiffel\components\adl_parser\test\src"
@@ -70,7 +72,6 @@ cluster
 			assertion (no)
 			assertion (require)
 			assertion (ensure)
-			assertion (invariant)
 		visible
 			C_CODED_TERM
 				end
@@ -89,7 +90,6 @@ cluster
 			assertion (ensure)
 			assertion (invariant)
 		end
-
 
 	library ut_support:		"$GOBO\library\utility"
 
@@ -127,6 +127,6 @@ external
 
 	object:
 		"$(ISE_EIFFEL)\library\wel\spec\$(ISE_C_COMPILER)\lib\wel.lib",
-		"$(OPENEHR)\implem-dev\library\eiffel\spec\$(ISE_C_COMPILER)\lib\method_dispatcher.lib"
+		"$(OPENEHR)\ref_impl_eiffel\libraries\common_libs\lib\$(ISE_C_COMPILER)\method_dispatcher.lib"
 
 end

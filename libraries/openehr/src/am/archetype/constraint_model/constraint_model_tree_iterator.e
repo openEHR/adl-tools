@@ -1,41 +1,56 @@
 indexing
 	component:   "openEHR Archetype Project"
-	description: "Test case for archetype creation"
-	keywords:    "test, ADL, CADL"
-
+	description: "Tree iterator for archetype nodes"
+	keywords:    "archetype, constraint, definition"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2005 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class SHARED_TEST_ENV
-	
-inherit
-	SHARED_ADL_INTERFACE
+deferred class CONSTRAINT_MODEL_TREE_ITERATOR
 
-	SHARED_C_ADL_INTERFACE
-	
 feature -- Access
 
-	serialise_format: STRING is "adl"
+	tree_iterator: OG_ITERATOR
 	
-feature -- Conversion
+feature -- Modification
 
-	print_list (a_list: LIST[STRING]):STRING is
+	set_target(a_target: C_COMPLEX_OBJECT) is 
+			-- create a new manager targetted to the parse tree `a_target'
+		require
+			Target_exists: a_target /= Void
 		do
-			create Result.make(0)
-			from a_list.start until a_list.off loop
-				Result.append(a_list.item)
-				Result.append("%N")
-				a_list.forth
-			end
+			create tree_iterator.make(a_target.representation)
 		end
+
+feature -- Command
+
+	do_all is
+			-- start the serialisation process; the result will be in `serialiser_output'
+		do
+			tree_iterator.do_all(agent node_enter_action(?,?), agent node_exit_action(?,?))
+		end
+
+feature {NONE} -- Implementation
 	
+	node_enter_action(a_node: OG_ITEM; indent_level: INTEGER) is
+		require
+			Node_exists: a_node /= Void
+		deferred
+		end
+
+	node_exit_action(a_node: OG_ITEM; indent_level: INTEGER) is
+		require
+			Node_exists: a_node /= Void
+		deferred
+		end
+
 end
+
 
 --|
 --| ***** BEGIN LICENSE BLOCK *****
@@ -51,7 +66,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is shared_test_env.e.
+--| The Original Code is cadl_serialiser_mgr.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

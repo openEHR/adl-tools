@@ -15,6 +15,7 @@ class CONSTRAINT_MODEL_SERIALISER_MGR
 
 inherit
 	SHARED_CONSTRAINT_MODEL_SERIALISERS
+	CONSTRAINT_MODEL_TREE_ITERATOR
 	
 create
 	make
@@ -27,7 +28,7 @@ feature -- Initialisation
 			Target_exists: a_target /= Void
 			Format_valid: format /= Void and then has_c_serialiser_format(format)
 		do
-			create tree_iterator.make(a_target.representation)
+			set_target(a_target)
 			serialiser := c_serialiser_for_format(format)
 			serialiser.initialise
 		end
@@ -37,13 +38,11 @@ feature -- Command
 	serialise is
 			-- start the serialisation process; the result will be in `serialiser_output'
 		do
-			tree_iterator.do_all(agent node_enter_action(?,?), agent node_exit_action(?,?))
+			do_all
 			serialiser.finalise
 		end
 
 feature -- Access
-
-	tree_iterator: OG_ITERATOR
 	
 	last_result: STRING is 
 		do
@@ -55,15 +54,11 @@ feature {NONE} -- Implementation
 	serialiser: CONSTRAINT_MODEL_SERIALISER
 
 	node_enter_action(a_node: OG_ITEM; indent_level: INTEGER) is
-		require
-			Node_exists: a_node /= Void
 		do
 			a_node.enter_block(serialiser, indent_level)
 		end
 
 	node_exit_action(a_node: OG_ITEM; indent_level: INTEGER) is
-		require
-			Node_exists: a_node /= Void
 		do
 			a_node.exit_block(serialiser, indent_level)
 		end

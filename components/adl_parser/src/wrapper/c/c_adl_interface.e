@@ -265,13 +265,16 @@ feature -- Commands
 			-- Called by `select_actions' of `parse'.
 		require
 			archetype_source_loaded
+		local
+			tree_it: C_ARCHETYPE_NODE_POPULATOR
 		do
 			adl_interface.parse_archetype
 
-			-- put newly created objects into shared object cache for acces from other side of C interface
-			if parse_succeeded then				
-				set_archetype_definition_handle(adl_objects.new_handle)
-				put_c_complex_object(adl_interface.adl_engine.archetype.definition, adl_objects.archetype_definition_handle)
+			-- put newly created objects into shared object cache for access from other side of C interface
+			if parse_succeeded then
+				create tree_it.make (adl_interface.adl_engine.archetype.definition)
+				tree_it.do_all
+				set_archetype_definition_handle(tree_it.root_handle)
 			end
 		end
 
@@ -281,9 +284,7 @@ feature -- Commands
 			adl_interface.reset
 			adl_objects.make
 		end
-	
 end
-
 
 
 --|

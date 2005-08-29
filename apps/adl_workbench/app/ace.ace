@@ -78,7 +78,6 @@ cluster
 			assertion (no)
 			assertion (require)
 			assertion (ensure)
-			assertion (invariant)
 		visible
 			C_CODED_TERM
 				end
@@ -97,7 +96,6 @@ cluster
 			assertion (ensure)
 			assertion (invariant)
 		end
-
 
 	gobo:		"$GOBO\library"
 
@@ -121,14 +119,14 @@ cluster
 	library design_pattern (gobo):		"$\pattern"
 
 	time:		"$ISE_EIFFEL\library\time"
+
 	time_format (time):		"$\format"
 
-	all base:	"$ISE_EIFFEL\library\base"
+	all base:		"$ISE_EIFFEL\library\base"
 		exclude
-			"table_eiffel3";
-			"desc"
+			"table_eiffel3"; "desc"; 
 		option
-			assertion (no): SPECIAL, STRING
+			assertion (no): special, string
 		end
 
 external

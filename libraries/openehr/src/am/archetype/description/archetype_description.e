@@ -25,7 +25,9 @@ create
 feature -- Definitions
 
 	Default_lifecycle_state: STRING is "initial"
-	
+
+	Default_original_author: STRING is "unknown"
+		
 feature -- Initialisation
 
 	default_create is
@@ -43,7 +45,7 @@ feature -- Initialisation
 			-- default make
 		do
 			default_create
-			make_author("unknown")
+			make_author(Default_original_author)
 		end
 		
 	make_author(an_author_name: STRING) is

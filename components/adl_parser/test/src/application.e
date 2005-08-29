@@ -65,7 +65,7 @@ feature -- Template
 		once
 			create Result.make
 			Result.extend(create {TS_ADL_SUITE}.make(Void))
-			Result.extend(create {TS_DADL_SUITE}.make(Void))
+			Result.extend(create {TS_JAVA_SIM_SUITE}.make(Void))
 		end
 
 feature -- Template

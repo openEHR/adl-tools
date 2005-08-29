@@ -1,40 +1,42 @@
 indexing
-	component:   "openEHR Archetype Project"
-	description: "Test case for archetype creation"
-	keywords:    "test, ADL, CADL"
+	component:   "openEHR Reusable Libraries"
+	description: "Test suite for simulating Java calls into JNI-wrapped DLL"
+	keywords:    "test"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2005 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class SHARED_TEST_ENV
-	
-inherit
-	SHARED_ADL_INTERFACE
+class TS_JAVA_SIM_SUITE
 
-	SHARED_C_ADL_INTERFACE
+inherit
+	TEST_SUITE
+	
+create
+	make
 	
 feature -- Access
 
-	serialise_format: STRING is "adl"
-	
-feature -- Conversion
-
-	print_list (a_list: LIST[STRING]):STRING is
-		do
-			create Result.make(0)
-			from a_list.start until a_list.off loop
-				Result.append(a_list.item)
-				Result.append("%N")
-				a_list.forth
-			end
+	test_cases: LINKED_LIST[TEST_CASE] is
+			-- the list of tests available
+		once
+			create Result.make
+			Result.extend(create {TC_JS_ARCHETYPE_PARSE}.make(Void))
 		end
-	
+
+	title: STRING is "Java simulator test cases"
+
+feature -- Initialisation
+
+	make(arg: ANY) is
+		do
+		end
+
 end
 
 --|
@@ -51,7 +53,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is shared_test_env.e.
+--| The Original Code is ts_adl_suite.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

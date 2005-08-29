@@ -99,8 +99,6 @@ cluster
 
 	time_format (time):		"$\format"
 
-	library time_format_english (time_format):		"$\english"
-
 external
 
 	include_path:
