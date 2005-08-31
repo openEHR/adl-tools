@@ -24,7 +24,8 @@ inherit
 	
 	SHARED_ARCHETYPE_CONTEXT
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} clear_terminology, language, set_language
 		redefine
 			default_create
 		end
@@ -754,7 +755,7 @@ feature {ADL_ENGINE} -- Representation
 	representation: DT_COMPLEX_OBJECT_NODE
 			-- root node of DADL objects representing this ontology
 	
-feature {NONE} -- Implementation
+feature  -- Implementation
 
 	term_definitions: HASH_TABLE[HASH_TABLE[ARCHETYPE_TERM, STRING], STRING]
 			-- table of term definitions, keyed by code, keyed by language
@@ -798,7 +799,7 @@ feature {NONE} -- Implementation
 			if representation.has_path("/" + Sym_terminologies_available + "/") then
 				terminologies_available := string_list_at_path("/" + Sym_terminologies_available + "/")
 			end
-			
+
 			-- populate term and constraint definitions
 			from
 				languages_available.start

@@ -46,7 +46,7 @@ inherit
 		undefine
 			default_rescue
 		end
-	
+
 	EXCEPTIONS
 		export
 			{NONE} all
@@ -165,7 +165,19 @@ feature -- Status Report
 			create c_a_format.make_by_pointer (a_format)
 			Result := adl_interface.has_archetype_serialiser_format(c_a_format.string)
 		end
-
+		
+	archetype_serialiser_formats: POINTER is
+			-- 	
+		do
+			Result := eif_list_string_to_c_array(adl_interface.archetype_serialiser_formats)
+		end
+	
+	archetype_serialiser_formats_count: INTEGER is
+			-- 
+		do
+			Result := adl_interface.archetype_serialiser_formats.count
+		end
+		
 feature -- Commands
 
 	set_current_directory (a_dir: POINTER) is
@@ -261,7 +273,7 @@ feature -- Commands
 			adl_interface.serialise_archetype(c_serialise_format.string)
 		end
 
-	parse_archetype is
+parse_archetype is
 			-- Called by `select_actions' of `parse'.
 		require
 			archetype_source_loaded
@@ -284,8 +296,8 @@ feature -- Commands
 			adl_interface.reset
 			adl_objects.make
 		end
-end
 
+end
 
 --|
 --| ***** BEGIN LICENSE BLOCK *****

@@ -77,6 +77,9 @@ public class AdlJniWrapper
 	public native boolean 
 	jhas_archetype_serialiser_format(String a_format);
 
+	public native String[]
+	jarchetype_serialiser_formats();
+
 	// True if archetype file has changed on disk due to external editing
 	public native boolean 
 	jfile_changed_on_disk();
@@ -374,6 +377,10 @@ public class AdlJniWrapper
 	public native int 
 	jcreate_real_interval_make_upper_unbounded (float a_lower, boolean include_lower);
 	
+	// create Result with unbounded interval
+	public native int
+	jcreate_real_interval_make_unbounded ();
+	
 	// ----------------- Object Factory Status -------------------
 
 	// True if a_handle is a valid handle to a previously created ARCHETYPE_INTERNAL_REF
@@ -463,8 +470,19 @@ public class AdlJniWrapper
 	public native int 
 	jcreate_constraint_ref (int h_parent_c_attribute, String a_code);
 
-	public native void
-	jset_occurrences_c_object(int h_c_object, int h_integer_interval);
+	// ---------------------------ARCHETYPE_SLOT--------------------------
+	
+	public native boolean
+	jarchetype_slot_has_includes(int h_archetype_slot);
+	
+	public native boolean
+	jarchetype_slot_has_excludes(int h_archetype_slot);
+	
+	public native int
+	jarchetype_slot_includes_count(int h_archetype_slot);
+	
+	public native int
+	jarchetype_slot_excludes_count(int h_archetype_slot);
 	
 	public native void
 	jarchetype_slot_add_include(int h_archetype_slot, int h_assertion);
@@ -472,8 +490,8 @@ public class AdlJniWrapper
 	public native void
 	jarchetype_slot_add_exclude(int h_archetype_slot, int h_assertion);
 
-	public native void
-	jc_complex_object_add_invariant(int h_c_complex_object, int h_assertion);
+//	public native void
+//	jc_complex_object_add_invariant(int h_c_complex_object, int h_assertion);
 
 	// ---------------------- assertions ---------------------
 
@@ -483,6 +501,9 @@ public class AdlJniWrapper
 	public native int
 	jcreate_assertion_with_tag (int h_an_expr, String a_tag);
 
+	//public native int
+	//jcreate_expr_binary_operator_boolean (String an_operator, int h_a_left_operand, int h_a_right_operand);
+	
 	public native int
 	jcreate_expr_binary_operator_node (int an_operator, int h_a_left_operand, int h_a_right_operand);
 
@@ -527,12 +548,18 @@ public class AdlJniWrapper
 	public native String
 	jarchetype_parent_archetype_id();
 	
+	public native void
+	jarchetype_set_parent_archetype_id(String id);
+	
 	// archetype concept
 	public native String
 	jarchetype_concept_code();
 
+	public native void
+	jarchetype_set_concept(String a_code);
+	
 	// archetype specialisation depth; 0 for non-specialised (top-level) archetypes
-	public native Integer
+	public native int
 	jarchetype_specialisation_depth();
 
 	// archetype version
@@ -546,6 +573,9 @@ public class AdlJniWrapper
 	// warnings from last validation 
 	public native String
 	jarchetype_warnings();
+	
+	public native int
+	jarchetype_logical_paths_count();
 	
 	// logical path set, i.e. with term definitions substituted
 	public native String[]
@@ -680,6 +710,12 @@ public class AdlJniWrapper
 	public native boolean 
 	jontology_has_constraint_bindings (String a_terminology);
 
+	public native String
+	jontology_constraint_binding(String a_terminology, String a_term_code);
+
+	public native int
+	jontology_constraint_bindings_count();
+	
 	public native boolean 
 	jontology_has_constraint_code (String a_constraint_code);
 
@@ -703,6 +739,168 @@ public class AdlJniWrapper
 
 	public native boolean 
 	jontology_is_valid();
+
+	public native void
+	jontology_clear_terminology();
+	
+	public native void
+	jontology_add_binding_terminology(String a_terminology);
+	
+	public native void
+	jontology_set_language(String a_language);
+	
+	public native String
+	jontology_language();
+	
+	public native int
+	jontology_term_definitions_count();
+	
+	// ----------------------------C_OBJECT-------------------------------
+	
+	public native String
+	jc_object_node_id(int h);
+	
+	public native void
+	jc_object_set_object_id(int h, String id);
+	
+	public native String
+	jc_object_rm_type_name(int h);
+	
+	public native String
+	jc_object_generating_type(int h);
+	
+	public native boolean
+	jc_object_any_allowed(int h);
+	
+	public native void
+	jc_object_set_any_allowed(int h);
+	
+	public native int
+	jc_object_occurrences(int h);
+	
+	public native void
+	jc_object_set_occurrences(int h_c_object, int h_integer_interval);
+	
+	
+	// -------------------------C_COMPLEX_OBJECT--------------------------
+	
+	public native int
+	jc_complex_object_attributes_count(int h_parent);
+	
+	public native int
+	jc_complex_object_attributes_get(int h_parent, int i_th);
+	
+	public native String[]
+	jc_complex_object_all_paths(int h_parent);
+	
+	public native int
+	jc_complex_object_attribute_at_path(int h_parent, String path);
+	
+	public native boolean
+	jc_complex_object_has_attribute(int h_parent, String attribute);
+	
+	// ---------------------------C_ATTRIBUTE-----------------------------
+	
+	public native int
+	jc_attributes_count();
+	
+	public native int
+	jc_attribute_children_count(int h_attribute);
+	
+	public native int
+	jc_attribute_children_get(int h_attribute, int i_th);
+	
+	public native String
+	jc_attribute_rm_attribute_name(int h_attribute);
+	
+	public native void
+	jc_attribute_set_cardinality(int h_attribute, int h_cardinality);
+	
+	// ----------------------------CARDINALITY----------------------------
+	
+	public native void
+	jcardinality_set_unordered(int h_cardinality);
+
+	// ----------------------------INTEGER_INTERVAL-----------------------
+	
+	public native boolean
+	jinteger_interval_upper_unbounded(int h_cardinality);
+
+	public native boolean
+	jinteger_interval_lower_unbounded(int h_cardinality);
+	
+	public native int
+	jinteger_interval_upper(int h_cardinality);
+
+	public native int
+	jinteger_interval_lower(int h_cardinality);
+	
+	// -----------------------ARCHETYPE_INTERNAL_REF----------------------
+	
+	public native String
+	jarchetype_internal_ref_target_path(int h);
+	
+	// ---------------------------C_PRIMITIVE-----------------------------
+	
+	public native int
+	jc_primitive_item(int h);
+	
+	
+	// ---------------------------C_QUANTITY------------------------------
+	
+	public native void
+	jc_quantity_add_unit_constraint(int h, String units, int h_interval);
+	
+	public native String
+	jc_quantity_property(int h);
+	
+	public native void
+	jc_quantity_set_property(int h, String property);
+	
+	public native int
+	jc_quantity_list_count(int h);
+	
+	// ---------------------------C_INTEGER-------------------------------
+	
+	public native int
+	jc_integer_interval(int h);
+	
+	// ---------------------------C_STRING--------------------------------
+	
+	public native void
+	jc_string_add_string(int h_string, String str);
+	
+	public native int
+	jc_string_strings_count(int h_string);
+	
+	public native String[]
+	jc_string_strings(int h_string);
+
+	// ---------------------------C_CODED_TERM----------------------------
+	
+	public native String
+	jc_coded_term_as_string(int h_coded_term);
+	
+	public native boolean
+	jc_coded_term_has_assumed_value(int h_coded_term);
+	
+	public native String
+	jc_coded_term_assumed_value(int h_coded_term);
+
+	// ---------------------------ASSERTION-------------------------------
+	
+	public native int
+	jassertion_get_expression(int h_assertion);
+	
+	// ---------------------------EXPR_ITEM-------------------------------
+	
+	public native String
+	jexpr_item_generating_type(int h_expr_item);
+	
+	// --------------------------CONSTRAINT_REF---------------------------
+	
+	public native String
+	jconstraint_ref_target(int h_c_ref);
 
 	// -------------------------------------------------------------------
 	static {	

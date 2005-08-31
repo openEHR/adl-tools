@@ -46,6 +46,7 @@ feature -- Initialisation
 			create integer_intervals.make(0)
 			create real_intervals.make(0)
 			create cardinalities.make(0)
+			create c_quantity_items.make (0)
 		end
 
 feature -- Access
@@ -99,6 +100,8 @@ feature {SHARED_ADL_OBJECTS} -- Handles
 
 	integer_intervals: HASH_TABLE[OE_INTERVAL[INTEGER], INTEGER]
 
+	c_quantity_items: HASH_TABLE[C_QUANTITY_ITEM, INTEGER]
+	
 	last_handle: INTEGER
 
 end

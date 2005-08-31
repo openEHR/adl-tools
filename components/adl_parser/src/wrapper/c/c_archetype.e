@@ -67,7 +67,19 @@ feature -- Access
 		do
 			obj := adl_interface.archetype.parent_archetype_id.as_string.to_c
 			Result := $obj
-		end		
+		end	
+	
+	archetype_set_parent_archetype_id(id: POINTER) is	
+			-- set id of specialisation parent
+		local
+			c_id: C_STRING
+			arch_id: ARCHETYPE_ID
+		do
+			create c_id.make_by_pointer (id)
+			create arch_id.make_from_string(c_id.string)
+			adl_interface.archetype.set_parent_archetype_id (arch_id)
+		end
+		
 	
 	archetype_concept_code: POINTER is 
 			-- concept_code as a string
@@ -76,7 +88,16 @@ feature -- Access
 		do
 			obj := adl_interface.archetype.concept_code.to_c
 			Result := $obj
-		end		
+		end	
+	
+	archetype_set_concept(a_code: POINTER) is
+			-- sets the concept
+		local
+			c_a_code: C_STRING
+		do
+			create c_a_code.make_by_pointer (a_code)
+			adl_interface.archetype.set_concept (c_a_code.string)
+		end
 	
 	archetype_specialisation_depth: INTEGER is
 			-- infer number of levels of specialisation from concept code

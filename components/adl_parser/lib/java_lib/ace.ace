@@ -2,7 +2,7 @@ system
 	"adl_java_lib"
 
 root
-	c_adl_interface: make
+	C_ADL_INTERFACE: make
 
 default
 	document (".")
@@ -11,11 +11,13 @@ default
 	disabled_debug ("adl_invariant")
 	disabled_debug ("adl_parse")
 	disabled_debug ("adl_tree")
+	disabled_debug ("dadl_parse")
 	disabled_debug ("exclude list")
 	disabled_debug ("gelex")
 	disabled_debug ("geyacc")
 	disabled_debug ("include list")
 	disabled_debug ("og_path_parse")
+	disabled_debug ("refactor_fixme")
 	debug (no)
 	line_generation (no)
 	profile (no)
@@ -30,16 +32,17 @@ default
 	exception_trace (no)
 	inlining (no)
 	multithreaded (no)
-	shared_library_definition ("C:\project\openehr\ref_impl_eiffel\components\adl_parser\lib\java_lib\adl_jni_wrapper.def")
+	shared_library_definition ("$OPENEHR\ref_impl_eiffel\components\adl_parser\lib\java_lib\adl_jni_wrapper.def")
+
 
 cluster
 	all adl_parser:		"$OPENEHR\ref_impl_eiffel\components\adl_parser\src"
 		exclude
 			".svn"; 
 		visible
-			adl_interface
+			ADL_INTERFACE
 				end
-			c_adl_interface
+			C_ADL_INTERFACE
 				end
 		end
 
@@ -69,7 +72,6 @@ cluster
 		exclude
 			".svn"; 
 		end
-
 
 	library ut_support:		"$GOBO\library\utility"
 
@@ -103,9 +105,9 @@ external
 
 	include_path:
 		"$(GOBO)\library\kernel\include",
-		"$(OPENEHR)\ref_impl_eiffel\components\adl_parser\src\java\jni_c"
+		"$(OPENEHR)\wrapper\src\jni_c"
 
 	object:
-		"$(OPENEHR)\ref_impl_eiffel\components\adl_parser\src\java\jni_c\adl_jni_wrapper.lib"
+		"$(OPENEHR)\wrapper\src\jni_c\adl_jni_wrapper.lib"
 
 end

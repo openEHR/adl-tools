@@ -50,27 +50,69 @@ feature {NONE} -- Implementation
 			l_c_object: C_OBJECT
 			l_c_complex_object: C_COMPLEX_OBJECT
 			l_handle: INTEGER
-			l_c_attribute: C_ATTRIBUTE
+			--l_c_attribute: C_ATTRIBUTE
+			l_c_primitive_object: C_PRIMITIVE_OBJECT
+			l_c_quantity: C_QUANTITY
+			l_c_coded_term: C_CODED_TERM
 		do
+			-- What needs to be done here will be some flow control, to determine what type the incoming object is
+			-- and to add it to the appropriate hash table, at the moment C_COMPLEX_OBJECT and to a nominal extent
+			-- C_PRIMITIVE_OBJECT are incorporated, others are placed as C_OBJECTS
 			l_c_object ?= a_node.content_item
+			
 			if l_c_object /= Void then
 				l_handle := adl_objects.new_handle
-			--	put_c_object(l_c_object, l_handle)
-				l_c_complex_object ?= l_c_object
-				if l_c_complex_object /= Void then
-					if root_handle = 0 then
-						root_handle := l_handle
+				if l_c_object.generating_type.is_equal ("C_COMPLEX_OBJECT") then
+					l_c_complex_object ?= l_c_object
+					if l_c_complex_object /= Void then
+						if root_handle = 0 then
+							root_handle := l_handle
+						end
+						put_c_complex_object(l_c_complex_object, l_handle)
+						from 
+							l_c_complex_object.attributes.start
+						until
+							l_c_complex_object.attributes.off
+						loop
+							put_c_attribute(l_c_complex_object.attributes.item, adl_objects.new_handle)
+							l_c_complex_object.attributes.forth
+						end
 					end
-					put_c_complex_object(l_c_complex_object, l_handle)
-					from 
-						l_c_complex_object.attributes.start
-					until
-						l_c_complex_object.attributes.off
-					loop
-						put_c_attribute(l_c_complex_object.attributes.item, adl_objects.new_handle)
-						l_c_complex_object.attributes.forth
+				elseif l_c_object.generating_type.is_equal ("C_PRIMITIVE_OBJECT") then
+					l_c_primitive_object ?= l_c_object
+					if l_c_primitive_object /= Void then
+						put_c_primitive_object(l_c_primitive_object, l_handle)
+						put_c_primitive(l_c_primitive_object.item, adl_objects.new_handle)
+						-- Simply adding primitive may not be enough, need to determine the sort of primitive too
+						-- as for the C_INTEGER, a handle for its INTEGER_INTERVAL will also be required, for
+						-- example, but this could handled in the factory
 					end
+				elseif l_c_object.generating_type.is_equal ("C_QUANTITY") then
+					l_c_quantity ?= l_c_object
+					if l_c_quantity /= Void then
+						put_c_quantity(l_c_quantity, l_handle)
+						-- TODO: Add code to add all the C_QUANTITY_ITEM in its list, requires new hash table
+						from
+							l_c_quantity.list.start
+						until
+							l_c_quantity.list.exhausted
+						loop
+							put_c_quantity_item(l_c_quantity.list.item, adl_objects.new_handle)
+							l_c_quantity.list.forth
+						end
+					end
+				elseif l_c_object.generating_type.is_equal ("C_CODED_TERM") then
+					l_c_coded_term ?= l_c_object
+					if l_c_coded_term /= Void then
+						put_c_coded_term(l_c_coded_term, l_handle)
+					end					
+				else
+					-- if it is not a c_complex_object, could still be something else, certainly
+					-- a c_object, possibly extend it here to handle all potential types, at the moment
+					-- just adding as c_object
+					put_c_object(l_c_object, l_handle)
 				end
+				
 			end
 		end
 

@@ -112,6 +112,14 @@ feature -- Access
 		do
 			Result := adl_objects.c_objects.item(a_handle)
 		end
+	
+	c_quantity_item(a_handle: INTEGER): C_QUANTITY_ITEM is
+		require
+			has_c_quantity_item(a_handle)
+		do
+			Result := adl_objects.c_quantity_items.item(a_handle)
+		end
+		
 		
 feature -- Status Report
 
@@ -194,6 +202,11 @@ feature -- Status Report
 		do
 			Result := adl_objects.c_objects.has(a_handle)
 		end
+	
+	has_c_quantity_item(a_handle: INTEGER): BOOLEAN is
+		do
+			Result := adl_objects.c_quantity_items.has(a_handle)
+		end
 
 feature -- Commands
 
@@ -206,19 +219,30 @@ feature -- Commands
 	put_archetype_internal_ref(an_item: ARCHETYPE_INTERNAL_REF; a_handle: INTEGER) is
 		do
 			adl_objects.archetype_internal_refs.put(an_item, a_handle)
-			adl_objects.c_objects.put(an_item, a_handle)
+			--adl_objects.c_objects.put(an_item, a_handle)
+			put_c_object(an_item, a_handle)
 		end
 
 	put_archetype_slot(an_item: ARCHETYPE_SLOT; a_handle: INTEGER) is
 		do
 			adl_objects.archetype_slots.put(an_item, a_handle)
-			adl_objects.c_objects.put(an_item, a_handle)
+			--adl_objects.c_objects.put(an_item, a_handle)
+			put_c_object(an_item, a_handle)
 		end
 
+	put_c_object(an_item: C_OBJECT; a_handle: INTEGER) is
+		do
+			adl_objects.c_objects.put (an_item, a_handle)
+			-- Not sure if this is a goood idea, putting the occurrences for c_object in
+			-- in hash table too, also could be possible to use same handle?
+			put_integer_interval(an_item.occurrences, a_handle)
+		end
+		
 	put_c_complex_object(an_item: C_COMPLEX_OBJECT; a_handle: INTEGER) is
 		do
 			adl_objects.c_complex_objects.put(an_item, a_handle)
-			adl_objects.c_objects.put(an_item, a_handle)
+			--adl_objects.c_objects.put(an_item, a_handle)
+			put_c_object(an_item, a_handle)
 		end
 
 	put_c_attribute(an_item: C_ATTRIBUTE; a_handle: INTEGER) is
@@ -229,36 +253,63 @@ feature -- Commands
 	put_constraint_ref(an_item: CONSTRAINT_REF; a_handle: INTEGER) is
 		do
 			adl_objects.constraint_refs.put(an_item, a_handle)
-			adl_objects.c_objects.put(an_item, a_handle)
+			--adl_objects.c_objects.put(an_item, a_handle)
+			put_c_object(an_item, a_handle)
 		end
 
 	put_c_primitive(an_item: C_PRIMITIVE; a_handle: INTEGER) is
+		local
+			l_c_integer: C_INTEGER
 		do
+			-- TODO: Possibly expand on this to handle specific primitive types,
+			-- such as C_INTEGER will would be recommended to add its interval property
+			-- to the INTEGER_INTERVAL hash table, such as below
 			adl_objects.c_primitives.put(an_item, a_handle)
+			if an_item.generating_type = "C_INTEGER" then
+				l_c_integer ?= an_item
+				if l_c_integer /= Void then
+					adl_objects.integer_intervals.put (l_c_integer.interval, a_handle)
+				end
+			end
 		end
 
 	put_c_primitive_object(an_item: C_PRIMITIVE_OBJECT; a_handle: INTEGER) is
 		do
 			adl_objects.c_primitive_objects.put(an_item, a_handle)
-			adl_objects.c_objects.put(an_item, a_handle)
+			--adl_objects.c_objects.put(an_item, a_handle)
+			put_c_object(an_item, a_handle)
 		end
 
 	put_c_coded_term(an_item: C_CODED_TERM; a_handle: INTEGER) is
 		do
 			adl_objects.c_coded_terms.put(an_item, a_handle)
-			adl_objects.c_objects.put(an_item, a_handle)
+			--adl_objects.c_objects.put(an_item, a_handle)
+			put_c_object(an_item, a_handle)
 		end
 
 	put_c_ordinal(an_item: C_ORDINAL; a_handle: INTEGER) is
 		do
 			adl_objects.c_ordinals.put(an_item, a_handle)
-			adl_objects.c_objects.put(an_item, a_handle)
+			--adl_objects.c_objects.put(an_item, a_handle)
+			put_c_object(an_item, a_handle)
 		end
 
 	put_c_quantity(an_item: C_QUANTITY; a_handle: INTEGER) is
+	-- TODO: Add hash_table for C_QUANTITY_ITEM and also put those ITEMS into
+	-- the hash table, could be done from here or from the NODE_POPULATOR...
+	-- Done via the NODE_POPULATOR for time being, not sure which way would be best...
 		do
 			adl_objects.c_quantities.put(an_item, a_handle)
-			adl_objects.c_objects.put(an_item, a_handle)
+			--adl_objects.c_objects.put(an_item, a_handle)
+			put_c_object(an_item, a_handle)
+		end
+	
+	put_c_quantity_item(an_item: C_QUANTITY_ITEM; a_handle: INTEGER) is
+		do
+			adl_objects.c_quantity_items.put (an_item, a_handle)
+			-- C_QUANTITY_ITEMS have a magnitude property which is a OE_INTERVAL[REAL] type
+			-- so applying a handle for that so it can be accessed
+			put_real_interval(an_item.magnitude, a_handle)
 		end
 
 	put_assertion(an_item: ASSERTION; a_handle: INTEGER) is

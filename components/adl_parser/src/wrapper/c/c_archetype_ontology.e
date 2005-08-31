@@ -193,6 +193,12 @@ feature -- Access
 		do
 			Result := ontology.term_codes.count
 		end
+		
+	ontology_term_definitions_count: INTEGER is
+			-- ARRAY SIZE OF TERM_DEFINITIONS HASH TABLE
+		do
+			Result := ontology.term_definitions.count
+		end
 
 	ontology_term_definition (a_lang, a_term_code: POINTER): POINTER is
 			-- retrieve the term definition in language `a_lang' for code `a_term_code'
@@ -465,8 +471,49 @@ feature -- Modification
 			ontology.set_primary_language(c_a_lang.string)
 		end
 	
+	ontology_clear_terminology is
+			-- calls clear_terminology
+		do
+			ontology.clear_terminology
+		end
+	
+	ontology_add_binding_terminology(code: POINTER) is
+			-- add specified terminology
+		local
+			c_code : C_STRING
+		do
+			create c_code.make_by_pointer (code)
+			--ontology.add_binding_terminology
+			ontology.add_binding_terminology (c_code.string)
+		end
+	
+	ontology_language: POINTER is
+			-- returns current selected language (from CONTEXT)
+		local
+			obj : ANY
+		do
+			obj := ontology.language.to_c
+			Result := $obj
+		end
+	
+	ontology_set_language(code: POINTER) is
+			-- sets the current selected language (from CONTEXT)
+		local
+			c_code : C_STRING
+		do
+			create c_code.make_by_pointer (code)
+			ontology.set_language (c_code.string)
+		end
+		
+	
 feature -- Status Report
 
+	ontology_constraint_bindings_count: INTEGER is
+			-- returns the number of constraint bindings there are (from HASH TABLE)
+		do
+			Result := ontology.constraint_bindings.count
+		end
+		
 	ontology_has_constraint_binding (a_terminology, a_term_code: POINTER): BOOLEAN is
 			-- true if there is a term binding for code `a_term_code' in `a_terminology'
 			-- REQUIRE

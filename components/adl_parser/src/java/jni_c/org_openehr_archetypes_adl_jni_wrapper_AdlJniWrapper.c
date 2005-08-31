@@ -104,6 +104,25 @@ JNIEXPORT jboolean JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniW
 	return result;
 }
 
+/*
+ * Method:    jarchetype_serialiser_formats
+ */
+JNIEXPORT jobjectArray JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jarchetype_1serialiser_1formats
+  (JNIEnv *env, jobject obj)
+{
+    jobjectArray result;
+	int i;
+	int len = archetype_serialiser_formats_count();
+	char **eif_array = archetype_serialiser_formats();
+
+	result = (*env)->NewObjectArray(env, len, (*env)->FindClass(env, "java/lang/String"), (*env)->NewStringUTF(env, ""));
+
+	for (i=0; i<len; i++) {
+		(*env)->SetObjectArrayElement(env, result, i, (*env)->NewStringUTF(env, *(eif_array + i)));
+	}
+
+	return result;
+}
 
 /*
  * Method:    jmake
@@ -618,85 +637,6 @@ JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapp
 }
 
 /*
-* Method:	jcreate_c_integer_make_bounded
-*/
-JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jcreate_1c_1integer_1make_1bounded
-(JNIEnv *env,jobject obj,jint lower,jint upper, jboolean include_lower, jboolean include_upper)
-{
-	return create_c_integer_make_bounded(lower, upper, include_lower, include_upper);
-}
-
-/*
-* Method:	jcreate_c_integer_make_lower_unbounded
-*/
-JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jcreate_1c_1integer_1make_1lower_1unbounded
-(JNIEnv *env,jobject obj,jint upper, jboolean include_upper)
-{
-	
-	return create_c_integer_make_lower_unbounded(upper, include_upper);
-}
-
-/*
-* Method:	jcreate_c_integer_make_unbounded
-*/
-JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jcreate_1c_1integer_1make_1unbounded
-(JNIEnv *env,jobject obj)
-{
-
-	return create_c_integer_make_unbounded();
-}
-
-/*
-* Method:	jcreate_c_integer_make_upper_unbounded
-*/
-JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jcreate_1c_1integer_1make_1upper_1unbounded
-(JNIEnv *env,jobject obj,jint lower, jboolean include_lower)
-{
-
-	return create_c_integer_make_upper_unbounded(lower, include_lower);
-}
-
-/*
-* Method:	jcreate_c_real_make_bounded
-*/
-JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jcreate_1c_1real_1make_1bounded
-(JNIEnv *env,jobject obj,jfloat lower,jfloat upper, jboolean include_lower, jboolean include_upper)
-{
-
-	return create_c_real_make_bounded(lower, upper, include_lower, include_upper);
-}
-
-/*
-* Method:	jcreate_c_real_make_lower_unbounded
-*/
-JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jcreate_1c_1real_1make_1lower_1unbounded
-(JNIEnv *env,jobject obj,jfloat upper, jboolean include_upper)
-{
-
-	return create_c_real_make_lower_unbounded(upper, include_upper);
-}
-
-/*
-* Method:	jcreate_c_real_make_unbounded
-*/
-JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jcreate_1c_1real_1make_1unbounded
-(JNIEnv *env,jobject obj)
-{
-
-	return create_c_real_make_unbounded();
-}
-
-/*
-* Method:	jcreate_c_real_make_upper_unbounded
-*/
-JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jcreate_1c_1real_1make_1upper_1unbounded
-(JNIEnv *env,jobject obj,jfloat lower, jboolean include_lower)
-{
-
-	return create_c_real_make_upper_unbounded(lower, include_lower);
-}
-
-/*
 * Method:	jcreate_c_string_make_any
 */
 JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jcreate_1c_1string_1make_1any
@@ -728,7 +668,7 @@ JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapp
 JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jcreate_1c_1string_1make_1from_1string
 (JNIEnv *env, jobject obj, jstring str)
 {
-	char *a_str = (*env)-> GetStringUTFChars(env, a_str, 0);
+	char *a_str = (*env)-> GetStringUTFChars(env, str, 0);
 	int result;
 
 	result = create_c_string_make_from_string(a_str);
@@ -855,63 +795,162 @@ JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapp
 }
 
 /*
-* Method:	jcreate_c_integer_make_bounded
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jcreate_c_integer_make_bounded
+ * Signature: (IIZZ)I
+ */
+JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jcreate_1c_1integer_1make_1bounded
+  (JNIEnv *env, jobject obj, jint lower, jint upper, jboolean include_lower, jboolean include_upper)
+{
+    return create_c_integer_make_bounded(lower, upper, include_lower, include_upper);
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jcreate_c_integer_make_lower_unbounded
+ * Signature: (IZ)I
+ */
+JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jcreate_1c_1integer_1make_1lower_1unbounded
+  (JNIEnv *env, jobject obj, jint upper, jboolean include_upper)
+{
+    return create_c_integer_make_lower_unbounded(upper, include_upper);
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jcreate_c_integer_make_unbounded
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jcreate_1c_1integer_1make_1unbounded
+  (JNIEnv *env , jobject obj)
+{
+    return create_c_integer_make_unbounded();
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jcreate_c_integer_make_upper_unbounded
+ * Signature: (IZ)I
+ */
+JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jcreate_1c_1integer_1make_1upper_1unbounded
+  (JNIEnv *env, jobject obj, jint lower, jboolean include_lower)
+{
+    return create_c_integer_make_upper_unbounded(lower, include_lower);
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jcreate_c_real_make_bounded
+ * Signature: (FFZZ)I
+ */
+JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jcreate_1c_1real_1make_1bounded
+  (JNIEnv *env, jobject obj, jfloat lower, jfloat upper, jboolean include_lower, jboolean include_upper)
+{
+    return create_c_real_make_bounded(lower, upper, include_lower, include_upper);
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jcreate_c_real_make_lower_unbounded
+ * Signature: (FZ)I
+ */
+JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jcreate_1c_1real_1make_1lower_1unbounded
+  (JNIEnv *env, jobject obj, jfloat upper, jboolean include_upper)
+{
+    return create_c_real_make_lower_unbounded(upper, include_upper);
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jcreate_c_real_make_unbounded
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jcreate_1c_1real_1make_1unbounded
+  (JNIEnv *env, jobject obj)
+{
+    return create_c_real_make_unbounded();
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jcreate_c_real_make_upper_unbounded
+ * Signature: (FZ)I
+ */
+JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jcreate_1c_1real_1make_1upper_1unbounded
+  (JNIEnv *env, jobject obj, jfloat lower, jboolean include_lower)
+{
+    return create_c_real_make_upper_unbounded(lower, include_lower);
+}
+
+/*
+* Method:	jcreate_integer_interval_make_bounded
 */
 JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jcreate_1integer_1interval_1make_1bounded
 (JNIEnv *env,jobject obj,jint lower,jint upper, jboolean include_lower, jboolean include_upper)
 {
-
-	return create_c_integer_make_bounded(lower, upper, include_lower, include_upper);
+    return create_integer_interval_make_bounded(lower, upper, include_lower, include_upper);
+	
 }
 
 /*
-* Method:	jcreate_c_integer_make_lower_unbounded
+* Method:	jcreate_integer_interval_make_lower_unbounded
 */
 JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jcreate_1integer_1interval_1make_1lower_1unbounded
 (JNIEnv *env,jobject obj,jint upper, jboolean include_upper)
 {
-
-	return create_c_integer_make_lower_unbounded(upper, include_upper);
+    
+	return create_integer_interval_make_lower_unbounded(upper, include_upper);
 }
 
 /*
-* Method:	jcreate_c_integer_make_upper_unbounded
+* Method:	jcreate_integer_interval_make_upper_unbounded
 */
 JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jcreate_1integer_1interval_1make_1upper_1unbounded
 (JNIEnv *env,jobject obj,jint lower, jboolean include_lower)
 {
-
-	return create_c_integer_make_upper_unbounded(lower, include_lower);
+    return create_integer_interval_make_upper_unbounded(lower, include_lower);
+	
 }
 
 /*
-* Method:	jcreate_c_real_make_bounded
+* Method:	jcreate_real_interval_make_bounded
 */
 JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jcreate_1real_1interval_1make_1bounded
 (JNIEnv *env,jobject obj,jfloat lower,jfloat upper, jboolean include_lower, jboolean include_upper)
 {
-
-	return create_c_real_make_bounded(lower, upper, include_lower, include_upper);
+    return create_real_interval_make_bounded(lower, upper, include_lower, include_upper);
+	
 }
 
 /*
-* Method:	jcreate_c_real_make_lower_unbounded
+* Method:	jcreate_real_interval_make_lower_unbounded
 */
 JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jcreate_1real_1interval_1make_1lower_1unbounded
 (JNIEnv *env,jobject obj,jfloat upper, jboolean include_upper)
 {
-
-	return create_c_real_make_lower_unbounded(upper, include_upper);
+    return create_real_interval_make_lower_unbounded(upper, include_upper);
+	
 }
 
 /*
-* Method:	jcreate_c_real_make_upper_unbounded
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jcreate_real_interval_make_unbounded
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jcreate_1real_1interval_1make_1unbounded
+  (JNIEnv *env, jobject ojb)
+{
+    return create_real_interval_make_unbounded();
+}
+
+/*
+* Method:	jcreate_real_interval_make_upper_unbounded
 */
 JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jcreate_1real_1interval_1make_1upper_1unbounded
 (JNIEnv *env,jobject obj,jfloat lower, jboolean include_lower)
 {
-
-	return create_c_real_make_upper_unbounded(lower, include_lower);
+    return create_real_interval_make_upper_unbounded(lower, include_lower);
+	
 }
 
 /*
@@ -1229,16 +1268,49 @@ JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapp
 }
 
 /*
- * Class:     AdlJniWrapper
- * Method:    jset_occurrences_c_object
- * Signature: ()Ljava/lang/String;
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jarchetype_slot_has_includes
+ * Signature: (I)Z
  */
-JNIEXPORT void JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jset_1occurrences_1c_1object
-  (JNIEnv *env, jobject obj, jint h_c_object, jint h_integer_interval)
+JNIEXPORT jboolean JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jarchetype_1slot_1has_1includes
+  (JNIEnv *env, jobject obj, jint h_archetype_slot)
 {
-	set_occurrences_c_object(h_c_object, h_integer_interval);
-	return;
+    return archetype_slot_has_includes(h_archetype_slot);
 }
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jarchetype_slot_has_excludes
+ * Signature: (I)Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jarchetype_1slot_1has_1excludes
+  (JNIEnv *env, jobject obj, jint h_archetype_slot)
+{
+    return archetype_slot_has_excludes(h_archetype_slot);
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jarchetype_slot_includes_count
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jarchetype_1slot_1includes_1count
+  (JNIEnv *env, jobject obj, jint h_archetype_slot)
+{
+    return archetype_slot_includes_count(h_archetype_slot);
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jarchetype_slot_excludes_count
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jarchetype_1slot_1excludes_1count
+  (JNIEnv *env, jobject obj, jint h_archetype_slot)
+{
+    return archetype_slot_excludes_count(h_archetype_slot);
+}
+
 
 /*
  * Class:     AdlJniWrapper
@@ -1472,6 +1544,22 @@ JNIEXPORT jstring JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWr
 }
 
 /*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jarchetype_set_parent_archetype_id
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jarchetype_1set_1parent_1archetype_1id
+  (JNIEnv *env, jobject obj, jstring id)
+{
+    const char *an_id = (*env)->GetStringUTFChars(env, id, 0);
+    
+    archetype_set_parent_archetype_id(an_id);
+    
+    (*env)->ReleaseStringUTFChars(env, id, an_id);
+}
+
+
+/*
 * Method:	jarchetype_concept_code
 */
 JNIEXPORT jstring JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jarchetype_1concept_1code
@@ -1482,9 +1570,25 @@ JNIEXPORT jstring JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWr
 }
 
 /*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jarchetype_set_concept
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jarchetype_1set_1concept
+  (JNIEnv *env, jobject obj, jstring code)
+{
+    char *a_code = (*env)->GetStringUTFChars(env, code, 0);
+
+	archetype_set_concept(a_code);
+
+	(*env)->ReleaseStringUTFChars(env, code, a_code);
+}
+
+
+/*
 * Method:	jarchetype_specialisation_depth
 */
-JNIEXPORT jobject JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jarchetype_1specialisation_1depth
+JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jarchetype_1specialisation_1depth
 (JNIEnv *env,jobject obj)
 {
 
@@ -1517,8 +1621,18 @@ JNIEXPORT jstring JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWr
 JNIEXPORT jstring JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jarchetype_1warnings
 (JNIEnv *env,jobject obj)
 {
-
 	return (*env)-> NewStringUTF(env, archetype_warnings());
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jarchetype_logical_paths_count
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jarchetype_1logical_1paths_1count
+  (JNIEnv *env, jobject obj)
+{
+    return archetype_logical_paths_count();
 }
 
 /*
@@ -1528,15 +1642,18 @@ JNIEXPORT jobjectArray JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_Adl
 (JNIEnv *env, jobject obj, jstring lang)
 {
 	jobjectArray result;
+	const char *a_lang = (*env)->GetStringUTFChars(env, lang, 0);
 	int i;
 	int len = archetype_logical_paths_count();
-	char **eif_array = archetype_logical_paths();
+	char **eif_array = archetype_logical_paths(a_lang);
 
 	result = (*env)->NewObjectArray(env, len, (*env)->FindClass(env, "java/lang/String"), (*env)->NewStringUTF(env, ""));
 
 	for (i=0; i<len; i++) {
 		(*env)->SetObjectArrayElement(env, result, i, (*env)->NewStringUTF(env, *(eif_array + i)));
 	}
+
+	(*env)->ReleaseStringUTFChars(env, lang, a_lang);
 
 	return result;
 }
@@ -1880,6 +1997,17 @@ JNIEXPORT jstring JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWr
 }
 
 /*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jontology_term_definitions_count
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jontology_1term_1definitions_1count
+  (JNIEnv *env, jobject obj)
+{
+    return ontology_term_definitions_count();
+}
+
+/*
  * Class:     AdlJniWrapper
  * Method:    jontology_terminologies_available
  * Signature: ()[Ljava/lang/String;
@@ -2002,6 +2130,8 @@ JNIEXPORT void JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapp
 	const char *a_lang = (*env)->GetStringUTFChars(env, lang, 0);
 
 	ontology_add_language_available(a_lang);
+	
+	(*env)->ReleaseStringUTFChars(env, lang, a_lang);
 
 	return;
 }
@@ -2176,6 +2306,31 @@ JNIEXPORT jboolean JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniW
 }
 
 /*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jontology_constraint_binding
+ * Signature: (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jontology_1constraint_1binding
+  (JNIEnv *env, jobject obj, jstring terminology, jstring term_code)
+{
+    const char *a_terminology = (*env)->GetStringUTFChars(env, terminology, 0);
+	const char *a_term_code = (*env)->GetStringUTFChars(env, term_code, 0);
+
+	return (*env)->NewStringUTF(env,ontology_constraint_binding(a_terminology, a_term_code));
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jontology_constraint_bindings_count
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jontology_1constraint_1bindings_1count
+  (JNIEnv *env, jobject obj)
+{
+    return ontology_constraint_bindings_count();
+}
+
+/*
  * Class:     AdlJniWrapper
  * Method:    jontology_has_constraint_bindings
  * Signature: (Ljava/lang/String;)Z
@@ -2330,6 +2485,666 @@ JNIEXPORT jboolean JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniW
   (JNIEnv *env, jobject obj)
 {
 	return ontology_is_valid();
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jontology_clear_terminology
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jontology_1clear_1terminology
+  (JNIEnv *env, jobject obj)
+{
+    ontology_clear_terminology();
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jontology_add_binding_terminology
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jontology_1add_1binding_1terminology
+  (JNIEnv *env, jobject obj, jstring terminology)
+{
+    const char *a_terminology = (*env)->GetStringUTFChars(env, terminology, 0);
+    
+    ontology_add_binding_terminology(a_terminology);
+    
+    (*env)->ReleaseStringUTFChars(env, terminology, a_terminology);
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jontology_set_language
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jontology_1set_1language
+  (JNIEnv *env, jobject obj, jstring language)
+{
+    const char *a_language = (*env)->GetStringUTFChars(env, language, 0);
+    
+    ontology_set_language(a_language);
+    
+    (*env)->ReleaseStringUTFChars(env, language, a_language);
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jontology_language
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jontology_1language
+  (JNIEnv *env, jobject obj)
+{
+    return (*env)->NewStringUTF(env, ontology_language());
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_object_node_id
+ * Signature: (I)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1object_1node_1id
+  (JNIEnv *env, jobject obj, jint h)
+{
+    return (*env)->NewStringUTF(env, c_object_node_id(h));
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_object_set_object_id
+ * Signature: (ILjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1object_1set_1object_1id
+  (JNIEnv *env, jobject obj, jint h, jstring id)
+{
+    const char *an_id = (*env)-> GetStringUTFChars(env, id, 0);
+    
+    c_object_set_object_id(an_id);
+
+	(*env)->ReleaseStringUTFChars(env, id, an_id);
+}
+
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_object_rm_type_name
+ * Signature: (I)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1object_1rm_1type_1name
+  (JNIEnv *env, jobject obj, jint h)
+{
+    return (*env)->NewStringUTF(env, c_object_rm_type_name(h));
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_object_any_allowed
+ * Signature: (I)Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1object_1any_1allowed
+  (JNIEnv *env, jobject obj, jint h)
+{
+    return c_object_any_allowed(h);
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_object_set_any_allowed
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1object_1set_1any_1allowed
+  (JNIEnv *env, jobject obj, jint h)
+{
+    c_object_set_any_allowed(h);
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_object_generating_type
+ * Signature: (I)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1object_1generating_1type
+  (JNIEnv *env, jobject obj, jint h)
+{
+    return (*env)->NewStringUTF(env, c_object_generating_type(h));
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_object_occurrences
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1object_1occurrences
+  (JNIEnv *env, jobject obj, jint h)
+{
+    return c_object_occurrences(h);
+}
+
+
+/*
+ * Class:     AdlJniWrapper
+ * Method:    jc_object_set_occurrences
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT void JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1object_1set_1occurrences
+  (JNIEnv *env, jobject obj, jint h_c_object, jint h_integer_interval)
+{
+	c_object_set_occurrences(h_c_object, h_integer_interval);
+	return;
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_complex_object_attributes_count
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1complex_1object_1attributes_1count
+  (JNIEnv *env, jobject obj, jint parent)
+{
+    return c_complex_object_attributes_count(parent);
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_complex_object_attributes_get
+ * Signature: (II)I
+ */
+JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1complex_1object_1attributes_1get
+  (JNIEnv *env, jobject obj, jint parent, jint i_th)
+{
+    return c_complex_object_attributes_get(parent, i_th);
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_complex_object_all_paths
+ * Signature: (I)[Ljava/lang/String;
+ */
+JNIEXPORT jobjectArray JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1complex_1object_1all_1paths
+  (JNIEnv *env, jobject obj, jint h)
+{
+    jobjectArray result;
+
+	int i;
+	int len = c_complex_object_all_paths_count(h);
+	char **eif_array = c_complex_object_all_paths(h);
+
+	result = (*env)->NewObjectArray(env, len, (*env)->FindClass(env, "java/lang/String"), (*env)->NewStringUTF(env, ""));
+
+	for (i=0; i<len; i++) {
+		(*env)->SetObjectArrayElement(env, result, i, (*env)->NewStringUTF(env, *(eif_array + i)));
+	}
+
+	return result;
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_complex_object_attribute_at_path
+ * Signature: (ILjava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1complex_1object_1attribute_1at_1path
+  (JNIEnv *env, jobject obj, jint h, jstring path)
+{
+    const char *a_path = (*env)->GetStringUTFChars(env, path, 0);
+    
+    jint i = c_complex_object_attribute_at_path(h, a_path);
+    
+    (*env)->ReleaseStringUTFChars(env, path, a_path);
+    
+    return i;
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_complex_object_has_attribute
+ * Signature: (ILjava/lang/String;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1complex_1object_1has_1attribute
+  (JNIEnv *env, jobject obj , jint h, jstring attribute)
+{
+    const char *an_attribute = (*env)->GetStringUTFChars(env, attribute, 0);
+    
+    boolean b = c_complex_object_has_attribute(h, an_attribute);
+    
+    (*env)->ReleaseStringUTFChars(env, attribute, an_attribute);
+    
+    return b;
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_attributes_count
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1attributes_1count
+  (JNIEnv *env, jobject obj)
+{
+    return c_attributes_count();
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_attribute_children_count
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1attribute_1children_1count
+  (JNIEnv *env, jobject obj, jint attribute)
+{
+    return c_attribute_children_count(attribute);
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_attribute_children_get
+ * Signature: (II)I
+ */
+JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1attribute_1children_1get
+  (JNIEnv *env, jobject obj, jint attribute, jint i_th)
+{
+    return c_attribute_children_get(attribute, i_th);
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_attribute_rm_attribute_name
+ * Signature: (I)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1attribute_1rm_1attribute_1name
+  (JNIEnv *env, jobject obj, jint attribute)
+{
+//	char *result;
+
+//	result = c_attribute_rm_attribute_name(attribute);
+	return (*env)->NewStringUTF(env, c_attribute_rm_attribute_name(attribute));
+//	return (*env)->NewStringUTF(env, result);
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_attribute_set_cardinality
+ * Signature: (II)V
+ */
+JNIEXPORT void JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1attribute_1set_1cardinality
+  (JNIEnv *env, jobject obj, jint h_attribute, jint h_cardinality)
+{
+    c_attribute_set_cardinality(h_attribute, h_cardinality);
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jcardinality_set_unordered
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jcardinality_1set_1unordered
+  (JNIEnv *env, jobject obj, jint h)
+{
+    cardinality_set_unordered(h);
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jinteger_interval_upper_unbounded
+ * Signature: (I)Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jinteger_1interval_1upper_1unbounded
+  (JNIEnv *env, jobject obj, jint h)
+{
+    return integer_interval_upper_unbounded(h);
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jinteger_interval_lower_unbounded
+ * Signature: (I)Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jinteger_1interval_1lower_1unbounded
+  (JNIEnv *env, jobject obj, jint h)
+{
+    return integer_interval_lower_unbounded(h);
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jinteger_interval_upper
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jinteger_1interval_1upper
+  (JNIEnv *env, jobject obj, jint h)
+{
+    return integer_interval_upper(h);
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jinteger_interval_lower
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jinteger_1interval_1lower
+  (JNIEnv *env, jobject obj, jint h)
+{
+    return integer_interval_lower(h);
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jreal_interval_upper_unbounded
+ * Signature: (I)Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jreal_1interval_1upper_1unbounded
+  (JNIEnv *env, jobject obj, jint h)
+{
+    return real_interval_upper_unbounded(h);
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jreal_interval_lower_unbounded
+ * Signature: (I)Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jreal_1interval_1lower_1unbounded
+  (JNIEnv *env, jobject obj, jint h)
+{
+    return real_interval_lower_unbounded(h);
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jreal_interval_upper
+ * Signature: (I)I
+ */
+JNIEXPORT jfloat JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jreal_1interval_1upper
+  (JNIEnv *env, jobject obj, jint h)
+{
+    return real_interval_upper(h);
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jreal_interval_lower
+ * Signature: (I)I
+ */
+JNIEXPORT jfloat JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jreal_1interval_1lower
+  (JNIEnv *env, jobject obj, jint h)
+{
+    return real_interval_lower(h);
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jarchetype_internal_ref_target_path
+ * Signature: (I)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jarchetype_1internal_1ref_1target_1path
+  (JNIEnv *env, jobject obj, jint h)
+{
+    return (*env)->NewStringUTF(env, archetype_internal_ref_target_path(h));
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_primitive_item
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1primitive_1item
+  (JNIEnv *env, jobject obj, jint h)
+{
+	return c_primitive_item(h);
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_quantity_add_unit_constraint
+ * Signature: (ILjava/lang/String;I)V
+ */
+JNIEXPORT void JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1quantity_1add_1unit_1constraint
+  (JNIEnv *env, jobject obj, jint h, jstring unit, jint h_interval)
+{
+    const char *a_unit = (*env)->GetStringUTFChars(env, unit, 0);
+    
+    c_quantity_add_unit_constraint(h,a_unit,h_interval);
+    
+    (*env)->ReleaseStringUTFChars(env, unit, a_unit);
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_quantity_property
+ * Signature: (I)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1quantity_1property
+  (JNIEnv *env, jobject obj, jint h)
+{
+    return (*env)->NewStringUTF(env, c_quantity_property(h));
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_quantity_set_property
+ * Signature: (ILjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1quantity_1set_1property
+  (JNIEnv *env, jobject obj, jint h, jstring property)
+{
+    const char *a_property = (*env)->GetStringUTFChars(env,property,0);
+    
+    c_quantity_set_property(h, a_property);
+    
+    (*env)->ReleaseStringUTFChars(env, property, a_property);       
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_quantity_list_count
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1quantity_1list_1count
+  (JNIEnv *env, jobject obj, jint h)
+{
+    return c_quantity_list_count(h);
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_quantity_list_get
+ * Signature: (II)I
+ */
+JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1quantity_1list_1get
+  (JNIEnv *env, jobject obj, jint h, jint i)
+{
+    return c_quantity_list_get(h, i);
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_quantity_has_assumed_value
+ * Signature: (I)Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1quantity_1has_1assumed_1value
+  (JNIEnv *env, jobject obj, jint h)
+{
+    return c_quantity_has_assumed_value(h);
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_quantity_assumed_value_units
+ * Signature: (I)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1quantity_1assumed_1value_1units
+  (JNIEnv *env, jobject obj, jint h)
+{
+    return (*env)->NewStringUTF(env, c_quantity_assumed_value_units(h));
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_quantity_assumed_value_magnitude
+ * Signature: (I)F
+ */
+JNIEXPORT jfloat JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1quantity_1assumed_1value_1magnitude
+  (JNIEnv *env, jobject obj, jint h)
+{
+    return c_quantity_assumed_value_magnitude(h);
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_quantity_item_any_magnitude_allowed
+ * Signature: (I)Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1quantity_1item_1any_1magnitude_1allowed
+  (JNIEnv *env, jobject obj, jint h)
+{
+    return c_quantity_item_any_magnitude_allowed(h);
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_quantity_item_units
+ * Signature: (I)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1quantity_1item_1units
+  (JNIEnv *env, jobject obj, jint h)
+{
+    return (*env)->NewStringUTF(env, c_quantity_item_units(h));
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_quantity_item_magnitude
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1quantity_1item_1magnitude
+  (JNIEnv *env, jobject obj, jint h)
+{
+    return c_quantity_item_magnitude(h);
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_integer_interval
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1integer_1interval
+  (JNIEnv *env, jobject obj, jint h)
+{
+	return c_integer_interval(h);
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_string_add_string
+ * Signature: (ILjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1string_1add_1string
+  (JNIEnv *env, jobject obj, jint h, jstring str)
+{
+    const char *a_str = (*env)->GetStringUTFChars(env, str, 0);
+    
+    c_string_add_string(h, a_str);
+    
+    (*env)->ReleaseStringUTFChars(env, str, a_str);
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_string_strings_count
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1string_1strings_1count
+  (JNIEnv *env, jobject obj, jint h)
+{
+    return c_string_strings_count(h);
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_string_strings
+ * Signature: (I)[Ljava/lang/String;
+ */
+JNIEXPORT jobjectArray JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1string_1strings
+  (JNIEnv *env, jobject obj, jint h)
+{
+    jobjectArray result;
+	int i;
+	int len = c_string_strings_count(h);
+	char **eif_array = c_string_strings(h);
+
+	result = (*env)->NewObjectArray(env, len, (*env)->FindClass(env, "java/lang/String"), (*env)->NewStringUTF(env, ""));
+
+	for (i=0; i<len; i++) {
+		(*env)->SetObjectArrayElement(env, result, i, (*env)->NewStringUTF(env, *(eif_array + i)));
+	}
+
+	return result;
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_coded_term_as_string
+ * Signature: (I)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1coded_1term_1as_1string
+  (JNIEnv *env, jobject obj, jint h)
+{
+    return (*env)->NewStringUTF(env, c_coded_term_as_string(h));
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_coded_term_has_assumed_value
+ * Signature: (I)Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1coded_1term_1has_1assumed_1value
+  (JNIEnv *env, jobject obj, jint h)
+{
+    return c_coded_term_has_assumed_value(h);
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_coded_term_assumed_value
+ * Signature: (I)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1coded_1term_1assumed_1value
+  (JNIEnv *env, jobject obj, jint h)
+{
+    return (*env)->NewStringUTF(env, c_coded_term_assumed_value(h));
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jassertion_get_expression
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jassertion_1get_1expression
+  (JNIEnv *env, jobject obj, jint h)
+{
+    return assertion_get_expression(h);
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jexpr_item_generating_type
+ * Signature: (I)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jexpr_1item_1generating_1type
+  (JNIEnv *env, jobject obj, jint h)
+{
+    return (*env)->NewStringUTF(env, expr_item_generating_type(h));
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jconstraint_ref_target
+ * Signature: (I)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jconstraint_1ref_1target
+  (JNIEnv *env, jobject obj, jint h)
+{
+    return (*env)->NewStringUTF(env, constraint_ref_target(h));
 }
 
 /*

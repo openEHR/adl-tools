@@ -175,6 +175,13 @@ feature -- Primitive Object Creation
 			Result := new_handle
 			put_real_interval(constraint_model_factory.create_real_interval_make_upper_unbounded(a_lower, include_lower), Result)
 		end
+	
+	create_real_interval_make_unbounded(): INTEGER is
+			-- create Result as unbounded interval
+		do
+			Result := new_handle
+			put_real_interval(constraint_model_factory.create_real_interval_make_unbounded,Result)
+		end
 
 	create_c_integer_make_bounded (a_lower, an_upper: INTEGER; include_lower, include_upper: BOOLEAN): INTEGER is
 			-- create Result with both limits set
@@ -742,12 +749,6 @@ feature -- Archetype Node Creation
 			Result := new_handle
 			put_constraint_ref(constraint_model_factory.create_constraint_ref(c_attribute(h_parent_c_attribute), c_a_code.string), Result)
 		end
-
-	set_occurrences_c_object(h_c_object, h_integer_interval: INTEGER) is
-			-- set_occurrences for any C_OBJECT
-		do
-			c_object(h_c_object).set_occurrences(integer_interval(h_integer_interval))
-		end
 		
 	archetype_slot_add_include(h_archetype_slot, h_assertion: INTEGER) is
 			-- add_include to an ARCHETYPE_SLOT
@@ -796,7 +797,7 @@ feature -- Assertions
 			put_expr_item(constraint_model_factory.create_expr_binary_operator_node(
 				create {OPERATOR_KIND}.make(an_operator),
 				expr_item(h_a_left_operand), expr_item(h_a_right_operand)), Result)
-		end
+		end		
 
 	create_expr_unary_operator_node (an_operator: INTEGER; h_an_operand: INTEGER): INTEGER is
 			-- REQUIRE
@@ -894,8 +895,7 @@ feature -- Assertions
 			create c_an_item.make_by_pointer (an_item)
 			Result := new_handle
 			put_expr_item(constraint_model_factory.create_expr_leaf_string(c_an_item.string), Result)
-		end
-
+		end	
 end
 
 
