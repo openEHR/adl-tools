@@ -54,6 +54,7 @@ feature {NONE} -- Implementation
 			l_c_primitive_object: C_PRIMITIVE_OBJECT
 			l_c_quantity: C_QUANTITY
 			l_c_coded_term: C_CODED_TERM
+			l_c_ordinal: C_ORDINAL
 		do
 			-- What needs to be done here will be some flow control, to determine what type the incoming object is
 			-- and to add it to the appropriate hash table, at the moment C_COMPLEX_OBJECT and to a nominal extent
@@ -105,7 +106,21 @@ feature {NONE} -- Implementation
 					l_c_coded_term ?= l_c_object
 					if l_c_coded_term /= Void then
 						put_c_coded_term(l_c_coded_term, l_handle)
-					end					
+					end				
+				elseif l_c_object.generating_type.is_equal ("C_ORDINAL") then
+					l_c_ordinal ?= l_c_object
+					if l_c_ordinal /= Void then
+						put_c_ordinal(l_c_ordinal, l_handle)
+						from
+							l_c_ordinal.items.start
+						until
+							l_c_ordinal.items.exhausted
+						loop
+							-- put each ordinal into a hash table
+							put_ordinal(l_c_ordinal.items.item, adl_objects.new_handle)
+							l_c_ordinal.items.forth
+						end
+					end
 				else
 					-- if it is not a c_complex_object, could still be something else, certainly
 					-- a c_object, possibly extend it here to handle all potential types, at the moment

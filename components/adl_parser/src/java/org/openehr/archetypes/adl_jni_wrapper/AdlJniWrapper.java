@@ -835,6 +835,20 @@ public class AdlJniWrapper
 	public native int
 	jinteger_interval_lower(int h_cardinality);
 	
+	// ---------------------------REAL_INTERVAL (OE_INTERVAL[REAL])-------
+	
+	public native boolean
+	jreal_interval_upper_unbounded(int h_cardinality);
+
+	public native boolean
+	jreal_interval_lower_unbounded(int h_cardinality);
+	
+	public native float
+	jreal_interval_upper(int h_cardinality);
+
+	public native float
+	jreal_interval_lower(int h_cardinality);
+	
 	// -----------------------ARCHETYPE_INTERNAL_REF----------------------
 	
 	public native String
@@ -845,6 +859,8 @@ public class AdlJniWrapper
 	public native int
 	jc_primitive_item(int h);
 	
+	public native String
+	jc_primitive_item_as_string(int h);
 	
 	// ---------------------------C_QUANTITY------------------------------
 	
@@ -859,6 +875,29 @@ public class AdlJniWrapper
 	
 	public native int
 	jc_quantity_list_count(int h);
+	
+	public native int
+	jc_quantity_list_get(int h, int i_th);
+	
+	public native boolean
+	jc_quantity_has_assumed_value(int h);
+	
+	public native String
+	jc_quantity_assumed_value_units(int h);
+	
+	public native float
+	jc_quantity_assumed_value_magnitude(int h);
+	
+	// -------------------------C_QUANTITY_ITEM---------------------------
+	
+	public native boolean
+	jc_quantity_item_any_magnitude_allowed(int h);
+	
+	public native String
+	jc_quantity_item_units(int h);
+	
+	public native int
+	jc_quantity_item_magnitude(int h);
 	
 	// ---------------------------C_INTEGER-------------------------------
 	
@@ -902,6 +941,45 @@ public class AdlJniWrapper
 	public native String
 	jconstraint_ref_target(int h_c_ref);
 
+	// ---------------------------C_DATE_TIME-----------------------------
+	
+	public native String
+	jc_date_time_pattern(int h);
+	
+	// ----------------------------C_TIME---------------------------------
+	
+	public native String
+	jc_time_pattern(int h);
+	
+	// ---------------------------OE_C_DATE-------------------------------
+	
+	public native String
+	jc_date_pattern(int h);
+	
+	// --------------------------C_BOOLEAN--------------------------------
+	
+	public native boolean
+	jc_boolean_true_valid(int h);
+	
+	public native boolean
+	jc_boolean_false_valid(int h);
+	
+	// ---------------------------C_ORDINAL-------------------------------
+	
+	public native int
+	jc_ordinal_items_count(int h);
+	
+	public native int
+	jc_ordinal_items_get(int h, int i_th);
+	
+	// ---------------------------ORDINAL---------------------------------
+	
+	public native int
+	jordinal_value(int h);
+	
+	public native String
+	jordinal_symbol_as_string(int h);
+	
 	// -------------------------------------------------------------------
 	static {	
 		System.loadLibrary("adl_java_lib");

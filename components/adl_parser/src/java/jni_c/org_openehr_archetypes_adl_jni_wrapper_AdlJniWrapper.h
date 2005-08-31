@@ -1673,6 +1673,14 @@ JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapp
 
 /*
  * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_primitive_item_as_string
+ * Signature: (I)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1primitive_1item_1as_1string
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
  * Method:    jc_quantity_add_unit_constraint
  * Signature: (ILjava/lang/String;I)V
  */
@@ -1837,6 +1845,78 @@ JNIEXPORT jstring JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWr
  * Signature: (I)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jconstraint_1ref_1target
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_date_time_pattern
+ * Signature: (I)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1date_1time_1pattern
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_time_pattern
+ * Signature: (I)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1time_1pattern
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_date_pattern
+ * Signature: (I)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1date_1pattern
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_boolean_true_valid
+ * Signature: (I)Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1boolean_1true_1valid
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_boolean_false_valid
+ * Signature: (I)Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1boolean_1false_1valid
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_ordinal_items_count
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1ordinal_1items_1count
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jc_ordinal_items_get
+ * Signature: (II)I
+ */
+JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jc_1ordinal_1items_1get
+  (JNIEnv *, jobject, jint, jint);
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jordinal_value
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jordinal_1value
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jordinal_symbol_as_string
+ * Signature: (I)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jordinal_1symbol_1as_1string
   (JNIEnv *, jobject, jint);
 
 #ifdef __cplusplus

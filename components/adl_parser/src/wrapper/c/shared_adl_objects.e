@@ -119,6 +119,13 @@ feature -- Access
 		do
 			Result := adl_objects.c_quantity_items.item(a_handle)
 		end
+	
+	ordinal(a_handle: INTEGER): ORDINAL is
+		require
+			has_ordinal(a_handle)
+		do
+			Result := adl_objects.ordinals.item(a_handle)
+		end
 		
 		
 feature -- Status Report
@@ -207,6 +214,11 @@ feature -- Status Report
 		do
 			Result := adl_objects.c_quantity_items.has(a_handle)
 		end
+	
+	has_ordinal(a_handle: INTEGER): BOOLEAN is
+		do	
+			Result := adl_objects.ordinals.has(a_handle)
+		end
 
 feature -- Commands
 
@@ -292,6 +304,11 @@ feature -- Commands
 			adl_objects.c_ordinals.put(an_item, a_handle)
 			--adl_objects.c_objects.put(an_item, a_handle)
 			put_c_object(an_item, a_handle)
+		end
+	
+	put_ordinal(an_item: ORDINAL; a_handle: INTEGER) is
+		do
+			adl_objects.ordinals.put (an_item, a_handle)
 		end
 
 	put_c_quantity(an_item: C_QUANTITY; a_handle: INTEGER) is

@@ -307,6 +307,15 @@ feature -- C_PRIMITIVE Methods
 				adl_objects.c_primitives.forth
 			end
 		end
+	
+	c_primitive_item_as_string(a_handle: INTEGER): POINTER is
+			-- returns the c_primitive as a string...
+		local
+			obj: ANY
+		do
+			obj := adl_objects.c_primitive_objects.item(a_handle).item.as_string.to_c
+			Result := $obj
+		end
 
 feature -- C_INTEGER Methods
 	
@@ -400,16 +409,9 @@ feature -- C_QUANTITY Methods
 			-- returns the property for given c_quantity
 		local
 			obj: ANY
-			--quantity : C_QUANTITY
 		do
-			-- Temporarily accessing through c_objects hash table
 			obj := adl_objects.c_quantities.item (a_handle).property.to_c
-			--Result := $obj
-			--quantity ?= adl_objects.c_objects.item (a_handle)
-			--if quantity /= Void then
-			--	obj := quantity.property.to_c
-			--	Result := $obj
-			--end
+			Result := $obj
 		end
 		
 	c_quantity_set_property(a_handler: INTEGER; a_property: POINTER) is
@@ -636,4 +638,117 @@ feature -- CONSTRAINT_REF Methods
 			--obj := adl_objects.constraint_refs.item (a_handler).target.to_c
 			Result := $obj
 		end
+
+feature --C_DATE_TIME Methods
+
+c_date_time_pattern(a_handle: INTEGER): POINTER is
+			-- returns the pattern for this c_date
+		local
+			obj: ANY
+			datetime: C_DATE_TIME
+		do
+			datetime ?= adl_objects.c_primitives.item (a_handle)
+			if datetime /= Void then
+				obj := datetime.pattern.to_c
+				Result := $obj
+			end
+		end
+
+feature -- C_TIME Methods
+
+c_time_pattern(a_handle: INTEGER): POINTER is
+			-- returns the pattern for this c_date
+		local
+			obj: ANY
+			time: C_TIME
+		do
+			time ?= adl_objects.c_primitives.item (a_handle)
+			if time /= Void then
+				obj := time.pattern.to_c
+				Result := $obj
+			end
+		end
+
+feature -- OE_C_DATE Methods
+
+	c_date_pattern(a_handle: INTEGER): POINTER is
+			-- returns the pattern for this c_date
+		local
+			obj: ANY
+			date: OE_C_DATE
+		do
+			date ?= adl_objects.c_primitives.item (a_handle)
+			if date /= Void then
+				obj := date.pattern.to_c
+				Result := $obj
+			end
+		end
+
+feature -- C_BOOLEAN Methods
+
+	c_boolean_true_valid(a_handle: INTEGER): BOOLEAN is
+			-- returns the true_valid property of the C_BOOLEAN
+		local
+			bool: C_BOOLEAN
+		do
+			bool ?= adl_objects.c_primitives.item (a_handle)
+			if bool /= Void then
+				Result := bool.true_valid
+			end
+		end
+
+	c_boolean_false_valid(a_handle: INTEGER): BOOLEAN is
+			-- returns the true_valid property of the C_BOOLEAN
+		local
+			bool: C_BOOLEAN
+		do
+			bool ?= adl_objects.c_primitives.item (a_handle)
+			if bool /= Void then
+				Result := bool.false_valid
+			end
+		end
+
+feature -- C_ORDINAL Methods
+-- descendant of C_DOMAIN_TYPE as is C_QUANTITY...
+
+	c_ordinal_items_count(a_handle: INTEGER): INTEGER is
+		do
+			Result := adl_objects.c_ordinals.item (a_handle).items.count
+		end
+		
+	
+	c_ordinal_items_get(a_handle, i_th: INTEGER): INTEGER is
+		local
+			ordinal1: ORDINAL
+			ordinal2: ORDINAL
+		do
+			ordinal1 := adl_objects.c_ordinals.item (a_handle).items.i_th (i_th)
+			from
+				adl_objects.ordinals.start
+			until
+				adl_objects.ordinals.off
+			loop
+				ordinal2 := adl_objects.ordinals.item_for_iteration
+				if ordinal1 = ordinal2 then
+					Result := adl_objects.ordinals.key_for_iteration
+				end
+				adl_objects.ordinals.forth
+			end
+		end
+
+feature -- ORDINAL Methods
+	
+	ordinal_value(a_handle: INTEGER): INTEGER is
+		do
+			Result := adl_objects.ordinals.item (a_handle).value
+		end
+		
+	ordinal_symbol_as_string(a_handle: INTEGER): POINTER is
+		local
+			obj : ANY
+		do
+			obj := adl_objects.ordinals.item (a_handle).symbol.as_string.to_c
+			Result := $obj
+		end
+
 end

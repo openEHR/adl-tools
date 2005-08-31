@@ -58,6 +58,16 @@ C_OBJECT_ACCESS (default_create) : real_interval_lower
 C_OBJECT_ACCESS (default_create) : c_quantity_has_assumed_value
 C_OBJECT_ACCESS (default_create) : c_quantity_assumed_value_units
 C_OBJECT_ACCESS (default_create) : c_quantity_assumed_value_magnitude
+C_OBJECT_ACCESS (default_create) : c_date_time_pattern
+C_OBJECT_ACCESS (default_create) : c_time_pattern
+C_OBJECT_ACCESS (default_create) : c_date_pattern
+C_OBJECT_ACCESS (default_create) : c_boolean_true_valid
+C_OBJECT_ACCESS (default_create) : c_boolean_false_valid
+C_OBJECT_ACCESS (default_create) : c_ordinal_items_count
+C_OBJECT_ACCESS (default_create) : c_ordinal_items_get
+C_OBJECT_ACCESS (default_create) : ordinal_value
+C_OBJECT_ACCESS (default_create) : ordinal_symbol_as_string
+C_OBJECT_ACCESS (default_create) : c_primitive_item_as_string
 
 -- CLASS [C_ADL_INTERFACE]
 C_ADL_INTERFACE : make
