@@ -256,3 +256,4 @@ C_ADL_INTERFACE (make) : ontology_term_definitions_count
 C_ADL_INTERFACE (make) : ontology_constraint_bindings_count
 C_ADL_INTERFACE (make) : ontology_constraint_binding
 C_ADL_INTERFACE (make) : archetype_set_parent_archetype_id
+C_ADL_INTERFACE (make) : create_c_coded_term_from_terminology_id

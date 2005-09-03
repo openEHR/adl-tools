@@ -552,6 +552,21 @@ feature -- Domain object creation
 			Result := new_handle
 			put_c_coded_term(constraint_model_factory.create_c_coded_term_from_pattern(c_attribute(h_parent_c_attribute), c_a_term_constraint.string), Result)
 		end
+	
+	create_c_coded_term_from_terminology_id(h_parent_c_attribute: INTEGER; a_terminology_id: POINTER): INTEGER is
+			-- create a "term" node from terminology id such as local::
+			-- REQUIRE
+			-- parent_valud: has_c_attribute(h_parent_c_attribute)
+			-- a_terminology_id_valid
+		local
+			c_a_terminology_id: C_STRING
+		do
+			create c_a_terminology_id.make_by_pointer (a_terminology_id)
+			Result := new_handle
+			put_c_coded_term(constraint_model_factory.create_c_coded_term_from_terminology_id (c_attribute(h_parent_c_attribute), c_a_terminology_id.string), Result)
+			--put_c_coded_term(constraint_model_factory.create_c_co
+		end
+		
 
 	create_c_ordinal (h_parent_c_attribute: INTEGER): INTEGER is
 			-- create an empty "ordinal" node.

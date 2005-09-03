@@ -127,6 +127,16 @@ feature -- Factory
 			create Result.make_from_pattern(a_term_constraint)
 			a_parent.put_child(Result)
 		end
+	
+	create_c_coded_term_from_terminology_id(a_parent: C_ATTRIBUTE; a_terminology_id: STRING): C_CODED_TERM is
+			-- create a "term" node from a terminology id such as local::
+		require
+			parent_valid: a_parent /= Void
+			terminology_id_valid: a_terminology_id /= Void and then not a_terminology_id.is_empty
+		do
+			create Result.make_from_terminology_id (a_terminology_id)
+			a_parent.put_child (Result)
+		end
 		
 	create_constraint_ref(a_parent: C_ATTRIBUTE; a_code: STRING): CONSTRAINT_REF is
 			-- create a "term" node from term in string form "ac0039"
