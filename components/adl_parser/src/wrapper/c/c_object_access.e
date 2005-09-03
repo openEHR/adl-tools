@@ -535,12 +535,52 @@ feature -- ARCHETYPE_SLOT Methods
 		do
 			Result := adl_objects.archetype_slots.item (a_handle).includes.count
 		end
-	
+		
+	archetype_slot_includes_get(a_handle, i_th: INTEGER): INTEGER is
+			-- returns the handle for specific assertion in includes of slot
+		local
+			expr1: ASSERTION
+			expr2: ASSERTION
+		do
+			expr1 := adl_objects.archetype_slots.item (a_handle).includes.i_th (i_th)
+			from
+				adl_objects.assertions.start
+			until
+				adl_objects.assertions.off
+			loop
+				expr2 := adl_objects.assertions.item_for_iteration
+				if expr1 = expr2 then
+					Result := adl_objects.assertions.key_for_iteration
+				end
+				adl_objects.assertions.forth
+			end
+		end
+
 	archetype_slot_excludes_count(a_handle: INTEGER): INTEGER is
 			-- returns number of excludes for given slot
 		do
 			Result := adl_objects.archetype_slots.item (a_handle).excludes.count
-		end	
+		end
+
+	archetype_slot_excludes_get(a_handle, i_th: INTEGER): INTEGER is
+			-- returns the handle for specific assertion in excludes of slot
+		local
+			expr1: ASSERTION
+			expr2: ASSERTION
+		do
+			expr1 := adl_objects.archetype_slots.item (a_handle).excludes.i_th (i_th)
+			from
+				adl_objects.assertions.start
+			until
+				adl_objects.assertions.off
+			loop
+				expr2 := adl_objects.assertions.item_for_iteration
+				if expr1 = expr2 then
+					Result := adl_objects.assertions.key_for_iteration
+				end
+				adl_objects.assertions.forth
+			end
+		end
 
 feature -- C_CODED_TERM Methods
 
@@ -619,6 +659,26 @@ feature -- EXPR_ITEM Methods
 		do
 			obj := adl_objects.expr_items.item (a_handle).generating_type.to_c
 			Result := $obj
+		end
+
+feature -- EXPR_BINARY_OPERATOR
+	
+	expr_binary_operator_right_operand_out(a_handle: INTEGER): POINTER is
+			-- returns the right operand's out method for given EXPR_BINARY_OPERATOR
+			-- called by the editor's ADL_Tools class
+		local
+			l_binary_operator: EXPR_BINARY_OPERATOR
+			l_operand: EXPR_LEAF
+			obj: ANY
+		do
+			l_binary_operator ?= adl_objects.expr_items.item (a_handle)
+			if l_binary_operator /= Void then
+				l_operand ?= l_binary_operator.right_operand
+				if l_operand /= Void then
+					obj := l_operand.out.to_c
+					Result := $obj
+				end
+			end
 		end
 
 feature -- CONSTRAINT_REF Methods

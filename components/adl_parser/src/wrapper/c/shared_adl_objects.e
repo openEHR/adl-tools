@@ -332,6 +332,8 @@ feature -- Commands
 	put_assertion(an_item: ASSERTION; a_handle: INTEGER) is
 		do
 			adl_objects.assertions.put(an_item, a_handle)
+			-- ASSERTION have an expression property, could be added here
+			put_expr_item(an_item.expression, a_handle)
 		end
 
 	put_integer_interval(an_item: OE_INTERVAL[INTEGER]; a_handle: INTEGER) is

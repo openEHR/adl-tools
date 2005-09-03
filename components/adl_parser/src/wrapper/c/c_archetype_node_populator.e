@@ -55,6 +55,7 @@ feature {NONE} -- Implementation
 			l_c_quantity: C_QUANTITY
 			l_c_coded_term: C_CODED_TERM
 			l_c_ordinal: C_ORDINAL
+			l_archetype_slot: ARCHETYPE_SLOT
 		do
 			-- What needs to be done here will be some flow control, to determine what type the incoming object is
 			-- and to add it to the appropriate hash table, at the moment C_COMPLEX_OBJECT and to a nominal extent
@@ -119,6 +120,28 @@ feature {NONE} -- Implementation
 							-- put each ordinal into a hash table
 							put_ordinal(l_c_ordinal.items.item, adl_objects.new_handle)
 							l_c_ordinal.items.forth
+						end
+					end
+				elseif l_c_object.generating_type.is_equal("ARCHETYPE_SLOT") then
+					-- Adding archetype slot now and also its assertions of includes and excludes
+					l_archetype_slot ?= l_c_object
+					if l_archetype_slot /= Void then
+						put_archetype_slot(l_archetype_slot, l_handle)
+						from
+							l_archetype_slot.includes.start
+						until
+							l_archetype_slot.includes.exhausted
+						loop
+							put_assertion(l_archetype_slot.includes.item, adl_objects.new_handle)
+							l_archetype_slot.includes.forth
+						end
+						from
+							l_archetype_slot.excludes.start
+						until
+							l_archetype_slot.excludes.exhausted
+						loop
+							put_assertion(l_archetype_slot.excludes.item, adl_objects.new_handle)
+							l_archetype_slot.excludes.forth
 						end
 					end
 				else
