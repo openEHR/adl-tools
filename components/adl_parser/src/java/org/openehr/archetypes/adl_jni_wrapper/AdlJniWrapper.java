@@ -440,6 +440,9 @@ public class AdlJniWrapper
 	public native int 
 	jcreate_c_coded_term_from_pattern (int h_parent_c_attribute, String a_term_constraint);
 
+	public native int
+	jcreate_c_coded_term_from_terminology_id (int h_parent_c_attribute, String a_terminology_id);
+
 	public native int 
 	jcreate_c_complex_object_anonymous (int h_parent_c_attribute, String a_type_name);
 
@@ -482,7 +485,13 @@ public class AdlJniWrapper
 	jarchetype_slot_includes_count(int h_archetype_slot);
 	
 	public native int
+	jarchetype_slot_includes_get(int h_archetype_slot, int i_th);
+	
+	public native int
 	jarchetype_slot_excludes_count(int h_archetype_slot);
+	
+	public native int
+	jarchetype_slot_excludes_get(int h_archetype_slot, int i_th);
 	
 	public native void
 	jarchetype_slot_add_include(int h_archetype_slot, int h_assertion);
@@ -649,6 +658,15 @@ public class AdlJniWrapper
 
 	public native String
 	jontology_term_binding (String a_terminology, String a_term_code);
+	
+	public native String
+	jontology_term_binding_code_string (String a_terminology, String a_term_code);
+	
+	public native int
+	jontology_term_binding_for_terminology_count(String a_terminology);
+	
+	public native String[]
+	jontology_term_binding_for_terminology_codes(String a_terminology);
 
 	public native String[]
 	jontology_term_codes();
@@ -935,6 +953,9 @@ public class AdlJniWrapper
 	
 	public native String
 	jexpr_item_generating_type(int h_expr_item);
+	
+	public native String
+	jexpr_binary_operator_right_operand_out(int h_expr_item);
 	
 	// --------------------------CONSTRAINT_REF---------------------------
 	

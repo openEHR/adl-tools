@@ -1144,6 +1144,24 @@ JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapp
 }
 
 /*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jcreate_c_coded_term_from_terminology_id
+ * Signature: (ILjava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jcreate_1c_1coded_1term_1from_1terminology_1id
+  (JNIEnv *env, jobject obj, jint attribute, jstring terminology)
+{
+    char *a_terminology = (*env)->GetStringUTFChars(env, terminology, 0);
+    int result;
+    
+    result = create_c_coded_term_from_terminology_id(attribute, a_terminology);
+    
+    (*env)->ReleaseStringUTFChars(env, terminology, a_terminology);
+    
+    return result;
+}
+
+/*
 * Method:	jcreate_c_complex_object_anonymous
 */
 JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jcreate_1c_1complex_1object_1anonymous
@@ -1302,6 +1320,17 @@ JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapp
 
 /*
  * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jarchetype_slot_includes_get
+ * Signature: (II)I
+ */
+JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jarchetype_1slot_1includes_1get
+  (JNIEnv *env, jobject obj, jint h_archetype_slot, jint i_th)
+{
+    return archetype_slot_includes_get(h_archetype_slot, i_th);
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
  * Method:    jarchetype_slot_excludes_count
  * Signature: (I)I
  */
@@ -1311,6 +1340,16 @@ JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapp
     return archetype_slot_excludes_count(h_archetype_slot);
 }
 
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jarchetype_slot_excludes_get
+ * Signature: (II)I
+ */
+JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jarchetype_1slot_1excludes_1get
+  (JNIEnv *env, jobject obj, jint h_archetype_slot, jint i_th)
+{
+    return archetype_slot_excludes_get(h_archetype_slot, i_th);
+}
 
 /*
  * Class:     AdlJniWrapper
@@ -1952,6 +1991,70 @@ JNIEXPORT jstring JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWr
 	(*env)->ReleaseStringUTFChars(env, term_code, a_term_code);
 
 	return (*env)->NewStringUTF(env, result);
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jontology_term_binding_code_string
+ * Signature: (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jontology_1term_1binding_1code_1string
+  (JNIEnv *env, jobject obj, jstring terminology, jstring term_code)
+{
+	const char *a_terminology = (*env)->GetStringUTFChars(env, terminology, 0);
+	const char *a_term_code = (*env)->GetStringUTFChars(env, term_code, 0);
+	char *result;
+
+	result = ontology_term_binding_code_string(a_terminology, a_term_code);
+
+	(*env)->ReleaseStringUTFChars(env, terminology, a_terminology);
+	(*env)->ReleaseStringUTFChars(env, term_code, a_term_code);
+
+	return (*env)->NewStringUTF(env, result);
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jontology_term_binding_for_terminology_count
+ * Signature: (Ljava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jontology_1term_1binding_1for_1terminology_1count
+  (JNIEnv *env, jobject obj, jstring terminology)
+{
+    const char *a_terminology = (*env)->GetStringUTFChars(env, terminology, 0);
+    int result;
+    
+    result = ontology_term_bindings_for_terminology_count(a_terminology);
+    
+    (*env)->ReleaseStringUTFChars(env, terminology, a_terminology);
+    
+    return result;
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jontology_term_binding_for_terminology_codes
+ * Signature: (Ljava/lang/String;)[Ljava/lang/String;
+ */
+JNIEXPORT jobjectArray JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jontology_1term_1binding_1for_1terminology_1codes
+  (JNIEnv *env, jobject obj, jstring terminology)
+{
+    jobjectArray result;
+    const char *a_terminology = (*env)->GetStringUTFChars(env, terminology, 0);
+    int i;
+    int len = ontology_term_bindings_for_terminology_count(a_terminology);
+	
+	char **eif_array = ontology_term_bindings_for_terminology_codes(a_terminology);
+
+	result = (*env)->NewObjectArray(env, len, (*env)->FindClass(env, "java/lang/String"), (*env)->NewStringUTF(env, ""));
+
+	for (i=0; i<len; i++) {
+		(*env)->SetObjectArrayElement(env, result, i, (*env)->NewStringUTF(env, *(eif_array + i)));
+	}
+
+	(*env)->ReleaseStringUTFChars(env, terminology, a_terminology);
+
+	return result;
 }
 
 /*
@@ -3145,6 +3248,17 @@ JNIEXPORT jstring JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWr
   (JNIEnv *env, jobject obj, jint h)
 {
     return (*env)->NewStringUTF(env, expr_item_generating_type(h));
+}
+
+/*
+ * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
+ * Method:    jexpr_binary_operator_right_operand_out
+ * Signature: (I)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jexpr_1binary_1operator_1right_1operand_1out
+  (JNIEnv *env, jobject obj, jint h)
+{
+    return (*env)->NewStringUTF(env, expr_binary_operator_right_operand_out(h));
 }
 
 /*

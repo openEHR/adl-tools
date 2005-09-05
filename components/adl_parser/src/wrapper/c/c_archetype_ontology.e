@@ -181,6 +181,50 @@ feature -- Access
 			obj := ontology.term_binding(c_a_terminology.string, c_a_term_code.string).as_string.to_c
 			Result := $obj
 		end
+	
+	ontology_term_binding_code_string(a_terminology, a_term_code: POINTER): POINTER is
+			-- 
+		local
+			c_a_terminology, c_a_term_code: C_STRING
+			obj : ANY
+		do
+			create c_a_terminology.make_by_pointer (a_terminology)
+			create c_a_term_code.make_by_pointer (a_term_code)
+			obj := ontology.term_binding(c_a_terminology.string, c_a_term_code.string).code_string.to_c
+			Result := $obj
+		end
+	
+	ontology_term_bindings_for_terminology_count(a_terminology: POINTER): INTEGER is
+			-- 
+		local
+			c_a_terminology: C_STRING
+		do
+			create c_a_terminology.make_by_pointer (a_terminology)
+			Result := ontology.term_bindings_for_terminology (c_a_terminology.string).count
+		end
+	
+	ontology_term_bindings_for_terminology_codes(a_terminology: POINTER): POINTER is
+			-- return an array of codes for corresponding term bindings...
+		local
+			c_a_terminology: C_STRING
+			code_array: ARRAYED_LIST [STRING]
+			--obj : ANY
+		do
+			create c_a_terminology.make_by_pointer(a_terminology)
+			create code_array.make(0)
+			--create 
+			from
+				ontology.term_bindings_for_terminology (c_a_terminology.string).start
+			until
+				ontology.term_bindings_for_terminology (c_a_terminology.string).off
+			loop
+				code_array.extend (ontology.term_bindings_for_terminology (c_a_terminology.string).key_for_iteration)
+				--code_array.
+				--ontology.term_bindings_for_terminology (c_a_terminology.string).key_for_iteration
+				ontology.term_bindings_for_terminology (c_a_terminology.string).forth
+			end
+			Result := eif_list_string_to_c_array(code_array)
+		end
 
 	ontology_term_codes: POINTER is
 			-- list of term codes
