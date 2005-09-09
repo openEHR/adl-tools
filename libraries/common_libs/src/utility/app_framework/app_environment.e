@@ -85,15 +85,15 @@ feature -- Resource Configuration
 
 feature -- Environment Status
 
-	app_env_is_valid:BOOLEAN is
+	app_env_is_valid: BOOLEAN is
 	        -- if not True, look at app_init_fail_reason
 	    do
 	        Result := app_env_fail_reason.is_empty
 	    end
 
-	app_env_fail_reason:STRING is
+	app_env_fail_reason: STRING is
  	    once
-	        !!Result.make(0)
+	        create Result.make(0)
 	    end
 
 end

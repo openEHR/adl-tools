@@ -8,9 +8,9 @@ indexing
 	copyright:   "Copyright (c) 2005 Ocean Informatics"
 	licence:     "The openEHR Open Source Licence"
 
-	file:        $URL$
-	revision:    $LastChangedRevision$
-	last_change: $LastChangedDate$
+	file:        "$URL$"
+	revision:    "$LastChangedRevision$"
+	last_change: "$LastChangedDate$"
 
 class LOCALE
 

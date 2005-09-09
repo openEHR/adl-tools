@@ -20,6 +20,11 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_TYPE_ID_CACHE
+		export
+			{NONE} all
+		end
+
 creation
 	make
 
@@ -28,32 +33,23 @@ feature -- Initialisation
 	make(ignore_invisible, cache_created_obj_ids: BOOLEAN) is
 			-- 'ignore_invisible' = True prevents Eiffel from raising an exception if a feature
 			-- call is made on a non-visible object;
-			-- 'cache_created_obj_ids' = True creates a HASH_TABLE[eif type id, type name], and
-			-- causes an entry to be added every time create_object is called, i.e. every time
-			-- creation by name is called. Subsequent calls to create new instances of the same
-			-- type will get the type id from the table and call create_object_by_id instead;
-			-- overall, this is much faster.
+			-- 'cache_created_obj_ids' is now ignored; a type id cache is always created.
 		do
 			if ignore_invisible then
 				c_ignore_invisible
-			end
-
-			if cache_created_obj_ids then
-				create object_id_cache.make(0)
 			end
 		end
 
 feature -- Access
 
-	eif_type_id(a_type_name:STRING):INTEGER is
+	eif_type_id(a_type_name: STRING): INTEGER is
 			-- return the unique internal type id as from eif_type_id()
+		obsolete
+			"Use INTERNAL.dynamic_type_from_string instead"
 		require
 			Valid_type_name: a_type_name /= Void and then not a_type_name.is_empty
-		local
-			c_type_name: ANY
 		do
-			c_type_name := a_type_name.to_c
-			Result := c_eif_type_id($c_type_name)
+			Result := dynamic_type_from_string(a_type_name)
 		end
 
 feature -- Status
@@ -111,21 +107,8 @@ feature -- Creation
 			Class_name_valid: a_type_name /= Void and then not a_type_name.is_empty
 			Make_proc_name_valid: make_proc_name /= Void implies not make_proc_name.is_empty 
 			Class_procedure_validity: is_valid_feature(a_type_name, make_proc_name)
-		local
-			id:INTEGER
 		do
-			if object_id_cache /= Void then
-				id := object_id_cache.item(a_type_name)
-			end
-
-			if id = 0 then
-				id := eif_type_id(a_type_name)	-- this is the SLOW operation
-				if object_id_cache /= Void then
-					object_id_cache.put(id, a_type_name)
-				end
-			end
-
-			Result := create_object_by_id(id, make_proc_name)
+			Result := create_object_by_id(type_id(a_type_name), make_proc_name)
 		ensure
 			Result_exists: Result /= Void
 		end
@@ -153,21 +136,8 @@ feature -- Creation
 			Type_name_valid: a_type_name /= Void and then not a_type_name.is_empty
 			Make_proc_name_valid: make_proc_name /= Void implies not make_proc_name.is_empty
 			Class_procedure_validity: is_valid_feature(a_type_name, make_proc_name)
-		local
-			id:INTEGER
 		do
-			if object_id_cache /= Void then
-				id := object_id_cache.item(a_type_name)
-			end
-
-			if id = 0 then
-				id := eif_type_id(a_type_name)	-- this is the SLOW operation
-				if object_id_cache /= Void then
-					object_id_cache.put(id, a_type_name)
-				end
-			end
-
-			Result := create_make_object_by_id(id, make_proc_name, make_arg)
+			Result := create_make_object_by_id(type_id(a_type_name), make_proc_name, make_arg)
 		ensure
 			Result_exists: Result /= Void
 		end
@@ -378,11 +348,6 @@ feature {NONE} -- External
 		end
 
 	c_is_class_visible(c_class_name: POINTER): BOOLEAN is
-		external
-		   "C"
-		end
-
-	c_eif_type_id(c_type_name: POINTER): INTEGER is
 		external
 		   "C"
 		end

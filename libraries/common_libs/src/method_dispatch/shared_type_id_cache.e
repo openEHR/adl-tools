@@ -1,28 +1,51 @@
 indexing
-	component:   "openEHR Reusable Libraries"
-	description: "shared access to LOCALE object"
-	keywords:    "locale"
+	component:   "openEHR Library Project"
+	description: "Shared cache for object type ids and type names"
+	keywords:    "type"
 
 	author:      "Thomas Beale"
-	support:     "openEHR support <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2005 Ocean Informatics"
-	licence:     "The openEHR Open Source Licence"
+	support:     "Ocean Informatics <support@OceanInformatics.biz>"
+	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
+	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class SHARED_LOCALE
+class SHARED_TYPE_ID_CACHE
 
-feature -- Shared Access
+inherit
+	INTERNAL
+		export 
+			{NONE} all
+		end
+		
+feature -- Access
 
-	locale: LOCALE is
+	type_id (a_type_name: STRING): INTEGER is
+		require
+			a_type_name /= Void and then not a_type_name.is_empty
+		do
+			if type_id_cache.has(a_type_name) then
+				Result := type_id_cache.item(a_type_name)
+			else
+				Result := dynamic_type_from_string(a_type_name)
+				if Result /= -1 then
+				    type_id_cache.put(Result, a_type_name)
+				end
+			end
+		end
+
+feature {NONE} -- Implementation
+
+    type_id_cache: HASH_TABLE [INTEGER, STRING] is
+			-- table of type ids keyed by type name
 		once
-			create Result.make
+			create Result.make(0)
 		end
 
 end
-
+	
 --|
 --| ***** BEGIN LICENSE BLOCK *****
 --| Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -37,7 +60,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is shared_locale.e.
+--| The Original Code is method_dispatcher.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004
