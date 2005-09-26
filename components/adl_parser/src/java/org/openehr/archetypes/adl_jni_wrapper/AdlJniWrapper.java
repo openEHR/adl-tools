@@ -941,6 +941,9 @@ public class AdlJniWrapper
 	public native boolean
 	jc_coded_term_has_assumed_value(int h_coded_term);
 	
+	public native void
+	jc_coded_term_set_assumed_value(int h_coded_term, String assumed);
+	
 	public native String
 	jc_coded_term_assumed_value(int h_coded_term);
 

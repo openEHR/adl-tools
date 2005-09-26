@@ -610,6 +610,19 @@ feature -- C_CODED_TERM Methods
 			end
 		end
 	
+	c_coded_term_set_assumed_value(a_handle: INTEGER; value: POINTER) is
+			-- sets the c_coded_terms assumed value
+		local
+			c_value: C_STRING
+			coded_term : C_CODED_TERM
+		do
+			create c_value.make_by_pointer (value)
+			coded_term ?= adl_objects.c_objects.item (a_handle)
+			if coded_term /= Void then
+				coded_term.set_assumed_value (c_value.string)
+			end
+		end
+	
 	c_coded_term_assumed_value(a_handle: INTEGER): POINTER is
 			-- returns the c_coded_terms assumed value
 			-- takes data from c_object hash table, as c_coded_term not populated as of yet

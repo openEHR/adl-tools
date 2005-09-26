@@ -201,6 +201,10 @@ feature -- Modification
 			-- node with all children gone
 		do
 			adl_interface.archetype.reset_definition
+			-- check if there is a C_COMPLEX_OBJECT
+			--adl_objects.c_complex_objects.item (1) /= Void then
+			adl_objects.reset_definition
+			--end
 		end
 
 	archetype_set_definition_node_id (a_term_code: POINTER) is

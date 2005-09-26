@@ -56,6 +56,7 @@ feature {NONE} -- Implementation
 			l_c_coded_term: C_CODED_TERM
 			l_c_ordinal: C_ORDINAL
 			l_archetype_slot: ARCHETYPE_SLOT
+			l_archetype_internal_ref: ARCHETYPE_INTERNAL_REF
 		do
 			-- What needs to be done here will be some flow control, to determine what type the incoming object is
 			-- and to add it to the appropriate hash table, at the moment C_COMPLEX_OBJECT and to a nominal extent
@@ -143,6 +144,12 @@ feature {NONE} -- Implementation
 							put_assertion(l_archetype_slot.excludes.item, adl_objects.new_handle)
 							l_archetype_slot.excludes.forth
 						end
+					end
+				elseif l_c_object.generating_type.is_equal("ARCHETYPE_INTERNAL_REF") then
+					-- Adding archetype internal reference to hashtables
+					l_archetype_internal_ref ?= l_c_object
+					if l_archetype_internal_ref /= Void then
+						put_archetype_internal_ref(l_archetype_internal_ref, l_handle)
 					end
 				else
 					-- if it is not a c_complex_object, could still be something else, certainly

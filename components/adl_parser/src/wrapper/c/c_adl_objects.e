@@ -63,6 +63,46 @@ feature -- Access
 		do
 			archetype_definition_handle := a_handle
 		end
+	
+	reset_definition is
+			-- resets the hash tables and resets the handle number
+			-- TODO: Ensure this works ok
+		local
+			root_node: C_COMPLEX_OBJECT
+		do
+			-- Should be a reasonable assumption that first C_COMPLEX_OBJECT in hash table is also the root
+			root_node := c_complex_objects.item (1)
+			last_handle := 0
+			-- Not sure about using make, could be ideal, but not sure, so just staying safe
+			c_objects.clear_all -- used for routines which are defined on C_OBJECT
+			archetype_internal_refs.clear_all
+			archetype_slots.clear_all
+			c_complex_objects.clear_all
+			c_attributes.clear_all
+			constraint_refs.clear_all
+			c_coded_terms.clear_all
+			c_ordinals.clear_all
+			c_quantities.clear_all
+			c_primitive_objects.clear_all
+
+			-- ASSERTIONs
+			assertions.clear_all
+			expr_items.clear_all
+
+			-- C_PRIMITIVEs
+			c_primitives.clear_all
+			
+			-- misc
+			integer_intervals.clear_all
+			real_intervals.clear_all
+			cardinalities.clear_all
+			c_quantity_items.clear_all
+			ordinals.clear_all
+			
+			c_complex_objects.put (root_node, new_handle)
+			last_handle := 0
+			c_objects.put (root_node, new_handle)
+		end
 
 feature {SHARED_ADL_OBJECTS} -- Handles
 
