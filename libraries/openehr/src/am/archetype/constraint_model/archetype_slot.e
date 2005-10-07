@@ -66,7 +66,7 @@ feature -- Access
 	excludes: ARRAYED_LIST [ASSERTION]
 			-- list of assertions on archetypes of type 'type_name' defining
 			-- excluded archetypes
-
+				
 feature -- Status Report
 
 	has_includes: BOOLEAN is
@@ -124,7 +124,7 @@ feature -- Modification
 		do
 			excludes := assn_list
 		end
-		
+				
 feature -- Output
 
 	out: STRING is

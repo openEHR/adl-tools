@@ -54,6 +54,14 @@ feature -- Status Report
 			Result := not is_ordered and not is_unique
 		end
 
+	contains (other: CARDINALITY): BOOLEAN is
+			-- Does current cardinality contain `other'?
+		require
+			Other_exists: other /= void
+		do
+			Result := interval.contains(other.interval)
+		end
+
 feature -- Modification
 
 	set_unordered is

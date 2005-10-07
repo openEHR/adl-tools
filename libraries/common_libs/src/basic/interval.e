@@ -151,6 +151,24 @@ feature -- Status report
 			(upper_unbounded or ((upper_included and v <= upper or v < upper)))
 		end
 
+	contains (other: like Current): BOOLEAN is
+			-- Does current interval contain `other'?
+		require
+			Other_exists: other /= void
+		do
+			if other.lower_unbounded then
+				if other.upper_unbounded then
+					Result := lower_unbounded and upper_unbounded
+				else
+					Result := lower_unbounded and has(other.upper)
+				end
+			elseif other.upper_unbounded then
+				Result := upper_unbounded and has(other.lower)
+			else
+				Result := has(other.lower) and has(other.upper)
+			end
+		end
+
 	is_equal(other: like Current): BOOLEAN is
 			-- compare two intervals
 		do

@@ -41,11 +41,12 @@ cluster
 			assertion (invariant)
 		end
 
-	all openehr:		"$OPENEHR\ref_impl_eiffel\libraries\openehr\src"
+	openehr:		"$OPENEHR\ref_impl_eiffel\libraries\openehr\src"
 		exclude
 			".svn"; 
 		default
 			assertion (invariant)
+		end
 
 	all common_libs:		"$OPENEHR\ref_impl_eiffel\libraries\common_libs\src"
 		exclude
@@ -107,6 +108,6 @@ external
 		"$(GOBO)\library\kernel\include"
 
 	object:
-		"$(OPENEHR)\build_area_eiffel\common_libs\bin\spec\$(ISE_C_COMPILER)\lib\method_dispatcher.lib"
+		"$(OPENEHR)\ref_impl_eiffel\libraries\common_libs\lib\$(ISE_C_COMPILER)\method_dispatcher.lib"
 
 end

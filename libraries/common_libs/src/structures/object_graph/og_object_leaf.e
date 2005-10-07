@@ -1,12 +1,12 @@
 indexing
 	component:   "openEHR Archetype Project"
 	description: "[
-				 Any primitive OBJECT node in object parse tree
+				 Any leaf OBJECT node in object graph
 			 ]"
-	keywords:    "object graph, ADL"
+	keywords:    "object graph"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2004-2005 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"

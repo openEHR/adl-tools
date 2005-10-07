@@ -9,9 +9,9 @@ indexing
 	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
-	file:        $URL$
-	revision:    $LastChangedRevision$
-	last_change: $LastChangedDate$
+	file:        "$URL$"
+	revision:    "$LastChangedRevision$"
+	last_change: "$LastChangedDate$"
 
 class
 	MAIN_WINDOW

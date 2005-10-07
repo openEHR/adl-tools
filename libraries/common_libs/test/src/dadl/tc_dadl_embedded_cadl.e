@@ -1,7 +1,7 @@
 indexing
 	component:   "openEHR Reusable Libraries"
-	description: "Test case for typed anonymous dADL"
-	keywords:    "test, object graph, creation"
+	description: "Test case for embedded cADL in dADL"
+	keywords:    "test, object graph, cADL, dADL, ADL"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
@@ -12,7 +12,7 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class TC_DADL2_TYPED_ANON
+class TC_DADL_EMBEDDED_CADL
 
 inherit
 	TEST_CASE
@@ -30,7 +30,7 @@ creation
 
 feature -- Access
 
-	title:STRING is "dADL2 typed anonymous object block"
+	title:STRING is "dADL with embedded cADL"
 
 feature -- Initialisation
 
@@ -40,18 +40,16 @@ feature -- Initialisation
 
 	execute is
 		do
-			dadl_engine.set_source (dadl_tour_data, 1)
+			io.put_string("---------- original dADL  -----------%N")
+			io.put_string(dadl_text)
+			dadl_engine.set_source (dadl_text, 1)
 			dadl_engine.parse
 			if not dadl_engine.parse_succeeded then
 				io.put_string("Parse failed; reason = " + dadl_engine.parse_error_text + "%N")
 			else
 				dadl_engine.serialise ("adl")
-				io.put_string("---------- original dADL -----------%N")
-				io.put_string(dadl_tour_data)
 				io.put_string("---------- serialised to ADL -----------%N")
 				io.put_string(dadl_engine.serialised)
-				io.put_string("---------- paths -----------%N")
-				io.put_string(print_list(dadl_engine.tree.all_paths))
 			end
 		end
 
@@ -62,21 +60,15 @@ feature -- Access
 	    end
 
 feature -- Implementation
-		
-	dadl_tour_data: STRING is "								%N%
-		%	TOURIST_DESTINATION <							%N%
-		%		profile = DESTINATION_PROFILE <>			%N%
-		%		hotels = LODGING <							%N%
-		%			[%"gran sevilla%"] = HISTORIC_HOTEL <>	%N%
-		%			[%"sofitel%"] = LUXURY_HOTEL <>			%N%
-		%			[%"hotel real%"] = PENSION <>			%N%
-		%		>											%N%
-		%		attractions = <								%N%
-		%			[%"la corrida%"] = ATTRACTION <>		%N%
-		%			[%"Alcázar%"] = HISTORIC_SITE <>		%N%
-		%		>											%N%
-		%	>												%N%
-		%"
+
+	dadl_text: STRING is  
+		local
+			from_file: PLAIN_TEXT_FILE
+		do
+			create from_file.make_open_read("../src/dadl/dadl_embedded_cadl.txt")
+			from_file.read_stream(from_file.count)
+			Result := from_file.last_string
+		end
 
 end
 

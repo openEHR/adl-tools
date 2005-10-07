@@ -249,7 +249,7 @@ feature -- Commands
 			if not exception_encountered then
 				status.wipe_out
 				save_succeeded := False
-				if adl_engine.archetype.is_valid then
+				if archetype_valid then
 					adl_engine.serialise(save_format)
 					if file_context.file_writable(file_path) then
 						file_context.save_file(file_path, adl_engine.serialised_archetype)

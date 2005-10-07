@@ -23,6 +23,11 @@ inherit
 			{ANY} has_dt_serialiser_format
 		end
 
+	SHARED_RESOURCES
+		export
+			{NONE} all
+		end
+
 	INTERNAL
 		export
 			{NONE} all
@@ -82,7 +87,7 @@ feature -- Access
 		once
 			create Result.make
 		end
-
+	    
 end
 
 --|
