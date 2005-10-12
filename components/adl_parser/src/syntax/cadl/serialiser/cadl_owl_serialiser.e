@@ -20,7 +20,7 @@ inherit
 	
 	OWL_DEFINITIONS
 	
-	SHARED_ADL_INTERFACE
+	SHARED_ARCHETYPE_CONTEXT
 		export
 			{NONE} all
 		end
@@ -41,7 +41,7 @@ feature -- Modification
 		do
 			-- common definitions
 			if a_node.is_addressable then
-				node_concept_ref := ontology.term_definition(language, a_node.node_id).item("text")
+				node_concept_ref := current_archetype.ontology.term_definition(language, a_node.node_id).item("text")
 			else
 				node_concept_ref := "unknown"
 			end
@@ -164,7 +164,7 @@ feature -- Modification
 
 					if a_node.children.item.is_addressable then
 						--  someValuesFrom("this:targ_node-concept"))
-						node_concept_ref := ontology.term_definition(language, a_node.children.item.node_id).item("text")
+						node_concept_ref := current_archetype.ontology.term_definition(language, a_node.children.item.node_id).item("text")
 						l_attr_buffer.append(create_indent(2) +
 							symbol(SYM_SOME_VALUES_FROM) + symbol(SYM_OPEN_PAREN) + 
 								"%"this:" + node_concept_ref + "%"" 
@@ -250,10 +250,10 @@ feature -- Modification
 			if a_node.code_count = 1 or a_node.code_count = 0 then
 				-- last_result.append(apply_style(clean(a_node.as_string), STYLE_TERM_REF))
 				-- create last_object_simple_buffer.make(0)
-				if ontology_available and a_node.is_local and a_node.code_count = 1 then
+				if a_node.is_local and a_node.code_count = 1 then
 					-- last_object_simple_buffer.append(format_item(FMT_INDENT))
 					
-					adl_term := ontology.term_definition(language, a_node.code_list.first)
+					adl_term := current_archetype.ontology.term_definition(language, a_node.code_list.first)
 					-- last_object_simple_buffer.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) + 
 					--	adl_term.item("text"), STYLE_COMMENT))			
 				end				
@@ -273,8 +273,8 @@ feature -- Modification
 					else
 						-- last_result.append(apply_style("]", STYLE_TERM_REF))
 					end
-					if ontology_available and a_node.is_local then
-						adl_term := ontology.term_definition(language, a_node.code_list.item)
+					if a_node.is_local then
+						adl_term := current_archetype.ontology.term_definition(language, a_node.code_list.item)
 						-- last_result.append(format_item(FMT_INDENT) + 
 							-- apply_style(format_item(FMT_COMMENT) + 
 							-- adl_term.item("text"), STYLE_COMMENT))			
@@ -299,9 +299,9 @@ feature -- Modification
 			if a_node.items.count = 1 then
 				-- last_result.append(apply_style(clean(a_node.as_string), STYLE_TERM_REF))
 				create last_object_simple_buffer.make(0)
-				if ontology_available and a_node.is_local then
+				if a_node.is_local then
 					-- last_object_simple_buffer.append(format_item(FMT_INDENT))
-					adl_term := ontology.term_definition(language, a_node.items.first.symbol.code_string)
+					adl_term := current_archetype.ontology.term_definition(language, a_node.items.first.symbol.code_string)
 					-- last_object_simple_buffer.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) + 
 						-- adl_term.item("text"), STYLE_COMMENT))			
 				end				
@@ -319,8 +319,8 @@ feature -- Modification
 					else -- pad same number of spaces
 						-- last_result.append (create {STRING}.make_filled(' ', format_item(FMT_LIST_ITEM_SEPARATOR).count))
 					end
-					if ontology_available and a_node.is_local then
-						adl_term := ontology.term_definition(language, a_node.items.item.symbol.code_string)
+					if a_node.is_local then
+						adl_term := current_archetype.ontology.term_definition(language, a_node.items.item.symbol.code_string)
 						-- last_result.append(format_item(FMT_INDENT) + 
 							-- apply_style(format_item(FMT_COMMENT) + 
 							-- adl_term.item("text"), STYLE_COMMENT))			
@@ -339,8 +339,6 @@ feature -- Modification
 
 	serialise_occurrences(a_node: C_OBJECT; depth: INTEGER) is
 			-- any positive range
-		local
-			s: STRING
 		do
 			if not a_node.occurrences.is_equal(default_occurrences) then
 				-- last_result.append(apply_style(symbol(SYM_OCCURRENCES), STYLE_OPERATOR) + format_item(FMT_SPACE))
@@ -353,8 +351,6 @@ feature -- Modification
 		
 	serialise_existence(a_node: C_ATTRIBUTE; depth: INTEGER) is
 			-- can only  be a range of 0..1 or 1..1
-		local
-			s: STRING
 		do
 			if not a_node.existence.is_equal(default_existence) then
 				-- last_result.append(apply_style(symbol(SYM_EXISTENCE), STYLE_OPERATOR) + format_item(FMT_SPACE))

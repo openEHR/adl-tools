@@ -23,14 +23,14 @@ inherit
 		undefine
 			copy, default_create
 		end
-	
+
 	SHARED_ADL_INTERFACE
 		export
 			{NONE} all
 		undefine
 			copy, default_create
-		end
-
+		end	
+		
 	SHARED_UI_RESOURCES
 		export
 			{NONE} all

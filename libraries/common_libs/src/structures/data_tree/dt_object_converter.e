@@ -64,7 +64,14 @@ feature -- Conversion
 							fld_dynamic_type := dynamic_type(fld_val)
 							if is_any_primitive_conforming_type(fld_dynamic_type) then
 								create a_dt_attr.make_single(fld_name)
-								cvt_tbl.item(any_primitive_conforming_type(fld_dynamic_type)).from_obj_proc.call([a_dt_attr, fld_val, Void])	
+								debug ("DT")
+									io.put_string("DT_OBJECT_CONVERTER.populate_dt_from_object: from_obj_proc.call([DT_ATTRIBUTE_NODE(" + 
+										a_dt_attr.rm_attr_name + "), " + fld_val.generating_type + ", Void)%N")
+								end
+								cvt_tbl.item(any_primitive_conforming_type(fld_dynamic_type)).from_obj_proc.call([a_dt_attr, fld_val, Void])
+								debug ("DT")
+									io.put_string("%T(return)%N")
+								end
 								a_dt_obj.put_attribute(a_dt_attr)
 							else -- its a complex object, or else a SEQUENCE or HASH_TABLE of a complex object
 								a_hash_table ?= fld_val
@@ -102,9 +109,23 @@ feature -- Conversion
 		do	
 			if is_special_any_type(a_type_id) then
 				-- FIXME: how to determine the length of the SPECIAL?
+				debug ("DT")
+					io.put_string("DT_OBJECT_CONVERTER.dt_to_object: about to call new_special_any_instance(" + 
+						type_name_of_type(a_type_id) + ")%N")
+				end
 				Result := new_special_any_instance(a_type_id, 1)
+				debug ("DT")
+					io.put_string("%T(return)%N")
+				end
 			else
+				debug ("DT")
+					io.put_string("DT_OBJECT_CONVERTER.dt_to_object: about to call new_instance_of(" + 
+						type_name_of_type(a_type_id) + ")%N")
+				end
 				Result := new_instance_of(a_type_id)
+				debug ("DT")
+					io.put_string("%T(return)%N")
+				end
 
 				-- FIXME: the following is a hacker's attempt to 
 				-- reliably call a reasonable make function? Should call at least 'default_create'
@@ -146,7 +167,14 @@ feature -- Conversion
 						if a_dt_attr.is_multiple and not a_dt_attr.is_empty then
 							if is_container_type(fld_type_id) then
 								-- create container object
+								debug ("DT")
+									io.put_string("DT_OBJECT_CONVERTER.dt_to_object: about to call (2) new_instance_of(" + 
+										type_name_of_type(fld_type_id) + ")%N")
+								end
 								a_gen_field := new_instance_of(fld_type_id)
+								debug ("DT")
+									io.put_string("%T(return)%N")
+								end
 								set_reference_field(i, Result, a_gen_field)
 								
 								-- FIXME: can only deal with one generic parameter for the moment
@@ -156,7 +184,15 @@ feature -- Conversion
 							a_dt_attr.start
 							a_dt_obj_leaf ?= a_dt_attr.item
 							if a_dt_obj_leaf /= Void then
+								debug ("DT")
+									io.put_string("DT_OBJECT_CONVERTER.dt_to_object: from_dt_proc.call([" + 
+										i.out + ", " + Result.generating_type + ", " +
+										a_dt_obj_leaf.value.generating_type + ")%N")
+								end
 								cvt_tbl.item(any_primitive_conforming_type(fld_type_id)).from_dt_proc.call([i, Result, a_dt_obj_leaf.value])
+								debug ("DT")
+									io.put_string("%T(return)%N")
+								end
 							else
 								set_reference_field(i, Result, a_dt_attr.item.as_object(fld_type_id))
 							end
@@ -173,7 +209,14 @@ feature -- Conversion
 			Obj_exists: an_obj /= Void
 			Node_id_valid: a_node_id /= Void implies not a_node_id.is_empty
 		do
+			debug ("DT")
+				io.put_string("DT_OBJECT_CONVERTER.prim_object_to_dt: from_obj_proc.call([DT_ATTRIBUTE_NODE(" + 
+					a_parent.rm_attr_name + "), " + an_obj.generating_type + ", " + a_node_id + ")%N")
+			end
 			cvt_tbl.item(any_primitive_conforming_type(dynamic_type(an_obj))).from_obj_proc.call([a_parent, an_obj, a_node_id])
+			debug ("DT")
+				io.put_string("%T(return)%N")
+			end
 		end
 
 feature {NONE} -- Conversion to object
@@ -219,7 +262,14 @@ feature {NONE} -- Conversion to object
 			if val_type = fld_type then
 				set_reference_field (i, object, value)
 			else
+				debug ("DT")
+					io.put_string("DT_OBJECT_CONVERTER.set_primitive_sequence_field: about to call new_instance_of(" + 
+						type_name_of_type(fld_type) + ")%N")
+				end
 				set_reference_field (i, object, new_instance_of(fld_type))
+				debug ("DT")
+					io.put_string("%T(return)%N")
+				end
 				al_field ?= field(i, object)
 				if al_field /= Void then
 					al_field.make(0)
@@ -388,7 +438,16 @@ feature {NONE} -- Implementation
 					a_hash_table.off
 				loop
 					if is_any_primitive_conforming_type(generic_param_type) then
-						cvt_tbl.item(any_primitive_conforming_type(generic_param_type)).from_obj_proc.call([a_dt_attr, a_hash_table.item_for_iteration, a_hash_table.key_for_iteration.out])	
+						debug ("DT")
+							io.put_string("DT_OBJECT_CONVERTER.create_dt_from_generic_obj: from_obj_proc.call([DT_ATTRIBUTE_NODE(" + 
+								a_dt_attr.rm_attr_name + "), " + a_hash_table.item_for_iteration.generating_type +
+								", " + a_hash_table.key_for_iteration.out + ")%N")
+						end
+						cvt_tbl.item(any_primitive_conforming_type(generic_param_type)).from_obj_proc.call([a_dt_attr, 
+								a_hash_table.item_for_iteration, a_hash_table.key_for_iteration.out])	
+						debug ("DT")
+							io.put_string("%T(return)%N")
+						end
 					else
 						populate_dt_from_object(a_hash_table.item_for_iteration, 
 							create_complex_object_node(a_dt_attr, a_hash_table.key_for_iteration.out))
@@ -402,7 +461,16 @@ feature {NONE} -- Implementation
 					a_sequence.off
 				loop
 					if is_any_primitive_conforming_type(generic_param_type) then
-						cvt_tbl.item(any_primitive_conforming_type(generic_param_type)).from_obj_proc.call([a_dt_attr, a_sequence.item, a_sequence.index.out])	
+						debug ("DT")
+							io.put_string("DT_OBJECT_CONVERTER.create_dt_from_generic_obj(2): from_obj_proc.call([DT_ATTRIBUTE_NODE(" + 
+								a_dt_attr.rm_attr_name + "), " + a_sequence.item.generating_type +
+								", " + a_sequence.index.out + ")%N")
+						end
+						cvt_tbl.item(any_primitive_conforming_type(generic_param_type)).from_obj_proc.call([a_dt_attr, 
+								a_sequence.item, a_sequence.index.out])	
+						debug ("DT")
+							io.put_string("%T(return)%N")
+						end
 					else
 						populate_dt_from_object(a_sequence.item, 
 							create_complex_object_node(a_dt_attr, a_sequence.index.out))

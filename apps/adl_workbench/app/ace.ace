@@ -12,8 +12,9 @@ default
 	disabled_debug ("adl_invariant")
 	disabled_debug ("adl_parse")
 	disabled_debug ("adl_tree")
-	debug ("dadl_parse")
+	disabled_debug ("dadl_parse")
 	disabled_debug ("dlg_dispatcher")
+	disabled_debug ("dt")
 	disabled_debug ("exclude list")
 	disabled_debug ("gelex")
 	disabled_debug ("geyacc")
@@ -64,7 +65,7 @@ cluster
 
 	all adl_parser:		"$OPENEHR\ref_impl_eiffel\components\adl_parser\src"
 		exclude
-			".svn"; 
+			".svn";
 		default
 			assertion (no)
 			assertion (require)

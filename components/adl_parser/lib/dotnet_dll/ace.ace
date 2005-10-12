@@ -2,7 +2,7 @@ system
 	"adl_dotnet_lib"
 
 root
-	DOTNET_ADL_INTERFACE: make
+	ADL_INTERFACE: make
 
 default
 	assertion (require)
@@ -12,11 +12,13 @@ default
 	disabled_debug ("adl_parse")
 	disabled_debug ("adl_tree")
 	disabled_debug ("dadl_parse")
+	disabled_debug ("dt")
 	disabled_debug ("exclude list")
 	disabled_debug ("gelex")
 	disabled_debug ("geyacc")
 	disabled_debug ("include list")
 	disabled_debug ("og_path_parse")
+	disabled_debug ("refactor_fixme")
 	debug (no)
 	line_generation (no)
 	profile (no)
@@ -30,7 +32,7 @@ default
 	namespace ("openehr")
 	company ("Ocean Informatics")
 	product ("ADL Parser")
-	copyright ("Ocean Informatics, 2003, 2004")
+	copyright ("Ocean Informatics, 2003-2005")
 	msil_clr_version ("v1.0.3705")
 	msil_assembly_compatibility ("None")
 	check_vape (yes)
@@ -40,10 +42,12 @@ default
 	array_optimization (no)
 	dead_code_removal (yes)
 	dynamic_runtime (no)
-	exception_trace (no)
+	exception_trace (yes)
 	inlining (no)
 	multithreaded (no)
 
+
+--"shared_dt_object_converter.e"; 
 
 cluster
 	all adl_parser:		"$OPENEHR\ref_impl_eiffel\components\adl_parser\src"
@@ -71,13 +75,14 @@ cluster
 				end
 			C_QUANTITY
 				end
+			C_QUANTITY_ITEM
+				end
 		end
 
 	all common_libs:		"$OPENEHR\ref_impl_eiffel\libraries\common_libs\src"
 		exclude
 			".svn"; 
 		end
-
 
 	gobo:		"$GOBO\library"
 

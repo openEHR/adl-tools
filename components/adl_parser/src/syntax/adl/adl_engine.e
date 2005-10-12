@@ -20,7 +20,7 @@ inherit
 			{ANY} archetype_serialiser_formats, has_archetype_serialiser_format
 		end
 		
-	SHARED_ADL_INTERFACE
+	SHARED_ARCHETYPE_CONTEXT
 		export
 			{NONE} all
 		end
@@ -61,6 +61,14 @@ feature -- Access
 			
 	archetype: ARCHETYPE
 			-- set if parse succeeded or if created new
+			
+	ontology: ARCHETYPE_ONTOLOGY is
+			-- retrieve ontology from current archetype
+		require
+			archetype_available
+		do
+			Result := archetype.ontology
+		end		
 
 	serialised_archetype: STRING
 	
@@ -86,9 +94,11 @@ feature -- Commands
 			Primary_language_valid: a_primary_language /= void and then not a_primary_language.is_empty
 		do
 			source := Void
-			create archetype.make_minimal(create {ARCHETYPE_ID}.make(a_im_originator, a_im_name, a_im_entity, "UNKNOWN", "draft"), a_primary_language)
+			create archetype.make_minimal(create {ARCHETYPE_ID}.make(a_im_originator, a_im_name, a_im_entity, 
+				"UNKNOWN", "draft"), a_primary_language)
 			set_language(archetype.ontology.primary_language)
 			archetype_id := archetype.archetype_id
+			set_current_archetype(archetype)
 		ensure
 			Archetype_available: archetype_available and archetype.is_valid
 		end
@@ -193,7 +203,8 @@ feature -- Commands
 								    adl_parser.concept,
 								    arch_desc,	-- may be Void
 								    definition_context.tree,
-								    create {ARCHETYPE_ONTOLOGY}.make_from_tree(ontology_context.tree, adl_parser.concept)
+								    create {ARCHETYPE_ONTOLOGY}.make_from_tree(ontology_context.tree, 
+								    	adl_parser.concept)
 							    )
 							    if adl_parser.parent_archetype_id /= Void then
 								    archetype.set_parent_archetype_id(adl_parser.parent_archetype_id)
@@ -204,6 +215,7 @@ feature -- Commands
 							    if not archetype.is_valid then
 								    parse_error_text := archetype.errors		
 							    end
+				    			set_current_archetype(archetype)
 							end
 						end
 					end
@@ -219,7 +231,6 @@ feature -- Commands
 		do
 			synchronise_from_archetype
 			description_context.serialise(a_format)
-
 			definition_context.serialise(a_format)
 			
 			if archetype.has_invariants then

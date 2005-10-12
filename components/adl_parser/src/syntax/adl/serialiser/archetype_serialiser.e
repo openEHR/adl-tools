@@ -16,7 +16,7 @@ deferred class ARCHETYPE_SERIALISER
 inherit
 	ANY_SERIALISER
 
-	SHARED_ADL_INTERFACE
+	SHARED_ARCHETYPE_CONTEXT
 		export
 			{NONE} all
 		end

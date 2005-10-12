@@ -127,105 +127,120 @@ feature {NONE} -- Definitions
 	
 feature -- Access
 
-	primitive_sequence_conforming_type(a_type: INTEGER): INTEGER is
-			-- Type which is the primitive_sequence type to which a_type conforms
+	primitive_sequence_conforming_type(a_type_id: INTEGER): INTEGER is
+			-- Type which is the primitive_sequence type to which a_type_id conforms
 			-- Returns 0 if not found
 		require
-			Type_valid: a_type >= 0
+			Type_valid: a_type_id >= 0
 		do
-			if primitive_sequence_conforming_types.has(a_type) then
-				Result := primitive_sequence_conforming_types.item(a_type)
-			else
-				if is_primitive_sequence_type(a_type) then
-					Result := a_type
+			if type_conforms_to(a_type_id, sequence_any_type_id) then
+				if primitive_sequence_conforming_types.has(a_type_id) then
+					Result := primitive_sequence_conforming_types.item(a_type_id)
 				else
-					from
-						primitive_sequence_types.start
-					until
-						primitive_sequence_types.off or Result /= 0
-					loop
-						if type_conforms_to(a_type, primitive_sequence_types.item) then
-							Result := primitive_sequence_types.item
+					if is_primitive_sequence_type(a_type_id) then
+						Result := a_type_id
+					else
+						from
+							primitive_sequence_types.start
+						until
+							primitive_sequence_types.off or Result /= 0
+						loop
+							debug ("DT")
+								io.put_string(generator + 
+									".primitive_sequence_conforming_type: call to type_conforms_to(" + 
+										type_name_of_type(a_type_id) + ", " + 
+										type_name_of_type(primitive_sequence_types.item)
+										+ ")%N")
+							end
+							if type_conforms_to(a_type_id, primitive_sequence_types.item) then
+								Result := primitive_sequence_types.item
+							end
+							debug ("DT")
+								io.put_string("%T(return)%N")
+							end
+							primitive_sequence_types.forth
 						end
-						primitive_sequence_types.forth
 					end
-				end
-				if Result /= 0 then
-					primitive_sequence_conforming_types.put(Result, a_type)
+					if Result /= 0 then
+						primitive_sequence_conforming_types.put(Result, a_type_id)
+					end
 				end
 			end
 		end
 	
-	any_primitive_conforming_type(a_type: INTEGER): INTEGER is
-			-- Returns a_type if in any of the primitive types which a_type, or 
-			-- one of the primitive_sequence types to which a_type conforms
+	any_primitive_conforming_type(a_type_id: INTEGER): INTEGER is
+			-- Returns a_type_id if in any of the primitive types which
+			-- a_type_id, or 
+			-- one of the primitive_sequence types to which a_type_id conforms
 			-- or 0 if not found
 		require
-			Type_valid: a_type >= 0
+			Type_valid: a_type_id >= 0
 		do
-			if is_any_primitive_type(a_type) then
-				Result := a_type
-			else
-				Result := primitive_sequence_conforming_type(a_type)
+			if is_any_primitive_type(a_type_id) then
+				Result := a_type_id
+			elseif generic_count_of_type(a_type_id) > 0 then
+				Result := primitive_sequence_conforming_type(a_type_id)
 			end
 		end
 
 feature -- Status Report
 
-	is_any_primitive_type(a_type: INTEGER): BOOLEAN is
-			-- True if a_type is any of the primitive, primitive_sequence or
+	is_any_primitive_type(a_type_id: INTEGER): BOOLEAN is
+			-- True if a_type_id is any of the primitive, primitive_sequence or
 			-- primitive_interval types
 		require
-			Type_valid: a_type >= 0
+			Type_valid: a_type_id >= 0
 		do
-			Result := is_primitive_type(a_type) or 
-					is_primitive_sequence_type(a_type) or 
-					is_primitive_interval_type(a_type)
+			Result := is_primitive_type(a_type_id)
+			if not Result and generic_count_of_type(a_type_id) > 0 then
+				Result := is_primitive_sequence_type(a_type_id) or 
+						is_primitive_interval_type(a_type_id)
+			end
 		end
 
-	is_any_primitive_conforming_type(a_type: INTEGER): BOOLEAN is
-			-- True if a_type is any of the primitive, primitive_sequence or
+	is_any_primitive_conforming_type(a_type_id: INTEGER): BOOLEAN is
+			-- True if a_type_id is any of the primitive, primitive_sequence or
 			-- primitive_interval types, or conforms to one of those
 		require
-			Type_valid: a_type >= 0
+			Type_valid: a_type_id >= 0
 		do
-			Result := any_primitive_conforming_type(a_type) /= 0
+			Result := any_primitive_conforming_type(a_type_id) /= 0
 		end
 
-	is_primitive_type(a_type: INTEGER): BOOLEAN is
+	is_primitive_type(a_type_id: INTEGER): BOOLEAN is
 			-- True if one of the types STRING, INTEGER, REAL, BOOLEAN, CHARACTER, 
 			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION
 		require
-			Type_valid: a_type >= 0
+			Type_valid: a_type_id >= 0
 		do
-			Result := primitive_types.has(a_type)
+			Result := primitive_types.has(a_type_id)
 		end
 
-	is_primitive_sequence_type(a_type: INTEGER): BOOLEAN is
-			-- True if a_type conforms to SEQUENCE of STRING, INTEGER, REAL, BOOLEAN, CHARACTER, 
+	is_primitive_sequence_type(a_type_id: INTEGER): BOOLEAN is
+			-- True if a_type_id conforms to SEQUENCE of STRING, INTEGER, REAL, BOOLEAN, CHARACTER, 
 			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION, CODE_PHRASE, URI
 		require
-			Type_valid: a_type >= 0
+			Type_valid: a_type_id >= 0
 		do
-			Result := primitive_sequence_types.has(a_type)
+			Result := primitive_sequence_types.has(a_type_id)
 		end
 
-	is_primitive_interval_type(a_type: INTEGER): BOOLEAN is
-			-- True if a_type conforms to INTERVAL of STRING, INTEGER, REAL, BOOLEAN, CHARACTER, 
+	is_primitive_interval_type(a_type_id: INTEGER): BOOLEAN is
+			-- True if a_type_id conforms to INTERVAL of STRING, INTEGER, REAL, BOOLEAN, CHARACTER, 
 			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION, CODE_PHRASE, URI
 		require
-			Type_valid: a_type >= 0
+			Type_valid: a_type_id >= 0
 		do
-			Result := primitive_interval_types.has(a_type)
+			Result := primitive_interval_types.has(a_type_id)
 		end
 
-	is_primitive_sequence_conforming_type(a_type: INTEGER): BOOLEAN is
-			-- True if a_type is either any of the primitive_sequence types, or else
+	is_primitive_sequence_conforming_type(a_type_id: INTEGER): BOOLEAN is
+			-- True if a_type_id is either any of the primitive_sequence types, or else
 			-- a type which conforms to one of those types
 		require
-			Type_valid: a_type >= 0
+			Type_valid: a_type_id >= 0
 		do
-			Result := primitive_sequence_conforming_type(a_type) /= 0
+			Result := primitive_sequence_conforming_type(a_type_id) /= 0
 		end
 	
 	has_primitive_type(an_obj: ANY): BOOLEAN is
@@ -259,18 +274,30 @@ feature -- Status Report
 			-- True if a_type_id is of a type which is a SEQUENCE or HASH_TABLE, which are the only
 			-- CONTAINERs used in DT structures
 		do
-			Result := type_conforms_to(a_type_id, sequence_type) or type_conforms_to(a_type_id, hash_table_type)
+			debug ("DT")
+				io.put_string(generator + 
+					".is_container_type: call to type_conforms_to(" + 
+						type_name_of_type(a_type_id) + ", " + 
+						type_name_of_type(sequence_any_type_id) + "), type_conforms_to(" + 
+						type_name_of_type(a_type_id) + ", " + 
+						type_name_of_type(hash_table_any_hashable_type_id) + ")%N")
+			end
+			Result := type_conforms_to(a_type_id, sequence_any_type_id) or
+				type_conforms_to(a_type_id, hash_table_any_hashable_type_id)
+			debug ("DT")
+				io.put_string("%T(return)%N")
+			end
 		end
 		
 feature {NONE} -- Implementation
 
-	sequence_type: INTEGER is
+	sequence_any_type_id: INTEGER is
 			-- dynamic type of SEQUENCE[ANY]
 		once
 			Result := dynamic_type_from_string("SEQUENCE[ANY]")
 		end
 
-	hash_table_type: INTEGER is
+	hash_table_any_hashable_type_id: INTEGER is
 			-- dynamic type of HASH_TABLE[ANY, HASHABLE]
 		local
 			-- these locals are to ensure that the types are compiled into the system

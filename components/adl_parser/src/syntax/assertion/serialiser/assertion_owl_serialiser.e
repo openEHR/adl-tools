@@ -20,11 +20,6 @@ inherit
 	
 	OWL_DEFINITIONS
 	
-	SHARED_ADL_INTERFACE
-		export
-			{NONE} all
-		end
-	
 creation
 	make
 

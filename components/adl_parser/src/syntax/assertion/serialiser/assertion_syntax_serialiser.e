@@ -26,11 +26,6 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_ADL_INTERFACE
-		export
-			{NONE} all
-		end
-			
 creation
 	make
 	

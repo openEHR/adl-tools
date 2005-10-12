@@ -17,7 +17,7 @@ feature -- Access
 
 	default_occurrences: OE_INTERVAL[INTEGER] is 
 			-- default object occurrences object representing 1..1
-		do
+		once
 			create Result.make_bounded(1,1, True, True)
 		ensure
 			Result_exists: Result /= Void
@@ -25,7 +25,7 @@ feature -- Access
 
 	default_existence: OE_INTERVAL[INTEGER] is 
 			-- default property existence object representing 1..1
-		do
+		once
 			create Result.make_bounded(1,1, True, True)
 		ensure
 			Result_exists: Result /= Void

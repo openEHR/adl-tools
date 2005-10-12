@@ -102,7 +102,7 @@ feature -- Serialisation
 			last_result.append(create_indent(1) + xml_tag_start(symbol(SYM_CONCEPT), Void) + format_item(FMT_NEWLINE))
 			last_result.append(create_indent(2) + xml_tag_enclose(tag(TAG_CODE), target.concept_code, Void) + format_item(FMT_NEWLINE))
 			last_result.append(create_indent(2) + xml_tag_enclose(tag(TAG_TEXT), 
-				ontology.term_definition(language, target.concept_code).item("text"), Void) + format_item(FMT_NEWLINE))
+				current_archetype.ontology.term_definition(language, target.concept_code).item("text"), Void) + format_item(FMT_NEWLINE))
 			last_result.append(create_indent(1) + xml_tag_end(symbol(SYM_CONCEPT)) + format_item(FMT_NEWLINE))
 		end
 

@@ -26,7 +26,7 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_ADL_INTERFACE
+	SHARED_ARCHETYPE_CONTEXT
 		export
 			{NONE} all
 		end
@@ -42,12 +42,12 @@ feature -- Modification
 			s:STRING
 		do
 			last_result.append(create_indent(depth))
-			
 			last_result.append(apply_style(a_node.rm_type_name, STYLE_IDENTIFIER))
 
 			if a_node.is_addressable then
 				last_result.append(apply_style("[" + a_node.node_id + "]", STYLE_TERM_REF))
 			end
+	
 			last_result.append(format_item(FMT_SPACE))
 			serialise_occurrences(a_node, depth)
 			last_result.append(apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
@@ -55,10 +55,10 @@ feature -- Modification
 
 			if a_node.any_allowed then
 				last_result.append(apply_style(symbol(SYM_ANY), STYLE_VALUE))
-			elseif ontology_available and then a_node.is_addressable then
+			elseif a_node.is_addressable then
 				s := a_node.node_id
 				last_result.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) + 
-					ontology.term_definition(language, s).item("text"), STYLE_COMMENT))
+					current_archetype.ontology.term_definition(language, s).item("text"), STYLE_COMMENT))
 				last_result.append(format_item(FMT_NEWLINE))
 			else
 				last_result.append(format_item(FMT_NEWLINE))
@@ -95,10 +95,10 @@ feature -- Modification
 
 			if a_node.any_allowed then
 				last_result.append(apply_style(symbol(SYM_ANY), STYLE_VALUE))
-			elseif ontology_available and then a_node.is_addressable then
+			elseif a_node.is_addressable then
 				s := a_node.node_id
 				last_result.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) + 
-					ontology.term_definition(language, s).item("text"), STYLE_COMMENT))
+					current_archetype.ontology.term_definition(language, s).item("text"), STYLE_COMMENT))
 				last_result.append(format_item(FMT_NEWLINE))
 			else
 				last_result.append(format_item(FMT_NEWLINE))
@@ -204,13 +204,11 @@ feature -- Modification
 			last_result.remove_tail(format_item(FMT_NEWLINE).count)	-- remove last newline due to OBJECT_REL_NODE	
 			last_result.append(apply_style(clean(a_node.as_string), STYLE_TERM_REF))
 			create last_object_simple_buffer.make(0)
-			if ontology_available then
-				last_object_simple_buffer.append(format_item(FMT_INDENT))
-				
-				-- add the comment
-				last_object_simple_buffer.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) + 
-						ontology.constraint_definition(language, a_node.target).item("text"), STYLE_COMMENT))
-			end				
+			last_object_simple_buffer.append(format_item(FMT_INDENT))
+			
+			-- add the comment
+			last_object_simple_buffer.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) + 
+					current_archetype.ontology.constraint_definition(language, a_node.target).item("text"), STYLE_COMMENT))
 			last_object_simple := True
 		end
 		
@@ -259,10 +257,10 @@ feature -- Modification
 				last_result.remove_tail(format_item(FMT_NEWLINE).count)	-- remove last newline due to OBJECT_REL_NODE	
 				last_result.append(apply_style(clean(a_node.as_string), STYLE_TERM_REF))
 				create last_object_simple_buffer.make(0)
-				if ontology_available and a_node.is_local and a_node.code_count = 1 then
+				if a_node.is_local and a_node.code_count = 1 then
 					last_object_simple_buffer.append(format_item(FMT_INDENT))
 					
-					adl_term := ontology.term_definition(language, a_node.code_list.first)
+					adl_term := current_archetype.ontology.term_definition(language, a_node.code_list.first)
 					last_object_simple_buffer.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) + 
 						adl_term.item("text"), STYLE_COMMENT))			
 				end				
@@ -287,8 +285,8 @@ feature -- Modification
 						last_result.append(apply_style("]", STYLE_TERM_REF))
 					end
 
-					if ontology_available and a_node.is_local then
-						adl_term := ontology.term_definition(language, a_node.code_list.item)
+					if a_node.is_local then
+						adl_term := current_archetype.ontology.term_definition(language, a_node.code_list.item)
 						last_result.append(format_item(FMT_INDENT) + 
 							apply_style(format_item(FMT_COMMENT) + 
 							adl_term.item("text"), STYLE_COMMENT))			
@@ -323,9 +321,9 @@ feature -- Modification
 				last_result.remove_tail(format_item(FMT_NEWLINE).count)	-- remove last newline due to OBJECT_REL_NODE	
 				last_result.append(apply_style(clean(a_node.as_string), STYLE_TERM_REF))
 				create last_object_simple_buffer.make(0)
-				if ontology_available and a_node.is_local then
+				if a_node.is_local then
 					last_object_simple_buffer.append(format_item(FMT_INDENT))
-					adl_term := ontology.term_definition(language, a_node.items.first.symbol.code_string)
+					adl_term := current_archetype.ontology.term_definition(language, a_node.items.first.symbol.code_string)
 					last_object_simple_buffer.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) + 
 						adl_term.item("text"), STYLE_COMMENT))			
 				end				
@@ -346,8 +344,8 @@ feature -- Modification
 					else -- pad same number of spaces
 						last_result.append (create {STRING}.make_filled(' ', format_item(FMT_LIST_ITEM_SEPARATOR).count))
 					end
-					if ontology_available and a_node.is_local then
-						adl_term := ontology.term_definition(language, a_node.items.item.symbol.code_string)
+					if a_node.is_local then
+						adl_term := current_archetype.ontology.term_definition(language, a_node.items.item.symbol.code_string)
 						last_result.append(format_item(FMT_INDENT) + 
 							apply_style(format_item(FMT_COMMENT) + 
 							adl_term.item("text"), STYLE_COMMENT))			
