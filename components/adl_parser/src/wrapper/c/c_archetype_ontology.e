@@ -92,6 +92,12 @@ feature -- Access
 			obj := ontology.constraint_definition(c_a_lang.string, c_a_term_code.string).out.to_c
 			Result := $obj
 		end
+	
+	ontology_constraint_definitions_count : INTEGER is
+			-- return the number of constraint definitions there are
+		do
+			Result := ontology.constraint_definitions.count
+		end
 
 	ontology_languages_available: POINTER is
 		do

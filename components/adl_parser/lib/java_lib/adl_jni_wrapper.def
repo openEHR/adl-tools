@@ -261,3 +261,4 @@ C_ADL_INTERFACE (make) : create_c_coded_term_from_terminology_id
 C_ADL_INTERFACE (make) : ontology_term_binding_code_string
 C_ADL_INTERFACE (make) : ontology_term_bindings_for_terminology_codes
 C_ADL_INTERFACE (make) : ontology_term_bindings_for_terminology_count
+C_ADL_INTERFACE (make) : ontology_constraint_definitions_count
