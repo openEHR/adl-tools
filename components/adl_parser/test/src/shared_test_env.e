@@ -15,6 +15,17 @@ indexing
 class SHARED_TEST_ENV
 	
 inherit
+	INTERNAL
+		export
+			{NONE} all
+		end
+		
+	SHARED_DT_SERIALISERS
+		export
+			{NONE} all
+			{ANY} has_dt_serialiser_format
+		end
+
 	SHARED_ADL_INTERFACE
 
 	SHARED_C_ADL_INTERFACE
@@ -23,6 +34,12 @@ feature -- Access
 
 	serialise_format: STRING is "adl"
 	
+	dadl_engine: DADL_ENGINE is
+			-- 
+		once
+			create Result.make
+		end
+	    
 feature -- Conversion
 
 	print_list (a_list: LIST[STRING]):STRING is

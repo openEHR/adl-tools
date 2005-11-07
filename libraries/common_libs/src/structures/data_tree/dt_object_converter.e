@@ -1,6 +1,9 @@
 indexing
 	component:   "openEHR Archetype Project"
-	description: "object birectional converter"
+	description: "[
+				 object birectional converter. Errors due to mismatching data and object 
+				 model reported in last_op_fail and fail_reason.
+				 ]"
 	keywords:    "dADL"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
@@ -15,7 +18,12 @@ class DT_OBJECT_CONVERTER
 
 inherit
 	DT_FACTORY
-		
+	
+	MESSAGE_BILLBOARD
+		export
+			{NONE} all
+		end
+	
 feature -- Conversion
 
 	object_to_dt(an_obj: ANY): DT_COMPLEX_OBJECT_NODE is
@@ -103,10 +111,11 @@ feature -- Conversion
 			a_dt_attr: DT_ATTRIBUTE_NODE
 			a_dt_obj_leaf: DT_OBJECT_LEAF
 			fld_name: STRING
-			fld_type_id, i: INTEGER
+			fld_type_id, equiv_prim_type_id, i: INTEGER
 			a_gen_field: ANY
 			a_dt_conv: DT_CONVERTIBLE
-		do	
+			exception_caught: BOOLEAN
+		do
 			if is_special_any_type(a_type_id) then
 				-- FIXME: how to determine the length of the SPECIAL?
 				debug ("DT")
@@ -135,72 +144,92 @@ feature -- Conversion
 					a_dt_conv.make
 				end
 			end
-			
-			if generic_count_of_type(a_type_id) > 0 then
-				-- we are on a generic object, and the correspoding DT object must 
-				-- have a single attribute which is_generic and is_multiple
-				-- we don't go through its fields, instead we just go to the next 
-				-- object level down in the DT tree
-				if not a_dt_obj.is_empty then
-					a_dt_obj.start -- get first attribute
-					a_dt_attr := a_dt_obj.item
-					if a_dt_attr.is_generic then
-						set_generic_object_data_from_dt (Result, a_dt_attr)
-					else
-						-- should never get here: it means that the DT data parsed as a 
-						-- nested generic, but that the corresponding object types are not
-					end				
-				end
-			else
-				-- for each field in the object
-				from
-					i := 1
-				until
-					i > field_count(Result)
-				loop
-					fld_name := field_name(i, Result)
-
-					if a_dt_obj.has_attribute(fld_name) then
-						a_dt_attr := a_dt_obj.attribute(fld_name)
-
-						fld_type_id := field_static_type_of_type(i, a_type_id)
-						if a_dt_attr.is_multiple and not a_dt_attr.is_empty then
-							if is_container_type(fld_type_id) then
-								-- create container object
-								debug ("DT")
-									io.put_string("DT_OBJECT_CONVERTER.dt_to_object: about to call (2) new_instance_of(" + 
-										type_name_of_type(fld_type_id) + ")%N")
-								end
-								a_gen_field := new_instance_of(fld_type_id)
-								debug ("DT")
-									io.put_string("%T(return)%N")
-								end
-								set_reference_field(i, Result, a_gen_field)
-								
-								-- FIXME: can only deal with one generic parameter for the moment
-								set_generic_object_data_from_dt (a_gen_field, a_dt_attr)				
-							end
+				
+			if not exception_caught then
+				if generic_count_of_type(a_type_id) > 0 then
+					-- we are on a generic object, and the correspoding DT object must 
+					-- have a single attribute which is_generic and is_multiple
+					-- we don't go through its fields, instead we just go to the next 
+					-- object level down in the DT tree
+					if not a_dt_obj.is_empty then
+						a_dt_obj.start -- get first attribute
+						a_dt_attr := a_dt_obj.item
+						if a_dt_attr.is_generic then
+							set_generic_object_data_from_dt (Result, a_dt_attr)
 						else
-							a_dt_attr.start
-							a_dt_obj_leaf ?= a_dt_attr.item
-							if a_dt_obj_leaf /= Void then
-								debug ("DT")
-									io.put_string("DT_OBJECT_CONVERTER.dt_to_object: from_dt_proc.call([" + 
-										i.out + ", " + Result.generating_type + ", " +
-										a_dt_obj_leaf.value.generating_type + ")%N")
-								end
-								cvt_tbl.item(any_primitive_conforming_type(fld_type_id)).from_dt_proc.call([i, Result, a_dt_obj_leaf.value])
-								debug ("DT")
-									io.put_string("%T(return)%N")
+							-- should never get here: it means that the DT data parsed as a 
+							-- nested generic, but that the corresponding object types are not
+						end				
+					end
+				else
+					-- for each field in the object
+					from
+						i := 1
+					until
+						i > field_count(Result)
+					loop
+						fld_name := field_name(i, Result)
+
+						if a_dt_obj.has_attribute(fld_name) then
+							a_dt_attr := a_dt_obj.attribute(fld_name)
+
+							fld_type_id := field_static_type_of_type(i, a_type_id)
+							if a_dt_attr.is_multiple and not a_dt_attr.is_empty then
+								if is_container_type(fld_type_id) then
+									-- create container object
+									debug ("DT")
+										io.put_string("DT_OBJECT_CONVERTER.dt_to_object: about to call (2) new_instance_of(" + 
+											type_name_of_type(fld_type_id) + ")%N")
+									end
+									a_gen_field := new_instance_of(fld_type_id)
+									debug ("DT")
+										io.put_string("%T(return)%N")
+									end
+									set_reference_field(i, Result, a_gen_field)
+									
+									-- FIXME: can only deal with one generic parameter for the moment
+									set_generic_object_data_from_dt (a_gen_field, a_dt_attr)
+								else -- type in parsed data is container, but is not in Eiffel class		
+									post_error(Current, "dt_to_object", "container_type_mismatch", 
+										<<type_name_of_type(fld_type_id), type_name_of_type(a_type_id)>>
+									)
 								end
 							else
-								set_reference_field(i, Result, a_dt_attr.item.as_object(fld_type_id))
+								a_dt_attr.start
+								a_dt_obj_leaf ?= a_dt_attr.item
+								if a_dt_obj_leaf /= Void then
+									equiv_prim_type_id := any_primitive_conforming_type(fld_type_id)
+									if equiv_prim_type_id /= 0 then
+										debug ("DT")
+											io.put_string("DT_OBJECT_CONVERTER.dt_to_object: from_dt_proc.call([" + 
+												i.out + ", " + Result.generating_type + ", " +
+												a_dt_obj_leaf.value.generating_type + ")%N")
+										end
+										cvt_tbl.item(equiv_prim_type_id).from_dt_proc.call([i, Result, a_dt_obj_leaf.value])
+										debug ("DT")
+											io.put_string("%T(return)%N")
+										end									
+									else -- type implied in data is primitive, but it is not a primitive type in Eiffel class
+										post_error(Current, "dt_to_object", "primitive_type_mismatch", 
+											<<type_name_of_type(fld_type_id), type_name_of_type(a_type_id)>>
+										)
+									end
+								else -- must be a reference type field
+									set_reference_field(i, Result, a_dt_attr.item.as_object(fld_type_id))
+								end
 							end
 						end
+						i := i + 1
 					end
-					i := i + 1
 				end
 			end
+		rescue
+			if equiv_prim_type_id /= 0 then -- this must have been an argument type mismatch which killed the from_dt_proc.call[]
+				post_error(Current, "dt_to_object", "dt_proc_arg_type_mismatch", 
+					<<type_name_of_type(fld_type_id), type_name_of_type(a_type_id)>>)
+			end
+			exception_caught := True
+			retry
 		end
 
 	prim_object_to_dt(a_parent: DT_ATTRIBUTE_NODE; an_obj: ANY; a_node_id: STRING) is

@@ -55,6 +55,11 @@ inherit
 			{NONE} all
 		end
 
+	MESSAGE_BILLBOARD
+		export
+			{NONE} all
+		end
+
 	EXCEPTIONS
 		export
 			{NONE} all
@@ -175,12 +180,13 @@ feature -- Commands
 			if not exception_encountered then
 				adl_engine.create_new_archetype(a_im_originator, a_im_name, a_im_entity, a_primary_language)
 			else
-				status.append("%NSAVE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear")
+				post_error(Current, "create_new_archetype", "create_new_archetype_e1", Void)
 			end
-		rescue
 			status.wipe_out
-			status.append("Software Exception " + exception.out + " caught; stack:%N")
-			status.append(exception_trace)
+			status.append(billboard_content)
+			clear_billboard
+		rescue
+			post_error(Current, "create_new_archetype", "report_exception", <<exception.out, exception_trace>>)
 			exception_encountered := True
 			retry
 		end
@@ -196,12 +202,13 @@ feature -- Commands
 			if not exception_encountered then
 				adl_engine.specialise_archetype(specialised_domain_concept)
 			else
-				status.append("%NSAVE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear")
+				post_error(Current, "specialise_archetype", "specialise_archetype_e1", Void)
 			end
-		rescue
 			status.wipe_out
-			status.append("Software Exception " + exception.out + " caught; stack:%N")
-			status.append(exception_trace)
+			status.append(billboard_content)
+			clear_billboard
+		rescue
+			post_error(Current, "specialise_archetype", "report_exception", <<exception.out, exception_trace>>)
 			exception_encountered := True
 			retry
 		end
@@ -218,17 +225,18 @@ feature -- Commands
 				if not file_context.last_op_failed then
 					adl_engine.set_source(file_context.read_file)
 				else	
-					status.append("Error: " + file_context.last_op_fail_reason)
+					post_error(Current, "open_adl_file", "general_error", <<file_context.last_op_fail_reason>>)
 				end
 			else
-				status.append("%NOPEN FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear")
+				post_error(Current, "open_adl_file", "open_adl_file_e1", Void)
 			end
+			status.wipe_out
+			status.append(billboard_content)
+			clear_billboard
 		ensure
 			archetype_source_loaded or else not status.is_empty
 		rescue
-			status.wipe_out
-			status.append("Software Exception " + exception.out + " caught; stack:%N")
-			status.append(exception_trace)
+			post_error(Current, "open_adl_file", "report_exception", <<exception.out, exception_trace>>)
 			exception_encountered := True
 			retry
 		end
@@ -253,23 +261,24 @@ feature -- Commands
 					adl_engine.serialise(save_format)
 					if file_context.file_writable(file_path) then
 						file_context.save_file(file_path, adl_engine.serialised_archetype)
-						status.append("Serialised: " + save_format + ", " + language + " to file " + file_path + "%N")
+						post_info(Current, "save_archetype", "save_archetype_i1", <<save_format, language, file_path>>)
 						save_succeeded := True
 					else
-						status.append("Serialise failed - could not write to file " + file_path + "%N")
+						post_error(Current, "save_archetype", "save_archetype_e1", <<file_path>>)
 					end
 				else
-					status.append("Serialisation failed; archetype not valid: " + adl_engine.archetype.errors + "%N")
+					post_error(Current, "save_archetype", "save_archetype_e2", <<adl_engine.archetype.errors>>)
 				end
 			else
-				status.append("%NSAVE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear")
+				post_error(Current, "save_archetype", "save_archetype_e3", Void)
 			end
+			status.wipe_out
+			status.append(billboard_content)
+			clear_billboard
 		ensure
 			save_succeeded or else not status.is_empty
 		rescue
-			status.wipe_out
-			status.append("Software Exception " + exception.out + " caught; stack:%N")
-			status.append(exception_trace)
+			post_error(Current, "save_archetype", "report_exception", <<exception.out, exception_trace>>)
 			exception_encountered := True
 			retry
 		end
@@ -281,21 +290,21 @@ feature -- Commands
 			serialise_format_valid: serialise_format /= Void and then has_archetype_serialiser_format(serialise_format)
 		do
 			if not exception_encountered then
-				status.wipe_out
 				if adl_engine.archetype.is_valid then
 					adl_engine.serialise(serialise_format)
 				else
-					status.append("Serialisation failed; archetype not valid: " + adl_engine.archetype.errors + "%N")
+					post_error(Current, "serialise_archetype", "serialise_archetype_e1", <<adl_engine.archetype.errors>>)
 				end
 			else
-				status.append("%NSERIALISE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear")
+				post_error(Current, "serialise_archetype", "serialise_archetype_e2", Void)
 			end
+			status.wipe_out
+			status.append(billboard_content)
+			clear_billboard
 		ensure
 			serialised_archetype /= Void or else not status.is_empty
 		rescue
-			status.wipe_out
-			status.append("Software Exception " + exception.out + " caught; stack:%N")
-			status.append(exception_trace)
+			post_error(Current, "serialise_archetype", "report_exception", <<exception.out, exception_trace>>)
 			exception_encountered := True
 			retry
 		end
@@ -308,12 +317,11 @@ feature -- Commands
 			if not exception_encountered then
 				parse_succeeded := False
 				adl_engine.parse
-				status.wipe_out
 				if not adl_engine.archetype_available then
-					status.append(adl_engine.parse_error_text)
-					status.append("(Parse failed)%N")
+					post_error(Current, "parse_archetype", "parse_archetype_e1", <<adl_engine.parse_error_text>>)						
 				else
-					status.append("Archetype " + adl_engine.archetype_id.as_string + " syntax VALIDATED%N")
+					post_info(Current, "parse_archetype", "parse_archetype_i1", <<adl_engine.archetype_id.as_string>>)						
+					
 					if language = Void or not ontology.has_language(language) then
 						set_language(ontology.primary_language)
 					end
@@ -325,23 +333,23 @@ feature -- Commands
 					end
 				
 					if adl_engine.archetype.is_valid then
-						status.append("Archetype " + adl_engine.archetype_id.as_string + " ontology validation PASSED%N")
+						post_info(Current, "parse_archetype", "parse_archetype_i2", <<adl_engine.archetype_id.as_string>>)						
 						parse_succeeded := True
 					else
-						status.append("Archetype " + adl_engine.archetype_id.as_string + " ontology validation FAILED; reasons:%N")
-						status.append(adl_engine.archetype.errors)
+						post_error(Current, "parse_archetype", "parse_archetype_e2", <<adl_engine.archetype_id.as_string, adl_engine.archetype.errors>>)
 					end
 					if adl_engine.archetype.has_warnings then
-						status.append(adl_engine.archetype.warnings)							
+						post_info(Current, "parse_archetype", "parse_archetype_i3", <<adl_engine.archetype.warnings>>)
 					end
 				end
 			else
-				status.append("%NSAVE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear")
+				post_error(Current, "parse_archetype", "parse_archetype_e3", Void)
 			end
-		rescue
 			status.wipe_out
-			status.append("Software Exception " + exception.out + " caught; stack:%N")
-			status.append(exception_trace)
+			status.append(billboard_content)
+			clear_billboard
+		rescue
+			post_error(Current, "parse_archetype", "report_exception", <<exception.out, exception_trace>>)
 			exception_encountered := True
 			retry
 		end

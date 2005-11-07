@@ -1,59 +1,66 @@
 indexing
 	component:   "openEHR Reusable Libraries"
-	description: "Test suite for ADL archetype test cases"
-	keywords:    "test"
+	description: "[
+			     Error status billboard item: contains id of message template
+				 and a set of args to be substituted. This approach allows
+				 messages to be reported in multiple languages, since they are
+				 built from the template & args on the fly when requested,
+				 not when created.
+				 ]"
+	keywords:    "error status reporting"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2005 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class TS_ADL_SUITE
+class MESSAGE_BILLBOARD_ITEM
 
 inherit
-	TEST_SUITE
-	
+	BILLBOARD_MESSAGE_TYPES
+		
 create
 	make
 	
+feature -- Initialisation
+		
+	make(a_type_name, a_routine_name: STRING; a_message_id: STRING; an_args:
+			ARRAY[STRING]; a_message_type:INTEGER) is
+		require
+			Type_name_valid: a_type_name /= Void and then not a_type_name.is_empty
+			Routine_name_valid: a_routine_name /= Void and then not a_routine_name.is_empty
+			Error_id_valid: a_message_id /= Void and then not a_message_id.is_empty
+			Message_type_valid: is_valid_message_type(a_message_type)
+		do
+			type_name := a_type_name
+			routine_name := a_routine_name
+			message_id := a_message_id
+			args := an_args
+			message_type := a_message_type
+		end
+
 feature -- Access
 
-	test_cases: LINKED_LIST[TEST_CASE] is
-			-- the list of tests available
-		once
-			create Result.make
-			Result.extend(create {TC_ARCHETYPE_CREATE}.make(Void))
+	type_name: STRING
+			-- type name of the object posting the message
 
-			Result.extend(create {TC_ONTOLOGY_POPULATE}.make(Void))
-			Result.extend(create {TC_ONTOLOGY_MODIFY}.make(Void))
-			Result.extend(create {TC_ONTOLOGY_LANGUAGES}.make(Void))
-			Result.extend(create {TC_ONTOLOGY_ADD_TERM_BINDING}.make(Void))
-			Result.extend(create {TC_ONTOLOGY_REMOVE_TERM_BINDING}.make(Void))
-			Result.extend(create {TC_ONTOLOGY_SHOW_PATHS}.make(Void))
+	routine_name: STRING
+			-- name of routine posting the message
 
-			Result.extend(create {TC_ARCHETYPE_ADD_NODES}.make(Void))
-			Result.extend(create {TC_ARCHETYPE_ADD_C_QUANTITY}.make(Void))
-			Result.extend(create {TC_ARCHETYPE_ADD_OBJECT_ORDINAL}.make(Void))
-			Result.extend(create {TC_ARCHETYPE_ADD_OBJECT_TERM}.make(Void))
-			Result.extend(create {TC_ARCHETYPE_ADD_INVARIANTS}.make(Void))
+	message_id: STRING
+			-- id of message message template
 
-			Result.extend(create {TC_ARCHETYPE_SPECIALISE}.make(Void))
-			Result.extend(create {TC_ARCHETYPE_SET_DESCRIPTION}.make(Void))
+	args: ARRAY[STRING]
+			-- string arguments to be substituted into message message
 
-			Result.extend(create {TC_CVT_C_QUANTITY}.make(Void))
-		end
+	message_type: INTEGER
 
-	title: STRING is "ADL test cases"
-
-feature -- Initialisation
-
-	make(arg: ANY) is
-		do
-		end
+invariant
+	is_valid_message_type(message_type)
 
 end
 
@@ -71,7 +78,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is ts_adl_suite.e.
+--| The Original Code is message_billboard_item.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004
@@ -93,3 +100,5 @@ end
 --|
 --| ***** END LICENSE BLOCK *****
 --|
+
+ 

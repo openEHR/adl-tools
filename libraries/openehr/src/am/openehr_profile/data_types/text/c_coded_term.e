@@ -244,6 +244,7 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 			create Result.make(0)
 			Result.extend("terminology_id")
 			Result.extend("code_list")
+			Result.extend("assumed_value")
 			Result.compare_objects
 		end
 

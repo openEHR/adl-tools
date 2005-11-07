@@ -694,7 +694,9 @@ feature {NONE} -- Implementation
 			-- generate string form of node or object for use in tree node
 		do
 			create Result.make(0)
-			Result.append(a_object_c_quantity.units)
+			if a_object_c_quantity.units /= Void then
+				Result.append(a_object_c_quantity.units)
+			end
 			if a_object_c_quantity.magnitude /= Void then
 				Result.append(": " + a_object_c_quantity.magnitude.as_string)
 			end

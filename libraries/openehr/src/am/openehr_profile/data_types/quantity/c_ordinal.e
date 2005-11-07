@@ -167,6 +167,7 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 		once
 			create Result.make(0)
 			Result.extend("items")
+			Result.extend("assumed_value")
 			Result.compare_objects
 		end
 
