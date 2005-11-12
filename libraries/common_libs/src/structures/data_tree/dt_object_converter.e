@@ -39,7 +39,7 @@ feature -- Conversion
 			a_dt_attr: DT_ATTRIBUTE_NODE
 			fld_dynamic_type: INTEGER
 			fld_val: ANY
-			i: INTEGER
+			equiv_prim_type_id, i: INTEGER
 			fld_name: STRING
 			a_sequence: SEQUENCE[ANY]
 			a_hash_table: HASH_TABLE [ANY, HASHABLE]
@@ -77,17 +77,10 @@ feature -- Conversion
 								io.put_string("DT_OBJECT_CONVERTER.populate_dt_from_object: field_name = " + fld_name + "%N")
 							end							
 							fld_dynamic_type := dynamic_type(fld_val)
-							if is_any_primitive_conforming_type(fld_dynamic_type) then
+							equiv_prim_type_id := any_primitive_conforming_type(fld_dynamic_type)
+							if equiv_prim_type_id /= 0 then
 								create a_dt_attr.make_single(fld_name)
-								debug ("DT")
-									io.put_string("DT_OBJECT_CONVERTER.populate_dt_from_object: (primitive type)%N")
-									io.put_string("%T from_obj_proc.call([DT_ATTRIBUTE_NODE(" + 
-										a_dt_attr.rm_attr_name + "), " + fld_val.generating_type + ", Void)%N")
-								end
-								cvt_tbl.item(any_primitive_conforming_type(fld_dynamic_type)).from_obj_proc.call([a_dt_attr, fld_val, Void])
-								debug ("DT")
-									io.put_string("%T(return)%N")
-								end
+								populate_prim_type_attribute(an_obj, a_dt_attr, fld_val, equiv_prim_type_id)
 								a_dt_obj.put_attribute(a_dt_attr)
 							else -- its a complex object, or else a SEQUENCE or HASH_TABLE of a complex object
 								debug ("DT")
@@ -117,6 +110,72 @@ feature -- Conversion
 						end
 					end
 					i := i + 1
+				end
+			end
+		end
+		
+	populate_prim_type_attribute(an_obj:ANY; a_dt_attr: DT_ATTRIBUTE_NODE; fld_val:ANY; equiv_prim_type_id: INTEGER) is
+			-- FIXME: this routine exists because of the Eiffel expanded
+			-- non-conformance problem. It has been made a separate
+			-- routine to allow exception handling to function properly
+		local
+			-- FIXME: all this code just to handle expanded nonconformance of OE_INTERVAL[INTEGER] -> OE_INTERVAL[PART_COMPARABLE]
+			-- REMOVE when this problem fixed
+			oe_int_real: OE_INTERVAL[REAL]
+			oe_int_integer: OE_INTERVAL[INTEGER]
+			exception_caught: BOOLEAN
+		do
+			if not exception_caught then
+				debug ("DT")
+					io.put_string("DT_OBJECT_CONVERTER.populate_dt_from_object: (primitive type)%N")
+					io.put_string("%T from_obj_proc.call([DT_ATTRIBUTE_NODE(" + 
+						a_dt_attr.rm_attr_name + "), " + fld_val.generating_type + ", Void)%N")
+				end
+				cvt_tbl.item(equiv_prim_type_id).from_obj_proc.call([a_dt_attr, fld_val, Void])
+				debug ("DT")
+					io.put_string("%T(return)%N")
+				end
+			else
+				-- FIXME: all this code just to handle expanded nonconformance of OE_INTERVAL[INTEGER] -> OE_INTERVAL[PART_COMPARABLE]
+				-- REMOVE when this problem fixed
+				oe_int_integer ?= fld_val
+				if oe_int_integer /= Void then
+					debug ("DT")
+						io.put_string("Using OE_INTERVAL[INTEGER_REF] conversion%N")
+					end
+					cvt_tbl.item(equiv_prim_type_id).from_obj_proc.call([a_dt_attr, 
+						interval_integer_to_interval_integer_ref(oe_int_integer), Void])			
+				else				
+					oe_int_real ?= fld_val
+					if oe_int_real /= Void then
+						debug ("DT")
+							io.put_string("Using OE_INTERVAL[REAL_REF] conversion%N")
+						end
+						cvt_tbl.item(equiv_prim_type_id).from_obj_proc.call([a_dt_attr, 
+							interval_real_to_interval_real_ref(oe_int_real), Void])			
+					else
+						debug ("DT")
+							io.put_string("No conversion available%N")
+						end
+					end
+				end		
+			end
+		rescue
+			if not exception_caught then				
+				if equiv_prim_type_id /= 0 then -- this must have been an argument type mismatch which killed the from_obj_proc.call[]
+					post_error(Current, "populate_prim_type_attribute", "populate_dt_proc_arg_type_mismatch", 
+						<<type_name(an_obj), a_dt_attr.rm_attr_name, fld_val.generating_type, type_name_of_type(equiv_prim_type_id)>>)
+				end
+				debug ("DT")
+					io.put_string(billboard_most_recent)
+				end
+
+				exception_caught := True
+				retry
+			else
+				post_error(Current, "populate_prim_type_attribute", "unhandled_exception", <<"Failed to convert type">>)
+				debug ("DT")
+					io.put_string(billboard_most_recent)
 				end
 			end
 		end

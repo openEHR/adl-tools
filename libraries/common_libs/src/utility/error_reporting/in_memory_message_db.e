@@ -57,6 +57,7 @@ feature -- Access
 			
 			-- ANY
 			["report_exception"] = <"Software Exception $1 caught; stack:%N$2">
+			["unhandled_exception"] = <"Exception caught but not handled: $1">
 			["general_error"] = <"Error: $1">
 			
 			-- ADL_INTERFACE
@@ -83,7 +84,8 @@ feature -- Access
 				<"Mismatch error in data and model for field $1 in type $2. Parsed data implies primitive, sequence<primitive> or interval<primitive> type but model does not">
 			["dt_proc_arg_type_mismatch"] = 
 				<"[Exception caught]: Mismatch error in data and model for field $1 in type $2. Parsed data subparts are of wrong type">
-
+			["populate_dt_proc_arg_type_mismatch"] = 
+				<"[Exception caught]: $1.$2 - writing primitive object of type $3 into argumentof type $4">			
 		>
 		]"
 
