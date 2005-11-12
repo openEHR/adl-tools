@@ -137,7 +137,7 @@ feature -- Access
 				if primitive_sequence_conforming_types.has(a_type_id) then
 					Result := primitive_sequence_conforming_types.item(a_type_id)
 				else
-					if is_primitive_sequence_type(a_type_id) then
+					if primitive_sequence_types.has(a_type_id) then
 						Result := a_type_id
 					else
 						from
@@ -148,15 +148,19 @@ feature -- Access
 							debug ("DT")
 								io.put_string(generator + 
 									".primitive_sequence_conforming_type: call to type_conforms_to(" + 
-										type_name_of_type(a_type_id) + ", " + 
-										type_name_of_type(primitive_sequence_types.item)
-										+ ")%N")
+									type_name_of_type(a_type_id) + ", " + 
+									type_name_of_type(primitive_sequence_types.item)
+									+ "):")
 							end
 							if type_conforms_to(a_type_id, primitive_sequence_types.item) then
 								Result := primitive_sequence_types.item
-							end
-							debug ("DT")
-								io.put_string("%T(return)%N")
+								debug ("DT")
+									io.put_string(" True%N")
+								end
+							else
+								debug ("DT")
+									io.put_string(" False%N")
+								end
 							end
 							primitive_sequence_types.forth
 						end
@@ -176,11 +180,17 @@ feature -- Access
 		require
 			Type_valid: a_type_id >= 0
 		do
+debug ("DT")
+	io.put_string("--->ENTER any_primitive_conforming_type(" + a_type_id.out + ")%N")
+end
 			if is_any_primitive_type(a_type_id) then
 				Result := a_type_id
 			elseif generic_count_of_type(a_type_id) > 0 then
 				Result := primitive_sequence_conforming_type(a_type_id)
 			end
+debug ("DT")
+	io.put_string("<---EXIT any_primitive_conforming_type(" + a_type_id.out + ")=" + Result.out + "%N")
+end		
 		end
 
 feature -- Status Report
@@ -193,8 +203,8 @@ feature -- Status Report
 		do
 			Result := is_primitive_type(a_type_id)
 			if not Result and generic_count_of_type(a_type_id) > 0 then
-				Result := is_primitive_sequence_type(a_type_id) or 
-						is_primitive_interval_type(a_type_id)
+				Result := primitive_sequence_types.has(a_type_id) or 
+						primitive_interval_types.has(a_type_id)
 			end
 		end
 

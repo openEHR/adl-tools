@@ -120,7 +120,7 @@ feature -- Access
 			src_node_path_str: STRING
 			src_nodes: ARRAYED_LIST [ARCHETYPE_INTERNAL_REF]
 		do
-			if physical_paths_cache = Void then
+			if physical_paths_cache = Void or not is_readonly then
 				physical_paths_cache := definition.all_paths
 
 				-- ADDED Sam Heard 2004-05-19
@@ -198,6 +198,9 @@ feature -- Access
 	
 feature -- Status Report
 
+	is_readonly: BOOLEAN
+			-- set True in circumstances where Archetype will not be modified in memory
+			
 	is_specialised: BOOLEAN is
 			-- 	True if this archetype identifies a specialisation parent
 		do
@@ -487,6 +490,14 @@ feature -- Modification
 			ontology := a_node
 		end
 
+feature -- Status setting
+
+	set_readonly is
+			-- set is_readonly to True
+		do
+			is_readonly := True
+		end
+		
 feature -- Output
 	
 	found_terms: STRING is

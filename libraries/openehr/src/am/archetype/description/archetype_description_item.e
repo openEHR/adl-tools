@@ -17,7 +17,7 @@ inherit
 	DT_CONVERTIBLE
 		
 create
-	make, make_lang
+	make_dt, make_lang
 	
 feature -- Definitions
 
@@ -25,7 +25,7 @@ feature -- Definitions
 	
 feature -- Initialisation
 
-	make is
+	make_dt is
 			-- 
 		do
 			create language.make (0)

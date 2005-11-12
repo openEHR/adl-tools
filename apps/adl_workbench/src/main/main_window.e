@@ -255,6 +255,7 @@ feature {NONE} -- Commands
 				if adl_interface.parse_succeeded then
 					populate_all_controls
 					source_notebook.select_item(parsed_archetype_tree_view)
+					adl_interface.set_archetype_readonly
 				else
 					populate_archetype_id
 				end

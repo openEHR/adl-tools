@@ -15,20 +15,10 @@ deferred class DT_CONVERTIBLE
 
 feature -- Initialisation
 
-	make is
+	make_dt is
 			-- basic make routine to guarantee validity on creation
 		deferred
 		end
-		
-feature -- Access
-
-	fail_reason: STRING
-			-- set with reason if make_from_data_tree failed
-			
-feature -- Status Report
-
-	make_failed: BOOLEAN
-			-- True if last call to make_form_data_tree failed.
 
 feature -- Representation
 

@@ -60,7 +60,7 @@ cluster
 
 	all vendor_fixes:		"$OPENEHR\ref_impl_eiffel\libraries\vendor-fixes"
 		exclude
-			".svn"; 
+			".svn"; "base_net";
 		end
 
 	all adl_parser:		"$OPENEHR\ref_impl_eiffel\components\adl_parser\src"

@@ -20,7 +20,7 @@ inherit
 		end
 		
 create
-	make, make_author
+	make, make_dt, make_author
 	
 feature -- Definitions
 
@@ -46,6 +46,12 @@ feature -- Initialisation
 		do
 			default_create
 			make_author(Default_original_author)
+		end
+		
+	make_dt is
+			-- make used by DT_OBJECT_CONVERTER
+		do
+			make
 		end
 		
 	make_author(an_author_name: STRING) is

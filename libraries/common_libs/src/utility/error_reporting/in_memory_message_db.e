@@ -39,7 +39,7 @@ feature -- Initialisation
 			parser.execute(message_templates_text, 1)
 			if not parser.syntax_error then
 				dt_tree := parser.output
-				init_helper ?= dt_tree.as_object(dynamic_type(create {IN_MEMORY_MESSAGE_DB_INITIALISER}))
+				init_helper ?= dt_tree.as_object(dynamic_type_from_string("IN_MEMORY_MESSAGE_DB_INITIALISER"))
 				check init_helper /= Void end
 				templates := init_helper.templates
 			end

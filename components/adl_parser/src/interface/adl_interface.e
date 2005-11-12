@@ -354,6 +354,12 @@ feature -- Commands
 			retry
 		end
 
+	set_archetype_readonly is
+			-- set readonly flag in archetype to enable optimisations like path extraction
+		do
+			archetype.set_readonly
+		end
+		
 	reset is
 			-- reset after exception encountered
 		do

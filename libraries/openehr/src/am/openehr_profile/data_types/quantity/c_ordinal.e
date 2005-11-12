@@ -21,7 +21,7 @@ inherit
 		end
 		
 create
-	make
+	make, make_dt
 
 feature -- Initialisation
 		
@@ -42,6 +42,12 @@ feature -- Initialisation
 			create representation.make_anonymous(Current)
 		end
 
+	make_dt is
+			-- make used by DT_OBJECT_CONVERTER
+		do
+			make
+		end
+		
 feature -- Access
 
 	items: LINKED_SET [ORDINAL]

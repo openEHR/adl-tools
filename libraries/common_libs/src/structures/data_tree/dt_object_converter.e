@@ -47,6 +47,10 @@ feature -- Conversion
 			fld_lst: ARRAYED_LIST[STRING]
 		do
 			a_dt_obj.set_type_name(an_obj.generating_type)
+			debug ("DT")
+				io.put_string("DT_OBJECT_CONVERTER.populate_dt_from_object: populating from a " + 
+					an_obj.generating_type + "%N")
+			end
 			
 			-- it is a generic object itself, have to deal with specially
 			a_hash_table ?= an_obj
@@ -69,11 +73,15 @@ feature -- Conversion
 					if fld_val /= Void then
 						fld_name := field_name(i, an_obj)
 						if fld_lst = Void or else fld_lst.has(fld_name) then							
+							debug ("DT")
+								io.put_string("DT_OBJECT_CONVERTER.populate_dt_from_object: field_name = " + fld_name + "%N")
+							end							
 							fld_dynamic_type := dynamic_type(fld_val)
 							if is_any_primitive_conforming_type(fld_dynamic_type) then
 								create a_dt_attr.make_single(fld_name)
 								debug ("DT")
-									io.put_string("DT_OBJECT_CONVERTER.populate_dt_from_object: from_obj_proc.call([DT_ATTRIBUTE_NODE(" + 
+									io.put_string("DT_OBJECT_CONVERTER.populate_dt_from_object: (primitive type)%N")
+									io.put_string("%T from_obj_proc.call([DT_ATTRIBUTE_NODE(" + 
 										a_dt_attr.rm_attr_name + "), " + fld_val.generating_type + ", Void)%N")
 								end
 								cvt_tbl.item(any_primitive_conforming_type(fld_dynamic_type)).from_obj_proc.call([a_dt_attr, fld_val, Void])
@@ -82,15 +90,24 @@ feature -- Conversion
 								end
 								a_dt_obj.put_attribute(a_dt_attr)
 							else -- its a complex object, or else a SEQUENCE or HASH_TABLE of a complex object
+								debug ("DT")
+									io.put_string("DT_OBJECT_CONVERTER.populate_dt_from_object: (complex or container type)%N")
+								end
 								a_hash_table ?= fld_val
 								a_sequence ?= fld_val
 								if a_hash_table /= Void or a_sequence /= Void then
+									debug ("DT")
+										io.put_string("DT_OBJECT_CONVERTER.populate_dt_from_object: (container type)%N")
+									end
 									create a_dt_attr.make_multiple(fld_name)
 									create_dt_from_generic_obj(a_dt_attr, fld_val)
 									if not a_dt_attr.is_empty then
 										a_dt_obj.put_attribute(a_dt_attr)
 									end
 								else
+									debug ("DT")
+										io.put_string("DT_OBJECT_CONVERTER.populate_dt_from_object: (normal complex type)%N")
+									end
 									-- it's a normal complex object
 									create a_dt_attr.make_single(fld_name)
 									populate_dt_from_object(fld_val, create_complex_object_node(a_dt_attr, Void))
@@ -141,7 +158,7 @@ feature -- Conversion
 				-- Eiffel does not allow this at the moment.
 				a_dt_conv ?= Result
 				if a_dt_conv /= Void then
-					a_dt_conv.make
+					a_dt_conv.make_dt
 				end
 			end
 				
@@ -240,7 +257,7 @@ feature -- Conversion
 		do
 			debug ("DT")
 				io.put_string("DT_OBJECT_CONVERTER.prim_object_to_dt: from_obj_proc.call([DT_ATTRIBUTE_NODE(" + 
-					a_parent.rm_attr_name + "), " + an_obj.generating_type + ", " + a_node_id + ")%N")
+					a_parent.rm_attr_name + "), " + an_obj.generating_type + ", [a_node_id])%N")
 			end
 			cvt_tbl.item(any_primitive_conforming_type(dynamic_type(an_obj))).from_obj_proc.call([a_parent, an_obj, a_node_id])
 			debug ("DT")
@@ -373,31 +390,52 @@ feature -- Conversion from object
 		local
 			a_dt_obj: DT_PRIMITIVE_OBJECT
 		do
+			debug("DT")
+				io.put_string("--->ENTER from_obj_primitive_type(DT_ATTIBUTE_NODE, " + 
+							an_obj.generating_type + ", [a_node_id])%N")
+			end			
 			a_dt_obj := create_primitive_object(a_parent, an_obj, a_node_id)
+			debug("DT")
+				io.put_string("<---EXIT from_obj_primitive_type%N")
+			end
 		end
 
 	from_obj_sequence_primitive_type(a_parent: DT_ATTRIBUTE_NODE; an_obj: SEQUENCE[ANY]; a_node_id: STRING) is
 		local
 			a_dt_obj: DT_PRIMITIVE_OBJECT_LIST
 		do
+			debug("DT")
+				io.put_string("--->ENTER from_obj_sequence_primitive_type(DT_ATTIBUTE_NODE, " + 
+							an_obj.generating_type + ", [node_id])%N")
+			end			
 			if a_node_id /= Void then
 				create a_dt_obj.make_identified(an_obj, a_node_id)
 			else
 				create a_dt_obj.make_anonymous(an_obj)
 			end
 			a_parent.put_child(a_dt_obj)
+			debug("DT")
+				io.put_string("<---EXIT from_obj_sequence_primitive_type%N")
+			end
 		end
 
 	from_obj_interval_primitive_type(a_parent: DT_ATTRIBUTE_NODE; an_obj: OE_INTERVAL[PART_COMPARABLE]; a_node_id: STRING) is
 		local
 			a_dt_obj: DT_PRIMITIVE_OBJECT_INTERVAL
 		do
+			debug("DT")
+				io.put_string("--->ENTER from_obj_interval_primitive_type(DT_ATTIBUTE_NODE, " + 
+							an_obj.generating_type + ", [a_node_id])%N")
+			end
 			if a_node_id /= Void then
 				create a_dt_obj.make_identified(an_obj, a_node_id)
 			else
 				create a_dt_obj.make_anonymous(an_obj)
 			end
 			a_parent.put_child(a_dt_obj)
+			debug("DT")
+				io.put_string("<---EXIT from_obj_interval_primitive_type%N")
+			end
 		end
 
 feature {NONE} -- Implementation

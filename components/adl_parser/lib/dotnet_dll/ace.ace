@@ -12,14 +12,13 @@ default
 	disabled_debug ("adl_parse")
 	disabled_debug ("adl_tree")
 	disabled_debug ("dadl_parse")
-	disabled_debug ("dt")
+	debug ("dt")
 	disabled_debug ("exclude list")
 	disabled_debug ("gelex")
 	disabled_debug ("geyacc")
 	disabled_debug ("include list")
 	disabled_debug ("og_path_parse")
 	disabled_debug ("refactor_fixme")
-	debug (no)
 	line_generation (no)
 	profile (no)
 	trace (no)
@@ -46,8 +45,6 @@ default
 	inlining (no)
 	multithreaded (no)
 
-
---"shared_dt_object_converter.e"; 
 
 cluster
 	all adl_parser:		"$OPENEHR\ref_impl_eiffel\components\adl_parser\src"
@@ -82,6 +79,11 @@ cluster
 	all common_libs:		"$OPENEHR\ref_impl_eiffel\libraries\common_libs\src"
 		exclude
 			".svn"; 
+		default
+			assertion (no)
+			assertion (check)
+			assertion (require)
+			assertion (ensure)
 		end
 
 	gobo:		"$GOBO\library"
@@ -115,6 +117,9 @@ cluster
 		end
 
 	all base_net:		"$ISE_EIFFEL\library.net\base"
+		exclude
+			"internal.e";
+		end
 
 assembly
 	"mscorlib":	"$ISE_DOTNET_FRAMEWORK\mscorlib.dll"

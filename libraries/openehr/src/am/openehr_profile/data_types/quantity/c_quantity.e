@@ -28,7 +28,7 @@ inherit
 		end
 		
 create
-	make
+	make, make_dt
 
 feature -- Initialisation
 		
@@ -46,6 +46,12 @@ feature -- Initialisation
 		do
 			default_create
 		end
+
+	make_dt is
+			-- make used by DT_OBJECT_CONVERTER
+		do
+			make
+		end		
 		
 feature -- Access
 
@@ -76,7 +82,7 @@ feature -- Access
 					elseif not a_mag_ivl.upper_unbounded then
 						a_mag := a_mag_ivl.lower
 					else
-						a_mag := 0.0 
+						-- a_mag := 0.0
 					end
 				end
  			end

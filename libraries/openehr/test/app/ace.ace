@@ -76,7 +76,7 @@ cluster
 
 	all vendor_fixes:		"$OPENEHR\ref_impl_eiffel\libraries\vendor-fixes"
 		exclude
-			".svn"; 
+			".svn"; "base_net";
 		end
 
 	gobo:		"$GOBO\library"

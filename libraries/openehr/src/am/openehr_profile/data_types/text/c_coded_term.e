@@ -21,7 +21,7 @@ inherit
 		end
 
 create
-	make_from_pattern, make_from_terminology_id, make
+	make_from_pattern, make_from_terminology_id, make_dt
 
 feature -- Definitions
 
@@ -45,7 +45,7 @@ feature -- Initialisation
 			Any_allowed: any_allowed
 		end
 		
-	make is
+	make_dt is
 			-- 
 		do
 			default_create
