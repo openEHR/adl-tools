@@ -12,13 +12,14 @@ default
 	disabled_debug ("adl_parse")
 	disabled_debug ("adl_tree")
 	disabled_debug ("dadl_parse")
-	debug ("dt")
+	disabled_debug ("dt")
 	disabled_debug ("exclude list")
 	disabled_debug ("gelex")
 	disabled_debug ("geyacc")
 	disabled_debug ("include list")
 	disabled_debug ("og_path_parse")
 	disabled_debug ("refactor_fixme")
+	debug (no)
 	line_generation (no)
 	profile (no)
 	trace (no)
@@ -47,22 +48,22 @@ default
 
 
 cluster
-	all adl_parser:		"$OPENEHR\ref_impl_eiffel\components\adl_parser\src"
+	all adl_parser:		"$OPENEHR\ref_impl_eiffel_dotnet\components\adl_parser\src"
 		exclude
 			".svn"; 
 		end
 
-	all version:		"$OPENEHR\ref_impl_eiffel\libraries\version"
+	all version:		"$OPENEHR\ref_impl_eiffel_dotnet\libraries\version"
 		exclude
 			".svn"; 
 		end
 
-	all vendor_fixes:		"$OPENEHR\ref_impl_eiffel\libraries\vendor-fixes"
+	all vendor_fixes:		"$OPENEHR\ref_impl_eiffel_dotnet\libraries\vendor-fixes"
 		exclude
 			".svn"; 
 		end
 
-	all openehr:		"$OPENEHR\ref_impl_eiffel\libraries\openehr\src"
+	all openehr:		"$OPENEHR\ref_impl_eiffel_dotnet\libraries\openehr\src"
 		exclude
 			".svn"; 
 		visible
@@ -76,7 +77,7 @@ cluster
 				end
 		end
 
-	all common_libs:		"$OPENEHR\ref_impl_eiffel\libraries\common_libs\src"
+	all common_libs:		"$OPENEHR\ref_impl_eiffel_dotnet\libraries\common_libs\src"
 		exclude
 			".svn"; 
 		default
@@ -118,7 +119,7 @@ cluster
 
 	all base_net:		"$ISE_EIFFEL\library.net\base"
 		exclude
-			"internal.e";
+			"internal.e"; 
 		end
 
 assembly
