@@ -89,10 +89,10 @@ feature
 	date_default_format_string: STRING is "yyyy-[0]mm-[0]dd"
 			-- ISO 8601 standard
 
-	time_default_format_string: STRING is "hh12:[0]mi:[0]ss.ff3"
+	time_default_format_string: STRING is "[0]hh:[0]mi:[0]ss.ff3"
 			-- ISO 8601 standard
 
-	default_format_string: STRING is "yyyy-[0]mm-[0]dd hh12:[0]mi:[0]ss.ff3"
+	default_format_string: STRING is "yyyy-[0]mm-[0]dd [0]hh:[0]mi:[0]ss.ff3"
 			-- ISO 8601 standard
 
 end -- class DATE_TIME_TOOLS 

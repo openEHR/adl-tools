@@ -165,6 +165,7 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 			-- empty structure means all attributes
 		once
 			create Result.make(0)
+			Result.extend("language")
 			Result.extend("purpose")
 			Result.extend("use")
 			Result.extend("misuse")

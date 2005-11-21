@@ -166,17 +166,10 @@ feature -- Conversion
 					post_error(Current, "populate_prim_type_attribute", "populate_dt_proc_arg_type_mismatch", 
 						<<type_name(an_obj), a_dt_attr.rm_attr_name, fld_val.generating_type, type_name_of_type(equiv_prim_type_id)>>)
 				end
-				debug ("DT")
-					io.put_string(billboard_most_recent)
-				end
-
 				exception_caught := True
 				retry
 			else
 				post_error(Current, "populate_prim_type_attribute", "unhandled_exception", <<"Failed to convert type">>)
-				debug ("DT")
-					io.put_string(billboard_most_recent)
-				end
 			end
 		end
 		
@@ -302,7 +295,7 @@ feature -- Conversion
 		rescue
 			if equiv_prim_type_id /= 0 then -- this must have been an argument type mismatch which killed the from_dt_proc.call[]
 				post_error(Current, "dt_to_object", "dt_proc_arg_type_mismatch", 
-					<<type_name_of_type(fld_type_id), type_name_of_type(a_type_id)>>)
+					<<type_name_of_type(a_type_id), fld_name, type_name_of_type(fld_type_id), type_name(a_dt_obj_leaf.value)>>)
 			end
 			exception_caught := True
 			retry

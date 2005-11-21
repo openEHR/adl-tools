@@ -2,7 +2,7 @@ system
 	"adl_cmd_line"
 
 root
-	adl_cmd_line: make
+	ADL_CMD_LINE: make
 
 default
 	document (".")
@@ -12,12 +12,16 @@ default
 	disabled_debug ("adl_invariant")
 	disabled_debug ("adl_parse")
 	disabled_debug ("adl_tree")
+	disabled_debug ("bb")
 	disabled_debug ("dadl_parse")
+	disabled_debug ("dt")
 	disabled_debug ("exclude list")
 	disabled_debug ("gelex")
 	disabled_debug ("geyacc")
 	disabled_debug ("include list")
 	disabled_debug ("og_path_parse")
+	disabled_debug ("refactor_fixme")
+	debug (no)
 	line_generation (no)
 	profile (no)
 	trace (no)
@@ -50,7 +54,7 @@ cluster
 
 	all vendor_fixes:		"$OPENEHR\ref_impl_eiffel\libraries\vendor-fixes"
 		exclude
-			".svn"; "base_net";
+			".svn"; "base_net"; 
 		end
 
 	all adl_parser:		"$OPENEHR\ref_impl_eiffel\components\adl_parser\src"
@@ -67,9 +71,9 @@ cluster
 			".svn"; 
 		default
 			assertion (no)
+			assertion (check)
 			assertion (require)
 			assertion (ensure)
-			assertion (invariant)
 		visible
 			C_CODED_TERM
 				end
@@ -88,7 +92,6 @@ cluster
 			assertion (ensure)
 			assertion (invariant)
 		end
-
 
 	library ut_support:		"$GOBO\library\utility"
 

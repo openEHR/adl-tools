@@ -8,17 +8,20 @@ default
 	assertion (require)
 	msil_generation (yes)
 	disabled_debug (yes)
+	disabled_debug ("adl_engine")
 	disabled_debug ("adl_invariant")
 	disabled_debug ("adl_parse")
 	disabled_debug ("adl_tree")
+	disabled_debug ("bb")
 	disabled_debug ("dadl_parse")
-	debug ("dt")
+	disabled_debug ("dt")
 	disabled_debug ("exclude list")
 	disabled_debug ("gelex")
 	disabled_debug ("geyacc")
 	disabled_debug ("include list")
 	disabled_debug ("og_path_parse")
 	disabled_debug ("refactor_fixme")
+	debug (no)
 	line_generation (no)
 	profile (no)
 	trace (no)
@@ -118,7 +121,7 @@ cluster
 
 	all base_net:		"$ISE_EIFFEL\library.net\base"
 		exclude
-			"internal.e";
+			"internal.e"; 
 		end
 
 assembly

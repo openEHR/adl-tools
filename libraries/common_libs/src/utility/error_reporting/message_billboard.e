@@ -32,7 +32,7 @@ feature -- Access
 	billboard_most_recent: STRING is
 			-- text of the message in locale current language 
 		do
-			create Result.make(0)
+			Result := billboard_item_formatted(billboard.first)
 		end
 
 	billboard_ith (i: INTEGER): STRING is
@@ -40,7 +40,7 @@ feature -- Access
 		require
 			Index_valid: i > 0 and i < billboard_count
 		do
-			create Result.make(0)
+			Result := billboard_item_formatted(billboard.i_th(i))
 		end
 
 	billboard_count: INTEGER is
@@ -57,8 +57,19 @@ feature -- Status Report
 			Result := billboard.is_empty
 		end
 
-	billboard_has_errors: BOOLEAN
-			-- True if billboard has any error messages
+	billboard_has_errors: BOOLEAN is
+			-- True if billboard has any error messages (note: it may be non-empty
+			-- and still have no error messages, just info messages)
+		do
+			from
+				billboard.start
+			until
+				Result or billboard.off
+			loop
+				Result := billboard.item.message_type = Message_type_error
+				billboard.forth
+			end
+		end
 
 feature -- Modify
 
@@ -66,7 +77,6 @@ feature -- Modify
 			-- wipe out error billboard and set is_error_posted False
 		do
 			billboard.wipe_out
-			billboard_has_errors := False
 		end
 
 	post_error(poster_object: ANY; poster_routine: STRING; id: STRING; args: ARRAY[STRING]) is
@@ -79,7 +89,9 @@ feature -- Modify
 		do
 			billboard.put_front(
 				create {MESSAGE_BILLBOARD_ITEM}.make(poster_object.generator, poster_routine, id, args, Message_type_error))
-			billboard_has_errors := True
+			debug("BB")
+				io.put_string("MSG_BB: " + billboard_most_recent)
+			end
 		ensure
 			Error_posted: billboard_has_errors
 		end
@@ -115,7 +127,6 @@ feature {NONE} -- Implementation
 			-- text of the billboard in locale current language, filtered according to include_types
 		local
 			bb_item: MESSAGE_BILLBOARD_ITEM
-			err_str, leader, trailer: STRING
 		do
 			create Result.make(0)
 			from
@@ -124,22 +135,32 @@ feature {NONE} -- Implementation
 				billboard.off
 			loop
 				bb_item := billboard.item
-				if include_types.has(bb_item.message_type) then				
-					leader := Message_type_names.item(bb_item.message_type) + " - "
-					trailer := " (" + bb_item.type_name + "." + bb_item.routine_name + ")"
-					if message_db.has_message(bb_item.message_id) then
-						err_str := message_db.stringify(bb_item.message_id, bb_item.args)
-					else
-						err_str := message_db.stringify("message_code_error", Void)
-					end
-					Result.append(leader)
-					Result.append(err_str)
-					Result.append(trailer)
-					Result.append("%N")
+				if include_types.has(bb_item.message_type) then			
+					Result.append(billboard_item_formatted(bb_item))
 				end
 				billboard.forth
 			end
 		end
+		
+	billboard_item_formatted(bb_item: MESSAGE_BILLBOARD_ITEM): STRING is
+			-- format one item
+		local
+			err_str, leader, trailer: STRING
+		do
+			create Result.make(0)
+			leader := Message_type_names.item(bb_item.message_type) + " - "
+			trailer := " (" + bb_item.type_name + "." + bb_item.routine_name + ")"
+			if message_db.has_message(bb_item.message_id) then
+				err_str := message_db.stringify(bb_item.message_id, bb_item.args)
+			else
+				err_str := message_db.stringify("message_code_error", Void)
+			end
+			Result.append(leader)
+			Result.append(err_str)
+			Result.append(trailer)
+			Result.append("%N")		
+		end
+		
 end
 
 --|

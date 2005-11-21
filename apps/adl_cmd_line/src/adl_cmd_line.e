@@ -53,7 +53,7 @@ feature -- Template
 			id_list: ARRAYED_LIST[STRING]
 			rep_path: STRING
 			parse_failed_list: ARRAYED_LIST[STRING]
-			serialise_failed_list: ARRAYED_LIST[STRING]
+			reparse_faied_list: ARRAYED_LIST[STRING]
    		do
 			io.put_string(splash)
 			read_resource_file
@@ -89,7 +89,7 @@ feature -- Template
 					finished
 				loop
  		  			create parse_failed_list.make(0)
-   					create serialise_failed_list.make(0)
+   					create reparse_faied_list.make(0)
    		
 					menu.display
 					menu.choose
@@ -105,7 +105,7 @@ feature -- Template
 								parse_failed_list.extend(repository.file_ids.item)
 							end
 							if parse_2_failed then
-								serialise_failed_list.extend(repository.file_ids.item)
+								reparse_faied_list.extend(repository.file_ids.item)
 							end
 							repository.file_ids.forth
 						end
@@ -121,7 +121,7 @@ feature -- Template
 							parse_failed_list.extend(arch_id)
 						end
 						if parse_2_failed then
-							serialise_failed_list.extend(arch_id)
+							reparse_faied_list.extend(arch_id)
 						end
 					end
 		
@@ -137,14 +137,14 @@ feature -- Template
 					end
 					
 					io.put_string("%N~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%N")
-					io.put_string("Archetypes which failed to serialise:%N")
+					io.put_string("Archetypes which failed to reparse:%N")
 					from
-						serialise_failed_list.start
+						reparse_faied_list.start
 					until
-						serialise_failed_list.off
+						reparse_faied_list.off
 					loop
-						io.put_string("%T" + serialise_failed_list.item + "%N")
-						serialise_failed_list.forth
+						io.put_string("%T" + reparse_faied_list.item + "%N")
+						reparse_faied_list.forth
 					end					
 				end
 			else
@@ -174,7 +174,8 @@ feature -- Template
 			parse_1_failed := False
 			parse_2_failed := False
 			
-			io.put_string("%N======== reading " + arch_id + "========%N")					
+			io.put_string("%N======== reading " + arch_id + "========%N")
+			adl_interface.reset			
 			adl_interface.open_adl_file(repository.file_path(arch_id))
 			adl_interface.parse_archetype
 			if adl_interface.parse_succeeded then
@@ -198,7 +199,7 @@ feature -- Template
 				adl_interface.open_adl_file(new_adl_file)
 				adl_interface.parse_archetype
 				if adl_interface.parse_succeeded then
-					io.put_string("Serialised archetype " + new_adl_file + " is VALIDATED%N")
+					io.put_string("Reparse: archetype " + new_adl_file + " is VALIDATED%N")
 					
 					-- if overwriting remove old file and copy new file over the top
 					if overwrite then
@@ -208,13 +209,13 @@ feature -- Template
 						new_file.change_name (old_adl_file)
 					end
 				else
-					io.put_string("Serialised archetype " + new_adl_file + " is NOT VALIDATED; reasons:%N")
-					io.put_string(adl_interface.status + "%N")
 					parse_2_failed := True
+					io.put_string("Reparse: Archetype " + new_adl_file + " is NOT VALIDATED; reasons:%N")
+					io.put_string(adl_interface.status + "%N")
 				end
 			else
 				parse_1_failed := True
-				io.put_string("Archetype " + arch_id + " is NOT VALIDATED; reasons:%N")
+				io.put_string("Reparse: Archetype " + arch_id + " is NOT VALIDATED; reasons:%N")
 				io.put_string(adl_interface.status + "%N")
 			end
 		end
