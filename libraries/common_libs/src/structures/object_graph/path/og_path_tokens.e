@@ -1,7 +1,7 @@
 indexing
 
 	description: "Parser token codes"
-	generator: "geyacc version 3.2"
+	generator: "geyacc version 3.4"
 
 class OG_PATH_TOKENS
 

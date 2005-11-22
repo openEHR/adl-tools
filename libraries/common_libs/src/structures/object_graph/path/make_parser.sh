@@ -13,3 +13,5 @@
 #
 
 $GOBO/bin/geyacc --new_typing -v parser_errs.txt -t OG_PATH_TOKENS -o og_path_validator.e og_path_validator.y
+
+$GOBO/bin/geyacc --doc=html -v parser_errs.txt -t OG_PATH_TOKENS -o og_path_validator.html og_path_validator.y

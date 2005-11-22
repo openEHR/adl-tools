@@ -21,7 +21,7 @@ class UNITS_PARSER
 
 inherit
 
-	YY_NEW_PARSER_SKELETON
+	YY_PARSER_SKELETON
 		rename
 			make as make_parser_skeleton
 		redefine
@@ -51,16 +51,16 @@ feature {NONE} -- Implementation
 	yy_build_parser_tables is
 			-- Build parser tables.
 		do
-			yytranslate ?= yytranslate_template
-			yyr1 ?= yyr1_template
-			yytypes1 ?= yytypes1_template
-			yytypes2 ?= yytypes2_template
-			yydefact ?= yydefact_template
-			yydefgoto ?= yydefgoto_template
-			yypact ?= yypact_template
-			yypgoto ?= yypgoto_template
-			yytable ?= yytable_template
-			yycheck ?= yycheck_template
+			yytranslate := yytranslate_template
+			yyr1 := yyr1_template
+			yytypes1 := yytypes1_template
+			yytypes2 := yytypes2_template
+			yydefact := yydefact_template
+			yydefgoto := yydefgoto_template
+			yypact := yypact_template
+			yypgoto := yypgoto_template
+			yytable := yytable_template
+			yycheck := yycheck_template
 		end
 
 	yy_create_value_stacks is
@@ -81,13 +81,13 @@ feature {NONE} -- Implementation
 			-- they can be collected by the garbage collector.
 		do
 			if yyvs1 /= Void then
-				yyspecial_routines1.clear_all (yyvs1)
+				yyvs1.clear_all
 			end
 			if yyvs2 /= Void then
-				yyspecial_routines2.clear_all (yyvs2)
+				yyvs2.clear_all
 			end
 			if yyvs3 /= Void then
-				yyspecial_routines3.clear_all (yyvs3)
+				yyvs3.clear_all
 			end
 		end
 
@@ -502,9 +502,7 @@ end
 
 feature {NONE} -- Table templates
 
-	yytranslate_template: ANY is
-			-- This is supposed to be "like FIXED_INTEGER_ARRAY_TYPE",
-			-- but once functions cannot be declared with anchored types.
+	yytranslate_template: SPECIAL [INTEGER] is
 		once
 			Result := yyfixed_array (<<
 			    0,    2,    2,    2,    2,    2,    2,    2,    2,    2,
@@ -535,91 +533,73 @@ feature {NONE} -- Table templates
 			    2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
 			    2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
 			    2,    2,    2,    2,    2,    2,    1,    2,    3,    4,
-			    5,    6,    7,    8,    9,   10>>)
+			    5,    6,    7,    8,    9,   10, yyDummy>>)
 		end
 
-	yyr1_template: ANY is
-			-- This is supposed to be "like FIXED_INTEGER_ARRAY_TYPE",
-			-- but once functions cannot be declared with anchored types.
+	yyr1_template: SPECIAL [INTEGER] is
 		once
 			Result := yyfixed_array (<<
 			    0,   16,   16,   17,   17,   18,   18,   18,   20,   20,
-			   21,   21,   19,   23,   22,   22,   22>>)
+			   21,   21,   19,   23,   22,   22,   22, yyDummy>>)
 		end
 
-	yytypes1_template: ANY is
-			-- This is supposed to be "like FIXED_INTEGER_ARRAY_TYPE",
-			-- but once functions cannot be declared with anchored types.
+	yytypes1_template: SPECIAL [INTEGER] is
 		once
 			Result := yyfixed_array (<<
 			    1,    3,    1,    1,    1,    1,    1,    1,    1,    1,
 			    1,    1,    1,    1,    3,    1,    1,    3,    1,    1,
-			    2,    1,    1,    1,    2,    2,    1,    1,    1>>)
+			    2,    1,    1,    1,    2,    2,    1,    1,    1, yyDummy>>)
 		end
 
-	yytypes2_template: ANY is
-			-- This is supposed to be "like FIXED_INTEGER_ARRAY_TYPE",
-			-- but once functions cannot be declared with anchored types.
+	yytypes2_template: SPECIAL [INTEGER] is
 		once
 			Result := yyfixed_array (<<
 			    1,    1,    1,    2,    3,    1,    1,    1,    1,    1,
-			    1,    1,    1,    1,    1,    1>>)
+			    1,    1,    1,    1,    1,    1, yyDummy>>)
 		end
 
-	yydefact_template: ANY is
-			-- This is supposed to be "like FIXED_INTEGER_ARRAY_TYPE",
-			-- but once functions cannot be declared with anchored types.
+	yydefact_template: SPECIAL [INTEGER] is
 		once
 			Result := yyfixed_array (<<
 			    0,   10,    2,    1,    3,    5,    8,    0,   11,    0,
 			    0,    0,    4,    0,    0,    6,    7,    0,    0,    0,
-			   14,    9,   13,   12,   16,   15,    0,    0,    0>>)
+			   14,    9,   13,   12,   16,   15,    0,    0,    0, yyDummy>>)
 		end
 
-	yydefgoto_template: ANY is
-			-- This is supposed to be "like FIXED_INTEGER_ARRAY_TYPE",
-			-- but once functions cannot be declared with anchored types.
+	yydefgoto_template: SPECIAL [INTEGER] is
 		once
 			Result := yyfixed_array (<<
-			   26,    3,    4,   12,    5,    6,   21,    8>>)
+			   26,    3,    4,   12,    5,    6,   21,    8, yyDummy>>)
 		end
 
-	yypact_template: ANY is
-			-- This is supposed to be "like FIXED_INTEGER_ARRAY_TYPE",
-			-- but once functions cannot be declared with anchored types.
+	yypact_template: SPECIAL [INTEGER] is
 		once
 			Result := yyfixed_array (<<
 			    3,   16, -32768, -32768,   -8, -32768,    1,   15, -32768,   14,
 			   14,   13, -32768,   -3,    5, -32768, -32768,    4,   12,    9,
-			 -32768, -32768, -32768, -32768, -32768, -32768,   11,   10, -32768>>)
+			 -32768, -32768, -32768, -32768, -32768, -32768,   11,   10, -32768, yyDummy>>)
 		end
 
-	yypgoto_template: ANY is
-			-- This is supposed to be "like FIXED_INTEGER_ARRAY_TYPE",
-			-- but once functions cannot be declared with anchored types.
+	yypgoto_template: SPECIAL [INTEGER] is
 		once
 			Result := yyfixed_array (<<
-			 -32768, -32768, -32768, -32768,   -7, -32768, -32768, -32768>>)
+			 -32768, -32768, -32768, -32768,   -7, -32768, -32768, -32768, yyDummy>>)
 		end
 
-	yytable_template: ANY is
-			-- This is supposed to be "like FIXED_INTEGER_ARRAY_TYPE",
-			-- but once functions cannot be declared with anchored types.
+	yytable_template: SPECIAL [INTEGER] is
 		once
 			Result := yyfixed_array (<<
 			   20,   11,   15,   16,    2,   10,    9,    1,   19,   18,
 			   28,   27,   25,   22,   23,   24,   13,   17,    1,   14,
-			    0,    0,    0,    7>>)
+			    0,    0,    0,    7, yyDummy>>)
 		end
 
-	yycheck_template: ANY is
-			-- This is supposed to be "like FIXED_INTEGER_ARRAY_TYPE",
-			-- but once functions cannot be declared with anchored types.
+	yycheck_template: SPECIAL [INTEGER] is
 		once
 			Result := yyfixed_array (<<
 			    3,    9,    9,   10,    1,   13,   14,    4,   11,   12,
 			    0,    0,    3,    8,   10,    3,   15,    4,    4,    4,
-			   -1,   -1,   -1,    7>>)
+			   -1,   -1,   -1,    7, yyDummy>>)
 		end
 
 feature {NONE} -- Semantic value stacks

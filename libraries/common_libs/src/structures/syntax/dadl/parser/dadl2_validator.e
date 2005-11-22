@@ -15,7 +15,7 @@ indexing
 class DADL2_VALIDATOR
 
 inherit
-	YY_NEW_PARSER_SKELETON
+	YY_PARSER_SKELETON
 		rename
 			make as make_parser_skeleton
 		redefine
@@ -44,16 +44,16 @@ feature {NONE} -- Implementation
 	yy_build_parser_tables is
 			-- Build parser tables.
 		do
-			yytranslate ?= yytranslate_template
-			yyr1 ?= yyr1_template
-			yytypes1 ?= yytypes1_template
-			yytypes2 ?= yytypes2_template
-			yydefact ?= yydefact_template
-			yydefgoto ?= yydefgoto_template
-			yypact ?= yypact_template
-			yypgoto ?= yypgoto_template
-			yytable ?= yytable_template
-			yycheck ?= yycheck_template
+			yytranslate := yytranslate_template
+			yyr1 := yyr1_template
+			yytypes1 := yytypes1_template
+			yytypes2 := yytypes2_template
+			yydefact := yydefact_template
+			yydefgoto := yydefgoto_template
+			yypact := yypact_template
+			yypgoto := yypgoto_template
+			yytable := yytable_template
+			yycheck := yycheck_template
 		end
 
 	yy_create_value_stacks is
@@ -109,118 +109,118 @@ feature {NONE} -- Implementation
 			-- they can be collected by the garbage collector.
 		do
 			if yyvs1 /= Void then
-				yyspecial_routines1.clear_all (yyvs1)
+				yyvs1.clear_all
 			end
 			if yyvs2 /= Void then
-				yyspecial_routines2.clear_all (yyvs2)
+				yyvs2.clear_all
 			end
 			if yyvs3 /= Void then
-				yyspecial_routines3.clear_all (yyvs3)
+				yyvs3.clear_all
 			end
 			if yyvs4 /= Void then
-				yyspecial_routines4.clear_all (yyvs4)
+				yyvs4.clear_all
 			end
 			if yyvs5 /= Void then
-				yyspecial_routines5.clear_all (yyvs5)
+				yyvs5.clear_all
 			end
 			if yyvs6 /= Void then
-				yyspecial_routines6.clear_all (yyvs6)
+				yyvs6.clear_all
 			end
 			if yyvs7 /= Void then
-				yyspecial_routines7.clear_all (yyvs7)
+				yyvs7.clear_all
 			end
 			if yyvs8 /= Void then
-				yyspecial_routines8.clear_all (yyvs8)
+				yyvs8.clear_all
 			end
 			if yyvs9 /= Void then
-				yyspecial_routines9.clear_all (yyvs9)
+				yyvs9.clear_all
 			end
 			if yyvs10 /= Void then
-				yyspecial_routines10.clear_all (yyvs10)
+				yyvs10.clear_all
 			end
 			if yyvs11 /= Void then
-				yyspecial_routines11.clear_all (yyvs11)
+				yyvs11.clear_all
 			end
 			if yyvs12 /= Void then
-				yyspecial_routines12.clear_all (yyvs12)
+				yyvs12.clear_all
 			end
 			if yyvs13 /= Void then
-				yyspecial_routines13.clear_all (yyvs13)
+				yyvs13.clear_all
 			end
 			if yyvs14 /= Void then
-				yyspecial_routines14.clear_all (yyvs14)
+				yyvs14.clear_all
 			end
 			if yyvs15 /= Void then
-				yyspecial_routines15.clear_all (yyvs15)
+				yyvs15.clear_all
 			end
 			if yyvs16 /= Void then
-				yyspecial_routines16.clear_all (yyvs16)
+				yyvs16.clear_all
 			end
 			if yyvs17 /= Void then
-				yyspecial_routines17.clear_all (yyvs17)
+				yyvs17.clear_all
 			end
 			if yyvs18 /= Void then
-				yyspecial_routines18.clear_all (yyvs18)
+				yyvs18.clear_all
 			end
 			if yyvs19 /= Void then
-				yyspecial_routines19.clear_all (yyvs19)
+				yyvs19.clear_all
 			end
 			if yyvs20 /= Void then
-				yyspecial_routines20.clear_all (yyvs20)
+				yyvs20.clear_all
 			end
 			if yyvs21 /= Void then
-				yyspecial_routines21.clear_all (yyvs21)
+				yyvs21.clear_all
 			end
 			if yyvs22 /= Void then
-				yyspecial_routines22.clear_all (yyvs22)
+				yyvs22.clear_all
 			end
 			if yyvs23 /= Void then
-				yyspecial_routines23.clear_all (yyvs23)
+				yyvs23.clear_all
 			end
 			if yyvs24 /= Void then
-				yyspecial_routines24.clear_all (yyvs24)
+				yyvs24.clear_all
 			end
 			if yyvs25 /= Void then
-				yyspecial_routines25.clear_all (yyvs25)
+				yyvs25.clear_all
 			end
 			if yyvs26 /= Void then
-				yyspecial_routines26.clear_all (yyvs26)
+				yyvs26.clear_all
 			end
 			if yyvs27 /= Void then
-				yyspecial_routines27.clear_all (yyvs27)
+				yyvs27.clear_all
 			end
 			if yyvs28 /= Void then
-				yyspecial_routines28.clear_all (yyvs28)
+				yyvs28.clear_all
 			end
 			if yyvs29 /= Void then
-				yyspecial_routines29.clear_all (yyvs29)
+				yyvs29.clear_all
 			end
 			if yyvs30 /= Void then
-				yyspecial_routines30.clear_all (yyvs30)
+				yyvs30.clear_all
 			end
 			if yyvs31 /= Void then
-				yyspecial_routines31.clear_all (yyvs31)
+				yyvs31.clear_all
 			end
 			if yyvs32 /= Void then
-				yyspecial_routines32.clear_all (yyvs32)
+				yyvs32.clear_all
 			end
 			if yyvs33 /= Void then
-				yyspecial_routines33.clear_all (yyvs33)
+				yyvs33.clear_all
 			end
 			if yyvs34 /= Void then
-				yyspecial_routines34.clear_all (yyvs34)
+				yyvs34.clear_all
 			end
 			if yyvs35 /= Void then
-				yyspecial_routines35.clear_all (yyvs35)
+				yyvs35.clear_all
 			end
 			if yyvs36 /= Void then
-				yyspecial_routines36.clear_all (yyvs36)
+				yyvs36.clear_all
 			end
 			if yyvs37 /= Void then
-				yyspecial_routines37.clear_all (yyvs37)
+				yyvs37.clear_all
 			end
 			if yyvs38 /= Void then
-				yyspecial_routines38.clear_all (yyvs38)
+				yyvs38.clear_all
 			end
 		end
 
@@ -5004,9 +5004,7 @@ end
 
 feature {NONE} -- Table templates
 
-	yytranslate_template: ANY is
-			-- This is supposed to be "like FIXED_INTEGER_ARRAY_TYPE",
-			-- but once functions cannot be declared with anchored types.
+	yytranslate_template: SPECIAL [INTEGER] is
 		once
 			Result := yyfixed_array (<<
 			    0,    2,    2,    2,    2,    2,    2,    2,    2,    2,
@@ -5039,12 +5037,10 @@ feature {NONE} -- Table templates
 			    2,    2,    2,    2,    2,    2,    1,    2,    3,    4,
 			    5,    6,    7,    8,    9,   10,   11,   12,   13,   14,
 			   15,   16,   17,   18,   19,   20,   21,   22,   23,   24,
-			   25,   26,   27,   28,   29,   30,   31>>)
+			   25,   26,   27,   28,   29,   30,   31, yyDummy>>)
 		end
 
-	yyr1_template: ANY is
-			-- This is supposed to be "like FIXED_INTEGER_ARRAY_TYPE",
-			-- but once functions cannot be declared with anchored types.
+	yyr1_template: SPECIAL [INTEGER] is
 		once
 			Result := yyfixed_array (<<
 			    0,   84,   84,   84,   85,   85,   85,   86,   87,   87,
@@ -5064,12 +5060,10 @@ feature {NONE} -- Table templates
 			   79,   79,   79,   79,   49,   49,   50,   51,   51,   51,
 			   73,   73,   73,   81,   81,   81,   81,   81,   81,   55,
 			   55,   56,   74,   74,   74,   82,   82,   82,   82,   82,
-			   82,   57,   75,   75,   75,   58>>)
+			   82,   57,   75,   75,   75,   58, yyDummy>>)
 		end
 
-	yytypes1_template: ANY is
-			-- This is supposed to be "like FIXED_INTEGER_ARRAY_TYPE",
-			-- but once functions cannot be declared with anchored types.
+	yytypes1_template: SPECIAL [INTEGER] is
 		once
 			Result := yyfixed_array (<<
 			    1,    1,    4,    4,    1,   13,   13,   13,   13,   13,
@@ -5103,24 +5097,20 @@ feature {NONE} -- Table templates
 			    1,    1,    1,    1,    1,    1,    1,    2,    3,    7,
 			    8,    9,   10,    1,    1,    3,    2,    1,    1,    2,
 			    1,    1,    4,    1,    1,    1,    1,    1,    1,    1,
-			    1,    1,    1,    1,    1>>)
+			    1,    1,    1,    1,    1, yyDummy>>)
 		end
 
-	yytypes2_template: ANY is
-			-- This is supposed to be "like FIXED_INTEGER_ARRAY_TYPE",
-			-- but once functions cannot be declared with anchored types.
+	yytypes2_template: SPECIAL [INTEGER] is
 		once
 			Result := yyfixed_array (<<
 			    1,    1,    1,    2,    3,    4,    4,    4,    4,    4,
 			    4,    4,    4,    4,    5,    1,    1,    1,    1,    1,
 			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
 			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-			    1,    1>>)
+			    1,    1, yyDummy>>)
 		end
 
-	yydefact_template: ANY is
-			-- This is supposed to be "like FIXED_INTEGER_ARRAY_TYPE",
-			-- but once functions cannot be declared with anchored types.
+	yydefact_template: SPECIAL [INTEGER] is
 		once
 			Result := yyfixed_array (<<
 			    0,   26,    0,    0,    3,   12,   22,   13,   14,    2,
@@ -5154,12 +5144,10 @@ feature {NONE} -- Table templates
 			  158,   73,   85,  108,  144,  129,  156,    0,    0,    0,
 			    0,    0,    0,  121,  120,  118,  117,  103,  102,  101,
 			    0,    0,    0,   72,   84,  107,  143,  128,  155,  138,
-			  139,   36,    0,    0,    0>>)
+			  139,   36,    0,    0,    0, yyDummy>>)
 		end
 
-	yydefgoto_template: ANY is
-			-- This is supposed to be "like FIXED_INTEGER_ARRAY_TYPE",
-			-- but once functions cannot be declared with anchored types.
+	yydefgoto_template: SPECIAL [INTEGER] is
 		once
 			Result := yyfixed_array (<<
 			   44,   45,   46,   47,   48,   49,   50,   51,   52,   53,
@@ -5167,12 +5155,10 @@ feature {NONE} -- Table templates
 			    8,   30,   31,   32,   79,   80,   81,   82,   83,   84,
 			   85,   86,   87,   88,   89,   90,   91,   92,   93,   94,
 			   95,   96,  292,   10,   11,   12,   33,   13,   22,   23,
-			   24,   60,   14,   98,   99,   61,  115>>)
+			   24,   60,   14,   98,   99,   61,  115, yyDummy>>)
 		end
 
-	yypact_template: ANY is
-			-- This is supposed to be "like FIXED_INTEGER_ARRAY_TYPE",
-			-- but once functions cannot be declared with anchored types.
+	yypact_template: SPECIAL [INTEGER] is
 		once
 			Result := yyfixed_array (<<
 			  180,  285,  147,  300, -32768, -32768, -32768, -32768, -32768, -32768,
@@ -5206,12 +5192,10 @@ feature {NONE} -- Table templates
 			 -32768, -32768, -32768, -32768, -32768, -32768, -32768,  161,  154,  138,
 			  129,  101,   95, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
 			   71,   67,   28, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
-			 -32768, -32768,   30,   26, -32768>>)
+			 -32768, -32768,   30,   26, -32768, yyDummy>>)
 		end
 
-	yypgoto_template: ANY is
-			-- This is supposed to be "like FIXED_INTEGER_ARRAY_TYPE",
-			-- but once functions cannot be declared with anchored types.
+	yypgoto_template: SPECIAL [INTEGER] is
 		once
 			Result := yyfixed_array (<<
 			   14,    7,   -1,  -22,  -12, -122, -126,  -16, -32768, -32768,
@@ -5219,12 +5203,10 @@ feature {NONE} -- Table templates
 			   15,  292,  290, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
 			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
 			 -32768, -32768, -32768,  303,  136, -32768,  212, -32768, -32768,  255,
-			 -32768,  254, -32768, -32768, -32768, -32768,  280>>)
+			 -32768,  254, -32768, -32768, -32768, -32768,  280, yyDummy>>)
 		end
 
-	yytable_template: ANY is
-			-- This is supposed to be "like FIXED_INTEGER_ARRAY_TYPE",
-			-- but once functions cannot be declared with anchored types.
+	yytable_template: SPECIAL [INTEGER] is
 		once
 			Result := yyfixed_array (<<
 			  103,  111,  110,  200,   77,   40,   73,    2,   76,  214,
@@ -5263,12 +5245,10 @@ feature {NONE} -- Table templates
 			  143,   20,  142,  141,  140,  139,  138,  137,  136,  135,
 			  134,  133,  132,  131,  130,    1,   21,   26,  -17,  100,
 			    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-			    0,    0,    0,    0,    0,    0,  116>>)
+			    0,    0,    0,    0,    0,    0,  116, yyDummy>>)
 		end
 
-	yycheck_template: ANY is
-			-- This is supposed to be "like FIXED_INTEGER_ARRAY_TYPE",
-			-- but once functions cannot be declared with anchored types.
+	yycheck_template: SPECIAL [INTEGER] is
 		once
 			Result := yyfixed_array (<<
 			   34,   49,   49,    3,   28,    8,   28,    6,   28,  135,
@@ -5307,7 +5287,7 @@ feature {NONE} -- Table templates
 			   36,   17,   36,   36,   36,   36,   36,   36,   36,   36,
 			   36,   36,   36,   36,   36,   15,   33,   14,   33,   29,
 			   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-			   -1,   -1,   -1,   -1,   -1,   -1,   56>>)
+			   -1,   -1,   -1,   -1,   -1,   -1,   56, yyDummy>>)
 		end
 
 feature {NONE} -- Semantic value stacks

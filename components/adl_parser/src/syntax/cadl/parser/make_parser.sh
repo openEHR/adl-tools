@@ -5,7 +5,7 @@
 #
 #	author:      "Thomas Beale"
 #	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-#	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+#	copyright:   "Copyright (c) 2000-2005 The openEHR Foundation <http://www.openEHR.org>"
 #	license:     "See notice at bottom of class"
 #
 #	file:        "$URL$"
@@ -14,3 +14,5 @@
 #
 
 $GOBO/bin/geyacc --new_typing -v parser_errs.txt -t CADL_TOKENS -o cadl_validator.e cadl_validator.y
+
+$GOBO/bin/geyacc --doc=html -v parser_errs.txt -t CADL_TOKENS -o cadl_validator.html cadl_validator.y

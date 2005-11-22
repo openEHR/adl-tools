@@ -6,6 +6,8 @@
 
 
 
+
+  
   
   
   
@@ -15,9 +17,12 @@
 
 
 
+
   
 
 
+  
+  
   
   
   
@@ -36,6 +41,7 @@
 
 
 
+
 <h1>The ref_impl_eiffel Project Developer's page
 </h1>
 
@@ -43,37 +49,60 @@
 
 
 
+
 <hr style="width: 100%; height: 2px;" />
 <h2>What is in this project?</h2>
+
 <p>There are 3 sections to this repository, as follows:</p>
+
 <ul>
+
   <li><span style="font-weight: bold;">libraries</span>: this is where the <span style="font-style: italic;">open</span>EHR reference model archetype models and supporting generic libraries are. Executables in this area are all test applications.</li>
+
   <li><span style="font-weight: bold;">components</span>: re-usable
 components based on the libraries are here. Includes .Net and
 Java-wrapped DLLs (future: Linux .so libs) for ADL, and any other
 deployable component form of the&nbsp;<span style="font-style: italic;">open</span>EHR models. Will eventually include an&nbsp;<span style="font-style: italic;">open</span>EHR archetype- and template-processing kernel</li>
+
   <li><span style="font-weight: bold;">apps</span>: standalone
 executable applications based on the libraries and/or components.
 Includes the ADL workbench, and will eventually include EHR,
 demographic and archetype servers.</li>
+
 </ul>
+
 <h2>Setting up for building</h2>
+
 <p>There are a number of steps to do to ensure you are ready to build anything, as follows:</p>
+
 <ul>
-  <li>make sure you have Gobo 3.2 libraries installed. You can get them <a href="https://sourceforge.net/project/showfiles.php?group_id=24591&amp;package_id=57904&amp;release_id=168440">here</a>. (later versions probably will not work yet - we have not tested them)</li>
-  <li>create an environment variable called GOBO with the value of the path where you instaled Gobo 3.2</li>
+
+  <li>make sure you have Gobo 3.4 libraries installed. You can get them <a href="https://sourceforge.net/project/showfiles.php?group_id=24591&amp;package_id=57904&amp;release_id=341053">here</a>. (later versions probably will not work yet - we have not tested them)</li>
+
+  <li>create an environment variable called GOBO with the value of the path where you instaled Gobo 3.4</li>
+
   <li>create an environment variable OPENEHR, pointing to the root of
 your openEHR area, e..g. c:\projects\openEHR, /usr/local/openehr&nbsp;</li>
+
   <li>download and install Eiffel 5.6 from <a href="http://eiffel.com">http://eiffel.com</a> (free use license). The IDE is known as "Eiffel Studio".&nbsp;</li>
+
+  
   <ul>
+
     <li>during install, when it asks which compiler to use, you can
 safely choose whichever; if you have MS VC++ 6.0 or later on your
 machine, you can use that, else just choose the built-in Borland
-compiler.</li>
+bcc compiler or gcc or other default compiler.</li>
+
     <li>when it asks whether to precompile the libraries, choose yes, and precompile base and vision.</li>
+
+  
   </ul>
+
 </ul>
+
 <h2>Building</h2>
+
 <p>There is a very basic Make-based facility for building the entire
 project. At the moment this is based on nmake for Windows. nmake is not
 nearly as smart as the usual make you will find on various unixes, and
@@ -81,40 +110,81 @@ the method of building currently used in this project needs to be
 seriously improved. Ideally it needs to be set up to work for either
 Microsoft or Borland compiler on Windows, and also for gcc on Linux and
 Mac.</p>
+
 <p>For now, the approach is:</p>
+
 <ul>
+
   <li>in a Windows terminal window at the project root directory, type nmake -f makefile.windows.</li>
+
 </ul>
+
 This will cause the build of all binaries. Sometimes it fails in
 various strange ways, and a manual build has to be done. This is not
 hard - it just means starting EiffelStudio by hand and telling it to
 build from an existing Ace file; depending on what you want to build,
 you just select the Ace file in the appropriate directory. <br />
+
 <h2>Build Targets (what can I build?)</h2>
+
 <p>The current build targets are as follows:</p>
+
 <ul>
+
   <li><span style="font-weight: bold;">libraries area</span>:&nbsp;</li>
+
+  
   <ul>
+
     <li>common_libs\test\app - a tester for dADL, method dispatcher, units library and others;</li>
+
     <li>openehr\test\app - a tester for the openEHR reference model classes</li>
+
+  
   </ul>
+
   <li><span style="font-weight: bold;">component area</span>:</li>
+
+  
   <ul>
+
     <li>components\adl_parser\test\app - a tester for the ADL parser</li>
+
     <li>components\adl_parser\lib\dotnet_dll - the <span style="font-weight: bold;">.Net DLL</span> form of the ADL parser</li>
+
     <li>components\adl_parser\lib\java_lib - the <span style="font-weight: bold;">JNI-wrapped DLL</span> form of the ADL parser</li>
+
+  
   </ul>
+
   <li><span style="font-weight: bold;">apps area</span>:</li>
+
+  
   <ul>
+
     <li>apps\adl_cmd_line\app - a simple command line version of the
 ADL parser. This can be used to do a parse check on every archetype in
 the archetypes directory, serialise it to ADL and HTML, and report the
 parsing errors. Useful for seeing if any changes to archetypes have
 broken the parser. There are some test archetypes which should always
 fail.</li>
+
     <li>apps\adl_workbench\app - <span style="font-weight: bold;">adl_workbench</span>, a Vision2-based GUI application for ADL parsing, viewing and saving.</li>
+
+  
   </ul>
+
 </ul>
+<h2>Parser Grammars</h2>
+The following are links to the grammars of the various parsers:<br />
+<ul>
+  <li>ADL (<a href="components/adl_parser/src/syntax/adl/parser/adl_validator.y">.y file</a>) (<a href="components/adl_parser/src/syntax/adl/parser/adl_validator.html">html documentation</a>)</li>
+  <li>cADL  (<a href="components/adl_parser/src/syntax/cadl/parser/cadl_validator.y">.y file</a>) (<a href="components/adl_parser/src/syntax/cadl/parser/cadl_validator.html">html documentation</a>)</li>
+  <li>dADL  (<a href="libraries/common_libs/src/structures/syntax/dadl/parser/dadl2_validator.y">.y file</a>) (<a href="libraries/common_libs/src/structures/syntax/dadl/parser/dadl2_validator.html">html documentation</a>)</li>
+  <li>ADL Path Syntax (<a href="libraries/common_libs/src/structures/object_graph/path/og_path_validator.y">.y file</a>) (<a href="libraries/common_libs/src/structures/object_graph/path/og_path_validator.html">html documentation</a>)</li>
+  <li>Units parser&nbsp;(<a href="libraries/common_libs/src/unit_parser/parser/units_parser.y">.y file</a>) (<a href="libraries/common_libs/src/unit_parser/parser/units_parser.html">html documentation</a>)</li>
+</ul>
+
 
 
 
@@ -123,6 +193,7 @@ fail.</li>
 <hr style="width: 100%; height: 2px;" />
 <p class="footer">$LastChangedDate$
 $LastChangedRevision$</p>
+
 
 
 

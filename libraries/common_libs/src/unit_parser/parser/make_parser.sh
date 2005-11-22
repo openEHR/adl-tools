@@ -1,15 +1,17 @@
 #!/bin/sh 
-#	component:   "Deep Thought Reusable Libraries"
+#	component:   "openEHR Reusable Libraries"
 #	description: "Units Parser builder script"
 #	keywords:    "units, parser"
 #
 #	author:      "Thomas Beale <thomas@deepthought.com.au>"
-#	copyright:   "Copyright (c) 2000 Deep Thought Informatics Pty Ltd"
-#	licence:     "The Eiffel Forum License, version 1"
+#	copyright:   "Copyright (c) 2005 Ocean Informatics"
+#	licence:     "The Mozilla Tri-license"
 #
-#	file:        "% %M% %"
-#	version:     "% %I% %"
-#	last_change: "% %E% %U% %"
+#	file:        "$URL$"
+#	revision:    "$LastChangedRevision$"
+#	last_change: "$LastChangedDate$"
 #
 
 $GOBO/bin/geyacc --new_typing -v parser_errs.txt -t UNITS_TOKENS -o units_parser.e units_parser.y
+
+$GOBO/bin/geyacc --doc=html -v parser_errs.txt -t UNITS_TOKENS -o units_parser.html units_parser.y
