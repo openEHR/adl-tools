@@ -28,7 +28,6 @@ feature -- C_OBJECT Methods
 			create c_an_id.make_by_pointer (an_id)
 			adl_objects.c_objects.item (a_handle).set_object_id (c_an_id.string)
 		end
-		
 	
 	c_object_rm_type_name(a_handle: INTEGER): POINTER is
 			-- Return the rm type name for specified C_OBJECT
@@ -272,6 +271,24 @@ feature -- REAL_INTERVAL Methods
 			-- returns the cardinality's lower bound
 		do
 			Result := adl_objects.real_intervals.item (a_handle).lower
+		end
+	
+	real_interval_upper_string(a_handle:INTEGER): POINTER is
+			-- 
+		local
+				obj : ANY
+		do
+			obj := adl_objects.real_intervals.item (a_handle).upper_out.to_c
+			Result := $obj	
+		end
+	
+	real_interval_lower_string(a_handle:INTEGER): POINTER is		
+			-- 
+		local
+			obj : ANY
+		do
+			obj := adl_objects.real_intervals.item (a_handle).lower_out.to_c
+			Result := $obj
 		end
 
 feature -- ARCHETYPE_INTERNAL_REF Methods

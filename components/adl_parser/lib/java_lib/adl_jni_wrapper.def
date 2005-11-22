@@ -72,6 +72,8 @@ C_OBJECT_ACCESS (default_create) : archetype_slot_includes_get
 C_OBJECT_ACCESS (default_create) : archetype_slot_excludes_get
 C_OBJECT_ACCESS (default_create) : expr_binary_operator_right_operand_out
 C_OBJECT_ACCESS (default_create) : c_coded_term_set_assumed_value
+C_OBJECT_ACCESS (default_create) : real_interval_upper_string
+C_OBJECT_ACCESS (default_create) : real_interval_lower_string
 
 -- CLASS [C_ADL_INTERFACE]
 C_ADL_INTERFACE : make

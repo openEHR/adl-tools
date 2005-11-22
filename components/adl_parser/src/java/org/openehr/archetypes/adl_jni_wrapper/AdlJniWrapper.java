@@ -641,6 +641,9 @@ public class AdlJniWrapper
 	public native String
 	jontology_constraint_definition (String a_lang, String a_term_code);
 
+	public native int
+	jontology_constraint_definitions_count();
+
 	public native String[]
 	jontology_languages_available();
 
@@ -866,6 +869,12 @@ public class AdlJniWrapper
 
 	public native float
 	jreal_interval_lower(int h_cardinality);
+
+	public native String
+	jreal_interval_upper_string(int h_cardinality);
+
+	public native String
+	jreal_interval_lower_string(int h_cardinality);
 	
 	// -----------------------ARCHETYPE_INTERNAL_REF----------------------
 	
