@@ -38,7 +38,7 @@ feature -- Access
 			-- Actor playing the role.
 		
 invariant
-	Capabilities_valid: capabilities /= Void implies not capabilities.empty
+	Capabilities_valid: capabilities /= Void implies not capabilities.is_empty
 	Performer_exists: performer /= Void
 
 end

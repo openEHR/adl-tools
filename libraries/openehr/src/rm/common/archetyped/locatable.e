@@ -52,6 +52,11 @@ feature -- Access
 		deferred
 		end
 
+	parent: LOCATABLE is
+			-- parent node of this node in compositional structure
+		deferred
+		end
+			
 feature -- Status Report
 
 	valid_path (a_path: STRING): BOOLEAN is

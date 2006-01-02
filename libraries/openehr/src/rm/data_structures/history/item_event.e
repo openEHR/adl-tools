@@ -18,38 +18,69 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class ITEM_EVENT [G -> ITEM_STRUCTURE]
+class INTERVAL_EVENT [G -> ITEM_STRUCTURE]
 
 inherit
+	EVENT [G]
+	
 	EXTERNAL_ENVIRONMENT_ACCESS
+		export
+			{NONE} all
+		end
 	
 feature -- Access
 
-	item: G	
-			-- The data of this event. 
+	data: HASH_TABLE [G, DV_CODED_TEXT]
+			-- The data of this event, keyed by math function
+			
+	data_math_functions: ARRAYED_LIST [DV_CODED_TEXT] is
+			-- list of math function keys in data hash table
+		do
+			from
+				create Result.make (data.count)
+				data.start
+			until
+				data.off
+			loop
+				Result.extend (data.key_for_iteration)
+				data.forth
+			end
+		end
 
 	width: DV_DURATION	
 			-- length of the interval during which the state was true. Void if an instantaneous event.
 
+	item(math_function: DV_CODED_TEXT): G is
+			-- data corresponding to mathematical function 
+			-- Coded using openEHR Terminology group "event math function".
+		do
+			Result := data.item(math_function)
+		end
 
-	math_function: DV_CODED_TEXT	
-			-- Mathematical function for non-instantaneous events - e.g. “maximum”, “mean” etc. 
-			-- Coded using openEHR Terminology group “event math function”.
+	is_instantaneous: BOOLEAN is False
+
+	sample_count: INTEGER
+			-- number of original point samples to which this interval example
+			-- corresponds
+
+	interval_start_time: DV_DATE_TIME is
+			-- time point of the start of the interval
+		do
+			Result := time.subtract(width)
+		end
 
 feature -- Status Report
 
-	is_instantaneous: BOOLEAN is
-			-- True if the width of this event is 0
-		do
-			Result := width = Void
+	math_function_valid(mf: DV_CODED_TEXT): BOOLEAN is 
+		do 
+			Result := terminology("openehr").codes_for_group_name("event math function", "en").has(mf.defining_code)
 		end
-
+		
 invariant
-	item_exists: item /= Void
-	width /= Void xor is_instantaneous
-	math_function_validity: width /= Void implies 
-		(math_function /= Void and then  
-		terminology("openehr").codes_for_group_name("event math function", "en").has(math_function.defining_code))
+	data_exists: data /= Void
+	width /= Void
+	interval_start_time /= Void
+	math_function_validity: data_math_functions.for_all(agent math_function_valid)
 
 end
 

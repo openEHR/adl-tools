@@ -36,6 +36,11 @@ class ITEM_LIST
 
 inherit
 	ITEM_STRUCTURE
+	
+	CLUSTER
+		redefine
+			items, path_of_item, item_at_path, valid_path
+		end
 
 feature -- Access
 

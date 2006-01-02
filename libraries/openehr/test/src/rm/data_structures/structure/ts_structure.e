@@ -13,7 +13,7 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class TS_DS_ITEM_STRUCTURE
+class TS_ITEM_STRUCTURE
 
 inherit 
 	TEST_SUITE

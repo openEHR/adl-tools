@@ -19,11 +19,11 @@ indexing
 	keywords:    "content, clinical, observation"
 
 	requirements:"ISO 18308 TS V1.0 ???"
-	design:      "openEHR EHR Reference Model 4.1"
+	design:      "openEHR EHR Reference Model 5.0"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2000-2005 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -33,31 +33,18 @@ indexing
 class INSTRUCTION
 
 inherit
-	ENTRY
+	CARE_ENTRY
 
 feature -- Access
 
-	state: DV_STATE	
-			-- current state of the action in a state machine description
+	narrative: DV_PARAGRAPH
+			-- narrative description of the action to be executed.
 
-	action: ITEM_STRUCTURE	
-			-- description of the action to be executed.
+	activities: LIST[ACTIVITY]
+			-- list of all activities in this Instruction
 
-	profile: ITEM_STRUCTURE	
-			-- configuration data mappings from archetyped model of action.
-
-	data: ITEM_STRUCTURE	
-			-- state data of action execution.
-
-	next_actions: LIST [INSTRUCTION] is
-			-- Next actions in chain, derived from links attribute -any LINK instance with name = “next actions”.
-		do
-		end
-
-	status: DV_STATE is
-			-- Overall status, derived from the state values of all linked INSTRUCTIONs in the chain.
-		do
-		end
+	wf_definition: DV_PARSABLE
+			-- syntax form of workflow definition
 
 	path_of_item (a_loc: LOCATABLE): STRING is
 			-- The path to an item relative to the root of this archetyped structure.
@@ -77,8 +64,7 @@ feature -- Status Report
 		end
 		
 invariant
-	state_exists: state /= Void
-	action_exists: action /= Void	
+	narrative_exists: narrative /= Void
 
 end
 
@@ -100,7 +86,7 @@ end
 --| The Original Code is instruction.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2003-2005
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

@@ -17,14 +17,14 @@ indexing
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2000-2005 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-deferred class HISTORY [G -> ITEM_STRUCTURE]
+class HISTORY [G -> ITEM_STRUCTURE]
 
 inherit
 	DATA_STRUCTURE
@@ -34,8 +34,57 @@ feature -- Access
 	origin: DV_DATE_TIME	
 			-- Time origin of this event history. The first event is not necessarily at the origin point.
 
+	period: DV_DURATION	
+			-- period between samples in this segment if periodic
+
+	items: LIST[EVENT[G]]	
+			-- The items in the series.
+
+	summary: ITEM_STRUCTURE
+			-- optional data item which summarises the entire series, e.g. a
+			-- text item or an image
+
+	duration: DV_DURATION
+			-- duration of the entire History; either corresponds to the
+			-- duration of all the events, and/or the duration represented by
+			-- the summary, if it exists
+
+	path_of_item (a_loc: LOCATABLE): STRING is
+			-- The path to an item relative to the root of this archetyped structure.
+		do
+		end
+
+	item_at_path (a_path: STRING): LOCATABLE is
+			-- The item at a path (relative to this item).
+		do
+		end
+
+feature -- Access
+
+	parent: LOCATABLE
+			-- parent node of this node in compositional structure
+
+feature -- Status Report
+
+	valid_path (a_path: STRING): BOOLEAN is
+			-- True if the path is valid with respect to the current item.
+		do
+		end
+
+	is_periodic: BOOLEAN	
+			-- Indicates whether history is periodic.
+
+feature -- Conversion
+
+	as_hierarchy: CLUSTER is
+			-- the physical representation as a CEN 13606-compliant structure
+		do
+		end
+
 invariant
 	origin_exists: origin /= Void
+	items_exists: items /= Void and then not items.is_empty	
+	period_validity: is_periodic xor period = Void	
 
 end
 

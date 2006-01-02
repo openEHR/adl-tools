@@ -18,16 +18,25 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class EVENT [G -> ITEM_STRUCTURE]
+deferred class EVENT [G -> ITEM_STRUCTURE]
 
 inherit
 	LOCATABLE
-	ITEM_EVENT [G]
 
 feature -- Access
 
-	offset: DV_DURATION 
+	time: DV_DATE_TIME
+			-- time point at the end of this event
+
+	offset: DV_DURATION is
 			-- offset of this sample from the origin of the history
+		do
+			Result := time - parent.origin
+		end
+
+	state: ITEM_STRUCTURE
+			-- data representing the state of the observed entity, which is relevant
+			-- to the interpretation of the data
 
 	path_of_item (a_loc: LOCATABLE): STRING is
 			-- The path to an item relative to the root of this archetyped structure.
@@ -39,7 +48,15 @@ feature -- Access
 		do
 		end
 
+	parent: HISTORY[G]
+			-- parent node of this node in compositional structure
+
 feature -- Status Report
+
+	is_instantaneous: BOOLEAN is
+			-- True if the width of this event is 0
+		deferred
+		end
 
 	valid_path (a_path: STRING): BOOLEAN is
 			-- True if the path is valid with respect to the current item.
@@ -47,6 +64,7 @@ feature -- Status Report
 		end
 
 invariant
+	time_exists: time /= Void	
 	offset_exists: offset /= Void	
 
 end

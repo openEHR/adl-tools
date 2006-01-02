@@ -3,18 +3,18 @@ indexing
 
 	description: "[
 	              Observational clinical statements, i.e. information about 
-			  events or processes in the real world, in the form of data situated 
-			  in time. Represented by temporal data structures in which each value 
-			  structure has a timepoint.
-			  ]"
+				  events or processes in the real world, in the form of data situated 
+				  in time. Represented by temporal data structures in which each value 
+				  structure has a timepoint.
+				  ]"
 	keywords:    "content, clinical, observation"
 
 	requirements:"ISO 18308 TS V1.0 ???"
-	design:      "openEHR EHR Reference Model 4.1"
+	design:      "openEHR EHR Reference Model 5.0"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2000-2005 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -24,7 +24,7 @@ indexing
 class OBSERVATION
 
 inherit
-	ENTRY
+	CARE_ENTRY
 
 feature -- Access
 
@@ -75,7 +75,7 @@ end
 --| The Original Code is observation.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2003-2005
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

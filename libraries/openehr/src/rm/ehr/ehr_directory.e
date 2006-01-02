@@ -10,22 +10,17 @@ indexing
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2000-2005 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class EHR_DIRECTORY
+class VERSIONED_DIRECTORY
 
 inherit
-	VERSION_REPOSITORY [FOLDER]
-
-feature -- Access
-
-	root: FOLDER	
-			-- Root FOLDER of the directory.
+	VERSIONED_OBJECT [FOLDER]
 
 feature -- Status Report
 
@@ -35,8 +30,7 @@ feature -- Status Report
 		end
 
 invariant
-	Root_exists: root /= Void
-	Owner_id_valid: owner_id.type.is_equal("EHR")	
+	Owner_id_valid: owner_id.generating_type.is_equal("EHR")	
 
 end
 
@@ -58,7 +52,7 @@ end
 --| The Original Code is folder.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2003-2005
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

@@ -1,107 +1,56 @@
 indexing
-	component:   "openEHR Data Structures Reference Model"
-
+	component:   "openEHR Common Reference Model"
 	description: "[
-	             A data structure in the form of a tree.
-			 Structure is as follows:
-					branch_1: CLUSTER
-						branch_1.1: CLUSTER
-							value_1: ELEMENT
-							....
-							value_N: ELEMENT
+			     Audit details from any system in feeder audit chain
+			     ]"
+	keywords:    "locator, locatable"
 
-						branch_1.2: CLUSTER
-							value_1: ELEMENT
-							....
-							value_N: ELEMENT
-
-						value_1: ELEMENT
-						value_2: ELEMENT
-						....
-						value_N: ELEMENT
-
-					branch_2: CLUSTER
-						branch_2.1: CLUSTER
-							value_1: ELEMENT
-							....
-							value_N: ELEMENT
-
-						branch_2.2: CLUSTER
-							value_1: ELEMENT
-							....
-							value_N: ELEMENT
-
-						value_1: ELEMENT
-						value_2: ELEMENT
-						....
-						value_N: ELEMENT
-
-					branch_N: CLUSTER
-						branch_N.1: CLUSTER
-							value_1: ELEMENT
-							....
-							value_N: ELEMENT
-
-						branch_N.2: CLUSTER
-							value_1: ELEMENT
-							....
-							value_N: ELEMENT
-
-						value_1: ELEMENT
-						value_2: ELEMENT
-						....
-						value_N: ELEMENT
-	             	
-	             Valid paths are of the form:	
-	             	whole tree: |<root-name>
-	             				
-	             	branch: |<root-name>|branch=<brach-name>|value=<value_name>
-	             	value: |<root-name>|value=<n>
-	  	       ]"
-	keywords:    "content, spatial, data structure"
-
-	requirements:"ISO 18308 TS V1.0 ???"
-	design:      "openEHR Data Structures Reference Model 1.2.1"
+	design:      "openEHR Common Reference Model 2.0"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2006 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class ITEM_TREE
+class FEEDER_AUDIT_DETAILS
 
-inherit
-	ITEM_STRUCTURE
+feature -- Initialisation
 	
-	CLUSTER
+	make(a_system_id:STRING) is
+		require
+			a_system_id_exists: a_system_id /= Void and then not a_system_id.is_empty
+		do
+		end
 
 feature -- Access
 
-	element_at_path(a_path:STRING): ELEMENT is
-			-- Return the leaf element at the path ëa_pathí
-		require
-			has_element_path(a_path)	
-		do
-		end
+	system_id: STRING	
+			-- Identifier of the system which handled the information item.
 
-feature -- Status Report
+	provider: PARTY_IDENTIFIED	
+			-- Optional provider(s) who created, committed, forwarded or otherwise handled the item.
 
-	has_element_path(a_path:STRING): BOOLEAN is
-			-- True if path ëa_pathí is a valid leaf path
-		do
-		end
+	location: PARTY_IDENTIFIED	
+			-- Identifier of the particular site/facility within an organisation which handled the item. 
+			-- For computability, this identifier needs to be e.g. a PKI identifier which can be included 
+			-- in the identifier list of the PARTY_IDENTIFIED object.
 
-feature -- Conversion
+	time: DV_DATE_TIME	
+			-- Time of handling the item.
 
-	as_hierarchy: CLUSTER is
-			-- the physical representation as a CEN 13606-compliant structure
-		do
-		end
-	
+	subject: PARTY_PROXY	
+			-- Identifiers for subject of the received information item.
+
+	version_id: STRING	
+			-- Any identifier used in the system such as ‚Äúinterim‚Äù, ‚Äúfinal‚Äù, or numeric versions if available.
+
+invariant
+	System_id_valid: system_id /= Void implies not system_id.is_empty	
+
 end
 
 
@@ -119,7 +68,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is tree_s.e.
+--| The Original Code is feeder_audit.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

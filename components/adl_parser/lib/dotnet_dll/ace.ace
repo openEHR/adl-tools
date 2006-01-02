@@ -7,20 +7,6 @@ root
 default
 	assertion (require)
 	msil_generation (yes)
-	disabled_debug (yes)
-	disabled_debug ("adl_engine")
-	disabled_debug ("adl_invariant")
-	disabled_debug ("adl_parse")
-	disabled_debug ("adl_tree")
-	disabled_debug ("bb")
-	disabled_debug ("dadl_parse")
-	disabled_debug ("dt")
-	disabled_debug ("exclude list")
-	disabled_debug ("gelex")
-	disabled_debug ("geyacc")
-	disabled_debug ("include list")
-	disabled_debug ("og_path_parse")
-	disabled_debug ("refactor_fixme")
 	debug (no)
 	line_generation (no)
 	profile (no)
@@ -82,11 +68,6 @@ cluster
 	all common_libs:		"$OPENEHR\ref_impl_eiffel\libraries\common_libs\src"
 		exclude
 			".svn"; 
-		default
-			assertion (no)
-			assertion (check)
-			assertion (require)
-			assertion (ensure)
 		end
 
 	gobo:		"$GOBO\library"

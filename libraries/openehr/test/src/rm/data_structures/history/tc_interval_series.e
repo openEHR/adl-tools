@@ -1,107 +1,55 @@
 indexing
 	component:   "openEHR Data Structures Reference Model"
 
-	description: "[
-	             A data structure in the form of a tree.
-			 Structure is as follows:
-					branch_1: CLUSTER
-						branch_1.1: CLUSTER
-							value_1: ELEMENT
-							....
-							value_N: ELEMENT
-
-						branch_1.2: CLUSTER
-							value_1: ELEMENT
-							....
-							value_N: ELEMENT
-
-						value_1: ELEMENT
-						value_2: ELEMENT
-						....
-						value_N: ELEMENT
-
-					branch_2: CLUSTER
-						branch_2.1: CLUSTER
-							value_1: ELEMENT
-							....
-							value_N: ELEMENT
-
-						branch_2.2: CLUSTER
-							value_1: ELEMENT
-							....
-							value_N: ELEMENT
-
-						value_1: ELEMENT
-						value_2: ELEMENT
-						....
-						value_N: ELEMENT
-
-					branch_N: CLUSTER
-						branch_N.1: CLUSTER
-							value_1: ELEMENT
-							....
-							value_N: ELEMENT
-
-						branch_N.2: CLUSTER
-							value_1: ELEMENT
-							....
-							value_N: ELEMENT
-
-						value_1: ELEMENT
-						value_2: ELEMENT
-						....
-						value_N: ELEMENT
-	             	
-	             Valid paths are of the form:	
-	             	whole tree: |<root-name>
-	             				
-	             	branch: |<root-name>|branch=<brach-name>|value=<value_name>
-	             	value: |<root-name>|value=<n>
-	  	       ]"
-	keywords:    "content, spatial, data structure"
-
-	requirements:"ISO 18308 TS V1.0 ???"
-	design:      "openEHR Data Structures Reference Model 1.2.1"
+	description: "Test HISTORY of INTERVAL_EVENTs"
+	keywords:    "test, event, history"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2000-2005 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
-
+	
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class ITEM_TREE
+class TC_INTERVAL_SERIES
 
 inherit
-	ITEM_STRUCTURE
-	
-	CLUSTER
+	TEST_CASE
+		redefine 
+			check_result
+		end
+
+creation
+	make
 
 feature -- Access
 
-	element_at_path(a_path:STRING): ELEMENT is
-			-- Return the leaf element at the path ‘a_path’
-		require
-			has_element_path(a_path)	
+	title: STRING is "TC_INTERVAL_SERIES"
+
+feature -- Initialisation
+
+	make(arg:ANY) is
 		do
 		end
 
-feature -- Status Report
+	execute is
+		local
+			evs1: INTERVAL_EVENT [ITEM_SINGLE]
+			evs2: INTERVAL_EVENT [ITEM_LIST]
+			evs3: INTERVAL_EVENT [ITEM_TABLE]
+			evs4: INTERVAL_EVENT [ITEM_TREE]
+		do
+			
+		end
 
-	has_element_path(a_path:STRING): BOOLEAN is
-			-- True if path ‘a_path’ is a valid leaf path
+feature -- Access
+
+	check_result is
 		do
 		end
 
-feature -- Conversion
-
-	as_hierarchy: CLUSTER is
-			-- the physical representation as a CEN 13606-compliant structure
-		do
-		end
-	
 end
 
 
@@ -119,10 +67,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is tree_s.e.
+--| The Original Code is tc_single_event.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2003-2005
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

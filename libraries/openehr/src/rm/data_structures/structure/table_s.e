@@ -52,6 +52,13 @@ class ITEM_TABLE
 
 inherit
 	ITEM_STRUCTURE
+	
+	CLUSTER
+		rename
+			items as columns
+		redefine
+			columns, path_of_item, item_at_path, valid_path
+		end
 
 feature -- Access
 

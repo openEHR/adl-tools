@@ -18,7 +18,7 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class VERSION_REPOSITORY [G]
+class VERSIONED_OBJECT [G]
 
 inherit
 	VERSION_NAMES

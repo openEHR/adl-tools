@@ -64,6 +64,11 @@ feature -- Access
 		do
 		end
 
+	parent: PARTY is
+			-- parent node of this node in compositional structure
+		once		
+		end
+
 feature -- Status Report
 
 	valid_path (a_path: STRING): BOOLEAN is
@@ -81,6 +86,7 @@ invariant
 --	Reverse_relationships_validity: reverse_relationships /= Void implies (not reverse_relationship.empty and then reverse_relationships.for_all(agent {PARTY_RELATIONSHIP}.target = Current))
 	Details_valid: details /= Void
 	Is_archetype_root: is_archetype_root
+	No_parent: parent = Void
 
 end
 

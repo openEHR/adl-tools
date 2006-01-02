@@ -21,6 +21,11 @@ deferred class ITEM
 inherit
 	LOCATABLE
 
+feature -- Access
+
+	parent: LOCATABLE
+			-- parent node of this node in compositional structure
+
 end
 
 

@@ -158,7 +158,7 @@ feature -- Basic Operations
 			-- impl := impl + other.impl.time_duration
 		end
 
-	infix "-" (other: like diff_type): like Current is
+	infix "-" (other: like Current): like diff_type is
 			-- subtraction
 		do
 			-- impl := impl - other.impl

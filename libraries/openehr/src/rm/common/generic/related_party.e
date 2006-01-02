@@ -1,50 +1,46 @@
 indexing
 	component:   "openEHR Common Reference Model"
 	
-	description: "Abstract model of related party"
+	description: "[
+			 	 Model of party proxy which adds in relationship of the party
+				 to the subject of the record.
+				 ]"
 	keywords:    "attestation"
 
-	design:      "openEHR Common Reference Model 1.4.3"
+	design:      "openEHR Common Reference Model 2.0"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2000-2005 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class RELATED_PARTY
+class PARTY_RELATED
 
 inherit
+	PARTY_IDENTIFIED
+
 	EXTERNAL_ENVIRONMENT_ACCESS
+		export
+			{NONE} all
+		end
 
 feature -- Initialization
 
-	make_from_string(a_string:STRING) is
-		require
-			String_exists: a_string /= Void and then not a_string.is_empty
-		do
-			
-		end
-		
 feature -- Access
-
-	party: PARTY_REF	
-			-- The party participating in the activity.
 
 	relationship: DV_CODED_TEXT	
 			-- The function of the Party in this participation (a given party might 
 			-- participate in more than one way in a given activity).
 
 invariant
-	Relationship_exists: relationship /= Void
 	Relationship_valid: relationship /= Void and then 
 			terminology("openehr").codes_for_group_name("related party relationship", "en").has(relationship.defining_code)
 
 end
-
 
 
 --|
@@ -64,7 +60,7 @@ end
 --| The Original Code is related_party.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2005
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

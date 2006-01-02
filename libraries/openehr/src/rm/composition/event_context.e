@@ -5,14 +5,14 @@ indexing
 		       Context of clinical session, which is any business function executed
 			 with or for a subject of care, including patient contact, pathology tests etc.
 			 ]"
-	keywords:    "transaction, versioning"
+	keywords:    "composition, context, versioning"
 
 	requirements:"ISO 18308 TS V1.0 ???"
-	design:      "openEHR EHR Reference Model 4.1"
+	design:      "openEHR EHR Reference Model 5.0"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2000-2005 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -25,13 +25,13 @@ inherit
 	LOCATABLE
 
 	EXTERNAL_ENVIRONMENT_ACCESS
+		export
+			{NONE} all
+		end
 	
 feature -- Access
 	
-	composer: PARTY_REF
-			-- Person or agent primarily responsible for the content of the Composition
-
-	health_care_facility: PARTY_REF
+	health_care_facility: PARTY_IDENTIFIED
 			-- The HCF in the health system who took part in the encounter; usually, this is 
 			-- where the encounter physically took place, but not in the case of patient home visits, 
 			-- internet contacts or emergency care.
@@ -70,6 +70,9 @@ feature -- Access
 				-- TO_BE_IMPLEM
 		end
 
+	parent: COMPOSITION
+			-- parent node of this node in compositional structure
+
 feature -- Status Report
 
 	valid_path (a_path: STRING): BOOLEAN is
@@ -79,8 +82,6 @@ feature -- Status Report
 		end
 		
 invariant
-	composer_exists: composer /= Void
-	health_care_facility_exists: health_care_facility /= Void
 	start_time_exists: start_time /= Void
 	participations_validity: participations /= Void implies not participations.is_empty
 	location_valid: location /= Void implies not location.is_empty
@@ -108,7 +109,7 @@ end
 --| The Original Code is event_context.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2003-2005
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

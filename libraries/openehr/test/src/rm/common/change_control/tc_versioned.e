@@ -13,7 +13,7 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class TC_VERSION_REPOSITORY
+class TC_VERSIONED_OBJECT
 
 inherit
 	TEST_CASE
@@ -26,7 +26,7 @@ creation
 
 feature -- Access
 
-	title: STRING is "TC_VERSION_REPOSITORY"
+	title: STRING is "TC_VERSIONED_OBJECT"
 
 
 feature -- Initialisation
@@ -37,7 +37,7 @@ feature -- Initialisation
 
 	execute is
 		local
-			vo: VERSION_REPOSITORY [TEST_DATA]
+			vo: VERSIONED_OBJECT [TEST_DATA]
 		do
 			
 		end

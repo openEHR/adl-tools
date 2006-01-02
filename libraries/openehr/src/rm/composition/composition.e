@@ -8,14 +8,14 @@ indexing
 	             
 	             COMPOSITION objects are simple items combining an audit and a content object.
 			 ]"
-	keywords:    "transaction, versioning"
+	keywords:    "composition, versioning"
 
 	requirements:"ISO 18308 TS V1.0 ???"
-	design:      "openEHR EHR Reference Model 4.1"
+	design:      "openEHR EHR Reference Model 5.0"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2000-2005 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -28,6 +28,9 @@ inherit
 	LOCATABLE
 
 	EXTERNAL_ENVIRONMENT_ACCESS
+		export
+			{NONE} all
+		end
 
 feature -- Definitions
 
@@ -36,17 +39,20 @@ feature -- Definitions
 
 feature -- Access
 	
-	territory: CODE_PHRASE	
-			-- Name of territory in which this Composition was written. 
-			-- Coded from openEHR “countries” code set, which is an expression of the ISO 3166 standard.
+	composer: PARTY_REF
+			-- Person or agent primarily responsible for the content of the Composition
 
-	content: LIST [SECTION]
+	content: LIST [CONTENT_ITEM]
 			-- the clinical session content of this transaction
 
 	context: EVENT_CONTEXT
 			-- The clinical session context of this transaction, 
 			-- i.e. the contextual attributes of the clinical session
 			
+	territory: CODE_PHRASE	
+			-- Name of territory in which this Composition was written. 
+			-- Coded from openEHR “countries” code set, which is an expression of the ISO 3166 standard.
+
 	category: DV_CODED_TEXT	
 			-- Indicates what broad category this Composition is belogs to, 
 			-- e.g. "persistent” - of longitudinal validity, “event”, “process” etc.
@@ -61,6 +67,11 @@ feature -- Access
 			-- The item at a path (relative to this item).
 		do
 				-- TO_BE_IMPLEM
+		end
+
+	parent: LOCATABLE is
+			-- parent node of this node in compositional structure
+		once			
 		end
 
 feature -- Status Report
@@ -88,7 +99,8 @@ feature {NONE} -- Implementation
 			-- the idea recorded in the term
 
 invariant
-	content_exists: content /= Void
+	composer_exists: composer /= Void
+	content_valid: content /= Void implies not content.is_empty
 	Category_validity: category /= Void and then terminology("openehr").codes_for_group_name("composition category", "en").has(category.defining_code)
 	Is_persistent_validity: is_persistent implies context = Void
 	Name_value: not is_persistent implies name.value.is_equal(context.health_care_facility.as_string + 
@@ -96,6 +108,8 @@ invariant
 	version_id_validity: version_id /= Void and then not version_id.is_empty	
 	archetype_root_point: is_archetype_root
 	territory_valid: territory /= Void and then code_set("countries").has(territory)
+	No_parent: parent = Void
+
 end
 
 
@@ -117,7 +131,7 @@ end
 --| The Original Code is composition.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2003-2005
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

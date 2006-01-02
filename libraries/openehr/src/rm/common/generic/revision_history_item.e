@@ -1,55 +1,38 @@
 indexing
-	component:   "openEHR Data Structures Reference Model"
-	
-	description: "[
-	              A single event.
-			  ]"
-	keywords:    "content, temporal, data structure"
+	component:   "openEHR Common Reference Model"
 
-	requirements:"ISO 18308 TS V1.0 ???"
-	design:      "openEHR Data Structures Reference Model 1.2.1"
+	description: "[
+				 Defines an entry in a revision history, which is logically a list of
+				 audits of a versioned resource, keyed by revision number.
+				 ]"
+	keywords:    "version control"
+
+	design:      "openEHR Common Reference Model 2.0"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2005 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
+class REVISION_HISTORY_ITEM
 
-class SINGLE_EVENT [G -> ITEM_STRUCTURE]
-
-inherit
-	HISTORY [G]
-	ITEM_EVENT[G]
+feature -- Initialization
 
 feature -- Access
 
-	path_of_item (a_loc: LOCATABLE): STRING is
-			-- The path to an item relative to the root of this archetyped structure.
-		do
-		end
+	revision: STRING	
+			-- revision to which the audit corresponds
 
-	item_at_path (a_path: STRING): LOCATABLE is
-			-- The item at a path (relative to this item).
-		do
-		end
+	audit: AUDIT_DETAILS	
+			-- audit information for this entry
 
-feature -- Status Report
-
-	valid_path (a_path: STRING): BOOLEAN is
-			-- True if the path is valid with respect to the current item.
-		do
-		end
-		
-feature -- Conversion
-
-	as_hierarchy: CLUSTER is
-			-- the physical representation as a CEN 13606-compliant structure
-		do
-		end
+invariant
+	revision_valid: revision /= Void and then not revision.is_empty
+	audit_valid: audit /= Void
 
 end
 
@@ -68,10 +51,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is single_event.e.
+--| The Original Code is revision_history_item.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2005
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

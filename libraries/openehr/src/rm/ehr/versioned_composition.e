@@ -22,7 +22,7 @@ indexing
 class VERSIONED_COMPOSITION
 
 inherit
-	VERSION_REPOSITORY [COMPOSITION]
+	VERSIONED_OBJECT [COMPOSITION]
 
 feature -- Status Report
 

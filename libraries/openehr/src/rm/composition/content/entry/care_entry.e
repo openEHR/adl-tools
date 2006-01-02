@@ -1,54 +1,42 @@
 indexing
-	component:   "openEHR Data Structures Reference Model"
+	component:   "openEHR EHR Reference Model"
 
-	description: "Test SINGLE_EVENT"
-	keywords:    "test, single event"
+	description: "[
+	              Abstract type corresponding to entries created during the
+				  care process, as opposed to administrative entries which are
+				  peripheral to the care process.
+				  ]"
+	keywords:    "content, clinical"
+
+	requirements:"ISO 18308 TS V1.0 ???"
+	design:      "openEHR EHR Reference Model 5.0"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2000-2005 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
-	
+
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class TC_SINGLE_EVENT
+deferred class CARE_ENTRY
 
 inherit
-	TEST_CASE
-		redefine 
-			check_result
-		end
-
-creation
-	make
+	ENTRY
 
 feature -- Access
 
-	title: STRING is "TC_SINGLE_EVENT"
+	protocol: ITEM_STRUCTURE
+			-- method of obtaining information: observation method; method of arriving at
+			-- subjective or prescriptive information
+			-- Description of why the information in this entry was arrived at. 
+			-- This may take the form of references to guidelines, including manually 
+			-- followed and executable; knowledge references such as a paper in 
+			-- Medline; clinical reasons within a largercare process.
 
-feature -- Initialisation
-
-	make(arg:ANY) is
-		do
-		end
-
-	execute is
-		local
-			evs1: SINGLE_EVENT [ITEM_SINGLE]
-			evs2: SINGLE_EVENT [ITEM_LIST]
-			evs3: SINGLE_EVENT [ITEM_TABLE]
-			evs4: SINGLE_EVENT [ITEM_TREE]
-		do
-			
-		end
-
-feature -- Access
-
-	check_result is
-		do
-		end
+	guideline_id: OBJECT_REF	
+			-- Identifier of guideline creating this action if relevant
 
 end
 
@@ -67,10 +55,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is tc_single_event.e.
+--| The Original Code is entry.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2003-2005
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

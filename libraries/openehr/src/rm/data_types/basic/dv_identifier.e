@@ -58,6 +58,9 @@ feature -- Status Report
 
 feature -- Access
 
+	assigner: STRING
+			-- organisation which assigned this id to the item it identifies
+
 	issuer: STRING	
 			-- Issuing agency of these kind of ids
 
@@ -83,6 +86,7 @@ feature -- Output
 		end
 	
 invariant
+	assigner_valid: assigner /= Void and then not assigner.is_empty
 	issuer_valid: issuer /= Void and then not issuer.is_empty
 	id_valid: id /= Void and then not id.is_empty
 	type_valid: type /= Void and then not type.is_empty	

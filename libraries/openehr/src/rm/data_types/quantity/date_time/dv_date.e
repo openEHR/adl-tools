@@ -136,9 +136,16 @@ feature -- Basic Operations
 			impl := impl + other.impl.date
 		end
 
-	infix "-" (other: like diff_type): like Current is
+	infix "-" (other: like Current): like diff_type is
 		do
 			-- impl := impl - other.impl.date
+		end
+
+	subtract(other: like diff_type): like Current is
+			-- subtraction
+		do
+		ensure
+			is_strictly_comparable_to(Result)
 		end
 
 feature -- Conversion

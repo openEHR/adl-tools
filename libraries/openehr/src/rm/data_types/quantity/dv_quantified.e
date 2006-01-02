@@ -44,15 +44,15 @@ feature -- Access
 	accuracy: REAL
 			-- optional accuracy of measurement instrument or method which applies 
 			-- to this specific instance of DV_QUANTIFIED, expressed as the value 
-			-- of the half-range quoted for the accuracy, e.g. “+/- 5%" is represented 
-			-- as a DV_QUANTITY of value 5 and units “%".
+			-- of the half-range quoted for the accuracy, e.g. "+/- 5%" is represented 
+			-- as a DV_QUANTITY of value 5 and units "%".
 			
 	accuracy_is_percent: BOOLEAN
 			-- If True, indicates that when this object was created, accuracy was recorded as a 
 			-- percent value; if False, as an absolute quantity value.
 
 	diff_type: DV_QUANTIFIED is
-			-- type of difference quantity for this quantity
+			-- type of difference for this quantity
 		deferred
 		end
 		
@@ -85,8 +85,8 @@ feature -- Basic Operations
 		deferred
 		end
 
-	infix "-" (other: like diff_type): like Current is
-			-- subtraction
+	infix "-" (other: like Current): like diff_type is
+			-- difference
 		require
 			is_strictly_comparable_to(other)
 		deferred

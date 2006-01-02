@@ -49,6 +49,9 @@ feature -- Access
 		do
 		end
 
+	parent: CONTACT
+			-- parent node of this node in compositional structure
+			
 feature -- Status Report
 
 	valid_path (a_path: STRING): BOOLEAN is

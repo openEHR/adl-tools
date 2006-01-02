@@ -103,8 +103,8 @@ feature -- Template
 			Result.extend(create {TS_DT_TIME_SPECIFICATION}.make(Void))
 			Result.extend(create {TS_DT_URI}.make(Void))
 
-			Result.extend(create {TS_DS_HISTORY}.make(Void))
-			Result.extend(create {TS_DS_ITEM_STRUCTURE}.make(Void))
+			Result.extend(create {TS_HISTORY}.make(Void))
+			Result.extend(create {TS_ITEM_STRUCTURE}.make(Void))
 
 			Result.extend(create {TS_COMMON_CHANGE_CONTROL}.make(Void))
 			Result.extend(create {TS_COMMON_GENERIC}.make(Void))

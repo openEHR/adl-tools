@@ -28,7 +28,7 @@ feature -- Access
 			tc:TEST_CASE
 		once
 			create Result.make
-			create {TC_VERSION_REPOSITORY} tc.make(Void) 		Result.extend(tc)
+			create {TC_VERSIONED_OBJECT} tc.make(Void) 		Result.extend(tc)
 		end
 
 	title:STRING is "Change Control tests"

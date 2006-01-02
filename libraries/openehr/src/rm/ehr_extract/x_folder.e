@@ -26,7 +26,7 @@ feature -- Access
 	folders: LIST[X_FOLDER]
 			-- sub-folders of this folder, including distinct Folder trees, which may be separately archetyped.
 
-	transactions: LIST [X_COMPOSITION]	
+	compositions: LIST [X_COMPOSITION]	
 			-- X_TRANSACTIONs in this folder.
 
 	path_of_item (a_loc: LOCATABLE): STRING is
@@ -39,6 +39,9 @@ feature -- Access
 		do
 		end
 
+	parent: X_FOLDER
+			-- parent node of this node in compositional structure
+
 feature -- Status Report
 
 	valid_path (a_path: STRING): BOOLEAN is
@@ -47,8 +50,8 @@ feature -- Status Report
 		end
 		
 invariant
-	folders_validity: folders /= Void implies not folders.empty
-	transactions_validity: transactions /= Void implies not transactions.empty
+	folders_validity: folders /= Void implies not folders.is_empty
+	compositions_validity: compositions /= Void implies not compositions.is_empty
 	
 end
 

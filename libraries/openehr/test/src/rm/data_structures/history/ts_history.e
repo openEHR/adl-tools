@@ -13,7 +13,7 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class TS_DS_HISTORY
+class TS_HISTORY
 
 inherit 
 	TEST_SUITE
@@ -28,8 +28,8 @@ feature -- Access
 			tc:TEST_CASE
 		once
 			create Result.make
-			create {TC_EVENT_SERIES} tc.make(Void) 		Result.extend(tc)
-			create {TC_SINGLE_EVENT} tc.make(Void) 		Result.extend(tc)
+			create {TC_POINT_SERIES} tc.make(Void) 		Result.extend(tc)
+			create {TC_INTERVAL_SERIES} tc.make(Void) 		Result.extend(tc)
 		end
 
 	title:STRING is "History tests"

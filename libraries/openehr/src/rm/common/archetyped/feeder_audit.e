@@ -19,12 +19,6 @@ indexing
 
 class FEEDER_AUDIT
 
-inherit
-	EXTERNAL_ENVIRONMENT_ACCESS
-		export 
-			{NONE} all
-		end
-
 feature -- Initialisation
 	
 	make(a_system_id:STRING) is
@@ -35,27 +29,20 @@ feature -- Initialisation
 
 feature -- Access
 
-	system_id: STRING	
+	originating_system_ids: LIST[DV_IDENTIFIER]
 			-- Identity of the system where the item was originally committed.
 
-	committer: STRING	
-			-- Identity of party who committed the item.
-
-	time_committed: DV_DATE_TIME	
-			-- Time of committal of the item.
+	feeder_system_ids: LIST[DV_IDENTIFIER]
+			-- Identity of the system where the item was originally committed.
 			
-	change_type: DV_CODED_TEXT	
-			-- Type of change, e.g. creation, correction, modification, synthesis etc. 
-			-- Coded using the openEHR Terminology “audit change type” group.
+	originating_system_audit: FEEDER_AUDIT_DETAILS	
+			-- audit details of information in originating system
 
-	description: DV_TEXT	
-			-- Description of change from original system.
+	feeder_system_audit: FEEDER_AUDIT_DETAILS	
+			-- audit details of information in originating system
 
 invariant
-	System_id_exists: system_id /= Void and then not system_id.is_empty
-	Committer_valid: committer /= Void implies not committer.is_empty
-	Change_type_valid: change_type /= Void and then 
-		terminology("openehr").codes_for_group_name("audit change type", "en").has(change_type.defining_code)
+	originating_system_audit_valid: originating_system_audit /= Void
 
 end
 

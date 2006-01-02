@@ -4,11 +4,11 @@ indexing
 	description: "Abstract model of attestation of a party to some information"
 	keywords:    "attestation"
 
-	design:      "openEHR Common Reference Model 1.4.1"
+	design:      "openEHR Common Reference Model 2.0"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2000-2005 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -18,41 +18,38 @@ indexing
 class ATTESTATION
 
 inherit
+	AUDIT_DETAILS
+
 	EXTERNAL_ENVIRONMENT_ACCESS
+		export
+			{NONE} all
+		end
 
 feature -- Initialization
 
-	make_from_string(a_string:STRING) is
-		require
-			String_exists: a_string /= Void and then not a_string.is_empty
-		do
-			
-		end
-		
 feature -- Access
 
-	participations: LIST [PARTICIPATION]	
-			-- Pariticipations in this attestation, e.g. witness, primary authority etc.
-			
+	proof: DV_ENCAPSULATED	
+			-- Proof of attestation.
+
 	items: Set [DV_EHR_URI]
 			-- Items attested. Although not recommended, these may include fine-grained 
 			-- items which have been attested in some other system. Otherwise the attestation 
 			-- is for the entire Version with which it is associated.
 
-	time: DV_DATE_TIME	
-			-- Time at which attestation was made.
+	reason: DV_TEXT	
+			-- reason of attestation; coded by openEHR terminology group
+			-- "attestation reason"
 
-	proof: DV_ENCAPSULATED	
-			-- Proof of attestation.
-
-	status: DV_CODED_TEXT	
-			-- status of attestation
+	is_pending: BOOLEAN
+			-- True if this attestation is pending
 
 invariant
-	Participations_validity: participations /= Void and then not participations.is_empty
-	Time_exists: time /= Void	
-	Status_validity: status /= Void and then 
-		terminology("openehr").codes_for_group_name("attestation status", "en").has(status.defining_code)
+	-- re-instate when we can state an expression which includes an assignment attempt
+	--Reason_validity: reason /= Void and then
+	--	(reason.generating_type.is_equal("DV_CODED_TEXT") implies
+	--	terminology("openehr").codes_for_group_name("attestation status",
+	--	"en").has(reason.defining_code))
 
 end
 
@@ -75,7 +72,7 @@ end
 --| The Original Code is attestation.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2003-2005
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

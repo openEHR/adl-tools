@@ -23,8 +23,10 @@ inherit
 	OBJECT_REF
 
 invariant
-	namespace_valid: namespace.is_equal("demographic")
-	type_valid: type.is_equal("PARTY")
+	Type_validity: generating_type.is_equal("PERSON") or 
+					generating_type.is_equal("ORGANISATION") or 
+					generating_type.is_equal("GROUP") or 
+					generating_type.is_equal("AGENT")
 
 end
 

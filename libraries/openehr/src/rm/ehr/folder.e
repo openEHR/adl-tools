@@ -13,7 +13,7 @@ indexing
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2000-2005 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -30,7 +30,7 @@ feature -- Access
 	folders: LIST[FOLDER]
 			-- Sub-folders of this FOLDER.
 
-	transactions: LIST[OBJECT_ID]	
+	items: LIST[OBJECT_ID]	
 			-- The list of references to versioned transactions in this folder. 
 			-- Since more than one folder can include the same transaction, 
 			-- this relationship is an association.
@@ -45,6 +45,9 @@ feature -- Access
 		do
 		end
 
+	parent: FOLDER
+			-- parent node of this node in compositional structure
+
 feature -- Status Report
 
 	valid_path (a_path: STRING): BOOLEAN is
@@ -53,8 +56,8 @@ feature -- Status Report
 		end
 
 invariant
-	Folders_valid: folders /= Void implies not folders.empty
-	Transactions_valid: transactions /= Void implies not transactions.empty 
+	Folders_valid: folders /= Void implies not folders.is_empty
+	Items_valid: items /= Void implies not items.is_empty 
 
 end
 
@@ -76,7 +79,7 @@ end
 --| The Original Code is folder.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2003-2005
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

@@ -23,7 +23,7 @@ inherit
 
 feature -- Access
 
-	subject: PARTY_REF	
+	subject: PARTY_SELF
 			-- The subject of this EHR.
 
 	time_created: DV_DATE_TIME	
@@ -35,10 +35,10 @@ feature -- Access
 			-- paths pointing to any number of VERSIONABLE items, i.e. items 
 			-- of type TRANSACTION and FOLDER_TREE.
 
-	directory: EHR_DIRECTORY
+	directory: VERSIONED_DIRECTORY
 			-- Optional directory structure for this EHR.
 
-	all_transactions: LIST [OBJECT_ID]	
+	all_compositions: LINKED_LIST [OBJECT_ID]	
 			-- Master list of all transaction references in this EHR
 
 	ehr_node: STRING
@@ -58,6 +58,11 @@ feature -- Access
 		do
 		end
 
+	parent: LOCATABLE is
+			-- parent node of this node in compositional structure
+		once
+		end
+			
 feature -- Status Report
 
 	valid_path (a_path: STRING): BOOLEAN is
@@ -77,11 +82,12 @@ invariant
 	Is_archetype_root: is_archetype_root
 	Subject_exists: subject /= Void
 	Time_created_exists: time_created /= Void
-	Contributions_exists: contributions /= Void and then not contributions.empty
+	Contributions_exists: contributions /= Void and then not contributions.is_empty
 	Directory_valid: directory /= Void and then directory.latest_version.data.is_archetype_root	
-	All_transactions_exists: all_transactions /= Void and then not all_transactions.empty
-		-- and then transactions.for_all({DV_EHR_URI}.target_is_transaction)	
+	All_compositions_exists: all_compositions /= Void and then not all_compositions.is_empty
+		-- and then transactions.for_all({DV_EHR_URI}.target_is_composition)	
 	Archetype_root: is_archetype_root
+	No_parent: parent = Void
 	
 end
 

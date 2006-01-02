@@ -36,7 +36,7 @@ feature -- Access
 			-- True if one there is an identity with purpose “legal identity”
 
 invariant
-	Roles_valid: roles /= Void implies not roles.empty
+	Roles_valid: roles /= Void implies not roles.is_empty
 	Legal_identity_exists: has_legal_identity	
 	Languages_valid: languages /= Void implies not languages.is_empty
 

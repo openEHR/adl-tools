@@ -1,10 +1,10 @@
 all: finalized
 
 wkbench: clean
-	ec -batch -ace ace.ace -freeze -c_compile
+	ec -batch -ace windows.ace -freeze -c_compile
 
 finalized: clean
-	ec -batch -ace ace.ace -finalize -c_compile
+	ec -batch -ace windows-final.ace -finalize -c_compile
 	copy /Y EIFGEN\F_code\*.exe %OPENEHR%\oe_distrib\windows\adl_workbench\bin
 	copy /Y news.txt %OPENEHR%\oe_distrib\windows\adl_workbench
 	copy /Y R*.txt %OPENEHR%\oe_distrib\windows\adl_workbench

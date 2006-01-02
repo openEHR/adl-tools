@@ -1,59 +1,44 @@
 indexing
-	component:   "openEHR Common Reference Model"
-	
-	description: "Abstract model of participation of a party in an act"
-	keywords:    "attestation"
+	component:   "openEHR EHR Reference Model"
 
-	design:      "openEHR Common Reference Model 2.0"
+	description: "[
+	              Record of Instruction State Machine transition and current
+				  state due to a workflow step being executed.
+				  ]"
+	keywords:    "content, clinical, instruction, action, workflow"
+
+	requirements:"ISO 18308 TS V1.0 ???"
+	design:      "openEHR EHR Reference Model 5.0"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2005 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2005 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class PARTICIPATION
+class ISM_TRANSITION
 
 inherit
-	EXTERNAL_ENVIRONMENT_ACCESS
-		export
-			{NONE} all
-		end
-
-feature -- Initialization
+	LOCATABLE
 
 feature -- Access
 
-	performer: PARTY_PROXY
-			-- The party participating in the activity.
+	current_state: DV_CODED_TEXT
+			-- current state in ISM at completion of this action
 
-	function: DV_TEXT	
-			-- The function of the Party in this participation (a given party might 
-			-- participate in more than one way in a given activity).
+	transition: DV_CODED_TEXT
+			-- ISM transition that occurred due to this step
 
-	mode: DV_CODED_TEXT	
-			-- The modality of the performer / activity interaction, e.g. present, 
-			-- by telephone, by email etc.
-			
-	time: DV_INTERVAL [DV_DATE_TIME]	
-			-- The time interval during which the participation took place, 
-			-- if it is used in an observational context (i.e. recording facts about 
-			-- the past); or the intended time interval of the participation when used 
-			-- in future contexts, such as EHR Instructions.
+	careflow_step: DV_CODED_TEXT
+			-- careflow step, as coded term from archetype
 
 invariant
-	Performer_exists: performer /= Void
-	Mode_valid: terminology("openehr").codes_for_group_name("participation modes", "en").has(mode.defining_code)
-	Function_valid: function /= Void and then function.generating_type.is_equal("DV_CODED_TEXT") 
--- FIXME: re-instate when a simple way is found to do an 'inline cast'
---		implies terminology("openehr").codes_for_group_name("participation function", "en")
---		.has(function.defining_code)
+	current_state_valid: current_state /= Void
 
 end
-
 
 
 --|
@@ -70,10 +55,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is participation.e.
+--| The Original Code is ism_transition.e
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2005
+--| Portions created by the Initial Developer are Copyright (C) 2005
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

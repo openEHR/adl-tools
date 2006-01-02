@@ -1,107 +1,53 @@
 indexing
-	component:   "openEHR Data Structures Reference Model"
+	component:   "openEHR EHR Reference Model"
 
 	description: "[
-	             A data structure in the form of a tree.
-			 Structure is as follows:
-					branch_1: CLUSTER
-						branch_1.1: CLUSTER
-							value_1: ELEMENT
-							....
-							value_N: ELEMENT
-
-						branch_1.2: CLUSTER
-							value_1: ELEMENT
-							....
-							value_N: ELEMENT
-
-						value_1: ELEMENT
-						value_2: ELEMENT
-						....
-						value_N: ELEMENT
-
-					branch_2: CLUSTER
-						branch_2.1: CLUSTER
-							value_1: ELEMENT
-							....
-							value_N: ELEMENT
-
-						branch_2.2: CLUSTER
-							value_1: ELEMENT
-							....
-							value_N: ELEMENT
-
-						value_1: ELEMENT
-						value_2: ELEMENT
-						....
-						value_N: ELEMENT
-
-					branch_N: CLUSTER
-						branch_N.1: CLUSTER
-							value_1: ELEMENT
-							....
-							value_N: ELEMENT
-
-						branch_N.2: CLUSTER
-							value_1: ELEMENT
-							....
-							value_N: ELEMENT
-
-						value_1: ELEMENT
-						value_2: ELEMENT
-						....
-						value_N: ELEMENT
-	             	
-	             Valid paths are of the form:	
-	             	whole tree: |<root-name>
-	             				
-	             	branch: |<root-name>|branch=<brach-name>|value=<value_name>
-	             	value: |<root-name>|value=<n>
-	  	       ]"
-	keywords:    "content, spatial, data structure"
+	              CLinical statements which are evaluations, including diagnoses and plans.
+				  ]"
+	keywords:    "content, clinical, evaluation"
 
 	requirements:"ISO 18308 TS V1.0 ???"
-	design:      "openEHR Data Structures Reference Model 1.2.1"
+	design:      "openEHR EHR Reference Model 5.0"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2000-2005 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class ITEM_TREE
+class ADMIN_ENTRY
 
 inherit
-	ITEM_STRUCTURE
-	
-	CLUSTER
+	CARE_ENTRY
 
 feature -- Access
 
-	element_at_path(a_path:STRING): ELEMENT is
-			-- Return the leaf element at the path ‘a_path’
-		require
-			has_element_path(a_path)	
+	data: ITEM_STRUCTURE
+			-- The data of this admin entry, in the form of a spatial data structure.
+
+	path_of_item (a_loc: LOCATABLE): STRING is
+			-- The path to an item relative to the root of this archetyped structure.
+		do
+		end
+
+	item_at_path (a_path: STRING): LOCATABLE is
+			-- The item at a path (relative to this item).
 		do
 		end
 
 feature -- Status Report
 
-	has_element_path(a_path:STRING): BOOLEAN is
-			-- True if path ‘a_path’ is a valid leaf path
+	valid_path (a_path: STRING): BOOLEAN is
+			-- True if the path is valid with respect to the current item.
 		do
 		end
+		
+invariant
+	Data_valid: data /= Void
 
-feature -- Conversion
-
-	as_hierarchy: CLUSTER is
-			-- the physical representation as a CEN 13606-compliant structure
-		do
-		end
-	
 end
 
 
@@ -119,10 +65,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is tree_s.e.
+--| The Original Code is admin_entry.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2005
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

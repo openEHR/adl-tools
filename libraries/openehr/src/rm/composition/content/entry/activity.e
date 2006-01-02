@@ -1,54 +1,62 @@
 indexing
-	component:   "openEHR Data Structures Reference Model"
+	component:   "openEHR EHR Reference Model"
 
-	description: "Test EVENT_SERIES"
-	keywords:    "test, event series"
+	description: "[
+				 Definition of an activity node in a workflow. The description of the 
+				 activiy is in the form of an archetypable ITEM_STRUCTURE. Its timing
+				 is expressed in the form of a time specification.
+				 Informational inputs and outputs can also be specified.
+				 ]"
+	keywords:    "workflow, instruction, entry"
+
+	requirements:"ISO 18308 TS V1.0 ???"
+	design:      "openEHR EHR Reference Model 5.0"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2005 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
-	
+
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class TC_EVENT_SERIES
+class ACTIVITY
 
 inherit
-	TEST_CASE
-		redefine 
-			check_result
-		end
-
-creation
-	make
+	LOCATABLE
 
 feature -- Access
 
-	title: STRING is "TC_EVENT_SERIES"
+	description: ITEM_STRUCTURE	
+			-- Description of the activity to be performed, in the form of an archetyped structure. 
 
-feature -- Initialisation
+	timing: DV_PARSABLE
+			-- Timing information for the activity, in a parsable form such as HL7 GTS.
 
-	make(arg:ANY) is
+	path_of_item (a_loc: LOCATABLE): STRING is
+			-- The path to an item relative to the root of this archetyped structure.
 		do
 		end
 
-	execute is
-		local
-			evs1: EVENT_SERIES [ITEM_SINGLE]
-			evs2: EVENT_SERIES [ITEM_LIST]
-			evs3: EVENT_SERIES [ITEM_TABLE]
-			evs4: EVENT_SERIES [ITEM_TREE]
-		do
-			
-		end
-
-feature -- Access
-
-	check_result is
+	item_at_path (a_path: STRING): LOCATABLE is
+			-- The item at a path (relative to this item).
 		do
 		end
+
+	parent: INSTRUCTION
+			-- parent node of this node in compositional structure
+
+feature -- Status Report
+
+	valid_path (a_path: STRING): BOOLEAN is
+			-- True if the path is valid with respect to the current item.
+		do
+		end
+
+invariant
+	Description_exists: description /= Void
+	Timing_exists: timing /= Void
 
 end
 
@@ -67,10 +75,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is tc_event_series.e.
+--| The Original Code is activity.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2005
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

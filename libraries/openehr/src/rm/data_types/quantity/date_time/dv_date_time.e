@@ -152,10 +152,17 @@ feature -- Basic Operations
 			-- impl := impl + other.impl
 		end
 
-	infix "-" (other: like diff_type): like Current is
-			-- subtraction
+	infix "-" (other: like Current): like diff_type is
+			-- difference
 		do
 			-- impl := impl - other.impl
+		end
+
+	subtract(other: like diff_type): like Current is
+			-- subtraction
+		do
+		ensure
+			is_strictly_comparable_to(Result)
 		end
 
 feature -- Conversion

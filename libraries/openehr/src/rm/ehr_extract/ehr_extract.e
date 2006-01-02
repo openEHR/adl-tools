@@ -76,6 +76,11 @@ feature -- Access
 		do
 		end
 
+	parent: LOCATABLE is
+			-- parent node of this node in compositional structure
+		once
+		end
+			
 feature -- Status Report
 
 	valid_path (a_path: STRING): BOOLEAN is
@@ -93,7 +98,8 @@ invariant
 	Directory_valid: directory /= Void and directory.is_archetype_root
 	Terminology_exists: terminology /= Void
 	Demographics_exists: demographics /= Void
-	Access_control_exists: access_control /= Void	
+	Access_control_exists: access_control /= Void
+	No_parent: parent = Void
 
 end
 
