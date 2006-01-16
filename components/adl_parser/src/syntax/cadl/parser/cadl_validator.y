@@ -146,14 +146,6 @@ input: c_complex_object
 
 			accept
 		}
-	| assertions
-		{
-			debug("ADL_parse")
-				io.put_string("assertions statements validated%N")
-			end
-
-			accept
-		}
 	| error
 		{
 			debug("ADL_parse")

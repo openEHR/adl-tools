@@ -1,3 +1,4 @@
+
 class OPENEHR_VERSION
 
 	feature -- Access

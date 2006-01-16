@@ -25,17 +25,6 @@ inherit
 
 feature -- Access
 
-	data: G
-			-- the data of this event
-
-feature -- Status Report
-
-	is_instantaneous: BOOLEAN is True
-			-- True if the width of this event is 0
-
-invariant
-	data_exists: data /= Void	
-
 end
 
 

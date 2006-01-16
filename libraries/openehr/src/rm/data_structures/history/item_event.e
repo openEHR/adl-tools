@@ -30,34 +30,11 @@ inherit
 	
 feature -- Access
 
-	data: HASH_TABLE [G, DV_CODED_TEXT]
-			-- The data of this event, keyed by math function
+	math_function: DV_CODED_TEXT
+			-- The math function of the data of this event
 			
-	data_math_functions: ARRAYED_LIST [DV_CODED_TEXT] is
-			-- list of math function keys in data hash table
-		do
-			from
-				create Result.make (data.count)
-				data.start
-			until
-				data.off
-			loop
-				Result.extend (data.key_for_iteration)
-				data.forth
-			end
-		end
-
 	width: DV_DURATION	
 			-- length of the interval during which the state was true. Void if an instantaneous event.
-
-	item(math_function: DV_CODED_TEXT): G is
-			-- data corresponding to mathematical function 
-			-- Coded using openEHR Terminology group "event math function".
-		do
-			Result := data.item(math_function)
-		end
-
-	is_instantaneous: BOOLEAN is False
 
 	sample_count: INTEGER
 			-- number of original point samples to which this interval example
@@ -68,20 +45,11 @@ feature -- Access
 		do
 			Result := time.subtract(width)
 		end
-
-feature -- Status Report
-
-	math_function_valid(mf: DV_CODED_TEXT): BOOLEAN is 
-		do 
-			Result := terminology("openehr").codes_for_group_name("event math function", "en").has(mf.defining_code)
-		end
 		
 invariant
-	data_exists: data /= Void
 	width /= Void
 	interval_start_time /= Void
-	math_function_validity: data_math_functions.for_all(agent math_function_valid)
-
+	math_function_validity: terminology("openehr").codes_for_group_name("event math function", "en").has(math_function.defining_code)
 end
 
 

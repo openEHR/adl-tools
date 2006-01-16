@@ -25,6 +25,9 @@ inherit
 
 feature -- Access
 
+	data: G
+			-- the data of this event
+
 	time: DV_DATE_TIME
 			-- time point at the end of this event
 
@@ -33,7 +36,7 @@ feature -- Access
 		do
 			Result := time - parent.origin
 		end
-
+		
 	state: ITEM_STRUCTURE
 			-- data representing the state of the observed entity, which is relevant
 			-- to the interpretation of the data
@@ -53,17 +56,13 @@ feature -- Access
 
 feature -- Status Report
 
-	is_instantaneous: BOOLEAN is
-			-- True if the width of this event is 0
-		deferred
-		end
-
 	valid_path (a_path: STRING): BOOLEAN is
 			-- True if the path is valid with respect to the current item.
 		do
 		end
 
 invariant
+	data_exists: data /= Void	
 	time_exists: time /= Void	
 	offset_exists: offset /= Void	
 

@@ -36,13 +36,13 @@ feature -- Access
 	version_id: STRING
 			-- Unique identifier of this version.
 			
-	version_repository_id: OBJECT_ID	
+	owner_id: OBJECT_ID	
 			-- A copy of the uid of the version repository to which this version was added.
 			
 	uid: OBJECT_ID is
 			-- Unique identifier of this version, derived from version repository id and version id.
 		do
-			Result := version_repository_id.twin
+			Result := owner_id.twin
 		--	Result.set_version_id(version_id)
 		end
 	
@@ -61,7 +61,7 @@ invariant
 
 	version_id_exists: version_id /= Void and then not version_id.is_empty
 	parent_version_id_exists: parent_version_id /= Void and then not parent_version_id.is_empty
-	version_repository_id_exists: version_repository_id /= Void
+	owner_id_exists: owner_id /= Void
 	
 	Contribution_exists: contribution /= Void
 

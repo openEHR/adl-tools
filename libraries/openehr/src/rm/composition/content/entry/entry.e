@@ -56,8 +56,9 @@ feature -- Access
 	other_participations: LIST [PARTICIPATION]
 			-- Other participations at ENTRY level - archetypable.
 
-	parent: CONTENT_ITEM
-			-- parent node of this node in compositional structure
+	parent: LOCATABLE
+			-- parent node of this node in compositional structure (could be a 
+			-- Section or a Composition)
 				
 invariant
 	Subject_exists: subject /= Void

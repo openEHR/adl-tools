@@ -169,13 +169,13 @@ creation
 [Ee][Xx][Cc][Ll][Uu][Dd][Ee]					last_token := SYM_EXCLUDE
 
 
-----------/* URI */ -------------------------------------------------
+----------/* V_URI */ -------------------------------------------------
 [a-z]+:\/\/[^> ]*	{
 	last_token := V_URI
 	last_string_value := text
 }
 
----------/* qualified term code reference */ -------------------------------------------------
+---------/* V_QUALIFIED_TERM_CODE_REF */ -------------------------------------------------
 -- any qualified code, e.g. [local::at0001], [local::ac0001], [loinc::700-0]
 --
 
@@ -184,7 +184,7 @@ creation
  					last_string_value := text_substring (2, text_count - 1)
  			}
 
----------/* term code constraint pattern of form:  */ ------------
+---------/* V_TERM_CODE_CONSTRAINT of form */ ------------
 -- [terminology_id::code, -- comment
 --		     	  code, -- comment
 --			  code] -- comment
@@ -237,7 +237,7 @@ creation
 			}
 
 
----------/* local term code reference */ -------------------------------------------------
+---------/* V_LOCAL_TERM_CODE_REF */ -------------------------------------------------
 -- any unqualified code, e.g. [at0001], [ac0001], [700-0]
 --
 
@@ -246,13 +246,13 @@ creation
 					last_string_value := text_substring (2, text_count - 1)
 			}
 
-----------/* local term code definition */ -------------------------------------------------
+----------/* V_LOCAL_CODE */ ----------------------------------------
 a[ct][0-9.]+		{
 					last_token := V_LOCAL_CODE
 					last_string_value := text
 			}
 
-----------/* ISO 8601 duration PNdNNhNNmNNs */ -------------------------------------------------
+----------/* V_ISO8601_DURATION PNdNNhNNmNNs */ -------------------------------------------------
 
 P([0-9]+[dD])?([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])?	{
 				last_token := V_ISO8601_DURATION
@@ -260,28 +260,28 @@ P([0-9]+[dD])?([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])?	{
 			}
 
 
-----------/* ISO 8601-based date constraint pattern */ -------------------------------------------------
+----------/* V_ISO8601_DATE_CONSTRAINT_PATTERN */ -------------------------------------------------
 
 [yY][yY][yY][yY]-[mM?X][mM?X]-[dD?X][dD?X]	{
 				last_token := V_ISO8601_DATE_CONSTRAINT_PATTERN
 				last_string_value := text
 			}
 
-----------/* ISO 8601-based time constraint pattern */ -------------------------------------------------
+----------/* V_ISO8601_TIME_CONSTRAINT_PATTERN */ -------------------------------------------------
 
 [hH][hH]:[mM?X][mM?X]:[sS?X][sS?X]	{
 				last_token := V_ISO8601_TIME_CONSTRAINT_PATTERN
 				last_string_value := text
 			}
 
-----------/* ISO 8601-based date/time constraint pattern */ -------------------------------------------------
+----------/* V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN */ -------------------------------------------------
 
 [yY][yY][yY][yY]-[mM?][mM?]-[dD?X][dD?X][ \t][hH?X][hH?X]:[mM?X][mM?X]:[sS?X][sS?X]	{
 				last_token := V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN
 				last_string_value := text
 			}
 
-----------/* domain types - sections of dADL syntax */ -------------------------------------------------
+----------/* V_C_DOMAIN_TYPE - sections of dADL syntax */ -------------------------------------------------
 
 -- this is an attempt to match a dADL section inside cADL. It will probably never work properly since 
 -- there can be '>' inside "||" ranges, and also strings containing any character, e.g. units string
@@ -333,7 +333,7 @@ P([0-9]+[dD])?([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])?	{
  				in_buffer.append_string (text)
   			}
 
-----------/* identifiers */ -------------------------------------------------
+----------/* V_TYPE_IDENTIFIER */ -------------------------------------------------
 [A-Z][a-zA-Z0-9_]*	{
 					last_token := V_TYPE_IDENTIFIER
 					last_string_value := text
@@ -344,7 +344,7 @@ P([0-9]+[dD])?([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])?	{
 					last_string_value := text
 			}
 
-----------/* regular expressions */ -------------------------------------------------
+----------/* V_REGEXP */ -------------------------------------------------
 "{/" 			{
 				last_token := SYM_START_CBLOCK
 				set_start_condition (IN_REGEXP1)
