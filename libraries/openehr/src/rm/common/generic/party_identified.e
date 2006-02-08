@@ -2,8 +2,16 @@ indexing
 	component:   "openEHR Common Reference Model"
 	
 	description: "[
-	             Model of party proxy which has a human-readable and potentially 
-				 a number of administrative identifiers.
+				 Proxy data for an identified party other than the subject of the 
+				 record, minimally consisting of human-readable identifier(s), 
+				 such as name, formal (and possibly computable) identifiers such 
+				 as NHS number, and an optional link to external data. There must 
+				 be at least one of name, identifier or external_ref present.	
+				 
+				 Used to describe parties where only identifiers may be known, and 
+				 there is no entry at all in the demographic system (or even no 
+				 demographic system). Typically for health care providers, e.g. 
+				 name and provider number of an institution.
 				 ]"
 	keywords:    "attestation"
 

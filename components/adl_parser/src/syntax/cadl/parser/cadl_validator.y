@@ -56,7 +56,7 @@ creation
 %}
 %token <INTEGER> V_INTEGER 
 %token <REAL> V_REAL 
-%token <STRING> V_TYPE_IDENTIFIER V_ATTRIBUTE_IDENTIFIER V_STRING V_ISO8601_DURATION
+%token <STRING> V_TYPE_IDENTIFIER V_ATTRIBUTE_IDENTIFIER V_FEATURE_CALL_IDENTIFIER V_STRING V_ISO8601_DURATION
 %token <STRING> V_LOCAL_CODE V_LOCAL_TERM_CODE_REF V_QUALIFIED_TERM_CODE_REF V_TERM_CODE_CONSTRAINT
 %token <STRING> V_REGEXP
 %token <CHARACTER> V_CHARACTER
@@ -94,7 +94,7 @@ creation
 
 %type <ARRAYED_LIST [ASSERTION]> assertions c_includes c_excludes
 
-%type <OG_PATH> object_path call_path
+%type <OG_PATH> absolute_path relative_path
 %type <INTEGER> cardinality_limit_value
 %type <OE_INTERVAL[INTEGER]> c_occurrences c_existence
 %type <C_PRIMITIVE_OBJECT> c_primitive_object
@@ -115,6 +115,7 @@ creation
 %type <STRING> any_identifier
 %type <STRING> string_value
 %type <URI> uri_value
+%type <OG_PATH_ITEM> path_segment
 
 %type	<ARRAYED_LIST[STRING]> string_list_value
 %type <ARRAYED_LIST[INTEGER_REF]> integer_list_value
@@ -282,7 +283,7 @@ c_object: c_complex_object
 		}
 	;
 
-archetype_internal_ref: SYM_USE_NODE V_TYPE_IDENTIFIER object_path 
+archetype_internal_ref: SYM_USE_NODE V_TYPE_IDENTIFIER absolute_path 
 		{
 			str := a_path.as_string
 			create archetype_internal_ref.make($2, str)
@@ -302,7 +303,7 @@ archetype_internal_ref: SYM_USE_NODE V_TYPE_IDENTIFIER object_path
 	| SYM_USE_NODE V_TYPE_IDENTIFIER error 
 		{
 			raise_error
-			report_error("expecting object path - must be terminated with '/'")
+			report_error("expecting absolute path")
 			abort
 		}
 	;
@@ -582,7 +583,7 @@ assertion: any_identifier ':' Boolean_expression
 
 ---------------------- expressions ---------------------
 
-Boolean_expression: SYM_EXISTS object_path
+Boolean_expression: SYM_EXISTS absolute_path
 		{
 			debug("ADL_invariant")
 				io.put_string(indent + "Exists " + $2.as_string + "%N") 
@@ -596,21 +597,13 @@ Boolean_expression: SYM_EXISTS object_path
 	| SYM_EXISTS error 
 		{
 			raise_error
-			report_error("expecting object path - must be terminated with '/'")
+			report_error("expecting absolute path")
 			abort
 		}
 	| '(' Boolean_expression ')'
 		{
 			$$ := $2
 		}
-	| call_path	-- for boolean returning functions
-		{
-			create expr_leaf.make_attribute_ref(a_path)
-			a_path := Void
-			$$ := expr_leaf
-		}
-		-- TEMPORARY: the following only allows single calls, not multiple dot-form calls on an object;
-		-- this can be added fairly easily
 	| V_ATTRIBUTE_IDENTIFIER SYM_MATCHES SYM_START_CBLOCK c_primitive SYM_END_CBLOCK
 		{
 			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_matches))
@@ -706,13 +699,7 @@ Boolean_expression: SYM_EXISTS object_path
 		}
 	;
 
-Arithmetic_expression: call_path
-		{
-			create expr_leaf.make_attribute_ref(a_path)
-			a_path := Void
-			$$ := expr_leaf
-		}
-	| '(' Arithmetic_expression ')'
+Arithmetic_expression: '(' Arithmetic_expression ')'
 		{
 			$$ := $2
 		}
@@ -786,94 +773,42 @@ Arithmetic_expression: call_path
 	;
 
 --------------------------------------------------------------------------------------------------
---------------- THE FOLLOWING SOURCE TAKEN FROM OG_PATH_VALIDATOR.Y - DO NOT MODIFY  ------------
+--------------- THE FOLLOWING SOURCE TAKEN FROM OG_PATH_VALIDATOR.Y - DO NOT MODIFY  -------------
+--------------- except to remove movable_path ----------------------------------------------------
 --------------------------------------------------------------------------------------------------
 
---------------- Attribute path --------------------------------------------
-
-attribute_path: attr_path_segment
-	| object_path attr_path_segment
-	;
-
---------------- Object path -------------------------------------------------
-
-object_path: obj_path_segment 
-	| attribute_path obj_path_segment
-	;
-
-attr_path_segment: V_ATTRIBUTE_IDENTIFIER
+absolute_path: '/' relative_path
 		{
-			if a_path = Void then
-				create a_path.make_relative(create {OG_PATH_ITEM}.make_attribute($1))
-			else
-				a_path.append_attribute_segment(create {OG_PATH_ITEM}.make_attribute($1))
-			end
+			a_path.set_absolute
 			debug("OG_PATH_parse")
-				io.put_string("...attr_path_segment: " + $1)
+				io.put_string("....absolute_path; %N")
 			end
 		}
 	;
 
-obj_path_segment: V_LOCAL_TERM_CODE_REF '/'		-- identified object
+relative_path: path_segment
 		{
-			if a_path = Void then
-				raise_error
-				report_error("Absolute path missing leading '/'")
-				abort
-			else
-				a_path.append_object_segment(create {OG_PATH_ITEM}.make_object($1))
-			end
-			debug("OG_PATH_parse")
-				io.put_string("...obj_path_segment: [" + $1 + "]/")
-			end
+			create a_path.make_relative($1)
 		}
-	| '/' V_LOCAL_TERM_CODE_REF '/'		-- absolute, identified path
+	| relative_path '/' path_segment
 		{
-			if a_path /= Void then
-				raise_error
-				report_error("/[xxx]/ can only appear at head of path")
-				abort
-			else
-				create a_path.make_absolute(create {OG_PATH_ITEM}.make_object($2))
-			end
-			debug("OG_PATH_parse")
-				io.put_string("...obj_path_segment: /[" + $2 + "]/")
-			end
-		}
-	| '/'					-- anonymous object
-		{
-			if a_path = Void then
-				create a_path.make_absolute(create {OG_PATH_ITEM}.make_object_unknown)
-			else
-				a_path.append_object_segment(create {OG_PATH_ITEM}.make_object_unknown)
-			end
-			debug("OG_PATH_parse")
-				io.put_string("...obj_path_segment(anon)")
-			end
+			a_path.append_segment($3)
 		}
 	;
 
-
-call_path: object_path '.' V_ATTRIBUTE_IDENTIFIER
+path_segment: V_ATTRIBUTE_IDENTIFIER V_LOCAL_TERM_CODE_REF
 		{
-			a_path.append_feature_call_segment(create {OG_PATH_ITEM}.make_feature_call($3))
+			create $$.make_with_object_id($1, $2)
 			debug("OG_PATH_parse")
-				io.put_string("...feature_call item: " + $3)
-			end
-
-		}
-	| call_path '.' V_ATTRIBUTE_IDENTIFIER
-		{
-			a_path.append_feature_call_segment(create {OG_PATH_ITEM}.make_feature_call($3))
-			debug("OG_PATH_parse")
-				io.put_string(indent + "feature_call item: " +  $3)
+				io.put_string("...path_segment: " + $1 + "[" + $2 + "]%N")
 			end
 		}
-	| object_path '.' error
+	| V_ATTRIBUTE_IDENTIFIER
 		{
-			raise_error
-			report_error("In call path expression; expecting property reference e.g. '.feature_call'")
-			abort
+			create $$.make($1)
+			debug("OG_PATH_parse")
+				io.put_string("...path_segment: " + $1 + "%N")
+			end
 		}
 	;
 

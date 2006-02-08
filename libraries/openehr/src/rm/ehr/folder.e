@@ -30,7 +30,7 @@ feature -- Access
 	folders: LIST[FOLDER]
 			-- Sub-folders of this FOLDER.
 
-	items: LIST[OBJECT_ID]	
+	items: LIST[OBJECT_REF]	
 			-- The list of references to versioned transactions in this folder. 
 			-- Since more than one folder can include the same transaction, 
 			-- this relationship is an association.

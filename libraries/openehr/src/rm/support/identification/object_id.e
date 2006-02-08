@@ -24,14 +24,7 @@ deferred class OBJECT_ID
 feature -- Access
 
 	value: STRING
-	
-	version_id: STRING is
-			-- extract the version id part of the id; can be empty
-		deferred
-		ensure
-			Result /= Void
-		end
-		
+			
 feature -- Status Report
 
 	valid_id(an_id:STRING): BOOLEAN is
@@ -39,7 +32,6 @@ feature -- Status Report
 		require
 			an_id_valid: an_id /= Void and then not an_id.is_empty
 		deferred
-			-- Result := 
 		end
 		
 invariant

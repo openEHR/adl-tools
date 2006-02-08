@@ -58,7 +58,7 @@ feature -- Initialisation
 			create terminology_id.make(a_terminology_id)
 		ensure
 			Any_allowed: any_allowed
-			Terminology_id_set: terminology_id.as_string.is_equal(a_terminology_id)
+			Terminology_id_set: terminology_id.value.is_equal(a_terminology_id)
 		end
 		
 	make_from_pattern(a_pattern: STRING) is
@@ -202,7 +202,7 @@ feature -- Conversion
 			-- 
 		do
 			create Result.make (0)
-			Result.append("[" + terminology_id.as_string + separator)
+			Result.append("[" + terminology_id.value + separator)
 			from
 				code_list.start
 			until

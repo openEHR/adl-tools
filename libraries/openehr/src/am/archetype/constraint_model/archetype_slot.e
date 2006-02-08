@@ -131,7 +131,7 @@ feature -- Output
 			-- 
 		do
 			create Result.make(0)
-			Result.append(rm_type_name + "[" + representation.path_id.value + "] " + occurrences.as_string)
+			Result.append(rm_type_name + "[" + representation.node_id + "] " + occurrences.as_string)
 		end
 		
 feature -- Representation

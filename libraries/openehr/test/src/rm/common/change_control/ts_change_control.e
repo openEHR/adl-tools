@@ -1,12 +1,12 @@
 indexing
-	component:   "openEHR Common Reference Model"
+	component:   "openEHR Common Information Model"
 
 	description: "Common test suite"
 	keywords:    "test, version, change control"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2000-2006 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -29,6 +29,10 @@ feature -- Access
 		once
 			create Result.make
 			create {TC_VERSIONED_OBJECT} tc.make(Void) 		Result.extend(tc)
+			create {TC_VERSION} tc.make(Void) 				Result.extend(tc)
+			create {TC_IMPORTED_VERSION} tc.make(Void) 		Result.extend(tc)
+			create {TC_MERGED_VERSION} tc.make(Void) 		Result.extend(tc)
+			create {TC_CONTRIBUTION} tc.make(Void) 			Result.extend(tc)
 		end
 
 	title:STRING is "Change Control tests"

@@ -211,10 +211,10 @@ feature -- Access
 			until
 				og_phys_path.off
 			loop
-				if og_phys_path.item.is_object and og_phys_path.item.is_addressable then
-					term_code := og_phys_path.item.value
+				if og_phys_path.item.is_addressable then
+					term_code := og_phys_path.item.object_id
 					if has_term_code(term_code) then
-						og_log_path.item.set_value(term_definition(a_lang, term_code).item("text"))
+						og_log_path.item.set_object_id(term_definition(a_lang, term_code).item("text"))
 					end
 				end
 				og_phys_path.forth
@@ -786,17 +786,17 @@ feature {NONE} -- Implementation
 			-- for languages available, should be a list from '= <"en", ...>' in the ADL text
 			-- but we don't want to die if they just wrote '= <"en">' - we do an implicit
 			-- conversion
-			sl := string_list_at_path("/" + Sym_languages_available + "/") 
+			sl := string_list_at_path("/" + Sym_languages_available) 
 			if sl /= Void then
 				set_languages_available(sl)
 			else
 				create sl.make(0)
-				sl.extend(string_at_path("/" + Sym_languages_available + "/"))
+				sl.extend(string_at_path("/" + Sym_languages_available))
 			end
-			set_primary_language(string_at_path("/" + Sym_primary_language + "/"))
+			set_primary_language(string_at_path("/" + Sym_primary_language))
 			
-			if representation.has_path("/" + Sym_terminologies_available + "/") then
-				terminologies_available := string_list_at_path("/" + Sym_terminologies_available + "/")
+			if representation.has_path("/" + Sym_terminologies_available) then
+				terminologies_available := string_list_at_path("/" + Sym_terminologies_available)
 			end
 			
 			-- populate term and constraint definitions
@@ -857,13 +857,13 @@ feature {NONE} -- Implementation
 			until
 				terminologies_available.off
 			loop
-				if has_path("/" + Sym_term_binding + "[" + terminologies_available.item + "]/") then
+				if has_path("/" + Sym_term_binding + "[" + terminologies_available.item + "]") then
 					create term_bindings_one_terminology.make(0)
 					populate_term_bindings(terminologies_available.item, term_bindings_one_terminology)
 					term_bindings.force(term_bindings_one_terminology , terminologies_available.item)
 				end
 
-				if has_path("/" + Sym_constraint_binding + "[" + terminologies_available.item + "]/") then
+				if has_path("/" + Sym_constraint_binding + "[" + terminologies_available.item + "]") then
 					create constraint_bindings_one_terminology.make(0)
 					populate_constraint_bindings(terminologies_available.item, constraint_bindings_one_terminology)
 					constraint_bindings.force(constraint_bindings_one_terminology, terminologies_available.item)
@@ -889,7 +889,7 @@ feature {NONE} -- Implementation
 			in_term_group := group.is_equal(Sym_term_definitions)
 			t_path := "/" + group + "[" + lang + "]/items"
 			if has_path(t_path) then
-				an_attr_node ?= representation.node_at_path(t_path)
+				an_attr_node := representation.attribute_node_at_path(t_path)
 				
 				if an_attr_node.is_multiple then
 					from 
@@ -929,7 +929,7 @@ feature {NONE} -- Implementation
 			a_simple_node: DT_PRIMITIVE_OBJECT
 			a_term: CODE_PHRASE
 		do
-			an_attr_node ?= representation.node_at_path("/" + Sym_term_binding + "[" + a_terminology + "]/items")
+			an_attr_node := representation.attribute_node_at_path("/" + Sym_term_binding + "[" + a_terminology + "]/items")
 			if an_attr_node.is_multiple then
 				from 
 					an_attr_node.start
@@ -950,7 +950,7 @@ feature {NONE} -- Implementation
 			an_attr_node: DT_ATTRIBUTE_NODE
 			a_leaf_node: DT_OBJECT_LEAF
 		do
-			an_attr_node ?= representation.node_at_path("/" + Sym_constraint_binding + "[" + a_terminology + "]/items")
+			an_attr_node := representation.attribute_node_at_path("/" + Sym_constraint_binding + "[" + a_terminology + "]/items")
 			if an_attr_node.is_multiple then
 				from 
 					an_attr_node.start
@@ -1076,7 +1076,7 @@ feature {NONE} -- Implementation
 			create t_path.make(0)
 			t_path.append("/" + group + "[" + a_lang + "]/items")
 			if has_path(t_path) then
-				attr_node ?= representation.node_at_path(t_path)
+				attr_node := representation.attribute_node_at_path(t_path)
 				object_node := dt_factory.create_complex_object_node(attr_node, a_term.code)
 				keys := a_term.keys
 				from
@@ -1095,11 +1095,11 @@ feature {NONE} -- Implementation
 			-- 
 		do
 			create validity_report.make(0)
-			if not has_path("/" + Sym_primary_language + "/") then
+			if not has_path("/" + Sym_primary_language) then
 				validity_report.append(Sym_primary_language + " not set in ontology")
-			elseif not has_path("/" + Sym_languages_available + "/") then
+			elseif not has_path("/" + Sym_languages_available) then
 				validity_report.append(Sym_languages_available + " not set in ontology")				
-			elseif not has_path("/" + Sym_terminologies_available + "/") then
+			elseif not has_path("/" + Sym_terminologies_available) then
 				validity_report.append(Sym_terminologies_available + " not set in ontology")				
 			end
 			Result := validity_report.is_empty
@@ -1123,7 +1123,7 @@ feature {NONE} -- Implementation
 				langs.off or not Result
 			loop
 				create t_path.make(0)
-				t_path.append("/" + Sym_term_definitions + "[" + langs.item + "]/items[" + a_term_code + "]/")
+				t_path.append("/" + Sym_term_definitions + "[" + langs.item + "]/items[" + a_term_code + "]")
 				Result := Result and has_path(t_path)
 				langs.forth
 			end
@@ -1145,7 +1145,7 @@ feature {NONE} -- Implementation
 				langs.off or not Result
 			loop
 				create t_path.make(0)
-				t_path.append("/" + Sym_constraint_definitions + "[" + langs.item + "]/items[" + a_term_code + "]/")
+				t_path.append("/" + Sym_constraint_definitions + "[" + langs.item + "]/items[" + a_term_code + "]")
 				Result := Result and has_path(t_path)
 				langs.forth
 			end

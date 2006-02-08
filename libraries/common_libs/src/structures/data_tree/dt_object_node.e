@@ -34,7 +34,7 @@ inherit
 	OG_PATH_TOOLS
 		export
 			{NONE} all
-			{ANY} valid_object_path_string
+			{ANY} valid_path_string
 		undefine
 			out, default_create, is_equal
 		end
@@ -118,12 +118,22 @@ feature -- Access
 			Result ?= representation.child_at_node_id(an_attr_name).content_item
 		end
 		
-	node_at_path(a_path: STRING): DT_ITEM is
+	node_at_path(a_path: STRING): DT_OBJECT_ITEM is
 			-- find the child at the relative path `a_path'; paths can only ever return an object
 		require
 			Path_valid: a_path /= Void and then has_path(a_path)
 		do
 			Result ?= representation.node_at_path(create {OG_PATH}.make_from_string(a_path)).content_item
+		ensure
+			Result_exists: Result /= Void
+		end
+		
+	attribute_node_at_path(a_path: STRING): DT_ATTRIBUTE_NODE is
+			-- find the child at the relative path `a_path'; paths can only ever return an object
+		require
+			Path_valid: a_path /= Void and then has_path(a_path)
+		do
+			Result ?= representation.attribute_node_at_path(create {OG_PATH}.make_from_string(a_path)).content_item
 		ensure
 			Result_exists: Result /= Void
 		end
@@ -150,7 +160,7 @@ feature -- Access
 
 	value_at_path(a_path: STRING): ANY is
 		require
-			Path_valid: a_path /= Void and then (valid_object_path_string(a_path) and has_path(a_path))
+			Path_valid: a_path /= Void and then (valid_path_string(a_path) and has_path(a_path))
 		local
 			a_primitive_node: DT_PRIMITIVE_OBJECT
 		do
@@ -161,7 +171,7 @@ feature -- Access
 	value_list_at_path(a_path: STRING): SEQUENCE[ANY] is
 			-- get value list from path `a_path'
 		require
-			Path_valid: a_path /= Void and then (valid_object_path_string(a_path) and has_path(a_path))
+			Path_valid: a_path /= Void and then (valid_path_string(a_path) and has_path(a_path))
 		local
 			a_primitive_list_node: DT_PRIMITIVE_OBJECT_LIST
 		do

@@ -26,9 +26,6 @@ inherit
 	LOCATABLE
 
 feature -- Access
-
-	uid: OBJECT_ID
-			-- unique identifier of this party
 			
 	identities: SET[PARTY_IDENTITY]
 			-- Identities used by the party to identify itself, such as legal name, 

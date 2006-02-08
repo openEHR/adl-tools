@@ -21,9 +21,9 @@ definition = <{
 		items cardinality matches {0..*; ordered} matches {
 			COMPLEX_OBJECT[at0001] matches {*}
 
-			use_node COMPLEX_OBJECT /[at0000]/items[at0001]/
+			use_node COMPLEX_OBJECT /items[at0001]
 
-			use_node COMPLEX_OBJECT /[at0000]/items[at0002]/
+			use_node COMPLEX_OBJECT /items[at0002]
 
 			COMPLEX_OBJECT[at0002] matches {*}
 

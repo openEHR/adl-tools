@@ -24,7 +24,7 @@ feature -- Initialization
 
 feature -- Access
 
-	items: LINKED_LIST [REVISION_HISTORY_ITEM]
+	items: LIST [REVISION_HISTORY_ITEM]
 			-- Complete history of items
 
 	item_count: INTEGER is
@@ -34,7 +34,7 @@ feature -- Access
 		end
 
 invariant
-	items_exist: items /= Void
+	Items_exist: items /= Void
 
 end
 

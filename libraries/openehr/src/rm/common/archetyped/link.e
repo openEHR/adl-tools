@@ -45,16 +45,16 @@ feature -- Access
 
 	meaning: DV_TEXT
 			-- Used to describe the relationship, usually in clinical terms, such as 
-			-- “in response to” (the relationship between test results and an order), 
-			-- “follow-up to” and so on. Such relationships can represent any clinically 
+			-- "in response to" (the relationship between test results and an order), 
+			-- "follow-up to" and so on. Such relationships can represent any clinically 
 			-- meaningful connection between pieces of information. 
 			-- Value for meaning include those described in Annex C, ENV 13606:2 
-			-- under the categories of “generic”, “documenting and reporting”, 
-			-- “organisational”, “clinical”, “circumstancial”, and “view management”.
+			-- under the categories of "generic", "documenting and reporting", 
+			-- "organisational", "clinical", "circumstancial", and "view management".
 
 	type: DV_TEXT
 			-- indicates a clinical or domain-level meaning for the kind of link, for example 
-			-- “problem thread” or “see also”. If type values are designed appropriately, they 
+			-- "problem thread" or "see also". If type values are designed appropriately, they 
 			-- can be used by the requestor of EHR extracts to categorise links which must be
 			-- followed and which can be broken when the extract is created.
 			

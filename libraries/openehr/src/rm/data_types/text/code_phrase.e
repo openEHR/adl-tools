@@ -123,11 +123,11 @@ feature -- Comparison
 			s, s_other:STRING
 		do
 			create s.make(0)
-			s.append(terminology_id.as_string)
+			s.append(terminology_id.value)
 			s.append(code_string)
 
 			create s_other.make(0)
-			s_other.append(other.terminology_id.as_string)
+			s_other.append(other.terminology_id.value)
 			s_other.append(other.code_string)		
 			
 			Result := s < s_other
@@ -139,7 +139,7 @@ feature -- Output
 			-- string form displayable for humans - e.g. ICD9(1989)::M17
 		do
 			create Result.make(0)
-			Result.append(terminology_id.as_string)
+			Result.append(terminology_id.value)
 			Result.append(separator)
 			Result.append(code_string)
 		end

@@ -37,10 +37,10 @@ feature -- Initialisation
 
 feature -- Access
 	
-	uid: OBJECT_ID	
+	uid: HIER_OBJECT_ID	
 			-- Unique identifier for this contribution.
 
-	versions: SET [OBJECT_ID]
+	versions: SET [OBJECT_REF]
 	
 	audit: AUDIT_DETAILS
 
@@ -49,7 +49,6 @@ invariant
 	Audit_exists: audit /= Void
 	Description_valid: audit.description /= Void
 	Versions_valid: versions /= Void and then not versions.is_empty
-	-- name_valid: name.value.is_equal(committer.id.value + "@" + node + "@" + time_committed.as_string)
 
 end
 

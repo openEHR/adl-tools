@@ -59,8 +59,8 @@ feature -- Initialisation
 				until
 					a_path.off
 				loop
-					if a_path.item.is_object and then a_path.item.is_addressable then
-						create a_movable_path.make_movable(create {OG_PATH_ITEM}.make_object(a_path.item.value))
+					if a_path.item.is_addressable then
+						create a_movable_path.make_movable(create {OG_PATH_ITEM}.make_from_other(a_path.item))
 						io.put_string("%T %TMovable path: " + a_movable_path.as_string + "; found: " + root_node.has_path(a_movable_path).out + "%N")
 					end
 					a_path.forth

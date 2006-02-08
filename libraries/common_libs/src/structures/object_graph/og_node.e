@@ -36,7 +36,13 @@ feature -- Access
 		require
 			has_child_node(a_node_id)
 		do
-			Result := children.item(a_node_id)
+			-- FIXME: should just be able to search with node_id, but we are still
+			-- using the 'unknown; node_ids rather than empty strings
+			if a_node_id.is_empty then
+				Result := first_child
+			else
+				Result := children.item(a_node_id)
+			end
 		ensure
 			Result_exists: Result /= Void
 		end
@@ -51,46 +57,7 @@ feature -- Access
 				Result := children_ordered.first
 			end
 		end
-		
-	node_at_path(a_path: OG_PATH): OG_ITEM is
-			-- find the child at the relative path `a_path'
-		require
-			Path_valid: a_path /= Void and then has_path(a_path)
-		local
-			a_key: STRING
-			a_node: OG_NODE
-		do
-			-- deal with absolute part if it exists
-			a_path.start
-			if a_path.is_absolute then
-				a_path.forth
-			end
-			
-			-- find child node relating to first relation path item
-			if not a_path.off then
-				a_key := a_path.item.value
-				a_path.forth
-				Result ?= children.item(a_key)
-				if not a_path.off then
-					a_node ?= Result
-					if a_node /= Void then
-						Result := a_node.node_at_path(a_path.sub_path_from_item)
-					end
-				end
-			else
-				Result ?= Current
-			end			
-		ensure
-			Result_exists: Result /= Void
-		end
-		
-	all_paths: ARRAYED_LIST[OG_PATH] is
-			-- all paths below this point, including this node
-		deferred
-		ensure
-			Result_exists: Result /= Void and then Result.object_comparison
-		end
-		
+						
 	item_for_iteration: like child_type is
 			-- 
 		do
@@ -109,50 +76,20 @@ feature -- Status Report
 			Result := not children.is_empty
 		end
 
-	has_child_node(a_path_id: STRING): BOOLEAN is
+	has_child_node(a_node_id: STRING): BOOLEAN is
 		require
-			path_id_valid: a_path_id /= Void and then not a_path_id.is_empty
+			node_id_valid: a_node_id /= Void
 		do
-			Result := children.has(a_path_id)
-		end
-
-	has_path(a_path: OG_PATH): BOOLEAN is
-			-- find the child at the path `a_path'
-		require
-			Path_valid: a_path /= Void and then a_path.is_absolute implies is_root
-		local
-			a_key: STRING
-			a_node: OG_NODE
-		do
-			Result := True
-			
-			-- deal with absolute part if it exists
-			if a_path.is_absolute then
-				a_path.start
-				Result := path_id.is_equal(a_path.item)
-				a_path.forth
+			-- FIXME: should just be able to search with node_id, but we are still
+			-- using the 'unknown; node_ids rather than empty strings
+			if a_node_id.is_empty then
+				Result := has_children
 			else
-				a_path.start
+				Result := children.has(a_node_id)
 			end
-			
-			-- find child node relating to first relation path item
-			if Result and not a_path.off then
-				a_key := a_path.item.value
-				a_path.forth
-				if children.has(a_key) then
-					if not a_path.off then
-						a_node ?= children.item(a_key)
-						if a_node /= Void then
-							Result := a_node.has_path(a_path.sub_path_from_item)
-						end
-					end
-				else
-					Result := False
-				end
-			end			
 		end
 		
-	off:BOOLEAN is
+	off: BOOLEAN is
 			-- 
 		do
 			if using_children_sorted then
@@ -208,7 +145,7 @@ feature -- Modification
 		require
 			Node_exists: a_node /= Void and then valid_child_for_insertion(a_node)
 		do
-			children.put(a_node, a_node.path_id.value)
+			children.put(a_node, a_node.node_id)
 			a_node.set_parent(Current)
 			a_node.set_sibling_order(children.count)
 			children_ordered.extend(a_node)
@@ -223,7 +160,7 @@ feature -- Modification
 			create children_sorted.make
 		end
 		
-feature {NONE} -- Implementation
+feature {OG_NODE} -- Implementation
 
 	children: HASH_TABLE [like child_type, STRING]
 			-- next nodes, keyed by node id or attribute name
@@ -234,8 +171,8 @@ feature {NONE} -- Implementation
 	children_sorted: SORTED_TWO_WAY_LIST[like child_type]
 			-- refence list of child, in lexical order of node_ids
 
-	child_type: OG_ITEM
-	
+	child_type: OG_ITEM	
+
 invariant
 	Children_exists: children /= Void
 	Childred_ordered_exists: children_ordered /= Void

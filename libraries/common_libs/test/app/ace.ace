@@ -10,12 +10,14 @@ default
 	assertion (require)
 	arguments ("C:\project\openehr\ref_impl_eiffel\libraries\common_libs\conf\unit_parser")
 	disabled_debug (yes)
-	disabled_debug ("adl_parse")
 	disabled_debug ("adl_tree")
-	debug ("dadl_parse")
+	disabled_debug ("bb")
+	disabled_debug ("dadl_parse")
+	disabled_debug ("dt")
 	disabled_debug ("gelex")
-	disabled_debug ("geyacc")
-	disabled_debug ("og_path_parse")
+	debug ("geyacc")
+	debug ("og_path_parse")
+	disabled_debug ("refactor_fixme")
 	disabled_debug ("units")
 	debug (no)
 	line_generation (yes)
@@ -38,6 +40,7 @@ cluster
 		exclude
 			".svn"; 
 		default
+			assertion (no)
 			assertion (invariant)
 		end
 
@@ -71,7 +74,7 @@ cluster
 
 	all vendor_fixes:		"$OPENEHR\ref_impl_eiffel\libraries\vendor-fixes"
 		exclude
-			".svn"; "base_net";
+			".svn"; "base_net"; 
 		end
 
 	library ut_support:		"$GOBO\library\utility"

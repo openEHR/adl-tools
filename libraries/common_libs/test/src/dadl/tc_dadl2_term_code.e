@@ -1,49 +1,79 @@
 indexing
-	component:   "openEHR Common Reference Model"
-
-	description: "Common test suite"
-	keywords:    "test, external, id"
+	component:   "openEHR Reusable Libraries"
+	description: "Test case for term code as primitive object value"
+	keywords:    "test, object graph, creation"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class TS_COMMON_IDENTIFICATION
+class TC_DADL2_TERM_CODE
 
-inherit 
-	TEST_SUITE
+inherit
+	TEST_CASE
+		redefine 
+			check_result
+		end
+		
+	SHARED_TEST_ENV
+		export
+			{NONE} all
+		end
 
 creation
 	make
 
 feature -- Access
 
-	test_cases: LINKED_LIST[TEST_CASE] is
-		local
-			tc:TEST_CASE
-		once
-			create Result.make
-			create {TC_OBJECT_REF} tc.make(Void) 		Result.extend(tc)
-			create {TC_OBJECT_ID} tc.make(Void) 		Result.extend(tc)
-		end
-
-	title:STRING is "External tests"
+	title:STRING is "dADL2 term code test"
 
 feature -- Initialisation
 
 	make(arg:ANY) is
-	    do
+		do
+		end
 
+	execute is
+		do
+			dadl_engine.set_source (dadl_data, 1)
+			dadl_engine.parse
+			if not dadl_engine.parse_succeeded then
+				io.put_string("Parse failed; reason = " + dadl_engine.parse_error_text + "%N")
+			else
+				dadl_engine.serialise ("adl")
+				io.put_string("---------- original dADL -----------%N")
+				io.put_string(dadl_data)
+				io.put_string("---------- serialised to ADL -----------%N")
+				io.put_string(dadl_engine.serialised)
+				io.put_string("---------- paths -----------%N")
+				io.put_string(print_list(dadl_engine.tree.all_paths))
+			end
+		end
+
+feature -- Access
+
+	check_result is
+	    do
 	    end
 
+feature -- Implementation
+
+	dadl_data: STRING is "												%N%
+		%term_binding = <												%N%
+		%	[%"HL7_ParticipationType%"] = <								%N%
+		%		items = <												%N%
+		%			[%"at1000%"] = <[HL7_ParticipationType::V10248]>	%N%
+		%		>														%N%
+		%	>															%N%
+		%>																%N%
+		%"
 
 end
-
 
 --|
 --| ***** BEGIN LICENSE BLOCK *****
@@ -59,7 +89,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is ts_external.e.
+--| The Original Code is tc_dadl_basic.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

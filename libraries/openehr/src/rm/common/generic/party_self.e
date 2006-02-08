@@ -19,6 +19,9 @@ indexing
 
 class PARTY_SELF
 
+inherit
+	PARTY_PROXY
+	
 feature -- Access
 
 end

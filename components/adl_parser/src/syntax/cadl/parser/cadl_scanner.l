@@ -291,7 +291,6 @@ P([0-9]+[dD])?([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])?	{
 [A-Z][a-zA-Z0-9_]*[	 \n]*< 			{	-- match a pattern like 'Type_Identifier whitespace <'
 				set_start_condition (IN_C_DOMAIN_TYPE)
 				in_buffer.append_string (text)
-
 			}
 
 <IN_C_DOMAIN_TYPE>[^}>]*>[	 \n]*[^>}A-Z] { -- match up to next > not followed by a '}' or '>' 
@@ -305,6 +304,7 @@ P([0-9]+[dD])?([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])?	{
 				in_buffer.remove_tail(1) -- get rid of the "}" from the buffer
 				str_ := STRING_.make (in_buffer.count)
 				str_.append_string (in_buffer)
+				in_lineno := in_lineno + str_.occurrences('%N')
 
 				dadl_parser.execute(str_, source_start_line)
 				if not dadl_parser.syntax_error then
@@ -337,6 +337,12 @@ P([0-9]+[dD])?([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])?	{
 [A-Z][a-zA-Z0-9_]*	{
 					last_token := V_TYPE_IDENTIFIER
 					last_string_value := text
+			}
+
+[a-z][a-zA-Z0-9_]*[	 ]*\(\)	{
+					last_token := V_FEATURE_CALL_IDENTIFIER
+					last_string_value := text_substring(1, text_count - 2)
+					last_string_value.right_adjust
 			}
 
 [a-z][a-zA-Z0-9_]*	{

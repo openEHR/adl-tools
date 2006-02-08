@@ -35,11 +35,9 @@ inherit
 			default_create
 		end
 		
-	HIER_OBJECT_ID
-		rename
-			make as make_external_id
+	OBJECT_ID
 		redefine
-			default_create, has_context_id, as_canonical_string
+			default_create
 		end
 		
 create
@@ -52,6 +50,10 @@ feature -- Definitions
 	Local_terminology_id: STRING is "local"
 			-- predefined id of terminology to indicate it is local to
 			-- the knowledge resource in which it occurs, e.g. an archetype
+			
+	Version_id_left_delimiter: STRING is "("
+
+	Version_id_right_delimiter: STRING is ")"
 
 feature -- Initialization
 
@@ -80,7 +82,8 @@ feature -- Initialization
 		do
 			value := xml_extract_from_tags(str, "name", 1)
 			if xml_has_tag(str, "version_id", 1) then
-				value.append(Version_start_separator + xml_extract_from_tags(str, "version_id", 1) + Version_end_separator)
+				value.append(Version_id_left_delimiter + xml_extract_from_tags(str, "version_id", 1) + 
+						Version_id_right_delimiter)
 			end
 		end
 		
@@ -96,19 +99,44 @@ feature -- Access
 			-- correspond to distinct (i.e. non-compatible) terminologies. Thus the names "ICD10AM" and "ICD10"
 			-- refer to distinct terminologies.
 		do
-			Result := local_id.twin
+			if has_version_id then
+				Result := value.substring(1, value.substring_index(Version_id_left_delimiter, 1)-1)
+			else
+				Result := value.twin
+			end
 		ensure
-			Result /= Void and then Result.is_equal(local_id)
+			Result /= Void
 		end
 
-	has_context_id: BOOLEAN is
-			-- False for terminology ids
+	version_id: STRING is
+			-- version id if there is a version or else Void
+		require
+			has_version_id
+		local
+			left_pos, right_pos: INTEGER
 		do
-			Result := False
+			left_pos := value.substring_index(Version_id_left_delimiter, 1)
+			right_pos := value.substring_index(Version_id_right_delimiter, 1)
+			Result := value.substring(left_pos+1, right_pos-1)
+		end
+		
+	has_version_id: BOOLEAN is
+			-- True if there is a version_id part of the identifier
+		local
+			left_pos, right_pos: INTEGER
+		do
+			left_pos := value.substring_index(Version_id_left_delimiter, 1)
+			right_pos := value.substring_index(Version_id_right_delimiter, 1)
+			Result := left_pos > 0 and right_pos > left_pos
 		end
 
 feature -- Status Report
 
+	valid_id(an_id:STRING): BOOLEAN is
+			-- 
+		do
+		end
+		
 	is_local: BOOLEAN is
 			-- True if this terminology id = "local"
 		do

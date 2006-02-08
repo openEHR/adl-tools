@@ -108,7 +108,6 @@ feature -- Template
 
 			Result.extend(create {TS_COMMON_CHANGE_CONTROL}.make(Void))
 			Result.extend(create {TS_COMMON_GENERIC}.make(Void))
-			Result.extend(create {TS_COMMON_IDENTIFICATION}.make(Void))
 
 			Result.extend(create {TS_DEMO_PARTY}.make(Void))
 
@@ -116,6 +115,8 @@ feature -- Template
 			Result.extend(create {TS_EHR_ENTRY}.make(Void))
 
 			Result.extend(create {TS_EHR_EXTRACT}.make(Void))
+
+			Result.extend(create {TS_SUPPORT_IDENTIFICATION}.make(Void))
 		end
 		
 feature {NONE} -- Implementation

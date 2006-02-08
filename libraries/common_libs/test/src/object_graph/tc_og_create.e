@@ -59,13 +59,13 @@ feature -- Initialisation
 			
 			-- add some object nodes
 			io.put_string("----- put anon node under 'name' ----%N")
-			attr_node ?= root_node.node_at_path (create {OG_PATH}.make_from_string("/[at0001]/name"))
+			attr_node := root_node.attribute_node_at_path (create {OG_PATH}.make_from_string("/name"))
 			create leaf_node.make_anonymous(Void)
 			attr_node.put_child(leaf_node)
 			print_paths(root_node.all_paths)
 			
 			io.put_string("----- put 2 addressable nodes under 'items' ----%N")
-			attr_node ?= root_node.node_at_path (create {OG_PATH}.make_from_string("/[at0001]/items"))
+			attr_node := root_node.attribute_node_at_path (create {OG_PATH}.make_from_string("/items"))
 			create leaf_node.make("at0002", Void)
 			attr_node.put_child(leaf_node)
 			create obj_node.make("at0003", Void)
@@ -73,7 +73,7 @@ feature -- Initialisation
 			print_paths(root_node.all_paths)
 
 			io.put_string("----- put addressable node under 'items/[at0003]' ----%N")
-			obj_node ?= root_node.node_at_path (create {OG_PATH}.make_from_string("/[at0001]/items[at0003]/"))
+			obj_node ?= root_node.node_at_path (create {OG_PATH}.make_from_string("/items[at0003]"))
 			create attr_node.make("count", Void)
 			obj_node.put_child(attr_node)
 			create leaf_node.make("at0004", Void)

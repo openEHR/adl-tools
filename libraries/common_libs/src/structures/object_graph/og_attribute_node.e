@@ -24,7 +24,7 @@ create
 
 feature -- Definitions
 
-	Generic_attr_name: STRING is "gENERIC"
+	Generic_attr_name: STRING is "_items"
 			-- name given to assumed multiple attribute of container types
 			
 feature -- Initialisation
@@ -45,17 +45,8 @@ feature -- Initialisation
 feature -- Access
 
 	parent: OG_OBJECT_NODE
-	
-	path_id: OG_PATH_ITEM is
-		do
-			if not is_generic then
-				create Result.make_attribute(node_id.twin)
-			else			
-				create Result.make_attribute("")
-			end
-		end
-	
-	all_paths: ARRAYED_LIST[OG_PATH] is
+		
+	Xall_paths: ARRAYED_LIST[OG_PATH] is
 			-- all paths below this point, including this node
 		local
 			child_paths: ARRAYED_LIST[OG_PATH]
@@ -83,13 +74,13 @@ feature -- Access
 								child_paths.off
 							loop
 								a_path := child_paths.item
-								a_path.items.put_front(path_id)
+							--	a_path.items.put_front(path_id)
 								Result.extend(a_path)
 								child_paths.forth
 							end
 						else -- must be an object leaf node
-							create a_path.make_relative(child_node.path_id)		
-							a_path.items.put_front(path_id)
+						--	create a_path.make_relative(child_node.path_id)		
+						--	a_path.items.put_front(path_id)
 							Result.extend(a_path)
 						end
 			--		end
@@ -131,7 +122,7 @@ feature -- Modification
 			-- if new child is an OBJECT_NODE id is known in children, generate a unique id for it
 			if children.has(obj_node.node_id) then
 				duplicate_child_id_count := duplicate_child_id_count + 1
-				new_id := obj_node.path_id.value + "_" + duplicate_child_id_count.out
+				new_id := obj_node.node_id + "_" + duplicate_child_id_count.out
 				obj_node.set_node_id(new_id)
 			end			
 			precursor(obj_node)

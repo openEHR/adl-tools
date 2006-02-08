@@ -1,5 +1,5 @@
 indexing
-	component:   "openEHR Common Reference Model"
+	component:   "openEHR Common Information Model"
 
 	description: "[
 			 An abstraction for a versioned repository of any content, such as a source
@@ -25,24 +25,28 @@ inherit
 
 feature -- Access
 
-	uid: OBJECT_ID	
+	uid: HIER_OBJECT_ID
 			-- Unique identifier of this version repository.
 
 	owner_id: OBJECT_REF
-			-- id of owning object
+			-- Reference to object to which this versioned repository belongs, 
+			-- e.g. the id of the containing EHR.
 
 	time_created: DV_DATE_TIME
-			-- Date/time at which this versioned repository was created 
+			-- Time of initial creation of this versioned object.
 
-	all_version_ids: LIST [STRING] is
+	all_version_ids: LIST [OBJECT_VERSION_ID] is
+			-- Return a list of ids of all versions in this object.
 		do
 		end
 
 	all_versions: LIST [VERSION[G]] is
+			-- Return a list of all versions in this object.
 		do
 		end
 
 	version_count: INTEGER is
+			-- Return the total number of versions in this object
 		do
 		end
 
@@ -61,7 +65,7 @@ feature -- Access
 		do
 		end
 
-	version_with_id(a_ver_id:STRING): VERSION[G] is
+	version_with_id(a_ver_id: OBJECT_VERSION_ID): VERSION[G] is
 			-- extract version known by 'a_ver_id'
 		require
 			Ver_id_valid: a_ver_id /= Void and then has_version_id(a_ver_id)
@@ -69,18 +73,21 @@ feature -- Access
 		end
 
 	version_at_time(a_dt: DV_DATE_TIME): VERSION [G] is
-			-- extract version for time 'a_dt'?
+			-- extract version for time 'a_dt'
 		require
 			Ver_time_valid: a_dt /= Void and then has_version_at_time(a_dt)
 		do
 		end
 
+	revision_history: REVISION_HISTORY	
+			-- History of all audits and attestations in this versioned repository.
+
 feature -- Status Report
 
-	has_version_id(a_ver_id:STRING):BOOLEAN is
+	has_version_id(a_ver_id: OBJECT_VERSION_ID): BOOLEAN is
 			-- does this VERSIONED<T> include a version known as 'a_ver_id'? 
 		require
-			Ver_id_exists: a_ver_id /= Void and then not a_ver_id.is_empty
+			Ver_id_exists: a_ver_id /= Void
 		do
 		end
 
@@ -93,24 +100,38 @@ feature -- Status Report
 
 feature -- Modify
 
-	commit(a_parent_version_id: STRING; an_audit: AUDIT_DETAILS; a_data: G)
+	commit(a_preceding_version_id: OBJECT_VERSION_ID; an_audit: AUDIT_DETAILS; a_data: G)
+			-- add a new version
 		is
 			-- commit new version. No locking (i.e. checking out) is needed to commit. 
 			-- 'parent_version_id' is the id of latest version in this VERSIONED<T>, at the time of
 			-- taking the copy for modification. If the commit is to create the first version, the 
 			-- 'parent_version_id' must be "none".
 		require
-			Parent_version_id_valid: all_version_ids.has(a_parent_version_id) or else a_parent_version_id.is_equal(First_version_parent_pseudo_id)
+			Preceding_version_id_valid: all_version_ids.has(a_preceding_version_id) or else 
+				version_count = 0
 			Audit_exists: an_audit /= Void
 			Version_exists: a_data /= Void
 		do
 		end
 
+	commit_attestation (an_attestation: ATTESTATION; a_ver_id: OBJECT_VERSION_ID) is
+			-- add an attestation to an existing version
+		require
+			Attestation_valid: an_attestation /= Void
+			Version_id_valid: has_version_id(a_ver_id)
+		do
+		end
+
 invariant
-	uid_exists: uid /= Void
-	Time_created_exists: time_created /= Void
-	Versions_exist: version_count > 0
-	Owner_id_exists: owner_id /= Void
+	uid_valid: uid /= Void
+	owner_id_valid: owner_id /= Void 
+	time_created_valid: time_created /= Void
+	version_count_valid: version_count >= 1
+	all_version_ids_valid: all_version_ids /= Void and then all_version_ids.count = version_count
+	all_versions_valid: all_versions /= Void and then all_versions.count = version_count
+	latest_version_valid: latest_version /= Void
+	revision_history_valid: revision_history /= Void	
 
 end
 

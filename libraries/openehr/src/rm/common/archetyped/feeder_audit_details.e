@@ -1,5 +1,5 @@
 indexing
-	component:   "openEHR Common Reference Model"
+	component:   "openEHR Common Information Model"
 	description: "[
 			     Audit details from any system in feeder audit chain
 			     ]"
@@ -32,12 +32,14 @@ feature -- Access
 			-- Identifier of the system which handled the information item.
 
 	provider: PARTY_IDENTIFIED	
-			-- Optional provider(s) who created, committed, forwarded or otherwise handled the item.
+			-- Optional provider(s) who created, committed, forwarded or otherwise 
+			-- handled the item.
 
 	location: PARTY_IDENTIFIED	
-			-- Identifier of the particular site/facility within an organisation which handled the item. 
-			-- For computability, this identifier needs to be e.g. a PKI identifier which can be included 
-			-- in the identifier list of the PARTY_IDENTIFIED object.
+			-- Identifier of the particular site/facility within an organisation which 
+			-- handled the item. For computability, this identifier needs to be e.g. a 
+			-- PKI identifier which can be included in the identifier list of the 
+			-- PARTY_IDENTIFIED object.
 
 	time: DV_DATE_TIME	
 			-- Time of handling the item.
@@ -46,7 +48,8 @@ feature -- Access
 			-- Identifiers for subject of the received information item.
 
 	version_id: STRING	
-			-- Any identifier used in the system such as “interim”, “final”, or numeric versions if available.
+			-- Any identifier used in the system such as "interim", "final", or 
+			-- numeric versions if available.
 
 invariant
 	System_id_valid: system_id /= Void implies not system_id.is_empty	

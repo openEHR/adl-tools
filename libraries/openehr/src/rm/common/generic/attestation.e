@@ -45,6 +45,7 @@ feature -- Access
 			-- True if this attestation is pending
 
 invariant
+	Items_validity: items /= Void implies not items.is_empty
 	-- re-instate when we can state an expression which includes an assignment attempt
 	--Reason_validity: reason /= Void and then
 	--	(reason.generating_type.is_equal("DV_CODED_TEXT") implies

@@ -1,8 +1,12 @@
 indexing
 	component:   "openEHR Common Reference Model"
 	
-	description: "Abstract model of participation of a party in an act"
-	keywords:    "attestation"
+	description: "[
+				 Used to represent any participation of a Party in some activity, 
+				 which is not explicitly in the model, e.g. assisting nurse. 
+				 Can be used to record past or future participations.
+				 ]"
+	keywords:    "participation"
 
 	design:      "openEHR Common Reference Model 2.0"
 
@@ -46,7 +50,8 @@ feature -- Access
 
 invariant
 	Performer_exists: performer /= Void
-	Mode_valid: terminology("openehr").codes_for_group_name("participation modes", "en").has(mode.defining_code)
+	Mode_valid: terminology("openehr").codes_for_group_name("participation modes", "en").
+			has(mode.defining_code)
 	Function_valid: function /= Void and then function.generating_type.is_equal("DV_CODED_TEXT") 
 -- FIXME: re-instate when a simple way is found to do an 'inline cast'
 --		implies terminology("openehr").codes_for_group_name("participation function", "en")

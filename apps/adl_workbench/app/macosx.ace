@@ -1,0 +1,140 @@
+system
+	"adl_workbench"
+
+root
+	ADL_WORKBENCH: make_and_launch
+
+default
+	namespace ("openehr")
+	precompiled ("$ISE_EIFFEL/precomp/spec/$ISE_PLATFORM/vision2")
+	assertion (require)
+	disabled_debug (yes)
+	disabled_debug ("adl_invariant")
+	disabled_debug ("adl_parse")
+	disabled_debug ("adl_tree")
+	disabled_debug ("dadl_parse")
+	disabled_debug ("dlg_dispatcher")
+	disabled_debug ("dt")
+	disabled_debug ("exclude list")
+	disabled_debug ("gelex")
+	disabled_debug ("geyacc")
+	disabled_debug ("include list")
+	disabled_debug ("og_path_parse")
+	disabled_debug ("refactor_fixme")
+	disabled_debug ("vision2_windows")
+	disabled_debug ("vision2_windows_gdi")
+	disabled_debug ("wel")
+	disabled_debug ("wel_gdi_count")
+	disabled_debug ("wel_gdi_references")
+	disabled_debug ("win_dispatcher")
+	debug (no)
+	line_generation (no)
+	profile (no)
+	trace (no)
+	check_vape (yes)
+	console_application (no)
+	syntax_warning (no)
+	address_expression (no)
+	array_optimization (no)
+	dead_code_removal (yes)
+	dynamic_runtime (no)
+	exception_trace (yes)
+	inlining (no)
+	multithreaded (no)
+
+
+cluster
+	all app:		"$OPENEHR/ref_impl_eiffel/apps/adl_workbench/src"
+		exclude
+			".svn"; 
+		default
+			assertion (no)
+			assertion (require)
+			assertion (ensure)
+		end
+
+	all version:		"$OPENEHR/ref_impl_eiffel/libraries/version"
+		exclude
+			".svn"; 
+		end
+
+	all vendor_fixes:		"$OPENEHR/ref_impl_eiffel/libraries/vendor-fixes"
+		exclude
+			".svn"; "base_net";
+		end
+
+	all adl_parser:		"$OPENEHR/ref_impl_eiffel/components/adl_parser/src"
+		exclude
+			".svn";
+		default
+			assertion (no)
+			assertion (require)
+			assertion (ensure)
+		end
+
+	all openehr:		"$OPENEHR/ref_impl_eiffel/libraries/openehr/src"
+		exclude
+			".svn"; 
+		default
+			assertion (no)
+			assertion (require)
+			assertion (ensure)
+		visible
+			C_CODED_TERM
+				end
+			C_ORDINAL
+				end
+			C_QUANTITY
+				end
+		end
+
+	all common_libs:		"$OPENEHR/ref_impl_eiffel/libraries/common_libs/src"
+		exclude
+			".svn"; 
+		default
+			assertion (no)
+			assertion (require)
+			assertion (ensure)
+			assertion (invariant)
+		end
+
+	gobo:		"$GOBO/library"
+
+	library ut_support (gobo):		"$/utility"
+
+	library kl_kernel (gobo):		"$/kernel"
+		exclude
+			"spec"; 
+		end
+
+	library kl_kernel_spec (gobo):		"$/kernel/spec/ise"
+
+	library kl_lexical (gobo):		"$/lexical"
+
+	library kl_parse (gobo):		"$/parse"
+
+	library gobo_structure (gobo):		"$/structure"
+
+	library regexp (gobo):		"$/regexp"
+
+	library design_pattern (gobo):		"$/pattern"
+
+	time:		"$ISE_EIFFEL/library/time"
+
+	time_format (time):		"$/format"
+
+	all base:		"$ISE_EIFFEL/library/base"
+		exclude
+			"table_eiffel3"; "desc"; 
+		option
+			assertion (no): special, string
+		end
+
+external
+	include_path:
+			"\$(ISE_EIFFEL)/library/event/Clib",
+			"\$(ISE_EIFFEL)/library/vision2/spec/include",
+			"\$(ISE_EIFFEL)/library/vision2/implementation/gtk/Clib `$ISE_EIFFEL/library/vision2/implementation/gtk/Clib/vision2-gtk-config --include_path`"
+	object:
+			"`$(ISE_EIFFEL)/library/vision2/implementation/gtk/Clib/vision2-gtk-config --object`"
+end

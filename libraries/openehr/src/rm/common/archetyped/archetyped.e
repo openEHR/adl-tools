@@ -3,11 +3,11 @@ indexing
 	description: "Parent of root classes whose construction is mediated by archetypes."
 	keywords:    "archetype"
 
-	design:      "openEHR Common Reference Model 1.4.1"
+	design:      "openEHR Common Reference Model 2.0"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2000-2006 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -17,9 +17,6 @@ indexing
 class ARCHETYPED
 
 feature -- Access
-
-	uid: OBJECT_ID
-			-- globally unique id for root objects of archetyped structures
 
 	archetype_id: ARCHETYPE_ID
 			-- id of the archetype in the global archetype library
@@ -32,7 +29,6 @@ feature -- Access
 			-- Access control settings for this archetyped structure
 		
 invariant
-	Uid_exists: uid /= Void
 	Archetype_id_exists: archetype_id /= Void
 	Rm_version_exists: rm_version /= Void
 	

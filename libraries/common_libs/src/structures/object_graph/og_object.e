@@ -34,12 +34,7 @@ feature -- Initialisation
 feature -- Access
 	
 	parent: OG_ATTRIBUTE_NODE
-	
-	path_id: OG_PATH_ITEM is
-		do
-			create Result.make_object(node_id.twin)
-		end
-	
+		
 feature -- Status Report
 
 	is_object_node: BOOLEAN is True

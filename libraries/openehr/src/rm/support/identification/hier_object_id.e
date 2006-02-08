@@ -3,7 +3,7 @@ indexing
 	
 	description: "[
 			 Hierarhical object identifiers. The syntax of the value attribute is as follows:
-					 [ context_id '.' ] local_id '(' version_id ')'
+					 [ root '.' ] extension
 			 ]"
 	keywords:    "object identifiers"
 
@@ -11,7 +11,7 @@ indexing
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2000-2006 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -28,37 +28,28 @@ create
 	
 feature -- Definitions
 	
-	Context_separator: STRING is "."
-	
-	Version_start_separator: STRING is "("
-	
-	Version_end_separator: STRING is ")"
+	Extension_separator: STRING is "::"
 
 feature -- Initialization
 
-	make(a_context_id, a_local_id, a_version_id:STRING) is
+	make(a_root: UID; an_extension: STRING) is
 			-- build an external ID
 		require
-			Context_id_valid: a_context_id /= Void implies not a_context_id.is_empty
-			Local_id_exists: a_local_id /= Void and then not a_local_id.is_empty
-			Version_id_exists: a_version_id /= Void implies not a_version_id.is_empty
+			Root_valid: a_root /= Void
+			Extension_exists: an_extension /= Void and then not an_extension.is_empty
 		do
 			create value.make(0)
-			if a_context_id /= Void then
-				value.append(a_context_id + Context_separator)
+			if a_root /= Void then
+				value.append(a_root.value + Extension_separator)
 			end
-			value.append(a_local_id)
-			if a_version_id /= Void then
-				value.append(Version_start_separator + a_version_id + Version_end_separator)
-			end
+			value.append(an_extension)
 		ensure
-			Context_id_set: a_context_id /= Void implies context_id.is_equal(a_context_id)
-			Local_id_set: local_id.is_equal(a_local_id)
-			Version_id_set: version_id /= Void implies version_id.is_equal(a_version_id)
+			Root_set: a_root /= Void implies root.value.is_equal(a_root.value)
+			Extension_set: extension.is_equal(an_extension)
 		end
 		
 	make_from_string(a_string:STRING) is
-			-- make from a string of the same form as `id', i.e. "namespace::class_name:value"
+			-- make from a string of the same form as `id', i.e. "root::extension"
 		require
 			String_exists: a_string /= Void and then valid_id(a_string)
 		do
@@ -67,82 +58,55 @@ feature -- Initialization
 		
 feature -- Access
 
-	context_id: STRING is
+	root: UID is
 			-- extract the context id part of the id, if any
-		require
-			has_context_id
 		local
+			end_pos: INTEGER
 			s: STRING
-			ver_sep_pos, local_sep_pos, context_id_pos: INTEGER
 		do
-			create Result.make(0)
+			end_pos := value.substring_index(Extension_separator, 1) - 1
+			if end_pos <= 0 then
+				end_pos := value.count
+			end
+			s := value.substring (1, end_pos)
 			
-			s := value.twin
-			s.mirror
-			ver_sep_pos := s.substring_index(version_start_separator, 1) -- position in mirrored string if present
-			local_sep_pos := s.substring_index_in_bounds(context_separator, ver_sep_pos.max(1), s.count)  -- position in mirrored string
-			context_id_pos := s.count - local_sep_pos  -- last_char of context_id in non-mirrored string
-			if context_id_pos > 0 then
-				Result.append(value.substring(1, context_id_pos))			
+			create {UUID} Result.default_create
+			if Result.valid_id (s) then
+				create {UUID} Result.make(s)
+			else	
+				create {ISO_OID} Result.default_create
+				if Result.valid_id (s) then			
+					create {ISO_OID} Result.make(s)
+				else
+					create {INTERNET_ID} Result.default_create
+					if Result.valid_id (s) then			
+						create {INTERNET_ID} Result.make(s)
+					else
+						-- error
+					end
+				end
 			end
 		ensure
 			Result /= Void
 		end
 
-	local_id: STRING is
+	extension: STRING is
 			-- extract the local id part of the id
-		local
-			s: STRING
-			ver_sep_pos, ver_pos, end_pos, local_sep_pos, local_id_pos: INTEGER
+		require
+			has_extension
 		do
-			s := value.twin
-			s.mirror
-			ver_sep_pos := s.substring_index(version_start_separator, 1) -- position in mirrored string
-			local_sep_pos := s.substring_index_in_bounds(context_separator, ver_sep_pos.max(1), s.count)  -- position in mirrored string
-			if local_sep_pos > 0 then
-				local_id_pos := s.count - local_sep_pos + 2 -- start of local_id in non-mirrored string
-			else
-				local_id_pos := 1
-			end
-			ver_pos := value.substring_index(version_start_separator, 1)
-			if ver_pos < 1 then
-				end_pos := value.count
-			else
-				end_pos := ver_pos-1
-			end
-			Result := value.substring(local_id_pos, end_pos)
+			Result := value.substring(value.substring_index(Extension_separator, 1) + 
+						Extension_separator.count, value.count)
 		ensure
 			Result /= Void and then not Result.is_empty
 		end
 		
-	version_id: STRING is
-			-- extract the version id part of the id
-		local
-			ver_start_sep_pos: INTEGER
+	has_extension: BOOLEAN is
+			-- True if there is a root part - at least one '.' in id before version part
 		do
-			ver_start_sep_pos := value.substring_index(version_start_separator, 1)
-			create Result.make(0)
-			if ver_start_sep_pos > 0 then
-				Result.append(value.substring(ver_start_sep_pos+1, value.count-1))
-			end
-		end
-		
-	has_context_id: BOOLEAN is
-			-- True if there is a context_id part - at least one '.' in id before version part
-		do
-			Result := value.substring_index(context_separator, 1) > 0
+			Result := value.substring_index(Extension_separator, 1) > 0
 		end
 
-feature -- Modify
-
-	set_version_id(a_str:STRING) is
-			-- set version_id
-		require
-			a_str /= Void and then not a_str.is_empty
-		do
-			
-		end
-		
 feature -- Status Report
 
 	valid_id(a_str:STRING): BOOLEAN is
@@ -157,15 +121,10 @@ feature -- Output
 			-- string form displayable for humans - e.g. ICD9;1989::M17(en-au)
 		do
 			create Result.make(0)
-			if has_context_id then
-				Result.append(context_id)
-				Result.append(Context_separator)
-			end
-			Result.append(local_id)
-			if not version_id.is_empty then
-				Result.append(version_start_separator)
-				Result.append(version_id)
-				Result.append(version_end_separator)	
+			Result.append(root.value)
+			if has_extension then
+				Result.append(Extension_separator)
+				Result.append(extension)
 			end
 		end
 
@@ -174,12 +133,9 @@ feature -- Output
 			-- in data item
 		do
 			create Result.make(0)
-			if has_context_id then
-				Result.append("<context_id>" + context_id + "</context_id>")
-			end
-			Result.append("<local_id>" + local_id + "</local_id>")
-			if not version_id.is_empty then
-				Result.append("<version_id>" + version_id + "</version_id>")
+			Result.append("<root>" + root.value + "</root>")
+			if has_extension then
+				Result.append("<extension>" + extension + "</extension>")
 			end
 		end
 

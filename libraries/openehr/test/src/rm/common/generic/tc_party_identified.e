@@ -1,19 +1,19 @@
 indexing
-	component:   "openEHR Common Reference Model"
+	component:   "openEHR Common Information Model"
 
-	description: "Test OBJECT_REF"
-	keywords:    "test, object reference"
+	description: "Test PARTY_IDENTIFIED"
+	keywords:    "test, PARTY"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2006 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 	
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class TC_OBJECT_REF
+class TC_PARTY_IDENTIFIED
 
 inherit
 	TEST_CASE
@@ -26,7 +26,8 @@ creation
 
 feature -- Access
 
-	title: STRING is "TC_OBJECT_REF"
+	title: STRING is "TC_PARTY_IDENTIFIED"
+
 
 feature -- Initialisation
 
@@ -36,7 +37,7 @@ feature -- Initialisation
 
 	execute is
 		local
-			obj_ref: OBJECT_REF
+			a_party: PARTY_IDENTIFIED
 		do
 			
 		end
@@ -64,7 +65,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is tc_object_ref.e.
+--| The Original Code is tc_attestation.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

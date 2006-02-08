@@ -50,7 +50,7 @@ feature -- Access
 	subject: PARTY_PROXY
 			-- Identity of human subject of the information in this entry
 
-	provider: PARTICIPATION
+	provider: PARTY_PROXY
 			-- party providing the information
 		
 	other_participations: LIST [PARTICIPATION]

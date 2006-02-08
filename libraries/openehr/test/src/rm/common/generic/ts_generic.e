@@ -30,6 +30,11 @@ feature -- Access
 			create Result.make
 			create {TC_PARTICIPATION} tc.make(Void) 		Result.extend(tc)
 			create {TC_ATTESTATION} tc.make(Void) 		Result.extend(tc)
+			create {TC_PARTY_SELF} tc.make(Void) 		Result.extend(tc)
+			create {TC_PARTY_IDENTIFIED} tc.make(Void) 		Result.extend(tc)
+			create {TC_PARTY_RELATED} tc.make(Void) 		Result.extend(tc)
+			create {TC_REVISION_HISTORY} tc.make(Void) 		Result.extend(tc)
+			create {TC_AUDIT_DETAILS} tc.make(Void) 		Result.extend(tc)
 		end
 
 	title:STRING is "Generic Package tests"

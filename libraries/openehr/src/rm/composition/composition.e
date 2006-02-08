@@ -99,6 +99,7 @@ feature {NONE} -- Implementation
 			-- the idea recorded in the term
 
 invariant
+	Uid_exists: uid /= Void
 	composer_exists: composer /= Void
 	content_valid: content /= Void implies not content.is_empty
 	Category_validity: category /= Void and then terminology("openehr").codes_for_group_name("composition category", "en").has(category.defining_code)

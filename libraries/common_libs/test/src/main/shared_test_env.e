@@ -88,6 +88,8 @@ feature -- Access
 			create Result.make
 		end
 	    
+	path_parser: OG_PATH_VALIDATOR
+
 end
 
 --|

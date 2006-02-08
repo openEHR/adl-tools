@@ -26,7 +26,7 @@ feature -- Definitions
 		do
 			create Result.make(0)
 			create term_id.make(Terminology_UnitsOfMeasureProperties)
-			Result.put(term_id, term_id.as_string)
+			Result.put(term_id, term_id.value)
 		end
 
 	Terminology_ISO_639_1: STRING is "ISO:639-1(1988)"
@@ -41,9 +41,9 @@ feature -- Definitions
 		do
 			create Result.make(0)
 			create term_id.make(Terminology_ISO_639_1)
-			Result.put(term_id, term_id.as_string)
+			Result.put(term_id, term_id.value)
 			create term_id.make(Terminology_ISO_639_2)
-			Result.put(term_id, term_id.as_string)
+			Result.put(term_id, term_id.value)
 		end
 
 	Terminology_ISO_3166_1: STRING is "ISO:3166-1(1988)"
@@ -57,9 +57,9 @@ feature -- Definitions
 		do
 			create Result.make(0)
 			create term_id.make(Terminology_ISO_3166_1)
-			Result.put(term_id, term_id.as_string)
+			Result.put(term_id, term_id.value)
 			create term_id.make(Terminology_ISO_3166_2)
-			Result.put(term_id, term_id.as_string)
+			Result.put(term_id, term_id.value)
 		end
 
 	Terminology_id_Charsets: HASH_TABLE [TERMINOLOGY_ID, STRING] is 
@@ -70,7 +70,7 @@ feature -- Definitions
 		do
 			create Result.make(0)
 			create term_id.make("IANA:charsets")
-			Result.put(term_id, term_id.as_string)
+			Result.put(term_id, term_id.value)
 		end
 
 	Terminology_id_Compression_algorithms: HASH_TABLE [TERMINOLOGY_ID, STRING] is 
@@ -80,7 +80,7 @@ feature -- Definitions
 		do
 			create Result.make(0)
 			create term_id.make("HL7:CompressionAlgorithm")
-			Result.put(term_id, term_id.as_string)
+			Result.put(term_id, term_id.value)
 		end
 
 	Terminology_id_Integrity_check_algorithms: HASH_TABLE [TERMINOLOGY_ID, STRING] is 
@@ -90,7 +90,7 @@ feature -- Definitions
 		do
 			create Result.make(0)
 			create term_id.make("HL7:IntegrityCheckAlgorithm")
-			Result.put(term_id, term_id.as_string)
+			Result.put(term_id, term_id.value)
 		end
 
 	Terminology_id_Media_types: HASH_TABLE [TERMINOLOGY_ID, STRING] is 
@@ -100,7 +100,7 @@ feature -- Definitions
 		do
 			create Result.make(0)
 			create term_id.make("HL7:MediaType")
-			Result.put(term_id, term_id.as_string)
+			Result.put(term_id, term_id.value)
 		end
 
 	Terminology_id_Null_flavours: HASH_TABLE [TERMINOLOGY_ID, STRING] is 
@@ -110,7 +110,7 @@ feature -- Definitions
 		do
 			create Result.make(0)
 			create term_id.make("HL7:NullFlavor")
-			Result.put(term_id, term_id.as_string)
+			Result.put(term_id, term_id.value)
 		end
 	
 	Terminology_id_Participation_modes:  HASH_TABLE [TERMINOLOGY_ID, STRING] is 
@@ -120,7 +120,7 @@ feature -- Definitions
 		do
 			create Result.make(0)
 			create term_id.make("HL7:ParticipationModes")
-			Result.put(term_id, term_id.as_string)
+			Result.put(term_id, term_id.value)
 		end
 		
 	Terminology_id_Attestation_statuses:  HASH_TABLE [TERMINOLOGY_ID, STRING] is 
@@ -130,7 +130,7 @@ feature -- Definitions
 		do
 			create Result.make(0)
 			create term_id.make("HL7:ParticipationSignature")
-			Result.put(term_id, term_id.as_string)
+			Result.put(term_id, term_id.value)
 		end
 		
 	Terminology_id_Provider_functions:  HASH_TABLE [TERMINOLOGY_ID, STRING] is 
@@ -140,7 +140,7 @@ feature -- Definitions
 		do
 			create Result.make(0)
 			create term_id.make("openEHR:Provider_relationships")
-			Result.put(term_id, term_id.as_string)
+			Result.put(term_id, term_id.value)
 		end
 		
 	Terminology_id_Subject_relationships:  HASH_TABLE [TERMINOLOGY_ID, STRING] is 
@@ -150,7 +150,7 @@ feature -- Definitions
 		do
 			create Result.make(0)
 			create term_id.make("openEHR:Subject_relationships")
-			Result.put(term_id, term_id.as_string)
+			Result.put(term_id, term_id.value)
 		end
 	
 end

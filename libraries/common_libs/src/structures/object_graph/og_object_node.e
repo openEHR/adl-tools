@@ -39,53 +39,193 @@ feature -- Access
 			-- all paths below this point, including this node
 		local
 			child_paths: ARRAYED_LIST[OG_PATH]
-			child_node: like child_type
+			attr_node: like child_type
 			a_path: OG_PATH
+			attr_children: HASH_TABLE [OG_OBJECT, STRING]
+			child_obj_node: OG_OBJECT_NODE
 		do
 			create Result.make(0)
 			Result.compare_objects
 			
+			-- get the attributes of this object
 			if has_children then
 				from 
 					children.start
 				until
 					children.off
 				loop
-					child_node := children.item_for_iteration
-					child_paths := child_node.all_paths
-							
-					from
-						child_paths.start
-					until
-						child_paths.off
-					loop
-						a_path := child_paths.item
-						a_path.items.put_front(path_id)
-						if is_root then
-							a_path.set_absolute
+					attr_node := children.item_for_iteration
+					
+					-- get the objects of this attribute
+		--			if attr_node.has_children then
+						attr_children := attr_node.children						
+						from	
+							attr_children.start
+						until
+							attr_children.off
+						loop
+							child_obj_node ?= attr_children.item_for_iteration
+							if child_obj_node /= Void then
+								child_paths := child_obj_node.all_paths
+								from
+									child_paths.start
+								until
+									child_paths.off
+								loop
+									a_path := child_paths.item
+									a_path.prepend_segment(create {OG_PATH_ITEM}.make_with_object_id(attr_node.node_id, child_obj_node.node_id))
+									if is_root then
+										a_path.set_absolute
+									end
+									Result.extend(a_path)
+									child_paths.forth
+								end
+								-- add the current object
+								if child_obj_node.is_addressable then
+									create a_path.make_relative(create {OG_PATH_ITEM}.make_with_object_id(attr_node.node_id, child_obj_node.node_id))	
+									if is_root then
+										a_path.set_absolute
+									end
+									Result.extend(a_path)														
+								end
+							end
+							attr_children.forth
 						end
-						Result.extend(a_path)
-						child_paths.forth
+	--				else
+					-- add current attribute
+					create a_path.make_relative(create {OG_PATH_ITEM}.make(attr_node.node_id))						
+					if is_root then
+						a_path.set_absolute
 					end
+					Result.extend(a_path)
+--					end
 					children.forth
 				end
 			end
+		end	
 
-			if is_root then
-				create a_path.make_absolute(path_id)
-			else
-				create a_path.make_relative(path_id)
-			end
-			if Result.is_empty then	-- this node is last addressable node on this branch
-				a_path.set_terminal
-			end
-			Result.extend(a_path)		
+	node_at_path(a_path: OG_PATH): OG_OBJECT is
+			-- find the object node at the relative path `a_path'
+		require
+			Path_valid: a_path /= Void and then has_path(a_path)
+		do
+			a_path.start				
+			Result := internal_node_at_path(a_path)		
+		ensure
+			Result_exists: Result /= Void
 		end
-	
-feature {NONE} -- Implementation
+
+	attribute_node_at_path(a_path: OG_PATH): OG_ATTRIBUTE_NODE is
+			-- find the attribute node corresponding the the terminal segment of `a_path'
+		require
+			Path_valid: a_path /= Void and then has_path(a_path)
+		do
+			a_path.start				
+			Result := internal_attribute_node_at_path(a_path)		
+		ensure
+			Result_exists: Result /= Void
+		end
+
+feature -- Status Report
+
+	has_path(a_path: OG_PATH): BOOLEAN is
+			-- find the child at the path `a_path'
+		require
+			Path_valid: a_path /= Void and then a_path.is_absolute implies is_root
+		local
+			a_key: STRING
+			a_node: OG_NODE
+		do
+			a_path.start
+			Result := internal_has_path(a_path)
+		end
+
+feature {OG_OBJECT_NODE} -- Implementation
 
 	child_type: OG_ATTRIBUTE_NODE
 			-- relationship target type
+
+	internal_has_path(a_path: OG_PATH): BOOLEAN is
+			-- find the child at the path `a_path'
+		local
+			child_obj_node: OG_OBJECT_NODE
+			child_obj: OG_OBJECT
+		do			
+			-- find child node relating to first relation path item
+			if has_object_at_path_segment(a_path.item) then
+				child_obj := object_at_path_segment(a_path.item)
+				a_path.forth
+				if not a_path.off then
+					child_obj_node ?= child_obj
+					if child_obj_node /= Void then
+						Result := child_obj_node.internal_has_path(a_path)
+					end
+				else
+					Result := True
+				end
+				a_path.back
+			else
+				Result := a_path.is_last and has_child_node(a_path.last.attr_name)
+			end
+		end
+		
+	internal_node_at_path(a_path: OG_PATH): OG_OBJECT is
+			-- find the child at the path `a_path'
+		local
+			child_obj: OG_OBJECT
+			child_obj_node: OG_OBJECT_NODE
+		do		
+			child_obj := object_at_path_segment(a_path.item)
+			a_path.forth
+			if not a_path.off then
+				child_obj_node ?= child_obj -- must exist since path has been checked
+				Result := child_obj_node.internal_node_at_path(a_path)
+			else
+				Result := child_obj
+			end
+		end
+		
+	internal_attribute_node_at_path(a_path: OG_PATH): OG_ATTRIBUTE_NODE is
+			-- find the child at the path `a_path'
+		local
+			child_obj_node: OG_OBJECT_NODE
+		do
+			if has_object_at_path_segment(a_path.item) then
+				child_obj_node ?= object_at_path_segment(a_path.item)
+					a_path.forth
+				if not a_path.off then
+					Result := child_obj_node.internal_attribute_node_at_path(a_path)
+				else
+					Result := child_at_node_id(a_path.last.attr_name)
+				end
+			elseif a_path.is_last then
+				Result := child_at_node_id(a_path.last.attr_name)
+			end
+		end
+		
+	has_object_at_path_segment(a_path_segment: OG_PATH_ITEM): BOOLEAN is
+			-- True if this object node has an attribute node and an object node below that
+			-- that match the path_segment
+		local
+			an_attr_node: OG_ATTRIBUTE_NODE
+		do
+			if children.has(a_path_segment.attr_name) then
+				an_attr_node := children.item(a_path_segment.attr_name)
+				if an_attr_node.has_children then 
+					Result := an_attr_node.has_child_node (a_path_segment.object_id)
+				end
+			end
+		end
+
+	object_at_path_segment(a_path_segment: OG_PATH_ITEM): OG_OBJECT is
+			-- object node at path_segment - strict match on object part
+		require
+			has_object_at_path_segment(a_path_segment)
+		local
+			an_attr_node: OG_ATTRIBUTE_NODE
+		do
+			Result := children.item(a_path_segment.attr_name).child_at_node_id (a_path_segment.object_id)
+		end
 
 end
 

@@ -6,7 +6,7 @@ indexing
 			     ]"
 	keywords:    "locator, locatable"
 
-	design:      "openEHR Common Reference Model 1.4.1"
+	design:      "openEHR Common Reference Model 2.0"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
@@ -42,7 +42,7 @@ feature -- Access
 			-- audit details of information in originating system
 
 invariant
-	originating_system_audit_valid: originating_system_audit /= Void
+	Originating_system_audit_valid: originating_system_audit /= Void
 
 end
 

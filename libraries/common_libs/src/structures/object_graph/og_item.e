@@ -54,22 +54,48 @@ feature -- Access
 			-- absolute path of this node relative to the root
 		local
 			csr: OG_NODE
+			path_list: ARRAYED_LIST [OG_ITEM]
+			a_path_item: OG_PATH_ITEM
 		do
-			create Result.make_absolute(path_id)
-			from
-				csr := parent
-			until
-				csr = Void
-			loop
-				Result.items.put_front(csr.path_id)
-				csr := csr.parent
+			create path_list.make(0)
+			path_list.extend(Current)
+			if parent /= Void then
+				from
+					csr := parent
+				until
+					csr.parent = Void
+				loop
+					path_list.put_front(csr)
+					csr := csr.parent
+				end	
 			end
-		end
-								
-	path_id: OG_PATH_ITEM is
-		deferred
-		ensure
-			Result_exists: Result /= Void
+
+			path_list.start
+			create a_path_item.make(path_list.item.node_id)
+			path_list.forth
+			if not path_list.off then 
+				if path_list.item.is_addressable then
+					a_path_item.set_object_id(path_list.item.node_id)				
+				end
+				path_list.forth
+			end
+
+			create Result.make_absolute(a_path_item)
+				
+			from
+			until
+				path_list.off
+			loop
+				create a_path_item.make(path_list.item.node_id)
+				path_list.forth
+				if not path_list.off then 
+					if path_list.item.is_addressable then
+						a_path_item.set_object_id(path_list.item.node_id)				
+					end
+					path_list.forth
+				end
+				Result.append_segment (a_path_item)
+			end
 		end
 	
 	sibling_order: INTEGER

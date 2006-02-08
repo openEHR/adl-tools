@@ -1,5 +1,5 @@
 indexing
-	component:   "openEHR Common Reference Model"
+	component:   "openEHR Common Information Model"
 
 	description: "[
 			 Versionable objects.
@@ -25,47 +25,60 @@ inherit
 
 feature -- Access
 
-	data: G
+	uid: OBJECT_VERSION_ID
+			-- Unique identifier of this version, containing owner_id, version_tree_id and 
+			-- creating_system_id.
 
-	audit: AUDIT_DETAILS
-
-	lifecycle_state: DV_STATE
-
-	attestations: SET [ATTESTATION]
-
-	version_id: STRING
-			-- Unique identifier of this version.
-			
-	owner_id: OBJECT_ID	
-			-- A copy of the uid of the version repository to which this version was added.
-			
-	uid: OBJECT_ID is
-			-- Unique identifier of this version, derived from version repository id and version id.
-		do
-			Result := owner_id.twin
-		--	Result.set_version_id(version_id)
-		end
+	preceding_version_id: OBJECT_VERSION_ID	
+			-- Unique identifier of the version of which this version is a modification; 
+			-- Void if this is the first version.
 	
-	parent_version_id: STRING
-			-- Unique identifier of the version on which this version was based. May be the pseudo-version “first”.
+	data: G
+			-- the data being versioned
 
-	contribution: DV_EHR_URI
-			-- the contribution to which this version belongs
+	attestations: LIST [ATTESTATION]	
+			-- Set of attestations relating to this version.
+
+	commit_audit: AUDIT_DETAILS
+			-- Audit trail corresponding to the committal of this version to the 
+			-- VERSION_REPOSITORY where it is currently located.
+
+	contribution: OBJECT_REF
+			-- Contribution in which this version was added.
+
+	lifecycle_state: DV_CODED_TEXT	
+			-- Lifecycle state of the content item in this version.
+
+	owner_id: HIER_OBJECT_ID is
+			-- Unique identifier of the owning VERSIONED_OBJECT.
+		do
+		end
+
+	create_audit: AUDIT_DETAILS	is 
+			-- Audit trail corresponding to the committal of this version when the 
+			-- content was created. If it was created locally, then the result is the 
+			-- value of commit_audit, else it is the value of original_create_audit.
+		do
+			Result := commit_audit
+		end
+
+feature -- Status Report
+
+	is_branch: BOOLEAN is
+			-- True if this Version represents a branch.
+		do
+		end
 
 invariant
-	Audit_exists: audit /= Void
-	Attestations_validity: attestations /= Void implies attestations.is_empty
-
-	lifecycle_state_valid: lifecycle_state /= Void and then 
-		terminology("openehr").codes_for_group_name("version lifecycle state", "en").has(lifecycle_state.value.defining_code)
-
-	version_id_exists: version_id /= Void and then not version_id.is_empty
-	parent_version_id_exists: parent_version_id /= Void and then not parent_version_id.is_empty
-	owner_id_exists: owner_id /= Void
-	
-	Contribution_exists: contribution /= Void
-
-	uid_valid: uid /= Void and uid.version_id.is_equal(version_id)
+	Uid_valid: uid /= Void
+	Owner_id_valid: owner_id /= Void and then owner_id.value.is_equal(uid.object_id.value)
+	Lifecycle_state_valid: lifecycle_state /= Void and then 
+		terminology("openehr").codes_for_group_name("version lifecycle state", "en").has(lifecycle_state.defining_code)
+	Create_audit_valid: create_audit /= Void and create_audit = commit_audit
+	Commit_audit_valid: commit_audit /= Void
+	Attestations_valid: attestations /= Void implies not attestations.is_empty
+	Contribution_valid: contribution /= Void
+	Data_valid: data /= Void	
 	
 end
 

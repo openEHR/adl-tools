@@ -94,7 +94,7 @@ feature -- Access
 			Path_valid: a_path /= Void and then has_path(a_path)
 		local
 			og_paths: ARRAYED_LIST [OG_PATH]
-			og_node: OG_NODE
+			og_node: OG_OBJECT_NODE
 		do
 			og_node ?= representation.node_at_path(create {OG_PATH}.make_from_string(a_path))
 			og_paths := og_node.all_paths
@@ -190,7 +190,7 @@ feature -- Output
 			-- 
 		do
 			create Result.make(0)
-			Result.append(rm_type_name + "[" + representation.path_id.value + "] " + occurrences.as_string)
+			Result.append(rm_type_name + "[" + representation.node_id + "] " + occurrences.as_string)
 		end
 		
 feature -- Representation

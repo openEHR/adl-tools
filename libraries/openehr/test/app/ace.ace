@@ -10,10 +10,13 @@ default
 	assertion (require)
 	disabled_debug (yes)
 	disabled_debug ("adl_tree")
+	disabled_debug ("bb")
+	disabled_debug ("dadl_parse")
 	disabled_debug ("dlg_dispatcher")
+	disabled_debug ("dt")
 	disabled_debug ("gelex")
-	disabled_debug ("geyacc")
-	disabled_debug ("og_path_parse")
+	debug ("geyacc")
+	debug ("og_path_parse")
 	disabled_debug ("refactor_fixme")
 	disabled_debug ("vision2_windows")
 	disabled_debug ("vision2_windows_gdi")
@@ -76,7 +79,7 @@ cluster
 
 	all vendor_fixes:		"$OPENEHR\ref_impl_eiffel\libraries\vendor-fixes"
 		exclude
-			".svn"; "base_net";
+			".svn"; "base_net"; 
 		end
 
 	gobo:		"$GOBO\library"

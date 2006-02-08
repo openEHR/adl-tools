@@ -84,7 +84,9 @@ feature -- Modification
 		do
 			value := a_value
 			rm_type_name := a_value.generating_type
+			
 			is_string := rm_type_name.is_equal("STRING")
+			is_character := rm_type_name.has_substring("CHARACTER")
 		end
 
 feature -- Conversion
@@ -95,6 +97,8 @@ a_dur: DATE_TIME_DURATION
 		do
 			if is_string then
 				Result := "%"" + value.out + "%""
+			elseif is_character then
+				Result := "%'" + value.out + "%'"
 			else
 				-- FIXME: duration.out does not exist in Eiffel, and in any case would not be ISO8601
 				-- compliant
@@ -128,6 +132,7 @@ feature -- Serialisation
 feature {NONE} -- Implementation
 
 	is_string: BOOLEAN
+	is_character: BOOLEAN
 	
 end
 

@@ -37,19 +37,6 @@ feature -- Validation
 			Error_supplied: not Result implies (path_parse_error /= Void and then not path_parse_error.is_empty)
 		end
 
-	valid_object_path_string(a_path: STRING): BOOLEAN is
-			-- True if a_path parses properly
-		require
-			a_path /= Void and then not a_path.is_empty
-		local
-			an_og_path: OG_PATH
-		do
-			create an_og_path.make_from_string(a_path)
-			Result := an_og_path.is_object
-		ensure
-			Error_supplied: not Result implies (path_parse_error /= Void and then not path_parse_error.is_empty)
-		end
-
 end
 
 

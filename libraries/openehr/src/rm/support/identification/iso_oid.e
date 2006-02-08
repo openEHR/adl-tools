@@ -1,53 +1,48 @@
 indexing
-	component:   "openEHR Common Reference Model"
+	component:   "openEHR Support Information Model"
+	
+	description: "[
+				 Model of ISO’s Object Identifier (oid) as defined by the standard 
+				 ISO/IEC 8824 . Oids are formed from integers separated by dots. 
+				 Each non-leaf node in an Oid starting from the left corresponds 
+				 to an assigning authority, and identifies that authority’s namespace, 
+				 inside which the remaining part of the identifier is locally unique.
+				 ]"
+	keywords:    "unique identifiers, OID"
 
-	description: "Test OBJECT_ID"
-	keywords:    "test, object reference"
+	design:      "openEHR Support Information Model 1.5"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2006 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
-	
+
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class TC_OBJECT_ID
+class ISO_OID
 
 inherit
-	TEST_CASE
-		redefine 
-			check_result
-		end
+	UID
 
-creation
-	make
+create
+	default_create, make
+	
+feature -- Definitions
 
-feature -- Access
+	Default_value: STRING is "1"
+			-- ISO Oid
 
-	title: STRING is "TC_OBJECT_ID"
+feature -- Status Report
 
-feature -- Initialisation
-
-	make(arg:ANY) is
+	valid_id(an_id:STRING): BOOLEAN is
+			-- 
 		do
 		end
-
-	execute is
-		local
-			obj_ref: OBJECT_ID
-		do
-			
-		end
-
-feature -- Access
-
-	check_result is
-		do
-		end
-
+		
 end
+
 
 
 --|
@@ -64,7 +59,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is tc_object_id.e.
+--| The Original Code is object_id.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

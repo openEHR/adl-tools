@@ -41,13 +41,15 @@ feature -- Initialisation
 	execute is
 		local
 			attr_node: OG_ATTRIBUTE_NODE
+			obj_node: OG_OBJECT
 		do
 			-- remove all children of  creation
 			io.put_string("----- initial state ----%N")
-			attr_node ?= root_node.node_at_path (create {OG_PATH}.make_from_string("/[at0001]/items"))
 			print_paths(root_node.all_paths)
 			
-			io.put_string("----- remove children of '/[at0001]/items' ----%N")
+			io.put_string("----- remove children of '/items' ----%N")
+			obj_node ?= root_node.node_at_path (create {OG_PATH}.make_from_string("/items"))
+			attr_node := obj_node.parent
 			attr_node.remove_all_children
 			print_paths(root_node.all_paths)
 		end

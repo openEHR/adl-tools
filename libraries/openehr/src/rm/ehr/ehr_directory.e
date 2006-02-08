@@ -10,14 +10,14 @@ indexing
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2005 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2000-2006 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class VERSIONED_DIRECTORY
+class VERSIONED_FOLDER
 
 inherit
 	VERSIONED_OBJECT [FOLDER]

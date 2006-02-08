@@ -37,6 +37,8 @@ feature -- Initialisation
 	execute is
 		local
 			a_datum: EHR
+			ehr_status: EHR_STATUS
+			v_ehr_status: VERSIONED_EHR_STATUS
 		do
 		end
 

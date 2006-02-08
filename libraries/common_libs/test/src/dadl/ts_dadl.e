@@ -48,6 +48,7 @@ feature -- Access
 			create {TC_DADL2_EMPTY} tc.make(Void) Result.extend(tc)
 			create {TC_DADL2_AS_OBJECT_SIMPLE} tc.make(Void) Result.extend(tc)
 			create {TC_DADL_EMBEDDED_CADL} tc.make(Void) Result.extend(tc)
+			create {TC_DADL2_TERM_CODE} tc.make(Void) Result.extend(tc)
 		end
 
 end

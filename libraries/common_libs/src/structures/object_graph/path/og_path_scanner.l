@@ -56,6 +56,9 @@ creation
 "["			last_token := Left_bracket_code
 "]"			last_token := Right_bracket_code
 
+"("			last_token := Left_parenthesis_code
+")"			last_token := Right_parenthesis_code
+
 "//"			last_token := SYM_MOVABLE_LEADER
 
 ----------/* term code reference */ -------------------------------------------------
@@ -68,6 +71,12 @@ creation
 [A-Z][a-zA-Z0-9_]*	{
 					last_token := V_TYPE_IDENTIFIER
 					last_string_value := text
+			}
+
+[a-z][a-zA-Z0-9_]*[	 ]*\(\)	{
+					last_token := V_FEATURE_CALL_IDENTIFIER
+					last_string_value := text_substring(1, text_count - 2)
+					last_string_value.right_adjust
 			}
 
 [a-z][a-zA-Z0-9_]*	{

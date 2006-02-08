@@ -26,24 +26,28 @@ feature -- Definitions
 
 	movable_leader: STRING is "//"
 
-	object_separator: CHARACTER is '/'
+	segment_separator: CHARACTER is '/'
 
-	feature_call_separator: CHARACTER is '.'
+	feature_call_separator: CHARACTER is '/'
 
+	feature_call_arg_delimiters: STRING is "()"
+	
 feature -- Initialisation
 
 	make_absolute(a_path_segment: OG_PATH_ITEM) is
+			-- make a path of the form /attr_name[xxx]/attr_name/attr_name[xxx]...
 		require
-			Path_segment_valid: a_path_segment /= Void and then a_path_segment.is_object
+			Path_segment_valid: a_path_segment /= Void
 		do
 			create items.make(0)
 			items.extend(a_path_segment)
 			is_absolute := True
 		ensure
-			is_absolute and not is_movable
+			is_absolute
 		end
 		
 	make_relative(a_path_segment: OG_PATH_ITEM) is
+			-- make a path of the form attr_name[xxx]/attr_name[xxx]...
 		require
 			Path_segment_valid: a_path_segment /= Void
 		do
@@ -54,7 +58,7 @@ feature -- Initialisation
 		end
 		
 	make_movable(a_path_segment: OG_PATH_ITEM) is
-			-- make as a movable path pattern which can occur anywhere from reference
+			-- make a path of the form //attr_name[xxx]/attr_name[xxx]...
 			-- point, equivalen to Xpath "//" path
 		require
 			Path_segment_valid: a_path_segment /= Void
@@ -63,7 +67,7 @@ feature -- Initialisation
 			items.extend(a_path_segment)
 			is_movable := True
 		ensure
-			is_movable and not is_absolute
+			is_movable
 		end
 		
 	make_from_string(s: STRING) is
@@ -193,6 +197,11 @@ feature -- Cursor Movement
 			items.forth
 		end
 
+	back is
+		do
+			items.back
+		end
+
 feature -- Status Report
 
 	is_equal(other: OG_PATH): BOOLEAN is
@@ -236,12 +245,6 @@ feature -- Status Report
 		do
 			Result := items.count = 1
 		end
-
-	is_object: BOOLEAN is
-			-- True if path refers to an object - last item must be an object segment
-		do
-			Result := items.last.is_object
-		end
 		
 feature -- Validation
 
@@ -268,6 +271,12 @@ feature -- Validation
 	
 feature -- Modification
 
+	set_movable is 
+			-- set is_movable true
+		do
+			is_movable := True
+		end
+		
 	remove_first is
 			-- remove the first path item
 		do
@@ -282,47 +291,18 @@ feature -- Modification
 			items.remove
 		end
 
-	append_object_segment(an_item: OG_PATH_ITEM) is
-			-- add object segment to the end
+	append_segment(an_item: OG_PATH_ITEM) is
+			-- add segment to the end
 		require
-			item_valid: an_item /= Void and then an_item.is_object 
-			path_valid: is_empty or else items.last.is_attribute
+			item_valid: an_item /= Void and not items.last.is_feature_call
 		do
 			items.extend(an_item)
 		end
 
-	append_attribute_segment(an_item: OG_PATH_ITEM) is
-			-- add attribute segment to the end
+	prepend_segment(an_item: OG_PATH_ITEM) is
+			-- add segment to the front
 		require
-			item_valid: an_item /= Void and then an_item.is_attribute
-			path_valid: is_empty or else items.last.is_object
-		do
-			items.extend(an_item)
-		end
-
-	append_feature_call_segment(an_item: OG_PATH_ITEM) is
-			-- add feature call segment to the end
-		require
-			item_valid: an_item /= Void and then an_item.is_feature_call
-			path_valid: is_empty or else (items.last.is_object or items.last.is_feature_call)
-		do
-			items.extend(an_item)
-		end
-
-	prepend_object_segment(an_item: OG_PATH_ITEM) is
-			-- add object segment to the front
-		require
-			item_valid: an_item /= Void and then an_item.is_object 
-			path_valid: is_empty or else (items.first.is_attribute or else items.first.is_feature_call)
-		do
-			items.put_front(an_item)
-		end
-
-	prepend_attribute_segment(an_item: OG_PATH_ITEM) is
-			-- add attribute to the front
-		require
-			item_valid: an_item /= Void and then an_item.is_attribute
-			path_valid: is_empty or else items.first.is_object
+			item_valid: an_item /= Void 
 		do
 			items.put_front(an_item)
 		end
@@ -373,54 +353,35 @@ feature -- Output
 		
 	as_string: STRING is
 			-- 
+		local
+			csr: ARRAYED_LIST_CURSOR
 		do
+			csr := items.cursor
+
 			create Result.make(0)
 			start
 			if is_absolute then
-				Result.append_character(object_separator)
+				Result.append_character(segment_separator)
 			elseif is_movable then
 				Result.append(movable_leader)				
 			end
 
-			if first.is_addressable then
-				Result.append("[" + first.value + "]")
-				Result.append_character(object_separator)
-			else
-				-- there is an object path item there, but we don't output it
-			end
-			if not off then
-				forth	-- get past first object item
-			end
-			
 			from
 			until
 				off or item.is_feature_call
 			loop
-				-- must be a rel
-				Result.append(item.value)
-				forth
-				
-				-- must be an object (might be no more items if path under construction)
-				if not off then
-					if item.is_addressable then
-						Result.append("[" + item.value + "]")
-					end
-					Result.append_character('/')
-					forth
+				Result.append(item.attr_name)
+				if item.is_addressable then
+					Result.append("[" + item.object_id + "]")
+				elseif item.is_feature_call then
+					Result.append(feature_call_arg_delimiters)
 				end
-			end
-			
-			-- output feature call parts if any
-			from
-			until
-				off
-			loop
-				if item.is_feature_call then
-					Result.append_character(feature_call_separator)
-					Result.append(item.value)
+				if not items.islast then
+					Result.append_character(segment_separator)					
 				end
 				forth
 			end
+			items.go_to(csr)
 		end
 		
 feature {NONE} -- Implementation
@@ -428,7 +389,7 @@ feature {NONE} -- Implementation
 	parser: OG_PATH_VALIDATOR
 	
 invariant
-	Items_exists: items /= Void
+	Items_valid: items /= Void
 	Movable_validity: not (is_movable and is_absolute)
 
 end

@@ -189,6 +189,7 @@ P([0-9]+[dD])?([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])?	{
 					last_token := V_CADL_BLOCK
 					create last_string_value.make(in_buffer.count)
 					last_string_value.append(in_buffer)
+					in_lineno := in_lineno + in_buffer.occurrences('%N')
 					in_buffer.wipe_out
 				end
 			}

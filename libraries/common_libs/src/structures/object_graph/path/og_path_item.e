@@ -1,6 +1,10 @@
 indexing
 	component:   "openEHR Archetype Project"
-	description: "ADL archetype path item"
+	description: "[
+				ADL archetype path segment, consisting of an attribute name and an object id, which is 
+				either empty, as in the case of single attributes, or some identifier, needed to discriminate
+				among objects in a container referenced by the attribute.
+				 ]"
 	keywords:    "test, ADL"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
@@ -20,102 +24,116 @@ inherit
 		end
 
 create
-	make_object, make_object_unknown, make_attribute, make_feature_call, make_from_other
+	make, make_with_object_id, make_feature_call, make_from_other
 
 feature -- Initialisation
 
-	make_object_unknown is
+	make(an_attr_name: STRING) is
+			-- make a path segment with an attribute and an object id - 
+			-- corresponds to single cardinality attribute or it could be
+			-- a path segment for a multiple cardinality attribute but defaulting
+			-- to the first object in the collection
+		require
+			an_attr_name_valid: an_attr_name /= Void and then not an_attr_name.is_empty
 		do
-			create value.make(0)
-			value.append(Not_addressable_value)
-			is_object := True
+			attr_name := an_attr_name
+			create object_id.make(0)
+		ensure
+			Attr_name_set: attr_name.is_equal(an_attr_name)
+			Object_id_empty: object_id.is_empty
 		end
 
-	make_object(s: STRING) is
+	make_with_object_id(an_attr_name, an_object_id: STRING) is
+			-- make a path segment with an attribute name and an object id - 
+			-- corresponds to multiple caridnality attribute case
 		require
-			s_valid: s /= Void and then not s.is_empty
+			an_attr_name_valid: an_attr_name /= Void and then not an_attr_name.is_empty
+			an_object_id_valid: an_object_id /= Void
 		do
-			value := s
-			is_object := True
+			attr_name := an_attr_name
+			if an_object_id.has_substring(Anonymous_node_id) then
+				create object_id.make(0)
+			else
+				object_id := an_object_id
+			end
+		ensure
+			Attr_name_set: attr_name.is_equal(an_attr_name)
+			Object_id_set: object_id.is_equal(an_object_id) or else object_id.is_empty
 		end
 
-	make_attribute(s: STRING) is
+	make_feature_call(a_feat_name: STRING) is
 		require
-			s_valid: s /= Void
+			a_feat_name_valid: a_feat_name /= Void and then not a_feat_name.is_empty
 		do
-			value := s
-			is_attribute := True
-		end
-
-	make_feature_call(s: STRING) is
-		require
-			s_valid: s /= Void and then not s.is_empty
-		do
-			value := s
+			attr_name := a_feat_name
 			is_feature_call := True
+			create object_id.make(0)
+		ensure
+			Attr_name_set: attr_name.is_equal(a_feat_name)
+			Is_feature_call: is_feature_call
 		end
 		
 	make_from_other(other: OG_PATH_ITEM) is
 			-- FIXME: created because clone does not work in dotnet
 		do
 			is_feature_call := other.is_feature_call
-			is_object := other.is_object
-			is_attribute := other.is_attribute
-			create value.make(0)
-			value.append(other.value)
+			attr_name := other.attr_name.twin
+			object_id := other.object_id.twin
 		end
 
 feature -- Definitions
 
-	Not_addressable_value: STRING is "unknown"
+	Anonymous_node_id: STRING is "unknown"
 
 feature -- Access
-
-	is_object: BOOLEAN
 	
-	is_attribute: BOOLEAN
+	attr_name: STRING
+			-- name of attribute of this path segment
 	
-	is_feature_call: BOOLEAN
-
-	value: STRING
-
-	is_addressable: BOOLEAN is
-			-- True if this node has a unique id
-			-- FIXME: possible problem with using ids like 'unknown_xx' - 
-			-- do unknown nodes need to be addressable by an archetype tool?
-		do
-			Result := not value.has_substring(Not_addressable_value)
-		end
+	object_id: STRING
+			-- id of object of this path segment, for attributes with cardinality > 1
 		
 feature -- Status Report
+
+	is_feature_call: BOOLEAN
+	
+	is_addressable: BOOLEAN is
+			-- True if the object in this segment is identified
+		do
+			Result := not object_id.is_empty
+		end
 
 	is_equal(other: OG_PATH_ITEM): BOOLEAN is
 			-- True if `other' and this path item are identical
 		do
-			if other /= Void then 
-				if is_object then
-					Result := is_addressable = other.is_addressable and value.is_equal(other.value)
-				elseif is_attribute then
-					Result := value.is_equal(other.value)
-				else -- feature_call
-					Result := value.is_equal(other.value)
-				end
+			if other /= Void then
+				Result := attr_name.is_equal(other.attr_name) and object_id.is_equal(other.object_id) and
+						is_feature_call = other.is_feature_call
 			end
 		end
 		
 feature -- Modification
 
-	set_value(s: STRING) is
+	set_object_id(an_object_id: STRING) is
+			-- make a path segment with an attribute name and an object id - 
+			-- corresponds to multiple caridnality attribute case
 		require
-			s_valid: s /= Void and then not s.is_empty
+			an_object_id_valid: an_object_id /= Void
 		do
-			value := s
+			if an_object_id.has_substring(Anonymous_node_id) then
+				create object_id.make(0)
+			else
+				object_id := an_object_id
+			end
+		ensure
+			Object_id_set: object_id.is_equal(an_object_id) or else object_id.is_empty
 		end
 
 invariant
-	Value_valid: value /= Void -- and then not value.is_empty
-	Type_valid: is_object xor is_attribute xor is_feature_call
-
+	Validity: not (is_addressable and is_feature_call)
+	Attr_name_valid: attr_name /= Void and then not attr_name.is_empty
+	Object_id_valid: object_id /= Void
+	
 end
 
 

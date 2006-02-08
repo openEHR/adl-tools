@@ -25,9 +25,6 @@ inherit
 
 feature -- Access
 
-	uid: OBJECT_ID
-			-- unique identifier of this party
-
 	details: ITEM_STRUCTURE	
 			-- The detailed description of the relationship
 

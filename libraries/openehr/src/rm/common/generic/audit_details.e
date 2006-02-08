@@ -27,7 +27,7 @@ inherit
 
 feature -- Initialization
 
-	make(a_system_id: STRING; a_committer: PARTY_REF; 
+	make(a_system_id: STRING; a_committer: PARTY_PROXY; 
 						a_time_committed: DV_DATE_TIME; a_change_type: DV_CODED_TEXT;
 						a_description: DV_TEXT) is
 		require
@@ -54,7 +54,7 @@ feature -- Access
 	system_id: STRING	
 			-- Identity of the node where the item was committed.
 
-	committer: PARTY_REF	
+	committer: PARTY_PROXY	
 			-- Identity of party who committed the item.
 
 	time_committed: DV_DATE_TIME	

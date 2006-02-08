@@ -37,14 +37,26 @@ creation
 
 %}
 
-%token <STRING> V_TYPE_IDENTIFIER V_ATTRIBUTE_IDENTIFIER V_STRING
+%token <STRING> V_TYPE_IDENTIFIER V_ATTRIBUTE_IDENTIFIER V_STRING V_FEATURE_CALL_IDENTIFIER
 %token <STRING> V_LOCAL_TERM_CODE_REF
 %token ERR_STRING
 %token SYM_MOVABLE_LEADER
 
+%type <OG_PATH_ITEM> path_segment -- call_path_segment
+
 %%
 
-input: og_path
+input: movable_path
+		{
+			output := a_path
+			accept
+		}
+	| absolute_path
+		{
+			output := a_path
+			accept
+		}
+	| relative_path
 		{
 			output := a_path
 			accept
@@ -52,159 +64,61 @@ input: og_path
 	| error
 		{
 			debug("OG_PATH_parse")
-				io.put_string("OG_PATH NOT validated%N")
+				io.put_string("....OG_PATH NOT validated%N")
 			end
 			abort
 		}
 	;
 
-
-og_path: object_path 
+movable_path: SYM_MOVABLE_LEADER relative_path
 		{
-			debug("OG_PATH_parse")
-				io.put_string(" = og_path%N")
-			end
+			a_path.set_movable
 		}
-	| attribute_path
+	;
+
+absolute_path: '/' relative_path
 		{
+			a_path.set_absolute
 			debug("OG_PATH_parse")
-				io.put_string(" = og_path%N")
+				io.put_string("....absolute_path; %N")
 			end
 		}
 	;
 
---------------- Relation path --------------------------------------------
-
-attribute_path: attr_path_segment
-	| object_path attr_path_segment
-	;
-
---------------- Object path -------------------------------------------------
-
-object_path: obj_path_segment 
-	| attribute_path obj_path_segment
-	;
-
-attr_path_segment: V_ATTRIBUTE_IDENTIFIER
+relative_path: path_segment
 		{
-			if a_path = Void then
-				create a_path.make_relative(create {OG_PATH_ITEM}.make_attribute($1))
-			else
-				a_path.append_attribute_segment(create {OG_PATH_ITEM}.make_attribute($1))
-			end
+			create a_path.make_relative($1)
+		}
+	| relative_path '/' path_segment
+		{
+			a_path.append_segment($3)
+		}
+	;
+
+path_segment: V_ATTRIBUTE_IDENTIFIER V_LOCAL_TERM_CODE_REF
+		{
+			create $$.make_with_object_id($1, $2)
 			debug("OG_PATH_parse")
-				io.put_string("...attr_path_segment: " + $1)
+				io.put_string("...path_segment: " + $1 + "[" + $2 + "]%N")
+			end
+		}
+	| V_ATTRIBUTE_IDENTIFIER
+		{
+			create $$.make($1)
+			debug("OG_PATH_parse")
+				io.put_string("...path_segment: " + $1 + "%N")
 			end
 		}
 	;
 
-obj_path_segment: V_LOCAL_TERM_CODE_REF '/'		-- identified object
-		{
-			if a_path = Void then
-				raise_error
-				report_error("Absolute path missing leading '/'")
-				abort
-			else
-				a_path.append_object_segment(create {OG_PATH_ITEM}.make_object($1))
-			end
-			debug("OG_PATH_parse")
-				io.put_string("...obj_path_segment: [" + $1 + "]")
-			end
-		}
-	| '/' V_LOCAL_TERM_CODE_REF '/'		-- absolute, identified path
-		{
-			if a_path /= Void then
-				raise_error
-				report_error("/[xxx]/ can only appear at head of path")
-				abort
-			else
-				create a_path.make_absolute(create {OG_PATH_ITEM}.make_object($2))
-			end
-			debug("OG_PATH_parse")
-				io.put_string("...obj_path_segment: /[" + $2 + "]/")
-			end
-		}
---
--- the following can be used to get absolute paths with no trailing slash, if we allow this
--- (not currently allowed in ADL)
---
---	| '/' V_LOCAL_TERM_CODE_REF 	-- absolute, identified path 1 item long
+-- call_path_segment: V_FEATURE_CALL_IDENTIFIER
 --		{
---			if a_path /= Void then
---				raise_error
---				report_error("/[xxx] can only appear at head of path")
---				abort
---			else
---				create a_path.make_absolute(create {OG_PATH_ITEM}.make_object($2))
---			end
+--			create $$.make_feature_call($1)
 --			debug("OG_PATH_parse")
---				io.put_string("...obj_path_segment: /[" + $2 + "]/")
+--				io.put_string("...feature_call path_segment: " + $1)
 --			end
 --		}
-	| SYM_MOVABLE_LEADER V_LOCAL_TERM_CODE_REF '/'		-- movable, identified "//" path pattern
-		{
-			if a_path /= Void then
-				raise_error
-				report_error("//[xxx]/ can only appear at head of path")
-				abort
-			else
-				create a_path.make_movable(create {OG_PATH_ITEM}.make_object($2))
-			end
-			debug("OG_PATH_parse")
-				io.put_string("...obj_path_segment: //[" + $2 + "]/")
-			end
-		}
-	| SYM_MOVABLE_LEADER V_LOCAL_TERM_CODE_REF 		-- movable, identified "//" path pattern 1 item long
-		{
-			if a_path /= Void then
-				raise_error
-				report_error("//[xxx] can only appear at head of path")
-				abort
-			else
-				create a_path.make_movable(create {OG_PATH_ITEM}.make_object($2))
-			end
-			debug("OG_PATH_parse")
-				io.put_string("...obj_path_segment: //[" + $2 + "]")
-			end
-		}
-	| '/'					-- anonymous object
-		{
-			if a_path = Void then
-				create a_path.make_absolute(create {OG_PATH_ITEM}.make_object_unknown)
-			else
-				a_path.append_object_segment(create {OG_PATH_ITEM}.make_object_unknown)
-			end
-			debug("OG_PATH_parse")
-				io.put_string("...obj_path_segment(anon)")
-			end
-		}
-	;
-
-
-call_path: object_path '.' V_ATTRIBUTE_IDENTIFIER
-		{
-			a_path.append_function_segment(create {OG_PATH_ITEM}.make_feature_call($3))
-			debug("OG_PATH_parse")
-				io.put_string("...feature_call item: " + $3)
-			end
-
-		}
-	| call_path '.' V_ATTRIBUTE_IDENTIFIER
-		{
-			a_path.append_function_segment(create {OG_PATH_ITEM}.make_feature_call($3))
-			debug("OG_PATH_parse")
-				io.put_string(indent + "feature_call item: " +  $3)
-			end
-		}
-	| object_path '.' error
-		{
-			raise_error
-			report_error("In call path expression; expecting property reference e.g. '.feature_call'")
-			abort
-		}
-	;
-
---------------------------------------------------------------------
+--	;
 
 %%
 
@@ -222,6 +136,7 @@ feature -- Initialization
 		do
 			reset
 			create error_text.make(0)
+			a_path := Void
 			set_input_buffer (new_string_buffer (in_text))
 			parse
 		end
@@ -245,7 +160,6 @@ feature -- Access
 feature {NONE} -- Implementation
 
 	a_path: OG_PATH
-	a_path_item: OG_PATH_ITEM
 
 	indent: STRING
 

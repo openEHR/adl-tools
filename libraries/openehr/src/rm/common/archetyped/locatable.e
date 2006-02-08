@@ -24,6 +24,9 @@ inherit
 
 feature -- Access
 	
+	uid: OBJECT_ID
+			-- globally unique id for root objects of archetyped structures
+
 	name: DV_TEXT
 			-- name of this item in structure; forms an element of runtime path 
 
@@ -69,12 +72,11 @@ feature -- Status Report
 		do
 			Result := archetype_details /= Void
 		end
-		
 
 invariant
 	Name_exists: name /= Void
 	Archetype_node_id_valid: archetype_node_id /= Void and then not archetype_node_id.is_empty
-	Archetype_validity: archetype_details = Void xor is_archetype_root
+	Archetyped_validity: archetype_details = Void xor is_archetype_root
 	Links_valid: links /= Void implies not links.is_empty
 
 end

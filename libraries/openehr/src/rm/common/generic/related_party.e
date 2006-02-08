@@ -33,12 +33,13 @@ feature -- Initialization
 feature -- Access
 
 	relationship: DV_CODED_TEXT	
-			-- The function of the Party in this participation (a given party might 
-			-- participate in more than one way in a given activity).
+			-- Relationship of subject of this ENTRY to the subject of the record. 
+			-- May be coded. If it is the patient, coded as "self".
 
 invariant
 	Relationship_valid: relationship /= Void and then 
-			terminology("openehr").codes_for_group_name("related party relationship", "en").has(relationship.defining_code)
+			terminology("openehr").codes_for_group_name("related party relationship", "en").
+			has(relationship.defining_code)
 
 end
 
