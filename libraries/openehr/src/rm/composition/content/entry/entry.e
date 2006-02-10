@@ -56,6 +56,10 @@ feature -- Access
 	other_participations: LIST [PARTICIPATION]
 			-- Other participations at ENTRY level - archetypable.
 
+	workflow_id: OBJECT_REF
+			-- Identifier of externally held workflow engine data for this workflow 
+			-- execution, for this subject of care.
+
 	parent: LOCATABLE
 			-- parent node of this node in compositional structure (could be a 
 			-- Section or a Composition)

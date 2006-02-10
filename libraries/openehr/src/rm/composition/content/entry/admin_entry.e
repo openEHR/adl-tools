@@ -21,7 +21,7 @@ indexing
 class ADMIN_ENTRY
 
 inherit
-	CARE_ENTRY
+	ENTRY
 
 feature -- Access
 

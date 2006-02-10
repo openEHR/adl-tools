@@ -37,7 +37,7 @@ inherit
 
 feature -- Access
 
-	narrative: DV_PARAGRAPH
+	narrative: DV_TEXT
 			-- narrative description of the action to be executed.
 
 	activities: LIST[ACTIVITY]
@@ -64,8 +64,9 @@ feature -- Status Report
 		end
 		
 invariant
-	narrative_exists: narrative /= Void
-
+	Narrative_exists: narrative /= Void
+	Activities_valid: activities /= Void implies not activities.is_empty
+	
 end
 
 

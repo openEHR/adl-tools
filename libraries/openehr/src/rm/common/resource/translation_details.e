@@ -1,71 +1,87 @@
 indexing
-	component:   "openEHR Data Structures Reference Model"
-	
-	description: "[
-	              An event in an event series.
-			  ]"
-	keywords:    "content, temporal, data structure"
-
-	requirements:"ISO 18308 TS V1.0 ???"
-	design:      "openEHR Data Structures Reference Model 1.2.1"
-
+	component:   "openEHR Common Information Model"
+	description: "Resource translation meta-data"
+	keywords:    "resource, meta-data, translation"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-deferred class EVENT [G -> ITEM_STRUCTURE]
+class TRANSLATION_DETAILS
 
 inherit
-	LOCATABLE
+	EXTERNAL_ENVIRONMENT_ACCESS
+		export
+			{NONE} all
+		undefine
+			default_create
+		end
 
-feature -- Access
-
-	data: G
-			-- the data of this event
-
-	time: DV_DATE_TIME
-			-- time point at the end of this event
-
-	offset: DV_DURATION is
-			-- offset of this sample from the origin of the history
-		do
-			Result := time - parent.origin
+	DT_CONVERTIBLE
+		export
+			{NONE} all
+		redefine
+			default_create
 		end
 		
-	state: ITEM_STRUCTURE
-			-- data representing the state of the observed entity, which is relevant
-			-- to the interpretation of the data
+create
+	make, make_dt
+	
+feature -- Initialisation
 
-	path_of_item (a_loc: LOCATABLE): STRING is
-			-- The path to an item relative to the root of this archetyped structure.
+	default_create is
+			-- 
 		do
 		end
-
-	item_at_path (a_path: STRING): LOCATABLE is
-			-- The item at a path (relative to this item).
+		
+	make is
+			-- default make
 		do
+			default_create
 		end
-
-	parent: HISTORY[G]
-			-- parent node of this node in compositional structure
-
-feature -- Status Report
-
-	valid_path (a_path: STRING): BOOLEAN is
-			-- True if the path is valid with respect to the current item.
+		
+	make_dt is
+			-- make used by DT_OBJECT_CONVERTER
 		do
+			make
+		end
+		
+feature -- Access
+
+	language: CODE_PHRASE	
+			-- Language of translation
+
+	author: HASH_TABLE [STRING, STRING]
+			-- Translator name and other demographic details
+
+	accreditation: STRING	
+			-- Accreditation of translator, usually a national translator’s association id
+	
+	other_details: HASH_TABLE [STRING, STRING]	
+			-- Any other meta-data
+
+feature {DT_OBJECT_CONVERTER} -- Conversion
+
+	persistent_attributes: ARRAYED_LIST[STRING] is
+			-- list of attribute names to persist as DT structure
+			-- empty structure means all attributes
+		once
+			create Result.make(0)
+			Result.extend("language")
+			Result.extend("author")
+			Result.extend("accreditation")
+			Result.extend("other_details")
+			Result.compare_objects
 		end
 
 invariant
-	Data_exists: data /= Void	
-	Time_exists: time /= Void	
-	Offset_validity: offset /= Void and then offset = time - parent.origin
-
+	Language_valid: language /= Void and then code_set("languages").has(language)
+	Author_valid: author /= Void	
+	
 end
 
 
@@ -83,13 +99,14 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is event.e.
+--| The Original Code is archetype_description.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):
+--|	Sam Heard
 --|
 --| Alternatively, the contents of this file may be used under the terms of
 --| either the GNU General Public License Version 2 or later (the 'GPL'), or

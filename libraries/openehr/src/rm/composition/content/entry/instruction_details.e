@@ -25,19 +25,47 @@ inherit
 
 feature -- Access
 
-	instruction_id: UID
+	instruction_id: OBJECT_VERSION_ID
 			-- id of Instruction
 
 	activity_id: STRING
 			-- Id of activity as an archetype path in Instruction
 
 	wf_details: ITEM_STRUCTURE
-			-- workflow engine state at the time of this Action completing, 
-			-- for the execution of this Instruction or series of actions
+			-- Various workflow engine state details, potentially including 
+			-- such things as:
+			-- 	condition that fired to cause this Action to be done (with
+			--  actual variables substituted); list of notifications which 
+			--  actually occurred (with all variables substituted);
+			--  other workflow engine state. 
+			-- This specification does not currently define the actual 
+			-- structure or semantics of this field.
+
+	path_of_item (a_loc: LOCATABLE): STRING is
+			-- The path to an item relative to the root of this archetyped structure.
+		do
+		end
+
+	item_at_path (a_path: STRING): LOCATABLE is
+			-- The item at a path (relative to this item).
+		do
+		end
+
+	parent: LOCATABLE is
+			-- parent node of this node in compositional structure
+		do
+		end
+			
+feature -- Status Report
+
+	valid_path (a_path: STRING): BOOLEAN is
+			-- True if the path is valid with respect to the current item.
+		do
+		end
 
 invariant
 	Instruction_id_valid: instruction_id /= Void
-	Activity_id_valid: activity_id /= Void
+	Activity_path_valid: activity_id /= Void and then not activity_id.is_empty
 
 end
 

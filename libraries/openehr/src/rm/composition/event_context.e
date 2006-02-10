@@ -49,7 +49,7 @@ feature -- Access
 
 	location: STRING	
 			-- The actual location where the session occurred, e.g. 
-			-- “microbiol lab 2”, “home”, “ward A3” and so on.
+			-- "microbiol lab 2", "home", "ward A3" and so on.
 
 	setting: DV_CODED_TEXT	
 			-- The setting in which the event took place.  
@@ -82,10 +82,10 @@ feature -- Status Report
 		end
 		
 invariant
-	start_time_exists: start_time /= Void
-	participations_validity: participations /= Void implies not participations.is_empty
-	location_valid: location /= Void implies not location.is_empty
-	setting_valid: setting /= Void and then 
+	Start_time_exists: start_time /= Void
+	Participations_validity: participations /= Void implies not participations.is_empty
+	Location_valid: location /= Void implies not location.is_empty
+	Setting_valid: setting /= Void and then 
 			terminology("openehr").codes_for_group_name("setting", "en").has(setting.defining_code)
 
 end

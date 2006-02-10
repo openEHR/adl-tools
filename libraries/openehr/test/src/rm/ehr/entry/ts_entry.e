@@ -6,7 +6,7 @@ indexing
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2000-2006 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -31,6 +31,8 @@ feature -- Access
 			create {TC_OBSERVATION} tc.make(Void) 		Result.extend(tc)
 			create {TC_EVALUATION} tc.make(Void) 		Result.extend(tc)
 			create {TC_INSTRUCTION} tc.make(Void) 		Result.extend(tc)
+			create {TC_ACTION} tc.make(Void) 			Result.extend(tc)
+			create {TC_ADMIN_ENTRY} tc.make(Void) 		Result.extend(tc)
 		end
 
 	title:STRING is "ENTRY tests"

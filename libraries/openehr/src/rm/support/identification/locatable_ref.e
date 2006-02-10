@@ -41,7 +41,7 @@ feature -- Access
 			-- "ehr://" + id.value + "/" + path
 
 invariant
-	Path_valid: path /= Void	
+	Path_valid: path /= Void implies not path.is_empty
 
 end
 

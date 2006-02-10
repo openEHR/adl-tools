@@ -59,7 +59,6 @@ feature -- Status Report
 invariant
 	Is_archetype_root: is_archetype_root
 	Subject_exists: subject /= Void
-	Archetype_root: is_archetype_root
 	No_parent: parent = Void
 	
 end

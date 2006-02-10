@@ -34,7 +34,7 @@ feature -- Access
 	time_validity: DV_INTERVAL [DV_DATE]	
 			-- Valid time interval for this role.
 
-	performer: ACTOR	
+	performer: PARTY_REF	
 			-- Actor playing the role.
 		
 invariant

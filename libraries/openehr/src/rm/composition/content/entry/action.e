@@ -39,10 +39,27 @@ feature -- Access
 			-- details of Instruction corresponding to this Action, if
 			-- relevant
 
+	path_of_item (a_loc: LOCATABLE): STRING is
+			-- The path to an item relative to the root of this archetyped structure.
+		do
+		end
+
+	item_at_path (a_path: STRING): LOCATABLE is
+			-- The item at a path (relative to this item).
+		do
+		end
+			
+feature -- Status Report
+
+	valid_path (a_path: STRING): BOOLEAN is
+			-- True if the path is valid with respect to the current item.
+		do
+		end
+
 invariant
-	time_exists: time /= Void
-	description_exists: description /= Void
-	ism_transition_exists: ism_transition /= Void
+	Time_exists: time /= Void
+	Description_exists: description /= Void
+	Ism_transition_exists: ism_transition /= Void
 
 end
 

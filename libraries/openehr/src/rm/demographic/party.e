@@ -37,7 +37,7 @@ feature -- Access
 	relationships: LINKED_SET[PARTY_RELATIONSHIP]
 			-- Relationships in which this role takes part as source.
 
-	reverse_relationships: SET[OBJECT_REF]
+	reverse_relationships: SET[LOCATABLE_REF]
 			-- Relationships in which this role takes part as target.
 
 	details: ITEM_STRUCTURE	
@@ -74,7 +74,6 @@ feature -- Status Report
 		end
 		
 invariant
-	Uid_exists: uid /= Void
 	Type_valid: type = name
 	Identities_valid: identities /= Void and then not identities.is_empty
 	Contacts_valid: contacts /= Void implies not contacts.is_empty

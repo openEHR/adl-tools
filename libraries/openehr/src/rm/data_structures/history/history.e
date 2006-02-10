@@ -82,9 +82,9 @@ feature -- Conversion
 		end
 
 invariant
-	origin_exists: origin /= Void
-	items_exists: items /= Void and then not items.is_empty	
-	period_validity: is_periodic xor period = Void	
+	Origin_exists: origin /= Void
+	Items_exists: items /= Void and then not items.is_empty	
+	Period_validity: is_periodic xor period = Void	
 
 end
 

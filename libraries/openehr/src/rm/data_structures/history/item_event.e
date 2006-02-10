@@ -3,15 +3,15 @@ indexing
 	
 	description: "[
 	              An event in an event series.
-			  ]"
+				  ]"
 	keywords:    "content, temporal, data structure"
 
 	requirements:"ISO 18308 TS V1.0 ???"
-	design:      "openEHR Data Structures Reference Model 1.2.1"
+	design:      "openEHR Data Structures Reference Model 1.6"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2000-2006 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -47,9 +47,11 @@ feature -- Access
 		end
 		
 invariant
-	width /= Void
-	interval_start_time /= Void
-	math_function_validity: terminology("openehr").codes_for_group_name("event math function", "en").has(math_function.defining_code)
+	Width_valid: width /= Void
+	Interval_start_time_valid: interval_start_time /= Void
+	Math_function_validity: terminology("openehr").
+		codes_for_group_name("event math function", "en").has(math_function.defining_code)
+		
 end
 
 

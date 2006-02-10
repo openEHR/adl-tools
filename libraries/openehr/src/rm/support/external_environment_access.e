@@ -16,6 +16,11 @@ indexing
 class EXTERNAL_ENVIRONMENT_ACCESS
 
 inherit
+	OPENEHR_TERMINOLOGY_IDS
+		export
+			{NONE} all
+		end
+		
 	TERMINOLOGY_SERVICE
 		export
 			{NONE} all

@@ -39,7 +39,7 @@ feature -- Definitions
 
 feature -- Access
 	
-	composer: PARTY_REF
+	composer: PARTY_PROXY
 			-- Person or agent primarily responsible for the content of the Composition
 
 	content: LIST [CONTENT_ITEM]
@@ -82,10 +82,6 @@ feature -- Status Report
 			
 		end
 		
-	version_id: STRING is
-		do
-		end
-
 	valid_path (a_path: STRING): BOOLEAN is
 			-- True if the path is valid with respect to the current item.
 		do
@@ -99,16 +95,13 @@ feature {NONE} -- Implementation
 			-- the idea recorded in the term
 
 invariant
-	Uid_exists: uid /= Void
-	composer_exists: composer /= Void
-	content_valid: content /= Void implies not content.is_empty
-	Category_validity: category /= Void and then terminology("openehr").codes_for_group_name("composition category", "en").has(category.defining_code)
+	Archetype_root_point: is_archetype_root
+	Composer_exists: composer /= Void
+	Content_valid: content /= Void implies not content.is_empty
+	Category_validity: category /= Void and then terminology("openehr").
+		codes_for_group_name("composition category", "en").has(category.defining_code)
 	Is_persistent_validity: is_persistent implies context = Void
-	Name_value: not is_persistent implies name.value.is_equal(context.health_care_facility.as_string + 
-		context.start_time.as_string)
-	version_id_validity: version_id /= Void and then not version_id.is_empty	
-	archetype_root_point: is_archetype_root
-	territory_valid: territory /= Void and then code_set("countries").has(territory)
+	Territory_valid: territory /= Void and then code_set("countries").has(territory)
 	No_parent: parent = Void
 
 end

@@ -31,7 +31,7 @@ feature -- Access
 			create {TC_LINK} tc.make(Void) 					Result.extend(tc)
 			create {TC_ARCHETYPED} tc.make(Void) 			Result.extend(tc)
 			create {TC_FEEDER_AUDIT} tc.make(Void) 			Result.extend(tc)
-			create {TC_FEEDER_AUDIT_DETALS} tc.make(Void) 	Result.extend(tc)
+			create {TC_FEEDER_AUDIT_DETAILS} tc.make(Void) 	Result.extend(tc)
 		end
 
 	title:STRING is "Archetyped package tests"

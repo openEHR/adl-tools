@@ -26,7 +26,7 @@ inherit
 
 feature -- Access
 
-	roles: SET[ROLE]
+	roles: SET[PARTY_REF]
 			-- Roles played by this party.
 
 	languages: SET[DV_TEXT]	

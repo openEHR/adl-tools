@@ -27,7 +27,7 @@ feature -- Access
 			-- is via online interrogation of the global ehr_node domain repository that the HCF identification
 			-- of a node can be discovered.
 
-	ehr_id: OBJECT_ID
+	ehr_id: HIER_OBJECT_ID
 			-- The identifier of this EHR - this is an immutable Id and is not
 			-- related to the id of the patient
 
@@ -43,7 +43,7 @@ feature -- Access
 	directory: OBJECT_REF
 			-- Optional directory structure for this EHR.
 
-	all_compositions: LINKED_LIST [OBJECT_REF]	
+	compositions: LINKED_LIST [OBJECT_REF]	
 			-- Master list of all transaction references in this EHR
 
 feature -- Status Setting
@@ -59,7 +59,7 @@ invariant
 	Ehr_id_exists: ehr_id /= Void
 	Time_created_exists: time_created /= Void
 	Contributions_valid: contributions /= Void -- and then contributions.for_all(agent {OBJECT_REF}.type.is_equal("CONTRIBUTION") end)
-	All_compositions_valid: all_compositions /= Void -- and then all_compositions.for_all(agent {OBJECT_REF}.type.is_equal("VERSIONED_COMPOSITION"))
+	Compositions_valid: compositions /= Void -- and then compositions.for_all(agent {OBJECT_REF}.type.is_equal("VERSIONED_COMPOSITION"))
 	Directory_valid: directory /= Void implies directory.type.is_equal("VERSIONED_FOLDER")
 
 end

@@ -34,13 +34,9 @@ feature -- Status Report
 		
 invariant
 	Owner_id_valid: owner_id.type.is_equal("EHR")
-	-- Meaning_valid: all_versions.for_all ({VERSION[COMPOSITION]}.data.meaning = all_versions.first.data.meaning)
-	-- Persistent_valid: all_versions.for_all ({VERSION[COMPOSITION]}.data.is_persistent = all_versions.first.data.is_persistent)
-
-	-- name_value: not is_persistent implies name.value.is_equal(meaning.value + "(" + 
-	--	version_with_id(First_version_parent_pseudo_id).audit.committer.as_display_string + "@" + 
-	--	version_with_id(First_version_parent_pseudo_id).audit.node + ")")
-
+	-- Archetype_node_id_valid: all_versions.for_all ((c:COMPOSITION) c.archetype_node_id.is_equal(all_versions.first.archetype_node_id))
+	-- Persistent_valid: all_versions.for_all ((c:COMPOSITION) c.is_persistent = all_versions.first.data.is_persistent)
+	
 end
 
 

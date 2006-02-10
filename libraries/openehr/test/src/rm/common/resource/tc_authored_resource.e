@@ -1,70 +1,52 @@
 indexing
-	component:   "openEHR Data Structures Reference Model"
-	
-	description: "[
-	              An event in an event series.
-			  ]"
-	keywords:    "content, temporal, data structure"
+	component:   "openEHR Common Information Model"
 
-	requirements:"ISO 18308 TS V1.0 ???"
-	design:      "openEHR Data Structures Reference Model 1.2.1"
+	description: "Test AUTHORED_RESOURCE class"
+	keywords:    "test, resource"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2006 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
-
+	
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-deferred class EVENT [G -> ITEM_STRUCTURE]
+class TC_AUTHORED_RESOURCE
 
 inherit
-	LOCATABLE
+	TEST_CASE
+		redefine 
+			check_result
+		end
+
+creation
+	make
 
 feature -- Access
 
-	data: G
-			-- the data of this event
+	title: STRING is "TC_AUTHORED_RESOURCE"
 
-	time: DV_DATE_TIME
-			-- time point at the end of this event
 
-	offset: DV_DURATION is
-			-- offset of this sample from the origin of the history
-		do
-			Result := time - parent.origin
-		end
-		
-	state: ITEM_STRUCTURE
-			-- data representing the state of the observed entity, which is relevant
-			-- to the interpretation of the data
+feature -- Initialisation
 
-	path_of_item (a_loc: LOCATABLE): STRING is
-			-- The path to an item relative to the root of this archetyped structure.
+	make(arg:ANY) is
 		do
 		end
 
-	item_at_path (a_path: STRING): LOCATABLE is
-			-- The item at a path (relative to this item).
+	execute is
+		local
+			v: AUTHORED_RESOURCE
 		do
+			
 		end
 
-	parent: HISTORY[G]
-			-- parent node of this node in compositional structure
+feature -- Access
 
-feature -- Status Report
-
-	valid_path (a_path: STRING): BOOLEAN is
-			-- True if the path is valid with respect to the current item.
+	check_result is
 		do
 		end
-
-invariant
-	Data_exists: data /= Void	
-	Time_exists: time /= Void	
-	Offset_validity: offset /= Void and then offset = time - parent.origin
 
 end
 
@@ -83,7 +65,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is event.e.
+--| The Original Code is tc_versioned.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

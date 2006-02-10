@@ -108,6 +108,8 @@ feature -- Template
 
 			Result.extend(create {TS_COMMON_CHANGE_CONTROL}.make(Void))
 			Result.extend(create {TS_COMMON_GENERIC}.make(Void))
+			Result.extend(create {TS_COMMON_ARCHETYPED}.make(Void))
+			Result.extend(create {TS_COMMON_RESOURCE}.make(Void))
 
 			Result.extend(create {TS_DEMO_PARTY}.make(Void))
 
