@@ -480,14 +480,14 @@ feature -- Modification
 		require
 			Code_phrase_exists: a_code_phrase /= Void
 			Local_code_valid: a_term_code /= Void and then has_term_code(a_term_code)
-			Not_already_added: not has_term_binding(a_code_phrase.terminology_id.as_string, a_term_code)
+			Not_already_added: not has_term_binding(a_code_phrase.terminology_id.value, a_term_code)
 		do
-			if not terminologies_available.has(a_code_phrase.terminology_id.as_string) then
-				add_binding_terminology(a_code_phrase.terminology_id.as_string)		
+			if not terminologies_available.has(a_code_phrase.terminology_id.value) then
+				add_binding_terminology(a_code_phrase.terminology_id.value)		
 			end
-			term_bindings.item(a_code_phrase.terminology_id.as_string).put(a_code_phrase, a_term_code)
+			term_bindings.item(a_code_phrase.terminology_id.value).put(a_code_phrase, a_term_code)
 		ensure
-			Binding_added: has_term_binding(a_code_phrase.terminology_id.as_string, a_term_code)
+			Binding_added: has_term_binding(a_code_phrase.terminology_id.value, a_term_code)
 		end
 		
 	replace_term_binding(a_code_phrase: CODE_PHRASE; a_term_code: STRING) is
@@ -495,12 +495,12 @@ feature -- Modification
 		require
 			Code_phrase_exists: a_code_phrase /= Void
 			Local_code_valid: a_term_code /= Void and then has_term_code(a_term_code)
-			Terminology_valid: terminologies_available.has(a_code_phrase.terminology_id.as_string)
-			Already_added: has_term_binding(a_code_phrase.terminology_id.as_string, a_term_code)
+			Terminology_valid: terminologies_available.has(a_code_phrase.terminology_id.value)
+			Already_added: has_term_binding(a_code_phrase.terminology_id.value, a_term_code)
 		do
-			term_bindings.item(a_code_phrase.terminology_id.as_string).replace(a_code_phrase, a_term_code)
+			term_bindings.item(a_code_phrase.terminology_id.value).replace(a_code_phrase, a_term_code)
 		ensure
-			Binding_added: has_term_binding(a_code_phrase.terminology_id.as_string, a_term_code)
+			Binding_added: has_term_binding(a_code_phrase.terminology_id.value, a_term_code)
 		end
 		
 	remove_term_binding(a_term_code, a_terminology: STRING) is

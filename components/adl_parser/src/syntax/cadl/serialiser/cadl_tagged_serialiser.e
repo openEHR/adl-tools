@@ -332,7 +332,7 @@ feature -- Modification
 				last_object_simple := True
 				
 			elseif a_node.code_count > 1 then
-				last_result.append(create_indent(depth) + clean("[" + a_node.terminology_id.as_string + 
+				last_result.append(create_indent(depth) + clean("[" + a_node.terminology_id.value + 
 					a_node.separator) + format_item(FMT_NEWLINE))
 				from
 					a_node.code_list.start

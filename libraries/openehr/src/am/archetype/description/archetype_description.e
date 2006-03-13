@@ -105,7 +105,7 @@ feature -- Modification
 			Key_valid: a_key /= Void and then not a_key.is_empty
 			Value_valid: a_value /= Void and then not a_value.is_empty
 		do
-			original_author.put(a_value, a_key)
+			original_author.force(a_value, a_key)
 		ensure
 			Original_author_set: original_author.item(a_key) = a_value
 		end

@@ -225,7 +225,7 @@ feature {NONE} -- Implementation
 
 			elseif a_type.is_equal("C_CODED_TERM") then
 				a_object_term ?= an_og_node.content_item
-				s.append(a_object_term.terminology_id.as_string)
+				s.append(a_object_term.terminology_id.value)
 				a_ti := attach_node(s, pixmaps.item("C_CODED_TERM"), an_og_node)			
 				from
 					a_object_term.code_list.start

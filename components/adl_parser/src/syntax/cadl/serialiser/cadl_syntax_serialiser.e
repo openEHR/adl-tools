@@ -268,7 +268,7 @@ feature -- Modification
 				
 			elseif a_node.code_count > 1 then
 				last_result.append(create_indent(depth) + apply_style(clean("[" + 
-					a_node.terminology_id.as_string + a_node.separator), STYLE_TERM_REF) + 
+					a_node.terminology_id.value + a_node.separator), STYLE_TERM_REF) + 
 					format_item(FMT_NEWLINE))
 				from
 					a_node.code_list.start

@@ -105,7 +105,7 @@ invariant
 	Value_validity: value > 0
 	Symbol_valid: symbol /= Void
 	Limits_valid: limits /= Void and then limits.meaning.value.is_equal("limits")
-	Reference_range_valid: reference_ranges /= Void and then reference_ranges.has(limits)
+	Reference_range_valid: other_reference_ranges /= Void and then other_reference_ranges.has(limits)
 	
 end
 

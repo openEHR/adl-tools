@@ -23,7 +23,7 @@ inherit
 			default_create, is_equal, infix "<"
 		end
 
-	DATE_TIME_CONSTANTS
+	ISO8601_ROUTINES
 		export
 			{NONE} all
 		undefine
@@ -68,8 +68,8 @@ feature -- Initialization
 		end
 
 	make_from_string (str: STRING) is
-			-- make from string using specified format
-			-- hh:mm:ss[.sss][Z|+zzzz]
+			-- make from string using ISO8601 format
+			-- hh:mm:ss[,sss][Z|+zzzz]
 		local
 			l_time_string, l_tz_string: STRING
 		do
@@ -101,6 +101,9 @@ feature -- Status Report
 
 feature -- Access
 
+	value: STRING
+			-- ISO8601 string for Date
+			
 	magnitude: DOUBLE_REF is
 			-- numeric value of the quantity
 		do
@@ -202,7 +205,8 @@ feature {DV_TIME, DV_DATE_TIME} -- Implementation
 	impl: TIME
 	
 invariant
-	is_valid: is_valid_time(hour, minute, second)
+	Syntax_validity: is_valid_iso8601_time(value)
+	Semantic_validity: is_valid_time(hour, minute, second)
 	
 end
 

@@ -39,9 +39,9 @@ feature -- Access
 	attestations: LIST [ATTESTATION]	
 			-- Set of attestations relating to this version.
 
-	commit_audit: AUDIT_DETAILS
+	create_audit: AUDIT_DETAILS
 			-- Audit trail corresponding to the committal of this version to the 
-			-- VERSION_REPOSITORY where it is currently located.
+			-- VERSION_REPOSITORY where it was first created..
 
 	contribution: OBJECT_REF
 			-- Contribution in which this version was added.
@@ -54,12 +54,11 @@ feature -- Access
 		do
 		end
 
-	create_audit: AUDIT_DETAILS	is 
-			-- Audit trail corresponding to the committal of this version when the 
-			-- content was created. If it was created locally, then the result is the 
-			-- value of commit_audit, else it is the value of original_create_audit.
+	commit_audit: AUDIT_DETAILS	is 
+			-- Audit trail corresponding to the local committal of this version. 
+			-- In instances of this class, the result = create_audit..
 		do
-			Result := commit_audit
+			Result := create_audit
 		end
 
 feature -- Status Report
@@ -74,8 +73,7 @@ invariant
 	Owner_id_valid: owner_id /= Void and then owner_id.value.is_equal(uid.object_id.value)
 	Lifecycle_state_valid: lifecycle_state /= Void and then 
 		terminology("openehr").codes_for_group_name("version lifecycle state", "en").has(lifecycle_state.defining_code)
-	Create_audit_valid: create_audit /= Void and create_audit = commit_audit
-	Commit_audit_valid: commit_audit /= Void
+	Create_audit_valid: create_audit /= Void
 	Attestations_valid: attestations /= Void implies not attestations.is_empty
 	Contribution_valid: contribution /= Void
 	Data_valid: data /= Void	

@@ -32,27 +32,10 @@ inherit
 
 feature -- Access
 
-	reference_ranges: LINKED_LIST[REFERENCE_RANGE[like Current]]
+	other_reference_ranges: LINKED_LIST[REFERENCE_RANGE[like Current]]
 			-- optional tagged ranges for this value in its particular measurement context
 
-	normal_range: REFERENCE_RANGE[like Current] is
-			-- optionally specify which of the reference ranges is to be considered the normal range
-		require
-			reference_ranges /= Void
-		do
-			from
-				reference_ranges.start
-			until
-				reference_ranges.off or Result /= Void
-			loop
-				if reference_ranges.item.meaning.value.is_equal("normal") then
-					Result := reference_ranges.item
-				end
-				reference_ranges.forth
-			end
-		ensure
-			Result /= Void implies reference_ranges.has(Result) and then Result.meaning.value.is_equal("normal")
-		end
+	normal_range: DV_INTERVAL[like Current]
 
 feature -- Comparison
 
@@ -67,12 +50,12 @@ feature -- Status Report
 	is_simple: BOOLEAN is
 			-- simple DV_ORDERED objects have no reference ranges or accuracy
 		do
-			Result := reference_ranges = Void
+			Result := normal_range = Void and other_reference_ranges = Void
 		end
 
 	has_normal_range: BOOLEAN is
 		do
-			Result := reference_ranges /= Void and then normal_range /= Void
+			Result := normal_range /= Void
 		end
 
 	is_normal: BOOLEAN is
@@ -81,26 +64,26 @@ feature -- Status Report
 			has_normal_range
 		do
 			Result := normal_range.has(Current)
+		ensure
+			Result = normal_range.has(Current)			
 		end
 		
 feature -- Modification
 
-	add_reference_range(a_rr:REFERENCE_RANGE[like Current]) is
+	add_other_reference_range(a_rr:REFERENCE_RANGE[like Current]) is
 			-- add a new reference range
 		require
 			Range_exists: a_rr /= Void
 		do
-			if reference_ranges = Void then
-				create reference_ranges.make
+			if other_reference_ranges = Void then
+				create other_reference_ranges.make
 			end
-			reference_ranges.extend(a_rr)
+			other_reference_ranges.extend(a_rr)
 		end
 		
 invariant
-
-	Is_simple_validity: reference_ranges = Void implies is_simple
-	Reference_range_validity: reference_ranges /= Void implies not reference_ranges.is_empty
-	Normal_range_validity: has_normal_range implies (reference_ranges /= Void and then reference_ranges.has(normal_range))
+	Other_reference_range_validity: other_reference_ranges /= Void implies not other_reference_ranges.is_empty
+	Is_simple_validity: (normal_range = Void and other_reference_ranges = Void) implies is_simple
 
 end
 

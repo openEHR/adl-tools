@@ -21,25 +21,24 @@ class IMPORTED_VERSION [G]
 inherit
 	VERSION [G]
 		redefine
-			create_audit
+			commit_audit
 		end
 
 feature -- Access
 
-	original_create_audit: AUDIT_DETAILS
-			-- Audit trail corresponding to the creation and first-time committal 
-			-- of this version to the VERSION_REPOSITORY where it was first located.
+	local_commit_audit: AUDIT_DETAILS
+			-- Audit trail corresponding to the committal of this version to the 
+			-- local VERSION_REPOSITORY where it is currently located. 
 
-	create_audit: AUDIT_DETAILS is
-			-- Audit trail corresponding to the committal of this version when the 
-			-- content was created. Result is the value of original_create_audit.
+	commit_audit: AUDIT_DETAILS is
+			-- Audit trail corresponding to the local committal of this version. 
+			-- Result = local_commit_audit.
 		do
-			Result := original_create_audit
+			Result := local_commit_audit
 		end
 
 invariant
-	Original_create_audit_validity: original_create_audit /= Void
-	Create_audit_valid: create_audit /= Void and create_audit = original_create_audit	
+	Original_create_audit_validity: local_commit_audit /= Void
 	
 end
 

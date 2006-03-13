@@ -25,7 +25,7 @@ inherit
 
 feature -- Access
 
-	instruction_id: OBJECT_VERSION_ID
+	instruction_id: LOCATABLE_REF
 			-- id of Instruction
 
 	activity_id: STRING
