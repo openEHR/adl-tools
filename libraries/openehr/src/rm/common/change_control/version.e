@@ -29,7 +29,7 @@ feature -- Access
 			-- Unique identifier of this version, containing owner_id, version_tree_id and 
 			-- creating_system_id.
 
-	preceding_version_id: OBJECT_VERSION_ID	
+	preceding_version_uid: OBJECT_VERSION_ID	
 			-- Unique identifier of the version of which this version is a modification; 
 			-- Void if this is the first version.
 	
@@ -76,6 +76,7 @@ invariant
 	Create_audit_valid: create_audit /= Void
 	Attestations_valid: attestations /= Void implies not attestations.is_empty
 	Contribution_valid: contribution /= Void
+	Preceding_version_uid_validity: uid.version_tree_id.is_first xor preceding_version_uid /= Void
 	Data_valid: data /= Void	
 	
 end

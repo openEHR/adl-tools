@@ -24,6 +24,10 @@ class VERSION_TREE_ID
 feature -- Access
 
 	value: STRING
+			-- numeric decimal style identifier, must be in either the 
+			-- form of a single integer, e.g "5", or else for a branch,
+			-- in the form "1.2.3", i.e. with 2 decimal points and only
+			-- integers in all slots
 	
 	trunk_version: STRING is
 			-- Trunk version number.
@@ -31,28 +35,53 @@ feature -- Access
 		end
 
 	branch_number: STRING is
-			-- Number of branch from the trunk point.
+			-- Number of branch from the trunk point; empty if not a branch
+		local
+			decpoint1_pos, decpoint2_pos: INTEGER
 		do
+			decpoint1_pos := value.index_of (Separator, 1)
+			if decpoint1_pos > 0 then
+				decpoint2_pos := value.index_of (Separator, decpoint1_pos+1)
+				Result := value.substring(decpoint1_pos+1, decpoint2_pos-1)
+			end
 		end
 
 	branch_version: STRING is
 			-- Version of the branch.
+		local
+			decpoint1_pos, decpoint2_pos: INTEGER
 		do
+			decpoint1_pos := value.index_of (Separator, 1)
+			if decpoint1_pos > 0 then
+				decpoint2_pos := value.index_of (Separator, decpoint1_pos+1)
+				Result := value.substring(decpoint2_pos+1, value.count)
+			end
 		end
 
+feature -- Status Report
+
+	is_first: BOOLEAN is
+			-- True if this version is a first version - i.e. trunk_version = 1 and
+			-- not is_branch
+		do
+			Result := trunk_version.to_integer = 1 and not is_branch
+		end
+		
 	is_branch: BOOLEAN is
 			-- True if this version identifier represents a branch, 
 			-- i.e. has branch_number and branch_version parts.
 		do
+			Result := value.index_of (Separator, 1) = 0
 		end
 
 invariant
 	Value_valid: value /= Void and then not value.is_empty
 	Trunk_version_valid: trunk_version /= Void and then trunk_version.is_integer
-	Branch_number_valid: branch_number /= Void and then branch_number.is_integer
-	Branch_version_valid: branch_version /= Void and then branch_version.is_integer
+	Branch_number_valid: branch_number /= Void implies branch_number.is_integer
+	Branch_version_valid: branch_version /= Void implies branch_version.is_integer
 	Branch_validity: (branch_number = Void and branch_version = Void ) xor (branch_number /= Void and branch_version /= Void )
-	Is_branch_validity: is_branch xor branch_version = Void	
+	Is_branch_validity: is_branch xor branch_number = Void
+	Is_first_validity: not is_first xor trunk_version.is_equal("1")
 
 end
 
