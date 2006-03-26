@@ -77,7 +77,7 @@ feature -- Access
 		require
 			a_path_valid: a_path /= Void and then has_path(a_path)
 		do
-			Result ?= representation.node_at_path (create {OG_PATH}.make_from_string(a_path)).content_item
+			Result ?= representation.attribute_node_at_path (create {OG_PATH}.make_from_string(a_path)).content_item
 		end
 		
 	c_object_at_path(a_path: STRING): C_OBJECT is
