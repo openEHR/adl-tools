@@ -164,8 +164,8 @@ feature {OG_OBJECT_NODE} -- Implementation
 					Result := True
 				end
 				a_path.back
-			else
-				Result := a_path.is_last and has_child_node(a_path.last.attr_name)
+			else -- if it's the last segment, it could be valid as an attribute name, only if no object_id
+				Result := a_path.is_last and not a_path.last.is_addressable and has_child_node(a_path.last.attr_name)
 			end
 		end
 		
