@@ -22,15 +22,16 @@ create
 
 feature -- Initialisation
 
-	make(a_target: C_COMPLEX_OBJECT; format: STRING) is 
+	make(a_target: C_COMPLEX_OBJECT; format: STRING; an_ontology: ARCHETYPE_ONTOLOGY) is 
 			-- create a new manager targetted to the parse tree `a_target'
 		require
 			Target_exists: a_target /= Void
 			Format_valid: format /= Void and then has_c_serialiser_format(format)
+			Ontology_valid: an_ontology /= Void
 		do
 			set_target(a_target)
 			serialiser := c_serialiser_for_format(format)
-			serialiser.initialise
+			serialiser.initialise(an_ontology)
 		end
 
 feature -- Command

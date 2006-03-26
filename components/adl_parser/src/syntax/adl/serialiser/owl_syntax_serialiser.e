@@ -25,7 +25,6 @@ feature -- Serialisation
 		do
 			target := a_target
 			
-			initialise
 			serialise_initialise
 			serialise_archetype_id
 			serialise_archetype_specialise

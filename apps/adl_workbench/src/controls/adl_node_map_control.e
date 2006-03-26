@@ -717,6 +717,7 @@ feature {NONE} -- Implementation
 		local
 			a_ti_sub, a_ti_sub2: EV_TREE_ITEM
 			invariants: ARRAYED_LIST[ASSERTION]
+			s: STRING
 		do
 			if adl_engine.archetype.has_invariants then
 				invariants := adl_engine.archetype.invariants
@@ -729,8 +730,12 @@ feature {NONE} -- Implementation
 				until
 					invariants.off
 				loop
-					create a_ti_sub2.make_with_text(invariants.item.tag + ": " + 
-						object_invariant_string(invariants.item))
+					create s.make(0)
+					if invariants.item.tag /= Void then
+						s.append (invariants.item.tag + ": ")
+					end
+					s.append(object_invariant_string(invariants.item))
+					create a_ti_sub2.make_with_text(s)
 					a_ti_sub2.set_pixmap(pixmaps.item("CADL_INVARIANT_ITEM"))
 					a_ti_sub2.set_data(invariants.item)
 					a_ti_sub.extend(a_ti_sub2)

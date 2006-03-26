@@ -98,7 +98,6 @@ feature -- Commands
 				"UNKNOWN", "draft"), a_primary_language)
 			set_language(archetype.ontology.primary_language)
 			archetype_id := archetype.archetype_id
-			set_current_archetype(archetype)
 		ensure
 			Archetype_available: archetype_available and archetype.is_valid
 		end
@@ -215,7 +214,6 @@ feature -- Commands
 							    if not archetype.is_valid then
 								    parse_error_text := archetype.errors		
 							    end
-				    			set_current_archetype(archetype)
 							end
 						end
 					end
@@ -231,7 +229,7 @@ feature -- Commands
 		do
 			synchronise_from_archetype
 			description_context.serialise(a_format)
-			definition_context.serialise(a_format)
+			definition_context.serialise(a_format, ontology)
 			
 			if archetype.has_invariants then
 				invariant_context.serialise(a_format)			
@@ -239,7 +237,7 @@ feature -- Commands
 			
 			ontology_context.serialise(a_format)
 			
-			create serialiser_mgr.make(archetype, a_format)
+			create serialiser_mgr.make(archetype, a_format, ontology)
 			serialiser_mgr.serialise(description_context.serialised, 
 					definition_context.serialised, 
 					invariant_context.serialised,

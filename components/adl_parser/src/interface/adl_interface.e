@@ -106,9 +106,6 @@ feature -- Access
 		
 	status: STRING
 			-- status of last operation
-
-	editor_command: STRING
-			-- command to launch when edit button pushed
 			
 	serialised_archetype: STRING is
 			-- archetype in serialised form, after call to serialise_archetype

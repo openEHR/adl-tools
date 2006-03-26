@@ -28,12 +28,6 @@ feature -- Access
 		do
 			Result := cell_terminology.item
 		end
-		
-	current_archetype: ARCHETYPE is
-			-- currently edited archetype
-		do
-			Result := cell_current_archetype.item
-		end		
 
 feature -- Modification
 	
@@ -52,15 +46,7 @@ feature -- Modification
 		do
 			cell_terminology.put(a_terminology)
 		end
-	
-	set_current_archetype(an_archetype: ARCHETYPE) is
-			-- set `current_archetype'
-		require
-			an_archetype /= Void
-		do
-			cell_current_archetype.put(an_archetype)
-		end
-			
+				
 	clear_terminology is
 			-- set `terminology' to nothing, for archetypes with no bindings
 		do
@@ -77,12 +63,6 @@ feature {NONE} -- Implementation
 			
 	cell_terminology: CELL[STRING] is
 			-- terminology to bind to
-		once
-			create Result.put(Void)
-		end
-
-	cell_current_archetype: CELL[ARCHETYPE] is
-			-- 
 		once
 			create Result.put(Void)
 		end

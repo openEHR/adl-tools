@@ -79,7 +79,7 @@ feature -- Modification
 			-- output text of node id
 			if a_node.is_addressable then
 				last_result.append(create_indent(depth+1) + xml_tag_enclose(tag(TAG_TEXT), 
-					current_archetype.ontology.term_definition(language, a_node.node_id).item("text"), Void) + format_item(FMT_NEWLINE))
+					ontology.term_definition(language, a_node.node_id).item("text"), Void) + format_item(FMT_NEWLINE))
 			end
 		end
 		
@@ -133,7 +133,7 @@ feature -- Modification
 			-- output text of node id
 			if a_node.is_addressable then
 				last_result.append(create_indent(depth+1) + xml_tag_enclose(tag(TAG_TEXT), 
-					current_archetype.ontology.term_definition(language, a_node.node_id).item("text"), Void) + format_item(FMT_NEWLINE))
+					ontology.term_definition(language, a_node.node_id).item("text"), Void) + format_item(FMT_NEWLINE))
 			end
 
 			-- output includes and excludes
@@ -236,21 +236,21 @@ feature -- Modification
 			last_result.append(clean(a_node.as_string))
 			create last_object_simple_buffer.make(0)
 			last_object_simple_buffer.append(xml_tag_enclose("text",  
-				current_archetype.ontology.constraint_definition(language, a_node.target).item("text"), Void))
+				ontology.constraint_definition(language, a_node.target).item("text"), Void))
 			from
-				current_archetype.ontology.terminologies_available.start
+				ontology.terminologies_available.start
 			until
-				current_archetype.ontology.terminologies_available.off							
+				ontology.terminologies_available.off							
 			loop
 				if
-					current_archetype.ontology.has_constraint_binding(current_archetype.ontology.terminologies_available.item, a_node.target) then
+					ontology.has_constraint_binding(ontology.terminologies_available.item, a_node.target) then
 					create attrs.make(0)
-					attrs.put(current_archetype.ontology.terminologies_available.item, "terminology")
+					attrs.put(ontology.terminologies_available.item, "terminology")
 					last_object_simple_buffer.append(format_item(FMT_NEWLINE) + create_indent(depth-1) + 
 						xml_tag_enclose("binding",
-						current_archetype.ontology.constraint_binding(current_archetype.ontology.terminologies_available.item, a_node.target), attrs))
+						ontology.constraint_binding(ontology.terminologies_available.item, a_node.target), attrs))
 				end
-				current_archetype.ontology.terminologies_available.forth							
+				ontology.terminologies_available.forth							
 			end
 			last_object_simple := True			
 		end
@@ -309,24 +309,24 @@ feature -- Modification
 				last_result.append(clean(a_node.as_string))
 				create last_object_simple_buffer.make(0)
 				if a_node.is_local and then a_node.code_count = 1 then
-					adl_term := current_archetype.ontology.term_definition(language, a_node.code_list.first)
+					adl_term := ontology.term_definition(language, a_node.code_list.first)
 					last_object_simple_buffer.append(xml_tag_enclose("text", 
 						adl_term.item("text"), Void))			
 					from
-						current_archetype.ontology.terminologies_available.start
+						ontology.terminologies_available.start
 					until
-						current_archetype.ontology.terminologies_available.off							
+						ontology.terminologies_available.off							
 					loop
 						if
-							current_archetype.ontology.has_term_binding(current_archetype.ontology.terminologies_available.item, adl_term.item("text")) then
+							ontology.has_term_binding(ontology.terminologies_available.item, adl_term.item("text")) then
 							create attrs.make(0)
-							attrs.put(current_archetype.ontology.terminologies_available.item, "terminology")
+							attrs.put(ontology.terminologies_available.item, "terminology")
 							last_object_simple_buffer.append(format_item(FMT_NEWLINE) + create_indent(depth-1) + 
 								xml_tag_enclose("binding",
-								current_archetype.ontology.term_binding(current_archetype.ontology.terminologies_available.item, adl_term.item("text")).code_string,
+								ontology.term_binding(ontology.terminologies_available.item, adl_term.item("text")).code_string,
 								attrs))
 						end
-						current_archetype.ontology.terminologies_available.forth							
+						ontology.terminologies_available.forth							
 					end		
 				end				
 				last_object_simple := True
@@ -346,7 +346,7 @@ feature -- Modification
 						last_result.append("]")
 					end
 					if a_node.is_local then
-						adl_term := current_archetype.ontology.term_definition(language, a_node.code_list.item)
+						adl_term := ontology.term_definition(language, a_node.code_list.item)
 						last_result.append(format_item(FMT_INDENT) + format_item(FMT_COMMENT) + adl_term.item("text"))			
 					end
 					last_result.append(format_item(FMT_NEWLINE))
@@ -372,7 +372,7 @@ feature -- Modification
 				create last_object_simple_buffer.make(0)
 				if a_node.is_local then
 					last_object_simple_buffer.append(format_item(FMT_INDENT))
-					adl_term := current_archetype.ontology.term_definition(language, a_node.items.first.symbol.code_string)
+					adl_term := ontology.term_definition(language, a_node.items.first.symbol.code_string)
 					last_object_simple_buffer.append(format_item(FMT_INDENT) + format_item(FMT_COMMENT) + adl_term.item("text"))			
 				end				
 				last_object_simple := True
@@ -390,7 +390,7 @@ feature -- Modification
 						last_result.append (create {STRING}.make_filled(' ', format_item(FMT_LIST_ITEM_SEPARATOR).count))
 					end
 					if a_node.is_local then
-						adl_term := current_archetype.ontology.term_definition(language, a_node.items.item.symbol.code_string)
+						adl_term := ontology.term_definition(language, a_node.items.item.symbol.code_string)
 						last_result.append(format_item(FMT_INDENT) + 
 							format_item(FMT_COMMENT) + 
 							adl_term.item("text"))			

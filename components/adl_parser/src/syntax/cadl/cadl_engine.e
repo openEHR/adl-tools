@@ -100,13 +100,14 @@ feature -- Commands
 			parse_succeeded or else tree = Void
 		end
 		
-	serialise(a_format: STRING) is
+	serialise(a_format: STRING; an_ontology: ARCHETYPE_ONTOLOGY) is
 			-- serialise current artifact into format
 		require
 			Format_valid: has_c_serialiser_format(a_format)
 			Archetype_valid: tree.is_valid
+			Ontology_valid: an_ontology /= Void
 		do
-			create serialiser_mgr.make(tree, a_format)
+			create serialiser_mgr.make(tree, a_format, an_ontology)
 			serialiser_mgr.serialise
 			serialised := serialiser_mgr.last_result
 		end

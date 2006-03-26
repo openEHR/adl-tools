@@ -68,7 +68,7 @@ feature -- Date/Time Routines
 			c_a_str: C_STRING
 		do
 			create c_a_str.make_by_pointer (a_str)
-			Result := constraint_model_factory.is_valid_iso8601_date_string(c_a_str.string)
+			Result := constraint_model_factory.is_valid_iso8601_date(c_a_str.string)
 		end
 
 	is_valid_iso8601_date_time_constraint_pattern (a_str: POINTER): BOOLEAN is
@@ -90,7 +90,7 @@ feature -- Date/Time Routines
 			c_a_str: C_STRING
 		do
 			create c_a_str.make_by_pointer (a_str)
-			Result := constraint_model_factory.is_valid_iso8601_date_time_string(c_a_str.string)
+			Result := constraint_model_factory.is_valid_iso8601_date_time(c_a_str.string)
 		end
 
 	is_valid_iso8601_duration_string (a_str: POINTER): BOOLEAN is
@@ -101,7 +101,7 @@ feature -- Date/Time Routines
 			c_a_str: C_STRING
 		do
 			create c_a_str.make_by_pointer (a_str)
-			Result := constraint_model_factory.is_valid_iso8601_duration_string(c_a_str.string)
+			Result := constraint_model_factory.is_valid_iso8601_duration(c_a_str.string)
 		end
 
 	is_valid_iso8601_time_constraint_pattern (a_str: POINTER): BOOLEAN is
@@ -124,7 +124,7 @@ feature -- Date/Time Routines
 			c_a_str: C_STRING
 		do
 			create c_a_str.make_by_pointer (a_str)
-			Result := constraint_model_factory.is_valid_iso8601_time_string(c_a_str.string)
+			Result := constraint_model_factory.is_valid_iso8601_time(c_a_str.string)
 		end
 
 feature -- Primitive Object Creation

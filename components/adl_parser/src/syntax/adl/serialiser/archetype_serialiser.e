@@ -15,10 +15,24 @@ deferred class ARCHETYPE_SERIALISER
 
 inherit
 	ANY_SERIALISER
+		rename
+			initialise as initialise_any_serialiser
+		end
 
 	SHARED_ARCHETYPE_CONTEXT
 		export
 			{NONE} all
+		end
+		
+feature -- Initialisation
+
+	initialise(an_ontology: ARCHETYPE_ONTOLOGY) is
+			-- set ontology required for serialising cADL, and perform basic initialisation
+		require
+			Ontology_valid: an_ontology /= Void
+		do
+			initialise_any_serialiser
+			ontology := an_ontology
 		end
 		
 feature -- Serialisation
@@ -55,6 +69,8 @@ feature -- Serialisation
 feature {NONE} -- Access
 
 	target: ARCHETYPE
+
+	ontology: ARCHETYPE_ONTOLOGY
 
 end
 

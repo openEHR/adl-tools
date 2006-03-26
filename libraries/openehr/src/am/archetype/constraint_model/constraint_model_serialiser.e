@@ -15,12 +15,26 @@ deferred class CONSTRAINT_MODEL_SERIALISER
 
 inherit
 	ANY_SERIALISER
+		rename
+			initialise as initialise_any_serialiser
+		end
 	
 	CONSTRAINT_MODEL_COMMON
 		export
 			{NONE} all
 		end
 
+feature -- Initialisation
+
+	initialise(an_ontology: ARCHETYPE_ONTOLOGY) is
+			-- set ontology required for serialising cADL, and perform basic initialisation
+		require
+			Ontology_valid: an_ontology /= Void
+		do
+			initialise_any_serialiser
+			ontology := an_ontology
+		end
+		
 feature -- Modification
 
 	start_c_complex_object(a_node: C_COMPLEX_OBJECT; depth: INTEGER) is
@@ -128,6 +142,10 @@ feature -- Modification
 		deferred
 		end
 
+feature {NONE} -- Implementation
+
+	ontology: ARCHETYPE_ONTOLOGY
+	
 end
 
 

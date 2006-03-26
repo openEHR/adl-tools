@@ -21,14 +21,16 @@ create
 
 feature -- Initialisation
 
-	make(a_target: ARCHETYPE; format: STRING) is 
+	make(a_target: ARCHETYPE; format: STRING; an_ontology: ARCHETYPE_ONTOLOGY) is 
 			-- create a new manager targetted to the ADL archetype 'a_target'
 		require
 			Target_exists: a_target /= Void
 			Format_valid: format /= Void and then has_archetype_serialiser_format(format)
+			Ontology_valid: an_ontology /= Void
 		do
 			target := a_target
 			serialiser := archetype_serialiser_for_format(format)
+			serialiser.initialise(an_ontology)
 		end
 
 feature -- Command

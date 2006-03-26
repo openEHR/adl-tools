@@ -22,13 +22,6 @@ inherit
 			default_create
 		end
 	
-	SHARED_ARCHETYPE_CONTEXT
-		export
-			{NONE} all
-		redefine
-			default_create
-		end
-	
 	ARCHETYPE_TERM_CODE_TOOLS
 		export
 			{NONE} all
