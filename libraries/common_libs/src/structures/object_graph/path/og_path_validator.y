@@ -43,6 +43,7 @@ creation
 %token SYM_MOVABLE_LEADER
 
 %type <OG_PATH_ITEM> path_segment -- call_path_segment
+%type <OG_PATH> absolute_path
 
 %%
 
@@ -82,16 +83,19 @@ absolute_path: '/' relative_path
 			debug("OG_PATH_parse")
 				io.put_string("....absolute_path; %N")
 			end
+			$$ := a_path
 		}
 	;
 
 relative_path: path_segment
 		{
 			create a_path.make_relative($1)
+			$$ := a_path
 		}
 	| relative_path '/' path_segment
 		{
 			a_path.append_segment($3)
+			$$ := a_path
 		}
 	;
 
@@ -110,15 +114,6 @@ path_segment: V_ATTRIBUTE_IDENTIFIER V_LOCAL_TERM_CODE_REF
 			end
 		}
 	;
-
--- call_path_segment: V_FEATURE_CALL_IDENTIFIER
---		{
---			create $$.make_feature_call($1)
---			debug("OG_PATH_parse")
---				io.put_string("...feature_call path_segment: " + $1)
---			end
---		}
---	;
 
 %%
 

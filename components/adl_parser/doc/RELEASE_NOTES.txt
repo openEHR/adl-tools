@@ -11,11 +11,38 @@ A propos
 
 Version
 -------
-	Last Change: $Date$
+	Last Change: $LastChangedDate$
 	
 
 Release history
 ---------------
+
+interim release Subversion 45 - 27/Mar/2006
+	All archetypes parse, save and reparse as expected except SOAP Headings.
+	The problem with the latter is that the Assertion grammar does not contain
+	absolute_path items; this will be fixed next release.
+
+	- enhancements: 
+		- now can have two archetypes in memory at once, due to getting rid 
+		  of current_archteype from SHARED_ARCHETYPE_CONTEXT object
+
+	- bug fixes:
+		- rewrote Assertion expression rules, removed 96 reduce/reduce conflicts
+		  in the cADL parser; 
+
+		- fixed minor bug in path testing where a path ending in attr[obj_id] 
+		  would match the OG structure when it should not
+
+
+interim subversion release 4 - 12 Oct 2005
+
+	- enhancements
+		- more efficient implementation of DT_OBJECT_CONVERTER, which 
+		  now checks far fewer types when comparing generic types
+
+	- bugfixes
+		- better structure of code with respect to use of 
+		  SHARED_ADL_INTERFACE, which slved .Net DLL crash problem.
 
 	++++++++++++++ move to subversion ++++++++++++++
 

@@ -179,8 +179,6 @@
 | <span class="rhs_variable"><a href="#c_string">c_string</a> </span></div>
 <div class="rhs">
 | <span class="rhs_variable"><a href="#c_boolean">c_boolean</a> </span></div>
-<div class="rhs">
-| <span class="token">error </span></div>
 </div>
 
 <div class="rule">
@@ -204,6 +202,8 @@
 <span class="lhs_variable" id="c_attribute">c_attribute</span>: </div>
 <div class="rhs">
 &nbsp; <span class="rhs_variable"><a href="#c_attr_head">c_attr_head</a> </span><span class="token">SYM_MATCHES </span><span class="token">SYM_START_CBLOCK </span><span class="rhs_variable"><a href="#c_attr_values">c_attr_values</a> </span><span class="token">SYM_END_CBLOCK </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_attr_head">c_attr_head</a> </span><span class="token">SYM_MATCHES </span><span class="token">SYM_START_CBLOCK </span><span class="token">error </span><span class="token">SYM_END_CBLOCK </span></div>
 </div>
 
 <div class="rule">
@@ -224,8 +224,6 @@
 | <span class="rhs_variable"><a href="#c_attr_values">c_attr_values</a> </span><span class="rhs_variable"><a href="#c_object">c_object</a> </span></div>
 <div class="rhs">
 | <span class="rhs_variable"><a href="#c_any">c_any</a> </span></div>
-<div class="rhs">
-| <span class="token">error </span></div>
 </div>
 
 <div class="rule">
@@ -270,68 +268,88 @@
 <div class="lhs">
 <span class="lhs_variable" id="Boolean_expression">Boolean_expression</span>: </div>
 <div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#Boolean_leaf">Boolean_leaf</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#Boolean_node">Boolean_node</a> </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="Boolean_node">Boolean_node</span>: </div>
+<div class="rhs">
 &nbsp; <span class="token">SYM_EXISTS </span><span class="rhs_variable"><a href="#absolute_path">absolute_path</a> </span></div>
 <div class="rhs">
 | <span class="token">SYM_EXISTS </span><span class="token">error </span></div>
 <div class="rhs">
-| <span class="literal_token">&#40; </span><span class="rhs_variable"><a href="#Boolean_expression">Boolean_expression</a> </span><span class="literal_token">&#41; </span></div>
-<div class="rhs">
 | <span class="token">V_ATTRIBUTE_IDENTIFIER </span><span class="token">SYM_MATCHES </span><span class="token">SYM_START_CBLOCK </span><span class="rhs_variable"><a href="#c_primitive">c_primitive</a> </span><span class="token">SYM_END_CBLOCK </span></div>
+<div class="rhs">
+| <span class="token">SYM_NOT </span><span class="rhs_variable"><a href="#Boolean_leaf">Boolean_leaf</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#Arithmetic_expression">Arithmetic_expression</a> </span><span class="literal_token">&#61; </span><span class="rhs_variable"><a href="#Arithmetic_leaf">Arithmetic_leaf</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#Arithmetic_expression">Arithmetic_expression</a> </span><span class="token">SYM_NE </span><span class="rhs_variable"><a href="#Arithmetic_leaf">Arithmetic_leaf</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#Arithmetic_expression">Arithmetic_expression</a> </span><span class="token">SYM_LT </span><span class="rhs_variable"><a href="#Arithmetic_leaf">Arithmetic_leaf</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#Arithmetic_expression">Arithmetic_expression</a> </span><span class="token">SYM_GT </span><span class="rhs_variable"><a href="#Arithmetic_leaf">Arithmetic_leaf</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#Arithmetic_expression">Arithmetic_expression</a> </span><span class="token">SYM_LE </span><span class="rhs_variable"><a href="#Arithmetic_leaf">Arithmetic_leaf</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#Arithmetic_expression">Arithmetic_expression</a> </span><span class="token">SYM_GE </span><span class="rhs_variable"><a href="#Arithmetic_leaf">Arithmetic_leaf</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#Boolean_expression">Boolean_expression</a> </span><span class="token">SYM_AND </span><span class="rhs_variable"><a href="#Boolean_leaf">Boolean_leaf</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#Boolean_expression">Boolean_expression</a> </span><span class="token">SYM_OR </span><span class="rhs_variable"><a href="#Boolean_leaf">Boolean_leaf</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#Boolean_expression">Boolean_expression</a> </span><span class="token">SYM_XOR </span><span class="rhs_variable"><a href="#Boolean_leaf">Boolean_leaf</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#Boolean_expression">Boolean_expression</a> </span><span class="token">SYM_IMPLIES </span><span class="rhs_variable"><a href="#Boolean_leaf">Boolean_leaf</a> </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="Boolean_leaf">Boolean_leaf</span>: </div>
+<div class="rhs">
+&nbsp; <span class="literal_token">&#40; </span><span class="rhs_variable"><a href="#Boolean_expression">Boolean_expression</a> </span><span class="literal_token">&#41; </span></div>
 <div class="rhs">
 | <span class="token">SYM_TRUE </span></div>
 <div class="rhs">
 | <span class="token">SYM_FALSE </span></div>
-<div class="rhs">
-| <span class="token">SYM_NOT </span><span class="rhs_variable"><a href="#Boolean_expression">Boolean_expression</a> </span></div>
-<div class="rhs">
-| <span class="rhs_variable"><a href="#Arithmetic_expression">Arithmetic_expression</a> </span><span class="literal_token">&#61; </span><span class="rhs_variable"><a href="#Arithmetic_expression">Arithmetic_expression</a> </span></div>
-<div class="rhs">
-| <span class="rhs_variable"><a href="#Arithmetic_expression">Arithmetic_expression</a> </span><span class="token">SYM_NE </span><span class="rhs_variable"><a href="#Arithmetic_expression">Arithmetic_expression</a> </span></div>
-<div class="rhs">
-| <span class="rhs_variable"><a href="#Arithmetic_expression">Arithmetic_expression</a> </span><span class="token">SYM_LT </span><span class="rhs_variable"><a href="#Arithmetic_expression">Arithmetic_expression</a> </span></div>
-<div class="rhs">
-| <span class="rhs_variable"><a href="#Arithmetic_expression">Arithmetic_expression</a> </span><span class="token">SYM_GT </span><span class="rhs_variable"><a href="#Arithmetic_expression">Arithmetic_expression</a> </span></div>
-<div class="rhs">
-| <span class="rhs_variable"><a href="#Arithmetic_expression">Arithmetic_expression</a> </span><span class="token">SYM_LE </span><span class="rhs_variable"><a href="#Arithmetic_expression">Arithmetic_expression</a> </span></div>
-<div class="rhs">
-| <span class="rhs_variable"><a href="#Arithmetic_expression">Arithmetic_expression</a> </span><span class="token">SYM_GE </span><span class="rhs_variable"><a href="#Arithmetic_expression">Arithmetic_expression</a> </span></div>
-<div class="rhs">
-| <span class="rhs_variable"><a href="#Boolean_expression">Boolean_expression</a> </span><span class="token">SYM_AND </span><span class="rhs_variable"><a href="#Boolean_expression">Boolean_expression</a> </span></div>
-<div class="rhs">
-| <span class="rhs_variable"><a href="#Boolean_expression">Boolean_expression</a> </span><span class="token">SYM_OR </span><span class="rhs_variable"><a href="#Boolean_expression">Boolean_expression</a> </span></div>
-<div class="rhs">
-| <span class="rhs_variable"><a href="#Boolean_expression">Boolean_expression</a> </span><span class="token">SYM_XOR </span><span class="rhs_variable"><a href="#Boolean_expression">Boolean_expression</a> </span></div>
-<div class="rhs">
-| <span class="rhs_variable"><a href="#Boolean_expression">Boolean_expression</a> </span><span class="token">SYM_IMPLIES </span><span class="rhs_variable"><a href="#Boolean_expression">Boolean_expression</a> </span></div>
 </div>
 
 <div class="rule">
 <div class="lhs">
 <span class="lhs_variable" id="Arithmetic_expression">Arithmetic_expression</span>: </div>
 <div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#Arithmetic_leaf">Arithmetic_leaf</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#Arithmetic_node">Arithmetic_node</a> </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="Arithmetic_node">Arithmetic_node</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#Arithmetic_expression">Arithmetic_expression</a> </span><span class="literal_token">&#43; </span><span class="rhs_variable"><a href="#Arithmetic_leaf">Arithmetic_leaf</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#Arithmetic_expression">Arithmetic_expression</a> </span><span class="literal_token">&#45; </span><span class="rhs_variable"><a href="#Arithmetic_leaf">Arithmetic_leaf</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#Arithmetic_expression">Arithmetic_expression</a> </span><span class="literal_token">&#42; </span><span class="rhs_variable"><a href="#Arithmetic_leaf">Arithmetic_leaf</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#Arithmetic_expression">Arithmetic_expression</a> </span><span class="literal_token">&#47; </span><span class="rhs_variable"><a href="#Arithmetic_leaf">Arithmetic_leaf</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#Arithmetic_expression">Arithmetic_expression</a> </span><span class="literal_token">&#94; </span><span class="rhs_variable"><a href="#Arithmetic_leaf">Arithmetic_leaf</a> </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="Arithmetic_leaf">Arithmetic_leaf</span>: </div>
+<div class="rhs">
 &nbsp; <span class="literal_token">&#40; </span><span class="rhs_variable"><a href="#Arithmetic_expression">Arithmetic_expression</a> </span><span class="literal_token">&#41; </span></div>
 <div class="rhs">
-| <span class="token">V_INTEGER </span></div>
+| <span class="rhs_variable"><a href="#integer_value">integer_value</a> </span></div>
 <div class="rhs">
-| <span class="token">V_REAL </span></div>
-<div class="rhs">
-| <span class="token">V_STRING </span></div>
-<div class="rhs">
-| <span class="token">V_CHARACTER </span></div>
-<div class="rhs">
-| <span class="literal_token">&#43; </span><span class="rhs_variable"><a href="#Arithmetic_expression">Arithmetic_expression</a> </span></div>
-<div class="rhs">
-| <span class="literal_token">&#45; </span><span class="rhs_variable"><a href="#Arithmetic_expression">Arithmetic_expression</a> </span></div>
-<div class="rhs">
-| <span class="rhs_variable"><a href="#Arithmetic_expression">Arithmetic_expression</a> </span><span class="literal_token">&#43; </span><span class="rhs_variable"><a href="#Arithmetic_expression">Arithmetic_expression</a> </span></div>
-<div class="rhs">
-| <span class="rhs_variable"><a href="#Arithmetic_expression">Arithmetic_expression</a> </span><span class="literal_token">&#45; </span><span class="rhs_variable"><a href="#Arithmetic_expression">Arithmetic_expression</a> </span></div>
-<div class="rhs">
-| <span class="rhs_variable"><a href="#Arithmetic_expression">Arithmetic_expression</a> </span><span class="literal_token">&#42; </span><span class="rhs_variable"><a href="#Arithmetic_expression">Arithmetic_expression</a> </span></div>
-<div class="rhs">
-| <span class="rhs_variable"><a href="#Arithmetic_expression">Arithmetic_expression</a> </span><span class="literal_token">&#47; </span><span class="rhs_variable"><a href="#Arithmetic_expression">Arithmetic_expression</a> </span></div>
-<div class="rhs">
-| <span class="rhs_variable"><a href="#Arithmetic_expression">Arithmetic_expression</a> </span><span class="literal_token">&#94; </span><span class="rhs_variable"><a href="#Arithmetic_expression">Arithmetic_expression</a> </span></div>
+| <span class="rhs_variable"><a href="#real_value">real_value</a> </span></div>
 </div>
 
 <div class="rule">
@@ -443,8 +461,6 @@
 | <span class="rhs_variable"><a href="#integer_list_value">integer_list_value</a> </span></div>
 <div class="rhs">
 | <span class="rhs_variable"><a href="#integer_interval_value">integer_interval_value</a> </span></div>
-<div class="rhs">
-| <span class="rhs_variable"><a href="#occurrence_spec">occurrence_spec</a> </span></div>
 </div>
 
 <div class="rule">

@@ -15,28 +15,12 @@ class ASSERTION_FACTORY
 
 feature -- Factory
 	
-	create_expr_leaf_feature_call(a_ref: STRING): EXPR_LEAF is
-			-- leaf node represents a feature call on Archetype object itself
-		require
-			ref_exists: a_ref /= Void and then not a_ref.is_empty
-		do
-			create Result.make_feature_call(a_ref)
-		end
-	
-	create_expr_leaf_attribute_ref(a_ref_path: STRING): EXPR_LEAF is
-			-- node refers to an attribute in the runtime data
-		require
-			ref_exists: a_ref_path /= Void and then not a_ref_path.is_empty
-		do
-			create Result.make_attribute_ref(create {OG_PATH}.make_from_string(a_ref_path))
-		end
-	
 	create_expr_leaf_object_ref(a_ref_path: STRING): EXPR_LEAF is
 			-- node refers to an object in the runtime data
 		require
 			ref_exists: a_ref_path /= Void and then not a_ref_path.is_empty
 		do
-			create Result.make_attribute_ref(create {OG_PATH}.make_from_string(a_ref_path))
+			create Result.make_object_ref(create {OG_PATH}.make_from_string(a_ref_path))
 		end
 	
 	create_expr_leaf_boolean(an_item: BOOLEAN): EXPR_LEAF is

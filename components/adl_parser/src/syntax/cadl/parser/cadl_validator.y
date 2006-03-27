@@ -99,8 +99,8 @@ creation
 %type <OE_INTERVAL[INTEGER]> c_occurrences c_existence
 %type <C_PRIMITIVE_OBJECT> c_primitive_object
 %type <C_PRIMITIVE> c_primitive
-%type <EXPR_ITEM> Boolean_expression
-%type <EXPR_ITEM> Arithmetic_expression
+%type <EXPR_ITEM> Boolean_expression Boolean_node Boolean_leaf
+%type <EXPR_ITEM> Arithmetic_expression Arithmetic_node Arithmetic_leaf
 %type <CARDINALITY> c_cardinality
 
 %type <INTEGER> integer_value
@@ -278,14 +278,14 @@ c_object: c_complex_object
 	| error		
 		{
 			raise_error
-			report_error("expecting a new node definition, 'use' path, or 'archetype' reference")
+			report_error("expecting a new node definition, primitive node definition, 'use' path, or 'archetype' reference")
 			abort
 		}
 	;
 
 archetype_internal_ref: SYM_USE_NODE V_TYPE_IDENTIFIER absolute_path 
 		{
-			str := a_path.as_string
+			str := $3.as_string
 			create archetype_internal_ref.make($2, str)
 
 			a_path := Void
@@ -423,12 +423,6 @@ c_primitive: c_integer
 			end
 			$$ := c_boolean
 		}
-	| error
-		{
-			raise_error
-			report_error("incorrect format for basic type")
-			abort
-		}
 	;
 
 c_any: '*' 
@@ -453,6 +447,12 @@ c_attribute: c_attr_head SYM_MATCHES SYM_START_CBLOCK c_attr_values SYM_END_CBLO
 				indent.remove_tail(1)
 			end
 			c_attrs.remove
+		}
+	| c_attr_head SYM_MATCHES SYM_START_CBLOCK error SYM_END_CBLOCK	
+		{
+			raise_error
+			report_error("expecting a 'any' node, 'leaf' node, or new node definition")
+			abort
 		}
 	;
 
@@ -517,12 +517,6 @@ c_attr_values: c_object
 			end
 			attr_node.set_any_allowed
 		}
-	| error		
-		{
-			raise_error
-			report_error("expecting a 'any' node, 'leaf' node, or new node definition")
-			abort
-		}
 	;
 
 
@@ -583,7 +577,17 @@ assertion: any_identifier ':' Boolean_expression
 
 ---------------------- expressions ---------------------
 
-Boolean_expression: SYM_EXISTS absolute_path
+Boolean_expression: Boolean_leaf
+		{
+			$$ := $1
+		}
+	| Boolean_node
+		{
+			$$ := $1
+		}
+	;
+
+Boolean_node: SYM_EXISTS absolute_path
 		{
 			debug("ADL_invariant")
 				io.put_string(indent + "Exists " + $2.as_string + "%N") 
@@ -600,16 +604,94 @@ Boolean_expression: SYM_EXISTS absolute_path
 			report_error("expecting absolute path")
 			abort
 		}
-	| '(' Boolean_expression ')'
-		{
-			$$ := $2
-		}
 	| V_ATTRIBUTE_IDENTIFIER SYM_MATCHES SYM_START_CBLOCK c_primitive SYM_END_CBLOCK
 		{
 			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_matches))
 			expr_binary_operator.set_left_operand(create {EXPR_LEAF}.make_feature_call($1))
 			expr_binary_operator.set_right_operand(create {EXPR_LEAF}.make_constraint($4))
 			$$ := expr_binary_operator
+		}
+	| SYM_NOT Boolean_leaf
+		{
+			create expr_unary_operator.make(create {OPERATOR_KIND}.make(op_not))
+			expr_unary_operator.set_operand($2)
+			$$ := expr_unary_operator
+		}
+	| Arithmetic_expression '=' Arithmetic_leaf
+		{
+			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_eq))
+			expr_binary_operator.set_left_operand($1)
+			expr_binary_operator.set_right_operand($3)
+			$$ := expr_binary_operator
+		}
+	| Arithmetic_expression SYM_NE Arithmetic_leaf
+		{
+			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_ne))
+			expr_binary_operator.set_left_operand($1)
+			expr_binary_operator.set_right_operand($3)
+			$$ := expr_binary_operator
+		}
+	| Arithmetic_expression SYM_LT Arithmetic_leaf
+		{
+			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_lt))
+			expr_binary_operator.set_left_operand($1)
+			expr_binary_operator.set_right_operand($3)
+			$$ := expr_binary_operator
+		}
+	| Arithmetic_expression SYM_GT Arithmetic_leaf
+		{
+			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_gt))
+			expr_binary_operator.set_left_operand($1)
+			expr_binary_operator.set_right_operand($3)
+			$$ := expr_binary_operator
+		}
+	| Arithmetic_expression SYM_LE Arithmetic_leaf
+		{
+			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_le))
+			expr_binary_operator.set_left_operand($1)
+			expr_binary_operator.set_right_operand($3)
+			$$ := expr_binary_operator
+		}
+	| Arithmetic_expression SYM_GE Arithmetic_leaf
+		{
+			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_ge))
+			expr_binary_operator.set_left_operand($1)
+			expr_binary_operator.set_right_operand($3)
+			$$ := expr_binary_operator
+		}
+	| Boolean_expression SYM_AND Boolean_leaf
+		{
+			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_and))
+			expr_binary_operator.set_left_operand($1)
+			expr_binary_operator.set_right_operand($3)
+			$$ := expr_binary_operator
+		}
+	| Boolean_expression SYM_OR Boolean_leaf
+		{
+			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_or))
+			expr_binary_operator.set_left_operand($1)
+			expr_binary_operator.set_right_operand($3)
+			$$ := expr_binary_operator
+		}
+	| Boolean_expression SYM_XOR Boolean_leaf
+		{
+			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_xor))
+			expr_binary_operator.set_left_operand($1)
+			expr_binary_operator.set_right_operand($3)
+			$$ := expr_binary_operator
+		}
+	| Boolean_expression SYM_IMPLIES Boolean_leaf
+		{
+			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_implies))
+			expr_binary_operator.set_left_operand($1)
+			expr_binary_operator.set_right_operand($3)
+			$$ := expr_binary_operator
+		}
+	;
+
+Boolean_leaf: '(' Boolean_expression ')'
+		{
+			$$ := $2
 		}
 	| SYM_TRUE
 		{
@@ -621,154 +703,68 @@ Boolean_expression: SYM_EXISTS absolute_path
 			create expr_leaf.make_boolean(False)
 			$$ := expr_leaf
 		}
-	| SYM_NOT Boolean_expression
+	;
+
+Arithmetic_expression: Arithmetic_leaf
 		{
-			create expr_unary_operator.make(create {OPERATOR_KIND}.make(op_not))
-			expr_unary_operator.set_operand($2)
-			$$ := expr_unary_operator
+			$$ := $1
 		}
-	| Arithmetic_expression '=' Arithmetic_expression
+	| Arithmetic_node
 		{
-			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_eq))
-			expr_binary_operator.set_left_operand($1)
-			expr_binary_operator.set_right_operand($3)
-			$$ := expr_binary_operator
-		}
-	| Arithmetic_expression SYM_NE Arithmetic_expression
-		{
-			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_ne))
-			expr_binary_operator.set_left_operand($1)
-			expr_binary_operator.set_right_operand($3)
-			$$ := expr_binary_operator
-		}
-	| Arithmetic_expression SYM_LT Arithmetic_expression
-		{
-			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_lt))
-			expr_binary_operator.set_left_operand($1)
-			expr_binary_operator.set_right_operand($3)
-			$$ := expr_binary_operator
-		}
-	| Arithmetic_expression SYM_GT Arithmetic_expression
-		{
-			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_gt))
-			expr_binary_operator.set_left_operand($1)
-			expr_binary_operator.set_right_operand($3)
-			$$ := expr_binary_operator
-		}
-	| Arithmetic_expression SYM_LE Arithmetic_expression
-		{
-			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_le))
-			expr_binary_operator.set_left_operand($1)
-			expr_binary_operator.set_right_operand($3)
-			$$ := expr_binary_operator
-		}
-	| Arithmetic_expression SYM_GE Arithmetic_expression
-		{
-			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_ge))
-			expr_binary_operator.set_left_operand($1)
-			expr_binary_operator.set_right_operand($3)
-			$$ := expr_binary_operator
-		}
-	| Boolean_expression SYM_AND Boolean_expression
-		{
-			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_and))
-			expr_binary_operator.set_left_operand($1)
-			expr_binary_operator.set_right_operand($3)
-			$$ := expr_binary_operator
-		}
-	| Boolean_expression SYM_OR Boolean_expression
-		{
-			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_or))
-			expr_binary_operator.set_left_operand($1)
-			expr_binary_operator.set_right_operand($3)
-			$$ := expr_binary_operator
-		}
-	| Boolean_expression SYM_XOR Boolean_expression
-		{
-			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_xor))
-			expr_binary_operator.set_left_operand($1)
-			expr_binary_operator.set_right_operand($3)
-			$$ := expr_binary_operator
-		}
-	| Boolean_expression SYM_IMPLIES Boolean_expression
-		{
-			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_implies))
-			expr_binary_operator.set_left_operand($1)
-			expr_binary_operator.set_right_operand($3)
-			$$ := expr_binary_operator
+			$$ := $1
 		}
 	;
 
-Arithmetic_expression: '(' Arithmetic_expression ')'
-		{
-			$$ := $2
-		}
-	| V_INTEGER
-		{
-			create expr_leaf.make_integer($1)
-			$$ := expr_leaf
-		}
-	| V_REAL
-		{
-			create expr_leaf.make_real($1)
-			$$ := expr_leaf
-		}
-	| V_STRING
-		{
-			create expr_leaf.make_string($1)
-			$$ := expr_leaf
-		}
-	| V_CHARACTER
-		{
-			create expr_leaf.make_character($1)
-			$$ := expr_leaf
-		}
-	| '+' Arithmetic_expression %prec SYM_NOT
-		{
-			create expr_unary_operator.make(create {OPERATOR_KIND}.make(op_plus))
-			expr_unary_operator.set_operand($2)
-			$$ := expr_unary_operator
-		}
-	| '-' Arithmetic_expression %prec SYM_NOT
-		{
-			create expr_unary_operator.make(create {OPERATOR_KIND}.make(op_minus))
-			expr_unary_operator.set_operand($2)
-			$$ := expr_unary_operator
-		}
-	| Arithmetic_expression '+' Arithmetic_expression
+Arithmetic_node: Arithmetic_expression '+' Arithmetic_leaf
 		{
 			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_plus))
 			expr_binary_operator.set_left_operand($1)
 			expr_binary_operator.set_right_operand($3)
 			$$ := expr_binary_operator
 		}
-	| Arithmetic_expression '-' Arithmetic_expression
+	| Arithmetic_expression '-' Arithmetic_leaf
 		{
 			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_minus))
 			expr_binary_operator.set_left_operand($1)
 			expr_binary_operator.set_right_operand($3)
 			$$ := expr_binary_operator
 		}
-	| Arithmetic_expression '*' Arithmetic_expression
+	| Arithmetic_expression '*' Arithmetic_leaf
 		{
 			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_multiply))
 			expr_binary_operator.set_left_operand($1)
 			expr_binary_operator.set_right_operand($3)
 			$$ := expr_binary_operator
 		}
-	| Arithmetic_expression '/' Arithmetic_expression
+	| Arithmetic_expression '/' Arithmetic_leaf
 		{
 			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_divide))
 			expr_binary_operator.set_left_operand($1)
 			expr_binary_operator.set_right_operand($3)
 			$$ := expr_binary_operator
 		}
-	| Arithmetic_expression '^' Arithmetic_expression
+	| Arithmetic_expression '^' Arithmetic_leaf
 		{
 			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_exp))
 			expr_binary_operator.set_left_operand($1)
 			expr_binary_operator.set_right_operand($3)
 			$$ := expr_binary_operator
+		}
+	;
+
+Arithmetic_leaf:  '(' Arithmetic_expression ')'
+		{
+			$$ := $2
+		}
+	| integer_value
+		{
+			create expr_leaf.make_integer($1)
+			$$ := expr_leaf
+		}
+	| real_value
+		{
+			create expr_leaf.make_real($1)
+			$$ := expr_leaf
 		}
 	;
 
@@ -783,16 +779,19 @@ absolute_path: '/' relative_path
 			debug("OG_PATH_parse")
 				io.put_string("....absolute_path; %N")
 			end
+			$$ := a_path
 		}
 	;
 
 relative_path: path_segment
 		{
 			create a_path.make_relative($1)
+			$$ := a_path
 		}
 	| relative_path '/' path_segment
 		{
 			a_path.append_segment($3)
+			$$ := a_path
 		}
 	;
 
@@ -1003,10 +1002,10 @@ c_integer_spec: integer_value
 
 			create c_integer.make_interval(int_interval)
 		}
-	| occurrence_spec	-- to allow intervals written in form {1..*}
-		{
-			create c_integer.make_interval(int_interval)
-		}
+--	| occurrence_spec	-- to allow intervals written in form {1..*}
+--		{
+--			create c_integer.make_interval(int_interval)
+--		}
 	;
 
 c_integer: c_integer_spec

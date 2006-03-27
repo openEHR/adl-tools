@@ -21,28 +21,19 @@ inherit
 
 creation
 	make_boolean, make_integer, make_real, make_string, make_character, 
-	make_attribute_ref, make_object_ref, make_feature_call,
+	make_object_ref, make_feature_call,
 	make_ordinal, make_coded_term,
 	make_constraint
 
 feature -- Initialisation
-	
+		
 	make_feature_call(a_ref: STRING) is
-			-- node represents a feature call on Archetype object itself
+			-- node refers to an object in the runtime data
 		require
 			ref_exists: a_ref /= Void and then not a_ref.is_empty
 		do
 			item := a_ref
 			type := "FEATURE_CALL"
-		end
-	
-	make_attribute_ref(a_ref: OG_PATH) is
-			-- node refers to an attribute in the runtime data
-		require
-			ref_exists: a_ref /= Void and then not a_ref.is_empty
-		do
-			item := a_ref
-			type := "ATTRIBUTE_REF"
 		end
 	
 	make_object_ref(a_ref: OG_PATH) is

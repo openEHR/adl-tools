@@ -278,8 +278,8 @@ multiple_attr_object_block_head: SYM_START_DBLOCK
 					attr_nodes.item.put_child(complex_object_node)
 				else
 					raise_error
-					report_error("Key must be unique; " + complex_object_node.node_id 
-							+ " already exists under " + attr_nodes.item.rm_attr_name)
+					report_error("Key must be unique; key [" + complex_object_node.node_id 
+							+ "] already exists under attribute %"" + attr_nodes.item.rm_attr_name + "%"")
 					abort
 				end
 
@@ -426,8 +426,8 @@ single_attr_object_complex_head: SYM_START_DBLOCK
 					attr_nodes.item.put_child(complex_object_node)
 				else
 					raise_error
-					report_error("Key must be unique; " + complex_object_nodes.item.node_id 
-								+ " already exists under " + attr_nodes.item.rm_attr_name)
+					report_error("Key must be unique; key [" + complex_object_nodes.item.node_id 
+								+ "] already exists under attribute %"" + attr_nodes.item.rm_attr_name + "%"")
 					abort
 				end
 			end
@@ -469,8 +469,15 @@ untyped_primitive_object_block: SYM_START_DBLOCK primitive_object_value SYM_END_
 						attr_nodes.item.rm_attr_name + ">>).item.put_child(<<" + 
 						leaf_object_node.as_string + ">>)%N")
 			end
-			attr_nodes.item.put_child(leaf_object_node)
-			$$ := leaf_object_node
+			if not attr_nodes.item.has_child(leaf_object_node.node_id) then
+				attr_nodes.item.put_child(leaf_object_node)
+				$$ := leaf_object_node
+			else
+				raise_error
+				report_error("Key must be unique; key [" + leaf_object_node.node_id 
+						+ "] already exists under attribute %"" + attr_nodes.item.rm_attr_name + "%"")
+				abort
+			end
 		}
 	;
 

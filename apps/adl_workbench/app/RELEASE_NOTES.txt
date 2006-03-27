@@ -1,10 +1,14 @@
 
-ADL Reference Parser Toolkit Release Notes
---------------------------------------------
+ADL Workbench Release Notes
+---------------------------
 
 Version
 	Last Change: $Date$
 	
+interim release Subversion 45 - 27/Mar/2006
+	various parser improvements; see 
+	http://svn.openehr.org/oe_distrib/windows/adl_parser/RELEASE_NOTES.txt
+
 	++++++++++++++ move to subversion ++++++++++++++
 
 interim release BitKeeper cset 1.57 23/June/2005

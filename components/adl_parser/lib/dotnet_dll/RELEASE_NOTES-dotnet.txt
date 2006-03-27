@@ -1,9 +1,15 @@
-
+Juluy
 ADL dotNet Toolkit Release Notes
 --------------------------------
 
 Version
 	Last Change: $Date$
+
+interim release Subversion revision 45 - 27 Mar 2006
+
+   - changes:
+      parser improved in a number of ways; see 
+	  http://svn.openehr.org/oe_distrib/windows/adl_parser/RELEASE_NOTES.txt
 
 interim release Subversion revision 3 - 23 July 2005
 
