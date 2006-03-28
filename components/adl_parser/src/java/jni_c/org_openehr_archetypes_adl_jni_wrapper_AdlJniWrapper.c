@@ -1311,23 +1311,6 @@ JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapp
 
 /*
  * Class:     AdlJniWrapper
- * Method:    jcreate_expr_leaf_attribute_ref
- * Signature: (Ljava/lang/String;)I
- */
-JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jcreate_1expr_1leaf_1attribute_1ref
-  (JNIEnv *env, jobject obj, jstring ref_path)
-{
-	char *a_ref_path = (*env)->GetStringUTFChars(env, ref_path, 0);
-	int result;
-
-	result = create_expr_leaf_attribute_ref(a_ref_path);
-
-	(*env)->ReleaseStringUTFChars(env, ref_path, a_ref_path);
-	return result;
-}
-
-/*
- * Class:     AdlJniWrapper
  * Method:    jcreate_expr_leaf_boolean
  * Signature: (Z)I
  */
@@ -1361,16 +1344,16 @@ JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapp
 
 /*
  * Class:     AdlJniWrapper
- * Method:    jcreate_expr_leaf_feature_call
+ * Method:    jcreate_expr_leaf_archetype_feature_call
  * Signature: (Ljava/lang/String;)I
  */
-JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jcreate_1expr_1leaf_1feature_1call
+JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jcreate_1expr_1leaf_1archetype_1feature_1call
   (JNIEnv *env, jobject obj, jstring ref)
 {
 	char *a_ref = (*env)->GetStringUTFChars(env, ref, 0);
 	int result;
 
-	result = create_expr_leaf_feature_call(a_ref);
+	result = create_expr_leaf_archetype_feature_call(a_ref);
 
 	(*env)->ReleaseStringUTFChars(env, ref, a_ref);
 	return result;

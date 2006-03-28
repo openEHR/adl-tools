@@ -307,6 +307,16 @@ feature -- Modification
 			items.put_front(an_item)
 		end
 		
+	append_path(a_path: OG_PATH) is
+			-- add a_path to the end
+		require
+			path_valid: a_path /= Void
+		do
+			items.append(a_path.items)
+		end
+
+feature -- Status Setting
+
 	set_absolute is
 		do
 			is_absolute := True

@@ -260,7 +260,10 @@ P([0-9]+[dD])?([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])?	{
 
 <IN_STR>[^\\\n"]+		in_buffer.append_string (text)
 
-<IN_STR>\\\n[ \t\r]*	in_lineno := in_lineno + 1	-- match LF in line
+<IN_STR>\n[ \t\r]*	{
+				in_lineno := in_lineno + 1	-- match LF in line
+				in_buffer.append_string (text)
+			}
 
 <IN_STR>[^\\\n"]*\"	{						-- match final end of string
 				last_token := V_STRING

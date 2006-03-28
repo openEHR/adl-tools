@@ -189,6 +189,8 @@ feature -- Commands
 								parse_error_text := invariant_context.parse_error_text
 								invariant_error := True
 							end
+						else
+							invariant_context.reset
 						end
 
 						if not invariant_error then
@@ -232,7 +234,7 @@ feature -- Commands
 			definition_context.serialise(a_format, ontology)
 			
 			if archetype.has_invariants then
-				invariant_context.serialise(a_format)			
+				invariant_context.serialise(a_format)				
 			end
 			
 			ontology_context.serialise(a_format)

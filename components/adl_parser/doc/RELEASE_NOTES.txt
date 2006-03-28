@@ -17,10 +17,8 @@ Version
 Release history
 ---------------
 
-interim release Subversion 45 - 27/Mar/2006
+interim release Subversion 46 - 27/Mar/2006
 	All archetypes parse, save and reparse as expected except SOAP Headings.
-	The problem with the latter is that the Assertion grammar does not contain
-	absolute_path items; this will be fixed next release.
 
 	- enhancements: 
 		- now can have two archetypes in memory at once, due to getting rid 
@@ -32,6 +30,12 @@ interim release Subversion 45 - 27/Mar/2006
 
 		- fixed minor bug in path testing where a path ending in attr[obj_id] 
 		  would match the OG structure when it should not
+
+		- assertion expressions now parse properly with rewritten grammar for
+		  boolean_expressions.
+
+		- dADL text containing newlines no longer cause crash; newlines are 
+		  preserved through parsing.
 
 
 interim subversion release 4 - 12 Oct 2005

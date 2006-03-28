@@ -801,14 +801,6 @@ JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapp
 
 /*
  * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
- * Method:    jcreate_expr_leaf_attribute_ref
- * Signature: (Ljava/lang/String;)I
- */
-JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jcreate_1expr_1leaf_1attribute_1ref
-  (JNIEnv *, jobject, jstring);
-
-/*
- * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
  * Method:    jcreate_expr_leaf_boolean
  * Signature: (Z)I
  */
@@ -833,10 +825,10 @@ JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapp
 
 /*
  * Class:     org_openehr_archetypes_adl_jni_wrapper_AdlJniWrapper
- * Method:    jcreate_expr_leaf_feature_call
+ * Method:    jcreate_expr_leaf_archetype_feature_call
  * Signature: (Ljava/lang/String;)I
  */
-JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jcreate_1expr_1leaf_1feature_1call
+JNIEXPORT jint JNICALL Java_org_openehr_archetypes_adl_1jni_1wrapper_AdlJniWrapper_jcreate_1expr_1leaf_1archetype_1feature_1call
   (JNIEnv *, jobject, jstring);
 
 /*

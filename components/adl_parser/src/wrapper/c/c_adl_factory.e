@@ -809,18 +809,6 @@ feature -- Assertions
 				expr_item(h_an_operand)), Result)
 		end
 
-	create_expr_leaf_attribute_ref (a_ref_path: POINTER): INTEGER is
-			-- node refers to an attribute in the runtime data
-			-- REQUIRE
-			-- ref_exists: a_ref_path /= void and then not a_ref_path.is_empty
-		local
-			c_a_ref_path: C_STRING
-		do
-			create c_a_ref_path.make_by_pointer (a_ref_path)
-			Result := new_handle
-			put_expr_item(constraint_model_factory.create_expr_leaf_attribute_ref(c_a_ref_path.string), Result)
-		end
-
 	create_expr_leaf_boolean (an_item: BOOLEAN): INTEGER is
 			-- node is a boolean value
 		do
@@ -846,7 +834,7 @@ feature -- Assertions
 				c_primitive(h_an_item)), Result)
 		end
 
-	create_expr_leaf_feature_call (a_ref: POINTER): INTEGER is
+	create_expr_leaf_archetype_feature_call (a_ref: POINTER): INTEGER is
 			-- leaf node represents a feature call on Archetype object itself
 			-- REQUIRE
 			-- ref_exists: a_ref /= void and then not a_ref.is_empty
@@ -855,7 +843,7 @@ feature -- Assertions
 		do
 			create c_a_ref.make_by_pointer (a_ref)
 			Result := new_handle
-			put_expr_item(constraint_model_factory.create_expr_leaf_feature_call(c_a_ref.string), Result)
+			put_expr_item(constraint_model_factory.create_expr_leaf_archetype_feature_call(c_a_ref.string), Result)
 		end
 
 	create_expr_leaf_integer (an_item: INTEGER): INTEGER is

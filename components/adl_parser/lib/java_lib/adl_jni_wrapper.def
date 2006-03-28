@@ -84,11 +84,10 @@ C_ADL_INTERFACE (make) : create_real_interval_make_upper_unbounded
 C_ADL_INTERFACE (make) : create_assertion
 C_ADL_INTERFACE (make) : create_assertion_with_tag
 C_ADL_INTERFACE (make) : create_expr_binary_operator_node
-C_ADL_INTERFACE (make) : create_expr_leaf_attribute_ref
 C_ADL_INTERFACE (make) : create_expr_leaf_boolean
 C_ADL_INTERFACE (make) : create_expr_leaf_character
 C_ADL_INTERFACE (make) : create_expr_leaf_constraint
-C_ADL_INTERFACE (make) : create_expr_leaf_feature_call
+C_ADL_INTERFACE (make) : create_expr_leaf_archetype_feature_call
 C_ADL_INTERFACE (make) : create_expr_leaf_integer
 C_ADL_INTERFACE (make) : create_expr_leaf_object_ref
 C_ADL_INTERFACE (make) : create_expr_leaf_real

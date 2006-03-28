@@ -1,56 +1,73 @@
 indexing
 	component:   "openEHR Reusable Libraries"
-	description: "Test suite for object graph parse tree."
-	keywords:    "test, parse, parsing, object graph"
+	description: "Test case for line breaks and paragraphs separate by blank lines"
+	keywords:    "test, object graph, cADL, dADL, ADL"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class TS_DADL
+class TC_DADL_LINE_BREAK
 
 inherit
-	TEST_SUITE
+	TEST_CASE
+		redefine 
+			check_result
+		end
+		
+	SHARED_TEST_ENV
+		export
+			{NONE} all
+		end
 
 creation
 	make
 
+feature -- Access
+
+	title: STRING is "dADL with line breaks and paragraphs"
+
 feature -- Initialisation
 
 	make(arg:ANY) is
-	    do
-	    end
+		do
+		end
+
+	execute is
+		do
+			io.put_string("---------- original dADL  -----------%N")
+			io.put_string(dadl_text)
+			dadl_engine.set_source (dadl_text, 1)
+			dadl_engine.parse
+			if not dadl_engine.parse_succeeded then
+				io.put_string("Parse failed; reason = " + dadl_engine.parse_error_text + "%N")
+			else
+				dadl_engine.serialise ("adl")
+				io.put_string("---------- serialised to dADL -----------%N")
+				io.put_string(dadl_engine.serialised)
+			end
+		end
 
 feature -- Access
 
-	title:STRING is "dADL test suite"
+	check_result is
+	    do
+	    end
 
-	test_cases: LINKED_LIST[TEST_CASE] is
+feature -- Implementation
+
+	dadl_text: STRING is  
 		local
-			tc:TEST_CASE
-		once
-			create Result.make
-
-			create {TC_DADL2_BASIC_TYPES} tc.make(Void) Result.extend(tc)
-		--	create {TC_DADL1_SINGLE_ATTR} tc.make(Void) Result.extend(tc)
-			create {TC_DADL2_SINGLE_ATTR} tc.make(Void) Result.extend(tc)
-		--	create {TC_DADL1_MULTIPLE_ATTR} tc.make(Void) Result.extend(tc)
-			create {TC_DADL2_MULTIPLE_ATTR} tc.make(Void) Result.extend(tc)
-			create {TC_DADL2_NESTED_MULTIPLE_ATTR} tc.make(Void) Result.extend(tc)
-			create {TC_DADL2_MULTIPLE_ATTR2} tc.make(Void) Result.extend(tc)
-			create {TC_DADL2_TYPED} tc.make(Void) Result.extend(tc)
-			create {TC_DADL2_TYPED_ANON} tc.make(Void) Result.extend(tc)
-			create {TC_DADL2_EMPTY} tc.make(Void) Result.extend(tc)
-			create {TC_DADL2_AS_OBJECT_SIMPLE} tc.make(Void) Result.extend(tc)
-			create {TC_DADL_EMBEDDED_CADL} tc.make(Void) Result.extend(tc)
-			create {TC_DADL2_TERM_CODE} tc.make(Void) Result.extend(tc)
-
-			create {TC_DADL_LINE_BREAK} tc.make(Void) Result.extend(tc)
+			from_file: PLAIN_TEXT_FILE
+		do
+			create from_file.make_open_read("../src/dadl/dadl_line_break.txt")
+			from_file.read_stream(from_file.count)
+			Result := from_file.last_string
 		end
 
 end
@@ -69,7 +86,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is units_suite.e.
+--| The Original Code is tc_dadl_basic.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

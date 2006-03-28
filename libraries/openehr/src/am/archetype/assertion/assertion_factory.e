@@ -22,7 +22,17 @@ feature -- Factory
 		do
 			create Result.make_object_ref(create {OG_PATH}.make_from_string(a_ref_path))
 		end
-	
+
+	create_expr_leaf_archetype_feature_call(a_ref: STRING): EXPR_LEAF is
+			-- node refers to an archetyoe feature in a slot-filling archetype
+			-- e.g. 'archetype_id' - see AOM for allowable features; dot notation
+			-- can be used if need to go deeper
+		require
+			ref_exists: a_ref /= Void and then not a_ref.is_empty
+		do
+			create Result.make_archetype_feature_call(a_ref)
+		end
+		
 	create_expr_leaf_boolean(an_item: BOOLEAN): EXPR_LEAF is
 			-- node is a boolean value
    		do

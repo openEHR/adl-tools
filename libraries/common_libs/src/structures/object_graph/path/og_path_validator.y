@@ -43,23 +43,23 @@ creation
 %token SYM_MOVABLE_LEADER
 
 %type <OG_PATH_ITEM> path_segment -- call_path_segment
-%type <OG_PATH> absolute_path
+%type <OG_PATH> absolute_path movable_path relative_path
 
 %%
 
 input: movable_path
 		{
-			output := a_path
+			output := $1
 			accept
 		}
 	| absolute_path
 		{
-			output := a_path
+			output := $1
 			accept
 		}
 	| relative_path
 		{
-			output := a_path
+			output := $1
 			accept
 		}
 	| error
@@ -73,29 +73,37 @@ input: movable_path
 
 movable_path: SYM_MOVABLE_LEADER relative_path
 		{
-			a_path.set_movable
+			$$ := $2
+			$$.set_movable
 		}
 	;
 
 absolute_path: '/' relative_path
 		{
-			a_path.set_absolute
+			$$ := $2
+			$$.set_absolute
 			debug("OG_PATH_parse")
 				io.put_string("....absolute_path; %N")
 			end
-			$$ := a_path
+		}
+	| absolute_path '/' relative_path
+		{
+			$$ := $1
+			$$.append_path($3)
+			debug("OG_PATH_parse")
+				io.put_string("....absolute_path (appended relative path); %N")
+			end
 		}
 	;
 
 relative_path: path_segment
 		{
-			create a_path.make_relative($1)
-			$$ := a_path
+			create $$.make_relative($1)
 		}
 	| relative_path '/' path_segment
 		{
-			a_path.append_segment($3)
-			$$ := a_path
+			$$ := $1
+			$$.append_segment($3)
 		}
 	;
 
@@ -131,7 +139,6 @@ feature -- Initialization
 		do
 			reset
 			create error_text.make(0)
-			a_path := Void
 			set_input_buffer (new_string_buffer (in_text))
 			parse
 		end
@@ -153,8 +160,6 @@ feature -- Access
 	output: OG_PATH
 
 feature {NONE} -- Implementation
-
-	a_path: OG_PATH
 
 	indent: STRING
 

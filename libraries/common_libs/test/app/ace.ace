@@ -19,6 +19,7 @@ default
 	debug ("og_path_parse")
 	disabled_debug ("refactor_fixme")
 	disabled_debug ("units")
+	debug (no)
 	line_generation (yes)
 	profile (no)
 	trace (no)

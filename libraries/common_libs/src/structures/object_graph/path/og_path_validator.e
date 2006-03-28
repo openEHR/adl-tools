@@ -205,11 +205,29 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 50")
 end
 
-			output := a_path
+			output := yyvs4.item (yyvsp4)
 			accept
 		
 if yy_parsing_status = yyContinue then
 	yyssp := yyssp - 1
+	yyvsp1 := yyvsp1 + 1
+	yyvsp4 := yyvsp4 -1
+	if yyvsp1 >= yyvsc1 then
+		if yyvs1 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs1")
+			end
+			create yyspecial_routines1
+			yyvsc1 := yyInitial_yyvs_size
+			yyvs1 := yyspecial_routines1.make (yyvsc1)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs1")
+			end
+			yyvsc1 := yyvsc1 + yyInitial_yyvs_size
+			yyvs1 := yyspecial_routines1.resize (yyvs1, yyvsc1)
+		end
+	end
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 2 then
@@ -218,7 +236,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 55")
 end
 
-			output := a_path
+			output := yyvs4.item (yyvsp4)
 			accept
 		
 if yy_parsing_status = yyContinue then
@@ -249,11 +267,29 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 60")
 end
 
-			output := a_path
+			output := yyvs4.item (yyvsp4)
 			accept
 		
 if yy_parsing_status = yyContinue then
 	yyssp := yyssp - 1
+	yyvsp1 := yyvsp1 + 1
+	yyvsp4 := yyvsp4 -1
+	if yyvsp1 >= yyvsc1 then
+		if yyvs1 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs1")
+			end
+			create yyspecial_routines1
+			yyvsc1 := yyInitial_yyvs_size
+			yyvs1 := yyspecial_routines1.make (yyvsc1)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs1")
+			end
+			yyvsc1 := yyvsc1 + yyInitial_yyvs_size
+			yyvs1 := yyspecial_routines1.resize (yyvs1, yyvsc1)
+		end
+	end
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 4 then
@@ -277,29 +313,61 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 74")
 end
 
-			a_path.set_movable
+			yyval4 := yyvs4.item (yyvsp4)
+			yyval4.set_movable
 		
 if yy_parsing_status = yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
-	yyvs1.put (yyval1, yyvsp1)
+	yyvs4.put (yyval4, yyvsp4)
 end
 when 6 then
---|#line 80 "og_path_validator.y"
+--|#line 81 "og_path_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 80")
+	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 81")
 end
 
-			a_path.set_absolute
+			yyval4 := yyvs4.item (yyvsp4)
+			yyval4.set_absolute
 			debug("OG_PATH_parse")
 				io.put_string("....absolute_path; %N")
 			end
-			yyval4 := a_path
 		
 if yy_parsing_status = yyContinue then
 	yyssp := yyssp - 2
+	yyvsp1 := yyvsp1 -1
+	yyvs4.put (yyval4, yyvsp4)
+end
+when 7 then
+--|#line 89 "og_path_validator.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 89")
+end
+
+			yyval4 := yyvs4.item (yyvsp4 - 1)
+			yyval4.append_path(yyvs4.item (yyvsp4))
+			debug("OG_PATH_parse")
+				io.put_string("....absolute_path (appended relative path); %N")
+			end
+		
+if yy_parsing_status = yyContinue then
+	yyssp := yyssp - 3
+	yyvsp4 := yyvsp4 -1
+	yyvsp1 := yyvsp1 -1
+	yyvs4.put (yyval4, yyvsp4)
+end
+when 8 then
+--|#line 99 "og_path_validator.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 99")
+end
+
+			create yyval4.make_relative(yyvs3.item (yyvsp3))
+		
+if yy_parsing_status = yyContinue then
+	yyssp := yyssp - 1
 	yyvsp4 := yyvsp4 + 1
-	yyvsp1 := yyvsp1 -2
+	yyvsp3 := yyvsp3 -1
 	if yyvsp4 >= yyvsc4 then
 		if yyvs4 = Void then
 			debug ("GEYACC")
@@ -318,56 +386,25 @@ if yy_parsing_status = yyContinue then
 	end
 	yyvs4.put (yyval4, yyvsp4)
 end
-when 7 then
---|#line 90 "og_path_validator.y"
+when 9 then
+--|#line 103 "og_path_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 90")
+	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 103")
 end
 
-			create a_path.make_relative(yyvs3.item (yyvsp3))
-			yyval1 := a_path
-		
-if yy_parsing_status = yyContinue then
-	yyssp := yyssp - 1
-	yyvsp1 := yyvsp1 + 1
-	yyvsp3 := yyvsp3 -1
-	if yyvsp1 >= yyvsc1 then
-		if yyvs1 = Void then
-			debug ("GEYACC")
-				std.error.put_line ("Create yyvs1")
-			end
-			create yyspecial_routines1
-			yyvsc1 := yyInitial_yyvs_size
-			yyvs1 := yyspecial_routines1.make (yyvsc1)
-		else
-			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs1")
-			end
-			yyvsc1 := yyvsc1 + yyInitial_yyvs_size
-			yyvs1 := yyspecial_routines1.resize (yyvs1, yyvsc1)
-		end
-	end
-	yyvs1.put (yyval1, yyvsp1)
-end
-when 8 then
---|#line 95 "og_path_validator.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 95")
-end
-
-			a_path.append_segment(yyvs3.item (yyvsp3))
-			yyval1 := a_path
+			yyval4 := yyvs4.item (yyvsp4)
+			yyval4.append_segment(yyvs3.item (yyvsp3))
 		
 if yy_parsing_status = yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
 	yyvsp3 := yyvsp3 -1
-	yyvs1.put (yyval1, yyvsp1)
+	yyvs4.put (yyval4, yyvsp4)
 end
-when 9 then
---|#line 102 "og_path_validator.y"
+when 10 then
+--|#line 110 "og_path_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 102")
+	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 110")
 end
 
 			create yyval3.make_with_object_id(yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2))
@@ -397,10 +434,10 @@ if yy_parsing_status = yyContinue then
 	end
 	yyvs3.put (yyval3, yyvsp3)
 end
-when 10 then
---|#line 109 "og_path_validator.y"
+when 11 then
+--|#line 117 "og_path_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 109")
+	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 117")
 end
 
 			create yyval3.make(yyvs2.item (yyvsp2))
@@ -444,7 +481,7 @@ end
 			-- Execute error action.
 		do
 			inspect yy_act
-			when 14 then
+			when 16 then
 					-- End-of-file expected action.
 				report_eof_expected_error
 			else
@@ -492,15 +529,15 @@ feature {NONE} -- Table templates
 	yyr1_template: SPECIAL [INTEGER] is
 		once
 			Result := yyfixed_array (<<
-			    0,   13,   13,   13,   13,   14,   12,   15,   15,   11,
-			   11, yyDummy>>)
+			    0,   15,   15,   15,   15,   13,   12,   12,   14,   14,
+			   11,   11, yyDummy>>)
 		end
 
 	yytypes1_template: SPECIAL [INTEGER] is
 		once
 			Result := yyfixed_array (<<
-			    1,    1,    1,    2,    1,    3,    4,    1,    1,    1,
-			    1,    2,    1,    3,    1,    1,    1, yyDummy>>)
+			    1,    1,    1,    2,    1,    3,    4,    4,    4,    4,
+			    4,    2,    1,    1,    4,    3,    1,    1,    1, yyDummy>>)
 		end
 
 	yytypes2_template: SPECIAL [INTEGER] is
@@ -513,41 +550,41 @@ feature {NONE} -- Table templates
 	yydefact_template: SPECIAL [INTEGER] is
 		once
 			Result := yyfixed_array (<<
-			    0,    0,    0,   10,    4,    7,    2,    1,    3,    6,
-			    5,    9,    0,    8,    0,    0,    0, yyDummy>>)
+			    0,    0,    0,   11,    4,    8,    2,    1,    3,    6,
+			    5,   10,    0,    0,    7,    9,    0,    0,    0, yyDummy>>)
 		end
 
 	yydefgoto_template: SPECIAL [INTEGER] is
 		once
 			Result := yyfixed_array (<<
-			    5,    6,   14,    7,    8, yyDummy>>)
+			    5,    6,    7,    8,   16, yyDummy>>)
 		end
 
 	yypact_template: SPECIAL [INTEGER] is
 		once
 			Result := yyfixed_array (<<
-			   -1,    2,    2,    3, -32768, -32768, -32768, -32768,   -3,   -3,
-			   -3, -32768,    2, -32768,    5,    4, -32768, yyDummy>>)
+			    3,    4,    4,    7, -32768, -32768,   -4, -32768,   -7,   -7,
+			   -7, -32768,    4,    4,   -7, -32768,    5,    2, -32768, yyDummy>>)
 		end
 
 	yypgoto_template: SPECIAL [INTEGER] is
 		once
 			Result := yyfixed_array (<<
-			    1, -32768, -32768, -32768,    0, yyDummy>>)
+			   -3, -32768, -32768,   -1, -32768, yyDummy>>)
 		end
 
 	yytable_template: SPECIAL [INTEGER] is
 		once
 			Result := yyfixed_array (<<
-			    4,    9,   10,    3,   16,   15,    3,   12,    2,    1,
-			   11,    0,    0,   13, yyDummy>>)
+			    9,   10,   18,   13,    4,   17,   12,    3,    3,    0,
+			   15,   14,    2,    1,   11, yyDummy>>)
 		end
 
 	yycheck_template: SPECIAL [INTEGER] is
 		once
 			Result := yyfixed_array (<<
-			    1,    1,    2,    4,    0,    0,    4,   10,    9,   10,
-			    7,   -1,   -1,   12, yyDummy>>)
+			    1,    2,    0,   10,    1,    0,   10,    4,    4,   -1,
+			   13,   12,    9,   10,    7, yyDummy>>)
 		end
 
 feature {NONE} -- Semantic value stacks
@@ -602,7 +639,7 @@ feature {NONE} -- Semantic value stacks
 
 feature {NONE} -- Constants
 
-	yyFinal: INTEGER is 16
+	yyFinal: INTEGER is 18
 			-- Termination state id
 
 	yyFlag: INTEGER is -32768
@@ -611,7 +648,7 @@ feature {NONE} -- Constants
 	yyNtbase: INTEGER is 11
 			-- Number of tokens
 
-	yyLast: INTEGER is 13
+	yyLast: INTEGER is 14
 			-- Upper bound of `yytable' and `yycheck'
 
 	yyMax_token: INTEGER is 264
@@ -640,7 +677,6 @@ feature -- Initialization
 		do
 			reset
 			create error_text.make(0)
-			a_path := Void
 			set_input_buffer (new_string_buffer (in_text))
 			parse
 		end
@@ -662,8 +698,6 @@ feature -- Access
 	output: OG_PATH
 
 feature {NONE} -- Implementation
-
-	a_path: OG_PATH
 
 	indent: STRING
 
