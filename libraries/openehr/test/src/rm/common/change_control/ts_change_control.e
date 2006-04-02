@@ -31,7 +31,7 @@ feature -- Access
 			create {TC_VERSIONED_OBJECT} tc.make(Void) 		Result.extend(tc)
 			create {TC_VERSION} tc.make(Void) 				Result.extend(tc)
 			create {TC_IMPORTED_VERSION} tc.make(Void) 		Result.extend(tc)
-			create {TC_MERGED_VERSION} tc.make(Void) 		Result.extend(tc)
+			create {TC_ORIGINAL_VERSION} tc.make(Void) 		Result.extend(tc)
 			create {TC_CONTRIBUTION} tc.make(Void) 			Result.extend(tc)
 		end
 

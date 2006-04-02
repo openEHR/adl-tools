@@ -15,7 +15,7 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class VERSION [G]
+deferred class VERSION [G]
 
 inherit
 	EXTERNAL_ENVIRONMENT_ACCESS
@@ -25,40 +25,33 @@ inherit
 
 feature -- Access
 
-	uid: OBJECT_VERSION_ID
+	uid: OBJECT_VERSION_ID is
 			-- Unique identifier of this version, containing owner_id, version_tree_id and 
 			-- creating_system_id.
+		deferred
+		end
 
-	preceding_version_uid: OBJECT_VERSION_ID	
+	preceding_version_uid: OBJECT_VERSION_ID is
 			-- Unique identifier of the version of which this version is a modification; 
 			-- Void if this is the first version.
+		deferred
+		end
 	
-	data: G
-			-- the data being versioned
-
-	attestations: LIST [ATTESTATION]	
-			-- Set of attestations relating to this version.
-
-	create_audit: AUDIT_DETAILS
+	commit_audit: AUDIT_DETAILS
 			-- Audit trail corresponding to the committal of this version to the 
 			-- VERSION_REPOSITORY where it was first created..
 
 	contribution: OBJECT_REF
 			-- Contribution in which this version was added.
 
-	lifecycle_state: DV_CODED_TEXT	
-			-- Lifecycle state of the content item in this version.
-
 	owner_id: HIER_OBJECT_ID is
 			-- Unique identifier of the owning VERSIONED_OBJECT.
 		do
 		end
-
-	commit_audit: AUDIT_DETAILS	is 
-			-- Audit trail corresponding to the local committal of this version. 
-			-- In instances of this class, the result = create_audit..
-		do
-			Result := create_audit
+		
+	data: G is
+			-- content of this Version
+		deferred
 		end
 
 feature -- Status Report
@@ -71,10 +64,7 @@ feature -- Status Report
 invariant
 	Uid_valid: uid /= Void
 	Owner_id_valid: owner_id /= Void and then owner_id.value.is_equal(uid.object_id.value)
-	Lifecycle_state_valid: lifecycle_state /= Void and then 
-		terminology("openehr").codes_for_group_name("version lifecycle state", "en").has(lifecycle_state.defining_code)
-	Create_audit_valid: create_audit /= Void
-	Attestations_valid: attestations /= Void implies not attestations.is_empty
+	Commit_audit_valid: commit_audit /= Void
 	Contribution_valid: contribution /= Void
 	Preceding_version_uid_validity: uid.version_tree_id.is_first xor preceding_version_uid /= Void
 	Data_valid: data /= Void	

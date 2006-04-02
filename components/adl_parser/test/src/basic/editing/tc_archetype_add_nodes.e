@@ -99,7 +99,7 @@ feature -- testing
 			an_arch_slot.set_occurrences(cf.create_integer_interval_make_upper_unbounded (0, True))
 			
 			-- make assertions for slot
-			id_expr_leaf := cf.create_expr_leaf_feature_call ("id")
+			id_expr_leaf := cf.create_expr_leaf_archetype_feature_call ("id")
 			id_pattern_expr_leaf := cf.create_expr_leaf_constraint (create {OE_C_STRING}.make_from_regexp("openehr-ehr-observation\..*\..*", True))
 			match_op := cf.create_expr_binary_operator_node (create {OPERATOR_KIND}.make(op_matches), id_expr_leaf, id_pattern_expr_leaf)
 			an_assertion := cf.create_assertion (match_op, Void)
@@ -124,7 +124,7 @@ feature -- testing
 			an_arch_slot.set_occurrences(cf.create_integer_interval_make_upper_unbounded (0, True))
 			
 			-- add assertions for slot
-			id_expr_leaf := cf.create_expr_leaf_feature_call ("id")
+			id_expr_leaf := cf.create_expr_leaf_archetype_feature_call ("id")
 			id_pattern_expr_leaf := cf.create_expr_leaf_constraint (create {OE_C_STRING}.make_from_regexp("openehr-ehr-observation\..*\..*", True))
 			match_op := cf.create_expr_binary_operator_node (create {OPERATOR_KIND}.make(op_matches), id_expr_leaf, id_pattern_expr_leaf)
 			an_assertion := cf.create_assertion (match_op, Void)

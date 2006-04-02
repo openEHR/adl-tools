@@ -4,7 +4,6 @@ finalized: clean
 	ec -batch -ace ace.ace -finalize -c_compile
 	cd EIFGEN/F_code
 	copy *.dll %OPENEHR%\oe_distrib\windows\adl_parser\lib
-	copy *.txt %OPENEHR%\oe_distrib\windows\adl_parser
 
 clean:
 	del /q /s *.epr

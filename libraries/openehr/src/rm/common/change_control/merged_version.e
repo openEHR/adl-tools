@@ -16,19 +16,39 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class MERGED_VERSION [G]
+class ORIGINAL_VERSION [G]
 
 inherit
 	VERSION [G]
 
 feature -- Access
 
-	input_version_ids: SET [OBJECT_VERSION_ID]	
+	uid: OBJECT_VERSION_ID
+			-- Unique identifier of this version, containing owner_id, version_tree_id and 
+			-- creating_system_id.
+
+	preceding_version_uid: OBJECT_VERSION_ID	
+			-- Unique identifier of the version of which this version is a modification; 
+			-- Void if this is the first version.
+	
+	data: G
+			-- the data being versioned
+
+	attestations: LIST [ATTESTATION]	
+			-- Set of attestations relating to this version.
+
+	other_input_version_uids: SET [OBJECT_VERSION_ID]	
 			-- Identifiers of the Versions used as input into this merged version. There is 
 			-- no guarantee that the identifiers of all content Versions are included here.
 
+	lifecycle_state: DV_CODED_TEXT	
+			-- Lifecycle state of the content item in this version.
+
 invariant
-	Input_version_ids_valid: input_version_ids /= Void and then not input_version_ids.is_empty	
+	Attestations_valid: attestations /= Void implies not attestations.is_empty
+	Other_input_version_uids_valid: other_input_version_uids /= Void implies other_input_version_uids.is_empty	
+	Lifecycle_state_valid: lifecycle_state /= Void and then 
+		terminology("openehr").codes_for_group_name("version lifecycle state", "en").has(lifecycle_state.defining_code)
 	
 end
 

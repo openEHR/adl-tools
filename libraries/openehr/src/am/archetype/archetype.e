@@ -147,7 +147,7 @@ feature -- Access
 						until
 							tgt_paths.off
 						loop
-							physical_paths_cache.extend (src_node_path_str + tgt_paths.item)
+							physical_paths_cache.extend (src_node_path_str + "/" + tgt_paths.item)
 							tgt_paths.forth
 						end
 						src_nodes.forth

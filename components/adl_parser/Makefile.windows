@@ -12,13 +12,13 @@
 all: app1 app2 app3 app4
 
 app1:
- 	pushd test\app & nmake -f makefile.windows & popd
-
-app2:
  	pushd lib\dotnet_dll & nmake -f makefile.windows & popd
 
-app3:
+app2:
  	pushd lib\java_lib & nmake -f makefile.windows & popd
+
+app3:
+ 	pushd test\app & nmake -f makefile.windows & popd
 
 app4:
 	copy doc %OPENEHR%\oe_distrib\windows\adl_parser\doc

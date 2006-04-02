@@ -20,25 +20,34 @@ class IMPORTED_VERSION [G]
 
 inherit
 	VERSION [G]
-		redefine
-			commit_audit
-		end
 
 feature -- Access
 
-	local_commit_audit: AUDIT_DETAILS
-			-- Audit trail corresponding to the committal of this version to the 
-			-- local VERSION_REPOSITORY where it is currently located. 
-
-	commit_audit: AUDIT_DETAILS is
-			-- Audit trail corresponding to the local committal of this version. 
-			-- Result = local_commit_audit.
+	uid: OBJECT_VERSION_ID is
+			-- Unique identifier of this version, containing owner_id, version_tree_id and 
+			-- creating_system_id.
 		do
-			Result := local_commit_audit
+			Result := item.uid
 		end
 
+	preceding_version_uid: OBJECT_VERSION_ID is
+			-- Unique identifier of the version of which this version is a modification; 
+			-- Void if this is the first version.
+		do
+			Result := item.preceding_version_uid
+		end
+
+	item: ORIGINAL_VERSION [G]
+			-- the original version wrapped by this imported version
+			
+	data: G is
+			-- content of the original Version
+		do
+			Result := item.data
+		end
+			
 invariant
-	Original_create_audit_validity: local_commit_audit /= Void
+	Item_valid: item /= Void
 	
 end
 

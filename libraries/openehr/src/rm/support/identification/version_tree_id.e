@@ -21,6 +21,10 @@ indexing
 
 class VERSION_TREE_ID
 
+feature -- Definitions
+
+	Separator: CHARACTER is '.'
+	
 feature -- Access
 
 	value: STRING

@@ -174,7 +174,7 @@ feature {NONE} -- Commands
 			Adl_file_open_dialog.show_modal_to_window (Current)
 			if Adl_file_open_dialog.file_name /= Void and then not Adl_file_open_dialog.file_name.is_empty then
 				load_and_parse_adl_file(Adl_file_open_dialog.file_name)
-				current_work_directory := Adl_file_open_dialog.file_path
+				current_work_directory := adl_interface.file_context.current_directory
 			end
 
 			set_pointer_style(cur_csr)			
@@ -287,7 +287,8 @@ feature {NONE} -- Commands
 			
 			archetype_tree_control.item_select
 			if archetype_tree_control.has_selected_file then
-				load_and_parse_adl_file(archetype_tree_control.selected_file)				
+				load_and_parse_adl_file(archetype_tree_control.selected_file_path)				
+				current_work_directory := adl_interface.file_context.current_directory
 			end
    			archetype_file_tree.set_minimum_width(0)
 
@@ -410,11 +411,11 @@ feature -- Controls
 	
 feature {NONE} -- Implementation
 
-	load_and_parse_adl_file(a_file_name: STRING) is
+	load_and_parse_adl_file(a_file_path: STRING) is
 			-- load and parse a named ADL file
 		do
 			adl_interface.reset
-			adl_interface.open_adl_file(a_file_name)
+			adl_interface.open_adl_file(a_file_path)
 			populate_archetype_text_edit_area
 			parse_archetype
 		end

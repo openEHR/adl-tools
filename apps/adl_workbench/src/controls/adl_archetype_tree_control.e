@@ -55,8 +55,8 @@ feature -- Initialisation
 
 feature -- Access
 
-	selected_file: STRING
-			-- name of file selected from tree control
+	selected_file_path: STRING
+			-- full path of file selected from tree control
 			
 	has_selected_file: BOOLEAN
 			-- True if a file was selected
@@ -76,8 +76,8 @@ feature -- Commands
 			show_node: EV_TREE_NODE
 		do
 			populate
-			if selected_file /= Void then
-				show_node := gui.archetype_file_tree.retrieve_item_recursively_by_data (selected_file, True)		
+			if selected_file_path /= Void then
+				show_node := gui.archetype_file_tree.retrieve_item_recursively_by_data (selected_file_path, True)		
 				if show_node /= Void then
 					gui.archetype_file_tree.ensure_item_visible (show_node)
 				end
@@ -102,7 +102,7 @@ feature -- Commands
 			arch_path ?= gui.archetype_file_tree.selected_item.data
 			if arch_path /= Void then
 				has_selected_file := True
-				selected_file := arch_path
+				selected_file_path := arch_path
 			end
 		end
 		
@@ -137,7 +137,7 @@ feature {NONE} -- Implementation
 					fnames.off
 				loop
 					fn := fnames.item
-					if not (fn.is_equal(".") or fn.is_equal("..")) then
+					if not (fn.is_equal(".") or fn.is_equal("..") or fn.item (1) = '.') then
 						fpath := a_dir_name + Os_directory_separator.out + fn
 						create a_file.make(fpath)	
 						if a_file.is_directory then

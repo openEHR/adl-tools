@@ -13,7 +13,7 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class TC_MERGED_VERSION
+class TC_ORIGINAL_VERSION
 
 inherit
 	TEST_CASE
@@ -26,7 +26,7 @@ creation
 
 feature -- Access
 
-	title: STRING is "TC_MERGED_VERSION"
+	title: STRING is "TC_ORIGINAL_VERSION"
 
 
 feature -- Initialisation
@@ -37,7 +37,7 @@ feature -- Initialisation
 
 	execute is
 		local
-			v: MERGED_VERSION [TEST_DATA]
+			v: ORIGINAL_VERSION [TEST_DATA]
 		do
 			
 		end

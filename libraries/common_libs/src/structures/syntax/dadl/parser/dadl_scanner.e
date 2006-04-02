@@ -671,7 +671,7 @@ debug ("GELEX")
 end
 
 				in_lineno := in_lineno + 1	-- match LF in line
-				in_buffer.append_string (text)
+				in_buffer.append_character ('%N')
 			
 else
 	yy_position := yy_position + yy_end - yy_start - yy_more_len

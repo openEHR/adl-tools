@@ -38,8 +38,10 @@ feature -- Access
 		end
 
 	current_directory: STRING
+			-- directory name only
 
 	current_file_name: STRING
+			-- name of fle only
 	
 	last_op_failed: BOOLEAN
 	
