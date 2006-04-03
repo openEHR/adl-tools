@@ -9,10 +9,13 @@
 # all: $(DIRS)
 # 
 
-all: app1 app2
+all: app1 app2 app3
 
 app1:
  	pushd adl_cmd_line\app & nmake -f makefile.windows & popd
 
 app2:
  	pushd adl_workbench\app & nmake -f makefile.windows & popd
+
+app3:
+	copy doc %OPENEHR%\oe_distrib\windows\adl_workbench\doc

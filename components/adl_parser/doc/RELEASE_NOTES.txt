@@ -100,11 +100,33 @@ interim release BitKeeper cset 1.57 23/June/2005
 					a_left_operand_exists: a_left_operand /= Void
 					a_right_operand_exists: a_right_operand /= Void
 
+		- java wrapper changes:
+			"create_expr_binary_operator_xxx" etc replaced by one function:
+			create_expr_binary_operator_node (an_operator: INTEGER; h_a_left_operand, 
+									h_a_right_operand: INTEGER): INTEGER
+			-- REQUIRE
+			-- an_operator_exists: {OPERATOR_KIND}.is_valid_operator(an_operator)
+			-- a_left_operand_exists: a_left_operand /= void
+			-- a_right_operand_exists: a_right_operand /= void
+
+		    "create_expr_unary_operator_xxx" etc replaced by one function 
+			create_expr_unary_operator_node (an_operator: INTEGER; 
+										h_an_operand: INTEGER): INTEGER
+
+			codes for an_operator argument given in openEHR AOM specification
+
 		- the new classes OPERATOR_KIND and OPERATOR_TYPES are added. To 
 		  make a call to one of the above functions, an OPERATOR_KIND 
 		  object needs to be created using the c# syntax which has the 
 		  effect of doing OPERATOR_KIND.make(integer value) or 
 		  OPERATOR_KIND.make_from_string(string value)
+
+	- bugs:
+		- some bugs remain in the java wrapping; compiles ok, but runtime errors at 
+		  assertion building. 
+		  
+		- More functions need to be wrapped for ARCHETYPE_DESCRIPTION, adding invariants
+		  to ARCHETYPE etc.
 
 release 'arch_desc' BitKeeper cset 1.56 19/June/2005
 
@@ -178,6 +200,17 @@ interim release BitKeeper cset 1.39 25/Feb/2005
 
 		- embedded C_DOMAIN_TYPE sections with sibling non-C_DOMAIN_TYPE
 		  sections now parse properly
+
+interim release cset 1.38 - 19 Jan 2005
+
+	- complete JNI wrapping for ADL parser. 
+	- Many fixes in parser.
+	- see http://www.deepthought.com.au for documentation on JNI wrapping
+	  for Eiffel / C.
+	- it is now recommended that users download the BitKeeper repository for
+	  this project, since it contains the proper java directory structure.
+	- this directory still contains the correct DLL, but will be replaced in
+	  the near future by a proper distribution server.
 
 interim release BitKeeper cset 1.32 - 29 July 2004
 
