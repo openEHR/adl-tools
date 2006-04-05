@@ -6,7 +6,7 @@ root
 
 default
 	namespace ("openehr")
-	precompiled ("$ISE_EIFFEL/precomp/spec/$ISE_PLATFORM/vision2")
+	-- precompiled ("$ISE_EIFFEL/precomp/spec/$ISE_PLATFORM/vision2")
 	assertion (require)
 	disabled_debug (yes)
 	disabled_debug ("adl_invariant")
@@ -122,6 +122,11 @@ cluster
 	time:		"$ISE_EIFFEL/library/time"
 
 	time_format (time):		"$/format"
+
+	all vision2:		"$ISE_EIFFEL/library/vision2"
+		exclude
+			"mswin"; 
+		end
 
 	all base:		"$ISE_EIFFEL/library/base"
 		exclude

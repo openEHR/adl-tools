@@ -176,7 +176,11 @@ feature {NONE} -- Implementation
 									else
 										a_ti.set_pixmap(pixmaps.item("archetype"))										
 									end
-									tree_item_stack.item.extend(a_ti)
+									if tree_item_stack.is_empty then
+										gui.archetype_file_tree.extend(a_ti)
+									else
+										tree_item_stack.item.extend(a_ti)
+									end
 	
 									Result := Result + 1
 								end

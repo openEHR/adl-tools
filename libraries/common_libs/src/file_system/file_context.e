@@ -133,7 +133,11 @@ feature -- Command
 				loop
 					in_file.read_line
 					Result.append(in_file.last_string)
-					Result.append(" %N")
+					if Result.item (Result.count) = '%R' then
+						Result.put('%N', Result.count)
+					else
+						Result.append_character('%N')					
+					end
 				end
 
 				in_file.close

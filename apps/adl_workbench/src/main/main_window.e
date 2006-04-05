@@ -481,29 +481,49 @@ feature {NONE} -- Implementation
 
 	populate_archetype_text_edit_area is
 		local
-			s, l: STRING
-			i, p: INTEGER
+			leader, int_val_str, src, s: STRING
+			len, left_pos, right_pos, line_cnt: INTEGER
 		do
 			create s.make(0)
-			s.append(adl_interface.adl_engine.source)
-			s.replace_substring_all ("%T", "    ")
-			s.replace_substring_all ("%N", "%NLINE: ")
-			s.remove_tail(("LINE: ").count)
-			s.prepend("LINE: ")
+			src := adl_interface.adl_engine.source
+			len := src.count
 			from
-				i := 1
-				p := 1
+				left_pos := 1
+				line_cnt := 1
 			until
-				p = 0
+				left_pos > len
 			loop
-				create l.make(("LINE: ").count)
-				l.fill_blank
-				l.replace_substring(i.out, 1, i.out.count-1)
-				s.replace_substring(l, p, p + ("LINE: ").count-1)
-				i := i + 1
-				p := s.substring_index("LINE: ", p)
+				create leader.make(4)
+				leader.fill_blank
+				int_val_str := line_cnt.out
+				leader.replace_substring(int_val_str, 1, int_val_str.count)
+
+				s.append (leader)
+				right_pos := src.index_of('%N', left_pos)
+				s.append(src.substring(left_pos, right_pos))
+				left_pos := right_pos + 1
+				line_cnt := line_cnt + 1
 			end
 			
+--			s.append(adl_interface.adl_engine.source)
+--			s.replace_substring_all ("%T", "    ")
+--			s.replace_substring_all ("%N", "%NLINE: ")
+--			s.remove_tail(("LINE: ").count)
+--			s.prepend("LINE: ")
+--			from
+--				i := 1
+--				p := 1
+--			until
+--				p = 0
+--			loop
+--				create l.make(("LINE: ").count)
+--				l.fill_blank
+--				l.replace_substring(i.out, 1, i.out.count-1)
+--				s.replace_substring(l, p, p + ("LINE: ").count-1)
+--				i := i + 1
+--				p := s.substring_index("LINE: ", p)
+--			end
+--			
 			archetype_text_edit_area.set_text(s)
 		end
 	
