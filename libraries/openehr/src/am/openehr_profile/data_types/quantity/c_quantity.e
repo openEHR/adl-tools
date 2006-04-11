@@ -165,7 +165,8 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 		end
 
 invariant
-	list_validity: list /= Void
+	Overall_validity: list /= Void or property /= Void
+	Items_valid: list /= Void implies not list.is_empty
 	property_valid: property /= Void implies not property.is_empty
 	
 end

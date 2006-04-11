@@ -66,7 +66,7 @@ SETUP
 	using subversion).
 
 	adl_workbench:
-		Double-click the adl_validator.exe file.  The GUI ADL workbench 
+		Double-click the adl_workbench.exe file.  The GUI ADL workbench 
 		tool should appear. Follow these general steps:
 
 		* open and parse an archetype file....
@@ -76,7 +76,8 @@ SETUP
 		  Use the archetype explorer on the left hand side of the tool to 
 		  navigate to the desired archetype and left-click to open and 
 		  parse. The root directory of the explorer view is determined by
-		  the "repository" setting in the .cfg file.
+		  the "repository" setting in the .cfg file. Use the Options menu
+		  to set the directory on your system.
 
 			OR
 
@@ -123,11 +124,12 @@ Reading the ADL files
 	supplied for the gvim editor. Modes needed for emacs etc.
 
 	See the ADL PDF manual for a full description of the syntax. The latest
-	is currently available at http://www.openehr.org/tmp/adl-1_2_draft_d.pdf.
+	is currently available at 
+	http://svn.openehr.org/specification/TRUNK/publishing/architecture/am/adl.pdf.
 
 
 FEEDBACK
-	Software support: mail <support@OceanInformatics.biz>
+	Software support: mail <Thomas dot Beale at OceanInformatics dot biz>
 	Discussion about ADL, archetypes: join the openEHR-technical mailing
 	list <www.openEHR.org>
 	

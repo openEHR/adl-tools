@@ -43,6 +43,9 @@ feature -- Access
 		do
 			Result := magnitude = Void
 		end
+		
+invariant
+	units_valid: units /= Void and not units.is_empty
 
 end
 
