@@ -62,9 +62,6 @@ feature {NONE}-- Initialization
 			l_ev_horizontal_box_3.extend (option_dialog_ok_button)
 			l_ev_horizontal_box_3.extend (option_dialog_cancel_button)
 			
-			set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 206))
-			disable_user_resize
-			set_title ("ADL workbench options")
 			l_ev_vertical_box_1.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 206))
 			l_ev_vertical_box_1.disable_item_expand (l_ev_label_1)
 			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_1)
@@ -106,6 +103,9 @@ feature {NONE}-- Initialization
 			option_dialog_cancel_button.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 157))
 			option_dialog_cancel_button.set_text ("Cancel")
 			option_dialog_cancel_button.set_minimum_width (100)
+			set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 206))
+			disable_user_resize
+			set_title ("ADL workbench options")
 			
 				--Connect events.
 			option_dialog_rep_path_edit.return_actions.extend (agent option_dialog_ok)
@@ -123,13 +123,15 @@ feature {NONE}-- Initialization
 
 feature -- Access
 
+	l_ev_cell_1: EV_CELL
+	option_dialog_rep_path_button, option_dialog_editor_command_button,
+	option_dialog_ok_button, option_dialog_cancel_button: EV_BUTTON
+	l_ev_horizontal_box_1, l_ev_horizontal_box_2,
+	l_ev_horizontal_box_3: EV_HORIZONTAL_BOX
 	l_ev_vertical_box_1: EV_VERTICAL_BOX
 	l_ev_label_1, l_ev_label_2, l_ev_label_3: EV_LABEL
-	l_ev_horizontal_box_1, l_ev_horizontal_box_2, l_ev_horizontal_box_3: EV_HORIZONTAL_BOX
-	option_dialog_rep_path_edit, option_dialog_editor_command_edit: EV_TEXT_FIELD
-	option_dialog_rep_path_button, option_dialog_editor_command_button, option_dialog_ok_button, 
-	option_dialog_cancel_button: EV_BUTTON
-	l_ev_cell_1: EV_CELL
+	option_dialog_rep_path_edit,
+	option_dialog_editor_command_edit: EV_TEXT_FIELD
 
 feature {NONE} -- Implementation
 

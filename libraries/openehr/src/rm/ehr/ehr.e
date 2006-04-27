@@ -40,6 +40,9 @@ feature -- Access
 			-- paths pointing to any number of VERSIONABLE items, i.e. items 
 			-- of type TRANSACTION and FOLDER_TREE.
 
+	ehr_status: OBJECT_REF
+			-- Optional directory structure for this EHR.
+
 	directory: OBJECT_REF
 			-- Optional directory structure for this EHR.
 
@@ -58,9 +61,9 @@ invariant
 	System_id_exists: system_id /= Void
 	Ehr_id_exists: ehr_id /= Void
 	Time_created_exists: time_created /= Void
-	Ehr_status_valid: ehr_status /= Void -- and then ehr_status.type.is_equal("VERSIONED_EHR_STATUS")
-	Contributions_valid: contributions /= Void -- and then contributions.for_all(agent {OBJECT_REF}.type.is_equal("CONTRIBUTION") end)
-	Compositions_valid: compositions /= Void -- and then compositions.for_all(agent {OBJECT_REF}.type.is_equal("VERSIONED_COMPOSITION"))
+	Ehr_status_valid: ehr_status /= Void and then ehr_status.type.is_equal("VERSIONED_EHR_STATUS")
+	Contributions_valid: contributions /= Void -- and then contributions.for_all(type.is_equal("CONTRIBUTION"))
+	Compositions_valid: compositions /= Void -- and then compositions.for_all(type.is_equal("VERSIONED_COMPOSITION"))
 	Directory_valid: directory /= Void implies directory.type.is_equal("VERSIONED_FOLDER")
 
 end

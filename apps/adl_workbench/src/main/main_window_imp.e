@@ -202,13 +202,6 @@ feature {NONE}-- Initialization
 			ontology_notebook.extend (ontology_constraint_defs)
 			l_ev_vertical_split_area_1.extend (parser_status_area)
 			
-			set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 206))
-			set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
-			set_minimum_width (app_min_width)
-			set_minimum_height (app_min_height)
-			set_maximum_width (app_max_width)
-			set_maximum_height (app_max_height)
-			set_title ("Ocean Informatics ADL Workbench")
 			file_menu.set_text ("File")
 			open_adl_file_mi.set_text ("Open")
 			save_adl_file_mi.disable_sensitive
@@ -368,10 +361,10 @@ feature {NONE}-- Initialization
 			arch_desc_resource_package_label.set_text ("package:")
 			arch_desc_resource_package_label.set_minimum_width (55)
 			create internal_font
-			internal_font.set_family (3)
-			internal_font.set_weight (7)
-			internal_font.set_shape (10)
-			internal_font.set_height (13)
+			internal_font.set_family (feature {EV_FONT_CONSTANTS}.Family_sans)
+			internal_font.set_weight (feature {EV_FONT_CONSTANTS}.Weight_regular)
+			internal_font.set_shape (feature {EV_FONT_CONSTANTS}.Shape_regular)
+			internal_font.set_height_in_points (10)
 			internal_font.preferred_families.extend ("Microsoft Sans Serif")
 			arch_desc_resource_package_text.set_font (internal_font)
 			arch_desc_resource_package_text.set_minimum_width (300)
@@ -387,10 +380,10 @@ feature {NONE}-- Initialization
 			arch_desc_copyright_label.set_text ("copyright: ")
 			arch_desc_copyright_label.set_minimum_width (55)
 			create internal_font
-			internal_font.set_family (3)
-			internal_font.set_weight (7)
-			internal_font.set_shape (10)
-			internal_font.set_height (13)
+			internal_font.set_family (feature {EV_FONT_CONSTANTS}.Family_sans)
+			internal_font.set_weight (feature {EV_FONT_CONSTANTS}.Weight_regular)
+			internal_font.set_shape (feature {EV_FONT_CONSTANTS}.Shape_regular)
+			internal_font.set_height_in_points (10)
 			internal_font.preferred_families.extend ("Microsoft Sans Serif")
 			arch_desc_copyright_text.set_font (internal_font)
 			arch_desc_copyright_text.set_minimum_height (44)
@@ -407,10 +400,10 @@ feature {NONE}-- Initialization
 			source_notebook.set_item_text (parsed_archetype_tree_view, "Node map")
 			archetype_text_edit_area.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
 			create internal_font
-			internal_font.set_family (4)
-			internal_font.set_weight (7)
-			internal_font.set_shape (10)
-			internal_font.set_height (12)
+			internal_font.set_family (feature {EV_FONT_CONSTANTS}.Family_typewriter)
+			internal_font.set_weight (feature {EV_FONT_CONSTANTS}.Weight_regular)
+			internal_font.set_shape (feature {EV_FONT_CONSTANTS}.Shape_regular)
+			internal_font.set_height_in_points (9)
 			internal_font.preferred_families.extend ("Courier New")
 			archetype_text_edit_area.set_font (internal_font)
 			archetype_text_edit_area.set_minimum_width (600)
@@ -441,7 +434,7 @@ feature {NONE}-- Initialization
 			tree_expand.set_tooltip ("Completely expand or collapse node map")
 			tree_expand.set_minimum_width (tree_control_panel_width)
 			tree_technical_node.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 157))
-			tree_technical_node.set_text ("to Tech-head")
+			tree_technical_node.set_text ("Technical")
 			tree_technical_node.set_tooltip ("Toggle inclusion of technical details")
 			tree_technical_node.set_minimum_width (tree_control_panel_width)
 			tree_expand_one.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 157))
@@ -478,9 +471,15 @@ feature {NONE}-- Initialization
 			parser_status_area.set_minimum_width (0)
 			parser_status_area.set_minimum_height (status_area_min_height)
 			parser_status_area.disable_edit
+			set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 206))
+			set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
+			set_minimum_width (app_min_width)
+			set_minimum_height (app_min_height)
+			set_maximum_width (app_max_width)
+			set_maximum_height (app_max_height)
+			set_title ("Ocean Informatics ADL Workbench")
 			
 				--Connect events.
-			close_request_actions.extend (agent exit_app)
 			open_adl_file_mi.select_actions.extend (agent open_adl_file)
 			save_adl_file_mi.select_actions.extend (agent save_adl_file)
 			exit_tool_mi.select_actions.extend (agent exit_app)
@@ -503,6 +502,7 @@ feature {NONE}-- Initialization
 			tree_expand_one.select_actions.extend (agent expand_tree_one_level)
 			tree_shrink_one.select_actions.extend (agent shrink_tree_one_level)
 			tree_shrink_level.select_actions.extend (agent shrink_tree_to_level)
+			close_request_actions.extend (agent exit_app)
 				-- Close the application when an interface close
 				-- request is recieved on `Current'. i.e. the cross is clicked.
 
@@ -512,33 +512,43 @@ feature {NONE}-- Initialization
 
 feature -- Access
 
-	menu: EV_MENU_BAR
-	file_menu, l_ev_menu_3, l_ev_menu_4: EV_MENU
-	open_adl_file_mi, save_adl_file_mi, exit_tool_mi, options, about_mi, news: EV_MENU_ITEM
-	l_ev_menu_separator_1, l_ev_menu_separator_2: EV_MENU_SEPARATOR
-	main, arch_desc_area_vbox, l_ev_vertical_box_1, l_ev_vertical_box_2, tree_controls: EV_VERTICAL_BOX
-	action_bar, arch_desc_status_hbox, arch_desc_auth_hbox, arch_desc_details_hbox, 
-	l_ev_horizontal_box_1, l_ev_horizontal_box_2, l_ev_horizontal_box_3, l_ev_horizontal_box_4, 
-	l_ev_horizontal_box_5, l_ev_horizontal_box_6, arch_desc_copyright_hbox, parsed_archetype_tree_view: EV_HORIZONTAL_BOX
-	open_button, parse_button, edit_button, save_button, tree_expand, tree_technical_node, 
-	tree_expand_one, tree_shrink_one: EV_BUTTON
-	format_label, l_ev_label_1, language_label, arch_desc_status_label, arch_desc_auth_orig_auth_label, 
-	arch_desc_auth_contrib_label, arch_desc_purpose_label, arch_desc_use_label, arch_desc_misuse_label, 
-	arch_desc_keywords_label, arch_desc_resource_package_label, arch_desc_resource_orig_res_label, 
-	arch_desc_copyright_label, tree_shrink_label: EV_LABEL
 	format_combo, language_combo, tree_shrink_level: EV_COMBO_BOX
-	archetype_id, parent_archetype_id, arch_desc_status_text, arch_desc_resource_package_text: EV_TEXT_FIELD
-	l_ev_horizontal_split_area_1: EV_HORIZONTAL_SPLIT_AREA
-	archetype_file_tree, parsed_archetype_tree: EV_TREE
-	l_ev_vertical_split_area_1, view_area: EV_VERTICAL_SPLIT_AREA
-	arch_notebook, source_notebook, ontology_notebook: EV_NOTEBOOK
-	arch_desc_auth_frame, arch_desc_details_frame, arch_desc_resource_frame: EV_FRAME
-	arch_desc_auth_orig_auth_mlist, arch_desc_resource_orig_res_mlist, parsed_archetype_found_paths, 
-	ontology_term_defs, ontology_constraint_defs: EV_MULTI_COLUMN_LIST
-	arch_desc_auth_contrib_list, arch_desc_keywords_list: EV_LIST
-	arch_desc_purpose_text, arch_desc_use_text, arch_desc_misuse_text, arch_desc_copyright_text, 
-	archetype_text_edit_area, parser_status_area: EV_TEXT
+	l_ev_menu_separator_1, l_ev_menu_separator_2: EV_MENU_SEPARATOR
+	archetype_id,
+	parent_archetype_id, arch_desc_status_text, arch_desc_resource_package_text: EV_TEXT_FIELD
+	arch_desc_auth_orig_auth_mlist,
+	arch_desc_resource_orig_res_mlist, parsed_archetype_found_paths, ontology_term_defs,
+	ontology_constraint_defs: EV_MULTI_COLUMN_LIST
+	file_menu, l_ev_menu_3, l_ev_menu_4: EV_MENU
 	l_ev_horizontal_separator_1: EV_HORIZONTAL_SEPARATOR
+	open_button,
+	parse_button, edit_button, save_button, tree_expand, tree_technical_node, tree_expand_one,
+	tree_shrink_one: EV_BUTTON
+	arch_desc_purpose_text, arch_desc_use_text, arch_desc_misuse_text,
+	arch_desc_copyright_text, archetype_text_edit_area, parser_status_area: EV_TEXT
+	arch_desc_auth_contrib_list,
+	arch_desc_keywords_list: EV_LIST
+	arch_notebook, source_notebook, ontology_notebook: EV_NOTEBOOK
+	archetype_file_tree,
+	parsed_archetype_tree: EV_TREE
+	l_ev_horizontal_split_area_1: EV_HORIZONTAL_SPLIT_AREA
+	l_ev_vertical_split_area_1,
+	view_area: EV_VERTICAL_SPLIT_AREA
+	action_bar, arch_desc_status_hbox, arch_desc_auth_hbox, arch_desc_details_hbox,
+	l_ev_horizontal_box_1, l_ev_horizontal_box_2, l_ev_horizontal_box_3, l_ev_horizontal_box_4,
+	l_ev_horizontal_box_5, l_ev_horizontal_box_6, arch_desc_copyright_hbox, parsed_archetype_tree_view: EV_HORIZONTAL_BOX
+	main,
+	arch_desc_area_vbox, l_ev_vertical_box_1, l_ev_vertical_box_2, tree_controls: EV_VERTICAL_BOX
+	format_label,
+	l_ev_label_1, language_label, arch_desc_status_label, arch_desc_auth_orig_auth_label,
+	arch_desc_auth_contrib_label, arch_desc_purpose_label, arch_desc_use_label, arch_desc_misuse_label,
+	arch_desc_keywords_label, arch_desc_resource_package_label, arch_desc_resource_orig_res_label,
+	arch_desc_copyright_label, tree_shrink_label: EV_LABEL
+	open_adl_file_mi, save_adl_file_mi,
+	exit_tool_mi, options, about_mi, news: EV_MENU_ITEM
+	menu: EV_MENU_BAR
+	arch_desc_auth_frame, arch_desc_details_frame,
+	arch_desc_resource_frame: EV_FRAME
 
 feature {NONE} -- Implementation
 
@@ -555,11 +565,6 @@ feature {NONE} -- Implementation
 		deferred
 		end
 	
-	exit_app is
-			-- Called by `close_request_actions' of `Current'.
-		deferred
-		end
-	
 	open_adl_file is
 			-- Called by `select_actions' of `open_adl_file_mi'.
 		deferred
@@ -567,6 +572,11 @@ feature {NONE} -- Implementation
 	
 	save_adl_file is
 			-- Called by `select_actions' of `save_adl_file_mi'.
+		deferred
+		end
+	
+	exit_app is
+			-- Called by `select_actions' of `exit_tool_mi'.
 		deferred
 		end
 	

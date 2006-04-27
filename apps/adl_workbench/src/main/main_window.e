@@ -334,9 +334,9 @@ feature {NONE} -- Commands
 			if adl_interface.parse_succeeded then
 				node_map_control.toggle_technical_mode
 				if node_map_control.in_technical_mode then
-					tree_technical_node.set_text("to Quack")
+					tree_technical_node.set_text("Basic")
 				else
-					tree_technical_node.set_text("to Tech-head")
+					tree_technical_node.set_text("Technical")
 				end
 			end
 		end

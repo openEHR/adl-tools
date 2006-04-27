@@ -29,10 +29,10 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	tree_control_panel_width: INTEGER is 
-			-- `Result' is INTEGER constant named tree_control_panel_width.
+	status_area_min_height: INTEGER is 
+			-- `Result' is INTEGER constant named status_area_min_height.
 		once
-			Result := 100
+			Result := 65
 		end
 
 	app_min_width: INTEGER is 
@@ -41,16 +41,22 @@ feature -- Access
 			Result := 800
 		end
 
-	parsed_archetype_tree_min_height: INTEGER is 
-			-- `Result' is INTEGER constant named parsed_archetype_tree_min_height.
+	source_notebook_min_width: INTEGER is 
+			-- `Result' is INTEGER constant named source_notebook_min_width.
 		once
-			Result := 350
+			Result := 600
 		end
 
-	max_arch_explorer_width: INTEGER is 
-			-- `Result' is INTEGER constant named max_arch_explorer_width.
+	tree_control_panel_width: INTEGER is 
+			-- `Result' is INTEGER constant named tree_control_panel_width.
 		once
-			Result := 180
+			Result := 100
+		end
+
+	min_terms_status_height: INTEGER is 
+			-- `Result' is INTEGER constant named min_terms_status_height.
+		once
+			Result := 200
 		end
 
 	app_min_height: INTEGER is 
@@ -65,40 +71,10 @@ feature -- Access
 			Result := 500
 		end
 
-	main_vbox_min_height: INTEGER is 
-			-- `Result' is INTEGER constant named main_vbox_min_height.
+	parsed_archetype_tree_min_height: INTEGER is 
+			-- `Result' is INTEGER constant named parsed_archetype_tree_min_height.
 		once
-			Result := 600
-		end
-
-	source_notebook_min_width: INTEGER is 
-			-- `Result' is INTEGER constant named source_notebook_min_width.
-		once
-			Result := 600
-		end
-
-	status_area_min_height: INTEGER is 
-			-- `Result' is INTEGER constant named status_area_min_height.
-		once
-			Result := 65
-		end
-
-	main_hbox_min_height: INTEGER is 
-			-- `Result' is INTEGER constant named main_hbox_min_height.
-		once
-			Result := 560
-		end
-
-	app_max_width: INTEGER is 
-			-- `Result' is INTEGER constant named app_max_width.
-		once
-			Result := 1024
-		end
-
-	app_max_height: INTEGER is 
-			-- `Result' is INTEGER constant named app_max_height.
-		once
-			Result := 768
+			Result := 350
 		end
 
 	min_terms_height: INTEGER is 
@@ -107,16 +83,40 @@ feature -- Access
 			Result := 100
 		end
 
+	app_max_width: INTEGER is 
+			-- `Result' is INTEGER constant named app_max_width.
+		once
+			Result := 1024
+		end
+
+	main_hbox_min_height: INTEGER is 
+			-- `Result' is INTEGER constant named main_hbox_min_height.
+		once
+			Result := 560
+		end
+
+	main_vbox_min_height: INTEGER is 
+			-- `Result' is INTEGER constant named main_vbox_min_height.
+		once
+			Result := 600
+		end
+
+	max_arch_explorer_width: INTEGER is 
+			-- `Result' is INTEGER constant named max_arch_explorer_width.
+		once
+			Result := 180
+		end
+
 	max_terms_height: INTEGER is 
 			-- `Result' is INTEGER constant named max_terms_height.
 		once
 			Result := 400
 		end
 
-	min_terms_status_height: INTEGER is 
-			-- `Result' is INTEGER constant named min_terms_status_height.
+	app_max_height: INTEGER is 
+			-- `Result' is INTEGER constant named app_max_height.
 		once
-			Result := 200
+			Result := 768
 		end
 
 
