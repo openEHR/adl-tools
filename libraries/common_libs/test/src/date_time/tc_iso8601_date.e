@@ -1,24 +1,28 @@
 indexing
-	component:   "openEHR EHR Reference Model"
-
-	description: "EHR test suite"
-	keywords:    "test, EHR"
+	component:   "openEHR Reusable Libraries"
+	description: "Test case for ISO8601_DATE type."
+	keywords:    "test, date, time"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class TC_EHR
+class TC_ISO8601_DATE
 
 inherit
 	TEST_CASE
 		redefine 
 			check_result
+		end
+		
+	SHARED_TEST_ENV
+		export
+			{NONE} all
 		end
 
 creation
@@ -26,7 +30,7 @@ creation
 
 feature -- Access
 
-	title: STRING is "EHR"
+	title:STRING is "ISO8601_DATE test"
 
 feature -- Initialisation
 
@@ -36,21 +40,18 @@ feature -- Initialisation
 
 	execute is
 		local
-			a_datum: EHR
-			ehr_status: EHR_STATUS
-			v_ehr_status: VERSIONED_EHR_STATUS
-			v_folder: VERSIONED_FOLDER
+			str: STRING
+			d: ISO8601_DATE
 		do
 		end
 
 feature -- Access
 
 	check_result is
-		do
-		end
+	    do
+	    end
 
 end
-
 
 --|
 --| ***** BEGIN LICENSE BLOCK *****
@@ -66,7 +67,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is tc_ehr.e.
+--| The Original Code is tc_base_units.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

@@ -1,54 +1,45 @@
 indexing
-	component:   "openEHR EHR Reference Model"
-
-	description: "EHR test suite"
-	keywords:    "test, EHR"
+	component:   "openEHR re-usable library"
+	description: "[
+				ISO8601:2004 compliant Duration class.
+				]"
+	keywords:    "date, time, duration"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2006 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class TC_EHR
+class ISO8601_DURATION
 
 inherit
-	TEST_CASE
-		redefine 
-			check_result
-		end
-
-creation
-	make
-
-feature -- Access
-
-	title: STRING is "EHR"
-
+	ISO8601_ROUTINES
+	
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make_from_string(s: STRING) is
+			-- make from a date of form: YYYYMMDD 
+		require
+			String_valid: s /= Void and is_valid_iso8601_date(s)
 		do
+			-- xx := iso8601_string_to_date(s)
 		end
 
-	execute is
-		local
-			a_datum: EHR
-			ehr_status: EHR_STATUS
-			v_ehr_status: VERSIONED_EHR_STATUS
-			v_folder: VERSIONED_FOLDER
+	make_from_extended_string(s: STRING) is
+			-- make from a date of form: YYYY-MM-DD 
+		require
+			String_valid: s /= Void and is_valid_iso8601_date(s)
 		do
+			-- xx := iso8601_string_to_date(s)
 		end
 
-feature -- Access
+feature -- Status Report
 
-	check_result is
-		do
-		end
-
+		
 end
 
 
@@ -66,7 +57,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is tc_ehr.e.
+--| The Original Code is date_time_routines.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

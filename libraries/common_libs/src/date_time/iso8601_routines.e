@@ -288,7 +288,7 @@ feature -- Status Report
 									Result := valid_time_strings(h_str, m_str, s_str, expanded_form)
 								end
 							end
-						elseif str.count = csr-1 then -- should be Thh:mm
+						elseif str.count = csr + 1 then -- should be Thh:mm
 							m_str := str.substring(csr, csr+1)	
 							Result := valid_time_strings(h_str, m_str, Void, expanded_form)
 						end
@@ -354,14 +354,14 @@ feature {NONE} -- Implementation
 		do
 			if h_str.is_integer then
 				h := h_str.to_integer
-				if h <= Hours_in_day then
+				if h < Hours_in_day then
 					if m_str /= Void and then m_str.is_integer then
 						m := m_str.to_integer
-						if m <= Minutes_in_hour then
+						if m < Minutes_in_hour then
 							if s_str /= Void then 
 								if s_str.is_double then
 									fs := s_str.to_double
-									if fs <= Seconds_in_minute then			
+									if fs < Seconds_in_minute then			
 										Result := True
 										create cached_iso8601_time.make_hmfs(h, m, fs, is_expanded)
 									end

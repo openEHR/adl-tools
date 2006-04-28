@@ -1,39 +1,57 @@
 indexing
-	component:   "openEHR EHR Reference Model"
-
-	description: "[
-	             Directory abstraction for the EHR, made up of a hierarchy of
-			 FOLDERs, each of which contains more FOLDERs and/or references
-			 to COMPOSITIONs.
-			 ]"
-	keywords:    "ehr, folder, directory"
+	component:   "openEHR Reusable Libraries"
+	description: "Test case for ISO8601_DURATION type."
+	keywords:    "test, date, time"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2006 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class VERSIONED_FOLDER
+class TC_ISO8601_DURATION
 
 inherit
-	VERSIONED_OBJECT [FOLDER]
+	TEST_CASE
+		redefine 
+			check_result
+		end
+		
+	SHARED_TEST_ENV
+		export
+			{NONE} all
+		end
 
-feature -- Status Report
+creation
+	make
 
-	valid_path (a_path: STRING): BOOLEAN is
-			-- True if the path is valid with respect to the current item.
+feature -- Access
+
+	title: STRING is "ISO8601_DURATION test"
+
+feature -- Initialisation
+
+	make(arg:ANY) is
 		do
 		end
 
-invariant
-	Owner_id_valid: owner_id.generating_type.is_equal("EHR")	
+	execute is
+		local
+			str: STRING
+			dt: ISO8601_DURATION
+		do
+		end
+
+feature -- Access
+
+	check_result is
+	    do
+	    end
 
 end
-
 
 --|
 --| ***** BEGIN LICENSE BLOCK *****
@@ -49,10 +67,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is folder.e.
+--| The Original Code is tc_base_units.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2005
+--| Portions created by the Initial Developer are Copyright (C) 2003-2004
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

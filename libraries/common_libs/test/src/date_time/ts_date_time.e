@@ -1,56 +1,48 @@
 indexing
-	component:   "openEHR EHR Reference Model"
-
-	description: "EHR test suite"
-	keywords:    "test, EHR"
+	component:   "openEHR Reusable Libraries"
+	description: "Test suite for date/time types."
+	keywords:    "test, date, time"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class TC_EHR
+class TS_DATE_TIME
 
 inherit
-	TEST_CASE
-		redefine 
-			check_result
-		end
+	TEST_SUITE
 
 creation
 	make
 
-feature -- Access
-
-	title: STRING is "EHR"
-
 feature -- Initialisation
 
 	make(arg:ANY) is
-		do
-		end
-
-	execute is
-		local
-			a_datum: EHR
-			ehr_status: EHR_STATUS
-			v_ehr_status: VERSIONED_EHR_STATUS
-			v_folder: VERSIONED_FOLDER
-		do
-		end
+	    do
+	    end
 
 feature -- Access
 
-	check_result is
-		do
+	title:STRING is "ISO 8601 Date/time test suite"
+
+	test_cases: LINKED_LIST[TEST_CASE] is
+		local
+			tc:TEST_CASE
+		once
+			create Result.make
+
+			create {TC_ISO8601_DATE} tc.make(Void) Result.extend(tc)
+			create {TC_ISO8601_TIME} tc.make(Void) Result.extend(tc)
+			create {TC_ISO8601_DATE_TIME} tc.make(Void) Result.extend(tc)
+			create {TC_ISO8601_DURATION} tc.make(Void) Result.extend(tc)
 		end
 
 end
-
 
 --|
 --| ***** BEGIN LICENSE BLOCK *****
@@ -66,7 +58,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is tc_ehr.e.
+--| The Original Code is units_suite.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004
