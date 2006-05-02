@@ -96,6 +96,22 @@ feature -- Environment Status
 	        create Result.make(0)
 	    end
 
+feature -- Miscellaneous
+
+	close_console:BOOLEAN is
+            external
+                "C | <wincon.h> , <wtypes.h>"
+            alias
+                "FreeConsole"
+            end
+	
+	app_interactive_mode: BOOLEAN is
+			-- FIXME - how to implement this? Probably needs to be implemented in FILE_APP_ENVIRONMENT
+			-- along with close_console function
+		do
+			io.put_string("FIXME: FILE_APP_ENVIRONMENT.app_interactive_mode function not implemented%N")
+		end
+
 end
 
 --|

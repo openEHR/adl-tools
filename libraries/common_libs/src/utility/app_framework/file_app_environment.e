@@ -104,15 +104,6 @@ feature -- Resource Configuration
 			Result := Default_cfg_file_cmt_char
 		end
 
-feature -- Miscellaneous
-
-	close_console:BOOLEAN is
-            external
-                "C | <wincon.h> , <wtypes.h>"
-            alias
-                "FreeConsole"
-            end
-
 end
 
 --|
