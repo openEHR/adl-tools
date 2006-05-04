@@ -1,10 +1,10 @@
 indexing
-	component:   "Deep Thought Reusable libraries"
+	component:   "openEHR Common Libraries"
 	description: "[
 				 Common access point operating environment resources.
 	             Sources of resource settings are as follows:
 	             	* environment variables
-	             	* local $DEEP_HOME/xxx.cfg file
+	             	* local $OCEAN_HOME/xxx.cfg file
 	             	* server host configuration server
 	             These are all gathered at initialisation time and made available
 	             through the app_resource_value() interface.
@@ -13,7 +13,7 @@ indexing
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2005 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2005,2006 openEHR Foundation"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -27,14 +27,14 @@ inherit
 
 feature -- Definitions
 
-	Default_cmd_line_option_sign:CHARACTER is '-'
+	Default_cmd_line_option_sign: CHARACTER is '-'
 
-	Default_home_env_varname:STRING is "DEEP_HOME"
+	Default_home_env_varname: STRING is "OCEAN_HOME"
 
-	Default_cfg_file_name:STRING is "default.cfg"
+	Default_cfg_file_name: STRING is "default.cfg"
 			-- default config filename is name of app + ".cfg"
 
-	Default_cfg_file_cmt_char:CHARACTER is ';'
+	Default_cfg_file_cmt_char: CHARACTER is ';'
 
 feature --- Initiatialisation
 
