@@ -21,10 +21,9 @@ feature --- Initiatialisation
 
 	app_env_initialise is
 		local
-			fname,home:STRING
-			a_dir:DIRECTORY
-			cfg_name:STRING
-			a_file:PLAIN_TEXT_FILE
+			fname, home: STRING
+			a_dir: DIRECTORY
+			a_file: PLAIN_TEXT_FILE
 		do
 			-- setup command line args
 			execution_environment.command_line.set_option_sign(app_cmd_line_option_sign)
@@ -44,16 +43,18 @@ feature --- Initiatialisation
 					app_env_fail_reason.append("Application HOME directory does not exist or not readable: ") 
 					app_env_fail_reason.append(application_home_directory)
 				else
-					-- find config file in home directory (defaults to current dir)
-					-- config file name "name_of_app.cfg" unless alternatively specified with "-cfg" option
-					fname := application_home_directory.twin
-					if fname.item(fname.count) /= os_directory_separator then
-						fname.extend(os_directory_separator)
-					end
-
 					-- see if a config file name was supplied on the command line
-					cfg_name := execution_environment.command_line.separate_word_option_value("cfg")
-					if cfg_name = Void or else cfg_name.is_empty then
+					fname := execution_environment.command_line.separate_word_option_value("cfg")
+
+					if fname = Void or else fname.is_empty then
+						-- find config file in home directory (defaults to current dir)
+						-- config file name "name_of_app.cfg" unless alternatively specified with "-cfg" option
+						fname := application_home_directory.twin
+
+						if fname.item(fname.count) /= os_directory_separator then
+							fname.extend(os_directory_separator)
+						end
+
 						-- try file named after this app
 						create a_file.make(fname + app_name + ".cfg")
 						if a_file.exists then
