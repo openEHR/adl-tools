@@ -31,8 +31,7 @@ inherit
 	DATE_TIME_ROUTINES
 		export
 			{NONE} all;
-			{ANY} is_valid_iso8601_date_constraint_pattern, is_valid_iso8601_date, 
-					iso8601_string_to_date
+			{ANY} is_valid_iso8601_date_constraint_pattern, is_valid_iso8601_date, iso8601_string_to_date
 		undefine
 			out
 		end
@@ -42,7 +41,7 @@ create
 
 feature -- Initialisation
 	
-	make_interval(an_interval: OE_INTERVAL[DATE]) is
+	make_interval(an_interval: OE_INTERVAL[ISO8601_DATE]) is
 		require
 			Interval_exists: an_interval /= Void
 		do
@@ -52,9 +51,9 @@ feature -- Initialisation
 		end
 
 	make_string_interval(a_lower, an_upper: STRING) is
-			-- make from two iso8601 strings. Either may be Void, indicating an open-ended interval;
-			-- they may also be the same, meaning a single point. Limits are automatically included
-			-- in the range
+			-- make from two iso8601 strings. Either but not both may be Void, indicating an 
+			-- open-ended interval; they may also be the same, meaning a single point. 
+			-- Limits are automatically included in the range
 		require
 			valid_interval: a_lower /= Void or an_upper /= Void
 			lower_exists: a_lower /= void implies is_valid_iso8601_date(a_lower)
@@ -63,16 +62,13 @@ feature -- Initialisation
 						(iso8601_string_to_date(a_lower) <= iso8601_string_to_date(an_upper))
 		do
 			if a_lower = Void then
-				if an_upper = Void then
-					create interval.make_unbounded
-				else
-					create interval.make_lower_unbounded(iso8601_string_to_date(an_upper), True)			
-				end
+				create interval.make_lower_unbounded(create {ISO8601_DATE}.make_from_string(an_upper), True)			
 			else
 				if an_upper = Void then
-					create interval.make_upper_unbounded(iso8601_string_to_date(a_lower), True)
+					create interval.make_upper_unbounded(create {ISO8601_DATE}.make_from_string(a_lower), True)
 				else
-					create interval.make_bounded(iso8601_string_to_date(a_lower), iso8601_string_to_date(an_upper), True, True)
+					create interval.make_bounded(create {ISO8601_DATE}.make_from_string(a_lower), 
+						create {ISO8601_DATE}.make_from_string(an_upper), True, True)
 				end
 			end
 		end
@@ -95,12 +91,12 @@ feature -- Initialisation
 		
 feature -- Access
 
-	interval: OE_INTERVAL[DATE]
+	interval: OE_INTERVAL[ISO8601_DATE]
 
 	pattern: STRING
 			-- ISO8601-based pattern like "yyyy-mm-??"
 
-	default_value: DATE is
+	default_value: ISO8601_DATE is
 		do
 			if interval /= Void then
 				Result := interval.lower
@@ -111,7 +107,7 @@ feature -- Access
 	
 feature -- Status Report
 
-	valid_value (a_value: DATE): BOOLEAN is 
+	valid_value (a_value: ISO8601_DATE): BOOLEAN is 
 		do
 			if interval /= Void then
 				Result := interval.has(a_value)

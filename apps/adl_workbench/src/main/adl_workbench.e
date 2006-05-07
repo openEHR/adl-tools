@@ -36,7 +36,7 @@ feature {NONE} -- Initialization
 			default_create
 		
 			if has_resources then
-				read_resource_file
+				initialise_default_resource_config_file_name
 				create main_window
 				create splash_window.make
 				splash_window.show
@@ -79,17 +79,6 @@ feature {NONE} -- Implementation
 			end
 		ensure
 			not Result implies fail_reason /= Void
-		end
-		
-	read_resource_file is
-			-- 
-		local
-			s: STRING
-		do
-			s := application_name
-			s.replace_substring_all(".exe", "")
-			s.append(".cfg")
-			initialise_resource_config_file_name(startup_directory + os_directory_separator.out + s)
 		end
 
 end

@@ -94,7 +94,6 @@ feature {NONE} -- Implementation
 		local
 			dir_dialog: EV_DIRECTORY_DIALOG
 			a_dir: DIRECTORY
-			question_dialog: EV_QUESTION_DIALOG
 			error_dialog: EV_INFORMATION_DIALOG
 		do
 			create dir_dialog
@@ -129,7 +128,6 @@ feature {NONE} -- Implementation
 		local
 			file_dialog: EV_FILE_OPEN_DIALOG
 			a_file: RAW_FILE
-			question_dialog: EV_QUESTION_DIALOG
 			error_dialog: EV_INFORMATION_DIALOG
 			end_pos: INTEGER
 			pathname: STRING

@@ -182,9 +182,9 @@ feature -- Factory
 		end
 
 	create_cardinality_make_unbounded: CARDINALITY is
-			-- create Result as unbounded interval
+			-- create Result as interval of 0 to +infinity
 		do
-			create Result.make(create {OE_INTERVAL[INTEGER]}.make_unbounded)
+			create Result.make(create {OE_INTERVAL[INTEGER]}.make_upper_unbounded(0, True))
 		end		
 end
 

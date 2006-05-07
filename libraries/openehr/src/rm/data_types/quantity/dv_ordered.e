@@ -28,6 +28,7 @@ inherit
 		undefine
 			is_equal
 		end
+		
 	COMPARABLE
 
 feature -- Access

@@ -42,7 +42,7 @@ create
 
 feature -- Initialisation
 	
-	make_interval(an_interval: OE_INTERVAL[TIME]) is
+	make_interval(an_interval: OE_INTERVAL[ISO8601_TIME]) is
 			-- make from a time interval
 		require
 			an_interval_exists: an_interval /= Void
@@ -64,16 +64,13 @@ feature -- Initialisation
 						(iso8601_string_to_time(a_lower) <= iso8601_string_to_time(an_upper))
 		do
 			if a_lower = Void then
-				if an_upper = Void then
-					create interval.make_unbounded
-				else
-					create interval.make_lower_unbounded(iso8601_string_to_time(an_upper), True)			
-				end
+				create interval.make_lower_unbounded(create {ISO8601_TIME}.make_from_string(an_upper), True)			
 			else
 				if an_upper = Void then
-					create interval.make_upper_unbounded(iso8601_string_to_time(a_lower), True)
+					create interval.make_upper_unbounded(create {ISO8601_TIME}.make_from_string(a_lower), True)
 				else
-					create interval.make_bounded(iso8601_string_to_time(a_lower), iso8601_string_to_time(an_upper), True, True)			
+					create interval.make_bounded(create {ISO8601_TIME}.make_from_string(a_lower), 
+						create {ISO8601_TIME}.make_from_string(an_upper), True, True)			
 				end
 			end
 		end
@@ -90,12 +87,12 @@ feature -- Initialisation
 		
 feature -- Access
 
-	interval: OE_INTERVAL[TIME]
+	interval: OE_INTERVAL[ISO8601_TIME]
 	
 	pattern: STRING
 			-- ISO8601-based pattern like "hh:mm:??"
 
-	default_value: TIME is
+	default_value: ISO8601_TIME is
 		do
 			if interval /= Void then
 				Result := interval.lower
@@ -106,7 +103,7 @@ feature -- Access
 	
 feature -- Status Report
 
-	valid_value (a_value: TIME): BOOLEAN is 
+	valid_value (a_value: ISO8601_TIME): BOOLEAN is 
 		do
 			if interval /= Void then
 				Result := interval.has(a_value)

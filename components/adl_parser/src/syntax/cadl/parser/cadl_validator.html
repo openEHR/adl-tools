@@ -826,25 +826,7 @@
 <div class="lhs">
 <span class="lhs_variable" id="date_value">date_value</span>: </div>
 <div class="rhs">
-&nbsp; <span class="rhs_variable"><a href="#precise_date_value">precise_date_value</a> </span></div>
-<div class="rhs">
-| <span class="rhs_variable"><a href="#partial_date_value">partial_date_value</a> </span></div>
-</div>
-
-<div class="rule">
-<div class="lhs">
-<span class="lhs_variable" id="precise_date_value">precise_date_value</span>: </div>
-<div class="rhs">
-&nbsp; <span class="token">V_INTEGER </span><span class="literal_token">&#45; </span><span class="token">V_INTEGER </span><span class="literal_token">&#45; </span><span class="token">V_INTEGER </span></div>
-</div>
-
-<div class="rule">
-<div class="lhs">
-<span class="lhs_variable" id="partial_date_value">partial_date_value</span>: </div>
-<div class="rhs">
-&nbsp; <span class="token">V_INTEGER </span><span class="literal_token">&#45; </span><span class="token">V_INTEGER </span><span class="literal_token">&#45; </span><span class="token">SYM_DT_UNKNOWN </span></div>
-<div class="rhs">
-| <span class="token">V_INTEGER </span><span class="literal_token">&#45; </span><span class="token">SYM_DT_UNKNOWN </span><span class="literal_token">&#45; </span><span class="token">SYM_DT_UNKNOWN </span></div>
+&nbsp; <span class="token">V_ISO8601_EXTENDED_DATE </span></div>
 </div>
 
 <div class="rule">
@@ -879,44 +861,7 @@
 <div class="lhs">
 <span class="lhs_variable" id="time_value">time_value</span>: </div>
 <div class="rhs">
-&nbsp; <span class="rhs_variable"><a href="#precise_time_value">precise_time_value</a> </span></div>
-<div class="rhs">
-| <span class="rhs_variable"><a href="#precise_time_value">precise_time_value</a> </span><span class="rhs_variable"><a href="#time_zone">time_zone</a> </span></div>
-<div class="rhs">
-| <span class="rhs_variable"><a href="#partial_time_value">partial_time_value</a> </span></div>
-<div class="rhs">
-| <span class="rhs_variable"><a href="#partial_time_value">partial_time_value</a> </span><span class="rhs_variable"><a href="#time_zone">time_zone</a> </span></div>
-</div>
-
-<div class="rule">
-<div class="lhs">
-<span class="lhs_variable" id="precise_time_value">precise_time_value</span>: </div>
-<div class="rhs">
-&nbsp; <span class="token">V_INTEGER </span><span class="literal_token">&#58; </span><span class="token">V_INTEGER </span><span class="literal_token">&#58; </span><span class="token">V_INTEGER </span></div>
-<div class="rhs">
-| <span class="token">V_INTEGER </span><span class="literal_token">&#58; </span><span class="token">V_INTEGER </span><span class="literal_token">&#58; </span><span class="token">V_REAL </span></div>
-<div class="rhs">
-| <span class="token">V_INTEGER </span><span class="literal_token">&#58; </span><span class="token">V_INTEGER </span></div>
-</div>
-
-<div class="rule">
-<div class="lhs">
-<span class="lhs_variable" id="partial_time_value">partial_time_value</span>: </div>
-<div class="rhs">
-&nbsp; <span class="token">V_INTEGER </span><span class="literal_token">&#58; </span><span class="token">V_INTEGER </span><span class="literal_token">&#58; </span><span class="token">SYM_DT_UNKNOWN </span></div>
-<div class="rhs">
-| <span class="token">V_INTEGER </span><span class="literal_token">&#58; </span><span class="token">SYM_DT_UNKNOWN </span><span class="literal_token">&#58; </span><span class="token">SYM_DT_UNKNOWN </span></div>
-<div class="rhs">
-| <span class="token">V_INTEGER </span><span class="literal_token">&#58; </span><span class="token">SYM_DT_UNKNOWN </span></div>
-</div>
-
-<div class="rule">
-<div class="lhs">
-<span class="lhs_variable" id="time_zone">time_zone</span>: </div>
-<div class="rhs">
-&nbsp; <span class="literal_token">Z </span></div>
-<div class="rhs">
-| <span class="literal_token">&#43; </span><span class="token">V_INTEGER </span></div>
+&nbsp; <span class="token">V_ISO8601_EXTENDED_TIME </span></div>
 </div>
 
 <div class="rule">
@@ -951,27 +896,7 @@
 <div class="lhs">
 <span class="lhs_variable" id="date_time_value">date_time_value</span>: </div>
 <div class="rhs">
-&nbsp; <span class="rhs_variable"><a href="#precise_date_time_value">precise_date_time_value</a> </span></div>
-<div class="rhs">
-| <span class="rhs_variable"><a href="#partial_date_time_value">partial_date_time_value</a> </span></div>
-</div>
-
-<div class="rule">
-<div class="lhs">
-<span class="lhs_variable" id="precise_date_time_value">precise_date_time_value</span>: </div>
-<div class="rhs">
-&nbsp; <span class="rhs_variable"><a href="#precise_date_value">precise_date_value</a> </span><span class="rhs_variable"><a href="#precise_time_value">precise_time_value</a> </span></div>
-</div>
-
-<div class="rule">
-<div class="lhs">
-<span class="lhs_variable" id="partial_date_time_value">partial_date_time_value</span>: </div>
-<div class="rhs">
-&nbsp; <span class="rhs_variable"><a href="#precise_date_value">precise_date_value</a> </span><span class="rhs_variable"><a href="#partial_time_value">partial_time_value</a> </span></div>
-<div class="rhs">
-| <span class="rhs_variable"><a href="#precise_date_value">precise_date_value</a> </span><span class="token">SYM_DT_UNKNOWN </span><span class="literal_token">&#58; </span><span class="token">SYM_DT_UNKNOWN </span><span class="literal_token">&#58; </span><span class="token">SYM_DT_UNKNOWN </span></div>
-<div class="rhs">
-| <span class="rhs_variable"><a href="#partial_date_value">partial_date_value</a> </span><span class="token">SYM_DT_UNKNOWN </span><span class="literal_token">&#58; </span><span class="token">SYM_DT_UNKNOWN </span><span class="literal_token">&#58; </span><span class="token">SYM_DT_UNKNOWN </span></div>
+&nbsp; <span class="token">V_ISO8601_EXTENDED_DATE_TIME </span></div>
 </div>
 
 <div class="rule">
@@ -1006,16 +931,9 @@
 <div class="lhs">
 <span class="lhs_variable" id="duration_value">duration_value</span>: </div>
 <div class="rhs">
-&nbsp; <span class="rhs_variable"><a href="#duration_magnitude">duration_magnitude</a> </span></div>
-<div class="rhs">
-| <span class="literal_token">&#45; </span><span class="rhs_variable"><a href="#duration_magnitude">duration_magnitude</a> </span></div>
-</div>
-
-<div class="rule">
-<div class="lhs">
-<span class="lhs_variable" id="duration_magnitude">duration_magnitude</span>: </div>
-<div class="rhs">
 &nbsp; <span class="token">V_ISO8601_DURATION </span></div>
+<div class="rhs">
+| <span class="literal_token">&#45; </span><span class="token">V_ISO8601_DURATION </span></div>
 </div>
 
 <div class="rule">

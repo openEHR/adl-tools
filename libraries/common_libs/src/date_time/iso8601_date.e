@@ -22,41 +22,148 @@ class ISO8601_DATE
 
 inherit
 	ISO8601_ROUTINES
+		undefine
+			is_equal, out
+		end
+	
+	COMPARABLE
+		redefine
+			out
+		end
+	
+create
+	make_from_string, make_y, make_ym, make_ymd
 	
 feature -- Initialisation
 
-	make_from_string(s: STRING) is
-			-- make from a date of form: YYYYMMDD 
+	make_from_string(str: STRING) is
+			-- make from any valid ISO date string
 		require
-			String_valid: s /= Void and is_valid_iso8601_date(s)
+			String_valid: str /= Void and is_valid_iso8601_date(str)
 		do
-			-- xx := iso8601_string_to_date(s)
+			if is_valid_iso8601_date(str) then
+				deep_copy(iso8601_parser.cached_iso8601_date)
+			end
 		end
 
-	make_from_extended_string(s: STRING) is
-			-- make from a date of form: YYYY-MM-DD 
+	make_y(y: INTEGER; is_extended_flag: BOOLEAN) is
+			-- make from year only
 		require
-			String_valid: s /= Void and is_valid_iso8601_date(s)
+			Year_valid: y >= 0
 		do
-			-- xx := iso8601_string_to_date(s)
+			year := y
+			month_unknown := True
+			day_unknown := True
+			is_extended := is_extended_flag
+		ensure
+			month_unknown
+			day_unknown
 		end
 
+	make_ym(y, m: INTEGER; is_extended_flag: BOOLEAN) is
+			-- make from year, month
+		require
+			Year_valid: y >= 0
+			Valid_month: m >= 1 and m <= Months_in_year
+		do
+			year := y
+			month := m
+			day_unknown := True
+			is_extended := is_extended_flag
+		ensure
+			day_unknown
+		end
+
+	make_ymd(y, m, d: INTEGER; is_extended_flag: BOOLEAN) is
+			-- make from year, month day
+		require
+			Year_valid: y >= 0
+			Valid_month: m >= 1 and m <= Months_in_year
+			Valid_day: d >= 1 and d <= days_in_month(m, y)
+		do
+			year := y
+			month := m
+			day := d
+			is_extended := is_extended_flag
+		end
+		
+feature -- Access
+
+	year: INTEGER
+	
+	month: INTEGER
+	
+	day: INTEGER
+	
 feature -- Status Report
 
-	month_known: BOOLEAN
-			-- True if month is known
+	is_extended: BOOLEAN
+			-- True if syntax format uses separators
+			
+	month_unknown: BOOLEAN
+			-- True if month is unknown
 
-	date_known: BOOLEAN
-			-- True if date is known
+	day_unknown: BOOLEAN
+			-- True if date is unknown
 
 	is_partial: BOOLEAN is
 			-- True if either date or month unknown
 		do
-			Result := not date_known
+			Result := day_unknown
 		end
 
+feature -- Comparison
+
+	infix "<" (other: like Current): BOOLEAN is
+			-- Is current object less than `other'?
+		do
+		end
+
+feature -- Output
+
+	as_string: STRING is
+			-- express as string of ISO8601 format
+		local
+			s: STRING
+		do
+			create Result.make(0)
+			Result.append(year.out)
+
+			if not month_unknown then
+				if is_extended then
+					Result.append_character(Date_separator)			
+				end
+				s := month.out
+				if s.count = 1 then
+					Result.append_character ('0')
+				end
+				Result.append(s)
+				
+				if not day_unknown then
+					if is_extended then
+						Result.append_character(Date_separator)			
+					end
+					s := day.out
+					if s.count = 1 then
+						Result.append_character ('0')
+					end
+					Result.append(s)					
+				end
+			end			
+		ensure
+			Result_valid: Result /= Void and then is_valid_iso8601_date(Result)				
+		end
+
+	out: STRING is
+		do
+			Result := as_string
+		end
+		
 invariant
-	Partial_validity: not month_known implies not date_known
+	Year_valid: year >= 0
+	Month_valid: not month_unknown implies (month >= 1 and month <= Months_in_year)
+	Day_valid: not day_unknown implies (day >= 1 and day <= days_in_month(month, year))
+	Partial_validity: month_unknown implies day_unknown
 		
 end
 

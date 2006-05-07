@@ -1,101 +1,101 @@
 indexing
-	component:   "openEHR Archetype Project"
-	description: "Test case for archetype creation"
-	keywords:    "test, ADL, CADL"
+	component:   "openEHR re-usable library"
+	description: "[
+				ISO8601:2004 compliant Timezone class, enabling representation
+				of 'Z', '+hhmm' and '-hhmm' time zone forms.
+				]"
+	keywords:    "date time"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2006 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class SHARED_TEST_ENV
-	
+class ISO8601_TIMEZONE
+
 inherit
-	SHARED_METHOD_DISPATCHER
-		
-	SHARED_DT_SERIALISERS
-		export
-			{NONE} all
-			{ANY} has_dt_serialiser_format
-		end
-
-	SHARED_RESOURCES
-		export
-			{NONE} all
-		end
-
-	INTERNAL
-		export
-			{NONE} all
-		end
-		
 	ISO8601_ROUTINES
-		export
-			{NONE} all
+	
+create
+	make_gmt, make
+	
+feature -- Initialisation
+
+	make_from_string(s: STRING) is
+			-- make from a time of form: Z|+hhmm|-hhmm
+		require
+			String_valid: s /= Void 
+		do
 		end
-		
+
+	make_gmt is
+			-- 
+		do
+			is_gmt := True
+			sign := '+'
+		end
+
+	make(a_sign: CHARACTER; h, m: INTEGER) is
+		require
+			Sign_valid: a_sign = '+' or a_sign = '-'
+			Hours_valid: h >= 0 and h <= Max_timezone_hours
+			Minutes_valid: m >= 0 and m < Minutes_in_hour
+		do
+			sign := a_sign
+			hours := h
+			minutes := m
+		end
+
 feature -- Access
 
-	root_node: OG_OBJECT_NODE is
-			-- 
-		once
-			-- initial creation
-			io.put_string("----- Create root node, id = at0001 ----%N")
-			create Result.make("at0001", Void)
-		end
-
-	print_paths(paths: ARRAYED_LIST [OG_PATH]) is
-		do
-			from 
-				paths.start
-			until
-				paths.off
-			loop
-				io.put_string(paths.item.as_string)
-				io.new_line
-				paths.forth
-			end
-		end
-
-	part:PART is
-		once
-			create Result
-		end
-
-	string_list:LINKED_LIST[STRING] is
-		once
-			create Result.make
-			Result.extend("1 - this")
-			Result.extend("2 - is")
-			Result.extend("3 - a")
-			Result.extend("4 - list")
-
-			Result.compare_objects
-		end
+	hours: INTEGER
 	
-	print_list (a_list: LIST[STRING]):STRING is
+	minutes: INTEGER
+	
+feature -- Status Report
+
+	is_gmt: BOOLEAN
+			-- True if 'Z' form
+
+	sign: CHARACTER
+			-- sign of non-GMT form, or '+' for GMT
+
+feature -- Output
+
+	as_string: STRING is
+			-- express as ISO8601 format string "Z" or "+hhmm" or "-hhmm"
+		local
+			s: STRING
 		do
 			create Result.make(0)
-			from a_list.start until a_list.off loop
-				Result.append(a_list.item)
-				Result.append("%N")
-				a_list.forth
-			end
+			if is_gmt then
+				Result.append_character(Time_zone_GMT)
+			else
+				Result.append_character(sign)				
+				s := hours.out
+				if s.count = 1 then
+					Result.append_character ('0')
+				end
+				Result.append(s)
+			
+				s := minutes.out
+				if s.count = 1 then
+					Result.append_character ('0')
+				end
+				Result.append(s)
+			end	
 		end
-		
-	dadl_engine: DADL_ENGINE is
-			-- 
-		once
-			create Result.make
-		end
-	    
-	path_parser: OG_PATH_VALIDATOR
+
+invariant
+	Hours_valid: hours >= 0 and hours <= Max_timezone_hours
+	Minutes_valid: minutes >= 0 and minutes < Minutes_in_hour
 
 end
+
 
 --|
 --| ***** BEGIN LICENSE BLOCK *****
@@ -111,7 +111,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is shared_test_env.e.
+--| The Original Code is date_time_routines.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

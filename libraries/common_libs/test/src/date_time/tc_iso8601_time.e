@@ -25,11 +25,6 @@ inherit
 			{NONE} all
 		end
 
-	ISO8601_ROUTINES
-		export
-			{NONE} all
-		end
-
 creation
 	make
 
@@ -45,51 +40,77 @@ feature -- Initialisation
 
 	execute is
 		local
-			str: STRING
 			t: ISO8601_TIME
 		do
 			--	Thh
-			io.put_string("is_valid_iso8601_time(%"T12%")=" + is_valid_iso8601_time("T12").out + "%N")
-			io.put_string("is_valid_iso8601_time(%"T00%")=" + is_valid_iso8601_time("T00").out + "%N")
-			io.put_string("is_valid_iso8601_time(%"T24%")=" + is_valid_iso8601_time("T24").out + "%N")
-			io.put_string("is_valid_iso8601_time(%"T25%")=" + is_valid_iso8601_time("T25").out + "%N")
+			io.put_string("    is_valid_iso8601_time(%"T12%")=" + is_valid_iso8601_time("T12").out + "%N")
+			io.put_string("    is_valid_iso8601_time(%"T00%")=" + is_valid_iso8601_time("T00").out + "%N")
+			io.put_string("    is_valid_iso8601_time(%"T24%")=" + is_valid_iso8601_time("T24").out + "%N")
+			io.put_string("not is_valid_iso8601_time(%"T25%")=" + (not is_valid_iso8601_time("T25")).out + "%N")
+
+			io.put_string("    is_valid_iso8601_time(%"T12Z%")=" + is_valid_iso8601_time("T12Z").out + "%N")
+			io.put_string("    is_valid_iso8601_time(%"T12+1000%")=" + is_valid_iso8601_time("T12+1000").out + "%N")
+			io.put_string("not is_valid_iso8601_time(%"T12+1300%")=" + (not is_valid_iso8601_time("T12+1300")).out + "%N")
+			io.put_string("    is_valid_iso8601_time(%"T12-1000%")=" + is_valid_iso8601_time("T12-1000").out + "%N")
+			io.put_string("not is_valid_iso8601_time(%"T12-1300%")=" + (not is_valid_iso8601_time("T12-1300")).out + "%N")
 
 			--	Thhmm
-			io.put_string("is_valid_iso8601_time(%"T1231%")=" + is_valid_iso8601_time("T1231").out + "%N")
-			io.put_string("is_valid_iso8601_time(%"T0031%")=" + is_valid_iso8601_time("T0031").out + "%N")
-			io.put_string("is_valid_iso8601_time(%"T2431%")=" + is_valid_iso8601_time("T2431").out + "%N")
-			io.put_string("is_valid_iso8601_time(%"T2531%")=" + is_valid_iso8601_time("T2531").out + "%N")
-			io.put_string("is_valid_iso8601_time(%"T1200%")=" + is_valid_iso8601_time("T1200").out + "%N")
-			io.put_string("is_valid_iso8601_time(%"T0059%")=" + is_valid_iso8601_time("T0059").out + "%N")
-			io.put_string("is_valid_iso8601_time(%"T2460%")=" + is_valid_iso8601_time("T2460").out + "%N")
-			io.put_string("is_valid_iso8601_time(%"T2561%")=" + is_valid_iso8601_time("T2561").out + "%N")
+			io.put_string("    is_valid_iso8601_time(%"T1231%")=" + is_valid_iso8601_time("T1231").out + "%N")
+			io.put_string("    is_valid_iso8601_time(%"T0031%")=" + is_valid_iso8601_time("T0031").out + "%N")
+			io.put_string("    is_valid_iso8601_time(%"T2400%")=" + is_valid_iso8601_time("T2400").out + "%N")
+			io.put_string("not is_valid_iso8601_time(%"T2431%")=" + (not is_valid_iso8601_time("T2431")).out + "%N")
+			io.put_string("not is_valid_iso8601_time(%"T2531%")=" + (not is_valid_iso8601_time("T2531")).out + "%N")
+			io.put_string("    is_valid_iso8601_time(%"T1200%")=" + is_valid_iso8601_time("T1200").out + "%N")
+			io.put_string("    is_valid_iso8601_time(%"T0059%")=" + is_valid_iso8601_time("T0059").out + "%N")
+			io.put_string("not is_valid_iso8601_time(%"T2460%")=" + (not is_valid_iso8601_time("T2460")).out + "%N")
+			io.put_string("not is_valid_iso8601_time(%"T2561%")=" + (not is_valid_iso8601_time("T2561")).out + "%N")
+
+			io.put_string("    is_valid_iso8601_time(%"T1540Z%")=" + is_valid_iso8601_time("T1540Z").out + "%N")
+			io.put_string("    is_valid_iso8601_time(%"T1540+0600%")=" + is_valid_iso8601_time("T1540+0600").out + "%N")
+			io.put_string("not is_valid_iso8601_time(%"T1540+1300%")=" + (not is_valid_iso8601_time("T1540+1300")).out + "%N")
+			io.put_string("    is_valid_iso8601_time(%"T1540-0000%")=" + is_valid_iso8601_time("T1540-0000").out + "%N")
+			io.put_string("not is_valid_iso8601_time(%"T1540-1300%")=" + (not is_valid_iso8601_time("T1540-1300")).out + "%N")
 
 			--  Thhmmss
-			io.put_string("is_valid_iso8601_time(%"T123122%")=" + is_valid_iso8601_time("T123122").out + "%N")
-			io.put_string("is_valid_iso8601_time(%"T003122%")=" + is_valid_iso8601_time("T003122").out + "%N")
-			io.put_string("is_valid_iso8601_time(%"T243122%")=" + is_valid_iso8601_time("T243122").out + "%N")
-			io.put_string("is_valid_iso8601_time(%"T253122%")=" + is_valid_iso8601_time("T253122").out + "%N")
-			io.put_string("is_valid_iso8601_time(%"T000000%")=" + is_valid_iso8601_time("T000000").out + "%N")
-			io.put_string("is_valid_iso8601_time(%"T120000%")=" + is_valid_iso8601_time("T120000").out + "%N")
-			io.put_string("is_valid_iso8601_time(%"T005959%")=" + is_valid_iso8601_time("T005959").out + "%N")
-			io.put_string("is_valid_iso8601_time(%"T246060%")=" + is_valid_iso8601_time("T246060").out + "%N")
-			io.put_string("is_valid_iso8601_time(%"T256161%")=" + is_valid_iso8601_time("T256161").out + "%N")
+			io.put_string("    is_valid_iso8601_time(%"T123122%")=" + is_valid_iso8601_time("T123122").out + "%N")
+			io.put_string("    is_valid_iso8601_time(%"T003122%")=" + is_valid_iso8601_time("T003122").out + "%N")
+			io.put_string("    is_valid_iso8601_time(%"T240000%")=" + is_valid_iso8601_time("T240000").out + "%N")
+			io.put_string("not is_valid_iso8601_time(%"T243122%")=" + (not is_valid_iso8601_time("T243122")).out + "%N")
+			io.put_string("not is_valid_iso8601_time(%"T253122%")=" + (not is_valid_iso8601_time("T253122")).out + "%N")
+			io.put_string("    is_valid_iso8601_time(%"T000000%")=" + is_valid_iso8601_time("T000000").out + "%N")
+			io.put_string("    is_valid_iso8601_time(%"T120000%")=" + is_valid_iso8601_time("T120000").out + "%N")
+			io.put_string("    is_valid_iso8601_time(%"T005959%")=" + is_valid_iso8601_time("T005959").out + "%N")
+			io.put_string("not is_valid_iso8601_time(%"T246060%")=" + (not is_valid_iso8601_time("T246060")).out + "%N")
+			io.put_string("not is_valid_iso8601_time(%"T256161%")=" + (not is_valid_iso8601_time("T256161")).out + "%N")
 
 			--	Thh:mm
-			io.put_string("is_valid_iso8601_time(%"T12:31%")=" + is_valid_iso8601_time("T12:31").out + "%N")
-			io.put_string("is_valid_iso8601_time(%"T00:31%")=" + is_valid_iso8601_time("T00:31").out + "%N")
-			io.put_string("is_valid_iso8601_time(%"T24:31%")=" + is_valid_iso8601_time("T24:31").out + "%N")
-			io.put_string("is_valid_iso8601_time(%"T25:31%")=" + is_valid_iso8601_time("T25:31").out + "%N")
-			io.put_string("is_valid_iso8601_time(%"T12:00%")=" + is_valid_iso8601_time("T12:00").out + "%N")
-			io.put_string("is_valid_iso8601_time(%"T00:59%")=" + is_valid_iso8601_time("T00:59").out + "%N")
-			io.put_string("is_valid_iso8601_time(%"T24:60%")=" + is_valid_iso8601_time("T24:60").out + "%N")
-			io.put_string("is_valid_iso8601_time(%"T25:61%")=" + is_valid_iso8601_time("T25:61").out + "%N")
+			io.put_string("    is_valid_iso8601_time(%"T12:31%")=" + is_valid_iso8601_time("T12:31").out + "%N")
+			io.put_string("    is_valid_iso8601_time(%"T00:31%")=" + is_valid_iso8601_time("T00:31").out + "%N")
+			io.put_string("    is_valid_iso8601_time(%"T24:00%")=" + is_valid_iso8601_time("T24:00").out + "%N")
+			io.put_string("not is_valid_iso8601_time(%"T24:31%")=" + (not is_valid_iso8601_time("T24:31")).out + "%N")
+			io.put_string("not is_valid_iso8601_time(%"T25:31%")=" + (not is_valid_iso8601_time("T25:31")).out + "%N")
+			io.put_string("    is_valid_iso8601_time(%"T12:00%")=" + is_valid_iso8601_time("T12:00").out + "%N")
+			io.put_string("    is_valid_iso8601_time(%"T00:59%")=" + is_valid_iso8601_time("T00:59").out + "%N")
+			io.put_string("not is_valid_iso8601_time(%"T24:60%")=" + (not is_valid_iso8601_time("T24:60")).out + "%N")
+			io.put_string("not is_valid_iso8601_time(%"T25:61%")=" + (not is_valid_iso8601_time("T25:61")).out + "%N")
 
 			--  Thhmmss,sss
+			io.put_string("    is_valid_iso8601_time(%"T123122,123%")=" + is_valid_iso8601_time("T123122,123").out + "%N")
 
 			-- 	Thh:mm:ss
+			io.put_string("    is_valid_iso8601_time(%"T12:31:22%")=" + is_valid_iso8601_time("T12:31:22").out + "%N")
+			io.put_string("    is_valid_iso8601_time(%"T00:31:22%")=" + is_valid_iso8601_time("T00:31:22").out + "%N")
+			io.put_string("    is_valid_iso8601_time(%"T24:00:00%")=" + is_valid_iso8601_time("T24:00:00").out + "%N")
+			io.put_string("not is_valid_iso8601_time(%"T24:31:22%")=" + (not is_valid_iso8601_time("T24:31:22")).out + "%N")
+			io.put_string("not is_valid_iso8601_time(%"T25:31:22%")=" + (not is_valid_iso8601_time("T25:31:22")).out + "%N")
+			io.put_string("    is_valid_iso8601_time(%"T00:00:00%")=" + is_valid_iso8601_time("T00:00:00").out + "%N")
+			io.put_string("    is_valid_iso8601_time(%"T12:00:00%")=" + is_valid_iso8601_time("T12:00:00").out + "%N")
+			io.put_string("    is_valid_iso8601_time(%"T00:59:59%")=" + is_valid_iso8601_time("T00:59:59").out + "%N")
+			io.put_string("not is_valid_iso8601_time(%"T24:60:60%")=" + (not is_valid_iso8601_time("T24:60:60")).out + "%N")
+			io.put_string("not is_valid_iso8601_time(%"T25:61:61%")=" + (not is_valid_iso8601_time("T25:61:61")).out + "%N")
 
 			-- 	Thh:mm:ss,sss
+			io.put_string("    is_valid_iso8601_time(%"T12:31:22,123%")=" + is_valid_iso8601_time("T12:31:22,123").out + "%N")
 
 		end
 

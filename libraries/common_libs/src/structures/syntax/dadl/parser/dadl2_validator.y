@@ -43,7 +43,8 @@ creation
 
 %token <INTEGER> V_INTEGER 
 %token <REAL> V_REAL 
-%token <STRING> V_TYPE_IDENTIFIER V_ATTRIBUTE_IDENTIFIER V_STRING V_ISO8601_DURATION
+%token <STRING> V_TYPE_IDENTIFIER V_ATTRIBUTE_IDENTIFIER V_STRING
+%token <STRING> V_ISO8601_EXTENDED_DATE V_ISO8601_EXTENDED_TIME V_ISO8601_EXTENDED_DATE_TIME V_ISO8601_DURATION
 %token <STRING> V_CADL_BLOCK
 %token <STRING> V_LOCAL_CODE V_QUALIFIED_TERM_CODE_REF V_LOCAL_TERM_CODE_REF
 %token <STRING> V_URI
@@ -65,10 +66,10 @@ creation
 %type <REAL> real_value
 %type <BOOLEAN> boolean_value
 %type <CHARACTER> character_value
-%type <DATE> date_value precise_date_value partial_date_value
-%type <DATE_TIME> date_time_value precise_date_time_value partial_date_time_value
-%type <TIME> time_value precise_time_value partial_time_value
-%type <DATE_TIME_DURATION> duration_value, duration_magnitude
+%type <ISO8601_DATE> date_value
+%type <ISO8601_DATE_TIME> date_time_value
+%type <ISO8601_TIME> time_value
+%type <ISO8601_DURATION> duration_value
 %type <CODE_PHRASE> term_code
 %type <URI> uri_value
 
@@ -77,24 +78,24 @@ creation
 %type <DT_COMPLEX_OBJECT_NODE> complex_object_block
 %type <DT_OBJECT_LEAF> untyped_primitive_object_block, primitive_object_block
 
-%type	<ARRAYED_LIST[STRING]> string_list_value
+%type <ARRAYED_LIST[STRING]> string_list_value
 %type <ARRAYED_LIST[INTEGER_REF]> integer_list_value
 %type <ARRAYED_LIST[REAL_REF]> real_list_value
 %type <ARRAYED_LIST[CHARACTER_REF]> character_list_value
 %type <ARRAYED_LIST[BOOLEAN_REF]> boolean_list_value
-%type <ARRAYED_LIST[DATE]> date_list_value
-%type <ARRAYED_LIST[TIME]> time_list_value
-%type <ARRAYED_LIST[DATE_TIME]> date_time_list_value
-%type <ARRAYED_LIST[DATE_TIME_DURATION]> duration_list_value
+%type <ARRAYED_LIST[ISO8601_DATE]> date_list_value
+%type <ARRAYED_LIST[ISO8601_TIME]> time_list_value
+%type <ARRAYED_LIST[ISO8601_DATE_TIME]> date_time_list_value
+%type <ARRAYED_LIST[ISO8601_DURATION]> duration_list_value
 %type <ARRAYED_LIST[CODE_PHRASE]> term_code_list_value
 %type <ARRAYED_LIST[ANY]> simple_list_value
 
 %type <OE_INTERVAL[INTEGER_REF]> integer_interval_value
 %type <OE_INTERVAL[REAL_REF]> real_interval_value
-%type <OE_INTERVAL[TIME]> time_interval_value
-%type <OE_INTERVAL[DATE]> date_interval_value
-%type <OE_INTERVAL[DATE_TIME]> date_time_interval_value
-%type <OE_INTERVAL[DURATION]> duration_interval_value
+%type <OE_INTERVAL[ISO8601_TIME]> time_interval_value
+%type <OE_INTERVAL[ISO8601_DATE]> date_interval_value
+%type <OE_INTERVAL[ISO8601_DATE_TIME]> date_time_interval_value
+%type <OE_INTERVAL[ISO8601_DURATION]> duration_interval_value
 %type <OE_INTERVAL[PART_COMPARABLE]> simple_interval_value
 
 %%
@@ -655,55 +656,48 @@ string_value: V_STRING
 
 string_list_value: V_STRING ',' V_STRING
 		{
-			create string_list.make(0)
-			string_list.extend($1)
-			string_list.extend($3)
-			$$ := string_list
+			create $$.make(0)
+			$$.extend($1)
+			$$.extend($3)
 		}
 	| string_list_value ',' V_STRING
 		{
-			string_list.extend($3)
-			$$ := string_list
+			$1.extend($3)
+			$$ := $1
 		}
 	| V_STRING ',' SYM_LIST_CONTINUE
 		{
-			create string_list.make(0)
-			string_list.extend($1)
-			$$ := string_list
+			create $$.make(0)
+			$$.extend($1)
 		}
 	;
 
 integer_value: V_INTEGER {
-			int_val := $1
-			$$ := int_val
+			$$ := $1
 		}
 	| '+' V_INTEGER {
-			int_val := $2
-			$$ := int_val
+			$$ := $2
 		}
 	| '-' V_INTEGER {
-			int_val := - $2
-			$$ := int_val
+			$$ := - $2
 		}
 	;
 
 integer_list_value: integer_value ',' integer_value
 		{
-			create integer_ref_list.make(0)
-			integer_ref_list.extend($1)
-			integer_ref_list.extend($3)
-			$$ := integer_ref_list
+			create $$.make(0)
+			$$.extend($1)
+			$$.extend($3)
 		}
 	| integer_list_value ',' integer_value
 		{
-			integer_ref_list.extend($3)
-			$$ := integer_ref_list
+			$1.extend($3)
+			$$ := $1
 		}
 	| integer_value ',' SYM_LIST_CONTINUE
 		{
-			create integer_ref_list.make(0)
-			integer_ref_list.extend($1)
-			$$ := integer_ref_list
+			create $$.make(0)
+			$$.extend($1)
 		}
 	;
 
@@ -741,39 +735,33 @@ integer_interval_value: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_va
 
 real_value: V_REAL 
 		{
-			real_val := $1
-			$$ := real_val
+			$$ := $1
 		}
 	| '+' V_REAL 
 		{
-			real_val := $2
-			$$ := real_val
+			$$ := $2
 		}
 	| '-' V_REAL 
 		{
-			real_val := - $2
-			$$ := real_val
+			$$ := - $2
 		}
 	;
 
 real_list_value: real_value ',' real_value
 		{
-			create real_ref_list.make(0)
-			real_ref_list.extend($1)
-
-			real_ref_list.extend($3)
-			$$ := real_ref_list
+			create $$.make(0)
+			$$.extend($1)
+			$$.extend($3)
 		}
 	| real_list_value ',' real_value
 		{
-			real_ref_list.extend($3)
-			$$ := real_ref_list
+			$1.extend($3)
+			$$ := $1
 		}
 	| real_value ',' SYM_LIST_CONTINUE
 		{
-			create real_ref_list.make(0)
-			real_ref_list.extend($1)
-			$$ := real_ref_list
+			create $$.make(0)
+			$$.extend($1)
 		}
 	;
 
@@ -821,21 +809,19 @@ boolean_value: SYM_TRUE
 
 boolean_list_value: boolean_value ',' boolean_value
 		{
-			create boolean_list.make(0)
-			boolean_list.extend($1)
-			boolean_list.extend($3)
-			$$ := boolean_list
+			create $$.make(0)
+			$$.extend($1)
+			$$.extend($3)
 		}
 	| boolean_list_value ',' boolean_value
 		{
-			boolean_list.extend($3)
-			$$ := boolean_list
+			$1.extend($3)
+			$$ := $1
 		}
 	| boolean_value ',' SYM_LIST_CONTINUE
 		{
-			create boolean_list.make(0)
-			boolean_list.extend($1)
-			$$ := boolean_list
+			create $$.make(0)
+			$$.extend($1)
 		}
 	;
 
@@ -847,67 +833,29 @@ character_value: V_CHARACTER
 
 character_list_value: character_value ',' character_value
 		{
-			create character_list.make(0)
-			character_list.extend($1)
-			character_list.extend($3)
-			$$ := character_list
+			create $$.make(0)
+			$$.extend($1)
+			$$.extend($3)
 		}
 	| character_list_value ',' character_value
 		{
-			character_list.extend($3)
-			$$ := character_list
+			$1.extend($3)
+			$$ := $1
 		}
 	| character_value ',' SYM_LIST_CONTINUE
 		{
-			create character_list.make(0)
-			character_list.extend($1)
-			$$ := character_list
+			create $$.make(0)
+			$$.extend($1)
 		}
 	;
 
-date_value: precise_date_value
+date_value: V_ISO8601_EXTENDED_DATE -- in ISO8601 form yyyy-MM-dd
 		{
-			$$ := $1
-		}
-	| partial_date_value
-		{
-			$$ := $1
-		}
-	;
-
-
-precise_date_value: V_INTEGER '-' V_INTEGER '-' V_INTEGER -- in ISO8601 form yyyy-MM-dd
-		{
-			if date_vc.is_correct_date($1, $3, $5) then
-				create a_date.make($1, $3, $5)
-				$$ := a_date
+			if is_valid_iso8601_date($1) then
+				create $$.make_from_string($1)
 			else
 				raise_error
-				report_error("invalid date: " + $1.out + "-" + $3.out + "-" + $5.out)
-				abort
-			end
-		}
-	;
-
-partial_date_value: V_INTEGER '-' V_INTEGER '-' SYM_DT_UNKNOWN -- in ISO8601 form yyyy-MM-??
-		{
-			if date_vc.is_correct_date($1, $3, 1) then -- FIXME: temporary until PARTIAL_DATE implemented
-				create a_date.make($1, $3, 1)
-				$$ := a_date
-			else
-				raise_error
-				report_error("invalid date: " + $1.out + "-" + $3.out + "-??")
-				abort
-			end
-		}
-	| V_INTEGER '-' SYM_DT_UNKNOWN '-' SYM_DT_UNKNOWN -- in ISO8601 form yyyy-??-??
-		{
-			if date_vc.is_correct_date($1, 1, 1) then
-				create a_date.make($1, 1, 1)
-				$$ := a_date
-			else
-				raise_error
-				report_error("invalid date: " + $1.out + "-??-??")
+				report_error("invalid ISO8601 date: " + $1)
 				abort
 			end
 		}
@@ -915,21 +863,19 @@ partial_date_value: V_INTEGER '-' V_INTEGER '-' SYM_DT_UNKNOWN -- in ISO8601 for
 
 date_list_value: date_value ',' date_value
 		{
-			create date_list.make(0)
-			date_list.extend($1)
-			date_list.extend($3)
-			$$ := date_list
+			create $$.make(0)
+			$$.extend($1)
+			$$.extend($3)
 		}
 	| date_list_value ',' date_value
 		{
-			date_list.extend($3)
-			$$ := date_list
+			$1.extend($3)
+			$$ := $1
 		}
 	| date_value ',' SYM_LIST_CONTINUE
 		{
-			create date_list.make(0)
-			date_list.extend($1)
-			$$ := date_list
+			create $$.make(0)
+			$$.extend($1)
 		}
 	;
 
@@ -965,121 +911,33 @@ date_interval_value: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_I
 		}
 	;
 
-time_value: precise_time_value
+time_value: V_ISO8601_EXTENDED_TIME
 		{
-			$$ := a_time
-		}
-	| precise_time_value time_zone
-		{
-			$$ := a_time
-		}
-	| partial_time_value
-		{
-			$$ := a_time
-		}
-	| partial_time_value time_zone
-		{
-			$$ := a_time
-		}
-	;
-
-precise_time_value: V_INTEGER ':' V_INTEGER ':' V_INTEGER
-		{
-			if time_vc.is_correct_time($1, $3, $5, False) then
-				create a_time.make($1, $3, $5)
-				$$ := a_time
+			if is_valid_iso8601_time($1) then
+				create $$.make_from_string($1)
 			else
 				raise_error
-				report_error("invalid time: " + $1.out + ":" + $3.out + ":" + $5.out)
+				report_error("invalid ISO8601 time: " + $1)
 				abort
 			end
-		}
-	| V_INTEGER ':' V_INTEGER ':' V_REAL
-		{
-			if time_vc.is_correct_time($1, $3, $5, False) then
-				create a_time.make_fine($1, $3, $5)
-				$$ := a_time
-			else
-				raise_error
-				report_error("invalid time: " + $1.out + ":" + $3.out + ":" + $5.out)
-				abort
-			end
-		}
-	| V_INTEGER ':' V_INTEGER
-		{
-			if time_vc.is_correct_time($1, $3, 0, False) then
-				create a_time.make($1, $3, 0)
-				$$ := a_time
-			else
-				raise_error
-				report_error("invalid time: " + $1.out + ":" + $3.out)
-				abort
-			end
-		}
-	;
-
-partial_time_value: V_INTEGER ':' V_INTEGER ':' SYM_DT_UNKNOWN
-		{
-			if time_vc.is_correct_time($1, $3, 0, False) then
-				create a_time.make($1, $3, 0) -- FIXME: hack until PARTIAL_TIME implemented
-				$$ := a_time
-			else
-				raise_error
-				report_error("invalid time: " + $1.out + ":" + $2.out + ":??")
-				abort
-			end
-		}
-	| V_INTEGER ':' SYM_DT_UNKNOWN ':' SYM_DT_UNKNOWN
-		{
-			if time_vc.is_correct_time($1, 0, 0, False) then
-				create a_time.make($1, 0, 0) -- FIXME: hack until PARTIAL_TIME implemented
-				$$ := a_time
-			else
-				raise_error
-				report_error("invalid time: " + $1.out + ":??:??")
-				abort
-			end
-		}
-	| V_INTEGER ':' SYM_DT_UNKNOWN
-		{
-			if time_vc.is_correct_time($1, 0, 0, False) then
-				create a_time.make($1, 0, 0) -- FIXME: hack until PARTIAL_TIME implemented
-				$$ := a_time
-			else
-				raise_error
-				report_error("invalid time: " + $1.out + ":??:??")
-				abort
-			end
-		}
-	;
-
-time_zone: 'Z'
-		{
-			-- set timezone to Greenwich
-		}
-	| '+' V_INTEGER
-		{
-			-- set it to some other meridian
 		}
 	;
 
 time_list_value: time_value ',' time_value
 		{
-			create time_list.make(0)
-			time_list.extend($1)
-			time_list.extend($3)
-			$$ := time_list
+			create $$.make(0)
+			$$.extend($1)
+			$$.extend($3)
 		}
 	| time_list_value ',' time_value
 		{
-			time_list.extend($3)
-			$$ := time_list
+			$1.extend($3)
+			$$ := $1
 		}
 	| time_value ',' SYM_LIST_CONTINUE
 		{
-			create time_list.make(0)
-			time_list.extend($1)
-			$$ := time_list
+			create $$.make(0)
+			$$.extend($1)
 		}
 	;
 
@@ -1115,63 +973,33 @@ time_interval_value: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_I
 		}
 	;
 
-date_time_value:  precise_date_time_value
+date_time_value: V_ISO8601_EXTENDED_DATE_TIME
 		{
-			$$ := $1
-		}
-	| partial_date_time_value
-		{
-			$$ := $1
-		}
-	;
-
-precise_date_time_value: precise_date_value precise_time_value
-		{
-			create a_date_time.make_by_date_time($1, $2)
-			$$ := a_date_time
-		}
-	;
-
-partial_date_time_value: precise_date_value partial_time_value
-		{
-			create a_date_time.make_by_date_time($1, $2)
-			$$ := a_date_time
-		}
-	| precise_date_value SYM_DT_UNKNOWN ':' SYM_DT_UNKNOWN ':' SYM_DT_UNKNOWN
-		{
-			if time_vc.is_correct_time(0, 0, 0, False) then
-				create a_time.make(0, 0, 0) -- FIXME: hack until PARTIAL_TIME implemented
+			if is_valid_iso8601_date_time($1) then
+				create $$.make_from_string($1)
+			else
+				raise_error
+				report_error("invalid ISO8601 date/time: " + $1)
+				abort
 			end
-			create a_date_time.make_by_date_time($1, a_time)
-			$$ := a_date_time
-		}
-	| partial_date_value SYM_DT_UNKNOWN ':' SYM_DT_UNKNOWN ':' SYM_DT_UNKNOWN
-		{
-			if time_vc.is_correct_time(0, 0, 0, False) then
-				create a_time.make(0, 0, 0) -- FIXME: hack until PARTIAL_TIME implemented
-			end
-			create a_date_time.make_by_date_time($1, a_time)
-			$$ := a_date_time
 		}
 	;
 
 date_time_list_value: date_time_value ',' date_time_value
 		{
-			create date_time_list.make(0)
-			date_time_list.extend($1)
-			date_time_list.extend($3)
-			$$ := date_time_list
+			create $$.make(0)
+			$$.extend($1)
+			$$.extend($3)
 		}
 	| date_time_list_value ',' date_time_value
 		{
-			date_time_list.extend($3)
-			$$ := date_time_list
+			$1.extend($3)
+			$$ := $1
 		}
 	| date_time_value ',' SYM_LIST_CONTINUE
 		{
-			create date_time_list.make(0)
-			date_time_list.extend($1)
-			$$ := date_time_list
+			create $$.make(0)
+			$$.extend($1)
 		}
 	;
 
@@ -1207,39 +1035,44 @@ date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_t
 		}
 	;
 
-duration_value: duration_magnitude
+duration_value: V_ISO8601_DURATION
 		{
-			$$ := $1
+			if is_valid_iso8601_duration($1) then
+				create $$.make_from_string($1)
+			else
+				raise_error
+				report_error("invalid ISO8601 duration: " + $1)
+				abort
+			end
 		}
-	| '-' duration_magnitude
+	| '-' V_ISO8601_DURATION
 		{
-			$$ := -$2
-		}
-	;
-
-duration_magnitude: V_ISO8601_DURATION
-		{
-			$$ := iso8601_string_to_duration($1)
+			if is_valid_iso8601_duration($2) then
+				create $$.make_from_string($2)
+				$$.set_sign_negative
+			else
+				raise_error
+				report_error("invalid ISO8601 duration: " + $2)
+				abort
+			end
 		}
 	;
 
 duration_list_value: duration_value ',' duration_value
 		{
-			create duration_list.make(0)
-			duration_list.extend($1)
-			duration_list.extend($3)
-			$$ := duration_list
+			create $$.make(0)
+			$$.extend($1)
+			$$.extend($3)
 		}
 	| duration_list_value ',' duration_value
 		{
-			duration_list.extend($3)
-			$$ := duration_list
+			$1.extend($3)
+			$$ := $1
 		}
 	| duration_value ',' SYM_LIST_CONTINUE
 		{
-			create duration_list.make(0)
-			duration_list.extend($1)
-			$$ := duration_list
+			create $$.make(0)
+			$$.extend($1)
 		}
 	;
 
@@ -1284,21 +1117,19 @@ term_code: V_QUALIFIED_TERM_CODE_REF
 
 term_code_list_value: term_code ',' term_code
 		{
-			create term_list.make(0)
-			term_list.extend($1)
-			term_list.extend($3)
-			$$ := term_list
+			create $$.make(0)
+			$$.extend($1)
+			$$.extend($3)
 		}
 	| term_code_list_value ',' term_code
 		{
-			term_list.extend($3)
-			$$ := term_list
+			$1.extend($3)
+			$$ := $1
 		}
 	| term_code ',' SYM_LIST_CONTINUE
 		{
-			create term_list.make(0)
-			term_list.extend($1)
-			$$ := term_list
+			create $$.make(0)
+			$$.extend($1)
 		}
 	;
 
@@ -1398,32 +1229,14 @@ feature {NONE} -- Implementation
 	term: CODE_PHRASE
 	a_uri: URI
 
-	term_list: ARRAYED_LIST[CODE_PHRASE]
-	string_list: ARRAYED_LIST[STRING]
-	integer_ref_list: ARRAYED_LIST[INTEGER_REF]
-	integer_list: ARRAYED_LIST[INTEGER]
-	real_ref_list: ARRAYED_LIST[REAL_REF]
-	real_list: ARRAYED_LIST[REAL]
-	character_list: ARRAYED_LIST[CHARACTER_REF]
-	boolean_list: ARRAYED_LIST[BOOLEAN_REF]
-	date_list: ARRAYED_LIST[DATE]
-	time_list: ARRAYED_LIST[TIME]
-	date_time_list: ARRAYED_LIST[DATE_TIME]
-	duration_list: ARRAYED_LIST[DATE_TIME_DURATION]
-
 	integer_interval: OE_INTERVAL [INTEGER_REF]
 	real_interval: OE_INTERVAL [REAL_REF]
-	date_interval: OE_INTERVAL [DATE]
-	time_interval: OE_INTERVAL [TIME]
-	date_time_interval: OE_INTERVAL [DATE_TIME]
-	duration_interval: OE_INTERVAL [DATE_TIME_DURATION]
+	date_interval: OE_INTERVAL [ISO8601_DATE]
+	time_interval: OE_INTERVAL [ISO8601_TIME]
+	date_time_interval: OE_INTERVAL [ISO8601_DATE_TIME]
+	duration_interval: OE_INTERVAL [ISO8601_DURATION]
 
 	indent: STRING
-	int_val: INTEGER
-	real_val: REAL
 	str: STRING
-	a_date: DATE
-	a_time: TIME
-	a_date_time: DATE_TIME
 
 end

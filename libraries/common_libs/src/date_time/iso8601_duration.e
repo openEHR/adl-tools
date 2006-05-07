@@ -18,28 +18,153 @@ class ISO8601_DURATION
 
 inherit
 	ISO8601_ROUTINES
+		undefine
+			is_equal, out
+		end
+	
+	COMPARABLE
+		redefine
+			out
+		end
+	
+create
+	make, make_from_string
 	
 feature -- Initialisation
 
-	make_from_string(s: STRING) is
-			-- make from a date of form: YYYYMMDD 
+	make_from_string(str: STRING) is
+			-- make from a valid ISO duration string
 		require
-			String_valid: s /= Void and is_valid_iso8601_date(s)
+			String_valid: str /= Void and is_valid_iso8601_duration(str)
 		do
-			-- xx := iso8601_string_to_date(s)
+			if is_valid_iso8601_duration(str) then
+				deep_copy(iso8601_parser.cached_iso8601_duration)
+			end
 		end
 
-	make_from_extended_string(s: STRING) is
-			-- make from a date of form: YYYY-MM-DD 
+	make(yr, mo, wk, dy, hr, mi, sec: INTEGER; sec_frac: DOUBLE) is
+			-- make from parts; any part can be zero; at least one part must be non-zero
 		require
-			String_valid: s /= Void and is_valid_iso8601_date(s)
+			years_valid: yr >= 0
+			months_valid: mo >= 0
+			weeks_valid: wk >= 0
+			days_valid: dy >= 0
+			hours_valid: hr >= 0
+			minutes_valid: mi >= 0
+			seconds_valid: sec >= 0
+			seconds_fraction_valid: sec_frac >= 0.0 and sec_frac < 1.0
 		do
-			-- xx := iso8601_string_to_date(s)
+			years := yr
+			months := mo
+			weeks := wk
+			days := dy
+			hours := hr
+			minutes := mi
+			seconds := sec
+			seconds_fraction := sec_frac
+		end
+	
+feature -- Access Control
+
+	years: INTEGER
+	
+	months: INTEGER
+	
+	weeks: INTEGER
+	
+	days: INTEGER
+	
+	hours: INTEGER
+	
+	minutes: INTEGER
+	
+	seconds: INTEGER
+	
+	seconds_fraction: DOUBLE
+	
+	sign: CHARACTER
+	
+feature -- Comparison
+
+	infix "<" (other: like Current): BOOLEAN is
+			-- Is current object less than `other'?
+		do
 		end
 
-feature -- Status Report
+feature -- Modification
 
+	set_sign_negative is
+			-- set sign to '-'
+		do
+			sign := '-'
+		end
 		
+feature -- Output
+
+	as_string: STRING is
+			-- output as ISO8601 duration string
+		local
+			sec_frac_str: STRING
+		do
+			create Result.make(0)
+			if sign = '-' then
+				Result.append_character(sign)
+			end
+			
+			Result.append_character(Duration_leader)
+
+			if years /= 0 then
+				Result.append(years.out + "Y")
+			end
+
+			if months /= 0 then
+				Result.append(months.out + "M")
+			end
+
+			if weeks /= 0 then
+				Result.append(weeks.out + "W")
+			end
+
+			if days /= 0 then
+				Result.append(days.out + "D")
+			end
+
+			Result.append_character(Time_leader)
+			
+			if hours /= 0 then
+				Result.append(hours.out + "h")
+			end
+
+			if minutes /= 0 then
+				Result.append(minutes.out + "m")
+			end
+
+			if seconds /= 0 then
+				Result.append(seconds.out)
+				if seconds_fraction > 0.0 then
+					Result.append_character(Decimal_separator)
+					sec_frac_str := seconds_fraction.out
+					Result.append(sec_frac_str.substring(sec_frac_str.index_of('.', 1)+1, sec_frac_str.count))
+				end
+				Result.append(seconds.out + "s")
+			end
+		end
+		
+	out: STRING is
+		do
+			Result := as_string
+		end
+		
+invariant		
+	years_valid: years >= 0
+	months_valid: months >= 0
+	weeks_valid: weeks >= 0
+	days_valid: days >= 0
+	hours_valid: hours >= 0
+	minutes_valid: minutes >= 0
+	seconds_valid: seconds >= 0
+	seconds_fraction_valid: seconds_fraction >= 0.0 and seconds_fraction < 1.0
+
 end
 
 

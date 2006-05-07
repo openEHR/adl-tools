@@ -15,8 +15,9 @@ indexing
 class DATE_TIME_CONSTANTS
 
 inherit
-	DATE_CONSTANTS
-	TIME_CONSTANTS
+	-- DATE_CONSTANTS
+	-- TIME_CONSTANTS
+	KL_GREGORIAN_CALENDAR
 	
 feature -- Definitions
 
@@ -30,21 +31,13 @@ feature -- Definitions
 
 	Middle_minute_in_hour:INTEGER is 30
 
-	Days_in_year: INTEGER is 365
-
 	Middle_day_of_month: INTEGER is 15
 
 	Middle_month_of_year: INTEGER is 6
 	
 	Last_day_of_middle_month: INTEGER is 30
-
-	days_in_month(a_month, a_year:INTEGER):INTEGER is
-			-- days in nth month
-		require
-			a_month > 0 and a_month < 12
-		do
-			Result := days_in_i_th_month(a_month, a_year)
-		end
+	
+	Max_timezone_hours: INTEGER is 12
 		
 end
 

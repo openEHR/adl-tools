@@ -23,7 +23,7 @@ inherit
 		
 create 
 	default_create,
-	make_bounded, make_lower_unbounded, make_upper_unbounded, make_unbounded, make_point
+	make_bounded, make_lower_unbounded, make_upper_unbounded, make_point
 
 feature -- Initialization
 
@@ -90,16 +90,16 @@ feature -- Initialization
 			lower_included_set: lower_included = lower_included_flag
 		end
 
-	make_unbounded is
-		do
-			lower_unbounded := True
-			upper_unbounded := True
-		ensure
-			Lower_unbounded: lower_unbounded
-			Upper_unbounded: upper_unbounded
-			lower_included_not_set: not lower_included
-			upper_included_not_set: not upper_included
-		end
+--	make_unbounded is
+--		do
+--			lower_unbounded := True
+--			upper_unbounded := True
+--		ensure
+--			Lower_unbounded: lower_unbounded
+--			Upper_unbounded: upper_unbounded
+--			lower_included_not_set: not lower_included
+--			upper_included_not_set: not upper_included
+--		end
 
 feature -- Access
 

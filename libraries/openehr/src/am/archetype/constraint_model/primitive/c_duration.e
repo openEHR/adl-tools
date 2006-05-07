@@ -41,7 +41,7 @@ create
 
 feature -- Initialisation
 	
-	make_interval(an_interval: OE_INTERVAL[DATE_TIME_DURATION]) is
+	make_interval(an_interval: OE_INTERVAL[ISO8601_DURATION]) is
 		require
 			Interval_exists: an_interval /= Void
 		do
@@ -60,32 +60,29 @@ feature -- Initialisation
 						(iso8601_string_to_duration(a_lower) <= iso8601_string_to_duration(an_upper))
 		do
 			if a_lower = Void then
-				if an_upper = Void then
-					create interval.make_unbounded
-				else
-					create interval.make_lower_unbounded(iso8601_string_to_duration(an_upper), include_upper)			
-				end
+				create interval.make_lower_unbounded(create {ISO8601_DURATION}.make_from_string(an_upper), include_upper)
 			else
 				if an_upper = Void then
-					create interval.make_upper_unbounded(iso8601_string_to_duration(a_lower), include_lower)
+					create interval.make_upper_unbounded(create {ISO8601_DURATION}.make_from_string(a_lower), include_lower)
 				else
-					create interval.make_bounded(iso8601_string_to_duration(a_lower), iso8601_string_to_duration(an_upper), include_lower, include_upper)			
+					create interval.make_bounded(create {ISO8601_DURATION}.make_from_string(a_lower), 
+						create {ISO8601_DURATION}.make_from_string(an_upper), include_lower, include_upper)			
 				end
 			end
 		end
 
 feature -- Access
 
-	interval: OE_INTERVAL[DATE_TIME_DURATION]
+	interval: OE_INTERVAL[ISO8601_DURATION]
 
-	default_value: DATE_TIME_DURATION is
+	default_value: ISO8601_DURATION is
 		do
 			Result := interval.lower
 		end
 
 feature -- Status Report
 
-	valid_value (a_value: DATE_TIME_DURATION): BOOLEAN is 
+	valid_value (a_value: ISO8601_DURATION): BOOLEAN is 
 		do
 			Result := interval.has(a_value)
 		end
@@ -97,18 +94,17 @@ feature -- Output
 			create Result.make(0)
 			Result.append(symbols.item(SYM_INTERVAL_DELIM))
 			if interval.lower_unbounded then
-				Result.append("<= " + duration_to_iso8601_string(interval.upper))
+				Result.append("<= " + interval.upper.as_string)
 			elseif interval.upper_unbounded then
-				Result.append(">= " + duration_to_iso8601_string(interval.lower))
+				Result.append(">= " + interval.lower.as_string)
 			elseif not interval.limits_equal then
-				Result.append(duration_to_iso8601_string(interval.lower) + ".." + 
-								duration_to_iso8601_string(interval.upper))
+				Result.append(interval.lower.as_string + ".." + interval.upper.as_string)
 			else
-				Result.append(duration_to_iso8601_string(interval.lower)) 
+				Result.append(interval.as_string) 
 			end
 			Result.append(symbols.item(SYM_INTERVAL_DELIM))
 			if assumed_value /= Void then
-				Result.append("; " + duration_to_iso8601_string(assumed_value))
+				Result.append("; " + assumed_value.as_string)
 			end
 		end
 

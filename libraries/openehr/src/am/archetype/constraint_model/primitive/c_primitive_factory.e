@@ -53,12 +53,6 @@ feature -- Factory
 			create Result.make_upper_unbounded(a_lower, include_lower)
 		end
 
-	create_integer_interval_make_unbounded: OE_INTERVAL[INTEGER] is
-			-- create Result as unbounded interval
-		do
-			create Result.make_unbounded
-		end
-
 	create_real_interval_make_bounded (a_lower, an_upper: REAL; include_lower, include_upper: BOOLEAN): OE_INTERVAL[REAL] is
 			-- create Result with both limits set
 		require
@@ -77,12 +71,6 @@ feature -- Factory
 			-- create Result from `a_lower' to +infinity
 		do
 			create Result.make_upper_unbounded(a_lower, include_lower)
-		end
-
-	create_real_interval_make_unbounded: OE_INTERVAL[REAL] is
-			-- create Result as unbounded interval
-		do
-			create Result.make_unbounded
 		end
 
 	create_c_integer_make_bounded (a_lower, an_upper: INTEGER; include_lower, include_upper: BOOLEAN): C_INTEGER is
@@ -105,12 +93,6 @@ feature -- Factory
 			create Result.make_interval(create {OE_INTERVAL[INTEGER]}.make_upper_unbounded(a_lower, include_lower))
 		end
 
-	create_c_integer_make_unbounded: C_INTEGER is
-			-- create Result as unbounded interval
-		do
-			create Result.make_interval(create {OE_INTERVAL[INTEGER]}.make_unbounded)
-		end
-
 	create_c_real_make_bounded (a_lower, an_upper: REAL; include_lower, include_upper: BOOLEAN): C_REAL is
 			-- create Result with both limits set
 		require
@@ -129,12 +111,6 @@ feature -- Factory
 			-- create Result from `a_lower' to +infinity
 		do
 			create Result.make_interval(create {OE_INTERVAL[REAL]}.make_upper_unbounded(a_lower, include_lower))
-		end
-
-	create_c_real_make_unbounded: C_REAL is
-			-- create Result as unbounded interval
-		do
-			create Result.make_interval(create {OE_INTERVAL[REAL]}.make_unbounded)
 		end
 
 	create_c_boolean_make_true: C_BOOLEAN is

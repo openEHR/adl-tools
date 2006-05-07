@@ -65,7 +65,7 @@ feature {NONE} -- Initialization
    			view_area.set_proportion(0.5)
 			
 			if repository_path.is_empty then
-				set_repository_path(startup_directory)
+				set_repository_path(application_startup_directory)
 				need_to_set_options := True
 			end
 
@@ -266,8 +266,6 @@ feature {NONE} -- Commands
 		
 	resync_file is
 			-- resynchronise in-memory archetype to file if changed due to editing
-		local
-			question_dialog: EV_QUESTION_DIALOG
 		do
 			if adl_interface.file_changed_on_disk then
 				adl_interface.resync_file

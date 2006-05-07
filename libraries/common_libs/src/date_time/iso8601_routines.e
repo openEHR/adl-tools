@@ -22,6 +22,7 @@ feature -- Definitions
 	Date_separator: CHARACTER is '-'
 	Time_separator: CHARACTER is ':'
 	Time_leader: CHARACTER is 'T'
+	Time_zone_GMT: CHARACTER is 'Z'
 	Duration_leader: CHARACTER is 'P'
 	Iso8601_decimal_separator: CHARACTER is ','
 	Decimal_separator: CHARACTER is '.'
@@ -34,23 +35,10 @@ feature -- Conversion
 			a_date /= Void
 		local
 			s: STRING
+			an_iso_date: ISO8601_DATE			
 		do
-			create Result.make(0)
-			Result.append(a_date.year.out)
-			Result.append_character(Date_separator)
-			
-			s := a_date.month.out
-			if s.count = 1 then
-				Result.append_character ('0')
-			end
-			Result.append(s)
-			Result.append_character(Date_separator)
-
-			s := a_date.day.out
-			if s.count = 1 then
-				Result.append_character ('0')
-			end
-			Result.append(s)
+			create an_iso_date.make_ymd (a_date.year, a_date.month, a_date.day, True)
+			Result := an_iso_date.as_string
 		ensure
 			Result_valid: Result /= Void and then is_valid_iso8601_date(Result)				
 		end
@@ -61,10 +49,22 @@ feature -- Conversion
 			str_valid: str /= Void and then is_valid_iso8601_date(str)
 		local
 			y, m, d: INTEGER
+			an_iso_date: ISO8601_DATE
 		do
-			y := str.substring(1,4).to_integer
-			m := str.substring(6,7).to_integer
-			d := str.substring(9,10).to_integer
+			create an_iso_date.make_from_string(str)
+			y := an_iso_date.year
+			if an_iso_date.day_unknown then
+				if an_iso_date.month_unknown then
+					m := Middle_month_of_year
+					d := Last_day_of_middle_month
+				else
+					m := an_iso_date.month
+					d := Middle_day_of_month
+				end
+			else
+				m := an_iso_date.month
+				d := an_iso_date.day
+			end
 			create Result.make(y, m, d)
 		ensure
 			Result /= Void
@@ -76,29 +76,10 @@ feature -- Conversion
 			a_time /= Void
 		local
 			s: STRING
+			an_iso_time: ISO8601_TIME
 		do
-			create Result.make(0)
-			Result.append_character(Time_leader)
-						
-			s := a_time.hour.out
-			if s.count = 1 then
-				Result.append_character ('0')
-			end
-			Result.append(s)
-			Result.append_character(Time_separator)
-			
-			s := a_time.minute.out
-			if s.count = 1 then
-				Result.append_character ('0')
-			end
-			Result.append(s)
-			Result.append_character(Time_separator)
-			
-			s := a_time.second.out
-			if s.count = 1 then
-				Result.append_character ('0')
-			end
-			Result.append(s)			
+			create an_iso_time.make_hmsf (a_time.hour, a_time.minute, a_time.second, a_time.fine_second, True)
+			Result := an_iso_time.as_string
 		ensure
 			Result_valid: Result /= Void and then is_valid_iso8601_time(Result)		
 		end
@@ -110,18 +91,24 @@ feature -- Conversion
 		local
 			h, m, s: INTEGER
 			fs: DOUBLE
-			sec_str: STRING
+			an_iso_time: ISO8601_TIME
 		do
-			h := str.substring(2,3).to_integer
-			m := str.substring(5,6).to_integer
-			sec_str := str.substring(8,str.count)
-			if sec_str.is_integer then
-				s := sec_str.to_integer
-				create Result.make(h, m, s)
+			create an_iso_time.make_from_string(str)
+			h := an_iso_time.hours
+			if an_iso_time.seconds_unknown then
+				if an_iso_time.minutes_unknown then
+					m := (Minutes_in_hour / 2).truncated_to_integer
+					s := Seconds_in_hour - 1
+				else
+					m := an_iso_time.minutes
+					s := (Seconds_in_hour / 2).truncated_to_integer
+				end
 			else
-				fs := sec_str.to_double
-				create Result.make_fine(h, m, fs)
+				m := an_iso_time.minutes
+				s := an_iso_time.seconds
+				fs := an_iso_time.seconds_fraction
 			end
+			create Result.make_fine(h, m, s + fs)
 		ensure
 			Result /= Void
 		end
@@ -159,31 +146,12 @@ feature -- Conversion
 			-- make into string using ISO8601 format "PNNDTNNhNNmNNs"
 		require
 			a_dur /= Void
+		local
+			an_iso_dur: ISO8601_DURATION
 		do
-			create Result.make(0)
-			if a_dur.is_negative then
-				Result.append_character(Date_separator)
-			end
-			
-			Result.append_character(Duration_leader)
-
-			if a_dur.day /= 0 then
-				Result.append(a_dur.day.abs.out + "d")
-			end
-
-			Result.append_character(Time_leader)
-			
-			if a_dur.hour /= 0 then
-				Result.append(a_dur.hour.abs.out + "h")
-			end
-
-			if a_dur.minute /= 0 then
-				Result.append(a_dur.minute.abs.out + "m")
-			end
-
-			if a_dur.second /= 0 or else Result.count = 1 then
-				Result.append(a_dur.second.abs.out + "s")
-			end
+			create an_iso_dur.make (a_dur.year, a_dur.month, 0, a_dur.day, a_dur.hour, a_dur.minute,
+				a_dur.second, a_dur.fine_second)
+			Result := an_iso_dur.as_string
 		ensure
 			Result_valid: Result /= Void and then is_valid_iso8601_duration(Result)
 		end
@@ -193,58 +161,26 @@ feature -- Conversion
 		require
 			str_valid: str /= Void and then is_valid_iso8601_duration(str)
 		local
-			str1: STRING
-			d,h,m,s:INTEGER
-			left, right: INTEGER
+			an_iso_dur: ISO8601_DURATION
 		do
-			-- get d h m s from string
-			-- extract dhms pieces from ISO8601 string of form PnDTnnHnnMnnS
-			create str1.make(0)
-			str1.append(str)
-			str1.to_lower
-			left := 2
-			d := 0
-			h := 0
-			m := 0
-			s := 0
-
-			-- days
-			right := str1.index_of('d', left)
-			if right > 0 then
-				d := str1.substring(left, right-1).to_integer
-				left := right + 1
-			end
-
-			-- account for the 'T'
-			left := right + 1
-			
-			-- hours
-			right := str1.index_of('h', left)
-			if right > 0 then
-				h := str1.substring(left, right-1).to_integer
-				left := right + 1
-			end
-
-			-- minutes
-			right := str1.index_of('m', left)
-			if right > 0 then
-				m := str1.substring(left, right-1).to_integer
-				left := right + 1
-			end
-
-			-- seconds
-			right := str1.index_of('s', left)
-			if right > 0 then
-				s := str1.substring(left, right-1).to_integer
-				left := right + 1
-			end
-
-			create Result.make_definite(d, h, m, s)
+			create an_iso_dur.make_from_string (str)				
+			create Result.make_fine (an_iso_dur.years, an_iso_dur.months, an_iso_dur.days + 
+				an_iso_dur.weeks * Days_in_week, an_iso_dur.hours, an_iso_dur.minutes, 
+				an_iso_dur.seconds + an_iso_dur.seconds_fraction)
 		ensure
 			Result /= Void
 		end
-					
+
 feature -- Status Report
+
+	is_valid_iso8601_string(str: STRING): BOOLEAN is
+			-- only use this when caller does not know what kind of ISO8601
+			-- string it is supposed to be
+		require
+			Str_valid: str /= Void and then not str.is_empty
+		do
+			Result := iso8601_parser.is_valid_iso8601_string(str)
+		end
 
 	is_valid_iso8601_time(str: STRING): BOOLEAN is
 			-- True if string in one of the forms:
@@ -255,137 +191,53 @@ feature -- Status Report
 			--  Thhmmss,sss
 			-- 	Thh:mm:ss
 			-- 	Thh:mm:ss,sss
+			-- with optional timezone in form:
+			--	Z
+			--	+hhmm
+			--	-hhmm
 		require
 			str /= Void
-		local
-			h, m, s, csr, dec_sep_pos: INTEGER
-			fs: DOUBLE
-			h_str, m_str, s_str: STRING
-			expanded_form: BOOLEAN
 		do
-			csr := 1 -- on the T
-			if str.item(csr) = Time_leader and str.count >= csr+2 then
-				csr := csr + 1 -- on first h digit
-				h_str := str.substring(csr, csr+1)
-				csr := csr + 2 -- on char after 2nd h digit
-				if str.count > csr then
-					if str.item(csr) = Time_separator then
-						expanded_form := True
-						csr := csr + 1 -- on first m digit
-						if str.count > csr+2 then -- should be Thh:mm:ss[,sss]
-							m_str := str.substring(csr, csr+1)
-							csr := csr + 2 -- on char after 2nd m digit
-							if str.item(csr) = Time_separator then
-								csr := csr + 1 -- first s digit
-								if str.count = csr + 1 then -- Thh:mm:ss
-									s_str := str.substring(csr, csr+1)
-									Result := valid_time_strings(h_str, m_str, s_str, expanded_form)
-								elseif str.count > csr + 2 and str.item(csr+2) = iso8601_decimal_separator then -- Thh:mm:ss,sss
-									s_str := str.substring(csr, csr+1)
-									csr := csr + 3
-									s_str.append_character(Decimal_separator)
-									s_str.append(str.substring(csr, str.count))
-									Result := valid_time_strings(h_str, m_str, s_str, expanded_form)
-								end
-							end
-						elseif str.count = csr + 1 then -- should be Thh:mm
-							m_str := str.substring(csr, csr+1)	
-							Result := valid_time_strings(h_str, m_str, Void, expanded_form)
-						end
-					else -- non-expanded form
-						if str.count = csr + 1 then -- should be Thhmm
-							m_str := str.substring(csr, csr+1)
-							Result := valid_time_strings(h_str, m_str, Void, expanded_form)
-						elseif str.count > csr+2 then
-							m_str := str.substring(csr, csr+1)
-							csr := csr+2 -- on char after 2nd m digit
-							if str.count = csr + 1 then -- has to be Thhmmss
-								s_str := str.substring(csr, csr+1)
-								Result := valid_time_strings(h_str, m_str, s_str, expanded_form)
-							elseif str.count > csr + 2 and str.item(csr+2) = iso8601_decimal_separator then -- Thhmmss,sss
-								s_str := str.substring(csr, csr+1)
-								csr := csr + 3
-								s_str.append_character(Decimal_separator)
-								s_str.append(str.substring(csr, str.count))
-								Result := valid_time_strings(h_str, m_str, s_str, expanded_form)
-							end
-						end
-					end
-				elseif str.count = csr-1 then -- should be Thh
-					Result := valid_time_strings(h_str, Void, Void, expanded_form)
-				end
-			end
+			Result := iso8601_parser.is_valid_iso8601_time(str)
 		end		
 		
-	is_valid_iso8601_date(s: STRING): BOOLEAN is
-			-- True if string in form "YYYY-MM-DD"
+	is_valid_iso8601_date(str: STRING): BOOLEAN is
+			-- True if string in one of the forms
+			--	YYYY
+			--	YYYYMM
+			--	YYYY-MM
+			--	YYYYMMDD
+			--	YYYY-MM-DD
 		require
-			s /= Void
+			str /= Void
 		do
-			Result := True -- FIXME: to be implemented
+			Result := iso8601_parser.is_valid_iso8601_date(str)
 		end
 		
-	is_valid_iso8601_date_time(s: STRING): BOOLEAN is
+	is_valid_iso8601_date_time(str: STRING): BOOLEAN is
 			-- True if string in form "YYYY-MM-DDThh:mm:ss[,sss]"
 		require
-			s /= Void
+			str /= Void
 		do
-			Result := True -- FIXME: to be implemented
+			Result := iso8601_parser.is_valid_iso8601_date_time(str)
 		end
 		
-	is_valid_iso8601_duration(s: STRING): BOOLEAN is
+	is_valid_iso8601_duration(str: STRING): BOOLEAN is
 			-- True if string in form "PnDTnHnMnS"
 		require
-			s /= Void
+			str /= Void
 		do
-			Result := True -- FIXME: to be implemented
+			Result := iso8601_parser.is_valid_iso8601_duration(str)
 		end
-		
+					
 feature {NONE} -- Implementation
 
-	valid_time_strings(h_str, m_str, s_str: STRING; is_expanded: BOOLEAN): BOOLEAN is 
-			-- True if each string is within correct limits for hours, minutes, seconds
-		require
-			h_str /= Void
-			s_str /= Void implies m_str /= Void
-		local
-			h, m, s: INTEGER
-			fs: DOUBLE
-		do
-			if h_str.is_integer then
-				h := h_str.to_integer
-				if h < Hours_in_day then
-					if m_str /= Void and then m_str.is_integer then
-						m := m_str.to_integer
-						if m < Minutes_in_hour then
-							if s_str /= Void then 
-								if s_str.is_double then
-									fs := s_str.to_double
-									if fs < Seconds_in_minute then			
-										Result := True
-										create cached_iso8601_time.make_hmfs(h, m, fs, is_expanded)
-									end
-								elseif s_str.is_integer then
-									s := s_str.to_integer
-									if s <= Seconds_in_minute then	
-										Result := True
-										create cached_iso8601_time.make_hms(h, m, s, is_expanded)
-									end
-								end
-							else -- hours and minutes only
-								Result := True
-								create cached_iso8601_time.make_hm(h, m, is_expanded)
-							end
-						end
-					else -- hours only
-						Result := True
-						create cached_iso8601_time.make_h(h, is_expanded)
-					end
-				end
-			end
+	iso8601_parser: ISO8601_PARSER is
+			-- parser for date/time strings
+		once
+			create Result.make
 		end
-
-	cached_iso8601_time: ISO8601_TIME
+	
 end
 
 
