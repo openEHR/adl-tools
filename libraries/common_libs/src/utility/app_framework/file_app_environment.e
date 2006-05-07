@@ -1,11 +1,11 @@
 indexing
-	component:   "OSTORE Object Persistence Library for Eiffel"
+	component:   "openEHR Common Library"
 	description: "Implementation of APP_ENVIRONMENT using text config file."
 	keywords:    "framework"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2005 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2005,2006 openEHR Foundation"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -21,61 +21,22 @@ feature --- Initiatialisation
 
 	app_env_initialise is
 		local
-			fname, home: STRING
-			a_dir: DIRECTORY
-			a_file: PLAIN_TEXT_FILE
+			cfg_file_full_path: STRING
 		do
-			-- setup command line args
+			-- set command line args option switch
 			execution_environment.command_line.set_option_sign(app_cmd_line_option_sign)
 
-			-- get value of XXX_HOME env var
-			home := execution_environment.get(app_home_env_varname)
-			if home = Void then
-				app_env_fail_reason.append(app_home_env_varname) 
-				app_env_fail_reason.append(" environment variable not specified")
-			else
-				-- find XXX_HOME directory
-				application_home_directory.copy(home)
+			-- config file is either in default place (.exe startup directory)
+			-- or else specified on command line with -cfg option
+			cfg_file_full_path := execution_environment.command_line.separate_word_option_value("cfg")
+			if cfg_file_full_path = Void or else cfg_file_full_path.is_empty then
+				cfg_file_full_path := default_resource_config_file_full_path
+			end
 
-				-- see if home dir is a valid directory
-				create a_dir.make_open_read(application_home_directory)
-				if not a_dir.exists then
-					app_env_fail_reason.append("Application HOME directory does not exist or not readable: ") 
-					app_env_fail_reason.append(application_home_directory)
-				else
-					-- see if a config file name was supplied on the command line
-					fname := execution_environment.command_line.separate_word_option_value("cfg")
-
-					if fname = Void or else fname.is_empty then
-						-- find config file in home directory (defaults to current dir)
-						-- config file name "name_of_app.cfg" unless alternatively specified with "-cfg" option
-						fname := application_home_directory.twin
-
-						if fname.item(fname.count) /= os_directory_separator then
-							fname.extend(os_directory_separator)
-						end
-
-						-- try file named after this app
-						create a_file.make(fname + app_name + ".cfg")
-						if a_file.exists then
-							fname.append(app_name + ".cfg")
-						else
-							fname.append(Default_cfg_file_name)
-						end
-					end
-
-					debug("app")
-						io.put_string("Using config file " + fname + "%N")
-					end
-		    
-					app_cfg_file_name.copy(fname)
-	
-					-- read in resources
-					initialise_resource_config_file_name(app_cfg_file_name)
-					if not resource_config_file.is_valid then
-						app_env_fail_reason.append(resource_config_file.fail_reason)
-					end
-				end
+			-- read in resources
+			initialise_resource_config_file_name(cfg_file_full_path)
+			if not resource_config_file.is_valid then
+				app_env_fail_reason.append(resource_config_file.fail_reason)
 			end
 		end
 
@@ -92,12 +53,6 @@ feature -- Resource Configuration
 	app_cmd_line_option_sign:CHARACTER is 
 		once
 			Result := Default_cmd_line_option_sign
-		end
-
-	app_home_env_varname:STRING is 
-		once
-			create Result.make(0)
-			Result.append(Default_home_env_varname)
 		end
 
 	app_cfg_file_cmt_char:CHARACTER is 

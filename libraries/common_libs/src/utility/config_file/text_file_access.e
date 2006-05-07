@@ -26,7 +26,6 @@ feature -- Initialisation
 		require
 			Args_valid: a_file_name /= Void and then not a_file_name.is_empty
 		do
-
 			file_name := a_file_name.twin
 			file_cmt_char := file_default_cmt_char
 

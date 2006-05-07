@@ -25,6 +25,12 @@ feature -- Initialisation
 			resource_config_file_name.is_equal(str)
 		end
 
+	initialise_default_resource_config_file_name is
+			-- initialise resources from default resource file location
+		do
+			resource_config_file_name.append(default_resource_config_file_full_path)
+		end
+		
 feature -- Access
 
 	resource_value(a_category, a_resource_name:STRING): STRING is
@@ -60,10 +66,18 @@ feature -- Access
 
 feature -- Environment
 
-	resource_config_file_name:STRING is
+	resource_config_file_name: STRING is
 			-- name of configuration file from which settings are read
 		once
 			create Result.make(0)
+		end
+
+	default_resource_config_file_full_path: STRING is
+			-- default full path to resource configuration file; same as 
+			-- full path to app, but config file has .cfg istead of .exe extension
+		once
+			Result := application_full_path
+			Result.replace_substring_all(".exe", ".cfg")
 		end
 
 	execution_environment: EXECUTION_ENVIRONMENT is
@@ -71,7 +85,7 @@ feature -- Environment
 	        create Result
 	    end
 
-	startup_directory: STRING is
+	application_startup_directory: STRING is
 			-- directory application started in
 		once
 			 Result := execution_environment.current_working_directory
@@ -82,25 +96,23 @@ feature -- Environment
 			Result := operating_environment.directory_separator
 	    end
 
-	application_home_directory:STRING is 
-			-- application home directory
-		once 
-			create Result.make(0)
-		end
-
-	application_name:STRING is
+	application_full_path: STRING is
+			-- full path to application
 	    once
-			create Result.make(0)
-			Result.append(execution_environment.command_line.argument(0).mirrored)
-
-			if Result.has(os_directory_separator) then
-			    Result.keep_head(Result.index_of(os_directory_separator, 1)-1)
-			end
-
-			Result.mirror
+			Result := application_startup_directory + os_directory_separator.out + application_name
 	    end
 
-	current_working_directory:STRING is
+	application_name: STRING is
+	    once
+			create Result.make(0)
+			Result.append(execution_environment.command_line.argument(0))
+
+			if Result.has(os_directory_separator) then
+			    Result.keep_tail(Result.count - Result.last_index_of(os_directory_separator, Result.count))
+			end
+	    end
+
+	current_working_directory: STRING is
 		once
 			Result := execution_environment.current_working_directory
 		end

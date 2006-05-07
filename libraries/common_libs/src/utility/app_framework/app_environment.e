@@ -2,12 +2,9 @@ indexing
 	component:   "openEHR Common Libraries"
 	description: "[
 				 Common access point operating environment resources.
-	             Sources of resource settings are as follows:
-	             	* environment variables
-	             	* local $OCEAN_HOME/xxx.cfg file
-	             	* server host configuration server
-	             These are all gathered at initialisation time and made available
-	             through the app_resource_value() interface.
+	             Sources of resource settings are a .cfg file named after the
+				 application and by default, found in its startup directory.
+	             The resource values are available via the resource_value() interface.
 	             ]"
 	keywords:    "config, resources"
 
@@ -29,8 +26,6 @@ feature -- Definitions
 
 	Default_cmd_line_option_sign: CHARACTER is '-'
 
-	Default_home_env_varname: STRING is "OCEAN_HOME"
-
 	Default_cfg_file_name: STRING is "default.cfg"
 			-- default config filename is name of app + ".cfg"
 
@@ -48,38 +43,18 @@ feature --- Initiatialisation
 
 feature -- Application Resources
 
-	app_cfg_file_name:STRING is 
+	app_cfg_file_name: STRING is 
 			-- application config file full pathname
 		deferred 
 		end
 
-	app_name:STRING is
-			-- name of application (no path or ".exe")
-		local
-			startpos, endpos:INTEGER
-		once
-			Result := execution_environment.command_line.command_name
-			endpos := Result.substring_index(".exe", 1) - 1
-			if endpos < 0 then
-				endpos := Result.count
-			end
-			startpos := Result.last_index_of(os_directory_separator, endpos) + 1
-			Result := Result.substring(startpos, endpos)
-		ensure
-			Result_exists: Result /= Void
-		end
-
 feature -- Resource Configuration
 
-	app_cmd_line_option_sign:CHARACTER is 
+	app_cmd_line_option_sign: CHARACTER is 
 		deferred
 		end
 
-	app_home_env_varname:STRING is 
-		deferred
-		end
-
-	app_cfg_file_cmt_char:CHARACTER is 
+	app_cfg_file_cmt_char: CHARACTER is 
 		deferred 
 		end
 

@@ -20,12 +20,12 @@ feature -- Definitions
 
 	News_file_path: STRING is 
 		once
-			Result := startup_directory + os_directory_separator.out + "news.txt"
+			Result := application_startup_directory + os_directory_separator.out + "news.txt"
 		end
 		
 	Status_file_path: STRING is 
 		once
-			Result := startup_directory + os_directory_separator.out + ".status"
+			Result := application_startup_directory + os_directory_separator.out + ".status"
 		end
 		
 	Adl_version: STRING is "1.1"
@@ -50,7 +50,7 @@ feature -- Access
 			
 	icon_directory: STRING is 
 		once
-			Result := startup_directory + "/icons"
+			Result := application_startup_directory + os_directory_separator.out + "icons"
 		end
 
 	has_icon_directory: BOOLEAN is
