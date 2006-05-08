@@ -129,8 +129,8 @@ creation
 %type <ARRAYED_LIST[ISO8601_DURATION]> duration_list_value
 %type <ARRAYED_LIST[CODE_PHRASE]> term_code_list_value
 
-%type <OE_INTERVAL[INTEGER_REF]> integer_interval_value
-%type <OE_INTERVAL[REAL_REF]> real_interval_value
+%type <OE_INTERVAL[INTEGER]> integer_interval_value
+%type <OE_INTERVAL[REAL]> real_interval_value
 %type <OE_INTERVAL[ISO8601_TIME]> time_interval_value
 %type <OE_INTERVAL[ISO8601_DATE]> date_interval_value
 %type <OE_INTERVAL[ISO8601_DATE_TIME]> date_time_interval_value
@@ -1054,15 +1054,6 @@ c_integer_spec: integer_value
 		}
 	| integer_list_value
 		{
-	--		create integer_list.make(0)
-	--		from
-	--			$1.start
-	--		until
-	--			$1.off
-	--		loop
-	--			integer_list.extend($1.item.item)
-	--			$1.forth
-	--		end
 			create c_integer.make_list($1)
 		}
 	| integer_interval_value
@@ -1079,10 +1070,6 @@ c_integer_spec: integer_value
 
 			create c_integer.make_interval(int_interval)
 		}
---	| occurrence_spec	-- to allow intervals written in form {1..*}
---		{
---			create c_integer.make_interval(int_interval)
---		}
 	;
 
 c_integer: c_integer_spec
@@ -1111,15 +1098,6 @@ c_real_spec: real_value
 		}
 	| real_list_value
 		{
-	--		create real_list.make(0)
-	--		from
-	--			$1.start
-	--		until
-	--			$1.off
-	--		loop
-	--			real_list.extend($1.item.item)
-	--			$1.forth
-	--		end
 			create c_real.make_list($1)
 		}
 	| real_interval_value
@@ -2114,18 +2092,14 @@ feature {NONE} -- Parse Tree
 -------------- FOLLOWING TAKEN FROM DADL_VALIDATOR.Y ---------------
 feature {NONE} -- Implementation 
 
-	integer_ref, integer_ref_2: INTEGER_REF
-	real_ref, real_ref_2: REAL_REF
-	character_ref: CHARACTER_REF
-	boolean_ref: BOOLEAN_REF
 	term: CODE_PHRASE
 	a_uri: URI
 
 	int_interval: OE_INTERVAL [INTEGER]
 	rl_interval: OE_INTERVAL [REAL]
 
-	integer_interval: OE_INTERVAL [INTEGER_REF]
-	real_interval: OE_INTERVAL [REAL_REF]
+	integer_interval: OE_INTERVAL [INTEGER]
+	real_interval: OE_INTERVAL [REAL]
 	date_interval: OE_INTERVAL [ISO8601_DATE]
 	time_interval: OE_INTERVAL [ISO8601_TIME]
 	date_time_interval: OE_INTERVAL [ISO8601_DATE_TIME]

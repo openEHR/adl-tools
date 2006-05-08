@@ -5312,10 +5312,6 @@ feature {NONE} -- Parse Tree
 
 feature {NONE} -- Implementation 
 	
-	integer_ref, integer_ref_2: INTEGER_REF
-	real_ref, real_ref_2: REAL_REF
-	character_ref: CHARACTER_REF
-	boolean_ref: BOOLEAN_REF
 	term: CODE_PHRASE
 	a_uri: URI
 

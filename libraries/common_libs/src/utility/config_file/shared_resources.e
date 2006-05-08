@@ -66,6 +66,13 @@ feature -- Access
 
 feature -- Environment
 
+	system_config_file_directory: STRING is
+			-- place for config files common to multiple applications
+		once
+			create Result.make(0)
+			Result.append(execution_environment.root_directory_name + "etc")
+		end
+		
 	resource_config_file_name: STRING is
 			-- name of configuration file from which settings are read
 		once
