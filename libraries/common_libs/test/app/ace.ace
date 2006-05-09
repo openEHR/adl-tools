@@ -16,7 +16,7 @@ default
 	disabled_debug ("dt")
 	disabled_debug ("gelex")
 	disabled_debug ("geyacc")
-	debug ("og_path_parse")
+	disabled_debug ("og_path_parse")
 	disabled_debug ("refactor_fixme")
 	disabled_debug ("units")
 	debug (no)
@@ -34,13 +34,11 @@ default
 	inlining (no)
 	multithreaded (no)
 
-
 cluster
 	all app:		"$OPENEHR\ref_impl_eiffel\libraries\common_libs\test"
 		exclude
 			".svn"; 
 		default
-			assertion (no)
 			assertion (invariant)
 		end
 

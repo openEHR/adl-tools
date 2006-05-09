@@ -80,7 +80,7 @@ feature -- Status Report
 			h_str, m_str, s_str, fs_str, tz_str: STRING
 			extended_form, tz_ok: BOOLEAN
 		do
-			if str.is_equal(cached_iso8601_time_string) then
+			if cached_iso8601_time_string /= Void and str.is_equal(cached_iso8601_time_string) then
 				Result := True
 			else
 				cached_iso8601_time := Void
@@ -92,7 +92,7 @@ feature -- Status Report
 					if str.item (str.count) = Time_zone_GMT then
 						tz_str := Time_zone_GMT.out
 						hms_part_end := str.count - 1
-					elseif str.has ('+') then
+					elseif str.has('+') then
 						tz_ind_pos := str.index_of('+', 1)
 						tz_str := str.substring(tz_ind_pos, str.count)
 						if tz_str.count = 5 and tz_str.is_integer then
@@ -100,7 +100,7 @@ feature -- Status Report
 						else					
 							tz_ok := False
 						end
-					elseif str.has ('-') then
+					elseif str.has('-') then
 						tz_ind_pos := str.index_of('-', 1)
 						tz_str := str.substring(tz_ind_pos, str.count)
 						if tz_str.count = 5 and tz_str.is_integer then
@@ -126,7 +126,7 @@ feature -- Status Report
 									csr := csr + 2 -- on char after 2nd m digit
 									if str.item(csr) = Time_separator then
 										csr := csr + 1 -- first s digit
-										if str.count = csr + 1 then -- Thh:mm:ss
+										if hms_part_end = csr + 1 then -- Thh:mm:ss
 											s_str := str.substring(csr, csr+1)
 											Result := valid_time_strings(h_str, m_str, s_str, Void,  tz_str, extended_form)
 										elseif hms_part_end > csr + 2 and str.item(csr+2) = iso8601_decimal_separator then -- Thh:mm:ss,sss
@@ -190,7 +190,7 @@ feature -- Status Report
 			y_str, m_str, d_str: STRING
 			extended_form: BOOLEAN
 		do
-			if str.is_equal(cached_iso8601_date_string) then
+			if cached_iso8601_date_string /= Void and str.is_equal(cached_iso8601_date_string) then
 				Result := True
 			else
 				cached_iso8601_date := Void
@@ -264,12 +264,10 @@ feature -- Status Report
 			time_sep_pos, end_date_part: INTEGER
 			date_part_ok, time_part_ok, has_time_part: BOOLEAN
 		do
-			if str.is_equal(cached_iso8601_date_string) then
+			if cached_iso8601_date_time_string /= Void and str.is_equal(cached_iso8601_date_time_string) then
 				Result := True
 			else
-				cached_iso8601_date := Void
-				cached_iso8601_time := Void
-
+				cached_iso8601_date_time := Void
 				time_sep_pos := str.index_of(Time_leader, 1)
 				if time_sep_pos = 0 then
 					end_date_part := str.count
@@ -283,8 +281,12 @@ feature -- Status Report
 				
 				if date_part_ok then 
 					if has_time_part then
-						Result := time_part_ok and not cached_iso8601_date.is_partial and 
-							cached_iso8601_time.is_extended = cached_iso8601_date.is_extended
+						Result := time_part_ok and not cached_iso8601_date.is_partial
+						if (cached_iso8601_time.minutes_unknown and cached_iso8601_time.seconds_unknown) and
+							cached_iso8601_date.is_extended then
+							cached_iso8601_time.set_extended
+						end 
+						Result := Result and cached_iso8601_time.is_extended = cached_iso8601_date.is_extended
 					else
 						Result := True
 					end
@@ -302,12 +304,13 @@ feature -- Status Report
 		require
 			str /= Void
 		local
-			str1: STRING
-			yr, wk, mo, dy, hr, mi, sec: INTEGER
+			str1, ymd_part, hms_part: STRING
+			yr, mo, dy, hr, mi, sec: INTEGER
+			yr_str, mo_str, wk_str, dy_str, hr_str, mi_str, sec_str, fsec_str: STRING
 			fsec: DOUBLE
-			left, right, dec_pos: INTEGER
+			left, right, time_sep_pos, dec_pos: INTEGER
 		do
-			if str.is_equal(cached_iso8601_duration_string) then
+			if cached_iso8601_duration_string /= Void and str.is_equal(cached_iso8601_duration_string) then
 				Result := True
 			else
 				cached_iso8601_duration := Void
@@ -317,69 +320,126 @@ feature -- Status Report
 					str1.to_lower
 					left := 2
 
-					-- years
-					right := str1.index_of('y', left)
-					if right > 0 then
-						yr := str1.substring(left, right-1).to_integer
-						left := right + 1
-					end
-
-					-- months
-					right := str1.index_of('m', left)
-					if right > 0 then
-						mo := str1.substring(left, right-1).to_integer
-						left := right + 1
-					end
-
-					-- weeks
+					-- weeks - must be on its own; cannot be mixed
 					right := str1.index_of('w', left)
 					if right > 0 then
-						wk := str1.substring(left, right-1).to_integer
-						left := right + 1
-					end
-
-					-- days
-					right := str1.index_of('d', left)
-					if right > 0 then
-						dy := str1.substring(left, right-1).to_integer
-						left := right + 1
-					end
-
-					left := str1.index_of (Time_leader, 1)
-					if left > 0 then
-						left := left + 1
+						wk_str := str1.substring(left, right-1)
+						if wk_str.is_integer then
+							create cached_iso8601_duration.make_weeks(wk_str.to_integer)
+							cached_iso8601_duration_string := str
+							Result := True
+						end
+					else
+						Result := True
+						time_sep_pos := str1.index_of (Time_leader.as_lower, 1)
+						if time_sep_pos > 0 then
+							ymd_part := str1.substring (1, time_sep_pos - 1)
+							hms_part := str1.substring (time_sep_pos + 1, str1.count)
+						else
+							ymd_part := str1
+						end
 						
-						-- hours
-						right := str1.index_of('h', left)
+						-- years
+						right := ymd_part.index_of('y', left)
 						if right > 0 then
-							hr := str1.substring(left, right-1).to_integer
-							left := right + 1
-						end
-
-						-- minutes
-						right := str1.index_of('m', left)
-						if right > 0 then
-							mi := str1.substring(left, right-1).to_integer
-							left := right + 1
-						end
-
-						-- seconds
-						right := str1.index_of('s', left)
-						if right > 0 then
-							dec_pos := str1.index_of(Decimal_separator, left)
-							if dec_pos > 0 then
-								sec := str1.substring(left, dec_pos-1).to_integer
-								fsec := str1.substring(dec_pos+1, right).to_double
+							yr_str := ymd_part.substring(left, right-1)
+							if yr_str.is_integer then
+								yr := yr_str.to_integer
+								left := right + 1						
 							else
-								sec := str1.substring(left, right-1).to_integer
+								Result := False
 							end
 						end
-					end
 
-					create cached_iso8601_duration.make(yr, mo, wk, dy, hr, mi, sec, fsec)
-					cached_iso8601_duration_string := str
-					Result := True
-					
+						-- months
+						if Result then
+							right := ymd_part.index_of('m', left)
+							if right > 0 then
+								mo_str := ymd_part.substring(left, right-1)
+								if mo_str.is_integer then
+									mo := mo_str.to_integer
+									left := right + 1
+								else
+									Result := False
+								end
+							end	
+						end
+
+						-- days
+						if Result then
+							right := ymd_part.index_of('d', left)
+							if right > 0 then
+								dy_str := ymd_part.substring(left, right-1)
+								if dy_str.is_integer then
+									dy := dy_str.to_integer
+									left := right + 1
+								else
+									Result := False
+								end
+							end		
+						end
+
+						if Result then 
+							if time_sep_pos > 0 then
+								left := 1
+							
+								-- hours
+								right := hms_part.index_of('h', left)
+								if right > 0 then
+									hr_str := hms_part.substring(left, right-1)
+									if hr_str.is_integer then
+										hr := hr_str.to_integer
+										left := right + 1
+									else
+										Result := False
+									end
+								end
+
+								if Result then								
+									-- minutes
+									right := hms_part.index_of('m', left)
+									if right > 0 then
+										mi_str := hms_part.substring(left, right-1)
+										if mi_str.is_integer then
+											mi := mi_str.to_integer
+											left := right + 1
+										else
+											Result := False
+										end
+									end
+								end
+
+								if Result then
+									-- seconds
+									right := hms_part.index_of('s', left)
+									if right > 0 then
+										dec_pos := hms_part.index_of(Iso8601_decimal_separator, left)
+										if dec_pos > 0 then
+											sec_str := hms_part.substring(left, dec_pos-1)
+											fsec_str := hms_part.substring(dec_pos, right)
+											fsec_str.put(Decimal_separator, 1)
+											if sec_str.is_integer and fsec_str.is_double then
+												sec := sec_str.to_integer
+												fsec := fsec_str.to_double
+											end
+										else
+											sec_str := hms_part.substring(left, right-1)
+											if sec_str.is_integer then
+												sec := sec_str.to_integer
+											end
+										end
+									end
+								end
+							else
+								-- should be no H or S
+								Result := Result and not ymd_part.has('h') and not ymd_part.has('s')
+							end
+						end
+						if Result then
+							create cached_iso8601_duration.make(yr, mo, dy, hr, mi, sec, fsec)
+							cached_iso8601_duration_string := str
+						end
+					end
 				end
 			end
 		end
@@ -415,6 +475,8 @@ feature {NONE} -- Implementation
 					create cached_iso8601_date.make_y(y, is_extended)
 				end
 			end
+		ensure
+			Result implies cached_iso8601_date /= Void
 		end
 
 	valid_time_strings(h_str, m_str, s_str, fs_str, tz_str: STRING; is_extended: BOOLEAN): BOOLEAN is 
@@ -515,6 +577,8 @@ feature {NONE} -- Implementation
 					end
 				end
 			end
+		ensure
+			Result implies cached_iso8601_time /= Void
 		end
 
 feature {ISO8601_ROUTINES} -- Implementation

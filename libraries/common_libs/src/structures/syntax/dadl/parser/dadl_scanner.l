@@ -179,9 +179,10 @@ T[0-2][0-9](Z|[+-][0-9]{4})? {
 				last_string_value := text
 		}
 
-----------/* V_ISO8601_DURATION PnYnMnWnDtnnHnnMnnS */ -------------------------------------------------
+----------/* V_ISO8601_DURATION PnYnMnDtnnHnnMnnS  or PnW */ -------------------------------------------------
 
-P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?T([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])?	{
+P[0-9]+[wW]	|
+P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[dD])?T([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])?	{
 				last_token := V_ISO8601_DURATION
 				last_string_value := text
 			}

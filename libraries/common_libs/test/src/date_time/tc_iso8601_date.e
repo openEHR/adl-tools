@@ -40,45 +40,106 @@ feature -- Initialisation
 
 	execute is
 		local
-			str: STRING
-			d: ISO8601_DATE
-			p: ISO8601_PARSER
+			iso_date: ISO8601_DATE
+			str, iso_date_str: STRING
 		do
+			io.put_string("input    	is_valid_iso8601_date()		as_string valid%N")
+			io.put_string("---------	-----------------------		---------------%N")
+
+			from
+				valid_iso_strings.start
+			until
+				valid_iso_strings.off
+			loop
+				create str.make (0)
+				str.copy (valid_iso_strings.item)
+				str.append(create {STRING}.make_filled(' ', 20-str.count))
+				str.append_character('%T')
+
+				if is_valid_iso8601_date(valid_iso_strings.item) then
+					create iso_date.make_from_string(valid_iso_strings.item)
+					str.append("True%T%T%T")
+					iso_date_str := iso_date.as_string
+					str.append(valid_iso_strings.item.is_equal(iso_date_str).out)
+					str.append("%T(" + iso_date_str + ")")
+					io.put_string(str + "%N")
+				else
+					str.append("False%T%T%T-")
+					io.put_string(str + "%N")
+				end
+				valid_iso_strings.forth
+			end
+
+			io.put_string("%Ninput    	!is_valid_iso8601_date()	as_string valid%N")
+			io.put_string("---------	------------------------	---------------%N")
+			from
+				invalid_iso_strings.start
+			until
+				invalid_iso_strings.off
+			loop
+				create str.make (0)
+				str.copy (invalid_iso_strings.item)
+				str.append(create {STRING}.make_filled(' ', 20-str.count))
+				str.append_character('%T')
+				io.put_string(str + (not is_valid_iso8601_date(invalid_iso_strings.item)).out + "%T%T%T-%N")
+				invalid_iso_strings.forth
+			end
+		end
+
+	valid_iso_strings: ARRAYED_LIST [STRING] is
+		once
+			create Result.make(0)
+
 			--	YYYY
-			io.put_string("    is_valid_iso8601_date(%"1989%")=" + is_valid_iso8601_date("1989").out + "%N")
-			io.put_string("not is_valid_iso8601_date(%"21989%")=" + (not is_valid_iso8601_date("21989")).out + "%N")
+			Result.extend("1989")
 
 			--	YYYYMM
-			io.put_string("not is_valid_iso8601_date(%"198900%")=" + (not is_valid_iso8601_date("198900")).out + "%N")
-			io.put_string("    is_valid_iso8601_date(%"198901%")=" + is_valid_iso8601_date("198901").out + "%N")
-			io.put_string("    is_valid_iso8601_date(%"198912%")=" + is_valid_iso8601_date("198912").out + "%N")
-			io.put_string("not is_valid_iso8601_date(%"198913%")=" + (not is_valid_iso8601_date("198913")).out + "%N")
+			Result.extend("198901")
+			Result.extend("198912")
 
 			--	YYYYMMDD
-			io.put_string("not is_valid_iso8601_date(%"19890100%")=" + (not is_valid_iso8601_date("19890100")).out + "%N")
-			io.put_string("    is_valid_iso8601_date(%"19890101%")=" + is_valid_iso8601_date("19890101").out + "%N")
-			io.put_string("    is_valid_iso8601_date(%"19890131%")=" + is_valid_iso8601_date("19890131").out + "%N")
-			io.put_string("not is_valid_iso8601_date(%"19890132%")=" + (not is_valid_iso8601_date("19890132")).out + "%N")
-			io.put_string("    is_valid_iso8601_date(%"19000201%")=" + is_valid_iso8601_date("19000201").out + "%N")
-			io.put_string("    is_valid_iso8601_date(%"19000228%")=" + is_valid_iso8601_date("19000228").out + "%N")
-			io.put_string("not is_valid_iso8601_date(%"19000229%")=" + (not is_valid_iso8601_date("19000229")).out + "%N")
-			io.put_string("    is_valid_iso8601_date(%"19040229%")=" + is_valid_iso8601_date("19040229").out + "%N")
+			Result.extend("19890101")
+			Result.extend("19890131")
+			Result.extend("19000201")
+			Result.extend("19000228")
+			Result.extend("19040229")
 
 			--	YYYY-MM
-			io.put_string("not is_valid_iso8601_date(%"1989-00%")=" + (not is_valid_iso8601_date("1989-00")).out + "%N")
-			io.put_string("    is_valid_iso8601_date(%"1989-01%")=" + is_valid_iso8601_date("1989-01").out + "%N")
-			io.put_string("    is_valid_iso8601_date(%"1989-12%")=" + is_valid_iso8601_date("1989-12").out + "%N")
-			io.put_string("not is_valid_iso8601_date(%"1989-13%")=" + (not is_valid_iso8601_date("1989-13")).out + "%N")
+			Result.extend("1989-01")
+			Result.extend("1989-12")
 
 			--	YYYY-MM-DD
-			io.put_string("not is_valid_iso8601_date(%"1989-01-00%")=" + (not is_valid_iso8601_date("1989-01-00")).out + "%N")
-			io.put_string("    is_valid_iso8601_date(%"1989-01-01%")=" + is_valid_iso8601_date("1989-01-01").out + "%N")
-			io.put_string("    is_valid_iso8601_date(%"1989-01-31%")=" + is_valid_iso8601_date("1989-01-31").out + "%N")
-			io.put_string("not is_valid_iso8601_date(%"1989-01-32%")=" + (not is_valid_iso8601_date("1989-01-32")).out + "%N")
-			io.put_string("    is_valid_iso8601_date(%"1900-02-01%")=" + is_valid_iso8601_date("1900-02-01").out + "%N")
-			io.put_string("    is_valid_iso8601_date(%"1900-02-28%")=" + is_valid_iso8601_date("1900-02-28").out + "%N")
-			io.put_string("not is_valid_iso8601_date(%"1900-02-29%")=" + (not is_valid_iso8601_date("1900-02-29")).out + "%N")
-			io.put_string("    is_valid_iso8601_date(%"1904-02-29%")=" + is_valid_iso8601_date("1904-02-29").out + "%N")
+			Result.extend("1989-01-01")
+			Result.extend("1989-01-31")
+			Result.extend("1900-02-01")
+			Result.extend("1900-02-28")
+			Result.extend("1904-02-29")
+		end
+
+	invalid_iso_strings: ARRAYED_LIST [STRING] is
+		once
+			create Result.make(0)
+
+			--	YYYY
+			Result.extend("21989")
+
+			--	YYYYMM
+			Result.extend("198900")
+			Result.extend("198913")
+
+			--	YYYYMMDD
+			Result.extend("19890100")
+			Result.extend("19890132")
+			Result.extend("19000229")
+
+			--	YYYY-MM
+			Result.extend("1989-00")
+			Result.extend("1989-13")
+
+			--	YYYY-MM-DD
+			Result.extend("1989-01-00")
+			Result.extend("1989-01-32")
+			Result.extend("1900-02-29")
 		end
 
 feature -- Access

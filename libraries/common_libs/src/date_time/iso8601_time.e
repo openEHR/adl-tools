@@ -55,6 +55,8 @@ feature -- Initialisation
 		do
 			hours := h
 			is_extended := is_extended_flag
+			minutes_unknown := True
+			seconds_unknown := True
 		end
 
 	make_hm(h, m: INTEGER; is_extended_flag: BOOLEAN) is
@@ -66,6 +68,7 @@ feature -- Initialisation
 		do
 			hours := h
 			minutes := m
+			seconds_unknown := True
 			is_extended := is_extended_flag
 		end
 
@@ -142,6 +145,12 @@ feature -- Modification
 			timezone := a_tz
 		end
 
+	set_extended is
+			-- set is_extended
+		do
+			is_extended := True
+		end
+		
 feature -- Comparison
 
 	infix "<" (other: like Current): BOOLEAN is
@@ -186,7 +195,7 @@ feature -- Output
 					Result.append(s)
 
 					if seconds_fraction_included then
-						Result.append_character(Decimal_separator)
+						Result.append_character(Iso8601_decimal_separator)
 						s := seconds_fraction.out
 						Result.append(s.substring(s.index_of('.', 1) + 1, s.count))
 					end

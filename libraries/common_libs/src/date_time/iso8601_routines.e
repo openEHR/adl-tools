@@ -34,7 +34,6 @@ feature -- Conversion
 		require
 			a_date /= Void
 		local
-			s: STRING
 			an_iso_date: ISO8601_DATE			
 		do
 			create an_iso_date.make_ymd (a_date.year, a_date.month, a_date.day, True)
@@ -149,7 +148,7 @@ feature -- Conversion
 		local
 			an_iso_dur: ISO8601_DURATION
 		do
-			create an_iso_dur.make (a_dur.year, a_dur.month, 0, a_dur.day, a_dur.hour, a_dur.minute,
+			create an_iso_dur.make (a_dur.year, a_dur.month, a_dur.day, a_dur.hour, a_dur.minute,
 				a_dur.second, a_dur.fine_second)
 			Result := an_iso_dur.as_string
 		ensure
@@ -163,10 +162,14 @@ feature -- Conversion
 		local
 			an_iso_dur: ISO8601_DURATION
 		do
-			create an_iso_dur.make_from_string (str)				
-			create Result.make_fine (an_iso_dur.years, an_iso_dur.months, an_iso_dur.days + 
-				an_iso_dur.weeks * Days_in_week, an_iso_dur.hours, an_iso_dur.minutes, 
-				an_iso_dur.seconds + an_iso_dur.seconds_fraction)
+			create an_iso_dur.make_from_string (str)
+			if an_iso_dur.weeks > 0 then
+				create Result.make_definite (an_iso_dur.weeks * Days_in_week, 0, 0, 0)
+			else				
+				create Result.make_fine (an_iso_dur.years, an_iso_dur.months, an_iso_dur.days,
+					an_iso_dur.hours, an_iso_dur.minutes, 
+					an_iso_dur.seconds + an_iso_dur.seconds_fraction)
+			end
 		ensure
 			Result /= Void
 		end

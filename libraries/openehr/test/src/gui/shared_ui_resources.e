@@ -23,7 +23,7 @@ feature -- Access
 		local
 			a_dir: DIRECTORY
 		do
-			create a_dir.make(startup_directory + "/icons")
+			create a_dir.make(application_startup_directory + "/icons")
 			Result := a_dir.exists
 		end
 		
@@ -37,7 +37,7 @@ feature -- Access
 			create Result.make(0)
 			
 			create pixmap
-			pixmap.set_with_named_file(startup_directory + "/icons/openehr.png")
+			pixmap.set_with_named_file(application_startup_directory + "/icons/openehr.png")
 			Result.put(pixmap, "openEHR logo")
 		end
 
