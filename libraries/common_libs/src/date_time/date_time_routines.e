@@ -36,10 +36,17 @@ feature -- Definitions
 		once
 			create Result.make(0)
 			Result.compare_objects
+			-- FIXME: the following group to be removed eventually
 			Result.extend ("hh:mm:ss")	-- full time required
 			Result.extend ("hh:??:XX")	-- seconds optional
 			Result.extend ("hh:??:??")	-- any time ok
 			Result.extend ("hh:mm:XX")	-- seconds not allowed
+			
+			-- the following group to be retained
+			Result.extend ("Thh:mm:ss")	-- full time required
+			Result.extend ("Thh:??:XX")	-- seconds optional
+			Result.extend ("Thh:??:??")	-- any time ok
+			Result.extend ("Thh:mm:XX")	-- seconds not allowed
 		end
 		
 	valid_date_time_constraint_patterns: ARRAYED_LIST [STRING] is
@@ -47,11 +54,19 @@ feature -- Definitions
 		once
 			create Result.make(0)
 			Result.compare_objects
+			-- FIXME: the following group to be removed eventually
 			Result.extend ("yyyy-mm-dd hh:mm:ss")	-- full date/time required
 			Result.extend ("yyyy-mm-dd hh:mm:??")	-- seconds optional
 			Result.extend ("yyyy-??-?? ??:??:??")	-- any date/time ok
 			Result.extend ("yyyy-mm-dd hh:??:XX")	-- seconds not allowed, minutes optional
 			Result.extend ("yyyy-mm-dd hh:mm:XX")	-- seconds not allowed
+			
+			-- the following group to be retained
+			Result.extend ("yyyy-mm-ddThh:mm:ss")	-- full date/time required
+			Result.extend ("yyyy-mm-ddThh:mm:??")	-- seconds optional
+			Result.extend ("yyyy-??-??T??:??:??")	-- any date/time ok
+			Result.extend ("yyyy-mm-ddThh:??:XX")	-- seconds not allowed, minutes optional
+			Result.extend ("yyyy-mm-ddThh:mm:XX")	-- seconds not allowed
 		end
 		
 feature -- Status Report

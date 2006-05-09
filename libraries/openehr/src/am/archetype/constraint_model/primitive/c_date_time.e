@@ -73,13 +73,23 @@ feature -- Initialisation
 		end
 
 	make_from_pattern(a_pattern: STRING) is
-			-- create Result from an ISO8601-based pattern like "yyyy-mm-dd ??:??:??"
+			-- create Result from an ISO8601-based pattern like "yyyy-mm-ddT??:??:??"
 		require
 			a_pattern_valid: a_pattern /= Void and then is_valid_iso8601_date_time_constraint_pattern(a_pattern)
+		local
+			spc_index: INTEGER
 		do
-			pattern := a_pattern
+			create pattern.make(0)
+			pattern.append(a_pattern)
+			if not a_pattern.has (Time_leader) then
+				spc_index := a_pattern.index_of(' ', 1)
+				if spc_index > 0 then
+					pattern.put(Time_leader, spc_index)
+				end
+			end
 		ensure
-			pattern_set: pattern = a_pattern
+			-- FIXME: re-instate when patterns with no 'T' made invalid
+			-- pattern_set: pattern = a_pattern
 		end
 		
 feature -- Access
@@ -87,7 +97,7 @@ feature -- Access
 	interval: OE_INTERVAL[ISO8601_DATE_TIME]
 
 	pattern: STRING
-			-- ISO8601-based pattern like "yyyy-mm-dd ??:??:??"
+			-- ISO8601-based pattern like "yyyy-mm-ddT??:??:??"
 
 	default_value: ISO8601_DATE_TIME is
 		do

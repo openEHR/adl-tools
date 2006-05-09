@@ -74,7 +74,6 @@ feature -- Conversion
 		require
 			a_time /= Void
 		local
-			s: STRING
 			an_iso_time: ISO8601_TIME
 		do
 			create an_iso_time.make_hmsf (a_time.hour, a_time.minute, a_time.second, a_time.fine_second, True)

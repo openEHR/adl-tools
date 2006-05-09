@@ -482,9 +482,9 @@ end
 end
 end
 else
-if yy_act <= 61 then
-if yy_act <= 51 then
-if yy_act <= 46 then
+if yy_act <= 62 then
+if yy_act <= 52 then
+if yy_act <= 47 then
 if yy_act <= 44 then
 if yy_act <= 43 then
 if yy_act = 42 then
@@ -521,6 +521,7 @@ end
 		
 end
 else
+if yy_act <= 46 then
 if yy_act = 45 then
 	yy_position := yy_position + 7
 --|#line 176 "dadl_scanner.l"
@@ -543,11 +544,7 @@ end
 				last_string_value := text
 			
 end
-end
 else
-if yy_act <= 49 then
-if yy_act <= 48 then
-if yy_act = 47 then
 	yy_position := yy_position + yy_end - yy_start - yy_more_len
 --|#line 185 "dadl_scanner.l"
 debug ("GELEX")
@@ -557,11 +554,26 @@ end
 				last_token := V_ISO8601_DURATION
 				last_string_value := text
 			
+end
+end
+else
+if yy_act <= 50 then
+if yy_act <= 49 then
+if yy_act = 48 then
+	yy_position := yy_position + yy_end - yy_start - yy_more_len
+--|#line 186 "dadl_scanner.l"
+debug ("GELEX")
+	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 186")
+end
+
+				last_token := V_ISO8601_DURATION
+				last_string_value := text
+			
 else
 	yy_position := yy_position + yy_end - yy_start - yy_more_len
---|#line 191 "dadl_scanner.l"
+--|#line 192 "dadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 191")
+	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 192")
 end
 
 					last_token := V_TYPE_IDENTIFIER
@@ -570,9 +582,9 @@ end
 end
 else
 	yy_position := yy_position + yy_end - yy_start - yy_more_len
---|#line 196 "dadl_scanner.l"
+--|#line 197 "dadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 196")
+	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 197")
 end
 
 					last_token := V_ATTRIBUTE_IDENTIFIER
@@ -580,11 +592,11 @@ end
 			
 end
 else
-if yy_act = 50 then
+if yy_act = 51 then
 	yy_position := yy_position + yy_end - yy_start - yy_more_len
---|#line 203 "dadl_scanner.l"
+--|#line 204 "dadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 203")
+	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 204")
 end
 				-- beginning of CADL block
 				in_buffer.append_string (text)
@@ -593,9 +605,9 @@ end
 			
 else
 	yy_position := yy_position + yy_end - yy_start - yy_more_len
---|#line 208 "dadl_scanner.l"
+--|#line 209 "dadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 208")
+	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 209")
 end
 		-- got an open brace
 				in_buffer.append_string (text)
@@ -605,14 +617,14 @@ end
 end
 end
 else
-if yy_act <= 56 then
+if yy_act <= 57 then
+if yy_act <= 55 then
 if yy_act <= 54 then
-if yy_act <= 53 then
-if yy_act = 52 then
+if yy_act = 53 then
 	yy_position := yy_position + yy_end - yy_start - yy_more_len
---|#line 212 "dadl_scanner.l"
+--|#line 213 "dadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 212")
+	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 213")
 end
 		-- got a close brace
 				in_buffer.append_string (text)
@@ -628,17 +640,6 @@ end
 			
 else
 	yy_position := yy_position + yy_end - yy_start - yy_more_len
---|#line 228 "dadl_scanner.l"
-debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 228")
-end
-
-					last_token := V_INTEGER
-					last_integer_value := text.to_integer
-			
-end
-else
-	yy_position := yy_position + yy_end - yy_start - yy_more_len
 --|#line 229 "dadl_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 229")
@@ -649,17 +650,18 @@ end
 			
 end
 else
-if yy_act = 55 then
 	yy_position := yy_position + yy_end - yy_start - yy_more_len
---|#line 236 "dadl_scanner.l"
+--|#line 230 "dadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 236")
+	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 230")
 end
 
-						last_token := V_REAL
-						last_real_value := text.to_real
-					
+					last_token := V_INTEGER
+					last_integer_value := text.to_integer
+			
+end
 else
+if yy_act = 56 then
 	yy_position := yy_position + yy_end - yy_start - yy_more_len
 --|#line 237 "dadl_scanner.l"
 debug ("GELEX")
@@ -669,16 +671,26 @@ end
 						last_token := V_REAL
 						last_real_value := text.to_real
 					
+else
+	yy_position := yy_position + yy_end - yy_start - yy_more_len
+--|#line 238 "dadl_scanner.l"
+debug ("GELEX")
+	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 238")
+end
+
+						last_token := V_REAL
+						last_real_value := text.to_real
+					
 end
 end
 else
+if yy_act <= 60 then
 if yy_act <= 59 then
-if yy_act <= 58 then
-if yy_act = 57 then
+if yy_act = 58 then
 	yy_position := yy_position + yy_end - yy_start - yy_more_len
---|#line 244 "dadl_scanner.l"
+--|#line 245 "dadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 244")
+	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 245")
 end
 
 				last_token := V_STRING
@@ -686,9 +698,9 @@ end
 			
 else
 	yy_position := yy_position + yy_end - yy_start - yy_more_len
---|#line 249 "dadl_scanner.l"
+--|#line 250 "dadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 249")
+	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 250")
 end
 				-- beginning of a string
 				if text_count > 1 then
@@ -699,25 +711,25 @@ end
 end
 else
 	yy_position := yy_position + 2
---|#line 255 "dadl_scanner.l"
+--|#line 256 "dadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 255")
+	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 256")
 end
 in_buffer.append_character ('\')
 end
 else
-if yy_act = 60 then
+if yy_act = 61 then
 	yy_position := yy_position + 2
---|#line 257 "dadl_scanner.l"
+--|#line 258 "dadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 257")
+	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 258")
 end
 in_buffer.append_character ('"')
 else
 	yy_position := yy_position + yy_end - yy_start - yy_more_len
---|#line 259 "dadl_scanner.l"
+--|#line 260 "dadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 259")
+	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 260")
 end
 	-- match ISO special character pattern &char_name;
 				-- look up the code in an ISO table
@@ -738,15 +750,15 @@ end
 end
 end
 else
-if yy_act <= 71 then
-if yy_act <= 66 then
+if yy_act <= 72 then
+if yy_act <= 67 then
+if yy_act <= 65 then
 if yy_act <= 64 then
-if yy_act <= 63 then
-if yy_act = 62 then
+if yy_act = 63 then
 	yy_position := yy_position + 8
---|#line 274 "dadl_scanner.l"
+--|#line 275 "dadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 274")
+	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 275")
 end
 	-- match W3C XML special character pattern &#xHHHH;
 				-- look up the code in an W3C table
@@ -764,17 +776,17 @@ end
 			
 else
 	yy_position := yy_position + yy_end - yy_start - yy_more_len
---|#line 289 "dadl_scanner.l"
+--|#line 290 "dadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 289")
+	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 290")
 end
 in_buffer.append_string (text)
 end
 else
 	yy_position := yy_position + yy_end - yy_start - yy_more_len
---|#line 291 "dadl_scanner.l"
+--|#line 292 "dadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 291")
+	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 292")
 end
 
 				in_lineno := in_lineno + 1	-- match LF in line
@@ -782,11 +794,11 @@ end
 			
 end
 else
-if yy_act = 65 then
+if yy_act = 66 then
 	yy_position := yy_position + yy_end - yy_start - yy_more_len
---|#line 296 "dadl_scanner.l"
+--|#line 297 "dadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 296")
+	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 297")
 end
 						-- match final end of string
 				last_token := V_STRING
@@ -801,9 +813,9 @@ end
 			
 else
 	yy_position := yy_position + 1
---|#line 307 "dadl_scanner.l"
+--|#line 308 "dadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 307")
+	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 308")
 end
 	-- Catch-all rules (no backing up)
 				last_token := ERR_STRING
@@ -812,82 +824,82 @@ end
 end
 end
 else
+if yy_act <= 70 then
 if yy_act <= 69 then
-if yy_act <= 68 then
-if yy_act = 67 then
+if yy_act = 68 then
 	yy_position := yy_position + 3
---|#line 315 "dadl_scanner.l"
-debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 315")
-end
-last_token := V_CHARACTER; last_character_value := text_item (2)
-else
-	yy_position := yy_position + 4
 --|#line 316 "dadl_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 316")
 end
-last_token := V_CHARACTER; last_character_value := '%N'
-end
+last_token := V_CHARACTER; last_character_value := text_item (2)
 else
 	yy_position := yy_position + 4
 --|#line 317 "dadl_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 317")
 end
-last_token := V_CHARACTER; last_character_value := '%R'
+last_token := V_CHARACTER; last_character_value := '%N'
 end
 else
-if yy_act = 70 then
 	yy_position := yy_position + 4
 --|#line 318 "dadl_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 318")
 end
-last_token := V_CHARACTER; last_character_value := '%T'
+last_token := V_CHARACTER; last_character_value := '%R'
+end
 else
+if yy_act = 71 then
 	yy_position := yy_position + 4
 --|#line 319 "dadl_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 319")
+end
+last_token := V_CHARACTER; last_character_value := '%T'
+else
+	yy_position := yy_position + 4
+--|#line 320 "dadl_scanner.l"
+debug ("GELEX")
+	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 320")
 end
 last_token := V_CHARACTER; last_character_value := '%F'
 end
 end
 end
 else
-if yy_act <= 76 then
+if yy_act <= 77 then
+if yy_act <= 75 then
 if yy_act <= 74 then
-if yy_act <= 73 then
-if yy_act = 72 then
-	yy_position := yy_position + 4
---|#line 320 "dadl_scanner.l"
-debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 320")
-end
-last_token := V_CHARACTER; last_character_value := '%''
-else
+if yy_act = 73 then
 	yy_position := yy_position + 4
 --|#line 321 "dadl_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 321")
 end
-last_token := V_CHARACTER; last_character_value := '%H'
-end
+last_token := V_CHARACTER; last_character_value := '%''
 else
 	yy_position := yy_position + 4
 --|#line 322 "dadl_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 322")
 end
-last_token := V_CHARACTER; last_character_value := '"'
+last_token := V_CHARACTER; last_character_value := '%H'
 end
 else
-if yy_act = 75 then
-	yy_position := yy_position + yy_end - yy_start - yy_more_len
+	yy_position := yy_position + 4
 --|#line 323 "dadl_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 323")
+end
+last_token := V_CHARACTER; last_character_value := '"'
+end
+else
+if yy_act = 76 then
+	yy_position := yy_position + yy_end - yy_start - yy_more_len
+--|#line 324 "dadl_scanner.l"
+debug ("GELEX")
+	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 324")
 end
 
 						code_ := text_substring (4, text_count - 1).to_integer
@@ -896,9 +908,9 @@ end
 				
 else
 	yy_position := yy_position + yy_end - yy_start - yy_more_len
---|#line 328 "dadl_scanner.l"
+--|#line 329 "dadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 328")
+	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 329")
 end
 	-- match ISO special character pattern &char_name;
 				-- look up the code in an ISO table
@@ -913,13 +925,13 @@ end
 end
 end
 else
+if yy_act <= 80 then
 if yy_act <= 79 then
-if yy_act <= 78 then
-if yy_act = 77 then
+if yy_act = 78 then
 	yy_position := yy_position + 10
---|#line 338 "dadl_scanner.l"
+--|#line 339 "dadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 338")
+	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 339")
 end
 	-- match W3C XML special character pattern &#xHHHH;
 				-- look up the code in an W3C table
@@ -933,14 +945,6 @@ end
 			
 else
 	yy_position := yy_position + yy_end - yy_start - yy_more_len
---|#line 349 "dadl_scanner.l"
-debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 349")
-end
-last_token := ERR_CHARACTER	-- Catch-all rules (no backing up)
-end
-else
-	yy_position := yy_position + yy_end - yy_start - yy_more_len
 --|#line 350 "dadl_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 350")
@@ -948,11 +952,19 @@ end
 last_token := ERR_CHARACTER	-- Catch-all rules (no backing up)
 end
 else
-if yy_act = 80 then
-	yy_position := yy_position + 1
---|#line 354 "dadl_scanner.l"
+	yy_position := yy_position + yy_end - yy_start - yy_more_len
+--|#line 351 "dadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 354")
+	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 351")
+end
+last_token := ERR_CHARACTER	-- Catch-all rules (no backing up)
+end
+else
+if yy_act = 81 then
+	yy_position := yy_position + 1
+--|#line 355 "dadl_scanner.l"
+debug ("GELEX")
+	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 355")
 end
 ;
 else
@@ -1451,32 +1463,32 @@ feature {NONE} -- Table templates
 	yy_accept_template: SPECIAL [INTEGER] is
 		once
 			Result := yy_fixed_array (<<
-			    0,    0,    0,    0,    0,    0,    0,   82,   80,    1,
-			    2,   14,   58,   17,   80,   15,   16,    7,    6,   12,
-			    5,   10,    8,   53,   13,   11,   26,   23,   27,   19,
-			   48,   48,   48,   48,   48,   48,   21,   22,    9,   49,
-			   49,   49,   49,   49,   49,   50,   20,   63,   64,   65,
-			   63,   66,   81,   51,   52,    1,    2,   58,   57,   78,
-			   78,   78,   78,    3,   28,    0,   53,    0,   25,   24,
-			   18,   48,   48,   48,   48,   47,   48,   48,   48,    0,
-			    0,   49,    0,   49,   49,   49,   49,   49,   49,   49,
-			   49,   49,   49,   50,   63,   65,   64,   63,   63,   60,
+			    0,    0,    0,    0,    0,    0,    0,   83,   81,    1,
+			    2,   14,   59,   17,   81,   15,   16,    7,    6,   12,
+			    5,   10,    8,   54,   13,   11,   26,   23,   27,   19,
+			   49,   49,   49,   48,   49,   49,   21,   22,    9,   50,
+			   50,   50,   50,   50,   50,   51,   20,   64,   65,   66,
+			   64,   67,   82,   52,   53,    1,    2,   59,   58,   79,
+			   79,   79,   79,    3,   28,    0,   54,    0,   25,   24,
+			   18,   49,   49,   49,   49,   47,   49,   49,   49,    0,
+			    0,   50,    0,   50,   50,   50,   50,   50,   50,   50,
+			   50,   50,   50,   51,   64,   66,   65,   64,   64,   61,
 
-			   59,    0,   52,   51,   78,   67,   78,   78,   78,   78,
-			   78,   78,   78,   78,   78,   78,    4,   29,   55,   53,
-			    0,   54,   48,   48,   48,   48,   46,   48,   48,   48,
-			   43,   48,    0,   36,    0,   37,   37,   49,   49,   49,
-			   49,   49,   49,   49,   49,   63,   63,    0,    0,    0,
-			   74,   72,   75,   79,   79,   73,   71,   68,   69,   70,
-			    0,   53,   48,   48,   48,   48,   47,   47,   47,   48,
-			    0,    0,   43,   30,    0,   34,   49,   49,   49,   49,
-			   49,   49,   30,   30,   63,   61,    0,   76,    0,   56,
-			    0,   53,   31,   48,   48,   48,   33,    0,    0,    0,
+			   60,    0,   53,   52,   79,   68,   79,   79,   79,   79,
+			   79,   79,   79,   79,   79,   79,    4,   29,   56,   54,
+			    0,   55,   49,   49,   48,   48,   46,   48,   49,   49,
+			   43,   49,    0,   36,    0,   37,   37,   50,   50,   50,
+			   50,   50,   50,   50,   50,   64,   64,    0,    0,    0,
+			   75,   73,   76,   80,   80,   74,   72,   69,   70,   71,
+			    0,   54,   49,   49,   49,   49,   47,   47,   47,   49,
+			    0,    0,   43,   30,    0,   34,   50,   50,   50,   50,
+			   50,   50,   30,   30,   64,   62,    0,   77,    0,   57,
+			    0,   54,   31,   49,   49,   49,   33,    0,    0,    0,
 
-			   31,   31,   49,   49,   33,   33,   63,    0,    0,   48,
-			    0,   42,   35,   49,   49,   63,    0,   45,   48,    0,
-			    0,    0,   42,   49,   49,   63,    0,    0,   32,   43,
-			    0,    0,   32,   32,   62,    0,    0,    0,   41,   77,
+			   31,   31,   50,   50,   33,   33,   64,    0,    0,   49,
+			    0,   42,   35,   50,   50,   64,    0,   45,   49,    0,
+			    0,    0,   42,   50,   50,   64,    0,    0,   32,   43,
+			    0,    0,   32,   32,   63,    0,    0,    0,   41,   78,
 			   44,    0,    0,    0,   41,    0,    0,   41,    0,    0,
 			   40,    0,    0,    0,   40,    0,    0,    0,   39,    0,
 			    0,    0,   39,    0,    0,    0,   38,    0,    0,    0,
@@ -1511,10 +1523,10 @@ feature {NONE} -- Constants
 			-- regular expression with both leading
 			-- and trailing parts having variable length?
 
-	yyNb_rules: INTEGER is 81
+	yyNb_rules: INTEGER is 82
 			-- Number of rules
 
-	yyEnd_of_buffer: INTEGER is 82
+	yyEnd_of_buffer: INTEGER is 83
 			-- End of buffer rule code
 
 	yyLine_used: BOOLEAN is false

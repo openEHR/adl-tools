@@ -283,7 +283,8 @@ T[0-2][0-9](Z|[+-][0-9]{4})? {
 ----------/* V_ISO8601_DURATION PnYnMnWnDtnnHnnMnnS */ -------------------------------------------------
 
 P[0-9]+[wW]	|
-P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[dD])?T([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])?	{
+P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[dD])?T([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])? |
+P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[dD])? {
 				last_token := V_ISO8601_DURATION
 				last_string_value := text
 			}
@@ -298,14 +299,14 @@ P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[dD])?T([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])?
 
 ----------/* V_ISO8601_TIME_CONSTRAINT_PATTERN */ -------------------------------------------------
 
-[hH][hH]:[mM?X][mM?X]:[sS?X][sS?X]	{
+T?[hH][hH]:[mM?X][mM?X]:[sS?X][sS?X]	{
 				last_token := V_ISO8601_TIME_CONSTRAINT_PATTERN
 				last_string_value := text
 			}
 
 ----------/* V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN */ -------------------------------------------------
 
-[yY][yY][yY][yY]-[mM?][mM?]-[dD?X][dD?X][ \t][hH?X][hH?X]:[mM?X][mM?X]:[sS?X][sS?X]	{
+[yY][yY][yY][yY]-[mM?][mM?]-[dD?X][dD?X][ T][hH?X][hH?X]:[mM?X][mM?X]:[sS?X][sS?X]	{
 				last_token := V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN
 				last_string_value := text
 			}

@@ -64,7 +64,7 @@ feature -- Template
 			if not rep_path.is_empty then
 				working_directory := substitute_env_vars(rep_path)
 			else
-				working_directory := startup_directory
+				working_directory := application_startup_directory
 			end
 			adl_interface.set_current_directory(working_directory)
 
@@ -184,7 +184,7 @@ feature -- Template
 				io.put_string(adl_interface.status + "%N")
 
 				io.put_string("-------- Serialising to HTML --------%N")
-				html_fname := clone(repository.file_path(arch_id))
+				html_fname := repository.file_path(arch_id).twin
 				html_fname.replace_substring(".html", html_fname.count - Archetype_file_extension.count, html_fname.count)
 				adl_interface.save_archetype(html_fname, "html")
 				io.put_string(adl_interface.status + "%N")
