@@ -171,11 +171,10 @@ feature -- Initialization
 		end
 
 	execute(in_text:STRING) is
-		require
 		do
 			reset
 			create error_text.make(0)
-			set_input_buffer (new_string_buffer (in_text + ";"))
+			set_input_buffer (new_string_buffer (in_text))
 			parse
 		end
 

@@ -58,7 +58,7 @@ feature -- testing
 			archetype := adl_interface.archetype
 			cf := adl_interface.constraint_model_factory
 
-			an_attr_node := archetype.definition.c_attribute_at_path ("/[at0001]/items[at0003]/items")
+			an_attr_node := archetype.definition.c_attribute_at_path ("/items[at0003]/items")
 
 			a_c_qty := cf.create_c_quantity (an_attr_node)
 			a_c_qty.set_property ("temperature")

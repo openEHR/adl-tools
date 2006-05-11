@@ -527,17 +527,6 @@ primitive_object_value: simple_value
 				create {DT_PRIMITIVE_OBJECT_LIST} leaf_object_node.make_anonymous($1)
 			end
 		}
--- FIXME: query syntax is obsolete from 01/jun/2005; remove when backward compatibility no longer needed
-	| query
-	;
-
--- FIXME: query syntax is obsolete from 01/jun/2005; remove when backward compatibility no longer needed
-query: SYM_QUERY_FUNC '(' V_STRING ',' V_STRING ')'
-		{
-			raise_error
-			report_error("query syntax is obsolete: use a URI instead e.g. [1234] = <http://free.terminology.org?terminology='snomed'&&is-a[94859384]>")
-			abort
-		}
 	;
 
 simple_value: string_value

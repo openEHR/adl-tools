@@ -134,7 +134,7 @@ feature {NONE} -- Implementation
 						fpath := a_dir_name + "\" + fn
 						create a_file.make(fpath)	
 						if a_file.is_directory then
-							find_file_paths(clone(fpath))
+							find_file_paths(fpath.twin)
 						elseif a_file.is_plain then
 							if base_name_pattern_regex.matches(fn) then
 								file_paths.put(fpath, fn.substring(1, fn.count-fn.last_index_of('.', 1)))

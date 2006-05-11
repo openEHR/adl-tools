@@ -99,6 +99,12 @@ feature -- Status Report
 
 	has_time: BOOLEAN
 			-- True if any hms component present
+			
+	is_zero: BOOLEAN is
+			-- True if total value is zero
+		do
+			Result := weeks = 0 and years + months + days + hours + minutes + seconds = 0
+		end
 		
 feature -- Comparison
 
@@ -163,7 +169,13 @@ feature -- Output
 							Result.append(sec_frac_str.substring(sec_frac_str.index_of('.', 1)+1, sec_frac_str.count))
 						end
 						Result.append("S")
-					end					
+					end			
+				end
+				if is_zero then
+					-- no values could have been appended; for now append 0 sec, but to correct this, 
+					-- need to have captured which part was actually supplied during make - which 
+					-- requires a set of flags for all input values...
+					Result.append("T0S")
 				end
 			end
 		end
@@ -177,7 +189,6 @@ invariant
 	years_valid: years >= 0
 	months_valid: months >= 0
 	weeks_valid: weeks >= 0
-	weeks_mutual_exclusion: weeks > 0 implies (years + months + days + hours + minutes + seconds = 0)
 	days_valid: days >= 0
 	hours_valid: hours >= 0
 	minutes_valid: minutes >= 0

@@ -58,7 +58,7 @@ feature -- Access
 		do
 			create c_a_terminology.make_by_pointer (a_terminology)
 			create c_a_term_code.make_by_pointer (a_term_code)
-			obj := ontology.constraint_binding (c_a_terminology.string, c_a_term_code.string).to_c
+			obj := ontology.constraint_binding (c_a_terminology.string, c_a_term_code.string).as_string.to_c
 			Result := $obj
 		end
 
@@ -230,7 +230,7 @@ feature -- Access
 		local
 			obj: ANY
 		do
-			obj := ontology.validity_report.to_c
+			obj := ontology.errors.to_c
 			Result := $obj
 		end
 	

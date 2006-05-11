@@ -54,7 +54,7 @@ feature -- Template
 			if not rep_path.is_empty then
 				working_directory := substitute_env_vars(rep_path)
 			else
-				working_directory := startup_directory
+				working_directory := application_startup_directory
 			end
 			adl_interface.set_current_directory(working_directory)
 			

@@ -128,13 +128,37 @@ creation
 				ontology_text_start_line := in_lineno
 			}
 
-<IN_DADL_SECTION>^[ \t]+[^\n]*\n {
+<IN_DADL_SECTION>^[Dd][Ee][Ff][Ii][Nn][Ii][Tt][Ii][Oo][Nn][ \t\r]*\n { -- line starting with "definition"
+				-- unread the pattern just matched
+				a_text := text
+				from i := text_count until i < 1 loop
+					unread_character (a_text.item (i))
+					i := i - 1
+				end
+
+				-- get the dADL section sorted out
+				last_token := V_DADL_TEXT
+				str_ := STRING_.make (in_buffer.count)
+				str_.append_string (in_buffer)
+				in_buffer.wipe_out
+				last_string_value := str_
+
+				set_start_condition(INITIAL)
+			}
+
+<IN_DADL_SECTION>[^\n]+\n { -- any text on line with a LF
 				in_buffer.append_string(text)
 				in_lineno := in_lineno + 1
 			}
 
-<IN_DADL_SECTION>^[^ \t] { -- non-white space at start
-				unread_character(text.item(1))
+<IN_DADL_SECTION>[^\n]+ { -- any text on line with no LF
+				in_buffer.append_string(text)
+				in_lineno := in_lineno + 1
+			}
+
+<IN_DADL_SECTION>{
+	<<EOF>> {
+				-- get the dADL section sorted out
 				last_token := V_DADL_TEXT
 				str_ := STRING_.make (in_buffer.count)
 				str_.append_string (in_buffer)
@@ -142,6 +166,10 @@ creation
 				last_string_value := str_
 				set_start_condition(INITIAL)
 			}
+	(.|\n) {
+		-- ignore unmatched chars
+	}
+}
 
 <IN_CADL_SECTION>^[ \t]+[^\n]*\n {
 				in_buffer.append_string(text)
@@ -193,16 +221,16 @@ creation
 
 --------------------------------------------------------------------------------
 <<EOF>>			terminate
-.				;
+(.|\n)			-- ignore unmatched chars
 
 
 %%
 
 feature {NONE} -- Local variables
 
-	i_, nb_: INTEGER
+	i_, i, nb_: INTEGER
 	char_: CHARACTER
-	str_: STRING
+	a_text, str_: STRING
 	code_: INTEGER
 
 feature {NONE} -- Initialization

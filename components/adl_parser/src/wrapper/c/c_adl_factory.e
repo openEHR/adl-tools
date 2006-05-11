@@ -199,13 +199,6 @@ feature -- Primitive Object Creation
 			put_c_primitive(constraint_model_factory.create_c_integer_make_upper_unbounded(a_lower, include_lower), Result)
 		end
 
-	create_c_integer_make_unbounded: INTEGER is
-			-- create Result as unbounded interval
-		do
-			Result := new_handle
-			put_c_primitive(constraint_model_factory.create_c_integer_make_unbounded, Result)
-		end
-
 	create_c_real_make_bounded (a_lower, an_upper: REAL; include_lower, include_upper: BOOLEAN): INTEGER is
 			-- create Result with both limits set
 			-- REQUIRE
@@ -227,13 +220,6 @@ feature -- Primitive Object Creation
 		do
 			Result := new_handle
 			put_c_primitive(constraint_model_factory.create_c_real_make_upper_unbounded(a_lower, include_lower), Result)
-		end
-
-	create_c_real_make_unbounded: INTEGER is
-			-- create Result as unbounded interval
-		do
-			Result := new_handle
-			put_c_primitive(constraint_model_factory.create_c_real_make_unbounded, Result)
 		end
 
 	create_c_boolean_make_true: INTEGER is

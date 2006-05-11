@@ -3,18 +3,23 @@ indexing
 	
 	description: "[
 				  Model of a URI, or Universal Resource Identifier, as defined by W3C
-	              RFC 2936.  See %"Universal Resource Identifiers in WWW%" by 
-				  Tim Berners-Lee at http://www.ietf.org/rfc/rfc2396.txt.
+	              RFC 3896.  See %"Universal Resource Identifiers in WWW%" by 
+				  Tim Berners-Lee at http://www.ietf.org/rfc/rfc3986.txt.
 	              This  is  a  World-Wide  Web  RFC  for  global 
 	              identification  of resources. In current use on the web, 
 	              eg by Mosaic, Netscape and similar tools.
 	              See http://www.w3.org/Addressing for a starting point on URIs.
+	              
+	              FIXME: This class does not implement this RFC at the moment. It will use the
+	              Gobo class to do so in the future, since URIs are made persisitent, 
+	              this class will have to iinherit from DT_CONVERTIBLE and list only value as
+	              being persistent.
 	              ]"
 	keywords:    "www, uri, uniform, resource, identifier"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2005 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2005-2006 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -56,8 +61,8 @@ feature -- Definitions
 	Scheme_delimiter: STRING is ":"
 			-- indicates the end of the scheme name
 
-	Path_delimiter: STRING is "//"
-			-- indicates start of the path
+	Authority_delimiter: STRING is "//"
+			-- indicates start of authority id under which next level of ids are sensible
 
 	Fragment_delimiter: STRING is "#"
 			-- Indicates the start of a fragment identifier
@@ -137,7 +142,9 @@ feature -- Status Report
 		require
 			str_valid: a_str /= Void
 		do
-			Result := a_str.substring_index(Scheme_delimiter + Path_delimiter, 1) > 1
+			-- FIXME: for the moment, anything is valid. We need to use the Gobo UT_URI class to
+			-- do proper validation
+			Result := not a_str.is_empty -- a_str.substring_index(Scheme_delimiter + Authority_delimiter, 1) > 1
 		end
 		
 feature -- Conversion
@@ -159,7 +166,7 @@ feature {NONE} -- Implementation
 	format(a_scheme, a_path, a_query, a_fragment:STRING): STRING is
 		do
 			Result := a_scheme.twin
-			Result.append(Scheme_delimiter + Path_delimiter + a_path)
+			Result.append(Scheme_delimiter + Authority_delimiter + a_path)
 
 			if a_query /= Void then
 			    Result.append(Query_delimiter + a_query)
@@ -169,6 +176,6 @@ feature {NONE} -- Implementation
 			    Result.append(Fragment_delimiter + a_fragment)
 			end
 		end
-		
+			
 end
 

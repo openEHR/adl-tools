@@ -91,24 +91,26 @@ cluster
 			assertion (invariant)
 		end
 
-	library ut_support:		"$GOBO\library\utility"
+	library gobo_string:		"$GOBO\library\string"
 
-	library kl_kernel:		"$GOBO\library\kernel"
+	library gobo_support:		"$GOBO\library\utility"
+
+	library gobo_kernel:		"$GOBO\library\kernel"
 		exclude
 			spec; 
 		end
 
-	library kl_kernel_spec:		"$GOBO\library\kernel\spec\ise"
+	library gobo_kernel_spec:		"$GOBO\library\kernel\spec\ise"
 
-	library kl_lexical:		"$GOBO\library\lexical"
+	library gobo_lexical:		"$GOBO\library\lexical"
 
-	library kl_parse:		"$GOBO\library\parse"
+	library gobo_parse:		"$GOBO\library\parse"
 
 	library gobo_structure:		"$GOBO\library\structure"
 
-	library regexp:		"$GOBO\library\regexp"
+	library gobo_regexp:		"$GOBO\library\regexp"
 
-	library design_pattern:		"$GOBO\library\pattern"
+	library gobo_design_pattern:		"$GOBO\library\pattern"
 
 	library base:		"$ISE_EIFFEL\library\base"
 		exclude

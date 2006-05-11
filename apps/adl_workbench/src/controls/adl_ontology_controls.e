@@ -215,8 +215,7 @@ feature {NONE} -- Implementation
 				loop	
 					if ontology.has_constraint_binding (ontology.terminologies_available.item, a_term.code) then
 						list_row.extend(ontology.constraint_binding(
-							ontology.terminologies_available.item, a_term.code
-						))
+							ontology.terminologies_available.item, a_term.code).as_string)
 					else
 						list_row.extend("")
 					end

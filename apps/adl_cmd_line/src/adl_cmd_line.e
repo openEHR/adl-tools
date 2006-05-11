@@ -56,7 +56,7 @@ feature -- Template
 			reparse_faied_list: ARRAYED_LIST[STRING]
    		do
 			io.put_string(splash)
-			read_resource_file
+			initialise_default_resource_config_file_name
 			rep_path := resource_value("any", "repository")
 			set_language("en")
 			read_command_line
@@ -191,7 +191,7 @@ feature -- Template
 
 				io.put_string("-------- Serialising to ADL --------%N")
 				old_adl_file := repository.file_path(arch_id)
-				new_adl_file := old_adl_file + "2"
+				new_adl_file := old_adl_file + "x"
 				adl_interface.save_archetype(new_adl_file, "adl")
 				io.put_string(adl_interface.status + "%N")
 				
@@ -219,18 +219,7 @@ feature -- Template
 				io.put_string(adl_interface.status + "%N")
 			end
 		end
-		
-	read_resource_file is
-			-- 
-		local
-			s: STRING
-		do
-			s := application_name
-			s.replace_substring_all(".exe", "")
-			s.append(".cfg")
-			initialise_resource_config_file_name(s)
-		end
-		
+				
 	repository: FILE_REPOSITORY
 	
 	overwrite: BOOLEAN
@@ -260,6 +249,7 @@ feature -- Template
 		
 	archetype_file_name_pattern: STRING is "^[a-z][a-z0-9_]*-[a-z][a-z0-9_]*-[a-z][a-z0-9_]*\.[a-z][a-z0-9\-_]*\.[a-z][a-z0-9_]*\.adl$"
 			-- matches "rm_originator-rm_name-rm_entity.concept.version.adl"
+			
 end
 
 

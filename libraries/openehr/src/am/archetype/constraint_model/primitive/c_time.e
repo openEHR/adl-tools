@@ -87,7 +87,7 @@ feature -- Initialisation
 			pattern.append(a_pattern)
 		ensure
 			-- FIXME: re-instate when patterns with no 'T' made invalid
-			pattern_set: pattern = a_pattern
+			-- pattern_set: pattern = a_pattern
 		end
 		
 feature -- Access

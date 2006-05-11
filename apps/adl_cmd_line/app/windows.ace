@@ -44,7 +44,6 @@ cluster
 		default
 			assertion (no)
 			assertion (require)
-			assertion (ensure)
 		end
 
 	all version:		"$OPENEHR\ref_impl_eiffel\libraries\version"
@@ -63,7 +62,6 @@ cluster
 		default
 			assertion (no)
 			assertion (require)
-			assertion (ensure)
 		end
 
 	all openehr:		"$OPENEHR\ref_impl_eiffel\libraries\openehr\src"
@@ -73,13 +71,16 @@ cluster
 			assertion (no)
 			assertion (check)
 			assertion (require)
-			assertion (ensure)
 		visible
 			C_CODED_TERM
 				end
 			C_ORDINAL
 				end
 			C_QUANTITY
+				end
+			CODE_PHRASE
+				end
+			TERMINOLOGY_ID
 				end
 		end
 
@@ -89,8 +90,6 @@ cluster
 		default
 			assertion (no)
 			assertion (require)
-			assertion (ensure)
-			assertion (invariant)
 		end
 
 	library ut_support:		"$GOBO\library\utility"

@@ -58,7 +58,7 @@ feature -- Modification
 			elseif a_node.is_addressable then
 				s := a_node.node_id
 				last_result.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) + 
-					ontology.term_definition(language, s).item("text"), STYLE_COMMENT))
+					safe_comment(ontology.term_definition(language, s).item("text")), STYLE_COMMENT))
 				last_result.append(format_item(FMT_NEWLINE))
 			else
 				last_result.append(format_item(FMT_NEWLINE))
@@ -98,7 +98,7 @@ feature -- Modification
 			elseif a_node.is_addressable then
 				s := a_node.node_id
 				last_result.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) + 
-					ontology.term_definition(language, s).item("text"), STYLE_COMMENT))
+					safe_comment(ontology.term_definition(language, s).item("text")), STYLE_COMMENT))
 				last_result.append(format_item(FMT_NEWLINE))
 			else
 				last_result.append(format_item(FMT_NEWLINE))
@@ -208,7 +208,7 @@ feature -- Modification
 			
 			-- add the comment
 			last_object_simple_buffer.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) + 
-					ontology.constraint_definition(language, a_node.target).item("text"), STYLE_COMMENT))
+					safe_comment(ontology.constraint_definition(language, a_node.target).item("text")), STYLE_COMMENT))
 			last_object_simple := True
 		end
 		

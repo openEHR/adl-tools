@@ -1,25 +1,27 @@
 indexing
 	component:   "openEHR Archetype Project"
-	description: "Test case for ADL ontology population"
-	keywords:    "test, ADL"
+	description: "Test case for archetype creation"
+	keywords:    "test, ADL, CADL"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	file:        "$Source"
+	revision:    "$Revision"
+	last_change: "$Date"
 
-class TC_ONTOLOGY_POPULATE
+class TC_ONTOLOGY_ADD_CONSTRAINT_BINDING
 	
 inherit
 	TEST_CASE
+		export
+			{NONE} all
 		redefine
 			prereqs
 		end
-
+		
 	SHARED_TEST_ENV
 		export
 			{NONE} all
@@ -36,57 +38,35 @@ feature -- Initialisation
 
 feature -- Access
 
-	title: STRING is "Populate ontology with terms"
+	title: STRING is "Add Constraint Binding"
 
 	prereqs: ARRAY[STRING] is 
 			-- ids of prerequisite test cases
 		once
-			Result := <<"TC_ARCHETYPE_CREATE">>
+			Result := <<"TS_ARCHETYPE_CREATE">>
 		end
 
 feature -- testing
 
 	execute is
 		local
-			code_1: STRING
+			a_code: STRING
 			a_term: ARCHETYPE_TERM
 			archetype: ARCHETYPE
+			a_binding: URI
 		do
 			archetype := adl_interface.adl_engine.archetype
-			
-			io_message.put_string ("------------------ create term -------------------%N")
-			code_1 := ontology.new_non_specialised_term_code
-			create a_term.make(code_1)
-			a_term.add_item("text", "post-natal examination headings")
-			a_term.add_item("description", "headings for post-natal examination note")
-			ontology.add_term_definition("en", a_term)	-- FIXME - should add_term_def always be for prim lang?
 
-			-- set id on root node
-			archetype.set_definition_node_id(code_1)
-			
-			io_message.put_string ("------------------ create term -------------------%N")
-			create a_term.make(ontology.new_non_specialised_term_code)
-			a_term.add_item("text", "post-natal examination")
-			a_term.add_item("description", "post-natal examination of mother and newborn children")
-			ontology.add_term_definition("en", a_term)
-			
-			io_message.put_string ("------------------ create constraint code -------------------%N")
-			create a_term.make(ontology.new_constraint_code)
-			a_term.add_item("text", "xxxxx")
-			a_term.add_item("description", "xxxxxx")
-			ontology.add_constraint_definition("en", a_term)
-			
-			io_message.put_string ("------------------ create 2nd constraint code -------------------%N")
-			create a_term.make(ontology.new_constraint_code)
-			a_term.add_item("text", "xxxxx")
-			a_term.add_item("description", "xxxxxx")
-			ontology.add_constraint_definition("en", a_term)
-			
+			-- ontology.add_constraint_binding
+			create a_binding.make_from_string ("urn:snomed-ct:query:123432")
+			ontology.add_constraint_binding (a_binding, "snomed-ct", "ac0001")
+			create a_binding.make_from_string ("http://terminology.net/queries?85858")
+			ontology.add_constraint_binding (a_binding, "snomed-ct", "ac0002")
 			if archetype.is_valid then
-				adl_interface.adl_engine.serialise (serialise_format)
-				io_message.put_string (adl_interface.adl_engine.serialised_archetype)
+				adl_interface.adl_engine.serialise (serialise_format)	
+				io_message.put_string(adl_interface.adl_engine.serialised_archetype)	
 			else
-				io_message.put_string (archetype.errors)
+				io_message.put_string(archetype.errors)	
 			end
 		end
 	
@@ -106,7 +86,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is tc_ontology_terms.e.
+--| The Original Code is tc_archetype_create.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

@@ -94,7 +94,7 @@ feature -- Modification
 	set_property(a_property: STRING) is
 			-- set property constraint
 		require
-			Property_valid: a_property /= Void and then not a_property.is_empty
+			Property_valid: a_property /= Void
 		do
 			property := a_property
 		end
@@ -167,7 +167,6 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 invariant
 	Overall_validity: list /= Void or property /= Void
 	Items_valid: list /= Void implies not list.is_empty
-	property_valid: property /= Void implies not property.is_empty
 	
 end
 

@@ -224,7 +224,8 @@ feature -- Status Report
 			elseif ontology = Void then
 				errors.append("No ontology%N")
 			elseif not ontology.is_valid then
-				errors.append("Ontology: " + ontology.validity_report)
+				errors.append("Ontology errors:-%N" + ontology.errors)
+				warnings.append("Ontology warnings:-%N: " + ontology.warnings)
 			else
 				if not definition.rm_type_name.is_equal (archetype_id.rm_entity) then
 					errors.append("Archetype id type %"" + archetype_id.rm_entity + 

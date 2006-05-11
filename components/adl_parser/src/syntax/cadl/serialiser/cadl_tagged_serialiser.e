@@ -248,7 +248,7 @@ feature -- Modification
 					attrs.put(ontology.terminologies_available.item, "terminology")
 					last_object_simple_buffer.append(format_item(FMT_NEWLINE) + create_indent(depth-1) + 
 						xml_tag_enclose("binding",
-						ontology.constraint_binding(ontology.terminologies_available.item, a_node.target), attrs))
+						ontology.constraint_binding(ontology.terminologies_available.item, a_node.target).as_string, attrs))
 				end
 				ontology.terminologies_available.forth							
 			end

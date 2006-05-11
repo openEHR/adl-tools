@@ -24,11 +24,11 @@ feature -- Definitions
 		once
 			create Result.make(0)
 			Result.compare_objects
-			Result.extend ("yyyy-mm-dd")	-- full date required
-			Result.extend ("yyyy-mm-??")	-- day optional
-			Result.extend ("yyyy-??-??")	-- any date ok
-			Result.extend ("yyyy-??-XX")	-- day not allowed
-			Result.extend ("yyyy-XX-XX")	-- neither month nor day allowed
+			Result.extend ("YYYY-MM-DD")	-- full date required
+			Result.extend ("YYYY-MM-??")	-- day optional
+			Result.extend ("YYYY-??-??")	-- any date ok
+			Result.extend ("YYYY-??-XX")	-- day not allowed
+			Result.extend ("YYYY-XX-XX")	-- neither month nor day allowed
 		end
 		
 	valid_time_constraint_patterns: ARRAYED_LIST [STRING] is
@@ -37,16 +37,16 @@ feature -- Definitions
 			create Result.make(0)
 			Result.compare_objects
 			-- FIXME: the following group to be removed eventually
-			Result.extend ("hh:mm:ss")	-- full time required
-			Result.extend ("hh:??:XX")	-- seconds optional
-			Result.extend ("hh:??:??")	-- any time ok
-			Result.extend ("hh:mm:XX")	-- seconds not allowed
+			Result.extend ("HH:MM:SS")	-- full time required
+			Result.extend ("HH:??:XX")	-- seconds optional
+			Result.extend ("HH:??:??")	-- any time ok
+			Result.extend ("HH:MM:XX")	-- seconds not allowed
 			
 			-- the following group to be retained
-			Result.extend ("Thh:mm:ss")	-- full time required
-			Result.extend ("Thh:??:XX")	-- seconds optional
-			Result.extend ("Thh:??:??")	-- any time ok
-			Result.extend ("Thh:mm:XX")	-- seconds not allowed
+			Result.extend ("THH:MM:SS")	-- full time required
+			Result.extend ("THH:??:XX")	-- seconds optional
+			Result.extend ("THH:??:??")	-- any time ok
+			Result.extend ("THH:MM:XX")	-- seconds not allowed
 		end
 		
 	valid_date_time_constraint_patterns: ARRAYED_LIST [STRING] is
@@ -55,18 +55,18 @@ feature -- Definitions
 			create Result.make(0)
 			Result.compare_objects
 			-- FIXME: the following group to be removed eventually
-			Result.extend ("yyyy-mm-dd hh:mm:ss")	-- full date/time required
-			Result.extend ("yyyy-mm-dd hh:mm:??")	-- seconds optional
-			Result.extend ("yyyy-??-?? ??:??:??")	-- any date/time ok
-			Result.extend ("yyyy-mm-dd hh:??:XX")	-- seconds not allowed, minutes optional
-			Result.extend ("yyyy-mm-dd hh:mm:XX")	-- seconds not allowed
+			Result.extend ("YYYY-MM-DD HH:MM:SS")	-- full date/time required
+			Result.extend ("YYYY-MM-DD HH:MM:??")	-- seconds optional
+			Result.extend ("YYYY-??-?? ??:??:??")	-- any date/time ok
+			Result.extend ("YYYY-MM-DD HH:??:XX")	-- seconds not allowed, minutes optional
+			Result.extend ("YYYY-MM-DD HH:MM:XX")	-- seconds not allowed
 			
 			-- the following group to be retained
-			Result.extend ("yyyy-mm-ddThh:mm:ss")	-- full date/time required
-			Result.extend ("yyyy-mm-ddThh:mm:??")	-- seconds optional
-			Result.extend ("yyyy-??-??T??:??:??")	-- any date/time ok
-			Result.extend ("yyyy-mm-ddThh:??:XX")	-- seconds not allowed, minutes optional
-			Result.extend ("yyyy-mm-ddThh:mm:XX")	-- seconds not allowed
+			Result.extend ("YYYY-MM-DDTHH:MM:SS")	-- full date/time required
+			Result.extend ("YYYY-MM-DDTHH:MM:??")	-- seconds optional
+			Result.extend ("YYYY-??-??T??:??:??")	-- any date/time ok
+			Result.extend ("YYYY-MM-DDTHH:??:XX")	-- seconds not allowed, minutes optional
+			Result.extend ("YYYY-MM-DDTHH:MM:XX")	-- seconds not allowed
 		end
 		
 feature -- Status Report
@@ -80,8 +80,7 @@ feature -- Status Report
 			str: STRING
 		do
 			str := s.twin
-			str.to_lower
-			str.replace_substring_all ("xx", "XX") -- to allow matching with "XX" rather than "xx" in allowed patterns
+			str.to_upper
 			Result := valid_time_constraint_patterns.has(str)
 		end
 		
@@ -94,8 +93,7 @@ feature -- Status Report
 			str: STRING
 		do
 			str := s.twin
-			str.to_lower
-			str.replace_substring_all ("xx", "XX") -- to allow matching with "XX" rather than "xx" in allowed patterns
+			str.to_upper
 			Result := valid_date_constraint_patterns.has(str)
 		end
 		
@@ -107,8 +105,7 @@ feature -- Status Report
 			str: STRING
 		do
 			str := s.twin
-			str.to_lower
-			str.replace_substring_all ("xx", "XX") -- to allow matching with "XX" rather than "xx" in allowed patterns
+			str.to_upper
 			Result := valid_date_time_constraint_patterns.has(str)
 		end
 		

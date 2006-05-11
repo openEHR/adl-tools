@@ -138,6 +138,21 @@ feature -- Factory
 			Result := profile.create_indent(indent_level)
 		end
 		
+	safe_comment(a_text: STRING): STRING is
+			-- make a comment text taken from the ontology safe for inclusion
+			-- by removing newlines and restricting its length
+		local
+			nl_pos: INTEGER
+		do
+			nl_pos := a_text.index_of('%N', 1)
+			if nl_pos > 0 then
+				create Result.make(nl_pos - 1)
+				Result.append(a_text.substring(1, nl_pos-1))
+			else
+				Result := a_text			
+			end
+		end
+
 feature {NONE} -- Implementation
 
 	profile: SERIALISATION_PROFILE

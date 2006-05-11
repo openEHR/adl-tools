@@ -53,6 +53,9 @@ feature -- Initialisation
 	default_create is
 			-- 
 		do
+			create errors.make(0)
+			create warnings.make(0)
+			
 			create languages_available.make(0)
 			languages_available.compare_objects
 			create terminologies_available.make(0)
@@ -153,14 +156,14 @@ feature -- Access
 			Result_exists: Result /= Void
 		end
 
-	constraint_binding(a_terminology, a_term_code: STRING): STRING is
+	constraint_binding(a_terminology, a_term_code: STRING): URI is
 			-- retrieve the constraint definition in language `a_lang' for code `a_term_code'
 			-- in form of a string: "service::query"
 		require
 			Terminology_valid: a_terminology /= Void and then terminologies_available.has(a_terminology)
 			Term_code_valid: a_term_code /= Void and then has_constraint_binding(a_terminology, a_term_code)
 		do
-			Result := constraint_bindings.item(a_terminology).item(a_term_code).as_string
+			Result := constraint_bindings.item(a_terminology).item(a_term_code)
 		ensure
 			Result_exists: Result /= Void
 		end	
@@ -177,7 +180,9 @@ feature -- Access
 	term_attribute_names: ARRAYED_LIST[STRING]
 			-- the attribute names found in ARCHETYPE_TERM objects
 
-	validity_report: STRING
+	errors: STRING
+	
+	warnings: STRING
 
 	logical_path_for_physical_path(a_path, a_lang: STRING): STRING is
 			-- generate the logical path in language 'a_lang' for 'a_path'
@@ -222,15 +227,14 @@ feature -- Status Report
 	is_valid: BOOLEAN is
 			-- 
 		do
-			create validity_report.make(0)
-			-- FIXME: do some validity checking
+			-- FIXME: do some validity checking; some is already happening in syncrhonise_from_tree
 			
 			-- there can be no code of a specialisation depth greater than that of the
 			-- ontology as a whole, which is derived from the concept code
 			
-			Result := validity_report.is_empty
+			Result := errors.is_empty
 		ensure
-			validity_report_exists: validity_report /= Void
+			not Result implies errors /= Void and then not errors.is_empty
 		end
 		
 	has_path(a_path: STRING): BOOLEAN is
@@ -474,11 +478,19 @@ feature -- Modification
 			Code_phrase_exists: a_code_phrase /= Void
 			Local_code_valid: a_term_code /= Void and then has_term_code(a_term_code)
 			Not_already_added: not has_term_binding(a_code_phrase.terminology_id.value, a_term_code)
+		local
+			a_terminology: STRING
 		do
-			if not terminologies_available.has(a_code_phrase.terminology_id.value) then
-				add_binding_terminology(a_code_phrase.terminology_id.value)		
+			a_terminology := a_code_phrase.terminology_id.value
+			if not terminologies_available.has(a_terminology) then
+				terminologies_available.extend(a_terminology)
 			end
-			term_bindings.item(a_code_phrase.terminology_id.value).put(a_code_phrase, a_term_code)
+			
+			if not has_term_bindings(a_terminology) then
+				term_bindings.put(create {HASH_TABLE[CODE_PHRASE, STRING]}.make(0), a_terminology)
+			end
+				
+			term_bindings.item(a_terminology).put(a_code_phrase, a_term_code)
 		ensure
 			Binding_added: has_term_binding(a_code_phrase.terminology_id.value, a_term_code)
 		end
@@ -509,6 +521,53 @@ feature -- Modification
 			end
 		ensure
 			Binding_removed: not has_term_binding(a_terminology, a_term_code)
+		end
+		
+	add_constraint_binding(a_uri: URI; a_terminology, a_constraint_code: STRING) is
+			-- add a new constraint binding to local code a_term_code, in the terminology
+			-- group corresponding to the a_code_phrase.terminology
+		require
+			Uri_exists: a_uri /= Void
+			Local_code_valid: a_constraint_code /= Void and then has_constraint_code(a_constraint_code)
+			Not_already_added: not has_constraint_binding(a_terminology, a_constraint_code)
+		do
+			if not terminologies_available.has(a_terminology) then
+				terminologies_available.extend(a_terminology)
+			end
+			if not has_constraint_bindings(a_terminology) then
+				constraint_bindings.put(create {HASH_TABLE[URI, STRING]}.make(0), a_terminology)
+			end
+			constraint_bindings.item(a_terminology).put(a_uri, a_constraint_code)
+		ensure
+			Binding_added: has_constraint_binding(a_terminology, a_constraint_code)
+		end
+		
+	replace_constraint_binding(a_uri: URI; a_terminology, a_constraint_code: STRING) is
+			-- replaces existing constraint binding to local code a_term_code, in group a_terminology
+		require
+			Uri_exists: a_uri /= Void
+			Local_code_valid: a_constraint_code /= Void and then has_constraint_code(a_constraint_code)
+			Terminology_valid: terminologies_available.has(a_terminology)
+			Already_added: has_constraint_binding(a_terminology, a_constraint_code)
+		do
+			constraint_bindings.item(a_terminology).replace(a_uri, a_constraint_code)
+		ensure
+			Binding_added: has_constraint_binding(a_terminology, a_constraint_code)
+		end
+		
+	remove_constraint_binding(a_constraint_code, a_terminology: STRING) is
+			-- remove constraint binding to local code in group a_terminology
+		require
+			Local_code_valid: a_constraint_code /= Void and then has_constraint_code(a_constraint_code)
+			Terminology_valid: terminologies_available.has(a_terminology)
+			Has_binding: has_constraint_binding(a_terminology, a_constraint_code)
+		do
+			constraint_bindings.item(a_terminology).remove(a_constraint_code)
+			if constraint_bindings.item(a_terminology).count = 0 then
+				remove_binding_terminology(a_terminology)
+			end
+		ensure
+			Binding_removed: not has_constraint_binding(a_terminology, a_constraint_code)
 		end
 		
 feature -- Factory
@@ -583,6 +642,7 @@ feature -- Synchronisation
 			a_term: ARCHETYPE_TERM
 			a_coord_term: CODE_PHRASE
 			keys: ARRAYED_LIST[STRING]
+			a_uri: URI
 		do
 			create representation.make_anonymous
 
@@ -734,7 +794,9 @@ feature -- Synchronisation
 					until
 						constraint_bindings.item_for_iteration.off
 					loop
-						an_attr_node.put_child(constraint_bindings.item_for_iteration.item_for_iteration)
+						a_uri := constraint_bindings.item_for_iteration.item_for_iteration
+						an_attr_node.put_child(create {DT_PRIMITIVE_OBJECT}.make_identified(a_uri, 
+							constraint_bindings.item_for_iteration.key_for_iteration))
 						constraint_bindings.item_for_iteration.forth
 					end
 					constraint_bindings.forth				
@@ -758,7 +820,7 @@ feature {NONE} -- Implementation
 	term_bindings: HASH_TABLE[HASH_TABLE[CODE_PHRASE, STRING], STRING]
 			-- tables of bindings of external terms to internal codes, keyed by external terminology id
 	
-	constraint_bindings: HASH_TABLE[HASH_TABLE[DT_OBJECT_LEAF, STRING], STRING]
+	constraint_bindings: HASH_TABLE[HASH_TABLE[URI, STRING], STRING]
 			-- table of constraint bindings in the form of strings "service::query", keyed by terminology
 
 	highest_non_specialised_term_code_index: INTEGER
@@ -772,7 +834,7 @@ feature {NONE} -- Implementation
 		local
 			term_defs_one_lang: HASH_TABLE[ARCHETYPE_TERM, STRING]
 			term_bindings_one_terminology: HASH_TABLE[CODE_PHRASE, STRING]
-			constraint_bindings_one_terminology: HASH_TABLE[DT_PRIMITIVE_OBJECT, STRING]
+			constraint_bindings_one_terminology: HASH_TABLE[URI, STRING]
 			code: STRING
 			sl: ARRAYED_LIST[STRING]
 		do
@@ -937,11 +999,12 @@ feature {NONE} -- Implementation
 			end
 		end
 		
-	populate_constraint_bindings(a_terminology: STRING; constraint_bindings_one_terminology: HASH_TABLE[DT_OBJECT_LEAF, STRING]) is
+	populate_constraint_bindings(a_terminology: STRING; constraint_bindings_one_terminology: HASH_TABLE[URI, STRING]) is
 			--
 		local
 			an_attr_node: DT_ATTRIBUTE_NODE
-			a_leaf_node: DT_OBJECT_LEAF
+			a_leaf_node: DT_PRIMITIVE_OBJECT
+			a_uri: URI
 		do
 			an_attr_node := representation.attribute_node_at_path("/" + Sym_constraint_binding + "[" + a_terminology + "]/items")
 			if an_attr_node.is_multiple then
@@ -951,8 +1014,17 @@ feature {NONE} -- Implementation
 					an_attr_node.off
 				loop
 					a_leaf_node ?= an_attr_node.item
-					constraint_bindings_one_terminology.force(a_leaf_node, a_leaf_node.node_id)
-					an_attr_node.forth
+					if a_leaf_node /= Void then
+						a_uri ?= a_leaf_node.value
+						if a_uri /= Void then
+							constraint_bindings_one_terminology.force(a_uri, a_leaf_node.node_id)
+							an_attr_node.forth
+						else
+							errors.append("Expecting URI, e.g. <xxx://some.authority/x/y/z?query#fragment>%N")
+						end
+					else
+						errors.append("Expecting primitive node containing URI%N")
+					end
 				end			
 			end
 		end
@@ -1087,17 +1159,17 @@ feature {NONE} -- Implementation
 	is_tree_valid: BOOLEAN is
 			-- 
 		do
-			create validity_report.make(0)
+			create errors.make(0)
 			if not has_path("/" + Sym_primary_language) then
-				validity_report.append(Sym_primary_language + " not set in ontology")
+				errors.append(Sym_primary_language + " not set in ontology")
 			elseif not has_path("/" + Sym_languages_available) then
-				validity_report.append(Sym_languages_available + " not set in ontology")				
+				errors.append(Sym_languages_available + " not set in ontology")				
 			elseif not has_path("/" + Sym_terminologies_available) then
-				validity_report.append(Sym_terminologies_available + " not set in ontology")				
+				errors.append(Sym_terminologies_available + " not set in ontology")				
 			end
-			Result := validity_report.is_empty
+			Result := errors.is_empty
 		ensure
-			validity_report_exists: validity_report /= Void
+			not Result implies errors /= Void
 		end
 
 	valid_term_code(a_term_code: STRING): BOOLEAN is
@@ -1204,13 +1276,19 @@ feature {NONE} -- Implementation
 	remove_binding_terminology(a_terminology: STRING) is
 			-- remove a terminology from list of terminologies available
 		require
-			a_terminology /= Void and then not a_terminology.is_empty
-			Terminology_valid: terminologies_available.has(a_terminology)
+			Terminology_valid: a_terminology /= Void and then terminologies_available.has(a_terminology)
 		do
 			terminologies_available.prune_all(a_terminology)
-			if not constraint_bindings.has(a_terminology) then
+			if term_bindings.has(a_terminology) then
 				term_bindings.remove(a_terminology)	
 			end
+			if constraint_bindings.has(a_terminology) then
+				constraint_bindings.remove(a_terminology)	
+			end
+		ensure
+			not terminologies_available.has(a_terminology)
+			not term_bindings.has(a_terminology)
+			not constraint_bindings.has(a_terminology)
 		end
 
 invariant

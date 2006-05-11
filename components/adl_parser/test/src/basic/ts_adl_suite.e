@@ -33,6 +33,8 @@ feature -- Access
 			Result.extend(create {TC_ONTOLOGY_LANGUAGES}.make(Void))
 			Result.extend(create {TC_ONTOLOGY_ADD_TERM_BINDING}.make(Void))
 			Result.extend(create {TC_ONTOLOGY_REMOVE_TERM_BINDING}.make(Void))
+			Result.extend(create {TC_ONTOLOGY_ADD_CONSTRAINT_BINDING}.make(Void))
+			Result.extend(create {TC_ONTOLOGY_REMOVE_CONSTRAINT_BINDING}.make(Void))
 			Result.extend(create {TC_ONTOLOGY_SHOW_PATHS}.make(Void))
 
 			Result.extend(create {TC_ARCHETYPE_ADD_NODES}.make(Void))

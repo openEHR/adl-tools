@@ -55,21 +55,21 @@ feature {NONE} -- Implementation
 	yy_build_tables is
 			-- Build scanner tables.
 		do
-			yy_nxt ?= yy_nxt_template
-			yy_chk ?= yy_chk_template
-			yy_base ?= yy_base_template
-			yy_def ?= yy_def_template
-			yy_ec ?= yy_ec_template
-			yy_meta ?= yy_meta_template
-			yy_accept ?= yy_accept_template
+			yy_nxt := yy_nxt_template
+			yy_chk := yy_chk_template
+			yy_base := yy_base_template
+			yy_def := yy_def_template
+			yy_ec := yy_ec_template
+			yy_meta := yy_meta_template
+			yy_accept := yy_accept_template
 		end
 
 	yy_execute_action (yy_act: INTEGER) is
 			-- Execute semantic action.
 		do
-if yy_act <= 20 then
-if yy_act <= 10 then
-if yy_act <= 5 then
+if yy_act <= 21 then
+if yy_act <= 11 then
+if yy_act <= 6 then
 if yy_act <= 3 then
 if yy_act <= 2 then
 if yy_act = 1 then
@@ -93,6 +93,7 @@ end
 -- Ignore comments
 end
 else
+if yy_act <= 5 then
 if yy_act = 4 then
 --|#line 61 "adl_scanner.l"
 debug ("GELEX")
@@ -106,23 +107,23 @@ debug ("GELEX")
 end
 last_token := Minus_code
 end
-end
 else
-if yy_act <= 8 then
-if yy_act <= 7 then
-if yy_act = 6 then
 --|#line 66 "adl_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 66")
 end
 last_token := Plus_code
+end
+end
 else
+if yy_act <= 9 then
+if yy_act <= 8 then
+if yy_act = 7 then
 --|#line 67 "adl_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 67")
 end
 last_token := Star_code
-end
 else
 --|#line 68 "adl_scanner.l"
 debug ("GELEX")
@@ -131,38 +132,38 @@ end
 last_token := Slash_code
 end
 else
-if yy_act = 9 then
 --|#line 69 "adl_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 69")
 end
 last_token := Caret_code
+end
 else
+if yy_act = 10 then
 --|#line 70 "adl_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 70")
 end
 last_token := Equal_code
-end
-end
-end
 else
-if yy_act <= 15 then
-if yy_act <= 13 then
-if yy_act <= 12 then
-if yy_act = 11 then
 --|#line 71 "adl_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 71")
 end
 last_token := Dot_code
+end
+end
+end
 else
+if yy_act <= 16 then
+if yy_act <= 14 then
+if yy_act <= 13 then
+if yy_act = 12 then
 --|#line 72 "adl_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 72")
 end
 last_token := Semicolon_code
-end
 else
 --|#line 73 "adl_scanner.l"
 debug ("GELEX")
@@ -171,36 +172,36 @@ end
 last_token := Comma_code
 end
 else
-if yy_act = 14 then
 --|#line 74 "adl_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 74")
 end
 last_token := Colon_code
+end
 else
+if yy_act = 15 then
 --|#line 75 "adl_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 75")
 end
 last_token := Exclamation_code
-end
-end
 else
-if yy_act <= 18 then
-if yy_act <= 17 then
-if yy_act = 16 then
 --|#line 76 "adl_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 76")
 end
 last_token := Left_parenthesis_code
+end
+end
 else
+if yy_act <= 19 then
+if yy_act <= 18 then
+if yy_act = 17 then
 --|#line 77 "adl_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 77")
 end
 last_token := Right_parenthesis_code
-end
 else
 --|#line 78 "adl_scanner.l"
 debug ("GELEX")
@@ -209,34 +210,35 @@ end
 last_token := Dollar_code
 end
 else
-if yy_act = 19 then
 --|#line 79 "adl_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 79")
 end
 last_token := Question_mark_code
+end
 else
+if yy_act = 20 then
 --|#line 81 "adl_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 81")
 end
 last_token := Left_bracket_code
-end
-end
-end
-end
 else
-if yy_act <= 30 then
-if yy_act <= 25 then
-if yy_act <= 23 then
-if yy_act <= 22 then
-if yy_act = 21 then
 --|#line 82 "adl_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 82")
 end
 last_token := Right_bracket_code
+end
+end
+end
+end
 else
+if yy_act <= 31 then
+if yy_act <= 26 then
+if yy_act <= 24 then
+if yy_act <= 23 then
+if yy_act = 22 then
 --|#line 86 "adl_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 86")
@@ -245,7 +247,6 @@ end
 				last_token := SYM_ARCHETYPE
 				in_lineno := in_lineno + 1
 			
-end
 else
 --|#line 91 "adl_scanner.l"
 debug ("GELEX")
@@ -257,7 +258,6 @@ end
 			
 end
 else
-if yy_act = 24 then
 --|#line 97 "adl_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 97")
@@ -266,7 +266,9 @@ end
 				last_token := SYM_CONCEPT
 				in_lineno := in_lineno + 1
 			
+end
 else
+if yy_act = 25 then
 --|#line 102 "adl_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 102")
@@ -277,12 +279,7 @@ end
 				in_lineno := in_lineno + 1
 				definition_text_start_line := in_lineno
 			
-end
-end
 else
-if yy_act <= 28 then
-if yy_act <= 27 then
-if yy_act = 26 then
 --|#line 109 "adl_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 109")
@@ -293,7 +290,12 @@ end
 				in_lineno := in_lineno + 1
 				description_text_start_line := in_lineno
 			
+end
+end
 else
+if yy_act <= 29 then
+if yy_act <= 28 then
+if yy_act = 27 then
 --|#line 117 "adl_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 117")
@@ -304,7 +306,6 @@ end
 				in_lineno := in_lineno + 1
 				invariant_text_start_line := in_lineno
 			
-end
 else
 --|#line 124 "adl_scanner.l"
 debug ("GELEX")
@@ -318,49 +319,76 @@ end
 			
 end
 else
-if yy_act = 29 then
 --|#line 131 "adl_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 131")
 end
+ -- line starting with "definition"
+				-- unread the pattern just matched
+				a_text := text
+				from i := text_count until i < 1 loop
+					unread_character (a_text.item (i))
+					i := i - 1
+				end
 
-				in_buffer.append_string(text)
-				in_lineno := in_lineno + 1
-			
-else
---|#line 136 "adl_scanner.l"
-debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 136")
-end
- -- non-white space at start
-				unread_character(text.item(1))
+				-- get the dADL section sorted out
 				last_token := V_DADL_TEXT
 				str_ := STRING_.make (in_buffer.count)
 				str_.append_string (in_buffer)
 				in_buffer.wipe_out
 				last_string_value := str_
+
 				set_start_condition(INITIAL)
+			
+end
+else
+if yy_act = 30 then
+--|#line 149 "adl_scanner.l"
+debug ("GELEX")
+	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 149")
+end
+ -- any text on line with a LF
+				in_buffer.append_string(text)
+				in_lineno := in_lineno + 1
+			
+else
+--|#line 154 "adl_scanner.l"
+debug ("GELEX")
+	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 154")
+end
+ -- any text on line with no LF
+				in_buffer.append_string(text)
+				in_lineno := in_lineno + 1
 			
 end
 end
 end
 else
-if yy_act <= 35 then
+if yy_act <= 36 then
+if yy_act <= 34 then
 if yy_act <= 33 then
-if yy_act <= 32 then
-if yy_act = 31 then
---|#line 146 "adl_scanner.l"
+if yy_act = 32 then
+--|#line 169 "adl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 146")
+	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 169")
+end
+
+		-- ignore unmatched chars
+	
+else
+--|#line 174 "adl_scanner.l"
+debug ("GELEX")
+	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 174")
 end
 
 				in_buffer.append_string(text)
 				in_lineno := in_lineno + 1
 			
+end
 else
---|#line 151 "adl_scanner.l"
+--|#line 179 "adl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 151")
+	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 179")
 end
  -- non-white space at start
 				unread_character(text.item(1))
@@ -373,20 +401,19 @@ end
 			
 end
 else
---|#line 161 "adl_scanner.l"
+if yy_act = 35 then
+--|#line 189 "adl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 161")
+	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 189")
 end
 
 				in_buffer.append_string(text)
 				in_lineno := in_lineno + 1
 			
-end
 else
-if yy_act = 34 then
---|#line 166 "adl_scanner.l"
+--|#line 194 "adl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 166")
+	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 194")
 end
  -- non-white space at start
 				unread_character(text.item(1))
@@ -397,32 +424,34 @@ end
 				last_string_value := str_
 				set_start_condition(INITIAL)
 			
+end
+end
 else
---|#line 177 "adl_scanner.l"
+if yy_act <= 39 then
+if yy_act <= 38 then
+if yy_act = 37 then
+--|#line 205 "adl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 177")
+	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 205")
 end
 
 					last_token := V_LOCAL_TERM_CODE_REF
 					last_string_value := text_substring (2, text_count - 1)
 			
-end
-end
 else
-if yy_act <= 37 then
-if yy_act = 36 then
---|#line 183 "adl_scanner.l"
+--|#line 211 "adl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 183")
+	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 211")
 end
 
 					last_token := V_ARCHETYPE_ID
 					last_string_value := text
 			
+end
 else
---|#line 189 "adl_scanner.l"
+--|#line 217 "adl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 189")
+	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 217")
 end
 
 					last_token := V_IDENTIFIER
@@ -430,12 +459,12 @@ end
 			
 end
 else
-if yy_act = 38 then
---|#line 196 "adl_scanner.l"
+if yy_act = 40 then
+--|#line 224 "adl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 196")
+	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 224")
 end
-;
+-- ignore unmatched chars
 else
 --|#line 0 "adl_scanner.l"
 debug ("GELEX")
@@ -454,12 +483,26 @@ end
 			-- Execute EOF semantic action.
 		do
 			inspect yy_sc
-when 0, 1, 2, 3 then
+when 0, 2, 3 then
 --|#line 0 "adl_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 0")
 end
 terminate
+when 1 then
+--|#line 0 "adl_scanner.l"
+debug ("GELEX")
+	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 0")
+end
+
+				-- get the dADL section sorted out
+				last_token := V_DADL_TEXT
+				str_ := STRING_.make (in_buffer.count)
+				str_.append_string (in_buffer)
+				in_buffer.wipe_out
+				last_string_value := str_
+				set_start_condition(INITIAL)
+			
 			else
 				terminate
 			end
@@ -467,169 +510,163 @@ terminate
 
 feature {NONE} -- Table templates
 
-	yy_nxt_template: ANY is
-			-- This is supposed to be "like FIXED_INTEGER_ARRAY_TYPE",
-			-- but once functions cannot be declared with anchored types.
+	yy_nxt_template: SPECIAL [INTEGER] is
 		once
 			Result := yy_fixed_array (<<
 			    0,   10,   11,   12,   11,   13,   14,   15,   16,   17,
 			   18,   19,   20,   21,   22,   10,   23,   24,   25,   26,
 			   27,   27,   27,   27,   27,   27,   27,   27,   27,   27,
 			   27,   27,   27,   27,   27,   27,   27,   27,   27,   28,
-			   29,   30,   10,   31,   47,   32,   33,   44,   47,   44,
-			   47,   34,   47,   47,   35,   47,   91,   36,   57,   58,
-			   60,   61,   52,   63,   64,   50,   44,   51,   44,   64,
-			   53,   54,   47,   66,   61,   55,   49,   49,   47,   66,
-			   47,   66,   58,   47,   66,   47,   66,   66,   68,   47,
-			   66,   47,   66,   57,   58,   65,   70,   65,   69,   60,
+			   29,   30,   10,   31,   38,   32,   33,   45,   48,   45,
+			   48,   34,   48,   95,   35,   48,   48,   36,   48,   58,
+			   61,   62,   53,   65,   39,   64,   65,   58,   45,   51,
+			   45,   52,   62,   54,   55,   48,   67,   58,   56,   58,
+			   59,   50,   50,   48,   67,   48,   67,   67,   48,   67,
+			   48,   67,   85,   69,   48,   67,   48,   67,   66,   76,
 
-			   61,   63,   64,   74,   67,   71,   49,   47,   66,   72,
-			   47,   66,   73,   47,   66,   47,   66,   65,   47,   66,
-			   77,   45,   76,   47,   66,   79,   80,   47,   66,   78,
-			   47,   47,   66,   47,   66,   47,   66,   82,   47,   66,
-			   47,   66,   81,   84,   46,   85,   47,   66,   47,   66,
-			   47,   66,   45,   86,   47,   66,   47,   66,  136,   87,
-			   43,   88,   41,   89,   90,   47,   66,   47,   66,   47,
-			   66,   39,   94,   92,   93,  136,   47,   66,   47,   66,
-			  136,   95,  136,   96,   98,   47,   66,  136,   97,   47,
-			   66,   47,   66,   47,   66,   47,   66,   47,   66,   47,
+			   66,   71,   66,   70,   61,   62,   64,   65,   75,   68,
+			   72,   50,   48,   67,   73,   48,   67,   74,   48,   67,
+			   48,   67,   58,   48,   67,   79,   46,   78,   48,   67,
+			   81,   82,   48,   67,   80,   58,   48,   67,   48,   67,
+			   48,   67,   84,   48,   67,   48,   67,   83,   87,   94,
+			   88,   48,   67,   48,   67,   48,   67,   58,   89,   48,
+			   67,   48,   67,   58,   90,   58,   91,  112,   92,   93,
+			   48,   67,   48,   67,   48,   67,   48,   98,   96,   97,
+			   58,   48,   67,   48,   67,  129,   99,   47,  100,  102,
+			  103,   48,   67,  101,   48,   67,   48,   67,   48,   67,
 
-			   66,  104,  136,  100,  136,  108,  109,  108,  101,  105,
-			  136,  103,  102,  136,  106,   47,   66,   47,   66,  107,
-			   47,   66,   47,   66,   47,   66,   47,   66,  136,   47,
-			   66,   47,   66,  110,  108,  109,  108,   47,   66,  136,
-			  112,  115,  114,  111,   47,   66,  119,  120,  119,  113,
-			  116,   47,   66,  117,   47,   66,   47,   66,  122,  123,
-			  122,   47,   66,  136,  126,  127,  126,  118,   47,   66,
-			  136,  136,  124,  121,   47,   66,  136,  121,   47,   66,
-			  125,  119,  120,  119,  122,  123,  122,  129,  130,  129,
-			  128,   47,   66,  126,  127,  126,  136,   47,   66,  136,
+			   46,   48,   67,   48,   67,  121,  109,  146,  105,   48,
+			   67,  114,  115,  114,  106,  110,  108,  107,   48,   67,
+			  111,   48,   67,   48,   67,   48,   67,   48,   67,  113,
+			   44,   48,   67,   42,  116,   58,   48,   67,  114,  115,
+			  114,   48,   67,  118,   48,   67,  117,  120,  122,   48,
+			   67,   38,  119,  126,  127,  126,   48,   67,   48,   67,
+			  123,  146,  137,   48,   67,  124,  146,  125,  146,  130,
+			  131,  130,   48,   67,   48,   67,  132,  146,  128,   48,
+			   67,  146,  128,  134,  135,  134,  126,  127,  126,   48,
+			   67,  133,  140,   48,   67,  130,  131,  130,  138,  139,
 
-			  132,  133,  132,  129,  130,  129,  134,  135,  134,  131,
-			   47,   66,  132,  133,  132,  136,   47,   66,  134,  135,
-			  134,   37,   37,   37,   37,   37,   37,   37,   38,   38,
-			   38,   38,   38,   38,   38,   40,   40,   40,   40,   40,
-			   40,   40,   42,   42,   42,   42,   42,   42,   42,   48,
-			  136,   48,   48,   48,   48,   49,   49,   49,   49,   56,
-			   56,   56,   56,   56,   56,   56,   59,   59,   59,   59,
-			   59,   59,   59,   62,   62,   62,   62,   62,   62,   62,
-			   46,   46,   46,   46,   46,   46,   46,   47,   47,   47,
-			   47,   47,   47,   75,   75,   75,   83,  136,   83,   83,
+			  138,  136,  134,  135,  134,  141,  142,  141,   48,   67,
+			  137,  143,  137,  146,  146,   48,   67,  138,  139,  138,
+			  144,  145,  144,  141,  142,  141,  144,  145,  144,  146,
+			   48,   67,   37,   37,   37,   37,   37,   37,   37,   40,
+			   40,   40,   40,   40,   40,   40,   41,   41,   41,   41,
+			   41,   41,   41,   43,   43,   43,   43,   43,   43,   43,
+			   49,  146,   49,   49,   49,   49,   50,   50,   50,   50,
+			   57,   57,   57,   57,   57,   57,   57,   60,   60,   60,
+			   60,   60,   60,   60,   63,   63,   63,   63,   63,   63,
+			   63,   47,   47,   47,   47,   47,   47,   47,   48,   48,
 
-			   83,   83,   99,   99,   99,   99,    9,  136,  136,  136,
-			  136,  136,  136,  136,  136,  136,  136,  136,  136,  136,
-			  136,  136,  136,  136,  136,  136,  136,  136,  136,  136,
-			  136,  136,  136,  136,  136,  136,  136,  136,  136,  136,
-			  136,  136,  136,  136,  136,  136,  136,  136,  136>>)
+			   48,   48,   48,   48,   77,   77,   77,   86,  146,   86,
+			   86,   86,   86,  104,  104,  104,  104,    9,  146,  146,
+			  146,  146,  146,  146,  146,  146,  146,  146,  146,  146,
+			  146,  146,  146,  146,  146,  146,  146,  146,  146,  146,
+			  146,  146,  146,  146,  146,  146,  146,  146,  146,  146,
+			  146,  146,  146,  146,  146,  146,  146,  146,  146,  146, yy_Dummy>>)
 		end
 
-	yy_chk_template: ANY is
-			-- This is supposed to be "like FIXED_INTEGER_ARRAY_TYPE",
-			-- but once functions cannot be declared with anchored types.
+	yy_chk_template: SPECIAL [INTEGER] is
 		once
 			Result := yy_fixed_array (<<
 			    0,    1,    1,    1,    1,    1,    1,    1,    1,    1,
 			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
 			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
 			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-			    1,    1,    1,    2,   31,    2,    2,   11,   32,   11,
-			   33,    2,   34,   35,    2,   36,   83,    2,   39,   39,
-			   41,   41,   33,   43,   43,   31,   44,   32,   44,   62,
-			   34,   35,   48,   48,   59,   36,   49,   49,   50,   50,
-			   51,   51,   56,   52,   52,   53,   53,   47,   50,   54,
-			   54,   55,   55,   57,   57,   65,   52,   65,   51,   60,
+			    1,    1,    1,    2,    4,    2,    2,   11,   31,   11,
+			   33,    2,   32,   86,    2,   34,   35,    2,   36,   39,
+			   42,   42,   33,   63,    4,   44,   44,   76,   45,   31,
+			   45,   32,   60,   34,   35,   49,   49,   59,   36,   57,
+			   39,   50,   50,   51,   51,   52,   52,   48,   53,   53,
+			   54,   54,   76,   51,   55,   55,   56,   56,   66,   59,
 
-			   60,   63,   63,   55,   49,   52,   49,   68,   68,   53,
-			   69,   69,   54,   70,   70,   71,   71,   46,   72,   72,
-			   69,   45,   68,   73,   73,   71,   72,   74,   74,   70,
-			   27,   76,   76,   77,   77,   78,   78,   74,   79,   79,
-			   80,   80,   73,   76,   20,   77,   81,   81,   82,   82,
-			   84,   84,   12,   78,   85,   85,   86,   86,    9,   79,
-			    8,   80,    6,   81,   82,   87,   87,   88,   88,   89,
-			   89,    4,   86,   84,   85,    0,   90,   90,   92,   92,
-			    0,   87,    0,   88,   90,   93,   93,    0,   89,   94,
-			   94,   95,   95,   96,   96,   97,   97,   98,   98,  100,
+			   66,   53,   47,   52,   61,   61,   64,   64,   56,   50,
+			   53,   50,   69,   69,   54,   70,   70,   55,   71,   71,
+			   72,   72,   85,   73,   73,   70,   46,   69,   74,   74,
+			   72,   73,   75,   75,   71,  103,   78,   78,   79,   79,
+			   80,   80,   75,   81,   81,   82,   82,   74,   78,   85,
+			   79,   83,   83,   84,   84,   87,   87,  121,   80,   88,
+			   88,   89,   89,   37,   81,   94,   82,  103,   83,   84,
+			   90,   90,   91,   91,   92,   92,   27,   89,   87,   88,
+			  112,   93,   93,   96,   96,  121,   90,   20,   91,   93,
+			   94,   97,   97,   92,   98,   98,   99,   99,  100,  100,
 
-			  100,   96,    0,   92,    0,  101,  101,  101,   93,   97,
-			    0,   95,   94,    0,   98,  101,  101,  102,  102,  100,
-			  103,  103,  104,  104,  105,  105,  106,  106,    0,  107,
-			  107,  110,  110,  102,  108,  108,  108,  111,  111,    0,
-			  104,  107,  106,  103,  112,  112,  113,  113,  113,  105,
-			  110,  114,  114,  111,  116,  116,  113,  113,  115,  115,
-			  115,  117,  117,    0,  118,  118,  118,  112,  115,  115,
-			    0,    0,  116,  114,  118,  118,    0,  114,  121,  121,
-			  117,  119,  119,  119,  122,  122,  122,  124,  124,  124,
-			  121,  125,  125,  126,  126,  126,    0,  124,  124,    0,
+			   12,  101,  101,  102,  102,  112,  100,    9,   96,  105,
+			  105,  106,  106,  106,   97,  101,   99,   98,  107,  107,
+			  102,  106,  106,  108,  108,  109,  109,  110,  110,  105,
+			    8,  111,  111,    6,  107,  129,  113,  113,  114,  114,
+			  114,  116,  116,  109,  118,  118,  108,  111,  113,  117,
+			  117,    3,  110,  119,  119,  119,  120,  120,  123,  123,
+			  116,    0,  129,  119,  119,  117,    0,  118,    0,  122,
+			  122,  122,  124,  124,  133,  133,  123,    0,  120,  122,
+			  122,    0,  120,  125,  125,  125,  126,  126,  126,  128,
+			  128,  124,  133,  125,  125,  130,  130,  130,  132,  132,
 
-			  128,  128,  128,  129,  129,  129,  131,  131,  131,  125,
-			  128,  128,  132,  132,  132,    0,  131,  131,  134,  134,
-			  134,  137,  137,  137,  137,  137,  137,  137,  138,  138,
-			  138,  138,  138,  138,  138,  139,  139,  139,  139,  139,
-			  139,  139,  140,  140,  140,  140,  140,  140,  140,  141,
-			    0,  141,  141,  141,  141,  142,  142,  142,  142,  143,
-			  143,  143,  143,  143,  143,  143,  144,  144,  144,  144,
-			  144,  144,  144,  145,  145,  145,  145,  145,  145,  145,
-			  146,  146,  146,  146,  146,  146,  146,  147,  147,  147,
-			  147,  147,  147,  148,  148,  148,  149,    0,  149,  149,
+			  132,  128,  134,  134,  134,  136,  136,  136,  132,  132,
+			  137,  137,  137,    0,    0,  136,  136,  138,  138,  138,
+			  140,  140,  140,  141,  141,  141,  144,  144,  144,    0,
+			  140,  140,  147,  147,  147,  147,  147,  147,  147,  148,
+			  148,  148,  148,  148,  148,  148,  149,  149,  149,  149,
+			  149,  149,  149,  150,  150,  150,  150,  150,  150,  150,
+			  151,    0,  151,  151,  151,  151,  152,  152,  152,  152,
+			  153,  153,  153,  153,  153,  153,  153,  154,  154,  154,
+			  154,  154,  154,  154,  155,  155,  155,  155,  155,  155,
+			  155,  156,  156,  156,  156,  156,  156,  156,  157,  157,
 
-			  149,  149,  150,  150,  150,  150,  136,  136,  136,  136,
-			  136,  136,  136,  136,  136,  136,  136,  136,  136,  136,
-			  136,  136,  136,  136,  136,  136,  136,  136,  136,  136,
-			  136,  136,  136,  136,  136,  136,  136,  136,  136,  136,
-			  136,  136,  136,  136,  136,  136,  136,  136,  136>>)
+			  157,  157,  157,  157,  158,  158,  158,  159,    0,  159,
+			  159,  159,  159,  160,  160,  160,  160,  146,  146,  146,
+			  146,  146,  146,  146,  146,  146,  146,  146,  146,  146,
+			  146,  146,  146,  146,  146,  146,  146,  146,  146,  146,
+			  146,  146,  146,  146,  146,  146,  146,  146,  146,  146,
+			  146,  146,  146,  146,  146,  146,  146,  146,  146,  146, yy_Dummy>>)
 		end
 
-	yy_base_template: ANY is
-			-- This is supposed to be "like FIXED_INTEGER_ARRAY_TYPE",
-			-- but once functions cannot be declared with anchored types.
+	yy_base_template: SPECIAL [INTEGER] is
 		once
 			Result := yy_fixed_array (<<
-			    0,    0,   23,    0,  169,    0,  160,    0,  158,  158,
-			  406,   45,  149,  406,  406,  406,  406,  406,  406,  406,
-			  132,  406,  406,  406,  406,  406,  406,  118,    0,  406,
-			  406,   32,   36,   38,   40,   41,   43,  406,  406,   56,
-			  406,   58,  406,   61,   64,  118,  114,   74,   60,   64,
-			   66,   68,   71,   73,   77,   79,   79,   91,  406,   71,
-			   97,  406,   66,   99,  406,   93,    0,  406,   95,   98,
-			  101,  103,  106,  111,  115,    0,  119,  121,  123,  126,
-			  128,  134,  136,   43,  138,  142,  144,  153,  155,  157,
-			  164,    0,  166,  173,  177,  179,  181,  183,  185,    0,
+			    0,    0,   23,  248,   41,    0,  231,    0,  228,  207,
+			  417,   45,  197,  417,  417,  417,  417,  417,  417,  417,
+			  175,  417,  417,  417,  417,  417,  417,  164,    0,  417,
+			  417,   36,   40,   38,   43,   44,   46,  160,  417,   56,
+			  417,  417,   58,  417,   63,   66,  123,   99,   74,   63,
+			   69,   71,   73,   76,   78,   82,   84,   76,  417,   74,
+			   69,  102,  417,   60,  104,  417,   96,    0,  417,  100,
+			  103,  106,  108,  111,  116,  120,   64,    0,  124,  126,
+			  128,  131,  133,  139,  141,  119,   40,  143,  147,  149,
+			  158,  160,  162,  169,  162,    0,  171,  179,  182,  184,
 
-			  187,  203,  205,  208,  210,  212,  214,  217,  232,  406,
-			  219,  225,  232,  244,  239,  256,  242,  249,  262,  279,
-			  406,  266,  282,  406,  285,  279,  291,  406,  298,  301,
-			  406,  304,  310,  406,  316,  406,  406,  320,  327,  334,
-			  341,  347,  351,  358,  365,  372,  379,  385,  388,  394,
-			  398>>)
+			  186,  189,  191,  132,    0,  197,  209,  206,  211,  213,
+			  215,  219,  177,  224,  236,  417,  229,  237,  232,  251,
+			  244,  154,  267,  246,  260,  281,  284,  417,  277,  232,
+			  293,  417,  296,  262,  300,  417,  303,  308,  315,  417,
+			  318,  321,  417,  417,  324,  417,  417,  331,  338,  345,
+			  352,  358,  362,  369,  376,  383,  390,  396,  399,  405,
+			  409, yy_Dummy>>)
 		end
 
-	yy_def_template: ANY is
-			-- This is supposed to be "like FIXED_INTEGER_ARRAY_TYPE",
-			-- but once functions cannot be declared with anchored types.
+	yy_def_template: SPECIAL [INTEGER] is
 		once
 			Result := yy_fixed_array (<<
-			    0,  136,    1,  137,  138,  137,  139,  137,  140,  136,
-			  136,  136,  136,  136,  136,  136,  136,  136,  136,  136,
-			  136,  136,  136,  136,  136,  136,  136,  141,  142,  136,
-			  136,  141,  141,  141,  141,  141,  141,  136,  136,  143,
-			  136,  144,  136,  145,  136,  136,  146,  147,  141,  142,
-			  141,  141,  141,  141,  141,  141,  143,  143,  136,  144,
-			  144,  136,  145,  145,  136,  136,  148,  136,  141,  141,
-			  141,  141,  141,  141,  141,  149,  141,  141,  141,  141,
-			  141,  141,  141,  149,  141,  141,  141,  141,  141,  141,
-			  141,  150,  141,  141,  141,  141,  141,  141,  141,  150,
+			    0,  146,    1,  147,  147,  148,  149,  148,  150,  146,
+			  146,  146,  146,  146,  146,  146,  146,  146,  146,  146,
+			  146,  146,  146,  146,  146,  146,  146,  151,  152,  146,
+			  146,  151,  151,  151,  151,  151,  151,  153,  146,  153,
+			  146,  146,  154,  146,  155,  146,  146,  156,  157,  151,
+			  152,  151,  151,  151,  151,  151,  151,  153,  146,  153,
+			  154,  154,  146,  155,  155,  146,  146,  158,  146,  151,
+			  151,  151,  151,  151,  151,  151,  153,  159,  151,  151,
+			  151,  151,  151,  151,  151,  153,  159,  151,  151,  151,
+			  151,  151,  151,  151,  153,  160,  151,  151,  151,  151,
 
-			  141,  141,  141,  141,  141,  141,  141,  141,  136,  136,
-			  141,  141,  141,  141,  141,  141,  141,  141,  141,  136,
-			  136,  141,  136,  136,  141,  141,  136,  136,  141,  136,
-			  136,  141,  136,  136,  136,  136,    0,  136,  136,  136,
-			  136,  136,  136,  136,  136,  136,  136,  136,  136,  136,
-			  136>>)
+			  151,  151,  151,  153,  160,  151,  151,  151,  151,  151,
+			  151,  151,  153,  151,  146,  146,  151,  151,  151,  151,
+			  151,  153,  151,  151,  151,  151,  146,  146,  151,  153,
+			  146,  146,  151,  151,  146,  146,  151,  153,  146,  146,
+			  151,  146,  146,  146,  146,  146,    0,  146,  146,  146,
+			  146,  146,  146,  146,  146,  146,  146,  146,  146,  146,
+			  146, yy_Dummy>>)
 		end
 
-	yy_ec_template: ANY is
-			-- This is supposed to be "like FIXED_INTEGER_ARRAY_TYPE",
-			-- but once functions cannot be declared with anchored types.
+	yy_ec_template: SPECIAL [INTEGER] is
 		once
 			Result := yy_fixed_array (<<
 			    0,    1,    1,    1,    1,    1,    1,    1,    1,    2,
@@ -659,53 +696,50 @@ feature {NONE} -- Table templates
 			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
 			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
 			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-			    1,    1,    1,    1,    1,    1,    1>>)
+			    1,    1,    1,    1,    1,    1,    1, yy_Dummy>>)
 		end
 
-	yy_meta_template: ANY is
-			-- This is supposed to be "like FIXED_INTEGER_ARRAY_TYPE",
-			-- but once functions cannot be declared with anchored types.
+	yy_meta_template: SPECIAL [INTEGER] is
 		once
 			Result := yy_fixed_array (<<
 			    0,    1,    1,    1,    1,    1,    1,    1,    1,    1,
 			    1,    1,    2,    3,    1,    4,    1,    1,    1,    1,
 			    5,    5,    6,    7,    5,    5,    5,    5,    5,    5,
 			    5,    5,    5,    5,    5,    5,    5,    5,    5,    1,
-			    1,    1,    2>>)
+			    1,    1,    2, yy_Dummy>>)
 		end
 
-	yy_accept_template: ANY is
-			-- This is supposed to be "like FIXED_INTEGER_ARRAY_TYPE",
-			-- but once functions cannot be declared with anchored types.
+	yy_accept_template: SPECIAL [INTEGER] is
 		once
 			Result := yy_fixed_array (<<
-			    0,    0,    0,    0,    0,    0,    0,    0,    0,   40,
-			   38,    1,    2,   15,   18,   16,   17,    7,    6,   13,
-			    5,   11,    8,   14,   12,   10,   19,   37,   20,   21,
-			    9,   37,   37,   37,   37,   37,   37,   39,   30,   39,
-			   32,   39,   34,   39,    1,    2,    3,    0,   37,    0,
-			   37,   37,   37,   37,   37,   37,    0,    0,   29,    0,
-			    0,   31,    0,    0,   33,    4,    0,   35,   37,   37,
-			   37,   37,   37,   37,   37,    0,   37,   37,   37,   37,
-			   37,   37,   37,    0,   37,   37,   37,   37,   37,   37,
-			   37,    0,   37,   37,   37,   37,   37,   37,   37,   36,
+			    0,    0,    0,    0,    0,    0,    0,    0,    0,   42,
+			   40,    1,    2,   15,   18,   16,   17,    7,    6,   13,
+			    5,   11,    8,   14,   12,   10,   19,   39,   20,   21,
+			    9,   39,   39,   39,   39,   39,   39,   31,   32,   31,
+			   41,   34,   41,   36,   41,    1,    2,    3,    0,   39,
+			    0,   39,   39,   39,   39,   39,   39,   31,   30,   31,
+			    0,    0,   33,    0,    0,   35,    4,    0,   37,   39,
+			   39,   39,   39,   39,   39,   39,   31,    0,   39,   39,
+			   39,   39,   39,   39,   39,   31,    0,   39,   39,   39,
+			   39,   39,   39,   39,   31,    0,   39,   39,   39,   39,
 
-			   37,   37,   37,   37,   37,   37,   37,   37,    0,   24,
-			   37,   37,   37,   37,   37,   37,   37,   37,   37,    0,
-			   28,   37,    0,   22,   37,   37,    0,   27,   37,    0,
-			   25,   37,    0,   23,    0,   26,    0>>)
+			   39,   39,   39,   31,   38,   39,   39,   39,   39,   39,
+			   39,   39,   31,   39,    0,   24,   39,   39,   39,   39,
+			   39,   31,   39,   39,   39,   39,    0,   28,   39,   31,
+			    0,   22,   39,   39,    0,   27,   39,   31,    0,   25,
+			   39,    0,   23,   29,    0,   26,    0, yy_Dummy>>)
 		end
 
 feature {NONE} -- Constants
 
-	yyJam_base: INTEGER is 406
+	yyJam_base: INTEGER is 417
 			-- Position in `yy_nxt'/`yy_chk' tables
 			-- where default jam table starts
 
-	yyJam_state: INTEGER is 136
+	yyJam_state: INTEGER is 146
 			-- State id corresponding to jam state
 
-	yyTemplate_mark: INTEGER is 137
+	yyTemplate_mark: INTEGER is 147
 			-- Mark between normal states and templates
 
 	yyNull_equiv_class: INTEGER is 1
@@ -724,10 +758,10 @@ feature {NONE} -- Constants
 			-- regular expression with both leading
 			-- and trailing parts having variable length?
 
-	yyNb_rules: INTEGER is 39
+	yyNb_rules: INTEGER is 41
 			-- Number of rules
 
-	yyEnd_of_buffer: INTEGER is 40
+	yyEnd_of_buffer: INTEGER is 42
 			-- End of buffer rule code
 
 	yyLine_used: BOOLEAN is false
@@ -748,9 +782,9 @@ feature -- User-defined features
 
 feature {NONE} -- Local variables
 
-	i_, nb_: INTEGER
+	i_, i, nb_: INTEGER
 	char_: CHARACTER
-	str_: STRING
+	a_text, str_: STRING
 	code_: INTEGER
 
 feature {NONE} -- Initialization
