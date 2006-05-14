@@ -60,7 +60,8 @@ creation
 %token SYM_TRUE SYM_FALSE 
 %left SYM_LT SYM_GT SYM_LE SYM_GE
 
-%token ERR_CHARACTER ERR_STRING
+%token ERR_CHARACTER ERR_STRING 
+%token <STRING> ERR_V_QUALIFIED_TERM_CODE_REF
 
 %type <INTEGER> integer_value
 %type <REAL> real_value
@@ -1101,6 +1102,12 @@ term_code: V_QUALIFIED_TERM_CODE_REF
 		{
 			create term.make($1)
 			$$ := term
+		}
+	| ERR_V_QUALIFIED_TERM_CODE_REF
+		{
+			raise_error
+			report_error("Invalid term code reference: %"" + $1 + "%"; spaces not allowed in code string")
+			abort
 		}
 	;
 

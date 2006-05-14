@@ -477,7 +477,7 @@ feature {NONE}-- Initialization
 			set_minimum_height (app_min_height)
 			set_maximum_width (app_max_width)
 			set_maximum_height (app_max_height)
-			set_title ("Ocean Informatics ADL Workbench")
+			set_title ("Ocean Informatics ADL VER Workbench")
 			
 				--Connect events.
 			open_adl_file_mi.select_actions.extend (agent open_adl_file)

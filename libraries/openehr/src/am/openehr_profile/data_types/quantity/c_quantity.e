@@ -55,7 +55,7 @@ feature -- Initialisation
 		
 feature -- Access
 
-	property: STRING
+	property: CODE_PHRASE
 			-- property: FIXME: should be a CODE_PHRASE
 	
 	list: ARRAYED_LIST[C_QUANTITY_ITEM]
@@ -91,7 +91,7 @@ feature -- Access
 
 feature -- Modification
 	
-	set_property(a_property: STRING) is
+	set_property(a_property: CODE_PHRASE) is
 			-- set property constraint
 		require
 			Property_valid: a_property /= Void

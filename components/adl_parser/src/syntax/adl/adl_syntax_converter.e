@@ -1,65 +1,52 @@
 indexing
-	component:   "openEHR Reusable Libraries"
-	description: "Test suite for ADL archetype test cases"
-	keywords:    "test"
-
+	component:   "openEHR Archetype Project"
+	description: "[
+			     Converter for fragments of ADL syntax that need to be upgraded in archetypes 
+				 that have been created with earlier versions of the parser.
+				 ]"
+	keywords:    "ADL"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class TS_ADL_SUITE
+class ADL_SYNTAX_CONVERTER
 
-inherit
-	TEST_SUITE
-	
-create
-	make
-	
 feature -- Access
 
-	test_cases: LINKED_LIST[TEST_CASE] is
-			-- the list of tests available
-		once
-			create Result.make
-			Result.extend(create {TC_ARCHETYPE_CREATE}.make(Void))
-
-			Result.extend(create {TC_ONTOLOGY_POPULATE}.make(Void))
-			Result.extend(create {TC_ONTOLOGY_MODIFY}.make(Void))
-			Result.extend(create {TC_ONTOLOGY_LANGUAGES}.make(Void))
-			Result.extend(create {TC_ONTOLOGY_ADD_TERM_BINDING}.make(Void))
-			Result.extend(create {TC_ONTOLOGY_REMOVE_TERM_BINDING}.make(Void))
-			Result.extend(create {TC_ONTOLOGY_ADD_CONSTRAINT_BINDING}.make(Void))
-			Result.extend(create {TC_ONTOLOGY_REMOVE_CONSTRAINT_BINDING}.make(Void))
-			Result.extend(create {TC_ONTOLOGY_SHOW_PATHS}.make(Void))
-
-			Result.extend(create {TC_ARCHETYPE_ADD_NODES}.make(Void))
-			Result.extend(create {TC_ONTOLOGY_UNUSED_CODES}.make(Void))
-			Result.extend(create {TC_ONTOLOGY_REMOVE_UNUSED_CODES}.make(Void))
-			Result.extend(create {TC_ARCHETYPE_ADD_C_QUANTITY}.make(Void))
-			Result.extend(create {TC_ARCHETYPE_ADD_OBJECT_ORDINAL}.make(Void))
-			Result.extend(create {TC_ARCHETYPE_ADD_OBJECT_TERM}.make(Void))
-			Result.extend(create {TC_ARCHETYPE_ADD_INVARIANTS}.make(Void))
-
-			Result.extend(create {TC_ARCHETYPE_SPECIALISE}.make(Void))
-			Result.extend(create {TC_ARCHETYPE_SET_DESCRIPTION}.make(Void))
-
-			Result.extend(create {TC_CVT_C_QUANTITY}.make(Void))
-		end
-
-	title: STRING is "ADL test cases"
-
-feature -- Initialisation
-
-	make(arg: ANY) is
+	convert_c_quantity_property(dadl_text: STRING) is
+			-- convert an old style C_QUANTITY property dADL fragment from ADL 1.x
+			-- to ADL 1.4 
+			-- The old fragment looks like this:
+			--		property = <"xxxx">
+			-- The new one looks like this:
+			--		property = <[openehr:xxxx]>
+			--
+		require
+			dadl_text /= Void
+		local
+			lpos, rpos: INTEGER
+			old_str, prop_name, new_str: STRING
 		do
+			old_str := "property = <%""
+			lpos := dadl_text.substring_index(old_str, 1)
+			if lpos > 0 then
+				rpos := dadl_text.index_of('>', lpos)
+				prop_name := dadl_text.substring (lpos + old_str.count, rpos-2)
+				prop_name.replace_substring_all (" ", "_")
+				new_str := "property = <[openehr::" + prop_name + "]>"
+				dadl_text.replace_substring (new_str, lpos, rpos)
+			end
 		end
+
+feature -- Status Report
 
 end
+
 
 --|
 --| ***** BEGIN LICENSE BLOCK *****
@@ -75,7 +62,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is ts_adl_suite.e.
+--| The Original Code is adl_syntax_converter.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

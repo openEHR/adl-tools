@@ -84,7 +84,7 @@ feature -- Implementation
 
 	dadl_c_quantity: STRING is "[
 			C_QUANTITY <
-				property = <"temperature">
+				property = <[openehr::271]>
 				list = <
 					["1"] = <
 						units = <"C">

@@ -291,6 +291,26 @@ feature -- Status Report
 			Result := constraint_bindings.has(a_terminology)
 		end
 		
+	has_any_term_binding(a_term_code: STRING): BOOLEAN is
+			-- true if there is any term binding for code `a_term_code'
+		require
+			Term_code_valid: a_term_code /= Void and then not a_term_code.is_empty
+		local
+			p: ARRAYED_LIST_CURSOR
+		do
+			p := terminologies_available.cursor
+			from
+				terminologies_available.start
+			until
+				terminologies_available.off or Result
+			loop
+				Result := term_bindings.has(terminologies_available.item) and then
+					term_bindings.item(terminologies_available.item).has(a_term_code)
+				terminologies_available.forth
+			end
+			terminologies_available.go_to (p)
+		end
+		
 	has_term_binding(a_terminology, a_term_code: STRING): BOOLEAN is
 			-- true if there is a term binding for code `a_term_code' in `a_terminology'
 		require
@@ -301,6 +321,26 @@ feature -- Status Report
 					term_bindings.item(a_terminology).has(a_term_code)
 		end
 		
+	has_any_constraint_binding(a_term_code: STRING): BOOLEAN is
+			-- true if there is any constraint binding for code `a_term_code'
+		require
+			Term_code_valid: a_term_code /= Void and then not a_term_code.is_empty
+		local
+			p: ARRAYED_LIST_CURSOR
+		do
+			p := terminologies_available.cursor
+			from
+				terminologies_available.start
+			until
+				terminologies_available.off or Result
+			loop
+				Result := constraint_bindings.has(terminologies_available.item) and then
+					constraint_bindings.item(terminologies_available.item).has(a_term_code)
+				terminologies_available.forth
+			end
+			terminologies_available.go_to (p)
+		end
+
 	has_constraint_binding(a_terminology, a_term_code: STRING): BOOLEAN is
 			-- true if there is a term binding for code `a_term_code' in `a_terminology'
 		require
@@ -443,6 +483,85 @@ feature -- Modification
 			end
 		end
 		
+	remove_term(a_code: STRING) is
+			-- completely remove the term from the ontology
+		require
+			Term_valid: a_code /= Void and then has_term_code(a_code)
+		local
+			ta: ARRAYED_LIST[STRING]
+		do
+			from
+				languages_available.start
+			until
+				languages_available.off
+			loop
+				term_definitions.item(languages_available.item).remove(a_code)
+				if term_definitions.item(languages_available.item).count = 0 then
+					term_definitions.remove(languages_available.item)
+				end
+				languages_available.forth
+			end
+			
+			-- make a copy of terminologies list, since the next action might modify it...
+			ta := terminologies_available.deep_twin
+			if has_any_term_binding(a_code) then
+				from
+					ta.start
+				until
+					ta.off
+				loop
+					if term_bindings.has(ta.item) and then
+						term_bindings.item(ta.item).has(a_code) then
+						remove_term_binding(a_code, ta.item)
+					end
+					ta.forth
+				end			
+			end
+			term_codes.prune (a_code)
+		ensure
+			not has_term_code(a_code)
+		end
+		
+	remove_constraint(a_code: STRING) is
+			-- completely remove the constraint from the ontology
+		require
+			Constraint_valid: a_code /= Void and then has_constraint_code(a_code)
+		local
+			ta: ARRAYED_LIST[STRING]
+		do
+			from
+				languages_available.start
+			until
+				languages_available.off
+			loop
+				constraint_definitions.item(languages_available.item).remove(a_code)
+				if constraint_definitions.item(languages_available.item).count = 0 then
+					constraint_definitions.remove(languages_available.item)
+				end
+				languages_available.forth
+			end
+			
+			-- make a copy of terminologies list, since the next action might modify it...
+			ta := terminologies_available.deep_twin
+			if has_any_constraint_binding(a_code) then
+				from
+					ta.start
+				until
+					ta.off
+				loop
+					if constraint_bindings.has(ta.item) and then
+						constraint_bindings.item(ta.item).has(a_code) then
+						remove_constraint_binding(a_code, ta.item)
+					end
+					ta.forth
+				end
+			end
+			
+			constraint_codes.prune (a_code)
+		ensure
+			not has_constraint_code(a_code)
+		end
+		
 	add_constraint_definition(a_lang: STRING; a_term: ARCHETYPE_TERM) is
 			-- add a new constraint definition for language `a_lang' and 
 			-- automatically add translation placeholders
@@ -517,7 +636,10 @@ feature -- Modification
 		do
 			term_bindings.item(a_terminology).remove(a_term_code)
 			if term_bindings.item(a_terminology).count = 0 then
-				remove_binding_terminology(a_terminology)
+				term_bindings.remove (a_terminology)
+				if not constraint_bindings.has (a_terminology) then
+					terminologies_available.prune_all (a_terminology)
+				end
 			end
 		ensure
 			Binding_removed: not has_term_binding(a_terminology, a_term_code)
@@ -564,7 +686,10 @@ feature -- Modification
 		do
 			constraint_bindings.item(a_terminology).remove(a_constraint_code)
 			if constraint_bindings.item(a_terminology).count = 0 then
-				remove_binding_terminology(a_terminology)
+				constraint_bindings.remove (a_terminology)
+				if not term_bindings.has (a_terminology) then
+					terminologies_available.prune_all (a_terminology)
+				end
 			end
 		ensure
 			Binding_removed: not has_constraint_binding(a_terminology, a_constraint_code)

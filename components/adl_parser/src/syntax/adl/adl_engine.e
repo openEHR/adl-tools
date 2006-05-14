@@ -30,6 +30,11 @@ inherit
 			{NONE} all
 		end
 
+	ADL_DEFINITIONS
+		export
+			{NONE} all
+		end
+	
 	INTERNAL
 		export
 			{NONE} all
@@ -207,6 +212,14 @@ feature -- Commands
 								    create {ARCHETYPE_ONTOLOGY}.make_from_tree(ontology_context.tree, 
 								    	adl_parser.concept)
 							    )
+								if adl_parser.adl_version /= Void then
+									archetype.set_adl_version(adl_parser.adl_version)
+								else
+									archetype.set_adl_version(Current_adl_version)
+								end
+								if adl_parser.is_controlled then
+									archetype.set_is_controlled
+								end
 							    if adl_parser.parent_archetype_id /= Void then
 								    archetype.set_parent_archetype_id(adl_parser.parent_archetype_id)
 							    end						

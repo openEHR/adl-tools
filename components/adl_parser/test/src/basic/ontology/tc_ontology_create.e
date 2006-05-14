@@ -62,7 +62,7 @@ feature -- testing
 			ontology.add_term_definition("en", a_term)	-- FIXME - should add_term_def always be for prim lang?
 
 			-- set id on root node
-			archetype.set_definition_node_id(code_1)
+			-- archetype.set_definition_node_id(code_1)
 			
 			io_message.put_string ("------------------ create term -------------------%N")
 			create a_term.make(ontology.new_non_specialised_term_code)

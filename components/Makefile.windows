@@ -12,4 +12,4 @@
 all: app1
 
 app1:
- 	pushd adl_parser\test\app & nmake -f makefile.windows & popd
+ 	pushd adl_parser & nmake -f makefile.windows & popd

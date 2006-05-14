@@ -80,8 +80,25 @@ feature -- Serialisation
 		end
 
 	serialise_archetype_id is
+		local
+			arch_kw_str: STRING
 		do
-			last_result.append(apply_style(symbol(SYM_ARCHETYPE), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
+			arch_kw_str := symbol(SYM_ARCHETYPE).twin
+			if target.has_adl_version or target.is_controlled then
+				arch_kw_str.append(" (")
+				if target.has_adl_version then				
+					arch_kw_str.append(symbol(SYM_ADL_VERSION) + "=" + target.adl_version)
+				end
+				if target.is_controlled then
+					if target.has_adl_version then
+						arch_kw_str.append(" ;")
+					end
+					arch_kw_str.append(symbol(SYM_IS_CONTROLLED))
+				end
+				arch_kw_str.append_character(')')
+			end
+			last_result.append(apply_style(arch_kw_str, STYLE_KEYWORD) + format_item(FMT_NEWLINE))
+
 			last_result.append(create_indent(1) + apply_style(target.archetype_id.as_string, STYLE_IDENTIFIER) + 
 				format_item(FMT_NEWLINE))
 		end

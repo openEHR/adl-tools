@@ -55,13 +55,16 @@ feature {NONE} -- Initialization
 			-- (due to regeneration of implementation class)
 			-- can be added here.
 		local
-			ed_cmd, os: STRING
+			ed_cmd, os, cur_title: STRING
 		do
 			set_x_position(0)
 			set_y_position(0)
 			set_width(app_max_width)
 			set_height(app_max_height)
 			set_icon_name("ADL Editor")
+			cur_title := title.twin
+			cur_title.replace_substring_all("VER", Current_adl_version)
+			set_title(cur_title)
    			view_area.set_proportion(0.5)
 			
 			if repository_path.is_empty then

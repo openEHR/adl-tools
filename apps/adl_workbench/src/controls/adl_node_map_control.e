@@ -265,7 +265,7 @@ feature {NONE} -- Implementation
 					s.append(a_object_quantity.rm_type_name)		
 				end
 				if a_object_quantity.property /= Void then
-					s.append(" (" + a_object_quantity.property + ")")
+					s.append(" (" + a_object_quantity.property.as_string + ")")
 				end
 				a_ti := attach_node(s, pixmaps.item("C_QUANTITY"), an_og_node)			
 				from
@@ -420,7 +420,7 @@ feature {NONE} -- Implementation
 							s.append(a_object_quantity.rm_type_name)		
 						end
 						if a_object_quantity.property /= Void then
-							s.append(" (" + a_object_quantity.property + ")")
+							s.append(" (" + a_object_quantity.property.as_string + ")")
 						end
 						a_ti.set_text(s)				
 				

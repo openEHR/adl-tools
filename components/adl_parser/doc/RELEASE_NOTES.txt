@@ -17,6 +17,34 @@ Version
 Release history
 ---------------
 
+interim release Subversion 63 - 14/May/2006
+	ADL 1.4 compliant
+	- enhancements: 
+		- all ISO date/time constraint patterns now include the 'T' where appropriate, but parser 
+		  tolerates a space for the moment, and silently substitutes a 'T' on output
+		- ISO8601 duration constraint patterns now possible. See basic_types 
+		  archetype in test archetypes area for examples
+		- property attribute value in C_QUANTITY dADL sections now upgraded to CODE_PHRASE 
+		  as defined by openEHR Archetype profile spec. Existing archetypes with old form of
+		  	property = <"xxxxx"> 
+		  still parse but are silently converted to
+		  	property = <[openehr:xxxx]>
+		  (note spaces converted to '_' as well)
+		- clear_xxx routines added to ARCHETYPE_DESCRIPTION and ARCHETYPE_DESCRIPTION_ITEM
+		  to allow all list attributes (e.g. author, keywords, details, other_details etc) 
+		  to be cleared in one go.
+		- implemented 'adl_version' and 'controlled' markers in ADL files. Existing ADL files
+		  opened and saved with the ADL workbench or other tool using this parser will have
+		  the latest ADL version written into them.
+		- added functions to ARCHETYPE_ONTOLOGY to remove terms and constraints completely.
+		- added a function to ARCHETYPE to generate list of unused term and constraint codes,
+		  and to delete them from the ontology.
+
+	- bug fixes:
+		- string values in dADL sections that wrap to start of next line now parse properly
+		- all ISO date/time values in dADL and cADL now parse with proper 'P' and 'T' characters;
+		  if no 'T' present in value, it parses fine (for now) but a 'T' is included on output.
+
 interim release Subversion 47 - 02/Apr/2006
 	- bug fixes
 		- fixed bug where Save on archetype opened from explorer tree had wrong 

@@ -73,9 +73,43 @@
 <div class="lhs">
 <span class="lhs_variable" id="arch_identification">arch_identification</span>: </div>
 <div class="rhs">
-&nbsp; <span class="token">SYM_ARCHETYPE </span><span class="token">V_ARCHETYPE_ID </span></div>
+&nbsp; <span class="rhs_variable"><a href="#arch_head">arch_head</a> </span><span class="token">V_ARCHETYPE_ID </span></div>
 <div class="rhs">
 | <span class="token">SYM_ARCHETYPE </span><span class="token">error </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="arch_head">arch_head</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">SYM_ARCHETYPE </span></div>
+<div class="rhs">
+| <span class="token">SYM_ARCHETYPE </span><span class="rhs_variable"><a href="#arch_meta_data">arch_meta_data</a> </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="arch_meta_data">arch_meta_data</span>: </div>
+<div class="rhs">
+&nbsp; <span class="literal_token">&#40; </span><span class="rhs_variable"><a href="#arch_meta_data_items">arch_meta_data_items</a> </span><span class="literal_token">&#41; </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="arch_meta_data_items">arch_meta_data_items</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#arch_meta_data_item">arch_meta_data_item</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#arch_meta_data_items">arch_meta_data_items</a> </span><span class="literal_token">&#59; </span><span class="rhs_variable"><a href="#arch_meta_data_item">arch_meta_data_item</a> </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="arch_meta_data_item">arch_meta_data_item</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">SYM_ADL_VERSION </span><span class="literal_token">&#61; </span><span class="token">V_VERSION_STRING </span></div>
+<div class="rhs">
+| <span class="token">SYM_IS_CONTROLLED </span></div>
 </div>
 
 <div class="rule">

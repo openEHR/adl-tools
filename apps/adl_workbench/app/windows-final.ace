@@ -17,7 +17,7 @@ default
 	disabled_debug ("dt")
 	disabled_debug ("exclude list")
 	debug ("gelex")
-	disabled_debug ("geyacc")
+	debug ("geyacc")
 	disabled_debug ("include list")
 	disabled_debug ("og_path_parse")
 	disabled_debug ("refactor_fixme")

@@ -34,6 +34,8 @@ feature {NONE} -- Implementation
 		once
 			create Result.make(0)
 			Result.put("archetype",		SYM_ARCHETYPE)
+			Result.put("adl_version",	SYM_ADL_VERSION)
+			Result.put("controlled",	SYM_IS_CONTROLLED)
 			Result.put("concept",		SYM_CONCEPT)
 			Result.put("specialize",	SYM_SPECIALIZE)
 			Result.put("description",	SYM_DESCRIPTION)

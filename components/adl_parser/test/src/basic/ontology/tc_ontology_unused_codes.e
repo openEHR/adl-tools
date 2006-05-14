@@ -1,64 +1,67 @@
 indexing
-	component:   "openEHR Reusable Libraries"
-	description: "Test suite for ADL archetype test cases"
-	keywords:    "test"
+	component:   "openEHR Archetype Project"
+	description: "Test case for unused codes in ontology"
+	keywords:    "test, ADL, CADL"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	file:        "$Source"
+	revision:    "$Revision"
+	last_change: "$Date"
 
-class TS_ADL_SUITE
-
-inherit
-	TEST_SUITE
+class TC_ONTOLOGY_UNUSED_CODES
 	
+inherit
+	TEST_CASE
+		export
+			{NONE} all
+		redefine
+			prereqs
+		end
+		
+	SHARED_TEST_ENV
+		export
+			{NONE} all
+		end
+		
 create
 	make
-	
-feature -- Access
-
-	test_cases: LINKED_LIST[TEST_CASE] is
-			-- the list of tests available
-		once
-			create Result.make
-			Result.extend(create {TC_ARCHETYPE_CREATE}.make(Void))
-
-			Result.extend(create {TC_ONTOLOGY_POPULATE}.make(Void))
-			Result.extend(create {TC_ONTOLOGY_MODIFY}.make(Void))
-			Result.extend(create {TC_ONTOLOGY_LANGUAGES}.make(Void))
-			Result.extend(create {TC_ONTOLOGY_ADD_TERM_BINDING}.make(Void))
-			Result.extend(create {TC_ONTOLOGY_REMOVE_TERM_BINDING}.make(Void))
-			Result.extend(create {TC_ONTOLOGY_ADD_CONSTRAINT_BINDING}.make(Void))
-			Result.extend(create {TC_ONTOLOGY_REMOVE_CONSTRAINT_BINDING}.make(Void))
-			Result.extend(create {TC_ONTOLOGY_SHOW_PATHS}.make(Void))
-
-			Result.extend(create {TC_ARCHETYPE_ADD_NODES}.make(Void))
-			Result.extend(create {TC_ONTOLOGY_UNUSED_CODES}.make(Void))
-			Result.extend(create {TC_ONTOLOGY_REMOVE_UNUSED_CODES}.make(Void))
-			Result.extend(create {TC_ARCHETYPE_ADD_C_QUANTITY}.make(Void))
-			Result.extend(create {TC_ARCHETYPE_ADD_OBJECT_ORDINAL}.make(Void))
-			Result.extend(create {TC_ARCHETYPE_ADD_OBJECT_TERM}.make(Void))
-			Result.extend(create {TC_ARCHETYPE_ADD_INVARIANTS}.make(Void))
-
-			Result.extend(create {TC_ARCHETYPE_SPECIALISE}.make(Void))
-			Result.extend(create {TC_ARCHETYPE_SET_DESCRIPTION}.make(Void))
-
-			Result.extend(create {TC_CVT_C_QUANTITY}.make(Void))
-		end
-
-	title: STRING is "ADL test cases"
 
 feature -- Initialisation
 
-	make(arg: ANY) is
-		do
+	make(arg:ANY) is
+	    do
+	    end
+
+feature -- Access
+
+	title: STRING is "Unused codes"
+
+	prereqs: ARRAY[STRING] is 
+			-- ids of prerequisite test cases
+		once
+			Result := <<"TC_ARCHETYPE_CREATE">>
 		end
 
+feature -- testing
+
+	execute is
+		local
+			a_code: STRING
+			a_term: ARCHETYPE_TERM
+			archetype: ARCHETYPE
+			a_binding: CODE_PHRASE
+		do
+			archetype := adl_interface.adl_engine.archetype
+			io.put_string("-------------- unused TERM codes --------------%N")
+			io.put_string(print_list (archetype.ontology_unused_term_codes))
+			io.put_string("-------------- unused CONSTRAINT codes --------------%N")
+			io.put_string(print_list (archetype.ontology_unused_constraint_codes))
+		end
+	
 end
 
 --|
@@ -75,7 +78,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is ts_adl_suite.e.
+--| The Original Code is tc_archetype_create.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

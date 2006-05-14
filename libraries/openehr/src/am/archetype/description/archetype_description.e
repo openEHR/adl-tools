@@ -110,6 +110,12 @@ feature -- Modification
 			Original_author_set: original_author.item(a_key) = a_value
 		end
 		
+	clear_original_author is
+			-- wipeout current items in original_author list
+		do
+			create original_author.make(0)
+		end
+		
 	add_other_contributor(a_contributor: STRING) is
 			-- add a_contributor to add_other_contributor
 		require
@@ -122,6 +128,12 @@ feature -- Modification
 		ensure
 			Other_contributor_set: other_contributors.has(a_contributor)
 		end
+		
+	clear_other_contributors is
+			-- wipeout current items in other_contributors list
+		do
+			create other_contributors.make(0)
+		end	
 		
 	set_archetype_package_uri(a_uri: STRING) is
 			-- set archetype_package_uri
@@ -157,6 +169,12 @@ feature -- Modification
 			Details_set: details.has(a_language)
 		end
 		
+	clear_details is
+			-- wipeout current items in details list
+		do
+			create details.make(0)
+		end	
+		
 	add_other_detail(a_key, a_value: STRING) is
 			-- add the key, value pair to other_details
 		require
@@ -171,6 +189,12 @@ feature -- Modification
 			Other_details_set: other_details.item(a_key) = a_value
 		end
 
+	clear_other_details is
+			-- wipeout current items in other_details list
+		do
+			create other_details.make(0)
+		end	
+		
 feature {DT_OBJECT_CONVERTER} -- Conversion
 
 	persistent_attributes: ARRAYED_LIST[STRING] is

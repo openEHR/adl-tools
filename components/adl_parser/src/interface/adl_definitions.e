@@ -21,6 +21,8 @@ inherit
 
 feature -- Access
 	
+	Current_adl_version: STRING is "1.4"
+	
 	symbols: HASH_TABLE[STRING, INTEGER] is
 		once
 			create Result.make(0)

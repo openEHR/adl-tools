@@ -31,13 +31,13 @@ inherit
 	DATE_TIME_ROUTINES
 		export
 			{NONE} all
-			{ANY} is_valid_iso8601_duration, iso8601_string_to_duration
+			{ANY} is_valid_iso8601_duration, iso8601_string_to_duration, is_valid_iso8601_duration_constraint_pattern
 		undefine
 			is_equal, default_create, out
 		end
 
 create
-	make_interval, make_string_interval
+	make_interval, make_string_interval, make_from_pattern
 
 feature -- Initialisation
 	
@@ -48,6 +48,20 @@ feature -- Initialisation
 			interval := an_interval
 		end
 
+	make_from_pattern(a_pattern: STRING) is
+			-- create Result from an ISO8601-based pattern like "yyyy-mm-XX"
+			-- allowed patterns:
+			-- P[Y|y][M|m][D|d][T[H|h][M|m][S|s]]
+			--	or
+			-- P[W|w]
+		require
+			a_pattern_valid: a_pattern /= Void and then is_valid_iso8601_duration_constraint_pattern(a_pattern)
+		do
+			pattern := a_pattern
+		ensure
+			pattern_set: pattern = a_pattern
+		end	
+		
 	make_string_interval(a_lower, an_upper: STRING; include_lower, include_upper: BOOLEAN) is
 			-- make from two iso8601 strings. Either may be Void, indicating an open-ended interval;
 			-- they may also be the same, meaning a single point. Boolean flags indicate whether to
@@ -73,18 +87,30 @@ feature -- Initialisation
 
 feature -- Access
 
+	pattern: STRING
+			-- ISO8601-based pattern following
+			-- P[Y|y][M|m][D|d][T[H|h][M|m][S|s]] or P[W|w]
+			
 	interval: OE_INTERVAL[ISO8601_DURATION]
 
 	default_value: ISO8601_DURATION is
 		do
-			Result := interval.lower
+			if pattern /= Void then
+				-- FIXME: TO BE IMPLEMENTED	
+			else
+				Result := interval.lower
+			end
 		end
 
 feature -- Status Report
 
 	valid_value (a_value: ISO8601_DURATION): BOOLEAN is 
 		do
-			Result := interval.has(a_value)
+			if pattern /= Void then
+				-- FIXME: TO BE IMPLEMENTED	
+			else
+				Result := interval.has(a_value)
+			end
 		end
 
 feature -- Output
@@ -92,17 +118,21 @@ feature -- Output
 	as_string: STRING is
 		do
 			create Result.make(0)
-			Result.append(symbols.item(SYM_INTERVAL_DELIM))
-			if interval.lower_unbounded then
-				Result.append("<= " + interval.upper.as_string)
-			elseif interval.upper_unbounded then
-				Result.append(">= " + interval.lower.as_string)
-			elseif not interval.limits_equal then
-				Result.append(interval.lower.as_string + ".." + interval.upper.as_string)
+			if pattern /= Void then
+				Result.append(pattern)
 			else
-				Result.append(interval.as_string) 
+				Result.append(symbols.item(SYM_INTERVAL_DELIM))
+				if interval.lower_unbounded then
+					Result.append("<= " + interval.upper.as_string)
+				elseif interval.upper_unbounded then
+					Result.append(">= " + interval.lower.as_string)
+				elseif not interval.limits_equal then
+					Result.append(interval.lower.as_string + ".." + interval.upper.as_string)
+				else
+					Result.append(interval.as_string) 
+				end
+				Result.append(symbols.item(SYM_INTERVAL_DELIM))
 			end
-			Result.append(symbols.item(SYM_INTERVAL_DELIM))
 			if assumed_value /= Void then
 				Result.append("; " + assumed_value.as_string)
 			end
@@ -113,6 +143,9 @@ feature -- Output
 			Result := interval.as_string
 		end
 
+invariant
+	Basic_validity: pattern /= Void xor interval /= Void
+	
 end
 
 

@@ -61,7 +61,7 @@ feature -- testing
 			an_attr_node := archetype.definition.c_attribute_at_path ("/items[at0003]/items")
 
 			a_c_qty := cf.create_c_quantity (an_attr_node)
-			a_c_qty.set_property ("temperature")
+			a_c_qty.set_property (create {CODE_PHRASE}.make_from_string("openehr::271"))
 			a_c_qty.add_unit_constraint ("F", cf.create_real_interval_make_bounded (0.0, 40.0, True, True))
 			a_c_qty.add_unit_constraint ("C", cf.create_real_interval_make_bounded (0.0, 24.0, True, True))
 			

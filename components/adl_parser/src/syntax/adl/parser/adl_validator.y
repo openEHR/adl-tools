@@ -41,9 +41,11 @@ creation
 %token <STRING> V_ARCHETYPE_ID
 %token <STRING> V_LOCAL_TERM_CODE_REF
 %token <STRING> V_DADL_TEXT V_CADL_TEXT V_ASSERTION_TEXT
+%token <STRING> V_VERSION_STRING
 
 %token SYM_ARCHETYPE SYM_CONCEPT SYM_SPECIALIZE
 %token SYM_DEFINITION SYM_DESCRIPTION SYM_ONTOLOGY SYM_INVARIANT
+%token SYM_ADL_VERSION SYM_IS_CONTROLLED
 
 %%
 
@@ -66,7 +68,7 @@ archetype: arch_identification
 		arch_ontology
 	;
 
-arch_identification: SYM_ARCHETYPE V_ARCHETYPE_ID 
+arch_identification: arch_head V_ARCHETYPE_ID 
 		{
 			create archetype_id.make_from_string($2) -- FIXME - should be other make routine
 		}
@@ -75,6 +77,27 @@ arch_identification: SYM_ARCHETYPE V_ARCHETYPE_ID
 			raise_error
 			report_error("In 'archetype' clause; expecting archetype id (model_issuer-ref_model-model_class.concept.version)")
 			abort
+		}
+	;
+
+arch_head: SYM_ARCHETYPE 
+	| SYM_ARCHETYPE arch_meta_data
+	;
+
+arch_meta_data: '(' arch_meta_data_items ')'
+	;
+
+arch_meta_data_items: arch_meta_data_item
+	| arch_meta_data_items ';' arch_meta_data_item
+	;
+
+arch_meta_data_item: SYM_ADL_VERSION '=' V_VERSION_STRING
+		{
+			adl_version := $3
+		}
+	| SYM_IS_CONTROLLED
+		{
+			is_controlled := True
 		}
 	;
 
@@ -202,6 +225,10 @@ feature {YY_PARSER_ACTION} -- Basic Operations
 feature -- Parse Output
 
 	archetype_id: ARCHETYPE_ID
+
+	adl_version: STRING
+
+	is_controlled: BOOLEAN
 
 	parent_archetype_id: ARCHETYPE_ID
 

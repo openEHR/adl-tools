@@ -141,6 +141,11 @@ creation
 					last_string_value := text_substring (2, text_count - 1)
 			}
 
+\[[a-zA-Z0-9()._\-]+::[a-zA-Z0-9._\- ]+\]	{
+					last_token := ERR_V_QUALIFIED_TERM_CODE_REF
+					last_string_value := text_substring (2, text_count - 1)
+			}
+
 \[[a-zA-Z0-9][a-zA-Z0-9._\-]*\]	{
 					last_token := V_LOCAL_TERM_CODE_REF
 					last_string_value := text_substring (2, text_count - 1)

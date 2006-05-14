@@ -62,7 +62,8 @@ creation
 %token <CHARACTER> V_CHARACTER
 %token <STRING> V_URI
 %token <STRING> V_ISO8601_EXTENDED_DATE V_ISO8601_EXTENDED_TIME V_ISO8601_EXTENDED_DATE_TIME V_ISO8601_DURATION
-%token <STRING> V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN V_ISO8601_TIME_CONSTRAINT_PATTERN V_ISO8601_DATE_CONSTRAINT_PATTERN
+%token <STRING> V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN V_ISO8601_TIME_CONSTRAINT_PATTERN
+%token <STRING> V_ISO8601_DATE_CONSTRAINT_PATTERN V_ISO8601_DURATION_CONSTRAINT_PATTERN
 %token <C_DOMAIN_TYPE> V_C_DOMAIN_TYPE
 
 %token SYM_START_CBLOCK SYM_END_CBLOCK	-- constraint block
@@ -1294,7 +1295,17 @@ c_date_time: c_date_time_spec
 		}
 	;
 
-c_duration_spec: duration_value
+c_duration_spec: V_ISO8601_DURATION_CONSTRAINT_PATTERN
+		{
+			if is_valid_iso8601_duration_constraint_pattern($1) then
+				create c_duration.make_from_pattern($1)
+			else
+				raise_error
+				report_error("invalid duration constraint pattern; legal pattern: P[Y|y][M|m][D|d][T[H|h][M|m][S|s]] or P[W|w]")
+				abort
+			end
+		}
+	| duration_value
 		{
 			create duration_interval.make_point($1)
 			create c_duration.make_interval(duration_interval)

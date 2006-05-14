@@ -50,6 +50,11 @@ inherit
 	KL_SHARED_EXCEPTIONS
 	KL_SHARED_ARGUMENTS
 
+	ADL_SYNTAX_CONVERTER
+		export 
+			{NONE} all
+		end
+
 creation
 
 	make
@@ -311,6 +316,15 @@ T?[hH][hH]:[mM?X][mM?X]:[sS?X][sS?X]	{
 				last_string_value := text
 			}
 
+----------/* V_ISO8601_DURATION_CONSTRAINT_PATTERN */ -------------------------------------------------
+
+P[wW]	|
+P[yY]?[mM]?[dD]?T[hH]?[mM]?[sS]? |
+P[yY]?[mM]?[dD]? {
+				last_token := V_ISO8601_DURATION_CONSTRAINT_PATTERN
+				last_string_value := text
+			}
+
 ----------/* V_C_DOMAIN_TYPE - sections of dADL syntax */ -------------------------------------------------
 
 -- this is an attempt to match a dADL section inside cADL. It will probably never work properly since 
@@ -335,6 +349,9 @@ T?[hH][hH]:[mM?X][mM?X]:[sS?X][sS?X]	{
 				str_ := STRING_.make (in_buffer.count)
 				str_.append_string (in_buffer)
 				in_lineno := in_lineno + str_.occurrences('%N')
+
+				-- perform any upgrades to embedded dADL object syntax here by substitution
+				convert_c_quantity_property(str_)
 
 				dadl_parser.execute(str_, source_start_line)
 				if not dadl_parser.syntax_error then

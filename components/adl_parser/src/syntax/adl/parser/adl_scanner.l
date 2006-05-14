@@ -52,7 +52,7 @@ creation
 ----------/** Separators **/----------------------------------------------------
 
 [ \t\r]+		-- Ignore separators
-\n+			in_lineno := in_lineno + text_count
+\n+				in_lineno := in_lineno + text_count
 
 
 ----------/** comments **/-----------------------------------------------
@@ -83,9 +83,16 @@ creation
 
 ----------/* keywords */ -------------------------------------------------
 
-^[Aa][Rr][Cc][Hh][Ee][Tt][Yy][Pp][Ee][ \t\r]*\n 		{
+^[Aa][Rr][Cc][Hh][Ee][Tt][Yy][Pp][Ee][ \t\r]* 		{
 				last_token := SYM_ARCHETYPE
-				in_lineno := in_lineno + 1
+			}
+
+[Aa][Dd][Ll]_[Vv][Ee][Rr][Ss][Ii][Oo][Nn] 		{
+				last_token := SYM_ADL_VERSION
+			}
+
+[Cc][Oo][Nn][Nn][Tt][Rr][Oo][Ll][Ll][Ee][Dd] 		{
+				last_token := SYM_IS_CONTROLLED
 			}
 
 ^[Ss][Pp][Ee][Cc][Ii][Aa][Ll][Ii][SsZz][Ee][ \t\r]*\n 	{
@@ -128,7 +135,8 @@ creation
 				ontology_text_start_line := in_lineno
 			}
 
-<IN_DADL_SECTION>^[Dd][Ee][Ff][Ii][Nn][Ii][Tt][Ii][Oo][Nn][ \t\r]*\n { -- line starting with "definition"
+<IN_DADL_SECTION>{
+	^[Dd][Ee][Ff][Ii][Nn][Ii][Tt][Ii][Oo][Nn][ \t\r]*\n { -- line starting with "definition"
 				-- unread the pattern just matched
 				a_text := text
 				from i := text_count until i < 1 loop
@@ -145,18 +153,14 @@ creation
 
 				set_start_condition(INITIAL)
 			}
-
-<IN_DADL_SECTION>[^\n]+\n { -- any text on line with a LF
+	[^\n]+\n { -- any text on line with a LF
 				in_buffer.append_string(text)
 				in_lineno := in_lineno + 1
 			}
-
-<IN_DADL_SECTION>[^\n]+ { -- any text on line with no LF
+	[^\n]+ { -- any text on line with no LF
 				in_buffer.append_string(text)
 				in_lineno := in_lineno + 1
 			}
-
-<IN_DADL_SECTION>{
 	<<EOF>> {
 				-- get the dADL section sorted out
 				last_token := V_DADL_TEXT
@@ -171,12 +175,14 @@ creation
 	}
 }
 
-<IN_CADL_SECTION>^[ \t]+[^\n]*\n {
+<IN_CADL_SECTION>{
+	^[ \t]+[^\n]*\n {
 				in_buffer.append_string(text)
 				in_lineno := in_lineno + 1
-			}
+	}
+	\n+				in_lineno := in_lineno + text_count
 
-<IN_CADL_SECTION>^[^ \t] { -- non-white space at start
+	^[^ \t] { -- non-white space at start
 				unread_character(text.item(1))
 				last_token := V_CADL_TEXT
 				str_ := STRING_.make (in_buffer.count)
@@ -184,14 +190,15 @@ creation
 				in_buffer.wipe_out
 				last_string_value := str_
 				set_start_condition(INITIAL)
-			}
+	}
+}
 
-<IN_ASSERTION_SECTION>^[ \t]+[^\n]*\n {
+<IN_ASSERTION_SECTION>{
+	^[ \t]+[^\n]*\n {
 				in_buffer.append_string(text)
 				in_lineno := in_lineno + 1
-			}
-
-<IN_ASSERTION_SECTION>^[^ \t] { -- non-white space at start
+	}
+	^[^ \t] { -- non-white space at start
 				unread_character(text.item(1))
 				last_token := V_ASSERTION_TEXT
 				str_ := STRING_.make (in_buffer.count)
@@ -199,6 +206,13 @@ creation
 				in_buffer.wipe_out
 				last_string_value := str_
 				set_start_condition(INITIAL)
+	}
+}
+
+----------/* V_VERSION_STRING */ -------------------------------------------------
+[0-9]+\.[0-9]+(\.[0-9]+)* {
+					last_token := V_VERSION_STRING
+					last_string_value := text_substring (1, text_count)
 			}
 
 ----------/* term code reference */ -------------------------------------------------

@@ -130,6 +130,12 @@ feature -- Modification
 			Keyword_added: keywords.has(a_keyword)
 		end
 		
+	clear_keywords is
+			-- remove existing keywords
+		do
+			create keywords.make(0)
+		end
+		
 	add_other_detail(a_key, a_value: STRING) is
 			-- add the key, value pair to other_details
 		require
@@ -142,6 +148,12 @@ feature -- Modification
 			other_details.put(a_value, a_key)
 		ensure
 			Other_details_set: other_details.item(a_key) = a_value
+		end
+		
+	clear_other_details is
+			-- remove existing other_details
+		do
+			create other_details.make (0)
 		end
 
 	add_original_resource_uri(a_key, a_value: STRING) is
@@ -156,6 +168,12 @@ feature -- Modification
 			original_resource_uri.put(create {URI}.make_from_string(a_value), a_key)
 		ensure
 			Original_resource_uri_added: original_resource_uri.item(a_key).as_string.is_equal(a_value)
+		end
+		
+	clear_original_resource_uri is
+			-- remove existing original_resource_uri items
+		do
+			create original_resource_uri.make(0)
 		end
 		
 feature {DT_OBJECT_CONVERTER} -- Conversion

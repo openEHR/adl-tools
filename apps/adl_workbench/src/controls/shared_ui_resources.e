@@ -16,6 +16,11 @@ class SHARED_UI_RESOURCES
 inherit
 	SHARED_RESOURCES
 
+	ADL_DEFINITIONS
+		export
+			{NONE} all
+		end
+	
 feature -- Definitions
 
 	News_file_path: STRING is 
@@ -27,9 +32,7 @@ feature -- Definitions
 		once
 			Result := application_startup_directory + os_directory_separator.out + ".status"
 		end
-		
-	Adl_version: STRING is "1.1"
-	
+			
 	Default_windows_editor_command: STRING is "Notepad.exe"
 
 	Default_non_windows_editor_command: STRING is "vi"
@@ -166,16 +169,14 @@ feature -- Access
 			-- create a splash string for the console
 		once
 			create Result.make(0)
-			Result.append("Ocean Informatics openEHR ADL Parser (c)2003-2005%N")
-			Result.append("%TADL version: " + adl_version + "%N" + (create {OPENEHR_VERSION}).version)
-			Result.append("%Tsource available from: www.openEHR.org%N")
-			Result.append("%Tsupport: support@OceanInformatics.biz%N")
-			Result.append("%Tauthor: Thomas Beale%N")
+			Result.append("Ocean Informatics openEHR ADL Parser (c)2003-2006%N")
+			Result.append("%TADL version: " + Current_adl_version + "%N")
+			Result.append("%TSource version (SVN - http://svn.openehr.org/ref_impl_eiffel): %N%T" + (create {OPENEHR_VERSION}).version + "%N")
+			Result.append("Support: support@OceanInformatics.biz%N")
+			Result.append("Author: Thomas Beale%N")
 			Result.append("Built using%N")
-			Result.append("%TISE Eiffel (see www.eiffel.com)%N")
-			Result.append("%TGobo parsing libraries & tools (see www.gobosoft.com)%N")
-			Result.append("Available versions%N")
-			Result.append("%TdotNet dll, Java-wrapped dll/.so, C dll/.so%N")
+			Result.append("%TEiffel Software Eiffel (http://www.eiffel.com)%N")
+			Result.append("%TGobo parsing libraries & tools (http://www.gobosoft.com)%N")
 		end
 
 	News_text: STRING is

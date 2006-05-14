@@ -84,6 +84,13 @@ feature -- Access
 
 	archetype_id: ARCHETYPE_ID
 	
+	adl_version: STRING
+			-- ADL version of this archetype
+			
+	is_controlled: BOOLEAN
+			-- True if this archetype is controlled in a versioning or document system;
+			-- if True, revision_history is included in archetype
+	
 	version: STRING is 
 			-- version of this archetype, according to its id
 		do
@@ -111,6 +118,7 @@ feature -- Access
 	ontology: ARCHETYPE_ONTOLOGY
 
 	revision_history: ARRAYED_LIST [ARCHETYPE_AUDIT]
+			-- only included in archetype if 'is_controlled' is True
 
 	physical_paths: ARRAYED_LIST [STRING] is
 			-- generate physical paths from definition structure
@@ -189,7 +197,60 @@ feature -- Access
 		do
 			Result := ontology.physical_to_logical_path(a_phys_path, a_lang)
 		end
+	
+	ontology_unused_term_codes: ARRAYED_LIST[STRING] is
+			-- list of at codes found in ontology that are not referenced 
+			-- anywhere in the archetype definition
+		local
+			ont_codes: SORTED_TWO_WAY_LIST[STRING]
+			found_codes: ARRAYED_LIST[STRING]
+		do
+			create Result.make(0)
+			if not is_specialised then
+				ont_codes := ontology.term_codes
+				found_codes := found_id_node_codes
+				found_codes.append(found_code_node_codes)
+				from
+					ont_codes.start
+				until
+					ont_codes.off
+				loop
+					if not found_codes.has(ont_codes.item) then 
+						Result.extend(ont_codes.item)
+					end
+					ont_codes.forth
+				end
+			end
+		ensure
+			Result_exists: Result /= Void
+		end
 		
+	ontology_unused_constraint_codes: ARRAYED_LIST[STRING] is
+			-- list of ac codes found in ontology that are not referenced 
+			-- anywhere in the archetype definition
+		local
+			ont_codes: SORTED_TWO_WAY_LIST[STRING]
+			found_codes: ARRAYED_LIST[STRING]
+		do
+			create Result.make(0)
+			if not is_specialised then
+				ont_codes := ontology.constraint_codes
+				found_codes := found_constraint_codes
+				from
+					ont_codes.start
+				until
+					ont_codes.off
+				loop
+					if not found_codes.has(ont_codes.item) then 
+						Result.extend(ont_codes.item)
+					end
+					ont_codes.forth
+				end
+			end
+		ensure
+			Result_exists: Result /= Void
+		end
+
 	errors: STRING
 			-- validity errors in this archetype
 	
@@ -197,6 +258,12 @@ feature -- Access
 			-- validity warnings for this archetype
 	
 feature -- Status Report
+
+	has_adl_version: BOOLEAN is
+			-- True if adl_version is set
+		do
+			Result := adl_version /= Void
+		end
 
 	is_readonly: BOOLEAN
 			-- set True in circumstances where Archetype will not be modified in memory
@@ -285,7 +352,6 @@ feature {ARCHETYPE} -- Validation
 			-- and term_definitions contains no extras
 		local
 			a_codes: ARRAYED_LIST[STRING]
-			ont_term_codes: SORTED_TWO_WAY_LIST[STRING]
 		do
 			-- see if all found codes are in each language table
 			a_codes := found_id_node_codes
@@ -316,19 +382,26 @@ feature {ARCHETYPE} -- Validation
 				a_codes.forth
 			end
 
-			-- see if each code in this definitions table is in found list
-			ont_term_codes := ontology.term_codes
+			-- unused term codes
+			a_codes := ontology_unused_term_codes
 			from
-				ont_term_codes.start
+				a_codes.start
 			until
-				ont_term_codes.off
+				a_codes.off
 			loop
-				if not is_specialised and
-					not found_id_node_codes.has(ont_term_codes.item) and then 
-					not found_code_node_codes.has(ont_term_codes.item) then
-					warnings.append("Term code " + ont_term_codes.item + " in ontology not used in archetype definition%N")
-				end
-				ont_term_codes.forth
+				warnings.append("Term code " + a_codes.item + " in ontology not used in archetype definition%N")
+				a_codes.forth
+			end
+
+			-- unused constraint codes
+			a_codes := ontology_unused_constraint_codes
+			from
+				a_codes.start
+			until
+				a_codes.off
+			loop
+				warnings.append("Constraint code " + a_codes.item + " in ontology not used in archetype definition%N")
+				a_codes.forth
 			end
 		end		
 		
@@ -387,8 +460,32 @@ feature {ARCHETYPE} -- Validation
 			end
 		end
 
+feature -- Comparison
+
+	valid_adl_version(a_ver: STRING): BOOLEAN is
+			-- set adl_version with a string containing only '.' and numbers, 
+			-- not commencing or finishing in '.'
+		require
+			Valid_string: a_ver /= Void and then not a_ver.is_empty
+		local
+			str: STRING
+		do
+			str := a_ver.twin
+			str.prune_all ('.')
+			Result := str.is_integer and a_ver.item(1) /= '.' and a_ver.item (a_ver.count) /= '.'
+		end
+
 feature -- Modification
 
+	set_adl_version(a_ver: STRING) is
+			-- set adl_version with a string containing only '.' and numbers, 
+			-- not commencing or finishing in '.'
+		require
+			Valid_version: a_ver /= Void and then valid_adl_version(a_ver)
+		do
+			adl_version := a_ver
+		end
+		
 	convert_to_specialised(a_spec_concept: STRING) is
 			-- convert this arcehtype to being a specialised version of itself
 			-- one level down
@@ -456,6 +553,7 @@ feature -- Modification
 			Valid_term_code: ontology.has_term_code(a_term_code)
 		do
 			definition.set_object_id(a_term_code)
+			update_node_lists
 		end
 
 	reset_definition is
@@ -463,6 +561,7 @@ feature -- Modification
 			-- node with all children gone
 		do
 			definition.remove_all_attributes
+			update_node_lists
 		end
 	
 	add_invariant(an_inv: ASSERTION) is
@@ -491,7 +590,39 @@ feature -- Modification
 			ontology := a_node
 		end
 
+	ontology_remove_unused_codes is
+			-- remove all term and constraint codes from ontology
+		local
+			code_list: ARRAYED_LIST[STRING]
+		do
+			code_list := ontology_unused_term_codes
+			from
+				code_list.start
+			until
+				code_list.off
+			loop
+				ontology.remove_term(code_list.item)
+				code_list.forth
+			end
+			
+			code_list := ontology_unused_constraint_codes
+			from
+				code_list.start
+			until
+				code_list.off
+			loop
+				ontology.remove_constraint(code_list.item)
+				code_list.forth
+			end
+		end
+		
 feature -- Status setting
+
+	set_is_controlled is
+			-- set 'is_controlled'
+		do
+			is_controlled := True
+		end
 
 	set_readonly is
 			-- set is_readonly to True

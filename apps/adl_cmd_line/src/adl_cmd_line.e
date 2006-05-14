@@ -53,7 +53,7 @@ feature -- Template
 			id_list: ARRAYED_LIST[STRING]
 			rep_path: STRING
 			parse_failed_list: ARRAYED_LIST[STRING]
-			reparse_faied_list: ARRAYED_LIST[STRING]
+			reparse_failed_list: ARRAYED_LIST[STRING]
    		do
 			io.put_string(splash)
 			initialise_default_resource_config_file_name
@@ -89,7 +89,7 @@ feature -- Template
 					finished
 				loop
  		  			create parse_failed_list.make(0)
-   					create reparse_faied_list.make(0)
+   					create reparse_failed_list.make(0)
    		
 					menu.display
 					menu.choose
@@ -105,7 +105,7 @@ feature -- Template
 								parse_failed_list.extend(repository.file_ids.item)
 							end
 							if parse_2_failed then
-								reparse_faied_list.extend(repository.file_ids.item)
+								reparse_failed_list.extend(repository.file_ids.item)
 							end
 							repository.file_ids.forth
 						end
@@ -121,7 +121,7 @@ feature -- Template
 							parse_failed_list.extend(arch_id)
 						end
 						if parse_2_failed then
-							reparse_faied_list.extend(arch_id)
+							reparse_failed_list.extend(arch_id)
 						end
 					end
 		
@@ -139,12 +139,12 @@ feature -- Template
 					io.put_string("%N~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%N")
 					io.put_string("Archetypes which failed to reparse:%N")
 					from
-						reparse_faied_list.start
+						reparse_failed_list.start
 					until
-						reparse_faied_list.off
+						reparse_failed_list.off
 					loop
-						io.put_string("%T" + reparse_faied_list.item + "%N")
-						reparse_faied_list.forth
+						io.put_string("%T" + reparse_failed_list.item + "%N")
+						reparse_failed_list.forth
 					end					
 				end
 			else

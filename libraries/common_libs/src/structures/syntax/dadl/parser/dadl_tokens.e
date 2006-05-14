@@ -91,6 +91,8 @@ feature -- Access
 				Result := "ERR_CHARACTER"
 			when ERR_STRING then
 				Result := "ERR_STRING"
+			when ERR_V_QUALIFIED_TERM_CODE_REF then
+				Result := "ERR_V_QUALIFIED_TERM_CODE_REF"
 			else
 				Result := yy_character_token_name (a_token)
 			end
@@ -130,5 +132,6 @@ feature -- Token codes
 	SYM_GE: INTEGER is 287
 	ERR_CHARACTER: INTEGER is 288
 	ERR_STRING: INTEGER is 289
+	ERR_V_QUALIFIED_TERM_CODE_REF: INTEGER is 290
 
 end
