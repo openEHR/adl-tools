@@ -206,6 +206,7 @@ feature -- Access
 			found_codes: ARRAYED_LIST[STRING]
 		do
 			create Result.make(0)
+			Result.compare_objects
 			if not is_specialised then
 				ont_codes := ontology.term_codes
 				found_codes := found_id_node_codes
@@ -220,6 +221,7 @@ feature -- Access
 					end
 					ont_codes.forth
 				end
+				Result.prune(concept_code)
 			end
 		ensure
 			Result_exists: Result /= Void

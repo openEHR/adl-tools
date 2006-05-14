@@ -58,6 +58,15 @@ feature -- Modification
 			items.extend(s)
 		end
 
+	set_i_th_item(i:INTEGER; s:STRING) is
+			-- set an existing item to 's'
+		require
+			Index_valid: i >= 1 and i <= count
+			Item_Exists: s /= Void
+		do
+			items.put_i_th (s, i)
+		end
+
 	set_all_item(s:STRING) is
 			-- string to display for All option
 		require

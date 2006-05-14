@@ -38,7 +38,12 @@ feature -- Access
 				rpos := dadl_text.index_of('>', lpos)
 				prop_name := dadl_text.substring (lpos + old_str.count, rpos-2)
 				prop_name.replace_substring_all (" ", "_")
-				new_str := "property = <[openehr::" + prop_name + "]>"
+				if not prop_name.has_substring("openehr::") then
+					new_str := "property = <[openehr::" + prop_name + "]>"
+				else
+					new_str := "property = <[" + prop_name + "]>"
+				end
+				
 				dadl_text.replace_substring (new_str, lpos, rpos)
 			end
 		end

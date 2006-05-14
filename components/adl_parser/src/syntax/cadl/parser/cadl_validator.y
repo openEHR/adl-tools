@@ -83,7 +83,7 @@ creation
 %token SYM_INCLUDE SYM_EXCLUDE
 %token SYM_DT_UNKNOWN
 
-%token ERR_CHARACTER ERR_STRING ERR_C_DOMAIN_TYPE ERR_TERM_CODE_CONSTRAINT
+%token ERR_CHARACTER ERR_STRING ERR_C_DOMAIN_TYPE ERR_TERM_CODE_CONSTRAINT ERR_V_ISO8601_DURATION
 
 %left SYM_IMPLIES
 %left SYM_OR SYM_XOR
@@ -1884,6 +1884,12 @@ duration_value: V_ISO8601_DURATION
 				report_error("invalid ISO8601 duration: " + $2)
 				abort
 			end
+		}
+	| ERR_V_ISO8601_DURATION
+		{
+			raise_error
+			report_error("Error in ISO8601 durationl missing 'T'?")
+			abort
 		}
 	;
 

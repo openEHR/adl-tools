@@ -40,20 +40,17 @@ creation
 	
 feature -- Definitions
 
-	Option_overwrite: STRING is "overwrite"
+	Cmd_line_option_overwrite: STRING is "overwrite"
+	
+	Option_overwrite: INTEGER is 1
+	
+	Option_remove_unused_codes: INTEGER is 2
 
 feature -- Template
 	
 	make is
 		local
-			i: INTEGER
-			menu: MENU
-			finished: BOOLEAN
-			arch_id: STRING
-			id_list: ARRAYED_LIST[STRING]
 			rep_path: STRING
-			parse_failed_list: ARRAYED_LIST[STRING]
-			reparse_failed_list: ARRAYED_LIST[STRING]
    		do
 			io.put_string(splash)
 			initialise_default_resource_config_file_name
@@ -68,6 +65,113 @@ feature -- Template
 			end
 			adl_interface.set_current_directory(working_directory)
 
+			get_options
+			menu_loop
+		end
+				
+	repository: FILE_REPOSITORY
+	
+	splash: STRING is
+			-- create a splash string for the console
+		once
+			create Result.make(0)
+			Result.append("%N..........................................................................%N")
+			Result.append(  ".           Ocean Informatics Validating ADL Parser (c)2003 - 2004       .%N")
+			Result.append(  "..........................................................................%N")
+			Result.append(  ". available from: www.OceanInformatics.biz                               .%N")
+			Result.append(  ".         author: Thomas Beale                                           .%N")
+			Result.append(  adl_interface.openehr_version																  )
+			Result.append(  ".    built using: ISE Eiffel (see www.eiffel.com)                        .%N")
+			Result.append(  ".                 Gobo parsing libraries & tools (see www.gobosoft.com)  .%N")
+			Result.append(  ".        support: support@OceanInformatics.biz                           .%N")
+			Result.append(  "..........................................................................%N%N")
+
+		end
+
+	working_directory: STRING
+		
+	archetype_file_name_pattern: STRING is "^[a-z][a-z0-9_]*-[a-z][a-z0-9_]*-[a-z][a-z0-9_]*\.[a-z][a-z0-9\-_]*\.[a-z][a-z0-9_]*\.adl$"
+			-- matches "rm_originator-rm_name-rm_entity.concept.version.adl"
+	
+feature -- Status Report
+
+	overwrite: BOOLEAN
+			-- set to True if old files are to be overwritten by new files
+			-- useful for upgrading ADL syntax in one go
+			
+	remove_unused_codes: BOOLEAN
+			-- True means remove unused codes from every archetype
+	
+	parse_1_failed, parse_2_failed: BOOLEAN
+
+feature -- Implementation
+
+	get_options is
+			-- get various options from user
+		local
+			finished: BOOLEAN
+			menu: MENU
+		do
+			create menu.make("Options (toggle)")
+			menu.add_item("Overwrite archetypes")
+			menu.add_item("Remove unused codes from archetypes")
+				
+			from
+			until
+				finished
+			loop  		
+				menu.display
+				menu.choose
+
+				if menu.all_selected then
+					overwrite := True						
+					remove_unused_codes := True
+				elseif menu.quit_selected then
+					finished := True				
+				else
+					inspect menu.selection
+					when Option_overwrite then
+						overwrite := not overwrite
+						if overwrite then
+							menu.set_i_th_item(Option_overwrite, "Don't overwrite archetypes")
+						else
+							menu.set_i_th_item(Option_overwrite, "Overwrite archetypes")
+						end
+					when Option_remove_unused_codes then
+						remove_unused_codes := not remove_unused_codes
+						if remove_unused_codes then
+							menu.set_i_th_item(Option_remove_unused_codes, "Don't remove unused codes from archetypes")
+						else
+							menu.set_i_th_item(Option_remove_unused_codes, "Remove unused codes from archetypes")
+						end
+					end
+				end
+				
+				if overwrite then
+					io.put_string("Overwrite selected: archetypes will be overwritten by serialised output%N")
+				else
+					io.put_string("Overwrite not selected: serialised output will be written to .adlx files%N")
+				end
+				if remove_unused_codes then
+					io.put_string("Remove unused codes selected: archetypes will have unused codes removed%N")
+				else
+					io.put_string("Remove unused codes not selected: archetype codes will not be changed%N")
+				end
+			end
+			io.new_line
+		end
+		
+	menu_loop is
+			-- go into menu interactive loop
+		local
+			i: INTEGER
+			menu: MENU
+			finished: BOOLEAN
+			arch_id: STRING
+			id_list: ARRAYED_LIST[STRING]
+			parse_failed_list: ARRAYED_LIST[STRING]
+			reparse_failed_list: ARRAYED_LIST[STRING]
+		do
 			create menu.make("ADL Files")
 			create repository.make(working_directory, archetype_file_name_pattern)
 			if not repository.make_failed then
@@ -149,16 +253,16 @@ feature -- Template
 				end
 			else
 				io.put_string("Repository not found; reason: " + repository.make_error + "%N")
-			end
+			end	
 		end
-	
+		
 	read_command_line is
 			-- get command line args
 		local
 			args: ARGUMENTS
 		do
 			args := execution_environment.Command_line
-			if args.index_of_word_option(Option_overwrite) > 0 then
+			if args.index_of_word_option(Cmd_line_option_overwrite) > 0 then
 				io.putstring("[Overwrite command line option found - will overwrite files%N")
 				overwrite := True
 			end
@@ -183,6 +287,13 @@ feature -- Template
 				io.put_string("Archetype " + arch_id + " is VALIDATED%N")
 				io.put_string(adl_interface.status + "%N")
 
+				if remove_unused_codes then
+					io.put_string("-------- removing unused codes --------%N")
+					io.put_string(display_arrayed_list(adl_interface.archetype.ontology_unused_term_codes) + "%N")
+					io.put_string(display_arrayed_list(adl_interface.archetype.ontology_unused_constraint_codes) + "%N")
+					adl_interface.archetype.ontology_remove_unused_codes
+				end
+				
 				io.put_string("-------- Serialising to HTML --------%N")
 				html_fname := repository.file_path(arch_id).twin
 				html_fname.replace_substring(".html", html_fname.count - Archetype_file_extension.count, html_fname.count)
@@ -219,37 +330,26 @@ feature -- Template
 				io.put_string(adl_interface.status + "%N")
 			end
 		end
-				
-	repository: FILE_REPOSITORY
-	
-	overwrite: BOOLEAN
-			-- set to True by command line if old files are to be overwritten by new files
-			-- useful for upgrading ADL syntax in one go
-	
-	parse_1_failed, parse_2_failed: BOOLEAN
 
-	splash: STRING is
-			-- create a splash string for the console
-		once
+	display_arrayed_list(str_lst: ARRAYED_LIST[STRING]):STRING is
+			-- 
+		require
+			str_lst /= Void
+		do
 			create Result.make(0)
-			Result.append("%N..........................................................................%N")
-			Result.append(  ".           Ocean Informatics Validating ADL Parser (c)2003 - 2004       .%N")
-			Result.append(  "..........................................................................%N")
-			Result.append(  ". available from: www.OceanInformatics.biz                               .%N")
-			Result.append(  ".         author: Thomas Beale                                           .%N")
-			Result.append(  adl_interface.openehr_version																  )
-			Result.append(  ".    built using: ISE Eiffel (see www.eiffel.com)                        .%N")
-			Result.append(  ".                 Gobo parsing libraries & tools (see www.gobosoft.com)  .%N")
-			Result.append(  ".        support: support@OceanInformatics.biz                           .%N")
-			Result.append(  "..........................................................................%N%N")
-
+			from
+				str_lst.start
+			until
+				str_lst.off
+			loop
+				if not str_lst.isfirst then
+					Result.append(", ")
+				end
+				Result.append(str_lst.item)
+				str_lst.forth
+			end
 		end
-
-	working_directory: STRING
 		
-	archetype_file_name_pattern: STRING is "^[a-z][a-z0-9_]*-[a-z][a-z0-9_]*-[a-z][a-z0-9_]*\.[a-z][a-z0-9\-_]*\.[a-z][a-z0-9_]*\.adl$"
-			-- matches "rm_originator-rm_name-rm_entity.concept.version.adl"
-			
 end
 
 
