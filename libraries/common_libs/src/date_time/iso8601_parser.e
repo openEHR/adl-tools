@@ -25,10 +25,25 @@ feature -- Definitions
 	Date_separator: CHARACTER is '-'
 	Time_separator: CHARACTER is ':'
 	Time_leader: CHARACTER is 'T'
+	Time_leader_lower: CHARACTER is 't'
 	Time_zone_GMT: CHARACTER is 'Z'
 	Duration_leader: CHARACTER is 'P'
 	Iso8601_decimal_separator: CHARACTER is ','
 	Decimal_separator: CHARACTER is '.'
+
+	Case_converter: HASH_TABLE[CHARACTER, CHARACTER] is
+			-- safe case converter for chars in ISO strings
+		once
+			create Result.make(0)
+			Result.put ('s', 'S')
+			Result.put ('m', 'M')
+			Result.put ('h', 'H')
+			Result.put ('d', 'D')
+			Result.put ('y', 'Y')
+			Result.put ('p', 'P')
+			Result.put ('t', 'T')
+			Result.put ('z', 'Z')
+		end
 
 feature -- Initialisation
 
@@ -316,8 +331,7 @@ feature -- Status Report
 				cached_iso8601_duration := Void
 
 				if str.item (1) = Duration_leader then
-					str1 := str.twin
-					str1.to_lower
+					str1 := convert_to_lower(str)
 					left := 2
 
 					-- weeks - must be on its own; cannot be mixed
@@ -331,7 +345,7 @@ feature -- Status Report
 						end
 					else
 						Result := True
-						time_sep_pos := str1.index_of (Time_leader.as_lower, 1)
+						time_sep_pos := str1.index_of (Time_leader_lower, 1)
 						if time_sep_pos > 0 then
 							ymd_part := str1.substring (1, time_sep_pos - 1)
 							hms_part := str1.substring (time_sep_pos + 1, str1.count)
@@ -582,6 +596,26 @@ feature {NONE} -- Implementation
 		end
 
 feature {ISO8601_ROUTINES} -- Implementation
+
+	convert_to_lower(a_str: STRING): STRING is
+			-- safe case conversion
+		local
+			i: INTEGER
+		do
+			create Result.make(0)
+			from
+				i := 1
+			until
+				i > a_str.count
+			loop
+				if case_converter.has(a_str.item(i)) then
+					Result.append_character(case_converter.item(a_str.item(i)))
+				else
+					Result.append_character(a_str.item(i))
+				end
+				i := i + 1
+			end
+		end
 
 	cached_iso8601_time_string: STRING
 			-- last time string on which is_valid_iso8601_time was called; used for matching

@@ -294,11 +294,16 @@ P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[dD])? {
 				last_string_value := text
 			}
 
--- flag missing 'T' (could silently correct, but ambiguity with 'm' makes this dangerous
+-- missing 'T' silently correct; assume 'm' means minutes not months
 P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[dD])?([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])? {
-				last_token := ERR_V_ISO8601_DURATION
+				last_token := V_ISO8601_DURATION
+				last_string_value := convert_non_conforming_duration(text)
 			}
 
+-- in future, use this instead to treat as an error
+-- P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[dD])?([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])? {
+-- 				last_token := ERR_V_ISO8601_DURATION
+--			}
 ----------/* V_ISO8601_DATE_CONSTRAINT_PATTERN */ -------------------------------------------------
 
 [yY][yY][yY][yY]-[mM?X][mM?X]-[dD?X][dD?X]	{

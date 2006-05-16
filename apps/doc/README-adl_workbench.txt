@@ -1,6 +1,6 @@
 
-openEHR ADL Reference Parser Toolkit
-------------------------------------
+openEHR ADL workbench
+---------------------
 
 VERSION
 	Last Change: $Date$
@@ -10,14 +10,11 @@ AUTHORS
 	Ocean Informatics <www.OceanInformatics.biz>
 
 CONTENTS
-	This package contains: 
-		- a GUI ADL viewer & parser application
-		- a command-line archetype test engine
+	GUI ADL viewer & parser application
 
 DIRECTORIES
 	$INSTALL/adl_workbench/bin: 
 		adl_workbench.exe - GUI ADL viewer
-		adl_cmd_line.exe - command-line ADL validator
 
 	$INSTALL/adl_workbench/etc/vim: 
 		(for vi fans only...) files for adding ADL to the vim/gvim editor.  
@@ -34,30 +31,22 @@ DIRECTORIES
 		is http://svn.openehr.org/knowledge/archetypes/dev/ .
 
 PURPOSE
-	adl_workbench:
-		At the moment, you can hand-write new ADL files, or experiment 
-		with the example files. In the future, this validator will 
-		mainly be used to do standalone checks on ADL files. The 
-		validator is modular, and has already been built as a dotNet 
-		DLL and used with VB and C# GUI tools (see ADL DLL toolkit).  
-		Other reusable library forms are being built for Linux and Windows.
+	At the moment, you can hand-write new ADL files, or experiment 
+	with the example files. In the future, this validator will 
+	mainly be used to do standalone checks on ADL files. The 
+	validator is modular, and has already been built as a dotNet 
+	DLL and used with VB and C# GUI tools (see ADL DLL toolkit).  
+	Other reusable library forms are being built for Linux and Windows.
 
-		The parser provides a reasonable amount of syntax error reporting 
-		on ADL files. It also does a certain amount of semantic checking. 
-		It is capable of serialising into ADL, HTML, and a form of XML
-		being developed for use with the Web Ontology Language (OWL).
+	The parser provides a reasonable amount of syntax error reporting 
+	on ADL files. It also does a certain amount of semantic checking. 
+	It is capable of serialising into ADL, HTML, and a form of XML
+	being developed for use with the Web Ontology Language (OWL).
 
-		The parser tool is *not* designed as a clinical or other domain
-		specialist's tool - other GUI tools are being developed for this 
-		purpose. Accordingly, the user interface is designed for technical
-		users.
-
-	adl_cmd_line:
-		This application will validate an entire directory tree of 
-		archetypes, parsing each one, saving as ADL (thus testing the
-		serialisation), reparsing the serialised version, and finally
-		saving as HTML. Errors in both parse attempts and the serialise
-		attempts are reported at the end.
+	The parser tool is *not* designed as a clinical or other domain
+	specialist's tool - other GUI tools are being developed for this 
+	purpose. Accordingly, the user interface is designed for technical
+	users.
 
 SETUP
 	Make sure you have the openEHR Archetype library installed first (see
@@ -65,55 +54,42 @@ SETUP
 	http://www.openehr.org/developer/t_svn_um_top.htm for instructions on
 	using subversion).
 
-	adl_workbench:
-		Double-click the adl_workbench.exe file.  The GUI ADL workbench 
-		tool should appear. Follow these general steps:
+	Double-click the adl_workbench.exe file.  The GUI ADL workbench 
+	tool should appear. Follow these general steps:
 
-		* open and parse an archetype file....
+	* open and parse an archetype file....
 
-			EITHER
+		EITHER
 
-		  Use the archetype explorer on the left hand side of the tool to 
-		  navigate to the desired archetype and left-click to open and 
-		  parse. The root directory of the explorer view is determined by
-		  the "repository" setting in the .cfg file. Use the Options menu
-		  to set the directory on your system.
+	  Use the archetype explorer on the left hand side of the tool to 
+	  navigate to the desired archetype and left-click to open and 
+	  parse. The root directory of the explorer view is determined by
+	  the "repository" setting in the .cfg file. Use the Options menu
+	  to set the directory on your system.
 
-			OR
+		OR
 
-		  open a file - use the  "Open" button to choose an archetype anywhere
-		  in the file system. Useful for looking at archetypes outside the 
-		  repository.
+	  open a file - use the  "Open" button to choose an archetype anywhere
+	  in the file system. Useful for looking at archetypes outside the 
+	  repository.
 
-		* for files that parse successfully, you can now use the other controls
-		  to explore the archetype, including the node map and the ontology
-		  display in the lower half of the tool. You can change the language
-		  and terminology for archetypes that have bindings and translations;
-		  this will cause all controls to be updated visually.
+	* for files that parse successfully, you can now use the other controls
+	  to explore the archetype, including the node map and the ontology
+	  display in the lower half of the tool. You can change the language
+	  and terminology for archetypes that have bindings and translations;
+	  this will cause all controls to be updated visually.
 
-		* edit the archetype - use the "Edit" button to bring up a text editor.
-		  Saving from the text editor will cause the archetype to be reloaded.
+	* edit the archetype - use the "Edit" button to bring up a text editor.
+	  Saving from the text editor will cause the archetype to be reloaded.
 
-		* Serialise (save) the archetype - choose a format, using the "Format"
-		  drop-down, then use the "Save" button. This will cause the parse tree
-		  to be written out to the selected format, currently HTML or ADL.
+	* Serialise (save) the archetype - choose a format, using the "Format"
+	  drop-down, then use the "Save" button. This will cause the parse tree
+	  to be written out to the selected format, currently HTML or ADL.
 
-		The application configuration file, adl_workbench.cfg can be used to set
-		the preferred editor command, e.g. "notepad" or "gvim". This file need
-		not exist on startup, as it will be created by setting options, if not
-		found.
-
-	adl_cmd_line:
-		You need to create a adl_cmd_line.cfg file containing the path of the 
-		archetypes, in .ini file format, e.g.:
-
-			[any]
-			repository = $OPENEHR\knowledge\archetypes\dev\adl
-
-Running the command-line validator
-	This tool gives a slightly more efficient way of parsing one or all
-	archetypes in the repository directory, and is used to verify a software
-	change against all the archetypes.
+	The application configuration file, adl_workbench.cfg can be used to set
+	the preferred editor command, e.g. "notepad" or "gvim". This file need
+	not exist on startup, as it will be created by setting options, if not
+	found.
 
 Reading the ADL files
 	The ADL files are plain text files, rather like programming language
@@ -126,7 +102,6 @@ Reading the ADL files
 	See the ADL PDF manual for a full description of the syntax. The latest
 	is currently available at 
 	http://svn.openehr.org/specification/TRUNK/publishing/architecture/am/adl.pdf.
-
 
 FEEDBACK
 	Software support: mail <Thomas dot Beale at OceanInformatics dot biz>

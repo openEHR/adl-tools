@@ -48,7 +48,49 @@ feature -- Access
 			end
 		end
 
-feature -- Status Report
+	convert_non_conforming_duration(a_str: STRING): STRING is
+			-- fix an ISO8601-like duration string which is missing a 'T' character
+			-- called from cADL lexer, matched by pattern: 
+			-- P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[dD])?([0-9]+h)?([0-9]+m)?([0-9]+s)?
+		require
+			a_str /= Void and then not a_str.is_empty
+		local
+			ind, i: INTEGER
+		do
+			Result := a_str.twin
+			
+			-- try lower case (can't use to_lower - not safe for some cultures/character sets)
+			ind := Result.index_of ('h', 1)
+			if ind = 0 then
+				ind := Result.index_of ('m', 1)
+				if ind = 0 then
+					ind := Result.index_of ('s', 1)
+				end
+			end
+
+			-- try upper case
+			if ind = 0 then
+				ind := Result.index_of ('H', 1)
+				if ind = 0 then
+					ind := Result.index_of ('M', 1)
+					if ind = 0 then
+						ind := Result.index_of ('S', 1)
+					end
+				end
+			end
+			
+			if ind > 0 then
+				from
+					i := ind - 1
+				until
+					i <= 1 or not Result.item(i).is_digit
+				loop
+					i := i - 1
+				end
+				-- have to insert a 'T' to the right of the cursor
+				Result.insert_character ('T', i+1)
+			end	
+		end
 
 end
 
