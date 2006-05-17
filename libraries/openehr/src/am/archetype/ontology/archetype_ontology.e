@@ -483,7 +483,7 @@ feature -- Modification
 			end
 		end
 		
-	remove_term(a_code: STRING) is
+	remove_term_definition(a_code: STRING) is
 			-- completely remove the term from the ontology
 		require
 			Term_valid: a_code /= Void and then has_term_code(a_code)
@@ -522,7 +522,7 @@ feature -- Modification
 			not has_term_code(a_code)
 		end
 		
-	remove_constraint(a_code: STRING) is
+	remove_constraint_definition(a_code: STRING) is
 			-- completely remove the constraint from the ontology
 		require
 			Constraint_valid: a_code /= Void and then has_constraint_code(a_code)
@@ -1380,6 +1380,9 @@ feature {NONE} -- Implementation
 				languages_available.off
 			loop
 				if not languages_available.item.is_equal(a_lang) then
+					if not constraint_definitions.has(languages_available.item) then
+						constraint_definitions.put(create {HASH_TABLE[ARCHETYPE_TERM, STRING]}.make(0), languages_available.item)
+					end
 					constraint_definitions.item(languages_available.item).force(trans_term, a_term.code)
 				end
 				languages_available.forth

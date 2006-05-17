@@ -603,7 +603,7 @@ feature -- Modification
 			until
 				code_list.off
 			loop
-				ontology.remove_term(code_list.item)
+				ontology.remove_term_definition(code_list.item)
 				code_list.forth
 			end
 			
@@ -613,7 +613,7 @@ feature -- Modification
 			until
 				code_list.off
 			loop
-				ontology.remove_constraint(code_list.item)
+				ontology.remove_constraint_definition(code_list.item)
 				code_list.forth
 			end
 		end
