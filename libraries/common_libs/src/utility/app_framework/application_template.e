@@ -41,6 +41,18 @@ feature -- Template
 			application_initialised := True
 		end
 		
+	persistence_initialise is
+			-- effect in descendants; set `persistence_initialised' appropriately
+		do
+			persistence_initialised := True
+		end
+		
+	persistence_finalise is
+			-- effect in descendants
+		do
+			
+		end
+		
 	main is
 			-- effect in descendants - the main business of the application
 		deferred
@@ -58,11 +70,15 @@ feature -- Initialisation
 				app_env_initialise
 				if app_env_is_valid then
 					initialise_event_log
-					application_initialise
-					if application_initialised then
-						main
-					else
-						io.put_string("Application initialisation failed%N")
+					persistence_initialise
+					if persistence_initialised then
+						application_initialise
+						if application_initialised then
+							main
+						else
+							io.put_string("Application initialisation failed%N")
+						end
+						persistence_finalise
 					end
 				else
 					io.put_string("Environment initialisation failed; reason: " + app_env_fail_reason + "%N")
@@ -95,5 +111,8 @@ feature -- Status
 
 	application_registering: BOOLEAN
 			-- result of `application_register'
+			
+	persistence_initialised: BOOLEAN
+			-- result of persistence_initialise
 
 end
