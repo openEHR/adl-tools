@@ -18,7 +18,16 @@ class
 	
 create
 	make
-	
+
+feature -- Definitions
+
+	UTF8_bom_char_1: CHARACTER is '%/239/'
+	UTF8_bom_char_2: CHARACTER is '%/187/'
+	UTF8_bom_char_3: CHARACTER is '%/191/'
+			-- UTF-8 files don't normally have a BOM (byte order marker) at the start as can be
+			-- required by UTF-16 files, but if the file has been converted from UTF-16 or UTF-32
+			-- then the BOM in a UTF-8 file will be 0xEF 0xBB 0xBF (dec equivalent: 239, 187, 191)
+
 feature -- Initialisation
 
 	make is
@@ -43,6 +52,9 @@ feature -- Access
 	current_file_name: STRING
 			-- name of fle only
 	
+	has_byte_order_marker: BOOLEAN
+			-- True if current file has a BOM, which means it is a UTF encoded unicode file
+
 	last_op_failed: BOOLEAN
 	
 	last_op_fail_reason: STRING
@@ -94,7 +106,7 @@ feature -- Command
 		end
 
 	save_file(a_file_name, content: STRING) is
-			-- write the named archetype out to file `a_file_name' in `current_directory'
+			-- write the content out to file `a_file_name' in `current_directory'
 		require
 			Arch_id_valid: a_file_name /= Void
 			Content_valid: content /= Void
@@ -105,6 +117,12 @@ feature -- Command
    			last_op_failed := False
 			create out_file.make_create_read_write(a_file_name)
 			if out_file.exists then
+				if has_byte_order_marker then
+					-- only safe if the file was last read using this object
+					out_file.put_character (UTF8_bom_char_1)
+					out_file.put_character (UTF8_bom_char_2)
+					out_file.put_character (UTF8_bom_char_3)
+				end
 				out_file.put_string(content)
 				out_file.close
 				epoch := out_file.date
@@ -118,21 +136,38 @@ feature -- Command
 			-- read text from current file as a string
 		local
 			in_file: PLAIN_TEXT_FILE
+			first_line: BOOLEAN
+			s: STRING
    		do
    			last_op_failed := False
 			create in_file.make(current_full_path)
+			has_byte_order_marker := False
 			if in_file.exists then
 				epoch := in_file.date
 				in_file.open_read
 				create Result.make(0)
 				
 				from
-					in_file.start
+					in_file.start	
+					first_line := True
 				until
 					in_file.off
 				loop
 					in_file.read_line
-					Result.append(in_file.last_string)
+					if first_line then
+						if in_file.last_string.item(1) = UTF8_bom_char_1 and
+							in_file.last_string.item(2) = UTF8_bom_char_2 and
+							in_file.last_string.item(3) = UTF8_bom_char_3 then
+							s := in_file.last_string.substring (4, in_file.last_string.count)
+							has_byte_order_marker := True
+						else
+							s := in_file.last_string
+						end
+						first_line := False
+					else
+						s := in_file.last_string
+					end
+					Result.append(s)
 					if Result.item (Result.count) = '%R' then
 						Result.put('%N', Result.count)
 					else

@@ -45,6 +45,16 @@ creation
 	make
 %}
 
+--------------- Definitions --------------
+ALPHANUM [a-zA-Z0-9]
+IDCHAR [a-zA-Z0-9_]
+NAMECHAR [a-zA-Z0-9._\-]
+NAMECHAR_SPACE [a-zA-Z0-9._\- ]
+NAMECHAR_PAREN [a-zA-Z0-9._\-()]
+
+UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x80-\xBF][\x80-\xBF])|(\xF0[\x90-\xBF][\x80-\xBF][\x80-\xBF])|([\xF1-\xF7][\x80-\xBF][\x80-\xBF][\x80-\xBF]))
+
+---------------- Options -----------------
 %x IN_STR IN_CADL_BLOCK
 %option position outfile="dadl_scanner.e"
 
@@ -124,7 +134,7 @@ creation
 
 [Ff][Aa][Ll][Ss][Ee] 						last_token := SYM_FALSE
 
-[Ii][Nn][Ff][Ii][Nn][Ii][Tt][Yy]				last_token := SYM_INFINITY
+[Ii][Nn][Ff][Ii][Nn][Ii][Tt][Yy]			last_token := SYM_INFINITY
 
 -- FIXME: query syntax is obsolete from 01/jun/2005; remove when backward compatibility no longer needed
 [Qq][Uu][Ee][Rr][Yy]					 	last_token := SYM_QUERY_FUNC
@@ -136,17 +146,17 @@ creation
 }
 
 ----------/* term code reference of form [ICD10AM(1998)::F23] */ -------------------------------------------------
-\[[a-zA-Z0-9()._\-]+::[a-zA-Z0-9._\-]+\]	{
+\[{NAMECHAR_PAREN}+::{NAMECHAR}+\]	{
 					last_token := V_QUALIFIED_TERM_CODE_REF
 					last_string_value := text_substring (2, text_count - 1)
 			}
 
-\[[a-zA-Z0-9()._\-]+::[a-zA-Z0-9._\- ]+\]	{
+\[{NAMECHAR_PAREN}+::{NAMECHAR_SPACE}+\]	{
 					last_token := ERR_V_QUALIFIED_TERM_CODE_REF
 					last_string_value := text_substring (2, text_count - 1)
 			}
 
-\[[a-zA-Z0-9][a-zA-Z0-9._\-]*\]	{
+\[{ALPHANUM}{NAMECHAR}*\]	{
 					last_token := V_LOCAL_TERM_CODE_REF
 					last_string_value := text_substring (2, text_count - 1)
 			}
@@ -194,12 +204,12 @@ P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[dD])? {
 			}
 
 ----------/* identifiers */ -------------------------------------------------
-[A-Z][a-zA-Z0-9_]*	{
+[A-Z]{IDCHAR}*	{
 					last_token := V_TYPE_IDENTIFIER
 					last_string_value := text
 			}
 
-[a-z][a-zA-Z0-9_]*	{
+[a-z]{IDCHAR}*	{
 					last_token := V_ATTRIBUTE_IDENTIFIER
 					last_string_value := text
 			}
@@ -211,11 +221,13 @@ P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[dD])? {
 				set_start_condition (IN_CADL_BLOCK)
 				cadl_depth := 1
 			}
-<IN_CADL_BLOCK>\{[^{}]*		{		-- got an open brace
+
+<IN_CADL_BLOCK> {
+	\{[^{}]*		{		-- got an open brace
 				in_buffer.append_string (text)
 				cadl_depth := cadl_depth + 1
 			}
-<IN_CADL_BLOCK>[^{}]*\}		{		-- got a close brace
+	[^{}]*\}		{		-- got a close brace
 				in_buffer.append_string (text)
 				cadl_depth := cadl_depth - 1
 				if cadl_depth = 0 then
@@ -227,6 +239,7 @@ P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[dD])? {
 					in_buffer.wipe_out
 				end
 			}
+}
 
 
 ----------/* integers */ -------------------------------------------------
@@ -258,11 +271,17 @@ P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[dD])? {
 				end
 				set_start_condition (IN_STR)
 			}
-<IN_STR>\\\\		in_buffer.append_character ('\')
 
-<IN_STR>\\\"		in_buffer.append_character ('"')
+<IN_STR> {
+	\\\\		in_buffer.append_character ('\')
 
-<IN_STR>&[a-zA-Z][a-zA-Z0-9_]+;	{	-- match ISO special character pattern &char_name;
+	\\\"		in_buffer.append_character ('"')
+
+	{UTF8CHAR}+ {
+				in_buffer.append_string (text)
+	}
+
+	&[a-zA-Z][a-zA-Z0-9_]+;	{	-- match ISO special character pattern &char_name;
 				-- look up the code in an ISO table
 				-- if a valid code then
 				-- 	convert to actual character?
@@ -275,9 +294,9 @@ P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[dD])? {
 				-- current simple approach: just copy the pattern into the buffer
 				--
 				in_buffer.append_string (text)
-			}
+	}
 
-<IN_STR>&#x[a-fA-F0-9]{4};	{	-- match W3C XML special character pattern &#xHHHH;
+	&#x[a-fA-F0-9]{4};	{	-- match W3C XML special character pattern &#xHHHH;
 				-- look up the code in an W3C table
 				-- if a valid code then
 				-- 	convert to actual character?
@@ -292,14 +311,14 @@ P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[dD])? {
 				in_buffer.append_string (text)
 			}
 
-<IN_STR>[^\\\n"]+		in_buffer.append_string (text)
+	[^\\\n"]+		in_buffer.append_string (text)
 
-<IN_STR>\n[ \t\r]*	{
+	\n[ \t\r]*	{
 				in_lineno := in_lineno + 1	-- match LF in line
 				in_buffer.append_character ('%N')
 			}
 
-<IN_STR>[^\\\n"]*\"	{						-- match final end of string
+	[^\\\n"]*\"	{						-- match final end of string
 				last_token := V_STRING
 				if text_count > 1 then
 					in_buffer.append_string (text_substring (1, text_count - 1))
@@ -310,11 +329,13 @@ P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[dD])? {
 				last_string_value := str_
 				set_start_condition (INITIAL)
 			}
-<IN_STR>.|\n			|
-<IN_STR><<EOF>>	{	-- Catch-all rules (no backing up)
+	.|\n			|
+
+	<<EOF>>	{	-- Catch-all rules (no backing up)
 				last_token := ERR_STRING
 				set_start_condition (INITIAL)
 			}
+}
 
 
 ----------/* characters */ -------------------------------------------------

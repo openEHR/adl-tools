@@ -74,6 +74,7 @@ feature -- Template
 			Result.extend(create {TS_OBJECT_GRAPH}.make(Void))
 			Result.extend(create {TS_PATH}.make(Void))
 			Result.extend(create {TS_DATE_TIME}.make(Void))
+			Result.extend(create {TS_UNICODE}.make(Void))
 		end
 
 feature -- Template
