@@ -10,41 +10,42 @@ indexing
 class WINDOWS_EVENT_LOG_I
 
 inherit
-        EVENT_LOG_FACILITY_I
-            rename
+	EVENT_LOG_FACILITY_I
+		rename
                 make as facility_make
 	    end
 
-creation 
-        make
+create
+	make
 
 feature -- Initialisation
 
-        make(a_facility_interface:like facility_interface) is
-            do
-                facility_make(a_facility_interface)
+	make(a_facility_interface:like facility_interface) is
+		do
+			facility_make(a_facility_interface)
 
-                -- real implementation to be determined 
-                -- create event_log.make
+			-- FIXME: to be implemented
+            -- real implementation to be determined - Windows event log
+            -- create event_log.make
 
-		-- if event_log /= Void then
-		--     log_start_event
-		-- else
-		    -- do something basic
-		-- end
-	    ensure then
-		-- Log_exists: event_log.exists
-            end
+			-- if event_log /= Void then
+			--     log_start_event
+			-- else
+			    -- do something basic
+			-- end
+		end
 
 feature {NONE} -- Implementation
 
-        append_event(severity:INTEGER; source,msg:STRING) is
-            do
-            end
+	append_event(severity: INTEGER; source ,msg: STRING) is
+		do
+			-- FIXME: to be implemented
+		end
 
-        event_log:ANY is
-            once
-            end
+	event_log: ANY is
+		once
+			-- FIXME: to be implemented with Windows event log
+		end
 
 end
 

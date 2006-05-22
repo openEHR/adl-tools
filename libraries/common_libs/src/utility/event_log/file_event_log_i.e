@@ -24,7 +24,7 @@ inherit
 			{NONE} all
 		end
 
-creation 
+create
     make
 
 feature -- Definitions
@@ -40,7 +40,7 @@ feature -- Initialisation
 	make(a_facility_interface:like facility_interface) is
 		local
 			event_dir:DIRECTORY
-			msg, dir_name, file_name:STRING
+			dir_name, file_name:STRING
 			today:DATE
 			date_pos:INTEGER
 		do
@@ -63,33 +63,24 @@ feature -- Initialisation
 
 				create event_log.make_open_read_append(file_name)
 				if not event_log.exists then
-					create msg.make(0) msg.append("Could not create file ") msg.append(facility_interface.name)
-					io.put_string(msg)
-					io.new_line
+					io.put_string("Could not create file " + facility_interface.name + "%N")
+					exists := False
 				end
 			else
-				create msg.make(0) msg.append("Directory ") msg.append(dir_name) msg.append(" does not exist%N")
-				io.put_string(msg)
+				io.put_string("Directory " + dir_name + " does not exist%N")
 			end
-		ensure then
-			Log_exists: event_log.exists
 		end
 
 feature -- Modify
-        append_event(severity:INTEGER; source,msg:STRING) is
-            local
-                str:STRING
-            do
-                create str.make(0)
-                str.append(Severities.item(severity)) str.append("    ")
-                str.append(facility_interface.app_name) str.append("    ")
-                str.append(source) str.append("    ")
-                str.append(msg) str.append_character('%R') str.append_character('%N')
 
-                event_log.put_string(str)
+	append_event(severity:INTEGER; source, msg:STRING) is
+		do
+			event_log.put_string(
+           		Severities.item(severity) + "    " + facility_interface.app_name + "    " +
+				source + "    " + msg + "%R%N")
             end
 
-        event_log:RAW_FILE
+	event_log: RAW_FILE
 
 end
 

@@ -14,17 +14,17 @@ indexing
 class CONSOLE_EVENT_LOG_I
 
 inherit
-        EVENT_LOG_FACILITY_I
+	EVENT_LOG_FACILITY_I
 
-creation 
-        make
+create
+	make
 
 feature -- Modify
 
-        append_event(severity:INTEGER; source, msg:STRING) is
-            do
-                io.put_string(Severities.item(severity) + "    " + facility_interface.app_name + "    " + source + "    " + msg + "%N")
-            end
+	append_event(severity:INTEGER; source, msg:STRING) is
+		do
+			io.put_string(Severities.item(severity) + "    " + facility_interface.app_name + "    " + source + "    " + msg + "%N")
+		end
 
 end
 

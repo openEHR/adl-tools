@@ -50,16 +50,29 @@ feature -- Initialisation
 			    append_event(generator, "make", "NO EVENT LOG FACILITY; using CONSOLE as log", Information)
 			end
 
-			log_start_event
+			if implementation.exists then
+				log_start_event
+				exists := True
+			end
 		end
 
 feature -- Access
+
 	app_name:STRING
+	
 	name:STRING
+	
 	type:STRING
+	
 	severity_threshold:INTEGER
+	
+feature -- Status Report
+
+	exists: BOOLEAN
+			-- True if event log was created correctly
 
 feature -- Modify
+
 	append_event(class_name, op_name, msg:STRING; severity:INTEGER) is
 		require
 			Valid_source: class_name /= Void and op_name /= Void
@@ -67,26 +80,25 @@ feature -- Modify
 			source_in_app:STRING
 		do
 			if severity >= severity_threshold then
-				!!source_in_app.make(0)
-				source_in_app.append(class_name) source_in_app.to_upper source_in_app.append(".")
-				source_in_app.append(op_name) source_in_app.append(": ")
+				create source_in_app.make(0)
+				source_in_app.append(class_name) 
+				source_in_app.to_upper 
+				source_in_app.append(".")
+				source_in_app.append(op_name) 
+				source_in_app.append(": ")
 
 				implementation.append_event(severity, source_in_app, msg)
 			end
 		end
 
 feature {NONE} -- Implementation
+
 	log_start_event is
-	    local
-			msg:STRING
-			today:DATE_TIME
-	    do
 			-- log initial message
-			!!today.make_now
-			!!msg.make(0)
-			msg.append("Started logging on facility ") msg.append(name) msg.append(" at ")
-			msg.append(today.out)
-			append_event(generator, "make", msg, Information)
+	    do
+			append_event(generator, "make", 
+					"Started logging on facility " + name + " at " + (create {DATE_TIME}.make_now).out, 
+					Information)
 	    end
 
 	implementation:EVENT_LOG_FACILITY_I

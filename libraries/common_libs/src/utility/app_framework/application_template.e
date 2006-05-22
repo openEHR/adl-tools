@@ -70,15 +70,19 @@ feature -- Initialisation
 				app_env_initialise
 				if app_env_is_valid then
 					initialise_event_log
-					persistence_initialise
-					if persistence_initialised then
-						application_initialise
-						if application_initialised then
-							main
-						else
-							io.put_string("Application initialisation failed%N")
+					if event_log_initialised then
+						persistence_initialise
+						if persistence_initialised then
+							application_initialise
+							if application_initialised then
+								main
+							else
+								io.put_string("Application initialisation failed%N")
+							end
+							persistence_finalise
 						end
-						persistence_finalise
+					else
+						io.put_string("Event log initialisation failed%N")
 					end
 				else
 					io.put_string("Environment initialisation failed; reason: " + app_env_fail_reason + "%N")
@@ -94,14 +98,15 @@ feature {NONE} -- Implementation
 	initialise_event_log is
 			-- initialisation the logging facility in SHARED_EVENT_LOG
 		local
-			app_log_facility:EVENT_LOG_FACILITY
+			app_log_facility: EVENT_LOG_FACILITY
 		do
 			create app_log_facility.make(application_name, resource_value("logging", "facility_name"), 
 										resource_value("logging", "facility_type"),
 										resource_value("logging", "severity_threshold"))
-			set_log_facility(app_log_facility)
-		ensure
-			Log_facility_exists: log_facility.item /= Void
+			if app_log_facility.exists then
+				set_log_facility(app_log_facility)
+				event_log_initialised := True
+			end
 		end
 		
 feature -- Status
@@ -114,5 +119,8 @@ feature -- Status
 			
 	persistence_initialised: BOOLEAN
 			-- result of persistence_initialise
+
+	event_log_initialised: BOOLEAN
+			-- result of initialise_event_log
 
 end

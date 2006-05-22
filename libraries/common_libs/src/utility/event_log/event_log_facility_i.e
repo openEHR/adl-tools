@@ -16,33 +16,34 @@ deferred class EVENT_LOG_FACILITY_I
 inherit
    	EVENT_SEVERITY_CONSTANTS
 
---	KL_IMPORTED_STRING_ROUTINES
---		export
---			{NONE} all
---		end
-
 feature -- Initialisation
 
-        make(a_facility_interface:like facility_interface) is
-            require
-                Args_valid: a_facility_interface /= Void
-            do
-                facility_interface := a_facility_interface
-            ensure
-                Facility_interface_exists: facility_interface /= Void
-            end
+	make(a_facility_interface:like facility_interface) is
+		require
+			Args_valid: a_facility_interface /= Void
+		do
+			facility_interface := a_facility_interface
+			exists := True
+		ensure
+			Facility_interface_exists: facility_interface /= Void
+		end
 
 feature -- Access
 
-        facility_interface:EVENT_LOG_FACILITY
+	facility_interface: EVENT_LOG_FACILITY
+	
+feature -- Status Report
+
+	exists: BOOLEAN
+			-- True if event log was successfully created
 
 feature {EVENT_LOG_FACILITY} -- Modify
 
-        append_event(severity:INTEGER; source,msg:STRING) is
-            require
-            	is_valid_severity(severity)
-            deferred
-            end
+	append_event(severity:INTEGER; source,msg:STRING) is
+		require
+			is_valid_severity(severity)
+		deferred
+		end
 
 invariant
 	Interface_exists: facility_interface /= Void
