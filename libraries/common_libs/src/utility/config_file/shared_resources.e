@@ -14,6 +14,15 @@ indexing
 
 class SHARED_RESOURCES
 
+feature -- Definitions
+
+	Global_config_directory: STRING is 
+			-- location of global configuration files - /etc
+		once
+			create Result.make(0)
+			Result.append(os_directory_separator.out + "etc")
+		end
+		
 feature -- Initialisation
 
 	initialise_resource_config_file_name(str:STRING) is
@@ -77,6 +86,14 @@ feature -- Environment
 			-- name of configuration file from which settings are read
 		once
 			create Result.make(0)
+		end
+
+	default_global_resource_config_file_full_path: STRING is
+			-- full path to default global resource configuration file area
+		once
+			Result := Global_config_directory.twin
+			Result.append(os_directory_separator.out + application_name)
+			Result.replace_substring_all(".exe", ".cfg")
 		end
 
 	default_resource_config_file_full_path: STRING is

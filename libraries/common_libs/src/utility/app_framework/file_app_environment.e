@@ -22,21 +22,52 @@ feature --- Initiatialisation
 	app_env_initialise is
 		local
 			cfg_file_full_path: STRING
+			cfg_file: PLAIN_TEXT_FILE
+			found_cfg_file: BOOLEAN
 		do
 			-- set command line args option switch
 			execution_environment.command_line.set_option_sign(app_cmd_line_option_sign)
 
-			-- config file is either in default place (.exe startup directory)
-			-- or else specified on command line with -cfg option
+			-- search for config file as follows:
+			-- in a place specified on command line with -cfg option
+			-- else in .exe startup directory
+			-- else in /etc
 			cfg_file_full_path := execution_environment.command_line.separate_word_option_value("cfg")
 			if cfg_file_full_path = Void or else cfg_file_full_path.is_empty then
+				-- try application startup directory
 				cfg_file_full_path := default_resource_config_file_full_path
+				create cfg_file.make (cfg_file_full_path)
+				if not cfg_file.exists then
+					-- try /etc
+					cfg_file_full_path := default_global_resource_config_file_full_path
+					create cfg_file.make (cfg_file_full_path)
+					if cfg_file.exists then
+						found_cfg_file := True
+					else
+						app_env_fail_reason.append("No config file found; checked " + default_resource_config_file_full_path + 
+							" and " + default_global_resource_config_file_full_path)
+					end
+				elseif not cfg_file.readable then
+					app_env_fail_reason.append("Config file " + cfg_file_full_path + " exists but not readable")
+				else
+					found_cfg_file := True
+				end
+			else -- make sure it exists
+				create cfg_file.make (cfg_file_full_path)
+				if not (cfg_file.exists and cfg_file.readable) then
+					app_env_fail_reason.append("Config file " + cfg_file_full_path + 
+						" specified on command line, but file doesn't exist or is not readable")
+				else
+					found_cfg_file := True
+				end
 			end
 
 			-- read in resources
-			initialise_resource_config_file_name(cfg_file_full_path)
-			if not resource_config_file.is_valid then
-				app_env_fail_reason.append(resource_config_file.fail_reason)
+			if found_cfg_file then
+				initialise_resource_config_file_name(cfg_file_full_path)
+				if not resource_config_file.is_valid then
+					app_env_fail_reason.append(resource_config_file.fail_reason)
+				end
 			end
 		end
 
