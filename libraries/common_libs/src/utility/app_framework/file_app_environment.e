@@ -47,14 +47,14 @@ feature --- Initiatialisation
 						app_env_fail_reason.append("No config file found; checked " + default_resource_config_file_full_path + 
 							" and " + default_global_resource_config_file_full_path)
 					end
-				elseif not cfg_file.readable then
+					elseif not cfg_file.is_readable then
 					app_env_fail_reason.append("Config file " + cfg_file_full_path + " exists but not readable")
 				else
 					found_cfg_file := True
 				end
 			else -- make sure it exists
 				create cfg_file.make (cfg_file_full_path)
-				if not (cfg_file.exists and cfg_file.readable) then
+				if not (cfg_file.exists and cfg_file.is_readable) then
 					app_env_fail_reason.append("Config file " + cfg_file_full_path + 
 						" specified on command line, but file doesn't exist or is not readable")
 				else
