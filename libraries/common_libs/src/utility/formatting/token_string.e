@@ -113,7 +113,7 @@ feature -- Status setting
 	    do
 	        create one_tab.make_filled ('%T', 1)
 	        create two_tabs.make_filled ('%T', 2)
-	        create one_space.make_filled (' ', 2) 
+	        create one_space.make_filled (' ', 1) 
 
 	        -- remove leading and trailing white space
   	        str.left_adjust 
