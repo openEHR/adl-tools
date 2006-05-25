@@ -14,6 +14,12 @@ indexing
 
 class TOKEN_STRING
 
+inherit
+	ANY
+		redefine
+			out
+		end
+
 creation
 	make
 
@@ -141,6 +147,14 @@ feature -- Status setting
 			delimiter = '%T'
 	    end
 
+feature -- Output
+
+	out: STRING is
+			-- 
+		do
+			Result := str.twin
+		end
+		
 feature {NONE} -- Implementation
 
 	str: STRING
