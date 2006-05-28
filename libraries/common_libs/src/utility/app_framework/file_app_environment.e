@@ -42,7 +42,11 @@ feature --- Initiatialisation
 					cfg_file_full_path := default_global_resource_config_file_full_path
 					create cfg_file.make (cfg_file_full_path)
 					if cfg_file.exists then
-						found_cfg_file := True
+						if cfg_file.is_readable then
+							found_cfg_file := True
+						else
+							app_env_fail_reason.append("Config file " + cfg_file_full_path + " exists but not readable")
+						end
 					else
 						app_env_fail_reason.append("No config file found; checked " + default_resource_config_file_full_path + 
 							" and " + default_global_resource_config_file_full_path)

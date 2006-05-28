@@ -58,7 +58,8 @@ feature -- Initialisation
 				create today.make_now
 				date_pos := file_name.substring_index(Date_variable, 1)
 				if date_pos > 0 then
-					file_name.replace_substring(today.formatted_out(File_date_format), date_pos, date_pos + Date_variable.count - 1)
+					file_name.replace_substring(today.formatted_out(File_date_format), 
+						date_pos, date_pos + Date_variable.count - 1)
 				end
 
 				create event_log.make_open_read_append(file_name)
@@ -68,6 +69,7 @@ feature -- Initialisation
 				end
 			else
 				io.put_string("Directory " + dir_name + " does not exist%N")
+				exists := False
 			end
 		end
 
