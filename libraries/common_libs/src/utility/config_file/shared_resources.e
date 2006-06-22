@@ -93,7 +93,11 @@ feature -- Environment
 		once
 			Result := Global_config_directory.twin
 			Result.append(os_directory_separator.out + application_name)
-			Result.replace_substring_all(".exe", ".cfg")
+			if Result.has_substring (".exe") then
+				Result.replace_substring_all(".exe", ".cfg")
+			else
+				Result.append(".cfg")
+			end
 		end
 
 	default_resource_config_file_full_path: STRING is
@@ -101,7 +105,11 @@ feature -- Environment
 			-- full path to app, but config file has .cfg istead of .exe extension
 		once
 			Result := application_full_path
-			Result.replace_substring_all(".exe", ".cfg")
+			if Result.has_substring (".exe") then
+				Result.replace_substring_all(".exe", ".cfg")
+			else
+				Result.append(".cfg")
+			end
 		end
 
 	execution_environment: EXECUTION_ENVIRONMENT is
@@ -110,9 +118,10 @@ feature -- Environment
 	    end
 
 	application_startup_directory: STRING is
-			-- directory application started in
+			-- directory application started in; needs to be called before any change_dir calls 
+			-- are made since there is no easy way to get the startup directory
 		once
-			 Result := execution_environment.current_working_directory
+			 Result := current_working_directory
 		end
 
 	os_directory_separator: CHARACTER is
@@ -137,7 +146,7 @@ feature -- Environment
 	    end
 
 	current_working_directory: STRING is
-		once
+		do
 			Result := execution_environment.current_working_directory
 		end
 
