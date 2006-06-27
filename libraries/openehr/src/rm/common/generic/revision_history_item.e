@@ -24,16 +24,17 @@ feature -- Initialization
 
 feature -- Access
 
-	revision: STRING	
-			-- revision to which the audit corresponds
+	version_id: OBJECT_VERSION_ID	
+			-- Version identifier for this revision.
 
-	audit: AUDIT_DETAILS	
-			-- audit information for this entry
+	audits: LIST[AUDIT_DETAILS	]
+			-- The audits for this revision; there will always be at least one commit audit 
+			-- (which may itself be an ATTESTATION), there may also be further attestations
 
 invariant
-	revision_valid: revision /= Void and then not revision.is_empty
-	audit_valid: audit /= Void
-
+	Audit_valid: audits /= Void and then not audits.is_empty
+	Version_id_valid: version_id /= Void
+	
 end
 
 

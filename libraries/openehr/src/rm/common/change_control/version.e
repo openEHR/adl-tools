@@ -2,13 +2,14 @@ indexing
 	component:   "openEHR Common Information Model"
 
 	description: "[
-			 Versionable objects.
+			 Abstract model of one Version within a Version container, containing data, commit audit trail, 
+			 and the identifier of its Contribution..
 			 ]"
 	keywords:    "version"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2000-2006 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -39,7 +40,7 @@ feature -- Access
 	
 	commit_audit: AUDIT_DETAILS
 			-- Audit trail corresponding to the committal of this version to the 
-			-- VERSION_REPOSITORY where it was first created..
+			-- VERSIONED_OBJECT where it was first created..
 
 	contribution: OBJECT_REF
 			-- Contribution in which this version was added.
@@ -54,20 +55,36 @@ feature -- Access
 		deferred
 		end
 
+	lifecycle_state: DV_CODED_TEXT is	
+			-- Lifecycle state of this version; coded by openEHR vocabulary “version lifecycle state”
+		deferred
+		end
+
+	signature: STRING
+			-- OpenPGP digital signature or digest of content committed in this Version.
+
 feature -- Status Report
 
 	is_branch: BOOLEAN is
-			-- True if this Version represents a branch.
+			-- True if this Version represents a branch; derived from uid attribute
 		do
+		end
+
+feature -- Conversion
+	
+	canonical_form: STRING is	
+			-- Canonical form of Version object, created by serialising all attributes except signature.
+		do
+			
 		end
 
 invariant
 	Uid_valid: uid /= Void
 	Owner_id_valid: owner_id /= Void and then owner_id.value.is_equal(uid.object_id.value)
 	Commit_audit_valid: commit_audit /= Void
-	Contribution_valid: contribution /= Void
+	Contribution_valid: contribution /= Void and contribution.type.is_equal("CONTRIBUTION")
 	Preceding_version_uid_validity: uid.version_tree_id.is_first xor preceding_version_uid /= Void
-	Data_valid: data /= Void	
+	Lifecycle_state_valid: lifecycle_state /= Void and then terminology("openehr").codes_for_group_name("version lifecycle state", "en").has(lifecycle_state.defining_code)
 	
 end
 

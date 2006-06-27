@@ -4,6 +4,7 @@ indexing
 	description: "[
 				 Defines a revision history, which is logically a list of
 				 audits of a versioned resource, keyed by revision number.
+				 The list is in most-recent-first order.
 				 ]"
 	keywords:    "version control"
 
@@ -31,6 +32,20 @@ feature -- Access
 			-- number of entries in revision history
 		do
 			Result := items.count
+		end
+		
+	most_recent_version: STRING is
+			-- The version id of the most recent item, as a String.
+		do
+		ensure
+			Result.is_equal (items.last.version_id.value)	
+		end
+		
+	most_recent_version_time_committed: STRING is
+			-- The commit date/time of the most recent item, as a String.
+		do
+		ensure
+			Result.is_equal (items.last.audits.first.time_committed.value)
 		end
 
 invariant

@@ -11,7 +11,7 @@ indexing
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2000-2006 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -60,19 +60,24 @@ feature -- Access
 		do
 		end
 
+	latest_trunk_version: VERSION[G] is
+			-- extract most recent version on the trunk
+		do
+		end
+
 	latest_version_id: STRING is
 			-- id of most recent version; if no transactions, "none"
 		do
 		end
 
-	version_with_id(a_ver_id: OBJECT_VERSION_ID): VERSION[G] is
+	version_with_id (a_ver_id: OBJECT_VERSION_ID): VERSION[G] is
 			-- extract version known by 'a_ver_id'
 		require
 			Ver_id_valid: a_ver_id /= Void and then has_version_id(a_ver_id)
 		do
 		end
 
-	version_at_time(a_dt: DV_DATE_TIME): VERSION [G] is
+	version_at_time (a_dt: DV_DATE_TIME): VERSION [G] is
 			-- extract version for time 'a_dt'
 		require
 			Ver_time_valid: a_dt /= Void and then has_version_at_time(a_dt)
@@ -81,45 +86,92 @@ feature -- Access
 
 	revision_history: REVISION_HISTORY	
 			-- History of all audits and attestations in this versioned repository.
+			
+	trunk_lifecycle_state: DV_CODED_TEXT is
+			-- Return the lifecycle state from the latest trunk version. Useful for 
+			-- determining if the version container is logically deleted.
+		do		
+		ensure
+			Result = latest_trunk_version.lifecycle_state
+		end
 
 feature -- Status Report
 
-	has_version_id(a_ver_id: OBJECT_VERSION_ID): BOOLEAN is
+	has_version_id (a_ver_id: OBJECT_VERSION_ID): BOOLEAN is
 			-- does this VERSIONED<T> include a version known as 'a_ver_id'? 
 		require
 			Ver_id_exists: a_ver_id /= Void
 		do
 		end
 
-	has_version_at_time(a_dt: DV_DATE_TIME):BOOLEAN is
+	has_version_at_time (a_dt: DV_DATE_TIME):BOOLEAN is
 			-- does this VERSIONED<T> include a version for time 'a_dt'? 
 		require
 			Ver_time_valid: a_dt /= Void
 		do
 		end
 
+	is_original_version (a_ver_id: OBJECT_VERSION_ID): BOOLEAN is
+			-- True if version with an_id is an ORIGINAL_VERSION
+		require
+			a_ver_id /= Void and has_version_id(a_ver_id)
+		do
+			
+		end
+
 feature -- Modify
 
-	commit(a_preceding_version_id: OBJECT_VERSION_ID; an_audit: AUDIT_DETAILS; a_data: G)
-			-- add a new version
-		is
-			-- commit new version. No locking (i.e. checking out) is needed to commit. 
-			-- 'parent_version_id' is the id of latest version in this VERSIONED<T>, at the time of
-			-- taking the copy for modification. If the commit is to create the first version, the 
-			-- 'parent_version_id' must be "none".
+	commit_original_version (a_contribution: OBJECT_REF;
+				a_new_version_uid, a_preceding_version_uid: OBJECT_VERSION_ID; 
+				an_audit: AUDIT_DETAILS; a_lifecycle_state: DV_CODED_TEXT; 
+				a_data: G; signing_key: STRING) is
+			-- commit a new ORIGINAL_VERSION to a VERSIONED_OBJECT; a_preceding_version_uid is compared
+			-- to the current latest version on the same branch, to determine if the new version 
+			-- can be committed
 		require
-			Preceding_version_id_valid: all_version_ids.has(a_preceding_version_id) or else 
-				version_count = 0
-			Audit_exists: an_audit /= Void
-			Version_exists: a_data /= Void
+			Contribution_valid: a_contribution /= Void
+			New_version_valid: a_new_version_uid /= Void
+			Preceding_version_uid_valid: all_version_ids.has(a_preceding_version_uid) or else version_count = 0
+			audit_valid: an_audit /= Void
+			data_valid: a_data /= Void
+			lifecycle_state_valid: a_lifecycle_state /= Void
+		do
+			
+		end
+
+	commit_original_merged_version (a_contribution: OBJECT_REF;
+				a_new_version_uid, a_preceding_version_uid: OBJECT_VERSION_ID; 
+				an_audit: AUDIT_DETAILS; a_lifecycle_state: DV_CODED_TEXT;
+				a_data: G; an_other_input_uids: SET[OBJECT_VERSION_ID]; signing_key: STRING) is
+			-- commit a new merged ORIGINAL_VERSION, i.e. one containing content from more than one
+			-- other version. This commit function adds a parameter containing the ids of other versions merged 
+			-- into the current one.
+		require
+			Contribution_valid: a_contribution /= Void
+			New_version_valid: a_new_version_uid /= Void
+			Preceding_version_id_valid: all_version_ids.has(a_preceding_version_uid) or else version_count = 0
+			audit_valid: an_audit /= Void
+			data_valid: a_data /= Void
+			lifecycle_state_valid: a_lifecycle_state /= Void
+			Merge_input_ids_valid: an_other_input_uids /= Void	
+		do
+
+		end
+
+	commit_imported_version (a_contribution: OBJECT_REF; an_audit: AUDIT_DETAILS; a_version: ORIGINAL_VERSION[G]) is
+			-- Add a new imported version. Details of version id etc come from the ORIGINAL_VERSION being committed.
+		require
+			Contribution_valid: a_contribution /= Void
+			audit_valid: an_audit /= Void
+			Version_valid: a_version /= Void	
 		do
 		end
 
-	commit_attestation (an_attestation: ATTESTATION; a_ver_id: OBJECT_VERSION_ID) is
-			-- add an attestation to an existing version
+	commit_attestation (an_attestation: ATTESTATION; a_ver_id: OBJECT_VERSION_ID; signing_key: STRING) is
+			-- Add a new attestation to a specified original version. Attestations can only be added to Original versions.
 		require
 			Attestation_valid: an_attestation /= Void
-			Version_id_valid: has_version_id(a_ver_id)
+			Version_id_valid: has_version_id(a_ver_id) and is_original_version(a_ver_id)	
 		do
 		end
 
@@ -127,10 +179,10 @@ invariant
 	uid_valid: uid /= Void
 	owner_id_valid: owner_id /= Void 
 	time_created_valid: time_created /= Void
-	version_count_valid: version_count >= 1
+	version_count_valid: version_count >= 0
 	all_version_ids_valid: all_version_ids /= Void and then all_version_ids.count = version_count
 	all_versions_valid: all_versions /= Void and then all_versions.count = version_count
-	latest_version_valid: latest_version /= Void
+	latest_version_valid: version_count > 0 implies latest_version /= Void
 	revision_history_valid: revision_history /= Void	
 
 end

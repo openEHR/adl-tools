@@ -31,8 +31,11 @@ feature -- Access
 
 	proof: DV_ENCAPSULATED	
 			-- Proof of attestation.
+			
+	attested_view: DV_MULTIMEDIA
+			-- Optional visual representation of content attested e.g. screen image.
 
-	items: Set [DV_EHR_URI]
+	items: SET [DV_EHR_URI]
 			-- Items attested. Although not recommended, these may include fine-grained 
 			-- items which have been attested in some other system. Otherwise the attestation 
 			-- is for the entire Version with which it is associated.

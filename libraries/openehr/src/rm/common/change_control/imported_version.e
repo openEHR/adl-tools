@@ -2,8 +2,10 @@ indexing
 	component:   "openEHR Common Information Model"
 
 	description: "[
-				 Versionable objects that have been copied from another location 
-				 and imported into a local version container.	
+				 Versions whose content is an ORIGINAL_VERSION copied from another location; this class 
+				 inherits commit_audit and contribution from VERSION<T>, providing imported versions 
+				 with their own audit trail and Contribution, distinct from those of the imported 
+				 ORIGINAL_VERSION.	
 				 ]"
 	keywords:    "version"
 
@@ -31,8 +33,7 @@ feature -- Access
 		end
 
 	preceding_version_uid: OBJECT_VERSION_ID is
-			-- Unique identifier of the version of which this version is a modification; 
-			-- Void if this is the first version.
+			-- Computed version of inheritance precursor, derived as item.preceding_version_uid.
 		do
 			Result := item.preceding_version_uid
 		end
@@ -44,6 +45,12 @@ feature -- Access
 			-- content of the original Version
 		do
 			Result := item.data
+		end
+		
+	lifecycle_state: DV_CODED_TEXT is
+			-- Lifecycle state of the content item in this version, derived as item.lifecycle_state.
+		do
+			Result := item.lifecycle_state
 		end
 			
 invariant

@@ -75,7 +75,7 @@ feature -- Access
 			-- URI of archetype package
 
 	details: HASH_TABLE [RESOURCE_DESCRIPTION_ITEM, STRING]
-			-- list of descriptive details, keyed by language
+			-- list of descriptive details, in one or more languages
 			
 	lifecycle_state: STRING
 			-- Lifecycle state of the archetype. Includes states such as
@@ -83,6 +83,7 @@ feature -- Access
 			-- superseded, obsolete. State machine defined by archetype system
 			
 	other_contributors: ARRAYED_LIST [STRING]
+			-- Other contributors to the resource, probably listed in “name <email>” form
 
 	other_details: HASH_TABLE [STRING, STRING]
 
@@ -195,6 +196,8 @@ invariant
 	Lifecycle_state_valid: lifecycle_state /= Void and then not lifecycle_state.is_empty
 	Details_valid: details /= Void
 	Parent_resource_valid: parent_resource /= Void implies parent_resource.description = Current
+--	Language_valid: parent_resource /= Void implies details.linear_representation.for_all 
+--		(d | parent_resource.languages_available.has(d.language.code_string))
 	
 end
 
