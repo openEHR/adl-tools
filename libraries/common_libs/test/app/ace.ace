@@ -34,11 +34,13 @@ default
 	inlining (no)
 	multithreaded (no)
 
+
 cluster
 	all app:		"$OPENEHR\ref_impl_eiffel\libraries\common_libs\test"
 		exclude
 			".svn"; 
 		default
+			assertion (no)
 			assertion (invariant)
 		end
 
@@ -53,6 +55,11 @@ cluster
 		exclude
 			".svn"; 
 		default
+			assertion (no)
+			assertion (check)
+			assertion (require)
+			assertion (ensure)
+			assertion (loop)
 			assertion (invariant)
 		end
 
@@ -75,24 +82,26 @@ cluster
 			".svn"; "base_net"; 
 		end
 
-	library ut_support:		"$GOBO\library\utility"
+	gobo:		"$ISE_EIFFEL\library\gobo\library"
 
-	library kl_kernel:		"$GOBO\library\kernel"
+	library ut_support (gobo):		"$\utility"
+
+	library kl_kernel (gobo):		"$\kernel"
 		exclude
 			spec; 
 		end
 
-	library kl_kernel_spec:		"$GOBO\library\kernel\spec\ise"
+	library kl_kernel_spec (gobo):		"$\kernel\spec\ise"
 
-	library kl_lexical:		"$GOBO\library\lexical"
+	library kl_lexical (gobo):		"$\lexical"
 
-	library kl_parse:		"$GOBO\library\parse"
+	library kl_parse (gobo):		"$\parse"
 
-	library gobo_structure:		"$GOBO\library\structure"
+	library gobo_structure (gobo):		"$\structure"
 
-	library regexp:		"$GOBO\library\regexp"
+	library regexp (gobo):		"$\regexp"
 
-	library design_pattern:		"$GOBO\library\pattern"
+	library design_pattern (gobo):		"$\pattern"
 
 	library base:		"$ISE_EIFFEL\library\base"
 		exclude
@@ -106,7 +115,7 @@ cluster
 external
 
 	include_path:
-		"$(GOBO)\library\kernel\include"
+		"$(ISE_EIFFEL)\library\gobo\library\kernel\include"
 
 	object:
 		"$(OPENEHR)\ref_impl_eiffel\libraries\common_libs\lib\$(ISE_C_COMPILER)\method_dispatcher.lib"

@@ -92,24 +92,26 @@ cluster
 			assertion (require)
 		end
 
-	library ut_support:		"$GOBO\library\utility"
+	gobo:		"$ISE_EIFFEL\library\gobo\library"
 
-	library kl_kernel:		"$GOBO\library\kernel"
+	library ut_support (gobo):		"$\utility"
+
+	library kl_kernel (gobo):		"$\kernel"
 		exclude
-			spec; 
+			"spec"; 
 		end
 
-	library kl_kernel_spec:		"$GOBO\library\kernel\spec\ise"
+	library kl_kernel_spec (gobo):		"$\kernel\spec\ise"
 
-	library kl_lexical:		"$GOBO\library\lexical"
+	library kl_lexical (gobo):		"$\lexical"
 
-	library kl_parse:		"$GOBO\library\parse"
+	library kl_parse (gobo):		"$\parse"
 
-	library gobo_structure:		"$GOBO\library\structure"
+	library gobo_structure (gobo):		"$\structure"
 
-	library regexp:		"$GOBO\library\regexp"
+	library regexp (gobo):		"$\regexp"
 
-	library design_pattern:		"$GOBO\library\pattern"
+	library design_pattern (gobo):		"$\pattern"
 
 	library base:		"$ISE_EIFFEL\library\base"
 		exclude
@@ -124,7 +126,7 @@ external
 
 	include_path:
 		"$(ISE_EIFFEL)\library\wel\spec\windows\include",
-		"$(GOBO)\library\kernel\include"
+		"$(ISE_EIFFEL)\library\gobo\library\kernel\include"
 
 	object:
 		"$(ISE_EIFFEL)\library\wel\spec\$(ISE_C_COMPILER)\lib\wel.lib"

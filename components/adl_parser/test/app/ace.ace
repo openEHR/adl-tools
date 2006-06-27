@@ -91,28 +91,30 @@ cluster
 			assertion (invariant)
 		end
 
-	library gobo_string:		"$GOBO\library\string"
+	gobo:						"$ISE_EIFFEL\library\gobo\library"
 
-	library gobo_support:		"$GOBO\library\utility"
+	library gobo_string(gobo):		"$\string"
 
-	library gobo_kernel:		"$GOBO\library\kernel"
+	library gobo_support(gobo):		"$\utility"
+
+	library gobo_kernel(gobo):		"$\kernel"
 		exclude
 			spec; 
 		end
 
-	library gobo_kernel_spec:		"$GOBO\library\kernel\spec\ise"
+	library gobo_kernel_spec(gobo):		"$\kernel\spec\ise"
 
-	library gobo_lexical:		"$GOBO\library\lexical"
+	library gobo_lexical(gobo):		"$\lexical"
 
-	library gobo_parse:		"$GOBO\library\parse"
+	library gobo_parse(gobo):		"$\parse"
 
-	library gobo_structure:		"$GOBO\library\structure"
+	library gobo_structure(gobo):	"$\structure"
 
-	library gobo_regexp:		"$GOBO\library\regexp"
+	library gobo_regexp(gobo):		"$\regexp"
 
-	library gobo_design_pattern:		"$GOBO\library\pattern"
+	library gobo_design_pattern(gobo):		"$\pattern"
 
-	library base:		"$ISE_EIFFEL\library\base"
+	library base(gobo):		"$\base"
 		exclude
 			"table_eiffel3"; "desc"; 
 		end
@@ -125,7 +127,7 @@ external
 
 	include_path:
 		"$(ISE_EIFFEL)\library\wel\spec\windows\include",
-		"$(GOBO)\library\kernel\include"
+		"$(ISE_EIFFEL)\library\gobo\library\kernel\include"
 
 	object:
 		"$(ISE_EIFFEL)\library\wel\spec\$(ISE_C_COMPILER)\lib\wel.lib",

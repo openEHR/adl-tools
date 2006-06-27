@@ -82,7 +82,7 @@ cluster
 			".svn"; "base_net"; 
 		end
 
-	gobo:		"$GOBO\library"
+	gobo:		"$ISE_EIFFEL\library\gobo\library"
 
 	library ut_support (gobo):		"$\utility"
 
@@ -112,7 +112,7 @@ external
 	include_path:
 		"$(ISE_EIFFEL)\library\wel\spec\windows\include",
 		"$(ISE_EIFFEL)\library\vision2\spec\include",
-		"$(GOBO)\library\kernel\include"
+		"$(ISE_EIFFEL)\library\gobo\library\kernel\include"
 
 	object:
 		"$(ISE_EIFFEL)\library\wel\spec\$(ISE_C_COMPILER)\lib\wel.lib",

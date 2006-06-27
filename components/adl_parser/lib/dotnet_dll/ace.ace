@@ -20,8 +20,8 @@ default
 	namespace ("openehr")
 	company ("Ocean Informatics")
 	product ("ADL Parser")
-	copyright ("Ocean Informatics, 2003-2005")
-	msil_clr_version ("v1.0.3705")
+	copyright ("Ocean Informatics, 2003-2006")
+	msil_clr_version ("v1.1.4322")
 	msil_assembly_compatibility ("None")
 	check_vape (yes)
 	console_application (no)
@@ -70,7 +70,7 @@ cluster
 			".svn"; 
 		end
 
-	gobo:		"$GOBO\library"
+	gobo:		"$ISE_EIFFEL\library\gobo\library"
 
 	library ut_support (gobo):		"$\utility"
 

@@ -98,7 +98,7 @@ cluster
 			assertion (invariant)
 		end
 
-	gobo:		"$GOBO/library"
+	gobo:		"$ISE_EIFFEL/library/gobo/library"
 
 	library ut_support (gobo):		"$/utility"
 
