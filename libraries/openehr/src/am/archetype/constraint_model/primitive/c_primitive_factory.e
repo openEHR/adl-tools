@@ -23,12 +23,12 @@ inherit
 	DATE_TIME_ROUTINES
 		export
 			{NONE} all;
-			{ANY} is_valid_iso8601_date, is_valid_iso8601_time, 
-					is_valid_iso8601_date_time, is_valid_iso8601_duration,
+			{ANY} valid_iso8601_date, valid_iso8601_time, 
+					valid_iso8601_date_time, valid_iso8601_duration,
 					iso8601_string_to_date, iso8601_string_to_date_time, iso8601_string_to_time,
 					iso8601_string_to_duration,
-					is_valid_iso8601_date_constraint_pattern, is_valid_iso8601_time_constraint_pattern, 
-					is_valid_iso8601_date_time_constraint_pattern
+					valid_iso8601_date_constraint_pattern, valid_iso8601_time_constraint_pattern, 
+					valid_iso8601_date_time_constraint_pattern
 		end
 	
 feature -- Factory
@@ -168,8 +168,8 @@ feature -- Factory
 	create_c_date_make_bounded (a_lower, an_upper: STRING): OE_C_DATE is
 			-- create Result with both limits set from ISO8601 strings
 		require
-			lower_exists: a_lower /= void and then is_valid_iso8601_date(a_lower)
-			upper_exists: an_upper /= void and then is_valid_iso8601_date(an_upper)
+			lower_exists: a_lower /= void and then valid_iso8601_date(a_lower)
+			upper_exists: an_upper /= void and then valid_iso8601_date(an_upper)
 			valid_order: iso8601_string_to_date(a_lower) <= iso8601_string_to_date(an_upper)
 		do
 			create Result.make_string_interval(a_lower, an_upper)
@@ -178,7 +178,7 @@ feature -- Factory
 	create_c_date_make_lower_unbounded (an_upper: STRING): OE_C_DATE is
 			-- create Result from -infinity to `an_upper' in ISO8601 string form
 		require
-			upper_exists: an_upper /= void and then is_valid_iso8601_date(an_upper)
+			upper_exists: an_upper /= void and then valid_iso8601_date(an_upper)
 		do
 			create Result.make_string_interval(Void, an_upper)
 		end
@@ -186,7 +186,7 @@ feature -- Factory
 	create_c_date_make_upper_unbounded (a_lower: STRING): OE_C_DATE is
 			-- create Result from `a_lower' in ISO8601 string form, to +infinity
 		require
-			lower_exists: a_lower /= void and then is_valid_iso8601_date(a_lower)
+			lower_exists: a_lower /= void and then valid_iso8601_date(a_lower)
 		do
 			create Result.make_string_interval(a_lower, Void)
 		end
@@ -200,7 +200,7 @@ feature -- Factory
 	create_c_date_make_pattern (a_pattern: STRING): OE_C_DATE is
 			-- create Result from an ISO8601-based pattern like "yyyy-mm-??"
 		require
-			pattern_exists: a_pattern /= void and then is_valid_iso8601_date_constraint_pattern(a_pattern)
+			pattern_exists: a_pattern /= void and then valid_iso8601_date_constraint_pattern(a_pattern)
 		do
 			create Result.make_from_pattern(a_pattern)
 		end
@@ -208,8 +208,8 @@ feature -- Factory
 	create_c_date_time_make_bounded (a_lower, an_upper: STRING): C_DATE_TIME is
 			-- create Result with both limits set from ISO8601 strings
 		require
-			lower_exists: a_lower /= void and then is_valid_iso8601_date_time(a_lower)
-			upper_exists: an_upper /= void and then is_valid_iso8601_date_time(an_upper)
+			lower_exists: a_lower /= void and then valid_iso8601_date_time(a_lower)
+			upper_exists: an_upper /= void and then valid_iso8601_date_time(an_upper)
 			valid_order: iso8601_string_to_date_time(a_lower) <= iso8601_string_to_date_time(an_upper)
 		do
 			create Result.make_string_interval(a_lower, an_upper)
@@ -218,7 +218,7 @@ feature -- Factory
 	create_c_date_time_make_lower_unbounded (an_upper: STRING): C_DATE_TIME is
 			-- create Result from -infinity to `an_upper' in ISO8601 string form
 		require
-			upper_exists: an_upper /= void and then is_valid_iso8601_date_time(an_upper)
+			upper_exists: an_upper /= void and then valid_iso8601_date_time(an_upper)
 		do
 			create Result.make_string_interval(Void, an_upper)
 		end
@@ -226,7 +226,7 @@ feature -- Factory
 	create_c_date_time_make_upper_unbounded (a_lower: STRING): C_DATE_TIME is
 			-- create Result from `a_lower' in ISO8601 string form, to +infinity
 		require
-			lower_exists: a_lower /= void and then is_valid_iso8601_date_time(a_lower)
+			lower_exists: a_lower /= void and then valid_iso8601_date_time(a_lower)
 		do
 			create Result.make_string_interval(a_lower, Void)
 		end
@@ -240,7 +240,7 @@ feature -- Factory
 	create_c_date_time_make_pattern (a_pattern: STRING): C_DATE_TIME is
 			-- create Result from an ISO8601-based pattern like "yyyy-mm-dd hh:??:XX"
 		require
-			pattern_exists: a_pattern /= void and then is_valid_iso8601_date_time_constraint_pattern(a_pattern)
+			pattern_exists: a_pattern /= void and then valid_iso8601_date_time_constraint_pattern(a_pattern)
 		do
 			create Result.make_from_pattern(a_pattern)
 		end
@@ -248,8 +248,8 @@ feature -- Factory
 	create_c_time_make_bounded (a_lower, an_upper: STRING): C_TIME is
 			-- create Result with both limits set from ISO8601 strings
 		require
-			lower_exists: a_lower /= void and then is_valid_iso8601_time(a_lower)
-			upper_exists: an_upper /= void and then is_valid_iso8601_time(an_upper)
+			lower_exists: a_lower /= void and then valid_iso8601_time(a_lower)
+			upper_exists: an_upper /= void and then valid_iso8601_time(an_upper)
 			valid_order: iso8601_string_to_time(a_lower) <= iso8601_string_to_time(an_upper)
 		do
 			create Result.make_string_interval(a_lower, an_upper)
@@ -258,7 +258,7 @@ feature -- Factory
 	create_c_time_make_lower_unbounded (an_upper: STRING): C_TIME is
 			-- create Result from -infinity to `an_upper' in ISO8601 string form
 		require
-			upper_exists: an_upper /= void and then is_valid_iso8601_time(an_upper)
+			upper_exists: an_upper /= void and then valid_iso8601_time(an_upper)
 		do
 			create Result.make_string_interval(Void, an_upper)
 		end
@@ -266,7 +266,7 @@ feature -- Factory
 	create_c_time_make_upper_unbounded (a_lower: STRING): C_TIME is
 			-- create Result from `a_lower' in ISO8601 string form, to +infinity
 		require
-			lower_exists: a_lower /= void and then is_valid_iso8601_time(a_lower)
+			lower_exists: a_lower /= void and then valid_iso8601_time(a_lower)
 		do
 			create Result.make_string_interval(a_lower, Void)
 		end
@@ -280,7 +280,7 @@ feature -- Factory
 	create_c_time_make_pattern (a_pattern: STRING): C_TIME is
 			-- create Result from an ISO8601-based pattern like "hh:mm:??"
 		require
-			pattern_exists: a_pattern /= void and then is_valid_iso8601_time_constraint_pattern(a_pattern)
+			pattern_exists: a_pattern /= void and then valid_iso8601_time_constraint_pattern(a_pattern)
 		do
 			create Result.make_from_pattern(a_pattern)
 		end
@@ -288,8 +288,8 @@ feature -- Factory
 	create_c_duration_make_bounded (a_lower, an_upper: STRING; include_lower, include_upper: BOOLEAN): C_DURATION is
 			-- create Result with both limits set from ISO8601 strings
 		require
-			lower_exists: a_lower /= void and then is_valid_iso8601_duration(a_lower)
-			upper_exists: an_upper /= void and then is_valid_iso8601_duration(an_upper)
+			lower_exists: a_lower /= void and then valid_iso8601_duration(a_lower)
+			upper_exists: an_upper /= void and then valid_iso8601_duration(an_upper)
 			valid_order: iso8601_string_to_duration(a_lower) <= iso8601_string_to_duration(an_upper)
 		do
 			create Result.make_string_interval(a_lower, an_upper, include_lower, include_upper)
@@ -298,7 +298,7 @@ feature -- Factory
 	create_c_duration_make_lower_unbounded (an_upper: STRING; include_upper: BOOLEAN): C_DURATION is
 			-- create Result from -infinity to `an_upper' in ISO8601 string form
 		require
-			upper_exists: an_upper /= void and then is_valid_iso8601_duration(an_upper)
+			upper_exists: an_upper /= void and then valid_iso8601_duration(an_upper)
 		do
 			create Result.make_string_interval(Void, an_upper, False, include_upper)
 		end
@@ -306,7 +306,7 @@ feature -- Factory
 	create_c_duration_make_upper_unbounded (a_lower: STRING; include_lower: BOOLEAN): C_DURATION is
 			-- create Result from `a_lower' in ISO8601 string form, to +infinity
 		require
-			lower_exists: a_lower /= void and then is_valid_iso8601_duration(a_lower)
+			lower_exists: a_lower /= void and then valid_iso8601_duration(a_lower)
 		do
 			create Result.make_string_interval(a_lower, Void, include_lower, False)
 		end

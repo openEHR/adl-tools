@@ -31,7 +31,7 @@ inherit
 	DATE_TIME_ROUTINES
 		export
 			{NONE} all
-			{ANY} is_valid_iso8601_duration, iso8601_string_to_duration, is_valid_iso8601_duration_constraint_pattern
+			{ANY} valid_iso8601_duration, iso8601_string_to_duration, valid_iso8601_duration_constraint_pattern
 		undefine
 			is_equal, default_create, out
 		end
@@ -55,7 +55,7 @@ feature -- Initialisation
 			--	or
 			-- P[W|w]
 		require
-			a_pattern_valid: a_pattern /= Void and then is_valid_iso8601_duration_constraint_pattern(a_pattern)
+			a_pattern_valid: a_pattern /= Void and then valid_iso8601_duration_constraint_pattern(a_pattern)
 		do
 			pattern := a_pattern
 		ensure
@@ -68,8 +68,8 @@ feature -- Initialisation
 			-- include limits in range or not
 		require
 			valid_interval: a_lower /= Void or an_upper /= Void
-			lower_exists: a_lower /= void implies is_valid_iso8601_duration(a_lower)
-			upper_exists: an_upper /= void implies is_valid_iso8601_duration(an_upper)
+			lower_exists: a_lower /= void implies valid_iso8601_duration(a_lower)
+			upper_exists: an_upper /= void implies valid_iso8601_duration(an_upper)
 			valid_order: (a_lower /= Void and an_upper /= Void) implies 
 						(iso8601_string_to_duration(a_lower) <= iso8601_string_to_duration(an_upper))
 		do

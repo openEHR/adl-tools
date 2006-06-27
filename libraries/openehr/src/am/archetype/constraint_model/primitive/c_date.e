@@ -31,7 +31,7 @@ inherit
 	DATE_TIME_ROUTINES
 		export
 			{NONE} all;
-			{ANY} is_valid_iso8601_date_constraint_pattern, is_valid_iso8601_date, iso8601_string_to_date
+			{ANY} valid_iso8601_date_constraint_pattern, valid_iso8601_date, iso8601_string_to_date
 		undefine
 			out
 		end
@@ -56,8 +56,8 @@ feature -- Initialisation
 			-- Limits are automatically included in the range
 		require
 			valid_interval: a_lower /= Void or an_upper /= Void
-			lower_exists: a_lower /= void implies is_valid_iso8601_date(a_lower)
-			upper_exists: an_upper /= void implies is_valid_iso8601_date(an_upper)
+			lower_exists: a_lower /= void implies valid_iso8601_date(a_lower)
+			upper_exists: an_upper /= void implies valid_iso8601_date(an_upper)
 			valid_order: (a_lower /= Void and an_upper /= Void) implies 
 						(iso8601_string_to_date(a_lower) <= iso8601_string_to_date(an_upper))
 		do
@@ -82,7 +82,7 @@ feature -- Initialisation
 			-- 	"yyyy-??-XX" - day not allowed
 			-- 	"yyyy-XX-XX" - month and day not allowed
 		require
-			a_pattern_valid: a_pattern /= Void and then is_valid_iso8601_date_constraint_pattern(a_pattern)
+			a_pattern_valid: a_pattern /= Void and then valid_iso8601_date_constraint_pattern(a_pattern)
 		do
 			pattern := a_pattern
 		ensure

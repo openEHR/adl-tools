@@ -79,7 +79,7 @@ feature -- Definitions
 		
 feature -- Status Report
 
-	is_valid_iso8601_time_constraint_pattern(s: STRING): BOOLEAN is
+	valid_iso8601_time_constraint_pattern(s: STRING): BOOLEAN is
 			-- True if string literal like "hh:mm:ss[.ssss]" 
 			-- with XX or ?? allowed in mm or ss slots
 		require
@@ -92,7 +92,7 @@ feature -- Status Report
 			Result := valid_time_constraint_patterns.has(str) or obsolete_time_constraint_patterns.has(str)
 		end
 		
-	is_valid_iso8601_date_constraint_pattern(s: STRING): BOOLEAN is
+	valid_iso8601_date_constraint_pattern(s: STRING): BOOLEAN is
 			-- True if string literal like "yyyy-MM-dd"
 			-- with XX or ?? allowed in MM or dd slots
 		require
@@ -105,7 +105,7 @@ feature -- Status Report
 			Result := valid_date_constraint_patterns.has(str)
 		end
 		
-	is_valid_iso8601_date_time_constraint_pattern(s: STRING): BOOLEAN is
+	valid_iso8601_date_time_constraint_pattern(s: STRING): BOOLEAN is
 			-- True if string in form "yyyy-MM-dd hh:mm:ss[.ssss]"
 		require
 			s /= Void
@@ -117,7 +117,7 @@ feature -- Status Report
 			Result := valid_date_time_constraint_patterns.has(str) or obsolete_date_time_constraint_patterns.has(str)
 		end
 		
-	is_valid_iso8601_duration_constraint_pattern(s: STRING): BOOLEAN is
+	valid_iso8601_duration_constraint_pattern(s: STRING): BOOLEAN is
 			-- True if string in form 
 			-- P[Y|y][M|m][D|d][T[H|h][M|m][S|s]]
 			--	or

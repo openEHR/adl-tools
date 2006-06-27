@@ -3307,7 +3307,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1139")
 end
 
-			if is_valid_iso8601_date_constraint_pattern(yyvs4.item (yyvsp4)) then
+			if valid_iso8601_date_constraint_pattern(yyvs4.item (yyvsp4)) then
 				create c_date.make_from_pattern(yyvs4.item (yyvsp4))
 			else
 				create str.make(0)
@@ -3463,7 +3463,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1192")
 end
 
-			if is_valid_iso8601_time_constraint_pattern(yyvs4.item (yyvsp4)) then
+			if valid_iso8601_time_constraint_pattern(yyvs4.item (yyvsp4)) then
 				create c_time.make_from_pattern(yyvs4.item (yyvsp4))
 			else
 				create str.make(0)
@@ -3619,7 +3619,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1245")
 end
 
-			if is_valid_iso8601_date_time_constraint_pattern(yyvs4.item (yyvsp4)) then
+			if valid_iso8601_date_time_constraint_pattern(yyvs4.item (yyvsp4)) then
 				create c_date_time.make_from_pattern(yyvs4.item (yyvsp4))
 			else
 				create str.make(0)
@@ -3775,7 +3775,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1298")
 end
 
-			if is_valid_iso8601_duration_constraint_pattern(yyvs4.item (yyvsp4)) then
+			if valid_iso8601_duration_constraint_pattern(yyvs4.item (yyvsp4)) then
 				create c_duration.make_from_pattern(yyvs4.item (yyvsp4))
 			else
 				raise_error

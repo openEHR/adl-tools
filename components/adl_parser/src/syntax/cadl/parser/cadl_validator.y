@@ -1138,7 +1138,7 @@ c_real: c_real_spec
 
 c_date_spec: V_ISO8601_DATE_CONSTRAINT_PATTERN
 		{
-			if is_valid_iso8601_date_constraint_pattern($1) then
+			if valid_iso8601_date_constraint_pattern($1) then
 				create c_date.make_from_pattern($1)
 			else
 				create str.make(0)
@@ -1191,7 +1191,7 @@ c_date: c_date_spec
 
 c_time_spec: V_ISO8601_TIME_CONSTRAINT_PATTERN
 		{
-			if is_valid_iso8601_time_constraint_pattern($1) then
+			if valid_iso8601_time_constraint_pattern($1) then
 				create c_time.make_from_pattern($1)
 			else
 				create str.make(0)
@@ -1244,7 +1244,7 @@ c_time: c_time_spec
 
 c_date_time_spec: V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN
 		{
-			if is_valid_iso8601_date_time_constraint_pattern($1) then
+			if valid_iso8601_date_time_constraint_pattern($1) then
 				create c_date_time.make_from_pattern($1)
 			else
 				create str.make(0)
@@ -1297,7 +1297,7 @@ c_date_time: c_date_time_spec
 
 c_duration_spec: V_ISO8601_DURATION_CONSTRAINT_PATTERN
 		{
-			if is_valid_iso8601_duration_constraint_pattern($1) then
+			if valid_iso8601_duration_constraint_pattern($1) then
 				create c_duration.make_from_pattern($1)
 			else
 				raise_error

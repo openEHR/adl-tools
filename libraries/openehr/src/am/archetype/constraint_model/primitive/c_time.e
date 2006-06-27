@@ -31,7 +31,7 @@ inherit
 	DATE_TIME_ROUTINES
 		export
 			{NONE} all;
-			{ANY} is_valid_iso8601_time_constraint_pattern, is_valid_iso8601_time, 
+			{ANY} valid_iso8601_time_constraint_pattern, valid_iso8601_time, 
 					iso8601_string_to_time
 		undefine
 			out
@@ -58,8 +58,8 @@ feature -- Initialisation
 			-- included in the interval
 		require
 			valid_interval: a_lower /= Void or an_upper /= Void
-			lower_exists: a_lower /= void implies is_valid_iso8601_time(a_lower)
-			upper_exists: an_upper /= void implies is_valid_iso8601_time(an_upper)
+			lower_exists: a_lower /= void implies valid_iso8601_time(a_lower)
+			upper_exists: an_upper /= void implies valid_iso8601_time(an_upper)
 			valid_order: (a_lower /= Void and an_upper /= Void) implies 
 						(iso8601_string_to_time(a_lower) <= iso8601_string_to_time(an_upper))
 		do
@@ -78,7 +78,7 @@ feature -- Initialisation
 	make_from_pattern(a_pattern: STRING) is
 			-- create Result from an ISO8601-based pattern like "Thh:mm:??"
 		require
-			a_pattern_valid: a_pattern /= Void and then is_valid_iso8601_time_constraint_pattern(a_pattern)
+			a_pattern_valid: a_pattern /= Void and then valid_iso8601_time_constraint_pattern(a_pattern)
 		do
 			create pattern.make(0)
 			if not a_pattern.has (Time_leader) then
