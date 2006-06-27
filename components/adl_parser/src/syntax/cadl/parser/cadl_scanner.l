@@ -60,6 +60,15 @@ creation
 	make
 %}
 
+--------------- Definitions --------------
+ALPHANUM [a-zA-Z0-9]
+IDCHAR [a-zA-Z0-9_]
+NAMECHAR [a-zA-Z0-9._\-]
+NAMECHAR_SPACE [a-zA-Z0-9._\- ]
+NAMECHAR_PAREN [a-zA-Z0-9._\-()]
+
+UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x80-\xBF][\x80-\xBF])|(\xF0[\x90-\xBF][\x80-\xBF][\x80-\xBF])|([\xF1-\xF7][\x80-\xBF][\x80-\xBF][\x80-\xBF]))
+
 %x IN_STR IN_REGEXP1 IN_REGEXP2 IN_TERM_CONSTRAINT IN_C_DOMAIN_TYPE
 %option outfile="cadl_scanner.e"
 
@@ -180,14 +189,21 @@ creation
 	last_string_value := text
 }
 
----------/* V_QUALIFIED_TERM_CODE_REF */ -------------------------------------------------
--- any qualified code, e.g. [local::at0001], [local::ac0001], [loinc::700-0]
---
+----------/* term code reference of form [ICD10AM(1998)::F23] */ -------------------------------------------------
+\[{NAMECHAR_PAREN}+::{NAMECHAR}+\]	{
+					last_token := V_QUALIFIED_TERM_CODE_REF
+					last_string_value := text_substring (2, text_count - 1)
+			}
 
-\[[a-zA-Z0-9()._\-]+::[a-zA-Z0-9._\-]+\]	{
- 					last_token := V_QUALIFIED_TERM_CODE_REF
- 					last_string_value := text_substring (2, text_count - 1)
- 			}
+\[{NAMECHAR_PAREN}+::{NAMECHAR_SPACE}+\]	{
+					last_token := ERR_V_QUALIFIED_TERM_CODE_REF
+					last_string_value := text_substring (2, text_count - 1)
+			}
+
+\[{ALPHANUM}{NAMECHAR}*\]	{
+					last_token := V_LOCAL_TERM_CODE_REF
+					last_string_value := text_substring (2, text_count - 1)
+			}
 
 ---------/* V_TERM_CODE_CONSTRAINT of form */ ------------
 -- [terminology_id::code, -- comment
@@ -242,15 +258,6 @@ creation
 			}
 
 
----------/* V_LOCAL_TERM_CODE_REF */ -------------------------------------------------
--- any unqualified code, e.g. [at0001], [ac0001], [700-0]
---
-
-\[[a-zA-Z0-9][a-zA-Z0-9._\-]*\]	{
-					last_token := V_LOCAL_TERM_CODE_REF
-					last_string_value := text_substring (2, text_count - 1)
-			}
-
 ----------/* V_LOCAL_CODE */ ----------------------------------------
 
 a[ct][0-9.]+ {
@@ -269,31 +276,41 @@ a[ct][0-9.]+ {
 
 ----------/* V_ISO8601_TIME Thh:mm:ss[,sss][Z|+/-nnnn] */ -------------------------------------------------
 
-T[0-2][0-9]:[0-6][0-9]:[0-6][0-9](,[0-9]+)?(Z|[+-][0-9]{4})? |
-T[0-2][0-9]:[0-6][0-9](Z|[+-][0-9]{4})? |
-T[0-2][0-9](Z|[+-][0-9]{4})? {
+[0-2][0-9]:[0-6][0-9]:[0-6][0-9](,[0-9]+)?(Z|[+-][0-9]{4})? |
+[0-2][0-9]:[0-6][0-9](Z|[+-][0-9]{4})? {
 				last_token := V_ISO8601_EXTENDED_TIME
 				last_string_value := text
 		}
+
+-- possible refinement to allow for hour-only times - but need to implement 'T' on output as well
+--T[0-2][0-9](Z|[+-][0-9]{4})? { -- special use of 'T' to differentiate from integer
+--				last_token := V_ISO8601_EXTENDED_TIME
+--				last_string_value := text_substring(2, text_count)
+--		}
 
 ----------/* V_ISO8601_DATE YYYY-MM-DD */ -------------------------------------------------
 
 [0-9]{4}-[0-1][0-9]-[0-3][0-9] |
 [0-9]{4}-[0-1][0-9] {
--- [0-9]{4} { -- can't handle year only, since it will be confused with plain integer
 				last_token := V_ISO8601_EXTENDED_DATE
 				last_string_value := text
 		}
 
+-- possible refinement to allow for year-only dates - but need to implement 'D' on output as well
+-- D[0-9]{4} { -- special use of 'D' to differentiate from integer
+-- 				last_token := V_ISO8601_EXTENDED_DATE
+-- 				last_string_value := text_substring(2, text_count)
+-- 		}
+
 ----------/* V_ISO8601_DURATION PnYnMnWnDtnnHnnMnnS */ -------------------------------------------------
 
-P[0-9]+[wW]	|
-P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[dD])?T([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])? |
-P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[dD])? {
+P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?T([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])? |
+P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])? {
 				last_token := V_ISO8601_DURATION
 				last_string_value := text
 			}
 
+-- temporary...
 -- missing 'T' silently correct; assume 'm' means minutes not months
 P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[dD])?([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])? {
 				last_token := V_ISO8601_DURATION
@@ -304,6 +321,7 @@ P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[dD])?([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])? 
 -- P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[dD])?([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])? {
 -- 				last_token := ERR_V_ISO8601_DURATION
 --			}
+
 ----------/* V_ISO8601_DATE_CONSTRAINT_PATTERN */ -------------------------------------------------
 
 [yY][yY][yY][yY]-[mM?X][mM?X]-[dD?X][dD?X]	{

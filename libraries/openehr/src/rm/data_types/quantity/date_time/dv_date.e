@@ -20,55 +20,36 @@ class DV_DATE
 
 inherit
 	DV_CUSTOMARY_QUANTITY
-		redefine
-			default_create, is_equal, infix "<"
+		undefine
+			out, infix "<", default_create
 		end
 		
-	DATE_TIME_CONSTANTS
-		export
-			{NONE} all
+	ISO8601_DATE
 		undefine
-			default_create, is_equal
+			default_create
 		end
 
 create 
-	default_create,
-	make_now,
-	make_from_string,
-	make_from_canonical_string,
-	make_day_month_year
+	default_create, make_from_string, make_y, make_ym, make_ymd
 
-feature -- Initialization
+feature -- Definitions
+
+	Default_value: STRING is "1600-01-01"
+	
+feature -- Initialisation
 
 	default_create is
-			-- create the date "1800-01-01"
+			-- create the date/time "1600-01-01"
 		do
-			create impl.make_from_string ("1800-01-01", Default_date_format)
+			value := Default_value.twin
+			make_from_string (value)
 		ensure then
-			default: as_string.is_equal ("1800-10-01")
+			default: as_string.is_equal (Default_value)
 		end
 
-	make_now is
+	make_from_canonical_string(str: STRING) is
 		do
-			create impl.make_now
-		end
-		
-	make_day_month_year (d, m, y: INTEGER) is
-			-- Set `day', `month' and `year' to `d', `m' and `y' respectively.
-		do
-			create impl.make (y, m, d)
-		end
-
-
-	make_from_string (str: STRING) is
-			-- make from string using specified format
-		do
-			create impl.make_from_string (str, Default_date_format)
-		end
-
-	make_from_canonical_string (str: STRING) is
-			-- make from string from canonical form
-		do
+			make_from_string(str)
 		end
 
 feature -- Status Report
@@ -76,53 +57,23 @@ feature -- Status Report
 	valid_canonical_string(str: STRING): BOOLEAN is
 			-- True if str contains required tags
 		do
+			Result := valid_iso8601_date(str)
 		end
 
 feature -- Access
 
 	magnitude: INTEGER_REF is
-			-- numeric value of the quantity
+			-- date as days since epoch date of 1600-01-01
 		do
-			create Result
-			Result.set_item(impl.duration.days_count * Seconds_in_day)
-		end
-
-	day: INTEGER is
-		do
-			Result := impl.day
-		end
-
-	month: INTEGER is
-		do
-			Result := impl.month
-		end
-
-	year: INTEGER is
-		do
-			Result := impl.year
+			Result := to_days
 		end
 		
-	diff_type: DV_DURATION
+	diff_type: DV_DURATION is
+			--
+		once
+		end
 		
 feature -- Comparison
-
-	infix "<" (other: like Current): BOOLEAN is
-			-- Is the current duration smaller than `other'?
-		do
-			Result := impl < other.impl
-		end
-
-	is_equal (other: like Current): BOOLEAN is
-			-- Are the current duration an `other' equal?
-		do
-			Result := impl.is_equal (other.impl)
-		end
-
-	is_valid_date(y, m, d:INTEGER):BOOLEAN is
-			-- is time valid in gregorian calendar?
-		do
-			Result := impl.is_correct_date(y, m, d)
-		end
 
 	is_strictly_comparable_to (other: like Current): BOOLEAN is
 		do
@@ -133,12 +84,10 @@ feature -- Basic Operations
 
 	infix "+" (other: like diff_type): like Current is
 		do
-			impl := impl + other.impl.date
 		end
 
 	infix "-" (other: like Current): like diff_type is
 		do
-			-- impl := impl - other.impl.date
 		end
 
 	subtract(other: like diff_type): like Current is
@@ -151,29 +100,23 @@ feature -- Basic Operations
 feature -- Conversion
 
 	to_quantity: DV_QUANTITY is
-			-- convert to a number of days
+			-- express as Quantity with magnitude = magnitude from this class
+		local
+			dbl: DOUBLE
 		do
+			dbl := magnitude.item
+			create Result.make (dbl, "d")
+		ensure then
+			Result.magnitude.rounded = magnitude
+			Result.units.is_equal("d")
 		end
 
 feature -- Output
-
-	as_string: STRING is
-		do
-			Result := impl.formatted_out (Default_date_format)
-		end
 
 	as_canonical_string: STRING is
 		do
 			Result := as_string
 		end
-
-feature {DV_DATE, DV_DATE_TIME} -- Implementation
-
-	impl: DATE
-	
-invariant
-	
-	Validity: is_valid_date(year, month, day)
 	
 end
 

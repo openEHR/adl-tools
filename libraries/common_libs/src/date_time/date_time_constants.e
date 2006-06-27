@@ -15,8 +15,6 @@ indexing
 class DATE_TIME_CONSTANTS
 
 inherit
-	-- DATE_CONSTANTS
-	-- TIME_CONSTANTS
 	KL_GREGORIAN_CALENDAR
 	
 feature -- Definitions
@@ -37,8 +35,10 @@ feature -- Definitions
 	
 	Last_day_of_middle_month: INTEGER is 30
 	
-	Max_timezone_hours: INTEGER is 12
-		
+	Max_timezone_hour: INTEGER is 12
+
+	Origin_year: INTEGER is 1600
+
 end
 
 

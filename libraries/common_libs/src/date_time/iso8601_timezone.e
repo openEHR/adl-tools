@@ -36,34 +36,43 @@ feature -- Initialisation
 			-- 
 		do
 			is_gmt := True
-			sign := '+'
+			sign := 1
 		end
 
-	make(a_sign: CHARACTER; h, m: INTEGER) is
+	make(a_sign: INTEGER; h, m: INTEGER) is
 		require
-			Sign_valid: a_sign = '+' or a_sign = '-'
-			Hours_valid: h >= 0 and h <= Max_timezone_hours
-			Minutes_valid: m >= 0 and m < Minutes_in_hour
+			Sign_valid: a_sign = -1 or a_sign = 1
+			Hour_valid: h >= 0 and h <= Max_timezone_hour
+			Minute_valid: m >= 0 and m < Minutes_in_hour
 		do
 			sign := a_sign
-			hours := h
-			minutes := m
+			hour := h
+			minute := m
 		end
 
 feature -- Access
 
-	hours: INTEGER
+	hour: INTEGER
 	
-	minutes: INTEGER
+	minute: INTEGER
 	
 feature -- Status Report
 
 	is_gmt: BOOLEAN
 			-- True if 'Z' form
 
-	sign: CHARACTER
-			-- sign of non-GMT form, or '+' for GMT
+	sign: INTEGER
+			-- value of +/- 1 - sign of non-GMT form, or '+' for GMT
 
+feature -- Conversion
+
+	to_seconds: INTEGER is
+			-- generate signed number of seconds after or before midnight at the 0 meridian
+			-- represented by this timezone
+		do
+			Result := hour * seconds_in_hour + minute * seconds_in_minute
+		end
+		
 feature -- Output
 
 	as_string: STRING is
@@ -75,14 +84,18 @@ feature -- Output
 			if is_gmt then
 				Result.append_character(Time_zone_GMT)
 			else
-				Result.append_character(sign)				
-				s := hours.out
+				if sign > 0 then
+					Result.append_character('+')				
+				else
+					Result.append_character('-')				
+				end
+				s := hour.out
 				if s.count = 1 then
 					Result.append_character ('0')
 				end
 				Result.append(s)
 			
-				s := minutes.out
+				s := minute.out
 				if s.count = 1 then
 					Result.append_character ('0')
 				end
@@ -91,8 +104,9 @@ feature -- Output
 		end
 
 invariant
-	Hours_valid: hours >= 0 and hours <= Max_timezone_hours
-	Minutes_valid: minutes >= 0 and minutes < Minutes_in_hour
+	Hour_valid: hour >= 0 and hour <= Max_timezone_hour
+	Minute_valid: minute >= 0 and minute < Minutes_in_hour
+	Sign_valid: sign = 1 or sign = -1
 
 end
 

@@ -31,8 +31,6 @@ feature -- Access
 			create {TC_DV_TIME} tc.make(Void) 		Result.extend(tc)
 			create {TC_DV_DATE_TIME} tc.make(Void) 		Result.extend(tc)
 			create {TC_DV_DURATION} tc.make(Void) 		Result.extend(tc)
-			create {TC_DV_PARTIAL_DATE} tc.make(Void) 		Result.extend(tc)
-			create {TC_DV_PARTIAL_DATE_TIME} tc.make(Void) 		Result.extend(tc)
 		end
 
 	title:STRING is "Date/time tests"

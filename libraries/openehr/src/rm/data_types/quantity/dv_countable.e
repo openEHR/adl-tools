@@ -54,7 +54,10 @@ feature -- Access
 	magnitude: INTEGER_REF
 			-- numeric value of the quantity
 
-	diff_type: DV_COUNT
+	diff_type: DV_COUNT is
+			-- 
+		once	
+		end
 	
 feature -- Basic Operations
 

@@ -6,6 +6,10 @@ indexing
 				uses  a standard library TIME class to represent the time
 				value for the purpose of mathematical operations and validity
 				checking.
+				Pre-parsed and parsed forms of the date are included as attributes. 
+				Typically the string form is required for presistent storage, but the
+				parsed attributes are required for computation (and should not be 
+				repeatedly recomputed on the fly, due to the amount of work involved).
 				]"
 	keywords:    "date time"
 
@@ -22,6 +26,9 @@ class ISO8601_TIME
 
 inherit
 	ISO8601_ROUTINES
+		export
+			{NONE} all;
+			{ANY} valid_iso8601_time, valid_hour, valid_minute, valid_second, valid_fractional_second
 		undefine
 			is_equal, out
 		end
@@ -41,98 +48,108 @@ feature -- Initialisation
 			-- hhmmss[,sss][Z|+/-hhmm] or 
 			-- hh:mm:ss[,sss][,sss][Z|+/-hhmm]
 		require
-			String_valid: str /= Void and is_valid_iso8601_time(str)
+			String_valid: str /= Void and valid_iso8601_time(str)
 		do
-			if is_valid_iso8601_time(str) then
+			if valid_iso8601_time(str) then
 				deep_copy(iso8601_parser.cached_iso8601_time)
 			end
+			value := as_string
 		end
 
 	make_h(h: INTEGER; is_extended_flag: BOOLEAN) is
-			-- make partial time from hours only
+			-- make partial time from hour only
 		require
-			Hours_valid: h >= 0 and h <= Hours_in_day
+			Hours_valid: valid_hour(h, 0, 0)
 		do
-			hours := h
+			hour := h
 			is_extended := is_extended_flag
-			minutes_unknown := True
-			seconds_unknown := True
+			minute_unknown := True
+			second_unknown := True
+			value := as_string
 		end
 
 	make_hm(h, m: INTEGER; is_extended_flag: BOOLEAN) is
-			-- make partial time from hours and minutes
+			-- make partial time from hour and minute
 		require
-			Hours_valid: h >= 0 and h <= Hours_in_day
-			Hour_limit_validity: h = Hours_in_day implies m = 0
-			Minutes_valid: m >= 0 and m < Minutes_in_hour
+			Hours_valid: valid_hour(h, m, 0)
+			Minutes_valid: valid_minute(m)
 		do
-			hours := h
-			minutes := m
-			seconds_unknown := True
+			hour := h
+			minute := m
+			second_unknown := True
 			is_extended := is_extended_flag
+			value := as_string
 		end
 
 	make_hms(h, m, s: INTEGER; is_extended_flag: BOOLEAN) is
 			-- make complete time
 		require
-			Hours_valid: h >= 0 and h <= Hours_in_day
-			Hour_limit_validity: h = Hours_in_day implies (m = 0 and s = 0)
-			Minutes_valid: m >= 0 and m < Minutes_in_hour
-			Seconds_valid: s >= 0 and s < Seconds_in_minute
+			Hours_valid: valid_hour(h, m, s)
+			Minutes_valid: valid_minute(m)
+			Seconds_valid: valid_second(s)
 		do
-			hours := h
-			minutes := m
-			seconds := s
+			hour := h
+			minute := m
+			second := s
 			is_extended := is_extended_flag
+			value := as_string
 		end
 
 	make_hmsf(h, m, s: INTEGER; sf: DOUBLE; is_extended_flag: BOOLEAN) is
-			-- make complete time from hours, minutes, seconds and fine seconds
+			-- make complete time from hour, minute, second and fine second
 		require
-			Hours_valid: h >= 0 and h <= Hours_in_day
-			Hour_limit_validity: h = Hours_in_day implies (m = 0 and s = 0)
-			Minutes_valid: m >= 0 and m < Minutes_in_hour
-			Seconds_valid: s >= 0 and s < Seconds_in_minute
-			Fine_seconds_valid: sf >= 0 and sf < 1.0
+			Hours_valid: valid_hour(h, m, s)
+			Minutes_valid: valid_minute(m)
+			Seconds_valid: valid_second(s)
+			Fractional_second_valid: valid_fractional_second(sf)
 		do
-			hours := h
-			minutes := m
-			seconds := s
-			seconds_fraction := sf
-			seconds_fraction_included := True
+			hour := h
+			minute := m
+			second := s
+			fractional_second := sf
+			has_fractional_second := True
 			is_extended := is_extended_flag
+			value := as_string
 		end
 				
 feature -- Access
 
-	hours: INTEGER
+	value: STRING
+			-- ISO8601 string for time; always equal to result of as_string
 
-	minutes: INTEGER
+	hour: INTEGER
+			-- extracted hour
 
-	seconds: INTEGER
+	minute: INTEGER
+			-- extracted minute
 
-	seconds_fraction: DOUBLE
+	second: INTEGER
+			-- extracted second
+
+	fractional_second: DOUBLE
+			-- extracted fractional second
 	
 	timezone: ISO8601_TIMEZONE
+			-- extracted timezone
 	
 feature -- Status Report
 
 	is_extended: BOOLEAN
 			-- True if syntax format uses separators
 			
-	minutes_unknown: BOOLEAN
-			-- True if minutes unknown
+	minute_unknown: BOOLEAN
+			-- True if minute unknown
 
-	seconds_unknown: BOOLEAN
-			-- True if seconds unknown
+	second_unknown: BOOLEAN
+			-- True if second unknown
 
-	seconds_fraction_included: BOOLEAN
-			-- True if seconds unknown
+	has_fractional_second: BOOLEAN
+			-- True if second unknown
 
 	is_partial: BOOLEAN is
-			-- True if either minutes or second unknown
+			-- True if either minute or second unknown
 		do
-			Result := seconds_unknown
+			Result := second_unknown
 		end
 
 feature -- Modification
@@ -143,19 +160,56 @@ feature -- Modification
 			a_tz /= Void
 		do
 			timezone := a_tz
+			value := as_string
 		end
 
 	set_extended is
 			-- set is_extended
 		do
 			is_extended := True
+			value := as_string
 		end
 		
 feature -- Comparison
 
 	infix "<" (other: like Current): BOOLEAN is
-			-- Is current object less than `other'?
+			-- Is current time less than `other', i.e. earlier? This comparison takes
+			-- into account timezone, i.e. it compares actual instants in world time, not
+			-- numeric values.
 		do
+			Result := to_seconds < other.to_seconds
+		end
+
+feature -- Conversion
+
+	to_seconds: DOUBLE is
+			-- convert to signed numeric form for comparison. The result is the number of
+			-- seconds since midnight at the 0000 meridian, and may be negative if the timezone is negative.
+			-- Timezone is taken into account, so that 00:00:00+0100 gives 3600, not 0. For missing parts, 
+			-- substitute mid point values, creating a statistical approximation for
+			-- sorting purposes. 
+		local
+			m, s, tz: INTEGER
+			fs: DOUBLE
+		do
+			if second_unknown then
+				if minute_unknown then
+					m := middle_minute_in_hour
+					s := seconds_in_minute
+				else
+					m := minute
+					s := middle_second_in_minute
+				end
+			else
+				s := second
+			end
+			if has_fractional_second then
+				fs := fractional_second
+			end
+			if timezone /= Void then
+				tz := timezone.to_seconds
+			end
+			Result := hour * seconds_in_hour + m * seconds_in_minute + s + fs + tz
 		end
 
 feature -- Output
@@ -166,37 +220,36 @@ feature -- Output
 			s: STRING
 		do
 			create Result.make(0)
-			Result.append_character(Time_leader)
 
-			s := hours.out
+			s := hour.out
 			if s.count = 1 then
 				Result.append_character ('0')
 			end
 			Result.append(s)
 			
-			if not minutes_unknown then
+			if not minute_unknown then
 				if is_extended then
 					Result.append_character(Time_separator)			
 				end
-				s := minutes.out
+				s := minute.out
 				if s.count = 1 then
 					Result.append_character ('0')
 				end
 				Result.append(s)
 				
-				if not seconds_unknown then
+				if not second_unknown then
 					if is_extended then
 						Result.append_character(Time_separator)			
 					end
-					s := seconds.out
+					s := second.out
 					if s.count = 1 then
 						Result.append_character ('0')
 					end
 					Result.append(s)
 
-					if seconds_fraction_included then
+					if has_fractional_second then
 						Result.append_character(Iso8601_decimal_separator)
-						s := seconds_fraction.out
+						s := fractional_second.out
 						Result.append(s.substring(s.index_of('.', 1) + 1, s.count))
 					end
 				end
@@ -206,7 +259,7 @@ feature -- Output
 				Result.append(timezone.as_string)
 			end
 		ensure
-			Result_valid: Result /= Void and then is_valid_iso8601_time(Result)		
+			Result_valid: Result /= Void and then valid_iso8601_time(Result)		
 		end
 
 	out: STRING is
@@ -215,14 +268,14 @@ feature -- Output
 		end
 		
 invariant
-	Hours_valid: hours >= 0 and hours <= Hours_in_day
-	Hour_limit_minutes_valid: hours = Hours_in_day and not minutes_unknown implies minutes = 0
-	Hour_limit_seconds_valid: hours = Hours_in_day and not seconds_unknown implies (seconds = 0 and seconds_fraction = 0.0)
-	Minutes_valid: not minutes_unknown implies (minutes >= 0 and minutes < Minutes_in_hour)
-	Seconds_valid: not seconds_unknown implies (seconds >= 0 and seconds < Seconds_in_minute)
-	Fine_seconds_valid: seconds_fraction >= 0 and seconds_fraction < 1.0
-	Partial_validity: minutes_unknown implies seconds_unknown
-		
+	Hour_valid: valid_hour(hour, minute, second)
+	Minute_valid: not minute_unknown implies valid_minute(minute)
+	Second_valid: not second_unknown implies valid_second(second)
+	Fractional_second_valid: has_fractional_second implies (not second_unknown and valid_fractional_second(fractional_second))
+	Partial_validity: minute_unknown implies second_unknown
+
+	Value_validity: value.is_equal(as_string)
+
 end
 
 

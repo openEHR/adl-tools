@@ -4,6 +4,10 @@ indexing
 				ISO8601:2004 compliant Duration class. Handles patterns of form:
 					PnW			-- duration in weeks
 					P[nY][nM][nD][T[nH][nM][nS]]
+				Pre-parsed and parsed forms of the date are included as attributes. 
+				Typically the string form is required for presistent storage, but the
+				parsed attributes are required for computation (and should not be 
+				repeatedly recomputed on the fly, due to the amount of work involved).
 				]"
 	keywords:    "date, time, duration"
 
@@ -20,6 +24,9 @@ class ISO8601_DURATION
 
 inherit
 	ISO8601_ROUTINES
+		export
+			{NONE} all;
+			{ANY} valid_iso8601_duration
 		undefine
 			is_equal, out
 		end
@@ -37,11 +44,12 @@ feature -- Initialisation
 	make_from_string(str: STRING) is
 			-- make from a valid ISO duration string
 		require
-			String_valid: str /= Void and is_valid_iso8601_duration(str)
+			String_valid: str /= Void and valid_iso8601_duration(str)
 		do
-			if is_valid_iso8601_duration(str) then
+			if valid_iso8601_duration(str) then
 				deep_copy(iso8601_parser.cached_iso8601_duration)
 			end
+			value := as_string
 		end
 
 	make(yr, mo, dy, hr, mi, sec: INTEGER; sec_frac: DOUBLE) is
@@ -61,10 +69,11 @@ feature -- Initialisation
 			hours := hr
 			minutes := mi
 			seconds := sec
-			seconds_fraction := sec_frac
-			if hours > 0 or minutes > 0 or seconds > 0 or seconds_fraction > 0 then
+			fractional_seconds := sec_frac
+			if hours > 0 or minutes > 0 or seconds > 0 or fractional_seconds > 0.0 then
 				has_time := True
 			end
+			value := as_string
 		end
 	
 	make_weeks(wk: INTEGER) is
@@ -73,27 +82,40 @@ feature -- Initialisation
 			weeks_valid: wk >= 0
 		do
 			weeks := wk
+			value := as_string
 		end
 	
-feature -- Access Control
+feature -- Access
+
+	value: STRING
+			-- ISO8601 string form of duration, always synchronised with as_string
 
 	years: INTEGER
-	
+			-- extracted year count
+		
 	months: INTEGER
+			-- extracted month count
 	
 	weeks: INTEGER
+			-- extracted week count
 	
 	days: INTEGER
+			-- extracted day count
 	
 	hours: INTEGER
+			-- extracted hour count
 	
 	minutes: INTEGER
+			-- extracted minute count
 	
 	seconds: INTEGER
+			-- extracted second count
 	
-	seconds_fraction: DOUBLE
+	fractional_seconds: DOUBLE
+			-- extracted fractional seconds
 	
-	sign: CHARACTER
+	sign: INTEGER
+			-- sign of duration; value is +1 or -1
 	
 feature -- Status Report
 
@@ -103,7 +125,7 @@ feature -- Status Report
 	is_zero: BOOLEAN is
 			-- True if total value is zero
 		do
-			Result := weeks = 0 and years + months + days + hours + minutes + seconds = 0
+			Result := weeks = 0 and years + months + days + hours + minutes + seconds = 0 and fractional_seconds = 0.0
 		end
 		
 feature -- Comparison
@@ -111,14 +133,7 @@ feature -- Comparison
 	infix "<" (other: like Current): BOOLEAN is
 			-- Is current object less than `other'?
 		do
-		end
-
-feature -- Modification
-
-	set_sign_negative is
-			-- set sign to '-'
-		do
-			sign := '-'
+			Result := to_seconds > other.to_seconds
 		end
 		
 feature -- Output
@@ -129,9 +144,6 @@ feature -- Output
 			sec_frac_str: STRING
 		do
 			create Result.make(0)
-			if sign = '-' then
-				Result.append_character(sign)
-			end
 			
 			Result.append_character(Duration_leader)
 
@@ -163,10 +175,10 @@ feature -- Output
 
 					if seconds /= 0 then
 						Result.append(seconds.out)
-						if seconds_fraction > 0.0 then
-							Result.append_character(Decimal_separator)
-							sec_frac_str := seconds_fraction.out
-							Result.append(sec_frac_str.substring(sec_frac_str.index_of('.', 1)+1, sec_frac_str.count))
+						if fractional_seconds > 0.0 then
+							Result.append_character(iso8601_decimal_separator)
+							sec_frac_str := fractional_seconds.out
+							Result.append(sec_frac_str.substring(sec_frac_str.index_of(decimal_separator, 1)+1, sec_frac_str.count))
 						end
 						Result.append("S")
 					end			
@@ -184,6 +196,18 @@ feature -- Output
 		do
 			Result := as_string
 		end
+
+feature -- Conversion
+
+	to_seconds: DOUBLE is
+			-- convert to signed numeric form for comparison. The result is a number of seconds.
+			-- If there are months, the value is based on an average number of seconds per month and
+			-- is therefore slightly statistical
+		do
+			Result := (((years  + months/months_in_year) * days_in_4_years/4) + weeks * days_in_week + days) * seconds_in_day +
+				hours * seconds_in_hour + minutes * seconds_in_minute + seconds
+			Result := Result + fractional_seconds -- (Double-precision fp operation)
+		end
 		
 invariant		
 	years_valid: years >= 0
@@ -193,7 +217,9 @@ invariant
 	hours_valid: hours >= 0
 	minutes_valid: minutes >= 0
 	seconds_valid: seconds >= 0
-	seconds_fraction_valid: seconds_fraction >= 0.0 and seconds_fraction < 1.0
+	fractional_second_valid: fractional_seconds >= 0.0 and fractional_seconds < 1.0
+
+	Value_validity: value.is_equal(as_string)
 
 end
 

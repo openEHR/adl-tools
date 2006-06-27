@@ -20,69 +20,45 @@ class DV_DURATION
 
 inherit
 	DV_CUSTOMARY_QUANTITY
-		redefine
-			default_create, is_equal, infix "<"
+		undefine
+			out, infix "<", default_create
 		end
 		
-	DATE_TIME_ROUTINES
-		export
-			{NONE} all
+	ISO8601_DURATION
 		undefine
-			is_equal, default_create
+			default_create
 		end
 		
 create 
-	default_create,
-	make_definite,
-	make_from_string,
-	make_from_canonical_string
+	default_create, make, make_weeks, make_from_string, make_from_canonical_string
 
 feature -- Initialization
 
 	default_create is
 			-- make of duration days = 0, hours = 0, mins = 0, seconds = 0
 		do
-			create impl.make_definite (0, 0, 0, 0)
+			make(0, 0, 0, 0, 0, 0, 0.0)
 		ensure then
-			day_set: days = 0
-			hour_set: hours = 0
-			minute_set: minutes = 0
-			second_set: seconds = 0
-		end
-
-	make_definite (d, h, m, s: INTEGER) is
-			-- Set `day' to `d'.
-			-- Set `hour', `minute', `second' to `h', `m', `s'.
-		do
-			create impl.make_definite (d, h, m, s)
-		ensure
-			day_set: days = d
-			hour_set: hours = h
-			minute_set: minutes = m
-			second_set: seconds = s
-		end
-
-	make_from_string (str: STRING) is
-			-- make from string using ISO8601 format "PNNdNNhNNmNNs"
-		do
-			impl := iso8601_string_to_duration(str)
+			years_set: years = 0
+			months_set: months = 0
+			days_set: days = 0
+			hours_set: hours = 0
+			minutes_set: minutes = 0
+			seconds_set: seconds = 0
 		end
 		
 	make_from_canonical_string (str: STRING) is
 			-- make from string using default format
 		do
+			make_from_string(str)
 		end
 
 feature -- Status Report
 
-	definite: BOOLEAN is
-		do
-			Result := impl.definite
-		end
-
 	valid_canonical_string(str: STRING): BOOLEAN is
 			-- True if str contains required tags
 		do
+			Result := valid_iso8601_duration (str)
 		end
 
 feature -- Access
@@ -90,55 +66,15 @@ feature -- Access
 	magnitude: DOUBLE_REF is
 			-- numeric value of the quantity
 		do
-			create Result
-			Result.set_item(impl.day * seconds_in_day + impl.hour * seconds_in_hour + impl.minute * seconds_in_minute + impl.fine_second)
+			Result := to_seconds
 		end
 
-	days: INTEGER is
-		do
-			Result := impl.day
+	diff_type: DV_DURATION is
+			--
+		once
 		end
-
-	hours: INTEGER is
-		do
-			Result := impl.hour
-		end
-
-	minutes: INTEGER is
-		do
-			Result := impl.minute
-		end
-
-	seconds: INTEGER is
-		do
-			Result := impl.second
-		end
-
-	diff_type: DV_DURATION
 		
 feature -- Comparison
-
-	infix "<" (other: like Current): BOOLEAN is
-			-- Is the current duration smaller than `other'?
-			-- False if either is not definite
-		do
-			Result := impl < other.impl
-		end
-
-	is_equal (other: like Current): BOOLEAN is
-			-- Are the current duration an `other' equal?
-		do
-			Result := impl.is_equal (other.impl)
-		end
-	
-	is_valid_duration(d, h, mi, s:INTEGER): BOOLEAN is
-			-- check validity of duration
-		local
-			tvc: TIME_VALIDITY_CHECKER
-		do
-			create tvc
-			Result := tvc.is_correct_time(h, mi, s, False)
-		end
 		
 	is_strictly_comparable_to (other: like Current): BOOLEAN is
 		do
@@ -150,48 +86,35 @@ feature -- Basic Operations
 	infix "+" (other: like diff_type): like Current is
 			-- addition
 		do
-			impl := impl + other.impl
 		end
 
 	infix "-" (other: like diff_type): like Current is
 			-- subtraction
 		do
-			impl := impl - other.impl
 		end
 
 	prefix "-": like Current is
 			-- Unary minus
 		do
-			impl := -impl
 		end
 		
 feature -- Conversion
 
 	to_quantity: DV_QUANTITY is
-			-- convert to a number of seconds (the unit "s" is an ISO base unit).
-		do		
+			-- express as Quantity with magnitude = magnitude from this class
+		do
+			create Result.make (magnitude, "s")
+		ensure then
+			Result.magnitude = magnitude
+			Result.units.is_equal("s")
 		end
 
 feature -- Output
 
-	as_string: STRING is
-			-- output as ISO 8601 string
-		do
-			Result := duration_to_iso8601_string(impl)
-		end
-	
 	as_canonical_string: STRING is
 		do
 			Result := as_string
 		end
-	
-feature {DV_DATE, DV_TIME, DV_DATE_TIME, DV_DURATION} -- Implementation
-
-	impl: DATE_TIME_DURATION
-	
-invariant
-	
-	validity: is_valid_duration(days, hours, minutes, seconds)
 	
 end
 

@@ -3047,7 +3047,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 842")
 end
 
-			if is_valid_iso8601_date(yyvs4.item (yyvsp4)) then
+			if valid_iso8601_date(yyvs4.item (yyvsp4)) then
 				create yyval7.make_from_string(yyvs4.item (yyvsp4))
 			else
 				raise_error
@@ -3355,7 +3355,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 904")
 end
 
-			if is_valid_iso8601_time(yyvs4.item (yyvsp4)) then
+			if valid_iso8601_time(yyvs4.item (yyvsp4)) then
 				create yyval9.make_from_string(yyvs4.item (yyvsp4))
 			else
 				raise_error
@@ -3663,7 +3663,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 966")
 end
 
-			if is_valid_iso8601_date_time(yyvs4.item (yyvsp4)) then
+			if valid_iso8601_date_time(yyvs4.item (yyvsp4)) then
 				create yyval8.make_from_string(yyvs4.item (yyvsp4))
 			else
 				raise_error
@@ -3971,7 +3971,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 1028")
 end
 
-			if is_valid_iso8601_duration(yyvs4.item (yyvsp4)) then
+			if valid_iso8601_duration(yyvs4.item (yyvsp4)) then
 				create yyval10.make_from_string(yyvs4.item (yyvsp4))
 			else
 				raise_error
@@ -4002,47 +4002,9 @@ if yy_parsing_status = yyContinue then
 	yyvs10.put (yyval10, yyvsp10)
 end
 when 128 then
---|#line 1038 "dadl2_validator.y"
+--|#line 1040 "dadl2_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 1038")
-end
-
-			if is_valid_iso8601_duration(yyvs4.item (yyvsp4)) then
-				create yyval10.make_from_string(yyvs4.item (yyvsp4))
-				yyval10.set_sign_negative
-			else
-				raise_error
-				report_error("invalid ISO8601 duration: " + yyvs4.item (yyvsp4))
-				abort
-			end
-		
-if yy_parsing_status = yyContinue then
-	yyssp := yyssp - 2
-	yyvsp10 := yyvsp10 + 1
-	yyvsp1 := yyvsp1 -1
-	yyvsp4 := yyvsp4 -1
-	if yyvsp10 >= yyvsc10 then
-		if yyvs10 = Void then
-			debug ("GEYACC")
-				std.error.put_line ("Create yyvs10")
-			end
-			create yyspecial_routines10
-			yyvsc10 := yyInitial_yyvs_size
-			yyvs10 := yyspecial_routines10.make (yyvsc10)
-		else
-			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs10")
-			end
-			yyvsc10 := yyvsc10 + yyInitial_yyvs_size
-			yyvs10 := yyspecial_routines10.resize (yyvs10, yyvsc10)
-		end
-	end
-	yyvs10.put (yyval10, yyvsp10)
-end
-when 129 then
---|#line 1051 "dadl2_validator.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 1051")
+	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 1040")
 end
 
 			create yyval27.make(0)
@@ -4072,10 +4034,10 @@ if yy_parsing_status = yyContinue then
 	end
 	yyvs27.put (yyval27, yyvsp27)
 end
-when 130 then
---|#line 1057 "dadl2_validator.y"
+when 129 then
+--|#line 1046 "dadl2_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 1057")
+	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 1046")
 end
 
 			yyvs27.item (yyvsp27).extend(yyvs10.item (yyvsp10))
@@ -4087,10 +4049,10 @@ if yy_parsing_status = yyContinue then
 	yyvsp10 := yyvsp10 -1
 	yyvs27.put (yyval27, yyvsp27)
 end
-when 131 then
---|#line 1062 "dadl2_validator.y"
+when 130 then
+--|#line 1051 "dadl2_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 1062")
+	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 1051")
 end
 
 			create yyval27.make(0)
@@ -4119,10 +4081,10 @@ if yy_parsing_status = yyContinue then
 	end
 	yyvs27.put (yyval27, yyvsp27)
 end
-when 132 then
---|#line 1069 "dadl2_validator.y"
+when 131 then
+--|#line 1058 "dadl2_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 1069")
+	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 1058")
 end
 
 			create duration_interval.make_bounded(yyvs10.item (yyvsp10 - 1), yyvs10.item (yyvsp10), True, True)
@@ -4151,10 +4113,10 @@ if yy_parsing_status = yyContinue then
 	end
 	yyvs35.put (yyval35, yyvsp35)
 end
-when 133 then
---|#line 1074 "dadl2_validator.y"
+when 132 then
+--|#line 1063 "dadl2_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 1074")
+	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 1063")
 end
 
 			create duration_interval.make_lower_unbounded(yyvs10.item (yyvsp10), False)
@@ -4183,10 +4145,10 @@ if yy_parsing_status = yyContinue then
 	end
 	yyvs35.put (yyval35, yyvsp35)
 end
-when 134 then
---|#line 1079 "dadl2_validator.y"
+when 133 then
+--|#line 1068 "dadl2_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 1079")
+	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 1068")
 end
 
 			create duration_interval.make_lower_unbounded(yyvs10.item (yyvsp10), True)
@@ -4215,10 +4177,10 @@ if yy_parsing_status = yyContinue then
 	end
 	yyvs35.put (yyval35, yyvsp35)
 end
-when 135 then
---|#line 1084 "dadl2_validator.y"
+when 134 then
+--|#line 1073 "dadl2_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 1084")
+	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 1073")
 end
 
 			create duration_interval.make_upper_unbounded(yyvs10.item (yyvsp10), False)
@@ -4247,10 +4209,10 @@ if yy_parsing_status = yyContinue then
 	end
 	yyvs35.put (yyval35, yyvsp35)
 end
-when 136 then
---|#line 1089 "dadl2_validator.y"
+when 135 then
+--|#line 1078 "dadl2_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 1089")
+	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 1078")
 end
 
 			create duration_interval.make_upper_unbounded(yyvs10.item (yyvsp10), True)
@@ -4279,10 +4241,10 @@ if yy_parsing_status = yyContinue then
 	end
 	yyvs35.put (yyval35, yyvsp35)
 end
-when 137 then
---|#line 1094 "dadl2_validator.y"
+when 136 then
+--|#line 1083 "dadl2_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 1094")
+	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 1083")
 end
 
 			create duration_interval.make_point(yyvs10.item (yyvsp10))
@@ -4311,10 +4273,10 @@ if yy_parsing_status = yyContinue then
 	end
 	yyvs35.put (yyval35, yyvsp35)
 end
-when 138 then
---|#line 1101 "dadl2_validator.y"
+when 137 then
+--|#line 1090 "dadl2_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 1101")
+	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 1090")
 end
 
 			create term.make(yyvs4.item (yyvsp4))
@@ -4342,10 +4304,10 @@ if yy_parsing_status = yyContinue then
 	end
 	yyvs11.put (yyval11, yyvsp11)
 end
-when 139 then
---|#line 1106 "dadl2_validator.y"
+when 138 then
+--|#line 1095 "dadl2_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 1106")
+	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 1095")
 end
 
 			raise_error
@@ -4374,10 +4336,10 @@ if yy_parsing_status = yyContinue then
 	end
 	yyvs11.put (yyval11, yyvsp11)
 end
-when 140 then
---|#line 1114 "dadl2_validator.y"
+when 139 then
+--|#line 1103 "dadl2_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 1114")
+	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 1103")
 end
 
 			create yyval28.make(0)
@@ -4407,10 +4369,10 @@ if yy_parsing_status = yyContinue then
 	end
 	yyvs28.put (yyval28, yyvsp28)
 end
-when 141 then
---|#line 1120 "dadl2_validator.y"
+when 140 then
+--|#line 1109 "dadl2_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 1120")
+	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 1109")
 end
 
 			yyvs28.item (yyvsp28).extend(yyvs11.item (yyvsp11))
@@ -4422,10 +4384,10 @@ if yy_parsing_status = yyContinue then
 	yyvsp11 := yyvsp11 -1
 	yyvs28.put (yyval28, yyvsp28)
 end
-when 142 then
---|#line 1125 "dadl2_validator.y"
+when 141 then
+--|#line 1114 "dadl2_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 1125")
+	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 1114")
 end
 
 			create yyval28.make(0)
@@ -4454,10 +4416,10 @@ if yy_parsing_status = yyContinue then
 	end
 	yyvs28.put (yyval28, yyvsp28)
 end
-when 143 then
---|#line 1132 "dadl2_validator.y"
+when 142 then
+--|#line 1121 "dadl2_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 1132")
+	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 1121")
 end
 
 			create a_uri.make_from_string(yyvs4.item (yyvsp4))
@@ -4499,7 +4461,7 @@ end
 			-- Execute error action.
 		do
 			inspect yy_act
-			when 241 then
+			when 239 then
 					-- End-of-file expected action.
 				report_eof_expected_error
 			else
@@ -4563,9 +4525,9 @@ feature {NONE} -- Table templates
 
 			   64,   73,   73,   73,   73,   73,   73,   48,   65,   65,
 			   65,   72,   72,   72,   72,   72,   72,   47,   66,   66,
-			   66,   74,   74,   74,   74,   74,   74,   49,   49,   67,
-			   67,   67,   75,   75,   75,   75,   75,   75,   50,   50,
-			   68,   68,   68,   51, yyDummy>>)
+			   66,   74,   74,   74,   74,   74,   74,   49,   67,   67,
+			   67,   75,   75,   75,   75,   75,   75,   50,   50,   68,
+			   68,   68,   51, yyDummy>>)
 		end
 
 	yytypes1_template: SPECIAL [INTEGER] is
@@ -4580,24 +4542,24 @@ feature {NONE} -- Table templates
 			    1,    1,    4,    1,    4,    4,    2,    3,    6,    5,
 			    7,    8,    9,   10,   11,   15,   17,   19,   21,   23,
 			   24,   25,   26,   27,   28,   29,   30,   31,   32,   33,
-			   34,   35,   37,    1,    1,   14,    4,    3,    2,    3,
+			   34,   35,   37,    1,    1,   14,    3,    2,    3,    2,
 
-			    2,    1,    1,    1,    1,    1,    1,    2,    3,    7,
+			    1,    1,    1,    1,    1,    1,    2,    3,    7,    8,
+			    9,   10,    1,    1,    1,    1,    1,    1,    1,    1,
+			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+			    1,    1,    1,    2,    3,    7,    8,    9,   10,    2,
+			    3,    7,    8,    9,   10,    2,    3,    7,    8,    9,
+			   10,    2,    3,    7,    8,    9,   10,    1,    1,    1,
+			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+			    4,    1,    1,    1,    2,    1,    1,    1,    3,    1,
+			    6,    1,    5,    1,    7,    1,    8,    1,    9,    1,
+			   10,    1,   11,    4,    2,    3,    5,    6,    7,    9,
+
+			    8,   10,   11,    1,    1,    1,    1,    1,    1,    1,
+			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+			    1,    1,    1,    1,    1,    1,    1,    2,    3,    7,
 			    8,    9,   10,    1,    1,    1,    1,    1,    1,    1,
-			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-			    1,    1,    1,    1,    2,    3,    7,    8,    9,   10,
-			    2,    3,    7,    8,    9,   10,    2,    3,    7,    8,
-			    9,   10,    2,    3,    7,    8,    9,   10,    1,    1,
-			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-			    1,    4,    1,    1,    1,    2,    1,    1,    1,    3,
-			    1,    6,    1,    5,    1,    7,    1,    8,    1,    9,
-			    1,    1,   10,    1,   11,    4,    2,    3,    5,    6,
-
-			    7,    9,    8,   10,   11,    1,    1,    1,    1,    1,
-			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-			    1,    1,    1,    1,    1,    1,    1,    1,    1,    2,
-			    3,    7,    8,    9,   10,    1,    1,    1,    1,    1,
-			    1,    1,    1,    1, yyDummy>>)
+			    1,    1, yyDummy>>)
 		end
 
 	yytypes2_template: SPECIAL [INTEGER] is
@@ -4616,30 +4578,30 @@ feature {NONE} -- Table templates
 			    0,   26,    0,    0,    3,   12,   22,   13,   14,    2,
 			    1,    4,    0,    0,    0,    9,   23,   15,    0,    5,
 			    0,    0,    0,   18,    0,   24,    0,    6,   26,    0,
-			   10,   27,   11,    7,    0,    0,   89,   88,   93,  143,
+			   10,   27,   11,    7,    0,    0,   89,   88,   93,  142,
 			  127,  117,  107,   97,   60,   76,   64,   36,   37,   38,
 			   39,   40,   42,   41,   43,   44,    0,   35,   16,   19,
-			    0,   25,  139,    0,  138,   60,   36,   37,   38,   39,
+			    0,   25,  138,    0,  137,   60,   36,   37,   38,   39,
 			   40,   42,   41,   43,   33,   45,   46,   47,   49,   48,
 			   50,   51,   52,   53,   34,   31,   54,   55,   57,   56,
-			   58,   59,   32,   30,    0,   28,  128,   78,   66,   77,
+			   58,   59,   32,   30,    0,   28,   78,   66,   77,   65,
 
-			   65,   21,   20,    0,    0,    0,    0,    0,    0,    0,
+			   21,   20,    0,    0,    0,    0,    0,    0,    0,    0,
 			    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
 			    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-			    0,    0,    0,   29,    0,    0,    0,    0,    0,    0,
+			    0,    0,   29,    0,    0,    0,    0,    0,    0,    0,
 			    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-			    0,    0,    0,    0,    0,    0,    0,    0,   75,    0,
-			   87,    0,  106,    0,  126,    0,  116,    0,  137,    0,
-			   63,   61,    0,    0,   69,   67,    0,    0,   81,   79,
-			   92,   90,   96,   94,  100,   98,  120,  118,  110,  108,
-			    0,  131,  129,  142,  140,   62,   68,   80,   95,   91,
+			    0,    0,    0,    0,    0,    0,    0,   75,    0,   87,
+			    0,  106,    0,  126,    0,  116,    0,  136,    0,   63,
+			   61,    0,    0,   69,   67,    0,    0,   81,   79,   92,
+			   90,   96,   94,  100,   98,  120,  118,  110,  108,  130,
+			  128,  141,  139,   62,   68,   80,   95,   91,   99,  109,
 
-			   99,  109,  119,  130,  141,   74,   86,  105,  125,  115,
-			  136,   72,   84,  103,  123,  113,  134,   73,   85,  104,
-			  124,  114,  135,   71,   83,  102,  122,  112,  133,    0,
-			    0,    0,    0,    0,    0,   70,   82,  101,  121,  111,
-			  132,    0,    0,    0, yyDummy>>)
+			  119,  129,  140,   74,   86,  105,  125,  115,  135,   72,
+			   84,  103,  123,  113,  133,   73,   85,  104,  124,  114,
+			  134,   71,   83,  102,  122,  112,  132,    0,    0,    0,
+			    0,    0,    0,   70,   82,  101,  121,  111,  131,    0,
+			    0,    0, yyDummy>>)
 		end
 
 	yydefgoto_template: SPECIAL [INTEGER] is
@@ -4648,120 +4610,120 @@ feature {NONE} -- Table templates
 			   47,   48,   49,   50,   51,   52,   53,   54,   74,   55,
 			    5,    6,    7,    8,   30,   31,   32,   75,   76,   77,
 			   78,   79,   80,   81,   82,   83,   84,   85,   86,   87,
-			   88,   89,   90,   91,   92,  241,   10,   11,   12,   33,
+			   88,   89,   90,   91,   92,  239,   10,   11,   12,   33,
 			   13,   22,   23,   24,   56,   14,   94,   57, yyDummy>>)
 		end
 
 	yypact_template: SPECIAL [INTEGER] is
 		once
 			Result := yyfixed_array (<<
-			  178,  239,   12,  255, -32768, -32768, -32768, -32768, -32768, -32768,
-			   23, -32768,  238,  184,  174, -32768, -32768, -32768,  235, -32768,
-			  130,   17,  -18, -32768,  237, -32768,  136, -32768,  122,  234,
-			 -32768, -32768, -32768, -32768,    6,  148, -32768, -32768, -32768, -32768,
+			  177,  234,   49,  252, -32768, -32768, -32768, -32768, -32768, -32768,
+			    1, -32768,  248,  232,  165, -32768, -32768, -32768,  231, -32768,
+			  136,   17,  -18, -32768,  236, -32768,   23, -32768,  121,  230,
+			 -32768, -32768, -32768, -32768,  176,  148, -32768, -32768, -32768, -32768,
 			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
-			 -32768, -32768, -32768, -32768, -32768, -32768,  168, -32768, -32768, -32768,
-			  130, -32768, -32768,  157, -32768,  233,  232,  231,  230,  229,
-			  228,  227,  226,  225,  224,  223,  222,  221,  220,  217,
-			  216,  215,  214,  212,  177, -32768, -32768, -32768, -32768, -32768,
-			 -32768, -32768, -32768, -32768,  218, -32768, -32768, -32768, -32768, -32768,
+			 -32768, -32768, -32768, -32768, -32768, -32768,  229, -32768, -32768, -32768,
+			  136, -32768, -32768,  156, -32768,  227,  226,  225,  224,  223,
+			  222,  221,  220,  219,  218,  216,  215,  214,  213,  212,
+			  211,  178,  175,  174,  172, -32768, -32768, -32768, -32768, -32768,
+			 -32768, -32768, -32768, -32768,  217, -32768, -32768, -32768, -32768, -32768,
 
-			 -32768, -32768, -32768,  167,  167,  167,  167,  180,  179,  171,
-			  170,   99,   74,   43,    0,   14,   42,   75,   52,  134,
-			   95,   31,  105,  213,    8,   11,  219,   34,  197,  172,
-			  192,   -4,   32, -32768,  211,  210,  209,  208,  207,  206,
-			  205,  204,  203,  202,  201,  200,  199,  198,  195,  194,
-			  193,  191,  190,  189,  188,  187,  186,  185, -32768,    8,
-			 -32768,   11, -32768,  197, -32768,  192, -32768,  172, -32768,   -4,
-			 -32768, -32768,  196,  182, -32768, -32768,  169,  154, -32768, -32768,
+			 -32768, -32768,  166,  166,  166,  166,  169,  126,   76,   72,
+			   70,  -11,  112,    0,   14,   40,   -8,  114,  133,   94,
+			   -6,  104,  228,    8,   11,  183,   36,  193,  190,  192,
+			  187,   18, -32768,  210,  209,  208,  207,  206,  205,  204,
+			  203,  202,  201,  200,  199,  198,  197,  196,  195,  194,
+			  188,  186,  185,  184,  181,  180,  179, -32768,    8, -32768,
+			   11, -32768,  193, -32768,  192, -32768,  190, -32768,  187, -32768,
+			 -32768,  191,  189, -32768, -32768,  168,  153, -32768, -32768, -32768,
 			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
-			  143, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
+			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
 
 			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
 			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
-			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,  129,
-			  113,   97,   77,   47,  -10, -32768, -32768, -32768, -32768, -32768,
-			 -32768,   63,    5, -32768, yyDummy>>)
+			 -32768, -32768, -32768, -32768, -32768, -32768, -32768,  167,  129,   96,
+			   47,   41,   -7, -32768, -32768, -32768, -32768, -32768, -32768,   61,
+			    6, -32768, yyDummy>>)
 		end
 
 	yypgoto_template: SPECIAL [INTEGER] is
 		once
 			Result := yyfixed_array (<<
-			   10,    3,   -5,  -26,  -16,  -20,  -24,  -28, -116, -32768,
-			 -32768,   65, -32768,   27,  240,  248, -32768, -32768, -32768, -32768,
+			   10,    3,   -5,  -26,  -16,  -20,  -24,  -28,  -61, -32768,
+			 -32768,   43, -32768,   27,  238,  245, -32768, -32768, -32768, -32768,
 			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
-			 -32768, -32768, -32768, -32768, -32768, -32768,  236,  164, -32768,  183,
-			 -32768, -32768,  253, -32768,  246, -32768, -32768, -32768, yyDummy>>)
+			 -32768, -32768, -32768, -32768, -32768, -32768,  233,  163, -32768,  155,
+			 -32768, -32768,  251, -32768,  244, -32768, -32768, -32768, yyDummy>>)
 		end
 
 	yytable_template: SPECIAL [INTEGER] is
 		once
 			Result := yyfixed_array (<<
-			   73,   58,   69,   46,   72,  243,  194,   40,   71,   98,
-			   97,   46,   70,   15,  240,   45,  204,   96,   45,   21,
-			   46,   45,  174,   68,   44,   43,   42,   41,   40,    2,
-			   17,   67,   -8,   39,   38,  112,  178,  190,   66,  111,
-			  173,  172,   40,  110,   37,   36,   64,  109,  173,  172,
-			  171,  177,  176,  191,  177,  176,   17,   35,   34,   18,
-			   43,   37,   36,  242,  180,  170,  108,   62,   16,   37,
-			   36,  239,  190,  107,  184,  139,  145,  151,  157,  138,
-			  144,  150,  156,  137,  143,  149,  155,  136,  142,  148,
-			  154,  183,   38,  192,   16,  169,  189,  182,  168,  187,
+			   73,   58,   69,   46,   72,   40,  241,    2,   71,   38,
+			  168,   46,   70,  167,  181,   45,  189,  238,   45,   21,
+			   46,   45,  173,   68,   44,   43,   42,   41,   40,    2,
+			   17,   67,   64,   39,   38,  111,  177,   18,   66,  110,
+			  172,  171,   61,  109,   37,   36,   16,  108,  172,  171,
+			   15,  176,  175,   62,  176,  175,   17,   35,   34,   18,
+			  192,  240,  179,   37,   36,  237,  107,   37,   36,   -8,
+			  202,  236,   16,  106,  138,  144,  150,  156,  137,  143,
+			  149,  155,  136,  142,  148,  154,  135,  141,  147,  153,
+			  182,  166,  190,  164,  165,  188,  163,  162,  186,  196,
 
-			  198,  238,  185,  203,   42,  201,  135,  141,  147,  153,
-			  202,  181,  200,  134,  140,  146,  152,  188,  179,   64,
-			  167,  237,  199,  166,  175,   46,   45,  193,  197,   65,
-			   43,   42,   41,   40,  196,   29,   64,  236,   39,   38,
-			   62,  234,    2,  233,   41,  232,   63,  231,   28,   37,
-			   36,  100,   99,  235,   96,   61,  186,   62,   99,  -17,
-			   46,   45,   35,   34,  230,   43,   42,   41,   40,  229,
-			   46,   45,   18,   97,   19,   43,   42,   41,   40,    4,
-			    2,   42,   27,    3,    2,  100,  106,  105,  104,  103,
-			   19,  165,  163,   25,  164,  162,    1,   35,   34,   98,
+			  161,  184,  201,   42,  199,  134,  140,  146,  152,  200,
+			  180,  198,  133,  139,  145,  151,  187,  178,   64,  170,
+			  235,  197,   43,  174,   46,   45,  191,  195,   65,   43,
+			   42,   41,   40,  194,  169,   64,  183,   39,   38,   62,
+			  232,   29,  231,   41,  230,   63,  229,  160,   37,   36,
+			  159,   99,   98,  234,   28,  185,   62,   98,  -17,   46,
+			   45,   35,   34,  228,   43,   42,   41,   40,  227,   46,
+			   45,    2,   96,   19,   43,   42,   41,   40,    4,   97,
+			   96,   27,    3,    2,   25,  105,  104,  103,  102,   19,
+			  158,  233,   99,  157,   97,    1,   35,   34,   40,   42,
 
-			  161,  159,   41,  160,  158,   43,  101,   35,   34,  228,
-			  227,  226,  225,  224,  223,  222,  132,  221,  220,  219,
-			  195,   21,  218,  217,  216,  215,  214,  213,  212,  211,
-			  210,  209,  208,  207,  206,  205,   38,  133,    0,    0,
-			    9,    2,    0,  102,    0,    0,    0,    0,    0,    0,
-			   26,  131,   28,  130,  129,  128,  127,   60,   20,  126,
-			  125,  124,  123,  122,  121,  120,  119,  118,  117,  116,
-			  115,  114,  113,    1,   93,   59,  -17,   95, yyDummy>>)
+			   38,   43,   41,  226,  225,  224,   35,   34,  223,  222,
+			  221,  131,  220,  130,  129,  101,    0,  128,  219,  218,
+			  217,  216,  215,  214,  213,  212,  211,  210,  209,  208,
+			  207,  206,  205,  204,  203,  193,  132,    2,    9,    0,
+			    0,    0,    0,    0,    0,    0,    0,   26,   28,    0,
+			  127,  126,  125,  124,  123,  122,   60,  121,  120,  119,
+			  118,  117,  116,  115,  114,  113,  112,  100,   20,   21,
+			    1,  -17,   93,   59,   95, yyDummy>>)
 		end
 
 	yycheck_template: SPECIAL [INTEGER] is
 		once
 			Result := yyfixed_array (<<
-			   28,   19,   28,    3,   28,    0,  122,   11,   28,    3,
-			    4,    3,   28,    1,   24,    4,  132,   11,    4,   37,
+			   28,   19,   28,    3,   28,   11,    0,    6,   28,   17,
+			   21,    3,   28,   24,   22,    4,   22,   24,    4,   37,
 			    3,    4,   22,   28,    7,    8,    9,   10,   11,    6,
-			    3,   28,   20,   16,   17,   63,   22,   41,   28,   63,
-			   40,   41,   11,   63,   27,   28,   14,   63,   40,   41,
-			    7,   40,   41,   22,   40,   41,   29,   40,   41,   36,
-			    8,   27,   28,    0,   22,   22,   63,   35,    3,   27,
-			   28,   24,   41,   63,   22,  103,  104,  105,  106,  103,
-			  104,  105,  106,  103,  104,  105,  106,  103,  104,  105,
-			  106,  117,   17,  121,   29,   21,  120,   22,   24,  119,
+			    3,   28,   14,   16,   17,   63,   22,   36,   28,   63,
+			   40,   41,   19,   63,   27,   28,    3,   63,   40,   41,
+			    1,   40,   41,   35,   40,   41,   29,   40,   41,   36,
+			  121,    0,   22,   27,   28,   24,   63,   27,   28,   20,
+			  131,   24,   29,   63,  102,  103,  104,  105,  102,  103,
+			  104,  105,  102,  103,  104,  105,  102,  103,  104,  105,
+			  116,   21,  120,   21,   24,  119,   24,   21,  118,  125,
 
-			  126,   24,  118,  131,    9,  129,  103,  104,  105,  106,
-			  130,  116,  128,  103,  104,  105,  106,   22,  115,   14,
-			   21,   24,  127,   24,  114,    3,    4,   22,  125,    7,
-			    8,    9,   10,   11,  124,    5,   14,   24,   16,   17,
-			   35,  169,    6,  167,   10,  165,   24,  163,   18,   27,
-			   28,    3,    4,   24,   11,   19,   22,   35,    4,   37,
-			    3,    4,   40,   41,  161,    8,    9,   10,   11,  159,
-			    3,    4,   36,    4,   10,    8,    9,   10,   11,    1,
-			    6,    9,   18,    5,    6,    3,   29,   30,   31,   32,
-			   26,   21,   21,   19,   24,   24,   18,   40,   41,    3,
+			   24,  117,  130,    9,  128,  102,  103,  104,  105,  129,
+			  115,  127,  102,  103,  104,  105,   22,  114,   14,    7,
+			   24,  126,    8,  113,    3,    4,   22,  124,    7,    8,
+			    9,   10,   11,  123,   22,   14,   22,   16,   17,   35,
+			  168,    5,  166,   10,  164,   24,  162,   21,   27,   28,
+			   24,    3,    4,   24,   18,   22,   35,    4,   37,    3,
+			    4,   40,   41,  160,    8,    9,   10,   11,  158,    3,
+			    4,    6,    4,   10,    8,    9,   10,   11,    1,    3,
+			    4,   18,    5,    6,   19,   29,   30,   31,   32,   26,
+			   21,   24,    3,   24,    3,   18,   40,   41,   11,    9,
 
-			   21,   21,   10,   24,   24,    8,   38,   40,   41,   24,
-			   24,   24,   24,   24,   24,   24,   39,   24,   24,   24,
-			    7,   37,   24,   24,   24,   24,   24,   24,   24,   24,
-			   24,   24,   24,   24,   24,   24,   17,   19,   -1,   -1,
-			    0,    6,   -1,   60,   -1,   -1,   -1,   -1,   -1,   -1,
-			   14,   39,   18,   39,   39,   39,   39,   20,   20,   39,
-			   39,   39,   39,   39,   39,   39,   39,   39,   39,   39,
-			   39,   39,   39,   18,   28,   22,   37,   29, yyDummy>>)
+			   17,    8,   10,   24,   24,   24,   40,   41,   24,   24,
+			   24,   39,   24,   39,   39,   60,   -1,   39,   24,   24,
+			   24,   24,   24,   24,   24,   24,   24,   24,   24,   24,
+			   24,   24,   24,   24,   24,    7,   19,    6,    0,   -1,
+			   -1,   -1,   -1,   -1,   -1,   -1,   -1,   14,   18,   -1,
+			   39,   39,   39,   39,   39,   39,   20,   39,   39,   39,
+			   39,   39,   39,   39,   39,   39,   39,   38,   20,   37,
+			   18,   37,   28,   22,   29, yyDummy>>)
 		end
 
 feature {NONE} -- Semantic value stacks
@@ -5212,7 +5174,7 @@ feature {NONE} -- Semantic value stacks
 
 feature {NONE} -- Constants
 
-	yyFinal: INTEGER is 243
+	yyFinal: INTEGER is 241
 			-- Termination state id
 
 	yyFlag: INTEGER is -32768
@@ -5221,7 +5183,7 @@ feature {NONE} -- Constants
 	yyNtbase: INTEGER is 42
 			-- Number of tokens
 
-	yyLast: INTEGER is 277
+	yyLast: INTEGER is 274
 			-- Upper bound of `yytable' and `yycheck'
 
 	yyMax_token: INTEGER is 290

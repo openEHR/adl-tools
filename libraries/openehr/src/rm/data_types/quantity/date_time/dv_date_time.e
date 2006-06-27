@@ -19,56 +19,36 @@ indexing
 class DV_DATE_TIME
 
 inherit
-	DV_WORLD_TIME
-		redefine
-			default_create, is_equal, infix "<"
+	DV_CUSTOMARY_QUANTITY
+		undefine
+			out, infix "<", default_create
+		end
+		
+	ISO8601_DATE_TIME
+		undefine
+			default_create
 		end
 
 create 
-	default_create,
-	make_now,
-	make_from_canonical_string,
-	make_from_string,
-	make_by_date_time
+	default_create,	make_from_string, make_date_time
 
 feature -- Definitions
-
-	Default_format: STRING is "yyyy-[0]mm-[0]dd [0]hh:[0]mi:[0]ss"
-			-- e.g.: "1998-04-19 13:03:02"
+			
+	Default_value: STRING is "1800-01-01T00:00:00"
 	
 feature -- Initialisation
 
 	default_create is
-			-- create the date/time "1800-01-01 00:00:00"
+			-- create the date/time "1800-01-01T00:00:00"
 		do
-			create impl.make_from_string ("1800-01-01 00:00:00", default_format)
+			make_from_string (value)
 		ensure then
-			default: as_string.is_equal ("1800-01-01 00:00:00")
+			default: as_string.is_equal (Default_value)
 		end
 
-	make_by_date_time(a_date: DV_DATE; a_time: DV_TIME) is
-			-- make from date and time values
-		require
-			a_date /= Void
-			a_time /= Void
+	make_from_canonical_string(str: STRING) is
 		do
-			create impl.make_by_date_time(a_date.impl, a_time.impl)
-		end
-		
-	make_now is
-		do
-			create impl.make_now
-		end
-
-	make_from_string (str: STRING) is
-			-- make from string using default format
-		do
-			create impl.make_from_string (str, default_format)
-		end
-
-	make_from_canonical_string (str: STRING) is
-			-- make from string using default format
-		do
+			make_from_string(str)
 		end
 
 feature -- Status Report
@@ -76,72 +56,20 @@ feature -- Status Report
 	valid_canonical_string(str: STRING): BOOLEAN is
 			-- True if str contains required tags
 		do
+			Result := valid_iso8601_date_time(str)
 		end
 
 feature -- Access
 
 	magnitude: DOUBLE_REF is
-			-- numeric value of the quantity
+			-- numeric value of the quantity in seconds
 		do
-			create Result
-			Result.set_item(impl.duration.fine_seconds_count)
+			Result := to_seconds
 		end
 
-	year: INTEGER is
-		do
-			Result := impl.year
-		end
-
-	month: INTEGER is
-		do
-			Result := impl.month
-		end
-
-	day: INTEGER is
-		do
-			Result := impl.day
-		end
-
-	hour: INTEGER is
-		do
-			Result := impl.hour
-		end
-
-	minute: INTEGER is
-		do
-			Result := impl.minute
-		end
-
-	second: INTEGER is
-		do
-			Result := impl.second
-		end
-
-	fractional_second: DOUBLE is
-		do
-			Result := impl.fractional_second
-		end
-
-	diff_type: DV_DURATION
-		
-feature -- Comparison
-
-	infix "<" (other: like Current): BOOLEAN is
-			-- Is the current duration smaller than `other'?
-		do
-			Result := impl < other.impl
-		end
-
-	is_equal (other: like Current): BOOLEAN is
-			-- Are the current duration an `other' equal?
-		do
-			Result := impl.is_equal (other.impl)
-		end
-	
-	is_valid_date_time(y, mo, d, h, mi, s:INTEGER):BOOLEAN is
-			-- check validity of date/time
-		do
-			Result := impl.is_correct_date_time (y, mo, d, h, mi, s, False)
+	diff_type: DV_DURATION is
+			--
+		once
 		end
 		
 feature -- Basic Operations
@@ -149,13 +77,13 @@ feature -- Basic Operations
 	infix "+" (other: like diff_type): like Current is
 			-- addition
 		do
-			-- impl := impl + other.impl
+
 		end
 
 	infix "-" (other: like Current): like diff_type is
 			-- difference
 		do
-			-- impl := impl - other.impl
+
 		end
 
 	subtract(other: like diff_type): like Current is
@@ -168,29 +96,29 @@ feature -- Basic Operations
 feature -- Conversion
 
 	to_quantity: DV_QUANTITY is
-			-- convert to a number of seconds (the unit "s" is an ISO base unit).
-		do		
+			-- express as Quantity with magnitude = magnitude from this class
+		do
+			create Result.make (magnitude, "s")
+		ensure then
+			Result.magnitude = magnitude
+			Result.units.is_equal("s")
+		end
+
+feature -- Comparison
+
+	is_strictly_comparable_to (other: like Current): BOOLEAN is
+			-- True for all date/time types
+		do
+			Result := True
 		end
 
 feature -- Output
-
-	as_string: STRING is
-		do
-			Result := impl.formatted_out (default_format)
-		end
 	
 	as_canonical_string: STRING is
 		do
 			Result := as_string
 		end
-	
-feature {DV_DATE_TIME} -- Implementation
-
-	impl: DATE_TIME
-
-invariant
-	is_valid_date_time(year, month, day, hour, minute, second)
-
+		
 end
 
 

@@ -83,7 +83,7 @@ creation
 %token SYM_INCLUDE SYM_EXCLUDE
 %token SYM_DT_UNKNOWN
 
-%token ERR_CHARACTER ERR_STRING ERR_C_DOMAIN_TYPE ERR_TERM_CODE_CONSTRAINT ERR_V_ISO8601_DURATION
+%token ERR_CHARACTER ERR_STRING ERR_C_DOMAIN_TYPE ERR_TERM_CODE_CONSTRAINT ERR_V_QUALIFIED_TERM_CODE_REF ERR_V_ISO8601_DURATION
 
 %left SYM_IMPLIES
 %left SYM_OR SYM_XOR
@@ -1680,7 +1680,7 @@ character_list_value: character_value ',' character_value
 
 date_value: V_ISO8601_EXTENDED_DATE -- in ISO8601 form yyyy-MM-dd
 		{
-			if is_valid_iso8601_date($1) then
+			if valid_iso8601_date($1) then
 				create $$.make_from_string($1)
 			else
 				raise_error
@@ -1742,7 +1742,7 @@ date_interval_value: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_I
 
 time_value: V_ISO8601_EXTENDED_TIME
 		{
-			if is_valid_iso8601_time($1) then
+			if valid_iso8601_time($1) then
 				create $$.make_from_string($1)
 			else
 				raise_error
@@ -1804,7 +1804,7 @@ time_interval_value: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_I
 
 date_time_value: V_ISO8601_EXTENDED_DATE_TIME
 		{
-			if is_valid_iso8601_date_time($1) then
+			if valid_iso8601_date_time($1) then
 				create $$.make_from_string($1)
 			else
 				raise_error
@@ -1866,30 +1866,13 @@ date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_t
 
 duration_value: V_ISO8601_DURATION
 		{
-			if is_valid_iso8601_duration($1) then
+			if valid_iso8601_duration($1) then
 				create $$.make_from_string($1)
 			else
 				raise_error
 				report_error("invalid ISO8601 duration: " + $1)
 				abort
 			end
-		}
-	| '-' V_ISO8601_DURATION
-		{
-			if is_valid_iso8601_duration($2) then
-				create $$.make_from_string($2)
-				$$.set_sign_negative
-			else
-				raise_error
-				report_error("invalid ISO8601 duration: " + $2)
-				abort
-			end
-		}
-	| ERR_V_ISO8601_DURATION
-		{
-			raise_error
-			report_error("Error in ISO8601 durationl missing 'T'?")
-			abort
 		}
 	;
 
@@ -1948,6 +1931,12 @@ term_code: V_QUALIFIED_TERM_CODE_REF
 			create term.make($1)
 			$$ := term
 		}
+	| ERR_V_QUALIFIED_TERM_CODE_REF
+		{
+			raise_error
+			report_error("Invalid term code reference: %"" + $1 + "%"; spaces not allowed in code string")
+			abort
+		}
 	;
 
 term_code_list_value: term_code ',' term_code
@@ -1974,7 +1963,6 @@ uri_value: V_URI
 			$$ := a_uri
 		}
 	;
-
 
 -----------------------------------------------------------------
 ------------- END TAKEN FROM DADL_VALIDATOR.Y -------------------

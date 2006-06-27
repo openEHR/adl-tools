@@ -178,27 +178,37 @@ a[ct][0-9.]+		{
 
 ----------/* V_ISO8601_TIME Thh:mm:ss[,sss][Z|+/-nnnn] */ -------------------------------------------------
 
-T[0-2][0-9]:[0-6][0-9]:[0-6][0-9](,[0-9]+)?(Z|[+-][0-9]{4})? |
-T[0-2][0-9]:[0-6][0-9](Z|[+-][0-9]{4})? |
-T[0-2][0-9](Z|[+-][0-9]{4})? {
+[0-2][0-9]:[0-6][0-9]:[0-6][0-9](,[0-9]+)?(Z|[+-][0-9]{4})? |
+[0-2][0-9]:[0-6][0-9](Z|[+-][0-9]{4})? {
 				last_token := V_ISO8601_EXTENDED_TIME
 				last_string_value := text
+		}
+
+T[0-2][0-9](Z|[+-][0-9]{4})? { -- special use of 'T' to differentiate from integer
+				last_token := V_ISO8601_EXTENDED_TIME
+				last_string_value := text_substring(2, text_count)
 		}
 
 ----------/* V_ISO8601_DATE YYYY-MM-DD */ -------------------------------------------------
 
 [0-9]{4}-[0-1][0-9]-[0-3][0-9] |
 [0-9]{4}-[0-1][0-9] {
--- [0-9]{4} { -- can't handle year only, since it will be confused with plain integer
 				last_token := V_ISO8601_EXTENDED_DATE
 				last_string_value := text
 		}
 
+D[0-9]{4} { -- special use of 'D' to differentiate from integer
+				last_token := V_ISO8601_EXTENDED_DATE
+				last_string_value := text_substring(2, text_count)
+		}
+
 ----------/* V_ISO8601_DURATION PnYnMnDtnnHnnMnnS  or PnW */ -------------------------------------------------
 
-P[0-9]+[wW]	|
-P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[dD])?T([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])? |
-P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[dD])? {
+-- here we allow a deviation from the standard to allow weeks to be mixed in with the rest
+-- since this commonly occurs in medicine
+
+P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?T([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])? |
+P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])? {
 				last_token := V_ISO8601_DURATION
 				last_string_value := text
 			}

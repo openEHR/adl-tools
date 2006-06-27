@@ -56,7 +56,7 @@ feature -- Initialisation
 				str.append(create {STRING}.make_filled(' ', 20-str.count))
 				str.append_character('%T')
 
-				if is_valid_iso8601_duration(valid_iso_strings.item) then
+				if valid_iso8601_duration(valid_iso_strings.item) then
 					create iso_dur.make_from_string(valid_iso_strings.item)
 					str.append("True%T%T%T%T")
 					iso_dur_str := iso_dur.as_string
@@ -81,8 +81,7 @@ feature -- Initialisation
 				str.copy (invalid_iso_strings.item)
 				str.append(create {STRING}.make_filled(' ', 20-str.count))
 				str.append_character('%T')
-				io.put_string(str + (not
-				is_valid_iso8601_duration(invalid_iso_strings.item)).out + "%T%T%T%T-%N")
+				io.put_string(str + (not valid_iso8601_duration(invalid_iso_strings.item)).out + "%T%T%T%T-%N")
 				invalid_iso_strings.forth
 			end
 		end
@@ -104,8 +103,9 @@ feature -- Initialisation
 			Result.extend("P12M")
 
 			Result.extend("P22Y3M5D")
-			Result.extend("P2DT15h32M12S")
-			Result.extend("P22Y3M5DT15H32M12s")
+			Result.extend("PT15H32M12S")
+			Result.extend("P2DT15H32M12S")
+			Result.extend("P22Y3M5DT15H32M12S")
 
 			Result.extend("PT1,04S")
 			Result.extend("PT2H4M22,049S")

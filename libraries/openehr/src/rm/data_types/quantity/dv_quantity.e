@@ -102,8 +102,10 @@ feature -- Access
 			-- precision  to  which  the  value  of  the  quantity  is expressed, in
 			-- terms of number  of  significant  figures. 0 implies no precision.
 
-	diff_type: like Current
+	diff_type: DV_QUANTITY is
 			-- type of difference quantity for this quantity
+		once
+		end
 		
 feature -- Basic Operations
 

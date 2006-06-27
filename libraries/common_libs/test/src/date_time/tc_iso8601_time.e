@@ -56,7 +56,7 @@ feature -- Initialisation
 				str.append(create {STRING}.make_filled(' ', 20-str.count))
 				str.append_character('%T')
 
-				if is_valid_iso8601_time(valid_iso_strings.item) then
+				if valid_iso8601_time(valid_iso_strings.item) then
 					create iso_time.make_from_string(valid_iso_strings.item)
 					str.append("True%T%T%T")
 					iso_time_str := iso_time.as_string
@@ -81,7 +81,7 @@ feature -- Initialisation
 				str.copy (invalid_iso_strings.item)
 				str.append(create {STRING}.make_filled(' ', 20-str.count))
 				str.append_character('%T')
-				io.put_string(str + (not is_valid_iso8601_time(invalid_iso_strings.item)).out + "%T%T%T-%N")
+				io.put_string(str + (not valid_iso8601_time(invalid_iso_strings.item)).out + "%T%T%T-%N")
 				invalid_iso_strings.forth
 			end
 		end
@@ -90,60 +90,60 @@ feature -- Initialisation
 		once
 			create Result.make(0)
 
-			--	Thh
-			Result.extend("T12")
-			Result.extend("T00")
-			Result.extend("T24")
-			Result.extend("T18Z")
-			Result.extend("T18+0700")
+			--	hh
+			Result.extend("12")
+			Result.extend("00")
+			Result.extend("24")
+			Result.extend("18Z")
+			Result.extend("18+0700")
 
-			Result.extend("T12Z")
-			Result.extend("T12+1000")
-			Result.extend("T12-1000")
+			Result.extend("12Z")
+			Result.extend("12+1000")
+			Result.extend("12-1000")
 
-			--	Thhmm
-			Result.extend("T1231")
-			Result.extend("T0031")
-			Result.extend("T2400")
-			Result.extend("T1200")
-			Result.extend("T0059")
+			--	hhmm
+			Result.extend("1231")
+			Result.extend("0031")
+			Result.extend("2400")
+			Result.extend("1200")
+			Result.extend("0059")
 
-			Result.extend("T1540Z")
-			Result.extend("T1540+0600")
-			Result.extend("T1540-0000")
+			Result.extend("1540Z")
+			Result.extend("1540+0600")
+			Result.extend("1540-0000")
 
-			--  Thhmmss
-			Result.extend("T123122")
-			Result.extend("T003122")
-			Result.extend("T240000")
-			Result.extend("T000000")
-			Result.extend("T120000")
-			Result.extend("T005959")
+			--  hhmmss
+			Result.extend("123122")
+			Result.extend("003122")
+			Result.extend("240000")
+			Result.extend("000000")
+			Result.extend("120000")
+			Result.extend("005959")
 
-			--	Thh:mm
-			Result.extend("T12:31")
-			Result.extend("T00:31")
-			Result.extend("T24:00")
-			Result.extend("T12:00")
-			Result.extend("T00:59")
-			Result.extend("T00:59Z")
-			Result.extend("T00:59+1000")
+			--	hh:mm
+			Result.extend("12:31")
+			Result.extend("00:31")
+			Result.extend("24:00")
+			Result.extend("12:00")
+			Result.extend("00:59")
+			Result.extend("00:59Z")
+			Result.extend("00:59+1000")
 			
-			--  Thhmmss,sss
-			Result.extend("T123122,123")
+			--  hhmmss,sss
+			Result.extend("123122,123")
 
-			-- 	Thh:mm:ss
-			Result.extend("T12:31:22")
-			Result.extend("T00:31:22")
-			Result.extend("T24:00:00")
-			Result.extend("T00:00:00")
-			Result.extend("T12:00:00")
-			Result.extend("T00:59:59")
-			Result.extend("T18:04:00Z")
-			Result.extend("T18:04:00+1000")
+			-- 	hh:mm:ss
+			Result.extend("12:31:22")
+			Result.extend("00:31:22")
+			Result.extend("24:00:00")
+			Result.extend("00:00:00")
+			Result.extend("12:00:00")
+			Result.extend("00:59:59")
+			Result.extend("18:04:00Z")
+			Result.extend("18:04:00+1000")
 			
-			-- 	Thh:mm:ss,sss
-			Result.extend("T12:31:22,123")
+			-- 	hh:mm:ss,sss
+			Result.extend("12:31:22,123")
 		end
 
 	invalid_iso_strings: ARRAYED_LIST [STRING] is

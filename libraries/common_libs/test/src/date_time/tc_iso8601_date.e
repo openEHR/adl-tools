@@ -56,7 +56,7 @@ feature -- Initialisation
 				str.append(create {STRING}.make_filled(' ', 20-str.count))
 				str.append_character('%T')
 
-				if is_valid_iso8601_date(valid_iso_strings.item) then
+				if valid_iso8601_date(valid_iso_strings.item) then
 					create iso_date.make_from_string(valid_iso_strings.item)
 					str.append("True%T%T%T")
 					iso_date_str := iso_date.as_string
@@ -81,7 +81,7 @@ feature -- Initialisation
 				str.copy (invalid_iso_strings.item)
 				str.append(create {STRING}.make_filled(' ', 20-str.count))
 				str.append_character('%T')
-				io.put_string(str + (not is_valid_iso8601_date(invalid_iso_strings.item)).out + "%T%T%T-%N")
+				io.put_string(str + (not valid_iso8601_date(invalid_iso_strings.item)).out + "%T%T%T-%N")
 				invalid_iso_strings.forth
 			end
 		end

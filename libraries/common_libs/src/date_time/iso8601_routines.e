@@ -39,13 +39,13 @@ feature -- Conversion
 			create an_iso_date.make_ymd (a_date.year, a_date.month, a_date.day, True)
 			Result := an_iso_date.as_string
 		ensure
-			Result_valid: Result /= Void and then is_valid_iso8601_date(Result)				
+			Result_valid: Result /= Void and then valid_iso8601_date(Result)				
 		end
 		
 	iso8601_string_to_date (str: STRING): DATE is
 			-- make from string using ISO8601 format "YYYY-MM-DD"
 		require
-			str_valid: str /= Void and then is_valid_iso8601_date(str)
+			str_valid: str /= Void and then valid_iso8601_date(str)
 		local
 			y, m, d: INTEGER
 			an_iso_date: ISO8601_DATE
@@ -79,32 +79,32 @@ feature -- Conversion
 			create an_iso_time.make_hmsf (a_time.hour, a_time.minute, a_time.second, a_time.fine_second, True)
 			Result := an_iso_time.as_string
 		ensure
-			Result_valid: Result /= Void and then is_valid_iso8601_time(Result)		
+			Result_valid: Result /= Void and then valid_iso8601_time(Result)		
 		end
 		
 	iso8601_string_to_time (str: STRING): TIME is
 			-- make from string using ISO8601 format "Thh:mm:ss[.ssss]"
 		require
-			str_valid: str /= Void and then is_valid_iso8601_time(str)
+			str_valid: str /= Void and then valid_iso8601_time(str)
 		local
 			h, m, s: INTEGER
 			fs: DOUBLE
 			an_iso_time: ISO8601_TIME
 		do
 			create an_iso_time.make_from_string(str)
-			h := an_iso_time.hours
-			if an_iso_time.seconds_unknown then
-				if an_iso_time.minutes_unknown then
+			h := an_iso_time.hour
+			if an_iso_time.second_unknown then
+				if an_iso_time.minute_unknown then
 					m := (Minutes_in_hour / 2).truncated_to_integer
 					s := Seconds_in_hour - 1
 				else
-					m := an_iso_time.minutes
+					m := an_iso_time.minute
 					s := (Seconds_in_hour / 2).truncated_to_integer
 				end
 			else
-				m := an_iso_time.minutes
-				s := an_iso_time.seconds
-				fs := an_iso_time.seconds_fraction
+				m := an_iso_time.minute
+				s := an_iso_time.second
+				fs := an_iso_time.fractional_second
 			end
 			create Result.make_fine(h, m, s + fs)
 		ensure
@@ -121,13 +121,13 @@ feature -- Conversion
 			Result.append_character(Time_leader)
 			Result.append(time_to_iso8601_string(a_dt.time))
 		ensure
-			Result_valid: Result /= Void and then is_valid_iso8601_date_time(Result)
+			Result_valid: Result /= Void and then valid_iso8601_date_time(Result)
 		end
 		
 	iso8601_string_to_date_time (str: STRING): DATE_TIME is
 			-- make from string using ISO8601 format "YYYY-MM-DDThh:mm:ss[.ssss]"
 		require
-			str_valid: str /= Void and then is_valid_iso8601_date_time(str)
+			str_valid: str /= Void and then valid_iso8601_date_time(str)
 		local
 			dt: DATE
 			tm: TIME
@@ -151,13 +151,13 @@ feature -- Conversion
 				a_dur.second, a_dur.fine_second)
 			Result := an_iso_dur.as_string
 		ensure
-			Result_valid: Result /= Void and then is_valid_iso8601_duration(Result)
+			Result_valid: Result /= Void and then valid_iso8601_duration(Result)
 		end
 		
 	iso8601_string_to_duration (str: STRING): DATE_TIME_DURATION is
 			-- make from string using ISO8601 format "PNNDTNNhNNmNNs"
 		require
-			str_valid: str /= Void and then is_valid_iso8601_duration(str)
+			str_valid: str /= Void and then valid_iso8601_duration(str)
 		local
 			an_iso_dur: ISO8601_DURATION
 		do
@@ -167,32 +167,32 @@ feature -- Conversion
 			else				
 				create Result.make_fine (an_iso_dur.years, an_iso_dur.months, an_iso_dur.days,
 					an_iso_dur.hours, an_iso_dur.minutes, 
-					an_iso_dur.seconds + an_iso_dur.seconds_fraction)
+					an_iso_dur.seconds + an_iso_dur.fractional_seconds)
 			end
 		ensure
 			Result /= Void
 		end
 
-feature -- Status Report
+feature -- Validity
 
-	is_valid_iso8601_string(str: STRING): BOOLEAN is
-			-- only use this when caller does not know what kind of ISO8601
-			-- string it is supposed to be
-		require
-			Str_valid: str /= Void and then not str.is_empty
-		do
-			Result := iso8601_parser.is_valid_iso8601_string(str)
-		end
+--	valid_iso8601_string(str: STRING): BOOLEAN is
+--			-- only use this when caller does not know what kind of ISO8601
+--			-- string it is supposed to be
+--		require
+--			Str_valid: str /= Void and then not str.is_empty
+--		do
+--			Result := iso8601_parser.valid_iso8601_string(str)
+--		end
 
-	is_valid_iso8601_time(str: STRING): BOOLEAN is
+	valid_iso8601_time(str: STRING): BOOLEAN is
 			-- True if string in one of the forms:
-			--	Thh
-			--	Thhmm
-			--	Thh:mm
-			--  Thhmmss
-			--  Thhmmss,sss
-			-- 	Thh:mm:ss
-			-- 	Thh:mm:ss,sss
+			--	hh
+			--	hhmm
+			--	hh:mm
+			--  hhmmss
+			--  hhmmss,sss
+			-- 	hh:mm:ss
+			-- 	hh:mm:ss,sss
 			-- with optional timezone in form:
 			--	Z
 			--	+hhmm
@@ -200,10 +200,10 @@ feature -- Status Report
 		require
 			str /= Void
 		do
-			Result := iso8601_parser.is_valid_iso8601_time(str)
+			Result := iso8601_parser.valid_iso8601_time(str)
 		end		
 		
-	is_valid_iso8601_date(str: STRING): BOOLEAN is
+	valid_iso8601_date(str: STRING): BOOLEAN is
 			-- True if string in one of the forms
 			--	YYYY
 			--	YYYYMM
@@ -213,25 +213,67 @@ feature -- Status Report
 		require
 			str /= Void
 		do
-			Result := iso8601_parser.is_valid_iso8601_date(str)
+			Result := iso8601_parser.valid_iso8601_date(str)
 		end
 		
-	is_valid_iso8601_date_time(str: STRING): BOOLEAN is
+	valid_iso8601_date_time(str: STRING): BOOLEAN is
 			-- True if string in form "YYYY-MM-DDThh:mm:ss[,sss]"
 		require
 			str /= Void
 		do
-			Result := iso8601_parser.is_valid_iso8601_date_time(str)
+			Result := iso8601_parser.valid_iso8601_date_time(str)
 		end
 		
-	is_valid_iso8601_duration(str: STRING): BOOLEAN is
+	valid_iso8601_duration(str: STRING): BOOLEAN is
 			-- True if string in form "PnDTnHnMnS"
 		require
 			str /= Void
 		do
-			Result := iso8601_parser.is_valid_iso8601_duration(str)
+			Result := iso8601_parser.valid_iso8601_duration(str)
 		end
 					
+	valid_year (y: INTEGER): BOOLEAN is
+			-- True if year >= 0
+		do
+			Result := y >= 0
+		end
+
+	valid_month (m: INTEGER): BOOLEAN is
+			-- True if m >= 1 and m <= Months_in_year
+		do
+			Result := m >= 1 and m <= Months_in_year
+		end
+
+	valid_day (y, m, d: INTEGER): BOOLEAN is
+			-- True if d >= 1 and d <= days_in_month(m, y)
+		do
+			Result := d >= 1 and d <= days_in_month(m, y)
+		end
+
+	valid_hour(h, m, s: INTEGER): BOOLEAN is 
+			-- True if (h >= 0 and h < Hours_in_day) or (h = Hours_in_day and m = 0 and s = 0)
+		do
+			Result := (h >= 0 and h < Hours_in_day) or (h = Hours_in_day and m = 0 and s = 0)
+		end
+		
+	valid_minute(m: INTEGER): BOOLEAN is 
+			-- True if m >= 0 and m < Minutes_in_hour
+		do
+			Result := m >= 0 and m < Minutes_in_hour
+		end
+		
+	valid_second(s: INTEGER): BOOLEAN is 
+			-- True if s >= 0 and s < Seconds_in_minute
+		do
+			Result := s >= 0 and s < Seconds_in_minute
+		end
+		
+	valid_fractional_second(fs: DOUBLE): BOOLEAN is 
+			-- True if fs >= 0.0 and fs < 1.0
+		do
+			Result := fs >= 0.0 and fs < 1.0
+		end
+
 feature {NONE} -- Implementation
 
 	iso8601_parser: ISO8601_PARSER is

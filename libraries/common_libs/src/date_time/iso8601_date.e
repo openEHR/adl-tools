@@ -6,6 +6,10 @@ indexing
 				uses  a standard library DATE class to represent the date
 				value for the purpose of mathematical operations and validity
 				checking.
+				Pre-parsed and parsed forms of the date are included as attributes. 
+				Typically the string form is required for presistent storage, but the
+				parsed attributes are required for computation (and should not be 
+				repeatedly recomputed on the fly, due to the amount of work involved).
 				]"
 	keywords:    "date time"
 
@@ -22,6 +26,9 @@ class ISO8601_DATE
 
 inherit
 	ISO8601_ROUTINES
+		export
+			{NONE} all;
+			{ANY} valid_iso8601_date, valid_year, valid_month, valid_day
 		undefine
 			is_equal, out
 		end
@@ -39,22 +46,24 @@ feature -- Initialisation
 	make_from_string(str: STRING) is
 			-- make from any valid ISO date string
 		require
-			String_valid: str /= Void and is_valid_iso8601_date(str)
+			String_valid: str /= Void and valid_iso8601_date(str)
 		do
-			if is_valid_iso8601_date(str) then
+			if valid_iso8601_date(str) then
 				deep_copy(iso8601_parser.cached_iso8601_date)
 			end
+			value := as_string
 		end
 
 	make_y(y: INTEGER; is_extended_flag: BOOLEAN) is
 			-- make from year only
 		require
-			Year_valid: y >= 0
+			Year_valid: valid_year(y)
 		do
 			year := y
 			month_unknown := True
 			day_unknown := True
 			is_extended := is_extended_flag
+			value := as_string
 		ensure
 			month_unknown
 			day_unknown
@@ -63,13 +72,14 @@ feature -- Initialisation
 	make_ym(y, m: INTEGER; is_extended_flag: BOOLEAN) is
 			-- make from year, month
 		require
-			Year_valid: y >= 0
-			Valid_month: m >= 1 and m <= Months_in_year
+			Year_valid: valid_year(y)
+			Valid_month: valid_month(m)
 		do
 			year := y
 			month := m
 			day_unknown := True
 			is_extended := is_extended_flag
+			value := as_string
 		ensure
 			day_unknown
 		end
@@ -77,23 +87,30 @@ feature -- Initialisation
 	make_ymd(y, m, d: INTEGER; is_extended_flag: BOOLEAN) is
 			-- make from year, month day
 		require
-			Year_valid: y >= 0
-			Valid_month: m >= 1 and m <= Months_in_year
-			Valid_day: d >= 1 and d <= days_in_month(m, y)
+			Year_valid: valid_year(y)
+			Valid_month: valid_month(m)
+			Valid_day: valid_day(y, m, d)
 		do
 			year := y
 			month := m
 			day := d
 			is_extended := is_extended_flag
+			value := as_string
 		end
 		
 feature -- Access
 
+	value: STRING
+			-- ISO8601 string for date; always equal to result of as_string
+
 	year: INTEGER
+			-- extracted year
 	
 	month: INTEGER
+			-- extracted month
 	
 	day: INTEGER
+			-- extracted day
 	
 feature -- Status Report
 
@@ -117,6 +134,34 @@ feature -- Comparison
 	infix "<" (other: like Current): BOOLEAN is
 			-- Is current object less than `other'?
 		do
+			Result := to_days < other.to_days
+		end
+
+feature -- Conversion
+
+	to_days: INTEGER is
+			-- convert to numeric form for comparison. Value is days since 1600-01-01, and
+			-- may be negative. Uses Eiffel Software DATE.days to compute.
+			-- For other alternative, see gobo KL_GREGORIAN_CALENDAR, but this uses 1970-01-01
+			-- as origin and is not flexible!
+			-- For missing parts, substitute mid point values.			
+		local
+			m, d: INTEGER
+		do
+			if day_unknown then
+				if month_unknown then
+					d := Last_day_of_middle_month
+					m := middle_month_of_year
+				else
+					m := month
+					d := middle_day_of_month
+				end
+			else
+				d := day
+				m := month
+			end
+
+			Result := (create {DATE}.make(year, m, d)).days
 		end
 
 feature -- Output
@@ -151,19 +196,22 @@ feature -- Output
 				end
 			end			
 		ensure
-			Result_valid: Result /= Void and then is_valid_iso8601_date(Result)				
+			Result_valid: Result /= Void and then valid_iso8601_date(Result)				
 		end
 
 	out: STRING is
 		do
 			Result := as_string
 		end
-		
+
 invariant
-	Year_valid: year >= 0
-	Month_valid: not month_unknown implies (month >= 1 and month <= Months_in_year)
-	Day_valid: not day_unknown implies (day >= 1 and day <= days_in_month(month, year))
+	Year_valid: valid_year(year)
+	Month_valid: not month_unknown implies valid_month(month)
+	Day_valid: not day_unknown implies valid_day(year, month, day)
+	
 	Partial_validity: month_unknown implies day_unknown
+	
+	Value_validity: value.is_equal(as_string)
 		
 end
 

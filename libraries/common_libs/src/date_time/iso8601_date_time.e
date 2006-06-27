@@ -3,6 +3,10 @@ indexing
 	description: "[
 				ISO8601:2004 compliant Date/Time class, including facility to represent 
 				partial date/times (called 'reduced accuracy' in the standard).
+				Pre-parsed and parsed forms of the date are included as attributes. 
+				Typically the string form is required for presistent storage, but the
+				parsed attributes are required for computation (and should not be 
+				repeatedly recomputed on the fly, due to the amount of work involved).
 				]"
 	keywords:    "date time"
 
@@ -19,6 +23,9 @@ class ISO8601_DATE_TIME
 
 inherit
 	ISO8601_ROUTINES
+		export
+			{NONE} all;
+			{ANY} valid_iso8601_date_time
 		undefine
 			is_equal, out
 		end
@@ -36,11 +43,12 @@ feature -- Initialisation
 	make_from_string(str: STRING) is
 			-- make from any valid ISO date/time string
 		require
-			String_valid: str /= Void and is_valid_iso8601_date_time(str)
+			String_valid: str /= Void and valid_iso8601_date_time(str)
 		do
-			if is_valid_iso8601_date_time(str) then
+			if valid_iso8601_date_time(str) then
 				deep_copy(iso8601_parser.cached_iso8601_date_time)
 			end
+			value := as_string
 		end
 
 	make_date_time(a_date: ISO8601_DATE; a_time: ISO8601_TIME) is
@@ -52,9 +60,13 @@ feature -- Initialisation
 		do
 			date_part := a_date
 			time_part := a_time
+			value := as_string
 		end
 		
 feature -- Access
+
+	value: STRING
+			-- ISO8601 string for date/time; always equal to result of as_string
 
 	year: INTEGER is
 		do
@@ -71,31 +83,31 @@ feature -- Access
 			Result := date_part.day
 		end
 	
-	hours: INTEGER is
+	hour: INTEGER is
 		do
 			if time_part /= Void then
-				Result := time_part.hours
+				Result := time_part.hour
 			end
 		end
 
-	minutes: INTEGER is
+	minute: INTEGER is
 		do
 			if time_part /= Void then
-				Result := time_part.minutes
+				Result := time_part.minute
 			end
 		end
 
-	seconds: INTEGER is
+	second: INTEGER is
 		do
 			if time_part /= Void then
-				Result := time_part.minutes
+				Result := time_part.minute
 			end
 		end
 
-	seconds_fraction: DOUBLE is
+	fractional_second: DOUBLE is
 		do
 			if time_part /= Void then
-				Result := time_part.seconds_fraction
+				Result := time_part.fractional_second
 			end
 		end
 	
@@ -123,41 +135,50 @@ feature -- Status Report
 			Result := date_part.day_unknown
 		end
 
-	hours_unknown: BOOLEAN is
-			-- True if hours unknown
+	hour_unknown: BOOLEAN is
+			-- True if hour unknown
 		do
 			Result := time_part = Void
 		end
 
-	minutes_unknown: BOOLEAN is
-			-- True if minutes unknown
+	minute_unknown: BOOLEAN is
+			-- True if minute unknown
 		do
-			Result := (time_part /= Void and time_part.minutes_unknown)
+			Result := (time_part /= Void and time_part.minute_unknown)
 		end
 
-	seconds_unknown: BOOLEAN is
-			-- True if seconds unknown
+	second_unknown: BOOLEAN is
+			-- True if second unknown
 		do
-			Result := (time_part /= Void and time_part.seconds_unknown)
+			Result := (time_part /= Void and time_part.second_unknown)
 		end
 
-	seconds_fraction_included: BOOLEAN is
-			-- True if seconds unknown
+	has_fractional_second: BOOLEAN is
+			-- True if second fraction incuded
 		do
-			Result := (time_part /= Void and time_part.seconds_fraction_included)
+			Result := (time_part /= Void and time_part.has_fractional_second)
 		end
 
 	is_partial: BOOLEAN is
 			-- True if either date or month unknown
 		do
-			Result := seconds_unknown
+			Result := second_unknown
 		end
 
 feature -- Comparison
-
+	
 	infix "<" (other: like Current): BOOLEAN is
 			-- Is current object less than `other'?
 		do
+			Result := to_seconds < other.to_seconds
+		end
+
+feature -- Conversion
+
+	to_seconds: DOUBLE is
+			-- date/time as a number of days since origin point of 1600-01-01
+		do
+			Result := date_part.to_days * seconds_in_day + time_part.to_seconds
 		end
 
 feature -- Output
@@ -168,8 +189,11 @@ feature -- Output
 			create Result.make(0)
 			Result.append(date_part.as_string)
 			if time_part /= Void then
+				Result.append_character(Time_leader)
 				Result.append(time_part.as_string)			
 			end
+		ensure
+			valid_iso8601_date_time(Result)
 		end
 			
 	out: STRING is
@@ -177,29 +201,29 @@ feature -- Output
 			Result := as_string
 		end
 		
-feature {NONE} -- Implementation
+feature {ISO8601_DATE_TIME} -- Implementation
 
 	date_part: ISO8601_DATE
 	
 	time_part: ISO8601_TIME
 	
 invariant
-	Year_valid: year >= 0
-	Month_valid: month >= 1 and month <= Months_in_year
-	Day_valid: day >= 1 and day <= days_in_month(month, year)
+	Year_valid: valid_year(year)
+	Month_valid: not month_unknown implies valid_month(month)
+	Day_valid: not day_unknown and not month_unknown implies valid_day(year, month, day)
 
-	Hours_valid: hours >= 0 and hours <= Hours_in_day
-	Hour_limit_minutes_validity: hours = Hours_in_day and not minutes_unknown implies minutes = 0
-	Hour_limit_seconds_validity: hours = Hours_in_day and not seconds_unknown implies (seconds = 0 and seconds_fraction = 0.0)
-	Minutes_valid: not minutes_unknown implies (minutes >= 0 and minutes < Minutes_in_hour)
-	Seconds_valid: not seconds_unknown implies (seconds >= 0 and seconds < Seconds_in_minute)
-	Fine_seconds_valid: seconds_fraction >= 0 and seconds_fraction < 1.0
+	Hour_valid: valid_hour(hour, minute, second)
+	Minute_valid: not minute_unknown implies valid_minute(minute)
+	Seconds_valid: not second_unknown implies valid_second(second)
+	Fractional_second_valid: has_fractional_second implies (not second_unknown and valid_fractional_second(fractional_second))
 	
 	Partial_validity_month: month_unknown implies day_unknown
-	Partial_validity_day: day_unknown implies hours_unknown
-	Partial_validity_hours: hours_unknown implies minutes_unknown
-	Partial_validity_minutes: minutes_unknown implies seconds_unknown
-		
+	Partial_validity_day: day_unknown implies hour_unknown
+	Partial_validity_hour: hour_unknown implies minute_unknown
+	Partial_validity_minute: minute_unknown implies second_unknown
+
+	Value_validity: value.is_equal(as_string)
+	
 end
 
 

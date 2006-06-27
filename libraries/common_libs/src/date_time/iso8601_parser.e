@@ -40,6 +40,7 @@ feature -- Definitions
 			Result.put ('h', 'H')
 			Result.put ('d', 'D')
 			Result.put ('y', 'Y')
+			Result.put ('w', 'W')
 			Result.put ('p', 'P')
 			Result.put ('t', 'T')
 			Result.put ('z', 'Z')
@@ -56,34 +57,30 @@ feature -- Initialisation
 		
 feature -- Status Report
 
-	is_valid_iso8601_string(a_str: STRING): BOOLEAN is
-			-- only use this when caller does not know what kind of ISO8601
-			-- string it is supposed to be
-		require
-			Str_valid: a_str /= Void and then not a_str.is_empty
-		do
-			if a_str.item(1) = Duration_leader then
-				Result := is_valid_iso8601_duration(a_str)
-			elseif a_str.has(Time_leader) then
-				if a_str.index_of(Time_leader, 1) = 1 then
-					Result := is_valid_iso8601_time(a_str)
-				else
-					Result := is_valid_iso8601_date_time(a_str)
-				end
-			else
-				Result := is_valid_iso8601_date(a_str)
-			end
-		end
+--	valid_iso8601_string(a_str: STRING): BOOLEAN is
+--			-- only use this when caller does not know what kind of ISO8601
+--			-- string it is supposed to be
+--		require
+--			Str_valid: a_str /= Void and then not a_str.is_empty
+--		do
+--			if a_str.item(1) = Duration_leader then
+--				Result := valid_iso8601_duration(a_str)
+--			elseif a_str.has(Time_leader) then
+--				Result := valid_iso8601_date_time(a_str)
+--			else
+--				Result := valid_iso8601_date(a_str)
+--			end
+--		end
 
-	is_valid_iso8601_time(str: STRING): BOOLEAN is
+	valid_iso8601_time(str: STRING): BOOLEAN is
 			-- True if string in one of the forms:
-			--	Thh
-			--	Thhmm
-			--	Thh:mm
-			--  Thhmmss
-			--  Thhmmss,sss
-			-- 	Thh:mm:ss
-			-- 	Thh:mm:ss,sss
+			--	hh
+			--	hhmm
+			--	hh:mm
+			--  hhmmss
+			--  hhmmss,sss
+			-- 	hh:mm:ss
+			-- 	hh:mm:ss,sss
 			-- with optional timezone in form:
 			--	Z
 			--	+hhmm
@@ -101,7 +98,7 @@ feature -- Status Report
 				cached_iso8601_time := Void
 
 				csr := 1 -- on the T
-				if str.item(csr) = Time_leader and str.count >= csr+2 then
+				if str.count >= csr+1 then
 					-- check for timezone on the end
 					tz_ok := True
 					if str.item (str.count) = Time_zone_GMT then
@@ -129,7 +126,7 @@ feature -- Status Report
 					
 					-- now start processing the main part
 					if tz_ok then					
-						csr := csr + 1 -- on first h digit
+						-- on first h digit
 						h_str := str.substring(csr, csr+1)
 						csr := csr + 2 -- on char after 2nd h digit
 						if hms_part_end > csr then
@@ -190,7 +187,7 @@ feature -- Status Report
 			end
 		end		
 		
-	is_valid_iso8601_date(str: STRING): BOOLEAN is
+	valid_iso8601_date(str: STRING): BOOLEAN is
 			-- True if string in one of the forms
 			--	YYYY
 			--	YYYYMM
@@ -209,7 +206,7 @@ feature -- Status Report
 				Result := True
 			else
 				cached_iso8601_date := Void
-				
+									
 				if str.count >= 4 then
 					csr := 1 -- on the first Y digit
 				
@@ -257,7 +254,7 @@ feature -- Status Report
 			end
 		end
 		
-	is_valid_iso8601_date_time(str: STRING): BOOLEAN is
+	valid_iso8601_date_time(str: STRING): BOOLEAN is
 			-- True if string in one of the forms
 			--	YYYY
 			--	YYYYMM
@@ -288,16 +285,16 @@ feature -- Status Report
 					end_date_part := str.count
 				else
 					end_date_part := time_sep_pos - 1
-					time_part_ok := is_valid_iso8601_time(str.substring(time_sep_pos, str.count))
+					time_part_ok := valid_iso8601_time(str.substring(time_sep_pos+1, str.count))
 					has_time_part := True
 				end
 					
-				date_part_ok := is_valid_iso8601_date(str.substring(1, end_date_part))
+				date_part_ok := valid_iso8601_date(str.substring(1, end_date_part))
 				
 				if date_part_ok then 
 					if has_time_part then
 						Result := time_part_ok and not cached_iso8601_date.is_partial
-						if (cached_iso8601_time.minutes_unknown and cached_iso8601_time.seconds_unknown) and
+						if (cached_iso8601_time.minute_unknown and cached_iso8601_time.second_unknown) and
 							cached_iso8601_date.is_extended then
 							cached_iso8601_time.set_extended
 						end 
@@ -314,7 +311,7 @@ feature -- Status Report
 			end
 		end
 		
-	is_valid_iso8601_duration(str: STRING): BOOLEAN is
+	valid_iso8601_duration(str: STRING): BOOLEAN is
 			-- True if string in form "PnYnMnWnDTnHnMnS"
 		require
 			str /= Void
@@ -430,7 +427,7 @@ feature -- Status Report
 										dec_pos := hms_part.index_of(Iso8601_decimal_separator, left)
 										if dec_pos > 0 then
 											sec_str := hms_part.substring(left, dec_pos-1)
-											fsec_str := hms_part.substring(dec_pos, right)
+											fsec_str := hms_part.substring(dec_pos, right-1)
 											fsec_str.put(Decimal_separator, 1)
 											if sec_str.is_integer and fsec_str.is_double then
 												sec := sec_str.to_integer
@@ -502,7 +499,7 @@ feature {NONE} -- Implementation
 			h, m, s, tz_h, tz_m: INTEGER
 			fs: DOUBLE
 			tz_obj: ISO8601_TIMEZONE
-			tz_sign: CHARACTER
+			tz_sign: INTEGER
 			tz_ok: BOOLEAN
 		do
 			-- check timezone part if any
@@ -510,8 +507,8 @@ feature {NONE} -- Implementation
 				if tz_str.count > 1 then
 					tz_h := tz_str.substring(2,3).to_integer
 					tz_m := tz_str.substring(4,5).to_integer
-					if (tz_h >=0 and tz_h <= Max_timezone_hours) and (tz_m >= 0 and tz_m <= Minutes_in_hour) then
-						tz_sign := tz_str.item(1)
+					if (tz_h >=0 and tz_h <= Max_timezone_hour) and (tz_m >= 0 and tz_m <= Minutes_in_hour) then
+						tz_sign := (tz_str.item(1).out + "1").to_integer
 						create tz_obj.make(tz_sign, tz_h, tz_m)
 						tz_ok := True
 					end
