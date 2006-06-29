@@ -693,8 +693,14 @@ integer_list_value: integer_value ',' integer_value
 
 integer_interval_value: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_value SYM_INTERVAL_DELIM
 		{
-			create integer_interval.make_bounded($2, $4, True, True)
-			$$ := integer_interval
+			if $2 <= $4 then
+				create integer_interval.make_bounded($2, $4, True, True)
+				$$ := integer_interval
+			else
+				raise_error
+				report_error("Invalid interval: " + $2.out + " must be <= " + $4.out)
+				abort
+			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT integer_value SYM_INTERVAL_DELIM
 		{
@@ -757,8 +763,14 @@ real_list_value: real_value ',' real_value
 
 real_interval_value: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_INTERVAL_DELIM
 		{
-			create real_interval.make_bounded($2, $4, True, True)
-			$$ := real_interval
+			if $2 <= $4 then
+				create real_interval.make_bounded($2, $4, True, True)
+				$$ := real_interval
+			else
+				raise_error
+				report_error("Invalid interval: " + $2.out + " must be <= " + $4.out)
+				abort
+			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT real_value SYM_INTERVAL_DELIM
 		{
@@ -871,8 +883,14 @@ date_list_value: date_value ',' date_value
 
 date_interval_value: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_INTERVAL_DELIM
 		{
-			create date_interval.make_bounded($2, $4, True, True)
-			$$ := date_interval
+			if $2 <= $4 then
+				create date_interval.make_bounded($2, $4, True, True)
+				$$ := date_interval
+			else
+				raise_error
+				report_error("Invalid interval: " + $2.out + " must be <= " + $4.out)
+				abort
+			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT date_value SYM_INTERVAL_DELIM
 		{
@@ -933,8 +951,14 @@ time_list_value: time_value ',' time_value
 
 time_interval_value: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_INTERVAL_DELIM
 		{
-			create time_interval.make_bounded($2, $4, True, True)
-			$$ := time_interval
+			if $2 <= $4 then
+				create time_interval.make_bounded($2, $4, True, True)
+				$$ := time_interval
+			else
+				raise_error
+				report_error("Invalid interval: " + $2.out + " must be <= " + $4.out)
+				abort
+			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT time_value SYM_INTERVAL_DELIM
 		{
@@ -995,8 +1019,14 @@ date_time_list_value: date_time_value ',' date_time_value
 
 date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_time_value  SYM_INTERVAL_DELIM
 		{
-			create date_time_interval.make_bounded($2, $4, True, True)
-			$$ := date_time_interval
+			if $2 <= $4 then
+				create date_time_interval.make_bounded($2, $4, True, True)
+				$$ := date_time_interval
+			else
+				raise_error
+				report_error("Invalid interval: " + $2.out + " must be <= " + $4.out)
+				abort
+			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT date_time_value SYM_INTERVAL_DELIM
 		{
@@ -1057,8 +1087,14 @@ duration_list_value: duration_value ',' duration_value
 
 duration_interval_value: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration_value SYM_INTERVAL_DELIM
 		{
-			create duration_interval.make_bounded($2, $4, True, True)
-			$$ := duration_interval
+			if $2 <= $4 then
+				create duration_interval.make_bounded($2, $4, True, True)
+				$$ := duration_interval
+			else
+				raise_error
+				report_error("Invalid interval: " + $2.out + " must be <= " + $4.out)
+				abort
+			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT duration_value SYM_INTERVAL_DELIM
 		{

@@ -30,17 +30,18 @@ inherit
 		end
 		
 create 
-	default_create, make, make_weeks, make_from_string, make_from_canonical_string
+	default_create, make, make_from_string, make_from_canonical_string
 
 feature -- Initialization
 
 	default_create is
 			-- make of duration days = 0, hours = 0, mins = 0, seconds = 0
 		do
-			make(0, 0, 0, 0, 0, 0, 0.0)
+			make(0, 0, 0, 0, 0, 0, 0, 0.0)
 		ensure then
 			years_set: years = 0
 			months_set: months = 0
+			weeks_set: weeks = 0
 			days_set: days = 0
 			hours_set: hours = 0
 			minutes_set: minutes = 0

@@ -317,7 +317,7 @@ feature -- Status Report
 			str /= Void
 		local
 			str1, ymd_part, hms_part: STRING
-			yr, mo, dy, hr, mi, sec: INTEGER
+			yr, mo, wk, dy, hr, mi, sec: INTEGER
 			yr_str, mo_str, wk_str, dy_str, hr_str, mi_str, sec_str, fsec_str: STRING
 			fsec: DOUBLE
 			left, right, time_sep_pos, dec_pos: INTEGER
@@ -331,125 +331,128 @@ feature -- Status Report
 					str1 := convert_to_lower(str)
 					left := 2
 
-					-- weeks - must be on its own; cannot be mixed
-					right := str1.index_of('w', left)
-					if right > 0 then
-						wk_str := str1.substring(left, right-1)
-						if wk_str.is_integer then
-							create cached_iso8601_duration.make_weeks(wk_str.to_integer)
-							cached_iso8601_duration_string := str
-							Result := True
-						end
+					Result := True
+					time_sep_pos := str1.index_of (Time_leader_lower, 1)
+					if time_sep_pos > 0 then
+						ymd_part := str1.substring (1, time_sep_pos - 1)
+						hms_part := str1.substring (time_sep_pos + 1, str1.count)
 					else
-						Result := True
-						time_sep_pos := str1.index_of (Time_leader_lower, 1)
-						if time_sep_pos > 0 then
-							ymd_part := str1.substring (1, time_sep_pos - 1)
-							hms_part := str1.substring (time_sep_pos + 1, str1.count)
-						else
-							ymd_part := str1
-						end
+						ymd_part := str1
+					end
 						
-						-- years
-						right := ymd_part.index_of('y', left)
-						if right > 0 then
-							yr_str := ymd_part.substring(left, right-1)
-							if yr_str.is_integer then
-								yr := yr_str.to_integer
+					-- years
+					right := ymd_part.index_of('y', left)
+					if right > 0 then
+						yr_str := ymd_part.substring(left, right-1)
+						if yr_str.is_integer then
+							yr := yr_str.to_integer
 								left := right + 1						
+						else
+							Result := False
+						end
+					end
+
+					-- months
+					if Result then
+						right := ymd_part.index_of('m', left)
+						if right > 0 then
+							mo_str := ymd_part.substring(left, right-1)
+							if mo_str.is_integer then
+								mo := mo_str.to_integer
+								left := right + 1
 							else
 								Result := False
 							end
-						end
+						end	
+					end
 
-						-- months
-						if Result then
-							right := ymd_part.index_of('m', left)
-							if right > 0 then
-								mo_str := ymd_part.substring(left, right-1)
-								if mo_str.is_integer then
-									mo := mo_str.to_integer
-									left := right + 1
-								else
-									Result := False
-								end
-							end	
-						end
+					-- weeks
+					if Result then
+						right := ymd_part.index_of('w', left)
+						if right > 0 then
+							wk_str := ymd_part.substring(left, right-1)
+							if wk_str.is_integer then
+								wk := wk_str.to_integer
+								left := right + 1
+							else
+								Result := False
+							end
+						end	
+					end
 
-						-- days
-						if Result then
-							right := ymd_part.index_of('d', left)
-							if right > 0 then
-								dy_str := ymd_part.substring(left, right-1)
-								if dy_str.is_integer then
-									dy := dy_str.to_integer
-									left := right + 1
-								else
-									Result := False
-								end
-							end		
-						end
+					-- days
+					if Result then
+						right := ymd_part.index_of('d', left)
+						if right > 0 then
+							dy_str := ymd_part.substring(left, right-1)
+							if dy_str.is_integer then
+								dy := dy_str.to_integer
+								left := right + 1
+							else
+								Result := False
+							end
+						end		
+					end
 
-						if Result then 
-							if time_sep_pos > 0 then
-								left := 1
+					if Result then 
+						if time_sep_pos > 0 then
+							left := 1
 							
-								-- hours
-								right := hms_part.index_of('h', left)
-								if right > 0 then
-									hr_str := hms_part.substring(left, right-1)
+							-- hours
+							right := hms_part.index_of('h', left)
+							if right > 0 then
+								hr_str := hms_part.substring(left, right-1)
 									if hr_str.is_integer then
-										hr := hr_str.to_integer
+									hr := hr_str.to_integer
+									left := right + 1
+								else
+									Result := False
+								end
+							end
+
+							if Result then								
+								-- minutes
+								right := hms_part.index_of('m', left)
+								if right > 0 then
+									mi_str := hms_part.substring(left, right-1)
+									if mi_str.is_integer then
+										mi := mi_str.to_integer
 										left := right + 1
 									else
 										Result := False
 									end
 								end
-
-								if Result then								
-									-- minutes
-									right := hms_part.index_of('m', left)
-									if right > 0 then
-										mi_str := hms_part.substring(left, right-1)
-										if mi_str.is_integer then
-											mi := mi_str.to_integer
-											left := right + 1
-										else
-											Result := False
-										end
-									end
-								end
-
-								if Result then
-									-- seconds
-									right := hms_part.index_of('s', left)
-									if right > 0 then
-										dec_pos := hms_part.index_of(Iso8601_decimal_separator, left)
-										if dec_pos > 0 then
-											sec_str := hms_part.substring(left, dec_pos-1)
-											fsec_str := hms_part.substring(dec_pos, right-1)
-											fsec_str.put(Decimal_separator, 1)
-											if sec_str.is_integer and fsec_str.is_double then
-												sec := sec_str.to_integer
-												fsec := fsec_str.to_double
-											end
-										else
-											sec_str := hms_part.substring(left, right-1)
-											if sec_str.is_integer then
-												sec := sec_str.to_integer
-											end
-										end
-									end
-								end
-							else
-								-- should be no H or S
-								Result := Result and not ymd_part.has('h') and not ymd_part.has('s')
 							end
+
+							if Result then
+								-- seconds
+								right := hms_part.index_of('s', left)
+								if right > 0 then
+									dec_pos := hms_part.index_of(Iso8601_decimal_separator, left)
+									if dec_pos > 0 then
+										sec_str := hms_part.substring(left, dec_pos-1)
+										fsec_str := hms_part.substring(dec_pos, right-1)
+										fsec_str.put(Decimal_separator, 1)
+										if sec_str.is_integer and fsec_str.is_double then
+											sec := sec_str.to_integer
+											fsec := fsec_str.to_double
+										end
+									else
+										sec_str := hms_part.substring(left, right-1)
+										if sec_str.is_integer then
+											sec := sec_str.to_integer
+										end
+									end
+								end
+							end
+						else
+							-- should be no H or S
+							Result := Result and not ymd_part.has('h') and not ymd_part.has('s')
 						end
-						if Result then
-							create cached_iso8601_duration.make(yr, mo, dy, hr, mi, sec, fsec)
-							cached_iso8601_duration_string := str
-						end
+					end
+					if Result then
+						create cached_iso8601_duration.make(yr, mo, wk, dy, hr, mi, sec, fsec)
+						cached_iso8601_duration_string := str
 					end
 				end
 			end

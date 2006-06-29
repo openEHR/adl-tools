@@ -28,7 +28,7 @@ inherit
 					iso8601_string_to_date, iso8601_string_to_date_time, iso8601_string_to_time,
 					iso8601_string_to_duration,
 					valid_iso8601_date_constraint_pattern, valid_iso8601_time_constraint_pattern, 
-					valid_iso8601_date_time_constraint_pattern
+					valid_iso8601_date_time_constraint_pattern, valid_iso8601_duration_constraint_pattern
 		end
 	
 feature -- Factory

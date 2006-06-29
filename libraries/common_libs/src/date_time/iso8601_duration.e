@@ -37,7 +37,7 @@ inherit
 		end
 	
 create
-	make, make_weeks, make_from_string
+	make, make_from_string
 	
 feature -- Initialisation
 
@@ -52,11 +52,12 @@ feature -- Initialisation
 			value := as_string
 		end
 
-	make(yr, mo, dy, hr, mi, sec: INTEGER; sec_frac: DOUBLE) is
+	make(yr, mo, wk, dy, hr, mi, sec: INTEGER; sec_frac: DOUBLE) is
 			-- make from parts; any part can be zero; at least one part must be non-zero
 		require
 			years_valid: yr >= 0
 			months_valid: mo >= 0
+			weeks_valid: wk >= 0
 			days_valid: dy >= 0
 			hours_valid: hr >= 0
 			minutes_valid: mi >= 0
@@ -65,6 +66,7 @@ feature -- Initialisation
 		do
 			years := yr
 			months := mo
+			weeks := wk
 			days := dy
 			hours := hr
 			minutes := mi
@@ -73,15 +75,6 @@ feature -- Initialisation
 			if hours > 0 or minutes > 0 or seconds > 0 or fractional_seconds > 0.0 then
 				has_time := True
 			end
-			value := as_string
-		end
-	
-	make_weeks(wk: INTEGER) is
-			-- make from weeks only
-		require
-			weeks_valid: wk >= 0
-		do
-			weeks := wk
 			value := as_string
 		end
 	
@@ -133,7 +126,7 @@ feature -- Comparison
 	infix "<" (other: like Current): BOOLEAN is
 			-- Is current object less than `other'?
 		do
-			Result := to_seconds > other.to_seconds
+			Result := to_seconds < other.to_seconds
 		end
 		
 feature -- Output
@@ -147,48 +140,48 @@ feature -- Output
 			
 			Result.append_character(Duration_leader)
 
+			if years /= 0 then
+				Result.append(years.out + "Y")
+			end
+
+			if months /= 0 then
+				Result.append(months.out + "M")
+			end
+
 			if weeks /= 0 then
 				Result.append(weeks.out + "W")
-			else
-				if years /= 0 then
-					Result.append(years.out + "Y")
+			end
+			
+			if days /= 0 then
+				Result.append(days.out + "D")
+			end
+
+			if has_time then
+				Result.append_character(Time_leader)
+				
+				if hours /= 0 then
+					Result.append(hours.out + "H")
 				end
 
-				if months /= 0 then
-					Result.append(months.out + "M")
+				if minutes /= 0 then
+					Result.append(minutes.out + "M")
 				end
 
-				if days /= 0 then
-					Result.append(days.out + "D")
-				end
-
-				if has_time then
-					Result.append_character(Time_leader)
-					
-					if hours /= 0 then
-						Result.append(hours.out + "H")
+				if seconds /= 0 then
+					Result.append(seconds.out)
+					if fractional_seconds > 0.0 then
+						Result.append_character(iso8601_decimal_separator)
+						sec_frac_str := fractional_seconds.out
+						Result.append(sec_frac_str.substring(sec_frac_str.index_of(decimal_separator, 1)+1, sec_frac_str.count))
 					end
-
-					if minutes /= 0 then
-						Result.append(minutes.out + "M")
-					end
-
-					if seconds /= 0 then
-						Result.append(seconds.out)
-						if fractional_seconds > 0.0 then
-							Result.append_character(iso8601_decimal_separator)
-							sec_frac_str := fractional_seconds.out
-							Result.append(sec_frac_str.substring(sec_frac_str.index_of(decimal_separator, 1)+1, sec_frac_str.count))
-						end
-						Result.append("S")
-					end			
-				end
-				if is_zero then
-					-- no values could have been appended; for now append 0 sec, but to correct this, 
-					-- need to have captured which part was actually supplied during make - which 
-					-- requires a set of flags for all input values...
-					Result.append("T0S")
-				end
+					Result.append("S")
+				end			
+			end
+			if is_zero then
+				-- no values could have been appended; for now append 0 sec, but to correct this, 
+				-- need to have captured which part was actually supplied during make - which 
+				-- requires a set of flags for all input values...
+				Result.append("T0S")
 			end
 		end
 		

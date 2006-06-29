@@ -88,7 +88,7 @@ feature -- Template
 			create Result.make(0)
 			Result.append("%N..........................................................................%N")
 			Result.append(  ".           Ocean Informatics Validating ADL Parser (c)2003 - 2004       .%N")
-			Result.append(  adl_interface.openehr_version)
+			Result.append(  adl_interface.openehr_version + "%N")
 			Result.append(  "..........................................................................%N")
 			Result.append(  ". available from: www.OceanInformatics.biz                               .%N")
 			Result.append(  ".         author: Thomas Beale                                           .%N")

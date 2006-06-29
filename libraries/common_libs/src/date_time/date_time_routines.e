@@ -119,9 +119,8 @@ feature -- Status Report
 		
 	valid_iso8601_duration_constraint_pattern(s: STRING): BOOLEAN is
 			-- True if string in form 
-			-- P[Y|y][M|m][D|d][T[H|h][M|m][S|s]]
-			--	or
-			-- P[W|w]			
+			-- P[Y|y][M|m][W|w][D|d][T[H|h][M|m][S|s]]
+			-- (note: allowing 'W' to be mixed in is an openEHR deviation of ISO 8601)
 		require
 			s /= Void
 		local
@@ -131,46 +130,43 @@ feature -- Status Report
 			str := s.twin
 			str.to_upper
 			if str.count >= 2 and str.item(1) = Duration_leader then
-				if str.count = 2 and str.item(2) = 'W' then
-					Result := True
-				elseif str.count > 2 then
-					time_leader_pos := str.index_of(Time_leader, 1)
-					if time_leader_pos = 1 then
-						hms_part := str.substring(time_leader_pos + 1, str.count)
-					elseif time_leader_pos > 1 then
-						hms_part := str.substring(time_leader_pos + 1, str.count)
-						ymd_part := str.substring(2, time_leader_pos - 1)
-					else
-						ymd_part := str.substring(2, str.count)
-					end
-					Result := True
-					if ymd_part /= Void then
-						from
-							i := 1
-						until
-							i > ymd_part.count or not Result
-						loop
-							if ymd_part.item(i) /= 'Y' and 
-								ymd_part.item(i) /= 'M' and 
-								ymd_part.item(i) /= 'D' then
-								Result := False
-							end
-							i := i + 1
+				time_leader_pos := str.index_of(Time_leader, 1)
+				if time_leader_pos = 1 then
+					hms_part := str.substring(time_leader_pos + 1, str.count)
+				elseif time_leader_pos > 1 then
+					hms_part := str.substring(time_leader_pos + 1, str.count)
+					ymd_part := str.substring(2, time_leader_pos - 1)
+				else
+					ymd_part := str.substring(2, str.count)
+				end
+				Result := True
+				if ymd_part /= Void then
+					from
+						i := 1
+					until
+						i > ymd_part.count or not Result
+					loop
+						if ymd_part.item(i) /= 'Y' and 
+							ymd_part.item(i) /= 'M' and 
+							ymd_part.item(i) /= 'W' and 
+							ymd_part.item(i) /= 'D' then
+							Result := False
 						end
+						i := i + 1
 					end
-					if Result and hms_part /= Void then
-						from
-							i := 1
-						until
-							i > hms_part.count or not Result
-						loop
-							if hms_part.item(i) /= 'H' and 
-								hms_part.item(i) /= 'M' and 
-								hms_part.item(i) /= 'S' then
-								Result := False
-							end
-							i := i + 1
+				end
+				if Result and hms_part /= Void then
+					from
+						i := 1
+					until
+						i > hms_part.count or not Result
+					loop
+						if hms_part.item(i) /= 'H' and 
+							hms_part.item(i) /= 'M' and 
+							hms_part.item(i) /= 'S' then
+							Result := False
 						end
+						i := i + 1
 					end
 				end
 			end

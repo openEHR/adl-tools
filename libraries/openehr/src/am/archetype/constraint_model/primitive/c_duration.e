@@ -51,9 +51,7 @@ feature -- Initialisation
 	make_from_pattern(a_pattern: STRING) is
 			-- create Result from an ISO8601-based pattern like "yyyy-mm-XX"
 			-- allowed patterns:
-			-- P[Y|y][M|m][D|d][T[H|h][M|m][S|s]]
-			--	or
-			-- P[W|w]
+			-- P[Y|y][M|m][W|w][D|d][T[H|h][M|m][S|s]]
 		require
 			a_pattern_valid: a_pattern /= Void and then valid_iso8601_duration_constraint_pattern(a_pattern)
 		do

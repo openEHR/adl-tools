@@ -147,7 +147,7 @@ feature -- Conversion
 		local
 			an_iso_dur: ISO8601_DURATION
 		do
-			create an_iso_dur.make (a_dur.year, a_dur.month, a_dur.day, a_dur.hour, a_dur.minute,
+			create an_iso_dur.make (a_dur.year, a_dur.month, 0, a_dur.day, a_dur.hour, a_dur.minute,
 				a_dur.second, a_dur.fine_second)
 			Result := an_iso_dur.as_string
 		ensure
