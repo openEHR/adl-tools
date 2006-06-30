@@ -1,4 +1,4 @@
-INCLUDE_PATH = -I$(ISE_EIFFEL)\library\wel\spec\windows\include -I$(ISE_EIFFEL)\studio\spec\$(ISE_PLATFORM)\include 
+INCLUDE_PATH = -I$(ISE_EIFFEL)\library\wel\spec\$(ISE_PLATFORM)\include -I$(ISE_EIFFEL)\studio\spec\$(ISE_PLATFORM)\include 
 COMPILER=msc
 SHELL = \bin\sh
 CC = cl

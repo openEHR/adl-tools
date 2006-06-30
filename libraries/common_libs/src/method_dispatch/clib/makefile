@@ -1,4 +1,4 @@
-INCLUDE_PATH = -I$(ISE_EIFFEL)\library\wel\spec\windows\include -I$(ISE_EIFFEL)\studio\spec\$(ISE_PLATFORM)\include 
+INCLUDE_PATH = -I$(ISE_EIFFEL)\library\wel\spec\$(ISE_PLATFORM)\include -I$(ISE_EIFFEL)\studio\spec\$(ISE_PLATFORM)\include 
 COMPILER=msc
 SHELL = \bin\sh
 CC = cl
@@ -21,7 +21,7 @@ all:  method_dispatcher.lib
 method_dispatcher.lib: $(method_dispatcher) Makefile
 	$(RM) $@
 	lib /OUT:$@ $(method_dispatcher)
-	$(MV) $@ ..\..\spec\$(ISE_C_COMPILER)\lib
+	$(MV) $@ ..\..\..\lib\$(ISE_C_COMPILER)
 
 clean: local_clean
 clobber: local_clobber

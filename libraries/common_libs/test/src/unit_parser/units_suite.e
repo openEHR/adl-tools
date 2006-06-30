@@ -12,7 +12,7 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class UNITS_SUITE
+class TS_UNITS
 
 inherit
 	TEST_SUITE

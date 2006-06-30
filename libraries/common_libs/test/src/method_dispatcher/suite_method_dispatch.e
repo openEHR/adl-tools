@@ -12,7 +12,7 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class SUITE_METHOD_DISPATCH
+class TS_METHOD_DISPATCH
 
 inherit 
 	TEST_SUITE
@@ -23,7 +23,7 @@ creation
 
 feature -- Access
 
-	test_cases:LINKED_LIST[TEST_CASE] is
+	test_cases: LINKED_LIST[TEST_CASE] is
 		local
 			tc_md_proc1:TC_MD_PROC_CALL_1
 			tc_md_proc2:TC_MD_PROC_CALL_2
@@ -41,7 +41,7 @@ feature -- Access
 			create tc_md_create.make(Void) Result.extend(tc_md_create)
 		end
 
-	title:STRING is "Eiffel to C Method Dispatcher Test Suite"
+	title:STRING is "Method Dispatcher"
 
 feature -- Initialisation
 

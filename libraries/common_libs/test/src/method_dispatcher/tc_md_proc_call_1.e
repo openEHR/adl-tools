@@ -30,6 +30,7 @@ feature -- Initialisation
 		end
 
 feature -- Access
+
 	title:STRING is "Procedure call"
 
 feature -- testing

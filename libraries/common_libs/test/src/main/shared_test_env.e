@@ -61,7 +61,7 @@ feature -- Access
 			end
 		end
 
-	part:PART is
+	part: PART is
 		once
 			create Result
 		end

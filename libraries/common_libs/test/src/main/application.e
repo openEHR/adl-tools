@@ -69,8 +69,8 @@ feature -- Template
 		once
 			create Result.make
 			Result.extend(create {TS_DADL}.make(Void))
-			Result.extend(create {SUITE_METHOD_DISPATCH}.make(Void))
-			Result.extend(create {UNITS_SUITE}.make(Void))
+			Result.extend(create {TS_METHOD_DISPATCH}.make(Void))
+			Result.extend(create {TS_UNITS}.make(Void))
 			Result.extend(create {TS_OBJECT_GRAPH}.make(Void))
 			Result.extend(create {TS_PATH}.make(Void))
 			Result.extend(create {TS_DATE_TIME}.make(Void))

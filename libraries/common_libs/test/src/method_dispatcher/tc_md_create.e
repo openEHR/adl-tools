@@ -32,13 +32,13 @@ feature -- Initialisation
 
 feature -- Access
 
-	title:STRING is "Create object"
+	title: STRING is "Create object"
 
 feature -- testing
 
 	execute is
 		local
-			obj:LINKED_LIST[STRING]
+			obj: LINKED_LIST[STRING]
 		do
 			io.put_string("Create LINKED_LIST[STRING].make%N")
 			obj ?= method_dispatcher.create_object("LINKED_LIST[STRING]", "make")
