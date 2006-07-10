@@ -38,7 +38,7 @@ feature -- Event Logging
 			msg:STRING
 			i:INTEGER
 		do
-			!!msg.make(0)
+			create msg.make(0)
 			from i := msg_items.lower until i > msg_items.upper loop
 				msg.append(msg_items.item(i).out)
 				i := i + 1
@@ -48,9 +48,9 @@ feature -- Event Logging
 
 feature {NONE} -- Implementation
 
-	log_facility:CELL[EVENT_LOG_FACILITY] is
+	log_facility: CELL[EVENT_LOG_FACILITY] is
 	    once
-	        !!Result.put(Void)
+	        create Result.put(Void)
 	    end
 
 end
