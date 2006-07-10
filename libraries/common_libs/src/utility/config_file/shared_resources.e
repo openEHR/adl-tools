@@ -43,12 +43,15 @@ feature -- Initialisation
 feature -- Access
 
 	resource_value(a_category, a_resource_name:STRING): STRING is
-			-- get the value for a_resource_name, in 'a_category'
+			-- The value for `a_resource_name', in `a_category', preferably from a command-line option.
 		require
 			Valid_category: a_category /= Void and then not a_category.is_empty
 			Valid_resource_name: a_resource_name /= Void and then not a_resource_name.is_empty
 		do
-			Result := resource_config_file.resource_value(a_category, a_resource_name)
+			Result := execution_environment.command_line.separate_word_option_value(a_category + ":" + a_resource_name)
+			if Result = Void then
+				Result := resource_config_file.resource_value(a_category, a_resource_name)			
+			end
 		ensure
 			Result_not_void: Result /= Void
 		end
