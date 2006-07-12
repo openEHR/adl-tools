@@ -7,5 +7,5 @@ finalized: clean
 
 clean:
 	del /q /s *.epr
-	rmdir /q /s EIFGEN
+	rd /q /s EIFGEN
 

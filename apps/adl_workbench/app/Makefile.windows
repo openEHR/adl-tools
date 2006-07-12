@@ -14,6 +14,6 @@ finalized: clean
 	cd ..\..
 
 clean:
-	del /q /s *.epr
-	rmdir /q /s EIFGEN
+	del /Q /S *.epr
+	rd /Q /S EIFGEN
 
