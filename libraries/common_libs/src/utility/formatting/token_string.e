@@ -155,6 +155,21 @@ feature -- Output
 			Result := str.twin
 		end
 		
+	as_list: ARRAYED_LIST [STRING] is
+			-- generate a list containing all the tokens in the original string
+		do
+			create Result.make(0)
+			from
+				token_start
+			until
+				token_off
+			loop
+				Result.extend(token_item)
+				token_forth
+			end
+		end
+		
+		
 feature {NONE} -- Implementation
 
 	str: STRING
