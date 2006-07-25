@@ -282,12 +282,6 @@ a[ct][0-9.]+ {
 				last_string_value := text
 		}
 
--- possible refinement to allow for hour-only times - but need to implement 'T' on output as well
---T[0-2][0-9](Z|[+-][0-9]{4})? { -- special use of 'T' to differentiate from integer
---				last_token := V_ISO8601_EXTENDED_TIME
---				last_string_value := text_substring(2, text_count)
---		}
-
 ----------/* V_ISO8601_DATE YYYY-MM-DD */ -------------------------------------------------
 
 [0-9]{4}-[0-1][0-9]-[0-3][0-9] |
@@ -295,12 +289,6 @@ a[ct][0-9.]+ {
 				last_token := V_ISO8601_EXTENDED_DATE
 				last_string_value := text
 		}
-
--- possible refinement to allow for year-only dates - but need to implement 'D' on output as well
--- D[0-9]{4} { -- special use of 'D' to differentiate from integer
--- 				last_token := V_ISO8601_EXTENDED_DATE
--- 				last_string_value := text_substring(2, text_count)
--- 		}
 
 ----------/* V_ISO8601_DURATION PnYnMnWnDtnnHnnMnnS */ -------------------------------------------------
 

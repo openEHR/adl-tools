@@ -14,7 +14,7 @@ indexing
 class ARCHETYPE
 
 inherit
-	ANY
+	ADL_DEFINITIONS
 		export
 			{NONE} all
 		end
@@ -37,6 +37,8 @@ feature  {ADL_ENGINE} -- Initialisation
 		do
 			archetype_id := an_id
 			
+			adl_version := 	Current_adl_version
+	
 			create concept_code.make(0)
 			concept_code.append(Default_concept_code)
 			
@@ -63,6 +65,7 @@ feature  {ADL_ENGINE} -- Initialisation
 			Definition_exists: a_definition /= Void
 			Ontology_exists: an_ontology /= Void
 		do
+			adl_version := 	Current_adl_version
 			archetype_id := an_id
 			concept_code := a_concept_code
 			if a_description = Void then

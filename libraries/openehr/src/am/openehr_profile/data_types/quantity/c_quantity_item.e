@@ -37,6 +37,8 @@ feature -- Access
 	
 	magnitude: OE_INTERVAL [REAL]
 			-- constraint on magnitude
+
+feature -- Status Report
 			
 	any_magnitude_allowed: BOOLEAN is
 			-- True if there is no constraint on magnitude

@@ -17,8 +17,29 @@ Version
 Release history
 ---------------
 
-interim release Subversion 63 - 14/May/2006
-	ADL 1.4 compliant
+interim release Subversion 81 - 29/Jun/2006 - ISO 8601 date/time enhancements & fixes
+	- enhancements
+		- Implement openEHR ISO8601 deviation
+			- allow 'W' to be included in durations containing 'Y', 'M' etc designators;
+			- allow 'W' to be mixed in with other designators in ADL duration constraints;
+			- improve error reporting in dADL and cADL parsers for intervals whose limits 
+			  are not legal
+		- Some small changes to enable reading unicode files - a BOM stripper for UTF-8 files, 
+		  and UTF-8 character matching in the dADL scanner
+		- Minor enhancements to ADL cmd line app.
+
+	- bugfixes
+		- Fix bug where adding a constraint definition when multiple languages already 
+		  defined caused crash;
+		- Renamed ONTOLOGY.remove_term to remove_term_definition and remove_constraint to 
+		  remove_constraint_definition, to be more obvious for developers.
+		- Small correct to allow ISO Duration strings without the 'T' character to be 
+		  silently fixed during by the cADL scanner;
+		- Added a hardwired lower-case converter for ISO8601 Durations to avoid culture 
+		  specific case conversion problems.
+		- Corrected some errors in ARCHETYPE.ontology_remove_unused_codes;
+
+interim release Subversion 63 - 14/May/2006 ADL - 1.4 compliance
 	- enhancements: 
 		- all ISO date/time constraint patterns now include the 'T' where appropriate, but parser 
 		  tolerates a space for the moment, and silently substitutes a 'T' on output

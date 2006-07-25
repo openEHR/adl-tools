@@ -256,9 +256,6 @@ feature -- Status Report
 		
 	valid_iso8601_date_time(str: STRING): BOOLEAN is
 			-- True if string in one of the forms
-			--	YYYY
-			--	YYYYMM
-			--	YYYYMMDD
 			--	YYYYMMDDThh
 			--	YYYYMMDDThhmm
 			--	YYYY-MM-DDThh:mm
@@ -294,8 +291,7 @@ feature -- Status Report
 				if date_part_ok then 
 					if has_time_part then
 						Result := time_part_ok and not cached_iso8601_date.is_partial
-						if (cached_iso8601_time.minute_unknown and cached_iso8601_time.second_unknown) and
-							cached_iso8601_date.is_extended then
+						if cached_iso8601_time.second_unknown and cached_iso8601_date.is_extended then
 							cached_iso8601_time.set_extended
 						end 
 						Result := Result and cached_iso8601_time.is_extended = cached_iso8601_date.is_extended

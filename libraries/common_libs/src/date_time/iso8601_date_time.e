@@ -55,7 +55,7 @@ feature -- Initialisation
 			-- create from date and time parts
 		require
 			Date_valid: a_date /= Void
-			Partial_validity: a_date.is_partial implies a_time = Void
+			Partial_validity: not a_date.is_partial
 			Extended_validity: a_time /= Void implies (a_date.is_extended = a_time.is_extended)
 		do
 			date_part := a_date
@@ -209,17 +209,17 @@ feature {ISO8601_DATE_TIME} -- Implementation
 	
 invariant
 	Year_valid: valid_year(year)
-	Month_valid: not month_unknown implies valid_month(month)
-	Day_valid: not day_unknown and not month_unknown implies valid_day(year, month, day)
+	Month_valid: valid_month(month)
+	Day_valid: valid_day(year, month, day)
 
 	Hour_valid: valid_hour(hour, minute, second)
 	Minute_valid: not minute_unknown implies valid_minute(minute)
 	Seconds_valid: not second_unknown implies valid_second(second)
 	Fractional_second_valid: has_fractional_second implies (not second_unknown and valid_fractional_second(fractional_second))
 	
-	Partial_validity_month: month_unknown implies day_unknown
-	Partial_validity_day: day_unknown implies hour_unknown
-	Partial_validity_hour: hour_unknown implies minute_unknown
+	Partial_validity_month: not month_unknown
+	Partial_validity_day: not day_unknown
+	Partial_validity_hour: not hour_unknown
 	Partial_validity_minute: minute_unknown implies second_unknown
 
 	Value_validity: value.is_equal(as_string)

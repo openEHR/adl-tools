@@ -102,9 +102,6 @@ feature -- Access
 	regexp: STRING
 			-- representation of constraint as PERL-compliant regexp pattern
 
-	is_open: BOOLEAN
-			-- values other than those in 'items' are allowed
-
 	default_value: STRING is
 			-- 	generate a default value from this constraint object
 		do
@@ -133,6 +130,11 @@ feature -- Access
 			end
 		end
 	
+feature -- Status Report
+
+	is_open: BOOLEAN
+			-- values other than those in 'items' are allowed
+
 feature -- Status Report
 
 	valid_value (a_value: STRING): BOOLEAN is 

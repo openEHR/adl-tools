@@ -115,6 +115,9 @@ feature -- Initialisation
 
 			--	YYYYMMDDThh:mm:ss
 			Result.extend("19890101T18:04:00")
+
+			Result.extend("1989-01-01")
+			Result.extend("198901")
 		end
 
 feature -- Access
