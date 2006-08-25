@@ -15,18 +15,18 @@ class EVENT_SEVERITY_CONSTANTS
 
 feature -- Access
 
-	Default_event_level, Information:INTEGER is 0
+	Default_event_level, Information: INTEGER is 0
 
-	Warning:INTEGER is 101
+	Warning: INTEGER is 101
 
-	Error:INTEGER is 102
+	Error: INTEGER is 102
 
-	No_events:INTEGER is 110
+	No_events: INTEGER is 110
 			-- pseudo level (not a severity) for masking all events	
 
-	Severities:HASH_TABLE[STRING, INTEGER] is
+	Severities: HASH_TABLE[STRING, INTEGER] is
 		once
-			!!Result.make(0)
+			create Result.make(0)
 			Result.put("Information", Information)
 			Result.put("Warning", Warning)
 			Result.put("Error", Error)
@@ -34,7 +34,7 @@ feature -- Access
 
 	Event_levels:HASH_TABLE[INTEGER, STRING] is
 		once
-			!!Result.make(0)
+			create Result.make(0)
 			Result.put(Information,	"all")
 			Result.put(Information,	"information")
 			Result.put(Warning, 	"warning")

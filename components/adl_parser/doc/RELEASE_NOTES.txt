@@ -17,6 +17,12 @@ Version
 Release history
 ---------------
 
+interim release subversion 89 - 24/aug/2006 - various small fixes
+	- enhancements
+		- allow date constraint pattern yyyy-mm-xx
+		- added language to COMPOSITION
+		- added magnitude_status to DV_QUANTITY
+
 interim release Subversion 81 - 29/Jun/2006 - ISO 8601 date/time enhancements & fixes
 	- enhancements
 		- Implement openEHR ISO8601 deviation

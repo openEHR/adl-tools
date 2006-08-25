@@ -49,6 +49,11 @@ feature -- Access
 			-- The clinical session context of this transaction, 
 			-- i.e. the contextual attributes of the clinical session
 			
+	language: CODE_PHRASE	
+			-- Mandatory indicator of the localised language in which this 
+			-- Composition is written. Coded from openEHR Code Set “languages”.
+			-- individual Entries may override this value
+			
 	territory: CODE_PHRASE	
 			-- Name of territory in which this Composition was written. 
 			-- Coded from openEHR “countries” code set, which is an expression of the ISO 3166 standard.
@@ -101,6 +106,7 @@ invariant
 	Category_validity: category /= Void and then terminology("openehr").
 		codes_for_group_name("composition category", "en").has(category.defining_code)
 	Is_persistent_validity: is_persistent implies context = Void
+	Language_valid: language /= Void and then code_set("languages").has(language)
 	Territory_valid: territory /= Void and then code_set("countries").has(territory)
 	No_parent: parent = Void
 

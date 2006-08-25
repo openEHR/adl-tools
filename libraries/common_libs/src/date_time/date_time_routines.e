@@ -26,6 +26,7 @@ feature -- Definitions
 			Result.compare_objects
 			Result.extend ("YYYY-MM-DD")	-- full date required
 			Result.extend ("YYYY-MM-??")	-- day optional
+			Result.extend ("YYYY-MM-XX")	-- day not allowed
 			Result.extend ("YYYY-??-??")	-- any date ok
 			Result.extend ("YYYY-??-XX")	-- day not allowed
 			Result.extend ("YYYY-XX-XX")	-- neither month nor day allowed

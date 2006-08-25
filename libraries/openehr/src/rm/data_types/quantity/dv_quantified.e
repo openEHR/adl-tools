@@ -41,6 +41,16 @@ feature -- Access
 		deferred
 		end
 
+	magnitude_status: STRING
+			-- Optional status of magnitude with values:
+			-- "=" : magnitude is a point value
+			-- "<" : value is < magnitude
+			-- ">" : value is > magnitude
+			-- "<=" : value is <= magnitude
+			-- ">=" : value is >= magnitude
+			-- "~" : value is approximately magnitude
+			-- If not present, meaning is “=”.
+
 	accuracy: REAL
 			-- optional accuracy of measurement instrument or method which applies 
 			-- to this specific instance of DV_QUANTIFIED, expressed as the value 
@@ -67,7 +77,7 @@ feature -- Comparison
 			Result := other_c < this_c
 		end
 
-	is_valid_percentage(v: REAL):BOOLEAN is
+	valid_percentage(v: REAL):BOOLEAN is
 			-- True if v between 0 and 1
 		local
 			a_comparable: COMPARABLE
@@ -76,6 +86,14 @@ feature -- Comparison
 			Result := a_comparable >= 0.0 and a_comparable <= 1.0
 		end
 		
+	valid_magnitude_status(s: STRING): BOOLEAN is
+			-- Test whether a string value is one of the valid
+			-- values for the magnitude_status attribute.
+		do
+		ensure
+			Result = s.is_equal("=") or s.is_equal("<") or s.is_equal(">") or s.is_equal("<=") or s.is_equal(">=") or s.is_equal("~")
+		end
+
 feature -- Basic Operations
 
 	infix "+" (other: like diff_type): like Current is
@@ -97,7 +115,7 @@ feature -- Modification
 	set_accuracy(v: REAL; is_percent:BOOLEAN) is
 			-- set accuracy as half-range v, flag indicates whether understood as a percentage or not
 		require
-			is_percent implies is_valid_percentage(v)
+			is_percent implies valid_percentage(v)
 		do
 			accuracy := v
 			accuracy_is_percent := is_percent
@@ -108,10 +126,10 @@ feature -- Modification
 
 invariant
 	Magnitude_exists: magnitude /= Void
-	accuracy_validity: accuracy_is_percent implies is_valid_percentage(accuracy)
+	Magnitude_status_valid: magnitude_status /= Void implies valid_magnitude_status(magnitude_status)
+	Accuracy_validity: accuracy_is_percent implies valid_percentage(accuracy)
 	
 end
-
 
 
 --|
