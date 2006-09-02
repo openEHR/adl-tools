@@ -45,6 +45,61 @@ feature -- Access
 			Result := substitute_env_vars(resource_value("default", "repository"))
 		end
 			
+	app_width: INTEGER is
+			-- application width
+		local
+			str: STRING
+		do
+			str := resource_value("default", "app_width")
+			if str.is_integer then
+				Result := str.to_integer
+			end
+		end
+			
+	app_height: INTEGER is
+			-- application height
+		local
+			str: STRING
+		do
+			str := resource_value("default", "app_height")
+			if str.is_integer then
+				Result := str.to_integer
+			end
+		end
+			
+	total_view_area_split_position: INTEGER is
+			-- split position of outer vertical split control
+		local
+			str: STRING
+		do
+			str := resource_value("default", "total_view_area_split_position")
+			if str.is_integer then
+				Result := str.to_integer
+			end
+		end
+			
+	info_view_area_split_position: INTEGER is
+			-- split position of inner vertical split control
+		local
+			str: STRING
+		do
+			str := resource_value("default", "info_view_area_split_position")
+			if str.is_integer then
+				Result := str.to_integer
+			end
+		end
+			
+	explorer_view_area_split_position: INTEGER is
+			-- split position of explorer horizontal split control
+		local
+			str: STRING
+		do
+			str := resource_value("default", "explorer_view_area_split_position")
+			if str.is_integer then
+				Result := str.to_integer
+			end
+		end
+			
 	editor_command: STRING is
 			-- path of editor application for ADL files
 		do
@@ -103,28 +158,38 @@ feature -- Access
 		once
 			create Result.make(0)
 			
-			Result.put("c_attribute.ico", 			"C_ATTRIBUTE")
-			Result.put("c_attribute_multiple.ico", 	"C_ATTRIBUTE.multiple")
-			Result.put("c_coded_term.ico", 			"C_CODED_TERM")
-			Result.put("c_ordinal.ico", 			"C_ORDINAL")
-			Result.put("c_quantity.ico", 			"C_QUANTITY")
-			Result.put("c_quantity_item.ico", 		"C_QUANTITY_ITEM")
-			Result.put("c_primitive_object.ico", 		"C_PRIMITIVE_OBJECT")
-			Result.put("archetype_code_ref.ico", 		"CONSTRAINT_REF")
-			Result.put("archetype_slot.ico", 		"ARCHETYPE_SLOT")
-			Result.put("c_complex_object_unknown.ico", 	"C_COMPLEX_OBJECT.unknown")
-			Result.put("c_complex_object.ico", 		"C_COMPLEX_OBJECT")
-			Result.put("archetype_internal_ref.ico", 	"ARCHETYPE_INTERNAL_REF")
-			Result.put("term.ico", 				"TERM")
-			Result.put("ordinal.ico", 				"ORDINAL")
-			Result.put("cadl_invariant.ico", 		"CADL_INVARIANT")
-			Result.put("cadl_include.ico", 			"CADL_INCLUDE")
-			Result.put("cadl_exclude.ico", 			"CADL_EXCLUDE")
-			Result.put("cadl_invariant_item.ico", 		"CADL_INVARIANT_ITEM")
-			Result.put("Ocean_float.png", 			"Ocean logo")
-			Result.put("file_folder.ico", 			"file_folder")
-			Result.put("archetype.ico", 			"archetype")
-			Result.put("archetype_specialised.ico", 	"archetype_specialised")
+			Result.put("c_attribute.ico", 								"C_ATTRIBUTE")
+			Result.put("c_attribute_optional.ico", 						"C_ATTRIBUTE.optional")
+			Result.put("c_attribute_multiple.ico",					 	"C_ATTRIBUTE.multiple")
+			Result.put("c_attribute_multiple_optional.ico", 			"C_ATTRIBUTE.multiple.optional")
+			
+			Result.put("c_coded_term.ico", 								"C_CODED_TERM")
+			Result.put("c_ordinal.ico", 								"C_ORDINAL")
+			Result.put("c_quantity.ico", 								"C_QUANTITY")
+			Result.put("c_quantity_item.ico", 							"C_QUANTITY_ITEM")
+			Result.put("c_primitive_object.ico", 						"C_PRIMITIVE_OBJECT")
+			Result.put("archetype_code_ref.ico", 						"CONSTRAINT_REF")
+			
+			Result.put("archetype_slot.ico", 							"ARCHETYPE_SLOT")
+			Result.put("archetype_slot_optional.ico", 					"ARCHETYPE_SLOT.optional")
+			
+			Result.put("c_complex_object_unknown.ico", 					"C_COMPLEX_OBJECT.unknown")
+			Result.put("c_complex_object.ico", 							"C_COMPLEX_OBJECT")
+			Result.put("c_complex_object_multiple.ico", 				"C_COMPLEX_OBJECT.multiple")
+			Result.put("c_complex_object_optional.ico", 				"C_COMPLEX_OBJECT.optional")
+			Result.put("c_complex_object_multiple_optional.ico", 		"C_COMPLEX_OBJECT.multiple.optional")
+			
+			Result.put("archetype_internal_ref.ico", 					"ARCHETYPE_INTERNAL_REF")
+			Result.put("term.ico", 										"TERM")
+			Result.put("ordinal.ico", 									"ORDINAL")
+			Result.put("cadl_invariant.ico", 							"CADL_INVARIANT")
+			Result.put("cadl_include.ico", 								"CADL_INCLUDE")
+			Result.put("cadl_exclude.ico", 								"CADL_EXCLUDE")
+			Result.put("cadl_invariant_item.ico", 						"CADL_INVARIANT_ITEM")
+			Result.put("Ocean_float.png", 								"Ocean logo")
+			Result.put("file_folder.ico", 								"file_folder")
+			Result.put("archetype.ico", 								"archetype")
+			Result.put("archetype_specialised.ico", 					"archetype_specialised")
 
 			-- check that icon files exist; for any that don't, output an error message and 
 			-- use a blank icon
@@ -169,10 +234,12 @@ feature -- Access
 			-- create a splash string for the console
 		once
 			create Result.make(0)
-			Result.append("Ocean Informatics openEHR ADL Parser (c)2003-2006%N")
+			Result.append("ADL Workbench (c)2003-2006 Ocean Informatics%N")
 			Result.append("%TADL version: " + Current_adl_version + "%N")
-			Result.append("%TSource version (SVN - http://svn.openehr.org/ref_impl_eiffel): %N%T" + (create {OPENEHR_VERSION}).version + "%N")
+			Result.append("%TSource SVN - http://svn.openehr.org/ref_impl_eiffel%N%T" + (create {OPENEHR_VERSION}).version + "%N")
+			Result.append("%TSource license: Mozilla tri-license (http://www.mozilla.org/MPL/boilerplate-1.1/mpl-tri-license-txt)%N")
 			Result.append("Support: support@OceanInformatics.biz%N")
+			Result.append("Funded by: OceanInformatics.biz%N")
 			Result.append("Author: Thomas Beale%N")
 			Result.append("Built using%N")
 			Result.append("%TEiffel Software Eiffel (http://www.eiffel.com)%N")
@@ -211,6 +278,46 @@ feature -- Modification
 			an_editor_command_valid: an_editor_command /= Void and then not an_editor_command.is_empty
 		do
 			set_resource_value("default", "editor", an_editor_command)
+		end
+
+	set_total_view_area_split_position (v: INTEGER) is
+			-- set split position of outer vertical split control
+		require
+			v > 0
+		do
+			set_resource_value("default", "total_view_area_split_position", v.out)
+		end
+			
+	set_info_view_area_split_position (v: INTEGER) is
+			-- set split position of inner vertical split control
+		require
+			v > 0
+		do
+			set_resource_value("default", "info_view_area_split_position", v.out)
+		end
+			
+	set_explorer_view_area_split_position (v: INTEGER) is
+			-- set split position of explorer horizontal split control
+		require
+			v > 0
+		do
+			set_resource_value("default", "explorer_view_area_split_position", v.out)
+		end
+
+	set_app_width (v: INTEGER) is
+			-- set app width
+		require
+			v > 0
+		do
+			set_resource_value("default", "app_width", v.out)
+		end
+
+	set_app_height (v: INTEGER) is
+			-- set app height
+		require
+			v > 0
+		do
+			set_resource_value("default", "app_height", v.out)
 		end
 
 end

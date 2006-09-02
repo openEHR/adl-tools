@@ -143,9 +143,12 @@ feature {NONE} -- Implementation
 				ontology.term_codes.forth
 			end
 			
-			from i := 1
-			until i > pl.column_count
-			loop pl.resize_column_to_content(i)
+			from
+				i := 1
+			until
+				i > pl.column_count
+			loop
+				pl.resize_column_to_content(i)					
 				i := i + 1
 			end
 		end

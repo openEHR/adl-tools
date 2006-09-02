@@ -114,6 +114,7 @@ feature -- Initialisation
 			Result.extend("1900-02-01")
 			Result.extend("1900-02-28")
 			Result.extend("1904-02-29")
+			Result.extend("2000-01-01")
 		end
 
 	invalid_iso_strings: ARRAYED_LIST [STRING] is

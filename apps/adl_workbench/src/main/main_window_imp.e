@@ -40,9 +40,9 @@ feature {NONE}-- Initialization
 			create save_adl_file_mi
 			create l_ev_menu_separator_2
 			create exit_tool_mi
-			create l_ev_menu_3
+			create options_menu
 			create options
-			create l_ev_menu_4
+			create about_menu
 			create about_mi
 			create news
 			create main
@@ -58,9 +58,9 @@ feature {NONE}-- Initialization
 			create parent_archetype_id
 			create language_label
 			create language_combo
-			create l_ev_horizontal_split_area_1
+			create explorer_view_area
 			create archetype_file_tree
-			create l_ev_vertical_split_area_1
+			create total_view_area
 			create arch_notebook
 			create arch_desc_area_vbox
 			create arch_desc_status_hbox
@@ -98,23 +98,20 @@ feature {NONE}-- Initialization
 			create arch_desc_copyright_hbox
 			create arch_desc_copyright_label
 			create arch_desc_copyright_text
-			create view_area
+			create info_view_area
 			create source_notebook
-			create archetype_text_edit_area
-			create parsed_archetype_found_paths
 			create parsed_archetype_tree_view
 			create parsed_archetype_tree
 			create tree_controls
 			create tree_expand
-			create tree_technical_node
 			create tree_expand_one
 			create tree_shrink_one
-			create l_ev_horizontal_separator_1
-			create tree_shrink_label
-			create tree_shrink_level
+			create tree_technical_node
+			create parsed_archetype_found_paths
 			create ontology_notebook
 			create ontology_term_defs
 			create ontology_constraint_defs
+			create archetype_text_edit_area
 			create parser_status_area
 			
 				-- Build_widget_structure.
@@ -125,11 +122,11 @@ feature {NONE}-- Initialization
 			file_menu.extend (save_adl_file_mi)
 			file_menu.extend (l_ev_menu_separator_2)
 			file_menu.extend (exit_tool_mi)
-			menu.extend (l_ev_menu_3)
-			l_ev_menu_3.extend (options)
-			menu.extend (l_ev_menu_4)
-			l_ev_menu_4.extend (about_mi)
-			l_ev_menu_4.extend (news)
+			menu.extend (options_menu)
+			options_menu.extend (options)
+			menu.extend (about_menu)
+			about_menu.extend (about_mi)
+			about_menu.extend (news)
 			extend (main)
 			main.extend (action_bar)
 			action_bar.extend (open_button)
@@ -143,10 +140,10 @@ feature {NONE}-- Initialization
 			action_bar.extend (parent_archetype_id)
 			action_bar.extend (language_label)
 			action_bar.extend (language_combo)
-			main.extend (l_ev_horizontal_split_area_1)
-			l_ev_horizontal_split_area_1.extend (archetype_file_tree)
-			l_ev_horizontal_split_area_1.extend (l_ev_vertical_split_area_1)
-			l_ev_vertical_split_area_1.extend (arch_notebook)
+			main.extend (explorer_view_area)
+			explorer_view_area.extend (archetype_file_tree)
+			explorer_view_area.extend (total_view_area)
+			total_view_area.extend (arch_notebook)
 			arch_notebook.extend (arch_desc_area_vbox)
 			arch_desc_area_vbox.extend (arch_desc_status_hbox)
 			arch_desc_status_hbox.extend (arch_desc_status_label)
@@ -183,33 +180,30 @@ feature {NONE}-- Initialization
 			arch_desc_area_vbox.extend (arch_desc_copyright_hbox)
 			arch_desc_copyright_hbox.extend (arch_desc_copyright_label)
 			arch_desc_copyright_hbox.extend (arch_desc_copyright_text)
-			arch_notebook.extend (view_area)
-			view_area.extend (source_notebook)
-			source_notebook.extend (archetype_text_edit_area)
-			source_notebook.extend (parsed_archetype_found_paths)
+			arch_notebook.extend (info_view_area)
+			info_view_area.extend (source_notebook)
 			source_notebook.extend (parsed_archetype_tree_view)
 			parsed_archetype_tree_view.extend (parsed_archetype_tree)
 			parsed_archetype_tree_view.extend (tree_controls)
 			tree_controls.extend (tree_expand)
-			tree_controls.extend (tree_technical_node)
 			tree_controls.extend (tree_expand_one)
 			tree_controls.extend (tree_shrink_one)
-			tree_controls.extend (l_ev_horizontal_separator_1)
-			tree_controls.extend (tree_shrink_label)
-			tree_controls.extend (tree_shrink_level)
-			view_area.extend (ontology_notebook)
+			tree_controls.extend (tree_technical_node)
+			source_notebook.extend (parsed_archetype_found_paths)
+			info_view_area.extend (ontology_notebook)
 			ontology_notebook.extend (ontology_term_defs)
 			ontology_notebook.extend (ontology_constraint_defs)
-			l_ev_vertical_split_area_1.extend (parser_status_area)
+			arch_notebook.extend (archetype_text_edit_area)
+			total_view_area.extend (parser_status_area)
 			
 			file_menu.set_text ("File")
 			open_adl_file_mi.set_text ("Open")
 			save_adl_file_mi.disable_sensitive
 			save_adl_file_mi.set_text ("Save")
 			exit_tool_mi.set_text ("Exit")
-			l_ev_menu_3.set_text ("Options")
+			options_menu.set_text ("Options")
 			options.set_text ("set options...")
-			l_ev_menu_4.set_text ("About")
+			about_menu.set_text ("About")
 			about_mi.set_text ("About")
 			news.set_text ("News")
 			main.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 206))
@@ -261,12 +255,12 @@ feature {NONE}-- Initialization
 			format_combo.set_tooltip ("Select save format")
 			format_combo.set_minimum_width (45)
 			archetype_id.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 206))
-			archetype_id.set_minimum_width (270)
+			archetype_id.set_minimum_width (200)
 			archetype_id.disable_edit
 			l_ev_label_1.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 206))
 			l_ev_label_1.set_text ("specializes")
 			parent_archetype_id.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 206))
-			parent_archetype_id.set_minimum_width (270)
+			parent_archetype_id.set_minimum_width (200)
 			parent_archetype_id.disable_edit
 			language_label.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 206))
 			language_label.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
@@ -277,11 +271,16 @@ feature {NONE}-- Initialization
 			language_combo.set_tooltip ("Language")
 			language_combo.set_minimum_width (40)
 			language_combo.set_minimum_height (23)
-			l_ev_horizontal_split_area_1.set_minimum_width (app_min_width)
-			l_ev_horizontal_split_area_1.set_minimum_height (main_hbox_min_height)
+			explorer_view_area.set_minimum_width (app_min_width)
+			explorer_view_area.set_minimum_height (main_hbox_min_height)
+			total_view_area.set_minimum_width (app_min_width)
+			total_view_area.set_minimum_height (app_min_height)
 			arch_notebook.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 206))
+			arch_notebook.set_minimum_width (app_min_width)
+			arch_notebook.set_minimum_height (arch_notebook_min_height)
 			arch_notebook.set_item_text (arch_desc_area_vbox, "Description")
-			arch_notebook.set_item_text (view_area, "Definition")
+			arch_notebook.set_item_text (info_view_area, "Definition")
+			arch_notebook.set_item_text (archetype_text_edit_area, "Source")
 			arch_desc_area_vbox.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (251, 239, 210))
 			arch_desc_area_vbox.disable_item_expand (arch_desc_status_hbox)
 			arch_desc_area_vbox.disable_item_expand (arch_desc_auth_frame)
@@ -300,53 +299,87 @@ feature {NONE}-- Initialization
 			arch_desc_auth_frame.set_text ("authorship")
 			arch_desc_auth_hbox.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (251, 239, 210))
 			arch_desc_auth_hbox.disable_item_expand (arch_desc_auth_orig_auth_label)
-			arch_desc_auth_hbox.disable_item_expand (arch_desc_auth_orig_auth_mlist)
 			arch_desc_auth_hbox.disable_item_expand (arch_desc_auth_contrib_label)
-			arch_desc_auth_hbox.disable_item_expand (arch_desc_auth_contrib_list)
 			arch_desc_auth_orig_auth_label.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (251, 239, 210))
+			create internal_font
+			internal_font.set_family (feature {EV_FONT_CONSTANTS}.Family_sans)
+			internal_font.set_weight (feature {EV_FONT_CONSTANTS}.Weight_bold)
+			internal_font.set_shape (feature {EV_FONT_CONSTANTS}.Shape_regular)
+			internal_font.set_height_in_points (10)
+			internal_font.preferred_families.extend ("System")
+			arch_desc_auth_orig_auth_label.set_font (internal_font)
 			arch_desc_auth_orig_auth_label.set_text ("original%Nauthor:")
-			arch_desc_auth_orig_auth_label.set_minimum_width (55)
+			arch_desc_auth_orig_auth_label.set_minimum_width (70)
 			arch_desc_auth_orig_auth_mlist.set_minimum_width (300)
 			arch_desc_auth_contrib_label.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (251, 239, 210))
+			create internal_font
+			internal_font.set_family (feature {EV_FONT_CONSTANTS}.Family_sans)
+			internal_font.set_weight (feature {EV_FONT_CONSTANTS}.Weight_bold)
+			internal_font.set_shape (feature {EV_FONT_CONSTANTS}.Shape_regular)
+			internal_font.set_height_in_points (10)
+			internal_font.preferred_families.extend ("System")
+			arch_desc_auth_contrib_label.set_font (internal_font)
 			arch_desc_auth_contrib_label.set_text ("contributors:")
-			arch_desc_auth_contrib_label.set_minimum_width (60)
+			arch_desc_auth_contrib_label.set_minimum_width (90)
 			arch_desc_auth_contrib_list.set_minimum_width (300)
 			arch_desc_details_frame.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (251, 239, 210))
 			arch_desc_details_frame.set_text ("details")
 			arch_desc_details_hbox.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (251, 239, 210))
-			arch_desc_details_hbox.disable_item_expand (l_ev_vertical_box_1)
-			arch_desc_details_hbox.disable_item_expand (l_ev_horizontal_box_4)
 			l_ev_vertical_box_1.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (251, 239, 210))
-			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_1)
-			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_2)
-			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_3)
 			l_ev_horizontal_box_1.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (251, 239, 210))
 			l_ev_horizontal_box_1.disable_item_expand (arch_desc_purpose_label)
 			arch_desc_purpose_label.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (251, 239, 210))
+			create internal_font
+			internal_font.set_family (feature {EV_FONT_CONSTANTS}.Family_sans)
+			internal_font.set_weight (feature {EV_FONT_CONSTANTS}.Weight_bold)
+			internal_font.set_shape (feature {EV_FONT_CONSTANTS}.Shape_regular)
+			internal_font.set_height_in_points (10)
+			internal_font.preferred_families.extend ("System")
+			arch_desc_purpose_label.set_font (internal_font)
 			arch_desc_purpose_label.set_text ("purpose")
-			arch_desc_purpose_label.set_minimum_width (55)
+			arch_desc_purpose_label.set_minimum_width (70)
 			arch_desc_purpose_text.set_minimum_width (300)
 			arch_desc_purpose_text.set_minimum_height (66)
 			l_ev_horizontal_box_2.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (251, 239, 210))
 			l_ev_horizontal_box_2.disable_item_expand (arch_desc_use_label)
 			arch_desc_use_label.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (251, 239, 210))
+			create internal_font
+			internal_font.set_family (feature {EV_FONT_CONSTANTS}.Family_sans)
+			internal_font.set_weight (feature {EV_FONT_CONSTANTS}.Weight_bold)
+			internal_font.set_shape (feature {EV_FONT_CONSTANTS}.Shape_regular)
+			internal_font.set_height_in_points (10)
+			internal_font.preferred_families.extend ("System")
+			arch_desc_use_label.set_font (internal_font)
 			arch_desc_use_label.set_text ("use:")
-			arch_desc_use_label.set_minimum_width (55)
+			arch_desc_use_label.set_minimum_width (70)
 			arch_desc_use_text.set_minimum_width (300)
 			arch_desc_use_text.set_minimum_height (66)
 			l_ev_horizontal_box_3.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (251, 239, 210))
 			l_ev_horizontal_box_3.disable_item_expand (arch_desc_misuse_label)
 			arch_desc_misuse_label.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (251, 239, 210))
+			create internal_font
+			internal_font.set_family (feature {EV_FONT_CONSTANTS}.Family_sans)
+			internal_font.set_weight (feature {EV_FONT_CONSTANTS}.Weight_bold)
+			internal_font.set_shape (feature {EV_FONT_CONSTANTS}.Shape_regular)
+			internal_font.set_height_in_points (10)
+			internal_font.preferred_families.extend ("System")
+			arch_desc_misuse_label.set_font (internal_font)
 			arch_desc_misuse_label.set_text ("misuse:")
-			arch_desc_misuse_label.set_minimum_width (55)
+			arch_desc_misuse_label.set_minimum_width (70)
 			arch_desc_misuse_text.set_minimum_width (300)
 			arch_desc_misuse_text.set_minimum_height (66)
 			l_ev_horizontal_box_4.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (251, 239, 210))
 			l_ev_horizontal_box_4.disable_item_expand (arch_desc_keywords_label)
-			l_ev_horizontal_box_4.disable_item_expand (arch_desc_keywords_list)
 			arch_desc_keywords_label.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (251, 239, 210))
-			arch_desc_keywords_label.set_text ("keywords")
-			arch_desc_keywords_label.set_minimum_width (55)
+			create internal_font
+			internal_font.set_family (feature {EV_FONT_CONSTANTS}.Family_sans)
+			internal_font.set_weight (feature {EV_FONT_CONSTANTS}.Weight_bold)
+			internal_font.set_shape (feature {EV_FONT_CONSTANTS}.Shape_regular)
+			internal_font.set_height_in_points (10)
+			internal_font.preferred_families.extend ("System")
+			arch_desc_keywords_label.set_font (internal_font)
+			arch_desc_keywords_label.set_text ("keywords:")
+			arch_desc_keywords_label.set_minimum_width (75)
 			arch_desc_keywords_list.set_minimum_width (200)
 			arch_desc_keywords_list.set_minimum_height (66)
 			arch_desc_resource_frame.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (251, 239, 210))
@@ -356,10 +389,16 @@ feature {NONE}-- Initialization
 			l_ev_vertical_box_2.disable_item_expand (l_ev_horizontal_box_6)
 			l_ev_horizontal_box_5.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (251, 239, 210))
 			l_ev_horizontal_box_5.disable_item_expand (arch_desc_resource_package_label)
-			l_ev_horizontal_box_5.disable_item_expand (arch_desc_resource_package_text)
 			arch_desc_resource_package_label.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (251, 239, 210))
+			create internal_font
+			internal_font.set_family (feature {EV_FONT_CONSTANTS}.Family_sans)
+			internal_font.set_weight (feature {EV_FONT_CONSTANTS}.Weight_bold)
+			internal_font.set_shape (feature {EV_FONT_CONSTANTS}.Shape_regular)
+			internal_font.set_height_in_points (10)
+			internal_font.preferred_families.extend ("System")
+			arch_desc_resource_package_label.set_font (internal_font)
 			arch_desc_resource_package_label.set_text ("package:")
-			arch_desc_resource_package_label.set_minimum_width (55)
+			arch_desc_resource_package_label.set_minimum_width (70)
 			create internal_font
 			internal_font.set_family (feature {EV_FONT_CONSTANTS}.Family_sans)
 			internal_font.set_weight (feature {EV_FONT_CONSTANTS}.Weight_regular)
@@ -372,13 +411,27 @@ feature {NONE}-- Initialization
 			l_ev_horizontal_box_6.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (251, 239, 210))
 			l_ev_horizontal_box_6.disable_item_expand (arch_desc_resource_orig_res_label)
 			arch_desc_resource_orig_res_label.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (251, 239, 210))
+			create internal_font
+			internal_font.set_family (feature {EV_FONT_CONSTANTS}.Family_sans)
+			internal_font.set_weight (feature {EV_FONT_CONSTANTS}.Weight_bold)
+			internal_font.set_shape (feature {EV_FONT_CONSTANTS}.Shape_regular)
+			internal_font.set_height_in_points (10)
+			internal_font.preferred_families.extend ("System")
+			arch_desc_resource_orig_res_label.set_font (internal_font)
 			arch_desc_resource_orig_res_label.set_text ("original%Nresources:")
-			arch_desc_resource_orig_res_label.set_minimum_width (55)
+			arch_desc_resource_orig_res_label.set_minimum_width (70)
 			arch_desc_copyright_hbox.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (251, 239, 210))
 			arch_desc_copyright_hbox.disable_item_expand (arch_desc_copyright_label)
 			arch_desc_copyright_label.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (251, 239, 210))
+			create internal_font
+			internal_font.set_family (feature {EV_FONT_CONSTANTS}.Family_sans)
+			internal_font.set_weight (feature {EV_FONT_CONSTANTS}.Weight_bold)
+			internal_font.set_shape (feature {EV_FONT_CONSTANTS}.Shape_regular)
+			internal_font.set_height_in_points (10)
+			internal_font.preferred_families.extend ("System")
+			arch_desc_copyright_label.set_font (internal_font)
 			arch_desc_copyright_label.set_text ("copyright: ")
-			arch_desc_copyright_label.set_minimum_width (55)
+			arch_desc_copyright_label.set_minimum_width (70)
 			create internal_font
 			internal_font.set_family (feature {EV_FONT_CONSTANTS}.Family_sans)
 			internal_font.set_weight (feature {EV_FONT_CONSTANTS}.Weight_regular)
@@ -387,17 +440,63 @@ feature {NONE}-- Initialization
 			internal_font.preferred_families.extend ("Microsoft Sans Serif")
 			arch_desc_copyright_text.set_font (internal_font)
 			arch_desc_copyright_text.set_minimum_height (44)
-			view_area.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 206))
-			view_area.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
-			view_area.set_minimum_width (0)
-			view_area.set_minimum_height (0)
+			info_view_area.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 206))
+			info_view_area.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
+			info_view_area.set_minimum_width (0)
+			info_view_area.set_minimum_height (0)
 			source_notebook.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 206))
 			source_notebook.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
 			source_notebook.set_minimum_width (source_notebook_min_width)
-			source_notebook.set_minimum_height (parsed_archetype_tree_min_height)
-			source_notebook.set_item_text (archetype_text_edit_area, "Source")
-			source_notebook.set_item_text (parsed_archetype_found_paths, "Paths")
+			source_notebook.set_minimum_height (source_notebook_min_height)
 			source_notebook.set_item_text (parsed_archetype_tree_view, "Node map")
+			source_notebook.set_item_text (parsed_archetype_found_paths, "Path map")
+			parsed_archetype_tree_view.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 206))
+			parsed_archetype_tree_view.set_minimum_width (source_notebook_min_width)
+			parsed_archetype_tree_view.set_minimum_height (arch_tree_min_height)
+			parsed_archetype_tree_view.disable_item_expand (tree_controls)
+			parsed_archetype_tree.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
+			parsed_archetype_tree.set_minimum_width (arch_tree_min_width)
+			parsed_archetype_tree.set_minimum_height (arch_tree_min_height)
+			tree_controls.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 206))
+			tree_controls.set_minimum_width (110)
+			tree_controls.set_minimum_height (app_min_height)
+			tree_controls.set_padding_width (15)
+			tree_controls.set_border_width (10)
+			tree_controls.disable_item_expand (tree_expand)
+			tree_controls.disable_item_expand (tree_expand_one)
+			tree_controls.disable_item_expand (tree_shrink_one)
+			tree_controls.disable_item_expand (tree_technical_node)
+			tree_expand.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 157))
+			tree_expand.set_text ("Expand/Collapse all")
+			tree_expand.set_tooltip ("Completely expand or collapse node map")
+			tree_expand.set_minimum_width (tree_control_panel_width)
+			tree_expand_one.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 157))
+			tree_expand_one.set_text ("Expand one")
+			tree_expand_one.set_tooltip ("Expand node map one level")
+			tree_expand_one.set_minimum_width (tree_control_panel_width)
+			tree_shrink_one.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 157))
+			tree_shrink_one.set_text ("Collapse one")
+			tree_shrink_one.set_tooltip ("Collapse node map one level")
+			tree_shrink_one.set_minimum_width (tree_control_panel_width)
+			tree_technical_node.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 157))
+			tree_technical_node.set_text ("Technical")
+			tree_technical_node.set_tooltip ("Toggle inclusion of technical details")
+			tree_technical_node.set_minimum_width (tree_control_panel_width)
+			parsed_archetype_found_paths.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
+			parsed_archetype_found_paths.set_minimum_width (0)
+			parsed_archetype_found_paths.set_minimum_height (0)
+			ontology_notebook.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 206))
+			ontology_notebook.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
+			ontology_notebook.set_minimum_width (0)
+			ontology_notebook.set_minimum_height (min_terms_height)
+			ontology_notebook.set_item_text (ontology_term_defs, "Term Defs")
+			ontology_notebook.set_item_text (ontology_constraint_defs, "Constraint Defs")
+			ontology_term_defs.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
+			ontology_term_defs.set_minimum_width (0)
+			ontology_term_defs.set_minimum_height (0)
+			ontology_constraint_defs.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
+			ontology_constraint_defs.set_minimum_width (0)
+			ontology_constraint_defs.set_minimum_height (0)
 			archetype_text_edit_area.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
 			create internal_font
 			internal_font.set_family (feature {EV_FONT_CONSTANTS}.Family_typewriter)
@@ -407,66 +506,8 @@ feature {NONE}-- Initialization
 			internal_font.preferred_families.extend ("Courier New")
 			archetype_text_edit_area.set_font (internal_font)
 			archetype_text_edit_area.set_minimum_width (600)
-			archetype_text_edit_area.set_minimum_height (300)
-			parsed_archetype_found_paths.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
-			parsed_archetype_found_paths.set_minimum_width (0)
-			parsed_archetype_found_paths.set_minimum_height (0)
-			parsed_archetype_tree_view.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 206))
-			parsed_archetype_tree_view.set_minimum_width (source_notebook_min_width)
-			parsed_archetype_tree_view.disable_item_expand (tree_controls)
-			parsed_archetype_tree.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
-			parsed_archetype_tree.set_minimum_width (parsed_archetype_tree_min_width)
-			parsed_archetype_tree.set_minimum_height (286)
-			tree_controls.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 206))
-			tree_controls.set_minimum_width (110)
-			tree_controls.set_minimum_height (286)
-			tree_controls.set_padding_width (15)
-			tree_controls.set_border_width (10)
-			tree_controls.disable_item_expand (tree_expand)
-			tree_controls.disable_item_expand (tree_technical_node)
-			tree_controls.disable_item_expand (tree_expand_one)
-			tree_controls.disable_item_expand (tree_shrink_one)
-			tree_controls.disable_item_expand (l_ev_horizontal_separator_1)
-			tree_controls.disable_item_expand (tree_shrink_label)
-			tree_controls.disable_item_expand (tree_shrink_level)
-			tree_expand.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 157))
-			tree_expand.set_text ("Expand/Collapse all")
-			tree_expand.set_tooltip ("Completely expand or collapse node map")
-			tree_expand.set_minimum_width (tree_control_panel_width)
-			tree_technical_node.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 157))
-			tree_technical_node.set_text ("Technical")
-			tree_technical_node.set_tooltip ("Toggle inclusion of technical details")
-			tree_technical_node.set_minimum_width (tree_control_panel_width)
-			tree_expand_one.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 157))
-			tree_expand_one.set_text ("Expand one")
-			tree_expand_one.set_tooltip ("Expand node map one level")
-			tree_expand_one.set_minimum_width (tree_control_panel_width)
-			tree_shrink_one.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 157))
-			tree_shrink_one.set_text ("Collapse one")
-			tree_shrink_one.set_tooltip ("Collapse node map one level")
-			tree_shrink_one.set_minimum_width (tree_control_panel_width)
-			l_ev_horizontal_separator_1.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 206))
-			l_ev_horizontal_separator_1.set_minimum_width (tree_control_panel_width)
-			l_ev_horizontal_separator_1.set_minimum_height (10)
-			tree_shrink_label.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 206))
-			tree_shrink_label.set_text ("Collapse to ...")
-			tree_shrink_label.set_minimum_width (tree_control_panel_width)
-			tree_shrink_label.set_minimum_height (23)
-			tree_shrink_level.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 206))
-			tree_shrink_level.set_minimum_width (tree_control_panel_width)
-			tree_shrink_level.set_minimum_height (23)
-			ontology_notebook.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 206))
-			ontology_notebook.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
-			ontology_notebook.set_minimum_width (0)
-			ontology_notebook.set_minimum_height (max_terms_height)
-			ontology_notebook.set_item_text (ontology_term_defs, "Term Defs")
-			ontology_notebook.set_item_text (ontology_constraint_defs, "Constraint Defs")
-			ontology_term_defs.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
-			ontology_term_defs.set_minimum_width (0)
-			ontology_term_defs.set_minimum_height (0)
-			ontology_constraint_defs.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
-			ontology_constraint_defs.set_minimum_width (0)
-			ontology_constraint_defs.set_minimum_height (0)
+			archetype_text_edit_area.set_minimum_height (app_min_height)
+			archetype_text_edit_area.disable_edit
 			parser_status_area.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
 			parser_status_area.set_minimum_width (0)
 			parser_status_area.set_minimum_height (status_area_min_height)
@@ -477,7 +518,7 @@ feature {NONE}-- Initialization
 			set_minimum_height (app_min_height)
 			set_maximum_width (app_max_width)
 			set_maximum_height (app_max_height)
-			set_title ("Ocean Informatics ADL VER Workbench")
+			set_title ("Archetype Ddefinition Language VER Workbench")
 			
 				--Connect events.
 			open_adl_file_mi.select_actions.extend (agent open_adl_file)
@@ -493,15 +534,14 @@ feature {NONE}-- Initialization
 			format_combo.select_actions.extend (agent select_format)
 			language_combo.select_actions.extend (agent select_language)
 			archetype_file_tree.select_actions.extend (agent archetype_tree_item_select)
+			parsed_archetype_tree.select_actions.extend (agent node_map_item_select)
+			tree_expand.select_actions.extend (agent expand_tree)
+			tree_expand_one.select_actions.extend (agent expand_tree_one_level)
+			tree_shrink_one.select_actions.extend (agent shrink_tree_one_level)
+			tree_technical_node.select_actions.extend (agent tree_technical_mode)
 			archetype_text_edit_area.pointer_button_press_actions.extend (agent move_cursor_to_pointer_location (?, ?, ?, ?, ?, ?, ?, ?))
 			archetype_text_edit_area.pointer_double_press_actions.extend (agent pointer_double_click_action (?, ?, ?, ?, ?, ?, ?, ?))
 			archetype_text_edit_area.key_press_string_actions.extend (agent process_keystroke (?))
-			parsed_archetype_tree.select_actions.extend (agent node_map_item_select)
-			tree_expand.select_actions.extend (agent expand_tree)
-			tree_technical_node.select_actions.extend (agent tree_technical_mode)
-			tree_expand_one.select_actions.extend (agent expand_tree_one_level)
-			tree_shrink_one.select_actions.extend (agent shrink_tree_one_level)
-			tree_shrink_level.select_actions.extend (agent shrink_tree_to_level)
 			close_request_actions.extend (agent exit_app)
 				-- Close the application when an interface close
 				-- request is recieved on `Current'. i.e. the cross is clicked.
@@ -512,28 +552,26 @@ feature {NONE}-- Initialization
 
 feature -- Access
 
-	format_combo, language_combo, tree_shrink_level: EV_COMBO_BOX
+	format_combo, language_combo: EV_COMBO_BOX
 	l_ev_menu_separator_1, l_ev_menu_separator_2: EV_MENU_SEPARATOR
 	archetype_id,
 	parent_archetype_id, arch_desc_status_text, arch_desc_resource_package_text: EV_TEXT_FIELD
 	arch_desc_auth_orig_auth_mlist,
 	arch_desc_resource_orig_res_mlist, parsed_archetype_found_paths, ontology_term_defs,
 	ontology_constraint_defs: EV_MULTI_COLUMN_LIST
-	file_menu, l_ev_menu_3, l_ev_menu_4: EV_MENU
-	l_ev_horizontal_separator_1: EV_HORIZONTAL_SEPARATOR
-	open_button,
-	parse_button, edit_button, save_button, tree_expand, tree_technical_node, tree_expand_one,
-	tree_shrink_one: EV_BUTTON
-	arch_desc_purpose_text, arch_desc_use_text, arch_desc_misuse_text,
-	arch_desc_copyright_text, archetype_text_edit_area, parser_status_area: EV_TEXT
-	arch_desc_auth_contrib_list,
-	arch_desc_keywords_list: EV_LIST
-	arch_notebook, source_notebook, ontology_notebook: EV_NOTEBOOK
-	archetype_file_tree,
-	parsed_archetype_tree: EV_TREE
-	l_ev_horizontal_split_area_1: EV_HORIZONTAL_SPLIT_AREA
-	l_ev_vertical_split_area_1,
-	view_area: EV_VERTICAL_SPLIT_AREA
+	file_menu, options_menu, about_menu: EV_MENU
+	open_button, parse_button,
+	edit_button, save_button, tree_expand, tree_expand_one, tree_shrink_one, tree_technical_node: EV_BUTTON
+	arch_desc_purpose_text,
+	arch_desc_use_text, arch_desc_misuse_text, arch_desc_copyright_text, archetype_text_edit_area,
+	parser_status_area: EV_TEXT
+	arch_desc_auth_contrib_list, arch_desc_keywords_list: EV_LIST
+	arch_notebook,
+	source_notebook, ontology_notebook: EV_NOTEBOOK
+	archetype_file_tree, parsed_archetype_tree: EV_TREE
+	explorer_view_area: EV_HORIZONTAL_SPLIT_AREA
+	total_view_area,
+	info_view_area: EV_VERTICAL_SPLIT_AREA
 	action_bar, arch_desc_status_hbox, arch_desc_auth_hbox, arch_desc_details_hbox,
 	l_ev_horizontal_box_1, l_ev_horizontal_box_2, l_ev_horizontal_box_3, l_ev_horizontal_box_4,
 	l_ev_horizontal_box_5, l_ev_horizontal_box_6, arch_desc_copyright_hbox, parsed_archetype_tree_view: EV_HORIZONTAL_BOX
@@ -543,12 +581,11 @@ feature -- Access
 	l_ev_label_1, language_label, arch_desc_status_label, arch_desc_auth_orig_auth_label,
 	arch_desc_auth_contrib_label, arch_desc_purpose_label, arch_desc_use_label, arch_desc_misuse_label,
 	arch_desc_keywords_label, arch_desc_resource_package_label, arch_desc_resource_orig_res_label,
-	arch_desc_copyright_label, tree_shrink_label: EV_LABEL
-	open_adl_file_mi, save_adl_file_mi,
-	exit_tool_mi, options, about_mi, news: EV_MENU_ITEM
+	arch_desc_copyright_label: EV_LABEL
+	open_adl_file_mi, save_adl_file_mi, exit_tool_mi, options,
+	about_mi, news: EV_MENU_ITEM
 	menu: EV_MENU_BAR
-	arch_desc_auth_frame, arch_desc_details_frame,
-	arch_desc_resource_frame: EV_FRAME
+	arch_desc_auth_frame, arch_desc_details_frame, arch_desc_resource_frame: EV_FRAME
 
 feature {NONE} -- Implementation
 
@@ -620,21 +657,6 @@ feature {NONE} -- Implementation
 		deferred
 		end
 	
-	move_cursor_to_pointer_location (a_x, a_y, a_button: INTEGER; a_x_tilt, a_y_tilt, a_pressure: DOUBLE; a_screen_x, a_screen_y: INTEGER) is
-			-- Called by `pointer_button_press_actions' of `archetype_text_edit_area'.
-		deferred
-		end
-	
-	pointer_double_click_action (a_x, a_y, a_button: INTEGER; a_x_tilt, a_y_tilt, a_pressure: DOUBLE; a_screen_x, a_screen_y: INTEGER) is
-			-- Called by `pointer_double_press_actions' of `archetype_text_edit_area'.
-		deferred
-		end
-	
-	process_keystroke (a_keystring: STRING) is
-			-- Called by `key_press_string_actions' of `archetype_text_edit_area'.
-		deferred
-		end
-	
 	node_map_item_select is
 			-- Called by `select_actions' of `parsed_archetype_tree'.
 		deferred
@@ -642,11 +664,6 @@ feature {NONE} -- Implementation
 	
 	expand_tree is
 			-- Called by `select_actions' of `tree_expand'.
-		deferred
-		end
-	
-	tree_technical_mode is
-			-- Called by `select_actions' of `tree_technical_node'.
 		deferred
 		end
 	
@@ -660,8 +677,23 @@ feature {NONE} -- Implementation
 		deferred
 		end
 	
-	shrink_tree_to_level is
-			-- Called by `select_actions' of `tree_shrink_level'.
+	tree_technical_mode is
+			-- Called by `select_actions' of `tree_technical_node'.
+		deferred
+		end
+	
+	move_cursor_to_pointer_location (a_x, a_y, a_button: INTEGER; a_x_tilt, a_y_tilt, a_pressure: DOUBLE; a_screen_x, a_screen_y: INTEGER) is
+			-- Called by `pointer_button_press_actions' of `archetype_text_edit_area'.
+		deferred
+		end
+	
+	pointer_double_click_action (a_x, a_y, a_button: INTEGER; a_x_tilt, a_y_tilt, a_pressure: DOUBLE; a_screen_x, a_screen_y: INTEGER) is
+			-- Called by `pointer_double_press_actions' of `archetype_text_edit_area'.
+		deferred
+		end
+	
+	process_keystroke (a_keystring: STRING) is
+			-- Called by `key_press_string_actions' of `archetype_text_edit_area'.
 		deferred
 		end
 	

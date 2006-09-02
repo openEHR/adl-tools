@@ -1,49 +1,21 @@
 ADL_WORKBENCH NEWS (see About menu > News)
 -------------------------------------------------------------------------
-In this edition of the archetype workbench, the "description" part of the
-archetype is implemented, according to the current published AOM
-specification. See:
-http://www.openehr.org/repositories/spec-dev/latest/publishing/architecture/am/aom.pdf
-The description section of the archetype now should as in the following
-example; in particular the names of attributes need to follow the
-specification, as shown in this example.
+The GUI has been improved to behave better on different screens. 
 
-	original_author = <
-		["name"] = <"author name">
-		["xxx"] = <"other detail">
-	>
-	other_contributors = <
-		["1"] = <"contrib 1">
-		["2"] = <"contrib 2">
-	>
-	lifecycle_state = <"draft">
-	archetype_package_uri = <http://archetypes.are.us/some/package/folder>
-	details = <
-		["en"] = <
-			language = <"en">
-			purpose = <"what this is for">
-			keywords = <"this", "is", "a", "list", "keywords">
-			use = <"This is what it is used for. This may be quite a
-				long explanation, taking a number of lines.">
-			misuse = <"This is not what it is used for. This may also
-				take multiple lines.">
-			copyright = <"copyright notice">
-			original_resource_uri = <
-				["guideline"] = <http://guidelines.are.us/wherever/en>
-				["medline"] = <http://some%20medline%20ref>
-				["etc"] = <etc://any.uri.com/some/resource>
-			>
-		>
-		["fr"] = <
-			language = <"fr">
-			purpose = <"a quoi ça sert">
-			keywords = <"ceçi", "est", "une", "liste", "de", "mots", "de", "clefs">
-			use = <"Ceçi explique la fonction de cet archetype. ">
-			misuse = <"Cet archetype est déconseillé pour...">
-			copyright = <"avis copyright">
-			original_resource_uri = <
-				["ligne guide"] = <http://guidelines.are.us/wherever/fr>
-				["medline"] = <http://some%20medline%20ref>
-			>
-		>
-	>
+General
+-------
+All split area positions are now remembered over sessions.
+
+Archetype Explorer
+------------------
+The left-hand explorer tree arranges archetypes in a more intelligent 
+manner.
+
+Definition Node Map
+-------------------
+Uses new icons:
+	- dark colour means mandatory, e.g. 1..1
+	- light colour means optional, e.g. 0..1
+	- additional '+' means cardinality of > 1
+
+The textual presentation in the node view has been improved.

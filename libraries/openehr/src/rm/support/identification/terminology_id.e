@@ -32,7 +32,7 @@ class TERMINOLOGY_ID
 inherit
 	CANONICAL_FRAGMENT
 		undefine
-			default_create
+			default_create, is_equal
 		end
 		
 	OBJECT_ID

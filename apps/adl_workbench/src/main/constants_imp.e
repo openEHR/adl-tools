@@ -29,16 +29,22 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	status_area_min_height: INTEGER is 
-			-- `Result' is INTEGER constant named status_area_min_height.
+	arch_tree_min_width: INTEGER is 
+			-- `Result' is INTEGER constant named arch_tree_min_width.
 		once
-			Result := 65
+			Result := 500
 		end
 
-	app_min_width: INTEGER is 
-			-- `Result' is INTEGER constant named app_min_width.
+	app_min_height: INTEGER is 
+			-- `Result' is INTEGER constant named app_min_height.
 		once
-			Result := 800
+			Result := 350
+		end
+
+	app_initial_width: INTEGER is 
+			-- `Result' is INTEGER constant named app_initial_width.
+		once
+			Result := 1024
 		end
 
 	source_notebook_min_width: INTEGER is 
@@ -47,10 +53,10 @@ feature -- Access
 			Result := 600
 		end
 
-	tree_control_panel_width: INTEGER is 
-			-- `Result' is INTEGER constant named tree_control_panel_width.
+	app_max_width: INTEGER is 
+			-- `Result' is INTEGER constant named app_max_width.
 		once
-			Result := 100
+			Result := 2000
 		end
 
 	min_terms_status_height: INTEGER is 
@@ -59,34 +65,34 @@ feature -- Access
 			Result := 200
 		end
 
-	app_min_height: INTEGER is 
-			-- `Result' is INTEGER constant named app_min_height.
-		once
-			Result := 650
-		end
-
-	parsed_archetype_tree_min_width: INTEGER is 
-			-- `Result' is INTEGER constant named parsed_archetype_tree_min_width.
-		once
-			Result := 500
-		end
-
-	parsed_archetype_tree_min_height: INTEGER is 
-			-- `Result' is INTEGER constant named parsed_archetype_tree_min_height.
-		once
-			Result := 350
-		end
-
-	min_terms_height: INTEGER is 
-			-- `Result' is INTEGER constant named min_terms_height.
+	tree_control_panel_width: INTEGER is 
+			-- `Result' is INTEGER constant named tree_control_panel_width.
 		once
 			Result := 100
 		end
 
-	app_max_width: INTEGER is 
-			-- `Result' is INTEGER constant named app_max_width.
+	max_arch_explorer_width: INTEGER is 
+			-- `Result' is INTEGER constant named max_arch_explorer_width.
 		once
-			Result := 1024
+			Result := 180
+		end
+
+	source_notebook_min_height: INTEGER is 
+			-- `Result' is INTEGER constant named source_notebook_min_height.
+		once
+			Result := 200
+		end
+
+	max_terms_height: INTEGER is 
+			-- `Result' is INTEGER constant named max_terms_height.
+		once
+			Result := 400
+		end
+
+	app_initial_height: INTEGER is 
+			-- `Result' is INTEGER constant named app_initial_height.
+		once
+			Result := 768
 		end
 
 	main_hbox_min_height: INTEGER is 
@@ -101,22 +107,52 @@ feature -- Access
 			Result := 600
 		end
 
-	max_arch_explorer_width: INTEGER is 
-			-- `Result' is INTEGER constant named max_arch_explorer_width.
+	status_area_min_height: INTEGER is 
+			-- `Result' is INTEGER constant named status_area_min_height.
 		once
-			Result := 180
+			Result := 65
 		end
 
-	max_terms_height: INTEGER is 
-			-- `Result' is INTEGER constant named max_terms_height.
+	arch_tree_min_height: INTEGER is 
+			-- `Result' is INTEGER constant named arch_tree_min_height.
 		once
-			Result := 400
+			Result := 60
+		end
+
+	arch_notebook_min_height: INTEGER is 
+			-- `Result' is INTEGER constant named arch_notebook_min_height.
+		once
+			Result := 500
+		end
+
+	ocean_ico: EV_PIXMAP is
+		once
+			create Result
+			Result.set_with_named_file ("C:\project\openehr\ref_impl_eiffel\apps\adl_workbench\app\ocean.ico")
 		end
 
 	app_max_height: INTEGER is 
 			-- `Result' is INTEGER constant named app_max_height.
 		once
-			Result := 768
+			Result := 2000
+		end
+
+	min_terms_height: INTEGER is 
+			-- `Result' is INTEGER constant named min_terms_height.
+		once
+			Result := 100
+		end
+
+	app_min_width: INTEGER is 
+			-- `Result' is INTEGER constant named app_min_width.
+		once
+			Result := 500
+		end
+
+	adl_workbench_ico: EV_PIXMAP is
+		once
+			create Result
+			Result.set_with_named_file ("C:\project\openehr\ref_impl_eiffel\apps\adl_workbench\app\icons\adl_gui_vision2.ico")
 		end
 
 

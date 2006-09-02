@@ -81,7 +81,7 @@ feature -- Commands
 			create tree_iterator.make(adl_engine.archetype.definition.representation)
 			tree_iterator.do_all(agent node_build_enter_action(?,?), agent node_build_exit_action(?,?))
 			populate_invariants
-			is_expanded := False
+			is_expanded := True
 			expand_or_shrink
 		end
 
@@ -214,9 +214,17 @@ feature {NONE} -- Implementation
 			if a_type.is_equal("C_ATTRIBUTE") then
 				an_attr_node ?= an_og_node.content_item
 				if an_attr_node.is_multiple then
-					a_ti := attach_node(c_attribute_string(an_attr_node), pixmaps.item("C_ATTRIBUTE.multiple"), an_og_node)
-				else	
-					a_ti := attach_node(c_attribute_string(an_attr_node), pixmaps.item("C_ATTRIBUTE"), an_og_node)				
+					if an_attr_node.cardinality.interval.lower > 0 then
+						a_ti := attach_node(c_attribute_string(an_attr_node), pixmaps.item("C_ATTRIBUTE.multiple"), an_og_node)
+					else
+						a_ti := attach_node(c_attribute_string(an_attr_node), pixmaps.item("C_ATTRIBUTE.multiple.optional"), an_og_node)
+					end
+				else
+					if an_attr_node.existence.lower = 1 then
+						a_ti := attach_node(c_attribute_string(an_attr_node), pixmaps.item("C_ATTRIBUTE"), an_og_node)
+					else
+						a_ti := attach_node(c_attribute_string(an_attr_node), pixmaps.item("C_ATTRIBUTE.optional"), an_og_node)										
+					end
 				end
 				
 			elseif a_type.is_equal("CONSTRAINT_REF") then
@@ -293,16 +301,28 @@ feature {NONE} -- Implementation
 				
 			elseif a_type.is_equal("C_COMPLEX_OBJECT") then
 				an_obj_node ?= an_og_node.content_item				
-				if an_obj_node.is_addressable then
-					pixmap := pixmaps.item("C_COMPLEX_OBJECT")
+				if an_obj_node.occurrences.lower > 0 then
+					if an_obj_node.occurrences.upper = 1 then
+						pixmap := pixmaps.item("C_COMPLEX_OBJECT")
+					else
+						pixmap := pixmaps.item("C_COMPLEX_OBJECT.multiple")
+					end
 				else
-					pixmap := pixmaps.item("C_COMPLEX_OBJECT.unknown")
+					if an_obj_node.occurrences.upper = 1 then
+						pixmap := pixmaps.item("C_COMPLEX_OBJECT.optional")
+					else
+						pixmap := pixmaps.item("C_COMPLEX_OBJECT.multiple.optional")
+					end
 				end
 				a_ti := attach_node(c_complex_object_string(an_obj_node), pixmap, an_og_node)
 				
 			elseif a_type.is_equal("ARCHETYPE_SLOT") then
-				a_slot ?= an_og_node.content_item				
-				pixmap := pixmaps.item("ARCHETYPE_SLOT")
+				a_slot ?= an_og_node.content_item
+				if a_slot.occurrences.lower = 1 then
+					pixmap := pixmaps.item("ARCHETYPE_SLOT")
+				else
+					pixmap := pixmaps.item("ARCHETYPE_SLOT.optional")
+				end
 				a_ti := attach_node(archetype_slot_string(a_slot), pixmap, an_og_node)
 				
 				if a_slot.has_includes then
@@ -536,7 +556,9 @@ feature {NONE} -- Implementation
 						node_list.extend(an_ev_tree_node.item)
 					end
 					an_ev_tree_node.forth
-				end					
+				end
+			elseif an_ev_tree_node = gui_tree.item then
+				node_list.extend(an_ev_tree_node)
 			end
 		end
 
@@ -566,10 +588,10 @@ feature {NONE} -- Implementation
 			-- generate string form of node or object for use in tree node
 		do
 			create Result.make(0)
-			Result.append(" [" + an_attr_node.existence.as_occurrences_string + "] ")
-			if an_attr_node.is_multiple then
-				Result.append(" [" + an_attr_node.cardinality.as_string + "] ")			
-			end
+			-- Result.append(" [" + an_attr_node.existence.as_occurrences_string + "] ")
+			-- if an_attr_node.is_multiple then
+			-- 	Result.append(" [" + an_attr_node.cardinality.as_string + "] ")			
+			-- end
 			Result.append(an_attr_node.rm_attribute_name)
 			if an_attr_node.any_allowed then
 				Result.append(" matches {*}")
@@ -580,12 +602,15 @@ feature {NONE} -- Implementation
 			-- generate string form of node or object for use in tree node
 		do
 			create Result.make(0)
-			Result.append(" [" + an_obj_node.occurrences.as_occurrences_string + "] ")
+			-- Result.append(" [" + an_obj_node.occurrences.as_occurrences_string + "] ")
 			if an_obj_node.is_addressable then
 				if in_technical_mode then
-					Result.append(an_obj_node.rm_type_name + "[" + an_obj_node.node_id + "]")
+					Result.append(an_obj_node.rm_type_name)
 				end
-				Result.append(" -- " + ontology.term_definition(language, an_obj_node.node_id).item("text"))
+				Result.append(" " + ontology.term_definition(language, an_obj_node.node_id).item("text"))
+				if in_technical_mode then
+					Result.append(" [" + an_obj_node.node_id + "]")
+				end
 			else -- put type even when not in technical mode
 				Result.append(an_obj_node.rm_type_name)
 			end
@@ -598,15 +623,17 @@ feature {NONE} -- Implementation
 			-- generate string form of node or object for use in tree node
 		do
 			create Result.make(0)
-			Result.append(" [" + an_obj_node.occurrences.as_occurrences_string + "] ")
+			-- Result.append(" [" + an_obj_node.occurrences.as_occurrences_string + "] ")
 			if in_technical_mode then
 				Result.append(an_obj_node.rm_type_name)
 			end
 			if an_obj_node.is_addressable then
-				if in_technical_mode then
-					Result.append("[" + an_obj_node.node_id + "]")
+				Result.append(" " + ontology.term_definition(language, an_obj_node.node_id).item("text"))
+			end
+			if in_technical_mode then
+				if an_obj_node.is_addressable then
+					Result.append(" [" + an_obj_node.node_id + "]")
 				end
-				Result.append(" -- " + ontology.term_definition(language, an_obj_node.node_id).item("text"))
 			end
 			if an_obj_node.any_allowed then
 				Result.append(" = *")
@@ -617,13 +644,13 @@ feature {NONE} -- Implementation
 			-- generate string form of node or object for use in tree node
 		do
 			create Result.make(0)
-			if not (a_simple_node.occurrences.lower = 1 and a_simple_node.occurrences.upper = 1) then
-				Result.append(" [" + a_simple_node.occurrences.as_occurrences_string + "] ")
-			end
-			Result.append(a_simple_node.item.as_string)
 			if in_technical_mode then		
-				Result.append(" (" + a_simple_node.rm_type_name + ")")
+				Result.append(a_simple_node.rm_type_name)
 			end
+			if not (a_simple_node.occurrences.lower = 1 and a_simple_node.occurrences.upper = 1) then
+				Result.append(" [" + a_simple_node.occurrences.as_occurrences_string + "]")
+			end
+			Result.append(" " + a_simple_node.item.as_string)
 		end
 
 	archetype_internal_ref_string(a_node_ref: ARCHETYPE_INTERNAL_REF): STRING is
@@ -631,7 +658,7 @@ feature {NONE} -- Implementation
 		do
 			create Result.make(0)
 			if in_technical_mode then		
-				Result.append("use " + a_node_ref.target_path)
+				Result.append("use " + a_node_ref.rm_type_name + " " + a_node_ref.target_path)
 			else
 				Result.append("use " + ontology.logical_path_for_physical_path(a_node_ref.target_path, language))
 			end

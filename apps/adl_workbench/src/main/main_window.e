@@ -57,15 +57,35 @@ feature {NONE} -- Initialization
 		local
 			ed_cmd, os, cur_title: STRING
 		do
-			set_x_position(0)
-			set_y_position(0)
-			set_width(app_max_width)
-			set_height(app_max_height)
 			set_icon_name("ADL Editor")
+			set_icon_pixmap (adl_workbench_ico)
 			cur_title := title.twin
 			cur_title.replace_substring_all("VER", Current_adl_version)
 			set_title(cur_title)
-   			view_area.set_proportion(0.5)
+
+			set_x_position(0)
+			set_y_position(0)
+			
+			if app_width > 0 then
+				set_width(app_width)
+			else
+				set_width(app_initial_width)
+			end			
+			if app_height > 0 then
+				set_height(app_height)
+			else
+				set_height(app_initial_height)
+			end
+						
+			if explorer_view_area_split_position > 0 then
+				explorer_view_area.set_split_position (explorer_view_area_split_position)
+			end
+			if info_view_area_split_position > 0 then
+				info_view_area.set_split_position (info_view_area_split_position)
+			end
+			if total_view_area_split_position > 0 then
+				total_view_area.set_split_position (total_view_area_split_position)
+			end
 			
 			if repository_path.is_empty then
 				set_repository_path(application_startup_directory)
@@ -97,9 +117,7 @@ feature {NONE} -- Initialization
 			adl_interface.set_current_directory(repository_path)
 			if current_work_directory = Void then
 				current_work_directory := adl_interface.working_directory
-			end
-			
-			tree_shrink_level.set_strings(<<"addressable", "anonymous", "simple">>)
+			end			
 		end
 
 feature -- Access
@@ -142,6 +160,12 @@ feature {NONE} -- Commands
 	exit_app is
 			-- 
 		do
+			set_total_view_area_split_position(total_view_area.split_position)
+			set_info_view_area_split_position(info_view_area.split_position)
+			set_explorer_view_area_split_position(explorer_view_area.split_position)
+			set_app_width(width)
+			set_app_height(height)
+			save_resources;
 			((create {EV_ENVIRONMENT}).application).destroy
 		end
 
@@ -294,13 +318,6 @@ feature {NONE} -- Commands
    			archetype_file_tree.set_minimum_width(0)
 
 			set_pointer_style(cur_csr)			
-		end
-			
-	shrink_tree_to_level is
-		do
-			if adl_interface.parse_succeeded then
-				node_map_control.shrink_to_level(tree_shrink_level.selected_text)
-			end
 		end
 				
 	shrink_tree_one_level is

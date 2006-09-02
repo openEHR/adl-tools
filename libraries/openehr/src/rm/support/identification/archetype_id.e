@@ -6,7 +6,7 @@ indexing
 				 		qualified_rm_entity.domain_concept.version
 				 	where:
 				 		qualified_rm_entity	= rm_originator-rm_name-rm_entity_name
-				 		domain_concept = string name of concept, includig specialised parts
+				 		domain_concept = string name of concept, including specialised parts
 				 						 separated by '-'s
 				 		version = string
 				 ]"
@@ -14,7 +14,7 @@ indexing
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2000-2006 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -26,7 +26,7 @@ class ARCHETYPE_ID
 inherit
 	OBJECT_ID
 		redefine
-			default_create
+			default_create, infix "<"
 		end
 
 create
@@ -101,7 +101,7 @@ feature -- Access
 		
 	domain_concept: STRING is
 			-- shortened version of concept name, e.g.
-			-- "blood_pressure", "general_biochemistry"
+			-- "blood_pressure", "problem-diagnosis"
 			-- extracted from `value'
 		local
 			p, q: INTEGER
@@ -172,6 +172,8 @@ feature -- Access
 	specialisation: STRING is
 			-- optional specialisation of concept, e.g. "blood lipids"
 			-- extracted from domain_concept
+		require
+			is_specialised
 		local
 			s: STRING
 		do
@@ -181,6 +183,35 @@ feature -- Access
 			Result_valid: Result /= Void implies not Result.is_empty
 		end
 
+	domain_concept_base: STRING is
+			-- the part of the domain concept excluding the last specialisation
+			-- i.e. "problem" 						-> "problem" (no specialisation)
+			--		"problem-diagnosis" 			-> "problem"
+			--		"problem-diagnosis-histological" -> "problem-diagnosis"
+		local
+			s: STRING
+			loc: INTEGER
+		do
+			s := domain_concept
+			loc := s.last_index_of(Section_separator, s.count) - 1
+			if loc < 0 then
+				loc := s.count
+			end
+			Result := s.substring(1, loc)
+		ensure
+			Result_valid: Result /= Void implies not Result.is_empty
+		end
+
+	sortable_id: STRING is
+			-- id as a string minus the version part at the end 
+			-- (which interferes with sensible sorting)
+		local
+			p: INTEGER
+		do
+			p := value.last_index_of(axis_separator, value.count) - 1
+			Result := value.substring(1, p)
+		end
+	
 feature -- Status Report
 
 	is_specialised: BOOLEAN
@@ -206,6 +237,14 @@ feature -- Factory
 			is_specialised := True
 		ensure
 			Result_exists: Result /= Void
+		end
+
+feature -- Comparison
+
+	infix "<" (other: like Current): BOOLEAN is
+			-- Is current object less than `other'?
+		do
+			Result := sortable_id < other.sortable_id
 		end
 
 feature -- Output

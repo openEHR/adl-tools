@@ -1,52 +1,45 @@
 indexing
-	component:   "openEHR Common Reference Model"
-	
-	description: "[
-			 Ancestor class of identifiers of informational objects. Ids may be completely meaningless, 
-			 in which case their only job is to refer to something, or may carry some information to do 
-			 with the identified object.
-			 ]"
-	keywords:    "object identifiers"
-
-	design:      "openEHR Common Reference Model 1.4.1"
-
+	component:   "openEHR Archetype Project"
+	description: "Descriptor of an archetype in a directory of archetypes"
+	keywords:    "ADL, archetype"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-deferred class OBJECT_ID
 
-inherit
-	COMPARABLE
-	
+class ARCHETYPE_DIRECTORY_ARCHETYPE
+
+inherit 
+	ARCHETYPE_DIRECTORY_ITEM
+		rename
+			make as make_adi
+		end
+
+create
+	make
+
+feature -- Initialisation
+
+	make(a_path: STRING; an_id: ARCHETYPE_ID; is_specialised_flag: BOOLEAN) is
+		require
+			Path_valid: a_path /= Void and then not a_path.is_empty
+			Id_valid: an_id /= Void
+		do
+			make_adi(a_path)
+			id := an_id
+			is_specialised := is_specialised_flag
+		end
+
 feature -- Access
 
-	value: STRING
-			
-feature -- Status Report
+	id: ARCHETYPE_ID
 
-	valid_id(an_id:STRING): BOOLEAN is
-			-- 
-		require
-			an_id_valid: an_id /= Void and then not an_id.is_empty
-		deferred
-		end
-		
-feature -- Comparison
-
-	infix "<" (other: like Current): BOOLEAN is
-			-- Is current object less than `other'?
-		do
-			Result := value < other.value
-		end
-
-invariant
-	value_exists: value /= Void and then not value.is_empty
+	is_specialised: BOOLEAN
 
 end
 
@@ -66,10 +59,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is object_id.e.
+--| The Original Code is archetype_directory_item.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2006
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

@@ -65,7 +65,7 @@ SETUP
 	  navigate to the desired archetype and left-click to open and 
 	  parse. The root directory of the explorer view is determined by
 	  the "repository" setting in the .cfg file. Use the Options menu
-	  to set the directory on your system.
+	  to set the directory on your system.
 
 		OR
 
@@ -113,6 +113,4 @@ FUTURE
 	validation of the archetype against a particular information model, 
 	such as the openEHR EHR information model, a CEN model and HL7 model, 
 	such as the RIM, or any other model.
-
-	Numerous small GUI improvements are in the pipeline.
 
