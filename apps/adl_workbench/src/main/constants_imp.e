@@ -41,6 +41,17 @@ feature -- Access
 			Result := 350
 		end
 
+	label_font: EV_FONT is
+			-- `Result' is EV_FONT constant named `label_font'.
+		once
+			create Result
+			Result.set_family ({EV_FONT_CONSTANTS}.Family_sans)
+			Result.set_weight ({EV_FONT_CONSTANTS}.Weight_bold)
+			Result.set_shape ({EV_FONT_CONSTANTS}.Shape_regular)
+			Result.set_height_in_points (8)
+			Result.preferred_families.extend ("System")
+		end
+
 	app_initial_width: INTEGER is 
 			-- `Result' is INTEGER constant named app_initial_width.
 		once
@@ -89,6 +100,18 @@ feature -- Access
 			Result := 400
 		end
 
+	table_row_spacing: INTEGER is 
+			-- `Result' is INTEGER constant named table_row_spacing.
+		once
+			Result := 4
+		end
+
+	desc_label_width: INTEGER is 
+			-- `Result' is INTEGER constant named desc_label_width.
+		once
+			Result := 100
+		end
+
 	app_initial_height: INTEGER is 
 			-- `Result' is INTEGER constant named app_initial_height.
 		once
@@ -125,10 +148,16 @@ feature -- Access
 			Result := 500
 		end
 
-	ocean_ico: EV_PIXMAP is
+	button_colour: EV_COLOR is
+			-- `Result' is EV_COLOR constant named `button_colour'.
 		once
-			create Result
-			Result.set_with_named_file ("C:\project\openehr\ref_impl_eiffel\apps\adl_workbench\app\ocean.ico")
+			Result := create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 0)
+		end
+
+	background: EV_COLOR is
+			-- `Result' is EV_COLOR constant named `background'.
+		once
+			Result := create {EV_COLOR}.make_with_8_bit_rgb (254, 248, 205)
 		end
 
 	app_max_height: INTEGER is 

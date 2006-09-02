@@ -137,6 +137,12 @@ feature -- Commands
 			option_dialog.show
 		end
 		
+	display_icon_help is
+			-- 
+		do
+			icon_dialog.show
+		end
+		
 	update_status_area(s: STRING) is
 			-- update parse status area on screen
 		do
@@ -281,7 +287,8 @@ feature {NONE} -- Commands
 				parser_status_area.append_text(adl_interface.status)
 				if adl_interface.parse_succeeded then
 					populate_all_controls
-					source_notebook.select_item(parsed_archetype_tree_view)
+--					arch_notebook.select_item (info_view_area)
+--					source_notebook.select_item(parsed_archetype_tree_view)
 					adl_interface.set_archetype_readonly
 				else
 					populate_archetype_id
@@ -298,7 +305,7 @@ feature {NONE} -- Commands
 				adl_interface.resync_file
 				clear_all_controls
 				populate_archetype_text_edit_area
-				source_notebook.select_item(archetype_text_edit_area)
+				-- arch_notebook.select_item(archetype_text_edit_area)
 			end
 		end
 		
@@ -402,6 +409,12 @@ feature -- Controls
 			Result.set_main_window(Current)
 		end
 		
+	Icon_dialog: ICON_DIALOG is
+		once
+			create Result
+			Result.set_main_window(Current)
+		end
+		
 	Print_dialog: EV_PRINT_DIALOG is
 			-- 	EV_PRINT_DIALOG for test.
 		once
@@ -495,6 +508,8 @@ feature {NONE} -- Implementation
 	populate_languages is
 		do
 			language_combo.set_strings(ontology.languages_available)
+			languages_list.set_strings(ontology.languages_available)
+			terminologies_list.set_strings(ontology.terminologies_available)
 		end
 
 	populate_archetype_text_edit_area is
@@ -522,26 +537,6 @@ feature {NONE} -- Implementation
 				left_pos := right_pos + 1
 				line_cnt := line_cnt + 1
 			end
-			
---			s.append(adl_interface.adl_engine.source)
---			s.replace_substring_all ("%T", "    ")
---			s.replace_substring_all ("%N", "%NLINE: ")
---			s.remove_tail(("LINE: ").count)
---			s.prepend("LINE: ")
---			from
---				i := 1
---				p := 1
---			until
---				p = 0
---			loop
---				create l.make(("LINE: ").count)
---				l.fill_blank
---				l.replace_substring(i.out, 1, i.out.count-1)
---				s.replace_substring(l, p, p + ("LINE: ").count-1)
---				i := i + 1
---				p := s.substring_index("LINE: ", p)
---			end
---			
 			archetype_text_edit_area.set_text(s)
 		end
 	

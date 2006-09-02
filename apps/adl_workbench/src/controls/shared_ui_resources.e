@@ -151,6 +151,76 @@ feature -- Access
 			end
 		end
 		
+	pixmap_help_index: ARRAYED_LIST [STRING] is
+			-- list of pixmap ids to be included in icon help dialog
+		once
+			create Result.make(0)
+			
+			Result.extend("archetype")
+			Result.extend("archetype_specialised")
+
+			Result.extend("C_ATTRIBUTE")
+			Result.extend("C_ATTRIBUTE.optional")
+			Result.extend("C_ATTRIBUTE.multiple")
+			Result.extend("C_ATTRIBUTE.multiple.optional")
+			
+			Result.extend("C_COMPLEX_OBJECT")
+			Result.extend("C_COMPLEX_OBJECT.multiple")
+			Result.extend("C_COMPLEX_OBJECT.optional")
+			Result.extend("C_COMPLEX_OBJECT.multiple.optional")
+			
+			Result.extend("ARCHETYPE_SLOT")
+			Result.extend("ARCHETYPE_SLOT.optional")
+			Result.extend("CADL_INCLUDE")
+			Result.extend("CADL_EXCLUDE")
+			
+			Result.extend("ARCHETYPE_INTERNAL_REF")
+			Result.extend("CONSTRAINT_REF")
+	
+			Result.extend("C_CODED_TERM")
+			Result.extend("C_ORDINAL")
+			Result.extend("C_QUANTITY")
+			Result.extend("C_PRIMITIVE_OBJECT")
+			
+			Result.extend("CADL_INVARIANT")
+			Result.extend("CADL_INVARIANT_ITEM")
+		end
+
+	pixmap_help_table: HASH_TABLE [STRING, STRING] is
+			-- table of pixmap file paths keyed by icon key used in this app
+		once
+			create Result.make(0)
+			
+			Result.put("Single-valued attribute (mandatory)", 			"C_ATTRIBUTE")
+			Result.put("Single-valued attribute (optional)", 			"C_ATTRIBUTE.optional")
+			Result.put("Container attribute (mandatory)",			 	"C_ATTRIBUTE.multiple")
+			Result.put("Container attribute (optional)", 				"C_ATTRIBUTE.multiple.optional")
+			
+			Result.put("C_CODED_TERM (openEHR archetype profile)", 		"C_CODED_TERM")
+			Result.put("C_ORDINAL (openEHR archetype profile)",			"C_ORDINAL")
+			Result.put("C_QUANTITY (openEHR archetype profile)", 		"C_QUANTITY")
+			Result.put("C_PRIMITIVE_OBJECT - any type (openEHR AOM)", 	"C_PRIMITIVE_OBJECT")
+			
+			Result.put("Archetype slot (mandatory)", 					"ARCHETYPE_SLOT")
+			Result.put("Archetype slot (optional)", 					"ARCHETYPE_SLOT.optional")
+			Result.put("Archetype slot allowed archetypes", 					"CADL_INCLUDE")
+			Result.put("Archetype slot allowed archetypes", 					"CADL_EXCLUDE")
+			
+			Result.put("Complex ref model object (mandatory, single occurrence)", 			"C_COMPLEX_OBJECT")
+			Result.put("Complex ref model object (mandatory, multiple occurrences)", 		"C_COMPLEX_OBJECT.multiple")
+			Result.put("Complex ref model object (optional, single occurrence)", 			"C_COMPLEX_OBJECT.optional")
+			Result.put("Complex ref model object (optional, multiple occurrences)", 		"C_COMPLEX_OBJECT.multiple.optional")
+			
+			Result.put("Archetype internal reference to previously defined node", 			"ARCHETYPE_INTERNAL_REF")
+			Result.put("Constraint reference (openEHR AOM)", 			"CONSTRAINT_REF")
+	
+			Result.put("Invariant section", 							"CADL_INVARIANT")
+			Result.put("Invariant section item", 						"CADL_INVARIANT_ITEM")
+
+			Result.put("Archetype", 									"archetype")
+			Result.put("Specialised archetype", 						"archetype_specialised")
+		end
+		
 	pixmap_file_table: HASH_TABLE [STRING, STRING] is
 			-- table of pixmap file paths keyed by icon key used in this app
 		local
@@ -206,7 +276,7 @@ feature -- Access
 				Result.forth
 			end
 		end
-		
+
 	pixmaps: HASH_TABLE[EV_PIXMAP, STRING] is
 			-- table of pixmap file paths keyed by logical name
 		require

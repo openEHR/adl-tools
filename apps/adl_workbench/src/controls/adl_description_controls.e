@@ -94,7 +94,6 @@ feature {NONE} -- Implementation
 			ev_auth_mlist: EV_MULTI_COLUMN_LIST
 			ev_list_row: EV_MULTI_COLUMN_LIST_ROW
 			ev_list_item: EV_LIST_ITEM
-			ev_contrib_list: EV_LIST
 			orig_auth: HASH_TABLE [STRING, STRING]
 			contribs: ARRAYED_LIST [STRING]
 			i: INTEGER
@@ -123,16 +122,7 @@ feature {NONE} -- Implementation
 			-- contributors: list of strings
 			contribs := adl_interface.archetype.description.other_contributors
 			if contribs /= Void then
-				ev_contrib_list := gui.arch_desc_auth_contrib_list
-				from
-					contribs.start
-				until
-					contribs.off				
-				loop
-					create ev_list_item.make_with_text (contribs.item)
-					ev_contrib_list.extend(ev_list_item)
-					contribs.forth				
-				end			
+				gui.arch_desc_auth_contrib_list.set_strings (contribs)
 			end
 		end
 
