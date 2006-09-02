@@ -42,11 +42,12 @@ feature {NONE}-- Initialization
 			create exit_tool_mi
 			create options_menu
 			create options
-			create about_menu
-			create about_mi
-			create news
 			create help_menu
 			create icon_help_mi
+			create news
+			create online_mi
+			create l_ev_menu_separator_3
+			create about_mi
 			create main
 			create action_bar
 			create open_button
@@ -137,11 +138,12 @@ feature {NONE}-- Initialization
 			file_menu.extend (exit_tool_mi)
 			menu.extend (options_menu)
 			options_menu.extend (options)
-			menu.extend (about_menu)
-			about_menu.extend (about_mi)
-			about_menu.extend (news)
 			menu.extend (help_menu)
 			help_menu.extend (icon_help_mi)
+			help_menu.extend (news)
+			help_menu.extend (online_mi)
+			help_menu.extend (l_ev_menu_separator_3)
+			help_menu.extend (about_mi)
 			extend (main)
 			main.extend (action_bar)
 			action_bar.extend (open_button)
@@ -229,11 +231,11 @@ feature {NONE}-- Initialization
 			exit_tool_mi.set_text ("Exit")
 			options_menu.set_text ("Options")
 			options.set_text ("set options...")
-			about_menu.set_text ("About")
-			about_mi.set_text ("About ")
-			news.set_text ("News")
 			help_menu.set_text ("Help")
 			icon_help_mi.set_text ("Icons ")
+			news.set_text ("News")
+			online_mi.set_text ("online...")
+			about_mi.set_text ("About ")
 			main.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 206))
 			main.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
 			main.set_minimum_width (app_min_width)
@@ -566,9 +568,10 @@ feature {NONE}-- Initialization
 			save_adl_file_mi.select_actions.extend (agent save_adl_file)
 			exit_tool_mi.select_actions.extend (agent exit_app)
 			options.select_actions.extend (agent set_options)
-			about_mi.select_actions.extend (agent display_about)
-			news.select_actions.extend (agent display_news)
 			icon_help_mi.select_actions.extend (agent display_icon_help)
+			news.select_actions.extend (agent display_news)
+			online_mi.select_actions.extend (agent show_online_help)
+			about_mi.select_actions.extend (agent display_about)
 			open_button.select_actions.extend (agent open_adl_file)
 			parse_button.select_actions.extend (agent parse_archetype)
 			edit_button.select_actions.extend (agent edit_archetype)
@@ -595,30 +598,30 @@ feature {NONE}-- Initialization
 feature -- Access
 
 	format_combo, language_combo: EV_COMBO_BOX
-	l_ev_menu_separator_1, l_ev_menu_separator_2: EV_MENU_SEPARATOR
+	l_ev_menu_separator_1, l_ev_menu_separator_2, l_ev_menu_separator_3: EV_MENU_SEPARATOR
 	archetype_id,
 	parent_archetype_id, arch_desc_status_text, arch_desc_resource_package_text: EV_TEXT_FIELD
 	arch_desc_auth_orig_auth_mlist,
 	arch_desc_resource_orig_res_mlist, parsed_archetype_found_paths, ontology_term_defs,
 	ontology_constraint_defs: EV_MULTI_COLUMN_LIST
-	file_menu, options_menu, about_menu, help_menu: EV_MENU
-	open_button,
-	parse_button, edit_button, save_button, tree_expand, tree_expand_one, tree_shrink_one,
-	tree_technical_node: EV_BUTTON
-	arch_desc_purpose_text, arch_desc_use_text, arch_desc_misuse_text,
-	arch_desc_copyright_text, archetype_text_edit_area, parser_status_area: EV_TEXT
-	arch_desc_auth_contrib_list,
-	languages_list, terminologies_list, arch_desc_keywords_list: EV_LIST
-	arch_notebook, source_notebook,
-	ontology_notebook: EV_NOTEBOOK
-	archetype_file_tree, parsed_archetype_tree: EV_TREE
+	file_menu, options_menu, help_menu: EV_MENU
+	open_button, parse_button,
+	edit_button, save_button, tree_expand, tree_expand_one, tree_shrink_one, tree_technical_node: EV_BUTTON
+	arch_desc_purpose_text,
+	arch_desc_use_text, arch_desc_misuse_text, arch_desc_copyright_text, archetype_text_edit_area,
+	parser_status_area: EV_TEXT
+	arch_desc_auth_contrib_list, languages_list, terminologies_list,
+	arch_desc_keywords_list: EV_LIST
+	arch_notebook, source_notebook, ontology_notebook: EV_NOTEBOOK
+	archetype_file_tree,
+	parsed_archetype_tree: EV_TREE
 	explorer_view_area: EV_HORIZONTAL_SPLIT_AREA
-	total_view_area,
-	info_view_area: EV_VERTICAL_SPLIT_AREA
-	action_bar, author_lang_term_hbox, arch_desc_status_hbox, arch_desc_auth_hbox,
-	arch_desc_contrib_hbox, l_ev_horizontal_box_1, lang_hbox, term_hbox, arch_desc_details_hbox,
-	l_ev_horizontal_box_2, l_ev_horizontal_box_3, l_ev_horizontal_box_4, l_ev_horizontal_box_5,
-	l_ev_horizontal_box_6, l_ev_horizontal_box_7, arch_desc_copyright_hbox, parsed_archetype_tree_view: EV_HORIZONTAL_BOX
+	total_view_area, info_view_area: EV_VERTICAL_SPLIT_AREA
+	action_bar,
+	author_lang_term_hbox, arch_desc_status_hbox, arch_desc_auth_hbox, arch_desc_contrib_hbox,
+	l_ev_horizontal_box_1, lang_hbox, term_hbox, arch_desc_details_hbox, l_ev_horizontal_box_2,
+	l_ev_horizontal_box_3, l_ev_horizontal_box_4, l_ev_horizontal_box_5, l_ev_horizontal_box_6,
+	l_ev_horizontal_box_7, arch_desc_copyright_hbox, parsed_archetype_tree_view: EV_HORIZONTAL_BOX
 	main,
 	arch_desc_area_vbox, l_ev_vertical_box_1, l_ev_vertical_box_2, l_ev_vertical_box_3,
 	tree_controls: EV_VERTICAL_BOX
@@ -627,7 +630,7 @@ feature -- Access
 	arch_desc_purpose_label, arch_desc_use_label, arch_desc_misuse_label, arch_desc_keywords_label,
 	arch_desc_resource_package_label, arch_desc_resource_orig_res_label, arch_desc_copyright_label: EV_LABEL
 	open_adl_file_mi,
-	save_adl_file_mi, exit_tool_mi, options, about_mi, news, icon_help_mi: EV_MENU_ITEM
+	save_adl_file_mi, exit_tool_mi, options, icon_help_mi, news, online_mi, about_mi: EV_MENU_ITEM
 	menu: EV_MENU_BAR
 	arch_desc_auth_frame,
 	lang_term_frame, arch_desc_details_frame, arch_desc_resource_frame: EV_FRAME
@@ -667,8 +670,8 @@ feature {NONE} -- Implementation
 		deferred
 		end
 	
-	display_about is
-			-- Called by `select_actions' of `about_mi'.
+	display_icon_help is
+			-- Called by `select_actions' of `icon_help_mi'.
 		deferred
 		end
 	
@@ -677,8 +680,13 @@ feature {NONE} -- Implementation
 		deferred
 		end
 	
-	display_icon_help is
-			-- Called by `select_actions' of `icon_help_mi'.
+	show_online_help is
+			-- Called by `select_actions' of `online_mi'.
+		deferred
+		end
+	
+	display_about is
+			-- Called by `select_actions' of `about_mi'.
 		deferred
 		end
 	

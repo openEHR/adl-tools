@@ -32,10 +32,28 @@ feature -- Definitions
 		once
 			Result := application_startup_directory + os_directory_separator.out + ".status"
 		end
-			
-	Default_windows_editor_command: STRING is "Notepad.exe"
-
-	Default_non_windows_editor_command: STRING is "vi"
+	
+	Default_editor_command: STRING is		
+			-- generate a reasonable name of an editor based on operating system
+		once	
+   			if os_type.substring_index("windows", 1) > 0 then
+   				Result := "Notepad.exe"
+			else
+   				Result := "vi"
+   			end
+   		end
+   			
+	Default_browser_command: STRING is 
+			-- generate a command to launch a browser based on OS
+		once
+   			if os_type.substring_index("windows", 1) > 0 then
+   				Result := "cmd /Q /c start "
+			else
+   				Result := "firefox "
+   			end
+		end
+	
+	ADL_help_page_url: STRING is "http://svn.openehr.org/ref_impl_eiffel/TRUNK/apps/doc/adl_workbench_help.htm"
 	
 feature -- Access
 

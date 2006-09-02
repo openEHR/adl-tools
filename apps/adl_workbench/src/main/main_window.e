@@ -55,7 +55,7 @@ feature {NONE} -- Initialization
 			-- (due to regeneration of implementation class)
 			-- can be added here.
 		local
-			ed_cmd, os, cur_title: STRING
+			ed_cmd, cur_title: STRING
 		do
 			set_icon_name("ADL Editor")
 			set_icon_pixmap (adl_workbench_ico)
@@ -93,19 +93,7 @@ feature {NONE} -- Initialization
 			end
 
 			if editor_command.is_empty then
-   				os := execution_environment.get("OS")
-   				if os /= Void then
-	   				os.to_lower
-   					if os.substring_index("windows", 1) > 0 then
-   						-- must be windows
-   						ed_cmd := Default_windows_editor_command
-					else
-   						ed_cmd := Default_windows_editor_command
-	   				end
-	   			else -- assume not windows
-   					ed_cmd := Default_non_windows_editor_command
-   				end
-				set_editor_command(ed_cmd)
+				set_editor_command(Default_editor_command)
 				need_to_set_options := True		
 			end
 			option_dialog.read_options_from_settings
@@ -156,7 +144,13 @@ feature -- Commands
 		end
 		
 feature {NONE} -- Commands
-		
+
+	show_online_help is
+			-- Called by `select_actions' of `online_mi'.
+		do
+			execution_environment.launch(Default_browser_command + ADL_help_page_url)
+		end
+
 	display_about is
 			-- Called by `pointer_button_press_actions' of `about_mi'.
 		do

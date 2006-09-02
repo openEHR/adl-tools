@@ -317,40 +317,6 @@
 </item>
 </item>
 <item type="EV_MENU"><Internal_properties>
-	<id>11</id>
-	<name>about_menu</name>
-	<Expanded>1</Expanded>
-	</Internal_properties>
-<EV_SENSITIVE></EV_SENSITIVE>
-<EV_TEXTABLE><Text>About</Text>
-	</EV_TEXTABLE>
-<EV_PIXMAPABLE></EV_PIXMAPABLE>
-<item type="EV_MENU_ITEM"><Internal_properties>
-	<id>12</id>
-	<name>about_mi</name>
-	<Expanded>0</Expanded>
-	</Internal_properties>
-<EV_SENSITIVE></EV_SENSITIVE>
-<EV_TEXTABLE><Text>About </Text>
-	</EV_TEXTABLE>
-<EV_PIXMAPABLE></EV_PIXMAPABLE>
-<Events><Event>select_actions EV_MENU_ITEM_ACTION_SEQUENCES display_about</Event>
-	</Events>
-</item>
-<item type="EV_MENU_ITEM"><Internal_properties>
-	<id>96</id>
-	<name>news</name>
-	<Expanded>0</Expanded>
-	</Internal_properties>
-<EV_SENSITIVE></EV_SENSITIVE>
-<EV_TEXTABLE><Text>News</Text>
-	</EV_TEXTABLE>
-<EV_PIXMAPABLE></EV_PIXMAPABLE>
-<Events><Event>select_actions EV_MENU_ITEM_ACTION_SEQUENCES display_news</Event>
-	</Events>
-</item>
-</item>
-<item type="EV_MENU"><Internal_properties>
 	<id>116</id>
 	<name>help_menu</name>
 	<Expanded>1</Expanded>
@@ -369,6 +335,50 @@
 	</EV_TEXTABLE>
 <EV_PIXMAPABLE></EV_PIXMAPABLE>
 <Events><Event>select_actions EV_MENU_ITEM_ACTION_SEQUENCES display_icon_help</Event>
+	</Events>
+</item>
+<item type="EV_MENU_ITEM"><Internal_properties>
+	<id>96</id>
+	<name>news</name>
+	<Expanded>0</Expanded>
+	</Internal_properties>
+<EV_SENSITIVE></EV_SENSITIVE>
+<EV_TEXTABLE><Text>News</Text>
+	</EV_TEXTABLE>
+<EV_PIXMAPABLE></EV_PIXMAPABLE>
+<Events><Event>select_actions EV_MENU_ITEM_ACTION_SEQUENCES display_news</Event>
+	</Events>
+</item>
+<item type="EV_MENU_ITEM"><Internal_properties>
+	<id>122</id>
+	<name>online_mi</name>
+	<Expanded>0</Expanded>
+	</Internal_properties>
+<EV_SENSITIVE></EV_SENSITIVE>
+<EV_TEXTABLE><Text>online...</Text>
+	</EV_TEXTABLE>
+<EV_PIXMAPABLE></EV_PIXMAPABLE>
+<Events><Event>select_actions EV_MENU_ITEM_ACTION_SEQUENCES show_online_help</Event>
+	</Events>
+</item>
+<item type="EV_MENU_SEPARATOR"><Internal_properties>
+	<id>123</id>
+	<Expanded>0</Expanded>
+	</Internal_properties>
+<EV_SENSITIVE></EV_SENSITIVE>
+<EV_TEXTABLE></EV_TEXTABLE>
+<EV_PIXMAPABLE></EV_PIXMAPABLE>
+</item>
+<item type="EV_MENU_ITEM"><Internal_properties>
+	<id>12</id>
+	<name>about_mi</name>
+	<Expanded>0</Expanded>
+	</Internal_properties>
+<EV_SENSITIVE></EV_SENSITIVE>
+<EV_TEXTABLE><Text>About </Text>
+	</EV_TEXTABLE>
+<EV_PIXMAPABLE></EV_PIXMAPABLE>
+<Events><Event>select_actions EV_MENU_ITEM_ACTION_SEQUENCES display_about</Event>
 	</Events>
 </item>
 </item>

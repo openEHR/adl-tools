@@ -78,6 +78,17 @@ feature -- Access
 
 feature -- Environment
 
+	os_type: STRING is
+			-- name of operating system
+		once		
+	   		Result := execution_environment.get("OS")
+   			if Result /= Void then
+   				Result.to_lower
+   			else
+   				Result := "unknown"
+   			end
+   		end
+
 	system_config_file_directory: STRING is
 			-- place for config files common to multiple applications
 		once
