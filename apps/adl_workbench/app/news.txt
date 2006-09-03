@@ -19,3 +19,5 @@ Uses new icons:
 	- additional '+' means cardinality of > 1
 
 The textual presentation in the node view has been improved.
+
+See help menu for online help.

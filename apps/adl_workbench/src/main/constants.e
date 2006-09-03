@@ -8,7 +8,18 @@ class
 
 inherit
 	CONSTANTS_IMP
+		redefine
+			icons
+		end
 
 -- Perform any constant redefinitions in this class.
+
+feature -- Access
 	
+	icons: STRING is
+			-- `Result' is DIRECTORY constant named `icons'.
+		once
+			Result := "icons"
+		end
+
 end -- class CONSTANTS

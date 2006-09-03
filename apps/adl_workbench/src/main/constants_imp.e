@@ -118,6 +118,12 @@ feature -- Access
 			Result := 768
 		end
 
+	icons: STRING is
+			-- `Result' is DIRECTORY constant named `icons'.
+		once
+			Result := "C:\project\openehr\ref_impl_eiffel\apps\adl_workbench\app\icons"
+		end
+
 	main_hbox_min_height: INTEGER is 
 			-- `Result' is INTEGER constant named main_hbox_min_height.
 		once
@@ -179,9 +185,13 @@ feature -- Access
 		end
 
 	adl_workbench_ico: EV_PIXMAP is
+		local
+			a_file_name: FILE_NAME
 		once
 			create Result
-			Result.set_with_named_file ("C:\project\openehr\ref_impl_eiffel\apps\adl_workbench\app\icons\adl_gui_vision2.ico")
+			create a_file_name.make_from_string (icons)
+			a_file_name.set_file_name ("adl_gui_vision2.ico")
+			set_with_named_file (Result, a_file_name)
 		end
 
 
