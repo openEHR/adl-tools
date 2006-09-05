@@ -32,7 +32,7 @@ feature -- Access
 	arch_tree_min_width: INTEGER is 
 			-- `Result' is INTEGER constant named arch_tree_min_width.
 		once
-			Result := 500
+			Result := 350
 		end
 
 	app_min_height: INTEGER is 
@@ -82,16 +82,28 @@ feature -- Access
 			Result := 100
 		end
 
+	arch_tree_min_height: INTEGER is 
+			-- `Result' is INTEGER constant named arch_tree_min_height.
+		once
+			Result := 60
+		end
+
 	max_arch_explorer_width: INTEGER is 
 			-- `Result' is INTEGER constant named max_arch_explorer_width.
 		once
 			Result := 180
 		end
 
-	source_notebook_min_height: INTEGER is 
-			-- `Result' is INTEGER constant named source_notebook_min_height.
+	padding_width: INTEGER is 
+			-- `Result' is INTEGER constant named padding_width.
 		once
-			Result := 200
+			Result := 5
+		end
+
+	min_list_height: INTEGER is 
+			-- `Result' is INTEGER constant named min_list_height.
+		once
+			Result := 80
 		end
 
 	max_terms_height: INTEGER is 
@@ -124,10 +136,26 @@ feature -- Access
 			Result := "C:\project\openehr\ref_impl_eiffel\apps\adl_workbench\app\icons"
 		end
 
+	min_entry_control_width: INTEGER is 
+			-- `Result' is INTEGER constant named min_entry_control_width.
+		once
+			Result := 200
+		end
+
 	main_hbox_min_height: INTEGER is 
 			-- `Result' is INTEGER constant named main_hbox_min_height.
 		once
 			Result := 560
+		end
+
+	adl_workbench_ico: EV_PIXMAP is
+		local
+			a_file_name: FILE_NAME
+		once
+			create Result
+			create a_file_name.make_from_string (icons)
+			a_file_name.set_file_name ("adl_gui_vision2.ico")
+			set_with_named_file (Result, a_file_name)
 		end
 
 	main_vbox_min_height: INTEGER is 
@@ -142,16 +170,16 @@ feature -- Access
 			Result := 65
 		end
 
-	arch_tree_min_height: INTEGER is 
-			-- `Result' is INTEGER constant named arch_tree_min_height.
+	source_notebook_min_height: INTEGER is 
+			-- `Result' is INTEGER constant named source_notebook_min_height.
 		once
-			Result := 60
+			Result := 200
 		end
 
-	arch_notebook_min_height: INTEGER is 
-			-- `Result' is INTEGER constant named arch_notebook_min_height.
+	border_width: INTEGER is 
+			-- `Result' is INTEGER constant named border_width.
 		once
-			Result := 500
+			Result := 5
 		end
 
 	button_colour: EV_COLOR is
@@ -184,14 +212,10 @@ feature -- Access
 			Result := 500
 		end
 
-	adl_workbench_ico: EV_PIXMAP is
-		local
-			a_file_name: FILE_NAME
+	arch_notebook_min_height: INTEGER is 
+			-- `Result' is INTEGER constant named arch_notebook_min_height.
 		once
-			create Result
-			create a_file_name.make_from_string (icons)
-			a_file_name.set_file_name ("adl_gui_vision2.ico")
-			set_with_named_file (Result, a_file_name)
+			Result := 500
 		end
 
 

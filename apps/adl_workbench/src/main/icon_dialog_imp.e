@@ -53,7 +53,7 @@ feature {NONE}-- Initialization
 			l_ev_horizontal_box_1.disable_item_expand (ok_button)
 			l_ev_cell_1.set_background_color (background)
 			ok_button.set_background_color (button_colour)
-			ok_button.set_text ("Ok")
+			ok_button.set_text ("OK")
 			ok_button.set_minimum_width (50)
 			l_ev_cell_2.set_background_color (background)
 			set_background_color (background)

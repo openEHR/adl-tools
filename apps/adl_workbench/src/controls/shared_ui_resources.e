@@ -222,7 +222,7 @@ feature -- Access
 			Result.put("Archetype slot (mandatory)", 					"ARCHETYPE_SLOT")
 			Result.put("Archetype slot (optional)", 					"ARCHETYPE_SLOT.optional")
 			Result.put("Archetype slot allowed archetypes", 					"CADL_INCLUDE")
-			Result.put("Archetype slot allowed archetypes", 					"CADL_EXCLUDE")
+			Result.put("Archetype slot excluded archetypes", 					"CADL_EXCLUDE")
 			
 			Result.put("Complex ref model object (mandatory, single occurrence)", 			"C_COMPLEX_OBJECT")
 			Result.put("Complex ref model object (mandatory, multiple occurrences)", 		"C_COMPLEX_OBJECT.multiple")
