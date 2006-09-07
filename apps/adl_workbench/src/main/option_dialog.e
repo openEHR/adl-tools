@@ -33,7 +33,7 @@ feature {NONE} -- Initialization
 			-- (due to regeneration of implementation class)
 			-- can be added here.
 		do
-			
+
 		end
 
 feature -- Access

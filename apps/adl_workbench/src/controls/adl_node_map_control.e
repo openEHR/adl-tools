@@ -40,10 +40,13 @@ feature -- Initialisation
 			gui_tree := parsed_archetype_tree
 		end
 
-feature -- Access
+feature -- Status Report
 
 	in_technical_mode: BOOLEAN
 	
+	is_expanded: BOOLEAN
+			-- True if last whole tree operation was expand
+
 feature -- Commands
 
 	toggle_technical_mode is
@@ -82,7 +85,7 @@ feature -- Commands
 			tree_iterator.do_all(agent node_build_enter_action(?,?), agent node_build_exit_action(?,?))
 			populate_invariants
 			is_expanded := True
-			expand_or_shrink
+			toggle_expand_tree
 		end
 
 	repopulate is
@@ -128,7 +131,7 @@ feature -- Commands
 			end
 		end
 		
-	expand_or_shrink is
+	toggle_expand_tree is
 			-- expand or shrink the tree control
 		do
 			is_expanded := not is_expanded
@@ -581,9 +584,6 @@ feature {NONE} -- Implementation
 
 	node_list: ARRAYED_LIST[EV_TREE_NODE]
 	
-	is_expanded: BOOLEAN
-			-- True if last whole tree operation was expand
-
 	c_attribute_string(an_attr_node: C_ATTRIBUTE): STRING is
 			-- generate string form of node or object for use in tree node
 		do

@@ -41,6 +41,9 @@ feature {NONE} -- Initialization
 				create splash_window.make
 				splash_window.show
 				main_window.show
+				if app_maximised then
+					main_window.maximize
+				end
 				if main_window.need_to_set_options then
 					main_window.set_options
 				end

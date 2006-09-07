@@ -11,13 +11,12 @@ default
 	disabled_debug ("adl_invariant")
 	disabled_debug ("adl_parse")
 	disabled_debug ("adl_tree")
-	disabled_debug ("bb")
 	disabled_debug ("dadl_parse")
 	disabled_debug ("dlg_dispatcher")
 	disabled_debug ("dt")
 	disabled_debug ("exclude list")
-	debug ("gelex")
-	debug ("geyacc")
+	disabled_debug ("gelex")
+	disabled_debug ("geyacc")
 	disabled_debug ("include list")
 	disabled_debug ("og_path_parse")
 	disabled_debug ("refactor_fixme")
@@ -42,13 +41,13 @@ default
 	inlining (no)
 	multithreaded (no)
 
-
--- precompiled ("$ISE_EIFFEL\precomp\spec\$ISE_PLATFORM\vision2")
-
 cluster
 	all app:		"$OPENEHR\ref_impl_eiffel\apps\adl_workbench\src"
 		exclude
 			".svn"; 
+		default
+			assertion (no)
+			assertion (require)
 		end
 
 	all version:		"$OPENEHR\ref_impl_eiffel\libraries\version"
@@ -58,17 +57,23 @@ cluster
 
 	all vendor_fixes:		"$OPENEHR\ref_impl_eiffel\libraries\vendor-fixes"
 		exclude
-			".svn"; "base_net"; 
+			".svn"; "base_net";
 		end
 
 	all adl_parser:		"$OPENEHR\ref_impl_eiffel\components\adl_parser\src"
 		exclude
-			".svn"; 
+			".svn";
+		default
+			assertion (no)
+			assertion (require)
 		end
 
 	all openehr:		"$OPENEHR\ref_impl_eiffel\libraries\openehr\src"
 		exclude
 			".svn"; 
+		default
+			assertion (no)
+			assertion (require)
 		visible
 			C_CODED_TERM
 				end
@@ -81,6 +86,9 @@ cluster
 	all common_libs:		"$OPENEHR\ref_impl_eiffel\libraries\common_libs\src"
 		exclude
 			".svn"; 
+		default
+			assertion (no)
+			assertion (require)
 		end
 
 	gobo:		"$ISE_EIFFEL\library\gobo\library"
@@ -108,9 +116,9 @@ cluster
 
 	time_format (time):		"$\format"
 
-	all wel:		"$ISE_EIFFEL\library\wel"
-
 	all vision2:		"$ISE_EIFFEL\library\vision2"
+
+	all wel:		"$ISE_EIFFEL\library\wel"
 
 	all base:		"$ISE_EIFFEL\library\base"
 		exclude

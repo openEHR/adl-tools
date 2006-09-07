@@ -85,6 +85,39 @@ feature -- Access
 			end
 		end
 			
+	app_x_position: INTEGER is
+			-- application horizontal position
+		local
+			str: STRING
+		do
+			str := resource_value("default", "app_x_position")
+			if str.is_integer then
+				Result := str.to_integer
+			end
+		end
+			
+	app_y_position: INTEGER is
+			-- application vertical position
+		local
+			str: STRING
+		do
+			str := resource_value("default", "app_y_position")
+			if str.is_integer then
+				Result := str.to_integer
+			end
+		end
+			
+	app_maximised: BOOLEAN is
+			-- True if app should be maximised
+		local
+			str: STRING
+		do
+			str := resource_value("default", "app_maximised")
+			if str.is_boolean then
+				Result := str.to_boolean
+			end
+		end
+		
 	total_view_area_split_position: INTEGER is
 			-- split position of outer vertical split control
 		local
@@ -408,6 +441,24 @@ feature -- Modification
 			set_resource_value("default", "app_height", v.out)
 		end
 
+	set_app_x_position (v: INTEGER) is
+			-- set app x position
+		do
+			set_resource_value("default", "app_x_position", v.out)
+		end
+
+	set_app_y_position (v: INTEGER) is
+			-- set app y position
+		do
+			set_resource_value("default", "app_y_position", v.out)
+		end
+
+	set_app_maximised (f: BOOLEAN) is
+			-- set app maximised flag
+		do
+			set_resource_value("default", "app_maximised", f.out)
+		end
+		
 end
 
 

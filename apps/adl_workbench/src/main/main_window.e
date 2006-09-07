@@ -76,6 +76,9 @@ feature {NONE} -- Initialization
 			else
 				set_height(app_initial_height)
 			end
+			
+			set_position (app_x_position, app_y_position)
+			
 						
 			if explorer_view_area_split_position > 0 then
 				explorer_view_area.set_split_position (explorer_view_area_split_position)
@@ -122,13 +125,13 @@ feature -- Commands
 	set_options is
 			-- 
 		do
-			option_dialog.show
+			option_dialog.show_modal_to_window (Current)
 		end
 		
 	display_icon_help is
 			-- 
 		do
-			icon_dialog.show
+			icon_dialog.show_modal_to_window (Current)
 		end
 		
 	update_status_area(s: STRING) is
@@ -165,6 +168,9 @@ feature {NONE} -- Commands
 			set_explorer_view_area_split_position(explorer_view_area.split_position)
 			set_app_width(width)
 			set_app_height(height)
+			set_app_x_position(x_position)
+			set_app_y_position(y_position)
+			set_app_maximised(is_maximized)
 			save_resources;
 			((create {EV_ENVIRONMENT}).application).destroy
 		end
@@ -335,10 +341,15 @@ feature {NONE} -- Commands
 			end
 		end
 				
-	expand_tree is
+	toggle_expand_tree is
 		do
 			if adl_interface.parse_succeeded then
-				node_map_control.expand_or_shrink
+				node_map_control.toggle_expand_tree
+				if node_map_control.is_expanded then
+					tree_expand_bn.set_text("Collapse All")
+				else
+					tree_expand_bn.set_text("Expand All")
+				end
 			end
 		end
 
@@ -353,9 +364,9 @@ feature {NONE} -- Commands
 			if adl_interface.parse_succeeded then
 				node_map_control.toggle_technical_mode
 				if node_map_control.in_technical_mode then
-					tree_technical_node.set_text("Basic")
+					tree_technical_mode_bn.set_text("Basic")
 				else
-					tree_technical_node.set_text("Technical")
+					tree_technical_mode_bn.set_text("Technical")
 				end
 			end
 		end

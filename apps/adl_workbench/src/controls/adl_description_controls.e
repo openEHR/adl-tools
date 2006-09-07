@@ -93,7 +93,6 @@ feature {NONE} -- Implementation
 		local
 			ev_auth_mlist: EV_MULTI_COLUMN_LIST
 			ev_list_row: EV_MULTI_COLUMN_LIST_ROW
-			ev_list_item: EV_LIST_ITEM
 			orig_auth: HASH_TABLE [STRING, STRING]
 			contribs: ARRAYED_LIST [STRING]
 			i: INTEGER

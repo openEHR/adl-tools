@@ -58,16 +58,22 @@ feature -- Access
 			Result := 1024
 		end
 
+	padding_width: INTEGER is 
+			-- `Result' is INTEGER constant named padding_width.
+		once
+			Result := 5
+		end
+
 	source_notebook_min_width: INTEGER is 
 			-- `Result' is INTEGER constant named source_notebook_min_width.
 		once
 			Result := 600
 		end
 
-	app_max_width: INTEGER is 
-			-- `Result' is INTEGER constant named app_max_width.
+	min_entry_control_width: INTEGER is 
+			-- `Result' is INTEGER constant named min_entry_control_width.
 		once
-			Result := 2000
+			Result := 200
 		end
 
 	min_terms_status_height: INTEGER is 
@@ -88,16 +94,16 @@ feature -- Access
 			Result := 60
 		end
 
-	max_arch_explorer_width: INTEGER is 
-			-- `Result' is INTEGER constant named max_arch_explorer_width.
+	desc_label_width: INTEGER is 
+			-- `Result' is INTEGER constant named desc_label_width.
 		once
-			Result := 180
+			Result := 100
 		end
 
-	padding_width: INTEGER is 
-			-- `Result' is INTEGER constant named padding_width.
+	source_notebook_min_height: INTEGER is 
+			-- `Result' is INTEGER constant named source_notebook_min_height.
 		once
-			Result := 5
+			Result := 200
 		end
 
 	min_list_height: INTEGER is 
@@ -118,16 +124,16 @@ feature -- Access
 			Result := 4
 		end
 
-	desc_label_width: INTEGER is 
-			-- `Result' is INTEGER constant named desc_label_width.
-		once
-			Result := 100
-		end
-
 	app_initial_height: INTEGER is 
 			-- `Result' is INTEGER constant named app_initial_height.
 		once
 			Result := 768
+		end
+
+	app_max_width: INTEGER is 
+			-- `Result' is INTEGER constant named app_max_width.
+		once
+			Result := 2000
 		end
 
 	icons: STRING is
@@ -136,10 +142,10 @@ feature -- Access
 			Result := "C:\project\openehr\ref_impl_eiffel\apps\adl_workbench\app\icons"
 		end
 
-	min_entry_control_width: INTEGER is 
-			-- `Result' is INTEGER constant named min_entry_control_width.
+	editable_colour: EV_COLOR is
+			-- `Result' is EV_COLOR constant named `editable_colour'.
 		once
-			Result := 200
+			Result := create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 255)
 		end
 
 	main_hbox_min_height: INTEGER is 
@@ -170,28 +176,16 @@ feature -- Access
 			Result := 65
 		end
 
-	source_notebook_min_height: INTEGER is 
-			-- `Result' is INTEGER constant named source_notebook_min_height.
+	max_arch_explorer_width: INTEGER is 
+			-- `Result' is INTEGER constant named max_arch_explorer_width.
 		once
-			Result := 200
+			Result := 180
 		end
 
 	border_width: INTEGER is 
 			-- `Result' is INTEGER constant named border_width.
 		once
 			Result := 5
-		end
-
-	button_colour: EV_COLOR is
-			-- `Result' is EV_COLOR constant named `button_colour'.
-		once
-			Result := create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 0)
-		end
-
-	background: EV_COLOR is
-			-- `Result' is EV_COLOR constant named `background'.
-		once
-			Result := create {EV_COLOR}.make_with_8_bit_rgb (254, 248, 205)
 		end
 
 	app_max_height: INTEGER is 
