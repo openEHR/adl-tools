@@ -88,6 +88,8 @@ feature {NONE} -- Initialization
 			end
 			if total_view_area_split_position > 0 then
 				total_view_area.set_split_position (total_view_area_split_position)
+			else
+				total_view_area.set_split_position (app_initial_height - parser_status_area.minimum_height)
 			end
 			
 			if repository_path.is_empty then

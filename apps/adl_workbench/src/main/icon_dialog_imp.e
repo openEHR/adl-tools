@@ -47,12 +47,15 @@ feature {NONE}-- Initialization
 			l_ev_horizontal_box_1.extend (l_ev_cell_2)
 			
 			l_ev_vertical_box_1.set_minimum_width (340)
+			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_1)
 			icon_help_list.set_background_color (editable_colour)
 			icon_help_list.set_minimum_width (300)
 			icon_help_list.set_minimum_height (400)
 			l_ev_horizontal_box_1.disable_item_expand (ok_button)
 			ok_button.set_text ("OK")
 			ok_button.set_minimum_width (50)
+			set_minimum_width (380)
+			set_minimum_height (525)
 			set_title ("ADL Workbench Icon Key")
 			
 				--Connect events.

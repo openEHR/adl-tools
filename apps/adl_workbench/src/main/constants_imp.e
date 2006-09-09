@@ -29,6 +29,12 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
+	min_entry_control_width: INTEGER is 
+			-- `Result' is INTEGER constant named min_entry_control_width.
+		once
+			Result := 200
+		end
+
 	arch_tree_min_width: INTEGER is 
 			-- `Result' is INTEGER constant named arch_tree_min_width.
 		once
@@ -61,7 +67,7 @@ feature -- Access
 	padding_width: INTEGER is 
 			-- `Result' is INTEGER constant named padding_width.
 		once
-			Result := 5
+			Result := 3
 		end
 
 	source_notebook_min_width: INTEGER is 
@@ -70,10 +76,10 @@ feature -- Access
 			Result := 600
 		end
 
-	min_entry_control_width: INTEGER is 
-			-- `Result' is INTEGER constant named min_entry_control_width.
+	app_max_width: INTEGER is 
+			-- `Result' is INTEGER constant named app_max_width.
 		once
-			Result := 200
+			Result := 2000
 		end
 
 	min_terms_status_height: INTEGER is 
@@ -88,16 +94,10 @@ feature -- Access
 			Result := 100
 		end
 
-	arch_tree_min_height: INTEGER is 
-			-- `Result' is INTEGER constant named arch_tree_min_height.
+	max_arch_explorer_width: INTEGER is 
+			-- `Result' is INTEGER constant named max_arch_explorer_width.
 		once
-			Result := 60
-		end
-
-	desc_label_width: INTEGER is 
-			-- `Result' is INTEGER constant named desc_label_width.
-		once
-			Result := 100
+			Result := 180
 		end
 
 	source_notebook_min_height: INTEGER is 
@@ -124,16 +124,16 @@ feature -- Access
 			Result := 4
 		end
 
+	desc_label_width: INTEGER is 
+			-- `Result' is INTEGER constant named desc_label_width.
+		once
+			Result := 100
+		end
+
 	app_initial_height: INTEGER is 
 			-- `Result' is INTEGER constant named app_initial_height.
 		once
 			Result := 768
-		end
-
-	app_max_width: INTEGER is 
-			-- `Result' is INTEGER constant named app_max_width.
-		once
-			Result := 2000
 		end
 
 	icons: STRING is
@@ -154,16 +154,6 @@ feature -- Access
 			Result := 560
 		end
 
-	adl_workbench_ico: EV_PIXMAP is
-		local
-			a_file_name: FILE_NAME
-		once
-			create Result
-			create a_file_name.make_from_string (icons)
-			a_file_name.set_file_name ("adl_gui_vision2.ico")
-			set_with_named_file (Result, a_file_name)
-		end
-
 	main_vbox_min_height: INTEGER is 
 			-- `Result' is INTEGER constant named main_vbox_min_height.
 		once
@@ -176,16 +166,26 @@ feature -- Access
 			Result := 65
 		end
 
-	max_arch_explorer_width: INTEGER is 
-			-- `Result' is INTEGER constant named max_arch_explorer_width.
+	arch_tree_min_height: INTEGER is 
+			-- `Result' is INTEGER constant named arch_tree_min_height.
 		once
-			Result := 180
+			Result := 60
 		end
 
 	border_width: INTEGER is 
 			-- `Result' is INTEGER constant named border_width.
 		once
-			Result := 5
+			Result := 4
+		end
+
+	adl_workbench_ico: EV_PIXMAP is
+		local
+			a_file_name: FILE_NAME
+		once
+			create Result
+			create a_file_name.make_from_string (icons)
+			a_file_name.set_file_name ("adl_gui_vision2.ico")
+			set_with_named_file (Result, a_file_name)
 		end
 
 	app_max_height: INTEGER is 

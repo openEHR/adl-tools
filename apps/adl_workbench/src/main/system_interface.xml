@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?><application xsi="http://www.w3.org/1999/XMLSchema-instance">
 <item type="Constants"><Constant><type>INTEGER</type>
+		<Name>min_entry_control_width</Name>
+		<Value>200</Value>
+		</Constant>
+	<Constant><type>INTEGER</type>
 		<Name>arch_tree_min_width</Name>
 		<Value>350</Value>
 		</Constant>
@@ -17,15 +21,15 @@
 		</Constant>
 	<Constant><type>INTEGER</type>
 		<Name>padding_width</Name>
-		<Value>5</Value>
+		<Value>3</Value>
 		</Constant>
 	<Constant><type>INTEGER</type>
 		<Name>source_notebook_min_width</Name>
 		<Value>600</Value>
 		</Constant>
 	<Constant><type>INTEGER</type>
-		<Name>min_entry_control_width</Name>
-		<Value>200</Value>
+		<Name>app_max_width</Name>
+		<Value>2000</Value>
 		</Constant>
 	<Constant><type>INTEGER</type>
 		<Name>min_terms_status_height</Name>
@@ -36,12 +40,8 @@
 		<Value>100</Value>
 		</Constant>
 	<Constant><type>INTEGER</type>
-		<Name>arch_tree_min_height</Name>
-		<Value>60</Value>
-		</Constant>
-	<Constant><type>INTEGER</type>
-		<Name>desc_label_width</Name>
-		<Value>100</Value>
+		<Name>max_arch_explorer_width</Name>
+		<Value>180</Value>
 		</Constant>
 	<Constant><type>INTEGER</type>
 		<Name>source_notebook_min_height</Name>
@@ -60,12 +60,12 @@
 		<Value>4</Value>
 		</Constant>
 	<Constant><type>INTEGER</type>
-		<Name>app_initial_height</Name>
-		<Value>768</Value>
+		<Name>desc_label_width</Name>
+		<Value>100</Value>
 		</Constant>
 	<Constant><type>INTEGER</type>
-		<Name>app_max_width</Name>
-		<Value>2000</Value>
+		<Name>app_initial_height</Name>
+		<Value>768</Value>
 		</Constant>
 	<Constant><type>DIRECTORY</type>
 		<Name>icons</Name>
@@ -79,13 +79,6 @@
 		<Name>main_hbox_min_height</Name>
 		<Value>560</Value>
 		</Constant>
-	<Constant><type>PIXMAP</type>
-		<Name>adl_workbench_ico</Name>
-		<Value>C:\project\openehr\ref_impl_eiffel\apps\adl_workbench\app\icons\adl_gui_vision2.ico</Value>
-		<is_absolute>False</is_absolute>
-		<Directory>icons</Directory>
-		<Filename>adl_gui_vision2.ico</Filename>
-		</Constant>
 	<Constant><type>INTEGER</type>
 		<Name>main_vbox_min_height</Name>
 		<Value>600</Value>
@@ -95,12 +88,19 @@
 		<Value>65</Value>
 		</Constant>
 	<Constant><type>INTEGER</type>
-		<Name>max_arch_explorer_width</Name>
-		<Value>180</Value>
+		<Name>arch_tree_min_height</Name>
+		<Value>60</Value>
 		</Constant>
 	<Constant><type>INTEGER</type>
 		<Name>border_width</Name>
-		<Value>5</Value>
+		<Value>4</Value>
+		</Constant>
+	<Constant><type>PIXMAP</type>
+		<Name>adl_workbench_ico</Name>
+		<Value>C:\project\openehr\ref_impl_eiffel\apps\adl_workbench\app\icons\adl_gui_vision2.ico</Value>
+		<is_absolute>False</is_absolute>
+		<Directory>icons</Directory>
+		<Filename>adl_gui_vision2.ico</Filename>
 		</Constant>
 	<Constant><type>INTEGER</type>
 		<Name>app_max_height</Name>
@@ -126,7 +126,9 @@
 	</Internal_properties>
 <EV_COLORIZABLE></EV_COLORIZABLE>
 <EV_SENSITIVE></EV_SENSITIVE>
-<EV_WIDGET></EV_WIDGET>
+<EV_WIDGET><Minimum_width>380</Minimum_width>
+	<Minimum_height>525</Minimum_height>
+	</EV_WIDGET>
 <EV_WINDOW><Title>ADL Workbench Icon Key</Title>
 	</EV_WINDOW>
 <EV_PIXMAPABLE></EV_PIXMAPABLE>
@@ -139,7 +141,7 @@
 <EV_SENSITIVE></EV_SENSITIVE>
 <EV_WIDGET><Minimum_width>340</Minimum_width>
 	</EV_WIDGET>
-<EV_BOX><Is_item_expanded>11</Is_item_expanded>
+<EV_BOX><Is_item_expanded>10</Is_item_expanded>
 	</EV_BOX>
 <EV_PIXMAPABLE></EV_PIXMAPABLE>
 <EV_CONTAINER></EV_CONTAINER>
@@ -236,12 +238,12 @@
 <item type="EV_MENU_BAR"><Internal_properties>
 	<id>2</id>
 	<name>menu</name>
-	<Expanded>0</Expanded>
+	<Expanded>1</Expanded>
 	</Internal_properties>
 <item type="EV_MENU"><Internal_properties>
 	<id>3</id>
 	<name>file_menu</name>
-	<Expanded>0</Expanded>
+	<Expanded>1</Expanded>
 	</Internal_properties>
 <EV_SENSITIVE></EV_SENSITIVE>
 <EV_TEXTABLE><Text>File</Text>
