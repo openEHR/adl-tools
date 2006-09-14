@@ -1,6 +1,7 @@
 ADL_WORKBENCH NEWS (see About menu > News)
 -------------------------------------------------------------------------
 The GUI has been improved to behave better on different screens. 
+A major addition for batch testing has been made to the tool.
 
 General
 -------
@@ -20,4 +21,11 @@ Uses new icons:
 
 The textual presentation in the node view has been improved.
 
-See help menu for online help.
+Tester facility
+---------------
+A completely new facility for batch testing of archetypes via
+the GUI hs been added. The details are explained in the online
+help.
+
+See help menu for online help or go to
+http://svn.openehr.org/ref_impl_eiffel/TRUNK/apps/doc/adl_workbench_help.htm 
