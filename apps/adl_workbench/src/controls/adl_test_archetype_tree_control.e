@@ -80,6 +80,9 @@ feature -- Access
 			Result.put(agent test_reparse, "Reparse")
 		end
 		
+	last_tested_archetypes_count: INTEGER
+			-- number of archetypes tested in last run
+		
 feature -- Status Setting
 
 	is_expanded: BOOLEAN
@@ -129,15 +132,17 @@ feature -- Commands
 			gui_grid.column (1).set_title ("Archetype")
 
 			-- put names on columns
-			from
-				tests.start
-				col_csr := First_test_col
-			until
-				tests.off
-			loop
-				gui_grid.column (col_csr).set_title (tests.key_for_iteration)				
-				tests.forth
-				col_csr := col_csr + 1
+			if gui_grid.column_count > 1 then
+				from
+					tests.start
+					col_csr := First_test_col
+				until
+					tests.off
+				loop
+					gui_grid.column (col_csr).set_title (tests.key_for_iteration)				
+					tests.forth
+					col_csr := col_csr + 1
+				end			
 			end
 			
 			is_expanded := False
@@ -188,6 +193,7 @@ feature -- Commands
 			remove_unused_codes := gui.remove_unused_codes_rb.is_selected
 			from
 				row_csr := First_data_row
+				last_tested_archetypes_count := 0
 			until
 				row_csr > gui_grid.row_count or test_stop_requested
 			loop
@@ -233,11 +239,13 @@ feature -- Commands
 							col_csr := col_csr + 1
 						end
 						toggle_checkbox_at_cell(gli_col_2)
+						last_tested_archetypes_count := last_tested_archetypes_count + 1
 					end
 				end
 				
 				row_csr := row_csr + 1
 			end
+			gui.test_status_area.append_text ("****** Executed tests on " + last_tested_archetypes_count.out + " Archetypes ******%N")
 			test_execution_underway := False
 			set_archetype_test_go_bn_icon
 		end

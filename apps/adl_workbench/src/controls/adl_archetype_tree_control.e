@@ -79,6 +79,7 @@ feature -- Commands
 	populate is
 			-- populate the ADL tree control by creating it from scratch
 		do
+			clear
  			create gui_tree_item_stack.make(0)
  			populate_gui_tree(archetype_directory.directory)
 		end
