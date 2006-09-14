@@ -21,6 +21,8 @@
 
 
 
+
+  
   
   
   
@@ -60,9 +62,12 @@
 
 
 
+
   
 
 
+  
+  
   
   
   
@@ -126,8 +131,10 @@
 
 
 
+
 <h1>ADL Workbench Help Page
 </h1>
+
 
 
 
@@ -151,625 +158,874 @@
 <hr style="width: 100%; height: 2px;" />
 <h2>Availability</h2>
 
+
 The ADL workbench is available as a <a href="http://my.openehr.org/wsvn/oe_distrib/windows/adl_workbench/?op=dl&amp;rev=0&amp;isdir=1">.tar.gz file</a>. The archetypes can be downloaded from the <span style="font-style: italic;">open</span>EHR Subversion repository at <a href="http://svn.openehr.org/knowledge">http://svn.openehr.org/knowledge</a>.
 <h2><span style="font-weight: bold;">Overview</span></h2>
+
 
 
 <table style="text-align: left; background-color: rgb(255, 255, 255); width: 600px;" border="0" cellpadding="2" cellspacing="2">
 
 
+
   <tbody>
 
 
+
     <tr>
+
 
 
       <td>The ADL Workbench is a visual front-end for the <span style="font-style: italic;">open</span>EHR
 reference ADL parser. It can be used for <span style="font-weight: bold;">individually viewing</span> and <span style="font-weight: bold;">batch testing</span> archetypes created
 for any reference model, and in any number of languages. The tool is based on the <a href="http://svn.openehr.org/specification/TRUNK/publishing/architecture/am/adl.pdf">ADL 1.4 language specification</a>, the <a href="http://svn.openehr.org/specification/TRUNK/publishing/architecture/am/aom.pdf">Archetype Object Model (AOM) specification</a>, and the <a href="http://svn.openehr.org/specification/TRUNK/publishing/architecture/am/openehr_archetype_profile.pdf"><span style="font-style: italic;">open</span>EHR archetype Profile</a> specification.<br />
+
       <br />
+
 The two parts of the tool are the <span style="font-weight: bold;">Viewer</span> and the <span style="font-weight: bold;">Tester</span>, which are available from the tabs on the right-hand side of the application.<br />
+
       </td>
+
 
 
       <td><a href="images/overview.png"><img style="border: 0px solid ; width: 100px; height: 80px;" alt="ADL workbench" src="images/tn/overview.jpg" /></a><br />
+
 Viewer<br />
 
 
+
       </td>
+
       <td><a href="images/overview_tester.png"><img style="border: 0px solid ; width: 100px; height: 85px;" alt="Archetype test page overview" src="images/tn/overview_tester.jpg" /></a><br />
+
 Tester</td>
+
 
 
     </tr>
 
 
+
+  
   
   
   </tbody>
 </table>
+
 
 
 <br />
 
 
+
 <h2>Archetype Viewer</h2>
+
 <h3>User Interface</h3>
+
 
 
 <table style="text-align: left; background-color: rgb(255, 255, 255); width: 800px; height: 538px;" border="0" cellpadding="2" cellspacing="2">
 
 
+
   <tbody>
 
 
+
     <tr>
+
 
 
       <td><span style="font-weight: bold;">Archetype Explorer</span><br />
 
 
+
 The explorer on the left hand side of the tool provides a view on an archetype <br />
+
 
 
 repository, which is simply a directory in the file system.&nbsp;The options menu <br />
 
 
+
 is used to select the location of the archetypes.&nbsp;<br />
 
 
+
       </td>
+
 
 
       <td><a href="images/explorer.png"><img style="border: 0px solid ; width: 36px; height: 100px;" alt="Archetype exlorer" src="images/tn/explorer.jpg" /></a><br />
 
 
+
 explorer<br />
+
 
 
       </td>
 
 
+
       <td></td>
 
 
+
       <td></td>
+
 
 
     </tr>
 
 
+
     <tr>
+
 
 
       <td><span style="font-weight: bold;">Description / Meta-data</span><br />
 
 
+
 This screen shows the contents of the "description" section near the top of<br />
+
 
 
 an archetype, as well as the languages and terminologies supported by the<br />
 
 
+
 archetype.</td>
+
 
 
       <td><a href="images/description_1.png"><img style="border: 0px solid ; width: 100px; height: 59px;" alt="Archetype description" src="images/tn/description_1.jpg" /></a></td>
 
 
+
       <td></td>
 
 
+
       <td></td>
+
 
 
     </tr>
 
 
+
     <tr>
+
 
 
       <td><span style="font-weight: bold;">Status Window</span><br />
 
 
+
 The status window provides feedback from the parser, and indicates whether<br />
+
 
 
 an archetype has parsed properly or not. It also indicates terms found in the<br />
 
 
+
 ontology section of the archetype that are not used in the defnition.</td>
+
 
 
       <td><a href="images/status_1.png"><img style="border: 0px solid ; width: 100px; height: 19px;" alt="Status 1" src="images/tn/status_1.jpg" /></a><br />
 
 
+
 parse failure</td>
+
 
 
       <td><a href="images/status_2.png"><img style="border: 0px solid ; width: 100px; height: 20px;" alt="Status 2" src="images/tn/status_2.jpg" /></a><br />
 
 
+
 parse suceeded</td>
+
 
 
       <td></td>
 
 
+
     </tr>
 
 
+
     <tr>
+
 
 
       <td><span style="font-weight: bold;">Node Map</span><br />
 
 
+
 When an archetype is parsed, its definition (cADL) section is displayed<br />
+
 
 
 graphically in the Node Map tab of the Definition tab on the right hand side<br />
 
 
+
 of the tool. This map is a direct representation of the tree structure of the<br />
+
 
 
 archetype, and consists of alternating object and attribute constraints, <br />
 
 
+
 culminating in leaf nodes representing constraints on primitive types such <br />
+
 
 
 as integers, strings and date/times.<br />
 
 
+
       <br />
+
 
 
 When an archetype is first successfully parsed, the node tree is shown <br />
 
 
+
 collapsed to its root; repeatedly using the "Expand one" button reveals the<br />
+
 
 
 structure of the archetype one tree level at a time.<br />
 
 
+
       <br />
+
 
 
 Quantities, coded terms and ordinal values have special representations, as<br />
 
 
+
 defined in the <span style="font-style: italic;">open</span>EHR Archetype Profile (oAP).</td>
+
 
 
       <td><a href="images/node_map_1.png"><img style="border: 0px solid ; width: 100px; height: 74px;" alt="Node map initial" src="images/tn/node_map_1.jpg" /></a><br />
 
 
+
 initial view</td>
+
 
 
       <td><a href="images/node_map_2.png"><img style="border: 0px solid ; width: 100px; height: 54px;" alt="Node map expanded" src="images/tn/node_map_2.jpg" /></a><br />
 
 
+
 after expanding<br />
 
 
+
 (CBC)</td>
+
 
 
       <td><a href="images/node_map_3.png"><img style="border: 0px solid ; width: 100px; height: 75px;" alt="Noed map 3" src="images/tn/node_map_3.jpg" /></a><br />
 
 
+
 after expanding<br />
+
 
 
 (CBC)</td>
 
 
+
     </tr>
 
 
+
     <tr>
+
 
 
       <td>The Technical/Basic button on the right hand side toggles between a view<br />
 
 
+
 consisting of purely semantic labels and a technical view in which the <br />
+
 
 
 reference model class names and node term codes are shown. This view<br />
 
 
+
 enables the connection of semantic markers (local "at" codes) and the<br />
+
 
 
 reference model to be understood.</td>
 
 
+
       <td><a href="images/node_map_basic_mode.png"><img style="border: 0px solid ; width: 100px; height: 46px;" alt="Node map basic mode" src="images/tn/node_map_basic_mode.jpg" /></a><br />
+
 
 
 basic view</td>
 
 
+
       <td><a href="images/node_map_tech_mode.png"><img style="border: 0px solid ; width: 100px; height: 46px;" alt="Node map tech mode" src="images/tn/node_map_tech_mode.jpg" /></a><br />
+
 
 
 technical view</td>
 
 
+
       <td></td>
+
 
 
     </tr>
 
 
+
     <tr>
+
 
 
       <td><span style="font-weight: bold;">Paths</span><br />
 
 
+
 The Path map tab shows the paths extracted from the definition section of<br />
+
 
 
 the archetype in "physical" (coded) and "logical" (codes replaced by their<br />
 
 
+
 descriptions). These paths are crucial to manipulating archetypes at<br />
+
 
 
 runtime, and also to building queries. The path syntax is&nbsp;a slightly reduced<br />
 
 
+
 form of XPath syntax, and can be converted to standard XPath for <br />
+
 
 
 XML-based processing.</td>
 
 
+
       <td><a href="images/paths_1.png"><img style="border: 0px solid ; width: 100px; height: 38px;" alt="Paths" src="images/tn/paths_1.jpg" /></a><br />
+
 
 
 path map</td>
 
 
+
       <td></td>
 
 
+
       <td></td>
+
 
 
     </tr>
 
 
+
     <tr>
+
 
 
       <td><span style="font-weight: bold;">Ontology</span><br />
 
 
+
 The ontology view shows the contents of the ontology section of the<br />
+
 
 
 archetype, with terms and constraints shown under separate tabs. Mappings<br />
 
 
+
 to external terminologies are also shown.</td>
+
 
 
       <td><a href="images/ontology_1.png"><img style="border: 0px solid ; width: 100px; height: 36px;" alt="Ontology 1" src="images/tn/ontology_1.jpg" /></a><br />
 
 
+
 ontology view</td>
+
 
 
       <td><a href="images/ontology_2.png"><img style="border: 0px solid ; width: 100px; height: 45px;" alt="Ontology 2" src="images/tn/ontology_2.jpg" /></a><br />
 
 
+
 terminology mapping</td>
+
 
 
       <td></td>
 
 
+
     </tr>
 
 
+
     <tr>
+
 
 
       <td><span style="font-weight: bold;">Translation</span><br />
 
 
+
 Archetypes can contains any number of translations of their linguistic <br />
+
 
 
 content, i.e. the description and ontology sections. The language combo-box<br />
 
 
+
 on the top right of the tool enables the language to be chosen.</td>
+
 
 
       <td><a href="images/translation_1.png"><img style="border: 0px solid ; width: 100px; height: 68px;" alt="Translation" src="images/tn/translation_1.jpg" /></a><br />
 
 
+
 translated view</td>
 
 
+
       <td></td>
 
 
+
       <td></td>
+
 
 
     </tr>
 
 
+
     <tr>
+
 
 
       <td><span style="font-weight: bold;">Archetype Source</span><br />
 
 
+
 The Source tab shows the raw archetype source, with line numbers added,<br />
+
 
 
 in order to facilitate interpretation of the status output.&nbsp;</td>
 
 
+
       <td><a href="images/source_1.png"><img style="border: 0px solid ; width: 100px; height: 68px;" alt="Source" src="images/tn/source_1.jpg" /></a><br />
+
 
 
 raw source</td>
 
 
+
       <td></td>
 
 
+
       <td></td>
+
 
 
     </tr>
 
 
+
+  
   
   
   </tbody>
 </table>
+
 
 
 <h3>Tasks</h3>
 
 
+
 <table style="text-align: left; background-color: rgb(255, 255, 255); width: 600px;" border="0" cellpadding="2" cellspacing="2">
+
 
 
   <tbody>
 
 
+
     <tr>
+
 
 
       <td><span style="font-weight: bold;">Finding an archetype repository</span><br />
 
 
+
 The ADL workbench will process archetypes under a root directory of any&nbsp;<br />
+
 
 
 structure. Usually, the structure used in the <span style="font-style: italic;">open</span>EHR Subversion repository<br />
 
 
+
 is advised, since it makes it easy to remember what reference model type <br />
+
 
 
 each archetype is and to work on groups of archetypes, e.g. archteypes<br />
 
 
+
 based on the <span style="font-style: italic;">open</span>EHR OBSERVATION type.<br />
 
 
+
       <br />
+
 
 
 The repository location is specified in the Option dialog, as shown in the <br />
 
 
+
 screen shot. The directory just above the directories you want to see should<br />
+
 
 
 be chosen; in the example here, the "adl" directory in a local copy of the <br />
 
 
+
       <span style="font-style: italic;">open</span>EHR Subversion knowledge repository is being chosen (<a href="http://svn.openehr.org/knowledge">http://svn.openehr.org/knowledge</a>).</td>
+
 
 
       <td><a href="images/options.png"><img style="border: 0px solid ; width: 96px; height: 100px;" alt="Options" src="images/tn/options.jpg" /></a><br />
 
 
+
       </td>
+
 
 
     </tr>
 
 
+
     <tr>
+
 
 
       <td><span style="font-weight: bold;">Loading an Archetype</span><br />
 
 
+
 Find an archetype in the left-hand archetype explorer, and simply select its <br />
+
 
 
 icon; this will cause it to be parsed. The parse status is shown in the status bar<br />
 
 
+
 as described above. Once an archetype has parsed successfully, it can be <br />
+
 
 
 explored using the controls in the tool as shown above.</td>
 
 
+
       <td></td>
+
 
 
     </tr>
 
 
+
     <tr>
+
 
 
       <td><span style="font-weight: bold;">Using an External Editor</span><br />
 
 
+
 If desired the archetype can be edited via the "Edit" button at the top left. The<br />
+
 
 
 editor can be chosen via the Options menu. If changes are made to an <br />
 
 
+
 archetype in an external editor and saved, the "Parse" button needs to be used<br />
+
 
 
 to re-evaluate the archetype.</td>
 
 
+
       <td><a href="images/external_editor.png"><img style="border: 0px solid ; width: 100px; height: 74px;" alt="External editor" src="images/tn/external_editor.jpg" /></a></td>
 
 
+
     </tr>
+
 
 
     <tr>
 
 
+
       <td><span style="font-weight: bold;">Serialising an archetype</span><br />
+
 
 
 Archetypes can be serialised (i.e. saved) using the "Save" button at the top left.<br />
 
 
+
 The serialisation form is chosen from the combo-box to the right of the Save<br />
+
 
 
 button. The ADL and HTML (colourised ADL) formats are currently supported. In<br />
 
 
+
 the future, a pure dADL form will be available.<br />
+
 
 
       <br />
 
 
+
 An example of an HTML serialised archetype is shown <a href="http://svn.openehr.org/knowledge/archetypes/dev/adl/openehr/ehr/entry/evaluation/openEHR-EHR-EVALUATION.adverse.v1.html">here</a>.</td>
+
 
 
       <td><a href="images/save_as.png"><img style="border: 0px solid ; width: 100px; height: 40px;" alt="save as" src="images/tn/save_as.jpg" /></a></td>
 
 
+
     </tr>
 
 
+
+  
   
   
   </tbody>
 </table>
 
 
+
 <h2>Archetype Tester</h2>
+
 <h3>User Interface</h3>
+
 <table style="text-align: left; width: 600px;" border="0" cellpadding="2" cellspacing="2">
+
   <tbody>
+
     <tr>
+
       <td><span style="font-weight: bold;">Main Window</span><br style="font-weight: bold;" />
+
 The Tester interface consists of a table containing the archetype tree
 and other columns indicating test execution status, and a number of
 controls on the right hand side, used to manage execution of the tests.<br />
+
       <br />
+
 The archetype tree is collapsable, and contains the same information as
 the explorer tree from the Viewer part of the application. <br />
+
       <br />
+
 The second column contains check-boxes used to mark an archetype for
 testing or not. The Check All/Uncheck All button on the right-hand side
 is used to check or uncheck all archetypes for inclusion in the next
 test run.<br />
+
       <br />
+
 The remaining columns are used to indicate the results of executing the tests, which currently incude:<br />
+
+      
       <ul>
+
         <li><span style="font-weight: bold;">Parse</span>: parse ADL
 file, in the same manner as the Viewer does. If the Remove Unused Codes
 checkbox on the right-hand side is selected, unused "at" and "ac" codes
 from the archetype ontology are removed. If the Overwrite ADL checkbox
 is also selected, then the subsequent "Save to ADL" tests below will
 reflect this change.</li>
+
         <li><span style="font-weight: bold;">Save to HTML</span>: save the archetype as colourised ADL HTML, which is a human-friendly form for reading ADL.</li>
+
         <li><span style="font-weight: bold;">Save to ADL</span>: save
 the archetype in ADL format. Normally, the saved file will have a .adlx
 extension, unless Overwrite ADL is selected, in which case the original
 file will be overwritten.</li>
+
         <li><span style="font-weight: bold;">Reparse</span>: &nbsp;this
 test&nbsp;parses the result of the "Save to ADL". Passing this test
 indicates that the serialisation (i.e. save operation) generated valid
 ADL.</li>
+
+      
       </ul>
+
 The effect on the file system of running the tests is to create new (or
 overwritten) HTML files, and to create either .adlx files, or, if
 Overwrite ADL is selected, overwritten ADL files.</td>
+
       <td><a href="images/overview_tester_2.png"><img style="border: 0px solid ; width: 100px; height: 85px;" alt="Archetype workbench test page" src="images/tn/overview_tester_2.jpg" /></a></td>
+
     </tr>
+
+  
   </tbody>
 </table>
+
 <h3>Tasks</h3>
 
 
+
 <table style="text-align: left; width: 600px;" border="0" cellpadding="2" cellspacing="2">
+
   <tbody>
+
     <tr>
+
       <td><span style="font-weight: bold;">Run all Tests</span><br />
+
 As soon as the workbench starts up, the Go button can be used to start
 a full test run. The test run can be interrupted at any time by pushing
 the same button; it can be resumed from the same archetype by pushing
 the button again, and so on.<br />
+
       <br />
+
 The status of each test is indicated by a green "tick" or red cross in the relevant right-hand column.<br />
+
       <br />
+
 Any errors or other information to do with the tests is appended to the status window at the bottom.</td>
+
       <td><a href="images/overview_tester_run_all.png"><img style="border: 0px solid ; width: 100px; height: 96px;" alt="Run all tests view" src="images/tn/overview_tester_run_all.jpg" /></a><a href="images/overview_tester_2.png"><br />
+
       </a></td>
+
     </tr>
+
     <tr>
+
       <td><span style="font-weight: bold;">Test only selected Archetypes</span><br />
+
 To test only selected archetypes:<br />
+
+      
       <ul>
+
         <li>Start the tool, or use the Refresh button to restore the original state</li>
+
         <li>Collapse the archteype tree as desired to view archetypes of interest</li>
+
         <li>Use the Uncheck All button to uncheck all archetypes</li>
+
         <li>Select archetypes to be tested by checking the boxes in the second column</li>
+
         <li>Use the Go button to run the tests.</li>
+
+      
       </ul>
+
       </td>
-      <td><a href="images/tn/overview_tester_test_selected.jpg"><img style="border: 0px solid ; width: 76px; height: 100px;" alt="Test selected archetypes" src="images/tn/overview_tester_test_selected.jpg" /></a></td>
+
+      <td><a href="images/overview_tester_test_selected.png"><img style="border: 0px solid ; width: 76px; height: 100px;" alt="Test selected archetypes" src="images/tn/overview_tester_test_selected.jpg" /></a></td>
+
     </tr>
+
     <tr>
+
       <td><span style="font-weight: bold;">Remove unused Ontology codes from Archetypes</span><br />
+
 Due to iterative development, some archetypes may have obsolete codes
 in their ontology sections. &nbsp;These can be deleted by checking the
 "Remove unused codes" checkbox and running all (or only some) tests.<br />
+
       <br />
+
 If the Overwrite ADL checkbox is also checked, this will cause the original ADL files to be overwritten, with the changes.</td>
-      <td><a href="images/tn/overview_tester_remove_codes.jpg"><img style="border: 0px solid ; width: 100px; height: 85px;" alt="Remove unused codes" src="images/tn/overview_tester_remove_codes.jpg" /></a></td>
+
+      <td><a href="images/overview_tester_remove_codes.png"><img style="border: 0px solid ; width: 100px; height: 85px;" alt="Remove unused codes" src="images/tn/overview_tester_remove_codes.jpg" /></a></td>
+
     </tr>
+
     <tr>
+
       <td><span style="font-weight: bold;">Resynchronise with Filesystem</span><br />
+
 The Tester can be resynchronised at any time with the file-system by pressing the Refresh button on the right hand side.</td>
+
       <td></td>
+
     </tr>
+
+  
   </tbody>
 </table>
+
 
 
 
@@ -793,6 +1049,7 @@ The Tester can be resynchronised at any time with the file-system by pressing th
 <hr style="width: 100%; height: 2px;" />
 <p class="footer">$LastChangedDate$
 $LastChangedRevision$</p>
+
 
 
 
