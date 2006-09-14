@@ -31,6 +31,13 @@ inherit
 			copy, default_create
 		end	
 		
+	SHARED_ARCHETYPE_DIRECTORY
+		export
+			{NONE} all
+		undefine
+			copy, default_create
+		end
+
 	SHARED_UI_RESOURCES
 		export
 			{NONE} all
@@ -54,8 +61,37 @@ feature {NONE} -- Initialization
 			-- could not be performed in `initialize',
 			-- (due to regeneration of implementation class)
 			-- can be added here.
+		do
+			initialise_gui_settings
+
+			if repository_path.is_empty then
+				set_repository_path(application_startup_directory)
+				need_to_set_options := True
+			end
+
+			if editor_command.is_empty then
+				set_editor_command(Default_editor_command)
+				need_to_set_options := True		
+			end
+			option_dialog.read_options_from_settings
+			
+			archetype_directory.populate (repository_path)			
+			archetype_view_tree_control.populate
+			archetype_test_tree_control.populate
+			
+			format_combo.set_strings(adl_interface.archetype_serialiser_formats)
+			format_combo.set_text (Archetype_file_extension)
+			
+			adl_interface.set_current_directory(repository_path)
+			if current_work_directory = Void then
+				current_work_directory := adl_interface.working_directory
+			end			
+		end
+
+	initialise_gui_settings is
+			-- initialise purely graphical elements
 		local
-			ed_cmd, cur_title: STRING
+			cur_title: STRING
 		do
 			set_icon_name("ADL Editor")
 			set_icon_pixmap (adl_workbench_ico)
@@ -78,8 +114,14 @@ feature {NONE} -- Initialization
 			end
 			
 			set_position (app_x_position, app_y_position)
-			
 						
+			if main_notebook_tab_pos > 1 then
+				main_nb.select_item (main_nb.i_th (main_notebook_tab_pos))
+			end
+
+			if test_view_area_split_position > 0 then
+				test_view_area.set_split_position (test_view_area_split_position)
+			end
 			if explorer_view_area_split_position > 0 then
 				explorer_view_area.set_split_position (explorer_view_area_split_position)
 			end
@@ -91,28 +133,8 @@ feature {NONE} -- Initialization
 			else
 				total_view_area.set_split_position (app_initial_height - parser_status_area.minimum_height)
 			end
-			
-			if repository_path.is_empty then
-				set_repository_path(application_startup_directory)
-				need_to_set_options := True
-			end
-
-			if editor_command.is_empty then
-				set_editor_command(Default_editor_command)
-				need_to_set_options := True		
-			end
-			option_dialog.read_options_from_settings
-			
-			archetype_tree_control.populate
-			format_combo.set_strings(adl_interface.archetype_serialiser_formats)
-			format_combo.set_text (Archetype_file_extension)
-			
-			adl_interface.set_current_directory(repository_path)
-			if current_work_directory = Void then
-				current_work_directory := adl_interface.working_directory
-			end			
 		end
-
+			
 feature -- Access
 
 	need_to_set_options: BOOLEAN
@@ -121,7 +143,21 @@ feature -- Access
 			-- directory where archetypes are currently being opened and saved
 			-- from GUI open and save buttons; automatic opens (due to clicking
 			-- on arhcyetpe name still use main repository directory
-	
+			
+	parent_app: EV_APPLICATION
+			-- provide a reference to the owning application so as to get access to a 
+			-- few things that only applications can do, like `process_events`	
+
+feature -- Modification
+
+	set_parent_app(an_app: EV_APPLICATION) is				
+			-- set `parent_app'
+		require
+			an_app /= Void
+		do
+			parent_app := an_app
+		end
+		
 feature -- Commands
 
 	set_options is
@@ -167,12 +203,14 @@ feature {NONE} -- Commands
 		do
 			set_total_view_area_split_position(total_view_area.split_position)
 			set_info_view_area_split_position(info_view_area.split_position)
+			set_test_view_area_split_position(test_view_area.split_position)
 			set_explorer_view_area_split_position(explorer_view_area.split_position)
 			set_app_width(width)
 			set_app_height(height)
 			set_app_x_position(x_position)
 			set_app_y_position(y_position)
 			set_app_maximised(is_maximized)
+			set_main_notebook_tab_pos(main_nb.selected_item_index)
 			save_resources;
 			((create {EV_ENVIRONMENT}).application).destroy
 		end
@@ -254,7 +292,9 @@ feature {NONE} -- Commands
 																format_combo.selected_text)
 							parser_status_area.append_text(adl_interface.status)
 							if format_combo.selected_text.is_equal(Archetype_file_extension) then
-								archetype_tree_control.repopulate -- refresh the explorer
+								archetype_directory.populate (repository_path)			
+								archetype_view_tree_control.repopulate -- refresh the explorer
+								archetype_test_tree_control.populate -- refresh the explorer
 							end
 						end
 						current_work_directory := adl_file_save_dialog.file_path
@@ -311,7 +351,7 @@ feature {NONE} -- Commands
 			end
 		end
 		
-	archetype_tree_item_select is
+	archetype_view_tree_item_select is
 			-- select an item on the archetype tree
 		local
 			cur_csr: EV_CURSOR
@@ -319,9 +359,9 @@ feature {NONE} -- Commands
 			cur_csr := pointer_style
 			set_pointer_style(wait_cursor)
 			
-			archetype_tree_control.item_select
-			if archetype_tree_control.has_selected_file then
-				load_and_parse_adl_file(archetype_tree_control.selected_file_path)				
+			archetype_view_tree_control.item_select
+			if archetype_view_tree_control.has_selected_file then
+				load_and_parse_adl_file(archetype_view_tree_control.selected_file_path)				
 				current_work_directory := adl_interface.file_context.current_directory
 			end
    			archetype_file_tree.set_minimum_width(0)
@@ -329,29 +369,24 @@ feature {NONE} -- Commands
 			set_pointer_style(cur_csr)			
 		end
 				
-	shrink_tree_one_level is
+	node_map_shrink_tree_one_level is
 		do
 			if adl_interface.parse_succeeded then
 				node_map_control.shrink_one_level
 			end
 		end
 				
-	expand_tree_one_level is
+	node_map_expand_tree_one_level is
 		do
 			if adl_interface.parse_succeeded then
 				node_map_control.expand_one_level
 			end
 		end
 				
-	toggle_expand_tree is
+	node_map_toggle_expand_tree is
 		do
 			if adl_interface.parse_succeeded then
 				node_map_control.toggle_expand_tree
-				if node_map_control.is_expanded then
-					tree_expand_bn.set_text("Collapse All")
-				else
-					tree_expand_bn.set_text("Expand All")
-				end
 			end
 		end
 
@@ -360,19 +395,14 @@ feature {NONE} -- Commands
 			node_map_control.item_select
 		end
 		
-	tree_technical_mode is
+	node_map_tree_technical_mode is
 			-- 
 		do
 			if adl_interface.parse_succeeded then
 				node_map_control.toggle_technical_mode
-				if node_map_control.in_technical_mode then
-					tree_technical_mode_bn.set_text("Basic")
-				else
-					tree_technical_mode_bn.set_text("Technical")
-				end
 			end
 		end
-				
+
 	move_cursor_to_pointer_location (a_x, a_y, a_button: INTEGER; a_x_tilt, a_y_tilt, a_pressure: DOUBLE; a_screen_x, a_screen_y: INTEGER) is
 			-- Called by `pointer_button_press_actions' of `archetype_text_edit_area'.
 		do
@@ -386,6 +416,32 @@ feature {NONE} -- Commands
 	process_keystroke (a_keystring: STRING) is
 			-- Called by `key_press_string_actions' of `archetype_text_edit_area'.
 		do
+		end
+		
+	archetype_test_go_stop is
+			-- start running tests in test page
+		do
+			archetype_test_tree_control.archetype_test_go_stop
+		end
+		
+	archetype_test_tree_expand_toggle is
+			-- toggle logical state of test page archetype tree expandedness
+		do
+			archetype_test_tree_control.toggle_expand_tree
+		end
+
+	archetype_test_tree_check_all_toggle is
+			-- toggle logical state of test page check boxes
+		do
+			archetype_test_tree_control.toggle_check_all
+		end
+
+	archetype_test_refresh is
+			-- refresh test environment back to vanilla state
+			-- i.e. synchronised with file system and with all
+			-- statuses cleared
+		do
+			archetype_test_tree_control.populate
 		end
 		
 feature -- Controls
@@ -405,7 +461,12 @@ feature -- Controls
 			create Result.make(Current, adl_interface.adl_engine, parsed_archetype_tree)
 		end
 
-	archetype_tree_control: ADL_ARCHETYPE_TREE_CONTROL is
+	archetype_view_tree_control: ADL_VIEW_ARCHETYPE_TREE_CONTROL is
+		once
+			create Result.make(Current)
+		end
+
+	archetype_test_tree_control: ADL_TEST_ARCHETYPE_TREE_CONTROL is
 		once
 			create Result.make(Current)
 		end

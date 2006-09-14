@@ -24,6 +24,13 @@ inherit
 			copy, default_create
 		end
 
+	SHARED_ARCHETYPE_DIRECTORY
+		export
+			{NONE} all
+		undefine
+			copy, default_create
+		end
+
 feature {NONE} -- Initialization
 
 	user_initialization is
@@ -68,7 +75,9 @@ feature {NONE} -- Implementation
 			set_editor_command(option_dialog_editor_command_edit.text)
 			save_resources
 			main_window.update_status_area("wrote config file " + Resource_config_file_name + "%N")
-			main_window.archetype_tree_control.populate
+			archetype_directory.populate (repository_path)			
+			main_window.archetype_view_tree_control.populate
+			main_window.archetype_test_tree_control.populate
 		end
 	
 	option_dialog_cancel is

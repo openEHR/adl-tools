@@ -64,6 +64,15 @@ cluster
 			assertion (require)
 		end
 
+	all archetype_directory:	"$OPENEHR\ref_impl_eiffel\components\archetype_repository\src"
+		exclude
+			".svn";
+		default
+			assertion (no)
+			assertion (require)
+			assertion (ensure)
+		end
+
 	all openehr:		"$OPENEHR\ref_impl_eiffel\libraries\openehr\src"
 		exclude
 			".svn"; 

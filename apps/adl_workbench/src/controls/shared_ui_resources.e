@@ -140,6 +140,17 @@ feature -- Access
 			end
 		end
 			
+	test_view_area_split_position: INTEGER is
+			-- split position of vertical split control in test tool
+		local
+			str: STRING
+		do
+			str := resource_value("default", "test_view_area_split_position")
+			if str.is_integer then
+				Result := str.to_integer
+			end
+		end
+			
 	explorer_view_area_split_position: INTEGER is
 			-- split position of explorer horizontal split control
 		local
@@ -150,7 +161,18 @@ feature -- Access
 				Result := str.to_integer
 			end
 		end
-			
+
+	main_notebook_tab_pos: INTEGER is			
+			-- which tab of the main notebook was visible at the end of the last session
+		local
+			str: STRING
+		do
+			str := resource_value("default", "main_notebook_tab_pos")
+			if str.is_integer then
+				Result := str.to_integer
+			end
+		end
+		
 	editor_command: STRING is
 			-- path of editor application for ADL files
 		do
@@ -307,10 +329,21 @@ feature -- Access
 			Result.put("cadl_include.ico", 								"CADL_INCLUDE")
 			Result.put("cadl_exclude.ico", 								"CADL_EXCLUDE")
 			Result.put("cadl_invariant_item.ico", 						"CADL_INVARIANT_ITEM")
-			Result.put("Ocean_float.png", 								"Ocean logo")
+
 			Result.put("file_folder.ico", 								"file_folder")
 			Result.put("archetype.ico", 								"archetype")
 			Result.put("archetype_specialised.ico", 					"archetype_specialised")
+
+			Result.put("pass.ico", 										"pass")
+			Result.put("fail.ico", 										"fail")
+
+			Result.put("go.ico", 										"go")
+			Result.put("stop.ico", 										"stop")
+
+			Result.put("checked_box.ico", 								"checked_box")
+			Result.put("unchecked_box.ico", 							"unchecked_box")
+
+			Result.put("Ocean_float.png", 								"Ocean logo")
 
 			-- check that icon files exist; for any that don't, output an error message and 
 			-- use a blank icon
@@ -401,6 +434,14 @@ feature -- Modification
 			set_resource_value("default", "editor", an_editor_command)
 		end
 
+	set_main_notebook_tab_pos(a_tab_pos: INTEGER) is
+			-- set main notebook tab pos
+		require
+			a_tab_pos_valid: a_tab_pos > 0
+		do
+			set_resource_value("default", "main_notebook_tab_pos", a_tab_pos.out)
+		end
+
 	set_total_view_area_split_position (v: INTEGER) is
 			-- set split position of outer vertical split control
 		require
@@ -415,6 +456,14 @@ feature -- Modification
 			v > 0
 		do
 			set_resource_value("default", "info_view_area_split_position", v.out)
+		end
+			
+	set_test_view_area_split_position (v: INTEGER) is
+			-- set split position of test tool vertical split control
+		require
+			v > 0
+		do
+			set_resource_value("default", "test_view_area_split_position", v.out)
 		end
 			
 	set_explorer_view_area_split_position (v: INTEGER) is

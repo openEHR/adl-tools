@@ -16,7 +16,7 @@ deferred class NATIVE_SERIALISATION_PROFILE
 inherit
 	SERIALISATION_PROFILE
 
-feature {NONE} -- Implementation
+feature {ANY_SERIALISER} -- Access
 
 	format_items: HASH_TABLE[STRING, INTEGER] is
 			-- formatting items

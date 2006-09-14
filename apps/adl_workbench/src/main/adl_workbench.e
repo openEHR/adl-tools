@@ -38,6 +38,7 @@ feature {NONE} -- Initialization
 			if has_resources then
 				initialise_default_resource_config_file_name
 				create main_window
+				main_window.set_parent_app(Current)
 				create splash_window.make
 				splash_window.show
 				main_window.show

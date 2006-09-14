@@ -1,75 +1,25 @@
-indexing
+indexing	
 	component:   "openEHR Archetype Project"
-	description: "cADL serialisers"
-	keywords:    "test, ADL"
+	description: "[
+				 Basic archetype definitions
+				 ]"
+	keywords:    "ADL"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class SHARED_ARCHETYPE_SERIALISERS
 
-inherit
-	ARCHETYPE_DEFINITIONS
-	
-feature -- Access
+class ARCHETYPE_DEFINITIONS 
 
-	archetype_serialiser_formats: ARRAYED_LIST[STRING] is
-			-- list of format names
-		once
-			create Result.make(0)
-			from 
-				archetype_serialisers.start
-			until
-				archetype_serialisers.off
-			loop
-				Result.extend(archetype_serialisers.key_for_iteration)
-				archetype_serialisers.forth
-			end
-			Result.compare_objects
-		end
+feature -- Definitions
 
-	archetype_serialiser_for_format(a_format:STRING): ARCHETYPE_SERIALISER is
-			-- get a specific ADL serialiser
-		require
-			Format_valid: a_format /= Void and then has_archetype_serialiser_format(a_format)
-		do
-			Result := archetype_serialisers.item(a_format)
-		ensure
-			Result_exists: Result /= Void
-		end
-	
-	archetype_file_extensions: HASH_TABLE [STRING, STRING] is
-			-- file extensions for logical serialisation formats
-		once
-			create Result.make(0)
-			Result.put(".adl", Archetype_file_extension)
-			Result.put(".html", "html")
-			Result.put(".xml", "xml")
-			Result.put(".owl", "owl")
-		end
+	Archetype_file_extension: STRING is "adl"
 
-feature -- Status Report
-
-	has_archetype_serialiser_format(a_format:STRING): BOOLEAN is
-			-- 
-		require
-			a_format /= Void
-		do
-			Result := archetype_serialisers.has(a_format)
-		end
-		
-feature {NONE} -- Implementation
-
-	archetype_serialisers: HASH_TABLE [ARCHETYPE_SERIALISER, STRING] is
-		once
-			create Result.make(0)
-		end
-		
 end
 
 
@@ -87,7 +37,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is shared_adl_serialisers.e.
+--| The Original Code is adl_node_control.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

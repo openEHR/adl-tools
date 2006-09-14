@@ -50,7 +50,8 @@ feature {NONE}-- Initialization
 			create online_mi
 			create l_ev_menu_separator_3
 			create about_mi
-			create main
+			create main_nb
+			create viewer_vbox
 			create action_bar
 			create open_button
 			create parse_button
@@ -128,7 +129,21 @@ feature {NONE}-- Initialization
 			create ontology_term_defs
 			create ontology_constraint_defs
 			create archetype_text_edit_area
+			create arch_statistics_vbox
 			create parser_status_area
+			create test_view_area
+			create l_ev_horizontal_box_7
+			create archetype_test_tree_grid
+			create l_ev_vertical_box_5
+			create l_ev_label_2
+			create overwrite_adl_rb
+			create remove_unused_codes_rb
+			create arch_test_tree_toggle_expand_bn
+			create arch_test_toggle_check_all_bn
+			create arch_test_refresh_bn
+			create l_ev_horizontal_separator_1
+			create archetype_test_go_bn
+			create test_status_area
 			
 				-- Build_widget_structure.
 			set_menu_bar (menu)
@@ -148,8 +163,9 @@ feature {NONE}-- Initialization
 			help_menu.extend (online_mi)
 			help_menu.extend (l_ev_menu_separator_3)
 			help_menu.extend (about_mi)
-			extend (main)
-			main.extend (action_bar)
+			extend (main_nb)
+			main_nb.extend (viewer_vbox)
+			viewer_vbox.extend (action_bar)
 			action_bar.extend (open_button)
 			action_bar.extend (parse_button)
 			action_bar.extend (edit_button)
@@ -161,7 +177,7 @@ feature {NONE}-- Initialization
 			action_bar.extend (parent_archetype_id)
 			action_bar.extend (language_label)
 			action_bar.extend (language_combo)
-			main.extend (explorer_view_area)
+			viewer_vbox.extend (explorer_view_area)
 			explorer_view_area.extend (archetype_file_tree)
 			explorer_view_area.extend (total_view_area)
 			total_view_area.extend (arch_notebook)
@@ -226,7 +242,21 @@ feature {NONE}-- Initialization
 			ontology_notebook.extend (ontology_term_defs)
 			ontology_notebook.extend (ontology_constraint_defs)
 			arch_notebook.extend (archetype_text_edit_area)
+			arch_notebook.extend (arch_statistics_vbox)
 			total_view_area.extend (parser_status_area)
+			main_nb.extend (test_view_area)
+			test_view_area.extend (l_ev_horizontal_box_7)
+			l_ev_horizontal_box_7.extend (archetype_test_tree_grid)
+			l_ev_horizontal_box_7.extend (l_ev_vertical_box_5)
+			l_ev_vertical_box_5.extend (l_ev_label_2)
+			l_ev_vertical_box_5.extend (overwrite_adl_rb)
+			l_ev_vertical_box_5.extend (remove_unused_codes_rb)
+			l_ev_vertical_box_5.extend (arch_test_tree_toggle_expand_bn)
+			l_ev_vertical_box_5.extend (arch_test_toggle_check_all_bn)
+			l_ev_vertical_box_5.extend (arch_test_refresh_bn)
+			l_ev_vertical_box_5.extend (l_ev_horizontal_separator_1)
+			l_ev_vertical_box_5.extend (archetype_test_go_bn)
+			test_view_area.extend (test_status_area)
 			
 			file_menu.set_text ("File")
 			open_adl_file_mi.set_text ("Open ")
@@ -241,10 +271,17 @@ feature {NONE}-- Initialization
 			news.set_text ("News")
 			online_mi.set_text ("Online...")
 			about_mi.set_text ("About ")
-			main.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
-			main.set_minimum_width (app_min_width)
-			main.set_minimum_height (main_vbox_min_height)
-			main.disable_item_expand (action_bar)
+			create internal_font
+			internal_font.set_family (feature {EV_FONT_CONSTANTS}.Family_sans)
+			internal_font.set_weight (feature {EV_FONT_CONSTANTS}.Weight_bold)
+			internal_font.set_shape (feature {EV_FONT_CONSTANTS}.Shape_regular)
+			internal_font.set_height_in_points (8)
+			internal_font.preferred_families.extend ("System")
+			main_nb.set_font (internal_font)
+			main_nb.set_tab_position (2)
+			main_nb.set_item_text (viewer_vbox, "Viewer")
+			main_nb.set_item_text (test_view_area, "Test")
+			viewer_vbox.disable_item_expand (action_bar)
 			action_bar.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
 			action_bar.set_minimum_width (800)
 			action_bar.set_padding_width (10)
@@ -305,6 +342,7 @@ feature {NONE}-- Initialization
 			arch_notebook.set_item_text (arch_desc_area_vbox, "Description")
 			arch_notebook.set_item_text (info_view_area, "Definition")
 			arch_notebook.set_item_text (archetype_text_edit_area, "Source")
+			arch_notebook.set_item_text (arch_statistics_vbox, "Statistics")
 			arch_desc_area_vbox.disable_item_expand (arch_desc_details_frame)
 			arch_desc_area_vbox.disable_item_expand (arch_desc_resource_frame)
 			arch_desc_area_vbox.disable_item_expand (arch_desc_copyright_hbox)
@@ -537,11 +575,37 @@ feature {NONE}-- Initialization
 			archetype_text_edit_area.set_minimum_width (600)
 			archetype_text_edit_area.set_minimum_height (app_min_height)
 			archetype_text_edit_area.disable_edit
-			parser_status_area.set_background_color (editable_colour)
 			parser_status_area.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
 			parser_status_area.set_minimum_width (0)
 			parser_status_area.set_minimum_height (status_area_min_height)
 			parser_status_area.disable_edit
+			test_view_area.set_minimum_width (app_min_width)
+			l_ev_horizontal_box_7.disable_item_expand (l_ev_vertical_box_5)
+			l_ev_vertical_box_5.set_padding_width (padding_width)
+			l_ev_vertical_box_5.set_border_width (border_width)
+			l_ev_vertical_box_5.disable_item_expand (l_ev_label_2)
+			l_ev_vertical_box_5.disable_item_expand (overwrite_adl_rb)
+			l_ev_vertical_box_5.disable_item_expand (remove_unused_codes_rb)
+			l_ev_vertical_box_5.disable_item_expand (arch_test_tree_toggle_expand_bn)
+			l_ev_vertical_box_5.disable_item_expand (arch_test_toggle_check_all_bn)
+			l_ev_vertical_box_5.disable_item_expand (arch_test_refresh_bn)
+			l_ev_vertical_box_5.disable_item_expand (l_ev_horizontal_separator_1)
+			l_ev_vertical_box_5.disable_item_expand (archetype_test_go_bn)
+			l_ev_label_2.set_text ("Options")
+			overwrite_adl_rb.set_text ("Overwrite ADL")
+			overwrite_adl_rb.set_tooltip ("Overwrite .adl files rather than save to .adlx")
+			remove_unused_codes_rb.set_text ("Remove unused codes")
+			remove_unused_codes_rb.set_tooltip ("Remove unused codes in archetypes on parse")
+			arch_test_tree_toggle_expand_bn.set_text ("Collapse Tree")
+			arch_test_tree_toggle_expand_bn.set_tooltip ("Expand or collapse directory tree")
+			arch_test_toggle_check_all_bn.set_text ("Uncheck All")
+			arch_test_toggle_check_all_bn.set_tooltip ("Check/uncheck all archetypes for testing")
+			arch_test_refresh_bn.set_text ("Refresh")
+			arch_test_refresh_bn.set_tooltip ("Resync to file system and reset statuses")
+			archetype_test_go_bn.set_text ("Go")
+			archetype_test_go_bn.set_tooltip ("Start running tests")
+			test_status_area.set_minimum_height (status_area_min_height)
+			test_status_area.disable_edit
 			set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
 			set_minimum_width (app_min_width)
 			set_minimum_height (app_min_height)
@@ -566,15 +630,19 @@ feature {NONE}-- Initialization
 			save_button.select_actions.extend (agent save_adl_file)
 			format_combo.select_actions.extend (agent select_format)
 			language_combo.select_actions.extend (agent select_language)
-			archetype_file_tree.select_actions.extend (agent archetype_tree_item_select)
+			archetype_file_tree.select_actions.extend (agent archetype_view_tree_item_select)
 			parsed_archetype_tree.select_actions.extend (agent node_map_item_select)
-			tree_expand_bn.select_actions.extend (agent toggle_expand_tree)
-			tree_expand_one_bn.select_actions.extend (agent expand_tree_one_level)
-			tree_shrink_one_bn.select_actions.extend (agent shrink_tree_one_level)
-			tree_technical_mode_bn.select_actions.extend (agent tree_technical_mode)
+			tree_expand_bn.select_actions.extend (agent node_map_toggle_expand_tree)
+			tree_expand_one_bn.select_actions.extend (agent node_map_expand_tree_one_level)
+			tree_shrink_one_bn.select_actions.extend (agent node_map_shrink_tree_one_level)
+			tree_technical_mode_bn.select_actions.extend (agent node_map_tree_technical_mode)
 			archetype_text_edit_area.pointer_button_press_actions.extend (agent move_cursor_to_pointer_location (?, ?, ?, ?, ?, ?, ?, ?))
 			archetype_text_edit_area.pointer_double_press_actions.extend (agent pointer_double_click_action (?, ?, ?, ?, ?, ?, ?, ?))
 			archetype_text_edit_area.key_press_string_actions.extend (agent process_keystroke (?))
+			arch_test_tree_toggle_expand_bn.select_actions.extend (agent archetype_test_tree_expand_toggle)
+			arch_test_toggle_check_all_bn.select_actions.extend (agent archetype_test_tree_check_all_toggle)
+			arch_test_refresh_bn.select_actions.extend (agent archetype_test_refresh)
+			archetype_test_go_bn.select_actions.extend (agent archetype_test_go_stop)
 			close_request_actions.extend (agent exit_app)
 				-- Close the application when an interface close
 				-- request is recieved on `Current'. i.e. the cross is clicked.
@@ -589,40 +657,46 @@ feature -- Access
 	l_ev_menu_separator_1, l_ev_menu_separator_2, l_ev_menu_separator_3: EV_MENU_SEPARATOR
 	archetype_id,
 	parent_archetype_id, arch_desc_status_text, arch_desc_resource_package_text: EV_TEXT_FIELD
+	archetype_test_tree_grid: EV_GRID
 	arch_desc_auth_orig_auth_mlist,
 	arch_desc_resource_orig_res_mlist, parsed_archetype_found_paths, ontology_term_defs,
 	ontology_constraint_defs: EV_MULTI_COLUMN_LIST
 	file_menu, options_menu, help_menu: EV_MENU
-	open_button, parse_button,
-	edit_button, save_button, tree_expand_bn, tree_expand_one_bn, tree_shrink_one_bn,
-	tree_technical_mode_bn: EV_BUTTON
-	arch_desc_purpose_text, arch_desc_use_text, arch_desc_misuse_text,
-	arch_desc_copyright_text, archetype_text_edit_area, parser_status_area: EV_TEXT
-	arch_desc_auth_contrib_list,
-	languages_list, terminologies_list, arch_desc_keywords_list: EV_LIST
-	arch_notebook, source_notebook,
-	ontology_notebook: EV_NOTEBOOK
-	archetype_file_tree, parsed_archetype_tree: EV_TREE
+	l_ev_horizontal_separator_1: EV_HORIZONTAL_SEPARATOR
+	open_button,
+	parse_button, edit_button, save_button, tree_expand_bn, tree_expand_one_bn, tree_shrink_one_bn,
+	tree_technical_mode_bn, arch_test_tree_toggle_expand_bn, arch_test_toggle_check_all_bn,
+	arch_test_refresh_bn, archetype_test_go_bn: EV_BUTTON
+	arch_desc_purpose_text, arch_desc_use_text,
+	arch_desc_misuse_text, arch_desc_copyright_text, archetype_text_edit_area, parser_status_area,
+	test_status_area: EV_TEXT
+	arch_desc_auth_contrib_list, languages_list, terminologies_list,
+	arch_desc_keywords_list: EV_LIST
+	main_nb, arch_notebook, source_notebook, ontology_notebook: EV_NOTEBOOK
+	archetype_file_tree,
+	parsed_archetype_tree: EV_TREE
 	explorer_view_area: EV_HORIZONTAL_SPLIT_AREA
-	total_view_area,
-	info_view_area: EV_VERTICAL_SPLIT_AREA
-	action_bar, author_lang_term_hbox, arch_desc_status_hbox, arch_desc_auth_hbox,
-	arch_desc_contrib_hbox, l_ev_horizontal_box_1, arch_desc_details_hbox, l_ev_horizontal_box_2,
-	l_ev_horizontal_box_3, l_ev_horizontal_box_4, l_ev_horizontal_box_5, l_ev_horizontal_box_6,
-	arch_desc_copyright_hbox, parsed_archetype_tree_view: EV_HORIZONTAL_BOX
-	main, arch_desc_area_vbox,
+	total_view_area, info_view_area, test_view_area: EV_VERTICAL_SPLIT_AREA
+	action_bar,
+	author_lang_term_hbox, arch_desc_status_hbox, arch_desc_auth_hbox, arch_desc_contrib_hbox,
+	l_ev_horizontal_box_1, arch_desc_details_hbox, l_ev_horizontal_box_2, l_ev_horizontal_box_3,
+	l_ev_horizontal_box_4, l_ev_horizontal_box_5, l_ev_horizontal_box_6, arch_desc_copyright_hbox,
+	parsed_archetype_tree_view, l_ev_horizontal_box_7: EV_HORIZONTAL_BOX
+	viewer_vbox, arch_desc_area_vbox,
 	l_ev_vertical_box_1, lang_vbox, terminology_vbox, l_ev_vertical_box_2, l_ev_vertical_box_3,
-	l_ev_vertical_box_4, tree_controls: EV_VERTICAL_BOX
+	l_ev_vertical_box_4, tree_controls, arch_statistics_vbox, l_ev_vertical_box_5: EV_VERTICAL_BOX
+	overwrite_adl_rb,
+	remove_unused_codes_rb: EV_CHECK_BUTTON
 	format_label, l_ev_label_1, language_label, arch_desc_status_label,
 	arch_desc_auth_orig_auth_label, arch_desc_auth_contrib_label, languages_label, terminologies_label,
 	arch_desc_purpose_label, arch_desc_use_label, arch_desc_misuse_label, arch_desc_keywords_label,
-	arch_desc_resource_package_label, arch_desc_resource_orig_res_label, arch_desc_copyright_label: EV_LABEL
-	open_adl_file_mi,
-	parse_mi, edit_archetype_mi, save_adl_file_mi, exit_tool_mi, options, icon_help_mi,
-	news, online_mi, about_mi: EV_MENU_ITEM
+	arch_desc_resource_package_label, arch_desc_resource_orig_res_label, arch_desc_copyright_label,
+	l_ev_label_2: EV_LABEL
+	open_adl_file_mi, parse_mi, edit_archetype_mi, save_adl_file_mi, exit_tool_mi,
+	options, icon_help_mi, news, online_mi, about_mi: EV_MENU_ITEM
 	menu: EV_MENU_BAR
-	arch_desc_auth_frame, lang_term_frame, arch_desc_details_frame,
-	arch_desc_resource_frame: EV_FRAME
+	arch_desc_auth_frame, lang_term_frame,
+	arch_desc_details_frame, arch_desc_resource_frame: EV_FRAME
 
 feature {NONE} -- Implementation
 
@@ -699,7 +773,7 @@ feature {NONE} -- Implementation
 		deferred
 		end
 	
-	archetype_tree_item_select is
+	archetype_view_tree_item_select is
 			-- Called by `select_actions' of `archetype_file_tree'.
 		deferred
 		end
@@ -709,22 +783,22 @@ feature {NONE} -- Implementation
 		deferred
 		end
 	
-	toggle_expand_tree is
+	node_map_toggle_expand_tree is
 			-- Called by `select_actions' of `tree_expand_bn'.
 		deferred
 		end
 	
-	expand_tree_one_level is
+	node_map_expand_tree_one_level is
 			-- Called by `select_actions' of `tree_expand_one_bn'.
 		deferred
 		end
 	
-	shrink_tree_one_level is
+	node_map_shrink_tree_one_level is
 			-- Called by `select_actions' of `tree_shrink_one_bn'.
 		deferred
 		end
 	
-	tree_technical_mode is
+	node_map_tree_technical_mode is
 			-- Called by `select_actions' of `tree_technical_mode_bn'.
 		deferred
 		end
@@ -741,6 +815,26 @@ feature {NONE} -- Implementation
 	
 	process_keystroke (a_keystring: STRING) is
 			-- Called by `key_press_string_actions' of `archetype_text_edit_area'.
+		deferred
+		end
+	
+	archetype_test_tree_expand_toggle is
+			-- Called by `select_actions' of `arch_test_tree_toggle_expand_bn'.
+		deferred
+		end
+	
+	archetype_test_tree_check_all_toggle is
+			-- Called by `select_actions' of `arch_test_toggle_check_all_bn'.
+		deferred
+		end
+	
+	archetype_test_refresh is
+			-- Called by `select_actions' of `arch_test_refresh_bn'.
+		deferred
+		end
+	
+	archetype_test_go_stop is
+			-- Called by `select_actions' of `archetype_test_go_bn'.
 		deferred
 		end
 	

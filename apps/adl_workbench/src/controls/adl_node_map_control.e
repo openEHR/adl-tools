@@ -54,6 +54,11 @@ feature -- Commands
 		do
 			in_technical_mode := not in_technical_mode
 			repopulate
+			if in_technical_mode then
+				gui.tree_technical_mode_bn.set_text("Basic")
+			else
+				gui.tree_technical_mode_bn.set_text("Technical")
+			end
 		end
 		
 	set_technical_node is
@@ -137,8 +142,10 @@ feature -- Commands
 			is_expanded := not is_expanded
 			if is_expanded then
 				gui_tree.recursive_do_all(agent ev_tree_item_expand(?))
+				gui.tree_expand_bn.set_text("Collapse All")
 			else
 				gui_tree.recursive_do_all(agent ev_tree_item_shrink(?))
+				gui.tree_expand_bn.set_text("Expand All")
 			end
 		end
 
