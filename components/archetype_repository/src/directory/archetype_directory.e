@@ -149,10 +149,6 @@ feature {NONE} -- Implementation
 		once
 			create Result.compile_case_insensitive(".*\." + Archetype_file_extension + "$")
 		end
-		
-invariant
-	Directory_exists: directory /= Void
-	Repository_path_valid: repository_path /= Void
 
 end
 

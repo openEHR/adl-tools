@@ -33,8 +33,7 @@ feature -- Initialization
 			make_with_text(splash_text)
 			set_background_color(create {EV_COLOR}.make_with_8_bit_rgb(255, 255, 255))
 			set_pixmap(pixmaps.item("Ocean logo"))
-			set_x_position(350)
-			set_y_position(200)
+			set_position (app_x_position + 350, app_y_position + 200)
 
 			create timer.make_with_interval(1500)
 			timer.actions.extend(~ close)

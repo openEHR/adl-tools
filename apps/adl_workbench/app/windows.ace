@@ -12,6 +12,7 @@ default
 	disabled_debug ("adl_invariant")
 	disabled_debug ("adl_parse")
 	disabled_debug ("adl_tree")
+	disabled_debug ("bb")
 	disabled_debug ("dadl_parse")
 	disabled_debug ("dlg_dispatcher")
 	disabled_debug ("dt")
@@ -49,6 +50,7 @@ cluster
 			".svn"; 
 		default
 			assertion (no)
+			assertion (check)
 			assertion (require)
 			assertion (ensure)
 		end
@@ -60,25 +62,28 @@ cluster
 
 	all vendor_fixes:		"$OPENEHR\ref_impl_eiffel\libraries\vendor-fixes"
 		exclude
-			".svn"; "base_net";
+			".svn"; "base_net"; 
 		end
 
 	all adl_parser:		"$OPENEHR\ref_impl_eiffel\components\adl_parser\src"
 		exclude
-			".svn";
+			".svn"; 
 		default
 			assertion (no)
+			assertion (check)
 			assertion (require)
 			assertion (ensure)
 		end
 
-	all archetype_directory:	"$OPENEHR\ref_impl_eiffel\components\archetype_repository\src"
+	all archetype_directory:		"$OPENEHR\ref_impl_eiffel\components\archetype_repository\src"
 		exclude
-			".svn";
+			".svn"; 
 		default
 			assertion (no)
+			assertion (check)
 			assertion (require)
 			assertion (ensure)
+			assertion (invariant)
 		end
 
 	all openehr:		"$OPENEHR\ref_impl_eiffel\libraries\openehr\src"

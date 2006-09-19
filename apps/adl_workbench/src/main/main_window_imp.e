@@ -42,8 +42,10 @@ feature {NONE}-- Initialization
 			create save_adl_file_mi
 			create l_ev_menu_separator_2
 			create exit_tool_mi
+			create repository_menu
+			create set_repository_mi
 			create options_menu
-			create options
+			create options_mi
 			create help_menu
 			create icon_help_mi
 			create news
@@ -141,6 +143,9 @@ feature {NONE}-- Initialization
 			create arch_test_tree_toggle_expand_bn
 			create arch_test_toggle_check_all_bn
 			create arch_test_refresh_bn
+			create l_ev_horizontal_box_8
+			create l_ev_label_3
+			create arch_test_processed_count
 			create l_ev_horizontal_separator_1
 			create archetype_test_go_bn
 			create test_status_area
@@ -155,8 +160,10 @@ feature {NONE}-- Initialization
 			file_menu.extend (save_adl_file_mi)
 			file_menu.extend (l_ev_menu_separator_2)
 			file_menu.extend (exit_tool_mi)
+			menu.extend (repository_menu)
+			repository_menu.extend (set_repository_mi)
 			menu.extend (options_menu)
-			options_menu.extend (options)
+			options_menu.extend (options_mi)
 			menu.extend (help_menu)
 			help_menu.extend (icon_help_mi)
 			help_menu.extend (news)
@@ -254,6 +261,9 @@ feature {NONE}-- Initialization
 			l_ev_vertical_box_5.extend (arch_test_tree_toggle_expand_bn)
 			l_ev_vertical_box_5.extend (arch_test_toggle_check_all_bn)
 			l_ev_vertical_box_5.extend (arch_test_refresh_bn)
+			l_ev_vertical_box_5.extend (l_ev_horizontal_box_8)
+			l_ev_horizontal_box_8.extend (l_ev_label_3)
+			l_ev_horizontal_box_8.extend (arch_test_processed_count)
 			l_ev_vertical_box_5.extend (l_ev_horizontal_separator_1)
 			l_ev_vertical_box_5.extend (archetype_test_go_bn)
 			test_view_area.extend (test_status_area)
@@ -264,8 +274,10 @@ feature {NONE}-- Initialization
 			edit_archetype_mi.set_text ("Edit")
 			save_adl_file_mi.set_text ("Save")
 			exit_tool_mi.set_text ("Exit")
+			repository_menu.set_text ("Repository")
+			set_repository_mi.set_text ("Set Repository...")
 			options_menu.set_text ("Options")
-			options.set_text ("Set Options...")
+			options_mi.set_text ("Set Options...")
 			help_menu.set_text ("Help")
 			icon_help_mi.set_text ("Icons ")
 			news.set_text ("News")
@@ -367,6 +379,7 @@ feature {NONE}-- Initialization
 			arch_desc_auth_orig_auth_mlist.set_background_color (editable_colour)
 			arch_desc_auth_orig_auth_mlist.set_tooltip ("200")
 			arch_desc_auth_orig_auth_mlist.set_minimum_width (min_entry_control_width)
+			arch_desc_auth_orig_auth_mlist.set_minimum_height (min_list_height)
 			arch_desc_contrib_hbox.set_padding_width (padding_width)
 			arch_desc_contrib_hbox.set_border_width (border_width)
 			arch_desc_contrib_hbox.disable_item_expand (arch_desc_auth_contrib_label)
@@ -375,6 +388,7 @@ feature {NONE}-- Initialization
 			arch_desc_auth_contrib_label.set_minimum_width (desc_label_width)
 			arch_desc_auth_contrib_list.set_background_color (editable_colour)
 			arch_desc_auth_contrib_list.set_minimum_width (min_entry_control_width)
+			arch_desc_auth_contrib_list.set_minimum_height (min_list_height)
 			lang_term_frame.set_text ("Available")
 			lang_vbox.set_padding_width (padding_width)
 			lang_vbox.set_border_width (border_width)
@@ -384,7 +398,7 @@ feature {NONE}-- Initialization
 			languages_label.set_minimum_width (desc_label_width)
 			languages_list.set_background_color (editable_colour)
 			languages_list.set_minimum_width (100)
-			languages_list.set_minimum_height (80)
+			languages_list.set_minimum_height (min_list_height)
 			terminology_vbox.set_padding_width (padding_width)
 			terminology_vbox.set_border_width (border_width)
 			terminology_vbox.disable_item_expand (terminologies_label)
@@ -399,7 +413,7 @@ feature {NONE}-- Initialization
 			terminologies_label.set_minimum_width (desc_label_width)
 			terminologies_list.set_background_color (editable_colour)
 			terminologies_list.set_minimum_width (100)
-			terminologies_list.set_minimum_height (80)
+			terminologies_list.set_minimum_height (min_list_height)
 			arch_desc_details_frame.set_text ("Details")
 			l_ev_vertical_box_2.set_padding_width (padding_width)
 			l_ev_vertical_box_2.set_border_width (border_width)
@@ -415,7 +429,7 @@ feature {NONE}-- Initialization
 			arch_desc_purpose_label.set_minimum_width (desc_label_width)
 			arch_desc_purpose_text.set_background_color (editable_colour)
 			arch_desc_purpose_text.set_minimum_width (min_entry_control_width)
-			arch_desc_purpose_text.set_minimum_height (66)
+			arch_desc_purpose_text.set_minimum_height (min_text_height)
 			l_ev_horizontal_box_3.disable_item_expand (arch_desc_use_label)
 			create internal_font
 			internal_font.set_family (feature {EV_FONT_CONSTANTS}.Family_sans)
@@ -428,14 +442,14 @@ feature {NONE}-- Initialization
 			arch_desc_use_label.set_minimum_width (desc_label_width)
 			arch_desc_use_text.set_background_color (editable_colour)
 			arch_desc_use_text.set_minimum_width (min_entry_control_width)
-			arch_desc_use_text.set_minimum_height (66)
+			arch_desc_use_text.set_minimum_height (min_text_height)
 			l_ev_horizontal_box_4.disable_item_expand (arch_desc_misuse_label)
 			arch_desc_misuse_label.set_font (label_font)
 			arch_desc_misuse_label.set_text ("Misuse:")
 			arch_desc_misuse_label.set_minimum_width (desc_label_width)
 			arch_desc_misuse_text.set_background_color (editable_colour)
 			arch_desc_misuse_text.set_minimum_width (min_entry_control_width)
-			arch_desc_misuse_text.set_minimum_height (66)
+			arch_desc_misuse_text.set_minimum_height (min_text_height)
 			l_ev_vertical_box_3.set_padding_width (padding_width)
 			l_ev_vertical_box_3.set_border_width (border_width)
 			l_ev_vertical_box_3.disable_item_expand (arch_desc_keywords_label)
@@ -450,7 +464,7 @@ feature {NONE}-- Initialization
 			arch_desc_keywords_label.set_minimum_width (75)
 			arch_desc_keywords_list.set_background_color (editable_colour)
 			arch_desc_keywords_list.set_minimum_width (min_entry_control_width)
-			arch_desc_keywords_list.set_minimum_height (66)
+			arch_desc_keywords_list.set_minimum_height (min_list_height)
 			arch_desc_resource_frame.set_text ("Resources")
 			l_ev_vertical_box_4.disable_item_expand (l_ev_horizontal_box_5)
 			l_ev_vertical_box_4.disable_item_expand (l_ev_horizontal_box_6)
@@ -589,6 +603,7 @@ feature {NONE}-- Initialization
 			l_ev_vertical_box_5.disable_item_expand (arch_test_tree_toggle_expand_bn)
 			l_ev_vertical_box_5.disable_item_expand (arch_test_toggle_check_all_bn)
 			l_ev_vertical_box_5.disable_item_expand (arch_test_refresh_bn)
+			l_ev_vertical_box_5.disable_item_expand (l_ev_horizontal_box_8)
 			l_ev_vertical_box_5.disable_item_expand (l_ev_horizontal_separator_1)
 			l_ev_vertical_box_5.disable_item_expand (archetype_test_go_bn)
 			l_ev_label_2.set_text ("Options")
@@ -602,6 +617,13 @@ feature {NONE}-- Initialization
 			arch_test_toggle_check_all_bn.set_tooltip ("Check/uncheck all archetypes for testing")
 			arch_test_refresh_bn.set_text ("Refresh")
 			arch_test_refresh_bn.set_tooltip ("Resync to file system and reset statuses")
+			l_ev_horizontal_box_8.set_minimum_width (110)
+			l_ev_horizontal_box_8.disable_item_expand (l_ev_label_3)
+			l_ev_horizontal_box_8.disable_item_expand (arch_test_processed_count)
+			l_ev_label_3.set_text ("Processed")
+			l_ev_label_3.set_minimum_width (65)
+			arch_test_processed_count.disable_edit
+			l_ev_horizontal_separator_1.set_minimum_height (15)
 			archetype_test_go_bn.set_text ("Go")
 			archetype_test_go_bn.set_tooltip ("Start running tests")
 			test_status_area.set_minimum_height (status_area_min_height)
@@ -619,7 +641,8 @@ feature {NONE}-- Initialization
 			edit_archetype_mi.select_actions.extend (agent edit_archetype)
 			save_adl_file_mi.select_actions.extend (agent save_adl_file)
 			exit_tool_mi.select_actions.extend (agent exit_app)
-			options.select_actions.extend (agent set_options)
+			set_repository_mi.select_actions.extend (agent set_repository)
+			options_mi.select_actions.extend (agent set_options)
 			icon_help_mi.select_actions.extend (agent display_icon_help)
 			news.select_actions.extend (agent display_news)
 			online_mi.select_actions.extend (agent show_online_help)
@@ -656,12 +679,12 @@ feature -- Access
 	format_combo, language_combo: EV_COMBO_BOX
 	l_ev_menu_separator_1, l_ev_menu_separator_2, l_ev_menu_separator_3: EV_MENU_SEPARATOR
 	archetype_id,
-	parent_archetype_id, arch_desc_status_text, arch_desc_resource_package_text: EV_TEXT_FIELD
+	parent_archetype_id, arch_desc_status_text, arch_desc_resource_package_text, arch_test_processed_count: EV_TEXT_FIELD
 	archetype_test_tree_grid: EV_GRID
 	arch_desc_auth_orig_auth_mlist,
 	arch_desc_resource_orig_res_mlist, parsed_archetype_found_paths, ontology_term_defs,
 	ontology_constraint_defs: EV_MULTI_COLUMN_LIST
-	file_menu, options_menu, help_menu: EV_MENU
+	file_menu, repository_menu, options_menu, help_menu: EV_MENU
 	l_ev_horizontal_separator_1: EV_HORIZONTAL_SEPARATOR
 	open_button,
 	parse_button, edit_button, save_button, tree_expand_bn, tree_expand_one_bn, tree_shrink_one_bn,
@@ -681,22 +704,22 @@ feature -- Access
 	author_lang_term_hbox, arch_desc_status_hbox, arch_desc_auth_hbox, arch_desc_contrib_hbox,
 	l_ev_horizontal_box_1, arch_desc_details_hbox, l_ev_horizontal_box_2, l_ev_horizontal_box_3,
 	l_ev_horizontal_box_4, l_ev_horizontal_box_5, l_ev_horizontal_box_6, arch_desc_copyright_hbox,
-	parsed_archetype_tree_view, l_ev_horizontal_box_7: EV_HORIZONTAL_BOX
-	viewer_vbox, arch_desc_area_vbox,
-	l_ev_vertical_box_1, lang_vbox, terminology_vbox, l_ev_vertical_box_2, l_ev_vertical_box_3,
-	l_ev_vertical_box_4, tree_controls, arch_statistics_vbox, l_ev_vertical_box_5: EV_VERTICAL_BOX
+	parsed_archetype_tree_view, l_ev_horizontal_box_7, l_ev_horizontal_box_8: EV_HORIZONTAL_BOX
+	viewer_vbox,
+	arch_desc_area_vbox, l_ev_vertical_box_1, lang_vbox, terminology_vbox, l_ev_vertical_box_2,
+	l_ev_vertical_box_3, l_ev_vertical_box_4, tree_controls, arch_statistics_vbox, l_ev_vertical_box_5: EV_VERTICAL_BOX
 	overwrite_adl_rb,
 	remove_unused_codes_rb: EV_CHECK_BUTTON
 	format_label, l_ev_label_1, language_label, arch_desc_status_label,
 	arch_desc_auth_orig_auth_label, arch_desc_auth_contrib_label, languages_label, terminologies_label,
 	arch_desc_purpose_label, arch_desc_use_label, arch_desc_misuse_label, arch_desc_keywords_label,
 	arch_desc_resource_package_label, arch_desc_resource_orig_res_label, arch_desc_copyright_label,
-	l_ev_label_2: EV_LABEL
-	open_adl_file_mi, parse_mi, edit_archetype_mi, save_adl_file_mi, exit_tool_mi,
-	options, icon_help_mi, news, online_mi, about_mi: EV_MENU_ITEM
+	l_ev_label_2, l_ev_label_3: EV_LABEL
+	open_adl_file_mi, parse_mi, edit_archetype_mi, save_adl_file_mi,
+	exit_tool_mi, set_repository_mi, options_mi, icon_help_mi, news, online_mi, about_mi: EV_MENU_ITEM
 	menu: EV_MENU_BAR
-	arch_desc_auth_frame, lang_term_frame,
-	arch_desc_details_frame, arch_desc_resource_frame: EV_FRAME
+	arch_desc_auth_frame,
+	lang_term_frame, arch_desc_details_frame, arch_desc_resource_frame: EV_FRAME
 
 feature {NONE} -- Implementation
 
@@ -738,8 +761,13 @@ feature {NONE} -- Implementation
 		deferred
 		end
 	
+	set_repository is
+			-- Called by `select_actions' of `set_repository_mi'.
+		deferred
+		end
+	
 	set_options is
-			-- Called by `select_actions' of `options'.
+			-- Called by `select_actions' of `options_mi'.
 		deferred
 		end
 	

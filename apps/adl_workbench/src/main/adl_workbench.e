@@ -45,8 +45,8 @@ feature {NONE} -- Initialization
 				if app_maximised then
 					main_window.maximize
 				end
-				if main_window.need_to_set_options then
-					main_window.set_options
+				if main_window.need_to_set_repository then
+					main_window.set_repository
 				end
 
 				if new_news then

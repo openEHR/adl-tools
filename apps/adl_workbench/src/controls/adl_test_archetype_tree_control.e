@@ -150,6 +150,9 @@ feature -- Commands
 
 			check_all_set := True
 			gui.arch_test_toggle_check_all_bn.set_text("Uncheck All")
+			gui.arch_test_processed_count.set_text("0")
+			gui.remove_unused_codes_rb.disable_select
+			gui.overwrite_adl_rb.disable_select
 		end
 		
 	item_select is
@@ -240,6 +243,8 @@ feature -- Commands
 						end
 						toggle_checkbox_at_cell(gli_col_2)
 						last_tested_archetypes_count := last_tested_archetypes_count + 1
+						gui.arch_test_processed_count.set_text(last_tested_archetypes_count.out)
+						gui.parent_app.process_events
 					end
 				end
 				
@@ -269,10 +274,9 @@ feature -- Commands
 			-- toggle status of check_all
 		local
 			arch_item: ARCHETYPE_DIRECTORY_ARCHETYPE
-			row_csr, col_csr: INTEGER
+			row_csr: INTEGER
 			gr: EV_GRID_ROW
 			gli_col_2: EV_GRID_LABEL_ITEM
-			res_label: STRING
 			checked: BOOLEAN_REF
 		do
 			if check_all_set then
@@ -495,7 +499,6 @@ feature {NONE} -- Implementation
 			-- indicating whether to include archetype or not
 		local
 			gli: EV_GRID_LABEL_ITEM
-			checked: BOOLEAN_REF
 		do
 			gli ?= gui_grid.selected_items.first
 			if gli /= Void then

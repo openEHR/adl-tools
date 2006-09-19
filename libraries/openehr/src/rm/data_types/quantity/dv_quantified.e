@@ -90,17 +90,20 @@ feature -- Comparison
 			-- Test whether a string value is one of the valid
 			-- values for the magnitude_status attribute.
 		do
+			Result := s.is_equal("=") or s.is_equal("<") or s.is_equal(">") or 
+				s.is_equal("<=") or s.is_equal(">=") or s.is_equal("~")
 		ensure
-			Result = s.is_equal("=") or s.is_equal("<") or s.is_equal(">") or s.is_equal("<=") or s.is_equal(">=") or s.is_equal("~")
+			Result = s.is_equal("=") or s.is_equal("<") or s.is_equal(">") or 
+				s.is_equal("<=") or s.is_equal(">=") or s.is_equal("~")
 		end
 
 feature -- Basic Operations
 
-	infix "+" (other: like diff_type): like Current is
+	infix "+" (diff_val: like diff_type): like Current is
 			-- addition
-		require
-			is_strictly_comparable_to(other)
 		deferred
+		ensure
+			is_strictly_comparable_to(Result)
 		end
 
 	infix "-" (other: like Current): like diff_type is

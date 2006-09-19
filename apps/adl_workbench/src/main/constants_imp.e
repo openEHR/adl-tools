@@ -64,12 +64,6 @@ feature -- Access
 			Result := 600
 		end
 
-	arch_notebook_min_height: INTEGER is 
-			-- `Result' is INTEGER constant named arch_notebook_min_height.
-		once
-			Result := 500
-		end
-
 	min_entry_control_width: INTEGER is 
 			-- `Result' is INTEGER constant named min_entry_control_width.
 		once
@@ -88,10 +82,10 @@ feature -- Access
 			Result := 100
 		end
 
-	arch_tree_min_height: INTEGER is 
-			-- `Result' is INTEGER constant named arch_tree_min_height.
+	source_notebook_min_height: INTEGER is 
+			-- `Result' is INTEGER constant named source_notebook_min_height.
 		once
-			Result := 60
+			Result := 200
 		end
 
 	max_arch_explorer_width: INTEGER is 
@@ -106,16 +100,28 @@ feature -- Access
 			Result := 3
 		end
 
+	min_text_height: INTEGER is 
+			-- `Result' is INTEGER constant named min_text_height.
+		once
+			Result := 50
+		end
+
 	min_list_height: INTEGER is 
 			-- `Result' is INTEGER constant named min_list_height.
 		once
-			Result := 80
+			Result := 50
 		end
 
 	max_terms_height: INTEGER is 
 			-- `Result' is INTEGER constant named max_terms_height.
 		once
 			Result := 400
+		end
+
+	icons: STRING is
+			-- `Result' is DIRECTORY constant named `icons'.
+		once
+			Result := "C:\project\openehr\ref_impl_eiffel\apps\adl_workbench\app\icons"
 		end
 
 	table_row_spacing: INTEGER is 
@@ -166,16 +172,16 @@ feature -- Access
 			Result := 65
 		end
 
-	icons: STRING is
-			-- `Result' is DIRECTORY constant named `icons'.
+	arch_tree_min_height: INTEGER is 
+			-- `Result' is INTEGER constant named arch_tree_min_height.
 		once
-			Result := "C:\project\openehr\ref_impl_eiffel\apps\adl_workbench\app\icons"
+			Result := 60
 		end
 
-	source_notebook_min_height: INTEGER is 
-			-- `Result' is INTEGER constant named source_notebook_min_height.
+	arch_notebook_min_height: INTEGER is 
+			-- `Result' is INTEGER constant named arch_notebook_min_height.
 		once
-			Result := 200
+			Result := 500
 		end
 
 	adl_workbench_ico: EV_PIXMAP is

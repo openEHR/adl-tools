@@ -55,6 +55,9 @@ feature -- Definitions
 	
 	ADL_help_page_url: STRING is "http://svn.openehr.org/ref_impl_eiffel/TRUNK/apps/doc/adl_workbench_help.htm"
 	
+	Splash_window_display_time: INTEGER is 1500
+			-- number of millseconds to display splash window
+			
 feature -- Access
 
 	repository_path: STRING is
@@ -508,6 +511,87 @@ feature -- Modification
 			set_resource_value("default", "app_maximised", f.out)
 		end
 		
+feature {NONE} -- Implementation
+
+	get_file(init_value: STRING; a_parent_window: EV_WINDOW): STRING is
+			-- get a file path from user
+		require
+			parent_window_valid: a_parent_window /= Void
+		local
+			file_dialog: EV_FILE_OPEN_DIALOG
+			a_file: RAW_FILE
+			error_dialog: EV_INFORMATION_DIALOG
+			end_pos: INTEGER
+			pathname: STRING
+		do
+			create file_dialog
+			end_pos := init_value.last_index_of(operating_environment.Directory_separator, init_value.count)
+			if end_pos = 0 then
+				end_pos := init_value.count
+			end
+			pathname := init_value.substring(1, end_pos)
+			file_dialog.set_start_directory (pathname)
+			
+			from
+			until
+				Result /= Void
+			loop
+				file_dialog.show_modal_to_window (a_parent_window)
+				if file_dialog.selected_button.is_equal("Cancel") then
+					Result := init_value
+				else
+					if not file_dialog.file_name.is_empty then
+						create a_file.make(file_dialog.file_name)
+						if a_file.exists then
+							Result := file_dialog.file_name
+						else
+							create error_dialog.make_with_text("File " + file_dialog.file_name + " does not exist")
+							error_dialog.show_modal_to_window (a_parent_window)
+						end
+					else
+						create error_dialog.make_with_text("File <empty> does not exist")
+						error_dialog.show_modal_to_window (a_parent_window)
+					end
+				end
+			end
+		end
+
+	get_directory(init_value: STRING; a_parent_window: EV_WINDOW): STRING is
+			-- get a directory from user
+		require
+			parent_window_valid: a_parent_window /= Void
+		local
+			dir_dialog: EV_DIRECTORY_DIALOG
+			a_dir: DIRECTORY
+			error_dialog: EV_INFORMATION_DIALOG
+		do
+			create dir_dialog
+			dir_dialog.set_start_directory (init_value)
+			
+			from
+			until
+				Result /= Void
+			loop
+				dir_dialog.show_modal_to_window (a_parent_window)
+				if dir_dialog.selected_button.is_equal("Cancel") then
+					Result := init_value
+				else
+					if not dir_dialog.directory.is_empty then
+						create a_dir.make(dir_dialog.directory)
+						if a_dir.exists then
+							Result := dir_dialog.directory
+						else
+							create error_dialog.make_with_text("Directory " + dir_dialog.directory + " does not exist")
+							error_dialog.show_modal_to_window (a_parent_window)
+						end
+					else
+						create error_dialog.make_with_text("Directory <empty dir> does not exist")
+						error_dialog.show_modal_to_window (a_parent_window)
+					end
+				end
+			end
+		end
+
 end
 
 

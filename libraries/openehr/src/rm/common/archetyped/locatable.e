@@ -45,14 +45,20 @@ feature -- Access
 			-- Audit trail from non-openEHR system of original commit of 
 			-- information forming the content of the current item.
 
-	path_of_item (a_loc: LOCATABLE): STRING is
+	path_of_item (an_item: LOCATABLE): STRING is
 			-- The path to an item relative to the root of this archetyped structure.
+		require
+			item_valid: an_item /= Void
 		deferred
 		end
 
 	item_at_path (a_path: STRING): LOCATABLE is
 			-- The item at a path (relative to this item).
+		require
+			Path_valid: a_path /= Void and then valid_path(a_path)
 		deferred
+		ensure
+			Result /= Void
 		end
 
 	parent: LOCATABLE is
@@ -64,6 +70,8 @@ feature -- Status Report
 
 	valid_path (a_path: STRING): BOOLEAN is
 			-- True if the path is valid with respect to the current item.
+		require
+			Path_valid: a_path /= Void and then not a_path.is_empty
 		deferred
 		end
 		

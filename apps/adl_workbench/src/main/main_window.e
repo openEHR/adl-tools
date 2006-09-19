@@ -66,14 +66,12 @@ feature {NONE} -- Initialization
 
 			if repository_path.is_empty then
 				set_repository_path(application_startup_directory)
-				need_to_set_options := True
+				need_to_set_repository := True
 			end
 
 			if editor_command.is_empty then
 				set_editor_command(Default_editor_command)
-				need_to_set_options := True		
 			end
-			option_dialog.read_options_from_settings
 			
 			archetype_directory.populate (repository_path)			
 			archetype_view_tree_control.populate
@@ -99,8 +97,7 @@ feature {NONE} -- Initialization
 			cur_title.replace_substring_all("VER", Current_adl_version)
 			set_title(cur_title)
 
-			set_x_position(0)
-			set_y_position(0)
+			set_position (app_x_position, app_y_position)
 			
 			if app_width > 0 then
 				set_width(app_width)
@@ -113,8 +110,6 @@ feature {NONE} -- Initialization
 				set_height(app_initial_height)
 			end
 			
-			set_position (app_x_position, app_y_position)
-						
 			if main_notebook_tab_pos > 1 then
 				main_nb.select_item (main_nb.i_th (main_notebook_tab_pos))
 			end
@@ -137,7 +132,8 @@ feature {NONE} -- Initialization
 			
 feature -- Access
 
-	need_to_set_options: BOOLEAN
+	need_to_set_repository: BOOLEAN
+			-- flag set on startup to indicate if repository needs to be specified by user
 
 	current_work_directory: STRING
 			-- directory where archetypes are currently being opened and saved
@@ -164,6 +160,12 @@ feature -- Commands
 			-- 
 		do
 			option_dialog.show_modal_to_window (Current)
+		end
+		
+	set_repository is
+			-- 
+		do
+			repository_dialog.show_modal_to_window (Current)
 		end
 		
 	display_icon_help is
@@ -472,6 +474,12 @@ feature -- Controls
 		end
 
 	Option_dialog: OPTION_DIALOG is
+		once
+			create Result
+			Result.set_main_window(Current)
+		end
+		
+	Repository_dialog: REPOSITORY_DIALOG is
 		once
 			create Result
 			Result.set_main_window(Current)
