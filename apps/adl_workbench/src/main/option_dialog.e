@@ -59,6 +59,11 @@ feature {NONE} -- Implementation
 			-- set dialog values from shared settings
 		do
 			option_dialog_editor_command_edit.set_text(editor_command)
+			if expand_node_tree then
+				option_dialog_node_tree_expand_cb.enable_select
+			else
+				option_dialog_node_tree_expand_cb.disable_select
+			end
 		end
 		
 	option_dialog_ok is
@@ -66,6 +71,7 @@ feature {NONE} -- Implementation
 		do
 			hide
 			set_editor_command(option_dialog_editor_command_edit.text)
+			set_expand_node_tree(option_dialog_node_tree_expand_cb.is_selected)
 			save_resources
 			main_window.update_status_area("wrote config file " + Resource_config_file_name + "%N")
 		end

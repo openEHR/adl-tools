@@ -32,11 +32,11 @@ feature {NONE}-- Initialization
 			
 				-- Create all widgets.
 			create l_ev_vertical_box_1
-			create l_ev_label_1
 			create l_ev_horizontal_box_1
-			create l_ev_label_2
+			create l_ev_label_1
 			create repository_dialog_path_edit
 			create repository_dialog_path_browse_bn
+			create l_ev_label_2
 			create l_ev_horizontal_box_2
 			create l_ev_cell_1
 			create repository_dialog_ok_bn
@@ -44,31 +44,31 @@ feature {NONE}-- Initialization
 			
 				-- Build_widget_structure.
 			extend (l_ev_vertical_box_1)
-			l_ev_vertical_box_1.extend (l_ev_label_1)
 			l_ev_vertical_box_1.extend (l_ev_horizontal_box_1)
-			l_ev_horizontal_box_1.extend (l_ev_label_2)
+			l_ev_horizontal_box_1.extend (l_ev_label_1)
 			l_ev_horizontal_box_1.extend (repository_dialog_path_edit)
 			l_ev_horizontal_box_1.extend (repository_dialog_path_browse_bn)
+			l_ev_vertical_box_1.extend (l_ev_label_2)
 			l_ev_vertical_box_1.extend (l_ev_horizontal_box_2)
 			l_ev_horizontal_box_2.extend (l_ev_cell_1)
 			l_ev_horizontal_box_2.extend (repository_dialog_ok_bn)
 			l_ev_horizontal_box_2.extend (repository_dialog_cancel_bn)
 			
-			l_ev_vertical_box_1.disable_item_expand (l_ev_label_1)
 			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_1)
+			l_ev_vertical_box_1.disable_item_expand (l_ev_label_2)
 			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_2)
-			l_ev_label_1.set_text ("ADL Workbench repository location settings (choose the directory above where the archetypes are)")
-			l_ev_horizontal_box_1.set_padding_width (15)
-			l_ev_horizontal_box_1.set_border_width (10)
+			l_ev_horizontal_box_1.set_padding_width (dialog_padding_width)
+			l_ev_horizontal_box_1.set_border_width (dialog_border_width)
 			l_ev_horizontal_box_1.disable_item_expand (repository_dialog_path_edit)
 			l_ev_horizontal_box_1.disable_item_expand (repository_dialog_path_browse_bn)
-			l_ev_label_2.set_text ("Repository path")
+			l_ev_label_1.set_text ("Repository path")
 			repository_dialog_path_edit.set_background_color (editable_colour)
 			repository_dialog_path_edit.set_minimum_width (300)
 			repository_dialog_path_browse_bn.set_text ("Browse...")
 			repository_dialog_path_browse_bn.set_minimum_width (65)
-			l_ev_horizontal_box_2.set_padding_width (15)
-			l_ev_horizontal_box_2.set_border_width (10)
+			l_ev_label_2.set_text ("(Choose the directory above where the archetypes are)")
+			l_ev_horizontal_box_2.set_padding_width (dialog_padding_width)
+			l_ev_horizontal_box_2.set_border_width (dialog_border_width)
 			l_ev_horizontal_box_2.disable_item_expand (repository_dialog_ok_bn)
 			l_ev_horizontal_box_2.disable_item_expand (repository_dialog_cancel_bn)
 			repository_dialog_ok_bn.set_text ("OK")

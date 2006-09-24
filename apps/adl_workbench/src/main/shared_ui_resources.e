@@ -176,6 +176,17 @@ feature -- Access
 			end
 		end
 		
+	expand_node_tree: BOOLEAN is
+			-- flag for expand archetype definition node tree or not by default
+		local
+			str: STRING
+		do
+			str := resource_value("default", "expand_node_tree")
+			if str.is_boolean then
+				Result := str.to_boolean
+			end
+		end
+		
 	editor_command: STRING is
 			-- path of editor application for ADL files
 		do
@@ -509,6 +520,12 @@ feature -- Modification
 			-- set app maximised flag
 		do
 			set_resource_value("default", "app_maximised", f.out)
+		end
+		
+	set_expand_node_tree(flag: BOOLEAN) is
+			-- set flag for expand archetype definition node tree or not by default
+		do
+			set_resource_value("default", "expand_node_tree", flag.out)
 		end
 		
 feature {NONE} -- Implementation

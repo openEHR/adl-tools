@@ -32,45 +32,50 @@ feature {NONE}-- Initialization
 			
 				-- Create all widgets.
 			create l_ev_vertical_box_1
-			create l_ev_label_1
 			create l_ev_horizontal_box_1
-			create l_ev_label_2
+			create l_ev_label_1
 			create option_dialog_editor_command_edit
 			create option_dialog_editor_command_button
 			create l_ev_horizontal_box_2
+			create option_dialog_node_tree_expand_cb
+			create l_ev_horizontal_box_3
 			create l_ev_cell_1
 			create option_dialog_ok_button
 			create option_dialog_cancel_button
 			
 				-- Build_widget_structure.
 			extend (l_ev_vertical_box_1)
-			l_ev_vertical_box_1.extend (l_ev_label_1)
 			l_ev_vertical_box_1.extend (l_ev_horizontal_box_1)
-			l_ev_horizontal_box_1.extend (l_ev_label_2)
+			l_ev_horizontal_box_1.extend (l_ev_label_1)
 			l_ev_horizontal_box_1.extend (option_dialog_editor_command_edit)
 			l_ev_horizontal_box_1.extend (option_dialog_editor_command_button)
 			l_ev_vertical_box_1.extend (l_ev_horizontal_box_2)
-			l_ev_horizontal_box_2.extend (l_ev_cell_1)
-			l_ev_horizontal_box_2.extend (option_dialog_ok_button)
-			l_ev_horizontal_box_2.extend (option_dialog_cancel_button)
+			l_ev_horizontal_box_2.extend (option_dialog_node_tree_expand_cb)
+			l_ev_vertical_box_1.extend (l_ev_horizontal_box_3)
+			l_ev_horizontal_box_3.extend (l_ev_cell_1)
+			l_ev_horizontal_box_3.extend (option_dialog_ok_button)
+			l_ev_horizontal_box_3.extend (option_dialog_cancel_button)
 			
-			l_ev_vertical_box_1.disable_item_expand (l_ev_label_1)
 			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_1)
 			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_2)
-			l_ev_label_1.set_text ("ADL Workbench resource settings")
-			l_ev_horizontal_box_1.set_padding_width (15)
-			l_ev_horizontal_box_1.set_border_width (10)
-			l_ev_horizontal_box_1.disable_item_expand (option_dialog_editor_command_edit)
+			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_3)
+			l_ev_horizontal_box_1.set_padding_width (dialog_padding_width)
+			l_ev_horizontal_box_1.set_border_width (dialog_border_width)
+			l_ev_horizontal_box_1.disable_item_expand (l_ev_label_1)
 			l_ev_horizontal_box_1.disable_item_expand (option_dialog_editor_command_button)
-			l_ev_label_2.set_text ("Editor")
+			l_ev_label_1.set_text ("Editor")
 			option_dialog_editor_command_edit.set_background_color (editable_colour)
 			option_dialog_editor_command_edit.set_minimum_width (300)
 			option_dialog_editor_command_button.set_text ("Browse...")
 			option_dialog_editor_command_button.set_minimum_width (65)
-			l_ev_horizontal_box_2.set_padding_width (15)
-			l_ev_horizontal_box_2.set_border_width (10)
-			l_ev_horizontal_box_2.disable_item_expand (option_dialog_ok_button)
-			l_ev_horizontal_box_2.disable_item_expand (option_dialog_cancel_button)
+			l_ev_horizontal_box_2.set_padding_width (dialog_padding_width)
+			l_ev_horizontal_box_2.set_border_width (dialog_border_width)
+			option_dialog_node_tree_expand_cb.set_text ("Show defiinition tree expanded?")
+			l_ev_horizontal_box_3.set_padding_width (dialog_padding_width)
+			l_ev_horizontal_box_3.set_border_width (dialog_border_width)
+			l_ev_horizontal_box_3.disable_item_expand (option_dialog_ok_button)
+			l_ev_horizontal_box_3.disable_item_expand (option_dialog_cancel_button)
+			l_ev_cell_1.set_minimum_width (100)
 			option_dialog_ok_button.set_text ("OK")
 			option_dialog_ok_button.set_minimum_width (100)
 			option_dialog_cancel_button.set_text ("Cancel")
@@ -96,9 +101,10 @@ feature -- Access
 	l_ev_cell_1: EV_CELL
 	option_dialog_editor_command_button, option_dialog_ok_button, option_dialog_cancel_button: EV_BUTTON
 	l_ev_horizontal_box_1,
-	l_ev_horizontal_box_2: EV_HORIZONTAL_BOX
+	l_ev_horizontal_box_2, l_ev_horizontal_box_3: EV_HORIZONTAL_BOX
 	l_ev_vertical_box_1: EV_VERTICAL_BOX
-	l_ev_label_1, l_ev_label_2: EV_LABEL
+	option_dialog_node_tree_expand_cb: EV_CHECK_BUTTON
+	l_ev_label_1: EV_LABEL
 	option_dialog_editor_command_edit: EV_TEXT_FIELD
 
 feature {NONE} -- Implementation

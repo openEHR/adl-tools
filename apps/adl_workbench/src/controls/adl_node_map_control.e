@@ -89,7 +89,7 @@ feature -- Commands
 			create tree_iterator.make(adl_engine.archetype.definition.representation)
 			tree_iterator.do_all(agent node_build_enter_action(?,?), agent node_build_exit_action(?,?))
 			populate_invariants
-			is_expanded := True
+			is_expanded := not expand_node_tree
 			toggle_expand_tree
 		end
 

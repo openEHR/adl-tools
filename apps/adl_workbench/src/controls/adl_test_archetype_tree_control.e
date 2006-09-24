@@ -182,7 +182,7 @@ feature -- Commands
 		local
 			arch_item: ARCHETYPE_DIRECTORY_ARCHETYPE
 			row_csr, col_csr: INTEGER
-			test_result: BOOLEAN
+			test_passed: BOOLEAN
 			gr: EV_GRID_ROW
 			gli_col_2, gli: EV_GRID_LABEL_ITEM
 			res_label: STRING
@@ -215,16 +215,17 @@ feature -- Commands
 						from
 							tests.start
 							col_csr := First_test_col
+							test_passed := True
 						until
-							tests.off
+							tests.off or not test_passed
 						loop
 							gr.set_item (col_csr, create {EV_GRID_LABEL_ITEM}.make_with_text("processing..."))
 							gui.parent_app.process_events
 						
 							create test_status.make(0)
 
-							test_result := tests.item_for_iteration.item ([arch_item.full_path])
-							if test_result then
+							test_passed := tests.item_for_iteration.item ([arch_item.full_path])
+							if test_passed then
 								res_label := "pass"
 							else
 								res_label := "fail"

@@ -1,6 +1,6 @@
 
-ADL - Archetype Description Language Toolkit
---------------------------------------------
+ADL - Archetype definition Language Toolkit
+-------------------------------------------
 
 VERSION
 	Last Change: $Date$
@@ -22,6 +22,6 @@ COPYRIGHT
 	appearing in the front of the document.
 
 USE
-	The archetype files, GUI validator, and PDF manual can all be freely
+	The archetype files, ADL workbench, and PDF manual can all be freely
 	distributed provided they are kept intact, and are accompanied by this
 	file. 

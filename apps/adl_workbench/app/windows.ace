@@ -7,6 +7,7 @@ root
 default
 	namespace ("openehr")
 	precompiled ("$ISE_EIFFEL\precomp\spec\$ISE_PLATFORM\vision2")
+	assertion (check)
 	assertion (require)
 	disabled_debug (yes)
 	disabled_debug ("adl_invariant")

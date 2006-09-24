@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "ADL_Workbench", "ADL_Workbench.vdproj", "{14D25FA3-1732-4F76-AC06-4DA05F2949E7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Default = Debug|Default
+		Release|Default = Release|Default
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{14D25FA3-1732-4F76-AC06-4DA05F2949E7}.Debug|Default.ActiveCfg = Debug
+		{14D25FA3-1732-4F76-AC06-4DA05F2949E7}.Debug|Default.Build.0 = Debug
+		{14D25FA3-1732-4F76-AC06-4DA05F2949E7}.Release|Default.ActiveCfg = Release
+		{14D25FA3-1732-4F76-AC06-4DA05F2949E7}.Release|Default.Build.0 = Release
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
