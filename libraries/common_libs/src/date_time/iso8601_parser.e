@@ -97,7 +97,7 @@ feature -- Status Report
 			else
 				cached_iso8601_time := Void
 
-				csr := 1 -- on the T
+				csr := 1
 				if str.count >= csr+1 then
 					-- check for timezone on the end
 					tz_ok := True

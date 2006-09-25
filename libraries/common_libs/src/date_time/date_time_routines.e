@@ -30,20 +30,9 @@ feature -- Definitions
 			Result.extend ("YYYY-??-??")	-- any date ok
 			Result.extend ("YYYY-??-XX")	-- day not allowed
 			Result.extend ("YYYY-XX-XX")	-- neither month nor day allowed
-		end
+		end		
 		
 	valid_time_constraint_patterns: ARRAYED_LIST [STRING] is
-			-- list of allowed time constraints
-		once
-			create Result.make(0)
-			Result.compare_objects
-			Result.extend ("THH:MM:SS")	-- full time required
-			Result.extend ("THH:??:XX")	-- seconds optional
-			Result.extend ("THH:??:??")	-- any time ok
-			Result.extend ("THH:MM:XX")	-- seconds not allowed
-		end
-		
-	obsolete_time_constraint_patterns: ARRAYED_LIST [STRING] is
 			-- FIXME: remove one day 
 		once
 			create Result.make(0)
@@ -65,18 +54,6 @@ feature -- Definitions
 			Result.extend ("YYYY-MM-DDTHH:??:XX")	-- seconds not allowed, minutes optional
 			Result.extend ("YYYY-MM-DDTHH:MM:XX")	-- seconds not allowed
 		end
-
-	obsolete_date_time_constraint_patterns: ARRAYED_LIST [STRING] is
-			-- list of allowed date/time constraints
-		once
-			create Result.make(0)
-			Result.compare_objects
-			Result.extend ("YYYY-MM-DD HH:MM:SS")	-- full date/time required
-			Result.extend ("YYYY-MM-DD HH:MM:??")	-- seconds optional
-			Result.extend ("YYYY-??-?? ??:??:??")	-- any date/time ok
-			Result.extend ("YYYY-MM-DD HH:??:XX")	-- seconds not allowed, minutes optional
-			Result.extend ("YYYY-MM-DD HH:MM:XX")	-- seconds not allowed
-		end
 		
 feature -- Status Report
 
@@ -90,7 +67,7 @@ feature -- Status Report
 		do
 			str := s.twin
 			str.to_upper
-			Result := valid_time_constraint_patterns.has(str) or obsolete_time_constraint_patterns.has(str)
+			Result := valid_time_constraint_patterns.has(str)
 		end
 		
 	valid_iso8601_date_constraint_pattern(s: STRING): BOOLEAN is
@@ -115,7 +92,7 @@ feature -- Status Report
 		do
 			str := s.twin
 			str.to_upper
-			Result := valid_date_time_constraint_patterns.has(str) or obsolete_date_time_constraint_patterns.has(str)
+			Result := valid_date_time_constraint_patterns.has(str)
 		end
 		
 	valid_iso8601_duration_constraint_pattern(s: STRING): BOOLEAN is

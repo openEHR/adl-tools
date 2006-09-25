@@ -76,18 +76,13 @@ feature -- Initialisation
 		end
 
 	make_from_pattern(a_pattern: STRING) is
-			-- create Result from an ISO8601-based pattern like "Thh:mm:??"
+			-- create Result from an ISO8601-based pattern like "hh:mm:??"
 		require
 			a_pattern_valid: a_pattern /= Void and then valid_iso8601_time_constraint_pattern(a_pattern)
 		do
-			create pattern.make(0)
-			if not a_pattern.has (Time_leader) then
-				pattern.append_character(Time_leader)
-			end
-			pattern.append(a_pattern)
+			pattern := a_pattern
 		ensure
-			-- FIXME: re-instate when patterns with no 'T' made invalid
-			-- pattern_set: pattern = a_pattern
+			pattern_set: pattern = a_pattern
 		end
 		
 feature -- Access

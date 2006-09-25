@@ -274,7 +274,7 @@ a[ct][0-9.]+ {
 				last_string_value := text
 		}
 
-----------/* V_ISO8601_TIME Thh:mm:ss[,sss][Z|+/-nnnn] */ -------------------------------------------------
+----------/* V_ISO8601_TIME hh:mm:ss[,sss][Z|+/-nnnn] */ -------------------------------------------------
 
 [0-2][0-9]:[0-6][0-9]:[0-6][0-9](,[0-9]+)?(Z|[+-][0-9]{4})? |
 [0-2][0-9]:[0-6][0-9](Z|[+-][0-9]{4})? {
@@ -319,14 +319,31 @@ P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[dD])?([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])? 
 
 ----------/* V_ISO8601_TIME_CONSTRAINT_PATTERN */ -------------------------------------------------
 
-T?[hH][hH]:[mM?X][mM?X]:[sS?X][sS?X]	{
+--
+-- remove the following pattern when all archetypes with leading 'T' on times are gone
+--
+T[hH][hH]:[mM?X][mM?X]:[sS?X][sS?X]	{
+				last_token := V_ISO8601_TIME_CONSTRAINT_PATTERN
+				last_string_value := text_substring(2, text_count)
+			}
+
+[hH][hH]:[mM?X][mM?X]:[sS?X][sS?X]	{
 				last_token := V_ISO8601_TIME_CONSTRAINT_PATTERN
 				last_string_value := text
 			}
 
 ----------/* V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN */ -------------------------------------------------
 
-[yY][yY][yY][yY]-[mM?][mM?]-[dD?X][dD?X][ T][hH?X][hH?X]:[mM?X][mM?X]:[sS?X][sS?X]	{
+--
+-- remove the following pattern when all archetypes with missing 'T' are gone
+--
+[yY][yY][yY][yY]-[mM?][mM?]-[dD?X][dD?X][ ][hH?X][hH?X]:[mM?X][mM?X]:[sS?X][sS?X]	{
+				last_token := V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN
+				last_string_value := text
+				last_string_value.put('T', last_string_value.index_of(' ', 1))
+			}
+
+[yY][yY][yY][yY]-[mM?][mM?]-[dD?X][dD?X]T[hH?X][hH?X]:[mM?X][mM?X]:[sS?X][sS?X]	{
 				last_token := V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN
 				last_string_value := text
 			}

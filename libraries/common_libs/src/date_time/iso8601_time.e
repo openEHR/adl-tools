@@ -215,7 +215,7 @@ feature -- Conversion
 feature -- Output
 
 	as_string: STRING is
-			-- express as ISO8601 format string "Thh:mm:ss[,ssss]"
+			-- express as ISO8601 format string "hh:mm:ss[,ssss]"
 		local
 			s: STRING
 		do
