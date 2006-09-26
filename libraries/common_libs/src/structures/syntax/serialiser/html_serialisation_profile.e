@@ -66,7 +66,7 @@ feature {ANY_SERIALISER} -- Access
 			Result.put("&gt;",			">")
 		end
 
-feature -- Factory
+feature {ANY_SERIALISER} -- Factory
 
 	apply_style(elem:STRING; a_style:INTEGER): STRING is
 			-- apply `a_style' to `elem', using attr 'class'
