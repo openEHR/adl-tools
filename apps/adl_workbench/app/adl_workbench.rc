@@ -7,5 +7,5 @@ Logo_icon    ICON    DISCARDABLE     "icons/adl_gui_vision2.ico"
 // It should be
 // CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "adl_workbench.exe.manifest"
 // but on older version of VC or older version of the Platform SDK they are not defined.
-1 24 "adl_workbench.exe.manifest"
+// 1 24 "adl_workbench.exe.manifest"
 
