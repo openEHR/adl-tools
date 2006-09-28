@@ -41,6 +41,11 @@ cluster
 			".svn"; 
 		end
 
+	all archetype_repository: "$OPENEHR\ref_impl_eiffel\components\archetype_repository\src\directory"
+		exclude
+		".svn";
+		end 
+
 	all version:		"$OPENEHR\ref_impl_eiffel\libraries\version"
 		exclude
 			".svn"; 

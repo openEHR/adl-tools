@@ -327,7 +327,7 @@ feature {NONE}-- Initialization
 			format_combo.set_background_color (editable_colour)
 			format_combo.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
 			format_combo.set_tooltip ("Select save format")
-			format_combo.set_minimum_width (45)
+			format_combo.set_minimum_width (min_combo_box_width)
 			archetype_id.set_background_color (editable_colour)
 			archetype_id.set_minimum_width (200)
 			archetype_id.disable_edit
@@ -342,7 +342,7 @@ feature {NONE}-- Initialization
 			language_combo.set_background_color (editable_colour)
 			language_combo.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
 			language_combo.set_tooltip ("Language")
-			language_combo.set_minimum_width (40)
+			language_combo.set_minimum_width (min_combo_box_width)
 			language_combo.set_minimum_height (23)
 			explorer_view_area.set_minimum_width (app_min_width)
 			explorer_view_area.set_minimum_height (main_hbox_min_height)

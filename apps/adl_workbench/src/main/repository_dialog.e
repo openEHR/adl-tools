@@ -34,7 +34,8 @@ feature {NONE} -- Initialization
 			-- can be added here.
 		do
 			set_default_cancel_button(repository_dialog_cancel_bn)
-			set_default_push_button (repository_dialog_cancel_bn)
+			set_default_push_button (repository_dialog_ok_bn)
+			show_actions.extend(agent repository_dialog_path_edit.set_focus)
 			populate_controls
 		end
 

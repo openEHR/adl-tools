@@ -58,10 +58,22 @@ feature -- Access
 			Result := 1024
 		end
 
+	padding_width: INTEGER is 
+			-- `Result' is INTEGER constant named padding_width.
+		once
+			Result := 3
+		end
+
 	source_notebook_min_width: INTEGER is 
 			-- `Result' is INTEGER constant named source_notebook_min_width.
 		once
 			Result := 600
+		end
+
+	arch_notebook_min_height: INTEGER is 
+			-- `Result' is INTEGER constant named arch_notebook_min_height.
+		once
+			Result := 500
 		end
 
 	min_entry_control_width: INTEGER is 
@@ -82,10 +94,10 @@ feature -- Access
 			Result := 100
 		end
 
-	arch_tree_min_height: INTEGER is 
-			-- `Result' is INTEGER constant named arch_tree_min_height.
+	max_arch_explorer_width: INTEGER is 
+			-- `Result' is INTEGER constant named max_arch_explorer_width.
 		once
-			Result := 60
+			Result := 180
 		end
 
 	desc_label_width: INTEGER is 
@@ -124,10 +136,10 @@ feature -- Access
 			Result := 4
 		end
 
-	main_hbox_min_height: INTEGER is 
-			-- `Result' is INTEGER constant named main_hbox_min_height.
+	dialog_border_width: INTEGER is 
+			-- `Result' is INTEGER constant named dialog_border_width.
 		once
-			Result := 560
+			Result := 10
 		end
 
 	app_initial_height: INTEGER is 
@@ -136,22 +148,10 @@ feature -- Access
 			Result := 768
 		end
 
-	app_max_width: INTEGER is 
-			-- `Result' is INTEGER constant named app_max_width.
+	min_combo_box_width: INTEGER is 
+			-- `Result' is INTEGER constant named min_combo_box_width.
 		once
-			Result := 2000
-		end
-
-	main_vbox_min_height: INTEGER is 
-			-- `Result' is INTEGER constant named main_vbox_min_height.
-		once
-			Result := 600
-		end
-
-	editable_colour: EV_COLOR is
-			-- `Result' is EV_COLOR constant named `editable_colour'.
-		once
-			Result := create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 255)
+			Result := 70
 		end
 
 	icons: STRING is
@@ -160,16 +160,22 @@ feature -- Access
 			Result := "C:\project\openehr\ref_impl_eiffel\apps\adl_workbench\app\icons"
 		end
 
-	dialog_border_width: INTEGER is 
-			-- `Result' is INTEGER constant named dialog_border_width.
+	editable_colour: EV_COLOR is
+			-- `Result' is EV_COLOR constant named `editable_colour'.
 		once
-			Result := 10
+			Result := create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 255)
 		end
 
-	padding_width: INTEGER is 
-			-- `Result' is INTEGER constant named padding_width.
+	main_hbox_min_height: INTEGER is 
+			-- `Result' is INTEGER constant named main_hbox_min_height.
 		once
-			Result := 3
+			Result := 560
+		end
+
+	main_vbox_min_height: INTEGER is 
+			-- `Result' is INTEGER constant named main_vbox_min_height.
+		once
+			Result := 600
 		end
 
 	status_area_min_height: INTEGER is 
@@ -184,10 +190,10 @@ feature -- Access
 			Result := 15
 		end
 
-	max_arch_explorer_width: INTEGER is 
-			-- `Result' is INTEGER constant named max_arch_explorer_width.
+	arch_tree_min_height: INTEGER is 
+			-- `Result' is INTEGER constant named arch_tree_min_height.
 		once
-			Result := 180
+			Result := 60
 		end
 
 	border_width: INTEGER is 
@@ -224,10 +230,10 @@ feature -- Access
 			Result := 500
 		end
 
-	arch_notebook_min_height: INTEGER is 
-			-- `Result' is INTEGER constant named arch_notebook_min_height.
+	app_max_width: INTEGER is 
+			-- `Result' is INTEGER constant named app_max_width.
 		once
-			Result := 500
+			Result := 2000
 		end
 
 

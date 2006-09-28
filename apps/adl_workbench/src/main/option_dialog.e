@@ -34,7 +34,8 @@ feature {NONE} -- Initialization
 			-- can be added here.
 		do
 			set_default_cancel_button (option_dialog_cancel_button)
-			set_default_push_button (option_dialog_cancel_button)
+			set_default_push_button (option_dialog_ok_button)
+			show_actions.extend(agent option_dialog_editor_command_edit.set_focus)
 			populate_controls
 		end
 
