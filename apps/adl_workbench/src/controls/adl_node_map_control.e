@@ -29,15 +29,13 @@ create
 
 feature -- Initialisation
 
-	make(a_main_window: MAIN_WINDOW; an_adl_context: ADL_ENGINE; parsed_archetype_tree: EV_TREE) is
+	make(a_main_window: MAIN_WINDOW) is
 		require
 			a_main_window /= Void
-			an_adl_context /= Void
-			parsed_archetype_tree /= Void
 		do
 			gui := a_main_window
-			adl_engine := an_adl_context
-			gui_tree := parsed_archetype_tree
+			adl_engine := adl_interface.adl_engine
+			gui_tree := gui.parsed_archetype_tree
 		end
 
 feature -- Status Report

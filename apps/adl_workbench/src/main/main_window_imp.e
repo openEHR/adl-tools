@@ -42,6 +42,9 @@ feature {NONE}-- Initialization
 			create save_adl_file_mi
 			create l_ev_menu_separator_2
 			create exit_tool_mi
+			create edit_menu
+			create copy_mi
+			create clipboard_mi
 			create repository_menu
 			create set_repository_mi
 			create options_menu
@@ -126,7 +129,13 @@ feature {NONE}-- Initialization
 			create tree_expand_one_bn
 			create tree_shrink_one_bn
 			create tree_technical_mode_bn
+			create parsed_archetype_path_view
 			create parsed_archetype_found_paths
+			create path_controls
+			create l_ev_frame_1
+			create path_view_check_list
+			create l_ev_frame_2
+			create path_filter_combo
 			create ontology_notebook
 			create ontology_term_defs
 			create ontology_constraint_defs
@@ -160,6 +169,9 @@ feature {NONE}-- Initialization
 			file_menu.extend (save_adl_file_mi)
 			file_menu.extend (l_ev_menu_separator_2)
 			file_menu.extend (exit_tool_mi)
+			menu.extend (edit_menu)
+			edit_menu.extend (copy_mi)
+			edit_menu.extend (clipboard_mi)
 			menu.extend (repository_menu)
 			repository_menu.extend (set_repository_mi)
 			menu.extend (options_menu)
@@ -244,7 +256,13 @@ feature {NONE}-- Initialization
 			tree_controls.extend (tree_expand_one_bn)
 			tree_controls.extend (tree_shrink_one_bn)
 			tree_controls.extend (tree_technical_mode_bn)
-			source_notebook.extend (parsed_archetype_found_paths)
+			source_notebook.extend (parsed_archetype_path_view)
+			parsed_archetype_path_view.extend (parsed_archetype_found_paths)
+			parsed_archetype_path_view.extend (path_controls)
+			path_controls.extend (l_ev_frame_1)
+			l_ev_frame_1.extend (path_view_check_list)
+			path_controls.extend (l_ev_frame_2)
+			l_ev_frame_2.extend (path_filter_combo)
 			info_view_area.extend (ontology_notebook)
 			ontology_notebook.extend (ontology_term_defs)
 			ontology_notebook.extend (ontology_constraint_defs)
@@ -274,6 +292,9 @@ feature {NONE}-- Initialization
 			edit_archetype_mi.set_text ("Edit")
 			save_adl_file_mi.set_text ("Save")
 			exit_tool_mi.set_text ("Exit")
+			edit_menu.set_text ("Edit")
+			copy_mi.set_text ("Copy")
+			clipboard_mi.set_text ("Clipboard ")
 			repository_menu.set_text ("Repository")
 			set_repository_mi.set_text ("Set Repository...")
 			options_menu.set_text ("Options")
@@ -528,11 +549,10 @@ feature {NONE}-- Initialization
 			info_view_area.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
 			info_view_area.set_minimum_width (0)
 			info_view_area.set_minimum_height (0)
-			source_notebook.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
 			source_notebook.set_minimum_width (source_notebook_min_width)
 			source_notebook.set_minimum_height (source_notebook_min_height)
-			source_notebook.set_item_text (parsed_archetype_tree_view, "Node map")
-			source_notebook.set_item_text (parsed_archetype_found_paths, "Path map")
+			source_notebook.set_item_text (parsed_archetype_tree_view, "Node Map")
+			source_notebook.set_item_text (parsed_archetype_path_view, "Path Analysis")
 			parsed_archetype_tree_view.set_minimum_width (source_notebook_min_width)
 			parsed_archetype_tree_view.set_minimum_height (arch_tree_min_height)
 			parsed_archetype_tree_view.disable_item_expand (tree_controls)
@@ -560,10 +580,21 @@ feature {NONE}-- Initialization
 			tree_technical_mode_bn.set_text ("Technical")
 			tree_technical_mode_bn.set_tooltip ("Toggle inclusion of technical details")
 			tree_technical_mode_bn.set_minimum_width (tree_control_panel_width)
+			parsed_archetype_path_view.disable_item_expand (path_controls)
 			parsed_archetype_found_paths.set_background_color (editable_colour)
-			parsed_archetype_found_paths.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
 			parsed_archetype_found_paths.set_minimum_width (0)
 			parsed_archetype_found_paths.set_minimum_height (0)
+			path_controls.set_padding_width (padding_width)
+			path_controls.set_border_width (border_width)
+			path_controls.disable_item_expand (l_ev_frame_1)
+			path_controls.disable_item_expand (l_ev_frame_2)
+			l_ev_frame_1.set_text ("Column View")
+			path_view_check_list.set_tooltip ("Choose view of columns")
+			path_view_check_list.set_minimum_width (100)
+			path_view_check_list.set_minimum_height (list_row_height)
+			l_ev_frame_2.set_text ("Row Filter")
+			path_filter_combo.set_tooltip ("Choose path row filter")
+			path_filter_combo.set_minimum_width (80)
 			ontology_notebook.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
 			ontology_notebook.set_minimum_width (0)
 			ontology_notebook.set_minimum_height (min_terms_height)
@@ -578,7 +609,6 @@ feature {NONE}-- Initialization
 			ontology_constraint_defs.set_minimum_width (0)
 			ontology_constraint_defs.set_minimum_height (0)
 			archetype_text_edit_area.set_background_color (editable_colour)
-			archetype_text_edit_area.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
 			create internal_font
 			internal_font.set_family (feature {EV_FONT_CONSTANTS}.Family_typewriter)
 			internal_font.set_weight (feature {EV_FONT_CONSTANTS}.Weight_regular)
@@ -641,6 +671,8 @@ feature {NONE}-- Initialization
 			edit_archetype_mi.select_actions.extend (agent edit_archetype)
 			save_adl_file_mi.select_actions.extend (agent save_adl_file)
 			exit_tool_mi.select_actions.extend (agent exit_app)
+			copy_mi.select_actions.extend (agent copy_path_to_clipboard)
+			clipboard_mi.select_actions.extend (agent show_clipboard)
 			set_repository_mi.select_actions.extend (agent set_repository)
 			options_mi.select_actions.extend (agent set_options)
 			icon_help_mi.select_actions.extend (agent display_icon_help)
@@ -659,9 +691,12 @@ feature {NONE}-- Initialization
 			tree_expand_one_bn.select_actions.extend (agent node_map_expand_tree_one_level)
 			tree_shrink_one_bn.select_actions.extend (agent node_map_shrink_tree_one_level)
 			tree_technical_mode_bn.select_actions.extend (agent node_map_tree_technical_mode)
+			path_view_check_list.check_actions.extend (agent path_column_select (?))
+			path_view_check_list.uncheck_actions.extend (agent path_column_unselect (?))
+			path_filter_combo.select_actions.extend (agent path_row_set_filter)
 			archetype_text_edit_area.pointer_button_press_actions.extend (agent move_cursor_to_pointer_location (?, ?, ?, ?, ?, ?, ?, ?))
 			archetype_text_edit_area.pointer_double_press_actions.extend (agent pointer_double_click_action (?, ?, ?, ?, ?, ?, ?, ?))
-			archetype_text_edit_area.key_press_string_actions.extend (agent process_keystroke (?))
+			archetype_text_edit_area.key_press_string_actions.extend (agent archetype_text_edit_process_keystroke (?))
 			arch_test_tree_toggle_expand_bn.select_actions.extend (agent archetype_test_tree_expand_toggle)
 			arch_test_toggle_check_all_bn.select_actions.extend (agent archetype_test_tree_check_all_toggle)
 			arch_test_refresh_bn.select_actions.extend (agent archetype_test_refresh)
@@ -676,15 +711,17 @@ feature {NONE}-- Initialization
 
 feature -- Access
 
-	format_combo, language_combo: EV_COMBO_BOX
-	l_ev_menu_separator_1, l_ev_menu_separator_2, l_ev_menu_separator_3: EV_MENU_SEPARATOR
-	archetype_id,
-	parent_archetype_id, arch_desc_status_text, arch_desc_resource_package_text, arch_test_processed_count: EV_TEXT_FIELD
+	format_combo, language_combo, path_filter_combo: EV_COMBO_BOX
+	l_ev_menu_separator_1, l_ev_menu_separator_2,
+	l_ev_menu_separator_3: EV_MENU_SEPARATOR
+	archetype_id, parent_archetype_id, arch_desc_status_text,
+	arch_desc_resource_package_text, arch_test_processed_count: EV_TEXT_FIELD
+	path_view_check_list: EV_CHECKABLE_LIST
 	archetype_test_tree_grid: EV_GRID
 	arch_desc_auth_orig_auth_mlist,
 	arch_desc_resource_orig_res_mlist, parsed_archetype_found_paths, ontology_term_defs,
 	ontology_constraint_defs: EV_MULTI_COLUMN_LIST
-	file_menu, repository_menu, options_menu, help_menu: EV_MENU
+	file_menu, edit_menu, repository_menu, options_menu, help_menu: EV_MENU
 	l_ev_horizontal_separator_1: EV_HORIZONTAL_SEPARATOR
 	open_button,
 	parse_button, edit_button, save_button, tree_expand_bn, tree_expand_one_bn, tree_shrink_one_bn,
@@ -704,22 +741,24 @@ feature -- Access
 	author_lang_term_hbox, arch_desc_status_hbox, arch_desc_auth_hbox, arch_desc_contrib_hbox,
 	l_ev_horizontal_box_1, arch_desc_details_hbox, l_ev_horizontal_box_2, l_ev_horizontal_box_3,
 	l_ev_horizontal_box_4, l_ev_horizontal_box_5, l_ev_horizontal_box_6, arch_desc_copyright_hbox,
-	parsed_archetype_tree_view, l_ev_horizontal_box_7, l_ev_horizontal_box_8: EV_HORIZONTAL_BOX
+	parsed_archetype_tree_view, parsed_archetype_path_view, l_ev_horizontal_box_7, l_ev_horizontal_box_8: EV_HORIZONTAL_BOX
 	viewer_vbox,
 	arch_desc_area_vbox, l_ev_vertical_box_1, lang_vbox, terminology_vbox, l_ev_vertical_box_2,
-	l_ev_vertical_box_3, l_ev_vertical_box_4, tree_controls, arch_statistics_vbox, l_ev_vertical_box_5: EV_VERTICAL_BOX
-	overwrite_adl_rb,
-	remove_unused_codes_rb: EV_CHECK_BUTTON
-	format_label, l_ev_label_1, language_label, arch_desc_status_label,
-	arch_desc_auth_orig_auth_label, arch_desc_auth_contrib_label, languages_label, terminologies_label,
-	arch_desc_purpose_label, arch_desc_use_label, arch_desc_misuse_label, arch_desc_keywords_label,
-	arch_desc_resource_package_label, arch_desc_resource_orig_res_label, arch_desc_copyright_label,
-	l_ev_label_2, l_ev_label_3: EV_LABEL
-	open_adl_file_mi, parse_mi, edit_archetype_mi, save_adl_file_mi,
-	exit_tool_mi, set_repository_mi, options_mi, icon_help_mi, news, online_mi, about_mi: EV_MENU_ITEM
+	l_ev_vertical_box_3, l_ev_vertical_box_4, tree_controls, path_controls, arch_statistics_vbox,
+	l_ev_vertical_box_5: EV_VERTICAL_BOX
+	overwrite_adl_rb, remove_unused_codes_rb: EV_CHECK_BUTTON
+	format_label, l_ev_label_1,
+	language_label, arch_desc_status_label, arch_desc_auth_orig_auth_label, arch_desc_auth_contrib_label,
+	languages_label, terminologies_label, arch_desc_purpose_label, arch_desc_use_label,
+	arch_desc_misuse_label, arch_desc_keywords_label, arch_desc_resource_package_label,
+	arch_desc_resource_orig_res_label, arch_desc_copyright_label, l_ev_label_2, l_ev_label_3: EV_LABEL
+	open_adl_file_mi,
+	parse_mi, edit_archetype_mi, save_adl_file_mi, exit_tool_mi, copy_mi, clipboard_mi,
+	set_repository_mi, options_mi, icon_help_mi, news, online_mi, about_mi: EV_MENU_ITEM
 	menu: EV_MENU_BAR
 	arch_desc_auth_frame,
-	lang_term_frame, arch_desc_details_frame, arch_desc_resource_frame: EV_FRAME
+	lang_term_frame, arch_desc_details_frame, arch_desc_resource_frame, l_ev_frame_1,
+	l_ev_frame_2: EV_FRAME
 
 feature {NONE} -- Implementation
 
@@ -758,6 +797,16 @@ feature {NONE} -- Implementation
 	
 	exit_app is
 			-- Called by `select_actions' of `exit_tool_mi'.
+		deferred
+		end
+	
+	copy_path_to_clipboard is
+			-- Called by `select_actions' of `copy_mi'.
+		deferred
+		end
+	
+	show_clipboard is
+			-- Called by `select_actions' of `clipboard_mi'.
 		deferred
 		end
 	
@@ -831,6 +880,21 @@ feature {NONE} -- Implementation
 		deferred
 		end
 	
+	path_column_select (a_list_item: EV_LIST_ITEM) is
+			-- Called by `check_actions' of `path_view_check_list'.
+		deferred
+		end
+	
+	path_column_unselect (a_list_item: EV_LIST_ITEM) is
+			-- Called by `uncheck_actions' of `path_view_check_list'.
+		deferred
+		end
+	
+	path_row_set_filter is
+			-- Called by `select_actions' of `path_filter_combo'.
+		deferred
+		end
+	
 	move_cursor_to_pointer_location (a_x, a_y, a_button: INTEGER; a_x_tilt, a_y_tilt, a_pressure: DOUBLE; a_screen_x, a_screen_y: INTEGER) is
 			-- Called by `pointer_button_press_actions' of `archetype_text_edit_area'.
 		deferred
@@ -841,7 +905,7 @@ feature {NONE} -- Implementation
 		deferred
 		end
 	
-	process_keystroke (a_keystring: STRING) is
+	archetype_text_edit_process_keystroke (a_keystring: STRING) is
 			-- Called by `key_press_string_actions' of `archetype_text_edit_area'.
 		deferred
 		end

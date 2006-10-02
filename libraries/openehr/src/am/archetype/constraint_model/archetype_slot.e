@@ -18,7 +18,7 @@ indexing
 class ARCHETYPE_SLOT
 
 inherit 
-	C_OBJECT
+	C_REFERENCE_OBJECT
 		redefine
 			representation, default_create, out
 		end

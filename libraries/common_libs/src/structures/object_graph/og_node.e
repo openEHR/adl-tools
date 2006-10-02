@@ -68,6 +68,12 @@ feature -- Access
 			end
 		end
 
+	child_count: INTEGER is
+			-- number of child nodes
+		do
+			Result := children.count
+		end
+		
 feature -- Status Report
 
 	has_children: BOOLEAN is

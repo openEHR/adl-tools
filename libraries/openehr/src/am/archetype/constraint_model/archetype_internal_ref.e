@@ -14,7 +14,7 @@ indexing
 class ARCHETYPE_INTERNAL_REF
 
 inherit
-	C_OBJECT
+	C_REFERENCE_OBJECT
 		redefine
 			representation, is_valid
 		end

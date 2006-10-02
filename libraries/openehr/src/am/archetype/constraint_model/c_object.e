@@ -94,7 +94,7 @@ feature -- Representation
 	representation: OG_OBJECT
 
 invariant
-	RM_type_name_valid: rm_type_name /= Void and then not rm_type_name.is_empty
+	rm_type_name_valid: rm_type_name /= Void and then not rm_type_name.is_empty
 	Occurrences_validity: occurrences /= Void and then 
 		(parent /= Void implies (not parent.is_multiple implies occurrences.upper <= 1))
 	

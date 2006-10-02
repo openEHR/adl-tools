@@ -151,7 +151,6 @@ feature -- Access
 						src_nodes.off
 					loop
 						src_node_path := src_nodes.item.representation.path
-						src_node_path.remove_last
 						src_node_path_str := src_node_path.as_string
 						from
 							tgt_paths.start	

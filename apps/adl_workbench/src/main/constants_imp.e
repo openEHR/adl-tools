@@ -58,22 +58,16 @@ feature -- Access
 			Result := 1024
 		end
 
-	padding_width: INTEGER is 
-			-- `Result' is INTEGER constant named padding_width.
-		once
-			Result := 3
-		end
-
 	source_notebook_min_width: INTEGER is 
 			-- `Result' is INTEGER constant named source_notebook_min_width.
 		once
 			Result := 600
 		end
 
-	arch_notebook_min_height: INTEGER is 
-			-- `Result' is INTEGER constant named arch_notebook_min_height.
+	border_width: INTEGER is 
+			-- `Result' is INTEGER constant named border_width.
 		once
-			Result := 500
+			Result := 4
 		end
 
 	min_entry_control_width: INTEGER is 
@@ -94,22 +88,22 @@ feature -- Access
 			Result := 100
 		end
 
+	arch_tree_min_height: INTEGER is 
+			-- `Result' is INTEGER constant named arch_tree_min_height.
+		once
+			Result := 60
+		end
+
 	max_arch_explorer_width: INTEGER is 
 			-- `Result' is INTEGER constant named max_arch_explorer_width.
 		once
 			Result := 180
 		end
 
-	desc_label_width: INTEGER is 
-			-- `Result' is INTEGER constant named desc_label_width.
+	padding_width: INTEGER is 
+			-- `Result' is INTEGER constant named padding_width.
 		once
-			Result := 100
-		end
-
-	source_notebook_min_height: INTEGER is 
-			-- `Result' is INTEGER constant named source_notebook_min_height.
-		once
-			Result := 200
+			Result := 3
 		end
 
 	min_text_height: INTEGER is 
@@ -118,10 +112,10 @@ feature -- Access
 			Result := 50
 		end
 
-	min_list_height: INTEGER is 
-			-- `Result' is INTEGER constant named min_list_height.
+	dialog_border_width: INTEGER is 
+			-- `Result' is INTEGER constant named dialog_border_width.
 		once
-			Result := 50
+			Result := 10
 		end
 
 	max_terms_height: INTEGER is 
@@ -130,16 +124,22 @@ feature -- Access
 			Result := 400
 		end
 
+	list_row_height: INTEGER is 
+			-- `Result' is INTEGER constant named list_row_height.
+		once
+			Result := 18
+		end
+
 	table_row_spacing: INTEGER is 
 			-- `Result' is INTEGER constant named table_row_spacing.
 		once
 			Result := 4
 		end
 
-	dialog_border_width: INTEGER is 
-			-- `Result' is INTEGER constant named dialog_border_width.
+	desc_label_width: INTEGER is 
+			-- `Result' is INTEGER constant named desc_label_width.
 		once
-			Result := 10
+			Result := 100
 		end
 
 	app_initial_height: INTEGER is 
@@ -154,10 +154,10 @@ feature -- Access
 			Result := 70
 		end
 
-	icons: STRING is
-			-- `Result' is DIRECTORY constant named `icons'.
+	main_vbox_min_height: INTEGER is 
+			-- `Result' is INTEGER constant named main_vbox_min_height.
 		once
-			Result := "C:\project\openehr\ref_impl_eiffel\apps\adl_workbench\app\icons"
+			Result := 600
 		end
 
 	editable_colour: EV_COLOR is
@@ -172,10 +172,16 @@ feature -- Access
 			Result := 560
 		end
 
-	main_vbox_min_height: INTEGER is 
-			-- `Result' is INTEGER constant named main_vbox_min_height.
+	app_min_width: INTEGER is 
+			-- `Result' is INTEGER constant named app_min_width.
 		once
-			Result := 600
+			Result := 500
+		end
+
+	icons: STRING is
+			-- `Result' is DIRECTORY constant named `icons'.
+		once
+			Result := "C:\project\openehr\ref_impl_eiffel\apps\adl_workbench\app\icons"
 		end
 
 	status_area_min_height: INTEGER is 
@@ -190,16 +196,16 @@ feature -- Access
 			Result := 15
 		end
 
-	arch_tree_min_height: INTEGER is 
-			-- `Result' is INTEGER constant named arch_tree_min_height.
+	source_notebook_min_height: INTEGER is 
+			-- `Result' is INTEGER constant named source_notebook_min_height.
 		once
-			Result := 60
+			Result := 200
 		end
 
-	border_width: INTEGER is 
-			-- `Result' is INTEGER constant named border_width.
+	arch_notebook_min_height: INTEGER is 
+			-- `Result' is INTEGER constant named arch_notebook_min_height.
 		once
-			Result := 4
+			Result := 500
 		end
 
 	adl_workbench_ico: EV_PIXMAP is
@@ -224,10 +230,10 @@ feature -- Access
 			Result := 100
 		end
 
-	app_min_width: INTEGER is 
-			-- `Result' is INTEGER constant named app_min_width.
+	min_list_height: INTEGER is 
+			-- `Result' is INTEGER constant named min_list_height.
 		once
-			Result := 500
+			Result := 50
 		end
 
 	app_max_width: INTEGER is 

@@ -194,6 +194,15 @@ feature -- Element Change
 			resource_config_file.set_resource_value(a_category, a_resource_name, a_value)			
 		end
 	
+	set_resource_value_list(a_category, a_resource_name: STRING; a_value: LIST[STRING]) is
+		require
+			Valid_category: a_category /= Void and then not a_category.is_empty
+			Valid_resource_name: a_resource_name /= Void and then not a_resource_name.is_empty
+			Valid_value: a_value /= Void
+		do
+			resource_config_file.set_resource_value_list(a_category, a_resource_name, a_value)			
+		end
+	
 feature -- Conversion
 
 	substitute_env_vars(s:STRING): STRING is

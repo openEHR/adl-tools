@@ -45,49 +45,6 @@ feature -- Initialisation
 feature -- Access
 
 	parent: OG_OBJECT_NODE
-		
-	Xall_paths: ARRAYED_LIST[OG_PATH] is
-			-- all paths below this point, including this node
-		local
-			child_paths: ARRAYED_LIST[OG_PATH]
-			obj_node: OG_OBJECT_NODE
-			child_node: OG_OBJECT
-			a_path: OG_PATH
-		do
-			create Result.make(0)
-			Result.compare_objects
-			
-			if has_children then
-				from 
-					children.start
-				until
-					children.off
-				loop
-					child_node := children.item_for_iteration
-			--		if child_node.is_addressable then
-						obj_node ?= child_node
-						if obj_node /= Void then
-							child_paths := obj_node.all_paths
-							from
-								child_paths.start
-							until
-								child_paths.off
-							loop
-								a_path := child_paths.item
-							--	a_path.items.put_front(path_id)
-								Result.extend(a_path)
-								child_paths.forth
-							end
-						else -- must be an object leaf node
-						--	create a_path.make_relative(child_node.path_id)		
-						--	a_path.items.put_front(path_id)
-							Result.extend(a_path)
-						end
-			--		end
-					children.forth
-				end
-			end
-		end
 
 feature -- Status Report
 

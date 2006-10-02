@@ -111,7 +111,7 @@ feature -- Status Report
 						is_feature_call = other.is_feature_call
 			end
 		end
-		
+
 feature -- Modification
 
 	set_object_id(an_object_id: STRING) is

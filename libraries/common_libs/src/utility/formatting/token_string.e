@@ -147,6 +147,27 @@ feature -- Status setting
 			delimiter = '%T'
 	    end
 
+feature -- Modification
+
+	append_token(s: STRING) is
+			-- append s adding a delimiter before if there is already content
+		require
+			s /= Void
+		do
+			if not str.is_empty then
+				str.append_character (delimiter)
+			end
+			str.append(s)
+		end
+		
+	append(s: STRING) is
+			-- append s
+		require
+			s /= Void
+		do
+			str.append(s)
+		end
+		
 feature -- Output
 
 	out: STRING is
@@ -167,8 +188,7 @@ feature -- Output
 				Result.extend(token_item)
 				token_forth
 			end
-		end
-		
+		end		
 		
 feature {NONE} -- Implementation
 

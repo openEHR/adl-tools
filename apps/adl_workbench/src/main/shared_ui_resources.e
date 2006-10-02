@@ -58,6 +58,18 @@ feature -- Definitions
 	Splash_window_display_time: INTEGER is 1500
 			-- number of millseconds to display splash window
 			
+	path_control_filter_names: ARRAY [STRING] is
+			-- names of row filters of path control
+		once
+			Result := <<"All", "Leaf">>
+		end
+		
+	path_control_column_names: ARRAY [STRING] is
+			-- names of columns of path view control
+		once
+			Result := <<"Physical", "Logical", "RM Type", "AOM Type">>
+		end
+
 feature -- Access
 
 	repository_path: STRING is
@@ -185,6 +197,18 @@ feature -- Access
 			if str.is_boolean then
 				Result := str.to_boolean
 			end
+		end
+		
+	path_filter_combo_selection: STRING is
+			-- setting of path control filter combo-box
+		do
+			Result := resource_value("default", "path_filter_combo_selection")
+		end
+
+	path_view_check_list_settings: ARRAYED_LIST[STRING] is
+			-- path view column settings
+		do
+			Result := resource_value_list("default", "path_view_check_list_settings")
 		end
 		
 	editor_command: STRING is
@@ -528,6 +552,19 @@ feature -- Modification
 			set_resource_value("default", "expand_node_tree", flag.out)
 		end
 		
+	set_path_filter_combo_selection(str: STRING) is
+			-- 
+		do
+			set_resource_value("default", "path_filter_combo_selection", str)
+		end
+
+	set_path_view_check_list_settings (strs: ARRAYED_LIST[STRING]) is
+			-- save path view column settings
+		do
+			set_resource_value_list("default", "path_view_check_list_settings", strs)
+			
+		end
+
 feature {NONE} -- Implementation
 
 	get_file(init_value: STRING; a_parent_window: EV_WINDOW): STRING is

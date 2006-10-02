@@ -22,7 +22,7 @@ indexing
 class C_COMPLEX_OBJECT
 
 inherit
-	C_OBJECT
+	C_DEFINED_OBJECT
 		redefine
 			default_create, representation, out, is_valid
 		end
@@ -132,6 +132,11 @@ feature -- Access
 			Result_exists: Result /= Void and then Result.object_comparison
 		end
 	
+	default_value: ANY is
+			-- 	generate a default value from this constraint object
+		do
+		end
+		
 feature -- Status Report
 
 	has_attribute(an_attr_name: STRING): BOOLEAN is
@@ -163,6 +168,11 @@ feature -- Status Report
 					end				
 				end			
 			end
+		end
+
+	valid_value (a_value: like default_value): BOOLEAN is 
+		do
+			-- FIXME: to be implemented
 		end
 
 feature -- Modification

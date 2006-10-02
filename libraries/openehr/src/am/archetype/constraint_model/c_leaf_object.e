@@ -1,59 +1,47 @@
 indexing
 	component:   "openEHR Archetype Project"
 	description: "[
-			 Abstract parent type of domain specific constraint types. This
-			 type guarantees that any descendant can be converted to a standard
-			 ADL object form, consisting of a network of C_COMPLEX_OBJECT and 
-			 C_ATTRIBUTE instances.
-			 ]"
-	keywords:    "test, ADL"
-	
+				 ADL leaf object nodes that have assumed value defined
+				 ]"
+	keywords:    "ADL"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-deferred class C_DOMAIN_TYPE
+deferred class C_LEAF_OBJECT
 
 inherit
-	C_LEAF_OBJECT
-		redefine
-			representation
-		end
-
-	DT_CONVERTIBLE
-		undefine
-			default_create
-		redefine
-			synchronise_to_tree
-		end
+	C_DEFINED_OBJECT
 
 feature -- Access
 
-	standard_equivalent: C_COMPLEX_OBJECT is
-			-- standard equivalent constraint form for this subtype
-		deferred
+	assumed_value: like default_value
+			-- value to be assumed if none sent in data
+
+feature -- Status Report
+	
+	has_assumed_value: BOOLEAN is
+			-- True if there is an assumed value
+		do
+			Result := assumed_value /= Void
 		end
 		
-feature -- Representation
+feature -- Modification
 
-	representation: OG_OBJECT_LEAF
-
-feature -- Synchronisation
-
-	synchronise_to_tree is
-			-- synchronise to parse tree representation
+	set_assumed_value(a_value: like assumed_value) is
+			-- set `assumed_value'
+		require
+			a_value /= Void and then valid_value(a_value)
 		do
-			precursor
-			dt_representation.show_type
+			assumed_value := a_value
+		ensure
+			assumed_value_set: assumed_value = a_value
 		end
-
-invariant
-	Assumed_value_valid: assumed_value /= Void implies valid_value(assumed_value)
 	
 end
 
@@ -72,10 +60,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is cadl_object_term.e.
+--| The Original Code is c_leaf_object.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2006
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

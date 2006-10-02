@@ -18,7 +18,7 @@ indexing
 class CONSTRAINT_REF
 
 inherit
-	C_OBJECT
+	C_REFERENCE_OBJECT
 		redefine
 			default_create, representation, is_valid
 		end

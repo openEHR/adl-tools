@@ -1,116 +1,41 @@
 indexing
 	component:   "openEHR Archetype Project"
 	description: "[
-				 Node of simple type in an ADL parse tree. Simple
-				 types include: STRING, INTEGER, REAL, CHARACTER,
-				 BOOLEAN. Occurrences set to the default of {1..1}
+				 ADL object nodes that are defined in line, rather than being
+				 defined as references to exterior resources.
 				 ]"
-	keywords:    "test, ADL"
+	keywords:    "ADL"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class C_PRIMITIVE_OBJECT
+deferred class C_DEFINED_OBJECT
 
 inherit
-	C_LEAF_OBJECT
-		redefine
-			representation, out, is_valid
-		end
+	C_OBJECT
 
-create
-	make
-
-feature -- Initialisation
-
-	make(an_item: C_PRIMITIVE) is
-		require
-			an_item /= Void
-		do
-			default_create
-			item := an_item
-			rm_type_name := an_item.generating_type
-
--- FIXME: Hack for EIFFEL lack of namespaces, which causes us to use class names like
--- OE_C_DATE instead of just C_DATE
-if rm_type_name.substring (1, ("OE_").count).is_equal("OE_") then
-	rm_type_name.remove_head (("OE_").count)
-end
-			rm_type_name.remove_head(2)
-			create representation.make_anonymous(Current)
-		end
-	
 feature -- Access
-
-	item: C_PRIMITIVE
-
+	
 	default_value: ANY is
 			-- 	generate a default value from this constraint object
-		do
-			Result := item.default_value
+		deferred
+		ensure
+			Result /= Void
 		end
 		
 feature -- Status Report
 
-	is_valid: BOOLEAN is
-			-- report on validity
-		do
-			if precursor then
-				if item = Void then
-					invalid_reason.append("simple type constraint not specified")
-				elseif occurrences = Void then
-					invalid_reason.append("occurrences must not be Void")
-				else
-					Result := True
-				end
-			end
-		end
-
 	valid_value (a_value: like default_value): BOOLEAN is 
-		do
-			Result := item.valid_value (a_value)
-		end
-
-feature -- Output
-
-	as_string: STRING is
-		do
-			Result := item.as_string
-		ensure
-			Result_exists: Result /= Void
-		end
-
-	out: STRING is
-		do
-			Result := as_string
-		end
-
-feature -- Representation
-
-	representation: OG_OBJECT_LEAF
-
-feature -- Serialisation
-
-	enter_block(serialiser: CONSTRAINT_MODEL_SERIALISER; depth: INTEGER) is
-			-- perform serialisation at start of block for this node
-		do
-			serialiser.start_c_primitive_object(Current, depth)
+		require
+			a_value /= Void
+		deferred
 		end
 		
-	exit_block(serialiser: CONSTRAINT_MODEL_SERIALISER; depth: INTEGER) is
-			-- perform serialisation at end of block for this node
-		do
-			serialiser.end_c_primitive_object(Current, depth)
-		end
-
-invariant
-	item_exists: any_allowed xor item /= Void
-	
 end
 
 
@@ -128,10 +53,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is cadl_object_simple.e.
+--| The Original Code is c_defined_object.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2006
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

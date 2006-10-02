@@ -53,6 +53,13 @@ inherit
 			copy, default_create
 		end
 
+	EV_KEY_CONSTANTS
+		export
+			{NONE} all
+		undefine
+			copy, default_create
+		end
+
 feature {NONE} -- Initialization
 
 	user_initialization is
@@ -64,26 +71,28 @@ feature {NONE} -- Initialization
 		do
 			initialise_gui_settings
 
-			if repository_path.is_empty then
-				set_repository_path(application_startup_directory)
-				need_to_set_repository := True
-			end
+			format_combo.set_strings(adl_interface.archetype_serialiser_formats)
+			format_combo.set_text (Archetype_file_extension)
 
 			if editor_command.is_empty then
 				set_editor_command(Default_editor_command)
 			end
 			
+			initialise_accelerators
+
+			if repository_path.is_empty then
+				set_repository_path(application_startup_directory)
+				need_to_set_repository := True
+			end
+
 			archetype_directory.populate (repository_path)			
 			archetype_view_tree_control.populate
-			archetype_test_tree_control.populate
-			
-			format_combo.set_strings(adl_interface.archetype_serialiser_formats)
-			format_combo.set_text (Archetype_file_extension)
+			archetype_test_tree_control.populate			
 			
 			adl_interface.set_current_directory(repository_path)
 			if current_work_directory = Void then
 				current_work_directory := adl_interface.working_directory
-			end			
+			end		
 		end
 
 	initialise_gui_settings is
@@ -127,9 +136,67 @@ feature {NONE} -- Initialization
 				total_view_area.set_split_position (total_view_area_split_position)
 			else
 				total_view_area.set_split_position (app_initial_height - parser_status_area.minimum_height)
-			end
+			end	
+							
+			initialise_path_control
 		end
 			
+	initialise_path_control is
+			-- create tree control repersenting archetype files found in repository_path
+		local
+			filter_combo_index: INTEGER			
+			strs: ARRAYED_LIST [STRING]
+		do
+			parsed_archetype_found_paths.enable_multiple_selection
+
+			path_filter_combo.set_strings (path_control_filter_names)
+			if not path_filter_combo_selection.is_empty then
+				from
+					filter_combo_index := 1
+				until
+					filter_combo_index > path_control_filter_names.count or 
+					path_control_filter_names.item(filter_combo_index).is_equal(path_filter_combo_selection)
+				loop
+					filter_combo_index := filter_combo_index + 1
+				end
+			else
+				filter_combo_index := 1
+			end
+			path_filter_combo.select_region (filter_combo_index, filter_combo_index)
+
+			path_view_check_list.set_strings (path_control_column_names)
+			path_view_check_list.set_minimum_height (path_control_column_names.count * List_row_height)
+		
+			strs := path_view_check_list_settings
+			strs.compare_objects
+			from
+				path_view_check_list.start
+			until
+				path_view_check_list.off
+			loop
+				if strs.has(path_view_check_list.item.text) then
+					path_view_check_list.check_item (path_view_check_list.item)
+				end
+				path_view_check_list.forth
+			end
+		end
+
+	initialise_accelerators is
+			-- initialise keybard accelerators for various controls
+		local
+			acc: EV_ACCELERATOR
+			key: EV_KEY
+			key_constants: EV_KEY_CONSTANTS
+		do
+			create key_constants
+			
+			-- make ^C (copy) accelerator
+			create key.make_with_code (key_constants.key_c)
+			create acc.make_with_key_combination (key, True, False, False)
+			acc.actions.extend(agent dispatch_ctrl_c_keystroke)
+			accelerators.extend (acc)
+		end
+		
 feature -- Access
 
 	need_to_set_repository: BOOLEAN
@@ -202,6 +269,9 @@ feature {NONE} -- Commands
 		
 	exit_app is
 			-- 
+		local
+			strs: ARRAYED_LIST [STRING]
+			ev_items: DYNAMIC_LIST[EV_LIST_ITEM]
 		do
 			set_total_view_area_split_position(total_view_area.split_position)
 			set_info_view_area_split_position(info_view_area.split_position)
@@ -213,8 +283,23 @@ feature {NONE} -- Commands
 			set_app_y_position(y_position)
 			set_app_maximised(is_maximized)
 			set_main_notebook_tab_pos(main_nb.selected_item_index)
-			save_resources;
-			((create {EV_ENVIRONMENT}).application).destroy
+			
+			set_path_filter_combo_selection(path_filter_combo.selected_text)
+
+			ev_items := path_view_check_list.checked_items
+			create strs.make(0)
+			from
+				ev_items.start
+			until
+				ev_items.off
+			loop
+				strs.extend(ev_items.item.text)
+				ev_items.forth
+			end
+			set_path_view_check_list_settings(strs)
+
+			save_resources
+			parent_app.destroy
 		end
 
 	select_language is
@@ -415,7 +500,7 @@ feature {NONE} -- Commands
 		do
 		end
 	
-	process_keystroke (a_keystring: STRING) is
+	archetype_text_edit_process_keystroke (a_keystring: STRING) is
 			-- Called by `key_press_string_actions' of `archetype_text_edit_area'.
 		do
 		end
@@ -446,6 +531,40 @@ feature {NONE} -- Commands
 			archetype_test_tree_control.populate
 		end
 		
+	show_clipboard is
+			-- show the current contents of the clipboard
+		local
+			ev_info_dlg: EV_INFORMATION_DIALOG
+		do			
+			create ev_info_dlg.make_with_text(parent_app.clipboard.text)
+			ev_info_dlg.set_title ("Clipboard Contents")
+			ev_info_dlg.show_modal_to_window (Current)			
+		end
+		
+	path_column_select (a_list_item: EV_LIST_ITEM) is
+			-- Called by `check_actions' of `path_view_check_list'.
+		do
+			adl_path_map_control.column_select(a_list_item)
+		end
+		
+	path_column_unselect (a_list_item: EV_LIST_ITEM) is
+			-- Called by `check_actions' of `path_view_check_list'.
+		do
+			adl_path_map_control.column_unselect(a_list_item)
+		end
+		
+	path_row_set_filter is
+			-- Called by `select_actions' of `path_filter_combo'.
+		do
+			adl_path_map_control.set_filter
+		end
+		
+	copy_path_to_clipboard is
+			-- Called by `select_actions' of `copy_mi'.
+		do
+			adl_path_map_control.copy_path_to_clipboard
+		end
+	
 feature -- Controls
 
 	ontology_controls: ADL_ONTOLOGY_CONTROLS is
@@ -460,7 +579,12 @@ feature -- Controls
 
 	node_map_control: ADL_NODE_MAP_CONTROL is
 		once
-			create Result.make(Current, adl_interface.adl_engine, parsed_archetype_tree)
+			create Result.make(Current)
+		end
+
+	adl_path_map_control: ADL_PATH_MAP_CONTROL is
+		once
+			create Result.make(Current)
 		end
 
 	archetype_view_tree_control: ADL_VIEW_ARCHETYPE_TREE_CONTROL is
@@ -555,7 +679,7 @@ feature {NONE} -- Implementation
 			-- populate content from visual controls
 		do
 			populate_user_controls
-			populate_found_paths
+			adl_path_map_control.populate
 			node_map_control.populate
 			ontology_controls.populate
 			description_controls.populate
@@ -564,7 +688,7 @@ feature {NONE} -- Implementation
 	populate_view_controls is
 			-- populate content from visual controls
 		do
-			populate_found_paths
+			adl_path_map_control.populate
 			node_map_control.repopulate
 			ontology_controls.populate
 			description_controls.populate
@@ -616,40 +740,14 @@ feature {NONE} -- Implementation
 			archetype_text_edit_area.set_text(s)
 		end
 	
-	populate_found_paths is
-			-- 
-		local
-			pl: EV_MULTI_COLUMN_LIST
-			list_row: EV_MULTI_COLUMN_LIST_ROW
-			p_paths, l_paths: ARRAYED_LIST[STRING]
-			i:INTEGER
+	dispatch_ctrl_c_keystroke is
+			-- dispathed routine for ctrl-C keystroke
 		do
-			pl := parsed_archetype_found_paths
-			pl.wipe_out
-			pl.set_column_titles(<<"Physical", "Logical">>)
-			p_paths := adl_interface.adl_engine.archetype.physical_paths
-			l_paths := adl_interface.adl_engine.archetype.logical_paths(language)
-			from
-				p_paths.start
-				l_paths.start
-			until
-				p_paths.off
-			loop
-				create list_row
-				list_row.extend(p_paths.item)
-				list_row.extend(l_paths.item)
-				pl.extend(list_row)
-				p_paths.forth
-				l_paths.forth
-			end
-			
-			from i := 1
-			until i > pl.column_count
-			loop pl.resize_column_to_content(i)
-				i := i + 1
+			if parsed_archetype_found_paths.has_focus then
+				adl_path_map_control.copy_path_to_clipboard
 			end
 		end
-
+		
 end
 
 

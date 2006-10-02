@@ -74,20 +74,20 @@ feature -- Access
 		end
 
 	resource_value_list(category, resource_name:STRING): ARRAYED_LIST[STRING] is
-                -- List of items specified in file setting
-                -- of the form of a comma-separated list.
+			-- List of items specified in file setting
+			-- of the form of a comma-separated list.
 		require
 			Valid_category: category /= Void and then not category.is_empty
-			Valid_resource_name: resource_name /= Void and then not resource_name .is_empty
+			Valid_resource_name: resource_name /= Void and then not resource_name.is_empty
 		local
-                token_str: TOKEN_STRING
-                str:STRING
+            token_str: TOKEN_STRING
+            str:STRING
 		do
 			create Result.make(0)
 			str := resource_value(category,resource_name)
                 
 			if str /= Void and then not str.is_empty then
-				create token_str.make(resource_value(category,resource_name))
+				create token_str.make(resource_value(category, resource_name))
 				from
 					token_str.token_start
 				until
@@ -110,7 +110,7 @@ feature -- Access
 				create Result.make(0)
 			end
 		ensure
-                Result_not_void: Result /= Void
+			Result_not_void: Result /= Void
 		end
 
 feature -- Modification
@@ -120,14 +120,43 @@ feature -- Modification
                 Valid_category: category_name /= Void and then not category_name.is_empty
                 Valid_resource_name: resource_name /= Void and then not resource_name.is_empty
            local
-                   resource_list: HASH_TABLE[STRING,STRING]
+				resource_list: HASH_TABLE[STRING,STRING]
            do
                 if resources.has(category_name) then
-					resource_list:= resources.item(category_name)
+					resource_list := resources.item(category_name)
 					resource_list.force(value, resource_name)
                 else
 					create resource_list.make(0)
 					resource_list.put(value, resource_name)
+					resources.put(resource_list, category_name)
+                end
+           end
+
+	set_resource_value_list(category_name: STRING; resource_name: STRING; values: LIST[STRING]) is
+           require
+                Valid_category: category_name /= Void and then not category_name.is_empty
+                Valid_resource_name: resource_name /= Void and then not resource_name.is_empty
+                Values_valid: values /= Void
+           local
+				resource_list: HASH_TABLE[STRING,STRING]
+				tstr: TOKEN_STRING
+           do
+           		create tstr.make("")
+	           	from
+	           		values.start
+	           	until
+	           		values.off
+	           	loop
+	           		tstr.append_token(values.item)
+	           		values.forth
+	           	end
+	           	
+                if resources.has(category_name) then
+					resource_list := resources.item(category_name)
+					resource_list.force(tstr.out, resource_name)
+                else
+					create resource_list.make(0)
+					resource_list.put(tstr.out, resource_name)
 					resources.put(resource_list, category_name)
                 end
            end
