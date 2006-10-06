@@ -26,7 +26,7 @@ feature -- Access
 	billboard_content: STRING is
 			-- text of the billboard in locale current language 
 		do
-			Result := filtered_billboard_content(<<Message_type_info, Message_type_error>>)
+			Result := filtered_billboard_content(<<Message_type_info, Message_type_warning, Message_type_error>>)
 		end
 
 	billboard_most_recent: STRING is
@@ -96,6 +96,20 @@ feature -- Modify
 			Error_posted: billboard_has_errors
 		end
 
+	post_warning(poster_object: ANY; poster_routine: STRING; id: STRING; args: ARRAY[STRING]) is
+			-- append to the  current contents of billboard a warning message
+			-- corresponding to id, with positional parameters replaced 
+			-- by contents of optional args
+		require
+			Poster_valid: poster_object /= Void and poster_routine /= Void and
+						  not poster_routine.is_empty
+		do
+			billboard.put_front(
+				create {MESSAGE_BILLBOARD_ITEM}.make(poster_object.generator, poster_routine, id, args, Message_type_warning))
+		ensure
+			Warning_posted: not billboard_empty
+		end
+		
 	post_info(poster_object: ANY; poster_routine: STRING; id: STRING; args: ARRAY[STRING]) is
 			-- append to the  current contents of billboard an info message
 			-- corresponding to id, with positional parameters replaced 

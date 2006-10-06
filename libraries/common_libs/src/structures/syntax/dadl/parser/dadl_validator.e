@@ -5115,6 +5115,8 @@ feature -- Initialization
 	execute(in_text:STRING; a_source_start_line: INTEGER) is
 		do
 			reset
+			recover
+
 			source_start_line := a_source_start_line
 
 			create indent.make(0)

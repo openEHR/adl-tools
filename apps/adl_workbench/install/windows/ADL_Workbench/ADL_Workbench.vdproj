@@ -123,6 +123,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_6E032F66E5984D50B82A5AF897444044"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_6E34CB3B150D4B1FAB3207DEDD4594DC"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -699,6 +705,26 @@
             "TargetName" = "8:pass.ico"
             "Tag" = "8:"
             "Folder" = "8:_EF4D492392CD41A68C993FE959AD3454"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6E032F66E5984D50B82A5AF897444044"
+            {
+            "SourcePath" = "8:..\\..\\..\\app\\news.txt"
+            "TargetName" = "8:news.txt"
+            "Tag" = "8:"
+            "Folder" = "8:_98BF1271FBC746FF90484D84A23B2AC4"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"

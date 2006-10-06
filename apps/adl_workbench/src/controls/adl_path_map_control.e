@@ -34,9 +34,6 @@ feature -- Initialisation
 			-- create tree control repersenting archetype files found in repository_path
 		require
 			a_main_window /= Void
-		local
-			filter_combo_index: INTEGER			
-			strs: ARRAYED_LIST [STRING]
 		do
 			gui := a_main_window
 			path_list := gui.parsed_archetype_found_paths

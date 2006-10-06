@@ -5,7 +5,7 @@ A major addition for batch testing has been made to the tool.
 
 General
 -------
-All split area positions are now remembered over sessions.
+Many GUI settings are now remembered over sessions.
 
 Archetype Explorer
 ------------------
@@ -20,6 +20,11 @@ Uses new icons:
 	- additional '+' means cardinality of > 1
 
 The textual presentation in the node view has been improved.
+
+Paths
+-----
+The path view now allows control over visible columns and row
+filtering, as well as ctrl-C for copy-to-clipboard of paths.
 
 Tester facility
 ---------------

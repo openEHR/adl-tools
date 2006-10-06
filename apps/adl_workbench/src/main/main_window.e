@@ -159,25 +159,33 @@ feature {NONE} -- Initialization
 				loop
 					filter_combo_index := filter_combo_index + 1
 				end
+				if filter_combo_index > path_control_filter_names.count then -- non-existent string in session file
+					filter_combo_index := 1
+				end
 			else
 				filter_combo_index := 1
 			end
-			path_filter_combo.select_region (filter_combo_index, filter_combo_index)
+			path_filter_combo.i_th (filter_combo_index).enable_select
 
 			path_view_check_list.set_strings (path_control_column_names)
 			path_view_check_list.set_minimum_height (path_control_column_names.count * List_row_height)
 		
 			strs := path_view_check_list_settings
-			strs.compare_objects
-			from
-				path_view_check_list.start
-			until
-				path_view_check_list.off
-			loop
-				if strs.has(path_view_check_list.item.text) then
-					path_view_check_list.check_item (path_view_check_list.item)
+			if not strs.is_empty then
+				strs.compare_objects
+				from
+					path_view_check_list.start
+				until
+					path_view_check_list.off
+				loop
+					if strs.has(path_view_check_list.item.text) then
+						path_view_check_list.check_item (path_view_check_list.item)
+					end
+					path_view_check_list.forth
 				end
-				path_view_check_list.forth
+			else -- default to physical paths
+				path_view_check_list.check_item (path_view_check_list.i_th(2))
+				path_view_check_list.check_item (path_view_check_list.i_th(3))
 			end
 		end
 
@@ -284,7 +292,7 @@ feature {NONE} -- Commands
 			set_app_maximised(is_maximized)
 			set_main_notebook_tab_pos(main_nb.selected_item_index)
 			
-			set_path_filter_combo_selection(path_filter_combo.selected_text)
+			set_path_filter_combo_selection(path_filter_combo.selected_item.text)
 
 			ev_items := path_view_check_list.checked_items
 			create strs.make(0)

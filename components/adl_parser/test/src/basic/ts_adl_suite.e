@@ -27,6 +27,7 @@ feature -- Access
 		once
 			create Result.make
 			Result.extend(create {TC_ARCHETYPE_CREATE}.make(Void))
+			Result.extend(create {TC_ARCHETYPE_SHOW_PATHS}.make(Void))
 
 			Result.extend(create {TC_ONTOLOGY_POPULATE}.make(Void))
 			Result.extend(create {TC_ONTOLOGY_MODIFY}.make(Void))
@@ -35,7 +36,7 @@ feature -- Access
 			Result.extend(create {TC_ONTOLOGY_REMOVE_TERM_BINDING}.make(Void))
 			Result.extend(create {TC_ONTOLOGY_ADD_CONSTRAINT_BINDING}.make(Void))
 			Result.extend(create {TC_ONTOLOGY_REMOVE_CONSTRAINT_BINDING}.make(Void))
-			Result.extend(create {TC_ONTOLOGY_SHOW_PATHS}.make(Void))
+			-- Result.extend(create {TC_ONTOLOGY_SHOW_PATHS}.make(Void))
 
 			Result.extend(create {TC_ARCHETYPE_ADD_NODES}.make(Void))
 			Result.extend(create {TC_ONTOLOGY_UNUSED_CODES}.make(Void))

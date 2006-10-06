@@ -1,46 +1,57 @@
 indexing
-	component:   "openEHR Reusable Libraries"
-	description: "[
-			     Enumeration of message types
-				 ]"
-	keywords:    "error status reporting"
+	component:   "openEHR Archetype Project"
+	description: "Test case for extracted archetype paths"
+	keywords:    "test, ADL, CADL"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2005 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-deferred class BILLBOARD_MESSAGE_TYPES
-
-feature -- Definitions
-
-	Message_type_info: INTEGER is 9001
-	Message_type_warning: INTEGER is 9002
-	Message_type_error: INTEGER is 9003
+class TC_ARCHETYPE_SHOW_PATHS
 	
-feature -- Access
+inherit
+	TEST_CASE
+		export
+			{NONE} all
+		end
 
-	Message_type_names: HASH_TABLE [STRING, INTEGER] is
-			-- names of message types
-		once
-			create Result.make(0)
-			Result.put("ERROR", Message_type_error)
-			Result.put("WARNING", Message_type_warning)
-			Result.put("INFO", Message_type_info)
+	SHARED_TEST_ENV
+		export
+			{NONE} all
 		end
 		
+create
+	make
 
-feature -- Status Report
+feature -- Initialisation
 
-	is_valid_message_type(i: INTEGER): BOOLEAN is
+	make(arg:ANY) is
+	    do
+	    end
+
+feature -- Access
+
+	title: STRING is "Test Archetype Show Paths"
+
+feature -- testing
+
+	execute is
+		local
+			a_code: STRING
+			a_term: ARCHETYPE_TERM
+			archetype: ARCHETYPE
 		do
-			Result := i >= Message_type_info and i <= Message_type_error
+			archetype := adl_interface.archetype
+			io_message.put_string ("------------------ definition paths -------------------%N")
+			io_message.put_string(print_list (archetype.physical_paths))
+			io_message.put_string ("------------------ definition paths -------------------%N")
 		end
-
+	
 end
 
 --|
@@ -57,7 +68,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is error_status.e.
+--| The Original Code is tc_archetype_create.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004
@@ -79,5 +90,3 @@ end
 --|
 --| ***** END LICENSE BLOCK *****
 --|
-
- 

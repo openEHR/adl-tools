@@ -70,6 +70,14 @@ feature -- Access
 	parent: C_COMPLEX_OBJECT
 	
 	children: ARRAYED_LIST [C_OBJECT]
+	
+	child_count: INTEGER is
+			-- number of children; 0 if any_allowed is True
+		do
+			if not any_allowed then
+				Result := children.count
+			end
+		end
 
 feature -- Status Report
 
@@ -104,17 +112,19 @@ feature -- Status Report
 				until
 					not Result or else children.off
 				loop
-					Result := (not is_multiple implies children.item.occurrences.upper <= 1)
-					if Result then
-						Result := children.item.is_valid
-						if Result then
-							children.forth
-						else
-							invalid_reason.append("(invalid child node) " + children.item.invalid_reason + "%N")
-						end
-					else
-						invalid_reason.append("occurrences on child node " + children.item.node_id.out + " must be singular for non-container attribute")		
+					-- check occurrences consistent with attribute cardinality
+					if Result and not is_multiple and children.item.occurrences.upper > 1 then
+						Result := False
+						invalid_reason.append("occurrences on child node " + children.item.node_id.out + 
+							" must be singular for non-container attribute")		
 					end
+					
+					if Result and not children.item.is_valid then
+						Result := False
+						invalid_reason.append("(invalid child node) " + children.item.invalid_reason + "%N")
+					end
+
+					children.forth
 				end
 			end
 		end

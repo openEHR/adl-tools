@@ -44,7 +44,7 @@ feature -- Access
 	occurrences: OE_INTERVAL[INTEGER]
 	
 	parent: C_ATTRIBUTE
-
+	
 feature -- Status Report
 
 	is_valid: BOOLEAN is

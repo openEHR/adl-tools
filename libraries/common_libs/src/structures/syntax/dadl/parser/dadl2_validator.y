@@ -30,7 +30,8 @@ inherit
 
 	DADL_SCANNER
 		rename
-			make as make_eiffel_scanner
+			make as make_scanner, 
+			reset as reset_scanner
 		end
 
 	KL_SHARED_EXCEPTIONS
@@ -1166,15 +1167,17 @@ uri_value: V_URI
 feature -- Initialization
 
 	make is
-			-- Create a new Eiffel parser.
+			-- Create a new parser.
 		do
-			make_eiffel_scanner
+			make_scanner
 			make_parser_skeleton
 		end
 
 	execute(in_text:STRING; a_source_start_line: INTEGER) is
 		do
-			reset
+			reset_scanner
+			recover
+
 			source_start_line := a_source_start_line
 
 			create indent.make(0)

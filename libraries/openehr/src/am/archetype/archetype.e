@@ -137,14 +137,14 @@ feature -- Access
 				-- ADDED Sam Heard 2004-05-19
 				-- Added full paths of internal references thus giving full set of actual paths
 				from
-					node_path_xref_table.start
+					use_node_path_xref_table.start
 				until
-					node_path_xref_table.off
+					use_node_path_xref_table.off
 				loop
 					-- Hash table with arrayed list of ARCHETYPE_INTERNAL_REFs and Key of target 
 					-- (ie the ref path of the internal reference)
-					src_nodes := node_path_xref_table.item_for_iteration
-					tgt_paths := definition.all_paths_at_path (node_path_xref_table.key_for_iteration)
+					src_nodes := use_node_path_xref_table.item_for_iteration
+					tgt_paths := definition.all_paths_at_path (use_node_path_xref_table.key_for_iteration)
 					from
 						src_nodes.start
 					until
@@ -162,7 +162,7 @@ feature -- Access
 						end
 						src_nodes.forth
 					end
-					node_path_xref_table.forth
+					use_node_path_xref_table.forth
 				end
 			end
 			Result := physical_paths_cache
@@ -307,6 +307,8 @@ feature -- Status Report
 				update_node_lists
 
 				check_definition
+				
+				check_unidentified_nodes
 			
 				-- currently we don't use the results of these functions - we just
 				-- check whether any errors were set. We want to see all the errors, 
@@ -703,14 +705,14 @@ feature {NONE} -- Implementation
 		do
 			create node_ids_xref_table.make(0)
 			create code_nodes_code_xref_table.make(0)
-			create node_path_xref_table.make(0)
+			create use_node_path_xref_table.make(0)
 			create constraint_nodes_code_xref_table.make(0)
 			
 			create cadl_iterator.make (definition.representation)
-			cadl_iterator.do_all (agent node_enter_action (?, ?), agent node_exit_action (?, ?))
+			cadl_iterator.do_all (agent update_node_lists_node_enter_action (?, ?), agent node_exit_action (?, ?))
 		end
 		
-	node_enter_action (a_node: OG_ITEM; indent_level: INTEGER) is
+	update_node_lists_node_enter_action (a_node: OG_ITEM; indent_level: INTEGER) is
 			-- FIXME: this should be re-implemented as functions in each C_OBJECT subtype,
 			-- same approach as enter_block/exit_block approach used in serialisation
 		require
@@ -769,10 +771,10 @@ feature {NONE} -- Implementation
 					else
 						a_i_r ?= a_node.content_item
 						if a_i_r /= Void then
-							if not node_path_xref_table.has(a_i_r.target_path) then
-								node_path_xref_table.put(create {ARRAYED_LIST[ARCHETYPE_INTERNAL_REF]}.make(0), a_i_r.target_path)
+							if not use_node_path_xref_table.has(a_i_r.target_path) then
+								use_node_path_xref_table.put(create {ARRAYED_LIST[ARCHETYPE_INTERNAL_REF]}.make(0), a_i_r.target_path)
 							end	
-							node_path_xref_table.item(a_i_r.target_path).extend(a_i_r)	
+							use_node_path_xref_table.item(a_i_r.target_path).extend(a_i_r)	
 						else
 							a_c_r ?= a_node.content_item
 							if a_c_r /= Void then
@@ -793,6 +795,63 @@ feature {NONE} -- Implementation
 		do
 		end
 
+	check_unidentified_nodes_node_enter_action (a_node: OG_ITEM; indent_level: INTEGER) is
+			-- FIXME: this should be re-implemented as functions in each C_OBJECT subtype,
+			-- same approach as enter_block/exit_block approach used in serialisation
+		require
+			node_exists: a_node /= void
+		local
+			a_c_c_o: C_COMPLEX_OBJECT
+			a_c_attr: C_ATTRIBUTE
+			a_c_d_o: C_DEFINED_OBJECT
+			a_c_l_o: C_LEAF_OBJECT
+			found: BOOLEAN
+		do
+			a_c_c_o ?= a_node.content_item
+			if a_c_c_o /= Void then
+				from
+					a_c_c_o.attributes.start
+				until
+					a_c_c_o.attributes.off
+				loop
+					a_c_attr := a_c_c_o.attributes.item
+
+					-- only check nodes that are either multiple or are single but have multiple alternate children					
+					if a_c_attr.is_multiple or else a_c_attr.child_count > 1 then
+						from
+							found := False
+							a_c_attr.children.start
+						until
+							a_c_attr.children.off or found
+						loop
+							a_c_d_o ?= a_c_attr.children.item
+							a_c_l_o ?= a_c_attr.children.item
+							if a_c_d_o /= Void and a_c_l_o = Void and not a_c_d_o.is_addressable then
+								warnings.append("child node of type " + a_c_attr.children.item.rm_type_name + " at path " + 
+									a_c_attr.path + " has no id.")
+								found := True
+							end					
+							a_c_attr.children.forth	
+						end
+					end
+					a_c_c_o.attributes.forth
+				end
+			else
+					
+			end
+		end
+
+	check_unidentified_nodes is
+			-- look for attributes that are either multiple or have multiple alternatives, whose
+			-- child objects are not identified, but only if the children are not C_PRIMITIVEs or 
+			-- C_C_Os whose values are C_PRMITIVEs. Record any such nodes as warnings
+		local
+			cadl_iterator: OG_ITERATOR
+		do			
+			create cadl_iterator.make (definition.representation)
+			cadl_iterator.do_all (agent check_unidentified_nodes_node_enter_action (?, ?), agent node_exit_action (?, ?))
+		end
+		
 	node_ids_xref_table: HASH_TABLE[ARRAYED_LIST[C_OBJECT], STRING]
 			-- table of {list<node>, code} for term codes which identify nodes in archetype
 			
@@ -803,8 +862,8 @@ feature {NONE} -- Implementation
 			-- table of {list<node>, code} for term codes which appear in archetype nodes as data,
 			-- e.g. in C_ORDINAL and C_CODED_TERM types
 			
-	node_path_xref_table: HASH_TABLE[ARRAYED_LIST[ARCHETYPE_INTERNAL_REF], STRING]
-			-- table of {list<node>, use_target_path} for use refs found in body
+	use_node_path_xref_table: HASH_TABLE[ARRAYED_LIST[ARCHETYPE_INTERNAL_REF], STRING]
+			-- table of {list<ARCHETYPE_INTERNAL_REF>, use_target_path} for use_node refs found in body
 	
 	found_id_node_codes: ARRAYED_LIST[STRING] is
 			-- term codes found as identifiers on definition nodes in archetype
@@ -856,12 +915,12 @@ feature {NONE} -- Implementation
 		do
 			create Result.make(0)
 			from
-				node_path_xref_table.start
+				use_node_path_xref_table.start
 			until
-				node_path_xref_table.off
+				use_node_path_xref_table.off
 			loop
-				Result.extend(node_path_xref_table.key_for_iteration)
-				node_path_xref_table.forth
+				Result.extend(use_node_path_xref_table.key_for_iteration)
+				use_node_path_xref_table.forth
 			end
 			Result.compare_objects
 		end

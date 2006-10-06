@@ -140,7 +140,7 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 [Qq][Uu][Ee][Rr][Yy]					 	last_token := SYM_QUERY_FUNC
 
 ----------/* URI */ -------------------------------------------------
-[a-z]+:\/\/[^> ]*	{
+[a-z]+:\/\/[^<>|\\{}^~"\[\] ]*	{
 	last_token := V_URI
 	last_string_value := text
 }

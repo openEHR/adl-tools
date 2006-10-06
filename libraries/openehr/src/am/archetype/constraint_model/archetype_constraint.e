@@ -22,6 +22,13 @@ feature -- Access
 	
 	parent: ARCHETYPE_CONSTRAINT
 	
+	path: STRING is
+			-- path to this object in the tree with respect to root
+		do
+			create Result.make(0)
+			Result := representation.path.as_string
+		end
+
 feature -- Status Report
 
 	any_allowed: BOOLEAN

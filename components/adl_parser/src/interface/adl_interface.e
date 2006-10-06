@@ -311,6 +311,7 @@ feature -- Commands
 		require
 			archetype_source_loaded
 		do
+			clear_billboard
 			if not exception_encountered then
 				parse_succeeded := False
 				adl_engine.parse
@@ -335,8 +336,9 @@ feature -- Commands
 					else
 						post_error(Current, "parse_archetype", "parse_archetype_e2", <<adl_engine.archetype_id.as_string, adl_engine.archetype.errors>>)
 					end
+
 					if adl_engine.archetype.has_warnings then
-						post_info(Current, "parse_archetype", "parse_archetype_i3", <<adl_engine.archetype.warnings>>)
+						post_warning(Current, "parse_archetype", "general", <<adl_engine.archetype.warnings>>)
 					end
 				end
 			else

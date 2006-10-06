@@ -59,6 +59,7 @@ feature -- Access
 			["report_exception"] = <"Software Exception $1 caught; stack:%N$2">
 			["unhandled_exception"] = <"Exception caught but not handled: $1">
 			["general_error"] = <"Error: $1">
+			["general"] = <"$1">
 			
 			-- ADL_INTERFACE
 			["create_new_archetype_1"] = <"CREATE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
@@ -72,7 +73,6 @@ feature -- Access
 			["serialise_archetype_e2"] = <"%NSERIALISE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
 			["parse_archetype_i1"] = <"Archetype $1 syntax VALIDATED">
 			["parse_archetype_i2"] = <"Archetype $1 semantics VALIDATED">
-			["parse_archetype_i3"] = <"$1">
 			["parse_archetype_e1"] = <"$1 (Parse failed)">
 			["parse_archetype_e2"] = <"Archetype $1 semantic validation FAILED; reasons:%N$2">
 			["parse_archetype_e3"] = <"PARSE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
