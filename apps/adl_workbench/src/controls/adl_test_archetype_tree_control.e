@@ -48,6 +48,14 @@ feature -- Definitions
 	First_data_row: INTEGER is 2
 			-- number of first row containing real information (top row contains root node)
 			
+	Test_passed: INTEGER is 101
+	
+	Test_failed: INTEGER is 102
+	
+	Test_not_applicable: INTEGER is 103
+	
+	Test_unknown: INTEGER is 104
+			
 feature -- Initialisation
 
 	make(a_main_window: MAIN_WINDOW) is
@@ -70,14 +78,15 @@ feature -- Access
 	has_selected_file: BOOLEAN
 			-- True if a file was selected
 			
-	tests: DS_HASH_TABLE [FUNCTION [ANY, TUPLE[STRING], BOOLEAN], STRING] is
+	tests: DS_HASH_TABLE [FUNCTION [ANY, TUPLE[STRING], INTEGER], STRING] is
 			-- table of test routines 
 		once
-			create Result.make(4)
+			create Result.make(5)
 			Result.put(agent test_parse, "Parse")
 			Result.put(agent test_save_html, "Save to HTML")
 			Result.put(agent test_save_adl, "Save to ADL")
 			Result.put(agent test_reparse, "Reparse")
+			Result.put(agent test_diff, "Diff")
 		end
 		
 	last_tested_archetypes_count: INTEGER
@@ -182,12 +191,12 @@ feature -- Commands
 		local
 			arch_item: ARCHETYPE_DIRECTORY_ARCHETYPE
 			row_csr, col_csr: INTEGER
-			test_passed: BOOLEAN
 			gr: EV_GRID_ROW
 			gli_col_2, gli: EV_GRID_LABEL_ITEM
 			res_label: STRING
 			checked: BOOLEAN_REF
 			item_is_checked: BOOLEAN
+			test_result: INTEGER
 		do
 			test_execution_underway := True
 			test_stop_requested := False
@@ -212,23 +221,29 @@ feature -- Commands
 					if item_is_checked then					
 						gr.ensure_visible
 						gui.parent_app.process_events
+						adl_interface.reset
 						from
 							tests.start
 							col_csr := First_test_col
-							test_passed := True
+							test_result := Test_unknown
 						until
-							tests.off or not test_passed
+							tests.off or test_result = Test_failed
 						loop
 							gr.set_item (col_csr, create {EV_GRID_LABEL_ITEM}.make_with_text("processing..."))
 							gui.parent_app.process_events
 						
 							create test_status.make(0)
 
-							test_passed := tests.item_for_iteration.item ([arch_item.full_path])
-							if test_passed then
-								res_label := "pass"
+							test_result := tests.item_for_iteration.item ([arch_item.full_path])
+							inspect test_result
+							when Test_passed then
+								res_label := "test_passed"
+							when Test_failed then
+								res_label := "test_failed"
+							when Test_not_applicable then
+								res_label := "test_not_applicable"
 							else
-								res_label := "fail"
+								
 							end
 							create gli.make_with_text("")
 							gli.set_pixmap(pixmaps.item(res_label))
@@ -314,17 +329,18 @@ feature -- Commands
 		
 feature -- Tests
 
-	test_parse (arch_file_path: STRING): BOOLEAN is
+	test_parse (arch_file_path: STRING): INTEGER is
 			-- parse archetype and return result
 		local
 			unused_at_codes, unused_ac_codes: ARRAYED_LIST[STRING]
 		do
+			Result := Test_failed
 			adl_interface.reset
 			adl_interface.open_adl_file(arch_file_path)
 			if adl_interface.archetype_source_loaded then
 				adl_interface.parse_archetype
 				if adl_interface.parse_succeeded then
-					Result := True
+					Result := Test_passed
 					if remove_unused_codes then
 						unused_at_codes := adl_interface.archetype.ontology_unused_term_codes
 						unused_ac_codes := adl_interface.archetype.ontology_unused_constraint_codes
@@ -347,28 +363,30 @@ feature -- Tests
 			end
 		end
 			
-	test_save_html (arch_file_path: STRING): BOOLEAN is
+	test_save_html (arch_file_path: STRING): INTEGER is
 			-- parse archetype and return result
 		local
 			html_fname: STRING
 		do
+			Result := Test_failed
 			if adl_interface.parse_succeeded then
 				html_fname := arch_file_path.twin
 				html_fname.replace_substring(".html", html_fname.count - Archetype_file_extension.count, html_fname.count)
 				adl_interface.save_archetype(html_fname, "html")
 				if adl_interface.save_succeeded then
-					Result := True
+					Result := Test_passed
 				else
 					test_status.append(adl_interface.status + "%N")
 				end
 			end
 		end
 			
-	test_save_adl (arch_file_path: STRING): BOOLEAN is
+	test_save_adl (arch_file_path: STRING): INTEGER is
 			-- parse archetype and return result
 		local
 			new_adl_file: STRING
 		do
+			Result := Test_failed
 			if adl_interface.parse_succeeded then
 				new_adl_file := arch_file_path.twin
 				if not overwrite then
@@ -376,35 +394,71 @@ feature -- Tests
 				end
 				adl_interface.save_archetype(new_adl_file, "adl")
 				if adl_interface.save_succeeded then
-					Result := True
+					Result := Test_passed
 				else
 					test_status.append(adl_interface.status + "%N")
 				end
+			else
+				Result := Test_not_applicable
 			end
 		end
 
-	test_reparse (arch_file_path: STRING): BOOLEAN is
+	test_reparse (arch_file_path: STRING): INTEGER is
 			-- parse archetype and return result
 		local
-			new_adl_file: STRING
+			new_adl_file_path: STRING
 		do
-			new_adl_file := arch_file_path.twin
+			Result := Test_failed
+			
+			new_adl_file_path := arch_file_path.twin
 			if not overwrite then
-				new_adl_file.append("x")
+				new_adl_file_path.append("x")
 			end
-			adl_interface.open_adl_file(new_adl_file)
+			adl_interface.open_adl_file(new_adl_file_path)
 			if adl_interface.archetype_source_loaded then
 				adl_interface.parse_archetype
 				if adl_interface.parse_succeeded then
-					Result := True
+					Result := Test_passed
 				else
 					test_status.append("Parse failed; reason: " + adl_interface.status + "%N")
 				end
 			else
-				test_status.append("Source file for archetype " + new_adl_file + " not found%N")
+				test_status.append("Source file for archetype " + new_adl_file_path + " not found%N")
 			end
 		end
 			
+	test_diff (arch_file_path: STRING): INTEGER is
+			-- parse archetype and return result
+		local
+			new_adl_file_path: STRING
+			orig_arch_source, new_arch_source: STRING
+		do
+			Result := Test_failed
+			if not overwrite then			
+				new_adl_file_path := arch_file_path.twin
+				new_adl_file_path.append("x")
+			
+				adl_interface.open_adl_file(arch_file_path)
+				orig_arch_source := adl_interface.adl_engine.source
+			
+				adl_interface.open_adl_file(new_adl_file_path)
+				new_arch_source := adl_interface.adl_engine.source
+
+				if orig_arch_source.count = new_arch_source.count then
+					if orig_arch_source.is_equal(new_arch_source) then
+						Result := Test_passed
+					else
+						test_status.append("Archetype source lengths same but texts differ%N")
+					end
+				else
+					test_status.append("Archetype source lengths differ: original =  " + orig_arch_source.count.out + 
+						"; new = " + new_arch_source.count.out + "%N")
+				end
+			else
+				Result := Test_not_applicable
+			end
+		end
+
 feature {NONE} -- Implementation
 
 	gui: MAIN_WINDOW

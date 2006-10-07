@@ -908,11 +908,17 @@ end
 				dadl_parser.execute(str_, source_start_line)
 				if not dadl_parser.syntax_error then
 					if dadl_parser.output.is_typed then
-						c_domain_type ?= dadl_parser.output.as_object(dynamic_type_from_string(dadl_parser.output.rm_type_name))
-						if c_domain_type /= Void then
-							last_token := V_C_DOMAIN_TYPE
+						tid := dynamic_type_from_string(dadl_parser.output.rm_type_name)
+						if tid >= 0 then
+							c_domain_type ?= dadl_parser.output.as_object(tid)
+							if c_domain_type /= Void then
+								last_token := V_C_DOMAIN_TYPE
+							else
+								dadl_parser_error := "Conversion of " + dadl_parser.output.rm_type_name + " failed"
+								last_token := ERR_C_DOMAIN_TYPE
+							end
 						else
-							dadl_parser_error := "Conversion of " + dadl_parser.output.rm_type_name + " failed"
+							dadl_parser_error := "Domain type " + dadl_parser.output.rm_type_name + " unknown or not visible in type system"
 							last_token := ERR_C_DOMAIN_TYPE
 						end
 					else
@@ -928,9 +934,9 @@ end
 				set_start_condition (INITIAL)
  			
 else
---|#line 413 "cadl_scanner.l"
+--|#line 419 "cadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 413")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 419")
 end
  -- match up to next '}' not preceded by a '>'
  				in_buffer.append_string (text)
@@ -942,18 +948,18 @@ else
 if yy_act <= 94 then
 if yy_act <= 92 then
 if yy_act = 91 then
---|#line 418 "cadl_scanner.l"
+--|#line 424 "cadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 418")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 424")
 end
 
 					last_token := V_TYPE_IDENTIFIER
 					last_string_value := text
 			
 else
---|#line 423 "cadl_scanner.l"
+--|#line 429 "cadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 423")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 429")
 end
 
 					last_token := V_FEATURE_CALL_IDENTIFIER
@@ -963,18 +969,18 @@ end
 end
 else
 if yy_act = 93 then
---|#line 429 "cadl_scanner.l"
+--|#line 435 "cadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 429")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 435")
 end
 
 					last_token := V_ATTRIBUTE_IDENTIFIER
 					last_string_value := text
 			
 else
---|#line 435 "cadl_scanner.l"
+--|#line 441 "cadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 435")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 441")
 end
 
 				last_token := SYM_START_CBLOCK
@@ -986,17 +992,17 @@ end
 else
 if yy_act <= 96 then
 if yy_act = 95 then
---|#line 441 "cadl_scanner.l"
+--|#line 447 "cadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 441")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 447")
 end
  		-- match any segments with quoted slashes
 				in_buffer.append_string (text)
 			
 else
---|#line 445 "cadl_scanner.l"
+--|#line 451 "cadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 445")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 451")
 end
  		-- match final segment
 				in_buffer.append_string (text)
@@ -1010,18 +1016,18 @@ end
 end
 else
 if yy_act = 97 then
---|#line 455 "cadl_scanner.l"
+--|#line 461 "cadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 455")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 461")
 end
 	-- regexp formed using '^' delimiters
  				last_token := V_REGEXP
  				last_string_value := text
 			
 else
---|#line 462 "cadl_scanner.l"
+--|#line 468 "cadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 462")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 468")
 end
 
 					last_token := V_INTEGER
@@ -1038,9 +1044,9 @@ if yy_act <= 106 then
 if yy_act <= 102 then
 if yy_act <= 100 then
 if yy_act = 99 then
---|#line 467 "cadl_scanner.l"
+--|#line 473 "cadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 467")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 473")
 end
 
 					last_token := V_INTEGER
@@ -1056,9 +1062,9 @@ end
 			
 else
 	yy_end := yy_end - 1
---|#line 482 "cadl_scanner.l"
+--|#line 488 "cadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 482")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 488")
 end
 
 						last_token := V_REAL
@@ -1067,18 +1073,18 @@ end
 end
 else
 if yy_act = 101 then
---|#line 483 "cadl_scanner.l"
+--|#line 489 "cadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 483")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 489")
 end
 
 						last_token := V_REAL
 						last_real_value := text.to_real
 					
 else
---|#line 484 "cadl_scanner.l"
+--|#line 490 "cadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 484")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 490")
 end
 
 						last_token := V_REAL
@@ -1090,9 +1096,9 @@ else
 if yy_act <= 104 then
 if yy_act = 103 then
 	yy_end := yy_end - 1
---|#line 488 "cadl_scanner.l"
+--|#line 494 "cadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 488")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 494")
 end
 
 						last_token := V_REAL
@@ -1109,9 +1115,9 @@ end
 						in_buffer.wipe_out
 					
 else
---|#line 489 "cadl_scanner.l"
+--|#line 495 "cadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 489")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 495")
 end
 
 						last_token := V_REAL
@@ -1130,9 +1136,9 @@ end
 end
 else
 if yy_act = 105 then
---|#line 490 "cadl_scanner.l"
+--|#line 496 "cadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 490")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 496")
 end
 
 						last_token := V_REAL
@@ -1149,9 +1155,9 @@ end
 						in_buffer.wipe_out
 					
 else
---|#line 510 "cadl_scanner.l"
+--|#line 516 "cadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 510")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 516")
 end
 
 				last_token := V_STRING
@@ -1164,9 +1170,9 @@ else
 if yy_act <= 110 then
 if yy_act <= 108 then
 if yy_act = 107 then
---|#line 514 "cadl_scanner.l"
+--|#line 520 "cadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 514")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 520")
 end
 				-- beginning of a string
 				if text_count > 1 then
@@ -1175,23 +1181,23 @@ end
 				set_start_condition (IN_STR)
 			
 else
---|#line 520 "cadl_scanner.l"
+--|#line 526 "cadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 520")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 526")
 end
 in_buffer.append_character ('\')
 end
 else
 if yy_act = 109 then
---|#line 521 "cadl_scanner.l"
+--|#line 527 "cadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 521")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 527")
 end
 in_buffer.append_character ('"')
 else
---|#line 522 "cadl_scanner.l"
+--|#line 528 "cadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 522")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 528")
 end
 	-- match ISO special character pattern &char_name;
 				-- look up the code in an ISO table
@@ -1212,9 +1218,9 @@ end
 else
 if yy_act <= 112 then
 if yy_act = 111 then
---|#line 536 "cadl_scanner.l"
+--|#line 542 "cadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 536")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 542")
 end
 	-- match W3C XML special character pattern &#xHHHH;
 				-- look up the code in an W3C table
@@ -1231,26 +1237,26 @@ end
 				in_buffer.append_string (text)
 			
 else
---|#line 550 "cadl_scanner.l"
+--|#line 556 "cadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 550")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 556")
 end
 in_buffer.append_string (text)
 end
 else
 if yy_act = 113 then
---|#line 552 "cadl_scanner.l"
+--|#line 558 "cadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 552")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 558")
 end
 
 				in_lineno := in_lineno + 1	-- match LF in line
 				in_buffer.append_string (text)
 			
 else
---|#line 557 "cadl_scanner.l"
+--|#line 563 "cadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 557")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 563")
 end
 						-- match final end of string
 				last_token := V_STRING
@@ -1272,32 +1278,32 @@ if yy_act <= 122 then
 if yy_act <= 118 then
 if yy_act <= 116 then
 if yy_act = 115 then
---|#line 568 "cadl_scanner.l"
+--|#line 574 "cadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 568")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 574")
 end
 	-- Catch-all rules (no backing up)
 				last_token := ERR_STRING
 				set_start_condition (INITIAL)
 			
 else
---|#line 576 "cadl_scanner.l"
+--|#line 582 "cadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 576")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 582")
 end
 last_token := V_CHARACTER; last_character_value := text_item (2)
 end
 else
 if yy_act = 117 then
---|#line 577 "cadl_scanner.l"
+--|#line 583 "cadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 577")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 583")
 end
 last_token := V_CHARACTER; last_character_value := '%N'
 else
---|#line 578 "cadl_scanner.l"
+--|#line 584 "cadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 578")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 584")
 end
 last_token := V_CHARACTER; last_character_value := '%R'
 end
@@ -1305,29 +1311,29 @@ end
 else
 if yy_act <= 120 then
 if yy_act = 119 then
---|#line 579 "cadl_scanner.l"
+--|#line 585 "cadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 579")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 585")
 end
 last_token := V_CHARACTER; last_character_value := '%T'
 else
---|#line 580 "cadl_scanner.l"
+--|#line 586 "cadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 580")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 586")
 end
 last_token := V_CHARACTER; last_character_value := '%F'
 end
 else
 if yy_act = 121 then
---|#line 581 "cadl_scanner.l"
+--|#line 587 "cadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 581")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 587")
 end
 last_token := V_CHARACTER; last_character_value := '%''
 else
---|#line 582 "cadl_scanner.l"
+--|#line 588 "cadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 582")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 588")
 end
 last_token := V_CHARACTER; last_character_value := '%H'
 end
@@ -1337,15 +1343,15 @@ else
 if yy_act <= 126 then
 if yy_act <= 124 then
 if yy_act = 123 then
---|#line 583 "cadl_scanner.l"
+--|#line 589 "cadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 583")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 589")
 end
 last_token := V_CHARACTER; last_character_value := '"'
 else
---|#line 584 "cadl_scanner.l"
+--|#line 590 "cadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 584")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 590")
 end
 
 				code_ := text_substring (4, text_count - 1).to_integer
@@ -1355,9 +1361,9 @@ end
 end
 else
 if yy_act = 125 then
---|#line 589 "cadl_scanner.l"
+--|#line 595 "cadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 589")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 595")
 end
 	-- match ISO special character pattern &char_name;
 				-- look up the code in an ISO table
@@ -1370,9 +1376,9 @@ end
 				-- end
 			
 else
---|#line 599 "cadl_scanner.l"
+--|#line 605 "cadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 599")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 605")
 end
 	-- match W3C XML special character pattern &#xHHHH;
 				-- look up the code in an W3C table
@@ -1389,23 +1395,23 @@ end
 else
 if yy_act <= 128 then
 if yy_act = 127 then
---|#line 609 "cadl_scanner.l"
+--|#line 615 "cadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 609")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 615")
 end
 last_token := ERR_CHARACTER	-- Catch-all rules (no backing up)
 else
---|#line 610 "cadl_scanner.l"
+--|#line 616 "cadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 610")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 616")
 end
 last_token := ERR_CHARACTER	-- Catch-all rules (no backing up)
 end
 else
 if yy_act = 129 then
---|#line 614 "cadl_scanner.l"
+--|#line 620 "cadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 614")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 620")
 end
 ;
 else
@@ -3029,7 +3035,7 @@ feature -- Access
 	source_start_line: INTEGER
 			-- offset of source in other document, else 0
 
-feature {NONE} -- Constants
+feature {NONE} -- Implementation
 
 	Init_buffer_size: INTEGER is 256
 				-- Initial size for `in_buffer'
@@ -3048,6 +3054,8 @@ feature {NONE} -- Constants
 			-- index of term code in 'assumed' position when parsing a  TERM_CONSTRAINT
 
 	c_domain_type: C_DOMAIN_TYPE
+
+	tid: INTEGER
 
 invariant
 

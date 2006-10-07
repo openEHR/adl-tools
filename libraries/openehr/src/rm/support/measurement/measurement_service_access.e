@@ -17,6 +17,29 @@ class MEASUREMENT_SERVICE
 
 feature -- Access
 
+	units_for_property(a_property: CODE_PHRASE): ARRAYED_LIST[STRING] is
+			-- return list of units for this property
+		require
+			a_property /= Void and then has_property(a_property)
+		do
+			-- FIXME: to be implemented
+			create Result.make(0)
+			Result.extend ("m")
+		end
+
+feature -- Status Report
+
+	has_property(a_property: CODE_PHRASE): BOOLEAN is
+			-- True if a_property known in property list
+		require
+			a_property /= Void
+		do
+			-- FIXME: to be implemented
+			Result := True
+		end
+		
+feature -- Comparison
+
 	is_valid_units_string (units: STRING): BOOLEAN is
 			-- True if the units string ‘units’ is a valid string according to the UCUM specification [8].
 		require

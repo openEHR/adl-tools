@@ -3,7 +3,11 @@ indexing
 	description: "[
 			     Subtype of C_OBJECT representing an archetype %"slot%", i.e.
 			     a specification of what archetypes can come at a chaining
-			     point in the archetype.
+			     point in the archetype. If the includes list is non-empty,
+			     only archetypes matching the list items are allowed; if the
+			     excludes list is non-empty, matching archetypes are not allowed.
+			     If both lists are empty, any archetype of the rm_type is
+			     allowed.
 			 ]"
 	keywords:    "archetype, ADL"
 	author:      "Thomas Beale"
@@ -68,6 +72,13 @@ feature -- Access
 			-- excluded archetypes
 				
 feature -- Status Report
+
+	any_allowed: BOOLEAN is
+			-- True if any value allowed
+			-- i.e. no terminology_id or code_list
+		do
+			Result := not (has_includes or has_excludes)
+		end
 
 	has_includes: BOOLEAN is
 			-- true if there are invariants
@@ -155,7 +166,6 @@ feature -- Serialisation
 invariant
 	includes_valid: includes /= Void
 	excludes_valid: excludes /= Void
-	-- validity: any_allowed xor (not includes.is_empty or excludes.is_empty)
 
 end
 

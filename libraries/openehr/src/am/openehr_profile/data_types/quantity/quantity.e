@@ -14,16 +14,28 @@ indexing
 
 class QUANTITY
 
+inherit
+	ANY
+		redefine
+			default_create
+		end
+
 create
-	make
+	make, default_create
 
 feature -- Definitions
 
-	Separator: CHARACTER is '|'
-			-- separates each value from its code-phrase
+	Default_units: STRING is "m"
+			-- metres
 
 feature -- Initialisation
 
+	default_create is
+			-- create a reasonable default object
+		do
+			units := Default_units.twin
+		end
+		
 	make(a_magnitude: REAL; a_units: STRING) is
 			-- set magnitude and units
 		require

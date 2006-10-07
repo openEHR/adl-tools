@@ -32,7 +32,7 @@ inherit
 			synchronise_to_tree
 		end
 
-feature -- Access
+feature -- Conversion
 
 	standard_equivalent: C_COMPLEX_OBJECT is
 			-- standard equivalent constraint form for this subtype
@@ -51,9 +51,6 @@ feature -- Synchronisation
 			precursor
 			dt_representation.show_type
 		end
-
-invariant
-	Assumed_value_valid: assumed_value /= Void implies valid_value(assumed_value)
 	
 end
 

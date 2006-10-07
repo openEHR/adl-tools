@@ -43,6 +43,9 @@ feature -- Modification
 			assumed_value_set: assumed_value = a_value
 		end
 	
+invariant
+	Assumed_value_valid: assumed_value /= Void implies valid_value(assumed_value)
+
 end
 
 

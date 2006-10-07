@@ -36,10 +36,7 @@ feature -- Initialisation
 			-- 
 		do
 			precursor
-			rm_type_name := (create {CODE_PHRASE}.make("UNKNOWN::unknown")).generator			
-			create code_list.make(0)
-			code_list.compare_objects
-			any_allowed := True
+			rm_type_name := (create {CODE_PHRASE}.default_create).generator			
 			create representation.make_anonymous(Current)
 		ensure then
 			Any_allowed: any_allowed
@@ -49,6 +46,8 @@ feature -- Initialisation
 			-- 
 		do
 			default_create
+		ensure then
+			Any_allowed: any_allowed
 		end
 		
 	make_from_terminology_id(a_terminology_id: STRING) is
@@ -57,13 +56,15 @@ feature -- Initialisation
 			default_create
 			create terminology_id.make(a_terminology_id)
 		ensure
-			Any_allowed: any_allowed
+			Not_any_allowed: not any_allowed
 			Terminology_id_set: terminology_id.value.is_equal(a_terminology_id)
 		end
 		
 	make_from_pattern(a_pattern: STRING) is
 			-- make from pattern of form "terminology_id::code, code, ..."
 			-- Pattern "terminology_id::" is legal
+		require
+			a_pattern /= Void and then not a_pattern.is_empty
 		local
 			pos1, pos2, sep_pos: INTEGER
 			code_str: STRING
@@ -105,7 +106,7 @@ feature -- Initialisation
 					a_code := code_str.substring(pos1, pos2)
 					a_code.left_adjust
 					a_code.right_adjust
-					set_assumed_value(a_code)
+					set_assumed_value(create {CODE_PHRASE}.make_from_string(terminology_id.value + separator + a_code))
 					pos1 := pos2+2
 				end
 					
@@ -121,6 +122,8 @@ feature -- Initialisation
 					end
 				end
 			end
+		ensure
+			not any_allowed
 		end
 		
 feature -- Access
@@ -130,47 +133,62 @@ feature -- Access
 			-- this terminology is allowed
 	
 	code_list: ARRAYED_LIST[STRING]
-			-- list of codes in terminology. Empty list means "any allowed"
+			-- list of codes in terminology designated by terminology_id
 			
 	code_count: INTEGER is
 			-- number of codes in code_list
 		do
-			Result := code_list.count
+			if code_list /= Void then
+				Result := code_list.count
+			end
 		end
 
-	standard_equivalent: C_COMPLEX_OBJECT is
+	default_value: CODE_PHRASE is
+			-- generate a default value from this constraint object of the form
+			-- "terminology_id::code_string"
 		do
-			-- FIXME: to be implemented
-		end
-	
-	default_value: STRING is
-			-- 	generate a default value from this constraint object
-		do
-			if not code_list.is_empty then
-				Result := code_list.first			
-			else
-				-- FIXME: this code is unlikely to be correct; but there is no general way to guess a 
-				-- code from this constraint if only terminology_id is set
-				Result := "unknown"
+			if assumed_value /= Void then
+				Result := assumed_value
+			elseif any_allowed then
+				create Result.default_create
+			else -- must have a terminology_id	
+				if code_list /= Void then
+					create Result.make_from_string (terminology_id.value + separator + code_list.first)
+				else
+					create Result.make_from_string (terminology_id.value + separator)
+				end
 			end
 		end
 		
 feature -- Status Report
 
+	any_allowed: BOOLEAN is
+			-- True if any value allowed
+			-- i.e. no terminology_id or code_list
+		do
+			Result := terminology_id = Void and code_list = Void
+		end
+
 	is_local: BOOLEAN is
 			-- True if this terminology id = "local"
+		require
+			not any_allowed
 		do
 			Result := terminology_id.is_local
 		end
 
-	valid_value (a_value: like default_value): BOOLEAN is 
+	valid_value (a_value: like default_value): BOOLEAN is
+			-- check a value of the form "terminology_id::code_string"
 		do
 			if any_allowed then
 				Result := True
-			elseif not code_list.is_empty then
-				Result := code_list.has(a_value)
 			else
-				Result := True -- no guarantee that this terminology really has this code of course
+				if terminology_id /= Void then
+					Result := a_value.terminology_id.value.is_equal(terminology_id.value)
+					if code_list /= Void then
+						Result := Result and code_list.has(a_value.code_string)
+					end
+				end
 			end
 		end
 		
@@ -179,7 +197,7 @@ feature -- Status Report
 		require
 			Code_valid: a_code /= Void and then not a_code.is_empty
 		do
-			Result := code_list.has(a_code)
+			Result := code_list /= Void and code_list.has(a_code)
 		end
 		
 feature -- Modification
@@ -187,10 +205,14 @@ feature -- Modification
 	add_code(a_code: STRING) is
 			-- 	add a term to the list
 		require
+			Not_any_allowed: not any_allowed
 			Code_valid: a_code /= Void 
 		do
+			if code_list = Void then
+				create code_list.make(0)
+				code_list.compare_objects
+			end
 			code_list.extend(a_code)
-			any_allowed := False
 		ensure
 			Code_added: code_list.has(a_code)
 			Not_any_allowed: not any_allowed
@@ -202,25 +224,36 @@ feature -- Conversion
 			-- 
 		do
 			create Result.make (0)
-			Result.append("[" + terminology_id.value + separator)
-			from
-				code_list.start
-			until
-				code_list.off
-			loop
-				if not code_list.isfirst then
-					Result.append (", ")
+			if any_allowed then
+				Result.append("*")
+			else
+				Result.append("[" + terminology_id.value + separator)
+				if code_list /= Void then
+					from
+						code_list.start
+					until
+						code_list.off
+					loop
+						if not code_list.isfirst then
+							Result.append (", ")
+						end
+						Result.append (code_list.item)
+						code_list.forth
+					end
 				end
-				Result.append (code_list.item)
-				code_list.forth
-			end
 			
-			if assumed_value /= Void then
-				Result.append("; " + assumed_value)
+				if assumed_value /= Void then
+					Result.append("; " + assumed_value.code_string)
+				end
+				Result.append ("]")
 			end
-			Result.append ("]")
 		end
 
+	standard_equivalent: C_COMPLEX_OBJECT is
+		do
+			-- FIXME: to be implemented
+		end
+	
 feature -- Serialisation
 
 	enter_block(serialiser: CONSTRAINT_MODEL_SERIALISER; depth: INTEGER) is
@@ -249,8 +282,8 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 		end
 
 invariant
-	List_validity: terminology_id /= Void and code_list /= Void
-	Any_allowed_validity: not code_list.is_empty xor any_allowed
+	List_validity: code_list /= Void implies (not code_list.is_empty and terminology_id /= Void)
+	Any_allowed_validity: (terminology_id /= Void or code_list /= Void) xor any_allowed
 	
 end
 

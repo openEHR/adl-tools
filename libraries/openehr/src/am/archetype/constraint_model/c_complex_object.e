@@ -139,6 +139,13 @@ feature -- Access
 		
 feature -- Status Report
 
+	any_allowed: BOOLEAN is
+			-- True if any value allowed ('*' received in parsed input)
+			-- i.e. no attributes
+		do
+			Result := attributes.is_empty
+		end
+
 	has_attribute(an_attr_name: STRING): BOOLEAN is
 		require
 			an_attr_name_valid: an_attr_name /= Void and then not an_attr_name.is_empty
@@ -227,7 +234,8 @@ feature {NONE} -- Implementation
 			-- child parse nodes
 				
 invariant
-	attributes_valid: any_allowed xor (attributes /= Void)
+	attributes_valid: attributes /= Void
+	Any_allowed_validity: any_allowed xor not attributes.is_empty
 	
 end
 

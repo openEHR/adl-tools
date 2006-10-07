@@ -241,20 +241,24 @@ feature {NONE} -- Implementation
 
 			elseif a_type.is_equal("C_CODED_TERM") then
 				a_object_term ?= an_og_node.content_item
-				s.append(a_object_term.terminology_id.value)
-				a_ti := attach_node(s, pixmaps.item("C_CODED_TERM"), an_og_node)			
-				from
-					a_object_term.code_list.start
-				until
-					a_object_term.code_list.off						
-				loop
-					assumed_flag := a_object_term.assumed_value /= Void and then 
-						a_object_term.assumed_value.is_equal(a_object_term.code_list.item)
-					create a_ti_sub.make_with_text(object_term_item_string(a_object_term.code_list.item, assumed_flag))
-					a_ti_sub.set_data(a_object_term.code_list.item) -- type STRING
-					a_ti_sub.set_pixmap(pixmaps.item("TERM"))
-					a_ti.extend(a_ti_sub)
-					a_object_term.code_list.forth						
+				if not a_object_term.any_allowed then
+					s.append(a_object_term.terminology_id.value)
+				end
+				a_ti := attach_node(s, pixmaps.item("C_CODED_TERM"), an_og_node)
+				if a_object_term.code_count > 0 then
+					from
+						a_object_term.code_list.start
+					until
+						a_object_term.code_list.off						
+					loop
+						assumed_flag := a_object_term.assumed_value /= Void and then 
+							a_object_term.assumed_value.code_string.is_equal(a_object_term.code_list.item)
+						create a_ti_sub.make_with_text(object_term_item_string(a_object_term.code_list.item, assumed_flag))
+						a_ti_sub.set_data(a_object_term.code_list.item) -- type STRING
+						a_ti_sub.set_pixmap(pixmaps.item("TERM"))
+						a_ti.extend(a_ti_sub)
+						a_object_term.code_list.forth						
+					end
 				end
 				
 			elseif a_type.is_equal("C_ORDINAL") then
@@ -283,18 +287,20 @@ feature {NONE} -- Implementation
 				if a_object_quantity.property /= Void then
 					s.append(" (" + a_object_quantity.property.as_string + ")")
 				end
-				a_ti := attach_node(s, pixmaps.item("C_QUANTITY"), an_og_node)			
-				from
-					a_object_quantity.list.start
-				until
-					a_object_quantity.list.off						
-				loop
-					create a_ti_sub.make_with_text(object_c_quantity_item_string(a_object_quantity.list.item))
-					a_ti_sub.set_data(a_object_quantity.list.item)
-					a_ti_sub.set_pixmap(pixmaps.item("C_QUANTITY_ITEM"))
-					a_ti.extend(a_ti_sub)
-					a_object_quantity.list.forth						
-				end
+				a_ti := attach_node(s, pixmaps.item("C_QUANTITY"), an_og_node)
+				if a_object_quantity.list /= Void then
+					from
+						a_object_quantity.list.start
+					until
+						a_object_quantity.list.off						
+					loop
+						create a_ti_sub.make_with_text(object_c_quantity_item_string(a_object_quantity.list.item))
+						a_ti_sub.set_data(a_object_quantity.list.item)
+						a_ti_sub.set_pixmap(pixmaps.item("C_QUANTITY_ITEM"))
+						a_ti.extend(a_ti_sub)
+						a_object_quantity.list.forth						
+					end
+				end	
 				
 				if a_object_quantity.assumed_value /= Void then
 					create a_ti_sub.make_with_text(object_quantity_string(a_object_quantity.assumed_value, True))
@@ -426,7 +432,7 @@ feature {NONE} -- Implementation
 							a_object_term ?= parent.data
 							if a_object_term /= Void then
 								assumed_flag := a_object_term.assumed_value /= Void and then 
-									a_object_term.assumed_value.is_equal(s)
+									a_object_term.assumed_value.code_string.is_equal(s)
 								a_ti.set_text(object_term_item_string(s, assumed_flag))						
 							end
 						end

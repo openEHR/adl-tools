@@ -32,7 +32,7 @@ feature -- Initialisation
 			-- 
 		do
 			precursor
-			rm_type_name := (create {CODE_PHRASE}.make("UNKNOWN::unknown")).generator			
+			rm_type_name := (create {CODE_PHRASE}.default_create).generator			
 		end
 		
 	make(a_code: STRING) is
@@ -90,7 +90,6 @@ feature -- Serialisation
 		end
 
 invariant
-	Consistency: not any_allowed
 	Target_valid: target /= Void
 	
 end

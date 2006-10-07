@@ -372,8 +372,9 @@ feature -- Access
 			Result.put("archetype.ico", 								"archetype")
 			Result.put("archetype_specialised.ico", 					"archetype_specialised")
 
-			Result.put("pass.ico", 										"pass")
-			Result.put("fail.ico", 										"fail")
+			Result.put("pass.ico", 										"test_passed")
+			Result.put("fail.ico", 										"test_failed")
+			Result.put("not_applicable.ico", 							"test_not_applicable")
 
 			Result.put("go.ico", 										"go")
 			Result.put("stop.ico", 										"stop")

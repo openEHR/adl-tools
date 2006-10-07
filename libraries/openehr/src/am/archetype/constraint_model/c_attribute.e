@@ -74,12 +74,16 @@ feature -- Access
 	child_count: INTEGER is
 			-- number of children; 0 if any_allowed is True
 		do
-			if not any_allowed then
-				Result := children.count
-			end
+			Result := children.count
 		end
 
 feature -- Status Report
+
+	any_allowed: BOOLEAN is
+			-- True if any value allowed ('*' received in parsed input) - i.e. no childred
+		do
+			Result := children.is_empty
+		end
 
 	is_relationship: BOOLEAN is
 			-- (in the UML sense) - True if attribute target type is not a primitive data type
@@ -188,7 +192,8 @@ feature -- Serialisation
 invariant
 	Rm_attribute_name_valid: rm_attribute_name /= Void and then not rm_attribute_name.is_empty
 	Existence_set: existence /= Void
-	Children_validity: any_allowed xor children /= Void
+	Children_validity: children /= Void
+	Any_allowed_validity: any_allowed xor not children.is_empty
 	
 end
 

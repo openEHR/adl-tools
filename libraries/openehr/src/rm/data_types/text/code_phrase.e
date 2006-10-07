@@ -62,8 +62,9 @@ feature -- Initialization
 		end
 
 	make, make_from_string(a_key: STRING) is
-			-- make from a string of the form terminology_id::code_string
-			-- e.g. ICD10(1998)::M10
+			-- make from a string of the form terminology_id::code_string, e.g. ICD10(1998)::M10
+			-- the form terminology_id:: is also allowable, in which case the default_code_string will
+			-- be used
 		require
 			Key_valid: a_key /= Void and then not a_key.is_empty
 		local
@@ -71,7 +72,11 @@ feature -- Initialization
 		do
 			sep_pos := a_key.substring_index(separator, 1)
 			create terminology_id.make(a_key.substring(1, sep_pos-1))
-			code_string := a_key.substring(sep_pos+separator.count, a_key.count)
+			if a_key.count > sep_pos + 1 then
+				code_string := a_key.substring(sep_pos+separator.count, a_key.count)
+			else
+				code_string := default_code_string.twin
+			end
 		ensure
 			Terminology_id_set: terminology_id /= Void
 			Code_string_set: code_string /= Void

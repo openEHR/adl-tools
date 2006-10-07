@@ -755,7 +755,7 @@ feature {NONE} -- Implementation
 				else
 					a_c_ct ?= a_node.content_item
 					if a_c_ct /= Void then
-						if a_c_ct.is_local then
+						if not a_c_ct.any_allowed and then (a_c_ct.is_local and a_c_ct.code_count > 0) then
 							from
 								a_c_ct.code_list.start
 							until
@@ -801,40 +801,49 @@ feature {NONE} -- Implementation
 		require
 			node_exists: a_node /= void
 		local
-			a_c_c_o: C_COMPLEX_OBJECT
-			a_c_attr: C_ATTRIBUTE
-			a_c_d_o: C_DEFINED_OBJECT
-			a_c_l_o: C_LEAF_OBJECT
+			a_c_c_o, a_c_c_o_2: C_COMPLEX_OBJECT
+			a_c_attr, a_c_attr2: C_ATTRIBUTE
 			found: BOOLEAN
 		do
-			a_c_c_o ?= a_node.content_item
-			if a_c_c_o /= Void then
-				from
-					a_c_c_o.attributes.start
-				until
-					a_c_c_o.attributes.off
-				loop
-					a_c_attr := a_c_c_o.attributes.item
+			a_c_attr ?= a_node.content_item
 
-					-- only check nodes that are either multiple or are single but have multiple alternate children					
-					if a_c_attr.is_multiple or else a_c_attr.child_count > 1 then
+			-- only check nodes that are either multiple or are single but have multiple alternate children					
+			if a_c_attr /= Void and (a_c_attr.is_multiple or else a_c_attr.child_count > 1) then
+				from
+					a_c_attr.children.start
+				until
+					a_c_attr.children.off
+				loop
+					a_c_c_o ?= a_c_attr.children.item
+
+					if a_c_c_o /= Void and not a_c_c_o.is_addressable then
+						-- see if it has children other than C_LEAF_OBJECTs
 						from
 							found := False
-							a_c_attr.children.start
+							a_c_c_o.attributes.start
 						until
-							a_c_attr.children.off or found
+							a_c_c_o.attributes.off or found
 						loop
-							a_c_d_o ?= a_c_attr.children.item
-							a_c_l_o ?= a_c_attr.children.item
-							if a_c_d_o /= Void and a_c_l_o = Void and not a_c_d_o.is_addressable then
-								warnings.append("child node of type " + a_c_attr.children.item.rm_type_name + " at path " + 
-									a_c_attr.path + " has no id.")
-								found := True
-							end					
-							a_c_attr.children.forth	
+							a_c_attr2 := a_c_c_o.attributes.item
+							
+							from
+								a_c_attr2.children.start
+							until
+								a_c_attr2.children.off or found
+							loop
+								a_c_c_o_2 ?= a_c_attr2.children.item
+								if a_c_c_o_2 /= Void then
+									warnings.append("child node of type " + a_c_c_o.rm_type_name + " at path " + 
+										a_c_attr.path + " has no id.%N")
+									found := True
+								end
+								a_c_attr2.children.forth
+							end
+							
+							a_c_c_o.attributes.forth
 						end
 					end
-					a_c_c_o.attributes.forth
+					a_c_attr.children.forth
 				end
 			else
 					

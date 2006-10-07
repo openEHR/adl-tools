@@ -30,6 +30,11 @@ feature -- Access
 		
 feature -- Status Report
 
+	any_allowed: BOOLEAN is
+			-- True if any value allowed ('*' received in parsed input)
+		deferred
+		end
+
 	valid_value (a_value: like default_value): BOOLEAN is 
 		require
 			a_value /= Void

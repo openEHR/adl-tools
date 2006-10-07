@@ -390,11 +390,17 @@ P[yY]?[mM]?[Ww]?[dD]? {
 				dadl_parser.execute(str_, source_start_line)
 				if not dadl_parser.syntax_error then
 					if dadl_parser.output.is_typed then
-						c_domain_type ?= dadl_parser.output.as_object(dynamic_type_from_string(dadl_parser.output.rm_type_name))
-						if c_domain_type /= Void then
-							last_token := V_C_DOMAIN_TYPE
+						tid := dynamic_type_from_string(dadl_parser.output.rm_type_name)
+						if tid >= 0 then
+							c_domain_type ?= dadl_parser.output.as_object(tid)
+							if c_domain_type /= Void then
+								last_token := V_C_DOMAIN_TYPE
+							else
+								dadl_parser_error := "Conversion of " + dadl_parser.output.rm_type_name + " failed"
+								last_token := ERR_C_DOMAIN_TYPE
+							end
 						else
-							dadl_parser_error := "Conversion of " + dadl_parser.output.rm_type_name + " failed"
+							dadl_parser_error := "Domain type " + dadl_parser.output.rm_type_name + " unknown or not visible in type system"
 							last_token := ERR_C_DOMAIN_TYPE
 						end
 					else
@@ -657,7 +663,7 @@ feature -- Access
 	source_start_line: INTEGER
 			-- offset of source in other document, else 0
 
-feature {NONE} -- Constants
+feature {NONE} -- Implementation
 
 	Init_buffer_size: INTEGER is 256
 				-- Initial size for `in_buffer'
@@ -676,6 +682,8 @@ feature {NONE} -- Constants
 			-- index of term code in 'assumed' position when parsing a  TERM_CONSTRAINT
 
 	c_domain_type: C_DOMAIN_TYPE
+
+	tid: INTEGER
 
 invariant
 

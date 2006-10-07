@@ -257,7 +257,7 @@ feature -- Modification
 				last_result.remove_tail(format_item(FMT_NEWLINE).count)	-- remove last newline due to OBJECT_REL_NODE	
 				last_result.append(apply_style(clean(a_node.as_string), STYLE_TERM_REF))
 				create last_object_simple_buffer.make(0)
-				if a_node.is_local and a_node.code_count = 1 then
+				if not a_node.any_allowed and then (a_node.is_local and a_node.code_count = 1) then
 					last_object_simple_buffer.append(format_item(FMT_INDENT))
 					
 					adl_term := ontology.term_definition(language, a_node.code_list.first)
@@ -296,7 +296,7 @@ feature -- Modification
 				end	
 				
 				if a_node.assumed_value /= Void then
-					last_result.append(create_indent(depth) + apply_style(clean(a_node.assumed_value), 
+					last_result.append(create_indent(depth) + apply_style(clean(a_node.assumed_value.code_string), 
 						STYLE_TERM_REF))
 					last_result.append(apply_style("]", STYLE_TERM_REF))
 					last_result.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) + 

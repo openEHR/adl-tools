@@ -82,9 +82,6 @@ feature -- Serialisation
 		do
 			serialiser.end_archetype_internal_ref(Current, depth)
 		end
-
-invariant
-	Consistency: not any_allowed
 	
 end
 

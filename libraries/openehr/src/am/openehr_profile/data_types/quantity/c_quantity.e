@@ -27,6 +27,13 @@ inherit
 			default_create
 		end
 		
+	EXTERNAL_ENVIRONMENT_ACCESS
+		export
+			{ANY} has_property
+		undefine
+			default_create
+		end
+		
 create
 	make, make_dt
 
@@ -38,34 +45,34 @@ feature -- Initialisation
 			precursor {C_DOMAIN_TYPE}
 			rm_type_name := generator
 			rm_type_name.remove_head(2) -- remove "C_"
-			create list.make(0)
 			create representation.make_anonymous(Current)
+		ensure then
+			Any_allowed: any_allowed
 		end
 		
 	make is
 		do
 			default_create
+		ensure
+			Any_allowed: any_allowed
 		end
 
 	make_dt is
 			-- make used by DT_OBJECT_CONVERTER
 		do
 			make
+		ensure then
+			Any_allowed: any_allowed
 		end		
 		
 feature -- Access
 
 	property: CODE_PHRASE
-			-- property: FIXME: should be a CODE_PHRASE
+			-- property
 	
 	list: ARRAYED_LIST[C_QUANTITY_ITEM]
 			-- list of items constraining magnitude/units pairs
 			
-	standard_equivalent: C_COMPLEX_OBJECT is
-		do
-			-- FIXME: to be implemented
-		end
-		
 	default_value: QUANTITY is
 			-- 	generate a default value from this constraint object
 		local
@@ -74,7 +81,9 @@ feature -- Access
  		do
  			if assumed_value /= Void then
  				Result := assumed_value
- 			else
+ 			elseif any_allowed then
+ 				Result := create {QUANTITY}.default_create
+ 			elseif list /= Void then
 				a_mag_ivl := list.first.magnitude
  				if a_mag_ivl /= Void then
 					if not a_mag_ivl.lower_unbounded then
@@ -85,8 +94,10 @@ feature -- Access
 						-- a_mag := 0.0
 					end
 				end
+				Result := create {QUANTITY}.make(a_mag, list.first.units)
+			else -- property must be the only thing set...
+				Result := create {QUANTITY}.make(a_mag, default_units)
  			end
-			Result := create {QUANTITY}.make(a_mag, list.first.units)
 		end
 
 feature -- Modification
@@ -94,19 +105,18 @@ feature -- Modification
 	set_property(a_property: CODE_PHRASE) is
 			-- set property constraint
 		require
-			Property_valid: a_property /= Void
+			Property_valid: a_property /= Void and has_property (a_property)
 		do
 			property := a_property
+			default_units := units_for_property (a_property).first
 		end
-
-feature -- Modification
 
 	set_assumed_value_from_units_magnitude(a_units: STRING; a_magnitude: REAL) is
 			-- set `assumed_value'
 		require
 			Units_valid: a_units /= Void implies not a_units.is_empty
 		do
-			assumed_value := create {QUANTITY}.make(a_magnitude, a_units)
+			set_assumed_value(create {QUANTITY}.make(a_magnitude, a_units))
 		ensure
 			assumed_value_set: assumed_value.magnitude = a_magnitude and assumed_value.units = a_units
 		end
@@ -117,10 +127,20 @@ feature -- Modification
 			Units_valid: a_units /= Void and then not a_units.is_empty
 			Magnitude_validity: a_magnitude /= Void implies a_units /= Void
 		do
+			if list = Void then
+				create list.make(0)
+			end
 			list.extend(create {C_QUANTITY_ITEM}.make(a_units, a_magnitude))
 		end
 	
 feature -- Status Report
+
+	any_allowed: BOOLEAN is
+			-- True if any value allowed
+			-- i.e. no property or list
+		do
+			Result := list = Void and property = Void
+		end
 
 	valid_value (a_value: like default_value): BOOLEAN is 
 		do
@@ -136,6 +156,11 @@ feature -- Conversion
 			create Result.make (0)
 		end
 
+	standard_equivalent: C_COMPLEX_OBJECT is
+		do
+			-- FIXME: to be implemented
+		end
+		
 feature -- Serialisation
 
 	enter_block(serialiser: CONSTRAINT_MODEL_SERIALISER; depth: INTEGER) is
@@ -164,9 +189,14 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 			Result.compare_objects
 		end
 
+feature -- Implementation
+
+	default_units: STRING
+			-- record default units if proerty is set; used to generate a default value
+			
 invariant
-	Overall_validity: list /= Void or property /= Void
 	Items_valid: list /= Void implies not list.is_empty
+	Overall_validity: (list /= Void or property /= Void) xor any_allowed
 	
 end
 

@@ -31,9 +31,6 @@ feature -- Access
 
 feature -- Status Report
 
-	any_allowed: BOOLEAN
-			-- True if any value allowed ('*' received in parsed input)
-
 	is_addressable: BOOLEAN is
 			-- True if this node has a non-anonymous node_id
 		do
@@ -50,14 +47,6 @@ feature -- Status Report
 feature -- Representation
 
 	representation: OG_ITEM
-	
-feature -- Modification
-
-	set_any_allowed is
-			-- 	
-		do
-			any_allowed := True
-		end
 	
 feature {ARCHETYPE_CONSTRAINT} -- Modification
 

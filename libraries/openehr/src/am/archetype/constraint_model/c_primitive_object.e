@@ -57,6 +57,13 @@ feature -- Access
 		
 feature -- Status Report
 
+	any_allowed: BOOLEAN is
+			-- True if any value allowed ('*' received in parsed input)
+			-- i.e. no item
+		do
+			Result := item = Void
+		end
+
 	is_valid: BOOLEAN is
 			-- report on validity
 		do

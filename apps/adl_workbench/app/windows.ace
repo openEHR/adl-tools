@@ -16,7 +16,7 @@ default
 	disabled_debug ("bb")
 	disabled_debug ("dadl_parse")
 	disabled_debug ("dlg_dispatcher")
-	disabled_debug ("dt")
+	debug ("dt")
 	disabled_debug ("exclude list")
 	disabled_debug ("gelex")
 	disabled_debug ("geyacc")
@@ -96,6 +96,8 @@ cluster
 			assertion (ensure)
 		visible
 			C_CODED_TERM
+				end
+			CODE_PHRASE
 				end
 			C_ORDINAL
 				end

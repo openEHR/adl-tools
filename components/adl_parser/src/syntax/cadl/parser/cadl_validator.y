@@ -218,9 +218,8 @@ c_complex_object_body: c_any -- used to indicate that any value of a type is ok
 		{
 			debug("ADL_parse")
 				io.put_string(indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + 
-					" [id=" + object_nodes.item.node_id + "] set_any_allowed%N") 
+					" [id=" + object_nodes.item.node_id + "] - any_allowed%N") 
 			end
-			object_nodes.item.set_any_allowed
 		}
 	| c_attributes			
 		{
@@ -521,9 +520,8 @@ c_attr_values: c_object
 	| c_any	-- to allow a property to have any value
 		{
 			debug("ADL_parse")
-				io.put_string(indent + "ATTR_NODE " + attr_node.rm_attribute_name + " set_any_allowed%N") 
+				io.put_string(indent + "ATTR_NODE " + attr_node.rm_attribute_name + "  - any_allowed%N") 
 			end
-			attr_node.set_any_allowed
 		}
 	;
 

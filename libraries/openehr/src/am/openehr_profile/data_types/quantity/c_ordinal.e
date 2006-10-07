@@ -31,8 +31,8 @@ feature -- Initialisation
 			precursor
 			create rm_type_name.make(0)
 			rm_type_name.append("ORDINAL")
-			create items.make
-			create index.make(0)
+		ensure then
+			any_allowed
 		end
 		
 	make is
@@ -40,12 +40,16 @@ feature -- Initialisation
 		do
 			default_create
 			create representation.make_anonymous(Current)
+		ensure
+			any_allowed
 		end
 
 	make_dt is
 			-- make used by DT_OBJECT_CONVERTER
 		do
 			make
+		ensure then
+			any_allowed
 		end
 		
 feature -- Access
@@ -55,27 +59,35 @@ feature -- Access
 	default_value: ORDINAL is
 			-- 	generate a default value from this constraint object
 		do
-			if not items.is_empty then
-				Result := items.first
+			if any_allowed then
+				create Result.make(0, create {CODE_PHRASE}.default_create)
 			else
-				create Result.make(0, create {CODE_PHRASE}.make ("UNKNOWN::unknown"))
+				Result := items.first
 			end
 		end
 
 	item_at_ordinal(i: INTEGER): ORDINAL is
 			-- get the item in the list which has the ordinal value i
 		require
-			has_item(i)
+			Not_any_allowed: not any_allowed
+			Valid_index: has_item(i)
 		do
 			Result := index.item(i)
 		end
 		
 feature -- Status Report
 
+	any_allowed: BOOLEAN is
+			-- True if any value allowed
+			-- i.e. no items
+		do
+			Result := items = Void
+		end
+
 	is_local: BOOLEAN is
 			-- True if terminology id = "local"
 		require
-			not is_empty
+			not any_allowed
 		do
 			Result := items.first.symbol.is_local
 		end	
@@ -83,16 +95,6 @@ feature -- Status Report
 	has_item(a_value: INTEGER): BOOLEAN is
 		do
 			Result := index.has(a_value)
-		end
-
-	standard_equivalent: C_COMPLEX_OBJECT is
-		do
-		end
-	
-	is_empty: BOOLEAN is
-			-- True if no ordinals added
-		do
-			Result := items.is_empty
 		end
 
 	valid_value (a_value: like default_value): BOOLEAN is 
@@ -105,8 +107,12 @@ feature -- Modification
 	add_item(an_ordinal: ORDINAL) is
 			-- add an ordinal to the list
 		require
-			An_ordinal_valid: not has_item(an_ordinal.value)
+			An_ordinal_valid: not any_allowed implies not has_item(an_ordinal.value)
 		do
+			if items = Void then
+				create items.make
+				create index.make(0)
+			end
 			items.extend(an_ordinal)
 			index.put(an_ordinal, an_ordinal.value)
 		ensure
@@ -116,7 +122,8 @@ feature -- Modification
 	set_assumed_value_from_integer(a_value: INTEGER) is
 			-- set `assumed_value' from an integer in the ordinal enumeration 
 		require
-			has_item(a_value)
+			Not_any_allowed: not any_allowed
+			Valid_index: has_item(a_value)
 		do
 			assumed_value := item_at_ordinal(a_value)
 		ensure
@@ -144,6 +151,10 @@ feature -- Conversion
 			if assumed_value /= Void then
 				Result.append("; " + assumed_value.value.out)
 			end
+		end
+
+	standard_equivalent: C_COMPLEX_OBJECT is
+		do
 		end
 
 feature -- Serialisation
@@ -178,7 +189,8 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 		end
 
 invariant
-	Ordinals_valid: items /= Void
+	Ordinals_valid: items /= Void xor any_allowed
+	Items_valid: items /= Void implies not items.is_empty
 	
 end
 
