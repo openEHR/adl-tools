@@ -76,7 +76,7 @@ feature -- Creation
 				l_table.put (Result, class_type)
 			end
 		ensure
-			dynamic_type_from_string_valid: Result = -1 or Result = none_type or Result >= 0
+			dynamic_type_from_string_valid: Result = -1 or else Result >= 0
 		end
 
 	new_instance_of (type_id: INTEGER): ANY is
@@ -111,9 +111,13 @@ feature -- Creation
 			count_valid: count >= 0
 			type_id_nonnegative: type_id >= 0
 			special_type: is_special_any_type (type_id)
+		local
+			l_gen_type, l_current_gen_type: RT_GENERIC_TYPE
 		do
-			Result ?= {ISE_RUNTIME}.create_type (pure_implementation_type (type_id))
-			Result.make (count)
+			create Result.make (count)
+			l_gen_type ?= id_to_eiffel_type.item (type_id)
+			l_current_gen_type := {ISE_RUNTIME}.generic_type (Result)
+			l_current_gen_type.set_generics (l_gen_type.generics)
 		ensure
 			special_type: is_special (Result)
 			dynamic_type_set: dynamic_type (Result) = type_id
@@ -130,9 +134,6 @@ feature -- Status report
 		local
 			l_gen_type: RT_GENERIC_TYPE
 		do
-				-- Unlike `is_special_type' we need to take the interface type,
-				-- as the {SPECIAL [ANY]}.to_cil will yield the interface type, not
-				-- the implementation type.
 			l_gen_type ?= id_to_eiffel_type.item (type_id)
 			if l_gen_type /= Void and then l_gen_type.count = 1 then
 				Result := l_gen_type.dotnet_type.equals (({SPECIAL [ANY]}).to_cil)
@@ -157,7 +158,7 @@ feature -- Status report
 
 	is_special (object: ANY): BOOLEAN is
 			-- Is `object' a special object?
-			-- It only recognized a special object
+			-- It only recognized a special object 
 			-- initialized within a TO_SPECIAL object.
 		require
 			object_not_void: object /= Void
@@ -192,24 +193,21 @@ feature -- Status report
 		require
 			object_not_void: obj /= Void
 		do
-			Result := marked_objects.contains (obj)
+			Result := Marked_objects.contains (obj)
 		end
-
+		
 feature -- Access
-
-	none_type: INTEGER is -2
-			-- Type ID representation for NONE.
 
 	Pointer_type: INTEGER is 0
 
 	Reference_type: INTEGER is 1
 
-	character_8_type, Character_type: INTEGER is 2
+	Character_type: INTEGER is 2
 
 	Boolean_type: INTEGER is 3
 
 	Integer_type, integer_32_type: INTEGER is 4
-
+	
 	Real_type, real_32_type: INTEGER is 5
 
 	Double_type, real_64_type: INTEGER is 6
@@ -224,17 +222,16 @@ feature -- Access
 
 	Integer_64_type: INTEGER is 11
 
-	character_32_type, Wide_character_type: INTEGER is 12
-
+	Wide_character_type: INTEGER is 12
+	
 	natural_8_type: INTEGER is 13
-
+	
 	natural_16_type: INTEGER is 14
-
+	
 	natural_32_type: INTEGER is 15
-
+	
 	natural_64_type: INTEGER is 16
 
-	min_predefined_type: INTEGER is -2
 	max_predefined_type: INTEGER is 17
 			-- See non-exported definition of `object_type' below.
 
@@ -245,7 +242,7 @@ feature -- Access
 		do
 			Result := object.generator
 		end
-
+		
 	class_name_of_type (type_id: INTEGER): STRING is
 			-- Name of class associated with dynamic type `type_id'.
 		require
@@ -441,7 +438,7 @@ feature -- Access
 			when real_64_type then
 				l_double ?= l_obj
 				Result := l_double
-
+			
 			else
 					-- A reference, so nothing to be done
 				Result := l_obj
@@ -475,7 +472,6 @@ feature -- Access
 			k, nb: INTEGER
 			l_attributes: NATIVE_ARRAY [SYSTEM_OBJECT]
 			l_field: FIELD_INFO
-			l_provider: ICUSTOM_ATTRIBUTE_PROVIDER
 		do
 			l_native_array := id_to_fields_name.item (type_id)
 			if l_native_array = Void then
@@ -488,8 +484,7 @@ feature -- Access
 					k = nb
 				loop
 					l_field := l_members.item (k)
-					l_provider := l_field
-					l_attributes := l_provider.get_custom_attributes_type ({EIFFEL_NAME_ATTRIBUTE}, False)
+					l_attributes := l_field.get_custom_attributes_type ({EIFFEL_NAME_ATTRIBUTE}, False)
 					if l_attributes.count > 0 then
 						check
 							valid_number_of_custom_attributes: l_attributes.count = 1
@@ -498,7 +493,7 @@ feature -- Access
 						l_name := l_eiffel_name.name
 					else
 						l_name := l_field.name
-					end
+					end					
 					l_native_array.put (k, l_name)
 					k := k + 1
 				end
@@ -545,7 +540,7 @@ feature -- Access
 			l_abstract_type: INTEGER
 			k, nb: INTEGER
 		do
-			l_native_array := id_to_fields_abstract_type.item (type_id)
+			l_native_array := id_to_fields_abstract_type.item (type_id)	
 			if l_native_array = Void then
 				from
 					l_members := get_members (type_id)
@@ -594,8 +589,6 @@ feature -- Access
 			l_members: NATIVE_ARRAY [FIELD_INFO]
 			l_field: FIELD_INFO
 			l_meth: METHOD_INFO
-			l_type_attr: RT_INTERFACE_TYPE_ATTRIBUTE
-			l_provider: ICUSTOM_ATTRIBUTE_PROVIDER
 		do
 			l_dtypes := id_to_fields_static_type.item (type_id)
 			if l_dtypes = Void then
@@ -608,8 +601,7 @@ feature -- Access
 					k = nb
 				loop
 					l_field := l_members.item (k)
-					l_provider := l_field
-					l_attributes := l_provider.get_custom_attributes_type ({TYPE_FEATURE_ATTRIBUTE}, False)
+					l_attributes := l_field.get_custom_attributes_type ({TYPE_FEATURE_ATTRIBUTE}, False)
 					if l_attributes.count > 0 then
 						check
 							valid_number_of_custom_attributes: l_attributes.count = 1
@@ -654,21 +646,12 @@ feature -- Access
 						l_type := interface_type (l_field.field_type)
 						if l_type.is_value_type then
 								-- Case of an expanded type.
-							l_dtype :=
+							l_dtype := 
 								dynamic_type_from_rt_class_type (associated_runtime_type (l_type))
 						else
 								-- Normal case, we handle a non-generic class type.
 							create l_class_type.make
-							l_attributes := l_field.get_custom_attributes_type ({RT_INTERFACE_TYPE_ATTRIBUTE}, False)
-							if l_attributes.count > 0 then
-								l_type_attr ?= l_attributes.item (0)
-								check
-									l_type_attr_not_void: l_type_attr /= Void
-								end
-								l_class_type.set_type (l_type_attr.class_type.type_handle)
-							else
-								l_class_type.set_type (l_type.type_handle)
-							end
+							l_class_type.set_type (l_type.type_handle)
 							l_dtype := dynamic_type_from_rt_class_type (l_class_type)
 						end
 					end
@@ -855,9 +838,9 @@ feature -- Element change
 			index_small_enough: i <= field_count (object)
 			reference_field: field_type (i, object) = Reference_type
 			value_conforms_to_field_static_type:
-				value /= Void implies
-					type_conforms_to (dynamic_type (value),
-						field_static_type_of_type (i, dynamic_type (object)))
+				value /= Void implies 
+					type_conforms_to (dynamic_type (value), 
+						field_static_type_of_type (i, dynamic_type (object))) 
 		do
 			internal_set_reference_field (i, object, value)
 		end
@@ -1035,43 +1018,25 @@ feature -- Measurement
 feature -- Marking
 
 	mark (obj: ANY) is
-			-- Mark object `obj'.
-			-- To be thread safe, make sure to call this feature when you
-			-- have the marking lock that you acquire using `lock_marking'.
+			-- Mark `obj'.
 		require
 			object_not_void: obj /= Void
 			object_not_marked: not is_marked (obj)
 		do
-			marked_objects.add (obj, obj)
+			Marked_objects.add (obj, obj)
 		ensure
 			marked: is_marked (obj)
 		end
-
+		
 	unmark (obj: ANY) is
-			-- Unmark object `obj'.
-			-- To be thread safe, make sure to call this feature when you
-			-- have the marking lock that you acquire using `lock_marking'.
+			-- Unmark `obj'.
 		require
 			object_not_void: obj /= Void
 			object_marked: is_marked (obj)
 		do
-			marked_objects.remove (obj)
+			Marked_objects.remove (obj)
 		ensure
 			not_marked: not is_marked (obj)
-		end
-
-	lock_marking is
-			-- Get a lock on `mark' and `unmark' routine so that 2 threads cannot `mark' and
-			-- `unmark' at the same time.
-		do
-			-- Nothing to be done, because `marked_objects' is per thread.
-		end
-
-	unlock_marking is
-			-- Release a lock on `mark' and `unmark', so that another thread can
-			-- use `mark' and `unmark'.
-		do
-			-- Nothing to be done, because `marked_objects' is per thread.
 		end
 
 feature {NONE} -- Cached data
@@ -1282,19 +1247,15 @@ feature {NONE} -- Implementation
 				if l_obj /= Void then
 					Result ?= l_obj
 				else
-					if a_class_type.is_none then
-						Result := none_type
-					else
-						Result := next_dynamic_type_id.item
-						next_dynamic_type_id.put (Result + 1)
-					end
+					Result := next_dynamic_type_id.item
+					next_dynamic_type_id.put (Result + 1)
 					eiffel_type_to_id.set_item (a_class_type, Result)
 					resize_arrays (Result)
 					id_to_eiffel_type.put (a_class_type, Result)
 				end
 			end
 		ensure
-			dynamic_type_from_rt_class_type: Result = -1 or Result = none_type or Result >= 0
+			dynamic_type_from_rt_class_type: Result = -1 or else Result >= 0
 		end
 
 	internal_field (i: INTEGER; object: ANY; type_id: INTEGER): SYSTEM_OBJECT is
@@ -1336,7 +1297,7 @@ feature {NONE} -- Implementation
 			l_class_type_name.right_adjust
 
 				-- Search for a non generic class type.
-			eiffel_meta_type_mapping.search (mapped_type (l_class_type_name))
+			eiffel_meta_type_mapping.search (l_class_type_name)
 			if eiffel_meta_type_mapping.found then
 					-- It is a non-generic Eiffel type which was recorded in `load_assemblies'.
 				check
@@ -1362,7 +1323,7 @@ feature {NONE} -- Implementation
 					l_type_name := l_class_type_name.substring (1, l_start_pos - 1)
 					l_type_name.left_adjust
 					l_type_name.right_adjust
-					eiffel_meta_type_mapping.search (mapped_type (l_type_name))
+					eiffel_meta_type_mapping.search (l_type_name)
 					if eiffel_meta_type_mapping.found then
 							-- Extract generic parameters and ensures that it matches the number of generic
 							-- parameter expected by the type `l_type_name'.
@@ -1495,14 +1456,6 @@ feature {NONE} -- Implementation
 				load_eiffel_types_from_assembly (args.loaded_assembly)
 			end
 		end
-
-	assembly_names: HASHTABLE is
-			-- Prevent same assembly to be loaded more than once by `load_eiffel_types_from_assembly'
-		once
-			create Result.make (10)
-		ensure
-			assembly_names_not_void: Result /= Void
-		end
 		
 	load_eiffel_types_from_assembly (an_assembly: ASSEMBLY) is
 			-- Load all Eiffel types from `an_assembly'.
@@ -1521,96 +1474,80 @@ feature {NONE} -- Implementation
 			l_type, l_param_type, l_any_type, l_interface_type: SYSTEM_TYPE
 			l_formal_type: RT_FORMAL_TYPE
 			l_list: ARRAYED_LIST [RT_CLASS_TYPE]
-			l_assembly_name: ASSEMBLY_NAME
-			l_provider: ICUSTOM_ATTRIBUTE_PROVIDER
 		do
 			if not retried then
-				l_assembly_name := an_assembly.get_name
-				if not assembly_names.contains (l_assembly_name) then
-					l_types := an_assembly.get_types
-						-- Add only when types have been extracted. On some assemblies
-						-- types cannot be extracted.
-					assembly_names.add (l_assembly_name, l_assembly_name)
-					from
-						nb := l_types.count
-					until
-						i = nb
-					loop
-						l_type := l_types.item (i)
-						l_provider := l_type
-						l_cas := l_provider.get_custom_attributes_type ({EIFFEL_NAME_ATTRIBUTE}, False)
-						if l_cas /= Void and then l_cas.count > 0 then
-							l_name ?= l_cas.item (0)
-							check
-								l_name_not_void: l_name /= Void
-							end
-							if l_name.is_generic then
-								check
-									has_generics: l_name.generics /= Void
-								end
-								l_array := l_name.generics
-								l_count := l_array.count
-								create l_rt_array.make (l_count)
-								from
-									l_any_type := {ANY}
-									j := 0
-								until
-									j = l_count
-								loop
-									l_param_type := l_array.item (j)
-										-- Special case here. If we load another Eiffel assembly which
-										-- contains its own version of ANY, then the comparison will fail.
-										-- Since the code was generated so that it is either ANY or a value type,
-										-- then if it is not a value type, then we need to do as if it was our ANY.
-									if l_param_type.equals (l_any_type) or else not l_param_type.is_value_type then
-											-- It is a formal
-										create l_formal_type.make
-										l_formal_type.set_position (j)
-										l_rt_array.put (j, l_formal_type)
-									else
-											-- It is an expanded type
-										check
-											l_param_type_is_value_type: l_param_type.is_value_type
-										end
-										l_rt_array.put (j,
-											associated_runtime_type (interface_type (l_param_type)))
-									end
-									j := j + 1
-								end
-								if l_count = 0 then
-										-- It should be a TUPLE type.
-									check
-										tuple_name: l_name.name.is_equal ("TUPLE")
-									end
-									create {RT_TUPLE_TYPE} l_gen_type.make
-								else
-									create l_gen_type.make
-								end
-								l_interface_type := interface_type (l_type)
-								l_gen_type.set_type (l_interface_type.type_handle)
-								l_gen_type.set_generics (l_rt_array)
-								l_class_type := l_gen_type
-							else
-								create l_class_type.make
-								l_interface_type := interface_type (l_type)
-								l_class_type.set_type (l_interface_type.type_handle)
-							end
-
-								-- Update `interface_to_implementation'
-							interface_to_implementation.add (l_interface_type, l_type)
-
-								-- Update `eiffel_meta_type_mapping'
-							eiffel_meta_type_mapping.search (mapped_type (l_name.name))
-							if eiffel_meta_type_mapping.found then
-								eiffel_meta_type_mapping.found_item.extend (l_class_type)
-							else
-								create l_list.make (1)
-								l_list.extend (l_class_type)
-								eiffel_meta_type_mapping.force (l_list, l_name.name)
-							end
+				l_types := an_assembly.get_types
+				from
+					nb := l_types.count
+				until
+					i = nb
+				loop
+					l_type := l_types.item (i)
+					l_cas := l_type.get_custom_attributes_type ({EIFFEL_NAME_ATTRIBUTE}, False)
+					if l_cas /= Void and then l_cas.count > 0 then
+						l_name ?= l_cas.item (0)
+						check
+							l_name_not_void: l_name /= Void
 						end
-						i := i + 1
+						if l_name.is_generic then
+							check
+								has_generics: l_name.generics /= Void
+							end
+							l_array := l_name.generics
+							l_count := l_array.count
+							create l_rt_array.make (l_count)
+							from
+								l_any_type := {ANY}
+								j := 0
+							until
+								j = l_count
+							loop
+								l_param_type := l_array.item (j)
+								if l_param_type.equals (l_any_type) then
+										-- It is a formal
+									create l_formal_type.make
+									l_formal_type.set_position (j)
+									l_rt_array.put (j, l_formal_type)
+								else
+										-- It is an expanded type
+									l_rt_array.put (j,
+										associated_runtime_type (interface_type (l_param_type)))
+								end
+								j := j + 1
+							end
+							if l_count = 0 then
+									-- It should be a TUPLE type.
+								check
+									tuple_name: l_name.name.is_equal ("TUPLE")
+								end
+								create {RT_TUPLE_TYPE} l_gen_type.make
+							else
+								create l_gen_type.make
+							end
+							l_interface_type := interface_type (l_type)
+							l_gen_type.set_type (l_interface_type.type_handle)
+							l_gen_type.set_generics (l_rt_array)
+							l_class_type := l_gen_type
+						else
+							create l_class_type.make
+							l_interface_type := interface_type (l_type)
+							l_class_type.set_type (l_interface_type.type_handle)
+						end
+
+							-- Update `interface_to_implementation'
+						interface_to_implementation.add (l_interface_type, l_type)
+
+							-- Update `eiffel_meta_type_mapping'
+						eiffel_meta_type_mapping.search (l_name.name)
+						if eiffel_meta_type_mapping.found then
+							eiffel_meta_type_mapping.found_item.extend (l_class_type)
+						else
+							create l_list.make (1)
+							l_list.extend (l_class_type)
+							eiffel_meta_type_mapping.force (l_list, l_name.name)
+						end
 					end
+					i := i + 1
 				end
 			end
 		rescue
@@ -1700,7 +1637,7 @@ feature {NONE} -- Implementation
 			create l_basic_type.make
 			l_basic_type.set_type (({INTEGER}).to_cil.type_handle)
 			l_list.extend (l_basic_type)
-			Result.put (l_list, "INTEGER_32")
+			Result.put (l_list, "INTEGER")
 
 			create l_list.make (1)
 			create l_basic_type.make
@@ -1718,19 +1655,19 @@ feature {NONE} -- Implementation
 			create l_basic_type.make
 			l_basic_type.set_type (({CHARACTER}).to_cil.type_handle)
 			l_list.extend (l_basic_type)
-			Result.put (l_list, "CHARACTER_8")
+			Result.put (l_list, "CHARACTER")
 
 			create l_list.make (1)
 			create l_basic_type.make
 			l_basic_type.set_type (({REAL}).to_cil.type_handle)
 			l_list.extend (l_basic_type)
-			Result.put (l_list, "REAL_32")
+			Result.put (l_list, "REAL")
 
 			create l_list.make (1)
 			create l_basic_type.make
 			l_basic_type.set_type (({DOUBLE}).to_cil.type_handle)
 			l_list.extend (l_basic_type)
-			Result.put (l_list, "REAL_64")
+			Result.put (l_list, "DOUBLE")
 
 			create l_list.make (1)
 			create l_basic_type.make
@@ -1738,9 +1675,6 @@ feature {NONE} -- Implementation
 			l_list.extend (l_basic_type)
 			Result.put (l_list, "BOOLEAN")
 
-			create l_list.make (1)
-			l_list.extend (create {RT_NONE_TYPE}.make)
-			Result.put (l_list, "NONE")
 		ensure
 			eiffel_meta_type_mapping_not_void: Result /= Void
 		end
@@ -1870,7 +1804,7 @@ feature {NONE} -- Implementation
 	id_to_eiffel_type: ARRAY [RT_CLASS_TYPE] is
 			-- Mapping between dynamic type id and Eiffel types.
 		once
-			create Result.make (min_predefined_type, array_upper_cell.item)
+			create Result.make (0, array_upper_cell.item)
 		ensure
 			id_to_eiffel_type_not_void: Result /= Void
 		end
@@ -1878,7 +1812,7 @@ feature {NONE} -- Implementation
 	id_to_eiffel_implementation_type: ARRAY [RT_CLASS_TYPE] is
 			-- Mapping between dynamic type id and Eiffel implementation types.
 		once
-			create Result.make (min_predefined_type, array_upper_cell.item)
+			create Result.make (0, array_upper_cell.item)
 		ensure
 			id_to_eiffel_type_not_void: Result /= Void
 		end
@@ -1886,7 +1820,7 @@ feature {NONE} -- Implementation
 	id_to_fields: ARRAY [NATIVE_ARRAY [FIELD_INFO]] is
 			-- Buffer for `get_members' lookups index by type_id.
 		once
-			create Result.make (min_predefined_type, array_upper_cell.item)
+			create Result.make (0, array_upper_cell.item)
 		ensure
 			id_to_fields_not_void: Result /= Void
 		end
@@ -1894,7 +1828,7 @@ feature {NONE} -- Implementation
 	id_to_fields_abstract_type: ARRAY [NATIVE_ARRAY [INTEGER]] is
 			-- Buffer for `field_type_of_type' lookups index by type_id.
 		once
-			create Result.make (min_predefined_type, array_upper_cell.item)
+			create Result.make (0, array_upper_cell.item)
 		ensure
 			id_to_fields_abstract_type_not_void: Result /= Void
 		end
@@ -1902,15 +1836,15 @@ feature {NONE} -- Implementation
 	id_to_fields_static_type: ARRAY [NATIVE_ARRAY [INTEGER]] is
 			-- Buffer for `field_static_type_of_type' lookups index by type_id.
 		once
-			create Result.make (min_predefined_type, array_upper_cell.item)
+			create Result.make (0, array_upper_cell.item)
 		ensure
 			id_to_fields_static_type_not_void: Result /= Void
 		end
-
+		
 	id_to_fields_name: ARRAY [NATIVE_ARRAY [STRING]] is
 			-- Buffer for `field_name_of_type' lookups index by type_id.
 		once
-			create Result.make (min_predefined_type, array_upper_cell.item)
+			create Result.make (0, array_upper_cell.item)
 		ensure
 			id_to_fields_name_not_void: Result /= Void
 		end
@@ -1918,7 +1852,7 @@ feature {NONE} -- Implementation
 	marked_objects: HASHTABLE is
 			-- Contains all objects marked.
 		once
-			create Result.make (chunk_size, Void, create {RT_REFERENCE_COMPARER}.make)
+			create Result.make_from_capacity (chunk_size)
 		end
 
 	chunk_size: INTEGER is 50;
@@ -1968,17 +1902,35 @@ feature {NONE} -- Implementation
 		end
 
 indexing
-	library:	"EiffelBase: Library of reusable components for Eiffel."
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
-	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
+
+	library: "[
+			EiffelBase: Library of reusable components for Eiffel.
+			]"
+
+	status: "[
+			Copyright 1986-2001 Interactive Software Engineering (ISE).
+			For ISE customers the original versions are an ISE product
+			covered by the ISE Eiffel license and support agreements.
+			]"
+
+	license: "[
+			EiffelBase may now be used by anyone as FREE SOFTWARE to
+			develop any product, public-domain or commercial, without
+			payment to ISE, under the terms of the ISE Free Eiffel Library
+			License (IFELL) at http://eiffel.com/products/base/license.html.
+			]"
+
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
-		]"
+			Interactive Software Engineering Inc.
+			ISE Building
+			360 Storke Road, Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Electronic mail <info@eiffel.com>
+			Customer support http://support.eiffel.com
+			]"
 
-
+	info: "[
+			For latest info see award-winning pages: http://eiffel.com
+			]"
 
 end -- class INTERNAL
