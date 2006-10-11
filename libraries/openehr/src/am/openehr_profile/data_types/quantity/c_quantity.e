@@ -196,6 +196,7 @@ feature -- Implementation
 			
 invariant
 	Items_valid: list /= Void implies not list.is_empty
+--	Property_valid: property /= Void implies terminology(Terminology_id_openehr).has_code_for_group_id (Group_id_measurable_properties, property)
 	Overall_validity: (list /= Void or property /= Void) xor any_allowed
 	
 end
