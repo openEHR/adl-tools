@@ -64,14 +64,6 @@ feature -- Access
 
 	attributes: ARRAYED_LIST [C_ATTRIBUTE]
 		
-	has_path(a_path: STRING): BOOLEAN is
-			-- does a_path exist from this node?
-		require
-			Path_valid: a_path /= Void
-		do
-			Result := representation.has_path(create {OG_PATH}.make_from_string(a_path))
-		end
-		
 	c_attribute_at_path(a_path: STRING): C_ATTRIBUTE is
 			-- get C_ATTRIBUTE at a path (which doesn't terminate in '/')
 		require
@@ -85,7 +77,7 @@ feature -- Access
 		require
 			a_path_valid: a_path /= Void and then has_path(a_path)
 		do
-			Result ?= representation.node_at_path (create {OG_PATH}.make_from_string(a_path)).content_item
+			Result ?= representation.object_node_at_path (create {OG_PATH}.make_from_string(a_path)).content_item
 		end
 		
 	all_paths_at_path(a_path: STRING): ARRAYED_LIST[STRING] is
@@ -96,7 +88,7 @@ feature -- Access
 			og_paths: ARRAYED_LIST [OG_PATH]
 			og_node: OG_OBJECT_NODE
 		do
-			og_node ?= representation.node_at_path(create {OG_PATH}.make_from_string(a_path))
+			og_node ?= representation.object_node_at_path(create {OG_PATH}.make_from_string(a_path))
 			og_paths := og_node.all_paths
 			create Result.make(0)
 			Result.compare_objects
@@ -146,6 +138,30 @@ feature -- Status Report
 			Result := attributes.is_empty
 		end
 
+	has_path(a_path: STRING): BOOLEAN is
+			-- does a_path exist from this node?
+		require
+			Path_valid: a_path /= Void
+		do
+			Result := representation.has_path(create {OG_PATH}.make_from_string(a_path))
+		end
+		
+	has_object_path(a_path: STRING): BOOLEAN is
+			-- does a_path exist to an object node from this node?
+		require
+			Path_valid: a_path /= Void
+		do
+			Result := representation.has_object_path(create {OG_PATH}.make_from_string(a_path))
+		end
+		
+	has_attribute_path(a_path: STRING): BOOLEAN is
+			-- does a_path to an object node exist from this node?
+		require
+			Path_valid: a_path /= Void
+		do
+			Result := representation.has_attribute_path(create {OG_PATH}.make_from_string(a_path))
+		end
+		
 	has_attribute(an_attr_name: STRING): BOOLEAN is
 		require
 			an_attr_name_valid: an_attr_name /= Void and then not an_attr_name.is_empty

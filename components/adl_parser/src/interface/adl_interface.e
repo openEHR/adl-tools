@@ -311,8 +311,8 @@ feature -- Commands
 		require
 			archetype_source_loaded
 		do
-			clear_billboard
 			if not exception_encountered then
+				clear_billboard
 				parse_succeeded := False
 				adl_engine.parse
 				if not adl_engine.archetype_available then

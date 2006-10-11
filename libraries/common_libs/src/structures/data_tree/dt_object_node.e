@@ -123,7 +123,7 @@ feature -- Access
 		require
 			Path_valid: a_path /= Void and then has_path(a_path)
 		do
-			Result ?= representation.node_at_path(create {OG_PATH}.make_from_string(a_path)).content_item
+			Result ?= representation.object_node_at_path(create {OG_PATH}.make_from_string(a_path)).content_item
 		ensure
 			Result_exists: Result /= Void
 		end

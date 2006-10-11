@@ -116,13 +116,13 @@ feature -- Access
 			end
 		end	
 
-	node_at_path(a_path: OG_PATH): OG_OBJECT is
+	object_node_at_path(a_path: OG_PATH): OG_OBJECT is
 			-- find the object node at the relative path `a_path'
 		require
 			Path_valid: a_path /= Void and then has_path(a_path)
 		do
 			a_path.start				
-			Result := internal_node_at_path(a_path)		
+			Result := internal_object_node_at_path(a_path)		
 		ensure
 			Result_exists: Result /= Void
 		end
@@ -141,15 +141,30 @@ feature -- Access
 feature -- Status Report
 
 	has_path(a_path: OG_PATH): BOOLEAN is
-			-- find the child at the path `a_path'
+			-- `a_path' exists in object structure
 		require
 			Path_valid: a_path /= Void and then a_path.is_absolute implies is_root
-		local
-			a_key: STRING
-			a_node: OG_NODE
 		do
 			a_path.start
 			Result := internal_has_path(a_path)
+		end
+
+	has_object_path(a_path: OG_PATH): BOOLEAN is
+			-- `a_path' refers to an object node in structure
+		require
+			Path_valid: a_path /= Void and then a_path.is_absolute implies is_root
+		do
+			a_path.start
+			Result := internal_object_node_at_path(a_path) /= Void
+		end
+
+	has_attribute_path(a_path: OG_PATH): BOOLEAN is
+			-- `a_path' refers to an attribute node in structure
+		require
+			Path_valid: a_path /= Void and then a_path.is_absolute implies is_root
+		do
+			a_path.start
+			Result := internal_attribute_node_at_path(a_path) /= Void
 		end
 
 feature {OG_OBJECT_NODE} -- Implementation
@@ -181,19 +196,21 @@ feature {OG_OBJECT_NODE} -- Implementation
 			end
 		end
 		
-	internal_node_at_path(a_path: OG_PATH): OG_OBJECT is
+	internal_object_node_at_path(a_path: OG_PATH): OG_OBJECT is
 			-- find the child at the path `a_path'
 		local
 			child_obj: OG_OBJECT
 			child_obj_node: OG_OBJECT_NODE
-		do		
-			child_obj := object_at_path_segment(a_path.item)
-			a_path.forth
-			if not a_path.off then
-				child_obj_node ?= child_obj -- must exist since path has been checked
-				Result := child_obj_node.internal_node_at_path(a_path)
-			else
-				Result := child_obj
+		do
+			if has_object_at_path_segment(a_path.item) then
+				child_obj := object_at_path_segment(a_path.item)
+				a_path.forth
+				if not a_path.off then
+					child_obj_node ?= child_obj -- must exist since path has been checked
+					Result := child_obj_node.internal_object_node_at_path(a_path)
+				else
+					Result := child_obj
+				end
 			end
 		end
 		
@@ -233,8 +250,6 @@ feature {OG_OBJECT_NODE} -- Implementation
 			-- object node at path_segment - strict match on object part
 		require
 			has_object_at_path_segment(a_path_segment)
-		local
-			an_attr_node: OG_ATTRIBUTE_NODE
 		do
 			Result := children.item(a_path_segment.attr_name).child_at_node_id (a_path_segment.object_id)
 		end
