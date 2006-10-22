@@ -51,7 +51,7 @@ feature -- Status Report
 
 feature -- Access
 
-	magnitude: INTEGER_REF
+	magnitude: REAL_REF
 			-- numeric value of the quantity
 
 	diff_type: DV_COUNT is

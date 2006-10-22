@@ -49,8 +49,8 @@ feature -- Access
 invariant
 	Width_valid: width /= Void
 	Interval_start_time_valid: interval_start_time /= Void
-	Math_function_validity: terminology("openehr").
-		codes_for_group_name("event math function", "en").has(math_function.defining_code)
+	Math_function_validity: terminology(terminology_id_openehr).
+		has_code_for_group_id(group_id_event_math_function, math_function.defining_code)
 		
 end
 

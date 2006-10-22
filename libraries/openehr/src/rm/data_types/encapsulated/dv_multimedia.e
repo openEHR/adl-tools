@@ -100,11 +100,11 @@ invariant
 	Media_type_terminology: media_type /= Void and then 
 	code_set("media types").all_codes.has(media_type)
 	Compression_algorithm_terminology: compression_algorithm /= Void implies 
-		code_set("compression algorithm").all_codes.has(compression_algorithm)
+		code_set(Code_set_id_compression_algorithms).has(compression_algorithm)
 	Integrity_check_validity: integrity_check /= Void implies 
 		integrity_check_algorithm /= Void
 	Integrity_check_algorithm_terminology: integrity_check_algorithm /= Void implies 
-		code_set("integrity check algorithm").has(integrity_check_algorithm)
+		code_set(code_set_id_integrity_check_algorithms).has(integrity_check_algorithm)
 
 end
 

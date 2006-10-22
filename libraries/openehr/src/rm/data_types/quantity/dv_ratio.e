@@ -1,61 +1,100 @@
 indexing
-	component:   "openEHR Common Reference Model"
+	component:   "openEHR Data Types"
 	
 	description: "[
-				 Used to represent any participation of a Party in some activity, 
-				 which is not explicitly in the model, e.g. assisting nurse. 
-				 Can be used to record past or future participations.
+	             Used to record pure ratios, such as titers, concentration ratios (e.g. Na:K) etc.
 				 ]"
-	keywords:    "participation"
-
-	design:      "openEHR Common Reference Model 2.0"
+	keywords:    "ratio, quantity"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2005 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2006 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class PARTICIPATION
+class DV_RATIO
 
 inherit
-	EXTERNAL_ENVIRONMENT_ACCESS
-		export
-			{NONE} all
+	DV_ORDERED
+
+create
+	make, make_from_string, make_from_canonical_string
+	
+feature -- Initialization
+	
+	make(a_numerator, a_denominator: REAL) is
+			-- make from a numerator, denominator
+		do
+			numerator := a_numerator
+			denominator := a_denominator
+		end
+		
+	make_from_string(str:STRING) is
+		do
 		end
 
-feature -- Initialization
+	make_from_canonical_string(str:STRING) is
+		do
+		end
 
+feature -- Status Report
+
+	valid_canonical_string(str: STRING): BOOLEAN is
+			-- True if str contains required tags
+		do
+		end
+		
 feature -- Access
 
-	performer: PARTY_PROXY
-			-- The party participating in the activity.
+	numerator: REAL
+			-- numerator of ratio
 
-	function: DV_TEXT	
-			-- The function of the Party in this participation (a given party might 
-			-- participate in more than one way in a given activity).
+	denominator: REAL
+			-- denominator of ratio
 
-	mode: DV_CODED_TEXT	
-			-- The modality of the performer / activity interaction, e.g. present, 
-			-- by telephone, by email etc.
+	type: INTEGER
+			-- type of ratio
 			
-	time: DV_INTERVAL [DV_DATE_TIME]	
-			-- The time interval during which the participation took place, 
-			-- if it is used in an observational context (i.e. recording facts about 
-			-- the past); or the intended time interval of the participation when used 
-			-- in future contexts, such as EHR Instructions.
+	effective_magnitude: REAL is
+			-- value of numerator/denominator
+		do
+			Result := numerator/denominator
+		end
 
+feature -- Comparison
+
+	infix "<" (other: like Current): BOOLEAN is
+			-- Is current object less than `other'?
+		do
+			Result := effective_magnitude < other.effective_magnitude
+		end
+
+	is_strictly_comparable_to (other: DV_RATIO): BOOLEAN is
+			-- two ordinals can be compared if they come from the same series
+		do
+			Result := type = other.type
+		end
+
+feature -- Conversion
+
+	as_string: STRING is
+		do
+			create Result.make(0)
+			Result.append(numerator.out)
+			Result.append(denominator.out)
+		end
+	
+	as_canonical_string: STRING is
+		do
+			Result := "<numerator>" + numerator.out + "</numerator>" +
+					"<denominator>" + denominator.out + "</denominator>"
+		end
+	
 invariant
-	Performer_exists: performer /= Void
-	Mode_valid: terminology(Terminology_id_openehr).has_code_for_group_id(Group_id_participation_mode, mode.defining_code)			
-	Function_valid: function /= Void and then function.generating_type.is_equal("DV_CODED_TEXT") 
--- FIXME: re-instate when a simple way is found to do an 'inline cast'
---		implies terminology("openehr").codes_for_group_name("participation function", "en")
---		.has(function.defining_code)
-
+	
 end
 
 
@@ -74,10 +113,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is participation.e.
+--| The Original Code is dv_ordinal.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2005
+--| Portions created by the Initial Developer are Copyright (C) 2003-2004
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

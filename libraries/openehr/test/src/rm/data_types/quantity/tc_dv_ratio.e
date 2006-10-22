@@ -1,63 +1,57 @@
 indexing
-	component:   "openEHR Common Reference Model"
-	
-	description: "[
-				 Used to represent any participation of a Party in some activity, 
-				 which is not explicitly in the model, e.g. assisting nurse. 
-				 Can be used to record past or future participations.
-				 ]"
-	keywords:    "participation"
+	component:   "openEHR Data Types"
 
-	design:      "openEHR Common Reference Model 2.0"
+	description: "Test DV_RATIO"
+	keywords:    "test, quantity"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2005 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2006 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class PARTICIPATION
+class TC_DV_RATIO
 
 inherit
-	EXTERNAL_ENVIRONMENT_ACCESS
+	TEST_CASE
+		redefine 
+			check_result
+		end
+
+	XML_TOOLS
 		export
 			{NONE} all
 		end
 
-feature -- Initialization
+creation
+	make
 
 feature -- Access
 
-	performer: PARTY_PROXY
-			-- The party participating in the activity.
+	title: STRING is "DV_RATIO"
 
-	function: DV_TEXT	
-			-- The function of the Party in this participation (a given party might 
-			-- participate in more than one way in a given activity).
+feature -- Initialisation
 
-	mode: DV_CODED_TEXT	
-			-- The modality of the performer / activity interaction, e.g. present, 
-			-- by telephone, by email etc.
-			
-	time: DV_INTERVAL [DV_DATE_TIME]	
-			-- The time interval during which the participation took place, 
-			-- if it is used in an observational context (i.e. recording facts about 
-			-- the past); or the intended time interval of the participation when used 
-			-- in future contexts, such as EHR Instructions.
+	make(arg:ANY) is
+		do
+		end
 
-invariant
-	Performer_exists: performer /= Void
-	Mode_valid: terminology(Terminology_id_openehr).has_code_for_group_id(Group_id_participation_mode, mode.defining_code)			
-	Function_valid: function /= Void and then function.generating_type.is_equal("DV_CODED_TEXT") 
--- FIXME: re-instate when a simple way is found to do an 'inline cast'
---		implies terminology("openehr").codes_for_group_name("participation function", "en")
---		.has(function.defining_code)
+	execute is
+		local
+			a_datum: DV_RATIO
+		do
+		end
+
+feature -- Access
+
+	check_result is
+		do
+		end
 
 end
-
 
 
 --|
@@ -74,10 +68,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is participation.e.
+--| The Original Code is tc_dv_quantity_ratio.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2005
+--| Portions created by the Initial Developer are Copyright (C) 2003-2004
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

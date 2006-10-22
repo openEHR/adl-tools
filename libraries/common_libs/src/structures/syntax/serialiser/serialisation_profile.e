@@ -82,19 +82,19 @@ feature  {ANY_SERIALISER} -- Factory
 		end
 
 	clean(elem:STRING): STRING is
-			-- clean `elem' by inserting correct quoting for formalism
+			-- generate clean copy of `elem' by inserting correct quoting for formalism
 		require
 			Elem_exists: elem /= Void
 		do
+			Result := elem.twin
 			from
 				quote_patterns.start
 			until
 				quote_patterns.off
 			loop
-				elem.replace_substring_all(quote_patterns.key_for_iteration, quote_patterns.item_for_iteration)
+				Result.replace_substring_all(quote_patterns.key_for_iteration, quote_patterns.item_for_iteration)
 				quote_patterns.forth
 			end
-			Result := elem
 		end
 
 	create_indent(indent_level: INTEGER): STRING is

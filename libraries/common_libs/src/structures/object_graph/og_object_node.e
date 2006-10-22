@@ -59,7 +59,7 @@ feature -- Access
 					
 					-- get the objects of this attribute
 					attr_children := attr_node.children
-					obj_predicate_required := attr_node.is_multiple or else attr_node.child_count > 1
+					obj_predicate_required := attr_node.is_multiple or attr_node.is_addressable or attr_node.child_count > 1
 					from	
 						attr_children.start
 					until
@@ -206,8 +206,10 @@ feature {OG_OBJECT_NODE} -- Implementation
 				child_obj := object_at_path_segment(a_path.item)
 				a_path.forth
 				if not a_path.off then
-					child_obj_node ?= child_obj -- must exist since path has been checked
-					Result := child_obj_node.internal_object_node_at_path(a_path)
+					child_obj_node ?= child_obj
+					if child_obj_node /= Void then
+						Result := child_obj_node.internal_object_node_at_path(a_path)
+					end
 				else
 					Result := child_obj
 				end

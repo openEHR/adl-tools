@@ -64,9 +64,9 @@ feature -- Status Report
 		
 invariant
 	Current_state_valid: current_state /= Void and then 
-		terminology("openehr").codes_for_group_name("ISM states", "en").has(current_state.defining_code)
+		terminology(Terminology_id_openehr).has_code_for_group_id(group_id_ism_states, current_state.defining_code)
 	Transition_valid: transition /= Void implies 
-		terminology("openehr").codes_for_group_name("ISM transitions", "en").has(transition.defining_code)
+		terminology(Terminology_id_openehr).has_code_for_group_id(group_id_ism_transitions, transition.defining_code)
 
 end
 

@@ -44,7 +44,7 @@ creation
 
 %token <INTEGER> V_INTEGER 
 %token <REAL> V_REAL 
-%token <STRING> V_TYPE_IDENTIFIER V_ATTRIBUTE_IDENTIFIER V_STRING
+%token <STRING> V_TYPE_IDENTIFIER V_GENERIC_TYPE_IDENTIFIER V_ATTRIBUTE_IDENTIFIER V_STRING
 %token <STRING> V_ISO8601_EXTENDED_DATE V_ISO8601_EXTENDED_TIME V_ISO8601_EXTENDED_DATE_TIME V_ISO8601_DURATION
 %token <STRING> V_CADL_BLOCK
 %token <STRING> V_LOCAL_CODE V_QUALIFIED_TERM_CODE_REF V_LOCAL_TERM_CODE_REF
@@ -64,6 +64,7 @@ creation
 %token ERR_CHARACTER ERR_STRING 
 %token <STRING> ERR_V_QUALIFIED_TERM_CODE_REF
 
+%type <STRING> type_identifier
 %type <INTEGER> integer_value
 %type <REAL> real_value
 %type <BOOLEAN> boolean_value
@@ -230,7 +231,7 @@ multiple_attr_object_block: untyped_multiple_attr_object_block
 		{
 			$$ := $1
 		}
-	| V_TYPE_IDENTIFIER untyped_multiple_attr_object_block
+	| type_identifier untyped_multiple_attr_object_block
 		{
 			-- probably should set type name on owning attribute - it doesn't belong on each 
 			-- object, since it is essentially a constraint
@@ -362,7 +363,7 @@ single_attr_object_block: untyped_single_attr_object_block
 			end
 			$$ := $1
 		}
-	| V_TYPE_IDENTIFIER untyped_single_attr_object_block
+	| type_identifier untyped_single_attr_object_block
 		{
 			debug("dADL_parse")
 				io.put_string(indent + "typed single_attr_object_block; type = " + $1 + "%N")
@@ -455,7 +456,7 @@ primitive_object_block: untyped_primitive_object_block
 			end
 			$$ := $1
 		}
-	| V_TYPE_IDENTIFIER untyped_primitive_object_block
+	| type_identifier untyped_primitive_object_block
 		{
 			debug("dADL_parse")
 				io.put_string(indent + "typed primitive_object_block; type = " + $1 + "%N")
@@ -638,6 +639,16 @@ simple_interval_value: integer_interval_value
 	;
 
 ---------------------- BASIC DATA VALUES -----------------------
+
+type_identifier: V_TYPE_IDENTIFIER
+		{
+			$$ := $1
+		}
+	| V_GENERIC_TYPE_IDENTIFIER
+		{
+			$$ := $1
+		}
+	;
 
 string_value: V_STRING
 		{

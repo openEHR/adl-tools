@@ -60,7 +60,7 @@ feature -- Status Report
 invariant
 	Null_flavour_indicated: is_null xor null_flavor /= Void
 	Null_flavour_valid: is_null implies
-		terminology("openehr").codes_for_group_name("null flavours", "en").has(null_flavor.defining_code)
+		terminology(terminology_id_openehr).has_code_for_group_id(group_id_null_flavours, null_flavor.defining_code)
 
 end
 

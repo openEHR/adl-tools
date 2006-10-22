@@ -83,7 +83,7 @@ feature -- Serialisation
 invariant
 	Description_exists: description /= Void
 	Original_language_valid: original_language /= void and then 
-		code_set("languages").has(original_language)
+		code_set(Code_set_id_languages).has(original_language)
 	Languages_available_valid: languages_available /= Void and then 
 		languages_available.has(original_language.as_string)
 	Revision_history_valid: is_controlled xor revision_history = Void

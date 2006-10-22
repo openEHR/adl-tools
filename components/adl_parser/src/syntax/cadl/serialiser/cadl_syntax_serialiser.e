@@ -42,7 +42,7 @@ feature -- Modification
 			s:STRING
 		do
 			last_result.append(create_indent(depth))
-			last_result.append(apply_style(a_node.rm_type_name, STYLE_IDENTIFIER))
+			last_result.append(apply_style(clean(a_node.rm_type_name), STYLE_IDENTIFIER))
 
 			if a_node.is_addressable then
 				last_result.append(apply_style("[" + a_node.node_id + "]", STYLE_TERM_REF))
@@ -83,7 +83,7 @@ feature -- Modification
 			
 			last_result.append(apply_style(symbol(SYM_ALLOW_ARCHETYPE), STYLE_KEYWORD) + format_item(FMT_SPACE))
 			
-			last_result.append(apply_style(a_node.rm_type_name, STYLE_IDENTIFIER))
+			last_result.append(apply_style(clean(a_node.rm_type_name), STYLE_IDENTIFIER))
 
 			if a_node.is_addressable then
 				last_result.append(apply_style("[" + a_node.node_id + "]", STYLE_TERM_REF))
@@ -189,7 +189,7 @@ feature -- Modification
 			-- start serialising an ARCHETYPE_INTERNAL_REF
 		do
 			last_result.append(create_indent(depth) + apply_style(symbol(SYM_USE_NODE), STYLE_KEYWORD) + format_item(FMT_SPACE))
-			last_result.append(a_node.rm_type_name + format_item(FMT_SPACE) + a_node.target_path + format_item(FMT_NEWLINE))
+			last_result.append(clean(a_node.rm_type_name) + format_item(FMT_SPACE) + a_node.target_path + format_item(FMT_NEWLINE))
 		end
 		
 	end_archetype_internal_ref(a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER) is

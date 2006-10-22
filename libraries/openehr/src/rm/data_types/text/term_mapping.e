@@ -127,7 +127,7 @@ invariant
 	Target_exists: target /= Void
 	Match_valid: is_valid_match_code(match)
 	Purpose_valid: purpose /= Void implies 
-		terminology("openehr").codes_for_group_name("term mapping purpose", "en").has(purpose.defining_code)
+		terminology(terminology_id_openehr).has_code_for_group_id(Group_id_term_mapping_purpose, purpose.defining_code)
 
 end
 

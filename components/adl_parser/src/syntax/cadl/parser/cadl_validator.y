@@ -56,7 +56,7 @@ creation
 %}
 %token <INTEGER> V_INTEGER 
 %token <REAL> V_REAL 
-%token <STRING> V_TYPE_IDENTIFIER V_ATTRIBUTE_IDENTIFIER V_FEATURE_CALL_IDENTIFIER V_STRING
+%token <STRING> V_TYPE_IDENTIFIER V_GENERIC_TYPE_IDENTIFIER V_ATTRIBUTE_IDENTIFIER V_FEATURE_CALL_IDENTIFIER V_STRING
 %token <STRING> V_LOCAL_CODE V_LOCAL_TERM_CODE_REF V_QUALIFIED_TERM_CODE_REF V_TERM_CODE_CONSTRAINT
 %token <STRING> V_REGEXP
 %token <CHARACTER> V_CHARACTER
@@ -96,6 +96,7 @@ creation
 
 %type <ARRAYED_LIST [ASSERTION]> assertions c_includes c_excludes
 
+%type <STRING> type_identifier
 %type <OG_PATH> absolute_path relative_path
 %type <INTEGER> cardinality_limit_value
 %type <OE_INTERVAL[INTEGER]> c_occurrences c_existence
@@ -204,11 +205,11 @@ c_complex_object_head: c_complex_object_id c_occurrences
 		}
 	;
 
-c_complex_object_id: V_TYPE_IDENTIFIER
+c_complex_object_id: type_identifier
 		{
 			create complex_obj.make_anonymous($1)
 		}
-	| V_TYPE_IDENTIFIER V_LOCAL_TERM_CODE_REF
+	| type_identifier V_LOCAL_TERM_CODE_REF
 		{
 			create complex_obj.make_identified($1, $2)
 		}
@@ -292,7 +293,7 @@ c_object: c_complex_object
 		}
 	;
 
-archetype_internal_ref: SYM_USE_NODE V_TYPE_IDENTIFIER absolute_path 
+archetype_internal_ref: SYM_USE_NODE type_identifier absolute_path 
 		{
 			str := $3.as_string
 			create archetype_internal_ref.make($2, str)
@@ -307,7 +308,7 @@ archetype_internal_ref: SYM_USE_NODE V_TYPE_IDENTIFIER absolute_path
 				c_attrs.item.put_child(archetype_internal_ref)
 			end
 		}
-	| SYM_USE_NODE V_TYPE_IDENTIFIER error 
+	| SYM_USE_NODE type_identifier error 
 		{
 			raise_error
 			report_error("expecting absolute path")
@@ -351,11 +352,11 @@ c_archetype_slot_head: c_archetype_slot_id c_occurrences
 		}
 	;
 
-c_archetype_slot_id: SYM_ALLOW_ARCHETYPE V_TYPE_IDENTIFIER
+c_archetype_slot_id: SYM_ALLOW_ARCHETYPE type_identifier
 		{
 			create archetype_slot.make_anonymous($2)
 		}
-	| SYM_ALLOW_ARCHETYPE V_TYPE_IDENTIFIER V_LOCAL_TERM_CODE_REF
+	| SYM_ALLOW_ARCHETYPE type_identifier V_LOCAL_TERM_CODE_REF
 		{
 			create archetype_slot.make_identified($2, $3)
 		}
@@ -1459,7 +1460,7 @@ constraint_ref: V_LOCAL_TERM_CODE_REF	-- e.g. "ac0003"
 		}
 	;
 
-any_identifier: V_TYPE_IDENTIFIER
+any_identifier: type_identifier
 		{
 			$$ := $1
 		}
@@ -1474,6 +1475,16 @@ any_identifier: V_TYPE_IDENTIFIER
 -----------------        DO NOT MODIFY        -------------------
 -----------------------------------------------------------------
 ---------------------- BASIC DATA VALUES -----------------------
+
+type_identifier: V_TYPE_IDENTIFIER
+		{
+			$$ := $1
+		}
+	| V_GENERIC_TYPE_IDENTIFIER
+		{
+			$$ := $1
+		}
+	;
 
 string_value: V_STRING
 		{

@@ -26,6 +26,7 @@ feature -- Access
 			Result.extend(create {TC_DV_INTERVAL}.make(Void))
 			Result.extend(create {TC_DV_COUNT}.make(Void))
 			Result.extend(create {TC_DV_ORDINAL}.make(Void))
+			Result.extend(create {TC_DV_RATIO}.make(Void))
 		end
 
 	title: STRING is "DATA TYPE - Quantity tests"

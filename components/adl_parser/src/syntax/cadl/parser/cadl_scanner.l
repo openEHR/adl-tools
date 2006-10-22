@@ -421,18 +421,23 @@ P[yY]?[mM]?[Ww]?[dD]? {
   			}
 
 ----------/* V_TYPE_IDENTIFIER */ -------------------------------------------------
-[A-Z][a-zA-Z0-9_]*	{
+[A-Z]{IDCHAR}*	{
 					last_token := V_TYPE_IDENTIFIER
 					last_string_value := text
 			}
 
-[a-z][a-zA-Z0-9_]*[	 ]*\(\)	{
+[A-Z]{IDCHAR}*<[a-zA-Z0-9,_<>]+>	{
+					last_token := V_GENERIC_TYPE_IDENTIFIER
+					last_string_value := text
+			}
+
+[a-z]{IDCHAR}*[	 ]*\(\)	{
 					last_token := V_FEATURE_CALL_IDENTIFIER
 					last_string_value := text_substring(1, text_count - 2)
 					last_string_value.right_adjust
 			}
 
-[a-z][a-zA-Z0-9_]*	{
+[a-z]{IDCHAR}*	{
 					last_token := V_ATTRIBUTE_IDENTIFIER
 					last_string_value := text
 			}

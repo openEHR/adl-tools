@@ -15,6 +15,9 @@ indexing
 
 class TERMINOLOGY_SERVICE
 
+inherit
+	OPENEHR_DEFINITIONS
+	
 feature -- Access
 
 	terminology(name: STRING): TERMINOLOGY_ACCESS is

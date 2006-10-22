@@ -48,7 +48,7 @@ feature -- Initialisation
 			print_paths(root_node.all_paths)
 			
 			io.put_string("----- remove children of '/items' ----%N")
-			obj_node ?= root_node.node_at_path (create {OG_PATH}.make_from_string("/items"))
+			obj_node ?= root_node.object_node_at_path (create {OG_PATH}.make_from_string("/items"))
 			attr_node := obj_node.parent
 			attr_node.remove_all_children
 			print_paths(root_node.all_paths)

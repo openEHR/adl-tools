@@ -192,7 +192,7 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 		end
 
 invariant
-	language_valid: language /= Void and then code_set("languages").has(language) 
+	language_valid: language /= Void and then code_set(code_set_id_languages).has(language) 
 	purpose_valid: purpose /= Void and then not purpose.is_empty
 	use_valid: use /= Void implies not use.is_empty
 	misuse_valid: misuse /= Void implies not misuse.is_empty

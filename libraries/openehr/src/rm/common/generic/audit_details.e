@@ -71,7 +71,7 @@ invariant
 	Committer_exists: committer /= Void
 	Time_committed_exists: time_committed /= Void	
 	Change_type_exists: change_type /= Void and then 
-		terminology("openehr").codes_for_group_name("audit change type", "en").has(change_type.defining_code)
+		terminology(Terminology_id_openehr).has_code_for_group_id(Group_id_audit_change_type, change_type.defining_code)			
 
 end
 

@@ -64,7 +64,7 @@ feature -- Access
 feature -- Status Report
 
 	has(a_code: CODE_PHRASE): BOOLEAN is
-			-- 	True if a_code exists in thsi code set
+			-- 	True if a_code exists in this code set
 		require
 			Code_exists: a_code /= Void
 		do
@@ -75,6 +75,12 @@ feature -- Status Report
 		require
 			gid_valid: gid /= Void and then not gid.is_empty
 		do
+		end
+
+	has_code_for_group_id (group_id: String; a_code: CODE_PHRASE): BOOLEAN is
+			-- True if ‘a_code’ is known in group ‘group_id’ in the openEHR terminology.
+		do
+			
 		end
 
 end

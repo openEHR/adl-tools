@@ -79,7 +79,7 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 		end
 
 invariant
-	Language_valid: language /= Void and then code_set("languages").has(language)
+	Language_valid: language /= Void and then code_set(code_set_id_languages).has(language)
 	Author_valid: author /= Void	
 	
 end

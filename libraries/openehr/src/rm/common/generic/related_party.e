@@ -38,9 +38,8 @@ feature -- Access
 
 invariant
 	Relationship_valid: relationship /= Void and then 
-			terminology("openehr").codes_for_group_name("related party relationship", "en").
-			has(relationship.defining_code)
-
+		terminology(Terminology_id_openehr).has_code_for_group_id(Group_id_related_party_relationship, relationship.defining_code)
+		
 end
 
 

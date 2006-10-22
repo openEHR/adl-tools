@@ -275,8 +275,8 @@ invariant
 	Mappings_valid: mappings /= void implies not mappings.is_empty
 	Formatting_valid: formatting /= void implies not formatting.is_empty
 
-	Language_valid: language /= Void and then code_set("languages").has(language)
-	Encoding_valid: encoding /= Void and then code_set("character sets").has(encoding)
+	Language_valid: language /= Void and then code_set(Code_set_id_languages).has(language)
+	Encoding_valid: encoding /= Void and then code_set(Code_set_id_character_sets).has(encoding)
 
 end
 

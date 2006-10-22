@@ -37,6 +37,12 @@ feature -- Access
 			-- optional tagged ranges for this value in its particular measurement context
 
 	normal_range: DV_INTERVAL[like Current]
+			-- Optional normal range
+	
+	normal_status: DV_ORDINAL	
+			-- Optional normal status indicator of value with respect to normal range for this value. 
+			-- Often included by lab, even if the normal range itself is not included.
+			-- Coded by ordinals in series HHH, HH, H, (nothing), L, LL, LLL
 
 feature -- Comparison
 
@@ -84,8 +90,11 @@ feature -- Modification
 		
 invariant
 	Other_reference_range_validity: other_reference_ranges /= Void implies not other_reference_ranges.is_empty
-	Is_simple_validity: (normal_range = Void and other_reference_ranges = Void) implies is_simple
-
+	Is_simple_validity: (normal_range = Void and other_reference_ranges = Void and normal_status = Void) implies is_simple
+	Normal_status_validity: normal_status /= Void implies normal_status.is_simple
+	Normal_status_symbol_validity: normal_status /= Void implies terminology(Terminology_id_openehr).
+		has_code_for_group_id(Group_id_normal_status, normal_status.symbol.defining_code)
+		
 end
 
 

@@ -69,8 +69,8 @@ invariant
 	Provider_valid: provider /= Void
 	Other_participations_valid: other_participations /= Void implies not other_participations.is_empty
 	Archetype_root_point: is_archetype_root
-	Language_valid: language /= Void and then code_set("languages").has(language)
-	Encoding_valid: encoding /= Void and then code_set("character sets").has(encoding)
+	Language_valid: language /= Void and then code_set(code_set_id_languages).has(language)
+	Encoding_valid: encoding /= Void and then code_set(code_set_id_character_sets).has(encoding)
 	
 end
 

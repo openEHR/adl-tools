@@ -84,7 +84,8 @@ invariant
 	Commit_audit_valid: commit_audit /= Void
 	Contribution_valid: contribution /= Void and contribution.type.is_equal("CONTRIBUTION")
 	Preceding_version_uid_validity: uid.version_tree_id.is_first xor preceding_version_uid /= Void
-	Lifecycle_state_valid: lifecycle_state /= Void and then terminology("openehr").codes_for_group_name("version lifecycle state", "en").has(lifecycle_state.defining_code)
+	Lifecycle_state_valid: lifecycle_state /= Void and then 
+		terminology(terminology_id_openehr).has_code_for_group_id(group_id_version_lifecycle_state, lifecycle_state.defining_code)
 	
 end
 

@@ -2,12 +2,9 @@ indexing
 	component:   "openEHR Data Types"
 
 	description: "[
-				 Used for recording specified administration dosages (e.g. 5 mg / 100 ml),
-				 drug amounts based on body weight (e.g. 1 tablet / 10 kg), and 
-				 titers (e.g. 1:128). Note that the units representation in single QUANTITYs 
-				 caters for any ratio in which the units are expressible in unitary 
-				 (i.e. denominator = 1) form. Thus, a QUANTITY_RATIO of '2 g / 250ml' could
-				 be expressed as a QUANTITY of '8 g/l'.
+				 Used for recording formulations, e.g. specified administration dosages (e.g. 5 mg / 100 ml),
+				 drug amounts based on body weight (e.g. 1 tablet / 10 kg). Not used for pure ratios; use
+				 DV_RATIO.
 				 ]"
 	keywords:    "quantity, ratio, data"
 

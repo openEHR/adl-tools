@@ -21,7 +21,10 @@ deferred class DATA_VALUE
 inherit
 	CANONICAL_FRAGMENT
 	
-	OPENEHR_DEFINITIONS
+	EXTERNAL_ENVIRONMENT_ACCESS
+		export
+			{NONE} all
+		end
 
 feature -- Initialization
 	

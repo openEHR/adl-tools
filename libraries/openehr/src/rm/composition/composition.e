@@ -103,11 +103,11 @@ invariant
 	Archetype_root_point: is_archetype_root
 	Composer_exists: composer /= Void
 	Content_valid: content /= Void implies not content.is_empty
-	Category_validity: category /= Void and then terminology("openehr").
-		codes_for_group_name("composition category", "en").has(category.defining_code)
+	Category_validity: category /= Void and then 
+		terminology(Terminology_id_openehr).has_code_for_group_id (Group_id_composition_category, category.defining_code)
 	Is_persistent_validity: is_persistent implies context = Void
-	Language_valid: language /= Void and then code_set("languages").has(language)
-	Territory_valid: territory /= Void and then code_set("countries").has(territory)
+	Territory_valid: territory /= Void and then code_set(Code_set_id_countries).has(territory)
+	Language_valid: language /= Void and then code_set(Code_set_id_languages).has(language)
 	No_parent: parent = Void
 
 end

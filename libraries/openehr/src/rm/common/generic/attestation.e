@@ -52,8 +52,8 @@ invariant
 	-- re-instate when we can state an expression which includes an assignment attempt
 	--Reason_validity: reason /= Void and then
 	--	(reason.generating_type.is_equal("DV_CODED_TEXT") implies
-	--	terminology("openehr").codes_for_group_name("attestation status",
-	--	"en").has(reason.defining_code))
+	--	terminology(Terminology_openehr).codes_for_group_name(Group_id_attestation_status,
+	--	reason.defining_code))
 
 end
 
