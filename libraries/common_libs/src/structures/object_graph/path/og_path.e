@@ -29,8 +29,6 @@ feature -- Definitions
 	segment_separator: CHARACTER is '/'
 
 	feature_call_separator: CHARACTER is '/'
-
-	feature_call_arg_delimiters: STRING is "()"
 	
 feature -- Initialisation
 
@@ -380,12 +378,7 @@ feature -- Output
 			until
 				off or item.is_feature_call
 			loop
-				Result.append(item.attr_name)
-				if item.is_addressable then
-					Result.append("[" + item.object_id + "]")
-				elseif item.is_feature_call then
-					Result.append(feature_call_arg_delimiters)
-				end
+				Result.append(item.as_string)
 				if not items.islast then
 					Result.append_character(segment_separator)					
 				end

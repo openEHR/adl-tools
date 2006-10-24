@@ -18,7 +18,7 @@ indexing
 class DV_RATIO
 
 inherit
-	DV_ORDERED
+	DV_QUANTIFIED
 
 create
 	make, make_from_string, make_from_canonical_string
@@ -58,24 +58,33 @@ feature -- Access
 	type: INTEGER
 			-- type of ratio
 			
-	effective_magnitude: REAL is
+	magnitude: REAL_REF is
 			-- value of numerator/denominator
 		do
 			Result := numerator/denominator
 		end
 
+	diff_type: DV_RATIO
+			-- type of difference for this quantity
+		
 feature -- Comparison
-
-	infix "<" (other: like Current): BOOLEAN is
-			-- Is current object less than `other'?
-		do
-			Result := effective_magnitude < other.effective_magnitude
-		end
 
 	is_strictly_comparable_to (other: DV_RATIO): BOOLEAN is
 			-- two ordinals can be compared if they come from the same series
 		do
 			Result := type = other.type
+		end
+
+feature -- Basic Operations
+
+	infix "+" (diff_val: like diff_type): like Current is
+			-- addition
+		do
+		end
+
+	infix "-" (other: like Current): like diff_type is
+			-- difference
+		do
 		end
 
 feature -- Conversion

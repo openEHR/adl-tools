@@ -529,7 +529,7 @@ feature -- Primitive Object Creation
 
 feature -- Domain object creation
 
-	create_c_coded_term_from_pattern (h_parent_c_attribute: INTEGER; a_term_constraint: POINTER): INTEGER is
+	create_c_code_phrase_from_pattern (h_parent_c_attribute: INTEGER; a_term_constraint: POINTER): INTEGER is
 			-- create a "term" node from term in string form "terminology(version)::code_phrase, code_phrase, ..."
 			-- REQUIRE
 			-- parent_valid: has_c_attribute(h_parent_c_attribute)
@@ -540,7 +540,7 @@ feature -- Domain object creation
 			create c_a_term_constraint.make_by_pointer (a_term_constraint)
 
 			Result := new_handle
-			put_c_coded_term(constraint_model_factory.create_c_coded_term_from_pattern(c_attribute(h_parent_c_attribute), c_a_term_constraint.string), Result)
+			put_c_code_phrase(constraint_model_factory.create_c_code_phrase_from_pattern(c_attribute(h_parent_c_attribute), c_a_term_constraint.string), Result)
 		end
 
 	create_c_ordinal (h_parent_c_attribute: INTEGER): INTEGER is

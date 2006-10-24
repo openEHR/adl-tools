@@ -30,7 +30,7 @@ feature -- Initialisation
 			create c_complex_objects.make(0)
 			create c_attributes.make(0)
 			create constraint_refs.make(0)
-			create c_coded_terms.make(0)
+			create c_code_phrases.make(0)
 			create c_ordinals.make(0)
 			create c_quantities.make(0)
 			create c_primitive_objects.make(0)
@@ -85,7 +85,7 @@ feature {SHARED_ADL_OBJECTS} -- Handles
 
 	cardinalities: HASH_TABLE[CARDINALITY, INTEGER]
 
-	c_coded_terms: HASH_TABLE[C_CODED_TERM, INTEGER]
+	c_code_phrases: HASH_TABLE[C_CODE_PHRASE, INTEGER]
 
 	c_ordinals: HASH_TABLE[C_ORDINAL, INTEGER]
 

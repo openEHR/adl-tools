@@ -170,9 +170,9 @@ feature -- Status Report
 			Result := adl_objects.cardinalities.has(a_handle)
 		end
 
-	has_c_coded_term(a_handle: INTEGER): BOOLEAN is
+	has_c_code_phrase(a_handle: INTEGER): BOOLEAN is
 		do
-			Result := adl_objects.c_coded_terms.has(a_handle)
+			Result := adl_objects.c_code_phrases.has(a_handle)
 		end
 
 	has_c_ordinal(a_handle: INTEGER): BOOLEAN is
@@ -243,9 +243,9 @@ feature -- Commands
 			adl_objects.c_objects.put(an_item, a_handle)
 		end
 
-	put_c_coded_term(an_item: C_CODED_TERM; a_handle: INTEGER) is
+	put_c_code_phrase(an_item: C_CODE_PHRASE; a_handle: INTEGER) is
 		do
-			adl_objects.c_coded_terms.put(an_item, a_handle)
+			adl_objects.c_code_phrases.put(an_item, a_handle)
 			adl_objects.c_objects.put(an_item, a_handle)
 		end
 

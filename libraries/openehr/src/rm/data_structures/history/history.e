@@ -84,7 +84,8 @@ feature -- Conversion
 invariant
 	Origin_exists: origin /= Void
 	Items_exists: items /= Void and then not items.is_empty	
-	Period_validity: is_periodic xor period = Void	
+	Period_validity: is_periodic xor period = Void
+--	Period_consistency: is_periodic implies events.for_all (e: EVENT | e.offset.to_seconds.mod(period.to_seconds) = 0)
 
 end
 

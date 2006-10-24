@@ -12,7 +12,7 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class C_CODED_TERM
+class C_CODE_PHRASE
 
 inherit
 	C_DOMAIN_TYPE
@@ -259,13 +259,13 @@ feature -- Serialisation
 	enter_block(serialiser: CONSTRAINT_MODEL_SERIALISER; depth: INTEGER) is
 			-- perform serialisation at start of block for this node
 		do
-			serialiser.start_c_coded_term(Current, depth)
+			serialiser.start_c_code_phrase(Current, depth)
 		end
 		
 	exit_block(serialiser: CONSTRAINT_MODEL_SERIALISER; depth: INTEGER) is
 			-- perform serialisation at end of block for this node
 		do
-			serialiser.end_c_coded_term(Current, depth)
+			serialiser.end_c_code_phrase(Current, depth)
 		end
 
 feature {DT_OBJECT_CONVERTER} -- Conversion

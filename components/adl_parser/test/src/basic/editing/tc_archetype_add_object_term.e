@@ -53,7 +53,7 @@ feature -- testing
 			archetype: ARCHETYPE
 			cf: CONSTRAINT_MODEL_FACTORY
 			an_attr_node: C_ATTRIBUTE
-			a_term_node: C_CODED_TERM
+			a_term_node: C_CODE_PHRASE
 		do
 			archetype := adl_interface.adl_engine.archetype
 
@@ -65,7 +65,7 @@ feature -- testing
 			
 			-- add ordinal node
 			an_attr_node := cf.create_c_attribute_single (archetype.definition, "a_term")
-			a_term_node := cf.create_c_coded_term_from_pattern(an_attr_node, "openehr::253, 271, 272, 273")
+			a_term_node := cf.create_c_code_phrase_from_pattern(an_attr_node, "openehr::253, 271, 272, 273")
 
 			if archetype.is_valid then
 				adl_interface.adl_engine.serialise (serialise_format)	

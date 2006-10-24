@@ -62,7 +62,7 @@ feature -- testing
 			an_attr_node, top_items_node: C_ATTRIBUTE
 			an_obj_node, obj_node2, neonate_section_node, mother_section_node: C_COMPLEX_OBJECT
 			a_simple_node: C_PRIMITIVE_OBJECT
-			a_term_node: C_CODED_TERM
+			a_term_node: C_CODE_PHRASE
 			an_assertion: ASSERTION
 			id_expr_leaf, id_pattern_expr_leaf: EXPR_LEAF
 			match_op: EXPR_BINARY_OPERATOR
@@ -75,7 +75,7 @@ feature -- testing
 			an_attr_node := cf.create_c_attribute_single (archetype.definition, "name")
 			an_obj_node := cf.create_c_complex_object_anonymous (an_attr_node, "CODED_TEXT")
 			an_attr_node := cf.create_c_attribute_single (an_obj_node, "code")
-			a_term_node := cf.create_c_coded_term_from_pattern (an_attr_node, "local::at0000")
+			a_term_node := cf.create_c_code_phrase_from_pattern (an_attr_node, "local::at0000")
 	
 			-- add items node
 			top_items_node := cf.create_c_attribute_multiple (archetype.definition, "items", cf.create_cardinality_make_upper_unbounded (0))
@@ -92,7 +92,7 @@ feature -- testing
 			an_attr_node := cf.create_c_attribute_single (neonate_section_node, "name")
 			obj_node2 := cf.create_c_complex_object_anonymous (an_attr_node, "CODED_TEXT")
 			an_attr_node := cf.create_c_attribute_single (obj_node2, "code")
-			a_term_node := cf.create_c_coded_term_from_pattern (an_attr_node, "local::" + a_code)
+			a_term_node := cf.create_c_code_phrase_from_pattern (an_attr_node, "local::" + a_code)
 			
 			an_attr_node := cf.create_c_attribute_multiple (neonate_section_node, "items", cf.create_cardinality_make_upper_unbounded (0))
 			an_arch_slot := cf.create_archetype_slot_anonymous (an_attr_node, "OBSERVATION")
@@ -117,7 +117,7 @@ feature -- testing
 			an_attr_node := cf.create_c_attribute_single (mother_section_node, "name")
 			obj_node2 := cf.create_c_complex_object_anonymous (an_attr_node, "CODED_TEXT")
 			an_attr_node := cf.create_c_attribute_single (obj_node2, "code")
-			a_term_node := cf.create_c_coded_term_from_pattern (an_attr_node, "local::" + a_code)
+			a_term_node := cf.create_c_code_phrase_from_pattern (an_attr_node, "local::" + a_code)
 
 			an_attr_node := cf.create_c_attribute_multiple (mother_section_node, "items", cf.create_cardinality_make_upper_unbounded (0))
 			an_arch_slot := cf.create_archetype_slot_anonymous (an_attr_node, "OBSERVATION")

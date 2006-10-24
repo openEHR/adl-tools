@@ -786,9 +786,9 @@ debug ("GEYACC")
 end
 
 			debug("ADL_parse")
-				io.put_string(indent + "ATTR_NODE " + c_attrs.item.rm_attribute_name + " put_child(c_coded_term LEAF_OBJ)%N") 
+				io.put_string(indent + "ATTR_NODE " + c_attrs.item.rm_attribute_name + " put_child(c_code_phrase LEAF_OBJ)%N") 
 			end
-			c_attrs.item.put_child(c_coded_term_obj)
+			c_attrs.item.put_child(c_code_phrase_obj)
 		
 if yy_parsing_status = yyContinue then
 	yyssp := yyssp - 1
@@ -4252,7 +4252,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1447")
 end
 
-			create c_coded_term_obj.make_from_pattern(yyvs4.item (yyvsp4))
+			create c_code_phrase_obj.make_from_pattern(yyvs4.item (yyvsp4))
 		
 if yy_parsing_status = yyContinue then
 	yyssp := yyssp - 1
@@ -4282,7 +4282,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1451")
 end
 
-			create c_coded_term_obj.make_from_pattern(yyvs4.item (yyvsp4))
+			create c_code_phrase_obj.make_from_pattern(yyvs4.item (yyvsp4))
 		
 if yy_parsing_status = yyContinue then
 	yyssp := yyssp - 1
@@ -7081,7 +7081,7 @@ feature {NONE} -- Parse Tree
 	attr_node: C_ATTRIBUTE
 
 	c_prim_obj: C_PRIMITIVE_OBJECT
-	c_coded_term_obj: C_CODED_TERM
+	c_code_phrase_obj: C_CODE_PHRASE
 	constraint_ref: CONSTRAINT_REF
 	archetype_internal_ref: ARCHETYPE_INTERNAL_REF
 	archetype_slot: ARCHETYPE_SLOT

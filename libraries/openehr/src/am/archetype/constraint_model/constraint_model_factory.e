@@ -118,7 +118,7 @@ feature -- Factory
 			a_parent.put_child(Result)
 		end
 		
-	create_c_coded_term_from_pattern(a_parent: C_ATTRIBUTE; a_term_constraint: STRING): C_CODED_TERM is
+	create_c_code_phrase_from_pattern(a_parent: C_ATTRIBUTE; a_term_constraint: STRING): C_CODE_PHRASE is
 			-- create a "term" node from term in string form "terminology(version)::code_phrase, code_phrase, ..."
 		require
 			parent_valid: a_parent /= Void
@@ -149,9 +149,9 @@ feature -- Factory
 			a_parent.put_child(Result)
 		end
 
-	create_ordinal(a_value: INTEGER; a_symbol_code_phrase: STRING):ORDINAL is
+	create_ordinal(a_value: INTEGER; a_symbol_code_phrase: STRING): ORDINAL is
 			-- create an ORDINAL from an integer value, and a symbol defined as a term
-			-- string of the usual form, i.e. "[ttt::code]"
+			-- string of the usual form, i.e. "terminology::code_string"
 		require
 			A_symbol_valid: a_symbol_code_phrase /= Void and then not a_symbol_code_phrase.is_empty
 		do

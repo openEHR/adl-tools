@@ -26,6 +26,11 @@ inherit
 create
 	make, make_with_object_id, make_feature_call, make_from_other
 
+
+feature -- Definitions
+
+	feature_call_arg_delimiters: STRING is "()"
+
 feature -- Initialisation
 
 	make(an_attr_name: STRING) is
@@ -129,6 +134,20 @@ feature -- Modification
 			Object_id_set: object_id.is_equal(an_object_id) or else object_id.is_empty
 		end
 
+feature -- Output
+
+	as_string: STRING is
+			-- output in string form
+		do
+			create Result.make(0)
+			Result.append(attr_name)
+			if is_addressable then
+				Result.append("[" + object_id + "]")
+			elseif is_feature_call then
+				Result.append(feature_call_arg_delimiters)
+			end
+		end
+		
 invariant
 	Validity: not (is_addressable and is_feature_call)
 	Attr_name_valid: attr_name /= Void and then not attr_name.is_empty

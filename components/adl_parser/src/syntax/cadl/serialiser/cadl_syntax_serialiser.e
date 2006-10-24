@@ -248,8 +248,8 @@ feature -- Modification
 		do
 		end
 
-	start_c_coded_term(a_node: C_CODED_TERM; depth: INTEGER) is
-			-- start serialising an C_CODED_TERM
+	start_c_code_phrase(a_node: C_CODE_PHRASE; depth: INTEGER) is
+			-- start serialising an C_CODE_PHRASE
 		local
 			adl_term: ARCHETYPE_TERM
 		do
@@ -306,8 +306,8 @@ feature -- Modification
 			end				
 		end
 		
-	end_c_coded_term(a_node: C_CODED_TERM; depth: INTEGER) is
-			-- end serialising an C_CODED_TERM
+	end_c_code_phrase(a_node: C_CODE_PHRASE; depth: INTEGER) is
+			-- end serialising an C_CODE_PHRASE
 		do
 		end
 

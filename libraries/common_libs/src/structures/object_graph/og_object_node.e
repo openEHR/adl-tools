@@ -59,7 +59,7 @@ feature -- Access
 					
 					-- get the objects of this attribute
 					attr_children := attr_node.children
-					obj_predicate_required := attr_node.is_multiple or attr_node.is_addressable or attr_node.child_count > 1
+					obj_predicate_required := attr_node.is_multiple or attr_node.is_addressable -- or attr_node.child_count > 1
 					from	
 						attr_children.start
 					until

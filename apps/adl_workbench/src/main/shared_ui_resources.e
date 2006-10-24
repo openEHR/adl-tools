@@ -288,7 +288,7 @@ feature -- Access
 			Result.extend("ARCHETYPE_INTERNAL_REF")
 			Result.extend("CONSTRAINT_REF")
 	
-			Result.extend("C_CODED_TERM")
+			Result.extend("C_CODE_PHRASE")
 			Result.extend("C_ORDINAL")
 			Result.extend("C_QUANTITY")
 			Result.extend("C_PRIMITIVE_OBJECT")
@@ -307,7 +307,7 @@ feature -- Access
 			Result.put("Container attribute (mandatory)",			 	"C_ATTRIBUTE.multiple")
 			Result.put("Container attribute (optional)", 				"C_ATTRIBUTE.multiple.optional")
 			
-			Result.put("C_CODED_TERM (openEHR archetype profile)", 		"C_CODED_TERM")
+			Result.put("C_CODE_PHRASE (openEHR archetype profile)", 	"C_CODE_PHRASE")
 			Result.put("C_ORDINAL (openEHR archetype profile)",			"C_ORDINAL")
 			Result.put("C_QUANTITY (openEHR archetype profile)", 		"C_QUANTITY")
 			Result.put("C_PRIMITIVE_OBJECT - any type (openEHR AOM)", 	"C_PRIMITIVE_OBJECT")
@@ -344,7 +344,7 @@ feature -- Access
 			Result.put("c_attribute_multiple.ico",					 	"C_ATTRIBUTE.multiple")
 			Result.put("c_attribute_multiple_optional.ico", 			"C_ATTRIBUTE.multiple.optional")
 			
-			Result.put("c_coded_term.ico", 								"C_CODED_TERM")
+			Result.put("c_code_phrase.ico", 								"C_CODE_PHRASE")
 			Result.put("c_ordinal.ico", 								"C_ORDINAL")
 			Result.put("c_quantity.ico", 								"C_QUANTITY")
 			Result.put("c_quantity_item.ico", 							"C_QUANTITY_ITEM")

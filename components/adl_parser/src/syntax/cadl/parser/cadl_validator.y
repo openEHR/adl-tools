@@ -250,12 +250,12 @@ c_object: c_complex_object
 			end
 			c_attrs.item.put_child(constraint_ref)
 		}
-	| c_coded_term
+	| c_code_phrase
 		{
 			debug("ADL_parse")
-				io.put_string(indent + "ATTR_NODE " + c_attrs.item.rm_attribute_name + " put_child(c_coded_term LEAF_OBJ)%N") 
+				io.put_string(indent + "ATTR_NODE " + c_attrs.item.rm_attribute_name + " put_child(c_code_phrase LEAF_OBJ)%N") 
 			end
-			c_attrs.item.put_child(c_coded_term_obj)
+			c_attrs.item.put_child(c_code_phrase_obj)
 		}
 	| c_ordinal 
 		{
@@ -1444,13 +1444,13 @@ ordinal: integer_value SYM_INTERVAL_DELIM V_QUALIFIED_TERM_CODE_REF
 		}
 	;
 
-c_coded_term: V_TERM_CODE_CONSTRAINT	-- e.g. "[local::at0040, at0041; at0040]"
+c_code_phrase: V_TERM_CODE_CONSTRAINT	-- e.g. "[local::at0040, at0041; at0040]"
 		{
-			create c_coded_term_obj.make_from_pattern($1)
+			create c_code_phrase_obj.make_from_pattern($1)
 		}
 	| V_QUALIFIED_TERM_CODE_REF
 		{
-			create c_coded_term_obj.make_from_pattern($1)
+			create c_code_phrase_obj.make_from_pattern($1)
 		}
 	;
  
@@ -2103,7 +2103,7 @@ feature {NONE} -- Parse Tree
 	attr_node: C_ATTRIBUTE
 
 	c_prim_obj: C_PRIMITIVE_OBJECT
-	c_coded_term_obj: C_CODED_TERM
+	c_code_phrase_obj: C_CODE_PHRASE
 	constraint_ref: CONSTRAINT_REF
 	archetype_internal_ref: ARCHETYPE_INTERNAL_REF
 	archetype_slot: ARCHETYPE_SLOT

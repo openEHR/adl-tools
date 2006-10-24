@@ -94,7 +94,7 @@ cluster
 			assertion (require)
 			assertion (ensure)
 		visible
-			C_CODED_TERM
+			C_CODE_PHRASE
 				end
 			C_ORDINAL
 				end

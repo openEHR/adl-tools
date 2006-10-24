@@ -81,8 +81,9 @@ feature -- Commands
 				p_paths.off
 			loop
 				create list_row
-				if adl_interface.archetype.definition.has_object_path (p_paths.item) then
-					c_o := adl_interface.archetype.definition.c_object_at_path (p_paths.item)
+		--		if adl_interface.archetype.definition.has_object_path (p_paths.item) then
+		--		if adl_interface.archetype.has_physical_path (p_paths.item) then
+					c_o := adl_interface.archetype.c_object_at_path (p_paths.item)
 					if c_o /= Void then
 						c_l_o ?= c_o
 						c_r ?= c_o
@@ -97,7 +98,7 @@ feature -- Commands
 							mcl.extend(list_row)
 						end
 					end
-				end
+		--		end
 				p_paths.forth
 				l_paths.forth
 			end

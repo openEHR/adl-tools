@@ -206,7 +206,7 @@ feature {NONE} -- Implementation
 			an_attr_node: C_ATTRIBUTE
 			an_obj_node: C_COMPLEX_OBJECT
 			a_simple_node: C_PRIMITIVE_OBJECT
-			a_object_term: C_CODED_TERM
+			a_object_term: C_CODE_PHRASE
 			a_constraint_ref: CONSTRAINT_REF
 			a_node_ref: ARCHETYPE_INTERNAL_REF
 			a_slot: ARCHETYPE_SLOT
@@ -239,12 +239,12 @@ feature {NONE} -- Implementation
 				a_constraint_ref ?= an_og_node.content_item
 				a_ti := attach_node(constraint_ref_string(a_constraint_ref), pixmaps.item("CONSTRAINT_REF"), an_og_node)				
 
-			elseif a_type.is_equal("C_CODED_TERM") then
+			elseif a_type.is_equal("C_CODE_PHRASE") then
 				a_object_term ?= an_og_node.content_item
 				if not a_object_term.any_allowed then
 					s.append(a_object_term.terminology_id.value)
 				end
-				a_ti := attach_node(s, pixmaps.item("C_CODED_TERM"), an_og_node)
+				a_ti := attach_node(s, pixmaps.item("C_CODE_PHRASE"), an_og_node)
 				if a_object_term.code_count > 0 then
 					from
 						a_object_term.code_list.start
@@ -405,7 +405,7 @@ feature {NONE} -- Implementation
 			a_node_ref: ARCHETYPE_INTERNAL_REF
 			a_slot: ARCHETYPE_SLOT
 			a_type, s: STRING
-			a_object_term: C_CODED_TERM
+			a_object_term: C_CODE_PHRASE
 			a_object_ordinal: C_ORDINAL
 			an_ordinal: ORDINAL
 			a_node: ANY -- because includes STRING as well as ARCHETYPE_CONSTRAINT
@@ -441,7 +441,7 @@ feature {NONE} -- Implementation
 						a_constraint_ref ?= a_node
 						a_ti.set_text(constraint_ref_string(a_constraint_ref))
 				
-					elseif a_type.is_equal("C_CODED_TERM") then
+					elseif a_type.is_equal("C_CODE_PHRASE") then
 						-- nothing needed
 						
 					elseif a_type.is_equal("C_ORDINAL") then
@@ -499,6 +499,7 @@ feature {NONE} -- Implementation
 			create Result.make_with_text(str)
 			Result.set_data(an_og_node.content_item)
 			Result.set_pixmap(pixmap)
+			Result.set_tooltip(an_og_node.path.as_string)
 			if not archetype_tree_root_set then
 				gui_tree.extend(Result)
 				archetype_tree_root_set := True

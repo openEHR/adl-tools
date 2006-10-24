@@ -127,12 +127,28 @@ feature -- Access
 			-- generate physical paths from definition structure
 		local
 			src_node_path: OG_PATH
-			tgt_paths: ARRAYED_LIST [STRING]
+			paths_below_tgt_path: ARRAYED_LIST [STRING]
 			src_node_path_str: STRING
 			src_nodes: ARRAYED_LIST [ARCHETYPE_INTERNAL_REF]
+			tgt_path_c_objects: HASH_TABLE [C_OBJECT, STRING]
+			tgt_path_str: STRING
+			tgt_path: OG_PATH
+			c_c_o: C_COMPLEX_OBJECT
+			c_o: C_OBJECT
 		do
 			if physical_paths_cache = Void or not is_readonly then
 				physical_paths_cache := definition.all_paths
+				
+				-- add entries for directly addressable paths to path map
+				create path_map.make(0)
+				from
+					physical_paths_cache.start
+				until
+					physical_paths_cache.off
+				loop
+					path_map.put(definition.c_object_at_path (physical_paths_cache.item), physical_paths_cache.item)
+					physical_paths_cache.forth
+				end
 
 				-- ADDED Sam Heard 2004-05-19
 				-- Added full paths of internal references thus giving full set of actual paths
@@ -144,21 +160,47 @@ feature -- Access
 					-- Hash table with arrayed list of ARCHETYPE_INTERNAL_REFs and Key of target 
 					-- (ie the ref path of the internal reference)
 					src_nodes := use_node_path_xref_table.item_for_iteration
-					tgt_paths := definition.all_paths_at_path (use_node_path_xref_table.key_for_iteration)
+					tgt_path_str := use_node_path_xref_table.key_for_iteration
+					create tgt_path.make_from_string(tgt_path_str)
+					paths_below_tgt_path := definition.all_paths_at_path (tgt_path_str)
+					
+					-- build a little list of c_object refs for all the c_objects below the tgt_path of the use_node ref
+					c_o ?= definition.c_object_at_path (tgt_path_str)
+					c_c_o ?= c_o
+					if c_c_o /= Void then
+						create tgt_path_c_objects.make(0)
+						from
+							paths_below_tgt_path.start	
+						until
+							paths_below_tgt_path.off
+						loop
+							tgt_path_c_objects.put(c_c_o.c_object_at_path (paths_below_tgt_path.item), paths_below_tgt_path.item)
+							paths_below_tgt_path.forth
+						end
+					end
+										
+					-- now add the paths below it
 					from
 						src_nodes.start
 					until
 						src_nodes.off
 					loop
 						src_node_path := src_nodes.item.representation.path
+						src_node_path.last.set_object_id(tgt_path.last.object_id)
 						src_node_path_str := src_node_path.as_string
+
+						physical_paths_cache.extend (src_node_path_str)
+						path_map.put(c_o, physical_paths_cache.last)
+
 						from
-							tgt_paths.start	
+							paths_below_tgt_path.start	
 						until
-							tgt_paths.off
+							paths_below_tgt_path.off
 						loop
-							physical_paths_cache.extend (src_node_path_str + "/" + tgt_paths.item)
-							tgt_paths.forth
+							physical_paths_cache.extend (src_node_path_str + "/" + paths_below_tgt_path.item)
+							path_map.put(tgt_path_c_objects.item(paths_below_tgt_path.item), physical_paths_cache.last)
+
+							paths_below_tgt_path.forth
 						end
 						src_nodes.forth
 					end
@@ -198,6 +240,16 @@ feature -- Access
 			Lang_valid: a_lang /= Void and then not a_lang.is_empty
 		do
 			Result := ontology.physical_to_logical_path(a_phys_path, a_lang)
+		end
+	
+	c_object_at_path (a_path: STRING): C_OBJECT is
+			-- find the c_object from the path_map matching the path
+		require
+			a_path_valid: a_path /= Void
+		do
+			if path_map.has(a_path) then
+				Result := path_map.item(a_path)
+			end
 		end
 	
 	ontology_unused_term_codes: ARRAYED_LIST[STRING] is
@@ -698,6 +750,9 @@ feature {NONE} -- Implementation
 
 	physical_paths_cache: ARRAYED_LIST [STRING]
 	
+	path_map: HASH_TABLE [C_OBJECT, STRING]
+			-- complete map of object nodes keyed by path
+	
 	update_node_lists is
 			-- 
 		local
@@ -722,7 +777,7 @@ feature {NONE} -- Implementation
 			a_c_co: C_COMPLEX_OBJECT
 			a_c_as: ARCHETYPE_SLOT
 			a_c_o: C_ORDINAL
-			a_c_ct: C_CODED_TERM
+			a_c_ct: C_CODE_PHRASE
 			a_i_r: ARCHETYPE_INTERNAL_REF
 			a_c_r: CONSTRAINT_REF
 		do
@@ -869,10 +924,11 @@ feature {NONE} -- Implementation
 			
 	code_nodes_code_xref_table: HASH_TABLE[ARRAYED_LIST[C_OBJECT], STRING]
 			-- table of {list<node>, code} for term codes which appear in archetype nodes as data,
-			-- e.g. in C_ORDINAL and C_CODED_TERM types
+			-- e.g. in C_ORDINAL and C_CODE_PHRASE types
 			
 	use_node_path_xref_table: HASH_TABLE[ARRAYED_LIST[ARCHETYPE_INTERNAL_REF], STRING]
-			-- table of {list<ARCHETYPE_INTERNAL_REF>, use_target_path} for use_node refs found in body
+			-- table of {list<ARCHETYPE_INTERNAL_REF>, target_path} 
+			-- i.e. <list of use_nodes> keyed by path they point to
 	
 	found_id_node_codes: ARRAYED_LIST[STRING] is
 			-- term codes found as identifiers on definition nodes in archetype
@@ -890,7 +946,7 @@ feature {NONE} -- Implementation
 		end
 
 	found_code_node_codes: ARRAYED_LIST[STRING] is
-			-- term codes found leaf nodes in definition, e.g. in term and ordinal constraints
+			-- term codes found in leaf nodes in definition, e.g. in C_CODE_PHRASE and C_ORDINAL constraints
 		do
 			create Result.make(0)
 			from
@@ -905,7 +961,7 @@ feature {NONE} -- Implementation
 		end
 
 	found_constraint_codes: ARRAYED_LIST[STRING] is
-			-- constraint codes found in body
+			-- constraint codes (acNNNN codes) found in body
 		do
 			create Result.make(0)
 			from

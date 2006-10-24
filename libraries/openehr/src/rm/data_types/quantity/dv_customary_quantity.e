@@ -1,3 +1,4 @@
+
 indexing
 	component:   "openEHR Data Types"
 
