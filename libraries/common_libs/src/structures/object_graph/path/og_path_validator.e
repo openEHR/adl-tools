@@ -327,6 +327,39 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 81")
 end
 
+			create yyval4.make_root
+			debug("OG_PATH_parse")
+				io.put_string("....absolute_path (root); %N")
+			end
+		
+if yy_parsing_status = yyContinue then
+	yyssp := yyssp - 1
+	yyvsp4 := yyvsp4 + 1
+	yyvsp1 := yyvsp1 -1
+	if yyvsp4 >= yyvsc4 then
+		if yyvs4 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs4")
+			end
+			create yyspecial_routines4
+			yyvsc4 := yyInitial_yyvs_size
+			yyvs4 := yyspecial_routines4.make (yyvsc4)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs4")
+			end
+			yyvsc4 := yyvsc4 + yyInitial_yyvs_size
+			yyvs4 := yyspecial_routines4.resize (yyvs4, yyvsc4)
+		end
+	end
+	yyvs4.put (yyval4, yyvsp4)
+end
+when 7 then
+--|#line 88 "og_path_validator.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 88")
+end
+
 			yyval4 := yyvs4.item (yyvsp4)
 			yyval4.set_absolute
 			debug("OG_PATH_parse")
@@ -338,10 +371,10 @@ if yy_parsing_status = yyContinue then
 	yyvsp1 := yyvsp1 -1
 	yyvs4.put (yyval4, yyvsp4)
 end
-when 7 then
---|#line 89 "og_path_validator.y"
+when 8 then
+--|#line 96 "og_path_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 89")
+	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 96")
 end
 
 			yyval4 := yyvs4.item (yyvsp4 - 1)
@@ -356,10 +389,10 @@ if yy_parsing_status = yyContinue then
 	yyvsp1 := yyvsp1 -1
 	yyvs4.put (yyval4, yyvsp4)
 end
-when 8 then
---|#line 99 "og_path_validator.y"
+when 9 then
+--|#line 106 "og_path_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 99")
+	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 106")
 end
 
 			create yyval4.make_relative(yyvs3.item (yyvsp3))
@@ -386,10 +419,10 @@ if yy_parsing_status = yyContinue then
 	end
 	yyvs4.put (yyval4, yyvsp4)
 end
-when 9 then
---|#line 103 "og_path_validator.y"
+when 10 then
+--|#line 110 "og_path_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 103")
+	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 110")
 end
 
 			yyval4 := yyvs4.item (yyvsp4)
@@ -401,10 +434,10 @@ if yy_parsing_status = yyContinue then
 	yyvsp3 := yyvsp3 -1
 	yyvs4.put (yyval4, yyvsp4)
 end
-when 10 then
---|#line 110 "og_path_validator.y"
+when 11 then
+--|#line 117 "og_path_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 110")
+	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 117")
 end
 
 			create yyval3.make_with_object_id(yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2))
@@ -434,10 +467,10 @@ if yy_parsing_status = yyContinue then
 	end
 	yyvs3.put (yyval3, yyvsp3)
 end
-when 11 then
---|#line 117 "og_path_validator.y"
+when 12 then
+--|#line 124 "og_path_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 117")
+	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 124")
 end
 
 			create yyval3.make(yyvs2.item (yyvsp2))
@@ -529,8 +562,8 @@ feature {NONE} -- Table templates
 	yyr1_template: SPECIAL [INTEGER] is
 		once
 			Result := yyfixed_array (<<
-			    0,   15,   15,   15,   15,   13,   12,   12,   14,   14,
-			   11,   11, yyDummy>>)
+			    0,   15,   15,   15,   15,   13,   12,   12,   12,   14,
+			   14,   11,   11, yyDummy>>)
 		end
 
 	yytypes1_template: SPECIAL [INTEGER] is
@@ -550,8 +583,8 @@ feature {NONE} -- Table templates
 	yydefact_template: SPECIAL [INTEGER] is
 		once
 			Result := yyfixed_array (<<
-			    0,    0,    0,   11,    4,    8,    2,    1,    3,    6,
-			    5,   10,    0,    0,    7,    9,    0,    0,    0, yyDummy>>)
+			    0,    6,    0,   12,    4,    9,    2,    1,    3,    7,
+			    5,   11,    0,    0,    8,   10,    0,    0,    0, yyDummy>>)
 		end
 
 	yydefgoto_template: SPECIAL [INTEGER] is

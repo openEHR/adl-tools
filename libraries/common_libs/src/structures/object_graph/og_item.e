@@ -54,47 +54,55 @@ feature -- Access
 			-- absolute path of this node relative to the root
 		local
 			csr: OG_NODE
-			path_list: ARRAYED_LIST [OG_ITEM]
+			og_nodes: ARRAYED_LIST [OG_ITEM]
 			a_path_item: OG_PATH_ITEM
+			og_attr: OG_ATTRIBUTE_NODE
 		do
-			create path_list.make(0)
-			path_list.extend(Current)
+			-- get the node list from here back up to the root, but don't include the root OG_OBJECT_NODE
+			create og_nodes.make(0)
 			if parent /= Void then
+				og_nodes.extend(Current)
 				from
 					csr := parent
 				until
 					csr.parent = Void
 				loop
-					path_list.put_front(csr)
+					og_nodes.put_front(csr)
 					csr := csr.parent
 				end	
 			end
 
-			path_list.start
-			create a_path_item.make(path_list.item.node_id)
-			path_list.forth
-			if not path_list.off then 
-				if path_list.item.is_addressable then
-					a_path_item.set_object_id(path_list.item.node_id)				
-				end
-				path_list.forth
-			end
-
-			create Result.make_absolute(a_path_item)
-				
-			from
-			until
-				path_list.off
-			loop
-				create a_path_item.make(path_list.item.node_id)
-				path_list.forth
-				if not path_list.off then 
-					if path_list.item.is_addressable then
-						a_path_item.set_object_id(path_list.item.node_id)				
+			if og_nodes.is_empty then
+				create Result.make_root				
+			else -- process the node list; we are starting on an OG_ATTR_NODE
+				og_nodes.start
+				create a_path_item.make(og_nodes.item.node_id)
+				og_attr ?= og_nodes.item
+				og_nodes.forth
+				if not og_nodes.off then -- now on an OG_OBJECT_NODE
+					if og_attr.is_multiple then
+						a_path_item.set_object_id(og_nodes.item.node_id)				
 					end
-					path_list.forth
+					og_nodes.forth
 				end
-				Result.append_segment (a_path_item)
+				create Result.make_absolute(a_path_item)
+				
+				from
+				until
+					og_nodes.off
+				loop
+					-- now on an OG_ATTR_NODE
+					create a_path_item.make(og_nodes.item.node_id)
+					og_attr ?= og_nodes.item
+					og_nodes.forth
+					if not og_nodes.off then -- now on an OG_OBJECT_NODE
+						if og_attr.is_multiple then
+							a_path_item.set_object_id(og_nodes.item.node_id)				
+						end
+						og_nodes.forth
+					end
+					Result.append_segment (a_path_item)
+				end
 			end
 		end
 	

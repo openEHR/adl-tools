@@ -203,15 +203,15 @@ feature {NONE} -- Implementation
 			Node_exists: an_og_node /= Void
 		local
 			a_ti, a_ti_sub, a_ti_sub2: EV_TREE_ITEM
-			an_attr_node: C_ATTRIBUTE
-			an_obj_node: C_COMPLEX_OBJECT
-			a_simple_node: C_PRIMITIVE_OBJECT
+			c_attr: C_ATTRIBUTE
+			c_c_o: C_COMPLEX_OBJECT
+			c_p_o: C_PRIMITIVE_OBJECT
 			a_object_term: C_CODE_PHRASE
 			a_constraint_ref: CONSTRAINT_REF
 			a_node_ref: ARCHETYPE_INTERNAL_REF
 			a_slot: ARCHETYPE_SLOT
-			a_object_ordinal: C_ORDINAL
-			a_object_quantity: C_QUANTITY
+			c_ordinal: C_ORDINAL
+			c_q: C_QUANTITY
 			a_type, s: STRING
 			pixmap: EV_PIXMAP
 			assumed_flag: BOOLEAN
@@ -220,18 +220,18 @@ feature {NONE} -- Implementation
 			a_type := an_og_node.content_item.generating_type
 			
 			if a_type.is_equal("C_ATTRIBUTE") then
-				an_attr_node ?= an_og_node.content_item
-				if an_attr_node.is_multiple then
-					if an_attr_node.cardinality.interval.lower > 0 then
-						a_ti := attach_node(c_attribute_string(an_attr_node), pixmaps.item("C_ATTRIBUTE.multiple"), an_og_node)
+				c_attr ?= an_og_node.content_item
+				if c_attr.is_multiple then
+					if c_attr.cardinality.interval.lower > 0 then
+						a_ti := attach_node(c_attribute_string(c_attr), pixmaps.item("C_ATTRIBUTE.multiple"), an_og_node)
 					else
-						a_ti := attach_node(c_attribute_string(an_attr_node), pixmaps.item("C_ATTRIBUTE.multiple.optional"), an_og_node)
+						a_ti := attach_node(c_attribute_string(c_attr), pixmaps.item("C_ATTRIBUTE.multiple.optional"), an_og_node)
 					end
 				else
-					if an_attr_node.existence.lower = 1 then
-						a_ti := attach_node(c_attribute_string(an_attr_node), pixmaps.item("C_ATTRIBUTE"), an_og_node)
+					if c_attr.existence.lower = 1 then
+						a_ti := attach_node(c_attribute_string(c_attr), pixmaps.item("C_ATTRIBUTE"), an_og_node)
 					else
-						a_ti := attach_node(c_attribute_string(an_attr_node), pixmaps.item("C_ATTRIBUTE.optional"), an_og_node)										
+						a_ti := attach_node(c_attribute_string(c_attr), pixmaps.item("C_ATTRIBUTE.optional"), an_og_node)										
 					end
 				end
 				
@@ -262,73 +262,73 @@ feature {NONE} -- Implementation
 				end
 				
 			elseif a_type.is_equal("C_ORDINAL") then
-				a_object_ordinal ?= an_og_node.content_item
-				s.append(a_object_ordinal.rm_type_name)
+				c_ordinal ?= an_og_node.content_item
+				s.append(c_ordinal.rm_type_name)
 				a_ti := attach_node(s, pixmaps.item("C_ORDINAL"), an_og_node)			
 				from
-					a_object_ordinal.items.start
+					c_ordinal.items.start
 				until
-					a_object_ordinal.items.off						
+					c_ordinal.items.off						
 				loop
-					assumed_flag := a_object_ordinal.assumed_value /= Void and then 
-						a_object_ordinal.assumed_value.value = a_object_ordinal.items.item.value
-					create a_ti_sub.make_with_text(object_ordinal_item_string(a_object_ordinal.items.item, assumed_flag))
-					a_ti_sub.set_data(a_object_ordinal.items.item) -- of type ORDINAL
+					assumed_flag := c_ordinal.assumed_value /= Void and then 
+						c_ordinal.assumed_value.value = c_ordinal.items.item.value
+					create a_ti_sub.make_with_text(object_ordinal_item_string(c_ordinal.items.item, assumed_flag))
+					a_ti_sub.set_data(c_ordinal.items.item) -- of type ORDINAL
 					a_ti_sub.set_pixmap(pixmaps.item("ORDINAL"))
 					a_ti.extend(a_ti_sub)
-					a_object_ordinal.items.forth						
+					c_ordinal.items.forth						
 				end				
 				
 			elseif a_type.is_equal("C_QUANTITY") then
-				a_object_quantity ?= an_og_node.content_item
+				c_q ?= an_og_node.content_item
 				if in_technical_mode then
-					s.append(a_object_quantity.rm_type_name)		
+					s.append(c_q.rm_type_name)		
 				end
-				if a_object_quantity.property /= Void then
-					s.append(" (" + a_object_quantity.property.as_string + ")")
+				if c_q.property /= Void then
+					s.append(" (" + c_q.property.as_string + ")")
 				end
 				a_ti := attach_node(s, pixmaps.item("C_QUANTITY"), an_og_node)
-				if a_object_quantity.list /= Void then
+				if c_q.list /= Void then
 					from
-						a_object_quantity.list.start
+						c_q.list.start
 					until
-						a_object_quantity.list.off						
+						c_q.list.off						
 					loop
-						create a_ti_sub.make_with_text(object_c_quantity_item_string(a_object_quantity.list.item))
-						a_ti_sub.set_data(a_object_quantity.list.item)
+						create a_ti_sub.make_with_text(object_c_quantity_item_string(c_q.list.item))
+						a_ti_sub.set_data(c_q.list.item)
 						a_ti_sub.set_pixmap(pixmaps.item("C_QUANTITY_ITEM"))
 						a_ti.extend(a_ti_sub)
-						a_object_quantity.list.forth						
+						c_q.list.forth						
 					end
 				end	
 				
-				if a_object_quantity.assumed_value /= Void then
-					create a_ti_sub.make_with_text(object_quantity_string(a_object_quantity.assumed_value, True))
-					a_ti_sub.set_data(a_object_quantity.assumed_value)
+				if c_q.assumed_value /= Void then
+					create a_ti_sub.make_with_text(object_quantity_string(c_q.assumed_value, True))
+					a_ti_sub.set_data(c_q.assumed_value)
 					a_ti_sub.set_pixmap(pixmaps.item("C_QUANTITY_ITEM"))
 					a_ti.extend(a_ti_sub)					
 				end
 				
 			elseif a_type.is_equal("C_PRIMITIVE_OBJECT") then
-				a_simple_node ?= an_og_node.content_item
-				a_ti := attach_node(c_primitive_object_string(a_simple_node), pixmaps.item("C_PRIMITIVE_OBJECT"), an_og_node)				
+				c_p_o ?= an_og_node.content_item
+				a_ti := attach_node(c_primitive_object_string(c_p_o), pixmaps.item("C_PRIMITIVE_OBJECT"), an_og_node)				
 				
 			elseif a_type.is_equal("C_COMPLEX_OBJECT") then
-				an_obj_node ?= an_og_node.content_item				
-				if an_obj_node.occurrences.lower > 0 then
-					if an_obj_node.occurrences.upper = 1 then
+				c_c_o ?= an_og_node.content_item				
+				if c_c_o.occurrences.lower > 0 then
+					if c_c_o.occurrences.upper = 1 then
 						pixmap := pixmaps.item("C_COMPLEX_OBJECT")
 					else
 						pixmap := pixmaps.item("C_COMPLEX_OBJECT.multiple")
 					end
 				else
-					if an_obj_node.occurrences.upper = 1 then
+					if c_c_o.occurrences.upper = 1 then
 						pixmap := pixmaps.item("C_COMPLEX_OBJECT.optional")
 					else
 						pixmap := pixmaps.item("C_COMPLEX_OBJECT.multiple.optional")
 					end
 				end
-				a_ti := attach_node(c_complex_object_string(an_obj_node), pixmap, an_og_node)
+				a_ti := attach_node(c_complex_object_string(c_c_o), pixmap, an_og_node)
 				
 			elseif a_type.is_equal("ARCHETYPE_SLOT") then
 				a_slot ?= an_og_node.content_item
@@ -397,16 +397,17 @@ feature {NONE} -- Implementation
 			Node_exists: a_tree_node /= Void
 		local
 			a_ti: EV_TREE_ITEM
-			an_attr_node: C_ATTRIBUTE
-			an_obj_node: C_COMPLEX_OBJECT
-			a_simple_node: C_PRIMITIVE_OBJECT
-			a_object_quantity: C_QUANTITY
+			c_o: C_OBJECT
+			c_attr: C_ATTRIBUTE
+			c_c_o: C_COMPLEX_OBJECT
+			c_p_o: C_PRIMITIVE_OBJECT
+			c_q: C_QUANTITY
 			a_constraint_ref: CONSTRAINT_REF
 			a_node_ref: ARCHETYPE_INTERNAL_REF
 			a_slot: ARCHETYPE_SLOT
 			a_type, s: STRING
 			a_object_term: C_CODE_PHRASE
-			a_object_ordinal: C_ORDINAL
+			c_ordinal: C_ORDINAL
 			an_ordinal: ORDINAL
 			a_node: ANY -- because includes STRING as well as ARCHETYPE_CONSTRAINT
 			parent: EV_TREE_NODE
@@ -417,13 +418,21 @@ feature {NONE} -- Implementation
 			a_ti ?= a_tree_node
 			if a_ti /= Void then
 				a_node := a_ti.data
-				
+				c_o ?= a_node
+				if c_o /= Void then
+					if in_technical_mode then		
+						a_ti.set_tooltip(c_o.representation.path.as_string)
+					else
+						a_ti.set_tooltip(ontology.logical_path_for_physical_path(c_o.representation.path.as_string, language))
+					end
+				end
+								
 				if a_node /= Void then
 					a_type := a_node.generating_type
 			
 					if a_type.is_equal("C_ATTRIBUTE") then
-						an_attr_node ?= a_node
-						a_ti.set_text(c_attribute_string(an_attr_node))
+						c_attr ?= a_node
+						a_ti.set_text(c_attribute_string(c_attr))
 				
 					elseif a_type.is_equal("STRING") then
 						s ?= a_node
@@ -448,32 +457,32 @@ feature {NONE} -- Implementation
 						-- nothing needed
 				
 					elseif a_type.is_equal("C_QUANTITY") then
-						a_object_quantity ?= a_node
+						c_q ?= a_node
 						create s.make(0)
 						if in_technical_mode then
-							s.append(a_object_quantity.rm_type_name)		
+							s.append(c_q.rm_type_name)		
 						end
-						if a_object_quantity.property /= Void then
-							s.append(" (" + a_object_quantity.property.as_string + ")")
+						if c_q.property /= Void then
+							s.append(" (" + c_q.property.as_string + ")")
 						end
 						a_ti.set_text(s)				
 				
 					elseif a_type.is_equal("ORDINAL") then
 						an_ordinal ?= a_node
 						parent ?= a_ti.parent
-						a_object_ordinal ?= parent.data
-						assumed_flag := a_object_ordinal.assumed_value /= Void and then 
-							a_object_ordinal.assumed_value.value = an_ordinal.value
+						c_ordinal ?= parent.data
+						assumed_flag := c_ordinal.assumed_value /= Void and then 
+							c_ordinal.assumed_value.value = an_ordinal.value
 
 						a_ti.set_text(object_ordinal_item_string(an_ordinal, assumed_flag))
 						
 					elseif a_type.is_equal("C_PRIMITIVE_OBJECT") then
-						a_simple_node ?= a_node
-						a_ti.set_text(c_primitive_object_string(a_simple_node))				
+						c_p_o ?= a_node
+						a_ti.set_text(c_primitive_object_string(c_p_o))				
 				
 					elseif a_type.is_equal("C_COMPLEX_OBJECT") then
-						an_obj_node ?= a_node				
-						a_ti.set_text(c_complex_object_string(an_obj_node))
+						c_c_o ?= a_node				
+						a_ti.set_text(c_complex_object_string(c_c_o))
 				
 					elseif a_type.is_equal("ARCHETYPE_INTERNAL_REF") then
 						a_node_ref ?= a_node
@@ -499,7 +508,13 @@ feature {NONE} -- Implementation
 			create Result.make_with_text(str)
 			Result.set_data(an_og_node.content_item)
 			Result.set_pixmap(pixmap)
-			Result.set_tooltip(an_og_node.path.as_string)
+			
+			if in_technical_mode then		
+				Result.set_tooltip(an_og_node.path.as_string)
+			else
+				Result.set_tooltip(ontology.logical_path_for_physical_path(an_og_node.path.as_string, language))
+			end
+			
 			if not archetype_tree_root_set then
 				gui_tree.extend(Result)
 				archetype_tree_root_set := True
@@ -596,16 +611,16 @@ feature {NONE} -- Implementation
 
 	node_list: ARRAYED_LIST[EV_TREE_NODE]
 	
-	c_attribute_string(an_attr_node: C_ATTRIBUTE): STRING is
+	c_attribute_string(c_attr: C_ATTRIBUTE): STRING is
 			-- generate string form of node or object for use in tree node
 		do
 			create Result.make(0)
-			-- Result.append(" [" + an_attr_node.existence.as_occurrences_string + "] ")
-			-- if an_attr_node.is_multiple then
-			-- 	Result.append(" [" + an_attr_node.cardinality.as_string + "] ")			
+			-- Result.append(" [" + c_attr.existence.as_occurrences_string + "] ")
+			-- if c_attr.is_multiple then
+			-- 	Result.append(" [" + c_attr.cardinality.as_string + "] ")			
 			-- end
-			Result.append(an_attr_node.rm_attribute_name)
-			if an_attr_node.any_allowed then
+			Result.append(c_attr.rm_attribute_name)
+			if c_attr.any_allowed then
 				Result.append(" matches {*}")
 			end		
 		end
@@ -652,17 +667,17 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	c_primitive_object_string(a_simple_node: C_PRIMITIVE_OBJECT): STRING is
+	c_primitive_object_string(c_p_o: C_PRIMITIVE_OBJECT): STRING is
 			-- generate string form of node or object for use in tree node
 		do
 			create Result.make(0)
 			if in_technical_mode then		
-				Result.append(a_simple_node.rm_type_name)
+				Result.append(c_p_o.rm_type_name)
 			end
-			if not (a_simple_node.occurrences.lower = 1 and a_simple_node.occurrences.upper = 1) then
-				Result.append(" [" + a_simple_node.occurrences.as_occurrences_string + "]")
+			if not (c_p_o.occurrences.lower = 1 and c_p_o.occurrences.upper = 1) then
+				Result.append(" [" + c_p_o.occurrences.as_occurrences_string + "]")
 			end
-			Result.append(" " + a_simple_node.item.as_string)
+			Result.append(" " + c_p_o.item.as_string)
 		end
 
 	archetype_internal_ref_string(a_node_ref: ARCHETYPE_INTERNAL_REF): STRING is
@@ -699,14 +714,14 @@ feature {NONE} -- Implementation
 			end
 		end
 		
-	object_ordinal_item_string(a_object_ordinal: ORDINAL; assumed_flag: BOOLEAN): STRING is
+	object_ordinal_item_string(an_ordinal: ORDINAL; assumed_flag: BOOLEAN): STRING is
 			-- generate string form of node or object for use in tree node
 		local
 			code: STRING
 		do
 			create Result.make(0)
-			code := a_object_ordinal.symbol.code_string
-			Result.append(a_object_ordinal.value.out + a_object_ordinal.separator.out)
+			code := an_ordinal.symbol.code_string
+			Result.append(an_ordinal.value.out + an_ordinal.separator.out)
 			if ontology.term_codes.has(code) then
 				Result.append(" " + ontology.term_definition(language, code).item("text"))
 			end
@@ -718,12 +733,12 @@ feature {NONE} -- Implementation
 			end
 		end
 		
-	object_quantity_string(a_object_quantity: QUANTITY; assumed_flag: BOOLEAN): STRING is
+	object_quantity_string(a_q: QUANTITY; assumed_flag: BOOLEAN): STRING is
 			-- generate string form of node or object for use in tree node
 		do
 			create Result.make(0)
-			Result.append(a_object_quantity.magnitude.out)
-			Result.append(" " + a_object_quantity.units)
+			Result.append(a_q.magnitude.out)
+			Result.append(" " + a_q.units)
 			if assumed_flag then
 				Result.append(" (Assumed)")
 			end

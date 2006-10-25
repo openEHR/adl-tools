@@ -41,7 +41,8 @@ feature -- Access
 			child_paths: ARRAYED_LIST[OG_PATH]
 			attr_node: like child_type
 			a_path: OG_PATH
-			attr_children: HASH_TABLE [OG_OBJECT, STRING]
+			attrs: HASH_TABLE [OG_OBJECT, STRING]
+			child_obj: OG_OBJECT
 			child_obj_node: OG_OBJECT_NODE
 			obj_predicate_required: BOOLEAN
 		do
@@ -58,14 +59,15 @@ feature -- Access
 					attr_node := children.item_for_iteration
 					
 					-- get the objects of this attribute
-					attr_children := attr_node.children
-					obj_predicate_required := attr_node.is_multiple or attr_node.is_addressable -- or attr_node.child_count > 1
+					attrs := attr_node.children
 					from	
-						attr_children.start
+						attrs.start
 					until
-						attr_children.off
+						attrs.off
 					loop
-						child_obj_node ?= attr_children.item_for_iteration
+						child_obj ?= attrs.item_for_iteration
+						obj_predicate_required := attr_node.is_multiple or child_obj.is_addressable
+						child_obj_node ?= child_obj
 						if child_obj_node /= Void then
 							child_paths := child_obj_node.all_paths
 							from
@@ -85,31 +87,30 @@ feature -- Access
 								Result.extend(a_path)
 								child_paths.forth
 							end
-							
-							-- add path for the current object if addressable
-							if obj_predicate_required then
-								create a_path.make_relative(create {OG_PATH_ITEM}.make_with_object_id(attr_node.node_id, child_obj_node.node_id))	
-			--				else
-			--					create a_path.make_relative(create {OG_PATH_ITEM}.make(attr_node.node_id))	
-			--				end
-								if is_root then
-									a_path.set_absolute
-								end
-								Result.extend(a_path)														
-							end
+						end 
+						
+						-- add path for the current child
+						if obj_predicate_required then
+							create a_path.make_relative(create {OG_PATH_ITEM}.make_with_object_id(attr_node.node_id, child_obj.node_id))	
+						else
+							create a_path.make_relative(create {OG_PATH_ITEM}.make(attr_node.node_id))	
 						end
-						attr_children.forth
+						if is_root then
+							a_path.set_absolute
+						end
+						Result.extend(a_path)														
+						attrs.forth
 					end
 					
 					-- create a path for this attribute
-					create a_path.make_relative(create {OG_PATH_ITEM}.make(attr_node.node_id))
-					if is_root then
-						a_path.set_absolute
-					end
+		--			create a_path.make_relative(create {OG_PATH_ITEM}.make(attr_node.node_id))
+		--			if is_root then
+		--				a_path.set_absolute
+		--			end
 		--			if not attr_node.has_children then
 		--				a_path.set_is_leaf
 		--			end
-					Result.extend(a_path)														
+		--			Result.extend(a_path)														
 
 					children.forth
 				end
@@ -203,7 +204,7 @@ feature {OG_OBJECT_NODE} -- Implementation
 			child_obj_node: OG_OBJECT_NODE
 		do
 			if has_object_at_path_segment(a_path.item) then
-				child_obj := object_at_path_segment(a_path.item)
+				child_obj := object_at_path_segment(a_path.item)  -- if no predicate in segment, only gets first item
 				a_path.forth
 				if not a_path.off then
 					child_obj_node ?= child_obj
@@ -223,9 +224,9 @@ feature {OG_OBJECT_NODE} -- Implementation
 		do
 			if has_object_at_path_segment(a_path.item) then
 				child_obj_node ?= object_at_path_segment(a_path.item)
-					a_path.forth
+				a_path.forth
 				if not a_path.off then
-					Result := child_obj_node.internal_attribute_node_at_path(a_path)
+					Result := child_obj_node.internal_attribute_node_at_path(a_path)   -- if no predicate in segment, only gets first item
 				else
 					Result := child_at_node_id(a_path.last.attr_name)
 				end

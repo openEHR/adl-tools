@@ -20,7 +20,7 @@ inherit
 		end
 		
 create
-	make_absolute, make_relative, make_movable, make_from_string, make_from_other
+	make_absolute, make_relative, make_movable, make_from_string, make_from_other, make_root
 
 feature -- Definitions
 
@@ -32,6 +32,15 @@ feature -- Definitions
 	
 feature -- Initialisation
 
+	make_root is
+			-- make a root path, i.e. /
+		do
+			create items.make(0)
+			is_absolute := True
+		ensure
+			is_absolute
+		end
+		
 	make_absolute(a_path_segment: OG_PATH_ITEM) is
 			-- make a path of the form /attr_name[xxx]/attr_name/attr_name[xxx]...
 		require

@@ -78,7 +78,14 @@ movable_path: SYM_MOVABLE_LEADER relative_path
 		}
 	;
 
-absolute_path: '/' relative_path
+absolute_path: '/'
+		{
+			create $$.make_root
+			debug("OG_PATH_parse")
+				io.put_string("....absolute_path (root); %N")
+			end
+		}
+	| '/' relative_path
 		{
 			$$ := $2
 			$$.set_absolute

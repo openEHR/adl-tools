@@ -56,11 +56,11 @@ feature -- Initialisation
 			an_object_id_valid: an_object_id /= Void
 		do
 			attr_name := an_attr_name
-			if an_object_id.has_substring(Anonymous_node_id) then
-				create object_id.make(0)
-			else
+	--		if an_object_id.has_substring(Anonymous_node_id) then
+	--			create object_id.make(0)
+	--		else
 				object_id := an_object_id
-			end
+	--		end
 		ensure
 			Attr_name_set: attr_name.is_equal(an_attr_name)
 			Object_id_set: object_id.is_equal(an_object_id) or else object_id.is_empty
@@ -125,11 +125,11 @@ feature -- Modification
 		require
 			an_object_id_valid: an_object_id /= Void
 		do
-			if an_object_id.has_substring(Anonymous_node_id) then
-				create object_id.make(0)
-			else
+	--		if an_object_id.has_substring(Anonymous_node_id) then
+	--			create object_id.make(0)
+	--		else
 				object_id := an_object_id
-			end
+	--		end
 		ensure
 			Object_id_set: object_id.is_equal(an_object_id) or else object_id.is_empty
 		end
