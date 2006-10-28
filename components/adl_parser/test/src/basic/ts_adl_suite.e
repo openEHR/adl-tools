@@ -41,6 +41,7 @@ feature -- Access
 			Result.extend(create {TC_ARCHETYPE_ADD_NODES}.make(Void))
 			Result.extend(create {TC_ONTOLOGY_UNUSED_CODES}.make(Void))
 			Result.extend(create {TC_ONTOLOGY_REMOVE_UNUSED_CODES}.make(Void))
+			Result.extend(create {TC_ARCHETYPE_ADD_DURATION}.make(Void))
 			Result.extend(create {TC_ARCHETYPE_ADD_C_QUANTITY}.make(Void))
 			Result.extend(create {TC_ARCHETYPE_ADD_OBJECT_ORDINAL}.make(Void))
 			Result.extend(create {TC_ARCHETYPE_ADD_OBJECT_TERM}.make(Void))

@@ -17,6 +17,8 @@ Version
 Release history
 ---------------
 
+FOR CHANGE HISTORY SEE SUBVERSION LOG of http://svn.openehr.org/ref_impl_eiffel
+
 interim release subversion 89 - 24/aug/2006 - various small fixes
 	- enhancements
 		- allow date constraint pattern yyyy-mm-xx

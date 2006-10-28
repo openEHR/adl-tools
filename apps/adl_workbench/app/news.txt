@@ -24,7 +24,9 @@ The textual presentation in the node view has been improved.
 Paths
 -----
 The path view now allows control over visible columns and row
+Paths generated due to use_node nodes are included.
 filtering, as well as ctrl-C for copy-to-clipboard of paths.
+Tooltip paths have now been added.
 
 Tester facility
 ---------------

@@ -20,16 +20,7 @@ indexing
 class C_PRIMITIVE_FACTORY
 
 inherit
-	DATE_TIME_ROUTINES
-		export
-			{NONE} all;
-			{ANY} valid_iso8601_date, valid_iso8601_time, 
-					valid_iso8601_date_time, valid_iso8601_duration,
-					iso8601_string_to_date, iso8601_string_to_date_time, iso8601_string_to_time,
-					iso8601_string_to_duration,
-					valid_iso8601_date_constraint_pattern, valid_iso8601_time_constraint_pattern, 
-					valid_iso8601_date_time_constraint_pattern, valid_iso8601_duration_constraint_pattern
-		end
+	ISO8601_FACTORY
 	
 feature -- Factory
 
