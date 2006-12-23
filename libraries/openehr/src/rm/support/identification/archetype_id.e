@@ -185,21 +185,21 @@ feature -- Access
 
 	domain_concept_base: STRING is
 			-- the part of the domain concept excluding the last specialisation
-			-- i.e. "problem" 						-> "problem" (no specialisation)
+			-- i.e. "problem" 						-> "" (no specialisation)
 			--		"problem-diagnosis" 			-> "problem"
 			--		"problem-diagnosis-histological" -> "problem-diagnosis"
 		local
 			s: STRING
 			loc: INTEGER
 		do
+			create Result.make(0)
 			s := domain_concept
 			loc := s.last_index_of(Section_separator, s.count) - 1
-			if loc < 0 then
-				loc := s.count
+			if loc > 0 then
+				Result.append(s.substring(1, loc))
 			end
-			Result := s.substring(1, loc)
 		ensure
-			Result_valid: Result /= Void implies not Result.is_empty
+			Result_exists: Result /= Void
 		end
 
 	sortable_id: STRING is
@@ -211,7 +211,32 @@ feature -- Access
 			p := value.last_index_of(axis_separator, value.count) - 1
 			Result := value.substring(1, p)
 		end
-	
+
+	semantic_id: STRING is
+			-- semantic id as a string minus the version part at the end
+			-- (same as sortable_id)
+		local
+			p: INTEGER
+		do
+			p := value.last_index_of(axis_separator, value.count) - 1
+			Result := value.substring(1, p)
+		end
+		
+	semantic_parent_id: STRING is
+			-- semantic id of parent as a string minus the version part at the end
+			-- equivalent to semantic_id including domain_base_name only
+		local
+			ver_sep_pos, concept_sep_pos: INTEGER
+		do
+			ver_sep_pos := value.last_index_of(axis_separator, value.count) - 1
+			Result := value.substring(1, ver_sep_pos)
+			concept_sep_pos := Result.last_index_of(Section_separator, Result.count) - 1
+			if concept_sep_pos < 0 then
+				concept_sep_pos := Result.count
+			end
+			Result := Result.substring(1, concept_sep_pos)
+		end
+		
 feature -- Status Report
 
 	is_specialised: BOOLEAN
