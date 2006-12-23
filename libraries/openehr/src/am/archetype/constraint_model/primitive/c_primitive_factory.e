@@ -44,6 +44,18 @@ feature -- Factory
 			create Result.make_upper_unbounded(a_lower, include_lower)
 		end
 
+	create_integer_list: ARRAYED_LIST[INTEGER] is
+			-- create Result; useful for callers on the other side of dotNet interface etc
+		do
+			create Result.make(0)
+		end
+
+	create_real_list: ARRAYED_LIST[REAL] is
+			-- create Result; useful for callers on the other side of dotNet interface etc
+		do
+			create Result.make(0)
+		end
+
 	create_real_interval_make_bounded (a_lower, an_upper: REAL; include_lower, include_upper: BOOLEAN): OE_INTERVAL[REAL] is
 			-- create Result with both limits set
 		require
@@ -84,6 +96,12 @@ feature -- Factory
 			create Result.make_interval(create {OE_INTERVAL[INTEGER]}.make_upper_unbounded(a_lower, include_lower))
 		end
 
+	create_c_integer_make_list (a_list: LIST[INTEGER]): C_INTEGER is
+			-- create Result using a_ist
+		do
+			create Result.make_list(a_list)
+		end
+
 	create_c_real_make_bounded (a_lower, an_upper: REAL; include_lower, include_upper: BOOLEAN): C_REAL is
 			-- create Result with both limits set
 		require
@@ -102,6 +120,12 @@ feature -- Factory
 			-- create Result from `a_lower' to +infinity
 		do
 			create Result.make_interval(create {OE_INTERVAL[REAL]}.make_upper_unbounded(a_lower, include_lower))
+		end
+
+	create_c_real_make_list (a_list: LIST[REAL]): C_REAL is
+			-- create Result using a_ist
+		do
+			create Result.make_list(a_list)
 		end
 
 	create_c_boolean_make_true: C_BOOLEAN is
@@ -139,7 +163,7 @@ feature -- Factory
 		end
 
 	create_c_string_make_from_regexp (str: STRING): OE_C_STRING is
-			-- create Result from a regular expression
+			-- create Result from a regular expression; don't include delimiters (normally //)
 		require
 			str /= void
 		do
