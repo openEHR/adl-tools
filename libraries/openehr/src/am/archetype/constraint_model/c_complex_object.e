@@ -80,48 +80,52 @@ feature -- Access
 			Result ?= representation.object_node_at_path (create {OG_PATH}.make_from_string(a_path)).content_item
 		end
 		
-	all_paths_at_path(a_path: STRING): ARRAYED_LIST[STRING] is
+	all_paths_at_path(a_path: STRING): HASH_TABLE[C_OBJECT, STRING] is
 			-- all paths starting at node found at a_path, including itself
 		require
 			Path_valid: a_path /= Void and then has_path(a_path)
 		local
-			og_paths: ARRAYED_LIST [OG_PATH]
+			og_paths: HASH_TABLE [OG_OBJECT, OG_PATH]
 			og_node: OG_OBJECT_NODE
+			c_obj: C_OBJECT
 		do
 			og_node ?= representation.object_node_at_path(create {OG_PATH}.make_from_string(a_path))
 			og_paths := og_node.all_paths
 			create Result.make(0)
-			Result.compare_objects
+--			Result.compare_objects
 			from 
 				og_paths.start
 			until
 				og_paths.off
 			loop
-				Result.extend(og_paths.item.as_string)
+				c_obj ?= og_paths.item_for_iteration.content_item
+				Result.put(c_obj, og_paths.key_for_iteration.as_string)
 				og_paths.forth
 			end
 		ensure
 			Result_exists: Result /= Void
 		end
 	
-	all_paths: ARRAYED_LIST[STRING] is
+	all_paths: HASH_TABLE[C_OBJECT, STRING] is
 			-- all paths below this point, including this node
 		local
-			og_paths: ARRAYED_LIST [OG_PATH]
+			og_paths: HASH_TABLE [OG_OBJECT, OG_PATH]
+			c_obj: C_OBJECT
 		do
 			og_paths := representation.all_paths
 			create Result.make(0)
-			Result.compare_objects
+--			Result.compare_objects
 			from 
 				og_paths.start
 			until
 				og_paths.off
 			loop
-				Result.extend(og_paths.item.as_string)
+				c_obj ?= og_paths.item_for_iteration.content_item
+				Result.put(c_obj, og_paths.key_for_iteration.as_string)
 				og_paths.forth
 			end
 		ensure
-			Result_exists: Result /= Void and then Result.object_comparison
+			Result_exists: Result /= Void -- and then Result.object_comparison
 		end
 	
 	default_value: ANY is

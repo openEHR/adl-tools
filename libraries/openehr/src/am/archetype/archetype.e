@@ -127,31 +127,18 @@ feature -- Access
 			-- generate physical paths from definition structure
 		local
 			src_node_path: OG_PATH
-			paths_below_tgt_path: ARRAYED_LIST [STRING]
+			paths_below_tgt_path: HASH_TABLE [C_OBJECT, STRING]
 			src_node_path_str: STRING
 			src_nodes: ARRAYED_LIST [ARCHETYPE_INTERNAL_REF]
 			tgt_path_c_objects: HASH_TABLE [C_OBJECT, STRING]
 			tgt_path_str: STRING
 			tgt_path: OG_PATH
-			c_c_o: C_COMPLEX_OBJECT
 			c_o: C_OBJECT
 		do
-			if physical_paths_cache = Void or not is_readonly then
-				physical_paths_cache := definition.all_paths
+			if path_map = Void or not is_readonly then
+				path_map := definition.all_paths
 				
-				-- add entries for directly addressable paths to path map
-				create path_map.make(0)
-				from
-					physical_paths_cache.start
-				until
-					physical_paths_cache.off
-				loop
-					path_map.put(definition.c_object_at_path (physical_paths_cache.item), physical_paths_cache.item)
-					physical_paths_cache.forth
-				end
-
-				-- ADDED Sam Heard 2004-05-19
-				-- Added full paths of internal references thus giving full set of actual paths
+				-- Add full paths of internal references thus giving full set of actual paths
 				from
 					use_node_path_xref_table.start
 				until
@@ -162,22 +149,8 @@ feature -- Access
 					src_nodes := use_node_path_xref_table.item_for_iteration
 					tgt_path_str := use_node_path_xref_table.key_for_iteration
 					create tgt_path.make_from_string(tgt_path_str)
-					paths_below_tgt_path := definition.all_paths_at_path (tgt_path_str)
-					
-					-- build a little list of c_object refs for all the c_objects below the tgt_path of the use_node ref
+					tgt_path_c_objects := definition.all_paths_at_path (tgt_path_str)					
 					c_o ?= definition.c_object_at_path (tgt_path_str)
-					c_c_o ?= c_o
-					if c_c_o /= Void then
-						create tgt_path_c_objects.make(0)
-						from
-							paths_below_tgt_path.start	
-						until
-							paths_below_tgt_path.off
-						loop
-							tgt_path_c_objects.put(c_c_o.c_object_at_path (paths_below_tgt_path.item), paths_below_tgt_path.item)
-							paths_below_tgt_path.forth
-						end
-					end
 										
 					-- now add the paths below it
 					from
@@ -189,25 +162,35 @@ feature -- Access
 						src_node_path.last.set_object_id(tgt_path.last.object_id)
 						src_node_path_str := src_node_path.as_string
 
-						physical_paths_cache.extend (src_node_path_str)
-						path_map.put(c_o, physical_paths_cache.last)
+						path_map.put (c_o, src_node_path_str)
 
 						from
-							paths_below_tgt_path.start	
+							tgt_path_c_objects.start	
 						until
-							paths_below_tgt_path.off
+							tgt_path_c_objects.off
 						loop
-							physical_paths_cache.extend (src_node_path_str + "/" + paths_below_tgt_path.item)
-							path_map.put(tgt_path_c_objects.item(paths_below_tgt_path.item), physical_paths_cache.last)
-
-							paths_below_tgt_path.forth
+							path_map.put (tgt_path_c_objects.item_for_iteration,
+								src_node_path_str + "/" + tgt_path_c_objects.key_for_iteration)
+							tgt_path_c_objects.forth
 						end
 						src_nodes.forth
 					end
 					use_node_path_xref_table.forth
 				end
+				
+				create physical_paths_cache.make
+				from
+					path_map.start
+				until
+					path_map.off
+				loop
+					physical_paths_cache.extend(path_map.key_for_iteration)
+					path_map.forth
+				end
 			end
-			Result := physical_paths_cache
+			
+			create Result.make (0)
+			Result.append (physical_paths_cache)
 		end	
 	
 	logical_paths(a_lang: STRING): ARRAYED_LIST [STRING] is
@@ -653,6 +636,7 @@ feature -- Modification
 		local
 			code_list: ARRAYED_LIST[STRING]
 		do
+			update_node_lists
 			code_list := ontology_unused_term_codes
 			from
 				code_list.start
@@ -748,7 +732,7 @@ feature -- Serialisation
 		
 feature {NONE} -- Implementation
 
-	physical_paths_cache: ARRAYED_LIST [STRING]
+	physical_paths_cache: SORTED_TWO_WAY_LIST [STRING]
 	
 	path_map: HASH_TABLE [C_OBJECT, STRING]
 			-- complete map of object nodes keyed by path

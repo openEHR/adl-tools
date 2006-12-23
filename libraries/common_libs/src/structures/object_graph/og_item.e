@@ -51,59 +51,15 @@ feature -- Access
 				-- content of this node
 
 	path: OG_PATH is
-			-- absolute path of this node relative to the root
-		local
-			csr: OG_NODE
-			og_nodes: ARRAYED_LIST [OG_ITEM]
-			a_path_item: OG_PATH_ITEM
-			og_attr: OG_ATTRIBUTE_NODE
+			-- absolute path of this node relative to the root; may produce non-unique paths
 		do
-			-- get the node list from here back up to the root, but don't include the root OG_OBJECT_NODE
-			create og_nodes.make(0)
-			if parent /= Void then
-				og_nodes.extend(Current)
-				from
-					csr := parent
-				until
-					csr.parent = Void
-				loop
-					og_nodes.put_front(csr)
-					csr := csr.parent
-				end	
-			end
-
-			if og_nodes.is_empty then
-				create Result.make_root				
-			else -- process the node list; we are starting on an OG_ATTR_NODE
-				og_nodes.start
-				create a_path_item.make(og_nodes.item.node_id)
-				og_attr ?= og_nodes.item
-				og_nodes.forth
-				if not og_nodes.off then -- now on an OG_OBJECT_NODE
-					if og_attr.is_multiple then
-						a_path_item.set_object_id(og_nodes.item.node_id)				
-					end
-					og_nodes.forth
-				end
-				create Result.make_absolute(a_path_item)
-				
-				from
-				until
-					og_nodes.off
-				loop
-					-- now on an OG_ATTR_NODE
-					create a_path_item.make(og_nodes.item.node_id)
-					og_attr ?= og_nodes.item
-					og_nodes.forth
-					if not og_nodes.off then -- now on an OG_OBJECT_NODE
-						if og_attr.is_multiple then
-							a_path_item.set_object_id(og_nodes.item.node_id)				
-						end
-						og_nodes.forth
-					end
-					Result.append_segment (a_path_item)
-				end
-			end
+			Result := generate_path(False)
+		end
+	
+	unique_path: OG_PATH is
+			-- absolute unique path of this node relative to the root
+		do
+			Result := generate_path(True)
 		end
 	
 	sibling_order: INTEGER
@@ -190,6 +146,66 @@ feature -- Serialisation
 			Depth_valid: depth >= 0
 		do
 			content_item.exit_block(serialiser, depth)
+		end
+
+feature {NONE} -- Implementation
+
+	generate_path(unique_flag: BOOLEAN): OG_PATH is
+			-- absolute path of this node relative to the root; if unique_flag set then
+			-- generate a completely unique path by including the "unknown" ids that are
+			-- automatically set at node-creation time on nodes that otherwise would have no id
+		local
+			csr: OG_NODE
+			og_nodes: ARRAYED_LIST [OG_ITEM]
+			a_path_item: OG_PATH_ITEM
+			og_attr: OG_ATTRIBUTE_NODE
+		do
+			-- get the node list from here back up to the root, but don't include the root OG_OBJECT_NODE
+			create og_nodes.make(0)
+			if parent /= Void then
+				og_nodes.extend(Current)
+				from
+					csr := parent
+				until
+					csr.parent = Void
+				loop
+					og_nodes.put_front(csr)
+					csr := csr.parent
+				end	
+			end
+
+			if og_nodes.is_empty then
+				create Result.make_root				
+			else -- process the node list; we are starting on an OG_ATTR_NODE
+				og_nodes.start
+				create a_path_item.make(og_nodes.item.node_id)
+				og_attr ?= og_nodes.item
+				og_nodes.forth
+				if not og_nodes.off then -- now on an OG_OBJECT_NODE
+					if og_attr.is_addressable or (unique_flag and og_attr.is_multiple) then
+						a_path_item.set_object_id(og_nodes.item.node_id)				
+					end
+					og_nodes.forth
+				end
+				create Result.make_absolute(a_path_item)
+				
+				from
+				until
+					og_nodes.off
+				loop
+					-- now on an OG_ATTR_NODE
+					create a_path_item.make(og_nodes.item.node_id)
+					og_attr ?= og_nodes.item
+					og_nodes.forth
+					if not og_nodes.off then -- now on an OG_OBJECT_NODE
+						if og_attr.is_addressable or (unique_flag and og_attr.is_multiple) then
+							a_path_item.set_object_id(og_nodes.item.node_id)				
+						end
+						og_nodes.forth
+					end
+					Result.append_segment (a_path_item)
+				end
+			end
 		end
 
 invariant

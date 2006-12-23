@@ -141,7 +141,7 @@ feature -- Access
 	all_paths: ARRAYED_LIST[STRING] is
 			-- all paths below this point, including this node
 		local
-			og_paths: ARRAYED_LIST [OG_PATH]
+			og_paths: HASH_TABLE [OG_OBJECT, OG_PATH]
 		do
 			og_paths := representation.all_paths
 			create Result.make(0)
@@ -151,7 +151,7 @@ feature -- Access
 			until
 				og_paths.off
 			loop
-				Result.extend(og_paths.item.as_string)
+				Result.extend(og_paths.key_for_iteration.as_string)
 				og_paths.forth
 			end
 		ensure

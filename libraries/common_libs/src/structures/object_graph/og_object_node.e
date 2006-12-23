@@ -35,86 +35,16 @@ feature -- Access
 
 	parent: OG_ATTRIBUTE_NODE
 	
-	all_paths: ARRAYED_LIST[OG_PATH] is
+	all_paths: HASH_TABLE [OG_OBJECT, OG_PATH] is
 			-- all paths below this point, including this node
-		local
-			child_paths: ARRAYED_LIST[OG_PATH]
-			attr_node: like child_type
-			a_path: OG_PATH
-			attrs: HASH_TABLE [OG_OBJECT, STRING]
-			child_obj: OG_OBJECT
-			child_obj_node: OG_OBJECT_NODE
-			obj_predicate_required: BOOLEAN
 		do
-			create Result.make(0)
-			Result.compare_objects
-			
-			-- get the attributes of this object
-			if has_children then
-				from 
-					children.start
-				until
-					children.off
-				loop
-					attr_node := children.item_for_iteration
-					
-					-- get the objects of this attribute
-					attrs := attr_node.children
-					from	
-						attrs.start
-					until
-						attrs.off
-					loop
-						child_obj ?= attrs.item_for_iteration
-						obj_predicate_required := attr_node.is_multiple or child_obj.is_addressable
-						child_obj_node ?= child_obj
-						if child_obj_node /= Void then
-							child_paths := child_obj_node.all_paths
-							from
-								child_paths.start
-							until
-								child_paths.off
-							loop
-								a_path := child_paths.item
-								if obj_predicate_required then
-									a_path.prepend_segment(create {OG_PATH_ITEM}.make_with_object_id(attr_node.node_id, child_obj_node.node_id))
-								else
-									a_path.prepend_segment(create {OG_PATH_ITEM}.make(attr_node.node_id))
-								end
-								if is_root then
-									a_path.set_absolute
-								end
-								Result.extend(a_path)
-								child_paths.forth
-							end
-						end 
-						
-						-- add path for the current child
-						if obj_predicate_required then
-							create a_path.make_relative(create {OG_PATH_ITEM}.make_with_object_id(attr_node.node_id, child_obj.node_id))	
-						else
-							create a_path.make_relative(create {OG_PATH_ITEM}.make(attr_node.node_id))	
-						end
-						if is_root then
-							a_path.set_absolute
-						end
-						Result.extend(a_path)														
-						attrs.forth
-					end
-					
-					-- create a path for this attribute
-		--			create a_path.make_relative(create {OG_PATH_ITEM}.make(attr_node.node_id))
-		--			if is_root then
-		--				a_path.set_absolute
-		--			end
-		--			if not attr_node.has_children then
-		--				a_path.set_is_leaf
-		--			end
-		--			Result.extend(a_path)														
+			Result := generate_all_paths(False)
+		end	
 
-					children.forth
-				end
-			end
+	all_unique_paths: HASH_TABLE [OG_OBJECT, OG_PATH] is
+			-- all paths below this point, including this node
+		do
+			Result := generate_all_paths(True)
 		end	
 
 	object_node_at_path(a_path: OG_PATH): OG_OBJECT is
@@ -256,6 +186,80 @@ feature {OG_OBJECT_NODE} -- Implementation
 		do
 			Result := children.item(a_path_segment.attr_name).child_at_node_id (a_path_segment.object_id)
 		end
+
+	generate_all_paths (unique_flag: BOOLEAN): HASH_TABLE [OG_OBJECT, OG_PATH] is
+			-- all paths below this point, including this node; if unique_flag is True,
+			-- then include the "unknown" ids on non-identified object nodes to give
+			-- completely unique paths
+		local
+			child_paths: HASH_TABLE [OG_OBJECT, OG_PATH]
+			attr_node: like child_type
+			a_path: OG_PATH
+			child_objs: HASH_TABLE [OG_OBJECT, STRING]
+			child_obj: OG_OBJECT
+			child_obj_node: OG_OBJECT_NODE
+			obj_predicate_required: BOOLEAN
+		do
+			create Result.make(0)
+			Result.compare_objects
+			
+			-- get the attributes of this object
+			if has_children then
+				from 
+					children.start
+				until
+					children.off
+				loop
+					attr_node := children.item_for_iteration
+					
+					-- get the objects of this attribute
+					child_objs := attr_node.children
+					from	
+						child_objs.start
+					until
+						child_objs.off
+					loop
+						child_obj ?= child_objs.item_for_iteration
+						obj_predicate_required := child_obj.is_addressable or (unique_flag and attr_node.is_multiple)
+						child_obj_node ?= child_obj
+						if child_obj_node /= Void then
+							child_paths := child_obj_node.all_paths
+							from
+								child_paths.start
+							until
+								child_paths.off
+							loop
+								a_path := child_paths.key_for_iteration
+								if obj_predicate_required then
+									a_path.prepend_segment(create {OG_PATH_ITEM}.make_with_object_id(attr_node.node_id, child_obj_node.node_id))
+								else
+									a_path.prepend_segment(create {OG_PATH_ITEM}.make(attr_node.node_id))
+								end
+								if is_root then
+									a_path.set_absolute
+								end
+								Result.put(child_paths.item_for_iteration, a_path)
+								child_paths.forth
+							end
+						end 
+						
+						-- add path for the current child
+						if obj_predicate_required then
+							create a_path.make_relative(create {OG_PATH_ITEM}.make_with_object_id(attr_node.node_id, child_obj.node_id))	
+						else
+							create a_path.make_relative(create {OG_PATH_ITEM}.make(attr_node.node_id))	
+						end
+						if is_root then
+							a_path.set_absolute
+						end
+						Result.put(child_obj, a_path)														
+						child_objs.forth
+					end
+					
+					children.forth
+				end
+			end
+		end	
 
 end
 
