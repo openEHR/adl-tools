@@ -78,8 +78,7 @@ feature -- Access
 feature -- Status Report
 
 	any_allowed: BOOLEAN is
-			-- True if any value allowed
-			-- i.e. no items
+			-- True if any value allowed i.e. no items
 		do
 			Result := items = Void
 		end
