@@ -78,6 +78,8 @@ feature -- Access
 		local
 			a_mag: REAL
 			a_mag_ivl: OE_INTERVAL[REAL]
+			a_prec: INTEGER
+			a_prec_ivl: OE_INTERVAL[INTEGER]
  		do
  			if assumed_value /= Void then
  				Result := assumed_value
@@ -94,9 +96,19 @@ feature -- Access
 						-- a_mag := 0.0
 					end
 				end
-				Result := create {QUANTITY}.make(a_mag, list.first.units)
+				a_prec_ivl := list.first.precIsion
+ 				if a_prec_ivl /= Void then
+					if not a_prec_ivl.lower_unbounded then
+						a_prec := a_prec_ivl.upper
+					elseif not a_prec_ivl.upper_unbounded then
+						a_prec := a_prec_ivl.lower
+					else
+						-- a_prec := 0.0
+					end
+				end
+				Result := create {QUANTITY}.make(a_mag, list.first.units, a_prec)
 			else -- property must be the only thing set...
-				Result := create {QUANTITY}.make(a_mag, default_units)
+				Result := create {QUANTITY}.make(a_mag, default_units, -1)
  			end
 		end
 
@@ -111,17 +123,17 @@ feature -- Modification
 			default_units := units_for_property (a_property).first
 		end
 
-	set_assumed_value_from_units_magnitude(a_units: STRING; a_magnitude: REAL) is
-			-- set `assumed_value'
+	set_assumed_value_from_units_magnitude(a_units: STRING; a_magnitude: REAL; a_precision: INTEGER) is
+			-- set `assumed_value'; set precision to -1 if no precision
 		require
 			Units_valid: a_units /= Void implies not a_units.is_empty
 		do
-			set_assumed_value(create {QUANTITY}.make(a_magnitude, a_units))
+			set_assumed_value(create {QUANTITY}.make(a_magnitude, a_units, a_precision))
 		ensure
-			assumed_value_set: assumed_value.magnitude = a_magnitude and assumed_value.units = a_units
+			assumed_value_set: assumed_value.magnitude = a_magnitude and assumed_value.units = a_units and assumed_value.precision = a_precision
 		end
 	
-	add_unit_constraint(a_units: STRING; a_magnitude: OE_INTERVAL[REAL]) is
+	add_unit_constraint(a_units: STRING; a_magnitude: OE_INTERVAL[REAL]; a_precision: OE_INTERVAL[INTEGER]) is
 			-- add a units constraint. Void magnitude means any magnitude allowed
 		require
 			Units_valid: a_units /= Void and then not a_units.is_empty
@@ -130,7 +142,7 @@ feature -- Modification
 			if list = Void then
 				create list.make(0)
 			end
-			list.extend(create {C_QUANTITY_ITEM}.make(a_units, a_magnitude))
+			list.extend(create {C_QUANTITY_ITEM}.make(a_units, a_magnitude, a_precision))
 		end
 	
 feature -- Status Report

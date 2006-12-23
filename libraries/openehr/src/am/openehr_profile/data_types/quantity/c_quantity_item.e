@@ -19,15 +19,17 @@ create
 
 feature -- Initialisation
 
-	make(a_units: STRING; a_magnitude: OE_INTERVAL[REAL]) is
+	make(a_units: STRING; a_magnitude: OE_INTERVAL[REAL]; a_precision: OE_INTERVAL[INTEGER]) is
 			-- add a units constraint. Void magnitude means any magnitude allowed
 		require
 			Magnitude_validity: a_magnitude /= Void implies a_units /= Void
 		do
 			units := a_units
 			magnitude := a_magnitude
+			precision := a_precision
 		ensure
 			magnitude = Void implies any_magnitude_allowed
+			precision = Void implies any_precision_allowed
 		end
 
 feature -- Access
@@ -37,6 +39,9 @@ feature -- Access
 	
 	magnitude: OE_INTERVAL [REAL]
 			-- constraint on magnitude
+			
+	precision: OE_INTERVAL [INTEGER]
+			-- constraint on precision
 
 feature -- Status Report
 			
@@ -44,6 +49,12 @@ feature -- Status Report
 			-- True if there is no constraint on magnitude
 		do
 			Result := magnitude = Void
+		end
+		
+	any_precision_allowed: BOOLEAN is
+			-- True if there is no constraint on precision
+		do
+			Result := precision = Void
 		end
 		
 invariant

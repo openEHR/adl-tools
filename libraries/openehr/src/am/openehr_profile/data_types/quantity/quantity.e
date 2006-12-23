@@ -27,6 +27,8 @@ feature -- Definitions
 
 	Default_units: STRING is "m"
 			-- metres
+			
+	Default_precision: INTEGER is -1
 
 feature -- Initialisation
 
@@ -34,18 +36,23 @@ feature -- Initialisation
 			-- create a reasonable default object
 		do
 			units := Default_units.twin
+			precision := Default_precision
+		ensure then
+			precision = Default_precision
 		end
 		
-	make(a_magnitude: REAL; a_units: STRING) is
-			-- set magnitude and units
+	make(a_magnitude: REAL; a_units: STRING; a_precision: INTEGER) is
+			-- set magnitude and units; precision should be set to -1 if no precision
 		require
 			Units_valid: a_units /= Void implies not a_units.is_empty
 		do
 			magnitude := a_magnitude
 			units := a_units
+			precision := a_precision
 		ensure
 			Magnitude_set: magnitude = a_magnitude
 			Units_set: units = a_units
+			Precision_set: precision = a_precision
 		end
 		
 feature -- Access
@@ -53,14 +60,23 @@ feature -- Access
 	magnitude: REAL
 
 	units: STRING
+	
+	precision: INTEGER
 
 feature -- Conversion
 
 	as_string: STRING is
 			-- 
+		local
+			fd: FORMAT_DOUBLE
 		do
 			create Result.make(0)
-			Result.append (magnitude.out)
+			if precision = Default_precision then
+				Result.append (magnitude.out)
+			else
+				create fd.make (50, precision)
+				Result.append(fd.formatted (magnitude))
+			end
 			if units /= Void then
 				Result.append (units)	
 			end
