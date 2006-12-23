@@ -13,7 +13,7 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class TC_DV_RATIO
+class TC_DV_PROPORTION
 
 inherit
 	TEST_CASE
@@ -31,7 +31,7 @@ creation
 
 feature -- Access
 
-	title: STRING is "DV_RATIO"
+	title: STRING is "DV_PROPORTION"
 
 feature -- Initialisation
 
@@ -41,7 +41,7 @@ feature -- Initialisation
 
 	execute is
 		local
-			a_datum: DV_RATIO
+			a_datum: DV_PROPORTION
 		do
 		end
 
