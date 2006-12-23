@@ -141,13 +141,21 @@ feature -- Output
 
 			create Result.make(0)
 			if interval.lower_unbounded then
-				Result.append("<= " + ustr)
+				if interval.upper_included then
+					Result.append("<= " + ustr)
+				else
+					Result.append("< " + ustr)
+				end
 			elseif interval.upper_unbounded then
-				Result.append(">= " + lstr)
+				if interval.lower_included then
+					Result.append(">= " + lstr)
+				else
+					Result.append("> " + lstr)
+				end
 			elseif not interval.limits_equal then
 				Result.append(lstr + ".." + ustr)
 			else
-				Result.append(lstr) 
+				Result.append(ustr) 
 			end
 		end
 
