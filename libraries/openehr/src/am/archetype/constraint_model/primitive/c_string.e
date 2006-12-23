@@ -66,6 +66,7 @@ feature -- Initialization
 				regexp := Regexp_compile_error.twin
 			end
 		ensure
+			strings = Void
 			regexp.is_equal(str) xor regexp.is_equal(Regexp_compile_error)
 		end
 
@@ -77,6 +78,7 @@ feature -- Initialization
 			strings.fill(lst)
 			strings.compare_objects
 		ensure
+			strings /= Void
 			not is_open
 		end
 
