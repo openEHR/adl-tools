@@ -1,54 +1,52 @@
 indexing
-	component:   "openEHR EHR Extract Reference Model"
+	component:   "openEHR EHR Reference Model"
 
-	description: "EHR Extract test suite"
-	keywords:    "test, EHR_EXTRACT"
+	description: "[
+				  Single item in generic extract.
+				  ]"
+	keywords:    "ehr, extract"
+
+	design:      "openEHR EHR Extract Reference Model rev 2"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2006 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2006 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	file:        "$URL"
+	revision:    "$LastChangedRevision"
+	last_change: "$LastChangedDate"
 
-class TC_EHR_EXTRACT
+class GENERIC_EXTRACT_ITEM
 
 inherit
-	TEST_CASE
-		redefine 
-			check_result
-		end
-
-creation
-	make
+	EXTRACT_ITEM
 
 feature -- Access
 
-	title: STRING is "EHR_EXTRACT"
+	item: LOCATABLE
+			-- Content item.
 
-feature -- Initialisation
+	item_type: STRING	
+			-- Type of item.
 
-	make(arg:ANY) is
-		do
-		end
+	version_id: STRING	
+			-- Version id of this item in original system.
 
-	execute is
-		local
-			ee: EHR_EXTRACT
-			msg: ADDRESSED_MESSAGE
-		do
-		end
+	version_set_id: STRING	
+			-- Version set id of this item in original system, where applicable.
 
-feature -- Access
+	other_details: HASH_TABLE [STRING, STRING]	
+			-- Other details about the content item.
 
-	check_result is
-		do
-		end
+invariant
+	Item_valid: item /= Void
+	Item_type_valid: item_type /= Void and then not item_type.is_empty
+	Version_id_valid: version_id /= Void implies not version_id.is_empty
+	Version_set_id_valid: version_set_id /= Void implies not version_set_id.is_empty
+	Other_details_valid: other_details /= Void implies not other_details.is_empty	
 
 end
-
 
 --|
 --| ***** BEGIN LICENSE BLOCK *****
@@ -64,10 +62,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is tc_ehr_extract.e.
+--| The Original Code is ehr_extract_request.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2006
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

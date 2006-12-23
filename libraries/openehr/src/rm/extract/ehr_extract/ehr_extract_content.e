@@ -1,54 +1,47 @@
 indexing
-	component:   "openEHR EHR Extract Reference Model"
+	component:   "openEHR EHR Reference Model"
 
-	description: "EHR Extract test suite"
-	keywords:    "test, EHR_EXTRACT"
+	description: "[
+				  openEHR EHR Extract content
+				  ]"
+	keywords:    "ehr, extract"
+
+	design:      "openEHR EHR Extract Reference Model rev 2"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2006 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2006 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	file:        "$URL"
+	revision:    "$LastChangedRevision"
+	last_change: "$LastChangedDate"
 
-class TC_EHR_EXTRACT
+class EHR_EXTRACT_CONTENT
 
-inherit
-	TEST_CASE
-		redefine 
-			check_result
-		end
-
-creation
-	make
+inherit 
+	EXTRACT_CONTENT
 
 feature -- Access
 
-	title: STRING is "EHR_EXTRACT"
+	folder_tree: X_VERSIONED_OBJECT [FOLDER]	
+			-- Folder tree from source EHR.
 
-feature -- Initialisation
+	compositions: SET [X_VERSIONED_OBJECT [COMPOSITION]]	
+			-- Compositions from source EHR.
 
-	make(arg:ANY) is
-		do
-		end
+	demographics: SET [X_VERSIONED_OBJECT [PARTY]]	
+			-- Demographic entities from source EHR.
 
-	execute is
-		local
-			ee: EHR_EXTRACT
-			msg: ADDRESSED_MESSAGE
-		do
-		end
+	other_items: SET [X_VERSIONED_OBJECT [LOCATABLE]]	
+			-- Other items from source EHR.
 
-feature -- Access
-
-	check_result is
-		do
-		end
+invariant
+	Compositions_valid: compositions /= Void implies not compositions.is_empty
+	Demographics_valid: demographics /= Void implies not demographics.is_empty
+	Other_items_valid: other_items /= Void implies not other_items.is_empty	
 
 end
-
 
 --|
 --| ***** BEGIN LICENSE BLOCK *****
@@ -64,10 +57,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is tc_ehr_extract.e.
+--| The Original Code is extract_request.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2006
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

@@ -1,54 +1,41 @@
 indexing
-	component:   "openEHR EHR Extract Reference Model"
+	component:   "openEHR EHR Reference Model"
 
-	description: "EHR Extract test suite"
-	keywords:    "test, EHR_EXTRACT"
+	description: "[
+				  Extract variant of CONTRIBUTION class.
+				  ]"
+	keywords:    "ehr, extract"
+
+	design:      "openEHR EHR Extract Reference Model rev 2"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2006 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2006 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	file:        "$URL"
+	revision:    "$LastChangedRevision"
+	last_change: "$LastChangedDate"
 
-class TC_EHR_EXTRACT
-
-inherit
-	TEST_CASE
-		redefine 
-			check_result
-		end
-
-creation
-	make
+class X_CONTRIBUTION
 
 feature -- Access
 
-	title: STRING is "EHR_EXTRACT"
+	uid: HIER_OBJECT_ID	
+			-- Uid of Contribution in source system.
 
-feature -- Initialisation
+	audit: AUDIT_DETAILS	
+			-- Audit of Contribution in source system.
 
-	make(arg:ANY) is
-		do
-		end
+	versions: LIST[VERSION[LOCATABLE]]	
+			-- Serialised Versions from Contribution in source system.
 
-	execute is
-		local
-			ee: EHR_EXTRACT
-			msg: ADDRESSED_MESSAGE
-		do
-		end
-
-feature -- Access
-
-	check_result is
-		do
-		end
+invariant
+	Uid_valid: uid /= Void
+	Audit_valid: audit /= Void
+	Versions_valid: versions /= Void and then not versions.is_empty
 
 end
-
 
 --|
 --| ***** BEGIN LICENSE BLOCK *****
@@ -64,10 +51,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is tc_ehr_extract.e.
+--| The Original Code is ehr_extract_request.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2006
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

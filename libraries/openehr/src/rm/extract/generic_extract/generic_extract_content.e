@@ -1,54 +1,36 @@
 indexing
-	component:   "openEHR EHR Extract Reference Model"
+	component:   "openEHR EHR Reference Model"
 
-	description: "EHR Extract test suite"
-	keywords:    "test, EHR_EXTRACT"
+	description: "[
+				  Generic EHR Extract content, capable of carrying any data. Designed to be CEN EN13606 compatible.
+				  ]"
+	keywords:    "ehr, extract"
+
+	design:      "openEHR EHR Extract Reference Model rev 2"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2006 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2006 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	file:        "$URL"
+	revision:    "$LastChangedRevision"
+	last_change: "$LastChangedDate"
 
-class TC_EHR_EXTRACT
+class GENERIC_EXTRACT_CONTENT
 
-inherit
-	TEST_CASE
-		redefine 
-			check_result
-		end
-
-creation
-	make
+inherit 
+	EXTRACT_CONTENT
 
 feature -- Access
 
-	title: STRING is "EHR_EXTRACT"
+	items: LIST [GENERIC_EXTRACT_ITEM]
+			-- Items.
 
-feature -- Initialisation
-
-	make(arg:ANY) is
-		do
-		end
-
-	execute is
-		local
-			ee: EHR_EXTRACT
-			msg: ADDRESSED_MESSAGE
-		do
-		end
-
-feature -- Access
-
-	check_result is
-		do
-		end
+invariant
+	Items_valid: items /= Void and not items.is_empty	
 
 end
-
 
 --|
 --| ***** BEGIN LICENSE BLOCK *****
@@ -64,10 +46,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is tc_ehr_extract.e.
+--| The Original Code is generic_extract_content.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2006
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

@@ -6,7 +6,7 @@ indexing
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2000-2006 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -29,6 +29,8 @@ feature -- Access
 		once
 			create Result.make
 			create {TC_EHR_EXTRACT} tc.make(Void) 		Result.extend(tc)
+			create {TC_GENERIC_EXTRACT} tc.make(Void) 		Result.extend(tc)
+			create {TC_SYNC_EXTRACT} tc.make(Void) 		Result.extend(tc)
 		end
 
 	title:STRING is "EHR Extract tests"

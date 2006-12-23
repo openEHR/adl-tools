@@ -1,19 +1,19 @@
 indexing
 	component:   "openEHR EHR Extract Reference Model"
 
-	description: "EHR Extract test suite"
-	keywords:    "test, EHR_EXTRACT"
+	description: "Synchronisation Extract test case"
+	keywords:    "test, extract"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2006 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2006 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class TC_EHR_EXTRACT
+class TC_SYNC_EXTRACT
 
 inherit
 	TEST_CASE
@@ -26,7 +26,7 @@ creation
 
 feature -- Access
 
-	title: STRING is "EHR_EXTRACT"
+	title: STRING is "SYNC_EXTRACT"
 
 feature -- Initialisation
 
@@ -36,8 +36,7 @@ feature -- Initialisation
 
 	execute is
 		local
-			ee: EHR_EXTRACT
-			msg: ADDRESSED_MESSAGE
+			ee: SYNC_EXTRACT
 		do
 		end
 
@@ -64,7 +63,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is tc_ehr_extract.e.
+--| The Original Code is tc_sync_extract.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

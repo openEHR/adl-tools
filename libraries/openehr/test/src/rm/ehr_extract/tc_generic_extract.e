@@ -1,72 +1,50 @@
 indexing
 	component:   "openEHR EHR Extract Reference Model"
 
-	description: "Generic Message Envelope"
-	keywords:    "message"
-
-	requirements:"ISO 18308 TS V1.0 ???"
-	design:      "openEHR EHR Extract Reference Model 1.3.1"
+	description: "Extract test suite"
+	keywords:    "test, extract"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2006 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class MESSAGE 
+class TC_GENERIC_EXTRACT
+
+inherit
+	TEST_CASE
+		redefine 
+			check_result
+		end
+
+creation
+	make
 
 feature -- Access
 
-	time_sent: DV_DATE_TIME	
-			-- Date/time the message was sent.
-			
-	sender: PARTY_REF	
-			-- Party sending the extract.
-			
-	receiver: PARTY_REF	
-			-- Party the extract is sent to.
-			
-	sender_node: PARTY_REF	
-			-- EHR node from which the message is sent.
+	title: STRING is "GENERIC_EXTRACT"
 
-	receiver_node: PARTY_REF	
-			-- EHR node receiving the message.
+feature -- Initialisation
 
-	senders_reference: STRING	
-			-- Identification of message at sender’s end.
+	make(arg:ANY) is
+		do
+		end
 
-	initiator: STRING	
-			-- Indicates which party - sender or receiver caused the message to 
-			-- be created and sent. If the receiver (initiator = “R”), there was 
-			-- an EHR_REQUEST. If the sender (initiator = “S”), there is no request, 
-			-- and the extract is being sent unsolicited.
+	execute is
+		local
+			ee: GENERIC_EXTRACT
+		do
+		end
 
-	urgency: DV_ORDINAL	
-			-- Urgency with which receiver should deal with message
+feature -- Access
 
-	signature: ATTESTATION	
-			-- Signature of message content.
-
-	parties: SET[PARTY]	
-			-- Parties referred to by all PARTY_REF and ATTESTATION instances in this message instance.
-
-	content: MESSAGE_CONTENT	
-			-- The content of the message.
-
-invariant
-	Time_sent_exists: time_sent /= Void
-	Sender_exists: sender /= Void
-	Receiver_exists: receiver /= Void
-	Sender_node_exists: sender_node /= Void
-	Senders_reference_exists: senders_reference /= Void
-	Receiver_node_exists: receiver_node /= Void
-	Urgency_exists: urgency /= Void
-	Initiator_valid: initiator /= Void and then (initiator = "S" or else initiator = "R")
-	Parties_valid: Parties /= Void implies parties.is_empty
-	Content_exists: content /= Void	
+	check_result is
+		do
+		end
 
 end
 
@@ -85,7 +63,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is message.e.
+--| The Original Code is tc_generic_extract.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004
