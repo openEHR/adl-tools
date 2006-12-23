@@ -1,9 +1,15 @@
 indexing	
 	component:   "openEHR Archetype Project"
 	description: "[
-				 Archteype directory - a data structure containing a archetypes found in a file-based 
-				 repository. In the structure, specialised archetypes are subordinates of their parent 
-				 archetypes, if the latter are known, else they are on the level of the parent.
+				 Archteype directory - a data structure containing a archetypes found in one or more
+				 file-system directories. In the structure, specialised archetypes are subordinates 
+				 of their parent archetypes, if the latter are known, else they are on the level of 
+				 the parent.
+				 
+				 The overall effect is to combine one or more file-system repositories of archetypes, 
+				 e.g. as found in the openEHR SVN knowledge repoisitory, into one logical tree. The
+				 objects from each repository are marked so that calling routines can distinguish them
+				 e.g. to use different coloured icons on the screen.
 				 ]"
 	keywords:    "ADL"
 	author:      "Thomas Beale"
@@ -29,127 +35,217 @@ inherit
 			{NONE} all
 		end
 
+	MESSAGE_BILLBOARD
+		export
+			{NONE} all
+		end
+
+create
+	make
+	
+feature -- Initialisation
+
+	make is
+		do
+			create repositories.make(0)
+			clear
+		end
+		
 feature -- Access
 
-	repository_path: STRING
-			-- path to the root of the repository containing the archetypes
+	repositories: DS_HASH_TABLE [ARCHETYPE_INDEXED_REPOSITORY, STRING]
+			-- paths of file-system repositories of archetypes, keyed by logical id
 
 	directory: TWO_WAY_TREE [ARCHETYPE_DIRECTORY_ITEM]
-			-- tree-structured directory of archetypes
-						
-	index: HASH_TABLE [TWO_WAY_TREE [ARCHETYPE_DIRECTORY_ITEM], STRING]
-			-- index of archetype nodes in archetype_directory, keyed by archetype domain_concept
+			-- result of merging all repositories
 
-feature -- Commands
-	
-	populate(a_dir_name: STRING) is
-			-- make based on valid directory path
+	path_index: DS_HASH_TABLE [TWO_WAY_TREE [ARCHETYPE_DIRECTORY_ITEM], STRING]
+			-- index of archetype nodes, keyed by semantic path of node
+			-- relative semantic path of item with respect to root; for folder nodes, 
+			-- this will look like the directory path; for archetype nodes, this will be
+			-- the concatenation of the directory path and archetype specialisation parent path
+
+feature -- Comparison
+
+	valid_directory(a_dir_name: STRING): BOOLEAN is
+			-- True if a_dir_name corresponds to a real directory, is readable, and is not the same as,
+			-- or a parent or child directory of any directory already used to populate the tree
 		require
-			Dir_name_valid: a_dir_name /= Void and then (create {DIRECTORY}.make(a_dir_name)).exists
+			a_dir_name /= Void
 		do
-			create index.make(0)
-			repository_path := a_dir_name
-			directory := populate_directory(repository_path)
+			if (create {DIRECTORY}.make(a_dir_name)).exists then
+				from
+					repositories.start
+				until
+					repositories.off or 
+						a_dir_name.is_equal(repositories.key_for_iteration) or
+						a_dir_name.has_substring (repositories.key_for_iteration) or
+						repositories.key_for_iteration.has_substring(a_dir_name)
+				loop
+					repositories.forth
+				end
+				Result := repositories.off
+			end
+		end
+		
+feature -- Commands
+			
+	clear is
+		do
+			create path_index.make(0)
+			directory := Void
+		end
+
+	repopulate is
+			-- rebuild directory based on existing paths
+		do
+			clear
+			from
+				repositories.start
+			until
+				repositories.off
+			loop
+				repositories.item_for_iteration.repopulate
+				tree_do_all(repositories.item_for_iteration, agent merge_enter, agent merge_exit)
+				repositories.forth
+			end
+		end
+
+	put_repository(a_dir_name, an_id: STRING) is
+			-- put repository logically identified an_id, at directory path a_dir_name
+		require
+			Dir_name_valid: a_dir_name /= Void and then valid_directory(a_dir_name)
+			Id_valid: an_id /= Void and then not an_id.is_empty
+		do
+			repositories.force(create {ARCHETYPE_INDEXED_REPOSITORY}.make(a_dir_name, repositories.count+1), an_id)
+		end
+
+feature -- Traversal
+
+	do_all (node_enter_action, node_exit_action: PROCEDURE [ANY, TUPLE[ARCHETYPE_DIRECTORY_ITEM]]) is
+			-- execute node_enter_action when entering a node, then recurse into subnodes, then execute
+			-- node_exit_action when leaving node
+		do
+			do_all_nodes(directory, node_enter_action, node_exit_action)
+		end
+		
+	tree_do_all (a_rep: ARCHETYPE_INDEXED_REPOSITORY; node_enter_action, node_exit_action: PROCEDURE [ANY, TUPLE[TWO_WAY_TREE[ARCHETYPE_DIRECTORY_ITEM]]]) is
+			-- execute node_enter_action when entering a node, then recurse into subnodes, then execute
+			-- node_exit_action when leaving node
+		do
+			tree_do_all_nodes(a_rep.directory, node_enter_action, node_exit_action)
 		end
 		
 feature {NONE} -- Implementation
 
-	populate_directory(a_dir_name: STRING): TWO_WAY_TREE [ARCHETYPE_DIRECTORY_ITEM] is
-			-- add archetype and folder meta-data for directory to archetype directory
+	do_all_nodes(node: like directory; node_enter_action, node_exit_action: PROCEDURE [ANY, TUPLE[ARCHETYPE_DIRECTORY_ITEM]])  is
+			-- recursive version of routine due to lack of useful recursive routines on Eiffel tree structures
 		require
-			Dir_name_valid: a_dir_name /= Void
-		local
-			fn, fpath: STRING
-			a_dir: DIRECTORY
-			fs_node_names: ARRAYED_LIST[STRING]
-			dir_name_index: SORTED_TWO_WAY_LIST[STRING]
-			file_name_index: SORTED_TWO_WAY_LIST[ARCHETYPE_ID]
-			file_name_table: HASH_TABLE[STRING, STRING]
-			a_file: RAW_FILE
-			an_arch_id: ARCHETYPE_ID
-			an_arch_name: STRING
-			ada_item: ARCHETYPE_DIRECTORY_ARCHETYPE
-			arch_node, non_spec_arch_node: TWO_WAY_TREE [ARCHETYPE_DIRECTORY_ITEM]
+			Node_valid: node /= Void
+			Node_enter_action_valid: node_enter_action /= Void
    		do
-			create a_dir.make(a_dir_name)
-			create Result.make(create {ARCHETYPE_DIRECTORY_FOLDER}.make(a_dir_name))
-
-			if a_dir.exists then
-				a_dir.open_read
-				fs_node_names := a_dir.linear_representation
-				create file_name_index.make
-				create dir_name_index.make
-				create file_name_table.make(0)
-				from 
-					fs_node_names.start
-				until 
-					fs_node_names.off
-				loop
-					fn := fs_node_names.item
-					if not (fn.is_equal(".") or fn.is_equal("..") or fn.item (1) = '.') then
-						fpath := a_dir_name + Os_directory_separator.out + fn
-						create a_file.make(fpath)	
-						if a_file.is_directory then
-							dir_name_index.extend (fn)
-						elseif a_file.is_plain and base_name_pattern_regex.matches(fn) then
-							an_arch_name := fn.twin
-							an_arch_name.remove_tail(("." + Archetype_file_extension).count)
-							create an_arch_id.default_create
-							if an_arch_id.valid_id(an_arch_name) then
-								an_arch_id.make_from_string(an_arch_name)
-								file_name_index.extend (an_arch_id)
-								file_name_table.put(fn, an_arch_id.as_string)
-							end
-						end			
-					end
-					fs_node_names.forth
-				end
-			end
-			
-			from
-				dir_name_index.start
-			until
-				dir_name_index.off
-			loop
-				fpath := a_dir_name + Os_directory_separator.out + dir_name_index.item
-				Result.put_child_right (populate_directory(fpath))
-				Result.child_forth				
-				dir_name_index.forth
-			end
-			
-			from
-				file_name_index.start
-			until
-				file_name_index.off
-			loop
-				fpath := a_dir_name + Os_directory_separator.out + file_name_table.item(file_name_index.item.as_string)
-				an_arch_id := file_name_index.item				
-				create ada_item.make(fpath, an_arch_id, an_arch_id.is_specialised)
-				create arch_node.make(ada_item)
-				if not an_arch_id.is_specialised then
-					Result.put_child_right(arch_node)
-					Result.child_forth
-				else
-					if index.has(an_arch_id.domain_concept_base) then
-						non_spec_arch_node := index.item(an_arch_id.domain_concept_base)
+  			from
+ 				node.child_start
+ 			until
+ 				node.child_off
+ 			loop		
+				node_enter_action.call([node.child_item])
+ 				do_all_nodes(node.child, node_enter_action, node_exit_action)
+				node_exit_action.call([node.child_item])
+ 				node.child_forth
+ 			end
+   		end	
+		
+	tree_do_all_nodes(node: like directory; node_enter_action, node_exit_action: PROCEDURE [ANY, TUPLE[TWO_WAY_TREE[ARCHETYPE_DIRECTORY_ITEM]]])  is
+			-- recursive version of routine due to lack of useful recursive routines on Eiffel tree structures
+		require
+			Node_valid: node /= Void
+			Node_enter_action_valid: node_enter_action /= Void
+   		do
+  			from
+ 				node.child_start
+ 			until
+ 				node.child_off
+ 			loop		
+				node_enter_action.call([node.child])
+ 				tree_do_all_nodes(node.child, node_enter_action, node_exit_action)
+				node_exit_action.call([node.child])
+ 				node.child_forth
+ 			end
+   		end	
+		
+	merge_enter(a_node: TWO_WAY_TREE [ARCHETYPE_DIRECTORY_ITEM]) is
+			-- merge a_node into directory - node enter 
+		local
+			adf: ARCHETYPE_DIRECTORY_FOLDER
+			ada: ARCHETYPE_DIRECTORY_ARCHETYPE
+			arch_node, parent_node: TWO_WAY_TREE [ARCHETYPE_DIRECTORY_ITEM]
+		do
+   			debug("arch_dir")
+   				io.put_string(shifter + "===> " + a_node.item.semantic_path)
+   				shifter.extend ('%T')
+   			end
+			adf ?= a_node.item
+			if adf /= Void then
+   				debug("arch_dir")
+   					io.put_string(shifter + " (folder)%N")
+	   			end
+				if not path_index.has(adf.semantic_path) then
+					create arch_node.make (adf)
+					if path_index.has(adf.semantic_parent_path) then
+						parent_node := path_index.item(adf.semantic_parent_path)
+						parent_node.put_child_right (arch_node)
+						parent_node.child_forth
+					elseif directory /= Void then
+						parent_node := directory
+						parent_node.put_child_right (arch_node)
+						parent_node.child_forth
 					else
-						non_spec_arch_node := Result
+						directory := arch_node
 					end
-					non_spec_arch_node.put_child_right(arch_node)
-					non_spec_arch_node.child_forth
+					path_index.force(arch_node, adf.semantic_path)
 				end
-				index.put(arch_node, an_arch_id.domain_concept)
-				
-				file_name_index.forth
-			end		
-		end
-							
-	base_name_pattern_regex: LX_DFA_REGULAR_EXPRESSION is
-			-- pattern matcher for filenames ending in ".adl"
+			else
+   				debug("arch_dir")
+   					io.put_string(shifter + " (archetype)%N")
+	   			end
+				ada ?= a_node.item
+				create arch_node.make (ada)
+				if path_index.has(ada.semantic_path) then
+					-- this is an error: it means there are archetypes from two different 
+					-- file repositories claiming to be the same archetype
+					post_error(Current, "repopulate", "arch_dir_dup_archetype", <<ada.full_path>>)
+				else
+					if path_index.has(ada.semantic_parent_path) then
+						parent_node := path_index.item(ada.semantic_parent_path)
+						parent_node.put_child_right (arch_node)
+						parent_node.child_forth
+					else
+						post_warning(Current, "repopulate", "arch_dir_no_arch_parent", <<ada.semantic_parent_path, ada.full_path>>)
+					end
+					path_index.force(arch_node, ada.semantic_path)
+				end
+			end
+   			debug("arch_dir")
+   				shifter.remove_tail (1)
+   				io.put_string(shifter + "<===%N")
+   			end
+		end		
+
+	merge_exit(a_node: TWO_WAY_TREE [ARCHETYPE_DIRECTORY_ITEM]) is
+			-- merge a_node into directory - node exit
+		do
+		end		
+
+	shifter: STRING is
+			-- debug indenter
 		once
-			create Result.compile_case_insensitive(".*\." + Archetype_file_extension + "$")
+			create Result.make(0)
 		end
 
+invariant
+	Repositories_valid: repositories /= Void
+	
 end
 
 

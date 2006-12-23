@@ -21,7 +21,7 @@ feature -- Access
 	archetype_directory: ARCHETYPE_DIRECTORY is
 			-- application-wide archetype directory access
 		once
-			create Result
+			create Result.make
 		end
 
 end

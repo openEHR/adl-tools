@@ -20,6 +20,41 @@ inherit
 create
 	make
 
+feature -- Access
+
+	base_name: STRING
+			-- name of last segment of path - i.e. local dir name or else file-name
+
+feature {NONE} -- Implementation
+
+	make_semantic_paths is
+			-- make semantic_path and semantic_parent_path
+		local
+			pos: INTEGER
+		do
+			semantic_path := full_path.substring (root_path.count + 1, full_path.count)
+
+			create semantic_parent_path.make(0)
+			if not semantic_path.is_empty then
+				pos := semantic_path.last_index_of(os_directory_separator, semantic_path.count)
+			end
+			if pos > 0 then
+				semantic_parent_path.append(semantic_path.substring (1, pos - 1))
+			end
+
+			if not semantic_path.is_empty then
+				pos := semantic_path.last_index_of(os_directory_separator, semantic_path.count)
+			end
+			if pos > 0 then
+				base_name := semantic_path.substring(pos+1, semantic_path.count)
+			else
+				base_name := semantic_path.twin
+			end
+		end
+
+invariant
+	Base_name: base_name /= Void and then not base_name.is_empty
+
 end
 
 

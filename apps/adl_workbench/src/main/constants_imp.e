@@ -64,10 +64,10 @@ feature -- Access
 			Result := 600
 		end
 
-	min_entry_control_width: INTEGER is 
-			-- `Result' is INTEGER constant named min_entry_control_width.
+	app_max_width: INTEGER is 
+			-- `Result' is INTEGER constant named app_max_width.
 		once
-			Result := 200
+			Result := 2000
 		end
 
 	min_terms_status_height: INTEGER is 
@@ -82,22 +82,22 @@ feature -- Access
 			Result := 100
 		end
 
+	arch_tree_min_height: INTEGER is 
+			-- `Result' is INTEGER constant named arch_tree_min_height.
+		once
+			Result := 60
+		end
+
+	desc_label_width: INTEGER is 
+			-- `Result' is INTEGER constant named desc_label_width.
+		once
+			Result := 100
+		end
+
 	source_notebook_min_height: INTEGER is 
 			-- `Result' is INTEGER constant named source_notebook_min_height.
 		once
 			Result := 200
-		end
-
-	max_arch_explorer_width: INTEGER is 
-			-- `Result' is INTEGER constant named max_arch_explorer_width.
-		once
-			Result := 180
-		end
-
-	padding_width: INTEGER is 
-			-- `Result' is INTEGER constant named padding_width.
-		once
-			Result := 3
 		end
 
 	min_text_height: INTEGER is 
@@ -106,16 +106,16 @@ feature -- Access
 			Result := 50
 		end
 
-	app_max_width: INTEGER is 
-			-- `Result' is INTEGER constant named app_max_width.
-		once
-			Result := 2000
-		end
-
 	dialog_border_width: INTEGER is 
 			-- `Result' is INTEGER constant named dialog_border_width.
 		once
 			Result := 10
+		end
+
+	min_terms_height: INTEGER is 
+			-- `Result' is INTEGER constant named min_terms_height.
+		once
+			Result := 100
 		end
 
 	max_terms_height: INTEGER is 
@@ -136,10 +136,10 @@ feature -- Access
 			Result := 4
 		end
 
-	desc_label_width: INTEGER is 
-			-- `Result' is INTEGER constant named desc_label_width.
+	main_hbox_min_height: INTEGER is 
+			-- `Result' is INTEGER constant named main_hbox_min_height.
 		once
-			Result := 100
+			Result := 560
 		end
 
 	app_initial_height: INTEGER is 
@@ -154,10 +154,10 @@ feature -- Access
 			Result := 70
 		end
 
-	icons: STRING is
-			-- `Result' is DIRECTORY constant named `icons'.
+	main_vbox_min_height: INTEGER is 
+			-- `Result' is INTEGER constant named main_vbox_min_height.
 		once
-			Result := "C:\project\openehr\ref_impl_eiffel\apps\adl_workbench\app\icons"
+			Result := 600
 		end
 
 	editable_colour: EV_COLOR is
@@ -166,22 +166,22 @@ feature -- Access
 			Result := create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 255)
 		end
 
-	main_hbox_min_height: INTEGER is 
-			-- `Result' is INTEGER constant named main_hbox_min_height.
+	icons: STRING is
+			-- `Result' is DIRECTORY constant named `icons'.
 		once
-			Result := 560
+			Result := "C:\project\openehr\ref_impl_eiffel\apps\adl_workbench\app\icons"
 		end
 
-	min_list_height: INTEGER is 
-			-- `Result' is INTEGER constant named min_list_height.
+	app_min_width: INTEGER is 
+			-- `Result' is INTEGER constant named app_min_width.
 		once
-			Result := 50
+			Result := 500
 		end
 
-	main_vbox_min_height: INTEGER is 
-			-- `Result' is INTEGER constant named main_vbox_min_height.
+	padding_width: INTEGER is 
+			-- `Result' is INTEGER constant named padding_width.
 		once
-			Result := 600
+			Result := 3
 		end
 
 	status_area_min_height: INTEGER is 
@@ -196,10 +196,10 @@ feature -- Access
 			Result := 15
 		end
 
-	arch_tree_min_height: INTEGER is 
-			-- `Result' is INTEGER constant named arch_tree_min_height.
+	max_arch_explorer_width: INTEGER is 
+			-- `Result' is INTEGER constant named max_arch_explorer_width.
 		once
-			Result := 60
+			Result := 180
 		end
 
 	border_width: INTEGER is 
@@ -224,16 +224,16 @@ feature -- Access
 			Result := 2000
 		end
 
-	min_terms_height: INTEGER is 
-			-- `Result' is INTEGER constant named min_terms_height.
+	min_entry_control_width: INTEGER is 
+			-- `Result' is INTEGER constant named min_entry_control_width.
 		once
-			Result := 100
+			Result := 200
 		end
 
-	app_min_width: INTEGER is 
-			-- `Result' is INTEGER constant named app_min_width.
+	min_list_height: INTEGER is 
+			-- `Result' is INTEGER constant named min_list_height.
 		once
-			Result := 500
+			Result := 50
 		end
 
 	arch_notebook_min_height: INTEGER is 

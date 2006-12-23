@@ -32,45 +32,67 @@ feature {NONE}-- Initialization
 			
 				-- Create all widgets.
 			create l_ev_vertical_box_1
-			create l_ev_horizontal_box_1
+			create l_ev_frame_1
+			create l_ev_vertical_box_2
 			create l_ev_label_1
-			create repository_dialog_path_edit
-			create repository_dialog_path_browse_bn
+			create l_ev_horizontal_box_1
+			create repository_dialog_reference_path_edit
+			create repository_dialog_reference_path_browse_bn
+			create l_ev_frame_2
+			create l_ev_vertical_box_3
 			create l_ev_label_2
 			create l_ev_horizontal_box_2
+			create repository_dialog_work_path_edit
+			create repository_dialog_work_path_bn
+			create l_ev_horizontal_box_3
 			create l_ev_cell_1
 			create repository_dialog_ok_bn
 			create repository_dialog_cancel_bn
 			
 				-- Build_widget_structure.
 			extend (l_ev_vertical_box_1)
-			l_ev_vertical_box_1.extend (l_ev_horizontal_box_1)
-			l_ev_horizontal_box_1.extend (l_ev_label_1)
-			l_ev_horizontal_box_1.extend (repository_dialog_path_edit)
-			l_ev_horizontal_box_1.extend (repository_dialog_path_browse_bn)
-			l_ev_vertical_box_1.extend (l_ev_label_2)
-			l_ev_vertical_box_1.extend (l_ev_horizontal_box_2)
-			l_ev_horizontal_box_2.extend (l_ev_cell_1)
-			l_ev_horizontal_box_2.extend (repository_dialog_ok_bn)
-			l_ev_horizontal_box_2.extend (repository_dialog_cancel_bn)
+			l_ev_vertical_box_1.extend (l_ev_frame_1)
+			l_ev_frame_1.extend (l_ev_vertical_box_2)
+			l_ev_vertical_box_2.extend (l_ev_label_1)
+			l_ev_vertical_box_2.extend (l_ev_horizontal_box_1)
+			l_ev_horizontal_box_1.extend (repository_dialog_reference_path_edit)
+			l_ev_horizontal_box_1.extend (repository_dialog_reference_path_browse_bn)
+			l_ev_vertical_box_1.extend (l_ev_frame_2)
+			l_ev_frame_2.extend (l_ev_vertical_box_3)
+			l_ev_vertical_box_3.extend (l_ev_label_2)
+			l_ev_vertical_box_3.extend (l_ev_horizontal_box_2)
+			l_ev_horizontal_box_2.extend (repository_dialog_work_path_edit)
+			l_ev_horizontal_box_2.extend (repository_dialog_work_path_bn)
+			l_ev_vertical_box_1.extend (l_ev_horizontal_box_3)
+			l_ev_horizontal_box_3.extend (l_ev_cell_1)
+			l_ev_horizontal_box_3.extend (repository_dialog_ok_bn)
+			l_ev_horizontal_box_3.extend (repository_dialog_cancel_bn)
 			
-			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_1)
-			l_ev_vertical_box_1.disable_item_expand (l_ev_label_2)
-			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_2)
-			l_ev_horizontal_box_1.set_padding_width (dialog_padding_width)
-			l_ev_horizontal_box_1.set_border_width (dialog_border_width)
-			l_ev_horizontal_box_1.disable_item_expand (repository_dialog_path_edit)
-			l_ev_horizontal_box_1.disable_item_expand (repository_dialog_path_browse_bn)
-			l_ev_label_1.set_text ("Repository path")
-			repository_dialog_path_edit.set_background_color (editable_colour)
-			repository_dialog_path_edit.set_minimum_width (300)
-			repository_dialog_path_browse_bn.set_text ("Browse...")
-			repository_dialog_path_browse_bn.set_minimum_width (65)
+			l_ev_vertical_box_1.disable_item_expand (l_ev_frame_1)
+			l_ev_vertical_box_1.disable_item_expand (l_ev_frame_2)
+			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_3)
+			l_ev_frame_1.set_text ("Reference Repository Path")
+			l_ev_vertical_box_2.disable_item_expand (l_ev_label_1)
+			l_ev_label_1.set_text ("(Choose the directory above where the archetypes are)")
+			l_ev_horizontal_box_1.set_padding_width (padding_width)
+			l_ev_horizontal_box_1.set_border_width (border_width)
+			l_ev_horizontal_box_1.disable_item_expand (repository_dialog_reference_path_browse_bn)
+			repository_dialog_reference_path_edit.set_background_color (editable_colour)
+			repository_dialog_reference_path_edit.set_minimum_width (300)
+			repository_dialog_reference_path_browse_bn.set_text ("Browse...")
+			repository_dialog_reference_path_browse_bn.set_minimum_width (65)
+			l_ev_frame_2.set_text ("Work Repository (Optional)")
+			l_ev_vertical_box_3.disable_item_expand (l_ev_label_2)
 			l_ev_label_2.set_text ("(Choose the directory above where the archetypes are)")
-			l_ev_horizontal_box_2.set_padding_width (dialog_padding_width)
-			l_ev_horizontal_box_2.set_border_width (dialog_border_width)
-			l_ev_horizontal_box_2.disable_item_expand (repository_dialog_ok_bn)
-			l_ev_horizontal_box_2.disable_item_expand (repository_dialog_cancel_bn)
+			l_ev_horizontal_box_2.set_padding_width (padding_width)
+			l_ev_horizontal_box_2.set_border_width (border_width)
+			l_ev_horizontal_box_2.disable_item_expand (repository_dialog_work_path_bn)
+			repository_dialog_work_path_bn.set_text ("Browse")
+			repository_dialog_work_path_bn.set_minimum_width (65)
+			l_ev_horizontal_box_3.set_padding_width (dialog_padding_width)
+			l_ev_horizontal_box_3.set_border_width (dialog_border_width)
+			l_ev_horizontal_box_3.disable_item_expand (repository_dialog_ok_bn)
+			l_ev_horizontal_box_3.disable_item_expand (repository_dialog_cancel_bn)
 			repository_dialog_ok_bn.set_text ("OK")
 			repository_dialog_ok_bn.set_minimum_width (100)
 			repository_dialog_cancel_bn.set_text ("Cancel")
@@ -80,7 +102,8 @@ feature {NONE}-- Initialization
 			set_title ("ADL Workbench repository settings")
 			
 				--Connect events.
-			repository_dialog_path_browse_bn.select_actions.extend (agent get_path_directory)
+			repository_dialog_reference_path_browse_bn.select_actions.extend (agent get_reference_repository_path)
+			repository_dialog_work_path_bn.select_actions.extend (agent get_work_repository_path)
 			repository_dialog_ok_bn.select_actions.extend (agent repository_dialog_ok)
 			repository_dialog_cancel_bn.select_actions.extend (agent repository_dialog_cancel)
 				-- Close the application when an interface close
@@ -93,12 +116,16 @@ feature {NONE}-- Initialization
 feature -- Access
 
 	l_ev_cell_1: EV_CELL
-	repository_dialog_path_browse_bn, repository_dialog_ok_bn, repository_dialog_cancel_bn: EV_BUTTON
-	l_ev_horizontal_box_1,
-	l_ev_horizontal_box_2: EV_HORIZONTAL_BOX
-	l_ev_vertical_box_1: EV_VERTICAL_BOX
-	l_ev_label_1, l_ev_label_2: EV_LABEL
-	repository_dialog_path_edit: EV_TEXT_FIELD
+	repository_dialog_reference_path_browse_bn, repository_dialog_work_path_bn,
+	repository_dialog_ok_bn, repository_dialog_cancel_bn: EV_BUTTON
+	l_ev_horizontal_box_1, l_ev_horizontal_box_2,
+	l_ev_horizontal_box_3: EV_HORIZONTAL_BOX
+	l_ev_vertical_box_1, l_ev_vertical_box_2, l_ev_vertical_box_3: EV_VERTICAL_BOX
+	l_ev_label_1,
+	l_ev_label_2: EV_LABEL
+	repository_dialog_reference_path_edit, repository_dialog_work_path_edit: EV_TEXT_FIELD
+	l_ev_frame_1,
+	l_ev_frame_2: EV_FRAME
 
 feature {NONE} -- Implementation
 
@@ -115,8 +142,13 @@ feature {NONE} -- Implementation
 		deferred
 		end
 	
-	get_path_directory is
-			-- Called by `select_actions' of `repository_dialog_path_browse_bn'.
+	get_reference_repository_path is
+			-- Called by `select_actions' of `repository_dialog_reference_path_browse_bn'.
+		deferred
+		end
+	
+	get_work_repository_path is
+			-- Called by `select_actions' of `repository_dialog_work_path_bn'.
 		deferred
 		end
 	

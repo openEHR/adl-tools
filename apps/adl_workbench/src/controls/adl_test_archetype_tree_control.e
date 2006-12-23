@@ -137,7 +137,7 @@ feature -- Commands
 			gui_grid.set_item (1, 1, gli)
 			gui_grid_row_stack.extend(gli.row)
 			
- 			populate_gui_tree(archetype_directory.directory)
+ 			archetype_directory.do_all(agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
 			gui_grid.column (1).set_title ("Archetype")
 
 			-- put names on columns
@@ -473,24 +473,7 @@ feature {NONE} -- Implementation
 	test_status: STRING
 			-- cumulative status message during running of test
 
-	populate_gui_tree(node: TWO_WAY_TREE [ARCHETYPE_DIRECTORY_ITEM])  is
-			-- add archetype ids found in directory and subdirectories to file_ids table
-		require
-			node /= Void
-   		do
-  			from
- 				node.child_start
- 			until
- 				node.child_off
- 			loop		
-				populate_gui_tree_item(node.child_item)
- 				populate_gui_tree(node.child)
-				gui_grid_row_stack.remove
- 				node.child_forth
- 			end
-   		end	
-   		
-   	populate_gui_tree_item(an_item: ARCHETYPE_DIRECTORY_ITEM) is
+   	populate_gui_tree_node_enter(an_item: ARCHETYPE_DIRECTORY_ITEM) is
    			--
 		require
 			an_item /= Void
@@ -502,13 +485,16 @@ feature {NONE} -- Implementation
  			col_csr: INTEGER
  			checked: BOOLEAN_REF
   		do
+  			-- add a new row to the current item in the grid row stack
  			gui_grid_row_stack.item.insert_subrow(gui_grid_row_stack.item.subrow_count + 1)
+ 			
+ 			-- now get a ref to the newly added subrow
 			gr := gui_grid_row_stack.item.subrow(gui_grid_row_stack.item.subrow_count)
   			adf ?= an_item
    			if adf /= Void then
 				-- First column (explorer)
  				create gli.make_with_text(adf.base_name)
-				gli.set_pixmap(pixmaps.item("file_folder"))
+				gli.set_pixmap(pixmaps.item("file_folder_" + adf.group_id.out))
 				gli.set_data(adf)
 				gr.set_item(1, gli)
 			else
@@ -518,9 +504,9 @@ feature {NONE} -- Implementation
 					create gli.make_with_text(ada.id.domain_concept + "(" + ada.id.version_id + ")")
 					gli.set_data(ada)
 					if ada.id.is_specialised then
-						gli.set_pixmap(pixmaps.item("archetype_specialised"))
+						gli.set_pixmap(pixmaps.item("archetype_specialised_" + ada.group_id.out))
 					else
-						gli.set_pixmap(pixmaps.item("archetype"))
+						gli.set_pixmap(pixmaps.item("archetype_" + ada.group_id.out))
 					end
 					gr.set_item(1, gli)
 					
@@ -547,6 +533,11 @@ feature {NONE} -- Implementation
 				end
    			end
 			gui_grid_row_stack.extend(gr)
+		end
+
+	populate_gui_tree_node_exit(an_item: ARCHETYPE_DIRECTORY_ITEM) is
+		do
+			gui_grid_row_stack.remove
 		end
 
 	toggle_selected_checkbox is

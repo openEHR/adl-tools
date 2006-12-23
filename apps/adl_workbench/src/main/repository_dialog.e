@@ -35,7 +35,7 @@ feature {NONE} -- Initialization
 		do
 			set_default_cancel_button(repository_dialog_cancel_bn)
 			set_default_push_button (repository_dialog_ok_bn)
-			show_actions.extend(agent repository_dialog_path_edit.set_focus)
+			show_actions.extend(agent repository_dialog_reference_path_edit.set_focus)
 			populate_controls
 		end
 
@@ -59,19 +59,27 @@ feature {NONE} -- Implementation
 	populate_controls is
 			-- set dialog values from shared settings
 		do
-			repository_dialog_path_edit.set_text(repository_path)
+			repository_dialog_reference_path_edit.set_text(reference_repository_path)
+			repository_dialog_work_path_edit.set_text(work_repository_path)
 		end		
 	
 	repository_dialog_ok is
 			-- Called by `select_actions' of `repository_dialog_ok_bn'.
 		do
 			hide
-			set_repository_path(repository_dialog_path_edit.text)
+			if not repository_dialog_reference_path_edit.text.is_empty then
+				set_reference_repository_path(repository_dialog_reference_path_edit.text)
+				archetype_directory.make
+				archetype_directory.put_repository (reference_repository_path, "repository")			
+			end
+			if not repository_dialog_work_path_edit.text.is_empty then
+				set_work_repository_path(repository_dialog_work_path_edit.text)
+				archetype_directory.put_repository (work_repository_path, "work")
+			end
+			main_window.populate_archetype_directory
+
 			save_resources
 			main_window.update_status_area("wrote config file " + Resource_config_file_name + "%N")
-			archetype_directory.populate (repository_path)			
-			main_window.archetype_view_tree_control.populate
-			main_window.archetype_test_tree_control.populate
 		end
 
 	repository_dialog_cancel is
@@ -80,10 +88,39 @@ feature {NONE} -- Implementation
 			hide
 		end
 
-	get_path_directory is
-			-- Called by `select_actions' of `repository_dialog_path_button'.
+	get_reference_repository_path is
+			-- Called by `select_actions' of `repository_dialog_reference_path_button'.
+		local
+			a_dir: STRING
+			error_dialog: EV_INFORMATION_DIALOG
 		do
-			repository_dialog_path_edit.set_text(get_directory(repository_path, Current))
+			a_dir := get_directory(reference_repository_path, Current)
+			if not archetype_directory.valid_directory (a_dir) then
+				create error_dialog.make_with_text("invalid reference directory: " + 
+					a_dir + " does not exist, or is same as, or is parent or child of another repository path ")
+				error_dialog.show_modal_to_window (Current)
+			else
+				repository_dialog_reference_path_edit.set_text(a_dir)
+			end
+		end
+
+	get_work_repository_path is
+			-- Called by `select_actions' of `repository_dialog_work_path_button'.
+		local
+			a_dir: STRING
+			error_dialog: EV_INFORMATION_DIALOG
+		do
+			if work_repository_path.is_empty then
+				set_work_repository_path(reference_repository_path.twin)
+			end
+			a_dir := get_directory(work_repository_path, Current)
+			if not archetype_directory.valid_directory (a_dir) then
+				create error_dialog.make_with_text("invalid work directory: " + 
+					a_dir + " does not exist, or is same as, or is parent or child of reference repository path")
+				error_dialog.show_modal_to_window (Current)
+			else
+				repository_dialog_work_path_edit.set_text(a_dir)
+			end
 		end
 
 end

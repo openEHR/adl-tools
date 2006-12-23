@@ -72,10 +72,20 @@ feature -- Definitions
 
 feature -- Access
 
-	repository_path: STRING is
+	reference_repository_path: STRING is
 			-- path of root of ADL file tree
 		do
-			Result := substitute_env_vars(resource_value("default", "repository"))
+			Result := substitute_env_vars(resource_value("default", "reference_repository"))
+		ensure
+			Result /= Void
+		end
+			
+	work_repository_path: STRING is
+			-- path of root of ADL file tree
+		do
+			Result := substitute_env_vars(resource_value("default", "work_repository"))
+		ensure
+			Result /= Void
 		end
 			
 	app_width: INTEGER is
@@ -215,6 +225,8 @@ feature -- Access
 			-- path of editor application for ADL files
 		do
 			Result := substitute_env_vars(resource_value("default", "editor"))
+		ensure
+			Result /= Void
 		end
 			
 	icon_directory: STRING is 
@@ -328,8 +340,11 @@ feature -- Access
 			Result.put("Invariant section", 							"CADL_INVARIANT")
 			Result.put("Invariant section item", 						"CADL_INVARIANT_ITEM")
 
-			Result.put("Archetype", 									"archetype")
-			Result.put("Specialised archetype", 						"archetype_specialised")
+			Result.put("Archetype (reference repository)", 									"archetype_1")
+			Result.put("Specialised archetype (reference repository)", 						"archetype_specialised_1")
+
+			Result.put("Archetype (work repository)", 									"archetype_2")
+			Result.put("Specialised archetype (work repository)", 						"archetype_specialised_2")
 		end
 		
 	pixmap_file_table: HASH_TABLE [STRING, STRING] is
@@ -368,9 +383,13 @@ feature -- Access
 			Result.put("cadl_exclude.ico", 								"CADL_EXCLUDE")
 			Result.put("cadl_invariant_item.ico", 						"CADL_INVARIANT_ITEM")
 
-			Result.put("file_folder.ico", 								"file_folder")
-			Result.put("archetype.ico", 								"archetype")
-			Result.put("archetype_specialised.ico", 					"archetype_specialised")
+			Result.put("file_folder_1.ico", 							"file_folder_1")
+			Result.put("archetype_1.ico", 								"archetype_1")
+			Result.put("archetype_specialised_1.ico", 					"archetype_specialised_1")
+
+			Result.put("file_folder_2.ico", 							"file_folder_2")
+			Result.put("archetype_2.ico", 								"archetype_2")
+			Result.put("archetype_specialised_2.ico", 					"archetype_specialised_2")
 
 			Result.put("pass.ico", 										"test_passed")
 			Result.put("fail.ico", 										"test_failed")
@@ -457,12 +476,20 @@ feature -- Access
 
 feature -- Modification
 
-	set_repository_path(a_path: STRING) is
-			-- set repository_path
+	set_reference_repository_path(a_path: STRING) is
+			-- set reference_repository_path
 		require
 			a_path_valid: a_path /= Void and then not a_path.is_empty
 		do
-			set_resource_value("default", "repository", a_path)
+			set_resource_value("default", "reference_repository", a_path)
+		end
+		
+	set_work_repository_path(a_path: STRING) is
+			-- set work repository_path
+		require
+			a_path_valid: a_path /= Void and then not a_path.is_empty
+		do
+			set_resource_value("default", "work_repository", a_path)
 		end
 		
 	set_editor_command(an_editor_command: STRING) is
@@ -621,7 +648,10 @@ feature {NONE} -- Implementation
 			error_dialog: EV_INFORMATION_DIALOG
 		do
 			create dir_dialog
-			dir_dialog.set_start_directory (init_value)
+			
+			if (create {DIRECTORY}.make (init_value)).exists then
+				dir_dialog.set_start_directory (init_value)
+			end
 			
 			from
 			until

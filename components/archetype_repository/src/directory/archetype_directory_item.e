@@ -14,31 +14,57 @@ indexing
 
 deferred class ARCHETYPE_DIRECTORY_ITEM 
 
+inherit
+	SHARED_RESOURCES
+		export
+			{NONE} all
+		end
+
 feature -- initialisation
 
-	make(a_path: STRING) is
+	make(a_root_path, a_full_path: STRING; a_group_id: INTEGER) is
+			-- make using root-path to archetype file-system tree, full path to directory or archetype file
+			-- and group id, to distinguish file-system tree
 		require
-			Path_valid: a_path /= Void and then not a_path.is_empty
-		local
-			pos: INTEGER
+			Root_path_valid: a_root_path /= Void and then not a_root_path.is_empty
+			Full_path_valid: a_full_path /= Void and then not a_full_path.is_empty and then a_full_path.substring_index (a_root_path, 1) = 1
+			Group_id_valid: a_group_id > 0
 		do
-			full_path := a_path
-			pos := full_path.last_index_of(operating_environment.directory_separator, full_path.count)
-			if pos > 0 then
-				base_name := full_path.substring(pos+1, full_path.count)
-			else
-				base_name := full_path.twin
-			end
+			root_path := a_root_path
+			full_path := a_full_path			
+			group_id := a_group_id
+			make_semantic_paths
 		end
 
 feature -- Access
 
-	full_path: STRING
-			-- full path to item
+	root_path: STRING
+			-- root path of repository containing this item
 			
-	base_name: STRING
-			-- name of last segment of path - i.e. local dir name or else file-name
+	full_path: STRING
+			-- full path to item on file_system
 
+	semantic_path: STRING
+			-- relative semantic path of item with respect to root; for folder nodes, 
+			-- this will look like the directory path; for archetype nodes, this will be
+			-- the concatenation of the directory path and archetype specialisation parent path
+
+	semantic_parent_path: STRING
+			-- relative path of parent node (empty if relative_path is already the root)			
+			
+	group_id: INTEGER
+			-- id of group of archetypes found in one directory hierarchy
+			
+feature {NONE} -- Implementation
+
+	make_semantic_paths is
+			-- make semantic_path and semantic_parent_path
+		deferred
+		end
+
+invariant
+	Valid_path: full_path /= Void and then not full_path.is_empty
+	
 end
 
 

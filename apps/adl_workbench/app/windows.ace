@@ -13,10 +13,11 @@ default
 	disabled_debug ("adl_invariant")
 	disabled_debug ("adl_parse")
 	disabled_debug ("adl_tree")
+	disabled_debug ("arch_dir")
 	disabled_debug ("bb")
 	disabled_debug ("dadl_parse")
 	disabled_debug ("dlg_dispatcher")
-	debug ("dt")
+	disabled_debug ("dt")
 	disabled_debug ("exclude list")
 	disabled_debug ("gelex")
 	disabled_debug ("geyacc")
@@ -84,7 +85,6 @@ cluster
 			assertion (check)
 			assertion (require)
 			assertion (ensure)
-			assertion (invariant)
 		end
 
 	all openehr:		"$OPENEHR\ref_impl_eiffel\libraries\openehr\src"
@@ -112,7 +112,6 @@ cluster
 			assertion (no)
 			assertion (require)
 			assertion (ensure)
-			assertion (invariant)
 		end
 
 	gobo:		"$ISE_EIFFEL\library\gobo\library"

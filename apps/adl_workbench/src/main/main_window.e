@@ -53,6 +53,13 @@ inherit
 			copy, default_create
 		end
 
+	MESSAGE_BILLBOARD
+		export
+			{NONE} all
+		undefine
+			copy, default_create
+		end
+
 	EV_KEY_CONSTANTS
 		export
 			{NONE} all
@@ -80,16 +87,18 @@ feature {NONE} -- Initialization
 			
 			initialise_accelerators
 
-			if repository_path.is_empty then
-				set_repository_path(application_startup_directory)
+			if reference_repository_path.is_empty then
+				set_reference_repository_path(application_startup_directory)
 				need_to_set_repository := True
 			end
 
-			archetype_directory.populate (repository_path)			
-			archetype_view_tree_control.populate
-			archetype_test_tree_control.populate			
+			archetype_directory.put_repository (reference_repository_path, "reference")
+			if not work_repository_path.is_empty then
+				archetype_directory.put_repository (work_repository_path, "work")
+			end
+			populate_archetype_directory
 			
-			adl_interface.set_current_directory(repository_path)
+			adl_interface.set_current_directory(reference_repository_path)
 			if current_work_directory = Void then
 				current_work_directory := adl_interface.working_directory
 			end		
@@ -387,9 +396,7 @@ feature {NONE} -- Commands
 																format_combo.selected_text)
 							parser_status_area.append_text(adl_interface.status)
 							if format_combo.selected_text.is_equal(Archetype_file_extension) then
-								archetype_directory.populate (repository_path)			
-								archetype_view_tree_control.repopulate -- refresh the explorer
-								archetype_test_tree_control.populate -- refresh the explorer
+								populate_archetype_directory
 							end
 						end
 						current_work_directory := adl_file_save_dialog.file_path
@@ -423,7 +430,7 @@ feature {NONE} -- Commands
 				adl_interface.parse_archetype
 				parser_status_area.append_text(adl_interface.status)
 				if adl_interface.parse_succeeded then
-					populate_all_controls
+					populate_all_archetype_controls
 --					arch_notebook.select_item (info_view_area)
 --					source_notebook.select_item(parsed_archetype_tree_view)
 					adl_interface.set_archetype_readonly
@@ -648,7 +655,17 @@ feature -- Controls
 			Result.set_y_position(10)
 		end
 	
-feature {NONE} -- Implementation
+feature {EV_DIALOG} -- Implementation
+
+	populate_archetype_directory is
+			-- rebuild archetype directory & repopulate relevant GUI parts
+		do
+			archetype_directory.repopulate
+			parser_status_area.set_text(billboard_content)
+			clear_billboard
+			archetype_view_tree_control.populate
+			archetype_test_tree_control.populate			
+		end
 
 	load_and_parse_adl_file(a_file_path: STRING) is
 			-- load and parse a named ADL file
@@ -683,7 +700,7 @@ feature {NONE} -- Implementation
 			populate_languages
 		end
 			
-	populate_all_controls is
+	populate_all_archetype_controls is
 			-- populate content from visual controls
 		do
 			populate_user_controls

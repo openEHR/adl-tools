@@ -25,14 +25,18 @@ create
 
 feature -- Initialisation
 
-	make(a_path: STRING; an_id: ARCHETYPE_ID; is_specialised_flag: BOOLEAN) is
+	make(a_root_path, a_full_path: STRING; a_group_id: INTEGER; an_id: ARCHETYPE_ID; is_specialised_flag: BOOLEAN) is
 		require
-			Path_valid: a_path /= Void and then not a_path.is_empty
+			Root_path_valid: a_root_path /= Void and then not a_root_path.is_empty
+			Full_path_valid: a_full_path /= Void and then not a_full_path.is_empty and then a_full_path.substring_index (a_root_path, 1) = 1
+			Group_id_valid: a_group_id > 0
 			Id_valid: an_id /= Void
+		local
+			arch_rel_path: STRING
 		do
-			make_adi(a_path)
 			id := an_id
 			is_specialised := is_specialised_flag
+			make_adi(a_root_path, a_full_path, a_group_id)
 		end
 
 feature -- Access
@@ -40,6 +44,30 @@ feature -- Access
 	id: ARCHETYPE_ID
 
 	is_specialised: BOOLEAN
+			
+feature {NONE} -- Implementation
+
+	make_semantic_paths is
+			-- make semantic_path and semantic_parent_path
+		local
+			arch_sem_path: STRING
+		do			
+			semantic_path := full_path.substring (root_path.count + 1, full_path.last_index_of(os_directory_separator, full_path.count)-1)
+			semantic_parent_path := semantic_path.twin
+
+			-- generate a semantic path that corresponds to this archetype: 
+			-- constructed from the relative folder path + the semantic part of the archetype id, with '-' separators
+			-- changed to '/' so that the entire path is '/'-separated
+			arch_sem_path := id.domain_concept
+			arch_sem_path.replace_substring_all (id.section_separator.out, os_directory_separator.out)
+			semantic_path.append(os_directory_separator.out + arch_sem_path)
+
+			arch_sem_path := id.domain_concept_base
+			if not arch_sem_path.is_empty then
+				arch_sem_path.replace_substring_all (id.section_separator.out, os_directory_separator.out)
+				semantic_parent_path.append(os_directory_separator.out + arch_sem_path)
+			end
+		end
 
 end
 

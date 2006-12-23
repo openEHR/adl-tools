@@ -81,7 +81,7 @@ feature -- Commands
 		do
 			clear
  			create gui_tree_item_stack.make(0)
- 			populate_gui_tree(archetype_directory.directory)
+ 			archetype_directory.do_all(agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit) 			
 		end
 		
 	item_select is
@@ -106,25 +106,8 @@ feature {NONE} -- Implementation
 
 	gui_tree_item_stack: ARRAYED_STACK[EV_TREE_ITEM]
 			-- 
-	
-	populate_gui_tree(node: TWO_WAY_TREE [ARCHETYPE_DIRECTORY_ITEM])  is
-			-- add archetype ids found in directory and subdirectories to file_ids table
-		require
-			node /= Void
-   		do
-  			from
- 				node.child_start
- 			until
- 				node.child_off
- 			loop		
-				populate_gui_tree_item(node.child_item)
- 				populate_gui_tree(node.child)
-				gui_tree_item_stack.remove
- 				node.child_forth
- 			end
-   		end	
-   		
-   	populate_gui_tree_item(an_item: ARCHETYPE_DIRECTORY_ITEM) is
+	   		
+   	populate_gui_tree_node_enter(an_item: ARCHETYPE_DIRECTORY_ITEM) is
    			--
 		require
 			an_item /= Void
@@ -136,16 +119,16 @@ feature {NONE} -- Implementation
    			adf ?= an_item
    			if adf /= Void then
  				create a_ti.make_with_text(adf.base_name)
-				a_ti.set_pixmap(pixmaps.item("file_folder"))
+				a_ti.set_pixmap(pixmaps.item("file_folder_" + adf.group_id.out))
 				a_ti.set_data(adf)
 			else
 				ada ?= an_item
 				create a_ti.make_with_text(ada.id.domain_concept + "(" + ada.id.version_id + ")")
 				a_ti.set_data(ada)		
 				if ada.id.is_specialised then
-					a_ti.set_pixmap(pixmaps.item("archetype_specialised"))
+					a_ti.set_pixmap(pixmaps.item("archetype_specialised_" + ada.group_id.out))
 				else
-					a_ti.set_pixmap(pixmaps.item("archetype"))
+					a_ti.set_pixmap(pixmaps.item("archetype_" + ada.group_id.out))
 				end
    			end		
 			if gui_tree_item_stack.is_empty then
@@ -154,6 +137,11 @@ feature {NONE} -- Implementation
 				gui_tree_item_stack.item.extend(a_ti)
 			end			
 			gui_tree_item_stack.extend(a_ti)
+		end
+
+   	populate_gui_tree_node_exit(an_item: ARCHETYPE_DIRECTORY_ITEM) is
+   		do
+			gui_tree_item_stack.remove
 		end
 
 end
