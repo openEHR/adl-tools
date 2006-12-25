@@ -10,6 +10,13 @@ class
 inherit
 	REPOSITORY_DIALOG_IMP
 
+	EV_STOCK_PIXMAPS_IMP
+		export
+			{NONE} all
+		undefine
+			copy, default_create
+		end
+
 	SHARED_ARCHETYPE_DIRECTORY
 		export
 			{NONE} all
@@ -65,21 +72,50 @@ feature {NONE} -- Implementation
 	
 	repository_dialog_ok is
 			-- Called by `select_actions' of `repository_dialog_ok_bn'.
+		local
+			error_dialog: EV_INFORMATION_DIALOG
+			paths_changed, paths_valid: BOOLEAN
+			cur_csr: EV_CURSOR
 		do
-			hide
-			if not repository_dialog_reference_path_edit.text.is_empty then
+			cur_csr := pointer_style
+			paths_valid := True
+			if not repository_dialog_reference_path_edit.text.is_equal(reference_repository_path) then
+				if not archetype_directory.valid_directory (repository_dialog_reference_path_edit.text) then
+					create error_dialog.make_with_text("invalid reference directory: " + 
+						repository_dialog_reference_path_edit.text + 
+						" does not exist, or is same as, or is parent or child of another repository path ")
+					error_dialog.show_modal_to_window (Current)
+					paths_valid := False
+				else
+					paths_changed := True
+				end
+			end
+			if not repository_dialog_work_path_edit.text.is_equal(work_repository_path) then
+				if not archetype_directory.valid_directory (repository_dialog_work_path_edit.text) then
+					create error_dialog.make_with_text("invalid work directory: " + 
+						repository_dialog_work_path_edit.text + 
+						" does not exist, or is same as, or is parent or child of reference repository path")
+					error_dialog.show_modal_to_window (Current)
+					paths_valid := False
+				else
+					paths_changed := True
+				end
+			end
+			if paths_changed then
+				set_pointer_style(wait_cursor)
 				set_reference_repository_path(repository_dialog_reference_path_edit.text)
 				archetype_directory.make
 				archetype_directory.put_repository (reference_repository_path, "repository")			
-			end
-			if not repository_dialog_work_path_edit.text.is_empty then
 				set_work_repository_path(repository_dialog_work_path_edit.text)
 				archetype_directory.put_repository (work_repository_path, "work")
+				main_window.populate_archetype_directory
+				save_resources
+				main_window.update_status_area("wrote config file " + Resource_config_file_name + "%N")
+				set_pointer_style(cur_csr)
 			end
-			main_window.populate_archetype_directory
-
-			save_resources
-			main_window.update_status_area("wrote config file " + Resource_config_file_name + "%N")
+			if paths_valid then
+				hide
+			end
 		end
 
 	repository_dialog_cancel is
@@ -90,37 +126,17 @@ feature {NONE} -- Implementation
 
 	get_reference_repository_path is
 			-- Called by `select_actions' of `repository_dialog_reference_path_button'.
-		local
-			a_dir: STRING
-			error_dialog: EV_INFORMATION_DIALOG
 		do
-			a_dir := get_directory(reference_repository_path, Current)
-			if not archetype_directory.valid_directory (a_dir) then
-				create error_dialog.make_with_text("invalid reference directory: " + 
-					a_dir + " does not exist, or is same as, or is parent or child of another repository path ")
-				error_dialog.show_modal_to_window (Current)
-			else
-				repository_dialog_reference_path_edit.set_text(a_dir)
-			end
+			repository_dialog_reference_path_edit.set_text(get_directory(reference_repository_path, Current))
 		end
 
 	get_work_repository_path is
 			-- Called by `select_actions' of `repository_dialog_work_path_button'.
-		local
-			a_dir: STRING
-			error_dialog: EV_INFORMATION_DIALOG
 		do
 			if work_repository_path.is_empty then
 				set_work_repository_path(reference_repository_path.twin)
 			end
-			a_dir := get_directory(work_repository_path, Current)
-			if not archetype_directory.valid_directory (a_dir) then
-				create error_dialog.make_with_text("invalid work directory: " + 
-					a_dir + " does not exist, or is same as, or is parent or child of reference repository path")
-				error_dialog.show_modal_to_window (Current)
-			else
-				repository_dialog_work_path_edit.set_text(a_dir)
-			end
+			repository_dialog_work_path_edit.set_text(get_directory(work_repository_path, Current))
 		end
 
 end

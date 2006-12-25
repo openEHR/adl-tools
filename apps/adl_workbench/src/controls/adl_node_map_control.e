@@ -340,19 +340,15 @@ feature {NONE} -- Implementation
 				a_ti := attach_node(archetype_slot_string(a_slot), pixmap, an_og_node)
 				
 				if a_slot.has_includes then
-					create a_ti_sub.make_with_text("includes:")
-					a_ti_sub.set_pixmap(pixmaps.item("CADL_INCLUDE"))
-					a_ti.extend(a_ti_sub)
-					
 					from
 						a_slot.includes.start
 					until
 						a_slot.includes.off
 					loop
 						create a_ti_sub2.make_with_text(object_invariant_string(a_slot.includes.item))
-						a_ti_sub2.set_pixmap(pixmaps.item("CADL_INVARIANT_ITEM"))
+						a_ti_sub2.set_pixmap(pixmaps.item("CADL_INCLUDE"))
 						a_ti_sub2.set_data(a_slot.includes.item)
-						a_ti_sub.extend(a_ti_sub2)
+						a_ti.extend(a_ti_sub2)
 						a_slot.includes.forth
 					end
 					
@@ -360,19 +356,15 @@ feature {NONE} -- Implementation
 				end
 
 				if a_slot.has_excludes then
-					create a_ti_sub.make_with_text("excludes:")
-					a_ti_sub.set_pixmap(pixmaps.item("CADL_EXCLUDE"))
-					a_ti.extend(a_ti_sub)
-					
 					from
 						a_slot.excludes.start
 					until
 						a_slot.excludes.off
 					loop
 						create a_ti_sub2.make_with_text(object_invariant_string(a_slot.excludes.item))
-						a_ti_sub2.set_pixmap(pixmaps.item("CADL_INVARIANT_ITEM"))
+						a_ti_sub2.set_pixmap(pixmaps.item("CADL_EXCLUDE"))
 						a_ti_sub2.set_data(a_slot.excludes.item)
-						a_ti_sub.extend(a_ti_sub2)
+						a_ti.extend(a_ti_sub2)
 						a_slot.excludes.forth
 					end
 					
@@ -651,9 +643,9 @@ feature {NONE} -- Implementation
 		do
 			create Result.make(0)
 			-- Result.append(" [" + an_obj_node.occurrences.as_occurrences_string + "] ")
-			if in_technical_mode then
+			--if in_technical_mode then
 				Result.append(an_obj_node.rm_type_name)
-			end
+			--end
 			if an_obj_node.is_addressable then
 				Result.append(" " + ontology.term_definition(language, an_obj_node.node_id).item("text"))
 			end
