@@ -129,6 +129,7 @@ feature {NONE}-- Initialization
 			create tree_expand_one_bn
 			create tree_shrink_one_bn
 			create tree_technical_mode_bn
+			create tree_source_status_bn
 			create parsed_archetype_path_view
 			create parsed_archetype_found_paths
 			create path_controls
@@ -256,6 +257,7 @@ feature {NONE}-- Initialization
 			tree_controls.extend (tree_expand_one_bn)
 			tree_controls.extend (tree_shrink_one_bn)
 			tree_controls.extend (tree_technical_mode_bn)
+			tree_controls.extend (tree_source_status_bn)
 			source_notebook.extend (parsed_archetype_path_view)
 			parsed_archetype_path_view.extend (parsed_archetype_found_paths)
 			parsed_archetype_path_view.extend (path_controls)
@@ -572,6 +574,7 @@ feature {NONE}-- Initialization
 			tree_controls.disable_item_expand (tree_expand_one_bn)
 			tree_controls.disable_item_expand (tree_shrink_one_bn)
 			tree_controls.disable_item_expand (tree_technical_mode_bn)
+			tree_controls.disable_item_expand (tree_source_status_bn)
 			tree_expand_bn.set_text ("Expand All")
 			tree_expand_bn.set_tooltip ("Completely expand or collapse node map")
 			tree_expand_bn.set_minimum_width (tree_control_panel_width)
@@ -584,6 +587,9 @@ feature {NONE}-- Initialization
 			tree_technical_mode_bn.set_text ("Technical")
 			tree_technical_mode_bn.set_tooltip ("Toggle inclusion of technical details")
 			tree_technical_mode_bn.set_minimum_width (tree_control_panel_width)
+			tree_source_status_bn.set_text ("Flat view")
+			tree_source_status_bn.set_tooltip ("Show inherited/defined status of nodes in archetype")
+			tree_source_status_bn.set_minimum_width (tree_control_panel_width)
 			parsed_archetype_path_view.disable_item_expand (path_controls)
 			parsed_archetype_found_paths.set_background_color (editable_colour)
 			parsed_archetype_found_paths.set_minimum_width (0)
@@ -695,6 +701,7 @@ feature {NONE}-- Initialization
 			tree_expand_one_bn.select_actions.extend (agent node_map_expand_tree_one_level)
 			tree_shrink_one_bn.select_actions.extend (agent node_map_shrink_tree_one_level)
 			tree_technical_mode_bn.select_actions.extend (agent node_map_tree_technical_mode)
+			tree_source_status_bn.select_actions.extend (agent node_map_tree_source_status_mode)
 			path_view_check_list.check_actions.extend (agent path_column_select (?))
 			path_view_check_list.uncheck_actions.extend (agent path_column_unselect (?))
 			path_filter_combo.select_actions.extend (agent path_row_set_filter)
@@ -729,7 +736,7 @@ feature -- Access
 	l_ev_horizontal_separator_1: EV_HORIZONTAL_SEPARATOR
 	open_button,
 	parse_button, edit_button, save_button, tree_expand_bn, tree_expand_one_bn, tree_shrink_one_bn,
-	tree_technical_mode_bn, arch_test_tree_toggle_expand_bn, arch_test_toggle_check_all_bn,
+	tree_technical_mode_bn, tree_source_status_bn, arch_test_tree_toggle_expand_bn, arch_test_toggle_check_all_bn,
 	arch_test_refresh_bn, archetype_test_go_bn: EV_BUTTON
 	arch_desc_purpose_text, arch_desc_use_text,
 	arch_desc_misuse_text, arch_desc_copyright_text, archetype_text_edit_area, parser_status_area,
@@ -881,6 +888,11 @@ feature {NONE} -- Implementation
 	
 	node_map_tree_technical_mode is
 			-- Called by `select_actions' of `tree_technical_mode_bn'.
+		deferred
+		end
+	
+	node_map_tree_source_status_mode is
+			-- Called by `select_actions' of `tree_source_status_bn'.
 		deferred
 		end
 	

@@ -58,14 +58,16 @@ feature {NONE} -- Implementation
 			list_item: EV_LIST_ITEM
 		do		
 			from
-				pixmap_help_index.start
+				pixmap_help_table.start
 			until
-				pixmap_help_index.off
+				pixmap_help_table.off
 			loop
-				create list_item.make_with_text (pixmap_help_table.item(pixmap_help_index.item))
-				list_item.set_pixmap (pixmaps.item(pixmap_help_index.item))
+				create list_item.make_with_text (pixmap_help_table.item_for_iteration)
+				if pixmaps.has(pixmap_help_table.key_for_iteration) then
+					list_item.set_pixmap (pixmaps.item(pixmap_help_table.key_for_iteration))
+				end
 				icon_help_list.extend (list_item)
-				pixmap_help_index.forth
+				pixmap_help_table.forth
 			end
 		end
 

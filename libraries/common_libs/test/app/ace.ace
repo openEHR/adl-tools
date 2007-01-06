@@ -93,7 +93,7 @@ cluster
 
 	all vendor_fixes:		"$OPENEHR\ref_impl_eiffel\libraries\vendor-fixes"
 		exclude
-			".svn"; "base_net"; 
+			".svn"; "base_net";
 		end
 
 	gobo:		"$ISE_EIFFEL\library\gobo\library"
@@ -110,6 +110,9 @@ cluster
 	library kl_lexical (gobo):		"$\lexical"
 
 	library kl_parse (gobo):		"$\parse"
+		exclude
+			"yy_parser_skeleton.e";
+		end
 
 	library gobo_structure (gobo):		"$\structure"
 

@@ -40,7 +40,7 @@ feature -- Initialisation
 
 	execute is
 		local
-			path_set: ARRAYED_LIST [OG_PATH]
+			path_set: HASH_TABLE [OG_OBJECT, OG_PATH]
 		do
 			io.put_string("----- path set ----%N")
 			path_set := root_node.all_paths
@@ -51,7 +51,8 @@ feature -- Initialisation
 			until
 				path_set.off
 			loop
-				io.put_string("%Thas_path(" + path_set.item.as_string + ") = " + root_node.has_path(path_set.item).out + "%N")
+				io.put_string("%Thas_path(" + path_set.key_for_iteration.as_string + ") = " + 
+					root_node.has_path(path_set.key_for_iteration).out + "%N")
 				path_set.forth
 			end
 			

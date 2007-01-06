@@ -5,7 +5,7 @@ feature -- Access
 	
 	version: STRING is "$LastChangedRevision$%N%T$LastChangedDate$"
 	
-	dummy: INTEGER is 03
+	dummy: INTEGER is 04
 
 end
 

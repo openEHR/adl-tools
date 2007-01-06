@@ -19,6 +19,15 @@ deferred class C_REFERENCE_OBJECT
 inherit
 	C_OBJECT
 
+feature -- Source Control
+
+	rolled_up_specialisation_status (archetype_specialisation_level: INTEGER): SPECIALISATION_STATUS is
+			-- status of this node taking into consideration effective_specialisation_status of
+			-- all sub-nodes.
+		do
+			Result := effective_specialisation_status (archetype_specialisation_level)
+		end
+
 end
 
 

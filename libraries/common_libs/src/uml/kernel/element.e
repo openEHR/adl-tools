@@ -27,7 +27,7 @@ feature -- Access
 			-- master list of elements
 
 invariant
-	Comments_valid: owned_comment /= Void implies owned_comment.for_all(agent owned_element.has({UML_COMMENT}))
+	-- Comments_valid: owned_comment /= Void implies owned_comment.for_all(agent owned_element.has({UML_COMMENT}))
 	
 end
 

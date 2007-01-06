@@ -505,6 +505,14 @@ feature {NONE} -- Commands
 			end
 		end
 
+	node_map_tree_source_status_mode is
+			-- 
+		do
+			if adl_interface.parse_succeeded then
+				node_map_control.toggle_source_status_mode
+			end
+		end
+
 	move_cursor_to_pointer_location (a_x, a_y, a_button: INTEGER; a_x_tilt, a_y_tilt, a_pressure: DOUBLE; a_screen_x, a_screen_y: INTEGER) is
 			-- Called by `pointer_button_press_actions' of `archetype_text_edit_area'.
 		do
@@ -660,6 +668,7 @@ feature {EV_DIALOG} -- Implementation
 	populate_archetype_directory is
 			-- rebuild archetype directory & repopulate relevant GUI parts
 		do
+			clear_all_controls
 			archetype_directory.repopulate
 			parser_status_area.set_text(billboard_content)
 			clear_billboard

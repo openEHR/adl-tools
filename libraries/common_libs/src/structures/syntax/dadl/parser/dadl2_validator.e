@@ -5272,7 +5272,6 @@ feature -- Initialization
 	execute(in_text:STRING; a_source_start_line: INTEGER) is
 		do
 			reset_scanner
-			recover
 
 			source_start_line := a_source_start_line
 
@@ -5354,5 +5353,5 @@ feature {NONE} -- Implementation
 
 	indent: STRING
 	str: STRING
-
+	
 end

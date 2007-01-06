@@ -161,6 +161,22 @@ feature -- Modification
                 end
            end
 
+feature -- Element Removal
+
+	remove_resource(category_name, resource_name:STRING) is
+			-- remove the resource resource_name
+		require
+			Valid_category: category_name /= Void and then not category_name.is_empty
+			Valid_resource_name: resource_name /= Void and then not resource_name.is_empty
+        local
+			resource_list: HASH_TABLE[STRING,STRING]
+		do
+			if resources.has(category_name) then
+				resource_list := resources.item(category_name)
+				resource_list.remove (resource_name)
+			end
+		end
+		
 feature -- template routines
 
 	initialise is

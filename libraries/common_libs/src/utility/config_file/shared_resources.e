@@ -202,7 +202,18 @@ feature -- Element Change
 		do
 			resource_config_file.set_resource_value_list(a_category, a_resource_name, a_value)			
 		end
-	
+
+feature -- Element Removal
+
+	remove_resource(a_category, a_resource_name:STRING) is
+			-- remove the resource a_resource_name
+		require
+			Valid_category: a_category /= Void and then not a_category.is_empty
+			Valid_resource_name: a_resource_name /= Void and then not a_resource_name.is_empty
+		do
+			resource_config_file.remove_resource(a_category, a_resource_name)
+		end
+		
 feature -- Conversion
 
 	substitute_env_vars(s:STRING): STRING is

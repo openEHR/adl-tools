@@ -1,11 +1,14 @@
 indexing
 	component:   "openEHR Archetype Project"
 	description: "[
-				 ADL leaf object nodes that have assumed value defined
+				 Values of status of node definition in source text, i.e. what is define 
+				 in this archetype, what is inherited, what is redefined here, what is 
+				 added here.
 				 ]"
 	keywords:    "ADL"
+	
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
+	support:     "Ocean Informatics<support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
@@ -13,48 +16,55 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-deferred class C_LEAF_OBJECT
+class SPECIALISATION_STATUSES
 
-inherit
-	C_DEFINED_OBJECT
+feature -- Definitions
+	
+	ss_undefined: INTEGER is 5000
+			-- this node is inherited here and is redefined here
 
-feature -- Source Control
+	ss_added: INTEGER is 5001
+			-- this node was defined here for the first time
 
-	rolled_up_specialisation_status (archetype_specialisation_level: INTEGER): SPECIALISATION_STATUS is
-			-- status of this node taking into consideration effective_specialisation_status of
-			-- all sub-nodes.
-		do
-			Result := effective_specialisation_status (archetype_specialisation_level)
-		end
+	ss_redefined: INTEGER is 5002
+			-- this node is inherited here and is redefined here
+
+	ss_inherited: INTEGER is 5003
+			-- this node is inherited here unchanged
+
+	ss_propagated: INTEGER is 5004
+			-- this node is inherited here and is redefined here
 
 feature -- Access
 
-	assumed_value: like default_value
-			-- value to be assumed if none sent in data
-
-feature -- Status Report
-	
-	has_assumed_value: BOOLEAN is
-			-- True if there is an assumed value
-		do
-			Result := assumed_value /= Void
+	specialisation_status_names: HASH_TABLE [STRING, INTEGER] is
+			-- names of specialsiation statuses
+		once
+			create Result.make(0)
+			Result.put("undefined", ss_undefined)
+			Result.put("added", ss_added)
+			Result.put("inherited", ss_inherited)
+			Result.put("redefined", ss_redefined)
+			Result.put("propagated", ss_propagated)
 		end
 		
-feature -- Modification
+feature -- Status Report
 
-	set_assumed_value(a_value: like assumed_value) is
-			-- set `assumed_value'
-		require
-			a_value /= Void and then valid_value(a_value)
+	valid_specialisation_status (a_status: INTEGER): BOOLEAN is
+			-- True if a_status is a valid source status
 		do
-			assumed_value := a_value
-		ensure
-			assumed_value_set: assumed_value = a_value
+			Result := a_status >= ss_undefined and a_status <= ss_propagated
 		end
-	
-invariant
-	Assumed_value_valid: assumed_value /= Void implies valid_value(assumed_value)
 
+feature -- Comparison
+
+	specialisation_xx(status_1, status_2: SPECIALISATION_STATUS): SPECIALISATION_STATUS is
+			-- determine which of status_1 and status_2 is effective at a given node, due
+			-- to sub-node values
+		do
+			create Result.make(status_1.value.min(status_2.value))
+		end
+		
 end
 
 
@@ -72,7 +82,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is c_leaf_object.e.
+--| The Original Code is source_statuses.e
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2006

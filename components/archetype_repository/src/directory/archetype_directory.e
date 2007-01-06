@@ -93,7 +93,7 @@ feature -- Commands
 	clear is
 		do
 			create path_index.make(0)
-			directory := Void
+			create directory.make(Void)
 		end
 
 	repopulate is
@@ -200,8 +200,6 @@ feature {NONE} -- Implementation
 						parent_node := directory
 						parent_node.put_child_right (arch_node)
 						parent_node.child_forth
-					else
-						directory := arch_node
 					end
 					path_index.force(arch_node, adf.semantic_path)
 				end

@@ -77,6 +77,30 @@ feature -- Access
 			Result := children.count
 		end
 
+feature -- Source Control
+
+	specialisation_status (specialisation_level: INTEGER): SPECIALISATION_STATUS is
+			-- status of this node in the source text of this archetype with respect to the 
+			-- specialisation hierarchy. Values are: defined_here; redefined, added, unknown
+		do
+			create Result.make(ss_propagated)
+		end
+			
+	rolled_up_specialisation_status (archetype_specialisation_level: INTEGER): SPECIALISATION_STATUS is
+			-- status of this node taking into consideration effective_specialisation_status of
+			-- all sub-nodes.
+		do
+			Result := effective_specialisation_status (archetype_specialisation_level)
+			from
+				children.start
+			until				
+				children.off or Result.value < ss_inherited
+			loop
+				Result := specialisation_xx(Result, children.item.rolled_up_specialisation_status (archetype_specialisation_level))
+				children.forth				
+			end
+		end
+	
 feature -- Status Report
 
 	any_allowed: BOOLEAN is

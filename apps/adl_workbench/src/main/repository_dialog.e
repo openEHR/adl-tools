@@ -80,34 +80,40 @@ feature {NONE} -- Implementation
 			cur_csr := pointer_style
 			paths_valid := True
 			if not repository_dialog_reference_path_edit.text.is_equal(reference_repository_path) then
-				if not archetype_directory.valid_directory (repository_dialog_reference_path_edit.text) then
+				if repository_dialog_reference_path_edit.text.is_empty or else
+						 archetype_directory.valid_directory (repository_dialog_reference_path_edit.text) then
+					paths_changed := True
+					set_reference_repository_path(repository_dialog_reference_path_edit.text)
+				else
 					create error_dialog.make_with_text("invalid reference directory: " + 
 						repository_dialog_reference_path_edit.text + 
 						" does not exist, or is same as, or is parent or child of another repository path ")
 					error_dialog.show_modal_to_window (Current)
 					paths_valid := False
-				else
-					paths_changed := True
 				end
 			end
 			if not repository_dialog_work_path_edit.text.is_equal(work_repository_path) then
-				if not archetype_directory.valid_directory (repository_dialog_work_path_edit.text) then
+				if repository_dialog_work_path_edit.text.is_empty or else
+						archetype_directory.valid_directory (repository_dialog_work_path_edit.text) then
+					set_work_repository_path(repository_dialog_work_path_edit.text)
+					paths_changed := True
+				else
 					create error_dialog.make_with_text("invalid work directory: " + 
 						repository_dialog_work_path_edit.text + 
 						" does not exist, or is same as, or is parent or child of reference repository path")
 					error_dialog.show_modal_to_window (Current)
 					paths_valid := False
-				else
-					paths_changed := True
 				end
 			end
 			if paths_changed then
 				set_pointer_style(wait_cursor)
-				set_reference_repository_path(repository_dialog_reference_path_edit.text)
 				archetype_directory.make
-				archetype_directory.put_repository (reference_repository_path, "repository")			
-				set_work_repository_path(repository_dialog_work_path_edit.text)
-				archetype_directory.put_repository (work_repository_path, "work")
+				if not reference_repository_path.is_empty then
+					archetype_directory.put_repository (reference_repository_path, "repository")			
+				end
+				if not work_repository_path.is_empty then
+					archetype_directory.put_repository (work_repository_path, "work")
+				end
 				main_window.populate_archetype_directory
 				save_resources
 				main_window.update_status_area("wrote config file " + Resource_config_file_name + "%N")

@@ -38,7 +38,7 @@ feature -- Access
 		end
 		
 invariant
-	Owned_member_validity: owned_member /= Void implies owned_member.for_all(agent owned_element.has({UML_PACKAGEABLE_ELEMENT}))
+	-- Owned_member_validity: owned_member /= Void implies owned_member.for_all(agent owned_element.has({UML_PACKAGEABLE_ELEMENT}))
 
 end
 

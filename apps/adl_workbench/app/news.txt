@@ -3,36 +3,19 @@ ADL_WORKBENCH NEWS (see About menu > News)
 The GUI has been improved to behave better on different screens. 
 A major addition for batch testing has been made to the tool.
 
-General
--------
-Many GUI settings are now remembered over sessions.
+Archetype Merging
+-----------------
+The left-hand explorer tree now merges archetypes from a reference 
+repository and an optional work repository. This facilitates working with
+local archetypes based on existing archetypes, e.g. as defined in the
+openEHR knowledge repository at http://svn.openEHR.org/knowledge.
 
-Archetype Explorer
-------------------
-The left-hand explorer tree arranges archetypes in a more intelligent 
-manner.
-
-Definition Node Map
--------------------
-Uses new icons:
-	- dark colour means mandatory, e.g. 1..1
-	- light colour means optional, e.g. 0..1
-	- additional '+' means cardinality of > 1
-
-The textual presentation in the node view has been improved.
-
-Paths
------
-The path view now allows control over visible columns and row
-Paths generated due to use_node nodes are included.
-filtering, as well as ctrl-C for copy-to-clipboard of paths.
-Tooltip paths have now been added.
-
-Tester facility
----------------
-A completely new facility for batch testing of archetypes via
-the GUI hs been added. The details are explained in the online
-help.
-
-See help menu for online help or go to
-http://svn.openehr.org/ref_impl_eiffel/TRUNK/apps/doc/adl_workbench_help.htm 
+Node map Visualisation Now Shows Inheritance Status
+---------------------------------------------------
+The node visualisation of the definition of an archetype now indicates the
+inheritance status of each node. In specialised archetypes, some nodes will
+show up as inherited, some redefined and some as added new in the archetype.
+In a top-level archetype, all nodes are shown as added new. The 
+visualisation can be toggled on and off. When an archetype is first shown,
+inherited nodes will be collapsed, with only redefined or added nodes
+expanded.

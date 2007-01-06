@@ -23,6 +23,13 @@ inherit
 			parent, default_create, representation
 		end
 
+	ARCHETYPE_TERM_CODE_TOOLS
+		export
+			{NONE} all
+		undefine
+			default_create
+		end
+
 feature -- Initialisation
 
 	default_create is
@@ -45,6 +52,26 @@ feature -- Access
 	
 	parent: C_ATTRIBUTE
 	
+feature -- Source Control
+
+	specialisation_status (specialisation_level: INTEGER): SPECIALISATION_STATUS is
+			-- status of this node in the source text of this archetype with respect to the 
+			-- specialisation hierarchy. Values are defined in SPECIALISATION_STATUSES
+		local
+			node_spec_level: INTEGER
+		do
+			if not is_valid_code(node_id) then
+				create Result.make(ss_propagated)
+			else
+				node_spec_level := specialisation_depth_from_code(node_id)
+				if node_spec_level < specialisation_level then
+					create Result.make(ss_inherited)
+				else
+					Result := specialisation_status_from_code (node_id, specialisation_level)
+				end
+			end
+		end
+			
 feature -- Status Report
 
 	is_valid: BOOLEAN is

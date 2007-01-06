@@ -1,11 +1,13 @@
 indexing
 	component:   "openEHR Archetype Project"
 	description: "[
-				 ADL leaf object nodes that have assumed value defined
+				 Status of node definition in source text, i.e. what is define in this archetype,
+				 what is inherited, what is redefined here, what is added here.
 				 ]"
 	keywords:    "ADL"
+	
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
+	support:     "Ocean Informatics<support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
@@ -13,48 +15,32 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-deferred class C_LEAF_OBJECT
+class SPECIALISATION_STATUS
 
 inherit
-	C_DEFINED_OBJECT
+	SPECIALISATION_STATUSES
 
-feature -- Source Control
+create
+	make
 
-	rolled_up_specialisation_status (archetype_specialisation_level: INTEGER): SPECIALISATION_STATUS is
-			-- status of this node taking into consideration effective_specialisation_status of
-			-- all sub-nodes.
+feature -- Initialisation
+
+	make(a_value: INTEGER) is
+			-- make with an ss_xxx value
+		require
+			Valid_valid: valid_specialisation_status(a_value)
 		do
-			Result := effective_specialisation_status (archetype_specialisation_level)
+			value := a_value
 		end
 
 feature -- Access
-
-	assumed_value: like default_value
-			-- value to be assumed if none sent in data
-
-feature -- Status Report
 	
-	has_assumed_value: BOOLEAN is
-			-- True if there is an assumed value
-		do
-			Result := assumed_value /= Void
-		end
-		
-feature -- Modification
+	value: INTEGER
+			-- the specialisation status value
 
-	set_assumed_value(a_value: like assumed_value) is
-			-- set `assumed_value'
-		require
-			a_value /= Void and then valid_value(a_value)
-		do
-			assumed_value := a_value
-		ensure
-			assumed_value_set: assumed_value = a_value
-		end
-	
 invariant
-	Assumed_value_valid: assumed_value /= Void implies valid_value(assumed_value)
-
+	Valid_value: valid_specialisation_status(value)
+	
 end
 
 
@@ -72,7 +58,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is c_leaf_object.e.
+--| The Original Code is source_statuses.e
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2006

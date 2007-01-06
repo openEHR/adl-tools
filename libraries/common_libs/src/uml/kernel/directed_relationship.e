@@ -38,8 +38,8 @@ feature -- Access
 	target: LINKED_SET [UML_ELEMENT]
 
 invariant
-	Source_valid: source /= Void and then source.for_all(agent related_element.has({UML_ELEMENT}))
-	Target_valid: target /= Void and then target.for_all(agent related_element.has({UML_ELEMENT}))
+	-- Source_valid: source /= Void and then source.for_all(agent related_element.has({UML_ELEMENT}))
+	-- Target_valid: target /= Void and then target.for_all(agent related_element.has({UML_ELEMENT}))
 	
 end
 

@@ -40,7 +40,7 @@ feature -- Initialisation
 
 	execute is
 		local
-			path_set: ARRAYED_LIST [OG_PATH]
+			path_set: HASH_TABLE [OG_OBJECT, OG_PATH]
 			a_path, a_movable_path: OG_PATH
 		do
 			io.put_string("----- path set ----%N")
@@ -52,7 +52,7 @@ feature -- Initialisation
 			until
 				path_set.off
 			loop
-				a_path := path_set.item
+				a_path := path_set.key_for_iteration
 				io.put_string("%TPath: " + a_path.as_string + "%N")
 				from
 					a_path.start

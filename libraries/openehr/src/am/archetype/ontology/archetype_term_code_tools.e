@@ -24,6 +24,12 @@ indexing
 
 class ARCHETYPE_TERM_CODE_TOOLS
 
+inherit
+	SPECIALISATION_STATUSES
+		export
+			{NONE} all
+		end
+
 feature -- Definitions
 
 	Specialisation_separator: CHARACTER is '.'
@@ -46,23 +52,85 @@ feature -- Access
 			Result := a_code.substring (1, a_code.last_index_of(Specialisation_separator, a_code.count)-1)
 		end
 
+	specialisation_status_from_code(a_code: STRING; a_depth: INTEGER): SPECIALISATION_STATUS is
+			-- get the specialisation status (added, inherited, redefined) from this code, at a_depth
+			-- for example: 
+			-- 		status of at0001 is added at depth 0
+			--		status of at0001.1 is added at depth 0, redefined at depth 1
+			--		status of at0.1 is undefined at depth 0, added at depth 1
+			--		status of at0.1.1 is undefined at depth 0, added at depth 1, redefined at depth 2
+		require
+			Code_valid: a_code /= Void and then not a_code.is_empty
+			Depth_valid: a_depth >= 0 and a_depth <= specialisation_depth_from_code(a_code)
+		local
+			this_code_exists, parent_code_exists: BOOLEAN
+		do
+			this_code_exists := specialisation_section_from_code(a_code, a_depth).to_integer > 0
+			if a_depth > 0 then
+				parent_code_exists := specialisation_section_from_code(a_code, a_depth - 1).to_integer > 0
+			end
+			
+			if this_code_exists then
+				if parent_code_exists then
+					create Result.make (ss_redefined)
+				else
+					create Result.make (ss_added)
+				end
+			else
+				create Result.make (ss_undefined)
+			end
+		end
+
+	specialisation_section_from_code(a_code: STRING; a_depth: INTEGER): STRING is
+			-- get the numeric part of the code from this code, at a_depth
+			-- for example: 
+			-- 		a_code = at0001		a_depth = 0 -> 0001
+			--		a_code = at0001.4	a_depth = 1 -> 4
+			--		a_code = at0.4		a_depth = 0 -> 0
+			--		a_code = at0.4		a_depth = 1 -> 4
+			--		a_code = at0.4.5	a_depth = 0 -> 0
+			--		a_code = at0.4.5	a_depth = 1 -> 4
+			--		a_code = at0.4.5	a_depth = 2 -> 5
+		require
+			Code_valid: a_code /= Void and then not a_code.is_empty
+			Depth_valid: a_depth >= 0 and a_depth <= specialisation_depth_from_code(a_code)
+		local
+			spec_depth: INTEGER
+			code_num_part: STRING
+			lpos, rpos, depth_count: INTEGER
+		do
+			spec_depth := specialisation_depth_from_code(a_code)
+			code_num_part := a_code.substring (term_code_leader.count+1, a_code.count)
+			
+			-- determine left hand position
+			from
+				lpos := 1
+				depth_count := 0
+			until
+				lpos > code_num_part.count or depth_count = a_depth
+			loop
+				if code_num_part.item (lpos) = Specialisation_separator then
+					depth_count := depth_count + 1
+				end
+				lpos := lpos + 1
+			end
+			
+			-- determine right hand position
+			rpos := code_num_part.index_of (Specialisation_separator, lpos)
+			if rpos = 0 then
+				rpos := code_num_part.count
+			else
+				rpos := rpos - 1
+			end
+			Result := a_code.substring(lpos, rpos)			
+		end
+
 	specialisation_depth_from_code(a_code: STRING): INTEGER is
 			-- infer number of levels of specialisation from concept code
 		require
-			Code_valid: a_code /= Void and then not a_code.is_empty		
+			Code_valid: a_code /= Void and then is_valid_code(a_code)
 		do
 			Result := a_code.occurrences (Specialisation_separator)
-		end
-
-	is_specialised_code(a_code: STRING): BOOLEAN is
-			-- 	a code has been specialised if there is a non-zero number above the 
-			-- specialisation depth of the code
-		require
-			Code_valid: a_code /= Void and then not a_code.is_empty				
-		do
-			if specialisation_depth_from_code(a_code) > 0 then
-				Result := a_code.substring(Term_code_leader.count+1, a_code.last_index_of(Specialisation_separator, a_code.count)-1).to_integer > 0
-			end
 		end
 
 	specialised_code_tail(a_code: STRING): STRING is
@@ -73,6 +141,27 @@ feature -- Access
 			Code_valid: a_code /= Void and then is_specialised_code(a_code)
 		do
 			Result := a_code.substring(a_code.last_index_of(Specialisation_separator, a_code.count)+1, a_code.count)
+		end
+
+feature -- Comparison
+
+	is_valid_code(a_code: STRING): BOOLEAN is
+			-- 	a code is an 'at' or 'ac' code
+		require
+			Code_valid: a_code /= Void and then not a_code.is_empty				
+		do
+			Result := a_code.substring_index (Term_code_leader, 1) > 0 or a_code.substring_index (Constraint_code_leader, 1) > 0
+		end
+
+	is_specialised_code(a_code: STRING): BOOLEAN is
+			-- 	a code has been specialised if there is a non-zero number above the 
+			-- specialisation depth of the code
+		require
+			Code_valid: a_code /= Void and then is_valid_code(a_code)
+		do
+			if specialisation_depth_from_code(a_code) > 0 then
+				Result := a_code.substring(Term_code_leader.count+1, a_code.last_index_of(Specialisation_separator, a_code.count)-1).to_integer > 0
+			end
 		end
 
 feature -- Factory

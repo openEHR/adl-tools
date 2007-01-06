@@ -15,7 +15,12 @@ deferred class ARCHETYPE_CONSTRAINT
 
 inherit
 	SERIALISABLE
-		
+	
+	SPECIALISATION_STATUSES	
+		export
+			{NONE} all
+		end
+	
 feature -- Access
 
 	invalid_reason: STRING
@@ -29,6 +34,38 @@ feature -- Access
 			Result := representation.path.as_string
 		end
 
+feature -- Source Control
+
+	specialisation_status (archetype_specialisation_level: INTEGER): SPECIALISATION_STATUS is
+			-- status of this node in the source text of this archetype with respect to the 
+			-- specialisation hierarchy. Values are: defined_here; redefined, added, unknown
+		require
+			valid_specialisation_level: archetype_specialisation_level >= 0
+		deferred
+		end
+			
+	effective_specialisation_status (archetype_specialisation_level: INTEGER): SPECIALISATION_STATUS is
+			-- status of this node either due to its own status or propagated status from a
+			-- parent node
+		require
+			valid_specialisation_level: archetype_specialisation_level >= 0
+		do
+			if specialisation_status(archetype_specialisation_level).value = ss_propagated then
+				create Result.make(parent.effective_specialisation_status(archetype_specialisation_level).value)
+			else
+				Result := specialisation_status(archetype_specialisation_level)
+			end
+		end
+	
+	rolled_up_specialisation_status (archetype_specialisation_level: INTEGER): SPECIALISATION_STATUS is
+			-- status of this node taking into consideration effective_specialisation_status of
+			-- all sub-nodes.
+			-- 
+		require
+			valid_specialisation_level: archetype_specialisation_level >= 0
+		deferred
+		end
+	
 feature -- Status Report
 
 	is_addressable: BOOLEAN is

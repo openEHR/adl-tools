@@ -23,7 +23,7 @@ inherit
 		end
 
 create
-	make
+	make, make_single_relationship, make_multiple_relationship
 
 feature -- Initialisation
 
@@ -42,7 +42,7 @@ feature -- Initialisation
 		do
 			create association.make(a_name, target)
 			name := a_name
-			make_single_multiplicity(is_mandatory)
+			set_single_multiplicity(is_mandatory)
 		end
 
 	make_multiple_relationship(a_name: STRING; target: UML_CLASS; 
@@ -57,7 +57,7 @@ feature -- Initialisation
 		do
 			create association.make(a_name, target)
 			name := a_name
-			make_multiple_multiplicity(min_cardinality, max_cardinality, max_cardinality_infinite, ordered, unique_flag)
+			set_multiple_multiplicity(min_cardinality, max_cardinality, max_cardinality_infinite, ordered, unique_flag)
 		end
 
 feature -- Access

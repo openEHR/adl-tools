@@ -127,7 +127,6 @@ feature -- Access
 			-- generate physical paths from definition structure
 		local
 			src_node_path: OG_PATH
-			paths_below_tgt_path: HASH_TABLE [C_OBJECT, STRING]
 			src_node_path_str: STRING
 			src_nodes: ARRAYED_LIST [ARCHETYPE_INTERNAL_REF]
 			tgt_path_c_objects: HASH_TABLE [C_OBJECT, STRING]

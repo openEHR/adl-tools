@@ -130,9 +130,8 @@ feature -- Serialisation
 		end
 
 invariant
-
-	Owned_attribute_valid: owned_attribute /= Void and then owned_attribute.for_all(agent owned_element.has({UML_PROPERTY}))
-	Owned_operation_valid: owned_operation /= Void and then owned_operation.for_all(agent owned_element.has({UML_OPERATION}))
+	-- Owned_attribute_valid: owned_attribute /= Void and then owned_attribute.for_all(agent owned_element.has({UML_PROPERTY}))
+	-- Owned_operation_valid: owned_operation /= Void and then owned_operation.for_all(agent owned_element.has({UML_OPERATION}))
 
 end
 

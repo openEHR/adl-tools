@@ -67,7 +67,7 @@ feature -- Definitions
 	path_control_column_names: ARRAY [STRING] is
 			-- names of columns of path view control
 		once
-			Result := <<"Physical", "Logical", "RM Type", "AOM Type">>
+			Result := <<"Machine", "Nat lang", "RM Type", "AOM Type">>
 		end
 
 feature -- Access
@@ -273,78 +273,47 @@ feature -- Access
 				status_file.close
 			end
 		end
-		
-	pixmap_help_index: ARRAYED_LIST [STRING] is
-			-- list of pixmap ids to be included in icon help dialog
-		once
-			create Result.make(0)
-			
-			Result.extend("archetype")
-			Result.extend("archetype_specialised")
 
-			Result.extend("C_ATTRIBUTE")
-			Result.extend("C_ATTRIBUTE.optional")
-			Result.extend("C_ATTRIBUTE.multiple")
-			Result.extend("C_ATTRIBUTE.multiple.optional")
-			
-			Result.extend("C_COMPLEX_OBJECT")
-			Result.extend("C_COMPLEX_OBJECT.multiple")
-			Result.extend("C_COMPLEX_OBJECT.optional")
-			Result.extend("C_COMPLEX_OBJECT.multiple.optional")
-			
-			Result.extend("ARCHETYPE_SLOT")
-			Result.extend("ARCHETYPE_SLOT.optional")
-			Result.extend("CADL_INCLUDE")
-			Result.extend("CADL_EXCLUDE")
-			
-			Result.extend("ARCHETYPE_INTERNAL_REF")
-			Result.extend("CONSTRAINT_REF")
-	
-			Result.extend("C_CODE_PHRASE")
-			Result.extend("C_ORDINAL")
-			Result.extend("C_QUANTITY")
-			Result.extend("C_PRIMITIVE_OBJECT")
-			
-			Result.extend("CADL_INVARIANT")
-			Result.extend("CADL_INVARIANT_ITEM")
-		end
-
-	pixmap_help_table: HASH_TABLE [STRING, STRING] is
+	pixmap_help_table: DS_HASH_TABLE [STRING, STRING] is
 			-- table of pixmap file paths keyed by icon key used in this app
 		once
 			create Result.make(0)
 			
-			Result.put("Single-valued attribute (mandatory)", 			"C_ATTRIBUTE")
-			Result.put("Single-valued attribute (optional)", 			"C_ATTRIBUTE.optional")
-			Result.put("Container attribute (mandatory)",			 	"C_ATTRIBUTE.multiple")
-			Result.put("Container attribute (optional)", 				"C_ATTRIBUTE.multiple.optional")
+			Result.force("Archetype (reference repository)", 							"archetype_1")
+			Result.force("Specialised archetype (reference repository)", 				"archetype_specialised_1")
+
+			Result.force("Archetype (work repository)", 								"archetype_2")
+			Result.force("Specialised archetype (work repository)", 					"archetype_specialised_2")
+
+			Result.force("", 															"NO ICON")
+
+			Result.force("Single-valued attribute (mandatory)", 						"C_ATTRIBUTE")
+			Result.force("Single-valued attribute (optional)",				 			"C_ATTRIBUTE.optional")
+			Result.force("Container attribute (mandatory)",			 					"C_ATTRIBUTE.multiple")
+			Result.force("Container attribute (optional)", 								"C_ATTRIBUTE.multiple.optional")
 			
-			Result.put("C_CODE_PHRASE (openEHR archetype profile)", 	"C_CODE_PHRASE")
-			Result.put("C_ORDINAL (openEHR archetype profile)",			"C_ORDINAL")
-			Result.put("C_QUANTITY (openEHR archetype profile)", 		"C_QUANTITY")
-			Result.put("C_PRIMITIVE_OBJECT - any type (openEHR AOM)", 	"C_PRIMITIVE_OBJECT")
+			Result.force("C_CODE_PHRASE (openEHR archetype profile)", 					"C_CODE_PHRASE")
+			Result.force("C_ORDINAL (openEHR archetype profile)",						"C_ORDINAL")
+			Result.force("C_QUANTITY (openEHR archetype profile)", 						"C_QUANTITY")
+			Result.force("C_PRIMITIVE_OBJECT - any type (openEHR AOM)", 				"C_PRIMITIVE_OBJECT")
 			
-			Result.put("Archetype slot (mandatory)", 					"ARCHETYPE_SLOT")
-			Result.put("Archetype slot (optional)", 					"ARCHETYPE_SLOT.optional")
-			Result.put("Archetype slot allowed archetypes", 					"CADL_INCLUDE")
-			Result.put("Archetype slot excluded archetypes", 					"CADL_EXCLUDE")
+			Result.force("Archetype slot (mandatory)", 									"ARCHETYPE_SLOT")
+			Result.force("Archetype slot (optional)", 									"ARCHETYPE_SLOT.optional")
+			Result.force("Archetype slot allowed archetypes", 							"CADL_INCLUDE")
+			Result.force("Archetype slot excluded archetypes", 							"CADL_EXCLUDE")
 			
-			Result.put("Complex ref model object (mandatory, single occurrence)", 			"C_COMPLEX_OBJECT")
-			Result.put("Complex ref model object (mandatory, multiple occurrences)", 		"C_COMPLEX_OBJECT.multiple")
-			Result.put("Complex ref model object (optional, single occurrence)", 			"C_COMPLEX_OBJECT.optional")
-			Result.put("Complex ref model object (optional, multiple occurrences)", 		"C_COMPLEX_OBJECT.multiple.optional")
+			Result.force("Complex ref model object (mandatory, single occurrence)", 	"C_COMPLEX_OBJECT")
+			Result.force("Complex ref model object (mandatory, multiple occurrences)", 	"C_COMPLEX_OBJECT.multiple")
+			Result.force("Complex ref model object (optional, single occurrence)", 		"C_COMPLEX_OBJECT.optional")
+			Result.force("Complex ref model object (optional, multiple occurrences)", 	"C_COMPLEX_OBJECT.multiple.optional")
 			
-			Result.put("Archetype internal reference to previously defined node", 			"ARCHETYPE_INTERNAL_REF")
-			Result.put("Constraint reference (openEHR AOM)", 			"CONSTRAINT_REF")
+			Result.force("Archetype internal reference to previously defined node", 	"ARCHETYPE_INTERNAL_REF")
+			Result.force("Constraint reference (openEHR AOM)", 							"CONSTRAINT_REF")
 	
-			Result.put("Invariant section", 							"CADL_INVARIANT")
-			Result.put("Invariant section item", 						"CADL_INVARIANT_ITEM")
-
-			Result.put("Archetype (reference repository)", 									"archetype_1")
-			Result.put("Specialised archetype (reference repository)", 						"archetype_specialised_1")
-
-			Result.put("Archetype (work repository)", 									"archetype_2")
-			Result.put("Specialised archetype (work repository)", 						"archetype_specialised_2")
+			Result.force("Invariant section", 											"CADL_INVARIANT")
+			Result.force("Invariant section item", 										"CADL_INVARIANT_ITEM")
+			Result.force("X is inherited from parent archetype",						"icon_help_example.inherited")
+			Result.force("X is redefined from parent archetype",						"icon_help_example.redefined")
 		end
 		
 	pixmap_file_table: HASH_TABLE [STRING, STRING] is
@@ -354,35 +323,75 @@ feature -- Access
 		once
 			create Result.make(0)
 			
-			Result.put("c_attribute.ico", 								"C_ATTRIBUTE")
-			Result.put("c_attribute_optional.ico", 						"C_ATTRIBUTE.optional")
-			Result.put("c_attribute_multiple.ico",					 	"C_ATTRIBUTE.multiple")
-			Result.put("c_attribute_multiple_optional.ico", 			"C_ATTRIBUTE.multiple.optional")
-			
-			Result.put("c_code_phrase.ico", 								"C_CODE_PHRASE")
-			Result.put("c_ordinal.ico", 								"C_ORDINAL")
-			Result.put("c_quantity.ico", 								"C_QUANTITY")
-			Result.put("c_quantity_item.ico", 							"C_QUANTITY_ITEM")
-			Result.put("c_primitive_object.ico", 						"C_PRIMITIVE_OBJECT")
-			Result.put("archetype_code_ref.ico", 						"CONSTRAINT_REF")
-			
-			Result.put("archetype_slot.ico", 							"ARCHETYPE_SLOT")
-			Result.put("archetype_slot_optional.ico", 					"ARCHETYPE_SLOT.optional")
-			
-			Result.put("c_complex_object_unknown.ico", 					"C_COMPLEX_OBJECT.unknown")
-			Result.put("c_complex_object.ico", 							"C_COMPLEX_OBJECT")
-			Result.put("c_complex_object_multiple.ico", 				"C_COMPLEX_OBJECT.multiple")
-			Result.put("c_complex_object_optional.ico", 				"C_COMPLEX_OBJECT.optional")
-			Result.put("c_complex_object_multiple_optional.ico", 		"C_COMPLEX_OBJECT.multiple.optional")
-			
-			Result.put("archetype_internal_ref.ico", 					"ARCHETYPE_INTERNAL_REF")
-			Result.put("term.ico", 										"TERM")
-			Result.put("ordinal.ico", 									"ORDINAL")
-			Result.put("cadl_invariant.ico", 							"CADL_INVARIANT")
-			Result.put("cadl_include.ico", 								"CADL_INCLUDE")
-			Result.put("cadl_exclude.ico", 								"CADL_EXCLUDE")
-			Result.put("cadl_invariant_item.ico", 						"CADL_INVARIANT_ITEM")
+			Result.put("node_normal/c_attribute.ico", 								"C_ATTRIBUTE")
+			Result.put("node_normal/c_attribute_optional.ico", 						"C_ATTRIBUTE.optional")
+			Result.put("node_normal/c_attribute_multiple.ico",					 	"C_ATTRIBUTE.multiple")
+			Result.put("node_normal/c_attribute_multiple_optional.ico", 			"C_ATTRIBUTE.multiple.optional")						
+			Result.put("node_normal/c_code_phrase.ico", 							"C_CODE_PHRASE")
+			Result.put("node_normal/c_ordinal.ico", 								"C_ORDINAL")
+			Result.put("node_normal/c_quantity.ico", 								"C_QUANTITY")
+			Result.put("node_normal/c_quantity_item.ico", 							"C_QUANTITY_ITEM")
+			Result.put("node_normal/c_primitive_object.ico", 						"C_PRIMITIVE_OBJECT")
+			Result.put("node_normal/archetype_code_ref.ico", 						"CONSTRAINT_REF")			
+			Result.put("node_normal/archetype_slot.ico", 							"ARCHETYPE_SLOT")
+			Result.put("node_normal/archetype_slot_optional.ico", 					"ARCHETYPE_SLOT.optional")			
+	--		Result.put("node_normal/c_complex_object_unknown.ico", 					"C_COMPLEX_OBJECT.unknown")
+			Result.put("node_normal/c_complex_object.ico", 							"C_COMPLEX_OBJECT")
+			Result.put("node_normal/c_complex_object_multiple.ico", 				"C_COMPLEX_OBJECT.multiple")
+			Result.put("node_normal/c_complex_object_optional.ico", 				"C_COMPLEX_OBJECT.optional")
+			Result.put("node_normal/c_complex_object_multiple_optional.ico", 		"C_COMPLEX_OBJECT.multiple.optional")			
+			Result.put("node_normal/archetype_internal_ref.ico", 					"ARCHETYPE_INTERNAL_REF")
+			Result.put("node_normal/term.ico", 										"TERM")
+			Result.put("node_normal/ordinal.ico", 									"ORDINAL")			
+			Result.put("node_normal/cadl_invariant.ico", 							"CADL_INVARIANT")
+			Result.put("node_normal/cadl_include.ico", 								"CADL_INCLUDE")
+			Result.put("node_normal/cadl_exclude.ico", 								"CADL_EXCLUDE")
+			Result.put("node_normal/cadl_invariant_item.ico", 						"CADL_INVARIANT_ITEM")
 
+			Result.put("node_inherited/c_attribute.ico",						 	"C_ATTRIBUTE.inherited")
+			Result.put("node_inherited/c_attribute_multiple.ico", 					"C_ATTRIBUTE.multiple.inherited")
+			Result.put("node_inherited/c_attribute.ico",		 					"C_ATTRIBUTE.optional.inherited")
+			Result.put("node_inherited/c_attribute_multiple.ico", 					"C_ATTRIBUTE.multiple.optional.inherited")
+			Result.put("node_inherited/c_code_phrase.ico", 							"C_CODE_PHRASE.inherited")
+			Result.put("node_inherited/c_ordinal.ico", 								"C_ORDINAL.inherited")
+			Result.put("node_inherited/c_quantity.ico", 							"C_QUANTITY.inherited")
+			Result.put("node_inherited/c_quantity_item.ico", 						"C_QUANTITY_ITEM.inherited")
+			Result.put("node_inherited/c_primitive_object.ico", 					"C_PRIMITIVE_OBJECT.inherited")
+			Result.put("node_inherited/archetype_code_ref.ico", 					"CONSTRAINT_REF.inherited")
+			Result.put("node_inherited/archetype_slot_optional.ico", 				"ARCHETYPE_SLOT.optional.inherited")
+			Result.put("node_inherited/archetype_slot.ico", 						"ARCHETYPE_SLOT.inherited")
+			Result.put("node_inherited/c_complex_object.ico", 						"C_COMPLEX_OBJECT.inherited")
+			Result.put("node_inherited/c_complex_object_multiple.ico", 				"C_COMPLEX_OBJECT.multiple.inherited")
+			Result.put("node_inherited/c_complex_object_optional.ico", 				"C_COMPLEX_OBJECT.optional.inherited")
+			Result.put("node_inherited/c_complex_object_multiple_optional.ico", 	"C_COMPLEX_OBJECT.multiple.optional.inherited")
+			Result.put("node_inherited/archetype_internal_ref.ico", 				"ARCHETYPE_INTERNAL_REF.inherited")
+			Result.put("node_inherited/term.ico", 									"TERM.inherited")
+			Result.put("node_inherited/ordinal.ico", 								"ORDINAL.inherited")
+			Result.put("node_normal/archetype_slot_optional.ico", 					"ARCHETYPE_SLOT.optional.inherited")
+			Result.put("node_inherited/icon_help_example.ico", 						"icon_help_example.inherited")
+			
+			Result.put("node_redefined/c_attribute.ico",						 	"C_ATTRIBUTE.redefined")
+			Result.put("node_redefined/c_attribute_multiple.ico", 					"C_ATTRIBUTE.multiple.redefined")
+			Result.put("node_redefined/c_attribute.ico",		 					"C_ATTRIBUTE.optional.redefined")
+			Result.put("node_redefined/c_attribute_multiple.ico", 					"C_ATTRIBUTE.multiple.optional.redefined")
+			Result.put("node_redefined/c_code_phrase.ico", 							"C_CODE_PHRASE.redefined")
+			Result.put("node_redefined/c_ordinal.ico", 								"C_ORDINAL.redefined")
+			Result.put("node_redefined/c_quantity.ico", 							"C_QUANTITY.redefined")
+			Result.put("node_redefined/c_quantity_item.ico", 						"C_QUANTITY_ITEM.redefined")
+			Result.put("node_redefined/c_primitive_object.ico", 					"C_PRIMITIVE_OBJECT.redefined")
+			Result.put("node_redefined/archetype_code_ref.ico", 					"CONSTRAINT_REF.redefined")
+			Result.put("node_redefined/archetype_slot_optional.ico", 				"ARCHETYPE_SLOT.optional.redefined")
+			Result.put("node_redefined/archetype_slot.ico", 						"ARCHETYPE_SLOT.redefined")
+			Result.put("node_redefined/c_complex_object.ico", 						"C_COMPLEX_OBJECT.redefined")
+			Result.put("node_redefined/c_complex_object_multiple.ico", 				"C_COMPLEX_OBJECT.multiple.redefined")
+			Result.put("node_redefined/c_complex_object_optional.ico", 				"C_COMPLEX_OBJECT.optional.redefined")
+			Result.put("node_redefined/c_complex_object_multiple_optional.ico", 	"C_COMPLEX_OBJECT.multiple.optional.redefined")
+			Result.put("node_redefined/archetype_internal_ref.ico", 				"ARCHETYPE_INTERNAL_REF.redefined")
+			Result.put("node_redefined/term.ico", 									"TERM.redefined")
+			Result.put("node_redefined/ordinal.ico", 								"ORDINAL.redefined")
+			Result.put("node_normal/archetype_slot_optional.ico", 					"ARCHETYPE_SLOT.optional.redefined")
+			Result.put("node_redefined/icon_help_example.ico", 						"icon_help_example.redefined")
+			
 			Result.put("file_folder_1.ico", 							"file_folder_1")
 			Result.put("archetype_1.ico", 								"archetype_1")
 			Result.put("archetype_specialised_1.ico", 					"archetype_specialised_1")
@@ -487,9 +496,13 @@ feature -- Modification
 	set_work_repository_path(a_path: STRING) is
 			-- set work repository_path
 		require
-			a_path_valid: a_path /= Void and then not a_path.is_empty
+			a_path_valid: a_path /= Void
 		do
-			set_resource_value("default", "work_repository", a_path)
+			if not a_path.is_empty then
+				set_resource_value("default", "work_repository", a_path)
+			else
+				remove_resource ("default", "work_repository")
+			end
 		end
 		
 	set_editor_command(an_editor_command: STRING) is

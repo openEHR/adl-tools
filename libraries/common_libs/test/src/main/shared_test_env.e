@@ -48,7 +48,20 @@ feature -- Access
 			create Result.make("at0001", Void)
 		end
 
-	print_paths(paths: ARRAYED_LIST [OG_PATH]) is
+	print_paths(paths: HASH_TABLE [OG_OBJECT, OG_PATH]) is
+		do
+			from 
+				paths.start
+			until
+				paths.off
+			loop
+				io.put_string(paths.key_for_iteration.as_string)
+				io.new_line
+				paths.forth
+			end
+		end
+
+	print_paths_list(paths: ARRAYED_LIST [OG_PATH]) is
 		do
 			from 
 				paths.start

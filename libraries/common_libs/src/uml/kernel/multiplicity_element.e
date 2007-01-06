@@ -19,9 +19,9 @@ deferred class UML_MULTIPLICITY_ELEMENT
 inherit
 	UML_ELEMENT
 	
-feature -- Initialisation
+feature -- Modification
 
-	make_single_multiplicity(is_mandatory: BOOLEAN) is
+	set_single_multiplicity(is_mandatory: BOOLEAN) is
 			-- make a single cardinality
 		do
 			if is_mandatory then
@@ -30,7 +30,7 @@ feature -- Initialisation
 			upper := 1
 		end
 
-	make_multiple_multiplicity(min_cardinality, max_cardinality: INTEGER; 
+	set_multiple_multiplicity(min_cardinality, max_cardinality: INTEGER; 
 				max_cardinality_infinite, ordered, unique_flag: BOOLEAN) is
 			-- make a multiple cardinality
 		require

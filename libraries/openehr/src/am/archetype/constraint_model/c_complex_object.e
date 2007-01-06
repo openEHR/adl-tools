@@ -60,6 +60,23 @@ feature -- Initialisation
 			rm_type_name := a_rm_type_name
 		end
 
+feature -- Source Control
+
+	rolled_up_specialisation_status (archetype_specialisation_level: INTEGER): SPECIALISATION_STATUS is
+			-- status of this node taking into consideration effective_specialisation_status of
+			-- all sub-nodes.
+		do
+			Result := effective_specialisation_status (archetype_specialisation_level)
+			from
+				attributes.start
+			until				
+				attributes.off or Result.value < ss_inherited
+			loop
+				Result := specialisation_xx(Result, attributes.item.rolled_up_specialisation_status (archetype_specialisation_level))
+				attributes.forth				
+			end
+		end
+
 feature -- Access
 
 	attributes: ARRAYED_LIST [C_ATTRIBUTE]

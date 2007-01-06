@@ -56,8 +56,8 @@ feature -- Modification
 		end	
 		
 invariant
-	Generalization_valid: generalization.for_all(agent owned_element.has({UML_GENERALIZATION}))
-	Redefined_classifier_valid: redefined_classifier.for_all(agent redefined_element.has({UML_CLASSIFIER}))
+	-- Generalization_valid: generalization.for_all(agent owned_element.has({UML_GENERALIZATION}))
+	-- Redefined_classifier_valid: redefined_classifier.for_all(agent redefined_element.has({UML_CLASSIFIER}))
 	
 end
 
