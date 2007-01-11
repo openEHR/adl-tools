@@ -311,8 +311,8 @@ feature -- Modification
 		do
 		end
 
-	start_c_ordinal(a_node: C_ORDINAL; depth: INTEGER) is
-			-- start serialising an C_ORDINAL
+	start_c_ordinal(a_node: C_DV_ORDINAL; depth: INTEGER) is
+			-- start serialising an C_DV_ORDINAL
 		local
 			adl_term: ARCHETYPE_TERM
 			i: INTEGER
@@ -365,8 +365,8 @@ feature -- Modification
 			end				
 		end
 		
-	end_c_ordinal(a_node: C_ORDINAL; depth: INTEGER) is
-			-- end serialising an C_ORDINAL
+	end_c_ordinal(a_node: C_DV_ORDINAL; depth: INTEGER) is
+			-- end serialising an C_DV_ORDINAL
 		do
 		end
 

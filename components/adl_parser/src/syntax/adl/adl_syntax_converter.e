@@ -18,6 +18,27 @@ class ADL_SYNTAX_CONVERTER
 
 feature -- Access
 
+	perform_syntax_upgrade(dadl_text: STRING) is
+			-- perform any upgrades likely to be required on older archetypes
+			-- dadl_text will be of form "C_SOME_TYPE <xxxxx>"
+		require
+			dadl_text /= Void
+		local
+			pos: INTEGER
+		do
+			-- get type name
+			pos := dadl_text.substring_index("C_QUANTITY", 1)
+			if pos > 0 then
+				dadl_text.replace_substring ("C_DV_QUANTITY", pos, pos+("C_QUANTITY").count-1)
+				convert_c_quantity_property(dadl_text)
+			else
+				pos := dadl_text.substring_index("C_ORDINAL", 1)
+				if pos > 0 then
+					dadl_text.replace_substring ("C_DV_ORDINAL", pos, pos+("C_ORDINAL").count-1)
+				end
+			end
+		end
+		
 	convert_c_quantity_property(dadl_text: STRING) is
 			-- convert an old style C_QUANTITY property dADL fragment from ADL 1.x
 			-- to ADL 1.4 

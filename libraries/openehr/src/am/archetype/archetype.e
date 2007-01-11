@@ -759,7 +759,7 @@ feature {NONE} -- Implementation
 			a_c_obj: C_OBJECT
 			a_c_co: C_COMPLEX_OBJECT
 			a_c_as: ARCHETYPE_SLOT
-			a_c_o: C_ORDINAL
+			a_c_o: C_DV_ORDINAL
 			a_c_ct: C_CODE_PHRASE
 			a_i_r: ARCHETYPE_INTERNAL_REF
 			a_c_r: CONSTRAINT_REF
@@ -907,7 +907,7 @@ feature {NONE} -- Implementation
 			
 	code_nodes_code_xref_table: HASH_TABLE[ARRAYED_LIST[C_OBJECT], STRING]
 			-- table of {list<node>, code} for term codes which appear in archetype nodes as data,
-			-- e.g. in C_ORDINAL and C_CODE_PHRASE types
+			-- e.g. in C_DV_ORDINAL and C_CODE_PHRASE types
 			
 	use_node_path_xref_table: HASH_TABLE[ARRAYED_LIST[ARCHETYPE_INTERNAL_REF], STRING]
 			-- table of {list<ARCHETYPE_INTERNAL_REF>, target_path} 
@@ -929,7 +929,7 @@ feature {NONE} -- Implementation
 		end
 
 	found_code_node_codes: ARRAYED_LIST[STRING] is
-			-- term codes found in leaf nodes in definition, e.g. in C_CODE_PHRASE and C_ORDINAL constraints
+			-- term codes found in leaf nodes in definition, e.g. in C_CODE_PHRASE and C_DV_ORDINAL constraints
 		do
 			create Result.make(0)
 			from

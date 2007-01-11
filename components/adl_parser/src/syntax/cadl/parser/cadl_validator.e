@@ -7119,7 +7119,7 @@ feature {NONE} -- Parse Tree
 	archetype_internal_ref: ARCHETYPE_INTERNAL_REF
 	archetype_slot: ARCHETYPE_SLOT
 
-	ordinal_node: C_ORDINAL
+	ordinal_node: C_DV_ORDINAL
 	an_ordinal: ORDINAL
 	a_code_phrase: CODE_PHRASE
 

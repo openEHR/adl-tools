@@ -146,7 +146,7 @@ feature {NONE} -- Initialization
 			else
 				total_view_area.set_split_position (app_initial_height - parser_status_area.minimum_height)
 			end	
-							
+			
 			initialise_path_control
 		end
 			
@@ -448,8 +448,9 @@ feature {NONE} -- Commands
 			if adl_interface.file_changed_on_disk then
 				adl_interface.resync_file
 				clear_all_controls
-				populate_archetype_text_edit_area
-				-- arch_notebook.select_item(archetype_text_edit_area)
+				if arch_notebook.item_text(arch_notebook.selected_item).is_equal ("Source") then
+					populate_archetype_text_edit_area
+				end
 			end
 		end
 		
@@ -588,6 +589,14 @@ feature {NONE} -- Commands
 			adl_path_map_control.copy_path_to_clipboard
 		end
 	
+	arch_notebook_select is
+			-- Called by `selection_actions' of `arch_notebook'.
+		do
+			if adl_interface.archetype_source_loaded and arch_notebook.item_text(arch_notebook.selected_item).is_equal ("Source") then
+				populate_archetype_text_edit_area
+			end
+		end
+
 feature -- Controls
 
 	ontology_controls: ADL_ONTOLOGY_CONTROLS is
@@ -681,7 +690,9 @@ feature {EV_DIALOG} -- Implementation
 		do
 			adl_interface.reset
 			adl_interface.open_adl_file(a_file_path)
-			populate_archetype_text_edit_area
+			if arch_notebook.item_text(arch_notebook.selected_item).is_equal ("Source") then
+				populate_archetype_text_edit_area
+			end
 			parse_archetype
 		end
 

@@ -141,20 +141,34 @@ feature {NONE}-- Initialization
 			create ontology_term_defs
 			create ontology_constraint_defs
 			create archetype_text_edit_area
-			create arch_statistics_vbox
+			create arch_stats_vbox
+			create l_ev_horizontal_box_7
+			create arch_stats_frame
+			create l_ev_vertical_box_5
+			create l_ev_horizontal_box_8
+			create l_ev_label_2
+			create arch_stats_total_node_count_tf
+			create l_ev_horizontal_box_9
+			create l_ev_label_3
+			create arch_stats_leaf_node_count_tf
+			create l_ev_frame_3
+			create l_ev_multi_column_list_1
+			create l_ev_frame_4
+			create l_ev_multi_column_list_2
+			create l_ev_frame_5
 			create parser_status_area
 			create test_view_area
-			create l_ev_horizontal_box_7
+			create l_ev_horizontal_box_10
 			create archetype_test_tree_grid
-			create l_ev_vertical_box_5
-			create l_ev_label_2
+			create l_ev_vertical_box_6
+			create l_ev_label_4
 			create overwrite_adl_rb
 			create remove_unused_codes_rb
 			create arch_test_tree_toggle_expand_bn
 			create arch_test_toggle_check_all_bn
 			create arch_test_refresh_bn
-			create l_ev_horizontal_box_8
-			create l_ev_label_3
+			create l_ev_horizontal_box_11
+			create l_ev_label_5
 			create arch_test_processed_count
 			create l_ev_horizontal_separator_1
 			create archetype_test_go_bn
@@ -269,23 +283,37 @@ feature {NONE}-- Initialization
 			ontology_notebook.extend (ontology_term_defs)
 			ontology_notebook.extend (ontology_constraint_defs)
 			arch_notebook.extend (archetype_text_edit_area)
-			arch_notebook.extend (arch_statistics_vbox)
+			arch_notebook.extend (arch_stats_vbox)
+			arch_stats_vbox.extend (l_ev_horizontal_box_7)
+			l_ev_horizontal_box_7.extend (arch_stats_frame)
+			arch_stats_frame.extend (l_ev_vertical_box_5)
+			l_ev_vertical_box_5.extend (l_ev_horizontal_box_8)
+			l_ev_horizontal_box_8.extend (l_ev_label_2)
+			l_ev_horizontal_box_8.extend (arch_stats_total_node_count_tf)
+			l_ev_vertical_box_5.extend (l_ev_horizontal_box_9)
+			l_ev_horizontal_box_9.extend (l_ev_label_3)
+			l_ev_horizontal_box_9.extend (arch_stats_leaf_node_count_tf)
+			l_ev_vertical_box_5.extend (l_ev_frame_3)
+			l_ev_frame_3.extend (l_ev_multi_column_list_1)
+			l_ev_vertical_box_5.extend (l_ev_frame_4)
+			l_ev_frame_4.extend (l_ev_multi_column_list_2)
+			l_ev_horizontal_box_7.extend (l_ev_frame_5)
 			total_view_area.extend (parser_status_area)
 			main_nb.extend (test_view_area)
-			test_view_area.extend (l_ev_horizontal_box_7)
-			l_ev_horizontal_box_7.extend (archetype_test_tree_grid)
-			l_ev_horizontal_box_7.extend (l_ev_vertical_box_5)
-			l_ev_vertical_box_5.extend (l_ev_label_2)
-			l_ev_vertical_box_5.extend (overwrite_adl_rb)
-			l_ev_vertical_box_5.extend (remove_unused_codes_rb)
-			l_ev_vertical_box_5.extend (arch_test_tree_toggle_expand_bn)
-			l_ev_vertical_box_5.extend (arch_test_toggle_check_all_bn)
-			l_ev_vertical_box_5.extend (arch_test_refresh_bn)
-			l_ev_vertical_box_5.extend (l_ev_horizontal_box_8)
-			l_ev_horizontal_box_8.extend (l_ev_label_3)
-			l_ev_horizontal_box_8.extend (arch_test_processed_count)
-			l_ev_vertical_box_5.extend (l_ev_horizontal_separator_1)
-			l_ev_vertical_box_5.extend (archetype_test_go_bn)
+			test_view_area.extend (l_ev_horizontal_box_10)
+			l_ev_horizontal_box_10.extend (archetype_test_tree_grid)
+			l_ev_horizontal_box_10.extend (l_ev_vertical_box_6)
+			l_ev_vertical_box_6.extend (l_ev_label_4)
+			l_ev_vertical_box_6.extend (overwrite_adl_rb)
+			l_ev_vertical_box_6.extend (remove_unused_codes_rb)
+			l_ev_vertical_box_6.extend (arch_test_tree_toggle_expand_bn)
+			l_ev_vertical_box_6.extend (arch_test_toggle_check_all_bn)
+			l_ev_vertical_box_6.extend (arch_test_refresh_bn)
+			l_ev_vertical_box_6.extend (l_ev_horizontal_box_11)
+			l_ev_horizontal_box_11.extend (l_ev_label_5)
+			l_ev_horizontal_box_11.extend (arch_test_processed_count)
+			l_ev_vertical_box_6.extend (l_ev_horizontal_separator_1)
+			l_ev_vertical_box_6.extend (archetype_test_go_bn)
 			test_view_area.extend (test_status_area)
 			
 			file_menu.set_text ("File")
@@ -377,7 +405,7 @@ feature {NONE}-- Initialization
 			arch_notebook.set_item_text (arch_desc_area_vbox, "Description")
 			arch_notebook.set_item_text (info_view_area, "Definition")
 			arch_notebook.set_item_text (archetype_text_edit_area, "Source")
-			arch_notebook.set_item_text (arch_statistics_vbox, "Statistics")
+			arch_notebook.set_item_text (arch_stats_vbox, "Statistics")
 			arch_desc_area_vbox.disable_item_expand (arch_desc_details_frame)
 			arch_desc_area_vbox.disable_item_expand (arch_desc_resource_frame)
 			arch_desc_area_vbox.disable_item_expand (arch_desc_copyright_hbox)
@@ -618,35 +646,48 @@ feature {NONE}-- Initialization
 			ontology_constraint_defs.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
 			ontology_constraint_defs.set_minimum_width (0)
 			ontology_constraint_defs.set_minimum_height (0)
-			archetype_text_edit_area.set_background_color (editable_colour)
-			create internal_font
-			internal_font.set_family (feature {EV_FONT_CONSTANTS}.Family_typewriter)
-			internal_font.set_weight (feature {EV_FONT_CONSTANTS}.Weight_regular)
-			internal_font.set_shape (feature {EV_FONT_CONSTANTS}.Shape_regular)
-			internal_font.set_height_in_points (9)
-			internal_font.preferred_families.extend ("Courier New")
-			archetype_text_edit_area.set_font (internal_font)
-			archetype_text_edit_area.set_minimum_width (600)
-			archetype_text_edit_area.set_minimum_height (app_min_height)
-			archetype_text_edit_area.disable_edit
+			arch_stats_vbox.set_padding_width (padding_width)
+			arch_stats_vbox.set_border_width (border_width)
+			l_ev_horizontal_box_7.set_padding_width (padding_width)
+			l_ev_horizontal_box_7.set_border_width (border_width)
+			arch_stats_frame.set_text ("Definition")
+			l_ev_vertical_box_5.set_padding_width (padding_width)
+			l_ev_vertical_box_5.set_border_width (border_width)
+			l_ev_vertical_box_5.disable_item_expand (l_ev_horizontal_box_8)
+			l_ev_vertical_box_5.disable_item_expand (l_ev_horizontal_box_9)
+			l_ev_horizontal_box_8.set_padding_width (padding_width)
+			l_ev_horizontal_box_8.set_border_width (border_width)
+			l_ev_horizontal_box_8.disable_item_expand (l_ev_label_2)
+			l_ev_horizontal_box_8.disable_item_expand (arch_stats_total_node_count_tf)
+			l_ev_label_2.set_text ("Total Node Count")
+			arch_stats_total_node_count_tf.disable_edit
+			l_ev_horizontal_box_9.set_padding_width (padding_width)
+			l_ev_horizontal_box_9.set_border_width (border_width)
+			l_ev_horizontal_box_9.disable_item_expand (l_ev_label_3)
+			l_ev_horizontal_box_9.disable_item_expand (arch_stats_leaf_node_count_tf)
+			l_ev_label_3.set_text ("Leaf Node Count")
+			arch_stats_leaf_node_count_tf.disable_edit
+			l_ev_frame_3.set_text ("Primitive Node Counts")
+			l_ev_frame_4.set_text ("Reference Model Node Counts")
+			l_ev_frame_5.set_text ("Ontology")
 			parser_status_area.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
 			parser_status_area.set_minimum_width (0)
 			parser_status_area.set_minimum_height (status_area_min_height)
 			parser_status_area.disable_edit
 			test_view_area.set_minimum_width (app_min_width)
-			l_ev_horizontal_box_7.disable_item_expand (l_ev_vertical_box_5)
-			l_ev_vertical_box_5.set_padding_width (padding_width)
-			l_ev_vertical_box_5.set_border_width (border_width)
-			l_ev_vertical_box_5.disable_item_expand (l_ev_label_2)
-			l_ev_vertical_box_5.disable_item_expand (overwrite_adl_rb)
-			l_ev_vertical_box_5.disable_item_expand (remove_unused_codes_rb)
-			l_ev_vertical_box_5.disable_item_expand (arch_test_tree_toggle_expand_bn)
-			l_ev_vertical_box_5.disable_item_expand (arch_test_toggle_check_all_bn)
-			l_ev_vertical_box_5.disable_item_expand (arch_test_refresh_bn)
-			l_ev_vertical_box_5.disable_item_expand (l_ev_horizontal_box_8)
-			l_ev_vertical_box_5.disable_item_expand (l_ev_horizontal_separator_1)
-			l_ev_vertical_box_5.disable_item_expand (archetype_test_go_bn)
-			l_ev_label_2.set_text ("Options")
+			l_ev_horizontal_box_10.disable_item_expand (l_ev_vertical_box_6)
+			l_ev_vertical_box_6.set_padding_width (padding_width)
+			l_ev_vertical_box_6.set_border_width (border_width)
+			l_ev_vertical_box_6.disable_item_expand (l_ev_label_4)
+			l_ev_vertical_box_6.disable_item_expand (overwrite_adl_rb)
+			l_ev_vertical_box_6.disable_item_expand (remove_unused_codes_rb)
+			l_ev_vertical_box_6.disable_item_expand (arch_test_tree_toggle_expand_bn)
+			l_ev_vertical_box_6.disable_item_expand (arch_test_toggle_check_all_bn)
+			l_ev_vertical_box_6.disable_item_expand (arch_test_refresh_bn)
+			l_ev_vertical_box_6.disable_item_expand (l_ev_horizontal_box_11)
+			l_ev_vertical_box_6.disable_item_expand (l_ev_horizontal_separator_1)
+			l_ev_vertical_box_6.disable_item_expand (archetype_test_go_bn)
+			l_ev_label_4.set_text ("Options")
 			overwrite_adl_rb.set_text ("Overwrite ADL")
 			overwrite_adl_rb.set_tooltip ("Overwrite .adl files rather than save to .adlx")
 			remove_unused_codes_rb.set_text ("Remove unused codes")
@@ -657,11 +698,11 @@ feature {NONE}-- Initialization
 			arch_test_toggle_check_all_bn.set_tooltip ("Check/uncheck all archetypes for testing")
 			arch_test_refresh_bn.set_text ("Refresh")
 			arch_test_refresh_bn.set_tooltip ("Resync to file system and reset statuses")
-			l_ev_horizontal_box_8.set_minimum_width (110)
-			l_ev_horizontal_box_8.disable_item_expand (l_ev_label_3)
-			l_ev_horizontal_box_8.disable_item_expand (arch_test_processed_count)
-			l_ev_label_3.set_text ("Processed")
-			l_ev_label_3.set_minimum_width (65)
+			l_ev_horizontal_box_11.set_minimum_width (110)
+			l_ev_horizontal_box_11.disable_item_expand (l_ev_label_5)
+			l_ev_horizontal_box_11.disable_item_expand (arch_test_processed_count)
+			l_ev_label_5.set_text ("Processed")
+			l_ev_label_5.set_minimum_width (65)
 			arch_test_processed_count.disable_edit
 			l_ev_horizontal_separator_1.set_minimum_height (15)
 			archetype_test_go_bn.set_text ("Go")
@@ -696,6 +737,7 @@ feature {NONE}-- Initialization
 			format_combo.select_actions.extend (agent select_format)
 			language_combo.select_actions.extend (agent select_language)
 			archetype_file_tree.select_actions.extend (agent archetype_view_tree_item_select)
+			arch_notebook.selection_actions.extend (agent arch_notebook_select)
 			parsed_archetype_tree.select_actions.extend (agent node_map_item_select)
 			tree_expand_bn.select_actions.extend (agent node_map_toggle_expand_tree)
 			tree_expand_one_bn.select_actions.extend (agent node_map_expand_tree_one_level)
@@ -705,9 +747,6 @@ feature {NONE}-- Initialization
 			path_view_check_list.check_actions.extend (agent path_column_select (?))
 			path_view_check_list.uncheck_actions.extend (agent path_column_unselect (?))
 			path_filter_combo.select_actions.extend (agent path_row_set_filter)
-			archetype_text_edit_area.pointer_button_press_actions.extend (agent move_cursor_to_pointer_location (?, ?, ?, ?, ?, ?, ?, ?))
-			archetype_text_edit_area.pointer_double_press_actions.extend (agent pointer_double_click_action (?, ?, ?, ?, ?, ?, ?, ?))
-			archetype_text_edit_area.key_press_string_actions.extend (agent archetype_text_edit_process_keystroke (?))
 			arch_test_tree_toggle_expand_bn.select_actions.extend (agent archetype_test_tree_expand_toggle)
 			arch_test_toggle_check_all_bn.select_actions.extend (agent archetype_test_tree_check_all_toggle)
 			arch_test_refresh_bn.select_actions.extend (agent archetype_test_refresh)
@@ -726,50 +765,54 @@ feature -- Access
 	l_ev_menu_separator_1, l_ev_menu_separator_2,
 	l_ev_menu_separator_3: EV_MENU_SEPARATOR
 	archetype_id, parent_archetype_id, arch_desc_status_text,
-	arch_desc_resource_package_text, arch_test_processed_count: EV_TEXT_FIELD
+	arch_desc_resource_package_text, arch_stats_total_node_count_tf, arch_stats_leaf_node_count_tf,
+	arch_test_processed_count: EV_TEXT_FIELD
 	path_view_check_list: EV_CHECKABLE_LIST
-	archetype_test_tree_grid: EV_GRID
+	archetype_text_edit_area: EV_RICH_TEXT
 	arch_desc_auth_orig_auth_mlist,
 	arch_desc_resource_orig_res_mlist, parsed_archetype_found_paths, ontology_term_defs,
-	ontology_constraint_defs: EV_MULTI_COLUMN_LIST
-	file_menu, edit_menu, repository_menu, options_menu, help_menu: EV_MENU
+	ontology_constraint_defs, l_ev_multi_column_list_1, l_ev_multi_column_list_2: EV_MULTI_COLUMN_LIST
+	file_menu,
+	edit_menu, repository_menu, options_menu, help_menu: EV_MENU
+	overwrite_adl_rb, remove_unused_codes_rb: EV_CHECK_BUTTON
 	l_ev_horizontal_separator_1: EV_HORIZONTAL_SEPARATOR
 	open_button,
 	parse_button, edit_button, save_button, tree_expand_bn, tree_expand_one_bn, tree_shrink_one_bn,
 	tree_technical_mode_bn, tree_source_status_bn, arch_test_tree_toggle_expand_bn, arch_test_toggle_check_all_bn,
 	arch_test_refresh_bn, archetype_test_go_bn: EV_BUTTON
 	arch_desc_purpose_text, arch_desc_use_text,
-	arch_desc_misuse_text, arch_desc_copyright_text, archetype_text_edit_area, parser_status_area,
-	test_status_area: EV_TEXT
-	arch_desc_auth_contrib_list, languages_list, terminologies_list,
-	arch_desc_keywords_list: EV_LIST
-	main_nb, arch_notebook, source_notebook, ontology_notebook: EV_NOTEBOOK
-	archetype_file_tree,
-	parsed_archetype_tree: EV_TREE
+	arch_desc_misuse_text, arch_desc_copyright_text, parser_status_area, test_status_area: EV_TEXT
+	arch_desc_auth_contrib_list,
+	languages_list, terminologies_list, arch_desc_keywords_list: EV_LIST
+	main_nb, arch_notebook,
+	source_notebook, ontology_notebook: EV_NOTEBOOK
+	archetype_file_tree, parsed_archetype_tree: EV_TREE
 	explorer_view_area: EV_HORIZONTAL_SPLIT_AREA
-	total_view_area, info_view_area, test_view_area: EV_VERTICAL_SPLIT_AREA
-	action_bar,
-	author_lang_term_hbox, arch_desc_status_hbox, arch_desc_auth_hbox, arch_desc_contrib_hbox,
-	l_ev_horizontal_box_1, arch_desc_details_hbox, l_ev_horizontal_box_2, l_ev_horizontal_box_3,
-	l_ev_horizontal_box_4, l_ev_horizontal_box_5, l_ev_horizontal_box_6, arch_desc_copyright_hbox,
-	parsed_archetype_tree_view, parsed_archetype_path_view, l_ev_horizontal_box_7, l_ev_horizontal_box_8: EV_HORIZONTAL_BOX
-	viewer_vbox,
-	arch_desc_area_vbox, l_ev_vertical_box_1, lang_vbox, terminology_vbox, l_ev_vertical_box_2,
-	l_ev_vertical_box_3, l_ev_vertical_box_4, tree_controls, path_controls, arch_statistics_vbox,
-	l_ev_vertical_box_5: EV_VERTICAL_BOX
-	overwrite_adl_rb, remove_unused_codes_rb: EV_CHECK_BUTTON
-	format_label, l_ev_label_1,
-	language_label, arch_desc_status_label, arch_desc_auth_orig_auth_label, arch_desc_auth_contrib_label,
-	languages_label, terminologies_label, arch_desc_purpose_label, arch_desc_use_label,
-	arch_desc_misuse_label, arch_desc_keywords_label, arch_desc_resource_package_label,
-	arch_desc_resource_orig_res_label, arch_desc_copyright_label, l_ev_label_2, l_ev_label_3: EV_LABEL
-	open_adl_file_mi,
-	parse_mi, edit_archetype_mi, save_adl_file_mi, exit_tool_mi, copy_mi, clipboard_mi,
-	set_repository_mi, options_mi, icon_help_mi, news, online_mi, about_mi: EV_MENU_ITEM
+	total_view_area,
+	info_view_area, test_view_area: EV_VERTICAL_SPLIT_AREA
+	action_bar, author_lang_term_hbox, arch_desc_status_hbox,
+	arch_desc_auth_hbox, arch_desc_contrib_hbox, l_ev_horizontal_box_1, arch_desc_details_hbox,
+	l_ev_horizontal_box_2, l_ev_horizontal_box_3, l_ev_horizontal_box_4, l_ev_horizontal_box_5,
+	l_ev_horizontal_box_6, arch_desc_copyright_hbox, parsed_archetype_tree_view, parsed_archetype_path_view,
+	l_ev_horizontal_box_7, l_ev_horizontal_box_8, l_ev_horizontal_box_9, l_ev_horizontal_box_10,
+	l_ev_horizontal_box_11: EV_HORIZONTAL_BOX
+	viewer_vbox, arch_desc_area_vbox, l_ev_vertical_box_1, lang_vbox,
+	terminology_vbox, l_ev_vertical_box_2, l_ev_vertical_box_3, l_ev_vertical_box_4,
+	tree_controls, path_controls, arch_stats_vbox, l_ev_vertical_box_5, l_ev_vertical_box_6: EV_VERTICAL_BOX
+	archetype_test_tree_grid: EV_GRID
+	format_label,
+	l_ev_label_1, language_label, arch_desc_status_label, arch_desc_auth_orig_auth_label,
+	arch_desc_auth_contrib_label, languages_label, terminologies_label, arch_desc_purpose_label,
+	arch_desc_use_label, arch_desc_misuse_label, arch_desc_keywords_label, arch_desc_resource_package_label,
+	arch_desc_resource_orig_res_label, arch_desc_copyright_label, l_ev_label_2, l_ev_label_3,
+	l_ev_label_4, l_ev_label_5: EV_LABEL
+	open_adl_file_mi, parse_mi, edit_archetype_mi, save_adl_file_mi,
+	exit_tool_mi, copy_mi, clipboard_mi, set_repository_mi, options_mi, icon_help_mi,
+	news, online_mi, about_mi: EV_MENU_ITEM
 	menu: EV_MENU_BAR
-	arch_desc_auth_frame,
-	lang_term_frame, arch_desc_details_frame, arch_desc_resource_frame, l_ev_frame_1,
-	l_ev_frame_2: EV_FRAME
+	arch_desc_auth_frame, lang_term_frame, arch_desc_details_frame,
+	arch_desc_resource_frame, l_ev_frame_1, l_ev_frame_2, arch_stats_frame, l_ev_frame_3,
+	l_ev_frame_4, l_ev_frame_5: EV_FRAME
 
 feature {NONE} -- Implementation
 
@@ -866,6 +909,11 @@ feature {NONE} -- Implementation
 		deferred
 		end
 	
+	arch_notebook_select is
+			-- Called by `selection_actions' of `arch_notebook'.
+		deferred
+		end
+	
 	node_map_item_select is
 			-- Called by `select_actions' of `parsed_archetype_tree'.
 		deferred
@@ -908,21 +956,6 @@ feature {NONE} -- Implementation
 	
 	path_row_set_filter is
 			-- Called by `select_actions' of `path_filter_combo'.
-		deferred
-		end
-	
-	move_cursor_to_pointer_location (a_x, a_y, a_button: INTEGER; a_x_tilt, a_y_tilt, a_pressure: DOUBLE; a_screen_x, a_screen_y: INTEGER) is
-			-- Called by `pointer_button_press_actions' of `archetype_text_edit_area'.
-		deferred
-		end
-	
-	pointer_double_click_action (a_x, a_y, a_button: INTEGER; a_x_tilt, a_y_tilt, a_pressure: DOUBLE; a_screen_x, a_screen_y: INTEGER) is
-			-- Called by `pointer_double_press_actions' of `archetype_text_edit_area'.
-		deferred
-		end
-	
-	archetype_text_edit_process_keystroke (a_keystring: STRING) is
-			-- Called by `key_press_string_actions' of `archetype_text_edit_area'.
 		deferred
 		end
 	

@@ -12,7 +12,7 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class C_QUANTITY
+class C_DV_QUANTITY
 
 inherit
 	C_DOMAIN_TYPE

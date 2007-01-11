@@ -138,10 +138,10 @@ feature -- Factory
 			a_parent.put_child(Result)
 		end
 		
-	create_c_ordinal(a_parent: C_ATTRIBUTE): C_ORDINAL is
+	create_c_ordinal(a_parent: C_ATTRIBUTE): C_DV_ORDINAL is
 			-- create an empty "ordinal" node.
 			-- Populate it using create_ordinal in this factory, then
-			-- C_ORDINAL.add_item(an_ordinal)
+			-- C_DV_ORDINAL.add_item(an_ordinal)
 		require
 			parent_valid: a_parent /= Void
 		do
@@ -158,8 +158,8 @@ feature -- Factory
 			create Result.make(a_value, create {CODE_PHRASE}.make(a_symbol_code_phrase))
 		end
 		
-	create_c_quantity(a_parent: C_ATTRIBUTE): C_QUANTITY is
-			-- create an empty C_QUANTITY node.
+	create_c_quantity(a_parent: C_ATTRIBUTE): C_DV_QUANTITY is
+			-- create an empty C_DV_QUANTITY node.
 		require
 			parent_valid: a_parent /= Void
 		do

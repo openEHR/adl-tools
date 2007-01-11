@@ -12,7 +12,7 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class C_ORDINAL
+class C_DV_ORDINAL
 
 inherit
 	C_DOMAIN_TYPE
@@ -29,8 +29,8 @@ feature -- Initialisation
 			--
 		do
 			precursor
-			create rm_type_name.make(0)
-			rm_type_name.append("ORDINAL")
+			rm_type_name := generator
+			rm_type_name.remove_head(2) -- remove "C_"
 		ensure then
 			any_allowed
 		end

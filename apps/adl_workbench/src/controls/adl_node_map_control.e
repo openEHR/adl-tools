@@ -252,8 +252,8 @@ feature {NONE} -- Implementation
 			a_constraint_ref: CONSTRAINT_REF
 			a_node_ref: ARCHETYPE_INTERNAL_REF
 			a_slot: ARCHETYPE_SLOT
-			c_ordinal: C_ORDINAL
-			c_q: C_QUANTITY
+			c_dv_ordinal: C_DV_ORDINAL
+			c_q: C_DV_QUANTITY
 			a_type, s: STRING
 			pixmap: EV_PIXMAP
 			assumed_flag: BOOLEAN
@@ -306,25 +306,25 @@ feature {NONE} -- Implementation
 					end
 				end
 				
-			elseif a_type.is_equal("C_ORDINAL") then
-				c_ordinal ?= an_og_node.content_item
-				s.append(c_ordinal.rm_type_name)
-				a_ti := attach_node(s, pixmaps.item("C_ORDINAL" + pixmap_ext), an_og_node)			
+			elseif a_type.is_equal("C_DV_ORDINAL") then
+				c_dv_ordinal ?= an_og_node.content_item
+				s.append(c_dv_ordinal.rm_type_name)
+				a_ti := attach_node(s, pixmaps.item("C_DV_ORDINAL" + pixmap_ext), an_og_node)			
 				from
-					c_ordinal.items.start
+					c_dv_ordinal.items.start
 				until
-					c_ordinal.items.off						
+					c_dv_ordinal.items.off						
 				loop
-					assumed_flag := c_ordinal.assumed_value /= Void and then 
-						c_ordinal.assumed_value.value = c_ordinal.items.item.value
-					create a_ti_sub.make_with_text(object_ordinal_item_string(c_ordinal.items.item, assumed_flag))
-					a_ti_sub.set_data(c_ordinal.items.item) -- of type ORDINAL
+					assumed_flag := c_dv_ordinal.assumed_value /= Void and then 
+						c_dv_ordinal.assumed_value.value = c_dv_ordinal.items.item.value
+					create a_ti_sub.make_with_text(object_ordinal_item_string(c_dv_ordinal.items.item, assumed_flag))
+					a_ti_sub.set_data(c_dv_ordinal.items.item) -- of type ORDINAL
 					a_ti_sub.set_pixmap(pixmaps.item("ORDINAL" + pixmap_ext))
 					a_ti.extend(a_ti_sub)
-					c_ordinal.items.forth						
+					c_dv_ordinal.items.forth						
 				end				
 				
-			elseif a_type.is_equal("C_QUANTITY") then
+			elseif a_type.is_equal("C_DV_QUANTITY") then
 				c_q ?= an_og_node.content_item
 				if in_technical_mode then
 					s.append(c_q.rm_type_name)		
@@ -332,7 +332,7 @@ feature {NONE} -- Implementation
 				if c_q.property /= Void then
 					s.append(" (" + c_q.property.as_string + ")")
 				end
-				a_ti := attach_node(s, pixmaps.item("C_QUANTITY" + pixmap_ext), an_og_node)
+				a_ti := attach_node(s, pixmaps.item("C_DV_QUANTITY" + pixmap_ext), an_og_node)
 				if c_q.list /= Void then
 					from
 						c_q.list.start
@@ -425,13 +425,13 @@ feature {NONE} -- Implementation
 			c_attr: C_ATTRIBUTE
 			c_c_o: C_COMPLEX_OBJECT
 			c_p_o: C_PRIMITIVE_OBJECT
-			c_q: C_QUANTITY
+			c_q: C_DV_QUANTITY
 			a_constraint_ref: CONSTRAINT_REF
 			a_node_ref: ARCHETYPE_INTERNAL_REF
 			a_slot: ARCHETYPE_SLOT
 			a_type, s: STRING
 			a_object_term: C_CODE_PHRASE
-			c_ordinal: C_ORDINAL
+			c_dv_ordinal: C_DV_ORDINAL
 			an_ordinal: ORDINAL
 			a_node: ANY -- because includes STRING as well as ARCHETYPE_CONSTRAINT
 			parent: EV_TREE_NODE
@@ -504,19 +504,19 @@ feature {NONE} -- Implementation
 					elseif a_type.is_equal("C_CODE_PHRASE") then
 						a_ti.set_pixmap(pixmaps.item("C_CODE_PHRASE" + pixmap_ext))				
 						
-					elseif a_type.is_equal("C_ORDINAL") then
-						a_ti.set_pixmap(pixmaps.item("C_ORDINAL" + pixmap_ext))				
+					elseif a_type.is_equal("C_DV_ORDINAL") then
+						a_ti.set_pixmap(pixmaps.item("C_DV_ORDINAL" + pixmap_ext))				
 								
 					elseif a_type.is_equal("ORDINAL") then
 						an_ordinal ?= a_node
 						parent ?= a_ti.parent
-						c_ordinal ?= parent.data
-						assumed_flag := c_ordinal.assumed_value /= Void and then c_ordinal.assumed_value.value = an_ordinal.value
+						c_dv_ordinal ?= parent.data
+						assumed_flag := c_dv_ordinal.assumed_value /= Void and then c_dv_ordinal.assumed_value.value = an_ordinal.value
 
 						a_ti.set_text(object_ordinal_item_string(an_ordinal, assumed_flag))
 						create pixmap_ext.make(0)					
 						if in_source_status_mode then
-							spec_sts := c_ordinal.effective_specialisation_status (adl_interface.archetype.specialisation_depth).value
+							spec_sts := c_dv_ordinal.effective_specialisation_status (adl_interface.archetype.specialisation_depth).value
 							if spec_sts = ss_inherited or spec_sts = ss_redefined then
 								pixmap_ext.append(".")
 								pixmap_ext.append(specialisation_status_names.item(spec_sts))
@@ -524,7 +524,7 @@ feature {NONE} -- Implementation
 						end
 						a_ti.set_pixmap(pixmaps.item("ORDINAL" + pixmap_ext))				
 						
-					elseif a_type.is_equal("C_QUANTITY") then
+					elseif a_type.is_equal("C_DV_QUANTITY") then
 						c_q ?= a_node
 						create s.make(0)
 						if in_technical_mode then
@@ -534,7 +534,7 @@ feature {NONE} -- Implementation
 							s.append(" (" + c_q.property.as_string + ")")
 						end
 						a_ti.set_text(s)				
-						a_ti.set_pixmap(pixmaps.item("C_QUANTITY" + pixmap_ext))				
+						a_ti.set_pixmap(pixmaps.item("C_DV_QUANTITY" + pixmap_ext))				
 				
 					elseif a_type.is_equal("C_QUANTITY_ITEM") then
 						parent ?= a_ti.parent

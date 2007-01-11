@@ -184,7 +184,7 @@ feature -- Modification
 			if other_details = Void then
 				create other_details.make(0)
 			end
-			other_details.put(a_value, a_key)
+			other_details.force(a_value, a_key)
 		ensure
 			Other_details_set: other_details.item(a_key) = a_value
 		end

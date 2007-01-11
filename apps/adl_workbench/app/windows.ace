@@ -99,9 +99,9 @@ cluster
 				end
 			CODE_PHRASE
 				end
-			C_ORDINAL
+			C_DV_ORDINAL
 				end
-			C_QUANTITY
+			C_DV_QUANTITY
 				end
 		end
 
