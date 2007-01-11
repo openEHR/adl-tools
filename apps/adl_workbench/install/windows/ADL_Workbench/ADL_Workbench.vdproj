@@ -75,6 +75,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_15EC17D947064014969E8A81C1BB0A2E"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_1813F73B0CA741EFBFA888783FCD91E1"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -135,12 +141,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_37F617CAA1AB49D5B65C00E1DD0CE540"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_39DE5CCBC6684FFAAB86D3B001F21D34"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -171,13 +171,13 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_4C6571EDEAD548C5AC4AAC5937A0E797"
+        "MsmKey" = "8:_476233A512CE40CB9BDE6D875F260560"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_4F070DFB9B5E481EAAC93E954B54B899"
+        "MsmKey" = "8:_498DB5781D304A5C97C722D0405AF85A"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -190,6 +190,12 @@
         "Entry"
         {
         "MsmKey" = "8:_5B919994DDC2467F94DD3248D35BF9BE"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_5F58D8EFD41A41A2A6200F27E66C6CD0"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -315,12 +321,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_942D7EEF295A4D2B9BAB2AB8245EA6CC"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_953D6CF0301D4872A5E16E8B0730AE95"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -334,6 +334,12 @@
         "Entry"
         {
         "MsmKey" = "8:_98C30C31E6104ABCB54D2D328985B69D"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_99A03E5D380546BD9825860977E3DF50"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -370,12 +376,6 @@
         "Entry"
         {
         "MsmKey" = "8:_A1FF1FCC1D8F442FA5F5107889779D0B"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_A649ECC6E3794DDCBAB88BD4D24D1353"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -441,6 +441,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_DB67894AA0A145B09494A053275F1E8E"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_DBDCA1447FA7443381D477F055F6FD19"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -448,12 +454,6 @@
         "Entry"
         {
         "MsmKey" = "8:_DCC6C7D5B0334DE79B193E2BE62E065E"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_E1D9B1039D2D40BEA591BBD78D8A80FB"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -787,6 +787,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_15EC17D947064014969E8A81C1BB0A2E"
+            {
+            "SourcePath" = "8:..\\..\\..\\app\\icons\\node_normal\\c_dv_ordinal.ico"
+            "TargetName" = "8:c_dv_ordinal.ico"
+            "Tag" = "8:"
+            "Folder" = "8:_CBB4D6DFB53F4C65AA810346C1D786C4"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1813F73B0CA741EFBFA888783FCD91E1"
             {
             "SourcePath" = "8:..\\..\\..\\app\\icons\\node_normal\\archetype_internal_ref_ball.ico"
@@ -987,26 +1007,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_37F617CAA1AB49D5B65C00E1DD0CE540"
-            {
-            "SourcePath" = "8:..\\..\\..\\app\\icons\\node_normal\\c_quantity.ico"
-            "TargetName" = "8:c_quantity.ico"
-            "Tag" = "8:"
-            "Folder" = "8:_CBB4D6DFB53F4C65AA810346C1D786C4"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_39DE5CCBC6684FFAAB86D3B001F21D34"
             {
             "SourcePath" = "8:..\\..\\..\\app\\icons\\node_redefined\\c_complex_object_multiple_optional.ico"
@@ -1107,12 +1107,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4C6571EDEAD548C5AC4AAC5937A0E797"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_476233A512CE40CB9BDE6D875F260560"
             {
-            "SourcePath" = "8:..\\..\\..\\app\\icons\\node_inherited\\c_quantity.ico"
-            "TargetName" = "8:c_quantity.ico"
+            "SourcePath" = "8:..\\..\\..\\app\\icons\\node_redefined\\c_dv_quantity.ico"
+            "TargetName" = "8:c_dv_quantity.ico"
             "Tag" = "8:"
-            "Folder" = "8:_DC81223EBC0E4EF29624ACE0B56AC64C"
+            "Folder" = "8:_A1034160E36E479E9A4F8FC82EFD0CAD"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -1127,12 +1127,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4F070DFB9B5E481EAAC93E954B54B899"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_498DB5781D304A5C97C722D0405AF85A"
             {
-            "SourcePath" = "8:..\\..\\..\\app\\icons\\node_inherited\\c_ordinal.ico"
-            "TargetName" = "8:c_ordinal.ico"
+            "SourcePath" = "8:..\\..\\..\\app\\icons\\node_redefined\\c_dv_ordinal.ico"
+            "TargetName" = "8:c_dv_ordinal.ico"
             "Tag" = "8:"
-            "Folder" = "8:_DC81223EBC0E4EF29624ACE0B56AC64C"
+            "Folder" = "8:_A1034160E36E479E9A4F8FC82EFD0CAD"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -1173,6 +1173,26 @@
             "TargetName" = "8:adl.vim"
             "Tag" = "8:"
             "Folder" = "8:_CDFB373A755E4503B3F7F0D010A16154"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_5F58D8EFD41A41A2A6200F27E66C6CD0"
+            {
+            "SourcePath" = "8:..\\..\\..\\app\\icons\\node_normal\\c_dv_quantity.ico"
+            "TargetName" = "8:c_dv_quantity.ico"
+            "Tag" = "8:"
+            "Folder" = "8:_CBB4D6DFB53F4C65AA810346C1D786C4"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -1587,26 +1607,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_942D7EEF295A4D2B9BAB2AB8245EA6CC"
-            {
-            "SourcePath" = "8:..\\..\\..\\app\\icons\\node_normal\\c_ordinal.ico"
-            "TargetName" = "8:c_ordinal.ico"
-            "Tag" = "8:"
-            "Folder" = "8:_CBB4D6DFB53F4C65AA810346C1D786C4"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_953D6CF0301D4872A5E16E8B0730AE95"
             {
             "SourcePath" = "8:..\\..\\..\\app\\icons\\go.ico"
@@ -1653,6 +1653,26 @@
             "TargetName" = "8:c_attribute_multiple.ico"
             "Tag" = "8:"
             "Folder" = "8:_CBB4D6DFB53F4C65AA810346C1D786C4"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_99A03E5D380546BD9825860977E3DF50"
+            {
+            "SourcePath" = "8:..\\..\\..\\app\\icons\\node_inherited\\c_dv_quantity.ico"
+            "TargetName" = "8:c_dv_quantity.ico"
+            "Tag" = "8:"
+            "Folder" = "8:_DC81223EBC0E4EF29624ACE0B56AC64C"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -1773,26 +1793,6 @@
             "TargetName" = "8:c_complex_object.ico"
             "Tag" = "8:"
             "Folder" = "8:_DC81223EBC0E4EF29624ACE0B56AC64C"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A649ECC6E3794DDCBAB88BD4D24D1353"
-            {
-            "SourcePath" = "8:..\\..\\..\\app\\icons\\node_redefined\\c_quantity.ico"
-            "TargetName" = "8:c_quantity.ico"
-            "Tag" = "8:"
-            "Folder" = "8:_A1034160E36E479E9A4F8FC82EFD0CAD"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -2007,6 +2007,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DB67894AA0A145B09494A053275F1E8E"
+            {
+            "SourcePath" = "8:..\\..\\..\\app\\icons\\node_inherited\\c_dv_ordinal.ico"
+            "TargetName" = "8:c_dv_ordinal.ico"
+            "Tag" = "8:"
+            "Folder" = "8:_DC81223EBC0E4EF29624ACE0B56AC64C"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DBDCA1447FA7443381D477F055F6FD19"
             {
             "SourcePath" = "8:..\\..\\..\\app\\icons\\node_normal\\cadl_include.ico"
@@ -2033,26 +2053,6 @@
             "TargetName" = "8:c_attribute_multiple_optional.ico"
             "Tag" = "8:"
             "Folder" = "8:_CBB4D6DFB53F4C65AA810346C1D786C4"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E1D9B1039D2D40BEA591BBD78D8A80FB"
-            {
-            "SourcePath" = "8:..\\..\\..\\app\\icons\\node_redefined\\c_ordinal.ico"
-            "TargetName" = "8:c_ordinal.ico"
-            "Tag" = "8:"
-            "Folder" = "8:_A1034160E36E479E9A4F8FC82EFD0CAD"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
