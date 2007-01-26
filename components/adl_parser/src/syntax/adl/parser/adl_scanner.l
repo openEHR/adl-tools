@@ -106,11 +106,11 @@ creation
 				in_lineno := in_lineno + 1
 			}
 
-^[Dd][Ee][Ff][Ii][Nn][Ii][Tt][Ii][Oo][Nn][ \t\r]*\n		{
-				last_token := SYM_DEFINITION
-				set_start_condition(IN_CADL_SECTION)
+^[Ll][Aa][Nn][Gg][Uu][Aa][Gg][Ee][ \t\r]*\n 	{
+				last_token := SYM_LANGUAGE
+				set_start_condition(IN_DADL_SECTION)
 				in_lineno := in_lineno + 1
-				definition_text_start_line := in_lineno
+				language_text_start_line := in_lineno
 			}
 
 ^[Dd][Ee][Ss][Cc][Rr][Ii][Pp][Tt][Ii][Oo][Nn][ \t\r]*\n	{
@@ -120,6 +120,12 @@ creation
 				description_text_start_line := in_lineno
 			}
 
+^[Dd][Ee][Ff][Ii][Nn][Ii][Tt][Ii][Oo][Nn][ \t\r]*\n		{
+				last_token := SYM_DEFINITION
+				set_start_condition(IN_CADL_SECTION)
+				in_lineno := in_lineno + 1
+				definition_text_start_line := in_lineno
+			}
 
 ^[Ii][Nn][Vv][Aa][Rr][Ii][Aa][Nn][Tt][ \t\r]*\n	{
 				last_token := SYM_INVARIANT
@@ -136,7 +142,8 @@ creation
 			}
 
 <IN_DADL_SECTION>{
-	^[Dd][Ee][Ff][Ii][Nn][Ii][Tt][Ii][Oo][Nn][ \t\r]*\n { -- line starting with "definition"
+	^[Dd][Ee][Ss][Cc][Rr][Ii][Pp][Tt][Ii][Oo][Nn][ \t\r]*\n	|
+	^[Dd][Ee][Ff][Ii][Nn][Ii][Tt][Ii][Oo][Nn][ \t\r]*\n { -- line starting with "definition" or "description"
 				-- unread the pattern just matched
 				a_text := text
 				from i := text_count until i < 1 loop
@@ -269,15 +276,6 @@ feature -- Initialization
 
 feature -- Access
 
-	-- last_string_value: STRING
-
-	-- last_character_value: CHARACTER
-
-	-- last_integer_value: INTEGER
-
-	-- last_real_value: REAL
-
-
 	in_buffer: STRING
 			-- Buffer for lexial tokens
 
@@ -291,6 +289,8 @@ feature -- Access
 			-- flag set by parser when inside constraint block
 			-- needed so scanner can present some keywords just as
 			-- identifiers
+
+	language_text_start_line: INTEGER
 
 	description_text_start_line: INTEGER
 

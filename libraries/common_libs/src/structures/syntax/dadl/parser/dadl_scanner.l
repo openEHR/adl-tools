@@ -286,36 +286,6 @@ P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])? {
 				in_buffer.append_string (text)
 	}
 
-	&[a-zA-Z][a-zA-Z0-9_]+;	{	-- match ISO special character pattern &char_name;
-				-- look up the code in an ISO table
-				-- if a valid code then
-				-- 	convert to actual character?
-				--	in_buffer.append_character (converted character)
-				-- else
-				--	last_token := ERR_STRING
-				--	set_start_condition (INITIAL)
-				-- end
-			
-				-- current simple approach: just copy the pattern into the buffer
-				--
-				in_buffer.append_string (text)
-	}
-
-	&#x[a-fA-F0-9]{4};	{	-- match W3C XML special character pattern &#xHHHH;
-				-- look up the code in an W3C table
-				-- if a valid code then
-				-- 	convert to actual character?
-				--	in_buffer.append_character (converted character)
-				-- else
-				--	last_token := ERR_STRING
-				--	set_start_condition (INITIAL)
-				-- end
-			
-				-- current simple approach: just copy the pattern into the buffer
-				--
-				in_buffer.append_string (text)
-			}
-
 	[^\\\n"]+		in_buffer.append_string (text)
 
 	\n[ \t\r]*	{
@@ -345,38 +315,12 @@ P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])? {
 
 ----------/* characters */ -------------------------------------------------
 \'[^\\\n']\'			last_token := V_CHARACTER; last_character_value := text_item (2)
+-- \'{UTF8CHAR}\'			last_token := V_CHARACTER; last_character_value := text.to_character
 \'\\n\'				last_token := V_CHARACTER; last_character_value := '%N'
 \'\\r\'				last_token := V_CHARACTER; last_character_value := '%R'
 \'\\t\'				last_token := V_CHARACTER; last_character_value := '%T'
-\'\\f\'				last_token := V_CHARACTER; last_character_value := '%F'
 \'\\'\'				last_token := V_CHARACTER; last_character_value := '%''
 \'\\\\'				last_token := V_CHARACTER; last_character_value := '%H'
-\'\\\"\'				last_token := V_CHARACTER; last_character_value := '"'
-\'\\[0-9]+\'		{
-						code_ := text_substring (4, text_count - 1).to_integer
-						last_token := V_CHARACTER
-						last_character_value := code_.to_character
-				}
-\'&[a-zA-Z0-9_]+;\'	{	-- match ISO special character pattern &char_name;
-				-- look up the code in an ISO table
-				-- if a valid code then
-				--	last_token := V_CHARACTER
-				-- 	convert to actual character?
-				--	last_character_value := converted character
-				-- else
-				--	last_token := ERR_CHARACTER
-				-- end
-			}
-\'&#x[a-fA-F0-9]{4};\'	{	-- match W3C XML special character pattern &#xHHHH;
-				-- look up the code in an W3C table
-				-- if a valid code then
-				--	last_token := V_CHARACTER
-				-- 	convert to actual character?
-				--	last_character_value := converted character
-				-- else
-				--	last_token := ERR_CHARACTER
-				-- end
-			}
 
 \'.{1,2}			|
 \'\\[0-9]+(\/)?	last_token := ERR_CHARACTER	-- Catch-all rules (no backing up)

@@ -5353,5 +5353,5 @@ feature {NONE} -- Implementation
 
 	indent: STRING
 	str: STRING
-	
+
 end

@@ -44,8 +44,18 @@ creation
 	make
 %}
 
+--------------- Definitions --------------
+ALPHANUM [a-zA-Z0-9]
+IDCHAR [a-zA-Z0-9_]
+NAMECHAR [a-zA-Z0-9._\-]
+NAMECHAR_SPACE [a-zA-Z0-9._\- ]
+NAMECHAR_PAREN [a-zA-Z0-9._\-()]
+
+UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x80-\xBF][\x80-\xBF])|(\xF0[\x90-\xBF][\x80-\xBF][\x80-\xBF])|([\xF1-\xF7][\x80-\xBF][\x80-\xBF][\x80-\xBF]))
+
+--------------- Options ------------
 %x IN_STR
-%option nodefault outfile="og_path_scanner.e"
+%option outfile="og_path_scanner.e"
 
 %%
 
@@ -62,24 +72,13 @@ creation
 "//"			last_token := SYM_MOVABLE_LEADER
 
 ----------/* term code reference */ -------------------------------------------------
-\[[a-zA-Z0-9][a-zA-Z0-9._\-]*\]	{
+\[{ALPHANUM}{NAMECHAR}*\]	{
 					last_token := V_LOCAL_TERM_CODE_REF
 					last_string_value := text_substring (2, text_count - 1)
 			}
 
 ----------/* identifiers */ -------------------------------------------------
-[A-Z][a-zA-Z0-9_]*	{
-					last_token := V_TYPE_IDENTIFIER
-					last_string_value := text
-			}
-
-[a-z][a-zA-Z0-9_]*[	 ]*\(\)	{
-					last_token := V_FEATURE_CALL_IDENTIFIER
-					last_string_value := text_substring(1, text_count - 2)
-					last_string_value.right_adjust
-			}
-
-[a-z][a-zA-Z0-9_]*	{
+[a-z]{IDCHAR}*	{
 					last_token := V_ATTRIBUTE_IDENTIFIER
 					last_string_value := text
 			}
@@ -89,45 +88,31 @@ creation
 				last_token := V_STRING
 				last_string_value := text_substring (2, text_count - 1)
 			}
+
 \"[^\\\n"]*		{				-- beginning of a string
 				if text_count > 1 then
 					in_buffer.append_string (text_substring (2, text_count))
 				end
 				set_start_condition (IN_STR)
 			}
-<IN_STR>\\\\		in_buffer.append_character ('\')
-<IN_STR>\\\"		in_buffer.append_character ('"')
-<IN_STR>&[a-zA-Z][a-zA-Z0-9_]*;	{	-- match ISO special character pattern &char_name;
-				-- look up the code in an ISO table
-				-- if a valid code then
-				-- 	convert to actual character?
-				--	in_buffer.append_character (converted character)
-				-- else
-				--	last_token := ERR_STRING
-				--	set_start_condition (INITIAL)
-				-- end
-			
-				-- current simple approach: just copy the pattern into the buffer
-				--
+
+<IN_STR> {
+	\\\\		in_buffer.append_character ('\')
+
+	\\\"		in_buffer.append_character ('"')
+
+	{UTF8CHAR}+ {
 				in_buffer.append_string (text)
+	}
+
+	[^\\\n"]+		in_buffer.append_string (text)
+
+	\n[ \t\r]*	{
+				in_lineno := in_lineno + 1	-- match LF in line
+				in_buffer.append_character ('%N')
 			}
-<IN_STR>&#x([a-fA-F0-9_]){4};	{	-- match W3C XML special character pattern &#xHHHH;
-				-- look up the code in an W3C table
-				-- if a valid code then
-				-- 	convert to actual character?
-				--	in_buffer.append_character (converted character)
-				-- else
-				--	last_token := ERR_STRING
-				--	set_start_condition (INITIAL)
-				-- end
-			
-				-- current simple approach: just copy the pattern into the buffer
-				--
-				in_buffer.append_string (text)
-			}
-<IN_STR>[^\\\n"]+		in_buffer.append_string (text)
-<IN_STR>\\\n[ \t\r]*	in_lineno := in_lineno + 1	-- match LF in line
-<IN_STR>[^\n"]*\"	{						-- match final end of string
+
+	[^\\\n"]*\"	{						-- match final end of string
 				last_token := V_STRING
 				if text_count > 1 then
 					in_buffer.append_string (text_substring (1, text_count - 1))
@@ -135,15 +120,16 @@ creation
 				str_ := STRING_.make (in_buffer.count)
 				str_.append_string (in_buffer)
 				in_buffer.wipe_out
-				last_any_value := str_
+				last_string_value := str_
 				set_start_condition (INITIAL)
 			}
-<IN_STR>.|\n			|
-<IN_STR><<EOF>>	{	-- Catch-all rules (no backing up)
+	.|\n			|
+
+	<<EOF>>	{	-- Catch-all rules (no backing up)
 				last_token := ERR_STRING
 				set_start_condition (INITIAL)
 			}
-
+}
 
 --------------------------------------------------------------------------------
 <<EOF>>			terminate

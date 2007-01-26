@@ -44,7 +44,8 @@ creation
 %token <STRING> V_VERSION_STRING
 
 %token SYM_ARCHETYPE SYM_CONCEPT SYM_SPECIALIZE
-%token SYM_DEFINITION SYM_DESCRIPTION SYM_ONTOLOGY SYM_INVARIANT
+%token SYM_DEFINITION SYM_LANGUAGE
+%token SYM_DESCRIPTION SYM_ONTOLOGY SYM_INVARIANT
 %token SYM_ADL_VERSION SYM_IS_CONTROLLED
 
 %%
@@ -62,6 +63,7 @@ input: archetype
 archetype: arch_identification 
 	   	arch_specialisation 
 		arch_concept 
+		arch_language 
 		arch_description 
 		arch_definition 
 		arch_invariant
@@ -125,6 +127,19 @@ arch_concept: SYM_CONCEPT V_LOCAL_TERM_CODE_REF
 		{
 			raise_error
 			report_error("In 'concept' clause; expecting TERM_CODE reference")
+			abort
+		}
+	;
+
+arch_language: -- empty is ok for ADL 1.4 tools
+	| SYM_LANGUAGE V_DADL_TEXT
+		{
+			language_text := $2
+		}
+	| SYM_LANGUAGE error
+		{
+			raise_error
+			report_error("Error in language section")
 			abort
 		}
 	;
@@ -215,11 +230,7 @@ feature {YY_PARSER_ACTION} -- Basic Operations
 			else
 				error_text.append ("line ")
 			end
-			error_text.append_integer (in_lineno)
-			error_text.append (": ")
-			error_text.append (a_message)
-			error_text.append (" [last token = " + token_name(last_token) + "]")
-			error_text.append_character ('%N')
+			error_text.append_integer (in_lineno + ": " + a_message + " [last token = " + token_name(last_token) + "]%N")
 		end
 
 feature -- Parse Output
@@ -233,6 +244,8 @@ feature -- Parse Output
 	parent_archetype_id: ARCHETYPE_ID
 
 	concept: STRING
+
+	language_text: STRING
 
 	description_text: STRING
 

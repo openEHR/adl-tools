@@ -69,6 +69,7 @@ NAMECHAR_PAREN [a-zA-Z0-9._\-()]
 
 UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x80-\xBF][\x80-\xBF])|(\xF0[\x90-\xBF][\x80-\xBF][\x80-\xBF])|([\xF1-\xF7][\x80-\xBF][\x80-\xBF][\x80-\xBF]))
 
+--------------- Options --------------
 %x IN_STR IN_REGEXP1 IN_REGEXP2 IN_TERM_CONSTRAINT IN_C_DOMAIN_TYPE
 %option outfile="cadl_scanner.e"
 
@@ -223,24 +224,25 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 				assumed_term_code_index := 0
 			}
 
-<IN_TERM_CONSTRAINT>[ \t]*[a-zA-Z0-9._\-]+[ \t]*;[ \t\n]* {
+<IN_TERM_CONSTRAINT> {
+	[ \t]*[a-zA-Z0-9._\-]+[ \t]*;[ \t\n]* {
 				str_ := text
 				in_buffer.append(text)
 				term_code_count := term_code_count + 1
 				assumed_term_code_index := term_code_count
 			}
 
-<IN_TERM_CONSTRAINT>[ \t]*[a-zA-Z0-9._\-]+[ \t]*,[ \t\n]* {
+	[ \t]*[a-zA-Z0-9._\-]+[ \t]*,[ \t\n]* {
 				str_ := text
 				in_buffer.append(text)
 				term_code_count := term_code_count + 1
 			}
 
-<IN_TERM_CONSTRAINT>\-\-[^\],\n]*\n {
+	\-\-[^\],\n]*\n {
 				do_nothing
 			}
 
-<IN_TERM_CONSTRAINT>[ \t]*[a-zA-Z0-9._\-]*[ \t\n]*\] {
+	[ \t]*[a-zA-Z0-9._\-]*[ \t\n]*\] {
 				if assumed_term_code_index > 0 and assumed_term_code_index /= term_code_count then
 					last_token := ERR_TERM_CODE_CONSTRAINT
 				else
@@ -256,6 +258,7 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 				end
 				set_start_condition (INITIAL)
 			}
+}
 
 
 ----------/* V_LOCAL_CODE */ ----------------------------------------
@@ -371,11 +374,12 @@ P[yY]?[mM]?[Ww]?[dD]? {
 				in_buffer.append_string (text)
 			}
 
-<IN_C_DOMAIN_TYPE>[^}>]*>[	 \n]*[^>}A-Z] { -- match up to next > not followed by a '}' or '>' 
+<IN_C_DOMAIN_TYPE> {
+	[^}>]*>[	 \n]*[^>}A-Z] { -- match up to next > not followed by a '}' or '>' 
  				in_buffer.append_string (text)
  			}
 
-<IN_C_DOMAIN_TYPE>[^}>]*>+[	 \n]*[}A-Z] 	{ -- final section - '...> whitespace } or beginning of a type identifier'
+	[^}>]*>+[	 \n]*[}A-Z] 	{ -- final section - '...> whitespace } or beginning of a type identifier'
 				-- get the entire section of dADL
 				in_buffer.append_string (text)
 				unread_character(in_buffer.item(in_buffer.count)) -- put back the last character 
@@ -416,9 +420,10 @@ P[yY]?[mM]?[Ww]?[dD]? {
 				set_start_condition (INITIAL)
  			}
 
-<IN_C_DOMAIN_TYPE>[^}>]*[	 \n]*} 			{ -- match up to next '}' not preceded by a '>'
+	[^}>]*[	 \n]*} 			{ -- match up to next '}' not preceded by a '>'
  				in_buffer.append_string (text)
   			}
+}
 
 ----------/* V_TYPE_IDENTIFIER */ -------------------------------------------------
 [A-Z]{IDCHAR}*	{
@@ -449,11 +454,12 @@ P[yY]?[mM]?[Ww]?[dD]? {
 				in_buffer.append_character ('/')
 			}
 
-<IN_REGEXP1>[^/]*\\\/	{ 		-- match any segments with quoted slashes
+<IN_REGEXP1> {
+	[^/]*\\\/	{ 		-- match any segments with quoted slashes
 				in_buffer.append_string (text)
 			}
 
-<IN_REGEXP1>[^/}]*\/	{ 		-- match final segment
+	[^/}]*\/	{ 		-- match final segment
 				in_buffer.append_string (text)
 				str_ := STRING_.make (in_buffer.count)
 				str_.append_string (in_buffer)
@@ -462,6 +468,7 @@ P[yY]?[mM]?[Ww]?[dD]? {
  				last_token := V_REGEXP
 				set_start_condition (INITIAL)
  			}
+}
 
 \^[^^\n]*\^		{	-- regexp formed using '^' delimiters
  				last_token := V_REGEXP
@@ -522,50 +529,31 @@ P[yY]?[mM]?[Ww]?[dD]? {
 				last_token := V_STRING
 				last_string_value := text_substring (2, text_count - 1)
 			}
+
 \"[^\\\n"]*		{				-- beginning of a string
 				if text_count > 1 then
 					in_buffer.append_string (text_substring (2, text_count))
 				end
 				set_start_condition (IN_STR)
 			}
-<IN_STR>\\\\		in_buffer.append_character ('\')
-<IN_STR>\\\"		in_buffer.append_character ('"')
-<IN_STR>&[a-zA-Z][a-zA-Z0-9_]*;	{	-- match ISO special character pattern &char_name;
-				-- look up the code in an ISO table
-				-- if a valid code then
-				-- 	convert to actual character?
-				--	in_buffer.append_character (converted character)
-				-- else
-				--	last_token := ERR_STRING
-				--	set_start_condition (INITIAL)
-				-- end
-			
-				-- current simple approach: just copy the pattern into the buffer
-				--
-				in_buffer.append_string (text)
-			}
-<IN_STR>&#x([a-fA-F0-9_]){4};	{	-- match W3C XML special character pattern &#xHHHH;
-				-- look up the code in an W3C table
-				-- if a valid code then
-				-- 	convert to actual character?
-				--	in_buffer.append_character (converted character)
-				-- else
-				--	last_token := ERR_STRING
-				--	set_start_condition (INITIAL)
-				-- end
-			
-				-- current simple approach: just copy the pattern into the buffer
-				--
-				in_buffer.append_string (text)
-			}
-<IN_STR>[^\\\n"]+		in_buffer.append_string (text)
 
-<IN_STR>\n[ \t\r]*	{
+<IN_STR> {
+	\\\\		in_buffer.append_character ('\')
+
+	\\\"		in_buffer.append_character ('"')
+
+	{UTF8CHAR}+ {
+				in_buffer.append_string (text)
+	}
+
+	[^\\\n"]+		in_buffer.append_string (text)
+
+	\n[ \t\r]*	{
 				in_lineno := in_lineno + 1	-- match LF in line
-				in_buffer.append_string (text)
+				in_buffer.append_character ('%N')
 			}
 
-<IN_STR>[^\n"]*\"	{						-- match final end of string
+	[^\\\n"]*\"	{						-- match final end of string
 				last_token := V_STRING
 				if text_count > 1 then
 					in_buffer.append_string (text_substring (1, text_count - 1))
@@ -576,49 +564,25 @@ P[yY]?[mM]?[Ww]?[dD]? {
 				last_string_value := str_
 				set_start_condition (INITIAL)
 			}
-<IN_STR>.|\n			|
-<IN_STR><<EOF>>	{	-- Catch-all rules (no backing up)
+	.|\n			|
+
+	<<EOF>>	{	-- Catch-all rules (no backing up)
 				last_token := ERR_STRING
 				set_start_condition (INITIAL)
 			}
-
+}
 
 ----------/* characters */ -------------------------------------------------
-\'[^\\\n']\'		last_token := V_CHARACTER; last_character_value := text_item (2)
-\'\\n\'			last_token := V_CHARACTER; last_character_value := '%N'
-\'\\r\'			last_token := V_CHARACTER; last_character_value := '%R'
-\'\\t\'			last_token := V_CHARACTER; last_character_value := '%T'
-\'\\f\'			last_token := V_CHARACTER; last_character_value := '%F'
-\'\\'\'			last_token := V_CHARACTER; last_character_value := '%''
-\'\\\\'			last_token := V_CHARACTER; last_character_value := '%H'
-\'\\\"\'			last_token := V_CHARACTER; last_character_value := '"'
-\'\\[0-9]+\'	{
-				code_ := text_substring (4, text_count - 1).to_integer
-				last_token := V_CHARACTER
-				last_character_value := code_.to_character
-			}
-\'&[a-zA-Z0-9_]+;\'	{	-- match ISO special character pattern &char_name;
-				-- look up the code in an ISO table
-				-- if a valid code then
-				--	last_token := V_CHARACTER
-				-- 	convert to actual character?
-				--	last_character_value := converted character
-				-- else
-				--	last_token := ERR_CHARACTER
-				-- end
-			}
-\'&#x([a-fA-F0-9_]){4};\'	{	-- match W3C XML special character pattern &#xHHHH;
-				-- look up the code in an W3C table
-				-- if a valid code then
-				--	last_token := V_CHARACTER
-				-- 	convert to actual character?
-				--	last_character_value := converted character
-				-- else
-				--	last_token := ERR_CHARACTER
-				-- end
-			}
-\'.{1,2}		|
-\'\\[0-9]+(\/)?		last_token := ERR_CHARACTER	-- Catch-all rules (no backing up)
+\'[^\\\n']\'			last_token := V_CHARACTER; last_character_value := text_item (2)
+-- \'{UTF8CHAR}\'			last_token := V_CHARACTER; last_character_value := text.to_character
+\'\\n\'				last_token := V_CHARACTER; last_character_value := '%N'
+\'\\r\'				last_token := V_CHARACTER; last_character_value := '%R'
+\'\\t\'				last_token := V_CHARACTER; last_character_value := '%T'
+\'\\'\'				last_token := V_CHARACTER; last_character_value := '%''
+\'\\\\'				last_token := V_CHARACTER; last_character_value := '%H'
+
+\'.{1,2}			|
+\'\\[0-9]+(\/)?	last_token := ERR_CHARACTER	-- Catch-all rules (no backing up)
 
 --------------------------------------------------------------------------------
 <<EOF>>			terminate
