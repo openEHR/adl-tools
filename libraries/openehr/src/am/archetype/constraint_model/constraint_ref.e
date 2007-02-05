@@ -53,6 +53,7 @@ feature -- Access
 			-- reference to another constraint object containing the logical
 			-- constraints for this object, defined outside the archetype,
 			-- usually in the ontology section of an ADL archetype
+			-- [called 'reference' in AOM, but that is a keyword in Eiffel]
 
 feature -- Status Report
 

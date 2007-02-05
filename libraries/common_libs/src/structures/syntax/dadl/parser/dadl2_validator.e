@@ -4341,7 +4341,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 1138")
 end
 
-			create term.make(yyvs4.item (yyvsp4))
+			create term.make_from_string(yyvs4.item (yyvsp4))
 			yyval11 := term
 		
 if yy_parsing_status = yyContinue then
@@ -5297,16 +5297,11 @@ feature {YY_PARSER_ACTION} -- Basic Operations
 		do
 			f_buffer ?= input_buffer
 			if f_buffer /= Void then
-				error_text.append (f_buffer.file.name)
-				error_text.append (", line ")
+				error_text.append (f_buffer.file.name + ", line ")
 			else
 				error_text.append ("line ")
 			end
-			error_text.append_integer (in_lineno + source_start_line - 1)
-			error_text.append (": ")
-			error_text.append (a_message)
-			error_text.append (" [last token = " + token_name(last_token) + "]")
-			error_text.append_character ('%N')
+			error_text.append ((in_lineno + source_start_line - 1).out + ": " + a_message + " [last token = " + token_name(last_token) + "]%N")
 		end
 
 feature -- Access

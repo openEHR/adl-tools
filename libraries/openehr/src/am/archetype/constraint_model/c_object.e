@@ -29,12 +29,19 @@ inherit
 		undefine
 			default_create
 		end
+	
+	CONSTRAINT_MODEL_COMMON
+		export
+			{NONE} all
+		undefine
+			default_create
+		end
 
 feature -- Initialisation
 
 	default_create is
 		do
-			create occurrences.make_bounded (1, 1, True, True)
+			occurrences := default_occurrences.deep_twin
 		end
 		
 feature -- Access
@@ -95,6 +102,12 @@ feature -- Status Report
 			else
 				Result := True
 			end
+		end
+		
+	is_occurrences_default: BOOLEAN is 
+			-- True if occurrences is set at default value
+		do
+			Result := occurrences.is_equal(default_occurrences)
 		end
 		
 feature -- Modification

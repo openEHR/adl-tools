@@ -1,7 +1,8 @@
 indexing
 	component:   "openEHR Reusable Libraries"
 	description: "[
-			     Error database abstraction
+			     Error database abstraction. Subtypes can be easily turned into a file that is read in as
+			     a dADL text.
 				 ]"
 	keywords:    "error status reporting"
 

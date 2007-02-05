@@ -109,9 +109,15 @@ feature -- Modification
 			Key_valid: a_key /= Void and then not a_key.is_empty
 			Value_valid: a_value /= Void and then not a_value.is_empty
 		do
-			original_author.put(a_value, a_key)
+			original_author.force(a_value, a_key)
 		ensure
 			Original_author_set: original_author.item(a_key) = a_value
+		end
+		
+	clear_original_author is
+			-- wipeout current items in original_author list
+		do
+			create original_author.make(0)
 		end
 		
 	add_other_contributor(a_contributor: STRING) is
@@ -126,6 +132,12 @@ feature -- Modification
 		ensure
 			Other_contributor_set: other_contributors.has(a_contributor)
 		end
+		
+	clear_other_contributors is
+			-- wipeout current items in other_contributors list
+		do
+			create other_contributors.make(0)
+		end	
 		
 	set_resource_package_uri(a_uri: STRING) is
 			-- set resource_package_uri
@@ -160,7 +172,13 @@ feature -- Modification
 		ensure
 			Details_set: details.has(a_language)
 		end
-		
+	
+	clear_details is
+			-- wipeout current items in details list
+		do
+			create details.make(0)
+		end		
+	
 	add_other_detail(a_key, a_value: STRING) is
 			-- add the key, value pair to other_details
 		require
@@ -170,7 +188,7 @@ feature -- Modification
 			if other_details = Void then
 				create other_details.make(0)
 			end
-			other_details.put(a_value, a_key)
+			other_details.force(a_value, a_key)
 		ensure
 			Other_details_set: other_details.item(a_key) = a_value
 		end

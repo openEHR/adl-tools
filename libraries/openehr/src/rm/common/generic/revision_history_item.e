@@ -27,7 +27,7 @@ feature -- Access
 	version_id: OBJECT_VERSION_ID	
 			-- Version identifier for this revision.
 
-	audits: LIST[AUDIT_DETAILS	]
+	audits: LIST[AUDIT_DETAILS]
 			-- The audits for this revision; there will always be at least one commit audit 
 			-- (which may itself be an ATTESTATION), there may also be further attestations
 

@@ -12,7 +12,7 @@ indexing
 	last_change: "$LastChangedDate$"
 
 
-class ADL_TEST_ARCHETYPE_TREE_CONTROL
+class GUI_TEST_ARCHETYPE_TREE_CONTROL
 
 inherit	
 	SHARED_ARCHETYPE_DIRECTORY

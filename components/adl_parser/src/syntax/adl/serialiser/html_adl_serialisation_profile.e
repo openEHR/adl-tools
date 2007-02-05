@@ -38,6 +38,7 @@ feature {NONE} -- Implementation
 			Result.put("controlled",	SYM_IS_CONTROLLED)
 			Result.put("concept",		SYM_CONCEPT)
 			Result.put("specialize",	SYM_SPECIALIZE)
+			Result.put("language",		SYM_LANGUAGE)
 			Result.put("description",	SYM_DESCRIPTION)
 			Result.put("definition",	SYM_DEFINITION)
 			Result.put("invariant",		SYM_INVARIANT)

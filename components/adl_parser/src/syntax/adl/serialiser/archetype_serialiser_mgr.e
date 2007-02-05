@@ -35,14 +35,15 @@ feature -- Initialisation
 
 feature -- Command
 
-	serialise(desc_serialised, def_serialised, inv_serialised, ont_serialised: STRING) is
+	serialise(lang_serialised, desc_serialised, def_serialised, inv_serialised, ont_serialised: STRING) is
 			-- start the serialisation process; the result will be in `serialiser_output'
 		require
+			lang_serialised /= Void
 			desc_serialised /= Void
 			def_serialised /= Void
 			ont_serialised /= Void
 		do
-			serialiser.serialise(target, desc_serialised, def_serialised, inv_serialised, ont_serialised)
+			serialiser.serialise(target, lang_serialised, desc_serialised, def_serialised, inv_serialised, ont_serialised)
 		end
 
 feature -- Access

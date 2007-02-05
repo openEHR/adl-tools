@@ -99,7 +99,7 @@ creation
 %type <STRING> type_identifier
 %type <OG_PATH> absolute_path relative_path
 %type <INTEGER> cardinality_limit_value
-%type <OE_INTERVAL[INTEGER]> c_occurrences c_existence
+%type <OE_INTERVAL[INTEGER]> c_occurrences c_existence occurrence_spec
 %type <C_PRIMITIVE_OBJECT> c_primitive_object
 %type <C_PRIMITIVE> c_primitive
 %type <EXPR_ITEM> boolean_expression boolean_node boolean_leaf
@@ -293,14 +293,21 @@ c_object: c_complex_object
 		}
 	;
 
-archetype_internal_ref: SYM_USE_NODE type_identifier absolute_path 
+archetype_internal_ref: SYM_USE_NODE type_identifier c_occurrences absolute_path 
 		{
-			str := $3.as_string
-			create archetype_internal_ref.make($2, str)
+			create archetype_internal_ref.make($2, $4.as_string)
+			if not c_occurrences_default then
+				archetype_internal_ref.set_occurrences($3)
+			end
 
 			debug("ADL_parse")
-				io.put_string(indent + "create ARCHETYPE_INTERNAL_REF " + 
-						archetype_internal_ref.rm_type_name + " path=" + archetype_internal_ref.target_path + "%N") 
+				io.put_string(indent + "create ARCHETYPE_INTERNAL_REF ")
+				if archetype_internal_ref.use_target_occurrences then
+					io.put_string("occurrences=(use target) ")
+				else
+					io.put_string("occurrences=" + archetype_internal_ref.occurrences.as_string + " ")
+				end
+				io.put_string(archetype_internal_ref.rm_type_name + " path=" + archetype_internal_ref.target_path + "%N") 
 				io.put_string(indent + "C_ATTR " + c_attrs.item.rm_attribute_name + " put_child(ARCHETYPE_INTERNAL_REF)%N") 
 			end
 
@@ -1019,10 +1026,12 @@ c_occurrences:  -- default to 1..1
 		{
 			int_interval := default_occurrences
 			$$ := int_interval
+			c_occurrences_default := True
 		}
 	| SYM_OCCURRENCES SYM_MATCHES SYM_START_CBLOCK occurrence_spec SYM_END_CBLOCK	
 		{
-			$$ := int_interval
+			$$ := $4
+			c_occurrences_default := False
 		}
 	| SYM_OCCURRENCES error
 		{
@@ -1040,6 +1049,7 @@ occurrence_spec: cardinality_limit_value 	-- single integer or '*'
 				create int_interval.make_upper_unbounded(0, True)
 				cardinality_limit_pos_infinity := False
 			end
+			$$ := int_interval
 		}
 	| V_INTEGER SYM_ELLIPSIS cardinality_limit_value 
 		{
@@ -1049,6 +1059,7 @@ occurrence_spec: cardinality_limit_value 	-- single integer or '*'
 			else
 				create int_interval.make_bounded($1, $3, True, True)
 			end
+			$$ := int_interval
 		}
 	;
 
@@ -1142,7 +1153,7 @@ c_real: c_real_spec
 		}
 	;
 
-c_date_spec: V_ISO8601_DATE_CONSTRAINT_PATTERN
+c_date_constraint: V_ISO8601_DATE_CONSTRAINT_PATTERN
 		{
 			if valid_iso8601_date_constraint_pattern($1) then
 				create c_date.make_from_pattern($1)
@@ -1176,8 +1187,8 @@ c_date_spec: V_ISO8601_DATE_CONSTRAINT_PATTERN
 		}
 	;
 
-c_date: c_date_spec
-	| c_date_spec ';' date_value
+c_date: c_date_constraint
+	| c_date_constraint ';' date_value
 		{
 			if c_date.valid_value($3) then
 				c_date.set_assumed_value($3)
@@ -1187,7 +1198,7 @@ c_date: c_date_spec
 				abort
 			end
 		}
-	| c_date_spec ';' error
+	| c_date_constraint ';' error
 		{
 			raise_error
 			report_error("invalid assumed value; must be valid ISO8601 date")
@@ -1195,7 +1206,7 @@ c_date: c_date_spec
 		}
 	;
 
-c_time_spec: V_ISO8601_TIME_CONSTRAINT_PATTERN
+c_time_constraint: V_ISO8601_TIME_CONSTRAINT_PATTERN
 		{
 			if valid_iso8601_time_constraint_pattern($1) then
 				create c_time.make_from_pattern($1)
@@ -1229,8 +1240,8 @@ c_time_spec: V_ISO8601_TIME_CONSTRAINT_PATTERN
 		}
 	;
 
-c_time: c_time_spec
-	| c_time_spec ';' time_value
+c_time: c_time_constraint
+	| c_time_constraint ';' time_value
 		{
 			if c_time.valid_value($3) then
 				c_time.set_assumed_value($3)
@@ -1240,7 +1251,7 @@ c_time: c_time_spec
 				abort
 			end
 		}
-	| c_time_spec ';' error
+	| c_time_constraint ';' error
 		{
 			raise_error
 			report_error("invalid assumed value; must be valid ISO8601 time")
@@ -1248,7 +1259,7 @@ c_time: c_time_spec
 		}
 	;
 
-c_date_time_spec: V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN
+c_date_time_constraint: V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN
 		{
 			if valid_iso8601_date_time_constraint_pattern($1) then
 				create c_date_time.make_from_pattern($1)
@@ -1282,8 +1293,8 @@ c_date_time_spec: V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN
 		}
 	;
 
-c_date_time: c_date_time_spec
-	| c_date_time_spec ';' date_time_value
+c_date_time: c_date_time_constraint
+	| c_date_time_constraint ';' date_time_value
 		{
 			if c_date_time.valid_value($3) then
 				c_date_time.set_assumed_value($3)
@@ -1293,7 +1304,7 @@ c_date_time: c_date_time_spec
 				abort
 			end
 		}
-	| c_date_time_spec ';' error
+	| c_date_time_constraint ';' error
 		{
 			raise_error
 			report_error("invalid assumed value; must be valid ISO8601 date_time")
@@ -1301,7 +1312,7 @@ c_date_time: c_date_time_spec
 		}
 	;
 
-c_duration_spec: V_ISO8601_DURATION_CONSTRAINT_PATTERN
+c_duration_constraint: V_ISO8601_DURATION_CONSTRAINT_PATTERN
 		{
 			if valid_iso8601_duration_constraint_pattern($1) then
 				create c_duration.make_from_pattern($1)
@@ -1322,8 +1333,8 @@ c_duration_spec: V_ISO8601_DURATION_CONSTRAINT_PATTERN
 		}
 	;
 
-c_duration: c_duration_spec
-	| c_duration_spec ';' duration_value
+c_duration: c_duration_constraint
+	| c_duration_constraint ';' duration_value
 		{
 			if c_duration.valid_value($3) then
 				c_duration.set_assumed_value($3)
@@ -1333,7 +1344,7 @@ c_duration: c_duration_spec
 				abort
 			end
 		}
-	| c_duration_spec ';' error
+	| c_duration_constraint ';' error
 		{
 			raise_error
 			report_error("invalid assumed value; must be valid ISO8601 duration")
@@ -1446,7 +1457,7 @@ ordinal: integer_value SYM_INTERVAL_DELIM V_QUALIFIED_TERM_CODE_REF
 			if ordinal_node = Void then
 				create ordinal_node.make
 			end
-			create a_code_phrase.make($3)
+			create a_code_phrase.make_from_string($3)
 			ordinal_node.add_item(create {ORDINAL}.make($1, a_code_phrase))
 		}
 	;
@@ -1980,7 +1991,7 @@ duration_interval_value: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration
 
 term_code: V_QUALIFIED_TERM_CODE_REF
 		{
-			create term.make($1)
+			create term.make_from_string($1)
 			$$ := term
 		}
 	| ERR_V_QUALIFIED_TERM_CODE_REF
@@ -2059,16 +2070,11 @@ feature {YY_PARSER_ACTION} -- Basic Operations
 		do
 			f_buffer ?= input_buffer
 			if f_buffer /= Void then
-				error_text.append (f_buffer.file.name)
-				error_text.append (", line ")
+				error_text.append (f_buffer.file.name + ", line ")
 			else
 				error_text.append ("line ")
 			end
-			error_text.append_integer (in_lineno + source_start_line - 1)
-			error_text.append (": ")
-			error_text.append (a_message)
-			error_text.append (" [last token = " + token_name(last_token) + "]")
-			error_text.append_character ('%N')
+			error_text.append ((in_lineno + source_start_line - 1).out + ": " + a_message + " [last token = " + token_name(last_token) + "]%N")
 		end
 
 feature -- Access
@@ -2141,6 +2147,8 @@ feature {NONE} -- Parse Tree
 
 	rm_attribute_name: STRING
 	occurrences: STRING
+	c_occurrences_default: BOOLEAN
+
 	invariant_expr: STRING
 
 	time_vc: TIME_VALIDITY_CHECKER

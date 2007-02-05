@@ -12,7 +12,7 @@ indexing
 	last_change: "$LastChangedDate$"
 
 
-class ADL_ONTOLOGY_CONTROLS
+class GUI_ONTOLOGY_CONTROLS
 
 inherit
 	SHARED_ADL_INTERFACE

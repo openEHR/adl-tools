@@ -16,6 +16,17 @@ indexing
 
 class ADL_SYNTAX_CONVERTER
 
+inherit
+	OPENEHR_TERMINOLOGY_IDS
+		export
+			{NONE} all
+		end
+		
+	MESSAGE_BILLBOARD
+		export
+			{NONE} all
+		end
+
 feature -- Access
 
 	perform_syntax_upgrade(dadl_text: STRING) is
@@ -26,15 +37,52 @@ feature -- Access
 		local
 			pos: INTEGER
 		do
+		end
+		
+	convert_dadl_language(dadl_text: STRING) is
+			-- converted language = <"xxx"> to language = <[ISO-639::xxx]>
+		require
+			dadl_text /= Void
+		local
+			pos, lpos, rpos: INTEGER
+			rep_str, lang: STRING
+		do
+			-- get type name
+			from
+				pos := dadl_text.substring_index("language = <%"", 1)
+			until
+				pos = 0
+			loop
+				lpos := dadl_text.index_of('"', pos)
+				rpos := dadl_text.index_of('"', lpos+1)
+				lang := dadl_text.substring (lpos+1, rpos-1)
+				rep_str := "[" + Terminology_ISO_639_1 + "::" + lang + "]"
+				dadl_text.replace_substring (rep_str, lpos, rpos)
+				post_info(Current, "convert_dadl_language", "syntax_upgraded_i1", 
+					<<"language = <%"" + lang + "%">", "language = <[" + Terminology_ISO_639_1 + "::" + lang + "]>">>)
+				pos := dadl_text.substring_index("language = <%"", rpos)
+			end
+		end
+
+	convert_c_dv_names(dadl_text: STRING) is
+			-- convert C_QUANTITY and C_ORDINAL in embedded dADL sections of cADL to
+			-- C_DV_QUANTITY and C_DV_ORDINAL
+		require
+			dadl_text /= Void
+		local
+			pos: INTEGER
+		do
 			-- get type name
 			pos := dadl_text.substring_index("C_QUANTITY", 1)
 			if pos > 0 then
 				dadl_text.replace_substring ("C_DV_QUANTITY", pos, pos+("C_QUANTITY").count-1)
 				convert_c_quantity_property(dadl_text)
+				post_info(Current, "convert_dadl_language", "syntax_upgraded_i1", <<"C_QUANTITY", "C_DV_QUANTITY">>)
 			else
 				pos := dadl_text.substring_index("C_ORDINAL", 1)
 				if pos > 0 then
 					dadl_text.replace_substring ("C_DV_ORDINAL", pos, pos+("C_ORDINAL").count-1)
+					post_info(Current, "convert_dadl_language", "syntax_upgraded_i1", <<"C_ORDINAL", "C_DV_ORDINAL">>)
 				end
 			end
 		end
@@ -66,6 +114,7 @@ feature -- Access
 				end
 				
 				dadl_text.replace_substring (new_str, lpos, rpos)
+				post_info(Current, "convert_dadl_language", "syntax_upgraded_i1", <<"property = <%"xxx%">", "language = <[openehr::xxx]>">>)
 			end
 		end
 
@@ -110,6 +159,7 @@ feature -- Access
 				end
 				-- have to insert a 'T' to the right of the cursor
 				Result.insert_character ('T', i+1)
+				post_info(Current, "convert_dadl_language", "syntax_upgraded_i1", <<"ISO 8601 duration", "(missing 'T' added)">>)
 			end	
 		end
 

@@ -21,6 +21,8 @@ inherit
 feature -- Access
 
 	terminology(name: STRING): TERMINOLOGY_ACCESS is
+			-- return a terminology access object for a terminology identified in openEHR by openehr_id
+			-- Allowable names are taken from the US NLM UMLS meta-data list at http://www.nlm.nih.gov/research/umls/metaa1.html
 		require
 			name_valid: name /= Void and then has_terminology(name)
 		do
@@ -31,6 +33,7 @@ feature -- Access
 		end
 
 	code_set(name:STRING): CODE_SET_ACCESS is
+			-- Allowable names are taken from 
 		require
 			name_valid: name /= Void and then has_code_set(name)
 		do
@@ -44,6 +47,7 @@ feature -- Status Report
 
 	has_terminology(name: STRING): BOOLEAN is
 			-- True if terminology with name is known by this service
+			-- Allowable names are taken from the US NLM UMLS meta-data list at http://www.nlm.nih.gov/research/umls/metaa1.html
 		require
 			name_valid: name /= Void and then not name.is_empty
 		do
@@ -51,6 +55,7 @@ feature -- Status Report
 	
 	has_code_set(name: STRING): BOOLEAN is
 			-- True if code set with name is known by this service
+			-- Allowable names are taken from 
 		require
 			name_valid: name /= Void and then not name.is_empty
 		do

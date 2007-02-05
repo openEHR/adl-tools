@@ -64,6 +64,18 @@ feature -- Access
 			Result := 600
 		end
 
+	border_width: INTEGER is 
+			-- `Result' is INTEGER constant named border_width.
+		once
+			Result := 4
+		end
+
+	arch_notebook_min_height: INTEGER is 
+			-- `Result' is INTEGER constant named arch_notebook_min_height.
+		once
+			Result := 500
+		end
+
 	min_entry_control_width: INTEGER is 
 			-- `Result' is INTEGER constant named min_entry_control_width.
 		once
@@ -82,12 +94,6 @@ feature -- Access
 			Result := 100
 		end
 
-	arch_tree_min_height: INTEGER is 
-			-- `Result' is INTEGER constant named arch_tree_min_height.
-		once
-			Result := 60
-		end
-
 	max_arch_explorer_width: INTEGER is 
 			-- `Result' is INTEGER constant named max_arch_explorer_width.
 		once
@@ -103,13 +109,7 @@ feature -- Access
 	min_text_height: INTEGER is 
 			-- `Result' is INTEGER constant named min_text_height.
 		once
-			Result := 50
-		end
-
-	app_max_width: INTEGER is 
-			-- `Result' is INTEGER constant named app_max_width.
-		once
-			Result := 2000
+			Result := 35
 		end
 
 	dialog_border_width: INTEGER is 
@@ -139,7 +139,7 @@ feature -- Access
 	desc_label_width: INTEGER is 
 			-- `Result' is INTEGER constant named desc_label_width.
 		once
-			Result := 100
+			Result := 70
 		end
 
 	app_initial_height: INTEGER is 
@@ -151,13 +151,13 @@ feature -- Access
 	min_combo_box_width: INTEGER is 
 			-- `Result' is INTEGER constant named min_combo_box_width.
 		once
-			Result := 70
+			Result := 55
 		end
 
-	main_vbox_min_height: INTEGER is 
-			-- `Result' is INTEGER constant named main_vbox_min_height.
+	icons: STRING is
+			-- `Result' is DIRECTORY constant named `icons'.
 		once
-			Result := 600
+			Result := "C:\project\openehr\ref_impl_eiffel\apps\adl_workbench\app\icons"
 		end
 
 	editable_colour: EV_COLOR is
@@ -172,16 +172,16 @@ feature -- Access
 			Result := 560
 		end
 
-	app_min_width: INTEGER is 
-			-- `Result' is INTEGER constant named app_min_width.
+	min_list_height: INTEGER is 
+			-- `Result' is INTEGER constant named min_list_height.
 		once
-			Result := 500
+			Result := 50
 		end
 
-	icons: STRING is
-			-- `Result' is DIRECTORY constant named `icons'.
+	main_vbox_min_height: INTEGER is 
+			-- `Result' is INTEGER constant named main_vbox_min_height.
 		once
-			Result := "C:\project\openehr\ref_impl_eiffel\apps\adl_workbench\app\icons"
+			Result := 600
 		end
 
 	status_area_min_height: INTEGER is 
@@ -196,16 +196,16 @@ feature -- Access
 			Result := 15
 		end
 
+	arch_tree_min_height: INTEGER is 
+			-- `Result' is INTEGER constant named arch_tree_min_height.
+		once
+			Result := 60
+		end
+
 	source_notebook_min_height: INTEGER is 
 			-- `Result' is INTEGER constant named source_notebook_min_height.
 		once
 			Result := 200
-		end
-
-	border_width: INTEGER is 
-			-- `Result' is INTEGER constant named border_width.
-		once
-			Result := 4
 		end
 
 	adl_workbench_ico: EV_PIXMAP is
@@ -230,16 +230,16 @@ feature -- Access
 			Result := 100
 		end
 
-	min_list_height: INTEGER is 
-			-- `Result' is INTEGER constant named min_list_height.
-		once
-			Result := 50
-		end
-
-	arch_notebook_min_height: INTEGER is 
-			-- `Result' is INTEGER constant named arch_notebook_min_height.
+	app_min_width: INTEGER is 
+			-- `Result' is INTEGER constant named app_min_width.
 		once
 			Result := 500
+		end
+
+	app_max_width: INTEGER is 
+			-- `Result' is INTEGER constant named app_max_width.
+		once
+			Result := 2000
 		end
 
 

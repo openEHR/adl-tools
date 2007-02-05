@@ -29,9 +29,11 @@ feature -- Definitions
 			Result.put(term_id, term_id.value)
 		end
 
-	Terminology_ISO_639_1: STRING is "ISO:639-1(1988)"
+	Terminology_ISO_639_1: STRING is "ISO_639-1"
+			-- two character language names
 
-	Terminology_ISO_639_2: STRING is "ISO:639-2(1988)"
+	Terminology_ISO_639_2: STRING is "ISO_639-2"
+			-- three character language names
 	
 	Terminology_id_Languages: HASH_TABLE [TERMINOLOGY_ID, STRING] is 
 			-- Language name terminologies, including ISO 639-1:1988 2 char language names
@@ -46,9 +48,9 @@ feature -- Definitions
 			Result.put(term_id, term_id.value)
 		end
 
-	Terminology_ISO_3166_1: STRING is "ISO:3166-1(1988)"
+	Terminology_ISO_3166_1: STRING is "ISO_3166-1"
 
-	Terminology_ISO_3166_2: STRING is "ISO:3166-2(1988)"
+	Terminology_ISO_3166_2: STRING is "ISO_3166-2"
 
 	Terminology_id_Countries: HASH_TABLE [TERMINOLOGY_ID, STRING] is 
 			-- country code terminologies including ISO 3166-1, 3166-2
@@ -69,7 +71,7 @@ feature -- Definitions
 			term_id: TERMINOLOGY_ID
 		do
 			create Result.make(0)
-			create term_id.make("IANA:charsets")
+			create term_id.make("IANA_charsets")
 			Result.put(term_id, term_id.value)
 		end
 
@@ -79,7 +81,7 @@ feature -- Definitions
 			term_id: TERMINOLOGY_ID
 		do
 			create Result.make(0)
-			create term_id.make("HL7:CompressionAlgorithm")
+			create term_id.make("HL7_CompressionAlgorithm")
 			Result.put(term_id, term_id.value)
 		end
 
@@ -89,7 +91,7 @@ feature -- Definitions
 			term_id: TERMINOLOGY_ID
 		do
 			create Result.make(0)
-			create term_id.make("HL7:IntegrityCheckAlgorithm")
+			create term_id.make("HL7_IntegrityCheckAlgorithm")
 			Result.put(term_id, term_id.value)
 		end
 

@@ -12,10 +12,15 @@ indexing
 	last_change: "$LastChangedDate$"
 
 
-class ADL_DESCRIPTION_CONTROLS
+class GUI_DESCRIPTION_CONTROLS
 
 inherit
 	SHARED_ADL_INTERFACE
+		export
+			{NONE} all
+		end
+	
+	GUI_CONTROLLER_TOOLS
 		export
 			{NONE} all
 		end
@@ -47,6 +52,7 @@ feature -- Commands
 
 			gui.arch_desc_auth_orig_auth_mlist.wipe_out
 			gui.arch_desc_auth_contrib_list.wipe_out
+			gui.arch_desc_original_language_text.remove_text
 		
 			gui.arch_desc_purpose_text.remove_text			
 			gui.arch_desc_use_text.remove_text			
@@ -64,7 +70,6 @@ feature -- Commands
 		do
 			clear
 			if adl_interface.archetype.description /= Void then
-				populate_status
 				populate_authorship
 				populate_details
 				populate_resources
@@ -77,46 +82,23 @@ feature {NONE} -- Implementation
 	gui: MAIN_WINDOW
 			-- main window of system
 
-	populate_status is
-			-- populate lifecycle status field
+	populate_authorship is
+			-- populate authorship fields
 		local
+			contribs: ARRAYED_LIST [STRING]
 			sts: STRING
 		do
+			-- original author: tagged list of strings
+			populate_ev_multi_list_from_hash(gui.arch_desc_auth_orig_auth_mlist, adl_interface.archetype.description.original_author)
+			
+			-- status
 			sts := adl_interface.archetype.description.lifecycle_state
 			if sts /= Void then
 				gui.arch_desc_status_text.set_text(sts)
 			end
-		end
-
-	populate_authorship is
-			-- populate authorship fields
-		local
-			ev_auth_mlist: EV_MULTI_COLUMN_LIST
-			ev_list_row: EV_MULTI_COLUMN_LIST_ROW
-			orig_auth: HASH_TABLE [STRING, STRING]
-			contribs: ARRAYED_LIST [STRING]
-			i: INTEGER
-		do
-			-- original author: tagged list of strings
-			orig_auth := adl_interface.archetype.description.original_author
-			ev_auth_mlist := gui.arch_desc_auth_orig_auth_mlist
-			from
-				orig_auth.start
-			until
-				orig_auth.off				
-			loop	
-				create ev_list_row
-				ev_list_row.extend(orig_auth.key_for_iteration)
-				ev_list_row.extend(orig_auth.item_for_iteration)
-				ev_auth_mlist.extend(ev_list_row)
-				orig_auth.forth				
-			end
-
-			from i := 1
-			until i > ev_auth_mlist.column_count
-			loop ev_auth_mlist.resize_column_to_content(i)
-				i := i + 1
-			end				
+			
+			-- original language
+			gui.arch_desc_original_language_text.set_text (adl_interface.archetype.original_language.code_string)
 			
 			-- contributors: list of strings
 			contribs := adl_interface.archetype.description.other_contributors
@@ -128,10 +110,7 @@ feature {NONE} -- Implementation
 	populate_details is
 			-- populate details (language senstive)
 		local
-			arch_desc_item: ARCHETYPE_DESCRIPTION_ITEM
-			keywords: ARRAYED_LIST [STRING]
-			ev_list: EV_LIST
-			ev_list_item: EV_LIST_ITEM
+			arch_desc_item: RESOURCE_DESCRIPTION_ITEM
 		do
 			arch_desc_item := adl_interface.archetype.description.details_for_lang(language)
 			
@@ -147,35 +126,19 @@ feature {NONE} -- Implementation
 				if arch_desc_item.misuse /= Void then
 					gui.arch_desc_misuse_text.set_text(arch_desc_item.misuse)
 				end
-			
-				ev_list := gui.arch_desc_keywords_list
-				keywords := arch_desc_item.keywords
-				if keywords /= Void then			
-					from
-						keywords.start
-					until
-						keywords.off
-					loop
-						create ev_list_item.make_with_text (keywords.item)
-						ev_list.extend(ev_list_item)
-						keywords.forth
-					end			
-				end
+
+				populate_ev_list_from_list(gui.arch_desc_keywords_list, arch_desc_item.keywords)
 			end
 		end
 
 	populate_resources is
 			-- populate resources fields
 		local
-			arch_desc_item: ARCHETYPE_DESCRIPTION_ITEM
-			orig_res_uris: HASH_TABLE [URI, STRING]
-			ev_mlist: EV_MULTI_COLUMN_LIST
-			ev_list_row: EV_MULTI_COLUMN_LIST_ROW
 			arch_pkg_uri: URI
-			i: INTEGER
+			arch_desc_item: RESOURCE_DESCRIPTION_ITEM
 		do
 			-- package URI
-			arch_pkg_uri := adl_interface.archetype.description.archetype_package_uri
+			arch_pkg_uri := adl_interface.archetype.description.resource_package_uri
 			if arch_pkg_uri /= Void then
 				gui.arch_desc_resource_package_text.set_text(arch_pkg_uri.out)
 			end
@@ -183,34 +146,14 @@ feature {NONE} -- Implementation
 			-- list of URI resources
 			arch_desc_item := adl_interface.archetype.description.details_for_lang(language)
 			if arch_desc_item /= Void then
-				orig_res_uris := arch_desc_item.original_resource_uri
-				if orig_res_uris /= Void then
-					ev_mlist := gui.arch_desc_resource_orig_res_mlist
-					from
-						orig_res_uris.start
-					until
-						orig_res_uris.off
-					loop
-						create ev_list_row
-						ev_list_row.extend(orig_res_uris.key_for_iteration)
-						ev_list_row.extend(orig_res_uris.item_for_iteration.out)
-						ev_mlist.extend(ev_list_row)
-						orig_res_uris.forth
-					end
-				
-					from i := 1
-					until i > ev_mlist.column_count
-					loop ev_mlist.resize_column_to_content(i)
-						i := i + 1
-					end
-				end			
+				populate_ev_multi_list_from_hash(gui.arch_desc_resource_orig_res_mlist, arch_desc_item.original_resource_uri)
 			end
 		end
 
 	populate_copyright is
 			-- populate copyright field
 		local
-			arch_desc_item: ARCHETYPE_DESCRIPTION_ITEM
+			arch_desc_item: RESOURCE_DESCRIPTION_ITEM
 		do
 			arch_desc_item := adl_interface.archetype.description.details_for_lang(language)
 			if arch_desc_item /= Void and then arch_desc_item.copyright /= Void then

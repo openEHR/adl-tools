@@ -37,9 +37,10 @@ feature -- Initialisation
 		
 feature -- Serialisation
 
-	serialise (a_target: ARCHETYPE; desc_serialised, def_serialised, inv_serialised, ont_serialised: STRING) is
+	serialise (a_target: ARCHETYPE; lang_serialised, desc_serialised, def_serialised, inv_serialised, ont_serialised: STRING) is
 		require
 			a_target /= Void
+			lang_serialised /= Void
 			desc_serialised /= Void
 			def_serialised /= Void
 			ont_serialised /= Void

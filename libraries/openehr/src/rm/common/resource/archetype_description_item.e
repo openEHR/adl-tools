@@ -29,22 +29,20 @@ inherit
 			{NONE} all
 		end
 		
+	ADL_DEFINITIONS
+		export
+			{NONE} all
+		end
+	
 create
 	make_dt, make_lang
-	
-feature -- Definitions
-
-	Default_language: CODE_PHRASE is 
-		once
-			create Result.make(Terminology_iso_639_1 + "en")
-		end
 	
 feature -- Initialisation
 
 	make_dt is
 			-- 
 		do
-			language := Default_language.twin
+			language := Default_language_code
 		end
 		
 	make_lang(a_lang: CODE_PHRASE; a_purpose: STRING) is

@@ -389,7 +389,7 @@ P[yY]?[mM]?[Ww]?[dD]? {
 				in_lineno := in_lineno + str_.occurrences('%N')
 
 				-- perform any upgrades to embedded dADL object syntax here by substitution
-				perform_syntax_upgrade(str_)
+				convert_c_dv_names(str_)
 
 				dadl_parser.execute(str_, source_start_line)
 				if not dadl_parser.syntax_error then

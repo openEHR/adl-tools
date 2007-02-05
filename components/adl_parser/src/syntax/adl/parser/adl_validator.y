@@ -28,6 +28,8 @@ inherit
 			make as make_eiffel_scanner
 		end
 
+	ADL_SYNTAX_CONVERTER
+
 	KL_SHARED_EXCEPTIONS
 	KL_SHARED_ARGUMENTS
 
@@ -134,6 +136,7 @@ arch_concept: SYM_CONCEPT V_LOCAL_TERM_CODE_REF
 arch_language: -- empty is ok for ADL 1.4 tools
 	| SYM_LANGUAGE V_DADL_TEXT
 		{
+			convert_dadl_language($2)
 			language_text := $2
 		}
 	| SYM_LANGUAGE error
@@ -145,10 +148,9 @@ arch_language: -- empty is ok for ADL 1.4 tools
 	;
 
 arch_description: -- no meta-data ok
-		{
-		}
 	| SYM_DESCRIPTION V_DADL_TEXT 
 		{ 
+			convert_dadl_language($2)
 			description_text := $2
 		}
 	| SYM_DESCRIPTION error
@@ -225,12 +227,11 @@ feature {YY_PARSER_ACTION} -- Basic Operations
 		do
 			f_buffer ?= input_buffer
 			if f_buffer /= Void then
-				error_text.append (f_buffer.file.name)
-				error_text.append (", line ")
+				error_text.append (f_buffer.file.name + ", line ")
 			else
 				error_text.append ("line ")
 			end
-			error_text.append_integer (in_lineno + ": " + a_message + " [last token = " + token_name(last_token) + "]%N")
+			error_text.append (in_lineno.out + ": " + a_message + " [last token = " + token_name(last_token) + "]%N")
 		end
 
 feature -- Parse Output

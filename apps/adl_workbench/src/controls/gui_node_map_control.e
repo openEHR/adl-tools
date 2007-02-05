@@ -11,7 +11,7 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class ADL_NODE_MAP_CONTROL
+class GUI_NODE_MAP_CONTROL
 
 inherit
 	SHARED_ADL_INTERFACE
@@ -740,23 +740,25 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	c_complex_object_string(an_obj_node: C_COMPLEX_OBJECT): STRING is
+	c_complex_object_string(a_node: C_COMPLEX_OBJECT): STRING is
 			-- generate string form of node or object for use in tree node
 		do
 			create Result.make(0)
-			-- Result.append(" [" + an_obj_node.occurrences.as_occurrences_string + "] ")
-			if an_obj_node.is_addressable then
+			-- if not a_node.is_occurrences_default then
+				-- Result.append(" [" + a_node.occurrences.as_occurrences_string + "] ")
+			-- end
+			if a_node.is_addressable then
 				if in_technical_mode then
-					Result.append(an_obj_node.rm_type_name)
+					Result.append(a_node.rm_type_name)
 				end
-				Result.append(" " + ontology.term_definition(language, an_obj_node.node_id).item("text"))
+				Result.append(" " + ontology.term_definition(language, a_node.node_id).item("text"))
 				if in_technical_mode then
-					Result.append(" [" + an_obj_node.node_id + "]")
+					Result.append(" [" + a_node.node_id + "]")
 				end
 			else -- put type even when not in technical mode
-				Result.append(an_obj_node.rm_type_name)
+				Result.append(a_node.rm_type_name)
 			end
-			if an_obj_node.any_allowed then
+			if a_node.any_allowed then
 				Result.append(" = *")
 			end
 		end
@@ -779,23 +781,25 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	archetype_slot_string(an_obj_node: ARCHETYPE_SLOT): STRING is
+	archetype_slot_string(a_node: ARCHETYPE_SLOT): STRING is
 			-- generate string form of node or object for use in tree node
 		do
 			create Result.make(0)
-			-- Result.append(" [" + an_obj_node.occurrences.as_occurrences_string + "] ")
+			-- if not a_node.is_occurrences_default then
+				-- Result.append(" [" + a_node.occurrences.as_occurrences_string + "] ")
+			-- end
 			--if in_technical_mode then
-				Result.append(an_obj_node.rm_type_name)
+				Result.append(a_node.rm_type_name)
 			--end
-			if an_obj_node.is_addressable then
-				Result.append(" " + ontology.term_definition(language, an_obj_node.node_id).item("text"))
+			if a_node.is_addressable then
+				Result.append(" " + ontology.term_definition(language, a_node.node_id).item("text"))
 			end
 			if in_technical_mode then
-				if an_obj_node.is_addressable then
-					Result.append(" [" + an_obj_node.node_id + "]")
+				if a_node.is_addressable then
+					Result.append(" [" + a_node.node_id + "]")
 				end
 			end
-			if an_obj_node.any_allowed then
+			if a_node.any_allowed then
 				Result.append(" = *")
 			end
 		end
@@ -813,14 +817,17 @@ feature {NONE} -- Implementation
 			Result.append(" " + c_p_o.item.as_string)
 		end
 
-	archetype_internal_ref_string(a_node_ref: ARCHETYPE_INTERNAL_REF): STRING is
+	archetype_internal_ref_string(a_node: ARCHETYPE_INTERNAL_REF): STRING is
 			-- generate string form of node or object for use in tree node
 		do
 			create Result.make(0)
+			if not a_node.use_target_occurrences then
+				Result.append(" [" + a_node.occurrences.as_occurrences_string + "] ")
+			end
 			if in_technical_mode then		
-				Result.append("use " + a_node_ref.rm_type_name + " " + a_node_ref.target_path)
+				Result.append("use " + a_node.rm_type_name + " " + a_node.target_path)
 			else
-				Result.append("use " + ontology.logical_path_for_physical_path(a_node_ref.target_path, language))
+				Result.append("use " + ontology.logical_path_for_physical_path(a_node.target_path, language))
 			end
 		end
 

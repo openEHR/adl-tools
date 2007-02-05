@@ -599,32 +599,37 @@ feature {NONE} -- Commands
 
 feature -- Controls
 
-	ontology_controls: ADL_ONTOLOGY_CONTROLS is
+	ontology_controls: GUI_ONTOLOGY_CONTROLS is
 		once
 			create Result.make(Current)
 		end
 
-	description_controls: ADL_DESCRIPTION_CONTROLS is
+	description_controls: GUI_DESCRIPTION_CONTROLS is
 		once
 			create Result.make(Current)
 		end
 
-	node_map_control: ADL_NODE_MAP_CONTROL is
+	translation_controls: GUI_TRANSLATION_CONTROLS is
 		once
 			create Result.make(Current)
 		end
 
-	adl_path_map_control: ADL_PATH_MAP_CONTROL is
+	node_map_control: GUI_NODE_MAP_CONTROL is
 		once
 			create Result.make(Current)
 		end
 
-	archetype_view_tree_control: ADL_VIEW_ARCHETYPE_TREE_CONTROL is
+	adl_path_map_control: GUI_PATH_MAP_CONTROL is
 		once
 			create Result.make(Current)
 		end
 
-	archetype_test_tree_control: ADL_TEST_ARCHETYPE_TREE_CONTROL is
+	archetype_view_tree_control: GUI_VIEW_ARCHETYPE_TREE_CONTROL is
+		once
+			create Result.make(Current)
+		end
+
+	archetype_test_tree_control: GUI_TEST_ARCHETYPE_TREE_CONTROL is
 		once
 			create Result.make(Current)
 		end
@@ -680,7 +685,6 @@ feature {EV_DIALOG} -- Implementation
 			clear_all_controls
 			archetype_directory.repopulate
 			parser_status_area.set_text(billboard_content)
-			clear_billboard
 			archetype_view_tree_control.populate
 			archetype_test_tree_control.populate			
 		end
@@ -710,6 +714,7 @@ feature {EV_DIALOG} -- Implementation
 			node_map_control.clear
 			ontology_controls.clear
 			description_controls.clear
+			translation_controls.clear
 			parsed_archetype_found_paths.wipe_out
 		end
 
@@ -718,6 +723,7 @@ feature {EV_DIALOG} -- Implementation
 		do
 			populate_archetype_id
 			populate_languages
+			populate_adl_version
 		end
 			
 	populate_all_archetype_controls is
@@ -728,6 +734,7 @@ feature {EV_DIALOG} -- Implementation
 			node_map_control.populate
 			ontology_controls.populate
 			description_controls.populate
+			translation_controls.populate
 		end
 
 	populate_view_controls is
@@ -750,10 +757,15 @@ feature {EV_DIALOG} -- Implementation
 			end
 		end
 
+	populate_adl_version is
+			-- populate ADL version 
+		do
+			adl_version_text.set_text(adl_interface.archetype.adl_version)
+		end
+		
 	populate_languages is
 		do
 			language_combo.set_strings(ontology.languages_available)
-			languages_list.set_strings(ontology.languages_available)
 			terminologies_list.set_strings(ontology.terminologies_available)
 		end
 

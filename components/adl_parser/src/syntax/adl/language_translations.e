@@ -1,30 +1,32 @@
 indexing
 	component:   "openEHR Common Information Model"
-	description: "Resource translation meta-data"
-	keywords:    "resource, meta-data, translation"
+	description: "[
+				 Dummy class containing just the translations attribute of AUTHORED_RESOURCE;
+				 used by pre-ADL2 parsing to convert dADL text of translations in language section
+				 of archetype into an object that can then be pasted into the archetype.
+				 ]"
+	keywords:    "archetype"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class TRANSLATION_DETAILS
+class LANGUAGE_TRANSLATIONS
 
 inherit
-	EXTERNAL_ENVIRONMENT_ACCESS
+	DT_CONVERTIBLE
+		redefine
+			default_create
+		end
+		
+	OPENEHR_TERMINOLOGY_IDS
 		export
 			{NONE} all
 		undefine
-			default_create
-		end
-
-	DT_CONVERTIBLE
-		export
-			{NONE} all
-		redefine
 			default_create
 		end
 		
@@ -34,7 +36,7 @@ inherit
 		undefine
 			default_create
 		end
-	
+		
 create
 	make, make_dt
 	
@@ -43,8 +45,6 @@ feature -- Initialisation
 	default_create is
 			-- 
 		do
-			language := default_language_code
-			create author.make(0)
 		end
 		
 	make is
@@ -58,46 +58,48 @@ feature -- Initialisation
 		do
 			make
 		end
-		
+
 feature -- Access
 
-	language: CODE_PHRASE	
-			-- Language of translation
-
-	author: HASH_TABLE [STRING, STRING]
-			-- Translator name and other demographic details
-
-	accreditation: STRING	
-			-- Accreditation of translator, usually a national translator's association id
+	original_language: CODE_PHRASE
 	
-	other_details: HASH_TABLE [STRING, STRING]	
-			-- Any other meta-data
+	translations: HASH_TABLE [TRANSLATION_DETAILS, STRING]
+			-- List of details for each natural translation made of this resource, keyed by 
+			-- language. For each translation listed here, there must be corresponding 
+			-- sections in all language-dependent parts of the resource. 
 			
 feature -- Modification
 
-	set_language(a_lang: CODE_PHRASE) is
-			-- set language
-		require
-			a_lang /= Void
+	set_translations(a_trans: HASH_TABLE [TRANSLATION_DETAILS, STRING]) is
+			-- set translations
 		do
-			language := a_lang
-		end
-		
-	set_author(auth_details: HASH_TABLE [STRING, STRING]) is
-			-- set author
-		require
-			auth_details /= Void and then not auth_details.is_empty
-		do
-			author := auth_details
+			translations := a_trans
 		end
 
-	add_author_detail(a_det_key, a_det_value: STRING) is
-			-- set key=value pair into author
-		require
-			Key_valid: a_det_key /= Void and then not a_det_key.is_empty
-			Value_valid: a_det_value /= Void and then not a_det_value.is_empty
+	set_original_language(a_lang: CODE_PHRASE) is
+			-- 
 		do
-			author.put (a_det_value, a_det_key)
+			original_language := a_lang
+		end
+		
+	set_original_language_from_string(a_lang: STRING) is
+			-- 
+		do
+			create original_language.make (Default_language_code_set, a_lang)
+		end
+		
+	add_new_translation(a_lang: STRING) is
+			-- add a blank translation object for a_lang
+		local
+			a_trans_det: TRANSLATION_DETAILS
+		do
+			if translations = Void then
+				create translations.make(0)
+			end
+			
+			create a_trans_det.make
+			a_trans_det.add_author_detail ("name", "unknown")
+			translations.put (a_trans_det, a_lang)
 		end
 		
 feature {DT_OBJECT_CONVERTER} -- Conversion
@@ -107,17 +109,11 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 			-- empty structure means all attributes
 		once
 			create Result.make(0)
-			Result.extend("language")
-			Result.extend("author")
-			Result.extend("accreditation")
-			Result.extend("other_details")
+			Result.extend("original_language")
+			Result.extend("translations")
 			Result.compare_objects
 		end
 
-invariant
-	Language_valid: language /= Void and then code_set(code_set_id_languages).has(language)
-	Author_valid: author /= Void	
-	
 end
 
 
@@ -135,7 +131,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is archetype_description.e.
+--| The Original Code is adl_archetype.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

@@ -124,9 +124,9 @@ feature -- Access
 			a_node_id_valid: a_node_id /= Void implies not a_node_id.is_empty
 		do
 			if a_node_id /= Void then
-				create Result.make_identified(create {CODE_PHRASE}.make(a_qualified_code), a_node_id)
+				create Result.make_identified(create {CODE_PHRASE}.make_from_string(a_qualified_code), a_node_id)
 			else
-				create Result.make_anonymous(create {CODE_PHRASE}.make(a_qualified_code))
+				create Result.make_anonymous(create {CODE_PHRASE}.make_from_string(a_qualified_code))
 			end
 			a_parent.put_child(Result)
 		end

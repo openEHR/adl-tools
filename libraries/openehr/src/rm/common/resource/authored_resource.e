@@ -18,11 +18,11 @@ inherit
 		export
 			{NONE} all
 		end
-		
+
 feature -- Definitions
 
 	Uncontrolled_revision_name: STRING is "(uncontrolled)"
-	
+		
 feature -- Access
 
 	original_language: CODE_PHRASE
@@ -43,12 +43,8 @@ feature -- Access
 			-- The revision history of the resource. Only required if is_controlled = True 
 			-- (avoids large revision histories for informal or private editing situations).
 
-	is_controlled: BOOLEAN	
-			-- True if this resource is under any kind of change control (even file 
-			-- copying), in which case revision history is created.
-
 	current_revision: STRING is
-			-- Current revision if revision_history exists else “(uncontrolled)”.
+			-- Current revision if revision_history exists else "(uncontrolled)".
 		do
 		end
 
@@ -60,6 +56,10 @@ feature -- Access
 
 feature -- Status Report
 
+	is_controlled: BOOLEAN	
+			-- True if this resource is under any kind of change control (even file 
+			-- copying), in which case revision history is created.
+
 feature -- Modification
 
 	set_description(a_desc: RESOURCE_DESCRIPTION) is
@@ -69,17 +69,47 @@ feature -- Modification
 			description := a_desc
 		end
 
+	set_translations(a_trans: HASH_TABLE [TRANSLATION_DETAILS, STRING]) is
+			-- set translations
+		require
+			a_trans /= Void
+		do
+			translations := a_trans
+		end
+
+feature -- Status setting
+
+	set_is_controlled is
+			-- set 'is_controlled'
+		do
+			is_controlled := True
+		end
+
 feature -- Serialisation
 
 	synchronise is
 			-- synchronise object representation of resource to forms suitable for
 			-- serialisation
 		do
+			-- FIXME - translations are handled like this until ADL2, when the 
+			-- whole archetype will just be a dADL doc
+			create orig_lang_translations.make
+			orig_lang_translations.set_original_language (original_language)
+			if translations /= Void then
+				orig_lang_translations.set_translations(translations)
+			end
+			orig_lang_translations.synchronise_to_tree
 			if description /= Void then
 				description.synchronise_to_tree			
 			end
 		end
 		
+feature {ADL_ENGINE} -- Implementation
+
+	orig_lang_translations: LANGUAGE_TRANSLATIONS
+			-- holds a copy of translations for purposes of DT object/dADL 
+			-- reading and writing
+			
 invariant
 	Description_exists: description /= Void
 	Original_language_valid: original_language /= void and then 
@@ -89,6 +119,10 @@ invariant
 	Revision_history_valid: is_controlled xor revision_history = Void
 	Current_revision_valid: current_revision /= Void and not is_controlled 
 		implies current_revision.is_equal(Uncontrolled_revision_name)	
+	Translations_valid: translations /= Void implies (not translations.is_empty and 
+		not translations.has(original_language.code_string))
+--	Description_valid: translations /= Void implies (description.details.for_all
+--		(d | translations.has_key(d.language.code_string)))
 
 end
 

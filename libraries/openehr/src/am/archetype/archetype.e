@@ -19,19 +19,24 @@ inherit
 			{NONE} all
 		end
 
+	AUTHORED_RESOURCE
+		rename
+			synchronise as synchronise_authored_resource
+		end
+	
 create {ADL_ENGINE}
 	make, make_minimal
 	
 feature -- Definitions
 
-	Default_concept_code: STRING is "at0000"
+	Default_concept: STRING is "at0000"
 
 feature  {ADL_ENGINE} -- Initialisation
 
-	make_minimal(an_id: ARCHETYPE_ID; a_primary_lang: STRING) is
+	make_minimal(an_id: ARCHETYPE_ID; an_original_language: STRING) is
 		require
 			Id_exists: an_id /= Void
-			Language_valid: a_primary_lang /= Void and then not a_primary_lang.is_empty
+			Language_valid: an_original_language /= Void and then not an_original_language.is_empty
 		local
 			a_term: ARCHETYPE_TERM
 		do
@@ -39,35 +44,41 @@ feature  {ADL_ENGINE} -- Initialisation
 			
 			adl_version := 	Current_adl_version
 	
-			create concept_code.make(0)
-			concept_code.append(Default_concept_code)
+			create concept.make(0)
+			concept.append(Default_concept)
+			
+			create original_language.make (Default_language_code_set, an_original_language)
 			
 			create description.make
-			create definition.make_identified(an_id.rm_entity, Default_concept_code)
+			create definition.make_identified(an_id.rm_entity, Default_concept)
 			
-			create a_term.make(concept_code)
+			create a_term.make(concept)
 			a_term.add_item("text", "unknown")
 			a_term.add_item("description", "unknown")
-			create ontology.make_empty(a_primary_lang, a_term)
+			create ontology.make_empty(an_original_language, a_term)
 		ensure
 			Id_set: archetype_id = an_id
-			Concept_set: concept_code.is_equal(Default_concept_code)
+			Concept_set: concept.is_equal(Default_concept)
 		end
 
 	make(an_id: ARCHETYPE_ID; 
 			a_concept_code: STRING; 
-			a_description: ARCHETYPE_DESCRIPTION; 
-			a_definition: C_COMPLEX_OBJECT; 
+			an_original_language: STRING;
+			a_description: RESOURCE_DESCRIPTION; 
+			a_definition: C_COMPLEX_OBJECT;
 			an_ontology: ARCHETYPE_ONTOLOGY) is
 		require
 			Id_exists: an_id /= Void
 			Concept_exists: a_concept_code /= Void
+			Language_valid: an_original_language /= Void and then not an_original_language.is_empty
 			Definition_exists: a_definition /= Void
 			Ontology_exists: an_ontology /= Void
 		do
 			adl_version := 	Current_adl_version
 			archetype_id := an_id
-			concept_code := a_concept_code
+			concept := a_concept_code
+			create original_language.make (Default_language_code_set, an_original_language)
+
 			if a_description = Void then
 				create description.make
 			else
@@ -78,7 +89,7 @@ feature  {ADL_ENGINE} -- Initialisation
 			ontology := an_ontology
 		ensure
 			Id_set: archetype_id = an_id
-			Concept_set: concept_code = a_concept_code
+			Concept_set: concept = a_concept_code
 			Definition_set: definition = a_definition
 			Ontology_set: ontology = an_ontology
 		end
@@ -90,10 +101,6 @@ feature -- Access
 	adl_version: STRING
 			-- ADL version of this archetype
 			
-	is_controlled: BOOLEAN
-			-- True if this archetype is controlled in a versioning or document system;
-			-- if True, revision_history is included in archetype
-	
 	version: STRING is 
 			-- version of this archetype, according to its id
 		do
@@ -109,19 +116,13 @@ feature -- Access
 			Result := ontology.specialisation_depth
 		end
 	
-	concept_code: STRING
-
-	description: ARCHETYPE_DESCRIPTION
-					-- meta-data from 'description' section of archetype
+	concept: STRING
 
 	definition: C_COMPLEX_OBJECT
 
 	invariants: ARRAYED_LIST[ASSERTION]
 
 	ontology: ARCHETYPE_ONTOLOGY
-
-	revision_history: ARRAYED_LIST [ARCHETYPE_AUDIT]
-			-- only included in archetype if 'is_controlled' is True
 
 	physical_paths: ARRAYED_LIST [STRING] is
 			-- generate physical paths from definition structure
@@ -257,7 +258,7 @@ feature -- Access
 					end
 					ont_codes.forth
 				end
-				Result.prune(concept_code)
+				Result.prune(concept)
 			end
 		ensure
 			Result_exists: Result /= Void
@@ -350,6 +351,7 @@ feature -- Status Report
 				-- first failure will prevent the execution of the later vality calls
 				-- in the expression (maybe a not( x or y or z) would work, but I don't
 				-- know how smart the compiler is
+				
 				node_list_validity := node_ids_valid
 				
 				constraint_references_validity := constraint_references_valid
@@ -538,17 +540,17 @@ feature -- Modification
 			
 			-- check if node id of root node of archetype is same as concept code of 
 			-- whole archetype; if so, change it once ontology converted
-			chg_root_node := concept_code.is_equal(definition.node_id)
+			chg_root_node := concept.is_equal(definition.node_id)
 
 			ontology.convert_to_specialised
 			if chg_root_node then
 				definition.set_object_id(ontology.concept_code)
 			end
 			archetype_id := archetype_id.create_specialised_id(a_spec_concept)
-			concept_code := ontology.concept_code
+			concept := ontology.concept_code
 		ensure
 			Archetype_id_updated: not archetype_id.is_equal(old archetype_id)
-			Concept_code_updated: not concept_code.is_equal(old concept_code)
+			Concept_code_updated: not concept.is_equal(old concept)
 			Specialisation_depth_valid: specialisation_depth = old specialisation_depth + 1
 		end
 
@@ -563,7 +565,7 @@ feature -- Modification
 		require
 			str_valid: str /= Void and then not str.is_empty
 		do
-			concept_code := str
+			concept := str
 		end
 
 	set_parent_archetype_id(an_id: ARCHETYPE_ID) is
@@ -571,13 +573,6 @@ feature -- Modification
 			an_id_valid: an_id /= Void
 		do
 			parent_archetype_id := an_id
-		end
-
-	set_description(a_desc: ARCHETYPE_DESCRIPTION) is
-		require
-			a_desc /= Void
-		do
-			description := a_desc
 		end
 
 	set_definition(a_node: C_COMPLEX_OBJECT) is
@@ -659,12 +654,6 @@ feature -- Modification
 		
 feature -- Status setting
 
-	set_is_controlled is
-			-- set 'is_controlled'
-		do
-			is_controlled := True
-		end
-
 	set_readonly is
 			-- set is_readonly to True
 		do
@@ -723,9 +712,7 @@ feature -- Serialisation
 			-- synchronise object representation of archetype to forms suitable for
 			-- serialisation
 		do
-			if description /= Void then
-				description.synchronise_to_tree			
-			end
+			synchronise_authored_resource
 			ontology.synchronise_to_tree
 		end
 		
@@ -1013,7 +1000,7 @@ feature {NONE} -- Implementation
 	
 invariant
 	Id_exists: archetype_id /= Void
-	Concept_exists: concept_code /= Void
+	Concept_exists: concept /= Void
 	Description_exists: description /= Void
 	Definition_exists: definition /= Void
 	Invariants_valid: invariants /= Void implies not invariants.is_empty	

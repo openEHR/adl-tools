@@ -12,7 +12,7 @@ indexing
 	last_change: "$LastChangedDate$"
 
 
-class ADL_PATH_MAP_CONTROL
+class GUI_PATH_MAP_CONTROL
 
 inherit
 	SHARED_UI_RESOURCES

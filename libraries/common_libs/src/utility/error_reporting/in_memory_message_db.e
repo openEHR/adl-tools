@@ -90,6 +90,9 @@ feature -- Access
 			-- ARCHETYPE_DIRECTORY
 			["arch_dir_no_arch_parent"] = <"No parent matching $1 found for archetype $2">
 			["arch_dir_dup_archetype"] = <"Duplicate archetype $1">
+
+			-- ADL_SYNTAX_CONTERTER
+			["syntax_upgraded_i1"] = <"Syntax element upgraded: --$1-- changed to --$2--">
 		>
 		]"
 

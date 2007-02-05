@@ -16,7 +16,7 @@ class ARCHETYPE_INTERNAL_REF
 inherit
 	C_REFERENCE_OBJECT
 		redefine
-			representation, is_valid
+			representation, is_valid, set_occurrences
 		end
 
 create
@@ -34,6 +34,9 @@ feature -- Initialisation
 			create representation.make_anonymous(Current)
 			rm_type_name := a_rm_type_name
 			set_target_path(a_path)
+			use_target_occurrences := True
+		ensure
+			Use_target_occurrences: use_target_occurrences
 		end
 
 feature -- Access
@@ -42,7 +45,11 @@ feature -- Access
 			-- path to the referenced node
 
 feature -- Status Report
-
+	
+	use_target_occurrences: BOOLEAN
+			-- True if target occurrences are to be used as the value of occurrences in this object;
+			-- by the time of runtime use, the target occurrences value has to be set into this object
+	
 	is_valid: BOOLEAN is
 			-- report on validity
 		do
@@ -63,6 +70,15 @@ feature -- Modification
 			a_path /= Void
 		do
 			target_path := a_path
+		end
+
+	set_occurrences(ivl: OE_INTERVAL[INTEGER]) is
+			-- 
+		do
+			precursor(ivl)
+			use_target_occurrences := False
+		ensure then
+			Dont_use_target_occurrences: not use_target_occurrences			
 		end
 
 feature -- Representation

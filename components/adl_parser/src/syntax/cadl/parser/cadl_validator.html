@@ -125,7 +125,7 @@
 <div class="lhs">
 <span class="lhs_variable" id="archetype_internal_ref">archetype_internal_ref</span>: </div>
 <div class="rhs">
-&nbsp; <span class="token">SYM_USE_NODE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="rhs_variable"><a href="#absolute_path">absolute_path</a> </span></div>
+&nbsp; <span class="token">SYM_USE_NODE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="rhs_variable"><a href="#c_occurrences">c_occurrences</a> </span><span class="rhs_variable"><a href="#absolute_path">absolute_path</a> </span></div>
 <div class="rhs">
 | <span class="token">SYM_USE_NODE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">error </span></div>
 </div>
@@ -506,7 +506,7 @@
 
 <div class="rule">
 <div class="lhs">
-<span class="lhs_variable" id="c_date_spec">c_date_spec</span>: </div>
+<span class="lhs_variable" id="c_date_constraint">c_date_constraint</span>: </div>
 <div class="rhs">
 &nbsp; <span class="token">V_ISO8601_DATE_CONSTRAINT_PATTERN </span></div>
 <div class="rhs">
@@ -519,16 +519,16 @@
 <div class="lhs">
 <span class="lhs_variable" id="c_date">c_date</span>: </div>
 <div class="rhs">
-&nbsp; <span class="rhs_variable"><a href="#c_date_spec">c_date_spec</a> </span></div>
+&nbsp; <span class="rhs_variable"><a href="#c_date_constraint">c_date_constraint</a> </span></div>
 <div class="rhs">
-| <span class="rhs_variable"><a href="#c_date_spec">c_date_spec</a> </span><span class="literal_token">&#59; </span><span class="rhs_variable"><a href="#date_value">date_value</a> </span></div>
+| <span class="rhs_variable"><a href="#c_date_constraint">c_date_constraint</a> </span><span class="literal_token">&#59; </span><span class="rhs_variable"><a href="#date_value">date_value</a> </span></div>
 <div class="rhs">
-| <span class="rhs_variable"><a href="#c_date_spec">c_date_spec</a> </span><span class="literal_token">&#59; </span><span class="token">error </span></div>
+| <span class="rhs_variable"><a href="#c_date_constraint">c_date_constraint</a> </span><span class="literal_token">&#59; </span><span class="token">error </span></div>
 </div>
 
 <div class="rule">
 <div class="lhs">
-<span class="lhs_variable" id="c_time_spec">c_time_spec</span>: </div>
+<span class="lhs_variable" id="c_time_constraint">c_time_constraint</span>: </div>
 <div class="rhs">
 &nbsp; <span class="token">V_ISO8601_TIME_CONSTRAINT_PATTERN </span></div>
 <div class="rhs">
@@ -541,16 +541,16 @@
 <div class="lhs">
 <span class="lhs_variable" id="c_time">c_time</span>: </div>
 <div class="rhs">
-&nbsp; <span class="rhs_variable"><a href="#c_time_spec">c_time_spec</a> </span></div>
+&nbsp; <span class="rhs_variable"><a href="#c_time_constraint">c_time_constraint</a> </span></div>
 <div class="rhs">
-| <span class="rhs_variable"><a href="#c_time_spec">c_time_spec</a> </span><span class="literal_token">&#59; </span><span class="rhs_variable"><a href="#time_value">time_value</a> </span></div>
+| <span class="rhs_variable"><a href="#c_time_constraint">c_time_constraint</a> </span><span class="literal_token">&#59; </span><span class="rhs_variable"><a href="#time_value">time_value</a> </span></div>
 <div class="rhs">
-| <span class="rhs_variable"><a href="#c_time_spec">c_time_spec</a> </span><span class="literal_token">&#59; </span><span class="token">error </span></div>
+| <span class="rhs_variable"><a href="#c_time_constraint">c_time_constraint</a> </span><span class="literal_token">&#59; </span><span class="token">error </span></div>
 </div>
 
 <div class="rule">
 <div class="lhs">
-<span class="lhs_variable" id="c_date_time_spec">c_date_time_spec</span>: </div>
+<span class="lhs_variable" id="c_date_time_constraint">c_date_time_constraint</span>: </div>
 <div class="rhs">
 &nbsp; <span class="token">V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN </span></div>
 <div class="rhs">
@@ -563,16 +563,16 @@
 <div class="lhs">
 <span class="lhs_variable" id="c_date_time">c_date_time</span>: </div>
 <div class="rhs">
-&nbsp; <span class="rhs_variable"><a href="#c_date_time_spec">c_date_time_spec</a> </span></div>
+&nbsp; <span class="rhs_variable"><a href="#c_date_time_constraint">c_date_time_constraint</a> </span></div>
 <div class="rhs">
-| <span class="rhs_variable"><a href="#c_date_time_spec">c_date_time_spec</a> </span><span class="literal_token">&#59; </span><span class="rhs_variable"><a href="#date_time_value">date_time_value</a> </span></div>
+| <span class="rhs_variable"><a href="#c_date_time_constraint">c_date_time_constraint</a> </span><span class="literal_token">&#59; </span><span class="rhs_variable"><a href="#date_time_value">date_time_value</a> </span></div>
 <div class="rhs">
-| <span class="rhs_variable"><a href="#c_date_time_spec">c_date_time_spec</a> </span><span class="literal_token">&#59; </span><span class="token">error </span></div>
+| <span class="rhs_variable"><a href="#c_date_time_constraint">c_date_time_constraint</a> </span><span class="literal_token">&#59; </span><span class="token">error </span></div>
 </div>
 
 <div class="rule">
 <div class="lhs">
-<span class="lhs_variable" id="c_duration_spec">c_duration_spec</span>: </div>
+<span class="lhs_variable" id="c_duration_constraint">c_duration_constraint</span>: </div>
 <div class="rhs">
 &nbsp; <span class="token">V_ISO8601_DURATION_CONSTRAINT_PATTERN </span></div>
 <div class="rhs">
@@ -585,11 +585,11 @@
 <div class="lhs">
 <span class="lhs_variable" id="c_duration">c_duration</span>: </div>
 <div class="rhs">
-&nbsp; <span class="rhs_variable"><a href="#c_duration_spec">c_duration_spec</a> </span></div>
+&nbsp; <span class="rhs_variable"><a href="#c_duration_constraint">c_duration_constraint</a> </span></div>
 <div class="rhs">
-| <span class="rhs_variable"><a href="#c_duration_spec">c_duration_spec</a> </span><span class="literal_token">&#59; </span><span class="rhs_variable"><a href="#duration_value">duration_value</a> </span></div>
+| <span class="rhs_variable"><a href="#c_duration_constraint">c_duration_constraint</a> </span><span class="literal_token">&#59; </span><span class="rhs_variable"><a href="#duration_value">duration_value</a> </span></div>
 <div class="rhs">
-| <span class="rhs_variable"><a href="#c_duration_spec">c_duration_spec</a> </span><span class="literal_token">&#59; </span><span class="token">error </span></div>
+| <span class="rhs_variable"><a href="#c_duration_constraint">c_duration_constraint</a> </span><span class="literal_token">&#59; </span><span class="token">error </span></div>
 </div>
 
 <div class="rule">

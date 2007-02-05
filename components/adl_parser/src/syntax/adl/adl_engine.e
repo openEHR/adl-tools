@@ -47,6 +47,7 @@ feature -- Initialisation
 	
 	make is
 		do
+			create language_context.make
 			create description_context.make
 			create definition_context.make
 			create invariant_context.make
@@ -151,8 +152,11 @@ feature -- Commands
 		require
 			Source_exists: source /= Void
 		local
-		      description_error, invariant_error: BOOLEAN
-			arch_desc: ARCHETYPE_DESCRIPTION
+			language_error, description_error, invariant_error: BOOLEAN
+			res_desc: RESOURCE_DESCRIPTION
+			orig_lang_trans: LANGUAGE_TRANSLATIONS
+			arch_ont: ARCHETYPE_ONTOLOGY
+			orig_lang: STRING
 		do
 			archetype := Void
 			serialised_archetype := Void
@@ -168,72 +172,123 @@ feature -- Commands
 				else
 					parent_archetype_id := Void
 				end						
-				if adl_parser.description_text /= Void and then not adl_parser.description_text.is_empty then
-					description_context.set_source(adl_parser.description_text, adl_parser.description_text_start_line)
-					description_context.parse
-					if not description_context.parse_succeeded then
-						parse_error_text := description_context.parse_error_text
-						description_error := True
+
+				------------------- language section ---------------
+				if adl_parser.language_text /= Void and then not adl_parser.language_text.is_empty then
+					language_context.set_source(adl_parser.language_text, adl_parser.language_text_start_line)
+					language_context.parse
+					if not language_context.parse_succeeded then
+						parse_error_text := language_context.parse_error_text
+						language_error := True
 					end
 				else
-					description_context.reset
+					language_context.reset
 				end
-				if not description_error then
-					if description_context.tree /= Void then
-						arch_desc ?= description_context.tree.as_object (arch_desc_id)
+				if not language_error then
+					if language_context.tree /= Void then
+						orig_lang_trans ?= language_context.tree.as_object (trans_det_id)
 					end
-					definition_context.set_source(adl_parser.definition_text, adl_parser.definition_text_start_line)
-					definition_context.parse
-					if not definition_context.parse_succeeded then
-						parse_error_text := definition_context.parse_error_text
+
+					------------------- description section ---------------
+					if adl_parser.description_text /= Void and then not adl_parser.description_text.is_empty then
+						description_context.set_source(adl_parser.description_text, adl_parser.description_text_start_line)
+						description_context.parse
+						if not description_context.parse_succeeded then
+							parse_error_text := description_context.parse_error_text
+							description_error := True
+						end
 					else
-						if adl_parser.invariant_text /= Void and then not adl_parser.invariant_text.is_empty then
-							invariant_context.set_source(adl_parser.invariant_text, adl_parser.invariant_text_start_line)
-							invariant_context.parse
-							if not invariant_context.parse_succeeded then
-								parse_error_text := invariant_context.parse_error_text
-								invariant_error := True
-							end
-						else
-							invariant_context.reset
+						description_context.reset
+					end
+					if not description_error then
+						if description_context.tree /= Void then
+							res_desc ?= description_context.tree.as_object (res_desc_id)
 						end
 
-						if not invariant_error then
-							ontology_context.set_source(adl_parser.ontology_text, adl_parser.ontology_text_start_line)
-							ontology_context.parse
-							if not ontology_context.parse_succeeded then
-							    parse_error_text := ontology_context.parse_error_text
+						------------------- definition section ---------------
+						definition_context.set_source(adl_parser.definition_text, adl_parser.definition_text_start_line)
+						definition_context.parse
+						if not definition_context.parse_succeeded then
+							parse_error_text := definition_context.parse_error_text
+						else
+							------------------- invariant section ---------------
+							if adl_parser.invariant_text /= Void and then not adl_parser.invariant_text.is_empty then
+								invariant_context.set_source(adl_parser.invariant_text, adl_parser.invariant_text_start_line)
+								invariant_context.parse
+								if not invariant_context.parse_succeeded then
+									parse_error_text := invariant_context.parse_error_text
+									invariant_error := True
+								end
 							else
-							    create archetype.make(
-								    adl_parser.archetype_id,
-								    adl_parser.concept,
-								    arch_desc,	-- may be Void
-								    definition_context.tree,
-								    create {ARCHETYPE_ONTOLOGY}.make_from_tree(ontology_context.tree, 
-								    	adl_parser.concept)
-							    )
-								if adl_parser.adl_version /= Void then
-									archetype.set_adl_version(adl_parser.adl_version)
+								invariant_context.reset
+							end
+
+							if not invariant_error then
+								------------------- ontology section ---------------
+								ontology_context.set_source(adl_parser.ontology_text, adl_parser.ontology_text_start_line)
+								ontology_context.parse
+								if not ontology_context.parse_succeeded then
+									parse_error_text := ontology_context.parse_error_text
 								else
-									archetype.set_adl_version(Current_adl_version)
+									create arch_ont.make_from_tree(ontology_context.tree, adl_parser.concept)
+									if orig_lang_trans = Void then
+										orig_lang := arch_ont.primary_language
+										create orig_lang_trans.make
+										orig_lang_trans.set_original_language_from_string(orig_lang)
+										from
+											arch_ont.languages_available.start
+										until
+											arch_ont.languages_available.off
+										loop
+											if not arch_ont.languages_available.item.is_equal(arch_ont.primary_language) then
+												orig_lang_trans.add_new_translation (arch_ont.languages_available.item)
+											end
+											arch_ont.languages_available.forth
+										end
+									else
+										orig_lang := orig_lang_trans.original_language.code_string
+									end
+									
+									create archetype.make(
+										adl_parser.archetype_id,
+										adl_parser.concept,
+										orig_lang,
+										res_desc,	-- may be Void
+										definition_context.tree,
+										arch_ont
+									)
+									if adl_parser.adl_version /= Void then
+										archetype.set_adl_version(adl_parser.adl_version)
+									else
+										archetype.set_adl_version(Current_adl_version)
+									end
+									
+									if adl_parser.is_controlled then
+										archetype.set_is_controlled
+									end
+									if adl_parser.parent_archetype_id /= Void then
+										archetype.set_parent_archetype_id(adl_parser.parent_archetype_id)
+									end						
+									
+									-- if there was no language section, then create the equivalent object
+									-- and use it to paste translations into the archetype
+									if orig_lang_trans.translations /= Void then
+										archetype.set_translations(orig_lang_trans.translations)
+									end
+
+									if invariant_context.tree /= Void then
+										archetype.set_invariants(invariant_context.tree)
+									end
+									if not archetype.is_valid then
+										parse_error_text := archetype.errors		
+									end
 								end
-								if adl_parser.is_controlled then
-									archetype.set_is_controlled
-								end
-							    if adl_parser.parent_archetype_id /= Void then
-								    archetype.set_parent_archetype_id(adl_parser.parent_archetype_id)
-							    end						
-							    if invariant_context.tree /= Void then
-								    archetype.set_invariants(invariant_context.tree)
-							    end
-							    if not archetype.is_valid then
-								    parse_error_text := archetype.errors		
-							    end
 							end
 						end
 					end
-				end
+				end				
 			end
+
 		end
 		
 	serialise(a_format: STRING) is
@@ -243,6 +298,7 @@ feature -- Commands
 			Archetype_valid: archetype.is_valid
 		do
 			synchronise_from_archetype
+			language_context.serialise(a_format)
 			description_context.serialise(a_format)
 			definition_context.serialise(a_format, ontology)
 			
@@ -253,10 +309,12 @@ feature -- Commands
 			ontology_context.serialise(a_format)
 			
 			create serialiser_mgr.make(archetype, a_format, ontology)
-			serialiser_mgr.serialise(description_context.serialised, 
-					definition_context.serialised, 
-					invariant_context.serialised,
-					ontology_context.serialised)
+			serialiser_mgr.serialise(
+				language_context.serialised, 
+				description_context.serialised, 
+				definition_context.serialised, 
+				invariant_context.serialised,
+				ontology_context.serialised)
 			serialised_archetype := serialiser_mgr.last_result
 		end
 		
@@ -264,7 +322,11 @@ feature -- Commands
 			-- synchronise archetype to processing engines
 		do
 			archetype.synchronise
-			
+		
+		-- FIXME: currently translations and original_language from archetype are serialsed together	
+		--	if archetype.translations /= Void then
+				language_context.set_tree (archetype.orig_lang_translations.dt_representation)
+		--	end
 			description_context.set_tree(archetype.description.dt_representation)					
 			definition_context.set_tree(archetype.definition)
 			if archetype.has_invariants then
@@ -279,6 +341,8 @@ feature {NONE} -- Implementation
 
 	serialiser_mgr: ARCHETYPE_SERIALISER_MGR
 
+	language_context: DADL_ENGINE
+	
 	description_context: DADL_ENGINE
 
 	definition_context: CADL_ENGINE
@@ -287,9 +351,17 @@ feature {NONE} -- Implementation
 
 	ontology_context: DADL_ENGINE
 	
-	arch_desc_id: INTEGER is
+	res_desc_id: INTEGER is
+			-- dynamic type id of RESOURCE_DESCRIPTION type
 		once
-			Result := dynamic_type(create {ARCHETYPE_DESCRIPTION}.make)
+			Result := dynamic_type(create {RESOURCE_DESCRIPTION}.make)
+		end
+
+	trans_det_id: INTEGER is
+			-- dynamic type id of dummy class containing translations: LIST [TRANSLATION_DETAILS], to 
+			-- mimic AUTHORED_RESOURCE - only needed until ADL2
+		once
+			Result := dynamic_type(create {LANGUAGE_TRANSLATIONS}.make)
 		end
 
 end

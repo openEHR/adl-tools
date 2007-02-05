@@ -61,7 +61,7 @@ feature -- Definitions
 	Default_language: CODE_PHRASE is 
 			-- default is "en-au"
 		once
-			create Result.make("ISO:639-1(1988)::en-au")
+			create Result.make_from_string("ISO:639-1(1988)::en-au")
 		end
 	
 	Default_value:STRING is "(default)"

@@ -61,7 +61,7 @@ feature -- Initialization
 			Code_string_set: code_string.is_equal(default_code_string)
 		end
 
-	make, make_from_string(a_key: STRING) is
+	make_from_string(a_key: STRING) is
 			-- make from a string of the form terminology_id::code_string, e.g. ICD10(1998)::M10
 			-- the form terminology_id:: is also allowable, in which case the default_code_string will
 			-- be used
@@ -80,6 +80,19 @@ feature -- Initialization
 		ensure
 			Terminology_id_set: terminology_id /= Void
 			Code_string_set: code_string /= Void
+		end
+
+	make(a_terminology_id, a_code_string: STRING) is
+			-- make from two strings
+		require
+			Terminology_id_valid: a_terminology_id /= Void and then not a_terminology_id.is_empty
+			Code_string_valid: a_code_string /= Void and then not a_code_string.is_empty
+		do
+			create terminology_id.make (a_terminology_id)
+			code_string := a_code_string
+		ensure
+			Terminology_id_set: terminology_id.value.is_equal(a_terminology_id)
+			Code_string_set: code_string = a_code_string
 		end
 
 	make_from_canonical_string(str:STRING) is

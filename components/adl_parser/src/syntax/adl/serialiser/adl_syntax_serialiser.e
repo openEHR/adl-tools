@@ -26,7 +26,7 @@ creation
 
 feature -- Serialisation
 
-	serialise (a_target: ARCHETYPE; desc_serialised, def_serialised, inv_serialised, ont_serialised: STRING) is
+	serialise (a_target: ARCHETYPE; lang_serialised, desc_serialised, def_serialised, inv_serialised, ont_serialised: STRING) is
 		do
 			target := a_target
 			
@@ -34,6 +34,11 @@ feature -- Serialisation
 			serialise_archetype_id
 			serialise_archetype_specialise
 			serialise_archetype_concept
+			
+			if not lang_serialised.is_empty then
+				last_result.append(apply_style(symbol(SYM_LANGUAGE), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
+				last_result.append(lang_serialised)				
+			end
 			
 			if not desc_serialised.is_empty then
 				last_result.append(apply_style(symbol(SYM_DESCRIPTION), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
@@ -108,9 +113,9 @@ feature -- Serialisation
 			s: STRING
 		do
 			last_result.append(apply_style(symbol(SYM_CONCEPT), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
-			last_result.append(create_indent(1) + apply_style("[" + target.concept_code + "]", STYLE_TERM_REF))
+			last_result.append(create_indent(1) + apply_style("[" + target.concept + "]", STYLE_TERM_REF))
 				
-			s := target.concept_code
+			s := target.concept
 			last_result.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) + 
 				 safe_comment(ontology.term_definition(language, s).item("text")), STYLE_COMMENT))
 
