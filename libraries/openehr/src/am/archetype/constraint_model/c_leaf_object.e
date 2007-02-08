@@ -27,34 +27,6 @@ feature -- Source Control
 			Result := effective_specialisation_status (archetype_specialisation_level)
 		end
 
-feature -- Access
-
-	assumed_value: like default_value
-			-- value to be assumed if none sent in data
-
-feature -- Status Report
-	
-	has_assumed_value: BOOLEAN is
-			-- True if there is an assumed value
-		do
-			Result := assumed_value /= Void
-		end
-		
-feature -- Modification
-
-	set_assumed_value(a_value: like assumed_value) is
-			-- set `assumed_value'
-		require
-			a_value /= Void and then valid_value(a_value)
-		do
-			assumed_value := a_value
-		ensure
-			assumed_value_set: assumed_value = a_value
-		end
-	
-invariant
-	Assumed_value_valid: assumed_value /= Void implies valid_value(assumed_value)
-
 end
 
 

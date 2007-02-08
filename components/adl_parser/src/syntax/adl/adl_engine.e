@@ -230,7 +230,15 @@ feature -- Commands
 								if not ontology_context.parse_succeeded then
 									parse_error_text := ontology_context.parse_error_text
 								else
-									create arch_ont.make_from_tree(ontology_context.tree, adl_parser.concept)
+									-- if there was a language section, get the original language
+									if orig_lang_trans /= Void then
+										orig_lang := orig_lang_trans.original_language.code_string
+									end
+									
+									-- this call will forgive the first argument being Void for the moment
+									create arch_ont.make_from_tree(orig_lang, ontology_context.tree, adl_parser.concept)
+									
+									-- if there was no language section, mine the original_language and translations from the ontology
 									if orig_lang_trans = Void then
 										orig_lang := arch_ont.primary_language
 										create orig_lang_trans.make
@@ -245,8 +253,6 @@ feature -- Commands
 											end
 											arch_ont.languages_available.forth
 										end
-									else
-										orig_lang := orig_lang_trans.original_language.code_string
 									end
 									
 									create archetype.make(

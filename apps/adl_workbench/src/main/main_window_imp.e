@@ -738,6 +738,7 @@ feature {NONE}-- Initialization
 			language_combo.select_actions.extend (agent select_language)
 			archetype_file_tree.select_actions.extend (agent archetype_view_tree_item_select)
 			arch_notebook.selection_actions.extend (agent arch_notebook_select)
+			arch_translations_languages_list.select_actions.extend (agent translations_select_language)
 			parsed_archetype_tree.select_actions.extend (agent node_map_item_select)
 			tree_expand_bn.select_actions.extend (agent node_map_toggle_expand_tree)
 			tree_expand_one_bn.select_actions.extend (agent node_map_expand_tree_one_level)
@@ -914,6 +915,11 @@ feature {NONE} -- Implementation
 	
 	arch_notebook_select is
 			-- Called by `selection_actions' of `arch_notebook'.
+		deferred
+		end
+	
+	translations_select_language is
+			-- Called by `select_actions' of `arch_translations_languages_list'.
 		deferred
 		end
 	

@@ -551,7 +551,7 @@ feature -- Domain object creation
 			-- C_ORDINAL.add_item(an_ordinal)
 		do
 			Result := new_handle
-			put_c_ordinal(constraint_model_factory.create_c_ordinal(c_attribute(h_parent_c_attribute)), Result)
+			put_c_ordinal(constraint_model_factory.create_c_dv_ordinal(c_attribute(h_parent_c_attribute)), Result)
 		end
 
 	create_ordinal (h_c_ordinal: INTEGER; a_value: INTEGER; a_symbol_code_phrase: POINTER) is
@@ -586,7 +586,7 @@ feature -- Domain object creation
 			-- parent_valid: has_c_attribute(h_parent_c_attribute)
 		do
 			Result := new_handle
-			put_c_quantity(constraint_model_factory.create_c_quantity(c_attribute(h_parent_c_attribute)), Result)
+			put_c_quantity(constraint_model_factory.create_c_dv_quantity(c_attribute(h_parent_c_attribute)), Result)
 		end
 
 	create_cardinality_make_bounded (a_lower, an_upper: INTEGER): INTEGER is

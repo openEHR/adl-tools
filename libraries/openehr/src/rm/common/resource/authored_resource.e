@@ -46,13 +46,45 @@ feature -- Access
 	current_revision: STRING is
 			-- Current revision if revision_history exists else "(uncontrolled)".
 		do
+			if revision_history /= Void then
+				Result := revision_history.most_recent_version
+			else
+				Result := uncontrolled_revision_name.twin
+			end
 		end
 
-	languages_available: SET [STRING] is
+	languages_available: LIST [STRING] is
 			-- Total list of languages available in this resource, derived from 
-			-- original_language and translations.
+			-- original_language and translations. Guaranteed to at least include original_language
 		do
+			if stored_languages_available = Void then
+				create {ARRAYED_LIST[STRING]} stored_languages_available.make(0)
+				stored_languages_available.extend(original_language.code_string)
+				if translations /= Void then				
+					from
+						translations.start
+					until
+						translations.off
+					loop
+						stored_languages_available.extend(translations.key_for_iteration)
+						translations.forth
+					end
+				end
+				stored_languages_available.compare_objects
+			end
+			Result := stored_languages_available
 		end
+
+	translation_for_lang(a_lang: STRING): TRANSLATION_DETAILS is
+			-- get translation details for a_lang
+			-- Void if nothing for that language
+		require
+			Lang_valid: a_lang /= Void and then not a_lang.is_empty
+		do
+			if translations.has(a_lang) then
+				Result := translations.item(a_lang)
+			end
+		end		
 
 feature -- Status Report
 
@@ -75,8 +107,44 @@ feature -- Modification
 			a_trans /= Void
 		do
 			translations := a_trans
+			stored_languages_available := Void
 		end
 
+	add_default_translation(a_lang: STRING) is
+			-- add a blank translation object for a_lang
+		require
+			Lang_valid: a_lang /= Void and then not languages_available.has(a_lang)
+		local
+			a_trans: TRANSLATION_DETAILS
+		do
+			create a_trans.make(a_lang)
+			a_trans.add_author_detail ("name", "unknown")
+			add_translation (a_trans, a_lang)
+		end
+		
+	add_translation(a_trans: TRANSLATION_DETAILS; a_lang: STRING) is
+			-- add a translation for a_lang
+		require
+			Lang_valid: a_lang /= Void and then not languages_available.has(a_lang)
+			Translation_valid: a_trans /= Void
+		do
+			if translations = Void then
+				create translations.make(0)
+			end
+			translations.put (a_trans, a_lang)
+			stored_languages_available := Void
+		end
+		
+	add_language(a_lang: STRING) is
+			-- add a new language to the resource, creating appropriate copies
+		require
+			Lang_valid: a_lang /= Void and then not languages_available.has(a_lang)
+		do
+			add_default_translation(a_lang)
+			description.add_language(a_lang)
+			stored_languages_available := Void
+		end
+		
 feature -- Status setting
 
 	set_is_controlled is
@@ -109,7 +177,13 @@ feature {ADL_ENGINE} -- Implementation
 	orig_lang_translations: LANGUAGE_TRANSLATIONS
 			-- holds a copy of translations for purposes of DT object/dADL 
 			-- reading and writing
+
+feature {NONE} -- Implementation
 			
+	stored_languages_available: LIST [STRING]
+			-- Total list of languages available in this resource, derived from 
+			-- original_language and translations. Guaranteed to at least include original_language
+
 invariant
 	Description_exists: description /= Void
 	Original_language_valid: original_language /= void and then 

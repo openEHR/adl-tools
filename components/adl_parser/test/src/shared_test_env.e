@@ -30,6 +30,11 @@ inherit
 
 	SHARED_C_ADL_INTERFACE
 	
+	ADL_DEFINITIONS
+		export
+			{NONE}
+		end
+	
 feature -- Access
 
 	serialise_format: STRING is "adl"

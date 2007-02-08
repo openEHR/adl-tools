@@ -29,7 +29,7 @@ create {ADL_ENGINE}
 	
 feature -- Definitions
 
-	Default_concept: STRING is "at0000"
+	Default_concept_code: STRING is "at0000"
 
 feature  {ADL_ENGINE} -- Initialisation
 
@@ -45,12 +45,12 @@ feature  {ADL_ENGINE} -- Initialisation
 			adl_version := 	Current_adl_version
 	
 			create concept.make(0)
-			concept.append(Default_concept)
+			concept.append(Default_concept_code)
 			
 			create original_language.make (Default_language_code_set, an_original_language)
 			
 			create description.make
-			create definition.make_identified(an_id.rm_entity, Default_concept)
+			create definition.make_identified(an_id.rm_entity, Default_concept_code)
 			
 			create a_term.make(concept)
 			a_term.add_item("text", "unknown")
@@ -58,7 +58,7 @@ feature  {ADL_ENGINE} -- Initialisation
 			create ontology.make_empty(an_original_language, a_term)
 		ensure
 			Id_set: archetype_id = an_id
-			Concept_set: concept.is_equal(Default_concept)
+			Concept_set: concept.is_equal(Default_concept_code)
 		end
 
 	make(an_id: ARCHETYPE_ID; 

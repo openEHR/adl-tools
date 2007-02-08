@@ -45,18 +45,22 @@ feature -- Initialisation
 		do
 			language := default_language_code
 			create author.make(0)
+			add_author_detail ("name", "unknown")
 		end
 		
-	make is
-			-- default make
+	make(a_lang: STRING) is
+			-- make
+		require
+			Language_valid: a_lang /= Void and then not a_lang.is_empty
 		do
 			default_create
+			create language.make (default_language_code_set, a_lang)
 		end
 		
 	make_dt is
 			-- make used by DT_OBJECT_CONVERTER
 		do
-			make
+			default_create
 		end
 		
 feature -- Access

@@ -597,6 +597,12 @@ feature {NONE} -- Commands
 			end
 		end
 
+	translations_select_language is
+			-- Called by `select_actions' of `arch_translations_languages_list'.
+		do
+			translation_controls.populate_items
+		end
+
 feature -- Controls
 
 	ontology_controls: GUI_ONTOLOGY_CONTROLS is

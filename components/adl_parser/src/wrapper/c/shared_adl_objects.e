@@ -85,7 +85,7 @@ feature -- Access
 			Result := adl_objects.assertions.item(a_handle)
 		end
 
-	c_ordinal(a_handle: INTEGER): C_ORDINAL is
+	c_ordinal(a_handle: INTEGER): C_DV_ORDINAL is
 		require
 			has_c_ordinal(a_handle)
 		do
@@ -249,13 +249,13 @@ feature -- Commands
 			adl_objects.c_objects.put(an_item, a_handle)
 		end
 
-	put_c_ordinal(an_item: C_ORDINAL; a_handle: INTEGER) is
+	put_c_ordinal(an_item: C_DV_ORDINAL; a_handle: INTEGER) is
 		do
 			adl_objects.c_ordinals.put(an_item, a_handle)
 			adl_objects.c_objects.put(an_item, a_handle)
 		end
 
-	put_c_quantity(an_item: C_QUANTITY; a_handle: INTEGER) is
+	put_c_quantity(an_item: C_DV_QUANTITY; a_handle: INTEGER) is
 		do
 			adl_objects.c_quantities.put(an_item, a_handle)
 			adl_objects.c_objects.put(an_item, a_handle)

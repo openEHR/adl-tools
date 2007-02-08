@@ -45,6 +45,12 @@ feature -- Commands
 			-- wipe out content
 		do
 			gui.arch_translations_languages_list.wipe_out
+			clear_items
+		end
+
+	clear_items is
+			-- wipe out content
+		do
 			gui.arch_translations_accreditation_text.remove_text
 			gui.arch_translations_author_mlist.wipe_out
 			gui.arch_translations_other_details_mlist.wipe_out
@@ -52,37 +58,38 @@ feature -- Commands
 
 	populate is
 			-- populate controls
-		local
-			trans_item: TRANSLATION_DETAILS
 		do
 			clear
 			if adl_interface.archetype.translations /= Void then
 				populate_ev_list_from_hash_keys(gui.arch_translations_languages_list, adl_interface.archetype.translations)
-				
-				-- determine selected language
-				if gui.arch_translations_languages_list.selected_item = Void then
-					translation_language := gui.arch_translations_languages_list.first.text
-				else
-					translation_language := gui.arch_translations_languages_list.selected_item.text
-				end
-
-				trans_item := adl_interface.archetype.translations.item(translation_language)
-				
-				-- populate author hash
-				populate_ev_multi_list_from_hash(gui.arch_translations_author_mlist, trans_item.author)
-
-				if trans_item.accreditation /= Void then
-					gui.arch_translations_accreditation_text.set_text(trans_item.accreditation)
-				end
-
-				-- populate other_details
-				populate_ev_multi_list_from_hash(gui.arch_translations_other_details_mlist, trans_item.other_details)
+				populate_items
 			end
 		end
 
-	select_language is
-			-- select a language in languages list and populate other controls accordingly
+	populate_items is
+			-- populate controls
+		local
+			trans_item: TRANSLATION_DETAILS
 		do
+			clear_items
+			
+			-- determine selected language
+			if gui.arch_translations_languages_list.selected_item = Void then
+				translation_language := gui.arch_translations_languages_list.first.text
+			else
+				translation_language := gui.arch_translations_languages_list.selected_item.text
+			end
+
+			trans_item := adl_interface.archetype.translations.item(translation_language)
+				
+			-- populate author hash
+			populate_ev_multi_list_from_hash(gui.arch_translations_author_mlist, trans_item.author)
+			if trans_item.accreditation /= Void then
+				gui.arch_translations_accreditation_text.set_text(trans_item.accreditation)
+			end
+
+			-- populate other_details
+			populate_ev_multi_list_from_hash(gui.arch_translations_other_details_mlist, trans_item.other_details)
 		end
 
 feature {NONE} -- Implementation

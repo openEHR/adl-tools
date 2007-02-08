@@ -75,7 +75,7 @@ feature -- Access
 			-- URI of archetype package
 
 	details: HASH_TABLE [RESOURCE_DESCRIPTION_ITEM, STRING]
-			-- list of descriptive details, in one or more languages
+			-- list of descriptive details, keyed by language
 			
 	lifecycle_state: STRING
 			-- Lifecycle state of the archetype. Includes states such as
@@ -171,6 +171,16 @@ feature -- Modification
 			details.force(a_value, a_language)
 		ensure
 			Details_set: details.has(a_language)
+		end
+	
+	add_language(a_lang: STRING) is
+			-- add a new language to the resource, creating appropriate copies
+--		require
+--			Lang_valid: a_lang /= Void and then not languages_available.has(a_lang)
+		do
+			-- get RESOURCE_DESCRIPTION_ITEM of original_language
+			-- copy it
+			-- mark up all the strings, i.e. convert "ssss" -> "*sss(lang)"
 		end
 	
 	clear_details is

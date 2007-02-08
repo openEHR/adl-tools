@@ -66,12 +66,12 @@ feature -- testing
 			
 			-- expr 1: ordinal = 1
 			id_expr_leaf1 := cf.create_expr_leaf_object_ref ("/an_ordinal")
-			id_expr_leaf2 := cf.create_expr_leaf_ordinal (create {ORDINAL}.make(1, create{CODE_PHRASE}.make("local::at0220")))
+			id_expr_leaf2 := cf.create_expr_leaf_ordinal (create {ORDINAL}.make(1, create{CODE_PHRASE}.make_from_string("local::at0220")))
 			expr1 := cf.create_expr_binary_operator_node (create {OPERATOR_KIND}.make(op_eq), id_expr_leaf1, id_expr_leaf2)
 
 			-- expr 2: term = [openehr::253]
 			id_expr_leaf1 := cf.create_expr_leaf_object_ref ("/a_term")
-			id_expr_leaf2 := cf.create_expr_leaf_coded_term (create{CODE_PHRASE}.make("openehr::253"))
+			id_expr_leaf2 := cf.create_expr_leaf_coded_term (create{CODE_PHRASE}.make_from_string("openehr::253"))
 			expr2 := cf.create_expr_binary_operator_node (create {OPERATOR_KIND}.make(op_eq), id_expr_leaf1, id_expr_leaf2)
 			
 			-- expr 1 implies expr 2
@@ -81,12 +81,12 @@ feature -- testing
 
 			-- expr 1: ordinal = 2
 			id_expr_leaf1 := cf.create_expr_leaf_object_ref ("/an_ordinal")
-			id_expr_leaf2 := cf.create_expr_leaf_ordinal (create {ORDINAL}.make(2, create{CODE_PHRASE}.make("local::at0221")))
+			id_expr_leaf2 := cf.create_expr_leaf_ordinal (create {ORDINAL}.make(2, create{CODE_PHRASE}.make_from_string("local::at0221")))
 			expr1 := cf.create_expr_binary_operator_node (create {OPERATOR_KIND}.make(op_eq), id_expr_leaf1, id_expr_leaf2)
 
 			-- expr 2: term = [openehr::271]
 			id_expr_leaf1 := cf.create_expr_leaf_object_ref ("/a_term")
-			id_expr_leaf2 := cf.create_expr_leaf_coded_term (create{CODE_PHRASE}.make("openehr::271"))
+			id_expr_leaf2 := cf.create_expr_leaf_coded_term (create{CODE_PHRASE}.make_from_string("openehr::271"))
 			expr2 := cf.create_expr_binary_operator_node (create {OPERATOR_KIND}.make(op_eq), id_expr_leaf1, id_expr_leaf2)
 			
 			-- expr 1 xor expr 2

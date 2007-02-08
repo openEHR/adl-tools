@@ -30,7 +30,7 @@ creation
 
 feature -- Access
 
-	title:STRING is "C_QUANTITY bidirectional conversion from dADL"
+	title:STRING is "C_DV_QUANTITY bidirectional conversion from dADL"
 
 feature -- Initialisation
 
@@ -83,7 +83,7 @@ feature -- Access
 feature -- Implementation
 
 	dadl_c_quantity: STRING is "[
-			C_QUANTITY <
+			C_DV_QUANTITY <
 				property = <[openehr::271]>
 				list = <
 					["1"] = <
@@ -102,7 +102,7 @@ feature -- Implementation
 			>
 		]"
 
-	test_object: C_QUANTITY
+	test_object: C_DV_QUANTITY
 
 end
 

@@ -73,17 +73,21 @@ feature -- Initialisation
 			create constraint_bindings.make(0)
 		end
 
-	make_from_tree(a_dadl_tree: DT_COMPLEX_OBJECT_NODE; a_concept_code: STRING) is
+	make_from_tree(a_primary_lang: STRING; a_dadl_tree: DT_COMPLEX_OBJECT_NODE; a_concept_code: STRING) is
 			-- make ontology from parse tree and concept code, usually something
 			-- like 'at0000' or 'at0000.1'. The specialisation depth of the 
 			-- ontology is determined from this code
 		require
+			Primary_language_valid: a_primary_lang /= Void implies not a_primary_lang.is_empty -- FIXME make mandatory with ADL2
 			Tree_exists: a_dadl_tree /= Void
 			Root_code_valid: a_concept_code /= Void and then not a_concept_code.is_empty
 		do
 			default_create
 			representation := a_dadl_tree
 			set_concept_code(a_concept_code)
+			if a_primary_lang /= Void then
+				set_primary_language(a_primary_lang)
+			end
 			synchronise_from_tree
 		end
 		
@@ -105,8 +109,13 @@ feature -- Initialisation
 feature -- Access
 
 	primary_language: STRING
-
-	languages_available: ARRAYED_LIST[STRING]
+	
+	languages_available: ARRAYED_LIST[STRING] 
+	--is
+	--		-- 
+	--	do
+	--		Result := parent.languages_available
+	--	end
 
 	terminologies_available: ARRAYED_LIST[STRING]
 	
@@ -366,7 +375,7 @@ feature -- Modification
 	set_primary_language(a_lang: STRING) is
 			-- set the primary language of the ontology
 		require
-			A_lang_valid: a_lang /= Void and then languages_available.has(a_lang)
+			A_lang_valid: a_lang /= Void -- and then languages_available.has(a_lang)
 		do
 			primary_language := a_lang
 		ensure
@@ -771,15 +780,15 @@ feature -- Synchronisation
 		do
 			create representation.make_anonymous
 
-			-- primary_language: STRING
-			create an_attr_node.make_single(Sym_primary_language)
-			representation.put_attribute (an_attr_node)
-			an_attr_node.put_child(create {DT_PRIMITIVE_OBJECT}.make_anonymous (primary_language))
+			-- primary_language: STRING -- can be removed with ADL2
+--			create an_attr_node.make_single(Sym_primary_language)
+--			representation.put_attribute (an_attr_node)
+--			an_attr_node.put_child(create {DT_PRIMITIVE_OBJECT}.make_anonymous (primary_language))
 
-			-- languages_available: ARRAYED_LIST [STRING]
-			create an_attr_node.make_single(Sym_languages_available)
-			representation.put_attribute (an_attr_node)
-			an_attr_node.put_child(create {DT_PRIMITIVE_OBJECT_LIST}.make_anonymous (languages_available))
+			-- languages_available: ARRAYED_LIST [STRING] -- can be removed with ADL2
+--			create an_attr_node.make_single(Sym_languages_available)
+--			representation.put_attribute (an_attr_node)
+--			an_attr_node.put_child(create {DT_PRIMITIVE_OBJECT_LIST}.make_anonymous (languages_available))
 			
 			-- terminologies_available: ARRAYED_LIST [STRING]
 			if not terminologies_available.is_empty then
@@ -960,45 +969,59 @@ feature {NONE} -- Implementation
 			term_defs_one_lang: HASH_TABLE[ARCHETYPE_TERM, STRING]
 			term_bindings_one_terminology: HASH_TABLE[CODE_PHRASE, STRING]
 			constraint_bindings_one_terminology: HASH_TABLE[URI, STRING]
-			code: STRING
+			code, a_lang: STRING
 			sl: ARRAYED_LIST[STRING]
-		do
-			-- for languages available, should be a list from '= <"en", ...>' in the ADL text
-			-- but we don't want to die if they just wrote '= <"en">' - we do an implicit
-			-- conversion
-			sl := string_list_at_path("/" + Sym_languages_available) 
-			if sl /= Void then
-				set_languages_available(sl)
-			else
-				create sl.make(0)
-				sl.extend(string_at_path("/" + Sym_languages_available))
-			end
-			set_primary_language(string_at_path("/" + Sym_primary_language))
-			
+			an_attr_node: DT_ATTRIBUTE_NODE
+		do			
 			if representation.has_path("/" + Sym_terminologies_available) then
 				terminologies_available := string_list_at_path("/" + Sym_terminologies_available)
 			end
 			
-			-- populate term and constraint definitions
-			from
-				languages_available.start
-			until
-				languages_available.off
-			loop
-				if has_path("/" + Sym_term_definitions + "[" + languages_available.item + "]/items") then
-					create term_defs_one_lang.make(0)
-					populate_term_defs(Sym_term_definitions, languages_available.item, term_defs_one_lang)
-					term_definitions.force(term_defs_one_lang , languages_available.item)
+			languages_available.wipe_out
+			
+			-- populate term definitions & languages_available (temporarily, until all archetypes 
+			-- have a proper language section
+			an_attr_node := representation.attribute_node_at_path("/" + Sym_term_definitions)				
+			if an_attr_node.is_multiple then
+				from 
+					an_attr_node.start
+				until
+					an_attr_node.off
+				loop
+					a_lang := an_attr_node.item.node_id
+					if has_path("/" + Sym_term_definitions + "[" + a_lang + "]/items") then
+						create term_defs_one_lang.make(0)
+						populate_term_defs(Sym_term_definitions, a_lang, term_defs_one_lang)
+						term_definitions.force(term_defs_one_lang , a_lang)
+					end
+					languages_available.extend(a_lang)
+					an_attr_node.forth
 				end
-
-				if has_path("/" + Sym_constraint_definitions + "[" + languages_available.item + "]/items") then
-					create term_defs_one_lang.make(0)
-					populate_term_defs(Sym_constraint_definitions, languages_available.item, term_defs_one_lang)
-					constraint_definitions.force(term_defs_one_lang, languages_available.item)
-				end
-				languages_available.forth
 			end
-
+			if has_path("/" + Sym_primary_language) then
+				set_primary_language(string_at_path("/" + Sym_primary_language))				
+			end
+			
+			-- populate constraint definitions
+			if has_path("/" + Sym_constraint_definitions) then
+				an_attr_node := representation.attribute_node_at_path("/" + Sym_constraint_definitions)				
+				if an_attr_node.is_multiple then
+					from 
+						an_attr_node.start
+					until
+						an_attr_node.off
+					loop
+						a_lang := an_attr_node.item.node_id
+						if has_path("/" + Sym_constraint_definitions + "[" + a_lang + "]/items") then
+							create term_defs_one_lang.make(0)
+							populate_term_defs(Sym_constraint_definitions, a_lang, term_defs_one_lang)
+							constraint_definitions.force(term_defs_one_lang , a_lang)
+						end
+						an_attr_node.forth
+					end
+				end
+			end
+			
 			-- populate term code list
 			from
 				term_definitions.item(primary_language).start
@@ -1418,6 +1441,12 @@ feature {NONE} -- Implementation
 			not term_bindings.has(a_terminology)
 			not constraint_bindings.has(a_terminology)
 		end
+
+feature {NONE} -- Obsolete in ADL2
+
+	x_primary_language: STRING
+
+	x_languages_available: ARRAYED_LIST[STRING]
 
 invariant
 	Primary_language_valid: primary_language /= Void and then not primary_language.is_empty

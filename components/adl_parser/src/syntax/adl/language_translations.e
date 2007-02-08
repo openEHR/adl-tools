@@ -91,15 +91,14 @@ feature -- Modification
 	add_new_translation(a_lang: STRING) is
 			-- add a blank translation object for a_lang
 		local
-			a_trans_det: TRANSLATION_DETAILS
+			a_trans: TRANSLATION_DETAILS
 		do
 			if translations = Void then
 				create translations.make(0)
 			end
 			
-			create a_trans_det.make
-			a_trans_det.add_author_detail ("name", "unknown")
-			translations.put (a_trans_det, a_lang)
+			create a_trans.make(a_lang)
+			translations.put (a_trans, a_lang)
 		end
 		
 feature {DT_OBJECT_CONVERTER} -- Conversion

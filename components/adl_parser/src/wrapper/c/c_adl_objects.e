@@ -87,9 +87,9 @@ feature {SHARED_ADL_OBJECTS} -- Handles
 
 	c_code_phrases: HASH_TABLE[C_CODE_PHRASE, INTEGER]
 
-	c_ordinals: HASH_TABLE[C_ORDINAL, INTEGER]
+	c_ordinals: HASH_TABLE[C_DV_ORDINAL, INTEGER]
 
-	c_quantities: HASH_TABLE[C_QUANTITY, INTEGER]
+	c_quantities: HASH_TABLE[C_DV_QUANTITY, INTEGER]
 
 	c_primitives: HASH_TABLE[C_PRIMITIVE, INTEGER]
 

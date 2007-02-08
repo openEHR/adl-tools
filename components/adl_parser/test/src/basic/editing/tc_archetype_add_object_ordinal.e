@@ -38,7 +38,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	title: STRING is "Test Archetype Add CADL_ORDINAL node"
+	title: STRING is "Test Archetype Add C_DV_ORDINAL node"
 
 	prereqs: ARRAY[STRING] is 
 			-- ids of prerequisite test cases
@@ -53,7 +53,7 @@ feature -- testing
 			archetype: ARCHETYPE
 			cf: CONSTRAINT_MODEL_FACTORY
 			an_attr_node: C_ATTRIBUTE
-			an_ordinal_node: C_ORDINAL
+			an_ordinal_node: C_DV_ORDINAL
 			an_ordinal: ORDINAL
 			a_term: ARCHETYPE_TERM
 		do
@@ -67,7 +67,7 @@ feature -- testing
 			
 			-- add ordinal node
 			an_attr_node := cf.create_c_attribute_single (archetype.definition, "an_ordinal")
-			an_ordinal_node := cf.create_c_ordinal(an_attr_node)
+			an_ordinal_node := cf.create_c_dv_ordinal(an_attr_node)
 
 			-- add some ordinal items to it
 			an_ordinal := cf.create_ordinal (0, "local::at0020")

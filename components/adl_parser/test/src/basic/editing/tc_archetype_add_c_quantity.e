@@ -38,7 +38,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	title: STRING is "Test Archetype Add C_QUANTITY node"
+	title: STRING is "Test Archetype Add C_DV_QUANTITY node"
 
 	prereqs: ARRAY[STRING] is 
 			-- ids of prerequisite test cases
@@ -53,17 +53,17 @@ feature -- testing
 			archetype: ARCHETYPE
 			cf: CONSTRAINT_MODEL_FACTORY
 			an_attr_node: C_ATTRIBUTE
-			a_c_qty: C_QUANTITY
+			a_c_qty: C_DV_QUANTITY
 		do
 			archetype := adl_interface.archetype
 			cf := adl_interface.constraint_model_factory
 
 			an_attr_node := archetype.definition.c_attribute_at_path ("/items[at0003]/items")
 
-			a_c_qty := cf.create_c_quantity (an_attr_node)
+			a_c_qty := cf.create_c_dv_quantity (an_attr_node)
 			a_c_qty.set_property (create {CODE_PHRASE}.make_from_string("openehr::271"))
-			a_c_qty.add_unit_constraint ("F", cf.create_real_interval_make_bounded (0.0, 40.0, True, True))
-			a_c_qty.add_unit_constraint ("C", cf.create_real_interval_make_bounded (0.0, 24.0, True, True))
+			a_c_qty.add_unit_constraint ("F", cf.create_real_interval_make_bounded (0.0, 40.0, True, True), Void)
+			a_c_qty.add_unit_constraint ("C", cf.create_real_interval_make_bounded (0.0, 24.0, True, True), Void)
 			
 			if archetype.is_valid then
 				adl_interface.adl_engine.serialise (serialise_format)	
