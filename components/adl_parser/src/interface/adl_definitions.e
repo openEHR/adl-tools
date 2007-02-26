@@ -14,36 +14,15 @@ indexing
 class ADL_DEFINITIONS
 
 inherit
-	CADL_TOKENS
-		export
-			{NONE} all
-		end
-
-	OPENEHR_TERMINOLOGY_IDS
+	OPENEHR_CODE_SET_IDENTIFIERS
 		export
 			{NONE} all
 		end
 		
 feature -- Definitions
-
-	Default_language_code_set: STRING is
-		once
-			Result := Terminology_iso_639_1.twin
-		end
-	
-	Default_language_code: CODE_PHRASE is 
-		do
-			create Result.make(Terminology_iso_639_1, "en")
-		end		
 		
 	Current_adl_version: STRING is "1.4"
 	
-	symbols: HASH_TABLE[STRING, INTEGER] is
-		once
-			create Result.make(0)
-			Result.put("|", SYM_INTERVAL_DELIM)
-		end
-
 end
 
 

@@ -51,13 +51,11 @@ feature -- testing
 	execute is
 		local
 			archetype: ARCHETYPE
-			obj_node2: C_COMPLEX_OBJECT
-			a_simple_node: C_PRIMITIVE_OBJECT
 		do
 			archetype := adl_interface.adl_engine.archetype
 
 			io_message.put_string ("------------------ ADD fr -------------------%N")
-			ontology.add_language_available("fr")
+			ontology.add_language("fr")
 
 			if archetype.is_valid then
 				adl_interface.adl_engine.serialise (serialise_format)
@@ -67,7 +65,7 @@ feature -- testing
 			end
 			
 			io_message.put_string ("------------------ ADD tr -------------------%N")
-			ontology.add_language_available("tr")
+			ontology.add_language("tr")
 			if archetype.is_valid then
 				adl_interface.adl_engine.serialise (serialise_format)
 				io_message.put_string (adl_interface.adl_engine.serialised_archetype)

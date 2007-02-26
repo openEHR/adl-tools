@@ -57,12 +57,6 @@ create
 	make, make_from_string, make_from_canonical_string
 
 feature -- Definitions
-
-	Default_language: CODE_PHRASE is 
-			-- default is "en-au"
-		once
-			create Result.make_from_string("ISO:639-1(1988)::en-au")
-		end
 	
 	Default_value:STRING is "(default)"
 
@@ -70,11 +64,11 @@ feature -- Initialization
 
 	default_create is
 		do
-			language := Default_language.twin
+			language := Default_language_code.deep_twin
 			value := Default_value.twin
 		ensure then
 			Value_set: value.is_equal(Default_value)
-			Language_set: language.is_equal(default_language)
+			Language_set: language.code_string.is_equal(default_language)
 		end
 
 	make, make_from_string(str:STRING) is

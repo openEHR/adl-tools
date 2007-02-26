@@ -317,7 +317,7 @@ feature -- Modification
 			ontology.add_constraint_definition (c_a_lang.string, create {ARCHETYPE_TERM}.make_from_string(c_a_term.string))
 		end
 
-	ontology_add_language_available (a_lang: POINTER) is
+	ontology_add_language (a_lang: POINTER) is
 			-- add a new language to list of languages available
 			-- No action if language already exists
 			-- REQUIRE
@@ -328,7 +328,7 @@ feature -- Modification
 			c_a_lang: C_STRING
 		do
 			create c_a_lang.make_by_pointer (a_lang)
-			ontology.add_language_available(c_a_lang.string)
+			ontology.add_language(c_a_lang.string)
 		end
 
 	ontology_add_term_binding (a_code_phrase_str: POINTER; a_term_code: POINTER) is

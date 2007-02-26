@@ -110,6 +110,12 @@ feature -- Conversion
 					"<denominator>" + denominator.out + "</denominator>"
 		end
 	
+	magnitude_as_string: STRING is
+			-- output the magnitude in its natural form
+		do
+			-- FIXME: to be implemented
+		end
+
 invariant
 	Type_validity: valid_proportion_kind(type)
 	Is_integral_validity: is_integral implies (numerator.floor = numerator and denominator.floor = denominator)

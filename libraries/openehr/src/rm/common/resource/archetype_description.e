@@ -19,8 +19,15 @@ inherit
 			default_create
 		end
 		
+	TERMINOLOGY_SERVICE
+		export
+			{NONE} all
+		undefine
+			default_create
+		end
+
 create
-	make, make_dt, make_author
+	make, make_dt, default_create
 	
 feature -- Definitions
 
@@ -36,33 +43,31 @@ feature -- Initialisation
 			lifecycle_state := Default_lifecycle_state.twin
 			create details.make(0)
 			create original_author.make(0)
+			add_original_author_item("name", Default_original_author)
+			create original_language.make(default_language_code_set, default_language)
 		ensure then
 			lifecycle_state_set: lifecycle_state.is_equal(Default_lifecycle_state)
 			details_exists: details /= Void
 		end
 		
-	make is
-			-- default make
-		do
-			default_create
-			make_author(Default_original_author)
-		end
-		
 	make_dt is
 			-- make used by DT_OBJECT_CONVERTER
 		do
-			make
+			default_create
 		end
 		
-	make_author(an_author_name: STRING) is
+	make(an_author_name, orig_lang: STRING) is
 			-- make an empty description
 		require
 			An_author_name_exists: an_author_name /= Void and then not an_author_name.is_empty
+			Language_valid: orig_lang /= Void and then not orig_lang.is_empty
 		do
 			default_create
 			add_original_author_item("name", an_author_name)
+			create original_language.make(default_language_code_set, orig_lang)
 		ensure
 			Original_author_item_set: original_author.item("name") = an_author_name
+			Original_language_set: original_language.code_string.is_equal(orig_lang)
 		end
 
 feature -- Access
@@ -87,20 +92,57 @@ feature -- Access
 
 	other_details: HASH_TABLE [STRING, STRING]
 
-	details_for_lang(a_lang: STRING): RESOURCE_DESCRIPTION_ITEM is
-			-- get details for given language
-			-- Void if nothing for that language
-		require
-			Lang_valid: a_lang /= Void and then not a_lang.is_empty
-		do
-			if details.has(a_lang) then
-				Result := details.item(a_lang)
-			end
-		end		
-
 	parent_resource: AUTHORED_RESOURCE	
 			-- Reference to owning resource.
+
+	languages: ARRAYED_SET[STRING] is
+			-- list of all languages in details
+		do
+			create Result.make(0)
+			from
+				details.start
+			until
+				details.off
+			loop
+				Result.extend(details.key_for_iteration.twin)
+				details.forth				
+			end
+		end
+		
+	detail_for_language(a_lang: STRING): RESOURCE_DESCRIPTION_ITEM is
+			-- get the RESOURCE_DESCRIPTION_ITEM for a_lang
+		require
+			Language_valid: a_lang /= Void and then details.has (a_lang)
+		do
+			Result := details.item(a_lang)
+		end
+		
+	original_language: CODE_PHRASE
+			-- a copy of original_language from parent object
 	
+feature -- Comparison
+
+	valid_detail(a_detail: RESOURCE_DESCRIPTION_ITEM): BOOLEAN is
+			-- is a_detail valid to be added to details list? Checks to see
+			-- that two detail objects both with is_original_language set
+			-- cannot be added.
+		require
+			a_detail /= Void
+		do
+			if not details.has (a_detail.language.code_string) then
+				if a_detail.is_original_language then
+					from
+						details.start
+					until
+						details.off or details.item_for_iteration.is_original_language
+					loop
+						details.forth					
+					end
+				end			
+				Result := not details.off
+			end
+		end
+
 feature -- Modification
 
 	add_original_author_item(a_key, a_value: STRING) is
@@ -159,28 +201,34 @@ feature -- Modification
 			Lifecycle_state_set: lifecycle_state = a_lifecycle_state
 		end
 
-	add_detail(a_language: STRING; a_value: RESOURCE_DESCRIPTION_ITEM) is
+	add_detail(a_detail: RESOURCE_DESCRIPTION_ITEM) is
 			-- add the a_language, value pair to other_details
 		require
-			Key_valid: a_language /= Void and then not a_language.is_empty
-			Value_valid: a_value /= Void and then a_value.language.code_string.is_equal(a_language)
+			Detail_valid: a_detail /= Void and then valid_detail(a_detail)
 		do
 			if details = Void then
 				create details.make(0)
 			end
-			details.force(a_value, a_language)
+			details.force(a_detail, a_detail.language.code_string)
 		ensure
-			Details_set: details.has(a_language)
+			Details_set: details.has(a_detail.language.code_string)
 		end
 	
-	add_language(a_lang: STRING) is
-			-- add a new language to the resource, creating appropriate copies
---		require
---			Lang_valid: a_lang /= Void and then not languages_available.has(a_lang)
+	add_language(a_new_lang: STRING) is
+			-- add a new details object created from the object for orig_lang,
+			-- with all string fields ready for translation
+		require
+			New_lang_valid: a_new_lang /= Void and then not details.has(a_new_lang)
 		do
-			-- get RESOURCE_DESCRIPTION_ITEM of original_language
-			-- copy it
-			-- mark up all the strings, i.e. convert "ssss" -> "*sss(lang)"
+			add_detail(details.item (original_language.code_string).translated_copy (a_new_lang))
+		end
+	
+	remove_detail, remove_language(a_lang: STRING) is
+			-- remove details item for a_lang from the resource
+		require
+			Lang_valid: a_lang /= Void and then details.has(a_lang)
+		do
+			details.remove (a_lang)
 		end
 	
 	clear_details is
@@ -203,6 +251,16 @@ feature -- Modification
 			Other_details_set: other_details.item(a_key) = a_value
 		end
 
+	set_parent_resource(a_res: AUTHORED_RESOURCE) is
+			-- set parent_resource
+		require
+			a_res /= Void
+		do
+			parent_resource := a_res
+		ensure
+			Parent_resource_set: parent_resource = a_res
+		end
+		
 feature {DT_OBJECT_CONVERTER} -- Conversion
 
 	persistent_attributes: ARRAYED_LIST[STRING] is

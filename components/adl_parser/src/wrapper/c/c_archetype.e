@@ -45,7 +45,7 @@ feature -- Definitions
 		local
 			obj: ANY
 		do
-			obj := adl_interface.archetype.Default_concept.to_c
+			obj := adl_interface.archetype.Default_concept_code.to_c
 			Result := $obj
 		end		
 	

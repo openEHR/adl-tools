@@ -22,6 +22,8 @@ inherit
 	AUTHORED_RESOURCE
 		rename
 			synchronise as synchronise_authored_resource
+		redefine
+			add_language
 		end
 	
 create {ADL_ENGINE}
@@ -49,7 +51,7 @@ feature  {ADL_ENGINE} -- Initialisation
 			
 			create original_language.make (Default_language_code_set, an_original_language)
 			
-			create description.make
+			create description.default_create
 			create definition.make_identified(an_id.rm_entity, Default_concept_code)
 			
 			create a_term.make(concept)
@@ -80,7 +82,7 @@ feature  {ADL_ENGINE} -- Initialisation
 			create original_language.make (Default_language_code_set, an_original_language)
 
 			if a_description = Void then
-				create description.make
+				create description.default_create
 			else
 				description := a_description
 			end
@@ -316,7 +318,7 @@ feature -- Status Report
 	is_valid: BOOLEAN is
 			-- is archetype in valid state?
 		local
-			node_list_validity, constraint_references_validity, internal_references_validity: BOOLEAN
+			node_list_validity, constraint_references_validity, internal_references_validity, language_validity: BOOLEAN
 		do
 			create errors.make(0)
 			create warnings.make(0)
@@ -357,6 +359,9 @@ feature -- Status Report
 				constraint_references_validity := constraint_references_valid
 			
 				internal_references_validity := internal_references_valid
+				
+				-- check language validity
+				language_validity := languages_valid
 			end
 			Result := errors.is_empty
 		end		
@@ -502,6 +507,15 @@ feature {ARCHETYPE} -- Validation
 			end
 		end
 
+	languages_valid: BOOLEAN is
+			-- check to see that all linguistic items in ontology, description, etc
+			-- are all coherent
+		do
+			-- is languages_available list same as languages in description.details?
+			
+			-- is languages_available list same as languages in ontology?
+		end
+		
 feature -- Comparison
 
 	valid_adl_version(a_ver: STRING): BOOLEAN is
@@ -652,6 +666,14 @@ feature -- Modification
 			end
 		end
 		
+	add_language(a_lang: STRING) is
+			-- add a new language to the archetype - creates new language section in
+			-- ontology, translations and resource description
+		do
+			precursor(a_lang)
+			ontology.add_language (a_lang)
+		end
+	
 feature -- Status setting
 
 	set_readonly is
@@ -746,7 +768,7 @@ feature {NONE} -- Implementation
 			a_c_obj: C_OBJECT
 			a_c_co: C_COMPLEX_OBJECT
 			a_c_as: ARCHETYPE_SLOT
-			a_c_o: C_DV_ORDINAL
+			a_c_ord: C_DV_ORDINAL
 			a_c_ct: C_CODE_PHRASE
 			a_i_r: ARCHETYPE_INTERNAL_REF
 			a_c_r: CONSTRAINT_REF
@@ -762,19 +784,19 @@ feature {NONE} -- Implementation
 					node_ids_xref_table.item(a_c_obj.node_id).extend(a_c_obj)
 				end
 			else
-				a_c_o ?= a_node.content_item
-				if a_c_o /= Void then
-					if a_c_o.is_local then
+				a_c_ord ?= a_node.content_item
+				if a_c_ord /= Void then
+					if not a_c_ord.any_allowed and then a_c_ord.is_local then
 						from
-							a_c_o.items.start
+							a_c_ord.items.start
 						until
-							a_c_o.items.off
+							a_c_ord.items.off
 						loop
-							if not code_nodes_code_xref_table.has(a_c_o.items.item.symbol.code_string) then
-								code_nodes_code_xref_table.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_c_o.items.item.symbol.code_string)
+							if not code_nodes_code_xref_table.has(a_c_ord.items.item.symbol.code_string) then
+								code_nodes_code_xref_table.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_c_ord.items.item.symbol.code_string)
 							end
-							code_nodes_code_xref_table.item(a_c_o.items.item.symbol.code_string).extend(a_c_o)
-							a_c_o.items.forth
+							code_nodes_code_xref_table.item(a_c_ord.items.item.symbol.code_string).extend(a_c_ord)
+							a_c_ord.items.forth
 						end
 					end
 				else

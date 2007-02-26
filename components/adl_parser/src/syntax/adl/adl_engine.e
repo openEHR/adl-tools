@@ -30,11 +30,6 @@ inherit
 			{NONE} all
 		end
 
-	ADL_DEFINITIONS
-		export
-			{NONE} all
-		end
-	
 	INTERNAL
 		export
 			{NONE} all
@@ -360,7 +355,7 @@ feature {NONE} -- Implementation
 	res_desc_id: INTEGER is
 			-- dynamic type id of RESOURCE_DESCRIPTION type
 		once
-			Result := dynamic_type(create {RESOURCE_DESCRIPTION}.make)
+			Result := dynamic_type(create {RESOURCE_DESCRIPTION}.default_create)
 		end
 
 	trans_det_id: INTEGER is

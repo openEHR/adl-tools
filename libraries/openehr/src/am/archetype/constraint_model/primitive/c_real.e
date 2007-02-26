@@ -79,15 +79,13 @@ feature -- Status Report
 
 feature -- Output
 
-	as_string:STRING is
+	as_string: STRING is
 		local
 			out_val: STRING
 		do
 			create Result.make(0)
 			if interval /= Void then
-				Result.append(symbols.item(SYM_INTERVAL_DELIM))
-				Result.append(interval_as_string)
-				Result.append(symbols.item(SYM_INTERVAL_DELIM))
+				Result.append("|" + interval_as_string + "|")
 			else
 				from
 					list.start

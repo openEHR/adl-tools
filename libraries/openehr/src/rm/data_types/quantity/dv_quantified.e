@@ -2,14 +2,8 @@ indexing
 	component:   "openEHR Data Types"
 	
 	description: "[
-				 Abstract class defining the concept of true quantified values, i.e. 
-				 values which are not only ordered, but whose magnitude is meaningful
-				 as well. The defining characteristics of the type is the attribute 
-				 magnitude - an accurate notion of quantity of something, and the 
-				 difference operation.
-				 Units were inspired by the Unified Code for Units of Measure (UCUM), 
-				 developed by Gunther Schadow and Clement J. McDonald of The Regenstrief 
-				 Institute [4]. 
+				 Abstract class defining the concept of true quantified values, i.e. values which are 
+				 not only ordered, but which have a precise magnitude.
 				 ]"
 	keywords:    "data, quantified, quantity"
 
@@ -51,21 +45,6 @@ feature -- Access
 			-- "~" : value is approximately magnitude
 			-- If not present, meaning is “=”.
 
-	accuracy: REAL
-			-- optional accuracy of measurement instrument or method which applies 
-			-- to this specific instance of DV_QUANTIFIED, expressed as the value 
-			-- of the half-range quoted for the accuracy, e.g. "+/- 5%" is represented 
-			-- as a DV_QUANTITY of value 5 and units "%".
-			
-	accuracy_is_percent: BOOLEAN
-			-- If True, indicates that when this object was created, accuracy was recorded as a 
-			-- percent value; if False, as an absolute quantity value.
-
-	diff_type: DV_QUANTIFIED is
-			-- type of difference for this quantity
-		deferred
-		end
-		
 feature -- Comparison
 
 	infix "<" (other: like Current): BOOLEAN is
@@ -77,15 +56,6 @@ feature -- Comparison
 			Result := other_c < this_c
 		end
 
-	valid_percentage(v: REAL):BOOLEAN is
-			-- True if v between 0 and 1
-		local
-			a_comparable: COMPARABLE
-		do
-			a_comparable ?= v
-			Result := a_comparable >= 0.0 and a_comparable <= 1.0
-		end
-		
 	valid_magnitude_status(s: STRING): BOOLEAN is
 			-- Test whether a string value is one of the valid
 			-- values for the magnitude_status attribute.
@@ -97,40 +67,9 @@ feature -- Comparison
 				s.is_equal("<=") or s.is_equal(">=") or s.is_equal("~")
 		end
 
-feature -- Basic Operations
-
-	infix "+" (diff_val: like diff_type): like Current is
-			-- addition
-		deferred
-		ensure
-			is_strictly_comparable_to(Result)
-		end
-
-	infix "-" (other: like Current): like diff_type is
-			-- difference
-		require
-			is_strictly_comparable_to(other)
-		deferred
-		end
-
-feature -- Modification
-
-	set_accuracy(v: REAL; is_percent:BOOLEAN) is
-			-- set accuracy as half-range v, flag indicates whether understood as a percentage or not
-		require
-			is_percent implies valid_percentage(v)
-		do
-			accuracy := v
-			accuracy_is_percent := is_percent
-		ensure
-			accuracy = v
-			accuracy_is_percent = is_percent
-		end
-
 invariant
 	Magnitude_exists: magnitude /= Void
 	Magnitude_status_valid: magnitude_status /= Void implies valid_magnitude_status(magnitude_status)
-	Accuracy_validity: accuracy_is_percent implies valid_percentage(accuracy)
 	
 end
 

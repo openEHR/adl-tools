@@ -18,10 +18,10 @@ class OPENEHR_DEFINITIONS
 inherit
 	BASIC_DEFINITIONS
 
-	OPENEHR_TERMINOLOGY_GROUP_IDENTIFIERS
-
-	OPENEHR_CODE_SET_IDENTIFIERS
-
+feature -- Definitions
+	
+	Default_language: STRING is "en"
+	
 end
 
 

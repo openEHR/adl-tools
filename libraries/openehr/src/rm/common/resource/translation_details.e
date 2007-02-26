@@ -28,7 +28,7 @@ inherit
 			default_create
 		end
 		
-	ADL_DEFINITIONS
+	OPENEHR_DEFINITIONS
 		export
 			{NONE} all
 		undefine
@@ -36,7 +36,7 @@ inherit
 		end
 	
 create
-	make, make_dt
+	make_from_language, make_dt
 	
 feature -- Initialisation
 
@@ -45,10 +45,10 @@ feature -- Initialisation
 		do
 			language := default_language_code
 			create author.make(0)
-			add_author_detail ("name", "unknown")
+			add_author_detail ("name", "????")
 		end
 		
-	make(a_lang: STRING) is
+	make_from_language(a_lang: STRING) is
 			-- make
 		require
 			Language_valid: a_lang /= Void and then not a_lang.is_empty
@@ -88,20 +88,71 @@ feature -- Modification
 		end
 		
 	set_author(auth_details: HASH_TABLE [STRING, STRING]) is
-			-- set author
+			-- set author from a complete hash table
 		require
 			auth_details /= Void and then not auth_details.is_empty
 		do
 			author := auth_details
 		end
 
+	set_accreditation(an_accreditation: STRING) is
+			-- set accreditation
+		require
+			an_accreditation /= Void and then not an_accreditation.is_empty
+		do
+			accreditation := an_accreditation
+		ensure
+			accreditation = an_accreditation
+		end
+		
+	clear_accreditation is
+			-- clear accreditation
+		do
+			accreditation := Void
+		ensure
+			accreditation = Void
+		end
+		
 	add_author_detail(a_det_key, a_det_value: STRING) is
 			-- set key=value pair into author
 		require
 			Key_valid: a_det_key /= Void and then not a_det_key.is_empty
 			Value_valid: a_det_value /= Void and then not a_det_value.is_empty
 		do
-			author.put (a_det_value, a_det_key)
+			author.force (a_det_value, a_det_key)
+		end
+		
+	add_other_detail(a_det_key, a_det_value: STRING) is
+			-- set key=value pair into other_details
+		require
+			Key_valid: a_det_key /= Void and then not a_det_key.is_empty
+			Value_valid: a_det_value /= Void and then not a_det_value.is_empty
+		do
+			if other_details = Void then
+				create other_details.make (0)
+			end
+			other_details.force (a_det_value, a_det_key)
+		end
+		
+	remove_author_detail(a_det_key: STRING) is
+			-- remove key=value pair from author
+		require
+			Key_valid: a_det_key /= Void and then author.has(a_det_key)
+		do
+			author.remove (a_det_key)
+		end
+		
+	remove_other_detail(a_det_key, a_det_value: STRING) is
+			-- set key=value pair into other_details
+		require
+			Key_valid: a_det_key /= Void and then other_details.has(a_det_key)
+		do
+			other_details.remove (a_det_key)
+			if other_details.is_empty then
+				other_details := Void
+			end
+		ensure
+			old other_details.count = 1 implies other_details = Void
 		end
 		
 feature {DT_OBJECT_CONVERTER} -- Conversion

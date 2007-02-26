@@ -34,7 +34,7 @@ feature -- Access
 	offset: DV_DURATION is
 			-- offset of this sample from the origin of the history
 		do
-			Result := time - parent.origin
+			Result := time.diff(parent.origin)
 		end
 		
 	state: ITEM_STRUCTURE
@@ -64,7 +64,7 @@ feature -- Status Report
 invariant
 	Data_exists: data /= Void	
 	Time_exists: time /= Void	
-	Offset_validity: offset /= Void and then offset = time - parent.origin
+	Offset_validity: offset /= Void and then offset = time.diff(parent.origin)
 
 end
 

@@ -119,7 +119,7 @@ feature -- Output
 			if pattern /= Void then
 				Result.append(pattern)
 			else
-				Result.append(symbols.item(SYM_INTERVAL_DELIM))
+				Result.append("|")
 				if interval.lower_unbounded then
 					Result.append("<= " + interval.upper.as_string)
 				elseif interval.upper_unbounded then
@@ -129,7 +129,7 @@ feature -- Output
 				else
 					Result.append(interval.as_string) 
 				end
-				Result.append(symbols.item(SYM_INTERVAL_DELIM))
+				Result.append("|")
 			end
 			if assumed_value /= Void then
 				Result.append("; " + assumed_value.as_string)

@@ -12,10 +12,19 @@ indexing
 	last_change: "$LastChangedDate$"
 
 class SHARED_ARCHETYPE_CONTEXT
+
+inherit	
+	OPENEHR_DEFINITIONS
+		export
+			{NONE} all
+		end
+	
+	ADL_DEFINITIONS
+		export
+			{NONE} all
+		end
 	
 feature -- Access
-
-	Default_language: STRING is "en"
 
 	language: STRING is
 		do

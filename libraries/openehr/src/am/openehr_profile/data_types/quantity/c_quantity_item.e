@@ -41,7 +41,7 @@ feature -- Access
 			-- constraint on magnitude
 			
 	precision: OE_INTERVAL [INTEGER]
-			-- constraint on precision
+			-- constraint on precision. A value of -1 means that precision is unconstrained.
 
 feature -- Status Report
 			

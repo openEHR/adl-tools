@@ -101,7 +101,7 @@ feature -- Initialisation
 			Root_term_valid: a_concept_term /= Void
 		do
 			default_create
-			add_language_available(a_primary_lang)
+			add_language(a_primary_lang)
 			set_primary_language(a_primary_lang)
 			initialise_term_definitions(a_concept_term)
 		end
@@ -125,7 +125,7 @@ feature -- Access
 	term_definition(a_lang, a_term_code: STRING): ARCHETYPE_TERM is
 			-- retrieve the term definition in language `a_lang' for code `a_term_code'
 		require
-			Language_valid: a_lang /= Void and then languages_available.has(a_lang)
+			Language_valid: a_lang /= Void and then has_language(a_lang)
 			Term_code_valid: a_term_code /= Void and then not a_term_code.is_empty
 		do
 			Result := term_definitions.item(a_lang).item(a_term_code)
@@ -136,7 +136,7 @@ feature -- Access
 	constraint_definition(a_lang, a_term_code: STRING): ARCHETYPE_TERM is
 			-- retrieve the constraint definition in language `a_lang' for code `a_term_code'
 		require
-			Language_valid: a_lang /= Void and then languages_available.has(a_lang)
+			Language_valid: a_lang /= Void and then has_language(a_lang)
 			Term_code_valid: a_term_code /= Void and then not a_term_code.is_empty
 		do
 			Result := constraint_definitions.item(a_lang).item(a_term_code)
@@ -259,7 +259,7 @@ feature -- Status Report
 		require
 			Language_valid: a_language /= Void and then not a_language.is_empty
 		do
-			Result := languages_available.has(a_language)
+			Result := term_definitions.has(a_language)
 		end
 	
 	has_terminology(a_terminology: STRING): BOOLEAN is
@@ -392,12 +392,12 @@ feature -- Modification
 			until
 				langs.off
 			loop
-				add_language_available(langs.item)
+				add_language(langs.item)
 				langs.forth
 			end
 		end
 		
-	add_language_available(a_lang: STRING) is
+	add_language(a_lang: STRING) is
 			-- add a new language to list of languages available
 			-- No action if language already exists
 		require
@@ -405,8 +405,7 @@ feature -- Modification
 		local
 			term_defs_one_lang, constraint_defs_one_lang, term_defs_prim_lang, constraint_defs_prim_lang: HASH_TABLE[ARCHETYPE_TERM, STRING]
 		do
-			if not languages_available.has(a_lang) then
-				languages_available.extend(a_lang)
+			if not term_definitions.has(a_lang) then
 				create term_defs_one_lang.make(0)	
 				term_definitions.put(term_defs_one_lang, a_lang)
 
@@ -445,7 +444,7 @@ feature -- Modification
 				end
 			end
 		ensure
-			Language_added: languages_available.has(a_lang)
+			Language_added: has_language(a_lang)
 		end
 
 	initialise_term_definitions(a_term: ARCHETYPE_TERM) is
@@ -498,17 +497,29 @@ feature -- Modification
 			Term_valid: a_code /= Void and then has_term_code(a_code)
 		local
 			ta: ARRAYED_LIST[STRING]
+			langs_to_remove: ARRAYED_LIST[STRING]
 		do
+			create langs_to_remove.make(0)
+
 			from
-				languages_available.start
+				term_definitions.start
 			until
-				languages_available.off
+				term_definitions.off
 			loop
-				term_definitions.item(languages_available.item).remove(a_code)
-				if term_definitions.item(languages_available.item).count = 0 then
-					term_definitions.remove(languages_available.item)
+				term_definitions.item_for_iteration.remove(a_code)
+				if term_definitions.item_for_iteration.count = 0 then
+					langs_to_remove.extend(term_definitions.key_for_iteration)
 				end
-				languages_available.forth
+				term_definitions.forth
+			end
+
+			from
+				langs_to_remove.start
+			until
+				langs_to_remove.off
+			loop
+				term_definitions.remove(langs_to_remove.item)
+				langs_to_remove.forth
 			end
 			
 			-- make a copy of terminologies list, since the next action might modify it...
@@ -537,17 +548,29 @@ feature -- Modification
 			Constraint_valid: a_code /= Void and then has_constraint_code(a_code)
 		local
 			ta: ARRAYED_LIST[STRING]
+			langs_to_remove: ARRAYED_LIST[STRING]
 		do
+			create langs_to_remove.make(0)
+
 			from
-				languages_available.start
+				constraint_definitions.start
 			until
-				languages_available.off
+				constraint_definitions.off
 			loop
-				constraint_definitions.item(languages_available.item).remove(a_code)
-				if constraint_definitions.item(languages_available.item).count = 0 then
-					constraint_definitions.remove(languages_available.item)
+				constraint_definitions.item_for_iteration.remove(a_code)
+				if constraint_definitions.item_for_iteration.count = 0 then
+					langs_to_remove.extend(constraint_definitions.key_for_iteration)
 				end
-				languages_available.forth
+				constraint_definitions.forth
+			end
+
+			from
+				langs_to_remove.start
+			until
+				langs_to_remove.off
+			loop
+				constraint_definitions.remove(langs_to_remove.item)
+				langs_to_remove.forth
 			end
 			
 			-- make a copy of terminologies list, since the next action might modify it...
@@ -801,22 +824,22 @@ feature -- Synchronisation
 			create attr_node_term_definitions.make_multiple(Sym_term_definitions)
 			representation.put_attribute (attr_node_term_definitions)
 			from
-				languages_available.start
+				term_definitions.start
 			until
-				languages_available.off
+				term_definitions.off
 			loop
-				create an_obj_node.make_identified(languages_available.item)
+				create an_obj_node.make_identified(term_definitions.key_for_iteration)
 				attr_node_term_definitions.put_child(an_obj_node)
 				create attr_node_items.make_multiple("items")
 				attr_node_items.use_children_sorted
 				an_obj_node.put_attribute(attr_node_items)
 				
 				from
-					term_definitions.item(languages_available.item).start
+					term_definitions.item_for_iteration.start
 				until
-					term_definitions.item(languages_available.item).off
+					term_definitions.item_for_iteration.off
 				loop
-					a_term := term_definitions.item(languages_available.item).item_for_iteration
+					a_term := term_definitions.item_for_iteration.item_for_iteration
 					create an_obj_node.make_identified(a_term.code)
 					attr_node_items.put_child(an_obj_node)
 					
@@ -831,10 +854,10 @@ feature -- Synchronisation
 						an_attr_node.put_child(create {DT_PRIMITIVE_OBJECT}.make_anonymous(a_term.item(keys.item)))
 						keys.forth
 					end
-					term_definitions.item(languages_available.item).forth
+					term_definitions.item_for_iteration.forth
 				end
 				
-				languages_available.forth				
+				term_definitions.forth				
 			end
 			
 			-- constraint definitions
@@ -842,22 +865,22 @@ feature -- Synchronisation
 				create attr_node_term_definitions.make_multiple(Sym_constraint_definitions)
 				representation.put_attribute (attr_node_term_definitions)
 				from
-					languages_available.start
+					constraint_definitions.start
 				until
-					languages_available.off
+					constraint_definitions.off
 				loop
-					create an_obj_node.make_identified(languages_available.item)
+					create an_obj_node.make_identified(constraint_definitions.key_for_iteration)
 					attr_node_term_definitions.put_child(an_obj_node)
 					create attr_node_items.make_multiple("items")
 					attr_node_items.use_children_sorted
 					an_obj_node.put_attribute(attr_node_items)
 					
 					from
-						constraint_definitions.item(languages_available.item).start
+						constraint_definitions.item_for_iteration.start
 					until
-						constraint_definitions.item(languages_available.item).off
+						constraint_definitions.item_for_iteration.off
 					loop
-						a_term := constraint_definitions.item(languages_available.item).item_for_iteration
+						a_term := constraint_definitions.item_for_iteration.item_for_iteration
 						create an_obj_node.make_identified(a_term.code)
 						attr_node_items.put_child(an_obj_node)
 						
@@ -872,10 +895,10 @@ feature -- Synchronisation
 							an_attr_node.put_child(create {DT_PRIMITIVE_OBJECT}.make_anonymous(a_term.item(keys.item)))
 							keys.forth
 						end
-						constraint_definitions.item(languages_available.item).forth
+						constraint_definitions.item_for_iteration.forth
 					end
 
-					languages_available.forth				
+					constraint_definitions.forth				
 				end				
 			end
 					
@@ -1325,20 +1348,18 @@ feature {NONE} -- Implementation
 		require
 			Term_code_valid: a_term_code /= Void and then not a_term_code.is_empty
 		local
-			langs: ARRAYED_LIST[STRING]
 			t_path: STRING
 		do
-			langs := languages_available
 			from
-				langs.start
+				term_definitions.start
 				Result := True
 			until
-				langs.off or not Result
+				term_definitions.off or not Result
 			loop
 				create t_path.make(0)
-				t_path.append("/" + Sym_term_definitions + "[" + langs.item + "]/items[" + a_term_code + "]")
+				t_path.append("/" + Sym_term_definitions + "[" + term_definitions.key_for_iteration + "]/items[" + a_term_code + "]")
 				Result := Result and has_path(t_path)
-				langs.forth
+				term_definitions.forth
 			end
 		end
 	
@@ -1347,20 +1368,18 @@ feature {NONE} -- Implementation
 		require
 			Term_code_valid: a_term_code /= Void and then not a_term_code.is_empty
 		local
-			langs: ARRAYED_LIST[STRING]
 			t_path: STRING
 		do
-			langs := languages_available
 			from
-				langs.start
+				constraint_definitions.start
 				Result := True
 			until
-				langs.off or not Result
+				constraint_definitions.off or not Result
 			loop
 				create t_path.make(0)
-				t_path.append("/" + Sym_constraint_definitions + "[" + langs.item + "]/items[" + a_term_code + "]")
+				t_path.append("/" + Sym_constraint_definitions + "[" + constraint_definitions.key_for_iteration + "]/items[" + a_term_code + "]")
 				Result := Result and has_path(t_path)
-				langs.forth
+				constraint_definitions.forth
 			end
 		end
 		
@@ -1373,14 +1392,14 @@ feature {NONE} -- Implementation
 			term_definitions.item(a_lang).force(a_term, a_term.code)
 			trans_term := a_term.create_translated_term(primary_language)
 			from 
-				languages_available.start
+				term_definitions.start
 			until
-				languages_available.off
+				term_definitions.off
 			loop
-				if not languages_available.item.is_equal(a_lang) then
-					term_definitions.item(languages_available.item).force(trans_term, trans_term.code)
+				if not term_definitions.key_for_iteration.is_equal(a_lang) then
+					term_definitions.item_for_iteration.force(trans_term.deep_twin, trans_term.code)
 				end
-				languages_available.forth
+				term_definitions.forth
 			end
 		ensure
 			term_definitions.item(a_lang).has(a_term.code)
@@ -1397,18 +1416,20 @@ feature {NONE} -- Implementation
 			end
 			constraint_definitions.item(a_lang).force(a_term, a_term.code)
 			trans_term := a_term.create_translated_term(a_lang)
+
+			-- in the following, iterate over term_definitions to get definitive list of languages
 			from 
-				languages_available.start
+				term_definitions.start
 			until
-				languages_available.off
+				term_definitions.off
 			loop
-				if not languages_available.item.is_equal(a_lang) then
-					if not constraint_definitions.has(languages_available.item) then
-						constraint_definitions.put(create {HASH_TABLE[ARCHETYPE_TERM, STRING]}.make(0), languages_available.item)
+				if not term_definitions.key_for_iteration.is_equal(a_lang) then
+					if not constraint_definitions.has(term_definitions.key_for_iteration) then
+						constraint_definitions.put(create {HASH_TABLE[ARCHETYPE_TERM, STRING]}.make(0), term_definitions.key_for_iteration)
 					end
-					constraint_definitions.item(languages_available.item).force(trans_term, a_term.code)
+					constraint_definitions.item(term_definitions.key_for_iteration).force(trans_term, a_term.code)
 				end
-				languages_available.forth
+				term_definitions.forth
 			end
 		ensure
 			constraint_definitions.item(a_lang).has(a_term.code)

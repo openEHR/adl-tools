@@ -63,7 +63,7 @@ feature -- testing
 			desc.set_lifecycle_state ("review")
 			
 			-- Add an english language descriptor
-			create a_desc_item.make_lang (create {CODE_PHRASE}.make(default_language_code_set, "en"), "This archetype purpose")
+			create a_desc_item.make (create {CODE_PHRASE}.make(default_language_code_set, "en"), "This archetype purpose", True)
 			a_desc_item.add_keyword ("keyword1")
 			a_desc_item.add_keyword ("keyword2")
 			a_desc_item.add_keyword ("keyword3")
@@ -73,7 +73,7 @@ feature -- testing
 			a_desc_item.set_use ("This is the main use of the archetype")
 			a_desc_item.set_misuse ("This is how the archetype should not be used")
 			
-			desc.add_detail ("en", a_desc_item)
+			desc.add_detail (a_desc_item)
 			
 			archetype.set_description(desc)
 			

@@ -25,10 +25,17 @@ inherit
 
 create 
 	default_create,
+	make,
 	make_from_string,
 	make_from_canonical_string
 
 feature -- Initialisation
+
+	make(a_val: INTEGER) is
+			-- make from an integer count
+		do
+			magnitude := a_val
+		end
 
 	make_from_string(s: STRING) is
 			-- 
@@ -51,24 +58,20 @@ feature -- Status Report
 
 feature -- Access
 
-	magnitude: REAL_REF
+	magnitude: INTEGER_REF
 			-- numeric value of the quantity
-
-	diff_type: DV_COUNT is
-			-- 
-		once	
-		end
 	
 feature -- Basic Operations
 
-	infix "+" (other: like diff_type): like Current is
+	infix "+" (other: like Current): like Current is
 		do
+			create Result.make(magnitude + other.magnitude)
 		end
 
-	infix "-" (other: like diff_type): like Current is
+	infix "-" (other: like Current): like Current is
 			-- subtraction
 		do
-			
+			create Result.make(magnitude - other.magnitude)
 		end
 
 feature -- Comparison

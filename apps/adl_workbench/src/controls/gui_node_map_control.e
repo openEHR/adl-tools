@@ -309,20 +309,22 @@ feature {NONE} -- Implementation
 			elseif a_type.is_equal("C_DV_ORDINAL") then
 				c_dv_ordinal ?= an_og_node.content_item
 				s.append(c_dv_ordinal.rm_type_name)
-				a_ti := attach_node(s, pixmaps.item("C_DV_ORDINAL" + pixmap_ext), an_og_node)			
-				from
-					c_dv_ordinal.items.start
-				until
-					c_dv_ordinal.items.off						
-				loop
-					assumed_flag := c_dv_ordinal.assumed_value /= Void and then 
-						c_dv_ordinal.assumed_value.value = c_dv_ordinal.items.item.value
-					create a_ti_sub.make_with_text(object_ordinal_item_string(c_dv_ordinal.items.item, assumed_flag))
-					a_ti_sub.set_data(c_dv_ordinal.items.item) -- of type ORDINAL
-					a_ti_sub.set_pixmap(pixmaps.item("ORDINAL" + pixmap_ext))
-					a_ti.extend(a_ti_sub)
-					c_dv_ordinal.items.forth						
-				end				
+				a_ti := attach_node(s, pixmaps.item("C_DV_ORDINAL" + pixmap_ext), an_og_node)
+				if not c_dv_ordinal.any_allowed then
+					from
+						c_dv_ordinal.items.start
+					until
+						c_dv_ordinal.items.off						
+					loop
+						assumed_flag := c_dv_ordinal.assumed_value /= Void and then 
+							c_dv_ordinal.assumed_value.value = c_dv_ordinal.items.item.value
+						create a_ti_sub.make_with_text(object_ordinal_item_string(c_dv_ordinal.items.item, assumed_flag))
+						a_ti_sub.set_data(c_dv_ordinal.items.item) -- of type ORDINAL
+						a_ti_sub.set_pixmap(pixmaps.item("ORDINAL" + pixmap_ext))
+						a_ti.extend(a_ti_sub)
+						c_dv_ordinal.items.forth						
+					end				
+				end	
 				
 			elseif a_type.is_equal("C_DV_QUANTITY") then
 				c_q ?= an_og_node.content_item

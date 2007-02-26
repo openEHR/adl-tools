@@ -23,20 +23,13 @@ inherit
 			default_create
 		end
 		
-	OPENEHR_TERMINOLOGY_IDS
+	TERMINOLOGY_SERVICE
 		export
 			{NONE} all
 		undefine
 			default_create
 		end
-		
-	ADL_DEFINITIONS
-		export
-			{NONE} all
-		undefine
-			default_create
-		end
-		
+				
 create
 	make, make_dt
 	
@@ -97,7 +90,7 @@ feature -- Modification
 				create translations.make(0)
 			end
 			
-			create a_trans.make(a_lang)
+			create a_trans.make_from_language(a_lang)
 			translations.put (a_trans, a_lang)
 		end
 		

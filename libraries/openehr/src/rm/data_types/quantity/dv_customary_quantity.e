@@ -3,12 +3,10 @@ indexing
 	component:   "openEHR Data Types"
 
 	description: "[
-			 Implementation of DV_CUSTOMARY_QUANTITY. Quantified data items
-			 which are not naturally expressed as a {value, units} tuple, but 
-			 instead in some non-systematic way. Time is the main example, but
-			 most imperial weights and lengths are also customary rather than 
-			 scientific quantities.
-			 ]"
+				 Abstract class defining the concept of quantified entities whose 
+				 values are absolute with respect to an origin. Dates and Times 
+				 are the main example.
+				 ]"
 	keywords:    "quantity, data"
 
 	design:      "openEHR Data Types Reference Model 1.7"
@@ -22,33 +20,33 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-deferred class DV_CUSTOMARY_QUANTITY
+deferred class DV_ABSOLUTE_QUANTITY
 
 inherit
 	DV_QUANTIFIED
 
-feature -- Definitions
-
-	Canonical_units: STRING is "s"
-
 feature -- Access
 
-	units: STRING is
-			-- units is "s"
-		once
-			create Result.make(0)
-			Result.append(Canonical_units)
-		end
+	accuracy: like diff	
+			-- Accuracy of measurement, expressed as a half-range value of the diff type 
+			-- for this quantity (i.e. an accuracy of x means +/-x).
+	
+feature -- Basic Operations
 
-feature -- Conversion
-
-	to_quantity: DV_QUANTITY is
-			-- convert to a scientific quantity
+	add (a_diff: like diff): like Current	is
+			-- Addition of a differential amount to this quantity.
 		deferred
 		end
-
-invariant
-	Units_valid: units.is_equal("s")
+	
+	subtract (a_diff: like diff): like Current is
+			-- Result of subtracting a differential amount from this quantity.
+		deferred
+		end
+	
+	diff (a_diff: like Current): ANY is
+			-- Difference of two quantities.
+		deferred
+		end
 			
 end
 

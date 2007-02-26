@@ -19,18 +19,22 @@ indexing
 class DV_DURATION
 
 inherit
-	DV_CUSTOMARY_QUANTITY
+	DV_AMOUNT
 		undefine
 			out, infix "<", default_create
+		redefine
+			as_string
 		end
 		
 	ISO8601_DURATION
+		rename
+			as_string as magnitude_as_string
 		undefine
 			default_create
 		end
 		
 create 
-	default_create, make, make_from_string, make_from_canonical_string
+	default_create, make, make_from_seconds, make_from_string, make_from_canonical_string
 
 feature -- Initialization
 
@@ -46,6 +50,12 @@ feature -- Initialization
 			hours_set: hours = 0
 			minutes_set: minutes = 0
 			seconds_set: seconds = 0
+		end
+		
+	make_from_seconds(v: DOUBLE) is
+			-- create from a number of seconds, and turn into DHMS canonical form
+		do
+			
 		end
 		
 	make_from_canonical_string (str: STRING) is
@@ -69,11 +79,6 @@ feature -- Access
 		do
 			Result := to_seconds
 		end
-
-	diff_type: DV_DURATION is
-			--
-		once
-		end
 		
 feature -- Comparison
 		
@@ -84,37 +89,31 @@ feature -- Comparison
 
 feature -- Basic Operations
 
-	infix "+" (other: like diff_type): like Current is
+	infix "+" (other: like Current): like Current is
 			-- addition
 		do
+			create Result.make_from_seconds(magnitude + other.magnitude)
 		end
 
-	infix "-" (other: like diff_type): like Current is
-			-- subtraction
+	infix "-" (other: like Current): like Current is
+			-- difference
 		do
-		end
-
-	prefix "-": like Current is
-			-- Unary minus
-		do
-		end
-		
-feature -- Conversion
-
-	to_quantity: DV_QUANTITY is
-			-- express as Quantity with magnitude = magnitude from this class
-		do
-			create Result.make (magnitude, "s")
-		ensure then
-			Result.magnitude = magnitude
-			Result.units.is_equal("s")
+			create Result.make_from_seconds(magnitude - other.magnitude)
 		end
 
 feature -- Output
 
-	as_canonical_string: STRING is
+	as_string: STRING is
+			-- string form displayable for humans
 		do
-			Result := as_string
+			Result := magnitude_as_string
+			if accuracy /= 0 then
+				if accuracy_is_percent then
+					Result.append(" +/-" + accuracy.out + "%%")
+				else
+					Result.append(" +/-" + (create {DV_DURATION}.make_from_seconds(accuracy)).magnitude_as_string)
+				end
+			end
 		end
 	
 end

@@ -1,6 +1,17 @@
 indexing
 	component:   "openEHR Archetype Project"
-	description: "leaf node in an expression tree"
+	description: "[
+					Expression tree leaf item. This can represent one of:
+						* a manifest constant of any primitive type (Integer, Real, Boolean, 
+						  String, Character, Date, Time, Date_time, Duration), or (in future) 
+						  of any complex reference model type, e.g. a DV_CODED_TEXT;
+						* a path referring to a value in the archetype (paths with a leading ‘/’ 
+						  are in the definition section; paths with no leading ‘/’ are in the outer 
+						  part of the archetype, e.g. “archetype_id/value” refers to the String 
+						  value of the archetype_id attribute of the enclosing archetype;
+						* a constraint, expressed in the form of concrete subtype of C_OBJECT; 
+						  most often this will be a C_PRIMITIVE_OBJECT.
+				 ]"
 	keywords:    "assertion, ADL"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
@@ -28,12 +39,13 @@ creation
 feature -- Initialisation
 		
 	make_archetype_feature_call(a_ref: STRING) is
-			-- node refers to a feature in a slot-filling archetype
+			-- node refers to a function in a slot-filling archetype
 		require
 			ref_exists: a_ref /= Void and then not a_ref.is_empty
 		do
 			item := a_ref
-			type := "ARCHETYPE_FEATURE_CALL"
+			type := "unknown" -- FIXME: need access to ref model to know what type it really is
+			reference_type := "function"
 		end
 	
 	make_object_ref(a_ref: OG_PATH) is
@@ -42,28 +54,32 @@ feature -- Initialisation
 			ref_exists: a_ref /= Void and then not a_ref.is_empty
 		do
 			item := a_ref
-			type := "OBJECT_REF"
+			type := "unknown" -- FIXME: need access to ref model to know what type it really is
+			reference_type := "attribute"
 		end
 	
 	make_boolean(an_item: BOOLEAN) is
 			-- node is a boolean value
    		do
 			item := an_item
-			type := "BOOLEAN"
+			type := "Boolean"
+			reference_type := "constant"
 		end
 
 	make_real(an_item: REAL) is
 			-- node is a real value
    		do
 			item := an_item
-			type := "REAL"
+			type := "Real"
+			reference_type := "constant"
 		end
 
 	make_integer(an_item: INTEGER) is
 			-- node is an integer value
    		do
 			item := an_item
-			type := "INTEGER"
+			type := "Integer"
+			reference_type := "constant"
 		end
 
 	make_string(an_item: STRING) is
@@ -72,14 +88,16 @@ feature -- Initialisation
 			Item_exists: an_item /= Void
    		do
 			item := an_item
-			type := "STRING"
+			type := "String"
+			reference_type := "constant"
 		end
 
 	make_character(an_item: CHARACTER) is
 			-- node is a character value
    		do
 			item := an_item
-			type := "CHARACTER"
+			type := "Character"
+			reference_type := "constant"
 		end
 
 	make_ordinal(an_item: ORDINAL) is
@@ -98,6 +116,7 @@ feature -- Initialisation
    		do
 			item := an_item
 			type := "CODE_PHRASE"
+			reference_type := "constraint"
 		end
 
 	make_constraint(an_item: C_PRIMITIVE) is
@@ -106,12 +125,16 @@ feature -- Initialisation
 			Item_exists: an_item /= Void
    		do
 			item := an_item
-			type := "CONSTRAINT"
+			type := "C_PRIMITIVE"
+			reference_type := "constraint"
 		end
 
 feature -- Access
 
-	type: STRING
+	reference_type: STRING
+			-- Type of reference: "constant", "attribute", "function", "constraint". The first three are
+			-- used to indicate the referencing mechanism for an operand. The last is used to indicate 
+			-- a constraint operand, as happens in the case of the right-hand operand of the ‘matches’ operator.
 
 	item: ANY
 
@@ -126,11 +149,11 @@ feature -- Conversion
 	as_string: STRING is
 		do
 			create Result.make(0)
-			if type.is_equal("CONSTRAINT") then
+			if type.is_equal("constraint") then
 				Result.append("{")			
 			end			
 			Result.append(item.out)
-			if type.is_equal("CONSTRAINT") then
+			if type.is_equal("constraint") then
 				Result.append("}")			
 			end
 		end

@@ -119,9 +119,7 @@ feature -- Output
 		do
 			create Result.make(0)
 			if interval /= Void then
-				Result.append(symbols.item(SYM_INTERVAL_DELIM))
-				Result.append(interval.as_string)
-				Result.append(symbols.item(SYM_INTERVAL_DELIM))
+				Result.append("|" + interval.as_string + "|")
 			else
 				Result.append(pattern)
 			end

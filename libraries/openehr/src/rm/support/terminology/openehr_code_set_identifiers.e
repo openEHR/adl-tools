@@ -28,7 +28,7 @@ feature -- Definitions
 	Code_set_id_languages: STRING is "languages"
 
 	Code_set_id_media_types: STRING is "media types"
-	
+
 feature -- Comparison
 
 	valid_code_set_id (an_id: STRING): BOOLEAN is

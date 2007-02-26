@@ -22,7 +22,7 @@ indexing
 class DV_QUANTITY
 
 inherit
-	DV_MEASURABLE
+	DV_AMOUNT
 		redefine
 			as_canonical_string
 		end
@@ -101,11 +101,6 @@ feature -- Access
 	precision: INTEGER
 			-- precision  to  which  the  value  of  the  quantity  is expressed, in
 			-- terms of number  of  significant  figures. 0 implies no precision.
-
-	diff_type: DV_QUANTITY is
-			-- type of difference quantity for this quantity
-		once
-		end
 		
 feature -- Basic Operations
 
@@ -119,6 +114,12 @@ feature -- Basic Operations
 			-- subtraction
 		do
 			magnitude := magnitude - other.magnitude
+		end
+
+	prefix "-": like Current is
+			-- Unary minus
+		do
+			magnitude := -magnitude
 		end
 
 feature -- Modification
@@ -146,12 +147,16 @@ feature -- Modification
 			precision := n
 		end
 
-feature -- Basic Operations
+feature -- Comparison
 
-	prefix "-": like Current is
-			-- Unary minus
+	is_strictly_comparable_to (other: like Current): BOOLEAN is
+			-- two quantities are strictly comparable if they are measuring the same property
+			-- Ideally, we would allow different units within the same property, but there is
+			-- no converter currently implemented, so we also require that the units are identical
 		do
-			magnitude := -magnitude
+			Result := units_equivalent (units, other.units)
+		ensure then
+			units_equivalent (units, other.units) implies Result
 		end
 
 feature -- Output
@@ -161,7 +166,14 @@ feature -- Output
 			-- in data item
 		do
 			Result := precursor
+			Result.append("<units>" + units + "</units>")
 			Result.append("<precision>" + precision.out + "</precision>")
+		end
+
+	magnitude_as_string: STRING is
+			-- output the magnitude in its natural form
+		do
+			Result := magnitude.out + " " + units
 		end
 
 feature {NONE} -- Implementation
@@ -170,6 +182,7 @@ feature {NONE} -- Implementation
 	
 invariant
 	Precision_valid: precision >= 0
+	Units_valid: units /= void 
 
 end
 

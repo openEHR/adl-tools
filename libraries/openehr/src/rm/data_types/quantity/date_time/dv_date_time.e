@@ -19,7 +19,7 @@ indexing
 class DV_DATE_TIME
 
 inherit
-	DV_CUSTOMARY_QUANTITY
+	DV_ABSOLUTE_QUANTITY
 		undefine
 			out, infix "<", default_create
 		end
@@ -66,42 +66,22 @@ feature -- Access
 		do
 			Result := to_seconds
 		end
-
-	diff_type: DV_DURATION is
-			--
-		once
-		end
 		
 feature -- Basic Operations
 
-	infix "+" (other: like diff_type): like Current is
-			-- addition
+	add (a_diff: like diff): like Current	is
+			-- Addition of a differential amount to this quantity.
 		do
-
 		end
-
-	infix "-" (other: like Current): like diff_type is
-			-- difference
+	
+	subtract (a_diff: like diff): like Current is
+			-- Result of subtracting a differential amount from this quantity.
 		do
-
 		end
-
-	subtract(other: like diff_type): like Current is
-			-- subtraction
+	
+	diff (other: like Current): DV_DURATION is
+			-- Difference of two quantities.
 		do
-		ensure
-			is_strictly_comparable_to(Result)
-		end
-
-feature -- Conversion
-
-	to_quantity: DV_QUANTITY is
-			-- express as Quantity with magnitude = magnitude from this class
-		do
-			create Result.make (magnitude, "s")
-		ensure then
-			Result.magnitude = magnitude
-			Result.units.is_equal("s")
 		end
 
 feature -- Comparison

@@ -29,13 +29,17 @@ inherit
 			{NONE} all
 		end
 		
-	ADL_DEFINITIONS
+	OPENEHR_DEFINITIONS
 		export
 			{NONE} all
 		end
 	
 create
-	make_dt, make_lang
+	make_dt, make, make_from_language
+	
+feature -- Definitions
+
+	Default_purpose: STRING is "???"
 	
 feature -- Initialisation
 
@@ -43,9 +47,11 @@ feature -- Initialisation
 			-- 
 		do
 			language := Default_language_code
+			create purpose.make (0)
+			purpose.append (Default_purpose)
 		end
 		
-	make_lang(a_lang: CODE_PHRASE; a_purpose: STRING) is
+	make(a_lang: CODE_PHRASE; a_purpose: STRING) is
 		require
 			Lang_valid: a_lang /= Void
 			Purpose_valid: a_purpose /= Void and then not a_purpose.is_empty
@@ -54,6 +60,19 @@ feature -- Initialisation
 			purpose := a_purpose
 		ensure
 			Language_set: language = a_lang
+			Purpose_set: purpose = a_purpose
+		end
+
+	make_from_language(a_lang_name: STRING; a_purpose: STRING) is
+			-- make using a_lang_name and default language code ste
+		require
+			Lang_valid: a_lang_name /= Void and then not a_lang_name.is_empty
+			Purpose_valid: a_purpose /= Void and then not a_purpose.is_empty
+		do
+			create language.make(default_language_code_set, a_lang_name)
+			purpose := a_purpose
+		ensure
+			Language_set: language.code_string.is_equal(a_lang_name)
 			Purpose_set: purpose = a_purpose
 		end
 
@@ -81,12 +100,16 @@ feature -- Access
 			-- Rights over the archetype as a knowledge resource; 
 			-- usually copyright and/or license to use.
 
-	original_resource_uri: HASH_TABLE [URI, STRING]
+	original_resource_uri: HASH_TABLE [STRING, STRING]
 			-- URI of precursor resource of archetype, e.g. natural language
 			-- document, semi-formal description
 
 	other_details: HASH_TABLE [STRING, STRING]
 			-- Additional language-senstive archetype meta-data, as a list of name/value pairs.
+
+feature -- Status
+
+	is_original_language: BOOLEAN
 
 feature -- Modification
 
@@ -166,9 +189,67 @@ feature -- Modification
 			if original_resource_uri = Void then
 				create original_resource_uri.make (0)
 			end
-			original_resource_uri.put(create {URI}.make_from_string(a_value), a_key)
+			-- original_resource_uri.put(create {URI}.make_from_string(a_value), a_key)
+			original_resource_uri.put(a_value, a_key)
 		ensure
-			Original_resource_uri_added: original_resource_uri.item(a_key).as_string.is_equal(a_value)
+			Original_resource_uri_added: original_resource_uri.item(a_key) = a_value
+		end
+		
+feature -- Copying
+
+	translated_copy(a_lang: STRING): RESOURCE_DESCRIPTION_ITEM is
+			-- generate a copy of this object, with all strings sss replaced by
+			-- "*sss(orig_lang)"
+		require
+			a_lang /= Void and then not language.code_string.is_equal(a_lang)
+		local
+			prefix_str, suffix_str: STRING
+		do
+			prefix_str := "*"
+			suffix_str := "(" + a_lang + ")"
+			create Result.make(create {CODE_PHRASE}.make(Default_language_code_set, a_lang), 
+				prefix_str + purpose + suffix_str)
+			if use /= Void then
+				Result.set_use(prefix_str + use + suffix_str)
+			end
+			if misuse /= Void then
+				Result.set_misuse(prefix_str + misuse + suffix_str)
+			end
+			if copyright /= Void then
+				Result.set_copyright(prefix_str + copyright + suffix_str)
+			end
+			if keywords /= Void then
+				from
+					keywords.start
+				until
+					keywords.off
+				loop
+					Result.add_keyword(prefix_str + keywords.item + suffix_str)
+					keywords.forth
+				end
+			end
+			if original_resource_uri /= Void then
+				from
+					original_resource_uri.start
+				until
+					original_resource_uri.off
+				loop
+					Result.add_original_resource_uri(prefix_str + original_resource_uri.key_for_iteration + suffix_str,
+						original_resource_uri.item_for_iteration)
+					original_resource_uri.forth
+				end			
+			end
+			if other_details /= Void then
+				from
+					other_details.start
+				until
+					other_details.off
+				loop
+					Result.add_other_detail(prefix_str + other_details.key_for_iteration + suffix_str,
+						prefix_str + other_details.item_for_iteration + suffix_str)
+					other_details.forth
+				end			
+			end
 		end
 		
 feature {DT_OBJECT_CONVERTER} -- Conversion

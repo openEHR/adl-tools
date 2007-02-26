@@ -53,12 +53,12 @@ feature -- Access
 			end
 		end
 
-	languages_available: LIST [STRING] is
+	languages_available: ARRAYED_SET [STRING] is
 			-- Total list of languages available in this resource, derived from 
 			-- original_language and translations. Guaranteed to at least include original_language
 		do
 			if stored_languages_available = Void then
-				create {ARRAYED_LIST[STRING]} stored_languages_available.make(0)
+				create stored_languages_available.make(0)
 				stored_languages_available.extend(original_language.code_string)
 				if translations /= Void then				
 					from
@@ -73,17 +73,17 @@ feature -- Access
 				stored_languages_available.compare_objects
 			end
 			Result := stored_languages_available
+		ensure
+			Result /= Void and then not Result.is_empty
 		end
 
-	translation_for_lang(a_lang: STRING): TRANSLATION_DETAILS is
+	translation_for_language(a_lang: STRING): TRANSLATION_DETAILS is
 			-- get translation details for a_lang
 			-- Void if nothing for that language
 		require
-			Lang_valid: a_lang /= Void and then not a_lang.is_empty
+			Lang_valid: a_lang /= Void and then translations.has(a_lang)
 		do
-			if translations.has(a_lang) then
-				Result := translations.item(a_lang)
-			end
+			Result := translations.item(a_lang)
 		end		
 
 feature -- Status Report
@@ -91,33 +91,32 @@ feature -- Status Report
 	is_controlled: BOOLEAN	
 			-- True if this resource is under any kind of change control (even file 
 			-- copying), in which case revision history is created.
+			
+	has_language(a_lang: STRING): BOOLEAN is
+			-- True if either original_language or translations has a_lang
+		require
+			Language_valid: a_lang /= Void
+		do
+			Result := original_language.code_string.is_equal(a_lang) or else translations.has(a_lang)
+		end
 
 feature -- Modification
 
 	set_description(a_desc: RESOURCE_DESCRIPTION) is
 		require
-			a_desc /= Void
+			Description_valid: a_desc /= Void and then a_desc.languages.is_equal(languages_available)
 		do
 			description := a_desc
-		end
-
-	set_translations(a_trans: HASH_TABLE [TRANSLATION_DETAILS, STRING]) is
-			-- set translations
-		require
-			a_trans /= Void
-		do
-			translations := a_trans
-			stored_languages_available := Void
 		end
 
 	add_default_translation(a_lang: STRING) is
 			-- add a blank translation object for a_lang
 		require
-			Lang_valid: a_lang /= Void and then not languages_available.has(a_lang)
+			Lang_valid: a_lang /= Void and then not has_language(a_lang)
 		local
 			a_trans: TRANSLATION_DETAILS
 		do
-			create a_trans.make(a_lang)
+			create a_trans.make_from_language(a_lang)
 			a_trans.add_author_detail ("name", "unknown")
 			add_translation (a_trans, a_lang)
 		end
@@ -136,15 +135,26 @@ feature -- Modification
 		end
 		
 	add_language(a_lang: STRING) is
-			-- add a new language to the resource, creating appropriate copies
+			-- add a new translation language to the resource, creating appropriate copies
 		require
-			Lang_valid: a_lang /= Void and then not languages_available.has(a_lang)
+			Lang_valid: a_lang /= Void and then not has_language(a_lang)
 		do
 			add_default_translation(a_lang)
 			description.add_language(a_lang)
 			stored_languages_available := Void
 		end
+
+feature {ADL_ENGINE} -- Construction
 		
+	set_translations(a_trans: HASH_TABLE [TRANSLATION_DETAILS, STRING]) is
+			-- set translations
+		require
+			a_trans /= Void
+		do
+			translations := a_trans
+			stored_languages_available := Void
+		end
+
 feature -- Status setting
 
 	set_is_controlled is
@@ -180,7 +190,7 @@ feature {ADL_ENGINE} -- Implementation
 
 feature {NONE} -- Implementation
 			
-	stored_languages_available: LIST [STRING]
+	stored_languages_available: ARRAYED_SET [STRING]
 			-- Total list of languages available in this resource, derived from 
 			-- original_language and translations. Guaranteed to at least include original_language
 

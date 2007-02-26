@@ -1,7 +1,7 @@
 indexing
 	component:   "openEHR Data Types"
 
-	description: "Test DV_RATIO"
+	description: "Test DV_PROPORTION"
 	keywords:    "test, quantity"
 
 	author:      "Thomas Beale"

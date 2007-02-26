@@ -2,9 +2,10 @@ indexing
 	component:   "openEHR Data Types"
 
 	description: "[
-			 Abstract type representing 'scientific' quantities, i.e. quantities expressed 
-			 as a single value and a single, optional units.
-			 ]"
+				 Abstract class defining the concept of relative quantified 'amounts'. For relative quantities, 
+				 the '+' and '-' operators are defined (unlike descendants of DV_ABSOLUTE_QUANTITY, such as the 
+				 date/time types).
+				 ]"
 	keywords:    "quantity, data"
 
 	requirements:"ISO 18308 TS V1.0 STR 3.2 - 3.4"
@@ -19,7 +20,7 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-deferred class DV_MEASURABLE
+deferred class DV_AMOUNT
 
 inherit
 	DV_QUANTIFIED
@@ -29,6 +30,14 @@ inherit
 			is_equal
 		end
 
+feature -- Access
+
+	accuracy: REAL
+			-- optional accuracy of measurement instrument or method which applies 
+			-- to this specific instance of DV_QUANTIFIED, expressed as the value 
+			-- of the half-range quoted for the accuracy, e.g. "+/- 5%" is represented 
+			-- as a DV_QUANTITY of value 5 and units "%".
+			
 feature -- Status Report
 
 	valid_canonical_string(str: STRING): BOOLEAN is
@@ -36,23 +45,53 @@ feature -- Status Report
 		deferred
 		end
 
-feature -- Access
-
-	units: STRING is
-			-- stringified units, expressed in UCUM unit syntax, e.g. "kg/m2", “mm[Hg]", "ms-1", "km/h". 
-		deferred
-		end
+	accuracy_is_percent: BOOLEAN
+			-- If True, indicates that when this object was created, accuracy was recorded as a 
+			-- percent value; if False, as an absolute quantity value.
 
 feature -- Comparison
 
-	is_strictly_comparable_to (other: like Current): BOOLEAN is
-			-- two quantities are strictly comparable if they are measuring the same property
-			-- Ideally, we would allow different units within the same property, but there is
-			-- no converter currently implemented, so we also require that the units are identical
+	valid_percentage(v: REAL):BOOLEAN is
+			-- True if v between 0 and 1
+		local
+			a_comparable: COMPARABLE
 		do
-			Result := units_equivalent (units, other.units)
-		ensure then
-			units_equivalent (units, other.units) implies Result
+			a_comparable ?= v
+			Result := a_comparable >= 0.0 and a_comparable <= 1.0
+		end
+		
+feature -- Basic Operations
+
+	infix "+" (other: like Current): like Current is
+			-- addition
+		require
+			is_strictly_comparable_to(other)
+		deferred
+		ensure
+			is_strictly_comparable_to(Result)
+		end
+
+	infix "-" (other: like Current): like Current is
+			-- difference
+		require
+			is_strictly_comparable_to(other)
+		deferred
+		ensure
+			is_strictly_comparable_to(Result)
+		end
+
+feature -- Modification
+
+	set_accuracy(v: REAL; is_percent:BOOLEAN) is
+			-- set accuracy as half-range v, flag indicates whether understood as a percentage or not
+		require
+			is_percent implies valid_percentage(v)
+		do
+			accuracy := v
+			accuracy_is_percent := is_percent
+		ensure
+			accuracy = v
+			accuracy_is_percent = is_percent
 		end
 
 feature -- Output
@@ -60,31 +99,33 @@ feature -- Output
 	as_string: STRING is
 			-- string form displayable for humans
 		do
-			Result := magnitude.out
+			Result := magnitude_as_string
 			if accuracy /= 0 then
 				Result.append(" +/-" + accuracy.out)
 				if accuracy_is_percent then
 					Result.append ("%%")
-				else
-					Result.append (units)
 				end
 			end
 		end
-	
+		
 	as_canonical_string: STRING is
 			-- standardised form of string guaranteed to contain all information
 			-- in data item
 		do
 			Result := "<magnitude>" + magnitude.out + "</magnitude>"
-			Result.append("<units>" + units + "</units>")
 			if accuracy /= 0 then
 				Result.append("<accuracy>" + accuracy.out + "</accuracy>")
 				Result.append("<accuracy_is_percent>" + accuracy_is_percent.out + "</accuracy_is_percent>")
 			end
 		end
 
+	magnitude_as_string: STRING is
+			-- output the magnitude in its natural form
+		deferred
+		end
+		
 invariant
-	units_valid: units /= void 
+	Accuracy_validity: accuracy_is_percent implies valid_percentage(accuracy)
 	
 end
 

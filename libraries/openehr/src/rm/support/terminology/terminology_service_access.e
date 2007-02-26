@@ -18,11 +18,29 @@ class TERMINOLOGY_SERVICE
 inherit
 	OPENEHR_DEFINITIONS
 	
+	OPENEHR_TERMINOLOGY_GROUP_IDENTIFIERS
+
+	OPENEHR_CODE_SET_IDENTIFIERS
+
+feature -- Definitions
+	
+	Default_language_code_set: STRING is "ISO_639-1"
+			-- FIXME - replace by call to code_sets for 'language'; need
+			-- a dADL config file
+	
+	Default_language_code: CODE_PHRASE is 
+		do
+			create Result.make("ISO_639-1", Default_language)
+		end
+		
 feature -- Access
 
 	terminology(name: STRING): TERMINOLOGY_ACCESS is
 			-- return a terminology access object for a terminology identified in openEHR by openehr_id
-			-- Allowable names are taken from the US NLM UMLS meta-data list at http://www.nlm.nih.gov/research/umls/metaa1.html
+			-- Allowable names are:
+			--    * official names from the US NLM UMLS meta-data list at http://www.nlm.nih.gov/research/umls/metaa1.html
+			--    * "openehr"
+			--    * "cen13606-3"
 		require
 			name_valid: name /= Void and then has_terminology(name)
 		do
@@ -32,13 +50,13 @@ feature -- Access
 			Result /= Void
 		end
 
-	code_set(name:STRING): CODE_SET_ACCESS is
-			-- Allowable names are taken from 
+	code_set(openehr_id: STRING): CODE_SET_ACCESS is
+			-- Allowable names are taken from OPENEHR_CODE_SET_IDENTIFIERS class
 		require
-			name_valid: name /= Void and then has_code_set(name)
+			name_valid: openehr_id /= Void and then has_code_set(openehr_id)
 		do
 			-- FIXME: dummy implementation
-			create Result.make(name)
+			create Result.make(openehr_id)
 		ensure
 			Result /= Void
 		end
@@ -47,7 +65,10 @@ feature -- Status Report
 
 	has_terminology(name: STRING): BOOLEAN is
 			-- True if terminology with name is known by this service
-			-- Allowable names are taken from the US NLM UMLS meta-data list at http://www.nlm.nih.gov/research/umls/metaa1.html
+			-- Allowable names are:
+			--    * official names from the US NLM UMLS meta-data list at http://www.nlm.nih.gov/research/umls/metaa1.html
+			--    * "openehr"
+			--    * "cen13606-3"
 		require
 			name_valid: name /= Void and then not name.is_empty
 		do
@@ -55,7 +76,7 @@ feature -- Status Report
 	
 	has_code_set(name: STRING): BOOLEAN is
 			-- True if code set with name is known by this service
-			-- Allowable names are taken from 
+			-- Allowable names are taken from OPENEHR_CODE_SET_IDENTIFIERS class
 		require
 			name_valid: name /= Void and then not name.is_empty
 		do

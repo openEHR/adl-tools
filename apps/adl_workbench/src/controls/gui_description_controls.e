@@ -112,7 +112,7 @@ feature {NONE} -- Implementation
 		local
 			arch_desc_item: RESOURCE_DESCRIPTION_ITEM
 		do
-			arch_desc_item := adl_interface.archetype.description.details_for_lang(language)
+			arch_desc_item := adl_interface.archetype.description.details.item(language)
 			
 			if arch_desc_item /= Void then
 				if arch_desc_item.purpose /= Void then
@@ -144,7 +144,7 @@ feature {NONE} -- Implementation
 			end
 	
 			-- list of URI resources
-			arch_desc_item := adl_interface.archetype.description.details_for_lang(language)
+			arch_desc_item := adl_interface.archetype.description.details.item(language)
 			if arch_desc_item /= Void then
 				populate_ev_multi_list_from_hash(gui.arch_desc_resource_orig_res_mlist, arch_desc_item.original_resource_uri)
 			end
@@ -155,7 +155,7 @@ feature {NONE} -- Implementation
 		local
 			arch_desc_item: RESOURCE_DESCRIPTION_ITEM
 		do
-			arch_desc_item := adl_interface.archetype.description.details_for_lang(language)
+			arch_desc_item := adl_interface.archetype.description.details.item(language)
 			if arch_desc_item /= Void and then arch_desc_item.copyright /= Void then
 				gui.arch_desc_copyright_text.set_text(arch_desc_item.copyright)
 			end

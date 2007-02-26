@@ -617,13 +617,13 @@ boolean_node: SYM_EXISTS absolute_path
 			report_error("expecting absolute path")
 			abort
 		}
-	| V_ATTRIBUTE_IDENTIFIER SYM_MATCHES SYM_START_CBLOCK c_primitive SYM_END_CBLOCK
+	| relative_path SYM_MATCHES SYM_START_CBLOCK c_primitive SYM_END_CBLOCK
 		{
 			debug("ADL_invariant")
 				io.put_string(indent + "Archetype feature matches {" + $4.as_string + "}%N") 
 			end
 			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_matches))
-			expr_binary_operator.set_left_operand(create {EXPR_LEAF}.make_archetype_feature_call($1))
+			expr_binary_operator.set_left_operand(create {EXPR_LEAF}.make_archetype_feature_call($1.as_string))
 			expr_binary_operator.set_right_operand(create {EXPR_LEAF}.make_constraint($4))
 			$$ := expr_binary_operator
 		}
