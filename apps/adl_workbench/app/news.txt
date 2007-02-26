@@ -1,21 +1,11 @@
 ADL_WORKBENCH NEWS (see About menu > News)
 -------------------------------------------------------------------------
-The GUI has been improved to behave better on different screens. 
-A major addition for batch testing has been made to the tool.
 
-Archetype Merging
------------------
-The left-hand explorer tree now merges archetypes from a reference 
-repository and an optional work repository. This facilitates working with
-local archetypes based on existing archetypes, e.g. as defined in the
-openEHR knowledge repository at http://svn.openEHR.org/knowledge.
+GUI Improvements
+The description tab now includes all possible meta-data items to do with
+translations.
 
-Node map Visualisation Now Shows Inheritance Status
----------------------------------------------------
-The node visualisation of the definition of an archetype now indicates the
-inheritance status of each node. In specialised archetypes, some nodes will
-show up as inherited, some redefined and some as added new in the archetype.
-In a top-level archetype, all nodes are shown as added new. The 
-visualisation can be toggled on and off. When an archetype is first shown,
-inherited nodes will be collapsed, with only redefined or added nodes
-expanded.
+Bugs
+Slot expressions using the 'match' operator can now use proper relative
+paths on the left-hand side.
+
