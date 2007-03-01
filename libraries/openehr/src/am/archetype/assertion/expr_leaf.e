@@ -149,11 +149,11 @@ feature -- Conversion
 	as_string: STRING is
 		do
 			create Result.make(0)
-			if type.is_equal("constraint") then
+			if reference_type.is_equal("constraint") then
 				Result.append("{")			
 			end			
 			Result.append(item.out)
-			if type.is_equal("constraint") then
+			if reference_type.is_equal("constraint") then
 				Result.append("}")			
 			end
 		end
