@@ -26,21 +26,21 @@ inherit
 	
 feature -- Access
 
-	language: STRING is
+	current_language: STRING is
 		do
 			Result := cell_language.item
 		ensure
 			Result_exists: Result /= Void
 		end
 
-	terminology: STRING is
+	current_terminology: STRING is
 		do
 			Result := cell_terminology.item
 		end
 
 feature -- Modification
 	
-	set_language(a_lang: STRING) is
+	set_current_language(a_lang: STRING) is
 			-- set `language'
 		require
 			a_lang /= Void and then not a_lang.is_empty
@@ -48,7 +48,7 @@ feature -- Modification
 			cell_language.put(a_lang)
 		end
 	
-	set_terminology(a_terminology: STRING) is
+	set_current_terminology(a_terminology: STRING) is
 			-- set `terminology'
 		require
 			a_terminology /= Void and then not a_terminology.is_empty
@@ -56,7 +56,7 @@ feature -- Modification
 			cell_terminology.put(a_terminology)
 		end
 				
-	clear_terminology is
+	clear_current_terminology is
 			-- set `terminology' to nothing, for archetypes with no bindings
 		do
 			cell_terminology.put(Void)

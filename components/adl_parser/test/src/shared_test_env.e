@@ -30,9 +30,9 @@ inherit
 
 	SHARED_C_ADL_INTERFACE
 	
-	ADL_DEFINITIONS
+	TERMINOLOGY_SERVICE
 		export
-			{NONE}
+			{NONE} all
 		end
 	
 feature -- Access

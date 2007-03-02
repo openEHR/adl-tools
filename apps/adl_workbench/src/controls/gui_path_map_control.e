@@ -73,7 +73,7 @@ feature -- Commands
 			mcl.wipe_out
 			mcl.set_column_titles(path_control_column_names)
 			p_paths := adl_interface.adl_engine.archetype.physical_paths
-			l_paths := adl_interface.adl_engine.archetype.logical_paths(language)
+			l_paths := adl_interface.adl_engine.archetype.logical_paths(current_language)
 			from
 				p_paths.start
 				l_paths.start

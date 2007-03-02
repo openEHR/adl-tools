@@ -97,7 +97,7 @@ feature -- Commands
 			source := Void
 			create archetype.make_minimal(create {ARCHETYPE_ID}.make(a_im_originator, a_im_name, a_im_entity, 
 				"UNKNOWN", "draft"), a_primary_language)
-			set_language(archetype.ontology.primary_language)
+			set_current_language(archetype.ontology.primary_language)
 			archetype_id := archetype.archetype_id
 		ensure
 			Archetype_available: archetype_available and archetype.is_valid

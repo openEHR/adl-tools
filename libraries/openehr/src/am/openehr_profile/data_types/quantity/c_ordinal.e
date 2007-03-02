@@ -161,6 +161,9 @@ feature -- Serialisation
 	enter_block(serialiser: CONSTRAINT_MODEL_SERIALISER; depth: INTEGER) is
 			-- perform serialisation at start of block for this node
 		do
+			if any_allowed then
+				synchronise_to_tree
+			end
 			serialiser.start_c_ordinal(Current, depth)
 		end
 		

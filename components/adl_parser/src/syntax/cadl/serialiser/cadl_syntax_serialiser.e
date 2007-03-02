@@ -58,7 +58,7 @@ feature -- Modification
 			elseif a_node.is_addressable then
 				s := a_node.node_id
 				last_result.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) + 
-					safe_comment(ontology.term_definition(language, s).item("text")), STYLE_COMMENT))
+					safe_comment(ontology.term_definition(current_language, s).item("text")), STYLE_COMMENT))
 				last_result.append(format_item(FMT_NEWLINE))
 			else
 				last_result.append(format_item(FMT_NEWLINE))
@@ -98,7 +98,7 @@ feature -- Modification
 			elseif a_node.is_addressable then
 				s := a_node.node_id
 				last_result.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) + 
-					safe_comment(ontology.term_definition(language, s).item("text")), STYLE_COMMENT))
+					safe_comment(ontology.term_definition(current_language, s).item("text")), STYLE_COMMENT))
 				last_result.append(format_item(FMT_NEWLINE))
 			else
 				last_result.append(format_item(FMT_NEWLINE))
@@ -212,7 +212,7 @@ feature -- Modification
 			
 			-- add the comment
 			last_object_simple_buffer.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) + 
-					safe_comment(ontology.constraint_definition(language, a_node.target).item("text")), STYLE_COMMENT))
+					safe_comment(ontology.constraint_definition(current_language, a_node.target).item("text")), STYLE_COMMENT))
 			last_object_simple := True
 		end
 		
@@ -264,7 +264,7 @@ feature -- Modification
 				if not a_node.any_allowed and then (a_node.is_local and a_node.code_count = 1) then
 					last_object_simple_buffer.append(format_item(FMT_INDENT))
 					
-					adl_term := ontology.term_definition(language, a_node.code_list.first)
+					adl_term := ontology.term_definition(current_language, a_node.code_list.first)
 					last_object_simple_buffer.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) + 
 						adl_term.item("text"), STYLE_COMMENT))			
 				end				
@@ -290,7 +290,7 @@ feature -- Modification
 					end
 
 					if a_node.is_local then
-						adl_term := ontology.term_definition(language, a_node.code_list.item)
+						adl_term := ontology.term_definition(current_language, a_node.code_list.item)
 						last_result.append(format_item(FMT_INDENT) + 
 							apply_style(format_item(FMT_COMMENT) + 
 							adl_term.item("text"), STYLE_COMMENT))			
@@ -321,13 +321,16 @@ feature -- Modification
 			adl_term: ARCHETYPE_TERM
 			i: INTEGER
 		do
-			if a_node.items.count = 1 then
+			if a_node.any_allowed then
+				-- output in C_DV_ORDINAL style
+				start_c_domain_type(a_node, depth)
+			elseif a_node.items.count = 1 then
 				last_result.remove_tail(format_item(FMT_NEWLINE).count)	-- remove last newline due to OBJECT_REL_NODE	
 				last_result.append(apply_style(clean(a_node.as_string), STYLE_TERM_REF))
 				create last_object_simple_buffer.make(0)
 				if a_node.is_local then
 					last_object_simple_buffer.append(format_item(FMT_INDENT))
-					adl_term := ontology.term_definition(language, a_node.items.first.symbol.code_string)
+					adl_term := ontology.term_definition(current_language, a_node.items.first.symbol.code_string)
 					last_object_simple_buffer.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) + 
 						adl_term.item("text"), STYLE_COMMENT))			
 				end				
@@ -349,7 +352,7 @@ feature -- Modification
 						last_result.append (create {STRING}.make_filled(' ', format_item(FMT_LIST_ITEM_SEPARATOR).count))
 					end
 					if a_node.is_local then
-						adl_term := ontology.term_definition(language, a_node.items.item.symbol.code_string)
+						adl_term := ontology.term_definition(current_language, a_node.items.item.symbol.code_string)
 						last_result.append(format_item(FMT_INDENT) + 
 							apply_style(format_item(FMT_COMMENT) + 
 							adl_term.item("text"), STYLE_COMMENT))			

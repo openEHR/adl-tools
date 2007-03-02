@@ -323,7 +323,7 @@ feature {NONE} -- Commands
 			-- Called by `select_actions' of `language_combo'.
 		do
 			if language_combo.has_selection then
-				adl_interface.set_language(language_combo.selected_text)
+				adl_interface.set_current_language(language_combo.selected_text)
 				if adl_interface.parse_succeeded then
 					populate_view_controls
 				end

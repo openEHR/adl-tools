@@ -117,7 +117,7 @@ feature -- Serialisation
 				
 			s := target.concept
 			last_result.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) + 
-				 safe_comment(ontology.term_definition(language, s).item("text")), STYLE_COMMENT))
+				 safe_comment(ontology.term_definition(current_language, s).item("text")), STYLE_COMMENT))
 
 			last_result.append(format_item(FMT_NEWLINE))
 		end

@@ -454,7 +454,7 @@ feature {NONE} -- Implementation
 						if in_technical_mode then		
 							a_ti.set_tooltip(c_o.representation.path.as_string)
 						else
-							a_ti.set_tooltip(ontology.logical_path_for_physical_path(c_o.representation.path.as_string, language))
+							a_ti.set_tooltip(ontology.logical_path_for_physical_path(c_o.representation.path.as_string, current_language))
 						end
 					end
 								
@@ -595,7 +595,7 @@ feature {NONE} -- Implementation
 			if in_technical_mode then		
 				Result.set_tooltip(an_og_node.path.as_string)
 			else
-				Result.set_tooltip(ontology.logical_path_for_physical_path(an_og_node.path.as_string, language))
+				Result.set_tooltip(ontology.logical_path_for_physical_path(an_og_node.path.as_string, current_language))
 			end
 			
 			if not archetype_tree_root_set then
@@ -753,7 +753,7 @@ feature {NONE} -- Implementation
 				if in_technical_mode then
 					Result.append(a_node.rm_type_name)
 				end
-				Result.append(" " + ontology.term_definition(language, a_node.node_id).item("text"))
+				Result.append(" " + ontology.term_definition(current_language, a_node.node_id).item("text"))
 				if in_technical_mode then
 					Result.append(" [" + a_node.node_id + "]")
 				end
@@ -794,7 +794,7 @@ feature {NONE} -- Implementation
 				Result.append(a_node.rm_type_name)
 			--end
 			if a_node.is_addressable then
-				Result.append(" " + ontology.term_definition(language, a_node.node_id).item("text"))
+				Result.append(" " + ontology.term_definition(current_language, a_node.node_id).item("text"))
 			end
 			if in_technical_mode then
 				if a_node.is_addressable then
@@ -829,7 +829,7 @@ feature {NONE} -- Implementation
 			if in_technical_mode then		
 				Result.append("use " + a_node.rm_type_name + " " + a_node.target_path)
 			else
-				Result.append("use " + ontology.logical_path_for_physical_path(a_node.target_path, language))
+				Result.append("use " + ontology.logical_path_for_physical_path(a_node.target_path, current_language))
 			end
 		end
 
@@ -838,7 +838,7 @@ feature {NONE} -- Implementation
 		do		
 			create Result.make(0)
 			if ontology.term_codes.has(code) then
-				Result.append(" " + ontology.term_definition(language, code).item("text"))
+				Result.append(" " + ontology.term_definition(current_language, code).item("text"))
 			end
 			Result.append(" -- " + code)
 			if assumed_flag then
@@ -850,7 +850,7 @@ feature {NONE} -- Implementation
 			-- generate string form of node or object for use in tree node
 		do
 			create Result.make(0)
-			Result.append(" " + ontology.constraint_definition(language, a_constraint_ref.target).item("text"))	
+			Result.append(" " + ontology.constraint_definition(current_language, a_constraint_ref.target).item("text"))	
 			if in_technical_mode then
 				Result.append(" -> " + a_constraint_ref.target)			
 			end
@@ -865,7 +865,7 @@ feature {NONE} -- Implementation
 			code := an_ordinal.symbol.code_string
 			Result.append(an_ordinal.value.out + an_ordinal.separator.out)
 			if ontology.term_codes.has(code) then
-				Result.append(" " + ontology.term_definition(language, code).item("text"))
+				Result.append(" " + ontology.term_definition(current_language, code).item("text"))
 			end
 			if in_technical_mode then
 				Result.append(" -- " + code)
@@ -904,7 +904,7 @@ feature {NONE} -- Implementation
 			create Result.make(0)
 			Result := an_inv.as_string
 			if not in_technical_mode then
-				Result := ontology.substitute_codes(Result, language)
+				Result := ontology.substitute_codes(Result, current_language)
 			end
 		end
 

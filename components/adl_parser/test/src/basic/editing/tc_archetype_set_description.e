@@ -55,7 +55,7 @@ feature -- testing
 			a_desc_item: RESOURCE_DESCRIPTION_ITEM
 		do
 			archetype := adl_interface.archetype
-			create desc.make_author ("Archy Type")
+			create desc.make ("Archy Type", "en")
 			desc.set_resource_package_uri ("http://archetypes.are.us/package_home")
 			desc.add_other_contributor ("Archy's 1st friend")
 			desc.add_other_contributor ("Archy's 2nd friend")
@@ -63,7 +63,7 @@ feature -- testing
 			desc.set_lifecycle_state ("review")
 			
 			-- Add an english language descriptor
-			create a_desc_item.make (create {CODE_PHRASE}.make(default_language_code_set, "en"), "This archetype purpose", True)
+			create a_desc_item.make (create {CODE_PHRASE}.make(default_language_code_set, "en"), "This archetype purpose")
 			a_desc_item.add_keyword ("keyword1")
 			a_desc_item.add_keyword ("keyword2")
 			a_desc_item.add_keyword ("keyword3")

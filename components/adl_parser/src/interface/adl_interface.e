@@ -23,7 +23,7 @@ inherit
 	SHARED_ARCHETYPE_CONTEXT
 		export
 			{NONE} all
-			{ANY} language, set_language, set_terminology
+			{ANY} current_language, set_current_language, set_current_terminology
 		end
 	
 	SHARED_ARCHETYPE_SERIALISERS
@@ -258,7 +258,7 @@ feature -- Commands
 					adl_engine.serialise(save_format)
 					if file_context.file_writable(file_path) then
 						file_context.save_file(file_path, adl_engine.serialised_archetype)
-						post_info(Current, "save_archetype", "save_archetype_i1", <<save_format, language, file_path>>)
+						post_info(Current, "save_archetype", "save_archetype_i1", <<save_format, current_language, file_path>>)
 						save_succeeded := True
 					else
 						post_error(Current, "save_archetype", "save_archetype_e1", <<file_path>>)
@@ -320,14 +320,14 @@ feature -- Commands
 				else
 					post_info(Current, "parse_archetype", "parse_archetype_i1", <<adl_engine.archetype_id.as_string>>)						
 					
-					if language = Void or not ontology.has_language(language) then
-						set_language(ontology.primary_language)
+					if current_language = Void or not ontology.has_language(current_language) then
+						set_current_language(ontology.primary_language)
 					end
 				
 					if ontology.terminologies_available.is_empty then
-						clear_terminology
+						clear_current_terminology
 					else
-						set_terminology(ontology.terminologies_available.first)
+						set_current_terminology(ontology.terminologies_available.first)
 					end
 				
 					if adl_engine.archetype.is_valid then

@@ -89,6 +89,10 @@ feature -- testing
 			a_term.add_item("text", "+++")
 			ontology.add_term_definition("en", a_term)
 
+			-- add another ordinal node with no items
+			an_attr_node := cf.create_c_attribute_single (archetype.definition, "an_ordinal_empty")
+			an_ordinal_node := cf.create_c_dv_ordinal(an_attr_node)
+
 			if archetype.is_valid then
 				adl_interface.adl_engine.serialise (serialise_format)	
 				io.put_string(adl_interface.adl_engine.serialised_archetype)	

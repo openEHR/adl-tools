@@ -110,7 +110,7 @@ feature {NONE} -- Implementation
 			loop
 				create list_row
 				list_row.extend(ontology.term_codes.item)
-				a_term := ontology.term_definition(language, ontology.term_codes.item)
+				a_term := ontology.term_definition(current_language, ontology.term_codes.item)
 				list_row.extend(a_term.item("text"))
 				from
 					ontology.term_attribute_names.start
@@ -197,7 +197,7 @@ feature {NONE} -- Implementation
 				
 				-- populate constraint codes
 				list_row.extend(ontology.constraint_codes.item)
-				a_term := ontology.constraint_definition(language, ontology.constraint_codes.item)
+				a_term := ontology.constraint_definition(current_language, ontology.constraint_codes.item)
 				list_row.extend(a_term.item("text"))
 				from
 					ontology.term_attribute_names.start
