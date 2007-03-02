@@ -21,10 +21,23 @@ indexing
 
 class VERSION_TREE_ID
 
+create
+	make
+	
 feature -- Definitions
 
 	Separator: CHARACTER is '.'
 	
+feature -- Initialisation
+
+	make(s: STRING) is
+			-- make from a single string
+		require
+			String_valid: s /= Void and then valid_version_tree_id(s)
+		do
+			
+		end
+		
 feature -- Access
 
 	value: STRING
@@ -76,6 +89,23 @@ feature -- Status Report
 			-- i.e. has branch_number and branch_version parts.
 		do
 			Result := value.index_of (Separator, 1) = 0
+		end
+	
+	valid_version_tree_id(s: STRING): BOOLEAN is
+			-- True if s is a valid id
+		require
+			String_valid: s /= Void and then not s.is_empty
+		local
+			i: INTEGER
+		do
+			from
+				i := 1
+			until
+				i > s.count or not (s.item (i).is_digit or s.item(i) = Separator)
+			loop
+				i := i + 1
+			end
+			Result := i > s.count
 		end
 
 invariant

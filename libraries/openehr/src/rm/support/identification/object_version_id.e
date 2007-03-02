@@ -21,7 +21,7 @@ indexing
 class OBJECT_VERSION_ID
 
 inherit
-	OBJECT_ID
+	UID_BASED_ID
 
 feature -- Access
 
@@ -30,15 +30,21 @@ feature -- Access
 			-- normally the object_id will be the unique identifier of the version container containing 
 			-- the version referred to by this OBJECT_VERSION_ID instance.
 		do
+			Result := root
 		end
 
 	version_tree_id: VERSION_TREE_ID is
 			-- tree identifier of this version with respect to other versions in the same version tree, 
 			-- as either 1 or 3 part dot-separated numbers, e.g. “1”, “2.1.4”.
+		local
+			sep_pos1, sep_pos2: INTEGER
 		do
+			sep_pos1 := value.substring_index(Extension_separator, 1) + Extension_separator.count
+			sep_pos2 := value.substring_index(Extension_separator, sep_pos1) - 1
+			create Result.make(value.substring(sep_pos1, sep_pos2))
 		end
 
-	creating_system_id: HIER_OBJECT_ID is
+	creating_system_id: UID is
 			-- Identifier of the system that created the Version corresponding to this Object version id.
 		do
 		end

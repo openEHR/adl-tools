@@ -26,10 +26,6 @@ inherit
 create
 	make
 	
-feature -- Definitions
-	
-	Extension_separator: STRING is "::"
-
 feature -- Initialization
 
 	make(a_root: UID; an_extension: STRING) is
@@ -56,87 +52,12 @@ feature -- Initialization
 			
 		end
 		
-feature -- Access
-
-	root: UID is
-			-- extract the context id part of the id, if any
-		local
-			end_pos: INTEGER
-			s: STRING
-		do
-			end_pos := value.substring_index(Extension_separator, 1) - 1
-			if end_pos <= 0 then
-				end_pos := value.count
-			end
-			s := value.substring (1, end_pos)
-			
-			create {UUID} Result.default_create
-			if Result.valid_id (s) then
-				create {UUID} Result.make(s)
-			else	
-				create {ISO_OID} Result.default_create
-				if Result.valid_id (s) then			
-					create {ISO_OID} Result.make(s)
-				else
-					create {INTERNET_ID} Result.default_create
-					if Result.valid_id (s) then			
-						create {INTERNET_ID} Result.make(s)
-					else
-						-- error
-					end
-				end
-			end
-		ensure
-			Result /= Void
-		end
-
-	extension: STRING is
-			-- extract the local id part of the id
-		require
-			has_extension
-		do
-			Result := value.substring(value.substring_index(Extension_separator, 1) + 
-						Extension_separator.count, value.count)
-		ensure
-			Result /= Void and then not Result.is_empty
-		end
-		
-	has_extension: BOOLEAN is
-			-- True if there is a root part - at least one '.' in id before version part
-		do
-			Result := value.substring_index(Extension_separator, 1) > 0
-		end
-
 feature -- Status Report
 
 	valid_id(a_str:STRING): BOOLEAN is
 			-- 
 		do
 			-- Result := 
-		end
-
-feature -- Output
-
-	as_string: STRING is
-			-- string form displayable for humans - e.g. ICD9;1989::M17(en-au)
-		do
-			create Result.make(0)
-			Result.append(root.value)
-			if has_extension then
-				Result.append(Extension_separator)
-				Result.append(extension)
-			end
-		end
-
-	as_canonical_string: STRING is
-			-- standardised form of string guaranteed to contain all information
-			-- in data item
-		do
-			create Result.make(0)
-			Result.append("<root>" + root.value + "</root>")
-			if has_extension then
-				Result.append("<extension>" + extension + "</extension>")
-			end
 		end
 
 end
