@@ -714,6 +714,39 @@ integer_interval_value: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_va
 				abort
 			end
 		}
+	| SYM_INTERVAL_DELIM SYM_GT integer_value SYM_ELLIPSIS integer_value SYM_INTERVAL_DELIM
+		{
+			if $3 <= $5 then
+				create integer_interval.make_bounded($3, $5, False, True)
+				$$ := integer_interval
+			else
+				raise_error
+				report_error("Invalid interval: " + $3.out + " must be <= " + $5.out)
+				abort
+			end
+		}
+	| SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS SYM_LT integer_value SYM_INTERVAL_DELIM
+		{
+			if $2 <= $5 then
+				create integer_interval.make_bounded($2, $5, True, False)
+				$$ := integer_interval
+			else
+				raise_error
+				report_error("Invalid interval: " + $2.out + " must be <= " + $5.out)
+				abort
+			end
+		}
+	| SYM_INTERVAL_DELIM SYM_GT integer_value SYM_ELLIPSIS SYM_LT integer_value SYM_INTERVAL_DELIM
+		{
+			if $3 <= $6 then
+				create integer_interval.make_bounded($3, $6, False, False)
+				$$ := integer_interval
+			else
+				raise_error
+				report_error("Invalid interval: " + $3.out + " must be <= " + $6.out)
+				abort
+			end
+		}
 	| SYM_INTERVAL_DELIM SYM_LT integer_value SYM_INTERVAL_DELIM
 		{
 			create integer_interval.make_lower_unbounded($3, False)
@@ -781,6 +814,39 @@ real_interval_value: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_I
 			else
 				raise_error
 				report_error("Invalid interval: " + $2.out + " must be <= " + $4.out)
+				abort
+			end
+		}
+	| SYM_INTERVAL_DELIM SYM_GT real_value SYM_ELLIPSIS real_value SYM_INTERVAL_DELIM
+		{
+			if $3 <= $5 then
+				create real_interval.make_bounded($3, $5, False, True)
+				$$ := real_interval
+			else
+				raise_error
+				report_error("Invalid interval: " + $3.out + " must be <= " + $5.out)
+				abort
+			end
+		}
+	| SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS SYM_LT real_value SYM_INTERVAL_DELIM
+		{
+			if $2 <= $5 then
+				create real_interval.make_bounded($2, $5, True, False)
+				$$ := real_interval
+			else
+				raise_error
+				report_error("Invalid interval: " + $2.out + " must be <= " + $5.out)
+				abort
+			end
+		}
+	| SYM_INTERVAL_DELIM SYM_GT real_value SYM_ELLIPSIS SYM_LT real_value SYM_INTERVAL_DELIM
+		{
+			if $3 <= $6 then
+				create real_interval.make_bounded($3, $6, False, False)
+				$$ := real_interval
+			else
+				raise_error
+				report_error("Invalid interval: " + $3.out + " must be <= " + $6.out)
 				abort
 			end
 		}
@@ -904,6 +970,39 @@ date_interval_value: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_I
 				abort
 			end
 		}
+	| SYM_INTERVAL_DELIM SYM_GT date_value SYM_ELLIPSIS date_value SYM_INTERVAL_DELIM
+		{
+			if $3 <= $5 then
+				create date_interval.make_bounded($3, $5, False, True)
+				$$ := date_interval
+			else
+				raise_error
+				report_error("Invalid interval: " + $3.out + " must be <= " + $5.out)
+				abort
+			end
+		}
+	| SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS SYM_LT date_value SYM_INTERVAL_DELIM
+		{
+			if $2 <= $5 then
+				create date_interval.make_bounded($2, $5, True, False)
+				$$ := date_interval
+			else
+				raise_error
+				report_error("Invalid interval: " + $2.out + " must be <= " + $5.out)
+				abort
+			end
+		}
+	| SYM_INTERVAL_DELIM SYM_GT date_value SYM_ELLIPSIS SYM_LT date_value SYM_INTERVAL_DELIM
+		{
+			if $3 <= $6 then
+				create date_interval.make_bounded($3, $6, False, False)
+				$$ := date_interval
+			else
+				raise_error
+				report_error("Invalid interval: " + $3.out + " must be <= " + $6.out)
+				abort
+			end
+		}
 	| SYM_INTERVAL_DELIM SYM_LT date_value SYM_INTERVAL_DELIM
 		{
 			create date_interval.make_lower_unbounded($3, False)
@@ -969,6 +1068,39 @@ time_interval_value: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_I
 			else
 				raise_error
 				report_error("Invalid interval: " + $2.out + " must be <= " + $4.out)
+				abort
+			end
+		}
+	| SYM_INTERVAL_DELIM SYM_GT time_value SYM_ELLIPSIS time_value SYM_INTERVAL_DELIM
+		{
+			if $3 <= $5 then
+				create time_interval.make_bounded($3, $5, False, True)
+				$$ := time_interval
+			else
+				raise_error
+				report_error("Invalid interval: " + $3.out + " must be <= " + $5.out)
+				abort
+			end
+		}
+	| SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS SYM_LT time_value SYM_INTERVAL_DELIM
+		{
+			if $2 <= $5 then
+				create time_interval.make_bounded($2, $5, True, False)
+				$$ := time_interval
+			else
+				raise_error
+				report_error("Invalid interval: " + $2.out + " must be <= " + $5.out)
+				abort
+			end
+		}
+	| SYM_INTERVAL_DELIM SYM_GT time_value SYM_ELLIPSIS SYM_LT time_value SYM_INTERVAL_DELIM
+		{
+			if $3 <= $6 then
+				create time_interval.make_bounded($3, $6, False, False)
+				$$ := time_interval
+			else
+				raise_error
+				report_error("Invalid interval: " + $3.out + " must be <= " + $6.out)
 				abort
 			end
 		}
@@ -1040,6 +1172,39 @@ date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_t
 				abort
 			end
 		}
+	| SYM_INTERVAL_DELIM SYM_GT date_time_value SYM_ELLIPSIS date_time_value SYM_INTERVAL_DELIM
+		{
+			if $3 <= $5 then
+				create date_time_interval.make_bounded($3, $5, False, True)
+				$$ := date_time_interval
+			else
+				raise_error
+				report_error("Invalid interval: " + $3.out + " must be <= " + $5.out)
+				abort
+			end
+		}
+	| SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS SYM_LT date_time_value SYM_INTERVAL_DELIM
+		{
+			if $2 <= $5 then
+				create date_time_interval.make_bounded($2, $5, True, False)
+				$$ := date_time_interval
+			else
+				raise_error
+				report_error("Invalid interval: " + $2.out + " must be <= " + $5.out)
+				abort
+			end
+		}
+	| SYM_INTERVAL_DELIM SYM_GT date_time_value SYM_ELLIPSIS SYM_LT date_time_value SYM_INTERVAL_DELIM
+		{
+			if $3 <= $6 then
+				create date_time_interval.make_bounded($3, $6, False, False)
+				$$ := date_time_interval
+			else
+				raise_error
+				report_error("Invalid interval: " + $3.out + " must be <= " + $6.out)
+				abort
+			end
+		}
 	| SYM_INTERVAL_DELIM SYM_LT date_time_value SYM_INTERVAL_DELIM
 		{
 			create date_time_interval.make_lower_unbounded($3, False)
@@ -1105,6 +1270,39 @@ duration_interval_value: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration
 			else
 				raise_error
 				report_error("Invalid interval: " + $2.out + " must be <= " + $4.out)
+				abort
+			end
+		}
+	| SYM_INTERVAL_DELIM SYM_GT duration_value SYM_ELLIPSIS duration_value SYM_INTERVAL_DELIM
+		{
+			if $3 <= $5 then
+				create duration_interval.make_bounded($3, $5, False, True)
+				$$ := duration_interval
+			else
+				raise_error
+				report_error("Invalid interval: " + $3.out + " must be <= " + $5.out)
+				abort
+			end
+		}
+	| SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS SYM_LT duration_value SYM_INTERVAL_DELIM
+		{
+			if $2 <= $5 then
+				create duration_interval.make_bounded($2, $5, True, False)
+				$$ := duration_interval
+			else
+				raise_error
+				report_error("Invalid interval: " + $2.out + " must be <= " + $5.out)
+				abort
+			end
+		}
+	| SYM_INTERVAL_DELIM SYM_GT duration_value SYM_ELLIPSIS SYM_LT duration_value SYM_INTERVAL_DELIM
+		{
+			if $3 <= $6 then
+				create duration_interval.make_bounded($3, $6, False, False)
+				$$ := duration_interval
+			else
+				raise_error
+				report_error("Invalid interval: " + $3.out + " must be <= " + $6.out)
 				abort
 			end
 		}

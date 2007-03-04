@@ -85,7 +85,7 @@ feature -- Output
 		do
 			create Result.make(0)
 			if interval /= Void then
-				Result.append("|" + interval_as_string + "|")
+				Result.append("|" + interval.as_string + "|")
 			else
 				from
 					list.start
@@ -120,43 +120,6 @@ feature -- Output
 		do
 			Result := as_string
 		end
-
-	interval_as_string: STRING is
-			-- FIXME: this is a copy of INTERVAL.as_STRING, slightly modified to make Reals 
-			-- which have no decimals still print out with a '.0' at the end - so as to be
-			-- symmetric on output and input
-		local
-			lstr, ustr: STRING
-		do
-			lstr := interval.lower.out
-			ustr := interval.upper.out
-			if lstr.index_of('.', 1) <= 0 then
-				lstr.append(".0")
-			end
-			if ustr.index_of('.', 1) <= 0 then
-				ustr.append(".0")
-			end
-
-			create Result.make(0)
-			if interval.lower_unbounded then
-				if interval.upper_included then
-					Result.append("<= " + ustr)
-				else
-					Result.append("< " + ustr)
-				end
-			elseif interval.upper_unbounded then
-				if interval.lower_included then
-					Result.append(">= " + lstr)
-				else
-					Result.append("> " + lstr)
-				end
-			elseif not interval.limits_equal then
-				Result.append(lstr + ".." + ustr)
-			else
-				Result.append(ustr) 
-			end
-		end
-
 		
 invariant
 	interval /= Void xor list /= Void

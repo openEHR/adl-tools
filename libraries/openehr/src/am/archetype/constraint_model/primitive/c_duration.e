@@ -119,17 +119,7 @@ feature -- Output
 			if pattern /= Void then
 				Result.append(pattern)
 			else
-				Result.append("|")
-				if interval.lower_unbounded then
-					Result.append("<= " + interval.upper.as_string)
-				elseif interval.upper_unbounded then
-					Result.append(">= " + interval.lower.as_string)
-				elseif not interval.limits_equal then
-					Result.append(interval.lower.as_string + ".." + interval.upper.as_string)
-				else
-					Result.append(interval.as_string) 
-				end
-				Result.append("|")
+				Result.append("|" + interval.as_string + "|")
 			end
 			if assumed_value /= Void then
 				Result.append("; " + assumed_value.as_string)

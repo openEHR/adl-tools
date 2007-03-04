@@ -90,17 +90,6 @@ feature -- Initialization
 			lower_included_set: lower_included = lower_included_flag
 		end
 
---	make_unbounded is
---		do
---			lower_unbounded := True
---			upper_unbounded := True
---		ensure
---			Lower_unbounded: lower_unbounded
---			Upper_unbounded: upper_unbounded
---			lower_included_not_set: not lower_included
---			upper_included_not_set: not upper_included
---		end
-
 feature -- Access
 
 	lower: G
@@ -238,18 +227,26 @@ feature -- Output
 			create Result.make(0)
 			if lower_unbounded then
 				if upper_included then
-					Result.append("<= " + upper_out)
+					Result.append("<=" + upper_out)
 				else
-					Result.append("< " + upper_out)
+					Result.append("<" + upper_out)
 				end
 			elseif upper_unbounded then
 				if lower_included then
-					Result.append(">= " + lower_out)
+					Result.append(">=" + lower_out)
 				else
-					Result.append("> " + lower_out)
+					Result.append(">" + lower_out)
 				end
 			elseif not limits_equal then
-				Result.append(lower_out + ".." + upper_out)
+				if lower_included and upper_included then
+					Result.append(lower_out + ".." + upper_out)
+				elseif lower_included then
+					Result.append(lower_out + "..<" + upper_out)
+				elseif upper_included then
+					Result.append(">" + lower_out + ".." + upper_out)
+				else
+					Result.append(">" + lower_out + "..<" + upper_out)
+				end
 			else
 				Result.append(lower_out) 
 			end
