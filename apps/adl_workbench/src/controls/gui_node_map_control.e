@@ -840,7 +840,9 @@ feature {NONE} -- Implementation
 			if ontology.term_codes.has(code) then
 				Result.append(" " + ontology.term_definition(current_language, code).item("text"))
 			end
-			Result.append(" -- " + code)
+			if in_technical_mode then
+				Result.append(" -- " + code)
+			end
 			if assumed_flag then
 				Result.append(" (Assumed)")
 			end

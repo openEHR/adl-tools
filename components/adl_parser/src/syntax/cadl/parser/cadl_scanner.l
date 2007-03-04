@@ -6,7 +6,7 @@ indexing
 
 	author:      "Thomas Beale <thomas@deepthought.com.au>"
 	support:     "Deep Thought Informatics <support@deepthought.com.au>"
-	copyright:   "Copyright (c) 2003-2005 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2003-2007 Ocean Informatics Pty Ltd"
 	license:     "Mozilla tri-license"
 
 	file:        "$URL$"
@@ -190,7 +190,7 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 	last_string_value := text
 }
 
-----------/* term code reference of form [ICD10AM(1998)::F23] */ -------------------------------------------------
+----------/* V_QUALIFIED_TERM_CODE_REF: term code of form [ICD10AM(1998)::F23] */ ---------------
 \[{NAMECHAR_PAREN}+::{NAMECHAR}+\]	{
 					last_token := V_QUALIFIED_TERM_CODE_REF
 					last_string_value := text_substring (2, text_count - 1)
@@ -201,6 +201,7 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 					last_string_value := text_substring (2, text_count - 1)
 			}
 
+----------/* V_LOCAL_TERM_CODE_REF: term code of form [at0000], [ac0000] */ ---------------
 \[{ALPHANUM}{NAMECHAR}*\]	{
 					last_token := V_LOCAL_TERM_CODE_REF
 					last_string_value := text_substring (2, text_count - 1)
@@ -225,24 +226,24 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 			}
 
 <IN_TERM_CONSTRAINT> {
-	[ \t]*[a-zA-Z0-9._\-]+[ \t]*;[ \t\n]* {
+	[ \t]*[a-zA-Z0-9._\-]+[ \t]*;[ \t\n]* { -- match second last line with ';' termination (assumed value)
 				str_ := text
 				in_buffer.append(text)
 				term_code_count := term_code_count + 1
 				assumed_term_code_index := term_code_count
 			}
 
-	[ \t]*[a-zA-Z0-9._\-]+[ \t]*,[ \t\n]* {
+	[ \t]*[a-zA-Z0-9._\-]+[ \t]*,[ \t\n]* {	-- match any line, with ',' termination
 				str_ := text
 				in_buffer.append(text)
 				term_code_count := term_code_count + 1
 			}
 
-	\-\-[^\],\n]*\n {
+	\-\-[^\n]*\n {	-- ignore comments
 				do_nothing
 			}
 
-	[ \t]*[a-zA-Z0-9._\-]*[ \t\n]*\] {
+	[ \t]*[a-zA-Z0-9._\-]*[ \t\n]*\] { -- match final line, terminating in ']'
 				if assumed_term_code_index > 0 and assumed_term_code_index /= term_code_count then
 					last_token := ERR_TERM_CODE_CONSTRAINT
 				else
@@ -268,7 +269,7 @@ a[ct][0-9.]+ {
 				last_string_value := text
 		}
 
-----------/* V_ISO8601_DATE_TIME YYYY-MM-DDThh:mm:ss[,sss][Z|+/-nnnn] */ -------------------------------------------------
+----------/* V_ISO8601_EXTENDED_DATE_TIME YYYY-MM-DDThh:mm:ss[,sss][Z|+/-nnnn] */ -------------------------------------------------
 
 [0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-6][0-9]:[0-6][0-9](,[0-9]+)?(Z|[+-][0-9]{4})? |
 [0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-6][0-9](Z|[+-][0-9]{4})? |
@@ -277,7 +278,7 @@ a[ct][0-9.]+ {
 				last_string_value := text
 		}
 
-----------/* V_ISO8601_TIME hh:mm:ss[,sss][Z|+/-nnnn] */ -------------------------------------------------
+----------/* V_ISO8601_EXTENDED_TIME hh:mm:ss[,sss][Z|+/-nnnn] */ -------------------------------------------------
 
 [0-2][0-9]:[0-6][0-9]:[0-6][0-9](,[0-9]+)?(Z|[+-][0-9]{4})? |
 [0-2][0-9]:[0-6][0-9](Z|[+-][0-9]{4})? {
@@ -285,7 +286,7 @@ a[ct][0-9.]+ {
 				last_string_value := text
 		}
 
-----------/* V_ISO8601_DATE YYYY-MM-DD */ -------------------------------------------------
+----------/* V_ISO8601_EXTENDED_DATE YYYY-MM-DD */ -------------------------------------------------
 
 [0-9]{4}-[0-1][0-9]-[0-3][0-9] |
 [0-9]{4}-[0-1][0-9] {
@@ -425,23 +426,26 @@ P[yY]?[mM]?[Ww]?[dD]? {
   			}
 }
 
-----------/* V_TYPE_IDENTIFIER */ -------------------------------------------------
+----------/* V_TYPE_IDENTIFIER */ --------------------------------------
 [A-Z]{IDCHAR}*	{
 					last_token := V_TYPE_IDENTIFIER
 					last_string_value := text
 			}
 
+----------/* V_GENERIC_TYPE_IDENTIFIER */ --------------------------------------
 [A-Z]{IDCHAR}*<[a-zA-Z0-9,_<>]+>	{
 					last_token := V_GENERIC_TYPE_IDENTIFIER
 					last_string_value := text
 			}
 
+----------/* V_FEATURE_CALL_IDENTIFIER */ --------------------------------------
 [a-z]{IDCHAR}*[	 ]*\(\)	{
 					last_token := V_FEATURE_CALL_IDENTIFIER
 					last_string_value := text_substring(1, text_count - 2)
 					last_string_value.right_adjust
 			}
 
+----------/* V_ATTRIBUTE_IDENTIFIER */ --------------------------------------
 [a-z]{IDCHAR}*	{
 					last_token := V_ATTRIBUTE_IDENTIFIER
 					last_string_value := text
