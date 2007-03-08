@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="ISO-8859-1"?><system xmlns="http://www.eiffel.com/developers/xml/configuration-1-0-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-0-0 http://www.eiffel.com/developers/xml/configuration-1-0-0.xsd" name="adl_workbench" uuid="3C8455F3-35B3-440C-BF32-DF5FA15DEFAA">
+	<target name="adl_workbench">
+		<root class="ADL_WORKBENCH" feature="make_and_launch"/>
+		<option trace="false" profile="false" debug="false" warning="true" namespace="openehr">
+			<debug name="__unnamed_debug__" enabled="false"/>
+			<debug name="adl_invariant" enabled="false"/>
+			<debug name="adl_parse" enabled="false"/>
+			<debug name="adl_tree" enabled="false"/>
+			<debug name="arch_dir" enabled="false"/>
+			<debug name="bb" enabled="false"/>
+			<debug name="dadl_parse" enabled="false"/>
+			<debug name="dlg_dispatcher" enabled="false"/>
+			<debug name="dt" enabled="false"/>
+			<debug name="exclude list" enabled="false"/>
+			<debug name="gelex" enabled="false"/>
+			<debug name="geyacc" enabled="false"/>
+			<debug name="include list" enabled="false"/>
+			<debug name="og_path_parse" enabled="false"/>
+			<debug name="refactor_fixme" enabled="false"/>
+			<debug name="vision2_windows" enabled="false"/>
+			<debug name="vision2_windows_gdi" enabled="false"/>
+			<debug name="wel" enabled="false"/>
+			<debug name="wel_gdi_count" enabled="false"/>
+			<debug name="wel_gdi_references" enabled="false"/>
+			<debug name="win_dispatcher" enabled="false"/>
+			<assertions precondition="true" postcondition="false" check="true" invariant="false" loop="false"/>
+			<warning name="export_class_missing" enabled="false"/>
+			<warning name="old_verbatim_strings" enabled="false"/>
+			<warning name="syntax" enabled="false"/>
+			<warning name="vjrv" enabled="false"/>
+		</option>
+		<setting name="address_expression" value="false"/>
+		<setting name="array_optimization" value="false"/>
+		<setting name="check_vape" value="true"/>
+		<setting name="console_application" value="false"/>
+		<setting name="dead_code_removal" value="true"/>
+		<setting name="dynamic_runtime" value="false"/>
+		<setting name="exception_trace" value="true"/>
+		<setting name="inlining" value="false"/>
+		<setting name="line_generation" value="false"/>
+		<setting name="multithreaded" value="false"/>
+		<external_include location="$(ISE_EIFFEL)\library\wel\spec\windows\include"/>
+		<external_include location="$(ISE_EIFFEL)\library\vision2\spec\include"/>
+		<external_include location="$(ISE_EIFFEL)\library\gobo\kernel\include"/>
+		<external_object location="$(ISE_EIFFEL)\library\wel\spec\$(ISE_C_COMPILER)\lib\wel.lib"/>
+		<external_object location="$(ISE_EIFFEL)\library\vision2\spec\$(ISE_C_COMPILER)\lib\vision2.lib"/>
+		<external_object location="$(ISE_EIFFEL)\library\vision2\spec\$(ISE_C_COMPILER)\lib\zlib.lib"/>
+		<external_object location="$(ISE_EIFFEL)\library\vision2\spec\$(ISE_C_COMPILER)\lib\libpng.lib"/>
+		<precompile name="precompile" location="$ISE_EIFFEL\precomp\spec\$ISE_PLATFORM\vision2.ecf"/>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
+		<library name="pre_vision2" location="$ISE_LIBRARY\library\vision2\vision2.ecf"/>
+		<library name="pre_wel" location="$ISE_LIBRARY\library\wel\wel.ecf">
+			<condition>
+				<platform value="windows"/>
+			</condition>
+		</library>
+		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf"/>
+		<cluster name="adl_parser" location="$OPENEHR\ref_impl_eiffel\components\adl_parser\src\" recursive="true">
+			<option>
+				<assertions precondition="true" postcondition="true" check="true" invariant="false" loop="false"/>
+			</option>
+			<file_rule>
+				<exclude>/.svn$</exclude>
+			</file_rule>
+		</cluster>
+		<cluster name="app" location="$OPENEHR\ref_impl_eiffel\apps\adl_workbench\src\" recursive="true">
+			<option>
+				<assertions precondition="true" postcondition="true" check="true" invariant="false" loop="false"/>
+			</option>
+			<file_rule>
+				<exclude>/.svn$</exclude>
+			</file_rule>
+		</cluster>
+		<cluster name="archetype_directory" location="$OPENEHR\ref_impl_eiffel\components\archetype_repository\src\" recursive="true">
+			<option>
+				<assertions precondition="true" postcondition="true" check="true" invariant="false" loop="false"/>
+			</option>
+			<file_rule>
+				<exclude>/.svn$</exclude>
+			</file_rule>
+		</cluster>
+		<cluster name="common_libs" location="$OPENEHR\ref_impl_eiffel\libraries\common_libs\src\" recursive="true">
+			<option>
+				<assertions precondition="true" postcondition="true" check="false" invariant="false" loop="false"/>
+			</option>
+			<file_rule>
+				<exclude>/.svn$</exclude>
+			</file_rule>
+		</cluster>
+		<cluster name="gobo" location="$ISE_EIFFEL\library\gobo\library\">
+			<cluster name="design_pattern" location="$|pattern\" readonly="true" recursive="true"/>
+			<cluster name="gobo_structure" location="$|structure\" readonly="true" recursive="true"/>
+			<cluster name="kl_kernel" location="$|kernel\" readonly="true" recursive="true">
+				<file_rule>
+					<exclude>/spec$</exclude>
+				</file_rule>
+			</cluster>
+			<cluster name="kl_kernel_spec" location="$|kernel\spec\ise\" readonly="true" recursive="true"/>
+			<cluster name="kl_lexical" location="$|lexical\" readonly="true" recursive="true"/>
+			<cluster name="kl_parse" location="$|parse\" readonly="true" recursive="true"/>
+			<cluster name="regexp" location="$|regexp\" readonly="true" recursive="true"/>
+			<cluster name="ut_support" location="$|utility\" readonly="true" recursive="true"/>
+		</cluster>
+		<cluster name="openehr" location="$OPENEHR\ref_impl_eiffel\libraries\openehr\src\" recursive="true">
+			<option>
+				<assertions precondition="true" postcondition="true" check="false" invariant="false" loop="false"/>
+			</option>
+			<file_rule>
+				<exclude>/.svn$</exclude>
+			</file_rule>
+			<visible class="C_CODE_PHRASE"/>
+			<visible class="C_DV_ORDINAL"/>
+			<visible class="C_DV_QUANTITY"/>
+			<visible class="CODE_PHRASE"/>
+		</cluster>
+		<cluster name="vendor_fixes" location="$OPENEHR\ref_impl_eiffel\libraries\vendor-fixes\" recursive="true">
+			<file_rule>
+				<exclude>/.svn$</exclude>
+				<exclude>/base_net$</exclude>
+			</file_rule>
+		</cluster>
+		<cluster name="version" location="$OPENEHR\ref_impl_eiffel\libraries\version\" recursive="true">
+			<file_rule>
+				<exclude>/.svn$</exclude>
+			</file_rule>
+		</cluster>
+	</target>
+</system>
