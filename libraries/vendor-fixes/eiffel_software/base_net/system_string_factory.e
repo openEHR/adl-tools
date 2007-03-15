@@ -6,6 +6,9 @@ indexing
 class
 	SYSTEM_STRING_FACTORY
 
+inherit
+	UC_STRING_HANDLER
+
 feature -- Conversion
 
 	from_string_to_system_string (a_str: STRING_GENERAL): SYSTEM_STRING is
@@ -51,10 +54,31 @@ feature -- Conversion
 		local
 			i, nb: INTEGER
 			l_str8: STRING
+			utf8: UC_UTF8_STRING
 		do
 			if a_result.is_string_8 then
-				l_str8 ?= a_result
-				a_str.copy_to (0, l_str8.area.native_array, 0, a_str.length)
+				from
+					i := 0
+					nb := a_str.length
+					create utf8.make_empty
+				until
+					i = nb
+				loop
+					utf8.append_character (a_str.chars (i))
+					i := i + 1
+				end
+
+				from
+					i := 1
+					nb := utf8.byte_count
+					l_str8 ?= a_result
+					l_str8.wipe_out
+				until
+					i > nb
+				loop
+					l_str8.append_character (utf8.byte_item (i))
+					i := i + 1
+				end
 			else
 				from
 					i := 0
