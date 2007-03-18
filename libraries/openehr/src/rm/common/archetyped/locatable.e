@@ -1,16 +1,15 @@
 indexing
 	component:   "openEHR Common Reference Model"
 	description: "[
-			     Interface to objects which are locatable - i.e. implement 
-	             locator_id, and which can locate a sub-object from a path.
+				 Root class of all information model classes that can be archetyped.
 			     ]"
 	keywords:    "locator, locatable"
 
-	design:      "openEHR Common Reference Model 1.4.1"
+	design:      "openEHR Common Reference Model"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2000-2007 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -21,6 +20,7 @@ deferred class LOCATABLE
 
 inherit
 	LOCATOR_CONSTANTS
+	PATHABLE
 
 feature -- Access
 	
@@ -45,36 +45,8 @@ feature -- Access
 			-- Audit trail from non-openEHR system of original commit of 
 			-- information forming the content of the current item.
 
-	path_of_item (an_item: LOCATABLE): STRING is
-			-- The path to an item relative to the root of this archetyped structure.
-		require
-			item_valid: an_item /= Void
-		deferred
-		end
-
-	item_at_path (a_path: STRING): LOCATABLE is
-			-- The item at a path (relative to this item).
-		require
-			Path_valid: a_path /= Void and then valid_path(a_path)
-		deferred
-		ensure
-			Result /= Void
-		end
-
-	parent: LOCATABLE is
-			-- parent node of this node in compositional structure
-		deferred
-		end
-			
 feature -- Status Report
 
-	valid_path (a_path: STRING): BOOLEAN is
-			-- True if the path is valid with respect to the current item.
-		require
-			Path_valid: a_path /= Void and then not a_path.is_empty
-		deferred
-		end
-		
 	is_archetype_root: BOOLEAN is
 			-- True if root point of an archetyped structure
 		do

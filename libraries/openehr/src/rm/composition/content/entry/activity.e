@@ -28,8 +28,8 @@ inherit
 
 feature -- Access
 
-	description: ITEM_STRUCTURE	
-			-- Description of the activity to be performed, in the form of an archetyped structure. 
+	description: ITEM_STRUCTURE
+			-- Description of the activity to be performed, in the form of an archetyped structure.
 
 	timing: DV_PARSABLE
 			-- Timing information for the activity, in a parsable form such as HL7 GTS.
@@ -49,7 +49,7 @@ feature -- Access
 
 feature -- Status Report
 
-	valid_path (a_path: STRING): BOOLEAN is
+	path_exists (a_path: STRING): BOOLEAN is
 			-- True if the path is valid with respect to the current item.
 		do
 		end

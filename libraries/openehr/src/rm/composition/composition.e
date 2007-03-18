@@ -87,7 +87,7 @@ feature -- Status Report
 			
 		end
 		
-	valid_path (a_path: STRING): BOOLEAN is
+	path_exists (a_path: STRING): BOOLEAN is
 			-- True if the path is valid with respect to the current item.
 		do
 				-- TO_BE_IMPLEM

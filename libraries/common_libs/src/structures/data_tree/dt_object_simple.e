@@ -22,12 +22,12 @@ inherit
 
 	-- FIXME: remove when duration.out solved
 	DATE_TIME_ROUTINES
-		export 
+		export
 			{NONE} all
 		undefine
 			is_equal, default_create
 		end
-		
+
 create
 	make_identified, make_anonymous
 
@@ -61,7 +61,7 @@ feature -- Initialisation
 feature -- Access
 
 	value: ANY
-	
+
 feature -- Status Report
 
 	is_valid: BOOLEAN is
@@ -84,9 +84,9 @@ feature -- Modification
 		do
 			value := a_value
 			rm_type_name := a_value.generating_type
-			
-			is_string := rm_type_name.is_equal("STRING")
-			is_character := rm_type_name.has_substring("CHARACTER")
+
+			is_string := rm_type_name.substring_index("STRING", 1) = 1
+			is_character := rm_type_name.substring_index("CHARACTER", 1) = 1
 		end
 
 feature -- Conversion
@@ -122,7 +122,7 @@ feature -- Serialisation
 		do
 			serialiser.start_primitive_object(Current, depth)
 		end
-		
+
 	exit_block(serialiser: DT_SERIALISER; depth: INTEGER) is
 			-- perform serialisation at end of block for this node
 		do
@@ -133,7 +133,7 @@ feature {NONE} -- Implementation
 
 	is_string: BOOLEAN
 	is_character: BOOLEAN
-	
+
 end
 
 

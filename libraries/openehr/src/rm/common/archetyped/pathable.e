@@ -1,59 +1,73 @@
 indexing
-	component:   "openEHR EHR Reference Model"
-
+	component:   "openEHR Common Reference Model"
 	description: "[
-	              Observational clinical statements, i.e. information about 
-				  events or processes in the real world, in the form of data situated 
-				  in time. Represented by temporal data structures in which each value 
-				  structure has a timepoint.
-				  ]"
-	keywords:    "content, clinical, observation"
+				 Abstract parent of all classes whose instances are reachable by paths, and 
+				 which know how to locate child object by paths. The parent feature may be 
+				 implemented as a function or attribute.
+			     ]"
+	keywords:    "path"
 
-	requirements:"ISO 18308 TS V1.0 ???"
-	design:      "openEHR EHR Reference Model 5.0"
+	design:      "openEHR Common Reference Model"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2005 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2007 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class OBSERVATION
-
-inherit
-	CARE_ENTRY
+deferred class PATHABLE
 
 feature -- Access
 
-	data: HISTORY [ITEM_STRUCTURE]
-			-- The data of this observation, in the form of a history of values which may be of any complexity.
-
-	state: HISTORY [ITEM_STRUCTURE]
-			-- The state of the subject of this observation, 
-			-- in the form of a history of values which may be of any complexity.
-
-	path_of_item (a_loc: LOCATABLE): STRING is
+	path_of_item (an_item: PATHABLE): STRING is
 			-- The path to an item relative to the root of this archetyped structure.
-		do
+		require
+			item_valid: an_item /= Void
+		deferred
 		end
 
-	item_at_path (a_path: STRING): LOCATABLE is
+	item_at_path (a_path: STRING): ANY is
 			-- The item at a path (relative to this item).
+		require
+			Path_valid: a_path /= Void and then path_exists(a_path)
+		deferred
+		ensure
+			Result /= Void
+		end
+
+	items_at_path (a_path: STRING): LIST[ANY] is
+			-- The item at a path (relative to this item); only valid
+			-- for unique paths, i.e. paths that resolve to a single item.
+		require
+			Path_valid: a_path /= Void and then path_unique(a_path)
 		do
+		ensure
+			Result /= Void
+		end
+
+	parent: PATHABLE is
+			-- parent node of this node in compositional structure
+		deferred
 		end
 
 feature -- Status Report
 
 	path_exists (a_path: STRING): BOOLEAN is
 			-- True if the path is valid with respect to the current item.
+		require
+			Path_valid: a_path /= Void and then not a_path.is_empty
+		deferred
+		end
+
+	path_unique (a_path: STRING): BOOLEAN is
+			-- True if the path corresponds to a single item in the data.
+		require
+  			path_valid: a_path /= Void and then path_exists(a_path)
 		do
 		end
-		
-invariant
-	Data_exists: data /= Void
 
 end
 
@@ -72,10 +86,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is observation.e.
+--| The Original Code is locatable.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2005
+--| Portions created by the Initial Developer are Copyright (C) 2003-2004
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

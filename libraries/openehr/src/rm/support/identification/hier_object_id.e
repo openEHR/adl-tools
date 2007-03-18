@@ -1,6 +1,6 @@
 indexing
 	component:   "openEHR Support Reference Model"
-	
+
 	description: "[
 			 Hierarhical object identifiers. The syntax of the value attribute is as follows:
 					 [ root '.' ] extension
@@ -21,11 +21,11 @@ indexing
 class HIER_OBJECT_ID
 
 inherit
-	OBJECT_ID
+	UID_BASED_ID
 
 create
 	make
-	
+
 feature -- Initialization
 
 	make(a_root: UID; an_extension: STRING) is
@@ -43,21 +43,21 @@ feature -- Initialization
 			Root_set: a_root /= Void implies root.value.is_equal(a_root.value)
 			Extension_set: extension.is_equal(an_extension)
 		end
-		
+
 	make_from_string(a_string:STRING) is
 			-- make from a string of the same form as `id', i.e. "root::extension"
 		require
 			String_exists: a_string /= Void and then valid_id(a_string)
 		do
-			
+
 		end
-		
+
 feature -- Status Report
 
 	valid_id(a_str:STRING): BOOLEAN is
-			-- 
+			--
 		do
-			-- Result := 
+			-- Result :=
 		end
 
 end
