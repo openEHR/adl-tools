@@ -17,7 +17,9 @@ class
 inherit
 	MAIN_WINDOW_IMP
 
-	EV_STOCK_PIXMAPS_IMP
+	EV_STOCK_PIXMAPS
+		rename
+			implementation as pixmaps_implementation
 		export
 			{NONE} all
 		undefine
@@ -29,8 +31,8 @@ inherit
 			{NONE} all
 		undefine
 			copy, default_create
-		end	
-		
+		end
+
 	SHARED_ARCHETYPE_DIRECTORY
 		export
 			{NONE} all
@@ -84,7 +86,7 @@ feature {NONE} -- Initialization
 			if editor_command.is_empty then
 				set_editor_command(Default_editor_command)
 			end
-			
+
 			initialise_accelerators
 
 			if reference_repository_path.is_empty then
@@ -97,11 +99,11 @@ feature {NONE} -- Initialization
 				archetype_directory.put_repository (work_repository_path, "work")
 			end
 			populate_archetype_directory
-			
+
 			adl_interface.set_current_directory(reference_repository_path)
 			if current_work_directory = Void then
 				current_work_directory := adl_interface.working_directory
-			end		
+			end
 		end
 
 	initialise_gui_settings is
@@ -116,18 +118,18 @@ feature {NONE} -- Initialization
 			set_title(cur_title)
 
 			set_position (app_x_position, app_y_position)
-			
+
 			if app_width > 0 then
 				set_width(app_width)
 			else
 				set_width(app_initial_width)
-			end			
+			end
 			if app_height > 0 then
 				set_height(app_height)
 			else
 				set_height(app_initial_height)
 			end
-			
+
 			if main_notebook_tab_pos > 1 then
 				main_nb.select_item (main_nb.i_th (main_notebook_tab_pos))
 			end
@@ -145,15 +147,15 @@ feature {NONE} -- Initialization
 				total_view_area.set_split_position (total_view_area_split_position)
 			else
 				total_view_area.set_split_position (app_initial_height - parser_status_area.minimum_height)
-			end	
-			
+			end
+
 			initialise_path_control
 		end
-			
+
 	initialise_path_control is
 			-- create tree control repersenting archetype files found in repository_path
 		local
-			filter_combo_index: INTEGER			
+			filter_combo_index: INTEGER
 			strs: ARRAYED_LIST [STRING]
 		do
 			parsed_archetype_found_paths.enable_multiple_selection
@@ -163,7 +165,7 @@ feature {NONE} -- Initialization
 				from
 					filter_combo_index := 1
 				until
-					filter_combo_index > path_control_filter_names.count or 
+					filter_combo_index > path_control_filter_names.count or
 					path_control_filter_names.item(filter_combo_index).is_equal(path_filter_combo_selection)
 				loop
 					filter_combo_index := filter_combo_index + 1
@@ -178,7 +180,7 @@ feature {NONE} -- Initialization
 
 			path_view_check_list.set_strings (path_control_column_names)
 			path_view_check_list.set_minimum_height (path_control_column_names.count * List_row_height)
-		
+
 			strs := path_view_check_list_settings
 			if not strs.is_empty then
 				strs.compare_objects
@@ -206,14 +208,14 @@ feature {NONE} -- Initialization
 			key_constants: EV_KEY_CONSTANTS
 		do
 			create key_constants
-			
+
 			-- make ^C (copy) accelerator
 			create key.make_with_code (key_constants.key_c)
 			create acc.make_with_key_combination (key, True, False, False)
 			acc.actions.extend(agent dispatch_ctrl_c_keystroke)
 			accelerators.extend (acc)
 		end
-		
+
 feature -- Access
 
 	need_to_set_repository: BOOLEAN
@@ -223,53 +225,53 @@ feature -- Access
 			-- directory where archetypes are currently being opened and saved
 			-- from GUI open and save buttons; automatic opens (due to clicking
 			-- on arhcyetpe name still use main repository directory
-			
+
 	parent_app: EV_APPLICATION
-			-- provide a reference to the owning application so as to get access to a 
+			-- provide a reference to the owning application so as to get access to a
 			-- few things that only applications can do, like `process_events`	
 
 feature -- Modification
 
-	set_parent_app(an_app: EV_APPLICATION) is				
+	set_parent_app(an_app: EV_APPLICATION) is
 			-- set `parent_app'
 		require
 			an_app /= Void
 		do
 			parent_app := an_app
 		end
-		
+
 feature -- Commands
 
 	set_options is
-			-- 
+			--
 		do
 			option_dialog.show_modal_to_window (Current)
 		end
-		
+
 	set_repository is
-			-- 
+			--
 		do
 			repository_dialog.show_modal_to_window (Current)
 		end
-		
+
 	display_icon_help is
-			-- 
+			--
 		do
 			icon_dialog.show_modal_to_window (Current)
 		end
-		
+
 	update_status_area(s: STRING) is
 			-- update parse status area on screen
 		do
 			parser_status_area.append_text(s)
 		end
-		
+
 	display_news is
 			-- Called by `pointer_button_press_actions' of `about_mi'.
 		do
 			News_dialog.show
 		end
-		
+
 feature {NONE} -- Commands
 
 	show_online_help is
@@ -283,9 +285,9 @@ feature {NONE} -- Commands
 		do
 			About_dialog.show_modal_to_window (Current)
 		end
-		
+
 	exit_app is
-			-- 
+			--
 		local
 			strs: ARRAYED_LIST [STRING]
 			ev_items: DYNAMIC_LIST[EV_LIST_ITEM]
@@ -300,7 +302,7 @@ feature {NONE} -- Commands
 			set_app_y_position(y_position)
 			set_app_maximised(is_maximized)
 			set_main_notebook_tab_pos(main_nb.selected_item_index)
-			
+
 			set_path_filter_combo_selection(path_filter_combo.selected_item.text)
 
 			ev_items := path_view_check_list.checked_items
@@ -329,7 +331,7 @@ feature {NONE} -- Commands
 				end
 			end
 		end
-	
+
 	select_format is
 			-- Called by `select_actions' of `format_combo'.
 		do
@@ -346,7 +348,7 @@ feature {NONE} -- Commands
 
 			create adl_file_open_dialog
 			adl_file_open_dialog.set_start_directory(current_work_directory)
-			adl_file_open_dialog.filters.extend (["*." + Archetype_file_extension, 
+			adl_file_open_dialog.filters.extend (["*." + Archetype_file_extension,
 				"Files of type " + Archetype_file_extension])
 			Adl_file_open_dialog.show_modal_to_window (Current)
 			if Adl_file_open_dialog.file_name /= Void and then not Adl_file_open_dialog.file_name.is_empty then
@@ -354,7 +356,7 @@ feature {NONE} -- Commands
 				current_work_directory := adl_interface.file_context.current_directory
 			end
 
-			set_pointer_style(cur_csr)			
+			set_pointer_style(cur_csr)
 		end
 
 	save_adl_file is
@@ -376,13 +378,13 @@ feature {NONE} -- Commands
 
 					ok_to_write := True
 					create adl_file_save_dialog
-					
+
 					fname := current_work_directory + operating_environment.directory_separator.out + adl_interface.file_context.current_file_name
 					fname.replace_substring(archetype_file_extensions.item(format_combo.selected_text), fname.count - Archetype_file_extension.count, fname.count)
 					adl_file_save_dialog.set_file_name (fname)
-					adl_file_save_dialog.filters.extend (["*" + archetype_file_extensions.item(format_combo.text), 
+					adl_file_save_dialog.filters.extend (["*" + archetype_file_extensions.item(format_combo.text),
 						"Files of type " + format_combo.text])
-					adl_file_save_dialog.show_modal_to_window (Current)			
+					adl_file_save_dialog.show_modal_to_window (Current)
 					if not adl_file_save_dialog.file_name.is_empty then
 						create a_file.make(adl_file_save_dialog.file_name)
 						if a_file.exists then
@@ -392,7 +394,7 @@ feature {NONE} -- Commands
 							ok_to_write := question_dialog.selected_button.is_equal("Yes")
 						end
 						if ok_to_write then
-							adl_interface.save_archetype(adl_file_save_dialog.file_name, 
+							adl_interface.save_archetype(adl_file_save_dialog.file_name,
 																format_combo.selected_text)
 							parser_status_area.append_text(adl_interface.status)
 							if format_combo.selected_text.is_equal(Archetype_file_extension) then
@@ -414,7 +416,7 @@ feature {NONE} -- Commands
 			if adl_interface.archetype_source_loaded then
 				execution_environment.launch(editor_command + " " + adl_interface.file_context.current_full_path)
 			end
-		end		
+		end
 
 	parse_archetype is
 			-- Called by `select_actions' of `parse'.
@@ -423,7 +425,7 @@ feature {NONE} -- Commands
 		do
 			cur_csr := pointer_style
 			set_pointer_style(wait_cursor)
-			
+
 			if adl_interface.archetype_source_loaded then
 				resync_file
 				clear_all_controls
@@ -439,9 +441,9 @@ feature {NONE} -- Commands
 				end
 			end
 
-			set_pointer_style(cur_csr)			
+			set_pointer_style(cur_csr)
 		end
-		
+
 	resync_file is
 			-- resynchronise in-memory archetype to file if changed due to editing
 		do
@@ -453,7 +455,7 @@ feature {NONE} -- Commands
 				end
 			end
 		end
-		
+
 	archetype_view_tree_item_select is
 			-- select an item on the archetype tree
 		local
@@ -461,31 +463,31 @@ feature {NONE} -- Commands
 		do
 			cur_csr := pointer_style
 			set_pointer_style(wait_cursor)
-			
+
 			archetype_view_tree_control.item_select
 			if archetype_view_tree_control.has_selected_file then
-				load_and_parse_adl_file(archetype_view_tree_control.selected_file_path)				
+				load_and_parse_adl_file(archetype_view_tree_control.selected_file_path)
 				current_work_directory := adl_interface.file_context.current_directory
 			end
    			archetype_file_tree.set_minimum_width(0)
 
-			set_pointer_style(cur_csr)			
+			set_pointer_style(cur_csr)
 		end
-				
+
 	node_map_shrink_tree_one_level is
 		do
 			if adl_interface.parse_succeeded then
 				node_map_control.shrink_one_level
 			end
 		end
-				
+
 	node_map_expand_tree_one_level is
 		do
 			if adl_interface.parse_succeeded then
 				node_map_control.expand_one_level
 			end
 		end
-				
+
 	node_map_toggle_expand_tree is
 		do
 			if adl_interface.parse_succeeded then
@@ -497,9 +499,9 @@ feature {NONE} -- Commands
 		do
 			node_map_control.item_select
 		end
-		
+
 	node_map_tree_technical_mode is
-			-- 
+			--
 		do
 			if adl_interface.parse_succeeded then
 				node_map_control.toggle_technical_mode
@@ -507,7 +509,7 @@ feature {NONE} -- Commands
 		end
 
 	node_map_tree_source_status_mode is
-			-- 
+			--
 		do
 			if adl_interface.parse_succeeded then
 				node_map_control.toggle_source_status_mode
@@ -518,23 +520,23 @@ feature {NONE} -- Commands
 			-- Called by `pointer_button_press_actions' of `archetype_text_edit_area'.
 		do
 		end
-	
+
 	pointer_double_click_action (a_x, a_y, a_button: INTEGER; a_x_tilt, a_y_tilt, a_pressure: DOUBLE; a_screen_x, a_screen_y: INTEGER) is
 			-- Called by `pointer_double_press_actions' of `archetype_text_edit_area'.
 		do
 		end
-	
+
 	archetype_text_edit_process_keystroke (a_keystring: STRING) is
 			-- Called by `key_press_string_actions' of `archetype_text_edit_area'.
 		do
 		end
-		
+
 	archetype_test_go_stop is
 			-- start running tests in test page
 		do
 			archetype_test_tree_control.archetype_test_go_stop
 		end
-		
+
 	archetype_test_tree_expand_toggle is
 			-- toggle logical state of test page archetype tree expandedness
 		do
@@ -554,41 +556,41 @@ feature {NONE} -- Commands
 		do
 			archetype_test_tree_control.populate
 		end
-		
+
 	show_clipboard is
 			-- show the current contents of the clipboard
 		local
 			ev_info_dlg: EV_INFORMATION_DIALOG
-		do			
+		do
 			create ev_info_dlg.make_with_text(parent_app.clipboard.text)
 			ev_info_dlg.set_title ("Clipboard Contents")
-			ev_info_dlg.show_modal_to_window (Current)			
+			ev_info_dlg.show_modal_to_window (Current)
 		end
-		
+
 	path_column_select (a_list_item: EV_LIST_ITEM) is
 			-- Called by `check_actions' of `path_view_check_list'.
 		do
 			adl_path_map_control.column_select(a_list_item)
 		end
-		
+
 	path_column_unselect (a_list_item: EV_LIST_ITEM) is
 			-- Called by `check_actions' of `path_view_check_list'.
 		do
 			adl_path_map_control.column_unselect(a_list_item)
 		end
-		
+
 	path_row_set_filter is
 			-- Called by `select_actions' of `path_filter_combo'.
 		do
 			adl_path_map_control.set_filter
 		end
-		
+
 	copy_path_to_clipboard is
 			-- Called by `select_actions' of `copy_mi'.
 		do
 			adl_path_map_control.copy_path_to_clipboard
 		end
-	
+
 	arch_notebook_select is
 			-- Called by `selection_actions' of `arch_notebook'.
 		do
@@ -645,25 +647,25 @@ feature -- Controls
 			create Result
 			Result.set_main_window(Current)
 		end
-		
+
 	Repository_dialog: REPOSITORY_DIALOG is
 		once
 			create Result
 			Result.set_main_window(Current)
 		end
-		
+
 	Icon_dialog: ICON_DIALOG is
 		once
 			create Result
 			Result.set_main_window(Current)
 		end
-		
+
 	Print_dialog: EV_PRINT_DIALOG is
 			-- 	EV_PRINT_DIALOG for test.
 		once
-			create Result	
+			create Result
 		end
-		
+
 	About_dialog: EV_INFORMATION_DIALOG is
 			-- about text
 		do
@@ -682,7 +684,7 @@ feature -- Controls
 			Result.set_x_position(20)
 			Result.set_y_position(10)
 		end
-	
+
 feature {EV_DIALOG} -- Implementation
 
 	populate_archetype_directory is
@@ -692,7 +694,7 @@ feature {EV_DIALOG} -- Implementation
 			archetype_directory.repopulate
 			parser_status_area.set_text(billboard_content)
 			archetype_view_tree_control.populate
-			archetype_test_tree_control.populate			
+			archetype_test_tree_control.populate
 		end
 
 	load_and_parse_adl_file(a_file_path: STRING) is
@@ -707,7 +709,7 @@ feature {EV_DIALOG} -- Implementation
 		end
 
 	clear_archetype_text_edit_area is
-			-- 
+			--
 		do
 			archetype_text_edit_area.set_text("")
 		end
@@ -731,7 +733,7 @@ feature {EV_DIALOG} -- Implementation
 			populate_languages
 			populate_adl_version
 		end
-			
+
 	populate_all_archetype_controls is
 			-- populate content from visual controls
 		do
@@ -755,7 +757,7 @@ feature {EV_DIALOG} -- Implementation
 	populate_archetype_id is
 		do
 			archetype_id.set_text(adl_interface.adl_engine.archetype_id.as_string)
-			if adl_interface.adl_engine.archetype /= Void and then 
+			if adl_interface.adl_engine.archetype /= Void and then
 					adl_interface.adl_engine.archetype.is_specialised then
 				parent_archetype_id.set_text(adl_interface.adl_engine.parent_archetype_id.as_string)
 			else
@@ -764,11 +766,11 @@ feature {EV_DIALOG} -- Implementation
 		end
 
 	populate_adl_version is
-			-- populate ADL version 
+			-- populate ADL version
 		do
 			adl_version_text.set_text(adl_interface.archetype.adl_version)
 		end
-		
+
 	populate_languages is
 		do
 			language_combo.set_strings(ontology.languages_available)
@@ -802,7 +804,7 @@ feature {EV_DIALOG} -- Implementation
 			end
 			archetype_text_edit_area.set_text(s)
 		end
-	
+
 	dispatch_ctrl_c_keystroke is
 			-- dispathed routine for ctrl-C keystroke
 		do
@@ -810,7 +812,7 @@ feature {EV_DIALOG} -- Implementation
 				adl_path_map_control.copy_path_to_clipboard
 			end
 		end
-		
+
 end
 
 
