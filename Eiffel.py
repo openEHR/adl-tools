@@ -94,7 +94,7 @@ def ec_emitter(target, source, env):
 	elif not env.Detect('ec'):
 		print 'Please add "ec" to your path: cannot build ' + exe
 	else:
-		project_dir = os.path.dirname(str(source[0])) + '/EIFGENs/'
+		project_dir = os.path.abspath(os.path.dirname(str(source[0]))) + '/EIFGENs/'
 
 		if len(target) > 1:
 			project_dir += str(target[1])
