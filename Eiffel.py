@@ -47,7 +47,7 @@ def ec(target, source, env):
 	log('=================== ' + ecf_target(target) + ' ===================')
 	log_date()
 
-	shutil.rmtree('EIFGENs/' + ecf_target(target))
+	shutil.rmtree(os.path.dirname(str(target[0])))
 
 	log_process(['ec', '-batch', '-config', ecf, '-target', ecf_target(target)] + env['ECFLAGS'].split() + ['-c_compile'], None)
 
@@ -94,10 +94,12 @@ def ec_emitter(target, source, env):
 	elif not env.Detect('ec'):
 		print 'Please add "ec" to your path: cannot build ' + exe
 	else:
+		project_dir = os.path.dirname(str(source[0])) + '/EIFGENs/'
+
 		if len(target) > 1:
-			project_dir = 'EIFGENs/' + str(target[1])
+			project_dir += str(target[1])
 		else:
-			project_dir = 'EIFGENs/' + os.path.splitext(exe)[0]
+			project_dir += os.path.splitext(exe)[0]
 
 		exe = project_dir + '/?_code/' + exe
 		result = [project_dir + '/project.epr', exe.replace('?', 'W')]
