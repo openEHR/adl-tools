@@ -25,10 +25,10 @@ inherit
 		redefine
 			add_language
 		end
-	
+
 create {ADL_ENGINE}
 	make, make_minimal
-	
+
 feature -- Definitions
 
 	Default_concept_code: STRING is "at0000"
@@ -43,17 +43,17 @@ feature  {ADL_ENGINE} -- Initialisation
 			a_term: ARCHETYPE_TERM
 		do
 			archetype_id := an_id
-			
+
 			adl_version := 	Current_adl_version
-	
+
 			create concept.make(0)
 			concept.append(Default_concept_code)
-			
+
 			create original_language.make (Default_language_code_set, an_original_language)
-			
+
 			create description.default_create
 			create definition.make_identified(an_id.rm_entity, Default_concept_code)
-			
+
 			create a_term.make(concept)
 			a_term.add_item("text", "unknown")
 			a_term.add_item("description", "unknown")
@@ -63,10 +63,10 @@ feature  {ADL_ENGINE} -- Initialisation
 			Concept_set: concept.is_equal(Default_concept_code)
 		end
 
-	make(an_id: ARCHETYPE_ID; 
-			a_concept_code: STRING; 
+	make(an_id: ARCHETYPE_ID;
+			a_concept_code: STRING;
 			an_original_language: STRING;
-			a_description: RESOURCE_DESCRIPTION; 
+			a_description: RESOURCE_DESCRIPTION;
 			a_definition: C_COMPLEX_OBJECT;
 			an_ontology: ARCHETYPE_ONTOLOGY) is
 		require
@@ -99,16 +99,16 @@ feature  {ADL_ENGINE} -- Initialisation
 feature -- Access
 
 	archetype_id: ARCHETYPE_ID
-	
+
 	adl_version: STRING
 			-- ADL version of this archetype
-			
-	version: STRING is 
+
+	version: STRING is
 			-- version of this archetype, according to its id
 		do
 			Result := archetype_id.version_id
 		end
-		
+
 	parent_archetype_id: ARCHETYPE_ID
 			-- id of specialisation parent of this archetype
 
@@ -117,7 +117,7 @@ feature -- Access
 		do
 			Result := ontology.specialisation_depth
 		end
-	
+
 	concept: STRING
 
 	definition: C_COMPLEX_OBJECT
@@ -139,21 +139,21 @@ feature -- Access
 		do
 			if path_map = Void or not is_readonly then
 				path_map := definition.all_paths
-				
+
 				-- Add full paths of internal references thus giving full set of actual paths
 				from
 					use_node_path_xref_table.start
 				until
 					use_node_path_xref_table.off
 				loop
-					-- Hash table with arrayed list of ARCHETYPE_INTERNAL_REFs and Key of target 
+					-- Hash table with arrayed list of ARCHETYPE_INTERNAL_REFs and Key of target
 					-- (ie the ref path of the internal reference)
 					src_nodes := use_node_path_xref_table.item_for_iteration
 					tgt_path_str := use_node_path_xref_table.key_for_iteration
 					create tgt_path.make_from_string(tgt_path_str)
-					tgt_path_c_objects := definition.all_paths_at_path (tgt_path_str)					
+					tgt_path_c_objects := definition.all_paths_at_path (tgt_path_str)
 					c_o ?= definition.c_object_at_path (tgt_path_str)
-										
+
 					-- now add the paths below it
 					from
 						src_nodes.start
@@ -167,7 +167,7 @@ feature -- Access
 						path_map.put (c_o, src_node_path_str)
 
 						from
-							tgt_path_c_objects.start	
+							tgt_path_c_objects.start
 						until
 							tgt_path_c_objects.off
 						loop
@@ -179,7 +179,7 @@ feature -- Access
 					end
 					use_node_path_xref_table.forth
 				end
-				
+
 				create physical_paths_cache.make
 				from
 					path_map.start
@@ -190,17 +190,17 @@ feature -- Access
 					path_map.forth
 				end
 			end
-			
+
 			create Result.make (0)
 			Result.append (physical_paths_cache)
-		end	
-	
+		end
+
 	logical_paths(a_lang: STRING): ARRAYED_LIST [STRING] is
-			-- paths with human readable terms substituted 
+			-- paths with human readable terms substituted
 		require
 			a_lang /= Void and then ontology.languages_available.has(a_lang)
 		local
-			phys_paths: ARRAYED_LIST [STRING]	
+			phys_paths: ARRAYED_LIST [STRING]
 		do
 			-- CHANGE Sam Heard 2004-05-19
 			-- made logical paths call physical paths directly
@@ -217,7 +217,7 @@ feature -- Access
 				phys_paths.forth
 			end
 		end
-		
+
 	physical_to_logical_path (a_phys_path: STRING; a_lang: STRING): STRING is
 			-- generate a logical path in 'a_lang' from a physical path
 		require
@@ -226,7 +226,7 @@ feature -- Access
 		do
 			Result := ontology.physical_to_logical_path(a_phys_path, a_lang)
 		end
-	
+
 	c_object_at_path (a_path: STRING): C_OBJECT is
 			-- find the c_object from the path_map matching the path
 		require
@@ -236,9 +236,9 @@ feature -- Access
 				Result := path_map.item(a_path)
 			end
 		end
-	
+
 	ontology_unused_term_codes: ARRAYED_LIST[STRING] is
-			-- list of at codes found in ontology that are not referenced 
+			-- list of at codes found in ontology that are not referenced
 			-- anywhere in the archetype definition
 		local
 			ont_codes: SORTED_TWO_WAY_LIST[STRING]
@@ -255,7 +255,7 @@ feature -- Access
 				until
 					ont_codes.off
 				loop
-					if not found_codes.has(ont_codes.item) then 
+					if not found_codes.has(ont_codes.item) then
 						Result.extend(ont_codes.item)
 					end
 					ont_codes.forth
@@ -265,9 +265,9 @@ feature -- Access
 		ensure
 			Result_exists: Result /= Void
 		end
-		
+
 	ontology_unused_constraint_codes: ARRAYED_LIST[STRING] is
-			-- list of ac codes found in ontology that are not referenced 
+			-- list of ac codes found in ontology that are not referenced
 			-- anywhere in the archetype definition
 		local
 			ont_codes: SORTED_TWO_WAY_LIST[STRING]
@@ -282,7 +282,7 @@ feature -- Access
 				until
 					ont_codes.off
 				loop
-					if not found_codes.has(ont_codes.item) then 
+					if not found_codes.has(ont_codes.item) then
 						Result.extend(ont_codes.item)
 					end
 					ont_codes.forth
@@ -292,12 +292,6 @@ feature -- Access
 			Result_exists: Result /= Void
 		end
 
-	errors: STRING
-			-- validity errors in this archetype
-	
-	warnings: STRING
-			-- validity warnings for this archetype
-	
 feature -- Status Report
 
 	has_adl_version: BOOLEAN is
@@ -308,13 +302,13 @@ feature -- Status Report
 
 	is_readonly: BOOLEAN
 			-- set True in circumstances where Archetype will not be modified in memory
-			
+
 	is_specialised: BOOLEAN is
 			-- 	True if this archetype identifies a specialisation parent
 		do
 			Result := parent_archetype_id /= Void
 		end
-		
+
 	is_valid: BOOLEAN is
 			-- is archetype in valid state?
 		local
@@ -322,11 +316,13 @@ feature -- Status Report
 		do
 			create errors.make(0)
 			create warnings.make(0)
-			
+
 			if archetype_id = Void then
 				errors.append("No archetype_id%N")
 			elseif definition = Void then
 				errors.append("No definition%N")
+			elseif not is_valid_resource then
+				-- FIXME: complete error-checking
 			elseif invariants /= Void and invariants.is_empty then
 				errors.append("invariants cannot be empty if specified")
 			elseif ontology = Void then
@@ -336,36 +332,36 @@ feature -- Status Report
 				warnings.append("Ontology warnings:-%N: " + ontology.warnings)
 			else
 				if not definition.rm_type_name.is_equal (archetype_id.rm_entity) then
-					errors.append("Archetype id type %"" + archetype_id.rm_entity + 
-								"%" does not match type %"" + definition.rm_type_name + 
+					errors.append("Archetype id type %"" + archetype_id.rm_entity +
+								"%" does not match type %"" + definition.rm_type_name +
 								"%" in definition section%N")
 				end
-				
+
 				update_node_lists
 
 				check_definition
-				
+
 				check_unidentified_nodes
-			
+
 				-- currently we don't use the results of these functions - we just
-				-- check whether any errors were set. We want to see all the errors, 
+				-- check whether any errors were set. We want to see all the errors,
 				-- which is why these results are not anded together, because the
 				-- first failure will prevent the execution of the later vality calls
 				-- in the expression (maybe a not( x or y or z) would work, but I don't
 				-- know how smart the compiler is
-				
+
 				node_list_validity := node_ids_valid
-				
+
 				constraint_references_validity := constraint_references_valid
-			
+
 				internal_references_validity := internal_references_valid
-				
+
 				-- check language validity
 				language_validity := languages_valid
 			end
 			Result := errors.is_empty
-		end		
-	
+		end
+
 	has_warnings: BOOLEAN is
 			-- True if warnings from last call to validate
 		do
@@ -377,7 +373,7 @@ feature -- Status Report
 		do
 			Result := physical_paths.has(a_path)
 		end
-		
+
 	has_invariants: BOOLEAN is
 			-- true if there are invariants
 		do
@@ -393,9 +389,9 @@ feature {ARCHETYPE} -- Validation
 				errors.append(definition.invalid_reason + "%N")
 			end
 		end
-		
+
 	node_ids_valid: BOOLEAN is
-			-- True if all found node_ids are defined in term_definitions, 
+			-- True if all found node_ids are defined in term_definitions,
 			-- and term_definitions contains no extras
 		local
 			a_codes: ARRAYED_LIST[STRING]
@@ -414,7 +410,7 @@ feature {ARCHETYPE} -- Validation
 				end
 				a_codes.forth
 			end
-				
+
 			-- see if every found leaf term code (in an ORDINAL or a CODED_TERM) is in ontology
 			a_codes := found_code_node_codes
 			from
@@ -450,10 +446,10 @@ feature {ARCHETYPE} -- Validation
 				warnings.append("Constraint code " + a_codes.item + " in ontology not used in archetype definition%N")
 				a_codes.forth
 			end
-		end		
-		
+		end
+
 	constraint_references_valid: BOOLEAN is
-			-- True if all found constraint_codes are defined in constraint_definitions, 
+			-- True if all found constraint_codes are defined in constraint_definitions,
 			-- and constraint_definitions contains no extras
 		local
 			term_codes: ARRAYED_LIST[STRING]
@@ -472,7 +468,7 @@ feature {ARCHETYPE} -- Validation
 				end
 				term_codes.forth
 			end
-				
+
 			-- see if each code in this definitions table is in found list
 			ont_term_codes := ontology.constraint_codes
 			from
@@ -485,8 +481,8 @@ feature {ARCHETYPE} -- Validation
 				end
 				ont_term_codes.forth
 			end
-		end		
-		
+		end
+
 	internal_references_valid: BOOLEAN is
 			-- validate items in `found_internal_references'
 		local
@@ -512,14 +508,14 @@ feature {ARCHETYPE} -- Validation
 			-- are all coherent
 		do
 			-- is languages_available list same as languages in description.details?
-			
+
 			-- is languages_available list same as languages in ontology?
 		end
-		
+
 feature -- Comparison
 
 	valid_adl_version(a_ver: STRING): BOOLEAN is
-			-- set adl_version with a string containing only '.' and numbers, 
+			-- set adl_version with a string containing only '.' and numbers,
 			-- not commencing or finishing in '.'
 		require
 			Valid_string: a_ver /= Void and then not a_ver.is_empty
@@ -534,14 +530,14 @@ feature -- Comparison
 feature -- Modification
 
 	set_adl_version(a_ver: STRING) is
-			-- set adl_version with a string containing only '.' and numbers, 
+			-- set adl_version with a string containing only '.' and numbers,
 			-- not commencing or finishing in '.'
 		require
 			Valid_version: a_ver /= Void and then valid_adl_version(a_ver)
 		do
 			adl_version := a_ver
 		end
-		
+
 	convert_to_specialised(a_spec_concept: STRING) is
 			-- convert this arcehtype to being a specialised version of itself
 			-- one level down
@@ -551,8 +547,8 @@ feature -- Modification
 			chg_root_node: BOOLEAN
 		do
 			create parent_archetype_id.make_from_string(archetype_id.value)
-			
-			-- check if node id of root node of archetype is same as concept code of 
+
+			-- check if node id of root node of archetype is same as concept code of
 			-- whole archetype; if so, change it once ontology converted
 			chg_root_node := concept.is_equal(definition.node_id)
 
@@ -612,7 +608,7 @@ feature -- Modification
 			definition.remove_all_attributes
 			update_node_lists
 		end
-	
+
 	add_invariant(an_inv: ASSERTION) is
 			-- add a new invariant
 		require
@@ -623,7 +619,7 @@ feature -- Modification
 			end
 			invariants.extend(an_inv)
 		end
-		
+
 	set_invariants(assn_list: ARRAYED_LIST[ASSERTION]) is
 			-- set invariants
 		require
@@ -631,7 +627,7 @@ feature -- Modification
 		do
 			invariants := assn_list
 		end
-		
+
 	set_ontology(a_node: ARCHETYPE_ONTOLOGY) is
 		require
 			a_node /= Void
@@ -654,7 +650,7 @@ feature -- Modification
 				ontology.remove_term_definition(code_list.item)
 				code_list.forth
 			end
-			
+
 			code_list := ontology_unused_constraint_codes
 			from
 				code_list.start
@@ -665,7 +661,7 @@ feature -- Modification
 				code_list.forth
 			end
 		end
-		
+
 	add_language(a_lang: STRING) is
 			-- add a new language to the archetype - creates new language section in
 			-- ontology, translations and resource description
@@ -673,7 +669,7 @@ feature -- Modification
 			precursor(a_lang)
 			ontology.add_language (a_lang)
 		end
-	
+
 feature -- Status setting
 
 	set_readonly is
@@ -681,15 +677,15 @@ feature -- Status setting
 		do
 			is_readonly := True
 		end
-		
+
 feature -- Output
-	
+
 	found_terms: STRING is
 		local
 			str_lst: ARRAYED_LIST[STRING]
    		do
    			create Result.make(0)
-   			
+
 			Result.append("%N--------------- found node term codes -------------%N")
 			Result.append(display_arrayed_list(found_id_node_codes))
 			Result.append("%N")
@@ -705,7 +701,7 @@ feature -- Output
 
 			Result.append("%N--------------- found use refs -----------%N")
 			create str_lst.make(0)
-			from 
+			from
 				found_internal_references.start
 			until
 				found_internal_references.off
@@ -720,7 +716,7 @@ feature -- Output
 	as_string: STRING is
    		do
    			create Result.make(0)
-   			
+
 			Result.append("%N--------------- physical paths -------------%N")
 			Result.append(display_paths(physical_paths))
 
@@ -737,16 +733,16 @@ feature -- Serialisation
 			synchronise_authored_resource
 			ontology.synchronise_to_tree
 		end
-		
+
 feature {NONE} -- Implementation
 
 	physical_paths_cache: SORTED_TWO_WAY_LIST [STRING]
-	
+
 	path_map: HASH_TABLE [C_OBJECT, STRING]
 			-- complete map of object nodes keyed by path
-	
+
 	update_node_lists is
-			-- 
+			--
 		local
 			cadl_iterator: OG_ITERATOR
 		do
@@ -754,11 +750,11 @@ feature {NONE} -- Implementation
 			create code_nodes_code_xref_table.make(0)
 			create use_node_path_xref_table.make(0)
 			create constraint_nodes_code_xref_table.make(0)
-			
+
 			create cadl_iterator.make (definition.representation)
 			cadl_iterator.do_all (agent update_node_lists_node_enter_action (?, ?), agent node_exit_action (?, ?))
 		end
-		
+
 	update_node_lists_node_enter_action (a_node: OG_ITEM; indent_level: INTEGER) is
 			-- FIXME: this should be re-implemented as functions in each C_OBJECT subtype,
 			-- same approach as enter_block/exit_block approach used in serialisation
@@ -820,22 +816,22 @@ feature {NONE} -- Implementation
 						if a_i_r /= Void then
 							if not use_node_path_xref_table.has(a_i_r.target_path) then
 								use_node_path_xref_table.put(create {ARRAYED_LIST[ARCHETYPE_INTERNAL_REF]}.make(0), a_i_r.target_path)
-							end	
-							use_node_path_xref_table.item(a_i_r.target_path).extend(a_i_r)	
+							end
+							use_node_path_xref_table.item(a_i_r.target_path).extend(a_i_r)
 						else
 							a_c_r ?= a_node.content_item
 							if a_c_r /= Void then
 								if not constraint_nodes_code_xref_table.has(a_c_r.target) then
 									constraint_nodes_code_xref_table.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_c_r.target)
 								end
-								constraint_nodes_code_xref_table.item(a_c_r.target).extend(a_c_r)			
+								constraint_nodes_code_xref_table.item(a_c_r.target).extend(a_c_r)
 							end
 						end
-					end			
+					end
 				end
 			end
 		end
-		
+
 	node_exit_action (a_node: OG_ITEM; indent_level: INTEGER) is
 		require
 			node_exists: a_node /= void
@@ -872,7 +868,7 @@ feature {NONE} -- Implementation
 							a_c_c_o.attributes.off or found
 						loop
 							a_c_attr2 := a_c_c_o.attributes.item
-							
+
 							from
 								a_c_attr2.children.start
 							until
@@ -880,48 +876,48 @@ feature {NONE} -- Implementation
 							loop
 								a_c_c_o_2 ?= a_c_attr2.children.item
 								if a_c_c_o_2 /= Void then
-									warnings.append("child node of type " + a_c_c_o.rm_type_name + " at path " + 
+									warnings.append("child node of type " + a_c_c_o.rm_type_name + " at path " +
 										a_c_attr.path + " has no id.%N")
 									found := True
 								end
 								a_c_attr2.children.forth
 							end
-							
+
 							a_c_c_o.attributes.forth
 						end
 					end
 					a_c_attr.children.forth
 				end
 			else
-					
+
 			end
 		end
 
 	check_unidentified_nodes is
 			-- look for attributes that are either multiple or have multiple alternatives, whose
-			-- child objects are not identified, but only if the children are not C_PRIMITIVEs or 
+			-- child objects are not identified, but only if the children are not C_PRIMITIVEs or
 			-- C_C_Os whose values are C_PRMITIVEs. Record any such nodes as warnings
 		local
 			cadl_iterator: OG_ITERATOR
-		do			
+		do
 			create cadl_iterator.make (definition.representation)
 			cadl_iterator.do_all (agent check_unidentified_nodes_node_enter_action (?, ?), agent node_exit_action (?, ?))
 		end
-		
+
 	node_ids_xref_table: HASH_TABLE[ARRAYED_LIST[C_OBJECT], STRING]
 			-- table of {list<node>, code} for term codes which identify nodes in archetype
-			
+
 	constraint_nodes_code_xref_table: HASH_TABLE[ARRAYED_LIST[C_OBJECT], STRING]
 			-- table of {list<node>, code} for constraint codes in archetype
-			
+
 	code_nodes_code_xref_table: HASH_TABLE[ARRAYED_LIST[C_OBJECT], STRING]
 			-- table of {list<node>, code} for term codes which appear in archetype nodes as data,
 			-- e.g. in C_DV_ORDINAL and C_CODE_PHRASE types
-			
+
 	use_node_path_xref_table: HASH_TABLE[ARRAYED_LIST[ARCHETYPE_INTERNAL_REF], STRING]
-			-- table of {list<ARCHETYPE_INTERNAL_REF>, target_path} 
+			-- table of {list<ARCHETYPE_INTERNAL_REF>, target_path}
 			-- i.e. <list of use_nodes> keyed by path they point to
-	
+
 	found_id_node_codes: ARRAYED_LIST[STRING] is
 			-- term codes found as identifiers on definition nodes in archetype
 		do
@@ -966,7 +962,7 @@ feature {NONE} -- Implementation
 			end
 			Result.compare_objects
 		end
-		
+
 	found_internal_references: ARRAYED_LIST[STRING] is
 			-- use references found in body
 		do
@@ -981,9 +977,9 @@ feature {NONE} -- Implementation
 			end
 			Result.compare_objects
 		end
-		
+
 	display_arrayed_list(str_lst: ARRAYED_LIST[STRING]):STRING is
-			-- 
+			--
 		require
 			str_lst /= Void
 		do
@@ -1000,7 +996,7 @@ feature {NONE} -- Implementation
 				str_lst.forth
 			end
 		end
-		
+
 	display_paths(path_list: ARRAYED_LIST[STRING]):STRING is
 			-- display terminal paths
 		require
@@ -1019,17 +1015,17 @@ feature {NONE} -- Implementation
 				path_list.forth
 			end
 		end
-	
+
 invariant
 	Id_exists: archetype_id /= Void
 	Concept_exists: concept /= Void
 	Description_exists: description /= Void
 	Definition_exists: definition /= Void
-	Invariants_valid: invariants /= Void implies not invariants.is_empty	
+	Invariants_valid: invariants /= Void implies not invariants.is_empty
 	Ontology_exists: ontology /= Void
 	RM_type_validity: definition.rm_type_name.as_lower.is_equal(archetype_id.rm_entity.as_lower)
-	Specialisation_validity: is_specialised implies specialisation_depth > 0	
-	
+	Specialisation_validity: is_specialised implies specialisation_depth > 0
+
 end
 
 

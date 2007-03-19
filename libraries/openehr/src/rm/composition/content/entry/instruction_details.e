@@ -21,7 +21,7 @@ indexing
 class INSTRUCTION_DETAILS
 
 inherit
-	LOCATABLE
+	PATHABLE
 
 feature -- Access
 
@@ -32,13 +32,13 @@ feature -- Access
 			-- Id of activity as an archetype path in Instruction
 
 	wf_details: ITEM_STRUCTURE
-			-- Various workflow engine state details, potentially including 
+			-- Various workflow engine state details, potentially including
 			-- such things as:
 			-- 	condition that fired to cause this Action to be done (with
-			--  actual variables substituted); list of notifications which 
+			--  actual variables substituted); list of notifications which
 			--  actually occurred (with all variables substituted);
-			--  other workflow engine state. 
-			-- This specification does not currently define the actual 
+			--  other workflow engine state.
+			-- This specification does not currently define the actual
 			-- structure or semantics of this field.
 
 	path_of_item (a_loc: LOCATABLE): STRING is
@@ -55,10 +55,10 @@ feature -- Access
 			-- parent node of this node in compositional structure
 		do
 		end
-			
+
 feature -- Status Report
 
-	valid_path (a_path: STRING): BOOLEAN is
+	path_exists (a_path: STRING): BOOLEAN is
 			-- True if the path is valid with respect to the current item.
 		do
 		end

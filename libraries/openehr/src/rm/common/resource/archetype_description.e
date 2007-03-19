@@ -18,7 +18,7 @@ inherit
 		redefine
 			default_create
 		end
-		
+
 	TERMINOLOGY_SERVICE
 		export
 			{NONE} all
@@ -28,17 +28,17 @@ inherit
 
 create
 	make, make_dt, default_create
-	
+
 feature -- Definitions
 
 	Default_lifecycle_state: STRING is "initial"
 
-	Default_original_author: STRING is "unknown"
-		
+	Default_original_author: STRING is "????"
+
 feature -- Initialisation
 
 	default_create is
-			-- 
+			--
 		do
 			lifecycle_state := Default_lifecycle_state.twin
 			create details.make(0)
@@ -49,13 +49,13 @@ feature -- Initialisation
 			lifecycle_state_set: lifecycle_state.is_equal(Default_lifecycle_state)
 			details_exists: details /= Void
 		end
-		
+
 	make_dt is
 			-- make used by DT_OBJECT_CONVERTER
 		do
 			default_create
 		end
-		
+
 	make(an_author_name, orig_lang: STRING) is
 			-- make an empty description
 		require
@@ -73,7 +73,7 @@ feature -- Initialisation
 feature -- Access
 
 	original_author: HASH_TABLE [STRING, STRING]
-			-- Original author of this archetype, with all relevant details, 
+			-- Original author of this archetype, with all relevant details,
 			-- including organisation.
 
 	resource_package_uri: URI
@@ -81,18 +81,18 @@ feature -- Access
 
 	details: HASH_TABLE [RESOURCE_DESCRIPTION_ITEM, STRING]
 			-- list of descriptive details, keyed by language
-			
+
 	lifecycle_state: STRING
 			-- Lifecycle state of the archetype. Includes states such as
-			-- submitted, experimental, awaiting_approval, approved, 
+			-- submitted, experimental, awaiting_approval, approved,
 			-- superseded, obsolete. State machine defined by archetype system
-			
+
 	other_contributors: ARRAYED_LIST [STRING]
 			-- Other contributors to the resource, probably listed in “name <email>” form
 
 	other_details: HASH_TABLE [STRING, STRING]
 
-	parent_resource: AUTHORED_RESOURCE	
+	parent_resource: AUTHORED_RESOURCE
 			-- Reference to owning resource.
 
 	languages: ARRAYED_SET[STRING] is
@@ -105,10 +105,10 @@ feature -- Access
 				details.off
 			loop
 				Result.extend(details.key_for_iteration.twin)
-				details.forth				
+				details.forth
 			end
 		end
-		
+
 	detail_for_language(a_lang: STRING): RESOURCE_DESCRIPTION_ITEM is
 			-- get the RESOURCE_DESCRIPTION_ITEM for a_lang
 		require
@@ -116,10 +116,10 @@ feature -- Access
 		do
 			Result := details.item(a_lang)
 		end
-		
+
 	original_language: CODE_PHRASE
 			-- a copy of original_language from parent object
-	
+
 feature -- Comparison
 
 	valid_detail(a_detail: RESOURCE_DESCRIPTION_ITEM): BOOLEAN is
@@ -136,9 +136,9 @@ feature -- Comparison
 					until
 						details.off or details.item_for_iteration.is_original_language
 					loop
-						details.forth					
+						details.forth
 					end
-				end			
+				end
 				Result := not details.off
 			end
 		end
@@ -155,13 +155,13 @@ feature -- Modification
 		ensure
 			Original_author_set: original_author.item(a_key) = a_value
 		end
-		
+
 	clear_original_author is
 			-- wipeout current items in original_author list
 		do
 			create original_author.make(0)
 		end
-		
+
 	add_other_contributor(a_contributor: STRING) is
 			-- add a_contributor to add_other_contributor
 		require
@@ -174,13 +174,13 @@ feature -- Modification
 		ensure
 			Other_contributor_set: other_contributors.has(a_contributor)
 		end
-		
+
 	clear_other_contributors is
 			-- wipeout current items in other_contributors list
 		do
 			create other_contributors.make(0)
-		end	
-		
+		end
+
 	set_resource_package_uri(a_uri: STRING) is
 			-- set resource_package_uri
 		require
@@ -190,7 +190,7 @@ feature -- Modification
 		ensure
 			Archetype_package_uri_set: resource_package_uri.out.is_equal(a_uri)
 		end
-		
+
 	set_lifecycle_state(a_lifecycle_state: STRING) is
 			-- set lifecycle_state
 		require
@@ -213,7 +213,7 @@ feature -- Modification
 		ensure
 			Details_set: details.has(a_detail.language.code_string)
 		end
-	
+
 	add_language(a_new_lang: STRING) is
 			-- add a new details object created from the object for orig_lang,
 			-- with all string fields ready for translation
@@ -222,7 +222,7 @@ feature -- Modification
 		do
 			add_detail(details.item (original_language.code_string).translated_copy (a_new_lang))
 		end
-	
+
 	remove_detail, remove_language(a_lang: STRING) is
 			-- remove details item for a_lang from the resource
 		require
@@ -230,13 +230,13 @@ feature -- Modification
 		do
 			details.remove (a_lang)
 		end
-	
+
 	clear_details is
 			-- wipeout current items in details list
 		do
 			create details.make(0)
-		end		
-	
+		end
+
 	add_other_detail(a_key, a_value: STRING) is
 			-- add the key, value pair to other_details
 		require
@@ -260,7 +260,7 @@ feature -- Modification
 		ensure
 			Parent_resource_set: parent_resource = a_res
 		end
-		
+
 feature {DT_OBJECT_CONVERTER} -- Conversion
 
 	persistent_attributes: ARRAYED_LIST[STRING] is
@@ -282,9 +282,9 @@ invariant
 	Lifecycle_state_valid: lifecycle_state /= Void and then not lifecycle_state.is_empty
 	Details_valid: details /= Void
 	Parent_resource_valid: parent_resource /= Void implies parent_resource.description = Current
---	Language_valid: parent_resource /= Void implies details.linear_representation.for_all 
---		(d | parent_resource.languages_available.has(d.language.code_string))
-	
+--	Language_valid: parent_resource /= Void implies details.linear_representation.for_all
+--		(parent_resource.languages_available.has(?.language.code_string))
+
 end
 
 

@@ -40,7 +40,7 @@ feature -- Access
 
 feature -- Status Report
 
-	valid_path (a_path: STRING): BOOLEAN is
+	path_exists (a_path: STRING): BOOLEAN is
 			-- True if the path is valid with respect to the current item.
 		do
 		end

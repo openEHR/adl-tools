@@ -22,7 +22,7 @@ indexing
 class ISM_TRANSITION
 
 inherit
-	LOCATABLE
+	PATHABLE
 
 	EXTERNAL_ENVIRONMENT_ACCESS
 		export
@@ -54,18 +54,18 @@ feature -- Access
 			-- parent node of this node in compositional structure
 		do
 		end
-			
+
 feature -- Status Report
 
-	valid_path (a_path: STRING): BOOLEAN is
+	path_exists (a_path: STRING): BOOLEAN is
 			-- True if the path is valid with respect to the current item.
 		do
 		end
-		
+
 invariant
-	Current_state_valid: current_state /= Void and then 
+	Current_state_valid: current_state /= Void and then
 		terminology(Terminology_id_openehr).has_code_for_group_id(group_id_ism_states, current_state.defining_code)
-	Transition_valid: transition /= Void implies 
+	Transition_valid: transition /= Void implies
 		terminology(Terminology_id_openehr).has_code_for_group_id(group_id_ism_transitions, transition.defining_code)
 
 end

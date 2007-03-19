@@ -1,6 +1,6 @@
 indexing
 	component:   "openEHR EHR Reference Model"
-	
+
 	description: "[
 		       Context of clinical session, which is any business function executed
 			 with or for a subject of care, including patient contact, pathology tests etc.
@@ -22,18 +22,18 @@ indexing
 class EVENT_CONTEXT
 
 inherit
-	LOCATABLE
+	PATHABLE
 
 	EXTERNAL_ENVIRONMENT_ACCESS
 		export
 			{NONE} all
 		end
-	
+
 feature -- Access
-	
+
 	health_care_facility: PARTY_IDENTIFIED
-			-- The HCF in the health system who took part in the encounter; usually, this is 
-			-- where the encounter physically took place, but not in the case of patient home visits, 
+			-- The HCF in the health system who took part in the encounter; usually, this is
+			-- where the encounter physically took place, but not in the case of patient home visits,
 			-- internet contacts or emergency care.
 
 	start_time: DV_DATE_TIME
@@ -43,19 +43,19 @@ feature -- Access
 			-- Optional end time of the clinical session.
 
 	participations: LIST [PARTICIPATION]
-			-- Parties involved in the clinical session. These would 
-			-- normally include the physician(s) and often the patient 
+			-- Parties involved in the clinical session. These would
+			-- normally include the physician(s) and often the patient
 			-- (but not the latter if the clinical session is a pathology test for example).
 
-	location: STRING	
-			-- The actual location where the session occurred, e.g. 
+	location: STRING
+			-- The actual location where the session occurred, e.g.
 			-- "microbiol lab 2", "home", "ward A3" and so on.
 
-	setting: DV_CODED_TEXT	
-			-- The setting in which the event took place.  
+	setting: DV_CODED_TEXT
+			-- The setting in which the event took place.
 			-- Coded using the openEHR Terminology, “setting” group.
 
-	other_context: ITEM_STRUCTURE	
+	other_context: ITEM_STRUCTURE
 			-- Other optional context which will be archetyped.
 
 	path_of_item (a_loc: LOCATABLE): STRING is
@@ -75,17 +75,17 @@ feature -- Access
 
 feature -- Status Report
 
-	valid_path (a_path: STRING): BOOLEAN is
+	path_exists (a_path: STRING): BOOLEAN is
 			-- True if the path is valid with respect to the current item.
 		do
 				-- TO_BE_IMPLEM
 		end
-		
+
 invariant
 	Start_time_exists: start_time /= Void
 	Participations_validity: participations /= Void implies not participations.is_empty
 	Location_valid: location /= Void implies not location.is_empty
-	Setting_valid: setting /= Void and then 
+	Setting_valid: setting /= Void and then
 			terminology("openehr").codes_for_group_name("setting", "en").has(setting.defining_code)
 
 end

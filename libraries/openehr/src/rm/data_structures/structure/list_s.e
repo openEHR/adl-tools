@@ -39,7 +39,7 @@ inherit
 	
 	CLUSTER
 		redefine
-			items, path_of_item, item_at_path, valid_path
+			items, path_of_item, item_at_path, path_exists
 		end
 
 feature -- Access
@@ -81,7 +81,7 @@ feature -- Access
 
 feature -- Status Report
 
-	valid_path (a_path: STRING): BOOLEAN is
+	path_exists (a_path: STRING): BOOLEAN is
 			-- True if the path is valid with respect to the current item.
 		do
 		end

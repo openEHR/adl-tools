@@ -22,25 +22,25 @@ inherit
 feature -- Definitions
 
 	Uncontrolled_revision_name: STRING is "(uncontrolled)"
-		
+
 feature -- Access
 
 	original_language: CODE_PHRASE
-			-- Language in which this resource was initially authored. Although there 
-			-- is no language primacy of resources overall, the language of original 
-			-- authoring is required to ensure natural language translations can preserve 
+			-- Language in which this resource was initially authored. Although there
+			-- is no language primacy of resources overall, the language of original
+			-- authoring is required to ensure natural language translations can preserve
 			-- quality. Language is relevant in both the description and ontology sections.
 
 	translations: HASH_TABLE [TRANSLATION_DETAILS, STRING]
-			-- List of details for each natural translation made of this resource, keyed by 
-			-- language. For each translation listed here, there must be corresponding 
-			-- sections in all language-dependent parts of the resource. 
+			-- List of details for each natural translation made of this resource, keyed by
+			-- language. For each translation listed here, there must be corresponding
+			-- sections in all language-dependent parts of the resource.
 
 	description: RESOURCE_DESCRIPTION
 			-- Description and lifecycle information of the resource.
 
 	revision_history: REVISION_HISTORY
-			-- The revision history of the resource. Only required if is_controlled = True 
+			-- The revision history of the resource. Only required if is_controlled = True
 			-- (avoids large revision histories for informal or private editing situations).
 
 	current_revision: STRING is
@@ -54,13 +54,13 @@ feature -- Access
 		end
 
 	languages_available: ARRAYED_SET [STRING] is
-			-- Total list of languages available in this resource, derived from 
+			-- Total list of languages available in this resource, derived from
 			-- original_language and translations. Guaranteed to at least include original_language
 		do
 			if stored_languages_available = Void then
 				create stored_languages_available.make(0)
 				stored_languages_available.extend(original_language.code_string)
-				if translations /= Void then				
+				if translations /= Void then
 					from
 						translations.start
 					until
@@ -84,20 +84,37 @@ feature -- Access
 			Lang_valid: a_lang /= Void and then translations.has(a_lang)
 		do
 			Result := translations.item(a_lang)
-		end		
+		end
+
+	errors: STRING
+			-- validity errors in this archetype
+
+	warnings: STRING
+			-- validity warnings for this archetype
 
 feature -- Status Report
 
-	is_controlled: BOOLEAN	
-			-- True if this resource is under any kind of change control (even file 
+	is_controlled: BOOLEAN
+			-- True if this resource is under any kind of change control (even file
 			-- copying), in which case revision history is created.
-			
+
 	has_language(a_lang: STRING): BOOLEAN is
 			-- True if either original_language or translations has a_lang
 		require
 			Language_valid: a_lang /= Void
 		do
 			Result := original_language.code_string.is_equal(a_lang) or else translations.has(a_lang)
+		end
+
+	is_valid_resource: BOOLEAN is
+			-- True if all structures obey their invariants
+		do
+			-- check original_language
+			if original_language = Void then
+				errors.append("No archetype_id%N")
+			end
+
+			Result := errors.is_empty and is_valid_description and is_valid_translations
 		end
 
 feature -- Modification
@@ -120,7 +137,7 @@ feature -- Modification
 			a_trans.add_author_detail ("name", "unknown")
 			add_translation (a_trans, a_lang)
 		end
-		
+
 	add_translation(a_trans: TRANSLATION_DETAILS; a_lang: STRING) is
 			-- add a translation for a_lang
 		require
@@ -133,7 +150,7 @@ feature -- Modification
 			translations.put (a_trans, a_lang)
 			stored_languages_available := Void
 		end
-		
+
 	add_language(a_lang: STRING) is
 			-- add a new translation language to the resource, creating appropriate copies
 		require
@@ -145,7 +162,7 @@ feature -- Modification
 		end
 
 feature {ADL_ENGINE} -- Construction
-		
+
 	set_translations(a_trans: HASH_TABLE [TRANSLATION_DETAILS, STRING]) is
 			-- set translations
 		require
@@ -169,7 +186,7 @@ feature -- Serialisation
 			-- synchronise object representation of resource to forms suitable for
 			-- serialisation
 		do
-			-- FIXME - translations are handled like this until ADL2, when the 
+			-- FIXME - translations are handled like this until ADL2, when the
 			-- whole archetype will just be a dADL doc
 			create orig_lang_translations.make
 			orig_lang_translations.set_original_language (original_language)
@@ -178,32 +195,44 @@ feature -- Serialisation
 			end
 			orig_lang_translations.synchronise_to_tree
 			if description /= Void then
-				description.synchronise_to_tree			
+				description.synchronise_to_tree
 			end
 		end
-		
+
 feature {ADL_ENGINE} -- Implementation
 
 	orig_lang_translations: LANGUAGE_TRANSLATIONS
-			-- holds a copy of translations for purposes of DT object/dADL 
+			-- holds a copy of translations for purposes of DT object/dADL
 			-- reading and writing
 
 feature {NONE} -- Implementation
-			
+
 	stored_languages_available: ARRAYED_SET [STRING]
-			-- Total list of languages available in this resource, derived from 
+			-- Total list of languages available in this resource, derived from
 			-- original_language and translations. Guaranteed to at least include original_language
+
+	is_valid_description: BOOLEAN is
+			--
+		do
+			Result := True
+		end
+
+	is_valid_translations: BOOLEAN is
+			--
+		do
+			Result := True
+		end
 
 invariant
 	Description_exists: description /= Void
-	Original_language_valid: original_language /= void and then 
+	Original_language_valid: original_language /= void and then
 		code_set(Code_set_id_languages).has(original_language)
-	Languages_available_valid: languages_available /= Void and then 
+	Languages_available_valid: languages_available /= Void and then
 		languages_available.has(original_language.as_string)
 	Revision_history_valid: is_controlled xor revision_history = Void
-	Current_revision_valid: current_revision /= Void and not is_controlled 
-		implies current_revision.is_equal(Uncontrolled_revision_name)	
-	Translations_valid: translations /= Void implies (not translations.is_empty and 
+	Current_revision_valid: current_revision /= Void and not is_controlled
+		implies current_revision.is_equal(Uncontrolled_revision_name)
+	Translations_valid: translations /= Void implies (not translations.is_empty and
 		not translations.has(original_language.code_string))
 --	Description_valid: translations /= Void implies (description.details.for_all
 --		(d | translations.has_key(d.language.code_string)))
