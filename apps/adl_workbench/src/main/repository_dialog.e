@@ -10,7 +10,9 @@ class
 inherit
 	REPOSITORY_DIALOG_IMP
 
-	EV_STOCK_PIXMAPS_IMP
+	EV_STOCK_PIXMAPS
+		rename
+			implementation as pixmaps_implementation
 		export
 			{NONE} all
 		undefine
@@ -68,8 +70,8 @@ feature {NONE} -- Implementation
 		do
 			repository_dialog_reference_path_edit.set_text(reference_repository_path)
 			repository_dialog_work_path_edit.set_text(work_repository_path)
-		end		
-	
+		end
+
 	repository_dialog_ok is
 			-- Called by `select_actions' of `repository_dialog_ok_bn'.
 		local
@@ -85,8 +87,8 @@ feature {NONE} -- Implementation
 					paths_changed := True
 					set_reference_repository_path(repository_dialog_reference_path_edit.text)
 				else
-					create error_dialog.make_with_text("invalid reference directory: " + 
-						repository_dialog_reference_path_edit.text + 
+					create error_dialog.make_with_text("invalid reference directory: " +
+						repository_dialog_reference_path_edit.text +
 						" does not exist, or is same as, or is parent or child of another repository path ")
 					error_dialog.show_modal_to_window (Current)
 					paths_valid := False
@@ -98,8 +100,8 @@ feature {NONE} -- Implementation
 					set_work_repository_path(repository_dialog_work_path_edit.text)
 					paths_changed := True
 				else
-					create error_dialog.make_with_text("invalid work directory: " + 
-						repository_dialog_work_path_edit.text + 
+					create error_dialog.make_with_text("invalid work directory: " +
+						repository_dialog_work_path_edit.text +
 						" does not exist, or is same as, or is parent or child of reference repository path")
 					error_dialog.show_modal_to_window (Current)
 					paths_valid := False
@@ -109,7 +111,7 @@ feature {NONE} -- Implementation
 				set_pointer_style(wait_cursor)
 				archetype_directory.make
 				if not reference_repository_path.is_empty then
-					archetype_directory.put_repository (reference_repository_path, "repository")			
+					archetype_directory.put_repository (reference_repository_path, "repository")
 				end
 				if not work_repository_path.is_empty then
 					archetype_directory.put_repository (work_repository_path, "work")

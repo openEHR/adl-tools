@@ -1,24 +1,19 @@
-<?xml version="1.0" encoding="ISO-8859-1"?><system xmlns="http://www.eiffel.com/developers/xml/configuration-1-0-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-0-0 http://www.eiffel.com/developers/xml/configuration-1-0-0.xsd" name="adl_workbench" uuid="C99BD5CC-111C-4EE7-9BCF-337A924E2783">
-	<target name="adl_workbench">
-		<root class="ADL_WORKBENCH" feature="make_and_launch"/>
+<?xml version="1.0" encoding="ISO-8859-1"?><system xmlns="http://www.eiffel.com/developers/xml/configuration-1-0-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-0-0 http://www.eiffel.com/developers/xml/configuration-1-0-0.xsd" name="openehr_test" uuid="E33D66E4-C874-4DEC-B590-CC5449FA7829">
+	<target name="openehr_test">
+		<root class="APPLICATION" feature="make_and_launch"/>
 		<file_rule>
 			<exclude>/.svn$</exclude>
 		</file_rule>
 		<option trace="false" profile="false" debug="false" warning="true" namespace="openehr">
 			<debug name="__unnamed_debug__" enabled="false"/>
-			<debug name="adl_invariant" enabled="false"/>
-			<debug name="adl_parse" enabled="false"/>
 			<debug name="adl_tree" enabled="false"/>
-			<debug name="arch_dir" enabled="false"/>
 			<debug name="bb" enabled="false"/>
 			<debug name="dadl_parse" enabled="false"/>
 			<debug name="dlg_dispatcher" enabled="false"/>
 			<debug name="dt" enabled="false"/>
-			<debug name="exclude list" enabled="false"/>
 			<debug name="gelex" enabled="false"/>
-			<debug name="geyacc" enabled="false"/>
-			<debug name="include list" enabled="false"/>
-			<debug name="og_path_parse" enabled="false"/>
+			<debug name="geyacc" enabled="true"/>
+			<debug name="og_path_parse" enabled="true"/>
 			<debug name="refactor_fixme" enabled="false"/>
 			<debug name="vision2_windows" enabled="false"/>
 			<debug name="vision2_windows_gdi" enabled="false"/>
@@ -26,7 +21,7 @@
 			<debug name="wel_gdi_count" enabled="false"/>
 			<debug name="wel_gdi_references" enabled="false"/>
 			<debug name="win_dispatcher" enabled="false"/>
-			<assertions precondition="true" postcondition="false" check="true" invariant="false" loop="false"/>
+			<assertions precondition="true" postcondition="false" check="false" invariant="false" loop="false"/>
 			<warning name="export_class_missing" enabled="false"/>
 			<warning name="old_verbatim_strings" enabled="false"/>
 			<warning name="syntax" enabled="false"/>
@@ -47,36 +42,24 @@
 		<library name="vision2" location="$ISE_LIBRARY\library\vision2\vision2.ecf"/>
 		<library name="gobo" location="$ISE_LIBRARY\library\gobo\gobo.ecf"/>
 		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf"/>
-		<cluster name="adl_parser" location="$OPENEHR\ref_impl_eiffel\components\adl_parser\src\" recursive="true">
+		<cluster name="app" location="$OPENEHR\ref_impl_eiffel\libraries\openehr\test\src\" recursive="true">
 			<option>
-				<assertions precondition="true" postcondition="true" check="true" invariant="false" loop="false"/>
-			</option>
-		</cluster>
-		<cluster name="app" location="$OPENEHR\ref_impl_eiffel\apps\adl_workbench\src\" recursive="true">
-			<option>
-				<assertions precondition="true" postcondition="true" check="true" invariant="false" loop="false"/>
-			</option>
-		</cluster>
-		<cluster name="archetype_directory" location="$OPENEHR\ref_impl_eiffel\components\archetype_repository\src\" recursive="true">
-			<option>
-				<assertions precondition="true" postcondition="true" check="true" invariant="false" loop="false"/>
+				<assertions precondition="true" postcondition="true" check="false" invariant="false" loop="false"/>
 			</option>
 		</cluster>
 		<cluster name="common_libs" location="$OPENEHR\ref_impl_eiffel\libraries\common_libs\src\" recursive="true">
 			<option>
-				<assertions precondition="true" postcondition="true" check="false" invariant="false" loop="false"/>
+				<assertions precondition="true" postcondition="true" check="false" invariant="true" loop="false"/>
 			</option>
 		</cluster>
 		<cluster name="openehr" location="$OPENEHR\ref_impl_eiffel\libraries\openehr\src\" recursive="true">
 			<option>
-				<assertions precondition="true" postcondition="true" check="false" invariant="false" loop="false"/>
+				<assertions precondition="true" postcondition="true" check="false" invariant="true" loop="false"/>
 			</option>
 			<visible class="C_CODE_PHRASE"/>
 			<visible class="C_DV_ORDINAL"/>
 			<visible class="C_DV_QUANTITY"/>
-			<visible class="CODE_PHRASE"/>
 		</cluster>
-		<cluster name="version" location="$OPENEHR\ref_impl_eiffel\libraries\version\" recursive="true"/>
 		<override name="vendor_fixes" location="$OPENEHR\ref_impl_eiffel\libraries\vendor-fixes\" recursive="true">
 			<file_rule>
 				<exclude>/base_net$</exclude>
