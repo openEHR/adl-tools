@@ -1,4 +1,4 @@
-indexing	
+indexing
 	component:   "openEHR Archetype Project"
 	description: "Populate ontology controls in ADL test workbench"
 	keywords:    "ADL"
@@ -14,7 +14,7 @@ indexing
 
 class GUI_TEST_ARCHETYPE_TREE_CONTROL
 
-inherit	
+inherit
 	SHARED_ARCHETYPE_DIRECTORY
 		export
 			{NONE} all
@@ -25,8 +25,8 @@ inherit
 			{NONE} all
 		undefine
 			copy, default_create
-		end	
-		
+		end
+
 	SHARED_UI_RESOURCES
 		export
 			{NONE} all
@@ -37,6 +37,8 @@ inherit
 			{NONE} all
 		end
 
+	STRING_UTILITIES
+
 create
 	make
 
@@ -44,18 +46,18 @@ feature -- Definitions
 
 	First_test_col: INTEGER is 3
 			-- number of first column in grid to be used for test results
-			
+
 	First_data_row: INTEGER is 2
 			-- number of first row containing real information (top row contains root node)
-			
+
 	Test_passed: INTEGER is 101
-	
+
 	Test_failed: INTEGER is 102
-	
+
 	Test_not_applicable: INTEGER is 103
-	
+
 	Test_unknown: INTEGER is 104
-			
+
 feature -- Initialisation
 
 	make(a_main_window: MAIN_WINDOW) is
@@ -66,7 +68,7 @@ feature -- Initialisation
 			gui := a_main_window
 			gui_grid := gui.archetype_test_tree_grid
 			gui_grid.enable_tree
-			
+
 			gui.archetype_test_go_bn.set_pixmap (pixmaps.item("go"))
 		end
 
@@ -74,12 +76,12 @@ feature -- Access
 
 	selected_file_path: STRING
 			-- full path of file selected from tree control
-			
+
 	has_selected_file: BOOLEAN
 			-- True if a file was selected
-			
+
 	tests: DS_HASH_TABLE [FUNCTION [ANY, TUPLE[STRING], INTEGER], STRING] is
-			-- table of test routines 
+			-- table of test routines
 		once
 			create Result.make(5)
 			Result.put(agent test_parse, "Parse")
@@ -88,10 +90,10 @@ feature -- Access
 			Result.put(agent test_reparse, "Reparse")
 			Result.put(agent test_diff, "Diff")
 		end
-		
+
 	last_tested_archetypes_count: INTEGER
 			-- number of archetypes tested in last run
-		
+
 feature -- Status Setting
 
 	is_expanded: BOOLEAN
@@ -100,21 +102,21 @@ feature -- Status Setting
 	overwrite: BOOLEAN
 			-- set to True if old files are to be overwritten by new files
 			-- useful for upgrading ADL syntax in one go
-			
+
 	remove_unused_codes: BOOLEAN
 			-- True means remove unused codes from every archetype	
-		
+
 	check_all_set: BOOLEAN
 			-- True means all rows checked for test execution
-			
+
 	test_execution_underway: BOOLEAN
 			-- True during a test run
-				
+
 	test_stop_requested: BOOLEAN
 			-- user requested stop
 
 feature -- Commands
-	
+
 	clear is
 			-- wipe out content from controls
 		do
@@ -122,7 +124,7 @@ feature -- Commands
 			gui.test_status_area.set_text ("")
 			has_selected_file := False
 		end
-		
+
 	populate is
 			-- populate the ADL tree control by creating it from scratch
 		local
@@ -131,12 +133,12 @@ feature -- Commands
 		do
 			clear
  			create gui_grid_row_stack.make(0)
- 			
+
  			-- populate first column with archetype tree
 			create gli.make_with_text ("Root")
 			gui_grid.set_item (1, 1, gli)
 			gui_grid_row_stack.extend(gli.row)
-			
+
  			archetype_directory.do_all(agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
 			gui_grid.column (1).set_title ("Archetype")
 
@@ -148,12 +150,12 @@ feature -- Commands
 				until
 					tests.off
 				loop
-					gui_grid.column (col_csr).set_title (tests.key_for_iteration)				
+					gui_grid.column (col_csr).set_title (tests.key_for_iteration)
 					tests.forth
 					col_csr := col_csr + 1
-				end			
+				end
 			end
-			
+
 			is_expanded := False
 			toggle_expand_tree
 
@@ -163,7 +165,7 @@ feature -- Commands
 			gui.remove_unused_codes_rb.disable_select
 			gui.overwrite_adl_rb.disable_select
 		end
-		
+
 	item_select is
 			-- do something when an item is selected
 		local
@@ -175,13 +177,13 @@ feature -- Commands
 				selected_file_path := arch_item.full_path
 			end
 		end
-		
+
 	archetype_test_go_stop is
 			-- start or stop test run
 		do
 			if test_execution_underway then
 				test_stop_requested := True
-			else	
+			else
 				run_tests
 			end
 		end
@@ -211,14 +213,14 @@ feature -- Commands
 			loop
 				gr := gui_grid.row(row_csr)
 				arch_item ?= gr.item (1).data
-				if arch_item /= Void then		
+				if arch_item /= Void then
 					gli_col_2 ?= gr.item(2)
 					checked ?= gli_col_2.data
 					if checked /= Void then
 						item_is_checked := checked.item
 					end
-					
-					if item_is_checked then					
+
+					if item_is_checked then
 						gr.ensure_visible
 						gui.parent_app.process_events
 						adl_interface.reset
@@ -231,7 +233,7 @@ feature -- Commands
 						loop
 							gr.set_item (col_csr, create {EV_GRID_LABEL_ITEM}.make_with_text("processing..."))
 							gui.parent_app.process_events
-						
+
 							create test_status.make(0)
 
 							test_result := tests.item_for_iteration.item ([arch_item.full_path])
@@ -243,17 +245,17 @@ feature -- Commands
 							when Test_not_applicable then
 								res_label := "test_not_applicable"
 							else
-								
+
 							end
 							create gli.make_with_text("")
 							gli.set_pixmap(pixmaps.item(res_label))
 							gr.set_item (col_csr, gli)
-					
+
 							if not test_status.is_empty then
 								gui.test_status_area.append_text ("--------------- " + arch_item.id.as_string + " -----------------%N" + test_status)
 							end
 							gui.parent_app.process_events
-						
+
 							tests.forth
 							col_csr := col_csr + 1
 						end
@@ -263,14 +265,14 @@ feature -- Commands
 						gui.parent_app.process_events
 					end
 				end
-				
+
 				row_csr := row_csr + 1
 			end
 			gui.test_status_area.append_text ("****** Executed tests on " + last_tested_archetypes_count.out + " Archetypes ******%N")
 			test_execution_underway := False
 			set_archetype_test_go_bn_icon
 		end
-		
+
 	toggle_expand_tree is
 			-- toggle expanded status of tree view
 		do
@@ -302,7 +304,7 @@ feature -- Commands
 				check_all_set := True
 				gui.arch_test_toggle_check_all_bn.set_text("Uncheck All")
 			end
-			
+
 			from
 				row_csr := First_data_row
 			until
@@ -310,7 +312,7 @@ feature -- Commands
 			loop
 				gr := gui_grid.row(row_csr)
 				arch_item ?= gr.item (1).data
-				if arch_item /= Void then		
+				if arch_item /= Void then
 					gli_col_2 ?= gr.item(2)
 					if gli_col_2 /= Void then
 						checked ?= gli_col_2.data
@@ -326,7 +328,7 @@ feature -- Commands
 				row_csr := row_csr + 1
 			end
 		end
-		
+
 feature -- Tests
 
 	test_parse (arch_file_path: STRING): INTEGER is
@@ -344,12 +346,12 @@ feature -- Tests
 					if remove_unused_codes then
 						unused_at_codes := adl_interface.archetype.ontology_unused_term_codes
 						unused_ac_codes := adl_interface.archetype.ontology_unused_constraint_codes
-						if not unused_at_codes.is_empty or not unused_ac_codes.is_empty then					
+						if not unused_at_codes.is_empty or not unused_ac_codes.is_empty then
 							test_status.append(">>>>>>>>>> removing unused codes%N")
-							if not unused_at_codes.is_empty then					
+							if not unused_at_codes.is_empty then
 								test_status.append("Unused AT codes: " + display_arrayed_list(unused_at_codes) + "%N")
 							end
-							if not unused_ac_codes.is_empty then					
+							if not unused_ac_codes.is_empty then
 								test_status.append("Unused AC codes: " + display_arrayed_list(unused_ac_codes) + "%N")
 							end
 							adl_interface.archetype.ontology_remove_unused_codes
@@ -362,7 +364,7 @@ feature -- Tests
 				test_status.append("Source file for archetype " + arch_file_path + " not found%N")
 			end
 		end
-			
+
 	test_save_html (arch_file_path: STRING): INTEGER is
 			-- parse archetype and return result
 		local
@@ -380,7 +382,7 @@ feature -- Tests
 				end
 			end
 		end
-			
+
 	test_save_adl (arch_file_path: STRING): INTEGER is
 			-- parse archetype and return result
 		local
@@ -409,7 +411,7 @@ feature -- Tests
 			new_adl_file_path: STRING
 		do
 			Result := Test_failed
-			
+
 			new_adl_file_path := arch_file_path.twin
 			if not overwrite then
 				new_adl_file_path.append("x")
@@ -426,7 +428,7 @@ feature -- Tests
 				test_status.append("Source file for archetype " + new_adl_file_path + " not found%N")
 			end
 		end
-			
+
 	test_diff (arch_file_path: STRING): INTEGER is
 			-- parse archetype and return result
 		local
@@ -434,13 +436,13 @@ feature -- Tests
 			orig_arch_source, new_arch_source: STRING
 		do
 			Result := Test_failed
-			if not overwrite then			
+			if not overwrite then
 				new_adl_file_path := arch_file_path.twin
 				new_adl_file_path.append("x")
-			
+
 				adl_interface.open_adl_file(arch_file_path)
 				orig_arch_source := adl_interface.adl_engine.source
-			
+
 				adl_interface.open_adl_file(new_adl_file_path)
 				new_arch_source := adl_interface.adl_engine.source
 
@@ -451,7 +453,7 @@ feature -- Tests
 						test_status.append("Archetype source lengths same but texts differ%N")
 					end
 				else
-					test_status.append("Archetype source lengths differ: original =  " + orig_arch_source.count.out + 
+					test_status.append("Archetype source lengths differ: original =  " + orig_arch_source.count.out +
 						"; new = " + new_arch_source.count.out + "%N")
 				end
 			else
@@ -463,13 +465,13 @@ feature {NONE} -- Implementation
 
 	gui: MAIN_WINDOW
 			-- main window of system
-	
+
 	gui_grid: EV_GRID
 			-- reference to MAIN_WINDOW.archetype_test_tree_grid
 
 	gui_grid_row_stack: ARRAYED_STACK[EV_GRID_ROW]
 			-- stack used duing population
-	
+
 	test_status: STRING
 			-- cumulative status message during running of test
 
@@ -487,13 +489,13 @@ feature {NONE} -- Implementation
   		do
   			-- add a new row to the current item in the grid row stack
  			gui_grid_row_stack.item.insert_subrow(gui_grid_row_stack.item.subrow_count + 1)
- 			
+
  			-- now get a ref to the newly added subrow
 			gr := gui_grid_row_stack.item.subrow(gui_grid_row_stack.item.subrow_count)
   			adf ?= an_item
    			if adf /= Void then
 				-- First column (explorer)
- 				create gli.make_with_text(adf.base_name)
+ 				create gli.make_with_text (utf8 (adf.base_name))
 				gli.set_pixmap(pixmaps.item("file_folder_" + adf.group_id.out))
 				gli.set_data(adf)
 				gr.set_item(1, gli)
@@ -501,7 +503,7 @@ feature {NONE} -- Implementation
 				ada ?= an_item
 				if ada /= Void then
 					-- First column (explorer)
-					create gli.make_with_text(ada.id.domain_concept + "(" + ada.id.version_id + ")")
+					create gli.make_with_text (utf8 (ada.id.domain_concept + "(" + ada.id.version_id + ")"))
 					gli.set_data(ada)
 					if ada.id.is_specialised then
 						gli.set_pixmap(pixmaps.item("archetype_specialised_" + ada.group_id.out))
@@ -509,7 +511,7 @@ feature {NONE} -- Implementation
 						gli.set_pixmap(pixmaps.item("archetype_" + ada.group_id.out))
 					end
 					gr.set_item(1, gli)
-					
+
 					-- second column (check box)
 					create gli.make_with_text("")
 					gli.set_pixmap(pixmaps.item("checked_box"))
@@ -529,7 +531,7 @@ feature {NONE} -- Implementation
 						gr.set_item (col_csr, create {EV_GRID_LABEL_ITEM}.make_with_text("?"))
 						tests.forth
 						col_csr := col_csr + 1
-					end										
+					end
 				end
    			end
 			gui_grid_row_stack.extend(gr)
@@ -541,7 +543,7 @@ feature {NONE} -- Implementation
 		end
 
 	toggle_selected_checkbox is
-			-- routine set in select_actions list on column 2 to toggle checkbox 
+			-- routine set in select_actions list on column 2 to toggle checkbox
 			-- indicating whether to include archetype or not
 		local
 			gli: EV_GRID_LABEL_ITEM
@@ -552,9 +554,9 @@ feature {NONE} -- Implementation
 			end
 			gli.disable_select
 		end
-		
+
 	toggle_checkbox_at_cell(gli: EV_GRID_LABEL_ITEM) is
-			-- routine set in select_actions list on column 2 to toggle checkbox 
+			-- routine set in select_actions list on column 2 to toggle checkbox
 			-- indicating whether to include archetype or not
 		local
 			checked: BOOLEAN_REF
@@ -570,7 +572,7 @@ feature {NONE} -- Implementation
 				end
 			end
 		end
-		
+
 	expand_tree(a_grid_row: EV_GRID_ROW) is
 			-- expand this row and all sub rows
 		local
@@ -588,7 +590,7 @@ feature {NONE} -- Implementation
 				end
 			end
 		end
-		
+
 	collapse_tree(a_grid_row: EV_GRID_ROW) is
 			-- collapse this row and all sub rows
 		local
@@ -606,11 +608,11 @@ feature {NONE} -- Implementation
 				a_grid_row.collapse
 			end
 		end
-		
+
 	set_archetype_test_go_bn_icon is
-			-- Set go button to be either "go" or "stop" icon depending on 
+			-- Set go button to be either "go" or "stop" icon depending on
 			-- setting of test_execution_underway
-		do		
+		do
 			if test_execution_underway then
 				gui.archetype_test_go_bn.set_pixmap (pixmaps.item("stop"))
 				gui.archetype_test_go_bn.set_text ("Stop")
@@ -619,9 +621,9 @@ feature {NONE} -- Implementation
 				gui.archetype_test_go_bn.set_text ("Go")
 			end
 		end
-		
+
 	display_arrayed_list(str_lst: ARRAYED_LIST[STRING]):STRING is
-			-- 
+			--
 		require
 			str_lst /= Void
 		do
@@ -638,7 +640,7 @@ feature {NONE} -- Implementation
 				str_lst.forth
 			end
 		end
-	
+
 end
 
 

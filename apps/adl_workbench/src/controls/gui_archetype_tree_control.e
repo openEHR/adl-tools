@@ -1,4 +1,4 @@
-indexing	
+indexing
 	component:   "openEHR Archetype Project"
 	description: "Populate ontology controls in ADL editor"
 	keywords:    "ADL"
@@ -19,7 +19,7 @@ inherit
 		export
 			{NONE} all
 		end
-	
+
 	SHARED_ARCHETYPE_DIRECTORY
 		export
 			{NONE} all
@@ -29,6 +29,8 @@ inherit
 		export
 			{NONE} all
 		end
+
+	STRING_UTILITIES
 
 create
 	make
@@ -49,12 +51,12 @@ feature -- Access
 
 	selected_file_path: STRING
 			-- full path of file selected from tree control
-			
+
 	has_selected_file: BOOLEAN
 			-- True if a file was selected
-			
+
 feature -- Commands
-	
+
 	clear is
 			-- wipe out content from controls
 		do
@@ -69,21 +71,21 @@ feature -- Commands
 		do
 			populate
 			if selected_file_path /= Void then
-				show_node := gui_file_tree.retrieve_item_recursively_by_data (selected_file_path, True)		
+				show_node := gui_file_tree.retrieve_item_recursively_by_data (selected_file_path, True)
 				if show_node /= Void then
 					gui_file_tree.ensure_item_visible (show_node)
 				end
 			end
 		end
-		
+
 	populate is
 			-- populate the ADL tree control by creating it from scratch
 		do
 			clear
  			create gui_tree_item_stack.make(0)
- 			archetype_directory.do_all(agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit) 			
+ 			archetype_directory.do_all(agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
 		end
-		
+
 	item_select is
 			-- do something when an item is selected
 		local
@@ -95,18 +97,18 @@ feature -- Commands
 				selected_file_path := arch_item.full_path
 			end
 		end
-		
+
 feature {NONE} -- Implementation
 
 	gui: MAIN_WINDOW
 			-- main window of system
-	
+
 	gui_file_tree: EV_TREE
 			-- reference to MAIN_WINDOW.archetype_file_tree
 
 	gui_tree_item_stack: ARRAYED_STACK[EV_TREE_ITEM]
-			-- 
-	   		
+			--
+
    	populate_gui_tree_node_enter(an_item: ARCHETYPE_DIRECTORY_ITEM) is
    			--
 		require
@@ -118,24 +120,24 @@ feature {NONE} -- Implementation
    		do
    			adf ?= an_item
    			if adf /= Void then
- 				create a_ti.make_with_text(adf.base_name)
+ 				create a_ti.make_with_text (utf8 (adf.base_name))
 				a_ti.set_pixmap(pixmaps.item("file_folder_" + adf.group_id.out))
 				a_ti.set_data(adf)
 			else
 				ada ?= an_item
-				create a_ti.make_with_text(ada.id.domain_concept + "(" + ada.id.version_id + ")")
-				a_ti.set_data(ada)		
+				create a_ti.make_with_text (utf8 (ada.id.domain_concept + "(" + ada.id.version_id + ")"))
+				a_ti.set_data(ada)
 				if ada.id.is_specialised then
 					a_ti.set_pixmap(pixmaps.item("archetype_specialised_" + ada.group_id.out))
 				else
 					a_ti.set_pixmap(pixmaps.item("archetype_" + ada.group_id.out))
 				end
-   			end		
+   			end
 			if gui_tree_item_stack.is_empty then
 				gui_file_tree.extend(a_ti)
 			else
 				gui_tree_item_stack.item.extend(a_ti)
-			end			
+			end
 			gui_tree_item_stack.extend(a_ti)
 		end
 

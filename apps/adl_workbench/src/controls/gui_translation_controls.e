@@ -1,4 +1,4 @@
-indexing	
+indexing
 	component:   "openEHR Archetype Project"
 	description: "Populate translation controls in ADL editor"
 	keywords:    "test, ADL"
@@ -24,7 +24,7 @@ inherit
 		export
 			{NONE} all
 		end
-	
+
 create
 	make
 
@@ -40,7 +40,7 @@ feature -- Initialisation
 		end
 
 feature -- Commands
-	
+
 	clear is
 			-- wipe out content
 		do
@@ -72,7 +72,7 @@ feature -- Commands
 			trans_item: TRANSLATION_DETAILS
 		do
 			clear_items
-			
+
 			-- determine selected language
 			if gui.arch_translations_languages_list.selected_item = Void then
 				translation_language := gui.arch_translations_languages_list.first.text
@@ -81,11 +81,11 @@ feature -- Commands
 			end
 
 			trans_item := adl_interface.archetype.translations.item(translation_language)
-				
+
 			-- populate author hash
 			populate_ev_multi_list_from_hash(gui.arch_translations_author_mlist, trans_item.author)
 			if trans_item.accreditation /= Void then
-				gui.arch_translations_accreditation_text.set_text(trans_item.accreditation)
+				gui.arch_translations_accreditation_text.set_text (utf8 (trans_item.accreditation))
 			end
 
 			-- populate other_details

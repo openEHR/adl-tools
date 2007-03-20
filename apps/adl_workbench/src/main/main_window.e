@@ -69,6 +69,13 @@ inherit
 			copy, default_create
 		end
 
+	STRING_UTILITIES
+		export
+			{NONE} all
+		undefine
+			copy, default_create
+		end
+
 feature {NONE} -- Initialization
 
 	user_initialization is
@@ -692,7 +699,7 @@ feature {EV_DIALOG} -- Implementation
 		do
 			clear_all_controls
 			archetype_directory.repopulate
-			parser_status_area.set_text(billboard_content)
+			parser_status_area.set_text (utf8 (billboard_content))
 			archetype_view_tree_control.populate
 			archetype_test_tree_control.populate
 		end
@@ -756,10 +763,10 @@ feature {EV_DIALOG} -- Implementation
 
 	populate_archetype_id is
 		do
-			archetype_id.set_text(adl_interface.adl_engine.archetype_id.as_string)
+			archetype_id.set_text (utf8 (adl_interface.adl_engine.archetype_id.as_string))
 			if adl_interface.adl_engine.archetype /= Void and then
 					adl_interface.adl_engine.archetype.is_specialised then
-				parent_archetype_id.set_text(adl_interface.adl_engine.parent_archetype_id.as_string)
+				parent_archetype_id.set_text (utf8 (adl_interface.adl_engine.parent_archetype_id.as_string))
 			else
 				parent_archetype_id.set_text("")
 			end
@@ -768,7 +775,7 @@ feature {EV_DIALOG} -- Implementation
 	populate_adl_version is
 			-- populate ADL version
 		do
-			adl_version_text.set_text(adl_interface.archetype.adl_version)
+			adl_version_text.set_text (utf8 (adl_interface.archetype.adl_version))
 		end
 
 	populate_languages is
@@ -802,7 +809,7 @@ feature {EV_DIALOG} -- Implementation
 				left_pos := right_pos + 1
 				line_cnt := line_cnt + 1
 			end
-			archetype_text_edit_area.set_text(s)
+			archetype_text_edit_area.set_text (utf8 (s))
 		end
 
 	dispatch_ctrl_c_keystroke is

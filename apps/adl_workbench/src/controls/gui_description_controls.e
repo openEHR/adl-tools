@@ -1,4 +1,4 @@
-indexing	
+indexing
 	component:   "openEHR Archetype Project"
 	description: "Populate description controls in ADL editor"
 	keywords:    "test, ADL"
@@ -19,12 +19,12 @@ inherit
 		export
 			{NONE} all
 		end
-	
+
 	GUI_CONTROLLER_TOOLS
 		export
 			{NONE} all
 		end
-	
+
 create
 	make
 
@@ -37,14 +37,14 @@ feature -- Initialisation
 			gui := a_main_window
 			gui.arch_desc_resource_orig_res_mlist.hide_title_row
 			gui.arch_desc_auth_orig_auth_mlist.hide_title_row
-			gui.arch_desc_purpose_text.enable_word_wrapping			
-			gui.arch_desc_use_text.enable_word_wrapping			
-			gui.arch_desc_misuse_text.enable_word_wrapping		
+			gui.arch_desc_purpose_text.enable_word_wrapping
+			gui.arch_desc_use_text.enable_word_wrapping
+			gui.arch_desc_misuse_text.enable_word_wrapping
 			gui.arch_desc_copyright_text.enable_word_wrapping
 		end
 
 feature -- Commands
-	
+
 	clear is
 			-- wipe out content
 		do
@@ -53,11 +53,11 @@ feature -- Commands
 			gui.arch_desc_auth_orig_auth_mlist.wipe_out
 			gui.arch_desc_auth_contrib_list.wipe_out
 			gui.arch_desc_original_language_text.remove_text
-		
-			gui.arch_desc_purpose_text.remove_text			
-			gui.arch_desc_use_text.remove_text			
-			gui.arch_desc_misuse_text.remove_text		
-			gui.arch_desc_keywords_list.wipe_out		
+
+			gui.arch_desc_purpose_text.remove_text
+			gui.arch_desc_use_text.remove_text
+			gui.arch_desc_misuse_text.remove_text
+			gui.arch_desc_keywords_list.wipe_out
 
 			gui.arch_desc_resource_package_text.remove_text
 			gui.arch_desc_resource_orig_res_mlist.wipe_out
@@ -73,7 +73,7 @@ feature -- Commands
 				populate_authorship
 				populate_details
 				populate_resources
-				populate_copyright			
+				populate_copyright
 			end
 		end
 
@@ -90,16 +90,16 @@ feature {NONE} -- Implementation
 		do
 			-- original author: tagged list of strings
 			populate_ev_multi_list_from_hash(gui.arch_desc_auth_orig_auth_mlist, adl_interface.archetype.description.original_author)
-			
+
 			-- status
 			sts := adl_interface.archetype.description.lifecycle_state
 			if sts /= Void then
-				gui.arch_desc_status_text.set_text(sts)
+				gui.arch_desc_status_text.set_text (utf8 (sts))
 			end
-			
+
 			-- original language
-			gui.arch_desc_original_language_text.set_text (adl_interface.archetype.original_language.code_string)
-			
+			gui.arch_desc_original_language_text.set_text (utf8 (adl_interface.archetype.original_language.code_string))
+
 			-- contributors: list of strings
 			contribs := adl_interface.archetype.description.other_contributors
 			if contribs /= Void then
@@ -113,18 +113,18 @@ feature {NONE} -- Implementation
 			arch_desc_item: RESOURCE_DESCRIPTION_ITEM
 		do
 			arch_desc_item := adl_interface.archetype.description.details.item(current_language)
-			
+
 			if arch_desc_item /= Void then
 				if arch_desc_item.purpose /= Void then
-					gui.arch_desc_purpose_text.set_text(arch_desc_item.purpose)
+					gui.arch_desc_purpose_text.set_text (utf8 (arch_desc_item.purpose))
 				end
-			
+
 				if arch_desc_item.use /= Void then
-					gui.arch_desc_use_text.set_text(arch_desc_item.use)
+					gui.arch_desc_use_text.set_text (utf8 (arch_desc_item.use))
 				end
-			
+
 				if arch_desc_item.misuse /= Void then
-					gui.arch_desc_misuse_text.set_text(arch_desc_item.misuse)
+					gui.arch_desc_misuse_text.set_text (utf8 (arch_desc_item.misuse))
 				end
 
 				populate_ev_list_from_list(gui.arch_desc_keywords_list, arch_desc_item.keywords)
@@ -140,9 +140,9 @@ feature {NONE} -- Implementation
 			-- package URI
 			arch_pkg_uri := adl_interface.archetype.description.resource_package_uri
 			if arch_pkg_uri /= Void then
-				gui.arch_desc_resource_package_text.set_text(arch_pkg_uri.out)
+				gui.arch_desc_resource_package_text.set_text (utf8 (arch_pkg_uri.out))
 			end
-	
+
 			-- list of URI resources
 			arch_desc_item := adl_interface.archetype.description.details.item(current_language)
 			if arch_desc_item /= Void then
@@ -157,7 +157,7 @@ feature {NONE} -- Implementation
 		do
 			arch_desc_item := adl_interface.archetype.description.details.item(current_language)
 			if arch_desc_item /= Void and then arch_desc_item.copyright /= Void then
-				gui.arch_desc_copyright_text.set_text(arch_desc_item.copyright)
+				gui.arch_desc_copyright_text.set_text (utf8 (arch_desc_item.copyright))
 			end
 		end
 

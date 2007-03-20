@@ -2,7 +2,7 @@ indexing
 	component:   "openEHR Archetype Project"
 	description: "Miscellaneous String utilities."
 	keywords:    "formatting"
-	
+
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
@@ -17,7 +17,7 @@ class STRING_UTILITIES
 feature -- Element Change
 
 	translate (str, s1, s2: STRING) is
-			-- in str, replace every occurrence of each char in s1 
+			-- in str, replace every occurrence of each char in s1
 			-- by corr char in s2, or delete them, if s2 empty
 	    require
 	    	Str_valid: str /= Void and then not str.is_empty
@@ -46,7 +46,7 @@ feature -- Element Change
 					    end
 					end
 			    end
-			    
+
 		    	i := i + 1
 			end
 	    end
@@ -96,10 +96,25 @@ feature -- Element Change
 
 				if final_return then
 					Result.append_character('%N')
-				end	
+				end
 			end
 		ensure
 			Result_exists: Result /= Void
+		end
+
+feature -- Unicode
+
+	utf8 (s: STRING): STRING_32
+			-- `s' converted to UTF-8 Unicode.
+		require
+			s_attached: s /= Void
+		local
+			unicode: STRING
+		do
+			create {UC_UTF8_STRING} unicode.make_from_utf8 (s)
+			Result := unicode.as_string_32
+		ensure
+			attached: Result /= Void
 		end
 
 feature -- Matching
@@ -115,10 +130,10 @@ feature -- Matching
 			remaining: STRING
 	    do
 	    	create Result.make(0)
-	    	
+
 	    	create code.make(0)
 	    	code.append(a_str)
-	    	
+
 			translate(code, punctuation, "")
 			code.to_upper
 
@@ -148,7 +163,7 @@ feature -- Matching
 feature {NONE} -- Implementation
 
 	punctuation: STRING is "!%"#$%%&%'()_=-~^@`{[;+:*]},<.>/?\|"
-	  
+
 	alphabet: STRING is  "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 	soundex_map: STRING is " 123 12  22455 12623 1 2 2"

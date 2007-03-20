@@ -1,4 +1,4 @@
-indexing	
+indexing
 	component:   "openEHR Re-usable Components"
 	description: "Populate various Eiffel Vision2 standard controls from standard EiffelBase data structures"
 	keywords:    "EiffelVision, GUI"
@@ -13,6 +13,9 @@ indexing
 
 
 class GUI_CONTROLLER_TOOLS
+
+inherit
+	STRING_UTILITIES
 
 feature {NONE} -- Implementation
 
@@ -29,13 +32,13 @@ feature {NONE} -- Implementation
 				from
 					ht.start
 				until
-					ht.off				
-				loop	
+					ht.off
+				loop
 					create ev_list_row
-					ev_list_row.extend(ht.key_for_iteration)
-					ev_list_row.extend(ht.item_for_iteration.out)
+					ev_list_row.extend (utf8 (ht.key_for_iteration))
+					ev_list_row.extend (utf8 (ht.item_for_iteration.out))
 					ev_mlist.extend(ev_list_row)
-					ht.forth				
+					ht.forth
 				end
 
 				from i := 1
@@ -57,11 +60,11 @@ feature {NONE} -- Implementation
 				from
 					a_list.start
 				until
-					a_list.off				
-				loop	
-					create ev_list_item.make_with_text(a_list.item)
+					a_list.off
+				loop
+					create ev_list_item.make_with_text (utf8 (a_list.item))
 					ev_list.extend(ev_list_item)
-					a_list.forth				
+					a_list.forth
 				end
 			end
 		end
@@ -71,19 +74,19 @@ feature {NONE} -- Implementation
 		local
 			ev_list_item: EV_LIST_ITEM
 		do
-			if ht /= Void then			
+			if ht /= Void then
 				from
 					ht.start
 				until
 					ht.off
 				loop
-					create ev_list_item.make_with_text (ht.key_for_iteration)
+					create ev_list_item.make_with_text (utf8 (ht.key_for_iteration))
 					ev_list.extend(ev_list_item)
 					ht.forth
-				end			
+				end
 			end
 		end
-		
+
 end
 
 
