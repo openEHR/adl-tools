@@ -2189,7 +2189,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F8D767529D6F4389B2E3806C29059E52"
             {
-            "SourcePath" = "8:..\\..\\..\\app\\EIFGENs\\adl_workbench\\F_code\\adl_workbench.exe"
+            "SourcePath" = "8:..\\..\\..\\app\\EIFGENs\\adl_workbench_precompile\\F_code\\adl_workbench.exe"
             "TargetName" = "8:adl_workbench.exe"
             "Tag" = "8:"
             "Folder" = "8:_98BF1271FBC746FF90484D84A23B2AC4"
