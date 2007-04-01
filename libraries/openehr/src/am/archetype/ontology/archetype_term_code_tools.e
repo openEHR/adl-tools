@@ -33,15 +33,15 @@ inherit
 feature -- Definitions
 
 	Specialisation_separator: CHARACTER is '.'
-	
+
 	Term_code_length: INTEGER is 6
 			-- length of internal term codes, e.g. "at0001"
-			
+
 	Term_code_leader: STRING is "at"
 			-- leader of all internal term codes
-			
+
 	Constraint_code_leader: STRING is "ac"
-	
+
 feature -- Access
 
 	specialisation_parent_from_code(a_code: STRING): STRING is
@@ -54,7 +54,7 @@ feature -- Access
 
 	specialisation_status_from_code(a_code: STRING; a_depth: INTEGER): SPECIALISATION_STATUS is
 			-- get the specialisation status (added, inherited, redefined) from this code, at a_depth
-			-- for example: 
+			-- for example:
 			-- 		status of at0001 is added at depth 0
 			--		status of at0001.1 is added at depth 0, redefined at depth 1
 			--		status of at0.1 is undefined at depth 0, added at depth 1
@@ -69,7 +69,7 @@ feature -- Access
 			if a_depth > 0 then
 				parent_code_exists := specialisation_section_from_code(a_code, a_depth - 1).to_integer > 0
 			end
-			
+
 			if this_code_exists then
 				if parent_code_exists then
 					create Result.make (ss_redefined)
@@ -83,7 +83,7 @@ feature -- Access
 
 	specialisation_section_from_code(a_code: STRING; a_depth: INTEGER): STRING is
 			-- get the numeric part of the code from this code, at a_depth
-			-- for example: 
+			-- for example:
 			-- 		a_code = at0001		a_depth = 0 -> 0001
 			--		a_code = at0001.4	a_depth = 1 -> 4
 			--		a_code = at0.4		a_depth = 0 -> 0
@@ -101,7 +101,7 @@ feature -- Access
 		do
 			spec_depth := specialisation_depth_from_code(a_code)
 			code_num_part := a_code.substring (term_code_leader.count+1, a_code.count)
-			
+
 			-- determine left hand position
 			from
 				lpos := 1
@@ -114,7 +114,7 @@ feature -- Access
 				end
 				lpos := lpos + 1
 			end
-			
+
 			-- determine right hand position
 			rpos := code_num_part.index_of (Specialisation_separator, lpos)
 			if rpos = 0 then
@@ -122,7 +122,7 @@ feature -- Access
 			else
 				rpos := rpos - 1
 			end
-			Result := a_code.substring(lpos, rpos)			
+			Result := code_num_part.substring(lpos, rpos)
 		end
 
 	specialisation_depth_from_code(a_code: STRING): INTEGER is
@@ -148,13 +148,13 @@ feature -- Comparison
 	is_valid_code(a_code: STRING): BOOLEAN is
 			-- 	a code is an 'at' or 'ac' code
 		require
-			Code_valid: a_code /= Void and then not a_code.is_empty				
+			Code_valid: a_code /= Void and then not a_code.is_empty
 		do
 			Result := a_code.substring_index (Term_code_leader, 1) > 0 or a_code.substring_index (Constraint_code_leader, 1) > 0
 		end
 
 	is_specialised_code(a_code: STRING): BOOLEAN is
-			-- 	a code has been specialised if there is a non-zero number above the 
+			-- 	a code has been specialised if there is a non-zero number above the
 			-- specialisation depth of the code
 		require
 			Code_valid: a_code /= Void and then is_valid_code(a_code)
@@ -186,8 +186,8 @@ feature -- Factory
 					Result.append_character('0')
 					Result.append_character(Specialisation_separator)
 					i := i + 1
-				end				
-				
+				end
+
 				Result.append_integer(last_index_at_level+1)
 			else
 				create Result.make_filled('0', Term_code_length)
@@ -198,7 +198,7 @@ feature -- Factory
 		ensure
 			Result_exists: Result /= Void
 		end
-		
+
 	new_specialised_term_code_at_level(a_parent_code: STRING; at_level:INTEGER): STRING is
 			-- get a new specialised code based on `a_parent_code'
 			-- e.g. "at0001" at level 2 will produce "at0001.0.1"
@@ -221,7 +221,7 @@ feature -- Factory
 				Result.append_character('0')
 				i := i + 1
 			end
-			
+
 			Result.append_character(Specialisation_separator)
 			if specialised_term_codes.has(a_parent_code) then
 				last_code := specialised_term_codes.item(a_parent_code).last
@@ -262,7 +262,7 @@ feature -- Factory
 		ensure
 			Result_exists: Result /= Void
 		end
-				
+
 feature {NONE} -- Implementation
 
 	specialised_term_codes: HASH_TABLE[TWO_WAY_SORTED_SET[STRING], STRING]
