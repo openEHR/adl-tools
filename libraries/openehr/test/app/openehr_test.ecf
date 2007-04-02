@@ -42,17 +42,17 @@
 		<library name="vision2" location="$ISE_LIBRARY\library\vision2\vision2.ecf"/>
 		<library name="gobo" location="$ISE_LIBRARY\library\gobo\gobo.ecf"/>
 		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf"/>
-		<cluster name="app" location="$OPENEHR\ref_impl_eiffel\libraries\openehr\test\src\" recursive="true">
+		<cluster name="app" location="..\src\" recursive="true">
 			<option>
 				<assertions precondition="true" postcondition="true" check="false" invariant="false" loop="false"/>
 			</option>
 		</cluster>
-		<cluster name="common_libs" location="$OPENEHR\ref_impl_eiffel\libraries\common_libs\src\" recursive="true">
+		<cluster name="common_libs" location="..\..\..\common_libs\src\" recursive="true">
 			<option>
 				<assertions precondition="true" postcondition="true" check="false" invariant="true" loop="false"/>
 			</option>
 		</cluster>
-		<cluster name="openehr" location="$OPENEHR\ref_impl_eiffel\libraries\openehr\src\" recursive="true">
+		<cluster name="openehr" location="..\..\..\openehr\src\" recursive="true">
 			<option>
 				<assertions precondition="true" postcondition="true" check="false" invariant="true" loop="false"/>
 			</option>
@@ -60,7 +60,7 @@
 			<visible class="C_DV_ORDINAL"/>
 			<visible class="C_DV_QUANTITY"/>
 		</cluster>
-		<override name="vendor_fixes" location="$OPENEHR\ref_impl_eiffel\libraries\vendor-fixes\" recursive="true">
+		<override name="vendor_fixes" location="..\..\..\vendor-fixes\" recursive="true">
 			<file_rule>
 				<exclude>/base_net$</exclude>
 			</file_rule>

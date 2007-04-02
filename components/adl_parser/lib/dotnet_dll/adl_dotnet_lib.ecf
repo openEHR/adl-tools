@@ -40,16 +40,16 @@
 		<assembly name="a_ise_dotnet_framework_system.dll" location="$ISE_DOTNET_FRAMEWORK\System.dll" prefix="SYSTEM_DLL_"/>
 		<assembly name="a_ise_dotnet_framework_system.xml.dll" location="$ISE_DOTNET_FRAMEWORK\System.Xml.dll" prefix="XML_"/>
 		<assembly name="a_ise_eiffel_studio_spec__ise_platform_bin_eiffelsoftware.runtime.dll" location="$ISE_EIFFEL\studio\spec\$ISE_PLATFORM\bin\EiffelSoftware.Runtime.dll"/>
-		<cluster name="adl_parser" location="$OPENEHR\ref_impl_eiffel\components\adl_parser\src\" recursive="true"/>
-		<cluster name="archetype_repository" location="$OPENEHR\ref_impl_eiffel\components\archetype_repository\src\directory\" recursive="true"/>
-		<cluster name="common_libs" location="$OPENEHR\ref_impl_eiffel\libraries\common_libs\src\" recursive="true"/>
-		<cluster name="openehr" location="$OPENEHR\ref_impl_eiffel\libraries\openehr\src\" recursive="true">
+		<cluster name="adl_parser" location="..\..\src\" recursive="true"/>
+		<cluster name="archetype_repository" location="..\..\..\archetype_repository\src\directory\" recursive="true"/>
+		<cluster name="common_libs" location="..\..\..\..\libraries\common_libs\src\" recursive="true"/>
+		<cluster name="openehr" location="..\..\..\..\libraries\openehr\src\" recursive="true">
 			<visible class="C_DV_QUANTITY"/>
 			<visible class="C_QUANTITY_ITEM"/>
 			<visible class="C_DV_ORDINAL"/>
 			<visible class="C_CODE_PHRASE"/>
 		</cluster>
-		<cluster name="version" location="$OPENEHR\ref_impl_eiffel\libraries\version\" recursive="true"/>
-		<override name="vendor_fixes" location="$OPENEHR\ref_impl_eiffel\libraries\vendor-fixes\" recursive="true"/>
+		<cluster name="version" location="..\..\..\..\libraries\version\" recursive="true"/>
+		<override name="vendor_fixes" location="..\..\..\..\libraries\vendor-fixes\" recursive="true"/>
 	</target>
 </system>

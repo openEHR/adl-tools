@@ -31,26 +31,25 @@
 		<setting name="inlining" value="false"/>
 		<setting name="line_generation" value="true"/>
 		<setting name="multithreaded" value="false"/>
-		<external_object location="$(OPENEHR)\ref_impl_eiffel\libraries\common_libs\lib\$(ISE_C_COMPILER)\method_dispatcher.lib"/>
 		<precompile name="precompile" location="$ISE_PRECOMP\base.ecf"/>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf">
 			<visible class="LINKED_LIST"/>
 		</library>
 		<library name="gobo" location="$ISE_LIBRARY\library\gobo\gobo.ecf"/>
 		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf"/>
-		<cluster name="app" location="$OPENEHR\ref_impl_eiffel\libraries\common_libs\test\" recursive="true">
+		<cluster name="app" location="..\src\" recursive="true">
 			<option>
 				<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true"/>
 			</option>
 			<visible class="PART"/>
 			<visible class="SUB_PART"/>
 		</cluster>
-		<cluster name="common_libs" location="$OPENEHR\ref_impl_eiffel\libraries\common_libs\src\" recursive="true">
+		<cluster name="common_libs" location="..\..\src\" recursive="true">
 			<option>
 				<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true"/>
 			</option>
 		</cluster>
-		<cluster name="openehr" location="$OPENEHR\ref_impl_eiffel\libraries\openehr\src\">
+		<cluster name="openehr" location="..\..\..\openehr\src\">
 			<cluster name="openehr_data_types" location="$|rm\data_types\" recursive="true">
 				<option>
 					<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true"/>
@@ -62,7 +61,7 @@
 				</option>
 			</cluster>
 		</cluster>
-		<override name="vendor_fixes" location="$OPENEHR\ref_impl_eiffel\libraries\vendor-fixes\" recursive="true">
+		<override name="vendor_fixes" location="..\..\..\vendor-fixes\" recursive="true">
 			<file_rule>
 				<exclude>/base_net$</exclude>
 			</file_rule>
