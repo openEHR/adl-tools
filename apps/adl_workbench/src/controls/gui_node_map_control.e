@@ -454,9 +454,9 @@ feature {NONE} -- Implementation
 					c_o ?= a_node
 					if c_o /= Void then
 						if in_technical_mode then
-							a_ti.set_tooltip(c_o.representation.path.as_string)
+							a_ti.set_tooltip (utf8 (c_o.representation.path.as_string))
 						else
-							a_ti.set_tooltip(ontology.logical_path_for_physical_path(c_o.representation.path.as_string, current_language))
+							a_ti.set_tooltip (utf8 (ontology.logical_path_for_physical_path (c_o.representation.path.as_string, current_language)))
 						end
 					end
 
@@ -595,9 +595,9 @@ feature {NONE} -- Implementation
 			Result.set_pixmap(pixmap)
 
 			if in_technical_mode then
-				Result.set_tooltip(an_og_node.path.as_string)
+				Result.set_tooltip (utf8 (an_og_node.path.as_string))
 			else
-				Result.set_tooltip(ontology.logical_path_for_physical_path(an_og_node.path.as_string, current_language))
+				Result.set_tooltip (utf8 (ontology.logical_path_for_physical_path (an_og_node.path.as_string, current_language)))
 			end
 
 			if not archetype_tree_root_set then
