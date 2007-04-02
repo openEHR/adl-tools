@@ -331,8 +331,8 @@ feature {NONE} -- Commands
 	select_language is
 			-- Called by `select_actions' of `language_combo'.
 		do
-			if language_combo.has_selection then
-				adl_interface.set_current_language(language_combo.selected_text)
+			if not language_combo.text.is_empty then
+				adl_interface.set_current_language(language_combo.text)
 				if adl_interface.parse_succeeded then
 					populate_view_controls
 				end
