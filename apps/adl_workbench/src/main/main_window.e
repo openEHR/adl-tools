@@ -333,7 +333,7 @@ feature {NONE} -- Commands
 		do
 			if not language_combo.text.is_empty then
 				adl_interface.set_current_language(language_combo.text)
-				if adl_interface.parse_succeeded then
+				if adl_interface.parse_succeeded and language_combo.has_focus then
 					populate_view_controls
 				end
 			end
