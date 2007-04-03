@@ -111,8 +111,20 @@ feature -- Unicode
 		local
 			unicode: STRING
 		do
-			create {UC_UTF8_STRING} unicode.make_from_utf8 (s)
-			Result := unicode.as_string_32
+			if utf8_routines.valid_utf8 (s) then
+				create {UC_UTF8_STRING} unicode.make_from_utf8 (s)
+				Result := unicode.as_string_32
+			else
+				Result := s.as_string_32
+			end
+		ensure
+			attached: Result /= Void
+		end
+
+	utf8_routines: UC_UTF8_ROUTINES
+			-- UTF-8 encoding routines.
+		once
+			create Result
 		ensure
 			attached: Result /= Void
 		end
