@@ -83,12 +83,13 @@ feature -- Access
 	tests: DS_HASH_TABLE [FUNCTION [ANY, TUPLE[STRING], INTEGER], STRING] is
 			-- table of test routines
 		once
-			create Result.make(5)
-			Result.put(agent test_parse, "Parse")
-			Result.put(agent test_save_html, "Save to HTML")
-			Result.put(agent test_save_adl, "Save to ADL")
-			Result.put(agent test_reparse, "Reparse")
-			Result.put(agent test_diff, "Diff")
+			create Result.make (6)
+			Result.put (agent test_utf8, "UTF-8")
+			Result.put (agent test_parse, "Parse")
+			Result.put (agent test_save_html, "Save to HTML")
+			Result.put (agent test_save_adl, "Save to ADL")
+			Result.put (agent test_reparse, "Reparse")
+			Result.put (agent test_diff, "Diff")
 		end
 
 	last_tested_archetypes_count: INTEGER
@@ -330,6 +331,54 @@ feature -- Commands
 		end
 
 feature -- Tests
+
+	test_utf8 (arch_file_path: STRING): INTEGER
+			-- Validate that the archetype is in UTF-8 Unicode.
+			-- ASCII is a subset of UTF-8 so it will pass, but Latin-1 (codes 128 to 255) will almost certainly fail.
+		require
+			arch_file_path_attached: arch_file_path /= Void
+			arch_file_path_not_empty: not arch_file_path.is_empty
+		local
+			utf8_routines: UC_UTF8_ROUTINES
+			source, new_adl_file_path: STRING
+			new_file: PLAIN_TEXT_FILE
+		do
+			Result := Test_failed
+			adl_interface.reset
+			adl_interface.open_adl_file (arch_file_path)
+
+			if adl_interface.archetype_source_loaded then
+				create utf8_routines
+				source := adl_interface.adl_engine.source
+
+				if utf8_routines.valid_utf8 (source) then
+					Result := Test_passed
+				else
+					test_status.append ("Archetype is not in UTF-8 format%N")
+					new_adl_file_path := arch_file_path.twin
+
+					if not overwrite then
+						new_adl_file_path.append ("x")
+					end
+
+					create new_file.make (new_adl_file_path)
+
+					if new_file.exists implies new_file.is_writable then
+						new_file.create_read_write
+						new_file.put_character ({FILE_CONTEXT}.utf8_bom_char_1)
+						new_file.put_character ({FILE_CONTEXT}.utf8_bom_char_2)
+						new_file.put_character ({FILE_CONTEXT}.utf8_bom_char_3)
+						new_file.put_string (utf8_routines.to_utf8 (source))
+						new_file.close
+						test_status.append ("Saved as UTF-8 to " + new_adl_file_path + "%N")
+					else
+						test_status.append ("Failed to save as UTF-8 to existing read-only file " + new_adl_file_path + "%N")
+					end
+				end
+			else
+				test_status.append ("Source file for archetype " + arch_file_path + " not found%N")
+			end
+		end
 
 	test_parse (arch_file_path: STRING): INTEGER is
 			-- parse archetype and return result

@@ -43,7 +43,11 @@
 		<setting name="line_generation" value="false"/>
 		<setting name="multithreaded" value="false"/>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
-		<library name="gobo" location="$ISE_LIBRARY\library\gobo\gobo.ecf"/>
+		<library name="gobo" location="$ISE_LIBRARY\library\gobo\gobo.ecf">
+			<class_option class="UC_UTF8_ROUTINES">
+				<assertions precondition="false" postcondition="false" check="false" invariant="false" loop="false"/>
+			</class_option>
+		</library>
 		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf"/>
 		<library name="vision2" location="$ISE_LIBRARY\library\vision2\vision2.ecf"/>
 		<cluster name="adl_parser" location="..\..\..\components\adl_parser\src\" recursive="true">

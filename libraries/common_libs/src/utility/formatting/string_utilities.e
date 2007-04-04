@@ -104,29 +104,19 @@ feature -- Element Change
 
 feature -- Unicode
 
-	utf8 (s: STRING): STRING_32
-			-- `s' converted to UTF-8 Unicode.
+	utf8 (utf8_bytes: STRING): STRING_32
+			-- `utf8_bytes' converted from a sequence of UTF-8 bytes to 32-bit Unicode characters.
 		require
-			s_attached: s /= Void
+			utf8_bytes_attached: utf8_bytes /= Void
+			utf8_bytes_valid: (create {UC_UTF8_ROUTINES}).valid_utf8 (utf8_bytes)
 		local
-			unicode: STRING
+			s: STRING
 		do
-			if utf8_routines.valid_utf8 (s) then
-				create {UC_UTF8_STRING} unicode.make_from_utf8 (s)
-				Result := unicode.as_string_32
-			else
-				Result := s.as_string_32
-			end
+			create {UC_UTF8_STRING} s.make_from_utf8 (utf8_bytes)
+			Result := s.as_string_32
 		ensure
 			attached: Result /= Void
-		end
-
-	utf8_routines: UC_UTF8_ROUTINES
-			-- UTF-8 encoding routines.
-		once
-			create Result
-		ensure
-			attached: Result /= Void
+			not_longer: Result.count <= utf8_bytes.count
 		end
 
 feature -- Matching
