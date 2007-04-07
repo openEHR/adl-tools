@@ -332,8 +332,9 @@ feature {NONE} -- Commands
 			-- Called by `select_actions' of `language_combo'.
 		do
 			if not language_combo.text.is_empty then
-				adl_interface.set_current_language(language_combo.text)
-				if adl_interface.parse_succeeded and language_combo.has_focus then
+				adl_interface.set_current_language (language_combo.text)
+
+				if adl_interface.parse_succeeded then
 					populate_view_controls
 				end
 			end
@@ -780,8 +781,15 @@ feature {EV_DIALOG} -- Implementation
 
 	populate_languages is
 		do
-			language_combo.set_strings(ontology.languages_available)
-			terminologies_list.set_strings(ontology.terminologies_available)
+			language_combo.select_actions.block
+			language_combo.set_strings (ontology.languages_available)
+
+			if not language_combo.text.is_empty then
+				adl_interface.set_current_language (language_combo.text)
+			end
+
+			language_combo.select_actions.resume
+			terminologies_list.set_strings (ontology.terminologies_available)
 		end
 
 	populate_archetype_text_edit_area is
