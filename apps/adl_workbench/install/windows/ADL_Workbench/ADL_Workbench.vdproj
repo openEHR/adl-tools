@@ -411,6 +411,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_C5E9FB78D7EF4D639B1394D94665E95B"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_C879374D98114532B6B39F75916C4A22"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1907,6 +1913,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C5E9FB78D7EF4D639B1394D94665E95B"
+            {
+            "SourcePath" = "8:..\\..\\..\\app\\icons\\not_applicable.ico"
+            "TargetName" = "8:not_applicable.ico"
+            "Tag" = "8:"
+            "Folder" = "8:_98BF1271FBC746FF90484D84A23B2AC4"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C879374D98114532B6B39F75916C4A22"
             {
             "SourcePath" = "8:..\\..\\..\\app\\icons\\node_inherited\\c_primitive_object.ico"
@@ -2894,9 +2920,6 @@
         {
         }
         "ProjectOutput"
-        {
-        }
-        "VJSharpPlugin"
         {
         }
     }
