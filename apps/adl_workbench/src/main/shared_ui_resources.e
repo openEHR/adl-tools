@@ -20,30 +20,30 @@ inherit
 		export
 			{NONE} all
 		end
-	
+
 feature -- Definitions
 
-	News_file_path: STRING is 
+	News_file_path: STRING is
 		once
 			Result := application_startup_directory + os_directory_separator.out + "news.txt"
 		end
-		
-	Status_file_path: STRING is 
+
+	Status_file_path: STRING is
 		once
 			Result := application_startup_directory + os_directory_separator.out + ".status"
 		end
-	
-	Default_editor_command: STRING is		
+
+	Default_editor_command: STRING is
 			-- generate a reasonable name of an editor based on operating system
-		once	
+		once
    			if os_type.substring_index("windows", 1) > 0 then
    				Result := "Notepad.exe"
 			else
    				Result := "vi"
    			end
    		end
-   			
-	Default_browser_command: STRING is 
+
+	Default_browser_command: STRING is
 			-- generate a command to launch a browser based on OS
 		once
    			if os_type.substring_index("windows", 1) > 0 then
@@ -52,18 +52,18 @@ feature -- Definitions
    				Result := "firefox "
    			end
 		end
-	
+
 	ADL_help_page_url: STRING is "http://svn.openehr.org/ref_impl_eiffel/TRUNK/apps/doc/adl_workbench_help.htm"
-	
+
 	Splash_window_display_time: INTEGER is 1500
 			-- number of millseconds to display splash window
-			
+
 	path_control_filter_names: ARRAY [STRING] is
 			-- names of row filters of path control
 		once
 			Result := <<"All", "Leaf">>
 		end
-		
+
 	path_control_column_names: ARRAY [STRING] is
 			-- names of columns of path view control
 		once
@@ -79,7 +79,7 @@ feature -- Access
 		ensure
 			Result /= Void
 		end
-			
+
 	work_repository_path: STRING is
 			-- path of root of ADL file tree
 		do
@@ -87,7 +87,7 @@ feature -- Access
 		ensure
 			Result /= Void
 		end
-			
+
 	app_width: INTEGER is
 			-- application width
 		local
@@ -98,7 +98,7 @@ feature -- Access
 				Result := str.to_integer
 			end
 		end
-			
+
 	app_height: INTEGER is
 			-- application height
 		local
@@ -109,7 +109,7 @@ feature -- Access
 				Result := str.to_integer
 			end
 		end
-			
+
 	app_x_position: INTEGER is
 			-- application horizontal position
 		local
@@ -120,7 +120,7 @@ feature -- Access
 				Result := str.to_integer
 			end
 		end
-			
+
 	app_y_position: INTEGER is
 			-- application vertical position
 		local
@@ -131,7 +131,7 @@ feature -- Access
 				Result := str.to_integer
 			end
 		end
-			
+
 	app_maximised: BOOLEAN is
 			-- True if app should be maximised
 		local
@@ -142,7 +142,7 @@ feature -- Access
 				Result := str.to_boolean
 			end
 		end
-		
+
 	total_view_area_split_position: INTEGER is
 			-- split position of outer vertical split control
 		local
@@ -153,7 +153,7 @@ feature -- Access
 				Result := str.to_integer
 			end
 		end
-			
+
 	info_view_area_split_position: INTEGER is
 			-- split position of inner vertical split control
 		local
@@ -164,7 +164,7 @@ feature -- Access
 				Result := str.to_integer
 			end
 		end
-			
+
 	test_view_area_split_position: INTEGER is
 			-- split position of vertical split control in test tool
 		local
@@ -175,7 +175,7 @@ feature -- Access
 				Result := str.to_integer
 			end
 		end
-			
+
 	explorer_view_area_split_position: INTEGER is
 			-- split position of explorer horizontal split control
 		local
@@ -187,7 +187,7 @@ feature -- Access
 			end
 		end
 
-	main_notebook_tab_pos: INTEGER is			
+	main_notebook_tab_pos: INTEGER is
 			-- which tab of the main notebook was visible at the end of the last session
 		local
 			str: STRING
@@ -197,7 +197,7 @@ feature -- Access
 				Result := str.to_integer
 			end
 		end
-		
+
 	expand_node_tree: BOOLEAN is
 			-- flag for expand archetype definition node tree or not by default
 		local
@@ -208,7 +208,7 @@ feature -- Access
 				Result := str.to_boolean
 			end
 		end
-		
+
 	path_filter_combo_selection: STRING is
 			-- setting of path control filter combo-box
 		do
@@ -220,7 +220,7 @@ feature -- Access
 		do
 			Result := resource_value_list("default", "path_view_check_list_settings")
 		end
-		
+
 	editor_command: STRING is
 			-- path of editor application for ADL files
 		do
@@ -228,8 +228,8 @@ feature -- Access
 		ensure
 			Result /= Void
 		end
-			
-	icon_directory: STRING is 
+
+	icon_directory: STRING is
 		once
 			Result := application_startup_directory + os_directory_separator.out + "icons"
 		end
@@ -242,13 +242,13 @@ feature -- Access
 			create a_dir.make(icon_directory)
 			Result := a_dir.exists
 		end
-		
+
 	new_news: BOOLEAN is
 			-- is there new news due to last installation?
 			-- work this out by seeing if there is a file called ".status" which is
 			-- older than the news file
 		local
-			news_file, status_file: PLAIN_TEXT_FILE	
+			news_file, status_file: PLAIN_TEXT_FILE
 		once
 			create news_file.make(News_file_path)
 			create status_file.make(Status_file_path)
@@ -263,7 +263,7 @@ feature -- Access
 			-- renew the status file, currently only used to indicate that
 			-- news has been shown at startup
 		local
-			status_file: PLAIN_TEXT_FILE	
+			status_file: PLAIN_TEXT_FILE
 		once
 			create status_file.make(Status_file_path)
 			if status_file.exists then
@@ -278,7 +278,7 @@ feature -- Access
 			-- table of pixmap file paths keyed by icon key used in this app
 		once
 			create Result.make(0)
-			
+
 			Result.force("Archetype (reference repository)", 							"archetype_1")
 			Result.force("Specialised archetype (reference repository)", 				"archetype_specialised_1")
 
@@ -291,58 +291,58 @@ feature -- Access
 			Result.force("Single-valued attribute (optional)",				 			"C_ATTRIBUTE.optional")
 			Result.force("Container attribute (mandatory)",			 					"C_ATTRIBUTE.multiple")
 			Result.force("Container attribute (optional)", 								"C_ATTRIBUTE.multiple.optional")
-			
+
 			Result.force("C_CODE_PHRASE (openEHR archetype profile)", 					"C_CODE_PHRASE")
 			Result.force("C_DV_ORDINAL (openEHR archetype profile)",					"C_DV_ORDINAL")
 			Result.force("C_DV_QUANTITY (openEHR archetype profile)", 						"C_DV_QUANTITY")
 			Result.force("C_PRIMITIVE_OBJECT - any type (openEHR AOM)", 				"C_PRIMITIVE_OBJECT")
-			
+
 			Result.force("Archetype slot (mandatory)", 									"ARCHETYPE_SLOT")
 			Result.force("Archetype slot (optional)", 									"ARCHETYPE_SLOT.optional")
 			Result.force("Archetype slot allowed archetypes", 							"CADL_INCLUDE")
 			Result.force("Archetype slot excluded archetypes", 							"CADL_EXCLUDE")
-			
+
 			Result.force("Complex ref model object (mandatory, single occurrence)", 	"C_COMPLEX_OBJECT")
 			Result.force("Complex ref model object (mandatory, multiple occurrences)", 	"C_COMPLEX_OBJECT.multiple")
 			Result.force("Complex ref model object (optional, single occurrence)", 		"C_COMPLEX_OBJECT.optional")
 			Result.force("Complex ref model object (optional, multiple occurrences)", 	"C_COMPLEX_OBJECT.multiple.optional")
-			
+
 			Result.force("Archetype internal reference to previously defined node", 	"ARCHETYPE_INTERNAL_REF")
 			Result.force("Constraint reference (openEHR AOM)", 							"CONSTRAINT_REF")
-	
+
 			Result.force("Invariant section", 											"CADL_INVARIANT")
 			Result.force("Invariant section item", 										"CADL_INVARIANT_ITEM")
 			Result.force("X is inherited from parent archetype",						"icon_help_example.inherited")
 			Result.force("X is redefined from parent archetype",						"icon_help_example.redefined")
 		end
-		
+
 	pixmap_file_table: HASH_TABLE [STRING, STRING] is
 			-- table of pixmap file paths keyed by icon key used in this app
 		local
-			a_dir: DIRECTORY
+			file: RAW_FILE
 		once
 			create Result.make(0)
-			
+
 			Result.put("node_normal/c_attribute.ico", 								"C_ATTRIBUTE")
 			Result.put("node_normal/c_attribute_optional.ico", 						"C_ATTRIBUTE.optional")
 			Result.put("node_normal/c_attribute_multiple.ico",					 	"C_ATTRIBUTE.multiple")
-			Result.put("node_normal/c_attribute_multiple_optional.ico", 			"C_ATTRIBUTE.multiple.optional")						
+			Result.put("node_normal/c_attribute_multiple_optional.ico", 			"C_ATTRIBUTE.multiple.optional")
 			Result.put("node_normal/c_code_phrase.ico", 							"C_CODE_PHRASE")
 			Result.put("node_normal/c_dv_ordinal.ico", 								"C_DV_ORDINAL")
 			Result.put("node_normal/c_dv_quantity.ico", 							"C_DV_QUANTITY")
 			Result.put("node_normal/c_quantity_item.ico", 							"C_QUANTITY_ITEM")
 			Result.put("node_normal/c_primitive_object.ico", 						"C_PRIMITIVE_OBJECT")
-			Result.put("node_normal/archetype_code_ref.ico", 						"CONSTRAINT_REF")			
+			Result.put("node_normal/archetype_code_ref.ico", 						"CONSTRAINT_REF")
 			Result.put("node_normal/archetype_slot.ico", 							"ARCHETYPE_SLOT")
-			Result.put("node_normal/archetype_slot_optional.ico", 					"ARCHETYPE_SLOT.optional")			
+			Result.put("node_normal/archetype_slot_optional.ico", 					"ARCHETYPE_SLOT.optional")
 	--		Result.put("node_normal/c_complex_object_unknown.ico", 					"C_COMPLEX_OBJECT.unknown")
 			Result.put("node_normal/c_complex_object.ico", 							"C_COMPLEX_OBJECT")
 			Result.put("node_normal/c_complex_object_multiple.ico", 				"C_COMPLEX_OBJECT.multiple")
 			Result.put("node_normal/c_complex_object_optional.ico", 				"C_COMPLEX_OBJECT.optional")
-			Result.put("node_normal/c_complex_object_multiple_optional.ico", 		"C_COMPLEX_OBJECT.multiple.optional")			
+			Result.put("node_normal/c_complex_object_multiple_optional.ico", 		"C_COMPLEX_OBJECT.multiple.optional")
 			Result.put("node_normal/archetype_internal_ref.ico", 					"ARCHETYPE_INTERNAL_REF")
 			Result.put("node_normal/term.ico", 										"TERM")
-			Result.put("node_normal/ordinal.ico", 									"ORDINAL")			
+			Result.put("node_normal/ordinal.ico", 									"ORDINAL")
 			Result.put("node_normal/cadl_invariant.ico", 							"CADL_INVARIANT")
 			Result.put("node_normal/cadl_include.ico", 								"CADL_INCLUDE")
 			Result.put("node_normal/cadl_exclude.ico", 								"CADL_EXCLUDE")
@@ -369,7 +369,7 @@ feature -- Access
 			Result.put("node_inherited/ordinal.ico", 								"ORDINAL.inherited")
 			Result.put("node_normal/archetype_slot_optional.ico", 					"ARCHETYPE_SLOT.optional.inherited")
 			Result.put("node_inherited/icon_help_example.ico", 						"icon_help_example.inherited")
-			
+
 			Result.put("node_redefined/c_attribute.ico",						 	"C_ATTRIBUTE.redefined")
 			Result.put("node_redefined/c_attribute_multiple.ico", 					"C_ATTRIBUTE.multiple.redefined")
 			Result.put("node_redefined/c_attribute.ico",		 					"C_ATTRIBUTE.optional.redefined")
@@ -391,7 +391,7 @@ feature -- Access
 			Result.put("node_redefined/ordinal.ico", 								"ORDINAL.redefined")
 			Result.put("node_normal/archetype_slot_optional.ico", 					"ARCHETYPE_SLOT.optional.redefined")
 			Result.put("node_redefined/icon_help_example.ico", 						"icon_help_example.redefined")
-			
+
 			Result.put("file_folder_1.ico", 							"file_folder_1")
 			Result.put("archetype_1.ico", 								"archetype_1")
 			Result.put("archetype_specialised_1.ico", 					"archetype_specialised_1")
@@ -412,20 +412,25 @@ feature -- Access
 
 			Result.put("Ocean_float.png", 								"Ocean logo")
 
-			-- check that icon files exist; for any that don't, output an error message and 
+			-- check that icon files exist; for any that don't, output an error message and
 			-- use a blank icon
-			create a_dir.make(icon_directory)
 			from
 				Result.start
 			until
 				Result.off
 			loop
-				if not a_dir.has_entry(Result.item_for_iteration) then
-					io.putstring("Could not find icon icons/" + Result.item_for_iteration + "; using default%N")
-					Result.force("default", pixmap_file_table.key_for_iteration)
+				create file.make (icon_directory + "/" + Result.item_for_iteration)
+
+				if not file.exists then
+					io.putstring ("Could not find icon " + file.name + "; using default%N")
+					Result.force ("default", Result.key_for_iteration)
 				end
+
 				Result.forth
 			end
+		ensure
+			attached: Result /= Void
+			not_empty: not Result.is_empty
 		end
 
 	pixmaps: HASH_TABLE[EV_PIXMAP, STRING] is
@@ -436,7 +441,7 @@ feature -- Access
 			pixmap: EV_PIXMAP
 		once
 			create Result.make(0)
-			
+
 			from
 				pixmap_file_table.start
 			until
@@ -470,7 +475,7 @@ feature -- Access
 	News_text: STRING is
 			-- news dialog
 		local
-			news_file: PLAIN_TEXT_FILE	
+			news_file: PLAIN_TEXT_FILE
 		once
 			create news_file.make(News_file_path)
 			if news_file.exists and news_file.is_readable then
@@ -492,7 +497,7 @@ feature -- Modification
 		do
 			set_resource_value("default", "reference_repository", a_path)
 		end
-		
+
 	set_work_repository_path(a_path: STRING) is
 			-- set work repository_path
 		require
@@ -504,7 +509,7 @@ feature -- Modification
 				remove_resource ("default", "work_repository")
 			end
 		end
-		
+
 	set_editor_command(an_editor_command: STRING) is
 			-- set editor
 		require
@@ -528,7 +533,7 @@ feature -- Modification
 		do
 			set_resource_value("default", "total_view_area_split_position", v.out)
 		end
-			
+
 	set_info_view_area_split_position (v: INTEGER) is
 			-- set split position of inner vertical split control
 		require
@@ -536,7 +541,7 @@ feature -- Modification
 		do
 			set_resource_value("default", "info_view_area_split_position", v.out)
 		end
-			
+
 	set_test_view_area_split_position (v: INTEGER) is
 			-- set split position of test tool vertical split control
 		require
@@ -544,7 +549,7 @@ feature -- Modification
 		do
 			set_resource_value("default", "test_view_area_split_position", v.out)
 		end
-			
+
 	set_explorer_view_area_split_position (v: INTEGER) is
 			-- set split position of explorer horizontal split control
 		require
@@ -586,15 +591,15 @@ feature -- Modification
 		do
 			set_resource_value("default", "app_maximised", f.out)
 		end
-		
+
 	set_expand_node_tree(flag: BOOLEAN) is
 			-- set flag for expand archetype definition node tree or not by default
 		do
 			set_resource_value("default", "expand_node_tree", flag.out)
 		end
-		
+
 	set_path_filter_combo_selection(str: STRING) is
-			-- 
+			--
 		do
 			set_resource_value("default", "path_filter_combo_selection", str)
 		end
@@ -603,7 +608,7 @@ feature -- Modification
 			-- save path view column settings
 		do
 			set_resource_value_list("default", "path_view_check_list_settings", strs)
-			
+
 		end
 
 feature {NONE} -- Implementation
@@ -626,7 +631,7 @@ feature {NONE} -- Implementation
 			end
 			pathname := init_value.substring(1, end_pos)
 			file_dialog.set_start_directory (pathname)
-			
+
 			from
 			until
 				Result /= Void
@@ -661,11 +666,11 @@ feature {NONE} -- Implementation
 			error_dialog: EV_INFORMATION_DIALOG
 		do
 			create dir_dialog
-			
+
 			if (create {DIRECTORY}.make (init_value)).exists then
 				dir_dialog.set_start_directory (init_value)
 			end
-			
+
 			from
 			until
 				Result /= Void

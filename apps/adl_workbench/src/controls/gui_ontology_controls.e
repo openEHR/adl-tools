@@ -1,4 +1,4 @@
-indexing	
+indexing
 	component:   "openEHR Archetype Project"
 	description: "Populate ontology controls in ADL editor"
 	keywords:    "test, ADL"
@@ -20,6 +20,8 @@ inherit
 			{NONE} all
 		end
 
+	STRING_UTILITIES
+
 create
 	make
 
@@ -34,7 +36,7 @@ feature -- Initialisation
 		end
 
 feature -- Commands
-	
+
 	clear is
 			-- wipe out content from ontology-related controls
 		do
@@ -49,13 +51,13 @@ feature -- Commands
 			populate_term_definitions
 			populate_constraint_definitions
 		end
-		
+
 	select_term(a_term_code: STRING) is
 			-- select row for a_term_code in term_definitions control
 		do
 			select_coded_term_row(a_term_code, gui.ontology_term_defs)
 		end
-		
+
 	select_constraint(a_term_code: STRING) is
 			-- select row for a_term_code in term_definitions control
 		do
@@ -68,7 +70,7 @@ feature {NONE} -- Implementation
 			-- main window of system
 
 	populate_term_definitions is
-			-- 
+			--
 		local
 			col_titles: ARRAYED_LIST[STRING]
 			pl: EV_MULTI_COLUMN_LIST
@@ -87,7 +89,7 @@ feature {NONE} -- Implementation
 				ontology.term_attribute_names.off
 			loop
 				if not ontology.term_attribute_names.item.is_equal("text") then
-					col_titles.extend(ontology.term_attribute_names.item)
+					col_titles.extend (utf8 (ontology.term_attribute_names.item))
 				end
 				ontology.term_attribute_names.forth
 			end
@@ -95,13 +97,13 @@ feature {NONE} -- Implementation
 			from
 				ontology.terminologies_available.start
 			until
-				ontology.terminologies_available.off				
+				ontology.terminologies_available.off
 			loop
-				col_titles.extend(ontology.terminologies_available.item)
-				ontology.terminologies_available.forth				
+				col_titles.extend (utf8 (ontology.terminologies_available.item))
+				ontology.terminologies_available.forth
 			end
 			pl.set_column_titles(col_titles)
-			
+
 			-- populate data
 			from
 				ontology.term_codes.start
@@ -109,52 +111,52 @@ feature {NONE} -- Implementation
 				ontology.term_codes.off
 			loop
 				create list_row
-				list_row.extend(ontology.term_codes.item)
+				list_row.extend (utf8 (ontology.term_codes.item))
 				a_term := ontology.term_definition(current_language, ontology.term_codes.item)
-				list_row.extend(a_term.item("text"))
+				list_row.extend (utf8 (a_term.item ("text")))
 				from
 					ontology.term_attribute_names.start
 				until
 					ontology.term_attribute_names.off
 				loop
 					if not ontology.term_attribute_names.item.is_equal("text") then
-						list_row.extend(a_term.item(ontology.term_attribute_names.item))
+						list_row.extend (utf8 (a_term.item(ontology.term_attribute_names.item)))
 					end
 					ontology.term_attribute_names.forth
 				end
-				
+
 				-- populate bindings
 				from
 					ontology.terminologies_available.start
 				until
-					ontology.terminologies_available.off				
-				loop	
+					ontology.terminologies_available.off
+				loop
 					if ontology.has_term_binding (ontology.terminologies_available.item, a_term.code) then
-						list_row.extend(ontology.term_binding(
+						list_row.extend (utf8 (ontology.term_binding (
 							ontology.terminologies_available.item, a_term.code
-						).as_string)
+						).as_string))
 					else
 						list_row.extend("")
 					end
-					ontology.terminologies_available.forth				
+					ontology.terminologies_available.forth
 				end
-				
+
 				pl.extend(list_row)
 				ontology.term_codes.forth
 			end
-			
+
 			from
 				i := 1
 			until
 				i > pl.column_count
 			loop
-				pl.resize_column_to_content(i)					
+				pl.resize_column_to_content(i)
 				i := i + 1
 			end
 		end
-		
+
 	populate_constraint_definitions is
-			-- 
+			--
 		local
 			col_titles: ARRAYED_LIST[STRING]
 			pl: EV_MULTI_COLUMN_LIST
@@ -173,18 +175,18 @@ feature {NONE} -- Implementation
 				ontology.term_attribute_names.off
 			loop
 				if not ontology.term_attribute_names.item.is_equal("text") then
-					col_titles.extend(ontology.term_attribute_names.item)
+					col_titles.extend (utf8 (ontology.term_attribute_names.item))
 				end
 				ontology.term_attribute_names.forth
 			end
-			
+
 			from
 				ontology.terminologies_available.start
 			until
-				ontology.terminologies_available.off				
+				ontology.terminologies_available.off
 			loop
-				col_titles.extend(ontology.terminologies_available.item)
-				ontology.terminologies_available.forth				
+				col_titles.extend (utf8 (ontology.terminologies_available.item))
+				ontology.terminologies_available.forth
 			end
 
 			pl.set_column_titles(col_titles)
@@ -194,18 +196,18 @@ feature {NONE} -- Implementation
 				ontology.constraint_codes.off
 			loop
 				create list_row
-				
+
 				-- populate constraint codes
-				list_row.extend(ontology.constraint_codes.item)
+				list_row.extend (utf8 (ontology.constraint_codes.item))
 				a_term := ontology.constraint_definition(current_language, ontology.constraint_codes.item)
-				list_row.extend(a_term.item("text"))
+				list_row.extend (utf8 (a_term.item ("text")))
 				from
 					ontology.term_attribute_names.start
 				until
 					ontology.term_attribute_names.off
 				loop
 					if not ontology.term_attribute_names.item.is_equal("text") then
-						list_row.extend(a_term.item(ontology.term_attribute_names.item))
+						list_row.extend (utf8 (a_term.item (ontology.term_attribute_names.item)))
 					end
 					ontology.term_attribute_names.forth
 				end
@@ -214,27 +216,27 @@ feature {NONE} -- Implementation
 				from
 					ontology.terminologies_available.start
 				until
-					ontology.terminologies_available.off				
-				loop	
+					ontology.terminologies_available.off
+				loop
 					if ontology.has_constraint_binding (ontology.terminologies_available.item, a_term.code) then
-						list_row.extend(ontology.constraint_binding(
-							ontology.terminologies_available.item, a_term.code).as_string)
+						list_row.extend (utf8 (ontology.constraint_binding(
+							ontology.terminologies_available.item, a_term.code).as_string))
 					else
 						list_row.extend("")
 					end
-					ontology.terminologies_available.forth				
+					ontology.terminologies_available.forth
 				end
-			
+
 				pl.extend(list_row)
 				ontology.constraint_codes.forth
 			end
-			
+
 			from i := 1
 			until i > pl.column_count
 			loop pl.resize_column_to_content(i)
 				i := i + 1
 			end
-			
+
 		end
 
 	select_coded_term_row(a_term_code: STRING; list_control: EV_MULTI_COLUMN_LIST) is
@@ -254,9 +256,9 @@ feature {NONE} -- Implementation
 					list_control.ensure_item_visible(list_control.item)
 				end
 				list_control.forth
-			end	
+			end
 		end
-		
+
 end
 
 

@@ -15,7 +15,10 @@ indexing
 
 class
 	FILE_CONTEXT
-	
+
+inherit
+	UC_IMPORTED_UTF8_ROUTINES
+
 create
 	make
 
@@ -51,14 +54,14 @@ feature -- Access
 
 	current_file_name: STRING
 			-- name of fle only
-	
+
 	has_byte_order_marker: BOOLEAN
 			-- True if current file has a BOM, which means it is a UTF encoded unicode file
 
 	last_op_failed: BOOLEAN
-	
+
 	last_op_fail_reason: STRING
-	
+
 feature -- Status Report
 
 	has_file(a_file_name: STRING):BOOLEAN is
@@ -92,7 +95,7 @@ feature -- Status Report
 			create fd.make(a_file_name)
 			Result := not fd.exists or else fd.is_writable
 		end
-		
+
 feature -- Command
 
 	set_epoch is
@@ -146,9 +149,9 @@ feature -- Command
 				epoch := in_file.date
 				in_file.open_read
 				create Result.make(0)
-				
+
 				from
-					in_file.start	
+					in_file.start
 					first_line := True
 				until
 					in_file.off
@@ -171,11 +174,21 @@ feature -- Command
 					if Result.item (Result.count) = '%R' then
 						Result.put('%N', Result.count)
 					else
-						Result.append_character('%N')					
+						Result.append_character('%N')
 					end
 				end
 
 				in_file.close
+
+				if not utf8.valid_utf8 (Result) then
+					if has_byte_order_marker then
+						Result := Void
+						last_op_failed := True
+						last_op_fail_reason := "Read failed; file " + current_full_path + " has UTF-8 marker but is not valid UTF-8"
+					else
+						Result := utf8.to_utf8 (Result)
+					end
+				end
 			else
 				last_op_failed := True
 				last_op_fail_reason := "Read failed; file " + current_full_path + " does not exist"
@@ -192,7 +205,7 @@ feature -- Command
 			a_file_path.mirror
 			sep_pos := a_file_path.index_of(operating_environment.Directory_separator, 1)
 			a_file_path.mirror
-			
+
 			if sep_pos > 0 then -- there is a directory
 				sep_pos := a_file_path.count - sep_pos + 1
 				current_directory := a_file_path.substring(1, sep_pos - 1)
@@ -221,7 +234,7 @@ feature {NONE} -- Implementation
 
 	epoch: INTEGER
 			-- last marked change timestamp of file
-			
+
 end
 
 

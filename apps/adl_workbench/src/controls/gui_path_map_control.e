@@ -1,4 +1,4 @@
-indexing	
+indexing
 	component:   "openEHR Archetype Project"
 	description: "Path map control and logic"
 	keywords:    "ADL"
@@ -23,8 +23,10 @@ inherit
 	SHARED_ADL_INTERFACE
 		export
 			{NONE} all
-		end	
-		
+		end
+
+	STRING_UTILITIES
+
 create
 	make
 
@@ -51,7 +53,7 @@ feature -- Access
 	column_check_list: EV_CHECKABLE_LIST
 
 feature -- Commands
-	
+
 	clear is
 			-- wipe out content from controls
 		do
@@ -88,13 +90,13 @@ feature -- Commands
 						c_l_o ?= c_o
 						c_r ?= c_o
 						c_c_o ?= c_o
-						
+
 						is_logical_leaf := c_l_o /= Void or c_r /= Void or (c_c_o /= Void and c_c_o.attributes.count = 0)
 						if filter_combo.has_selection and filter_combo.selected_text.is_equal ("All") or else is_logical_leaf then
-							list_row.extend(p_paths.item)
-							list_row.extend(l_paths.item)
-							list_row.extend(c_o.rm_type_name)
-							list_row.extend(c_o.generating_type)
+							list_row.extend (utf8 (p_paths.item))
+							list_row.extend (utf8 (l_paths.item))
+							list_row.extend (utf8 (c_o.rm_type_name))
+							list_row.extend (utf8 (c_o.generating_type))
 							mcl.extend(list_row)
 						end
 					end
@@ -102,7 +104,7 @@ feature -- Commands
 				p_paths.forth
 				l_paths.forth
 			end
-			
+
 			adjust_columns
 		end
 
@@ -110,18 +112,18 @@ feature -- Commands
 			-- Called by `check_actions' of `column_check_list'.
 		do
 			if path_list.is_displayed then
-				path_list.resize_column_to_content(column_check_list.index_of (a_list_item, 1))				
+				path_list.resize_column_to_content(column_check_list.index_of (a_list_item, 1))
 			end
 		end
-		
+
 	column_unselect (a_list_item: EV_LIST_ITEM) is
 			-- Called by `check_actions' of `column_check_list'.
 		do
 			if path_list.is_displayed then
-				path_list.set_column_width (0, column_check_list.index_of (a_list_item, 1))	
+				path_list.set_column_width (0, column_check_list.index_of (a_list_item, 1))
 			end
 		end
-		
+
 	set_filter is
 			-- Called by `select_actions' of `filter_combo'.
 		do
@@ -129,7 +131,7 @@ feature -- Commands
 				populate
 			end
 		end
-		
+
 	copy_path_to_clipboard is
 			-- copy a selected path row from the paths control to the OS clipboard
 		local
@@ -166,7 +168,7 @@ feature {NONE} -- Implementation
 
 	gui: MAIN_WINDOW
 			-- main window of system
-	
+
 	adjust_columns is
 			-- adjust column view of paths control according to checklist
 		local
@@ -183,7 +185,7 @@ feature {NONE} -- Implementation
 					path_list.set_column_width (0, i)
 				end
 				i := i + 1
-			end			
+			end
 		end
 
 end
