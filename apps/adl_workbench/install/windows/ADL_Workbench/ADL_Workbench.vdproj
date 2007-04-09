@@ -429,6 +429,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_D2D4BDA574BB460E94A3F08BA2EE7C6B"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_D5638AEBD3C143229D9E8C5880DBFC84"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -496,12 +502,6 @@
         "Entry"
         {
         "MsmKey" = "8:_F7A33B5D2B7C42BBAC456A0F3C0F7D5B"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_F8D767529D6F4389B2E3806C29059E52"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1918,7 +1918,7 @@
             "SourcePath" = "8:..\\..\\..\\app\\icons\\not_applicable.ico"
             "TargetName" = "8:not_applicable.ico"
             "Tag" = "8:"
-            "Folder" = "8:_98BF1271FBC746FF90484D84A23B2AC4"
+            "Folder" = "8:_EF4D492392CD41A68C993FE959AD3454"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -1959,6 +1959,26 @@
             "TargetName" = "8:archetype_slot_optional.ico"
             "Tag" = "8:"
             "Folder" = "8:_A1034160E36E479E9A4F8FC82EFD0CAD"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D2D4BDA574BB460E94A3F08BA2EE7C6B"
+            {
+            "SourcePath" = "8:..\\..\\..\\app\\EIFGENs\\adl_workbench\\F_code\\adl_workbench.exe"
+            "TargetName" = "8:adl_workbench.exe"
+            "Tag" = "8:"
+            "Folder" = "8:_98BF1271FBC746FF90484D84A23B2AC4"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -2213,26 +2233,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F8D767529D6F4389B2E3806C29059E52"
-            {
-            "SourcePath" = "8:..\\..\\..\\app\\EIFGENs\\adl_workbench_precompile\\F_code\\adl_workbench.exe"
-            "TargetName" = "8:adl_workbench.exe"
-            "Tag" = "8:"
-            "Folder" = "8:_98BF1271FBC746FF90484D84A23B2AC4"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FECDBA33D9CF4F4E8155CAADDE8FA588"
             {
             "SourcePath" = "8:..\\..\\..\\app\\icons\\node_redefined\\c_code_phrase.ico"
@@ -2374,14 +2374,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:ADLWorkbench"
-        "ProductCode" = "8:{67AC8116-3973-4499-84BF-B6F6B1EB0444}"
-        "PackageCode" = "8:{9811179A-BE1D-48D0-A34C-D89230A91D34}"
+        "ProductCode" = "8:{86D10506-16D6-4E6A-86D9-3EC71B913A7B}"
+        "PackageCode" = "8:{402E15AE-CBF8-4C35-B153-A3C74BC9FEE1}"
         "UpgradeCode" = "8:{3DC24488-B6B6-4147-A993-F0D7B20DB307}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:1.1.5"
+        "ProductVersion" = "8:1.2.0"
         "Manufacturer" = "8:openEHR"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://svn.openehr.org/ref_impl_eiffel/TRUNK/project_page.htm"
@@ -2502,7 +2502,7 @@
             "ShowCmd" = "3:1"
             "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
-            "Target" = "8:_F8D767529D6F4389B2E3806C29059E52"
+            "Target" = "8:_D2D4BDA574BB460E94A3F08BA2EE7C6B"
             "Folder" = "8:_F9E33905B2E747D99D33E3BAE88B0B43"
             "WorkingFolder" = "8:_98BF1271FBC746FF90484D84A23B2AC4"
             "Icon" = "8:_F6B2C846407A4FA0B573F4873C7B18FE"
@@ -2516,7 +2516,7 @@
             "ShowCmd" = "3:1"
             "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
-            "Target" = "8:_F8D767529D6F4389B2E3806C29059E52"
+            "Target" = "8:_D2D4BDA574BB460E94A3F08BA2EE7C6B"
             "Folder" = "8:_2F622F5D96134A40BABE917C06CA047E"
             "WorkingFolder" = "8:_98BF1271FBC746FF90484D84A23B2AC4"
             "Icon" = "8:_F6B2C846407A4FA0B573F4873C7B18FE"
@@ -2920,6 +2920,9 @@
         {
         }
         "ProjectOutput"
+        {
+        }
+        "VJSharpPlugin"
         {
         }
     }
