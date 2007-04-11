@@ -467,6 +467,7 @@ feature -- Access
 			Result.append("Support: support@OceanInformatics.biz%N")
 			Result.append("Funded by: OceanInformatics.biz%N")
 			Result.append("Author: Thomas Beale%N")
+			Result.append("Contributors: Peter Gummer%N")
 			Result.append("Built using%N")
 			Result.append("%TEiffel Software Eiffel (http://www.eiffel.com)%N")
 			Result.append("%TGobo parsing libraries & tools (http://www.gobosoft.com)%N")

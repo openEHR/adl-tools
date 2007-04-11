@@ -2,10 +2,7 @@ ADL_WORKBENCH NEWS (see About menu > News)
 -------------------------------------------------------------------------
 
 GUI Improvements
-The description tab now includes all possible meta-data items to do with
-translations.
+Unicode is supported in all parts of the tool.
+The GUI is now faster.
 
-Bugs
-Slot expressions using the 'match' operator can now use proper relative
-paths on the left-hand side.
-
+See http://svn.openehr.org/ref_impl_eiffel/TRUNK/apps/doc/adl_workbench_help.htm for help.
