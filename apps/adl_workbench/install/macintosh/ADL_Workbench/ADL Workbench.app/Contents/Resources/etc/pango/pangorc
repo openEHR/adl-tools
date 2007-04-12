@@ -1,0 +1,5 @@
+[Pango]
+ModuleFiles = "${HOME}/Library/Application Support/ADL Workbench/pango.modules"
+
+[PangoX]
+AliasFiles = "${HOME}/Library/Application Support/ADL Workbench/pangox.aliases"
