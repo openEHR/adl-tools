@@ -782,12 +782,7 @@ feature {EV_DIALOG} -- Implementation
 	populate_languages is
 		do
 			language_combo.select_actions.block
-			language_combo.set_strings (ontology.languages_available)
-
-			if not language_combo.text.is_empty then
-				adl_interface.set_current_language (language_combo.text)
-			end
-
+			language_combo.set_strings (adl_interface.archetype.languages_available)
 			language_combo.select_actions.resume
 			terminologies_list.set_strings (ontology.terminologies_available)
 		end

@@ -59,6 +59,7 @@ feature -- Access
 		do
 			if stored_languages_available = Void then
 				create stored_languages_available.make(0)
+				stored_languages_available.compare_objects
 				stored_languages_available.extend(original_language.code_string)
 				if translations /= Void then
 					from
@@ -70,7 +71,6 @@ feature -- Access
 						translations.forth
 					end
 				end
-				stored_languages_available.compare_objects
 			end
 			Result := stored_languages_available
 		ensure
