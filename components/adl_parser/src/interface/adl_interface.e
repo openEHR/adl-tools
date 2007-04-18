@@ -19,25 +19,25 @@ inherit
 			{NONE} all
 			{ANY} constraint_model_factory
 		end
-	
+
 	SHARED_ARCHETYPE_CONTEXT
 		export
 			{NONE} all
 			{ANY} current_language, set_current_language, set_current_terminology
 		end
-	
+
 	SHARED_ARCHETYPE_SERIALISERS
 		export
 			{NONE} all
 			{ANY} has_archetype_serialiser_format, archetype_serialiser_formats
 		end
-		
+
 	SHARED_DT_SERIALISERS
 		export
 			{NONE} all
 			{ANY} has_dt_serialiser_format
 		end
-	
+
 	SHARED_CONSTRAINT_MODEL_SERIALISERS
 		export
 			{NONE} all
@@ -64,7 +64,7 @@ inherit
 		export
 			{NONE} all
 		end
-		
+
 	OG_PATH_TOOLS
 		export
 			{NONE} all
@@ -73,7 +73,7 @@ inherit
 
 create
 	make
-	
+
 feature -- Initialisation
 
 	make is
@@ -83,42 +83,42 @@ feature -- Initialisation
 			create file_context.make
 			initialise_serialisers
 		end
-	
+
 feature -- Access
-	
+
 	openehr_version: STRING is
 			-- version of openEHR implem-dev repository containing
 			-- this software
 		once
 			Result := (create {OPENEHR_VERSION}).version
 		end
-		
+
 	adl_engine: ADL_ENGINE
 
 	file_context: FILE_CONTEXT
 			-- file handling context
-		
+
 	working_directory: STRING is
 			-- current working directory of application
 		do
 			Result := file_context.current_directory
 		end
-		
+
 	status: STRING
 			-- status of last operation
-			
+
 	serialised_archetype: STRING is
 			-- archetype in serialised form, after call to serialise_archetype
 		do
 			Result := adl_engine.serialised_archetype
 		end
-			
-	archetype: ARCHETYPE is 
+
+	archetype: ARCHETYPE is
 		do
 			Result := adl_engine.archetype
 		end
 
-	ontology: ARCHETYPE_ONTOLOGY is 
+	ontology: ARCHETYPE_ONTOLOGY is
 		do
 			Result := adl_engine.archetype.ontology
 		end
@@ -133,7 +133,7 @@ feature -- Status Report
 
 	parse_succeeded: BOOLEAN
 			-- True if parse has been successfully executed
-			
+
 	save_succeeded: BOOLEAN
 			-- True if last save operation was successful
 
@@ -141,22 +141,22 @@ feature -- Status Report
 		do
 			Result := adl_engine.archetype_available
 		end
-		
+
 	archetype_valid: BOOLEAN is
 		do
 			Result := adl_engine.archetype.is_valid
 		end
-		
+
 	file_changed_on_disk: BOOLEAN is
 			-- True if loaded archetype has changed on disk since last read;
 			-- To fix, call resync_file
 		do
 			Result := file_context.file_changed
 		end
-		
+
 	exception_encountered: BOOLEAN
 			-- True if last operation caused an exception
-		
+
 feature -- Commands
 
 	set_current_directory (a_dir: STRING) is
@@ -165,7 +165,7 @@ feature -- Commands
 		do
 			file_context.set_current_directory(a_dir)
 		end
-		
+
 	create_new_archetype(a_im_originator, a_im_name, a_im_entity, a_primary_language: STRING) is
 			-- create a new tree and throw away previous state
 		require
@@ -187,7 +187,7 @@ feature -- Commands
 			exception_encountered := True
 			retry
 		end
-		
+
 	specialise_archetype(specialised_domain_concept: STRING) is
 			-- convert current archetype to specialised version of itself,
 			-- supplying a specialised domain concept string to go in the new archetype id
@@ -209,7 +209,7 @@ feature -- Commands
 			exception_encountered := True
 			retry
 		end
-		
+
 	open_adl_file(file_path: STRING) is
 		require
 			file_path_valid: file_path /= Void and then not file_path.is_empty
@@ -221,7 +221,7 @@ feature -- Commands
 				src := file_context.read_file
 				if not file_context.last_op_failed then
 					adl_engine.set_source(file_context.read_file)
-				else	
+				else
 					post_error(Current, "open_adl_file", "general_error", <<file_context.last_op_fail_reason>>)
 				end
 			else
@@ -237,13 +237,13 @@ feature -- Commands
 			exception_encountered := True
 			retry
 		end
-		
+
 	resync_file is
 			-- resync from disc
 		do
 			adl_engine.set_source(file_context.read_file)
 		end
-		
+
 	save_archetype(file_path, save_format: STRING) is
 			-- Save ADL file via GUI File save dialog
 		require
@@ -316,22 +316,22 @@ feature -- Commands
 				parse_succeeded := False
 				adl_engine.parse
 				if not adl_engine.archetype_available then
-					post_error(Current, "parse_archetype", "parse_archetype_e1", <<adl_engine.parse_error_text>>)						
+					post_error(Current, "parse_archetype", "parse_archetype_e1", <<adl_engine.parse_error_text>>)
 				else
-					post_info(Current, "parse_archetype", "parse_archetype_i1", <<adl_engine.archetype_id.as_string>>)						
-					
+					post_info(Current, "parse_archetype", "parse_archetype_i1", <<adl_engine.archetype_id.as_string>>)
+
 					if current_language = Void or not ontology.has_language(current_language) then
-						set_current_language(ontology.primary_language)
+						set_current_language(archetype.original_language.code_string)
 					end
-				
+
 					if ontology.terminologies_available.is_empty then
 						clear_current_terminology
 					else
 						set_current_terminology(ontology.terminologies_available.first)
 					end
-				
+
 					if adl_engine.archetype.is_valid then
-						post_info(Current, "parse_archetype", "parse_archetype_i2", <<adl_engine.archetype_id.as_string>>)						
+						post_info(Current, "parse_archetype", "parse_archetype_i2", <<adl_engine.archetype_id.as_string>>)
 						parse_succeeded := True
 					else
 						post_error(Current, "parse_archetype", "parse_archetype_e2", <<adl_engine.archetype_id.as_string, adl_engine.archetype.errors>>)
@@ -358,7 +358,7 @@ feature -- Commands
 		do
 			archetype.set_readonly
 		end
-		
+
 	reset is
 			-- reset after exception encountered
 		do
@@ -368,7 +368,7 @@ feature -- Commands
 			Exception_cleared: not exception_encountered
 			Status_cleared: status.is_empty
 		end
-		
+
 feature -- External Java Interface
 
 	set_status(a_str: STRING) is
@@ -376,13 +376,13 @@ feature -- External Java Interface
 		do
 			status := a_str
 		end
-	
+
 	set_exception_encountered is
-			-- 
+			--
 		do
 			exception_encountered := True
 		end
-		
+
 feature {NONE} -- Implementation
 
 	initialise_serialisers is
