@@ -23,6 +23,9 @@ def eiffel(target, source):
 openehr_clusters = eiffel_classes_in_cluster('libraries/openehr/src') + eiffel_classes_in_cluster('libraries/vendor-fixes') + eiffel_classes_in_cluster('libraries/common_libs/src')
 all_clusters = openehr_clusters + eiffel_classes_in_cluster('libraries/version') + eiffel_classes_in_cluster('components/adl_parser/src') + eiffel_classes_in_cluster('components/archetype_repository/src')
 sources = ['apps/adl_workbench/app/adl_workbench.ecf'] + eiffel_classes_in_cluster('apps/adl_workbench/src') + all_clusters
+icons = 'apps/adl_workbench/app/icons'
+news = 'apps/adl_workbench/app/news.txt'
+vim = files('apps/adl_workbench/etc/vim/*')
 
 if platform == 'windows':
 	target = eiffel(['adl_workbench', 'adl_workbench_precompile'], sources)
@@ -34,8 +37,12 @@ if platform == 'windows':
 			dir + 'ADL_Workbench.sln',
 			dir + 'ADL_Workbench.vdproj',
 			target[2],
-			'apps/adl_workbench/app/news.txt'
-		] + files('apps/adl_workbench/app/icons/*') + files('apps/adl_workbench/etc/vim/*')
+			news
+		] + vim
+
+		for source, dirnames, filenames in os.walk(icons):
+			if '.svn' in dirnames: dirnames.remove('.svn')
+			sources += files(source + '/*')
 
 		msi = env.Command(dir + 'Release/ADL_Workbench.msi', sources, 'devenv $SOURCE /build Release')
 		install('tools', msi)
@@ -62,15 +69,14 @@ if platform == 'macintosh':
 		resources = dir + 'English.lproj/'
 		info = dir + 'Info.plist'
 		description = dir + 'Description.plist'
-		news = 'apps/adl_workbench/app/news.txt'
 
 		sources = [info, description]
 		sources += Install(bin, target[2])
 		sources += Install(bin, news)
-		sources += Install(root + 'vim', files('apps/adl_workbench/etc/vim/*'))
+		sources += Install(root + 'vim', vim)
 		sources += InstallAs(resources + 'Welcome.txt', news)
 
-		for source, dirnames, filenames in os.walk('apps/adl_workbench/app/icons'):
+		for source, dirnames, filenames in os.walk(icons):
 			if '.svn' in dirnames: dirnames.remove('.svn')
 			subdir = os.path.basename(source)
 			if subdir == 'icons': subdir = ''
