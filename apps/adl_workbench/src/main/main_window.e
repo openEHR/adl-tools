@@ -97,7 +97,7 @@ feature {NONE} -- Initialization
 			initialise_accelerators
 
 			if reference_repository_path.is_empty then
-				set_reference_repository_path(application_startup_directory)
+				set_reference_repository_path (application_startup_directory)
 				need_to_set_repository := True
 			end
 
@@ -108,8 +108,9 @@ feature {NONE} -- Initialization
 			populate_archetype_directory
 
 			adl_interface.set_current_directory(reference_repository_path)
-			if current_work_directory = Void then
-				current_work_directory := adl_interface.working_directory
+
+			if current_work_directory.is_empty then
+				set_current_work_directory (adl_interface.working_directory)
 			end
 		end
 
@@ -227,11 +228,6 @@ feature -- Access
 
 	need_to_set_repository: BOOLEAN
 			-- flag set on startup to indicate if repository needs to be specified by user
-
-	current_work_directory: STRING
-			-- directory where archetypes are currently being opened and saved
-			-- from GUI open and save buttons; automatic opens (due to clicking
-			-- on arhcyetpe name still use main repository directory
 
 	parent_app: EV_APPLICATION
 			-- provide a reference to the owning application so as to get access to a
@@ -361,7 +357,7 @@ feature {NONE} -- Commands
 			Adl_file_open_dialog.show_modal_to_window (Current)
 			if Adl_file_open_dialog.file_name /= Void and then not Adl_file_open_dialog.file_name.is_empty then
 				load_and_parse_adl_file(Adl_file_open_dialog.file_name)
-				current_work_directory := adl_interface.file_context.current_directory
+				set_current_work_directory (adl_interface.working_directory)
 			end
 
 			set_pointer_style(cur_csr)
@@ -409,7 +405,8 @@ feature {NONE} -- Commands
 								populate_archetype_directory
 							end
 						end
-						current_work_directory := adl_file_save_dialog.file_path
+
+						set_current_work_directory (adl_file_save_dialog.file_path)
 					end
 				else
 					create error_dialog.make_with_text("must parse before serialising")
@@ -475,7 +472,7 @@ feature {NONE} -- Commands
 			archetype_view_tree_control.item_select
 			if archetype_view_tree_control.has_selected_file then
 				load_and_parse_adl_file(archetype_view_tree_control.selected_file_path)
-				current_work_directory := adl_interface.file_context.current_directory
+				set_current_work_directory (adl_interface.working_directory)
 			end
    			archetype_file_tree.set_minimum_width(0)
 
