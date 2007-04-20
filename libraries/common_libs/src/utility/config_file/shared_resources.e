@@ -152,12 +152,15 @@ feature -- Environment
 			path := file_system.string_to_pathname (file_system.absolute_pathname (execution_environment.command_line.command_name))
 			path.set_canonical
 	    	Result := file_system.pathname_to_string (path)
-			dir := path.item (path.count - 1)
 
-			if dir.is_equal ("W_code") or dir.is_equal ("F_code") then
-				if path.item (path.count - 3).is_equal ("EIFGENs") then
-					dir := file_system.dirname (file_system.dirname (file_system.dirname (file_system.dirname (Result))))
-					Result := file_system.pathname (dir, file_system.basename (Result))
+			if path.count > 3 then
+				dir := path.item (path.count - 1)
+
+				if dir.is_equal ("W_code") or dir.is_equal ("F_code") then
+					if path.item (path.count - 3).is_equal ("EIFGENs") then
+						dir := file_system.dirname (file_system.dirname (file_system.dirname (file_system.dirname (Result))))
+						Result := file_system.pathname (dir, file_system.basename (Result))
+					end
 				end
 			end
 		ensure
