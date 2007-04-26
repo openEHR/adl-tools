@@ -21,7 +21,7 @@ inherit
 
 create
 	make, make_from_string
-	
+
 feature -- Initialisation
 
 	make(an_op: INTEGER) is
@@ -31,7 +31,7 @@ feature -- Initialisation
 		do
 			value := an_op
 		end
-		
+
 	make_from_string(an_op_name: STRING) is
 			-- make from operator name
 		require
@@ -39,7 +39,7 @@ feature -- Initialisation
 		do
 			value := operator_values.item(an_op_name)
 		end
-		
+
 feature -- Access
 
 	value: Integer
@@ -52,23 +52,23 @@ feature -- Output
 		do
 			Result := as_string_symbol
 		end
-	
+
 	as_string_symbol: STRING is
-			-- output symbolic form
+			-- output symbolic form, e.g. "="
 		do
 			create Result.make(0)
 			Result.append(operator_symbols.item(value))
 		end
-		
+
 	as_string_name: STRING is
-			-- output symbolic form
+			-- output word form e.g. "equals"
 		do
 			create Result.make(0)
 			Result.append(operator_names.item(value))
 		end
-		
+
 invariant
-	Validity: valid_operator(value)	
+	Validity: valid_operator(value)
 
 end
 

@@ -1774,7 +1774,7 @@ end
 				io.put_string(indent + "Exists " + yyvs9.item (yyvsp9).as_string + "%N") 
 			end
 			create expr_unary_operator.make(create {OPERATOR_KIND}.make(op_exists))
-			create expr_leaf.make_object_ref(yyvs9.item (yyvsp9))
+			create expr_leaf.make_archetype_definition_ref(yyvs9.item (yyvsp9).as_string)
 			expr_unary_operator.set_operand(expr_leaf)
 			yyval13 := expr_unary_operator
 		
@@ -1843,7 +1843,7 @@ end
 				io.put_string(indent + "Archetype feature matches {" + yyvs12.item (yyvsp12).as_string + "}%N") 
 			end
 			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_matches))
-			expr_binary_operator.set_left_operand(create {EXPR_LEAF}.make_archetype_feature_call(yyvs9.item (yyvsp9).as_string))
+			expr_binary_operator.set_left_operand(create {EXPR_LEAF}.make_archetype_ref(yyvs9.item (yyvsp9).as_string))
 			expr_binary_operator.set_right_operand(create {EXPR_LEAF}.make_constraint(yyvs12.item (yyvsp12)))
 			yyval13 := expr_binary_operator
 		
@@ -2381,7 +2381,7 @@ end
 			debug("ADL_invariant")
 				io.put_string(indent + "arith_leaf - path: " + yyvs9.item (yyvsp9).as_string + "%N") 
 			end
-			create expr_leaf.make_object_ref(yyvs9.item (yyvsp9))
+			create expr_leaf.make_archetype_definition_ref(yyvs9.item (yyvsp9).as_string)
 			yyval13 := expr_leaf
 		
 if yy_parsing_status = yyContinue then

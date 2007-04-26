@@ -14,21 +14,32 @@ indexing
 deferred class EXPR_OPERATOR
 
 inherit
+	OPERATOR_TYPES
+		export
+			{NONE} all
+		end
 	EXPR_ITEM
 
 feature -- Initialisation
-	
+
 	make(an_op: OPERATOR_KIND) is
 		require
 			an_op_exists: an_op /= Void
    		do
 			operator := an_op
+
+			-- this should be replaced by code that infers typs properly from operands
+			if boolean_operator (an_op.value) or relational_operator(an_op.value) or set_operator(an_op.value) then
+				type := "Boolean"
+			elseif arithmetic_operator (an_op.value) then
+				type := "Integer"
+			end
 		end
 
 feature -- Access
 
 	operator: OPERATOR_KIND
-	
+
 	precedence_overridden: BOOLEAN
 
 feature -- Modification
