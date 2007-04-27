@@ -1,59 +1,45 @@
 indexing
-	component:   "openEHR Archetype Project"
-	description: "node in ADL parse tree"
-	keywords:    "test, ADL"
+	component:   "openEHR Reusable Libraries"
+	description: "Test suite for UML classes"
+	keywords:    "test, UML"
+
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	file:        "$URL"
+	revision:    "$LastChangedRevision"
+	last_change: "$LastChangedDate"
 
-deferred class EXPR_OPERATOR
+class TS_UML
 
 inherit
-	OPERATOR_TYPES
-		export
-			{NONE} all
-		end
-	EXPR_ITEM
+	TEST_SUITE
+
+creation
+	make
 
 feature -- Initialisation
 
-	make(an_op: OPERATOR_KIND) is
-		require
-			an_op_exists: an_op /= Void
-   		do
-			operator := an_op
-
-			-- this should be replaced by code that infers typs properly from operands
-			if boolean_operator (an_op.value) or relational_operator(an_op.value) or set_operator(an_op.value) then
-				type := "Boolean"
-			elseif arithmetic_operator (an_op.value) then
-				type := "Integer"
-			end
-		end
+	make(arg:ANY) is
+	    do
+	    end
 
 feature -- Access
 
-	operator: OPERATOR_KIND
+	title:STRING is "Object Graph test suite"
 
-	precedence_overridden: BOOLEAN
+	test_cases: LINKED_LIST[TEST_CASE] is
+		local
+			tc:TEST_CASE
+		once
+			create Result.make
 
-feature -- Modification
-
-	override_precedence is
-			-- override natural precedence
-		do
-			precedence_overridden := True
-		ensure
-			precedence_overridden
+			create {TC_UML_CREATE_CLASS} tc.make(Void) Result.extend(tc)
 		end
 
 end
-
 
 --|
 --| ***** BEGIN LICENSE BLOCK *****
@@ -69,7 +55,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is adl_expr_operator.e.
+--| The Original Code is units_suite.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

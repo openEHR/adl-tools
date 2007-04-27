@@ -607,7 +607,7 @@ boolean_node: SYM_EXISTS absolute_path
 				io.put_string(indent + "Exists " + $2.as_string + "%N") 
 			end
 			create expr_unary_operator.make(create {OPERATOR_KIND}.make(op_exists))
-			create expr_leaf.make_object_ref($2)
+			create expr_leaf.make_archetype_definition_ref($2.as_string)
 			expr_unary_operator.set_operand(expr_leaf)
 			$$ := expr_unary_operator
 		}
@@ -623,7 +623,7 @@ boolean_node: SYM_EXISTS absolute_path
 				io.put_string(indent + "Archetype feature matches {" + $4.as_string + "}%N") 
 			end
 			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_matches))
-			expr_binary_operator.set_left_operand(create {EXPR_LEAF}.make_archetype_feature_call($1.as_string))
+			expr_binary_operator.set_left_operand(create {EXPR_LEAF}.make_archetype_ref($1.as_string))
 			expr_binary_operator.set_right_operand(create {EXPR_LEAF}.make_constraint($4))
 			$$ := expr_binary_operator
 		}
@@ -844,7 +844,7 @@ arithmetic_leaf:  '(' arithmetic_expression ')'
 			debug("ADL_invariant")
 				io.put_string(indent + "arith_leaf - path: " + $1.as_string + "%N") 
 			end
-			create expr_leaf.make_object_ref($1)
+			create expr_leaf.make_archetype_definition_ref($1.as_string)
 			$$ := expr_leaf
 		}
 	;

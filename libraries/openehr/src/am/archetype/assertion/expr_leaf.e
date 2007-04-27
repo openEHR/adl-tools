@@ -31,33 +31,34 @@ inherit
 		end
 
 creation
-	make_boolean, make_integer, make_real, make_string, make_character, 
-	make_object_ref, make_archetype_feature_call,
+	make_boolean, make_integer, make_real, make_string, make_character,
+	make_archetype_definition_ref, make_archetype_ref,
 	make_ordinal, make_coded_term,
 	make_constraint
 
 feature -- Initialisation
-		
-	make_archetype_feature_call(a_ref: STRING) is
-			-- node refers to a function in a slot-filling archetype
+
+	make_archetype_ref(a_ref: STRING) is
+			-- node refers to a feature in the main part of an archetype
+			-- (not the definition section)
 		require
 			ref_exists: a_ref /= Void and then not a_ref.is_empty
 		do
 			item := a_ref
-			type := "unknown" -- FIXME: need access to ref model to know what type it really is
-			reference_type := "function"
+			type := "String" -- FIXME: need access to ref model to know what type it really is
+			reference_type := "feature"
 		end
-	
-	make_object_ref(a_ref: OG_PATH) is
-			-- node refers to an object in the runtime data
+
+	make_archetype_definition_ref(a_ref: STRING) is
+			-- node refers to a feature in the archetype definition
 		require
 			ref_exists: a_ref /= Void and then not a_ref.is_empty
 		do
 			item := a_ref
-			type := "unknown" -- FIXME: need access to ref model to know what type it really is
+			type := "Any" -- FIXME: need access to ref model to know what type it really is
 			reference_type := "attribute"
 		end
-	
+
 	make_boolean(an_item: BOOLEAN) is
 			-- node is a boolean value
    		do
@@ -125,7 +126,7 @@ feature -- Initialisation
 			Item_exists: an_item /= Void
    		do
 			item := an_item
-			type := "C_PRIMITIVE"
+			type := an_item.generator
 			reference_type := "constraint"
 		end
 
@@ -133,31 +134,31 @@ feature -- Access
 
 	reference_type: STRING
 			-- Type of reference: "constant", "attribute", "function", "constraint". The first three are
-			-- used to indicate the referencing mechanism for an operand. The last is used to indicate 
+			-- used to indicate the referencing mechanism for an operand. The last is used to indicate
 			-- a constraint operand, as happens in the case of the right-hand operand of the ‘matches’ operator.
 
 	item: ANY
 
 feature -- Conversion
 
-	out: STRING is 
+	out: STRING is
 		do
 			create Result.make(0)
 			Result.append(item.out)
 		end
-		
+
 	as_string: STRING is
 		do
 			create Result.make(0)
 			if reference_type.is_equal("constraint") then
-				Result.append("{")			
-			end			
+				Result.append("{")
+			end
 			Result.append(item.out)
 			if reference_type.is_equal("constraint") then
-				Result.append("}")			
+				Result.append("}")
 			end
 		end
-		
+
 end
 
 

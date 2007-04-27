@@ -14,25 +14,26 @@ indexing
 class ASSERTION_FACTORY
 
 feature -- Factory
-	
-	create_expr_leaf_object_ref(a_ref_path: STRING): EXPR_LEAF is
-			-- node refers to an object in the runtime data
+
+	create_expr_leaf_archetype_definition_ref(an_absolute_path: STRING): EXPR_LEAF is
+			-- node refers to a feature in an archetype definition
 		require
-			ref_exists: a_ref_path /= Void and then not a_ref_path.is_empty
+			path_exists: an_absolute_path /= Void and then not an_absolute_path.is_empty
 		do
-			create Result.make_object_ref(create {OG_PATH}.make_from_string(a_ref_path))
+			create Result.make_archetype_definition_ref(an_absolute_path)
 		end
 
-	create_expr_leaf_archetype_feature_call(a_ref: STRING): EXPR_LEAF is
-			-- node refers to an archetyoe feature in a slot-filling archetype
-			-- e.g. 'archetype_id' - see AOM for allowable features; dot notation
+	create_expr_leaf_archetype_ref(a_rel_path: STRING): EXPR_LEAF is
+			-- node refers to a feature in an outer archetype structure (not the
+			-- definition - use create_expr_leaf_archetype_definition_ref for that)
+			-- e.g. 'archetype_id' - see AOM for allowable features; / notation
 			-- can be used if need to go deeper
 		require
-			ref_exists: a_ref /= Void and then not a_ref.is_empty
+			ref_exists: a_rel_path /= Void and then not a_rel_path.is_empty
 		do
-			create Result.make_archetype_feature_call(a_ref)
+			create Result.make_archetype_ref(a_rel_path)
 		end
-		
+
 	create_expr_leaf_boolean(an_item: BOOLEAN): EXPR_LEAF is
 			-- node is a boolean value
    		do
@@ -79,7 +80,7 @@ feature -- Factory
 
 	create_expr_leaf_constraint(an_item: C_PRIMITIVE): EXPR_LEAF is
 			-- node is a constraint on a primitive type; can only be used with "matches" function
-			-- an_item is C_STRING, C_INTEGER, C_REAL, C_DOUBLE, C_BOOLEAN 
+			-- an_item is C_STRING, C_INTEGER, C_REAL, C_DOUBLE, C_BOOLEAN
 		require
 			Item_exists: an_item /= Void
    		do

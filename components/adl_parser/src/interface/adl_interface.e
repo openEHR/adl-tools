@@ -245,7 +245,7 @@ feature -- Commands
 		end
 
 	save_archetype(file_path, save_format: STRING) is
-			-- Save ADL file via GUI File save dialog
+			-- Save ADL to `file_path' in `save_format'.
 		require
 			archetype_available
 			file_path_valid: file_path /= Void and then not file_path.is_empty
@@ -287,7 +287,7 @@ feature -- Commands
 			serialise_format_valid: serialise_format /= Void and then has_archetype_serialiser_format(serialise_format)
 		do
 			if not exception_encountered then
-				if adl_engine.archetype.is_valid then
+				if archetype_valid then
 					adl_engine.serialise(serialise_format)
 				else
 					post_error(Current, "serialise_archetype", "serialise_archetype_e1", <<adl_engine.archetype.errors>>)

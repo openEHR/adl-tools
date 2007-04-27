@@ -1,25 +1,25 @@
 indexing
 	component:   "openEHR Reusable Libraries"
-	description: "Test case for typed anonymous dADL"
+	description: "Test case for UML class creation"
 	keywords:    "test, object graph, creation"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2005 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class TC_DADL2_TYPED_ANON
+class TC_UML_CREATE_CLASS
 
 inherit
 	TEST_CASE
-		redefine
+		redefine 
 			check_result
 		end
-
+		
 	SHARED_TEST_ENV
 		export
 			{NONE} all
@@ -30,7 +30,7 @@ creation
 
 feature -- Access
 
-	title:STRING is "dADL2 typed anonymous object block"
+	title:STRING is "Create UML Class Object"
 
 feature -- Initialisation
 
@@ -39,34 +39,17 @@ feature -- Initialisation
 		end
 
 	execute is
+		local
+			uc_abstract, uc_concrete: UML_CLASS
+			up_1: UML_PROPERTY
 		do
-			dadl_engine.set_source (dadl_tour_data, 1)
-			dadl_engine.parse
-			if not dadl_engine.parse_succeeded then
-				io.put_string("Parse failed; reason = " + dadl_engine.parse_error_text + "%N")
-			else
-				dadl_engine.serialise ("adl")
-				io.put_string("---------- original dADL -----------%N")
-				io.put_string(dadl_tour_data)
-				io.put_string("---------- serialised to ADL -----------%N")
-				io.put_string(dadl_engine.serialised)
-				io.put_string("---------- paths -----------%N")
-				io.put_string(print_list(dadl_engine.tree.all_paths))
-			end
+			create uc_abstract.make ("ENTRY")
+			uc_abstract.set_is_abstract
+			create up_1.make_single_relationship ("subject", uc_abstract, True)
 
-			dadl_engine.set_source (c_dv_quantity, 1)
-			dadl_engine.parse
-			if not dadl_engine.parse_succeeded then
-				io.put_string("Parse failed; reason = " + dadl_engine.parse_error_text + "%N")
-			else
-				dadl_engine.serialise ("adl")
-				io.put_string("---------- original dADL -----------%N")
-				io.put_string(c_dv_quantity)
-				io.put_string("---------- serialised to ADL -----------%N")
-				io.put_string(dadl_engine.serialised)
-				io.put_string("---------- paths -----------%N")
-				io.put_string(print_list(dadl_engine.tree.all_paths))
-			end
+			uc_abstract.add_attribute (up_1)
+			
+			create uc_concrete.make ("OBSERVATION")
 		end
 
 feature -- Access
@@ -74,44 +57,6 @@ feature -- Access
 	check_result is
 	    do
 	    end
-
-feature -- Implementation
-
-	dadl_tour_data: STRING is "[
-			TOURIST_DESTINATION <
-				profile = DESTINATION_PROFILE <>
-				hotels = LODGING <
-					["gran sevilla"] = HISTORIC_HOTEL <>
-					["sofitel"] = LUXURY_HOTEL <>
-					["hotel real"] = PENSION <>
-				>
-				attractions = <
-					["la corrida"] = ATTRACTION <>
-					["Alcázar"] = HISTORIC_SITE <>
-				>
-			>
-		]"
-
-	c_dv_quantity: STRING is "[
-			C_DV_QUANTITY <
-				assumed_value = <
-					units = <"C">
-					precision = <0>
-					magnitude = <8.0>
-				>
-				property = <[openehr::127]>
-				list = <
-					["1"] = <
-						units = <"C">
-						magnitude = <|>=4.0|>
-					>
-					["2"] = <
-						units = <"F">
-						magnitude = <|>=40.0|>
-					>
-				>
-			>
-		]"
 
 end
 
@@ -129,7 +74,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is tc_dadl_basic.e.
+--| The Original Code is tc_base_units.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004
