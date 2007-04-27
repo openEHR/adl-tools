@@ -7830,7 +7830,7 @@ feature {YY_PARSER_ACTION} -- Basic Operations
 			else
 				error_text.append ("line ")
 			end
-			error_text.append ((in_lineno + source_start_line - 1).out + ": " + a_message + " [last token = " + token_name(last_token) + "]%N")
+			error_text.append ((in_lineno + source_start_line).out + ": " + a_message + " [last cADL token = " + token_name(last_token) + "]%N")
 		end
 
 feature -- Access

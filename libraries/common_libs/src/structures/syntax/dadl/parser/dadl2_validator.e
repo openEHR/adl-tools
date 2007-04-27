@@ -5991,11 +5991,13 @@ feature -- Initialization
 	execute(in_text:STRING; a_source_start_line: INTEGER) is
 		do
 			reset_scanner
+			accept -- ensure no syntax errors lying around from previous invocation
 
 			source_start_line := a_source_start_line
 
 			create indent.make(0)
 			create error_text.make(0)
+			create error_message.make(0)
 
 			create complex_object_nodes.make(0)
 			create attr_nodes.make(0)
@@ -6014,18 +6016,24 @@ feature {YY_PARSER_ACTION} -- Basic Operations
 		local
 			f_buffer: YY_FILE_BUFFER
 		do
+			error_message.append (a_message + " [last dADL token = " + token_name(last_token) + "]")
+
 			f_buffer ?= input_buffer
 			if f_buffer /= Void then
 				error_text.append (f_buffer.file.name + ", line ")
 			else
 				error_text.append ("line ")
 			end
-			error_text.append ((in_lineno + source_start_line - 1).out + ": " + a_message + " [last token = " + token_name(last_token) + "]%N")
+			error_text.append ((in_lineno + source_start_line).out + ": " + error_message + "%N")
 		end
 
 feature -- Access
 
 	error_text: STRING
+			-- complete error text including line number location
+
+	error_message: STRING
+			-- message part of error text
 
 	source_start_line: INTEGER
 			-- offset of source in other document, else 0

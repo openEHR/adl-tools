@@ -715,10 +715,10 @@ feature {NONE} -- Implementation
 			-- generate string form of node or object for use in tree node
 		do
 			create Result.make(0)
-			-- Result.append(" [" + c_attr.existence.as_occurrences_string + "] ")
-			-- if c_attr.is_multiple then
-			-- 	Result.append(" [" + c_attr.cardinality.as_string + "] ")			
-			-- end
+		--	Result.append(" [" + c_attr.existence.as_occurrences_string + "] ")
+		--	if c_attr.is_multiple then
+		--	 	Result.append(" [" + c_attr.cardinality.as_string + "] ")
+		--	end
 			Result.append(c_attr.rm_attribute_name)
 			if c_attr.any_allowed then
 				Result.append(" matches {*}")
