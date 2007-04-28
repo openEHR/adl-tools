@@ -1,4 +1,4 @@
-#!/bin/sh 
+#!/bin/sh
 #	component:   "Deep Thought Reusable Libraries"
 #	description: "ADL scanner builder script"
 #	keywords:    "ADL, scanner"

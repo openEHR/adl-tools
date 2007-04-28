@@ -392,7 +392,7 @@ P[yY]?[mM]?[Ww]?[dD]? {
 				-- perform any upgrades to embedded dADL object syntax here by substitution
 				convert_c_dv_names(str_)
 
-				dadl_parser.execute(str_, source_start_line)
+				dadl_parser.execute(str_, source_start_line + in_lineno)
 				if not dadl_parser.syntax_error then
 					if dadl_parser.output.is_typed then
 						tid := dynamic_type_from_string(dadl_parser.output.rm_type_name)
@@ -413,7 +413,7 @@ P[yY]?[mM]?[Ww]?[dD]? {
 						last_token := ERR_C_DOMAIN_TYPE
 					end
 				else
-					dadl_parser_error := dadl_parser.error_text
+					dadl_parser_error := dadl_parser.error_message
 					last_token := ERR_C_DOMAIN_TYPE
 				end
 
