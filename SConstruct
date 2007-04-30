@@ -17,7 +17,7 @@ def install(dir, source):
 def eiffel(target, source):
 	if platform == 'macintosh': target = [target, target + '_no_precompile']
 	result = env.Eiffel(target, source)
-	Default(Alias(str(target[0]), result))
+	Default(Alias(Split(target)[0], result))
 	return result
 
 openehr_clusters = eiffel_classes_in_cluster('libraries/openehr/src') + eiffel_classes_in_cluster('libraries/vendor-fixes') + eiffel_classes_in_cluster('libraries/common_libs/src')
