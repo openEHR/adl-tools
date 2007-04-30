@@ -9,11 +9,10 @@ env = Environment(ENV = os.environ, tools = ['Eiffel'], toolpath = ['.'])
 if env['PLATFORM'] == 'win32': platform = 'windows'
 if env['PLATFORM'] == 'darwin': platform = 'macintosh'
 
-def install_path(name):
-	return '../oe_distrib/' + platform + '/' + name
+install_path = '../oe_distrib/' + platform + '/'
 
 def install(dir, source):
-	Alias('install', Install(install_path(dir), source))
+	Alias('install', Install(install_path + dir, source))
 
 def eiffel(target, source):
 	result = env.Eiffel(target, source)
@@ -51,12 +50,6 @@ if platform == 'windows':
 
 	if len(target) > 2:
 		install('adl_parser/lib', [target[2], os.path.dirname(str(target[2])) + '/libadl_dotnet_lib.dll'])
-
-	eiffel(['openehr_test'],     ['libraries/openehr/test/app/openehr_test.ecf']         + eiffel_classes_in_cluster('libraries/openehr/test/src') + openehr_clusters)
-	eiffel(['adl_parser_test'],  ['components/adl_parser/test/app/adl_parser_test.ecf']  + eiffel_classes_in_cluster('components/adl_parser/test/src') + all_clusters)
-
-#	TODO: common_libs_test does not compile!
-#	eiffel(['common_libs_test'], ['libraries/common_libs/test/app/common_libs_test.ecf'] + eiffel_classes_in_cluster('libraries/common_libs/test/src') + openehr_clusters)
 
 if platform == 'macintosh':
 	target = eiffel(['adl_workbench'], sources)
@@ -96,12 +89,16 @@ if platform == 'macintosh':
 
 		command = [
 			packagemaker, '-build',
-			'-p', '$TARGET',
+			'-p', '${TARGET.dir.dir}',
 			'-f', root,
 			'-r', resources,
 			'-i', info,
 			'-d', description
 		]
 
-		pkg = env.Command(install_path('tools/ADL Workbench.pkg'), sources, [command])
+		pkg = env.Command(install_path + 'tools/ADL Workbench.pkg/Contents/Archive.pax.gz', sources, [command])
 		Alias('install', pkg)
+
+eiffel(['openehr_test'],     ['libraries/openehr/test/app/openehr_test.ecf']         + eiffel_classes_in_cluster('libraries/openehr/test/src') + openehr_clusters)
+eiffel(['adl_parser_test'],  ['components/adl_parser/test/app/adl_parser_test.ecf']  + eiffel_classes_in_cluster('components/adl_parser/test/src') + all_clusters)
+eiffel(['common_libs_test'], ['libraries/common_libs/test/app/common_libs_test.ecf'] + eiffel_classes_in_cluster('libraries/common_libs/test/src') + openehr_clusters)
