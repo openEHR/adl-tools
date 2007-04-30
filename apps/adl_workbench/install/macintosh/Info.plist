@@ -3,11 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleGetInfoString</key>
-	<string>1.4, OpenEHR</string>
+	<string>1.4.2, OpenEHR</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.openehr.adl_workbench</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.4</string>
+	<string>1.4.2</string>
 	<key>IFMajorVersion</key>
 	<integer>1</integer>
 	<key>IFMinorVersion</key>
