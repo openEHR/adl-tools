@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?><system xmlns="http://www.eiffel.com/developers/xml/configuration-1-0-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-0-0 http://www.eiffel.com/developers/xml/configuration-1-0-0.xsd" name="openehr_test" uuid="E33D66E4-C874-4DEC-B590-CC5449FA7829">
-	<target name="openehr_test">
+	<target name="openehr_test_no_precompile">
 		<root class="APPLICATION" feature="make_and_launch"/>
 		<file_rule>
 			<exclude>/.svn$</exclude>
@@ -37,7 +37,6 @@
 		<setting name="inlining" value="false"/>
 		<setting name="line_generation" value="false"/>
 		<setting name="multithreaded" value="false"/>
-		<precompile name="precompile" location="$ISE_PRECOMP\vision2.ecf"/>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
 		<library name="vision2" location="$ISE_LIBRARY\library\vision2\vision2.ecf"/>
 		<library name="gobo" location="$ISE_LIBRARY\library\gobo\gobo.ecf"/>
@@ -65,5 +64,8 @@
 				<exclude>/base_net$</exclude>
 			</file_rule>
 		</override>
+	</target>
+	<target name="openehr_test" extends="openehr_test_no_precompile">
+		<precompile name="precompile" location="$ISE_PRECOMP\base.ecf"/>
 	</target>
 </system>
