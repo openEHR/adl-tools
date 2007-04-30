@@ -27,14 +27,14 @@ inherit
 		export
 			{NONE} all
 		end
-	
+
 	SHARED_ADL_OBJECTS
 		export
 			{NONE} all;
-			{ANY} has_c_attribute, has_archetype_internal_ref, 
-			has_archetype_slot, has_c_complex_object, has_constraint_ref			
+			{ANY} has_c_attribute, has_archetype_internal_ref,
+			has_archetype_slot, has_c_complex_object, has_constraint_ref
 		end
-	
+
 	C_WRAPPER_TOOLS
 		export
 			{NONE} all
@@ -253,7 +253,7 @@ feature -- Primitive Object Creation
 			Result := new_handle
 			put_c_primitive(constraint_model_factory.create_c_boolean_make_true_false, Result)
 		end
-	
+
 	create_c_string_make_any: INTEGER is
 			-- create Result completely open
 		do
@@ -291,7 +291,7 @@ feature -- Primitive Object Creation
 			Result := new_handle
 			put_c_primitive(constraint_model_factory.create_c_string_make_from_string_list(c_array_string_to_eif_list (a_str_lst)), Result)
 		end
-	
+
 	create_c_date_make_bounded (a_lower, an_upper: POINTER): INTEGER is
 			-- create Result with both limits set from ISO8601 strings
 			-- REQUIRE
@@ -415,7 +415,7 @@ feature -- Primitive Object Creation
 			Result := new_handle
 			put_c_primitive(constraint_model_factory.create_c_date_time_make_unbounded, Result)
 		end
-	
+
 	create_c_time_make_bounded (a_lower, an_upper: POINTER): INTEGER is
 			-- create Result with both limits set from ISO8601 strings
 			-- REQUIRE
@@ -477,7 +477,7 @@ feature -- Primitive Object Creation
 			Result := new_handle
 			put_c_primitive(constraint_model_factory.create_c_time_make_unbounded, Result)
 		end
-	
+
 	create_c_duration_make_bounded (a_lower, an_upper: POINTER; include_lower, include_upper: BOOLEAN): INTEGER is
 			-- create Result with both limits set from ISO8601 strings
 			-- REQUIRE
@@ -576,7 +576,7 @@ feature -- Domain object creation
 		do
 			Result := new_handle
 			put_c_primitive_object(constraint_model_factory.create_c_primitive_object(
-				c_attribute(h_parent_c_attribute), 
+				c_attribute(h_parent_c_attribute),
 				c_primitive(h_c_primitive)), Result)
 		end
 
@@ -628,7 +628,7 @@ feature -- Archetype Node Creation
 			create c_a_path.make_by_pointer (a_path)
 
 			Result := new_handle
-			put_archetype_internal_ref(constraint_model_factory.create_archetype_internal_ref(c_attribute(h_parent_c_attribute), 
+			put_archetype_internal_ref(constraint_model_factory.create_archetype_internal_ref(c_attribute(h_parent_c_attribute),
 				c_a_type_name.string, c_a_path.string), Result)
 		end
 
@@ -677,7 +677,7 @@ feature -- Archetype Node Creation
 
 			Result := new_handle
 			put_c_attribute(constraint_model_factory.create_c_attribute_multiple (
-				c_complex_object(h_parent_c_complex_object), 
+				c_complex_object(h_parent_c_complex_object),
 				c_an_attr_name.string, cardinality(h_cardinality)), Result)
 		end
 
@@ -745,7 +745,7 @@ feature -- Archetype Node Creation
 		do
 			c_object(h_c_object).set_occurrences(integer_interval(h_integer_interval))
 		end
-		
+
 	archetype_slot_add_include(h_archetype_slot, h_assertion: INTEGER) is
 			-- add_include to an ARCHETYPE_SLOT
 		do
@@ -759,7 +759,7 @@ feature -- Archetype Node Creation
 		end
 
 feature -- Assertions
-	
+
 	create_assertion (h_an_expr: INTEGER): INTEGER is
 			-- make assertion with an expression
 			-- REQUIRE
@@ -840,7 +840,7 @@ feature -- Assertions
 		do
 			create c_a_ref.make_by_pointer (a_ref)
 			Result := new_handle
-			put_expr_item(constraint_model_factory.create_expr_leaf_archetype_feature_call(c_a_ref.string), Result)
+			put_expr_item (constraint_model_factory.create_expr_leaf_archetype_ref (c_a_ref.string), Result)
 		end
 
 	create_expr_leaf_integer (an_item: INTEGER): INTEGER is
@@ -859,7 +859,7 @@ feature -- Assertions
 		do
 			create c_a_ref_path.make_by_pointer (a_ref_path)
 			Result := new_handle
-			put_expr_item(constraint_model_factory.create_expr_leaf_object_ref(c_a_ref_path.string), Result)
+			put_expr_item (constraint_model_factory.create_expr_leaf_archetype_definition_ref (c_a_ref_path.string), Result)
 		end
 
 	create_expr_leaf_real (an_item: REAL): INTEGER is
