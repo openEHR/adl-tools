@@ -47,4 +47,4 @@ echo Launching ADL Workbench
 
 cd "$ETC"
 for f in `ls "$CWD/bin"`; do ln -fsv "$CWD/bin/$f"; done
-./adl_workbench &
+./adl_workbench || open /Applications/Utilities/Console.app &
