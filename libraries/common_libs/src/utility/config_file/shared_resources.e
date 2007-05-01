@@ -14,15 +14,18 @@ indexing
 
 class SHARED_RESOURCES
 
+inherit
+	KL_SHARED_FILE_SYSTEM
+
 feature -- Definitions
 
-	Global_config_directory: STRING is 
+	Global_config_directory: STRING is
 			-- location of global configuration files - /etc
 		once
 			create Result.make(0)
 			Result.append(os_directory_separator.out + "etc")
 		end
-		
+
 feature -- Initialisation
 
 	initialise_resource_config_file_name(str:STRING) is
@@ -39,7 +42,7 @@ feature -- Initialisation
 		do
 			resource_config_file_name.append(default_resource_config_file_full_path)
 		end
-		
+
 feature -- Access
 
 	resource_value(a_category, a_resource_name:STRING): STRING is
@@ -50,7 +53,7 @@ feature -- Access
 		do
 			Result := execution_environment.command_line.separate_word_option_value(a_category + ":" + a_resource_name)
 			if Result = Void then
-				Result := resource_config_file.resource_value(a_category, a_resource_name)			
+				Result := resource_config_file.resource_value(a_category, a_resource_name)
 			end
 		ensure
 			Result_not_void: Result /= Void
@@ -80,7 +83,7 @@ feature -- Environment
 
 	os_type: STRING is
 			-- name of operating system
-		once		
+		once
 	   		Result := execution_environment.get("OS")
    			if Result /= Void then
    				Result.to_lower
@@ -95,7 +98,7 @@ feature -- Environment
 			create Result.make(0)
 			Result.append(execution_environment.root_directory_name + "etc")
 		end
-		
+
 	resource_config_file_name: STRING is
 			-- name of configuration file from which settings are read
 		once
@@ -115,7 +118,7 @@ feature -- Environment
 		end
 
 	default_resource_config_file_full_path: STRING is
-			-- default full path to resource configuration file; same as 
+			-- default full path to resource configuration file; same as
 			-- full path to app, but config file has .cfg istead of .exe extension
 		once
 			Result := application_full_path
@@ -131,32 +134,57 @@ feature -- Environment
 	        create Result
 	    end
 
-	application_startup_directory: STRING is
-			-- directory application started in; needs to be called before any change_dir calls 
-			-- are made since there is no easy way to get the startup directory
-		once
-			 Result := current_working_directory
-		end
-
 	os_directory_separator: CHARACTER is
 	    once
 			Result := operating_environment.directory_separator
 	    end
 
 	application_full_path: STRING is
-			-- full path to application
-	    once
-			Result := application_startup_directory + os_directory_separator.out + application_name
+			-- The full path to the application;
+			-- else, if the application is in an Eiffel project's W_code
+			-- or F_code directory, a path within the Eiffel project directory.
+			-- This must be called before any change_dir calls are made
+			-- since there is no easy way to get the startup directory.
+		local
+			path: KI_PATHNAME
+			dir: STRING
+		once
+			path := file_system.string_to_pathname (file_system.absolute_pathname (execution_environment.command_line.command_name))
+			path.set_canonical
+	    	Result := file_system.pathname_to_string (path)
+
+			if path.count > 3 then
+				dir := path.item (path.count - 1)
+
+				if dir.is_equal ("W_code") or dir.is_equal ("F_code") then
+					if path.item (path.count - 3).is_equal ("EIFGENs") then
+						dir := file_system.dirname (file_system.dirname (file_system.dirname (file_system.dirname (Result))))
+						Result := file_system.pathname (dir, file_system.basename (Result))
+					end
+				end
+			end
+		ensure
+			attached: Result /= Void
+			not_empty: not Result.is_empty
 	    end
 
-	application_name: STRING is
-	    once
-			create Result.make(0)
-			Result.append(execution_environment.command_line.argument(0))
+	application_startup_directory: STRING is
+			-- The directory in which the application is installed;
+			-- else, if the application is in an Eiffel project's W_code
+			-- or F_code directory, the Eiffel project directory.
+			-- This must be called before any change_dir calls are made
+			-- since there is no easy way to get the startup directory.
+		once
+			Result := file_system.dirname (application_full_path)
+		ensure
+			attached: Result /= Void
+			not_empty: not Result.is_empty
+		end
 
-			if Result.has(os_directory_separator) then
-			    Result.keep_tail(Result.count - Result.last_index_of(os_directory_separator, Result.count))
-			end
+	application_name: STRING is
+			-- The name of the application executable, with any leading directory components removed.
+	    once
+			Result := file_system.basename (application_full_path)
 	    end
 
 	current_working_directory: STRING is
@@ -173,7 +201,7 @@ feature -- Element Change
 		local
 			res_table:HASH_TABLE[STRING,STRING]
 		do
-			res_table := resource_config_file.requested_resources.item(a_category) 
+			res_table := resource_config_file.requested_resources.item(a_category)
 			if res_table /= Void then
 				if not res_table.has(a_resource_name) then
 					res_table.put("------", a_resource_name)
@@ -191,16 +219,16 @@ feature -- Element Change
 			Valid_resource_name: a_resource_name /= Void and then not a_resource_name.is_empty
 			Valid_value: a_value /= Void and then not a_value.is_empty
 		do
-			resource_config_file.set_resource_value(a_category, a_resource_name, a_value)			
+			resource_config_file.set_resource_value(a_category, a_resource_name, a_value)
 		end
-	
+
 	set_resource_value_list(a_category, a_resource_name: STRING; a_value: LIST[STRING]) is
 		require
 			Valid_category: a_category /= Void and then not a_category.is_empty
 			Valid_resource_name: a_resource_name /= Void and then not a_resource_name.is_empty
 			Valid_value: a_value /= Void
 		do
-			resource_config_file.set_resource_value_list(a_category, a_resource_name, a_value)			
+			resource_config_file.set_resource_value_list(a_category, a_resource_name, a_value)
 		end
 
 feature -- Element Removal
@@ -213,12 +241,12 @@ feature -- Element Removal
 		do
 			resource_config_file.remove_resource(a_category, a_resource_name)
 		end
-		
+
 feature -- Conversion
 
 	substitute_env_vars(s:STRING): STRING is
-			-- expand the environment variables, delimited by a '$' and any 
-			-- non alphanumeric character except underscore, or end of string, 
+			-- expand the environment variables, delimited by a '$' and any
+			-- non alphanumeric character except underscore, or end of string,
 			-- in the string s
 		local
 			i, p,q: INTEGER
@@ -238,7 +266,7 @@ feature -- Conversion
 					i = 0
 				loop
 					c := s.item(i)
-					if (c >= 'a' and c <= 'z') or else 
+					if (c >= 'a' and c <= 'z') or else
 						(c >= 'A' and c <= 'Z') or else
 						(c >= '0' and c <= '9') or else
 						c = '_' then
@@ -252,7 +280,7 @@ feature -- Conversion
 						i := 0
 					end
 				end
-				
+
 				var_name := s.substring(p+1, q)
 				var_val := execution_environment.get(var_name)
 				if var_val /= Void then
@@ -261,7 +289,7 @@ feature -- Conversion
 				p := s.index_of('$', q)
 			end
 		end
-		
+
 feature -- Output
 
 	resources_as_list: ARRAYED_LIST[STRING] is
@@ -290,7 +318,7 @@ feature -- Persistence
 		do
 			resource_config_file.write_file
 		end
-		
+
 feature {NONE} -- Implementation
 
 	resources: HASH_TABLE[HASH_TABLE[STRING,STRING], STRING] is

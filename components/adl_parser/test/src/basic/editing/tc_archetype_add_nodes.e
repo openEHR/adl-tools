@@ -13,7 +13,7 @@ indexing
 	last_change: "$LastChangedDate$"
 
 class TC_ARCHETYPE_ADD_NODES
-	
+
 inherit
 	TEST_CASE
 		export
@@ -26,12 +26,12 @@ inherit
 		export
 			{NONE} all
 		end
-		
+
 	OPERATOR_TYPES
 		export
 			{NONE} all
 		end
-		
+
 create
 	make
 
@@ -45,7 +45,7 @@ feature -- Access
 
 	title: STRING is "Test Archetype Add definition nodes"
 
-	prereqs: ARRAY[STRING] is 
+	prereqs: ARRAY[STRING] is
 			-- ids of prerequisite test cases
 		once
 			Result := <<"TC_ARCHETYPE_CREATE">>
@@ -70,13 +70,13 @@ feature -- testing
 		do
 			archetype := adl_interface.archetype
 			cf := adl_interface.constraint_model_factory
-			
+
 			-- add name node
 			an_attr_node := cf.create_c_attribute_single (archetype.definition, "name")
 			an_obj_node := cf.create_c_complex_object_anonymous (an_attr_node, "CODED_TEXT")
 			an_attr_node := cf.create_c_attribute_single (an_obj_node, "code")
 			a_term_node := cf.create_c_code_phrase_from_pattern (an_attr_node, "local::at0000")
-	
+
 			-- add items node
 			top_items_node := cf.create_c_attribute_multiple (archetype.definition, "items", cf.create_cardinality_make_upper_unbounded (0))
 
@@ -86,20 +86,20 @@ feature -- testing
 			a_term.add_item("text", "neonate")
 			a_term.add_item("description", "newborn child")
 			ontology.add_term_definition("en", a_term)
-			
+
 			-- add neonate subsection
 			neonate_section_node := cf.create_c_complex_object_identified (top_items_node, "SECTION", a_code)
 			an_attr_node := cf.create_c_attribute_single (neonate_section_node, "name")
 			obj_node2 := cf.create_c_complex_object_anonymous (an_attr_node, "CODED_TEXT")
 			an_attr_node := cf.create_c_attribute_single (obj_node2, "code")
 			a_term_node := cf.create_c_code_phrase_from_pattern (an_attr_node, "local::" + a_code)
-			
+
 			an_attr_node := cf.create_c_attribute_multiple (neonate_section_node, "items", cf.create_cardinality_make_upper_unbounded (0))
 			an_arch_slot := cf.create_archetype_slot_anonymous (an_attr_node, "OBSERVATION")
 			an_arch_slot.set_occurrences(cf.create_integer_interval_make_upper_unbounded (0, True))
-			
+
 			-- make assertions for slot
-			id_expr_leaf := cf.create_expr_leaf_archetype_feature_call ("id")
+			id_expr_leaf := cf.create_expr_leaf_archetype_ref ("id")
 			id_pattern_expr_leaf := cf.create_expr_leaf_constraint (create {OE_C_STRING}.make_from_regexp("openehr-ehr-observation\..*\..*", True))
 			match_op := cf.create_expr_binary_operator_node (create {OPERATOR_KIND}.make(op_matches), id_expr_leaf, id_pattern_expr_leaf)
 			an_assertion := cf.create_assertion (match_op, Void)
@@ -111,7 +111,7 @@ feature -- testing
 			a_term.add_item("text", "mother")
 			a_term.add_item("description", "mother of newborn child")
 			ontology.add_term_definition("en", a_term)
-			
+
 			-- add mother subsection
 			mother_section_node := cf.create_c_complex_object_identified (top_items_node, "SECTION", a_code)
 			an_attr_node := cf.create_c_attribute_single (mother_section_node, "name")
@@ -122,22 +122,22 @@ feature -- testing
 			an_attr_node := cf.create_c_attribute_multiple (mother_section_node, "items", cf.create_cardinality_make_upper_unbounded (0))
 			an_arch_slot := cf.create_archetype_slot_anonymous (an_attr_node, "OBSERVATION")
 			an_arch_slot.set_occurrences(cf.create_integer_interval_make_upper_unbounded (0, True))
-			
+
 			-- add assertions for slot
-			id_expr_leaf := cf.create_expr_leaf_archetype_feature_call ("id")
+			id_expr_leaf := cf.create_expr_leaf_archetype_ref ("id")
 			id_pattern_expr_leaf := cf.create_expr_leaf_constraint (create {OE_C_STRING}.make_from_regexp("openehr-ehr-observation\..*\..*", True))
 			match_op := cf.create_expr_binary_operator_node (create {OPERATOR_KIND}.make(op_matches), id_expr_leaf, id_pattern_expr_leaf)
 			an_assertion := cf.create_assertion (match_op, Void)
 			an_arch_slot.add_include(an_assertion)
 
 			if archetype.is_valid then
-				adl_interface.adl_engine.serialise (serialise_format)	
-				io.put_string(adl_interface.adl_engine.serialised_archetype)	
+				adl_interface.adl_engine.serialise (serialise_format)
+				io.put_string(adl_interface.adl_engine.serialised_archetype)
 			else
-				io.put_string(archetype.errors)	
+				io.put_string(archetype.errors)
 			end
 		end
-	
+
 end
 
 --|

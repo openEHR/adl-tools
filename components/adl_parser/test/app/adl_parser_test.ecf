@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?><system xmlns="http://www.eiffel.com/developers/xml/configuration-1-0-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-0-0 http://www.eiffel.com/developers/xml/configuration-1-0-0.xsd" name="adl_parser_test" uuid="763D9B8F-04FF-472C-8BAE-0DD04D2C5943">
-	<target name="adl_parser_test">
+	<target name="adl_parser_test_no_precompile">
 		<root class="APPLICATION" feature="make"/>
 		<file_rule>
 			<exclude>/.svn$</exclude>
@@ -32,7 +32,6 @@
 		<setting name="inlining" value="false"/>
 		<setting name="line_generation" value="false"/>
 		<setting name="multithreaded" value="false"/>
-		<precompile name="precompile" location="$ISE_PRECOMP\base.ecf"/>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
 		<library name="gobo" location="$ISE_LIBRARY\library\gobo\gobo.ecf"/>
 		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf"/>
@@ -70,5 +69,8 @@
 				<exclude>/base_net$</exclude>
 			</file_rule>
 		</override>
+	</target>
+	<target name="adl_parser_test" extends="adl_parser_test_no_precompile">
+		<precompile name="precompile" location="$ISE_PRECOMP\base.ecf"/>
 	</target>
 </system>

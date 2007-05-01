@@ -88,6 +88,16 @@ feature -- Access
 			Result /= Void
 		end
 
+	current_work_directory: STRING
+			-- Directory where archetypes are currently being opened and saved
+			-- from GUI open and save buttons; automatic opens (due to clicking
+			-- on archetype name) still use main repository directory.
+		do
+			Result := resource_value ("default", "current_work_directory")
+		ensure
+			attached: Result /= Void
+		end
+
 	app_width: INTEGER is
 			-- application width
 		local
@@ -508,6 +518,18 @@ feature -- Modification
 				set_resource_value("default", "work_repository", a_path)
 			else
 				remove_resource ("default", "work_repository")
+			end
+		end
+
+	set_current_work_directory (a_path: STRING) is
+			-- set the directory where archetypes are currently being opened and saved.
+		require
+			a_path_attached: a_path /= Void
+		do
+			if not a_path.is_empty then
+				set_resource_value ("default", "current_work_directory", a_path)
+			else
+				remove_resource ("default", "current_work_directory")
 			end
 		end
 
