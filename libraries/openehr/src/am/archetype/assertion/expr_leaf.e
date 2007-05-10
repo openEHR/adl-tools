@@ -46,7 +46,7 @@ feature -- Initialisation
 		do
 			item := a_ref
 			type := "String" -- FIXME: need access to ref model to know what type it really is
-			reference_type := "feature"
+			reference_type := "attribute"
 		end
 
 	make_archetype_definition_ref(a_ref: STRING) is
