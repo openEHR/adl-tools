@@ -99,7 +99,7 @@ def ec_emitter(target, source, env):
 		else:
 			project_dir = exe
 
-		project_dir = os.path.dirname(str(source[0])) + '/EIFGENs/' + os.path.splitext(project_dir)[0]
+		project_dir = os.path.abspath(os.path.dirname(str(source[0]))) + '/EIFGENs/' + os.path.splitext(project_dir)[0]
 		exe = project_dir + '/?_code/' + exe
 		result = [project_dir + '/project.epr', exe.replace('?', 'W')]
 
