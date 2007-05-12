@@ -115,12 +115,7 @@ demographic and archetype servers.</li>
 
   
 
-  <li>create an environment variable OPENEHR, pointing to the root of
-your openEHR area, e..g. c:\projects\openEHR, /usr/local/openehr&nbsp;</li>
-
-
-
-  <li>download and install Eiffel 5.6 from <a href="http://eiffel.com">http://eiffel.com</a> (free use license). The IDE is known as "Eiffel Studio".&nbsp;</li>
+  <li>Download and install EiffelStudio 5.7 from <a href="http://eiffel.com">http://eiffel.com</a> (free use license).</li>
 
 
 
@@ -149,6 +144,36 @@ bcc compiler or gcc or other default compiler.</li>
 
 
 
+  
+
+  
+
+  <li>You can, if you wish, build individual projects within the EiffelStudio IDE; but if you wish to do batch command-line builds, you need SCons. SCons is a software build utility, based on Python, and it only takes a few minutes to install.</li>
+
+
+
+  
+  
+  
+  <ul>
+
+
+
+    <li>download and install Python 2.5 from <a href="http://www.python.org">http://www.python.org</a>.</li>
+
+
+
+    <li>download and install SCons 0.96.96 from <a href="http://www.scons.org">http://www.scons.org</a>.</li>
+
+
+
+  
+  
+  
+  </ul>
+
+
+
 </ul>
 
 
@@ -157,17 +182,11 @@ bcc compiler or gcc or other default compiler.</li>
 
 
 
-<p>There is a very basic Make-based facility for building the entire
-project. At the moment this is based on nmake for Windows. nmake is not
-nearly as smart as the usual make you will find on various unixes, and
-the method of building currently used in this project needs to be
-seriously improved. Ideally it needs to be set up to work for either
-Microsoft or Borland compiler on Windows, and also for gcc on Linux and
-Mac.</p>
+<p>The SCons-based facility for building the entire project works on Windows, Linux and Mac.</p>
 
 
 
-<p>For now, the approach is:</p>
+<p>The approach is:</p>
 
 
 
@@ -175,7 +194,15 @@ Mac.</p>
 
 
 
-  <li>in a Windows terminal window at the project root directory, type nmake -f makefile.windows.</li>
+  <li>Open a Windows command window, or a Linux terminal window. On Mac, you need to open an X11 EiffelStudio console.</li>
+
+
+
+  <li>Change directory to the project root directory.</li>
+
+
+
+  <li>To build everything, simply type <span style="font-weight: bold;">scons</span>.</li>
 
 
 
@@ -186,8 +213,32 @@ Mac.</p>
 This will cause the build of all binaries. Sometimes it fails in
 various strange ways, and a manual build has to be done. This is not
 hard - it just means starting EiffelStudio by hand and telling it to
-build from an existing Ace file; depending on what you want to build,
-you just select the Ace file in the appropriate directory. <br />
+build from an existing ECF file; depending on what you want to build,
+you just select the ECF file in the appropriate directory. <br />
+
+
+
+<p>SCons provides many other options, depending how and what you want to build. For example:</p>
+
+
+
+<ul>
+
+
+
+  <li>To build just ADL Workbench, type <span style="font-weight: bold;">scons adl_workbench</span>.</li>
+
+
+
+  <li>To create installers for the current platform, type <span style="font-weight: bold;">scons install</span>.</li>
+
+
+
+  <li>For a list of the SCons command-line options, type <span style="font-weight: bold;">scons -h</span>.</li>
+
+
+
+</ul>
 
 
 
@@ -273,7 +324,7 @@ you just select the Ace file in the appropriate directory. <br />
     
 
 
-    <li>apps\adl_workbench\app - <span style="font-weight: bold;">adl_workbench</span>, a Vision2-based GUI application for ADL parsing, viewing and saving.</li>
+    <li>apps\adl_workbench\app - <span style="font-weight: bold;">adl_workbench</span>, an EiffelVision2-based GUI application for ADL parsing, viewing and saving.</li>
 
 
 
