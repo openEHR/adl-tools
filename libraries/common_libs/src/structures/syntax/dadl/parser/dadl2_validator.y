@@ -93,13 +93,13 @@ creation
 %type <ARRAYED_LIST[CODE_PHRASE]> term_code_list_value
 %type <ARRAYED_LIST[ANY]> simple_list_value
 
-%type <OE_INTERVAL[INTEGER_REF]> integer_interval_value
-%type <OE_INTERVAL[REAL_REF]> real_interval_value
-%type <OE_INTERVAL[ISO8601_TIME]> time_interval_value
-%type <OE_INTERVAL[ISO8601_DATE]> date_interval_value
-%type <OE_INTERVAL[ISO8601_DATE_TIME]> date_time_interval_value
-%type <OE_INTERVAL[ISO8601_DURATION]> duration_interval_value
-%type <OE_INTERVAL[PART_COMPARABLE]> simple_interval_value
+%type <INTERVAL[INTEGER_REF]> integer_interval_value
+%type <INTERVAL[REAL_REF]> real_interval_value
+%type <INTERVAL[ISO8601_TIME]> time_interval_value
+%type <INTERVAL[ISO8601_DATE]> date_interval_value
+%type <INTERVAL[ISO8601_DATE_TIME]> date_time_interval_value
+%type <INTERVAL[ISO8601_DURATION]> duration_interval_value
+%type <INTERVAL[PART_COMPARABLE]> simple_interval_value
 
 %%
 
@@ -1460,12 +1460,12 @@ feature {NONE} -- Implementation
 	term: CODE_PHRASE
 	a_uri: URI
 
-	integer_interval: OE_INTERVAL [INTEGER_REF]
-	real_interval: OE_INTERVAL [REAL_REF]
-	date_interval: OE_INTERVAL [ISO8601_DATE]
-	time_interval: OE_INTERVAL [ISO8601_TIME]
-	date_time_interval: OE_INTERVAL [ISO8601_DATE_TIME]
-	duration_interval: OE_INTERVAL [ISO8601_DURATION]
+	integer_interval: INTERVAL [INTEGER_REF]
+	real_interval: INTERVAL [REAL_REF]
+	date_interval: INTERVAL [ISO8601_DATE]
+	time_interval: INTERVAL [ISO8601_TIME]
+	date_time_interval: INTERVAL [ISO8601_DATE_TIME]
+	duration_interval: INTERVAL [ISO8601_DURATION]
 
 	indent: STRING
 	str: STRING

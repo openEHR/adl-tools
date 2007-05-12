@@ -35,16 +35,10 @@ feature -- Initialisation
 			default_create
 			item := an_item
 			rm_type_name := an_item.generating_type
-
--- FIXME: Hack for EIFFEL lack of namespaces, which causes us to use class names like
--- OE_C_DATE instead of just C_DATE
-if rm_type_name.substring (1, ("OE_").count).is_equal("OE_") then
-	rm_type_name.remove_head (("OE_").count)
-end
 			rm_type_name.remove_head(2)
 			create representation.make_anonymous(Current)
 		end
-	
+
 feature -- Access
 
 	item: C_PRIMITIVE
@@ -54,7 +48,7 @@ feature -- Access
 		do
 			Result := item.default_value
 		end
-		
+
 feature -- Status Report
 
 	any_allowed: BOOLEAN is
@@ -78,7 +72,7 @@ feature -- Status Report
 			end
 		end
 
-	valid_value (a_value: like default_value): BOOLEAN is 
+	valid_value (a_value: like default_value): BOOLEAN is
 		do
 			Result := item.valid_value (a_value)
 		end
@@ -108,7 +102,7 @@ feature -- Serialisation
 		do
 			serialiser.start_c_primitive_object(Current, depth)
 		end
-		
+
 	exit_block(serialiser: CONSTRAINT_MODEL_SERIALISER; depth: INTEGER) is
 			-- perform serialisation at end of block for this node
 		do
@@ -117,7 +111,7 @@ feature -- Serialisation
 
 invariant
 	item_exists: any_allowed xor item /= Void
-	
+
 end
 
 

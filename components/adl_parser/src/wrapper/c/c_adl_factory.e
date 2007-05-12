@@ -54,7 +54,7 @@ feature -- Date/Time Routines
 			-- REQUIRE
 			-- a_str /= void
 		local
-			c_a_str: C_STRING
+			c_a_str: BASE_C_STRING
 		do
 			create c_a_str.make_by_pointer (a_str)
 			Result := constraint_model_factory.valid_iso8601_date_constraint_pattern(c_a_str.string)
@@ -65,7 +65,7 @@ feature -- Date/Time Routines
 			-- REQUIRE
 			-- a_str /= void
 		local
-			c_a_str: C_STRING
+			c_a_str: BASE_C_STRING
 		do
 			create c_a_str.make_by_pointer (a_str)
 			Result := constraint_model_factory.valid_iso8601_date(c_a_str.string)
@@ -76,7 +76,7 @@ feature -- Date/Time Routines
 			-- REQUIRE
 			-- a_str /= void
 		local
-			c_a_str: C_STRING
+			c_a_str: BASE_C_STRING
 		do
 			create c_a_str.make_by_pointer (a_str)
 			Result := constraint_model_factory.valid_iso8601_date_time_constraint_pattern(c_a_str.string)
@@ -87,7 +87,7 @@ feature -- Date/Time Routines
 			-- REQUIRE
 			-- a_str /= void
 		local
-			c_a_str: C_STRING
+			c_a_str: BASE_C_STRING
 		do
 			create c_a_str.make_by_pointer (a_str)
 			Result := constraint_model_factory.valid_iso8601_date_time(c_a_str.string)
@@ -98,7 +98,7 @@ feature -- Date/Time Routines
 			-- REQUIRE
 			-- a_str /= void
 		local
-			c_a_str: C_STRING
+			c_a_str: BASE_C_STRING
 		do
 			create c_a_str.make_by_pointer (a_str)
 			Result := constraint_model_factory.valid_iso8601_duration(c_a_str.string)
@@ -109,7 +109,7 @@ feature -- Date/Time Routines
 			-- REQUIRE
 			-- a_str /= void
 		local
-			c_a_str: C_STRING
+			c_a_str: BASE_C_STRING
 		do
 			create c_a_str.make_by_pointer (a_str)
 			Result := constraint_model_factory.valid_iso8601_duration_constraint_pattern(c_a_str.string)
@@ -121,7 +121,7 @@ feature -- Date/Time Routines
 			-- REQUIRE
 			-- a_str /= void
 		local
-			c_a_str: C_STRING
+			c_a_str: BASE_C_STRING
 		do
 			create c_a_str.make_by_pointer (a_str)
 			Result := constraint_model_factory.valid_iso8601_time_constraint_pattern(c_a_str.string)
@@ -132,7 +132,7 @@ feature -- Date/Time Routines
 			-- REQUIRE
 			-- a_str /= void
 		local
-			c_a_str: C_STRING
+			c_a_str: BASE_C_STRING
 		do
 			create c_a_str.make_by_pointer (a_str)
 			Result := constraint_model_factory.valid_iso8601_time(c_a_str.string)
@@ -264,7 +264,7 @@ feature -- Primitive Object Creation
 	create_c_string_make_from_string (a_str: POINTER): INTEGER is
 			-- create Result from a single string
 		local
-			c_a_str: C_STRING
+			c_a_str: BASE_C_STRING
 		do
 			create c_a_str.make_by_pointer (a_str)
 
@@ -275,7 +275,7 @@ feature -- Primitive Object Creation
 	create_c_string_make_from_regexp (a_str: POINTER): INTEGER is
 			-- create Result from a regular expression
 		local
-			c_a_str: C_STRING
+			c_a_str: BASE_C_STRING
 		do
 			create c_a_str.make_by_pointer (a_str)
 
@@ -299,7 +299,7 @@ feature -- Primitive Object Creation
 			-- upper_valid: an_upper /= void and then is_valid_iso8601_date_string(an_upper)
 			-- valid_order: iso8601_string_to_date(a_lower) <= iso8601_string_to_date(an_upper)
 		local
-			c_a_lower, c_an_upper: C_STRING
+			c_a_lower, c_an_upper: BASE_C_STRING
 		do
 			create c_a_lower.make_by_pointer (a_lower)
 			create c_an_upper.make_by_pointer (an_upper)
@@ -313,7 +313,7 @@ feature -- Primitive Object Creation
 			-- REQUIRE
 			-- upper_valid: an_upper /= void and then is_valid_iso8601_date_string(an_upper)
 		local
-			c_an_upper: C_STRING
+			c_an_upper: BASE_C_STRING
 		do
 			create c_an_upper.make_by_pointer (an_upper)
 
@@ -326,7 +326,7 @@ feature -- Primitive Object Creation
 			-- REQUIRE
 			-- lower_valid: a_lower /= void and then is_valid_iso8601_date_string(a_lower)
 		local
-			c_a_lower: C_STRING
+			c_a_lower: BASE_C_STRING
 		do
 			create c_a_lower.make_by_pointer (a_lower)
 
@@ -339,7 +339,7 @@ feature -- Primitive Object Creation
 			-- REQUIRE
 			-- pattern_valid: a_pattern /= void and then is_valid_iso8601_date_constraint_pattern(a_pattern)
 		local
-			c_a_pattern: C_STRING
+			c_a_pattern: BASE_C_STRING
 		do
 			create c_a_pattern.make_by_pointer (a_pattern)
 
@@ -361,7 +361,7 @@ feature -- Primitive Object Creation
 			-- upper_valid: an_upper /= void and then is_valid_iso8601_date_time_string(an_upper)
 			-- valid_order: iso8601_string_to_date_time(a_lower) <= iso8601_string_to_date_time(an_upper)
 		local
-			c_a_lower, c_an_upper: C_STRING
+			c_a_lower, c_an_upper: BASE_C_STRING
 		do
 			create c_a_lower.make_by_pointer (a_lower)
 			create c_an_upper.make_by_pointer (an_upper)
@@ -375,7 +375,7 @@ feature -- Primitive Object Creation
 			-- REQUIRE
 			-- upper_valid: an_upper /= void and then is_valid_iso8601_date_time_string(an_upper)
 		local
-			c_an_upper: C_STRING
+			c_an_upper: BASE_C_STRING
 		do
 			create c_an_upper.make_by_pointer (an_upper)
 
@@ -388,7 +388,7 @@ feature -- Primitive Object Creation
 			-- REQUIRE
 			-- lower_valid: a_lower /= void and then is_valid_iso8601_date_time_string(a_lower)
 		local
-			c_a_lower: C_STRING
+			c_a_lower: BASE_C_STRING
 		do
 			create c_a_lower.make_by_pointer (a_lower)
 
@@ -401,7 +401,7 @@ feature -- Primitive Object Creation
 			-- REQUIRE
 			-- pattern_valid: a_pattern /= void and then is_valid_iso8601_date_time_constraint_pattern(a_pattern)
 		local
-			c_a_pattern: C_STRING
+			c_a_pattern: BASE_C_STRING
 		do
 			create c_a_pattern.make_by_pointer (a_pattern)
 
@@ -423,7 +423,7 @@ feature -- Primitive Object Creation
 			-- upper_valid: an_upper /= void and then is_valid_iso8601_time_string(an_upper)
 			-- valid_order: iso8601_string_to_time(a_lower) <= iso8601_string_to_time(an_upper)
 		local
-			c_a_lower, c_an_upper: C_STRING
+			c_a_lower, c_an_upper: BASE_C_STRING
 		do
 			create c_a_lower.make_by_pointer (a_lower)
 			create c_an_upper.make_by_pointer (an_upper)
@@ -437,7 +437,7 @@ feature -- Primitive Object Creation
 			-- REQUIRE
 			-- upper_valid: an_upper /= void and then is_valid_iso8601_time_string(an_upper)
 		local
-			c_an_upper: C_STRING
+			c_an_upper: BASE_C_STRING
 		do
 			create c_an_upper.make_by_pointer (an_upper)
 
@@ -450,7 +450,7 @@ feature -- Primitive Object Creation
 			-- REQUIRE
 			-- lower_valid: a_lower /= void and then is_valid_iso8601_time_string(a_lower)
 		local
-			c_a_lower: C_STRING
+			c_a_lower: BASE_C_STRING
 		do
 			create c_a_lower.make_by_pointer (a_lower)
 
@@ -463,7 +463,7 @@ feature -- Primitive Object Creation
 			-- REQUIRE
 			-- pattern_valid: a_pattern /= void and then is_valid_iso8601_time_constraint_pattern(a_pattern)
 		local
-			c_a_pattern: C_STRING
+			c_a_pattern: BASE_C_STRING
 		do
 			create c_a_pattern.make_by_pointer (a_pattern)
 
@@ -485,7 +485,7 @@ feature -- Primitive Object Creation
 			-- upper_valid: an_upper /= void and then is_valid_iso8601_duration_string(an_upper)
 			-- valid_order: iso8601_string_to_duration(a_lower) <= iso8601_string_to_duration(an_upper)
 		local
-			c_a_lower, c_an_upper: C_STRING
+			c_a_lower, c_an_upper: BASE_C_STRING
 		do
 			create c_a_lower.make_by_pointer (a_lower)
 			create c_an_upper.make_by_pointer (an_upper)
@@ -499,7 +499,7 @@ feature -- Primitive Object Creation
 			-- REQUIRE
 			-- upper_valid: an_upper /= void and then is_valid_iso8601_duration_string(an_upper)
 		local
-			c_an_upper: C_STRING
+			c_an_upper: BASE_C_STRING
 		do
 			create c_an_upper.make_by_pointer (an_upper)
 
@@ -512,7 +512,7 @@ feature -- Primitive Object Creation
 			-- REQUIRE
 			-- lower_valid: a_lower /= void and then is_valid_iso8601_duration_string(a_lower)
 		local
-			c_a_lower: C_STRING
+			c_a_lower: BASE_C_STRING
 		do
 			create c_a_lower.make_by_pointer (a_lower)
 
@@ -535,7 +535,7 @@ feature -- Domain object creation
 			-- parent_valid: has_c_attribute(h_parent_c_attribute)
 			-- term_constraint_valid: a_term_constraint /= void
 		local
-			c_a_term_constraint: C_STRING
+			c_a_term_constraint: BASE_C_STRING
 		do
 			create c_a_term_constraint.make_by_pointer (a_term_constraint)
 
@@ -561,7 +561,7 @@ feature -- Domain object creation
 			-- c_ordinal_valid: has_c_ordinal(h_c_ordinal)
 			-- a_symbol_valid: a_symbol_code_phrase /= void
 		local
-			c_a_symbol_code_phrase: C_STRING
+			c_a_symbol_code_phrase: BASE_C_STRING
 		do
 			create c_a_symbol_code_phrase.make_by_pointer (a_symbol_code_phrase)
 
@@ -569,7 +569,7 @@ feature -- Domain object creation
 		end
 
 	create_c_primitive_object (h_parent_c_attribute: INTEGER; h_c_primitive: INTEGER): INTEGER is
-			-- h_c_primitive is C_STRING, C_INTEGER, C_REAL, C_DOUBLE, C_BOOLEAN
+			-- h_c_primitive is BASE_C_STRING, C_INTEGER, C_REAL, C_DOUBLE, C_BOOLEAN
 			-- REQUIRE
 			-- parent_valid: has_c_attribute(h_parent_c_attribute)
 			-- h_c_primitive_valid: has_c_primitive(h_c_primitive) /= void
@@ -622,7 +622,7 @@ feature -- Archetype Node Creation
 			-- a_type_name_valid: a_type_name /= void
 			-- a_path_valid: a_path /= void
 		local
-			c_a_type_name, c_a_path: C_STRING
+			c_a_type_name, c_a_path: BASE_C_STRING
 		do
 			create c_a_type_name.make_by_pointer (a_type_name)
 			create c_a_path.make_by_pointer (a_path)
@@ -638,7 +638,7 @@ feature -- Archetype Node Creation
 			-- parent_valid: has_c_attribute(h_parent_c_attribute)
 			-- type_name_valid: a_type_name /= void and then not a_type_name.is_empty
 		local
-			c_a_type_name: C_STRING
+			c_a_type_name: BASE_C_STRING
 		do
 			create c_a_type_name.make_by_pointer (a_type_name)
 
@@ -653,7 +653,7 @@ feature -- Archetype Node Creation
 			-- parent_valid: has_c_attribute(h_parent_c_attribute)
 			-- type_name_valid: a_type_name /= void and then not a_type_name.is_empty
 		local
-			c_a_type_name, c_a_node_id: C_STRING
+			c_a_type_name, c_a_node_id: BASE_C_STRING
 		do
 			create c_a_type_name.make_by_pointer (a_type_name)
 			create c_a_node_id.make_by_pointer (a_node_id)
@@ -671,7 +671,7 @@ feature -- Archetype Node Creation
 			-- an_attr_name_valid: an_attr_name /= void
 			-- cardinality_valid: has_cardinality(h_cardinality)
 		local
-			c_an_attr_name: C_STRING
+			c_an_attr_name: BASE_C_STRING
 		do
 			create c_an_attr_name.make_by_pointer (an_attr_name)
 
@@ -687,7 +687,7 @@ feature -- Archetype Node Creation
 			-- parent_valid: has_c_complex_object(h_parent_c_complex_object)
 			-- an_attr_name_valid: an_attr_name /= void
 		local
-			c_an_attr_name: C_STRING
+			c_an_attr_name: BASE_C_STRING
 		do
 			create c_an_attr_name.make_by_pointer (an_attr_name)
 
@@ -701,7 +701,7 @@ feature -- Archetype Node Creation
 			-- parent_valid: has_c_attribute(h_parent_c_attribute)
 			-- type_name_valid: a_type_name /= void
 		local
-			c_a_type_name: C_STRING
+			c_a_type_name: BASE_C_STRING
 		do
 			create c_a_type_name.make_by_pointer (a_type_name)
 
@@ -716,7 +716,7 @@ feature -- Archetype Node Creation
 			-- type_name_valid: a_type_name /= void
 			-- node_id_valid: a_node_id /= void
 		local
-			c_a_type_name, c_a_node_id: C_STRING
+			c_a_type_name, c_a_node_id: BASE_C_STRING
 		do
 			create c_a_type_name.make_by_pointer (a_type_name)
 			create c_a_node_id.make_by_pointer (a_node_id)
@@ -732,7 +732,7 @@ feature -- Archetype Node Creation
 			-- parent_valid: has_c_attribute(h_parent_c_attribute)
 			-- code_valid: a_code /= void
 		local
-			c_a_code: C_STRING
+			c_a_code: BASE_C_STRING
 		do
 			create c_a_code.make_by_pointer (a_code)
 
@@ -775,7 +775,7 @@ feature -- Assertions
 			-- tag_valid: a_tag /= void and then a_tag.is_empty
 			-- expr_valid: an_expr /= void
 		local
-			c_a_tag: C_STRING
+			c_a_tag: BASE_C_STRING
 		do
 			create c_a_tag.make_by_pointer (a_tag)
 			Result := new_handle
@@ -822,7 +822,7 @@ feature -- Assertions
 
 	create_expr_leaf_constraint (h_an_item: INTEGER): INTEGER is
 			-- node is a constraint on a primitive type; can only be used with "matches" function
-			-- an_item is C_STRING, C_INTEGER, C_REAL, C_DOUBLE, C_BOOLEAN
+			-- an_item is BASE_C_STRING, C_INTEGER, C_REAL, C_DOUBLE, C_BOOLEAN
 			-- REQUIRE
 			-- item_exists: an_item /= void
 		do
@@ -836,7 +836,7 @@ feature -- Assertions
 			-- REQUIRE
 			-- ref_exists: a_ref /= void and then not a_ref.is_empty
 		local
-			c_a_ref: C_STRING
+			c_a_ref: BASE_C_STRING
 		do
 			create c_a_ref.make_by_pointer (a_ref)
 			Result := new_handle
@@ -855,7 +855,7 @@ feature -- Assertions
 			-- REQUIRE
 			-- ref_exists: a_ref_path /= void and then not a_ref_path.is_empty
 		local
-			c_a_ref_path: C_STRING
+			c_a_ref_path: BASE_C_STRING
 		do
 			create c_a_ref_path.make_by_pointer (a_ref_path)
 			Result := new_handle
@@ -874,7 +874,7 @@ feature -- Assertions
 			-- REQUIRE
 			-- item_exists: an_item /= void
 		local
-			c_an_item: C_STRING
+			c_an_item: BASE_C_STRING
 		do
 			create c_an_item.make_by_pointer (an_item)
 			Result := new_handle

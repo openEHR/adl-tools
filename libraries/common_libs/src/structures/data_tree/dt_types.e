@@ -26,7 +26,7 @@ inherit
 
 feature {NONE} -- Definitions
 
-	primitive_types: ARRAYED_LIST[INTEGER] is 
+	primitive_types: ARRAYED_LIST[INTEGER] is
 		local
 			a_uri: URI -- keep to ensure compiled in
 			a_code_phrase: CODE_PHRASE -- keep to ensure compiled in
@@ -100,31 +100,31 @@ feature {NONE} -- Definitions
 			-- the list of dynamic types of intervals of primitives
 		local
 			-- these locals are to ensure that the types are compiled into the system
-			ivl_integer: OE_INTERVAL[INTEGER]
-			ivl_real: OE_INTERVAL[REAL]
-			ivl_double: OE_INTERVAL[DOUBLE]
-			ivl_integer_ref: OE_INTERVAL[INTEGER_REF]
-			ivl_real_ref: OE_INTERVAL[REAL_REF]
-			ivl_double_ref: OE_INTERVAL[DOUBLE_REF]
-			ivl_date: OE_INTERVAL[DATE]
-			ivl_date_time: OE_INTERVAL[DATE_TIME]
-			ivl_time: OE_INTERVAL[TIME]
-			ivl_duration: OE_INTERVAL[DATE_TIME_DURATION]
+			ivl_integer: INTERVAL[INTEGER]
+			ivl_real: INTERVAL[REAL]
+			ivl_double: INTERVAL[DOUBLE]
+			ivl_integer_ref: INTERVAL[INTEGER_REF]
+			ivl_real_ref: INTERVAL[REAL_REF]
+			ivl_double_ref: INTERVAL[DOUBLE_REF]
+			ivl_date: INTERVAL[DATE]
+			ivl_date_time: INTERVAL[DATE_TIME]
+			ivl_time: INTERVAL[TIME]
+			ivl_duration: INTERVAL[DATE_TIME_DURATION]
 		once
 			Create Result.make(0)
 			Result.compare_objects
-			Result.extend(dynamic_type_from_string("OE_INTERVAL[INTEGER]"))
-			Result.extend(dynamic_type_from_string("OE_INTERVAL[REAL]"))
-			Result.extend(dynamic_type_from_string("OE_INTERVAL[DOUBLE]"))
-			Result.extend(dynamic_type_from_string("OE_INTERVAL[DATE]"))
-			Result.extend(dynamic_type_from_string("OE_INTERVAL[DATE_TIME]"))
-			Result.extend(dynamic_type_from_string("OE_INTERVAL[TIME]"))
-			Result.extend(dynamic_type_from_string("OE_INTERVAL[DATE_TIME_DURATION]"))
-			Result.extend(dynamic_type_from_string("OE_INTERVAL[INTEGER_REF]"))
-			Result.extend(dynamic_type_from_string("OE_INTERVAL[REAL_REF]"))
-			Result.extend(dynamic_type_from_string("OE_INTERVAL[DOUBLE_REF]"))
+			Result.extend(dynamic_type_from_string("INTERVAL[INTEGER]"))
+			Result.extend(dynamic_type_from_string("INTERVAL[REAL]"))
+			Result.extend(dynamic_type_from_string("INTERVAL[DOUBLE]"))
+			Result.extend(dynamic_type_from_string("INTERVAL[DATE]"))
+			Result.extend(dynamic_type_from_string("INTERVAL[DATE_TIME]"))
+			Result.extend(dynamic_type_from_string("INTERVAL[TIME]"))
+			Result.extend(dynamic_type_from_string("INTERVAL[DATE_TIME_DURATION]"))
+			Result.extend(dynamic_type_from_string("INTERVAL[INTEGER_REF]"))
+			Result.extend(dynamic_type_from_string("INTERVAL[REAL_REF]"))
+			Result.extend(dynamic_type_from_string("INTERVAL[DOUBLE_REF]"))
 		end
-	
+
 feature -- Access
 
 	primitive_sequence_conforming_type(a_type_id: INTEGER): INTEGER is
@@ -146,9 +146,9 @@ feature -- Access
 							primitive_sequence_types.off or Result /= 0
 						loop
 							debug ("DT")
-								io.put_string(generator + 
-									".primitive_sequence_conforming_type: call to type_conforms_to(" + 
-									type_name_of_type(a_type_id) + ", " + 
+								io.put_string(generator +
+									".primitive_sequence_conforming_type: call to type_conforms_to(" +
+									type_name_of_type(a_type_id) + ", " +
 									type_name_of_type(primitive_sequence_types.item)
 									+ "):")
 							end
@@ -171,10 +171,10 @@ feature -- Access
 				end
 			end
 		end
-	
+
 	any_primitive_conforming_type(a_type_id: INTEGER): INTEGER is
 			-- Returns a_type_id if in any of the primitive types which
-			-- a_type_id, or 
+			-- a_type_id, or
 			-- one of the primitive_sequence types to which a_type_id conforms
 			-- or 0 if not found
 		require
@@ -190,7 +190,7 @@ end
 			end
 debug ("DT")
 	io.put_string("<---EXIT any_primitive_conforming_type(" + a_type_id.out + ")=" + Result.out + "%N")
-end		
+end
 		end
 
 feature -- Status Report
@@ -203,7 +203,7 @@ feature -- Status Report
 		do
 			Result := is_primitive_type(a_type_id)
 			if not Result and generic_count_of_type(a_type_id) > 0 then
-				Result := primitive_sequence_types.has(a_type_id) or 
+				Result := primitive_sequence_types.has(a_type_id) or
 						primitive_interval_types.has(a_type_id)
 			end
 		end
@@ -218,7 +218,7 @@ feature -- Status Report
 		end
 
 	is_primitive_type(a_type_id: INTEGER): BOOLEAN is
-			-- True if one of the types STRING, INTEGER, REAL, BOOLEAN, CHARACTER, 
+			-- True if one of the types STRING, INTEGER, REAL, BOOLEAN, CHARACTER,
 			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION
 		require
 			Type_valid: a_type_id >= 0
@@ -227,7 +227,7 @@ feature -- Status Report
 		end
 
 	is_primitive_sequence_type(a_type_id: INTEGER): BOOLEAN is
-			-- True if a_type_id conforms to SEQUENCE of STRING, INTEGER, REAL, BOOLEAN, CHARACTER, 
+			-- True if a_type_id conforms to SEQUENCE of STRING, INTEGER, REAL, BOOLEAN, CHARACTER,
 			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION, CODE_PHRASE, URI
 		require
 			Type_valid: a_type_id >= 0
@@ -236,7 +236,7 @@ feature -- Status Report
 		end
 
 	is_primitive_interval_type(a_type_id: INTEGER): BOOLEAN is
-			-- True if a_type_id conforms to INTERVAL of STRING, INTEGER, REAL, BOOLEAN, CHARACTER, 
+			-- True if a_type_id conforms to INTERVAL of STRING, INTEGER, REAL, BOOLEAN, CHARACTER,
 			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION, CODE_PHRASE, URI
 		require
 			Type_valid: a_type_id >= 0
@@ -252,9 +252,9 @@ feature -- Status Report
 		do
 			Result := primitive_sequence_conforming_type(a_type_id) /= 0
 		end
-	
+
 	has_primitive_type(an_obj: ANY): BOOLEAN is
-			-- True if one of the types STRING, INTEGER, REAL, BOOLEAN, CHARACTER, 
+			-- True if one of the types STRING, INTEGER, REAL, BOOLEAN, CHARACTER,
 			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION
 		require
 			Object_valid: an_obj /= Void
@@ -263,7 +263,7 @@ feature -- Status Report
 		end
 
 	has_primitive_sequence_type(an_obj: ANY): BOOLEAN is
-			-- True if an_obj conforms to SEQUENCE of STRING, INTEGER, REAL, BOOLEAN, CHARACTER, 
+			-- True if an_obj conforms to SEQUENCE of STRING, INTEGER, REAL, BOOLEAN, CHARACTER,
 			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION, CODE_PHRASE, URI
 		require
 			Object_valid: an_obj /= Void
@@ -272,7 +272,7 @@ feature -- Status Report
 		end
 
 	has_primitive_interval_type(an_obj: ANY): BOOLEAN is
-			-- True if an_obj conforms to INTERVAL of STRING, INTEGER, REAL, BOOLEAN, CHARACTER, 
+			-- True if an_obj conforms to INTERVAL of STRING, INTEGER, REAL, BOOLEAN, CHARACTER,
 			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION, CODE_PHRASE, URI
 		require
 			Object_valid: an_obj /= Void
@@ -285,11 +285,11 @@ feature -- Status Report
 			-- CONTAINERs used in DT structures
 		do
 			debug ("DT")
-				io.put_string(generator + 
-					".is_container_type: call to type_conforms_to(" + 
-						type_name_of_type(a_type_id) + ", " + 
-						type_name_of_type(sequence_any_type_id) + "), type_conforms_to(" + 
-						type_name_of_type(a_type_id) + ", " + 
+				io.put_string(generator +
+					".is_container_type: call to type_conforms_to(" +
+						type_name_of_type(a_type_id) + ", " +
+						type_name_of_type(sequence_any_type_id) + "), type_conforms_to(" +
+						type_name_of_type(a_type_id) + ", " +
 						type_name_of_type(hash_table_any_hashable_type_id) + ")%N")
 			end
 			Result := type_conforms_to(a_type_id, sequence_any_type_id) or
@@ -298,7 +298,7 @@ feature -- Status Report
 				io.put_string("%T(return)%N")
 			end
 		end
-		
+
 feature {NONE} -- Implementation
 
 	sequence_any_type_id: INTEGER is

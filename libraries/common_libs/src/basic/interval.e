@@ -13,7 +13,7 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class OE_INTERVAL [G -> PART_COMPARABLE]
+class INTERVAL [G -> PART_COMPARABLE]
 
 inherit
 	ANY

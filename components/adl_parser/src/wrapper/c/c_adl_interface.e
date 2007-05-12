@@ -34,7 +34,7 @@ inherit
 		undefine
 			default_rescue
 		end
-		
+
 	C_ARCHETYPE_ONTOLOGY
 		undefine
 			default_rescue
@@ -46,21 +46,21 @@ inherit
 		undefine
 			default_rescue
 		end
-	
+
 	EXCEPTIONS
 		export
 			{NONE} all
 		redefine
 			default_rescue
 		end
-		
+
 	MEMORY
 		export
 			{NONE} all
 		redefine
 			default_rescue
 		end
-		
+
 create
 	make
 
@@ -71,7 +71,7 @@ feature -- Initialisation
 		do
 			make_factory
 		end
-	
+
 feature -- Exception Handling
 
 	default_rescue is
@@ -80,18 +80,18 @@ feature -- Exception Handling
 			adl_interface.set_status("Software Exception " + exception.out + " caught; stack:%N" + exception_trace)
 			adl_interface.set_exception_encountered
 		end
-		
+
 feature -- Access
-	
-	status: POINTER is 
+
+	status: POINTER is
 			-- status of last operation
 		local
 			obj: ANY
 		do
 			obj := adl_interface.status.to_c
 			Result := $obj
-		end		
-		
+		end
+
 	serialised_archetype: POINTER is
 			-- call after loading and parsing, if no errors encountered
 			-- REQUIRE
@@ -103,15 +103,15 @@ feature -- Access
 			Result := $obj
 		end
 
-	openehr_version: POINTER is 
+	openehr_version: POINTER is
 			-- openehr version information
 		local
 			obj: ANY
 		do
 			obj := adl_interface.openehr_version.to_c
 			Result := $obj
-		end		
-		
+		end
+
 feature -- Status Report
 
 	archetype_source_loaded: BOOLEAN is
@@ -125,7 +125,7 @@ feature -- Status Report
 		do
 			Result := adl_interface.parse_succeeded
 		end
-			
+
 	save_succeeded: BOOLEAN is
 			-- True if last save operation was successful
 		do
@@ -136,31 +136,31 @@ feature -- Status Report
 		do
 			Result := adl_interface.archetype_available
 		end
-		
+
 	archetype_valid: BOOLEAN is
 		do
 			Result := adl_interface.archetype_valid
 		end
-		
+
 	file_changed_on_disk: BOOLEAN is
 			-- True if loaded archetype has changed on disk since last read;
 			-- To fix, call resync_file
 		do
 			Result := adl_interface.file_changed_on_disk
 		end
-		
+
 	exception_encountered: BOOLEAN is
 			-- True if last operation caused an exception
 		do
 			Result := adl_interface.exception_encountered
 		end
-		
+
 	has_archetype_serialiser_format(a_format: POINTER): BOOLEAN is
 			-- True if a_format known
 			-- REQUIRE
 			-- 	a_format /= void
 		local
-			c_a_format: C_STRING
+			c_a_format: BASE_C_STRING
 		do
 			create c_a_format.make_by_pointer (a_format)
 			Result := adl_interface.has_archetype_serialiser_format(c_a_format.string)
@@ -172,12 +172,12 @@ feature -- Commands
 			-- REQUIRE
 			-- a_dir_valid: a_dir /= void and then not a_dir.is_empty
 		local
-			c_a_dir: C_STRING
+			c_a_dir: BASE_C_STRING
 		do
 			create c_a_dir.make_by_pointer (a_dir)
 			adl_interface.set_current_directory (c_a_dir.string)
 		end
-		
+
 	create_new_archetype(a_im_originator, a_im_name, a_im_entity, a_primary_language: POINTER) is
 			-- create a new tree and throw away previous state
 			-- REQUIRE
@@ -186,54 +186,54 @@ feature -- Commands
 			--  info_model_entity_valid: a_im_entity /= void and then not a_im_entity.is_empty
 			--  primary_language_valid: a_primary_language /= void and then not a_primary_language.is_empty
 		local
-			c_a_im_originator, c_a_im_name, c_a_im_entity, c_a_primary_language: C_STRING
+			c_a_im_originator, c_a_im_name, c_a_im_entity, c_a_primary_language: BASE_C_STRING
 		do
 			create c_a_im_originator.make_by_pointer (a_im_originator)
 			create c_a_im_name.make_by_pointer (a_im_name)
 			create c_a_im_entity.make_by_pointer (a_im_entity)
 			create c_a_primary_language.make_by_pointer (a_primary_language)
-			adl_interface.create_new_archetype(c_a_im_originator.string, 
-									c_a_im_name.string, 
-									c_a_im_entity.string, 
+			adl_interface.create_new_archetype(c_a_im_originator.string,
+									c_a_im_name.string,
+									c_a_im_entity.string,
 									c_a_primary_language.string)
 
 			-- put newly created objects into shared object cache for acces from other side of C interface
 			set_archetype_definition_handle(adl_objects.new_handle)
 			put_c_complex_object(adl_interface.adl_engine.archetype.definition, adl_objects.archetype_definition_handle)
 		end
-		
+
 	specialise_archetype(specialised_domain_concept: POINTER) is
 			-- convert current archetype to specialised version of itself,
 			-- supplying a specialised domain concept string to go in the new archetype id
 			-- (which is a duplicate of the old one, with this concept string inserted)
 			-- REQUIRE
 			--  Archetype_available: archetype_available and then archetype_valid
-			--  Concept_valid: specialised_domain_concept /= Void and then not 
+			--  Concept_valid: specialised_domain_concept /= Void and then not
 			--					specialised_domain_concept.is_empty
 		local
-			c_specialised_domain_concept: C_STRING
+			c_specialised_domain_concept: BASE_C_STRING
 		do
 			create c_specialised_domain_concept.make_by_pointer (specialised_domain_concept)
 			adl_interface.specialise_archetype(c_specialised_domain_concept.string)
 		end
-		
+
 	open_adl_file(file_path: POINTER) is
 			-- REQUIRE
 			--	file_path_valid: file_path /= Void and then not file_path.is_empty
 		local
-			c_file_path: C_STRING
+			c_file_path: BASE_C_STRING
 		do
 			create c_file_path.make_by_pointer (file_path)
-			
+
 			adl_interface.open_adl_file(c_file_path.string)
 		end
-		
+
 	resync_file is
 			-- resync from disc
 		do
 			adl_interface.resync_file
 		end
-		
+
 	save_archetype(file_path, save_format: POINTER) is
 			-- Save ADL file via GUI File save dialog
 			-- REQUIRE
@@ -241,11 +241,11 @@ feature -- Commands
 			-- 	file_path_valid: file_path /= Void and then not file_path.is_empty
 			--  save_format_valid: save_format /= Void and then has_archetype_serialiser_format(save_format)
 		local
-			c_file_path, c_save_format: C_STRING
+			c_file_path, c_save_format: BASE_C_STRING
 		do
 			create c_file_path.make_by_pointer (file_path)
 			create c_save_format.make_by_pointer (save_format)
-			
+
 			adl_interface.save_archetype(c_file_path.string, c_save_format.string)
 		end
 
@@ -255,7 +255,7 @@ feature -- Commands
 			-- archetype_available
 			-- serialise_format_valid: serialise_format /= Void and then has_archetype_serialiser_format(serialise_format)
 		local
-			c_serialise_format: C_STRING
+			c_serialise_format: BASE_C_STRING
 		do
 			create c_serialise_format.make_by_pointer (serialise_format)
 			adl_interface.serialise_archetype(c_serialise_format.string)

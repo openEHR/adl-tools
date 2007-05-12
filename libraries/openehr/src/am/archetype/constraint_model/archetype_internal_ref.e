@@ -72,7 +72,7 @@ feature -- Modification
 			target_path := a_path
 		end
 
-	set_occurrences(ivl: OE_INTERVAL[INTEGER]) is
+	set_occurrences(ivl: INTERVAL[INTEGER]) is
 			-- 
 		do
 			precursor(ivl)

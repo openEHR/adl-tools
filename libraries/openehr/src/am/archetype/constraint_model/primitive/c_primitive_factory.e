@@ -24,7 +24,7 @@ inherit
 	
 feature -- Factory
 
-	create_integer_interval_make_bounded (a_lower, an_upper: INTEGER; include_lower, include_upper: BOOLEAN): OE_INTERVAL[INTEGER] is
+	create_integer_interval_make_bounded (a_lower, an_upper: INTEGER; include_lower, include_upper: BOOLEAN): INTERVAL[INTEGER] is
 			-- create Result with both limits set
 		require
 			valid_order: a_lower <= an_upper
@@ -32,13 +32,13 @@ feature -- Factory
 			create Result.make_bounded(a_lower, an_upper, include_lower, include_upper)
 		end
 
-	create_integer_interval_make_lower_unbounded (an_upper: INTEGER; include_upper: BOOLEAN): OE_INTERVAL[INTEGER] is
+	create_integer_interval_make_lower_unbounded (an_upper: INTEGER; include_upper: BOOLEAN): INTERVAL[INTEGER] is
 			-- create Result from -infinity to `an_upper'
 		do
 			create Result.make_lower_unbounded(an_upper, include_upper)
 		end
 
-	create_integer_interval_make_upper_unbounded (a_lower: INTEGER; include_lower: BOOLEAN): OE_INTERVAL[INTEGER] is
+	create_integer_interval_make_upper_unbounded (a_lower: INTEGER; include_lower: BOOLEAN): INTERVAL[INTEGER] is
 			-- create Result from `a_lower' to +infinity
 		do
 			create Result.make_upper_unbounded(a_lower, include_lower)
@@ -56,7 +56,7 @@ feature -- Factory
 			create Result.make(0)
 		end
 
-	create_real_interval_make_bounded (a_lower, an_upper: REAL; include_lower, include_upper: BOOLEAN): OE_INTERVAL[REAL] is
+	create_real_interval_make_bounded (a_lower, an_upper: REAL; include_lower, include_upper: BOOLEAN): INTERVAL[REAL] is
 			-- create Result with both limits set
 		require
 			valid_order: a_lower <= an_upper
@@ -64,13 +64,13 @@ feature -- Factory
 			create Result.make_bounded(a_lower, an_upper, include_lower, include_upper)
 		end
 
-	create_real_interval_make_lower_unbounded (an_upper: REAL; include_upper: BOOLEAN): OE_INTERVAL[REAL] is
+	create_real_interval_make_lower_unbounded (an_upper: REAL; include_upper: BOOLEAN): INTERVAL[REAL] is
 			-- create Result from -infinity to `an_upper'
 		do
 			create Result.make_lower_unbounded(an_upper, include_upper)
 		end
 
-	create_real_interval_make_upper_unbounded (a_lower: REAL; include_lower: BOOLEAN): OE_INTERVAL[REAL] is
+	create_real_interval_make_upper_unbounded (a_lower: REAL; include_lower: BOOLEAN): INTERVAL[REAL] is
 			-- create Result from `a_lower' to +infinity
 		do
 			create Result.make_upper_unbounded(a_lower, include_lower)
@@ -81,19 +81,19 @@ feature -- Factory
 		require
 			valid_order: a_lower <= an_upper
 		do
-			create Result.make_interval(create {OE_INTERVAL[INTEGER]}.make_bounded(a_lower, an_upper, include_lower, include_upper))
+			create Result.make_interval(create {INTERVAL[INTEGER]}.make_bounded(a_lower, an_upper, include_lower, include_upper))
 		end
 
 	create_c_integer_make_lower_unbounded (an_upper: INTEGER; include_upper: BOOLEAN): C_INTEGER is
 			-- create Result from -infinity to `an_upper'
 		do
-			create Result.make_interval(create {OE_INTERVAL[INTEGER]}.make_lower_unbounded(an_upper, include_upper))
+			create Result.make_interval(create {INTERVAL[INTEGER]}.make_lower_unbounded(an_upper, include_upper))
 		end
 
 	create_c_integer_make_upper_unbounded (a_lower: INTEGER; include_lower: BOOLEAN): C_INTEGER is
 			-- create Result from `a_lower' to +infinity
 		do
-			create Result.make_interval(create {OE_INTERVAL[INTEGER]}.make_upper_unbounded(a_lower, include_lower))
+			create Result.make_interval(create {INTERVAL[INTEGER]}.make_upper_unbounded(a_lower, include_lower))
 		end
 
 	create_c_integer_make_list (a_list: LIST[INTEGER]): C_INTEGER is
@@ -107,19 +107,19 @@ feature -- Factory
 		require
 			valid_order: a_lower <= an_upper
 		do
-			create Result.make_interval(create {OE_INTERVAL[REAL]}.make_bounded(a_lower, an_upper, include_lower, include_upper))
+			create Result.make_interval(create {INTERVAL[REAL]}.make_bounded(a_lower, an_upper, include_lower, include_upper))
 		end
 
 	create_c_real_make_lower_unbounded (an_upper: REAL; include_upper: BOOLEAN): C_REAL is
 			-- create Result from -infinity to `an_upper'
 		do
-			create Result.make_interval(create {OE_INTERVAL[REAL]}.make_lower_unbounded(an_upper, include_upper))
+			create Result.make_interval(create {INTERVAL[REAL]}.make_lower_unbounded(an_upper, include_upper))
 		end
 
 	create_c_real_make_upper_unbounded (a_lower: REAL; include_lower: BOOLEAN): C_REAL is
 			-- create Result from `a_lower' to +infinity
 		do
-			create Result.make_interval(create {OE_INTERVAL[REAL]}.make_upper_unbounded(a_lower, include_lower))
+			create Result.make_interval(create {INTERVAL[REAL]}.make_upper_unbounded(a_lower, include_lower))
 		end
 
 	create_c_real_make_list (a_list: LIST[REAL]): C_REAL is
@@ -146,13 +146,13 @@ feature -- Factory
 			create Result.make_true_false
 		end
 	
-	create_c_string_make_any: OE_C_STRING is
+	create_c_string_make_any: C_STRING is
 			-- create Result completely open
 		do
 			create Result.make_any
 		end
 
-	create_c_string_make_from_string (str: STRING): OE_C_STRING is
+	create_c_string_make_from_string (str: STRING): C_STRING is
 			-- create Result from a single string
 		require
 			str /= void
@@ -162,7 +162,7 @@ feature -- Factory
 			not Result.is_open
 		end
 
-	create_c_string_make_from_regexp (str: STRING): OE_C_STRING is
+	create_c_string_make_from_regexp (str: STRING): C_STRING is
 			-- create Result from a regular expression; don't include delimiters (normally //)
 		require
 			str /= void
@@ -170,7 +170,7 @@ feature -- Factory
 			create Result.make_from_regexp(str, True)
 		end
 
-	create_c_string_make_from_string_list (lst: LIST [STRING]): OE_C_STRING is
+	create_c_string_make_from_string_list (lst: LIST [STRING]): C_STRING is
 			-- create Result from a list of strings
 		require
 			lst /= void
@@ -180,7 +180,7 @@ feature -- Factory
 			not Result.is_open
 		end
 	
-	create_c_date_make_bounded (a_lower, an_upper: STRING): OE_C_DATE is
+	create_c_date_make_bounded (a_lower, an_upper: STRING): C_DATE is
 			-- create Result with both limits set from ISO8601 strings
 		require
 			lower_exists: a_lower /= void and then valid_iso8601_date(a_lower)
@@ -190,7 +190,7 @@ feature -- Factory
 			create Result.make_string_interval(a_lower, an_upper)
 		end
 
-	create_c_date_make_lower_unbounded (an_upper: STRING): OE_C_DATE is
+	create_c_date_make_lower_unbounded (an_upper: STRING): C_DATE is
 			-- create Result from -infinity to `an_upper' in ISO8601 string form
 		require
 			upper_exists: an_upper /= void and then valid_iso8601_date(an_upper)
@@ -198,7 +198,7 @@ feature -- Factory
 			create Result.make_string_interval(Void, an_upper)
 		end
 
-	create_c_date_make_upper_unbounded (a_lower: STRING): OE_C_DATE is
+	create_c_date_make_upper_unbounded (a_lower: STRING): C_DATE is
 			-- create Result from `a_lower' in ISO8601 string form, to +infinity
 		require
 			lower_exists: a_lower /= void and then valid_iso8601_date(a_lower)
@@ -206,13 +206,13 @@ feature -- Factory
 			create Result.make_string_interval(a_lower, Void)
 		end
 
-	create_c_date_make_unbounded: OE_C_DATE is
+	create_c_date_make_unbounded: C_DATE is
 			-- create Result as unbounded interval
 		do
 			create Result.make_string_interval(Void, Void)
 		end
 
-	create_c_date_make_pattern (a_pattern: STRING): OE_C_DATE is
+	create_c_date_make_pattern (a_pattern: STRING): C_DATE is
 			-- create Result from an ISO8601-based pattern like "yyyy-mm-??"
 		require
 			pattern_exists: a_pattern /= void and then valid_iso8601_date_constraint_pattern(a_pattern)

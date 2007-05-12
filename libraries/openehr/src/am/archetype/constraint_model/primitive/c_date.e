@@ -16,7 +16,7 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class OE_C_DATE
+class C_DATE
 
 inherit
 	C_PRIMITIVE
@@ -41,7 +41,7 @@ create
 
 feature -- Initialisation
 	
-	make_interval(an_interval: OE_INTERVAL[ISO8601_DATE]) is
+	make_interval(an_interval: INTERVAL[ISO8601_DATE]) is
 		require
 			Interval_exists: an_interval /= Void
 		do
@@ -91,7 +91,7 @@ feature -- Initialisation
 		
 feature -- Access
 
-	interval: OE_INTERVAL[ISO8601_DATE]
+	interval: INTERVAL[ISO8601_DATE]
 
 	pattern: STRING
 			-- ISO8601-based pattern like "yyyy-mm-??"

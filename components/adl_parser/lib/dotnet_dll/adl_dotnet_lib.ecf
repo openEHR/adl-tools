@@ -6,7 +6,7 @@
 			<exclude>/.svn$</exclude>
 		</file_rule>
 		<option trace="false" profile="false" debug="false" warning="true" namespace="openehr">
-			<assertions precondition="true"/>
+			<assertions precondition="true" postcondition="false" check="false" invariant="false" loop="false"/>
 			<warning name="export_class_missing" enabled="false"/>
 			<warning name="old_verbatim_strings" enabled="false"/>
 			<warning name="syntax" enabled="false"/>
@@ -31,9 +31,14 @@
 		<setting name="multithreaded" value="false"/>
 		<setting name="use_all_cluster_name_as_namespace" value="true"/>
 		<setting name="use_cluster_name_as_namespace" value="true"/>
-		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf">
+			<renaming old_name="C_STRING" new_name="BASE_C_STRING"/>
+		</library>
 		<library name="gobo" location="$ISE_LIBRARY\library\gobo\gobo.ecf"/>
-		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf"/>
+		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf">
+			<renaming old_name="C_DATE" new_name="TIME_C_DATE"/>
+			<renaming old_name="INTERVAL" new_name="TIME_INTERVAL"/>
+		</library>
 		<assembly name="a_ise_dotnet_framework_mscorlib.dll" location="$ISE_DOTNET_FRAMEWORK\mscorlib.dll">
 			<renaming old_name="C_ATTRIBUTE" new_name="DOTNET_C_ATTRIBUTE"/>
 		</assembly>
@@ -44,10 +49,10 @@
 		<cluster name="archetype_repository" location="..\..\..\archetype_repository\src\directory\" recursive="true"/>
 		<cluster name="common_libs" location="..\..\..\..\libraries\common_libs\src\" recursive="true"/>
 		<cluster name="openehr" location="..\..\..\..\libraries\openehr\src\" recursive="true">
-			<visible class="C_DV_QUANTITY"/>
-			<visible class="C_QUANTITY_ITEM"/>
-			<visible class="C_DV_ORDINAL"/>
 			<visible class="C_CODE_PHRASE"/>
+			<visible class="C_QUANTITY_ITEM"/>
+			<visible class="C_DV_QUANTITY"/>
+			<visible class="C_DV_ORDINAL"/>
 		</cluster>
 		<cluster name="version" location="..\..\..\..\libraries\version\" recursive="true"/>
 		<override name="vendor_fixes" location="..\..\..\..\libraries\vendor-fixes\" recursive="true"/>
