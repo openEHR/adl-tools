@@ -18,7 +18,7 @@ inherit
 		redefine
 			is_equal, out
 		end
-		
+
 create
 	make_absolute, make_relative, make_movable, make_from_string, make_from_other, make_root
 
@@ -29,7 +29,7 @@ feature -- Definitions
 	segment_separator: CHARACTER is '/'
 
 	feature_call_separator: CHARACTER is '/'
-	
+
 feature -- Initialisation
 
 	make_root is
@@ -40,7 +40,7 @@ feature -- Initialisation
 		ensure
 			is_absolute
 		end
-		
+
 	make_absolute(a_path_segment: OG_PATH_ITEM) is
 			-- make a path of the form /attr_name[xxx]/attr_name/attr_name[xxx]...
 		require
@@ -52,7 +52,7 @@ feature -- Initialisation
 		ensure
 			is_absolute
 		end
-		
+
 	make_relative(a_path_segment: OG_PATH_ITEM) is
 			-- make a path of the form attr_name[xxx]/attr_name[xxx]...
 		require
@@ -63,7 +63,7 @@ feature -- Initialisation
 		ensure
 			not is_absolute and not is_movable
 		end
-		
+
 	make_movable(a_path_segment: OG_PATH_ITEM) is
 			-- make a path of the form //attr_name[xxx]/attr_name[xxx]...
 			-- point, equivalen to Xpath "//" path
@@ -76,9 +76,9 @@ feature -- Initialisation
 		ensure
 			is_movable
 		end
-		
+
 	make_from_string(s: STRING) is
-			-- 
+			--
 		require
 			s /= Void and then valid_path_string(s)
 		do
@@ -88,7 +88,7 @@ feature -- Initialisation
 			is_terminal := parser.output.is_terminal
 			items := parser.output.items
 		end
-		
+
 	make_from_other(other: OG_PATH) is
 			-- FIXME: created because clone does not work in dotnet
 		do
@@ -96,19 +96,17 @@ feature -- Initialisation
 			is_terminal := other.is_terminal
 			create items.make(0)
 			from
-				other.items.start
+				other.start
 			until
-				other.items.off
+				other.off
 			loop
-				items.extend(create {OG_PATH_ITEM}.make_from_other(other.items.item))
-				other.items.forth
+				items.extend(create {OG_PATH_ITEM}.make_from_other(other.item))
+				other.forth
 			end
-		end	
+		end
 
 feature -- Access
 
-	items: ARRAYED_LIST[OG_PATH_ITEM]
-	
 	item: OG_PATH_ITEM is
 		require
 			not is_empty
@@ -146,13 +144,13 @@ feature -- Access
 		do
 			Result := as_string.hash_code
 		end
-		
+
 	sub_path: OG_PATH is
 			-- the current path minus the first segment
 		require
 			not is_final
 		do
-			from 
+			from
 				start
 				forth	-- miss first item
 				create Result.make_relative(item)
@@ -163,13 +161,13 @@ feature -- Access
 			until
 				off
 			loop
-				Result.items.extend(create {OG_PATH_ITEM}.make_from_other(item))
+				Result.append_segment (create {OG_PATH_ITEM}.make_from_other(item))
 				forth
 			end
 		ensure
 			Result_relative: not Result.is_absolute
 		end
-		
+
 	sub_path_from_item: OG_PATH is
 			-- the section of the current path from current `item' position to the end
 		require
@@ -180,18 +178,18 @@ feature -- Access
 				Result.set_terminal
 			end
 			forth
-			
-			from 
+
+			from
 			until
 				off
 			loop
-				Result.items.extend(create {OG_PATH_ITEM}.make_from_other(item))
+				Result.append_segment (create {OG_PATH_ITEM}.make_from_other(item))
 				forth
 			end
 		ensure
 			Result_relative: not Result.is_absolute
 		end
-		
+
 feature -- Cursor Movement
 
 	start is
@@ -219,17 +217,17 @@ feature -- Status Report
 			end
 			Result := as_string.is_equal(other.as_string)
 		end
-		
+
 	is_absolute: BOOLEAN
 			-- True if this path is relative to the root of hierarchical structure
-			
+
 	is_movable: BOOLEAN
 			-- True if this path is a pattern which may apply anywhere from the
 			-- reference point down. Corresponds to Xpath '//' paths
 
 	is_terminal: BOOLEAN
 			-- True if this path refers to a node which is the last addressable node in a chain
-			-- (not necessarily a leaf node in the structure, however, since leaf nodes often 
+			-- (not necessarily a leaf node in the structure, however, since leaf nodes often
 			-- have no addressing)
 
 	is_empty: BOOLEAN is
@@ -246,13 +244,13 @@ feature -- Status Report
 		do
 			Result := items.off
 		end
-		
+
 	is_final: BOOLEAN is
 			-- true if path has only one segment
 		do
 			Result := items.count = 1
 		end
-		
+
 feature -- Validation
 
 	valid_path_string(a_path: STRING): BOOLEAN is
@@ -266,27 +264,22 @@ feature -- Validation
 				create parser.make
 			end
 			parser.execute(a_path)
-			
+
 			if parser.syntax_error then
 				invalid_path_string_reason.append(parser.error_text)
 			else
 				Result := True
 			end
 		end
-		
+
 	invalid_path_string_reason: STRING
-	
+
 feature -- Modification
 
-	set_movable is 
-			-- set is_movable true
-		do
-			is_movable := True
-		end
-		
 	remove_first is
 			-- remove the first path item
 		do
+			as_string_cache := Void
 			items.start
 			items.remove
 		end
@@ -294,6 +287,7 @@ feature -- Modification
 	remove_last is
 			-- remove the first path item
 		do
+			as_string_cache := Void
 			items.finish
 			items.remove
 		end
@@ -301,53 +295,65 @@ feature -- Modification
 	append_segment(an_item: OG_PATH_ITEM) is
 			-- add segment to the end
 		require
-			item_valid: an_item /= Void and not items.last.is_feature_call
+			item_valid: an_item /= Void and not last.is_feature_call
 		do
+			as_string_cache := Void
 			items.extend(an_item)
 		end
 
 	prepend_segment(an_item: OG_PATH_ITEM) is
 			-- add segment to the front
 		require
-			item_valid: an_item /= Void 
+			item_valid: an_item /= Void
 		do
+			as_string_cache := Void
 			items.put_front(an_item)
 		end
-		
+
 	append_path(a_path: OG_PATH) is
 			-- add a_path to the end
 		require
 			path_valid: a_path /= Void
 		do
-			items.append(a_path.items)
+			as_string_cache := Void
+			items.append (a_path.items)
 		end
 
 feature -- Status Setting
 
+	set_movable is
+			-- set `is_movable' true.
+		do
+			as_string_cache := Void
+			is_movable := True
+		end
+
 	set_absolute is
 		do
+			as_string_cache := Void
 			is_absolute := True
 		end
 
 	set_terminal is
 		do
+			as_string_cache := Void
 			is_terminal := True
 		end
-		
+
 feature -- Comparison
 
 	matches(a_path: STRING):BOOLEAN is
-			-- 
+			--
 		require
 			a_path /= Void and then valid_path_string(a_path)
 		do
-			if a_path.count <= count then				
+			if a_path.count <= count then
 				if parser = Void then
 					create parser.make
 				end
 				parser.execute(a_path)
-			
-				from 
+
+				from
 					parser.output.start
 					start
 					Result := True
@@ -367,39 +373,56 @@ feature -- Output
 		do
 			Result := as_string
 		end
-		
+
 	as_string: STRING is
-			-- 
+			-- Textual representation of `Current'.
 		local
 			csr: ARRAYED_LIST_CURSOR
 		do
-			csr := items.cursor
+			if as_string_cache = Void then
+				csr := items.cursor
 
-			create Result.make(0)
-			start
-			if is_absolute then
-				Result.append_character(segment_separator)
-			elseif is_movable then
-				Result.append(movable_leader)				
-			end
-
-			from
-			until
-				off or item.is_feature_call
-			loop
-				Result.append(item.as_string)
-				if not items.islast then
-					Result.append_character(segment_separator)					
+				if is_absolute then
+					create as_string_cache.make_filled (segment_separator, 1)
+				elseif is_movable then
+					create as_string_cache.make_from_string (movable_leader)
+				else
+					create as_string_cache.make_empty
 				end
-				forth
+
+				from
+					start
+				until
+					off or item.is_feature_call
+				loop
+					as_string_cache.append (item.as_string)
+
+					if not is_last then
+						as_string_cache.append_character(segment_separator)
+					end
+
+					forth
+				end
+
+				items.go_to (csr)
 			end
-			items.go_to(csr)
+
+			Result := as_string_cache
+		ensure
+			attached: Result /= Void
 		end
-		
+
+feature {OG_PATH} -- Implementation
+
+	items: ARRAYED_LIST [OG_PATH_ITEM]
+
 feature {NONE} -- Implementation
 
 	parser: OG_PATH_VALIDATOR
-	
+
+	as_string_cache: STRING
+			-- Cached implementation of `as_string', to improve runtime performance.
+
 invariant
 	Items_valid: items /= Void
 	Movable_validity: not (is_movable and is_absolute)
