@@ -33,10 +33,14 @@
 		<setting name="multithreaded" value="false"/>
 		<external_object location="../../../../../lib/$ISE_C_COMPILER/method_dispatcher.lib"/>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf">
+			<renaming old_name="C_STRING" new_name="BASE_C_STRING"/>
 			<visible class="LINKED_LIST"/>
 		</library>
 		<library name="gobo" location="$ISE_LIBRARY\library\gobo\gobo.ecf"/>
-		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf"/>
+		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf">
+			<renaming old_name="C_DATE" new_name="TIME_C_DATE"/>
+			<renaming old_name="INTERVAL" new_name="TIME_INTERVAL"/>
+		</library>
 		<cluster name="app" location="..\src\" recursive="true">
 			<option>
 				<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true"/>

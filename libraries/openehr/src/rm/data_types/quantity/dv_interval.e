@@ -1,6 +1,6 @@
 indexing
 	component:   "openEHR Data Types"
-	
+
 	description: "[
 				 Generic class defining an interval (i.e. range) of a comparable type. 
 				 An interval is a contiguous subrange of a comparable base type.
@@ -26,17 +26,17 @@ inherit
 		undefine
 			is_equal
 		end
-	OE_INTERVAL [G]
+	INTERVAL [G]
 		redefine
 			as_string
 		end
 
-create 
+create
 	default_create,
-	make_bounded, 
-	make_lower_unbounded, 
-	make_upper_unbounded, 
-	make_from_canonical_string, 
+	make_bounded,
+	make_lower_unbounded,
+	make_upper_unbounded,
+	make_from_canonical_string,
 	make_from_string
 
 feature -- Initialization
@@ -77,7 +77,7 @@ feature -- Conversion
 		do
 			Result := lower.as_string + ".." + upper.as_string
 		end
-	
+
 	as_canonical_string: STRING is
 			-- output as a STRING of the form
 			-- "<lower>" + value + "</lower>"
@@ -95,7 +95,7 @@ feature -- Conversion
 				Result.append("<upper>" + upper.as_canonical_string + "</upper>")
 			end
 		end
-		
+
 invariant
 
 	Limits_consistent: (not upper_unbounded and not lower_unbounded) implies (lower.is_strictly_comparable_to(upper) and lower <= upper)

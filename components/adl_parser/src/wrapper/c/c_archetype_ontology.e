@@ -32,7 +32,7 @@ inherit
 		export
 			{NONE} all
 		end
-		
+
 feature -- Access
 
 	ontology_concept_code: POINTER is
@@ -53,7 +53,7 @@ feature -- Access
 			-- ENSURE
 			--  result_exists: Result /= void
 		local
-			c_a_terminology, c_a_term_code: C_STRING
+			c_a_terminology, c_a_term_code: BASE_C_STRING
 			obj: ANY
 		do
 			create c_a_terminology.make_by_pointer (a_terminology)
@@ -73,7 +73,7 @@ feature -- Access
 		do
 			Result := ontology.constraint_codes.count
 		end
-		
+
 	ontology_constraint_definition (a_lang, a_term_code: POINTER): POINTER is
 			-- retrieve the constraint definition in language `a_lang' for code `a_term_code'
 			-- output in String dADL form of ARCHETYPE_TERM used in archetypes (same as .out form):
@@ -84,7 +84,7 @@ feature -- Access
 			-- ENSURE
 			--  result_exists: Result /= void
 		local
-			c_a_lang, c_a_term_code: C_STRING
+			c_a_lang, c_a_term_code: BASE_C_STRING
 			obj: ANY
 		do
 			create c_a_lang.make_by_pointer (a_lang)
@@ -113,7 +113,7 @@ feature -- Access
 			-- ENSURE
 			--  result_exists: Result /= void
 		local
-			c_a_path, c_a_lang: C_STRING
+			c_a_path, c_a_lang: BASE_C_STRING
 			obj: ANY
 		do
 			create c_a_path.make_by_pointer (a_path)
@@ -128,7 +128,7 @@ feature -- Access
 --	ontology_physical_to_logical_path (a_phys_path, a_lang: POINTER): POINTER is
 --			-- generate a logical path in 'a_lang' from a physical path
 --		local
---			c_a_phys_path, c_a_lang: C_STRING
+--			c_a_phys_path, c_a_lang: BASE_C_STRING
 --			obj: ANY
 --		do
 --			create c_a_phys_path.make_by_pointer (a_phys_path)
@@ -173,7 +173,7 @@ feature -- Access
 			-- ENSURE
 			--  result_exists: Result /= void
 		local
-			c_a_terminology, c_a_term_code: C_STRING
+			c_a_terminology, c_a_term_code: BASE_C_STRING
 			obj: ANY
 		do
 			create c_a_terminology.make_by_pointer (a_terminology)
@@ -187,7 +187,7 @@ feature -- Access
 		do
 			Result := eif_list_string_to_c_array(ontology.term_codes)
 		end
-		
+
 	ontology_term_codes_count: INTEGER is
 			-- SUPPORT FUNCTION SOLELY FOR USE BY JNI LAYER TO DISCOVER ARRAY LENGTH
 		do
@@ -204,12 +204,12 @@ feature -- Access
 			-- ENSURE
 			--  result_exists: Result /= void
 		local
-			c_a_lang, c_a_term_code, obj: C_STRING
+			c_a_lang, c_a_term_code, obj: BASE_C_STRING
 			-- obj: ANY
 		do
 			create c_a_lang.make_by_pointer (a_lang)
 			create c_a_term_code.make_by_pointer (a_term_code)
-			
+
 			create obj.make(ontology.term_definition(c_a_lang.string, c_a_term_code.string).out)
 			Result := obj.item
 		end
@@ -233,7 +233,7 @@ feature -- Access
 			obj := ontology.errors.to_c
 			Result := $obj
 		end
-	
+
 feature -- Conversion
 
 	ontology_substitute_codes (a_str, a_lang: POINTER): POINTER is
@@ -245,7 +245,7 @@ feature -- Conversion
 			-- ENSURE
 			--  result_exists: Result /= void
 		local
-			c_a_str, c_a_lang: C_STRING
+			c_a_str, c_a_lang: BASE_C_STRING
 			obj: ANY
 		do
 			create c_a_str.make_by_pointer (a_str)
@@ -253,7 +253,7 @@ feature -- Conversion
 			obj := ontology.substitute_codes(c_a_str.string, c_a_lang.string).to_c
 			Result := $obj
 		end
-	
+
 feature -- Factory
 
 	ontology_new_constraint_code: POINTER is
@@ -274,7 +274,7 @@ feature -- Factory
 			-- ENSURE
 			--  result_exists: Result /= void and then not Result.is_empty
 		local
-			c_str: C_STRING
+			c_str: BASE_C_STRING
 		do
 			create c_str.make (ontology.new_non_specialised_term_code)
 			Result := c_str.item
@@ -289,14 +289,14 @@ feature -- Factory
 			-- ENSURE
 			--  result_valid: Result /= void and then not Result.is_empty
 		local
-			c_a_parent_code: C_STRING
+			c_a_parent_code: BASE_C_STRING
 			obj: ANY
 		do
 			create c_a_parent_code.make_by_pointer (a_parent_code)
 			obj := ontology.new_specialised_term_code(c_a_parent_code.string).to_c
 			Result := $obj
 		end
-	
+
 feature -- Modification
 
 	ontology_add_constraint_definition (a_lang: POINTER; a_term: POINTER) is
@@ -310,7 +310,7 @@ feature -- Modification
 			-- ENSURE
 			--  has_constraint_code (a_term.code)
 		local
-			c_a_term, c_a_lang: C_STRING
+			c_a_term, c_a_lang: BASE_C_STRING
 		do
 			create c_a_term.make_by_pointer (a_term)
 			create c_a_lang.make_by_pointer (a_lang)
@@ -325,7 +325,7 @@ feature -- Modification
 			-- ENSURE
 			--  language_added: languages_available.has (a_lang)
 		local
-			c_a_lang: C_STRING
+			c_a_lang: BASE_C_STRING
 		do
 			create c_a_lang.make_by_pointer (a_lang)
 			ontology.add_language(c_a_lang.string)
@@ -342,7 +342,7 @@ feature -- Modification
 			-- ENSURE
 			--  binding_added: has_term_binding (a_code_phrase.terminology_id.as_string, a_term_code)
 		local
-			c_a_code_phrase_str, c_a_term_code: C_STRING
+			c_a_code_phrase_str, c_a_term_code: BASE_C_STRING
 			a_code_phrase: CODE_PHRASE
 		do
 			create c_a_code_phrase_str.make_by_pointer (a_code_phrase_str)
@@ -362,7 +362,7 @@ feature -- Modification
 			-- ENSURE
 			--  has_term_code (a_term.code)
 		local
-			c_a_term, c_a_lang: C_STRING
+			c_a_term, c_a_lang: BASE_C_STRING
 		do
 			create c_a_term.make_by_pointer (a_term)
 			create c_a_lang.make_by_pointer (a_lang)
@@ -378,7 +378,7 @@ feature -- Modification
 			--  concept_code_set: concept_code /= void
 			--  term_definitions_created: term_definitions /= void and then term_definitions.item (primary_language).item (concept_code) = a_term
 		local
-			c_a_term: C_STRING
+			c_a_term: BASE_C_STRING
 		do
 			create c_a_term.make_by_pointer (a_term)
 			ontology.initialise_term_definitions (create {ARCHETYPE_TERM}.make_from_string(c_a_term.string))
@@ -393,7 +393,7 @@ feature -- Modification
 			-- ENSURE
 			--  binding_removed: not has_term_binding (a_terminology, a_term_code)
 		local
-			c_a_term_code, c_a_terminology: C_STRING
+			c_a_term_code, c_a_terminology: BASE_C_STRING
 		do
 			create c_a_term_code.make_by_pointer (a_term_code)
 			create c_a_terminology.make_by_pointer (a_terminology)
@@ -409,7 +409,7 @@ feature -- Modification
 			--  language_valid: a_lang /= void and then has_language (a_lang)
 			--  term_valid: a_term /= void and then has_constraint_code (a_term.code)
 		local
-			c_a_term, c_a_lang: C_STRING
+			c_a_term, c_a_lang: BASE_C_STRING
 		do
 			create c_a_term.make_by_pointer (a_term)
 			create c_a_lang.make_by_pointer (a_lang)
@@ -427,7 +427,7 @@ feature -- Modification
 			-- ENSURE
 			--  binding_added: has_term_binding (a_code_phrase.terminology_id.as_string, a_term_code)
 		local
-			c_a_code_phrase_str, c_a_term_code: C_STRING
+			c_a_code_phrase_str, c_a_term_code: BASE_C_STRING
 			a_code_phrase: CODE_PHRASE
 		do
 			create c_a_code_phrase_str.make_by_pointer (a_code_phrase_str)
@@ -445,7 +445,7 @@ feature -- Modification
 			--  language_valid: a_lang /= void and then has_language (a_lang)
 			--  term_valid: a_term /= void and then has_term_code (a_term.code)
 		local
-			c_a_term, c_a_lang: C_STRING
+			c_a_term, c_a_lang: BASE_C_STRING
 		do
 			create c_a_term.make_by_pointer (a_term)
 			create c_a_lang.make_by_pointer (a_lang)
@@ -459,12 +459,12 @@ feature -- Modification
 			-- ENSURE
 			--  language_set: primary_language.is_equal (a_lang)
 		local
-			c_a_lang: C_STRING
+			c_a_lang: BASE_C_STRING
 		do
 			create c_a_lang.make_by_pointer (a_lang)
 			ontology.set_primary_language(c_a_lang.string)
 		end
-	
+
 feature -- Status Report
 
 	ontology_has_constraint_binding (a_terminology, a_term_code: POINTER): BOOLEAN is
@@ -473,7 +473,7 @@ feature -- Status Report
 			--  terminology_valid: a_terminology /= void and then not terminologies_available.is_empty
 			--  term_code_valid: a_term_code /= void and then not a_term_code.is_empty
 		local
-			c_a_terminology, c_a_term_code: C_STRING
+			c_a_terminology, c_a_term_code: BASE_C_STRING
 		do
 			create c_a_terminology.make_by_pointer (a_terminology)
 			create c_a_term_code.make_by_pointer (a_term_code)
@@ -485,7 +485,7 @@ feature -- Status Report
 			-- REQUIRE
 			--  terminology_valid: a_terminology /= void and then not terminologies_available.is_empty
 		local
-			c_a_terminology: C_STRING
+			c_a_terminology: BASE_C_STRING
 		do
 			create c_a_terminology.make_by_pointer (a_terminology)
 			Result := ontology.has_constraint_bindings(c_a_terminology.string)
@@ -496,7 +496,7 @@ feature -- Status Report
 			-- REQUIRE
 			--  constraint_code_valid: a_constraint_code /= void and then not a_constraint_code.is_empty
 		local
-			c_a_constraint_code: C_STRING
+			c_a_constraint_code: BASE_C_STRING
 		do
 			create c_a_constraint_code.make_by_pointer (a_constraint_code)
 			Result := ontology.has_constraint_code(c_a_constraint_code.string)
@@ -507,7 +507,7 @@ feature -- Status Report
 			-- REQUIRE
 			--  language_valid: a_language /= void and then not a_language.is_empty
 		local
-			c_a_lang: C_STRING
+			c_a_lang: BASE_C_STRING
 		do
 			create c_a_lang.make_by_pointer (a_lang)
 			Result := ontology.has_language(c_a_lang.string)
@@ -518,7 +518,7 @@ feature -- Status Report
 			-- REQUIRE
 			--  a_path_valid: a_path /= void and then not a_path.is_empty
 		local
-			c_a_path: C_STRING
+			c_a_path: BASE_C_STRING
 		do
 			create c_a_path.make_by_pointer (a_path)
 			Result := ontology.has_path(c_a_path.string)
@@ -530,7 +530,7 @@ feature -- Status Report
 			--  terminology_valid: a_terminology /= void and then not terminologies_available.is_empty
 			--  term_code_valid: a_term_code /= void and then not a_term_code.is_empty
 		local
-			c_a_terminology, c_a_term_code: C_STRING
+			c_a_terminology, c_a_term_code: BASE_C_STRING
 		do
 			create c_a_terminology.make_by_pointer (a_terminology)
 			create c_a_term_code.make_by_pointer (a_term_code)
@@ -542,7 +542,7 @@ feature -- Status Report
 			-- REQUIRE
 			--  terminology_valid: a_terminology /= void and then not terminologies_available.is_empty
 		local
-			c_a_terminology: C_STRING
+			c_a_terminology: BASE_C_STRING
 		do
 			create c_a_terminology.make_by_pointer (a_terminology)
 			Result := ontology.has_term_bindings(c_a_terminology.string)
@@ -551,7 +551,7 @@ feature -- Status Report
 	ontology_has_term_code (a_term_code: POINTER): BOOLEAN is
 			-- is `a_term_code' known in this ontology
 		local
-			c_a_term_code: C_STRING
+			c_a_term_code: BASE_C_STRING
 		do
 			create c_a_term_code.make_by_pointer (a_term_code)
 			Result := ontology.has_term_code(c_a_term_code.string)
@@ -562,7 +562,7 @@ feature -- Status Report
 			-- REQUIRE
 			--  terminology_valid: a_terminology /= void and then not a_terminology.is_empty
 		local
-			c_a_terminology: C_STRING
+			c_a_terminology: BASE_C_STRING
 		do
 			create c_a_terminology.make_by_pointer (a_terminology)
 			Result := ontology.has_terminology(c_a_terminology.string)
@@ -575,7 +575,7 @@ feature -- Status Report
 		do
 			Result := ontology.is_valid
 		end
-	
+
 end
 
 

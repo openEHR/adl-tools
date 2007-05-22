@@ -99,7 +99,7 @@ creation
 %type <STRING> type_identifier
 %type <OG_PATH> absolute_path relative_path
 %type <INTEGER> cardinality_limit_value
-%type <OE_INTERVAL[INTEGER]> c_occurrences c_existence occurrence_spec
+%type <INTERVAL[INTEGER]> c_occurrences c_existence occurrence_spec
 %type <C_PRIMITIVE_OBJECT> c_primitive_object
 %type <C_PRIMITIVE> c_primitive
 %type <EXPR_ITEM> boolean_expression boolean_node boolean_leaf
@@ -131,12 +131,12 @@ creation
 %type <ARRAYED_LIST[ISO8601_DURATION]> duration_list_value
 %type <ARRAYED_LIST[CODE_PHRASE]> term_code_list_value
 
-%type <OE_INTERVAL[INTEGER]> integer_interval_value
-%type <OE_INTERVAL[REAL]> real_interval_value
-%type <OE_INTERVAL[ISO8601_TIME]> time_interval_value
-%type <OE_INTERVAL[ISO8601_DATE]> date_interval_value
-%type <OE_INTERVAL[ISO8601_DATE_TIME]> date_time_interval_value
-%type <OE_INTERVAL[ISO8601_DURATION]> duration_interval_value
+%type <INTERVAL[INTEGER]> integer_interval_value
+%type <INTERVAL[REAL]> real_interval_value
+%type <INTERVAL[ISO8601_TIME]> time_interval_value
+%type <INTERVAL[ISO8601_DATE]> date_interval_value
+%type <INTERVAL[ISO8601_DATE_TIME]> date_time_interval_value
+%type <INTERVAL[ISO8601_DURATION]> duration_interval_value
 
 
 
@@ -2330,11 +2330,11 @@ feature {NONE} -- Parse Tree
 
 	assertion: ASSERTION
 
-	c_string: OE_C_STRING
+	c_string: C_STRING
 	string_list: ARRAYED_LIST[STRING]
 	c_boolean: C_BOOLEAN
 	c_real: C_REAL
-	c_date: OE_C_DATE
+	c_date: C_DATE
 	c_integer:  C_INTEGER
 	c_time: C_TIME
 	c_date_time: C_DATE_TIME
@@ -2358,15 +2358,15 @@ feature {NONE} -- Implementation
 	term: CODE_PHRASE
 	a_uri: URI
 
-	int_interval: OE_INTERVAL [INTEGER]
-	rl_interval: OE_INTERVAL [REAL]
+	int_interval: INTERVAL [INTEGER]
+	rl_interval: INTERVAL [REAL]
 
-	integer_interval: OE_INTERVAL [INTEGER]
-	real_interval: OE_INTERVAL [REAL]
-	date_interval: OE_INTERVAL [ISO8601_DATE]
-	time_interval: OE_INTERVAL [ISO8601_TIME]
-	date_time_interval: OE_INTERVAL [ISO8601_DATE_TIME]
-	duration_interval: OE_INTERVAL [ISO8601_DURATION]
+	integer_interval: INTERVAL [INTEGER]
+	real_interval: INTERVAL [REAL]
+	date_interval: INTERVAL [ISO8601_DATE]
+	time_interval: INTERVAL [ISO8601_TIME]
+	date_time_interval: INTERVAL [ISO8601_DATE_TIME]
+	duration_interval: INTERVAL [ISO8601_DURATION]
 
 	indent: STRING
 	str: STRING

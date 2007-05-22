@@ -1,7 +1,7 @@
 indexing
 	component:   "openEHR Archetype Project"
 	description: "[
-			 Shared ADL_OBJECTS Object for C wrapper for ADL_INTERFACE. 
+			 Shared ADL_OBJECTS Object for C wrapper for ADL_INTERFACE.
 			 ]"
 	keywords:    "C wrapper"
 	author:      "Thomas Beale"
@@ -17,9 +17,9 @@ class SHARED_ADL_OBJECTS
 
 feature {NONE} -- Implementation
 
-	adl_objects: C_ADL_OBJECTS is 
+	adl_objects: C_ADL_OBJECTS is
 		once
-			create Result.make			
+			create Result.make
 		end
 
 feature -- Access
@@ -29,14 +29,14 @@ feature -- Access
 			Result := adl_objects.new_handle
 		end
 
-	integer_interval(a_handle: INTEGER): OE_INTERVAL[INTEGER] is
+	integer_interval(a_handle: INTEGER): INTERVAL[INTEGER] is
 		require
 			has_integer_interval(a_handle)
 		do
 			Result := adl_objects.integer_intervals.item(a_handle)
 		end
-	
-	real_interval(a_handle: INTEGER): OE_INTERVAL[REAL] is
+
+	real_interval(a_handle: INTEGER): INTERVAL[REAL] is
 		require
 			has_real_interval(a_handle)
 		do
@@ -49,21 +49,21 @@ feature -- Access
 		do
 			Result := adl_objects.c_primitives.item(a_handle)
 		end
-		
+
 	c_primitive_object(a_handle: INTEGER): C_PRIMITIVE_OBJECT is
 		require
 			has_c_primitive_object(a_handle)
 		do
 			Result := adl_objects.c_primitive_objects.item(a_handle)
 		end
-		
+
 	c_attribute(a_handle: INTEGER): C_ATTRIBUTE is
 		require
 			has_c_attribute(a_handle)
 		do
 			Result := adl_objects.c_attributes.item(a_handle)
 		end
-		
+
 	c_complex_object(a_handle: INTEGER): C_COMPLEX_OBJECT is
 		require
 			has_c_complex_object(a_handle)
@@ -112,7 +112,7 @@ feature -- Access
 		do
 			Result := adl_objects.c_objects.item(a_handle)
 		end
-		
+
 feature -- Status Report
 
 	has_integer_interval(a_handle: INTEGER): BOOLEAN is
@@ -202,7 +202,7 @@ feature -- Commands
 		do
 			adl_objects.set_archetype_definition_handle(a_handle)
 		end
-		
+
 	put_archetype_internal_ref(an_item: ARCHETYPE_INTERNAL_REF; a_handle: INTEGER) is
 		do
 			adl_objects.archetype_internal_refs.put(an_item, a_handle)
@@ -266,14 +266,14 @@ feature -- Commands
 			adl_objects.assertions.put(an_item, a_handle)
 		end
 
-	put_integer_interval(an_item: OE_INTERVAL[INTEGER]; a_handle: INTEGER) is
+	put_integer_interval(an_item: INTERVAL[INTEGER]; a_handle: INTEGER) is
 		require
 			not has_integer_interval(a_handle)
 		do
 			adl_objects.integer_intervals.put(an_item, a_handle)
 		end
 
-	put_real_interval(an_item: OE_INTERVAL[REAL]; a_handle: INTEGER) is
+	put_real_interval(an_item: INTERVAL[REAL]; a_handle: INTEGER) is
 		require
 			not has_real_interval(a_handle)
 		do

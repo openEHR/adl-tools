@@ -28,7 +28,7 @@ feature -- Initialisation
 			-- 
 		do
 			create children.make(0)
-			set_existence(create {OE_INTERVAL[INTEGER]}.make_bounded(1,1, True, True))
+			set_existence(create {INTERVAL[INTEGER]}.make_bounded(1,1, True, True))
 		end
 	
 	make_single(a_name: STRING) is
@@ -63,7 +63,7 @@ feature -- Access
 			Result := representation.node_id
 		end
 
-	existence: OE_INTERVAL[INTEGER]
+	existence: INTERVAL[INTEGER]
 	
 	cardinality: CARDINALITY
 		
@@ -167,7 +167,7 @@ feature -- Status Report
 		
 feature -- Modification
 
-	set_existence(an_interval: OE_INTERVAL[INTEGER]) is
+	set_existence(an_interval: INTERVAL[INTEGER]) is
 			-- set existence constraint on this relation - applies whether single or multiple
 		require
 			Interval_exists: an_interval /= Void

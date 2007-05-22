@@ -122,13 +122,13 @@ feature -- Time
 		-- e.g. "HH:MM:SS", "HHhMM"
 
 	use_24_hour_time:BOOLEAN
-		-- True for most of Europe, False for most anglo, asian 
+		-- True for most of Europe, False for most anglo, asian
 		-- countries. If False, "am" or "pm" are appended to times
 
 	summertime_adjustment:INTEGER
 		-- normally +1 if used
 
-	summertime_period: OE_INTERVAL[DATE]
+	summertime_period: INTERVAL[DATE]
 		-- period of Summer time; Void if summertime_adjustment = 0
 
 feature -- Measurement

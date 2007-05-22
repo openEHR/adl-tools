@@ -55,7 +55,7 @@ feature -- Access
 			Result := representation.node_id
 		end
 		
-	occurrences: OE_INTERVAL[INTEGER]
+	occurrences: INTERVAL[INTEGER]
 	
 	parent: C_ATTRIBUTE
 	
@@ -119,7 +119,7 @@ feature -- Modification
 			representation.set_node_id(an_object_id)
 		end
 
-	set_occurrences(ivl: OE_INTERVAL[INTEGER]) is
+	set_occurrences(ivl: INTERVAL[INTEGER]) is
 			-- 
 		require
 			Interval_exists: ivl /= Void
