@@ -158,6 +158,7 @@ feature {NONE} -- Initialization
 			end
 
 			initialise_path_control
+			open_button.set_focus
 		end
 
 	initialise_path_control is
@@ -505,19 +506,35 @@ feature {NONE} -- Commands
 			node_map_control.item_select
 		end
 
-	node_map_tree_technical_mode is
-			--
+	on_tree_domain_selected
+			-- Hide technical details in `parsed_archetype_tree'.
 		do
 			if adl_interface.parse_succeeded then
-				node_map_control.toggle_technical_mode
+				node_map_control.set_domain_mode
 			end
 		end
 
-	node_map_tree_source_status_mode is
-			--
+	on_tree_technical_selected
+			-- Display technical details in `parsed_archetype_tree'.
 		do
 			if adl_interface.parse_succeeded then
-				node_map_control.toggle_source_status_mode
+				node_map_control.set_technical_mode
+			end
+		end
+
+	on_tree_flat_view_selected
+			-- Do not show the inherited/defined status of nodes in `parsed_archetype_tree'.
+		do
+			if adl_interface.parse_succeeded then
+				node_map_control.set_flat_view
+			end
+		end
+
+	on_tree_inheritance_selected
+			-- Show the inherited/defined status of nodes in `parsed_archetype_tree'.
+		do
+			if adl_interface.parse_succeeded then
+				node_map_control.set_inheritance_view
 			end
 		end
 

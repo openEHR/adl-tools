@@ -60,42 +60,32 @@ feature -- Status Report
 
 feature -- Commands
 
-	toggle_technical_mode is
-			-- toggle technical mode setting
-		do
-			in_technical_mode := not in_technical_mode
-			repopulate
-			if in_technical_mode then
-				gui.tree_technical_mode_bn.set_text("Domain")
-			else
-				gui.tree_technical_mode_bn.set_text("Technical")
-			end
-		end
-
-	set_technical_node is
-			-- set technical mode on
+	set_technical_mode
+			-- Set `in_technical_mode' on.
 		do
 			in_technical_mode := True
 			repopulate
 		end
 
-	set_domain_mode is
-			-- set technical mode off
+	set_domain_mode
+			-- Set `in_technical_mode' off.
 		do
 			in_technical_mode := False
 			repopulate
 		end
 
-	toggle_source_status_mode is
-			-- set in_source_origin_mode
+	set_inheritance_view
+			-- Set `in_source_status_mode' on.
 		do
-			in_source_status_mode := not in_source_status_mode
+			in_source_status_mode := True
 			repopulate
-			if in_source_status_mode then
-				gui.tree_source_status_bn.set_text("Flat view")
-			else
-				gui.tree_source_status_bn.set_text("Inheritance")
-			end
+		end
+
+	set_flat_view
+			-- Set `in_source_status_mode' off.
+		do
+			in_source_status_mode := False
+			repopulate
 		end
 
 	clear is
