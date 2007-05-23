@@ -470,13 +470,13 @@ feature {NONE} -- Implementation
 			-- reference to MAIN_WINDOW.archetype_test_tree_grid
 
 	gui_grid_row_stack: ARRAYED_STACK[EV_GRID_ROW]
-			-- stack used duing population
+			-- Stack used during `populate_gui_tree_node_enter'.
 
 	test_status: STRING
 			-- cumulative status message during running of test
 
    	populate_gui_tree_node_enter(an_item: ARCHETYPE_DIRECTORY_ITEM) is
-   			--
+   			-- Add a node representing `an_item' to `gui_file_tree'.
 		require
 			an_item /= Void
    		local
@@ -503,7 +503,7 @@ feature {NONE} -- Implementation
 				ada ?= an_item
 				if ada /= Void then
 					-- First column (explorer)
-					create gli.make_with_text (utf8 (ada.id.domain_concept + "(" + ada.id.version_id + ")"))
+					create gli.make_with_text (utf8 (ada.id.domain_concept_tail + "(" + ada.id.version_id + ")"))
 					gli.set_data(ada)
 					if ada.id.is_specialised then
 						gli.set_pixmap(pixmaps.item("archetype_specialised_" + ada.group_id.out))

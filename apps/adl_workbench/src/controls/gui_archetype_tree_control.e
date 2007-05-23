@@ -107,10 +107,10 @@ feature {NONE} -- Implementation
 			-- reference to MAIN_WINDOW.archetype_file_tree
 
 	gui_tree_item_stack: ARRAYED_STACK[EV_TREE_ITEM]
-			--
+			-- Stack used during `populate_gui_tree_node_enter'.
 
    	populate_gui_tree_node_enter(an_item: ARCHETYPE_DIRECTORY_ITEM) is
-   			--
+   			-- Add a node representing `an_item' to `gui_file_tree'.
 		require
 			an_item /= Void
    		local
@@ -125,7 +125,7 @@ feature {NONE} -- Implementation
 				a_ti.set_data(adf)
 			else
 				ada ?= an_item
-				create a_ti.make_with_text (utf8 (ada.id.domain_concept + "(" + ada.id.version_id + ")"))
+				create a_ti.make_with_text (utf8 (ada.id.domain_concept_tail + "(" + ada.id.version_id + ")"))
 				a_ti.set_data(ada)
 				if ada.id.is_specialised then
 					a_ti.set_pixmap(pixmaps.item("archetype_specialised_" + ada.group_id.out))
