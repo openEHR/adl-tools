@@ -16,6 +16,9 @@ class
 
 inherit
 	MAIN_WINDOW_IMP
+		redefine
+			show
+		end
 
 	EV_STOCK_PIXMAPS
 		rename
@@ -158,7 +161,6 @@ feature {NONE} -- Initialization
 			end
 
 			initialise_path_control
-			open_button.set_focus
 		end
 
 	initialise_path_control is
@@ -245,6 +247,16 @@ feature -- Modification
 		end
 
 feature -- Commands
+
+	show
+			-- Do a few adjustments straight after display.
+		do
+			Precursor
+
+			if open_button.is_displayed then
+				open_button.set_focus
+			end
+		end
 
 	set_options is
 			--
