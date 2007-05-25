@@ -63,8 +63,6 @@ feature {NONE}-- Initialization
 			create parse_button
 			create edit_button
 			create save_button
-			create format_label
-			create format_combo
 			create archetype_id
 			create l_ev_label_1
 			create parent_archetype_id
@@ -225,8 +223,6 @@ feature {NONE}-- Initialization
 			action_bar.extend (parse_button)
 			action_bar.extend (edit_button)
 			action_bar.extend (save_button)
-			action_bar.extend (format_label)
-			action_bar.extend (format_combo)
 			action_bar.extend (archetype_id)
 			action_bar.extend (l_ev_label_1)
 			action_bar.extend (parent_archetype_id)
@@ -407,8 +403,6 @@ feature {NONE}-- Initialization
 			action_bar.disable_item_expand (parse_button)
 			action_bar.disable_item_expand (edit_button)
 			action_bar.disable_item_expand (save_button)
-			action_bar.disable_item_expand (format_label)
-			action_bar.disable_item_expand (format_combo)
 			action_bar.disable_item_expand (l_ev_label_1)
 			action_bar.disable_item_expand (adl_version_label)
 			action_bar.disable_item_expand (adl_version_text)
@@ -428,15 +422,6 @@ feature {NONE}-- Initialization
 			save_button.set_text ("Save")
 			save_button.set_tooltip ("Save currently loaded archetype")
 			save_button.set_minimum_width (40)
-			format_label.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
-			format_label.set_text ("as")
-			format_label.set_minimum_width (15)
-			color_constant_set_procedures.extend (agent format_combo.set_background_color (?))
-			color_constant_retrieval_functions.extend (agent editable_colour)
-			format_combo.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
-			format_combo.set_tooltip ("Select save format")
-			integer_constant_set_procedures.extend (agent format_combo.set_minimum_width (?))
-			integer_constant_retrieval_functions.extend (agent min_combo_box_width)
 			color_constant_set_procedures.extend (agent archetype_id.set_background_color (?))
 			color_constant_retrieval_functions.extend (agent editable_colour)
 			archetype_id.set_minimum_width (120)
@@ -894,7 +879,6 @@ feature {NONE}-- Initialization
 			parse_button.select_actions.extend (agent parse_archetype)
 			edit_button.select_actions.extend (agent edit_archetype)
 			save_button.select_actions.extend (agent save_adl_file)
-			format_combo.select_actions.extend (agent select_format)
 			language_combo.select_actions.extend (agent select_language)
 			archetype_file_tree.select_actions.extend (agent archetype_view_tree_item_select)
 			arch_notebook.selection_actions.extend (agent arch_notebook_select)
@@ -923,10 +907,10 @@ feature {NONE}-- Initialization
 
 feature -- Access
 
-	format_combo, language_combo, path_filter_combo: EV_COMBO_BOX
+	language_combo, path_filter_combo: EV_COMBO_BOX
 	menu: EV_MENU_BAR
-	tree_domain_radio_button,
-	tree_technical_radio_button, tree_inheritance_radio_button, tree_flat_view_radio_button: EV_RADIO_BUTTON
+	tree_domain_radio_button, tree_technical_radio_button,
+	tree_inheritance_radio_button, tree_flat_view_radio_button: EV_RADIO_BUTTON
 	arch_desc_purpose_text,
 	arch_desc_use_text, arch_desc_misuse_text, arch_desc_copyright_text, parser_status_area,
 	test_status_area: EV_TEXT
@@ -966,12 +950,12 @@ feature -- Access
 	open_adl_file_mi, parse_mi, edit_archetype_mi, save_adl_file_mi,
 	exit_tool_mi, copy_mi, clipboard_mi, set_repository_mi, options_mi, icon_help_mi,
 	news, online_mi, about_mi: EV_MENU_ITEM
-	format_label, l_ev_label_1, adl_version_label, language_label,
-	arch_desc_auth_orig_auth_label, arch_desc_status_label, arch_desc_original_language_label,
-	arch_desc_auth_contrib_label, arch_translations_languages_label, l_ev_label_2, l_ev_label_3,
-	l_ev_label_4, arch_desc_purpose_label, arch_desc_use_label, arch_desc_misuse_label,
-	arch_desc_keywords_label, arch_desc_resource_package_label, arch_desc_resource_orig_res_label,
-	arch_desc_copyright_label, l_ev_label_5, l_ev_label_6, l_ev_label_7, l_ev_label_8: EV_LABEL
+	l_ev_label_1, adl_version_label, language_label, arch_desc_auth_orig_auth_label,
+	arch_desc_status_label, arch_desc_original_language_label, arch_desc_auth_contrib_label,
+	arch_translations_languages_label, l_ev_label_2, l_ev_label_3, l_ev_label_4, arch_desc_purpose_label,
+	arch_desc_use_label, arch_desc_misuse_label, arch_desc_keywords_label, arch_desc_resource_package_label,
+	arch_desc_resource_orig_res_label, arch_desc_copyright_label, l_ev_label_5, l_ev_label_6,
+	l_ev_label_7, l_ev_label_8: EV_LABEL
 	path_view_check_list: EV_CHECKABLE_LIST
 	l_ev_horizontal_separator_1: EV_HORIZONTAL_SEPARATOR
 	arch_desc_auth_frame,
@@ -1059,11 +1043,6 @@ feature {NONE} -- Implementation
 	
 	display_about is
 			-- Called by `select_actions' of `about_mi'.
-		deferred
-		end
-	
-	select_format is
-			-- Called by `select_actions' of `format_combo'.
 		deferred
 		end
 	

@@ -90,9 +90,6 @@ feature {NONE} -- Initialization
 		do
 			initialise_gui_settings
 
-			format_combo.set_strings(adl_interface.archetype_serialiser_formats)
-			format_combo.set_text (Archetype_file_extension)
-
 			if editor_command.is_empty then
 				set_editor_command(Default_editor_command)
 			end
@@ -349,11 +346,6 @@ feature {NONE} -- Commands
 			end
 		end
 
-	select_format is
-			-- Called by `select_actions' of `format_combo'.
-		do
-		end
-
 	open_adl_file is
 			-- Called by `pointer_button_press_actions' of `open_file_mi'.
 		local
@@ -383,46 +375,67 @@ feature {NONE} -- Commands
 			question_dialog: EV_QUESTION_DIALOG
 			error_dialog: EV_INFORMATION_DIALOG
 			a_file: PLAIN_TEXT_FILE
-			adl_file_save_dialog: EV_FILE_SAVE_DIALOG
-			fname: STRING
+			save_dialog: EV_FILE_SAVE_DIALOG
+			name, format: STRING
 		do
 			if adl_interface.archetype_source_loaded then
 				if adl_interface.parse_succeeded then
-					if not format_combo.has_selection then
-						format_combo.select_all
-					end
-				--	resync_file
-
 					ok_to_write := True
-					create adl_file_save_dialog
+					create save_dialog
+					save_dialog.set_file_name (adl_interface.file_context.current_file_name)
+					save_dialog.set_start_directory (current_work_directory)
 
-					fname := current_work_directory + operating_environment.directory_separator.out + adl_interface.file_context.current_file_name
-					fname.replace_substring(archetype_file_extensions.item(format_combo.selected_text), fname.count - Archetype_file_extension.count, fname.count)
-					adl_file_save_dialog.set_file_name (fname)
-					adl_file_save_dialog.filters.extend (["*" + archetype_file_extensions.item(format_combo.text),
-						"Files of type " + format_combo.text])
-					adl_file_save_dialog.show_modal_to_window (Current)
-					if not adl_file_save_dialog.file_name.is_empty then
-						create a_file.make(adl_file_save_dialog.file_name)
-						if a_file.exists then
-							create question_dialog.make_with_text("File " + adl_file_save_dialog.file_title + " already exists; replace?")
-							question_dialog.set_buttons(<<"Yes", "No">>)
-							question_dialog.show_modal_to_window (Current)
-							ok_to_write := question_dialog.selected_button.is_equal("Yes")
+					from
+						archetype_file_extensions.start
+					until
+						archetype_file_extensions.off
+					loop
+						format := archetype_file_extensions.key_for_iteration
+
+						if has_archetype_serialiser_format (format) then
+							save_dialog.filters.extend (["*" + archetype_file_extensions.item_for_iteration, "Files of type " + format])
 						end
+
+						archetype_file_extensions.forth
+					end
+
+					save_dialog.show_modal_to_window (Current)
+					name := save_dialog.file_name
+
+					if not name.is_empty then
+						format ?= (save_dialog.filters [save_dialog.selected_filter_index]) [1]
+						format.remove_head (2)
+
+						if not format.is_equal (archetype_file_extension) then
+							if file_system.has_extension (name, archetype_file_extensions [archetype_file_extension]) then
+								name.remove_tail (archetype_file_extensions [archetype_file_extension].count)
+								name.append (archetype_file_extensions [format])
+								save_dialog.set_file_name (name)
+							end
+						end
+
+						create a_file.make (name)
+
+						if a_file.exists then
+							create question_dialog.make_with_text ("File " + save_dialog.file_title + " already exists; replace?")
+							question_dialog.set_buttons (<<"Yes", "No">>)
+							question_dialog.show_modal_to_window (Current)
+							ok_to_write := question_dialog.selected_button.is_equal ("Yes")
+						end
+
 						if ok_to_write then
-							adl_interface.save_archetype(adl_file_save_dialog.file_name,
-																format_combo.selected_text)
-							parser_status_area.append_text(adl_interface.status)
-							if format_combo.selected_text.is_equal(Archetype_file_extension) then
+							adl_interface.save_archetype (name, format)
+							parser_status_area.append_text (adl_interface.status)
+
+							if format.is_equal (archetype_file_extension) then
 								populate_archetype_directory
 							end
 						end
 
-						set_current_work_directory (adl_file_save_dialog.file_path)
+						set_current_work_directory (save_dialog.file_path)
 					end
 				else
-					create error_dialog.make_with_text("must parse before serialising")
+					create error_dialog.make_with_text ("must parse before serialising")
 					error_dialog.show_modal_to_window (Current)
 				end
 			end
