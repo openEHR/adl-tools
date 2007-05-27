@@ -36,26 +36,32 @@ feature {NONE}-- Initialization
 				-- Create all widgets.
 			create menu
 			create file_menu
-			create open_adl_file_mi
-			create parse_mi
-			create edit_archetype_mi
+			create open_menu_item
+			create parse_menu_item
+			create edit_archetype_menu_item
 			create l_ev_menu_separator_1
-			create save_adl_file_mi
+			create save_as_menu_item
 			create l_ev_menu_separator_2
-			create exit_tool_mi
+			create exit_menu_item
 			create edit_menu
-			create copy_mi
-			create clipboard_mi
-			create repository_menu
-			create set_repository_mi
-			create options_menu
-			create options_mi
-			create help_menu
-			create icon_help_mi
-			create news
-			create online_mi
+			create cut_menu_item
+			create copy_menu_item
+			create paste_menu_item
 			create l_ev_menu_separator_3
-			create about_mi
+			create delete_menu_item
+			create select_all_menu_item
+			create l_ev_menu_separator_4
+			create clipboard_menu_item
+			create repository_menu
+			create set_repository_menu_item
+			create options_menu
+			create options_menu_item
+			create help_menu
+			create icon_help_menu_item
+			create news_menu_item
+			create online_menu_item
+			create l_ev_menu_separator_5
+			create about_menu_item
 			create main_nb
 			create viewer_vbox
 			create action_bar
@@ -196,26 +202,32 @@ feature {NONE}-- Initialization
 				-- Build widget structure.
 			set_menu_bar (menu)
 			menu.extend (file_menu)
-			file_menu.extend (open_adl_file_mi)
-			file_menu.extend (parse_mi)
-			file_menu.extend (edit_archetype_mi)
+			file_menu.extend (open_menu_item)
+			file_menu.extend (parse_menu_item)
+			file_menu.extend (edit_archetype_menu_item)
 			file_menu.extend (l_ev_menu_separator_1)
-			file_menu.extend (save_adl_file_mi)
+			file_menu.extend (save_as_menu_item)
 			file_menu.extend (l_ev_menu_separator_2)
-			file_menu.extend (exit_tool_mi)
+			file_menu.extend (exit_menu_item)
 			menu.extend (edit_menu)
-			edit_menu.extend (copy_mi)
-			edit_menu.extend (clipboard_mi)
+			edit_menu.extend (cut_menu_item)
+			edit_menu.extend (copy_menu_item)
+			edit_menu.extend (paste_menu_item)
+			edit_menu.extend (l_ev_menu_separator_3)
+			edit_menu.extend (delete_menu_item)
+			edit_menu.extend (select_all_menu_item)
+			edit_menu.extend (l_ev_menu_separator_4)
+			edit_menu.extend (clipboard_menu_item)
 			menu.extend (repository_menu)
-			repository_menu.extend (set_repository_mi)
+			repository_menu.extend (set_repository_menu_item)
 			menu.extend (options_menu)
-			options_menu.extend (options_mi)
+			options_menu.extend (options_menu_item)
 			menu.extend (help_menu)
-			help_menu.extend (icon_help_mi)
-			help_menu.extend (news)
-			help_menu.extend (online_mi)
-			help_menu.extend (l_ev_menu_separator_3)
-			help_menu.extend (about_mi)
+			help_menu.extend (icon_help_menu_item)
+			help_menu.extend (news_menu_item)
+			help_menu.extend (online_menu_item)
+			help_menu.extend (l_ev_menu_separator_5)
+			help_menu.extend (about_menu_item)
 			extend (main_nb)
 			main_nb.extend (viewer_vbox)
 			viewer_vbox.extend (action_bar)
@@ -366,24 +378,28 @@ feature {NONE}-- Initialization
 			create pixmap_constant_retrieval_functions.make (10)
 			create color_constant_set_procedures.make (10)
 			create color_constant_retrieval_functions.make (10)
-			file_menu.set_text ("File")
-			open_adl_file_mi.set_text ("Open ")
-			parse_mi.set_text ("Parse")
-			edit_archetype_mi.set_text ("Edit")
-			save_adl_file_mi.set_text ("Save")
-			exit_tool_mi.set_text ("Exit")
-			edit_menu.set_text ("Edit")
-			copy_mi.set_text ("Copy")
-			clipboard_mi.set_text ("Clipboard ")
-			repository_menu.set_text ("Repository")
-			set_repository_mi.set_text ("Set Repository...")
-			options_menu.set_text ("Options")
-			options_mi.set_text ("Set Options...")
-			help_menu.set_text ("Help")
-			icon_help_mi.set_text ("Icons ")
-			news.set_text ("News")
-			online_mi.set_text ("Online...")
-			about_mi.set_text ("About ")
+			file_menu.set_text ("&File")
+			open_menu_item.set_text ("&Open...")
+			parse_menu_item.set_text ("&Parse")
+			edit_archetype_menu_item.set_text ("&Edit")
+			save_as_menu_item.set_text ("Save &As...")
+			exit_menu_item.set_text ("E&xit")
+			edit_menu.set_text ("&Edit")
+			cut_menu_item.set_text ("Cu&t")
+			copy_menu_item.set_text ("&Copy")
+			paste_menu_item.set_text ("&Paste")
+			delete_menu_item.set_text ("&Delete")
+			select_all_menu_item.set_text ("Select &All")
+			clipboard_menu_item.set_text ("Clip&board...")
+			repository_menu.set_text ("&Repository")
+			set_repository_menu_item.set_text ("&Set Repository...")
+			options_menu.set_text ("&Options")
+			options_menu_item.set_text ("&Set Options...")
+			help_menu.set_text ("&Help")
+			icon_help_menu_item.set_text ("&Icons ")
+			news_menu_item.set_text ("&News")
+			online_menu_item.set_text ("&Online...")
+			about_menu_item.set_text ("&About ")
 			create internal_font
 			internal_font.set_family ({EV_FONT_CONSTANTS}.Family_sans)
 			internal_font.set_weight ({EV_FONT_CONSTANTS}.Weight_bold)
@@ -862,27 +878,42 @@ feature {NONE}-- Initialization
 			set_all_attributes_using_constants
 			
 				-- Connect events.
-			open_adl_file_mi.select_actions.extend (agent open_adl_file)
-			parse_mi.select_actions.extend (agent parse_archetype)
-			edit_archetype_mi.select_actions.extend (agent edit_archetype)
-			save_adl_file_mi.select_actions.extend (agent save_adl_file)
-			exit_tool_mi.select_actions.extend (agent exit_app)
-			copy_mi.select_actions.extend (agent copy_path_to_clipboard)
-			clipboard_mi.select_actions.extend (agent show_clipboard)
-			set_repository_mi.select_actions.extend (agent set_repository)
-			options_mi.select_actions.extend (agent set_options)
-			icon_help_mi.select_actions.extend (agent display_icon_help)
-			news.select_actions.extend (agent display_news)
-			online_mi.select_actions.extend (agent show_online_help)
-			about_mi.select_actions.extend (agent display_about)
+			open_menu_item.select_actions.extend (agent open_adl_file)
+			parse_menu_item.select_actions.extend (agent parse_archetype)
+			edit_archetype_menu_item.select_actions.extend (agent edit_archetype)
+			save_as_menu_item.select_actions.extend (agent save_adl_file)
+			exit_menu_item.select_actions.extend (agent exit_app)
+			cut_menu_item.select_actions.extend (agent on_cut)
+			copy_menu_item.select_actions.extend (agent on_copy)
+			paste_menu_item.select_actions.extend (agent on_paste)
+			delete_menu_item.select_actions.extend (agent on_delete)
+			select_all_menu_item.select_actions.extend (agent on_select_all)
+			clipboard_menu_item.select_actions.extend (agent show_clipboard)
+			set_repository_menu_item.select_actions.extend (agent set_repository)
+			options_menu_item.select_actions.extend (agent set_options)
+			icon_help_menu_item.select_actions.extend (agent display_icon_help)
+			news_menu_item.select_actions.extend (agent display_news)
+			online_menu_item.select_actions.extend (agent show_online_help)
+			about_menu_item.select_actions.extend (agent display_about)
 			open_button.select_actions.extend (agent open_adl_file)
 			parse_button.select_actions.extend (agent parse_archetype)
 			edit_button.select_actions.extend (agent edit_archetype)
 			save_button.select_actions.extend (agent save_adl_file)
+			archetype_id.focus_in_actions.extend (agent on_text_focus_in)
+			parent_archetype_id.focus_in_actions.extend (agent on_text_focus_in)
+			adl_version_text.focus_in_actions.extend (agent on_text_focus_in)
 			language_combo.select_actions.extend (agent select_language)
 			archetype_file_tree.select_actions.extend (agent archetype_view_tree_item_select)
 			arch_notebook.selection_actions.extend (agent arch_notebook_select)
+			arch_desc_status_text.focus_in_actions.extend (agent on_text_focus_in)
+			arch_desc_original_language_text.focus_in_actions.extend (agent on_text_focus_in)
 			arch_translations_languages_list.select_actions.extend (agent translations_select_language)
+			arch_translations_accreditation_text.focus_in_actions.extend (agent on_text_focus_in)
+			arch_desc_purpose_text.focus_in_actions.extend (agent on_text_focus_in)
+			arch_desc_use_text.focus_in_actions.extend (agent on_text_focus_in)
+			arch_desc_misuse_text.focus_in_actions.extend (agent on_text_focus_in)
+			arch_desc_resource_package_text.focus_in_actions.extend (agent on_text_focus_in)
+			arch_desc_copyright_text.focus_in_actions.extend (agent on_text_focus_in)
 			parsed_archetype_tree.select_actions.extend (agent node_map_item_select)
 			tree_expand_bn.select_actions.extend (agent node_map_toggle_expand_tree)
 			tree_expand_one_bn.select_actions.extend (agent node_map_expand_tree_one_level)
@@ -894,10 +925,14 @@ feature {NONE}-- Initialization
 			path_view_check_list.check_actions.extend (agent path_column_select (?))
 			path_view_check_list.uncheck_actions.extend (agent path_column_unselect (?))
 			path_filter_combo.select_actions.extend (agent path_row_set_filter)
+			arch_stats_total_node_count_tf.focus_in_actions.extend (agent on_text_focus_in)
+			arch_stats_leaf_node_count_tf.focus_in_actions.extend (agent on_text_focus_in)
 			arch_test_tree_toggle_expand_bn.select_actions.extend (agent archetype_test_tree_expand_toggle)
 			arch_test_toggle_check_all_bn.select_actions.extend (agent archetype_test_tree_check_all_toggle)
 			arch_test_refresh_bn.select_actions.extend (agent archetype_test_refresh)
+			arch_test_processed_count.focus_in_actions.extend (agent on_text_focus_in)
 			archetype_test_go_bn.select_actions.extend (agent archetype_test_go_stop)
+			test_status_area.focus_in_actions.extend (agent on_text_focus_in)
 			close_request_actions.extend (agent exit_app)
 
 				-- Call `user_initialization'.
@@ -947,13 +982,15 @@ feature -- Access
 	archetype_test_go_bn: EV_BUTTON
 	arch_desc_auth_contrib_list, terminologies_list, arch_translations_languages_list,
 	arch_desc_keywords_list: EV_LIST
-	open_adl_file_mi, parse_mi, edit_archetype_mi, save_adl_file_mi,
-	exit_tool_mi, copy_mi, clipboard_mi, set_repository_mi, options_mi, icon_help_mi,
-	news, online_mi, about_mi: EV_MENU_ITEM
-	l_ev_label_1, adl_version_label, language_label, arch_desc_auth_orig_auth_label,
-	arch_desc_status_label, arch_desc_original_language_label, arch_desc_auth_contrib_label,
-	arch_translations_languages_label, l_ev_label_2, l_ev_label_3, l_ev_label_4, arch_desc_purpose_label,
-	arch_desc_use_label, arch_desc_misuse_label, arch_desc_keywords_label, arch_desc_resource_package_label,
+	open_menu_item, parse_menu_item, edit_archetype_menu_item,
+	save_as_menu_item, exit_menu_item, cut_menu_item, copy_menu_item, paste_menu_item,
+	delete_menu_item, select_all_menu_item, clipboard_menu_item, set_repository_menu_item,
+	options_menu_item, icon_help_menu_item, news_menu_item, online_menu_item, about_menu_item: EV_MENU_ITEM
+	l_ev_label_1,
+	adl_version_label, language_label, arch_desc_auth_orig_auth_label, arch_desc_status_label,
+	arch_desc_original_language_label, arch_desc_auth_contrib_label, arch_translations_languages_label,
+	l_ev_label_2, l_ev_label_3, l_ev_label_4, arch_desc_purpose_label, arch_desc_use_label,
+	arch_desc_misuse_label, arch_desc_keywords_label, arch_desc_resource_package_label,
 	arch_desc_resource_orig_res_label, arch_desc_copyright_label, l_ev_label_5, l_ev_label_6,
 	l_ev_label_7, l_ev_label_8: EV_LABEL
 	path_view_check_list: EV_CHECKABLE_LIST
@@ -964,7 +1001,7 @@ feature -- Access
 	l_ev_frame_6, l_ev_frame_7: EV_FRAME
 	main_nb, arch_notebook, source_notebook, ontology_notebook: EV_NOTEBOOK
 	l_ev_menu_separator_1,
-	l_ev_menu_separator_2, l_ev_menu_separator_3: EV_MENU_SEPARATOR
+	l_ev_menu_separator_2, l_ev_menu_separator_3, l_ev_menu_separator_4, l_ev_menu_separator_5: EV_MENU_SEPARATOR
 
 feature {NONE} -- Implementation
 
@@ -982,67 +1019,92 @@ feature {NONE} -- Implementation
 		end
 	
 	open_adl_file is
-			-- Called by `select_actions' of `open_adl_file_mi'.
+			-- Called by `select_actions' of `open_menu_item'.
 		deferred
 		end
 	
 	parse_archetype is
-			-- Called by `select_actions' of `parse_mi'.
+			-- Called by `select_actions' of `parse_menu_item'.
 		deferred
 		end
 	
 	edit_archetype is
-			-- Called by `select_actions' of `edit_archetype_mi'.
+			-- Called by `select_actions' of `edit_archetype_menu_item'.
 		deferred
 		end
 	
 	save_adl_file is
-			-- Called by `select_actions' of `save_adl_file_mi'.
+			-- Called by `select_actions' of `save_as_menu_item'.
 		deferred
 		end
 	
 	exit_app is
-			-- Called by `select_actions' of `exit_tool_mi'.
+			-- Called by `select_actions' of `exit_menu_item'.
 		deferred
 		end
 	
-	copy_path_to_clipboard is
-			-- Called by `select_actions' of `copy_mi'.
+	on_cut is
+			-- Called by `select_actions' of `cut_menu_item'.
+		deferred
+		end
+	
+	on_copy is
+			-- Called by `select_actions' of `copy_menu_item'.
+		deferred
+		end
+	
+	on_paste is
+			-- Called by `select_actions' of `paste_menu_item'.
+		deferred
+		end
+	
+	on_delete is
+			-- Called by `select_actions' of `delete_menu_item'.
+		deferred
+		end
+	
+	on_select_all is
+			-- Called by `select_actions' of `select_all_menu_item'.
 		deferred
 		end
 	
 	show_clipboard is
-			-- Called by `select_actions' of `clipboard_mi'.
+			-- Called by `select_actions' of `clipboard_menu_item'.
 		deferred
 		end
 	
 	set_repository is
-			-- Called by `select_actions' of `set_repository_mi'.
+			-- Called by `select_actions' of `set_repository_menu_item'.
 		deferred
 		end
 	
 	set_options is
-			-- Called by `select_actions' of `options_mi'.
+			-- Called by `select_actions' of `options_menu_item'.
 		deferred
 		end
 	
 	display_icon_help is
-			-- Called by `select_actions' of `icon_help_mi'.
+			-- Called by `select_actions' of `icon_help_menu_item'.
 		deferred
 		end
 	
 	display_news is
-			-- Called by `select_actions' of `news'.
+			-- Called by `select_actions' of `news_menu_item'.
 		deferred
 		end
 	
 	show_online_help is
-			-- Called by `select_actions' of `online_mi'.
+			-- Called by `select_actions' of `online_menu_item'.
 		deferred
 		end
 	
 	display_about is
-			-- Called by `select_actions' of `about_mi'.
+			-- Called by `select_actions' of `about_menu_item'.
+		deferred
+		end
+	
+	on_text_focus_in is
+			-- Called by `focus_in_actions' of `archetype_id'.
 		deferred
 		end
 	

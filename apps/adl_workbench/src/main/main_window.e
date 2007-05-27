@@ -20,6 +20,12 @@ inherit
 			show
 		end
 
+	MAIN_WINDOW_ACCELERATORS
+		undefine
+			copy,
+			default_create
+		end
+
 	EV_STOCK_PIXMAPS
 		rename
 			implementation as pixmaps_implementation
@@ -209,19 +215,23 @@ feature {NONE} -- Initialization
 		end
 
 	initialise_accelerators is
-			-- initialise keybard accelerators for various controls
-		local
-			acc: EV_ACCELERATOR
-			key: EV_KEY
-			key_constants: EV_KEY_CONSTANTS
+			-- Initialise keybard accelerators for various controls.
 		do
-			create key_constants
+			suppress_tab_key_insertion (arch_desc_purpose_text, arch_translations_other_details_mlist, arch_desc_use_text)
+			suppress_tab_key_insertion (arch_desc_use_text, arch_desc_purpose_text, arch_desc_misuse_text)
+			suppress_tab_key_insertion (arch_desc_misuse_text, arch_desc_use_text, arch_desc_keywords_list)
+			suppress_tab_key_insertion (arch_desc_copyright_text, arch_desc_resource_orig_res_mlist, parser_status_area)
+			suppress_tab_key_insertion (archetype_text_edit_area, arch_notebook, parser_status_area)
 
-			-- make ^C (copy) accelerator
-			create key.make_with_code (key_constants.key_c)
-			create acc.make_with_key_combination (key, True, False, False)
-			acc.actions.extend(agent dispatch_ctrl_c_keystroke)
-			accelerators.extend (acc)
+			add_shortcut (agent on_next_tab, {EV_KEY_CONSTANTS}.key_tab, True, False)
+			add_shortcut (agent on_previous_tab, {EV_KEY_CONSTANTS}.key_tab, True, True)
+
+			add_menu_shortcut (open_menu_item, {EV_KEY_CONSTANTS}.key_o, True, False)
+			add_menu_shortcut_for_action (cut_menu_item, agent call_unless_text_focused (agent on_cut), {EV_KEY_CONSTANTS}.key_x, True, False)
+			add_menu_shortcut_for_action (copy_menu_item, agent call_unless_text_focused (agent on_copy), {EV_KEY_CONSTANTS}.key_c, True, False)
+			add_menu_shortcut_for_action (paste_menu_item, agent call_unless_text_focused (agent on_paste), {EV_KEY_CONSTANTS}.key_v, True, False)
+			add_menu_shortcut_for_action (delete_menu_item, agent call_unless_text_focused (agent on_delete), {EV_KEY_CONSTANTS}.key_delete, False, False)
+			add_menu_shortcut (select_all_menu_item, {EV_KEY_CONSTANTS}.key_a, True, False)
 		end
 
 feature -- Access
@@ -249,10 +259,7 @@ feature -- Commands
 			-- Do a few adjustments straight after display.
 		do
 			Precursor
-
-			if open_button.is_displayed then
-				open_button.set_focus
-			end
+			focus_first_widget (main_nb.selected_item)
 		end
 
 	set_options is
@@ -632,12 +639,6 @@ feature {NONE} -- Commands
 			adl_path_map_control.set_filter
 		end
 
-	copy_path_to_clipboard is
-			-- Called by `select_actions' of `copy_mi'.
-		do
-			adl_path_map_control.copy_path_to_clipboard
-		end
-
 	arch_notebook_select is
 			-- Called by `selection_actions' of `arch_notebook'.
 		do
@@ -650,6 +651,71 @@ feature {NONE} -- Commands
 			-- Called by `select_actions' of `arch_translations_languages_list'.
 		do
 			translation_controls.populate_items
+		end
+
+feature {NONE} -- Edit events
+
+	call_unless_text_focused (action: PROCEDURE [ANY, TUPLE])
+			-- Some of the edit shortcuts are implemented automatically for text boxes.
+			-- If called from a keyboard shortcut, execute the action unless a text box is focused.
+			-- Executing it within a text box would cause it to be performed twice.
+			-- For some actions this wouldn't really matter (cut, copy), but for paste it would be a blatant bug.
+		do
+			if focused_text = Void then
+				action.call ([])
+			end
+		end
+
+	on_cut
+			-- Cut the selected item, depending on which widget has focus.
+		do
+			on_copy
+			on_delete
+		end
+
+	on_copy
+			-- Copy the selected item, depending on which widget has focus.
+		do
+			if parsed_archetype_found_paths.has_focus then
+				adl_path_map_control.copy_path_to_clipboard
+			elseif focused_text /= Void then
+				if focused_text.has_selection then
+					focused_text.copy_selection
+				end
+			end
+		end
+
+	on_paste
+			-- Paste an item, depending on which widget has focus.
+		local
+			old_length: INTEGER
+		do
+			if focused_text /= Void then
+				if focused_text.is_editable then
+					on_delete
+					old_length := focused_text.text_length
+					focused_text.paste (focused_text.caret_position)
+					focused_text.set_caret_position (focused_text.caret_position + focused_text.text_length - old_length)
+				end
+			end
+		end
+
+	on_delete
+			-- Delete the selected item, depending on which widget has focus.
+		do
+			if focused_text /= Void then
+				if focused_text.is_editable and focused_text.has_selection then
+					focused_text.delete_selection
+				end
+			end
+		end
+
+	on_select_all
+			-- Select all text in the currently focused text box, if any.
+		do
+			if focused_text /= Void and then focused_text.text_length > 0 then
+				focused_text.select_all
+			end
 		end
 
 feature -- Controls
@@ -854,12 +920,150 @@ feature {EV_DIALOG} -- Implementation
 			archetype_text_edit_area.set_text (utf8 (s))
 		end
 
-	dispatch_ctrl_c_keystroke is
-			-- dispathed routine for ctrl-C keystroke
+feature {NONE} -- Events implementing standard Windows behaviour that EiffelVision ought to be doing automatically
+
+	on_text_focus_in
+			-- When a text box gains focus, select all of its text.
 		do
-			if parsed_archetype_found_paths.has_focus then
-				adl_path_map_control.copy_path_to_clipboard
+			if focused_text /= Void and then focused_text.text_length > 0 then
+				focused_text.select_all
 			end
+		end
+
+	on_next_tab
+			-- Switch to the next tab page of the currently focused notebook, in standard Windows fashion.
+		do
+			step_focused_notebook_tab (1)
+		end
+
+	on_previous_tab
+			-- Switch to the previous tab page of the currently focused notebook, in standard Windows fashion.
+		do
+			step_focused_notebook_tab (-1)
+		end
+
+feature -- Standard Windows behaviour that EiffelVision ought to be managing automatically
+
+	step_focused_notebook_tab (step: INTEGER)
+			-- Switch forward or back from the current tab page of the currently focused notebook.
+		require
+			valid_step: step.abs <= 1
+		local
+			notebook: EV_NOTEBOOK
+			widget: EV_WIDGET
+		do
+			notebook := notebook_containing_focused_widget
+
+			if notebook /= Void then
+				widget := notebook [1 + (step + notebook.selected_item_index - 1 + notebook.count) \\ notebook.count]
+				notebook.select_item (widget)
+				focus_first_widget (widget)
+			end
+		end
+
+	notebook_containing_focused_widget: EV_NOTEBOOK
+			-- The notebook, if any, containing the currently focused widget.
+		local
+			focused: EV_WIDGET
+			container: EV_CONTAINER
+		do
+			focused := focused_widget
+
+			if focused /= Void then
+				from
+					container := focused.parent
+				until
+					container = Void or Result /= Void
+				loop
+					Result ?= container
+					container := container.parent
+				end
+			end
+		end
+
+	focus_first_widget (widget: EV_WIDGET)
+			-- Set focus to `widget' or to its first child widget that accepts focus.
+		require
+			widget_attached: widget /= Void
+		local
+			container: EV_CONTAINER
+			grid: EV_GRID
+			label: EV_LABEL
+			widgets: LINEAR [EV_WIDGET]
+		do
+			container ?= widget
+			grid ?= widget
+
+			if container /= Void and grid = Void then
+				from
+					widgets := container.linear_representation
+					widgets.start
+				until
+					widgets.off or container.has_recursive (focused_widget)
+				loop
+					focus_first_widget (widgets.item)
+					widgets.forth
+				end
+			elseif widget.is_displayed and widget.is_sensitive then
+				label ?= widget
+
+				if label = Void then
+					widget.set_focus
+				end
+			end
+		end
+
+	focused_widget: EV_WIDGET
+			-- The currently focused widget, if any.
+		local
+			window_imp: EV_WINDOW_IMP
+			widget_imp: EV_ANY_I
+		do
+			window_imp ?= implementation
+
+			if window_imp /= Void and then window_imp.focus_on_widget /= Void then
+				widget_imp := window_imp.focus_on_widget.item
+
+				if widget_imp /= Void then
+					Result ?= widget_imp.interface
+				end
+			end
+		ensure
+			focused: Result /= Void implies Result.has_focus
+		end
+
+	focused_text: EV_TEXT_COMPONENT
+			-- The currently focused text widget, if any.
+		do
+			Result ?= focused_widget
+		end
+
+	suppress_tab_key_insertion (text: EV_TEXT; previous_widget, next_widget: EV_WIDGET)
+			-- Prevent insertion of tabs into `text', so that the user can tab out of it.
+		require
+			text_attached: text /= Void
+			previous_attached: previous_widget /= Void
+			next_attached: next_widget /= Void
+		do
+			text.set_default_key_processing_handler (
+				agent (key: EV_KEY): BOOLEAN
+					do
+						Result := key.code /= {EV_KEY_CONSTANTS}.key_tab
+					end)
+
+			text.key_press_actions.extend (
+				agent (key: EV_KEY; previous, next: EV_WIDGET)
+					do
+						if key /= Void and then key.code = {EV_KEY_CONSTANTS}.key_tab then
+							if not parent_app.ctrl_pressed and not parent_app.alt_pressed then
+								if parent_app.shift_pressed then
+									previous.set_focus
+								else
+									next.set_focus
+								end
+							end
+						end
+					end (?, previous_widget, next_widget))
 		end
 
 end
