@@ -223,8 +223,8 @@ feature {NONE} -- Initialization
 			suppress_tab_key_insertion (arch_desc_copyright_text, arch_desc_resource_orig_res_mlist, parser_status_area)
 			suppress_tab_key_insertion (archetype_text_edit_area, arch_notebook, parser_status_area)
 
-			add_shortcut (agent on_next_tab, {EV_KEY_CONSTANTS}.key_tab, True, False)
-			add_shortcut (agent on_previous_tab, {EV_KEY_CONSTANTS}.key_tab, True, True)
+			add_shortcut (agent step_focused_notebook_tab (1), {EV_KEY_CONSTANTS}.key_tab, True, False)
+			add_shortcut (agent step_focused_notebook_tab (-1), {EV_KEY_CONSTANTS}.key_tab, True, True)
 
 			add_menu_shortcut (open_menu_item, {EV_KEY_CONSTANTS}.key_o, True, False)
 			add_menu_shortcut_for_action (cut_menu_item, agent call_unless_text_focused (agent on_cut), {EV_KEY_CONSTANTS}.key_x, True, False)
@@ -928,18 +928,6 @@ feature {NONE} -- Events implementing standard Windows behaviour that EiffelVisi
 			if focused_text /= Void and then focused_text.text_length > 0 then
 				focused_text.select_all
 			end
-		end
-
-	on_next_tab
-			-- Switch to the next tab page of the currently focused notebook, in standard Windows fashion.
-		do
-			step_focused_notebook_tab (1)
-		end
-
-	on_previous_tab
-			-- Switch to the previous tab page of the currently focused notebook, in standard Windows fashion.
-		do
-			step_focused_notebook_tab (-1)
 		end
 
 feature {NONE} -- Standard Windows behaviour that EiffelVision ought to be managing automatically

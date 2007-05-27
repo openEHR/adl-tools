@@ -52,6 +52,8 @@ feature {NONE} -- Implementation
 			create accelerator.make_with_key_combination (create {EV_KEY}.make_with_code (key), ctrl, False, shift)
 			accelerator.actions.extend (action)
 			accelerators.extend (accelerator)
+		ensure
+			accelerators_extended: accelerators.count = 1 + old accelerators.count
 		end
 
 	shortcut_text (key: INTEGER; ctrl, shift: BOOLEAN): STRING
