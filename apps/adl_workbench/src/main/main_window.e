@@ -942,7 +942,7 @@ feature {NONE} -- Events implementing standard Windows behaviour that EiffelVisi
 			step_focused_notebook_tab (-1)
 		end
 
-feature -- Standard Windows behaviour that EiffelVision ought to be managing automatically
+feature {NONE} -- Standard Windows behaviour that EiffelVision ought to be managing automatically
 
 	step_focused_notebook_tab (step: INTEGER)
 			-- Switch forward or back from the current tab page of the currently focused notebook.
