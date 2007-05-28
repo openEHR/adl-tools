@@ -1003,21 +1003,15 @@ feature {NONE} -- Standard Windows behaviour that EiffelVision ought to be manag
 
 	focused_widget: EV_WIDGET
 			-- The currently focused widget, if any.
-		local
-			window_imp: EV_WINDOW_IMP
-			widget_imp: EV_ANY_I
 		do
-			window_imp ?= implementation
+			Result := parent_app.focused_widget
 
-			if window_imp /= Void and then window_imp.focus_on_widget /= Void then
-				widget_imp := window_imp.focus_on_widget.item
-
-				if widget_imp /= Void then
-					Result ?= widget_imp.interface
-				end
+			if not has_recursive (Result) then
+				Result := Void
 			end
 		ensure
 			focused: Result /= Void implies Result.has_focus
+			in_this_window: Result /= Void implies has_recursive (Result)
 		end
 
 	focused_text: EV_TEXT_COMPONENT
