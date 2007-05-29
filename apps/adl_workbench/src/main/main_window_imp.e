@@ -68,7 +68,6 @@ feature {NONE}-- Initialization
 			create open_button
 			create parse_button
 			create edit_button
-			create save_button
 			create archetype_id
 			create l_ev_label_1
 			create parent_archetype_id
@@ -234,7 +233,6 @@ feature {NONE}-- Initialization
 			action_bar.extend (open_button)
 			action_bar.extend (parse_button)
 			action_bar.extend (edit_button)
-			action_bar.extend (save_button)
 			action_bar.extend (archetype_id)
 			action_bar.extend (l_ev_label_1)
 			action_bar.extend (parent_archetype_id)
@@ -418,7 +416,6 @@ feature {NONE}-- Initialization
 			action_bar.disable_item_expand (open_button)
 			action_bar.disable_item_expand (parse_button)
 			action_bar.disable_item_expand (edit_button)
-			action_bar.disable_item_expand (save_button)
 			action_bar.disable_item_expand (l_ev_label_1)
 			action_bar.disable_item_expand (adl_version_label)
 			action_bar.disable_item_expand (adl_version_text)
@@ -435,9 +432,6 @@ feature {NONE}-- Initialization
 			edit_button.set_tooltip ("Edit archetype with external editor")
 			edit_button.set_minimum_width (40)
 			edit_button.set_minimum_height (23)
-			save_button.set_text ("Save")
-			save_button.set_tooltip ("Save currently loaded archetype")
-			save_button.set_minimum_width (40)
 			color_constant_set_procedures.extend (agent archetype_id.set_background_color (?))
 			color_constant_retrieval_functions.extend (agent editable_colour)
 			archetype_id.set_minimum_width (120)
@@ -898,7 +892,6 @@ feature {NONE}-- Initialization
 			open_button.select_actions.extend (agent open_adl_file)
 			parse_button.select_actions.extend (agent parse_archetype)
 			edit_button.select_actions.extend (agent edit_archetype)
-			save_button.select_actions.extend (agent save_adl_file)
 			archetype_id.focus_in_actions.extend (agent on_text_focus_in)
 			parent_archetype_id.focus_in_actions.extend (agent on_text_focus_in)
 			adl_version_text.focus_in_actions.extend (agent on_text_focus_in)
@@ -977,7 +970,7 @@ feature -- Access
 	arch_desc_original_language_text, arch_translations_accreditation_text, arch_desc_resource_package_text,
 	arch_stats_total_node_count_tf, arch_stats_leaf_node_count_tf, arch_test_processed_count: EV_TEXT_FIELD
 	open_button,
-	parse_button, edit_button, save_button, tree_expand_bn, tree_expand_one_bn, tree_shrink_one_bn,
+	parse_button, edit_button, tree_expand_bn, tree_expand_one_bn, tree_shrink_one_bn,
 	arch_test_tree_toggle_expand_bn, arch_test_toggle_check_all_bn, arch_test_refresh_bn,
 	archetype_test_go_bn: EV_BUTTON
 	arch_desc_auth_contrib_list, terminologies_list, arch_translations_languages_list,
