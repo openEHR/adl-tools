@@ -44,13 +44,9 @@ feature {NONE}-- Initialization
 			create l_ev_menu_separator_2
 			create exit_menu_item
 			create edit_menu
-			create cut_menu_item
 			create copy_menu_item
-			create paste_menu_item
-			create l_ev_menu_separator_3
-			create delete_menu_item
 			create select_all_menu_item
-			create l_ev_menu_separator_4
+			create l_ev_menu_separator_3
 			create clipboard_menu_item
 			create repository_menu
 			create set_repository_menu_item
@@ -60,7 +56,7 @@ feature {NONE}-- Initialization
 			create icon_help_menu_item
 			create news_menu_item
 			create online_menu_item
-			create l_ev_menu_separator_5
+			create l_ev_menu_separator_4
 			create about_menu_item
 			create main_nb
 			create viewer_vbox
@@ -209,13 +205,9 @@ feature {NONE}-- Initialization
 			file_menu.extend (l_ev_menu_separator_2)
 			file_menu.extend (exit_menu_item)
 			menu.extend (edit_menu)
-			edit_menu.extend (cut_menu_item)
 			edit_menu.extend (copy_menu_item)
-			edit_menu.extend (paste_menu_item)
-			edit_menu.extend (l_ev_menu_separator_3)
-			edit_menu.extend (delete_menu_item)
 			edit_menu.extend (select_all_menu_item)
-			edit_menu.extend (l_ev_menu_separator_4)
+			edit_menu.extend (l_ev_menu_separator_3)
 			edit_menu.extend (clipboard_menu_item)
 			menu.extend (repository_menu)
 			repository_menu.extend (set_repository_menu_item)
@@ -225,7 +217,7 @@ feature {NONE}-- Initialization
 			help_menu.extend (icon_help_menu_item)
 			help_menu.extend (news_menu_item)
 			help_menu.extend (online_menu_item)
-			help_menu.extend (l_ev_menu_separator_5)
+			help_menu.extend (l_ev_menu_separator_4)
 			help_menu.extend (about_menu_item)
 			extend (main_nb)
 			main_nb.extend (viewer_vbox)
@@ -383,10 +375,7 @@ feature {NONE}-- Initialization
 			save_as_menu_item.set_text ("Save &As...")
 			exit_menu_item.set_text ("E&xit")
 			edit_menu.set_text ("&Edit")
-			cut_menu_item.set_text ("Cu&t")
 			copy_menu_item.set_text ("&Copy")
-			paste_menu_item.set_text ("&Paste")
-			delete_menu_item.set_text ("&Delete")
 			select_all_menu_item.set_text ("Select &All")
 			clipboard_menu_item.set_text ("Clip&board...")
 			repository_menu.set_text ("&Repository")
@@ -443,6 +432,7 @@ feature {NONE}-- Initialization
 			parent_archetype_id.disable_edit
 			adl_version_label.set_text ("ADL version")
 			adl_version_text.set_minimum_width (30)
+			adl_version_text.disable_edit
 			language_label.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
 			language_label.set_text ("Language")
 			language_label.set_minimum_width (50)
@@ -454,6 +444,7 @@ feature {NONE}-- Initialization
 			integer_constant_set_procedures.extend (agent language_combo.set_minimum_width (?))
 			integer_constant_retrieval_functions.extend (agent min_combo_box_width)
 			language_combo.set_minimum_height (23)
+			language_combo.disable_edit
 			integer_constant_set_procedures.extend (agent explorer_view_area.set_minimum_width (?))
 			integer_constant_retrieval_functions.extend (agent app_min_width)
 			integer_constant_set_procedures.extend (agent explorer_view_area.set_minimum_height (?))
@@ -516,7 +507,9 @@ feature {NONE}-- Initialization
 			color_constant_set_procedures.extend (agent arch_desc_status_text.set_background_color (?))
 			color_constant_retrieval_functions.extend (agent editable_colour)
 			arch_desc_status_text.set_minimum_width (100)
+			arch_desc_status_text.disable_edit
 			arch_desc_original_language_label.set_text ("Language")
+			arch_desc_original_language_text.disable_edit
 			integer_constant_set_procedures.extend (agent arch_desc_contrib_hbox.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
 			integer_constant_set_procedures.extend (agent arch_desc_contrib_hbox.set_border_width (?))
@@ -571,6 +564,7 @@ feature {NONE}-- Initialization
 			l_ev_vertical_box_2.disable_item_expand (l_ev_label_3)
 			l_ev_label_2.set_text ("Author")
 			l_ev_label_3.set_text ("Accreditation")
+			arch_translations_accreditation_text.disable_edit
 			integer_constant_set_procedures.extend (agent l_ev_vertical_box_3.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
 			integer_constant_set_procedures.extend (agent l_ev_vertical_box_3.set_border_width (?))
@@ -597,6 +591,7 @@ feature {NONE}-- Initialization
 			integer_constant_retrieval_functions.extend (agent min_entry_control_width)
 			integer_constant_set_procedures.extend (agent arch_desc_purpose_text.set_minimum_height (?))
 			integer_constant_retrieval_functions.extend (agent min_text_height)
+			arch_desc_purpose_text.disable_edit
 			l_ev_horizontal_box_5.disable_item_expand (arch_desc_use_label)
 			arch_desc_use_label.set_text ("Use")
 			integer_constant_set_procedures.extend (agent arch_desc_use_label.set_minimum_width (?))
@@ -607,6 +602,7 @@ feature {NONE}-- Initialization
 			integer_constant_retrieval_functions.extend (agent min_entry_control_width)
 			integer_constant_set_procedures.extend (agent arch_desc_use_text.set_minimum_height (?))
 			integer_constant_retrieval_functions.extend (agent min_text_height)
+			arch_desc_use_text.disable_edit
 			l_ev_horizontal_box_6.disable_item_expand (arch_desc_misuse_label)
 			arch_desc_misuse_label.set_text ("Misuse")
 			integer_constant_set_procedures.extend (agent arch_desc_misuse_label.set_minimum_width (?))
@@ -617,6 +613,7 @@ feature {NONE}-- Initialization
 			integer_constant_retrieval_functions.extend (agent min_entry_control_width)
 			integer_constant_set_procedures.extend (agent arch_desc_misuse_text.set_minimum_height (?))
 			integer_constant_retrieval_functions.extend (agent min_text_height)
+			arch_desc_misuse_text.disable_edit
 			integer_constant_set_procedures.extend (agent l_ev_vertical_box_5.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
 			integer_constant_set_procedures.extend (agent l_ev_vertical_box_5.set_border_width (?))
@@ -654,6 +651,7 @@ feature {NONE}-- Initialization
 			arch_desc_resource_package_text.set_font (internal_font)
 			integer_constant_set_procedures.extend (agent arch_desc_resource_package_text.set_minimum_width (?))
 			integer_constant_retrieval_functions.extend (agent min_entry_control_width)
+			arch_desc_resource_package_text.disable_edit
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_8.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_8.set_border_width (?))
@@ -686,6 +684,7 @@ feature {NONE}-- Initialization
 			internal_font.preferred_families.extend ("Microsoft Sans Serif")
 			arch_desc_copyright_text.set_font (internal_font)
 			arch_desc_copyright_text.set_minimum_height (44)
+			arch_desc_copyright_text.disable_edit
 			info_view_area.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
 			info_view_area.set_minimum_width (0)
 			info_view_area.set_minimum_height (0)
@@ -709,7 +708,7 @@ feature {NONE}-- Initialization
 			integer_constant_retrieval_functions.extend (agent arch_tree_min_width)
 			integer_constant_set_procedures.extend (agent parsed_archetype_tree.set_minimum_height (?))
 			integer_constant_retrieval_functions.extend (agent arch_tree_min_height)
-			tree_controls.set_minimum_width (110)
+			tree_controls.set_minimum_width (120)
 			integer_constant_set_procedures.extend (agent tree_controls.set_minimum_height (?))
 			integer_constant_retrieval_functions.extend (agent app_min_height)
 			tree_controls.set_padding (15)
@@ -748,6 +747,7 @@ feature {NONE}-- Initialization
 			color_constant_retrieval_functions.extend (agent editable_colour)
 			parsed_archetype_found_paths.set_minimum_width (0)
 			parsed_archetype_found_paths.set_minimum_height (0)
+			path_controls.set_minimum_width (120)
 			integer_constant_set_procedures.extend (agent path_controls.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
 			integer_constant_set_procedures.extend (agent path_controls.set_border_width (?))
@@ -762,6 +762,7 @@ feature {NONE}-- Initialization
 			l_ev_frame_4.set_text ("Row Filter")
 			path_filter_combo.set_tooltip ("Choose path row filter")
 			path_filter_combo.set_minimum_width (80)
+			path_filter_combo.disable_edit
 			ontology_notebook.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
 			ontology_notebook.set_minimum_width (0)
 			integer_constant_set_procedures.extend (agent ontology_notebook.set_minimum_height (?))
@@ -778,6 +779,7 @@ feature {NONE}-- Initialization
 			ontology_constraint_defs.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
 			ontology_constraint_defs.set_minimum_width (0)
 			ontology_constraint_defs.set_minimum_height (0)
+			archetype_text_edit_area.disable_edit
 			integer_constant_set_procedures.extend (agent arch_stats_vbox.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
 			integer_constant_set_procedures.extend (agent arch_stats_vbox.set_border_width (?))
@@ -877,10 +879,7 @@ feature {NONE}-- Initialization
 			edit_archetype_menu_item.select_actions.extend (agent edit_archetype)
 			save_as_menu_item.select_actions.extend (agent save_adl_file)
 			exit_menu_item.select_actions.extend (agent exit_app)
-			cut_menu_item.select_actions.extend (agent on_cut)
 			copy_menu_item.select_actions.extend (agent on_copy)
-			paste_menu_item.select_actions.extend (agent on_paste)
-			delete_menu_item.select_actions.extend (agent on_delete)
 			select_all_menu_item.select_actions.extend (agent on_select_all)
 			clipboard_menu_item.select_actions.extend (agent show_clipboard)
 			set_repository_menu_item.select_actions.extend (agent set_repository)
@@ -892,21 +891,21 @@ feature {NONE}-- Initialization
 			open_button.select_actions.extend (agent open_adl_file)
 			parse_button.select_actions.extend (agent parse_archetype)
 			edit_button.select_actions.extend (agent edit_archetype)
-			archetype_id.focus_in_actions.extend (agent on_text_focus_in)
-			parent_archetype_id.focus_in_actions.extend (agent on_text_focus_in)
-			adl_version_text.focus_in_actions.extend (agent on_text_focus_in)
+			archetype_id.focus_in_actions.extend (agent on_select_all)
+			parent_archetype_id.focus_in_actions.extend (agent on_select_all)
+			adl_version_text.focus_in_actions.extend (agent on_select_all)
 			language_combo.select_actions.extend (agent select_language)
 			archetype_file_tree.select_actions.extend (agent archetype_view_tree_item_select)
 			arch_notebook.selection_actions.extend (agent arch_notebook_select)
-			arch_desc_status_text.focus_in_actions.extend (agent on_text_focus_in)
-			arch_desc_original_language_text.focus_in_actions.extend (agent on_text_focus_in)
+			arch_desc_status_text.focus_in_actions.extend (agent on_select_all)
+			arch_desc_original_language_text.focus_in_actions.extend (agent on_select_all)
 			arch_translations_languages_list.select_actions.extend (agent translations_select_language)
-			arch_translations_accreditation_text.focus_in_actions.extend (agent on_text_focus_in)
-			arch_desc_purpose_text.focus_in_actions.extend (agent on_text_focus_in)
-			arch_desc_use_text.focus_in_actions.extend (agent on_text_focus_in)
-			arch_desc_misuse_text.focus_in_actions.extend (agent on_text_focus_in)
-			arch_desc_resource_package_text.focus_in_actions.extend (agent on_text_focus_in)
-			arch_desc_copyright_text.focus_in_actions.extend (agent on_text_focus_in)
+			arch_translations_accreditation_text.focus_in_actions.extend (agent on_select_all)
+			arch_desc_purpose_text.focus_in_actions.extend (agent on_select_all)
+			arch_desc_use_text.focus_in_actions.extend (agent on_select_all)
+			arch_desc_misuse_text.focus_in_actions.extend (agent on_select_all)
+			arch_desc_resource_package_text.focus_in_actions.extend (agent on_select_all)
+			arch_desc_copyright_text.focus_in_actions.extend (agent on_select_all)
 			parsed_archetype_tree.select_actions.extend (agent node_map_item_select)
 			tree_expand_bn.select_actions.extend (agent node_map_toggle_expand_tree)
 			tree_expand_one_bn.select_actions.extend (agent node_map_expand_tree_one_level)
@@ -918,14 +917,13 @@ feature {NONE}-- Initialization
 			path_view_check_list.check_actions.extend (agent path_column_select (?))
 			path_view_check_list.uncheck_actions.extend (agent path_column_unselect (?))
 			path_filter_combo.select_actions.extend (agent path_row_set_filter)
-			arch_stats_total_node_count_tf.focus_in_actions.extend (agent on_text_focus_in)
-			arch_stats_leaf_node_count_tf.focus_in_actions.extend (agent on_text_focus_in)
+			arch_stats_total_node_count_tf.focus_in_actions.extend (agent on_select_all)
+			arch_stats_leaf_node_count_tf.focus_in_actions.extend (agent on_select_all)
 			arch_test_tree_toggle_expand_bn.select_actions.extend (agent archetype_test_tree_expand_toggle)
 			arch_test_toggle_check_all_bn.select_actions.extend (agent archetype_test_tree_check_all_toggle)
 			arch_test_refresh_bn.select_actions.extend (agent archetype_test_refresh)
-			arch_test_processed_count.focus_in_actions.extend (agent on_text_focus_in)
+			arch_test_processed_count.focus_in_actions.extend (agent on_select_all)
 			archetype_test_go_bn.select_actions.extend (agent archetype_test_go_stop)
-			test_status_area.focus_in_actions.extend (agent on_text_focus_in)
 			close_request_actions.extend (agent exit_app)
 
 				-- Call `user_initialization'.
@@ -976,16 +974,15 @@ feature -- Access
 	arch_desc_auth_contrib_list, terminologies_list, arch_translations_languages_list,
 	arch_desc_keywords_list: EV_LIST
 	open_menu_item, parse_menu_item, edit_archetype_menu_item,
-	save_as_menu_item, exit_menu_item, cut_menu_item, copy_menu_item, paste_menu_item,
-	delete_menu_item, select_all_menu_item, clipboard_menu_item, set_repository_menu_item,
-	options_menu_item, icon_help_menu_item, news_menu_item, online_menu_item, about_menu_item: EV_MENU_ITEM
-	l_ev_label_1,
-	adl_version_label, language_label, arch_desc_auth_orig_auth_label, arch_desc_status_label,
-	arch_desc_original_language_label, arch_desc_auth_contrib_label, arch_translations_languages_label,
-	l_ev_label_2, l_ev_label_3, l_ev_label_4, arch_desc_purpose_label, arch_desc_use_label,
-	arch_desc_misuse_label, arch_desc_keywords_label, arch_desc_resource_package_label,
-	arch_desc_resource_orig_res_label, arch_desc_copyright_label, l_ev_label_5, l_ev_label_6,
-	l_ev_label_7, l_ev_label_8: EV_LABEL
+	save_as_menu_item, exit_menu_item, copy_menu_item, select_all_menu_item, clipboard_menu_item,
+	set_repository_menu_item, options_menu_item, icon_help_menu_item, news_menu_item,
+	online_menu_item, about_menu_item: EV_MENU_ITEM
+	l_ev_label_1, adl_version_label, language_label,
+	arch_desc_auth_orig_auth_label, arch_desc_status_label, arch_desc_original_language_label,
+	arch_desc_auth_contrib_label, arch_translations_languages_label, l_ev_label_2, l_ev_label_3,
+	l_ev_label_4, arch_desc_purpose_label, arch_desc_use_label, arch_desc_misuse_label,
+	arch_desc_keywords_label, arch_desc_resource_package_label, arch_desc_resource_orig_res_label,
+	arch_desc_copyright_label, l_ev_label_5, l_ev_label_6, l_ev_label_7, l_ev_label_8: EV_LABEL
 	path_view_check_list: EV_CHECKABLE_LIST
 	l_ev_horizontal_separator_1: EV_HORIZONTAL_SEPARATOR
 	arch_desc_auth_frame,
@@ -994,7 +991,7 @@ feature -- Access
 	l_ev_frame_6, l_ev_frame_7: EV_FRAME
 	main_nb, arch_notebook, source_notebook, ontology_notebook: EV_NOTEBOOK
 	l_ev_menu_separator_1,
-	l_ev_menu_separator_2, l_ev_menu_separator_3, l_ev_menu_separator_4, l_ev_menu_separator_5: EV_MENU_SEPARATOR
+	l_ev_menu_separator_2, l_ev_menu_separator_3, l_ev_menu_separator_4: EV_MENU_SEPARATOR
 
 feature {NONE} -- Implementation
 
@@ -1036,23 +1033,8 @@ feature {NONE} -- Implementation
 		deferred
 		end
 	
-	on_cut is
-			-- Called by `select_actions' of `cut_menu_item'.
-		deferred
-		end
-	
 	on_copy is
 			-- Called by `select_actions' of `copy_menu_item'.
-		deferred
-		end
-	
-	on_paste is
-			-- Called by `select_actions' of `paste_menu_item'.
-		deferred
-		end
-	
-	on_delete is
-			-- Called by `select_actions' of `delete_menu_item'.
 		deferred
 		end
 	
@@ -1093,11 +1075,6 @@ feature {NONE} -- Implementation
 	
 	display_about is
 			-- Called by `select_actions' of `about_menu_item'.
-		deferred
-		end
-	
-	on_text_focus_in is
-			-- Called by `focus_in_actions' of `archetype_id'.
 		deferred
 		end
 	

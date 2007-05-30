@@ -227,10 +227,7 @@ feature {NONE} -- Initialization
 			add_shortcut (agent step_focused_notebook_tab (-1), {EV_KEY_CONSTANTS}.key_tab, True, True)
 
 			add_menu_shortcut (open_menu_item, {EV_KEY_CONSTANTS}.key_o, True, False)
-			add_menu_shortcut_for_action (cut_menu_item, agent call_unless_text_focused (agent on_cut), {EV_KEY_CONSTANTS}.key_x, True, False)
 			add_menu_shortcut_for_action (copy_menu_item, agent call_unless_text_focused (agent on_copy), {EV_KEY_CONSTANTS}.key_c, True, False)
-			add_menu_shortcut_for_action (paste_menu_item, agent call_unless_text_focused (agent on_paste), {EV_KEY_CONSTANTS}.key_v, True, False)
-			add_menu_shortcut_for_action (delete_menu_item, agent call_unless_text_focused (agent on_delete), {EV_KEY_CONSTANTS}.key_delete, False, False)
 			add_menu_shortcut (select_all_menu_item, {EV_KEY_CONSTANTS}.key_a, True, False)
 		end
 
@@ -920,16 +917,6 @@ feature {EV_DIALOG} -- Implementation
 			archetype_text_edit_area.set_text (utf8 (s))
 		end
 
-feature {NONE} -- Events implementing standard Windows behaviour that EiffelVision ought to be doing automatically
-
-	on_text_focus_in
-			-- When a text box gains focus, select all of its text.
-		do
-			if focused_text /= Void and then focused_text.text_length > 0 then
-				focused_text.select_all
-			end
-		end
-
 feature {NONE} -- Standard Windows behaviour that EiffelVision ought to be managing automatically
 
 	step_focused_notebook_tab (step: INTEGER)
@@ -952,14 +939,11 @@ feature {NONE} -- Standard Windows behaviour that EiffelVision ought to be manag
 	notebook_containing_focused_widget: EV_NOTEBOOK
 			-- The notebook, if any, containing the currently focused widget.
 		local
-			focused: EV_WIDGET
 			container: EV_CONTAINER
 		do
-			focused := focused_widget
-
-			if focused /= Void then
+			if has_recursive (parent_app.focused_widget) then
 				from
-					container := focused.parent
+					container := parent_app.focused_widget.parent
 				until
 					container = Void or Result /= Void
 				loop
@@ -987,7 +971,7 @@ feature {NONE} -- Standard Windows behaviour that EiffelVision ought to be manag
 					widgets := container.linear_representation
 					widgets.start
 				until
-					widgets.off or container.has_recursive (focused_widget)
+					widgets.off or container.has_recursive (parent_app.focused_widget)
 				loop
 					focus_first_widget (widgets.item)
 					widgets.forth
@@ -1001,10 +985,10 @@ feature {NONE} -- Standard Windows behaviour that EiffelVision ought to be manag
 			end
 		end
 
-	focused_widget: EV_WIDGET
-			-- The currently focused widget, if any.
+	focused_text: EV_TEXT_COMPONENT
+			-- The currently focused text widget, if any.
 		do
-			Result := parent_app.focused_widget
+			Result ?= parent_app.focused_widget
 
 			if not has_recursive (Result) then
 				Result := Void
@@ -1012,12 +996,6 @@ feature {NONE} -- Standard Windows behaviour that EiffelVision ought to be manag
 		ensure
 			focused: Result /= Void implies Result.has_focus
 			in_this_window: Result /= Void implies has_recursive (Result)
-		end
-
-	focused_text: EV_TEXT_COMPONENT
-			-- The currently focused text widget, if any.
-		do
-			Result ?= focused_widget
 		end
 
 	suppress_tab_key_insertion (text: EV_TEXT; previous_widget, next_widget: EV_WIDGET)

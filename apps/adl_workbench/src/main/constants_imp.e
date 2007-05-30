@@ -259,14 +259,14 @@ feature -- Access
 			create Result.put (200)
 		end
 
-	arch_notebook_min_height: INTEGER is
-			-- `Result' is INTEGER constant named `arch_notebook_min_height'.
+	app_min_width: INTEGER is
+			-- `Result' is INTEGER constant named `app_min_width'.
 		do
-			Result := arch_notebook_min_height_cell.item
+			Result := app_min_width_cell.item
 		end
 
-	arch_notebook_min_height_cell: CELL [INTEGER] is
-			--`Result' is once access to a cell holding vale of `arch_notebook_min_height'.
+	app_min_width_cell: CELL [INTEGER] is
+			--`Result' is once access to a cell holding vale of `app_min_width'.
 		once
 			create Result.put (500)
 		end
@@ -295,16 +295,16 @@ feature -- Access
 			create Result.put (60)
 		end
 
-	app_initial_height: INTEGER is
-			-- `Result' is INTEGER constant named `app_initial_height'.
+	arch_notebook_min_height: INTEGER is
+			-- `Result' is INTEGER constant named `arch_notebook_min_height'.
 		do
-			Result := app_initial_height_cell.item
+			Result := arch_notebook_min_height_cell.item
 		end
 
-	app_initial_height_cell: CELL [INTEGER] is
-			--`Result' is once access to a cell holding vale of `app_initial_height'.
+	arch_notebook_min_height_cell: CELL [INTEGER] is
+			--`Result' is once access to a cell holding vale of `arch_notebook_min_height'.
 		once
-			create Result.put (768)
+			create Result.put (500)
 		end
 
 	padding_width: INTEGER is
@@ -331,16 +331,16 @@ feature -- Access
 			create Result.put (35)
 		end
 
-	app_min_width: INTEGER is
-			-- `Result' is INTEGER constant named `app_min_width'.
+	app_initial_height: INTEGER is
+			-- `Result' is INTEGER constant named `app_initial_height'.
 		do
-			Result := app_min_width_cell.item
+			Result := app_initial_height_cell.item
 		end
 
-	app_min_width_cell: CELL [INTEGER] is
-			--`Result' is once access to a cell holding vale of `app_min_width'.
+	app_initial_height_cell: CELL [INTEGER] is
+			--`Result' is once access to a cell holding vale of `app_initial_height'.
 		once
-			create Result.put (500)
+			create Result.put (768)
 		end
 
 	main_vbox_min_height: INTEGER is
