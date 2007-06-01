@@ -614,9 +614,9 @@ feature {NONE} -- Implementation
 						selected := grid.selected_items.first
 
 						if key.code = {EV_KEY_CONSTANTS}.key_page_up then
-							step_to_row (selected.row.index - grid.visible_row_indexes.count + 1)
+							step_to_row (grid.first_visible_row.index.min (selected.row.index - grid.visible_row_indexes.count + 1))
 						elseif key.code = {EV_KEY_CONSTANTS}.key_page_down then
-							step_to_row (selected.row.index + grid.visible_row_indexes.count - 1)
+							step_to_row (grid.last_visible_row.index.max (selected.row.index + grid.visible_row_indexes.count - 1))
 						elseif key.code = {EV_KEY_CONSTANTS}.key_numpad_multiply then
 							expand_tree (selected.row)
 						elseif key.code = {EV_KEY_CONSTANTS}.key_numpad_add or key.code = {EV_KEY_CONSTANTS}.key_right then
