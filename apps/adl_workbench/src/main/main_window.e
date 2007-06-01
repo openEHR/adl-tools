@@ -594,12 +594,6 @@ feature {NONE} -- Commands
 			archetype_test_tree_control.toggle_expand_tree
 		end
 
-	archetype_test_tree_check_all_toggle is
-			-- toggle logical state of test page check boxes
-		do
-			archetype_test_tree_control.toggle_check_all
-		end
-
 	archetype_test_refresh is
 			-- refresh test environment back to vanilla state
 			-- i.e. synchronised with file system and with all

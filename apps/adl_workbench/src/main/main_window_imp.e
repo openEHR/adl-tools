@@ -181,14 +181,12 @@ feature {NONE}-- Initialization
 			create l_ev_horizontal_box_12
 			create archetype_test_tree_grid
 			create l_ev_vertical_box_10
-			create l_ev_label_7
 			create overwrite_adl_rb
 			create remove_unused_codes_rb
 			create arch_test_tree_toggle_expand_bn
-			create arch_test_toggle_check_all_bn
 			create arch_test_refresh_bn
 			create l_ev_horizontal_box_13
-			create l_ev_label_8
+			create l_ev_label_7
 			create arch_test_processed_count
 			create l_ev_horizontal_separator_1
 			create archetype_test_go_bn
@@ -342,14 +340,12 @@ feature {NONE}-- Initialization
 			test_view_area.extend (l_ev_horizontal_box_12)
 			l_ev_horizontal_box_12.extend (archetype_test_tree_grid)
 			l_ev_horizontal_box_12.extend (l_ev_vertical_box_10)
-			l_ev_vertical_box_10.extend (l_ev_label_7)
 			l_ev_vertical_box_10.extend (overwrite_adl_rb)
 			l_ev_vertical_box_10.extend (remove_unused_codes_rb)
 			l_ev_vertical_box_10.extend (arch_test_tree_toggle_expand_bn)
-			l_ev_vertical_box_10.extend (arch_test_toggle_check_all_bn)
 			l_ev_vertical_box_10.extend (arch_test_refresh_bn)
 			l_ev_vertical_box_10.extend (l_ev_horizontal_box_13)
-			l_ev_horizontal_box_13.extend (l_ev_label_8)
+			l_ev_horizontal_box_13.extend (l_ev_label_7)
 			l_ev_horizontal_box_13.extend (arch_test_processed_count)
 			l_ev_vertical_box_10.extend (l_ev_horizontal_separator_1)
 			l_ev_vertical_box_10.extend (archetype_test_go_bn)
@@ -821,38 +817,32 @@ feature {NONE}-- Initialization
 			parser_status_area.disable_edit
 			integer_constant_set_procedures.extend (agent test_view_area.set_minimum_width (?))
 			integer_constant_retrieval_functions.extend (agent app_min_width)
-			test_view_area.enable_item_expand (test_status_area)
-			test_view_area.disable_item_expand (l_ev_horizontal_box_12)
+			test_view_area.enable_item_expand (l_ev_horizontal_box_12)
+			test_view_area.disable_item_expand (test_status_area)
 			l_ev_horizontal_box_12.disable_item_expand (l_ev_vertical_box_10)
 			integer_constant_set_procedures.extend (agent l_ev_vertical_box_10.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
 			integer_constant_set_procedures.extend (agent l_ev_vertical_box_10.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
-			l_ev_vertical_box_10.disable_item_expand (l_ev_label_7)
 			l_ev_vertical_box_10.disable_item_expand (overwrite_adl_rb)
 			l_ev_vertical_box_10.disable_item_expand (remove_unused_codes_rb)
 			l_ev_vertical_box_10.disable_item_expand (arch_test_tree_toggle_expand_bn)
-			l_ev_vertical_box_10.disable_item_expand (arch_test_toggle_check_all_bn)
 			l_ev_vertical_box_10.disable_item_expand (arch_test_refresh_bn)
 			l_ev_vertical_box_10.disable_item_expand (l_ev_horizontal_box_13)
 			l_ev_vertical_box_10.disable_item_expand (l_ev_horizontal_separator_1)
 			l_ev_vertical_box_10.disable_item_expand (archetype_test_go_bn)
-			l_ev_label_7.set_text ("Options")
 			overwrite_adl_rb.set_text ("Overwrite ADL")
 			overwrite_adl_rb.set_tooltip ("Overwrite .adl files rather than save to .adlx")
 			remove_unused_codes_rb.set_text ("Remove unused codes")
 			remove_unused_codes_rb.set_tooltip ("Remove unused codes in archetypes on parse")
 			arch_test_tree_toggle_expand_bn.set_text ("Collapse Tree")
 			arch_test_tree_toggle_expand_bn.set_tooltip ("Expand or collapse directory tree")
-			arch_test_toggle_check_all_bn.set_text ("Uncheck All")
-			arch_test_toggle_check_all_bn.set_tooltip ("Check/uncheck all archetypes for testing")
 			arch_test_refresh_bn.set_text ("Refresh")
 			arch_test_refresh_bn.set_tooltip ("Resync to file system and reset statuses")
 			l_ev_horizontal_box_13.set_minimum_width (110)
-			l_ev_horizontal_box_13.disable_item_expand (l_ev_label_8)
-			l_ev_horizontal_box_13.disable_item_expand (arch_test_processed_count)
-			l_ev_label_8.set_text ("Processed")
-			l_ev_label_8.set_minimum_width (65)
+			l_ev_horizontal_box_13.disable_item_expand (l_ev_label_7)
+			l_ev_label_7.set_text ("Processed")
+			l_ev_label_7.set_minimum_width (65)
 			arch_test_processed_count.disable_edit
 			l_ev_horizontal_separator_1.set_minimum_height (15)
 			archetype_test_go_bn.set_text ("Go")
@@ -920,7 +910,6 @@ feature {NONE}-- Initialization
 			arch_stats_total_node_count_tf.focus_in_actions.extend (agent on_select_all)
 			arch_stats_leaf_node_count_tf.focus_in_actions.extend (agent on_select_all)
 			arch_test_tree_toggle_expand_bn.select_actions.extend (agent archetype_test_tree_expand_toggle)
-			arch_test_toggle_check_all_bn.select_actions.extend (agent archetype_test_tree_check_all_toggle)
 			arch_test_refresh_bn.select_actions.extend (agent archetype_test_refresh)
 			arch_test_processed_count.focus_in_actions.extend (agent on_select_all)
 			archetype_test_go_bn.select_actions.extend (agent archetype_test_go_stop)
@@ -969,20 +958,20 @@ feature -- Access
 	arch_stats_total_node_count_tf, arch_stats_leaf_node_count_tf, arch_test_processed_count: EV_TEXT_FIELD
 	open_button,
 	parse_button, edit_button, tree_expand_bn, tree_expand_one_bn, tree_shrink_one_bn,
-	arch_test_tree_toggle_expand_bn, arch_test_toggle_check_all_bn, arch_test_refresh_bn,
-	archetype_test_go_bn: EV_BUTTON
-	arch_desc_auth_contrib_list, terminologies_list, arch_translations_languages_list,
-	arch_desc_keywords_list: EV_LIST
-	open_menu_item, parse_menu_item, edit_archetype_menu_item,
-	save_as_menu_item, exit_menu_item, copy_menu_item, select_all_menu_item, clipboard_menu_item,
-	set_repository_menu_item, options_menu_item, icon_help_menu_item, news_menu_item,
-	online_menu_item, about_menu_item: EV_MENU_ITEM
-	l_ev_label_1, adl_version_label, language_label,
-	arch_desc_auth_orig_auth_label, arch_desc_status_label, arch_desc_original_language_label,
-	arch_desc_auth_contrib_label, arch_translations_languages_label, l_ev_label_2, l_ev_label_3,
-	l_ev_label_4, arch_desc_purpose_label, arch_desc_use_label, arch_desc_misuse_label,
-	arch_desc_keywords_label, arch_desc_resource_package_label, arch_desc_resource_orig_res_label,
-	arch_desc_copyright_label, l_ev_label_5, l_ev_label_6, l_ev_label_7, l_ev_label_8: EV_LABEL
+	arch_test_tree_toggle_expand_bn, arch_test_refresh_bn, archetype_test_go_bn: EV_BUTTON
+	arch_desc_auth_contrib_list,
+	terminologies_list, arch_translations_languages_list, arch_desc_keywords_list: EV_LIST
+	open_menu_item,
+	parse_menu_item, edit_archetype_menu_item, save_as_menu_item, exit_menu_item, copy_menu_item,
+	select_all_menu_item, clipboard_menu_item, set_repository_menu_item, options_menu_item,
+	icon_help_menu_item, news_menu_item, online_menu_item, about_menu_item: EV_MENU_ITEM
+	l_ev_label_1,
+	adl_version_label, language_label, arch_desc_auth_orig_auth_label, arch_desc_status_label,
+	arch_desc_original_language_label, arch_desc_auth_contrib_label, arch_translations_languages_label,
+	l_ev_label_2, l_ev_label_3, l_ev_label_4, arch_desc_purpose_label, arch_desc_use_label,
+	arch_desc_misuse_label, arch_desc_keywords_label, arch_desc_resource_package_label,
+	arch_desc_resource_orig_res_label, arch_desc_copyright_label, l_ev_label_5, l_ev_label_6,
+	l_ev_label_7: EV_LABEL
 	path_view_check_list: EV_CHECKABLE_LIST
 	l_ev_horizontal_separator_1: EV_HORIZONTAL_SEPARATOR
 	arch_desc_auth_frame,
@@ -1155,11 +1144,6 @@ feature {NONE} -- Implementation
 	
 	archetype_test_tree_expand_toggle is
 			-- Called by `select_actions' of `arch_test_tree_toggle_expand_bn'.
-		deferred
-		end
-	
-	archetype_test_tree_check_all_toggle is
-			-- Called by `select_actions' of `arch_test_toggle_check_all_bn'.
 		deferred
 		end
 	
