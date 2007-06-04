@@ -220,7 +220,7 @@ feature -- Commands
 				file_context.set_file_details(file_path)
 				src := file_context.read_file
 				if not file_context.last_op_failed then
-					adl_engine.set_source(file_context.read_file)
+					adl_engine.set_source(src)
 				else
 					post_error(Current, "open_adl_file", "general_error", <<file_context.last_op_fail_reason>>)
 				end
