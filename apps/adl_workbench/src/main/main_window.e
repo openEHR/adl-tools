@@ -26,15 +26,6 @@ inherit
 			default_create
 		end
 
-	EV_STOCK_PIXMAPS
-		rename
-			implementation as pixmaps_implementation
-		export
-			{NONE} all
-		undefine
-			copy, default_create
-		end
-
 	SHARED_ADL_INTERFACE
 		export
 			{NONE} all
@@ -289,6 +280,19 @@ feature -- Commands
 			News_dialog.show
 		end
 
+	load_and_parse_adl_file (file_path: STRING)
+			-- Load and parse a named ADL file.
+		do
+			adl_interface.reset
+			adl_interface.open_adl_file (file_path)
+
+			if arch_notebook.selected_item = archetype_text_edit_area then
+				populate_archetype_text_edit_area
+			end
+
+			parse_archetype
+		end
+
 feature {NONE} -- Commands
 
 	show_online_help is
@@ -492,21 +496,9 @@ feature {NONE} -- Commands
 		end
 
 	archetype_view_tree_item_select is
-			-- select an item on the archetype tree
-		local
-			cur_csr: EV_CURSOR
+			-- Display details of `archetype_file_tree' when the user selects it.
 		do
-			cur_csr := pointer_style
-			set_pointer_style(wait_cursor)
-
-			archetype_view_tree_control.item_select
-			if archetype_view_tree_control.has_selected_file then
-				load_and_parse_adl_file(archetype_view_tree_control.selected_file_path)
-				set_current_work_directory (adl_interface.working_directory)
-			end
-   			archetype_file_tree.set_minimum_width(0)
-
-			set_pointer_style(cur_csr)
+			archetype_view_tree_control.display_details_of_selected_item
 		end
 
 	node_map_shrink_tree_one_level is
@@ -799,18 +791,6 @@ feature {EV_DIALOG} -- Implementation
 			parser_status_area.set_text (utf8 (billboard_content))
 			archetype_view_tree_control.populate
 			archetype_test_tree_control.populate
-		end
-
-	load_and_parse_adl_file(a_file_path: STRING) is
-			-- load and parse a named ADL file
-		do
-			adl_interface.reset
-			adl_interface.open_adl_file(a_file_path)
-
-			if arch_notebook.selected_item = archetype_text_edit_area then
-				populate_archetype_text_edit_area
-			end
-			parse_archetype
 		end
 
 	clear_archetype_text_edit_area is
