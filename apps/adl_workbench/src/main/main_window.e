@@ -806,7 +806,8 @@ feature {EV_DIALOG} -- Implementation
 		do
 			adl_interface.reset
 			adl_interface.open_adl_file(a_file_path)
-			if arch_notebook.item_text(arch_notebook.selected_item).is_equal ("Source") then
+
+			if arch_notebook.selected_item = archetype_text_edit_area then
 				populate_archetype_text_edit_area
 			end
 			parse_archetype
