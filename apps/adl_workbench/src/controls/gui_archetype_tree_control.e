@@ -92,8 +92,9 @@ feature -- Commands
 			arch_item: ARCHETYPE_DIRECTORY_ARCHETYPE
 		do
 			arch_item ?= gui_file_tree.selected_item.data
-			if arch_item /= Void then
-				has_selected_file := True
+			has_selected_file := arch_item /= Void
+
+			if has_selected_file then
 				selected_file_path := arch_item.full_path
 			end
 		end
