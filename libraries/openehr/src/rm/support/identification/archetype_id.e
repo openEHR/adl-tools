@@ -31,17 +31,17 @@ inherit
 
 create
 	make, make_from_string, default_create
-	
+
 feature -- Definitions
 
 	Default_id: STRING is "openehr-ehr-ENTRY.any.v1"
-	
+
 	axis_separator: CHARACTER is '.'
 			-- major separator between values on the different axes
-	
+
 	section_separator: CHARACTER is '-'
 			-- separator between sections in an axis
-			
+
 feature -- Initialisation
 
 	make(a_rm_originator, a_rm_name, a_rm_entity, a_domain_concept, a_version_id: STRING) is
@@ -59,17 +59,17 @@ feature -- Initialisation
 			value.append(a_rm_name)
 			value.append_character(section_separator)
 			value.append(a_rm_entity)
-			
+
 			value.append_character(axis_separator)
 			value.append(a_domain_concept)
 			if domain_concept.has(section_separator) then
-				is_specialised := True				
+				is_specialised := True
 			end
-			
+
 			value.append_character(axis_separator)
 			value.append(a_version_id)
 		end
-		
+
 	make_from_string(an_id: STRING) is
 			-- make from "rm_entity.domain_concept.ver_id"
 		require
@@ -77,7 +77,7 @@ feature -- Initialisation
 		do
 			value := an_id
 			if domain_concept.has(section_separator) then
-				is_specialised := True				
+				is_specialised := True
 			end
 		end
 
@@ -86,7 +86,7 @@ feature -- Initialisation
 		do
 			make_from_string(Default_id)
 		end
-		
+
 feature -- Access
 
 	qualified_rm_entity: STRING is
@@ -98,7 +98,7 @@ feature -- Access
 			p := value.index_of(axis_separator, 1) - 1
 			Result := value.substring(1, p)
 		end
-		
+
 	domain_concept: STRING is
 			-- shortened version of concept name, e.g.
 			-- "blood_pressure", "problem-diagnosis"
@@ -119,9 +119,9 @@ feature -- Access
 			p := value.index_of(axis_separator, p) + 1
 			Result := value.substring(p, value.count)
 		end
-	
+
 	rm_originator: STRING is
-			-- name of organisation which created the reference model on 
+			-- name of organisation which created the reference model on
 			-- which archetypes in this system are based, e.g. "openehr"
 			-- Extracted from qualified_rm_entity
 		local
@@ -152,7 +152,7 @@ feature -- Access
 		end
 
 	rm_entity: STRING is
-			-- level in the reference model which this archetype applies to, e.g. 
+			-- level in the reference model which this archetype applies to, e.g.
 			-- "organiser", "transaction", "entry" in the openehr RM;
 			-- "headed_section", "composition" in CEN 13606
 			-- "act", "act_context" in HL7 RIM
@@ -183,6 +183,27 @@ feature -- Access
 			Result_valid: Result /= Void implies not Result.is_empty
 		end
 
+	domain_concept_tail: STRING is
+			-- The last part of the domain concept.
+			-- i.e. "problem" 						-> "problem"
+			--		"problem-diagnosis" 			-> "diagnosis"
+			--		"problem-diagnosis-histological" -> "histological"
+		local
+			i: INTEGER
+		do
+			Result := domain_concept
+			i := Result.last_index_of (section_separator, Result.count)
+
+			if i > 0 then
+				Result := Result.substring (i + 1, Result.count)
+			end
+		ensure
+			attached: Result /= Void
+			not_empty: not Result.is_empty
+			domain_concept_unless_specialised: not is_specialised implies domain_concept.is_equal (Result)
+			last_specialisation: is_specialised implies domain_concept.is_equal (domain_concept_base + section_separator.out + Result)
+		end
+
 	domain_concept_base: STRING is
 			-- the part of the domain concept excluding the last specialisation
 			-- i.e. "problem" 						-> "" (no specialisation)
@@ -203,7 +224,7 @@ feature -- Access
 		end
 
 	sortable_id: STRING is
-			-- id as a string minus the version part at the end 
+			-- id as a string minus the version part at the end
 			-- (which interferes with sensible sorting)
 		local
 			p: INTEGER
@@ -221,7 +242,7 @@ feature -- Access
 			p := value.last_index_of(axis_separator, value.count) - 1
 			Result := value.substring(1, p)
 		end
-		
+
 	semantic_parent_id: STRING is
 			-- semantic id of parent as a string minus the version part at the end
 			-- equivalent to semantic_id including domain_base_name only
@@ -236,16 +257,16 @@ feature -- Access
 			end
 			Result := Result.substring(1, concept_sep_pos)
 		end
-		
+
 feature -- Status Report
 
 	is_specialised: BOOLEAN
-	
+
 	valid_id(an_id: STRING):BOOLEAN is
 		do
 			Result := an_id.occurrences(axis_separator) = 2 and an_id.occurrences(section_separator) >= 2
 		end
-		
+
 feature -- Factory
 
 	create_specialised_id(a_spec_domain_concept: STRING): ARCHETYPE_ID is
@@ -279,7 +300,6 @@ feature -- Output
 			create Result.make(value.count)
 			Result.append(value)
 		end
-		
 
 invariant
 	Qualified_rm_entity_valid: qualified_rm_entity /= Void and then not qualified_rm_entity.is_empty

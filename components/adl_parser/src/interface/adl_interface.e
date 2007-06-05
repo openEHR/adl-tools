@@ -23,7 +23,7 @@ inherit
 	SHARED_ARCHETYPE_CONTEXT
 		export
 			{NONE} all
-			{ANY} current_language, set_current_language, set_current_terminology
+			{ANY} current_language, set_current_language
 		end
 
 	SHARED_ARCHETYPE_SERIALISERS
@@ -213,14 +213,12 @@ feature -- Commands
 	open_adl_file(file_path: STRING) is
 		require
 			file_path_valid: file_path /= Void and then not file_path.is_empty
-		local
-			src: STRING
 		do
 			if not exception_encountered then
-				file_context.set_file_details(file_path)
-				src := file_context.read_file
+				file_context.set_target(file_path)
+				file_context.read_file
 				if not file_context.last_op_failed then
-					adl_engine.set_source(file_context.read_file)
+					adl_engine.set_source(file_context.file_content)
 				else
 					post_error(Current, "open_adl_file", "general_error", <<file_context.last_op_fail_reason>>)
 				end
@@ -241,7 +239,7 @@ feature -- Commands
 	resync_file is
 			-- resync from disc
 		do
-			adl_engine.set_source(file_context.read_file)
+			adl_engine.set_source(file_context.file_content)
 		end
 
 	save_archetype(file_path, save_format: STRING) is
@@ -322,12 +320,6 @@ feature -- Commands
 
 					if current_language = Void or not ontology.has_language(current_language) then
 						set_current_language(archetype.original_language.code_string)
-					end
-
-					if ontology.terminologies_available.is_empty then
-						clear_current_terminology
-					else
-						set_current_terminology(ontology.terminologies_available.first)
 					end
 
 					if adl_engine.archetype.is_valid then

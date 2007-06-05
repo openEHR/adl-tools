@@ -28,19 +28,43 @@ inherit
 create
 	make
 
-feature -- Initialisation
+feature {NONE} -- Initialisation
 
-	make(a_main_window: MAIN_WINDOW) is
+	make (a_main_window: MAIN_WINDOW)
+			-- Create to control `a_main_window'.
 		require
-			a_main_window /= Void
+			window_attached: a_main_window /= Void
 		do
 			gui := a_main_window
 			gui.arch_desc_resource_orig_res_mlist.hide_title_row
 			gui.arch_desc_auth_orig_auth_mlist.hide_title_row
-			gui.arch_desc_purpose_text.enable_word_wrapping
-			gui.arch_desc_use_text.enable_word_wrapping
-			gui.arch_desc_misuse_text.enable_word_wrapping
-			gui.arch_desc_copyright_text.enable_word_wrapping
+			enable_word_wrapping (gui.arch_desc_purpose_text)
+			enable_word_wrapping (gui.arch_desc_use_text)
+			enable_word_wrapping (gui.arch_desc_misuse_text)
+			enable_word_wrapping (gui.arch_desc_copyright_text)
+		ensure
+			gui_set: gui = a_main_window
+		end
+
+	enable_word_wrapping (text: EV_TEXT) is
+			-- Enable word-wrapping in `text', preserving `text.is_editable'.
+			-- This is a work-around for a bug in the Windows implementation of EV_TEXT.
+		require
+			text_attached: text /= Void
+		local
+			is_editable: BOOLEAN
+		do
+			is_editable := text.is_editable
+			text.enable_word_wrapping
+
+			if is_editable then
+				text.enable_edit
+			else
+				text.disable_edit
+			end
+		ensure
+			word_wrapping: text.has_word_wrapping
+			editable_preserved: text.is_editable = old text.is_editable
 		end
 
 feature -- Commands

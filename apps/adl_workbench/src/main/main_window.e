@@ -16,14 +16,14 @@ class
 
 inherit
 	MAIN_WINDOW_IMP
+		redefine
+			show
+		end
 
-	EV_STOCK_PIXMAPS
-		rename
-			implementation as pixmaps_implementation
-		export
-			{NONE} all
+	MAIN_WINDOW_ACCELERATORS
 		undefine
-			copy, default_create
+			copy,
+			default_create
 		end
 
 	SHARED_ADL_INTERFACE
@@ -34,8 +34,6 @@ inherit
 		end
 
 	SHARED_ARCHETYPE_DIRECTORY
-		export
-			{NONE} all
 		undefine
 			copy, default_create
 		end
@@ -86,9 +84,6 @@ feature {NONE} -- Initialization
 			-- can be added here.
 		do
 			initialise_gui_settings
-
-			format_combo.set_strings(adl_interface.archetype_serialiser_formats)
-			format_combo.set_text (Archetype_file_extension)
 
 			if editor_command.is_empty then
 				set_editor_command(Default_editor_command)
@@ -209,19 +204,20 @@ feature {NONE} -- Initialization
 		end
 
 	initialise_accelerators is
-			-- initialise keybard accelerators for various controls
-		local
-			acc: EV_ACCELERATOR
-			key: EV_KEY
-			key_constants: EV_KEY_CONSTANTS
+			-- Initialise keybard accelerators for various controls.
 		do
-			create key_constants
+			suppress_tab_key_insertion (arch_desc_purpose_text, arch_translations_other_details_mlist, arch_desc_use_text)
+			suppress_tab_key_insertion (arch_desc_use_text, arch_desc_purpose_text, arch_desc_misuse_text)
+			suppress_tab_key_insertion (arch_desc_misuse_text, arch_desc_use_text, arch_desc_keywords_list)
+			suppress_tab_key_insertion (arch_desc_copyright_text, arch_desc_resource_orig_res_mlist, parser_status_area)
+			suppress_tab_key_insertion (archetype_text_edit_area, arch_notebook, parser_status_area)
 
-			-- make ^C (copy) accelerator
-			create key.make_with_code (key_constants.key_c)
-			create acc.make_with_key_combination (key, True, False, False)
-			acc.actions.extend(agent dispatch_ctrl_c_keystroke)
-			accelerators.extend (acc)
+			add_shortcut (agent step_focused_notebook_tab (1), {EV_KEY_CONSTANTS}.key_tab, True, False)
+			add_shortcut (agent step_focused_notebook_tab (-1), {EV_KEY_CONSTANTS}.key_tab, True, True)
+
+			add_menu_shortcut (open_menu_item, {EV_KEY_CONSTANTS}.key_o, True, False)
+			add_menu_shortcut_for_action (copy_menu_item, agent call_unless_text_focused (agent on_copy), {EV_KEY_CONSTANTS}.key_c, True, False)
+			add_menu_shortcut (select_all_menu_item, {EV_KEY_CONSTANTS}.key_a, True, False)
 		end
 
 feature -- Access
@@ -244,6 +240,13 @@ feature -- Modification
 		end
 
 feature -- Commands
+
+	show
+			-- Do a few adjustments straight after display.
+		do
+			Precursor
+			focus_first_widget (main_nb.selected_item)
+		end
 
 	set_options is
 			--
@@ -273,6 +276,19 @@ feature -- Commands
 			-- Called by `pointer_button_press_actions' of `about_mi'.
 		do
 			News_dialog.show
+		end
+
+	load_and_parse_adl_file (file_path: STRING)
+			-- Load and parse a named ADL file.
+		do
+			adl_interface.reset
+			adl_interface.open_adl_file (file_path)
+
+			if arch_notebook.selected_item = archetype_text_edit_area then
+				populate_archetype_text_edit_area
+			end
+
+			parse_archetype
 		end
 
 feature {NONE} -- Commands
@@ -336,11 +352,6 @@ feature {NONE} -- Commands
 			end
 		end
 
-	select_format is
-			-- Called by `select_actions' of `format_combo'.
-		do
-		end
-
 	open_adl_file is
 			-- Called by `pointer_button_press_actions' of `open_file_mi'.
 		local
@@ -370,43 +381,64 @@ feature {NONE} -- Commands
 			question_dialog: EV_QUESTION_DIALOG
 			error_dialog: EV_INFORMATION_DIALOG
 			a_file: PLAIN_TEXT_FILE
-			adl_file_save_dialog: EV_FILE_SAVE_DIALOG
-			fname: STRING
+			save_dialog: EV_FILE_SAVE_DIALOG
+			name, format: STRING
 		do
 			if adl_interface.archetype_source_loaded then
 				if adl_interface.parse_succeeded then
-					if not format_combo.has_selection then
-						format_combo.select_all
-					end
-				--	resync_file
-
 					ok_to_write := True
-					create adl_file_save_dialog
+					create save_dialog
+					save_dialog.set_file_name (adl_interface.file_context.current_file_name)
+					save_dialog.set_start_directory (current_work_directory)
 
-					fname := current_work_directory + operating_environment.directory_separator.out + adl_interface.file_context.current_file_name
-					fname.replace_substring(archetype_file_extensions.item(format_combo.selected_text), fname.count - Archetype_file_extension.count, fname.count)
-					adl_file_save_dialog.set_file_name (fname)
-					adl_file_save_dialog.filters.extend (["*" + archetype_file_extensions.item(format_combo.text),
-						"Files of type " + format_combo.text])
-					adl_file_save_dialog.show_modal_to_window (Current)
-					if not adl_file_save_dialog.file_name.is_empty then
-						create a_file.make(adl_file_save_dialog.file_name)
+					from
+						archetype_file_extensions.start
+					until
+						archetype_file_extensions.off
+					loop
+						format := archetype_file_extensions.key_for_iteration
+
+						if has_archetype_serialiser_format (format) then
+							save_dialog.filters.extend (["*" + archetype_file_extensions.item_for_iteration, "Files of type " + format])
+					end
+
+						archetype_file_extensions.forth
+					end
+
+					save_dialog.show_modal_to_window (Current)
+					name := save_dialog.file_name
+
+					if not name.is_empty then
+						format ?= (save_dialog.filters [save_dialog.selected_filter_index]) [1]
+						format.remove_head (2)
+
+						if not format.is_equal (archetype_file_extension) then
+							if file_system.has_extension (name, archetype_file_extensions [archetype_file_extension]) then
+								name.remove_tail (archetype_file_extensions [archetype_file_extension].count)
+								name.append (archetype_file_extensions [format])
+								save_dialog.set_file_name (name)
+							end
+						end
+
+						create a_file.make (name)
+
 						if a_file.exists then
-							create question_dialog.make_with_text("File " + adl_file_save_dialog.file_title + " already exists; replace?")
+							create question_dialog.make_with_text ("File " + save_dialog.file_title + " already exists; replace?")
 							question_dialog.set_buttons(<<"Yes", "No">>)
 							question_dialog.show_modal_to_window (Current)
 							ok_to_write := question_dialog.selected_button.is_equal("Yes")
 						end
+
 						if ok_to_write then
-							adl_interface.save_archetype(adl_file_save_dialog.file_name,
-																format_combo.selected_text)
+							adl_interface.save_archetype (name, format)
 							parser_status_area.append_text(adl_interface.status)
-							if format_combo.selected_text.is_equal(Archetype_file_extension) then
+
+							if format.is_equal (archetype_file_extension) then
 								populate_archetype_directory
 							end
 						end
 
-						set_current_work_directory (adl_file_save_dialog.file_path)
+						set_current_work_directory (save_dialog.file_path)
 					end
 				else
 					create error_dialog.make_with_text("must parse before serialising")
@@ -470,8 +502,8 @@ feature {NONE} -- Commands
 			set_pointer_style(wait_cursor)
 
 			archetype_view_tree_control.item_select
-			if archetype_view_tree_control.has_selected_file then
-				load_and_parse_adl_file(archetype_view_tree_control.selected_file_path)
+			if archetype_directory.has_selected_archetype then
+				load_and_parse_adl_file(archetype_directory.selected_archetype.full_path)
 				set_current_work_directory (adl_interface.working_directory)
 			end
    			archetype_file_tree.set_minimum_width(0)
@@ -505,19 +537,35 @@ feature {NONE} -- Commands
 			node_map_control.item_select
 		end
 
-	node_map_tree_technical_mode is
-			--
+	on_tree_domain_selected
+			-- Hide technical details in `parsed_archetype_tree'.
 		do
 			if adl_interface.parse_succeeded then
-				node_map_control.toggle_technical_mode
+				node_map_control.set_domain_mode
 			end
 		end
 
-	node_map_tree_source_status_mode is
-			--
+	on_tree_technical_selected
+			-- Display technical details in `parsed_archetype_tree'.
 		do
 			if adl_interface.parse_succeeded then
-				node_map_control.toggle_source_status_mode
+				node_map_control.set_technical_mode
+			end
+		end
+
+	on_tree_flat_view_selected
+			-- Do not show the inherited/defined status of nodes in `parsed_archetype_tree'.
+		do
+			if adl_interface.parse_succeeded then
+				node_map_control.set_flat_view
+			end
+		end
+
+	on_tree_inheritance_selected
+			-- Show the inherited/defined status of nodes in `parsed_archetype_tree'.
+		do
+			if adl_interface.parse_succeeded then
+				node_map_control.set_inheritance_view
 			end
 		end
 
@@ -546,12 +594,6 @@ feature {NONE} -- Commands
 			-- toggle logical state of test page archetype tree expandedness
 		do
 			archetype_test_tree_control.toggle_expand_tree
-		end
-
-	archetype_test_tree_check_all_toggle is
-			-- toggle logical state of test page check boxes
-		do
-			archetype_test_tree_control.toggle_check_all
 		end
 
 	archetype_test_refresh is
@@ -590,12 +632,6 @@ feature {NONE} -- Commands
 			adl_path_map_control.set_filter
 		end
 
-	copy_path_to_clipboard is
-			-- Called by `select_actions' of `copy_mi'.
-		do
-			adl_path_map_control.copy_path_to_clipboard
-		end
-
 	arch_notebook_select is
 			-- Called by `selection_actions' of `arch_notebook'.
 		do
@@ -608,6 +644,71 @@ feature {NONE} -- Commands
 			-- Called by `select_actions' of `arch_translations_languages_list'.
 		do
 			translation_controls.populate_items
+		end
+
+feature {NONE} -- Edit events
+
+	call_unless_text_focused (action: PROCEDURE [ANY, TUPLE])
+			-- Some of the edit shortcuts are implemented automatically for text boxes.
+			-- If called from a keyboard shortcut, execute the action unless a text box is focused.
+			-- Executing it within a text box would cause it to be performed twice.
+			-- For some actions this wouldn't really matter (cut, copy), but for paste it would be a blatant bug.
+		do
+			if focused_text = Void then
+				action.call ([])
+			end
+		end
+
+	on_cut
+			-- Cut the selected item, depending on which widget has focus.
+		do
+			on_copy
+			on_delete
+		end
+
+	on_copy
+			-- Copy the selected item, depending on which widget has focus.
+		do
+			if parsed_archetype_found_paths.has_focus then
+				adl_path_map_control.copy_path_to_clipboard
+			elseif focused_text /= Void then
+				if focused_text.has_selection then
+					focused_text.copy_selection
+				end
+			end
+		end
+
+	on_paste
+			-- Paste an item, depending on which widget has focus.
+		local
+			old_length: INTEGER
+		do
+			if focused_text /= Void then
+				if focused_text.is_editable then
+					on_delete
+					old_length := focused_text.text_length
+					focused_text.paste (focused_text.caret_position)
+					focused_text.set_caret_position (focused_text.caret_position + focused_text.text_length - old_length)
+				end
+			end
+		end
+
+	on_delete
+			-- Delete the selected item, depending on which widget has focus.
+		do
+			if focused_text /= Void then
+				if focused_text.is_editable and focused_text.has_selection then
+					focused_text.delete_selection
+				end
+			end
+		end
+
+	on_select_all
+			-- Select all text in the currently focused text box, if any.
+		do
+			if focused_text /= Void and then focused_text.text_length > 0 then
+				focused_text.select_all
+			end
 		end
 
 feature -- Controls
@@ -696,21 +797,10 @@ feature {EV_DIALOG} -- Implementation
 			-- rebuild archetype directory & repopulate relevant GUI parts
 		do
 			clear_all_controls
-			archetype_directory.repopulate
+			archetype_directory.build_directory
 			parser_status_area.set_text (utf8 (billboard_content))
 			archetype_view_tree_control.populate
 			archetype_test_tree_control.populate
-		end
-
-	load_and_parse_adl_file(a_file_path: STRING) is
-			-- load and parse a named ADL file
-		do
-			adl_interface.reset
-			adl_interface.open_adl_file(a_file_path)
-			if arch_notebook.item_text(arch_notebook.selected_item).is_equal ("Source") then
-				populate_archetype_text_edit_area
-			end
-			parse_archetype
 		end
 
 	clear_archetype_text_edit_area is
@@ -812,12 +902,113 @@ feature {EV_DIALOG} -- Implementation
 			archetype_text_edit_area.set_text (utf8 (s))
 		end
 
-	dispatch_ctrl_c_keystroke is
-			-- dispathed routine for ctrl-C keystroke
+feature {NONE} -- Standard Windows behaviour that EiffelVision ought to be managing automatically
+
+	step_focused_notebook_tab (step: INTEGER)
+			-- Switch forward or back from the current tab page of the currently focused notebook.
+		require
+			valid_step: step.abs <= 1
+		local
+			notebook: EV_NOTEBOOK
+			widget: EV_WIDGET
 		do
-			if parsed_archetype_found_paths.has_focus then
-				adl_path_map_control.copy_path_to_clipboard
+			notebook := notebook_containing_focused_widget
+
+			if notebook /= Void then
+				widget := notebook [1 + (step + notebook.selected_item_index - 1 + notebook.count) \\ notebook.count]
+				notebook.select_item (widget)
+				focus_first_widget (widget)
 			end
+		end
+
+	notebook_containing_focused_widget: EV_NOTEBOOK
+			-- The notebook, if any, containing the currently focused widget.
+		local
+			container: EV_CONTAINER
+		do
+			if has_recursive (parent_app.focused_widget) then
+				from
+					container := parent_app.focused_widget.parent
+				until
+					container = Void or Result /= Void
+				loop
+					Result ?= container
+					container := container.parent
+end
+			end
+		end
+
+	focus_first_widget (widget: EV_WIDGET)
+			-- Set focus to `widget' or to its first child widget that accepts focus.
+		require
+			widget_attached: widget /= Void
+		local
+			container: EV_CONTAINER
+			grid: EV_GRID
+			label: EV_LABEL
+			widgets: LINEAR [EV_WIDGET]
+		do
+			container ?= widget
+			grid ?= widget
+
+			if container /= Void and grid = Void then
+				from
+					widgets := container.linear_representation
+					widgets.start
+				until
+					widgets.off or container.has_recursive (parent_app.focused_widget)
+				loop
+					focus_first_widget (widgets.item)
+					widgets.forth
+				end
+			elseif widget.is_displayed and widget.is_sensitive then
+				label ?= widget
+
+				if label = Void then
+					widget.set_focus
+				end
+			end
+		end
+
+	focused_text: EV_TEXT_COMPONENT
+			-- The currently focused text widget, if any.
+		do
+			Result ?= parent_app.focused_widget
+
+			if not has_recursive (Result) then
+				Result := Void
+			end
+		ensure
+			focused: Result /= Void implies Result.has_focus
+			in_this_window: Result /= Void implies has_recursive (Result)
+		end
+
+	suppress_tab_key_insertion (text: EV_TEXT; previous_widget, next_widget: EV_WIDGET)
+			-- Prevent insertion of tabs into `text', so that the user can tab out of it.
+		require
+			text_attached: text /= Void
+			previous_attached: previous_widget /= Void
+			next_attached: next_widget /= Void
+		do
+			text.set_default_key_processing_handler (
+				agent (key: EV_KEY): BOOLEAN
+					do
+						Result := key.code /= {EV_KEY_CONSTANTS}.key_tab
+					end)
+
+			text.key_press_actions.extend (
+				agent (key: EV_KEY; previous, next: EV_WIDGET)
+					do
+						if key /= Void and then key.code = {EV_KEY_CONSTANTS}.key_tab then
+							if not parent_app.ctrl_pressed and not parent_app.alt_pressed then
+								if parent_app.shift_pressed then
+									previous.set_focus
+								else
+									next.set_focus
+								end
+							end
+						end
+					end (?, previous_widget, next_widget))
 		end
 
 end

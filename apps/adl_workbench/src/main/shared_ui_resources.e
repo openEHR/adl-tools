@@ -21,6 +21,15 @@ inherit
 			{NONE} all
 		end
 
+	EV_STOCK_PIXMAPS
+		rename
+			implementation as pixmaps_implementation
+		export
+			{NONE} all
+		undefine
+			copy, default_create
+		end
+
 feature -- Definitions
 
 	News_file_path: STRING is

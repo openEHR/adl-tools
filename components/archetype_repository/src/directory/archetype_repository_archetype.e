@@ -1,6 +1,6 @@
 indexing
 	component:   "openEHR Archetype Project"
-	description: "Descriptor of a folder in a directory of archetypes"
+	description: "Descriptor of an archetype in a directory of archetypes"
 	keywords:    "ADL, archetype"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
@@ -12,48 +12,71 @@ indexing
 	last_change: "$LastChangedDate$"
 
 
-class ARCHETYPE_DIRECTORY_FOLDER
+class ARCHETYPE_REPOSITORY_ARCHETYPE
 
-inherit 
-	ARCHETYPE_DIRECTORY_ITEM 
+inherit
+	ARCHETYPE_REPOSITORY_ITEM
+		rename
+			make as make_adi
+		end
 
 create
 	make
 
+feature -- Initialisation
+
+	make(a_root_path, a_full_path: STRING; a_group_id: INTEGER; an_id: ARCHETYPE_ID; is_specialised_flag: BOOLEAN; a_repository: ARCHETYPE_INDEXED_REPOSITORY_I) is
+		require
+			Root_path_valid: a_root_path /= Void and then not a_root_path.is_empty
+			Full_path_valid: a_full_path /= Void and then not a_full_path.is_empty and then a_full_path.substring_index (a_root_path, 1) = 1
+			Group_id_valid: a_group_id > 0
+			Id_valid: an_id /= Void
+			Repository_exists: a_repository /= Void
+		local
+			arch_rel_path: STRING
+		do
+			id := an_id
+			is_specialised := is_specialised_flag
+			make_adi(a_root_path, a_full_path, a_group_id, a_repository)
+		end
+
 feature -- Access
 
-	base_name: STRING
-			-- name of last segment of path - i.e. local dir name or else file-name
+	id: ARCHETYPE_ID
+
+	is_specialised: BOOLEAN
+
+	source: STRING is
+			-- get source text of archetype
+		do
+			Result := repository.source (Current)
+		end
 
 feature {NONE} -- Implementation
 
-	make_semantic_paths is
-			-- make semantic_path and semantic_parent_path
+	make_ontological_paths is
+			-- make ontological_path and ontological_parent_path
 		local
-			pos: INTEGER
+			arch_ont_path: STRING
 		do
-			semantic_path := full_path.substring (root_path.count + 1, full_path.count)
+			-- initialise paths down to but not including archetype file name
+			ontological_path := full_path.substring (root_path.count + 1, full_path.last_index_of(os_directory_separator, full_path.count)-1)
+			ontological_parent_path := ontological_path.twin
 
-			create semantic_parent_path.make(0)
-			if not semantic_path.is_empty then
-				pos := semantic_path.last_index_of(os_directory_separator, semantic_path.count)
-			end
-			if pos > 0 then
-				semantic_parent_path.append(semantic_path.substring (1, pos - 1))
-			end
+			-- generate a semantic path that corresponds to this archetype:
+			-- constructed from the relative folder path + the semantic part of the archetype id, with '-' separators
+			-- changed to '/' so that the entire path is '/'-separated
+			arch_ont_path := id.domain_concept
+			arch_ont_path.replace_substring_all (id.section_separator.out, os_directory_separator.out)
+			ontological_path.append(os_directory_separator.out + arch_ont_path)
 
-			if not semantic_path.is_empty then
-				pos := semantic_path.last_index_of(os_directory_separator, semantic_path.count)
-			end
-			if pos > 0 then
-				base_name := semantic_path.substring(pos+1, semantic_path.count)
-			else
-				base_name := semantic_path.twin
+			-- generate parent ontological path if appropriate
+			arch_ont_path := id.domain_concept_base
+			if not arch_ont_path.is_empty then
+				arch_ont_path.replace_substring_all (id.section_separator.out, os_directory_separator.out)
+				ontological_parent_path.append(os_directory_separator.out + arch_ont_path)
 			end
 		end
-
-invariant
-	Base_name: base_name /= Void and then not base_name.is_empty
 
 end
 

@@ -13,17 +13,17 @@ indexing
 
 class SHARED_ARCHETYPE_CONTEXT
 
-inherit	
+inherit
 	OPENEHR_DEFINITIONS
 		export
 			{NONE} all
 		end
-	
+
 	ADL_DEFINITIONS
 		export
 			{NONE} all
 		end
-	
+
 feature -- Access
 
 	current_language: STRING is
@@ -33,13 +33,8 @@ feature -- Access
 			Result_exists: Result /= Void
 		end
 
-	current_terminology: STRING is
-		do
-			Result := cell_terminology.item
-		end
-
 feature -- Modification
-	
+
 	set_current_language(a_lang: STRING) is
 			-- set `language'
 		require
@@ -47,21 +42,7 @@ feature -- Modification
 		do
 			cell_language.put(a_lang)
 		end
-	
-	set_current_terminology(a_terminology: STRING) is
-			-- set `terminology'
-		require
-			a_terminology /= Void and then not a_terminology.is_empty
-		do
-			cell_terminology.put(a_terminology)
-		end
-				
-	clear_current_terminology is
-			-- set `terminology' to nothing, for archetypes with no bindings
-		do
-			cell_terminology.put(Void)
-		end
-	
+
 feature {NONE} -- Implementation
 
 	cell_language: CELL[STRING] is
@@ -69,13 +50,7 @@ feature {NONE} -- Implementation
 		once
 			create Result.put(Default_language)
 		end
-			
-	cell_terminology: CELL[STRING] is
-			-- terminology to bind to
-		once
-			create Result.put(Void)
-		end
-		
+
 end
 
 

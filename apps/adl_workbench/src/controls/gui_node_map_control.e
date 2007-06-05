@@ -60,42 +60,32 @@ feature -- Status Report
 
 feature -- Commands
 
-	toggle_technical_mode is
-			-- toggle technical mode setting
-		do
-			in_technical_mode := not in_technical_mode
-			repopulate
-			if in_technical_mode then
-				gui.tree_technical_mode_bn.set_text("Domain")
-			else
-				gui.tree_technical_mode_bn.set_text("Technical")
-			end
-		end
-
-	set_technical_node is
-			-- set technical mode on
+	set_technical_mode
+			-- Set `in_technical_mode' on.
 		do
 			in_technical_mode := True
 			repopulate
 		end
 
-	set_domain_mode is
-			-- set technical mode off
+	set_domain_mode
+			-- Set `in_technical_mode' off.
 		do
 			in_technical_mode := False
 			repopulate
 		end
 
-	toggle_source_status_mode is
-			-- set in_source_origin_mode
+	set_inheritance_view
+			-- Set `in_source_status_mode' on.
 		do
-			in_source_status_mode := not in_source_status_mode
+			in_source_status_mode := True
 			repopulate
-			if in_source_status_mode then
-				gui.tree_source_status_bn.set_text("Flat view")
-			else
-				gui.tree_source_status_bn.set_text("Inheritance")
-			end
+		end
+
+	set_flat_view
+			-- Set `in_source_status_mode' off.
+		do
+			in_source_status_mode := False
+			repopulate
 		end
 
 	clear is
@@ -288,10 +278,13 @@ feature {NONE} -- Implementation
 
 			elseif a_type.is_equal("C_CODE_PHRASE") then
 				a_object_term ?= an_og_node.content_item
+
 				if not a_object_term.any_allowed then
 					s.append(a_object_term.terminology_id.value)
 				end
+
 				a_ti := attach_node(s, pixmaps.item("C_CODE_PHRASE" + pixmap_ext), an_og_node)
+
 				if a_object_term.code_count > 0 then
 					from
 						a_object_term.code_list.start
@@ -300,7 +293,7 @@ feature {NONE} -- Implementation
 					loop
 						assumed_flag := a_object_term.assumed_value /= Void and then
 							a_object_term.assumed_value.code_string.is_equal(a_object_term.code_list.item)
-						create a_ti_sub.make_with_text(object_term_item_string(a_object_term.code_list.item, assumed_flag))
+						create a_ti_sub.make_with_text (utf8 (object_term_item_string (a_object_term.code_list.item, assumed_flag)))
 						a_ti_sub.set_data(a_object_term.code_list.item) -- type STRING
 						a_ti_sub.set_pixmap(pixmaps.item("TERM" + pixmap_ext))
 						a_ti.extend(a_ti_sub)
@@ -312,6 +305,7 @@ feature {NONE} -- Implementation
 				c_dv_ordinal ?= an_og_node.content_item
 				s.append(c_dv_ordinal.rm_type_name)
 				a_ti := attach_node(s, pixmaps.item("C_DV_ORDINAL" + pixmap_ext), an_og_node)
+
 				if not c_dv_ordinal.any_allowed then
 					from
 						c_dv_ordinal.items.start
@@ -320,7 +314,7 @@ feature {NONE} -- Implementation
 					loop
 						assumed_flag := c_dv_ordinal.assumed_value /= Void and then
 							c_dv_ordinal.assumed_value.value = c_dv_ordinal.items.item.value
-						create a_ti_sub.make_with_text(object_ordinal_item_string(c_dv_ordinal.items.item, assumed_flag))
+						create a_ti_sub.make_with_text (utf8 (object_ordinal_item_string (c_dv_ordinal.items.item, assumed_flag)))
 						a_ti_sub.set_data(c_dv_ordinal.items.item) -- of type ORDINAL
 						a_ti_sub.set_pixmap(pixmaps.item("ORDINAL" + pixmap_ext))
 						a_ti.extend(a_ti_sub)
@@ -330,32 +324,36 @@ feature {NONE} -- Implementation
 
 			elseif a_type.is_equal("C_DV_QUANTITY") then
 				c_q ?= an_og_node.content_item
+
 				if in_technical_mode then
 					s.append(c_q.rm_type_name)
 				end
+
 				if c_q.property /= Void then
 					s.append(" (" + c_q.property.as_string + ")")
 				end
+
 				a_ti := attach_node(s, pixmaps.item("C_DV_QUANTITY" + pixmap_ext), an_og_node)
+
 				if c_q.list /= Void then
 					from
 						c_q.list.start
 					until
 						c_q.list.off
 					loop
-						create a_ti_sub.make_with_text(object_c_quantity_item_string(c_q.list.item))
-						a_ti_sub.set_data(c_q.list.item)
-						a_ti_sub.set_pixmap(pixmaps.item("C_QUANTITY_ITEM" + pixmap_ext))
-						a_ti.extend(a_ti_sub)
+						create a_ti_sub.make_with_text (utf8 (object_c_quantity_item_string (c_q.list.item)))
+						a_ti_sub.set_data (c_q.list.item)
+						a_ti_sub.set_pixmap (pixmaps.item ("C_QUANTITY_ITEM" + pixmap_ext))
+						a_ti.extend (a_ti_sub)
 						c_q.list.forth
 					end
 				end
 
 				if c_q.assumed_value /= Void then
-					create a_ti_sub.make_with_text(object_quantity_string(c_q.assumed_value, True))
-					a_ti_sub.set_data(c_q.assumed_value)
-					a_ti_sub.set_pixmap(pixmaps.item("C_QUANTITY_ITEM" + pixmap_ext))
-					a_ti.extend(a_ti_sub)
+					create a_ti_sub.make_with_text (utf8 (object_quantity_string (c_q.assumed_value, True)))
+					a_ti_sub.set_data (c_q.assumed_value)
+					a_ti_sub.set_pixmap (pixmaps.item ("C_QUANTITY_ITEM" + pixmap_ext))
+					a_ti.extend (a_ti_sub)
 				end
 
 			elseif a_type.is_equal("C_PRIMITIVE_OBJECT") then
@@ -368,11 +366,13 @@ feature {NONE} -- Implementation
 
 			elseif a_type.is_equal("ARCHETYPE_SLOT") then
 				a_slot ?= an_og_node.content_item
+
 				if a_slot.occurrences.lower = 1 then
 					pixmap := pixmaps.item("ARCHETYPE_SLOT" + pixmap_ext)
 				else
 					pixmap := pixmaps.item("ARCHETYPE_SLOT.optional" + pixmap_ext)
 				end
+
 				a_ti := attach_node(archetype_slot_string(a_slot), pixmap, an_og_node)
 
 				if a_slot.has_includes then
@@ -381,10 +381,10 @@ feature {NONE} -- Implementation
 					until
 						a_slot.includes.off
 					loop
-						create a_ti_sub2.make_with_text(object_invariant_string(a_slot.includes.item))
-						a_ti_sub2.set_pixmap(pixmaps.item("CADL_INCLUDE"))
-						a_ti_sub2.set_data(a_slot.includes.item)
-						a_ti.extend(a_ti_sub2)
+						create a_ti_sub2.make_with_text (utf8 (object_invariant_string (a_slot.includes.item)))
+						a_ti_sub2.set_pixmap (pixmaps.item ("CADL_INCLUDE"))
+						a_ti_sub2.set_data (a_slot.includes.item)
+						a_ti.extend (a_ti_sub2)
 						a_slot.includes.forth
 					end
 
@@ -397,10 +397,10 @@ feature {NONE} -- Implementation
 					until
 						a_slot.excludes.off
 					loop
-						create a_ti_sub2.make_with_text(object_invariant_string(a_slot.excludes.item))
-						a_ti_sub2.set_pixmap(pixmaps.item("CADL_EXCLUDE"))
-						a_ti_sub2.set_data(a_slot.excludes.item)
-						a_ti.extend(a_ti_sub2)
+						create a_ti_sub2.make_with_text (utf8 (object_invariant_string (a_slot.excludes.item)))
+						a_ti_sub2.set_pixmap (pixmaps.item ("CADL_EXCLUDE"))
+						a_ti_sub2.set_data (a_slot.excludes.item)
+						a_ti.extend (a_ti_sub2)
 						a_slot.excludes.forth
 					end
 
@@ -882,11 +882,10 @@ feature {NONE} -- Implementation
 	object_quantity_string(a_q: QUANTITY; assumed_flag: BOOLEAN): STRING is
 			-- generate string form of node or object for use in tree node
 		do
-			create Result.make(0)
-			Result.append(a_q.magnitude.out)
-			Result.append(" " + a_q.units)
+			Result := a_q.magnitude.out + " " + a_q.units
+
 			if assumed_flag then
-				Result.append(" (Assumed)")
+				Result.append (" (Assumed)")
 			end
 		end
 
@@ -921,24 +920,26 @@ feature {NONE} -- Implementation
 		do
 			if adl_engine.archetype.has_invariants then
 				invariants := adl_engine.archetype.invariants
-				create a_ti_sub.make_with_text("invariants:")
-				a_ti_sub.set_pixmap(pixmaps.item("CADL_INVARIANT"))
-				gui_tree.extend(a_ti_sub)
+				create a_ti_sub.make_with_text ("invariants:")
+				a_ti_sub.set_pixmap(pixmaps.item ("CADL_INVARIANT"))
+				gui_tree.extend (a_ti_sub)
 
 				from
 					invariants.start
 				until
 					invariants.off
 				loop
-					create s.make(0)
+					create s.make_empty
+
 					if invariants.item.tag /= Void then
 						s.append (invariants.item.tag + ": ")
 					end
-					s.append(object_invariant_string(invariants.item))
-					create a_ti_sub2.make_with_text(s)
-					a_ti_sub2.set_pixmap(pixmaps.item("CADL_INVARIANT_ITEM"))
-					a_ti_sub2.set_data(invariants.item)
-					a_ti_sub.extend(a_ti_sub2)
+
+					s.append (object_invariant_string (invariants.item))
+					create a_ti_sub2.make_with_text (utf8 (s))
+					a_ti_sub2.set_pixmap (pixmaps.item ("CADL_INVARIANT_ITEM"))
+					a_ti_sub2.set_data (invariants.item)
+					a_ti_sub.extend (a_ti_sub2)
 					invariants.forth
 				end
 

@@ -1,9 +1,36 @@
 indexing
-	description: "Objects that provide access to constants loaded from files."
+	description: "[
+			Objects that provide access to constants, possibly loaded from a files.
+			Each constant is generated into two features: both a query and a storage
+			feature. For example, for a STRING constant named `my_string', the following
+			features are generated: my_string: STRING and my_string_cell: CELL [STRING].
+			`my_string' simply returns the current item of `my_string_cell'. By seperating
+			the constant access in this way, it is possible to change the constant's value
+			by either redefining `my_string' in descendent classes or simply performing
+			my_string_cell.put ("new_string") as required.
+			If you are loading the constants from a file and you wish to reload a different set
+			of constants for your interface (e.g. for multi-language support), you may perform
+			this in the following way:
+			
+			set_file_name ("my_constants_file.text")
+			reload_constants_from_file
+			
+			and then for each generated widget, call `set_all_attributes_using_constants' to reset
+			the newly loaded constants into the attribute settings of each widget that relies on constants.
+			
+			Note that if you wish your constants file to be loaded from a specific location,
+			you may redefine `initialize_constants' to handle the loading of the file from
+			an alternative location.
+			
+			Note that if you have selected to load constants from a file, and the file cannot
+			be loaded, you will get a precondition violation when attempting to access one
+			of the constants that should have been loaded. Therefore, you must ensure that either the
+			file is accessible or you do not specify to load from a file.
+		]"
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
+deferred class
 	CONSTANTS_IMP
 	
 feature {NONE} -- Initialization
@@ -29,219 +56,436 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	source_notebook_min_height: INTEGER is 
-			-- `Result' is INTEGER constant named source_notebook_min_height.
-		once
-			Result := 200
+	reload_constants_from_file is
+			-- Re-load all constants from file named `file_name'.
+			-- When used in conjunction with `set_file_name', it enables
+			-- you to load a fresh set of INTEGER and STRING constants
+			-- from a constants file. If you then wish these to be applied
+			-- to a current generated interface, call `set_all_attributes_using_constants'
+			-- on that interface for the changed constants to be reflected in the attributes
+			-- of your widgets.
+		do
+			initialized_cell.put (False)
+			initialize_constants
 		end
 
-	arch_tree_min_width: INTEGER is 
-			-- `Result' is INTEGER constant named arch_tree_min_width.
-		once
-			Result := 350
+	app_min_height: INTEGER is
+			-- `Result' is INTEGER constant named `app_min_height'.
+		do
+			Result := app_min_height_cell.item
 		end
 
-	app_min_height: INTEGER is 
-			-- `Result' is INTEGER constant named app_min_height.
+	app_min_height_cell: CELL [INTEGER] is
+			--`Result' is once access to a cell holding vale of `app_min_height'.
 		once
-			Result := 350
+			create Result.put (350)
+		end
+
+	min_combo_box_width: INTEGER is
+			-- `Result' is INTEGER constant named `min_combo_box_width'.
+		do
+			Result := min_combo_box_width_cell.item
+		end
+
+	min_combo_box_width_cell: CELL [INTEGER] is
+			--`Result' is once access to a cell holding vale of `min_combo_box_width'.
+		once
+			create Result.put (55)
+		end
+
+	list_row_height: INTEGER is
+			-- `Result' is INTEGER constant named `list_row_height'.
+		do
+			Result := list_row_height_cell.item
+		end
+
+	list_row_height_cell: CELL [INTEGER] is
+			--`Result' is once access to a cell holding vale of `list_row_height'.
+		once
+			create Result.put (18)
+		end
+
+	adl_workbench_ico: EV_PIXMAP is
+			-- `Result' is EV_PIXMAP constant named `adl_workbench_ico'.
+		do
+			Result := adl_workbench_ico_cell.item
+		end
+
+	adl_workbench_ico_cell: CELL [EV_PIXMAP] is
+			--`Result' is once access to a cell holding vale of `adl_workbench_ico'.
+		local
+			a_file_name: FILE_NAME
+		once
+			create Result.put (create {EV_PIXMAP})
+			create a_file_name.make_from_string (icons)
+			a_file_name.set_file_name ("adl_gui_vision2.ico")
+			set_with_named_file (Result.item, a_file_name)
 		end
 
 	label_font: EV_FONT is
 			-- `Result' is EV_FONT constant named `label_font'.
-		once
-			create Result
-			Result.set_family ({EV_FONT_CONSTANTS}.Family_sans)
-			Result.set_weight ({EV_FONT_CONSTANTS}.Weight_bold)
-			Result.set_shape ({EV_FONT_CONSTANTS}.Shape_regular)
-			Result.set_height_in_points (8)
-			Result.preferred_families.extend ("System")
+		do
+			Result := label_font_cell.item
 		end
 
-	app_initial_width: INTEGER is 
-			-- `Result' is INTEGER constant named app_initial_width.
+	label_font_cell: CELL [EV_FONT] is
+			--`Result' is once access to a cell holding vale of `label_font'.
 		once
-			Result := 1024
+			create Result.put (create {EV_FONT})
+			Result.item.set_family ({EV_FONT_CONSTANTS}.Family_sans)
+			Result.item.set_weight ({EV_FONT_CONSTANTS}.Weight_bold)
+			Result.item.set_shape ({EV_FONT_CONSTANTS}.Shape_regular)
+			Result.item.set_height_in_points (8)
+			Result.item.preferred_families.extend ("System")
 		end
 
-	source_notebook_min_width: INTEGER is 
-			-- `Result' is INTEGER constant named source_notebook_min_width.
-		once
-			Result := 600
+	status_area_min_height: INTEGER is
+			-- `Result' is INTEGER constant named `status_area_min_height'.
+		do
+			Result := status_area_min_height_cell.item
 		end
 
-	min_entry_control_width: INTEGER is 
-			-- `Result' is INTEGER constant named min_entry_control_width.
+	status_area_min_height_cell: CELL [INTEGER] is
+			--`Result' is once access to a cell holding vale of `status_area_min_height'.
 		once
-			Result := 200
+			create Result.put (65)
 		end
 
-	min_terms_status_height: INTEGER is 
-			-- `Result' is INTEGER constant named min_terms_status_height.
-		once
-			Result := 200
+	main_hbox_min_height: INTEGER is
+			-- `Result' is INTEGER constant named `main_hbox_min_height'.
+		do
+			Result := main_hbox_min_height_cell.item
 		end
 
-	tree_control_panel_width: INTEGER is 
-			-- `Result' is INTEGER constant named tree_control_panel_width.
+	main_hbox_min_height_cell: CELL [INTEGER] is
+			--`Result' is once access to a cell holding vale of `main_hbox_min_height'.
 		once
-			Result := 100
+			create Result.put (560)
 		end
 
-	arch_tree_min_height: INTEGER is 
-			-- `Result' is INTEGER constant named arch_tree_min_height.
-		once
-			Result := 60
+	dialog_border_width: INTEGER is
+			-- `Result' is INTEGER constant named `dialog_border_width'.
+		do
+			Result := dialog_border_width_cell.item
 		end
 
-	max_arch_explorer_width: INTEGER is 
-			-- `Result' is INTEGER constant named max_arch_explorer_width.
+	dialog_border_width_cell: CELL [INTEGER] is
+			--`Result' is once access to a cell holding vale of `dialog_border_width'.
 		once
-			Result := 180
+			create Result.put (10)
 		end
 
-	padding_width: INTEGER is 
-			-- `Result' is INTEGER constant named padding_width.
-		once
-			Result := 3
+	app_max_width: INTEGER is
+			-- `Result' is INTEGER constant named `app_max_width'.
+		do
+			Result := app_max_width_cell.item
 		end
 
-	min_text_height: INTEGER is 
-			-- `Result' is INTEGER constant named min_text_height.
+	app_max_width_cell: CELL [INTEGER] is
+			--`Result' is once access to a cell holding vale of `app_max_width'.
 		once
-			Result := 35
+			create Result.put (2000)
 		end
 
-	dialog_border_width: INTEGER is 
-			-- `Result' is INTEGER constant named dialog_border_width.
-		once
-			Result := 10
+	max_terms_height: INTEGER is
+			-- `Result' is INTEGER constant named `max_terms_height'.
+		do
+			Result := max_terms_height_cell.item
 		end
 
-	max_terms_height: INTEGER is 
-			-- `Result' is INTEGER constant named max_terms_height.
+	max_terms_height_cell: CELL [INTEGER] is
+			--`Result' is once access to a cell holding vale of `max_terms_height'.
 		once
-			Result := 400
+			create Result.put (400)
 		end
 
-	list_row_height: INTEGER is 
-			-- `Result' is INTEGER constant named list_row_height.
-		once
-			Result := 18
+	min_terms_status_height: INTEGER is
+			-- `Result' is INTEGER constant named `min_terms_status_height'.
+		do
+			Result := min_terms_status_height_cell.item
 		end
 
-	table_row_spacing: INTEGER is 
-			-- `Result' is INTEGER constant named table_row_spacing.
+	min_terms_status_height_cell: CELL [INTEGER] is
+			--`Result' is once access to a cell holding vale of `min_terms_status_height'.
 		once
-			Result := 4
+			create Result.put (200)
 		end
 
-	desc_label_width: INTEGER is 
-			-- `Result' is INTEGER constant named desc_label_width.
-		once
-			Result := 70
+	source_notebook_min_width: INTEGER is
+			-- `Result' is INTEGER constant named `source_notebook_min_width'.
+		do
+			Result := source_notebook_min_width_cell.item
 		end
 
-	app_initial_height: INTEGER is 
-			-- `Result' is INTEGER constant named app_initial_height.
+	source_notebook_min_width_cell: CELL [INTEGER] is
+			--`Result' is once access to a cell holding vale of `source_notebook_min_width'.
 		once
-			Result := 768
+			create Result.put (600)
 		end
 
-	min_combo_box_width: INTEGER is 
-			-- `Result' is INTEGER constant named min_combo_box_width.
-		once
-			Result := 55
+	max_arch_explorer_width: INTEGER is
+			-- `Result' is INTEGER constant named `max_arch_explorer_width'.
+		do
+			Result := max_arch_explorer_width_cell.item
 		end
 
-	border_width: INTEGER is 
-			-- `Result' is INTEGER constant named border_width.
+	max_arch_explorer_width_cell: CELL [INTEGER] is
+			--`Result' is once access to a cell holding vale of `max_arch_explorer_width'.
 		once
-			Result := 4
+			create Result.put (180)
 		end
 
 	editable_colour: EV_COLOR is
 			-- `Result' is EV_COLOR constant named `editable_colour'.
-		once
-			Result := create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 255)
+		do
+			Result := editable_colour_cell.item
 		end
 
-	main_hbox_min_height: INTEGER is 
-			-- `Result' is INTEGER constant named main_hbox_min_height.
+	editable_colour_cell: CELL [EV_COLOR] is
+			--`Result' is once access to a cell holding vale of `editable_colour'.
 		once
-			Result := 560
+			create Result.put (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 255))
 		end
 
-	app_min_width: INTEGER is 
-			-- `Result' is INTEGER constant named app_min_width.
-		once
-			Result := 500
+	source_notebook_min_height: INTEGER is
+			-- `Result' is INTEGER constant named `source_notebook_min_height'.
+		do
+			Result := source_notebook_min_height_cell.item
 		end
 
-	main_vbox_min_height: INTEGER is 
-			-- `Result' is INTEGER constant named main_vbox_min_height.
+	source_notebook_min_height_cell: CELL [INTEGER] is
+			--`Result' is once access to a cell holding vale of `source_notebook_min_height'.
 		once
-			Result := 600
+			create Result.put (200)
 		end
 
-	status_area_min_height: INTEGER is 
-			-- `Result' is INTEGER constant named status_area_min_height.
-		once
-			Result := 65
+	app_min_width: INTEGER is
+			-- `Result' is INTEGER constant named `app_min_width'.
+		do
+			Result := app_min_width_cell.item
 		end
 
-	dialog_padding_width: INTEGER is 
-			-- `Result' is INTEGER constant named dialog_padding_width.
+	app_min_width_cell: CELL [INTEGER] is
+			--`Result' is once access to a cell holding vale of `app_min_width'.
 		once
-			Result := 15
+			create Result.put (500)
+		end
+
+	tree_control_panel_width: INTEGER is
+			-- `Result' is INTEGER constant named `tree_control_panel_width'.
+		do
+			Result := tree_control_panel_width_cell.item
+		end
+
+	tree_control_panel_width_cell: CELL [INTEGER] is
+			--`Result' is once access to a cell holding vale of `tree_control_panel_width'.
+		once
+			create Result.put (100)
+		end
+
+	arch_tree_min_height: INTEGER is
+			-- `Result' is INTEGER constant named `arch_tree_min_height'.
+		do
+			Result := arch_tree_min_height_cell.item
+		end
+
+	arch_tree_min_height_cell: CELL [INTEGER] is
+			--`Result' is once access to a cell holding vale of `arch_tree_min_height'.
+		once
+			create Result.put (60)
+		end
+
+	arch_notebook_min_height: INTEGER is
+			-- `Result' is INTEGER constant named `arch_notebook_min_height'.
+		do
+			Result := arch_notebook_min_height_cell.item
+		end
+
+	arch_notebook_min_height_cell: CELL [INTEGER] is
+			--`Result' is once access to a cell holding vale of `arch_notebook_min_height'.
+		once
+			create Result.put (500)
+		end
+
+	padding_width: INTEGER is
+			-- `Result' is INTEGER constant named `padding_width'.
+		do
+			Result := padding_width_cell.item
+		end
+
+	padding_width_cell: CELL [INTEGER] is
+			--`Result' is once access to a cell holding vale of `padding_width'.
+		once
+			create Result.put (3)
+		end
+
+	min_text_height: INTEGER is
+			-- `Result' is INTEGER constant named `min_text_height'.
+		do
+			Result := min_text_height_cell.item
+		end
+
+	min_text_height_cell: CELL [INTEGER] is
+			--`Result' is once access to a cell holding vale of `min_text_height'.
+		once
+			create Result.put (35)
+		end
+
+	app_initial_height: INTEGER is
+			-- `Result' is INTEGER constant named `app_initial_height'.
+		do
+			Result := app_initial_height_cell.item
+		end
+
+	app_initial_height_cell: CELL [INTEGER] is
+			--`Result' is once access to a cell holding vale of `app_initial_height'.
+		once
+			create Result.put (768)
+		end
+
+	main_vbox_min_height: INTEGER is
+			-- `Result' is INTEGER constant named `main_vbox_min_height'.
+		do
+			Result := main_vbox_min_height_cell.item
+		end
+
+	main_vbox_min_height_cell: CELL [INTEGER] is
+			--`Result' is once access to a cell holding vale of `main_vbox_min_height'.
+		once
+			create Result.put (600)
 		end
 
 	icons: STRING is
 			-- `Result' is DIRECTORY constant named `icons'.
-		once
-			Result := "C:\project\openehr\ref_impl_eiffel\apps\adl_workbench\app\icons"
+		do
+			Result := icons_cell.item
 		end
 
-	arch_notebook_min_height: INTEGER is 
-			-- `Result' is INTEGER constant named arch_notebook_min_height.
+	icons_cell: CELL [STRING] is
+			--`Result' is once access to a cell holding vale of `icons'.
 		once
-			Result := 500
+			create Result.put ("C:\project\openehr\ref_impl_eiffel\apps\adl_workbench\app\icons")
 		end
 
-	adl_workbench_ico: EV_PIXMAP is
-		local
-			a_file_name: FILE_NAME
-		once
-			create Result
-			create a_file_name.make_from_string (icons)
-			a_file_name.set_file_name ("adl_gui_vision2.ico")
-			set_with_named_file (Result, a_file_name)
+	min_terms_height: INTEGER is
+			-- `Result' is INTEGER constant named `min_terms_height'.
+		do
+			Result := min_terms_height_cell.item
 		end
 
-	app_max_height: INTEGER is 
-			-- `Result' is INTEGER constant named app_max_height.
+	min_terms_height_cell: CELL [INTEGER] is
+			--`Result' is once access to a cell holding vale of `min_terms_height'.
 		once
-			Result := 2000
+			create Result.put (100)
 		end
 
-	min_terms_height: INTEGER is 
-			-- `Result' is INTEGER constant named min_terms_height.
-		once
-			Result := 100
+	dialog_padding_width: INTEGER is
+			-- `Result' is INTEGER constant named `dialog_padding_width'.
+		do
+			Result := dialog_padding_width_cell.item
 		end
 
-	min_list_height: INTEGER is 
-			-- `Result' is INTEGER constant named min_list_height.
+	dialog_padding_width_cell: CELL [INTEGER] is
+			--`Result' is once access to a cell holding vale of `dialog_padding_width'.
 		once
-			Result := 50
+			create Result.put (15)
 		end
 
-	app_max_width: INTEGER is 
-			-- `Result' is INTEGER constant named app_max_width.
-		once
-			Result := 2000
+	min_list_height: INTEGER is
+			-- `Result' is INTEGER constant named `min_list_height'.
+		do
+			Result := min_list_height_cell.item
 		end
 
+	min_list_height_cell: CELL [INTEGER] is
+			--`Result' is once access to a cell holding vale of `min_list_height'.
+		once
+			create Result.put (50)
+		end
+
+	app_max_height: INTEGER is
+			-- `Result' is INTEGER constant named `app_max_height'.
+		do
+			Result := app_max_height_cell.item
+		end
+
+	app_max_height_cell: CELL [INTEGER] is
+			--`Result' is once access to a cell holding vale of `app_max_height'.
+		once
+			create Result.put (2000)
+		end
+
+	arch_tree_min_width: INTEGER is
+			-- `Result' is INTEGER constant named `arch_tree_min_width'.
+		do
+			Result := arch_tree_min_width_cell.item
+		end
+
+	arch_tree_min_width_cell: CELL [INTEGER] is
+			--`Result' is once access to a cell holding vale of `arch_tree_min_width'.
+		once
+			create Result.put (350)
+		end
+
+	min_entry_control_width: INTEGER is
+			-- `Result' is INTEGER constant named `min_entry_control_width'.
+		do
+			Result := min_entry_control_width_cell.item
+		end
+
+	min_entry_control_width_cell: CELL [INTEGER] is
+			--`Result' is once access to a cell holding vale of `min_entry_control_width'.
+		once
+			create Result.put (200)
+		end
+
+	desc_label_width: INTEGER is
+			-- `Result' is INTEGER constant named `desc_label_width'.
+		do
+			Result := desc_label_width_cell.item
+		end
+
+	desc_label_width_cell: CELL [INTEGER] is
+			--`Result' is once access to a cell holding vale of `desc_label_width'.
+		once
+			create Result.put (70)
+		end
+
+	table_row_spacing: INTEGER is
+			-- `Result' is INTEGER constant named `table_row_spacing'.
+		do
+			Result := table_row_spacing_cell.item
+		end
+
+	table_row_spacing_cell: CELL [INTEGER] is
+			--`Result' is once access to a cell holding vale of `table_row_spacing'.
+		once
+			create Result.put (4)
+		end
+
+	border_width: INTEGER is
+			-- `Result' is INTEGER constant named `border_width'.
+		do
+			Result := border_width_cell.item
+		end
+
+	border_width_cell: CELL [INTEGER] is
+			--`Result' is once access to a cell holding vale of `border_width'.
+		once
+			create Result.put (4)
+		end
+
+	app_initial_width: INTEGER is
+			-- `Result' is INTEGER constant named `app_initial_width'.
+		do
+			Result := app_initial_width_cell.item
+		end
+
+	app_initial_width_cell: CELL [INTEGER] is
+			--`Result' is once access to a cell holding vale of `app_initial_width'.
+		once
+			create Result.put (1024)
+		end
 
 feature -- Access
 
@@ -306,8 +550,23 @@ feature {NONE} -- Implementation
 			create Result.make (4)
 		end
 		
-	file_name: STRING is "constants.txt"
-		-- File name from which constants must be loaded.
+	file_name: STRING is
+			-- File name from which constants must be loaded.
+		do
+			Result := file_name_cell.item
+		end
+		
+	file_name_cell: CELL [STRING] is
+		once
+			create Result
+			Result.put ("constants.txt")
+		end
+		
+	set_file_name (a_file_name: STRING) is
+			-- Assign `a_file_name' to `file_name'.
+		do
+			file_name_cell.put (a_file_name)
+		end
 		
 	String_constant: STRING is "STRING"
 	
@@ -337,7 +596,7 @@ feature {NONE} -- Implementation
 						end_quote2 := line_contents.index_of ('"', start_quote2 + 1)
 						name := line_contents.substring (start_quote1 + 1, end_quote1 - 1)
 						value := line_contents.substring (start_quote2 + 1, end_quote2 - 1)
-						all_constants.put (value, name)
+						all_constants.force (value, name)
 					end
 				end
 			end
@@ -383,4 +642,4 @@ feature {NONE} -- Implementation
 invariant
 	all_constants_not_void: all_constants /= Void
 
-end -- class CONSTANTS_IMP
+end
