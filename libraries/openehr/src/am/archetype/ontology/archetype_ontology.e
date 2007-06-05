@@ -21,14 +21,14 @@ inherit
 		redefine
 			default_create
 		end
-	
+
 	ARCHETYPE_TERM_CODE_TOOLS
 		export
 			{NONE} all
 		undefine
 			default_create
 		end
-		
+
 create
 	make_from_tree, make_empty
 
@@ -51,19 +51,19 @@ feature -- Definitions
 feature -- Initialisation
 
 	default_create is
-			-- 
+			--
 		do
 			create errors.make(0)
 			create warnings.make(0)
-			
+
 			create languages_available.make(0)
 			languages_available.compare_objects
 			create terminologies_available.make(0)
 			terminologies_available.compare_objects
 
-			create term_definitions.make(0)			
+			create term_definitions.make(0)
 			create constraint_definitions.make(0)
-			
+
 			create term_codes.make
 			term_codes.compare_objects
 			create constraint_codes.make
@@ -75,7 +75,7 @@ feature -- Initialisation
 
 	make_from_tree(a_primary_lang: STRING; a_dadl_tree: DT_COMPLEX_OBJECT_NODE; a_concept_code: STRING) is
 			-- make ontology from parse tree and concept code, usually something
-			-- like 'at0000' or 'at0000.1'. The specialisation depth of the 
+			-- like 'at0000' or 'at0000.1'. The specialisation depth of the
 			-- ontology is determined from this code
 		require
 			Primary_language_valid: a_primary_lang /= Void implies not a_primary_lang.is_empty -- FIXME make mandatory with ADL2
@@ -90,9 +90,9 @@ feature -- Initialisation
 			end
 			synchronise_from_tree
 		end
-		
+
 	make_empty(a_primary_lang: STRING; a_concept_term: ARCHETYPE_TERM) is
-			-- make an empty ontology with concept term which must be in 
+			-- make an empty ontology with concept term which must be in
 			-- the primary language. It is usually something
 			-- with a code like 'at0000' or 'at0000.1'. The specialisation
 			-- depth of the ontology is determined from this code
@@ -109,16 +109,16 @@ feature -- Initialisation
 feature -- Access
 
 	primary_language: STRING
-	
-	languages_available: ARRAYED_LIST[STRING] 
+
+	languages_available: ARRAYED_LIST[STRING]
 	--is
-	--		-- 
+	--		--
 	--	do
 	--		Result := parent.languages_available
 	--	end
 
 	terminologies_available: ARRAYED_LIST[STRING]
-	
+
 	specialisation_depth: INTEGER
 			-- depth of this ontology with relation to ontologies in other archetypes
 
@@ -132,7 +132,7 @@ feature -- Access
 		ensure
 			Result_exists: Result /= Void
 		end
-		
+
 	constraint_definition(a_lang, a_term_code: STRING): ARCHETYPE_TERM is
 			-- retrieve the constraint definition in language `a_lang' for code `a_term_code'
 		require
@@ -142,7 +142,7 @@ feature -- Access
 			Result := constraint_definitions.item(a_lang).item(a_term_code)
 		ensure
 			Result_exists: Result /= Void
-		end	
+		end
 
 	term_binding(a_terminology, a_term_code: STRING): CODE_PHRASE is
 			-- retrieve the term definition in language `a_lang' for code `a_term_code'
@@ -154,7 +154,7 @@ feature -- Access
 		ensure
 			Result_exists: Result /= Void
 		end
-		
+
 	term_bindings_for_terminology(a_terminology: STRING): HASH_TABLE [CODE_PHRASE, STRING] is
 			-- retrieve the term bindings for a particular terminology
 		require
@@ -175,14 +175,14 @@ feature -- Access
 			Result := constraint_bindings.item(a_terminology).item(a_term_code)
 		ensure
 			Result_exists: Result /= Void
-		end	
-		
+		end
+
 	concept_code: STRING
 			-- term code of the concept of the ontology as a whole
-			
+
 	term_codes: TWO_WAY_SORTED_SET[STRING]
 			-- list of term codes
-	
+
 	constraint_codes: TWO_WAY_SORTED_SET[STRING]
 			-- list of constraint codes
 
@@ -190,7 +190,7 @@ feature -- Access
 			-- the attribute names found in ARCHETYPE_TERM objects
 
 	errors: STRING
-	
+
 	warnings: STRING
 
 	logical_path_for_physical_path(a_path, a_lang: STRING): STRING is
@@ -227,25 +227,25 @@ feature -- Access
 				og_phys_path.forth
 				og_log_path.forth
 			end
-			
+
 			Result := og_log_path.as_string
 		end
 
 feature -- Status Report
 
 	is_valid: BOOLEAN is
-			-- 
+			--
 		do
 			-- FIXME: do some validity checking; some is already happening in syncrhonise_from_tree
-			
+
 			-- there can be no code of a specialisation depth greater than that of the
 			-- ontology as a whole, which is derived from the concept code
-			
+
 			Result := errors.is_empty
 		ensure
 			not Result implies errors /= Void and then not errors.is_empty
 		end
-		
+
 	has_path(a_path: STRING): BOOLEAN is
 			-- True if path `a_path' exists in structure
 		require
@@ -253,7 +253,7 @@ feature -- Status Report
 		do
 			Result := representation.has_path(a_path)
 		end
-	
+
 	has_language(a_language:STRING): BOOLEAN is
 			-- check that `a_language' supported
 		require
@@ -261,29 +261,29 @@ feature -- Status Report
 		do
 			Result := term_definitions.has(a_language)
 		end
-	
+
 	has_terminology(a_terminology: STRING): BOOLEAN is
 			-- is `a_terminology' known in this ontology
 		require
 			Terminology_valid: a_terminology /= Void and then not a_terminology.is_empty
 		do
 			Result := terminologies_available.has(a_terminology)
-		end		
-	
+		end
+
 	has_term_code(a_term_code: STRING): BOOLEAN is
 			-- is `a_term_code' known in this ontology
 		do
 			Result := term_codes.has(a_term_code)
-		end		
-	
+		end
+
 	has_constraint_code(a_constraint_code: STRING): BOOLEAN is
-			-- 
+			--
 		require
 			Constraint_code_valid: a_constraint_code /= Void and then not a_constraint_code.is_empty
 		do
 			Result := constraint_codes.has(a_constraint_code)
-		end	
-		
+		end
+
 	has_term_bindings(a_terminology: STRING): BOOLEAN is
 			-- true if there are term bindings `a_terminology'
 		require
@@ -291,7 +291,7 @@ feature -- Status Report
 		do
 			Result := term_bindings.has(a_terminology)
 		end
-		
+
 	has_constraint_bindings(a_terminology: STRING): BOOLEAN is
 			-- true if there are term bindings `a_terminology'
 		require
@@ -299,7 +299,7 @@ feature -- Status Report
 		do
 			Result := constraint_bindings.has(a_terminology)
 		end
-		
+
 	has_any_term_binding(a_term_code: STRING): BOOLEAN is
 			-- true if there is any term binding for code `a_term_code'
 		require
@@ -319,7 +319,7 @@ feature -- Status Report
 			end
 			terminologies_available.go_to (p)
 		end
-		
+
 	has_term_binding(a_terminology, a_term_code: STRING): BOOLEAN is
 			-- true if there is a term binding for code `a_term_code' in `a_terminology'
 		require
@@ -329,7 +329,7 @@ feature -- Status Report
 			Result := term_bindings.has(a_terminology) and then
 					term_bindings.item(a_terminology).has(a_term_code)
 		end
-		
+
 	has_any_constraint_binding(a_term_code: STRING): BOOLEAN is
 			-- true if there is any constraint binding for code `a_term_code'
 		require
@@ -371,7 +371,7 @@ feature -- Modification
 			add_term_definition(primary_language, term_definition(primary_language, concept_code).create_derived_term(spec_code))
 			set_concept_code(spec_code)
 		end
-		
+
 	set_primary_language(a_lang: STRING) is
 			-- set the primary language of the ontology
 		require
@@ -396,7 +396,7 @@ feature -- Modification
 				langs.forth
 			end
 		end
-		
+
 	add_language(a_lang: STRING) is
 			-- add a new language to list of languages available
 			-- No action if language already exists
@@ -406,11 +406,11 @@ feature -- Modification
 			term_defs_one_lang, constraint_defs_one_lang, term_defs_prim_lang, constraint_defs_prim_lang: HASH_TABLE[ARCHETYPE_TERM, STRING]
 		do
 			if not term_definitions.has(a_lang) then
-				create term_defs_one_lang.make(0)	
+				create term_defs_one_lang.make(0)
 				term_definitions.put(term_defs_one_lang, a_lang)
 
 				if not constraint_definitions.is_empty then
-					create constraint_defs_one_lang.make(0)	
+					create constraint_defs_one_lang.make(0)
 					constraint_definitions.put(constraint_defs_one_lang, a_lang)
 				end
 
@@ -423,10 +423,10 @@ feature -- Modification
 					until
 						term_defs_prim_lang.off
 					loop
-						term_defs_one_lang.put(term_defs_prim_lang.item_for_iteration.create_translated_term(primary_language), 
+						term_defs_one_lang.put(term_defs_prim_lang.item_for_iteration.create_translated_term(primary_language),
 							term_defs_prim_lang.item_for_iteration.code)
 						term_defs_prim_lang.forth
-					end				
+					end
 
 					-- do constraint definitions as well
 					if not constraint_definitions.is_empty then
@@ -436,10 +436,10 @@ feature -- Modification
 						until
 							constraint_defs_prim_lang.off
 						loop
-							constraint_defs_one_lang.put(constraint_defs_prim_lang.item_for_iteration.create_translated_term(primary_language), 
+							constraint_defs_one_lang.put(constraint_defs_prim_lang.item_for_iteration.create_translated_term(primary_language),
 								constraint_defs_prim_lang.item_for_iteration.code)
 							constraint_defs_prim_lang.forth
-						end	
+						end
 					end
 				end
 			end
@@ -463,7 +463,7 @@ feature -- Modification
 		end
 
 	add_term_definition(a_lang: STRING; a_term: ARCHETYPE_TERM) is
-			-- add a new term definition for language `a_lang' and 
+			-- add a new term definition for language `a_lang' and
 			-- automatically add translation placeholders in all other languages
 		require
 			Language_valid: a_lang /= Void and then has_language(a_lang)
@@ -476,7 +476,7 @@ feature -- Modification
 		ensure
 			Code_valid: has_term_code(a_term.code)
 		end
-		
+
 	replace_term_definition(a_lang: STRING; a_term: ARCHETYPE_TERM; replace_translations: BOOLEAN) is
 			-- replace the definition of an existing term code; replace all translations
 			-- if flag set and `a_lang' is the primary language
@@ -490,7 +490,7 @@ feature -- Modification
 				term_definitions.item(a_lang).replace(a_term, a_term.code) -- just do this translation
 			end
 		end
-		
+
 	remove_term_definition(a_code: STRING) is
 			-- completely remove the term from the ontology
 		require
@@ -521,7 +521,7 @@ feature -- Modification
 				term_definitions.remove(langs_to_remove.item)
 				langs_to_remove.forth
 			end
-			
+
 			-- make a copy of terminologies list, since the next action might modify it...
 			ta := terminologies_available.deep_twin
 			if has_any_term_binding(a_code) then
@@ -535,13 +535,13 @@ feature -- Modification
 						remove_term_binding(a_code, ta.item)
 					end
 					ta.forth
-				end			
+				end
 			end
 			term_codes.prune (a_code)
 		ensure
 			not has_term_code(a_code)
 		end
-		
+
 	remove_constraint_definition(a_code: STRING) is
 			-- completely remove the constraint from the ontology
 		require
@@ -572,7 +572,7 @@ feature -- Modification
 				constraint_definitions.remove(langs_to_remove.item)
 				langs_to_remove.forth
 			end
-			
+
 			-- make a copy of terminologies list, since the next action might modify it...
 			ta := terminologies_available.deep_twin
 			if has_any_constraint_binding(a_code) then
@@ -588,26 +588,26 @@ feature -- Modification
 					ta.forth
 				end
 			end
-			
+
 			constraint_codes.prune (a_code)
 		ensure
 			not has_constraint_code(a_code)
 		end
-		
+
 	add_constraint_definition(a_lang: STRING; a_term: ARCHETYPE_TERM) is
-			-- add a new constraint definition for language `a_lang' and 
+			-- add a new constraint definition for language `a_lang' and
 			-- automatically add translation placeholders
 		require
 			Language_valid: a_lang /= Void and then has_language(a_lang)
 			Term_valid: a_term /= Void and then not has_constraint_code(a_term.code)
 		do
-			put_constraint_definition(a_lang, a_term)			
+			put_constraint_definition(a_lang, a_term)
 			constraint_codes.extend(a_term.code)
 			update_highest_constraint_code_index(a_term.code)
 		ensure
 			has_constraint_code(a_term.code)
 		end
-		
+
 	replace_constraint_definition(a_lang: STRING; a_term: ARCHETYPE_TERM; replace_translations: BOOLEAN) is
 			-- replace the definition of an existing constraint code; replace all translations
 			-- if flag set and `a_lang' is the primary language
@@ -621,7 +621,7 @@ feature -- Modification
 				constraint_definitions.item(a_lang).replace(a_term, a_term.code) -- just do this translation
 			end
 		end
-	
+
 	add_term_binding(a_code_phrase: CODE_PHRASE; a_term_code: STRING) is
 			-- add a new term binding to local code a_term_code, in the terminology
 			-- group corresponding to the a_code_phrase.terminology
@@ -636,16 +636,16 @@ feature -- Modification
 			if not terminologies_available.has(a_terminology) then
 				terminologies_available.extend(a_terminology)
 			end
-			
+
 			if not has_term_bindings(a_terminology) then
 				term_bindings.put(create {HASH_TABLE[CODE_PHRASE, STRING]}.make(0), a_terminology)
 			end
-				
+
 			term_bindings.item(a_terminology).put(a_code_phrase, a_term_code)
 		ensure
 			Binding_added: has_term_binding(a_code_phrase.terminology_id.value, a_term_code)
 		end
-		
+
 	replace_term_binding(a_code_phrase: CODE_PHRASE; a_term_code: STRING) is
 			-- replaces existing a term binding to local code a_term_code, in group a_terminology
 		require
@@ -658,7 +658,7 @@ feature -- Modification
 		ensure
 			Binding_added: has_term_binding(a_code_phrase.terminology_id.value, a_term_code)
 		end
-		
+
 	remove_term_binding(a_term_code, a_terminology: STRING) is
 			-- remove term binding to local code in group a_terminology
 		require
@@ -676,7 +676,7 @@ feature -- Modification
 		ensure
 			Binding_removed: not has_term_binding(a_terminology, a_term_code)
 		end
-		
+
 	add_constraint_binding(a_uri: URI; a_terminology, a_constraint_code: STRING) is
 			-- add a new constraint binding to local code a_term_code, in the terminology
 			-- group corresponding to the a_code_phrase.terminology
@@ -695,7 +695,7 @@ feature -- Modification
 		ensure
 			Binding_added: has_constraint_binding(a_terminology, a_constraint_code)
 		end
-		
+
 	replace_constraint_binding(a_uri: URI; a_terminology, a_constraint_code: STRING) is
 			-- replaces existing constraint binding to local code a_term_code, in group a_terminology
 		require
@@ -708,7 +708,7 @@ feature -- Modification
 		ensure
 			Binding_added: has_constraint_binding(a_terminology, a_constraint_code)
 		end
-		
+
 	remove_constraint_binding(a_constraint_code, a_terminology: STRING) is
 			-- remove constraint binding to local code in group a_terminology
 		require
@@ -726,19 +726,19 @@ feature -- Modification
 		ensure
 			Binding_removed: not has_constraint_binding(a_terminology, a_constraint_code)
 		end
-		
+
 feature -- Factory
 
 	new_non_specialised_term_code: STRING is
 			-- get a new term code at the specialisation depth of this ontology
-			-- NOTE: don't use this to get a specialised code; 
+			-- NOTE: don't use this to get a specialised code;
 			-- use `new_specialised_term_code' and supply parent code
 		do
 			Result := new_non_specialised_term_code_at_level(specialisation_depth, highest_non_specialised_term_code_index)
 		ensure
 			Result_exists: Result /= Void and then not Result.is_empty
 		end
-		
+
 	new_specialised_term_code (a_parent_code: STRING): STRING is
 			-- get a new specialised code based on `a_parent_code' at the depth
 			-- of this ontology
@@ -749,7 +749,7 @@ feature -- Factory
 			Result := new_specialised_term_code_at_level(a_parent_code, specialisation_depth)
 		ensure
 			Result_valid: Result /= Void and then not Result.is_empty
-		end	
+		end
 
 	new_constraint_code: STRING is
 			-- get a new constraint code at this level
@@ -758,7 +758,7 @@ feature -- Factory
 		ensure
 			Result_exists: Result /= Void and then not Result.is_empty
 		end
-				
+
 feature -- Conversion
 
 	substitute_codes(str, lang: STRING): STRING is
@@ -812,12 +812,12 @@ feature -- Synchronisation
 --			create an_attr_node.make_single(Sym_languages_available)
 --			representation.put_attribute (an_attr_node)
 --			an_attr_node.put_child(create {DT_PRIMITIVE_OBJECT_LIST}.make_anonymous (languages_available))
-			
+
 			-- terminologies_available: ARRAYED_LIST [STRING]
 			if not terminologies_available.is_empty then
 				create an_attr_node.make_single(Sym_terminologies_available)
 				representation.put_attribute (an_attr_node)
-				an_attr_node.put_child(create {DT_PRIMITIVE_OBJECT_LIST}.make_anonymous (terminologies_available))	
+				an_attr_node.put_child(create {DT_PRIMITIVE_OBJECT_LIST}.make_anonymous (terminologies_available))
 			end
 
 			-- term_definitions
@@ -833,7 +833,7 @@ feature -- Synchronisation
 				create attr_node_items.make_multiple("items")
 				attr_node_items.use_children_sorted
 				an_obj_node.put_attribute(attr_node_items)
-				
+
 				from
 					term_definitions.item_for_iteration.start
 				until
@@ -842,7 +842,7 @@ feature -- Synchronisation
 					a_term := term_definitions.item_for_iteration.item_for_iteration
 					create an_obj_node.make_identified(a_term.code)
 					attr_node_items.put_child(an_obj_node)
-					
+
 					keys := a_term.keys
 					from
 						keys.start
@@ -856,10 +856,10 @@ feature -- Synchronisation
 					end
 					term_definitions.item_for_iteration.forth
 				end
-				
-				term_definitions.forth				
+
+				term_definitions.forth
 			end
-			
+
 			-- constraint definitions
 			if not constraint_definitions.is_empty then
 				create attr_node_term_definitions.make_multiple(Sym_constraint_definitions)
@@ -874,7 +874,7 @@ feature -- Synchronisation
 					create attr_node_items.make_multiple("items")
 					attr_node_items.use_children_sorted
 					an_obj_node.put_attribute(attr_node_items)
-					
+
 					from
 						constraint_definitions.item_for_iteration.start
 					until
@@ -883,7 +883,7 @@ feature -- Synchronisation
 						a_term := constraint_definitions.item_for_iteration.item_for_iteration
 						create an_obj_node.make_identified(a_term.code)
 						attr_node_items.put_child(an_obj_node)
-						
+
 						keys := a_term.keys
 						from
 							keys.start
@@ -898,10 +898,10 @@ feature -- Synchronisation
 						constraint_definitions.item_for_iteration.forth
 					end
 
-					constraint_definitions.forth				
-				end				
+					constraint_definitions.forth
+				end
 			end
-					
+
 			-- term bindings
 			if not term_bindings.is_empty then
 				create attr_node_term_binding.make_multiple(Sym_term_binding)
@@ -916,21 +916,21 @@ feature -- Synchronisation
 					create an_attr_node.make_multiple("items")
 					an_attr_node.use_children_sorted
 					an_obj_node.put_attribute(an_attr_node)
-				
+
 					from
 						term_bindings.item_for_iteration.start
 					until
 						term_bindings.item_for_iteration.off
 					loop
 						a_coord_term := term_bindings.item_for_iteration.item_for_iteration
-						an_attr_node.put_child(create {DT_PRIMITIVE_OBJECT}.make_identified(a_coord_term, 
+						an_attr_node.put_child(create {DT_PRIMITIVE_OBJECT}.make_identified(a_coord_term,
 							term_bindings.item_for_iteration.key_for_iteration))
 						term_bindings.item_for_iteration.forth
-					end					
-					term_bindings.forth				
-				end				
+					end
+					term_bindings.forth
+				end
 			end
-			
+
 			-- constraint bindings
 			if not constraint_bindings.is_empty then
 				create attr_node_term_binding.make_multiple(Sym_constraint_binding)
@@ -945,38 +945,38 @@ feature -- Synchronisation
 					create an_attr_node.make_multiple("items")
 					an_attr_node.use_children_sorted
 					an_obj_node.put_attribute(an_attr_node)
-				
+
 					from
 						constraint_bindings.item_for_iteration.start
 					until
 						constraint_bindings.item_for_iteration.off
 					loop
 						a_uri := constraint_bindings.item_for_iteration.item_for_iteration
-						an_attr_node.put_child(create {DT_PRIMITIVE_OBJECT}.make_identified(a_uri, 
+						an_attr_node.put_child(create {DT_PRIMITIVE_OBJECT}.make_identified(a_uri,
 							constraint_bindings.item_for_iteration.key_for_iteration))
 						constraint_bindings.item_for_iteration.forth
 					end
-					constraint_bindings.forth				
-				end			
+					constraint_bindings.forth
+				end
 			end
-		end	
+		end
 
 feature {ADL_ENGINE} -- Representation
 
 	representation: DT_COMPLEX_OBJECT_NODE
 			-- root node of DADL objects representing this ontology
-	
+
 feature {NONE} -- Implementation
 
 	term_definitions: HASH_TABLE[HASH_TABLE[ARCHETYPE_TERM, STRING], STRING]
 			-- table of term definitions, keyed by code, keyed by language
-	
+
 	constraint_definitions: HASH_TABLE[HASH_TABLE[ARCHETYPE_TERM, STRING], STRING]
 			-- table of constraint definitions, keyed by code, keyed by language
-			
+
 	term_bindings: HASH_TABLE[HASH_TABLE[CODE_PHRASE, STRING], STRING]
 			-- tables of bindings of external terms to internal codes, keyed by external terminology id
-	
+
 	constraint_bindings: HASH_TABLE[HASH_TABLE[URI, STRING], STRING]
 			-- table of constraint bindings in the form of strings "service::query", keyed by terminology
 
@@ -985,7 +985,7 @@ feature {NONE} -- Implementation
 
 	highest_constraint_code_index: INTEGER
 			-- index of the highest constraint code in the ontology
-			
+
 	synchronise_from_tree is
 			-- synchronise info from parse tree to data structures
 		local
@@ -995,18 +995,18 @@ feature {NONE} -- Implementation
 			code, a_lang: STRING
 			sl: ARRAYED_LIST[STRING]
 			an_attr_node: DT_ATTRIBUTE_NODE
-		do			
+		do
 			if representation.has_path("/" + Sym_terminologies_available) then
 				terminologies_available := string_list_at_path("/" + Sym_terminologies_available)
 			end
-			
+
 			languages_available.wipe_out
-			
-			-- populate term definitions & languages_available (temporarily, until all archetypes 
+
+			-- populate term definitions & languages_available (temporarily, until all archetypes
 			-- have a proper language section
-			an_attr_node := representation.attribute_node_at_path("/" + Sym_term_definitions)				
+			an_attr_node := representation.attribute_node_at_path("/" + Sym_term_definitions)
 			if an_attr_node.is_multiple then
-				from 
+				from
 					an_attr_node.start
 				until
 					an_attr_node.off
@@ -1022,14 +1022,14 @@ feature {NONE} -- Implementation
 				end
 			end
 			if has_path("/" + Sym_primary_language) then
-				set_primary_language(string_at_path("/" + Sym_primary_language))				
+				set_primary_language(string_at_path("/" + Sym_primary_language))
 			end
-			
+
 			-- populate constraint definitions
 			if has_path("/" + Sym_constraint_definitions) then
-				an_attr_node := representation.attribute_node_at_path("/" + Sym_constraint_definitions)				
+				an_attr_node := representation.attribute_node_at_path("/" + Sym_constraint_definitions)
 				if an_attr_node.is_multiple then
-					from 
+					from
 						an_attr_node.start
 					until
 						an_attr_node.off
@@ -1044,7 +1044,7 @@ feature {NONE} -- Implementation
 					end
 				end
 			end
-			
+
 			-- populate term code list
 			from
 				term_definitions.item(primary_language).start
@@ -1056,8 +1056,8 @@ feature {NONE} -- Implementation
 				update_specialised_term_codes(code)
 				update_highest_non_specialised_term_code_index(code)
 				term_definitions.item(primary_language).forth
-			end				
-			
+			end
+
 			-- populate constraint code list
 			if not constraint_definitions.is_empty then
 				from
@@ -1069,14 +1069,14 @@ feature {NONE} -- Implementation
 					constraint_codes.extend(code)
 					constraint_definitions.item(primary_language).forth
 					update_highest_constraint_code_index(code)
-				end					
+				end
 			end
-			
+
 			-- populate term attribute names (assumed to be the same for terms and constraints)
 			if not term_codes.is_empty then
 				term_attribute_names := term_definition(primary_language, term_codes.first).keys
 			end
-			
+
 			-- populate term and constraint bindings
 			from
 				terminologies_available.start
@@ -1094,11 +1094,11 @@ feature {NONE} -- Implementation
 					populate_constraint_bindings(terminologies_available.item, constraint_bindings_one_terminology)
 					constraint_bindings.force(constraint_bindings_one_terminology, terminologies_available.item)
 				end
-				
+
 				terminologies_available.forth
 			end
 		end
-		
+
 	populate_term_defs(group, lang: STRING; term_defs_one_lang: HASH_TABLE[ARCHETYPE_TERM, STRING]) is
 		require
 			group /= Void and then (group.is_equal(Sym_term_definitions) or group.is_equal(Sym_constraint_definitions))
@@ -1116,9 +1116,9 @@ feature {NONE} -- Implementation
 			t_path := "/" + group + "[" + lang + "]/items"
 			if has_path(t_path) then
 				an_attr_node := representation.attribute_node_at_path(t_path)
-				
+
 				if an_attr_node.is_multiple then
-					from 
+					from
 						an_attr_node.start
 					until
 						an_attr_node.off
@@ -1140,14 +1140,14 @@ feature {NONE} -- Implementation
 							adl_term.add_item(term_attr_name, t_val)
 							object_node.forth
 						end
-						
+
 						term_defs_one_lang.force(adl_term, a_code)
 						an_attr_node.forth
 					end
 				end
 			end
 		end
-		
+
 	populate_term_bindings(a_terminology: STRING; term_bindings_one_terminology: HASH_TABLE[CODE_PHRASE, STRING]) is
 			--
 		local
@@ -1157,7 +1157,7 @@ feature {NONE} -- Implementation
 		do
 			an_attr_node := representation.attribute_node_at_path("/" + Sym_term_binding + "[" + a_terminology + "]/items")
 			if an_attr_node.is_multiple then
-				from 
+				from
 					an_attr_node.start
 				until
 					an_attr_node.off
@@ -1166,10 +1166,10 @@ feature {NONE} -- Implementation
 					a_term ?= a_simple_node.value
 					term_bindings_one_terminology.force(a_term, a_simple_node.node_id)
 					an_attr_node.forth
-				end			
+				end
 			end
 		end
-		
+
 	populate_constraint_bindings(a_terminology: STRING; constraint_bindings_one_terminology: HASH_TABLE[URI, STRING]) is
 			--
 		local
@@ -1179,7 +1179,7 @@ feature {NONE} -- Implementation
 		do
 			an_attr_node := representation.attribute_node_at_path("/" + Sym_constraint_binding + "[" + a_terminology + "]/items")
 			if an_attr_node.is_multiple then
-				from 
+				from
 					an_attr_node.start
 				until
 					an_attr_node.off
@@ -1196,7 +1196,7 @@ feature {NONE} -- Implementation
 					else
 						errors.append("Expecting primitive node containing URI%N")
 					end
-				end			
+				end
 			end
 		end
 
@@ -1212,10 +1212,10 @@ feature {NONE} -- Implementation
 				if not specialised_term_codes.has(parent_code) then
 					specialised_term_codes.force(create {TWO_WAY_SORTED_SET[STRING]}.make, parent_code)
 				end
-				specialised_term_codes.item(parent_code).extend(a_code)	
+				specialised_term_codes.item(parent_code).extend(a_code)
 			end
 		end
-		
+
 	update_highest_non_specialised_term_code_index(a_code: STRING) is
 			-- update highest_non_specialised_term_code_index
 		require
@@ -1247,18 +1247,23 @@ feature {NONE} -- Implementation
 		do
 			if specialisation_depth = a_code.occurrences (Specialisation_separator) then
 				str := a_code.substring(Constraint_code_leader.count + 1, a_code.count)
-				idx := str.substring(str.index_of(Specialisation_separator, 1) + 1, str.count).to_integer
-				if idx > highest_constraint_code_index then
-					highest_constraint_code_index := idx
+				str.remove_head (str.last_index_of (Specialisation_separator, str.count))
+
+				if str.is_integer then
+					idx := str.to_integer
+
+					if idx > highest_constraint_code_index then
+						highest_constraint_code_index := idx
+					end
 				end
 			end
 		end
-		
+
 	set_concept_code(a_concept_code: STRING) is
 			-- set the root code and infer number of levels of specialisation
 			-- from it
 		require
-			Code_valid: a_concept_code /= Void and then not a_concept_code.is_empty		
+			Code_valid: a_concept_code /= Void and then not a_concept_code.is_empty
 		do
 			concept_code := a_concept_code
 			specialisation_depth := specialisation_depth_from_code(a_concept_code)
@@ -1268,7 +1273,7 @@ feature {NONE} -- Implementation
 		ensure
 			concept_code /= Void
 		end
-		
+
 	string_at_path(a_path: STRING): STRING is
 		require
 			Path_valid: a_path /= Void and then has_path(a_path)
@@ -1328,15 +1333,15 @@ feature {NONE} -- Implementation
 		end
 
 	is_tree_valid: BOOLEAN is
-			-- 
+			--
 		do
 			create errors.make(0)
 			if not has_path("/" + Sym_primary_language) then
 				errors.append(Sym_primary_language + " not set in ontology")
 			elseif not has_path("/" + Sym_languages_available) then
-				errors.append(Sym_languages_available + " not set in ontology")				
+				errors.append(Sym_languages_available + " not set in ontology")
 			elseif not has_path("/" + Sym_terminologies_available) then
-				errors.append(Sym_terminologies_available + " not set in ontology")				
+				errors.append(Sym_terminologies_available + " not set in ontology")
 			end
 			Result := errors.is_empty
 		ensure
@@ -1362,7 +1367,7 @@ feature {NONE} -- Implementation
 				term_definitions.forth
 			end
 		end
-	
+
 	valid_constraint_code(a_term_code: STRING): BOOLEAN is
 			-- True if `a_term_code' is found in all languages
 		require
@@ -1382,16 +1387,16 @@ feature {NONE} -- Implementation
 				constraint_definitions.forth
 			end
 		end
-		
+
 	put_term_definition(a_lang: STRING; a_term: ARCHETYPE_TERM) is
-			-- put a new term definition for language `a_lang' and 
+			-- put a new term definition for language `a_lang' and
 			-- automatically add translation placeholders in all other languages
 		local
 			trans_term: ARCHETYPE_TERM
 		do
 			term_definitions.item(a_lang).force(a_term, a_term.code)
 			trans_term := a_term.create_translated_term(primary_language)
-			from 
+			from
 				term_definitions.start
 			until
 				term_definitions.off
@@ -1404,9 +1409,9 @@ feature {NONE} -- Implementation
 		ensure
 			term_definitions.item(a_lang).has(a_term.code)
 		end
-		
+
 	put_constraint_definition(a_lang: STRING; a_term: ARCHETYPE_TERM) is
-			-- add a new constraint definition for language `a_lang' and 
+			-- add a new constraint definition for language `a_lang' and
 			-- automatically add translation placeholders
 		local
 			trans_term: ARCHETYPE_TERM
@@ -1418,7 +1423,7 @@ feature {NONE} -- Implementation
 			trans_term := a_term.create_translated_term(a_lang)
 
 			-- in the following, iterate over term_definitions to get definitive list of languages
-			from 
+			from
 				term_definitions.start
 			until
 				term_definitions.off
@@ -1452,10 +1457,10 @@ feature {NONE} -- Implementation
 		do
 			terminologies_available.prune_all(a_terminology)
 			if term_bindings.has(a_terminology) then
-				term_bindings.remove(a_terminology)	
+				term_bindings.remove(a_terminology)
 			end
 			if constraint_bindings.has(a_terminology) then
-				constraint_bindings.remove(a_terminology)	
+				constraint_bindings.remove(a_terminology)
 			end
 		ensure
 			not terminologies_available.has(a_terminology)
@@ -1473,14 +1478,14 @@ invariant
 	Primary_language_valid: primary_language /= Void and then not primary_language.is_empty
 	Languages_available_valid: languages_available /= Void and then not languages_available.is_empty
 	Terminologies_available_exists: terminologies_available /= Void
-	
+
 	Term_codes_exists: term_codes /= Void
 	Constraint_codes_exists: constraint_codes /= Void
 	Term_bindings_exists: term_bindings /= Void
 	Constraint_bindings_exists: constraint_bindings /= Void
 	Root_code_valid: term_codes.has(concept_code)
 	Specialised_term_codes_valid: specialised_term_codes /= Void
-	
+
 end
 
 

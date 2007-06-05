@@ -139,46 +139,39 @@ feature -- Command
 			-- read text from current file as a string
 		local
 			in_file: PLAIN_TEXT_FILE
-			first_line: BOOLEAN
-			s: STRING
    		do
    			last_op_failed := False
 			create in_file.make(current_full_path)
 			has_byte_order_marker := False
+
 			if in_file.exists then
 				epoch := in_file.date
 				in_file.open_read
-				create Result.make(0)
 
 				from
+					create Result.make_empty
 					in_file.start
-					first_line := True
 				until
 					in_file.off
 				loop
 					in_file.read_line
-					if first_line then
-						if in_file.last_string.item(1) = UTF8_bom_char_1 and
-							in_file.last_string.item(2) = UTF8_bom_char_2 and
-							in_file.last_string.item(3) = UTF8_bom_char_3 then
-							s := in_file.last_string.substring (4, in_file.last_string.count)
-							has_byte_order_marker := True
-						else
-							s := in_file.last_string
-						end
-						first_line := False
-					else
-						s := in_file.last_string
-					end
-					Result.append(s)
+					Result.append(in_file.last_string)
+
 					if Result.item (Result.count) = '%R' then
-						Result.put('%N', Result.count)
+						Result.put ('%N', Result.count)
 					else
-						Result.append_character('%N')
+						Result.append_character ('%N')
 					end
 				end
 
 				in_file.close
+
+				if Result.count >= 3 then
+					if Result.item (1) = UTF8_bom_char_1 and Result.item (2) = UTF8_bom_char_2 and Result.item (3) = UTF8_bom_char_3 then
+						Result.remove_head (3)
+						has_byte_order_marker := True
+					end
+				end
 
 				if not utf8.valid_utf8 (Result) then
 					if has_byte_order_marker then

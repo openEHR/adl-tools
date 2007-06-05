@@ -30,6 +30,11 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_ADL_INTERFACE
+		export
+			{NONE} all
+		end
+
 	STRING_UTILITIES
 
 create
@@ -86,16 +91,36 @@ feature -- Commands
  			archetype_directory.do_all(agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
 		end
 
-	item_select is
-			-- do something when an item is selected
-		local
-			arch_item: ARCHETYPE_DIRECTORY_ARCHETYPE
+	display_details_of_selected_item
+			-- When the user selects an item in `gui_file_tree', delay before displaying it.
 		do
-			arch_item ?= gui_file_tree.selected_item.data
-			if arch_item /= Void then
-				has_selected_file := True
-				selected_file_path := arch_item.full_path
+			if delay_to_make_keyboard_navigation_practical = Void then
+				create delay_to_make_keyboard_navigation_practical
+
+				delay_to_make_keyboard_navigation_practical.actions.extend (agent
+					local
+						cur_csr: EV_CURSOR
+						archetype: ARCHETYPE_DIRECTORY_ARCHETYPE
+					do
+						delay_to_make_keyboard_navigation_practical.set_interval (0)
+						cur_csr := gui.pointer_style
+						gui.set_pointer_style (wait_cursor)
+
+						archetype ?= gui_file_tree.selected_item.data
+						has_selected_file := archetype /= Void
+
+						if has_selected_file then
+							selected_file_path := archetype.full_path
+							gui.load_and_parse_adl_file (selected_file_path)
+							set_current_work_directory (adl_interface.working_directory)
+						end
+
+			   			gui_file_tree.set_minimum_width (0)
+						gui.set_pointer_style (cur_csr)
+					end)
 			end
+
+			delay_to_make_keyboard_navigation_practical.set_interval (300)
 		end
 
 feature {NONE} -- Implementation
@@ -107,10 +132,13 @@ feature {NONE} -- Implementation
 			-- reference to MAIN_WINDOW.archetype_file_tree
 
 	gui_tree_item_stack: ARRAYED_STACK[EV_TREE_ITEM]
-			--
+			-- Stack used during `populate_gui_tree_node_enter'.
+
+	delay_to_make_keyboard_navigation_practical: EV_TIMEOUT
+			-- Timer to delay a moment before displaying details of the item selected in `archetype_file_tree'.
 
    	populate_gui_tree_node_enter(an_item: ARCHETYPE_DIRECTORY_ITEM) is
-   			--
+   			-- Add a node representing `an_item' to `gui_file_tree'.
 		require
 			an_item /= Void
    		local
@@ -125,7 +153,7 @@ feature {NONE} -- Implementation
 				a_ti.set_data(adf)
 			else
 				ada ?= an_item
-				create a_ti.make_with_text (utf8 (ada.id.domain_concept + "(" + ada.id.version_id + ")"))
+				create a_ti.make_with_text (utf8 (ada.id.domain_concept_tail + "(" + ada.id.version_id + ")"))
 				a_ti.set_data(ada)
 				if ada.id.is_specialised then
 					a_ti.set_pixmap(pixmaps.item("archetype_specialised_" + ada.group_id.out))
