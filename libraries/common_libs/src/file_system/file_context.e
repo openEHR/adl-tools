@@ -41,6 +41,7 @@ feature -- Initialisation
 			create current_directory.make(0)
 			create current_file_name.make(0)
 			create last_op_fail_reason.make(0)
+			create file_content.make_empty
 		end
 
 feature -- Access
@@ -119,16 +120,15 @@ feature -- Command
 			in_file: PLAIN_TEXT_FILE
    		do
    			last_op_failed := False
+			create file_content.make_empty
 			create in_file.make(current_full_path)
 			has_byte_order_marker := False
 
 			if in_file.exists then
 				epoch := in_file.date
 				in_file.open_read
-				create file_content.make(0)
 
 				from
-					create file_content.make_empty
 					in_file.start
 				until
 					in_file.off
@@ -154,7 +154,7 @@ feature -- Command
 
 				if not utf8.valid_utf8 (file_content) then
 					if has_byte_order_marker then
-						file_content := Void
+						create file_content.make_empty
 						last_op_failed := True
 						last_op_fail_reason := "Read failed; file " + current_full_path + " has UTF-8 marker but is not valid UTF-8"
 					else
@@ -165,6 +165,8 @@ feature -- Command
 				last_op_failed := True
 				last_op_fail_reason := "Read failed; file " + current_full_path + " does not exist"
 			end
+		ensure
+			file_content_empty_on_failure: last_op_failed implies file_content.is_empty
 		end
 
 	save_file(a_file_name, content: STRING) is
@@ -230,6 +232,9 @@ feature {NONE} -- Implementation
 
 	epoch: INTEGER
 			-- last marked change timestamp of file
+
+invariant
+	file_content_attached: file_content /= Void
 
 end
 

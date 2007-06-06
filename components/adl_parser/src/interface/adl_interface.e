@@ -216,12 +216,7 @@ feature -- Commands
 		do
 			if not exception_encountered then
 				file_context.set_target(file_path)
-				file_context.read_file
-				if not file_context.last_op_failed then
-					adl_engine.set_source(file_context.file_content)
-				else
-					post_error(Current, "open_adl_file", "general_error", <<file_context.last_op_fail_reason>>)
-				end
+				resync_file
 			else
 				post_error(Current, "open_adl_file", "open_adl_file_e1", Void)
 			end
@@ -239,7 +234,13 @@ feature -- Commands
 	resync_file is
 			-- resync from disc
 		do
-			adl_engine.set_source(file_context.file_content)
+			file_context.read_file
+
+			if not file_context.file_content.is_empty then
+				adl_engine.set_source (file_context.file_content)
+			else
+				post_error (Current, "resync_file", "general_error", <<file_context.last_op_fail_reason>>)
+			end
 		end
 
 	save_archetype(file_path, save_format: STRING) is
