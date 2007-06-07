@@ -91,36 +91,41 @@ feature -- Commands
  			archetype_directory.do_all(agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
 		end
 
-	display_details_of_selected_item
+	display_details_of_selected_item_after_delay
 			-- When the user selects an item in `gui_file_tree', delay before displaying it.
 		do
 			if delay_to_make_keyboard_navigation_practical = Void then
 				create delay_to_make_keyboard_navigation_practical
 
 				delay_to_make_keyboard_navigation_practical.actions.extend (agent
-					local
-						cur_csr: EV_CURSOR
-						archetype: ARCHETYPE_DIRECTORY_ARCHETYPE
 					do
 						delay_to_make_keyboard_navigation_practical.set_interval (0)
-						cur_csr := gui.pointer_style
-						gui.set_pointer_style (wait_cursor)
-
-						archetype ?= gui_file_tree.selected_item.data
-						has_selected_file := archetype /= Void
-
-						if has_selected_file then
-							selected_file_path := archetype.full_path
-							gui.load_and_parse_adl_file (selected_file_path)
-							set_current_work_directory (adl_interface.working_directory)
-						end
-
-			   			gui_file_tree.set_minimum_width (0)
-						gui.set_pointer_style (cur_csr)
+						display_details_of_selected_item
 					end)
 			end
 
 			delay_to_make_keyboard_navigation_practical.set_interval (300)
+		end
+
+	display_details_of_selected_item
+			-- Display the details of `selected_item'.
+		local
+			cur_csr: EV_CURSOR
+			arch_item: ARCHETYPE_DIRECTORY_ARCHETYPE
+		do
+			cur_csr := gui.pointer_style
+			gui.set_pointer_style (wait_cursor)
+
+			arch_item ?= gui_file_tree.selected_item.data
+			has_selected_file := arch_item /= Void
+
+			if has_selected_file then
+				selected_file_path := arch_item.full_path
+				gui.load_and_parse_adl_file (selected_file_path)
+				set_current_work_directory (adl_interface.working_directory)
+			end
+
+			gui.set_pointer_style (cur_csr)
 		end
 
 feature {NONE} -- Implementation
@@ -135,9 +140,9 @@ feature {NONE} -- Implementation
 			-- Stack used during `populate_gui_tree_node_enter'.
 
 	delay_to_make_keyboard_navigation_practical: EV_TIMEOUT
-			-- Timer to delay a moment before displaying details of the item selected in `archetype_file_tree'.
+			-- Timer to delay a moment before calling `display_details_of_selected_item'.
 
-   	populate_gui_tree_node_enter(an_item: ARCHETYPE_DIRECTORY_ITEM) is
+   	populate_gui_tree_node_enter (an_item: ARCHETYPE_DIRECTORY_ITEM) is
    			-- Add a node representing `an_item' to `gui_file_tree'.
 		require
 			an_item /= Void

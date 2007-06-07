@@ -498,7 +498,7 @@ feature {NONE} -- Commands
 	archetype_view_tree_item_select is
 			-- Display details of `archetype_file_tree' when the user selects it.
 		do
-			archetype_view_tree_control.display_details_of_selected_item
+			archetype_view_tree_control.display_details_of_selected_item_after_delay
 		end
 
 	node_map_shrink_tree_one_level is
