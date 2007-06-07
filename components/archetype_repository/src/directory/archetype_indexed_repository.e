@@ -1,8 +1,7 @@
-indexing	
+indexing
 	component:   "openEHR Archetype Project"
 	description: "[
-				 Directory representation of a file-system archetype repository, index by paths to 
-				 directory nodes.
+				 Directory representation of a file-system archetype repository.
 				 ]"
 	keywords:    "ADL"
 	author:      "Thomas Beale"
@@ -15,7 +14,7 @@ indexing
 	last_change: "$LastChangedDate$"
 
 
-class ARCHETYPE_INDEXED_REPOSITORY
+deferred class ARCHETYPE_INDEXED_REPOSITORY_I
 
 inherit
 	ARCHETYPE_DEFINITIONS
@@ -23,40 +22,47 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_RESOURCES
-		export
-			{NONE} all
-		end
-
-create
-	make
-	
 feature -- Initialisation
 
 	make(a_dir_name: STRING; a_group_id: INTEGER) is
 			-- make based on valid directory path
 		require
-			Dir_name_valid: a_dir_name /= Void and then (create {DIRECTORY}.make(a_dir_name)).exists
+			Dir_name_valid: a_dir_name /= Void and then valid_path(a_dir_name)
 		do
-			repository_path := a_dir_name
+			root_path := a_dir_name
 			current_group_id := a_group_id
 			clear
-			populate
 		end
 
 feature -- Access
 
-	repository_path: STRING
-			-- path of file-system repositories of archetypes
+	root_path: STRING
+			-- path of file-system repository of archetypes
 
-	directory: TWO_WAY_TREE [ARCHETYPE_DIRECTORY_ITEM]
-			-- tree-structured directory of archetypes
+	directory: TWO_WAY_TREE [ARCHETYPE_REPOSITORY_ITEM]
+			-- tree-structured directory of folders and archetype sources
+
+	source (an_archetype: ARCHETYPE_REPOSITORY_ARCHETYPE): STRING is
+			-- get source of archetype from repository medium
+		deferred
+		ensure
+			Result_exists: Result /= Void
+		end
+
+feature -- Status Report
+
+	valid_path(a_path: STRING): BOOLEAN is
+			-- validate path on medium
+		require
+			a_path /= Void
+		deferred
+		end
 
 feature -- Commands
-	
+
 	clear is
 		do
-			current_root_path := repository_path
+			current_root_path := root_path
 		end
 
 	repopulate is
@@ -69,125 +75,29 @@ feature -- Commands
 	populate is
 			-- make based on valid directory path
 		do
-			directory := build_directory(repository_path)
+			directory := build_directory(root_path)
 		end
 
 feature {NONE} -- Implementation
 
-	build_directory(a_dir_name: STRING): TWO_WAY_TREE [ARCHETYPE_DIRECTORY_ITEM] is
-			-- add archetype and folder meta-data for directory to archetype directory
+	build_directory(a_dir_name: STRING): TWO_WAY_TREE [ARCHETYPE_REPOSITORY_ITEM] is
+			-- build a literal representation of the archetype and folder structure
+			-- in the repository path, as a tree; each node carries some meta-data
 		require
 			Dir_name_valid: a_dir_name /= Void
-		local
-			fn, fpath: STRING
-			a_dir: DIRECTORY
-			fs_node_names: ARRAYED_LIST[STRING]
-			dir_name_index: SORTED_TWO_WAY_LIST[STRING]
-			file_name_index: SORTED_TWO_WAY_LIST[ARCHETYPE_ID]
-			file_name_table: DS_HASH_TABLE[STRING, STRING]
-			a_file: RAW_FILE
-			an_arch_name: STRING
-			ada_item: ARCHETYPE_DIRECTORY_ARCHETYPE
-			arch_node: TWO_WAY_TREE [ARCHETYPE_DIRECTORY_ITEM]
-			an_arch_id: ARCHETYPE_ID
-   		do
-   			-- create folder for this directory and index it
-			create Result.make(create {ARCHETYPE_DIRECTORY_FOLDER}.make(repository_path, a_dir_name, current_group_id))
-
-   			-- generate lists of immediate child directory and archetype file names
-   			-- in the current directory 'a_dir_name'
-   			debug("arch_dir")
-   				io.put_string(shifter + "---> " + a_dir_name + "%N")
-   				shifter.extend ('%T')
-   			end
-			create a_dir.make(a_dir_name)
-			if a_dir.exists then
-				a_dir.open_read
-				fs_node_names := a_dir.linear_representation
-				create file_name_index.make
-				create dir_name_index.make
-				create file_name_table.make(0)
-				from 
-					fs_node_names.start
-				until 
-					fs_node_names.off
-				loop
-					fn := fs_node_names.item
-					if not (fn.is_equal(".") or fn.is_equal("..") or fn.item (1) = '.') then
-						fpath := a_dir_name + Os_directory_separator.out + fn
-						create a_file.make(fpath)	
-						if a_file.is_directory then
-							dir_name_index.extend (fn)
-						elseif a_file.is_plain and base_name_pattern_regex.matches(fn) then
-							an_arch_name := fn.twin
-							an_arch_name.remove_tail(("." + Archetype_file_extension).count)
-							create an_arch_id.default_create
-							if an_arch_id.valid_id(an_arch_name) then
-								an_arch_id.make_from_string(an_arch_name)
-								file_name_index.extend (an_arch_id)
-								file_name_table.force(fpath, an_arch_id.as_string)
-							end
-						end			
-					end
-					fs_node_names.forth
-				end
-			end
-			
-			-- process the directories list first:
-			-- for all directories below this one, call this routine recursively
-			from
-				dir_name_index.start
-			until
-				dir_name_index.off
-			loop
-				fpath := a_dir_name + Os_directory_separator.out + dir_name_index.item
-				Result.put_child_right (build_directory(fpath))
-				Result.child_forth				
-				dir_name_index.forth
-			end
-
-			-- now create nodes representing all the files for this point
-			from
-				file_name_index.start
-			until
-				file_name_index.off
-			loop
-				fpath := file_name_table.item(file_name_index.item.as_string)
-				create ada_item.make(repository_path, fpath, current_group_id, file_name_index.item, file_name_index.item.is_specialised)
-				create arch_node.make(ada_item)
-				Result.put_child_right(arch_node)
-				Result.child_forth				
-				file_name_index.forth
-			end
-
-   			debug("arch_dir")
-   				shifter.remove_tail (1)
-   				io.put_string(shifter + "<---%N")
-   			end
-		end
-							
-	base_name_pattern_regex: LX_DFA_REGULAR_EXPRESSION is
-			-- pattern matcher for filenames ending in ".adl"
-		once
-			create Result.compile_case_insensitive(".*\." + Archetype_file_extension + "$")
+   		deferred
 		end
 
 	current_group_id: INTEGER
 			-- id of group currently being populated
-			
+
 	current_root_path: STRING
 			-- current path being populated
-		
-	shifter: STRING is
-			-- debug indenter
-		once
-			create Result.make(0)
-		end
 
 invariant
-	Repository_path_valid: repository_path /= Void and then (create {DIRECTORY}.make(repository_path)).exists
+	Repository_path_valid: root_path /= Void and then valid_path(root_path)
 	Directory_exists: directory /= Void
-	
+
 end
 
 

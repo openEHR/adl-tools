@@ -52,21 +52,13 @@ feature -- Initialisation
    			gui_file_tree.set_minimum_width(gui.max_arch_explorer_width)
 		end
 
-feature -- Access
-
-	selected_file_path: STRING
-			-- full path of file selected from tree control
-
-	has_selected_file: BOOLEAN
-			-- True if a file was selected
-
 feature -- Commands
 
 	clear is
 			-- wipe out content from controls
 		do
 			gui_file_tree.wipe_out
-			has_selected_file := False
+			archetype_directory.clear_selected_item
 		end
 
 	repopulate is
@@ -75,8 +67,8 @@ feature -- Commands
 			show_node: EV_TREE_NODE
 		do
 			populate
-			if selected_file_path /= Void then
-				show_node := gui_file_tree.retrieve_item_recursively_by_data (selected_file_path, True)
+			if archetype_directory.has_selected_archetype then
+				show_node := gui_file_tree.retrieve_item_recursively_by_data (archetype_directory.selected_archetype.full_path, True)
 				if show_node /= Void then
 					gui_file_tree.ensure_item_visible (show_node)
 				end
@@ -111,18 +103,19 @@ feature -- Commands
 			-- Display the details of `selected_item'.
 		local
 			cur_csr: EV_CURSOR
-			arch_item: ARCHETYPE_DIRECTORY_ARCHETYPE
+			arch_item: ARCHETYPE_REPOSITORY_ARCHETYPE
 		do
 			cur_csr := gui.pointer_style
 			gui.set_pointer_style (wait_cursor)
 
 			arch_item ?= gui_file_tree.selected_item.data
-			has_selected_file := arch_item /= Void
 
-			if has_selected_file then
-				selected_file_path := arch_item.full_path
-				gui.load_and_parse_adl_file (selected_file_path)
+			if arch_item /= Void then
+				archetype_directory.set_selected_item (arch_item)
+				gui.load_and_parse_adl_file(archetype_directory.selected_archetype.full_path)
 				set_current_work_directory (adl_interface.working_directory)
+			else
+				archetype_directory.clear_selected_item
 			end
 
 			gui.set_pointer_style (cur_csr)
@@ -142,14 +135,14 @@ feature {NONE} -- Implementation
 	delay_to_make_keyboard_navigation_practical: EV_TIMEOUT
 			-- Timer to delay a moment before calling `display_details_of_selected_item'.
 
-   	populate_gui_tree_node_enter (an_item: ARCHETYPE_DIRECTORY_ITEM) is
+   	populate_gui_tree_node_enter(an_item: ARCHETYPE_REPOSITORY_ITEM) is
    			-- Add a node representing `an_item' to `gui_file_tree'.
 		require
 			an_item /= Void
    		local
 			a_ti: EV_TREE_ITEM
-   			ada: ARCHETYPE_DIRECTORY_ARCHETYPE
-   			adf: ARCHETYPE_DIRECTORY_FOLDER
+   			ada: ARCHETYPE_REPOSITORY_ARCHETYPE
+   			adf: ARCHETYPE_REPOSITORY_FOLDER
    		do
    			adf ?= an_item
    			if adf /= Void then
@@ -174,7 +167,7 @@ feature {NONE} -- Implementation
 			gui_tree_item_stack.extend(a_ti)
 		end
 
-   	populate_gui_tree_node_exit(an_item: ARCHETYPE_DIRECTORY_ITEM) is
+   	populate_gui_tree_node_exit(an_item: ARCHETYPE_REPOSITORY_ITEM) is
    		do
 			gui_tree_item_stack.remove
 		end

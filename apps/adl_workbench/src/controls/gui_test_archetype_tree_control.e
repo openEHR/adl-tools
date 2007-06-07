@@ -167,7 +167,7 @@ feature -- Commands
 	item_select is
 			-- do something when an item is selected
 		local
-			arch_item: ARCHETYPE_DIRECTORY_ARCHETYPE
+			arch_item: ARCHETYPE_REPOSITORY_ARCHETYPE
 		do
 			arch_item ?= grid.selected_rows.first.data
 
@@ -190,7 +190,7 @@ feature -- Commands
 	run_tests is
 			-- execute tests on all marked archetypes
 		local
-			arch_item: ARCHETYPE_DIRECTORY_ARCHETYPE
+			arch_item: ARCHETYPE_REPOSITORY_ARCHETYPE
 			row_csr, col_csr: INTEGER
 			gr: EV_GRID_ROW
 			gli: EV_GRID_LABEL_ITEM
@@ -449,14 +449,14 @@ feature {NONE} -- Implementation
 	test_status: STRING
 			-- Cumulative status message during running of test.
 
-   	populate_gui_tree_node_enter (an_item: ARCHETYPE_DIRECTORY_ITEM) is
+   	populate_gui_tree_node_enter (an_item: ARCHETYPE_REPOSITORY_ITEM) is
    			-- Add a node representing `an_item' to `gui_file_tree'.
 		require
 			an_item /= Void
    		local
 			gli: EV_GRID_LABEL_ITEM
-   			ada: ARCHETYPE_DIRECTORY_ARCHETYPE
-   			adf: ARCHETYPE_DIRECTORY_FOLDER
+   			ada: ARCHETYPE_REPOSITORY_ARCHETYPE
+   			adf: ARCHETYPE_REPOSITORY_FOLDER
    			gr: EV_GRID_ROW
  			col_csr: INTEGER
   		do
@@ -508,7 +508,7 @@ feature {NONE} -- Implementation
 			grid_row_stack.extend (gr)
 		end
 
-	populate_gui_tree_node_exit (an_item: ARCHETYPE_DIRECTORY_ITEM) is
+	populate_gui_tree_node_exit (an_item: ARCHETYPE_REPOSITORY_ITEM) is
 		do
 			grid_row_stack.remove
 		end

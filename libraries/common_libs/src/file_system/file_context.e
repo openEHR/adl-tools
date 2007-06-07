@@ -31,6 +31,8 @@ feature -- Definitions
 			-- required by UTF-16 files, but if the file has been converted from UTF-16 or UTF-32
 			-- then the BOM in a UTF-8 file will be 0xEF 0xBB 0xBF (dec equivalent: 239, 187, 191)
 
+	Default_current_directory: STRING is "."
+
 feature -- Initialisation
 
 	make is
@@ -39,6 +41,7 @@ feature -- Initialisation
 			create current_directory.make(0)
 			create current_file_name.make(0)
 			create last_op_fail_reason.make(0)
+			create file_content.make_empty
 		end
 
 feature -- Access
@@ -96,16 +99,74 @@ feature -- Status Report
 			Result := not fd.exists or else fd.is_writable
 		end
 
+	file_content: STRING
+			-- text from current file as a string
+
 feature -- Command
 
 	set_epoch is
-			-- set time mark for file changes to be compared to
+			-- set time mark for file changes to be compared to - read from modify date of current file
 		local
 			a_file: PLAIN_TEXT_FILE
 		do
 			create a_file.make_open_read(current_directory + operating_environment.Directory_separator.out + current_file_name)
 			epoch := a_file.date
 			a_file.close
+		end
+
+	read_file is
+			-- read text from current file as a string
+		local
+			in_file: PLAIN_TEXT_FILE
+   		do
+   			last_op_failed := False
+			create file_content.make_empty
+			create in_file.make(current_full_path)
+			has_byte_order_marker := False
+
+			if in_file.exists then
+				epoch := in_file.date
+				in_file.open_read
+
+				from
+					in_file.start
+				until
+					in_file.off
+				loop
+					in_file.read_line
+					file_content.append(in_file.last_string)
+
+					if file_content.item (file_content.count) = '%R' then
+						file_content.put ('%N', file_content.count)
+					else
+						file_content.append_character('%N')
+					end
+				end
+
+				in_file.close
+
+				if file_content.count >= 3 then
+					if file_content.item (1) = UTF8_bom_char_1 and file_content.item (2) = UTF8_bom_char_2 and file_content.item (3) = UTF8_bom_char_3 then
+						file_content.remove_head (3)
+						has_byte_order_marker := True
+					end
+				end
+
+				if not utf8.valid_utf8 (file_content) then
+					if has_byte_order_marker then
+						create file_content.make_empty
+						last_op_failed := True
+						last_op_fail_reason := "Read failed; file " + current_full_path + " has UTF-8 marker but is not valid UTF-8"
+					else
+						file_content := utf8.to_utf8 (file_content)
+					end
+				end
+			else
+				last_op_failed := True
+				last_op_fail_reason := "Read failed; file " + current_full_path + " does not exist"
+			end
+		ensure
+			file_content_empty_on_failure: last_op_failed implies file_content.is_empty
 		end
 
 	save_file(a_file_name, content: STRING) is
@@ -135,76 +196,20 @@ feature -- Command
 			end
 		end
 
-	read_file: STRING is
-			-- read text from current file as a string
-		local
-			in_file: PLAIN_TEXT_FILE
-   		do
-   			last_op_failed := False
-			create in_file.make(current_full_path)
-			has_byte_order_marker := False
-
-			if in_file.exists then
-				epoch := in_file.date
-				in_file.open_read
-
-				from
-					create Result.make_empty
-					in_file.start
-				until
-					in_file.off
-				loop
-					in_file.read_line
-					Result.append(in_file.last_string)
-
-					if Result.item (Result.count) = '%R' then
-						Result.put ('%N', Result.count)
-					else
-						Result.append_character ('%N')
-					end
-				end
-
-				in_file.close
-
-				if Result.count >= 3 then
-					if Result.item (1) = UTF8_bom_char_1 and Result.item (2) = UTF8_bom_char_2 and Result.item (3) = UTF8_bom_char_3 then
-						Result.remove_head (3)
-						has_byte_order_marker := True
-					end
-				end
-
-				if not utf8.valid_utf8 (Result) then
-					if has_byte_order_marker then
-						Result := Void
-						last_op_failed := True
-						last_op_fail_reason := "Read failed; file " + current_full_path + " has UTF-8 marker but is not valid UTF-8"
-					else
-						Result := utf8.to_utf8 (Result)
-					end
-				end
-			else
-				last_op_failed := True
-				last_op_fail_reason := "Read failed; file " + current_full_path + " does not exist"
-			end
-		end
-
-	set_file_details(a_file_path: STRING) is
+	set_target(a_file_path: STRING) is
 			-- set context to `a_file_path'
 		require
 			a_file_path_valid: a_file_path /= Void and then not a_file_path.is_empty
 		local
 			sep_pos: INTEGER
 		do
-			a_file_path.mirror
-			sep_pos := a_file_path.index_of(operating_environment.Directory_separator, 1)
-			a_file_path.mirror
+			sep_pos := a_file_path.last_index_of(operating_environment.Directory_separator, a_file_path.count)
 
 			if sep_pos > 0 then -- there is a directory
-				sep_pos := a_file_path.count - sep_pos + 1
 				current_directory := a_file_path.substring(1, sep_pos - 1)
 				current_file_name := a_file_path.substring(sep_pos + 1, a_file_path.count)
 			else
-				current_directory := "."
+				current_directory := Default_current_directory
 				current_file_name := a_file_path
 			end
 		end
@@ -227,6 +232,9 @@ feature {NONE} -- Implementation
 
 	epoch: INTEGER
 			-- last marked change timestamp of file
+
+invariant
+	file_content_attached: file_content /= Void
 
 end
 

@@ -34,8 +34,6 @@ inherit
 		end
 
 	SHARED_ARCHETYPE_DIRECTORY
-		export
-			{NONE} all
 		undefine
 			copy, default_create
 		end
@@ -402,7 +400,7 @@ feature {NONE} -- Commands
 
 						if has_archetype_serialiser_format (format) then
 							save_dialog.filters.extend (["*" + archetype_file_extensions.item_for_iteration, "Files of type " + format])
-						end
+					end
 
 						archetype_file_extensions.forth
 					end
@@ -426,14 +424,14 @@ feature {NONE} -- Commands
 
 						if a_file.exists then
 							create question_dialog.make_with_text ("File " + save_dialog.file_title + " already exists; replace?")
-							question_dialog.set_buttons (<<"Yes", "No">>)
+							question_dialog.set_buttons(<<"Yes", "No">>)
 							question_dialog.show_modal_to_window (Current)
-							ok_to_write := question_dialog.selected_button.is_equal ("Yes")
+							ok_to_write := question_dialog.selected_button.is_equal("Yes")
 						end
 
 						if ok_to_write then
 							adl_interface.save_archetype (name, format)
-							parser_status_area.append_text (adl_interface.status)
+							parser_status_area.append_text(adl_interface.status)
 
 							if format.is_equal (archetype_file_extension) then
 								populate_archetype_directory
@@ -443,7 +441,7 @@ feature {NONE} -- Commands
 						set_current_work_directory (save_dialog.file_path)
 					end
 				else
-					create error_dialog.make_with_text ("must parse before serialising")
+					create error_dialog.make_with_text("must parse before serialising")
 					error_dialog.show_modal_to_window (Current)
 				end
 			end
@@ -787,7 +785,7 @@ feature {EV_DIALOG} -- Implementation
 			-- rebuild archetype directory & repopulate relevant GUI parts
 		do
 			clear_all_controls
-			archetype_directory.repopulate
+			archetype_directory.build_directory
 			parser_status_area.set_text (utf8 (billboard_content))
 			archetype_view_tree_control.populate
 			archetype_test_tree_control.populate
@@ -924,7 +922,7 @@ feature {NONE} -- Standard Windows behaviour that EiffelVision ought to be manag
 				loop
 					Result ?= container
 					container := container.parent
-				end
+end
 			end
 		end
 

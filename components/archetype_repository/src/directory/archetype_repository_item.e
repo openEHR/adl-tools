@@ -12,7 +12,7 @@ indexing
 	last_change: "$LastChangedDate$"
 
 
-deferred class ARCHETYPE_DIRECTORY_ITEM 
+deferred class ARCHETYPE_REPOSITORY_ITEM
 
 inherit
 	SHARED_RESOURCES
@@ -22,49 +22,57 @@ inherit
 
 feature -- initialisation
 
-	make(a_root_path, a_full_path: STRING; a_group_id: INTEGER) is
-			-- make using root-path to archetype file-system tree, full path to directory or archetype file
-			-- and group id, to distinguish file-system tree
+	make(a_root_path, a_full_path: STRING; a_group_id: INTEGER; a_repository: ARCHETYPE_INDEXED_REPOSITORY_I) is
+			-- make using root-path to archetype repository tree, full path to directory or archetype file
+			-- and group id, to distinguish repository with respect to others in ARCHETYPE_DIRECTORY
 		require
 			Root_path_valid: a_root_path /= Void and then not a_root_path.is_empty
 			Full_path_valid: a_full_path /= Void and then not a_full_path.is_empty and then a_full_path.substring_index (a_root_path, 1) = 1
 			Group_id_valid: a_group_id > 0
+			Repository_exists: a_repository /= Void
 		do
 			root_path := a_root_path
-			full_path := a_full_path			
+			full_path := a_full_path
 			group_id := a_group_id
-			make_semantic_paths
+			make_ontological_paths
+			repository := a_repository
 		end
 
 feature -- Access
 
 	root_path: STRING
-			-- root path of repository containing this item
-			
+			-- root path of repository on storage medium containing this item
+
 	full_path: STRING
-			-- full path to item on file_system
+			-- full path to item on storage medium
 
-	semantic_path: STRING
-			-- relative semantic path of item with respect to root; for folder nodes, 
+	ontological_path: STRING
+			-- logical ontological path of item with respect to root; for folder nodes,
 			-- this will look like the directory path; for archetype nodes, this will be
-			-- the concatenation of the directory path and archetype specialisation parent path
+			-- the concatenation of the directory path and a path pseudo-path constructed
+			-- by replacing the '-'s in an archetype concept with '/', enabling specialised
+			-- archetypes to be treated as subnodes of their parent
 
-	semantic_parent_path: STRING
-			-- relative path of parent node (empty if relative_path is already the root)			
-			
+	ontological_parent_path: STRING
+			-- logical path of parent node (empty if relative_path is already the root)			
+
 	group_id: INTEGER
-			-- id of group of archetypes found in one directory hierarchy
-			
+			-- id of repository containing this item (e.g. it might be in the reference tree
+			-- or in another repository designed to be overlaid on the reference)
+
+	repository: ARCHETYPE_INDEXED_REPOSITORY_I
+			-- the repository on which this item is found
+
 feature {NONE} -- Implementation
 
-	make_semantic_paths is
-			-- make semantic_path and semantic_parent_path
+	make_ontological_paths is
+			-- make ontological_path and ontological_parent_path
 		deferred
 		end
 
 invariant
 	Valid_path: full_path /= Void and then not full_path.is_empty
-	
+
 end
 
 
