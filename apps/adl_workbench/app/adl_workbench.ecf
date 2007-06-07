@@ -62,7 +62,8 @@
 			</option>
 		</cluster>
 		<cluster name="archetype_directory" location="..\..\..\components\archetype_repository\src\" recursive="true">
-			<option>
+			<option debug="false">
+				<debug name="arch_dir" enabled="true"/>
 				<assertions precondition="true" postcondition="true" check="true" invariant="false" loop="false"/>
 			</option>
 		</cluster>

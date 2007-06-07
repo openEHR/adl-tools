@@ -83,7 +83,7 @@ feature {NONE} -- Implementation
 			paths_valid := True
 			if not repository_dialog_reference_path_edit.text.is_equal(reference_repository_path) then
 				if repository_dialog_reference_path_edit.text.is_empty or else
-						 archetype_directory.valid_directory (repository_dialog_reference_path_edit.text) then
+						 archetype_directory.valid_repository_path (repository_dialog_reference_path_edit.text) then
 					paths_changed := True
 					set_reference_repository_path(repository_dialog_reference_path_edit.text)
 				else
@@ -96,7 +96,7 @@ feature {NONE} -- Implementation
 			end
 			if not repository_dialog_work_path_edit.text.is_equal(work_repository_path) then
 				if repository_dialog_work_path_edit.text.is_empty or else
-						archetype_directory.valid_directory (repository_dialog_work_path_edit.text) then
+						archetype_directory.valid_repository_path (repository_dialog_work_path_edit.text) then
 					set_work_repository_path(repository_dialog_work_path_edit.text)
 					paths_changed := True
 				else
