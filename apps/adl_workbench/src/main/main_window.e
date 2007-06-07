@@ -494,21 +494,9 @@ feature {NONE} -- Commands
 		end
 
 	archetype_view_tree_item_select is
-			-- select an item on the archetype tree
-		local
-			cur_csr: EV_CURSOR
+			-- Display details of `archetype_file_tree' when the user selects it.
 		do
-			cur_csr := pointer_style
-			set_pointer_style(wait_cursor)
-
-			archetype_view_tree_control.item_select
-			if archetype_directory.has_selected_archetype then
-				load_and_parse_adl_file(archetype_directory.selected_archetype.full_path)
-				set_current_work_directory (adl_interface.working_directory)
-			end
-   			archetype_file_tree.set_minimum_width(0)
-
-			set_pointer_style(cur_csr)
+			archetype_view_tree_control.display_details_of_selected_item_after_delay
 		end
 
 	node_map_shrink_tree_one_level is

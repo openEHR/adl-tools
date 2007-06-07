@@ -83,15 +83,42 @@ feature -- Commands
  			archetype_directory.do_all(agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
 		end
 
-	item_select is
-			-- do something when an item is selected
+	display_details_of_selected_item_after_delay
+			-- When the user selects an item in `gui_file_tree', delay before displaying it.
+		do
+			if delay_to_make_keyboard_navigation_practical = Void then
+				create delay_to_make_keyboard_navigation_practical
+
+				delay_to_make_keyboard_navigation_practical.actions.extend (agent
+					do
+						delay_to_make_keyboard_navigation_practical.set_interval (0)
+						display_details_of_selected_item
+					end)
+			end
+
+			delay_to_make_keyboard_navigation_practical.set_interval (300)
+		end
+
+	display_details_of_selected_item
+			-- Display the details of `selected_item'.
 		local
+			cur_csr: EV_CURSOR
 			arch_item: ARCHETYPE_REPOSITORY_ARCHETYPE
 		do
+			cur_csr := gui.pointer_style
+			gui.set_pointer_style (wait_cursor)
+
 			arch_item ?= gui_file_tree.selected_item.data
+
 			if arch_item /= Void then
-				archetype_directory.set_selected_item(arch_item)
+				archetype_directory.set_selected_item (arch_item)
+				gui.load_and_parse_adl_file(archetype_directory.selected_archetype.full_path)
+				set_current_work_directory (adl_interface.working_directory)
+			else
+				archetype_directory.clear_selected_item
 			end
+
+			gui.set_pointer_style (cur_csr)
 		end
 
 feature {NONE} -- Implementation
@@ -106,7 +133,7 @@ feature {NONE} -- Implementation
 			-- Stack used during `populate_gui_tree_node_enter'.
 
 	delay_to_make_keyboard_navigation_practical: EV_TIMEOUT
-			-- Timer to delay a moment before displaying details of the item selected in `archetype_file_tree'.
+			-- Timer to delay a moment before calling `display_details_of_selected_item'.
 
    	populate_gui_tree_node_enter(an_item: ARCHETYPE_REPOSITORY_ITEM) is
    			-- Add a node representing `an_item' to `gui_file_tree'.
