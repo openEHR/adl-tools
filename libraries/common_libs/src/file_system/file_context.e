@@ -79,13 +79,12 @@ feature -- Status Report
 		end
 
 	file_changed: BOOLEAN is
-			-- has file changed in this epoch
+			-- Has file changed in this epoch?
 		local
-			a_file: PLAIN_TEXT_FILE
+			file: PLAIN_TEXT_FILE
 		do
-			create a_file.make_open_read(current_directory + operating_environment.Directory_separator.out + current_file_name)
-			Result := a_file.date /= epoch
-			a_file.close
+			create file.make (current_full_path)
+			Result := file.exists and then file.date /= epoch
 		end
 
 	file_writable(a_file_name:STRING): BOOLEAN is
@@ -105,13 +104,17 @@ feature -- Status Report
 feature -- Command
 
 	set_epoch is
-			-- set time mark for file changes to be compared to - read from modify date of current file
+			-- Set time mark for file changes to be compared to - read from modify date of current file.
 		local
-			a_file: PLAIN_TEXT_FILE
+			file: PLAIN_TEXT_FILE
 		do
-			create a_file.make_open_read(current_directory + operating_environment.Directory_separator.out + current_file_name)
-			epoch := a_file.date
-			a_file.close
+			create file.make (current_full_path)
+
+			if file.exists then
+				epoch := file.date
+			else
+				epoch := 0
+			end
 		end
 
 	read_file is
