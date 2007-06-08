@@ -280,15 +280,22 @@ feature -- Commands
 
 	load_and_parse_adl_file (file_path: STRING)
 			-- Load and parse a named ADL file.
+		require
+			file_path_attached: file_path /= Void
+			file_path_not_empty: not file_path.is_empty
 		do
-			adl_interface.reset
-			adl_interface.open_adl_file (file_path)
+			do_with_wait_cursor (agent (path: STRING)
+				do
+					adl_interface.reset
+					adl_interface.open_adl_file (path)
 
-			if arch_notebook.selected_item = archetype_text_edit_area then
-				populate_archetype_text_edit_area
-			end
+					if arch_notebook.selected_item = archetype_text_edit_area then
+						populate_archetype_text_edit_area
+					end
 
-			parse_archetype
+					parse_archetype
+					set_current_work_directory (adl_interface.working_directory)
+				end (file_path))
 		end
 
 feature {NONE} -- Commands
@@ -353,25 +360,18 @@ feature {NONE} -- Commands
 		end
 
 	open_adl_file is
-			-- Called by `pointer_button_press_actions' of `open_file_mi'.
+			-- Let the user select an ADL file, and the load and parse it.
 		local
-			adl_file_open_dialog: EV_FILE_OPEN_DIALOG
-			cur_csr: EV_CURSOR
+			dialog: EV_FILE_OPEN_DIALOG
 		do
-			cur_csr := pointer_style
-			set_pointer_style(wait_cursor)
+			create dialog
+			dialog.set_start_directory (current_work_directory)
+			dialog.filters.extend (["*." + archetype_file_extension, "Files of type " + archetype_file_extension])
+			dialog.show_modal_to_window (Current)
 
-			create adl_file_open_dialog
-			adl_file_open_dialog.set_start_directory(current_work_directory)
-			adl_file_open_dialog.filters.extend (["*." + Archetype_file_extension,
-				"Files of type " + Archetype_file_extension])
-			Adl_file_open_dialog.show_modal_to_window (Current)
-			if Adl_file_open_dialog.file_name /= Void and then not Adl_file_open_dialog.file_name.is_empty then
-				load_and_parse_adl_file(Adl_file_open_dialog.file_name)
-				set_current_work_directory (adl_interface.working_directory)
+			if not dialog.file_name.is_empty then
+				load_and_parse_adl_file (dialog.file_name)
 			end
-
-			set_pointer_style(cur_csr)
 		end
 
 	save_adl_file is
@@ -456,29 +456,26 @@ feature {NONE} -- Commands
 		end
 
 	parse_archetype is
-			-- Called by `select_actions' of `parse'.
-		local
-			cur_csr: EV_CURSOR
+			-- Parse the archetype currently selected.
 		do
-			cur_csr := pointer_style
-			set_pointer_style(wait_cursor)
+			do_with_wait_cursor (agent
+				do
+					if adl_interface.archetype_source_loaded then
+						resync_file
+						clear_all_controls
+						adl_interface.parse_archetype
+						parser_status_area.append_text (adl_interface.status)
 
-			if adl_interface.archetype_source_loaded then
-				resync_file
-				clear_all_controls
-				adl_interface.parse_archetype
-				parser_status_area.append_text(adl_interface.status)
-				if adl_interface.parse_succeeded then
-					populate_all_archetype_controls
---					arch_notebook.select_item (info_view_area)
---					source_notebook.select_item(parsed_archetype_tree_view)
-					adl_interface.set_archetype_readonly
-				else
-					populate_archetype_id
-				end
-			end
-
-			set_pointer_style(cur_csr)
+						if adl_interface.parse_succeeded then
+							populate_all_archetype_controls
+--							arch_notebook.select_item (info_view_area)
+--							source_notebook.select_item (parsed_archetype_tree_view)
+							adl_interface.set_archetype_readonly
+						else
+							populate_archetype_id
+						end
+					end
+				end)
 		end
 
 	resync_file is
@@ -888,6 +885,21 @@ feature {EV_DIALOG} -- Implementation
 				line_cnt := line_cnt + 1
 			end
 			archetype_text_edit_area.set_text (utf8 (s))
+		end
+
+feature {NONE} -- Implementation
+
+	do_with_wait_cursor (action: PROCEDURE [ANY, TUPLE])
+			-- Perform `action' with an hourglass mouse cursor, restoring the cursor when done.
+		local
+			cursor: EV_CURSOR
+		do
+			cursor := pointer_style
+			set_pointer_style (wait_cursor)
+			action.call ([])
+			set_pointer_style (cursor)
+		rescue
+			set_pointer_style (cursor)
 		end
 
 feature {NONE} -- Standard Windows behaviour that EiffelVision ought to be managing automatically
