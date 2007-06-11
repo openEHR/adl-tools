@@ -103,7 +103,7 @@ feature -- Status Report
 		require
 			Language_valid: a_lang /= Void
 		do
-			Result := original_language.code_string.is_equal(a_lang) or else translations.has(a_lang)
+			Result := original_language.code_string.is_equal(a_lang) or else (translations /= Void and then translations.has(a_lang))
 		end
 
 	is_valid_resource: BOOLEAN is

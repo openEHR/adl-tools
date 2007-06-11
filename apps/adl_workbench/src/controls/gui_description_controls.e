@@ -15,12 +15,17 @@ indexing
 class GUI_DESCRIPTION_CONTROLS
 
 inherit
-	SHARED_ADL_INTERFACE
+	GUI_CONTROLLER_TOOLS
 		export
 			{NONE} all
 		end
 
-	GUI_CONTROLLER_TOOLS
+	SHARED_ARCHETYPE_DIRECTORY
+		export
+			{NONE} all
+		end
+
+	SHARED_ARCHETYPE_CONTEXT
 		export
 			{NONE} all
 		end
@@ -93,7 +98,7 @@ feature -- Commands
 			-- populate ontology controls
 		do
 			clear
-			if adl_interface.archetype.description /= Void then
+			if archetype_directory.selected_archetype.description /= Void then
 				populate_authorship
 				populate_details
 				populate_resources
@@ -113,19 +118,19 @@ feature {NONE} -- Implementation
 			sts: STRING
 		do
 			-- original author: tagged list of strings
-			populate_ev_multi_list_from_hash(gui.arch_desc_auth_orig_auth_mlist, adl_interface.archetype.description.original_author)
+			populate_ev_multi_list_from_hash(gui.arch_desc_auth_orig_auth_mlist, archetype_directory.selected_archetype.description.original_author)
 
 			-- status
-			sts := adl_interface.archetype.description.lifecycle_state
+			sts := archetype_directory.selected_archetype.description.lifecycle_state
 			if sts /= Void then
 				gui.arch_desc_status_text.set_text (utf8 (sts))
 			end
 
 			-- original language
-			gui.arch_desc_original_language_text.set_text (utf8 (adl_interface.archetype.original_language.code_string))
+			gui.arch_desc_original_language_text.set_text (utf8 (archetype_directory.selected_archetype.original_language.code_string))
 
 			-- contributors: list of strings
-			contribs := adl_interface.archetype.description.other_contributors
+			contribs := archetype_directory.selected_archetype.description.other_contributors
 			if contribs /= Void then
 				gui.arch_desc_auth_contrib_list.set_strings (contribs)
 			end
@@ -136,7 +141,7 @@ feature {NONE} -- Implementation
 		local
 			arch_desc_item: RESOURCE_DESCRIPTION_ITEM
 		do
-			arch_desc_item := adl_interface.archetype.description.details.item(current_language)
+			arch_desc_item := archetype_directory.selected_archetype.description.details.item(current_language)
 
 			if arch_desc_item /= Void then
 				if arch_desc_item.purpose /= Void then
@@ -162,13 +167,13 @@ feature {NONE} -- Implementation
 			arch_desc_item: RESOURCE_DESCRIPTION_ITEM
 		do
 			-- package URI
-			arch_pkg_uri := adl_interface.archetype.description.resource_package_uri
+			arch_pkg_uri := archetype_directory.selected_archetype.description.resource_package_uri
 			if arch_pkg_uri /= Void then
 				gui.arch_desc_resource_package_text.set_text (utf8 (arch_pkg_uri.out))
 			end
 
 			-- list of URI resources
-			arch_desc_item := adl_interface.archetype.description.details.item(current_language)
+			arch_desc_item := archetype_directory.selected_archetype.description.details.item(current_language)
 			if arch_desc_item /= Void then
 				populate_ev_multi_list_from_hash(gui.arch_desc_resource_orig_res_mlist, arch_desc_item.original_resource_uri)
 			end
@@ -179,7 +184,7 @@ feature {NONE} -- Implementation
 		local
 			arch_desc_item: RESOURCE_DESCRIPTION_ITEM
 		do
-			arch_desc_item := adl_interface.archetype.description.details.item(current_language)
+			arch_desc_item := archetype_directory.selected_archetype.description.details.item(current_language)
 			if arch_desc_item /= Void and then arch_desc_item.copyright /= Void then
 				gui.arch_desc_copyright_text.set_text (utf8 (arch_desc_item.copyright))
 			end

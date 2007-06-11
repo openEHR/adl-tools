@@ -79,7 +79,7 @@ feature -- Access
 	has_selected_file: BOOLEAN
 			-- True if a file was selected
 
-	tests: DS_HASH_TABLE [FUNCTION [ANY, TUPLE [STRING], INTEGER], STRING] is
+	tests: DS_HASH_TABLE [FUNCTION [ANY, TUPLE [ARCHETYPE_REPOSITORY_ARCHETYPE], INTEGER], STRING] is
 			-- table of test routines
 		once
 			create Result.make (5)
@@ -231,7 +231,7 @@ feature -- Commands
 
 						create test_status.make_empty
 
-						test_result := tests.item_for_iteration.item ([arch_item.full_path])
+						test_result := tests.item_for_iteration.item ([arch_item])
 
 						inspect test_result
 						when Test_passed then
@@ -288,48 +288,43 @@ feature -- Commands
 
 feature -- Tests
 
-	test_parse (arch_file_path: STRING): INTEGER is
+	test_parse (ara: ARCHETYPE_REPOSITORY_ARCHETYPE): INTEGER is
 			-- parse archetype and return result
 		local
 			unused_at_codes, unused_ac_codes: ARRAYED_LIST [STRING]
 		do
 			Result := Test_failed
-			adl_interface.reset
-			adl_interface.open_adl_file(arch_file_path)
+			adl_interface.set_target (ara)
 
-			if adl_interface.archetype_source_loaded then
-				adl_interface.parse_archetype
+			adl_interface.parse_archetype
 
-				if adl_interface.parse_succeeded then
-					Result := Test_passed
+			if adl_interface.parse_succeeded then
+				Result := Test_passed
 
-					if remove_unused_codes then
-						unused_at_codes := adl_interface.archetype.ontology_unused_term_codes
-						unused_ac_codes := adl_interface.archetype.ontology_unused_constraint_codes
+				if remove_unused_codes then
+					unused_at_codes := ara.archetype.ontology_unused_term_codes
+					unused_ac_codes := ara.archetype.ontology_unused_constraint_codes
 
-						if not unused_at_codes.is_empty or not unused_ac_codes.is_empty then
-							test_status.append(">>>>>>>>>> removing unused codes%N")
+					if not unused_at_codes.is_empty or not unused_ac_codes.is_empty then
+						test_status.append(">>>>>>>>>> removing unused codes%N")
 
-							if not unused_at_codes.is_empty then
-								test_status.append("Unused AT codes: " + display_arrayed_list (unused_at_codes) + "%N")
-							end
-
-							if not unused_ac_codes.is_empty then
-								test_status.append("Unused AC codes: " + display_arrayed_list (unused_ac_codes) + "%N")
-							end
-
-							adl_interface.archetype.ontology_remove_unused_codes
+						if not unused_at_codes.is_empty then
+							test_status.append("Unused AT codes: " + display_arrayed_list (unused_at_codes) + "%N")
 						end
+
+						if not unused_ac_codes.is_empty then
+							test_status.append("Unused AC codes: " + display_arrayed_list (unused_ac_codes) + "%N")
+						end
+
+						ara.archetype.ontology_remove_unused_codes
 					end
-				else
-					test_status.append("Parse failed; reason: " + adl_interface.status + "%N")
 				end
 			else
-				test_status.append("Source file for archetype " + arch_file_path + " not found%N")
+				test_status.append(ara.id.as_string + " parse failed%N")
 			end
 		end
 
-	test_save_html (arch_file_path: STRING): INTEGER is
+	test_save_html (ara: ARCHETYPE_REPOSITORY_ARCHETYPE): INTEGER is
 			-- parse archetype and return result
 		local
 			html_fname: STRING
@@ -337,9 +332,13 @@ feature -- Tests
 			Result := Test_failed
 
 			if adl_interface.parse_succeeded then
-				html_fname := arch_file_path.twin
+				-- FIXME: Sam doesn't want the html files to go in the same place as the adl files anymore
+				-- now they should go in the path html/adl, where html is a sibling directory of the main
+				-- 'adl' directory in the repository path; 'html/adl' means "the ADL form of HTML", since
+				-- there are other things in the html directory.
+				html_fname := ara.full_path.twin
 				html_fname.replace_substring(".html", html_fname.count - Archetype_file_extension.count, html_fname.count)
-				adl_interface.save_archetype(html_fname, "html")
+				adl_interface.save_archetype_as(html_fname, "html")
 
 				if adl_interface.save_succeeded then
 					Result := Test_passed
@@ -349,21 +348,20 @@ feature -- Tests
 			end
 		end
 
-	test_save_adl (arch_file_path: STRING): INTEGER is
+	test_save_adl (ara: ARCHETYPE_REPOSITORY_ARCHETYPE): INTEGER is
 			-- parse archetype and return result
 		local
-			new_adl_file: STRING
+			new_adl_file_path: STRING
 		do
 			Result := Test_failed
 
 			if adl_interface.parse_succeeded then
-				new_adl_file := arch_file_path.twin
-
-				if not overwrite then
-					new_adl_file.append ("x")
+				if overwrite then
+					adl_interface.save_archetype
+				else
+					new_adl_file_path := system_temp_file_directory + os_directory_separator.out + ara.archetype_file_name
+					adl_interface.save_archetype_as(new_adl_file_path, "adl")
 				end
-
-				adl_interface.save_archetype (new_adl_file, "adl")
 
 				if adl_interface.save_succeeded then
 					Result := Test_passed
@@ -375,34 +373,33 @@ feature -- Tests
 			end
 		end
 
-	test_reparse (arch_file_path: STRING): INTEGER is
+	test_reparse (ara: ARCHETYPE_REPOSITORY_ARCHETYPE): INTEGER is
 			-- parse archetype and return result
 		local
 			new_adl_file_path: STRING
 		do
 			Result := Test_failed
-			new_adl_file_path := arch_file_path.twin
 
-			if not overwrite then
-				new_adl_file_path.append ("x")
+			if overwrite then
+				new_adl_file_path := ara.full_path
+			else
+				new_adl_file_path := system_temp_file_directory + os_directory_separator.out + ara.archetype_file_name
 			end
 
-			adl_interface.open_adl_file (new_adl_file_path)
+			-- FIXME: these are the right paths, but we don't yet have a way of overriding the source
+			-- of an archetype from what is in its file
+			-- DO SOMETHING HERE
 
-			if adl_interface.archetype_source_loaded then
-				adl_interface.parse_archetype
+			adl_interface.parse_archetype
 
-				if adl_interface.parse_succeeded then
-					Result := Test_passed
-				else
-					test_status.append ("Parse failed; reason: " + adl_interface.status + "%N")
-				end
+			if adl_interface.parse_succeeded then
+				Result := Test_passed
 			else
-				test_status.append ("Source file for archetype " + new_adl_file_path + " not found%N")
+				test_status.append ("Parse failed; reason: " + adl_interface.status + "%N")
 			end
 		end
 
-	test_diff (arch_file_path: STRING): INTEGER is
+	test_diff (ara: ARCHETYPE_REPOSITORY_ARCHETYPE): INTEGER is
 			-- parse archetype and return result
 		local
 			new_adl_file_path: STRING
@@ -411,14 +408,11 @@ feature -- Tests
 			Result := Test_failed
 
 			if not overwrite then
-				new_adl_file_path := arch_file_path.twin
-				new_adl_file_path.append ("x")
+				orig_arch_source := ara.source
 
-				adl_interface.open_adl_file (arch_file_path)
-				orig_arch_source := adl_interface.adl_engine.source
-
-				adl_interface.open_adl_file (new_adl_file_path)
-				new_arch_source := adl_interface.adl_engine.source
+				new_adl_file_path := system_temp_file_directory + os_directory_separator.out + ara.archetype_file_name
+				-- FIXME: DO SOMETIHNG HERE TO OPEN THE NEW FILE
+				-- new_arch_source := adl_interface.adl_engine.source
 
 				if orig_arch_source.count = new_arch_source.count then
 					if orig_arch_source.is_equal (new_arch_source) then

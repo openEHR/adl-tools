@@ -17,7 +17,18 @@ indexing
 deferred class ARCHETYPE_INDEXED_REPOSITORY_I
 
 inherit
+	SHARED_ARCHETYPE_CONTEXT
+		export
+			{NONE} all
+			{ANY} current_language, set_current_language
+		end
+
 	ARCHETYPE_DEFINITIONS
+		export
+			{NONE} all
+		end
+
+	MESSAGE_BILLBOARD
 		export
 			{NONE} all
 		end
@@ -40,13 +51,20 @@ feature -- Access
 			-- path of file-system repository of archetypes
 
 	directory: TWO_WAY_TREE [ARCHETYPE_REPOSITORY_ITEM]
-			-- tree-structured directory of folders and archetype sources
+			-- tree-structured directory of folders and archetypes
 
-	source (an_archetype: ARCHETYPE_REPOSITORY_ARCHETYPE): STRING is
+	source (a_full_path: STRING): STRING is
 			-- get source of archetype from repository medium
+		require
+			path_valid: a_full_path /= Void
 		deferred
 		ensure
 			Result_exists: Result /= Void
+		end
+
+	source_timestamp: INTEGER is
+			-- modification time of last opened file as an integer, for comparison purposes
+		deferred
 		end
 
 feature -- Status Report
@@ -55,6 +73,12 @@ feature -- Status Report
 			-- validate path on medium
 		require
 			a_path /= Void
+		deferred
+		end
+
+	file_changed_on_disk (a_path: STRING; a_timestamp: INTEGER): BOOLEAN is
+			-- True if loaded archetype has changed on disk since last read;
+			-- To fix, call resync_file
 		deferred
 		end
 
@@ -76,6 +100,14 @@ feature -- Commands
 			-- make based on valid directory path
 		do
 			directory := build_directory(root_path)
+		end
+
+	save_as(a_full_path, a_text: STRING) is
+			-- save a_text (representing archetype source) to a file
+		require
+			Text_valid: a_text /= Void and then not a_text.is_empty
+			Path_valid: a_full_path /= Void and then valid_path(a_full_path)
+		deferred
 		end
 
 feature {NONE} -- Implementation

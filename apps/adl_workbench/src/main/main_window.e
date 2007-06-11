@@ -101,12 +101,6 @@ feature {NONE} -- Initialization
 				archetype_directory.put_repository (work_repository_path, "work")
 			end
 			populate_archetype_directory
-
-			adl_interface.set_current_directory(reference_repository_path)
-
-			if current_work_directory.is_empty then
-				set_current_work_directory (adl_interface.working_directory)
-			end
 		end
 
 	initialise_gui_settings is
@@ -278,11 +272,10 @@ feature -- Commands
 			News_dialog.show
 		end
 
-	load_and_parse_adl_file (file_path: STRING)
-			-- Load and parse a named ADL file.
+	load_and_parse_archetype
+			-- Load and parse archetype currently selected in archetype_directory
 		do
-			adl_interface.reset
-			adl_interface.open_adl_file (file_path)
+			adl_interface.set_target_to_selected
 
 			if arch_notebook.selected_item = archetype_text_edit_area then
 				populate_archetype_text_edit_area
@@ -367,8 +360,8 @@ feature {NONE} -- Commands
 				"Files of type " + Archetype_file_extension])
 			Adl_file_open_dialog.show_modal_to_window (Current)
 			if Adl_file_open_dialog.file_name /= Void and then not Adl_file_open_dialog.file_name.is_empty then
-				load_and_parse_adl_file(Adl_file_open_dialog.file_name)
-				set_current_work_directory (adl_interface.working_directory)
+				archetype_directory.add_adhoc_item (Adl_file_open_dialog.file_name)
+				load_and_parse_archetype
 			end
 
 			set_pointer_style(cur_csr)
@@ -384,11 +377,10 @@ feature {NONE} -- Commands
 			save_dialog: EV_FILE_SAVE_DIALOG
 			name, format: STRING
 		do
-			if adl_interface.archetype_source_loaded then
 				if adl_interface.parse_succeeded then
 					ok_to_write := True
 					create save_dialog
-					save_dialog.set_file_name (adl_interface.file_context.current_file_name)
+					save_dialog.set_file_name (archetype_directory.selected_archetype_descriptor.full_path)
 					save_dialog.set_start_directory (current_work_directory)
 
 					from
@@ -430,7 +422,7 @@ feature {NONE} -- Commands
 						end
 
 						if ok_to_write then
-							adl_interface.save_archetype (name, format)
+							adl_interface.save_archetype_as (name, format)
 							parser_status_area.append_text(adl_interface.status)
 
 							if format.is_equal (archetype_file_extension) then
@@ -444,15 +436,12 @@ feature {NONE} -- Commands
 					create error_dialog.make_with_text("must parse before serialising")
 					error_dialog.show_modal_to_window (Current)
 				end
-			end
 		end
 
 	edit_archetype is
 			-- launch external editor with archetype
 		do
-			if adl_interface.archetype_source_loaded then
-				execution_environment.launch(editor_command + " " + adl_interface.file_context.current_full_path)
-			end
+			execution_environment.launch(editor_command + " " + archetype_directory.selected_archetype_descriptor.full_path)
 		end
 
 	parse_archetype is
@@ -463,40 +452,34 @@ feature {NONE} -- Commands
 			cur_csr := pointer_style
 			set_pointer_style(wait_cursor)
 
-			if adl_interface.archetype_source_loaded then
-				resync_file
-				clear_all_controls
-				adl_interface.parse_archetype
-				parser_status_area.append_text(adl_interface.status)
-				if adl_interface.parse_succeeded then
-					populate_all_archetype_controls
---					arch_notebook.select_item (info_view_area)
---					source_notebook.select_item(parsed_archetype_tree_view)
-					adl_interface.set_archetype_readonly
-				else
-					populate_archetype_id
-				end
+			clear_all_controls
+			adl_interface.parse_archetype
+			parser_status_area.append_text(adl_interface.status)
+			if adl_interface.parse_succeeded then
+				populate_all_archetype_controls
+				adl_interface.set_archetype_readonly
+			else
+				populate_archetype_id
 			end
 
 			set_pointer_style(cur_csr)
 		end
 
-	resync_file is
-			-- resynchronise in-memory archetype to file if changed due to editing
-		do
-			if adl_interface.file_changed_on_disk then
-				adl_interface.resync_file
-				clear_all_controls
-				if arch_notebook.item_text(arch_notebook.selected_item).is_equal ("Source") then
-					populate_archetype_text_edit_area
-				end
-			end
-		end
-
 	archetype_view_tree_item_select is
-			-- Display details of `archetype_file_tree' when the user selects it.
+			-- select an item on the archetype tree
+		local
+			cur_csr: EV_CURSOR
 		do
-			archetype_view_tree_control.display_details_of_selected_item_after_delay
+			cur_csr := pointer_style
+			set_pointer_style(wait_cursor)
+
+			archetype_view_tree_control.item_select
+			if archetype_directory.has_selected_archetype_descriptor then
+				load_and_parse_archetype
+			end
+   			archetype_file_tree.set_minimum_width(0)
+
+			set_pointer_style(cur_csr)
 		end
 
 	node_map_shrink_tree_one_level is
@@ -623,7 +606,7 @@ feature {NONE} -- Commands
 	arch_notebook_select is
 			-- Called by `selection_actions' of `arch_notebook'.
 		do
-			if adl_interface.archetype_source_loaded and arch_notebook.item_text(arch_notebook.selected_item).is_equal ("Source") then
+			if arch_notebook.item_text(arch_notebook.selected_item).is_equal ("Source") then
 				populate_archetype_text_edit_area
 			end
 		end
@@ -851,15 +834,15 @@ feature {EV_DIALOG} -- Implementation
 	populate_adl_version is
 			-- populate ADL version
 		do
-			adl_version_text.set_text (utf8 (adl_interface.archetype.adl_version))
+			adl_version_text.set_text (utf8 (archetype_directory.selected_archetype.adl_version))
 		end
 
 	populate_languages is
 		do
 			language_combo.select_actions.block
-			language_combo.set_strings (adl_interface.archetype.languages_available)
+			language_combo.set_strings (archetype_directory.selected_archetype.languages_available)
 			language_combo.select_actions.resume
-			terminologies_list.set_strings (ontology.terminologies_available)
+			terminologies_list.set_strings (archetype_directory.selected_archetype.ontology.terminologies_available)
 		end
 
 	populate_archetype_text_edit_area is

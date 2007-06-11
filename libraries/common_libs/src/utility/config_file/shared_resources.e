@@ -19,12 +19,7 @@ inherit
 
 feature -- Definitions
 
-	Global_config_directory: STRING is
-			-- location of global configuration files - /etc
-		once
-			create Result.make(0)
-			Result.append(os_directory_separator.out + "etc")
-		end
+	Windows_OS_name: STRING is "windows"
 
 feature -- Initialisation
 
@@ -92,11 +87,33 @@ feature -- Environment
    			end
    		end
 
+	Global_config_directory: STRING is
+			-- location of global configuration files - /etc
+		once
+			create Result.make(0)
+			Result.append(os_directory_separator.out + "etc")
+		end
+
 	system_config_file_directory: STRING is
 			-- place for config files common to multiple applications
 		once
 			create Result.make(0)
 			Result.append(execution_environment.root_directory_name + "etc")
+		end
+
+	system_temp_file_directory: STRING is
+			-- standard place for temporary files, normally /tmp on unix-like systems
+			-- and c:\temp on windows-like systems
+		local
+			tmp_dir_name: STRING
+		once
+			create Result.make(0)
+			if os_type.has_substring(Windows_OS_name) then
+				tmp_dir_name := "temp"
+			else
+				tmp_dir_name := "tmp"
+			end
+			Result.append(execution_environment.root_directory_name + tmp_dir_name)
 		end
 
 	resource_config_file_name: STRING is

@@ -18,21 +18,21 @@ class IN_MEMORY_MESSAGE_DB
 
 inherit
 	MESSAGE_DB
-	
+
 	INTERNAL
-		export 
+		export
 			{NONE} all
 		end
-		
+
 create
 	make
-	
+
 feature -- Initialisation
 
 	make is
 		local
 			parser: DADL2_VALIDATOR
-			dt_tree: DT_COMPLEX_OBJECT_NODE 
+			dt_tree: DT_COMPLEX_OBJECT_NODE
 			init_helper: IN_MEMORY_MESSAGE_DB_INITIALISER
 		do
 			create parser.make
@@ -65,7 +65,7 @@ feature -- Access
 			["create_new_archetype_1"] = <"CREATE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
 			["specialise_archetype_1"] = <"SPECIALISE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
 			["open_adl_file_1"] = <"%NOPEN FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
-			["save_archetype_i1"] = <"Serialised: $1, $2 to file $3">
+			["save_archetype_i1"] = <"Serialised: $1 to file $2">
 			["save_archetype_e1"] = <"Serialise failed - could not write to file $1">
 			["save_archetype_e2"] = <"Serialisation failed; archetype not valid: $1">
 			["save_archetype_e3"] = <"%NSAVE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
@@ -135,4 +135,4 @@ end
 --| ***** END LICENSE BLOCK *****
 --|
 
- 
+

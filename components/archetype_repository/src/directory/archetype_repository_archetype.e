@@ -27,8 +27,8 @@ feature -- Initialisation
 
 	make(a_root_path, a_full_path: STRING; a_group_id: INTEGER; an_id: ARCHETYPE_ID; is_specialised_flag: BOOLEAN; a_repository: ARCHETYPE_INDEXED_REPOSITORY_I) is
 		require
-			Root_path_valid: a_root_path /= Void and then not a_root_path.is_empty
-			Full_path_valid: a_full_path /= Void and then not a_full_path.is_empty and then a_full_path.substring_index (a_root_path, 1) = 1
+			Root_path_valid: a_root_path /= Void and then a_repository.valid_path(a_root_path)
+			Full_path_valid: a_full_path /= Void and then a_full_path.substring_index (a_root_path, 1) = 1
 			Group_id_valid: a_group_id > 0
 			Id_valid: an_id /= Void
 			Repository_exists: a_repository /= Void
@@ -38,18 +38,72 @@ feature -- Initialisation
 			id := an_id
 			is_specialised := is_specialised_flag
 			make_adi(a_root_path, a_full_path, a_group_id, a_repository)
+			archetype_file_name := full_path.substring (full_path.last_index_of(os_directory_separator, full_path.count)+1, full_path.count)
 		end
 
 feature -- Access
 
 	id: ARCHETYPE_ID
 
-	is_specialised: BOOLEAN
+	archetype_file_name: STRING
+			-- the name of the archetype file
 
 	source: STRING is
 			-- get source text of archetype
 		do
-			Result := repository.source (Current)
+			Result := repository.source (full_path)
+			source_timestamp := repository.source_timestamp
+		end
+
+	source_timestamp: INTEGER
+
+	compilation_context: ARCHETYPE_CONTEXT
+			-- context object for compilation activities
+
+	archetype: ARCHETYPE is
+			-- differential form of currently compiled archetype
+		do
+			Result := compilation_context.differential
+		end
+
+feature -- Status Report
+
+	is_specialised: BOOLEAN
+			-- True if this archetype is a specialisation of another archetype
+
+	file_changed_on_disk: BOOLEAN is
+			-- True if loaded archetype has changed on disk since last read;
+			-- To fix, call resync_file
+		do
+			Result := repository.file_changed_on_disk(full_path, source_timestamp)
+		end
+
+feature -- Commands
+
+	save(a_text: STRING) is
+			-- save a_text (representing archetype source) to archetype source file
+		require
+			Text_valid: a_text /= Void and then not a_text.is_empty
+		do
+			repository.save_as(full_path, a_text)
+		end
+
+	save_as(a_full_path, a_text: STRING) is
+			-- save a_text (representing archetype source) to archetype source file
+		require
+			Text_valid: a_text /= Void and then not a_text.is_empty
+			Path_valid: a_full_path /= Void and then valid_path(a_full_path)
+		do
+			repository.save_as(a_full_path, a_text)
+		end
+
+	set_compilation_context (a_source_archetype: ARCHETYPE) is
+			-- create compilation context object with a_source_archetype, which is
+			-- an archetype in differential (source) form (cf flattened)
+		require
+			a_source_archetype /= Void
+		do
+			create compilation_context.make(a_source_archetype)
 		end
 
 feature {NONE} -- Implementation
@@ -61,20 +115,21 @@ feature {NONE} -- Implementation
 		do
 			-- initialise paths down to but not including archetype file name
 			ontological_path := full_path.substring (root_path.count + 1, full_path.last_index_of(os_directory_separator, full_path.count)-1)
+			ontological_path.replace_substring_all (os_directory_separator.out, Ontological_path_separator)
 			ontological_parent_path := ontological_path.twin
 
 			-- generate a semantic path that corresponds to this archetype:
 			-- constructed from the relative folder path + the semantic part of the archetype id, with '-' separators
 			-- changed to '/' so that the entire path is '/'-separated
 			arch_ont_path := id.domain_concept
-			arch_ont_path.replace_substring_all (id.section_separator.out, os_directory_separator.out)
-			ontological_path.append(os_directory_separator.out + arch_ont_path)
+			arch_ont_path.replace_substring_all (id.section_separator.out, Ontological_path_separator)
+			ontological_path.append(Ontological_path_separator + arch_ont_path)
 
 			-- generate parent ontological path if appropriate
 			arch_ont_path := id.domain_concept_base
 			if not arch_ont_path.is_empty then
-				arch_ont_path.replace_substring_all (id.section_separator.out, os_directory_separator.out)
-				ontological_parent_path.append(os_directory_separator.out + arch_ont_path)
+				arch_ont_path.replace_substring_all (id.section_separator.out, Ontological_path_separator)
+				ontological_parent_path.append(Ontological_path_separator + arch_ont_path)
 			end
 		end
 

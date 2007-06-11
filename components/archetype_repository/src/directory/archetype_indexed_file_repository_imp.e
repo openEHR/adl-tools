@@ -29,15 +29,24 @@ create
 
 feature -- Access
 
-	file_context: FILE_CONTEXT
+	file_context: FILE_CONTEXT is
 			-- access to file system
+		once
+			create Result.make
+		end
 
-	source (an_arch_desc: ARCHETYPE_REPOSITORY_ARCHETYPE): STRING is
+	source (a_full_path: STRING): STRING is
 			-- get source of archetype from repository medium
 		do
-			file_context.set_target (an_arch_desc.full_path)
+			file_context.set_target (a_full_path)
 			file_context.read_file
 			Result := file_context.file_content
+		end
+
+	source_timestamp: INTEGER is
+			-- modification time of last opened file as an integer, for comparison purposes
+		do
+			Result := file_context.file_timestamp
 		end
 
 feature -- Status Report
@@ -46,6 +55,27 @@ feature -- Status Report
 			-- validate path on medium
 		do
 			Result := (create {DIRECTORY}.make(a_path)).exists
+		end
+
+	file_changed_on_disk (a_path: STRING; a_timestamp: INTEGER): BOOLEAN is
+			-- True if loaded archetype has changed on disk since last read;
+			-- To fix, call resync_file
+		do
+			file_context.set_target (a_path)
+			Result := file_context.file_changed(a_timestamp)
+		end
+
+feature -- Commands
+
+	save_as(a_full_path, a_text: STRING) is
+			-- save a_text (representing archetype source) to a file
+		do
+			if file_context.file_writable(a_full_path) then
+				file_context.save_file(a_full_path, a_text)
+				post_info(Current, "save_archetype", "save_archetype_i1", <<current_language, a_full_path>>)
+			else
+				post_error(Current, "save_archetype", "save_archetype_e1", <<a_full_path>>)
+			end
 		end
 
 feature {NONE} -- Implementation

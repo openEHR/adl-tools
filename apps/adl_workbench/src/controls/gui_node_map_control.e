@@ -1,10 +1,10 @@
 indexing
 	component:   "openEHR Archetype Project"
 	description: "Node map control"
-	keywords:    "test, ADL"
+	keywords:    "Visualise an archetype structure as a node map"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003-2005 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2003-2007 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -14,11 +14,6 @@ indexing
 class GUI_NODE_MAP_CONTROL
 
 inherit
-	SHARED_ADL_INTERFACE
-		export
-			{NONE} all
-		end
-
 	SHARED_UI_RESOURCES
 		export
 			{NONE} all
@@ -30,6 +25,19 @@ inherit
 		end
 
 	STRING_UTILITIES
+		export
+			{NONE} all
+		end
+
+	SHARED_ARCHETYPE_DIRECTORY
+		export
+			{NONE} all
+		end
+
+	SHARED_ARCHETYPE_CONTEXT
+		export
+			{NONE} all
+		end
 
 create
 	make
@@ -41,7 +49,6 @@ feature -- Initialisation
 			a_main_window /= Void
 		do
 			gui := a_main_window
-			adl_engine := adl_interface.adl_engine
 			gui_tree := gui.parsed_archetype_tree
 			in_source_status_mode := True
 		end
@@ -99,7 +106,7 @@ feature -- Commands
 			clear
 			archetype_tree_root_set := False
 			create tree_item_stack.make(0)
-			create tree_iterator.make(adl_engine.archetype.definition.representation)
+			create tree_iterator.make(archetype_directory.selected_archetype.definition.representation)
 			tree_iterator.do_all(agent node_build_enter_action(?,?), agent node_build_exit_action(?,?))
 			populate_invariants
 			is_expanded := not expand_node_tree
@@ -143,7 +150,7 @@ feature -- Commands
 					else
 						s ?= node_data
 						if s /= Void then -- must be a term constraint item
-							if ontology.has_term_code(s) then
+							if archetype_directory.selected_archetype.ontology.has_term_code(s) then
 								gui.ontology_controls.select_term(s)
 							end
 						end
@@ -224,8 +231,6 @@ feature {NONE} -- Implementation
 
 	gui_tree: EV_TREE
 
-	adl_engine: ADL_ENGINE
-
 	tree_iterator: OG_ITERATOR
 
 	tree_item_stack: ARRAYED_STACK[EV_TREE_ITEM]
@@ -261,7 +266,7 @@ feature {NONE} -- Implementation
 			create pixmap_ext.make(0)
 			if in_source_status_mode then
 				arch_const ?= an_og_node.content_item
-				spec_sts := arch_const.effective_specialisation_status (adl_interface.archetype.specialisation_depth).value
+				spec_sts := arch_const.effective_specialisation_status (archetype_directory.selected_archetype.specialisation_depth).value
 				if spec_sts = ss_inherited or spec_sts = ss_redefined then
 					pixmap_ext.append(".")
 					pixmap_ext.append(specialisation_status_names.item(spec_sts))
@@ -456,7 +461,7 @@ feature {NONE} -- Implementation
 						if in_technical_mode then
 							a_ti.set_tooltip (utf8 (c_o.representation.path.as_string))
 						else
-							a_ti.set_tooltip (utf8 (ontology.logical_path_for_physical_path (c_o.representation.path.as_string, current_language)))
+							a_ti.set_tooltip (utf8 (archetype_directory.selected_archetype.ontology.logical_path_for_physical_path (c_o.representation.path.as_string, current_language)))
 						end
 					end
 
@@ -464,7 +469,7 @@ feature {NONE} -- Implementation
 					if in_source_status_mode then
 						arch_const ?= a_node
 						if arch_const /= Void then
-							spec_sts := arch_const.effective_specialisation_status (adl_interface.archetype.specialisation_depth).value
+							spec_sts := arch_const.effective_specialisation_status (archetype_directory.selected_archetype.specialisation_depth).value
 							if spec_sts = ss_inherited or spec_sts = ss_redefined then
 								pixmap_ext.append(".")
 								pixmap_ext.append(specialisation_status_names.item(spec_sts))
@@ -490,7 +495,7 @@ feature {NONE} -- Implementation
 								a_ti.set_text (utf8 (object_term_item_string (s, assumed_flag)))
 								create pixmap_ext.make(0)
 								if in_source_status_mode then
-									spec_sts := a_object_term.effective_specialisation_status (adl_interface.archetype.specialisation_depth).value
+									spec_sts := a_object_term.effective_specialisation_status (archetype_directory.selected_archetype.specialisation_depth).value
 									if spec_sts = ss_inherited or spec_sts = ss_redefined then
 										pixmap_ext.append(".")
 										pixmap_ext.append(specialisation_status_names.item(spec_sts))
@@ -520,7 +525,7 @@ feature {NONE} -- Implementation
 						a_ti.set_text (utf8 (object_ordinal_item_string (an_ordinal, assumed_flag)))
 						create pixmap_ext.make(0)
 						if in_source_status_mode then
-							spec_sts := c_dv_ordinal.effective_specialisation_status (adl_interface.archetype.specialisation_depth).value
+							spec_sts := c_dv_ordinal.effective_specialisation_status (archetype_directory.selected_archetype.specialisation_depth).value
 							if spec_sts = ss_inherited or spec_sts = ss_redefined then
 								pixmap_ext.append(".")
 								pixmap_ext.append(specialisation_status_names.item(spec_sts))
@@ -547,7 +552,7 @@ feature {NONE} -- Implementation
 							if c_q /= Void then
 								create pixmap_ext.make(0)
 								if in_source_status_mode then
-									spec_sts := c_q.effective_specialisation_status (adl_interface.archetype.specialisation_depth).value
+									spec_sts := c_q.effective_specialisation_status (archetype_directory.selected_archetype.specialisation_depth).value
 									if spec_sts = ss_inherited or spec_sts = ss_redefined then
 										pixmap_ext.append(".")
 										pixmap_ext.append(specialisation_status_names.item(spec_sts))
@@ -597,7 +602,7 @@ feature {NONE} -- Implementation
 			if in_technical_mode then
 				Result.set_tooltip (utf8 (an_og_node.path.as_string))
 			else
-				Result.set_tooltip (utf8 (ontology.logical_path_for_physical_path (an_og_node.path.as_string, current_language)))
+				Result.set_tooltip (utf8 (archetype_directory.selected_archetype.ontology.logical_path_for_physical_path (an_og_node.path.as_string, current_language)))
 			end
 
 			if not archetype_tree_root_set then
@@ -701,7 +706,7 @@ feature {NONE} -- Implementation
 		do
 			if an_ev_tree_node.is_expandable then
 				arch_cons ?= an_ev_tree_node.data
-				if arch_cons /= Void and arch_cons.rolled_up_specialisation_status (adl_interface.archetype.specialisation_depth).value = ss_inherited then
+				if arch_cons /= Void and arch_cons.rolled_up_specialisation_status (archetype_directory.selected_archetype.specialisation_depth).value = ss_inherited then
 					an_ev_tree_node.collapse
 				else
 					an_ev_tree_node.expand
@@ -755,7 +760,7 @@ feature {NONE} -- Implementation
 				if in_technical_mode then
 					Result.append(a_node.rm_type_name)
 				end
-				Result.append(" " + ontology.term_definition(current_language, a_node.node_id).item("text"))
+				Result.append(" " + archetype_directory.selected_archetype.ontology.term_definition(current_language, a_node.node_id).item("text"))
 				if in_technical_mode then
 					Result.append(" [" + a_node.node_id + "]")
 				end
@@ -796,7 +801,7 @@ feature {NONE} -- Implementation
 				Result.append(a_node.rm_type_name)
 			--end
 			if a_node.is_addressable then
-				Result.append(" " + ontology.term_definition(current_language, a_node.node_id).item("text"))
+				Result.append(" " + archetype_directory.selected_archetype.ontology.term_definition(current_language, a_node.node_id).item("text"))
 			end
 			if in_technical_mode then
 				if a_node.is_addressable then
@@ -831,7 +836,7 @@ feature {NONE} -- Implementation
 			if in_technical_mode then
 				Result.append("use " + a_node.rm_type_name + " " + a_node.target_path)
 			else
-				Result.append("use " + ontology.logical_path_for_physical_path(a_node.target_path, current_language))
+				Result.append("use " + archetype_directory.selected_archetype.ontology.logical_path_for_physical_path(a_node.target_path, current_language))
 			end
 		end
 
@@ -839,8 +844,8 @@ feature {NONE} -- Implementation
 			-- generate string form of node or object for use in tree node
 		do
 			create Result.make(0)
-			if ontology.term_codes.has(code) then
-				Result.append(" " + ontology.term_definition(current_language, code).item("text"))
+			if archetype_directory.selected_archetype.ontology.term_codes.has(code) then
+				Result.append(" " + archetype_directory.selected_archetype.ontology.term_definition(current_language, code).item("text"))
 			end
 			if in_technical_mode then
 				Result.append(" -- " + code)
@@ -854,7 +859,7 @@ feature {NONE} -- Implementation
 			-- generate string form of node or object for use in tree node
 		do
 			create Result.make(0)
-			Result.append(" " + ontology.constraint_definition(current_language, a_constraint_ref.target).item("text"))
+			Result.append(" " + archetype_directory.selected_archetype.ontology.constraint_definition(current_language, a_constraint_ref.target).item("text"))
 			if in_technical_mode then
 				Result.append(" -> " + a_constraint_ref.target)
 			end
@@ -868,8 +873,8 @@ feature {NONE} -- Implementation
 			create Result.make(0)
 			code := an_ordinal.symbol.code_string
 			Result.append(an_ordinal.value.out + an_ordinal.separator.out)
-			if ontology.term_codes.has(code) then
-				Result.append(" " + ontology.term_definition(current_language, code).item("text"))
+			if archetype_directory.selected_archetype.ontology.term_codes.has(code) then
+				Result.append(" " + archetype_directory.selected_archetype.ontology.term_definition(current_language, code).item("text"))
 			end
 			if in_technical_mode then
 				Result.append(" -- " + code)
@@ -907,7 +912,7 @@ feature {NONE} -- Implementation
 			create Result.make(0)
 			Result := an_inv.as_string
 			if not in_technical_mode then
-				Result := ontology.substitute_codes(Result, current_language)
+				Result := archetype_directory.selected_archetype.ontology.substitute_codes(Result, current_language)
 			end
 		end
 
@@ -918,8 +923,8 @@ feature {NONE} -- Implementation
 			invariants: ARRAYED_LIST[ASSERTION]
 			s: STRING
 		do
-			if adl_engine.archetype.has_invariants then
-				invariants := adl_engine.archetype.invariants
+			if archetype_directory.selected_archetype.has_invariants then
+				invariants := archetype_directory.selected_archetype.invariants
 				create a_ti_sub.make_with_text ("invariants:")
 				a_ti_sub.set_pixmap(pixmaps.item ("CADL_INVARIANT"))
 				gui_tree.extend (a_ti_sub)

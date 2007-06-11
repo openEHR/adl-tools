@@ -65,6 +65,9 @@ feature -- Access
 
 	last_op_fail_reason: STRING
 
+	file_timestamp: INTEGER
+			-- last marked change timestamp of file
+
 feature -- Status Report
 
 	has_file(a_file_name: STRING):BOOLEAN is
@@ -78,13 +81,13 @@ feature -- Status Report
 			Result := a_file.exists
 		end
 
-	file_changed: BOOLEAN is
-			-- has file changed in this epoch
+	file_changed (a_timestamp: INTEGER): BOOLEAN is
+			-- is a_timestamp older than file current modification date
 		local
 			a_file: PLAIN_TEXT_FILE
 		do
-			create a_file.make_open_read(current_directory + operating_environment.Directory_separator.out + current_file_name)
-			Result := a_file.date /= epoch
+			create a_file.make_open_read(current_full_path)
+			Result := a_file.date /= a_timestamp
 			a_file.close
 		end
 
@@ -104,13 +107,13 @@ feature -- Status Report
 
 feature -- Command
 
-	set_epoch is
+	set_file_timestamp is
 			-- set time mark for file changes to be compared to - read from modify date of current file
 		local
 			a_file: PLAIN_TEXT_FILE
 		do
-			create a_file.make_open_read(current_directory + operating_environment.Directory_separator.out + current_file_name)
-			epoch := a_file.date
+			create a_file.make_open_read(current_full_path)
+			file_timestamp := a_file.date
 			a_file.close
 		end
 
@@ -125,7 +128,7 @@ feature -- Command
 			has_byte_order_marker := False
 
 			if in_file.exists then
-				epoch := in_file.date
+				file_timestamp := in_file.date
 				in_file.open_read
 
 				from
@@ -189,7 +192,7 @@ feature -- Command
 				end
 				out_file.put_string(content)
 				out_file.close
-				epoch := out_file.date
+				file_timestamp := out_file.date
 			else
 				last_op_failed := True
 				last_op_fail_reason := "Write failed; file " + a_file_name + " does not exist"
@@ -227,11 +230,6 @@ feature -- Command
 		do
 			current_directory := a_dir
 		end
-
-feature {NONE} -- Implementation
-
-	epoch: INTEGER
-			-- last marked change timestamp of file
 
 invariant
 	file_content_attached: file_content /= Void

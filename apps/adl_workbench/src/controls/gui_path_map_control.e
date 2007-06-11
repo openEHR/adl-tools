@@ -20,12 +20,20 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_ADL_INTERFACE
+	SHARED_ARCHETYPE_DIRECTORY
+		export
+			{NONE} all
+		end
+
+	SHARED_ARCHETYPE_CONTEXT
 		export
 			{NONE} all
 		end
 
 	STRING_UTILITIES
+		export
+			{NONE} all
+		end
 
 create
 	make
@@ -74,8 +82,8 @@ feature -- Commands
 			mcl := path_list
 			mcl.wipe_out
 			mcl.set_column_titles(path_control_column_names)
-			p_paths := adl_interface.adl_engine.archetype.physical_paths
-			l_paths := adl_interface.adl_engine.archetype.logical_paths(current_language)
+			p_paths := archetype_directory.selected_archetype.physical_paths
+			l_paths := archetype_directory.selected_archetype.logical_paths(current_language)
 			from
 				p_paths.start
 				l_paths.start
@@ -83,9 +91,9 @@ feature -- Commands
 				p_paths.off
 			loop
 				create list_row
-		--		if adl_interface.archetype.definition.has_object_path (p_paths.item) then
-		--		if adl_interface.archetype.has_physical_path (p_paths.item) then
-					c_o := adl_interface.archetype.c_object_at_path (p_paths.item)
+		--		if archetype_directory.selected_archetype.definition.has_object_path (p_paths.item) then
+		--		if archetype_directory.selected_archetype.has_physical_path (p_paths.item) then
+					c_o := archetype_directory.selected_archetype.c_object_at_path (p_paths.item)
 					if c_o /= Void then
 						c_l_o ?= c_o
 						c_r ?= c_o

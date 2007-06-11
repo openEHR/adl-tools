@@ -11,9 +11,11 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class ADL_INTERFACE
+class ARCHETYPE_COMPILER
 
 inherit
+	SHARED_ARCHETYPE_DIRECTORY
+
 	SHARED_CONSTRAINT_MODEL_FACTORY
 		export
 			{NONE} all
@@ -65,12 +67,6 @@ inherit
 			{NONE} all
 		end
 
-	OG_PATH_TOOLS
-		export
-			{NONE} all
-			{ANY} valid_path_string, path_parse_error
-		end
-
 create
 	make
 
@@ -80,11 +76,13 @@ feature -- Initialisation
 		do
 			create status.make(0)
 			create adl_engine.make
-			create file_context.make
 			initialise_serialisers
 		end
 
 feature -- Access
+
+	target: ARCHETYPE_REPOSITORY_ARCHETYPE
+			-- archetype currently being processed by this instance of the compiler
 
 	openehr_version: STRING is
 			-- version of openEHR implem-dev repository containing
@@ -95,15 +93,6 @@ feature -- Access
 
 	adl_engine: ADL_ENGINE
 
-	file_context: FILE_CONTEXT
-			-- file handling context
-
-	working_directory: STRING is
-			-- current working directory of application
-		do
-			Result := file_context.current_directory
-		end
-
 	status: STRING
 			-- status of last operation
 
@@ -113,23 +102,7 @@ feature -- Access
 			Result := adl_engine.serialised_archetype
 		end
 
-	archetype: ARCHETYPE is
-		do
-			Result := adl_engine.archetype
-		end
-
-	ontology: ARCHETYPE_ONTOLOGY is
-		do
-			Result := adl_engine.archetype.ontology
-		end
-
 feature -- Status Report
-
-	archetype_source_loaded: BOOLEAN is
-			-- True if an ADL file has been opened and loaded
-		do
-			Result := adl_engine.source /= Void
-		end
 
 	parse_succeeded: BOOLEAN
 			-- True if parse has been successfully executed
@@ -137,34 +110,15 @@ feature -- Status Report
 	save_succeeded: BOOLEAN
 			-- True if last save operation was successful
 
-	archetype_available: BOOLEAN is
-		do
-			Result := adl_engine.archetype_available
-		end
-
 	archetype_valid: BOOLEAN is
 		do
 			Result := adl_engine.archetype.is_valid
-		end
-
-	file_changed_on_disk: BOOLEAN is
-			-- True if loaded archetype has changed on disk since last read;
-			-- To fix, call resync_file
-		do
-			Result := file_context.file_changed
 		end
 
 	exception_encountered: BOOLEAN
 			-- True if last operation caused an exception
 
 feature -- Commands
-
-	set_current_directory (a_dir: STRING) is
-		require
-			a_dir_valid: a_dir /= void and then not a_dir.is_empty
-		do
-			file_context.set_current_directory(a_dir)
-		end
 
 	create_new_archetype(a_im_originator, a_im_name, a_im_entity, a_primary_language: STRING) is
 			-- create a new tree and throw away previous state
@@ -188,80 +142,56 @@ feature -- Commands
 			retry
 		end
 
-	specialise_archetype(specialised_domain_concept: STRING) is
-			-- convert current archetype to specialised version of itself,
-			-- supplying a specialised domain concept string to go in the new archetype id
-			-- (which is a duplicate of the old one, with this concept string inserted)
+--	specialise_archetype(specialised_domain_concept: STRING) is
+--			-- convert current archetype to specialised version of itself,
+--			-- supplying a specialised domain concept string to go in the new archetype id
+--			-- (which is a duplicate of the old one, with this concept string inserted)
+--		require
+--			Archetype_available: archetype_available and then archetype_valid
+--			Concept_valid: specialised_domain_concept /= Void and then not specialised_domain_concept.is_empty
+--		do
+--			if not exception_encountered then
+--				adl_engine.specialise_archetype(specialised_domain_concept)
+--			else
+--				post_error(Current, "specialise_archetype", "specialise_archetype_e1", Void)
+--			end
+--			status.wipe_out
+--			status.append(billboard_content)
+--			clear_billboard
+--		rescue
+--			post_error(Current, "specialise_archetype", "report_exception", <<exception.out, exception_trace>>)
+--			exception_encountered := True
+--			retry
+--		end
+
+	set_target (ara: ARCHETYPE_REPOSITORY_ARCHETYPE) is
+			-- set target of the compiler to designated archetype
 		require
-			Archetype_available: archetype_available and then archetype_valid
-			Concept_valid: specialised_domain_concept /= Void and then not specialised_domain_concept.is_empty
+			descriptor_exists: ara /= Void
 		do
-			if not exception_encountered then
-				adl_engine.specialise_archetype(specialised_domain_concept)
-			else
-				post_error(Current, "specialise_archetype", "specialise_archetype_e1", Void)
-			end
-			status.wipe_out
-			status.append(billboard_content)
-			clear_billboard
-		rescue
-			post_error(Current, "specialise_archetype", "report_exception", <<exception.out, exception_trace>>)
-			exception_encountered := True
-			retry
+			reset
+			target := ara
 		end
 
-	open_adl_file(file_path: STRING) is
+	set_target_to_selected is
+			-- set target of the compiler to archetype currently selected in archetype_directory
 		require
-			file_path_valid: file_path /= Void and then not file_path.is_empty
+			archetype_available: archetype_directory.has_selected_archetype_descriptor
 		do
-			if not exception_encountered then
-				file_context.set_target(file_path)
-				resync_file
-			else
-				post_error(Current, "open_adl_file", "open_adl_file_e1", Void)
-			end
-			status.wipe_out
-			status.append(billboard_content)
-			clear_billboard
-		ensure
-			archetype_source_loaded or else not status.is_empty
-		rescue
-			post_error(Current, "open_adl_file", "report_exception", <<exception.out, exception_trace>>)
-			exception_encountered := True
-			retry
+			reset
+			target := archetype_directory.selected_archetype_descriptor
 		end
 
-	resync_file is
-			-- resync from disc
-		do
-			file_context.read_file
-
-			if not file_context.file_content.is_empty then
-				adl_engine.set_source (file_context.file_content)
-			else
-				post_error (Current, "resync_file", "general_error", <<file_context.last_op_fail_reason>>)
-			end
-		end
-
-	save_archetype(file_path, save_format: STRING) is
-			-- Save ADL to `file_path' in `save_format'.
-		require
-			archetype_available
-			file_path_valid: file_path /= Void and then not file_path.is_empty
-			save_format_valid: save_format /= Void and then has_archetype_serialiser_format(save_format)
+	save_archetype is
+			-- Save current target archetype to its file
 		do
 			if not exception_encountered then
 				status.wipe_out
 				save_succeeded := False
 				if archetype_valid then
-					adl_engine.serialise(save_format)
-					if file_context.file_writable(file_path) then
-						file_context.save_file(file_path, adl_engine.serialised_archetype)
-						post_info(Current, "save_archetype", "save_archetype_i1", <<save_format, current_language, file_path>>)
-						save_succeeded := True
-					else
-						post_error(Current, "save_archetype", "save_archetype_e1", <<file_path>>)
-					end
+				--	adl_engine.serialise(a)
+					target.save (adl_engine.serialised_archetype)
+					save_succeeded := True
 				else
 					post_error(Current, "save_archetype", "save_archetype_e2", <<adl_engine.archetype.errors>>)
 				end
@@ -279,59 +209,90 @@ feature -- Commands
 			retry
 		end
 
-	serialise_archetype(serialise_format: STRING) is
-			-- Serialise archetype into string; result available in serialised_archetype
+	save_archetype_as(a_full_path: STRING; save_format: STRING) is
+			-- Save current target archetype to `file_path' in `save_format'.
 		require
-			archetype_available
-			serialise_format_valid: serialise_format /= Void and then has_archetype_serialiser_format(serialise_format)
+			path_valid: a_full_path /= Void and then not a_full_path.is_empty
+			save_format_valid: save_format /= Void and then has_archetype_serialiser_format(save_format)
 		do
 			if not exception_encountered then
+				status.wipe_out
+				save_succeeded := False
 				if archetype_valid then
-					adl_engine.serialise(serialise_format)
+					adl_engine.serialise(save_format)
+					save_succeeded := True
+					target.save_as (a_full_path, adl_engine.serialised_archetype)
 				else
-					post_error(Current, "serialise_archetype", "serialise_archetype_e1", <<adl_engine.archetype.errors>>)
+					post_error(Current, "save_archetype", "save_archetype_e2", <<adl_engine.archetype.errors>>)
 				end
 			else
-				post_error(Current, "serialise_archetype", "serialise_archetype_e2", Void)
+				post_error(Current, "save_archetype", "save_archetype_e3", Void)
 			end
 			status.wipe_out
 			status.append(billboard_content)
 			clear_billboard
 		ensure
-			serialised_archetype /= Void or else not status.is_empty
+			save_succeeded or else not status.is_empty
 		rescue
-			post_error(Current, "serialise_archetype", "report_exception", <<exception.out, exception_trace>>)
+			post_error(Current, "save_archetype", "report_exception", <<exception.out, exception_trace>>)
 			exception_encountered := True
 			retry
 		end
 
+--	serialise_archetype(serialise_format: STRING) is
+--			-- Serialise archetype into string; result available in serialised_archetype
+--		require
+--			archetype_available
+--			serialise_format_valid: serialise_format /= Void and then has_archetype_serialiser_format(serialise_format)
+--		do
+--			if not exception_encountered then
+--				if archetype_valid then
+--					adl_engine.serialise(serialise_format)
+--				else
+--					post_error(Current, "serialise_archetype", "serialise_archetype_e1", <<adl_engine.archetype.errors>>)
+--				end
+--			else
+--				post_error(Current, "serialise_archetype", "serialise_archetype_e2", Void)
+--			end
+--			status.wipe_out
+--			status.append(billboard_content)
+--			clear_billboard
+--		ensure
+--			serialised_archetype /= Void or else not status.is_empty
+--		rescue
+--			post_error(Current, "serialise_archetype", "report_exception", <<exception.out, exception_trace>>)
+--			exception_encountered := True
+--			retry
+--		end
+
 	parse_archetype is
 			-- Called by `select_actions' of `parse'.
-		require
-			archetype_source_loaded
 		do
 			if not exception_encountered then
 				clear_billboard
 				parse_succeeded := False
+				adl_engine.set_source(target.source)
 				adl_engine.parse
 				if not adl_engine.archetype_available then
 					post_error(Current, "parse_archetype", "parse_archetype_e1", <<adl_engine.parse_error_text>>)
 				else
-					post_info(Current, "parse_archetype", "parse_archetype_i1", <<adl_engine.archetype_id.as_string>>)
+					target.set_compilation_context(adl_engine.archetype)
 
-					if current_language = Void or not ontology.has_language(current_language) then
-						set_current_language(archetype.original_language.code_string)
+					post_info(Current, "parse_archetype", "parse_archetype_i1", <<target.id.as_string>>)
+
+					if current_language = Void or not target.archetype.has_language (current_language) then
+						set_current_language(target.archetype.original_language.code_string)
 					end
 
-					if adl_engine.archetype.is_valid then
-						post_info(Current, "parse_archetype", "parse_archetype_i2", <<adl_engine.archetype_id.as_string>>)
+					if target.archetype.is_valid then
+						post_info(Current, "parse_archetype", "parse_archetype_i2", <<target.id.as_string>>)
 						parse_succeeded := True
 					else
-						post_error(Current, "parse_archetype", "parse_archetype_e2", <<adl_engine.archetype_id.as_string, adl_engine.archetype.errors>>)
+						post_error(Current, "parse_archetype", "parse_archetype_e2", <<target.id.as_string, target.archetype.errors>>)
 					end
 
-					if adl_engine.archetype.has_warnings then
-						post_warning(Current, "parse_archetype", "general", <<adl_engine.archetype.warnings>>)
+					if target.archetype.has_warnings then
+						post_warning(Current, "parse_archetype", "general", <<target.archetype.warnings>>)
 					end
 				end
 			else
@@ -349,7 +310,7 @@ feature -- Commands
 	set_archetype_readonly is
 			-- set readonly flag in archetype to enable optimisations like path extraction
 		do
-			archetype.set_readonly
+			target.archetype.set_readonly
 		end
 
 	reset is

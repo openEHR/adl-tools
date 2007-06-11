@@ -1,42 +1,92 @@
 indexing
 	component:   "openEHR Archetype Project"
 	description: "[
-			 Shared ADL_INTERFACE Object for C wrapper for ADL_INTERFACE.
-			 ]"
-	keywords:    "C wrapper"
+				 File-system adhoc repository of archetypes - where archetypes are not arranged as a tree
+				 but may appear anywhere. Items are added to the repository by the user, not by an automatic
+				 scan of a directory tree.
+				 ]"
+	keywords:    "ADL"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class SHARED_ADL_INTERFACE
+
+class ARCHETYPE_ADHOC_FILE_REPOSITORY
 
 inherit
-	SHARED_ARCHETYPE_CONTEXT
-
-feature {NONE} -- Implementation
-
-	adl_interface: ARCHETYPE_COMPILER is
-		once
-			create Result.make
+	SHARED_RESOURCES
+		export
+			{NONE} all
 		end
 
-	ontology: ARCHETYPE_ONTOLOGY is
+create
+	make
+
+feature -- Initialisation
+
+	make is
+			-- create with a sensible work path
 		do
-		--	Result := adl_interface.ontology
+			work_path := system_temp_file_directory.twin
+			create directory.make (0)
 		end
 
-	ontology_available: BOOLEAN is
+feature -- Access
+
+	work_path: STRING
+			-- current work path on file system, normally used to tell GUI or other
+			-- file searching method where to start looking
+
+	directory: DS_HASH_TABLE [ARCHETYPE_REPOSITORY_ARCHETYPE, STRING]
+			-- the directory of archetypes added to this adhoc repository
+			-- as a list of descriptors keyed by full path
+
+	file_context: FILE_CONTEXT
+			-- access to file system
+
+	source (an_arch_desc: ARCHETYPE_REPOSITORY_ARCHETYPE): STRING is
+			-- get source of archetype from repository medium
 		do
-			Result := ontology /= Void
+			file_context.set_target (an_arch_desc.full_path)
+			file_context.read_file
+			Result := file_context.file_content
+		end
+
+feature -- Status Report
+
+	valid_path(a_path: STRING): BOOLEAN is
+			-- validate path on medium
+		do
+			Result := (create {DIRECTORY}.make(a_path)).exists
+		end
+
+feature -- Modification
+
+	set_work_path (a_work_path: STRING) is
+			-- make with root path of file system
+		require
+			root_valid: a_work_path /= Void and then valid_path(a_work_path)
+		do
+			work_path := a_work_path
+		end
+
+	add_item (a_full_path: STRING) is
+			-- add an archetype to this repository
+		require
+			Path_valid: a_full_path /= Void and then valid_path(a_full_path)
+		do
+			-- TODO: implement this routine :-
+			-- create an ARCHETYPE_REPOSITORY_ARCHETYPE, include
+			-- empty ontological paths, since the latter are unknown
+			-- for archetypes found in ad hoc places like c:\temp, /tmp etc
 		end
 
 end
-
 
 
 --|
@@ -53,7 +103,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is adl_interface.e.
+--| The Original Code is adl_node_control.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

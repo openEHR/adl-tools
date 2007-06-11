@@ -1,15 +1,29 @@
 indexing
 	component:   "openEHR Archetype Project"
 	description: "[
-				 Archteype directory - a data structure containing a archetypes found in one or more
-				 file-system directories. In the structure, specialised archetypes are subordinates 
-				 of their parent archetypes, if the latter are known, else they are on the level of 
-				 the parent.
+				 Archteype directory - a data structure containing archetypes found in one or more
+				 physical repositories, each of which is on some medium, such as the file-system or
+				 a web-accessible repository. The structure of the directory is ontological, meaning
+				 that it expresses the classification structure of items in it. Each item has an 
+				 ontological path therefore, such as /openehr/ehr/entry/observation/lab_result. The 
+				 concept part of the archetype id becomes part of the path. Specialised archetypes are 
+				 thus subordinates of their parent archetypes, if the latter are known, else they are 
+				 on the level of the parent; e.g. the archetype openEHR-EHR-OBSERVATION.lab_result-lipids.v1
+				 will have a path such as /openehr/ehr/entry/observation/lab_result/lipids. Note that start
+				 of the path may vary due to the user having chosen a different root point for the
+				 source repositories that are merged into the directory.
 				 
-				 The overall effect is to combine one or more file-system repositories of archetypes, 
-				 e.g. as found in the openEHR SVN knowledge repoisitory, into one logical tree. The
-				 objects from each repository are marked so that calling routines can distinguish them
-				 e.g. to use different coloured icons on the screen.
+				 The directory is populated at startup, using the source repository paths stored in a
+				 configuration file or elsewhere.
+				 
+				 Archetypes can also be explicitly chosen by the user at runtime, outside of the 
+				 repositories, e.g. the user wants to look at an archetype sent to them in email and
+				 stored in /tmp. These archetypes are remembered on the 'adhoc_repository', and this 
+				 is also merged into the directory by 'grafting'.
+				 
+				 In the resulting directory, the archetype descriptors from each repository are marked
+				 so that calling routines can distinguish them e.g. to use different coloured icons on 
+				 the screen.
 				 ]"
 	keywords:    "ADL"
 	author:      "Thomas Beale"
@@ -48,6 +62,7 @@ feature -- Initialisation
 	make is
 		do
 			create source_repositories.make(0)
+			create adhoc_source_repository.make
 			clear
 		end
 
@@ -55,11 +70,25 @@ feature -- Access
 
 	source_repositories: DS_HASH_TABLE [ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP, STRING]
 			-- physical repositories of archetypes, keyed by logical id
+			-- Each such repository consists of archetypes arranged in a directory structure
+			-- mimicking an ontological structure, e.g. ehr/entry/observation etc
+			-- FIXME: this should be declared as
+			-- source_repositories: DS_HASH_TABLE [ARCHETYPE_INDEXED_REPOSITORY_I, STRING]
+			-- with the concrete types being instantiated at runtime, based on settings in
+			-- the .cfg file - i.e. have to determine from those settings what type of
+			-- repository it is - web, file system etc
+
+	adhoc_source_repository: ARCHETYPE_ADHOC_FILE_REPOSITORY
+			-- an additional 'repository' where archetypes may be found, but not necessarily classified
+			-- under any structure - used e.g. to represent the file local system where isolated archetypes
+			-- may be found, e.g. in c:\temp, /tmp or wherever. This repository is just a list of
+			-- archetypes keyed by path on the file system. They are not merged onto the directory
+			-- but 'grafted' - a simpler operation
 
 	directory: TWO_WAY_TREE [ARCHETYPE_REPOSITORY_ITEM]
-			-- result of merging all repositories in ontology structure (where specialised
+			-- result of merging all source repositories in ontology structure (where specialised
 			-- archetypes now appear as child nodes, rather than sibling nodes, as they do
-			-- in the file system)
+			-- in the file system), as well as grafting on adhoc archetypes
 
 	ontology_index: DS_HASH_TABLE [TWO_WAY_TREE [ARCHETYPE_REPOSITORY_ITEM], STRING]
 			-- index of archetypes, keyed by ontology path
@@ -67,15 +96,16 @@ feature -- Access
 			-- this will look like the relative directory path; for archetype nodes, this will be
 			-- the concatenation of the directory path and archetype specialisation parent path
 
-	selected_archetype: ARCHETYPE_REPOSITORY_ARCHETYPE
+	archetype_id_index: DS_HASH_TABLE [ARCHETYPE_REPOSITORY_ITEM, STRING]
+			-- index of archetype nodes keyed by archetype id
+
+	selected_archetype_descriptor: ARCHETYPE_REPOSITORY_ARCHETYPE
 			-- selected archetype node
 
-feature -- Status Report
-
-	has_selected_archetype: BOOLEAN is
-			-- True if an archetype has been selected
+	selected_archetype: ARCHETYPE is
+			-- currently selected archetype descriptor
 		do
-			Result := selected_archetype /= Void
+			Result := selected_archetype_descriptor.archetype
 		end
 
 feature -- Comparison
@@ -106,6 +136,7 @@ feature -- Commands
 	clear is
 		do
 			create ontology_index.make(0)
+			create archetype_id_index.make(0)
 			create directory.make(Void)
 		end
 
@@ -122,6 +153,20 @@ feature -- Commands
 				tree_do_all(source_repositories.item_for_iteration, agent merge_enter, agent merge_exit)
 				source_repositories.forth
 			end
+		end
+
+	graft_adhoc_items is
+			-- graft contents of adhoc repository into directory
+		do
+			-- TODO: to be implemented
+			-- iterate over the archetypes in the adhoc repository and graft them into
+			-- the directory in the appropriate places. To do this, use the archetype ids
+			-- to find archetypes in the same semantic category, i.e. to figure out the
+			-- ontological path; then figure out if the adhoc archetypes are specialisations of
+			-- archetypes found in the directory already; in which case graft them below existing
+			-- archetypes
+			-- NOTE: THIS FUNCTION HAS TO BE CALLABLE REPEATEDLY, SO IT NEEDS TO CHECK IF IT
+			-- HAS ALREADY GRAFTED SOMETHING IN AND ONLY GRAFT NEW ARCHETYPES!
 		end
 
 	put_repository(a_dir_name, an_id: STRING) is
@@ -151,18 +196,85 @@ feature -- Traversal
 
 feature -- Modification
 
-	set_selected_item(an_arch_repos_item: ARCHETYPE_REPOSITORY_ARCHETYPE) is
+	set_selected_archetype_descriptor(an_arch_repos_item: ARCHETYPE_REPOSITORY_ARCHETYPE) is
 			-- set `selected_archetype'
 		require
 			an_arch_repos_item /= Void
 		do
-			selected_archetype := an_arch_repos_item
+			selected_archetype_descriptor := an_arch_repos_item
 		end
 
-	clear_selected_item is
+	set_selected_archetype_descriptor_from_ontological_path(a_path: STRING) is
+			-- set `selected_archetype' using an ontological path like "/ehr/entry/observation/lab-result"
+		require
+			Path_valid: has_ontological_archetype_path(a_path)
+		do
+			selected_archetype_descriptor ?= ontology_index.item(a_path).item
+		end
+
+	set_selected_archetype_descriptor_from_archetype_id(an_id: STRING) is
+			-- set `selected_archetype' using an id of archetype
+		require
+			Path_valid: has_archetype_id(an_id)
+		do
+			selected_archetype_descriptor ?= archetype_id_index.item(an_id)
+		end
+
+	clear_selected_archetype_descriptor is
 			-- clear `selected_archetype'
 		do
-			selected_archetype := Void
+			selected_archetype_descriptor := Void
+		end
+
+	add_adhoc_item (a_full_path: STRING) is
+			-- add an archetype to the adhoc repository, merge it, and make it the selected archetype
+		require
+			Path_valid: a_full_path /= Void and then adhoc_source_repository.valid_path(a_full_path)
+		do
+			adhoc_source_repository.add_item (a_full_path)
+			graft_adhoc_items
+			set_selected_archetype_descriptor_from_archetype_id (adhoc_source_repository.directory.last.id.as_string)
+		ensure
+			has_selected_archetype_descriptor
+		end
+
+feature -- Status Report
+
+	has_selected_archetype_descriptor: BOOLEAN is
+			-- True if an archetype has been selected
+		do
+			Result := selected_archetype_descriptor /= Void
+		end
+
+	has_ontological_path (a_path: STRING):BOOLEAN is
+			-- check if 'a_path' exists in ontology; path will be something like
+			-- "/ehr/entry/observation/lab-result/lipids"
+		require
+			Path_exists: a_path /= Void
+		do
+			Result := ontology_index.has(a_path)
+		end
+
+	has_archetype_id (an_archetype_id: STRING):BOOLEAN is
+			-- check if an_id known in archetype index of directory
+		require
+			Archetype_id_exists: an_archetype_id /= Void
+		do
+			Result := archetype_id_index.has(an_archetype_id)
+		end
+
+	has_ontological_archetype_path (a_path: STRING):BOOLEAN is
+			-- check if 'a_path' exists in ontology and refers to an archetype; path will be something like
+			-- "/ehr/entry/observation/lab-result/lipids"
+		require
+			Path_exists: a_path /= Void
+		local
+			ara: ARCHETYPE_REPOSITORY_ARCHETYPE
+		do
+			if ontology_index.has(a_path) then
+				ara ?= ontology_index.item(a_path).item
+			end
+			Result := ara /= Void
 		end
 
 feature {NONE} -- Implementation
@@ -273,6 +385,7 @@ feature {NONE} -- Implementation
 	   					end
 					end
 					ontology_index.force(arch_node, ada.ontological_path)
+					archetype_id_index.force(ada, ada.id.as_string)
 				end
 			end
    			debug("arch_dir")

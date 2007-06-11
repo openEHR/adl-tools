@@ -33,17 +33,18 @@ feature {NONE} -- Implementation
 			pos: INTEGER
 		do
 			ontological_path := full_path.substring (root_path.count + 1, full_path.count)
+			ontological_path.replace_substring_all (os_directory_separator.out, Ontological_path_separator)
 
 			create ontological_parent_path.make(0)
 			if not ontological_path.is_empty then
-				pos := ontological_path.last_index_of(os_directory_separator, ontological_path.count)
+				pos := ontological_path.last_index_of(Ontological_path_separator.item (1), ontological_path.count)
 			end
 			if pos > 0 then
 				ontological_parent_path.append(ontological_path.substring (1, pos - 1))
 			end
 
 			if not ontological_path.is_empty then
-				pos := ontological_path.last_index_of(os_directory_separator, ontological_path.count)
+				pos := ontological_path.last_index_of(Ontological_path_separator.item(1), ontological_path.count)
 			end
 			if pos > 0 then
 				base_name := ontological_path.substring(pos+1, ontological_path.count)

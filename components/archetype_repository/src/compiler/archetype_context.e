@@ -1,42 +1,56 @@
 indexing
 	component:   "openEHR Archetype Project"
 	description: "[
-			 Shared ADL_INTERFACE Object for C wrapper for ADL_INTERFACE.
-			 ]"
-	keywords:    "C wrapper"
+				 Wrapper object for ARCHETYPE being parsed & compiled; provides a place
+				 to record intermediate prodcts of compilation. Also includes parent
+				 relationship between specialised archetypes.
+				 ]"
+	keywords:    "ADL"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class SHARED_ADL_INTERFACE
+
+class ARCHETYPE_CONTEXT
 
 inherit
-	SHARED_ARCHETYPE_CONTEXT
-
-feature {NONE} -- Implementation
-
-	adl_interface: ARCHETYPE_COMPILER is
-		once
-			create Result.make
+	ARCHETYPE_DEFINITIONS
+		export
+			{NONE} all
 		end
 
-	ontology: ARCHETYPE_ONTOLOGY is
+create
+	make
+	
+feature -- Initialisation
+
+	make(an_archetype: ARCHETYPE) is
+			-- create with a new differential form (i.e. source form) archetype
+		require
+			Archetype_exists: an_archetype /= Void
 		do
-		--	Result := adl_interface.ontology
+			differential := an_archetype
 		end
 
-	ontology_available: BOOLEAN is
-		do
-			Result := ontology /= Void
-		end
+feature -- Access
+
+	differential: ARCHETYPE
+			-- archetype representing differential structure with respect to parent archetype;
+			-- if this is a non-specialised archetype, then it is the same as the flat form, else
+			-- it is just the differences (like an OO source file for a subclass)
+
+	flat_form: ARCHETYPE
+			-- inheritance-flattened form of archetype
+
+	parent: ARCHETYPE
+			-- parent archetype if this one is specialised, or else Void
 
 end
-
 
 
 --|
@@ -53,10 +67,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is adl_interface.e.
+--| The Original Code is archetype_context.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2007
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):
