@@ -30,7 +30,7 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_ADL_INTERFACE
+	SHARED_ARCHETYPE_COMPILER
 		export
 			{NONE} all
 		end

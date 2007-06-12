@@ -13,7 +13,7 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class SHARED_ADL_INTERFACE
+class SHARED_ARCHETYPE_COMPILER
 
 inherit
 	SHARED_ARCHETYPE_CONTEXT
