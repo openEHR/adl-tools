@@ -76,6 +76,13 @@ feature -- Status Report
 		deferred
 		end
 
+	directory_valid(a_path: STRING): BOOLEAN is
+			-- validate the directory part of a path whose last section is a filename
+		require
+			a_path /= Void
+		deferred
+		end
+
 	file_changed_on_disk (a_path: STRING; a_timestamp: INTEGER): BOOLEAN is
 			-- True if loaded archetype has changed on disk since last read;
 			-- To fix, call resync_file
@@ -106,7 +113,7 @@ feature -- Commands
 			-- save a_text (representing archetype source) to a file
 		require
 			Text_valid: a_text /= Void and then not a_text.is_empty
-			Path_valid: a_full_path /= Void and then valid_path(a_full_path)
+			Path_valid: a_full_path /= Void and then directory_valid(a_full_path)
 		deferred
 		end
 

@@ -21,6 +21,10 @@ feature -- Definitions
 
 	Windows_OS_name: STRING is "windows"
 
+	Default_windows_temp_dir: STRING is "c:\temp"
+
+	Default_unix_temp_dir: STRING is "/tmp"
+
 feature -- Initialisation
 
 	initialise_resource_config_file_name(str:STRING) is
@@ -105,15 +109,21 @@ feature -- Environment
 			-- standard place for temporary files, normally /tmp on unix-like systems
 			-- and c:\temp on windows-like systems
 		local
-			tmp_dir_name: STRING
+			tmp_dir_env_var: STRING
 		once
-			create Result.make(0)
 			if os_type.has_substring(Windows_OS_name) then
-				tmp_dir_name := "temp"
+				tmp_dir_env_var := "TEMP"
+		   		Result := execution_environment.get(tmp_dir_env_var)
+		   		if Result = Void then
+	   				Result := Default_windows_temp_dir.twin
+	   			end
 			else
-				tmp_dir_name := "tmp"
+				tmp_dir_env_var := "TMP"
+		   		Result := execution_environment.get(tmp_dir_env_var)
+		   		if Result = Void then
+	   				Result := Default_unix_temp_dir.twin
+	   			end
 			end
-			Result.append(execution_environment.root_directory_name + tmp_dir_name)
 		end
 
 	resource_config_file_name: STRING is

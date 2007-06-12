@@ -78,6 +78,14 @@ feature -- Status Report
 			Result := repository.valid_path(a_path)
 		end
 
+	directory_valid(a_path: STRING): BOOLEAN is
+			-- validate the directory part of a path whose last section is a filename
+		require
+			a_path /= Void
+		do
+			Result := repository.directory_valid(a_path)
+		end
+
 feature {NONE} -- Implementation
 
 	make_ontological_paths is

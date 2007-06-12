@@ -92,7 +92,7 @@ feature -- Commands
 			-- save a_text (representing archetype source) to archetype source file
 		require
 			Text_valid: a_text /= Void and then not a_text.is_empty
-			Path_valid: a_full_path /= Void and then valid_path(a_full_path)
+			Path_valid: a_full_path /= Void and then directory_valid(a_full_path)
 		do
 			repository.save_as(a_full_path, a_text)
 		end

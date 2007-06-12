@@ -57,6 +57,15 @@ feature -- Status Report
 			Result := (create {RAW_FILE}.make(a_path)).exists
 		end
 
+	directory_valid(a_path: STRING): BOOLEAN is
+			-- validate the directory part of a path whose last section is a filename
+		local
+			dir_name: STRING
+		do
+			dir_name := a_path.substring(1, a_path.last_index_of (operating_environment.Directory_separator, a_path.count)-1)
+			Result := (create {DIRECTORY}.make(dir_name)).exists
+		end
+
 	file_changed_on_disk (a_path: STRING; a_timestamp: INTEGER): BOOLEAN is
 			-- True if loaded archetype has changed on disk since last read;
 			-- To fix, call resync_file
