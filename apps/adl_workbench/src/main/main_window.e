@@ -275,7 +275,7 @@ feature -- Commands
 	load_and_parse_archetype
 			-- Load and parse archetype currently selected in archetype_directory
 		do
-			adl_interface.set_target_to_selected
+			archetype_compiler.set_target_to_selected
 
 			if arch_notebook.selected_item = archetype_text_edit_area then
 				populate_archetype_text_edit_area
@@ -337,9 +337,9 @@ feature {NONE} -- Commands
 			-- Called by `select_actions' of `language_combo'.
 		do
 			if not language_combo.text.is_empty then
-				adl_interface.set_current_language (language_combo.text)
+				archetype_compiler.set_current_language (language_combo.text)
 
-				if adl_interface.parse_succeeded then
+				if archetype_compiler.parse_succeeded then
 					populate_view_controls
 				end
 			end
@@ -377,7 +377,7 @@ feature {NONE} -- Commands
 			save_dialog: EV_FILE_SAVE_DIALOG
 			name, format: STRING
 		do
-				if adl_interface.parse_succeeded then
+				if archetype_compiler.parse_succeeded then
 					ok_to_write := True
 					create save_dialog
 					save_dialog.set_file_name (archetype_directory.selected_archetype_descriptor.full_path)
@@ -422,8 +422,8 @@ feature {NONE} -- Commands
 						end
 
 						if ok_to_write then
-							adl_interface.save_archetype_as (name, format)
-							parser_status_area.append_text(adl_interface.status)
+							archetype_compiler.save_archetype_as (name, format)
+							parser_status_area.append_text(archetype_compiler.status)
 
 							if format.is_equal (archetype_file_extension) then
 								populate_archetype_directory
@@ -453,11 +453,11 @@ feature {NONE} -- Commands
 			set_pointer_style(wait_cursor)
 
 			clear_all_controls
-			adl_interface.parse_archetype
-			parser_status_area.append_text(adl_interface.status)
-			if adl_interface.parse_succeeded then
+			archetype_compiler.parse_archetype
+			parser_status_area.append_text(archetype_compiler.status)
+			if archetype_compiler.parse_succeeded then
 				populate_all_archetype_controls
-				adl_interface.set_archetype_readonly
+				archetype_compiler.set_archetype_readonly
 			else
 				populate_archetype_id
 			end
@@ -484,21 +484,21 @@ feature {NONE} -- Commands
 
 	node_map_shrink_tree_one_level is
 		do
-			if adl_interface.parse_succeeded then
+			if archetype_compiler.parse_succeeded then
 				node_map_control.shrink_one_level
 			end
 		end
 
 	node_map_expand_tree_one_level is
 		do
-			if adl_interface.parse_succeeded then
+			if archetype_compiler.parse_succeeded then
 				node_map_control.expand_one_level
 			end
 		end
 
 	node_map_toggle_expand_tree is
 		do
-			if adl_interface.parse_succeeded then
+			if archetype_compiler.parse_succeeded then
 				node_map_control.toggle_expand_tree
 			end
 		end
@@ -511,7 +511,7 @@ feature {NONE} -- Commands
 	on_tree_domain_selected
 			-- Hide technical details in `parsed_archetype_tree'.
 		do
-			if adl_interface.parse_succeeded then
+			if archetype_compiler.parse_succeeded then
 				node_map_control.set_domain_mode
 			end
 		end
@@ -519,7 +519,7 @@ feature {NONE} -- Commands
 	on_tree_technical_selected
 			-- Display technical details in `parsed_archetype_tree'.
 		do
-			if adl_interface.parse_succeeded then
+			if archetype_compiler.parse_succeeded then
 				node_map_control.set_technical_mode
 			end
 		end
@@ -527,7 +527,7 @@ feature {NONE} -- Commands
 	on_tree_flat_view_selected
 			-- Do not show the inherited/defined status of nodes in `parsed_archetype_tree'.
 		do
-			if adl_interface.parse_succeeded then
+			if archetype_compiler.parse_succeeded then
 				node_map_control.set_flat_view
 			end
 		end
@@ -535,7 +535,7 @@ feature {NONE} -- Commands
 	on_tree_inheritance_selected
 			-- Show the inherited/defined status of nodes in `parsed_archetype_tree'.
 		do
-			if adl_interface.parse_succeeded then
+			if archetype_compiler.parse_succeeded then
 				node_map_control.set_inheritance_view
 			end
 		end
@@ -822,10 +822,10 @@ feature {EV_DIALOG} -- Implementation
 
 	populate_archetype_id is
 		do
-			archetype_id.set_text (utf8 (adl_interface.adl_engine.archetype_id.as_string))
-			if adl_interface.adl_engine.archetype /= Void and then
-					adl_interface.adl_engine.archetype.is_specialised then
-				parent_archetype_id.set_text (utf8 (adl_interface.adl_engine.parent_archetype_id.as_string))
+			archetype_id.set_text (utf8 (archetype_compiler.adl_engine.archetype_id.as_string))
+			if archetype_compiler.adl_engine.archetype /= Void and then
+					archetype_compiler.adl_engine.archetype.is_specialised then
+				parent_archetype_id.set_text (utf8 (archetype_compiler.adl_engine.parent_archetype_id.as_string))
 			else
 				parent_archetype_id.set_text("")
 			end
@@ -851,7 +851,7 @@ feature {EV_DIALOG} -- Implementation
 			len, left_pos, right_pos, line_cnt: INTEGER
 		do
 			create s.make(0)
-			src := adl_interface.adl_engine.source
+			src := archetype_compiler.adl_engine.source
 			len := src.count
 			from
 				left_pos := 1

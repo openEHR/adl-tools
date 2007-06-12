@@ -217,7 +217,7 @@ feature -- Commands
 				if arch_item /= Void and checked then
 					gr.ensure_visible
 					gui.parent_app.process_events
-					adl_interface.reset
+					archetype_compiler.reset
 
 					from
 						tests.start
@@ -294,11 +294,11 @@ feature -- Tests
 			unused_at_codes, unused_ac_codes: ARRAYED_LIST [STRING]
 		do
 			Result := Test_failed
-			adl_interface.set_target (ara)
+			archetype_compiler.set_target (ara)
 
-			adl_interface.parse_archetype
+			archetype_compiler.parse_archetype
 
-			if adl_interface.parse_succeeded then
+			if archetype_compiler.parse_succeeded then
 				Result := Test_passed
 
 				if remove_unused_codes then
@@ -331,19 +331,19 @@ feature -- Tests
 		do
 			Result := Test_failed
 
-			if adl_interface.parse_succeeded then
+			if archetype_compiler.parse_succeeded then
 				-- FIXME: Sam doesn't want the html files to go in the same place as the adl files anymore
 				-- now they should go in the path html/adl, where html is a sibling directory of the main
 				-- 'adl' directory in the repository path; 'html/adl' means "the ADL form of HTML", since
 				-- there are other things in the html directory.
 				html_fname := ara.full_path.twin
 				html_fname.replace_substring(".html", html_fname.count - Archetype_file_extension.count, html_fname.count)
-				adl_interface.save_archetype_as(html_fname, "html")
+				archetype_compiler.save_archetype_as(html_fname, "html")
 
-				if adl_interface.save_succeeded then
+				if archetype_compiler.save_succeeded then
 					Result := Test_passed
 				else
-					test_status.append (adl_interface.status + "%N")
+					test_status.append (archetype_compiler.status + "%N")
 				end
 			end
 		end
@@ -355,18 +355,18 @@ feature -- Tests
 		do
 			Result := Test_failed
 
-			if adl_interface.parse_succeeded then
+			if archetype_compiler.parse_succeeded then
 				if overwrite then
-					adl_interface.save_archetype
+					archetype_compiler.save_archetype
 				else
 					new_adl_file_path := system_temp_file_directory + os_directory_separator.out + ara.archetype_file_name
-					adl_interface.save_archetype_as(new_adl_file_path, "adl")
+					archetype_compiler.save_archetype_as(new_adl_file_path, "adl")
 				end
 
-				if adl_interface.save_succeeded then
+				if archetype_compiler.save_succeeded then
 					Result := Test_passed
 				else
-					test_status.append (adl_interface.status + "%N")
+					test_status.append (archetype_compiler.status + "%N")
 				end
 			else
 				Result := Test_not_applicable
@@ -390,12 +390,12 @@ feature -- Tests
 			-- of an archetype from what is in its file
 			-- DO SOMETHING HERE
 
-			adl_interface.parse_archetype
+			archetype_compiler.parse_archetype
 
-			if adl_interface.parse_succeeded then
+			if archetype_compiler.parse_succeeded then
 				Result := Test_passed
 			else
-				test_status.append ("Parse failed; reason: " + adl_interface.status + "%N")
+				test_status.append ("Parse failed; reason: " + archetype_compiler.status + "%N")
 			end
 		end
 

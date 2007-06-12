@@ -20,7 +20,7 @@ inherit
 
 feature {NONE} -- Implementation
 
-	adl_interface: ARCHETYPE_COMPILER is
+	archetype_compiler: ARCHETYPE_COMPILER is
 		once
 			create Result.make
 		end
