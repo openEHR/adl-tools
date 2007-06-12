@@ -54,7 +54,7 @@ feature -- Status Report
 	valid_path(a_path: STRING): BOOLEAN is
 			-- validate path on medium
 		do
-			Result := (create {DIRECTORY}.make(a_path)).exists
+			Result := (create {RAW_FILE}.make(a_path)).exists
 		end
 
 	file_changed_on_disk (a_path: STRING; a_timestamp: INTEGER): BOOLEAN is

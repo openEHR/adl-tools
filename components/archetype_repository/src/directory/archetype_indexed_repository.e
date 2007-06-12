@@ -70,7 +70,7 @@ feature -- Access
 feature -- Status Report
 
 	valid_path(a_path: STRING): BOOLEAN is
-			-- validate path on medium
+			-- validate path to directory or file on medium
 		require
 			a_path /= Void
 		deferred
