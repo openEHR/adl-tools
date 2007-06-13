@@ -164,19 +164,6 @@ feature -- Commands
 			gui.overwrite_adl_rb.disable_select
 		end
 
-	item_select is
-			-- do something when an item is selected
-		local
-			arch_item: ARCHETYPE_REPOSITORY_ARCHETYPE
-		do
-			arch_item ?= grid.selected_rows.first.data
-
-			if arch_item /= Void then
-				has_selected_file := True
-				selected_file_path := arch_item.full_path
-			end
-		end
-
 	archetype_test_go_stop is
 			-- start or stop test run
 		do
@@ -192,7 +179,7 @@ feature -- Commands
 		local
 			arch_item: ARCHETYPE_REPOSITORY_ARCHETYPE
 			row_csr, col_csr: INTEGER
-			gr: EV_GRID_ROW
+			row: EV_GRID_ROW
 			gli: EV_GRID_LABEL_ITEM
 			res_label: STRING
 			checked: BOOLEAN
@@ -210,12 +197,12 @@ feature -- Commands
 			until
 				row_csr > grid.row_count or test_stop_requested
 			loop
-				gr := grid.row (row_csr)
-				arch_item ?= gr.item (1).data
-				checked ?= gr.item (2).data
+				row := grid.row (row_csr)
+				arch_item ?= row.item (1).data
+				checked ?= row.item (2).data
 
 				if arch_item /= Void and checked then
-					gr.ensure_visible
+					row.ensure_visible
 					gui.parent_app.process_events
 					adl_interface.reset
 
@@ -226,7 +213,7 @@ feature -- Commands
 					until
 						tests.off or test_result = Test_failed
 					loop
-						gr.set_item (col_csr, create {EV_GRID_LABEL_ITEM}.make_with_text ("processing..."))
+						row.set_item (col_csr, create {EV_GRID_LABEL_ITEM}.make_with_text ("processing..."))
 						gui.parent_app.process_events
 
 						create test_status.make_empty
@@ -246,7 +233,7 @@ feature -- Commands
 
 						create gli.make_with_text ("")
 						gli.set_pixmap (pixmaps [res_label])
-						gr.set_item (col_csr, gli)
+						row.set_item (col_csr, gli)
 
 						if not test_status.is_empty then
 							gui.test_status_area.append_text ("--------------- " + arch_item.id.as_string + " -----------------%N" + test_status)
@@ -263,7 +250,7 @@ feature -- Commands
 					gui.parent_app.process_events
 				end
 
-				set_checkbox (gr.item (2), False)
+				set_checkbox (row.item (2), False)
 				row_csr := row_csr + 1
 			end
 
@@ -457,16 +444,14 @@ feature {NONE} -- Implementation
 			gli: EV_GRID_LABEL_ITEM
    			ada: ARCHETYPE_REPOSITORY_ARCHETYPE
    			adf: ARCHETYPE_REPOSITORY_FOLDER
-   			gr: EV_GRID_ROW
+   			row: EV_GRID_ROW
  			col_csr: INTEGER
   		do
-  			-- add a new row to the current item in the grid row stack
- 			grid_row_stack.item.insert_subrow (grid_row_stack.item.subrow_count + 1)
-
- 			-- now get a ref to the newly added subrow
-			gr := grid_row_stack.item.subrow (grid_row_stack.item.subrow_count)
-			add_checkbox (gr)
-
+  			row := grid_row_stack.item
+  			row.collapse_actions.extend (agent step_to_visible_parent_of_selected_row)
+  			row.insert_subrow (row.subrow_count + 1)
+			row := row.subrow (row.subrow_count)
+			add_checkbox (row)
   			adf ?= an_item
 
 			if adf /= Void then
@@ -474,7 +459,7 @@ feature {NONE} -- Implementation
  				create gli.make_with_text (utf8 (adf.base_name))
 				gli.set_pixmap (pixmaps ["file_folder_" + adf.group_id.out])
 				gli.set_data (adf)
-				gr.set_item (1, gli)
+				row.set_item (1, gli)
 			else
 				ada ?= an_item
 
@@ -489,23 +474,22 @@ feature {NONE} -- Implementation
 						gli.set_pixmap (pixmaps ["archetype_" + ada.group_id.out])
 					end
 
-					gr.set_item (1, gli)
+					row.set_item (1, gli)
 
-					-- test columns
 					from
 						tests.start
 						col_csr := First_test_col
 					until
 						tests.off
 					loop
-						gr.set_item (col_csr, create {EV_GRID_LABEL_ITEM}.make_with_text ("?"))
+						row.set_item (col_csr, create {EV_GRID_LABEL_ITEM}.make_with_text ("?"))
 						tests.forth
 						col_csr := col_csr + 1
 					end
 				end
    			end
 
-			grid_row_stack.extend (gr)
+			grid_row_stack.extend (row)
 		end
 
 	populate_gui_tree_node_exit (an_item: ARCHETYPE_REPOSITORY_ITEM) is
@@ -658,7 +642,7 @@ feature {NONE} -- Implementation
 		end
 
 	scroll_to_row (index: INTEGER)
-			-- Scroll `grid' so the row at `index' is at the top if Ctrl is held down, else selecting it.
+			-- Scroll `grid' so the row at `index' is at the top.
 		local
 			i: INTEGER
 		do
@@ -667,7 +651,7 @@ feature {NONE} -- Implementation
 		end
 
 	step_to_row (index: INTEGER)
-			-- Scroll `grid' so the row at `index' is at the top if Ctrl is held down, else selecting it.
+			-- Select the row at `index'.
 		local
 			i: INTEGER
 			row: EV_GRID_ROW
@@ -676,7 +660,7 @@ feature {NONE} -- Implementation
 				i := index.max (1).min (grid.row_count)
 				row := grid.row (i)
 			until
-				row.parent_row = Void
+				row = Void
 			loop
 				if not row.is_expanded then
 					i := row.index
@@ -685,18 +669,31 @@ feature {NONE} -- Implementation
 				row := row.parent_row
 			end
 
-			grid.remove_selection
 			row := grid.row (i)
-			row.item (1).enable_select
-			row.ensure_visible
+
+			if not row.item (1).is_selected then
+				grid.remove_selection
+				row.item (1).enable_select
+				row.ensure_visible
+			end
 		end
 
-	expand_tree (row: EV_GRID_ROW) is
+	step_to_visible_parent_of_selected_row
+			-- Select `row' or one its parents, such that the selected row is not hidden within a collapsed parent.
+		do
+			if not grid.selected_items.is_empty then
+				step_to_row (grid.selected_items.first.row.index)
+			end
+		end
+
+	expand_tree (row: EV_GRID_ROW)
 			-- Expand `row' and all of its sub-rows, recursively.
+		require
+			row_attached: row /= Void
 		local
 			i: INTEGER
 		do
-			if row.subrow_count > 0 then
+			if row.is_expandable then
 				row.expand
 
 				from
@@ -708,25 +705,29 @@ feature {NONE} -- Implementation
 					i := i + 1
 				end
 			end
+		ensure
+			row_expanded: row.is_expandable implies row.is_expanded
 		end
 
-	collapse_tree (row: EV_GRID_ROW) is
+	collapse_tree (row: EV_GRID_ROW)
 			-- Collapse `row' and all of its sub-rows, recursively.
+		require
+			row_attached: row /= Void
 		local
 			i: INTEGER
 		do
-			if row.subrow_count > 0 then
-				from
-					i := 1
-				until
-					i > row.subrow_count
-				loop
-					collapse_tree (row.subrow (i))
-					i := i + 1
-				end
-
-				row.collapse
+			from
+				i := 1
+			until
+				i > row.subrow_count
+			loop
+				collapse_tree (row.subrow (i))
+				i := i + 1
 			end
+
+			row.collapse
+		ensure
+			row_collapsed: not row.is_expanded
 		end
 
 	set_archetype_test_go_bn_icon is
