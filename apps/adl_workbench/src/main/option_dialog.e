@@ -33,9 +33,11 @@ feature {NONE} -- Initialization
 			-- (due to regeneration of implementation class)
 			-- can be added here.
 		do
+			option_dialog_cancel_button.select_actions.extend (agent hide)
 			set_default_cancel_button (option_dialog_cancel_button)
 			set_default_push_button (option_dialog_ok_button)
-			show_actions.extend(agent option_dialog_editor_command_edit.set_focus)
+			show_actions.extend (agent option_dialog_editor_command_text.set_focus)
+			option_dialog_editor_command_text.focus_in_actions.extend (agent on_select_all (option_dialog_editor_command_text))
 			populate_controls
 		end
 
@@ -43,51 +45,53 @@ feature -- Access
 
 	main_window: MAIN_WINDOW
 			-- main window of app
-			
+
 feature -- Modification
 
-	set_main_window(a_mw: MAIN_WINDOW) is
+	set_main_window (a_mw: MAIN_WINDOW) is
 			-- set main_window
 		require
 			a_mw /= Void
 		do
 			main_window := a_mw
 		end
-		
+
 feature {NONE} -- Implementation
 
 	populate_controls is
 			-- set dialog values from shared settings
 		do
-			option_dialog_editor_command_edit.set_text(editor_command)
+			option_dialog_editor_command_text.set_text (editor_command)
+
 			if expand_node_tree then
 				option_dialog_node_tree_expand_cb.enable_select
 			else
 				option_dialog_node_tree_expand_cb.disable_select
 			end
 		end
-		
+
 	option_dialog_ok is
 			-- Called by `select_actions' of `option_dialog_ok_button'.
 		do
 			hide
-			set_editor_command(option_dialog_editor_command_edit.text)
-			set_expand_node_tree(option_dialog_node_tree_expand_cb.is_selected)
+			set_editor_command (option_dialog_editor_command_text.text)
+			set_expand_node_tree (option_dialog_node_tree_expand_cb.is_selected)
 			save_resources
-			main_window.update_status_area("wrote config file " + Resource_config_file_name + "%N")
+			main_window.update_status_area ("wrote config file " + Resource_config_file_name + "%N")
 		end
-	
-	option_dialog_cancel is
-			-- Called by `select_actions' of `option_dialog_cancel_button'.
-		do
-			hide
-		end
-	
+
 	get_editor_command_directory is
 			-- Called by `select_actions' of `option_dialog_editor_command_button'.
 		do
-			option_dialog_editor_command_edit.set_text(get_file(editor_command, Current))
+			option_dialog_editor_command_text.set_text (get_file (editor_command, Current))
 		end
-		
-end
 
+	on_select_all (text: EV_TEXT_FIELD)
+			-- Select all text in  `text', if any.
+		do
+			if text /= Void and then text.text_length > 0 then
+				text.select_all
+			end
+		end
+
+end

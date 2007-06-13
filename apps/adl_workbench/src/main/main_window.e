@@ -934,7 +934,7 @@ feature {NONE} -- Standard Windows behaviour that EiffelVision ought to be manag
 				loop
 					Result ?= container
 					container := container.parent
-end
+				end
 			end
 		end
 
