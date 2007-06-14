@@ -42,6 +42,7 @@ feature {NONE} -- Initialization
 			-- (due to regeneration of implementation class)
 			-- can be added here.
 		do
+			set_icon_pixmap (adl_workbench_ico)
 			repository_dialog_cancel_button.select_actions.extend (agent hide)
 			set_default_cancel_button (repository_dialog_cancel_button)
 			set_default_push_button (repository_dialog_ok_button)

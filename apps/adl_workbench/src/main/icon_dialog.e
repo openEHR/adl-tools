@@ -26,6 +26,7 @@ feature {NONE} -- Initialization
 			-- (due to regeneration of implementation class)
 			-- can be added here.
 		do
+			set_icon_pixmap (adl_workbench_ico)
 			ok_button.select_actions.extend (agent hide)
 			set_default_cancel_button (ok_button)
 			set_default_push_button (ok_button)
