@@ -1,7 +1,7 @@
 indexing
 	component:   "openEHR Archetype Project"
 	description: "[
-				 File-system adhoc repository of archetypes - where archetypes are not arranged as a tree
+				 File-system ad hoc repository of archetypes - where archetypes are not arranged as a tree
 				 but may appear anywhere. Items are added to the repository by the user, not by an automatic
 				 scan of a directory tree.
 				 ]"
@@ -59,10 +59,10 @@ feature -- Access
 
 feature -- Status Report
 
-	valid_path(a_path: STRING): BOOLEAN is
+	valid_path (a_path: STRING): BOOLEAN is
 			-- validate path on medium
 		do
-			Result := (create {DIRECTORY}.make(a_path)).exists
+			Result := (create {RAW_FILE}.make(a_path)).exists
 		end
 
 feature -- Modification
