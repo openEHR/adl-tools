@@ -19,9 +19,7 @@ inherit
 
 feature -- Definitions
 
-	Windows_OS_name: STRING is "windows"
-
-	Default_windows_temp_dir: STRING is "c:\temp"
+	Default_windows_temp_dir: STRING is "C:\Temp"
 
 	Default_unix_temp_dir: STRING is "/tmp"
 
@@ -106,24 +104,30 @@ feature -- Environment
 		end
 
 	system_temp_file_directory: STRING is
-			-- standard place for temporary files, normally /tmp on unix-like systems
-			-- and c:\temp on windows-like systems
-		local
-			tmp_dir_env_var: STRING
+			-- Standard place for temporary files.
+			-- By default /tmp on unix-like systems and C:\Temp on windows-like systems.
+			-- Windows would normally be "C:\Documents and Settings\(user)\Local Settings\Temp".
 		once
-			if os_type.has_substring(Windows_OS_name) then
-				tmp_dir_env_var := "TEMP"
-		   		Result := execution_environment.get(tmp_dir_env_var)
-		   		if Result = Void then
-	   				Result := Default_windows_temp_dir.twin
-	   			end
-			else
-				tmp_dir_env_var := "TMP"
-		   		Result := execution_environment.get(tmp_dir_env_var)
-		   		if Result = Void then
-	   				Result := Default_unix_temp_dir.twin
-	   			end
+			Result := execution_environment.get ("TMP")
+
+			if Result = Void or else Result.is_empty then
+				Result := execution_environment.get ("TEMP")
 			end
+
+			if Result = Void or else Result.is_empty then
+				if operating_system.is_windows then
+					Result := default_windows_temp_dir.twin
+				else
+					Result := default_unix_temp_dir.twin
+				end
+			end
+
+			Result.prune_all_trailing (os_directory_separator)
+			Result.append_character (os_directory_separator)
+		ensure
+			attached: Result /= Void
+			not_empty: not Result.is_empty
+			ends_with_directory_separator: Result @ Result.count = os_directory_separator
 		end
 
 	resource_config_file_name: STRING is

@@ -359,7 +359,7 @@ feature -- Tests
 				if overwrite then
 					archetype_compiler.save_archetype
 				else
-					new_adl_file_path := system_temp_file_directory + os_directory_separator.out + ara.archetype_file_name
+					new_adl_file_path := system_temp_file_directory + ara.archetype_file_name
 					archetype_compiler.save_archetype_as(new_adl_file_path, "adl")
 				end
 
@@ -383,7 +383,7 @@ feature -- Tests
 			if overwrite then
 				new_adl_file_path := ara.full_path
 			else
-				new_adl_file_path := system_temp_file_directory + os_directory_separator.out + ara.archetype_file_name
+				new_adl_file_path := system_temp_file_directory + ara.archetype_file_name
 			end
 
 			-- FIXME: these are the right paths, but we don't yet have a way of overriding the source
@@ -410,7 +410,7 @@ feature -- Tests
 			if not overwrite then
 				orig_arch_source := ara.source
 
-				new_adl_file_path := system_temp_file_directory + os_directory_separator.out + ara.archetype_file_name
+				new_adl_file_path := system_temp_file_directory + ara.archetype_file_name
 				-- FIXME: DO SOMETIHNG HERE TO OPEN THE NEW FILE
 				-- new_arch_source := adl_interface.adl_engine.source
 
