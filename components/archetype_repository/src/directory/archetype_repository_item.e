@@ -27,14 +27,14 @@ inherit
 
 feature -- initialisation
 
-	make(a_root_path, a_full_path: STRING; a_group_id: INTEGER; a_repository: ARCHETYPE_INDEXED_REPOSITORY_I) is
+	make(a_root_path, a_full_path: STRING; a_group_id: INTEGER; a_repository: ARCHETYPE_REPOSITORY_I) is
 			-- make using root-path to archetype repository tree, full path to directory or archetype file
 			-- and group id, to distinguish repository with respect to others in ARCHETYPE_DIRECTORY
 		require
-			Root_path_valid: a_root_path /= Void and then a_repository.valid_path(a_root_path)
+			Repository_exists: a_repository /= Void
+			Root_path_valid: a_repository.is_valid_path (a_root_path)
 			Full_path_valid: a_full_path /= Void and then a_full_path.substring_index (a_root_path, 1) = 1
 			Group_id_valid: a_group_id > 0
-			Repository_exists: a_repository /= Void
 		do
 			root_path := a_root_path
 			full_path := a_full_path
@@ -65,25 +65,21 @@ feature -- Access
 			-- id of repository containing this item (e.g. it might be in the reference tree
 			-- or in another repository designed to be overlaid on the reference)
 
-	repository: ARCHETYPE_INDEXED_REPOSITORY_I
+	repository: ARCHETYPE_REPOSITORY_I
 			-- the repository on which this item is found
 
 feature -- Status Report
 
-	valid_path(a_path: STRING): BOOLEAN is
-			-- validate path on medium
-		require
-			a_path /= Void
+	is_valid_path (path: STRING): BOOLEAN is
+			-- Is `path' a valid, existing directory or file on `repository'?
 		do
-			Result := repository.valid_path(a_path)
+			Result := repository.is_valid_path (path)
 		end
 
-	directory_valid(a_path: STRING): BOOLEAN is
-			-- validate the directory part of a path whose last section is a filename
-		require
-			a_path /= Void
+	is_valid_directory_part (path: STRING): BOOLEAN is
+			-- Is the directory part of `path', whose last section is a filename, valid on `repository'?
 		do
-			Result := repository.directory_valid(a_path)
+			Result := repository.is_valid_directory_part (path)
 		end
 
 feature {NONE} -- Implementation
@@ -94,7 +90,10 @@ feature {NONE} -- Implementation
 		end
 
 invariant
-	Valid_path: full_path /= Void and then not full_path.is_empty
+	repository_attached: repository /= Void
+	root_path_valid: is_valid_path (root_path)
+	full_path_valid: full_path /= Void and then not full_path.is_empty
+	group_id_valid: group_id > 0
 
 end
 

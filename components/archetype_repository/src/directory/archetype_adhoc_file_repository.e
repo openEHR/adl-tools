@@ -11,26 +11,23 @@ indexing
 	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
+	file:        "$URL: $"
 	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	last_change: "$LastChangedDate: $"
 
 
 class ARCHETYPE_ADHOC_FILE_REPOSITORY
 
 inherit
-	SHARED_RESOURCES
-		export
-			{NONE} all
-		end
+	ARCHETYPE_FILE_REPOSITORY_IMP
 
 create
 	make
 
-feature -- Initialisation
+feature {NONE} -- Initialisation
 
-	make is
-			-- create with a sensible work path
+	make
+			-- Create with a sensible default `work_path'.
 		do
 			work_path := system_temp_file_directory.twin
 			create directory.make (0)
@@ -38,53 +35,59 @@ feature -- Initialisation
 
 feature -- Access
 
-	work_path: STRING
-			-- current work path on file system, normally used to tell GUI or other
-			-- file searching method where to start looking
+	work_path: STRING assign set_work_path
+			-- The current work path on the file system, normally used to tell GUI or other
+			-- file searching method where to start looking.
 
 	directory: DS_HASH_TABLE [ARCHETYPE_REPOSITORY_ARCHETYPE, STRING]
-			-- the directory of archetypes added to this adhoc repository
-			-- as a list of descriptors keyed by full path
+			-- The directory of archetypes added to this ad hoc repository
+			-- as a list of descriptors keyed by full path.
 
-	file_context: FILE_CONTEXT
-			-- access to file system
-
-	source (an_arch_desc: ARCHETYPE_REPOSITORY_ARCHETYPE): STRING is
-			-- get source of archetype from repository medium
-		do
-			file_context.set_target (an_arch_desc.full_path)
-			file_context.read_file
-			Result := file_context.file_content
-		end
+	group_id: INTEGER = 1
+			-- TODO: Figure out how to implement this properly!
 
 feature -- Status Report
 
-	valid_path (a_path: STRING): BOOLEAN is
-			-- validate path on medium
+	is_valid_work_path (path: STRING): BOOLEAN
+			-- Is `path' a valid value for `work_path'?
 		do
-			Result := (create {RAW_FILE}.make(a_path)).exists
+			if path /= Void and then not path.is_empty then
+				Result := (create {DIRECTORY}.make (path)).exists and path @ path.count = os_directory_separator
+			end
 		end
 
 feature -- Modification
 
-	set_work_path (a_work_path: STRING) is
-			-- make with root path of file system
+	set_work_path (path: STRING)
+			-- Set `work_path'.
 		require
-			root_valid: a_work_path /= Void and then valid_path(a_work_path)
+			path_attached: path /= Void
+			path_not_empty: is_valid_work_path (path)
 		do
-			work_path := a_work_path
+			work_path := path.twin
+		ensure
+			work_path_set: work_path.is_equal (path)
+			work_path_not_same: work_path /= path
 		end
 
-	add_item (a_full_path: STRING) is
-			-- add an archetype to this repository
+	add_item (full_path: STRING)
+			-- Add the archetype designated by `full_path' to this repository.
 		require
-			Path_valid: a_full_path /= Void and then valid_path(a_full_path)
+			path_valid: is_valid_path (full_path)
+			path_under_work_path: full_path.substring_index (work_path, 1) = 1
+		local
+			ara: ARCHETYPE_REPOSITORY_ARCHETYPE
 		do
+			create ara.make (work_path, full_path, group_id, Void, False, Current)
 			-- TODO: implement this routine :-
-			-- create an ARCHETYPE_REPOSITORY_ARCHETYPE, include
-			-- empty ontological paths, since the latter are unknown
+			-- Create the above ARCHETYPE_REPOSITORY_ARCHETYPE with a proper ARCHETYPE_ID.
+			-- Include empty ontological paths, since the latter are unknown
 			-- for archetypes found in ad hoc places like c:\temp, /tmp etc
 		end
+
+invariant
+	work_path_valid: is_valid_work_path (work_path)
+	directory_attached: directory /= Void
 
 end
 

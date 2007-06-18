@@ -25,15 +25,13 @@ create
 
 feature -- Initialisation
 
-	make(a_root_path, a_full_path: STRING; a_group_id: INTEGER; an_id: ARCHETYPE_ID; is_specialised_flag: BOOLEAN; a_repository: ARCHETYPE_INDEXED_REPOSITORY_I) is
+	make (a_root_path, a_full_path: STRING; a_group_id: INTEGER; an_id: ARCHETYPE_ID; is_specialised_flag: BOOLEAN; a_repository: ARCHETYPE_REPOSITORY_I) is
 		require
-			Root_path_valid: a_root_path /= Void and then a_repository.valid_path(a_root_path)
+			Repository_exists: a_repository /= Void
+			Root_path_valid: a_repository.is_valid_path (a_root_path)
 			Full_path_valid: a_full_path /= Void and then a_full_path.substring_index (a_root_path, 1) = 1
 			Group_id_valid: a_group_id > 0
 			Id_valid: an_id /= Void
-			Repository_exists: a_repository /= Void
-		local
-			arch_rel_path: STRING
 		do
 			id := an_id
 			is_specialised := is_specialised_flag
@@ -72,10 +70,9 @@ feature -- Status Report
 			-- True if this archetype is a specialisation of another archetype
 
 	file_changed_on_disk: BOOLEAN is
-			-- True if loaded archetype has changed on disk since last read;
-			-- To fix, call resync_file
+			-- Has the loaded archetype designated by `path' changed on disk since last read?
 		do
-			Result := repository.file_changed_on_disk(full_path, source_timestamp)
+			Result := repository.has_file_changed_on_disk (full_path, source_timestamp)
 		end
 
 feature -- Commands
@@ -92,9 +89,9 @@ feature -- Commands
 			-- save a_text (representing archetype source) to archetype source file
 		require
 			Text_valid: a_text /= Void and then not a_text.is_empty
-			Path_valid: a_full_path /= Void and then directory_valid(a_full_path)
+			Path_valid: is_valid_directory_part (a_full_path)
 		do
-			repository.save_as(a_full_path, a_text)
+			repository.save_as (a_full_path, a_text)
 		end
 
 	set_compilation_context (a_source_archetype: ARCHETYPE) is

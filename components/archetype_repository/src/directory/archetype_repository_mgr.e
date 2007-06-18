@@ -2,7 +2,7 @@ indexing
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Archteype directory - a data structure containing archetypes found in one or more
-				 physical repositories, each of which is on some medium, such as the file-system or
+				 physical repositories, each of which is on some medium, such as the file system or
 				 a web-accessible repository. The structure of the directory is ontological, meaning
 				 that it expresses the classification structure of items in it. Each item has an 
 				 ontological path therefore, such as /openehr/ehr/entry/observation/lab_result. The 
@@ -22,7 +22,7 @@ indexing
 				 is also merged into the directory by 'grafting'.
 				 
 				 In the resulting directory, the archetype descriptors from each repository are marked
-				 so that calling routines can distinguish them e.g. to use different coloured icons on 
+				 so that calling routines can distinguish them, e.g. to use different coloured icons on 
 				 the screen.
 				 ]"
 	keywords:    "ADL"
@@ -31,9 +31,9 @@ indexing
 	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
+	file:        "$URL: $"
 	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	last_change: "$LastChangedDate: $"
 
 
 class ARCHETYPE_DIRECTORY
@@ -156,8 +156,9 @@ feature -- Commands
 		end
 
 	graft_adhoc_items is
-			-- graft contents of adhoc repository into directory
+			-- Graft the contents of `adhoc_source_repository' into `directory'.
 		do
+
 			-- TODO: to be implemented
 			-- iterate over the archetypes in the adhoc repository and graft them into
 			-- the directory in the appropriate places. To do this, use the archetype ids
@@ -226,12 +227,13 @@ feature -- Modification
 			selected_archetype_descriptor := Void
 		end
 
-	add_adhoc_item (a_full_path: STRING) is
-			-- add an archetype to the adhoc repository, merge it, and make it the selected archetype
+	add_adhoc_item (full_path: STRING) is
+			-- Add the archetype designated by `full_path' to the ad hoc repository.
+			-- Then merge it and make it the selected archetype.
 		require
-			Path_valid: a_full_path /= Void and then adhoc_source_repository.valid_path(a_full_path)
+			path_valid: adhoc_source_repository.is_valid_path (full_path)
 		do
-			adhoc_source_repository.add_item (a_full_path)
+			adhoc_source_repository.add_item (full_path)
 			graft_adhoc_items
 			set_selected_archetype_descriptor_from_archetype_id (adhoc_source_repository.directory.last.id.as_string)
 		ensure
@@ -406,6 +408,7 @@ feature {NONE} -- Implementation
 
 invariant
 	Repositories_valid: source_repositories /= Void
+	adhoc_source_repository_valid: adhoc_source_repository /= Void
 
 end
 

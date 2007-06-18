@@ -9,26 +9,17 @@ indexing
 	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
+	file:        "$URL: $"
 	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	last_change: "$LastChangedDate: $"
 
 
 deferred class ARCHETYPE_INDEXED_REPOSITORY_I
 
 inherit
-	SHARED_ARCHETYPE_CONTEXT
-		export
-			{NONE} all
-			{ANY} current_language, set_current_language
-		end
+	ARCHETYPE_REPOSITORY_I
 
 	ARCHETYPE_DEFINITIONS
-		export
-			{NONE} all
-		end
-
-	MESSAGE_BILLBOARD
 		export
 			{NONE} all
 		end
@@ -38,7 +29,7 @@ feature -- Initialisation
 	make(a_dir_name: STRING; a_group_id: INTEGER) is
 			-- make based on valid directory path
 		require
-			Dir_name_valid: a_dir_name /= Void and then valid_path(a_dir_name)
+			dir_name_valid: is_valid_path (a_dir_name)
 		do
 			root_path := a_dir_name
 			current_group_id := a_group_id
@@ -52,42 +43,6 @@ feature -- Access
 
 	directory: TWO_WAY_TREE [ARCHETYPE_REPOSITORY_ITEM]
 			-- tree-structured directory of folders and archetypes
-
-	source (a_full_path: STRING): STRING is
-			-- get source of archetype from repository medium
-		require
-			path_valid: a_full_path /= Void
-		deferred
-		ensure
-			Result_exists: Result /= Void
-		end
-
-	source_timestamp: INTEGER is
-			-- modification time of last opened file as an integer, for comparison purposes
-		deferred
-		end
-
-feature -- Status Report
-
-	valid_path(a_path: STRING): BOOLEAN is
-			-- validate path to directory or file on medium
-		require
-			a_path /= Void
-		deferred
-		end
-
-	directory_valid(a_path: STRING): BOOLEAN is
-			-- validate the directory part of a path whose last section is a filename
-		require
-			a_path /= Void
-		deferred
-		end
-
-	file_changed_on_disk (a_path: STRING; a_timestamp: INTEGER): BOOLEAN is
-			-- True if loaded archetype has changed on disk since last read;
-			-- To fix, call resync_file
-		deferred
-		end
 
 feature -- Commands
 
@@ -109,14 +64,6 @@ feature -- Commands
 			directory := build_directory(root_path)
 		end
 
-	save_as(a_full_path, a_text: STRING) is
-			-- save a_text (representing archetype source) to a file
-		require
-			Text_valid: a_text /= Void and then not a_text.is_empty
-			Path_valid: a_full_path /= Void and then directory_valid(a_full_path)
-		deferred
-		end
-
 feature {NONE} -- Implementation
 
 	build_directory(a_dir_name: STRING): TWO_WAY_TREE [ARCHETYPE_REPOSITORY_ITEM] is
@@ -134,7 +81,7 @@ feature {NONE} -- Implementation
 			-- current path being populated
 
 invariant
-	Repository_path_valid: root_path /= Void and then valid_path(root_path)
+	Repository_path_valid: is_valid_path (root_path)
 	Directory_exists: directory /= Void
 
 end

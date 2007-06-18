@@ -1,17 +1,15 @@
 indexing
 	component:   "openEHR Archetype Project"
-	description: "[
-				 FIle-system repository of archetypes - implementation of ARCHETYPE_INDEXED_REPOSITORY_I
-				 ]"
+	description: "File-system repository of archetypes - implementation of ARCHETYPE_INDEXED_REPOSITORY_I."
 	keywords:    "ADL"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
+	file:        "$URL: $"
 	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	last_change: "$LastChangedDate: $"
 
 
 class ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP
@@ -19,73 +17,10 @@ class ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP
 inherit
 	ARCHETYPE_INDEXED_REPOSITORY_I
 
-	SHARED_RESOURCES
-		export
-			{NONE} all
-		end
+	ARCHETYPE_FILE_REPOSITORY_IMP
 
 create
 	make
-
-feature -- Access
-
-	file_context: FILE_CONTEXT is
-			-- access to file system
-		once
-			create Result.make
-		end
-
-	source (a_full_path: STRING): STRING is
-			-- get source of archetype from repository medium
-		do
-			file_context.set_target (a_full_path)
-			file_context.read_file
-			Result := file_context.file_content
-		end
-
-	source_timestamp: INTEGER is
-			-- modification time of last opened file as an integer, for comparison purposes
-		do
-			Result := file_context.file_timestamp
-		end
-
-feature -- Status Report
-
-	valid_path(a_path: STRING): BOOLEAN is
-			-- validate path on medium
-		do
-			Result := (create {RAW_FILE}.make(a_path)).exists
-		end
-
-	directory_valid(a_path: STRING): BOOLEAN is
-			-- validate the directory part of a path whose last section is a filename
-		local
-			dir_name: STRING
-		do
-			dir_name := a_path.substring(1, a_path.last_index_of (operating_environment.Directory_separator, a_path.count)-1)
-			Result := (create {DIRECTORY}.make(dir_name)).exists
-		end
-
-	file_changed_on_disk (a_path: STRING; a_timestamp: INTEGER): BOOLEAN is
-			-- True if loaded archetype has changed on disk since last read;
-			-- To fix, call resync_file
-		do
-			file_context.set_target (a_path)
-			Result := file_context.file_changed(a_timestamp)
-		end
-
-feature -- Commands
-
-	save_as(a_full_path, a_text: STRING) is
-			-- save a_text (representing archetype source) to a file
-		do
-			if file_context.file_writable(a_full_path) then
-				file_context.save_file(a_full_path, a_text)
-				post_info(Current, "save_archetype", "save_archetype_i1", <<current_language, a_full_path>>)
-			else
-				post_error(Current, "save_archetype", "save_archetype_e1", <<a_full_path>>)
-			end
-		end
 
 feature {NONE} -- Implementation
 
