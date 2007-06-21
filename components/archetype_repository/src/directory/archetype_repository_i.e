@@ -21,6 +21,11 @@ inherit
 			{ANY} current_language, set_current_language
 		end
 
+	ARCHETYPE_DEFINITIONS
+		export
+			{NONE} all
+		end
+
 feature -- Access
 
 	source (full_path: STRING): STRING

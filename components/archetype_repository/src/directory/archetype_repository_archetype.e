@@ -18,7 +18,11 @@ inherit
 	ARCHETYPE_REPOSITORY_ITEM
 		rename
 			make as make_adi
+		undefine
+			is_equal
 		end
+
+	COMPARABLE
 
 create
 	make
@@ -101,6 +105,14 @@ feature -- Commands
 			a_source_archetype /= Void
 		do
 			create compilation_context.make(a_source_archetype)
+		end
+
+feature -- Comparison
+
+	infix "<" (other: like Current): BOOLEAN is
+			-- Is current object less than `other'?
+		do
+			Result := id < other.id
 		end
 
 feature {NONE} -- Implementation

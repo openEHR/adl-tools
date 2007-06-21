@@ -114,7 +114,9 @@ feature -- Environment
 				Result := execution_environment.get ("TEMP")
 			end
 
-			if Result = Void or else Result.is_empty then
+			if Result /= Void and then not Result.is_empty then
+				Result := (create {WINDOWS_SHORT_PATH}.make (Result)).as_long_path
+			else
 				if operating_system.is_windows then
 					Result := default_windows_temp_dir.twin
 				else
@@ -133,7 +135,7 @@ feature -- Environment
 	resource_config_file_name: STRING is
 			-- name of configuration file from which settings are read
 		once
-			create Result.make(0)
+			create Result.make_empty
 		end
 
 	default_global_resource_config_file_full_path: STRING is

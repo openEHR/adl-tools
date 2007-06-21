@@ -33,7 +33,7 @@ feature -- Definitions
 
 	Default_current_directory: STRING is "."
 
-feature -- Initialisation
+feature {NONE} -- Initialisation
 
 	make is
 			-- basic initialisation

@@ -78,11 +78,14 @@ feature -- Modification
 		local
 			ara: ARCHETYPE_REPOSITORY_ARCHETYPE
 		do
-			create ara.make (work_path, full_path, group_id, Void, False, Current)
-			-- TODO: implement this routine :-
-			-- Create the above ARCHETYPE_REPOSITORY_ARCHETYPE with a proper ARCHETYPE_ID.
-			-- Include empty ontological paths, since the latter are unknown
-			-- for archetypes found in ad hoc places like c:\temp, /tmp etc
+			ara := repository_archetype (work_path, full_path, group_id)
+
+			if ara /= Void then
+				-- TODO: implement this routine :-
+				-- Create the above ARCHETYPE_REPOSITORY_ARCHETYPE with a proper ARCHETYPE_ID.
+				-- Include empty ontological paths, since the latter are unknown
+				-- for archetypes found in ad hoc places like c:\temp, /tmp etc
+			end
 		end
 
 invariant

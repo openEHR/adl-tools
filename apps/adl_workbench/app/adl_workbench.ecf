@@ -50,6 +50,7 @@
 		</library>
 		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf"/>
 		<library name="vision2" location="$ISE_LIBRARY\library\vision2\vision2.ecf"/>
+		<library name="wel" location="$ISE_LIBRARY\library\wel\wel.ecf"/>
 		<cluster name="adl_parser" location="..\..\..\components\adl_parser\src\" recursive="true">
 			<option>
 				<assertions precondition="true" postcondition="true" check="true" invariant="false" loop="false"/>
@@ -70,6 +71,20 @@
 			<option>
 				<assertions precondition="true" postcondition="true" check="false" invariant="false" loop="false"/>
 			</option>
+			<file_rule>
+				<exclude>/other$</exclude>
+				<include>/windows$</include>
+				<condition>
+					<platform value="windows"/>
+				</condition>
+			</file_rule>
+			<file_rule>
+				<exclude>/windows$</exclude>
+				<include>/other$</include>
+				<condition>
+					<platform excluded_value="windows"/>
+				</condition>
+			</file_rule>
 		</cluster>
 		<cluster name="openehr" location="..\..\..\libraries\openehr\src\" recursive="true">
 			<option>

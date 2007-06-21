@@ -297,8 +297,10 @@ feature -- Output
 
 	as_string: STRING is
 		do
-			create Result.make(value.count)
-			Result.append(value)
+			Result := value.twin
+		ensure
+			attached: Result /= Void
+			not_empty: not Result.is_empty
 		end
 
 invariant

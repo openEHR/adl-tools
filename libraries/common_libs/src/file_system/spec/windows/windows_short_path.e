@@ -1,86 +1,55 @@
 indexing
-	component:   "openEHR Archetype Project"
-	description: "[
-				 Directory representation of a file-system archetype repository.
-				 ]"
-	keywords:    "ADL"
-	author:      "Thomas Beale"
+	component:   "openEHR Reusable Libraries"
+	description: "Short (8-dot-3) MS-DOS style paths on Windows."
+	keywords:    "path, Windows"
+
+	author:      "Peter Gummer"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL: $"
+	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate: $"
+	last_change: "$LastChangedDate$"
 
-
-deferred class ARCHETYPE_INDEXED_REPOSITORY_I
+class
+	WINDOWS_SHORT_PATH
 
 inherit
-	ARCHETYPE_REPOSITORY_I
+	WEL_STRING
+		rename
+			string as as_long_path
+		export
+			{NONE} all
+			{ANY} as_long_path
+		redefine
+			make
+		end
+
+create
+	make
 
 feature {NONE} -- Initialisation
 
-	make(a_dir_name: STRING; a_group_id: INTEGER) is
-			-- make based on valid directory path
-		require
-			dir_name_valid: is_valid_path (a_dir_name)
+	make (path: STRING)
+			-- If `path' is in Windows short 8.3 format, convert it to a normal long path.
 		do
-			root_path := a_dir_name
-			current_group_id := a_group_id
-			clear
+			make_empty (2000)
+			set_string (path)
+			get_long_path_name (item, character_capacity)
 		end
 
-feature -- Access
+feature {NONE} -- Externals
 
-	root_path: STRING
-			-- path of file-system repository of archetypes
-
-	directory: TWO_WAY_TREE [ARCHETYPE_REPOSITORY_ITEM]
-			-- tree-structured directory of folders and archetypes
-
-feature -- Commands
-
-	clear is
-		do
-			current_root_path := root_path
+	get_long_path_name (path: POINTER; n: INTEGER)
+			-- Convert `path' to a normal long path.
+		external
+			"C inline use <windows.h>"
+		alias
+			"GetLongPathNameW ((LPCWSTR) $path, (LPWSTR) $path, (DWORD) $n)"
 		end
-
-	repopulate is
-			-- rebuild directory based on existing paths
-		do
-			clear
-			populate
-		end
-
-	populate is
-			-- make based on valid directory path
-		do
-			directory := build_directory(root_path)
-		end
-
-feature {NONE} -- Implementation
-
-	build_directory(a_dir_name: STRING): TWO_WAY_TREE [ARCHETYPE_REPOSITORY_ITEM] is
-			-- build a literal representation of the archetype and folder structure
-			-- in the repository path, as a tree; each node carries some meta-data
-		require
-			Dir_name_valid: a_dir_name /= Void
-   		deferred
-		end
-
-	current_group_id: INTEGER
-			-- id of group currently being populated
-
-	current_root_path: STRING
-			-- current path being populated
-
-invariant
-	Repository_path_valid: is_valid_path (root_path)
-	Directory_exists: directory /= Void
 
 end
-
 
 --|
 --| ***** BEGIN LICENSE BLOCK *****
@@ -96,7 +65,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is adl_node_control.e.
+--| The Original Code is shared_resources.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004
