@@ -22,6 +22,20 @@ inherit
 create
 	make
 
+feature {NONE} -- Initialisation
+
+	make (dir_name: STRING; a_group_id: INTEGER)
+			-- Create as part of `a_group_id', based on valid directory path.
+		require
+			group_id_valid: a_group_id > 0
+		do
+			make_with_root_path (dir_name)
+			group_id := a_group_id
+		ensure
+			root_path_set: root_path = dir_name
+			group_id_set: group_id = a_group_id
+		end
+
 feature {NONE} -- Implementation
 
 	build_directory(a_dir_name: STRING): TWO_WAY_TREE [ARCHETYPE_REPOSITORY_ITEM] is
@@ -36,7 +50,7 @@ feature {NONE} -- Implementation
 			arch_node: TWO_WAY_TREE [ARCHETYPE_REPOSITORY_ITEM]
    		do
    			-- create folder for this directory and index it
-			create Result.make(create {ARCHETYPE_REPOSITORY_FOLDER}.make(root_path, a_dir_name, current_group_id, Current))
+			create Result.make(create {ARCHETYPE_REPOSITORY_FOLDER}.make(root_path, a_dir_name, group_id, Current))
 
    			-- generate lists of immediate child directory and archetype file names
    			-- in the current directory 'a_dir_name'
@@ -66,7 +80,7 @@ feature {NONE} -- Implementation
 						if (create {RAW_FILE}.make (full_path)).is_directory then
 							dir_name_index.extend (fn)
 						else
-							ara := repository_archetype (root_path, full_path, current_group_id)
+							ara := repository_archetype (root_path, full_path)
 
 							if ara /= Void then
 								arch_index.extend (ara)

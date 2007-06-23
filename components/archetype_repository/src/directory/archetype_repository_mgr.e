@@ -61,8 +61,8 @@ feature -- Initialisation
 
 	make is
 		do
-			create source_repositories.make(0)
-			create adhoc_source_repository.make
+			create source_repositories.make (0)
+			create adhoc_source_repository.make (current_group_id)
 			clear
 		end
 
@@ -176,7 +176,7 @@ feature -- Commands
 			Dir_name_valid: a_dir_name /= Void and then valid_repository_path(a_dir_name)
 			Id_valid: an_id /= Void and then not an_id.is_empty
 		do
-			source_repositories.force(create {ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP}.make(a_dir_name, source_repositories.count+1), an_id)
+			source_repositories.force (create {ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP}.make (a_dir_name, current_group_id), an_id)
 		end
 
 feature -- Traversal
@@ -280,6 +280,14 @@ feature -- Status Report
 		end
 
 feature {NONE} -- Implementation
+
+	current_group_id: INTEGER
+			-- Id of the group currently being built.
+		do
+			Result := source_repositories.count + 1
+		ensure
+			group_id_valid: Result > 0
+		end
 
 	do_all_nodes(node: like directory; node_enter_action, node_exit_action: PROCEDURE [ANY, TUPLE[ARCHETYPE_REPOSITORY_ITEM]])  is
 			-- recursive version of routine due to lack of useful recursive routines on Eiffel tree structures
@@ -407,8 +415,13 @@ feature {NONE} -- Implementation
 		end
 
 invariant
-	Repositories_valid: source_repositories /= Void
-	adhoc_source_repository_valid: adhoc_source_repository /= Void
+	adhoc_source_repository_attached: adhoc_source_repository /= Void
+	adhoc_source_repository_group_id: adhoc_source_repository.group_id = 1
+	repositories_attached: source_repositories /= Void
+	repositories_group_ids: source_repositories.for_all (agent (repository: ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP): BOOLEAN
+		do
+			Result := repository.group_id > 1
+		end)
 
 end
 

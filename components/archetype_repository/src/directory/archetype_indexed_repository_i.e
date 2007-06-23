@@ -21,14 +21,15 @@ inherit
 
 feature {NONE} -- Initialisation
 
-	make(a_dir_name: STRING; a_group_id: INTEGER) is
-			-- make based on valid directory path
+	make_with_root_path (dir_name: STRING)
+			-- Create based on valid directory path.
 		require
-			dir_name_valid: is_valid_path (a_dir_name)
+			dir_name_valid: is_valid_path (dir_name)
 		do
-			root_path := a_dir_name
-			current_group_id := a_group_id
+			root_path := dir_name
 			clear
+		ensure
+			root_path_set: root_path = dir_name
 		end
 
 feature -- Access
@@ -68,9 +69,6 @@ feature {NONE} -- Implementation
 			Dir_name_valid: a_dir_name /= Void
    		deferred
 		end
-
-	current_group_id: INTEGER
-			-- id of group currently being populated
 
 	current_root_path: STRING
 			-- current path being populated

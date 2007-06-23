@@ -26,11 +26,16 @@ create
 
 feature {NONE} -- Initialisation
 
-	make
-			-- Create with a sensible default `work_path'.
+	make (a_group_id: INTEGER)
+			-- Create as part of `a_group_id', with a sensible default `work_path'.
+		require
+			group_id_valid: a_group_id > 0
 		do
+			group_id := a_group_id
 			work_path := system_temp_file_directory.twin
 			create directory.make (0)
+		ensure
+			group_id_set: group_id = a_group_id
 		end
 
 feature -- Access
@@ -42,9 +47,6 @@ feature -- Access
 	directory: DS_HASH_TABLE [ARCHETYPE_REPOSITORY_ARCHETYPE, STRING]
 			-- The directory of archetypes added to this ad hoc repository
 			-- as a list of descriptors keyed by full path.
-
-	group_id: INTEGER = 1
-			-- TODO: Figure out how to implement this properly!
 
 feature -- Status Report
 
@@ -78,7 +80,7 @@ feature -- Modification
 		local
 			ara: ARCHETYPE_REPOSITORY_ARCHETYPE
 		do
-			ara := repository_archetype (work_path, full_path, group_id)
+			ara := repository_archetype (work_path, full_path)
 
 			if ara /= Void then
 				-- TODO: implement this routine :-

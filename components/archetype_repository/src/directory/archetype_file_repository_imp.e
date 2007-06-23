@@ -41,6 +41,9 @@ feature -- Access
 	source_timestamp: INTEGER
 			-- Modification time of last opened file as an integer, for comparison purposes.
 
+	group_id: INTEGER
+			-- Id of the group to which this repository belongs.
+
 feature -- Status Report
 
 	is_valid_path (path: STRING): BOOLEAN
@@ -105,7 +108,7 @@ feature {NONE} -- Implementation
 			attached: Result /= Void
 		end
 
-	repository_archetype (root_path, full_path: STRING; group_id: INTEGER): ARCHETYPE_REPOSITORY_ARCHETYPE
+	repository_archetype (root_path, full_path: STRING): ARCHETYPE_REPOSITORY_ARCHETYPE
 			-- A descriptor of the archetype designated by `full_path' to this repository.
 		require
 			root_path_valid: is_valid_path (root_path)
@@ -134,6 +137,9 @@ feature {NONE} -- Implementation
 			has_group_id: Result /= Void implies Result.group_id = group_id
 			has_this_repository: Result /= Void implies Result.repository = Current
 		end
+
+invariant
+	group_id_valid: group_id > 0
 
 end
 
