@@ -359,7 +359,7 @@ feature -- Tests
 				if overwrite then
 					archetype_compiler.save_archetype
 				else
-					new_adl_file_path := system_temp_file_directory + ara.archetype_file_name
+					new_adl_file_path := file_system.pathname (system_temp_file_directory, file_system.basename (ara.full_path))
 					archetype_compiler.save_archetype_as(new_adl_file_path, "adl")
 				end
 
@@ -383,7 +383,7 @@ feature -- Tests
 			if overwrite then
 				new_adl_file_path := ara.full_path
 			else
-				new_adl_file_path := system_temp_file_directory + ara.archetype_file_name
+				new_adl_file_path := file_system.pathname (system_temp_file_directory, file_system.basename (ara.full_path))
 			end
 
 			-- FIXME: these are the right paths, but we don't yet have a way of overriding the source
@@ -410,7 +410,7 @@ feature -- Tests
 			if not overwrite then
 				orig_arch_source := ara.source
 
-				new_adl_file_path := system_temp_file_directory + ara.archetype_file_name
+				new_adl_file_path := file_system.pathname (system_temp_file_directory, file_system.basename (ara.full_path))
 				-- FIXME: DO SOMETIHNG HERE TO OPEN THE NEW FILE
 				-- new_arch_source := adl_interface.adl_engine.source
 
@@ -443,61 +443,43 @@ feature {NONE} -- Implementation
 	test_status: STRING
 			-- Cumulative status message during running of test.
 
-   	populate_gui_tree_node_enter (an_item: ARCHETYPE_REPOSITORY_ITEM) is
-   			-- Add a node representing `an_item' to `gui_file_tree'.
+	populate_gui_tree_node_enter (an_item: ARCHETYPE_REPOSITORY_ITEM) is
+			-- Add a node representing `an_item' to `gui_file_tree'.
 		require
 			an_item /= Void
-   		local
+		local
 			gli: EV_GRID_LABEL_ITEM
-   			ada: ARCHETYPE_REPOSITORY_ARCHETYPE
-   			adf: ARCHETYPE_REPOSITORY_FOLDER
-   			gr: EV_GRID_ROW
- 			col_csr: INTEGER
-  		do
-  			-- add a new row to the current item in the grid row stack
- 			grid_row_stack.item.insert_subrow (grid_row_stack.item.subrow_count + 1)
-
- 			-- now get a ref to the newly added subrow
+			gr: EV_GRID_ROW
+			pixmap: EV_PIXMAP
+			ada: ARCHETYPE_REPOSITORY_ARCHETYPE
+			col_csr: INTEGER
+		do
+			grid_row_stack.item.insert_subrow (grid_row_stack.item.subrow_count + 1)
 			gr := grid_row_stack.item.subrow (grid_row_stack.item.subrow_count)
+			create gli.make_with_text (utf8 (an_item.base_name))
+			gr.set_item (1, gli)
+			gli.set_data (an_item)
+			pixmap := pixmaps [an_item.group_name]
+
+			if pixmap /= Void then
+				gli.set_pixmap (pixmap)
+			end
+
 			add_checkbox (gr)
+			ada ?= an_item
 
-  			adf ?= an_item
-
-			if adf /= Void then
-				-- First column (explorer)
- 				create gli.make_with_text (utf8 (adf.base_name))
-				gli.set_pixmap (pixmaps ["file_folder_" + adf.group_id.out])
-				gli.set_data (adf)
-				gr.set_item (1, gli)
-			else
-				ada ?= an_item
-
-				if ada /= Void then
-					-- First column (explorer)
-					create gli.make_with_text (utf8 (ada.id.domain_concept_tail + "(" + ada.id.version_id + ")"))
-					gli.set_data (ada)
-
-					if ada.id.is_specialised then
-						gli.set_pixmap (pixmaps ["archetype_specialised_" + ada.group_id.out])
-					else
-						gli.set_pixmap (pixmaps ["archetype_" + ada.group_id.out])
-					end
-
-					gr.set_item (1, gli)
-
-					-- test columns
-					from
-						tests.start
-						col_csr := First_test_col
-					until
-						tests.off
-					loop
-						gr.set_item (col_csr, create {EV_GRID_LABEL_ITEM}.make_with_text ("?"))
-						tests.forth
-						col_csr := col_csr + 1
-					end
+			if ada /= Void then
+				from
+					tests.start
+					col_csr := first_test_col
+				until
+					tests.off
+				loop
+					gr.set_item (col_csr, create {EV_GRID_LABEL_ITEM}.make_with_text ("?"))
+					tests.forth
+					col_csr := col_csr + 1
 				end
-   			end
+			end
 
 			grid_row_stack.extend (gr)
 		end
@@ -514,7 +496,7 @@ feature {NONE} -- Implementation
 			row_attached: row /= Void
 		local
 			item: EV_GRID_LABEL_ITEM
-   		do
+		do
 			create item
 			row.set_item (2, item)
 			set_checkbox (item, True)

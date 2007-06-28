@@ -41,12 +41,9 @@ feature -- Access
 	source_timestamp: INTEGER
 			-- Modification time of last opened file as an integer, for comparison purposes.
 
-	group_id: INTEGER
-			-- Id of the group to which this repository belongs.
-
 feature -- Status Report
 
-	is_valid_path (path: STRING): BOOLEAN
+	is_valid_path (path: STRING): BOOLEAN is
 			-- Is `path' a valid, existing file on the repository medium?
 		local
 			s: STRING
@@ -65,7 +62,7 @@ feature -- Status Report
 		do
 			if path /= Void and then not path.is_empty then
 				dir_name := path.substring(1, path.last_index_of (operating_environment.directory_separator, path.count) - 1)
-				Result := (create {DIRECTORY}.make (dir_name)).exists
+				Result := directory_at (dir_name).exists
 			end
 		end
 
@@ -127,19 +124,15 @@ feature {NONE} -- Implementation
 
 					if id.valid_id (base_name) then
 						id.make_from_string (base_name)
-						create Result.make (root_path, full_path, group_id, id, id.is_specialised, Current)
+						create Result.make (root_path, full_path, id, id.is_specialised, Current)
 					end
 				end
 			end
 		ensure
 			has_root_path: Result /= Void implies Result.root_path.is_equal (root_path)
 			has_full_path: Result /= Void implies Result.full_path.is_equal (full_path)
-			has_group_id: Result /= Void implies Result.group_id = group_id
 			has_this_repository: Result /= Void implies Result.repository = Current
 		end
-
-invariant
-	group_id_valid: group_id > 0
 
 end
 

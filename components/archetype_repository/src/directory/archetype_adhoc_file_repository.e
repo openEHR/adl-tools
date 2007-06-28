@@ -44,9 +44,15 @@ feature -- Access
 			-- The current work path on the file system, normally used to tell GUI or other
 			-- file searching method where to start looking.
 
-	directory: DS_HASH_TABLE [ARCHETYPE_REPOSITORY_ARCHETYPE, STRING]
-			-- The directory of archetypes added to this ad hoc repository
-			-- as a list of descriptors keyed by full path.
+	item alias "[]" (full_path: STRING): ARCHETYPE_REPOSITORY_ARCHETYPE
+			-- The archetype at `full_path'.
+		require
+			has_full_path: has (full_path)
+		do
+			Result := directory [full_path]
+		ensure
+			attached: Result /= Void
+		end
 
 feature -- Status Report
 
@@ -54,8 +60,14 @@ feature -- Status Report
 			-- Is `path' a valid value for `work_path'?
 		do
 			if path /= Void and then not path.is_empty then
-				Result := (create {DIRECTORY}.make (path)).exists and path @ path.count = os_directory_separator
+				Result := directory_at (path).exists
 			end
+		end
+
+	has (full_path: STRING): BOOLEAN
+			-- Has `full_path' been added to this repository?
+		do
+			Result := directory [full_path] /= Void
 		end
 
 feature -- Modification
@@ -76,19 +88,24 @@ feature -- Modification
 			-- Add the archetype designated by `full_path' to this repository.
 		require
 			path_valid: is_valid_path (full_path)
-			path_under_work_path: full_path.substring_index (work_path, 1) = 1
 		local
 			ara: ARCHETYPE_REPOSITORY_ARCHETYPE
 		do
-			ara := repository_archetype (work_path, full_path)
+			ara := repository_archetype (file_system.dirname (full_path), full_path)
 
 			if ara /= Void then
-				-- TODO: implement this routine :-
-				-- Create the above ARCHETYPE_REPOSITORY_ARCHETYPE with a proper ARCHETYPE_ID.
-				-- Include empty ontological paths, since the latter are unknown
-				-- for archetypes found in ad hoc places like c:\temp, /tmp etc
+				directory [full_path] := ara
 			end
+		ensure
+			added_1_or_none: (0 |..| 1).has (directory.count - old directory.count)
+			has_full_path: directory.count > old directory.count implies has (full_path)
 		end
+
+feature {NONE} -- Implementation
+
+	directory: HASH_TABLE [ARCHETYPE_REPOSITORY_ARCHETYPE, STRING]
+			-- The directory of archetypes added to this ad hoc repository
+			-- as a list of descriptors keyed by full path.
 
 invariant
 	work_path_valid: is_valid_work_path (work_path)

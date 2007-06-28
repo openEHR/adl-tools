@@ -225,6 +225,23 @@ feature -- Environment
 			Result := execution_environment.current_working_directory
 		end
 
+	directory_at (path: STRING): DIRECTORY
+			-- A directory object representing `path'.
+			-- Strips any trailing backslash to avoid Windows API defect.
+		require
+			path_attached: path /= Void
+			path_not_empty: not path.is_empty
+		local
+			s: STRING
+		do
+			s := path.twin
+			s.prune_all_trailing (os_directory_separator)
+			create Result.make (s)
+		ensure
+			attached: Result /= Void
+			correct_path: Result.name.is_equal (path)
+		end
+
 feature -- Element Change
 
 	record_resource_request(a_category, a_resource_name:STRING) is

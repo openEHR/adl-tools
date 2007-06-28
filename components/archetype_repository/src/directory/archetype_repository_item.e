@@ -7,9 +7,9 @@ indexing
 	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
+	file:        "$URL: $"
 	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	last_change: "$LastChangedDate: $"
 
 
 deferred class ARCHETYPE_REPOSITORY_ITEM
@@ -25,75 +25,94 @@ inherit
 			{NONE} all
 		end
 
-feature -- initialisation
+feature {NONE} -- initialisation
 
-	make(a_root_path, a_full_path: STRING; a_group_id: INTEGER; a_repository: ARCHETYPE_REPOSITORY_I) is
-			-- make using root-path to archetype repository tree, full path to directory or archetype file
-			-- and group id, to distinguish repository with respect to others in ARCHETYPE_DIRECTORY
+	make (a_root_path, a_full_path: STRING; a_repository: ARCHETYPE_REPOSITORY_I)
+			-- Make to represent the directory or archetype file at `full_path',
+			-- belonging to `a_repository' at `a_root_path'.
 		require
-			Repository_exists: a_repository /= Void
-			Root_path_valid: a_repository.is_valid_path (a_root_path)
-			Full_path_valid: a_full_path /= Void and then a_full_path.substring_index (a_root_path, 1) = 1
-			Group_id_valid: a_group_id > 0
+			repository_attached: a_repository /= Void
+			root_path_valid: a_repository.is_valid_path (a_root_path)
+			full_path_valid: a_full_path /= Void and then a_full_path.substring_index (a_root_path, 1) = 1
 		do
 			root_path := a_root_path
 			full_path := a_full_path
-			group_id := a_group_id
 			repository := a_repository
 			make_ontological_paths
+		ensure
+			root_path_set: root_path = a_root_path
+			full_path_set: full_path = a_full_path
+			repository_set: repository = a_repository
 		end
 
 feature -- Access
 
 	root_path: STRING
-			-- root path of repository on storage medium containing this item
+			-- Root path of repository on storage medium containing this item.
 
 	full_path: STRING
-			-- full path to item on storage medium
+			-- Full path to the item on the storage medium.
+
+	base_name: STRING
+			-- Name of last segment of `ontological_path'.
 
 	ontological_path: STRING
-			-- logical ontological path of item with respect to root; for folder nodes,
+			-- Logical ontological path of item with respect to `root_path'; for folder nodes,
 			-- this will look like the directory path; for archetype nodes, this will be
 			-- the concatenation of the directory path and a path pseudo-path constructed
 			-- by replacing the '-'s in an archetype concept with '/', enabling specialised
-			-- archetypes to be treated as subnodes of their parent
+			-- archetypes to be treated as subnodes of their parent.
 
 	ontological_parent_path: STRING
-			-- logical path of parent node (empty if relative_path is already the root)			
-
-	group_id: INTEGER
-			-- id of repository containing this item (e.g. it might be in the reference tree
-			-- or in another repository designed to be overlaid on the reference)
+			-- Logical path of parent node (empty if `ontological_path' is already the root).
 
 	repository: ARCHETYPE_REPOSITORY_I
-			-- the repository on which this item is found
+			-- The repository on which this item is found.
+
+	group_name: STRING
+			-- Name distinguishing the type of item and the group to which its `repository' belongs.
+			-- Useful as a logical key to pixmap icons, etc.
+		deferred
+		ensure
+			attached: Result /= Void
+			not_empty: not Result.is_empty
+		end
 
 feature -- Status Report
 
-	is_valid_path (path: STRING): BOOLEAN is
+	is_valid_path (path: STRING): BOOLEAN
 			-- Is `path' a valid, existing directory or file on `repository'?
 		do
 			Result := repository.is_valid_path (path)
+		ensure
+			false_if_void: Result implies path /= Void
 		end
 
-	is_valid_directory_part (path: STRING): BOOLEAN is
+	is_valid_directory_part (path: STRING): BOOLEAN
 			-- Is the directory part of `path', whose last section is a filename, valid on `repository'?
 		do
 			Result := repository.is_valid_directory_part (path)
+		ensure
+			false_if_void: Result implies path /= Void
 		end
 
 feature {NONE} -- Implementation
 
-	make_ontological_paths is
-			-- make ontological_path and ontological_parent_path
+	make_ontological_paths
+			-- Make `base_name', `ontological_path' and `ontological_parent_path'.
 		deferred
 		end
 
 invariant
 	repository_attached: repository /= Void
 	root_path_valid: is_valid_path (root_path)
-	full_path_valid: full_path /= Void and then not full_path.is_empty
-	group_id_valid: group_id > 0
+	full_path_attached: full_path /= Void
+	full_path_not_empty: not full_path.is_empty
+	ontological_path_attached: ontological_path /= Void
+	ontological_parent_path_attached: ontological_parent_path /= Void
+	ontological_path_absolute: ontological_path.substring_index (ontological_path_separator, 1) = 1
+	ontological_parent_path_valid: ontological_path.substring_index (ontological_parent_path, 1) = 1
+	base_name_attached: base_name /= Void
 
 end
 

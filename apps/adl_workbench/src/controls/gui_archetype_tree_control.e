@@ -108,39 +108,32 @@ feature {NONE} -- Implementation
 	delay_to_make_keyboard_navigation_practical: EV_TIMEOUT
 			-- Timer to delay a moment before displaying details of the item selected in `archetype_file_tree'.
 
-   	populate_gui_tree_node_enter(an_item: ARCHETYPE_REPOSITORY_ITEM) is
+   	populate_gui_tree_node_enter (an_item: ARCHETYPE_REPOSITORY_ITEM)
    			-- Add a node representing `an_item' to `gui_file_tree'.
 		require
 			an_item /= Void
    		local
-			a_ti: EV_TREE_ITEM
-   			ada: ARCHETYPE_REPOSITORY_ARCHETYPE
-   			adf: ARCHETYPE_REPOSITORY_FOLDER
+			node: EV_TREE_ITEM
+			pixmap: EV_PIXMAP
    		do
-   			adf ?= an_item
-   			if adf /= Void then
- 				create a_ti.make_with_text (utf8 (adf.base_name))
-				a_ti.set_pixmap(pixmaps.item("file_folder_" + adf.group_id.out))
-				a_ti.set_data(adf)
-			else
-				ada ?= an_item
-				create a_ti.make_with_text (utf8 (ada.id.domain_concept_tail + "(" + ada.id.version_id + ")"))
-				a_ti.set_data(ada)
-				if ada.id.is_specialised then
-					a_ti.set_pixmap(pixmaps.item("archetype_specialised_" + ada.group_id.out))
-				else
-					a_ti.set_pixmap(pixmaps.item("archetype_" + ada.group_id.out))
-				end
-   			end
-			if gui_tree_item_stack.is_empty then
-				gui_file_tree.extend(a_ti)
-			else
-				gui_tree_item_stack.item.extend(a_ti)
+			create node.make_with_text (utf8 (an_item.base_name))
+ 			node.set_data (an_item)
+			pixmap := pixmaps [an_item.group_name]
+
+			if pixmap /= Void then
+				node.set_pixmap (pixmap)
 			end
-			gui_tree_item_stack.extend(a_ti)
+
+			if gui_tree_item_stack.is_empty then
+				gui_file_tree.extend (node)
+			else
+				gui_tree_item_stack.item.extend (node)
+			end
+
+			gui_tree_item_stack.extend (node)
 		end
 
-   	populate_gui_tree_node_exit(an_item: ARCHETYPE_REPOSITORY_ITEM) is
+   	populate_gui_tree_node_exit (an_item: ARCHETYPE_REPOSITORY_ITEM)
    		do
 			gui_tree_item_stack.remove
 		end

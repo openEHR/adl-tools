@@ -7,9 +7,9 @@ indexing
 	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
+	file:        "$URL: $"
 	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	last_change: "$LastChangedDate: $"
 
 
 class ARCHETYPE_REPOSITORY_FOLDER
@@ -20,41 +20,33 @@ inherit
 create
 	make
 
-feature -- Access
-
-	base_name: STRING
-			-- name of last segment of path - i.e. local dir name or else file-name
-
 feature {NONE} -- Implementation
 
-	make_ontological_paths is
-			-- make ontological_path and ontological_parent_path
+	make_ontological_paths
+			-- Make `base_name', `ontological_path' and `ontological_parent_path'.
 		local
 			pos: INTEGER
 		do
 			ontological_path := full_path.substring (root_path.count + 1, full_path.count)
-			ontological_path.replace_substring_all (os_directory_separator.out, Ontological_path_separator)
+			ontological_path.replace_substring_all (os_directory_separator.out, ontological_path_separator)
 
-			create ontological_parent_path.make(0)
-			if not ontological_path.is_empty then
-				pos := ontological_path.last_index_of(Ontological_path_separator.item (1), ontological_path.count)
-			end
-			if pos > 0 then
-				ontological_parent_path.append(ontological_path.substring (1, pos - 1))
+			if ontological_path.is_empty then
+				ontological_path := ontological_path_separator.twin
 			end
 
-			if not ontological_path.is_empty then
-				pos := ontological_path.last_index_of(Ontological_path_separator.item(1), ontological_path.count)
-			end
-			if pos > 0 then
-				base_name := ontological_path.substring(pos+1, ontological_path.count)
-			else
-				base_name := ontological_path.twin
-			end
+			pos := ontological_path.last_index_of (ontological_path_separator.item (1), ontological_path.count)
+			ontological_parent_path := ontological_path.substring (1, pos - 1)
+			base_name := ontological_path.substring (pos + ontological_path_separator.count, ontological_path.count)
 		end
 
-invariant
-	Base_name: base_name /= Void and then not base_name.is_empty
+feature -- Access
+
+	group_name: STRING
+			-- Name distinguishing the type of item and the group to which its `repository' belongs.
+			-- Useful as a logical key to pixmap icons, etc.
+		do
+			Result := "file_folder_" + repository.group_id.out
+		end
 
 end
 

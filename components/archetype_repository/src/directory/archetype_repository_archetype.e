@@ -29,43 +29,51 @@ create
 
 feature -- Initialisation
 
-	make (a_root_path, a_full_path: STRING; a_group_id: INTEGER; an_id: ARCHETYPE_ID; is_specialised_flag: BOOLEAN; a_repository: ARCHETYPE_REPOSITORY_I) is
+	make (a_root_path, a_full_path: STRING; an_id: ARCHETYPE_ID; is_specialised_flag: BOOLEAN; a_repository: ARCHETYPE_REPOSITORY_I)
 		require
 			Repository_exists: a_repository /= Void
 			Root_path_valid: a_repository.is_valid_path (a_root_path)
 			Full_path_valid: a_full_path /= Void and then a_full_path.substring_index (a_root_path, 1) = 1
-			Group_id_valid: a_group_id > 0
 			Id_valid: an_id /= Void
 		do
 			id := an_id
 			is_specialised := is_specialised_flag
-			make_adi(a_root_path, a_full_path, a_group_id, a_repository)
-			archetype_file_name := full_path.substring (full_path.last_index_of(os_directory_separator, full_path.count)+1, full_path.count)
+			make_adi (a_root_path, a_full_path, a_repository)
 		end
 
 feature -- Access
 
 	id: ARCHETYPE_ID
+			-- Archetype identifier.
 
-	archetype_file_name: STRING
-			-- the name of the archetype file
-
-	source: STRING is
-			-- get source text of archetype
+	source: STRING
+			-- The source text of the archetype.
 		do
 			Result := repository.source (full_path)
 			source_timestamp := repository.source_timestamp
 		end
 
 	source_timestamp: INTEGER
+			-- Date and time at which the archetype file was last modified.
 
 	compilation_context: ARCHETYPE_CONTEXT
-			-- context object for compilation activities
+			-- Context object for compilation activities.
 
-	archetype: ARCHETYPE is
-			-- differential form of currently compiled archetype
+	archetype: ARCHETYPE
+			-- Differential form of currently compiled archetype.
 		do
 			Result := compilation_context.differential
+		end
+
+	group_name: STRING
+			-- Name distinguishing the type of item and the group to which its `repository' belongs.
+			-- Useful as a logical key to pixmap icons, etc.
+		do
+			if id.is_specialised then
+				Result := "archetype_specialised_" + repository.group_id.out
+			else
+				Result := "archetype_" + repository.group_id.out
+			end
 		end
 
 feature -- Status Report
@@ -73,7 +81,7 @@ feature -- Status Report
 	is_specialised: BOOLEAN
 			-- True if this archetype is a specialisation of another archetype
 
-	file_changed_on_disk: BOOLEAN is
+	file_changed_on_disk: BOOLEAN
 			-- Has the loaded archetype designated by `path' changed on disk since last read?
 		do
 			Result := repository.has_file_changed_on_disk (full_path, source_timestamp)
@@ -81,7 +89,7 @@ feature -- Status Report
 
 feature -- Commands
 
-	save(a_text: STRING) is
+	save (a_text: STRING)
 			-- save a_text (representing archetype source) to archetype source file
 		require
 			Text_valid: a_text /= Void and then not a_text.is_empty
@@ -89,7 +97,7 @@ feature -- Commands
 			repository.save_as(full_path, a_text)
 		end
 
-	save_as(a_full_path, a_text: STRING) is
+	save_as (a_full_path, a_text: STRING)
 			-- save a_text (representing archetype source) to archetype source file
 		require
 			Text_valid: a_text /= Void and then not a_text.is_empty
@@ -98,7 +106,7 @@ feature -- Commands
 			repository.save_as (a_full_path, a_text)
 		end
 
-	set_compilation_context (a_source_archetype: ARCHETYPE) is
+	set_compilation_context (a_source_archetype: ARCHETYPE)
 			-- create compilation context object with a_source_archetype, which is
 			-- an archetype in differential (source) form (cf flattened)
 		require
@@ -109,7 +117,7 @@ feature -- Commands
 
 feature -- Comparison
 
-	infix "<" (other: like Current): BOOLEAN is
+	infix "<" (other: like Current): BOOLEAN
 			-- Is current object less than `other'?
 		do
 			Result := id < other.id
@@ -117,29 +125,33 @@ feature -- Comparison
 
 feature {NONE} -- Implementation
 
-	make_ontological_paths is
-			-- make ontological_path and ontological_parent_path
+	make_ontological_paths
+			-- Make `base_name', `ontological_path' and `ontological_parent_path'.
 		local
+			pos: INTEGER
 			arch_ont_path: STRING
 		do
-			-- initialise paths down to but not including archetype file name
-			ontological_path := full_path.substring (root_path.count + 1, full_path.last_index_of(os_directory_separator, full_path.count)-1)
-			ontological_path.replace_substring_all (os_directory_separator.out, Ontological_path_separator)
+			pos := full_path.last_index_of (os_directory_separator, full_path.count)
+			ontological_path := full_path.substring (root_path.count + 1, pos - 1)
+			ontological_path.replace_substring_all (os_directory_separator.out, ontological_path_separator)
 			ontological_parent_path := ontological_path.twin
 
 			-- generate a semantic path that corresponds to this archetype:
 			-- constructed from the relative folder path + the semantic part of the archetype id, with '-' separators
 			-- changed to '/' so that the entire path is '/'-separated
 			arch_ont_path := id.domain_concept
-			arch_ont_path.replace_substring_all (id.section_separator.out, Ontological_path_separator)
-			ontological_path.append(Ontological_path_separator + arch_ont_path)
+			arch_ont_path.replace_substring_all (id.section_separator.out, ontological_path_separator)
+			ontological_path.append (ontological_path_separator + arch_ont_path)
 
 			-- generate parent ontological path if appropriate
 			arch_ont_path := id.domain_concept_base
+
 			if not arch_ont_path.is_empty then
-				arch_ont_path.replace_substring_all (id.section_separator.out, Ontological_path_separator)
-				ontological_parent_path.append(Ontological_path_separator + arch_ont_path)
+				arch_ont_path.replace_substring_all (id.section_separator.out, ontological_path_separator)
+				ontological_parent_path.append (ontological_path_separator + arch_ont_path)
 			end
+
+			base_name := id.domain_concept_tail + "(" + id.version_id + ")"
 		end
 
 end

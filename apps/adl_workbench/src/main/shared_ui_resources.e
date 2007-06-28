@@ -411,25 +411,28 @@ feature -- Access
 			Result.put("node_normal/archetype_slot_optional.ico", 					"ARCHETYPE_SLOT.optional.redefined")
 			Result.put("node_redefined/icon_help_example.ico", 						"icon_help_example.redefined")
 
-			Result.put("file_folder_1.ico", 							"file_folder_1")
-			Result.put("archetype_1.ico", 								"archetype_1")
-			Result.put("archetype_specialised_1.ico", 					"archetype_specialised_1")
+			Result.put ("archetype_1.ico", "archetype_1")
+			Result.put ("archetype_specialised_1.ico", "archetype_specialised_1")
 
-			Result.put("file_folder_2.ico", 							"file_folder_2")
-			Result.put("archetype_2.ico", 								"archetype_2")
-			Result.put("archetype_specialised_2.ico", 					"archetype_specialised_2")
+			Result.put ("file_folder_2.ico", "file_folder_2")
+			Result.put ("archetype_2.ico", "archetype_2")
+			Result.put ("archetype_specialised_2.ico", "archetype_specialised_2")
 
-			Result.put("pass.ico", 										"test_passed")
-			Result.put("fail.ico", 										"test_failed")
-			Result.put("not_applicable.ico", 							"test_not_applicable")
+			Result.put ("file_folder_3.ico", "file_folder_3")
+			Result.put ("archetype_3.ico", "archetype_3")
+			Result.put ("archetype_specialised_3.ico", "archetype_specialised_3")
 
-			Result.put("go.ico", 										"go")
-			Result.put("stop.ico", 										"stop")
+			Result.put ("pass.ico", "test_passed")
+			Result.put ("fail.ico", "test_failed")
+			Result.put ("not_applicable.ico", "test_not_applicable")
 
-			Result.put("checked_box.ico", 								"checked_box")
-			Result.put("unchecked_box.ico", 							"unchecked_box")
+			Result.put ("go.ico", "go")
+			Result.put ("stop.ico", "stop")
 
-			Result.put("Ocean_float.png", 								"Ocean logo")
+			Result.put ("checked_box.ico", "checked_box")
+			Result.put ("unchecked_box.ico", "unchecked_box")
+
+			Result.put ("Ocean_float.png", "Ocean logo")
 
 			-- check that icon files exist; for any that don't, output an error message and
 			-- use a blank icon

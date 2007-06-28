@@ -359,9 +359,14 @@ feature {NONE} -- Commands
 			adl_file_open_dialog.filters.extend (["*." + Archetype_file_extension,
 				"Files of type " + Archetype_file_extension])
 			Adl_file_open_dialog.show_modal_to_window (Current)
+
 			if Adl_file_open_dialog.file_name /= Void and then not Adl_file_open_dialog.file_name.is_empty then
 				archetype_directory.add_adhoc_item (Adl_file_open_dialog.file_name)
-				load_and_parse_archetype
+
+				if archetype_directory.has_selected_archetype_descriptor then
+					archetype_view_tree_control.repopulate
+					-- TODO: For some reason, this is not auto-selecting the new item in the tree.
+				end
 			end
 
 			set_pointer_style(cur_csr)

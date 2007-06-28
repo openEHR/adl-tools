@@ -21,61 +21,78 @@ inherit
 
 feature {NONE} -- Initialisation
 
-	make_with_root_path (dir_name: STRING)
-			-- Create based on valid directory path.
+	make (dir_name: STRING; a_group_id: INTEGER)
+			-- Create as part of `a_group_id', based on valid directory path.
 		require
 			dir_name_valid: is_valid_path (dir_name)
+			group_id_valid: a_group_id > 0
 		do
+			group_id := a_group_id
 			root_path := dir_name
 			clear
 		ensure
 			root_path_set: root_path = dir_name
+			group_id_set: group_id = a_group_id
 		end
 
 feature -- Access
 
 	root_path: STRING
-			-- path of file-system repository of archetypes
+			-- Path of file-system repository of archetypes.
 
 	directory: TWO_WAY_TREE [ARCHETYPE_REPOSITORY_ITEM]
-			-- tree-structured directory of folders and archetypes
+			-- Tree-structured directory of folders and archetypes.
 
 feature -- Commands
 
-	clear is
+	clear
+			-- Reinitialise `directory' to empty.
 		do
-			current_root_path := root_path
+			directory := new_folder_node (root_path)
 		end
 
-	repopulate is
-			-- rebuild directory based on existing paths
+	repopulate
+			-- Rebuild `directory' based on existing paths.
 		do
 			clear
 			populate
 		end
 
-	populate is
-			-- make based on valid directory path
+	populate
+			-- Make based on `root_path'.
 		do
-			directory := build_directory(root_path)
+			build_directory (directory)
 		end
 
 feature {NONE} -- Implementation
 
-	build_directory(a_dir_name: STRING): TWO_WAY_TREE [ARCHETYPE_REPOSITORY_ITEM] is
-			-- build a literal representation of the archetype and folder structure
-			-- in the repository path, as a tree; each node carries some meta-data
+	build_directory (tree: like directory)
+			-- Build a literal representation of the archetype and folder structure
+			-- in the repository path, as a tree; each node carries some meta-data.
 		require
-			Dir_name_valid: a_dir_name /= Void
+			tree_attached: tree /= Void
    		deferred
 		end
 
-	current_root_path: STRING
-			-- current path being populated
+	new_folder_node (path: STRING): like directory
+			-- A newly-created folder for `path', ready to be added to `directory'.
+		require
+			path_valid: path /= Void and then path.substring_index (root_path, 1) = 1
+   		do
+			create Result.make (create {ARCHETYPE_REPOSITORY_FOLDER}.make (root_path, path, Current))
+		ensure
+			attached: Result /= Void
+			root_path_set: Result.item.root_path = root_path
+			full_path_set: Result.item.full_path = path
+			repository_set: Result.item.repository = Current
+		end
 
 invariant
-	Repository_path_valid: is_valid_path (root_path)
-	Directory_exists: directory /= Void
+	repository_path_valid: is_valid_path (root_path)
+	directory_attached: directory /= Void
+	directory_root_path: directory.item.root_path = root_path
+	directory_full_path: directory.item.full_path = root_path
+	directory_repository: directory.item.repository = Current
 
 end
 

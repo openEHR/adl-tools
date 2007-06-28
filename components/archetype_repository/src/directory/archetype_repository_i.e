@@ -42,6 +42,9 @@ feature -- Access
 		deferred
 		end
 
+	group_id: INTEGER
+			-- Id of the group to which this repository belongs.
+
 feature -- Status Report
 
 	is_valid_path (path: STRING): BOOLEAN
@@ -72,6 +75,9 @@ feature -- Commands
 			archetype_source_not_empty: not archetype_source.is_empty
 		deferred
 		end
+
+invariant
+	group_id_valid: group_id > 0
 
 end
 

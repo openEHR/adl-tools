@@ -22,24 +22,10 @@ inherit
 create
 	make
 
-feature {NONE} -- Initialisation
-
-	make (dir_name: STRING; a_group_id: INTEGER)
-			-- Create as part of `a_group_id', based on valid directory path.
-		require
-			group_id_valid: a_group_id > 0
-		do
-			make_with_root_path (dir_name)
-			group_id := a_group_id
-		ensure
-			root_path_set: root_path = dir_name
-			group_id_set: group_id = a_group_id
-		end
-
 feature {NONE} -- Implementation
 
-	build_directory(a_dir_name: STRING): TWO_WAY_TREE [ARCHETYPE_REPOSITORY_ITEM] is
-			-- add archetype and folder meta-data for directory to archetype directory
+	build_directory (tree: like directory)
+			-- Add archetype and folder meta-data to `tree'.
 		local
 			fn, full_path: STRING
 			a_dir: DIRECTORY
@@ -47,19 +33,16 @@ feature {NONE} -- Implementation
 			dir_name_index: SORTED_TWO_WAY_LIST[STRING]
 			arch_index: SORTED_TWO_WAY_LIST [ARCHETYPE_REPOSITORY_ARCHETYPE]
 			ara: ARCHETYPE_REPOSITORY_ARCHETYPE
-			arch_node: TWO_WAY_TREE [ARCHETYPE_REPOSITORY_ITEM]
+			node: like directory
    		do
-   			-- create folder for this directory and index it
-			create Result.make(create {ARCHETYPE_REPOSITORY_FOLDER}.make(root_path, a_dir_name, group_id, Current))
-
    			-- generate lists of immediate child directory and archetype file names
-   			-- in the current directory 'a_dir_name'
+   			-- in the current directory 'tree.item.full_path'
    			debug("arch_dir")
-   				io.put_string(shifter + "---> " + a_dir_name + "%N")
+   				io.put_string(shifter + "---> " + tree.item.full_path + "%N")
    				shifter.extend ('%T')
    			end
 
-			create a_dir.make(a_dir_name)
+			a_dir := directory_at (tree.item.full_path)
 
 			if a_dir.exists then
 				a_dir.open_read
@@ -75,7 +58,7 @@ feature {NONE} -- Implementation
 					fn := fs_node_names.item
 
 					if not (fn.is_equal(".") or fn.is_equal("..") or fn.item (1) = '.') then
-						full_path := a_dir_name + Os_directory_separator.out + fn
+						full_path := tree.item.full_path + Os_directory_separator.out + fn
 
 						if (create {RAW_FILE}.make (full_path)).is_directory then
 							dir_name_index.extend (fn)
@@ -99,9 +82,11 @@ feature {NONE} -- Implementation
 			until
 				dir_name_index.off
 			loop
-				full_path := a_dir_name + Os_directory_separator.out + dir_name_index.item
-				Result.put_child_right (build_directory (full_path))
-				Result.child_forth
+				full_path := tree.item.full_path + os_directory_separator.out + dir_name_index.item
+				node := new_folder_node (full_path)
+				build_directory (node)
+				tree.put_child_right (node)
+				tree.child_forth
 				dir_name_index.forth
 			end
 
@@ -111,9 +96,9 @@ feature {NONE} -- Implementation
 			until
 				arch_index.off
 			loop
-				create arch_node.make(arch_index.item)
-				Result.put_child_right(arch_node)
-				Result.child_forth
+				create node.make (arch_index.item)
+				tree.put_child_right (node)
+				tree.child_forth
 				arch_index.forth
 			end
 
@@ -123,10 +108,10 @@ feature {NONE} -- Implementation
    			end
 		end
 
-	shifter: STRING is
-			-- debug indenter
+	shifter: STRING
+			-- Debug indenter.
 		once
-			create Result.make(0)
+			create Result.make_empty
 		end
 
 end
