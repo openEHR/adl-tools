@@ -139,14 +139,16 @@ feature -- Comparison
 feature -- Commands
 
 	clear
+			-- Clear `directory' and its index tables.
 		do
+			clear_selected_archetype_descriptor
 			create ontology_index.make (0)
 			create archetype_id_index.make (0)
 			create directory.make (Void)
 		end
 
 	build_directory
-			-- rebuild directory from source repositories
+			-- Rebuild `directory' from source repositories.
 		do
 			clear
 
@@ -238,7 +240,7 @@ feature -- Traversal
 feature -- Modification
 
 	set_selected_archetype_descriptor (an_arch_repos_item: ARCHETYPE_REPOSITORY_ARCHETYPE)
-			-- set `selected_archetype'
+			-- Set `selected_archetype_descriptor'.
 		require
 			an_arch_repos_item /= Void
 		do
@@ -246,7 +248,7 @@ feature -- Modification
 		end
 
 	set_selected_archetype_descriptor_from_ontological_path (a_path: STRING)
-			-- Set `selected_archetype' using an ontological path like "/ehr/entry/observation/lab-result".
+			-- Set `selected_archetype_descriptor' using an ontological path like "/ehr/entry/observation/lab-result".
 		require
 			Path_valid: has_ontological_archetype_path (a_path)
 		do
@@ -254,7 +256,7 @@ feature -- Modification
 		end
 
 	set_selected_archetype_descriptor_from_archetype_id (an_id: STRING)
-			-- Set `selected_archetype' using an id of archetype.
+			-- Set `selected_archetype_descriptor' using an id of archetype.
 		require
 			Path_valid: has_archetype_id (an_id)
 		do
@@ -265,7 +267,7 @@ feature -- Modification
 		end
 
 	clear_selected_archetype_descriptor
-			-- clear `selected_archetype'
+			-- Clear `selected_archetype_descriptor'.
 		do
 			selected_archetype_descriptor := Void
 		end
@@ -292,7 +294,7 @@ feature -- Modification
 feature -- Status Report
 
 	has_selected_archetype_descriptor: BOOLEAN
-			-- True if an archetype has been selected
+			-- Has an archetype been selected?
 		do
 			Result := selected_archetype_descriptor /= Void
 		end

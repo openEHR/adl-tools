@@ -365,7 +365,6 @@ feature {NONE} -- Commands
 
 				if archetype_directory.has_selected_archetype_descriptor then
 					archetype_view_tree_control.repopulate
-					-- TODO: For some reason, this is not auto-selecting the new item in the tree.
 				end
 			end
 

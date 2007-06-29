@@ -54,33 +54,29 @@ feature -- Initialisation
 
 feature -- Commands
 
-	clear is
-			-- wipe out content from controls
-		do
-			gui_file_tree.wipe_out
-			archetype_directory.clear_selected_archetype_descriptor
-		end
-
 	repopulate is
-			-- repopulate after changes on file system
+			-- Repopulate `gui_file_tree' after changes on file system.
 		local
 			show_node: EV_TREE_NODE
 		do
 			populate
+
 			if archetype_directory.has_selected_archetype_descriptor then
-				show_node := gui_file_tree.retrieve_item_recursively_by_data (archetype_directory.selected_archetype_descriptor.full_path, True)
+				show_node := gui_file_tree.retrieve_item_recursively_by_data (archetype_directory.selected_archetype_descriptor, True)
+
 				if show_node /= Void then
 					gui_file_tree.ensure_item_visible (show_node)
+					show_node.enable_select
 				end
 			end
 		end
 
 	populate is
-			-- populate the ADL tree control by creating it from scratch
+			-- Populate `gui_file_tree' by creating it from scratch.
 		do
-			clear
- 			create gui_tree_item_stack.make(0)
- 			archetype_directory.do_all(agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
+			gui_file_tree.wipe_out
+ 			create gui_tree_item_stack.make (0)
+ 			archetype_directory.do_all (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
 		end
 
 	item_select is
