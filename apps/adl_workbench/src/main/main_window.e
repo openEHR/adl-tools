@@ -229,20 +229,6 @@ feature -- Access
 	need_to_set_repository: BOOLEAN
 			-- flag set on startup to indicate if repository needs to be specified by user
 
-	parent_app: EV_APPLICATION
-			-- provide a reference to the owning application so as to get access to a
-			-- few things that only applications can do, like `process_events`	
-
-feature -- Modification
-
-	set_parent_app(an_app: EV_APPLICATION) is
-			-- set `parent_app'
-		require
-			an_app /= Void
-		do
-			parent_app := an_app
-		end
-
 feature -- Commands
 
 	set_options is
@@ -321,7 +307,7 @@ feature {NONE} -- Commands
 			set_path_view_check_list_settings(strs)
 
 			save_resources
-			parent_app.destroy
+			ev_application.destroy
 		end
 
 	select_language is
@@ -567,7 +553,7 @@ feature {NONE} -- Commands
 		local
 			ev_info_dlg: EV_INFORMATION_DIALOG
 		do
-			create ev_info_dlg.make_with_text(parent_app.clipboard.text)
+			create ev_info_dlg.make_with_text (ev_application.clipboard.text)
 			ev_info_dlg.set_title ("Clipboard Contents")
 			ev_info_dlg.show_modal_to_window (Current)
 		end

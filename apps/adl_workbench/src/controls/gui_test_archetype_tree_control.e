@@ -37,6 +37,11 @@ inherit
 			{NONE} all
 		end
 
+	EV_SHARED_APPLICATION
+		export
+			{NONE} all
+		end
+
 	STRING_UTILITIES
 
 create
@@ -222,7 +227,6 @@ feature -- Commands
 
 					if item_is_checked then
 						gr.ensure_visible
-						gui.parent_app.process_events
 						adl_interface.reset
 						from
 							tests.start
@@ -232,7 +236,6 @@ feature -- Commands
 							tests.off or test_result = Test_failed
 						loop
 							gr.set_item (col_csr, create {EV_GRID_LABEL_ITEM}.make_with_text("processing..."))
-							gui.parent_app.process_events
 
 							create test_status.make(0)
 
@@ -254,15 +257,14 @@ feature -- Commands
 							if not test_status.is_empty then
 								gui.test_status_area.append_text ("--------------- " + arch_item.id.as_string + " -----------------%N" + test_status)
 							end
-							gui.parent_app.process_events
 
+							ev_application.process_events
 							tests.forth
 							col_csr := col_csr + 1
 						end
 						toggle_checkbox_at_cell(gli_col_2)
 						last_tested_archetypes_count := last_tested_archetypes_count + 1
 						gui.arch_test_processed_count.set_text(last_tested_archetypes_count.out)
-						gui.parent_app.process_events
 					end
 				end
 
