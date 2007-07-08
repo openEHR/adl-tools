@@ -1,9 +1,9 @@
 """
-Tool-specific initialisation for EiffelStudio 5.7.
+Tool-specific initialisation for EiffelStudio.
 This does not work with EiffelStudio 5.6 or earlier.
 """
 
-import os, glob, sys, shutil, datetime, subprocess
+import os, glob, sys, shutil, datetime, subprocess, re
 from SCons.Script import *
 	
 log_file = None
@@ -31,6 +31,21 @@ def log_process(args, working_directory):
 	log_file.flush()
 	return subprocess.call(args, cwd = working_directory, stdout = log_file, stderr = subprocess.STDOUT)
 
+def log_file_tail():
+	"""The last thousand characters of the log file."""
+	result = ''
+
+	if log_file != sys.stdout:
+		if log_file.tell() > 1000:
+			log_file.seek(-1000, 1)
+		else:
+			log_file.seek(0)
+
+		result = '... ' + log_file.read()
+		log_file.seek(0, 2)
+
+	return result
+
 def ec(target, source, env):
 	"""
 	The Eiffel Builder's action function, running the Eiffel compiler "ec".
@@ -57,15 +72,7 @@ def ec(target, source, env):
 		log_process(['finish_freezing', '-silent'], os.path.dirname(exe))
 
 	if not os.path.exists(exe):
-		if log_file != sys.stdout:
-			if log_file.tell() > 1000:
-				log_file.seek(-1000, 1)
-			else:
-				log_file.seek(0)
-
-			print '... ' + log_file.read()
-			log_file.seek(0, 2)
-
+		print log_file_tail()
 		result = 1
 
 	if log_file != sys.stdout: log_file.close()
@@ -111,28 +118,43 @@ def ec_emitter(target, source, env):
 	return result
 
 def ecf_target(target, source = None, env = None):
-	return os.path.basename(os.path.dirname(str(target[0])))
+	"""The ECF target corresponding to the given build target."""
+	return os.path.basename(ecf_target_dir(target))
 
-def c_compiler(env):
-	"""
-	The given Environment's ISE_C_COMPILER variable, if set.
-	The Microsoft compiler is the default because ISE_C_COMPILER is normally set on all platforms but Windows.
-	"""
-	if env['ENV'].has_key('ISE_C_COMPILER'):
-		return env['ENV']['ISE_C_COMPILER']
-	else:
-		return 'msc'
+def ecf_target_dir(target):
+	"""The ECF target directory corresponding to the given build target."""
+	return os.path.dirname(str(target[0]))
+
+ecf_scanner_re = re.compile(r'<(cluster|override)(\s+\S+="[^"]*")*\s+location="([^"]+)"(\s+recursive="true")?', re.M)
+
+def ecf_scanner(node, env, path):
+	"""All Eiffel class files in all clusters mentioned in an ECF file."""
+	result = []
+	previous_cluster = ''
+
+	for group1, group2, location, recursive in ecf_scanner_re.findall(node.get_contents()):
+		if location.startswith('$|'):
+			cluster = os.path.join(previous_cluster, location.replace('$|', '', 1))
+		else:
+			cluster = previous_cluster = os.path.abspath(os.path.join(os.path.dirname(str(node)), location))
+
+		if recursive:
+			result += eiffel_classes_in_cluster(cluster)
+		else:
+			result += files(cluster + '/*.e')
+
+	return result
 
 def generate(env):
 	"""Add a Builder and options for Eiffel to the given Environment."""
 	opts = Options()
 	opts.Add('ECFLAGS', '"-freeze" for a workbench build.', '-finalize')
 	opts.Add('ECLOG', 'File to log Eiffel compiler output.', 'SCons.Eiffel.log')
-	opts.Add('ISE_C_COMPILER', 'msc = Microsoft, bcc = Borland, etc.', c_compiler(env))
 	opts.Update(env)
 	Help(opts.GenerateHelpText(env))
 
 	env['BUILDERS']['Eiffel'] = Builder(action = Action(ec, ecf_target), emitter = ec_emitter, suffix = env['PROGSUFFIX'])
+	env.Append(SCANNERS = Scanner(function = ecf_scanner, skeys = ['.ecf']))
 
 def exists(env):
 	"""Is the Eiffel compiler available?"""

@@ -15,6 +15,9 @@ class SPLASH_WINDOW
 
 inherit
 	EV_MESSAGE_DIALOG
+		redefine
+			initialize
+		end
 
 	SHARED_UI_RESOURCES
 		export
@@ -25,26 +28,36 @@ inherit
 
 create
 	make
-	
-feature -- Initialization
+
+feature {NONE} -- Initialization
 
 	make is
+			-- Create to be visible for one-and-a-half seconds.
 		do
-			make_with_text(splash_text)
-			set_background_color(create {EV_COLOR}.make_with_8_bit_rgb(255, 255, 255))
-			set_pixmap(pixmaps.item("Ocean logo"))
+			make_with_text (splash_text)
+			set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 255))
+			set_pixmap (pixmaps ["Ocean logo"])
 			set_position (app_x_position + 350, app_y_position + 200)
 
-			create timer.make_with_interval(1500)
-			timer.actions.extend(~ close)
+			create timer.make_with_interval (1500)
+			timer.actions.extend (agent close)
 		end
-		
+
+	initialize is
+			-- HACK to work around crash in EV_MESSAGE_DIALOG.initialize.
+		do
+			foreground_color := implementation.foreground_color
+			background_color := implementation.background_color
+			Precursor
+		end
+
 feature {NONE} -- Implementation
 
 	timer: EV_TIMEOUT
-	
+			-- Timer to keep window visible for a limited number of seconds.
+
 	close is
-			-- 
+			-- Close the window and destroy `timer'.
 		do
 			timer.destroy
 			hide

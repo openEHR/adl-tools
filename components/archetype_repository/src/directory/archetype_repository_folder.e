@@ -53,7 +53,7 @@ feature {NONE} -- Implementation
 		end
 
 invariant
-	Base_name: base_name /= Void and then not base_name.is_empty
+	base_name_attached: base_name /= Void
 
 end
 

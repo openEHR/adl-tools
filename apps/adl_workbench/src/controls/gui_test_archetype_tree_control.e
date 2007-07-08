@@ -37,6 +37,11 @@ inherit
 			{NONE} all
 		end
 
+	EV_SHARED_APPLICATION
+		export
+			{NONE} all
+		end
+
 	STRING_UTILITIES
 
 create
@@ -216,7 +221,6 @@ feature -- Commands
 
 				if arch_item /= Void and checked then
 					gr.ensure_visible
-					gui.parent_app.process_events
 					adl_interface.reset
 
 					from
@@ -227,7 +231,6 @@ feature -- Commands
 						tests.off or test_result = Test_failed
 					loop
 						gr.set_item (col_csr, create {EV_GRID_LABEL_ITEM}.make_with_text ("processing..."))
-						gui.parent_app.process_events
 
 						create test_status.make_empty
 
@@ -252,15 +255,13 @@ feature -- Commands
 							gui.test_status_area.append_text ("--------------- " + arch_item.id.as_string + " -----------------%N" + test_status)
 						end
 
-						gui.parent_app.process_events
-
+						ev_application.process_events
 						tests.forth
 						col_csr := col_csr + 1
 					end
 
 					last_tested_archetypes_count := last_tested_archetypes_count + 1
 					gui.arch_test_processed_count.set_text (last_tested_archetypes_count.out)
-					gui.parent_app.process_events
 				end
 
 				set_checkbox (gr.item (2), False)
@@ -586,8 +587,8 @@ feature {NONE} -- Implementation
 			selected: EV_GRID_ITEM
 		do
 			if key /= Void then
-				if not gui.parent_app.shift_pressed and not gui.parent_app.alt_pressed then
-					if gui.parent_app.ctrl_pressed then
+				if not ev_application.shift_pressed and not ev_application.alt_pressed then
+					if ev_application.ctrl_pressed then
 						if key.code = {EV_KEY_CONSTANTS}.key_up then
 							key.set_code ({EV_KEY_CONSTANTS}.key_menu)
 							scroll_to_row (grid.first_visible_row.index - 1)

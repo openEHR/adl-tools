@@ -96,7 +96,6 @@ feature {NONE} -- Implementation
 
 invariant
 	Repository_path_valid: root_path /= Void and then valid_path(root_path)
-	Directory_exists: directory /= Void
 
 end
 
