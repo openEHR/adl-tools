@@ -1,6 +1,11 @@
 indexing
 	component:   "openEHR Archetype Project"
-	description: "Service interface to handing ADL files and parsing."
+	description: "[
+				 Archetype compiler interface. This object is targetted to archetypes found in the 
+				 ARCHETYPE_DIRECTORY, and can then be used to parse (single archetype), compile
+				 (archetype lineage), save (serialise back to ADL), and save-as (serialise to
+				 another format).
+				 ]"
 	keywords:    "test, ADL"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
@@ -22,7 +27,7 @@ inherit
 			{ANY} constraint_model_factory
 		end
 
-	SHARED_ARCHETYPE_CONTEXT
+	SHARED_APPLICATION_CONTEXT
 		export
 			{NONE} all
 			{ANY} current_language, set_current_language
@@ -81,6 +86,9 @@ feature -- Initialisation
 
 feature -- Access
 
+	source: STRING
+			-- source text of target Archetype
+
 	target: ARCHETYPE_REPOSITORY_ARCHETYPE
 			-- archetype currently being processed by this instance of the compiler
 
@@ -90,8 +98,6 @@ feature -- Access
 		once
 			Result := (create {OPENEHR_VERSION}).version
 		end
-
-	adl_engine: ADL_ENGINE
 
 	status: STRING
 			-- status of last operation
@@ -117,6 +123,12 @@ feature -- Status Report
 
 	exception_encountered: BOOLEAN
 			-- True if last operation caused an exception
+
+	has_target: BOOLEAN is
+			-- True if the compiler has been set to a target archetype descriptor in the ARCHETYPE_DIRECTORY
+		do
+			Result := target /= Void
+		end
 
 feature -- Commands
 
@@ -171,6 +183,9 @@ feature -- Commands
 		do
 			reset
 			target := ara
+			source := target.source
+		ensure
+			has_target
 		end
 
 	set_target_to_selected is
@@ -180,6 +195,9 @@ feature -- Commands
 		do
 			reset
 			target := archetype_directory.selected_archetype_descriptor
+			source := target.source
+		ensure
+			has_target
 		end
 
 	save_archetype is
@@ -189,7 +207,7 @@ feature -- Commands
 				status.wipe_out
 				save_succeeded := False
 				if archetype_valid then
-				--	adl_engine.serialise(a)
+					adl_engine.serialise("adl")
 					target.save (adl_engine.serialised_archetype)
 					save_succeeded := True
 				else
@@ -267,12 +285,14 @@ feature -- Commands
 
 	parse_archetype is
 			-- Called by `select_actions' of `parse'.
+		require
+			has_target
 		do
 			if not exception_encountered then
 				clear_billboard
+--				if target.needs_recompile then					
 				parse_succeeded := False
-				adl_engine.set_source(target.source)
-				adl_engine.parse
+				adl_engine.parse(source)
 				if not adl_engine.archetype_available then
 					post_error(Current, "parse_archetype", "parse_archetype_e1", <<adl_engine.parse_error_text>>)
 				else
@@ -294,6 +314,7 @@ feature -- Commands
 					if target.archetype.has_warnings then
 						post_warning(Current, "parse_archetype", "general", <<target.archetype.warnings>>)
 					end
+--				end
 				end
 			else
 				post_error(Current, "parse_archetype", "parse_archetype_e3", Void)
@@ -338,6 +359,8 @@ feature -- External Java Interface
 		end
 
 feature {NONE} -- Implementation
+
+	adl_engine: ADL_ENGINE
 
 	initialise_serialisers is
 		once

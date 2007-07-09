@@ -15,7 +15,7 @@ deferred class
 	ARCHETYPE_REPOSITORY_I
 
 inherit
-	SHARED_ARCHETYPE_CONTEXT
+	SHARED_APPLICATION_CONTEXT
 		export
 			{NONE} all
 			{ANY} current_language, set_current_language

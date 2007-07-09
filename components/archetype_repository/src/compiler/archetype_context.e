@@ -26,7 +26,7 @@ inherit
 
 create
 	make
-	
+
 feature -- Initialisation
 
 	make(an_archetype: ARCHETYPE) is
@@ -35,6 +35,9 @@ feature -- Initialisation
 			Archetype_exists: an_archetype /= Void
 		do
 			differential := an_archetype
+			if not an_archetype.is_specialised then
+				flat_form := differential
+			end
 		end
 
 feature -- Access

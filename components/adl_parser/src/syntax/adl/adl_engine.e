@@ -20,7 +20,7 @@ inherit
 			{ANY} archetype_serialiser_formats, has_archetype_serialiser_format
 		end
 
-	SHARED_ARCHETYPE_CONTEXT
+	SHARED_APPLICATION_CONTEXT
 		export
 			{NONE} all
 		end
@@ -50,15 +50,6 @@ feature -- Initialisation
 		end
 
 feature -- Access
-
-	archetype_id: ARCHETYPE_ID
-			-- id of current archetype
-
-	parent_archetype_id: ARCHETYPE_ID
-			-- id of current archetype parent, if specialised
-
-	source: STRING
-			-- source of current archetype
 
 	archetype: ARCHETYPE
 			-- set if parse succeeded or if created new
@@ -94,11 +85,9 @@ feature -- Commands
 			a_im_entity /= void and then not a_im_entity.is_empty
 			Primary_language_valid: a_primary_language /= void and then not a_primary_language.is_empty
 		do
-			source := Void
 			create archetype.make_minimal(create {ARCHETYPE_ID}.make(a_im_originator, a_im_name, a_im_entity,
 				"UNKNOWN", "draft"), a_primary_language)
 			set_current_language(archetype.ontology.primary_language)
-			archetype_id := archetype.archetype_id
 		ensure
 			Archetype_available: archetype_available and archetype.is_valid
 		end
@@ -117,31 +106,7 @@ feature -- Commands
 --			Archetype_available: archetype.is_valid
 --		end
 
-	set_archetype_id(an_id: ARCHETYPE_ID) is
-			-- set archetype id from GUI
-		require
-			Id_valid: an_id /= Void
-		do
-			archetype_id := an_id
-		end
-
-	set_parent_archetype_id(an_id: ARCHETYPE_ID) is
-			-- set archetype id from GUI
-		require
-			Id_valid: an_id /= Void
-		do
-			parent_archetype_id := an_id
-		end
-
-	set_source(in_text: STRING) is
-			-- set `in_text' as working archetype with id `arch_id'
-		require
-			Text_valid: in_text /= Void and then not in_text.is_empty
-		do
-			source := in_text
-		end
-
-	parse is
+	parse (source: STRING) is
 			-- parse tree. If successful, `archetype' contains the parse
 			-- structure. Then validate the tree
 		require
@@ -158,16 +123,9 @@ feature -- Commands
 
 			create adl_parser.make
 			adl_parser.execute(source)
-			archetype_id := adl_parser.archetype_id -- usually it will have been set
 			if adl_parser.syntax_error then
 				parse_error_text := adl_parser.error_text
 			else
-				if adl_parser.parent_archetype_id /= Void then
-					parent_archetype_id := adl_parser.parent_archetype_id
-				else
-					parent_archetype_id := Void
-				end
-
 				------------------- language section ---------------
 				if adl_parser.language_text /= Void and then not adl_parser.language_text.is_empty then
 					language_context.set_source(adl_parser.language_text, adl_parser.language_text_start_line)

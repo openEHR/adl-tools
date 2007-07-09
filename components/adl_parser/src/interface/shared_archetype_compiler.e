@@ -16,7 +16,7 @@ indexing
 class SHARED_ARCHETYPE_COMPILER
 
 inherit
-	SHARED_ARCHETYPE_CONTEXT
+	SHARED_APPLICATION_CONTEXT
 
 feature {NONE} -- Implementation
 

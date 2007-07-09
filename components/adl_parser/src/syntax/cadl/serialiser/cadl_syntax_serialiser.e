@@ -26,7 +26,7 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_ARCHETYPE_CONTEXT
+	SHARED_APPLICATION_CONTEXT
 		export
 			{NONE} all
 		end

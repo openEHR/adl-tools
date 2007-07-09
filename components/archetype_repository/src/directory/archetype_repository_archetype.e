@@ -81,10 +81,10 @@ feature -- Status Report
 	is_specialised: BOOLEAN
 			-- True if this archetype is a specialisation of another archetype
 
-	file_changed_on_disk: BOOLEAN
+	needs_recompile: BOOLEAN
 			-- Has the loaded archetype designated by `path' changed on disk since last read?
 		do
-			Result := repository.has_file_changed_on_disk (full_path, source_timestamp)
+			Result := compilation_context = Void or repository.has_file_changed_on_disk (full_path, source_timestamp)
 		end
 
 feature -- Commands

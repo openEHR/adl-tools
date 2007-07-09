@@ -274,6 +274,8 @@ feature -- Commands
 
 	load_and_parse_archetype
 			-- Load and parse archetype currently selected in archetype_directory
+		require
+			archetype_directory.has_selected_archetype_descriptor
 		do
 			archetype_compiler.set_target_to_selected
 
@@ -826,10 +828,10 @@ feature {EV_DIALOG} -- Implementation
 
 	populate_archetype_id is
 		do
-			archetype_id.set_text (utf8 (archetype_compiler.adl_engine.archetype_id.as_string))
-			if archetype_compiler.adl_engine.archetype /= Void and then
-					archetype_compiler.adl_engine.archetype.is_specialised then
-				parent_archetype_id.set_text (utf8 (archetype_compiler.adl_engine.parent_archetype_id.as_string))
+			archetype_id.set_text (utf8 (archetype_directory.selected_archetype.archetype_id.as_string))
+			if archetype_directory.selected_archetype /= Void and then
+					archetype_directory.selected_archetype.is_specialised then
+				parent_archetype_id.set_text (utf8 (archetype_directory.selected_archetype.parent_archetype_id.as_string))
 			else
 				parent_archetype_id.set_text("")
 			end
@@ -855,7 +857,7 @@ feature {EV_DIALOG} -- Implementation
 			len, left_pos, right_pos, line_cnt: INTEGER
 		do
 			create s.make(0)
-			src := archetype_compiler.adl_engine.source
+			src := archetype_compiler.source
 			len := src.count
 			from
 				left_pos := 1
