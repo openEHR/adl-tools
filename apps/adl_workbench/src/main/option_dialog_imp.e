@@ -35,7 +35,7 @@ feature {NONE}-- Initialization
 			create l_ev_vertical_box_1
 			create l_ev_horizontal_box_1
 			create l_ev_label_1
-			create option_dialog_editor_command_edit
+			create option_dialog_editor_command_text
 			create option_dialog_editor_command_button
 			create l_ev_horizontal_box_2
 			create option_dialog_node_tree_expand_cb
@@ -48,7 +48,7 @@ feature {NONE}-- Initialization
 			extend (l_ev_vertical_box_1)
 			l_ev_vertical_box_1.extend (l_ev_horizontal_box_1)
 			l_ev_horizontal_box_1.extend (l_ev_label_1)
-			l_ev_horizontal_box_1.extend (option_dialog_editor_command_edit)
+			l_ev_horizontal_box_1.extend (option_dialog_editor_command_text)
 			l_ev_horizontal_box_1.extend (option_dialog_editor_command_button)
 			l_ev_vertical_box_1.extend (l_ev_horizontal_box_2)
 			l_ev_horizontal_box_2.extend (option_dialog_node_tree_expand_cb)
@@ -79,10 +79,10 @@ feature {NONE}-- Initialization
 			integer_constant_retrieval_functions.extend (agent dialog_border_width)
 			l_ev_horizontal_box_1.disable_item_expand (l_ev_label_1)
 			l_ev_horizontal_box_1.disable_item_expand (option_dialog_editor_command_button)
-			l_ev_label_1.set_text ("Editor")
-			color_constant_set_procedures.extend (agent option_dialog_editor_command_edit.set_background_color (?))
+			l_ev_label_1.set_text ("Editor:")
+			color_constant_set_procedures.extend (agent option_dialog_editor_command_text.set_background_color (?))
 			color_constant_retrieval_functions.extend (agent editable_colour)
-			option_dialog_editor_command_edit.set_minimum_width (300)
+			option_dialog_editor_command_text.set_minimum_width (300)
 			option_dialog_editor_command_button.set_text ("Browse...")
 			option_dialog_editor_command_button.set_minimum_width (65)
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_2.set_padding (?))
@@ -103,17 +103,14 @@ feature {NONE}-- Initialization
 			option_dialog_cancel_button.set_minimum_width (100)
 			integer_constant_set_procedures.extend (agent set_maximum_width (?))
 			integer_constant_retrieval_functions.extend (agent app_max_width)
-			integer_constant_set_procedures.extend (agent set_maximum_height (?))
-			integer_constant_retrieval_functions.extend (agent app_max_height)
-			set_title ("ADL Workbench options")
+			set_maximum_height (156)
+			set_title ("ADL Workbench Options")
 			
 			set_all_attributes_using_constants
 			
 				-- Connect events.
-			option_dialog_editor_command_edit.return_actions.extend (agent option_dialog_ok)
 			option_dialog_editor_command_button.select_actions.extend (agent get_editor_command_directory)
 			option_dialog_ok_button.select_actions.extend (agent option_dialog_ok)
-			option_dialog_cancel_button.select_actions.extend (agent option_dialog_cancel)
 
 				-- Call `user_initialization'.
 			user_initialization
@@ -129,7 +126,7 @@ feature -- Access
 	l_ev_vertical_box_1: EV_VERTICAL_BOX
 	option_dialog_node_tree_expand_cb: EV_CHECK_BUTTON
 	l_ev_label_1: EV_LABEL
-	option_dialog_editor_command_edit: EV_TEXT_FIELD
+	option_dialog_editor_command_text: EV_TEXT_FIELD
 
 feature {NONE} -- Implementation
 
@@ -146,18 +143,13 @@ feature {NONE} -- Implementation
 		deferred
 		end
 	
-	option_dialog_ok is
-			-- Called by `return_actions' of `option_dialog_editor_command_edit'.
-		deferred
-		end
-	
 	get_editor_command_directory is
 			-- Called by `select_actions' of `option_dialog_editor_command_button'.
 		deferred
 		end
 	
-	option_dialog_cancel is
-			-- Called by `select_actions' of `option_dialog_cancel_button'.
+	option_dialog_ok is
+			-- Called by `select_actions' of `option_dialog_ok_button'.
 		deferred
 		end
 	

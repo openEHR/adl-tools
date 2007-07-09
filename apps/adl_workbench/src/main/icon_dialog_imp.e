@@ -66,17 +66,18 @@ feature {NONE}-- Initialization
 			color_constant_retrieval_functions.extend (agent editable_colour)
 			icon_help_list.set_minimum_width (300)
 			icon_help_list.set_minimum_height (400)
+			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_1.set_padding (?))
+			integer_constant_retrieval_functions.extend (agent dialog_padding_width)
+			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_1.set_border_width (?))
+			integer_constant_retrieval_functions.extend (agent dialog_border_width)
 			l_ev_horizontal_box_1.disable_item_expand (ok_button)
 			ok_button.set_text ("OK")
-			ok_button.set_minimum_width (50)
+			ok_button.set_minimum_width (100)
 			set_minimum_width (380)
-			set_minimum_height (525)
+			set_minimum_height (580)
 			set_title ("ADL Workbench Icon Key")
 			
 			set_all_attributes_using_constants
-			
-				-- Connect events.
-			ok_button.select_actions.extend (agent icon_dialog_ok)
 
 				-- Call `user_initialization'.
 			user_initialization
@@ -105,12 +106,6 @@ feature {NONE} -- Implementation
 			-- Feature for custom initialization, called at end of `initialize'.
 		deferred
 		end
-	
-	icon_dialog_ok is
-			-- Called by `select_actions' of `ok_button'.
-		deferred
-		end
-	
 	
 feature {NONE} -- Constant setting
 

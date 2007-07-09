@@ -102,23 +102,16 @@ feature -- Commands
 	display_details_of_selected_item
 			-- Display the details of `selected_item'.
 		local
-			cur_csr: EV_CURSOR
 			arch_item: ARCHETYPE_REPOSITORY_ARCHETYPE
 		do
-			cur_csr := gui.pointer_style
-			gui.set_pointer_style (wait_cursor)
-
 			arch_item ?= gui_file_tree.selected_item.data
 
 			if arch_item /= Void then
 				archetype_directory.set_selected_item (arch_item)
-				gui.load_and_parse_adl_file(archetype_directory.selected_archetype.full_path)
-				set_current_work_directory (adl_interface.working_directory)
+				gui.load_and_parse_adl_file (arch_item.full_path)
 			else
 				archetype_directory.clear_selected_item
 			end
-
-			gui.set_pointer_style (cur_csr)
 		end
 
 feature {NONE} -- Implementation
