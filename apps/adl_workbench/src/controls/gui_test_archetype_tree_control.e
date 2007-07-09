@@ -186,7 +186,6 @@ feature -- Commands
 			gli: EV_GRID_LABEL_ITEM
 			checkbox: EV_GRID_CHECKABLE_LABEL_ITEM
 			res_label: STRING
-			checked: BOOLEAN
 			test_result: INTEGER
 		do
 			test_execution_underway := True
