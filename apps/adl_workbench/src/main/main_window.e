@@ -225,20 +225,6 @@ feature -- Access
 	need_to_set_repository: BOOLEAN
 			-- flag set on startup to indicate if repository needs to be specified by user
 
-	parent_app: EV_APPLICATION
-			-- provide a reference to the owning application so as to get access to a
-			-- few things that only applications can do, like `process_events`	
-
-feature -- Modification
-
-	set_parent_app(an_app: EV_APPLICATION) is
-			-- set `parent_app'
-		require
-			an_app /= Void
-		do
-			parent_app := an_app
-		end
-
 feature -- Commands
 
 	show
@@ -344,7 +330,7 @@ feature {NONE} -- Commands
 			set_path_view_check_list_settings(strs)
 
 			save_resources
-			parent_app.destroy
+			ev_application.destroy
 		end
 
 	select_language is
@@ -423,7 +409,7 @@ feature {NONE} -- Commands
 						create a_file.make (name)
 
 						if a_file.exists then
-							create question_dialog.make_with_text ("File " + save_dialog.file_title + " already exists; replace?")
+							create question_dialog.make_with_text ("File " + save_dialog.file_title + " already exists. Replace it?")
 							question_dialog.set_buttons(<<"Yes", "No">>)
 							question_dialog.show_modal_to_window (Current)
 							ok_to_write := question_dialog.selected_button.is_equal("Yes")
@@ -594,7 +580,7 @@ feature {NONE} -- Commands
 		local
 			ev_info_dlg: EV_INFORMATION_DIALOG
 		do
-			create ev_info_dlg.make_with_text(parent_app.clipboard.text)
+			create ev_info_dlg.make_with_text (ev_application.clipboard.text)
 			ev_info_dlg.set_title ("Clipboard Contents")
 			ev_info_dlg.show_modal_to_window (Current)
 		end
@@ -926,9 +912,9 @@ feature {NONE} -- Standard Windows behaviour that EiffelVision ought to be manag
 		local
 			container: EV_CONTAINER
 		do
-			if has_recursive (parent_app.focused_widget) then
+			if has_recursive (ev_application.focused_widget) then
 				from
-					container := parent_app.focused_widget.parent
+					container := ev_application.focused_widget.parent
 				until
 					container = Void or Result /= Void
 				loop
@@ -956,7 +942,7 @@ feature {NONE} -- Standard Windows behaviour that EiffelVision ought to be manag
 					widgets := container.linear_representation
 					widgets.start
 				until
-					widgets.off or container.has_recursive (parent_app.focused_widget)
+					widgets.off or container.has_recursive (ev_application.focused_widget)
 				loop
 					focus_first_widget (widgets.item)
 					widgets.forth
@@ -973,7 +959,7 @@ feature {NONE} -- Standard Windows behaviour that EiffelVision ought to be manag
 	focused_text: EV_TEXT_COMPONENT
 			-- The currently focused text widget, if any.
 		do
-			Result ?= parent_app.focused_widget
+			Result ?= ev_application.focused_widget
 
 			if not has_recursive (Result) then
 				Result := Void
@@ -1000,8 +986,8 @@ feature {NONE} -- Standard Windows behaviour that EiffelVision ought to be manag
 				agent (key: EV_KEY; previous, next: EV_WIDGET)
 					do
 						if key /= Void and then key.code = {EV_KEY_CONSTANTS}.key_tab then
-							if not parent_app.ctrl_pressed and not parent_app.alt_pressed then
-								if parent_app.shift_pressed then
+							if not ev_application.ctrl_pressed and not ev_application.alt_pressed then
+								if ev_application.shift_pressed then
 									previous.set_focus
 								else
 									next.set_focus
