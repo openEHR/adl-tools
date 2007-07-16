@@ -66,11 +66,11 @@ feature -- Access
 	last_op_fail_reason: STRING
 
 	file_timestamp: INTEGER
-			-- last marked change timestamp of file
+			-- Last marked change timestamp of file.
 
 feature -- Status Report
 
-	has_file(a_file_name: STRING):BOOLEAN is
+	has_file (a_file_name: STRING):BOOLEAN is
 			-- does `a_file_name' exist in `current_directory'
 		require
 			File_name_valid: a_file_name /= Void
@@ -82,13 +82,12 @@ feature -- Status Report
 		end
 
 	file_changed (a_timestamp: INTEGER): BOOLEAN is
-			-- is a_timestamp older than file current modification date
+			-- Is `a_timestamp' older than file current modification date?
 		local
-			a_file: PLAIN_TEXT_FILE
+			file: PLAIN_TEXT_FILE
 		do
-			create a_file.make_open_read(current_full_path)
-			Result := a_file.date /= a_timestamp
-			a_file.close
+			create file.make (current_full_path)
+			Result := file.exists and then file.date /= a_timestamp
 		end
 
 	file_writable(a_file_name:STRING): BOOLEAN is
@@ -108,13 +107,17 @@ feature -- Status Report
 feature -- Command
 
 	set_file_timestamp is
-			-- set time mark for file changes to be compared to - read from modify date of current file
+			-- Set time mark for file changes to be compared to - read from modify date of current file.
 		local
-			a_file: PLAIN_TEXT_FILE
+			file: PLAIN_TEXT_FILE
 		do
-			create a_file.make_open_read(current_full_path)
-			file_timestamp := a_file.date
-			a_file.close
+			create file.make (current_full_path)
+
+			if file.exists then
+				file_timestamp := file.date
+			else
+				file_timestamp := 0
+			end
 		end
 
 	read_file is

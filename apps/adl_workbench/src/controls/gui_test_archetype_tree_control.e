@@ -37,6 +37,11 @@ inherit
 			{NONE} all
 		end
 
+	EV_SHARED_APPLICATION
+		export
+			{NONE} all
+		end
+
 	STRING_UTILITIES
 
 create
@@ -44,8 +49,8 @@ create
 
 feature -- Definitions
 
-	First_test_col: INTEGER is 3
-			-- number of first column in grid to be used for test results
+	First_test_col: INTEGER is 2
+			-- Number of first column in grid to be used for test results.
 
 	Test_passed: INTEGER is 101
 
@@ -124,16 +129,15 @@ feature -- Commands
 	populate is
 			-- populate the ADL tree control by creating it from scratch
 		local
-			gli: EV_GRID_LABEL_ITEM
+			gli: EV_GRID_CHECKABLE_LABEL_ITEM
 			col_csr: INTEGER
 		do
 			clear
  			create grid_row_stack.make (0)
 
  			-- populate first column with archetype tree
-			create gli.make_with_text ("Root")
+			gli := new_checkbox_item ("Root")
 			grid.set_item (1, 1, gli)
-			add_checkbox (gli.row)
 			gli.enable_select
 			grid_row_stack.extend (gli.row)
 
@@ -157,24 +161,10 @@ feature -- Commands
 			is_expanded := False
 			toggle_expand_tree
 			grid.column (1).resize_to_content
-			grid.column (2).resize_to_content
 
 			gui.arch_test_processed_count.set_text ("0")
 			gui.remove_unused_codes_rb.disable_select
 			gui.overwrite_adl_rb.disable_select
-		end
-
-	item_select is
-			-- do something when an item is selected
-		local
-			arch_item: ARCHETYPE_REPOSITORY_ARCHETYPE
-		do
-			arch_item ?= grid.selected_rows.first.data
-
-			if arch_item /= Void then
-				has_selected_file := True
-				selected_file_path := arch_item.full_path
-			end
 		end
 
 	archetype_test_go_stop is
@@ -192,10 +182,10 @@ feature -- Commands
 		local
 			arch_item: ARCHETYPE_REPOSITORY_ARCHETYPE
 			row_csr, col_csr: INTEGER
-			gr: EV_GRID_ROW
+			row: EV_GRID_ROW
 			gli: EV_GRID_LABEL_ITEM
+			checkbox: EV_GRID_CHECKABLE_LABEL_ITEM
 			res_label: STRING
-			checked: BOOLEAN
 			test_result: INTEGER
 		do
 			test_execution_underway := True
@@ -210,60 +200,60 @@ feature -- Commands
 			until
 				row_csr > grid.row_count or test_stop_requested
 			loop
-				gr := grid.row (row_csr)
-				arch_item ?= gr.item (1).data
-				checked ?= gr.item (2).data
+				row := grid.row (row_csr)
+				checkbox ?= row.item (1)
 
-				if arch_item /= Void and checked then
-					gr.ensure_visible
-					gui.parent_app.process_events
-					archetype_compiler.reset
+				if checkbox /= Void and then checkbox.is_checked then
+					arch_item ?= checkbox.data
 
-					from
-						tests.start
-						col_csr := First_test_col
-						test_result := Test_unknown
-					until
-						tests.off or test_result = Test_failed
-					loop
-						gr.set_item (col_csr, create {EV_GRID_LABEL_ITEM}.make_with_text ("processing..."))
-						gui.parent_app.process_events
+					if arch_item /= Void then
+						row.ensure_visible
+						archetype_compiler.reset
 
-						create test_status.make_empty
+						from
+							tests.start
+							col_csr := first_test_col
+							test_result := test_unknown
+						until
+							tests.off or test_result = test_failed
+						loop
+							row.set_item (col_csr, create {EV_GRID_LABEL_ITEM}.make_with_text ("processing..."))
 
-						test_result := tests.item_for_iteration.item ([arch_item])
+							create test_status.make_empty
 
-						inspect test_result
-						when Test_passed then
-							res_label := "test_passed"
-						when Test_failed then
-							res_label := "test_failed"
-						when Test_not_applicable then
-							res_label := "test_not_applicable"
-						else
+							test_result := tests.item_for_iteration.item ([arch_item])
 
+							inspect test_result
+							when test_passed then
+								res_label := "test_passed"
+							when test_failed then
+								res_label := "test_failed"
+							when test_not_applicable then
+								res_label := "test_not_applicable"
+							else
+
+							end
+
+							create gli.make_with_text ("")
+							gli.set_pixmap (pixmaps [res_label])
+							row.set_item (col_csr, gli)
+
+							if not test_status.is_empty then
+								gui.test_status_area.append_text ("--------------- " + arch_item.id.as_string + " -----------------%N" + test_status)
+							end
+
+							ev_application.process_events
+							tests.forth
+							col_csr := col_csr + 1
 						end
 
-						create gli.make_with_text ("")
-						gli.set_pixmap (pixmaps [res_label])
-						gr.set_item (col_csr, gli)
-
-						if not test_status.is_empty then
-							gui.test_status_area.append_text ("--------------- " + arch_item.id.as_string + " -----------------%N" + test_status)
-						end
-
-						gui.parent_app.process_events
-
-						tests.forth
-						col_csr := col_csr + 1
+						last_tested_archetypes_count := last_tested_archetypes_count + 1
+						gui.arch_test_processed_count.set_text (last_tested_archetypes_count.out)
 					end
 
-					last_tested_archetypes_count := last_tested_archetypes_count + 1
-					gui.arch_test_processed_count.set_text (last_tested_archetypes_count.out)
-					gui.parent_app.process_events
+					checkbox.set_is_checked (False)
 				end
 
-				set_checkbox (gr.item (2), False)
 				row_csr := row_csr + 1
 			end
 
@@ -293,34 +283,33 @@ feature -- Tests
 		local
 			unused_at_codes, unused_ac_codes: ARRAYED_LIST [STRING]
 		do
-			Result := Test_failed
+			Result := test_failed
 			archetype_compiler.set_target (ara)
-
 			archetype_compiler.parse_archetype
 
 			if archetype_compiler.parse_succeeded then
-				Result := Test_passed
+				Result := test_passed
 
 				if remove_unused_codes then
 					unused_at_codes := ara.archetype.ontology_unused_term_codes
 					unused_ac_codes := ara.archetype.ontology_unused_constraint_codes
 
 					if not unused_at_codes.is_empty or not unused_ac_codes.is_empty then
-						test_status.append(">>>>>>>>>> removing unused codes%N")
+						test_status.append (">>>>>>>>>> removing unused codes%N")
 
 						if not unused_at_codes.is_empty then
-							test_status.append("Unused AT codes: " + display_arrayed_list (unused_at_codes) + "%N")
+							test_status.append ("Unused AT codes: " + display_arrayed_list (unused_at_codes) + "%N")
 						end
 
 						if not unused_ac_codes.is_empty then
-							test_status.append("Unused AC codes: " + display_arrayed_list (unused_ac_codes) + "%N")
+							test_status.append ("Unused AC codes: " + display_arrayed_list (unused_ac_codes) + "%N")
 						end
 
 						ara.archetype.ontology_remove_unused_codes
 					end
 				end
 			else
-				test_status.append(ara.id.as_string + " parse failed%N")
+				test_status.append (ara.id.as_string + " parse failed%N")
 			end
 		end
 
@@ -329,7 +318,7 @@ feature -- Tests
 		local
 			html_fname: STRING
 		do
-			Result := Test_failed
+			Result := test_failed
 
 			if archetype_compiler.parse_succeeded then
 				-- FIXME: Sam doesn't want the html files to go in the same place as the adl files anymore
@@ -341,7 +330,7 @@ feature -- Tests
 				archetype_compiler.save_archetype_as(html_fname, "html")
 
 				if archetype_compiler.save_succeeded then
-					Result := Test_passed
+					Result := test_passed
 				else
 					test_status.append (archetype_compiler.status + "%N")
 				end
@@ -353,23 +342,23 @@ feature -- Tests
 		local
 			new_adl_file_path: STRING
 		do
-			Result := Test_failed
+			Result := test_failed
 
 			if archetype_compiler.parse_succeeded then
 				if overwrite then
 					archetype_compiler.save_archetype
 				else
-					new_adl_file_path := file_system.pathname (system_temp_file_directory, file_system.basename (ara.full_path))
-					archetype_compiler.save_archetype_as(new_adl_file_path, "adl")
+				new_adl_file_path := file_system.pathname (system_temp_file_directory, file_system.basename (ara.full_path))
+					archetype_compiler.save_archetype_as (new_adl_file_path, "adl")
 				end
 
 				if archetype_compiler.save_succeeded then
-					Result := Test_passed
+					Result := test_passed
 				else
 					test_status.append (archetype_compiler.status + "%N")
 				end
 			else
-				Result := Test_not_applicable
+				Result := test_not_applicable
 			end
 		end
 
@@ -378,8 +367,7 @@ feature -- Tests
 		local
 			new_adl_file_path: STRING
 		do
-			Result := Test_failed
-
+			Result := test_failed
 			if overwrite then
 				new_adl_file_path := ara.full_path
 			else
@@ -393,7 +381,7 @@ feature -- Tests
 			archetype_compiler.parse_archetype
 
 			if archetype_compiler.parse_succeeded then
-				Result := Test_passed
+				Result := test_passed
 			else
 				test_status.append ("Parse failed; reason: " + archetype_compiler.status + "%N")
 			end
@@ -448,16 +436,18 @@ feature {NONE} -- Implementation
 		require
 			an_item /= Void
 		local
-			gli: EV_GRID_LABEL_ITEM
-			gr: EV_GRID_ROW
+			gli: EV_GRID_CHECKABLE_LABEL_ITEM
+			row: EV_GRID_ROW
 			pixmap: EV_PIXMAP
 			ada: ARCHETYPE_REPOSITORY_ARCHETYPE
 			col_csr: INTEGER
 		do
-			grid_row_stack.item.insert_subrow (grid_row_stack.item.subrow_count + 1)
-			gr := grid_row_stack.item.subrow (grid_row_stack.item.subrow_count)
-			create gli.make_with_text (utf8 (an_item.base_name))
-			gr.set_item (1, gli)
+			row := grid_row_stack.item
+			row.collapse_actions.extend (agent step_to_viewable_parent_of_selected_row)
+			row.insert_subrow (row.subrow_count + 1)
+			row := row.subrow (row.subrow_count)
+			gli := new_checkbox_item (an_item.base_name)
+			row.set_item (1, gli)
 			gli.set_data (an_item)
 			pixmap := pixmaps [an_item.group_name]
 
@@ -465,7 +455,6 @@ feature {NONE} -- Implementation
 				gli.set_pixmap (pixmap)
 			end
 
-			add_checkbox (gr)
 			ada ?= an_item
 
 			if ada /= Void then
@@ -475,13 +464,13 @@ feature {NONE} -- Implementation
 				until
 					tests.off
 				loop
-					gr.set_item (col_csr, create {EV_GRID_LABEL_ITEM}.make_with_text ("?"))
+					row.set_item (col_csr, create {EV_GRID_LABEL_ITEM}.make_with_text ("?"))
 					tests.forth
 					col_csr := col_csr + 1
 				end
 			end
 
-			grid_row_stack.extend (gr)
+			grid_row_stack.extend (row)
 		end
 
 	populate_gui_tree_node_exit (an_item: ARCHETYPE_REPOSITORY_ITEM) is
@@ -489,69 +478,37 @@ feature {NONE} -- Implementation
 			grid_row_stack.remove
 		end
 
-	add_checkbox (row: EV_GRID_ROW)
-			-- Add the checkbox column to `row'.
-			-- TODO: When we move to EiffelStudio 6.0, replace this with EV_GRID_CHECKABLE_LABEL_ITEM on column 1.
+	new_checkbox_item (text: STRING): EV_GRID_CHECKABLE_LABEL_ITEM
+			-- A newly created checkable grid item, with the label `text'.
 		require
-			row_attached: row /= Void
-		local
-			item: EV_GRID_LABEL_ITEM
+			text_attached: text /= Void
 		do
-			create item
-			row.set_item (2, item)
-			set_checkbox (item, True)
-			item.pointer_button_release_actions.force_extend (agent toggle_checkbox (item))
+			create Result.make_with_text (utf8 (text))
+			Result.set_is_checked (True)
+			Result.pointer_button_press_actions.force_extend (agent set_checkboxes_recursively (Result))
+		ensure
+			attached: Result /= Void
 		end
 
-	toggle_checkbox (item: EV_GRID_ITEM) is
-			-- Toggle checkbox indicating whether to test archetypes on `item' and its sub-rows.
+	set_checkboxes_recursively (item: EV_GRID_CHECKABLE_LABEL_ITEM)
+			-- For all sub-items of `item', set their check boxes to match `item', recursively.
 		require
 			item_attached: item /= Void
-		local
-			checked: BOOLEAN
-		do
-			if item.column.index = 2 then
-				checked ?= item.data
-				set_checkbox_recursively (item, not checked)
-			end
-		end
-
-	set_checkbox_recursively (item: EV_GRID_ITEM; checked: BOOLEAN) is
-			-- Set checkbox indicating whether to test archetypes on `item' and its sub-rows.
-		require
-			item_attached: item /= Void
-			column_2: item.column.index = 2
 		local
 			i: INTEGER
+			sub_item: EV_GRID_CHECKABLE_LABEL_ITEM
 		do
-			set_checkbox (item, checked)
-
 			from
-				i := 0
+				i := item.row.subrow_count
 			until
-				i = item.row.subrow_count
+				i = 0
 			loop
-				i := i + 1
-				set_checkbox_recursively (item.row.subrow (i).item (2), checked)
-			end
-		end
+				sub_item ?= item.row.subrow (i).item (item.column.index)
+				i := i - 1
 
-	set_checkbox (item: EV_GRID_ITEM; checked: BOOLEAN) is
-			-- Set checkbox indicating whether to test archetype on `item'.
-		require
-			item_attached: item /= Void
-			column_2: item.column.index = 2
-		local
-			gli: EV_GRID_LABEL_ITEM
-		do
-			item.set_data (checked)
-			gli ?= item
-
-			if gli /= Void then
-				if checked then
-					gli.set_pixmap (pixmaps ["checked_box"])
-				else
-					gli.set_pixmap (pixmaps ["unchecked_box"])
+				if sub_item /= Void then
+					sub_item.set_is_checked (item.is_checked)
+					set_checkboxes_recursively (sub_item)
 				end
 			end
 		end
@@ -560,10 +517,11 @@ feature {NONE} -- Implementation
 			-- Process keystrokes in `grid' to scroll, expand and collapse rows, etc.
 		local
 			selected: EV_GRID_ITEM
+			checkbox: EV_GRID_CHECKABLE_LABEL_ITEM
 		do
 			if key /= Void then
-				if not gui.parent_app.shift_pressed and not gui.parent_app.alt_pressed then
-					if gui.parent_app.ctrl_pressed then
+				if not ev_application.shift_pressed and not ev_application.alt_pressed then
+					if ev_application.ctrl_pressed then
 						if key.code = {EV_KEY_CONSTANTS}.key_up then
 							key.set_code ({EV_KEY_CONSTANTS}.key_menu)
 							scroll_to_row (grid.first_visible_row.index - 1)
@@ -578,7 +536,7 @@ feature {NONE} -- Implementation
 						elseif key.code = {EV_KEY_CONSTANTS}.key_end then
 							scroll_to_row (grid.row_count)
 						elseif key.code = {EV_KEY_CONSTANTS}.key_page_up then
-							scroll_to_row (grid.first_visible_row.index - grid.visible_row_indexes.count + 1)
+							scroll_to_row (index_of_viewable_offset_from_row (grid.first_visible_row.index, 1 - grid.visible_row_indexes.count))
 						elseif key.code = {EV_KEY_CONSTANTS}.key_page_down then
 							scroll_to_row (grid.last_visible_row.index)
 						end
@@ -590,9 +548,9 @@ feature {NONE} -- Implementation
 						selected := grid.selected_items.first
 
 						if key.code = {EV_KEY_CONSTANTS}.key_page_up then
-							step_to_row (grid.first_visible_row.index.min (selected.row.index - grid.visible_row_indexes.count + 1))
+							step_to_row (index_of_viewable_offset_from_row (selected.row.index, 1 - grid.visible_row_indexes.count))
 						elseif key.code = {EV_KEY_CONSTANTS}.key_page_down then
-							step_to_row (grid.last_visible_row.index.max (selected.row.index + grid.visible_row_indexes.count - 1))
+							step_to_row (index_of_viewable_offset_from_row (selected.row.index, grid.visible_row_indexes.count - 1))
 						elseif key.code = {EV_KEY_CONSTANTS}.key_numpad_multiply then
 							expand_tree (selected.row)
 						elseif key.code = {EV_KEY_CONSTANTS}.key_numpad_add or key.code = {EV_KEY_CONSTANTS}.key_right then
@@ -616,7 +574,12 @@ feature {NONE} -- Implementation
 								step_to_row (selected.row.parent_row.index)
 							end
 						elseif key.code = {EV_KEY_CONSTANTS}.key_space then
-							toggle_checkbox (selected)
+							checkbox ?= selected
+
+							if checkbox /= Void then
+								checkbox.toggle_is_checked
+								set_checkboxes_recursively (checkbox)
+							end
 						end
 					end
 				end
@@ -634,7 +597,7 @@ feature {NONE} -- Implementation
 		end
 
 	scroll_to_row (index: INTEGER)
-			-- Scroll `grid' so the row at `index' is at the top if Ctrl is held down, else selecting it.
+			-- Scroll `grid' so the row at `index' is at the top.
 		local
 			i: INTEGER
 		do
@@ -643,36 +606,53 @@ feature {NONE} -- Implementation
 		end
 
 	step_to_row (index: INTEGER)
-			-- Scroll `grid' so the row at `index' is at the top if Ctrl is held down, else selecting it.
+			-- Select the row at `index'.
 		local
-			i: INTEGER
 			row: EV_GRID_ROW
 		do
-			from
-				i := index.max (1).min (grid.row_count)
-				row := grid.row (i)
-			until
-				row.parent_row = Void
-			loop
-				if not row.is_expanded then
-					i := row.index
-				end
+			row := grid.row (index_of_viewable_offset_from_row (index, 0))
 
-				row := row.parent_row
+			if not row.item (1).is_selected then
+				grid.remove_selection
+				row.item (1).enable_select
+				row.ensure_visible
 			end
-
-			grid.remove_selection
-			row := grid.row (i)
-			row.item (1).enable_select
-			row.ensure_visible
 		end
 
-	expand_tree (row: EV_GRID_ROW) is
+	step_to_viewable_parent_of_selected_row
+			-- Select `row' or one its parents, such that the selected row is not hidden within a collapsed parent.
+		do
+			if not grid.selected_items.is_empty then
+				step_to_row (grid.selected_items.first.row.index)
+			end
+		end
+
+	index_of_viewable_offset_from_row (index, offset: INTEGER): INTEGER
+			-- The index of the row at viewable `offset' from the row at `index'.
+		local
+			indexes: ARRAYED_LIST [INTEGER]
+			i: INTEGER
+		do
+			from
+				indexes := grid.viewable_row_indexes
+				i := indexes.count
+			until
+				i = 1 or else indexes [i] <= index
+			loop
+				i := i - 1
+			end
+
+			Result := indexes [(i + offset).max (1).min (indexes.count)]
+		end
+
+	expand_tree (row: EV_GRID_ROW)
 			-- Expand `row' and all of its sub-rows, recursively.
+		require
+			row_attached: row /= Void
 		local
 			i: INTEGER
 		do
-			if row.subrow_count > 0 then
+			if row.is_expandable then
 				row.expand
 
 				from
@@ -684,25 +664,29 @@ feature {NONE} -- Implementation
 					i := i + 1
 				end
 			end
+		ensure
+			row_expanded: row.is_expandable implies row.is_expanded
 		end
 
-	collapse_tree (row: EV_GRID_ROW) is
+	collapse_tree (row: EV_GRID_ROW)
 			-- Collapse `row' and all of its sub-rows, recursively.
+		require
+			row_attached: row /= Void
 		local
 			i: INTEGER
 		do
-			if row.subrow_count > 0 then
-				from
-					i := 1
-				until
-					i > row.subrow_count
-				loop
-					collapse_tree (row.subrow (i))
-					i := i + 1
-				end
-
-				row.collapse
+			from
+				i := 1
+			until
+				i > row.subrow_count
+			loop
+				collapse_tree (row.subrow (i))
+				i := i + 1
 			end
+
+			row.collapse
+		ensure
+			row_collapsed: not row.is_expanded
 		end
 
 	set_archetype_test_go_bn_icon is

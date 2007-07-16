@@ -97,9 +97,11 @@ feature {NONE} -- Initialization
 			end
 
 			archetype_directory.put_repository (reference_repository_path, "reference")
+
 			if not work_repository_path.is_empty then
 				archetype_directory.put_repository (work_repository_path, "work")
 			end
+
 			populate_archetype_directory
 		end
 
@@ -219,20 +221,6 @@ feature -- Access
 	need_to_set_repository: BOOLEAN
 			-- flag set on startup to indicate if repository needs to be specified by user
 
-	parent_app: EV_APPLICATION
-			-- provide a reference to the owning application so as to get access to a
-			-- few things that only applications can do, like `process_events`	
-
-feature -- Modification
-
-	set_parent_app(an_app: EV_APPLICATION) is
-			-- set `parent_app'
-		require
-			an_app /= Void
-		do
-			parent_app := an_app
-		end
-
 feature -- Commands
 
 	show
@@ -273,17 +261,20 @@ feature -- Commands
 		end
 
 	load_and_parse_archetype
-			-- Load and parse archetype currently selected in archetype_directory
+			-- Load and parse archetype currently selected in archetype_directory.
 		require
-			archetype_directory.has_selected_archetype_descriptor
+			archetype_selected: archetype_directory.has_selected_archetype_descriptor
 		do
-			archetype_compiler.set_target_to_selected
+			do_with_wait_cursor (agent
+				do
+					archetype_compiler.set_target_to_selected
 
-			if arch_notebook.selected_item = archetype_text_edit_area then
-				populate_archetype_text_edit_area
-			end
+					if arch_notebook.selected_item = archetype_text_edit_area then
+						populate_archetype_text_edit_area
+					end
 
-			parse_archetype
+					parse_archetype
+				end)
 		end
 
 feature {NONE} -- Commands
@@ -332,7 +323,7 @@ feature {NONE} -- Commands
 			set_path_view_check_list_settings(strs)
 
 			save_resources
-			parent_app.destroy
+			ev_application.destroy
 		end
 
 	select_language is
@@ -348,29 +339,22 @@ feature {NONE} -- Commands
 		end
 
 	open_adl_file is
-			-- Called by `pointer_button_press_actions' of `open_file_mi'.
+			-- Let the user select an ADL file, and the load and parse it.
 		local
-			adl_file_open_dialog: EV_FILE_OPEN_DIALOG
-			cur_csr: EV_CURSOR
+			dialog: EV_FILE_OPEN_DIALOG
 		do
-			cur_csr := pointer_style
-			set_pointer_style(wait_cursor)
+			create dialog
+			dialog.set_start_directory (current_work_directory)
+			dialog.filters.extend (["*." + archetype_file_extension, "Files of type " + archetype_file_extension])
+			dialog.show_modal_to_window (Current)
 
-			create adl_file_open_dialog
-			adl_file_open_dialog.set_start_directory(current_work_directory)
-			adl_file_open_dialog.filters.extend (["*." + Archetype_file_extension,
-				"Files of type " + Archetype_file_extension])
-			Adl_file_open_dialog.show_modal_to_window (Current)
-
-			if Adl_file_open_dialog.file_name /= Void and then not Adl_file_open_dialog.file_name.is_empty then
-				archetype_directory.add_adhoc_item (Adl_file_open_dialog.file_name)
+			if not dialog.file_name.is_empty then
+				archetype_directory.add_adhoc_item (dialog.file_name)
 
 				if archetype_directory.has_selected_archetype_descriptor then
 					archetype_view_tree_control.repopulate
 				end
 			end
-
-			set_pointer_style(cur_csr)
 		end
 
 	save_adl_file is
@@ -383,65 +367,65 @@ feature {NONE} -- Commands
 			save_dialog: EV_FILE_SAVE_DIALOG
 			name, format: STRING
 		do
-				if archetype_compiler.parse_succeeded then
-					ok_to_write := True
-					create save_dialog
-					save_dialog.set_file_name (archetype_directory.selected_archetype_descriptor.full_path)
-					save_dialog.set_start_directory (current_work_directory)
+			if archetype_compiler.parse_succeeded then
+				ok_to_write := True
+				create save_dialog
+				save_dialog.set_file_name (archetype_directory.selected_archetype_descriptor.full_path)
+				save_dialog.set_start_directory (current_work_directory)
 
-					from
-						archetype_file_extensions.start
-					until
-						archetype_file_extensions.off
-					loop
-						format := archetype_file_extensions.key_for_iteration
+				from
+					archetype_file_extensions.start
+				until
+					archetype_file_extensions.off
+				loop
+					format := archetype_file_extensions.key_for_iteration
 
-						if has_archetype_serialiser_format (format) then
-							save_dialog.filters.extend (["*" + archetype_file_extensions.item_for_iteration, "Files of type " + format])
-					end
-
-						archetype_file_extensions.forth
-					end
-
-					save_dialog.show_modal_to_window (Current)
-					name := save_dialog.file_name
-
-					if not name.is_empty then
-						format ?= (save_dialog.filters [save_dialog.selected_filter_index]) [1]
-						format.remove_head (2)
-
-						if not format.is_equal (archetype_file_extension) then
-							if file_system.has_extension (name, archetype_file_extensions [archetype_file_extension]) then
-								name.remove_tail (archetype_file_extensions [archetype_file_extension].count)
-								name.append (archetype_file_extensions [format])
-								save_dialog.set_file_name (name)
-							end
-						end
-
-						create a_file.make (name)
-
-						if a_file.exists then
-							create question_dialog.make_with_text ("File " + save_dialog.file_title + " already exists; replace?")
-							question_dialog.set_buttons(<<"Yes", "No">>)
-							question_dialog.show_modal_to_window (Current)
-							ok_to_write := question_dialog.selected_button.is_equal("Yes")
-						end
-
-						if ok_to_write then
-							archetype_compiler.save_archetype_as (name, format)
-							parser_status_area.append_text(archetype_compiler.status)
-
-							if format.is_equal (archetype_file_extension) then
-								populate_archetype_directory
-							end
-						end
-
-						set_current_work_directory (save_dialog.file_path)
-					end
-				else
-					create error_dialog.make_with_text("must parse before serialising")
-					error_dialog.show_modal_to_window (Current)
+					if has_archetype_serialiser_format (format) then
+						save_dialog.filters.extend (["*" + archetype_file_extensions.item_for_iteration, "Files of type " + format])
 				end
+
+					archetype_file_extensions.forth
+				end
+
+				save_dialog.show_modal_to_window (Current)
+				name := save_dialog.file_name
+
+				if not name.is_empty then
+					format ?= (save_dialog.filters [save_dialog.selected_filter_index]) [1]
+					format.remove_head (2)
+
+					if not format.is_equal (archetype_file_extension) then
+						if file_system.has_extension (name, archetype_file_extensions [archetype_file_extension]) then
+							name.remove_tail (archetype_file_extensions [archetype_file_extension].count)
+							name.append (archetype_file_extensions [format])
+							save_dialog.set_file_name (name)
+						end
+					end
+
+					create a_file.make (name)
+
+					if a_file.exists then
+						create question_dialog.make_with_text ("File " + save_dialog.file_title + " already exists. Replace it?")
+						question_dialog.set_buttons(<<"Yes", "No">>)
+						question_dialog.show_modal_to_window (Current)
+						ok_to_write := question_dialog.selected_button.is_equal("Yes")
+					end
+
+					if ok_to_write then
+						archetype_compiler.save_archetype_as (name, format)
+						parser_status_area.append_text (archetype_compiler.status)
+
+						if format.is_equal (archetype_file_extension) then
+							populate_archetype_directory
+						end
+					end
+
+					set_current_work_directory (save_dialog.file_path)
+				end
+			else
+				create error_dialog.make_with_text("must parse before serialising")
+				error_dialog.show_modal_to_window (Current)
+			end
 		end
 
 	edit_archetype is
@@ -451,41 +435,27 @@ feature {NONE} -- Commands
 		end
 
 	parse_archetype is
-			-- Called by `select_actions' of `parse'.
-		local
-			cur_csr: EV_CURSOR
+			-- Parse the archetype currently selected.
 		do
-			cur_csr := pointer_style
-			set_pointer_style(wait_cursor)
+			do_with_wait_cursor (agent
+				do
+					clear_all_controls
+					archetype_compiler.parse_archetype
+					parser_status_area.append_text (archetype_compiler.status)
 
-			clear_all_controls
-			archetype_compiler.parse_archetype
-			parser_status_area.append_text(archetype_compiler.status)
-			if archetype_compiler.parse_succeeded then
-				populate_all_archetype_controls
-				archetype_compiler.set_archetype_readonly
-			else
-				populate_archetype_id
-			end
-
-			set_pointer_style(cur_csr)
+					if archetype_compiler.parse_succeeded then
+						populate_all_archetype_controls
+						archetype_compiler.set_archetype_readonly
+					else
+						populate_archetype_id
+					end
+				end)
 		end
 
 	archetype_view_tree_item_select is
-			-- select an item on the archetype tree
-		local
-			cur_csr: EV_CURSOR
+			-- Display details of `archetype_file_tree' when the user selects it.
 		do
-			cur_csr := pointer_style
-			set_pointer_style(wait_cursor)
-
-			archetype_view_tree_control.item_select
-			if archetype_directory.has_selected_archetype_descriptor then
-				load_and_parse_archetype
-			end
-   			archetype_file_tree.set_minimum_width(0)
-
-			set_pointer_style(cur_csr)
+			archetype_view_tree_control.display_details_of_selected_item_after_delay
 		end
 
 	node_map_shrink_tree_one_level is
@@ -586,7 +556,7 @@ feature {NONE} -- Commands
 		local
 			ev_info_dlg: EV_INFORMATION_DIALOG
 		do
-			create ev_info_dlg.make_with_text(parent_app.clipboard.text)
+			create ev_info_dlg.make_with_text (ev_application.clipboard.text)
 			ev_info_dlg.set_title ("Clipboard Contents")
 			ev_info_dlg.show_modal_to_window (Current)
 		end
@@ -612,7 +582,7 @@ feature {NONE} -- Commands
 	arch_notebook_select is
 			-- Called by `selection_actions' of `arch_notebook'.
 		do
-			if arch_notebook.item_text(arch_notebook.selected_item).is_equal ("Source") then
+			if arch_notebook.item_text (arch_notebook.selected_item).is_equal ("Source") then
 				populate_archetype_text_edit_area
 			end
 		end
@@ -827,13 +797,22 @@ feature {EV_DIALOG} -- Implementation
 		end
 
 	populate_archetype_id is
+		local
+			selected: ARCHETYPE
 		do
-			archetype_id.set_text (utf8 (archetype_directory.selected_archetype.archetype_id.as_string))
-			if archetype_directory.selected_archetype /= Void and then
-					archetype_directory.selected_archetype.is_specialised then
-				parent_archetype_id.set_text (utf8 (archetype_directory.selected_archetype.parent_archetype_id.as_string))
+			selected := archetype_directory.selected_archetype
+
+			if selected /= Void then
+				archetype_id.set_text (utf8 (selected.archetype_id.as_string))
+
+				if selected.is_specialised then
+					parent_archetype_id.set_text (utf8 (selected.parent_archetype_id.as_string))
+				else
+					parent_archetype_id.remove_text
+				end
 			else
-				parent_archetype_id.set_text("")
+				archetype_id.remove_text
+				parent_archetype_id.remove_text
 			end
 		end
 
@@ -856,9 +835,10 @@ feature {EV_DIALOG} -- Implementation
 			leader, int_val_str, src, s: STRING
 			len, left_pos, right_pos, line_cnt: INTEGER
 		do
-			create s.make(0)
+			create s.make_empty
 			src := archetype_compiler.source
 			len := src.count
+
 			from
 				left_pos := 1
 				line_cnt := 1
@@ -877,6 +857,21 @@ feature {EV_DIALOG} -- Implementation
 				line_cnt := line_cnt + 1
 			end
 			archetype_text_edit_area.set_text (utf8 (s))
+		end
+
+feature {NONE} -- Implementation
+
+	do_with_wait_cursor (action: PROCEDURE [ANY, TUPLE])
+			-- Perform `action' with an hourglass mouse cursor, restoring the cursor when done.
+		local
+			cursor: EV_CURSOR
+		do
+			cursor := pointer_style
+			set_pointer_style (wait_cursor)
+			action.call ([])
+			set_pointer_style (cursor)
+		rescue
+			set_pointer_style (cursor)
 		end
 
 feature {NONE} -- Standard Windows behaviour that EiffelVision ought to be managing automatically
@@ -903,15 +898,15 @@ feature {NONE} -- Standard Windows behaviour that EiffelVision ought to be manag
 		local
 			container: EV_CONTAINER
 		do
-			if has_recursive (parent_app.focused_widget) then
+			if has_recursive (ev_application.focused_widget) then
 				from
-					container := parent_app.focused_widget.parent
+					container := ev_application.focused_widget.parent
 				until
 					container = Void or Result /= Void
 				loop
 					Result ?= container
 					container := container.parent
-end
+				end
 			end
 		end
 
@@ -933,7 +928,7 @@ end
 					widgets := container.linear_representation
 					widgets.start
 				until
-					widgets.off or container.has_recursive (parent_app.focused_widget)
+					widgets.off or container.has_recursive (ev_application.focused_widget)
 				loop
 					focus_first_widget (widgets.item)
 					widgets.forth
@@ -950,7 +945,7 @@ end
 	focused_text: EV_TEXT_COMPONENT
 			-- The currently focused text widget, if any.
 		do
-			Result ?= parent_app.focused_widget
+			Result ?= ev_application.focused_widget
 
 			if not has_recursive (Result) then
 				Result := Void
@@ -977,8 +972,8 @@ end
 				agent (key: EV_KEY; previous, next: EV_WIDGET)
 					do
 						if key /= Void and then key.code = {EV_KEY_CONSTANTS}.key_tab then
-							if not parent_app.ctrl_pressed and not parent_app.alt_pressed then
-								if parent_app.shift_pressed then
+							if not ev_application.ctrl_pressed and not ev_application.alt_pressed then
+								if ev_application.shift_pressed then
 									previous.set_focus
 								else
 									next.set_focus

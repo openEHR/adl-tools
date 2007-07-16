@@ -44,12 +44,12 @@ feature -- Conformance
                 -- deal with generics
                 if Result then
 	                from
-						gen_type_count := generic_count_of_type(type1).min(generic_count_of_type(type2))
+						gen_type_count := generic_count_of_type (type1).min (generic_count_of_type (type2))
 						i := 1
             	    until
                 	    not Result or i > gen_type_count
 	                loop
-    	                Result := type_conforms_to(generic_dynamic_type_of_type (type1, i), generic_dynamic_type_of_type (type2, i))
+    	                Result := type_conforms_to (generic_dynamic_type_of_type (type1, i), generic_dynamic_type_of_type (type2, i))
         	            i := i + 1
             	    end
 				end
@@ -119,6 +119,28 @@ feature -- Creation
 			special_type: is_special (Result)
 			dynamic_type_set: dynamic_type (Result) = type_id
 			count_set: Result.count = count
+		end
+
+	type_of (object: ANY): TYPE [ANY]
+			-- Type object for `object'.
+		do
+			if object /= Void then
+				Result := type_of_type (dynamic_type (object))
+			else
+				Result ?= new_instance_of (dynamic_type_from_string ("TYPE [NONE]"))
+			end
+		ensure
+			result_not_void: Result /= Void
+		end
+
+	type_of_type (type_id: INTEGER): TYPE [ANY]
+			-- Return type for type id `type_id'.
+		require
+			type_id_nonnegative: type_id >= 0
+		do
+			Result ?= new_instance_of (dynamic_type_from_string ("TYPE [" + type_name_of_type (type_id) + "]"))
+		ensure
+			result_not_void: Result /= Void
 		end
 
 feature -- Status report
@@ -205,7 +227,7 @@ feature -- Access
 
 	Reference_type: INTEGER is 1
 
-	character_8_type, Character_type: INTEGER is 2
+	character_8_type, character_type: INTEGER is 2
 
 	Boolean_type: INTEGER is 3
 
@@ -225,7 +247,7 @@ feature -- Access
 
 	Integer_64_type: INTEGER is 11
 
-	character_32_type, Wide_character_type: INTEGER is 12
+	character_32_type, wide_character_type: INTEGER is 12
 
 	natural_8_type: INTEGER is 13
 
@@ -380,7 +402,8 @@ feature -- Access
 			l_int16: INTEGER_16
 			l_int32: INTEGER
 			l_int64: INTEGER_64
-			l_char: CHARACTER
+			l_char: CHARACTER_8
+			l_wchar: CHARACTER_32
 			l_boolean: BOOLEAN
 			l_real: REAL
 			l_double: DOUBLE
@@ -395,9 +418,13 @@ feature -- Access
 				l_pointer ?= l_obj
 				Result := l_pointer
 
-			when Character_type then
+			when character_8_type then
 				l_char ?= l_obj
 				Result := l_char
+
+			when character_32_type then
+				l_wchar ?= l_obj
+				Result := l_wchar
 
 			when Boolean_type then
 				l_boolean ?= l_obj
@@ -597,6 +624,7 @@ feature -- Access
 			l_meth: METHOD_INFO
 			l_type_attr: RT_INTERFACE_TYPE_ATTRIBUTE
 			l_provider: ICUSTOM_ATTRIBUTE_PROVIDER
+			l_object: SYSTEM_OBJECT
 		do
 			l_dtypes := id_to_fields_static_type.item (type_id)
 			if l_dtypes = Void then
@@ -622,6 +650,7 @@ feature -- Access
 						l_name := l_type_feature_name.feature_name
 						if l_current_type = Void then
 							l_current_rt_type := pure_implementation_type (type_id)
+							l_object := {ISE_RUNTIME}.create_type (l_current_rt_type)
 							l_current_type := {SYSTEM_TYPE}.get_type_from_handle (l_current_rt_type.type)
 								-- Get RT_GENERIC_TYPE from `l_current_rt_type' if it
 								-- is an instance of `RT_GENERIC_TYPE', otherwise we get
@@ -636,7 +665,7 @@ feature -- Access
 						end
 							-- Invoke method that is going to give us a RT_TYPE instance representing the
 							-- static type of the field for the base class of `type_id'.
-						l_rt_type ?= l_meth.invoke ({ACTIVATOR}.create_instance (l_current_type), Void)
+						l_rt_type ?= l_meth.invoke_object_object_array (l_object, Void)
 						check
 							l_rt_type_not_void: l_rt_type /= Void
 						end
@@ -697,13 +726,24 @@ feature -- Access
 			Result_exists: Result /= Void
 		end
 
-	character_field (i: INTEGER; object: ANY): CHARACTER is
+	character_8_field, character_field (i: INTEGER; object: ANY): CHARACTER_8 is
 			-- Character value of `i'-th field of `object'
 		require
 			object_not_void: object /= Void
 			index_large_enough: i >= 1
 			index_small_enough: i <= field_count (object)
-			character_field: field_type (i, object) = Character_type
+			character_8_field: field_type (i, object) = character_8_type
+		do
+			Result ?= internal_field (i, object, dynamic_type (object))
+		end
+
+	character_32_field (i: INTEGER; object: ANY): CHARACTER_32 is
+			-- Character value of `i'-th field of `object'
+		require
+			object_not_void: object /= Void
+			index_large_enough: i >= 1
+			index_small_enough: i <= field_count (object)
+			character_32_field: field_type (i, object) = character_32_type
 		do
 			Result ?= internal_field (i, object, dynamic_type (object))
 		end
@@ -873,13 +913,24 @@ feature -- Element change
 			internal_set_reference_field (i, object, value)
 		end
 
-	set_character_field (i: INTEGER; object: ANY; value: CHARACTER) is
+	set_character_8_field, set_character_field (i: INTEGER; object: ANY; value: CHARACTER_8) is
 			-- Set character value of `i'-th field of `object' to `value'
 		require
 			object_not_void: object /= Void
 			index_large_enough: i >= 1
 			index_small_enough: i <= field_count (object)
-			character_field: field_type (i, object) = Character_type
+			character_8_field: field_type (i, object) = character_8_type
+		do
+			internal_set_reference_field (i, object, value)
+		end
+
+	set_character_32_field (i: INTEGER; object: ANY; value: CHARACTER_32) is
+			-- Set character value of `i'-th field of `object' to `value'
+		require
+			object_not_void: object /= Void
+			index_large_enough: i >= 1
+			index_small_enough: i <= field_count (object)
+			character_32_field: field_type (i, object) = character_32_type
 		do
 			internal_set_reference_field (i, object, value)
 		end
@@ -1717,7 +1768,7 @@ feature {NONE} -- Implementation
 
 			create l_list.make (1)
 			create l_basic_type.make
-			l_basic_type.set_type (({CHARACTER}).to_cil.type_handle)
+			l_basic_type.set_type (({CHARACTER_8}).to_cil.type_handle)
 			l_list.extend (l_basic_type)
 			Result.put (l_list, "CHARACTER_8")
 
@@ -1769,7 +1820,7 @@ feature {NONE} -- Implementation
 		once
 			create Result.make_from_capacity (10)
 			Result.set_item (({POINTER}).to_cil, Pointer_type)
-			Result.set_item (({CHARACTER}).to_cil, Character_type)
+			Result.set_item (({CHARACTER_8}).to_cil, character_8_type)
 			Result.set_item (({BOOLEAN}).to_cil, Boolean_type)
 			Result.set_item (({REAL}).to_cil, real_32_type)
 			Result.set_item (({DOUBLE}).to_cil, real_64_type)

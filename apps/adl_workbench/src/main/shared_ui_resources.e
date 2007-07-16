@@ -64,9 +64,6 @@ feature -- Definitions
 
 	ADL_help_page_url: STRING is "http://svn.openehr.org/ref_impl_eiffel/TRUNK/apps/doc/adl_workbench_help.htm"
 
-	Splash_window_display_time: INTEGER is 1500
-			-- number of millseconds to display splash window
-
 	path_control_filter_names: ARRAY [STRING] is
 			-- names of row filters of path control
 		once
@@ -428,9 +425,6 @@ feature -- Access
 
 			Result.put ("go.ico", "go")
 			Result.put ("stop.ico", "stop")
-
-			Result.put ("checked_box.ico", "checked_box")
-			Result.put ("unchecked_box.ico", "unchecked_box")
 
 			Result.put ("Ocean_float.png", "Ocean logo")
 

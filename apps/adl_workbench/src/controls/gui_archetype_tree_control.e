@@ -79,14 +79,34 @@ feature -- Commands
  			archetype_directory.do_all (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
 		end
 
-	item_select is
-			-- do something when an item is selected
+	display_details_of_selected_item_after_delay
+			-- When the user selects an item in `gui_file_tree', delay before displaying it.
+		do
+			if delay_to_make_keyboard_navigation_practical = Void then
+				create delay_to_make_keyboard_navigation_practical
+
+				delay_to_make_keyboard_navigation_practical.actions.extend (agent
+					do
+						delay_to_make_keyboard_navigation_practical.set_interval (0)
+						display_details_of_selected_item
+					end)
+			end
+
+			delay_to_make_keyboard_navigation_practical.set_interval (300)
+		end
+
+	display_details_of_selected_item
+			-- Display the details of `selected_item'.
 		local
 			arch_item: ARCHETYPE_REPOSITORY_ARCHETYPE
 		do
 			arch_item ?= gui_file_tree.selected_item.data
+
 			if arch_item /= Void then
-				archetype_directory.set_selected_archetype_descriptor(arch_item)
+				archetype_directory.set_selected_archetype_descriptor (arch_item)
+				gui.load_and_parse_archetype
+			else
+				archetype_directory.clear_selected_archetype_descriptor
 			end
 		end
 
@@ -102,7 +122,7 @@ feature {NONE} -- Implementation
 			-- Stack used during `populate_gui_tree_node_enter'.
 
 	delay_to_make_keyboard_navigation_practical: EV_TIMEOUT
-			-- Timer to delay a moment before displaying details of the item selected in `archetype_file_tree'.
+			-- Timer to delay a moment before calling `display_details_of_selected_item'.
 
    	populate_gui_tree_node_enter (an_item: ARCHETYPE_REPOSITORY_ITEM)
    			-- Add a node representing `an_item' to `gui_file_tree'.

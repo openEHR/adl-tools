@@ -16,7 +16,7 @@ class
 
 inherit
 	EV_APPLICATION
-	
+
 	SHARED_UI_RESOURCES
 		export
 			{NONE} all
@@ -26,7 +26,7 @@ inherit
 
 create
 	make_and_launch
-	
+
 feature {NONE} -- Initialization
 
 	make_and_launch is
@@ -34,11 +34,10 @@ feature {NONE} -- Initialization
 			-- then launch the application.
 		do
 			default_create
-		
+
 			if has_resources then
 				initialise_default_resource_config_file_name
 				create main_window
-				main_window.set_parent_app(Current)
 				create splash_window.make
 				splash_window.show
 				main_window.show
@@ -53,26 +52,26 @@ feature {NONE} -- Initialization
 					main_window.display_news
 					update_status_file
 				end
-				
+
 				splash_window.raise
-				
-				launch				
+
+				launch
 			else
 				io.put_string(fail_reason + "%N")
 				io.put_string("Hit any key to exit application%N")
 				io.read_character
 			end
 		end
-		
+
 feature {NONE} -- Implementation
 
 	main_window: MAIN_WINDOW
 		-- Main window of `Current'.
-	
+
 	splash_window: SPLASH_WINDOW
-	
+
 	fail_reason: STRING
-	
+
 	has_resources: BOOLEAN is
 			-- True if all resources are available
 		do

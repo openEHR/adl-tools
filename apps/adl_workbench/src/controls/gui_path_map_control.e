@@ -30,6 +30,11 @@ inherit
 			{NONE} all
 		end
 
+	EV_SHARED_APPLICATION
+		export
+			{NONE} all
+		end
+
 	STRING_UTILITIES
 		export
 			{NONE} all
@@ -38,9 +43,9 @@ inherit
 create
 	make
 
-feature -- Initialisation
+feature {NONE} -- Initialisation
 
-	make(a_main_window: MAIN_WINDOW) is
+	make (a_main_window: MAIN_WINDOW) is
 			-- create tree control repersenting archetype files found in repository_path
 		require
 			a_main_window /= Void
@@ -151,6 +156,7 @@ feature -- Commands
 			mcl := path_list
 			ev_rows := mcl.selected_items
 			create copy_text.make(0)
+
 			if not ev_rows.is_empty then
 				from
 					ev_rows.start
@@ -169,7 +175,8 @@ feature -- Commands
 					ev_rows.forth
 				end
 			end
-			gui.parent_app.clipboard.set_text (copy_text)
+
+			ev_application.clipboard.set_text (copy_text)
 		end
 
 feature {NONE} -- Implementation
