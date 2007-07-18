@@ -99,12 +99,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_1B929517F2DB4127A2AF7033494458CB"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_224A61FA1E0B4656A120B64CB7841AF2"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -208,12 +202,6 @@
         "Entry"
         {
         "MsmKey" = "8:_649EB286550E41269E0EA5ADF50B793B"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_65913769F5FA4E6DB0778B775928AD0C"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -346,12 +334,6 @@
         "Entry"
         {
         "MsmKey" = "8:_9C17C48D838E4B259EE6F4461B38B6F4"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_9CFB6718B32441CCB1F29808061D9CC2"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -873,26 +855,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1B929517F2DB4127A2AF7033494458CB"
-            {
-            "SourcePath" = "8:..\\..\\..\\app\\icons\\checked.ico"
-            "TargetName" = "8:checked.ico"
-            "Tag" = "8:"
-            "Folder" = "8:_EF4D492392CD41A68C993FE959AD3454"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_224A61FA1E0B4656A120B64CB7841AF2"
             {
             "SourcePath" = "8:..\\..\\..\\app\\icons\\node_normal\\c_attribute_optional.ico"
@@ -1239,26 +1201,6 @@
             "TargetName" = "8:c_code_phrase.ico"
             "Tag" = "8:"
             "Folder" = "8:_CBB4D6DFB53F4C65AA810346C1D786C4"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_65913769F5FA4E6DB0778B775928AD0C"
-            {
-            "SourcePath" = "8:..\\..\\..\\app\\icons\\unchecked_box.ico"
-            "TargetName" = "8:unchecked_box.ico"
-            "Tag" = "8:"
-            "Folder" = "8:_EF4D492392CD41A68C993FE959AD3454"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -1699,26 +1641,6 @@
             "TargetName" = "8:c_complex_object_optional.ico"
             "Tag" = "8:"
             "Folder" = "8:_A1034160E36E479E9A4F8FC82EFD0CAD"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9CFB6718B32441CCB1F29808061D9CC2"
-            {
-            "SourcePath" = "8:..\\..\\..\\app\\icons\\checked_box.ico"
-            "TargetName" = "8:checked_box.ico"
-            "Tag" = "8:"
-            "Folder" = "8:_EF4D492392CD41A68C993FE959AD3454"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -2920,9 +2842,6 @@
         {
         }
         "ProjectOutput"
-        {
-        }
-        "VJSharpPlugin"
         {
         }
     }
