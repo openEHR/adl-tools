@@ -24,7 +24,6 @@
 		<setting name="exception_trace" value="true"/>
 		<setting name="il_verifiable" value="true"/>
 		<setting name="inlining" value="false"/>
-		<setting name="line_generation" value="false"/>
 		<setting name="msil_assembly_compatibility" value="None"/>
 		<setting name="msil_clr_version" value="v2.0.50727"/>
 		<setting name="msil_generation" value="true"/>
@@ -71,5 +70,8 @@
 			</option>
 		</cluster>
 		<override name="vendor_fixes" location="..\..\..\..\libraries\vendor-fixes\" recursive="true"/>
+	</target>
+	<target name="adl_dotnet_lib_debug" extends="adl_dotnet_lib">
+		<setting name="line_generation" value="true"/>
 	</target>
 </system>
