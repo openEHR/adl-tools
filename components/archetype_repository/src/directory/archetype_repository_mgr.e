@@ -158,7 +158,7 @@ feature -- Commands
 				source_repositories.off
 			loop
 				source_repositories.item_for_iteration.repopulate
-				tree_do_all(source_repositories.item_for_iteration, agent merge_enter, agent merge_exit)
+				tree_do_all (source_repositories.item_for_iteration, agent merge_enter, agent merge_exit)
 				source_repositories.forth
 			end
 		end

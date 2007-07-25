@@ -128,7 +128,7 @@ feature -- Time
 	summertime_adjustment:INTEGER
 		-- normally +1 if used
 
-	summertime_period: OE_INTERVAL[DATE]
+	summertime_period: INTERVAL[DATE]
 		-- period of Summer time; Void if summertime_adjustment = 0
 
 feature -- Measurement

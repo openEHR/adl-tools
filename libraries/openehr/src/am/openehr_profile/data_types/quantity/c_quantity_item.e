@@ -19,7 +19,7 @@ create
 
 feature -- Initialisation
 
-	make(a_units: STRING; a_magnitude: OE_INTERVAL[REAL]; a_precision: OE_INTERVAL[INTEGER]) is
+	make(a_units: STRING; a_magnitude: INTERVAL[REAL]; a_precision: INTERVAL[INTEGER]) is
 			-- add a units constraint. Void magnitude means any magnitude allowed
 		require
 			Magnitude_validity: a_magnitude /= Void implies a_units /= Void
@@ -37,10 +37,10 @@ feature -- Access
 	units: STRING
 			-- constraint on units
 	
-	magnitude: OE_INTERVAL [REAL]
+	magnitude: INTERVAL [REAL]
 			-- constraint on magnitude
 			
-	precision: OE_INTERVAL [INTEGER]
+	precision: INTERVAL [INTEGER]
 			-- constraint on precision. A value of -1 means that precision is unconstrained.
 
 feature -- Status Report

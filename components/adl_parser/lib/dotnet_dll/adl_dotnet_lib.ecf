@@ -24,14 +24,13 @@
 		<setting name="exception_trace" value="true"/>
 		<setting name="il_verifiable" value="true"/>
 		<setting name="inlining" value="false"/>
-		<setting name="line_generation" value="false"/>
 		<setting name="msil_assembly_compatibility" value="None"/>
 		<setting name="msil_clr_version" value="v2.0.50727"/>
 		<setting name="msil_generation" value="true"/>
 		<setting name="msil_generation_type" value="dll"/>
 		<setting name="multithreaded" value="false"/>
-		<setting name="use_all_cluster_name_as_namespace" value="false"/>
-		<setting name="use_cluster_name_as_namespace" value="true"/>
+		<setting name="use_all_cluster_name_as_namespace" value="true"/>
+		<setting name="use_cluster_name_as_namespace" value="false"/>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf">
 			<renaming old_name="C_STRING" new_name="BASE_C_STRING"/>
 		</library>
@@ -86,5 +85,8 @@
 			</option>
 		</cluster>
 		<override name="vendor_fixes" location="..\..\..\..\libraries\vendor-fixes\" recursive="true"/>
+	</target>
+	<target name="adl_dotnet_lib_debug" extends="adl_dotnet_lib">
+		<setting name="line_generation" value="true"/>
 	</target>
 </system>

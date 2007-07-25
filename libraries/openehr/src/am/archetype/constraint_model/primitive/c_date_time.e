@@ -42,7 +42,7 @@ create
 
 feature -- Initialisation
 	
-	make_interval(an_interval: OE_INTERVAL[ISO8601_DATE_TIME]) is
+	make_interval(an_interval: INTERVAL[ISO8601_DATE_TIME]) is
 		require
 			Interval_exists: an_interval /= Void
 		do
@@ -94,7 +94,7 @@ feature -- Initialisation
 		
 feature -- Access
 
-	interval: OE_INTERVAL[ISO8601_DATE_TIME]
+	interval: INTERVAL[ISO8601_DATE_TIME]
 
 	pattern: STRING
 			-- ISO8601-based pattern like "yyyy-mm-ddT??:??:??"

@@ -25,7 +25,7 @@ create
 
 feature -- Initialisation
 
-	make_identified(a_value: OE_INTERVAL[PART_COMPARABLE]; a_node_id: STRING) is
+	make_identified(a_value: INTERVAL[PART_COMPARABLE]; a_node_id: STRING) is
 		require
 			Item_valid: a_value /= Void
 			Node_id_valid: a_node_id /= Void and then not a_node_id.is_empty
@@ -38,7 +38,7 @@ feature -- Initialisation
 			is_addressable
 		end
 
-	make_anonymous(a_value: OE_INTERVAL[PART_COMPARABLE]) is
+	make_anonymous(a_value: INTERVAL[PART_COMPARABLE]) is
 		require
 			Item_valid: a_value /= Void
 		do
@@ -52,7 +52,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	value: OE_INTERVAL[PART_COMPARABLE]
+	value: INTERVAL[PART_COMPARABLE]
 
 feature -- Status Report
 
@@ -70,7 +70,7 @@ feature -- Status Report
 
 feature -- Modification
 
-	set_value(a_value: OE_INTERVAL[PART_COMPARABLE]) is
+	set_value(a_value: INTERVAL[PART_COMPARABLE]) is
 		require
 			Item_valid: a_value /= Void
 		do

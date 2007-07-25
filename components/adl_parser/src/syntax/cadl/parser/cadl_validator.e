@@ -505,7 +505,7 @@ feature {NONE} -- Semantic actions
 			yyval13: EXPR_ITEM
 			yyval9: OG_PATH
 			yyval22: OG_PATH_ITEM
-			yyval10: OE_INTERVAL [INTEGER]
+			yyval10: INTERVAL [INTEGER]
 			yyval14: CARDINALITY
 			yyval2: INTEGER
 			yyval4: STRING
@@ -513,16 +513,16 @@ feature {NONE} -- Semantic actions
 			yyval24: ARRAYED_LIST [INTEGER]
 			yyval3: REAL
 			yyval25: ARRAYED_LIST [REAL]
-			yyval35: OE_INTERVAL [REAL]
+			yyval35: INTERVAL [REAL]
 			yyval15: BOOLEAN
 			yyval16: ISO8601_DATE
-			yyval37: OE_INTERVAL [ISO8601_DATE]
+			yyval37: INTERVAL [ISO8601_DATE]
 			yyval18: ISO8601_TIME
-			yyval36: OE_INTERVAL [ISO8601_TIME]
+			yyval36: INTERVAL [ISO8601_TIME]
 			yyval17: ISO8601_DATE_TIME
-			yyval38: OE_INTERVAL [ISO8601_DATE_TIME]
+			yyval38: INTERVAL [ISO8601_DATE_TIME]
 			yyval19: ISO8601_DURATION
-			yyval39: OE_INTERVAL [ISO8601_DURATION]
+			yyval39: INTERVAL [ISO8601_DURATION]
 		do
 			inspect yy_act
 when 1 then
@@ -7403,8 +7403,8 @@ feature {NONE} -- Semantic value stacks
 	yyspecial_routines9: KL_SPECIAL_ROUTINES [OG_PATH]
 			-- Routines that ought to be in SPECIAL [OG_PATH]
 
-	yyvs10: SPECIAL [OE_INTERVAL [INTEGER]]
-			-- Stack for semantic values of type OE_INTERVAL [INTEGER]
+	yyvs10: SPECIAL [INTERVAL [INTEGER]]
+			-- Stack for semantic values of type INTERVAL [INTEGER]
 
 	yyvsc10: INTEGER
 			-- Capacity of semantic value stack `yyvs10'
@@ -7412,8 +7412,8 @@ feature {NONE} -- Semantic value stacks
 	yyvsp10: INTEGER
 			-- Top of semantic value stack `yyvs10'
 
-	yyspecial_routines10: KL_SPECIAL_ROUTINES [OE_INTERVAL [INTEGER]]
-			-- Routines that ought to be in SPECIAL [OE_INTERVAL [INTEGER]]
+	yyspecial_routines10: KL_SPECIAL_ROUTINES [INTERVAL [INTEGER]]
+			-- Routines that ought to be in SPECIAL [INTERVAL [INTEGER]]
 
 	yyvs11: SPECIAL [C_PRIMITIVE_OBJECT]
 			-- Stack for semantic values of type C_PRIMITIVE_OBJECT
@@ -7703,8 +7703,8 @@ feature {NONE} -- Semantic value stacks
 	yyspecial_routines34: KL_SPECIAL_ROUTINES [ARRAYED_LIST [CODE_PHRASE]]
 			-- Routines that ought to be in SPECIAL [ARRAYED_LIST [CODE_PHRASE]]
 
-	yyvs35: SPECIAL [OE_INTERVAL [REAL]]
-			-- Stack for semantic values of type OE_INTERVAL [REAL]
+	yyvs35: SPECIAL [INTERVAL [REAL]]
+			-- Stack for semantic values of type INTERVAL [REAL]
 
 	yyvsc35: INTEGER
 			-- Capacity of semantic value stack `yyvs35'
@@ -7712,11 +7712,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp35: INTEGER
 			-- Top of semantic value stack `yyvs35'
 
-	yyspecial_routines35: KL_SPECIAL_ROUTINES [OE_INTERVAL [REAL]]
-			-- Routines that ought to be in SPECIAL [OE_INTERVAL [REAL]]
+	yyspecial_routines35: KL_SPECIAL_ROUTINES [INTERVAL [REAL]]
+			-- Routines that ought to be in SPECIAL [INTERVAL [REAL]]
 
-	yyvs36: SPECIAL [OE_INTERVAL [ISO8601_TIME]]
-			-- Stack for semantic values of type OE_INTERVAL [ISO8601_TIME]
+	yyvs36: SPECIAL [INTERVAL [ISO8601_TIME]]
+			-- Stack for semantic values of type INTERVAL [ISO8601_TIME]
 
 	yyvsc36: INTEGER
 			-- Capacity of semantic value stack `yyvs36'
@@ -7724,11 +7724,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp36: INTEGER
 			-- Top of semantic value stack `yyvs36'
 
-	yyspecial_routines36: KL_SPECIAL_ROUTINES [OE_INTERVAL [ISO8601_TIME]]
-			-- Routines that ought to be in SPECIAL [OE_INTERVAL [ISO8601_TIME]]
+	yyspecial_routines36: KL_SPECIAL_ROUTINES [INTERVAL [ISO8601_TIME]]
+			-- Routines that ought to be in SPECIAL [INTERVAL [ISO8601_TIME]]
 
-	yyvs37: SPECIAL [OE_INTERVAL [ISO8601_DATE]]
-			-- Stack for semantic values of type OE_INTERVAL [ISO8601_DATE]
+	yyvs37: SPECIAL [INTERVAL [ISO8601_DATE]]
+			-- Stack for semantic values of type INTERVAL [ISO8601_DATE]
 
 	yyvsc37: INTEGER
 			-- Capacity of semantic value stack `yyvs37'
@@ -7736,11 +7736,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp37: INTEGER
 			-- Top of semantic value stack `yyvs37'
 
-	yyspecial_routines37: KL_SPECIAL_ROUTINES [OE_INTERVAL [ISO8601_DATE]]
-			-- Routines that ought to be in SPECIAL [OE_INTERVAL [ISO8601_DATE]]
+	yyspecial_routines37: KL_SPECIAL_ROUTINES [INTERVAL [ISO8601_DATE]]
+			-- Routines that ought to be in SPECIAL [INTERVAL [ISO8601_DATE]]
 
-	yyvs38: SPECIAL [OE_INTERVAL [ISO8601_DATE_TIME]]
-			-- Stack for semantic values of type OE_INTERVAL [ISO8601_DATE_TIME]
+	yyvs38: SPECIAL [INTERVAL [ISO8601_DATE_TIME]]
+			-- Stack for semantic values of type INTERVAL [ISO8601_DATE_TIME]
 
 	yyvsc38: INTEGER
 			-- Capacity of semantic value stack `yyvs38'
@@ -7748,11 +7748,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp38: INTEGER
 			-- Top of semantic value stack `yyvs38'
 
-	yyspecial_routines38: KL_SPECIAL_ROUTINES [OE_INTERVAL [ISO8601_DATE_TIME]]
-			-- Routines that ought to be in SPECIAL [OE_INTERVAL [ISO8601_DATE_TIME]]
+	yyspecial_routines38: KL_SPECIAL_ROUTINES [INTERVAL [ISO8601_DATE_TIME]]
+			-- Routines that ought to be in SPECIAL [INTERVAL [ISO8601_DATE_TIME]]
 
-	yyvs39: SPECIAL [OE_INTERVAL [ISO8601_DURATION]]
-			-- Stack for semantic values of type OE_INTERVAL [ISO8601_DURATION]
+	yyvs39: SPECIAL [INTERVAL [ISO8601_DURATION]]
+			-- Stack for semantic values of type INTERVAL [ISO8601_DURATION]
 
 	yyvsc39: INTEGER
 			-- Capacity of semantic value stack `yyvs39'
@@ -7760,8 +7760,8 @@ feature {NONE} -- Semantic value stacks
 	yyvsp39: INTEGER
 			-- Top of semantic value stack `yyvs39'
 
-	yyspecial_routines39: KL_SPECIAL_ROUTINES [OE_INTERVAL [ISO8601_DURATION]]
-			-- Routines that ought to be in SPECIAL [OE_INTERVAL [ISO8601_DURATION]]
+	yyspecial_routines39: KL_SPECIAL_ROUTINES [INTERVAL [ISO8601_DURATION]]
+			-- Routines that ought to be in SPECIAL [INTERVAL [ISO8601_DURATION]]
 
 feature {NONE} -- Constants
 
@@ -7888,11 +7888,11 @@ feature {NONE} -- Parse Tree
 
 	assertion: ASSERTION
 
-	c_string: OE_C_STRING
+	c_string: C_STRING
 	string_list: ARRAYED_LIST[STRING]
 	c_boolean: C_BOOLEAN
 	c_real: C_REAL
-	c_date: OE_C_DATE
+	c_date: C_DATE
 	c_integer:  C_INTEGER
 	c_time: C_TIME
 	c_date_time: C_DATE_TIME
@@ -7916,15 +7916,15 @@ feature {NONE} -- Implementation
 	term: CODE_PHRASE
 	a_uri: URI
 
-	int_interval: OE_INTERVAL [INTEGER]
-	rl_interval: OE_INTERVAL [REAL]
+	int_interval: INTERVAL [INTEGER]
+	rl_interval: INTERVAL [REAL]
 
-	integer_interval: OE_INTERVAL [INTEGER]
-	real_interval: OE_INTERVAL [REAL]
-	date_interval: OE_INTERVAL [ISO8601_DATE]
-	time_interval: OE_INTERVAL [ISO8601_TIME]
-	date_time_interval: OE_INTERVAL [ISO8601_DATE_TIME]
-	duration_interval: OE_INTERVAL [ISO8601_DURATION]
+	integer_interval: INTERVAL [INTEGER]
+	real_interval: INTERVAL [REAL]
+	date_interval: INTERVAL [ISO8601_DATE]
+	time_interval: INTERVAL [ISO8601_TIME]
+	date_time_interval: INTERVAL [ISO8601_DATE_TIME]
+	duration_interval: INTERVAL [ISO8601_DURATION]
 
 	indent: STRING
 	str: STRING

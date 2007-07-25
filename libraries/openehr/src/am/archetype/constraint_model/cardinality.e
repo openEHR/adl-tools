@@ -18,7 +18,7 @@ create
 	
 feature -- Initialisation
 
-	make(an_interval: OE_INTERVAL[INTEGER]) is
+	make(an_interval: INTERVAL[INTEGER]) is
 			-- 
 		require
 			Interval_exists: an_interval /= Void and then not an_interval.lower_unbounded
@@ -31,7 +31,7 @@ feature -- Initialisation
 		
 feature -- Access
 
-	interval: OE_INTERVAL[INTEGER]
+	interval: INTERVAL[INTEGER]
 
 feature -- Status Report
 
