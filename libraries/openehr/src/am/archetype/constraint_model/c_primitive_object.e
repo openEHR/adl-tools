@@ -37,7 +37,7 @@ feature -- Initialisation
 			rm_type_name := an_item.generating_type
 
 -- FIXME: Hack for EIFFEL lack of namespaces, which causes us to use class names like
--- OE_C_DATE instead of just C_DATE
+-- C_DATE instead of just C_DATE
 if rm_type_name.substring (1, ("OE_").count).is_equal("OE_") then
 	rm_type_name.remove_head (("OE_").count)
 end

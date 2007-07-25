@@ -77,9 +77,9 @@ feature -- Access
 			-- 	generate a default value from this constraint object
 		local
 			a_mag: REAL
-			a_mag_ivl: OE_INTERVAL[REAL]
+			a_mag_ivl: INTERVAL[REAL]
 			a_prec: INTEGER
-			a_prec_ivl: OE_INTERVAL[INTEGER]
+			a_prec_ivl: INTERVAL[INTEGER]
  		do
  			if assumed_value /= Void then
  				Result := assumed_value
@@ -133,7 +133,7 @@ feature -- Modification
 			assumed_value_set: assumed_value.magnitude = a_magnitude and assumed_value.units = a_units and assumed_value.precision = a_precision
 		end
 	
-	add_unit_constraint(a_units: STRING; a_magnitude: OE_INTERVAL[REAL]; a_precision: OE_INTERVAL[INTEGER]) is
+	add_unit_constraint(a_units: STRING; a_magnitude: INTERVAL[REAL]; a_precision: INTERVAL[INTEGER]) is
 			-- add a units constraint. Void magnitude means any magnitude allowed
 		require
 			Units_valid: a_units /= Void and then not a_units.is_empty

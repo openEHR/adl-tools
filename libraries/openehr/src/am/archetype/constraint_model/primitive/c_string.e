@@ -16,7 +16,7 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class OE_C_STRING
+class C_STRING
 
 inherit
 	C_PRIMITIVE

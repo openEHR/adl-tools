@@ -95,9 +95,9 @@ feature {SHARED_ADL_OBJECTS} -- Handles
 
 	c_primitive_objects: HASH_TABLE[C_PRIMITIVE_OBJECT, INTEGER]
 
-	real_intervals: HASH_TABLE[OE_INTERVAL[REAL], INTEGER]
+	real_intervals: HASH_TABLE[INTERVAL[REAL], INTEGER]
 
-	integer_intervals: HASH_TABLE[OE_INTERVAL[INTEGER], INTEGER]
+	integer_intervals: HASH_TABLE[INTERVAL[INTEGER], INTEGER]
 
 	last_handle: INTEGER
 

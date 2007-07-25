@@ -29,14 +29,14 @@ feature -- Access
 			Result := adl_objects.new_handle
 		end
 
-	integer_interval(a_handle: INTEGER): OE_INTERVAL[INTEGER] is
+	integer_interval(a_handle: INTEGER): INTERVAL[INTEGER] is
 		require
 			has_integer_interval(a_handle)
 		do
 			Result := adl_objects.integer_intervals.item(a_handle)
 		end
 	
-	real_interval(a_handle: INTEGER): OE_INTERVAL[REAL] is
+	real_interval(a_handle: INTEGER): INTERVAL[REAL] is
 		require
 			has_real_interval(a_handle)
 		do
@@ -266,14 +266,14 @@ feature -- Commands
 			adl_objects.assertions.put(an_item, a_handle)
 		end
 
-	put_integer_interval(an_item: OE_INTERVAL[INTEGER]; a_handle: INTEGER) is
+	put_integer_interval(an_item: INTERVAL[INTEGER]; a_handle: INTEGER) is
 		require
 			not has_integer_interval(a_handle)
 		do
 			adl_objects.integer_intervals.put(an_item, a_handle)
 		end
 
-	put_real_interval(an_item: OE_INTERVAL[REAL]; a_handle: INTEGER) is
+	put_real_interval(an_item: INTERVAL[REAL]; a_handle: INTEGER) is
 		require
 			not has_real_interval(a_handle)
 		do

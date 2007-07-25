@@ -33,7 +33,7 @@ create
 
 feature -- Initialisation
 	
-	make_interval(an_interval: OE_INTERVAL[INTEGER]) is
+	make_interval(an_interval: INTERVAL[INTEGER]) is
 		require
 			Interval_exists: an_interval /= Void
 		do
@@ -52,7 +52,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	interval: OE_INTERVAL[INTEGER]
+	interval: INTERVAL[INTEGER]
 	
 	list: LIST[INTEGER]
 

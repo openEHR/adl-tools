@@ -41,7 +41,7 @@ create
 
 feature -- Initialisation
 	
-	make_interval(an_interval: OE_INTERVAL[ISO8601_DURATION]) is
+	make_interval(an_interval: INTERVAL[ISO8601_DURATION]) is
 		require
 			Interval_exists: an_interval /= Void
 		do
@@ -89,7 +89,7 @@ feature -- Access
 			-- ISO8601-based pattern following
 			-- P[Y|y][M|m][D|d][T[H|h][M|m][S|s]] or P[W|w]
 			
-	interval: OE_INTERVAL[ISO8601_DURATION]
+	interval: INTERVAL[ISO8601_DURATION]
 
 	default_value: ISO8601_DURATION is
 		do
