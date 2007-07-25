@@ -31,25 +31,25 @@ feature {NONE} -- Definitions
 			a_uri: URI -- keep to ensure compiled in
 			a_code_phrase: CODE_PHRASE -- keep to ensure compiled in
 		once
-			Create Result.make(0)
+			create Result.make (0)
 			Result.compare_objects
-			Result.extend(dynamic_type_from_string("INTEGER"))
-			Result.extend(dynamic_type_from_string("REAL"))
-			Result.extend(dynamic_type_from_string("DOUBLE"))
-			Result.extend(dynamic_type_from_string("BOOLEAN"))
-			Result.extend(dynamic_type_from_string("CHARACTER"))
-			Result.extend(dynamic_type_from_string("STRING"))
-			Result.extend(dynamic_type_from_string("DATE"))
-			Result.extend(dynamic_type_from_string("DATE_TIME"))
-			Result.extend(dynamic_type_from_string("TIME"))
-			Result.extend(dynamic_type_from_string("DATE_TIME_DURATION"))
-			Result.extend(dynamic_type_from_string("CODE_PHRASE"))
-			Result.extend(dynamic_type_from_string("URI"))
-			Result.extend(dynamic_type_from_string("INTEGER_REF"))
-			Result.extend(dynamic_type_from_string("REAL_REF"))
-			Result.extend(dynamic_type_from_string("DOUBLE_REF"))
-			Result.extend(dynamic_type_from_string("BOOLEAN_REF"))
-			Result.extend(dynamic_type_from_string("CHARACTER_REF"))
+			Result.extend (dynamic_type (create {INTEGER}))
+			Result.extend (dynamic_type (create {REAL}))
+			Result.extend (dynamic_type (create {DOUBLE}))
+			Result.extend (dynamic_type (create {BOOLEAN}))
+			Result.extend (dynamic_type (create {CHARACTER}))
+			Result.extend (dynamic_type (create {STRING}.make_empty))
+			Result.extend (dynamic_type (create {DATE}.make_now))
+			Result.extend (dynamic_type (create {DATE_TIME}.make_now))
+			Result.extend (dynamic_type (create {TIME}.make_now))
+			Result.extend (dynamic_type (create {DATE_TIME_DURATION}.make (0, 0, 0, 0, 0, 0)))
+			Result.extend (dynamic_type (create {CODE_PHRASE}))
+			Result.extend (dynamic_type (create {URI}.make_from_string ("http://no.way.home")))
+			Result.extend (dynamic_type (create {INTEGER_REF}))
+			Result.extend (dynamic_type (create {REAL_REF}))
+			Result.extend (dynamic_type (create {DOUBLE_REF}))
+			Result.extend (dynamic_type (create {BOOLEAN_REF}))
+			Result.extend (dynamic_type (create {CHARACTER_REF}))
 		end
 
 	primitive_sequence_types: ARRAYED_LIST [INTEGER] is
@@ -75,25 +75,25 @@ feature {NONE} -- Definitions
 			seq_uri: SEQUENCE[URI]
 			seq_code_phrase: SEQUENCE[CODE_PHRASE]
 		once
-			Create Result.make(0)
+			Create Result.make (0)
 			Result.compare_objects
-			Result.extend(dynamic_type_from_string("SEQUENCE[INTEGER]"))
-			Result.extend(dynamic_type_from_string("SEQUENCE[BOOLEAN]"))
-			Result.extend(dynamic_type_from_string("SEQUENCE[REAL]"))
-			Result.extend(dynamic_type_from_string("SEQUENCE[DOUBLE]"))
-			Result.extend(dynamic_type_from_string("SEQUENCE[CHARACTER]"))
-			Result.extend(dynamic_type_from_string("SEQUENCE[STRING]"))
-			Result.extend(dynamic_type_from_string("SEQUENCE[DATE]"))
-			Result.extend(dynamic_type_from_string("SEQUENCE[DATE_TIME]"))
-			Result.extend(dynamic_type_from_string("SEQUENCE[TIME]"))
-			Result.extend(dynamic_type_from_string("SEQUENCE[DURATION]"))
-			Result.extend(dynamic_type_from_string("SEQUENCE[URI]"))
-			Result.extend(dynamic_type_from_string("SEQUENCE[CODE_PHRASE]"))
-			Result.extend(dynamic_type_from_string("SEQUENCE[INTEGER_REF]"))
-			Result.extend(dynamic_type_from_string("SEQUENCE[BOOLEAN_REF]"))
-			Result.extend(dynamic_type_from_string("SEQUENCE[REAL_REF]"))
-			Result.extend(dynamic_type_from_string("SEQUENCE[DOUBLE_REF]"))
-			Result.extend(dynamic_type_from_string("SEQUENCE[CHARACTER_REF]"))
+			Result.extend (dynamic_type_from_string ("SEQUENCE [INTEGER]"))
+			Result.extend (dynamic_type_from_string ("SEQUENCE [BOOLEAN]"))
+			Result.extend (dynamic_type_from_string ("SEQUENCE [REAL]"))
+			Result.extend (dynamic_type_from_string ("SEQUENCE [DOUBLE]"))
+			Result.extend (dynamic_type_from_string ("SEQUENCE [CHARACTER]"))
+			Result.extend (dynamic_type_from_string ("SEQUENCE [STRING]"))
+			Result.extend (dynamic_type_from_string ("SEQUENCE [DATE]"))
+			Result.extend (dynamic_type_from_string ("SEQUENCE [DATE_TIME]"))
+			Result.extend (dynamic_type_from_string ("SEQUENCE [TIME]"))
+			Result.extend (dynamic_type_from_string ("SEQUENCE [DURATION]"))
+			Result.extend (dynamic_type_from_string ("SEQUENCE [URI]"))
+			Result.extend (dynamic_type_from_string ("SEQUENCE [CODE_PHRASE]"))
+			Result.extend (dynamic_type_from_string ("SEQUENCE [INTEGER_REF]"))
+			Result.extend (dynamic_type_from_string ("SEQUENCE [BOOLEAN_REF]"))
+			Result.extend (dynamic_type_from_string ("SEQUENCE [REAL_REF]"))
+			Result.extend (dynamic_type_from_string ("SEQUENCE [DOUBLE_REF]"))
+			Result.extend (dynamic_type_from_string ("SEQUENCE [CHARACTER_REF]"))
 		end
 
 	primitive_interval_types: ARRAYED_LIST [INTEGER] is
@@ -111,18 +111,18 @@ feature {NONE} -- Definitions
 			ivl_time: INTERVAL[TIME]
 			ivl_duration: INTERVAL[DATE_TIME_DURATION]
 		once
-			Create Result.make(0)
+			Create Result.make (0)
 			Result.compare_objects
-			Result.extend(dynamic_type_from_string("INTERVAL[INTEGER]"))
-			Result.extend(dynamic_type_from_string("INTERVAL[REAL]"))
-			Result.extend(dynamic_type_from_string("INTERVAL[DOUBLE]"))
-			Result.extend(dynamic_type_from_string("INTERVAL[DATE]"))
-			Result.extend(dynamic_type_from_string("INTERVAL[DATE_TIME]"))
-			Result.extend(dynamic_type_from_string("INTERVAL[TIME]"))
-			Result.extend(dynamic_type_from_string("INTERVAL[DATE_TIME_DURATION]"))
-			Result.extend(dynamic_type_from_string("INTERVAL[INTEGER_REF]"))
-			Result.extend(dynamic_type_from_string("INTERVAL[REAL_REF]"))
-			Result.extend(dynamic_type_from_string("INTERVAL[DOUBLE_REF]"))
+			Result.extend (dynamic_type (create {INTERVAL [INTEGER]}))
+			Result.extend (dynamic_type (create {INTERVAL [REAL]}))
+			Result.extend (dynamic_type (create {INTERVAL [DOUBLE]}))
+			Result.extend (dynamic_type (create {INTERVAL [DATE]}))
+			Result.extend (dynamic_type (create {INTERVAL [DATE_TIME]}))
+			Result.extend (dynamic_type (create {INTERVAL [TIME]}))
+			Result.extend (dynamic_type (create {INTERVAL [DATE_TIME_DURATION]}))
+			Result.extend (dynamic_type (create {INTERVAL [INTEGER_REF]}))
+			Result.extend (dynamic_type (create {INTERVAL [REAL_REF]}))
+			Result.extend (dynamic_type (create {INTERVAL [DOUBLE_REF]}))
 		end
 
 feature -- Access
