@@ -1,6 +1,6 @@
 indexing
 	component:   "openEHR support types"
-	
+
 	description: "Generic class defining an interval (i.e. range) of a comparable type."
 	keywords:    "intervals"
 
@@ -18,14 +18,27 @@ class INTERVAL [G -> PART_COMPARABLE]
 inherit
 	ANY
 		redefine
+			default_create,
 			is_equal
 		end
-		
-create 
+
+create
 	default_create,
-	make_bounded, make_lower_unbounded, make_upper_unbounded, make_point
+	make_bounded,
+	make_lower_unbounded,
+	make_upper_unbounded,
+	make_point
 
 feature -- Initialization
+
+	default_create
+			-- Create satisfying the invariant.
+		do
+			lower_unbounded := True
+			upper_unbounded := True
+		ensure then
+			unbounded: lower_unbounded and upper_unbounded
+		end
 
 	make_point(a_value:G) is
 			-- make with both limits set to the same value
@@ -97,34 +110,34 @@ feature -- Access
 
 	upper: G
 			-- upper limit of interval
-			
+
 	midpoint: G is
 			-- generate midpoint of limits
 		do
-			
+
 		end
-		
+
 feature -- Status report
 
 	lower_unbounded: BOOLEAN
 			-- True if lower limit open, i.e. -infinity
-	
+
 	upper_unbounded: BOOLEAN
 			-- True if upper limit open, i.e. +infinity
-		
+
 	lower_included: BOOLEAN
 			-- True if lower limit point included in interval
-	
+
 	upper_included: BOOLEAN
 			-- True if upper limit point included in interval
 
 	is_point: BOOLEAN is
 			-- Is current interval a point (width = 0)?
 		do
-			Result := not (lower_unbounded or upper_unbounded) and  
+			Result := not (lower_unbounded or upper_unbounded) and
 						lower_included and upper_included and lower.is_equal (upper)
 		ensure
-			Result = (not (lower_unbounded or upper_unbounded) and 
+			Result = (not (lower_unbounded or upper_unbounded) and
 				lower_included and upper_included and lower.is_equal (upper))
 		end
 
@@ -133,10 +146,10 @@ feature -- Status report
 		require
 			exists: v /= void
 		do
-			Result := (lower_unbounded or ((lower_included and v >= lower) or v > lower)) and 
+			Result := (lower_unbounded or ((lower_included and v >= lower) or v > lower)) and
 			(upper_unbounded or ((upper_included and v <= upper or v < upper)))
 		ensure
-			result_definition: Result = (lower_unbounded or ((lower_included and v >= lower) or v > lower)) and 
+			result_definition: Result = (lower_unbounded or ((lower_included and v >= lower) or v > lower)) and
 			(upper_unbounded or ((upper_included and v <= upper or v < upper)))
 		end
 
@@ -164,20 +177,20 @@ feature -- Status report
 			if lower_unbounded then
 				Result := other.lower_unbounded
 			else
-				Result := not other.lower_unbounded and 
+				Result := not other.lower_unbounded and
 						((lower_included = other.lower_included) and lower.is_equal(other.lower))
 			end
-			
+
 			if Result then
 				if upper_unbounded then
 					Result := other.upper_unbounded
 				else
-					Result := not other.upper_unbounded and 
+					Result := not other.upper_unbounded and
 					((upper_included = other.upper_included) and upper.is_equal(other.upper))
-				end				
+				end
 			end
 		end
-		
+
 	limits_equal: BOOLEAN is
 			-- true if limits bounded and equal
 		do
@@ -189,6 +202,8 @@ feature -- Output
 	lower_out: STRING is
 			-- same as out but fixed to make REALs with no decimal part
 			-- output as NNN.0 anyway
+		require
+			has_lower: not lower_unbounded
 		do
 			-- FIXME: REAL.out is broken
 			Result := lower.out
@@ -200,6 +215,8 @@ feature -- Output
 	upper_out: STRING is
 			-- same as out but fixed to make REALs with no decimal part
 			-- output as NNN.0 anyway
+		require
+			has_upper: not upper_unbounded
 		do
 			-- FIXME: REAL.out is broken
 			Result := upper.out
@@ -218,7 +235,7 @@ feature -- Output
 			elseif not limits_equal then
 				Result.append(lower_out + ".." + upper_out)
 			else
-				Result.append(lower_out) 
+				Result.append(lower_out)
 			end
 		end
 
@@ -248,12 +265,14 @@ feature -- Output
 					Result.append(">" + lower_out + "..<" + upper_out)
 				end
 			else
-				Result.append(lower_out) 
+				Result.append(lower_out)
 			end
 		end
 
 invariant
-	Limits_consistent: (not upper_unbounded and not lower_unbounded) implies (lower <= upper)
+	lower_attached_if_bounded: not lower_unbounded implies lower /= Void
+	upper_attached_if_bounded: not upper_unbounded implies upper /= Void
+	limits_consistent: not (upper_unbounded or lower_unbounded) implies lower <= upper
 
 end
 
