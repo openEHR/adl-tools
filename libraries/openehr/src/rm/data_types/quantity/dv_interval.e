@@ -24,6 +24,7 @@ class DV_INTERVAL [G -> DV_ORDERED]
 inherit
 	DATA_VALUE
 		undefine
+			default_create,
 			is_equal
 		end
 	INTERVAL [G]
