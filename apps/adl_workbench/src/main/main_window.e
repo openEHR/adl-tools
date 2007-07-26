@@ -369,8 +369,12 @@ feature {NONE} -- Commands
 		do
 			if archetype_compiler.parse_succeeded then
 				ok_to_write := True
+
+				name := archetype_directory.selected_archetype_descriptor.full_path.twin
+				name.remove_tail (archetype_file_extensions [archetype_file_extension].count)
+
 				create save_dialog
-				save_dialog.set_file_name (archetype_directory.selected_archetype_descriptor.full_path)
+					save_dialog.set_file_name (name)
 				save_dialog.set_start_directory (current_work_directory)
 
 				from
@@ -382,7 +386,7 @@ feature {NONE} -- Commands
 
 					if has_archetype_serialiser_format (format) then
 						save_dialog.filters.extend (["*" + archetype_file_extensions.item_for_iteration, "Files of type " + format])
-				end
+					end
 
 					archetype_file_extensions.forth
 				end
@@ -394,12 +398,9 @@ feature {NONE} -- Commands
 					format ?= (save_dialog.filters [save_dialog.selected_filter_index]) [1]
 					format.remove_head (2)
 
-					if not format.is_equal (archetype_file_extension) then
-						if file_system.has_extension (name, archetype_file_extensions [archetype_file_extension]) then
-							name.remove_tail (archetype_file_extensions [archetype_file_extension].count)
-							name.append (archetype_file_extensions [format])
-							save_dialog.set_file_name (name)
-						end
+					if not file_system.has_extension (name, archetype_file_extensions [format]) then
+						name.append (archetype_file_extensions [format])
+						save_dialog.set_file_name (name)
 					end
 
 					create a_file.make (name)
