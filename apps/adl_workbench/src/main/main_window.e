@@ -373,8 +373,12 @@ feature {NONE} -- Commands
 			if adl_interface.archetype_source_loaded then
 				if adl_interface.parse_succeeded then
 					ok_to_write := True
+
+					name := adl_interface.file_context.current_file_name.twin
+					name.remove_tail (archetype_file_extensions [archetype_file_extension].count)
+
 					create save_dialog
-					save_dialog.set_file_name (adl_interface.file_context.current_file_name)
+					save_dialog.set_file_name (name)
 					save_dialog.set_start_directory (current_work_directory)
 
 					from
@@ -398,12 +402,9 @@ feature {NONE} -- Commands
 						format ?= (save_dialog.filters [save_dialog.selected_filter_index]) [1]
 						format.remove_head (2)
 
-						if not format.is_equal (archetype_file_extension) then
-							if file_system.has_extension (name, archetype_file_extensions [archetype_file_extension]) then
-								name.remove_tail (archetype_file_extensions [archetype_file_extension].count)
-								name.append (archetype_file_extensions [format])
-								save_dialog.set_file_name (name)
-							end
+						if not file_system.has_extension (name, archetype_file_extensions [format]) then
+							name.append (archetype_file_extensions [format])
+							save_dialog.set_file_name (name)
 						end
 
 						create a_file.make (name)
