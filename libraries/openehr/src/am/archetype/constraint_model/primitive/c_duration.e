@@ -1,10 +1,10 @@
 indexing
 
 	component:   "openEHR Common Archetype Model"
-	
+
 	description: "Constrainer type for instances of DURATION"
 	keywords:    "archetype, date, data"
-	
+
 	design:      "openEHR Common Archetype Model 0.2"
 
 	author:      "Thomas Beale"
@@ -33,107 +33,160 @@ inherit
 			{NONE} all
 			{ANY} valid_iso8601_duration, iso8601_string_to_duration, valid_iso8601_duration_constraint_pattern
 		undefine
-			is_equal, default_create, out
+			is_equal,
+			default_create,
+			out
 		end
 
 create
-	make_interval, make_string_interval, make_from_pattern
+	make_interval,
+	make_string_interval,
+	make_from_pattern,
+	make_pattern_with_interval
 
-feature -- Initialisation
-	
-	make_interval(an_interval: INTERVAL[ISO8601_DURATION]) is
+feature {NONE} -- Initialisation
+
+	make_interval (an_interval: like interval)
+			-- Create from an ISO8601-based interval.
 		require
-			Interval_exists: an_interval /= Void
+			interval_attached: an_interval /= Void
 		do
 			interval := an_interval
+		ensure
+			interval_set: interval = an_interval
+			pattern_void: pattern = Void
 		end
 
-	make_from_pattern(a_pattern: STRING) is
-			-- create Result from an ISO8601-based pattern like "yyyy-mm-XX"
-			-- allowed patterns:
-			-- P[Y|y][M|m][W|w][D|d][T[H|h][M|m][S|s]]
+	make_from_pattern (a_pattern: STRING)
+			-- Create from an ISO8601-based pattern.
 		require
-			a_pattern_valid: a_pattern /= Void and then valid_iso8601_duration_constraint_pattern(a_pattern)
+			a_pattern_attached: a_pattern /= Void
+			a_pattern_valid: valid_iso8601_duration_constraint_pattern (a_pattern)
 		do
 			pattern := a_pattern
 		ensure
 			pattern_set: pattern = a_pattern
-		end	
-		
-	make_string_interval(a_lower, an_upper: STRING; include_lower, include_upper: BOOLEAN) is
-			-- make from two iso8601 strings. Either may be Void, indicating an open-ended interval;
-			-- they may also be the same, meaning a single point. Boolean flags indicate whether to
-			-- include limits in range or not
+			interval_void: interval = Void
+		end
+
+	make_pattern_with_interval (a_pattern: STRING; an_interval: like interval)
+			-- Create from an ISO8601-based pattern, together with an ISO8601-based interval.
+		require
+			a_pattern_attached: a_pattern /= Void
+			a_pattern_valid: valid_iso8601_duration_constraint_pattern (a_pattern)
+			interval_attached: an_interval /= Void
+		do
+			pattern := a_pattern
+			interval := an_interval
+		ensure
+			pattern_set: pattern = a_pattern
+			interval_set: interval = an_interval
+		end
+
+	make_string_interval (a_lower, an_upper: STRING; include_lower, include_upper: BOOLEAN)
+			-- Create from two ISO8601 strings. Either may be Void, indicating an open-ended interval;
+			-- they may also be the same, meaning a single point.
+			-- Boolean flags indicate whether to include limits in range or not.
 		require
 			valid_interval: a_lower /= Void or an_upper /= Void
-			lower_exists: a_lower /= void implies valid_iso8601_duration(a_lower)
-			upper_exists: an_upper /= void implies valid_iso8601_duration(an_upper)
-			valid_order: (a_lower /= Void and an_upper /= Void) implies 
-						(iso8601_string_to_duration(a_lower) <= iso8601_string_to_duration(an_upper))
+			lower_valid: a_lower /= void implies valid_iso8601_duration (a_lower)
+			upper_valid: an_upper /= void implies valid_iso8601_duration (an_upper)
+			valid_order: (a_lower /= Void and an_upper /= Void) implies
+						iso8601_string_to_duration (a_lower) <= iso8601_string_to_duration (an_upper)
+		local
+			lower_duration, upper_duration: ISO8601_DURATION
 		do
-			if a_lower = Void then
-				create interval.make_lower_unbounded(create {ISO8601_DURATION}.make_from_string(an_upper), include_upper)
-			else
-				if an_upper = Void then
-					create interval.make_upper_unbounded(create {ISO8601_DURATION}.make_from_string(a_lower), include_lower)
-				else
-					create interval.make_bounded(create {ISO8601_DURATION}.make_from_string(a_lower), 
-						create {ISO8601_DURATION}.make_from_string(an_upper), include_lower, include_upper)			
-				end
+			if a_lower /= Void then
+				create lower_duration.make_from_string (a_lower)
 			end
+
+			if an_upper /= Void then
+				create upper_duration.make_from_string (an_upper)
+			end
+
+			if lower_duration = Void then
+				create interval.make_lower_unbounded (upper_duration, include_upper)
+			elseif upper_duration = Void then
+				create interval.make_upper_unbounded (lower_duration, include_lower)
+			else
+				create interval.make_bounded (lower_duration, upper_duration, include_lower, include_upper)
+			end
+		ensure
+			interval_void: interval = Void
 		end
 
 feature -- Access
 
 	pattern: STRING
-			-- ISO8601-based pattern following
+			-- ISO8601-based pattern like "yyyy-mm-XX".
+			-- Allowed patterns:
 			-- P[Y|y][M|m][D|d][T[H|h][M|m][S|s]] or P[W|w]
-			
-	interval: INTERVAL[ISO8601_DURATION]
+
+	interval: INTERVAL [ISO8601_DURATION]
+			-- ISO8601-based interval.
 
 	default_value: ISO8601_DURATION is
+			-- Default duration value.
 		do
-			if pattern /= Void then
-				-- FIXME: TO BE IMPLEMENTED	
-			else
+			if interval /= Void then
 				Result := interval.lower
+			else
+				-- FIXME: Return something based on `pattern'.
 			end
 		end
 
 feature -- Status Report
 
-	valid_value (a_value: ISO8601_DURATION): BOOLEAN is 
+	valid_value (duration: ISO8601_DURATION): BOOLEAN
+			-- Is `duration' within `interval'?
 		do
+			Result := True
+
 			if pattern /= Void then
 				-- FIXME: TO BE IMPLEMENTED	
-			else
-				Result := interval.has(a_value)
 			end
+
+			Result := Result and (interval /= Void implies interval.has (duration))
 		end
 
 feature -- Output
 
 	as_string: STRING is
+			-- Textual representation.
 		do
-			create Result.make(0)
+			create Result.make_empty
+
 			if pattern /= Void then
-				Result.append(pattern)
-			else
-				Result.append("|" + interval.as_string + "|")
+				Result.append (pattern)
 			end
+
+			if interval /= Void then
+				if pattern /= Void then
+					Result.append_character ('/')
+				end
+
+				Result.append ("|" + interval.as_string + "|")
+			end
+
 			if assumed_value /= Void then
-				Result.append("; " + assumed_value.as_string)
+				Result.append ("; " + assumed_value.as_string)
 			end
+		ensure then
+			not_empty: not Result.is_empty
 		end
 
-	as_canonical_string:STRING is
+	as_canonical_string: STRING is
 		do
 			Result := interval.as_string
+		ensure
+			attached: Result /= Void
+			not_empty: not Result.is_empty
 		end
 
 invariant
-	Basic_validity: pattern /= Void xor interval /= Void
-	
+	basic_validity: pattern /= Void or interval /= Void
+	pattern_valid: pattern /= Void implies valid_iso8601_duration_constraint_pattern (pattern)
+
 end
 
 
