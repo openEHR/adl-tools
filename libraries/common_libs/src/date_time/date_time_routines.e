@@ -16,13 +16,13 @@ class DATE_TIME_ROUTINES
 
 inherit
 	ISO8601_ROUTINES
-	
+
 feature -- Definitions
 
 	valid_date_constraint_patterns: ARRAYED_LIST [STRING] is
 			-- list of allowed date constraints
 		once
-			create Result.make(0)
+			create Result.make (0)
 			Result.compare_objects
 			Result.extend ("YYYY-MM-DD")	-- full date required
 			Result.extend ("YYYY-MM-??")	-- day optional
@@ -30,83 +30,80 @@ feature -- Definitions
 			Result.extend ("YYYY-??-??")	-- any date ok
 			Result.extend ("YYYY-??-XX")	-- day not allowed
 			Result.extend ("YYYY-XX-XX")	-- neither month nor day allowed
-		end		
-		
+		ensure
+			attached: Result /= Void
+			not_empty: not Result.is_empty
+		end
+
 	valid_time_constraint_patterns: ARRAYED_LIST [STRING] is
-			-- FIXME: remove one day 
+			-- FIXME: remove one day
 		once
-			create Result.make(0)
+			create Result.make (0)
 			Result.compare_objects
 			Result.extend ("HH:MM:SS")	-- full time required
 			Result.extend ("HH:??:XX")	-- seconds optional
 			Result.extend ("HH:??:??")	-- any time ok
 			Result.extend ("HH:MM:XX")	-- seconds not allowed
+		ensure
+			attached: Result /= Void
+			not_empty: not Result.is_empty
 		end
-		
+
 	valid_date_time_constraint_patterns: ARRAYED_LIST [STRING] is
 			-- list of allowed date/time constraints
 		once
-			create Result.make(0)
+			create Result.make (0)
 			Result.compare_objects
 			Result.extend ("YYYY-MM-DDTHH:MM:SS")	-- full date/time required
 			Result.extend ("YYYY-MM-DDTHH:MM:??")	-- seconds optional
 			Result.extend ("YYYY-??-??T??:??:??")	-- any date/time ok
 			Result.extend ("YYYY-MM-DDTHH:??:XX")	-- seconds not allowed, minutes optional
 			Result.extend ("YYYY-MM-DDTHH:MM:XX")	-- seconds not allowed
+		ensure
+			attached: Result /= Void
+			not_empty: not Result.is_empty
 		end
-		
+
 feature -- Status Report
 
 	valid_iso8601_time_constraint_pattern(s: STRING): BOOLEAN is
-			-- True if string literal like "hh:mm:ss[.ssss]" 
+			-- True if string literal like "hh:mm:ss[.ssss]"
 			-- with XX or ?? allowed in mm or ss slots
 		require
-			s /= Void
-		local
-			str: STRING
+			s_attached: s /= Void
 		do
-			str := s.twin
-			str.to_upper
-			Result := valid_time_constraint_patterns.has(str)
+			Result := valid_time_constraint_patterns.has (s.as_upper)
 		end
-		
+
 	valid_iso8601_date_constraint_pattern(s: STRING): BOOLEAN is
 			-- True if string literal like "yyyy-MM-dd"
 			-- with XX or ?? allowed in MM or dd slots
 		require
-			s /= Void
-		local
-			str: STRING
+			s_attached: s /= Void
 		do
-			str := s.twin
-			str.to_upper
-			Result := valid_date_constraint_patterns.has(str)
+			Result := valid_date_constraint_patterns.has (s.as_upper)
 		end
-		
+
 	valid_iso8601_date_time_constraint_pattern(s: STRING): BOOLEAN is
 			-- True if string in form "yyyy-MM-dd hh:mm:ss[.ssss]"
 		require
-			s /= Void
-		local
-			str: STRING
+			s_attached: s /= Void
 		do
-			str := s.twin
-			str.to_upper
-			Result := valid_date_time_constraint_patterns.has(str)
+			Result := valid_date_time_constraint_patterns.has (s.as_upper)
 		end
-		
+
 	valid_iso8601_duration_constraint_pattern(s: STRING): BOOLEAN is
-			-- True if string in form 
+			-- True if string in form
 			-- P[Y|y][M|m][W|w][D|d][T[H|h][M|m][S|s]]
 			-- (note: allowing 'W' to be mixed in is an openEHR deviation of ISO 8601)
 		require
-			s /= Void
+			s_attached: s /= Void
 		local
 			time_leader_pos, i: INTEGER
 			str, ymd_part, hms_part: STRING
 		do
-			str := s.twin
-			str.to_upper
+			str := s.as_upper
+
 			if str.count >= 2 and str.item(1) = Duration_leader then
 				time_leader_pos := str.index_of(Time_leader, 1)
 				if time_leader_pos = 1 then
@@ -124,9 +121,9 @@ feature -- Status Report
 					until
 						i > ymd_part.count or not Result
 					loop
-						if ymd_part.item(i) /= 'Y' and 
-							ymd_part.item(i) /= 'M' and 
-							ymd_part.item(i) /= 'W' and 
+						if ymd_part.item(i) /= 'Y' and
+							ymd_part.item(i) /= 'M' and
+							ymd_part.item(i) /= 'W' and
 							ymd_part.item(i) /= 'D' then
 							Result := False
 						end
@@ -139,8 +136,8 @@ feature -- Status Report
 					until
 						i > hms_part.count or not Result
 					loop
-						if hms_part.item(i) /= 'H' and 
-							hms_part.item(i) /= 'M' and 
+						if hms_part.item(i) /= 'H' and
+							hms_part.item(i) /= 'M' and
 							hms_part.item(i) /= 'S' then
 							Result := False
 						end

@@ -39,12 +39,50 @@ inherit
 		end
 
 create
+	make,
 	make_interval,
-	make_string_interval,
 	make_from_pattern,
 	make_pattern_with_interval
 
 feature {NONE} -- Initialisation
+
+	make (a_pattern, a_lower, an_upper: STRING; include_lower, include_upper: BOOLEAN)
+			-- Create from an ISO8601-based pattern, together with two ISO8601 strings representing an interval.
+			-- If either `a_lower' or `an_upper' is Void, the interval is open-ended;
+			-- if they are the same, the interval is a single point.
+			-- Boolean flags indicate whether to include limits in the range or not.
+		require
+			not_all_void: a_pattern /= Void or a_lower /= Void or an_upper /= Void
+			valid_pattern: a_pattern /= Void implies valid_iso8601_duration_constraint_pattern (a_pattern)
+			valid_lower: a_lower /= void implies valid_iso8601_duration (a_lower)
+			valid_upper: an_upper /= void implies valid_iso8601_duration (an_upper)
+			valid_order: (a_lower /= Void and an_upper /= Void) implies iso8601_string_to_duration (a_lower) <= iso8601_string_to_duration (an_upper)
+		local
+			lower_duration, upper_duration: ISO8601_DURATION
+		do
+			pattern := a_pattern
+
+			if a_lower /= Void or an_upper /= Void then
+				if a_lower /= Void then
+					create lower_duration.make_from_string (a_lower)
+				end
+
+				if an_upper /= Void then
+					create upper_duration.make_from_string (an_upper)
+				end
+
+				if lower_duration = Void then
+					create interval.make_lower_unbounded (upper_duration, include_upper)
+				elseif upper_duration = Void then
+					create interval.make_upper_unbounded (lower_duration, include_lower)
+				else
+					create interval.make_bounded (lower_duration, upper_duration, include_lower, include_upper)
+				end
+			end
+		ensure
+			pattern_set: pattern = a_pattern
+			interval_if_lower_or_upper: (a_lower /= Void or an_upper /= Void) xor interval = Void
+		end
 
 	make_interval (an_interval: like interval)
 			-- Create from an ISO8601-based interval.
@@ -81,38 +119,6 @@ feature {NONE} -- Initialisation
 		ensure
 			pattern_set: pattern = a_pattern
 			interval_set: interval = an_interval
-		end
-
-	make_string_interval (a_lower, an_upper: STRING; include_lower, include_upper: BOOLEAN)
-			-- Create from two ISO8601 strings. Either may be Void, indicating an open-ended interval;
-			-- they may also be the same, meaning a single point.
-			-- Boolean flags indicate whether to include limits in range or not.
-		require
-			valid_interval: a_lower /= Void or an_upper /= Void
-			lower_valid: a_lower /= void implies valid_iso8601_duration (a_lower)
-			upper_valid: an_upper /= void implies valid_iso8601_duration (an_upper)
-			valid_order: (a_lower /= Void and an_upper /= Void) implies
-						iso8601_string_to_duration (a_lower) <= iso8601_string_to_duration (an_upper)
-		local
-			lower_duration, upper_duration: ISO8601_DURATION
-		do
-			if a_lower /= Void then
-				create lower_duration.make_from_string (a_lower)
-			end
-
-			if an_upper /= Void then
-				create upper_duration.make_from_string (an_upper)
-			end
-
-			if lower_duration = Void then
-				create interval.make_lower_unbounded (upper_duration, include_upper)
-			elseif upper_duration = Void then
-				create interval.make_upper_unbounded (lower_duration, include_lower)
-			else
-				create interval.make_bounded (lower_duration, upper_duration, include_lower, include_upper)
-			end
-		ensure
-			interval_void: interval = Void
 		end
 
 feature -- Access
