@@ -16,7 +16,6 @@ indexing
 class CADL_SCANNER
 
 inherit
-
 	YY_COMPRESSED_SCANNER_SKELETON
 		rename
 			make as make_compressed_scanner_skeleton,
@@ -55,8 +54,7 @@ inherit
 			{NONE} all
 		end
 
-creation
-
+create
 	make
 %}
 
@@ -248,7 +246,7 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 					last_token := ERR_TERM_CODE_CONSTRAINT
 				else
 					in_buffer.append(text_substring(1, text_count-1))
-					str_ := STRING_.make (in_buffer.count)
+					create str_.make (in_buffer.count)
 					str_.append (in_buffer)
 					in_buffer.wipe_out
 					last_string_value := str_
@@ -385,7 +383,7 @@ P[yY]?[mM]?[Ww]?[dD]? {
 				in_buffer.append_string (text)
 				unread_character(in_buffer.item(in_buffer.count)) -- put back the last character 
 				in_buffer.remove_tail(1) -- get rid of the "}" from the buffer
-				str_ := STRING_.make (in_buffer.count)
+				create str_.make (in_buffer.count)
 				str_.append_string (in_buffer)
 				in_lineno := in_lineno + str_.occurrences('%N')
 
@@ -465,7 +463,7 @@ P[yY]?[mM]?[Ww]?[dD]? {
 
 	[^/}]*\/	{ 		-- match final segment
 				in_buffer.append_string (text)
-				str_ := STRING_.make (in_buffer.count)
+				create str_.make (in_buffer.count)
 				str_.append_string (in_buffer)
 				in_buffer.wipe_out
  				last_string_value := str_
@@ -562,7 +560,7 @@ P[yY]?[mM]?[Ww]?[dD]? {
 				if text_count > 1 then
 					in_buffer.append_string (text_substring (1, text_count - 1))
 				end
-				str_ := STRING_.make (in_buffer.count)
+				create str_.make (in_buffer.count)
 				str_.append_string (in_buffer)
 				in_buffer.wipe_out
 				last_string_value := str_
@@ -608,7 +606,7 @@ feature {NONE} -- Initialization
 			-- Create a new scanner.
 		do
 			make_compressed_scanner_skeleton
-			in_buffer := string_.make (Init_buffer_size)
+			create in_buffer.make (Init_buffer_size)
 			in_lineno := 1
 		end
 
@@ -625,16 +623,16 @@ feature -- Initialization
 feature -- Access
 
 	in_buffer: STRING
-			-- Buffer for lexical tokens
+			-- Buffer for lexical tokens.
 
 	in_lineno: INTEGER
-			-- Current line number
+			-- Current line number.
 
 	is_operator: BOOLEAN
 			-- Parsing an operator declaration?
 
 	source_start_line: INTEGER
-			-- offset of source in other document, else 0
+			-- Offset of source in other document, else 0.
 
 feature {NONE} -- Implementation
 
@@ -649,17 +647,16 @@ feature {NONE} -- Implementation
 	dadl_parser_error: STRING
 
 	term_code_count: INTEGER
-			-- number of term codes found so far parsing a  TERM_CONSTRAINT
+			-- Number of term codes found so far parsing a TERM_CONSTRAINT.
 
 	assumed_term_code_index: INTEGER
-			-- index of term code in 'assumed' position when parsing a  TERM_CONSTRAINT
+			-- Index of term code in 'assumed' position when parsing a TERM_CONSTRAINT.
 
 	c_domain_type: C_DOMAIN_TYPE
 
 	tid: INTEGER
 
 invariant
-
 	in_buffer_not_void: in_buffer /= Void
 
 end

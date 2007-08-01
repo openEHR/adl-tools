@@ -16,7 +16,6 @@ indexing
 class CADL_VALIDATOR
 
 inherit
-
 	YY_PARSER_SKELETON
 		rename
 			make as make_parser_skeleton
@@ -49,10 +48,8 @@ inherit
 	KL_SHARED_EXCEPTIONS
 	KL_SHARED_ARGUMENTS
 
-creation
-
+create
 	make
-
 %}
 %token <INTEGER> V_INTEGER 
 %token <REAL> V_REAL 
@@ -1312,15 +1309,10 @@ c_date_time: c_date_time_constraint
 		}
 	;
 
-c_duration_constraint: V_ISO8601_DURATION_CONSTRAINT_PATTERN
+c_duration_constraint: duration_pattern
+	| duration_pattern '/' duration_interval_value
 		{
-			if valid_iso8601_duration_constraint_pattern($1) then
-				create c_duration.make_from_pattern($1)
-			else
-				raise_error
-				report_error("invalid duration constraint pattern; legal pattern: P[Y|y][M|m][W|w][D|d][T[H|h][M|m][S|s]] or P[W|w]")
-				abort
-			end
+			create c_duration.make_pattern_with_interval (c_duration.pattern, duration_interval)
 		}
 	| duration_value
 		{
@@ -2086,6 +2078,18 @@ date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_t
 		}
 	;
 
+duration_pattern: V_ISO8601_DURATION_CONSTRAINT_PATTERN
+		{
+			if valid_iso8601_duration_constraint_pattern ($1) then
+				create c_duration.make_from_pattern ($1)
+			else
+				raise_error
+				report_error ("invalid duration constraint pattern; legal pattern: P[Y|y][M|m][W|w][D|d][T[H|h][M|m][S|s]] or P[W|w]")
+				abort
+			end
+		}
+	;
+
 duration_value: V_ISO8601_DURATION
 		{
 			if valid_iso8601_duration($1) then
@@ -2240,7 +2244,7 @@ feature -- Initialization
 			make_parser_skeleton
 		end
 
-	execute(in_text:STRING; a_source_start_line: INTEGER) is
+	execute (in_text:STRING; a_source_start_line: INTEGER) is
 		do
 			reset
 			source_start_line := a_source_start_line
@@ -2307,10 +2311,10 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Parse Tree
 
-	object_nodes: ARRAYED_STACK[C_COMPLEX_OBJECT]
+	object_nodes: ARRAYED_STACK [C_COMPLEX_OBJECT]
 	complex_obj: C_COMPLEX_OBJECT
 
-	c_attrs: ARRAYED_STACK[C_ATTRIBUTE]
+	c_attrs: ARRAYED_STACK [C_ATTRIBUTE]
 	attr_node: C_ATTRIBUTE
 
 	c_prim_obj: C_PRIMITIVE_OBJECT
@@ -2331,7 +2335,7 @@ feature {NONE} -- Parse Tree
 	assertion: ASSERTION
 
 	c_string: C_STRING
-	string_list: ARRAYED_LIST[STRING]
+	string_list: ARRAYED_LIST [STRING]
 	c_boolean: C_BOOLEAN
 	c_real: C_REAL
 	c_date: C_DATE
