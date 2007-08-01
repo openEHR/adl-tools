@@ -1,7 +1,7 @@
 indexing
 
 	description: "Parser token codes"
-	generator: "geyacc version 3.4"
+	generator: "geyacc version 3.6"
 
 class ADL_TOKENS
 

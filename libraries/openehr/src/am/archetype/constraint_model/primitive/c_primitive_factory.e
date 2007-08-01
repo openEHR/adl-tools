@@ -21,7 +21,7 @@ class C_PRIMITIVE_FACTORY
 
 inherit
 	ISO8601_FACTORY
-	
+
 feature -- Factory
 
 	create_integer_interval_make_bounded (a_lower, an_upper: INTEGER; include_lower, include_upper: BOOLEAN): INTERVAL[INTEGER] is
@@ -145,7 +145,7 @@ feature -- Factory
 		do
 			create Result.make_true_false
 		end
-	
+
 	create_c_string_make_any: C_STRING is
 			-- create Result completely open
 		do
@@ -179,7 +179,7 @@ feature -- Factory
 		ensure
 			not Result.is_open
 		end
-	
+
 	create_c_date_make_bounded (a_lower, an_upper: STRING): C_DATE is
 			-- create Result with both limits set from ISO8601 strings
 		require
@@ -251,7 +251,7 @@ feature -- Factory
 		do
 			create Result.make_string_interval(Void, Void)
 		end
-	
+
 	create_c_date_time_make_pattern (a_pattern: STRING): C_DATE_TIME is
 			-- create Result from an ISO8601-based pattern like "yyyy-mm-dd hh:??:XX"
 		require
@@ -291,7 +291,7 @@ feature -- Factory
 		do
 			create Result.make_string_interval(Void, Void)
 		end
-	
+
 	create_c_time_make_pattern (a_pattern: STRING): C_TIME is
 			-- create Result from an ISO8601-based pattern like "hh:mm:??"
 		require
@@ -300,36 +300,18 @@ feature -- Factory
 			create Result.make_from_pattern(a_pattern)
 		end
 
-	create_c_duration_make_bounded (a_lower, an_upper: STRING; include_lower, include_upper: BOOLEAN): C_DURATION is
-			-- create Result with both limits set from ISO8601 strings
+	create_c_duration_make (a_pattern, a_lower, an_upper: STRING; include_lower, include_upper: BOOLEAN): C_DURATION
+			-- A duration constraint, made from an ISO8601-based pattern and an interval with both limits set from ISO8601 strings.
 		require
-			lower_exists: a_lower /= void and then valid_iso8601_duration(a_lower)
-			upper_exists: an_upper /= void and then valid_iso8601_duration(an_upper)
-			valid_order: iso8601_string_to_duration(a_lower) <= iso8601_string_to_duration(an_upper)
+			not_all_void: a_pattern /= Void or a_lower /= Void or an_upper /= Void
+			valid_pattern: a_pattern /= Void implies valid_iso8601_duration_constraint_pattern (a_pattern)
+			valid_lower: a_lower /= void implies valid_iso8601_duration (a_lower)
+			valid_upper: an_upper /= void implies valid_iso8601_duration (an_upper)
+			valid_order: (a_lower /= Void and an_upper /= Void) implies iso8601_string_to_duration (a_lower) <= iso8601_string_to_duration (an_upper)
 		do
-			create Result.make_string_interval(a_lower, an_upper, include_lower, include_upper)
-		end
-
-	create_c_duration_make_lower_unbounded (an_upper: STRING; include_upper: BOOLEAN): C_DURATION is
-			-- create Result from -infinity to `an_upper' in ISO8601 string form
-		require
-			upper_exists: an_upper /= void and then valid_iso8601_duration(an_upper)
-		do
-			create Result.make_string_interval(Void, an_upper, False, include_upper)
-		end
-
-	create_c_duration_make_upper_unbounded (a_lower: STRING; include_lower: BOOLEAN): C_DURATION is
-			-- create Result from `a_lower' in ISO8601 string form, to +infinity
-		require
-			lower_exists: a_lower /= void and then valid_iso8601_duration(a_lower)
-		do
-			create Result.make_string_interval(a_lower, Void, include_lower, False)
-		end
-
-	create_c_duration_make_unbounded: C_DURATION is
-			-- create Result as unbounded interval
-		do
-			create Result.make_string_interval(Void, Void, False, False)
+			create Result.make (a_pattern, a_lower, an_upper, include_lower, include_upper)
+		ensure
+			pattern_set: Result.pattern = a_pattern
 		end
 
 end

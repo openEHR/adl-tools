@@ -30,30 +30,39 @@ inherit
 		undefine
 			is_equal, out
 		end
-	
+
 	COMPARABLE
 		redefine
 			out
 		end
-	
-create
-	make, make_from_string
-	
-feature -- Initialisation
 
-	make_from_string(str: STRING) is
-			-- make from a valid ISO duration string
+create
+	make,
+	make_from_string
+
+feature {NONE} -- Initialisation
+
+	make_from_string (str: STRING)
+			-- Make from a valid ISO duration string.
 		require
-			String_valid: str /= Void and valid_iso8601_duration(str)
+			str_attached: str /= Void
+			str_valid_duration: valid_iso8601_duration (str)
 		do
-			if valid_iso8601_duration(str) then
-				deep_copy(iso8601_parser.cached_iso8601_duration)
+			if valid_iso8601_duration (str) then
+				deep_copy (iso8601_parser.cached_iso8601_duration)
 			end
-			value := as_string
+
+			if is_zero then
+				value := str.twin
+			else
+				value := as_string
+			end
+		ensure
+			value_when_zero: is_zero implies value.is_equal (str)
 		end
 
-	make(yr, mo, wk, dy, hr, mi, sec: INTEGER; sec_frac: DOUBLE) is
-			-- make from parts; any part can be zero; at least one part must be non-zero
+	make (yr, mo, wk, dy, hr, mi, sec: INTEGER; sec_frac: DOUBLE)
+			-- Make from parts; any part can be zero.
 		require
 			years_valid: yr >= 0
 			months_valid: mo >= 0
@@ -72,12 +81,10 @@ feature -- Initialisation
 			minutes := mi
 			seconds := sec
 			fractional_seconds := sec_frac
-			if hours > 0 or minutes > 0 or seconds > 0 or fractional_seconds > 0.0 then
-				has_time := True
-			end
+			has_time := hours > 0 or minutes > 0 or seconds > 0 or fractional_seconds > 0.0
 			value := as_string
 		end
-	
+
 feature -- Access
 
 	value: STRING
@@ -85,42 +92,42 @@ feature -- Access
 
 	years: INTEGER
 			-- extracted year count
-		
+
 	months: INTEGER
 			-- extracted month count
-	
+
 	weeks: INTEGER
 			-- extracted week count
-	
+
 	days: INTEGER
 			-- extracted day count
-	
+
 	hours: INTEGER
 			-- extracted hour count
-	
+
 	minutes: INTEGER
 			-- extracted minute count
-	
+
 	seconds: INTEGER
 			-- extracted second count
-	
+
 	fractional_seconds: DOUBLE
 			-- extracted fractional seconds
-	
+
 	sign: INTEGER
 			-- sign of duration; value is +1 or -1
-	
+
 feature -- Status Report
 
 	has_time: BOOLEAN
 			-- True if any hms component present
-			
+
 	is_zero: BOOLEAN is
 			-- True if total value is zero
 		do
 			Result := weeks = 0 and years + months + days + hours + minutes + seconds = 0 and fractional_seconds = 0.0
 		end
-		
+
 feature -- Comparison
 
 	infix "<" (other: like Current): BOOLEAN is
@@ -128,7 +135,7 @@ feature -- Comparison
 		do
 			Result := to_seconds < other.to_seconds
 		end
-		
+
 feature -- Output
 
 	as_string: STRING is
@@ -136,55 +143,60 @@ feature -- Output
 		local
 			sec_frac_str: STRING
 		do
-			create Result.make(0)
-			
-			Result.append_character(Duration_leader)
+			Result := Duration_leader.out
 
-			if years /= 0 then
-				Result.append(years.out + "Y")
-			end
-
-			if months /= 0 then
-				Result.append(months.out + "M")
-			end
-
-			if weeks /= 0 then
-				Result.append(weeks.out + "W")
-			end
-			
-			if days /= 0 then
-				Result.append(days.out + "D")
-			end
-
-			if has_time then
-				Result.append_character(Time_leader)
-				
-				if hours /= 0 then
-					Result.append(hours.out + "H")
-				end
-
-				if minutes /= 0 then
-					Result.append(minutes.out + "M")
-				end
-
-				if seconds /= 0 then
-					Result.append(seconds.out)
-					if fractional_seconds > 0.0 then
-						Result.append_character(iso8601_decimal_separator)
-						sec_frac_str := fractional_seconds.out
-						Result.append(sec_frac_str.substring(sec_frac_str.index_of(decimal_separator, 1)+1, sec_frac_str.count))
-					end
-					Result.append("S")
-				end			
-			end
 			if is_zero then
-				-- no values could have been appended; for now append 0 sec, but to correct this, 
-				-- need to have captured which part was actually supplied during make - which 
-				-- requires a set of flags for all input values...
-				Result.append("T0S")
+				if value /= Void then
+					Result := value
+				else
+					Result.append ("T0S")
+				end
+			else
+				if years /= 0 then
+					Result.append (years.out + "Y")
+				end
+
+				if months /= 0 then
+					Result.append (months.out + "M")
+				end
+
+				if weeks /= 0 then
+					Result.append (weeks.out + "W")
+				end
+
+				if days /= 0 then
+					Result.append (days.out + "D")
+				end
+
+				if has_time then
+					Result.append_character (Time_leader)
+
+					if hours /= 0 then
+						Result.append (hours.out + "H")
+					end
+
+					if minutes /= 0 then
+						Result.append (minutes.out + "M")
+					end
+
+					if seconds /= 0 then
+						Result.append (seconds.out)
+
+						if fractional_seconds > 0.0 then
+							Result.append_character (iso8601_decimal_separator)
+							sec_frac_str := fractional_seconds.out
+							Result.append (sec_frac_str.substring (sec_frac_str.index_of (decimal_separator, 1) + 1, sec_frac_str.count))
+						end
+
+						Result.append ("S")
+					end
+				end
 			end
+		ensure
+			attached: Result /= Void
+			valid: valid_iso8601_duration (Result)
 		end
-		
+
 	out: STRING is
 		do
 			Result := as_string
@@ -201,8 +213,8 @@ feature -- Conversion
 				hours * seconds_in_hour + minutes * seconds_in_minute + seconds
 			Result := Result + fractional_seconds -- (Double-precision fp operation)
 		end
-		
-invariant		
+
+invariant
 	years_valid: years >= 0
 	months_valid: months >= 0
 	weeks_valid: weeks >= 0
