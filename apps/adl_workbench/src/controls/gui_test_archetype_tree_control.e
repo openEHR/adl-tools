@@ -49,7 +49,7 @@ create
 
 feature -- Definitions
 
-	First_test_col: INTEGER is 2
+	First_test_col: INTEGER is 3
 			-- Number of first column in grid to be used for test results.
 
 	Test_passed: INTEGER is 101
@@ -129,15 +129,16 @@ feature -- Commands
 	populate is
 			-- populate the ADL tree control by creating it from scratch
 		local
-			gli: EV_GRID_CHECKABLE_LABEL_ITEM
+			gli: EV_GRID_LABEL_ITEM
 			col_csr: INTEGER
 		do
 			clear
  			create grid_row_stack.make (0)
 
- 			-- populate first column with archetype tree
-			gli := new_checkbox_item ("Root")
+ 			-- Populate first column with archetype tree.
+			create gli.make_with_text ("Root")
 			grid.set_item (1, 1, gli)
+			add_checkbox (gli.row)
 			gli.enable_select
 			grid_row_stack.extend (gli.row)
 
@@ -161,6 +162,7 @@ feature -- Commands
 			is_expanded := False
 			toggle_expand_tree
 			grid.column (1).resize_to_content
+			grid.column (2).resize_to_content
 
 			gui.arch_test_processed_count.set_text ("0")
 			gui.remove_unused_codes_rb.disable_select
@@ -201,10 +203,10 @@ feature -- Commands
 				row_csr > grid.row_count or test_stop_requested
 			loop
 				row := grid.row (row_csr)
-				checkbox ?= row.item (1)
+				checkbox ?= row.item (2)
 
 				if checkbox /= Void and then checkbox.is_checked then
-					arch_item ?= checkbox.data
+					arch_item ?= row.item (1).data
 
 					if arch_item /= Void then
 						row.ensure_visible
@@ -444,7 +446,7 @@ feature {NONE} -- Implementation
 		require
 			an_item /= Void
    		local
-			gli: EV_GRID_CHECKABLE_LABEL_ITEM
+			gli: EV_GRID_LABEL_ITEM
    			ada: ARCHETYPE_REPOSITORY_ARCHETYPE
    			adf: ARCHETYPE_REPOSITORY_FOLDER
    			row: EV_GRID_ROW
@@ -454,10 +456,11 @@ feature {NONE} -- Implementation
   			row.collapse_actions.extend (agent step_to_viewable_parent_of_selected_row)
   			row.insert_subrow (row.subrow_count + 1)
 			row := row.subrow (row.subrow_count)
+			add_checkbox (row)
   			adf ?= an_item
 
 			if adf /= Void then
-				gli := new_checkbox_item (adf.base_name)
+ 				create gli.make_with_text (utf8 (adf.base_name))
 				gli.set_pixmap (pixmaps ["file_folder_" + adf.group_id.out])
 				gli.set_data (adf)
 				row.set_item (1, gli)
@@ -465,7 +468,7 @@ feature {NONE} -- Implementation
 				ada ?= an_item
 
 				if ada /= Void then
-					gli := new_checkbox_item (ada.id.domain_concept_tail + "(" + ada.id.version_id + ")")
+					create gli.make_with_text (utf8 (ada.id.domain_concept_tail + "(" + ada.id.version_id + ")"))
 					gli.set_data (ada)
 
 					if ada.id.is_specialised then
@@ -497,16 +500,19 @@ feature {NONE} -- Implementation
 			grid_row_stack.remove
 		end
 
-	new_checkbox_item (text: STRING): EV_GRID_CHECKABLE_LABEL_ITEM
-			-- A newly created checkable grid item, with the label `text'.
+	add_checkbox (row: EV_GRID_ROW)
+			-- Add the checkbox column to `row'.
 		require
-			text_attached: text /= Void
+			row_attached: row /= Void
+		local
+			item: EV_GRID_CHECKABLE_LABEL_ITEM
 		do
-			create Result.make_with_text (utf8 (text))
-			Result.set_is_checked (True)
-			Result.pointer_button_press_actions.force_extend (agent set_checkboxes_recursively (Result))
+			create item
+			row.set_item (2, item)
+			item.set_is_checked (True)
+			item.pointer_button_press_actions.force_extend (agent set_checkboxes_recursively (item))
 		ensure
-			attached: Result /= Void
+			at_least_2_columns: row.count >= 2
 		end
 
 	set_checkboxes_recursively (item: EV_GRID_CHECKABLE_LABEL_ITEM)
