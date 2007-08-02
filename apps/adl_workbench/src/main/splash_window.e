@@ -33,11 +33,14 @@ feature {NONE} -- Initialization
 
 	make is
 			-- Create to be visible for one-and-a-half seconds.
+		local
+			screen: EV_SCREEN
 		do
 			make_with_text (splash_text)
 			set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 255))
 			set_pixmap (pixmaps ["Ocean logo"])
-			set_position (app_x_position + 350, app_y_position + 200)
+			create screen
+			set_position ((screen.width - width) // 2, (screen.height - height) // 2)
 
 			create timer.make_with_interval (1500)
 			timer.actions.extend (agent close)

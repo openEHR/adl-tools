@@ -83,30 +83,7 @@ feature {NONE} -- Initialization
 			-- (due to regeneration of implementation class)
 			-- can be added here.
 		do
-			initialise_gui_settings
-
-			if editor_command.is_empty then
-				set_editor_command(Default_editor_command)
-			end
-
 			initialise_accelerators
-
-			if reference_repository_path.is_empty then
-				set_reference_repository_path (application_startup_directory)
-				need_to_set_repository := True
-			end
-
-			archetype_directory.put_repository (reference_repository_path, "reference")
-			if not work_repository_path.is_empty then
-				archetype_directory.put_repository (work_repository_path, "work")
-			end
-			populate_archetype_directory
-
-			adl_interface.set_current_directory(reference_repository_path)
-
-			if current_work_directory.is_empty then
-				set_current_work_directory (adl_interface.working_directory)
-			end
 		end
 
 	initialise_gui_settings is
@@ -127,6 +104,7 @@ feature {NONE} -- Initialization
 			else
 				set_width(app_initial_width)
 			end
+
 			if app_height > 0 then
 				set_height(app_height)
 			else
@@ -140,12 +118,15 @@ feature {NONE} -- Initialization
 			if test_view_area_split_position > 0 then
 				test_view_area.set_split_position (test_view_area_split_position)
 			end
+
 			if explorer_view_area_split_position > 0 then
 				explorer_view_area.set_split_position (explorer_view_area_split_position)
 			end
+
 			if info_view_area_split_position > 0 then
 				info_view_area.set_split_position (info_view_area_split_position)
 			end
+
 			if total_view_area_split_position > 0 then
 				total_view_area.set_split_position (total_view_area_split_position)
 			else
@@ -230,7 +211,33 @@ feature -- Commands
 	show
 			-- Do a few adjustments straight after display.
 		do
+			initialise_gui_settings
 			Precursor
+			refresh_now
+
+			if editor_command.is_empty then
+				set_editor_command(Default_editor_command)
+			end
+
+			if reference_repository_path.is_empty then
+				set_reference_repository_path (application_startup_directory)
+				need_to_set_repository := True
+			end
+
+			archetype_directory.put_repository (reference_repository_path, "reference")
+
+			if not work_repository_path.is_empty then
+				archetype_directory.put_repository (work_repository_path, "work")
+			end
+
+			populate_archetype_directory
+
+			adl_interface.set_current_directory(reference_repository_path)
+
+			if current_work_directory.is_empty then
+				set_current_work_directory (adl_interface.working_directory)
+			end
+
 			focus_first_widget (main_nb.selected_item)
 		end
 

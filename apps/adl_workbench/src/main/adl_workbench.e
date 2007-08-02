@@ -16,6 +16,9 @@ class
 
 inherit
 	EV_APPLICATION
+		redefine
+			initialize
+		end
 
 	SHARED_UI_RESOURCES
 		export
@@ -29,7 +32,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make_and_launch is
+	make_and_launch
 			-- Create `Current', build and display `main_window',
 			-- then launch the application.
 		do
@@ -37,13 +40,12 @@ feature {NONE} -- Initialization
 
 			if has_resources then
 				initialise_default_resource_config_file_name
-				create main_window
-				create splash_window.make
-				splash_window.show
 				main_window.show
+
 				if app_maximised then
 					main_window.maximize
 				end
+
 				if main_window.need_to_set_repository then
 					main_window.set_repository
 				end
@@ -53,8 +55,6 @@ feature {NONE} -- Initialization
 					update_status_file
 				end
 
-				splash_window.raise
-
 				launch
 			else
 				io.put_string(fail_reason + "%N")
@@ -63,12 +63,37 @@ feature {NONE} -- Initialization
 			end
 		end
 
+	initialize
+			-- Ensure that `splash_window' is shown at the earliest opportunity.
+		do
+			Precursor
+			show_splash_window
+		end
+
+	show_splash_window
+			-- Show `splash_window' centred on the screen in front of `main_window'.
+		do
+			if splash_window = Void then
+				create splash_window.make
+				splash_window.show_relative_to_window (main_window)
+				splash_window.refresh_now
+			end
+		rescue
+			retry
+		end
+
 feature {NONE} -- Implementation
 
 	main_window: MAIN_WINDOW
-		-- Main window of `Current'.
+			-- The application's main window.
+		once
+			create Result
+		ensure
+			attached: Result /= Void
+		end
 
 	splash_window: SPLASH_WINDOW
+			-- A splash screen to show while `main_window' is loading.
 
 	fail_reason: STRING
 
@@ -76,6 +101,7 @@ feature {NONE} -- Implementation
 			-- True if all resources are available
 		do
 			Result := True
+
 			if not has_icon_directory then
 				fail_reason := "Cannot run: 'icons' directory missing"
 				Result := False
