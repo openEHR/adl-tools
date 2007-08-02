@@ -44,7 +44,7 @@ feature -- Access
 			-- The current work path on the file system, normally used to tell GUI or other
 			-- file searching method where to start looking.
 
-	item alias "[]" (full_path: STRING): ARCHETYPE_REPOSITORY_ARCHETYPE
+	item alias "[]" (full_path: STRING): ARCH_REP_ARCHETYPE
 			-- The archetype at `full_path'.
 		require
 			has_full_path: has (full_path)
@@ -89,7 +89,7 @@ feature -- Modification
 		require
 			path_valid: is_valid_path (full_path)
 		local
-			ara: ARCHETYPE_REPOSITORY_ARCHETYPE
+			ara: ARCH_REP_ARCHETYPE
 		do
 			ara := repository_archetype (file_system.dirname (full_path), full_path)
 
@@ -103,7 +103,7 @@ feature -- Modification
 
 feature {NONE} -- Implementation
 
-	directory: HASH_TABLE [ARCHETYPE_REPOSITORY_ARCHETYPE, STRING]
+	directory: HASH_TABLE [ARCH_REP_ARCHETYPE, STRING]
 			-- The directory of archetypes added to this ad hoc repository
 			-- as a list of descriptors keyed by full path.
 

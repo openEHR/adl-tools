@@ -68,7 +68,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	source_repositories: DS_HASH_TABLE [ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP, STRING]
+	source_repositories: DS_HASH_TABLE [ARCHETYPE_INDEXED_REPOSITORY_I, STRING]
 			-- physical repositories of archetypes, keyed by logical id
 			-- Each such repository consists of archetypes arranged in a directory structure
 			-- mimicking an ontological structure, e.g. ehr/entry/observation etc
@@ -85,7 +85,7 @@ feature -- Access
 			-- archetypes keyed by path on the file system. They are not merged onto the directory
 			-- but 'grafted' - a simpler operation
 
-	directory: TWO_WAY_TREE [ARCHETYPE_REPOSITORY_ITEM]
+	directory: TWO_WAY_TREE [ARCH_REP_ITEM]
 			-- result of merging all source repositories in ontology structure (where specialised
 			-- archetypes now appear as child nodes, rather than sibling nodes, as they do
 			-- in the file system), as well as grafting on adhoc archetypes
@@ -96,16 +96,16 @@ feature -- Access
 			-- this will look like the relative directory path; for archetype nodes, this will be
 			-- the concatenation of the directory path and archetype specialisation parent path
 
-	archetype_id_index: DS_HASH_TABLE [ARCHETYPE_REPOSITORY_ARCHETYPE, STRING]
+	archetype_id_index: DS_HASH_TABLE [ARCH_REP_ARCHETYPE, STRING]
 			-- index of archetype nodes keyed by archetype id
 
-	selected_archetype_descriptor: ARCHETYPE_REPOSITORY_ARCHETYPE
+	selected_descriptor: ARCH_REP_ARCHETYPE
 			-- selected archetype node
 
 	selected_archetype: ARCHETYPE is
 			-- currently selected archetype descriptor
 		do
-			Result := selected_archetype_descriptor.archetype
+			Result := selected_descriptor.archetype
 		end
 
 feature -- Comparison
@@ -163,7 +163,7 @@ feature -- Commands
 			end
 		end
 
-	graft_adhoc_item (ara: ARCHETYPE_REPOSITORY_ARCHETYPE)
+	graft_adhoc_item (ara: ARCH_REP_ARCHETYPE)
 			-- Graft ad hoc archetype `ara' into `directory'. Use its archetype id to figure out
 			-- its ontological path, by finding archetypes in the same semantic category.
 			-- If `ara' specialises an archetype already in `directory', graft it there.
@@ -171,7 +171,7 @@ feature -- Commands
 			ara_attached: ara /= Void
 		local
 			semantic_category: STRING
-			archetype_in_same_semantic_category: ARCHETYPE_REPOSITORY_ARCHETYPE
+			archetype_in_same_semantic_category: ARCH_REP_ARCHETYPE
 			node, parent_node: like directory
 		do
 			from
@@ -223,14 +223,20 @@ feature -- Commands
 
 feature -- Traversal
 
-	do_all (node_enter_action, node_exit_action: PROCEDURE [ANY, TUPLE [ARCHETYPE_REPOSITORY_ITEM]])
+	do_all (node_enter_action, node_exit_action: PROCEDURE [ANY, TUPLE [ARCH_REP_ITEM]])
 			-- execute node_enter_action when entering a node, then recurse into subnodes, then execute
 			-- node_exit_action when leaving node
 		do
 			do_all_nodes (directory, node_enter_action, node_exit_action)
 		end
 
-	tree_do_all (a_rep: ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP; node_enter_action, node_exit_action: PROCEDURE [ANY, TUPLE [like directory]])
+	do_all_archetype (node_enter_action, node_exit_action: PROCEDURE [ANY, TUPLE [ARCH_REP_ARCHETYPE]])
+			-- execute node_enter_action on archetype nodes
+		do
+			do_all_archetype_nodes (directory, node_enter_action, node_exit_action)
+		end
+
+	tree_do_all (a_rep: ARCHETYPE_INDEXED_REPOSITORY_I; node_enter_action, node_exit_action: PROCEDURE [ANY, TUPLE [like directory]])
 			-- execute node_enter_action when entering a node, then recurse into subnodes, then execute
 			-- node_exit_action when leaving node
 		do
@@ -239,37 +245,37 @@ feature -- Traversal
 
 feature -- Modification
 
-	set_selected_archetype_descriptor (an_arch_repos_item: ARCHETYPE_REPOSITORY_ARCHETYPE)
-			-- Set `selected_archetype_descriptor'.
+	set_selected_archetype_descriptor (an_arch_repos_item: ARCH_REP_ARCHETYPE)
+			-- Set `selected_descriptor'.
 		require
 			an_arch_repos_item /= Void
 		do
-			selected_archetype_descriptor := an_arch_repos_item
+			selected_descriptor := an_arch_repos_item
 		end
 
 	set_selected_archetype_descriptor_from_ontological_path (a_path: STRING)
-			-- Set `selected_archetype_descriptor' using an ontological path like "/ehr/entry/observation/lab-result".
+			-- Set `selected_descriptor' using an ontological path like "/ehr/entry/observation/lab-result".
 		require
 			Path_valid: has_ontological_archetype_path (a_path)
 		do
-			selected_archetype_descriptor ?= ontology_index.item (a_path).item
+			selected_descriptor ?= ontology_index.item (a_path).item
 		end
 
 	set_selected_archetype_descriptor_from_archetype_id (an_id: STRING)
-			-- Set `selected_archetype_descriptor' using an id of archetype.
+			-- Set `selected_descriptor' using an id of archetype.
 		require
 			Path_valid: has_archetype_id (an_id)
 		do
-			selected_archetype_descriptor := archetype_id_index.item (an_id)
+			selected_descriptor := archetype_id_index.item (an_id)
 		ensure
 			has_selected_archetype_descriptor: has_selected_archetype_descriptor
-			set: selected_archetype_descriptor.id.value.is_equal (an_id)
+			set: selected_descriptor.id.value.is_equal (an_id)
 		end
 
 	clear_selected_archetype_descriptor
-			-- Clear `selected_archetype_descriptor'.
+			-- Clear `selected_descriptor'.
 		do
-			selected_archetype_descriptor := Void
+			selected_descriptor := Void
 		end
 
 	add_adhoc_item (full_path: STRING)
@@ -278,7 +284,7 @@ feature -- Modification
 		require
 			path_valid: adhoc_source_repository.is_valid_path (full_path)
 		local
-			ara: ARCHETYPE_REPOSITORY_ARCHETYPE
+			ara: ARCH_REP_ARCHETYPE
 		do
 			adhoc_source_repository.add_item (full_path)
 
@@ -296,7 +302,7 @@ feature -- Status Report
 	has_selected_archetype_descriptor: BOOLEAN
 			-- Has an archetype been selected?
 		do
-			Result := selected_archetype_descriptor /= Void
+			Result := selected_descriptor /= Void
 		end
 
 	has_ontological_path (a_path: STRING): BOOLEAN
@@ -322,7 +328,7 @@ feature -- Status Report
 		require
 			Path_exists: a_path /= Void
 		local
-			ara: ARCHETYPE_REPOSITORY_ARCHETYPE
+			ara: ARCH_REP_ARCHETYPE
 		do
 			if ontology_index.has (a_path) then
 				ara ?= ontology_index.item (a_path).item
@@ -333,7 +339,7 @@ feature -- Status Report
 
 feature {NONE} -- Implementation
 
-	do_all_nodes (node: like directory; node_enter_action, node_exit_action: PROCEDURE [ANY, TUPLE [ARCHETYPE_REPOSITORY_ITEM]])
+	do_all_nodes (node: like directory; node_enter_action, node_exit_action: PROCEDURE [ANY, TUPLE [ARCH_REP_ITEM]])
 			-- recursive version of routine due to lack of useful recursive routines on Eiffel tree structures
 			-- processes treats each node of the tree separately
 		require
@@ -351,6 +357,38 @@ feature {NONE} -- Implementation
 				node_enter_action.call([node.child_item])
  				do_all_nodes(node.child, node_enter_action, node_exit_action)
 				node_exit_action.call([node.child_item])
+  	  			debug("arch_dir")
+   					shifter.remove_tail (1)
+    			end
+ 				node.child_forth
+			end
+   		end
+
+	do_all_archetype_nodes (node: like directory; node_enter_action, node_exit_action: PROCEDURE [ANY, TUPLE [ARCH_REP_ARCHETYPE]])
+			-- recursive version of routine due to lack of useful recursive routines on Eiffel tree structures
+			-- processes treats each node of the tree separately
+		require
+			Node_valid: node /= Void
+			Node_enter_action_valid: node_enter_action /= Void
+		local
+			ara: ARCH_REP_ARCHETYPE
+   		do
+  			from
+ 				node.child_start
+ 			until
+ 				node.child_off
+ 			loop
+  	 			debug("arch_dir")
+   					shifter.extend ('%T')
+   				end
+   				ara ?= node.child_item
+   				if ara /= Void then
+					node_enter_action.call([ara])
+   				end
+ 				do_all_archetype_nodes(node.child, node_enter_action, node_exit_action)
+ 				if ara /= Void then
+					node_exit_action.call([ara])
+ 				end
   	  			debug("arch_dir")
    					shifter.remove_tail (1)
     			end
@@ -386,8 +424,8 @@ feature {NONE} -- Implementation
 	merge_enter (a_node: like directory)
 			-- merge a_node into directory - node enter
 		local
-			arf: ARCHETYPE_REPOSITORY_FOLDER
-			ara: ARCHETYPE_REPOSITORY_ARCHETYPE
+			arf: ARCH_REP_FOLDER
+			ara: ARCH_REP_ARCHETYPE
 			arch_node, parent_node: like directory
 		do
    			debug("arch_dir")
@@ -474,7 +512,7 @@ invariant
 	adhoc_source_repository_attached: adhoc_source_repository /= Void
 	adhoc_source_repository_group_id: adhoc_source_repository.group_id = 1
 	repositories_attached: source_repositories /= Void
-	repositories_group_ids: source_repositories.for_all (agent (repository: ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP): BOOLEAN
+	repositories_group_ids: source_repositories.for_all (agent (repository: ARCHETYPE_INDEXED_REPOSITORY_I): BOOLEAN
 		do
 			Result := repository.group_id > 1
 		end)

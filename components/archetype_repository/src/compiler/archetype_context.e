@@ -24,6 +24,11 @@ inherit
 			{NONE} all
 		end
 
+	MESSAGE_BILLBOARD
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -37,6 +42,16 @@ feature -- Initialisation
 			differential := an_archetype
 			if not an_archetype.is_specialised then
 				flat_form := differential
+			end
+
+			if differential.is_valid then
+				post_info(Current, "parse_archetype", "parse_archetype_i2", <<differential.archetype_id.as_string>>)
+				is_valid := True
+			else
+				post_error(Current, "parse_archetype", "parse_archetype_e2", <<differential.archetype_id.as_string, differential.errors>>)
+			end
+			if differential.has_warnings then
+				post_warning(Current, "parse_archetype", "general", <<differential.warnings>>)
 			end
 		end
 
@@ -52,6 +67,11 @@ feature -- Access
 
 	parent: ARCHETYPE
 			-- parent archetype if this one is specialised, or else Void
+
+feature -- Status Report
+
+	is_valid: BOOLEAN
+			-- True if archetype object created and 'is_valid' True
 
 end
 

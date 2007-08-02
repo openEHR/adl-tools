@@ -84,13 +84,7 @@ feature -- Initialisation
 			initialise_serialisers
 		end
 
-feature -- Access
-
-	source: STRING
-			-- source text of target Archetype
-
-	target: ARCHETYPE_REPOSITORY_ARCHETYPE
-			-- archetype currently being processed by this instance of the compiler
+feature -- Definitions
 
 	openehr_version: STRING is
 			-- version of openEHR implem-dev repository containing
@@ -98,6 +92,11 @@ feature -- Access
 		once
 			Result := (create {OPENEHR_VERSION}).version
 		end
+
+feature -- Access
+
+	target: ARCH_REP_ARCHETYPE
+			-- archetype currently being processed by this instance of the compiler
 
 	status: STRING
 			-- status of last operation
@@ -110,16 +109,8 @@ feature -- Access
 
 feature -- Status Report
 
-	parse_succeeded: BOOLEAN
-			-- True if parse has been successfully executed
-
 	save_succeeded: BOOLEAN
 			-- True if last save operation was successful
-
-	archetype_valid: BOOLEAN is
-		do
-			Result := adl_engine.archetype.is_valid
-		end
 
 	exception_encountered: BOOLEAN
 			-- True if last operation caused an exception
@@ -130,10 +121,94 @@ feature -- Status Report
 			Result := target /= Void
 		end
 
+feature -- Modification
+
+	set_target (ara: ARCH_REP_ARCHETYPE) is
+			-- set target of the compiler to designated archetype
+		require
+			descriptor_exists: ara /= Void
+		do
+			reset
+			target := ara
+		ensure
+			has_target
+		end
+
+	set_target_to_selected is
+			-- set target of the compiler to archetype currently selected in archetype_directory
+		require
+			archetype_available: archetype_directory.has_selected_archetype_descriptor
+		do
+			reset
+			target := archetype_directory.selected_descriptor
+		ensure
+			has_target
+		end
+
+	reset is
+			-- reset after exception encountered
+		do
+			exception_encountered := False
+			status.wipe_out
+		ensure
+			Exception_cleared: not exception_encountered
+			Status_cleared: status.is_empty
+		end
+
 feature -- Commands
 
+	parse_target_archetype is
+			-- parse the target archetype of this compiler
+		require
+			Has_target: has_target
+		do
+			parse_archetype(target)
+		end
+
+	parse_archetype(an_ar_archetype: ARCH_REP_ARCHETYPE) is
+			-- parse archetype at specified directory node; this routine
+			-- is mainly for use with traversal routines, such as
+			-- ARCHETYPE_DIRECTORY.do_all_archetype
+		require
+			an_ar_archetype /= Void
+		do
+			if not exception_encountered then
+				clear_billboard
+				if an_ar_archetype.is_out_of_date then
+					adl_engine.parse(an_ar_archetype.source)
+					if not adl_engine.archetype_available then
+						post_error(Current, "parse_archetype", "parse_archetype_e1", <<adl_engine.parse_error_text>>)
+					else
+						an_ar_archetype.set_compilation_context(adl_engine.archetype)
+						post_info(Current, "parse_archetype", "parse_archetype_i1", <<an_ar_archetype.id.as_string>>)
+
+						-- make sure that the language is set, and that it is one of the languages in the archetype
+						if current_language = Void or not an_ar_archetype.archetype.has_language (current_language) then
+							set_current_language(an_ar_archetype.archetype.original_language.code_string)
+						end
+					end
+				end
+			else
+				post_error(Current, "parse_archetype", "parse_archetype_e3", Void)
+			end
+			status.wipe_out
+			status.append(billboard_content)
+			clear_billboard
+		rescue
+			post_error(Current, "parse_archetype", "report_exception", <<exception.out, exception_trace>>)
+			exception_encountered := True
+			retry
+		end
+
+	set_archetype_readonly is
+			-- set readonly flag in archetype to enable optimisations like path extraction
+		do
+			target.archetype.set_readonly
+		end
+
 	create_new_archetype(a_im_originator, a_im_name, a_im_entity, a_primary_language: STRING) is
-			-- create a new tree and throw away previous state
+			-- create a new tree and throw away previous state; put new archetype into
+			-- repository according to its id
 		require
 			Info_model_originator_valid: a_im_originator /= void and then not a_im_originator.is_empty
 			Info_model_name_valid: a_im_name /= void and then not a_im_name.is_empty
@@ -142,6 +217,8 @@ feature -- Commands
 		do
 			if not exception_encountered then
 				adl_engine.create_new_archetype(a_im_originator, a_im_name, a_im_entity, a_primary_language)
+
+				-- FIXME: now add this archetype into the ARCHETYPE_DIRECTORY
 			else
 				post_error(Current, "create_new_archetype", "create_new_archetype_e1", Void)
 			end
@@ -176,37 +253,15 @@ feature -- Commands
 --			retry
 --		end
 
-	set_target (ara: ARCHETYPE_REPOSITORY_ARCHETYPE) is
-			-- set target of the compiler to designated archetype
-		require
-			descriptor_exists: ara /= Void
-		do
-			reset
-			target := ara
-			source := target.source
-		ensure
-			has_target
-		end
-
-	set_target_to_selected is
-			-- set target of the compiler to archetype currently selected in archetype_directory
-		require
-			archetype_available: archetype_directory.has_selected_archetype_descriptor
-		do
-			reset
-			target := archetype_directory.selected_archetype_descriptor
-			source := target.source
-		ensure
-			has_target
-		end
-
 	save_archetype is
 			-- Save current target archetype to its file
+		require
+			Has_target: has_target
 		do
 			if not exception_encountered then
 				status.wipe_out
 				save_succeeded := False
-				if archetype_valid then
+				if target.is_valid then
 					adl_engine.serialise("adl")
 					target.save (adl_engine.serialised_archetype)
 					save_succeeded := True
@@ -227,17 +282,18 @@ feature -- Commands
 			retry
 		end
 
-	save_archetype_as(a_full_path: STRING; save_format: STRING) is
-			-- Save current target archetype to `file_path' in `save_format'.
+	save_archetype_as(a_full_path: STRING; serialise_format: STRING) is
+			-- Save current target archetype to `file_path' in `serialise_format'.
 		require
+			Has_target: has_target
 			path_valid: a_full_path /= Void and then not a_full_path.is_empty
-			save_format_valid: save_format /= Void and then has_archetype_serialiser_format(save_format)
+			Serialise_format_valid: serialise_format /= Void and then has_archetype_serialiser_format(serialise_format)
 		do
 			if not exception_encountered then
 				status.wipe_out
 				save_succeeded := False
-				if archetype_valid then
-					adl_engine.serialise(save_format)
+				if target.is_valid then
+					adl_engine.serialise(serialise_format)
 					save_succeeded := True
 					target.save_as (a_full_path, adl_engine.serialised_archetype)
 				else
@@ -257,91 +313,26 @@ feature -- Commands
 			retry
 		end
 
---	serialise_archetype(serialise_format: STRING) is
---			-- Serialise archetype into string; result available in serialised_archetype
---		require
---			archetype_available
---			serialise_format_valid: serialise_format /= Void and then has_archetype_serialiser_format(serialise_format)
---		do
---			if not exception_encountered then
---				if archetype_valid then
---					adl_engine.serialise(serialise_format)
---				else
---					post_error(Current, "serialise_archetype", "serialise_archetype_e1", <<adl_engine.archetype.errors>>)
---				end
---			else
---				post_error(Current, "serialise_archetype", "serialise_archetype_e2", Void)
---			end
---			status.wipe_out
---			status.append(billboard_content)
---			clear_billboard
---		ensure
---			serialised_archetype /= Void or else not status.is_empty
---		rescue
---			post_error(Current, "serialise_archetype", "report_exception", <<exception.out, exception_trace>>)
---			exception_encountered := True
---			retry
---		end
-
-	parse_archetype is
-			-- Called by `select_actions' of `parse'.
+	serialise_archetype(serialise_format: STRING) is
+			-- Serialise archetype into string; result available in `serialised_archetype'
 		require
-			has_target
+			Has_target: has_target and target.is_valid
+			Serialise_format_valid: serialise_format /= Void and then has_archetype_serialiser_format(serialise_format)
 		do
 			if not exception_encountered then
-				clear_billboard
---				if target.needs_recompile then					
-				parse_succeeded := False
-				adl_engine.parse(source)
-				if not adl_engine.archetype_available then
-					post_error(Current, "parse_archetype", "parse_archetype_e1", <<adl_engine.parse_error_text>>)
-				else
-					target.set_compilation_context(adl_engine.archetype)
-
-					post_info(Current, "parse_archetype", "parse_archetype_i1", <<target.id.as_string>>)
-
-					if current_language = Void or not target.archetype.has_language (current_language) then
-						set_current_language(target.archetype.original_language.code_string)
-					end
-
-					if target.archetype.is_valid then
-						post_info(Current, "parse_archetype", "parse_archetype_i2", <<target.id.as_string>>)
-						parse_succeeded := True
-					else
-						post_error(Current, "parse_archetype", "parse_archetype_e2", <<target.id.as_string, target.archetype.errors>>)
-					end
-
-					if target.archetype.has_warnings then
-						post_warning(Current, "parse_archetype", "general", <<target.archetype.warnings>>)
-					end
---				end
-				end
+				adl_engine.serialise(serialise_format)
 			else
-				post_error(Current, "parse_archetype", "parse_archetype_e3", Void)
+				post_error(Current, "serialise_archetype", "serialise_archetype_e2", Void)
 			end
 			status.wipe_out
 			status.append(billboard_content)
 			clear_billboard
+		ensure
+			serialised_archetype /= Void or else not status.is_empty
 		rescue
-			post_error(Current, "parse_archetype", "report_exception", <<exception.out, exception_trace>>)
+			post_error(Current, "serialise_archetype", "report_exception", <<exception.out, exception_trace>>)
 			exception_encountered := True
 			retry
-		end
-
-	set_archetype_readonly is
-			-- set readonly flag in archetype to enable optimisations like path extraction
-		do
-			target.archetype.set_readonly
-		end
-
-	reset is
-			-- reset after exception encountered
-		do
-			exception_encountered := False
-			status.wipe_out
-		ensure
-			Exception_cleared: not exception_encountered
-			Status_cleared: status.is_empty
 		end
 
 feature -- External Java Interface

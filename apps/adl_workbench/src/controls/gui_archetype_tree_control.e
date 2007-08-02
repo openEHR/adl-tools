@@ -62,7 +62,7 @@ feature -- Commands
 			populate
 
 			if archetype_directory.has_selected_archetype_descriptor then
-				show_node := gui_file_tree.retrieve_item_recursively_by_data (archetype_directory.selected_archetype_descriptor, True)
+				show_node := gui_file_tree.retrieve_item_recursively_by_data (archetype_directory.selected_descriptor, True)
 
 				if show_node /= Void then
 					gui_file_tree.ensure_item_visible (show_node)
@@ -98,7 +98,7 @@ feature -- Commands
 	display_details_of_selected_item
 			-- Display the details of `selected_item'.
 		local
-			arch_item: ARCHETYPE_REPOSITORY_ARCHETYPE
+			arch_item: ARCH_REP_ARCHETYPE
 		do
 			arch_item ?= gui_file_tree.selected_item.data
 
@@ -124,7 +124,7 @@ feature {NONE} -- Implementation
 	delay_to_make_keyboard_navigation_practical: EV_TIMEOUT
 			-- Timer to delay a moment before calling `display_details_of_selected_item'.
 
-   	populate_gui_tree_node_enter (an_item: ARCHETYPE_REPOSITORY_ITEM)
+   	populate_gui_tree_node_enter (an_item: ARCH_REP_ITEM)
    			-- Add a node representing `an_item' to `gui_file_tree'.
 		require
 			an_item /= Void
@@ -149,7 +149,7 @@ feature {NONE} -- Implementation
 			gui_tree_item_stack.extend (node)
 		end
 
-   	populate_gui_tree_node_exit (an_item: ARCHETYPE_REPOSITORY_ITEM)
+   	populate_gui_tree_node_exit (an_item: ARCH_REP_ITEM)
    		do
 			gui_tree_item_stack.remove
 		end

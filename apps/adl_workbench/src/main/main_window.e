@@ -336,7 +336,7 @@ feature {NONE} -- Commands
 			if not language_combo.text.is_empty then
 				archetype_compiler.set_current_language (language_combo.text)
 
-				if archetype_compiler.parse_succeeded then
+				if archetype_directory.selected_descriptor.is_valid then
 					populate_view_controls
 				end
 			end
@@ -371,14 +371,14 @@ feature {NONE} -- Commands
 			save_dialog: EV_FILE_SAVE_DIALOG
 			name, format: STRING
 		do
-			if archetype_compiler.parse_succeeded then
+			if archetype_directory.selected_descriptor.is_valid then
 				ok_to_write := True
 
-				name := archetype_directory.selected_archetype_descriptor.full_path.twin
+				name := archetype_directory.selected_descriptor.full_path.twin
 				name.remove_tail (archetype_file_extensions [archetype_file_extension].count)
 
 				create save_dialog
-					save_dialog.set_file_name (name)
+				save_dialog.set_file_name (name)
 				save_dialog.set_start_directory (current_work_directory)
 
 				from
@@ -436,7 +436,7 @@ feature {NONE} -- Commands
 	edit_archetype is
 			-- launch external editor with archetype
 		do
-			execution_environment.launch(editor_command + " " + archetype_directory.selected_archetype_descriptor.full_path)
+			execution_environment.launch(editor_command + " " + archetype_directory.selected_descriptor.full_path)
 		end
 
 	parse_archetype is
@@ -445,10 +445,10 @@ feature {NONE} -- Commands
 			do_with_wait_cursor (agent
 				do
 					clear_all_controls
-					archetype_compiler.parse_archetype
+					archetype_compiler.parse_target_archetype
 					parser_status_area.append_text (archetype_compiler.status)
 
-					if archetype_compiler.parse_succeeded then
+					if archetype_directory.selected_descriptor.is_valid then
 						populate_all_archetype_controls
 						archetype_compiler.set_archetype_readonly
 					else
@@ -465,21 +465,21 @@ feature {NONE} -- Commands
 
 	node_map_shrink_tree_one_level is
 		do
-			if archetype_compiler.parse_succeeded then
+			if archetype_directory.selected_descriptor.is_valid then
 				node_map_control.shrink_one_level
 			end
 		end
 
 	node_map_expand_tree_one_level is
 		do
-			if archetype_compiler.parse_succeeded then
+			if archetype_directory.selected_descriptor.is_valid then
 				node_map_control.expand_one_level
 			end
 		end
 
 	node_map_toggle_expand_tree is
 		do
-			if archetype_compiler.parse_succeeded then
+			if archetype_directory.selected_descriptor.is_valid then
 				node_map_control.toggle_expand_tree
 			end
 		end
@@ -492,7 +492,7 @@ feature {NONE} -- Commands
 	on_tree_domain_selected
 			-- Hide technical details in `parsed_archetype_tree'.
 		do
-			if archetype_compiler.parse_succeeded then
+			if archetype_directory.selected_descriptor.is_valid then
 				node_map_control.set_domain_mode
 			end
 		end
@@ -500,7 +500,7 @@ feature {NONE} -- Commands
 	on_tree_technical_selected
 			-- Display technical details in `parsed_archetype_tree'.
 		do
-			if archetype_compiler.parse_succeeded then
+			if archetype_directory.selected_descriptor.is_valid then
 				node_map_control.set_technical_mode
 			end
 		end
@@ -508,7 +508,7 @@ feature {NONE} -- Commands
 	on_tree_flat_view_selected
 			-- Do not show the inherited/defined status of nodes in `parsed_archetype_tree'.
 		do
-			if archetype_compiler.parse_succeeded then
+			if archetype_compiler.target.is_valid then
 				node_map_control.set_flat_view
 			end
 		end
@@ -516,7 +516,7 @@ feature {NONE} -- Commands
 	on_tree_inheritance_selected
 			-- Show the inherited/defined status of nodes in `parsed_archetype_tree'.
 		do
-			if archetype_compiler.parse_succeeded then
+			if archetype_directory.selected_descriptor.is_valid then
 				node_map_control.set_inheritance_view
 			end
 		end
@@ -841,7 +841,7 @@ feature {EV_DIALOG} -- Implementation
 			len, left_pos, right_pos, line_cnt: INTEGER
 		do
 			create s.make_empty
-			src := archetype_compiler.source
+			src := archetype_directory.selected_descriptor.source
 			len := src.count
 
 			from

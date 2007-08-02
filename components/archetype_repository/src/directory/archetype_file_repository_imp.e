@@ -105,7 +105,7 @@ feature {NONE} -- Implementation
 			attached: Result /= Void
 		end
 
-	repository_archetype (root_path, full_path: STRING): ARCHETYPE_REPOSITORY_ARCHETYPE
+	repository_archetype (root_path, full_path: STRING): ARCH_REP_ARCHETYPE
 			-- A descriptor of the archetype designated by `full_path' to this repository.
 		require
 			root_path_valid: is_valid_path (root_path)

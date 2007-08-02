@@ -12,10 +12,10 @@ indexing
 	last_change: "$LastChangedDate: $"
 
 
-class ARCHETYPE_REPOSITORY_FOLDER
+class ARCH_REP_FOLDER
 
 inherit
-	ARCHETYPE_REPOSITORY_ITEM
+	ARCH_REP_ITEM
 
 create
 	make

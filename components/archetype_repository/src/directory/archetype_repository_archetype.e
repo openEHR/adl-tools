@@ -12,10 +12,10 @@ indexing
 	last_change: "$LastChangedDate$"
 
 
-class ARCHETYPE_REPOSITORY_ARCHETYPE
+class ARCH_REP_ARCHETYPE
 
 inherit
-	ARCHETYPE_REPOSITORY_ITEM
+	ARCH_REP_ITEM
 		rename
 			make as make_adi
 		undefine
@@ -37,7 +37,7 @@ feature -- Initialisation
 			Id_valid: an_id /= Void
 		do
 			id := an_id
-			is_specialised := is_specialised_flag
+			archetype_specialised := is_specialised_flag
 			make_adi (a_root_path, a_full_path, a_repository)
 		end
 
@@ -78,10 +78,22 @@ feature -- Access
 
 feature -- Status Report
 
-	is_specialised: BOOLEAN
+	archetype_specialised: BOOLEAN
 			-- True if this archetype is a specialisation of another archetype
 
-	needs_recompile: BOOLEAN
+	archetype_parsed: BOOLEAN
+			-- Has the archetype been parsed into an ARCHETYPE structure?
+		do
+			Result := compilation_context /= Void
+		end
+
+	is_valid: BOOLEAN
+			-- Has the archetype been parsed into an ARCHETYPE structure and then validated?
+		do
+			Result := compilation_context /= Void and then compilation_context.is_valid
+		end
+
+	is_out_of_date: BOOLEAN
 			-- Has the loaded archetype designated by `path' changed on disk since last read?
 		do
 			Result := compilation_context = Void or repository.has_file_changed_on_disk (full_path, source_timestamp)

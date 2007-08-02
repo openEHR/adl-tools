@@ -12,7 +12,7 @@ indexing
 	last_change: "$LastChangedDate: $"
 
 
-deferred class ARCHETYPE_REPOSITORY_ITEM
+deferred class ARCH_REP_ITEM
 
 inherit
 	SHARED_RESOURCES

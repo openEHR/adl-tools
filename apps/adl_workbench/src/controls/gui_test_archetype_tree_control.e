@@ -84,7 +84,7 @@ feature -- Access
 	has_selected_file: BOOLEAN
 			-- True if a file was selected
 
-	tests: DS_HASH_TABLE [FUNCTION [ANY, TUPLE [ARCHETYPE_REPOSITORY_ARCHETYPE], INTEGER], STRING] is
+	tests: DS_HASH_TABLE [FUNCTION [ANY, TUPLE [ARCH_REP_ARCHETYPE], INTEGER], STRING] is
 			-- table of test routines
 		once
 			create Result.make (5)
@@ -182,7 +182,7 @@ feature -- Commands
 	run_tests is
 			-- execute tests on all marked archetypes
 		local
-			arch_item: ARCHETYPE_REPOSITORY_ARCHETYPE
+			arch_item: ARCH_REP_ARCHETYPE
 			row_csr, col_csr: INTEGER
 			row: EV_GRID_ROW
 			gli: EV_GRID_LABEL_ITEM
@@ -280,16 +280,15 @@ feature -- Commands
 
 feature -- Tests
 
-	test_parse (ara: ARCHETYPE_REPOSITORY_ARCHETYPE): INTEGER is
+	test_parse (ara: ARCH_REP_ARCHETYPE): INTEGER is
 			-- parse archetype and return result
 		local
 			unused_at_codes, unused_ac_codes: ARRAYED_LIST [STRING]
 		do
 			Result := test_failed
-			archetype_compiler.set_target (ara)
-			archetype_compiler.parse_archetype
+			archetype_compiler.parse_archetype(ara)
 
-			if archetype_compiler.parse_succeeded then
+			if ara.is_valid then
 				Result := test_passed
 
 				if remove_unused_codes then
@@ -315,14 +314,14 @@ feature -- Tests
 			end
 		end
 
-	test_save_html (ara: ARCHETYPE_REPOSITORY_ARCHETYPE): INTEGER is
+	test_save_html (ara: ARCH_REP_ARCHETYPE): INTEGER is
 			-- parse archetype and return result
 		local
 			html_fname: STRING
 		do
 			Result := test_failed
 
-			if archetype_compiler.parse_succeeded then
+			if ara.is_valid then
 				-- FIXME: Sam doesn't want the html files to go in the same place as the adl files anymore
 				-- now they should go in the path html/adl, where html is a sibling directory of the main
 				-- 'adl' directory in the repository path; 'html/adl' means "the ADL form of HTML", since
@@ -339,14 +338,14 @@ feature -- Tests
 			end
 		end
 
-	test_save_adl (ara: ARCHETYPE_REPOSITORY_ARCHETYPE): INTEGER is
+	test_save_adl (ara: ARCH_REP_ARCHETYPE): INTEGER is
 			-- parse archetype and return result
 		local
 			new_adl_file_path: STRING
 		do
 			Result := test_failed
 
-			if archetype_compiler.parse_succeeded then
+			if ara.is_valid then
 				if overwrite then
 					archetype_compiler.save_archetype
 				else
@@ -364,7 +363,7 @@ feature -- Tests
 			end
 		end
 
-	test_reparse (ara: ARCHETYPE_REPOSITORY_ARCHETYPE): INTEGER is
+	test_reparse (ara: ARCH_REP_ARCHETYPE): INTEGER is
 			-- parse archetype and return result
 		local
 			new_adl_file_path: STRING
@@ -380,16 +379,16 @@ feature -- Tests
 			-- of an archetype from what is in its file
 			-- DO SOMETHING HERE
 
-			archetype_compiler.parse_archetype
+			archetype_compiler.parse_archetype(ara)
 
-			if archetype_compiler.parse_succeeded then
+			if ara.is_valid then
 				Result := test_passed
 			else
 				test_status.append ("Parse failed; reason: " + archetype_compiler.status + "%N")
 			end
 		end
 
-	test_diff (ara: ARCHETYPE_REPOSITORY_ARCHETYPE): INTEGER is
+	test_diff (ara: ARCH_REP_ARCHETYPE): INTEGER is
 			-- parse archetype and return result
 		local
 			new_adl_file_path: STRING
@@ -433,7 +432,7 @@ feature {NONE} -- Implementation
 	test_status: STRING
 			-- Cumulative status message during running of test.
 
-	populate_gui_tree_node_enter (an_item: ARCHETYPE_REPOSITORY_ITEM) is
+	populate_gui_tree_node_enter (an_item: ARCH_REP_ITEM) is
 			-- Add a node representing `an_item' to `gui_file_tree'.
 		require
 			an_item /= Void
@@ -441,7 +440,7 @@ feature {NONE} -- Implementation
 			gli: EV_GRID_LABEL_ITEM
 			row: EV_GRID_ROW
 			pixmap: EV_PIXMAP
-			ada: ARCHETYPE_REPOSITORY_ARCHETYPE
+			ada: ARCH_REP_ARCHETYPE
 			col_csr: INTEGER
 		do
 			row := grid_row_stack.item
@@ -476,7 +475,7 @@ feature {NONE} -- Implementation
 			grid_row_stack.extend (row)
 		end
 
-	populate_gui_tree_node_exit (an_item: ARCHETYPE_REPOSITORY_ITEM) is
+	populate_gui_tree_node_exit (an_item: ARCH_REP_ITEM) is
 		do
 			grid_row_stack.remove
 		end

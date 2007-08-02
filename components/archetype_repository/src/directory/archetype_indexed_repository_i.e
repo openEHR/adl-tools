@@ -40,7 +40,9 @@ feature -- Access
 	root_path: STRING
 			-- Path of file-system repository of archetypes.
 
-	directory: TWO_WAY_TREE [ARCHETYPE_REPOSITORY_ITEM]
+feature {ARCHETYPE_DIRECTORY} -- Access
+
+	directory: TWO_WAY_TREE [ARCH_REP_ITEM]
 			-- Tree-structured directory of folders and archetypes.
 
 feature -- Commands
@@ -79,7 +81,7 @@ feature {NONE} -- Implementation
 		require
 			path_valid: path /= Void and then path.substring_index (root_path, 1) = 1
    		do
-			create Result.make (create {ARCHETYPE_REPOSITORY_FOLDER}.make (root_path, path, Current))
+			create Result.make (create {ARCH_REP_FOLDER}.make (root_path, path, Current))
 		ensure
 			attached: Result /= Void
 			root_path_set: Result.item.root_path = root_path
