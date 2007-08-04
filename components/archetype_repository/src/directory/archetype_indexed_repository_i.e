@@ -86,7 +86,7 @@ feature {NONE} -- Implementation
 			attached: Result /= Void
 			root_path_set: Result.item.root_path = root_path
 			full_path_set: Result.item.full_path = path
-			repository_set: Result.item.repository = Current
+			repository_set: Result.item.source_repository = Current
 		end
 
 invariant
@@ -94,7 +94,7 @@ invariant
 	directory_attached: directory /= Void
 	directory_root_path: directory.item.root_path = root_path
 	directory_full_path: directory.item.full_path = root_path
-	directory_repository: directory.item.repository = Current
+	directory_repository: directory.item.source_repository = Current
 
 end
 

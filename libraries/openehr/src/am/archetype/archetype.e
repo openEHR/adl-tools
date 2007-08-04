@@ -310,7 +310,8 @@ feature -- Status Report
 		end
 
 	is_valid: BOOLEAN is
-			-- is archetype in valid state?
+			-- is archetype locally in valid state? For specialised archetypes, this does not take
+			-- into account validity with respect to parent archetypes.
 		local
 			node_list_validity, constraint_references_validity, internal_references_validity, language_validity: BOOLEAN
 		do

@@ -425,7 +425,7 @@ feature {NONE} -- Implementation
 			-- merge a_node into directory - node enter
 		local
 			arf: ARCH_REP_FOLDER
-			ara: ARCH_REP_ARCHETYPE
+			ara, parent_ara: ARCH_REP_ARCHETYPE
 			arch_node, parent_node: like directory
 		do
    			debug("arch_dir")
@@ -473,6 +473,10 @@ feature {NONE} -- Implementation
 					if ontology_index.has (ara.ontological_parent_path) then
 						parent_node := ontology_index.item (ara.ontological_parent_path)
 						parent_node.put_child_right (arch_node)
+						if ara.is_specialised then
+							parent_ara ?= parent_node.item
+							ara.set_specialisation_parent(parent_ara)
+						end
 						parent_node.child_forth
   	 					debug("arch_dir")
    							io.put_string("%N")

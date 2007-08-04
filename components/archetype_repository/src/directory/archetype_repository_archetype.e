@@ -29,7 +29,7 @@ create
 
 feature -- Initialisation
 
-	make (a_root_path, a_full_path: STRING; an_id: ARCHETYPE_ID; is_specialised_flag: BOOLEAN; a_repository: ARCHETYPE_REPOSITORY_I)
+	make (a_root_path, a_full_path: STRING; an_id: ARCHETYPE_ID; a_repository: ARCHETYPE_REPOSITORY_I)
 		require
 			Repository_exists: a_repository /= Void
 			Root_path_valid: a_repository.is_valid_path (a_root_path)
@@ -37,7 +37,6 @@ feature -- Initialisation
 			Id_valid: an_id /= Void
 		do
 			id := an_id
-			archetype_specialised := is_specialised_flag
 			make_adi (a_root_path, a_full_path, a_repository)
 		end
 
@@ -49,8 +48,8 @@ feature -- Access
 	source: STRING
 			-- The source text of the archetype.
 		do
-			Result := repository.source (full_path)
-			source_timestamp := repository.source_timestamp
+			Result := source_repository.source (full_path)
+			source_timestamp := source_repository.source_timestamp
 		end
 
 	source_timestamp: INTEGER
@@ -69,17 +68,23 @@ feature -- Access
 			-- Name distinguishing the type of item and the group to which its `repository' belongs.
 			-- Useful as a logical key to pixmap icons, etc.
 		do
-			if id.is_specialised then
-				Result := "archetype_specialised_" + repository.group_id.out
+			if is_specialised then
+				Result := "archetype_specialised_" + source_repository.group_id.out
 			else
-				Result := "archetype_" + repository.group_id.out
+				Result := "archetype_" + source_repository.group_id.out
 			end
 		end
 
+	specialisation_parent: ARCH_REP_ARCHETYPE
+			-- parent descriptor, for specialised archetypes only
+
 feature -- Status Report
 
-	archetype_specialised: BOOLEAN
+	is_specialised: BOOLEAN is
 			-- True if this archetype is a specialisation of another archetype
+		do
+			Result := id.is_specialised
+		end
 
 	archetype_parsed: BOOLEAN
 			-- Has the archetype been parsed into an ARCHETYPE structure?
@@ -96,7 +101,7 @@ feature -- Status Report
 	is_out_of_date: BOOLEAN
 			-- Has the loaded archetype designated by `path' changed on disk since last read?
 		do
-			Result := compilation_context = Void or repository.has_file_changed_on_disk (full_path, source_timestamp)
+			Result := compilation_context = Void or source_repository.has_file_changed_on_disk (full_path, source_timestamp)
 		end
 
 feature -- Commands
@@ -106,7 +111,7 @@ feature -- Commands
 		require
 			Text_valid: a_text /= Void and then not a_text.is_empty
 		do
-			repository.save_as(full_path, a_text)
+			source_repository.save_as(full_path, a_text)
 		end
 
 	save_as (a_full_path, a_text: STRING)
@@ -115,7 +120,7 @@ feature -- Commands
 			Text_valid: a_text /= Void and then not a_text.is_empty
 			Path_valid: is_valid_directory_part (a_full_path)
 		do
-			repository.save_as (a_full_path, a_text)
+			source_repository.save_as (a_full_path, a_text)
 		end
 
 	set_compilation_context (a_source_archetype: ARCHETYPE)
@@ -133,6 +138,16 @@ feature -- Comparison
 			-- Is current object less than `other'?
 		do
 			Result := id < other.id
+		end
+
+feature -- Modification
+
+	set_specialisation_parent(a_parent: ARCH_REP_ARCHETYPE) is
+			-- set `parent'
+		require
+			Parent_exists: a_parent /= Void
+		do
+			specialisation_parent := a_parent
 		end
 
 feature {NONE} -- Implementation
@@ -165,6 +180,10 @@ feature {NONE} -- Implementation
 
 			base_name := id.domain_concept_tail + "(" + id.version_id + ")"
 		end
+
+invariant
+	Parent_existence: specialisation_parent /= Void implies is_specialised
+	Parent_validity: specialisation_parent /= Void implies specialisation_parent.id.semantic_id.is_equal(id.semantic_parent_id)
 
 end
 

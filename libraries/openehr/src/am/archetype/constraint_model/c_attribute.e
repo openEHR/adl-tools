@@ -96,7 +96,7 @@ feature -- Source Control
 			until				
 				children.off or Result.value < ss_inherited
 			loop
-				Result := specialisation_xx(Result, children.item.rolled_up_specialisation_status (archetype_specialisation_level))
+				Result := specialisation_effective_status(Result, children.item.rolled_up_specialisation_status (archetype_specialisation_level))
 				children.forth				
 			end
 		end

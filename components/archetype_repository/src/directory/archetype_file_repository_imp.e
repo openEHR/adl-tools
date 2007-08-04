@@ -124,14 +124,14 @@ feature {NONE} -- Implementation
 
 					if id.valid_id (base_name) then
 						id.make_from_string (base_name)
-						create Result.make (root_path, full_path, id, id.is_specialised, Current)
+						create Result.make (root_path, full_path, id, Current)
 					end
 				end
 			end
 		ensure
 			has_root_path: Result /= Void implies Result.root_path.is_equal (root_path)
 			has_full_path: Result /= Void implies Result.full_path.is_equal (full_path)
-			has_this_repository: Result /= Void implies Result.repository = Current
+			has_this_repository: Result /= Void implies Result.source_repository = Current
 		end
 
 end

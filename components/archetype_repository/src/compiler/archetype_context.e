@@ -65,13 +65,23 @@ feature -- Access
 	flat_form: ARCHETYPE
 			-- inheritance-flattened form of archetype
 
-	parent: ARCHETYPE
+	specialisation_parent: ARCHETYPE
 			-- parent archetype if this one is specialised, or else Void
 
 feature -- Status Report
 
 	is_valid: BOOLEAN
 			-- True if archetype object created and 'is_valid' True
+
+	is_specialised: BOOLEAN is
+			-- True if archetype is a specialisation
+		do
+			Result := differential.is_specialised
+		end
+
+invariant
+	Parent_existence: specialisation_parent /= Void implies is_specialised
+	Parent_validity: specialisation_parent /= Void implies specialisation_parent.archetype_id.semantic_id.is_equal(differential.archetype_id.semantic_parent_id)
 
 end
 

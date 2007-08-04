@@ -58,7 +58,7 @@ feature -- Status Report
 
 feature -- Comparison
 
-	specialisation_xx(status_1, status_2: SPECIALISATION_STATUS): SPECIALISATION_STATUS is
+	specialisation_effective_status(status_1, status_2: SPECIALISATION_STATUS): SPECIALISATION_STATUS is
 			-- determine which of status_1 and status_2 is effective at a given node, due
 			-- to sub-node values
 		do

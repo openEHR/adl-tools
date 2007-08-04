@@ -1,55 +1,39 @@
 indexing
 	component:   "openEHR Archetype Project"
-	description: "Descriptor of a folder in a directory of archetypes"
+	description: "[
+			 Archetype comparator: generate differences between archetypes.
+		     ]"
 	keywords:    "ADL, archetype"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL: $"
+	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate: $"
+	last_change: "$LastChangedDate$"
 
 
-class ARCH_REP_FOLDER
+class ARCHETYPE_COMPARATOR
 
 inherit
-	ARCH_REP_ITEM
+	ARCHETYPE_DEFINITIONS
+		export
+			{NONE} all
+		end
+
+	MESSAGE_BILLBOARD
+		export
+			{NONE} all
+		end
 
 create
 	make
 
-feature {NONE} -- Implementation
+feature -- Comparison
 
-	make_ontological_paths
-			-- Make `base_name', `ontological_path' and `ontological_parent_path'.
-		local
-			pos: INTEGER
-		do
-			ontological_path := full_path.substring (root_path.count + 1, full_path.count)
-			ontological_path.replace_substring_all (os_directory_separator.out, ontological_path_separator)
-
-			if ontological_path.is_empty then
-				ontological_path := ontological_path_separator.twin
-			end
-
-			pos := ontological_path.last_index_of (ontological_path_separator.item (1), ontological_path.count)
-			ontological_parent_path := ontological_path.substring (1, pos - 1)
-			base_name := ontological_path.substring (pos + ontological_path_separator.count, ontological_path.count)
-		end
-
-feature -- Access
-
-	group_name: STRING
-			-- Name distinguishing the type of item and the group to which its `repository' belongs.
-			-- Useful as a logical key to pixmap icons, etc.
-		do
-			Result := "file_folder_" + source_repository.group_id.out
-		end
 
 end
-
 
 
 --|
@@ -66,10 +50,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is archetype_directory_item.e.
+--| The Original Code is archetype_comparator.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2006
+--| Portions created by the Initial Developer are Copyright (C) 2007
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):
