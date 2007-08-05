@@ -11,7 +11,7 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class SHARED_CONSTRAINT_MODEL_SERIALISERS
+class SHARED_C_SERIALISERS
 
 feature -- Access
 
@@ -30,7 +30,7 @@ feature -- Access
 			Result.compare_objects
 		end
 
-	c_serialiser_for_format(a_format:STRING): CONSTRAINT_MODEL_SERIALISER is
+	c_serialiser_for_format(a_format:STRING): C_SERIALISER is
 			-- get a specific ADL serialiser
 		require
 			Format_valid: a_format /= Void and then has_c_serialiser_format(a_format)
@@ -52,7 +52,7 @@ feature -- Status Report
 		
 feature {NONE} -- Implementation
 
-	c_serialisers: HASH_TABLE [CONSTRAINT_MODEL_SERIALISER, STRING] is
+	c_serialisers: HASH_TABLE [C_SERIALISER, STRING] is
 		once
 			create Result.make(0)
 		end

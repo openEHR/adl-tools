@@ -36,7 +36,7 @@ indexing
 	last_change: "$LastChangedDate: $"
 
 
-class ARCHETYPE_DIRECTORY
+class ARCH_DIRECTORY
 
 inherit
 	SHARED_RESOURCES
@@ -103,9 +103,15 @@ feature -- Access
 			-- selected archetype node
 
 	selected_archetype: ARCHETYPE is
-			-- currently selected archetype descriptor
+			-- archetype at currently selected archetype descriptor
 		do
-			Result := selected_descriptor.archetype
+			Result := selected_descriptor.compilation_context.differential
+		end
+
+	selected_archetype_valid: BOOLEAN is
+			-- is archetype at currently selected archetype descriptor valid?
+		do
+			Result := selected_descriptor.compilation_context.is_valid
 		end
 
 feature -- Comparison

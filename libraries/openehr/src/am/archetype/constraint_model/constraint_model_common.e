@@ -1,7 +1,7 @@
 indexing
 	component:   "openEHR Archetype Project"
 	description: "Common things for all SML archetypes"
-	keywords:    "test, SML"
+	keywords:    "test, ADL"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
@@ -11,11 +11,11 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-deferred class CONSTRAINT_MODEL_COMMON
+deferred class C_COMMON
 
 feature -- Access
 
-	default_occurrences: INTERVAL[INTEGER] is 
+	default_occurrences: INTERVAL[INTEGER] is
 			-- default object occurrences object representing 1..1
 		once
 			create Result.make_bounded(1,1, True, True)
@@ -23,7 +23,7 @@ feature -- Access
 			Result_exists: Result /= Void
 		end
 
-	default_existence: INTERVAL[INTEGER] is 
+	default_existence: INTERVAL[INTEGER] is
 			-- default property existence object representing 1..1
 		once
 			create Result.make_bounded(1,1, True, True)

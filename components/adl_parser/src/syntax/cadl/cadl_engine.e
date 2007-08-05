@@ -12,19 +12,19 @@ indexing
 	last_change: "$LastChangedDate$"
 
 class CADL_ENGINE
-	
+
 inherit
-	SHARED_CONSTRAINT_MODEL_SERIALISERS
+	SHARED_C_SERIALISERS
 		export
 			{NONE} all
 			{ANY} has_c_serialiser_format
 		end
-	
+
 creation
 	make
 
 feature -- Initialisation
-	
+
 	make is
 		do
 		end
@@ -36,20 +36,20 @@ feature -- Initialisation
 			tree := Void
 			serialised := Void
 		end
-		
+
 feature -- Access
 
 	source: STRING
 			-- source of current artifact
-			
+
 	source_start_line: INTEGER
 			-- defaults to 0; can be set to line number of dADL text inside some other document
-			
+
 	tree: C_COMPLEX_OBJECT
 			-- set if parse succeeded
-		
+
 	serialised: STRING
-	
+
 	parse_error_text: STRING is
 			-- result of last parse
 		do
@@ -60,7 +60,7 @@ feature -- Status Report
 
 	in_parse_mode: BOOLEAN
 			-- True if engine in mode where tree was created from source
-			
+
 	parse_succeeded: BOOLEAN is
 			-- True if parse succeeded; call after parse()
 		do
@@ -99,19 +99,24 @@ feature -- Commands
 		ensure
 			parse_succeeded or else tree = Void
 		end
-		
+
 	serialise(a_format: STRING; an_ontology: ARCHETYPE_ONTOLOGY) is
 			-- serialise current artifact into format
 		require
 			Format_valid: has_c_serialiser_format(a_format)
 			Archetype_valid: tree.is_valid
 			Ontology_valid: an_ontology /= Void
+		local
+			a_c_serialiser: C_SERIALISER
 		do
-			create serialiser_mgr.make(tree, a_format, an_ontology)
-			serialiser_mgr.serialise
-			serialised := serialiser_mgr.last_result
+			a_c_serialiser := c_serialiser_for_format(a_format)
+			a_c_serialiser.initialise(an_ontology)
+			create tree_iterator.make(tree, a_c_serialiser)
+			tree_iterator.do_all
+			a_c_serialiser.finalise
+			serialised := a_c_serialiser.last_result
 		end
-	
+
 	set_tree(a_node: C_COMPLEX_OBJECT) is
 			-- set root node from e.g. GUI tool
 		require
@@ -122,12 +127,12 @@ feature -- Commands
 		ensure
 			not in_parse_mode
 		end
-		
+
 feature {NONE} -- Implementation
 
 	parser: CADL_VALIDATOR
-	
-	serialiser_mgr: CONSTRAINT_MODEL_SERIALISER_MGR
+
+	tree_iterator: C_ITERATOR
 
 end
 

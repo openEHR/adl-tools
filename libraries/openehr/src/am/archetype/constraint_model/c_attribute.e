@@ -201,13 +201,13 @@ feature -- Representation
 
 feature -- Serialisation
 
-	enter_block(serialiser: CONSTRAINT_MODEL_SERIALISER; depth: INTEGER) is
+	enter_subtree(serialiser: C_SERIALISER; depth: INTEGER) is
 			-- perform serialisation at start of block for this node
 		do
 			serialiser.start_c_attribute(Current, depth)
 		end
 		
-	exit_block(serialiser: CONSTRAINT_MODEL_SERIALISER; depth: INTEGER) is
+	exit_subtree(serialiser: C_SERIALISER; depth: INTEGER) is
 			-- perform serialisation at end of block for this node
 		do
 			serialiser.end_c_attribute(Current, depth)

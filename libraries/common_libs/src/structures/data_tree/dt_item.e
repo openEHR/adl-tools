@@ -14,7 +14,7 @@ indexing
 deferred class DT_ITEM
 
 inherit
-	SERIALISABLE
+	VISITABLE
 		export
 			{NONE} all
 		end
@@ -62,12 +62,12 @@ feature -- Representation
 
 feature -- Serialisation
 
-	enter_block(serialiser: DT_SERIALISER; depth: INTEGER) is
+	enter_subtree(serialiser: DT_SERIALISER; depth: INTEGER) is
 			-- perform serialisation at start of block for this node
 		deferred
 		end
 		
-	exit_block(serialiser: DT_SERIALISER; depth: INTEGER) is
+	exit_subtree(serialiser: DT_SERIALISER; depth: INTEGER) is
 			-- perform serialisation at end of block for this node
 		deferred
 		end

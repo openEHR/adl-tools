@@ -11,20 +11,21 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-deferred class CONSTRAINT_MODEL_TREE_ITERATOR
+class C_ITERATOR
 
-feature -- Access
+create
+	make
 
-	tree_iterator: OG_ITERATOR
-	
-feature -- Modification
+feature -- Initialisation
 
-	set_target(a_target: C_COMPLEX_OBJECT) is 
+	make(a_target: C_COMPLEX_OBJECT; a_visitor: C_VISITOR) is
 			-- create a new manager targetted to the parse tree `a_target'
 		require
 			Target_exists: a_target /= Void
+			Visitor_exists: a_visitor /= Void
 		do
 			create tree_iterator.make(a_target.representation)
+			visitor := a_visitor
 		end
 
 feature -- Command
@@ -36,17 +37,23 @@ feature -- Command
 		end
 
 feature {NONE} -- Implementation
-	
+
+	tree_iterator: OG_ITERATOR
+
+	visitor: C_VISITOR
+
 	node_enter_action(a_node: OG_ITEM; indent_level: INTEGER) is
 		require
 			Node_exists: a_node /= Void
-		deferred
+		do
+			a_node.enter_subtree(visitor, indent_level)
 		end
 
 	node_exit_action(a_node: OG_ITEM; indent_level: INTEGER) is
 		require
 			Node_exists: a_node /= Void
-		deferred
+		do
+			a_node.exit_subtree(visitor, indent_level)
 		end
 
 end

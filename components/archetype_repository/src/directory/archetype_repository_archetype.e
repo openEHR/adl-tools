@@ -55,14 +55,8 @@ feature -- Access
 	source_timestamp: INTEGER
 			-- Date and time at which the archetype file was last modified.
 
-	compilation_context: ARCHETYPE_CONTEXT
+	compilation_context: ARCH_CONTEXT
 			-- Context object for compilation activities.
-
-	archetype: ARCHETYPE
-			-- Differential form of currently compiled archetype.
-		do
-			Result := compilation_context.differential
-		end
 
 	group_name: STRING
 			-- Name distinguishing the type of item and the group to which its `repository' belongs.
@@ -84,18 +78,6 @@ feature -- Status Report
 			-- True if this archetype is a specialisation of another archetype
 		do
 			Result := id.is_specialised
-		end
-
-	archetype_parsed: BOOLEAN
-			-- Has the archetype been parsed into an ARCHETYPE structure?
-		do
-			Result := compilation_context /= Void
-		end
-
-	is_valid: BOOLEAN
-			-- Has the archetype been parsed into an ARCHETYPE structure and then validated?
-		do
-			Result := compilation_context /= Void and then compilation_context.is_valid
 		end
 
 	is_out_of_date: BOOLEAN

@@ -336,7 +336,7 @@ feature {NONE} -- Commands
 			if not language_combo.text.is_empty then
 				archetype_compiler.set_current_language (language_combo.text)
 
-				if archetype_directory.selected_descriptor.is_valid then
+				if archetype_directory.selected_archetype_valid then
 					populate_view_controls
 				end
 			end
@@ -371,7 +371,7 @@ feature {NONE} -- Commands
 			save_dialog: EV_FILE_SAVE_DIALOG
 			name, format: STRING
 		do
-			if archetype_directory.selected_descriptor.is_valid then
+			if archetype_directory.selected_archetype_valid then
 				ok_to_write := True
 
 				name := archetype_directory.selected_descriptor.full_path.twin
@@ -420,6 +420,9 @@ feature {NONE} -- Commands
 						archetype_compiler.save_archetype_as (name, format)
 						parser_status_area.append_text (archetype_compiler.status)
 
+						-- FIXME: currently this refreshes the whole view and forgets what archetype the user was on;
+						-- it is only useful to do this in any case if the archetype was written over the .adl file
+						-- in the repository area; if it is saved to e.g. the temp area, this should not even be done
 						if format.is_equal (archetype_file_extension) then
 							populate_archetype_directory
 						end
@@ -445,10 +448,10 @@ feature {NONE} -- Commands
 			do_with_wait_cursor (agent
 				do
 					clear_all_controls
-					archetype_compiler.parse_target_archetype
+					archetype_compiler.parse_archetype
 					parser_status_area.append_text (archetype_compiler.status)
 
-					if archetype_directory.selected_descriptor.is_valid then
+					if archetype_directory.selected_archetype_valid then
 						populate_all_archetype_controls
 						archetype_compiler.set_archetype_readonly
 					else
@@ -465,21 +468,21 @@ feature {NONE} -- Commands
 
 	node_map_shrink_tree_one_level is
 		do
-			if archetype_directory.selected_descriptor.is_valid then
+			if archetype_directory.selected_archetype_valid then
 				node_map_control.shrink_one_level
 			end
 		end
 
 	node_map_expand_tree_one_level is
 		do
-			if archetype_directory.selected_descriptor.is_valid then
+			if archetype_directory.selected_archetype_valid then
 				node_map_control.expand_one_level
 			end
 		end
 
 	node_map_toggle_expand_tree is
 		do
-			if archetype_directory.selected_descriptor.is_valid then
+			if archetype_directory.selected_archetype_valid then
 				node_map_control.toggle_expand_tree
 			end
 		end
@@ -492,7 +495,7 @@ feature {NONE} -- Commands
 	on_tree_domain_selected
 			-- Hide technical details in `parsed_archetype_tree'.
 		do
-			if archetype_directory.selected_descriptor.is_valid then
+			if archetype_directory.selected_archetype_valid then
 				node_map_control.set_domain_mode
 			end
 		end
@@ -500,7 +503,7 @@ feature {NONE} -- Commands
 	on_tree_technical_selected
 			-- Display technical details in `parsed_archetype_tree'.
 		do
-			if archetype_directory.selected_descriptor.is_valid then
+			if archetype_directory.selected_archetype_valid then
 				node_map_control.set_technical_mode
 			end
 		end
@@ -508,7 +511,7 @@ feature {NONE} -- Commands
 	on_tree_flat_view_selected
 			-- Do not show the inherited/defined status of nodes in `parsed_archetype_tree'.
 		do
-			if archetype_compiler.target.is_valid then
+			if archetype_directory.selected_archetype_valid then
 				node_map_control.set_flat_view
 			end
 		end
@@ -516,7 +519,7 @@ feature {NONE} -- Commands
 	on_tree_inheritance_selected
 			-- Show the inherited/defined status of nodes in `parsed_archetype_tree'.
 		do
-			if archetype_directory.selected_descriptor.is_valid then
+			if archetype_directory.selected_archetype_valid then
 				node_map_control.set_inheritance_view
 			end
 		end

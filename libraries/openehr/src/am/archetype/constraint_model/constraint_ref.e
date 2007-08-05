@@ -5,7 +5,7 @@ indexing
 			 defined in the ontology section of the archetype.
 			 ]"
 	keywords:    "test, ADL"
-	
+
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics<support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
@@ -27,14 +27,14 @@ create
 	make
 
 feature -- Initialisation
-		
+
 	default_create is
-			-- 
+			--
 		do
 			precursor
-			rm_type_name := (create {CODE_PHRASE}.default_create).generator			
+			rm_type_name := (create {CODE_PHRASE}.default_create).generator
 		end
-		
+
 	make(a_code: STRING) is
 			-- make from pattern of form "[acNNNN[.NN[etc]]]"
 		require
@@ -46,7 +46,7 @@ feature -- Initialisation
 		ensure
 			Target_set: target = a_code
 		end
-		
+
 feature -- Access
 
 	target: STRING
@@ -62,37 +62,37 @@ feature -- Status Report
 		do
 			Result := precursor
 		end
-	
+
 feature -- Conversion
 
 	as_string: STRING is
-			-- 
+			--
 		do
 			create Result.make (0)
 			Result.append("[" + target + "]")
 		end
-		
+
 feature -- Representation
 
 	representation: OG_OBJECT_LEAF
 
-feature -- Serialisation
+feature -- Visitor
 
-	enter_block(serialiser: CONSTRAINT_MODEL_SERIALISER; depth: INTEGER) is
-			-- perform serialisation at start of block for this node
+	enter_subtree(visitor: C_VISITOR; depth: INTEGER) is
+			-- perform action at start of block for this node
 		do
-			serialiser.start_constraint_ref(Current, depth)
+			visitor.start_constraint_ref(Current, depth)
 		end
-		
-	exit_block(serialiser: CONSTRAINT_MODEL_SERIALISER; depth: INTEGER) is
-			-- perform serialisation at end of block for this node
+
+	exit_subtree(visitor: C_VISITOR; depth: INTEGER) is
+			-- perform action at end of block for this node
 		do
-			serialiser.end_constraint_ref(Current, depth)
+			visitor.end_constraint_ref(Current, depth)
 		end
 
 invariant
 	Target_valid: target /= Void
-	
+
 end
 
 

@@ -44,7 +44,7 @@ end
 			rm_type_name.remove_head(2)
 			create representation.make_anonymous(Current)
 		end
-	
+
 feature -- Access
 
 	item: C_PRIMITIVE
@@ -54,7 +54,7 @@ feature -- Access
 		do
 			Result := item.default_value
 		end
-		
+
 feature -- Status Report
 
 	any_allowed: BOOLEAN is
@@ -78,7 +78,7 @@ feature -- Status Report
 			end
 		end
 
-	valid_value (a_value: like default_value): BOOLEAN is 
+	valid_value (a_value: like default_value): BOOLEAN is
 		do
 			Result := item.valid_value (a_value)
 		end
@@ -101,23 +101,23 @@ feature -- Representation
 
 	representation: OG_OBJECT_LEAF
 
-feature -- Serialisation
+feature -- Visitor
 
-	enter_block(serialiser: CONSTRAINT_MODEL_SERIALISER; depth: INTEGER) is
-			-- perform serialisation at start of block for this node
+	enter_subtree(visitor: C_VISITOR; depth: INTEGER) is
+			-- perform action at start of block for this node
 		do
-			serialiser.start_c_primitive_object(Current, depth)
+			visitor.start_c_primitive_object(Current, depth)
 		end
-		
-	exit_block(serialiser: CONSTRAINT_MODEL_SERIALISER; depth: INTEGER) is
-			-- perform serialisation at end of block for this node
+
+	exit_subtree(visitor: C_VISITOR; depth: INTEGER) is
+			-- perform action at end of block for this node
 		do
-			serialiser.end_c_primitive_object(Current, depth)
+			visitor.end_c_primitive_object(Current, depth)
 		end
 
 invariant
 	item_exists: any_allowed xor item /= Void
-	
+
 end
 
 

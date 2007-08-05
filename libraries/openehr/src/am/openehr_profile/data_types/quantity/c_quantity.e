@@ -2,7 +2,7 @@ indexing
 	component:   "openEHR Archetype Project"
 	description: "Object node type representing constraint on QUANTITY"
 	keywords:    "quantity, archetype, clinical type, ADL"
-	
+
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
@@ -26,21 +26,21 @@ inherit
 		undefine
 			default_create
 		end
-		
+
 	EXTERNAL_ENVIRONMENT_ACCESS
 		export
 			{ANY} has_property
 		undefine
 			default_create
 		end
-		
+
 create
 	make, make_dt
 
 feature -- Initialisation
-		
+
 	default_create is
-			-- 
+			--
 		do
 			precursor {C_DOMAIN_TYPE}
 			rm_type_name := generator
@@ -49,7 +49,7 @@ feature -- Initialisation
 		ensure then
 			Any_allowed: any_allowed
 		end
-		
+
 	make is
 		do
 			default_create
@@ -63,16 +63,16 @@ feature -- Initialisation
 			make
 		ensure then
 			Any_allowed: any_allowed
-		end		
-		
+		end
+
 feature -- Access
 
 	property: CODE_PHRASE
 			-- property
-	
+
 	list: ARRAYED_LIST[C_QUANTITY_ITEM]
 			-- list of items constraining magnitude/units pairs
-			
+
 	default_value: QUANTITY is
 			-- 	generate a default value from this constraint object
 		local
@@ -113,7 +113,7 @@ feature -- Access
 		end
 
 feature -- Modification
-	
+
 	set_property(a_property: CODE_PHRASE) is
 			-- set property constraint
 		require
@@ -132,7 +132,7 @@ feature -- Modification
 		ensure
 			assumed_value_set: assumed_value.magnitude = a_magnitude and assumed_value.units = a_units and assumed_value.precision = a_precision
 		end
-	
+
 	add_unit_constraint(a_units: STRING; a_magnitude: INTERVAL[REAL]; a_precision: INTERVAL[INTEGER]) is
 			-- add a units constraint. Void magnitude means any magnitude allowed
 		require
@@ -144,7 +144,7 @@ feature -- Modification
 			end
 			list.extend(create {C_QUANTITY_ITEM}.make(a_units, a_magnitude, a_precision))
 		end
-	
+
 feature -- Status Report
 
 	any_allowed: BOOLEAN is
@@ -154,16 +154,16 @@ feature -- Status Report
 			Result := list = Void and property = Void
 		end
 
-	valid_value (a_value: like default_value): BOOLEAN is 
+	valid_value (a_value: like default_value): BOOLEAN is
 		do
 			-- FIXME: to be implemented
 			Result := any_allowed or else True
 		end
-		
+
 feature -- Conversion
 
 	as_string: STRING is
-			-- 
+			--
 		do
 			create Result.make (0)
 		end
@@ -172,20 +172,20 @@ feature -- Conversion
 		do
 			-- FIXME: to be implemented
 		end
-		
-feature -- Serialisation
 
-	enter_block(serialiser: CONSTRAINT_MODEL_SERIALISER; depth: INTEGER) is
-			-- perform serialisation at start of block for this node
+feature -- Visitor
+
+	enter_subtree(visitor: C_VISITOR; depth: INTEGER) is
+			-- perform action at start of block for this node
 		do
 			synchronise_to_tree
-			serialiser.start_c_domain_type(Current, depth)
+			visitor.start_c_domain_type(Current, depth)
 		end
-		
-	exit_block(serialiser: CONSTRAINT_MODEL_SERIALISER; depth: INTEGER) is
-			-- perform serialisation at end of block for this node
+
+	exit_subtree(visitor: C_VISITOR; depth: INTEGER) is
+			-- perform action at end of block for this node
 		do
-			serialiser.end_c_domain_type(Current, depth)
+			visitor.end_c_domain_type(Current, depth)
 		end
 
 feature {DT_OBJECT_CONVERTER} -- Conversion
@@ -205,12 +205,12 @@ feature -- Implementation
 
 	default_units: STRING
 			-- record default units if proerty is set; used to generate a default value
-			
+
 invariant
 	Items_valid: list /= Void implies not list.is_empty
 --	Property_valid: property /= Void implies terminology(Terminology_id_openehr).has_code_for_group_id (Group_id_measurable_properties, property)
 	Overall_validity: (list /= Void or property /= Void) xor any_allowed
-	
+
 end
 
 --|

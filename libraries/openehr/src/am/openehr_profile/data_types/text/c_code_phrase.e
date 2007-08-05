@@ -2,7 +2,7 @@ indexing
 	component:   "openEHR Archetype Project"
 	description: "Object node type representing constraint on text or term"
 	keywords:    "test, ADL"
-	
+
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
@@ -27,29 +27,29 @@ feature -- Definitions
 
 	-- FIXME: these have been copied from CODE_PHRASE for now;
 	-- in future, this class should just use C_CODE_PHRASE to represent its data
-	
+
 	separator: STRING is "::"
-	
+
 feature -- Initialisation
-		
+
 	default_create is
-			-- 
+			--
 		do
 			precursor
-			rm_type_name := (create {CODE_PHRASE}.default_create).generator			
+			rm_type_name := (create {CODE_PHRASE}.default_create).generator
 			create representation.make_anonymous(Current)
 		ensure then
 			Any_allowed: any_allowed
 		end
-		
+
 	make_dt is
-			-- 
+			--
 		do
 			default_create
 		ensure then
 			Any_allowed: any_allowed
 		end
-		
+
 	make_from_terminology_id(a_terminology_id: STRING) is
 			-- make from terminology_id
 		do
@@ -59,7 +59,7 @@ feature -- Initialisation
 			Not_any_allowed: not any_allowed
 			Terminology_id_set: terminology_id.value.is_equal(a_terminology_id)
 		end
-		
+
 	make_from_pattern(a_pattern: STRING) is
 			-- make from pattern of form "terminology_id::code, code, ..."
 			-- Pattern "terminology_id::" is legal
@@ -72,10 +72,10 @@ feature -- Initialisation
 			found_assumed_value: BOOLEAN
 		do
 			default_create
-			
+
 			sep_pos := a_pattern.substring_index(separator, 1)
 			create terminology_id.make(a_pattern.substring(1, sep_pos-1))
-			
+
 			-- get the part after the terminology_id
 			code_str := a_pattern.substring(sep_pos+separator.count, a_pattern.count)
 
@@ -100,7 +100,7 @@ feature -- Initialisation
 					add_code(a_code)
 				end
 				pos1 := pos2+2
-				
+
 				if found_assumed_value then
 					pos2 := code_str.count
 					a_code := code_str.substring(pos1, pos2)
@@ -109,7 +109,7 @@ feature -- Initialisation
 					set_assumed_value(create {CODE_PHRASE}.make_from_string(terminology_id.value + separator + a_code))
 					pos1 := pos2+2
 				end
-					
+
 				if pos1 <= code_str.count then
 					pos2 := code_str.index_of(',', pos1)-1
 					if pos2 < 1 then
@@ -125,16 +125,16 @@ feature -- Initialisation
 		ensure
 			not any_allowed
 		end
-		
+
 feature -- Access
 
 	terminology_id: TERMINOLOGY_ID
 			-- id of terminology from which codes come. If code list empty, any code from
 			-- this terminology is allowed
-	
+
 	code_list: ARRAYED_LIST[STRING]
 			-- list of codes in terminology designated by terminology_id
-			
+
 	code_count: INTEGER is
 			-- number of codes in code_list
 		do
@@ -159,7 +159,7 @@ feature -- Access
 				end
 			end
 		end
-		
+
 feature -- Status Report
 
 	any_allowed: BOOLEAN is
@@ -191,7 +191,7 @@ feature -- Status Report
 				end
 			end
 		end
-		
+
 	has_code(a_code: STRING): BOOLEAN is
 			-- True if 'a_code' found in code list
 		require
@@ -199,14 +199,14 @@ feature -- Status Report
 		do
 			Result := code_list /= Void and code_list.has(a_code)
 		end
-		
+
 feature -- Modification
 
 	add_code(a_code: STRING) is
 			-- 	add a term to the list
 		require
 			Not_any_allowed: not any_allowed
-			Code_valid: a_code /= Void 
+			Code_valid: a_code /= Void
 		do
 			if code_list = Void then
 				create code_list.make(0)
@@ -217,11 +217,11 @@ feature -- Modification
 			Code_added: code_list.has(a_code)
 			Not_any_allowed: not any_allowed
 		end
-	
+
 feature -- Conversion
 
 	as_string: STRING is
-			-- 
+			--
 		do
 			create Result.make (0)
 			if any_allowed then
@@ -241,7 +241,7 @@ feature -- Conversion
 						code_list.forth
 					end
 				end
-			
+
 				if assumed_value /= Void then
 					Result.append("; " + assumed_value.code_string)
 				end
@@ -253,19 +253,19 @@ feature -- Conversion
 		do
 			-- FIXME: to be implemented
 		end
-	
-feature -- Serialisation
 
-	enter_block(serialiser: CONSTRAINT_MODEL_SERIALISER; depth: INTEGER) is
-			-- perform serialisation at start of block for this node
+feature -- Visitor
+
+	enter_subtree(visitor: C_VISITOR; depth: INTEGER) is
+			-- perform action at start of block for this node
 		do
-			serialiser.start_c_code_phrase(Current, depth)
+			visitor.start_c_code_phrase(Current, depth)
 		end
-		
-	exit_block(serialiser: CONSTRAINT_MODEL_SERIALISER; depth: INTEGER) is
-			-- perform serialisation at end of block for this node
+
+	exit_subtree(visitor: C_VISITOR; depth: INTEGER) is
+			-- perform action at end of block for this node
 		do
-			serialiser.end_c_code_phrase(Current, depth)
+			visitor.end_c_code_phrase(Current, depth)
 		end
 
 feature {DT_OBJECT_CONVERTER} -- Conversion
@@ -284,7 +284,7 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 invariant
 	List_validity: code_list /= Void implies (not code_list.is_empty and terminology_id /= Void)
 	Any_allowed_validity: (terminology_id /= Void or code_list /= Void) xor any_allowed
-	
+
 end
 
 

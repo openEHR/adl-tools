@@ -29,7 +29,7 @@ feature -- Definitions
 			
 feature -- Initialisation
 
-	make_generic (a_content_item: SERIALISABLE) is
+	make_generic (a_content_item: VISITABLE) is
 			-- create with pseudo-node id indicating that it is an unnamed
 			-- container attribute of a generic type
 		do

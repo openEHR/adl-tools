@@ -750,7 +750,7 @@ feature {NONE} -- Implementation
 			create node_ids_xref_table.make(0)
 			create code_nodes_code_xref_table.make(0)
 			create use_node_path_xref_table.make(0)
-			create constraint_nodes_code_xref_table.make(0)
+			create constraint_codes_xref_table.make(0)
 
 			create cadl_iterator.make (definition.representation)
 			cadl_iterator.do_all (agent update_node_lists_node_enter_action (?, ?), agent node_exit_action (?, ?))
@@ -822,10 +822,10 @@ feature {NONE} -- Implementation
 						else
 							a_c_r ?= a_node.content_item
 							if a_c_r /= Void then
-								if not constraint_nodes_code_xref_table.has(a_c_r.target) then
-									constraint_nodes_code_xref_table.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_c_r.target)
+								if not constraint_codes_xref_table.has(a_c_r.target) then
+									constraint_codes_xref_table.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_c_r.target)
 								end
-								constraint_nodes_code_xref_table.item(a_c_r.target).extend(a_c_r)
+								constraint_codes_xref_table.item(a_c_r.target).extend(a_c_r)
 							end
 						end
 					end
@@ -906,9 +906,11 @@ feature {NONE} -- Implementation
 		end
 
 	node_ids_xref_table: HASH_TABLE[ARRAYED_LIST[C_OBJECT], STRING]
-			-- table of {list<node>, code} for term codes which identify nodes in archetype
+			-- table of {list<node>, code} for term codes which identify nodes in archetype (note that there
+			-- are other uses of term codes from the ontology, which is why this attribute is not just called
+			-- 'term_codes_xref_table')
 
-	constraint_nodes_code_xref_table: HASH_TABLE[ARRAYED_LIST[C_OBJECT], STRING]
+	constraint_codes_xref_table: HASH_TABLE[ARRAYED_LIST[C_OBJECT], STRING]
 			-- table of {list<node>, code} for constraint codes in archetype
 
 	code_nodes_code_xref_table: HASH_TABLE[ARRAYED_LIST[C_OBJECT], STRING]
@@ -954,12 +956,12 @@ feature {NONE} -- Implementation
 		do
 			create Result.make(0)
 			from
-				constraint_nodes_code_xref_table.start
+				constraint_codes_xref_table.start
 			until
-				constraint_nodes_code_xref_table.off
+				constraint_codes_xref_table.off
 			loop
-				Result.extend(constraint_nodes_code_xref_table.key_for_iteration)
-				constraint_nodes_code_xref_table.forth
+				Result.extend(constraint_codes_xref_table.key_for_iteration)
+				constraint_codes_xref_table.forth
 			end
 			Result.compare_objects
 		end

@@ -21,7 +21,7 @@ indexing
 
 class ARCHETYPE_SLOT
 
-inherit 
+inherit
 	C_REFERENCE_OBJECT
 		redefine
 			representation, default_create, out
@@ -31,15 +31,15 @@ creation
 	make_identified, make_anonymous
 
 feature -- Initialisation
-	
+
 	default_create is
-			-- 
+			--
 		do
 			precursor
 			create includes.make(0)
-			create excludes.make(0)			
+			create excludes.make(0)
 		end
-		
+
 	make_identified(a_rm_type_name, an_object_id:STRING) is
 			-- set type name, object_id
 		require
@@ -70,7 +70,7 @@ feature -- Access
 	excludes: ARRAYED_LIST [ASSERTION]
 			-- list of assertions on archetypes of type 'type_name' defining
 			-- excluded archetypes
-				
+
 feature -- Status Report
 
 	any_allowed: BOOLEAN is
@@ -106,7 +106,7 @@ feature -- Modification
 		ensure
 			includes.has(assn)
 		end
-		
+
 	add_exclude(assn: ASSERTION) is
 			-- add excludes constraint
 		require
@@ -119,7 +119,7 @@ feature -- Modification
 		ensure
 			excludes.has(assn)
 		end
-		
+
 	set_includes(assn_list: ARRAYED_LIST[ASSERTION]) is
 			-- set includes constraints
 		require
@@ -127,7 +127,7 @@ feature -- Modification
 		do
 			includes := assn_list
 		end
-		
+
 	set_excludes(assn_list: ARRAYED_LIST[ASSERTION]) is
 			-- set excludes constraints
 		require
@@ -135,32 +135,32 @@ feature -- Modification
 		do
 			excludes := assn_list
 		end
-				
+
 feature -- Output
 
 	out: STRING is
-			-- 
+			--
 		do
 			create Result.make(0)
 			Result.append(rm_type_name + "[" + representation.node_id + "] " + occurrences.as_string)
 		end
-		
+
 feature -- Representation
 
 	representation: OG_OBJECT_LEAF
 
-feature -- Serialisation
+feature -- Visitor
 
-	enter_block(serialiser: CONSTRAINT_MODEL_SERIALISER; depth: INTEGER) is
-			-- perform serialisation at start of block for this node
+	enter_subtree(visitor: C_VISITOR; depth: INTEGER) is
+			-- perform action at start of block for this node
 		do
-			serialiser.start_archetype_slot(Current, depth)
+			visitor.start_archetype_slot(Current, depth)
 		end
-		
-	exit_block(serialiser: CONSTRAINT_MODEL_SERIALISER; depth: INTEGER) is
-			-- perform serialisation at end of block for this node
+
+	exit_subtree(visitor: C_VISITOR; depth: INTEGER) is
+			-- perform action at end of block for this node
 		do
-			serialiser.end_archetype_slot(Current, depth)
+			visitor.end_archetype_slot(Current, depth)
 		end
 
 invariant

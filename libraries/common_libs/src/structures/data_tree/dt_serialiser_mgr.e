@@ -15,57 +15,48 @@ class DT_SERIALISER_MGR
 
 inherit
 	SHARED_DT_SERIALISERS
-	
+
 create
 	make
 
 feature -- Initialisation
 
-	make(a_target: DT_COMPLEX_OBJECT_NODE; format: STRING) is 
+	make(a_target: DT_COMPLEX_OBJECT_NODE; a_visitor: DT_SERIALISER) is
 			-- create a new manager targetted to the DT tree `a_target'
 		require
 			Target_exists: a_target /= Void
-			Format_valid: format /= Void and then has_dt_serialiser_format(format)
+			Visitor_exists: a_visitor /= Void
 		do
 			create tree_iterator.make(a_target.representation)
-			serialiser := dt_serialiser_for_format(format)
-			serialiser.initialise
+			visitor := a_visitor
 		end
 
 feature -- Command
 
-	serialise is
+	do_all is
 			-- start the serialisation process; the result will be in `serialiser_output'
 		do
 			tree_iterator.do_all(agent node_enter_action(?,?), agent node_exit_action(?,?))
-			serialiser.finalise
-		end
-
-feature -- Access
-
-	tree_iterator: OG_ITERATOR
-	
-	last_result: STRING is 
-		do
-			Result := serialiser.last_result
 		end
 
 feature {NONE} -- Implementation
-	
-	serialiser: DT_SERIALISER
+
+	tree_iterator: OG_ITERATOR
+
+	visitor: DT_SERIALISER
 
 	node_enter_action(a_node: OG_ITEM; indent_level: INTEGER) is
 		require
 			Node_exists: a_node /= Void
 		do
-			a_node.enter_block(serialiser, indent_level)
+			a_node.enter_subtree(visitor, indent_level)
 		end
 
 	node_exit_action(a_node: OG_ITEM; indent_level: INTEGER) is
 		require
 			Node_exists: a_node /= Void
 		do
-			a_node.exit_block(serialiser, indent_level)
+			a_node.exit_subtree(visitor, indent_level)
 		end
 
 end

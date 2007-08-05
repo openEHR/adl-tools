@@ -21,7 +21,7 @@ inherit
 
 create
 	make
-	
+
 feature -- Initialisation
 
 	make(a_rm_type_name:STRING; a_path: STRING) is
@@ -45,11 +45,11 @@ feature -- Access
 			-- path to the referenced node
 
 feature -- Status Report
-	
+
 	use_target_occurrences: BOOLEAN
 			-- True if target occurrences are to be used as the value of occurrences in this object;
 			-- by the time of runtime use, the target occurrences value has to be set into this object
-	
+
 	is_valid: BOOLEAN is
 			-- report on validity
 		do
@@ -58,7 +58,7 @@ feature -- Status Report
 					invalid_reason.append("'use' reference path not specified")
 				else
 					Result := True
-				end			
+				end
 			end
 		end
 
@@ -73,32 +73,32 @@ feature -- Modification
 		end
 
 	set_occurrences(ivl: INTERVAL[INTEGER]) is
-			-- 
+			--
 		do
 			precursor(ivl)
 			use_target_occurrences := False
 		ensure then
-			Dont_use_target_occurrences: not use_target_occurrences			
+			Dont_use_target_occurrences: not use_target_occurrences
 		end
 
 feature -- Representation
 
 	representation: OG_OBJECT_LEAF
 
-feature -- Serialisation
+feature -- Visitor
 
-	enter_block(serialiser: CONSTRAINT_MODEL_SERIALISER; depth: INTEGER) is
-			-- perform serialisation at start of block for this node
+	enter_subtree(visitor: C_VISITOR; depth: INTEGER) is
+			-- perform action at start of block for this node
 		do
-			serialiser.start_archetype_internal_ref(Current, depth)
+			visitor.start_archetype_internal_ref(Current, depth)
 		end
-		
-	exit_block(serialiser: CONSTRAINT_MODEL_SERIALISER; depth: INTEGER) is
-			-- perform serialisation at end of block for this node
+
+	exit_subtree(visitor: C_VISITOR; depth: INTEGER) is
+			-- perform action at end of block for this node
 		do
-			serialiser.end_archetype_internal_ref(Current, depth)
+			visitor.end_archetype_internal_ref(Current, depth)
 		end
-	
+
 end
 
 

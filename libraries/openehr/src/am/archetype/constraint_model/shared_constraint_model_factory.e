@@ -11,11 +11,11 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class SHARED_CONSTRAINT_MODEL_FACTORY
+class SHARED_C_FACTORY
 
 feature -- Access
 
-	constraint_model_factory: CONSTRAINT_MODEL_FACTORY is
+	constraint_model_factory: C_FACTORY is
 			-- access to constraint-building routines
 		once
 			create Result.make

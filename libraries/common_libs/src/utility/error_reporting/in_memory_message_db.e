@@ -61,12 +61,11 @@ feature -- Access
 			["general_error"] = <"Error: $1">
 			["general"] = <"$1">
 			
-			-- ADL_INTERFACE
+			-- ARCHETYPE_COMPILER
 			["create_new_archetype_1"] = <"CREATE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
 			["specialise_archetype_1"] = <"SPECIALISE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
 			["open_adl_file_1"] = <"%NOPEN FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
 			["save_archetype_i1"] = <"Serialised: $1 to file $2">
-			["save_archetype_e1"] = <"Serialise failed - could not write to file $1">
 			["save_archetype_e2"] = <"Serialisation failed; archetype not valid: $1">
 			["save_archetype_e3"] = <"%NSAVE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
 			["serialise_archetype_e1"] = <"Serialisation failed; archetype not valid: $1">
@@ -76,6 +75,10 @@ feature -- Access
 			["parse_archetype_e1"] = <"$1 (Parse failed)">
 			["parse_archetype_e2"] = <"Archetype $1 semantic validation FAILED; reasons:%N$2">
 			["parse_archetype_e3"] = <"PARSE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
+			
+			-- ARCHETYPE_FILE_REPOSITORY_IMP
+			["save_as_i1"] = <"Archetype saved in language $1 to $2">
+			["save_as_e1"] = <"Save-as failed; could not write to file $1">
 			
 			-- DT_OBJECT_CONVERTER.dt_to_object
 			["container_type_mismatch"] = 

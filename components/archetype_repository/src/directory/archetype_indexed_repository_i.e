@@ -40,7 +40,7 @@ feature -- Access
 	root_path: STRING
 			-- Path of file-system repository of archetypes.
 
-feature {ARCHETYPE_DIRECTORY} -- Access
+feature {ARCH_DIRECTORY} -- Access
 
 	directory: TWO_WAY_TREE [ARCH_REP_ITEM]
 			-- Tree-structured directory of folders and archetypes.

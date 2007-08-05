@@ -21,7 +21,7 @@ class ARCHETYPE_COMPILER
 inherit
 	SHARED_ARCHETYPE_DIRECTORY
 
-	SHARED_CONSTRAINT_MODEL_FACTORY
+	SHARED_C_FACTORY
 		export
 			{NONE} all
 			{ANY} constraint_model_factory
@@ -45,7 +45,7 @@ inherit
 			{ANY} has_dt_serialiser_format
 		end
 
-	SHARED_CONSTRAINT_MODEL_SERIALISERS
+	SHARED_C_SERIALISERS
 		export
 			{NONE} all
 			{ANY} has_c_serialiser_format
@@ -98,8 +98,17 @@ feature -- Access
 	target: ARCH_REP_ARCHETYPE
 			-- archetype currently being processed by this instance of the compiler
 
-	status: STRING
-			-- status of last operation
+	source: STRING is
+			-- source of current archetype
+		do
+			Result := target.source
+		end
+
+	archetype: ARCHETYPE is
+			-- Differential form of currently compiled archetype.
+		do
+			Result := target.compilation_context.differential
+		end
 
 	serialised_archetype: STRING is
 			-- archetype in serialised form, after call to serialise_archetype
@@ -107,7 +116,22 @@ feature -- Access
 			Result := adl_engine.serialised_archetype
 		end
 
+	status: STRING
+			-- status of last operation
+
 feature -- Status Report
+
+	archetype_parsed: BOOLEAN
+			-- Has the archetype been parsed into an ARCHETYPE structure?
+		do
+			Result := target.compilation_context /= Void
+		end
+
+	archetype_valid: BOOLEAN
+			-- Has the archetype been parsed into an ARCHETYPE structure and then validated?
+		do
+			Result := target.compilation_context /= Void and then target.compilation_context.is_valid
+		end
 
 	save_succeeded: BOOLEAN
 			-- True if last save operation was successful
@@ -157,34 +181,24 @@ feature -- Modification
 
 feature -- Commands
 
-	parse_target_archetype is
+	parse_archetype is
 			-- parse the target archetype of this compiler
 		require
 			Has_target: has_target
 		do
-			parse_archetype(target)
-		end
-
-	parse_archetype(an_ar_archetype: ARCH_REP_ARCHETYPE) is
-			-- parse archetype at specified directory node; this routine
-			-- is mainly for use with traversal routines, such as
-			-- ARCHETYPE_DIRECTORY.do_all_archetype
-		require
-			an_ar_archetype /= Void
-		do
 			if not exception_encountered then
 				clear_billboard
-				if an_ar_archetype.is_out_of_date then
-					adl_engine.parse(an_ar_archetype.source)
+				if target.is_out_of_date then
+					adl_engine.parse(target.source)
 					if not adl_engine.archetype_available then
 						post_error(Current, "parse_archetype", "parse_archetype_e1", <<adl_engine.parse_error_text>>)
 					else
-						an_ar_archetype.set_compilation_context(adl_engine.archetype)
-						post_info(Current, "parse_archetype", "parse_archetype_i1", <<an_ar_archetype.id.as_string>>)
+						target.set_compilation_context(adl_engine.archetype)
+						post_info(Current, "parse_archetype", "parse_archetype_i1", <<target.id.as_string>>)
 
 						-- make sure that the language is set, and that it is one of the languages in the archetype
-						if current_language = Void or not an_ar_archetype.archetype.has_language (current_language) then
-							set_current_language(an_ar_archetype.archetype.original_language.code_string)
+						if current_language = Void or not archetype.has_language (current_language) then
+							set_current_language(archetype.original_language.code_string)
 						end
 					end
 				end
@@ -203,7 +217,7 @@ feature -- Commands
 	set_archetype_readonly is
 			-- set readonly flag in archetype to enable optimisations like path extraction
 		do
-			target.archetype.set_readonly
+			archetype.set_readonly
 		end
 
 	create_new_archetype(a_im_originator, a_im_name, a_im_entity, a_primary_language: STRING) is
@@ -261,7 +275,7 @@ feature -- Commands
 			if not exception_encountered then
 				status.wipe_out
 				save_succeeded := False
-				if target.is_valid then
+				if archetype_valid then
 					adl_engine.serialise("adl")
 					target.save (adl_engine.serialised_archetype)
 					save_succeeded := True
@@ -292,7 +306,7 @@ feature -- Commands
 			if not exception_encountered then
 				status.wipe_out
 				save_succeeded := False
-				if target.is_valid then
+				if archetype_valid then
 					adl_engine.serialise(serialise_format)
 					save_succeeded := True
 					target.save_as (a_full_path, adl_engine.serialised_archetype)
@@ -316,7 +330,7 @@ feature -- Commands
 	serialise_archetype(serialise_format: STRING) is
 			-- Serialise archetype into string; result available in `serialised_archetype'
 		require
-			Has_target: has_target and target.is_valid
+			Has_target: has_target and archetype_valid
 			Serialise_format_valid: serialise_format /= Void and then has_archetype_serialiser_format(serialise_format)
 		do
 			if not exception_encountered then

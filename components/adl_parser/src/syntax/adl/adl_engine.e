@@ -25,7 +25,7 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_CONSTRAINT_MODEL_FACTORY
+	SHARED_C_FACTORY
 		export
 			{NONE} all
 		end

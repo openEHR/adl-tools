@@ -14,7 +14,7 @@ indexing
 deferred class ARCHETYPE_CONSTRAINT
 
 inherit
-	SERIALISABLE
+	VISITABLE
 	
 	SPECIALISATION_STATUSES	
 		export

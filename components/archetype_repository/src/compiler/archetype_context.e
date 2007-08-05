@@ -16,7 +16,7 @@ indexing
 	last_change: "$LastChangedDate$"
 
 
-class ARCHETYPE_CONTEXT
+class ARCH_CONTEXT
 
 inherit
 	ARCHETYPE_DEFINITIONS
