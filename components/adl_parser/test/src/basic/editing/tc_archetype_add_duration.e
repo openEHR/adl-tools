@@ -13,7 +13,7 @@ indexing
 	last_change: "$LastChangedDate$"
 
 class TC_ARCHETYPE_ADD_DURATION
-	
+
 inherit
 	TEST_CASE
 		export
@@ -26,7 +26,7 @@ inherit
 		export
 			{NONE} all
 		end
-		
+
 create
 	make
 
@@ -40,7 +40,7 @@ feature -- Access
 
 	title: STRING is "Test Archetype Add CADL_OBJECT_TERM node"
 
-	prereqs: ARRAY[STRING] is 
+	prereqs: ARRAY[STRING] is
 			-- ids of prerequisite test cases
 		once
 			Result := <<"TC_ARCHETYPE_CREATE", "TC_ONTOLOGY_OPOULATE">>
@@ -60,21 +60,21 @@ feature -- testing
 
 			-- set root node term to first term added
 			cf := adl_interface.constraint_model_factory
-			
+
 			-- add duration attribute
 			an_attr_node := cf.create_c_attribute_single (archetype.definition, "a_duration")
-			a_duration := cf.create_c_duration_make_bounded ("P0W", "P55W", True, True)
+			a_duration := cf.create_c_duration_make (Void, "P0W", "P55W", True, True)
 			a_duration.set_assumed_value (cf.create_iso8601_duration ("P32W4D"))
 			c_prim := cf.create_c_primitive_object (an_attr_node, a_duration)
 
 			if archetype.is_valid then
-				adl_interface.adl_engine.serialise (serialise_format)	
-				io.put_string(adl_interface.adl_engine.serialised_archetype)	
+				adl_interface.adl_engine.serialise (serialise_format)
+				io.put_string(adl_interface.adl_engine.serialised_archetype)
 			else
-				io.put_string(archetype.errors)	
+				io.put_string(archetype.errors)
 			end
 		end
-	
+
 end
 
 --|
