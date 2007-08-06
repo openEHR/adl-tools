@@ -293,7 +293,6 @@ feature -- Tests
 				Result := test_passed
 
 				if remove_unused_codes then
-					-- FIXME - need to clean this up
 					unused_at_codes := archetype_compiler.archetype.ontology_unused_term_codes
 					unused_ac_codes := archetype_compiler.archetype.ontology_unused_constraint_codes
 
@@ -312,7 +311,7 @@ feature -- Tests
 					end
 				end
 			else
-				test_status.append (archetype_compiler.target.id.as_string + " parse failed%N")
+				test_status.append (" parse failed%N" + archetype_compiler.status)
 			end
 		end
 

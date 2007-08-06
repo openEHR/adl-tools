@@ -53,7 +53,7 @@ feature -- Initialisation
 				post_error(Current, "parse_archetype", "parse_archetype_e2", <<archetype.archetype_id.as_string, archetype.validator.errors>>)
 			end
 			if archetype.validator.has_warnings then
-				post_warning(Current, "parse_archetype", "general", <<archetype.validator.warnings>>)
+				post_warning(Current, "parse_archetype", "parse_archetype_w2", <<archetype.archetype_id.as_string, archetype.validator.warnings>>)
 			end
 		end
 

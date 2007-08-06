@@ -82,13 +82,14 @@ feature -- Commands
 			c_l_o: C_LEAF_OBJECT
 			c_r: CONSTRAINT_REF
 			c_c_o: C_COMPLEX_OBJECT
-			is_logical_leaf: BOOLEAN
+			is_logical_leaf, all_selected: BOOLEAN
 		do
 			mcl := path_list
 			mcl.wipe_out
 			mcl.set_column_titles(path_control_column_names)
 			p_paths := archetype_directory.selected_archetype.physical_paths
 			l_paths := archetype_directory.selected_archetype.logical_paths(current_language)
+			all_selected := filter_combo.text.is_equal ("All")
 			from
 				p_paths.start
 				l_paths.start
@@ -105,7 +106,7 @@ feature -- Commands
 						c_c_o ?= c_o
 
 						is_logical_leaf := c_l_o /= Void or c_r /= Void or (c_c_o /= Void and c_c_o.attributes.count = 0)
-						if filter_combo.has_selection and filter_combo.selected_text.is_equal ("All") or else is_logical_leaf then
+						if all_selected or else is_logical_leaf then
 							list_row.extend (utf8 (p_paths.item))
 							list_row.extend (utf8 (l_paths.item))
 							list_row.extend (utf8 (c_o.rm_type_name))

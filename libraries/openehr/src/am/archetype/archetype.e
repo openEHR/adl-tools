@@ -314,13 +314,16 @@ feature -- Validation
 			create use_node_path_xref_table.make(0)
 			create ac_codes_xref_table.make(0)
 
+			create ontology_unused_term_codes.make(0)
+			ontology_unused_term_codes.compare_objects
+			create ontology_unused_constraint_codes.make(0)
+			ontology_unused_constraint_codes.compare_objects
+
 			create xref_builder
 			xref_builder.initialise(ontology, Current)
 			create a_c_iterator.make(definition, xref_builder)
 			a_c_iterator.do_all
 			xref_builder.finalise
-
-			find_unused_ontology_codes
 		end
 
 	validate is
@@ -362,52 +365,6 @@ feature -- Validation
 	ontology_unused_constraint_codes: ARRAYED_LIST[STRING]
 			-- list of ac codes found in ontology that are not referenced
 			-- anywhere in the archetype definition
-
-	find_unused_ontology_codes is
-			-- populate lists of at-codes and ac-codes found in ontology that
-			-- are not referenced anywhere in the archetype definition
-		do
-			create ontology_unused_term_codes.make(0)
-			ontology_unused_term_codes.compare_objects
-
-			-- FIXME: this test will go when we are using differential archetypes
-			-- if not is_specialised then
-				from
-					ontology.term_codes.start
-				until
-					ontology.term_codes.off
-				loop
-					if not id_at_codes_xref_table.has(ontology.term_codes.item) and not
-							data_at_codes_xref_table.has(ontology.term_codes.item) then
-						ontology_unused_term_codes.extend(ontology.term_codes.item)
-						warnings.append("Term code " + ontology.term_codes.item + " in ontology not used in archetype definition%N")
-					end
-					ontology.term_codes.forth
-				end
-				ontology_unused_term_codes.prune(concept)
-			-- end
-
-			create ontology_unused_constraint_codes.make(0)
-			ontology_unused_constraint_codes.compare_objects
-			-- FIXME: this test will go when we are using differential archetypes
-			-- if not is_specialised then
-
-				from
-					ontology.constraint_codes.start
-				until
-					ontology.constraint_codes.off
-				loop
-					if not ac_codes_xref_table.has(ontology.constraint_codes.item) then
-						ontology_unused_constraint_codes.extend(ontology.constraint_codes.item)
-						warnings.append("Constraint code " + ontology.constraint_codes.item + " in ontology not used in archetype definition%N")
-					end
-					ontology.constraint_codes.forth
-				end
-			-- end
-		ensure
-			Ontology_unused_term_codes_exists: ontology_unused_term_codes /= Void
-			Ontology_unused_constraint_codes_exists: ontology_unused_constraint_codes /= Void
-		end
 
 feature -- Modification
 
@@ -624,7 +581,8 @@ feature {NONE} -- Implementation
 	physical_paths_cache: SORTED_TWO_WAY_LIST [STRING]
 
 	path_map: HASH_TABLE [C_OBJECT, STRING]
-			-- complete map of object nodes keyed by path
+			-- complete map of object nodes keyed by path, including paths implied by
+			-- use_nodes in definition structure.
 
 	display_arrayed_list(str_lst: ARRAYED_LIST[STRING]):STRING is
 			--

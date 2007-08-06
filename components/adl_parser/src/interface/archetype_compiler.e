@@ -283,7 +283,7 @@ feature -- Commands
 					target.save (adl_engine.serialised_archetype)
 					save_succeeded := True
 				else
-					post_error(Current, "save_archetype", "save_archetype_e2", <<adl_engine.archetype.errors>>)
+					post_error(Current, "save_archetype", "save_archetype_e2", Void)
 				end
 			else
 				post_error(Current, "save_archetype", "save_archetype_e3", Void)
@@ -314,7 +314,7 @@ feature -- Commands
 					save_succeeded := True
 					target.save_as (a_full_path, adl_engine.serialised_archetype)
 				else
-					post_error(Current, "save_archetype", "save_archetype_e2", <<adl_engine.archetype.errors>>)
+					post_error(Current, "save_archetype", "save_archetype_e2", Void)
 				end
 			else
 				post_error(Current, "save_archetype", "save_archetype_e3", Void)

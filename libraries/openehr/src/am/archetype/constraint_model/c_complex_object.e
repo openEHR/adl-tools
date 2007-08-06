@@ -131,7 +131,6 @@ feature -- Access
 		do
 			og_paths := representation.all_paths
 			create Result.make(0)
---			Result.compare_objects
 			from
 				og_paths.start
 			until

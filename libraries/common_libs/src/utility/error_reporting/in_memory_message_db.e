@@ -66,7 +66,7 @@ feature -- Access
 			["specialise_archetype_1"] = <"SPECIALISE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
 			["open_adl_file_1"] = <"%NOPEN FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
 			["save_archetype_i1"] = <"Serialised: $1 to file $2">
-			["save_archetype_e2"] = <"Serialisation failed; archetype not valid: $1">
+			["save_archetype_e2"] = <"Serialisation failed (archetype not valid)">
 			["save_archetype_e3"] = <"%NSAVE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
 			["serialise_archetype_e1"] = <"Serialisation failed; archetype not valid: $1">
 			["serialise_archetype_e2"] = <"%NSERIALISE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
@@ -74,6 +74,7 @@ feature -- Access
 			["parse_archetype_i2"] = <"Archetype $1 semantics VALIDATED">
 			["parse_archetype_e1"] = <"$1 (Parse failed)">
 			["parse_archetype_e2"] = <"Archetype $1 semantic validation FAILED; reasons:%N$2">
+			["parse_archetype_w2"] = <"Archetype $1 semantic validation Warnings:%N$2">
 			["parse_archetype_e3"] = <"PARSE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
 			
 			-- ARCHETYPE_VALIDATOR

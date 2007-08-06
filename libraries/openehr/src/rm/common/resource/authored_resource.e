@@ -86,12 +86,6 @@ feature -- Access
 			Result := translations.item(a_lang)
 		end
 
-	errors: STRING
-			-- validity errors in this archetype
-
-	warnings: STRING
-			-- validity warnings for this archetype
-
 feature -- Status Report
 
 	is_controlled: BOOLEAN
