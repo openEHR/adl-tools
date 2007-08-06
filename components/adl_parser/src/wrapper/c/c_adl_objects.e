@@ -18,7 +18,7 @@ class C_ADL_OBJECTS
 
 create
 	make
-	
+
 feature -- Initialisation
 
 	make is
@@ -41,7 +41,7 @@ feature -- Initialisation
 
 			-- C_PRIMITIVEs
 			create c_primitives.make(0)
-			
+
 			-- misc
 			create integer_intervals.make(0)
 			create real_intervals.make(0)
@@ -68,7 +68,7 @@ feature {SHARED_ADL_OBJECTS} -- Handles
 			-- C interface handle of archetype.definition
 
 	c_objects: HASH_TABLE[C_OBJECT, INTEGER]
-	
+
 	archetype_internal_refs: HASH_TABLE[ARCHETYPE_INTERNAL_REF, INTEGER]
 
 	archetype_slots: HASH_TABLE[ARCHETYPE_SLOT, INTEGER]

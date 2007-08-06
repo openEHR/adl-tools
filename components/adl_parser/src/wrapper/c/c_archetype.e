@@ -27,12 +27,12 @@ inherit
 		export
 			{NONE} all
 		end
-	
+
 	SHARED_ADL_OBJECTS
 		export
 			{NONE} all
 		end
-	
+
 	C_WRAPPER_TOOLS
 		export
 			{NONE} all
@@ -40,44 +40,44 @@ inherit
 
 feature -- Definitions
 
-	Default_concept_code: POINTER is 
+	Default_concept_code: POINTER is
 			-- "at0000"
 		local
 			obj: ANY
 		do
 			obj := adl_interface.archetype.Default_concept_code.to_c
 			Result := $obj
-		end		
-	
+		end
+
 feature -- Access
-	
-	archetype_id: POINTER is 
+
+	archetype_id: POINTER is
 			-- archetype_id as a string
 		local
 			obj: ANY
 		do
 			obj := adl_interface.archetype.archetype_id.as_string.to_c
 			Result := $obj
-		end		
-	
-	archetype_parent_archetype_id: POINTER is 
+		end
+
+	archetype_parent_archetype_id: POINTER is
 			-- id of specialisation parent of this archetype
 		local
 			obj: ANY
 		do
 			obj := adl_interface.archetype.parent_archetype_id.as_string.to_c
 			Result := $obj
-		end		
-	
-	archetype_concept_code: POINTER is 
+		end
+
+	archetype_concept_code: POINTER is
 			-- concept_code as a string
 		local
 			obj: ANY
 		do
 			obj := adl_interface.archetype.concept.to_c
 			Result := $obj
-		end		
-	
+		end
+
 	archetype_specialisation_depth: INTEGER is
 			-- infer number of levels of specialisation from concept code
 		do
@@ -110,13 +110,13 @@ feature -- Access
 			obj := adl_interface.archetype.warnings.to_c
 			Result := $obj
 		end
-	
+
 	archetype_logical_paths (a_lang: POINTER): POINTER is
 			-- paths with human readable terms substituted
 			-- REQUIRE
 			-- a_lang /= void and then ontology.languages_available.has (a_lang)
 		local
-			c_a_lang: C_STRING
+			c_a_lang: BASE_C_STRING
 		do
 			create c_a_lang.make_by_pointer (a_lang)
 			Result := eif_list_string_to_c_array(adl_interface.archetype.logical_paths(c_a_lang.string))
@@ -146,7 +146,7 @@ feature -- Access
 			-- phys_path_valid: a_phys_path /= void and then not a_phys_path.is_empty
 			-- lang_valid: a_lang /= void and then not a_lang.is_empty
 		local
-			c_a_phys_path, c_a_lang: C_STRING
+			c_a_phys_path, c_a_lang: BASE_C_STRING
 			obj: ANY
 		do
 			create c_a_phys_path.make_by_pointer (a_phys_path)
@@ -160,7 +160,7 @@ feature -- Access
 		do
 			Result := adl_objects.archetype_definition_handle
 		end
-			
+
 feature -- Modification
 
 	archetype_convert_to_specialised (a_spec_concept: POINTER) is
@@ -169,7 +169,7 @@ feature -- Modification
 			-- REQUIRE
 			-- concept_valid: a_spec_concept /= void and then not a_spec_concept.is_empty
 		local
-			c_a_spec_concept: C_STRING
+			c_a_spec_concept: BASE_C_STRING
 		do
 			create c_a_spec_concept.make_by_pointer (a_spec_concept)
 			adl_interface.archetype.convert_to_specialised(c_a_spec_concept.string)
@@ -187,18 +187,18 @@ feature -- Modification
 			-- REQUIRE
 			--  valid_term_code: ontology.has_term_code (a_term_code)
 		local
-			c_a_term_code: C_STRING
+			c_a_term_code: BASE_C_STRING
 		do
 			create c_a_term_code.make_by_pointer (a_term_code)
 			adl_interface.archetype.set_definition_node_id (c_a_term_code.string)
 		end
-		
+
 feature -- Status Report
 
 	archetype_has_physical_path (a_path: POINTER): BOOLEAN is
 			-- true if physical path `a_path' exists in this archetype
 		local
-			c_a_path: C_STRING
+			c_a_path: BASE_C_STRING
 		do
 			create c_a_path.make_by_pointer (a_path)
 			Result := adl_interface.archetype.has_physical_path(c_a_path.string)

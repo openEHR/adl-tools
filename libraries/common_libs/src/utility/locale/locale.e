@@ -122,7 +122,7 @@ feature -- Time
 		-- e.g. "HH:MM:SS", "HHhMM"
 
 	use_24_hour_time:BOOLEAN
-		-- True for most of Europe, False for most anglo, asian 
+		-- True for most of Europe, False for most anglo, asian
 		-- countries. If False, "am" or "pm" are appended to times
 
 	summertime_adjustment:INTEGER
