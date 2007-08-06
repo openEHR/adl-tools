@@ -37,10 +37,15 @@
 		<setting name="inlining" value="false"/>
 		<setting name="line_generation" value="false"/>
 		<setting name="multithreaded" value="false"/>
-		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
-		<library name="vision2" location="$ISE_LIBRARY\library\vision2\vision2.ecf"/>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf">
+			<renaming old_name="C_STRING" new_name="BASE_C_STRING"/>
+		</library>
 		<library name="gobo" location="$ISE_LIBRARY\library\gobo\gobo.ecf"/>
-		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf"/>
+		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf">
+			<renaming old_name="C_DATE" new_name="TIME_C_DATE"/>
+			<renaming old_name="INTERVAL" new_name="TIME_INTERVAL"/>
+		</library>
+		<library name="vision2" location="$ISE_LIBRARY\library\vision2\vision2.ecf"/>
 		<cluster name="app" location="..\src\" recursive="true">
 			<option>
 				<assertions precondition="true" postcondition="true" check="false" invariant="false" loop="false"/>

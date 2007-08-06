@@ -16,11 +16,11 @@ class C_WRAPPER_TOOLS
 feature -- Conversion
 
 	eif_list_string_to_c_array(a_list: LIST [STRING]): POINTER is
-			-- convert and Eiffel a_list: ARRAYED_LIST [STRING] to 
+			-- convert and Eiffel a_list: ARRAYED_LIST [STRING] to
 			-- ARRAY<POINTER>, which is passed back as a POINTER
         local
             i: INTEGER
-            c_str: C_STRING
+            c_str: BASE_C_STRING
             c_str_array: ANY
        do
             create eif_ptr_array.make(0, a_list.count-1)
@@ -37,7 +37,7 @@ feature -- Conversion
             c_str_array := eif_ptr_array.to_c -- get hold of the SPECIAL holding the string pointers
             Result := $c_str_array -- generate a pointer to that
         end
-        
+
    eif_ptr_array: ARRAY [POINTER]
 
    c_array_string_to_eif_list (a_str_lst: ARRAY [POINTER]): ARRAYED_LIST [STRING] is
@@ -45,7 +45,7 @@ feature -- Conversion
 		require
 			a_str_lst /= void
 		local
-			c_a_str: C_STRING
+			c_a_str: BASE_C_STRING
 			i: INTEGER
 		do
 			create Result.make(0)

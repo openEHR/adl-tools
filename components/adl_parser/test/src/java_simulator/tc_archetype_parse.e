@@ -13,7 +13,7 @@ indexing
 	last_change: "$LastChangedDate$"
 
 class TC_JS_ARCHETYPE_PARSE
-	
+
 inherit
 	TEST_CASE
 		export
@@ -24,7 +24,7 @@ inherit
 		export
 			{NONE} all
 		end
-		
+
 create
 	make
 
@@ -37,24 +37,24 @@ feature -- Initialisation
 feature -- Access
 
 	title: STRING is "Test Archetype Create"
-	
-	infile: STRING is 
+
+	infile: STRING is
 		once
 			create Result.make(0)
 			Result.append("openEHR-EHR-OBSERVATION.blood_pressure.v1.adl")
 		end
-	
-	outfile: STRING is 
+
+	outfile: STRING is
 		once
 			create Result.make(0)
 			Result.append("openEHR-EHR-OBSERVATION.blood_pressure.v1.html")
-		end	
+		end
 
 feature -- testing
 
 	execute is
 		local
-			c_status, c_infile, c_outfile, c_format: C_STRING
+			c_status, c_infile, c_outfile, c_format: BASE_C_STRING
 		do
 			create c_infile.make (infile)
 			create c_outfile.make (outfile)
@@ -64,12 +64,12 @@ feature -- testing
 			create c_status.make_by_pointer (c_adl_interface.status)
 			if c_adl_interface.archetype_source_loaded then
 				io.put_string("Loaded " + infile + "; status: " + c_status.string + "%N")
-	
+
 				c_adl_interface.parse_archetype
 				create c_status.make_by_pointer (c_adl_interface.status)
 				if c_adl_interface.parse_succeeded then
 					c_adl_interface.save_archetype(c_outfile.item, c_format.item)
-	
+
 					if c_adl_interface.save_succeeded then
 						io.put_string("Saved to " + outfile + "%N")
 					else
@@ -78,12 +78,12 @@ feature -- testing
 					end
 				else
 					io.put_string("failed to parse; status = " + c_status.string + "%N")
-				end				
+				end
 			else
 				io.put_string("Unable to load " + infile + " because of " + c_status.string + "%N")
 			end
 		end
-	
+
 end
 
 --|
