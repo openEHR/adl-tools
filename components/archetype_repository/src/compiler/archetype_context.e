@@ -39,27 +39,27 @@ feature -- Initialisation
 		require
 			Archetype_exists: an_archetype /= Void
 		do
-			differential := an_archetype
+			archetype := an_archetype
 			if not an_archetype.is_specialised then
 				-- FIXME for the moment
-				flat_form := differential
+				flat_form := archetype
 			end
 
-			differential.validate
-			if differential.is_valid then
-				post_info(Current, "parse_archetype", "parse_archetype_i2", <<differential.archetype_id.as_string>>)
+			archetype.validate
+			if archetype.is_valid then
+				post_info(Current, "parse_archetype", "parse_archetype_i2", <<archetype.archetype_id.as_string>>)
 				is_valid := True
 			else
-				post_error(Current, "parse_archetype", "parse_archetype_e2", <<differential.archetype_id.as_string, differential.archetype_validator.errors>>)
+				post_error(Current, "parse_archetype", "parse_archetype_e2", <<archetype.archetype_id.as_string, archetype.validator.errors>>)
 			end
-			if differential.archetype_validator.has_warnings then
-				post_warning(Current, "parse_archetype", "general", <<differential.archetype_validator.warnings>>)
+			if archetype.validator.has_warnings then
+				post_warning(Current, "parse_archetype", "general", <<archetype.validator.warnings>>)
 			end
 		end
 
 feature -- Access
 
-	differential: ARCHETYPE
+	archetype: ARCHETYPE
 			-- archetype representing differential structure with respect to parent archetype;
 			-- if this is a non-specialised archetype, then it is the same as the flat form, else
 			-- it is just the differences (like an OO source file for a subclass)
@@ -78,12 +78,12 @@ feature -- Status Report
 	is_specialised: BOOLEAN is
 			-- True if archetype is a specialisation
 		do
-			Result := differential.is_specialised
+			Result := archetype.is_specialised
 		end
 
 invariant
 	Parent_existence: specialisation_parent /= Void implies is_specialised
-	Parent_validity: specialisation_parent /= Void implies specialisation_parent.archetype_id.semantic_id.is_equal(differential.archetype_id.semantic_parent_id)
+	Parent_validity: specialisation_parent /= Void implies specialisation_parent.archetype_id.semantic_id.is_equal(archetype.archetype_id.semantic_parent_id)
 
 end
 

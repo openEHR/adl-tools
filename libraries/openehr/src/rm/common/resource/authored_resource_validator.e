@@ -15,23 +15,12 @@ class AUTHORED_RESOURCE_VALIDATOR
 
 inherit
 	ANY_VALIDATOR
-		rename
-			make as make_validator
+		redefine
+			target
 		end
 
 create
 	make
-
-feature -- Initialisation
-
-	make(a_target: AUTHORED_RESOURCE) is
-			-- set target
-		require
-			Target_valid: a_target /= Void
-		do
-			make_validator
-			target := a_target
-		end
 
 feature -- Access
 

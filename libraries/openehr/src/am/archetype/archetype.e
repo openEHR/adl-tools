@@ -138,14 +138,11 @@ feature -- Access
 			tgt_path_str: STRING
 			tgt_path: OG_PATH
 			c_o: C_OBJECT
-			use_node_path_xref_table: HASH_TABLE[ARRAYED_LIST[ARCHETYPE_INTERNAL_REF], STRING]
 		do
 			if path_map = Void or not is_readonly then
 				path_map := definition.all_paths
 
 				-- Add full paths of internal references thus giving full set of actual paths
-				-- FIXME: thre will be a cleaner way to get at this table
-				use_node_path_xref_table := archetype_validator.xref_builder.use_node_path_xref_table
 				from
 					use_node_path_xref_table.start
 				until
@@ -259,21 +256,6 @@ feature -- Status Report
 			Result := parent_archetype_id /= Void
 		end
 
-	is_valid: BOOLEAN is
-			-- is archetype locally in valid state? For specialised archetypes, this does not take
-			-- into account validity with respect to parent archetypes.
-		require
-			validation_done
-		do
-			Result := archetype_validator.passed and authored_resource_validator.passed
-		end
-
-	validation_done: BOOLEAN is
-			-- has the validator been run? Need to call validate if not.
-		do
-			Result := archetype_validator /= Void
-		end
-
 	has_physical_path(a_path: STRING): BOOLEAN is
 			-- true if physical path `a_path' exists in this archetype
 		do
@@ -303,27 +285,129 @@ feature -- Comparison
 
 feature -- Validation
 
+	is_valid: BOOLEAN is
+			-- is archetype locally in valid state? For specialised archetypes, this does not take
+			-- into account validity with respect to parent archetypes.
+		require
+			validation_done
+		do
+			Result := validator.passed
+		end
+
+	validation_done: BOOLEAN is
+			-- has the validator been run? Need to call validate if not.
+			-- FIXME - need to implement a dirty flag for calls to modifier routines
+			-- that forces revalidation
+		do
+			Result := validator /= Void
+		end
+
+	build_xrefs is
+			-- build definition / ontology cross reference tables used for validation and
+			-- other purposes
+		local
+			a_c_iterator: C_ITERATOR
+			xref_builder: C_XREF_BUILDER
+		do
+			create id_at_codes_xref_table.make(0)
+			create data_at_codes_xref_table.make(0)
+			create use_node_path_xref_table.make(0)
+			create ac_codes_xref_table.make(0)
+
+			create xref_builder
+			xref_builder.initialise(ontology, Current)
+			create a_c_iterator.make(definition, xref_builder)
+			a_c_iterator.do_all
+			xref_builder.finalise
+
+			find_unused_ontology_codes
+		end
+
 	validate is
 			-- perform various levels validation of archetype
 			-- FIXME: this may stay here, or it may be moved out of the ARCHETYPE classes
 			-- to the compiler environment. Also have to decide on whether to have several
 			-- validators
 		do
-			create archetype_validator.make(Current)
-			archetype_validator.validate
-
-			create authored_resource_validator.make(Current)
-			authored_resource_validator.validate
+			create validator.make(Current)
+			validator.validate
 		ensure
 			validation_done
 		end
 
-	archetype_validator: ARCHETYPE_VALIDATOR
+	validator: ARCHETYPE_VALIDATOR
 			-- validation object for this archetype
 
-	authored_resource_validator: AUTHORED_RESOURCE_VALIDATOR
-			-- validation object for the inherited AUTHORED_RESOURCE parts of this archetype
-			-- FIXME: this probably won't stay here...
+	id_at_codes_xref_table: HASH_TABLE[ARRAYED_LIST[C_OBJECT], STRING]
+			-- table of {list<node>, code} for term codes which identify nodes in archetype (note that there
+			-- are other uses of term codes from the ontology, which is why this attribute is not just called
+			-- 'term_codes_xref_table')
+
+	ac_codes_xref_table: HASH_TABLE[ARRAYED_LIST[C_OBJECT], STRING]
+			-- table of {list<node>, code} for constraint codes in archetype
+
+	data_at_codes_xref_table: HASH_TABLE[ARRAYED_LIST[C_OBJECT], STRING]
+			-- table of {list<node>, code} for term codes which appear in archetype nodes as data,
+			-- e.g. in C_DV_ORDINAL and C_CODE_PHRASE types
+
+	use_node_path_xref_table: HASH_TABLE[ARRAYED_LIST[ARCHETYPE_INTERNAL_REF], STRING]
+			-- table of {list<ARCHETYPE_INTERNAL_REF>, target_path}
+			-- i.e. <list of use_nodes> keyed by path they point to
+			-- FIXME - maybe should move back to ARCHETYPE
+
+	ontology_unused_term_codes: ARRAYED_LIST[STRING]
+			-- list of at codes found in ontology that are not referenced
+			-- anywhere in the archetype definition
+
+	ontology_unused_constraint_codes: ARRAYED_LIST[STRING]
+			-- list of ac codes found in ontology that are not referenced
+			-- anywhere in the archetype definition
+
+	find_unused_ontology_codes is
+			-- populate lists of at-codes and ac-codes found in ontology that
+			-- are not referenced anywhere in the archetype definition
+		do
+			create ontology_unused_term_codes.make(0)
+			ontology_unused_term_codes.compare_objects
+
+			-- FIXME: this test will go when we are using differential archetypes
+			-- if not is_specialised then
+				from
+					ontology.term_codes.start
+				until
+					ontology.term_codes.off
+				loop
+					if not id_at_codes_xref_table.has(ontology.term_codes.item) and not
+							data_at_codes_xref_table.has(ontology.term_codes.item) then
+						ontology_unused_term_codes.extend(ontology.term_codes.item)
+						warnings.append("Term code " + ontology.term_codes.item + " in ontology not used in archetype definition%N")
+					end
+					ontology.term_codes.forth
+				end
+				ontology_unused_term_codes.prune(concept)
+			-- end
+
+			create ontology_unused_constraint_codes.make(0)
+			ontology_unused_constraint_codes.compare_objects
+			-- FIXME: this test will go when we are using differential archetypes
+			-- if not is_specialised then
+
+				from
+					ontology.constraint_codes.start
+				until
+					ontology.constraint_codes.off
+				loop
+					if not ac_codes_xref_table.has(ontology.constraint_codes.item) then
+						ontology_unused_constraint_codes.extend(ontology.constraint_codes.item)
+						warnings.append("Constraint code " + ontology.constraint_codes.item + " in ontology not used in archetype definition%N")
+					end
+					ontology.constraint_codes.forth
+				end
+			-- end
+		ensure
+			Ontology_unused_term_codes_exists: ontology_unused_term_codes /= Void
+			Ontology_unused_constraint_codes_exists: ontology_unused_constraint_codes /= Void
+		end
 
 feature -- Modification
 
@@ -437,9 +521,9 @@ feature -- Modification
 			code_list: ARRAYED_LIST[STRING]
 		do
 			-- unused codes are generated by the archetype validator
-			validate
+			build_xrefs
 
-			code_list := archetype_validator.ontology_unused_term_codes
+			code_list := ontology_unused_term_codes
 			from
 				code_list.start
 			until
@@ -449,7 +533,7 @@ feature -- Modification
 				code_list.forth
 			end
 
-			code_list := archetype_validator.ontology_unused_constraint_codes
+			code_list := ontology_unused_constraint_codes
 			from
 				code_list.start
 			until

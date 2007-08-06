@@ -24,14 +24,20 @@ inherit
 
 feature -- Initialisation
 
-	make is
+	make(a_target: like target) is
+			-- set target
 			-- initialise reporting variables
+		require
+			Target_valid: a_target /= Void
 		do
+			target := a_target
 			create errors.make(0)
 			create warnings.make(0)
 		end
 
 feature -- Access
+
+	target: ANY
 
 	errors: STRING
 			-- error output of validator
@@ -55,6 +61,10 @@ feature -- Validation
 	validate is
 		deferred
 		end
+
+invariant
+	Errors_exists: errors /= Void
+	Warnings_exists: warnings /= Void
 
 end
 

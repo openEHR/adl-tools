@@ -294,8 +294,8 @@ feature -- Tests
 
 				if remove_unused_codes then
 					-- FIXME - need to clean this up
-					unused_at_codes := archetype_compiler.archetype.archetype_validator.ontology_unused_term_codes
-					unused_ac_codes := archetype_compiler.archetype.archetype_validator.ontology_unused_constraint_codes
+					unused_at_codes := archetype_compiler.archetype.ontology_unused_term_codes
+					unused_ac_codes := archetype_compiler.archetype.ontology_unused_constraint_codes
 
 					if not unused_at_codes.is_empty or not unused_ac_codes.is_empty then
 						test_status.append (">>>>>>>>>> removing unused codes%N")

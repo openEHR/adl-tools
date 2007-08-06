@@ -27,36 +27,17 @@ inherit
 
 feature -- Initialisation
 
-	initialise(an_ontology: ARCHETYPE_ONTOLOGY) is
+	initialise(an_ontology: ARCHETYPE_ONTOLOGY; an_archetype: ARCHETYPE) is
 			-- set ontology required for interpreting meaning of object nodes
+			-- archetype is required as well since it contains the xref tables that are
+			-- populated by this visitor
 		require
 			Ontology_valid: an_ontology /= Void
+			Archetype_valid: an_archetype /= Void and an_archetype.ontology = an_ontology
 		do
 			initialise_visitor(an_ontology)
-			create node_ids_xref_table.make(0)
-			create code_nodes_code_xref_table.make(0)
-			create use_node_path_xref_table.make(0)
-			create constraint_codes_xref_table.make(0)
+			archetype := an_archetype
 		end
-
-feature -- Access
-
-	node_ids_xref_table: HASH_TABLE[ARRAYED_LIST[C_OBJECT], STRING]
-			-- table of {list<node>, code} for term codes which identify nodes in archetype (note that there
-			-- are other uses of term codes from the ontology, which is why this attribute is not just called
-			-- 'term_codes_xref_table')
-
-	constraint_codes_xref_table: HASH_TABLE[ARRAYED_LIST[C_OBJECT], STRING]
-			-- table of {list<node>, code} for constraint codes in archetype
-
-	code_nodes_code_xref_table: HASH_TABLE[ARRAYED_LIST[C_OBJECT], STRING]
-			-- table of {list<node>, code} for term codes which appear in archetype nodes as data,
-			-- e.g. in C_DV_ORDINAL and C_CODE_PHRASE types
-
-	use_node_path_xref_table: HASH_TABLE[ARRAYED_LIST[ARCHETYPE_INTERNAL_REF], STRING]
-			-- table of {list<ARCHETYPE_INTERNAL_REF>, target_path}
-			-- i.e. <list of use_nodes> keyed by path they point to
-			-- FIXME - maybe should move back to ARCHETYPE
 
 feature -- Visitor
 
@@ -64,10 +45,10 @@ feature -- Visitor
 			-- enter an C_COMPLEX_OBJECT
 		do
 			if a_node.is_addressable then
-				if not node_ids_xref_table.has(a_node.node_id) then
-					node_ids_xref_table.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.node_id)
+				if not archetype.id_at_codes_xref_table.has(a_node.node_id) then
+					archetype.id_at_codes_xref_table.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.node_id)
 				end
-				node_ids_xref_table.item(a_node.node_id).extend(a_node)
+				archetype.id_at_codes_xref_table.item(a_node.node_id).extend(a_node)
 			end
 		end
 
@@ -81,10 +62,10 @@ feature -- Visitor
 			-- enter an ARCHETYPE_SLOT
 		do
 			if a_node.is_addressable then
-				if not node_ids_xref_table.has(a_node.node_id) then
-					node_ids_xref_table.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.node_id)
+				if not archetype.id_at_codes_xref_table.has(a_node.node_id) then
+					archetype.id_at_codes_xref_table.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.node_id)
 				end
-				node_ids_xref_table.item(a_node.node_id).extend(a_node)
+				archetype.id_at_codes_xref_table.item(a_node.node_id).extend(a_node)
 			end
 		end
 
@@ -109,10 +90,10 @@ feature -- Visitor
 	start_archetype_internal_ref(a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER) is
 			-- enter an ARCHETYPE_INTERNAL_REF
 		do
-			if not use_node_path_xref_table.has(a_node.target_path) then
-				use_node_path_xref_table.put(create {ARRAYED_LIST[ARCHETYPE_INTERNAL_REF]}.make(0), a_node.target_path)
+			if not archetype.use_node_path_xref_table.has(a_node.target_path) then
+				archetype.use_node_path_xref_table.put(create {ARRAYED_LIST[ARCHETYPE_INTERNAL_REF]}.make(0), a_node.target_path)
 			end
-			use_node_path_xref_table.item(a_node.target_path).extend(a_node)
+			archetype.use_node_path_xref_table.item(a_node.target_path).extend(a_node)
 		end
 
 	end_archetype_internal_ref(a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER) is
@@ -124,10 +105,10 @@ feature -- Visitor
 	start_constraint_ref(a_node: CONSTRAINT_REF; depth: INTEGER) is
 			-- enter a CONSTRAINT_REF
 		do
-			if not constraint_codes_xref_table.has(a_node.target) then
-				constraint_codes_xref_table.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.target)
+			if not archetype.ac_codes_xref_table.has(a_node.target) then
+				archetype.ac_codes_xref_table.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.target)
 			end
-			constraint_codes_xref_table.item(a_node.target).extend(a_node)
+			archetype.ac_codes_xref_table.item(a_node.target).extend(a_node)
 		end
 
 	end_constraint_ref(a_node: CONSTRAINT_REF; depth: INTEGER) is
@@ -169,10 +150,10 @@ feature -- Visitor
 				until
 					a_node.code_list.off
 				loop
-					if not code_nodes_code_xref_table.has(a_node.code_list.item) then
-						code_nodes_code_xref_table.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.code_list.item)
+					if not archetype.data_at_codes_xref_table.has(a_node.code_list.item) then
+						archetype.data_at_codes_xref_table.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.code_list.item)
 					end
-					code_nodes_code_xref_table.item(a_node.code_list.item).extend(a_node)
+					archetype.data_at_codes_xref_table.item(a_node.code_list.item).extend(a_node)
 					a_node.code_list.forth
 				end
 			end
@@ -193,10 +174,10 @@ feature -- Visitor
 				until
 					a_node.items.off
 				loop
-					if not code_nodes_code_xref_table.has(a_node.items.item.symbol.code_string) then
-						code_nodes_code_xref_table.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.items.item.symbol.code_string)
+					if not archetype.data_at_codes_xref_table.has(a_node.items.item.symbol.code_string) then
+						archetype.data_at_codes_xref_table.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.items.item.symbol.code_string)
 					end
-					code_nodes_code_xref_table.item(a_node.items.item.symbol.code_string).extend(a_node)
+					archetype.data_at_codes_xref_table.item(a_node.items.item.symbol.code_string).extend(a_node)
 					a_node.items.forth
 				end
 			end
@@ -207,6 +188,10 @@ feature -- Visitor
 		do
 			-- nothing required
 		end
+
+feature {NONE} -- Implementation
+
+	archetype: ARCHETYPE
 
 end
 

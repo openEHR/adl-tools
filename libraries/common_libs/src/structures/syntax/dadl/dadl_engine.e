@@ -106,7 +106,7 @@ feature -- Commands
 			Archetype_valid: tree /= Void implies tree.is_valid
 		local
 			a_dt_serialiser: DT_SERIALISER
-			a_dt_iterator: DT_SERIALISER_MGR
+			a_dt_iterator: DT_ITERATOR
 		do
 			if tree /= Void then
 				a_dt_serialiser := dt_serialiser_for_format(a_format)

@@ -105,7 +105,7 @@ feature -- Access
 	selected_archetype: ARCHETYPE is
 			-- archetype at currently selected archetype descriptor
 		do
-			Result := selected_descriptor.compilation_context.differential
+			Result := selected_descriptor.compilation_context.archetype
 		end
 
 	selected_archetype_valid: BOOLEAN is

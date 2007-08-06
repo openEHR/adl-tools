@@ -19,43 +19,24 @@ indexing
 class ARCHETYPE_VALIDATOR
 
 inherit
-	ANY_VALIDATOR
-		rename
-			make as make_validator
+	AUTHORED_RESOURCE_VALIDATOR
+		redefine
+			target, validate
 		end
 
 create
 	make
 
-feature -- Initialisation
-
-	make(an_archetype: ARCHETYPE) is
-			-- set archetype required for interpreting meaning of object nodes
-		require
-			Archetype_valid: an_archetype /= Void
-		do
-			make_validator
-			archetype := an_archetype
-		end
-
 feature -- Access
 
-	archetype: ARCHETYPE
+	target: ARCHETYPE
 			-- differential archetype
 
 	ontology: ARCHETYPE_ONTOLOGY is
 			-- the ontology of the current archetype
 		do
-			Result := archetype.ontology
+			Result := target.ontology
 		end
-
-	ontology_unused_term_codes: ARRAYED_LIST[STRING]
-			-- list of at codes found in ontology that are not referenced
-			-- anywhere in the archetype definition
-
-	ontology_unused_constraint_codes: ARRAYED_LIST[STRING]
-			-- list of ac codes found in ontology that are not referenced
-			-- anywhere in the archetype definition
 
 feature -- Validation
 
@@ -66,24 +47,18 @@ feature -- Validation
 			validate_basics
 
 			if passed then
-				build_xrefs
+				target.build_xrefs
 				validate_xrefs
-				find_unused_ontology_codes
 				validate_internal_references
 			end
 
 			if passed then
+				precursor
 				validate_languages
 				check_unidentified_nodes
 				warnings.append(unidentified_node_finder.warnings)
 			end
 		end
-
-feature {ARCHETYPE} -- Access
-
-	xref_builder: C_XREF_BUILDER
-			-- C_OBJECT structure visitor that builds up cross-reference tables of
-			-- at- and ac-codes to support validation done here
 
 feature {NONE} -- Implementation
 
@@ -96,36 +71,24 @@ feature {NONE} -- Implementation
 			-- into account validity with respect to parent archetypes.
 		do
 			passed := False
-			if archetype.archetype_id = Void then
+			if target.archetype_id = Void then
 				errors.append("No archetype_id%N")
-			elseif archetype.definition = Void then
+			elseif target.definition = Void then
 				errors.append("No definition%N")
-			elseif archetype.invariants /= Void and archetype.invariants.is_empty then
+			elseif target.invariants /= Void and target.invariants.is_empty then
 				errors.append("invariants cannot be empty if specified")
 			elseif ontology = Void then
 				errors.append("No ontology%N")
-			elseif not archetype.definition.rm_type_name.is_equal (archetype.archetype_id.rm_entity) then
-					errors.append("Archetype id type %"" + archetype.archetype_id.rm_entity +
-								"%" does not match type %"" + archetype.definition.rm_type_name +
+			elseif not target.definition.rm_type_name.is_equal (target.archetype_id.rm_entity) then
+					errors.append("Archetype id type %"" + target.archetype_id.rm_entity +
+								"%" does not match type %"" + target.definition.rm_type_name +
 								"%" in definition section%N")
-			elseif not archetype.definition.is_valid then
+			elseif not target.definition.is_valid then
 				-- FIXME - need to check definition validation
-					errors.append(archetype.definition.invalid_reason + "%N")
+					errors.append(target.definition.invalid_reason + "%N")
 			else
 				passed := True
 			end
-		end
-
-	build_xrefs is
-			--
-		local
-			a_c_iterator: C_ITERATOR
-		do
-			create xref_builder
-			xref_builder.initialise(archetype.ontology)
-			create a_c_iterator.make(archetype.definition, xref_builder)
-			a_c_iterator.do_all
-			xref_builder.finalise
 		end
 
 	validate_languages is
@@ -144,7 +107,7 @@ feature {NONE} -- Implementation
 			a_codes: HASH_TABLE[ARRAYED_LIST[C_OBJECT], STRING]
 		do
 			-- see if all found codes are in each language table
-			a_codes := xref_builder.node_ids_xref_table
+			a_codes := target.id_at_codes_xref_table
 			from
 				a_codes.start
 			until
@@ -158,7 +121,7 @@ feature {NONE} -- Implementation
 			end
 
 			-- see if every found leaf term code (in an ORDINAL or a CODED_TERM) is in ontology
-			a_codes := xref_builder.code_nodes_code_xref_table
+			a_codes := target.data_at_codes_xref_table
 			from
 				a_codes.start
 			until
@@ -172,7 +135,7 @@ feature {NONE} -- Implementation
 			end
 
 			-- check if all found constraint_codes are defined in constraint_definitions,
-			a_codes := xref_builder.constraint_codes_xref_table
+			a_codes := target.ac_codes_xref_table
 			from
 				a_codes.start
 			until
@@ -191,64 +154,18 @@ feature {NONE} -- Implementation
 		local
 			use_refs: HASH_TABLE[ARRAYED_LIST[ARCHETYPE_INTERNAL_REF], STRING]
 		do
-			use_refs := xref_builder.use_node_path_xref_table
+			use_refs := target.use_node_path_xref_table
 			from
 				use_refs.start
 			until
 				use_refs.off
 			loop
-				if not archetype.definition.has_path(use_refs.key_for_iteration) then
+				if not target.definition.has_path(use_refs.key_for_iteration) then
 					passed := False
 					errors.append("Error: path " + use_refs.key_for_iteration + " not found in archetype%N")
 				end
 				use_refs.forth
 			end
-		end
-
-	find_unused_ontology_codes is
-			-- populate lists of at-codes and ac-codes found in ontology that
-			-- are not referenced anywhere in the archetype definition
-		do
-			create ontology_unused_term_codes.make(0)
-			ontology_unused_term_codes.compare_objects
-
-			-- FIXME: this test will go when we are using differential archetypes
-			-- if not is_specialised then
-				from
-					ontology.term_codes.start
-				until
-					ontology.term_codes.off
-				loop
-					if not xref_builder.node_ids_xref_table.has(ontology.term_codes.item) and not
-							xref_builder.code_nodes_code_xref_table.has(ontology.term_codes.item) then
-						ontology_unused_term_codes.extend(ontology.term_codes.item)
-						warnings.append("Term code " + ontology.term_codes.item + " in ontology not used in archetype definition%N")
-					end
-					ontology.term_codes.forth
-				end
-				ontology_unused_term_codes.prune(archetype.concept)
-			-- end
-
-			create ontology_unused_constraint_codes.make(0)
-			ontology_unused_constraint_codes.compare_objects
-			-- FIXME: this test will go when we are using differential archetypes
-			-- if not is_specialised then
-
-				from
-					ontology.constraint_codes.start
-				until
-					ontology.constraint_codes.off
-				loop
-					if not xref_builder.constraint_codes_xref_table.has(ontology.constraint_codes.item) then
-						ontology_unused_constraint_codes.extend(ontology.constraint_codes.item)
-						warnings.append("Constraint code " + ontology.constraint_codes.item + " in ontology not used in archetype definition%N")
-					end
-					ontology.constraint_codes.forth
-				end
-			-- end
-		ensure
-			Ontology_unused_term_codes_exists: ontology_unused_term_codes /= Void
-			Ontology_unused_constraint_codes_exists: ontology_unused_constraint_codes /= Void
 		end
 
 	check_unidentified_nodes is
@@ -260,7 +177,7 @@ feature {NONE} -- Implementation
 		do
 			create unidentified_node_finder
 			unidentified_node_finder.initialise(ontology)
-			create a_c_iterator.make(archetype.definition, unidentified_node_finder)
+			create a_c_iterator.make(target.definition, unidentified_node_finder)
 			a_c_iterator.do_all
 		end
 

@@ -238,19 +238,12 @@ feature -- Commands
 									if invariant_context.tree /= Void then
 										archetype.set_invariants(invariant_context.tree)
 									end
-
-									-- FIXME - probably should not do this here...
-									archetype.validate
-									if not archetype.is_valid then
-										parse_error_text := archetype.errors
-									end
 								end
 							end
 						end
 					end
 				end
 			end
-
 		end
 
 	serialise(a_format: STRING) is

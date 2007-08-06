@@ -107,7 +107,7 @@ feature -- Access
 	archetype: ARCHETYPE is
 			-- Differential form of currently compiled archetype.
 		do
-			Result := target.compilation_context.differential
+			Result := target.compilation_context.archetype
 		end
 
 	serialised_archetype: STRING is
@@ -193,8 +193,11 @@ feature -- Commands
 					if not adl_engine.archetype_available then
 						post_error(Current, "parse_archetype", "parse_archetype_e1", <<adl_engine.parse_error_text>>)
 					else
-						target.set_compilation_context(adl_engine.archetype)
 						post_info(Current, "parse_archetype", "parse_archetype_i1", <<target.id.as_string>>)
+
+						-- put the archetype into the tree; note that this runs its validator(s) and further
+						-- errors and warnings are reported on the billboard
+						target.set_compilation_context(adl_engine.archetype)
 
 						-- make sure that the language is set, and that it is one of the languages in the archetype
 						if current_language = Void or not archetype.has_language (current_language) then

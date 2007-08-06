@@ -11,18 +11,15 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class DT_SERIALISER_MGR
-
-inherit
-	SHARED_DT_SERIALISERS
+class DT_ITERATOR
 
 create
 	make
 
 feature -- Initialisation
 
-	make(a_target: DT_COMPLEX_OBJECT_NODE; a_visitor: DT_SERIALISER) is
-			-- create a new manager targetted to the DT tree `a_target'
+	make(a_target: DT_COMPLEX_OBJECT_NODE; a_visitor: DT_VISITOR) is
+			-- create a new iterator targetted to the DT tree `a_target'
 		require
 			Target_exists: a_target /= Void
 			Visitor_exists: a_visitor /= Void
@@ -43,7 +40,7 @@ feature {NONE} -- Implementation
 
 	tree_iterator: OG_ITERATOR
 
-	visitor: DT_SERIALISER
+	visitor: DT_VISITOR
 
 	node_enter_action(a_node: OG_ITEM; indent_level: INTEGER) is
 		require

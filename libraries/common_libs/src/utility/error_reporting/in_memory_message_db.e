@@ -76,6 +76,9 @@ feature -- Access
 			["parse_archetype_e2"] = <"Archetype $1 semantic validation FAILED; reasons:%N$2">
 			["parse_archetype_e3"] = <"PARSE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
 			
+			-- ARCHETYPE_VALIDATOR
+			
+			
 			-- ARCHETYPE_FILE_REPOSITORY_IMP
 			["save_as_i1"] = <"Archetype saved in language $1 to $2">
 			["save_as_e1"] = <"Save-as failed; could not write to file $1">
