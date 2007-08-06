@@ -491,7 +491,7 @@ feature -- Primitive Object Creation
 			create c_an_upper.make_by_pointer (an_upper)
 
 			Result := new_handle
-			put_c_primitive(constraint_model_factory.create_c_duration_make_bounded (c_a_lower.string, c_an_upper.string, include_lower, include_upper), Result)
+			put_c_primitive (constraint_model_factory.create_c_duration_make (Void, c_a_lower.string, c_an_upper.string, include_lower, include_upper), Result)
 		end
 
 	create_c_duration_make_lower_unbounded (an_upper: POINTER; include_upper: BOOLEAN): INTEGER is
@@ -504,7 +504,7 @@ feature -- Primitive Object Creation
 			create c_an_upper.make_by_pointer (an_upper)
 
 			Result := new_handle
-			put_c_primitive(constraint_model_factory.create_c_duration_make_lower_unbounded (c_an_upper.string, include_upper), Result)
+			put_c_primitive (constraint_model_factory.create_c_duration_make (Void, Void, c_an_upper.string, False, include_upper), Result)
 		end
 
 	create_c_duration_make_upper_unbounded (a_lower: POINTER; include_lower: BOOLEAN): INTEGER is
@@ -517,14 +517,14 @@ feature -- Primitive Object Creation
 			create c_a_lower.make_by_pointer (a_lower)
 
 			Result := new_handle
-			put_c_primitive(constraint_model_factory.create_c_duration_make_upper_unbounded (c_a_lower.string, include_lower), Result)
+			put_c_primitive (constraint_model_factory.create_c_duration_make (Void, c_a_lower.string, Void, include_lower, False), Result)
 		end
 
 	create_c_duration_make_unbounded: INTEGER is
 			-- create Result as unbounded interval
 		do
 			Result := new_handle
-			put_c_primitive(constraint_model_factory.create_c_duration_make_unbounded, Result)
+			put_c_primitive (constraint_model_factory.create_c_duration_make (Void, Void, Void, False, False), Result)
 		end
 
 feature -- Domain object creation
