@@ -1,5 +1,5 @@
 
-ADL - Archetype definition Language Toolkit
+ADL - Archetype Definition Language Toolkit
 -------------------------------------------
 
 VERSION
@@ -7,11 +7,12 @@ VERSION
 
 AUTHORS 
 	Thomas Beale, Sam Heard
-	Ocean Informatics <www.OceanInformatics.biz>
+
+	Ocean Informatics <www.OceanInformatics.com>
 
 COPYRIGHT
 	The software, including all files in this directory and subdirectories 
-	is copyrighted to Ocean Informatics Pty Ltd, Australia, 2003, 2004.
+	is copyrighted to Ocean Informatics Pty Ltd, Australia, 2003-2007.
 
 	The source code is licensed under the Mozilla triple licence. See the
 	files mpl-tri-license-txt.txt, MPL-1.1.txt, gpl.txt and lgpl.txt in this
