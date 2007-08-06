@@ -2,7 +2,7 @@ import os
 from Eiffel import files
 
 EnsurePythonVersion(2, 4)
-EnsureSConsVersion(0, 96, 96)
+EnsureSConsVersion(0, 97, 0)
 
 env = Environment(ENV = os.environ, tools = ['Eiffel'], toolpath = ['.'])
 
@@ -25,9 +25,9 @@ else:
 # Define how to build the Eiffel projects.
 
 def eiffel(target, ecf):
-	if platform == 'macintosh': target = [target, target + '_no_precompile']
+	if platform == 'macintosh': env['ECTARGET'] = target + '_no_precompile'
 	result = env.Eiffel(target, [ecf])
-	Alias(Split(target)[0], result)
+	Alias(target, result)
 	return result
 
 adl_workbench = eiffel('adl_workbench', 'apps/adl_workbench/app/adl_workbench.ecf')
@@ -108,7 +108,13 @@ if distrib:
 					[resources + 'ReadMe.html', 'apps/doc/README-adl_workbench.txt'],
 					[resources + 'License.html', 'apps/doc/LICENSE.txt']
 				]:
-					substitutions = '2s|^.+$|<h2>&</h2>|;s|^[A-Z].+$|<h3>&</h3>|;s|^$|<br><br>|;s|^-+$||'
+					substitutions = 's|\&|\&amp;|;'
+					substitutions += 's|\<|\&lt;|;'
+					substitutions += 's|\>|\&gt;|;'
+					substitutions += '2s|^.+$|<h2>&</h2>|;'
+					substitutions += 's|^[A-Z].+$|<h3>&</h3>|;'
+					substitutions += 's|^$|<br><br>|;'
+					substitutions += 's|^-+$||'
 					sources += env.Command(html, txt, 'sed -E \'' + substitutions + '\' $SOURCE > $TARGET')
 
 				command = [

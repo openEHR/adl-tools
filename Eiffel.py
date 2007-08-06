@@ -49,29 +49,33 @@ def log_file_tail():
 def ec(target, source, env):
 	"""
 	The Eiffel Builder's action function, running the Eiffel compiler "ec".
-	All compiler output is logged to a file.
-	Parameters are as returned by ec_emitter().
+	Parameters are as returned by ec_emitter():
+	 * target[0]: the path to the "project.epr" file of the ECF target to build.
+	 * target[1]: the path to the workbench executable to be built.
+	 * target[2]: the path to the finalised executable to be built (only if finalizing).
+	 * source[0]: the ECF file.
+	 * source[1], source[2], etc.: any additional dependencies.
+	 * env['ECLOG']: name of file to which all compiler output is logged (stdout if empty).
+	 * env['ECFLAGS']: "ec" compiler flags: -finalize, -freeze, -melt, -clean, etc.
 	Result is 0 (success) if target[0] (the workbench executable) is built; else 1.
 	(Note that ec's return code is unreliable: it returns 0 if C compilation fails.)
 	"""
 	result = 0
-	exe = str(target[1])
-	ecf = str(source[0])
 
 	log_open(env)
 	log('=================== ' + ecf_target(target) + ' ===================')
 	log_date()
 
-	shutil.rmtree(os.path.dirname(str(target[0])))
+	shutil.rmtree(ecf_target_dir(target))
 
-	log_process(['ec', '-batch', '-config', ecf, '-target', ecf_target(target)] + env['ECFLAGS'].split() + ['-c_compile'], None)
+	log_process(['ec', '-batch', '-config', str(source[0]), '-target', ecf_target(target)] + env['ECFLAGS'].split() + ['-c_compile'], None)
 
-	if len(target) > 2 and os.path.exists(os.path.dirname(exe)):
+	if len(target) > 2 and os.path.exists(str(target[2])):
 		log('--------------------------')
 		log_date()
-		log_process(['finish_freezing', '-silent'], os.path.dirname(exe))
+		log_process(['finish_freezing', '-silent'], os.path.dirname(str(target[1])))
 
-	if not os.path.exists(exe):
+	if not os.path.exists(str(target[1])):
 		print log_file_tail()
 		result = 1
 
@@ -82,16 +86,13 @@ def ec_emitter(target, source, env):
 	"""
 	The Eiffel Builder's emitter function.
 	Parameters:
-	1. target[0]: the base name of the executable (application or dll) produced by the Eiffel project.
-	2. target[1]: optionally specifies the name of the ECF target to build. If not given, then the ECF target is target[0] minus the extension.
-	3. source[0]: the ECF file.
-	4. source[1], source[2], etc.: optionally specify other dependencies, e.g., Eiffel class file names.
-	The result specifies the targets and sources that will be passed to ec():
-	1. Result target[0]: the path to the "project.epr" file of the ECF target to build.
-	2. Result target[1]: the path to the workbench executable that the ECF target will build.
-	3. Result target[2]: the path to the finalised executable that the ECF target will build (only if finalising).
-	4. Result source[0]: the given ECF file.
-	5. Result source[1], source[2], etc.: the additional given dependencies, if any.
+	 * target[0]: the base name of the executable (application or dll) produced by the Eiffel project.
+	 * source[0]: the ECF file.
+	 * source[1], source[2], etc.: optionally specify other dependencies.
+	 * env['ECFLAGS']: build F_code only if -finalize is in these flags.
+	 * env['ECTARGET']: optionally specifies the name of the ECF target to build;
+	   if not given, then the ECF target is target[0] minus the extension.
+	Result emits the target and source parameters passed to ec().
 	"""
 	result = None, source
 	exe = str(target[0])
@@ -101,12 +102,12 @@ def ec_emitter(target, source, env):
 	elif not env.Detect('ec'):
 		print 'Please add "ec" to your path: cannot build ' + exe
 	else:
-		if len(target) > 1:
-			project_dir = str(target[1])
+		if env['ECTARGET']:
+			project_dir = env['ECTARGET']
 		else:
-			project_dir = exe
+			project_dir = os.path.splitext(exe)[0]
 
-		project_dir = os.path.abspath(os.path.dirname(str(source[0]))) + '/EIFGENs/' + os.path.splitext(project_dir)[0]
+		project_dir = os.path.abspath(os.path.dirname(str(source[0]))) + '/EIFGENs/' + project_dir
 		exe = project_dir + '/?_code/' + exe
 		result = [project_dir + '/project.epr', exe.replace('?', 'W')]
 
@@ -148,7 +149,8 @@ def ecf_scanner(node, env, path):
 def generate(env):
 	"""Add a Builder and options for Eiffel to the given Environment."""
 	opts = Options()
-	opts.Add('ECFLAGS', '"-freeze" for a workbench build.', '-finalize')
+	opts.Add('ECFLAGS', 'Use ec -help to see possible options.', '-finalize')
+	opts.Add('ECTARGET', 'Target in the ECF file. Defaults to the base name of each built executable.', '')
 	opts.Add('ECLOG', 'File to log Eiffel compiler output.', 'SCons.Eiffel.log')
 	opts.Update(env)
 	Help(opts.GenerateHelpText(env))

@@ -20,8 +20,18 @@ export "ETC=$HOME/Library/Application Support/ADL Workbench"
 mkdir -p "$ETC"
 rm -f "$ETC/display"
 
-/usr/bin/open-x11 "$CWD/display.sh" || \
-open -a XDarwin "$CWD/display.sh" || \
+echo '#!/bin/sh
+if [ "$DISPLAY"x == "x" ]; then
+    echo :0 > "'$ETC'/display"
+else
+    echo $DISPLAY > "'$ETC'/display"
+fi
+' > "$ETC/display.sh"
+
+chmod 777 "$ETC/display.sh"
+
+/usr/bin/open-x11 "$ETC/display.sh" || \
+open -a XDarwin "$ETC/display.sh" || \
 echo ":0" > "$ETC/display"
 
 while [ "$?" == "0" -a ! -f "$ETC/display" ]; do sleep 1; done
