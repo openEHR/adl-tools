@@ -41,17 +41,19 @@ feature -- Initialisation
 		do
 			differential := an_archetype
 			if not an_archetype.is_specialised then
+				-- FIXME for the moment
 				flat_form := differential
 			end
 
+			differential.validate
 			if differential.is_valid then
 				post_info(Current, "parse_archetype", "parse_archetype_i2", <<differential.archetype_id.as_string>>)
 				is_valid := True
 			else
-				post_error(Current, "parse_archetype", "parse_archetype_e2", <<differential.archetype_id.as_string, differential.errors>>)
+				post_error(Current, "parse_archetype", "parse_archetype_e2", <<differential.archetype_id.as_string, differential.archetype_validator.errors>>)
 			end
-			if differential.has_warnings then
-				post_warning(Current, "parse_archetype", "general", <<differential.warnings>>)
+			if differential.archetype_validator.has_warnings then
+				post_warning(Current, "parse_archetype", "general", <<differential.archetype_validator.warnings>>)
 			end
 		end
 

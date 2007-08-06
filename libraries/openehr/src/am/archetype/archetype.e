@@ -128,6 +128,8 @@ feature -- Access
 
 	physical_paths: ARRAYED_LIST [STRING] is
 			-- generate physical paths from definition structure
+		require
+			validation_done
 		local
 			src_node_path: OG_PATH
 			src_node_path_str: STRING
@@ -136,11 +138,14 @@ feature -- Access
 			tgt_path_str: STRING
 			tgt_path: OG_PATH
 			c_o: C_OBJECT
+			use_node_path_xref_table: HASH_TABLE[ARRAYED_LIST[ARCHETYPE_INTERNAL_REF], STRING]
 		do
 			if path_map = Void or not is_readonly then
 				path_map := definition.all_paths
 
 				-- Add full paths of internal references thus giving full set of actual paths
+				-- FIXME: thre will be a cleaner way to get at this table
+				use_node_path_xref_table := archetype_validator.xref_builder.use_node_path_xref_table
 				from
 					use_node_path_xref_table.start
 				until
@@ -237,61 +242,6 @@ feature -- Access
 			end
 		end
 
-	ontology_unused_term_codes: ARRAYED_LIST[STRING] is
-			-- list of at codes found in ontology that are not referenced
-			-- anywhere in the archetype definition
-		local
-			ont_codes: SORTED_TWO_WAY_LIST[STRING]
-			found_codes: ARRAYED_LIST[STRING]
-		do
-			create Result.make(0)
-			Result.compare_objects
-			if not is_specialised then
-				ont_codes := ontology.term_codes
-				found_codes := found_id_node_codes
-				found_codes.append(found_code_node_codes)
-				from
-					ont_codes.start
-				until
-					ont_codes.off
-				loop
-					if not found_codes.has(ont_codes.item) then
-						Result.extend(ont_codes.item)
-					end
-					ont_codes.forth
-				end
-				Result.prune(concept)
-			end
-		ensure
-			Result_exists: Result /= Void
-		end
-
-	ontology_unused_constraint_codes: ARRAYED_LIST[STRING] is
-			-- list of ac codes found in ontology that are not referenced
-			-- anywhere in the archetype definition
-		local
-			ont_codes: SORTED_TWO_WAY_LIST[STRING]
-			found_codes: ARRAYED_LIST[STRING]
-		do
-			create Result.make(0)
-			if not is_specialised then
-				ont_codes := ontology.constraint_codes
-				found_codes := found_constraint_codes
-				from
-					ont_codes.start
-				until
-					ont_codes.off
-				loop
-					if not found_codes.has(ont_codes.item) then
-						Result.extend(ont_codes.item)
-					end
-					ont_codes.forth
-				end
-			end
-		ensure
-			Result_exists: Result /= Void
-		end
-
 feature -- Status Report
 
 	has_adl_version: BOOLEAN is
@@ -312,61 +262,16 @@ feature -- Status Report
 	is_valid: BOOLEAN is
 			-- is archetype locally in valid state? For specialised archetypes, this does not take
 			-- into account validity with respect to parent archetypes.
-		local
-			node_list_validity, constraint_references_validity, internal_references_validity, language_validity: BOOLEAN
+		require
+			validation_done
 		do
-			create errors.make(0)
-			create warnings.make(0)
-
-			if archetype_id = Void then
-				errors.append("No archetype_id%N")
-			elseif definition = Void then
-				errors.append("No definition%N")
-			elseif not is_valid_resource then
-				-- FIXME: complete error-checking
-			elseif invariants /= Void and invariants.is_empty then
-				errors.append("invariants cannot be empty if specified")
-			elseif ontology = Void then
-				errors.append("No ontology%N")
-			elseif not ontology.is_valid then
-				errors.append("Ontology errors:-%N" + ontology.errors)
-				warnings.append("Ontology warnings:-%N: " + ontology.warnings)
-			else
-				if not definition.rm_type_name.is_equal (archetype_id.rm_entity) then
-					errors.append("Archetype id type %"" + archetype_id.rm_entity +
-								"%" does not match type %"" + definition.rm_type_name +
-								"%" in definition section%N")
-				end
-
-				update_node_lists
-
-				check_definition
-
-				check_unidentified_nodes
-
-				-- currently we don't use the results of these functions - we just
-				-- check whether any errors were set. We want to see all the errors,
-				-- which is why these results are not anded together, because the
-				-- first failure will prevent the execution of the later vality calls
-				-- in the expression (maybe a not( x or y or z) would work, but I don't
-				-- know how smart the compiler is
-
-				node_list_validity := node_ids_valid
-
-				constraint_references_validity := constraint_references_valid
-
-				internal_references_validity := internal_references_valid
-
-				-- check language validity
-				language_validity := languages_valid
-			end
-			Result := errors.is_empty
+			Result := archetype_validator.passed and authored_resource_validator.passed
 		end
 
-	has_warnings: BOOLEAN is
-			-- True if warnings from last call to validate
+	validation_done: BOOLEAN is
+			-- has the validator been run? Need to call validate if not.
 		do
-			Result := warnings /= Void and then not warnings.is_empty
+			Result := archetype_validator /= Void
 		end
 
 	has_physical_path(a_path: STRING): BOOLEAN is
@@ -379,138 +284,6 @@ feature -- Status Report
 			-- true if there are invariants
 		do
 			Result := invariants /= Void
-		end
-
-feature {ARCHETYPE} -- Validation
-
-	check_definition is
-			-- check validity of definition part of archetype
-		do
-			if not definition.is_valid then
-				errors.append(definition.invalid_reason + "%N")
-			end
-		end
-
-	node_ids_valid: BOOLEAN is
-			-- True if all found node_ids are defined in term_definitions,
-			-- and term_definitions contains no extras
-		local
-			a_codes: ARRAYED_LIST[STRING]
-		do
-			-- see if all found codes are in each language table
-			a_codes := found_id_node_codes
-			Result := True
-			from
-				a_codes.start
-			until
-				a_codes.off
-			loop
-				if not ontology.has_term_code(a_codes.item) then
-					Result := False
-					errors.append("Found node term code " + a_codes.item + " not defined in ontology%N")
-				end
-				a_codes.forth
-			end
-
-			-- see if every found leaf term code (in an ORDINAL or a CODED_TERM) is in ontology
-			a_codes := found_code_node_codes
-			from
-				a_codes.start
-			until
-				a_codes.off
-			loop
-				if not ontology.has_term_code(a_codes.item) then
-					Result := False
-					errors.append("Found leaf term code " + a_codes.item + " not defined in ontology%N")
-				end
-				a_codes.forth
-			end
-
-			-- unused term codes
-			a_codes := ontology_unused_term_codes
-			from
-				a_codes.start
-			until
-				a_codes.off
-			loop
-				warnings.append("Term code " + a_codes.item + " in ontology not used in archetype definition%N")
-				a_codes.forth
-			end
-
-			-- unused constraint codes
-			a_codes := ontology_unused_constraint_codes
-			from
-				a_codes.start
-			until
-				a_codes.off
-			loop
-				warnings.append("Constraint code " + a_codes.item + " in ontology not used in archetype definition%N")
-				a_codes.forth
-			end
-		end
-
-	constraint_references_valid: BOOLEAN is
-			-- True if all found constraint_codes are defined in constraint_definitions,
-			-- and constraint_definitions contains no extras
-		local
-			term_codes: ARRAYED_LIST[STRING]
-			ont_term_codes: SORTED_TWO_WAY_LIST[STRING]
-		do
-			Result := True
-			term_codes := found_constraint_codes
-			from
-				term_codes.start
-			until
-				term_codes.off
-			loop
-				if not ontology.has_constraint_code(term_codes.item) then
-					Result := True
-					errors.append("Found constraint code " + term_codes.item + " not defined in all languages in ontology%N")
-				end
-				term_codes.forth
-			end
-
-			-- see if each code in this definitions table is in found list
-			ont_term_codes := ontology.constraint_codes
-			from
-				ont_term_codes.start
-			until
-				ont_term_codes.off
-			loop
-				if not term_codes.has(ont_term_codes.item) then
-					warnings.append("Constraint code " + ont_term_codes.item + " in ontology not used in archetype definition%N")
-				end
-				ont_term_codes.forth
-			end
-		end
-
-	internal_references_valid: BOOLEAN is
-			-- validate items in `found_internal_references'
-		local
-			use_refs: LIST[STRING]
-		do
-			Result := True
-			use_refs := found_internal_references
-			from
-				use_refs.start
-			until
-				use_refs.off
-			loop
-				if not definition.has_path(use_refs.item) then
-					Result := False
-					errors.append("Error: path " + use_refs.item + " not found in archetype%N")
-				end
-				use_refs.forth
-			end
-		end
-
-	languages_valid: BOOLEAN is
-			-- check to see that all linguistic items in ontology, description, etc
-			-- are all coherent
-		do
-			-- is languages_available list same as languages in description.details?
-
-			-- is languages_available list same as languages in ontology?
 		end
 
 feature -- Comparison
@@ -527,6 +300,30 @@ feature -- Comparison
 			str.prune_all ('.')
 			Result := str.is_integer and a_ver.item(1) /= '.' and a_ver.item (a_ver.count) /= '.'
 		end
+
+feature -- Validation
+
+	validate is
+			-- perform various levels validation of archetype
+			-- FIXME: this may stay here, or it may be moved out of the ARCHETYPE classes
+			-- to the compiler environment. Also have to decide on whether to have several
+			-- validators
+		do
+			create archetype_validator.make(Current)
+			archetype_validator.validate
+
+			create authored_resource_validator.make(Current)
+			authored_resource_validator.validate
+		ensure
+			validation_done
+		end
+
+	archetype_validator: ARCHETYPE_VALIDATOR
+			-- validation object for this archetype
+
+	authored_resource_validator: AUTHORED_RESOURCE_VALIDATOR
+			-- validation object for the inherited AUTHORED_RESOURCE parts of this archetype
+			-- FIXME: this probably won't stay here...
 
 feature -- Modification
 
@@ -599,7 +396,6 @@ feature -- Modification
 			Valid_term_code: ontology.has_term_code(a_term_code)
 		do
 			definition.set_object_id(a_term_code)
-			update_node_lists
 		end
 
 	reset_definition is
@@ -607,7 +403,6 @@ feature -- Modification
 			-- node with all children gone
 		do
 			definition.remove_all_attributes
-			update_node_lists
 		end
 
 	add_invariant(an_inv: ASSERTION) is
@@ -641,8 +436,10 @@ feature -- Modification
 		local
 			code_list: ARRAYED_LIST[STRING]
 		do
-			update_node_lists
-			code_list := ontology_unused_term_codes
+			-- unused codes are generated by the archetype validator
+			validate
+
+			code_list := archetype_validator.ontology_unused_term_codes
 			from
 				code_list.start
 			until
@@ -652,7 +449,7 @@ feature -- Modification
 				code_list.forth
 			end
 
-			code_list := ontology_unused_constraint_codes
+			code_list := archetype_validator.ontology_unused_constraint_codes
 			from
 				code_list.start
 			until
@@ -681,38 +478,41 @@ feature -- Status setting
 
 feature -- Output
 
-	found_terms: STRING is
-		local
-			str_lst: ARRAYED_LIST[STRING]
-   		do
-   			create Result.make(0)
-
-			Result.append("%N--------------- found node term codes -------------%N")
-			Result.append(display_arrayed_list(found_id_node_codes))
-			Result.append("%N")
-
-			Result.append("%N--------------- found leaf term codes -------------%N")
-			Result.append(display_arrayed_list(found_code_node_codes))
-			Result.append("%N")
-
-			Result.append("%N--------------- found constraint codes -----------%N")
-			str_lst := found_constraint_codes
-			Result.append(display_arrayed_list(str_lst))
-			Result.append("%N")
-
-			Result.append("%N--------------- found use refs -----------%N")
-			create str_lst.make(0)
-			from
-				found_internal_references.start
-			until
-				found_internal_references.off
-			loop
-				str_lst.extend(found_internal_references.item)
-				found_internal_references.forth
-			end
-			Result.append(display_arrayed_list(str_lst))
-			Result.append("%N")
-		end
+-- FIXME: this is probably used in some test app; if so, a simple display_hash_table_keys
+-- routine should be implemented to generate the keys of each of the archetype_validator.xref tables
+--
+--	found_terms: STRING is
+--		local
+--			str_lst: ARRAYED_LIST[STRING]
+--   		do
+--   			create Result.make(0)
+--
+--			Result.append("%N--------------- found node term codes -------------%N")
+--			Result.append(display_arrayed_list(found_id_node_codes))
+--			Result.append("%N")
+--
+--			Result.append("%N--------------- found leaf term codes -------------%N")
+--			Result.append(display_arrayed_list(found_code_node_codes))
+--			Result.append("%N")
+--
+--			Result.append("%N--------------- found constraint codes -----------%N")
+--			str_lst := found_constraint_codes
+--			Result.append(display_arrayed_list(str_lst))
+--			Result.append("%N")
+--
+--			Result.append("%N--------------- found use refs -----------%N")
+--			create str_lst.make(0)
+--			from
+--				found_internal_references.start
+--			until
+--				found_internal_references.off
+--			loop
+--				str_lst.extend(found_internal_references.item)
+--				found_internal_references.forth
+--			end
+--			Result.append(display_arrayed_list(str_lst))
+--			Result.append("%N")
+--		end
 
 	as_string: STRING is
    		do
@@ -741,245 +541,6 @@ feature {NONE} -- Implementation
 
 	path_map: HASH_TABLE [C_OBJECT, STRING]
 			-- complete map of object nodes keyed by path
-
-	update_node_lists is
-			--
-		local
-			cadl_iterator: OG_ITERATOR
-		do
-			create node_ids_xref_table.make(0)
-			create code_nodes_code_xref_table.make(0)
-			create use_node_path_xref_table.make(0)
-			create constraint_codes_xref_table.make(0)
-
-			create cadl_iterator.make (definition.representation)
-			cadl_iterator.do_all (agent update_node_lists_node_enter_action (?, ?), agent node_exit_action (?, ?))
-		end
-
-	update_node_lists_node_enter_action (a_node: OG_ITEM; indent_level: INTEGER) is
-			-- FIXME: this should be re-implemented as functions in each C_OBJECT subtype,
-			-- same approach as enter_block/exit_block approach used in serialisation
-		require
-			node_exists: a_node /= void
-		local
-			a_c_obj: C_OBJECT
-			a_c_co: C_COMPLEX_OBJECT
-			a_c_as: ARCHETYPE_SLOT
-			a_c_ord: C_DV_ORDINAL
-			a_c_ct: C_CODE_PHRASE
-			a_i_r: ARCHETYPE_INTERNAL_REF
-			a_c_r: CONSTRAINT_REF
-		do
-			a_c_co ?= a_node.content_item
-			a_c_as ?= a_node.content_item
-			if a_c_co /= Void or a_c_as /= Void then
-				a_c_obj ?= a_node.content_item
-				if a_c_obj.is_addressable then
-					if not node_ids_xref_table.has(a_c_obj.node_id) then
-						node_ids_xref_table.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_c_obj.node_id)
-					end
-					node_ids_xref_table.item(a_c_obj.node_id).extend(a_c_obj)
-				end
-			else
-				a_c_ord ?= a_node.content_item
-				if a_c_ord /= Void then
-					if not a_c_ord.any_allowed and then a_c_ord.is_local then
-						from
-							a_c_ord.items.start
-						until
-							a_c_ord.items.off
-						loop
-							if not code_nodes_code_xref_table.has(a_c_ord.items.item.symbol.code_string) then
-								code_nodes_code_xref_table.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_c_ord.items.item.symbol.code_string)
-							end
-							code_nodes_code_xref_table.item(a_c_ord.items.item.symbol.code_string).extend(a_c_ord)
-							a_c_ord.items.forth
-						end
-					end
-				else
-					a_c_ct ?= a_node.content_item
-					if a_c_ct /= Void then
-						if not a_c_ct.any_allowed and then (a_c_ct.is_local and a_c_ct.code_count > 0) then
-							from
-								a_c_ct.code_list.start
-							until
-								a_c_ct.code_list.off
-							loop
-								if not code_nodes_code_xref_table.has(a_c_ct.code_list.item) then
-									code_nodes_code_xref_table.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_c_ct.code_list.item)
-								end
-								code_nodes_code_xref_table.item(a_c_ct.code_list.item).extend(a_c_ct)
-								a_c_ct.code_list.forth
-							end
-						end
-					else
-						a_i_r ?= a_node.content_item
-						if a_i_r /= Void then
-							if not use_node_path_xref_table.has(a_i_r.target_path) then
-								use_node_path_xref_table.put(create {ARRAYED_LIST[ARCHETYPE_INTERNAL_REF]}.make(0), a_i_r.target_path)
-							end
-							use_node_path_xref_table.item(a_i_r.target_path).extend(a_i_r)
-						else
-							a_c_r ?= a_node.content_item
-							if a_c_r /= Void then
-								if not constraint_codes_xref_table.has(a_c_r.target) then
-									constraint_codes_xref_table.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_c_r.target)
-								end
-								constraint_codes_xref_table.item(a_c_r.target).extend(a_c_r)
-							end
-						end
-					end
-				end
-			end
-		end
-
-	node_exit_action (a_node: OG_ITEM; indent_level: INTEGER) is
-		require
-			node_exists: a_node /= void
-		do
-		end
-
-	check_unidentified_nodes_node_enter_action (a_node: OG_ITEM; indent_level: INTEGER) is
-			-- FIXME: this should be re-implemented as functions in each C_OBJECT subtype,
-			-- same approach as enter_block/exit_block approach used in serialisation
-		require
-			node_exists: a_node /= void
-		local
-			a_c_c_o, a_c_c_o_2: C_COMPLEX_OBJECT
-			a_c_attr, a_c_attr2: C_ATTRIBUTE
-			found: BOOLEAN
-		do
-			a_c_attr ?= a_node.content_item
-
-			-- only check nodes that are either multiple or are single but have multiple alternate children					
-			if a_c_attr /= Void and (a_c_attr.is_multiple or else a_c_attr.child_count > 1) then
-				from
-					a_c_attr.children.start
-				until
-					a_c_attr.children.off
-				loop
-					a_c_c_o ?= a_c_attr.children.item
-
-					if a_c_c_o /= Void and not a_c_c_o.is_addressable then
-						-- see if it has children other than C_LEAF_OBJECTs
-						from
-							found := False
-							a_c_c_o.attributes.start
-						until
-							a_c_c_o.attributes.off or found
-						loop
-							a_c_attr2 := a_c_c_o.attributes.item
-
-							from
-								a_c_attr2.children.start
-							until
-								a_c_attr2.children.off or found
-							loop
-								a_c_c_o_2 ?= a_c_attr2.children.item
-								if a_c_c_o_2 /= Void then
-									warnings.append("child node of type " + a_c_c_o.rm_type_name + " at path " +
-										a_c_attr.path + " has no id.%N")
-									found := True
-								end
-								a_c_attr2.children.forth
-							end
-
-							a_c_c_o.attributes.forth
-						end
-					end
-					a_c_attr.children.forth
-				end
-			else
-
-			end
-		end
-
-	check_unidentified_nodes is
-			-- look for attributes that are either multiple or have multiple alternatives, whose
-			-- child objects are not identified, but only if the children are not C_PRIMITIVEs or
-			-- C_C_Os whose values are C_PRMITIVEs. Record any such nodes as warnings
-		local
-			cadl_iterator: OG_ITERATOR
-		do
-			create cadl_iterator.make (definition.representation)
-			cadl_iterator.do_all (agent check_unidentified_nodes_node_enter_action (?, ?), agent node_exit_action (?, ?))
-		end
-
-	node_ids_xref_table: HASH_TABLE[ARRAYED_LIST[C_OBJECT], STRING]
-			-- table of {list<node>, code} for term codes which identify nodes in archetype (note that there
-			-- are other uses of term codes from the ontology, which is why this attribute is not just called
-			-- 'term_codes_xref_table')
-
-	constraint_codes_xref_table: HASH_TABLE[ARRAYED_LIST[C_OBJECT], STRING]
-			-- table of {list<node>, code} for constraint codes in archetype
-
-	code_nodes_code_xref_table: HASH_TABLE[ARRAYED_LIST[C_OBJECT], STRING]
-			-- table of {list<node>, code} for term codes which appear in archetype nodes as data,
-			-- e.g. in C_DV_ORDINAL and C_CODE_PHRASE types
-
-	use_node_path_xref_table: HASH_TABLE[ARRAYED_LIST[ARCHETYPE_INTERNAL_REF], STRING]
-			-- table of {list<ARCHETYPE_INTERNAL_REF>, target_path}
-			-- i.e. <list of use_nodes> keyed by path they point to
-
-	found_id_node_codes: ARRAYED_LIST[STRING] is
-			-- term codes found as identifiers on definition nodes in archetype
-		do
-			create Result.make(0)
-			from
-				node_ids_xref_table.start
-			until
-				node_ids_xref_table.off
-			loop
-				Result.extend(node_ids_xref_table.key_for_iteration)
-				node_ids_xref_table.forth
-			end
-			Result.compare_objects
-		end
-
-	found_code_node_codes: ARRAYED_LIST[STRING] is
-			-- term codes found in leaf nodes in definition, e.g. in C_CODE_PHRASE and C_DV_ORDINAL constraints
-		do
-			create Result.make(0)
-			from
-				code_nodes_code_xref_table.start
-			until
-				code_nodes_code_xref_table.off
-			loop
-				Result.extend(code_nodes_code_xref_table.key_for_iteration)
-				code_nodes_code_xref_table.forth
-			end
-			Result.compare_objects
-		end
-
-	found_constraint_codes: ARRAYED_LIST[STRING] is
-			-- constraint codes (acNNNN codes) found in body
-		do
-			create Result.make(0)
-			from
-				constraint_codes_xref_table.start
-			until
-				constraint_codes_xref_table.off
-			loop
-				Result.extend(constraint_codes_xref_table.key_for_iteration)
-				constraint_codes_xref_table.forth
-			end
-			Result.compare_objects
-		end
-
-	found_internal_references: ARRAYED_LIST[STRING] is
-			-- use references found in body
-		do
-			create Result.make(0)
-			from
-				use_node_path_xref_table.start
-			until
-				use_node_path_xref_table.off
-			loop
-				Result.extend(use_node_path_xref_table.key_for_iteration)
-				use_node_path_xref_table.forth
-			end
-			Result.compare_objects
-		end
 
 	display_arrayed_list(str_lst: ARRAYED_LIST[STRING]):STRING is
 			--

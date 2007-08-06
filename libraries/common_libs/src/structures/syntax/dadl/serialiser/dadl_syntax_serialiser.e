@@ -11,7 +11,7 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class DADL_SYNTAX_SERIALISER 
+class DADL_SYNTAX_SERIALISER
 
 inherit
 	DT_SERIALISER
@@ -20,11 +20,11 @@ inherit
 		export
 			{NONE} all
 		end
-		
+
 creation
 	make
-	
-feature -- Modification
+
+feature -- Visitor
 
 	start_complex_object_node(a_node: DT_COMPLEX_OBJECT_NODE; depth: INTEGER) is
 			-- start serialising a DT_COMPLEX_OBJECT_NODE
@@ -32,23 +32,23 @@ feature -- Modification
 			if not a_node.is_root and then a_node.parent.is_multiple then
 				last_result.append(create_indent(depth//2 + multiple_attr_count))
 			end
-			
+
 			if a_node.is_addressable then
 				last_result.append(apply_style("[%"" + a_node.node_id + "%"]", STYLE_IDENTIFIER))
 				last_result.append(format_item(FMT_SPACE))
 				last_result.append(apply_style(symbol(SYM_EQ), STYLE_OPERATOR) + format_item(FMT_SPACE))
 			end
 			if a_node.is_typed and a_node.type_visible then
-				last_result.append(a_node.rm_type_name + format_item(FMT_SPACE) + symbol(SYM_START_DBLOCK) + 
+				last_result.append(a_node.rm_type_name + format_item(FMT_SPACE) + symbol(SYM_START_DBLOCK) +
 					format_item(FMT_NEWLINE))
 			elseif not a_node.is_root then
 				last_result.append(symbol(SYM_START_DBLOCK) + format_item(FMT_NEWLINE))
 			end
 		end
-		
+
 	end_complex_object_node(a_node: DT_COMPLEX_OBJECT_NODE; depth: INTEGER) is
 			-- end serialising a DT_COMPLEX_OBJECT_NODE
-		do	
+		do
 			last_result.append(create_indent(depth//2 + multiple_attr_count))
 			if not a_node.is_root or else (a_node.is_typed and a_node.type_visible) then -- and a_node.is_addressable) then
 				last_result.append(symbol(SYM_END_DBLOCK) + format_item(FMT_NEWLINE))
@@ -58,8 +58,8 @@ feature -- Modification
 	start_attribute_node(a_node: DT_ATTRIBUTE_NODE; depth: INTEGER) is
 			-- start serialising a DT_ATTRIBUTE_NODE
 		do
-			if not a_node.is_generic then			
-				last_result.append(create_indent(depth//2 + multiple_attr_count) + 
+			if not a_node.is_generic then
+				last_result.append(create_indent(depth//2 + multiple_attr_count) +
 						apply_style(a_node.rm_attr_name, STYLE_IDENTIFIER) +  format_item(FMT_SPACE))
 				last_result.append(apply_style(symbol(SYM_EQ), STYLE_OPERATOR) + format_item(FMT_SPACE))
 				if a_node.is_multiple then
@@ -68,12 +68,12 @@ feature -- Modification
 				end
 			end
 		end
-		
+
 	end_attribute_node(a_node: DT_ATTRIBUTE_NODE; depth: INTEGER) is
 			-- end serialising an DT_ATTRIBUTE_NODE
 		do
 			last_object_simple := False
-			if not a_node.is_generic then			
+			if not a_node.is_generic then
 				if a_node.is_multiple then
 					multiple_attr_count := multiple_attr_count - 1
 					last_result.append(create_indent(depth//2 + multiple_attr_count) + symbol(SYM_END_DBLOCK) + format_item(FMT_NEWLINE))
@@ -87,7 +87,7 @@ feature -- Modification
 			start_object_leaf(a_node, depth)
 			last_object_simple := True
 		end
-		
+
 	end_primitive_object(a_node: DT_PRIMITIVE_OBJECT; depth: INTEGER) is
 			-- end serialising a DT_PRIMITIVE_OBJECT
 		do
@@ -100,7 +100,7 @@ feature -- Modification
 			start_object_leaf(a_node, depth)
 			last_object_simple := True
 		end
-		
+
 	end_primitive_object_list(a_node: DT_PRIMITIVE_OBJECT_LIST; depth: INTEGER) is
 			-- end serialising an DT_PRIMITIVE_OBJECT_LIST
 		do
@@ -113,7 +113,7 @@ feature -- Modification
 			start_object_leaf(a_node, depth)
 			last_object_simple := True
 		end
-		
+
 	end_primitive_object_interval(a_node: DT_PRIMITIVE_OBJECT_INTERVAL; depth: INTEGER) is
 			-- end serialising a DT_PRIMITIVE_OBJECT_INTERVAL
 		do
@@ -124,10 +124,10 @@ feature {NONE} -- Implementation
 
 	multiple_attr_count: INTEGER
 			-- counter for how many multiple attributes at the current point
-			
+
 	last_object_simple: BOOLEAN
 			-- True if last object traversed was an OBJECT_SIMPLE
-			
+
 	start_object_leaf(a_node: DT_OBJECT_LEAF; depth: INTEGER) is
 			-- start serialising a DT_OBJECT_LEAF
 		do

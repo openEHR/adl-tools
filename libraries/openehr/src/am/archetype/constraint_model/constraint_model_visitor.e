@@ -29,7 +29,7 @@ feature -- Initialisation
 			ontology := an_ontology
 		end
 
-feature -- Modification
+feature -- Visitor
 
 	start_c_complex_object(a_node: C_COMPLEX_OBJECT; depth: INTEGER) is
 			-- enter an C_COMPLEX_OBJECT
@@ -121,26 +121,12 @@ feature -- Modification
 		deferred
 		end
 
-	serialise_occurrences(a_node: C_OBJECT; depth: INTEGER) is
-			-- any positive range
-		deferred
-		end
-
-	serialise_existence(a_node: C_ATTRIBUTE; depth: INTEGER) is
-			-- can only  be a range of 0..1 or 1..1
-		deferred
-		end
-
-	serialise_cardinality(a_node: C_ATTRIBUTE; depth: INTEGER) is
-			-- includes a range and possibly ordered, unique qualifiers
-		deferred
-		end
-
 feature -- Finalisation
 
 	finalise is
 			-- finalise after all nodes visited
-		deferred
+		do
+			-- assume nothing; override in descendants
 		end
 
 feature {NONE} -- Implementation

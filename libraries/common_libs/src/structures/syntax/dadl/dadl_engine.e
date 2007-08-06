@@ -106,13 +106,13 @@ feature -- Commands
 			Archetype_valid: tree /= Void implies tree.is_valid
 		local
 			a_dt_serialiser: DT_SERIALISER
+			a_dt_iterator: DT_SERIALISER_MGR
 		do
 			if tree /= Void then
 				a_dt_serialiser := dt_serialiser_for_format(a_format)
 				a_dt_serialiser.initialise
-				create tree_iterator.make(tree, a_dt_serialiser)
-				tree_iterator.do_all
-				a_dt_serialiser.finalise
+				create a_dt_iterator.make(tree, a_dt_serialiser)
+				a_dt_iterator.do_all
 				serialised := a_dt_serialiser.last_result
 			else
 				create serialised.make(0)
@@ -134,8 +134,6 @@ feature {NONE} -- Implementation
 
 	parser: DADL2_VALIDATOR
 			-- dADL parser
-
-	tree_iterator: DT_SERIALISER_MGR
 
 end
 

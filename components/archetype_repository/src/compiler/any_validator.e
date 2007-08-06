@@ -1,54 +1,58 @@
 indexing
 	component:   "openEHR Archetype Project"
-	description: "Serialise archetype definition to any format"
-	keywords:    "test, constraint model"
+	description: "[
+				 General idea of a validator object that reports errors, warnings.
+				 ]"
+	keywords:    "ADL, archetype"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-deferred class C_SERIALISER
+
+deferred class ANY_VALIDATOR
 
 inherit
-	ANY_SERIALISER
-		rename
-			initialise as initialise_any_serialiser
-		end
-
-	C_VISITOR
-		rename
-			initialise as initialise_visitor
+	MESSAGE_BILLBOARD
+		export
+			{NONE} all
 		end
 
 feature -- Initialisation
 
-	initialise(an_ontology: ARCHETYPE_ONTOLOGY) is
-			-- set ontology required for serialising cADL, and perform basic initialisation
-		require
-			Ontology_valid: an_ontology /= Void
+	make is
+			-- initialise reporting variables
 		do
-			initialise_any_serialiser
-			initialise_visitor(an_ontology)
+			create errors.make(0)
+			create warnings.make(0)
 		end
 
-feature {NONE} -- Implementation
+feature -- Access
 
-	serialise_occurrences(a_node: C_OBJECT; depth: INTEGER) is
-			-- any positive range
-		deferred
+	errors: STRING
+			-- error output of validator
+
+	warnings: STRING
+			-- warnings output of validator
+
+feature -- Status Report
+
+	passed: BOOLEAN
+			-- True if validation succeeded
+
+	has_warnings: BOOLEAN is
+			-- True if warnings from last call to validate
+		do
+			Result := warnings /= Void and then not warnings.is_empty
 		end
 
-	serialise_existence(a_node: C_ATTRIBUTE; depth: INTEGER) is
-			-- can only  be a range of 0..1 or 1..1
-		deferred
-		end
+feature -- Validation
 
-	serialise_cardinality(a_node: C_ATTRIBUTE; depth: INTEGER) is
-			-- includes a range and possibly ordered, unique qualifiers
+	validate is
 		deferred
 		end
 
@@ -69,10 +73,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is cadl_serialiser.e.
+--| The Original Code is any_validator.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2007
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

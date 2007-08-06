@@ -1,55 +1,65 @@
 indexing
-	component:   "openEHR Archetype Project"
-	description: "Serialise archetype definition to any format"
-	keywords:    "test, constraint model"
+	component:   "openEHR Common Information Model"
+	description: "Validator for AUTHOR_RESOURCE objects"
+	keywords:    "archetype"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-deferred class C_SERIALISER
+class AUTHORED_RESOURCE_VALIDATOR
 
 inherit
-	ANY_SERIALISER
+	ANY_VALIDATOR
 		rename
-			initialise as initialise_any_serialiser
+			make as make_validator
 		end
 
-	C_VISITOR
-		rename
-			initialise as initialise_visitor
-		end
+create
+	make
 
 feature -- Initialisation
 
-	initialise(an_ontology: ARCHETYPE_ONTOLOGY) is
-			-- set ontology required for serialising cADL, and perform basic initialisation
+	make(a_target: AUTHORED_RESOURCE) is
+			-- set target
 		require
-			Ontology_valid: an_ontology /= Void
+			Target_valid: a_target /= Void
 		do
-			initialise_any_serialiser
-			initialise_visitor(an_ontology)
+			make_validator
+			target := a_target
+		end
+
+feature -- Access
+
+	target: AUTHORED_RESOURCE
+			-- target of this validator
+
+	validate is
+			-- True if all structures obey their invariants
+		do
+			passed := True
+			if target.original_language = Void then
+				errors.append("No original language%N")
+				passed := False
+			end
+			validate_description
+			validate_translations
 		end
 
 feature {NONE} -- Implementation
 
-	serialise_occurrences(a_node: C_OBJECT; depth: INTEGER) is
-			-- any positive range
-		deferred
+	validate_description is
+			-- TODO
+		do
 		end
 
-	serialise_existence(a_node: C_ATTRIBUTE; depth: INTEGER) is
-			-- can only  be a range of 0..1 or 1..1
-		deferred
-		end
-
-	serialise_cardinality(a_node: C_ATTRIBUTE; depth: INTEGER) is
-			-- includes a range and possibly ordered, unique qualifiers
-		deferred
+	validate_translations is
+			-- TODO
+		do
 		end
 
 end
@@ -69,13 +79,14 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is cadl_serialiser.e.
+--| The Original Code is authored_resource_validator.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2007
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):
+--|	Sam Heard
 --|
 --| Alternatively, the contents of this file may be used under the terms of
 --| either the GNU General Public License Version 2 or later (the 'GPL'), or

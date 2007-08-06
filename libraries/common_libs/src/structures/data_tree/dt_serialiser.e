@@ -11,73 +11,12 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-deferred class DT_SERIALISER 
+deferred class DT_SERIALISER
 
 inherit
 	ANY_SERIALISER
-		redefine
-			initialise
-		end
 
-feature -- Initialisation
-
-	initialise is
-			-- set up serialiser
-		do
-			precursor
-		end
-	
-feature -- Modification
-
-	start_complex_object_node(a_node: DT_COMPLEX_OBJECT_NODE; depth: INTEGER) is
-			-- start serialising an DT_COMPLEX_OBJECT_NODE
-		deferred
-		end
-		
-	end_complex_object_node(a_node: DT_COMPLEX_OBJECT_NODE; depth: INTEGER) is
-			-- end serialising an DT_COMPLEX_OBJECT_NODE
-		deferred	
-		end
-
-	start_attribute_node(a_node: DT_ATTRIBUTE_NODE; depth: INTEGER) is
-			-- start serialising an DT_ATTRIBUTE_NODE
-		deferred
-		end
-		
-	end_attribute_node(a_node: DT_ATTRIBUTE_NODE; depth: INTEGER) is
-			-- end serialising an DT_ATTRIBUTE_NODE
-		deferred
-		end
-
-	start_primitive_object(a_node: DT_PRIMITIVE_OBJECT; depth: INTEGER) is
-			-- start serialising a DT_OBJECT_SIMPLE
-		deferred
-		end
-		
-	end_primitive_object(a_node: DT_PRIMITIVE_OBJECT; depth: INTEGER) is
-			-- end serialising a DT_OBJECT_SIMPLE
-		deferred
-		end
-
-	start_primitive_object_list(a_node: DT_PRIMITIVE_OBJECT_LIST; depth: INTEGER) is
-			-- start serialising an DT_OBJECT_SIMPLE_LIST
-		deferred
-		end
-		
-	end_primitive_object_list(a_node: DT_PRIMITIVE_OBJECT_LIST; depth: INTEGER) is
-			-- end serialising an DT_OBJECT_SIMPLE_LIST
-		deferred
-		end
-
-	start_primitive_object_interval(a_node: DT_PRIMITIVE_OBJECT_INTERVAL; depth: INTEGER) is
-			-- start serialising a DT_OBJECT_SIMPLE
-		deferred
-		end
-		
-	end_primitive_object_interval(a_node: DT_PRIMITIVE_OBJECT_INTERVAL; depth: INTEGER) is
-			-- end serialising a DT_OBJECT_SIMPLE
-		deferred
-		end
+	DT_VISITOR
 
 end
 

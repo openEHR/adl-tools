@@ -1,11 +1,9 @@
 indexing
 	component:   "openEHR Archetype Project"
 	description: "[
-				 Archetype cross-reference table validator. The ARCHEYPE class has a number of
-				 xref tables it uses to keep track of the codes in the ontology and where they
-				 are used in the archetype definition; these tables are used to test validity,
-				 e.g. if a code is mentioned in the definition but not defined in the ontology
-				 etc. This object is used in a traversal to populate the xref tables.
+				 Archetype visitor to look for attributes that are either multiple or have multiple alternatives, whose
+				 child objects are not identified, but only if the children are not C_PRIMITIVEs or
+				 C_C_Os whose values are C_PRMITIVEs. Record any such nodes as warnings
 		         ]"
 	keywords:    "visitor, constraint model"
 	author:      "Thomas Beale"
@@ -17,7 +15,7 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class C_XREF_BUILDER
+class C_UNIDENTIFIED_NODE_CHECKER
 
 inherit
 	C_VISITOR
@@ -33,42 +31,19 @@ feature -- Initialisation
 			Ontology_valid: an_ontology /= Void
 		do
 			initialise_visitor(an_ontology)
-			create node_ids_xref_table.make(0)
-			create code_nodes_code_xref_table.make(0)
-			create use_node_path_xref_table.make(0)
-			create constraint_codes_xref_table.make(0)
+			create warnings.make(0)
 		end
 
 feature -- Access
 
-	node_ids_xref_table: HASH_TABLE[ARRAYED_LIST[C_OBJECT], STRING]
-			-- table of {list<node>, code} for term codes which identify nodes in archetype (note that there
-			-- are other uses of term codes from the ontology, which is why this attribute is not just called
-			-- 'term_codes_xref_table')
-
-	constraint_codes_xref_table: HASH_TABLE[ARRAYED_LIST[C_OBJECT], STRING]
-			-- table of {list<node>, code} for constraint codes in archetype
-
-	code_nodes_code_xref_table: HASH_TABLE[ARRAYED_LIST[C_OBJECT], STRING]
-			-- table of {list<node>, code} for term codes which appear in archetype nodes as data,
-			-- e.g. in C_DV_ORDINAL and C_CODE_PHRASE types
-
-	use_node_path_xref_table: HASH_TABLE[ARRAYED_LIST[ARCHETYPE_INTERNAL_REF], STRING]
-			-- table of {list<ARCHETYPE_INTERNAL_REF>, target_path}
-			-- i.e. <list of use_nodes> keyed by path they point to
-			-- FIXME - maybe should move back to ARCHETYPE
+	warnings: STRING
 
 feature -- Visitor
 
 	start_c_complex_object(a_node: C_COMPLEX_OBJECT; depth: INTEGER) is
 			-- enter an C_COMPLEX_OBJECT
 		do
-			if a_node.is_addressable then
-				if not node_ids_xref_table.has(a_node.node_id) then
-					node_ids_xref_table.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.node_id)
-				end
-				node_ids_xref_table.item(a_node.node_id).extend(a_node)
-			end
+			-- nothing required
 		end
 
 	end_c_complex_object(a_node: C_COMPLEX_OBJECT; depth: INTEGER) is
@@ -80,12 +55,7 @@ feature -- Visitor
 	start_archetype_slot(a_node: ARCHETYPE_SLOT; depth: INTEGER) is
 			-- enter an ARCHETYPE_SLOT
 		do
-			if a_node.is_addressable then
-				if not node_ids_xref_table.has(a_node.node_id) then
-					node_ids_xref_table.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.node_id)
-				end
-				node_ids_xref_table.item(a_node.node_id).extend(a_node)
-			end
+			-- nothing required
 		end
 
 	end_archetype_slot(a_node: ARCHETYPE_SLOT; depth: INTEGER) is
@@ -95,9 +65,53 @@ feature -- Visitor
 		end
 
 	start_c_attribute(a_node: C_ATTRIBUTE; depth: INTEGER) is
-			-- enter an C_ATTRIBUTE
+			-- FIXME: this can probably be done in a smarter way by an analysis of paths?
+		local
+			a_c_c_o, a_c_c_o_2: C_COMPLEX_OBJECT
+			a_c_attr2: C_ATTRIBUTE
+			found: BOOLEAN
 		do
-			-- nothing required
+			-- only check nodes that are either multiple or are single but have multiple alternate children					
+			if a_node /= Void and (a_node.is_multiple or else a_node.child_count > 1) then
+				from
+					a_node.children.start
+				until
+					a_node.children.off
+				loop
+					a_c_c_o ?= a_node.children.item
+
+					if a_c_c_o /= Void and not a_c_c_o.is_addressable then
+						-- see if it has children other than C_LEAF_OBJECTs
+						from
+							found := False
+							a_c_c_o.attributes.start
+						until
+							a_c_c_o.attributes.off or found
+						loop
+							a_c_attr2 := a_c_c_o.attributes.item
+
+							from
+								a_c_attr2.children.start
+							until
+								a_c_attr2.children.off or found
+							loop
+								a_c_c_o_2 ?= a_c_attr2.children.item
+								if a_c_c_o_2 /= Void then
+									warnings.append("child node of type " + a_c_c_o.rm_type_name + " at path " +
+										a_node.path + " has no id.%N")
+									found := True
+								end
+								a_c_attr2.children.forth
+							end
+
+							a_c_c_o.attributes.forth
+						end
+					end
+					a_node.children.forth
+				end
+			else
+
+			end
 		end
 
 	end_c_attribute(a_node: C_ATTRIBUTE; depth: INTEGER) is
@@ -109,10 +123,7 @@ feature -- Visitor
 	start_archetype_internal_ref(a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER) is
 			-- enter an ARCHETYPE_INTERNAL_REF
 		do
-			if not use_node_path_xref_table.has(a_node.target_path) then
-				use_node_path_xref_table.put(create {ARRAYED_LIST[ARCHETYPE_INTERNAL_REF]}.make(0), a_node.target_path)
-			end
-			use_node_path_xref_table.item(a_node.target_path).extend(a_node)
+			-- nothing required
 		end
 
 	end_archetype_internal_ref(a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER) is
@@ -124,10 +135,7 @@ feature -- Visitor
 	start_constraint_ref(a_node: CONSTRAINT_REF; depth: INTEGER) is
 			-- enter a CONSTRAINT_REF
 		do
-			if not constraint_codes_xref_table.has(a_node.target) then
-				constraint_codes_xref_table.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.target)
-			end
-			constraint_codes_xref_table.item(a_node.target).extend(a_node)
+			-- nothing required
 		end
 
 	end_constraint_ref(a_node: CONSTRAINT_REF; depth: INTEGER) is
@@ -163,19 +171,7 @@ feature -- Visitor
 	start_c_code_phrase(a_node: C_CODE_PHRASE; depth: INTEGER) is
 			-- enter an C_CODE_PHRASE
 		do
-			if not a_node.any_allowed and then (a_node.is_local and a_node.code_count > 0) then
-				from
-					a_node.code_list.start
-				until
-					a_node.code_list.off
-				loop
-					if not code_nodes_code_xref_table.has(a_node.code_list.item) then
-						code_nodes_code_xref_table.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.code_list.item)
-					end
-					code_nodes_code_xref_table.item(a_node.code_list.item).extend(a_node)
-					a_node.code_list.forth
-				end
-			end
+			-- nothing required
 		end
 
 	end_c_code_phrase(a_node: C_CODE_PHRASE; depth: INTEGER) is
@@ -187,19 +183,7 @@ feature -- Visitor
 	start_c_ordinal(a_node: C_DV_ORDINAL; depth: INTEGER) is
 			-- enter an C_DV_ORDINAL
 		do
-			if not a_node.any_allowed and then a_node.is_local then
-				from
-					a_node.items.start
-				until
-					a_node.items.off
-				loop
-					if not code_nodes_code_xref_table.has(a_node.items.item.symbol.code_string) then
-						code_nodes_code_xref_table.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.items.item.symbol.code_string)
-					end
-					code_nodes_code_xref_table.item(a_node.items.item.symbol.code_string).extend(a_node)
-					a_node.items.forth
-				end
-			end
+			-- nothing required
 		end
 
 	end_c_ordinal(a_node: C_DV_ORDINAL; depth: INTEGER) is
