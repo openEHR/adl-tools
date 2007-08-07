@@ -224,9 +224,11 @@ feature -- Commands
 				need_to_set_repository := True
 			end
 
-			archetype_directory.put_repository (reference_repository_path, "reference")
+			if archetype_directory.valid_repository_path (reference_repository_path) then
+				archetype_directory.put_repository (reference_repository_path, "reference")
+			end
 
-			if not work_repository_path.is_empty then
+			if archetype_directory.valid_repository_path (work_repository_path) then
 				archetype_directory.put_repository (work_repository_path, "work")
 			end
 

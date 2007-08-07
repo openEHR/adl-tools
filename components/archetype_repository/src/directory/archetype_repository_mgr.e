@@ -223,6 +223,7 @@ feature -- Commands
 		local
 			repository: ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP
 		do
+			-- FIXME: If there is no reference repository, this wrongly sets group id 2 to the work repository:
 			create repository.make (dir_name, source_repositories.count + 2)
 			source_repositories.force (repository, repository_id)
 		end
