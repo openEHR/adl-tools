@@ -15,13 +15,13 @@ class ASSERTION_SERIALISER_MGR
 
 inherit
 	SHARED_ASSERTION_SERIALISERS
-	
+
 create
 	make
 
 feature -- Initialisation
 
-	make(a_target: ARRAYED_LIST [ASSERTION]; format: STRING) is 
+	make(a_target: ARRAYED_LIST [ASSERTION]; format: STRING) is
 			-- create a new manager targetted to the parse tree `a_target'
 		require
 			Target_exists: a_target /= Void
@@ -38,20 +38,19 @@ feature -- Command
 			-- start the serialisation process; the result will be in `serialiser_output'
 		do
 			serialiser.start_assertion(target, 0)
-			serialiser.finalise
 		end
 
 feature -- Access
 
-	last_result: STRING is 
+	last_result: STRING is
 		do
 			Result := serialiser.last_result
 		end
 
 feature {NONE} -- Implementation
-	
+
 	serialiser: ASSERTION_SERIALISER
-	
+
 	target: ARRAYED_LIST [ASSERTION]
 
 end
