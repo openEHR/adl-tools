@@ -13,7 +13,7 @@ indexing
 	last_change: "$LastChangedDate$"
 
 class TC_ARCHETYPE_CREATE
-	
+
 inherit
 	TEST_CASE
 		export
@@ -24,7 +24,7 @@ inherit
 		export
 			{NONE} all
 		end
-		
+
 create
 	make
 
@@ -46,17 +46,18 @@ feature -- testing
 			a_term: ARCHETYPE_TERM
 			archetype: ARCHETYPE
 		do
-			adl_interface.create_new_archetype("openehr", "ehr", "SECTION", "en")
-			archetype := adl_interface.archetype
+			archetype_compiler.create_new_archetype ("openehr", "ehr", "SECTION", "en")
+			archetype := archetype_compiler.archetype
 
 			if archetype.is_valid then
-				adl_interface.serialise_archetype (serialise_format)	
-				io_message.put_string(adl_interface.serialised_archetype)	
+				archetype_compiler.serialise_archetype (serialise_format)
+				io_message.put_string(archetype_compiler.serialised_archetype)
 			else
-				io_message.put_string(archetype.errors)	
+				-- FIXME: This did not compile because of revision 319. What should it do?
+				io_message.put_string (archetype.errors)
 			end
 		end
-	
+
 end
 
 --|

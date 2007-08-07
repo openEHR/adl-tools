@@ -13,7 +13,7 @@ indexing
 	last_change: "$LastChangedDate$"
 
 class TC_ARCHETYPE_ADD_OBJECT_ORDINAL
-	
+
 inherit
 	TEST_CASE
 		export
@@ -21,12 +21,12 @@ inherit
 		redefine
 			prereqs
 		end
-		
+
 	SHARED_TEST_ENV
 		export
 			{NONE} all
 		end
-		
+
 create
 	make
 
@@ -40,7 +40,7 @@ feature -- Access
 
 	title: STRING is "Test Archetype Add C_DV_ORDINAL node"
 
-	prereqs: ARRAY[STRING] is 
+	prereqs: ARRAY[STRING] is
 			-- ids of prerequisite test cases
 		once
 			Result := <<"TC_ARCHETYPE_CREATE", "TC_ONTOLOGY_OPOULATE">>
@@ -51,20 +51,20 @@ feature -- testing
 	execute is
 		local
 			archetype: ARCHETYPE
-			cf: CONSTRAINT_MODEL_FACTORY
+			cf: C_FACTORY
 			an_attr_node: C_ATTRIBUTE
 			an_ordinal_node: C_DV_ORDINAL
 			an_ordinal: ORDINAL
 			a_term: ARCHETYPE_TERM
 		do
-			archetype := adl_interface.adl_engine.archetype
+			archetype := archetype_compiler.archetype
 
 			-- set root node term to first term added and make it a SECTION type
-			cf := adl_interface.constraint_model_factory
-			
+			cf := archetype_compiler.constraint_model_factory
+
 			-- set id on root node
 			archetype.definition.set_object_id("at0001")
-			
+
 			-- add ordinal node
 			an_attr_node := cf.create_c_attribute_single (archetype.definition, "an_ordinal")
 			an_ordinal_node := cf.create_c_dv_ordinal(an_attr_node)
@@ -94,13 +94,14 @@ feature -- testing
 			an_ordinal_node := cf.create_c_dv_ordinal(an_attr_node)
 
 			if archetype.is_valid then
-				adl_interface.adl_engine.serialise (serialise_format)	
-				io.put_string(adl_interface.adl_engine.serialised_archetype)	
+				archetype_compiler.serialise_archetype (serialise_format)
+				io.put_string (archetype_compiler.serialised_archetype)
 			else
-				io.put_string(archetype.errors)	
+				-- FIXME: This did not compile because of revision 319. What should it do?
+				io.put_string(archetype.errors)
 			end
 		end
-	
+
 end
 
 --|

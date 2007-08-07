@@ -40,7 +40,7 @@ inherit
 			default_rescue
 		end
 
-	SHARED_ADL_INTERFACE
+	SHARED_ARCHETYPE_COMPILER
 		export
 			{NONE} all
 		undefine
@@ -77,8 +77,8 @@ feature -- Exception Handling
 	default_rescue is
 			-- clean up after failed call
 		do
-			adl_interface.set_status("Software Exception " + exception.out + " caught; stack:%N" + exception_trace)
-			adl_interface.set_exception_encountered
+			archetype_compiler.set_status ("Software Exception " + exception.out + " caught; stack:%N" + exception_trace)
+			archetype_compiler.set_exception_encountered
 		end
 
 feature -- Access
@@ -88,7 +88,7 @@ feature -- Access
 		local
 			obj: ANY
 		do
-			obj := adl_interface.status.to_c
+			obj := archetype_compiler.status.to_c
 			Result := $obj
 		end
 
@@ -99,7 +99,7 @@ feature -- Access
 		local
 			obj: ANY
 		do
-			obj := adl_interface.serialised_archetype.to_c
+			obj := archetype_compiler.serialised_archetype.to_c
 			Result := $obj
 		end
 
@@ -108,7 +108,7 @@ feature -- Access
 		local
 			obj: ANY
 		do
-			obj := adl_interface.openehr_version.to_c
+			obj := archetype_compiler.openehr_version.to_c
 			Result := $obj
 		end
 
@@ -117,42 +117,46 @@ feature -- Status Report
 	archetype_source_loaded: BOOLEAN is
 			-- True if an ADL file has been opened and loaded
 		do
-			Result := adl_interface.archetype_source_loaded
+			-- FIXME: This did not compile. What should it do?
+			Result := archetype_compiler.archetype_source_loaded
 		end
 
 	parse_succeeded: BOOLEAN is
 			-- True if parse has been successfully executed
 		do
-			Result := adl_interface.parse_succeeded
+			-- FIXME: This did not compile. What should it do?
+			Result := archetype_compiler.parse_succeeded
 		end
 
 	save_succeeded: BOOLEAN is
 			-- True if last save operation was successful
 		do
-			Result := adl_interface.save_succeeded
+			Result := archetype_compiler.save_succeeded
 		end
 
 	archetype_available: BOOLEAN is
 		do
-			Result := adl_interface.archetype_available
+			-- FIXME: This did not compile. What should it do?
+			Result := archetype_compiler.archetype_available
 		end
 
 	archetype_valid: BOOLEAN is
 		do
-			Result := adl_interface.archetype_valid
+			Result := archetype_compiler.archetype_valid
 		end
 
 	file_changed_on_disk: BOOLEAN is
 			-- True if loaded archetype has changed on disk since last read;
 			-- To fix, call resync_file
 		do
-			Result := adl_interface.file_changed_on_disk
+			-- FIXME: This did not compile. What should it do?
+			Result := archetype_compiler.file_changed_on_disk
 		end
 
 	exception_encountered: BOOLEAN is
 			-- True if last operation caused an exception
 		do
-			Result := adl_interface.exception_encountered
+			Result := archetype_compiler.exception_encountered
 		end
 
 	has_archetype_serialiser_format(a_format: POINTER): BOOLEAN is
@@ -163,7 +167,7 @@ feature -- Status Report
 			c_a_format: BASE_C_STRING
 		do
 			create c_a_format.make_by_pointer (a_format)
-			Result := adl_interface.has_archetype_serialiser_format(c_a_format.string)
+			Result := archetype_compiler.has_archetype_serialiser_format(c_a_format.string)
 		end
 
 feature -- Commands
@@ -175,7 +179,8 @@ feature -- Commands
 			c_a_dir: BASE_C_STRING
 		do
 			create c_a_dir.make_by_pointer (a_dir)
-			adl_interface.set_current_directory (c_a_dir.string)
+			-- FIXME: This did not compile. What should it do?
+			archetype_compiler.set_current_directory (c_a_dir.string)
 		end
 
 	create_new_archetype(a_im_originator, a_im_name, a_im_entity, a_primary_language: POINTER) is
@@ -192,14 +197,14 @@ feature -- Commands
 			create c_a_im_name.make_by_pointer (a_im_name)
 			create c_a_im_entity.make_by_pointer (a_im_entity)
 			create c_a_primary_language.make_by_pointer (a_primary_language)
-			adl_interface.create_new_archetype(c_a_im_originator.string,
+			archetype_compiler.create_new_archetype(c_a_im_originator.string,
 									c_a_im_name.string,
 									c_a_im_entity.string,
 									c_a_primary_language.string)
 
 			-- put newly created objects into shared object cache for acces from other side of C interface
-			set_archetype_definition_handle(adl_objects.new_handle)
-			put_c_complex_object(adl_interface.adl_engine.archetype.definition, adl_objects.archetype_definition_handle)
+			set_archetype_definition_handle (adl_objects.new_handle)
+			put_c_complex_object (archetype_compiler.archetype.definition, adl_objects.archetype_definition_handle)
 		end
 
 	specialise_archetype(specialised_domain_concept: POINTER) is
@@ -214,7 +219,8 @@ feature -- Commands
 			c_specialised_domain_concept: BASE_C_STRING
 		do
 			create c_specialised_domain_concept.make_by_pointer (specialised_domain_concept)
-			adl_interface.specialise_archetype(c_specialised_domain_concept.string)
+			-- FIXME: This did not compile. What should it do?
+			archetype_compiler.specialise_archetype (c_specialised_domain_concept.string)
 		end
 
 	open_adl_file(file_path: POINTER) is
@@ -224,14 +230,15 @@ feature -- Commands
 			c_file_path: BASE_C_STRING
 		do
 			create c_file_path.make_by_pointer (file_path)
-
-			adl_interface.open_adl_file(c_file_path.string)
+			-- FIXME: This did not compile. What should it do?
+			archetype_compiler.open_adl_file (c_file_path.string)
 		end
 
 	resync_file is
 			-- resync from disc
 		do
-			adl_interface.resync_file
+			-- FIXME: This did not compile. What should it do?
+			archetype_compiler.resync_file
 		end
 
 	save_archetype(file_path, save_format: POINTER) is
@@ -246,7 +253,8 @@ feature -- Commands
 			create c_file_path.make_by_pointer (file_path)
 			create c_save_format.make_by_pointer (save_format)
 
-			adl_interface.save_archetype(c_file_path.string, c_save_format.string)
+			-- FIXME: This did not compile. What should it do?
+			archetype_compiler.save_archetype (c_file_path.string, c_save_format.string)
 		end
 
 	serialise_archetype(serialise_format: POINTER) is
@@ -258,7 +266,7 @@ feature -- Commands
 			c_serialise_format: BASE_C_STRING
 		do
 			create c_serialise_format.make_by_pointer (serialise_format)
-			adl_interface.serialise_archetype(c_serialise_format.string)
+			archetype_compiler.serialise_archetype (c_serialise_format.string)
 		end
 
 	parse_archetype is
@@ -268,11 +276,11 @@ feature -- Commands
 		local
 			tree_it: C_ARCHETYPE_NODE_POPULATOR
 		do
-			adl_interface.parse_archetype
+			archetype_compiler.parse_archetype
 
 			-- put newly created objects into shared object cache for access from other side of C interface
 			if parse_succeeded then
-				create tree_it.make (adl_interface.adl_engine.archetype.definition)
+				create tree_it.make (archetype_compiler.archetype.definition)
 				tree_it.do_all
 				set_archetype_definition_handle(tree_it.root_handle)
 			end
@@ -281,7 +289,7 @@ feature -- Commands
 	reset is
 			-- reset after exception encountered
 		do
-			adl_interface.reset
+			archetype_compiler.reset
 			adl_objects.make
 		end
 end
@@ -301,7 +309,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is adl_interface.e.
+--| The Original Code is c_adl_interface.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

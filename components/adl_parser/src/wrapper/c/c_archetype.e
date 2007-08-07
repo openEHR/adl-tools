@@ -23,7 +23,7 @@ indexing
 class C_ARCHETYPE
 
 inherit
-	SHARED_ADL_INTERFACE
+	SHARED_ARCHETYPE_COMPILER
 		export
 			{NONE} all
 		end
@@ -45,7 +45,7 @@ feature -- Definitions
 		local
 			obj: ANY
 		do
-			obj := adl_interface.archetype.Default_concept_code.to_c
+			obj := archetype_compiler.archetype.Default_concept_code.to_c
 			Result := $obj
 		end
 
@@ -56,7 +56,7 @@ feature -- Access
 		local
 			obj: ANY
 		do
-			obj := adl_interface.archetype.archetype_id.as_string.to_c
+			obj := archetype_compiler.archetype.archetype_id.as_string.to_c
 			Result := $obj
 		end
 
@@ -65,7 +65,7 @@ feature -- Access
 		local
 			obj: ANY
 		do
-			obj := adl_interface.archetype.parent_archetype_id.as_string.to_c
+			obj := archetype_compiler.archetype.parent_archetype_id.as_string.to_c
 			Result := $obj
 		end
 
@@ -74,14 +74,14 @@ feature -- Access
 		local
 			obj: ANY
 		do
-			obj := adl_interface.archetype.concept.to_c
+			obj := archetype_compiler.archetype.concept.to_c
 			Result := $obj
 		end
 
 	archetype_specialisation_depth: INTEGER is
 			-- infer number of levels of specialisation from concept code
 		do
-			Result := adl_interface.archetype.specialisation_depth
+			Result := archetype_compiler.archetype.specialisation_depth
 		end
 
 	archetype_version: POINTER is
@@ -89,7 +89,7 @@ feature -- Access
 		local
 			obj: ANY
 		do
-			obj := adl_interface.archetype.version.to_c
+			obj := archetype_compiler.archetype.version.to_c
 			Result := $obj
 		end
 
@@ -98,7 +98,8 @@ feature -- Access
 		local
 			obj: ANY
 		do
-			obj := adl_interface.archetype.errors.to_c
+			-- FIXME: This did not compile because of revision 319. What should it do?
+			obj := archetype_compiler.archetype.errors.to_c
 			Result := $obj
 		end
 
@@ -107,7 +108,8 @@ feature -- Access
 		local
 			obj: ANY
 		do
-			obj := adl_interface.archetype.warnings.to_c
+			-- FIXME: This did not compile because of revision 319. What should it do?
+			obj := archetype_compiler.archetype.warnings.to_c
 			Result := $obj
 		end
 
@@ -119,25 +121,25 @@ feature -- Access
 			c_a_lang: BASE_C_STRING
 		do
 			create c_a_lang.make_by_pointer (a_lang)
-			Result := eif_list_string_to_c_array(adl_interface.archetype.logical_paths(c_a_lang.string))
+			Result := eif_list_string_to_c_array (archetype_compiler.archetype.logical_paths (c_a_lang.string))
 		end
 
 	archetype_logical_paths_count: INTEGER is
 			-- SUPPORT FUNCTION SOLELY FOR USE BY JNI LAYER TO DISCOVER ARRAY LENGTH
 		do
-			Result := adl_interface.archetype.physical_paths.count
+			Result := archetype_compiler.archetype.physical_paths.count
 		end
 
 	archetype_physical_paths: POINTER is
 			-- generate physical paths from definition structure
 		do
-			Result := eif_list_string_to_c_array(adl_interface.archetype.physical_paths)
+			Result := eif_list_string_to_c_array (archetype_compiler.archetype.physical_paths)
 		end
 
 	archetype_physical_paths_count: INTEGER is
 			-- SUPPORT FUNCTION SOLELY FOR USE BY JNI LAYER TO DISCOVER ARRAY LENGTH
 		do
-			Result := adl_interface.archetype.physical_paths.count
+			Result := archetype_compiler.archetype.physical_paths.count
 		end
 
 	archetype_physical_to_logical_path (a_phys_path: POINTER; a_lang: POINTER): POINTER is
@@ -151,7 +153,7 @@ feature -- Access
 		do
 			create c_a_phys_path.make_by_pointer (a_phys_path)
 			create c_a_lang.make_by_pointer (a_lang)
-			obj := adl_interface.archetype.physical_to_logical_path(c_a_phys_path.string, c_a_lang.string).to_c
+			obj := archetype_compiler.archetype.physical_to_logical_path (c_a_phys_path.string, c_a_lang.string).to_c
 			Result := $obj
 		end
 
@@ -172,14 +174,14 @@ feature -- Modification
 			c_a_spec_concept: BASE_C_STRING
 		do
 			create c_a_spec_concept.make_by_pointer (a_spec_concept)
-			adl_interface.archetype.convert_to_specialised(c_a_spec_concept.string)
+			archetype_compiler.archetype.convert_to_specialised (c_a_spec_concept.string)
 		end
 
 	archetype_reset_definition is
 			-- set definition back to its original state - just the root
 			-- node with all children gone
 		do
-			adl_interface.archetype.reset_definition
+			archetype_compiler.archetype.reset_definition
 		end
 
 	archetype_set_definition_node_id (a_term_code: POINTER) is
@@ -190,7 +192,7 @@ feature -- Modification
 			c_a_term_code: BASE_C_STRING
 		do
 			create c_a_term_code.make_by_pointer (a_term_code)
-			adl_interface.archetype.set_definition_node_id (c_a_term_code.string)
+			archetype_compiler.archetype.set_definition_node_id (c_a_term_code.string)
 		end
 
 feature -- Status Report
@@ -201,27 +203,27 @@ feature -- Status Report
 			c_a_path: BASE_C_STRING
 		do
 			create c_a_path.make_by_pointer (a_path)
-			Result := adl_interface.archetype.has_physical_path(c_a_path.string)
+			Result := archetype_compiler.archetype.has_physical_path (c_a_path.string)
 		end
 
 	archetype_has_warnings: BOOLEAN is
 			-- True if warnings from last call to validate
 		do
-			Result := adl_interface.archetype.has_warnings
+			-- FIXME: This did not compile because of revision 319. What should it do?
+			Result := archetype_compiler.archetype.has_warnings
 		end
 
 	archetype_is_specialised: BOOLEAN is
 			-- 	True if this archetype identifies a specialisation parent
 		do
-			Result := adl_interface.archetype.is_specialised
+			Result := archetype_compiler.archetype.is_specialised
 		end
 
 	archetype_is_valid: BOOLEAN is
 			-- is archetype in valid state?
 		do
-			Result := adl_interface.archetype.is_valid
+			Result := archetype_compiler.archetype.is_valid
 		end
-
 
 end
 

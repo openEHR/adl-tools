@@ -13,7 +13,7 @@ indexing
 	last_change: "$Date"
 
 class TC_ONTOLOGY_REMOVE_UNUSED_CODES
-	
+
 inherit
 	TEST_CASE
 		export
@@ -21,12 +21,12 @@ inherit
 		redefine
 			prereqs
 		end
-		
+
 	SHARED_TEST_ENV
 		export
 			{NONE} all
 		end
-		
+
 create
 	make
 
@@ -40,7 +40,7 @@ feature -- Access
 
 	title: STRING is "Remove unused codes"
 
-	prereqs: ARRAY[STRING] is 
+	prereqs: ARRAY[STRING] is
 			-- ids of prerequisite test cases
 		once
 			Result := <<"TC_ARCHETYPE_CREATE">>
@@ -52,18 +52,19 @@ feature -- testing
 		local
 			archetype: ARCHETYPE
 		do
-
-			archetype := adl_interface.adl_engine.archetype
+			archetype := archetype_compiler.archetype
 			archetype.ontology_remove_unused_codes
 			io.put_string("-------------- after REMOVING unused codes --------------%N")
+
 			if archetype.is_valid then
-				adl_interface.adl_engine.serialise (serialise_format)	
-				io_message.put_string(adl_interface.adl_engine.serialised_archetype)	
+				archetype_compiler.serialise_archetype (serialise_format)
+				io_message.put_string(archetype_compiler.serialised_archetype)
 			else
-				io_message.put_string(archetype.errors)	
+				-- FIXME: This did not compile because of revision 319. What should it do?
+				io_message.put_string (archetype.errors)
 			end
 		end
-	
+
 end
 
 --|

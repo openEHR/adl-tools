@@ -2,7 +2,7 @@ indexing
 	component:   "openEHR Archetype Project"
 	description: "Test application for ADL validating parser"
 	keywords:    "test, ADL"
-	
+
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
@@ -32,7 +32,7 @@ inherit
 		redefine
 			splash
 		end
-		
+
 	SHARED_TEST_ENV
 		export
 			{NONE} all
@@ -56,8 +56,10 @@ feature -- Template
 			else
 				working_directory := application_startup_directory
 			end
-			adl_interface.set_current_directory(working_directory)
-			
+
+			-- FIXME: This does not compile. What should it do?
+			archetype_compiler.set_current_directory(working_directory)
+
 			test_initialised := True
 		end
 
@@ -69,9 +71,9 @@ feature -- Template
 		end
 
 feature -- Template
-	
+
 	read_resource_file is
-			-- 
+			--
 		local
 			s: STRING
 		do
@@ -79,16 +81,16 @@ feature -- Template
 			s.replace_substring_all(".exe", ".cfg")
 			initialise_resource_config_file_name(s)
 		end
-		
+
 	repository: FILE_REPOSITORY
-	
+
 	splash: STRING is
 			-- create a splash string for the console
 		do
-			create Result.make(0)
+			create Result.make_empty
 			Result.append("%N..........................................................................%N")
-			Result.append(  ".           Ocean Informatics Validating ADL Parser (c)2003 - 2004       .%N")
-			Result.append(  adl_interface.openehr_version + "%N")
+			Result.append(  ".           Ocean Informatics Validating ADL Parser (c)2003 - 2007       .%N")
+			Result.append(  current_adl_version + "%N")
 			Result.append(  "..........................................................................%N")
 			Result.append(  ". available from: www.OceanInformatics.biz                               .%N")
 			Result.append(  ".         author: Thomas Beale                                           .%N")
@@ -96,13 +98,13 @@ feature -- Template
 			Result.append(  ".                 Gobo parsing libraries & tools (see www.gobosoft.com)  .%N")
 			Result.append(  ".        support: support@OceanInformatics.biz                           .%N")
 			Result.append(  "..........................................................................%N%N")
-
 		end
 
 	working_directory: STRING
-		
+
 	archetype_file_name_pattern: STRING is "^[a-z][a-z0-9_]*-[a-z][a-z0-9_]*-[a-z][a-z0-9_]*\.[a-z][a-z0-9\-_]*\.[a-z][a-z0-9_]*\.adl$"
 			-- matches "rm_originator-rm_name-rm_entity.concept.version.adl"
+
 end
 
 

@@ -58,7 +58,7 @@ feature -- testing
 			a_code: STRING
 			a_term: ARCHETYPE_TERM
 			archetype: ARCHETYPE
-			cf: CONSTRAINT_MODEL_FACTORY
+			cf: C_FACTORY
 			an_attr_node, top_items_node: C_ATTRIBUTE
 			an_obj_node, obj_node2, neonate_section_node, mother_section_node: C_COMPLEX_OBJECT
 			a_simple_node: C_PRIMITIVE_OBJECT
@@ -68,8 +68,8 @@ feature -- testing
 			match_op: EXPR_BINARY_OPERATOR
 			an_arch_slot: ARCHETYPE_SLOT
 		do
-			archetype := adl_interface.archetype
-			cf := adl_interface.constraint_model_factory
+			archetype := archetype_compiler.archetype
+			cf := archetype_compiler.constraint_model_factory
 
 			-- add name node
 			an_attr_node := cf.create_c_attribute_single (archetype.definition, "name")
@@ -131,10 +131,11 @@ feature -- testing
 			an_arch_slot.add_include(an_assertion)
 
 			if archetype.is_valid then
-				adl_interface.adl_engine.serialise (serialise_format)
-				io.put_string(adl_interface.adl_engine.serialised_archetype)
+				archetype_compiler.serialise_archetype (serialise_format)
+				io.put_string(archetype_compiler.serialised_archetype)
 			else
-				io.put_string(archetype.errors)
+				-- FIXME: This did not compile because of revision 319. What should it do?
+				io.put_string (archetype.errors)
 			end
 		end
 

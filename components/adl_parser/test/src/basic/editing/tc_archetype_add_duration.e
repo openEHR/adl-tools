@@ -51,15 +51,15 @@ feature -- testing
 	execute is
 		local
 			archetype: ARCHETYPE
-			cf: CONSTRAINT_MODEL_FACTORY
+			cf: C_FACTORY
 			an_attr_node: C_ATTRIBUTE
 			a_duration: C_DURATION
 			c_prim: C_PRIMITIVE_OBJECT
 		do
-			archetype := adl_interface.adl_engine.archetype
+			archetype := archetype_compiler.archetype
 
 			-- set root node term to first term added
-			cf := adl_interface.constraint_model_factory
+			cf := archetype_compiler.constraint_model_factory
 
 			-- add duration attribute
 			an_attr_node := cf.create_c_attribute_single (archetype.definition, "a_duration")
@@ -68,9 +68,10 @@ feature -- testing
 			c_prim := cf.create_c_primitive_object (an_attr_node, a_duration)
 
 			if archetype.is_valid then
-				adl_interface.adl_engine.serialise (serialise_format)
-				io.put_string(adl_interface.adl_engine.serialised_archetype)
+				archetype_compiler.serialise_archetype (serialise_format)
+				io.put_string (archetype_compiler.serialised_archetype)
 			else
+				-- FIXME: This did not compile because of revision 319. What should it do?
 				io.put_string(archetype.errors)
 			end
 		end

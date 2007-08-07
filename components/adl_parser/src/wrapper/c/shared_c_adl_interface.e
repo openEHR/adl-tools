@@ -17,13 +17,13 @@ indexing
 class SHARED_C_ADL_INTERFACE
 
 inherit
-	SHARED_ARCHETYPE_CONTEXT
-	
+	SHARED_APPLICATION_CONTEXT
+
 feature {NONE} -- Implementation
 
-	c_adl_interface: C_ADL_INTERFACE is 
+	c_adl_interface: C_ADL_INTERFACE is
 		once
-			create Result.make			
+			create Result.make
 		end
 
 end

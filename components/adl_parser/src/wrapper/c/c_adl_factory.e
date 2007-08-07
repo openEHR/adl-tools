@@ -23,7 +23,7 @@ indexing
 class C_ADL_FACTORY
 
 inherit
-	SHARED_CONSTRAINT_MODEL_FACTORY
+	SHARED_C_FACTORY
 		export
 			{NONE} all
 		end
