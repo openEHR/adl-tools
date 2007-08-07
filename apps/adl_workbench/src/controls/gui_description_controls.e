@@ -113,12 +113,14 @@ feature {NONE} -- Implementation
 
 	populate_authorship is
 			-- populate authorship fields
+		require
+			archetype_selected: archetype_directory.has_selected_archetype_descriptor
 		local
 			contribs: ARRAYED_LIST [STRING]
 			sts: STRING
 		do
 			-- original author: tagged list of strings
-			populate_ev_multi_list_from_hash(gui.arch_desc_auth_orig_auth_mlist, archetype_directory.selected_archetype.description.original_author)
+			populate_ev_multi_list_from_hash (gui.arch_desc_auth_orig_auth_mlist, archetype_directory.selected_archetype.description.original_author)
 
 			-- status
 			sts := archetype_directory.selected_archetype.description.lifecycle_state
@@ -137,7 +139,9 @@ feature {NONE} -- Implementation
 		end
 
 	populate_details is
-			-- populate details (language senstive)
+			-- Populate details (language sensitive).
+		require
+			archetype_selected: archetype_directory.has_selected_archetype_descriptor
 		local
 			arch_desc_item: RESOURCE_DESCRIPTION_ITEM
 		do
@@ -162,6 +166,8 @@ feature {NONE} -- Implementation
 
 	populate_resources is
 			-- populate resources fields
+		require
+			archetype_selected: archetype_directory.has_selected_archetype_descriptor
 		local
 			arch_pkg_uri: URI
 			arch_desc_item: RESOURCE_DESCRIPTION_ITEM

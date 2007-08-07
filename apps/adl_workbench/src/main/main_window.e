@@ -433,7 +433,7 @@ feature {NONE} -- Commands
 					set_current_work_directory (save_dialog.file_path)
 				end
 			else
-				create error_dialog.make_with_text("must parse before serialising")
+				create error_dialog.make_with_text ("Must parse before serialising.")
 				error_dialog.show_modal_to_window (Current)
 			end
 		end
@@ -441,7 +441,9 @@ feature {NONE} -- Commands
 	edit_archetype is
 			-- launch external editor with archetype
 		do
-			execution_environment.launch(editor_command + " " + archetype_directory.selected_descriptor.full_path)
+			if archetype_directory.has_selected_archetype_descriptor then
+				execution_environment.launch (editor_command + " " + archetype_directory.selected_descriptor.full_path)
+			end
 		end
 
 	parse_archetype is
@@ -450,14 +452,17 @@ feature {NONE} -- Commands
 			do_with_wait_cursor (agent
 				do
 					clear_all_controls
-					archetype_compiler.parse_archetype
-					parser_status_area.append_text (archetype_compiler.status)
 
-					if archetype_directory.selected_archetype_valid then
-						populate_all_archetype_controls
-						archetype_compiler.set_archetype_readonly
-					else
-						populate_archetype_id
+					if archetype_compiler.has_target then
+						archetype_compiler.parse_archetype
+						parser_status_area.append_text (archetype_compiler.status)
+
+						if archetype_directory.selected_archetype_valid then
+							populate_all_archetype_controls
+							archetype_compiler.set_archetype_readonly
+						else
+							populate_archetype_id
+						end
 					end
 				end)
 		end
@@ -829,15 +834,26 @@ feature {EV_DIALOG} -- Implementation
 	populate_adl_version is
 			-- populate ADL version
 		do
-			adl_version_text.set_text (utf8 (archetype_directory.selected_archetype.adl_version))
+			if archetype_directory.has_selected_archetype_descriptor then
+				adl_version_text.set_text (utf8 (archetype_directory.selected_archetype.adl_version))
+			else
+				adl_version_text.remove_text
+			end
 		end
 
 	populate_languages is
 		do
 			language_combo.select_actions.block
-			language_combo.set_strings (archetype_directory.selected_archetype.languages_available)
+
+			if archetype_directory.has_selected_archetype_descriptor then
+				language_combo.set_strings (archetype_directory.selected_archetype.languages_available)
+				terminologies_list.set_strings (archetype_directory.selected_archetype.ontology.terminologies_available)
+			else
+				language_combo.wipe_out
+				terminologies_list.wipe_out
+			end
+
 			language_combo.select_actions.resume
-			terminologies_list.set_strings (archetype_directory.selected_archetype.ontology.terminologies_available)
 		end
 
 	populate_archetype_text_edit_area is
@@ -846,26 +862,30 @@ feature {EV_DIALOG} -- Implementation
 			len, left_pos, right_pos, line_cnt: INTEGER
 		do
 			create s.make_empty
-			src := archetype_directory.selected_descriptor.source
-			len := src.count
 
-			from
-				left_pos := 1
-				line_cnt := 1
-			until
-				left_pos > len
-			loop
-				create leader.make(4)
-				leader.fill_blank
-				int_val_str := line_cnt.out
-				leader.replace_substring(int_val_str, 1, int_val_str.count)
+			if archetype_directory.has_selected_archetype_descriptor then
+				src := archetype_directory.selected_descriptor.source
+				len := src.count
 
-				s.append (leader)
-				right_pos := src.index_of('%N', left_pos)
-				s.append(src.substring(left_pos, right_pos))
-				left_pos := right_pos + 1
-				line_cnt := line_cnt + 1
+				from
+					left_pos := 1
+					line_cnt := 1
+				until
+					left_pos > len
+				loop
+					create leader.make(4)
+					leader.fill_blank
+					int_val_str := line_cnt.out
+					leader.replace_substring(int_val_str, 1, int_val_str.count)
+
+					s.append (leader)
+					right_pos := src.index_of('%N', left_pos)
+					s.append(src.substring(left_pos, right_pos))
+					left_pos := right_pos + 1
+					line_cnt := line_cnt + 1
+				end
 			end
+
 			archetype_text_edit_area.set_text (utf8 (s))
 		end
 

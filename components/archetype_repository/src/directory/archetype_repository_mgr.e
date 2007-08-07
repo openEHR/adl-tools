@@ -105,13 +105,17 @@ feature -- Access
 	selected_archetype: ARCHETYPE is
 			-- archetype at currently selected archetype descriptor
 		do
-			Result := selected_descriptor.compilation_context.archetype
+			if has_selected_archetype_descriptor then
+				Result := selected_descriptor.compilation_context.archetype
+			end
 		end
 
 	selected_archetype_valid: BOOLEAN is
 			-- is archetype at currently selected archetype descriptor valid?
 		do
-			Result := selected_descriptor.compilation_context.is_valid
+			if has_selected_archetype_descriptor then
+				Result := selected_descriptor.compilation_context.is_valid
+			end
 		end
 
 feature -- Comparison
