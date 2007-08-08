@@ -197,25 +197,27 @@ feature -- Access
 			Result.append (physical_paths_cache)
 		end
 
-	logical_paths(a_lang: STRING): ARRAYED_LIST [STRING] is
+	logical_paths (a_lang: STRING): ARRAYED_LIST [STRING] is
 			-- paths with human readable terms substituted
 		require
-			a_lang /= Void and then ontology.languages_available.has(a_lang)
+			language_attached: a_lang /= Void
+			has_language: ontology.languages_available.has (a_lang)
 		local
 			phys_paths: ARRAYED_LIST [STRING]
 		do
 			-- CHANGE Sam Heard 2004-05-19
 			-- made logical paths call physical paths directly
 			-- cache is held within physical paths
-			create Result.make(0)
+			create Result.make (0)
 			Result.compare_objects
 			phys_paths := physical_paths
+
 			from
 				phys_paths.start
 			until
 				phys_paths.off
 			loop
-				Result.extend(ontology.physical_to_logical_path(phys_paths.item, a_lang))
+				Result.extend (ontology.physical_to_logical_path (phys_paths.item, a_lang))
 				phys_paths.forth
 			end
 		end
