@@ -341,6 +341,7 @@ feature {NONE} -- Commands
 			-- Let the user select an ADL file, and the load and parse it.
 		local
 			dialog: EV_FILE_OPEN_DIALOG
+			ara: ARCH_REP_ARCHETYPE
 		do
 			create dialog
 			dialog.set_start_directory (current_work_directory)
@@ -349,8 +350,10 @@ feature {NONE} -- Commands
 
 			if not dialog.file_name.is_empty then
 				archetype_directory.add_adhoc_item (dialog.file_name)
+				ara := archetype_directory.archetype_descriptor_from_full_path (dialog.file_name)
 
-				if archetype_directory.has_selected_archetype_descriptor then
+				if ara /= Void then
+					archetype_directory.set_selected_archetype_descriptor (ara)
 					archetype_view_tree_control.repopulate
 				end
 			end

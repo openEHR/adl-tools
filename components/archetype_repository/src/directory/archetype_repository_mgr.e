@@ -118,6 +118,26 @@ feature -- Access
 			end
 		end
 
+	archetype_descriptor_from_full_path (full_path: STRING): ARCH_REP_ARCHETYPE
+			-- The archetype descriptor in the directory that is designated by `full_path'; else Void.
+		require
+			path_valid: adhoc_source_repository.is_valid_path (full_path)
+		do
+			from
+				archetype_id_index.start
+			until
+				archetype_id_index.off or Result /= Void
+			loop
+				if archetype_id_index.item_for_iteration.full_path.is_equal (full_path) then
+					Result := archetype_id_index.item_for_iteration
+				end
+
+				archetype_id_index.forth
+			end
+		ensure
+			has_full_path_if_attached: Result /= Void implies Result.full_path.is_equal (full_path)
+		end
+
 feature -- Comparison
 
 	valid_repository_path (dir_name: STRING): BOOLEAN
@@ -259,15 +279,17 @@ feature -- Modification
 	set_selected_archetype_descriptor (an_arch_repos_item: ARCH_REP_ARCHETYPE)
 			-- Set `selected_descriptor'.
 		require
-			an_arch_repos_item /= Void
+			item_attached: an_arch_repos_item /= Void
 		do
 			selected_descriptor := an_arch_repos_item
+		ensure
+			set: selected_descriptor = an_arch_repos_item
 		end
 
 	set_selected_archetype_descriptor_from_ontological_path (a_path: STRING)
 			-- Set `selected_descriptor' using an ontological path like "/ehr/entry/observation/lab-result".
 		require
-			Path_valid: has_ontological_archetype_path (a_path)
+			path_valid: has_ontological_archetype_path (a_path)
 		do
 			selected_descriptor ?= ontology_index.item (a_path).item
 		end
@@ -290,22 +312,17 @@ feature -- Modification
 		end
 
 	add_adhoc_item (full_path: STRING)
-			-- Add the archetype designated by `full_path' to the ad hoc repository.
-			-- Then merge it and make it the selected archetype.
+			-- Add the archetype designated by `full_path' to the ad hoc repository, and graft it into the directory.
 		require
 			path_valid: adhoc_source_repository.is_valid_path (full_path)
-		local
-			ara: ARCH_REP_ARCHETYPE
 		do
-			adhoc_source_repository.add_item (full_path)
+			if archetype_descriptor_from_full_path (full_path) = Void then
+				adhoc_source_repository.add_item (full_path)
 
-			if adhoc_source_repository.has (full_path) then
-				ara := adhoc_source_repository [full_path]
-				graft_adhoc_item (ara)
-				set_selected_archetype_descriptor_from_archetype_id (ara.id.as_string)
+				if adhoc_source_repository.has (full_path) then
+					graft_adhoc_item (adhoc_source_repository [full_path])
+				end
 			end
-		ensure
-			has_selected_archetype_descriptor: adhoc_source_repository.has (full_path) implies has_selected_archetype_descriptor
 		end
 
 feature -- Status Report

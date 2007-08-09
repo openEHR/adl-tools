@@ -88,6 +88,7 @@ feature -- Modification
 			-- Add the archetype designated by `full_path' to this repository.
 		require
 			path_valid: is_valid_path (full_path)
+			hasnt_path: not has (full_path)
 		local
 			ara: ARCH_REP_ARCHETYPE
 		do
@@ -98,7 +99,7 @@ feature -- Modification
 			end
 		ensure
 			added_1_or_none: (0 |..| 1).has (directory.count - old directory.count)
-			has_full_path: directory.count > old directory.count implies has (full_path)
+			has_path: directory.count > old directory.count implies has (full_path)
 		end
 
 feature {NONE} -- Implementation
