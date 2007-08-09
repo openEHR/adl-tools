@@ -476,17 +476,17 @@ feature -- Access
 			-- create a splash string for the console
 		once
 			create Result.make(0)
-			Result.append("ADL Workbench (c)2003-2006 Ocean Informatics%N")
-			Result.append("%TADL version: " + Current_adl_version + "%N")
-			Result.append("%TSource SVN - http://svn.openehr.org/ref_impl_eiffel%N%T" + (create {OPENEHR_VERSION}).version + "%N")
-			Result.append("%TSource license: Mozilla tri-license (http://www.mozilla.org/MPL/boilerplate-1.1/mpl-tri-license-txt)%N")
-			Result.append("Support: support@OceanInformatics.biz%N")
-			Result.append("Funded by: OceanInformatics.biz%N")
-			Result.append("Author: Thomas Beale%N")
-			Result.append("Contributors: Peter Gummer%N")
-			Result.append("Built using%N")
-			Result.append("%TEiffel Software Eiffel (http://www.eiffel.com)%N")
-			Result.append("%TGobo parsing libraries & tools (http://www.gobosoft.com)%N")
+			Result.append ("ADL Workbench (c)2003-2007 Ocean Informatics%N")
+			Result.append ("%TADL version: " + Current_adl_version + "%N")
+			Result.append ("%TSource SVN - http://svn.openehr.org/ref_impl_eiffel%N%T" + (create {OPENEHR_VERSION}).version + "%N")
+			Result.append ("%TSource license: Mozilla tri-license (http://www.mozilla.org/MPL/boilerplate-1.1/mpl-tri-license-txt)%N")
+			Result.append ("Support: support@OceanInformatics.com%N")
+			Result.append ("Funded by: OceanInformatics.com%N")
+			Result.append ("Author: Thomas Beale%N")
+			Result.append ("Contributors: Peter Gummer%N")
+			Result.append ("Built using%N")
+			Result.append ("%TEiffel Software Eiffel (http://www.eiffel.com)%N")
+			Result.append ("%TGobo parsing libraries & tools (http://www.gobosoft.com)%N")
 		end
 
 	News_text: STRING is
