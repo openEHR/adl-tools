@@ -271,16 +271,9 @@ feature -- Commands
 		require
 			archetype_selected: archetype_directory.has_selected_archetype_descriptor
 		do
-			do_with_wait_cursor (agent
-				do
-					archetype_compiler.set_target_to_selected
-
-					if arch_notebook.selected_item = archetype_text_edit_area then
-						populate_archetype_text_edit_area
-					end
-
-					parse_archetype
-				end)
+			archetype_compiler.set_target_to_selected
+			arch_notebook_select
+			do_with_wait_cursor (agent parse_archetype)
 		end
 
 feature {NONE} -- Commands
@@ -449,22 +442,19 @@ feature {NONE} -- Commands
 	parse_archetype is
 			-- Parse the archetype currently selected.
 		do
-			do_with_wait_cursor (agent
-				do
-					clear_all_controls
+			clear_all_controls
 
-					if archetype_compiler.has_target then
-						archetype_compiler.parse_archetype
-						parser_status_area.append_text (archetype_compiler.status)
+			if archetype_compiler.has_target then
+				archetype_compiler.parse_archetype
+				parser_status_area.append_text (archetype_compiler.status)
 
-						if archetype_directory.selected_archetype_valid then
-							populate_all_archetype_controls
-							archetype_compiler.set_archetype_readonly
-						else
-							populate_archetype_id
-						end
-					end
-				end)
+				if archetype_directory.selected_archetype_valid then
+					populate_all_archetype_controls
+					archetype_compiler.set_archetype_readonly
+				else
+					populate_archetype_id
+				end
+			end
 		end
 
 	archetype_view_tree_item_select is
@@ -595,10 +585,37 @@ feature {NONE} -- Commands
 		end
 
 	arch_notebook_select is
-			-- Called by `selection_actions' of `arch_notebook'.
+			-- Redisplay the archetype's source when the selected page changes in `arch_notebook'.
+		local
+			leader, int_val_str, src, s: STRING
+			len, left_pos, right_pos, line_cnt: INTEGER
 		do
-			if arch_notebook.item_text (arch_notebook.selected_item).is_equal ("Source") then
-				populate_archetype_text_edit_area
+			if arch_notebook.selected_item = archetype_text_edit_area then
+				create s.make_empty
+
+				if archetype_directory.has_selected_archetype_descriptor then
+					src := archetype_directory.selected_descriptor.source
+					len := src.count
+
+					from
+						left_pos := 1
+						line_cnt := 1
+					until
+						left_pos > len
+					loop
+						create leader.make_filled (' ', 4)
+						int_val_str := line_cnt.out
+						leader.replace_substring (int_val_str, 1, int_val_str.count)
+
+						s.append (leader)
+						right_pos := src.index_of ('%N', left_pos)
+						s.append (src.substring (left_pos, right_pos))
+						left_pos := right_pos + 1
+						line_cnt := line_cnt + 1
+					end
+				end
+
+				archetype_text_edit_area.set_text (utf8 (s))
 			end
 		end
 
@@ -854,39 +871,6 @@ feature {EV_DIALOG} -- Implementation
 			end
 
 			language_combo.select_actions.resume
-		end
-
-	populate_archetype_text_edit_area is
-		local
-			leader, int_val_str, src, s: STRING
-			len, left_pos, right_pos, line_cnt: INTEGER
-		do
-			create s.make_empty
-
-			if archetype_directory.has_selected_archetype_descriptor then
-				src := archetype_directory.selected_descriptor.source
-				len := src.count
-
-				from
-					left_pos := 1
-					line_cnt := 1
-				until
-					left_pos > len
-				loop
-					create leader.make(4)
-					leader.fill_blank
-					int_val_str := line_cnt.out
-					leader.replace_substring(int_val_str, 1, int_val_str.count)
-
-					s.append (leader)
-					right_pos := src.index_of('%N', left_pos)
-					s.append(src.substring(left_pos, right_pos))
-					left_pos := right_pos + 1
-					line_cnt := line_cnt + 1
-				end
-			end
-
-			archetype_text_edit_area.set_text (utf8 (s))
 		end
 
 feature {NONE} -- Implementation
