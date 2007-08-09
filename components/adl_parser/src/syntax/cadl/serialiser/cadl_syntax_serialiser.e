@@ -20,6 +20,14 @@ class CADL_SYNTAX_SERIALISER
 
 inherit
 	C_SERIALISER
+		redefine
+			start_c_complex_object, end_c_complex_object,
+			start_c_attribute, end_c_attribute,
+			start_archetype_slot, end_archetype_slot,
+			start_archetype_internal_ref, start_constraint_ref,
+			start_c_code_phrase, start_c_ordinal, start_c_quantity,
+			start_c_primitive_object
+		end
 
 	CADL_TOKENS
 		export
@@ -196,12 +204,6 @@ feature -- Visitor
 			last_result.append(a_node.target_path + format_item(FMT_NEWLINE))
 		end
 
-	end_archetype_internal_ref(a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER) is
-			-- end serialising an ARCHETYPE_INTERNAL_REF
-		do
-			-- nothing needed
-		end
-
 	start_constraint_ref(a_node: CONSTRAINT_REF; depth: INTEGER) is
 			-- start serialising a CONSTRAINT_REF
 		do
@@ -216,11 +218,6 @@ feature -- Visitor
 			last_object_simple := True
 		end
 
-	end_constraint_ref(a_node: CONSTRAINT_REF; depth: INTEGER) is
-			-- end serialising a CONSTRAINT_REF
-		do
-		end
-
 	start_c_primitive_object(a_node: C_PRIMITIVE_OBJECT; depth: INTEGER) is
 			-- start serialising an C_PRIMITIVE_OBJECT
 		do
@@ -229,15 +226,10 @@ feature -- Visitor
 			last_object_simple := True
 		end
 
-	end_c_primitive_object(a_node: C_PRIMITIVE_OBJECT; depth: INTEGER) is
-			-- end serialising an C_PRIMITIVE_OBJECT
-		do
-			-- nothing needed
-			-- EXCEPTION TEST
-		end
-
-	start_c_domain_type(a_node: C_DOMAIN_TYPE; depth: INTEGER) is
-			-- start serialising an C_DOMAIN_TYPE
+	start_c_quantity(a_node: C_DV_QUANTITY; depth: INTEGER) is
+			-- start serialising an C_DV_QUANTITY; note that the following code is generic to all
+			-- C_DOMAIN_TYPEs not having a special syntax like C_CODE_PHRASE and C_DV_ORDINAL (and note
+			-- that in some archetypes, these types can be represented with dADL blocks)
 		do
 			if dadl_engine = Void then
 				create dadl_engine.make
@@ -245,11 +237,6 @@ feature -- Visitor
 			dadl_engine.set_tree (a_node.dt_representation)
 			dadl_engine.serialise (output_format)
 			last_result.append((create {STRING_UTILITIES}).indented(dadl_engine.serialised, create_indent(depth)))
-		end
-
-	end_c_domain_type(a_node: C_DOMAIN_TYPE; depth: INTEGER) is
-			-- end serialising an C_DOMAIN_TYPE
-		do
 		end
 
 	start_c_code_phrase(a_node: C_CODE_PHRASE; depth: INTEGER) is
@@ -310,11 +297,6 @@ feature -- Visitor
 			end
 		end
 
-	end_c_code_phrase(a_node: C_CODE_PHRASE; depth: INTEGER) is
-			-- end serialising an C_CODE_PHRASE
-		do
-		end
-
 	start_c_ordinal(a_node: C_DV_ORDINAL; depth: INTEGER) is
 			-- start serialising an C_DV_ORDINAL
 		local
@@ -370,11 +352,6 @@ feature -- Visitor
 					last_result.append(format_item(FMT_NEWLINE))
 				end
 			end
-		end
-
-	end_c_ordinal(a_node: C_DV_ORDINAL; depth: INTEGER) is
-			-- end serialising an C_DV_ORDINAL
-		do
 		end
 
 	serialise_occurrences(a_node: C_OBJECT; depth: INTEGER) is

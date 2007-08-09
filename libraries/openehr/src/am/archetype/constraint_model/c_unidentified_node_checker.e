@@ -21,6 +21,8 @@ inherit
 	C_VISITOR
 		rename
 			initialise as initialise_visitor
+		redefine
+			start_c_attribute
 		end
 
 feature -- Initialisation
@@ -39,30 +41,6 @@ feature -- Access
 	warnings: STRING
 
 feature -- Visitor
-
-	start_c_complex_object(a_node: C_COMPLEX_OBJECT; depth: INTEGER) is
-			-- enter an C_COMPLEX_OBJECT
-		do
-			-- nothing required
-		end
-
-	end_c_complex_object(a_node: C_COMPLEX_OBJECT; depth: INTEGER) is
-			-- exit an C_COMPLEX_OBJECT
-		do
-			-- nothing required
-		end
-
-	start_archetype_slot(a_node: ARCHETYPE_SLOT; depth: INTEGER) is
-			-- enter an ARCHETYPE_SLOT
-		do
-			-- nothing required
-		end
-
-	end_archetype_slot(a_node: ARCHETYPE_SLOT; depth: INTEGER) is
-			-- exit an ARCHETYPE_SLOT
-		do
-			-- nothing required
-		end
 
 	start_c_attribute(a_node: C_ATTRIBUTE; depth: INTEGER) is
 			-- FIXME: this can probably be done in a smarter way by an analysis of paths?
@@ -112,84 +90,6 @@ feature -- Visitor
 			else
 
 			end
-		end
-
-	end_c_attribute(a_node: C_ATTRIBUTE; depth: INTEGER) is
-			-- exit an C_ATTRIBUTE
-		do
-			-- nothing required
-		end
-
-	start_archetype_internal_ref(a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER) is
-			-- enter an ARCHETYPE_INTERNAL_REF
-		do
-			-- nothing required
-		end
-
-	end_archetype_internal_ref(a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER) is
-			-- exit an ARCHETYPE_INTERNAL_REF
-		do
-			-- nothing required
-		end
-
-	start_constraint_ref(a_node: CONSTRAINT_REF; depth: INTEGER) is
-			-- enter a CONSTRAINT_REF
-		do
-			-- nothing required
-		end
-
-	end_constraint_ref(a_node: CONSTRAINT_REF; depth: INTEGER) is
-			-- exit a CONSTRAINT_REF
-		do
-			-- nothing required
-		end
-
-	start_c_primitive_object(a_node: C_PRIMITIVE_OBJECT; depth: INTEGER) is
-			-- enter an C_PRIMITIVE_OBJECT
-		do
-			-- nothing required
-		end
-
-	end_c_primitive_object(a_node: C_PRIMITIVE_OBJECT; depth: INTEGER) is
-			-- exit an C_PRIMITIVE_OBJECT
-		do
-			-- nothing required
-		end
-
-	start_c_domain_type(a_node: C_DOMAIN_TYPE; depth: INTEGER) is
-			-- enter an C_DOMAIN_TYPE
-		do
-			-- nothing required
-		end
-
-	end_c_domain_type(a_node: C_DOMAIN_TYPE; depth: INTEGER) is
-			-- exit an C_DOMAIN_TYPE
-		do
-			-- nothing required
-		end
-
-	start_c_code_phrase(a_node: C_CODE_PHRASE; depth: INTEGER) is
-			-- enter an C_CODE_PHRASE
-		do
-			-- nothing required
-		end
-
-	end_c_code_phrase(a_node: C_CODE_PHRASE; depth: INTEGER) is
-			-- exit an C_CODE_PHRASE
-		do
-			-- nothing required
-		end
-
-	start_c_ordinal(a_node: C_DV_ORDINAL; depth: INTEGER) is
-			-- enter an C_DV_ORDINAL
-		do
-			-- nothing required
-		end
-
-	end_c_ordinal(a_node: C_DV_ORDINAL; depth: INTEGER) is
-			-- exit an C_DV_ORDINAL
-		do
-			-- nothing required
 		end
 
 end

@@ -16,7 +16,7 @@ class ARCHETYPE_INTERNAL_REF
 inherit
 	C_REFERENCE_OBJECT
 		redefine
-			representation, is_valid, set_occurrences
+			representation, is_valid, set_occurrences, enter_subtree, exit_subtree
 		end
 
 create
@@ -90,12 +90,14 @@ feature -- Visitor
 	enter_subtree(visitor: C_VISITOR; depth: INTEGER) is
 			-- perform action at start of block for this node
 		do
+			precursor(visitor, depth)
 			visitor.start_archetype_internal_ref(Current, depth)
 		end
 
 	exit_subtree(visitor: C_VISITOR; depth: INTEGER) is
 			-- perform action at end of block for this node
 		do
+			precursor(visitor, depth)
 			visitor.end_archetype_internal_ref(Current, depth)
 		end
 

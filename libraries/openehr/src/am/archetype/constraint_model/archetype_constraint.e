@@ -18,7 +18,8 @@ inherit
 
 	SPECIALISATION_STATUSES
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} valid_specialisation_status
 		end
 
 feature -- Access
@@ -57,13 +58,17 @@ feature -- Source Control
 			end
 		end
 
-	rolled_up_specialisation_status (archetype_specialisation_level: INTEGER): SPECIALISATION_STATUS is
-			-- status of this node taking into consideration effective_specialisation_status of
-			-- all sub-nodes.
+	set_rolled_up_specialisation_status (a_status: SPECIALISATION_STATUS) is
 		require
-			valid_specialisation_level: archetype_specialisation_level >= 0
-		deferred
+			valid_specialisation_status: valid_specialisation_status(a_status.value)
+		do
+			rolled_up_specialisation_status := a_status
 		end
+
+	rolled_up_specialisation_status: SPECIALISATION_STATUS
+			-- status of this node taking into consideration effective_specialisation_status of
+			-- all sub-nodes. Used to roll up nodes on visualisation, and also to decide which
+			-- subtree to remove to convert an archetype to differential form
 
 feature -- Status Report
 

@@ -20,7 +20,7 @@ class C_PRIMITIVE_OBJECT
 inherit
 	C_LEAF_OBJECT
 		redefine
-			representation, out, is_valid
+			representation, out, is_valid, enter_subtree, exit_subtree
 		end
 
 create
@@ -106,12 +106,14 @@ feature -- Visitor
 	enter_subtree(visitor: C_VISITOR; depth: INTEGER) is
 			-- perform action at start of block for this node
 		do
+			precursor(visitor, depth)
 			visitor.start_c_primitive_object(Current, depth)
 		end
 
 	exit_subtree(visitor: C_VISITOR; depth: INTEGER) is
 			-- perform action at end of block for this node
 		do
+			precursor(visitor, depth)
 			visitor.end_c_primitive_object(Current, depth)
 		end
 

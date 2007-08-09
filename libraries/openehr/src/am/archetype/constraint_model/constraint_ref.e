@@ -20,7 +20,7 @@ class CONSTRAINT_REF
 inherit
 	C_REFERENCE_OBJECT
 		redefine
-			default_create, representation, is_valid
+			default_create, representation, is_valid, enter_subtree, exit_subtree
 		end
 
 create
@@ -81,12 +81,14 @@ feature -- Visitor
 	enter_subtree(visitor: C_VISITOR; depth: INTEGER) is
 			-- perform action at start of block for this node
 		do
+			precursor(visitor, depth)
 			visitor.start_constraint_ref(Current, depth)
 		end
 
 	exit_subtree(visitor: C_VISITOR; depth: INTEGER) is
 			-- perform action at end of block for this node
 		do
+			precursor(visitor, depth)
 			visitor.end_constraint_ref(Current, depth)
 		end
 

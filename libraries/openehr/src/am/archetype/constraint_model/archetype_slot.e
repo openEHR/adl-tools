@@ -24,7 +24,7 @@ class ARCHETYPE_SLOT
 inherit
 	C_REFERENCE_OBJECT
 		redefine
-			representation, default_create, out
+			representation, default_create, out, enter_subtree, exit_subtree
 		end
 
 creation
@@ -154,12 +154,14 @@ feature -- Visitor
 	enter_subtree(visitor: C_VISITOR; depth: INTEGER) is
 			-- perform action at start of block for this node
 		do
+			precursor(visitor, depth)
 			visitor.start_archetype_slot(Current, depth)
 		end
 
 	exit_subtree(visitor: C_VISITOR; depth: INTEGER) is
 			-- perform action at end of block for this node
 		do
+			precursor(visitor, depth)
 			visitor.end_archetype_slot(Current, depth)
 		end
 

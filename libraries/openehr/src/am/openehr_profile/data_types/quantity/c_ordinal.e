@@ -17,7 +17,7 @@ class C_DV_ORDINAL
 inherit
 	C_DOMAIN_TYPE
 		redefine
-			default_create
+			default_create, enter_subtree, exit_subtree, synchronise_to_tree
 		end
 
 create
@@ -156,20 +156,29 @@ feature -- Conversion
 		do
 		end
 
+feature -- Synchronisation
+
+	synchronise_to_tree is
+			-- synchronise to parse tree representation
+		do
+            if any_allowed then -- only represent as an inline dADL if any_allowed, else use syntax
+				precursor
+			end
+		end
+
 feature -- Visitor
 
 	enter_subtree(visitor: C_VISITOR; depth: INTEGER) is
 			-- perform action at start of block for this node
 		do
-            if any_allowed then
-                synchronise_to_tree
-            end
+            precursor(visitor, depth)
 			visitor.start_c_ordinal(Current, depth)
 		end
 
 	exit_subtree(visitor: C_VISITOR; depth: INTEGER) is
 			-- perform action at end of block for this node
 		do
+            precursor(visitor, depth)
 			visitor.end_c_ordinal(Current, depth)
 		end
 

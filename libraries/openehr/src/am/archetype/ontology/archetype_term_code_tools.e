@@ -42,6 +42,11 @@ feature -- Definitions
 
 	Constraint_code_leader: STRING is "ac"
 
+	Special_top_level_code: STRING is "0000"
+			-- FIXME: the 0000 code should not be allowed to be used in an archetype
+			-- definition secton, since it violates the rule that a '0' code means
+			-- "not defined here" (i.e. it is normally a filler for lower down codes)
+
 feature -- Access
 
 	specialisation_parent_from_code(a_code: STRING): STRING is
@@ -63,21 +68,28 @@ feature -- Access
 			Code_valid: a_code /= Void and then not a_code.is_empty
 			Depth_valid: a_depth >= 0 and a_depth <= specialisation_depth_from_code(a_code)
 		local
-			this_code_exists, parent_code_exists: BOOLEAN
+			code_defined_in_this_level, parent_code_defined_in_level_above: BOOLEAN
+			code_at_this_level, code_at_parent_level: STRING
 		do
-			this_code_exists := specialisation_section_from_code(a_code, a_depth).to_integer > 0
+			code_at_this_level := specialisation_section_from_code(a_code, a_depth)
+			code_defined_in_this_level := code_at_this_level.to_integer > 0 or else code_at_this_level.count = 4 -- takes account of anomalous "0000" code
 			if a_depth > 0 then
-				parent_code_exists := specialisation_section_from_code(a_code, a_depth - 1).to_integer > 0
+				code_at_parent_level := specialisation_section_from_code(a_code, a_depth - 1)
+				parent_code_defined_in_level_above := code_at_parent_level.to_integer > 0 or else code_at_parent_level.count = 4 -- takes account of anomalous "0000" code
 			end
 
-			if this_code_exists then
-				if parent_code_exists then
+			if code_defined_in_this_level then
+				if parent_code_defined_in_level_above then
 					create Result.make (ss_redefined)
 				else
 					create Result.make (ss_added)
 				end
 			else
-				create Result.make (ss_undefined)
+				if parent_code_defined_in_level_above then
+					create Result.make (ss_inherited)
+				else
+					create Result.make (ss_undefined)
+				end
 			end
 		end
 

@@ -19,13 +19,18 @@ deferred class C_REFERENCE_OBJECT
 inherit
 	C_OBJECT
 
-feature -- Source Control
+feature -- Visitor
 
-	rolled_up_specialisation_status (archetype_specialisation_level: INTEGER): SPECIALISATION_STATUS is
-			-- status of this node taking into consideration effective_specialisation_status of
-			-- all sub-nodes.
+	enter_subtree(visitor: C_VISITOR; depth: INTEGER) is
+			-- perform action at start of block for this node
 		do
-			Result := effective_specialisation_status (archetype_specialisation_level)
+			visitor.start_c_reference_object(Current, depth)
+		end
+
+	exit_subtree(visitor: C_VISITOR; depth: INTEGER) is
+			-- perform action at end of block for this node
+		do
+			visitor.end_c_reference_object(Current, depth)
 		end
 
 end

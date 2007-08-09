@@ -17,7 +17,7 @@ class C_DV_QUANTITY
 inherit
 	C_DOMAIN_TYPE
 		redefine
-			default_create --, synchronise_to_tree
+			default_create, enter_subtree, exit_subtree
 		end
 
 	TYPE_UTILITIES
@@ -178,14 +178,15 @@ feature -- Visitor
 	enter_subtree(visitor: C_VISITOR; depth: INTEGER) is
 			-- perform action at start of block for this node
 		do
-			synchronise_to_tree
-			visitor.start_c_domain_type(Current, depth)
+            precursor(visitor, depth)
+			visitor.start_c_quantity(Current, depth)
 		end
 
 	exit_subtree(visitor: C_VISITOR; depth: INTEGER) is
 			-- perform action at end of block for this node
 		do
-			visitor.end_c_domain_type(Current, depth)
+            precursor(visitor, depth)
+			visitor.end_c_quantity(Current, depth)
 		end
 
 feature {DT_OBJECT_CONVERTER} -- Conversion

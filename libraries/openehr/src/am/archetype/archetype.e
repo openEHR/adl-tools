@@ -325,7 +325,18 @@ feature -- Validation
 			xref_builder.initialise(ontology, Current)
 			create a_c_iterator.make(definition, xref_builder)
 			a_c_iterator.do_all
-			xref_builder.finalise
+		end
+
+	build_rolled_up_status is
+			-- set rolled_up_specialisation statuses in nodes of definition
+		local
+			a_c_iterator: C_ITERATOR
+			rollup_builder: C_ROLLUP_BUILDER
+		do
+			create rollup_builder
+			rollup_builder.initialise(ontology, Current.specialisation_depth)
+			create a_c_iterator.make(definition, rollup_builder)
+			a_c_iterator.do_all
 		end
 
 	validate is
@@ -336,6 +347,7 @@ feature -- Validation
 		do
 			create validator.make(Current)
 			validator.validate
+			build_rolled_up_status
 		ensure
 			validation_done
 		end

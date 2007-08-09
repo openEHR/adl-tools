@@ -1,7 +1,7 @@
 indexing
 	component:   "openEHR Archetype Project"
-	description: "Node map control"
-	keywords:    "Visualise an archetype structure as a node map"
+	description: "Node map control - Visualise an archetype structure as a node map"
+	keywords:    "archetype, cadl, gui"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2003-2007 Ocean Informatics Pty Ltd"
@@ -747,7 +747,7 @@ feature {NONE} -- Implementation
 				if archetype_directory.has_selected_archetype_descriptor then
 					arch_cons ?= an_ev_tree_node.data
 
-					if arch_cons /= Void and arch_cons.rolled_up_specialisation_status (archetype_directory.selected_archetype.specialisation_depth).value = ss_inherited then
+					if arch_cons /= Void and arch_cons.rolled_up_specialisation_status.value = ss_inherited then
 						an_ev_tree_node.collapse
 					else
 						an_ev_tree_node.expand

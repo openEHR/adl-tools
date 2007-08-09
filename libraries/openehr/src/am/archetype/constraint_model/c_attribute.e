@@ -23,14 +23,14 @@ creation
 	make_single, make_multiple
 
 feature -- Initialisation
-	
+
 	default_create is
-			-- 
+			--
 		do
 			create children.make(0)
 			set_existence(create {INTERVAL[INTEGER]}.make_bounded(1,1, True, True))
 		end
-	
+
 	make_single(a_name: STRING) is
 			-- set attr name
 		require
@@ -64,13 +64,13 @@ feature -- Access
 		end
 
 	existence: INTERVAL[INTEGER]
-	
+
 	cardinality: CARDINALITY
-		
+
 	parent: C_COMPLEX_OBJECT
-	
+
 	children: ARRAYED_LIST [C_OBJECT]
-	
+
 	child_count: INTEGER is
 			-- number of children; 0 if any_allowed is True
 		do
@@ -80,27 +80,12 @@ feature -- Access
 feature -- Source Control
 
 	specialisation_status (specialisation_level: INTEGER): SPECIALISATION_STATUS is
-			-- status of this node in the source text of this archetype with respect to the 
+			-- status of this node in the source text of this archetype with respect to the
 			-- specialisation hierarchy. Values are: defined_here; redefined, added, unknown
 		do
 			create Result.make(ss_propagated)
 		end
-			
-	rolled_up_specialisation_status (archetype_specialisation_level: INTEGER): SPECIALISATION_STATUS is
-			-- status of this node taking into consideration effective_specialisation_status of
-			-- all sub-nodes.
-		do
-			Result := effective_specialisation_status (archetype_specialisation_level)
-			from
-				children.start
-			until				
-				children.off or Result.value < ss_inherited
-			loop
-				Result := specialisation_effective_status(Result, children.item.rolled_up_specialisation_status (archetype_specialisation_level))
-				children.forth				
-			end
-		end
-	
+
 feature -- Status Report
 
 	any_allowed: BOOLEAN is
@@ -117,7 +102,7 @@ feature -- Status Report
 			a_prim ?= children.first
 			Result := a_prim = Void
 		end
-		
+
 	is_multiple: BOOLEAN is
 			-- True if this attribute has multiple cardinality
 		do
@@ -135,7 +120,7 @@ feature -- Status Report
 				invalid_reason.append("existence must be specified")
 			else
 				Result := True
-				from 
+				from
 					children.start
 				until
 					not Result or else children.off
@@ -143,10 +128,10 @@ feature -- Status Report
 					-- check occurrences consistent with attribute cardinality
 					if Result and not is_multiple and children.item.occurrences.upper > 1 then
 						Result := False
-						invalid_reason.append("occurrences on child node " + children.item.node_id.out + 
-							" must be singular for non-container attribute")		
+						invalid_reason.append("occurrences on child node " + children.item.node_id.out +
+							" must be singular for non-container attribute")
 					end
-					
+
 					if Result and not children.item.is_valid then
 						Result := False
 						invalid_reason.append("(invalid child node) " + children.item.invalid_reason + "%N")
@@ -164,7 +149,7 @@ feature -- Status Report
 		do
 			Result := representation.has_child_node (a_path_id)
 		end
-		
+
 feature -- Modification
 
 	set_existence(an_interval: INTERVAL[INTEGER]) is
@@ -174,14 +159,14 @@ feature -- Modification
 		do
 			existence := an_interval
 		end
-		
+
 	set_cardinality(a_cardinality: CARDINALITY) is
-			-- 
+			--
 		require
 			cardinality_exists: a_cardinality /= Void
 		do
 			cardinality := a_cardinality
-		end		
+		end
 
 	put_child(an_obj: C_OBJECT) is
 			-- put a new child node
@@ -206,19 +191,19 @@ feature -- Serialisation
 		do
 			serialiser.start_c_attribute(Current, depth)
 		end
-		
+
 	exit_subtree(serialiser: C_SERIALISER; depth: INTEGER) is
 			-- perform serialisation at end of block for this node
 		do
 			serialiser.end_c_attribute(Current, depth)
 		end
-	
+
 invariant
 	Rm_attribute_name_valid: rm_attribute_name /= Void and then not rm_attribute_name.is_empty
 	Existence_set: existence /= Void
 	Children_validity: children /= Void
 	Any_allowed_validity: any_allowed xor not children.is_empty
-	
+
 end
 
 
