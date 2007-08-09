@@ -35,14 +35,8 @@ feature -- Initialisation
 			default_create
 			item := an_item
 			rm_type_name := an_item.generating_type
-
--- FIXME: Hack for EIFFEL lack of namespaces, which causes us to use class names like
--- C_DATE instead of just C_DATE
-if rm_type_name.substring (1, ("OE_").count).is_equal("OE_") then
-	rm_type_name.remove_head (("OE_").count)
-end
-			rm_type_name.remove_head(2)
-			create representation.make_anonymous(Current)
+			rm_type_name.remove_head (2)
+			create representation.make_anonymous (Current)
 		end
 
 feature -- Access
