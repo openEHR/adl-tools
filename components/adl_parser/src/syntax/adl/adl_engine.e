@@ -51,62 +51,12 @@ feature -- Initialisation
 
 feature -- Access
 
-	archetype: ARCHETYPE
-			-- set if parse succeeded or if created new
-
-	ontology: ARCHETYPE_ONTOLOGY is
-			-- retrieve ontology from current archetype
-		require
-			archetype_available
-		do
-			Result := archetype.ontology
-		end
-
-	serialised_archetype: STRING
-
 	parse_error_text: STRING
 			-- errors of last parse
 
-feature -- Status Report
-
-	archetype_available: BOOLEAN is
-			-- True if parse failed; call after parse()
-		do
-			Result := archetype /= Void
-		end
-
 feature -- Commands
 
-	create_new_archetype(a_im_originator, a_im_name, a_im_entity, a_primary_language: STRING) is
-			-- create a new archetype and throw away previous state
-		require
-			a_im_originator /= void and then not a_im_originator.is_empty
-			a_im_name /= void and then not a_im_name.is_empty
-			a_im_entity /= void and then not a_im_entity.is_empty
-			Primary_language_valid: a_primary_language /= void and then not a_primary_language.is_empty
-		do
-			create archetype.make_minimal(create {ARCHETYPE_ID}.make(a_im_originator, a_im_name, a_im_entity,
-				"UNKNOWN", "draft"), a_primary_language)
-			set_current_language(archetype.ontology.primary_language)
-		ensure
-			Archetype_available: archetype_available and archetype.is_valid
-		end
-
---	specialise_archetype(specialised_domain_concept: STRING) is
---			-- convert current archetype to specialised version of itself,
---			-- supplying a specialised domain concept string to go in the new archetype id
---			-- (which is a duplicate of the old one, with this concept string inserted)
---		require
---			Archetype_available: archetype_available and then archetype.is_valid
---			Concept_valid: specialised_domain_concept /= Void and then not specialised_domain_concept.is_empty
---		do
---			archetype.convert_to_specialised(specialised_domain_concept)
---			parent_archetype_id := archetype.parent_archetype_id
---		ensure
---			Archetype_available: archetype.is_valid
---		end
-
-	parse (source: STRING) is
+	parse (source: STRING): ARCHETYPE is
 			-- parse tree. If successful, `archetype' contains the parse
 			-- structure. Then validate the tree
 		require
@@ -118,9 +68,6 @@ feature -- Commands
 			arch_ont: ARCHETYPE_ONTOLOGY
 			orig_lang: STRING
 		do
-			archetype := Void
-			serialised_archetype := Void
-
 			create adl_parser.make
 			adl_parser.execute(source)
 			if adl_parser.syntax_error then
@@ -208,7 +155,7 @@ feature -- Commands
 										end
 									end
 
-									create archetype.make(
+									create Result.make(
 										adl_parser.archetype_id,
 										adl_parser.concept,
 										orig_lang,
@@ -217,26 +164,26 @@ feature -- Commands
 										arch_ont
 									)
 									if adl_parser.adl_version /= Void then
-										archetype.set_adl_version(adl_parser.adl_version)
+										Result.set_adl_version(adl_parser.adl_version)
 									else
-										archetype.set_adl_version(Current_adl_version)
+										Result.set_adl_version(Current_adl_version)
 									end
 
 									if adl_parser.is_controlled then
-										archetype.set_is_controlled
+										Result.set_is_controlled
 									end
 									if adl_parser.parent_archetype_id /= Void then
-										archetype.set_parent_archetype_id(adl_parser.parent_archetype_id)
+										Result.set_parent_archetype_id(adl_parser.parent_archetype_id)
 									end
 
 									-- if there was no language section, then create the equivalent object
 									-- and use it to paste translations into the archetype
 									if orig_lang_trans.translations /= Void then
-										archetype.set_translations(orig_lang_trans.translations)
+										Result.set_translations(orig_lang_trans.translations)
 									end
 
 									if invariant_context.tree /= Void then
-										archetype.set_invariants(invariant_context.tree)
+										Result.set_invariants(invariant_context.tree)
 									end
 								end
 							end
@@ -246,48 +193,31 @@ feature -- Commands
 			end
 		end
 
-	serialise(a_format: STRING) is
+	serialise(an_archetype: ARCHETYPE; a_format: STRING):STRING is
 			-- serialise current archetype into format
 		require
 			Format_valid: has_archetype_serialiser_format(a_format)
-			Archetype_valid: archetype.is_valid
+			Archetype_valid: an_archetype.is_valid
 		do
-			synchronise_from_archetype
+			synchronise_from_archetype(an_archetype)
 			language_context.serialise(a_format)
 			description_context.serialise(a_format)
-			definition_context.serialise(a_format, ontology)
+			definition_context.serialise(a_format, an_archetype.ontology)
 
-			if archetype.has_invariants then
+			if an_archetype.has_invariants then
 				invariant_context.serialise(a_format)
 			end
 
 			ontology_context.serialise(a_format)
 
-			create serialiser_mgr.make(archetype, a_format, ontology)
+			create serialiser_mgr.make(an_archetype, a_format, an_archetype.ontology)
 			serialiser_mgr.serialise(
 				language_context.serialised,
 				description_context.serialised,
 				definition_context.serialised,
 				invariant_context.serialised,
 				ontology_context.serialised)
-			serialised_archetype := serialiser_mgr.last_result
-		end
-
-	synchronise_from_archetype is
-			-- synchronise archetype to processing engines
-		do
-			archetype.synchronise
-
-		-- FIXME: currently translations and original_language from archetype are serialsed together	
-		--	if archetype.translations /= Void then
-				language_context.set_tree (archetype.orig_lang_translations.dt_representation)
-		--	end
-			description_context.set_tree(archetype.description.dt_representation)
-			definition_context.set_tree(archetype.definition)
-			if archetype.has_invariants then
-				invariant_context.set_tree(archetype.invariants)
-			end
-			ontology_context.set_tree(archetype.ontology.representation)
+			Result := serialiser_mgr.last_result
 		end
 
 feature {NONE} -- Implementation
@@ -317,6 +247,23 @@ feature {NONE} -- Implementation
 			-- mimic AUTHORED_RESOURCE - only needed until ADL2
 		once
 			Result := dynamic_type(create {LANGUAGE_TRANSLATIONS}.make)
+		end
+
+	synchronise_from_archetype(an_archetype: ARCHETYPE) is
+			-- synchronise archetype to processing engines
+		do
+			an_archetype.synchronise
+
+		-- FIXME: currently translations and original_language from archetype are serialsed together	
+		--	if archetype.translations /= Void then
+				language_context.set_tree (an_archetype.orig_lang_translations.dt_representation)
+		--	end
+			description_context.set_tree(an_archetype.description.dt_representation)
+			definition_context.set_tree(an_archetype.definition)
+			if an_archetype.has_invariants then
+				invariant_context.set_tree(an_archetype.invariants)
+			end
+			ontology_context.set_tree(an_archetype.ontology.representation)
 		end
 
 end

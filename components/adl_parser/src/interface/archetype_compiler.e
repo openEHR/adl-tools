@@ -110,11 +110,8 @@ feature -- Access
 			Result := target.compilation_context.archetype
 		end
 
-	serialised_archetype: STRING is
+	serialised_archetype: STRING
 			-- archetype in serialised form, after call to serialise_archetype
-		do
-			Result := adl_engine.serialised_archetype
-		end
 
 	status: STRING
 			-- status of last operation
@@ -163,8 +160,7 @@ feature -- Modification
 		require
 			archetype_available: archetype_directory.has_selected_archetype_descriptor
 		do
-			reset
-			target := archetype_directory.selected_descriptor
+			set_target(archetype_directory.selected_descriptor)
 		ensure
 			has_target
 		end
@@ -185,19 +181,21 @@ feature -- Commands
 			-- parse the target archetype of this compiler
 		require
 			Has_target: has_target
+		local
+			an_archetype: ARCHETYPE
 		do
 			if not exception_encountered then
 				clear_billboard
 				if target.is_out_of_date then
-					adl_engine.parse(target.source)
-					if not adl_engine.archetype_available then
+					an_archetype := adl_engine.parse(target.source)
+					if an_archetype = Void then
 						post_error(Current, "parse_archetype", "parse_archetype_e1", <<adl_engine.parse_error_text>>)
 					else
 						post_info(Current, "parse_archetype", "parse_archetype_i1", <<target.id.as_string>>)
 
-						-- put the archetype into the tree; note that this runs its validator(s) and further
+						-- put the archetype into the its directory node; note that this runs its validator(s) and further
 						-- errors and warnings are reported on the billboard
-						target.set_compilation_context(adl_engine.archetype)
+						target.set_compilation_context(an_archetype)
 					end
 				end
 
@@ -224,51 +222,62 @@ feature -- Commands
 		end
 
 	create_new_archetype(a_im_originator, a_im_name, a_im_entity, a_primary_language: STRING) is
-			-- create a new tree and throw away previous state; put new archetype into
-			-- repository according to its id
+			-- create a new top-level archetype and install it into the directory according to its id
 		require
 			Info_model_originator_valid: a_im_originator /= void and then not a_im_originator.is_empty
 			Info_model_name_valid: a_im_name /= void and then not a_im_name.is_empty
 			Info_model_entity_valid: a_im_entity /= void and then not a_im_entity.is_empty
 			Primary_language_valid: a_primary_language /= void and then not a_primary_language.is_empty
+		local
+			an_archetype: ARCHETYPE
 		do
 			if not exception_encountered then
-				adl_engine.create_new_archetype(a_im_originator, a_im_name, a_im_entity, a_primary_language)
+				create an_archetype.make_minimal(create {ARCHETYPE_ID}.make(a_im_originator, a_im_name, a_im_entity,
+					"UNKNOWN", "draft"), a_primary_language, 0)
+
+				set_current_language(a_primary_language)
 
 				-- FIXME: now add this archetype into the ARCHETYPE_DIRECTORY
+
+				-- set it as the target
 			else
 				post_error(Current, "create_new_archetype", "create_new_archetype_e1", Void)
 			end
 			status.wipe_out
 			status.append(billboard_content)
 			clear_billboard
+		ensure
+			-- FIXME: make the new archetype the target??
 		rescue
 			post_error(Current, "create_new_archetype", "report_exception", <<exception.out, exception_trace>>)
 			exception_encountered := True
 			retry
 		end
 
---	specialise_archetype(specialised_domain_concept: STRING) is
---			-- convert current archetype to specialised version of itself,
---			-- supplying a specialised domain concept string to go in the new archetype id
---			-- (which is a duplicate of the old one, with this concept string inserted)
---		require
---			Archetype_available: archetype_available and then archetype_valid
---			Concept_valid: specialised_domain_concept /= Void and then not specialised_domain_concept.is_empty
---		do
---			if not exception_encountered then
---				adl_engine.specialise_archetype(specialised_domain_concept)
---			else
---				post_error(Current, "specialise_archetype", "specialise_archetype_e1", Void)
---			end
---			status.wipe_out
---			status.append(billboard_content)
---			clear_billboard
---		rescue
---			post_error(Current, "specialise_archetype", "report_exception", <<exception.out, exception_trace>>)
---			exception_encountered := True
---			retry
---		end
+	create_new_specialised_archetype(specialised_domain_concept: STRING) is
+			-- create a new specialised archetype as a child of the target archetype and install it in
+			-- the directory
+		require
+			Has_target: has_target
+			Concept_valid: specialised_domain_concept /= Void and then not specialised_domain_concept.is_empty
+		local
+			an_archetype: ARCHETYPE
+		do
+			if not exception_encountered then
+				create an_archetype.make_specialised_child(archetype, specialised_domain_concept)
+
+				-- FIXME: now add this archetype into the ARCHETYPE_DIRECTORY
+			else
+				post_error(Current, "create_new_specialised_archetype", "create_new_specialised_archetype_e1", Void)
+			end
+			status.wipe_out
+			status.append(billboard_content)
+			clear_billboard
+		rescue
+			post_error(Current, "create_new_specialised_archetype", "report_exception", <<exception.out, exception_trace>>)
+			exception_encountered := True
+			retry
+		end
 
 	save_archetype is
 			-- Save current target archetype to its file
@@ -279,8 +288,8 @@ feature -- Commands
 				status.wipe_out
 				save_succeeded := False
 				if archetype_valid then
-					adl_engine.serialise("adl")
-					target.save (adl_engine.serialised_archetype)
+					serialised_archetype := adl_engine.serialise(archetype, "adl")
+					target.save (serialised_archetype)
 					save_succeeded := True
 				else
 					post_error(Current, "save_archetype", "save_archetype_e2", Void)
@@ -310,9 +319,9 @@ feature -- Commands
 				status.wipe_out
 				save_succeeded := False
 				if archetype_valid then
-					adl_engine.serialise(serialise_format)
+					serialised_archetype := adl_engine.serialise(archetype, serialise_format)
 					save_succeeded := True
-					target.save_as (a_full_path, adl_engine.serialised_archetype)
+					target.save_as (a_full_path, serialised_archetype)
 				else
 					post_error(Current, "save_archetype", "save_archetype_e2", Void)
 				end
@@ -337,7 +346,7 @@ feature -- Commands
 			Serialise_format_valid: serialise_format /= Void and then has_archetype_serialiser_format(serialise_format)
 		do
 			if not exception_encountered then
-				adl_engine.serialise(serialise_format)
+				serialised_archetype := adl_engine.serialise(archetype, serialise_format)
 			else
 				post_error(Current, "serialise_archetype", "serialise_archetype_e2", Void)
 			end

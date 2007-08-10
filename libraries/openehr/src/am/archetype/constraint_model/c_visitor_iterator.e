@@ -1,25 +1,25 @@
 indexing
 	component:   "openEHR Archetype Project"
-	description: "Serialiser Manager for all DT serialiser types"
-	keywords:    "test, Data Tree"
+	description: "Tree iterator for archetype nodes"
+	keywords:    "archetype, constraint, definition"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2005 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class DT_ITERATOR
+class C_VISITOR_ITERATOR
 
 create
 	make
 
 feature -- Initialisation
 
-	make(a_target: DT_COMPLEX_OBJECT_NODE; a_visitor: DT_VISITOR) is
-			-- create a new iterator targetted to the DT tree `a_target'
+	make(a_target: C_COMPLEX_OBJECT; a_visitor: C_VISITOR) is
+			-- create a new manager targetted to the parse tree `a_target'
 		require
 			Target_exists: a_target /= Void
 			Visitor_exists: a_visitor /= Void
@@ -40,7 +40,7 @@ feature {NONE} -- Implementation
 
 	tree_iterator: OG_ITERATOR
 
-	visitor: DT_VISITOR
+	visitor: C_VISITOR
 
 	node_enter_action(a_node: OG_ITEM; indent_level: INTEGER) is
 		require
@@ -73,7 +73,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is dadl_serialiser_mgr.e.
+--| The Original Code is cadl_serialiser_mgr.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

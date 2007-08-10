@@ -19,6 +19,12 @@ inherit
 			{NONE} all
 		end
 
+	ARCHETYPE_TERM_CODE_TOOLS
+		export
+			{NONE} all;
+			{ANY} valid_concept_code
+		end
+
 	AUTHORED_RESOURCE
 		rename
 			synchronise as synchronise_authored_resource
@@ -26,52 +32,38 @@ inherit
 			add_language
 		end
 
-create {ADL_ENGINE}
-	make, make_minimal
+create
+	make, make_minimal, make_specialised_child
 
-feature -- Definitions
+feature -- Initialisation
 
-	Default_concept_code: STRING is "at0000"
-
-feature  {ADL_ENGINE} -- Initialisation
-
-	make_minimal(an_id: ARCHETYPE_ID; an_original_language: STRING) is
+	make_minimal(an_id: ARCHETYPE_ID; an_original_language: STRING; a_specialisation_depth: INTEGER) is
 		require
 			Id_exists: an_id /= Void
 			Language_valid: an_original_language /= Void and then not an_original_language.is_empty
-		local
-			a_term: ARCHETYPE_TERM
+			Specialisation_depth_valid: a_specialisation_depth >= 0
 		do
 			archetype_id := an_id
-
 			adl_version := 	Current_adl_version
-
-			create concept.make(0)
-			concept.append(Default_concept_code)
-
+			create ontology.make_empty(an_original_language, a_specialisation_depth)
+			concept := ontology.concept_code.twin
 			create original_language.make (Default_language_code_set, an_original_language)
-
 			create description.default_create
-			create definition.make_identified(an_id.rm_entity, Default_concept_code)
-
-			create a_term.make(concept)
-			a_term.add_item("text", "unknown")
-			a_term.add_item("description", "unknown")
-			create ontology.make_empty(an_original_language, a_term)
+			create definition.make_identified(an_id.rm_entity, concept)
 		ensure
 			Id_set: archetype_id = an_id
-			Concept_set: concept.is_equal(Default_concept_code)
+			Original_language_set: original_language.as_string.is_equal(an_original_language)
+			Specialisation_depth_set: specialisation_depth = a_specialisation_depth
+			Definition_root_node_id: definition.node_id.is_equal (concept)
 		end
 
-	make(an_id: ARCHETYPE_ID;
-			a_concept_code: STRING;
-			an_original_language: STRING;
-			a_description: RESOURCE_DESCRIPTION;
-			a_definition: C_COMPLEX_OBJECT;
-			an_ontology: ARCHETYPE_ONTOLOGY) is
+	make(an_id: ARCHETYPE_ID; a_concept_code: STRING;
+			an_original_language: STRING; a_description: RESOURCE_DESCRIPTION;
+			a_definition: C_COMPLEX_OBJECT;	an_ontology: ARCHETYPE_ONTOLOGY) is
+				-- make from pieces obtained by parsing
 		require
 			Id_exists: an_id /= Void
-			Concept_exists: a_concept_code /= Void
+			Concept_exists: a_concept_code /= Void and then valid_concept_code(a_concept_code)
 			Language_valid: an_original_language /= Void and then not an_original_language.is_empty
 			Definition_exists: a_definition /= Void
 			Ontology_exists: an_ontology /= Void
@@ -94,6 +86,16 @@ feature  {ADL_ENGINE} -- Initialisation
 			Concept_set: concept = a_concept_code
 			Definition_set: definition = a_definition
 			Ontology_set: ontology = an_ontology
+		end
+
+	make_specialised_child(other: ARCHETYPE; a_spec_concept: STRING) is
+			-- make this archetype as a specialisation 1 level below the 'other'
+		require
+			Other_valid: other /= Void and then other.is_valid
+			Concept_valid: a_spec_concept /= Void and then not a_spec_concept.is_empty
+		do
+			make_minimal(other.archetype_id.create_specialised_id(a_spec_concept), other.original_language.as_string, other.specialisation_depth+1)
+			create parent_archetype_id.make_from_string(other.archetype_id.value)
 		end
 
 feature -- Access
@@ -308,7 +310,7 @@ feature -- Validation
 			-- build definition / ontology cross reference tables used for validation and
 			-- other purposes
 		local
-			a_c_iterator: C_ITERATOR
+			a_c_iterator: C_VISITOR_ITERATOR
 			xref_builder: C_XREF_BUILDER
 		do
 			create id_at_codes_xref_table.make(0)
@@ -330,13 +332,15 @@ feature -- Validation
 	build_rolled_up_status is
 			-- set rolled_up_specialisation statuses in nodes of definition
 		local
-			a_c_iterator: C_ITERATOR
+			a_c_iterator: C_VISITOR_ITERATOR
 			rollup_builder: C_ROLLUP_BUILDER
 		do
-			create rollup_builder
-			rollup_builder.initialise(ontology, Current.specialisation_depth)
-			create a_c_iterator.make(definition, rollup_builder)
-			a_c_iterator.do_all
+			if is_specialised then
+				create rollup_builder
+				rollup_builder.initialise(ontology, Current.specialisation_depth)
+				create a_c_iterator.make(definition, rollup_builder)
+				a_c_iterator.do_all
+			end
 		end
 
 	validate is
@@ -389,32 +393,6 @@ feature -- Modification
 			Valid_version: a_ver /= Void and then valid_adl_version(a_ver)
 		do
 			adl_version := a_ver
-		end
-
-	convert_to_specialised(a_spec_concept: STRING) is
-			-- convert this arcehtype to being a specialised version of itself
-			-- one level down
-		require
-			Concept_valid: a_spec_concept /= Void and then not a_spec_concept.is_empty
-		local
-			chg_root_node: BOOLEAN
-		do
-			create parent_archetype_id.make_from_string(archetype_id.value)
-
-			-- check if node id of root node of archetype is same as concept code of
-			-- whole archetype; if so, change it once ontology converted
-			chg_root_node := concept.is_equal(definition.node_id)
-
-			ontology.convert_to_specialised
-			if chg_root_node then
-				definition.set_object_id(ontology.concept_code)
-			end
-			archetype_id := archetype_id.create_specialised_id(a_spec_concept)
-			concept := ontology.concept_code
-		ensure
-			Archetype_id_updated: not archetype_id.is_equal(old archetype_id)
-			Concept_code_updated: not concept.is_equal(old concept)
-			Specialisation_depth_valid: specialisation_depth = old specialisation_depth + 1
 		end
 
 	set_archetype_id(an_id: ARCHETYPE_ID) is
@@ -638,7 +616,7 @@ feature {NONE} -- Implementation
 
 invariant
 	Id_exists: archetype_id /= Void
-	Concept_exists: concept /= Void
+	Concept_valid: concept /= Void and then concept.is_equal(ontology.concept_code)
 	Description_exists: description /= Void
 	Definition_exists: definition /= Void
 	Invariants_valid: invariants /= Void implies not invariants.is_empty

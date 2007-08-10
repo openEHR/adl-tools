@@ -14,28 +14,33 @@ indexing
 class ARCHETYPE_TERM
 
 inherit
-	ANY
+	ARCHETYPE_TERM_CODE_TOOLS
 		redefine
 			out, default_create
 		end
 
 create
-	make, make_from_string, make_from_data_tree
-	
-feature -- Definitions
+	make_default, make, make_from_string, make_from_data_tree
 
-	Default_code: STRING is "default_code"
-	
 feature -- Initialisation
 
 	default_create is
 			-- basic creation
 		do
 			create code.make(0)
-			code.append(Default_code)
 			create items.make(0)
 		end
-		
+
+	make_default is
+			-- create a default version with code at0000 and text and description
+			-- both set to "unknown"
+		do
+			default_create
+			code.append(Default_concept_code)
+			add_item("text", "unknown")
+			add_item("description", "unknown")
+		end
+
 	make(a_code:STRING) is
 		require
 			Code_valid: a_code /= Void and then not a_code.is_empty
@@ -43,13 +48,13 @@ feature -- Initialisation
 			default_create
 			code := a_code
 		end
-		
+
 	make_from_string(a_str:STRING) is
 			-- make from string in dADL form used in archetypes (same as .out form):
 			--  [code] = <key1 = <"value1">, key2 = <"value2">, key3 = <"value3">>
 		require
 			Code_valid: a_str /= Void and then not a_str.is_empty
-		do						
+		do
 			default_create
 			dadl_validator.reset_scanner
 			dadl_validator.execute(a_str, 1)
@@ -58,7 +63,7 @@ feature -- Initialisation
 			else
 				-- FIXME: do something with dadl_validator.error_text
 			end
-		end	
+		end
 
 	make_from_data_tree (a_dt: DT_COMPLEX_OBJECT_NODE) is
 			-- make from a data tree
@@ -73,7 +78,7 @@ feature -- Initialisation
 			if a_dt.has_path("/code/") then
 				dt_property ?= a_dt.node_at_path ("/code/")
 				code ?= dt_property.value
-				
+
 				create items_path.make(0)
 				items_path.append("/items")
 				if a_dt.has_path(items_path) then
@@ -100,11 +105,11 @@ feature -- Initialisation
 				-- report error "path %"/code%" not found"
 			end
 		end
-		
+
 feature -- Access
 
 	code: STRING
-	
+
 	keys: ARRAYED_LIST[STRING] is
 			-- return all attribute keys for this term
 		do
@@ -120,25 +125,25 @@ feature -- Access
 		end
 
 	items: HASH_TABLE[STRING, STRING]
-	
+
 	item(a_key:STRING):STRING is
-			-- 
+			--
 		require
 			a_key /= Void and then has_key(a_key)
 		do
 			Result := items.item(a_key)
 		end
-		
+
 feature -- Status Report
 
 	has_key(a_key:STRING): BOOLEAN is
-			-- 
+			--
 		require
 			a_key /= Void and then not a_key.is_empty
 		do
 			Result := items.has(a_key)
 		end
-		
+
 feature -- Modification
 
 	add_item(a_key, value: STRING) is
@@ -206,10 +211,10 @@ feature -- Factory
 			from
 				items.start
 			until
-				items.off						
+				items.off
 			loop
 				Result.add_item (items.key_for_iteration, "*" + items.item_for_iteration + "(" + a_lang + ")")
-				items.forth												
+				items.forth
 			end
 		end
 
@@ -224,10 +229,10 @@ feature -- Factory
 			from
 				items.start
 			until
-				items.off						
+				items.off
 			loop
 				Result.add_item (items.key_for_iteration, items.item_for_iteration + "!")
-				items.forth												
+				items.forth
 			end
 		end
 
@@ -238,11 +243,11 @@ feature {NONE} -- Implementation
 		once
 			create Result.make
 		end
-		
+
 invariant
 	Code_valid: code /= Void and then not code.is_empty
 	Items_exists: items /= Void
-	
+
 end
 
 

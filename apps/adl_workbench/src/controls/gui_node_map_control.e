@@ -222,15 +222,17 @@ feature -- Commands
 			-- roll the tree up so that nodes whose rolled_up_specialisation_status is
 			-- ss_inherited are closed, but nodes with
 		do
-			create node_list.make(0)
-			gui_tree.recursive_do_all(agent ev_tree_item_roll_up(?))
-			from
-				node_list.start
-			until
-				node_list.off
-			loop
-				node_list.item.collapse
-				node_list.forth
+			if archetype_directory.selected_archetype.is_specialised then
+				create node_list.make(0)
+				gui_tree.recursive_do_all(agent ev_tree_item_roll_up(?))
+				from
+					node_list.start
+				until
+					node_list.off
+				loop
+					node_list.item.collapse
+					node_list.forth
+				end
 			end
 		end
 
@@ -744,14 +746,11 @@ feature {NONE} -- Implementation
 			arch_cons: ARCHETYPE_CONSTRAINT
 		do
 			if an_ev_tree_node.is_expandable then
-				if archetype_directory.has_selected_archetype_descriptor then
-					arch_cons ?= an_ev_tree_node.data
-
-					if arch_cons /= Void and arch_cons.rolled_up_specialisation_status.value = ss_inherited then
-						an_ev_tree_node.collapse
-					else
-						an_ev_tree_node.expand
-					end
+				arch_cons ?= an_ev_tree_node.data
+				if arch_cons /= Void and arch_cons.rolled_up_specialisation_status.value = ss_inherited then
+					an_ev_tree_node.collapse
+				else
+					an_ev_tree_node.expand
 				end
 			end
 		end

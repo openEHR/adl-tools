@@ -1,7 +1,7 @@
 indexing
 	component:   "openEHR Archetype Project"
 	description: "[
-			 Model of an archetype Term code. Term codes take the form of 'atNNNN.N..'.
+			 Tools for manipulating archetype codes. Term codes take the form of 'atNNNN.N..'.
 			 At the first level, 'atNNNN' is used; specialised codes are of the 
 			 form 'atNNNN.N' to watever depth require; intervening '0's are allowed,
 			 indicating that the code is a child of a parent more than one level
@@ -11,6 +11,10 @@ indexing
 			 New codes can also be introduced in specialised archetypes, which are
 			 not themselves specialisations of any existing code. These have the form
 			 'at.NN.NN', e.g. 'at.0.0.2'
+			 
+			 The factory routines in this class are smart - they don't just make new specialised
+			 codes by adding '.1', but by looking at the current hash of codes known in the 
+			 archetype ontology into which this class is inherited.
 			 ]"
 	keywords:    "archetype, ontology, coded term"
 	author:      "Thomas Beale"
@@ -26,26 +30,24 @@ class ARCHETYPE_TERM_CODE_TOOLS
 
 inherit
 	SPECIALISATION_STATUSES
-		export
-			{NONE} all
-		end
 
 feature -- Definitions
+
+	Default_concept_code: STRING is "at0000"
+			-- FIXME: the 0000 code should not be allowed to be used in an archetype
+			-- definition secton, since it violates the rule that a '0' code means
+			-- "not defined here" (i.e. it is normally a filler for lower down codes)
+			-- THIS SHOULD BE CHANGED to at0001
 
 	Specialisation_separator: CHARACTER is '.'
 
 	Term_code_length: INTEGER is 6
-			-- length of internal term codes, e.g. "at0001"
+			-- length of internal top-level term codes, e.g. "at0001"
 
 	Term_code_leader: STRING is "at"
 			-- leader of all internal term codes
 
 	Constraint_code_leader: STRING is "ac"
-
-	Special_top_level_code: STRING is "0000"
-			-- FIXME: the 0000 code should not be allowed to be used in an archetype
-			-- definition secton, since it violates the rule that a '0' code means
-			-- "not defined here" (i.e. it is normally a filler for lower down codes)
 
 feature -- Access
 
@@ -176,10 +178,31 @@ feature -- Comparison
 			end
 		end
 
+	valid_concept_code(a_code: STRING): BOOLEAN is
+			-- check if `a_code' is a valid root concept code of an archetype
+			-- True if a_code has form at0000, or at0000.1, at0000.1.1 etc
+		require
+			Code_valid: a_code /= Void and then not a_code.is_empty
+		local
+			csr: INTEGER
+		do
+			Result := a_code.substring(1, Default_concept_code.count).is_equal (default_concept_code)
+			if Result then
+				from
+					csr := Default_concept_code.count + 1
+				until
+					csr > a_code.count or not Result
+				loop
+					Result := a_code.count >= csr+1 and (a_code.item (csr) = Specialisation_separator and a_code.item (csr+1) = '1')
+					csr := csr + 2
+				end
+			end
+		end
+
 feature -- Factory
 
 	new_non_specialised_term_code_at_level(a_level, last_index_at_level: INTEGER): STRING is
-			-- create a new code at level of current top code at that level is `last_code_at_level'
+			-- create a new code at level of current top code at that level is `last_index_at_level'
 		require
 			Level_valid: a_level >= 0
 			Index_valid: last_index_at_level >= 0
@@ -211,16 +234,16 @@ feature -- Factory
 			Result_exists: Result /= Void
 		end
 
-	new_specialised_term_code_at_level(a_parent_code: STRING; at_level:INTEGER): STRING is
-			-- get a new specialised code based on `a_parent_code'
+	new_specialised_term_code_at_level(a_parent_code, last_code: STRING; at_level:INTEGER): STRING is
+			-- make a new specialised code based on `a_parent_code'
 			-- e.g. "at0001" at level 2 will produce "at0001.0.1"
 			-- Note: a code of "at0001" has specialisation depth 0
 		require
 			a_parent_code_valid: a_parent_code /= Void and then not a_parent_code.is_empty
+			last_code_valid: last_code /= Void and then not last_code.is_empty
 			level_valid: at_level > 0
 		local
 			i, n: INTEGER
-			last_code: STRING
 		do
 			create Result.make(0)
 			Result.append(a_parent_code)
@@ -235,13 +258,35 @@ feature -- Factory
 			end
 
 			Result.append_character(Specialisation_separator)
-			if specialised_term_codes.has(a_parent_code) then
-				last_code := specialised_term_codes.item(a_parent_code).last
-				n := specialised_code_tail(last_code).to_integer
-			end
+			n := specialised_code_tail(last_code).to_integer
 			Result.append_integer(n+1)
 		ensure
 			Result_valid: Result /= Void and then specialised_code_tail(Result).to_integer > 0
+		end
+
+	new_concept_code_at_level(at_level:INTEGER): STRING is
+			-- make a new term code for use as the root concept code of an archetype
+			-- at level = 0 -> Default_concept_code
+			-- at level = 1 -> Default_concept_code.1
+			-- at level = 2 -> Default_concept_code.1.1
+			-- etc
+		require
+			level_valid: at_level >= 0
+		local
+			i: INTEGER
+		do
+			create Result.make(0)
+			Result.append(Default_concept_code)
+			from
+			until
+				i >= at_level
+			loop
+				Result.append_character(Specialisation_separator)
+				Result.append_character('1')
+				i := i + 1
+			end
+		ensure
+			Result_valid: Result /= Void and then valid_concept_code(Result)
 		end
 
 	new_constraint_code_from_index(last_index, specialisation_depth: INTEGER): STRING is
@@ -274,13 +319,6 @@ feature -- Factory
 		ensure
 			Result_exists: Result /= Void
 		end
-
-feature {NONE} -- Implementation
-
-	specialised_term_codes: HASH_TABLE[TWO_WAY_SORTED_SET[STRING], STRING]
-			-- table of immediate child codes keyed by immediate parent code
-			-- e.g. the entry for at0005 might have a list of {at0005.1, at0005.2}
-			-- and at0005.1 might have at0005.1.1
 
 end
 

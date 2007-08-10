@@ -219,7 +219,7 @@ feature {NONE} -- Implementation
 			-- child objects are not identified, but only if the children are not C_PRIMITIVEs or
 			-- C_C_Os whose values are C_PRMITIVEs. Record any such nodes as warnings
 		local
-			a_c_iterator: C_ITERATOR
+			a_c_iterator: C_VISITOR_ITERATOR
 		do
 			create unidentified_node_finder
 			unidentified_node_finder.initialise(ontology)

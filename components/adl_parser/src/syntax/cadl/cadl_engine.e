@@ -108,7 +108,7 @@ feature -- Commands
 			Ontology_valid: an_ontology /= Void
 		local
 			a_c_serialiser: C_SERIALISER
-			a_c_iterator: C_ITERATOR
+			a_c_iterator: C_VISITOR_ITERATOR
 		do
 			a_c_serialiser := c_serialiser_for_format(a_format)
 			a_c_serialiser.initialise(an_ontology)
