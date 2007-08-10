@@ -29,8 +29,8 @@ inherit
 		undefine
 			default_create
 		end
-	
-	CONSTRAINT_MODEL_COMMON
+
+	C_COMMON
 		export
 			{NONE} all
 		undefine
@@ -43,26 +43,26 @@ feature -- Initialisation
 		do
 			occurrences := default_occurrences.deep_twin
 		end
-		
+
 feature -- Access
 
 	rm_type_name: STRING
 			-- type name from reference model, of object to instantiate
-			
+
 	node_id: STRING is
-			-- 
+			--
 		do
 			Result := representation.node_id
 		end
-		
+
 	occurrences: INTERVAL[INTEGER]
-	
+
 	parent: C_ATTRIBUTE
-	
+
 feature -- Source Control
 
 	specialisation_status (specialisation_level: INTEGER): SPECIALISATION_STATUS is
-			-- status of this node in the source text of this archetype with respect to the 
+			-- status of this node in the source text of this archetype with respect to the
 			-- specialisation hierarchy. Values are defined in SPECIALISATION_STATUSES
 		local
 			node_spec_level: INTEGER
@@ -78,7 +78,7 @@ feature -- Source Control
 				end
 			end
 		end
-			
+
 feature -- Status Report
 
 	is_valid: BOOLEAN is
@@ -90,7 +90,7 @@ feature -- Status Report
 				invalid_reason.append("[" + node_id + "]")
 			end
 			invalid_reason.append(": ")
-			
+
 			if occurrences = Void then
 				invalid_reason.append("occurrences must be specified")
 			elseif parent /= Void then
@@ -103,15 +103,15 @@ feature -- Status Report
 				Result := True
 			end
 		end
-		
-	is_occurrences_default: BOOLEAN is 
+
+	is_occurrences_default: BOOLEAN is
 			-- True if occurrences is set at default value
 		do
 			Result := occurrences.is_equal(default_occurrences)
 		end
-		
+
 feature -- Modification
-		
+
 	set_object_id(an_object_id:STRING) is
 		require
 			Object_id_valid: an_object_id /= Void and then not an_object_id.is_empty
@@ -120,7 +120,7 @@ feature -- Modification
 		end
 
 	set_occurrences(ivl: INTERVAL[INTEGER]) is
-			-- 
+			--
 		require
 			Interval_exists: ivl /= Void
 		do
@@ -135,9 +135,9 @@ feature -- Representation
 
 invariant
 	rm_type_name_valid: rm_type_name /= Void and then not rm_type_name.is_empty
-	Occurrences_validity: occurrences /= Void and then 
+	Occurrences_validity: occurrences /= Void and then
 		(parent /= Void implies (not parent.is_multiple implies occurrences.upper <= 1))
-	
+
 end
 
 

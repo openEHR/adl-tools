@@ -26,7 +26,7 @@ inherit
 			default_create
 		end
 
-	SHARED_ADL_INTERFACE
+	SHARED_ARCHETYPE_COMPILER
 		export
 			{NONE} all
 		undefine
@@ -224,20 +224,15 @@ feature -- Commands
 				need_to_set_repository := True
 			end
 
-			archetype_directory.put_repository (reference_repository_path, "reference")
+			if archetype_directory.valid_repository_path (reference_repository_path) then
+				archetype_directory.put_repository (reference_repository_path, "reference")
+			end
 
-			if not work_repository_path.is_empty then
+			if archetype_directory.valid_repository_path (work_repository_path) then
 				archetype_directory.put_repository (work_repository_path, "work")
 			end
 
 			populate_archetype_directory
-
-			adl_interface.set_current_directory(reference_repository_path)
-
-			if current_work_directory.is_empty then
-				set_current_work_directory (adl_interface.working_directory)
-			end
-
 			focus_first_widget (main_nb.selected_item)
 		end
 
@@ -271,24 +266,14 @@ feature -- Commands
 			News_dialog.show
 		end
 
-	load_and_parse_adl_file (file_path: STRING)
-			-- Load and parse a named ADL file.
+	load_and_parse_archetype
+			-- Load and parse archetype currently selected in archetype_directory.
 		require
-			file_path_attached: file_path /= Void
-			file_path_not_empty: not file_path.is_empty
+			archetype_selected: archetype_directory.has_selected_archetype_descriptor
 		do
-			do_with_wait_cursor (agent (path: STRING)
-				do
-					adl_interface.reset
-					adl_interface.open_adl_file (path)
-
-					if arch_notebook.selected_item = archetype_text_edit_area then
-						populate_archetype_text_edit_area
-					end
-
-					parse_archetype
-					set_current_work_directory (adl_interface.working_directory)
-				end (file_path))
+			archetype_compiler.set_target_to_selected
+			arch_notebook_select
+			do_with_wait_cursor (agent parse_archetype)
 		end
 
 feature {NONE} -- Commands
@@ -344,9 +329,9 @@ feature {NONE} -- Commands
 			-- Called by `select_actions' of `language_combo'.
 		do
 			if not language_combo.text.is_empty then
-				adl_interface.set_current_language (language_combo.text)
+				archetype_compiler.set_current_language (language_combo.text)
 
-				if adl_interface.parse_succeeded then
+				if archetype_directory.selected_archetype_valid then
 					populate_view_controls
 				end
 			end
@@ -356,6 +341,7 @@ feature {NONE} -- Commands
 			-- Let the user select an ADL file, and the load and parse it.
 		local
 			dialog: EV_FILE_OPEN_DIALOG
+			ara: ARCH_REP_ARCHETYPE
 		do
 			create dialog
 			dialog.set_start_directory (current_work_directory)
@@ -363,7 +349,13 @@ feature {NONE} -- Commands
 			dialog.show_modal_to_window (Current)
 
 			if not dialog.file_name.is_empty then
-				load_and_parse_adl_file (dialog.file_name)
+				archetype_directory.add_adhoc_item (dialog.file_name)
+				ara := archetype_directory.archetype_descriptor_from_full_path (dialog.file_name)
+
+				if ara /= Void then
+					archetype_directory.set_selected_archetype_descriptor (ara)
+					archetype_view_tree_control.repopulate
+				end
 			end
 		end
 
@@ -377,109 +369,93 @@ feature {NONE} -- Commands
 			save_dialog: EV_FILE_SAVE_DIALOG
 			name, format: STRING
 		do
-			if adl_interface.archetype_source_loaded then
-				if adl_interface.parse_succeeded then
-					ok_to_write := True
+			if archetype_directory.selected_archetype_valid then
+				ok_to_write := True
 
-					name := adl_interface.file_context.current_file_name.twin
-					name.remove_tail (archetype_file_extensions [archetype_file_extension].count)
+				name := archetype_directory.selected_descriptor.full_path.twin
+				name.remove_tail (archetype_file_extensions [archetype_file_extension].count)
 
-					create save_dialog
-					save_dialog.set_file_name (name)
-					save_dialog.set_start_directory (current_work_directory)
+				create save_dialog
+				save_dialog.set_file_name (name)
+				save_dialog.set_start_directory (current_work_directory)
 
-					from
-						archetype_file_extensions.start
-					until
-						archetype_file_extensions.off
-					loop
-						format := archetype_file_extensions.key_for_iteration
+				from
+					archetype_file_extensions.start
+				until
+					archetype_file_extensions.off
+				loop
+					format := archetype_file_extensions.key_for_iteration
 
-						if has_archetype_serialiser_format (format) then
-							save_dialog.filters.extend (["*" + archetype_file_extensions.item_for_iteration, "Files of type " + format])
+					if has_archetype_serialiser_format (format) then
+						save_dialog.filters.extend (["*" + archetype_file_extensions.item_for_iteration, "Files of type " + format])
 					end
 
-						archetype_file_extensions.forth
-					end
-
-					save_dialog.show_modal_to_window (Current)
-					name := save_dialog.file_name
-
-					if not name.is_empty then
-						format ?= (save_dialog.filters [save_dialog.selected_filter_index]) [1]
-						format.remove_head (2)
-
-						if not file_system.has_extension (name, archetype_file_extensions [format]) then
-							name.append (archetype_file_extensions [format])
-							save_dialog.set_file_name (name)
-						end
-
-						create a_file.make (name)
-
-						if a_file.exists then
-							create question_dialog.make_with_text ("File " + save_dialog.file_title + " already exists. Replace it?")
-							question_dialog.set_buttons(<<"Yes", "No">>)
-							question_dialog.show_modal_to_window (Current)
-							ok_to_write := question_dialog.selected_button.is_equal("Yes")
-						end
-
-						if ok_to_write then
-							adl_interface.save_archetype (name, format)
-							parser_status_area.append_text(adl_interface.status)
-
-							if format.is_equal (archetype_file_extension) then
-								populate_archetype_directory
-							end
-						end
-
-						set_current_work_directory (save_dialog.file_path)
-					end
-				else
-					create error_dialog.make_with_text("must parse before serialising")
-					error_dialog.show_modal_to_window (Current)
+					archetype_file_extensions.forth
 				end
+
+				save_dialog.show_modal_to_window (Current)
+				name := save_dialog.file_name
+
+				if not name.is_empty then
+					format ?= (save_dialog.filters [save_dialog.selected_filter_index]) [1]
+					format.remove_head (2)
+
+					if not file_system.has_extension (name, archetype_file_extensions [format]) then
+						name.append (archetype_file_extensions [format])
+						save_dialog.set_file_name (name)
+					end
+
+					create a_file.make (name)
+
+					if a_file.exists then
+						create question_dialog.make_with_text ("File " + save_dialog.file_title + " already exists. Replace it?")
+						question_dialog.set_buttons(<<"Yes", "No">>)
+						question_dialog.show_modal_to_window (Current)
+						ok_to_write := question_dialog.selected_button.is_equal("Yes")
+					end
+
+					if ok_to_write then
+						archetype_compiler.save_archetype_as (name, format)
+						parser_status_area.append_text (archetype_compiler.status)
+
+						-- FIXME: currently this refreshes the whole view and forgets what archetype the user was on;
+						-- it is only useful to do this in any case if the archetype was written over the .adl file
+						-- in the repository area; if it is saved to e.g. the temp area, this should not even be done
+						if format.is_equal (archetype_file_extension) then
+							populate_archetype_directory
+						end
+					end
+
+					set_current_work_directory (save_dialog.file_path)
+				end
+			else
+				create error_dialog.make_with_text ("Must parse before serialising.")
+				error_dialog.show_modal_to_window (Current)
 			end
 		end
 
 	edit_archetype is
 			-- launch external editor with archetype
 		do
-			if adl_interface.archetype_source_loaded then
-				execution_environment.launch(editor_command + " " + adl_interface.file_context.current_full_path)
+			if archetype_directory.has_selected_archetype_descriptor then
+				execution_environment.launch (editor_command + " " + archetype_directory.selected_descriptor.full_path)
 			end
 		end
 
 	parse_archetype is
 			-- Parse the archetype currently selected.
 		do
-			do_with_wait_cursor (agent
-				do
-					if adl_interface.archetype_source_loaded then
-						resync_file
-						clear_all_controls
-						adl_interface.parse_archetype
-						parser_status_area.append_text (adl_interface.status)
+			clear_all_controls
 
-						if adl_interface.parse_succeeded then
-							populate_all_archetype_controls
---							arch_notebook.select_item (info_view_area)
---							source_notebook.select_item (parsed_archetype_tree_view)
-							adl_interface.set_archetype_readonly
-						else
-							populate_archetype_id
-						end
-					end
-				end)
-		end
+			if archetype_compiler.has_target then
+				archetype_compiler.parse_archetype
+				parser_status_area.append_text (archetype_compiler.status)
 
-	resync_file is
-			-- resynchronise in-memory archetype to file if changed due to editing
-		do
-			if adl_interface.file_changed_on_disk then
-				adl_interface.resync_file
-				clear_all_controls
-				if arch_notebook.item_text(arch_notebook.selected_item).is_equal ("Source") then
-					populate_archetype_text_edit_area
+				if archetype_directory.selected_archetype_valid then
+					populate_all_archetype_controls
+					archetype_compiler.set_archetype_readonly
+				else
+					populate_archetype_id
 				end
 			end
 		end
@@ -492,21 +468,21 @@ feature {NONE} -- Commands
 
 	node_map_shrink_tree_one_level is
 		do
-			if adl_interface.parse_succeeded then
+			if archetype_directory.selected_archetype_valid then
 				node_map_control.shrink_one_level
 			end
 		end
 
 	node_map_expand_tree_one_level is
 		do
-			if adl_interface.parse_succeeded then
+			if archetype_directory.selected_archetype_valid then
 				node_map_control.expand_one_level
 			end
 		end
 
 	node_map_toggle_expand_tree is
 		do
-			if adl_interface.parse_succeeded then
+			if archetype_directory.selected_archetype_valid then
 				node_map_control.toggle_expand_tree
 			end
 		end
@@ -519,7 +495,7 @@ feature {NONE} -- Commands
 	on_tree_domain_selected
 			-- Hide technical details in `parsed_archetype_tree'.
 		do
-			if adl_interface.parse_succeeded then
+			if archetype_directory.selected_archetype_valid then
 				node_map_control.set_domain_mode
 			end
 		end
@@ -527,7 +503,7 @@ feature {NONE} -- Commands
 	on_tree_technical_selected
 			-- Display technical details in `parsed_archetype_tree'.
 		do
-			if adl_interface.parse_succeeded then
+			if archetype_directory.selected_archetype_valid then
 				node_map_control.set_technical_mode
 			end
 		end
@@ -535,7 +511,7 @@ feature {NONE} -- Commands
 	on_tree_flat_view_selected
 			-- Do not show the inherited/defined status of nodes in `parsed_archetype_tree'.
 		do
-			if adl_interface.parse_succeeded then
+			if archetype_directory.selected_archetype_valid then
 				node_map_control.set_flat_view
 			end
 		end
@@ -543,7 +519,7 @@ feature {NONE} -- Commands
 	on_tree_inheritance_selected
 			-- Show the inherited/defined status of nodes in `parsed_archetype_tree'.
 		do
-			if adl_interface.parse_succeeded then
+			if archetype_directory.selected_archetype_valid then
 				node_map_control.set_inheritance_view
 			end
 		end
@@ -612,10 +588,37 @@ feature {NONE} -- Commands
 		end
 
 	arch_notebook_select is
-			-- Called by `selection_actions' of `arch_notebook'.
+			-- Redisplay the archetype's source when the selected page changes in `arch_notebook'.
+		local
+			leader, int_val_str, src, s: STRING
+			len, left_pos, right_pos, line_cnt: INTEGER
 		do
-			if adl_interface.archetype_source_loaded and arch_notebook.item_text(arch_notebook.selected_item).is_equal ("Source") then
-				populate_archetype_text_edit_area
+			if arch_notebook.selected_item = archetype_text_edit_area then
+				create s.make_empty
+
+				if archetype_directory.has_selected_archetype_descriptor then
+					src := archetype_directory.selected_descriptor.source
+					len := src.count
+
+					from
+						left_pos := 1
+						line_cnt := 1
+					until
+						left_pos > len
+					loop
+						create leader.make_filled (' ', 4)
+						int_val_str := line_cnt.out
+						leader.replace_substring (int_val_str, 1, int_val_str.count)
+
+						s.append (leader)
+						right_pos := src.index_of ('%N', left_pos)
+						s.append (src.substring (left_pos, right_pos))
+						left_pos := right_pos + 1
+						line_cnt := line_cnt + 1
+					end
+				end
+
+				archetype_text_edit_area.set_text (utf8 (s))
 			end
 		end
 
@@ -829,56 +832,48 @@ feature {EV_DIALOG} -- Implementation
 		end
 
 	populate_archetype_id is
+		local
+			selected: ARCHETYPE
 		do
-			archetype_id.set_text (utf8 (adl_interface.adl_engine.archetype_id.as_string))
-			if adl_interface.adl_engine.archetype /= Void and then
-					adl_interface.adl_engine.archetype.is_specialised then
-				parent_archetype_id.set_text (utf8 (adl_interface.adl_engine.parent_archetype_id.as_string))
+			selected := archetype_directory.selected_archetype
+
+			if selected /= Void then
+				archetype_id.set_text (utf8 (selected.archetype_id.as_string))
+
+				if selected.is_specialised then
+					parent_archetype_id.set_text (utf8 (selected.parent_archetype_id.as_string))
+				else
+					parent_archetype_id.remove_text
+				end
 			else
-				parent_archetype_id.set_text("")
+				archetype_id.remove_text
+				parent_archetype_id.remove_text
 			end
 		end
 
 	populate_adl_version is
 			-- populate ADL version
 		do
-			adl_version_text.set_text (utf8 (adl_interface.archetype.adl_version))
+			if archetype_directory.has_selected_archetype_descriptor then
+				adl_version_text.set_text (utf8 (archetype_directory.selected_archetype.adl_version))
+			else
+				adl_version_text.remove_text
+			end
 		end
 
 	populate_languages is
 		do
 			language_combo.select_actions.block
-			language_combo.set_strings (adl_interface.archetype.languages_available)
-			language_combo.select_actions.resume
-			terminologies_list.set_strings (ontology.terminologies_available)
-		end
 
-	populate_archetype_text_edit_area is
-		local
-			leader, int_val_str, src, s: STRING
-			len, left_pos, right_pos, line_cnt: INTEGER
-		do
-			create s.make(0)
-			src := adl_interface.adl_engine.source
-			len := src.count
-			from
-				left_pos := 1
-				line_cnt := 1
-			until
-				left_pos > len
-			loop
-				create leader.make(4)
-				leader.fill_blank
-				int_val_str := line_cnt.out
-				leader.replace_substring(int_val_str, 1, int_val_str.count)
-
-				s.append (leader)
-				right_pos := src.index_of('%N', left_pos)
-				s.append(src.substring(left_pos, right_pos))
-				left_pos := right_pos + 1
-				line_cnt := line_cnt + 1
+			if archetype_directory.has_selected_archetype_descriptor then
+				language_combo.set_strings (archetype_directory.selected_archetype.languages_available)
+				terminologies_list.set_strings (archetype_directory.selected_archetype.ontology.terminologies_available)
+			else
+				language_combo.wipe_out
+				terminologies_list.wipe_out
 			end
-			archetype_text_edit_area.set_text (utf8 (s))
+
+			language_combo.select_actions.resume
 		end
 
 feature {NONE} -- Implementation

@@ -13,7 +13,7 @@ indexing
 	last_change: "$LastChangedDate$"
 
 class TC_ONTOLOGY_LANGUAGES
-	
+
 inherit
 	TEST_CASE
 		export
@@ -21,12 +21,12 @@ inherit
 		redefine
 			prereqs
 		end
-		
+
 	SHARED_TEST_ENV
 		export
 			{NONE} all
 		end
-		
+
 create
 	make
 
@@ -40,7 +40,7 @@ feature -- Access
 
 	title: STRING is "Add languages to ontology"
 
-	prereqs: ARRAY[STRING] is 
+	prereqs: ARRAY[STRING] is
 			-- ids of prerequisite test cases
 		once
 			Result := <<"TC_ONTOLOGY_POPULATE">>
@@ -52,37 +52,40 @@ feature -- testing
 		local
 			archetype: ARCHETYPE
 		do
-			archetype := adl_interface.adl_engine.archetype
+			archetype := archetype_compiler.archetype
 
 			io_message.put_string ("------------------ ADD fr -------------------%N")
 			ontology.add_language("fr")
 
 			if archetype.is_valid then
-				adl_interface.adl_engine.serialise (serialise_format)
-				io_message.put_string (adl_interface.adl_engine.serialised_archetype)
+				archetype_compiler.serialise_archetype (serialise_format)
+				io_message.put_string (archetype_compiler.serialised_archetype)
 			else
+				-- FIXME: This did not compile because of revision 319. What should it do?
 				io_message.put_string (archetype.errors)
 			end
-			
+
 			io_message.put_string ("------------------ ADD tr -------------------%N")
 			ontology.add_language("tr")
+
 			if archetype.is_valid then
-				adl_interface.adl_engine.serialise (serialise_format)
-				io_message.put_string (adl_interface.adl_engine.serialised_archetype)
+				archetype_compiler.serialise_archetype (serialise_format)
+				io_message.put_string (archetype_compiler.serialised_archetype)
 			else
+				-- FIXME: This did not compile because of revision 319. What should it do?
 				io_message.put_string (archetype.errors)
 			end
 
 	--		io_message.put_string ("-------------- ADD tr again (expect ERROR) ---------------%N")
 	--		ontology.add_language_available("tr")
 	--		if archetype.is_valid then
-	--			adl_interface.adl_engine.serialise (serialise_format)
-	--			io_message.put_string (adl_interface.adl_engine.serialised_archetype)
+	--			archetype_compiler.serialise_arachetype (serialise_format)
+	--			io_message.put_string (archetype_compiler.serialised_archetype)
 	--		else
 	--			io_message.put_string (archetype.errors)
 	--		end
 		end
-	
+
 end
 
 --|

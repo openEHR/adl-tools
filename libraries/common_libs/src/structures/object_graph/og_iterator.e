@@ -1,7 +1,18 @@
 indexing
 	component:   "openEHR Archetype Project"
-	description: "CADL Tree cursor"
-	keywords:    "test, ADL, CADL"
+	description: "[
+				 Object Graph Tree iterator. This iterator currently supplies the standard 'do_all'
+				 function which performs an action on entry to each node, descends, and then performs
+				 an action on exiting each node; there are two agent actions supplied: node_enter_action
+				 and node_exit_action. This allows signficantly more power than just a single action per 
+				 node type.
+				 
+				 It also supports a more esoteric iteration function called do_at_surface, which iterates
+				 from the top until a 'surface' of nodes is hit (which test true according to the supplied
+				 'is_at_surface' agent); performs a single action to each such node, and does not continue
+				 past these nodes.
+				 ]"
+	keywords:    "object graph, recursive iterator"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2003,2004 Ocean Informatics Pty Ltd"
@@ -32,6 +43,7 @@ feature -- Access
 feature -- Traversal
 
 	do_all(node_enter_action, node_exit_action: PROCEDURE[ANY, TUPLE[OG_ITEM, INTEGER]]) is
+			-- do enter_action and exit_action to all nodes in the structure
 		require
 			Enter_action_valid: node_enter_action /= Void
 			Exit_action_valid: node_exit_action /= Void
@@ -40,19 +52,26 @@ feature -- Traversal
 			do_all_nodes(target, node_enter_action, node_exit_action)
 		end
 
+	do_at_surface(node_action: PROCEDURE[ANY, TUPLE[OG_ITEM]]; is_at_surface: FUNCTION[ANY, TUPLE[OG_ITEM], BOOLEAN]) is
+			-- do action only to nodes at surface, where membership is defined by 'is_at_surface'
+		require
+			Node_action_valid: node_action /= Void
+			Surface_test_action_valid: is_at_surface /= Void
+		do
+			do_at_surface_nodes(target, node_action, is_at_surface)
+		end
+
 feature {NONE} -- Implementation
 
 	do_all_nodes(a_target: OG_NODE; node_enter_action, node_exit_action: PROCEDURE[ANY, TUPLE[OG_ITEM, INTEGER]]) is
 		require
 			Target_exists: a_target /= Void
-			Enter_action_valid: node_enter_action /= Void
-			Exit_action_valid: node_exit_action /= Void
 		local
 			a_node: OG_NODE
 		do
 			depth := depth + 1
 			node_enter_action.call([a_target, depth])
-			from 
+			from
 				a_target.start
 			until
 				a_target.off
@@ -64,13 +83,41 @@ feature {NONE} -- Implementation
 					node_enter_action.call([a_target.item_for_iteration, depth+1])
 					node_exit_action.call([a_target.item_for_iteration, depth+1])
 				end
-				
+
 				a_target.forth
 			end
 			node_exit_action.call([a_target, depth])
 			depth := depth - 1
 		end
-		
+
+	do_at_surface_nodes(a_target: OG_NODE; node_action: PROCEDURE[ANY, TUPLE[OG_ITEM]]; is_at_surface: FUNCTION[ANY, TUPLE[OG_ITEM], BOOLEAN]) is
+			-- do action only to nodes at surface, where membership is defined by 'is_at_surface'
+		require
+			Target_exists: a_target /= Void
+		local
+			a_node: OG_NODE
+		do
+			if is_at_surface.item([a_target]) then
+				node_action.call([a_target])
+			else -- haven't hit the surface yet, descend...
+				from
+					a_target.start
+				until
+					a_target.off
+				loop
+					a_node ?= a_target.item_for_iteration
+					if a_node /= Void then
+						do_at_surface_nodes(a_node, node_action, is_at_surface)
+					else -- terminal child node
+						if is_at_surface.item ([a_target.item_for_iteration]) then
+							node_action.call([a_target.item_for_iteration])
+						end
+					end
+					a_target.forth
+				end
+			end
+		end
+
 	depth: INTEGER
 
 invariant

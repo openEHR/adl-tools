@@ -1,15 +1,29 @@
 indexing
 	component:   "openEHR Archetype Project"
 	description: "[
-				 Archteype directory - a data structure containing a archetypes found in one or more
-				 file-system directories. In the structure, specialised archetypes are subordinates 
-				 of their parent archetypes, if the latter are known, else they are on the level of 
-				 the parent.
+				 Archteype directory - a data structure containing archetypes found in one or more
+				 physical repositories, each of which is on some medium, such as the file system or
+				 a web-accessible repository. The structure of the directory is ontological, meaning
+				 that it expresses the classification structure of items in it. Each item has an 
+				 ontological path therefore, such as /openehr/ehr/entry/observation/lab_result. The 
+				 concept part of the archetype id becomes part of the path. Specialised archetypes are 
+				 thus subordinates of their parent archetypes, if the latter are known, else they are 
+				 on the level of the parent; e.g. the archetype openEHR-EHR-OBSERVATION.lab_result-lipids.v1
+				 will have a path such as /openehr/ehr/entry/observation/lab_result/lipids. Note that start
+				 of the path may vary due to the user having chosen a different root point for the
+				 source repositories that are merged into the directory.
 				 
-				 The overall effect is to combine one or more file-system repositories of archetypes, 
-				 e.g. as found in the openEHR SVN knowledge repoisitory, into one logical tree. The
-				 objects from each repository are marked so that calling routines can distinguish them
-				 e.g. to use different coloured icons on the screen.
+				 The directory is populated at startup, using the source repository paths stored in a
+				 configuration file or elsewhere.
+				 
+				 Archetypes can also be explicitly chosen by the user at runtime, outside of the 
+				 repositories, e.g. the user wants to look at an archetype sent to them in email and
+				 stored in /tmp. These archetypes are remembered on the 'adhoc_repository', and this 
+				 is also merged into the directory by 'grafting'.
+				 
+				 In the resulting directory, the archetype descriptors from each repository are marked
+				 so that calling routines can distinguish them, e.g. to use different coloured icons on 
+				 the screen.
 				 ]"
 	keywords:    "ADL"
 	author:      "Thomas Beale"
@@ -17,12 +31,12 @@ indexing
 	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
+	file:        "$URL: $"
 	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	last_change: "$LastChangedDate: $"
 
 
-class ARCHETYPE_DIRECTORY
+class ARCH_DIRECTORY
 
 inherit
 	SHARED_RESOURCES
@@ -45,129 +59,315 @@ create
 
 feature -- Initialisation
 
-	make is
+	make
 		do
-			create source_repositories.make(0)
+			create source_repositories.make (0)
+			create adhoc_source_repository.make (1)
 			clear
 		end
 
 feature -- Access
 
-	source_repositories: DS_HASH_TABLE [ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP, STRING]
+	source_repositories: DS_HASH_TABLE [ARCHETYPE_INDEXED_REPOSITORY_I, STRING]
 			-- physical repositories of archetypes, keyed by logical id
+			-- Each such repository consists of archetypes arranged in a directory structure
+			-- mimicking an ontological structure, e.g. ehr/entry/observation etc
+			-- FIXME: this should be declared as
+			-- source_repositories: DS_HASH_TABLE [ARCHETYPE_INDEXED_REPOSITORY_I, STRING]
+			-- with the concrete types being instantiated at runtime, based on settings in
+			-- the .cfg file - i.e. have to determine from those settings what type of
+			-- repository it is - web, file system etc
 
-	directory: TWO_WAY_TREE [ARCHETYPE_REPOSITORY_ITEM]
-			-- result of merging all repositories in ontology structure (where specialised
+	adhoc_source_repository: ARCHETYPE_ADHOC_FILE_REPOSITORY
+			-- an additional 'repository' where archetypes may be found, but not necessarily classified
+			-- under any structure - used e.g. to represent the file local system where isolated archetypes
+			-- may be found, e.g. in c:\temp, /tmp or wherever. This repository is just a list of
+			-- archetypes keyed by path on the file system. They are not merged onto the directory
+			-- but 'grafted' - a simpler operation
+
+	directory: TWO_WAY_TREE [ARCH_REP_ITEM]
+			-- result of merging all source repositories in ontology structure (where specialised
 			-- archetypes now appear as child nodes, rather than sibling nodes, as they do
-			-- in the file system)
+			-- in the file system), as well as grafting on adhoc archetypes
 
-	ontology_index: DS_HASH_TABLE [TWO_WAY_TREE [ARCHETYPE_REPOSITORY_ITEM], STRING]
+	ontology_index: DS_HASH_TABLE [like directory, STRING]
 			-- index of archetypes, keyed by ontology path
 			-- relative ontology path of item with respect to root; for folder nodes,
 			-- this will look like the relative directory path; for archetype nodes, this will be
 			-- the concatenation of the directory path and archetype specialisation parent path
 
-	selected_archetype: ARCHETYPE_REPOSITORY_ARCHETYPE
+	archetype_id_index: DS_HASH_TABLE [ARCH_REP_ARCHETYPE, STRING]
+			-- index of archetype nodes keyed by archetype id
+
+	selected_descriptor: ARCH_REP_ARCHETYPE
 			-- selected archetype node
 
-feature -- Status Report
-
-	has_selected_archetype: BOOLEAN is
-			-- True if an archetype has been selected
+	selected_archetype: ARCHETYPE is
+			-- archetype at currently selected archetype descriptor
 		do
-			Result := selected_archetype /= Void
+			if selected_descriptor /= Void and then selected_descriptor.compilation_context /= Void then
+				Result := selected_descriptor.compilation_context.archetype
+			end
+		end
+
+	selected_archetype_valid: BOOLEAN is
+			-- is archetype at currently selected archetype descriptor valid?
+		do
+			if selected_descriptor /= Void and then selected_descriptor.compilation_context /= Void then
+				Result := selected_descriptor.compilation_context.is_valid
+			end
+		end
+
+	archetype_descriptor_from_full_path (full_path: STRING): ARCH_REP_ARCHETYPE
+			-- The archetype descriptor in the directory that is designated by `full_path'; else Void.
+		require
+			path_valid: adhoc_source_repository.is_valid_path (full_path)
+		do
+			from
+				archetype_id_index.start
+			until
+				archetype_id_index.off or Result /= Void
+			loop
+				if archetype_id_index.item_for_iteration.full_path.is_equal (full_path) then
+					Result := archetype_id_index.item_for_iteration
+				end
+
+				archetype_id_index.forth
+			end
+		ensure
+			has_full_path_if_attached: Result /= Void implies Result.full_path.is_equal (full_path)
 		end
 
 feature -- Comparison
 
-	valid_repository_path(a_dir_name: STRING): BOOLEAN is
-			-- True if a_dir_name corresponds to a real directory, is readable, and is not the same as,
-			-- or a parent or child directory of any directory already used to populate the tree
-		require
-			a_dir_name /= Void
+	valid_repository_path (dir_name: STRING): BOOLEAN
+			-- Does `dir_name' correspond to a real directory, which is not the same as, or a
+			-- parent or child of, any directory already used to populate the tree?
+		local
+			s: STRING
 		do
-			if (create {DIRECTORY}.make(a_dir_name)).exists then
-				from
-					source_repositories.start
-				until
-					source_repositories.off or
-						a_dir_name.is_equal(source_repositories.key_for_iteration) or
-						a_dir_name.has_substring (source_repositories.key_for_iteration) or
-						source_repositories.key_for_iteration.has_substring(a_dir_name)
-				loop
-					source_repositories.forth
+			if dir_name /= Void and then not dir_name.is_empty then
+				if directory_at (dir_name).exists then
+					from
+						source_repositories.start
+					until
+						source_repositories.off or Result
+					loop
+						s := source_repositories.key_for_iteration
+						Result := dir_name.is_equal (s) or dir_name.has_substring (s) or s.has_substring (dir_name)
+						-- FIXME: The above test would say yes to "C:\x" and "C:\xx"!
+						source_repositories.forth
+					end
+
+					Result := not Result
 				end
-				Result := source_repositories.off
 			end
+		ensure
+			false_if_void: Result implies dir_name /= Void
 		end
 
 feature -- Commands
 
-	clear is
+	clear
+			-- Clear `directory' and its index tables.
 		do
-			create ontology_index.make(0)
-			create directory.make(Void)
+			clear_selected_archetype_descriptor
+			create ontology_index.make (0)
+			create archetype_id_index.make (0)
+			create directory.make (Void)
 		end
 
-	build_directory is
-			-- rebuild directory from source repositories
+	build_directory
+			-- Rebuild `directory' from source repositories.
 		do
 			clear
+
 			from
 				source_repositories.start
 			until
 				source_repositories.off
 			loop
 				source_repositories.item_for_iteration.repopulate
-				tree_do_all(source_repositories.item_for_iteration, agent merge_enter, agent merge_exit)
+				tree_do_all (source_repositories.item_for_iteration, agent merge_enter, agent merge_exit)
 				source_repositories.forth
 			end
 		end
 
-	put_repository(a_dir_name, an_id: STRING) is
-			-- put repository logically identified an_id, at directory path a_dir_name
+	graft_adhoc_item (ara: ARCH_REP_ARCHETYPE)
+			-- Graft ad hoc archetype `ara' into `directory'. Use its archetype id to figure out
+			-- its ontological path, by finding archetypes in the same semantic category.
+			-- If `ara' specialises an archetype already in `directory', graft it there.
 		require
-			Dir_name_valid: a_dir_name /= Void and then valid_repository_path(a_dir_name)
-			Id_valid: an_id /= Void and then not an_id.is_empty
+			ara_attached: ara /= Void
+		local
+			semantic_category: STRING
+			archetype_in_same_semantic_category: ARCH_REP_ARCHETYPE
+			node, parent_node: like directory
 		do
-			source_repositories.force(create {ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP}.make(a_dir_name, source_repositories.count+1), an_id)
+			from
+				semantic_category := ara.id.qualified_rm_entity
+				semantic_category.append_character ({ARCHETYPE_ID}.axis_separator)
+				archetype_id_index.start
+			until
+				archetype_id_index.off or archetype_in_same_semantic_category /= Void
+			loop
+				if archetype_id_index.key_for_iteration.substring_index (semantic_category, 1) = 1 then
+					archetype_in_same_semantic_category := archetype_id_index.item_for_iteration
+					-- FIXME: Keep looking for an archetype that `ara' specialises.
+				end
+
+				archetype_id_index.forth
+			end
+
+			create node.make (ara)
+
+			if archetype_in_same_semantic_category /= Void and then ontology_index.has (archetype_in_same_semantic_category.ontological_path) then
+				parent_node := ontology_index.item (archetype_in_same_semantic_category.ontological_path).parent
+			else
+				parent_node := directory
+			end
+
+			-- FIXME: Need to check that this doesn't duplicate another archetype:
+--			if ontology_index.has (ara.ontological_path) then
+--				post_error (Current, "graft_adhoc_item", "arch_dir_dup_archetype", <<ara.full_path>>)
+--			else
+
+			parent_node.child_start
+			parent_node.put_child_left (node)
+			ontology_index.force (node, ara.ontological_path)
+			archetype_id_index.force (ara, ara.id.as_string)
+		end
+
+	put_repository (dir_name, repository_id: STRING)
+			-- Put the repository logically identified by `repository_id' at path `dir_name'.
+		require
+			dir_name_valid: valid_repository_path (dir_name)
+			repository_id_attached: repository_id /= Void
+			repository_id_not_empty: not repository_id.is_empty
+		local
+			repository: ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP
+		do
+			-- FIXME: If there is no reference repository, this wrongly sets group id 2 to the work repository:
+			create repository.make (dir_name, source_repositories.count + 2)
+			source_repositories.force (repository, repository_id)
 		end
 
 feature -- Traversal
 
-	do_all (node_enter_action, node_exit_action: PROCEDURE [ANY, TUPLE[ARCHETYPE_REPOSITORY_ITEM]]) is
+	do_all (node_enter_action, node_exit_action: PROCEDURE [ANY, TUPLE [ARCH_REP_ITEM]])
 			-- execute node_enter_action when entering a node, then recurse into subnodes, then execute
 			-- node_exit_action when leaving node
 		do
-			do_all_nodes(directory, node_enter_action, node_exit_action)
+			do_all_nodes (directory, node_enter_action, node_exit_action)
 		end
 
-	tree_do_all (a_rep: ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP; node_enter_action, node_exit_action: PROCEDURE [ANY, TUPLE[TWO_WAY_TREE[ARCHETYPE_REPOSITORY_ITEM]]]) is
+	do_all_archetype (node_enter_action, node_exit_action: PROCEDURE [ANY, TUPLE [ARCH_REP_ARCHETYPE]])
+			-- execute node_enter_action on archetype nodes
+		do
+			do_all_archetype_nodes (directory, node_enter_action, node_exit_action)
+		end
+
+	tree_do_all (a_rep: ARCHETYPE_INDEXED_REPOSITORY_I; node_enter_action, node_exit_action: PROCEDURE [ANY, TUPLE [like directory]])
 			-- execute node_enter_action when entering a node, then recurse into subnodes, then execute
 			-- node_exit_action when leaving node
 		do
-			tree_do_all_nodes(a_rep.directory, node_enter_action, node_exit_action)
+			tree_do_all_nodes (a_rep.directory, node_enter_action, node_exit_action)
 		end
 
 feature -- Modification
 
-	set_selected_item(an_arch_repos_item: ARCHETYPE_REPOSITORY_ARCHETYPE) is
-			-- set `selected_archetype'
+	set_selected_archetype_descriptor (an_arch_repos_item: ARCH_REP_ARCHETYPE)
+			-- Set `selected_descriptor'.
 		require
-			an_arch_repos_item /= Void
+			item_attached: an_arch_repos_item /= Void
 		do
-			selected_archetype := an_arch_repos_item
+			selected_descriptor := an_arch_repos_item
+		ensure
+			set: selected_descriptor = an_arch_repos_item
 		end
 
-	clear_selected_item is
-			-- clear `selected_archetype'
+	set_selected_archetype_descriptor_from_ontological_path (a_path: STRING)
+			-- Set `selected_descriptor' using an ontological path like "/ehr/entry/observation/lab-result".
+		require
+			path_valid: has_ontological_archetype_path (a_path)
 		do
-			selected_archetype := Void
+			selected_descriptor ?= ontology_index.item (a_path).item
+		end
+
+	set_selected_archetype_descriptor_from_archetype_id (an_id: STRING)
+			-- Set `selected_descriptor' using an id of archetype.
+		require
+			Path_valid: has_archetype_id (an_id)
+		do
+			selected_descriptor := archetype_id_index.item (an_id)
+		ensure
+			has_selected_archetype_descriptor: has_selected_archetype_descriptor
+			set: selected_descriptor.id.value.is_equal (an_id)
+		end
+
+	clear_selected_archetype_descriptor
+			-- Clear `selected_descriptor'.
+		do
+			selected_descriptor := Void
+		end
+
+	add_adhoc_item (full_path: STRING)
+			-- Add the archetype designated by `full_path' to the ad hoc repository, and graft it into the directory.
+		require
+			path_valid: adhoc_source_repository.is_valid_path (full_path)
+		do
+			if archetype_descriptor_from_full_path (full_path) = Void then
+				adhoc_source_repository.add_item (full_path)
+
+				if adhoc_source_repository.has (full_path) then
+					graft_adhoc_item (adhoc_source_repository [full_path])
+				end
+			end
+		end
+
+feature -- Status Report
+
+	has_selected_archetype_descriptor: BOOLEAN
+			-- Has an archetype been selected?
+		do
+			Result := selected_descriptor /= Void
+		end
+
+	has_ontological_path (a_path: STRING): BOOLEAN
+			-- check if 'a_path' exists in ontology; path will be something like
+			-- "/ehr/entry/observation/lab-result/lipids"
+		require
+			Path_exists: a_path /= Void
+		do
+			Result := ontology_index.has (a_path)
+		end
+
+	has_archetype_id (an_archetype_id: STRING): BOOLEAN
+			-- check if an_id known in archetype index of directory
+		require
+			Archetype_id_exists: an_archetype_id /= Void
+		do
+			Result := archetype_id_index.has (an_archetype_id)
+		end
+
+	has_ontological_archetype_path (a_path: STRING): BOOLEAN
+			-- check if 'a_path' exists in ontology and refers to an archetype; path will be something like
+			-- "/ehr/entry/observation/lab-result/lipids"
+		require
+			Path_exists: a_path /= Void
+		local
+			ara: ARCH_REP_ARCHETYPE
+		do
+			if ontology_index.has (a_path) then
+				ara ?= ontology_index.item (a_path).item
+			end
+
+			Result := ara /= Void
 		end
 
 feature {NONE} -- Implementation
 
-	do_all_nodes(node: like directory; node_enter_action, node_exit_action: PROCEDURE [ANY, TUPLE[ARCHETYPE_REPOSITORY_ITEM]])  is
+	do_all_nodes (node: like directory; node_enter_action, node_exit_action: PROCEDURE [ANY, TUPLE [ARCH_REP_ITEM]])
 			-- recursive version of routine due to lack of useful recursive routines on Eiffel tree structures
 			-- processes treats each node of the tree separately
 		require
@@ -192,7 +392,39 @@ feature {NONE} -- Implementation
 			end
    		end
 
-	tree_do_all_nodes(node: like directory; node_enter_action, node_exit_action: PROCEDURE [ANY, TUPLE[TWO_WAY_TREE[ARCHETYPE_REPOSITORY_ITEM]]])  is
+	do_all_archetype_nodes (node: like directory; node_enter_action, node_exit_action: PROCEDURE [ANY, TUPLE [ARCH_REP_ARCHETYPE]])
+			-- recursive version of routine due to lack of useful recursive routines on Eiffel tree structures
+			-- processes treats each node of the tree separately
+		require
+			Node_valid: node /= Void
+			Node_enter_action_valid: node_enter_action /= Void
+		local
+			ara: ARCH_REP_ARCHETYPE
+   		do
+  			from
+ 				node.child_start
+ 			until
+ 				node.child_off
+ 			loop
+  	 			debug("arch_dir")
+   					shifter.extend ('%T')
+   				end
+   				ara ?= node.child_item
+   				if ara /= Void then
+					node_enter_action.call([ara])
+   				end
+ 				do_all_archetype_nodes(node.child, node_enter_action, node_exit_action)
+ 				if ara /= Void then
+					node_exit_action.call([ara])
+ 				end
+  	  			debug("arch_dir")
+   					shifter.remove_tail (1)
+    			end
+ 				node.child_forth
+			end
+   		end
+
+	tree_do_all_nodes (node: like directory; node_enter_action, node_exit_action: PROCEDURE [ANY, TUPLE [like directory]])
 			-- recursive version of routine due to lack of useful recursive routines on Eiffel tree structures
 			-- processes the tree as sub-trees
 		require
@@ -217,82 +449,105 @@ feature {NONE} -- Implementation
  			end
    		end
 
-	merge_enter(a_node: TWO_WAY_TREE [ARCHETYPE_REPOSITORY_ITEM]) is
+	merge_enter (a_node: like directory)
 			-- merge a_node into directory - node enter
 		local
-			adf: ARCHETYPE_REPOSITORY_FOLDER
-			ada: ARCHETYPE_REPOSITORY_ARCHETYPE
-			arch_node, parent_node: TWO_WAY_TREE [ARCHETYPE_REPOSITORY_ITEM]
+			arf: ARCH_REP_FOLDER
+			ara, parent_ara: ARCH_REP_ARCHETYPE
+			arch_node, parent_node: like directory
 		do
    			debug("arch_dir")
    				io.put_string(shifter + "===> " + a_node.item.ontological_path)
    			end
-			adf ?= a_node.item
-			if adf /= Void then
-				if not ontology_index.has(adf.ontological_path) then
-					create arch_node.make (adf)
-					if ontology_index.has(adf.ontological_parent_path) then
-						parent_node := ontology_index.item(adf.ontological_parent_path)
-						parent_node.put_child_right (arch_node)
-						parent_node.child_forth
-					elseif directory /= Void then
+
+			arf ?= a_node.item
+
+			if arf /= Void then
+				if not ontology_index.has (arf.ontological_path) then
+					if ontology_index.has (arf.ontological_parent_path) then
+						parent_node := ontology_index.item (arf.ontological_parent_path)
+					else
 						parent_node := directory
-						parent_node.put_child_right (arch_node)
-						parent_node.child_forth
 					end
-					ontology_index.force(arch_node, adf.ontological_path)
+
+					create arch_node.make (arf)
+					parent_node.put_child_right (arch_node)
+					parent_node.child_forth
+					ontology_index.force (arch_node, arf.ontological_path)
 				end
+
    				debug("arch_dir")
    					io.put_string(shifter + " (folder)%N")
 	   			end
-			else
-				ada ?= a_node.item
-				create arch_node.make (ada)
+			end
+
+			ara ?= a_node.item
+
+			if ara /= Void then
+				create arch_node.make (ara)
+
    				debug("arch_dir")
-   					io.put_string(shifter + ada.id.as_string + " (archetype)")
+   					io.put_string(shifter + ara.id.as_string + " (archetype)")
 	   			end
-				if ontology_index.has(ada.ontological_path) then
+
+				if ontology_index.has (ara.ontological_path) then
 					-- this is an error: it means there are archetypes from two different
 					-- file repositories claiming to be the same archetype
-					post_error(Current, "repopulate", "arch_dir_dup_archetype", <<ada.full_path>>)
+					post_error (Current, "merge_enter", "arch_dir_dup_archetype", <<ara.full_path>>)
   	 				debug("arch_dir")
    						io.put_string(shifter + "DUPLICATE!%N")
 	   				end
 				else
-					if ontology_index.has(ada.ontological_parent_path) then
-						parent_node := ontology_index.item(ada.ontological_parent_path)
+					if ontology_index.has (ara.ontological_parent_path) then
+						parent_node := ontology_index.item (ara.ontological_parent_path)
 						parent_node.put_child_right (arch_node)
+						if ara.is_specialised then
+							parent_ara ?= parent_node.item
+							ara.set_specialisation_parent(parent_ara)
+						end
 						parent_node.child_forth
   	 					debug("arch_dir")
    							io.put_string("%N")
 	   					end
 					else
-						post_warning(Current, "repopulate", "arch_dir_no_arch_parent", <<ada.ontological_parent_path, ada.full_path>>)
+						post_warning (Current, "merge_enter", "arch_dir_no_arch_parent", <<ara.ontological_parent_path, ara.full_path>>)
   	 					debug("arch_dir")
    							io.put_string(shifter + "NO PARENT%N")
 	   					end
 					end
-					ontology_index.force(arch_node, ada.ontological_path)
+
+					ontology_index.force (arch_node, ara.ontological_path)
+					archetype_id_index.force (ara, ara.id.as_string)
 				end
 			end
+
    			debug("arch_dir")
    				io.put_string(shifter + "<===%N")
    			end
 		end
 
-	merge_exit(a_node: TWO_WAY_TREE [ARCHETYPE_REPOSITORY_ITEM]) is
+	merge_exit(a_node: like directory)
 			-- merge a_node into directory - node exit
 		do
 		end
 
-	shifter: STRING is
+	shifter: STRING
 			-- debug indenter
 		once
-			create Result.make(0)
+			create Result.make_empty
 		end
 
 invariant
-	Repositories_valid: source_repositories /= Void
+	directory_attached: directory /= Void
+	ontology_index_attached: ontology_index /= Void
+	archetype_id_index_attached: archetype_id_index /= Void
+	adhoc_source_repository_attached: adhoc_source_repository /= Void
+	adhoc_source_repository_group_id: adhoc_source_repository.group_id = 1
+	repositories_attached: source_repositories /= Void
+	repositories_group_ids: source_repositories.for_all (agent (repository: ARCHETYPE_INDEXED_REPOSITORY_I): BOOLEAN
+		do
+			Result := repository.group_id > 1
+		end)
 
 end
 

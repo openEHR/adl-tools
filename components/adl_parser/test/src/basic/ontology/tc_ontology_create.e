@@ -13,7 +13,7 @@ indexing
 	last_change: "$LastChangedDate$"
 
 class TC_ONTOLOGY_POPULATE
-	
+
 inherit
 	TEST_CASE
 		redefine
@@ -24,7 +24,7 @@ inherit
 		export
 			{NONE} all
 		end
-		
+
 create
 	make
 
@@ -38,7 +38,7 @@ feature -- Access
 
 	title: STRING is "Populate ontology with terms"
 
-	prereqs: ARRAY[STRING] is 
+	prereqs: ARRAY[STRING] is
 			-- ids of prerequisite test cases
 		once
 			Result := <<"TC_ARCHETYPE_CREATE">>
@@ -52,8 +52,8 @@ feature -- testing
 			a_term: ARCHETYPE_TERM
 			archetype: ARCHETYPE
 		do
-			archetype := adl_interface.adl_engine.archetype
-			
+			archetype := archetype_compiler.archetype
+
 			io_message.put_string ("------------------ create term -------------------%N")
 			code_1 := ontology.new_non_specialised_term_code
 			create a_term.make(code_1)
@@ -63,33 +63,34 @@ feature -- testing
 
 			-- set id on root node
 			-- archetype.set_definition_node_id(code_1)
-			
+
 			io_message.put_string ("------------------ create term -------------------%N")
 			create a_term.make(ontology.new_non_specialised_term_code)
 			a_term.add_item("text", "post-natal examination")
 			a_term.add_item("description", "post-natal examination of mother and newborn children")
 			ontology.add_term_definition("en", a_term)
-			
+
 			io_message.put_string ("------------------ create constraint code -------------------%N")
 			create a_term.make(ontology.new_constraint_code)
 			a_term.add_item("text", "xxxxx")
 			a_term.add_item("description", "xxxxxx")
 			ontology.add_constraint_definition("en", a_term)
-			
+
 			io_message.put_string ("------------------ create 2nd constraint code -------------------%N")
 			create a_term.make(ontology.new_constraint_code)
 			a_term.add_item("text", "xxxxx")
 			a_term.add_item("description", "xxxxxx")
 			ontology.add_constraint_definition("en", a_term)
-			
+
 			if archetype.is_valid then
-				adl_interface.adl_engine.serialise (serialise_format)
-				io_message.put_string (adl_interface.adl_engine.serialised_archetype)
+				archetype_compiler.serialise_archetype (serialise_format)
+				io_message.put_string (archetype_compiler.serialised_archetype)
 			else
+				-- FIXME: This did not compile because of revision 319. What should it do?
 				io_message.put_string (archetype.errors)
 			end
 		end
-	
+
 end
 
 --|

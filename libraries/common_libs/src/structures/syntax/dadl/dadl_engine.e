@@ -12,19 +12,19 @@ indexing
 	last_change: "$LastChangedDate$"
 
 class DADL_ENGINE
-	
+
 inherit
 	SHARED_DT_SERIALISERS
 		export
 			{NONE} all
 			{ANY} has_dt_serialiser_format
 		end
-	
+
 creation
 	make
 
 feature -- Initialisation
-	
+
 	make is
 		do
 			create parser.make
@@ -37,31 +37,31 @@ feature -- Initialisation
 			tree := Void
 			serialised := Void
 		end
-		
+
 feature -- Access
 
 	source: STRING
 			-- source of current artifact
-			
+
 	source_start_line: INTEGER
 			-- defaults to 0; can be set to line number of dADL text inside some other document
-			
+
 	tree: DT_COMPLEX_OBJECT_NODE
 			-- set if parse succeeded
 
 	serialised: STRING
-	
+
 	parse_error_text: STRING is
 			-- result of last parse
 		do
 			Result := parser.error_text
 		end
-	
+
 feature -- Status Report
 
 	in_parse_mode: BOOLEAN
 			-- True if engine in mode where archetype was created from source
-			
+
 	parse_succeeded: BOOLEAN is
 			-- True if parse succeeded; call after parse()
 		do
@@ -69,7 +69,7 @@ feature -- Status Report
 		end
 
 feature -- Commands
-		
+
 	set_source(in_text: STRING; a_source_start_line: INTEGER) is
 			-- set `in_text' as working artifact with id `a_node_id'
 		require
@@ -98,22 +98,27 @@ feature -- Commands
 		ensure
 			parse_succeeded or else tree = Void
 		end
-		
+
 	serialise(a_format: STRING) is
 			-- serialise current artifact into format
 		require
 			Format_valid: has_dt_serialiser_format(a_format)
 			Archetype_valid: tree /= Void implies tree.is_valid
+		local
+			a_dt_serialiser: DT_SERIALISER
+			a_dt_iterator: DT_VISITOR_ITERATOR
 		do
 			if tree /= Void then
-				create serialiser_mgr.make(tree, a_format)
-				serialiser_mgr.serialise
-				serialised := serialiser_mgr.last_result
+				a_dt_serialiser := dt_serialiser_for_format(a_format)
+				a_dt_serialiser.initialise
+				create a_dt_iterator.make(tree, a_dt_serialiser)
+				a_dt_iterator.do_all
+				serialised := a_dt_serialiser.last_result
 			else
 				create serialised.make(0)
 			end
 		end
-	
+
 	set_tree(a_node: DT_COMPLEX_OBJECT_NODE) is
 			-- set root node from e.g. GUI tool
 		require
@@ -129,9 +134,7 @@ feature {NONE} -- Implementation
 
 	parser: DADL2_VALIDATOR
 			-- dADL parser
-	
-	serialiser_mgr: DT_SERIALISER_MGR
-	
+
 end
 
 

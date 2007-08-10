@@ -13,7 +13,7 @@ indexing
 	last_change: "$Date"
 
 class TC_ONTOLOGY_ADD_CONSTRAINT_BINDING
-	
+
 inherit
 	TEST_CASE
 		export
@@ -21,12 +21,12 @@ inherit
 		redefine
 			prereqs
 		end
-		
+
 	SHARED_TEST_ENV
 		export
 			{NONE} all
 		end
-		
+
 create
 	make
 
@@ -40,7 +40,7 @@ feature -- Access
 
 	title: STRING is "Add Constraint Binding"
 
-	prereqs: ARRAY[STRING] is 
+	prereqs: ARRAY[STRING] is
 			-- ids of prerequisite test cases
 		once
 			Result := <<"TS_ARCHETYPE_CREATE">>
@@ -55,21 +55,23 @@ feature -- testing
 			archetype: ARCHETYPE
 			a_binding: URI
 		do
-			archetype := adl_interface.adl_engine.archetype
+			archetype := archetype_compiler.archetype
 
 			-- ontology.add_constraint_binding
 			create a_binding.make_from_string ("urn:snomed-ct:query:123432")
 			ontology.add_constraint_binding (a_binding, "snomed-ct", "ac0001")
 			create a_binding.make_from_string ("http://terminology.net/queries?85858")
 			ontology.add_constraint_binding (a_binding, "snomed-ct", "ac0002")
+
 			if archetype.is_valid then
-				adl_interface.adl_engine.serialise (serialise_format)	
-				io_message.put_string(adl_interface.adl_engine.serialised_archetype)	
+				archetype_compiler.serialise_archetype (serialise_format)
+				io_message.put_string(archetype_compiler.serialised_archetype)
 			else
-				io_message.put_string(archetype.errors)	
+				-- FIXME: This did not compile because of revision 319. What should it do?
+				io_message.put_string (archetype.errors)
 			end
 		end
-	
+
 end
 
 --|

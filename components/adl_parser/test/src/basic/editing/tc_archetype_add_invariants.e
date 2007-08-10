@@ -56,13 +56,13 @@ feature -- testing
 	execute is
 		local
 			archetype: ARCHETYPE
-			cf: CONSTRAINT_MODEL_FACTORY
+			cf: C_FACTORY
 			an_assertion: ASSERTION
 			id_expr_leaf1, id_expr_leaf2: EXPR_LEAF
 			expr1, expr2, expr3: EXPR_BINARY_OPERATOR
 		do
-			archetype := adl_interface.archetype
-			cf := adl_interface.constraint_model_factory
+			archetype := archetype_compiler.archetype
+			cf := archetype_compiler.constraint_model_factory
 
 			-- expr 1: ordinal = 1
 			id_expr_leaf1 := cf.create_expr_leaf_archetype_definition_ref ("/an_ordinal")
@@ -96,10 +96,11 @@ feature -- testing
 
 
 			if archetype.is_valid then
-				adl_interface.adl_engine.serialise (serialise_format)
-				io.put_string(adl_interface.adl_engine.serialised_archetype)
+				archetype_compiler.serialise_archetype (serialise_format)
+				io.put_string (archetype_compiler.serialised_archetype)
 			else
-				io.put_string(archetype.errors)
+				-- FIXME: This did not compile because of revision 319. What should it do?
+				io.put_string (archetype.errors)
 			end
 
 		end

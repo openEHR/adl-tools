@@ -1,51 +1,67 @@
 indexing
 	component:   "openEHR Archetype Project"
-	description: "Tree iterator for archetype nodes"
-	keywords:    "archetype, constraint, definition"
+	description: "Visitor template for Data Tree structures"
+	keywords:    "visitor, Data Tree"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2005 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-deferred class CONSTRAINT_MODEL_TREE_ITERATOR
+deferred class DT_VISITOR
 
-feature -- Access
+feature -- Visitor
 
-	tree_iterator: OG_ITERATOR
-	
-feature -- Modification
-
-	set_target(a_target: C_COMPLEX_OBJECT) is 
-			-- create a new manager targetted to the parse tree `a_target'
-		require
-			Target_exists: a_target /= Void
-		do
-			create tree_iterator.make(a_target.representation)
-		end
-
-feature -- Command
-
-	do_all is
-			-- start the serialisation process; the result will be in `serialiser_output'
-		do
-			tree_iterator.do_all(agent node_enter_action(?,?), agent node_exit_action(?,?))
-		end
-
-feature {NONE} -- Implementation
-	
-	node_enter_action(a_node: OG_ITEM; indent_level: INTEGER) is
-		require
-			Node_exists: a_node /= Void
+	start_complex_object_node(a_node: DT_COMPLEX_OBJECT_NODE; depth: INTEGER) is
+			-- start serialising an DT_COMPLEX_OBJECT_NODE
 		deferred
 		end
 
-	node_exit_action(a_node: OG_ITEM; indent_level: INTEGER) is
-		require
-			Node_exists: a_node /= Void
+	end_complex_object_node(a_node: DT_COMPLEX_OBJECT_NODE; depth: INTEGER) is
+			-- end serialising an DT_COMPLEX_OBJECT_NODE
+		deferred
+		end
+
+	start_attribute_node(a_node: DT_ATTRIBUTE_NODE; depth: INTEGER) is
+			-- start serialising an DT_ATTRIBUTE_NODE
+		deferred
+		end
+
+	end_attribute_node(a_node: DT_ATTRIBUTE_NODE; depth: INTEGER) is
+			-- end serialising an DT_ATTRIBUTE_NODE
+		deferred
+		end
+
+	start_primitive_object(a_node: DT_PRIMITIVE_OBJECT; depth: INTEGER) is
+			-- start serialising a DT_OBJECT_SIMPLE
+		deferred
+		end
+
+	end_primitive_object(a_node: DT_PRIMITIVE_OBJECT; depth: INTEGER) is
+			-- end serialising a DT_OBJECT_SIMPLE
+		deferred
+		end
+
+	start_primitive_object_list(a_node: DT_PRIMITIVE_OBJECT_LIST; depth: INTEGER) is
+			-- start serialising an DT_OBJECT_SIMPLE_LIST
+		deferred
+		end
+
+	end_primitive_object_list(a_node: DT_PRIMITIVE_OBJECT_LIST; depth: INTEGER) is
+			-- end serialising an DT_OBJECT_SIMPLE_LIST
+		deferred
+		end
+
+	start_primitive_object_interval(a_node: DT_PRIMITIVE_OBJECT_INTERVAL; depth: INTEGER) is
+			-- start serialising a DT_OBJECT_SIMPLE
+		deferred
+		end
+
+	end_primitive_object_interval(a_node: DT_PRIMITIVE_OBJECT_INTERVAL; depth: INTEGER) is
+			-- end serialising a DT_OBJECT_SIMPLE
 		deferred
 		end
 
@@ -66,10 +82,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is cadl_serialiser_mgr.e.
+--| The Original Code is dt_visitor.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2007
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

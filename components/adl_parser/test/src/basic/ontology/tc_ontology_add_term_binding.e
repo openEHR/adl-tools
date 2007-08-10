@@ -13,7 +13,7 @@ indexing
 	last_change: "$Date"
 
 class TC_ONTOLOGY_ADD_TERM_BINDING
-	
+
 inherit
 	TEST_CASE
 		export
@@ -21,12 +21,12 @@ inherit
 		redefine
 			prereqs
 		end
-		
+
 	SHARED_TEST_ENV
 		export
 			{NONE} all
 		end
-		
+
 create
 	make
 
@@ -40,7 +40,7 @@ feature -- Access
 
 	title: STRING is "Add Term Binding"
 
-	prereqs: ARRAY[STRING] is 
+	prereqs: ARRAY[STRING] is
 			-- ids of prerequisite test cases
 		once
 			Result := <<"TS_ARCHETYPE_CREATE">>
@@ -55,7 +55,7 @@ feature -- testing
 			archetype: ARCHETYPE
 			a_binding: CODE_PHRASE
 		do
-			archetype := adl_interface.adl_engine.archetype
+			archetype := archetype_compiler.archetype
 
 			-- ontology.add_term_binding
 			create a_binding.make_from_string ("ICD10AM::F40.1")
@@ -64,14 +64,16 @@ feature -- testing
 			ontology.add_term_binding (a_binding, "at0001")
 			create a_binding.make_from_string ("LO25::3456-7")
 	--		ontology.add_term_binding (a_binding, "[at0000]/history[at10002]/events/event[3456]")
+
 			if archetype.is_valid then
-				adl_interface.adl_engine.serialise (serialise_format)	
-				io_message.put_string(adl_interface.adl_engine.serialised_archetype)	
+				archetype_compiler.serialise_archetype (serialise_format)
+				io_message.put_string(archetype_compiler.serialised_archetype)
 			else
-				io_message.put_string(archetype.errors)	
+				-- FIXME: This did not compile because of revision 319. What should it do?
+				io_message.put_string (archetype.errors)
 			end
 		end
-	
+
 end
 
 --|

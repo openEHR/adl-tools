@@ -21,7 +21,7 @@ inherit
 		undefine
 			is_equal
 		end
-		
+
 	COMPARABLE
 
 feature -- Definitions
@@ -30,7 +30,7 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make (a_node_id: STRING; a_content_item: SERIALISABLE) is
+	make (a_node_id: STRING; a_content_item: VISITABLE) is
 			-- create with node id and optional content_item
 		require
 			Node_id_valid: a_node_id /= Void and then not a_node_id.is_empty
@@ -41,13 +41,13 @@ feature -- Initialisation
 		ensure
 			Node_id_set: node_id = a_node_id
 		end
-	
+
 feature -- Access
-	
+
 	node_id: STRING
 				-- id of this node
-				
-	content_item: SERIALISABLE
+
+	content_item: VISITABLE
 				-- content of this node
 
 	path: OG_PATH is
@@ -55,16 +55,16 @@ feature -- Access
 		do
 			Result := generate_path(False)
 		end
-	
+
 	unique_path: OG_PATH is
 			-- absolute unique path of this node relative to the root
 		do
 			Result := generate_path(True)
 		end
-	
+
 	sibling_order: INTEGER
 			-- position of this sibling as child of parent in parsed input
-			
+
 	parent: OG_NODE
 
 feature -- Comparison
@@ -74,7 +74,7 @@ feature -- Comparison
 		do
 			Result := node_id < other.node_id
 		end
-		
+
 feature -- Status Report
 
 	is_addressable: BOOLEAN is
@@ -92,7 +92,7 @@ feature -- Status Report
 		do
 			Result := parent = Void
 		end
-		
+
 feature -- Modification
 
 	set_node_id(a_node_id:STRING) is
@@ -109,7 +109,7 @@ feature -- Modification
 		do
 			parent := a_node
 		end
-		
+
 	set_sibling_order(i: INTEGER) is
 			-- set sibling order
 		require
@@ -117,8 +117,8 @@ feature -- Modification
 		do
 			sibling_order := i
 		end
-	
-	set_content (a_content_item: SERIALISABLE) is
+
+	set_content (a_content_item: VISITABLE) is
 			-- set item
 		require
 			Content_item_valid: a_content_item /= Void
@@ -127,25 +127,25 @@ feature -- Modification
 		ensure
 			Content_set: content_item = a_content_item
 		end
-		
+
 feature -- Serialisation
 
-	enter_block(serialiser: ANY_SERIALISER; depth: INTEGER) is
-			-- perform serialisation at start of block for this node
+	enter_subtree(visitor: ANY; depth: INTEGER) is
+			-- perform action at start of block for this node
 		require
-			Serialiser_exists: serialiser /= Void
+			Visitor_exists: visitor /= Void
 			Depth_valid: depth >= 0
 		do
-			content_item.enter_block(serialiser, depth)
+			content_item.enter_subtree(visitor, depth)
 		end
-		
-	exit_block(serialiser: ANY_SERIALISER; depth: INTEGER) is
-			-- perform serialisation at end of block for this node
+
+	exit_subtree(visitor: ANY; depth: INTEGER) is
+			-- perform action at end of block for this node
 		require
-			Serialiser_exists: serialiser /= Void
+			Visitor_exists: visitor /= Void
 			Depth_valid: depth >= 0
 		do
-			content_item.exit_block(serialiser, depth)
+			content_item.exit_subtree(visitor, depth)
 		end
 
 feature {NONE} -- Implementation
@@ -171,11 +171,11 @@ feature {NONE} -- Implementation
 				loop
 					og_nodes.put_front(csr)
 					csr := csr.parent
-				end	
+				end
 			end
 
 			if og_nodes.is_empty then
-				create Result.make_root				
+				create Result.make_root
 			else -- process the node list; we are starting on an OG_ATTR_NODE
 				og_nodes.start
 				create a_path_item.make(og_nodes.item.node_id)
@@ -183,12 +183,12 @@ feature {NONE} -- Implementation
 				og_nodes.forth
 				if not og_nodes.off then -- now on an OG_OBJECT_NODE
 					if og_attr.is_addressable or (unique_flag and og_attr.is_multiple) then
-						a_path_item.set_object_id(og_nodes.item.node_id)				
+						a_path_item.set_object_id(og_nodes.item.node_id)
 					end
 					og_nodes.forth
 				end
 				create Result.make_absolute(a_path_item)
-				
+
 				from
 				until
 					og_nodes.off
@@ -199,7 +199,7 @@ feature {NONE} -- Implementation
 					og_nodes.forth
 					if not og_nodes.off then -- now on an OG_OBJECT_NODE
 						if og_attr.is_addressable or (unique_flag and og_attr.is_multiple) then
-							a_path_item.set_object_id(og_nodes.item.node_id)				
+							a_path_item.set_object_id(og_nodes.item.node_id)
 						end
 						og_nodes.forth
 					end

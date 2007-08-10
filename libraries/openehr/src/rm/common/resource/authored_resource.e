@@ -86,12 +86,6 @@ feature -- Access
 			Result := translations.item(a_lang)
 		end
 
-	errors: STRING
-			-- validity errors in this archetype
-
-	warnings: STRING
-			-- validity warnings for this archetype
-
 feature -- Status Report
 
 	is_controlled: BOOLEAN
@@ -103,19 +97,21 @@ feature -- Status Report
 		require
 			Language_valid: a_lang /= Void
 		do
-			Result := original_language.code_string.is_equal(a_lang) or else translations.has(a_lang)
+			Result := original_language.code_string.is_equal(a_lang) or else (translations /= Void and then translations.has(a_lang))
 		end
 
-	is_valid_resource: BOOLEAN is
-			-- True if all structures obey their invariants
-		do
-			-- check original_language
-			if original_language = Void then
-				errors.append("No archetype_id%N")
-			end
-
-			Result := errors.is_empty and is_valid_description and is_valid_translations
-		end
+-- FIXME: we may re-instate this, but needs something like a list
+-- of XX_VALIDATOR objects that can be added to down the inheritance chain (e.g. by ARCHETYPE as well)
+--	is_valid_resource: BOOLEAN is
+--			-- True if all structures obey their invariants
+--		do
+--			-- check original_language
+--			if original_language = Void then
+--				errors.append("No original language%N")
+--			end
+--
+--			Result := errors.is_empty and is_valid_description and is_valid_translations
+--		end
 
 feature -- Modification
 
@@ -210,18 +206,6 @@ feature {NONE} -- Implementation
 	stored_languages_available: ARRAYED_SET [STRING]
 			-- Total list of languages available in this resource, derived from
 			-- original_language and translations. Guaranteed to at least include original_language
-
-	is_valid_description: BOOLEAN is
-			--
-		do
-			Result := True
-		end
-
-	is_valid_translations: BOOLEAN is
-			--
-		do
-			Result := True
-		end
 
 invariant
 	Description_exists: description /= Void

@@ -11,7 +11,7 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class SHARED_ARCHETYPE_CONTEXT
+class SHARED_APPLICATION_CONTEXT
 
 inherit
 	OPENEHR_DEFINITIONS

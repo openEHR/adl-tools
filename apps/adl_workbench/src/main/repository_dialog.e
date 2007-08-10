@@ -113,20 +113,25 @@ feature {NONE} -- Implementation
 					paths_valid := False
 				end
 			end
+
 			if paths_changed then
 				set_pointer_style(wait_cursor)
 				archetype_directory.make
-				if not reference_repository_path.is_empty then
+
+				if archetype_directory.valid_repository_path (reference_repository_path) then
 					archetype_directory.put_repository (reference_repository_path, "repository")
 				end
-				if not work_repository_path.is_empty then
+
+				if archetype_directory.valid_repository_path (work_repository_path) then
 					archetype_directory.put_repository (work_repository_path, "work")
 				end
+
 				main_window.populate_archetype_directory
 				save_resources
 				main_window.update_status_area("wrote config file " + Resource_config_file_name + "%N")
 				set_pointer_style(cur_csr)
 			end
+
 			if paths_valid then
 				hide
 			end

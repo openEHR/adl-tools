@@ -24,7 +24,8 @@ inherit
 
 	ARCHETYPE_TERM_CODE_TOOLS
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} valid_concept_code
 		undefine
 			default_create
 		end
@@ -53,24 +54,25 @@ feature -- Initialisation
 	default_create is
 			--
 		do
-			create errors.make(0)
-			create warnings.make(0)
+			create errors.make (0)
+			create warnings.make (0)
 
-			create languages_available.make(0)
+			create languages_available.make (0)
 			languages_available.compare_objects
-			create terminologies_available.make(0)
+			create terminologies_available.make (0)
 			terminologies_available.compare_objects
 
-			create term_definitions.make(0)
-			create constraint_definitions.make(0)
+			create term_definitions.make (0)
+			create constraint_definitions.make (0)
 
 			create term_codes.make
 			term_codes.compare_objects
 			create constraint_codes.make
 			constraint_codes.compare_objects
 
-			create term_bindings.make(0)
-			create constraint_bindings.make(0)
+			create term_bindings.make (0)
+			create constraint_bindings.make (0)
+			create specialised_term_codes.make (0)
 		end
 
 	make_from_tree(a_primary_lang: STRING; a_dadl_tree: DT_COMPLEX_OBJECT_NODE; a_concept_code: STRING) is
@@ -80,30 +82,37 @@ feature -- Initialisation
 		require
 			Primary_language_valid: a_primary_lang /= Void implies not a_primary_lang.is_empty -- FIXME make mandatory with ADL2
 			Tree_exists: a_dadl_tree /= Void
-			Root_code_valid: a_concept_code /= Void and then not a_concept_code.is_empty
+			Root_code_valid: a_concept_code /= Void and then valid_concept_code(a_concept_code)
 		do
 			default_create
 			representation := a_dadl_tree
-			set_concept_code(a_concept_code)
+			concept_code := a_concept_code
+
 			if a_primary_lang /= Void then
-				set_primary_language(a_primary_lang)
+				set_primary_language (a_primary_lang)
 			end
+
 			synchronise_from_tree
+		ensure
+			Concept_code_set: concept_code.is_equal(a_concept_code) and valid_concept_code(concept_code)
 		end
 
-	make_empty(a_primary_lang: STRING; a_concept_term: ARCHETYPE_TERM) is
-			-- make an empty ontology with concept term which must be in
-			-- the primary language. It is usually something
-			-- with a code like 'at0000' or 'at0000.1'. The specialisation
-			-- depth of the ontology is determined from this code
+	make_empty(a_primary_lang: STRING; at_specialisation_depth: INTEGER) is
+			-- make an empty ontology at specified specialisation depth
 		require
 			Primary_language_valid: a_primary_lang /= Void and then not a_primary_lang.is_empty
-			Root_term_valid: a_concept_term /= Void
+			Valid_specialisation_depth: at_specialisation_depth >= 0
+		local
+			a_term: ARCHETYPE_TERM
 		do
 			default_create
 			add_language(a_primary_lang)
 			set_primary_language(a_primary_lang)
-			initialise_term_definitions(a_concept_term)
+			concept_code := new_concept_code_at_level (at_specialisation_depth)
+			initialise_term_definitions(create {ARCHETYPE_TERM}.make (concept_code))
+		ensure
+			Specialisation_level_set: specialisation_depth = at_specialisation_depth
+			Concept_code_set: valid_concept_code(concept_code) and specialisation_depth_from_code (concept_code) = at_specialisation_depth
 		end
 
 feature -- Access
@@ -119,8 +128,11 @@ feature -- Access
 
 	terminologies_available: ARRAYED_LIST[STRING]
 
-	specialisation_depth: INTEGER
+	specialisation_depth: INTEGER is
 			-- depth of this ontology with relation to ontologies in other archetypes
+		do
+			Result := specialisation_depth_from_code (concept_code)
+		end
 
 	term_definition(a_lang, a_term_code: STRING): ARCHETYPE_TERM is
 			-- retrieve the term definition in language `a_lang' for code `a_term_code'
@@ -362,16 +374,6 @@ feature -- Status Report
 
 feature -- Modification
 
-	convert_to_specialised is
-			-- convert this ontology to a specialised version of what it currently is
-		local
-			spec_code: STRING
-		do
-			spec_code := new_specialised_term_code_at_level(concept_code, specialisation_depth+1)
-			add_term_definition(primary_language, term_definition(primary_language, concept_code).create_derived_term(spec_code))
-			set_concept_code(spec_code)
-		end
-
 	set_primary_language(a_lang: STRING) is
 			-- set the primary language of the ontology
 		require
@@ -456,9 +458,7 @@ feature -- Modification
 			create term_definitions.make(0)
 			term_definitions.put(create {HASH_TABLE[ARCHETYPE_TERM, STRING]}.make(0), primary_language)
 			term_definitions.item(primary_language).put(a_term, a_term.code)
-			set_concept_code(a_term.code)
 		ensure
-			Concept_code_set: concept_code /= Void
 			Term_definitions_created: term_definitions /= Void and then term_definitions.item(primary_language).item(concept_code) = a_term
 		end
 
@@ -740,13 +740,12 @@ feature -- Factory
 		end
 
 	new_specialised_term_code (a_parent_code: STRING): STRING is
-			-- get a new specialised code based on `a_parent_code' at the depth
-			-- of this ontology
+			-- get a new specialised code based on `a_parent_code' at the depth of this ontology
 		require
 			a_parent_code_valid: a_parent_code /= void and then has_term_code (a_parent_code)
 			level_valid: specialisation_depth > 0
 		do
-			Result := new_specialised_term_code_at_level(a_parent_code, specialisation_depth)
+			Result := new_specialised_term_code_at_level(a_parent_code, specialised_term_codes.item(a_parent_code).last, specialisation_depth)
 		ensure
 			Result_valid: Result /= Void and then not Result.is_empty
 		end
@@ -1207,12 +1206,14 @@ feature {NONE} -- Implementation
 		local
 			parent_code: STRING
 		do
-			if specialisation_depth_from_code(a_code) > 0 then
+			if specialisation_depth_from_code (a_code) > 0 then
 				parent_code := specialisation_parent_from_code(a_code)
-				if not specialised_term_codes.has(parent_code) then
-					specialised_term_codes.force(create {TWO_WAY_SORTED_SET[STRING]}.make, parent_code)
+
+				if not specialised_term_codes.has (parent_code) then
+					specialised_term_codes.force (create {TWO_WAY_SORTED_SET [STRING]}.make, parent_code)
 				end
-				specialised_term_codes.item(parent_code).extend(a_code)
+
+				specialised_term_codes.item (parent_code).extend (a_code)
 			end
 		end
 
@@ -1257,21 +1258,6 @@ feature {NONE} -- Implementation
 					end
 				end
 			end
-		end
-
-	set_concept_code(a_concept_code: STRING) is
-			-- set the root code and infer number of levels of specialisation
-			-- from it
-		require
-			Code_valid: a_concept_code /= Void and then not a_concept_code.is_empty
-		do
-			concept_code := a_concept_code
-			specialisation_depth := specialisation_depth_from_code(a_concept_code)
-			if specialised_term_codes = Void then
-				create specialised_term_codes.make(0)
-			end
-		ensure
-			concept_code /= Void
 		end
 
 	string_at_path(a_path: STRING): STRING is
@@ -1468,6 +1454,11 @@ feature {NONE} -- Implementation
 			not constraint_bindings.has(a_terminology)
 		end
 
+	specialised_term_codes: HASH_TABLE[TWO_WAY_SORTED_SET[STRING], STRING]
+			-- table of immediate child codes keyed by immediate parent code
+			-- e.g. the entry for at0005 might have a list of {at0005.1, at0005.2}
+			-- and at0005.1 might have at0005.1.1
+
 feature {NONE} -- Obsolete in ADL2
 
 	x_primary_language: STRING
@@ -1475,7 +1466,7 @@ feature {NONE} -- Obsolete in ADL2
 	x_languages_available: ARRAYED_LIST[STRING]
 
 invariant
-	Primary_language_valid: primary_language /= Void and then not primary_language.is_empty
+	Primary_language_valid: primary_language /= Void implies not primary_language.is_empty
 	Languages_available_valid: languages_available /= Void and then not languages_available.is_empty
 	Terminologies_available_exists: terminologies_available /= Void
 

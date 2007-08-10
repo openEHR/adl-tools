@@ -19,12 +19,9 @@ inherit
 
 feature -- Definitions
 
-	Global_config_directory: STRING is
-			-- location of global configuration files - /etc
-		once
-			create Result.make(0)
-			Result.append(os_directory_separator.out + "etc")
-		end
+	Default_windows_temp_dir: STRING is "C:\Temp"
+
+	Default_unix_temp_dir: STRING is "/tmp"
 
 feature -- Initialisation
 
@@ -92,6 +89,13 @@ feature -- Environment
    			end
    		end
 
+	Global_config_directory: STRING is
+			-- location of global configuration files - /etc
+		once
+			create Result.make(0)
+			Result.append(os_directory_separator.out + "etc")
+		end
+
 	system_config_file_directory: STRING is
 			-- place for config files common to multiple applications
 		once
@@ -99,10 +103,39 @@ feature -- Environment
 			Result.append(execution_environment.root_directory_name + "etc")
 		end
 
+	system_temp_file_directory: STRING is
+			-- Standard place for temporary files.
+			-- By default /tmp on unix-like systems and C:\Temp on windows-like systems.
+			-- Windows would normally be "C:\Documents and Settings\(user)\Local Settings\Temp".
+		once
+			Result := execution_environment.get ("TMP")
+
+			if Result = Void or else Result.is_empty then
+				Result := execution_environment.get ("TEMP")
+			end
+
+			if Result /= Void and then not Result.is_empty then
+				Result := (create {WINDOWS_SHORT_PATH}.make (Result)).as_long_path
+			else
+				if operating_system.is_windows then
+					Result := default_windows_temp_dir.twin
+				else
+					Result := default_unix_temp_dir.twin
+				end
+			end
+
+			Result.prune_all_trailing (os_directory_separator)
+			Result.append_character (os_directory_separator)
+		ensure
+			attached: Result /= Void
+			not_empty: not Result.is_empty
+			ends_with_directory_separator: Result @ Result.count = os_directory_separator
+		end
+
 	resource_config_file_name: STRING is
 			-- name of configuration file from which settings are read
 		once
-			create Result.make(0)
+			create Result.make_empty
 		end
 
 	default_global_resource_config_file_full_path: STRING is
@@ -190,6 +223,23 @@ feature -- Environment
 	current_working_directory: STRING is
 		do
 			Result := execution_environment.current_working_directory
+		end
+
+	directory_at (path: STRING): DIRECTORY
+			-- A directory object representing `path'.
+			-- Strips any trailing backslash to avoid Windows API defect.
+		require
+			path_attached: path /= Void
+			path_not_empty: not path.is_empty
+		local
+			s: STRING
+		do
+			s := path.twin
+			s.prune_all_trailing (os_directory_separator)
+			create Result.make (s)
+		ensure
+			attached: Result /= Void
+			correct_path: Result.name.is_equal (path)
 		end
 
 feature -- Element Change

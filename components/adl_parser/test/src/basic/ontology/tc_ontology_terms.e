@@ -13,18 +13,18 @@ indexing
 	last_change: "$LastChangedDate$"
 
 class TC_ONTOLOGY_MODIFY
-	
+
 inherit
 	TEST_CASE
 		redefine
 			prereqs
 		end
-		
+
 	SHARED_TEST_ENV
 		export
 			{NONE} all
 		end
-		
+
 create
 	make
 
@@ -38,7 +38,7 @@ feature -- Access
 
 	title: STRING is "Modify ontology terms"
 
-	prereqs: ARRAY[STRING] is 
+	prereqs: ARRAY[STRING] is
 			-- ids of prerequisite test cases
 		once
 			Result := <<"TC_ONTOLOGY_POPULATE">>
@@ -51,22 +51,23 @@ feature -- testing
 			a_term: ARCHETYPE_TERM
 			archetype: ARCHETYPE
 		do
-			archetype := adl_interface.adl_engine.archetype
+			archetype := archetype_compiler.archetype
 
 			io_message.put_string ("------------------ replace at0001 -------------------%N")
 			create a_term.make("at0001")
 			a_term.add_item("text", "CHANGED post-natal examination headings")
 			a_term.add_item("description", "CHANGED headings for post-natal examination note")
 			ontology.replace_term_definition("en", a_term, True)
-			
+
 			if archetype.is_valid then
-				adl_interface.adl_engine.serialise (serialise_format)
-				io_message.put_string (adl_interface.adl_engine.serialised_archetype)
+				archetype_compiler.serialise_archetype (serialise_format)
+				io_message.put_string (archetype_compiler.serialised_archetype)
 			else
+				-- FIXME: This did not compile because of revision 319. What should it do?
 				io_message.put_string (archetype.errors)
 			end
 		end
-	
+
 end
 
 --|

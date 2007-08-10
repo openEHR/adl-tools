@@ -13,7 +13,7 @@ indexing
 	last_change: "$Date"
 
 class TC_ONTOLOGY_UNUSED_CODES
-	
+
 inherit
 	TEST_CASE
 		export
@@ -21,12 +21,12 @@ inherit
 		redefine
 			prereqs
 		end
-		
+
 	SHARED_TEST_ENV
 		export
 			{NONE} all
 		end
-		
+
 create
 	make
 
@@ -40,7 +40,7 @@ feature -- Access
 
 	title: STRING is "Unused codes"
 
-	prereqs: ARRAY[STRING] is 
+	prereqs: ARRAY[STRING] is
 			-- ids of prerequisite test cases
 		once
 			Result := <<"TC_ARCHETYPE_CREATE">>
@@ -55,13 +55,13 @@ feature -- testing
 			archetype: ARCHETYPE
 			a_binding: CODE_PHRASE
 		do
-			archetype := adl_interface.adl_engine.archetype
+			archetype := archetype_compiler.archetype
 			io.put_string("-------------- unused TERM codes --------------%N")
 			io.put_string(print_list (archetype.ontology_unused_term_codes))
 			io.put_string("-------------- unused CONSTRAINT codes --------------%N")
 			io.put_string(print_list (archetype.ontology_unused_constraint_codes))
 		end
-	
+
 end
 
 --|

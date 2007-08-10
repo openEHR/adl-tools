@@ -18,21 +18,21 @@ class IN_MEMORY_MESSAGE_DB
 
 inherit
 	MESSAGE_DB
-	
+
 	INTERNAL
-		export 
+		export
 			{NONE} all
 		end
-		
+
 create
 	make
-	
+
 feature -- Initialisation
 
 	make is
 		local
 			parser: DADL2_VALIDATOR
-			dt_tree: DT_COMPLEX_OBJECT_NODE 
+			dt_tree: DT_COMPLEX_OBJECT_NODE
 			init_helper: IN_MEMORY_MESSAGE_DB_INITIALISER
 		do
 			create parser.make
@@ -61,13 +61,12 @@ feature -- Access
 			["general_error"] = <"Error: $1">
 			["general"] = <"$1">
 			
-			-- ADL_INTERFACE
+			-- ARCHETYPE_COMPILER
 			["create_new_archetype_1"] = <"CREATE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
 			["specialise_archetype_1"] = <"SPECIALISE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
 			["open_adl_file_1"] = <"%NOPEN FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
-			["save_archetype_i1"] = <"Serialised: $1, $2 to file $3">
-			["save_archetype_e1"] = <"Serialise failed - could not write to file $1">
-			["save_archetype_e2"] = <"Serialisation failed; archetype not valid: $1">
+			["save_archetype_i1"] = <"Serialised: $1 to file $2">
+			["save_archetype_e2"] = <"Serialisation failed (archetype not valid)">
 			["save_archetype_e3"] = <"%NSAVE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
 			["serialise_archetype_e1"] = <"Serialisation failed; archetype not valid: $1">
 			["serialise_archetype_e2"] = <"%NSERIALISE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
@@ -75,7 +74,15 @@ feature -- Access
 			["parse_archetype_i2"] = <"Archetype $1 semantics VALIDATED">
 			["parse_archetype_e1"] = <"$1 (Parse failed)">
 			["parse_archetype_e2"] = <"Archetype $1 semantic validation FAILED; reasons:%N$2">
+			["parse_archetype_w2"] = <"Archetype $1 semantic validation Warnings:%N$2">
 			["parse_archetype_e3"] = <"PARSE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
+			
+			-- ARCHETYPE_VALIDATOR
+			
+			
+			-- ARCHETYPE_FILE_REPOSITORY_IMP
+			["save_as_i1"] = <"Archetype saved in language $1 to $2">
+			["save_as_e1"] = <"Save-as failed; could not write to file $1">
 			
 			-- DT_OBJECT_CONVERTER.dt_to_object
 			["container_type_mismatch"] = 
@@ -135,4 +142,4 @@ end
 --| ***** END LICENSE BLOCK *****
 --|
 
- 
+

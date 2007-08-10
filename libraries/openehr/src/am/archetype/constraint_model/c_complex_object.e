@@ -33,12 +33,12 @@ creation
 feature -- Initialisation
 
 	default_create is
-			-- 
+			--
 		do
 			precursor
 			create attributes.make(0)
 		end
-	
+
 	make_identified(a_rm_type_name, an_object_id:STRING) is
 			-- set type name, object_id
 		require
@@ -60,27 +60,10 @@ feature -- Initialisation
 			rm_type_name := a_rm_type_name
 		end
 
-feature -- Source Control
-
-	rolled_up_specialisation_status (archetype_specialisation_level: INTEGER): SPECIALISATION_STATUS is
-			-- status of this node taking into consideration effective_specialisation_status of
-			-- all sub-nodes.
-		do
-			Result := effective_specialisation_status (archetype_specialisation_level)
-			from
-				attributes.start
-			until				
-				attributes.off or Result.value < ss_inherited
-			loop
-				Result := specialisation_xx(Result, attributes.item.rolled_up_specialisation_status (archetype_specialisation_level))
-				attributes.forth				
-			end
-		end
-
 feature -- Access
 
 	attributes: ARRAYED_LIST [C_ATTRIBUTE]
-		
+
 	c_attribute_at_path(a_path: STRING): C_ATTRIBUTE is
 			-- get C_ATTRIBUTE at a path (which doesn't terminate in '/')
 		require
@@ -88,7 +71,7 @@ feature -- Access
 		do
 			Result ?= representation.attribute_node_at_path (create {OG_PATH}.make_from_string(a_path)).content_item
 		end
-		
+
 	c_object_at_path(a_path: STRING): C_OBJECT is
 			-- get C_OBJECT at a path (which terminates in '/')
 		require
@@ -96,7 +79,7 @@ feature -- Access
 		do
 			Result ?= representation.object_node_at_path (create {OG_PATH}.make_from_string(a_path)).content_item
 		end
-		
+
 	all_paths_at_path(a_path: STRING): HASH_TABLE[C_OBJECT, STRING] is
 			-- all paths starting at node found at a_path, including itself
 		require
@@ -110,7 +93,7 @@ feature -- Access
 			og_paths := og_node.all_paths
 			create Result.make(0)
 --			Result.compare_objects
-			from 
+			from
 				og_paths.start
 			until
 				og_paths.off
@@ -122,7 +105,7 @@ feature -- Access
 		ensure
 			Result_exists: Result /= Void
 		end
-	
+
 	all_paths: HASH_TABLE[C_OBJECT, STRING] is
 			-- all paths below this point, including this node
 		local
@@ -131,8 +114,7 @@ feature -- Access
 		do
 			og_paths := representation.all_paths
 			create Result.make(0)
---			Result.compare_objects
-			from 
+			from
 				og_paths.start
 			until
 				og_paths.off
@@ -144,12 +126,12 @@ feature -- Access
 		ensure
 			Result_exists: Result /= Void -- and then Result.object_comparison
 		end
-	
+
 	default_value: ANY is
 			-- 	generate a default value from this constraint object
 		do
 		end
-		
+
 feature -- Status Report
 
 	any_allowed: BOOLEAN is
@@ -166,7 +148,7 @@ feature -- Status Report
 		do
 			Result := representation.has_path(create {OG_PATH}.make_from_string(a_path))
 		end
-		
+
 	has_object_path(a_path: STRING): BOOLEAN is
 			-- does a_path exist to an object node from this node?
 		require
@@ -174,7 +156,7 @@ feature -- Status Report
 		do
 			Result := representation.has_object_path(create {OG_PATH}.make_from_string(a_path))
 		end
-		
+
 	has_attribute_path(a_path: STRING): BOOLEAN is
 			-- does a_path to an object node exist from this node?
 		require
@@ -182,7 +164,7 @@ feature -- Status Report
 		do
 			Result := representation.has_attribute_path(create {OG_PATH}.make_from_string(a_path))
 		end
-		
+
 	has_attribute(an_attr_name: STRING): BOOLEAN is
 		require
 			an_attr_name_valid: an_attr_name /= Void and then not an_attr_name.is_empty
@@ -198,7 +180,7 @@ feature -- Status Report
 					invalid_reason.append("cannot have both 'any_allowed' and have children")
 				else
 					Result := True
-					from 
+					from
 						attributes.start
 					until
 						not Result or else attributes.off
@@ -209,12 +191,12 @@ feature -- Status Report
 						else
 							invalid_reason.append("(invalid child node) " + attributes.item.invalid_reason)
 						end
-					end				
-				end			
+					end
+				end
 			end
 		end
 
-	valid_value (a_value: like default_value): BOOLEAN is 
+	valid_value (a_value: like default_value): BOOLEAN is
 		do
 			-- FIXME: to be implemented
 		end
@@ -230,9 +212,9 @@ feature -- Modification
 			attributes.extend(an_attr)
 			an_attr.set_parent(Current)
 		end
-		
+
 	remove_all_attributes is
-			-- 
+			--
 		do
 			representation.remove_all_children
 			attributes.wipe_out
@@ -241,39 +223,39 @@ feature -- Modification
 feature -- Output
 
 	out: STRING is
-			-- 
+			--
 		do
 			create Result.make(0)
 			Result.append(rm_type_name + "[" + representation.node_id + "] " + occurrences.as_string)
 		end
-		
+
 feature -- Representation
 
 	representation: OG_OBJECT_NODE
 
-feature -- Serialisation
+feature -- Visitor
 
-	enter_block(serialiser: CONSTRAINT_MODEL_SERIALISER; depth: INTEGER) is
-			-- perform serialisation at start of block for this node
+	enter_subtree(visitor: C_VISITOR; depth: INTEGER) is
+			-- perform action at start of block for this node
 		do
-			serialiser.start_c_complex_object(Current, depth)
+			visitor.start_c_complex_object(Current, depth)
 		end
-		
-	exit_block(serialiser: CONSTRAINT_MODEL_SERIALISER; depth: INTEGER) is
-			-- perform serialisation at end of block for this node
+
+	exit_subtree(visitor: C_VISITOR; depth: INTEGER) is
+			-- perform action at end of block for this node
 		do
-			serialiser.end_c_complex_object(Current, depth)
+			visitor.end_c_complex_object(Current, depth)
 		end
 
 feature {NONE} -- Implementation
 
 	child_type: C_ATTRIBUTE
 			-- child parse nodes
-				
+
 invariant
 	attributes_valid: attributes /= Void
 	Any_allowed_validity: any_allowed xor not attributes.is_empty
-	
+
 end
 
 

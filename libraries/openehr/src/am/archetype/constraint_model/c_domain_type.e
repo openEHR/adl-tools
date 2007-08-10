@@ -7,7 +7,7 @@ indexing
 			 C_ATTRIBUTE instances.
 			 ]"
 	keywords:    "test, ADL"
-	
+
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
@@ -22,7 +22,7 @@ deferred class C_DOMAIN_TYPE
 inherit
 	C_LEAF_OBJECT
 		redefine
-			representation
+			representation, enter_subtree, exit_subtree
 		end
 
 	DT_CONVERTIBLE
@@ -38,7 +38,7 @@ feature -- Conversion
 			-- standard equivalent constraint form for this subtype
 		deferred
 		end
-		
+
 feature -- Representation
 
 	representation: OG_OBJECT_LEAF
@@ -51,7 +51,24 @@ feature -- Synchronisation
 			precursor
 			dt_representation.show_type
 		end
-	
+
+feature -- Visitor
+
+	enter_subtree(visitor: C_VISITOR; depth: INTEGER) is
+			-- perform action at start of block for this node
+		do
+			synchronise_to_tree
+			precursor(visitor, depth)
+			visitor.start_c_domain_type(Current, depth)
+		end
+
+	exit_subtree(visitor: C_VISITOR; depth: INTEGER) is
+			-- perform action at end of block for this node
+		do
+			precursor(visitor, depth)
+			visitor.end_c_domain_type(Current, depth)
+		end
+
 end
 
 

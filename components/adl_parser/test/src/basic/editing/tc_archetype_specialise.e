@@ -13,7 +13,7 @@ indexing
 	last_change: "$LastChangedDate$"
 
 class TC_ARCHETYPE_SPECIALISE
-	
+
 inherit
 	TEST_CASE
 		export
@@ -21,12 +21,12 @@ inherit
 		redefine
 			prereqs
 		end
-		
+
 	SHARED_TEST_ENV
 		export
 			{NONE} all
 		end
-		
+
 create
 	make
 
@@ -40,7 +40,7 @@ feature -- Access
 
 	title: STRING is "Test Archetype Specialise"
 
-	prereqs: ARRAY[STRING] is 
+	prereqs: ARRAY[STRING] is
 			-- ids of prerequisite test cases
 		once
 			Result := <<"TS_ARCHETYPE_CREATE">>
@@ -54,17 +54,20 @@ feature -- testing
 			a_term: ARCHETYPE_TERM
 			archetype: ARCHETYPE
 		do
-			adl_interface.specialise_archetype("xxxxxx")
-			archetype := adl_interface.archetype
+			-- FIXME: This does not compile. What should it do?
+			archetype_compiler.specialise_archetype("xxxxxx")
+			archetype := archetype_compiler.archetype
 
 			if archetype.is_valid then
-				adl_interface.adl_engine.serialise (serialise_format)	
-				io_message.put_string(adl_interface.adl_engine.serialised_archetype)	
+				-- FIXME: This does not compile. What should it do?
+				archetype_compiler.serialise_archetype (serialise_format)
+				io_message.put_string (archetype_compiler.serialised_archetype)
 			else
-				io_message.put_string(archetype.errors)	
+				-- FIXME: This did not compile because of revision 319. What should it do?
+				io_message.put_string (archetype.errors)
 			end
 		end
-	
+
 end
 
 --|

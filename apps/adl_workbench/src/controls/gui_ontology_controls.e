@@ -15,12 +15,20 @@ indexing
 class GUI_ONTOLOGY_CONTROLS
 
 inherit
-	SHARED_ADL_INTERFACE
+	SHARED_ARCHETYPE_DIRECTORY
+		export
+			{NONE} all
+		end
+
+	SHARED_APPLICATION_CONTEXT
 		export
 			{NONE} all
 		end
 
 	STRING_UTILITIES
+		export
+			{NONE} all
+		end
 
 create
 	make
@@ -68,6 +76,14 @@ feature {NONE} -- Implementation
 
 	gui: MAIN_WINDOW
 			-- main window of system
+
+	ontology: ARCHETYPE_ONTOLOGY is
+			-- access to ontology of selected archetype
+		do
+			if archetype_directory.has_selected_archetype_descriptor then
+				Result := archetype_directory.selected_archetype.ontology
+			end
+		end
 
 	populate_term_definitions is
 			--

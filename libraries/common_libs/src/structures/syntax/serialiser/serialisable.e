@@ -11,7 +11,7 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-deferred class SERIALISABLE
+deferred class VISITABLE
 
 inherit
 	ANY
@@ -19,21 +19,21 @@ inherit
 			{NONE} all
 			{ANY} generating_type
 		end
-		
-feature -- Serialisation
 
-	enter_block(serialiser: ANY_SERIALISER; depth: INTEGER) is
-			-- perform serialisation at start of block for this node
+feature -- Visitor
+
+	enter_subtree(visitor: ANY; depth: INTEGER) is
+			-- perform action at start of block for this node
 		require
-			Serialiser_exists: serialiser /= Void
+			Visitor_exists: visitor /= Void
 			Depth_valid: depth >= 0
 		deferred
 		end
-		
-	exit_block(serialiser: ANY_SERIALISER; depth: INTEGER) is
-			-- perform serialisation at end of block for this node
+
+	exit_subtree(visitor: ANY; depth: INTEGER) is
+			-- perform action at end of block for this node
 		require
-			Serialiser_exists: serialiser /= Void
+			Visitor_exists: visitor /= Void
 			Depth_valid: depth >= 0
 		deferred
 		end

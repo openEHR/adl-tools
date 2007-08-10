@@ -20,7 +20,7 @@ class C_PRIMITIVE_OBJECT
 inherit
 	C_LEAF_OBJECT
 		redefine
-			representation, out, is_valid
+			representation, out, is_valid, enter_subtree, exit_subtree
 		end
 
 create
@@ -35,8 +35,8 @@ feature -- Initialisation
 			default_create
 			item := an_item
 			rm_type_name := an_item.generating_type
-			rm_type_name.remove_head(2)
-			create representation.make_anonymous(Current)
+			rm_type_name.remove_head (2)
+			create representation.make_anonymous (Current)
 		end
 
 feature -- Access
@@ -95,18 +95,20 @@ feature -- Representation
 
 	representation: OG_OBJECT_LEAF
 
-feature -- Serialisation
+feature -- Visitor
 
-	enter_block(serialiser: CONSTRAINT_MODEL_SERIALISER; depth: INTEGER) is
-			-- perform serialisation at start of block for this node
+	enter_subtree(visitor: C_VISITOR; depth: INTEGER) is
+			-- perform action at start of block for this node
 		do
-			serialiser.start_c_primitive_object(Current, depth)
+			precursor(visitor, depth)
+			visitor.start_c_primitive_object(Current, depth)
 		end
 
-	exit_block(serialiser: CONSTRAINT_MODEL_SERIALISER; depth: INTEGER) is
-			-- perform serialisation at end of block for this node
+	exit_subtree(visitor: C_VISITOR; depth: INTEGER) is
+			-- perform action at end of block for this node
 		do
-			serialiser.end_c_primitive_object(Current, depth)
+			precursor(visitor, depth)
+			visitor.end_c_primitive_object(Current, depth)
 		end
 
 invariant

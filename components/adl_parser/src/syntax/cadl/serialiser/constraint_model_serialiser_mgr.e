@@ -11,18 +11,18 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class CONSTRAINT_MODEL_SERIALISER_MGR
+class C_SERIALISER_MGR
 
 inherit
-	SHARED_CONSTRAINT_MODEL_SERIALISERS
-	CONSTRAINT_MODEL_TREE_ITERATOR
-	
+	SHARED_C_SERIALISERS
+	C_ITERATOR
+
 create
 	make
 
 feature -- Initialisation
 
-	make(a_target: C_COMPLEX_OBJECT; format: STRING; an_ontology: ARCHETYPE_ONTOLOGY) is 
+	make(a_target: C_COMPLEX_OBJECT; format: STRING; an_ontology: ARCHETYPE_ONTOLOGY) is
 			-- create a new manager targetted to the parse tree `a_target'
 		require
 			Target_exists: a_target /= Void
@@ -30,8 +30,8 @@ feature -- Initialisation
 			Ontology_valid: an_ontology /= Void
 		do
 			set_target(a_target)
-			serialiser := c_serialiser_for_format(format)
-			serialiser.initialise(an_ontology)
+			visitor := c_serialiser_for_format(format)
+			visitor.initialise(an_ontology)
 		end
 
 feature -- Command
@@ -40,28 +40,28 @@ feature -- Command
 			-- start the serialisation process; the result will be in `serialiser_output'
 		do
 			do_all
-			serialiser.finalise
+			visitor.finalise
 		end
 
 feature -- Access
-	
-	last_result: STRING is 
+
+	last_result: STRING is
 		do
-			Result := serialiser.last_result
+			Result := visitor.last_result
 		end
 
 feature {NONE} -- Implementation
-	
-	serialiser: CONSTRAINT_MODEL_SERIALISER
+
+	visitor: C_SERIALISER
 
 	node_enter_action(a_node: OG_ITEM; indent_level: INTEGER) is
 		do
-			a_node.enter_block(serialiser, indent_level)
+			a_node.enter_subtree(visitor, indent_level)
 		end
 
 	node_exit_action(a_node: OG_ITEM; indent_level: INTEGER) is
 		do
-			a_node.exit_block(serialiser, indent_level)
+			a_node.exit_subtree(visitor, indent_level)
 		end
 
 end

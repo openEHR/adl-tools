@@ -12,71 +12,160 @@ indexing
 	last_change: "$LastChangedDate$"
 
 
-class ARCHETYPE_REPOSITORY_ARCHETYPE
+class ARCH_REP_ARCHETYPE
 
 inherit
-	ARCHETYPE_REPOSITORY_ITEM
+	ARCH_REP_ITEM
 		rename
 			make as make_adi
+		undefine
+			is_equal
 		end
+
+	COMPARABLE
 
 create
 	make
 
 feature -- Initialisation
 
-	make(a_root_path, a_full_path: STRING; a_group_id: INTEGER; an_id: ARCHETYPE_ID; is_specialised_flag: BOOLEAN; a_repository: ARCHETYPE_INDEXED_REPOSITORY_I) is
+	make (a_root_path, a_full_path: STRING; an_id: ARCHETYPE_ID; a_repository: ARCHETYPE_REPOSITORY_I)
 		require
-			Root_path_valid: a_root_path /= Void and then not a_root_path.is_empty
-			Full_path_valid: a_full_path /= Void and then not a_full_path.is_empty and then a_full_path.substring_index (a_root_path, 1) = 1
-			Group_id_valid: a_group_id > 0
-			Id_valid: an_id /= Void
 			Repository_exists: a_repository /= Void
-		local
-			arch_rel_path: STRING
+			Root_path_valid: a_repository.is_valid_path (a_root_path)
+			Full_path_valid: a_full_path /= Void and then a_full_path.substring_index (a_root_path, 1) = 1
+			Id_valid: an_id /= Void
 		do
 			id := an_id
-			is_specialised := is_specialised_flag
-			make_adi(a_root_path, a_full_path, a_group_id, a_repository)
+			make_adi (a_root_path, a_full_path, a_repository)
 		end
 
 feature -- Access
 
 	id: ARCHETYPE_ID
+			-- Archetype identifier.
 
-	is_specialised: BOOLEAN
-
-	source: STRING is
-			-- get source text of archetype
+	source: STRING
+			-- The source text of the archetype.
 		do
-			Result := repository.source (Current)
+			Result := source_repository.source (full_path)
+			source_timestamp := source_repository.source_timestamp
+		end
+
+	source_timestamp: INTEGER
+			-- Date and time at which the archetype file was last modified.
+
+	compilation_context: ARCH_CONTEXT
+			-- Context object for compilation activities.
+
+	group_name: STRING
+			-- Name distinguishing the type of item and the group to which its `repository' belongs.
+			-- Useful as a logical key to pixmap icons, etc.
+		do
+			if is_specialised then
+				Result := "archetype_specialised_" + source_repository.group_id.out
+			else
+				Result := "archetype_" + source_repository.group_id.out
+			end
+		end
+
+	specialisation_parent: ARCH_REP_ARCHETYPE
+			-- parent descriptor, for specialised archetypes only
+
+feature -- Status Report
+
+	is_specialised: BOOLEAN is
+			-- True if this archetype is a specialisation of another archetype
+		do
+			Result := id.is_specialised
+		end
+
+	is_out_of_date: BOOLEAN
+			-- Has the loaded archetype designated by `path' changed on disk since last read?
+		do
+			Result := compilation_context = Void or source_repository.has_file_changed_on_disk (full_path, source_timestamp)
+		end
+
+feature -- Commands
+
+	save (a_text: STRING)
+			-- save a_text (representing archetype source) to archetype source file
+		require
+			Text_valid: a_text /= Void and then not a_text.is_empty
+		do
+			source_repository.save_as(full_path, a_text)
+		end
+
+	save_as (a_full_path, a_text: STRING)
+			-- save a_text (representing archetype source) to archetype source file
+		require
+			Text_valid: a_text /= Void and then not a_text.is_empty
+			Path_valid: is_valid_directory_part (a_full_path)
+		do
+			source_repository.save_as (a_full_path, a_text)
+		end
+
+	set_compilation_context (a_source_archetype: ARCHETYPE)
+			-- create compilation context object with a_source_archetype, which is
+			-- an archetype in differential (source) form (cf flattened)
+		require
+			a_source_archetype /= Void
+		do
+			create compilation_context.make(a_source_archetype)
+		end
+
+feature -- Comparison
+
+	infix "<" (other: like Current): BOOLEAN
+			-- Is current object less than `other'?
+		do
+			Result := id < other.id
+		end
+
+feature -- Modification
+
+	set_specialisation_parent(a_parent: ARCH_REP_ARCHETYPE) is
+			-- set `parent'
+		require
+			Parent_exists: a_parent /= Void
+		do
+			specialisation_parent := a_parent
 		end
 
 feature {NONE} -- Implementation
 
-	make_ontological_paths is
-			-- make ontological_path and ontological_parent_path
+	make_ontological_paths
+			-- Make `base_name', `ontological_path' and `ontological_parent_path'.
 		local
+			pos: INTEGER
 			arch_ont_path: STRING
 		do
-			-- initialise paths down to but not including archetype file name
-			ontological_path := full_path.substring (root_path.count + 1, full_path.last_index_of(os_directory_separator, full_path.count)-1)
+			pos := full_path.last_index_of (os_directory_separator, full_path.count)
+			ontological_path := full_path.substring (root_path.count + 1, pos - 1)
+			ontological_path.replace_substring_all (os_directory_separator.out, ontological_path_separator)
 			ontological_parent_path := ontological_path.twin
 
 			-- generate a semantic path that corresponds to this archetype:
 			-- constructed from the relative folder path + the semantic part of the archetype id, with '-' separators
 			-- changed to '/' so that the entire path is '/'-separated
 			arch_ont_path := id.domain_concept
-			arch_ont_path.replace_substring_all (id.section_separator.out, os_directory_separator.out)
-			ontological_path.append(os_directory_separator.out + arch_ont_path)
+			arch_ont_path.replace_substring_all (id.section_separator.out, ontological_path_separator)
+			ontological_path.append (ontological_path_separator + arch_ont_path)
 
 			-- generate parent ontological path if appropriate
 			arch_ont_path := id.domain_concept_base
+
 			if not arch_ont_path.is_empty then
-				arch_ont_path.replace_substring_all (id.section_separator.out, os_directory_separator.out)
-				ontological_parent_path.append(os_directory_separator.out + arch_ont_path)
+				arch_ont_path.replace_substring_all (id.section_separator.out, ontological_path_separator)
+				ontological_parent_path.append (ontological_path_separator + arch_ont_path)
 			end
+
+			base_name := id.domain_concept_tail + "(" + id.version_id + ")"
 		end
+
+invariant
+	Parent_existence: specialisation_parent /= Void implies is_specialised
+	Parent_validity: specialisation_parent /= Void implies specialisation_parent.id.semantic_id.is_equal(id.semantic_parent_id)
 
 end
 

@@ -2,7 +2,7 @@ indexing
 	component:   "openEHR Archetype Project"
 	description: "Object node type representing constraint on ordinal quantity"
 	keywords:    "ordinal, ADL"
-	
+
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
@@ -17,14 +17,14 @@ class C_DV_ORDINAL
 inherit
 	C_DOMAIN_TYPE
 		redefine
-			default_create
+			default_create, enter_subtree, exit_subtree, synchronise_to_tree
 		end
-		
+
 create
 	make, make_dt
 
 feature -- Initialisation
-		
+
 	default_create is
 			--
 		do
@@ -34,7 +34,7 @@ feature -- Initialisation
 		ensure then
 			any_allowed
 		end
-		
+
 	make is
 			-- make empty, add members with add_item
 		do
@@ -51,7 +51,7 @@ feature -- Initialisation
 		ensure then
 			any_allowed
 		end
-		
+
 feature -- Access
 
 	items: LINKED_SET [ORDINAL]
@@ -74,7 +74,7 @@ feature -- Access
 		do
 			Result := index.item(i)
 		end
-		
+
 feature -- Status Report
 
 	any_allowed: BOOLEAN is
@@ -89,18 +89,18 @@ feature -- Status Report
 			not any_allowed
 		do
 			Result := items.first.symbol.is_local
-		end	
+		end
 
 	has_item(a_value: INTEGER): BOOLEAN is
 		do
 			Result := index.has(a_value)
 		end
 
-	valid_value (a_value: like default_value): BOOLEAN is 
+	valid_value (a_value: like default_value): BOOLEAN is
 		do
 			Result := any_allowed or else has_item(a_value.value)
 		end
-		
+
 feature -- Modification
 
 	add_item(an_ordinal: ORDINAL) is
@@ -117,9 +117,9 @@ feature -- Modification
 		ensure
 			Item_added: items.has(an_ordinal)
 		end
-	
+
 	set_assumed_value_from_integer(a_value: INTEGER) is
-			-- set `assumed_value' from an integer in the ordinal enumeration 
+			-- set `assumed_value' from an integer in the ordinal enumeration
 		require
 			Not_any_allowed: not any_allowed
 			Valid_index: has_item(a_value)
@@ -128,11 +128,11 @@ feature -- Modification
 		ensure
 			assumed_value_set: assumed_value = item_at_ordinal(a_value)
 		end
-		
+
 feature -- Conversion
 
 	as_string: STRING is
-			-- 
+			--
 		do
 			create Result.make (0)
 			from
@@ -146,7 +146,7 @@ feature -- Conversion
 				Result.append (items.item.as_string)
 				items.forth
 			end
-			
+
 			if assumed_value /= Void then
 				Result.append("; " + assumed_value.value.out)
 			end
@@ -156,28 +156,37 @@ feature -- Conversion
 		do
 		end
 
-feature -- Serialisation
+feature -- Synchronisation
 
-	enter_block(serialiser: CONSTRAINT_MODEL_SERIALISER; depth: INTEGER) is
-			-- perform serialisation at start of block for this node
+	synchronise_to_tree is
+			-- synchronise to parse tree representation
 		do
-			if any_allowed then
-				synchronise_to_tree
+            if any_allowed then -- only represent as an inline dADL if any_allowed, else use syntax
+				precursor
 			end
-			serialiser.start_c_ordinal(Current, depth)
 		end
-		
-	exit_block(serialiser: CONSTRAINT_MODEL_SERIALISER; depth: INTEGER) is
-			-- perform serialisation at end of block for this node
+
+feature -- Visitor
+
+	enter_subtree(visitor: C_VISITOR; depth: INTEGER) is
+			-- perform action at start of block for this node
 		do
-			serialiser.end_c_ordinal(Current, depth)
+            precursor(visitor, depth)
+			visitor.start_c_ordinal(Current, depth)
+		end
+
+	exit_subtree(visitor: C_VISITOR; depth: INTEGER) is
+			-- perform action at end of block for this node
+		do
+            precursor(visitor, depth)
+			visitor.end_c_ordinal(Current, depth)
 		end
 
 feature {NONE} -- Implementation
 
 	index: HASH_TABLE [ORDINAL, INTEGER]
 			-- index of items keyed by ordinal value
-	
+
 feature {DT_OBJECT_CONVERTER} -- Conversion
 
 	persistent_attributes: ARRAYED_LIST[STRING] is
@@ -193,7 +202,7 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 invariant
 	Ordinals_valid: items /= Void xor any_allowed
 	Items_valid: items /= Void implies not items.is_empty
-	
+
 end
 
 

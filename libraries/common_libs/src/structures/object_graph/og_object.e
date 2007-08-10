@@ -25,7 +25,7 @@ inherit
 
 feature -- Initialisation
 
-	make_anonymous(a_content_item: SERIALISABLE) is
+	make_anonymous(a_content_item: VISITABLE) is
 			-- make an anonymous node with optional content item
 		do
 			make(Anonymous_node_id, a_content_item)

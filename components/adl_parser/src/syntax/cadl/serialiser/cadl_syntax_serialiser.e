@@ -16,25 +16,33 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class CADL_SYNTAX_SERIALISER 
+class CADL_SYNTAX_SERIALISER
 
 inherit
-	CONSTRAINT_MODEL_SERIALISER
-	
+	C_SERIALISER
+		redefine
+			start_c_complex_object, end_c_complex_object,
+			start_c_attribute, end_c_attribute,
+			start_archetype_slot, end_archetype_slot,
+			start_archetype_internal_ref, start_constraint_ref,
+			start_c_code_phrase, start_c_ordinal, start_c_quantity,
+			start_c_primitive_object
+		end
+
 	CADL_TOKENS
 		export
 			{NONE} all
 		end
 
-	SHARED_ARCHETYPE_CONTEXT
+	SHARED_APPLICATION_CONTEXT
 		export
 			{NONE} all
 		end
-			
+
 creation
 	make
-	
-feature -- Modification
+
+feature -- Visitor
 
 	start_c_complex_object(a_node: C_COMPLEX_OBJECT; depth: INTEGER) is
 			-- start serialising an C_COMPLEX_OBJECT
@@ -47,7 +55,7 @@ feature -- Modification
 			if a_node.is_addressable then
 				last_result.append(apply_style("[" + a_node.node_id + "]", STYLE_TERM_REF))
 			end
-	
+
 			last_result.append(format_item(FMT_SPACE))
 			serialise_occurrences(a_node, depth)
 			last_result.append(apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
@@ -57,20 +65,20 @@ feature -- Modification
 				last_result.append(apply_style(symbol(SYM_ANY), STYLE_VALUE))
 			elseif a_node.is_addressable then
 				s := a_node.node_id
-				last_result.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) + 
+				last_result.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
 					safe_comment(ontology.term_definition(current_language, s).item("text")), STYLE_COMMENT))
 				last_result.append(format_item(FMT_NEWLINE))
 			else
 				last_result.append(format_item(FMT_NEWLINE))
 			end
 		end
-		
+
 	end_c_complex_object(a_node: C_COMPLEX_OBJECT; depth: INTEGER) is
 			-- end serialising an C_COMPLEX_OBJECT
-		do	
+		do
 			if not a_node.any_allowed then
 				last_result.append(create_indent(depth))
-			end			
+			end
 			last_result.append(symbol(SYM_END_CBLOCK) + format_item(FMT_NEWLINE))
 		end
 
@@ -80,9 +88,9 @@ feature -- Modification
 			s:STRING
 		do
 			last_result.append(create_indent(depth))
-			
+
 			last_result.append(apply_style(symbol(SYM_ALLOW_ARCHETYPE), STYLE_KEYWORD) + format_item(FMT_SPACE))
-			
+
 			last_result.append(apply_style(clean(a_node.rm_type_name), STYLE_IDENTIFIER))
 
 			if a_node.is_addressable then
@@ -97,56 +105,56 @@ feature -- Modification
 				last_result.append(apply_style(symbol(SYM_ANY), STYLE_VALUE))
 			elseif a_node.is_addressable then
 				s := a_node.node_id
-				last_result.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) + 
+				last_result.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
 					safe_comment(ontology.term_definition(current_language, s).item("text")), STYLE_COMMENT))
 				last_result.append(format_item(FMT_NEWLINE))
 			else
 				last_result.append(format_item(FMT_NEWLINE))
 			end
 		end
-		
+
 	end_archetype_slot(a_node: ARCHETYPE_SLOT; depth: INTEGER) is
 			-- end serialising an ARCHETYPE_SLOT
 		local
 			invs: ARRAYED_LIST[ASSERTION]
-		do	
+		do
 			-- output includes & excludes, indent then end block, since must be on new line
 			if not a_node.any_allowed then
 				if a_node.has_includes then
-					last_result.append(create_indent(depth+1) + apply_style(symbol(SYM_INCLUDE), STYLE_KEYWORD) + 
+					last_result.append(create_indent(depth+1) + apply_style(symbol(SYM_INCLUDE), STYLE_KEYWORD) +
 						format_item(FMT_NEWLINE))
-						
+
 					invs := a_node.includes
 					from
 						invs.start
 					until
 						invs.off
 					loop
-						last_result.append(create_indent(depth+2) +  
-							invs.item.expression.as_string + format_item(FMT_NEWLINE))						
+						last_result.append(create_indent(depth+2) +
+							invs.item.expression.as_string + format_item(FMT_NEWLINE))
 						invs.forth
 					end
 				end
-				
+
 				if a_node.has_excludes then
-					last_result.append(create_indent(depth+1) + apply_style(symbol(SYM_EXCLUDE), STYLE_KEYWORD) + 
+					last_result.append(create_indent(depth+1) + apply_style(symbol(SYM_EXCLUDE), STYLE_KEYWORD) +
 						format_item(FMT_NEWLINE))
-						
+
 					invs := a_node.excludes
 					from
 						invs.start
 					until
 						invs.off
 					loop
-						last_result.append(create_indent(depth+2) +  
-							invs.item.expression.as_string + format_item(FMT_NEWLINE))						
+						last_result.append(create_indent(depth+2) +
+							invs.item.expression.as_string + format_item(FMT_NEWLINE))
 						invs.forth
 					end
 				end
 				last_result.append(create_indent(depth))
 			end
 			last_result.append(symbol(SYM_END_CBLOCK))
-			
+
 			last_result.append(format_item(FMT_NEWLINE))
 		end
 
@@ -164,16 +172,16 @@ feature -- Modification
 				last_result.append(format_item(FMT_NEWLINE))
 			end
 		end
-		
+
 	end_c_attribute(a_node: C_ATTRIBUTE; depth: INTEGER) is
 			-- end serialising an C_ATTRIBUTE
 		do
 			if not last_object_simple and not a_node.any_allowed then
 				last_result.append(create_indent(depth))
 			end
-			
+
 			last_result.append(symbol(SYM_END_CBLOCK))
-			
+
 			if last_object_simple then
 				if last_object_simple_buffer /= Void then
 					last_result.append(last_object_simple_buffer)
@@ -195,12 +203,6 @@ feature -- Modification
 			end
 			last_result.append(a_node.target_path + format_item(FMT_NEWLINE))
 		end
-		
-	end_archetype_internal_ref(a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER) is
-			-- end serialising an ARCHETYPE_INTERNAL_REF
-		do
-			-- nothing needed
-		end
 
 	start_constraint_ref(a_node: CONSTRAINT_REF; depth: INTEGER) is
 			-- start serialising a CONSTRAINT_REF
@@ -209,16 +211,11 @@ feature -- Modification
 			last_result.append(apply_style(clean(a_node.as_string), STYLE_TERM_REF))
 			create last_object_simple_buffer.make(0)
 			last_object_simple_buffer.append(format_item(FMT_INDENT))
-			
+
 			-- add the comment
-			last_object_simple_buffer.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) + 
+			last_object_simple_buffer.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
 					safe_comment(ontology.constraint_definition(current_language, a_node.target).item("text")), STYLE_COMMENT))
 			last_object_simple := True
-		end
-		
-	end_constraint_ref(a_node: CONSTRAINT_REF; depth: INTEGER) is
-			-- end serialising a CONSTRAINT_REF
-		do
 		end
 
 	start_c_primitive_object(a_node: C_PRIMITIVE_OBJECT; depth: INTEGER) is
@@ -228,16 +225,11 @@ feature -- Modification
 			last_result.append(apply_style(clean(a_node.as_string), STYLE_VALUE))
 			last_object_simple := True
 		end
-		
-	end_c_primitive_object(a_node: C_PRIMITIVE_OBJECT; depth: INTEGER) is
-			-- end serialising an C_PRIMITIVE_OBJECT
-		do
-			-- nothing needed
-			-- EXCEPTION TEST
-		end
 
-	start_c_domain_type(a_node: C_DOMAIN_TYPE; depth: INTEGER) is
-			-- start serialising an C_DOMAIN_TYPE
+	start_c_quantity(a_node: C_DV_QUANTITY; depth: INTEGER) is
+			-- start serialising an C_DV_QUANTITY; note that the following code is generic to all
+			-- C_DOMAIN_TYPEs not having a special syntax like C_CODE_PHRASE and C_DV_ORDINAL (and note
+			-- that in some archetypes, these types can be represented with dADL blocks)
 		do
 			if dadl_engine = Void then
 				create dadl_engine.make
@@ -245,11 +237,6 @@ feature -- Modification
 			dadl_engine.set_tree (a_node.dt_representation)
 			dadl_engine.serialise (output_format)
 			last_result.append((create {STRING_UTILITIES}).indented(dadl_engine.serialised, create_indent(depth)))
-		end
-		
-	end_c_domain_type(a_node: C_DOMAIN_TYPE; depth: INTEGER) is
-			-- end serialising an C_DOMAIN_TYPE
-		do
 		end
 
 	start_c_code_phrase(a_node: C_CODE_PHRASE; depth: INTEGER) is
@@ -263,16 +250,16 @@ feature -- Modification
 				create last_object_simple_buffer.make(0)
 				if not a_node.any_allowed and then (a_node.is_local and a_node.code_count = 1) then
 					last_object_simple_buffer.append(format_item(FMT_INDENT))
-					
+
 					adl_term := ontology.term_definition(current_language, a_node.code_list.first)
-					last_object_simple_buffer.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) + 
-						adl_term.item("text"), STYLE_COMMENT))			
-				end				
+					last_object_simple_buffer.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
+						adl_term.item("text"), STYLE_COMMENT))
+				end
 				last_object_simple := True
-				
+
 			elseif a_node.code_count > 1 then
-				last_result.append(create_indent(depth) + apply_style(clean("[" + 
-					a_node.terminology_id.value + a_node.separator), STYLE_TERM_REF) + 
+				last_result.append(create_indent(depth) + apply_style(clean("[" +
+					a_node.terminology_id.value + a_node.separator), STYLE_TERM_REF) +
 					format_item(FMT_NEWLINE))
 				from
 					a_node.code_list.start
@@ -291,28 +278,23 @@ feature -- Modification
 
 					if a_node.is_local then
 						adl_term := ontology.term_definition(current_language, a_node.code_list.item)
-						last_result.append(format_item(FMT_INDENT) + 
-							apply_style(format_item(FMT_COMMENT) + 
-							adl_term.item("text"), STYLE_COMMENT))			
+						last_result.append(format_item(FMT_INDENT) +
+							apply_style(format_item(FMT_COMMENT) +
+							adl_term.item("text"), STYLE_COMMENT))
 					end
 					last_result.append(format_item(FMT_NEWLINE))
 					a_node.code_list.forth
-				end	
-				
+				end
+
 				if a_node.assumed_value /= Void then
-					last_result.append(create_indent(depth) + apply_style(clean(a_node.assumed_value.code_string), 
+					last_result.append(create_indent(depth) + apply_style(clean(a_node.assumed_value.code_string),
 						STYLE_TERM_REF))
 					last_result.append(apply_style("]", STYLE_TERM_REF))
-					last_result.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) + 
-							"assumed value", STYLE_COMMENT))			
-					last_result.append(format_item(FMT_NEWLINE))					
+					last_result.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
+							"assumed value", STYLE_COMMENT))
+					last_result.append(format_item(FMT_NEWLINE))
 				end
-			end				
-		end
-		
-	end_c_code_phrase(a_node: C_CODE_PHRASE; depth: INTEGER) is
-			-- end serialising an C_CODE_PHRASE
-		do
+			end
 		end
 
 	start_c_ordinal(a_node: C_DV_ORDINAL; depth: INTEGER) is
@@ -331,11 +313,11 @@ feature -- Modification
 				if a_node.is_local then
 					last_object_simple_buffer.append(format_item(FMT_INDENT))
 					adl_term := ontology.term_definition(current_language, a_node.items.first.symbol.code_string)
-					last_object_simple_buffer.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) + 
-						adl_term.item("text"), STYLE_COMMENT))			
-				end				
+					last_object_simple_buffer.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
+						adl_term.item("text"), STYLE_COMMENT))
+				end
 				last_object_simple := True
-				
+
 			elseif a_node.items.count > 1 then
 				from
 					a_node.items.start
@@ -347,34 +329,29 @@ feature -- Modification
 					if i < a_node.items.count then
 						last_result.append (format_item(FMT_LIST_ITEM_SEPARATOR))
 					elseif a_node.assumed_value /= Void then
-						last_result.append (format_item(FMT_ASSUMED_VALUE_SEPARATOR))						
+						last_result.append (format_item(FMT_ASSUMED_VALUE_SEPARATOR))
 					else -- pad same number of spaces
 						last_result.append (create {STRING}.make_filled(' ', format_item(FMT_LIST_ITEM_SEPARATOR).count))
 					end
 					if a_node.is_local then
 						adl_term := ontology.term_definition(current_language, a_node.items.item.symbol.code_string)
-						last_result.append(format_item(FMT_INDENT) + 
-							apply_style(format_item(FMT_COMMENT) + 
-							adl_term.item("text"), STYLE_COMMENT))			
+						last_result.append(format_item(FMT_INDENT) +
+							apply_style(format_item(FMT_COMMENT) +
+							adl_term.item("text"), STYLE_COMMENT))
 					end
 					last_result.append(format_item(FMT_NEWLINE))
 					a_node.items.forth
 					i := i + 1
 				end
-				
+
 				if a_node.assumed_value /= Void then
 					last_result.append(create_indent(depth) + apply_style(a_node.assumed_value.value.out, STYLE_TERM_REF))
 					last_result.append (create {STRING}.make_filled(' ', format_item(FMT_LIST_ITEM_SEPARATOR).count))
-					last_result.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) + 
-							"assumed value", STYLE_COMMENT))			
+					last_result.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
+							"assumed value", STYLE_COMMENT))
 					last_result.append(format_item(FMT_NEWLINE))
 				end
-			end				
-		end
-		
-	end_c_ordinal(a_node: C_DV_ORDINAL; depth: INTEGER) is
-			-- end serialising an C_DV_ORDINAL
-		do
+			end
 		end
 
 	serialise_occurrences(a_node: C_OBJECT; depth: INTEGER) is
@@ -386,11 +363,11 @@ feature -- Modification
 				last_result.append(apply_style(symbol(SYM_OCCURRENCES), STYLE_OPERATOR) + format_item(FMT_SPACE))
 				last_result.append(apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
 				s := a_node.occurrences.as_occurrences_string
-				last_result.append(symbol(SYM_START_CBLOCK) + apply_style(s, STYLE_VALUE) + 
-					symbol(SYM_END_CBLOCK) + format_item(FMT_SPACE))				
+				last_result.append(symbol(SYM_START_CBLOCK) + apply_style(s, STYLE_VALUE) +
+					symbol(SYM_END_CBLOCK) + format_item(FMT_SPACE))
 			end
 		end
-		
+
 	serialise_existence(a_node: C_ATTRIBUTE; depth: INTEGER) is
 			-- can only  be a range of 0..1 or 1..1
 		local
@@ -404,7 +381,7 @@ feature -- Modification
 					symbol(SYM_END_CBLOCK) + format_item(FMT_SPACE))
 			end
 		end
-		
+
 	serialise_cardinality(a_node: C_ATTRIBUTE; depth: INTEGER) is
 			-- includes a range and possibly ordered, unique qualifiers
 		local
@@ -423,11 +400,11 @@ feature {NONE} -- Implementation
 
 	last_object_simple: BOOLEAN
 			-- True if last object traversed was an OBJECT_SIMPLE
-			
+
 	last_object_simple_buffer: STRING
-	
+
 	dadl_engine: DADL_ENGINE
-			
+
 end
 
 

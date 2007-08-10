@@ -95,8 +95,11 @@ feature -- Access
 		local
 			p: INTEGER
 		do
-			p := value.index_of(axis_separator, 1) - 1
-			Result := value.substring(1, p)
+			p := value.index_of (axis_separator, 1) - 1
+			Result := value.substring (1, p)
+		ensure
+			attached: Result /= Void
+			not_empty: not Result.is_empty
 		end
 
 	domain_concept: STRING is
@@ -106,9 +109,12 @@ feature -- Access
 		local
 			p, q: INTEGER
 		do
-			p := value.index_of(axis_separator, 1) + 1
-			q := value.index_of(axis_separator, p) - 1
-			Result := value.substring(p, q)
+			p := value.index_of (axis_separator, 1) + 1
+			q := value.index_of (axis_separator, p) - 1
+			Result := value.substring (p, q)
+		ensure
+			attached: Result /= Void
+			not_empty: not Result.is_empty
 		end
 
 	version_id: STRING is
@@ -189,13 +195,13 @@ feature -- Access
 			--		"problem-diagnosis" 			-> "diagnosis"
 			--		"problem-diagnosis-histological" -> "histological"
 		local
-			i: INTEGER
+			p: INTEGER
 		do
 			Result := domain_concept
-			i := Result.last_index_of (section_separator, Result.count)
+			p := Result.last_index_of (section_separator, Result.count)
 
-			if i > 0 then
-				Result := Result.substring (i + 1, Result.count)
+			if p > 0 then
+				Result := Result.substring (p + 1, Result.count)
 			end
 		ensure
 			attached: Result /= Void
@@ -210,57 +216,56 @@ feature -- Access
 			--		"problem-diagnosis" 			-> "problem"
 			--		"problem-diagnosis-histological" -> "problem-diagnosis"
 		local
-			s: STRING
-			loc: INTEGER
+			p: INTEGER
 		do
-			create Result.make(0)
-			s := domain_concept
-			loc := s.last_index_of(Section_separator, s.count) - 1
-			if loc > 0 then
-				Result.append(s.substring(1, loc))
-			end
+			Result := domain_concept
+			p := Result.last_index_of (section_separator, Result.count) - 1
+			Result := Result.substring (1, p)
 		ensure
-			Result_exists: Result /= Void
+			attached: Result /= Void
+			empty_unless_specialised: not is_specialised implies Result.is_empty
+			excludes_last_specialisation: is_specialised implies domain_concept.is_equal (Result + section_separator.out + domain_concept_tail)
 		end
 
-	sortable_id: STRING is
-			-- id as a string minus the version part at the end
-			-- (which interferes with sensible sorting)
+	sortable_id, semantic_id: STRING is
+			-- Semantic id as a string minus the version part at the end (which interferes with sensible sorting).
 		local
 			p: INTEGER
 		do
-			p := value.last_index_of(axis_separator, value.count) - 1
-			Result := value.substring(1, p)
-		end
-
-	semantic_id: STRING is
-			-- semantic id as a string minus the version part at the end
-			-- (same as sortable_id)
-		local
-			p: INTEGER
-		do
-			p := value.last_index_of(axis_separator, value.count) - 1
-			Result := value.substring(1, p)
+			p := value.last_index_of (axis_separator, value.count) - 1
+			Result := value.substring (1, p)
+		ensure
+			attached: Result /= Void
+			rm_entity_plus_domain_concept: Result.is_equal (qualified_rm_entity + axis_separator.out + domain_concept)
 		end
 
 	semantic_parent_id: STRING is
-			-- semantic id of parent as a string minus the version part at the end
-			-- equivalent to semantic_id including domain_base_name only
+			-- Semantic id of parent as a string minus the version part at the end.
+			-- Equivalent to `semantic_id' including `domain_concept_base' only.
 		local
-			ver_sep_pos, concept_sep_pos: INTEGER
+			p: INTEGER
+			separator: CHARACTER
 		do
-			ver_sep_pos := value.last_index_of(axis_separator, value.count) - 1
-			Result := value.substring(1, ver_sep_pos)
-			concept_sep_pos := Result.last_index_of(Section_separator, Result.count) - 1
-			if concept_sep_pos < 0 then
-				concept_sep_pos := Result.count
+			Result := semantic_id
+
+			if is_specialised then
+				separator := section_separator
+			else
+				separator := axis_separator
 			end
-			Result := Result.substring(1, concept_sep_pos)
+
+			p := Result.last_index_of (separator, Result.count) - 1
+			Result := Result.substring (1, p)
+		ensure
+			attached: Result /= Void
+			empty_unless_specialised: not is_specialised implies Result.is_equal (qualified_rm_entity)
+			excludes_last_specialisation: is_specialised implies Result.is_equal (qualified_rm_entity + axis_separator.out + domain_concept_base)
 		end
 
 feature -- Status Report
 
 	is_specialised: BOOLEAN
+			-- Is this id a specialisation?
 
 	valid_id(an_id: STRING):BOOLEAN is
 		do
@@ -297,13 +302,11 @@ feature -- Output
 
 	as_string: STRING is
 		do
-			create Result.make(value.count)
-			Result.append(value)
+			Result := value.twin
+		ensure
+			attached: Result /= Void
+			not_empty: not Result.is_empty
 		end
-
-invariant
-	Qualified_rm_entity_valid: qualified_rm_entity /= Void and then not qualified_rm_entity.is_empty
-	Domain_concept_valid: domain_concept /= Void and then not domain_concept.is_empty
 
 end
 

@@ -1,101 +1,83 @@
 indexing
 	component:   "openEHR Archetype Project"
-	description: "[
-				 Directory representation of a file-system archetype repository.
-				 ]"
+	description: "Representation of an archetype repository in some medium."
 	keywords:    "ADL"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-
-deferred class ARCHETYPE_INDEXED_REPOSITORY_I
+deferred class
+	ARCHETYPE_REPOSITORY_I
 
 inherit
+	SHARED_APPLICATION_CONTEXT
+		export
+			{NONE} all
+			{ANY} current_language, set_current_language
+		end
+
 	ARCHETYPE_DEFINITIONS
 		export
 			{NONE} all
 		end
 
-feature -- Initialisation
-
-	make(a_dir_name: STRING; a_group_id: INTEGER) is
-			-- make based on valid directory path
-		require
-			Dir_name_valid: a_dir_name /= Void and then valid_path(a_dir_name)
-		do
-			root_path := a_dir_name
-			current_group_id := a_group_id
-			clear
-		end
-
 feature -- Access
 
-	root_path: STRING
-			-- path of file-system repository of archetypes
-
-	directory: TWO_WAY_TREE [ARCHETYPE_REPOSITORY_ITEM]
-			-- tree-structured directory of folders and archetype sources
-
-	source (an_archetype: ARCHETYPE_REPOSITORY_ARCHETYPE): STRING is
-			-- get source of archetype from repository medium
+	source (full_path: STRING): STRING
+			-- Source of archetype designated by `full_path' from the repository medium.
+		require
+			path_attached: full_path /= Void
 		deferred
 		ensure
-			Result_exists: Result /= Void
+			attached: Result /= Void
 		end
+
+	source_timestamp: INTEGER
+			-- Modification time of last opened file as an integer, for comparison purposes.
+		deferred
+		end
+
+	group_id: INTEGER
+			-- Id of the group to which this repository belongs.
 
 feature -- Status Report
 
-	valid_path(a_path: STRING): BOOLEAN is
-			-- validate path on medium
+	is_valid_path (path: STRING): BOOLEAN
+			-- Is `path' a valid, existing directory or file on the repository medium?
+		deferred
+		end
+
+	is_valid_directory_part (path: STRING): BOOLEAN
+			-- Is the directory part of `path' valid on the repository medium?
+		deferred
+		end
+
+	has_file_changed_on_disk (path: STRING; timestamp: INTEGER): BOOLEAN
+			-- Has the loaded archetype designated by `path' changed on disk since last read?
 		require
-			a_path /= Void
+			path_attached: path /= Void
+			path_not_empty: not path.is_empty
 		deferred
 		end
 
 feature -- Commands
 
-	clear is
-		do
-			current_root_path := root_path
-		end
-
-	repopulate is
-			-- rebuild directory based on existing paths
-		do
-			clear
-			populate
-		end
-
-	populate is
-			-- make based on valid directory path
-		do
-			directory := build_directory(root_path)
-		end
-
-feature {NONE} -- Implementation
-
-	build_directory(a_dir_name: STRING): TWO_WAY_TREE [ARCHETYPE_REPOSITORY_ITEM] is
-			-- build a literal representation of the archetype and folder structure
-			-- in the repository path, as a tree; each node carries some meta-data
+	save_as (full_path, archetype_source: STRING)
+			-- Save `archetype_source' to the file designated by `full_path'.
 		require
-			Dir_name_valid: a_dir_name /= Void
-   		deferred
+			path_valid: is_valid_directory_part (full_path)
+			archetype_source_attached: archetype_source /= Void
+			archetype_source_not_empty: not archetype_source.is_empty
+		deferred
 		end
-
-	current_group_id: INTEGER
-			-- id of group currently being populated
-
-	current_root_path: STRING
-			-- current path being populated
 
 invariant
-	Repository_path_valid: root_path /= Void and then valid_path(root_path)
+	group_id_valid: group_id > 0
 
 end
 

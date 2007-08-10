@@ -1,34 +1,24 @@
 indexing
 	component:   "openEHR Archetype Project"
-	description: "Common things for all SML archetypes"
-	keywords:    "test, SML"
+	description: "Shared CADL Factor"
+	keywords:    "CADL"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-deferred class CONSTRAINT_MODEL_COMMON
+class SHARED_C_FACTORY
 
 feature -- Access
 
-	default_occurrences: INTERVAL[INTEGER] is 
-			-- default object occurrences object representing 1..1
+	constraint_model_factory: C_FACTORY is
+			-- access to constraint-building routines
 		once
-			create Result.make_bounded(1,1, True, True)
-		ensure
-			Result_exists: Result /= Void
-		end
-
-	default_existence: INTERVAL[INTEGER] is 
-			-- default property existence object representing 1..1
-		once
-			create Result.make_bounded(1,1, True, True)
-		ensure
-			Result_exists: Result /= Void
+			create Result.make
 		end
 
 end
@@ -48,7 +38,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is cadl_common.e.
+--| The Original Code is shared_adl_context.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

@@ -87,13 +87,13 @@ feature -- Conversion
 		
 feature -- Serialisation
 
-	enter_block(serialiser: DT_SERIALISER; depth: INTEGER) is
+	enter_subtree(serialiser: DT_SERIALISER; depth: INTEGER) is
 			-- perform serialisation at start of block for this node
 		do
 			serialiser.start_primitive_object_interval(Current, depth)
 		end
 		
-	exit_block(serialiser: DT_SERIALISER; depth: INTEGER) is
+	exit_subtree(serialiser: DT_SERIALISER; depth: INTEGER) is
 			-- perform serialisation at end of block for this node
 		do
 			serialiser.end_primitive_object_interval(Current, depth)

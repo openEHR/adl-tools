@@ -13,7 +13,7 @@ indexing
 	last_change: "$LastChangedDate$"
 
 class TC_ARCHETYPE_SHOW_PATHS
-	
+
 inherit
 	TEST_CASE
 		export
@@ -24,7 +24,7 @@ inherit
 		export
 			{NONE} all
 		end
-		
+
 create
 	make
 
@@ -46,12 +46,12 @@ feature -- testing
 			a_term: ARCHETYPE_TERM
 			archetype: ARCHETYPE
 		do
-			archetype := adl_interface.archetype
+			archetype := archetype_compiler.archetype
 			io_message.put_string ("------------------ definition paths -------------------%N")
 			io_message.put_string(print_list (archetype.physical_paths))
 			io_message.put_string ("------------------ definition paths -------------------%N")
 		end
-	
+
 end
 
 --|

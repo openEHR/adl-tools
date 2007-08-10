@@ -1,4 +1,4 @@
-indexing	
+indexing
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Basic archetype definitions
@@ -14,11 +14,13 @@ indexing
 	last_change: "$LastChangedDate$"
 
 
-class ARCHETYPE_DEFINITIONS 
+class ARCHETYPE_DEFINITIONS
 
 feature -- Definitions
 
 	Archetype_file_extension: STRING is "adl"
+
+	Ontological_path_separator: STRING is "/"
 
 end
 

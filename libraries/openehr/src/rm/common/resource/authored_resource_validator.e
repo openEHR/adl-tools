@@ -1,42 +1,57 @@
 indexing
-	component:   "openEHR Archetype Project"
-	description: "[
-			 Shared ADL_INTERFACE Object for C wrapper for ADL_INTERFACE. 
-			 ]"
-	keywords:    "C wrapper"
+	component:   "openEHR Common Information Model"
+	description: "Validator for AUTHOR_RESOURCE objects"
+	keywords:    "archetype"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class SHARED_ADL_INTERFACE
+class AUTHORED_RESOURCE_VALIDATOR
 
 inherit
-	SHARED_ARCHETYPE_CONTEXT
-	
+	ANY_VALIDATOR
+		redefine
+			target
+		end
+
+create
+	make
+
+feature -- Access
+
+	target: AUTHORED_RESOURCE
+			-- target of this validator
+
+	validate is
+			-- True if all structures obey their invariants
+		do
+			passed := True
+			if target.original_language = Void then
+				errors.append("No original language%N")
+				passed := False
+			end
+			validate_description
+			validate_translations
+		end
+
 feature {NONE} -- Implementation
 
-	adl_interface: ADL_INTERFACE is 
-		once
-			create Result.make			
+	validate_description is
+			-- TODO
+		do
 		end
 
-	ontology: ARCHETYPE_ONTOLOGY is 
+	validate_translations is
+			-- TODO
 		do
-			Result := adl_interface.ontology
-		end
-
-	ontology_available: BOOLEAN is
-		do
-			Result := ontology /= Void
 		end
 
 end
-
 
 
 --|
@@ -53,13 +68,14 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is adl_interface.e.
+--| The Original Code is authored_resource_validator.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2007
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):
+--|	Sam Heard
 --|
 --| Alternatively, the contents of this file may be used under the terms of
 --| either the GNU General Public License Version 2 or later (the 'GPL'), or

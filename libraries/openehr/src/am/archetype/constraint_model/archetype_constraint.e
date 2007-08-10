@@ -14,19 +14,20 @@ indexing
 deferred class ARCHETYPE_CONSTRAINT
 
 inherit
-	SERIALISABLE
-	
-	SPECIALISATION_STATUSES	
+	VISITABLE
+
+	SPECIALISATION_STATUSES
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} valid_specialisation_status
 		end
-	
+
 feature -- Access
 
 	invalid_reason: STRING
-	
+
 	parent: ARCHETYPE_CONSTRAINT
-	
+
 	path: STRING is
 			-- path to this object in the tree with respect to root
 		do
@@ -37,13 +38,13 @@ feature -- Access
 feature -- Source Control
 
 	specialisation_status (archetype_specialisation_level: INTEGER): SPECIALISATION_STATUS is
-			-- status of this node in the source text of this archetype with respect to the 
+			-- status of this node in the source text of this archetype with respect to the
 			-- specialisation hierarchy. Values are: defined_here; redefined, added, unknown
 		require
 			valid_specialisation_level: archetype_specialisation_level >= 0
 		deferred
 		end
-			
+
 	effective_specialisation_status (archetype_specialisation_level: INTEGER): SPECIALISATION_STATUS is
 			-- status of this node either due to its own status or propagated status from a
 			-- parent node
@@ -56,16 +57,19 @@ feature -- Source Control
 				Result := specialisation_status(archetype_specialisation_level)
 			end
 		end
-	
-	rolled_up_specialisation_status (archetype_specialisation_level: INTEGER): SPECIALISATION_STATUS is
-			-- status of this node taking into consideration effective_specialisation_status of
-			-- all sub-nodes.
-			-- 
+
+	set_rolled_up_specialisation_status (a_status: SPECIALISATION_STATUS) is
 		require
-			valid_specialisation_level: archetype_specialisation_level >= 0
-		deferred
+			valid_specialisation_status: valid_specialisation_status(a_status.value)
+		do
+			rolled_up_specialisation_status := a_status
 		end
-	
+
+	rolled_up_specialisation_status: SPECIALISATION_STATUS
+			-- status of this node taking into consideration effective_specialisation_status of
+			-- all sub-nodes. Used to roll up nodes on visualisation, and also to decide which
+			-- subtree to remove to convert an archetype to differential form
+
 feature -- Status Report
 
 	is_addressable: BOOLEAN is
@@ -73,7 +77,7 @@ feature -- Status Report
 		do
 			Result := representation.is_addressable
 		end
-	
+
 	is_valid: BOOLEAN is
 			-- True if node valid; if False, reason in `invalid_reason'
 		deferred
@@ -84,7 +88,7 @@ feature -- Status Report
 feature -- Representation
 
 	representation: OG_ITEM
-	
+
 feature {ARCHETYPE_CONSTRAINT} -- Modification
 
 	set_parent(a_node: like parent) is
@@ -94,11 +98,11 @@ feature {ARCHETYPE_CONSTRAINT} -- Modification
 		do
 			parent := a_node
 		end
-		
+
 feature {OG_ITEM} -- Implementation
 
 	set_representation(a_rep: like representation) is
-			-- 
+			--
 		require
 			a_rep /= Void
 		do
@@ -106,7 +110,7 @@ feature {OG_ITEM} -- Implementation
 		ensure
 			Representation_set: representation = a_rep
 		end
-		
+
 end
 
 

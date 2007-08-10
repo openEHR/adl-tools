@@ -15,7 +15,7 @@ indexing
 class GUI_TRANSLATION_CONTROLS
 
 inherit
-	SHARED_ADL_INTERFACE
+	SHARED_ARCHETYPE_DIRECTORY
 		export
 			{NONE} all
 		end
@@ -60,9 +60,12 @@ feature -- Commands
 			-- populate controls
 		do
 			clear
-			if adl_interface.archetype.translations /= Void then
-				populate_ev_list_from_hash_keys(gui.arch_translations_languages_list, adl_interface.archetype.translations)
-				populate_items
+
+			if archetype_directory.has_selected_archetype_descriptor then
+				if archetype_directory.selected_archetype.translations /= Void then
+					populate_ev_list_from_hash_keys(gui.arch_translations_languages_list, archetype_directory.selected_archetype.translations)
+					populate_items
+				end
 			end
 		end
 
@@ -80,16 +83,19 @@ feature -- Commands
 				translation_language := gui.arch_translations_languages_list.selected_item.text
 			end
 
-			trans_item := adl_interface.archetype.translations.item(translation_language)
+			if archetype_directory.has_selected_archetype_descriptor then
+				trans_item := archetype_directory.selected_archetype.translations.item(translation_language)
 
-			-- populate author hash
-			populate_ev_multi_list_from_hash(gui.arch_translations_author_mlist, trans_item.author)
-			if trans_item.accreditation /= Void then
-				gui.arch_translations_accreditation_text.set_text (utf8 (trans_item.accreditation))
+				-- populate author hash
+				populate_ev_multi_list_from_hash(gui.arch_translations_author_mlist, trans_item.author)
+
+				if trans_item.accreditation /= Void then
+					gui.arch_translations_accreditation_text.set_text (utf8 (trans_item.accreditation))
+				end
+
+				-- populate other_details
+				populate_ev_multi_list_from_hash(gui.arch_translations_other_details_mlist, trans_item.other_details)
 			end
-
-			-- populate other_details
-			populate_ev_multi_list_from_hash(gui.arch_translations_other_details_mlist, trans_item.other_details)
 		end
 
 feature {NONE} -- Implementation

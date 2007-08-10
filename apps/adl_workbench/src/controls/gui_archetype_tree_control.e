@@ -15,7 +15,7 @@ indexing
 class GUI_VIEW_ARCHETYPE_TREE_CONTROL
 
 inherit
-	SHARED_ARCHETYPE_CONTEXT
+	SHARED_APPLICATION_CONTEXT
 		export
 			{NONE} all
 		end
@@ -30,7 +30,7 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_ADL_INTERFACE
+	SHARED_ARCHETYPE_COMPILER
 		export
 			{NONE} all
 		end
@@ -54,33 +54,29 @@ feature -- Initialisation
 
 feature -- Commands
 
-	clear is
-			-- wipe out content from controls
-		do
-			gui_file_tree.wipe_out
-			archetype_directory.clear_selected_item
-		end
-
 	repopulate is
-			-- repopulate after changes on file system
+			-- Repopulate `gui_file_tree' after changes on file system.
 		local
 			show_node: EV_TREE_NODE
 		do
 			populate
-			if archetype_directory.has_selected_archetype then
-				show_node := gui_file_tree.retrieve_item_recursively_by_data (archetype_directory.selected_archetype.full_path, True)
+
+			if archetype_directory.has_selected_archetype_descriptor then
+				show_node := gui_file_tree.retrieve_item_recursively_by_data (archetype_directory.selected_descriptor, True)
+
 				if show_node /= Void then
 					gui_file_tree.ensure_item_visible (show_node)
+					show_node.enable_select
 				end
 			end
 		end
 
 	populate is
-			-- populate the ADL tree control by creating it from scratch
+			-- Populate `gui_file_tree' by creating it from scratch.
 		do
-			clear
- 			create gui_tree_item_stack.make(0)
- 			archetype_directory.do_all(agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
+			gui_file_tree.wipe_out
+ 			create gui_tree_item_stack.make (0)
+ 			archetype_directory.do_all (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
 		end
 
 	display_details_of_selected_item_after_delay
@@ -102,15 +98,15 @@ feature -- Commands
 	display_details_of_selected_item
 			-- Display the details of `selected_item'.
 		local
-			arch_item: ARCHETYPE_REPOSITORY_ARCHETYPE
+			arch_item: ARCH_REP_ARCHETYPE
 		do
 			arch_item ?= gui_file_tree.selected_item.data
 
 			if arch_item /= Void then
-				archetype_directory.set_selected_item (arch_item)
-				gui.load_and_parse_adl_file (arch_item.full_path)
+				archetype_directory.set_selected_archetype_descriptor (arch_item)
+				gui.load_and_parse_archetype
 			else
-				archetype_directory.clear_selected_item
+				archetype_directory.clear_selected_archetype_descriptor
 			end
 		end
 
@@ -128,39 +124,32 @@ feature {NONE} -- Implementation
 	delay_to_make_keyboard_navigation_practical: EV_TIMEOUT
 			-- Timer to delay a moment before calling `display_details_of_selected_item'.
 
-   	populate_gui_tree_node_enter(an_item: ARCHETYPE_REPOSITORY_ITEM) is
+   	populate_gui_tree_node_enter (an_item: ARCH_REP_ITEM)
    			-- Add a node representing `an_item' to `gui_file_tree'.
 		require
 			an_item /= Void
    		local
-			a_ti: EV_TREE_ITEM
-   			ada: ARCHETYPE_REPOSITORY_ARCHETYPE
-   			adf: ARCHETYPE_REPOSITORY_FOLDER
+			node: EV_TREE_ITEM
+			pixmap: EV_PIXMAP
    		do
-   			adf ?= an_item
-   			if adf /= Void then
- 				create a_ti.make_with_text (utf8 (adf.base_name))
-				a_ti.set_pixmap(pixmaps.item("file_folder_" + adf.group_id.out))
-				a_ti.set_data(adf)
-			else
-				ada ?= an_item
-				create a_ti.make_with_text (utf8 (ada.id.domain_concept_tail + "(" + ada.id.version_id + ")"))
-				a_ti.set_data(ada)
-				if ada.id.is_specialised then
-					a_ti.set_pixmap(pixmaps.item("archetype_specialised_" + ada.group_id.out))
-				else
-					a_ti.set_pixmap(pixmaps.item("archetype_" + ada.group_id.out))
-				end
-   			end
-			if gui_tree_item_stack.is_empty then
-				gui_file_tree.extend(a_ti)
-			else
-				gui_tree_item_stack.item.extend(a_ti)
+			create node.make_with_text (utf8 (an_item.base_name))
+ 			node.set_data (an_item)
+			pixmap := pixmaps [an_item.group_name]
+
+			if pixmap /= Void then
+				node.set_pixmap (pixmap)
 			end
-			gui_tree_item_stack.extend(a_ti)
+
+			if gui_tree_item_stack.is_empty then
+				gui_file_tree.extend (node)
+			else
+				gui_tree_item_stack.item.extend (node)
+			end
+
+			gui_tree_item_stack.extend (node)
 		end
 
-   	populate_gui_tree_node_exit(an_item: ARCHETYPE_REPOSITORY_ITEM) is
+   	populate_gui_tree_node_exit (an_item: ARCH_REP_ITEM)
    		do
 			gui_tree_item_stack.remove
 		end

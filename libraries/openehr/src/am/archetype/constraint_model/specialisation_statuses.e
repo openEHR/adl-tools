@@ -6,7 +6,7 @@ indexing
 				 added here.
 				 ]"
 	keywords:    "ADL"
-	
+
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics<support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
@@ -19,7 +19,7 @@ indexing
 class SPECIALISATION_STATUSES
 
 feature -- Definitions
-	
+
 	ss_undefined: INTEGER is 5000
 			-- this node is inherited here and is redefined here
 
@@ -47,7 +47,7 @@ feature -- Access
 			Result.put("redefined", ss_redefined)
 			Result.put("propagated", ss_propagated)
 		end
-		
+
 feature -- Status Report
 
 	valid_specialisation_status (a_status: INTEGER): BOOLEAN is
@@ -58,13 +58,14 @@ feature -- Status Report
 
 feature -- Comparison
 
-	specialisation_xx(status_1, status_2: SPECIALISATION_STATUS): SPECIALISATION_STATUS is
-			-- determine which of status_1 and status_2 is effective at a given node, due
-			-- to sub-node values
+	specialisation_dominant_status(status_1, status_2: SPECIALISATION_STATUS): SPECIALISATION_STATUS is
+			-- determine which of status_1 and status_2 is dominant at a given node, due
+			-- to sub-node values; order is:
+			-- added, redefined, inherited, propagated
 		do
 			create Result.make(status_1.value.min(status_2.value))
 		end
-		
+
 end
 
 

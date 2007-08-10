@@ -20,7 +20,12 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_ADL_INTERFACE
+	SHARED_ARCHETYPE_DIRECTORY
+		export
+			{NONE} all
+		end
+
+	SHARED_APPLICATION_CONTEXT
 		export
 			{NONE} all
 		end
@@ -31,13 +36,16 @@ inherit
 		end
 
 	STRING_UTILITIES
+		export
+			{NONE} all
+		end
 
 create
 	make
 
-feature -- Initialisation
+feature {NONE} -- Initialisation
 
-	make(a_main_window: MAIN_WINDOW) is
+	make (a_main_window: MAIN_WINDOW) is
 			-- create tree control repersenting archetype files found in repository_path
 		require
 			a_main_window /= Void
@@ -74,40 +82,49 @@ feature -- Commands
 			c_l_o: C_LEAF_OBJECT
 			c_r: CONSTRAINT_REF
 			c_c_o: C_COMPLEX_OBJECT
-			is_logical_leaf: BOOLEAN
+			is_logical_leaf, all_selected: BOOLEAN
 		do
 			mcl := path_list
 			mcl.wipe_out
-			mcl.set_column_titles(path_control_column_names)
-			p_paths := adl_interface.adl_engine.archetype.physical_paths
-			l_paths := adl_interface.adl_engine.archetype.logical_paths(current_language)
-			from
-				p_paths.start
-				l_paths.start
-			until
-				p_paths.off
-			loop
-				create list_row
-		--		if adl_interface.archetype.definition.has_object_path (p_paths.item) then
-		--		if adl_interface.archetype.has_physical_path (p_paths.item) then
-					c_o := adl_interface.archetype.c_object_at_path (p_paths.item)
-					if c_o /= Void then
-						c_l_o ?= c_o
-						c_r ?= c_o
-						c_c_o ?= c_o
+			mcl.set_column_titles (path_control_column_names)
 
-						is_logical_leaf := c_l_o /= Void or c_r /= Void or (c_c_o /= Void and c_c_o.attributes.count = 0)
-						if filter_combo.has_selection and filter_combo.selected_text.is_equal ("All") or else is_logical_leaf then
-							list_row.extend (utf8 (p_paths.item))
-							list_row.extend (utf8 (l_paths.item))
-							list_row.extend (utf8 (c_o.rm_type_name))
-							list_row.extend (utf8 (c_o.generating_type))
-							mcl.extend(list_row)
+			if archetype_directory.has_selected_archetype_descriptor then
+				p_paths := archetype_directory.selected_archetype.physical_paths
+				l_paths := archetype_directory.selected_archetype.logical_paths (current_language)
+				all_selected := filter_combo.text.is_equal ("All")
+
+				from
+					p_paths.start
+					l_paths.start
+				until
+					p_paths.off
+				loop
+					create list_row
+
+			--		if archetype_directory.selected_archetype.definition.has_object_path (p_paths.item) then
+			--		if archetype_directory.selected_archetype.has_physical_path (p_paths.item) then
+						c_o := archetype_directory.selected_archetype.c_object_at_path (p_paths.item)
+
+						if c_o /= Void then
+							c_l_o ?= c_o
+							c_r ?= c_o
+							c_c_o ?= c_o
+
+							is_logical_leaf := c_l_o /= Void or c_r /= Void or (c_c_o /= Void and c_c_o.attributes.count = 0)
+
+							if all_selected or else is_logical_leaf then
+								list_row.extend (utf8 (p_paths.item))
+								list_row.extend (utf8 (l_paths.item))
+								list_row.extend (utf8 (c_o.rm_type_name))
+								list_row.extend (utf8 (c_o.generating_type))
+								mcl.extend (list_row)
+							end
 						end
-					end
-		--		end
-				p_paths.forth
-				l_paths.forth
+			--		end
+
+					p_paths.forth
+					l_paths.forth
+				end
 			end
 
 			adjust_columns
@@ -115,17 +132,29 @@ feature -- Commands
 
 	column_select (a_list_item: EV_LIST_ITEM) is
 			-- Called by `check_actions' of `column_check_list'.
+		local
+			i: INTEGER
 		do
 			if path_list.is_displayed then
-				path_list.resize_column_to_content(column_check_list.index_of (a_list_item, 1))
+				i := column_check_list.index_of (a_list_item, 1)
+
+				if (1 |..| path_list.column_count).has (i) then
+					path_list.resize_column_to_content (i)
+				end
 			end
 		end
 
 	column_unselect (a_list_item: EV_LIST_ITEM) is
 			-- Called by `check_actions' of `column_check_list'.
+		local
+			i: INTEGER
 		do
 			if path_list.is_displayed then
-				path_list.set_column_width (0, column_check_list.index_of (a_list_item, 1))
+				i := column_check_list.index_of (a_list_item, 1)
+
+				if (1 |..| path_list.column_count).has (i) then
+					path_list.set_column_width (0, i)
+				end
 			end
 		end
 

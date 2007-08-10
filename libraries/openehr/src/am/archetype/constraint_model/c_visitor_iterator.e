@@ -1,71 +1,59 @@
 indexing
 	component:   "openEHR Archetype Project"
-	description: "Serialiser Manager for all DT serialiser types"
-	keywords:    "test, Data Tree"
+	description: "Tree iterator for archetype nodes"
+	keywords:    "archetype, constraint, definition"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2005 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class DT_SERIALISER_MGR
+class C_VISITOR_ITERATOR
 
-inherit
-	SHARED_DT_SERIALISERS
-	
 create
 	make
 
 feature -- Initialisation
 
-	make(a_target: DT_COMPLEX_OBJECT_NODE; format: STRING) is 
-			-- create a new manager targetted to the DT tree `a_target'
+	make(a_target: C_COMPLEX_OBJECT; a_visitor: C_VISITOR) is
+			-- create a new manager targetted to the parse tree `a_target'
 		require
 			Target_exists: a_target /= Void
-			Format_valid: format /= Void and then has_dt_serialiser_format(format)
+			Visitor_exists: a_visitor /= Void
 		do
 			create tree_iterator.make(a_target.representation)
-			serialiser := dt_serialiser_for_format(format)
-			serialiser.initialise
+			visitor := a_visitor
 		end
 
 feature -- Command
 
-	serialise is
+	do_all is
 			-- start the serialisation process; the result will be in `serialiser_output'
 		do
 			tree_iterator.do_all(agent node_enter_action(?,?), agent node_exit_action(?,?))
-			serialiser.finalise
-		end
-
-feature -- Access
-
-	tree_iterator: OG_ITERATOR
-	
-	last_result: STRING is 
-		do
-			Result := serialiser.last_result
 		end
 
 feature {NONE} -- Implementation
-	
-	serialiser: DT_SERIALISER
+
+	tree_iterator: OG_ITERATOR
+
+	visitor: C_VISITOR
 
 	node_enter_action(a_node: OG_ITEM; indent_level: INTEGER) is
 		require
 			Node_exists: a_node /= Void
 		do
-			a_node.enter_block(serialiser, indent_level)
+			a_node.enter_subtree(visitor, indent_level)
 		end
 
 	node_exit_action(a_node: OG_ITEM; indent_level: INTEGER) is
 		require
 			Node_exists: a_node /= Void
 		do
-			a_node.exit_block(serialiser, indent_level)
+			a_node.exit_subtree(visitor, indent_level)
 		end
 
 end
@@ -85,7 +73,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is dadl_serialiser_mgr.e.
+--| The Original Code is cadl_serialiser_mgr.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

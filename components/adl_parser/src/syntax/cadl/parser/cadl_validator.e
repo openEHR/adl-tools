@@ -27,14 +27,14 @@ inherit
 			make as make_eiffel_scanner
 		end
 
-	CONSTRAINT_MODEL_COMMON
+	C_COMMON
 
 	OPERATOR_TYPES
 		export
 			{NONE} all
 		end
 
-	SHARED_CONSTRAINT_MODEL_FACTORY
+	SHARED_C_FACTORY
 		export
 			{NONE} all
 		end

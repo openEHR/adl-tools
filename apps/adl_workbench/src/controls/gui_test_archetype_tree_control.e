@@ -20,7 +20,7 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_ADL_INTERFACE
+	SHARED_ARCHETYPE_COMPILER
 		export
 			{NONE} all
 		undefine
@@ -84,7 +84,7 @@ feature -- Access
 	has_selected_file: BOOLEAN
 			-- True if a file was selected
 
-	tests: DS_HASH_TABLE [FUNCTION [ANY, TUPLE [STRING], INTEGER], STRING] is
+	tests: DS_HASH_TABLE [FUNCTION [ANY, TUPLE, INTEGER], STRING] is
 			-- table of test routines
 		once
 			create Result.make (5)
@@ -182,7 +182,7 @@ feature -- Commands
 	run_tests is
 			-- execute tests on all marked archetypes
 		local
-			arch_item: ARCHETYPE_REPOSITORY_ARCHETYPE
+			arch_item: ARCH_REP_ARCHETYPE
 			row_csr, col_csr: INTEGER
 			row: EV_GRID_ROW
 			gli: EV_GRID_LABEL_ITEM
@@ -210,27 +210,28 @@ feature -- Commands
 
 					if arch_item /= Void then
 						row.ensure_visible
-						adl_interface.reset
+						archetype_compiler.reset
+						archetype_compiler.set_target(arch_item)
 
 						from
 							tests.start
 							col_csr := first_test_col
-							test_result := Test_unknown
+							test_result := test_unknown
 						until
-							tests.off or test_result = Test_failed
+							tests.off or test_result = test_failed
 						loop
 							row.set_item (col_csr, create {EV_GRID_LABEL_ITEM}.make_with_text ("processing..."))
 
 							create test_status.make_empty
 
-							test_result := tests.item_for_iteration.item ([arch_item.full_path])
+							test_result := tests.item_for_iteration.item([])
 
 							inspect test_result
-							when Test_passed then
+							when test_passed then
 								res_label := "test_passed"
-							when Test_failed then
+							when test_failed then
 								res_label := "test_failed"
-							when Test_not_applicable then
+							when test_not_applicable then
 								res_label := "test_not_applicable"
 							else
 
@@ -280,121 +281,116 @@ feature -- Commands
 
 feature -- Tests
 
-	test_parse (arch_file_path: STRING): INTEGER is
+	test_parse: INTEGER is
 			-- parse archetype and return result
 		local
 			unused_at_codes, unused_ac_codes: ARRAYED_LIST [STRING]
 		do
-			Result := Test_failed
-			adl_interface.reset
-			adl_interface.open_adl_file(arch_file_path)
+			Result := test_failed
+			archetype_compiler.parse_archetype
 
-			if adl_interface.archetype_source_loaded then
-				adl_interface.parse_archetype
+			if archetype_compiler.archetype_valid then
+				Result := test_passed
 
-				if adl_interface.parse_succeeded then
-					Result := Test_passed
+				if remove_unused_codes then
+					unused_at_codes := archetype_compiler.archetype.ontology_unused_term_codes
+					unused_ac_codes := archetype_compiler.archetype.ontology_unused_constraint_codes
 
-					if remove_unused_codes then
-						unused_at_codes := adl_interface.archetype.ontology_unused_term_codes
-						unused_ac_codes := adl_interface.archetype.ontology_unused_constraint_codes
+					if not unused_at_codes.is_empty or not unused_ac_codes.is_empty then
+						test_status.append (">>>>>>>>>> removing unused codes%N")
 
-						if not unused_at_codes.is_empty or not unused_ac_codes.is_empty then
-							test_status.append(">>>>>>>>>> removing unused codes%N")
-
-							if not unused_at_codes.is_empty then
-								test_status.append("Unused AT codes: " + display_arrayed_list (unused_at_codes) + "%N")
-							end
-
-							if not unused_ac_codes.is_empty then
-								test_status.append("Unused AC codes: " + display_arrayed_list (unused_ac_codes) + "%N")
-							end
-
-							adl_interface.archetype.ontology_remove_unused_codes
+						if not unused_at_codes.is_empty then
+							test_status.append ("Unused AT codes: " + display_arrayed_list (unused_at_codes) + "%N")
 						end
+
+						if not unused_ac_codes.is_empty then
+							test_status.append ("Unused AC codes: " + display_arrayed_list (unused_ac_codes) + "%N")
+						end
+
+						archetype_compiler.archetype.ontology_remove_unused_codes
 					end
-				else
-					test_status.append("Parse failed; reason: " + adl_interface.status + "%N")
 				end
 			else
-				test_status.append("Source file for archetype " + arch_file_path + " not found%N")
+				test_status.append (" parse failed%N" + archetype_compiler.status)
 			end
 		end
 
-	test_save_html (arch_file_path: STRING): INTEGER is
+	test_save_html: INTEGER is
 			-- parse archetype and return result
 		local
 			html_fname: STRING
 		do
-			Result := Test_failed
+			Result := test_failed
 
-			if adl_interface.parse_succeeded then
-				html_fname := arch_file_path.twin
+			if archetype_compiler.archetype_valid then
+				-- FIXME: Sam doesn't want the html files to go in the same place as the adl files anymore
+				-- now they should go in the path html/adl, where html is a sibling directory of the main
+				-- 'adl' directory in the repository path; 'html/adl' means "the ADL form of HTML", since
+				-- there are other things in the html directory.
+				html_fname := archetype_compiler.target.full_path.twin
 				html_fname.replace_substring(".html", html_fname.count - Archetype_file_extension.count, html_fname.count)
-				adl_interface.save_archetype(html_fname, "html")
+				archetype_compiler.save_archetype_as(html_fname, "html")
 
-				if adl_interface.save_succeeded then
-					Result := Test_passed
+				if archetype_compiler.save_succeeded then
+					Result := test_passed
 				else
-					test_status.append (adl_interface.status + "%N")
+					test_status.append (archetype_compiler.status + "%N")
 				end
 			end
 		end
 
-	test_save_adl (arch_file_path: STRING): INTEGER is
-			-- parse archetype and return result
-		local
-			new_adl_file: STRING
-		do
-			Result := Test_failed
-
-			if adl_interface.parse_succeeded then
-				new_adl_file := arch_file_path.twin
-
-				if not overwrite then
-					new_adl_file.append ("x")
-				end
-
-				adl_interface.save_archetype (new_adl_file, "adl")
-
-				if adl_interface.save_succeeded then
-					Result := Test_passed
-				else
-					test_status.append (adl_interface.status + "%N")
-				end
-			else
-				Result := Test_not_applicable
-			end
-		end
-
-	test_reparse (arch_file_path: STRING): INTEGER is
+	test_save_adl: INTEGER is
 			-- parse archetype and return result
 		local
 			new_adl_file_path: STRING
 		do
-			Result := Test_failed
-			new_adl_file_path := arch_file_path.twin
+			Result := test_failed
 
-			if not overwrite then
-				new_adl_file_path.append ("x")
-			end
-
-			adl_interface.open_adl_file (new_adl_file_path)
-
-			if adl_interface.archetype_source_loaded then
-				adl_interface.parse_archetype
-
-				if adl_interface.parse_succeeded then
-					Result := Test_passed
+			if archetype_compiler.archetype_valid then
+				archetype_compiler.set_target(archetype_compiler.target)
+				if overwrite then
+					archetype_compiler.save_archetype
 				else
-					test_status.append ("Parse failed; reason: " + adl_interface.status + "%N")
+					new_adl_file_path := file_system.pathname (system_temp_file_directory, file_system.basename (archetype_compiler.target.full_path))
+					archetype_compiler.save_archetype_as (new_adl_file_path, "adl")
+				end
+
+				if archetype_compiler.save_succeeded then
+					Result := test_passed
+				else
+					test_status.append (archetype_compiler.status + "%N")
 				end
 			else
-				test_status.append ("Source file for archetype " + new_adl_file_path + " not found%N")
+				Result := test_not_applicable
 			end
 		end
 
-	test_diff (arch_file_path: STRING): INTEGER is
+	test_reparse: INTEGER is
+			-- parse archetype and return result
+		local
+			new_adl_file_path: STRING
+		do
+			Result := test_failed
+			if overwrite then
+				new_adl_file_path := archetype_compiler.target.full_path
+			else
+				new_adl_file_path := file_system.pathname (system_temp_file_directory, file_system.basename (archetype_compiler.target.full_path))
+			end
+
+			-- FIXME: these are the right paths, but we don't yet have a way of overriding the source
+			-- of an archetype from what is in its file
+			-- DO SOMETHING HERE
+
+			archetype_compiler.parse_archetype
+
+			if archetype_compiler.archetype_valid then
+				Result := test_passed
+			else
+				test_status.append ("Parse failed; reason: " + archetype_compiler.status + "%N")
+			end
+		end
+
+	test_diff: INTEGER is
 			-- parse archetype and return result
 		local
 			new_adl_file_path: STRING
@@ -403,14 +399,11 @@ feature -- Tests
 			Result := Test_failed
 
 			if not overwrite then
-				new_adl_file_path := arch_file_path.twin
-				new_adl_file_path.append ("x")
+				orig_arch_source := archetype_compiler.source
 
-				adl_interface.open_adl_file (arch_file_path)
-				orig_arch_source := adl_interface.adl_engine.source
-
-				adl_interface.open_adl_file (new_adl_file_path)
-				new_arch_source := adl_interface.adl_engine.source
+				new_adl_file_path := file_system.pathname (system_temp_file_directory, file_system.basename (archetype_compiler.target.full_path))
+				-- FIXME: DO SOMETIHNG HERE TO OPEN THE NEW FILE
+				new_arch_source := archetype_compiler.serialised_archetype
 
 				if orig_arch_source.count = new_arch_source.count then
 					if orig_arch_source.is_equal (new_arch_source) then
@@ -441,61 +434,50 @@ feature {NONE} -- Implementation
 	test_status: STRING
 			-- Cumulative status message during running of test.
 
-   	populate_gui_tree_node_enter (an_item: ARCHETYPE_REPOSITORY_ITEM) is
-   			-- Add a node representing `an_item' to `gui_file_tree'.
+	populate_gui_tree_node_enter (an_item: ARCH_REP_ITEM) is
+			-- Add a node representing `an_item' to `gui_file_tree'.
 		require
 			an_item /= Void
-   		local
+		local
 			gli: EV_GRID_LABEL_ITEM
-   			ada: ARCHETYPE_REPOSITORY_ARCHETYPE
-   			adf: ARCHETYPE_REPOSITORY_FOLDER
-   			row: EV_GRID_ROW
- 			col_csr: INTEGER
-  		do
-  			row := grid_row_stack.item
-  			row.collapse_actions.extend (agent step_to_viewable_parent_of_selected_row)
-  			row.insert_subrow (row.subrow_count + 1)
+			row: EV_GRID_ROW
+			pixmap: EV_PIXMAP
+			ada: ARCH_REP_ARCHETYPE
+			col_csr: INTEGER
+		do
+			row := grid_row_stack.item
+			row.collapse_actions.extend (agent step_to_viewable_parent_of_selected_row)
+			row.insert_subrow (row.subrow_count + 1)
 			row := row.subrow (row.subrow_count)
 			add_checkbox (row)
-  			adf ?= an_item
+			create gli.make_with_text (utf8 (an_item.base_name))
+			row.set_item (1, gli)
+			gli.set_data (an_item)
+			pixmap := pixmaps [an_item.group_name]
 
-			if adf /= Void then
- 				create gli.make_with_text (utf8 (adf.base_name))
-				gli.set_pixmap (pixmaps ["file_folder_" + adf.group_id.out])
-				gli.set_data (adf)
-				row.set_item (1, gli)
-			else
-				ada ?= an_item
+			if pixmap /= Void then
+				gli.set_pixmap (pixmap)
+			end
 
-				if ada /= Void then
-					create gli.make_with_text (utf8 (ada.id.domain_concept_tail + "(" + ada.id.version_id + ")"))
-					gli.set_data (ada)
+			ada ?= an_item
 
-					if ada.id.is_specialised then
-						gli.set_pixmap (pixmaps ["archetype_specialised_" + ada.group_id.out])
-					else
-						gli.set_pixmap (pixmaps ["archetype_" + ada.group_id.out])
-					end
-
-					row.set_item (1, gli)
-
-					from
-						tests.start
-						col_csr := first_test_col
-					until
-						tests.off
-					loop
-						row.set_item (col_csr, create {EV_GRID_LABEL_ITEM}.make_with_text ("?"))
-						tests.forth
-						col_csr := col_csr + 1
-					end
+			if ada /= Void then
+				from
+					tests.start
+					col_csr := first_test_col
+				until
+					tests.off
+				loop
+					row.set_item (col_csr, create {EV_GRID_LABEL_ITEM}.make_with_text ("?"))
+					tests.forth
+					col_csr := col_csr + 1
 				end
-   			end
+			end
 
 			grid_row_stack.extend (row)
 		end
 
-	populate_gui_tree_node_exit (an_item: ARCHETYPE_REPOSITORY_ITEM) is
+	populate_gui_tree_node_exit (an_item: ARCH_REP_ITEM) is
 		do
 			grid_row_stack.remove
 		end

@@ -16,35 +16,42 @@ indexing
 	last_change: "$LastChangedDate$"
 
 class C_ARCHETYPE_NODE_POPULATOR
-   
+
 inherit
 	SHARED_ADL_OBJECTS
 		export
 			{NONE} all
 		end
-	
-	CONSTRAINT_MODEL_TREE_ITERATOR
+
+	C_ITERATOR
+		rename
+			make as make_iterator
+		redefine
+			node_enter_action,
+			node_exit_action
+		end
 
 create
 	make
 
 feature -- Initialisation
 
-	make(a_target: C_COMPLEX_OBJECT) is 
+	make(a_target: C_COMPLEX_OBJECT) is
 			-- create a new manager targetted to the parse tree `a_target'
 		require
 			Target_exists: a_target /= Void
 		do
-			set_target(a_target)
+			make_iterator (a_target)
+			-- FIXME: A visitor is needed for the second argument, and node_enter_action below should be reconsidered.
 		end
 
 feature -- Access
 
 	root_handle: INTEGER
 			-- handle of root node
-			
+
 feature {NONE} -- Implementation
-	
+
 	node_enter_action(a_node: OG_ITEM; indent_level: INTEGER) is
 		local
 			l_c_object: C_OBJECT
@@ -62,7 +69,7 @@ feature {NONE} -- Implementation
 						root_handle := l_handle
 					end
 					put_c_complex_object(l_c_complex_object, l_handle)
-					from 
+					from
 						l_c_complex_object.attributes.start
 					until
 						l_c_complex_object.attributes.off
