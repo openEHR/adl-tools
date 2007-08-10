@@ -106,6 +106,8 @@ feature -- Access
 
 	archetype: ARCHETYPE is
 			-- Differential form of currently compiled archetype.
+		require
+			has_context: archetype_parsed
 		do
 			Result := target.compilation_context.archetype
 		end
@@ -186,31 +188,36 @@ feature -- Commands
 		do
 			if not exception_encountered then
 				clear_billboard
-				if target.is_out_of_date then
-					an_archetype := adl_engine.parse(target.source)
-					if an_archetype = Void then
-						post_error(Current, "parse_archetype", "parse_archetype_e1", <<adl_engine.parse_error_text>>)
-					else
-						post_info(Current, "parse_archetype", "parse_archetype_i1", <<target.id.as_string>>)
 
-						-- put the archetype into the its directory node; note that this runs its validator(s) and further
-						-- errors and warnings are reported on the billboard
-						target.set_compilation_context(an_archetype)
+				if target.is_out_of_date then
+					an_archetype := adl_engine.parse (target.source)
+
+					if an_archetype = Void then
+						post_error (Current, "parse_archetype", "parse_archetype_e1", <<adl_engine.parse_error_text>>)
+					else
+						post_info (Current, "parse_archetype", "parse_archetype_i1", <<target.id.as_string>>)
+
+						-- Put the archetype into its directory node; note that this runs its validator(s) and further
+						-- errors and warnings are reported on the billboard.
+						target.set_compilation_context (an_archetype)
 					end
 				end
 
-				-- make sure that the language is set, and that it is one of the languages in the archetype
-				if current_language = Void or not archetype.has_language (current_language) then
-					set_current_language(archetype.original_language.code_string)
+				-- Make sure that the language is set, and that it is one of the languages in the archetype.
+				if archetype_parsed then
+					if current_language = Void or not archetype.has_language (current_language) then
+						set_current_language (archetype.original_language.code_string)
+					end
 				end
 			else
-				post_error(Current, "parse_archetype", "parse_archetype_e3", Void)
+				post_error (Current, "parse_archetype", "parse_archetype_e3", Void)
 			end
+
 			status.wipe_out
-			status.append(billboard_content)
+			status.append (billboard_content)
 			clear_billboard
 		rescue
-			post_error(Current, "parse_archetype", "report_exception", <<exception.out, exception_trace>>)
+			post_error (Current, "parse_archetype", "report_exception", <<exception.out, exception_trace>>)
 			exception_encountered := True
 			retry
 		end
