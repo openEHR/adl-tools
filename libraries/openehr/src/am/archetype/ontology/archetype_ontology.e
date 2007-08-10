@@ -54,24 +54,25 @@ feature -- Initialisation
 	default_create is
 			--
 		do
-			create errors.make(0)
-			create warnings.make(0)
+			create errors.make (0)
+			create warnings.make (0)
 
-			create languages_available.make(0)
+			create languages_available.make (0)
 			languages_available.compare_objects
-			create terminologies_available.make(0)
+			create terminologies_available.make (0)
 			terminologies_available.compare_objects
 
-			create term_definitions.make(0)
-			create constraint_definitions.make(0)
+			create term_definitions.make (0)
+			create constraint_definitions.make (0)
 
 			create term_codes.make
 			term_codes.compare_objects
 			create constraint_codes.make
 			constraint_codes.compare_objects
 
-			create term_bindings.make(0)
-			create constraint_bindings.make(0)
+			create term_bindings.make (0)
+			create constraint_bindings.make (0)
+			create specialised_term_codes.make (0)
 		end
 
 	make_from_tree(a_primary_lang: STRING; a_dadl_tree: DT_COMPLEX_OBJECT_NODE; a_concept_code: STRING) is
@@ -86,12 +87,11 @@ feature -- Initialisation
 			default_create
 			representation := a_dadl_tree
 			concept_code := a_concept_code
-			if specialisation_depth > 0 then
-				create specialised_term_codes.make(0)
-			end
+
 			if a_primary_lang /= Void then
-				set_primary_language(a_primary_lang)
+				set_primary_language (a_primary_lang)
 			end
+
 			synchronise_from_tree
 		ensure
 			Concept_code_set: concept_code.is_equal(a_concept_code) and valid_concept_code(concept_code)
@@ -109,9 +109,6 @@ feature -- Initialisation
 			add_language(a_primary_lang)
 			set_primary_language(a_primary_lang)
 			concept_code := new_concept_code_at_level (at_specialisation_depth)
-			if specialisation_depth > 0 then
-				create specialised_term_codes.make(0)
-			end
 			initialise_term_definitions(create {ARCHETYPE_TERM}.make (concept_code))
 		ensure
 			Specialisation_level_set: specialisation_depth = at_specialisation_depth
@@ -1209,12 +1206,14 @@ feature {NONE} -- Implementation
 		local
 			parent_code: STRING
 		do
-			if specialisation_depth_from_code(a_code) > 0 then
+			if specialisation_depth_from_code (a_code) > 0 then
 				parent_code := specialisation_parent_from_code(a_code)
-				if not specialised_term_codes.has(parent_code) then
-					specialised_term_codes.force(create {TWO_WAY_SORTED_SET[STRING]}.make, parent_code)
+
+				if not specialised_term_codes.has (parent_code) then
+					specialised_term_codes.force (create {TWO_WAY_SORTED_SET [STRING]}.make, parent_code)
 				end
-				specialised_term_codes.item(parent_code).extend(a_code)
+
+				specialised_term_codes.item (parent_code).extend (a_code)
 			end
 		end
 
@@ -1467,7 +1466,7 @@ feature {NONE} -- Obsolete in ADL2
 	x_languages_available: ARRAYED_LIST[STRING]
 
 invariant
-	Primary_language_valid: primary_language /= Void and then not primary_language.is_empty
+	Primary_language_valid: primary_language /= Void implies not primary_language.is_empty
 	Languages_available_valid: languages_available /= Void and then not languages_available.is_empty
 	Terminologies_available_exists: terminologies_available /= Void
 
