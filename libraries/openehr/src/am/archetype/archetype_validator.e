@@ -63,6 +63,7 @@ feature -- Validation
 			if passed and target.is_specialised then
 				-- look for paths that are not at the same level as the specialisation level of the archetype
 				-- Note that finding the deletion points is not so easy due to sibling paths with specialisations
+				target.build_rolled_up_status
 			end
 		end
 

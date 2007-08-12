@@ -306,6 +306,21 @@ feature -- Validation
 			Result := validator /= Void
 		end
 
+	validate is
+			-- perform various levels validation of archetype
+			-- FIXME: this may stay here, or it may be moved out of the ARCHETYPE classes
+			-- to the compiler environment. Also have to decide on whether to have several
+			-- validators
+		do
+			create validator.make(Current)
+			validator.validate
+		ensure
+			validation_done
+		end
+
+	validator: ARCHETYPE_VALIDATOR
+			-- validation object for this archetype
+
 	build_xrefs is
 			-- build definition / ontology cross reference tables used for validation and
 			-- other purposes
@@ -331,33 +346,30 @@ feature -- Validation
 
 	build_rolled_up_status is
 			-- set rolled_up_specialisation statuses in nodes of definition
+			-- only useful to call for specialised archetypes
 		local
 			a_c_iterator: C_VISITOR_ITERATOR
 			rollup_builder: C_ROLLUP_BUILDER
 		do
-			if is_specialised then
-				create rollup_builder
-				rollup_builder.initialise(ontology, Current.specialisation_depth)
-				create a_c_iterator.make(definition, rollup_builder)
-				a_c_iterator.do_all
-			end
+			create rollup_builder
+			rollup_builder.initialise(ontology, Current.specialisation_depth)
+			create a_c_iterator.make(definition, rollup_builder)
+			a_c_iterator.do_all
 		end
 
-	validate is
-			-- perform various levels validation of archetype
-			-- FIXME: this may stay here, or it may be moved out of the ARCHETYPE classes
-			-- to the compiler environment. Also have to decide on whether to have several
-			-- validators
+	build_inherited_subtree_list is
+			-- using rolled_up_specialisation statuses in nodes of definition
+			-- generate a list of nodes/paths for deletion from a flat-form archetype
+		local
+			list_builder: C_ITERATOR
 		do
-			create validator.make(Current)
-			validator.validate
-			build_rolled_up_status
-		ensure
-			validation_done
+			create inherited_subtree_list.make(0)
+			create list_builder.make(definition)
+			list_builder.do_at_surface(
+				agent (a_c_node: C_OBJECT) do inherited_subtree_list.put (a_c_node, a_c_node.path) end,
+				agent (a_c_node: C_OBJECT):BOOLEAN do Result := a_c_node.rolled_up_specialisation_status.value = ss_inherited end
+			)
 		end
-
-	validator: ARCHETYPE_VALIDATOR
-			-- validation object for this archetype
 
 	id_at_codes_xref_table: HASH_TABLE[ARRAYED_LIST[C_OBJECT], STRING]
 			-- table of {list<node>, code} for term codes which identify nodes in archetype (note that there
@@ -374,15 +386,22 @@ feature -- Validation
 	use_node_path_xref_table: HASH_TABLE[ARRAYED_LIST[ARCHETYPE_INTERNAL_REF], STRING]
 			-- table of {list<ARCHETYPE_INTERNAL_REF>, target_path}
 			-- i.e. <list of use_nodes> keyed by path they point to
-			-- FIXME - maybe should move back to ARCHETYPE
+
+	inherited_subtree_list: HASH_TABLE[C_OBJECT, STRING]
+			-- table of {object_node, path} of nodes at the top of inherited subtrees,
+			-- that if deleted should bring the archetype back to differential form
 
 	ontology_unused_term_codes: ARRAYED_LIST[STRING]
 			-- list of at codes found in ontology that are not referenced
 			-- anywhere in the archetype definition
+			-- FIXME: probably will be modified to do with separating what is unused, due
+			-- to being inherited versus from the current specialisation level
 
 	ontology_unused_constraint_codes: ARRAYED_LIST[STRING]
 			-- list of ac codes found in ontology that are not referenced
 			-- anywhere in the archetype definition
+			-- FIXME: probably will be modified to do with separating what is unused, due
+			-- to being inherited versus from the current specialisation level
 
 feature -- Modification
 
