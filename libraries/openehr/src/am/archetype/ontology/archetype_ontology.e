@@ -1045,16 +1045,18 @@ feature {NONE} -- Implementation
 			end
 
 			-- populate term code list
-			from
-				term_definitions.item(primary_language).start
-			until
-				term_definitions.item(primary_language).off
-			loop
-				code := term_definitions.item(primary_language).key_for_iteration
-				term_codes.extend(code)
-				update_specialised_term_codes(code)
-				update_highest_non_specialised_term_code_index(code)
-				term_definitions.item(primary_language).forth
+			if has_language (primary_language) then
+				from
+					term_definitions.item (primary_language).start
+				until
+					term_definitions.item (primary_language).off
+				loop
+					code := term_definitions.item (primary_language).key_for_iteration
+					term_codes.extend (code)
+					update_specialised_term_codes (code)
+					update_highest_non_specialised_term_code_index (code)
+					term_definitions.item (primary_language).forth
+				end
 			end
 
 			-- populate constraint code list
