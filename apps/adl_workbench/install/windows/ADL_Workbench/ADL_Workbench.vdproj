@@ -123,7 +123,25 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_305384EA31D94D58857EBEC0CFEFABF8"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_319D85AEF78C48C2BB780FBCB3DE8440"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_33790B1130084DDE89A5AA22FF83CDF2"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_37957B7AFD3144F5873F62E36DA807F9"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -214,12 +232,6 @@
         "Entry"
         {
         "MsmKey" = "8:_68DD350558744433B99C98C415033777"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_6ADB05CAF8774C709A3DB36515C3863C"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -935,12 +947,72 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_305384EA31D94D58857EBEC0CFEFABF8"
+            {
+            "SourcePath" = "8:..\\..\\..\\app\\icons\\file_folder_3.ico"
+            "TargetName" = "8:file_folder_3.ico"
+            "Tag" = "8:"
+            "Folder" = "8:_98BF1271FBC746FF90484D84A23B2AC4"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_319D85AEF78C48C2BB780FBCB3DE8440"
             {
             "SourcePath" = "8:..\\..\\..\\app\\icons\\node_redefined\\c_attribute.ico"
             "TargetName" = "8:c_attribute.ico"
             "Tag" = "8:"
             "Folder" = "8:_A1034160E36E479E9A4F8FC82EFD0CAD"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_33790B1130084DDE89A5AA22FF83CDF2"
+            {
+            "SourcePath" = "8:..\\..\\..\\app\\icons\\archetype_specialised_3.ico"
+            "TargetName" = "8:archetype_specialised_3.ico"
+            "Tag" = "8:"
+            "Folder" = "8:_98BF1271FBC746FF90484D84A23B2AC4"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_37957B7AFD3144F5873F62E36DA807F9"
+            {
+            "SourcePath" = "8:..\\..\\..\\app\\icons\\archetype_3.ico"
+            "TargetName" = "8:archetype_3.ico"
+            "Tag" = "8:"
+            "Folder" = "8:_98BF1271FBC746FF90484D84A23B2AC4"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -1239,26 +1311,6 @@
             {
             "SourcePath" = "8:..\\..\\..\\app\\icons\\pass.ico"
             "TargetName" = "8:pass.ico"
-            "Tag" = "8:"
-            "Folder" = "8:_EF4D492392CD41A68C993FE959AD3454"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6ADB05CAF8774C709A3DB36515C3863C"
-            {
-            "SourcePath" = "8:..\\..\\..\\app\\icons\\file_folder_1.ico"
-            "TargetName" = "8:file_folder_1.ico"
             "Tag" = "8:"
             "Folder" = "8:_EF4D492392CD41A68C993FE959AD3454"
             "Condition" = "8:"
