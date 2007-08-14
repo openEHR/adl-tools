@@ -53,7 +53,7 @@ feature -- Traversal
 		end
 
 	do_at_surface(node_action: PROCEDURE[ANY, TUPLE[OG_ITEM]]; node_is_at_surface: FUNCTION[ANY, TUPLE[OG_ITEM], BOOLEAN]) is
-			-- do action only to nodes at surface, where membership is defined by 'is_at_surface'
+			-- Do action only to nodes at surface, where membership is defined by `node_is_at_surface'.
 		require
 			Node_action_valid: node_action /= Void
 			Surface_test_action_valid: node_is_at_surface /= Void
@@ -91,7 +91,7 @@ feature {NONE} -- Implementation
 		end
 
 	do_at_surface_nodes(a_target: OG_NODE; node_action: PROCEDURE[ANY, TUPLE[OG_ITEM]]; node_is_at_surface: FUNCTION[ANY, TUPLE[OG_ITEM], BOOLEAN]) is
-			-- do action only to nodes at surface, where membership is defined by 'is_at_surface'
+			-- Do action only to nodes at surface, where membership is defined by `node_is_at_surface'.
 		require
 			Target_exists: a_target /= Void
 		local
