@@ -43,7 +43,7 @@ if platform == 'windows':
 distrib = None
 
 for target in COMMAND_LINE_TARGETS:
-	if os.path.basename(target) == 'oe_distrib':
+	if os.path.basename(os.path.normpath(target)) == 'oe_distrib':
 		distrib = target + '/' + platform + '/'
 
 if distrib:
