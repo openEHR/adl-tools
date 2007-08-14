@@ -126,18 +126,20 @@ def ecf_target_dir(target):
 	"""The ECF target directory corresponding to the given build target."""
 	return os.path.dirname(str(target[0]))
 
-ecf_scanner_re = re.compile(r'<(cluster|override)(\s+\S+="[^"]*")*\s+location="([^"]+)"(\s+recursive="true")?', re.M)
+ecf_scanner_regex = re.compile(r'<(cluster|override)(\s+\S+="[^"]*")*\s+location="([^"]+)"(\s+recursive="true")?', re.M)
 
 def ecf_scanner(node, env, path):
 	"""All Eiffel class files in all clusters mentioned in an ECF file."""
 	result = []
 	previous_cluster = ''
 
-	for group1, group2, location, recursive in ecf_scanner_re.findall(node.get_contents()):
-		if location.startswith('$|'):
-			cluster = os.path.join(previous_cluster, location.replace('$|', '', 1))
+	for group1, group2, location, recursive in ecf_scanner_regex.findall(node.get_contents()):
+		cluster = location.replace('\\', '/')
+
+		if cluster.startswith('$|'):
+			cluster = os.path.join(previous_cluster, cluster.replace('$|', '', 1))
 		else:
-			cluster = previous_cluster = os.path.abspath(os.path.join(os.path.dirname(str(node)), location))
+			cluster = previous_cluster = os.path.abspath(os.path.join(os.path.dirname(str(node)), cluster))
 
 		if recursive:
 			result += eiffel_classes_in_cluster(cluster)
