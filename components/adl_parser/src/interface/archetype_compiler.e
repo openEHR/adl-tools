@@ -100,6 +100,8 @@ feature -- Access
 
 	source: STRING is
 			-- source of current archetype
+		require
+			has_target: has_target
 		do
 			Result := target.source
 		end
@@ -120,16 +122,22 @@ feature -- Access
 
 feature -- Status Report
 
+	has_target: BOOLEAN is
+			-- True if the compiler has been set to a target archetype descriptor in the ARCHETYPE_DIRECTORY
+		do
+			Result := target /= Void
+		end
+
 	archetype_parsed: BOOLEAN
 			-- Has the archetype been parsed into an ARCHETYPE structure?
 		do
-			Result := target.compilation_context /= Void
+			Result := target /= Void and then target.compilation_context /= Void
 		end
 
 	archetype_valid: BOOLEAN
 			-- Has the archetype been parsed into an ARCHETYPE structure and then validated?
 		do
-			Result := target.compilation_context /= Void and then target.compilation_context.is_valid
+			Result := target /= Void and then target.compilation_context /= Void and then target.compilation_context.is_valid
 		end
 
 	save_succeeded: BOOLEAN
@@ -137,12 +145,6 @@ feature -- Status Report
 
 	exception_encountered: BOOLEAN
 			-- True if last operation caused an exception
-
-	has_target: BOOLEAN is
-			-- True if the compiler has been set to a target archetype descriptor in the ARCHETYPE_DIRECTORY
-		do
-			Result := target /= Void
-		end
 
 feature -- Modification
 
