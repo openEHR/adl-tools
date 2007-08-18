@@ -87,12 +87,13 @@ feature -- Access
 	tests: DS_HASH_TABLE [FUNCTION [ANY, TUPLE, INTEGER], STRING] is
 			-- table of test routines
 		once
-			create Result.make (5)
-			Result.put (agent test_parse, "Parse")
-			Result.put (agent test_save_html, "Save to HTML")
-			Result.put (agent test_save_adl, "Save to ADL")
-			Result.put (agent test_reparse, "Reparse")
-			Result.put (agent test_diff, "Diff")
+			create Result.make (0)
+			Result.force (agent test_parse, "Parse")
+			Result.force (agent test_save_html, "Save to HTML")
+			Result.force (agent test_save_adl, "Save to ADL")
+			Result.force (agent test_reparse, "Reparse")
+			Result.force (agent test_convert_to_differential, "-> Differential")
+			Result.force (agent test_diff, "Diff")
 		end
 
 	last_tested_archetypes_count: INTEGER
@@ -415,6 +416,18 @@ feature -- Tests
 					test_status.append ("Archetype source lengths differ: original =  " + orig_arch_source.count.out +
 						"; new = " + new_arch_source.count.out + "%N")
 				end
+			else
+				Result := Test_not_applicable
+			end
+		end
+
+	test_convert_to_differential: INTEGER is
+			-- convert specialised archetypes to differential form;
+			-- FIXME: temporary - only needed while differential form not the standard form
+		do
+			if archetype_compiler.target.is_specialised then
+				archetype_compiler.target.compilation_context.convert_archetype_to_differential
+				Result := test_passed
 			else
 				Result := Test_not_applicable
 			end

@@ -70,6 +70,19 @@ feature -- Access
 	specialisation_parent: ARCHETYPE
 			-- parent archetype if this one is specialised, or else Void
 
+feature -- Commands
+
+	convert_archetype_to_differential
+			-- modify 'archetype' if specialised, to be in differential form by removing inherited parts
+		do
+			if is_specialised then
+				remove_inherited_subtrees
+
+				--FIXME: remove inherited ontology codes. Note that there are some lists already in the
+				-- ARCHETYPE with lists of unused codes; not all inherited. But it is a start
+			end
+		end
+
 feature -- Status Report
 
 	is_valid: BOOLEAN
@@ -79,6 +92,16 @@ feature -- Status Report
 			-- True if archetype is a specialisation
 		do
 			Result := archetype.is_specialised
+		end
+
+feature {NONE} -- Implementation
+
+	remove_inherited_subtrees is
+			-- remove purely inherited subtrees from the achetype definition, making it a
+			-- differential form structure
+		do
+			archetype.build_inherited_subtree_list
+			-- FIXME: now do the removal
 		end
 
 invariant
