@@ -38,7 +38,11 @@ feature {NONE} -- Initialization
 		do
 			make_with_text (splash_text)
 			set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 255))
-			set_pixmap (pixmaps ["Ocean logo"])
+
+			if has_icon_directory then
+				set_pixmap (pixmaps ["Ocean logo"])
+			end
+
 			create screen
 			set_position ((screen.width - width) // 2, (screen.height - height) // 2)
 
