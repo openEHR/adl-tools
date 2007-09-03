@@ -16,7 +16,7 @@ class
 	WINDOWS_SHORT_PATH
 
 inherit
-	WEL_STRING
+	BASE_C_STRING
 		rename
 			string as as_long_path
 		export
@@ -36,7 +36,7 @@ feature {NONE} -- Initialisation
 		do
 			make_empty (2000)
 			set_string (path)
-			get_long_path_name (item, character_capacity)
+			get_long_path_name (item, capacity)
 		end
 
 feature {NONE} -- Externals
@@ -46,7 +46,7 @@ feature {NONE} -- Externals
 		external
 			"C inline use <windows.h>"
 		alias
-			"GetLongPathNameW ((LPCWSTR) $path, (LPWSTR) $path, (DWORD) $n)"
+			"GetLongPathNameA ((LPCSTR) $path, (LPSTR) $path, (DWORD) $n)"
 		end
 
 end

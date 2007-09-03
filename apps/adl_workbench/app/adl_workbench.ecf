@@ -52,7 +52,6 @@
 			<renaming old_name="INTERVAL" new_name="TIME_INTERVAL"/>
 		</library>
 		<library name="vision2" location="$ISE_LIBRARY\library\vision2\vision2.ecf"/>
-		<library name="wel" location="$ISE_LIBRARY\library\wel\wel.ecf"/>
 		<cluster name="adl_parser" location="..\..\..\components\adl_parser\src\" recursive="true"/>
 		<cluster name="app" location="..\src\" recursive="true"/>
 		<cluster name="archetype_repository" location="..\..\..\components\archetype_repository\src\" recursive="true"/>
