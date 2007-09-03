@@ -39,7 +39,6 @@
 			<renaming old_name="C_DATE" new_name="TIME_C_DATE"/>
 			<renaming old_name="INTERVAL" new_name="TIME_INTERVAL"/>
 		</library>
-		<library name="wel" location="$ISE_LIBRARY\library\wel\wel.ecf"/>
 		<assembly name="eiffelsoftware.runtime.dll" location="$ISE_EIFFEL\studio\spec\$ISE_PLATFORM\bin\EiffelSoftware.Runtime.dll"/>
 		<assembly name="mscorlib.dll" location="$ISE_DOTNET_FRAMEWORK\mscorlib.dll">
 			<renaming old_name="C_ATTRIBUTE" new_name="DOTNET_C_ATTRIBUTE"/>
