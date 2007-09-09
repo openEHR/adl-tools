@@ -1272,16 +1272,25 @@ feature {NONE} -- Implementation
 			Code_valid: a_code /= Void and then not a_code.is_empty
 		local
 			depth, idx: INTEGER
+			idx_string: STRING
 		do
-			depth := specialisation_depth_from_code(a_code)
+			depth := specialisation_depth_from_code (a_code)
+
 			if depth = specialisation_depth then
 				if depth = 0 then
-					idx := a_code.substring(Term_code_leader.count + 1, a_code.count).to_integer
+					idx := Term_code_leader.count
 				else
-					idx := a_code.substring(a_code.last_index_of(Specialisation_separator, a_code.count)+1, a_code.count).to_integer
+					idx := a_code.last_index_of (Specialisation_separator, a_code.count)
 				end
-				if idx > highest_non_specialised_term_code_index then
-					highest_non_specialised_term_code_index := idx
+
+				idx_string := a_code.substring (idx + 1, a_code.count)
+
+				if idx_string.is_integer then
+					idx := idx_string.to_integer
+
+					if idx > highest_non_specialised_term_code_index then
+						highest_non_specialised_term_code_index := idx
+					end
 				end
 			end
 		end
