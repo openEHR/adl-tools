@@ -403,14 +403,22 @@ feature {ARCHETYPE_VALIDATOR, C_XREF_BUILDER} -- Validation
 				inherited_subtree_list.off
 			loop
 				c_obj ?= inherited_subtree_list.item_for_iteration
+
 				if c_obj /= Void then
-					c_obj.parent.remove_child(c_obj)
+					if c_obj.parent /= Void then
+						c_obj.parent.remove_child (c_obj)
+					end
 				else
 					c_attr ?= inherited_subtree_list.item_for_iteration
-					c_attr.parent.remove_attribute(c_attr)
+
+					if c_attr /= Void and then c_attr.parent /= Void then
+						c_attr.parent.remove_attribute (c_attr)
+					end
 				end
+
 				inherited_subtree_list.forth
 			end
+
 			set_unvalidated
 		end
 
