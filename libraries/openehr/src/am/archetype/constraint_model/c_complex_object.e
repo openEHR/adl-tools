@@ -213,6 +213,15 @@ feature -- Modification
 			an_attr.set_parent(Current)
 		end
 
+	remove_attribute(an_attr: C_ATTRIBUTE) is
+			-- remove an existing attribute
+		require
+			Attribute_exists: an_attr /= Void and has_attribute (an_attr.rm_attribute_name)
+		do
+			attributes.prune_all(an_attr)
+			representation.remove_child (an_attr.rm_attribute_name)
+		end
+
 	remove_all_attributes is
 			--
 		do

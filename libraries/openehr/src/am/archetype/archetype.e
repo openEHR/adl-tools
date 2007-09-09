@@ -132,7 +132,7 @@ feature -- Access
 			-- generate physical paths from definition structure; if no changes made on archetype,
 			-- return cached value
 		require
-			validation_done
+			validated
 		local
 			src_node_path: OG_PATH
 			src_node_path_str: STRING
@@ -143,7 +143,7 @@ feature -- Access
 			c_o: C_OBJECT
 			sorted_physical_paths: SORTED_TWO_WAY_LIST [STRING]
 		do
-			if path_map = Void or not is_readonly then
+			if path_map = Void or not validated or not is_readonly then
 				path_map := definition.all_paths
 
 				-- Add full paths of internal references thus giving full set of actual paths
@@ -297,12 +297,12 @@ feature -- Validation
 			-- is archetype locally in valid state? For specialised archetypes, this does not take
 			-- into account validity with respect to parent archetypes.
 		require
-			validation_done
+			validated
 		do
 			Result := validator.passed
 		end
 
-	validation_done: BOOLEAN is
+	validated: BOOLEAN is
 			-- has the validator been run? Need to call validate if not.
 			-- FIXME - need to implement a dirty flag for calls to modifier routines
 			-- that forces revalidation
@@ -319,7 +319,13 @@ feature -- Validation
 			create validator.make(Current)
 			validator.validate
 		ensure
-			validation_done
+			validated
+		end
+
+	set_unvalidated is
+			--
+		do
+			validator := Void
 		end
 
 	validator: ARCHETYPE_VALIDATOR
@@ -377,13 +383,22 @@ feature -- Validation
 
 	remove_inherited_subtrees is
 			-- remove inherited subtrees to convert to differential form
+		local
+			c_obj: C_COMPLEX_OBJECT
+			c_attr: C_ATTRIBUTE
 		do
 			from
 				inherited_subtree_list.start
 			until
 				inherited_subtree_list.off
 			loop
-			--	inherited_subtree_list.item_for_iteration.parent.remove_child(inherited_subtree_list.item_for_iteration)
+				c_obj ?= inherited_subtree_list.item_for_iteration
+				if c_obj /= Void then
+					c_obj.parent.remove_child(c_obj)
+				else
+					c_attr ?= inherited_subtree_list.item_for_iteration
+					c_attr.parent.remove_attribute(c_attr)
+				end
 				inherited_subtree_list.forth
 			end
 		end

@@ -172,9 +172,9 @@ feature -- Modification
 		require
 			Node_exists: a_node_id /= Void and then has_child_with_id(a_node_id)
 		do
+			children_ordered.prune_all (children.item (a_node_id))
+			children_sorted.prune_all (children.item (a_node_id))
 			children.remove (a_node_id)
-			children_ordered.prune (children.item (a_node_id))
-			children_sorted.prune (children.item (a_node_id))
 		ensure
 			not has_child_with_id (a_node_id)
 		end

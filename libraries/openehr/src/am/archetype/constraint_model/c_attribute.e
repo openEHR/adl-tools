@@ -194,7 +194,7 @@ feature -- Modification
 			Object_valid: an_obj /= Void and then has_child (an_obj)
 		do
 			representation.remove_child (an_obj.node_id)
-			children.prune(an_obj)
+			children.prune_all(an_obj)
 		end
 
 feature -- Representation
