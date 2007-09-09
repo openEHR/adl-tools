@@ -40,7 +40,7 @@ feature -- Factory
 		require
 			parent_valid: a_parent /= Void
 			type_name_valid: a_type_name /= Void and then not a_type_name.is_empty
-			node_id_valid: a_node_id /= Void and then not a_parent.has_child_node(a_node_id)
+			node_id_valid: a_node_id /= Void and then not a_parent.has_child_with_id(a_node_id)
 		do
 			create Result.make_identified(a_type_name, a_node_id)
 			a_parent.put_child(Result)

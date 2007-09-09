@@ -278,7 +278,7 @@ feature {NONE} -- Implementation
 			if in_source_status_mode then
 				if archetype_directory.has_selected_archetype_descriptor then
 					arch_const ?= an_og_node.content_item
-					spec_sts := arch_const.effective_specialisation_status (archetype_directory.selected_archetype.specialisation_depth).value
+					spec_sts := arch_const.specialisation_status (archetype_directory.selected_archetype.specialisation_depth).value
 
 					if spec_sts = ss_inherited or spec_sts = ss_redefined then
 						pixmap_ext.append (".")
@@ -488,7 +488,7 @@ feature {NONE} -- Implementation
 
 						if arch_const /= Void then
 							if archetype_directory.has_selected_archetype_descriptor then
-								spec_sts := arch_const.effective_specialisation_status (archetype_directory.selected_archetype.specialisation_depth).value
+								spec_sts := arch_const.specialisation_status (archetype_directory.selected_archetype.specialisation_depth).value
 
 								if spec_sts = ss_inherited or spec_sts = ss_redefined then
 									pixmap_ext.append (".")
@@ -520,7 +520,7 @@ feature {NONE} -- Implementation
 
 								if in_source_status_mode then
 									if archetype_directory.has_selected_archetype_descriptor then
-										spec_sts := a_object_term.effective_specialisation_status (archetype_directory.selected_archetype.specialisation_depth).value
+										spec_sts := a_object_term.specialisation_status (archetype_directory.selected_archetype.specialisation_depth).value
 
 										if spec_sts = ss_inherited or spec_sts = ss_redefined then
 											pixmap_ext.append (".")
@@ -555,7 +555,7 @@ feature {NONE} -- Implementation
 
 						if in_source_status_mode then
 							if archetype_directory.has_selected_archetype_descriptor then
-								spec_sts := c_dv_ordinal.effective_specialisation_status (archetype_directory.selected_archetype.specialisation_depth).value
+								spec_sts := c_dv_ordinal.specialisation_status (archetype_directory.selected_archetype.specialisation_depth).value
 
 								if spec_sts = ss_inherited or spec_sts = ss_redefined then
 									pixmap_ext.append (".")
@@ -589,7 +589,7 @@ feature {NONE} -- Implementation
 
 								if in_source_status_mode then
 									if archetype_directory.has_selected_archetype_descriptor then
-										spec_sts := c_q.effective_specialisation_status (archetype_directory.selected_archetype.specialisation_depth).value
+										spec_sts := c_q.specialisation_status (archetype_directory.selected_archetype.specialisation_depth).value
 
 										if spec_sts = ss_inherited or spec_sts = ss_redefined then
 											pixmap_ext.append(".")

@@ -22,7 +22,7 @@ inherit
 feature -- Initialisation
 
 	default_create is
-			-- 
+			--
 		do
 			create children.make(0)
 			create children_ordered.make(0)
@@ -31,10 +31,10 @@ feature -- Initialisation
 
 feature -- Access
 
-	child_at_node_id(a_node_id: STRING): like child_type is
+	child_with_id(a_node_id: STRING): like child_type is
 			-- find the child node with `a_node_id'
 		require
-			has_child_node(a_node_id)
+			has_child_with_id(a_node_id)
 		do
 			-- FIXME: should just be able to search with node_id, but we are still
 			-- using the 'unknown; node_ids rather than empty strings
@@ -53,17 +53,17 @@ feature -- Access
 		do
 			if using_children_sorted then
 				Result := children_sorted.first
-			else	
+			else
 				Result := children_ordered.first
 			end
 		end
-						
+
 	item_for_iteration: like child_type is
-			-- 
+			--
 		do
 			if using_children_sorted then
 				Result := children_sorted.item
-			else	
+			else
 				Result := children_ordered.item
 			end
 		end
@@ -73,7 +73,7 @@ feature -- Access
 		do
 			Result := children.count
 		end
-		
+
 feature -- Status Report
 
 	has_children: BOOLEAN is
@@ -82,7 +82,7 @@ feature -- Status Report
 			Result := not children.is_empty
 		end
 
-	has_child_node(a_node_id: STRING): BOOLEAN is
+	has_child_with_id(a_node_id: STRING): BOOLEAN is
 		require
 			node_id_valid: a_node_id /= Void
 		do
@@ -94,34 +94,41 @@ feature -- Status Report
 				Result := children.has(a_node_id)
 			end
 		end
-		
+
+	has_child(a_node: like child_type): BOOLEAN is
+		require
+			node_valid: a_node /= Void
+		do
+			Result := children.has_item (a_node)
+		end
+
 	off: BOOLEAN is
-			-- 
+			--
 		do
 			if using_children_sorted then
 				Result := children_sorted.off
-			else	
+			else
 				Result := children_ordered.off
 			end
 		end
-	
+
 	valid_child_for_insertion(a_node: like child_type):BOOLEAN is
 		do
-			Result := not has_child_node(a_node.node_id)
-		end		
-	
+			Result := not has_child(a_node)
+		end
+
 	using_children_sorted: BOOLEAN
 			-- True if using sorted order list for iteration rather than
 			-- added order
-			
+
 feature -- Status Setting
 
-	use_children_sorted is 
+	use_children_sorted is
 			-- use sorted list
 		do
 			using_children_sorted := True
 		end
-		
+
 feature -- Cursor Movement
 
 	start is
@@ -129,21 +136,21 @@ feature -- Cursor Movement
 		do
 			if using_children_sorted then
 				children_sorted.start
-			else	
+			else
 				children_ordered.start
 			end
 		end
-		
+
 	forth is
-			-- 
+			--
 		do
 			if using_children_sorted then
 				children_sorted.forth
-			else	
+			else
 				children_ordered.forth
 			end
 		end
-		
+
 feature -- Modification
 
 	put_child(a_node: like child_type) is
@@ -156,6 +163,20 @@ feature -- Modification
 			a_node.set_sibling_order(children.count)
 			children_ordered.extend(a_node)
 			children_sorted.extend(a_node)
+		ensure
+			has_child (a_node)
+		end
+
+	remove_child(a_node_id: STRING) is
+			-- remove the child node identified by a_node_id
+		require
+			Node_exists: a_node_id /= Void and then has_child_with_id(a_node_id)
+		do
+			children.remove (a_node_id)
+			children_ordered.prune (children.item (a_node_id))
+			children_sorted.prune (children.item (a_node_id))
+		ensure
+			not has_child_with_id (a_node_id)
 		end
 
 	remove_all_children is
@@ -165,19 +186,19 @@ feature -- Modification
 			create children_ordered.make(0)
 			create children_sorted.make
 		end
-		
+
 feature {OG_NODE} -- Implementation
 
 	children: HASH_TABLE [like child_type, STRING]
 			-- next nodes, keyed by node id or attribute name
-			
+
 	children_ordered: ARRAYED_LIST[like child_type]
-			-- refence list of child, in order of insertion (i.e. order of original parsing)
+			-- reference list of child, in order of insertion (i.e. order of original parsing)
 
 	children_sorted: SORTED_TWO_WAY_LIST[like child_type]
-			-- refence list of child, in lexical order of node_ids
+			-- reference list of child, in lexical order of node_ids
 
-	child_type: OG_ITEM	
+	child_type: OG_ITEM
 
 invariant
 	Children_exists: children /= Void

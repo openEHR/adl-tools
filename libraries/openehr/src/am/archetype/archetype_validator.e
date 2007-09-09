@@ -60,10 +60,13 @@ feature -- Validation
 				warnings.append(unidentified_node_finder.warnings)
 			end
 
-			if passed and target.is_specialised then
+			if passed then
 				-- look for paths that are not at the same level as the specialisation level of the archetype
-				-- Note that finding the deletion points is not so easy due to sibling paths with specialisations
-				target.build_rolled_up_status
+				validate_paths
+				if target.is_specialised then
+					-- mark nodes with rolled up status due to inheritance, so that copied subtrees can be found and deleted
+					target.build_rolled_up_status
+				end
 			end
 		end
 
@@ -173,6 +176,35 @@ feature {NONE} -- Implementation
 					errors.append("Error: path " + use_refs.key_for_iteration + " not found in archetype%N")
 				end
 				use_refs.forth
+			end
+		end
+
+	validate_paths is
+			-- find paths that are not of the level of the archetype
+		local
+			path_analyser: ARCHETYPE_PATH_ANALYSER
+			path_list: ARRAYED_LIST [STRING]
+			err_str: STRING
+		do
+			create path_analyser
+			path_list := target.physical_paths
+			from
+				path_list.start
+			until
+				path_list.off
+			loop
+				path_analyser.set_from_string(path_list.item)
+				if path_analyser.level /= target.specialisation_depth then
+					err_str := "specialisation depth of path " + path_list.item + " " + path_analyser.level.out +
+						" differs from archetype (" + target.specialisation_depth.out + ")%N"
+					if strict then
+						passed := False
+						errors.append("Error: " + err_str)
+					else
+						warnings.append("Warning: " + err_str)
+					end
+				end
+				path_list.forth
 			end
 		end
 

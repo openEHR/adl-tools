@@ -142,12 +142,20 @@ feature -- Status Report
 			end
 		end
 
-	has_child_node (a_path_id: STRING): BOOLEAN is
-			-- (from OG_NODE)
-		require -- from OG_NODE
-			path_id_valid: a_path_id /= void and then not a_path_id.is_empty
+	has_child_with_id (a_node_id: STRING): BOOLEAN is
+			-- has a child node with id a_node_id
+		require
+			Node_id_valid: a_node_id /= void and then not a_node_id.is_empty
 		do
-			Result := representation.has_child_node (a_path_id)
+			Result := representation.has_child_with_id (a_node_id)
+		end
+
+	has_child (a_node: C_OBJECT): BOOLEAN is
+			-- True if a_node is actually one of the children
+		require
+			Node_valid: a_node /= Void
+		do
+			Result := children.has (a_node)
 		end
 
 feature -- Modification
@@ -173,11 +181,20 @@ feature -- Modification
 		require
 			Object_exists: an_obj /= Void
 			Object_occurrences_valid: not is_multiple implies an_obj.occurrences.upper <= 1
-			Object_id_valid: not (an_obj.is_addressable and has_child_node(an_obj.node_id))
+			Object_id_valid: not (an_obj.is_addressable and has_child(an_obj))
 		do
 			representation.put_child(an_obj.representation)
 			children.extend(an_obj)
 			an_obj.set_parent(Current)
+		end
+
+	remove_child(an_obj: C_OBJECT) is
+			-- remove an existing child node
+		require
+			Object_valid: an_obj /= Void and then has_child (an_obj)
+		do
+			representation.remove_child (an_obj.node_id)
+			children.prune(an_obj)
 		end
 
 feature -- Representation

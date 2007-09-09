@@ -1,7 +1,9 @@
 indexing
-	component:   "openEHR Common Information Model"
-	description: "Validator for AUTHOR_RESOURCE objects"
-	keywords:    "archetype"
+	component:   "openEHR Archetype Project"
+	description: "[
+				 Validator of archeype paths.
+		         ]"
+	keywords:    "path"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
@@ -11,64 +13,55 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class AUTHORED_RESOURCE_VALIDATOR
+class ARCHETYPE_PATH_ANALYSER
 
 inherit
-	ANY_VALIDATOR
-		redefine
-			target
+	ARCHETYPE_TERM_CODE_TOOLS
+		export
+			{NONE} all;
+			{ANY} valid_concept_code
 		end
 
-create
-	make
+feature -- Initialisation
+
+	set_from_path (a_path: OG_PATH) is
+			-- create from an OG_PATH
+		require
+			a_path_valid: a_path /= Void
+		do
+			target := a_path
+		end
+
+	set_from_string (a_path: STRING) is
+			-- create from a STRING
+		require
+			a_path_valid: a_path /= Void
+		do
+			create target.make_from_string(a_path)
+		end
 
 feature -- Access
 
-	target: AUTHORED_RESOURCE
-			-- target of this validator
+	target: OG_PATH
+			-- differential archetype
 
-	validate is
-			-- True if all structures obey their invariants
-		do
-			passed := True
-			if target.original_language = Void then
-				errors.append("No original language%N")
-				passed := False
-			end
-			validate_description
-			validate_translations
-		end
-
-feature -- Status Report
-
-	strict: BOOLEAN
-			-- True if strict validation is to be applied. When strict is on, the following things cause errors:
-			-- - paths at the wrong specialisation level
-
-feature -- Status Setting
-
-	set_strict is
-			-- set `strict' to True
-		do
-			strict := True
-		end
-
-	unset_strict is
-			-- set `strict' to False
-		do
-			strict := False
-		end
+	level: INTEGER
 
 feature {NONE} -- Implementation
 
-	validate_description is
-			-- TODO
+	calculate_level is
+			-- get the deepest level of this path, determined from the depth of the object codes
 		do
-		end
-
-	validate_translations is
-			-- TODO
-		do
+			from
+				target.start
+			until
+				target.off
+			loop
+				if is_valid_code (target.item.object_id) then
+					level := level.max(specialisation_depth_from_code (target.item.object_id))
+				end
+				target.forth
+			end
 		end
 
 end
@@ -88,14 +81,13 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is authored_resource_validator.e.
+--| The Original Code is archetype_local_validator.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2007
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):
---|	Sam Heard
 --|
 --| Alternatively, the contents of this file may be used under the terms of
 --| either the GNU General Public License Version 2 or later (the 'GPL'), or

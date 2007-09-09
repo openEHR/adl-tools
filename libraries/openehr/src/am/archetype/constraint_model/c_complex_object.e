@@ -169,7 +169,7 @@ feature -- Status Report
 		require
 			an_attr_name_valid: an_attr_name /= Void and then not an_attr_name.is_empty
 		do
-			Result := representation.has_child_node(an_attr_name)
+			Result := representation.has_child_with_id(an_attr_name)
 		end
 
 	is_valid: BOOLEAN is

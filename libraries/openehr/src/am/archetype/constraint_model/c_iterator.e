@@ -42,35 +42,49 @@ feature -- Access
 
 	target: C_COMPLEX_OBJECT
 
-	c_node_action: PROCEDURE [ANY, TUPLE[C_OBJECT]]
+	c_node_enter_action: PROCEDURE [ANY, TUPLE[ARCHETYPE_CONSTRAINT, INTEGER]]
 
-	c_node_test: FUNCTION [ANY, TUPLE[C_OBJECT], BOOLEAN]
+	c_node_exit_action: PROCEDURE [ANY, TUPLE[ARCHETYPE_CONSTRAINT, INTEGER]]
+
+	c_node_test: FUNCTION [ANY, TUPLE[ARCHETYPE_CONSTRAINT], BOOLEAN]
 
 feature -- Command
 
-	do_all is
+	do_all(a_c_node_enter_action, a_c_node_exit_action: PROCEDURE [ANY, TUPLE [ARCHETYPE_CONSTRAINT, INTEGER]]) is
 			-- TODO: implement
 		do
-
+			c_node_enter_action := a_c_node_enter_action
+			c_node_exit_action := a_c_node_exit_action
+			tree_iterator.do_all(agent node_enter_action(?, ?), agent node_exit_action(?, ?))
 		end
 
-	do_at_surface(a_c_node_action: PROCEDURE [ANY, TUPLE[C_OBJECT]]; a_c_node_test: FUNCTION [ANY, TUPLE[C_OBJECT], BOOLEAN]) is
+	do_at_surface(a_c_node_enter_action: PROCEDURE [ANY, TUPLE [ARCHETYPE_CONSTRAINT, INTEGER]]; a_c_node_test: FUNCTION [ANY, TUPLE [ARCHETYPE_CONSTRAINT], BOOLEAN]) is
 			-- start the serialisation process; the result will be in `serialiser_output'
 		do
-			c_node_action := a_c_node_action
+			c_node_enter_action := a_c_node_enter_action
 			c_node_test := a_c_node_test
-			tree_iterator.do_at_surface(agent node_action(?), agent node_is_at_surface(?))
+			tree_iterator.do_at_surface(agent node_enter_action(?, ?), agent node_is_at_surface(?))
 		end
 
 feature {NONE} -- Implementation
 
 	tree_iterator: OG_ITERATOR
 
-	node_action(a_node: OG_ITEM) is
+	node_enter_action(a_node: OG_ITEM; depth: INTEGER) is
 		require
 			Node_exists: a_node /= Void
 		do
-			c_node_action.call([arch_node])
+			if arch_node = Void then
+				arch_node ?= a_node.content_item
+			end
+			c_node_enter_action.call([arch_node, depth])
+		end
+
+	node_exit_action(a_node: OG_ITEM; depth: INTEGER) is
+		require
+			Node_exists: a_node /= Void
+		do
+			c_node_exit_action.call([arch_node, depth])
 		end
 
 	node_is_at_surface(a_node: OG_ITEM): BOOLEAN is
@@ -81,7 +95,8 @@ feature {NONE} -- Implementation
 			Result := arch_node /= Void and then c_node_test.item([arch_node])
 		end
 
-	arch_node: C_OBJECT
+	arch_node: ARCHETYPE_CONSTRAINT
+
 
 end
 

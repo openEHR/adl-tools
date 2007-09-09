@@ -16,14 +16,14 @@ indexing
 class DT_COMPLEX_OBJECT_NODE
 
 inherit
-	
+
 	SHARED_DT_OBJECT_CONVERTER
 		export
 			{NONE} all
 		undefine
 			is_equal, out, default_create
 		end
-		
+
 	DT_OBJECT_ITEM
 		undefine
 			out
@@ -38,14 +38,14 @@ inherit
 		undefine
 			out, default_create, is_equal
 		end
-		
+
 creation
 	make_identified, make_anonymous, make_typed, make_typed_identified, make_from_object
 
 feature -- Initialisation
-	
+
 	default_create is
-			-- 
+			--
 		do
 			create attributes.make(0)
 			create rm_type_name.make(0)
@@ -53,7 +53,7 @@ feature -- Initialisation
 		ensure then
 			not is_typed
 		end
-		
+
 	make_identified(a_node_id: STRING) is
 			-- set node id, type_name = 'unknown'
 		require
@@ -115,9 +115,9 @@ feature -- Access
 		require
 			An_attr_name_valid: an_attr_name /= Void and then has_attribute(an_attr_name)
 		do
-			Result ?= representation.child_at_node_id(an_attr_name).content_item
+			Result ?= representation.child_with_id(an_attr_name).content_item
 		end
-		
+
 	node_at_path(a_path: STRING): DT_OBJECT_ITEM is
 			-- find the child at the relative path `a_path'; paths can only ever return an object
 		require
@@ -127,7 +127,7 @@ feature -- Access
 		ensure
 			Result_exists: Result /= Void
 		end
-		
+
 	attribute_node_at_path(a_path: STRING): DT_ATTRIBUTE_NODE is
 			-- find the child at the relative path `a_path'; paths can only ever return an object
 		require
@@ -137,7 +137,7 @@ feature -- Access
 		ensure
 			Result_exists: Result /= Void
 		end
-		
+
 	all_paths: ARRAYED_LIST[STRING] is
 			-- all paths below this point, including this node
 		local
@@ -146,7 +146,7 @@ feature -- Access
 			og_paths := representation.all_paths
 			create Result.make(0)
 			Result.compare_objects
-			from 
+			from
 				og_paths.start
 			until
 				og_paths.off
@@ -184,29 +184,29 @@ feature -- Access
 feature -- Iteration
 
 	start is
-			-- 
+			--
 		do
 			attributes.start
 		end
 
 	forth is
-			-- 
+			--
 		do
 			attributes.forth
 		end
 
 	off: BOOLEAN is
-			-- 
+			--
 		do
 			Result := attributes.off
 		end
 
 	item: DT_ATTRIBUTE_NODE is
-			-- 
+			--
 		do
 			Result := attributes.item
 		end
-		
+
 feature -- Status Report
 
 	has_path(a_path: STRING): BOOLEAN is
@@ -222,9 +222,9 @@ feature -- Status Report
 		require
 			Attr_name_valid: an_attr_name /= Void and then not an_attr_name.is_empty
 		do
-			Result := representation.has_child_node(an_attr_name)
+			Result := representation.has_child_with_id(an_attr_name)
 		end
-		
+
 	is_valid: BOOLEAN is
 			-- report on validity
 		do
@@ -232,9 +232,9 @@ feature -- Status Report
 			invalid_reason.append(rm_type_name + node_id + ":")
 			Result := True
 		end
-		
+
 	is_empty: BOOLEAN is
-			-- 
+			--
 		do
 			Result := attributes.is_empty
 		end
@@ -283,22 +283,22 @@ feature -- Modification
 			an_attr_node: DT_ATTRIBUTE_NODE
 			an_obj_node: DT_COMPLEX_OBJECT_NODE
 		do
-			
+
 		end
-		
+
 feature -- Conversion
 
 	out: STRING is
-			-- 
+			--
 		do
 			create Result.make(0)
 			Result.append(rm_type_name + "[" + node_id + "] ")
 		end
 
 	as_object(a_type_id: INTEGER): ANY is
-			-- make an object whose classes and attributes correspond to the structure 
+			-- make an object whose classes and attributes correspond to the structure
 			-- of this DT_OBJECT
-		do	
+		do
 			Result := object_converter.dt_to_object(Current, a_type_id)
 		end
 
@@ -313,7 +313,7 @@ feature -- Serialisation
 		do
 			serialiser.start_complex_object_node(Current, depth)
 		end
-		
+
 	exit_subtree(serialiser: DT_SERIALISER; depth: INTEGER) is
 			-- perform serialisation at end of block for this node
 		do

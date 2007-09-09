@@ -61,11 +61,11 @@ feature -- Visitor
 		local
 			spec_sts: SPECIALISATION_STATUS
 		do
-			spec_sts := a_node.effective_specialisation_status (archetype_specialisation_level)
+			spec_sts := a_node.specialisation_status (archetype_specialisation_level)
 			from
 				a_node.attributes.start
 			until
-				a_node.attributes.off or spec_sts.value < ss_inherited
+				a_node.attributes.off -- or spec_sts.value < ss_inherited
 			loop
 				spec_sts := specialisation_dominant_status(spec_sts, a_node.attributes.item.rolled_up_specialisation_status)
 				a_node.attributes.forth
@@ -78,11 +78,11 @@ feature -- Visitor
 		local
 			spec_sts: SPECIALISATION_STATUS
 		do
-			spec_sts := a_node.effective_specialisation_status (archetype_specialisation_level)
+			spec_sts := a_node.specialisation_status (archetype_specialisation_level)
 			from
 				a_node.children.start
 			until
-				a_node.children.off or spec_sts.value < ss_inherited
+				a_node.children.off -- or spec_sts.value < ss_inherited
 			loop
 				spec_sts := specialisation_dominant_status(spec_sts, a_node.children.item.rolled_up_specialisation_status)
 				a_node.children.forth
@@ -93,13 +93,13 @@ feature -- Visitor
 	start_c_leaf_object(a_node: C_LEAF_OBJECT; depth: INTEGER) is
 			-- enter an C_LEAF_OBJECT
 		do
-			a_node.set_rolled_up_specialisation_status(a_node.effective_specialisation_status (archetype_specialisation_level))
+			a_node.set_rolled_up_specialisation_status(a_node.specialisation_status (archetype_specialisation_level))
 		end
 
 	start_c_reference_object(a_node: C_REFERENCE_OBJECT; depth: INTEGER) is
 			-- enter an C_REFERENCE_OBJECT
 		do
-			a_node.set_rolled_up_specialisation_status(a_node.effective_specialisation_status (archetype_specialisation_level))
+			a_node.set_rolled_up_specialisation_status(a_node.specialisation_status (archetype_specialisation_level))
 		end
 
 feature {NONE} -- Implementation

@@ -2300,7 +2300,7 @@ feature {NONE} -- Implementation
 				report_error("attribute " + an_attr.rm_attribute_name + " must have cardinality > 1 for object with id " + 
 							an_obj.node_id + " to have occurrences > 1")
 				abort
-			elseif an_obj.is_addressable and an_attr.has_child_node(an_obj.node_id) then
+			elseif an_obj.is_addressable and an_attr.has_child(an_obj) then
 				raise_error
 				report_error("attribute " + an_attr.rm_attribute_name + " already has child object with id " + an_obj.node_id)
 				abort

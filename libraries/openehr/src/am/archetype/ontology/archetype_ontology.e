@@ -1126,7 +1126,7 @@ feature {NONE} -- Implementation
 					loop
 						a_code := an_attr_node.item.node_id
 						create adl_term.make (a_code)
-						object_node ?= an_attr_node.child(a_code)
+						object_node ?= an_attr_node.child_with_id(a_code)
 						from
 							object_node.start
 						until

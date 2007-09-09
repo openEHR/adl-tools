@@ -1,7 +1,9 @@
 indexing
-	component:   "openEHR Common Information Model"
-	description: "Validator for AUTHOR_RESOURCE objects"
-	keywords:    "archetype"
+	component:   "openEHR Archetype Project"
+	description: "[
+				 Comparator of two archetypes.
+		         ]"
+	keywords:    "archetype, comparison, constraint model"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
@@ -11,65 +13,46 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class AUTHORED_RESOURCE_VALIDATOR
-
-inherit
-	ANY_VALIDATOR
-		redefine
-			target
-		end
+class ARCHETYPE_COMPARATOR
 
 create
 	make
 
+feature -- Initialisation
+
+	make(a_reference_archetype, an_other_archetype: ARCHETYPE) is
+			-- create with two archetypes for comparison
+		require
+			A_reference_archetype_valid: a_reference_archetype /= Void
+			An_other_archetype_valid: an_other_archetype /= Void
+		do
+			reference_archetype := a_reference_archetype
+			other_archetype := an_other_archetype
+		end
+
 feature -- Access
 
-	target: AUTHORED_RESOURCE
-			-- target of this validator
+	reference_archetype: ARCHETYPE
+			-- reference archetype
 
-	validate is
-			-- True if all structures obey their invariants
+	other_archetype: ARCHETYPE
+			-- archetype being compared
+
+feature -- Comparison
+
+	is_specialised: BOOLEAN is
+			-- True if other_archetype is a legal specialisation of reference_archetype
 		do
-			passed := True
-			if target.original_language = Void then
-				errors.append("No original language%N")
-				passed := False
-			end
-			validate_description
-			validate_translations
 		end
 
-feature -- Status Report
-
-	strict: BOOLEAN
-			-- True if strict validation is to be applied. When strict is on, the following things cause errors:
-			-- - paths at the wrong specialisation level
-
-feature -- Status Setting
-
-	set_strict is
-			-- set `strict' to True
+	diff: ARCHETYPE_DIFF is
+			-- Generate a diff object from the two archetypes
 		do
-			strict := True
-		end
-
-	unset_strict is
-			-- set `strict' to False
-		do
-			strict := False
+		ensure
+			Result_exists: Result /= Void
 		end
 
 feature {NONE} -- Implementation
-
-	validate_description is
-			-- TODO
-		do
-		end
-
-	validate_translations is
-			-- TODO
-		do
-		end
 
 end
 
@@ -88,14 +71,13 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is authored_resource_validator.e.
+--| The Original Code is archetype_comparator.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2007
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):
---|	Sam Heard
 --|
 --| Alternatively, the contents of this file may be used under the terms of
 --| either the GNU General Public License Version 2 or later (the 'GPL'), or

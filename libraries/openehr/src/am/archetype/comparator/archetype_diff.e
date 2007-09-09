@@ -1,7 +1,9 @@
 indexing
-	component:   "openEHR Common Information Model"
-	description: "Validator for AUTHOR_RESOURCE objects"
-	keywords:    "archetype"
+	component:   "openEHR Archetype Project"
+	description: "[
+				 Difference of two archetypes.
+		         ]"
+	keywords:    "archetype, comparison, diff"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
@@ -11,65 +13,22 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class AUTHORED_RESOURCE_VALIDATOR
-
-inherit
-	ANY_VALIDATOR
-		redefine
-			target
-		end
+class ARCHETYPE_DIFF
 
 create
 	make
 
+feature -- Initialisation
+
+	make is
+		do
+		end
+
 feature -- Access
 
-	target: AUTHORED_RESOURCE
-			-- target of this validator
-
-	validate is
-			-- True if all structures obey their invariants
-		do
-			passed := True
-			if target.original_language = Void then
-				errors.append("No original language%N")
-				passed := False
-			end
-			validate_description
-			validate_translations
-		end
-
-feature -- Status Report
-
-	strict: BOOLEAN
-			-- True if strict validation is to be applied. When strict is on, the following things cause errors:
-			-- - paths at the wrong specialisation level
-
-feature -- Status Setting
-
-	set_strict is
-			-- set `strict' to True
-		do
-			strict := True
-		end
-
-	unset_strict is
-			-- set `strict' to False
-		do
-			strict := False
-		end
+feature -- Comparison
 
 feature {NONE} -- Implementation
-
-	validate_description is
-			-- TODO
-		do
-		end
-
-	validate_translations is
-			-- TODO
-		do
-		end
 
 end
 
@@ -88,14 +47,13 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is authored_resource_validator.e.
+--| The Original Code is archetype_diff.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2007
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):
---|	Sam Heard
 --|
 --| Alternatively, the contents of this file may be used under the terms of
 --| either the GNU General Public License Version 2 or later (the 'GPL'), or

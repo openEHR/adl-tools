@@ -101,7 +101,7 @@ feature {NONE} -- Implementation
 			-- differential form structure
 		do
 			archetype.build_inherited_subtree_list
-			-- FIXME: now do the removal
+			archetype.remove_inherited_subtrees
 		end
 
 invariant

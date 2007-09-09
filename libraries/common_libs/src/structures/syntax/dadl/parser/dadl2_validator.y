@@ -273,7 +273,7 @@ multiple_attr_object_block_head: SYM_START_DBLOCK
 				-- we are in a multi-block which is the value of a keyed object
 				-- so create the object with the key id
 				create complex_object_node.make_identified(obj_id)
-				if not attr_nodes.item.has_child(complex_object_node.node_id) then
+				if not attr_nodes.item.has_child(complex_object_node) then
 					debug("dADL_parse")
 						io.put_string(indent + "multiple_attr_object_block_head; attr_nodes(<<" + 
 							attr_nodes.item.rm_attr_name + ">>).item.put_child(complex_object_node(" + 
@@ -421,7 +421,7 @@ single_attr_object_complex_head: SYM_START_DBLOCK
 
 			-- now put the new object under its attribute, if one exists
 			if not attr_nodes.is_empty then
-				if not attr_nodes.item.has_child(complex_object_node.node_id) then
+				if not attr_nodes.item.has_child(complex_object_node) then
 					debug("dADL_parse")
 						io.put_string(indent + "single_attr_object_complex_head; attr_nodes(<<" + 
 							attr_nodes.item.rm_attr_name + ">>).item.put_child(complex_object_node(" + 
@@ -473,7 +473,7 @@ untyped_primitive_object_block: SYM_START_DBLOCK primitive_object_value SYM_END_
 						attr_nodes.item.rm_attr_name + ">>).item.put_child(<<" + 
 						leaf_object_node.as_string + ">>)%N")
 			end
-			if not attr_nodes.item.has_child(leaf_object_node.node_id) then
+			if not attr_nodes.item.has_child(leaf_object_node) then
 				attr_nodes.item.put_child(leaf_object_node)
 				$$ := leaf_object_node
 			else

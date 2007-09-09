@@ -129,7 +129,8 @@ feature -- Access
 	ontology: ARCHETYPE_ONTOLOGY
 
 	physical_paths: ARRAYED_LIST [STRING] is
-			-- generate physical paths from definition structure
+			-- generate physical paths from definition structure; if no changes made on archetype,
+			-- return cached value
 		require
 			validation_done
 		local
@@ -140,6 +141,7 @@ feature -- Access
 			tgt_path_str: STRING
 			tgt_path: OG_PATH
 			c_o: C_OBJECT
+			sorted_physical_paths: SORTED_TWO_WAY_LIST [STRING]
 		do
 			if path_map = Void or not is_readonly then
 				path_map := definition.all_paths
@@ -184,19 +186,21 @@ feature -- Access
 					use_node_path_xref_table.forth
 				end
 
-				create physical_paths_cache.make
+				create sorted_physical_paths.make
 				from
 					path_map.start
 				until
 					path_map.off
 				loop
-					physical_paths_cache.extend(path_map.key_for_iteration)
+					sorted_physical_paths.extend(path_map.key_for_iteration)
 					path_map.forth
 				end
+
+				create physical_paths_cache.make(0)
+				physical_paths_cache.append (sorted_physical_paths)
 			end
 
-			create Result.make (0)
-			Result.append (physical_paths_cache)
+			Result := physical_paths_cache
 		end
 
 	logical_paths (a_lang: STRING): ARRAYED_LIST [STRING] is
@@ -366,9 +370,22 @@ feature -- Validation
 			create inherited_subtree_list.make(0)
 			create list_builder.make(definition)
 			list_builder.do_at_surface(
-				agent (a_c_node: C_OBJECT) do inherited_subtree_list.put (a_c_node, a_c_node.path) end,
-				agent (a_c_node: C_OBJECT):BOOLEAN do Result := a_c_node.rolled_up_specialisation_status.value = ss_inherited end
+				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER) do inherited_subtree_list.put (a_c_node, a_c_node.path) end,
+				agent (a_c_node: ARCHETYPE_CONSTRAINT):BOOLEAN do Result := a_c_node.rolled_up_specialisation_status.value = ss_inherited end
 			)
+		end
+
+	remove_inherited_subtrees is
+			-- remove inherited subtrees to convert to differential form
+		do
+			from
+				inherited_subtree_list.start
+			until
+				inherited_subtree_list.off
+			loop
+			--	inherited_subtree_list.item_for_iteration.parent.remove_child(inherited_subtree_list.item_for_iteration)
+				inherited_subtree_list.forth
+			end
 		end
 
 	id_at_codes_xref_table: HASH_TABLE[ARRAYED_LIST[C_OBJECT], STRING]
@@ -387,7 +404,7 @@ feature -- Validation
 			-- table of {list<ARCHETYPE_INTERNAL_REF>, target_path}
 			-- i.e. <list of use_nodes> keyed by path they point to
 
-	inherited_subtree_list: HASH_TABLE[C_OBJECT, STRING]
+	inherited_subtree_list: HASH_TABLE[ARCHETYPE_CONSTRAINT, STRING]
 			-- table of {object_node, path} of nodes at the top of inherited subtrees,
 			-- that if deleted should bring the archetype back to differential form
 
@@ -589,7 +606,7 @@ feature -- Serialisation
 
 feature {NONE} -- Implementation
 
-	physical_paths_cache: SORTED_TWO_WAY_LIST [STRING]
+	physical_paths_cache: ARRAYED_LIST [STRING]
 
 	path_map: HASH_TABLE [C_OBJECT, STRING]
 			-- complete map of object nodes keyed by path, including paths implied by
