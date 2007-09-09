@@ -453,7 +453,6 @@ feature {NONE} -- Commands
 
 				if archetype_directory.selected_archetype_valid then
 					populate_all_archetype_controls
-					archetype_compiler.set_archetype_readonly
 				else
 					populate_archetype_id
 				end

@@ -727,6 +727,53 @@ feature -- Modification
 			Binding_removed: not has_constraint_binding(a_terminology, a_constraint_code)
 		end
 
+	remove_inherited_codes is
+			-- remove all at- and ac- codes inherited from ancestor archetypes
+		local
+			rm_term_codes: ARRAYED_LIST[STRING]
+			rm_constraint_codes: ARRAYED_LIST[STRING]
+		do
+			create rm_term_codes.make(0)
+			create rm_constraint_codes.make(0)
+			from
+				term_codes.start
+			until
+				term_codes.off
+			loop
+				if specialisation_depth_from_code (term_codes.item) /= specialisation_depth then
+					rm_term_codes.extend(term_codes.item)
+				end
+				term_codes.forth
+			end
+			from
+				constraint_codes.start
+			until
+				constraint_codes.off
+			loop
+				if specialisation_depth_from_code (constraint_codes.item) /= specialisation_depth then
+					rm_constraint_codes.extend (constraint_codes.item)
+				end
+				constraint_codes.forth
+			end
+
+			from
+				rm_term_codes.start
+			until
+				rm_term_codes.off
+			loop
+				remove_term_definition (rm_term_codes.item)
+				rm_term_codes.forth
+			end
+			from
+				rm_constraint_codes.start
+			until
+				rm_constraint_codes.off
+			loop
+				remove_constraint_definition (rm_constraint_codes.item)
+				rm_constraint_codes.forth
+			end
+		end
+
 feature -- Factory
 
 	new_non_specialised_term_code: STRING is

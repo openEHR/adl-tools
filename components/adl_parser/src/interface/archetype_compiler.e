@@ -224,12 +224,6 @@ feature -- Commands
 			retry
 		end
 
-	set_archetype_readonly is
-			-- set readonly flag in archetype to enable optimisations like path extraction
-		do
-			archetype.set_readonly
-		end
-
 	create_new_archetype(a_im_originator, a_im_name, a_im_entity, a_primary_language: STRING) is
 			-- create a new top-level archetype and install it into the directory according to its id
 		require

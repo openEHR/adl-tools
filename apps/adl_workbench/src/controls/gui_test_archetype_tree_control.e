@@ -308,7 +308,7 @@ feature -- Tests
 							test_status.append ("Unused AC codes: " + display_arrayed_list (unused_ac_codes) + "%N")
 						end
 
-						archetype_compiler.archetype.ontology_remove_unused_codes
+						archetype_compiler.archetype.remove_ontology_unused_codes
 					end
 				end
 			else
