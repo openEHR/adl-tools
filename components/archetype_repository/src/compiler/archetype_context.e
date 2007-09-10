@@ -74,6 +74,8 @@ feature -- Commands
 
 	convert_archetype_to_differential
 			-- modify 'archetype' if specialised, to be in differential form by removing inherited parts
+		require
+			is_valid
 		do
 			if is_specialised then
 				archetype.convert_to_differential

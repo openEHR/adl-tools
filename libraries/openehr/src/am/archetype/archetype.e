@@ -117,10 +117,11 @@ feature -- Access
 	specialisation_depth: INTEGER is
 			-- infer number of levels of specialisation from concept code
 		do
-			Result := ontology.specialisation_depth
+			Result := archetype_id.specialisation_depth
 		end
 
 	concept: STRING
+			-- at-code of concept of the archetype as a whole and the code of its root node
 
 	definition: C_COMPLEX_OBJECT
 
@@ -393,6 +394,8 @@ feature {ARCHETYPE_VALIDATOR, C_XREF_BUILDER} -- Validation
 
 	remove_inherited_subtrees is
 			-- remove inherited subtrees to convert to differential form
+		require
+			is_valid
 		local
 			c_obj: C_COMPLEX_OBJECT
 			c_attr: C_ATTRIBUTE
@@ -405,15 +408,10 @@ feature {ARCHETYPE_VALIDATOR, C_XREF_BUILDER} -- Validation
 				c_obj ?= inherited_subtree_list.item_for_iteration
 
 				if c_obj /= Void then
-					if c_obj.parent /= Void then
 						c_obj.parent.remove_child (c_obj)
-					end
 				else
 					c_attr ?= inherited_subtree_list.item_for_iteration
-
-					if c_attr /= Void and then c_attr.parent /= Void then
-						c_attr.parent.remove_attribute (c_attr)
-					end
+					c_attr.parent.remove_attribute (c_attr)
 				end
 
 				inherited_subtree_list.forth

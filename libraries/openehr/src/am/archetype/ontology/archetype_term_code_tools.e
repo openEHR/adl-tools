@@ -67,7 +67,6 @@ feature -- Access
 			--		status of at0.1 is undefined at depth 0, added at depth 1
 			--		status of at0.1.1 is undefined at depth 0, added at depth 1, redefined at depth 2
 		require
-			Code_valid: a_code /= Void and then not a_code.is_empty
 			Depth_valid: a_depth >= 0 and a_depth <= specialisation_depth_from_code(a_code)
 		local
 			code_defined_in_this_level, parent_code_defined_in_level_above: BOOLEAN
@@ -106,7 +105,6 @@ feature -- Access
 			--		a_code = at0.4.5	a_depth = 1 -> 4
 			--		a_code = at0.4.5	a_depth = 2 -> 5
 		require
-			Code_valid: a_code /= Void and then not a_code.is_empty
 			Depth_valid: a_depth >= 0 and a_depth <= specialisation_depth_from_code(a_code)
 		local
 			spec_depth: INTEGER
@@ -163,8 +161,13 @@ feature -- Comparison
 			-- 	a code is an 'at' or 'ac' code
 		require
 			Code_valid: a_code /= Void and then not a_code.is_empty
+		local
+			str: STRING
 		do
-			Result := a_code.substring_index (Term_code_leader, 1) > 0 or a_code.substring_index (Constraint_code_leader, 1) > 0
+			Result := (a_code.substring_index (Term_code_leader, 1) > 0 or a_code.substring_index (Constraint_code_leader, 1) > 0)
+				str := a_code.substring(Term_code_leader.count + 1, a_code.count)
+				str.prune_all (specialisation_separator)
+				Result := str.is_integer
 		end
 
 	is_specialised_code(a_code: STRING): BOOLEAN is

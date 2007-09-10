@@ -262,6 +262,12 @@ feature -- Access
 			excludes_last_specialisation: is_specialised implies Result.is_equal (qualified_rm_entity + axis_separator.out + domain_concept_base)
 		end
 
+	specialisation_depth: INTEGER is
+			-- specialisation level of this archetype id; non-specialised -> 0
+		do
+			Result := domain_concept.occurrences (section_separator)
+		end
+
 feature -- Status Report
 
 	is_specialised: BOOLEAN

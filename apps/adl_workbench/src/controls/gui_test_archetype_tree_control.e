@@ -425,7 +425,7 @@ feature -- Tests
 			-- convert specialised archetypes to differential form;
 			-- FIXME: temporary - only needed while differential form not the standard form
 		do
-			if archetype_compiler.target.is_specialised then
+			if archetype_compiler.target.is_specialised and archetype_compiler.target.compilation_context.is_valid then
 				archetype_compiler.target.compilation_context.convert_archetype_to_differential
 				Result := test_passed
 			else

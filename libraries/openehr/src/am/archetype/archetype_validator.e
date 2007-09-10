@@ -24,6 +24,11 @@ inherit
 			target, validate
 		end
 
+	ARCHETYPE_TERM_CODE_TOOLS
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -93,6 +98,10 @@ feature {NONE} -- Implementation
 				errors.append("Archetype id type %"" + target.archetype_id.rm_entity +
 								"%" does not match type %"" + target.definition.rm_type_name +
 								"%" in definition section%N")
+			elseif specialisation_depth_from_code (target.concept) /= target.specialisation_depth then
+				errors.append("Specialisation depth of concept (root) code is incorrect - should be " + target.specialisation_depth.out + "%N")
+			elseif not target.definition.node_id.is_equal(target.concept) then
+				errors.append("Concept code " + target.concept + " not used in definition%N")
 			elseif not target.definition.is_valid then
 				-- FIXME - need to check definition validation; possibly this should be
 				-- done using another visitor pattern?
