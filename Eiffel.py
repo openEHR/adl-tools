@@ -3,7 +3,7 @@ Tool-specific initialisation for EiffelStudio.
 This does not work with EiffelStudio 5.6 or earlier.
 """
 
-import os, glob, sys, shutil, datetime, subprocess, re
+import os, glob, sys, shutil, datetime, subprocess, xml.dom.minidom
 from SCons.Script import *
 	
 log_file = None
@@ -126,25 +126,25 @@ def ecf_target_dir(target):
 	"""The ECF target directory corresponding to the given build target."""
 	return os.path.dirname(str(target[0]))
 
-ecf_scanner_regex = re.compile(r'<(cluster|override)(\s+\S+="[^"]*")*\s+location="([^"]+)"(\s+recursive="true")?', re.M)
-
 def ecf_scanner(node, env, path):
 	"""All Eiffel class files in all clusters mentioned in an ECF file."""
 	result = []
 	previous_cluster = ''
+	ecf = xml.dom.minidom.parse(open(str(node)))
 
-	for group1, group2, location, recursive in ecf_scanner_regex.findall(node.get_contents()):
-		cluster = location.replace('\\', '/')
+	for cluster in ecf.getElementsByTagName("cluster") + ecf.getElementsByTagName("override"):
+		location = cluster.attributes["location"].value.replace('\\', '/')
+		recursive = cluster.attributes["recursive"]
 
-		if cluster.startswith('$|'):
-			cluster = os.path.join(previous_cluster, cluster.replace('$|', '', 1))
+		if location.startswith('$|'):
+			location = os.path.join(previous_cluster, location.replace('$|', '', 1))
 		else:
-			cluster = previous_cluster = os.path.abspath(os.path.join(os.path.dirname(str(node)), cluster))
+			location = previous_cluster = os.path.abspath(os.path.join(os.path.dirname(str(node)), location))
 
 		if recursive:
-			result += eiffel_classes_in_cluster(cluster)
+			result += eiffel_classes_in_cluster(location)
 		else:
-			result += files(cluster + '/*.e')
+			result += files(location + '/*.e')
 
 	return result
 
