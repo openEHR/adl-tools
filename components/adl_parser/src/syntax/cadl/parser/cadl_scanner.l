@@ -216,7 +216,7 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 --			  code] -- an optional assumed value
 --
 
-\[[a-zA-Z0-9()._\-]+::[ \t\n]*	{
+\[[a-zA-Z0-9()._\-]+::[ \t]*	{
 				in_buffer.append_string (text_substring (2, text_count))
 				set_start_condition (IN_TERM_CONSTRAINT)
 				term_code_count := 0
@@ -224,24 +224,26 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 			}
 
 <IN_TERM_CONSTRAINT> {
-	[ \t]*[a-zA-Z0-9._\-]+[ \t]*;[ \t\n]* { -- match second last line with ';' termination (assumed value)
+	[ \t]*[a-zA-Z0-9._\-]+[ \t]*;[ \t]* { -- match second last line with ';' termination (assumed value)
 				str_ := text
 				in_buffer.append(text)
 				term_code_count := term_code_count + 1
 				assumed_term_code_index := term_code_count
 			}
 
-	[ \t]*[a-zA-Z0-9._\-]+[ \t]*,[ \t\n]* {	-- match any line, with ',' termination
+	[ \t]*[a-zA-Z0-9._\-]+[ \t]*,[ \t]* {	-- match any line, with ',' termination
 				str_ := text
 				in_buffer.append(text)
 				term_code_count := term_code_count + 1
 			}
 
-	\-\-[^\n]*\n {	-- ignore comments
-				do_nothing
-			}
+	-- count line endings
+	\n+			in_lineno := in_lineno + text_count
 
-	[ \t]*[a-zA-Z0-9._\-]*[ \t\n]*\] { -- match final line, terminating in ']'
+	-- count line endings with comments
+	\-\-[^\n]*\n	in_lineno := in_lineno + 1
+
+	[ \t]*[a-zA-Z0-9._\-]*[ \t]*\] { -- match final line, terminating in ']'
 				if assumed_term_code_index > 0 and assumed_term_code_index /= term_code_count then
 					last_token := ERR_TERM_CODE_CONSTRAINT
 				else

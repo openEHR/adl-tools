@@ -203,16 +203,16 @@ feature -- Representation
 
 feature -- Serialisation
 
-	enter_subtree(serialiser: C_SERIALISER; depth: INTEGER) is
+	enter_subtree(visitor: C_VISITOR; depth: INTEGER) is
 			-- perform serialisation at start of block for this node
 		do
-			serialiser.start_c_attribute(Current, depth)
+			visitor.start_c_attribute(Current, depth)
 		end
 
-	exit_subtree(serialiser: C_SERIALISER; depth: INTEGER) is
+	exit_subtree(visitor: C_VISITOR; depth: INTEGER) is
 			-- perform serialisation at end of block for this node
 		do
-			serialiser.end_c_attribute(Current, depth)
+			visitor.end_c_attribute(Current, depth)
 		end
 
 invariant
