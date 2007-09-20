@@ -4,7 +4,7 @@ from Eiffel import files
 EnsurePythonVersion(2, 4)
 EnsureSConsVersion(0, 97, 0)
 
-env = Environment(ENV = os.environ, tools = ['Eiffel', 'packaging'], toolpath = ['.'])
+env = Environment(ENV = os.environ, tools = ['Eiffel'], toolpath = ['.'])
 
 if env['PLATFORM'] == 'win32': platform = 'windows'
 if env['PLATFORM'] == 'darwin': platform = 'macintosh'
@@ -60,33 +60,26 @@ if distrib:
 
 	if platform == 'windows':
 		if len(adl_workbench) > 2:
-			if not env.Detect('candle') or not env.Detect('light'):
-				print 'WARNING! WiX is missing from your path: cannot build installer for ADL Workbench.'
+			if not env.Detect('makensis'):
+				print 'WARNING! NSIS is missing from your path: cannot build installer for ADL Workbench.'
 			else:
-				sources = Install('/', [adl_workbench[2], news]) + Install('/vim', vim)
+				sources = [
+					root + 'ADLWorkbenchInstall.nsi',
+					adl_workbench[2],
+					news
+				] + vim
 
 				for source, dirnames, filenames in os.walk(icons):
 					if '.svn' in dirnames: dirnames.remove('.svn')
-					subdir = os.path.basename(source)
-					if subdir == 'icons': subdir = ''
-					#sources += Install('/icons/' + subdir, files(source + '/*'))
+					sources += files(source + '/*')
 
-					# Hack to work around duplicate file IDs bug in Package():
-					for f in files(source + '/*'):
-						env.Tag(File(f), X_MSI_FILEID = subdir + os.path.basename(f))
-						sources += Install('/icons/' + subdir, f)
+				command = [
+					'makensis', '-V1',
+					'-XOutFile $TARGET',
+					'$SOURCE'
+				]
 
-				msi = env.Package(
-					NAME        = 'ADL Workbench',
-					DESCRIPTION = 'openEHR ADL Workbench',
-					SUMMARY     = 'A rip snorter of a release',
-					VERSION     = '1.4',
-					PACKAGETYPE = 'msi',
-					VENDOR      = 'Ocean Informatics',
-					vendor      = 'Ocean Informatics',
-					target      = distrib + 'tools/ADL_Workbench',
-					source      = sources
-				)
+				env.Command(distrib + 'tools/OceanADLWorkbenchInstall.exe', sources, [command])
 
 		if len(adl_dotnet_lib) > 2:
 			Install(distrib + 'adl_parser/lib', [adl_dotnet_lib[2], os.path.dirname(str(adl_dotnet_lib[2])) + '/libadl_dotnet_lib.dll'])
