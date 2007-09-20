@@ -4,7 +4,7 @@ from Eiffel import files
 EnsurePythonVersion(2, 4)
 EnsureSConsVersion(0, 97, 0)
 
-env = Environment(ENV = os.environ, tools = ['Eiffel'], toolpath = ['.'])
+env = Environment(ENV = os.environ, tools = ['Eiffel', 'packaging'], toolpath = ['.'])
 
 if env['PLATFORM'] == 'win32': platform = 'windows'
 if env['PLATFORM'] == 'darwin': platform = 'macintosh'
@@ -43,8 +43,13 @@ if platform == 'windows':
 distrib = None
 
 for target in COMMAND_LINE_TARGETS:
-	if os.path.basename(os.path.normpath(target)) == 'oe_distrib':
-		distrib = target + '/' + platform + '/'
+	s = os.path.normpath(target)
+
+	while distrib == None and s != os.path.dirname(s):
+		if os.path.basename(s) == 'oe_distrib':
+			distrib = s + '/' + platform + '/'
+		else:
+			s = os.path.dirname(s)
 
 if distrib:
 	icons = 'apps/adl_workbench/app/icons'
@@ -55,22 +60,33 @@ if distrib:
 
 	if platform == 'windows':
 		if len(adl_workbench) > 2:
-			if not env.Detect('devenv'):
-				print 'WARNING! Visual Studio is missing from your path: cannot build installer for ADL Workbench.'
+			if not env.Detect('candle') or not env.Detect('light'):
+				print 'WARNING! WiX is missing from your path: cannot build installer for ADL Workbench.'
 			else:
-				sources = [
-					root + 'ADL_Workbench.sln',
-					root + 'ADL_Workbench.vdproj',
-					adl_workbench[2],
-					news
-				] + vim
+				sources = Install('/', [adl_workbench[2], news]) + Install('/vim', vim)
 
 				for source, dirnames, filenames in os.walk(icons):
 					if '.svn' in dirnames: dirnames.remove('.svn')
-					sources += files(source + '/*')
+					subdir = os.path.basename(source)
+					if subdir == 'icons': subdir = ''
+					#sources += Install('/icons/' + subdir, files(source + '/*'))
 
-				msi = env.Command(root + 'Release/ADL_Workbench.msi', sources, 'devenv $SOURCE /build Release')
-				Install(distrib + 'tools', msi)
+					# Hack to work around duplicate file IDs bug in Package():
+					for f in files(source + '/*'):
+						env.Tag(File(f), X_MSI_FILEID = subdir + os.path.basename(f))
+						sources += Install('/icons/' + subdir, f)
+
+				msi = env.Package(
+					NAME        = 'ADL Workbench',
+					DESCRIPTION = 'openEHR ADL Workbench',
+					SUMMARY     = 'A rip snorter of a release',
+					VERSION     = '1.4',
+					PACKAGETYPE = 'msi',
+					VENDOR      = 'Ocean Informatics',
+					vendor      = 'Ocean Informatics',
+					target      = distrib + 'tools/ADL_Workbench',
+					source      = sources
+				)
 
 		if len(adl_dotnet_lib) > 2:
 			Install(distrib + 'adl_parser/lib', [adl_dotnet_lib[2], os.path.dirname(str(adl_dotnet_lib[2])) + '/libadl_dotnet_lib.dll'])
@@ -88,8 +104,7 @@ if distrib:
 				description = install + 'Description.plist'
 
 				sources = [info, description]
-				sources += Install(bin, adl_workbench[2])
-				sources += Install(bin, news)
+				sources += Install(bin, [adl_workbench[2], news])
 				sources += Install(root + 'vim', vim)
 				sources += InstallAs(resources + 'Welcome.txt', news)
 
