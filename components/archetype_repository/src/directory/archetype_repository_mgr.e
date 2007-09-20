@@ -200,7 +200,7 @@ feature -- Commands
 		require
 			ara_attached: ara /= Void
 		local
-			semantic_category: STRING
+			semantic_category, key: STRING
 			archetype_in_same_semantic_category: ARCH_REP_ARCHETYPE
 			node, parent_node: like directory
 		do
@@ -209,11 +209,16 @@ feature -- Commands
 				semantic_category.append_character ({ARCHETYPE_ID}.axis_separator)
 				archetype_id_index.start
 			until
-				archetype_id_index.off or archetype_in_same_semantic_category /= Void
+				archetype_id_index.off or parent_node /= Void
 			loop
-				if archetype_id_index.key_for_iteration.substring_index (semantic_category, 1) = 1 then
+				key := archetype_id_index.key_for_iteration
+
+				if key.substring_index (semantic_category, 1) = 1 then
 					archetype_in_same_semantic_category := archetype_id_index.item_for_iteration
-					-- FIXME: Keep looking for an archetype that `ara' specialises.
+
+					if archetype_in_same_semantic_category.id.semantic_id.is_equal (ara.id.semantic_parent_id) then
+						parent_node := ontology_index.item (archetype_in_same_semantic_category.ontological_path)
+					end
 				end
 
 				archetype_id_index.forth
@@ -221,10 +226,12 @@ feature -- Commands
 
 			create node.make (ara)
 
-			if archetype_in_same_semantic_category /= Void and then ontology_index.has (archetype_in_same_semantic_category.ontological_path) then
-				parent_node := ontology_index.item (archetype_in_same_semantic_category.ontological_path).parent
-			else
-				parent_node := directory
+			if parent_node = Void then
+				if archetype_in_same_semantic_category /= Void and then ontology_index.has (archetype_in_same_semantic_category.ontological_path) then
+					parent_node := ontology_index.item (archetype_in_same_semantic_category.ontological_path).parent
+				else
+					parent_node := directory
+				end
 			end
 
 			-- FIXME: Need to check that this doesn't duplicate another archetype:

@@ -119,7 +119,11 @@ feature -- Comparison
 	infix "<" (other: like Current): BOOLEAN
 			-- Is current object less than `other'?
 		do
-			Result := id < other.id
+			if id.is_equal (other.id) then
+				Result := full_path < other.full_path
+			else
+				Result := id < other.id
+			end
 		end
 
 feature -- Modification

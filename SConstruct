@@ -43,8 +43,13 @@ if platform == 'windows':
 distrib = None
 
 for target in COMMAND_LINE_TARGETS:
-	if os.path.basename(os.path.normpath(target)) == 'oe_distrib':
-		distrib = target + '/' + platform + '/'
+	s = os.path.normpath(target)
+
+	while distrib == None and s != os.path.dirname(s):
+		if os.path.basename(s) == 'oe_distrib':
+			distrib = s + '/' + platform + '/'
+		else:
+			s = os.path.dirname(s)
 
 if distrib:
 	icons = 'apps/adl_workbench/app/icons'
@@ -55,12 +60,11 @@ if distrib:
 
 	if platform == 'windows':
 		if len(adl_workbench) > 2:
-			if not env.Detect('devenv'):
-				print 'WARNING! Visual Studio is missing from your path: cannot build installer for ADL Workbench.'
+			if not env.Detect('makensis'):
+				print 'WARNING! NSIS is missing from your path: cannot build installer for ADL Workbench.'
 			else:
 				sources = [
-					root + 'ADL_Workbench.sln',
-					root + 'ADL_Workbench.vdproj',
+					root + 'ADLWorkbenchInstall.nsi',
 					adl_workbench[2],
 					news
 				] + vim
@@ -69,8 +73,13 @@ if distrib:
 					if '.svn' in dirnames: dirnames.remove('.svn')
 					sources += files(source + '/*')
 
-				msi = env.Command(root + 'Release/ADL_Workbench.msi', sources, 'devenv $SOURCE /build Release')
-				Install(distrib + 'tools', msi)
+				command = [
+					'makensis', '-V1',
+					'-XOutFile $TARGET',
+					'$SOURCE'
+				]
+
+				env.Command(distrib + 'tools/OceanADLWorkbenchInstall.exe', sources, [command])
 
 		if len(adl_dotnet_lib) > 2:
 			Install(distrib + 'adl_parser/lib', [adl_dotnet_lib[2], os.path.dirname(str(adl_dotnet_lib[2])) + '/libadl_dotnet_lib.dll'])
@@ -88,8 +97,7 @@ if distrib:
 				description = install + 'Description.plist'
 
 				sources = [info, description]
-				sources += Install(bin, adl_workbench[2])
-				sources += Install(bin, news)
+				sources += Install(bin, [adl_workbench[2], news])
 				sources += Install(root + 'vim', vim)
 				sources += InstallAs(resources + 'Welcome.txt', news)
 
