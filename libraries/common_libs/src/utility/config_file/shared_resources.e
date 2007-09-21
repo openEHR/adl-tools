@@ -231,15 +231,11 @@ feature -- Environment
 		require
 			path_attached: path /= Void
 			path_not_empty: not path.is_empty
-		local
-			s: STRING
 		do
-			s := path.twin
-			s.prune_all_trailing (os_directory_separator)
-			create Result.make (s)
+			create Result.make (file_system.canonical_pathname (path))
 		ensure
 			attached: Result /= Void
-			correct_path: Result.name.is_equal (path)
+			correct_path: path.substring (1, Result.name.count).is_equal (Result.name)
 		end
 
 feature -- Element Change

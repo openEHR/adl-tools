@@ -49,8 +49,7 @@ feature -- Status Report
 			s: STRING
 		do
 			if path /= Void and then not path.is_empty then
-				s := path.twin
---				s.prune_all_trailing (os_directory_separator)
+				s := file_system.canonical_pathname (path)
 				Result := (create {RAW_FILE}.make (s)).exists
 			end
 		end
