@@ -87,14 +87,13 @@ feature {NONE} -- Implementation
 			paths_valid := True
 
 			if not repository_dialog_reference_path_text.text.is_equal (reference_repository_path) then
-				if repository_dialog_reference_path_text.text.is_empty or else
-						 archetype_directory.valid_repository_path (repository_dialog_reference_path_text.text) then
+				if archetype_directory.valid_repository_path (repository_dialog_reference_path_text.text) then
 					paths_changed := True
 					set_reference_repository_path(repository_dialog_reference_path_text.text)
 				else
-					create error_dialog.make_with_text("invalid reference directory: " +
+					create error_dialog.make_with_text("Invalid reference directory: %"" +
 						repository_dialog_reference_path_text.text +
-						" does not exist, or is same as, or is parent or child of another repository path ")
+						"%" does not exist, or is the same as or a parent or a child of another repository path.")
 					error_dialog.show_modal_to_window (Current)
 					paths_valid := False
 				end
@@ -106,9 +105,9 @@ feature {NONE} -- Implementation
 					set_work_repository_path(repository_dialog_work_path_text.text)
 					paths_changed := True
 				else
-					create error_dialog.make_with_text("invalid work directory: " +
+					create error_dialog.make_with_text("Invalid work directory: %"" +
 						repository_dialog_work_path_text.text +
-						" does not exist, or is same as, or is parent or child of reference repository path")
+						"%" does not exist, or is the same as or a parent or a child of reference repository path.")
 					error_dialog.show_modal_to_window (Current)
 					paths_valid := False
 				end
