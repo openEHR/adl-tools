@@ -11,16 +11,37 @@ if env['PLATFORM'] == 'darwin': platform = 'macintosh'
 
 # Define how to build the parser classes.
 
+def gelex(target, source):
+	return env.Command(target, source, [['gelex', '-o', '${TARGET.file}', '${SOURCE.file}']], chdir = 1)
+
+def geyacc(target, source):
+	return env.Command(target, source, [['geyacc', '--new_typing', '-v', '${TARGET.filebase}.txt', '-t', '${TARGETS[1].filebase}', '-o', '${TARGET.file}', '${SOURCE.file}']], chdir = 1)
+
+def geyacc_html(target, source):
+	return env.Command(target, source, [['geyacc', '--doc=html', '-o', '${TARGET.file}', '${SOURCE.file}']], chdir = 1)
+
 if not env.Detect('gelex') or not env.Detect('geyacc'):
 	print 'WARNING! The Gobo tools are missing from your path: cannot build the parsers.'
 else:
-	for prefix, dir in [
-		['adl_', 'components/adl_parser/src/syntax/adl/parser/'],
-		['cadl_', 'components/adl_parser/src/syntax/cadl/parser/']
-	]:
-		env.Command(dir + prefix + 'scanner.e', dir + prefix + 'scanner.l', [['gelex', '-o', '$TARGET', '$SOURCE']])
-		env.Command([dir + prefix + 'validator.e', dir + prefix + 'tokens.e'], dir + prefix + 'validator.y', [['geyacc', '--new_typing', '-v', dir + 'parser_errs.txt', '-t', prefix + 'tokens', '-o', '$TARGET', '-k', '${TARGETS[1]}', '$SOURCE']])
-		env.Command(dir + prefix + 'validator.html', dir + prefix + 'validator.y', [['geyacc', '--doc=html', '-o', '$TARGET', '$SOURCE']])
+	dir = 'components/adl_parser/src/syntax/adl/parser/'
+	gelex(dir + 'adl_scanner.e', dir + 'adl_scanner.l')
+	geyacc([dir + 'adl_validator.e', dir + 'adl_tokens.e'], dir + 'adl_validator.y')
+	geyacc_html(dir + 'adl_validator.html', dir + 'adl_validator.y')
+
+	dir = 'components/adl_parser/src/syntax/cadl/parser/'
+	gelex(dir + 'cadl_scanner.e', dir + 'cadl_scanner.l')
+	geyacc([dir + 'cadl_validator.e', dir + 'cadl_tokens.e'], dir + 'cadl_validator.y')
+	geyacc_html(dir + 'cadl_validator.html', dir + 'cadl_validator.y')
+
+	dir = 'libraries/common_libs/src/structures/syntax/dadl/parser/'
+	gelex(dir + 'dadl_scanner.e', dir + 'dadl_scanner.l')
+	geyacc([dir + 'dadl2_validator.e', dir + 'dadl_tokens.e'], dir + 'dadl2_validator.y')
+	geyacc_html(dir + 'dadl2_validator.html', dir + 'dadl2_validator.y')
+
+	dir = 'libraries/common_libs/src/unit_parser/parser/'
+	gelex(dir + 'units_scanner.e', dir + 'units_scanner.l')
+	geyacc([dir + 'units_parser.e', dir + 'units_tokens.e'], dir + 'units_parser.y')
+	geyacc_html(dir + 'units_parser.html', dir + 'units_parser.y')
 
 # Define how to build the Eiffel projects.
 

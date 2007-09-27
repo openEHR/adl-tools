@@ -503,6 +503,7 @@ end
 feature {NONE} -- Table templates
 
 	yytranslate_template: SPECIAL [INTEGER] is
+			-- Template for `yytranslate'
 		once
 			Result := yyfixed_array (<<
 			    0,    2,    2,    2,    2,    2,    2,    2,    2,    2,
@@ -537,6 +538,7 @@ feature {NONE} -- Table templates
 		end
 
 	yyr1_template: SPECIAL [INTEGER] is
+			-- Template for `yyr1'
 		once
 			Result := yyfixed_array (<<
 			    0,   16,   16,   17,   17,   18,   18,   18,   20,   20,
@@ -544,6 +546,7 @@ feature {NONE} -- Table templates
 		end
 
 	yytypes1_template: SPECIAL [INTEGER] is
+			-- Template for `yytypes1'
 		once
 			Result := yyfixed_array (<<
 			    1,    3,    1,    1,    1,    1,    1,    1,    1,    1,
@@ -552,6 +555,7 @@ feature {NONE} -- Table templates
 		end
 
 	yytypes2_template: SPECIAL [INTEGER] is
+			-- Template for `yytypes2'
 		once
 			Result := yyfixed_array (<<
 			    1,    1,    1,    2,    3,    1,    1,    1,    1,    1,
@@ -559,6 +563,7 @@ feature {NONE} -- Table templates
 		end
 
 	yydefact_template: SPECIAL [INTEGER] is
+			-- Template for `yydefact'
 		once
 			Result := yyfixed_array (<<
 			    0,   10,    2,    1,    3,    5,    8,    0,   11,    0,
@@ -567,12 +572,14 @@ feature {NONE} -- Table templates
 		end
 
 	yydefgoto_template: SPECIAL [INTEGER] is
+			-- Template for `yydefgoto'
 		once
 			Result := yyfixed_array (<<
 			   26,    3,    4,   12,    5,    6,   21,    8, yyDummy>>)
 		end
 
 	yypact_template: SPECIAL [INTEGER] is
+			-- Template for `yypact'
 		once
 			Result := yyfixed_array (<<
 			    3,   16, -32768, -32768,   -8, -32768,    1,   15, -32768,   14,
@@ -581,12 +588,14 @@ feature {NONE} -- Table templates
 		end
 
 	yypgoto_template: SPECIAL [INTEGER] is
+			-- Template for `yypgoto'
 		once
 			Result := yyfixed_array (<<
 			 -32768, -32768, -32768, -32768,   -7, -32768, -32768, -32768, yyDummy>>)
 		end
 
 	yytable_template: SPECIAL [INTEGER] is
+			-- Template for `yytable'
 		once
 			Result := yyfixed_array (<<
 			   20,   11,   15,   16,    2,   10,    9,    1,   19,   18,
@@ -595,6 +604,7 @@ feature {NONE} -- Table templates
 		end
 
 	yycheck_template: SPECIAL [INTEGER] is
+			-- Template for `yycheck'
 		once
 			Result := yyfixed_array (<<
 			    3,    9,    9,   10,    1,   13,   14,    4,   11,   12,
