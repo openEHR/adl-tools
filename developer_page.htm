@@ -115,7 +115,7 @@ demographic and archetype servers.</li>
 
   
 
-  <li>Download and install EiffelStudio 5.7 from <a href="http://eiffel.com">http://eiffel.com</a> (free use license).</li>
+  <li>Download and install EiffelStudio 6.0 from <a href="http://eiffel.com">http://eiffel.com</a> (free use license).</li>
 
 
 
@@ -126,14 +126,7 @@ demographic and archetype servers.</li>
 
 
 
-    <li>during install, when it asks which compiler to use, you can
-safely choose whichever; if you have MS VC++ 6.0 or later on your
-machine, you can use that, else just choose the built-in Borland
-bcc compiler or gcc or other default compiler.</li>
-
-
-
-    <li>when it asks whether to precompile the libraries, choose yes, and precompile base and vision.</li>
+    <li>During install, when it asks whether to precompile the libraries, choose Yes, and precompile Base and Vision.</li>
 
 
 
@@ -194,7 +187,27 @@ bcc compiler or gcc or other default compiler.</li>
 
 
 
-  <li>Open a Windows command window, or a Linux terminal window. On Mac, you need to open an X11 EiffelStudio console.</li>
+  <li>Make sure that SCons and the Eiffel compiler are in your PATH. The SCons installer may have already done so, but the EiffelStudio installer probably did not.</li>
+
+
+
+  <li>On Linux or Mac, make sure that you have also set the EiffelStudio environment variables.</li>
+
+
+
+  <li>For example, on a PowerPC Mac, your <span style="font-weight: bold;">.profile</span> might contain this:
+    <ul>
+        <li>export <span style="font-weight: bold;">ISE_PLATFORM</span>=macosx-ppc</li>
+        <li>export <span style="font-weight: bold;">ISE_EIFFEL</span>=/Applications/MacPorts/Eiffel60</li>
+        <li>export <span style="font-weight: bold;">GOBO</span>=$ISE_EIFFEL/library/gobo</li>
+        <li>export <span style="font-weight: bold;">ES_PATH</span>=$ISE_EIFFEL/studio/spec/$ISE_PLATFORM/bin</li>
+        <li>export <span style="font-weight: bold;">PATH</span>=$ES_PATH:$GOBO/spec/$ISE_PLATFORM/bin:$PATH</li>
+    </ul>
+  </li>
+
+
+
+  <li>Open a Windows command window, or a Linux or Mac terminal window.</li>
 
 
 
@@ -230,7 +243,7 @@ you just select the ECF file in the appropriate directory. <br />
 
 
 
-  <li>To create installers for the current platform, type <span style="font-weight: bold;">scons install</span>.</li>
+  <li>To create installers for the current platform, specify a file or directory target that contains <span style="font-weight: bold;">oe_distrib</span> as a path component. For example, to build the installers below the current directory's parent, type <span style="font-weight: bold;">scons ../oe_distrib/</span>.</li>
 
 
 
