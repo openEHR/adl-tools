@@ -65,8 +65,10 @@ feature -- Visitor
 				last_result.append(apply_style(symbol(SYM_ANY), STYLE_VALUE))
 			elseif a_node.is_addressable then
 				s := a_node.node_id
-				last_result.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
-					safe_comment(ontology.term_definition(current_language, s).item("text")), STYLE_COMMENT))
+				if ontology.has_term_code(s) then
+					last_result.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
+						safe_comment(ontology.term_definition(current_language, s).item("text")), STYLE_COMMENT))
+				end
 				last_result.append(format_item(FMT_NEWLINE))
 			else
 				last_result.append(format_item(FMT_NEWLINE))
@@ -105,8 +107,10 @@ feature -- Visitor
 				last_result.append(apply_style(symbol(SYM_ANY), STYLE_VALUE))
 			elseif a_node.is_addressable then
 				s := a_node.node_id
-				last_result.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
-					safe_comment(ontology.term_definition(current_language, s).item("text")), STYLE_COMMENT))
+				if ontology.has_term_code(s) then
+					last_result.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
+						safe_comment(ontology.term_definition(current_language, s).item("text")), STYLE_COMMENT))
+				end
 				last_result.append(format_item(FMT_NEWLINE))
 			else
 				last_result.append(format_item(FMT_NEWLINE))
@@ -248,7 +252,7 @@ feature -- Visitor
 				last_result.remove_tail(format_item(FMT_NEWLINE).count)	-- remove last newline due to OBJECT_REL_NODE	
 				last_result.append(apply_style(clean(a_node.as_string), STYLE_TERM_REF))
 				create last_object_simple_buffer.make(0)
-				if not a_node.any_allowed and then (a_node.is_local and a_node.code_count = 1) then
+				if not a_node.any_allowed and then (a_node.is_local and a_node.code_count = 1 and ontology.has_term_code(a_node.code_list.first)) then
 					last_object_simple_buffer.append(format_item(FMT_INDENT))
 
 					adl_term := ontology.term_definition(current_language, a_node.code_list.first)
@@ -276,7 +280,7 @@ feature -- Visitor
 						last_result.append(apply_style("]", STYLE_TERM_REF))
 					end
 
-					if a_node.is_local then
+					if a_node.is_local and ontology.has_term_code(a_node.code_list.item) then
 						adl_term := ontology.term_definition(current_language, a_node.code_list.item)
 						last_result.append(format_item(FMT_INDENT) +
 							apply_style(format_item(FMT_COMMENT) +

@@ -15,14 +15,14 @@ class SHARED_ARCHETYPE_SERIALISERS
 
 inherit
 	ARCHETYPE_DEFINITIONS
-	
+
 feature -- Access
 
 	archetype_serialiser_formats: ARRAYED_LIST[STRING] is
 			-- list of format names
 		once
 			create Result.make(0)
-			from 
+			from
 				archetype_serialisers.start
 			until
 				archetype_serialisers.off
@@ -42,12 +42,12 @@ feature -- Access
 		ensure
 			Result_exists: Result /= Void
 		end
-	
+
 	archetype_file_extensions: HASH_TABLE [STRING, STRING] is
 			-- file extensions for logical serialisation formats
 		once
 			create Result.make(0)
-			Result.put(".adl", Archetype_file_extension)
+			Result.put("." + archetype_flat_file_extension, archetype_native_syntax)
 			Result.put(".html", "html")
 			Result.put(".xml", "xml")
 			Result.put(".owl", "owl")
@@ -56,20 +56,20 @@ feature -- Access
 feature -- Status Report
 
 	has_archetype_serialiser_format(a_format:STRING): BOOLEAN is
-			-- 
+			--
 		require
 			a_format /= Void
 		do
 			Result := archetype_serialisers.has(a_format)
 		end
-		
+
 feature {NONE} -- Implementation
 
 	archetype_serialisers: HASH_TABLE [ARCHETYPE_SERIALISER, STRING] is
 		once
 			create Result.make(0)
 		end
-		
+
 end
 
 

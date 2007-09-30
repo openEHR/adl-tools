@@ -120,11 +120,6 @@ feature -- Access
 	primary_language: STRING
 
 	languages_available: ARRAYED_LIST[STRING]
-	--is
-	--		--
-	--	do
-	--		Result := parent.languages_available
-	--	end
 
 	terminologies_available: ARRAYED_LIST[STRING]
 
@@ -138,7 +133,7 @@ feature -- Access
 			-- retrieve the term definition in language `a_lang' for code `a_term_code'
 		require
 			Language_valid: a_lang /= Void and then has_language(a_lang)
-			Term_code_valid: a_term_code /= Void and then not a_term_code.is_empty
+			Term_code_valid: a_term_code /= Void and then has_term_code (a_term_code)
 		do
 			Result := term_definitions.item(a_lang).item(a_term_code)
 		ensure
@@ -149,7 +144,7 @@ feature -- Access
 			-- retrieve the constraint definition in language `a_lang' for code `a_term_code'
 		require
 			Language_valid: a_lang /= Void and then has_language(a_lang)
-			Term_code_valid: a_term_code /= Void and then not a_term_code.is_empty
+			Term_code_valid: a_term_code /= Void and then has_constraint_code(a_term_code)
 		do
 			Result := constraint_definitions.item(a_lang).item(a_term_code)
 		ensure
@@ -244,6 +239,9 @@ feature -- Access
 		end
 
 feature -- Status Report
+
+	is_differential: BOOLEAN
+			-- True if this archetype is in differential, i.e. source form. False means it is in a flattened, i.e. standalone form
 
 	is_valid: BOOLEAN is
 			--
@@ -370,6 +368,14 @@ feature -- Status Report
 		do
 			Result := constraint_bindings.has(a_terminology) and then
 						constraint_bindings.item(a_terminology).has(a_term_code)
+		end
+
+feature -- Status Setting
+
+	set_differential is
+			-- set is_differential True
+		do
+			is_differential := True
 		end
 
 feature -- Modification

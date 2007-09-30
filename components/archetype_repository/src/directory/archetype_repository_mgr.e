@@ -106,7 +106,7 @@ feature -- Access
 			-- archetype at currently selected archetype descriptor
 		do
 			if selected_descriptor /= Void and then selected_descriptor.compilation_context /= Void then
-				Result := selected_descriptor.compilation_context.archetype
+				Result := selected_descriptor.compilation_context.archetype_flat
 			end
 		end
 

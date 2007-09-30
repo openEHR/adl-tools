@@ -16,6 +16,8 @@ class ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP
 
 inherit
 	ARCHETYPE_INDEXED_REPOSITORY_I
+		
+		
 
 	ARCHETYPE_FILE_REPOSITORY_IMP
 
@@ -63,7 +65,7 @@ feature {NONE} -- Implementation
 						if (create {RAW_FILE}.make (full_path)).is_directory then
 							dir_name_index.extend (fn)
 						else
-							ara := repository_archetype (root_path, full_path)
+							ara := create_repository_archetype_descriptor (root_path, full_path)
 
 							if ara /= Void then
 								arch_index.extend (ara)

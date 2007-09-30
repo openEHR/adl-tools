@@ -345,7 +345,7 @@ feature {NONE} -- Commands
 		do
 			create dialog
 			dialog.set_start_directory (current_work_directory)
-			dialog.filters.extend (["*." + archetype_file_extension, "Files of type " + archetype_file_extension])
+			dialog.filters.extend (["*." + archetype_native_syntax, "Files of type " + Archetype_flat_file_extension])
 			dialog.show_modal_to_window (Current)
 
 			if not dialog.file_name.is_empty then
@@ -373,7 +373,7 @@ feature {NONE} -- Commands
 				ok_to_write := True
 
 				name := archetype_directory.selected_descriptor.full_path.twin
-				name.remove_tail (archetype_file_extensions [archetype_file_extension].count)
+				name.remove_tail (archetype_file_extensions [Archetype_flat_file_extension].count)
 
 				create save_dialog
 				save_dialog.set_file_name (name)
@@ -421,7 +421,7 @@ feature {NONE} -- Commands
 						-- FIXME: currently this refreshes the whole view and forgets what archetype the user was on;
 						-- it is only useful to do this in any case if the archetype was written over the .adl file
 						-- in the repository area; if it is saved to e.g. the temp area, this should not even be done
-						if format.is_equal (archetype_file_extension) then
+						if format.is_equal (archetype_native_syntax) then
 							populate_archetype_directory
 						end
 					end
@@ -596,7 +596,7 @@ feature {NONE} -- Commands
 				create s.make_empty
 
 				if archetype_directory.has_selected_archetype_descriptor then
-					src := archetype_directory.selected_descriptor.source
+					src := archetype_directory.selected_descriptor.flat_text
 					len := src.count
 
 					from

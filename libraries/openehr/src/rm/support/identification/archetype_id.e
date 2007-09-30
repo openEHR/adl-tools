@@ -274,6 +274,7 @@ feature -- Status Report
 			-- Is this id a specialisation?
 
 	valid_id(an_id: STRING):BOOLEAN is
+			-- id has valid basic form containing 2 axis separators and at least 2 section separators
 		do
 			Result := an_id.occurrences(axis_separator) = 2 and an_id.occurrences(section_separator) >= 2
 		end

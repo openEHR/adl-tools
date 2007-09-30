@@ -89,10 +89,9 @@ feature -- Access
 		once
 			create Result.make (0)
 			Result.force (agent test_parse, "Parse")
-			Result.force (agent test_save_html, "Save to HTML")
-			Result.force (agent test_save_adl, "Save to ADL")
-			Result.force (agent test_reparse, "Reparse")
-			Result.force (agent test_convert_to_differential, "-> Differential")
+			Result.force (agent test_save_flat_html, "Save to HTML")
+			Result.force (agent test_save, "Save to ADL")
+			Result.force (agent test_reparse_flat, "Reparse")
 			Result.force (agent test_diff, "Diff")
 		end
 
@@ -292,10 +291,11 @@ feature -- Tests
 
 			if archetype_compiler.archetype_valid then
 				Result := test_passed
+				test_status.append (" parse succeeded%N" + archetype_compiler.status)
 
 				if remove_unused_codes then
-					unused_at_codes := archetype_compiler.archetype.ontology_unused_term_codes
-					unused_ac_codes := archetype_compiler.archetype.ontology_unused_constraint_codes
+					unused_at_codes := archetype_compiler.archetype_differential.ontology_unused_term_codes
+					unused_ac_codes := archetype_compiler.archetype_differential.ontology_unused_constraint_codes
 
 					if not unused_at_codes.is_empty or not unused_ac_codes.is_empty then
 						test_status.append (">>>>>>>>>> removing unused codes%N")
@@ -308,7 +308,7 @@ feature -- Tests
 							test_status.append ("Unused AC codes: " + display_arrayed_list (unused_ac_codes) + "%N")
 						end
 
-						archetype_compiler.archetype.remove_ontology_unused_codes
+						archetype_compiler.archetype_differential.remove_ontology_unused_codes
 					end
 				end
 			else
@@ -316,7 +316,7 @@ feature -- Tests
 			end
 		end
 
-	test_save_html: INTEGER is
+	test_save_flat_html: INTEGER is
 			-- parse archetype and return result
 		local
 			html_fname: STRING
@@ -329,7 +329,7 @@ feature -- Tests
 				-- 'adl' directory in the repository path; 'html/adl' means "the ADL form of HTML", since
 				-- there are other things in the html directory.
 				html_fname := archetype_compiler.target.full_path.twin
-				html_fname.replace_substring(".html", html_fname.count - Archetype_file_extension.count, html_fname.count)
+				html_fname.replace_substring(".html", html_fname.count - Archetype_flat_file_extension.count, html_fname.count)
 				archetype_compiler.save_archetype_as(html_fname, "html")
 
 				if archetype_compiler.save_succeeded then
@@ -340,7 +340,7 @@ feature -- Tests
 			end
 		end
 
-	test_save_adl: INTEGER is
+	test_save: INTEGER is
 			-- parse archetype and return result
 		local
 			new_adl_file_path: STRING
@@ -348,7 +348,6 @@ feature -- Tests
 			Result := test_failed
 
 			if archetype_compiler.archetype_valid then
-				archetype_compiler.set_target(archetype_compiler.target)
 				if overwrite then
 					archetype_compiler.save_archetype
 				else
@@ -366,7 +365,7 @@ feature -- Tests
 			end
 		end
 
-	test_reparse: INTEGER is
+	test_reparse_flat: INTEGER is
 			-- parse archetype and return result
 		local
 			new_adl_file_path: STRING
@@ -386,6 +385,7 @@ feature -- Tests
 
 			if archetype_compiler.archetype_valid then
 				Result := test_passed
+				test_status.append ("Parse succeeded%N" + archetype_compiler.status)
 			else
 				test_status.append ("Parse failed; reason: " + archetype_compiler.status + "%N")
 			end
@@ -400,11 +400,11 @@ feature -- Tests
 			Result := Test_failed
 
 			if not overwrite then
-				orig_arch_source := archetype_compiler.source
+				orig_arch_source := archetype_compiler.flat_text
 
 				new_adl_file_path := file_system.pathname (system_temp_file_directory, file_system.basename (archetype_compiler.target.full_path))
 				-- FIXME: DO SOMETIHNG HERE TO OPEN THE NEW FILE
-				new_arch_source := archetype_compiler.serialised_archetype
+				new_arch_source := archetype_compiler.serialised_flat
 
 				if orig_arch_source.count = new_arch_source.count then
 					if orig_arch_source.is_equal (new_arch_source) then
@@ -416,18 +416,6 @@ feature -- Tests
 					test_status.append ("Archetype source lengths differ: original =  " + orig_arch_source.count.out +
 						"; new = " + new_arch_source.count.out + "%N")
 				end
-			else
-				Result := Test_not_applicable
-			end
-		end
-
-	test_convert_to_differential: INTEGER is
-			-- convert specialised archetypes to differential form;
-			-- FIXME: temporary - only needed while differential form not the standard form
-		do
-			if archetype_compiler.target.is_specialised and archetype_compiler.target.compilation_context.is_valid then
-				archetype_compiler.target.compilation_context.convert_archetype_to_differential
-				Result := test_passed
 			else
 				Result := Test_not_applicable
 			end

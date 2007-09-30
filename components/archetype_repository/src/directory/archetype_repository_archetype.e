@@ -32,28 +32,47 @@ feature -- Initialisation
 	make (a_root_path, a_full_path: STRING; an_id: ARCHETYPE_ID; a_repository: ARCHETYPE_REPOSITORY_I)
 		require
 			Repository_exists: a_repository /= Void
-			Root_path_valid: a_repository.is_valid_path (a_root_path)
+			Root_path_valid: a_repository.is_valid_directory (a_root_path)
 			Full_path_valid: a_full_path /= Void and then a_full_path.substring_index (a_root_path, 1) = 1
 			Id_valid: an_id /= Void
 		do
 			id := an_id
 			make_adi (a_root_path, a_full_path, a_repository)
+			source_path := full_path.twin
+			source_path.replace_substring (Archetype_source_file_extension, source_path.count - Archetype_flat_file_extension.count + 1, source_path.count)
 		end
 
 feature -- Access
 
+	source_path: STRING
+			-- path of differential source file of archetype
+
 	id: ARCHETYPE_ID
 			-- Archetype identifier.
 
-	source: STRING
-			-- The source text of the archetype.
+	flat_text: STRING
+			-- The text of the flat form of the archetype.
 		do
-			Result := source_repository.source (full_path)
-			source_timestamp := source_repository.source_timestamp
+			Result := file_repository.text (full_path)
+			flat_text_timestamp := file_repository.text_timestamp
+		ensure
+			Result_exists: Result /= Void
 		end
 
-	source_timestamp: INTEGER
-			-- Date and time at which the archetype file was last modified.
+	source_text: STRING
+			-- The text of the archetype source file, i.e. the differential form
+		require
+			has_source_file
+		do
+			Result := file_repository.text (source_path)
+			source_text_timestamp := file_repository.text_timestamp
+		end
+
+	flat_text_timestamp: INTEGER
+			-- Date and time at which the archetype flat file was last modified.
+
+	source_text_timestamp: INTEGER
+			-- Date and time at which the archetype source file was last modified.
 
 	compilation_context: ARCH_CONTEXT
 			-- Context object for compilation activities.
@@ -63,9 +82,9 @@ feature -- Access
 			-- Useful as a logical key to pixmap icons, etc.
 		do
 			if is_specialised then
-				Result := "archetype_specialised_" + source_repository.group_id.out
+				Result := "archetype_specialised_" + file_repository.group_id.out
 			else
-				Result := "archetype_" + source_repository.group_id.out
+				Result := "archetype_" + file_repository.group_id.out
 			end
 		end
 
@@ -74,44 +93,86 @@ feature -- Access
 
 feature -- Status Report
 
+	has_source_file: BOOLEAN is
+			-- True if repository has a source-form file for this archetype
+		do
+			Result := file_repository.is_valid_path (source_path)
+		end
+
 	is_specialised: BOOLEAN is
 			-- True if this archetype is a specialisation of another archetype
 		do
 			Result := id.is_specialised
 		end
 
-	is_out_of_date: BOOLEAN
-			-- Has the loaded archetype designated by `path' changed on disk since last read?
+	is_flat_file_out_of_date: BOOLEAN
+			-- Has the loaded archetype designated by `full_path' changed on disk since last read?
 		do
-			Result := compilation_context = Void or source_repository.has_file_changed_on_disk (full_path, source_timestamp)
+			Result := compilation_context = Void or file_repository.has_file_changed_on_disk (full_path, flat_text_timestamp)
 		end
 
 feature -- Commands
 
-	save (a_text: STRING)
-			-- save a_text (representing archetype source) to archetype source file
+	save_differential (a_text: STRING)
+			-- save a_text (representing differential archetype) to a file; save to source file path (.adls extension)
 		require
 			Text_valid: a_text /= Void and then not a_text.is_empty
 		do
-			source_repository.save_as(full_path, a_text)
+			file_repository.save_text_to_file(source_path, a_text)
 		end
 
-	save_as (a_full_path, a_text: STRING)
-			-- save a_text (representing archetype source) to archetype source file
+	save_differential_as (a_path, a_text: STRING)
+			-- save a_text (representing differential archetype) to a file with source file (.adls) extension
 		require
 			Text_valid: a_text /= Void and then not a_text.is_empty
-			Path_valid: is_valid_directory_part (a_full_path)
+			Path_valid: is_valid_directory_part (a_path)
+		local
+			save_path: STRING
 		do
-			source_repository.save_as (a_full_path, a_text)
+			save_path := a_path.twin
+			save_path.replace_substring (Archetype_source_file_extension, save_path.count - Archetype_flat_file_extension.count + 1, save_path.count)
+
+			file_repository.save_text_to_file (save_path, a_text)
 		end
 
-	set_compilation_context (a_source_archetype: ARCHETYPE)
-			-- create compilation context object with a_source_archetype, which is
+	save_flat (a_text: STRING)
+			-- save a_text (representing flat archetype) to a file; save to flat file path (.adl extension)
+		require
+			Text_valid: a_text /= Void and then not a_text.is_empty
+		do
+			file_repository.save_text_to_file(full_path, a_text)
+		end
+
+	save_flat_as (a_path, a_text: STRING)
+			-- save a_text (representing flat archetype) to a file with flat file (.adl) extension
+		require
+			Text_valid: a_text /= Void and then not a_text.is_empty
+			Path_valid: is_valid_directory_part (a_path)
+		local
+			save_path: STRING
+		do
+			save_path := a_path.twin
+			-- FIXME: see if there is an extension; if there is, change it to .adl
+
+			file_repository.save_text_to_file (save_path, a_text)
+		end
+
+	set_compilation_context_from_differential (an_archetype: ARCHETYPE)
+			-- create compilation context object with an_archetype, which is
 			-- an archetype in differential (source) form (cf flattened)
 		require
-			a_source_archetype /= Void
+			an_archetype /= Void and then an_archetype.is_differential
 		do
-			create compilation_context.make(a_source_archetype)
+			create compilation_context.make_differential(an_archetype)
+		end
+
+	set_compilation_context_from_flat (an_archetype: ARCHETYPE)
+			-- create compilation context object with an_archetype, which is
+			-- an archetype in differential (source) form (cf flattened)
+		require
+			an_archetype /= Void and then not an_archetype.is_differential
+		do
+			create compilation_context.make_flat(an_archetype)
 		end
 
 feature -- Comparison

@@ -16,13 +16,14 @@ class ARCHETYPE
 inherit
 	ADL_DEFINITIONS
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} deep_twin
 		end
 
 	ARCHETYPE_TERM_CODE_TOOLS
 		export
 			{NONE} all;
-			{ANY} valid_concept_code
+			{ANY} valid_concept_code, deep_twin
 		end
 
 	AUTHORED_RESOURCE
@@ -272,6 +273,18 @@ feature -- Status Report
 			Result := invariants /= Void
 		end
 
+	is_differential: BOOLEAN
+			-- True if this archetype is in differential, i.e. source form. False means it is in a flattened, i.e. standalone form
+
+feature -- Status Setting
+
+	set_differential is
+			-- set `is_differential' True
+		do
+			is_differential := True
+			ontology.set_differential
+		end
+
 feature -- Comparison
 
 	valid_adl_version(a_ver: STRING): BOOLEAN is
@@ -292,10 +305,11 @@ feature -- Validation
 	is_valid: BOOLEAN is
 			-- is archetype locally in valid state? For specialised archetypes, this does not take
 			-- into account validity with respect to parent archetypes.
+			-- FIXME: for the moment, we don't validate differential archetypes
 		require
-			validated
+			is_differential xor validated
 		do
-			Result := validator.passed
+			Result := is_differential or validator.passed
 		end
 
 	validated: BOOLEAN is
@@ -381,6 +395,8 @@ feature {ARCHETYPE_VALIDATOR, C_XREF_BUILDER} -- Validation
 	build_inherited_subtree_list is
 			-- using rolled_up_specialisation statuses in nodes of definition
 			-- generate a list of nodes/paths for deletion from a flat-form archetype
+		require
+			is_valid
 		local
 			list_builder: C_ITERATOR
 		do
@@ -390,34 +406,6 @@ feature {ARCHETYPE_VALIDATOR, C_XREF_BUILDER} -- Validation
 				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER) do inherited_subtree_list.put (a_c_node, a_c_node.path) end,
 				agent (a_c_node: ARCHETYPE_CONSTRAINT):BOOLEAN do Result := a_c_node.rolled_up_specialisation_status.value = ss_inherited end
 			)
-		end
-
-	remove_inherited_subtrees is
-			-- remove inherited subtrees to convert to differential form
-		require
-			is_valid
-		local
-			c_obj: C_COMPLEX_OBJECT
-			c_attr: C_ATTRIBUTE
-		do
-			from
-				inherited_subtree_list.start
-			until
-				inherited_subtree_list.off
-			loop
-				c_obj ?= inherited_subtree_list.item_for_iteration
-
-				if c_obj /= Void then
-						c_obj.parent.remove_child (c_obj)
-				else
-					c_attr ?= inherited_subtree_list.item_for_iteration
-					c_attr.parent.remove_attribute (c_attr)
-				end
-
-				inherited_subtree_list.forth
-			end
-
-			set_unvalidated
 		end
 
 	id_at_codes_xref_table: HASH_TABLE[ARRAYED_LIST[C_OBJECT], STRING]
@@ -444,12 +432,38 @@ feature -- Conversion
 
 	convert_to_differential
 			-- modify archetype if specialised, to be in differential form by removing inherited parts
+		require
+			Valid: is_valid
+			In_flat_form: not is_differential
+		local
+			c_obj: C_COMPLEX_OBJECT
+			c_attr: C_ATTRIBUTE
 		do
 			if is_specialised then
 				build_inherited_subtree_list
-				remove_inherited_subtrees
-			--	ontology.remove_inherited_codes
+
+				-- remove inherited subtrees
+				from
+					inherited_subtree_list.start
+				until
+					inherited_subtree_list.off
+				loop
+					c_obj ?= inherited_subtree_list.item_for_iteration
+
+					if c_obj /= Void then
+						c_obj.parent.remove_child (c_obj)
+					else
+						c_attr ?= inherited_subtree_list.item_for_iteration
+						c_attr.parent.remove_attribute (c_attr)
+					end
+
+					inherited_subtree_list.forth
+				end
+				set_unvalidated
+
+				ontology.remove_inherited_codes
 				validate
+				set_differential
 			end
 		end
 

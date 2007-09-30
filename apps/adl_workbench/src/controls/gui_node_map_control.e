@@ -803,7 +803,7 @@ feature {NONE} -- Implementation
 					Result.append (a_node.rm_type_name)
 				end
 
-				if archetype_directory.has_selected_archetype_descriptor then
+				if archetype_directory.has_selected_archetype_descriptor and archetype_directory.selected_archetype.ontology.has_term_code(a_node.node_id) then
 					Result.append (" " + archetype_directory.selected_archetype.ontology.term_definition (current_language, a_node.node_id).item ("text"))
 				end
 
@@ -850,7 +850,7 @@ feature {NONE} -- Implementation
 			--end
 
 			if a_node.is_addressable then
-				if archetype_directory.has_selected_archetype_descriptor then
+				if archetype_directory.has_selected_archetype_descriptor and archetype_directory.selected_archetype.ontology.has_term_code(a_node.node_id) then
 					Result.append (" " + archetype_directory.selected_archetype.ontology.term_definition (current_language, a_node.node_id).item ("text"))
 				end
 			end
@@ -901,7 +901,7 @@ feature {NONE} -- Implementation
 			create Result.make_empty
 
 			if archetype_directory.has_selected_archetype_descriptor then
-				if archetype_directory.selected_archetype.ontology.term_codes.has (code) then
+				if archetype_directory.selected_archetype.ontology.has_term_code(code) then
 					Result.append (" " + archetype_directory.selected_archetype.ontology.term_definition (current_language, code).item ("text"))
 				end
 			end
@@ -939,7 +939,7 @@ feature {NONE} -- Implementation
 			Result.append (an_ordinal.value.out + an_ordinal.separator.out)
 
 			if archetype_directory.has_selected_archetype_descriptor then
-				if archetype_directory.selected_archetype.ontology.term_codes.has (code) then
+				if archetype_directory.selected_archetype.ontology.has_term_code(code) then
 					Result.append (" " + archetype_directory.selected_archetype.ontology.term_definition (current_language, code).item ("text"))
 				end
 			end

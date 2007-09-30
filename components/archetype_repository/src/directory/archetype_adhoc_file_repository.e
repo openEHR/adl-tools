@@ -92,7 +92,7 @@ feature -- Modification
 		local
 			ara: ARCH_REP_ARCHETYPE
 		do
-			ara := repository_archetype (file_system.dirname (full_path), full_path)
+			ara := create_repository_archetype_descriptor (file_system.dirname (full_path), full_path)
 
 			if ara /= Void then
 				directory [full_path] := ara

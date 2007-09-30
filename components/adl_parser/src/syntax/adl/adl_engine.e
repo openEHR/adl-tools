@@ -56,11 +56,11 @@ feature -- Access
 
 feature -- Commands
 
-	parse (source: STRING): ARCHETYPE is
+	parse (text: STRING; is_differential_source: BOOLEAN): ARCHETYPE is
 			-- parse tree. If successful, `archetype' contains the parse
 			-- structure. Then validate the tree
 		require
-			Source_exists: source /= Void
+			Text_exists: text /= Void
 		local
 			language_error, description_error, invariant_error: BOOLEAN
 			res_desc: RESOURCE_DESCRIPTION
@@ -69,7 +69,7 @@ feature -- Commands
 			orig_lang: STRING
 		do
 			create adl_parser.make
-			adl_parser.execute(source)
+			adl_parser.execute(text)
 			if adl_parser.syntax_error then
 				parse_error_text := adl_parser.error_text
 			else
@@ -167,6 +167,10 @@ feature -- Commands
 										Result.set_adl_version(adl_parser.adl_version)
 									else
 										Result.set_adl_version(Current_adl_version)
+									end
+
+									if is_differential_source then
+										Result.set_differential
 									end
 
 									if adl_parser.is_controlled then

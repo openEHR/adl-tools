@@ -98,23 +98,42 @@ feature -- Access
 	target: ARCH_REP_ARCHETYPE
 			-- archetype currently being processed by this instance of the compiler
 
-	source: STRING is
+	flat_text: STRING is
 			-- source of current archetype
 		require
 			has_target: has_target
 		do
-			Result := target.source
+			Result := target.flat_text
 		end
 
-	archetype: ARCHETYPE is
+	source_text: STRING is
+			-- source of current archetype
+		require
+			has_target: has_target
+		do
+			Result := target.source_text
+		end
+
+	archetype_differential: ARCHETYPE is
 			-- Differential form of currently compiled archetype.
 		require
 			has_context: archetype_parsed
 		do
-			Result := target.compilation_context.archetype
+			Result := target.compilation_context.archetype_differential
 		end
 
-	serialised_archetype: STRING
+	archetype_flat: ARCHETYPE is
+			-- Flat form of currently compiled archetype.
+		require
+			has_context: archetype_parsed
+		do
+			Result := target.compilation_context.archetype_flat
+		end
+
+	serialised_differential: STRING
+			-- archetype in serialised form, after call to serialise_archetype
+
+	serialised_flat: STRING
 			-- archetype in serialised form, after call to serialise_archetype
 
 	status: STRING
@@ -138,6 +157,12 @@ feature -- Status Report
 			-- Has the archetype been parsed into an ARCHETYPE structure and then validated?
 		do
 			Result := target /= Void and then target.compilation_context /= Void and then target.compilation_context.is_valid
+		end
+
+	archetype_specialised: BOOLEAN
+			-- Has the archetype been parsed into an ARCHETYPE structure and then validated?
+		do
+			Result := target /= Void and then target.compilation_context /= Void and then target.compilation_context.is_specialised
 		end
 
 	save_succeeded: BOOLEAN
@@ -191,24 +216,38 @@ feature -- Commands
 			if not exception_encountered then
 				clear_billboard
 
-				if target.is_out_of_date then
-					an_archetype := adl_engine.parse (target.source)
+				if target.has_source_file then
+					an_archetype := adl_engine.parse (target.source_text, True)
 
 					if an_archetype = Void then
 						post_error (Current, "parse_archetype", "parse_archetype_e1", <<adl_engine.parse_error_text>>)
 					else
 						post_info (Current, "parse_archetype", "parse_archetype_i1", <<target.id.as_string>>)
 
-						-- Put the archetype into its directory node; note that this runs its validator(s) and further
-						-- errors and warnings are reported on the billboard.
-						target.set_compilation_context (an_archetype)
+						-- Put the archetype into its directory node; note that this runs its validator(s)
+						target.set_compilation_context_from_differential (an_archetype)
+
+						-- FIXME: if archetype is specialised, continue the process back up the specialisation lineage.
+					end
+
+				elseif target.is_flat_file_out_of_date then
+					an_archetype := adl_engine.parse (target.flat_text, False)
+
+					if an_archetype = Void then
+						post_error (Current, "parse_archetype", "parse_archetype_e1", <<adl_engine.parse_error_text>>)
+					else
+						post_info (Current, "parse_archetype", "parse_archetype_i1", <<target.id.as_string>>)
+
+						-- Put the archetype into its directory node; note that this runs its validator(s).
+						target.set_compilation_context_from_flat (an_archetype)
 					end
 				end
 
 				-- Make sure that the language is set, and that it is one of the languages in the archetype.
 				if archetype_parsed then
-					if current_language = Void or not archetype.has_language (current_language) then
-						set_current_language (archetype.original_language.code_string)
+					-- FIXME: in future this should use archetype_differential not archetype_flat
+					if current_language = Void or not archetype_flat.has_language (current_language) then
+						set_current_language (archetype_flat.original_language.code_string)
 					end
 				end
 			else
@@ -267,7 +306,7 @@ feature -- Commands
 			an_archetype: ARCHETYPE
 		do
 			if not exception_encountered then
-				create an_archetype.make_specialised_child(archetype, specialised_domain_concept)
+				create an_archetype.make_specialised_child(archetype_differential, specialised_domain_concept)
 
 				-- FIXME: now add this archetype into the ARCHETYPE_DIRECTORY
 			else
@@ -291,8 +330,15 @@ feature -- Commands
 				status.wipe_out
 				save_succeeded := False
 				if archetype_valid then
-					serialised_archetype := adl_engine.serialise(archetype, "adl")
-					target.save (serialised_archetype)
+					serialised_flat := adl_engine.serialise(archetype_flat, "adl")
+					target.save_flat (serialised_flat)
+
+					if archetype_specialised then
+						serialised_differential := adl_engine.serialise(archetype_differential, "adl")
+						target.save_differential (serialised_differential)
+					else
+						serialised_differential := serialised_flat
+					end
 					save_succeeded := True
 				else
 					post_error(Current, "save_archetype", "save_archetype_e2", Void)
@@ -312,7 +358,7 @@ feature -- Commands
 		end
 
 	save_archetype_as(a_full_path: STRING; serialise_format: STRING) is
-			-- Save current target archetype to `file_path' in `serialise_format'.
+			-- Save current target archetype to `a_full_path' in `serialise_format'.
 		require
 			Has_target: has_target
 			path_valid: a_full_path /= Void and then not a_full_path.is_empty
@@ -322,9 +368,15 @@ feature -- Commands
 				status.wipe_out
 				save_succeeded := False
 				if archetype_valid then
-					serialised_archetype := adl_engine.serialise(archetype, serialise_format)
+					serialised_flat := adl_engine.serialise(archetype_flat, serialise_format)
+					target.save_flat_as (a_full_path, serialised_flat)
+					if archetype_specialised then
+						serialised_differential := adl_engine.serialise(archetype_differential, serialise_format)
+						target.save_differential_as (a_full_path, serialised_differential)
+					else
+						serialised_differential := serialised_flat
+					end
 					save_succeeded := True
-					target.save_as (a_full_path, serialised_archetype)
 				else
 					post_error(Current, "save_archetype", "save_archetype_e2", Void)
 				end
@@ -343,13 +395,15 @@ feature -- Commands
 		end
 
 	serialise_archetype(serialise_format: STRING) is
-			-- Serialise archetype into string; result available in `serialised_archetype'
+			-- Serialise archetype into string for both flat and differential forms
+			-- result available in `serialised_flat' and `serialised_differential'
 		require
 			Has_target: has_target and archetype_valid
 			Serialise_format_valid: serialise_format /= Void and then has_archetype_serialiser_format(serialise_format)
 		do
 			if not exception_encountered then
-				serialised_archetype := adl_engine.serialise(archetype, serialise_format)
+				serialised_differential := adl_engine.serialise(archetype_differential, serialise_format)
+				serialised_flat := adl_engine.serialise(archetype_flat, serialise_format)
 			else
 				post_error(Current, "serialise_archetype", "serialise_archetype_e2", Void)
 			end
@@ -357,7 +411,7 @@ feature -- Commands
 			status.append(billboard_content)
 			clear_billboard
 		ensure
-			serialised_archetype /= Void or else not status.is_empty
+			(serialised_differential /= Void and serialised_flat /= Void) or else not status.is_empty
 		rescue
 			post_error(Current, "serialise_archetype", "report_exception", <<exception.out, exception_trace>>)
 			exception_encountered := True

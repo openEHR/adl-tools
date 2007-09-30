@@ -32,17 +32,17 @@ feature {NONE} -- initialisation
 			-- belonging to `a_repository' at `a_root_path'.
 		require
 			repository_attached: a_source_repository /= Void
-			root_path_valid: a_source_repository.is_valid_path (a_root_path)
+			root_path_valid: a_source_repository.is_valid_directory (a_root_path)
 			full_path_valid: a_full_path /= Void and then a_full_path.substring_index (a_root_path, 1) = 1
 		do
 			root_path := a_root_path
 			full_path := a_full_path
-			source_repository := a_source_repository
+			file_repository := a_source_repository
 			make_ontological_paths
 		ensure
 			root_path_set: root_path = a_root_path
 			full_path_set: full_path = a_full_path
-			source_repository_set: source_repository = a_source_repository
+			source_repository_set: file_repository = a_source_repository
 		end
 
 feature -- Access
@@ -66,7 +66,7 @@ feature -- Access
 	ontological_parent_path: STRING
 			-- Logical path of parent node (empty if `ontological_path' is already the root).
 
-	source_repository: ARCHETYPE_REPOSITORY_I
+	file_repository: ARCHETYPE_REPOSITORY_I
 			-- The source repository on which this item is found.
 
 	group_name: STRING
@@ -83,7 +83,15 @@ feature -- Status Report
 	is_valid_path (path: STRING): BOOLEAN
 			-- Is `path' a valid, existing directory or file on `repository'?
 		do
-			Result := source_repository.is_valid_path (path)
+			Result := file_repository.is_valid_path (path)
+		ensure
+			false_if_void: Result implies path /= Void
+		end
+
+	is_valid_directory (path: STRING): BOOLEAN
+			-- Is `path' a valid, existing directory or file on `repository'?
+		do
+			Result := file_repository.is_valid_directory (path)
 		ensure
 			false_if_void: Result implies path /= Void
 		end
@@ -91,7 +99,7 @@ feature -- Status Report
 	is_valid_directory_part (path: STRING): BOOLEAN
 			-- Is the directory part of `path', whose last section is a filename, valid on `repository'?
 		do
-			Result := source_repository.is_valid_directory_part (path)
+			Result := file_repository.is_valid_directory_part (path)
 		ensure
 			false_if_void: Result implies path /= Void
 		end
@@ -104,8 +112,8 @@ feature {NONE} -- Implementation
 		end
 
 invariant
-	repository_attached: source_repository /= Void
-	root_path_valid: is_valid_path (root_path)
+	repository_attached: file_repository /= Void
+	root_path_valid: is_valid_directory (root_path)
 	full_path_attached: full_path /= Void
 	full_path_not_empty: not full_path.is_empty
 	ontological_path_attached: ontological_path /= Void

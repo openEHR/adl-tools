@@ -45,7 +45,7 @@ feature -- Access
 			-- Name distinguishing the type of item and the group to which its `repository' belongs.
 			-- Useful as a logical key to pixmap icons, etc.
 		do
-			Result := "file_folder_" + source_repository.group_id.out
+			Result := "file_folder_" + file_repository.group_id.out
 		end
 
 end

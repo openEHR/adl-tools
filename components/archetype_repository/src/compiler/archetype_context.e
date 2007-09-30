@@ -30,57 +30,80 @@ inherit
 		end
 
 create
-	make
+	make_differential, make_flat
 
 feature -- Initialisation
 
-	make(an_archetype: ARCHETYPE) is
+	make_differential(an_archetype: ARCHETYPE) is
 			-- create with a new differential form (i.e. source form) archetype
 		require
-			Archetype_exists: an_archetype /= Void
+			Archetype_exists: an_archetype /= Void and then an_archetype.is_differential
 		do
-			archetype := an_archetype
+			archetype_differential := an_archetype
 			if not an_archetype.is_specialised then
 				-- FIXME for the moment
-				flat_form := archetype
+				archetype_flat := archetype_differential
+			else
+				-- FIXME set flat_form to structure generated from differential form in memory
 			end
 
-			archetype.validate
-			if archetype.is_valid then
-				post_info(Current, "parse_archetype", "parse_archetype_i2", <<archetype.archetype_id.as_string>>)
+	--		archetype_differential.validate
+	--		if archetype_differential.is_valid then
+	--			post_info(Current, "parse_archetype", "parse_archetype_i2", <<archetype_differential.archetype_id.as_string>>)
+	--			is_valid := True
+	--		else
+	--			post_error(Current, "parse_archetype", "parse_archetype_e2", <<archetype_differential.archetype_id.as_string, archetype_differential.validator.errors>>)
+	--		end
+	--		if archetype_differential.validator.has_warnings then
+	--			post_warning(Current, "parse_archetype", "parse_archetype_w2", <<archetype_differential.archetype_id.as_string, archetype_differential.validator.warnings>>)
+	--		end
+		end
+
+	make_flat(an_archetype: ARCHETYPE) is
+			-- create with a flat form archetype
+		require
+			Archetype_exists: an_archetype /= Void and then not an_archetype.is_differential
+		do
+			archetype_flat := an_archetype
+			-- FIXME validation is currently done here on flat form; in future has to be done on the differential form,
+			-- but requires new validation code to be written. THE FOLLOWING LINES OF CODE WOULD THEN DISAPPEAR - AND THE
+			-- EQUIVALENT LINES IN THE make_differential ROUTINE ABOVE WOULD BE UNCOMMENTED, AND EITHER OPY THAT HERE
+			-- OR MAKE A NEW ROUTINE THAT VALIDATES THE DIFFERENTIAL FORM, TO BE CALLED BY BOTH make ROUTINES HERE.
+			archetype_flat.validate
+			if archetype_flat.is_valid then
+				post_info(Current, "parse_archetype", "parse_archetype_i2", <<archetype_flat.archetype_id.as_string>>)
 				is_valid := True
+
+				-- generate the differential form
+				if not an_archetype.is_specialised then
+					-- FIXME for the moment; in future needs to be separate instances??
+					archetype_differential := archetype_flat
+				else -- generate differential form from flat
+					-- first make a complete clone of the archetype; could also be done by copy of serialised form and parse
+					archetype_differential := archetype_flat.deep_twin
+					archetype_differential.convert_to_differential
+					post_info (Current, "make_flat", "arch_context_make_flat_i1", Void)
+				end
 			else
-				post_error(Current, "parse_archetype", "parse_archetype_e2", <<archetype.archetype_id.as_string, archetype.validator.errors>>)
+				post_error(Current, "parse_archetype", "parse_archetype_e2", <<archetype_flat.archetype_id.as_string, archetype_flat.validator.errors>>)
 			end
-			if archetype.validator.has_warnings then
-				post_warning(Current, "parse_archetype", "parse_archetype_w2", <<archetype.archetype_id.as_string, archetype.validator.warnings>>)
+			if archetype_flat.validator.has_warnings then
+				post_warning(Current, "parse_archetype", "parse_archetype_w2", <<archetype_flat.archetype_id.as_string, archetype_flat.validator.warnings>>)
 			end
 		end
 
 feature -- Access
 
-	archetype: ARCHETYPE
+	archetype_differential: ARCHETYPE
 			-- archetype representing differential structure with respect to parent archetype;
 			-- if this is a non-specialised archetype, then it is the same as the flat form, else
 			-- it is just the differences (like an OO source file for a subclass)
 
-	flat_form: ARCHETYPE
+	archetype_flat: ARCHETYPE
 			-- inheritance-flattened form of archetype
 
 	specialisation_parent: ARCHETYPE
 			-- parent archetype if this one is specialised, or else Void
-
-feature -- Commands
-
-	convert_archetype_to_differential
-			-- modify 'archetype' if specialised, to be in differential form by removing inherited parts
-		require
-			is_valid
-		do
-			if is_specialised then
-				archetype.convert_to_differential
-			end
-		end
 
 feature -- Status Report
 
@@ -90,12 +113,12 @@ feature -- Status Report
 	is_specialised: BOOLEAN is
 			-- True if archetype is a specialisation
 		do
-			Result := archetype.is_specialised
+			Result := archetype_differential.is_specialised
 		end
 
 invariant
 	Parent_existence: specialisation_parent /= Void implies is_specialised
-	Parent_validity: specialisation_parent /= Void implies specialisation_parent.archetype_id.semantic_id.is_equal(archetype.archetype_id.semantic_parent_id)
+	Parent_validity: specialisation_parent /= Void implies specialisation_parent.archetype_id.semantic_id.is_equal(archetype_differential.archetype_id.semantic_parent_id)
 
 end
 
