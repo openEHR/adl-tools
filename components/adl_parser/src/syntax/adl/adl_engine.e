@@ -1,10 +1,12 @@
 indexing
 	component:   "openEHR Archetype Project"
-	description: "interface class to ADL parser and parse tree"
+	description: "[
+				 This class knows how to parse an ADL text, and serialise an ARCHETYPE object.
+				 ]"
 	keywords:    "ADL"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003-2005 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2003-2007 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"

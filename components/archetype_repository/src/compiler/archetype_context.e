@@ -47,6 +47,7 @@ feature -- Initialisation
 				-- FIXME set flat_form to structure generated from differential form in memory
 			end
 
+	-- FIXME: the following call yet to be properly implemented
 	--		archetype_differential.validate
 	--		if archetype_differential.is_valid then
 	--			post_info(Current, "parse_archetype", "parse_archetype_i2", <<archetype_differential.archetype_id.as_string>>)
@@ -97,18 +98,21 @@ feature -- Access
 	archetype_differential: ARCHETYPE
 			-- archetype representing differential structure with respect to parent archetype;
 			-- if this is a non-specialised archetype, then it is the same as the flat form, else
-			-- it is just the differences (like an OO source file for a subclass)
+			-- it is just the differences (like an object-oriented source file for a subclass)
 
 	archetype_flat: ARCHETYPE
 			-- inheritance-flattened form of archetype
 
-	specialisation_parent: ARCHETYPE
+	specialisation_parent: ARCH_CONTEXT
 			-- parent archetype if this one is specialised, or else Void
 
 feature -- Status Report
 
 	is_valid: BOOLEAN
-			-- True if archetype object created and 'is_valid' True
+			-- True if archetype object created and 'is_valid' True. This can be used to check if the archetype has
+			-- actually been compiled and is available in memory. This is useful for specialised archetypes because
+			-- you want to know if the parent has been compiled (up the lineage) before you can compile the current
+			-- one
 
 	is_specialised: BOOLEAN is
 			-- True if archetype is a specialisation
@@ -118,7 +122,7 @@ feature -- Status Report
 
 invariant
 	Parent_existence: specialisation_parent /= Void implies is_specialised
-	Parent_validity: specialisation_parent /= Void implies specialisation_parent.archetype_id.semantic_id.is_equal(archetype_differential.archetype_id.semantic_parent_id)
+	Parent_validity: specialisation_parent /= Void implies specialisation_parent.archetype_flat.archetype_id.semantic_id.is_equal(archetype_differential.archetype_id.semantic_parent_id)
 
 end
 

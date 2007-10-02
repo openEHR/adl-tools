@@ -1,7 +1,7 @@
 indexing
 	component:   "openEHR Archetype Project"
 	description: "[
-			 Shared ADL_INTERFACE Object for C wrapper for ADL_INTERFACE.
+			 Shared access to ARCHETYPE_PARSER.
 			 ]"
 	keywords:    "C wrapper"
 	author:      "Thomas Beale"
@@ -13,14 +13,14 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class SHARED_ARCHETYPE_COMPILER
+class SHARED_ARCHETYPE_PARSER
 
 inherit
 	SHARED_APPLICATION_CONTEXT
 
 feature {NONE} -- Implementation
 
-	archetype_compiler: ARCHETYPE_COMPILER is
+	archetype_compiler: ARCHETYPE_PARSER is
 		once
 			create Result.make
 		end

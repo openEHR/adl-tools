@@ -1,31 +1,34 @@
 indexing
 	component:   "openEHR Archetype Project"
 	description: "[
-				 Archetype compiler interface. This object is targetted to archetypes found in the 
-				 ARCHETYPE_DIRECTORY, and can then be used to parse (single archetype), compile
-				 (archetype lineage), save (serialise back to ADL), and save-as (serialise to
-				 another format).
+				 Archetype parser interface. This object is targetted to archetypes found in the 
+				 ARCHETYPE_DIRECTORY. It can be driven by a recursive ARCHETYPE_DIRECTORY visitor
+				 which would aim to compile the entire repository, or in an ad hoc fashion, as by the
+				 Archetype Editor. For each target, it can then be used to:
+				 	- parse (single archetype), 
+				 	- save (serialise back to ADL), 
+				 	- save-as (serialise to another format).
 				 ]"
 	keywords:    "test, ADL"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2003-2007 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class ARCHETYPE_COMPILER
+class ARCHETYPE_PARSER
 
 inherit
 	SHARED_ARCHETYPE_DIRECTORY
 
-	SHARED_C_FACTORY
-		export
-			{NONE} all
-			{ANY} constraint_model_factory
-		end
+--	SHARED_C_FACTORY
+--		export
+--			{NONE} all
+--			{ANY} constraint_model_factory
+--		end
 
 	SHARED_APPLICATION_CONTEXT
 		export
@@ -111,7 +114,7 @@ feature -- Access
 		require
 			has_target: has_target
 		do
-			Result := target.source_text
+			Result := target.differential_text
 		end
 
 	archetype_differential: ARCHETYPE is
@@ -157,12 +160,6 @@ feature -- Status Report
 			-- Has the archetype been parsed into an ARCHETYPE structure and then validated?
 		do
 			Result := target /= Void and then target.compilation_context /= Void and then target.compilation_context.is_valid
-		end
-
-	archetype_specialised: BOOLEAN
-			-- Has the archetype been parsed into an ARCHETYPE structure and then validated?
-		do
-			Result := target /= Void and then target.compilation_context /= Void and then target.compilation_context.is_specialised
 		end
 
 	save_succeeded: BOOLEAN
@@ -216,8 +213,15 @@ feature -- Commands
 			if not exception_encountered then
 				clear_billboard
 
-				if target.has_source_file then
-					an_archetype := adl_engine.parse (target.source_text, True)
+				if target.has_differential_file then
+					-- FIXME: if archetype is specialised, and parents not yet parsed, parse the archetypes up
+					-- the specialisation lineage first until we get to top or else an archetype that has been
+					-- parsed and validated.
+					if target.is_specialised then
+						-- do something
+					end
+
+					an_archetype := adl_engine.parse (target.differential_text, True)
 
 					if an_archetype = Void then
 						post_error (Current, "parse_archetype", "parse_archetype_e1", <<adl_engine.parse_error_text>>)
@@ -226,8 +230,6 @@ feature -- Commands
 
 						-- Put the archetype into its directory node; note that this runs its validator(s)
 						target.set_compilation_context_from_differential (an_archetype)
-
-						-- FIXME: if archetype is specialised, continue the process back up the specialisation lineage.
 					end
 
 				elseif target.is_flat_file_out_of_date then
@@ -333,7 +335,7 @@ feature -- Commands
 					serialised_flat := adl_engine.serialise(archetype_flat, "adl")
 					target.save_flat (serialised_flat)
 
-					if archetype_specialised then
+					if target.is_specialised then
 						serialised_differential := adl_engine.serialise(archetype_differential, "adl")
 						target.save_differential (serialised_differential)
 					else
@@ -370,7 +372,7 @@ feature -- Commands
 				if archetype_valid then
 					serialised_flat := adl_engine.serialise(archetype_flat, serialise_format)
 					target.save_flat_as (a_full_path, serialised_flat)
-					if archetype_specialised then
+					if target.is_specialised then
 						serialised_differential := adl_engine.serialise(archetype_differential, serialise_format)
 						target.save_differential_as (a_full_path, serialised_differential)
 					else

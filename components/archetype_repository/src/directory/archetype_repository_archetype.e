@@ -38,13 +38,13 @@ feature -- Initialisation
 		do
 			id := an_id
 			make_adi (a_root_path, a_full_path, a_repository)
-			source_path := full_path.twin
-			source_path.replace_substring (Archetype_source_file_extension, source_path.count - Archetype_flat_file_extension.count + 1, source_path.count)
+			differential_path := full_path.twin
+			differential_path.replace_substring (Archetype_source_file_extension, differential_path.count - Archetype_flat_file_extension.count + 1, differential_path.count)
 		end
 
 feature -- Access
 
-	source_path: STRING
+	differential_path: STRING
 			-- path of differential source file of archetype
 
 	id: ARCHETYPE_ID
@@ -59,19 +59,19 @@ feature -- Access
 			Result_exists: Result /= Void
 		end
 
-	source_text: STRING
+	differential_text: STRING
 			-- The text of the archetype source file, i.e. the differential form
 		require
-			has_source_file
+			has_differential_file
 		do
-			Result := file_repository.text (source_path)
-			source_text_timestamp := file_repository.text_timestamp
+			Result := file_repository.text (differential_path)
+			differential_text_timestamp := file_repository.text_timestamp
 		end
 
 	flat_text_timestamp: INTEGER
 			-- Date and time at which the archetype flat file was last modified.
 
-	source_text_timestamp: INTEGER
+	differential_text_timestamp: INTEGER
 			-- Date and time at which the archetype source file was last modified.
 
 	compilation_context: ARCH_CONTEXT
@@ -93,10 +93,10 @@ feature -- Access
 
 feature -- Status Report
 
-	has_source_file: BOOLEAN is
+	has_differential_file: BOOLEAN is
 			-- True if repository has a source-form file for this archetype
 		do
-			Result := file_repository.is_valid_path (source_path)
+			Result := file_repository.is_valid_path (differential_path)
 		end
 
 	is_specialised: BOOLEAN is
@@ -118,7 +118,7 @@ feature -- Commands
 		require
 			Text_valid: a_text /= Void and then not a_text.is_empty
 		do
-			file_repository.save_text_to_file(source_path, a_text)
+			file_repository.save_text_to_file(differential_path, a_text)
 		end
 
 	save_differential_as (a_path, a_text: STRING)

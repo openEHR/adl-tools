@@ -20,7 +20,7 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_ARCHETYPE_COMPILER
+	SHARED_ARCHETYPE_PARSER
 		export
 			{NONE} all
 		undefine

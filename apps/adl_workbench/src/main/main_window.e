@@ -26,7 +26,7 @@ inherit
 			default_create
 		end
 
-	SHARED_ARCHETYPE_COMPILER
+	SHARED_ARCHETYPE_PARSER
 		export
 			{NONE} all
 		undefine
