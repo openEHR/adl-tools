@@ -17,8 +17,6 @@ deferred class
 inherit
 	ARCHETYPE_REPOSITORY_I
 
-
-
 	SHARED_RESOURCES
 		export
 			{NONE} all
@@ -65,8 +63,7 @@ feature -- Status Report
 			rf: RAW_FILE
 		do
 			if path /= Void and then not path.is_empty then
-				s := path.twin
-				s.prune_all_trailing (os_directory_separator)
+				s := file_system.canonical_pathname (path)
 				create rf.make (s)
 				Result := rf.exists and then rf.is_directory
 			end
