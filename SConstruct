@@ -23,25 +23,15 @@ def geyacc_html(target, source):
 if not env.Detect('gelex') or not env.Detect('geyacc'):
 	print 'WARNING! The Gobo tools are missing from your path: cannot build the parsers.'
 else:
-	dir = 'components/adl_parser/src/syntax/adl/parser/'
-	gelex(dir + 'adl_scanner.e', dir + 'adl_scanner.l')
-	geyacc([dir + 'adl_validator.e', dir + 'adl_tokens.e'], dir + 'adl_validator.y')
-	geyacc_html(dir + 'adl_validator.html', dir + 'adl_validator.y')
-
-	dir = 'components/adl_parser/src/syntax/cadl/parser/'
-	gelex(dir + 'cadl_scanner.e', dir + 'cadl_scanner.l')
-	geyacc([dir + 'cadl_validator.e', dir + 'cadl_tokens.e'], dir + 'cadl_validator.y')
-	geyacc_html(dir + 'cadl_validator.html', dir + 'cadl_validator.y')
-
-	dir = 'libraries/common_libs/src/structures/syntax/dadl/parser/'
-	gelex(dir + 'dadl_scanner.e', dir + 'dadl_scanner.l')
-	geyacc([dir + 'dadl2_validator.e', dir + 'dadl_tokens.e'], dir + 'dadl2_validator.y')
-	geyacc_html(dir + 'dadl2_validator.html', dir + 'dadl2_validator.y')
-
-	dir = 'libraries/common_libs/src/unit_parser/parser/'
-	gelex(dir + 'units_scanner.e', dir + 'units_scanner.l')
-	geyacc([dir + 'units_parser.e', dir + 'units_tokens.e'], dir + 'units_parser.y')
-	geyacc_html(dir + 'units_parser.html', dir + 'units_parser.y')
+	for scanner, parser, tokens, dir in [
+		['adl_scanner', 'adl_validator', 'adl_tokens', 'components/adl_parser/src/syntax/adl/parser/'],
+		['cadl_scanner', 'cadl_validator', 'cadl_tokens', 'components/adl_parser/src/syntax/cadl/parser/'],
+		['dadl_scanner', 'dadl2_validator', 'dadl_tokens', 'libraries/common_libs/src/structures/syntax/dadl/parser/'],
+		['units_scanner', 'units_parser', 'units_tokens', 'libraries/common_libs/src/unit_parser/parser/']
+	]:
+		gelex(dir + scanner + '.e', dir + scanner + '.l')
+		geyacc([dir + parser + '.e', dir + tokens + '.e'], dir + parser + '.y')
+		geyacc_html(dir + parser + '.html', dir + parser + '.y')
 
 # Define how to build the Eiffel projects.
 
@@ -96,7 +86,7 @@ if distrib:
 
 				command = [
 					'makensis', '-V1',
-					'-XOutFile $TARGET',
+					'-XOutFile ${TARGET.abspath}',
 					'$SOURCE'
 				]
 
