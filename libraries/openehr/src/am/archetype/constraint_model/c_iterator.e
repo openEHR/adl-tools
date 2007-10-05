@@ -1,10 +1,8 @@
 indexing
 	component:   "openEHR Archetype Project"
 	description: "[
-				 Find inherited subtrees in an archetype, i.e. subtrees of nodes that are
-				 inherited without change from a parent. These subtrees should only occur in 
-				 flat-form archetypes, and form the deletion list for turning a flat-form
-				 archetype into a differential form archetype.
+				 Generic Iterator for C_XXX class structures; this just applies various routines to
+				 Constraint model nodes. To send a visitor around, use C_VISITOR_ITERATOR.
 		         ]"
 	keywords:    "visitor, constraint model"
 	author:      "Thomas Beale"
@@ -51,7 +49,6 @@ feature -- Access
 feature -- Command
 
 	do_all(a_c_node_enter_action, a_c_node_exit_action: PROCEDURE [ANY, TUPLE [ARCHETYPE_CONSTRAINT, INTEGER]]) is
-			-- TODO: implement
 		do
 			c_node_enter_action := a_c_node_enter_action
 			c_node_exit_action := a_c_node_exit_action

@@ -86,7 +86,8 @@ feature -- Access
 			-- but 'grafted' - a simpler operation
 
 	directory: TWO_WAY_TREE [ARCH_REP_ITEM]
-			-- result of merging all source repositories in ontology structure (where specialised
+			-- the logical directory of archetypes, in an ontology-based structure.
+			-- Result of merging all source repositories in ontology structure (where specialised
 			-- archetypes now appear as child nodes, rather than sibling nodes, as they do
 			-- in the file system), as well as grafting on adhoc archetypes
 

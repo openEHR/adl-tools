@@ -1,10 +1,10 @@
 indexing
 	component:   "openEHR Archetype Project"
 	description: "[
-				 Archetype parser interface. This object is targetted to archetypes found in the 
-				 ARCHETYPE_DIRECTORY. It can be driven by a recursive ARCHETYPE_DIRECTORY visitor
-				 which would aim to compile the entire repository, or in an ad hoc fashion, as by the
-				 Archetype Editor. For each target, it can then be used to:
+				 Archetype parser. This object can parse single archetypes. It is used by the 
+				 ARCHETYPE_COMPILER to perform a system-wide or partial system compilation of
+				 archetypes found in the ARCHETYPE_DIRECTORY. It can be driven in an ad hoc fashion, 
+				 as by the Archetype Editor. For the target archetype, it can then be used to:
 				 	- parse (single archetype), 
 				 	- save (serialise back to ADL), 
 				 	- save-as (serialise to another format).

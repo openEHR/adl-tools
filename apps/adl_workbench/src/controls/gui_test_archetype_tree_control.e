@@ -210,8 +210,8 @@ feature -- Commands
 
 					if arch_item /= Void then
 						row.ensure_visible
-						archetype_compiler.reset
-						archetype_compiler.set_target(arch_item)
+						archetype_parser.reset
+						archetype_parser.set_target(arch_item)
 
 						from
 							tests.start
@@ -287,15 +287,15 @@ feature -- Tests
 			unused_at_codes, unused_ac_codes: ARRAYED_LIST [STRING]
 		do
 			Result := test_failed
-			archetype_compiler.parse_archetype
+			archetype_parser.parse_archetype
 
-			if archetype_compiler.archetype_valid then
+			if archetype_parser.archetype_valid then
 				Result := test_passed
-				test_status.append (" parse succeeded%N" + archetype_compiler.status)
+				test_status.append (" parse succeeded%N" + archetype_parser.status)
 
 				if remove_unused_codes then
-					unused_at_codes := archetype_compiler.archetype_differential.ontology_unused_term_codes
-					unused_ac_codes := archetype_compiler.archetype_differential.ontology_unused_constraint_codes
+					unused_at_codes := archetype_parser.archetype_differential.ontology_unused_term_codes
+					unused_ac_codes := archetype_parser.archetype_differential.ontology_unused_constraint_codes
 
 					if not unused_at_codes.is_empty or not unused_ac_codes.is_empty then
 						test_status.append (">>>>>>>>>> removing unused codes%N")
@@ -308,11 +308,11 @@ feature -- Tests
 							test_status.append ("Unused AC codes: " + display_arrayed_list (unused_ac_codes) + "%N")
 						end
 
-						archetype_compiler.archetype_differential.remove_ontology_unused_codes
+						archetype_parser.archetype_differential.remove_ontology_unused_codes
 					end
 				end
 			else
-				test_status.append (" parse failed%N" + archetype_compiler.status)
+				test_status.append (" parse failed%N" + archetype_parser.status)
 			end
 		end
 
@@ -323,19 +323,19 @@ feature -- Tests
 		do
 			Result := test_failed
 
-			if archetype_compiler.archetype_valid then
+			if archetype_parser.archetype_valid then
 				-- FIXME: Sam doesn't want the html files to go in the same place as the adl files anymore
 				-- now they should go in the path html/adl, where html is a sibling directory of the main
 				-- 'adl' directory in the repository path; 'html/adl' means "the ADL form of HTML", since
 				-- there are other things in the html directory.
-				html_fname := archetype_compiler.target.full_path.twin
+				html_fname := archetype_parser.target.full_path.twin
 				html_fname.replace_substring(".html", html_fname.count - Archetype_flat_file_extension.count, html_fname.count)
-				archetype_compiler.save_archetype_as(html_fname, "html")
+				archetype_parser.save_archetype_as(html_fname, "html")
 
-				if archetype_compiler.save_succeeded then
+				if archetype_parser.save_succeeded then
 					Result := test_passed
 				else
-					test_status.append (archetype_compiler.status + "%N")
+					test_status.append (archetype_parser.status + "%N")
 				end
 			end
 		end
@@ -347,18 +347,18 @@ feature -- Tests
 		do
 			Result := test_failed
 
-			if archetype_compiler.archetype_valid then
+			if archetype_parser.archetype_valid then
 				if overwrite then
-					archetype_compiler.save_archetype
+					archetype_parser.save_archetype
 				else
-					new_adl_file_path := file_system.pathname (system_temp_file_directory, file_system.basename (archetype_compiler.target.full_path))
-					archetype_compiler.save_archetype_as (new_adl_file_path, "adl")
+					new_adl_file_path := file_system.pathname (system_temp_file_directory, file_system.basename (archetype_parser.target.full_path))
+					archetype_parser.save_archetype_as (new_adl_file_path, "adl")
 				end
 
-				if archetype_compiler.save_succeeded then
+				if archetype_parser.save_succeeded then
 					Result := test_passed
 				else
-					test_status.append (archetype_compiler.status + "%N")
+					test_status.append (archetype_parser.status + "%N")
 				end
 			else
 				Result := test_not_applicable
@@ -372,22 +372,22 @@ feature -- Tests
 		do
 			Result := test_failed
 			if overwrite then
-				new_adl_file_path := archetype_compiler.target.full_path
+				new_adl_file_path := archetype_parser.target.full_path
 			else
-				new_adl_file_path := file_system.pathname (system_temp_file_directory, file_system.basename (archetype_compiler.target.full_path))
+				new_adl_file_path := file_system.pathname (system_temp_file_directory, file_system.basename (archetype_parser.target.full_path))
 			end
 
 			-- FIXME: these are the right paths, but we don't yet have a way of overriding the source
 			-- of an archetype from what is in its file
 			-- DO SOMETHING HERE
 
-			archetype_compiler.parse_archetype
+			archetype_parser.parse_archetype
 
-			if archetype_compiler.archetype_valid then
+			if archetype_parser.archetype_valid then
 				Result := test_passed
-				test_status.append ("Parse succeeded%N" + archetype_compiler.status)
+				test_status.append ("Parse succeeded%N" + archetype_parser.status)
 			else
-				test_status.append ("Parse failed; reason: " + archetype_compiler.status + "%N")
+				test_status.append ("Parse failed; reason: " + archetype_parser.status + "%N")
 			end
 		end
 
@@ -400,11 +400,11 @@ feature -- Tests
 			Result := Test_failed
 
 			if not overwrite then
-				orig_arch_source := archetype_compiler.flat_text
+				orig_arch_source := archetype_parser.flat_text
 
-				new_adl_file_path := file_system.pathname (system_temp_file_directory, file_system.basename (archetype_compiler.target.full_path))
+				new_adl_file_path := file_system.pathname (system_temp_file_directory, file_system.basename (archetype_parser.target.full_path))
 				-- FIXME: DO SOMETIHNG HERE TO OPEN THE NEW FILE
-				new_arch_source := archetype_compiler.serialised_flat
+				new_arch_source := archetype_parser.serialised_flat
 
 				if orig_arch_source.count = new_arch_source.count then
 					if orig_arch_source.is_equal (new_arch_source) then

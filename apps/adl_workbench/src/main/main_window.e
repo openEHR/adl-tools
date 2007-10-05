@@ -26,6 +26,13 @@ inherit
 			default_create
 		end
 
+	SHARED_ARCHETYPE_COMPILER
+		export
+			{NONE} all
+		undefine
+			copy, default_create
+		end
+
 	SHARED_ARCHETYPE_PARSER
 		export
 			{NONE} all
@@ -206,7 +213,7 @@ feature -- Access
 	need_to_set_repository: BOOLEAN
 			-- flag set on startup to indicate if repository needs to be specified by user
 
-feature -- Commands
+feature -- Application Commands
 
 	show
 			-- Do a few adjustments straight after display.
@@ -266,73 +273,31 @@ feature -- Commands
 			News_dialog.show
 		end
 
+feature -- Archetype Commands
+
 	load_and_parse_archetype
 			-- Load and parse archetype currently selected in archetype_directory.
 		require
 			archetype_selected: archetype_directory.has_selected_archetype_descriptor
 		do
-			archetype_compiler.set_target_to_selected
+			archetype_parser.set_target_to_selected
 			arch_notebook_select
 			do_with_wait_cursor (agent parse_archetype)
 		end
 
-feature {NONE} -- Commands
-
-	show_online_help is
-			-- Called by `select_actions' of `online_mi'.
+	parse_archetype is
+			-- Parse the archetype currently selected.
 		do
-			execution_environment.launch(Default_browser_command + ADL_help_page_url)
-		end
+			clear_all_controls
 
-	display_about is
-			-- Called by `pointer_button_press_actions' of `about_mi'.
-		do
-			About_dialog.show_modal_to_window (Current)
-		end
-
-	exit_app is
-			--
-		local
-			strs: ARRAYED_LIST [STRING]
-			ev_items: DYNAMIC_LIST[EV_LIST_ITEM]
-		do
-			set_total_view_area_split_position(total_view_area.split_position)
-			set_info_view_area_split_position(info_view_area.split_position)
-			set_test_view_area_split_position(test_view_area.split_position)
-			set_explorer_view_area_split_position(explorer_view_area.split_position)
-			set_app_width(width)
-			set_app_height(height)
-			set_app_x_position(x_position)
-			set_app_y_position(y_position)
-			set_app_maximised(is_maximized)
-			set_main_notebook_tab_pos(main_nb.selected_item_index)
-
-			set_path_filter_combo_selection(path_filter_combo.selected_item.text)
-
-			ev_items := path_view_check_list.checked_items
-			create strs.make(0)
-			from
-				ev_items.start
-			until
-				ev_items.off
-			loop
-				strs.extend(ev_items.item.text)
-				ev_items.forth
-			end
-			set_path_view_check_list_settings(strs)
-
-			save_resources
-			ev_application.destroy
-		end
-
-	select_language is
-			-- Called by `select_actions' of `language_combo'.
-		do
-			if not language_combo.text.is_empty then
-				archetype_compiler.set_current_language (language_combo.text)
+			if archetype_parser.has_target then
+				archetype_parser.parse_archetype
+				parser_status_area.append_text (archetype_parser.status)
 
 				if archetype_directory.selected_archetype_valid then
-					populate_view_controls
+					populate_all_archetype_controls
+				else
+					populate_archetype_id
 				end
 			end
 		end
@@ -415,8 +380,8 @@ feature {NONE} -- Commands
 					end
 
 					if ok_to_write then
-						archetype_compiler.save_archetype_as (name, format)
-						parser_status_area.append_text (archetype_compiler.status)
+						archetype_parser.save_archetype_as (name, format)
+						parser_status_area.append_text (archetype_parser.status)
 
 						-- FIXME: currently this refreshes the whole view and forgets what archetype the user was on;
 						-- it is only useful to do this in any case if the archetype was written over the .adl file
@@ -439,23 +404,6 @@ feature {NONE} -- Commands
 		do
 			if archetype_directory.has_selected_archetype_descriptor then
 				execution_environment.launch (editor_command + " " + archetype_directory.selected_descriptor.full_path)
-			end
-		end
-
-	parse_archetype is
-			-- Parse the archetype currently selected.
-		do
-			clear_all_controls
-
-			if archetype_compiler.has_target then
-				archetype_compiler.parse_archetype
-				parser_status_area.append_text (archetype_compiler.status)
-
-				if archetype_directory.selected_archetype_valid then
-					populate_all_archetype_controls
-				else
-					populate_archetype_id
-				end
 			end
 		end
 
@@ -523,16 +471,6 @@ feature {NONE} -- Commands
 			end
 		end
 
-	move_cursor_to_pointer_location (a_x, a_y, a_button: INTEGER; a_x_tilt, a_y_tilt, a_pressure: DOUBLE; a_screen_x, a_screen_y: INTEGER) is
-			-- Called by `pointer_button_press_actions' of `archetype_text_edit_area'.
-		do
-		end
-
-	pointer_double_click_action (a_x, a_y, a_button: INTEGER; a_x_tilt, a_y_tilt, a_pressure: DOUBLE; a_screen_x, a_screen_y: INTEGER) is
-			-- Called by `pointer_double_press_actions' of `archetype_text_edit_area'.
-		do
-		end
-
 	archetype_text_edit_process_keystroke (a_keystring: STRING) is
 			-- Called by `key_press_string_actions' of `archetype_text_edit_area'.
 		do
@@ -556,16 +494,6 @@ feature {NONE} -- Commands
 			-- statuses cleared
 		do
 			archetype_test_tree_control.populate
-		end
-
-	show_clipboard is
-			-- show the current contents of the clipboard
-		local
-			ev_info_dlg: EV_INFORMATION_DIALOG
-		do
-			create ev_info_dlg.make_with_text (ev_application.clipboard.text)
-			ev_info_dlg.set_title ("Clipboard Contents")
-			ev_info_dlg.show_modal_to_window (Current)
 		end
 
 	path_column_select (a_list_item: EV_LIST_ITEM) is
@@ -626,6 +554,88 @@ feature {NONE} -- Commands
 		do
 			translation_controls.populate_items
 		end
+
+feature {NONE} -- Application Commands
+
+	show_online_help is
+			-- Called by `select_actions' of `online_mi'.
+		do
+			execution_environment.launch(Default_browser_command + ADL_help_page_url)
+		end
+
+	display_about is
+			-- Called by `pointer_button_press_actions' of `about_mi'.
+		do
+			About_dialog.show_modal_to_window (Current)
+		end
+
+	exit_app is
+			--
+		local
+			strs: ARRAYED_LIST [STRING]
+			ev_items: DYNAMIC_LIST[EV_LIST_ITEM]
+		do
+			set_total_view_area_split_position(total_view_area.split_position)
+			set_info_view_area_split_position(info_view_area.split_position)
+			set_test_view_area_split_position(test_view_area.split_position)
+			set_explorer_view_area_split_position(explorer_view_area.split_position)
+			set_app_width(width)
+			set_app_height(height)
+			set_app_x_position(x_position)
+			set_app_y_position(y_position)
+			set_app_maximised(is_maximized)
+			set_main_notebook_tab_pos(main_nb.selected_item_index)
+
+			set_path_filter_combo_selection(path_filter_combo.selected_item.text)
+
+			ev_items := path_view_check_list.checked_items
+			create strs.make(0)
+			from
+				ev_items.start
+			until
+				ev_items.off
+			loop
+				strs.extend(ev_items.item.text)
+				ev_items.forth
+			end
+			set_path_view_check_list_settings(strs)
+
+			save_resources
+			ev_application.destroy
+		end
+
+	select_language is
+			-- Called by `select_actions' of `language_combo'.
+		do
+			if not language_combo.text.is_empty then
+				archetype_parser.set_current_language (language_combo.text)
+
+				if archetype_directory.selected_archetype_valid then
+					populate_view_controls
+				end
+			end
+		end
+
+	move_cursor_to_pointer_location (a_x, a_y, a_button: INTEGER; a_x_tilt, a_y_tilt, a_pressure: DOUBLE; a_screen_x, a_screen_y: INTEGER) is
+			-- Called by `pointer_button_press_actions' of `archetype_text_edit_area'.
+		do
+		end
+
+	pointer_double_click_action (a_x, a_y, a_button: INTEGER; a_x_tilt, a_y_tilt, a_pressure: DOUBLE; a_screen_x, a_screen_y: INTEGER) is
+			-- Called by `pointer_double_press_actions' of `archetype_text_edit_area'.
+		do
+		end
+
+	show_clipboard is
+			-- show the current contents of the clipboard
+		local
+			ev_info_dlg: EV_INFORMATION_DIALOG
+		do
+			create ev_info_dlg.make_with_text (ev_application.clipboard.text)
+			ev_info_dlg.set_title ("Clipboard Contents")
+			ev_info_dlg.show_modal_to_window (Current)
+		end
+
 
 feature {NONE} -- Edit events
 
