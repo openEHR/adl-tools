@@ -200,8 +200,12 @@ feature {NONE} -- Initialization
 			suppress_tab_key_insertion (arch_desc_copyright_text, arch_desc_resource_orig_res_mlist, parser_status_area)
 			suppress_tab_key_insertion (archetype_text_edit_area, arch_notebook, parser_status_area)
 
+			add_shortcut (agent build_system, {EV_KEY_CONSTANTS}.key_f7, False, False) -- F7 = rebuild
+			add_shortcut (agent rebuild_system, {EV_KEY_CONSTANTS}.key_f7, False, True) -- shift-F7 = force complete rebuild
+
 			add_shortcut (agent step_focused_notebook_tab (1), {EV_KEY_CONSTANTS}.key_tab, True, False)
 			add_shortcut (agent step_focused_notebook_tab (-1), {EV_KEY_CONSTANTS}.key_tab, True, True)
+	--		add_shortcut (agent FIXME-routine to stop build processing (-1), {EV_KEY_CONSTANTS}.FIXME-ctrl-c, True, True)
 
 			add_menu_shortcut (open_menu_item, {EV_KEY_CONSTANTS}.key_o, True, False)
 			add_menu_shortcut_for_action (copy_menu_item, agent call_unless_text_focused (agent on_copy), {EV_KEY_CONSTANTS}.key_c, True, False)
@@ -212,6 +216,9 @@ feature -- Access
 
 	need_to_set_repository: BOOLEAN
 			-- flag set on startup to indicate if repository needs to be specified by user
+
+	last_selected_archetype: ARCH_REP_ARCHETYPE
+			-- reference to last archetype selected due to user navigation of directory
 
 feature -- Application Commands
 
@@ -275,35 +282,39 @@ feature -- Application Commands
 
 feature -- Archetype Commands
 
-	load_and_parse_archetype
-			-- Load and parse archetype currently selected in archetype_directory.
-		require
-			archetype_selected: archetype_directory.has_selected_archetype_descriptor
+	build_system is
+			-- build the whole system
 		do
-			archetype_parser.set_target_to_selected
-			arch_notebook_select
-			do_with_wait_cursor (agent parse_archetype)
+			archetype_compiler.build_all(agent build_gui_update)
 		end
 
-	parse_archetype is
-			-- Parse the archetype currently selected.
+	rebuild_system is
+			-- build the whole system
 		do
-			clear_all_controls
+			archetype_compiler.rebuild_all(agent build_gui_update)
+		end
 
-			if archetype_parser.has_target then
-				archetype_parser.parse_archetype
-				parser_status_area.append_text (archetype_parser.status)
-
-				if archetype_directory.selected_archetype_valid then
-					populate_all_archetype_controls
-				else
-					populate_archetype_id
-				end
+	parse_archetype
+			-- Load and parse archetype currently selected in archetype_directory.
+		do
+			if archetype_directory.selected_archetype /= last_selected_archetype then
+				arch_notebook_select
 			end
+			clear_all_controls
+			if archetype_directory.selected_archetype.is_valid then
+				populate_all_archetype_controls
+			elseif archetype_directory.selected_archetype.is_parsed then
+				populate_archetype_id
+			else
+				do_with_wait_cursor (agent archetype_compiler.build_lineage (archetype_directory.selected_archetype))
+				populate_all_archetype_controls
+				parser_status_area.append_text (archetype_compiler.status)
+			end
+			last_selected_archetype := archetype_directory.selected_archetype
 		end
 
 	open_adl_file is
-			-- Let the user select an ADL file, and the load and parse it.
+			-- Let the user select an ADL file, and then load and parse it.
 		local
 			dialog: EV_FILE_OPEN_DIALOG
 			ara: ARCH_REP_ARCHETYPE
@@ -334,10 +345,10 @@ feature -- Archetype Commands
 			save_dialog: EV_FILE_SAVE_DIALOG
 			name, format: STRING
 		do
-			if archetype_directory.selected_archetype_valid then
+			if archetype_directory.selected_archetype.is_valid then
 				ok_to_write := True
 
-				name := archetype_directory.selected_descriptor.full_path.twin
+				name := archetype_directory.selected_archetype.full_path.twin
 				name.remove_tail (archetype_file_extensions [Archetype_flat_file_extension].count)
 
 				create save_dialog
@@ -402,8 +413,8 @@ feature -- Archetype Commands
 	edit_archetype is
 			-- launch external editor with archetype
 		do
-			if archetype_directory.has_selected_archetype_descriptor then
-				execution_environment.launch (editor_command + " " + archetype_directory.selected_descriptor.full_path)
+			if archetype_directory.has_selected_archetype then
+				execution_environment.launch (editor_command + " " + archetype_directory.selected_archetype.full_path)
 			end
 		end
 
@@ -415,21 +426,21 @@ feature -- Archetype Commands
 
 	node_map_shrink_tree_one_level is
 		do
-			if archetype_directory.selected_archetype_valid then
+			if archetype_directory.selected_archetype.is_valid then
 				node_map_control.shrink_one_level
 			end
 		end
 
 	node_map_expand_tree_one_level is
 		do
-			if archetype_directory.selected_archetype_valid then
+			if archetype_directory.selected_archetype.is_valid then
 				node_map_control.expand_one_level
 			end
 		end
 
 	node_map_toggle_expand_tree is
 		do
-			if archetype_directory.selected_archetype_valid then
+			if archetype_directory.selected_archetype.is_valid then
 				node_map_control.toggle_expand_tree
 			end
 		end
@@ -442,7 +453,7 @@ feature -- Archetype Commands
 	on_tree_domain_selected
 			-- Hide technical details in `parsed_archetype_tree'.
 		do
-			if archetype_directory.selected_archetype_valid then
+			if archetype_directory.selected_archetype.is_valid then
 				node_map_control.set_domain_mode
 			end
 		end
@@ -450,7 +461,7 @@ feature -- Archetype Commands
 	on_tree_technical_selected
 			-- Display technical details in `parsed_archetype_tree'.
 		do
-			if archetype_directory.selected_archetype_valid then
+			if archetype_directory.selected_archetype.is_valid then
 				node_map_control.set_technical_mode
 			end
 		end
@@ -458,7 +469,7 @@ feature -- Archetype Commands
 	on_tree_flat_view_selected
 			-- Do not show the inherited/defined status of nodes in `parsed_archetype_tree'.
 		do
-			if archetype_directory.selected_archetype_valid then
+			if archetype_directory.selected_archetype.is_valid then
 				node_map_control.set_flat_view
 			end
 		end
@@ -466,7 +477,7 @@ feature -- Archetype Commands
 	on_tree_inheritance_selected
 			-- Show the inherited/defined status of nodes in `parsed_archetype_tree'.
 		do
-			if archetype_directory.selected_archetype_valid then
+			if archetype_directory.selected_archetype.is_valid then
 				node_map_control.set_inheritance_view
 			end
 		end
@@ -523,8 +534,8 @@ feature -- Archetype Commands
 			if arch_notebook.selected_item = archetype_text_edit_area then
 				create s.make_empty
 
-				if archetype_directory.has_selected_archetype_descriptor then
-					src := archetype_directory.selected_descriptor.flat_text
+				if archetype_directory.has_selected_archetype then
+					src := archetype_directory.selected_archetype.flat_text
 					len := src.count
 
 					from
@@ -569,6 +580,12 @@ feature {NONE} -- Application Commands
 			About_dialog.show_modal_to_window (Current)
 		end
 
+	display_interrupt is
+			-- Called by ESC keyboard accelerator.
+		do
+			Interrupt_dialog.show_modal_to_window (Current)
+		end
+
 	exit_app is
 			--
 		local
@@ -608,9 +625,9 @@ feature {NONE} -- Application Commands
 			-- Called by `select_actions' of `language_combo'.
 		do
 			if not language_combo.text.is_empty then
-				archetype_parser.set_current_language (language_combo.text)
+				set_current_language (language_combo.text)
 
-				if archetype_directory.selected_archetype_valid then
+				if archetype_directory.selected_archetype.is_valid then
 					populate_view_controls
 				end
 			end
@@ -635,7 +652,6 @@ feature {NONE} -- Application Commands
 			ev_info_dlg.set_title ("Clipboard Contents")
 			ev_info_dlg.show_modal_to_window (Current)
 		end
-
 
 feature {NONE} -- Edit events
 
@@ -782,6 +798,13 @@ feature -- Controls
 			Result.set_y_position(10)
 		end
 
+	Interrupt_dialog: EV_INFORMATION_DIALOG is
+			-- processing interrupted dialog
+		do
+			create Result.make_with_text("Processing aborted")
+			result.propagate_background_color
+		end
+
 feature {EV_DIALOG} -- Implementation
 
 	populate_archetype_directory is
@@ -844,7 +867,7 @@ feature {EV_DIALOG} -- Implementation
 		local
 			selected: ARCHETYPE
 		do
-			selected := archetype_directory.selected_archetype
+			selected := archetype_directory.selected_archetype.archetype_flat
 
 			if selected /= Void then
 				archetype_id.set_text (utf8 (selected.archetype_id.as_string))
@@ -863,8 +886,8 @@ feature {EV_DIALOG} -- Implementation
 	populate_adl_version is
 			-- populate ADL version
 		do
-			if archetype_directory.has_selected_archetype_descriptor then
-				adl_version_text.set_text (utf8 (archetype_directory.selected_archetype.adl_version))
+			if archetype_directory.has_selected_archetype then
+				adl_version_text.set_text (utf8 (archetype_directory.selected_archetype.archetype_flat.adl_version))
 			else
 				adl_version_text.remove_text
 			end
@@ -874,9 +897,9 @@ feature {EV_DIALOG} -- Implementation
 		do
 			language_combo.select_actions.block
 
-			if archetype_directory.has_selected_archetype_descriptor then
-				language_combo.set_strings (archetype_directory.selected_archetype.languages_available)
-				terminologies_list.set_strings (archetype_directory.selected_archetype.ontology.terminologies_available)
+			if archetype_directory.has_selected_archetype then
+				language_combo.set_strings (archetype_directory.selected_archetype.archetype_flat.languages_available)
+				terminologies_list.set_strings (archetype_directory.selected_archetype.archetype_flat.ontology.terminologies_available)
 			else
 				language_combo.wipe_out
 				terminologies_list.wipe_out
@@ -898,6 +921,21 @@ feature {NONE} -- Implementation
 			set_pointer_style (cursor)
 		rescue
 			set_pointer_style (cursor)
+		end
+
+	build_gui_update (ara: ARCH_REP_ARCHETYPE) is
+			-- update GUI with progress on build
+		require
+			ara /= Void
+		do
+			parser_status_area.set_text (utf8 (archetype_compiler.status))
+
+			-- FIXME: update the icons in the tree to show what is compiled and what is not:
+			-- Suggest: traffic light colours:
+			--	ARCH_REP_ARCHETYPE.is_parsed = False -> add a red marker to explorer icon
+			--  ARCH_REP_ARCHETYPE.is_parsed = True, ARCH_REP_ARCHETYPE.is_compiled = False -> add an orange marker to explorer icon
+			--  ARCH_REP_ARCHETYPE.is_compiled = True -> add green marker to explorer icon
+			ev_application.process_events
 		end
 
 feature {NONE} -- Standard Windows behaviour that EiffelVision ought to be managing automatically

@@ -121,6 +121,7 @@ feature -- Status Report
 		end
 
 invariant
+	Archetype_loaded: archetype_differential /= Void and archetype_flat /= Void
 	Parent_existence: specialisation_parent /= Void implies is_specialised
 	Parent_validity: specialisation_parent /= Void implies specialisation_parent.archetype_flat.archetype_id.semantic_id.is_equal(archetype_differential.archetype_id.semantic_parent_id)
 

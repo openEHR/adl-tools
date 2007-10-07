@@ -100,24 +100,8 @@ feature -- Access
 	archetype_id_index: DS_HASH_TABLE [ARCH_REP_ARCHETYPE, STRING]
 			-- index of archetype nodes keyed by archetype id
 
-	selected_descriptor: ARCH_REP_ARCHETYPE
+	selected_archetype: ARCH_REP_ARCHETYPE
 			-- selected archetype node
-
-	selected_archetype: ARCHETYPE is
-			-- archetype at currently selected archetype descriptor
-		do
-			if selected_descriptor /= Void and then selected_descriptor.compilation_context /= Void then
-				Result := selected_descriptor.compilation_context.archetype_flat
-			end
-		end
-
-	selected_archetype_valid: BOOLEAN is
-			-- is archetype at currently selected archetype descriptor valid?
-		do
-			if selected_descriptor /= Void and then selected_descriptor.compilation_context /= Void then
-				Result := selected_descriptor.compilation_context.is_valid
-			end
-		end
 
 	archetype_descriptor_from_full_path (full_path: STRING): ARCH_REP_ARCHETYPE
 			-- The archetype descriptor in the directory that is designated by `full_path'; else Void.
@@ -137,6 +121,46 @@ feature -- Access
 			end
 		ensure
 			has_full_path_if_attached: Result /= Void implies Result.full_path.is_equal (full_path)
+		end
+
+feature -- Status Report
+
+	has_selected_archetype: BOOLEAN
+			-- Has an archetype been selected?
+		do
+			Result := selected_archetype /= Void
+		end
+
+	has_ontological_path (a_path: STRING): BOOLEAN
+			-- check if 'a_path' exists in ontology; path will be something like
+			-- "/ehr/entry/observation/lab-result/lipids"
+		require
+			Path_exists: a_path /= Void
+		do
+			Result := ontology_index.has (a_path)
+		end
+
+	has_archetype_id (an_archetype_id: STRING): BOOLEAN
+			-- check if an_id known in archetype index of directory
+		require
+			Archetype_id_exists: an_archetype_id /= Void
+		do
+			Result := archetype_id_index.has (an_archetype_id)
+		end
+
+	has_ontological_archetype_path (a_path: STRING): BOOLEAN
+			-- check if 'a_path' exists in ontology and refers to an archetype; path will be something like
+			-- "/ehr/entry/observation/lab-result/lipids"
+		require
+			Path_exists: a_path /= Void
+		local
+			ara: ARCH_REP_ARCHETYPE
+		do
+			if ontology_index.has (a_path) then
+				ara ?= ontology_index.item (a_path).item
+			end
+
+			Result := ara /= Void
 		end
 
 feature -- Comparison
@@ -189,7 +213,7 @@ feature -- Commands
 				source_repositories.off
 			loop
 				source_repositories.item_for_iteration.repopulate
-				tree_do_all (source_repositories.item_for_iteration, agent merge_enter, agent merge_exit)
+				repository_do_all (source_repositories.item_for_iteration, agent merge_enter, agent merge_exit)
 				source_repositories.forth
 			end
 		end
@@ -263,19 +287,19 @@ feature -- Commands
 feature -- Traversal
 
 	do_all (node_enter_action, node_exit_action: PROCEDURE [ANY, TUPLE [ARCH_REP_ITEM]])
-			-- execute node_enter_action when entering a node, then recurse into subnodes, then execute
-			-- node_exit_action when leaving node
+			-- on archetype directory, execute node_enter_action when entering a node, then
+			-- recurse into subnodes, then execute node_exit_action when leaving node
 		do
 			do_all_nodes (directory, node_enter_action, node_exit_action)
 		end
 
 	do_all_archetype (node_enter_action, node_exit_action: PROCEDURE [ANY, TUPLE [ARCH_REP_ARCHETYPE]])
-			-- execute node_enter_action on archetype nodes
+			-- on archetype directory, execute node_enter_action on archetype nodes
 		do
 			do_all_archetype_nodes (directory, node_enter_action, node_exit_action)
 		end
 
-	tree_do_all (a_rep: ARCHETYPE_INDEXED_REPOSITORY_I; node_enter_action, node_exit_action: PROCEDURE [ANY, TUPLE [like directory]])
+	repository_do_all (a_rep: ARCHETYPE_INDEXED_REPOSITORY_I; node_enter_action, node_exit_action: PROCEDURE [ANY, TUPLE [like directory]])
 			-- execute node_enter_action when entering a node, then recurse into subnodes, then execute
 			-- node_exit_action when leaving node
 		do
@@ -285,38 +309,38 @@ feature -- Traversal
 feature -- Modification
 
 	set_selected_archetype_descriptor (an_arch_repos_item: ARCH_REP_ARCHETYPE)
-			-- Set `selected_descriptor'.
+			-- Set `selected_archetype'.
 		require
 			item_attached: an_arch_repos_item /= Void
 		do
-			selected_descriptor := an_arch_repos_item
+			selected_archetype := an_arch_repos_item
 		ensure
-			set: selected_descriptor = an_arch_repos_item
+			set: selected_archetype = an_arch_repos_item
 		end
 
 	set_selected_archetype_descriptor_from_ontological_path (a_path: STRING)
-			-- Set `selected_descriptor' using an ontological path like "/ehr/entry/observation/lab-result".
+			-- Set `selected_archetype' using an ontological path like "/ehr/entry/observation/lab-result".
 		require
 			path_valid: has_ontological_archetype_path (a_path)
 		do
-			selected_descriptor ?= ontology_index.item (a_path).item
+			selected_archetype ?= ontology_index.item (a_path).item
 		end
 
 	set_selected_archetype_descriptor_from_archetype_id (an_id: STRING)
-			-- Set `selected_descriptor' using an id of archetype.
+			-- Set `selected_archetype' using an id of archetype.
 		require
 			Path_valid: has_archetype_id (an_id)
 		do
-			selected_descriptor := archetype_id_index.item (an_id)
+			selected_archetype := archetype_id_index.item (an_id)
 		ensure
-			has_selected_archetype_descriptor: has_selected_archetype_descriptor
-			set: selected_descriptor.id.value.is_equal (an_id)
+			has_selected_archetype_descriptor: has_selected_archetype
+			set: selected_archetype.id.value.is_equal (an_id)
 		end
 
 	clear_selected_archetype_descriptor
-			-- Clear `selected_descriptor'.
+			-- Clear `selected_archetype'.
 		do
-			selected_descriptor := Void
+			selected_archetype := Void
 		end
 
 	add_adhoc_item (full_path: STRING)
@@ -331,46 +355,6 @@ feature -- Modification
 					graft_adhoc_item (adhoc_source_repository [full_path])
 				end
 			end
-		end
-
-feature -- Status Report
-
-	has_selected_archetype_descriptor: BOOLEAN
-			-- Has an archetype been selected?
-		do
-			Result := selected_descriptor /= Void
-		end
-
-	has_ontological_path (a_path: STRING): BOOLEAN
-			-- check if 'a_path' exists in ontology; path will be something like
-			-- "/ehr/entry/observation/lab-result/lipids"
-		require
-			Path_exists: a_path /= Void
-		do
-			Result := ontology_index.has (a_path)
-		end
-
-	has_archetype_id (an_archetype_id: STRING): BOOLEAN
-			-- check if an_id known in archetype index of directory
-		require
-			Archetype_id_exists: an_archetype_id /= Void
-		do
-			Result := archetype_id_index.has (an_archetype_id)
-		end
-
-	has_ontological_archetype_path (a_path: STRING): BOOLEAN
-			-- check if 'a_path' exists in ontology and refers to an archetype; path will be something like
-			-- "/ehr/entry/observation/lab-result/lipids"
-		require
-			Path_exists: a_path /= Void
-		local
-			ara: ARCH_REP_ARCHETYPE
-		do
-			if ontology_index.has (a_path) then
-				ara ?= ontology_index.item (a_path).item
-			end
-
-			Result := ara /= Void
 		end
 
 feature {NONE} -- Implementation
@@ -422,7 +406,7 @@ feature {NONE} -- Implementation
 					node_enter_action.call([ara])
    				end
  				do_all_archetype_nodes(node.child, node_enter_action, node_exit_action)
- 				if ara /= Void then
+ 				if ara /= Void and node_exit_action /= Void then
 					node_exit_action.call([ara])
  				end
   	  			debug("arch_dir")

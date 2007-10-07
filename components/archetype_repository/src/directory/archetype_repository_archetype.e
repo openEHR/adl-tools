@@ -22,6 +22,13 @@ inherit
 			is_equal
 		end
 
+	MESSAGE_BILLBOARD
+		export
+			{NONE} all
+		undefine
+			is_equal
+		end
+
 	COMPARABLE
 
 create
@@ -74,9 +81,6 @@ feature -- Access
 	differential_text_timestamp: INTEGER
 			-- Date and time at which the archetype source file was last modified.
 
-	compilation_context: ARCH_CONTEXT
-			-- Context object for compilation activities.
-
 	group_name: STRING
 			-- Name distinguishing the type of item and the group to which its `repository' belongs.
 			-- Useful as a logical key to pixmap icons, etc.
@@ -90,6 +94,35 @@ feature -- Access
 
 	specialisation_parent: ARCH_REP_ARCHETYPE
 			-- parent descriptor, for specialised archetypes only
+
+	archetype_lineage: ARRAYED_LIST [ARCH_REP_ARCHETYPE] is
+			-- lineage of archetypes from parent to this one, inclusive of the current one.
+			-- For non-specialised archetypes, contains just the top-level archetype.
+			-- NOTE: in theory this could be precomputed from ARCH_DIRECTORY, but modifications to
+			-- the directory structure would mean always recomputing parts of it. This computation
+			-- is not particularly expensive anyway...however, the result could be cached on a per-
+			-- instance basis to be more efficient
+		local
+			csr: ARCH_REP_ARCHETYPE
+		do
+			create Result.make(1)
+			from
+				csr := Current
+			until
+				csr = Void
+			loop
+				Result.put_front (csr)
+				csr := csr.specialisation_parent
+			end
+		end
+
+	archetype_differential: ARCHETYPE
+			-- archetype representing differential structure with respect to parent archetype;
+			-- if this is a non-specialised archetype, then it is the same as the flat form, else
+			-- it is just the differences (like an object-oriented source file for a subclass)
+
+	archetype_flat: ARCHETYPE
+			-- inheritance-flattened form of archetype
 
 feature -- Status Report
 
@@ -108,8 +141,20 @@ feature -- Status Report
 	is_flat_file_out_of_date: BOOLEAN
 			-- Has the loaded archetype designated by `full_path' changed on disk since last read?
 		do
-			Result := compilation_context = Void or file_repository.has_file_changed_on_disk (full_path, flat_text_timestamp)
+			Result := not is_parsed or file_repository.has_file_changed_on_disk (full_path, flat_text_timestamp)
 		end
+
+	is_parsed: BOOLEAN is
+			-- True if archetype has been parsed and loaded in at least flat form
+		do
+			Result := archetype_flat /= Void
+		end
+
+	is_valid: BOOLEAN
+			-- True if archetype object created and 'is_valid' True. This can be used to check if the archetype has
+			-- actually been compiled and is available in memory. This is useful for specialised archetypes because
+			-- you want to know if the parent has been compiled (up the lineage) before you can compile the current
+			-- one
 
 feature -- Commands
 
@@ -157,22 +202,71 @@ feature -- Commands
 			file_repository.save_text_to_file (save_path, a_text)
 		end
 
-	set_compilation_context_from_differential (an_archetype: ARCHETYPE)
-			-- create compilation context object with an_archetype, which is
-			-- an archetype in differential (source) form (cf flattened)
+feature -- Modification
+
+	set_archetype_differential(an_archetype: ARCHETYPE) is
+			-- create with a new differential form (i.e. source form) archetype
 		require
-			an_archetype /= Void and then an_archetype.is_differential
+			Archetype_exists: an_archetype /= Void and then an_archetype.is_differential
 		do
-			create compilation_context.make_differential(an_archetype)
+			archetype_differential := an_archetype
+			if not an_archetype.is_specialised then
+				-- FIXME for the moment
+				archetype_flat := archetype_differential
+			else
+				-- FIXME set flat_form to structure generated from differential form in memory
+			end
+
+	-- FIXME: the following call yet to be properly implemented
+	--		archetype_differential.validate
+	--		if archetype_differential.is_valid then
+	--			post_info(Current, "parse_archetype", "parse_archetype_i2", <<archetype_differential.archetype_id.as_string>>)
+	--			is_valid := True
+	--		else
+	--			post_error(Current, "parse_archetype", "parse_archetype_e2", <<archetype_differential.archetype_id.as_string, archetype_differential.validator.errors>>)
+	--		end
+	--		if archetype_differential.validator.has_warnings then
+	--			post_warning(Current, "parse_archetype", "parse_archetype_w2", <<archetype_differential.archetype_id.as_string, archetype_differential.validator.warnings>>)
+	--		end
+		ensure
+			Archetype_loaded: archetype_differential /= Void
+	--		Archetype_validity: archetype_differential.is_valid implies archetype_flat /= Void
 		end
 
-	set_compilation_context_from_flat (an_archetype: ARCHETYPE)
-			-- create compilation context object with an_archetype, which is
-			-- an archetype in differential (source) form (cf flattened)
+	set_archetype_flat(an_archetype: ARCHETYPE) is
+			-- create with a flat form archetype
 		require
-			an_archetype /= Void and then not an_archetype.is_differential
+			Archetype_exists: an_archetype /= Void and then not an_archetype.is_differential
 		do
-			create compilation_context.make_flat(an_archetype)
+			archetype_flat := an_archetype
+			-- FIXME validation is currently done here on flat form; in future has to be done on the differential form,
+			-- but requires new validation code to be written. THE FOLLOWING LINES OF CODE WOULD THEN DISAPPEAR - AND THE
+			-- EQUIVALENT LINES IN THE make_differential ROUTINE ABOVE WOULD BE UNCOMMENTED, AND EITHER OPY THAT HERE
+			-- OR MAKE A NEW ROUTINE THAT VALIDATES THE DIFFERENTIAL FORM, TO BE CALLED BY BOTH make ROUTINES HERE.
+			archetype_flat.validate
+			if archetype_flat.is_valid then
+				post_info(Current, "parse_archetype", "parse_archetype_i2", <<archetype_flat.archetype_id.as_string>>)
+				is_valid := True
+
+				-- generate the differential form
+				if not an_archetype.is_specialised then
+					-- FIXME for the moment; in future needs to be separate instances??
+					archetype_differential := archetype_flat
+				else -- generate differential form from flat
+					-- first make a complete clone of the archetype; could also be done by copy of serialised form and parse
+					archetype_differential := archetype_flat.deep_twin
+					archetype_differential.convert_to_differential
+					post_info (Current, "make_flat", "arch_context_make_flat_i1", Void)
+				end
+			else
+				post_error(Current, "parse_archetype", "parse_archetype_e2", <<archetype_flat.archetype_id.as_string, archetype_flat.validator.errors>>)
+			end
+			if archetype_flat.validator.has_warnings then
+				post_warning(Current, "parse_archetype", "parse_archetype_w2", <<archetype_flat.archetype_id.as_string, archetype_flat.validator.warnings>>)
+			end
+		ensure
+			Archetype_loaded: archetype_flat /= Void
+			Archetype_validity: archetype_flat.is_valid implies archetype_differential /= Void
 		end
 
 feature -- Comparison

@@ -78,6 +78,10 @@ feature {NONE}-- Initialization
 			set_title ("ADL Workbench Icon Key")
 			
 			set_all_attributes_using_constants
+			
+				-- Connect events.
+				-- Close the application when an interface close
+				-- request is recieved on `Current'. i.e. the cross is clicked.
 
 				-- Call `user_initialization'.
 			user_initialization

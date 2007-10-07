@@ -19,6 +19,13 @@ class ARCHETYPE_COMPILER
 inherit
 	SHARED_ARCHETYPE_DIRECTORY
 
+	SHARED_ARCHETYPE_PARSER
+		export
+			{NONE} all
+		undefine
+			copy, default_create
+		end
+
 	SHARED_RESOURCES
 		export
 			{NONE} all
@@ -53,30 +60,79 @@ feature -- Status Report
 
 feature -- Commands
 
-	build_all is
+	build_all(visual_update_action: PROCEDURE [ANY, TUPLE [ARCH_REP_ARCHETYPE]]) is
 			-- rebuild the whole system, but don't rebuild artefact that seem to already be built
+			-- the visual_update_action argument is called at the end of processng each archetype and
+			-- can be used to perform GUI updates during processing
 		do
-
+			status.wipe_out
+			status.append("=============== building system ===============%N")
+			force := False
+			archetype_directory.do_all_archetype (agent process_one_archetype, visual_update_action)
 		end
 
-	rebuild_all is
+	rebuild_all(visual_update_action: PROCEDURE [ANY, TUPLE [ARCH_REP_ARCHETYPE]]) is
 			-- force rebuild the whole system from scratch, regardless of previous previous attempts
 		do
-
+			status.wipe_out
+			status.append("=============== rebuilding system from scratch ===============%N")
+			force := True
+			archetype_directory.do_all_archetype (agent process_one_archetype, visual_update_action)
 		end
 
 	build_lineage (ara: ARCH_REP_ARCHETYPE) is
 			-- build just the archetypes that need to be rebuilt in the lineage containing ara, down as far
 			-- as ara, and not including sibling branches (since this would create errors in unrelated archetypes)
+		require
+			ara /= Void
 		do
-
+			status.wipe_out
+			force := False
+			process_lineage(ara)
 		end
 
 	rebuild_lineage (ara: ARCH_REP_ARCHETYPE) is
 			-- force rebuild of the archetypes in the lineage containing ara
+		require
+			ara /= Void
 		do
-
+			status.wipe_out
+			force := True
+			process_lineage(ara)
 		end
+
+feature {NONE} -- Implementation
+
+	process_lineage (ara: ARCH_REP_ARCHETYPE) is
+			-- build just the archetypes that need to be rebuilt in the lineage containing ara, down as far
+			-- as ara, and not including sibling branches (since this would create errors in unrelated archetypes)
+		local
+			arch_lin: ARRAYED_LIST [ARCH_REP_ARCHETYPE]
+		do
+			from
+				arch_lin := ara.archetype_lineage
+				arch_lin.start
+			until
+				arch_lin.off
+			loop
+				process_one_archetype(arch_lin.item)
+				arch_lin.forth
+			end
+		end
+
+	process_one_archetype(ara: ARCH_REP_ARCHETYPE) is
+			-- agent routine for processing one archetype
+		do
+			if force or not ara.is_parsed then
+				status.append("------------- compiling " + ara.id.value + " -------------%N")
+				archetype_parser.set_target(ara)
+				archetype_parser.parse_archetype
+				status.append(archetype_parser.status)
+			end
+		end
+
+	force: BOOLEAN
+			-- if True, force processing even if archetype appears to be properly compiled already
 
 end
 

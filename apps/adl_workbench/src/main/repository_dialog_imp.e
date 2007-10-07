@@ -129,6 +129,8 @@ feature {NONE}-- Initialization
 			repository_dialog_reference_path_browse_button.select_actions.extend (agent get_reference_repository_path)
 			repository_dialog_work_path_button.select_actions.extend (agent get_work_repository_path)
 			repository_dialog_ok_button.select_actions.extend (agent repository_dialog_ok)
+				-- Close the application when an interface close
+				-- request is recieved on `Current'. i.e. the cross is clicked.
 
 				-- Call `user_initialization'.
 			user_initialization

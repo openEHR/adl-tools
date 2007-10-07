@@ -98,7 +98,7 @@ feature -- Commands
 			-- populate ontology controls
 		do
 			clear
-			if archetype_directory.selected_archetype.description /= Void then
+			if archetype_directory.selected_archetype.archetype_flat.description /= Void then
 				populate_authorship
 				populate_details
 				populate_resources
@@ -114,25 +114,25 @@ feature {NONE} -- Implementation
 	populate_authorship is
 			-- populate authorship fields
 		require
-			archetype_selected: archetype_directory.has_selected_archetype_descriptor
+			archetype_selected: archetype_directory.has_selected_archetype
 		local
 			contribs: ARRAYED_LIST [STRING]
 			sts: STRING
 		do
 			-- original author: tagged list of strings
-			populate_ev_multi_list_from_hash (gui.arch_desc_auth_orig_auth_mlist, archetype_directory.selected_archetype.description.original_author)
+			populate_ev_multi_list_from_hash (gui.arch_desc_auth_orig_auth_mlist, archetype_directory.selected_archetype.archetype_flat.description.original_author)
 
 			-- status
-			sts := archetype_directory.selected_archetype.description.lifecycle_state
+			sts := archetype_directory.selected_archetype.archetype_flat.description.lifecycle_state
 			if sts /= Void then
 				gui.arch_desc_status_text.set_text (utf8 (sts))
 			end
 
 			-- original language
-			gui.arch_desc_original_language_text.set_text (utf8 (archetype_directory.selected_archetype.original_language.code_string))
+			gui.arch_desc_original_language_text.set_text (utf8 (archetype_directory.selected_archetype.archetype_flat.original_language.code_string))
 
 			-- contributors: list of strings
-			contribs := archetype_directory.selected_archetype.description.other_contributors
+			contribs := archetype_directory.selected_archetype.archetype_flat.description.other_contributors
 			if contribs /= Void then
 				gui.arch_desc_auth_contrib_list.set_strings (contribs)
 			end
@@ -141,11 +141,11 @@ feature {NONE} -- Implementation
 	populate_details is
 			-- Populate details (language sensitive).
 		require
-			archetype_selected: archetype_directory.has_selected_archetype_descriptor
+			archetype_selected: archetype_directory.has_selected_archetype
 		local
 			arch_desc_item: RESOURCE_DESCRIPTION_ITEM
 		do
-			arch_desc_item := archetype_directory.selected_archetype.description.details.item(current_language)
+			arch_desc_item := archetype_directory.selected_archetype.archetype_flat.description.details.item(current_language)
 
 			if arch_desc_item /= Void then
 				if arch_desc_item.purpose /= Void then
@@ -167,19 +167,19 @@ feature {NONE} -- Implementation
 	populate_resources is
 			-- populate resources fields
 		require
-			archetype_selected: archetype_directory.has_selected_archetype_descriptor
+			archetype_selected: archetype_directory.has_selected_archetype
 		local
 			arch_pkg_uri: URI
 			arch_desc_item: RESOURCE_DESCRIPTION_ITEM
 		do
 			-- package URI
-			arch_pkg_uri := archetype_directory.selected_archetype.description.resource_package_uri
+			arch_pkg_uri := archetype_directory.selected_archetype.archetype_flat.description.resource_package_uri
 			if arch_pkg_uri /= Void then
 				gui.arch_desc_resource_package_text.set_text (utf8 (arch_pkg_uri.out))
 			end
 
 			-- list of URI resources
-			arch_desc_item := archetype_directory.selected_archetype.description.details.item(current_language)
+			arch_desc_item := archetype_directory.selected_archetype.archetype_flat.description.details.item(current_language)
 			if arch_desc_item /= Void then
 				populate_ev_multi_list_from_hash(gui.arch_desc_resource_orig_res_mlist, arch_desc_item.original_resource_uri)
 			end
@@ -190,7 +190,7 @@ feature {NONE} -- Implementation
 		local
 			arch_desc_item: RESOURCE_DESCRIPTION_ITEM
 		do
-			arch_desc_item := archetype_directory.selected_archetype.description.details.item(current_language)
+			arch_desc_item := archetype_directory.selected_archetype.archetype_flat.description.details.item(current_language)
 			if arch_desc_item /= Void and then arch_desc_item.copyright /= Void then
 				gui.arch_desc_copyright_text.set_text (utf8 (arch_desc_item.copyright))
 			end

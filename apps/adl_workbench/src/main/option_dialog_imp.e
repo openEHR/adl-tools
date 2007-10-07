@@ -111,6 +111,8 @@ feature {NONE}-- Initialization
 				-- Connect events.
 			option_dialog_editor_command_button.select_actions.extend (agent get_editor_command_directory)
 			option_dialog_ok_button.select_actions.extend (agent option_dialog_ok)
+				-- Close the application when an interface close
+				-- request is recieved on `Current'. i.e. the cross is clicked.
 
 				-- Call `user_initialization'.
 			user_initialization

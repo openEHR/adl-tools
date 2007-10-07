@@ -122,7 +122,7 @@ feature -- Access
 		require
 			has_context: archetype_parsed
 		do
-			Result := target.compilation_context.archetype_differential
+			Result := target.archetype_differential
 		end
 
 	archetype_flat: ARCHETYPE is
@@ -130,7 +130,7 @@ feature -- Access
 		require
 			has_context: archetype_parsed
 		do
-			Result := target.compilation_context.archetype_flat
+			Result := target.archetype_flat
 		end
 
 	serialised_differential: STRING
@@ -153,13 +153,13 @@ feature -- Status Report
 	archetype_parsed: BOOLEAN
 			-- Has the archetype been parsed into an ARCHETYPE structure?
 		do
-			Result := target /= Void and then target.compilation_context /= Void
+			Result := target /= Void and then target.is_parsed /= Void
 		end
 
 	archetype_valid: BOOLEAN
 			-- Has the archetype been parsed into an ARCHETYPE structure and then validated?
 		do
-			Result := target /= Void and then target.compilation_context /= Void and then target.compilation_context.is_valid
+			Result := target /= Void and then target.is_valid
 		end
 
 	save_succeeded: BOOLEAN
@@ -184,9 +184,9 @@ feature -- Modification
 	set_target_to_selected is
 			-- set target of the compiler to archetype currently selected in archetype_directory
 		require
-			archetype_available: archetype_directory.has_selected_archetype_descriptor
+			archetype_available: archetype_directory.has_selected_archetype
 		do
-			set_target(archetype_directory.selected_descriptor)
+			set_target(archetype_directory.selected_archetype)
 		ensure
 			has_target
 		end
@@ -229,7 +229,7 @@ feature -- Commands
 						post_info (Current, "parse_archetype", "parse_archetype_i1", <<target.id.as_string>>)
 
 						-- Put the archetype into its directory node; note that this runs its validator(s)
-						target.set_compilation_context_from_differential (an_archetype)
+						target.set_archetype_differential (an_archetype)
 					end
 
 				elseif target.is_flat_file_out_of_date then
@@ -241,12 +241,12 @@ feature -- Commands
 						post_info (Current, "parse_archetype", "parse_archetype_i1", <<target.id.as_string>>)
 
 						-- Put the archetype into its directory node; note that this runs its validator(s).
-						target.set_compilation_context_from_flat (an_archetype)
+						target.set_archetype_flat (an_archetype)
 					end
 				end
 
 				-- Make sure that the language is set, and that it is one of the languages in the archetype.
-				if archetype_parsed then
+				if archetype_valid then
 					-- FIXME: in future this should use archetype_differential not archetype_flat
 					if current_language = Void or not archetype_flat.has_language (current_language) then
 						set_current_language (archetype_flat.original_language.code_string)

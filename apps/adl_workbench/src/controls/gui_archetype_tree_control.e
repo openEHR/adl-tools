@@ -61,8 +61,8 @@ feature -- Commands
 		do
 			populate
 
-			if archetype_directory.has_selected_archetype_descriptor then
-				show_node := gui_file_tree.retrieve_item_recursively_by_data (archetype_directory.selected_descriptor, True)
+			if archetype_directory.has_selected_archetype then
+				show_node := gui_file_tree.retrieve_item_recursively_by_data (archetype_directory.selected_archetype, True)
 
 				if show_node /= Void then
 					gui_file_tree.ensure_item_visible (show_node)
@@ -104,7 +104,7 @@ feature -- Commands
 
 			if arch_item /= Void then
 				archetype_directory.set_selected_archetype_descriptor (arch_item)
-				gui.load_and_parse_archetype
+				gui.parse_archetype
 			else
 				archetype_directory.clear_selected_archetype_descriptor
 			end

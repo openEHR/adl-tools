@@ -80,8 +80,8 @@ feature {NONE} -- Implementation
 	ontology: ARCHETYPE_ONTOLOGY is
 			-- access to ontology of selected archetype
 		do
-			if archetype_directory.has_selected_archetype_descriptor then
-				Result := archetype_directory.selected_archetype.ontology
+			if archetype_directory.has_selected_archetype then
+				Result := archetype_directory.selected_archetype.archetype_flat.ontology
 			end
 		end
 
