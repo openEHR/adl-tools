@@ -24,12 +24,6 @@ class ARCHETYPE_PARSER
 inherit
 	SHARED_ARCHETYPE_DIRECTORY
 
---	SHARED_C_FACTORY
---		export
---			{NONE} all
---			{ANY} constraint_model_factory
---		end
-
 	SHARED_APPLICATION_CONTEXT
 		export
 			{NONE} all
@@ -153,7 +147,7 @@ feature -- Status Report
 	archetype_parsed: BOOLEAN
 			-- Has the archetype been parsed into an ARCHETYPE structure?
 		do
-			Result := target /= Void and then target.is_parsed /= Void
+			Result := target /= Void and then target.is_parsed
 		end
 
 	archetype_valid: BOOLEAN
