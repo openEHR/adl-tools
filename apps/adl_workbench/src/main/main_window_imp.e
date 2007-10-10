@@ -36,31 +36,36 @@ feature {NONE}-- Initialization
 				-- Create all widgets.
 			create menu
 			create file_menu
-			create open_menu_item
-			create parse_menu_item
-			create edit_archetype_menu_item
+			create file_menu_open
+			create file_menu_parse
+			create file_menu_edit
 			create l_ev_menu_separator_1
-			create save_as_menu_item
+			create file_menu_save_as
 			create l_ev_menu_separator_2
-			create exit_menu_item
+			create file_menu_exit
 			create edit_menu
-			create copy_menu_item
-			create select_all_menu_item
+			create edit_menu_copy
+			create edit_menu_select_all
 			create l_ev_menu_separator_3
-			create clipboard_menu_item
+			create edit_menu_clipboard
 			create repository_menu
-			create set_repository_menu_item
-			create build_menu
-			create build_menu_build
-			create build_menu_rebuild
-			create options_menu
-			create options_menu_item
-			create help_menu
-			create icon_help_menu_item
-			create news_menu_item
-			create online_menu_item
+			create repository_menu_set_repository
 			create l_ev_menu_separator_4
-			create about_menu_item
+			create repository_menu_build_all
+			create repository_menu_rebuild_all
+			create l_ev_menu_separator_5
+			create repository_menu_build_subtree
+			create repository_menu_rebuild_subtree
+			create l_ev_menu_separator_6
+			create repository_menu_interrupt_build
+			create tools_menu
+			create tools_menu_options
+			create help_menu
+			create help_menu_icons
+			create help_menu_news
+			create help_menu_online
+			create l_ev_menu_separator_7
+			create help_menu_about
 			create main_nb
 			create viewer_vbox
 			create action_bar
@@ -198,31 +203,36 @@ feature {NONE}-- Initialization
 				-- Build widget structure.
 			set_menu_bar (menu)
 			menu.extend (file_menu)
-			file_menu.extend (open_menu_item)
-			file_menu.extend (parse_menu_item)
-			file_menu.extend (edit_archetype_menu_item)
+			file_menu.extend (file_menu_open)
+			file_menu.extend (file_menu_parse)
+			file_menu.extend (file_menu_edit)
 			file_menu.extend (l_ev_menu_separator_1)
-			file_menu.extend (save_as_menu_item)
+			file_menu.extend (file_menu_save_as)
 			file_menu.extend (l_ev_menu_separator_2)
-			file_menu.extend (exit_menu_item)
+			file_menu.extend (file_menu_exit)
 			menu.extend (edit_menu)
-			edit_menu.extend (copy_menu_item)
-			edit_menu.extend (select_all_menu_item)
+			edit_menu.extend (edit_menu_copy)
+			edit_menu.extend (edit_menu_select_all)
 			edit_menu.extend (l_ev_menu_separator_3)
-			edit_menu.extend (clipboard_menu_item)
+			edit_menu.extend (edit_menu_clipboard)
 			menu.extend (repository_menu)
-			repository_menu.extend (set_repository_menu_item)
-			menu.extend (build_menu)
-			build_menu.extend (build_menu_build)
-			build_menu.extend (build_menu_rebuild)
-			menu.extend (options_menu)
-			options_menu.extend (options_menu_item)
+			repository_menu.extend (repository_menu_set_repository)
+			repository_menu.extend (l_ev_menu_separator_4)
+			repository_menu.extend (repository_menu_build_all)
+			repository_menu.extend (repository_menu_rebuild_all)
+			repository_menu.extend (l_ev_menu_separator_5)
+			repository_menu.extend (repository_menu_build_subtree)
+			repository_menu.extend (repository_menu_rebuild_subtree)
+			repository_menu.extend (l_ev_menu_separator_6)
+			repository_menu.extend (repository_menu_interrupt_build)
+			menu.extend (tools_menu)
+			tools_menu.extend (tools_menu_options)
 			menu.extend (help_menu)
-			help_menu.extend (icon_help_menu_item)
-			help_menu.extend (news_menu_item)
-			help_menu.extend (online_menu_item)
-			help_menu.extend (l_ev_menu_separator_4)
-			help_menu.extend (about_menu_item)
+			help_menu.extend (help_menu_icons)
+			help_menu.extend (help_menu_news)
+			help_menu.extend (help_menu_online)
+			help_menu.extend (l_ev_menu_separator_7)
+			help_menu.extend (help_menu_about)
 			extend (main_nb)
 			main_nb.extend (viewer_vbox)
 			viewer_vbox.extend (action_bar)
@@ -371,27 +381,30 @@ feature {NONE}-- Initialization
 			create color_constant_set_procedures.make (10)
 			create color_constant_retrieval_functions.make (10)
 			file_menu.set_text ("&File")
-			open_menu_item.set_text ("&Open...")
-			parse_menu_item.set_text ("&Parse")
-			edit_archetype_menu_item.set_text ("&Edit")
-			save_as_menu_item.set_text ("Save &As...")
-			exit_menu_item.set_text ("E&xit")
+			file_menu_open.set_text ("&Open...")
+			file_menu_parse.set_text ("&Parse")
+			file_menu_edit.set_text ("&Edit")
+			file_menu_save_as.set_text ("Save &As...")
+			file_menu_exit.set_text ("E&xit")
 			edit_menu.set_text ("&Edit")
-			copy_menu_item.set_text ("&Copy")
-			select_all_menu_item.set_text ("Select &All")
-			clipboard_menu_item.set_text ("Clip&board...")
+			edit_menu_copy.set_text ("&Copy")
+			edit_menu_select_all.set_text ("Select &All")
+			edit_menu_clipboard.set_text ("Clip&board...")
 			repository_menu.set_text ("&Repository")
-			set_repository_menu_item.set_text ("&Set Repository...")
-			build_menu.set_text ("&Build")
-			build_menu_build.set_text ("&Build")
-			build_menu_rebuild.set_text ("&Rebuild")
-			options_menu.set_text ("&Options")
-			options_menu_item.set_text ("&Set Options...")
+			repository_menu_set_repository.set_text ("&Set Repository...")
+			repository_menu_build_all.set_text ("&Build All")
+			repository_menu_rebuild_all.set_text ("&Rebuild All")
+			repository_menu_build_subtree.set_text ("Build Sub&tree")
+			repository_menu_rebuild_subtree.set_text ("Rebuild S&ubtree")
+			repository_menu_interrupt_build.disable_sensitive
+			repository_menu_interrupt_build.set_text ("&Interrupt Build")
+			tools_menu.set_text ("&Tools")
+			tools_menu_options.set_text ("&Options...")
 			help_menu.set_text ("&Help")
-			icon_help_menu_item.set_text ("&Icons ")
-			news_menu_item.set_text ("&News")
-			online_menu_item.set_text ("&Online...")
-			about_menu_item.set_text ("&About ")
+			help_menu_icons.set_text ("&Icons ")
+			help_menu_news.set_text ("&News")
+			help_menu_online.set_text ("&Online...")
+			help_menu_about.set_text ("&About ")
 			create internal_font
 			internal_font.set_family ({EV_FONT_CONSTANTS}.Family_sans)
 			internal_font.set_weight ({EV_FONT_CONSTANTS}.Weight_bold)
@@ -454,16 +467,16 @@ feature {NONE}-- Initialization
 			integer_constant_retrieval_functions.extend (agent app_min_width)
 			integer_constant_set_procedures.extend (agent explorer_view_area.set_minimum_height (?))
 			integer_constant_retrieval_functions.extend (agent main_hbox_min_height)
-			explorer_view_area.disable_item_expand (archetype_file_tree)
 			explorer_view_area.enable_item_expand (total_view_area)
+			explorer_view_area.disable_item_expand (archetype_file_tree)
 			color_constant_set_procedures.extend (agent archetype_file_tree.set_background_color (?))
 			color_constant_retrieval_functions.extend (agent editable_colour)
 			integer_constant_set_procedures.extend (agent total_view_area.set_minimum_width (?))
 			integer_constant_retrieval_functions.extend (agent app_min_width)
 			integer_constant_set_procedures.extend (agent total_view_area.set_minimum_height (?))
 			integer_constant_retrieval_functions.extend (agent app_min_height)
-			total_view_area.disable_item_expand (arch_notebook)
 			total_view_area.enable_item_expand (parser_status_area)
+			total_view_area.disable_item_expand (arch_notebook)
 			integer_constant_set_procedures.extend (agent arch_notebook.set_minimum_width (?))
 			integer_constant_retrieval_functions.extend (agent app_min_width)
 			integer_constant_set_procedures.extend (agent arch_notebook.set_minimum_height (?))
@@ -693,8 +706,8 @@ feature {NONE}-- Initialization
 			info_view_area.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
 			info_view_area.set_minimum_width (0)
 			info_view_area.set_minimum_height (0)
-			info_view_area.disable_item_expand (source_notebook)
 			info_view_area.enable_item_expand (ontology_notebook)
+			info_view_area.disable_item_expand (source_notebook)
 			integer_constant_set_procedures.extend (agent source_notebook.set_minimum_width (?))
 			integer_constant_retrieval_functions.extend (agent source_notebook_min_width)
 			integer_constant_set_procedures.extend (agent source_notebook.set_minimum_height (?))
@@ -873,22 +886,25 @@ feature {NONE}-- Initialization
 			set_all_attributes_using_constants
 			
 				-- Connect events.
-			open_menu_item.select_actions.extend (agent open_adl_file)
-			parse_menu_item.select_actions.extend (agent parse_archetype)
-			edit_archetype_menu_item.select_actions.extend (agent edit_archetype)
-			save_as_menu_item.select_actions.extend (agent save_adl_file)
-			exit_menu_item.select_actions.extend (agent exit_app)
-			copy_menu_item.select_actions.extend (agent on_copy)
-			select_all_menu_item.select_actions.extend (agent on_select_all)
-			clipboard_menu_item.select_actions.extend (agent show_clipboard)
-			set_repository_menu_item.select_actions.extend (agent set_repository)
-			build_menu_build.select_actions.extend (agent build_system)
-			build_menu_rebuild.select_actions.extend (agent rebuild_system)
-			options_menu_item.select_actions.extend (agent set_options)
-			icon_help_menu_item.select_actions.extend (agent display_icon_help)
-			news_menu_item.select_actions.extend (agent display_news)
-			online_menu_item.select_actions.extend (agent show_online_help)
-			about_menu_item.select_actions.extend (agent display_about)
+			file_menu_open.select_actions.extend (agent open_adl_file)
+			file_menu_parse.select_actions.extend (agent parse_archetype)
+			file_menu_edit.select_actions.extend (agent edit_archetype)
+			file_menu_save_as.select_actions.extend (agent save_adl_file)
+			file_menu_exit.select_actions.extend (agent exit_app)
+			edit_menu_copy.select_actions.extend (agent on_copy)
+			edit_menu_select_all.select_actions.extend (agent on_select_all)
+			edit_menu_clipboard.select_actions.extend (agent show_clipboard)
+			repository_menu_set_repository.select_actions.extend (agent set_repository)
+			repository_menu_build_all.select_actions.extend (agent build_all)
+			repository_menu_rebuild_all.select_actions.extend (agent rebuild_all)
+			repository_menu_build_subtree.select_actions.extend (agent build_subtree)
+			repository_menu_rebuild_subtree.select_actions.extend (agent rebuild_subtree)
+			repository_menu_interrupt_build.select_actions.extend (agent interrupt_build)
+			tools_menu_options.select_actions.extend (agent set_options)
+			help_menu_icons.select_actions.extend (agent display_icon_help)
+			help_menu_news.select_actions.extend (agent display_news)
+			help_menu_online.select_actions.extend (agent show_online_help)
+			help_menu_about.select_actions.extend (agent display_about)
 			open_button.select_actions.extend (agent open_adl_file)
 			parse_button.select_actions.extend (agent parse_archetype)
 			edit_button.select_actions.extend (agent edit_archetype)
@@ -925,8 +941,6 @@ feature {NONE}-- Initialization
 			arch_test_processed_count.focus_in_actions.extend (agent on_select_all)
 			archetype_test_go_bn.select_actions.extend (agent archetype_test_go_stop)
 			close_request_actions.extend (agent exit_app)
-				-- Close the application when an interface close
-				-- request is recieved on `Current'. i.e. the cross is clicked.
 
 				-- Call `user_initialization'.
 			user_initialization
@@ -935,64 +949,67 @@ feature {NONE}-- Initialization
 
 feature -- Access
 
-	archetype_id, parent_archetype_id, adl_version_text, arch_desc_status_text, arch_desc_original_language_text,
-	arch_translations_accreditation_text, arch_desc_resource_package_text, arch_stats_total_node_count_tf,
-	arch_stats_leaf_node_count_tf, arch_test_processed_count: EV_TEXT_FIELD
-	overwrite_adl_rb, remove_unused_codes_rb: EV_CHECK_BUTTON
-	l_ev_menu_separator_1,
-	l_ev_menu_separator_2, l_ev_menu_separator_3, l_ev_menu_separator_4: EV_MENU_SEPARATOR
-	path_view_check_list: EV_CHECKABLE_LIST
-	archetype_text_edit_area: EV_RICH_TEXT
-	arch_desc_auth_orig_auth_mlist,
-	arch_translations_author_mlist, arch_translations_other_details_mlist, arch_desc_resource_orig_res_mlist,
-	parsed_archetype_found_paths, ontology_term_defs, ontology_constraint_defs, l_ev_multi_column_list_1,
-	l_ev_multi_column_list_2: EV_MULTI_COLUMN_LIST
-	file_menu, edit_menu, repository_menu, build_menu, options_menu,
-	help_menu: EV_MENU
 	language_combo, path_filter_combo: EV_COMBO_BOX
-	l_ev_horizontal_separator_1: EV_HORIZONTAL_SEPARATOR
-	open_button,
-	parse_button, edit_button, tree_expand_bn, tree_expand_one_bn, tree_shrink_one_bn,
-	arch_test_tree_toggle_expand_bn, arch_test_refresh_bn, archetype_test_go_bn: EV_BUTTON
+	menu: EV_MENU_BAR
+	tree_domain_radio_button, tree_technical_radio_button,
+	tree_inheritance_radio_button, tree_flat_view_radio_button: EV_RADIO_BUTTON
 	arch_desc_purpose_text,
 	arch_desc_use_text, arch_desc_misuse_text, arch_desc_copyright_text, parser_status_area,
 	test_status_area: EV_TEXT
-	arch_desc_auth_contrib_list, terminologies_list, arch_translations_languages_list,
-	arch_desc_keywords_list: EV_LIST
-	tree_domain_radio_button, tree_technical_radio_button, tree_inheritance_radio_button,
-	tree_flat_view_radio_button: EV_RADIO_BUTTON
-	main_nb, arch_notebook, source_notebook, ontology_notebook: EV_NOTEBOOK
+	total_view_area, info_view_area, test_view_area: EV_VERTICAL_SPLIT_AREA
 	archetype_file_tree,
 	parsed_archetype_tree: EV_TREE
-	explorer_view_area: EV_HORIZONTAL_SPLIT_AREA
-	total_view_area, info_view_area, test_view_area: EV_VERTICAL_SPLIT_AREA
-	action_bar,
-	author_lang_term_hbox, l_ev_horizontal_box_1, arch_desc_status_hbox, l_ev_horizontal_box_2,
-	l_ev_horizontal_box_3, arch_desc_details_hbox, l_ev_horizontal_box_4, l_ev_horizontal_box_5,
-	l_ev_horizontal_box_6, l_ev_horizontal_box_7, l_ev_horizontal_box_8, arch_desc_copyright_hbox,
-	parsed_archetype_tree_view, parsed_archetype_path_view, l_ev_horizontal_box_9, l_ev_horizontal_box_10,
-	l_ev_horizontal_box_11, l_ev_horizontal_box_12, l_ev_horizontal_box_13: EV_HORIZONTAL_BOX
+	archetype_text_edit_area: EV_RICH_TEXT
+	archetype_test_tree_grid: EV_GRID
 	viewer_vbox,
 	arch_desc_area_vbox, arch_desc_auth_hbox, l_ev_vertical_box_1, arch_desc_contrib_hbox,
 	terminology_vbox, lang_vbox, l_ev_vertical_box_2, l_ev_vertical_box_3, l_ev_vertical_box_4,
 	l_ev_vertical_box_5, l_ev_vertical_box_6, tree_controls, l_ev_vertical_box_7, l_ev_vertical_box_8,
 	path_controls, arch_stats_vbox, l_ev_vertical_box_9, l_ev_vertical_box_10: EV_VERTICAL_BOX
-	archetype_test_tree_grid: EV_GRID
-	l_ev_label_1,
-	adl_version_label, language_label, arch_desc_auth_orig_auth_label, arch_desc_status_label,
-	arch_desc_original_language_label, arch_desc_auth_contrib_label, arch_translations_languages_label,
-	l_ev_label_2, l_ev_label_3, l_ev_label_4, arch_desc_purpose_label, arch_desc_use_label,
-	arch_desc_misuse_label, arch_desc_keywords_label, arch_desc_resource_package_label,
-	arch_desc_resource_orig_res_label, arch_desc_copyright_label, l_ev_label_5, l_ev_label_6,
-	l_ev_label_7: EV_LABEL
-	open_menu_item, parse_menu_item, edit_archetype_menu_item, save_as_menu_item,
-	exit_menu_item, copy_menu_item, select_all_menu_item, clipboard_menu_item, set_repository_menu_item,
-	build_menu_build, build_menu_rebuild, options_menu_item, icon_help_menu_item, news_menu_item,
-	online_menu_item, about_menu_item: EV_MENU_ITEM
-	menu: EV_MENU_BAR
-	arch_desc_auth_frame, term_frame, arch_translations_frame,
-	arch_desc_details_frame, arch_desc_resource_frame, l_ev_frame_1, l_ev_frame_2, l_ev_frame_3,
-	l_ev_frame_4, arch_stats_frame, l_ev_frame_5, l_ev_frame_6, l_ev_frame_7: EV_FRAME
+	explorer_view_area: EV_HORIZONTAL_SPLIT_AREA
+	file_menu,
+	edit_menu, repository_menu, tools_menu, help_menu: EV_MENU
+	action_bar, author_lang_term_hbox,
+	l_ev_horizontal_box_1, arch_desc_status_hbox, l_ev_horizontal_box_2, l_ev_horizontal_box_3,
+	arch_desc_details_hbox, l_ev_horizontal_box_4, l_ev_horizontal_box_5, l_ev_horizontal_box_6,
+	l_ev_horizontal_box_7, l_ev_horizontal_box_8, arch_desc_copyright_hbox, parsed_archetype_tree_view,
+	parsed_archetype_path_view, l_ev_horizontal_box_9, l_ev_horizontal_box_10, l_ev_horizontal_box_11,
+	l_ev_horizontal_box_12, l_ev_horizontal_box_13: EV_HORIZONTAL_BOX
+	arch_desc_auth_orig_auth_mlist, arch_translations_author_mlist,
+	arch_translations_other_details_mlist, arch_desc_resource_orig_res_mlist, parsed_archetype_found_paths,
+	ontology_term_defs, ontology_constraint_defs, l_ev_multi_column_list_1, l_ev_multi_column_list_2: EV_MULTI_COLUMN_LIST
+	overwrite_adl_rb,
+	remove_unused_codes_rb: EV_CHECK_BUTTON
+	archetype_id, parent_archetype_id, adl_version_text, arch_desc_status_text,
+	arch_desc_original_language_text, arch_translations_accreditation_text, arch_desc_resource_package_text,
+	arch_stats_total_node_count_tf, arch_stats_leaf_node_count_tf, arch_test_processed_count: EV_TEXT_FIELD
+	open_button,
+	parse_button, edit_button, tree_expand_bn, tree_expand_one_bn, tree_shrink_one_bn,
+	arch_test_tree_toggle_expand_bn, arch_test_refresh_bn, archetype_test_go_bn: EV_BUTTON
+	arch_desc_auth_contrib_list,
+	terminologies_list, arch_translations_languages_list, arch_desc_keywords_list: EV_LIST
+	file_menu_open,
+	file_menu_parse, file_menu_edit, file_menu_save_as, file_menu_exit, edit_menu_copy,
+	edit_menu_select_all, edit_menu_clipboard, repository_menu_set_repository, repository_menu_build_all,
+	repository_menu_rebuild_all, repository_menu_build_subtree, repository_menu_rebuild_subtree,
+	repository_menu_interrupt_build, tools_menu_options, help_menu_icons, help_menu_news,
+	help_menu_online, help_menu_about: EV_MENU_ITEM
+	l_ev_label_1, adl_version_label, language_label,
+	arch_desc_auth_orig_auth_label, arch_desc_status_label, arch_desc_original_language_label,
+	arch_desc_auth_contrib_label, arch_translations_languages_label, l_ev_label_2, l_ev_label_3,
+	l_ev_label_4, arch_desc_purpose_label, arch_desc_use_label, arch_desc_misuse_label,
+	arch_desc_keywords_label, arch_desc_resource_package_label, arch_desc_resource_orig_res_label,
+	arch_desc_copyright_label, l_ev_label_5, l_ev_label_6, l_ev_label_7: EV_LABEL
+	path_view_check_list: EV_CHECKABLE_LIST
+	l_ev_horizontal_separator_1: EV_HORIZONTAL_SEPARATOR
+	arch_desc_auth_frame,
+	term_frame, arch_translations_frame, arch_desc_details_frame, arch_desc_resource_frame,
+	l_ev_frame_1, l_ev_frame_2, l_ev_frame_3, l_ev_frame_4, arch_stats_frame, l_ev_frame_5,
+	l_ev_frame_6, l_ev_frame_7: EV_FRAME
+	main_nb, arch_notebook, source_notebook, ontology_notebook: EV_NOTEBOOK
+	l_ev_menu_separator_1,
+	l_ev_menu_separator_2, l_ev_menu_separator_3, l_ev_menu_separator_4, l_ev_menu_separator_5,
+	l_ev_menu_separator_6, l_ev_menu_separator_7: EV_MENU_SEPARATOR
 
 feature {NONE} -- Implementation
 
@@ -1010,82 +1027,97 @@ feature {NONE} -- Implementation
 		end
 	
 	open_adl_file is
-			-- Called by `select_actions' of `open_menu_item'.
+			-- Called by `select_actions' of `file_menu_open'.
 		deferred
 		end
 	
 	parse_archetype is
-			-- Called by `select_actions' of `parse_menu_item'.
+			-- Called by `select_actions' of `file_menu_parse'.
 		deferred
 		end
 	
 	edit_archetype is
-			-- Called by `select_actions' of `edit_archetype_menu_item'.
+			-- Called by `select_actions' of `file_menu_edit'.
 		deferred
 		end
 	
 	save_adl_file is
-			-- Called by `select_actions' of `save_as_menu_item'.
+			-- Called by `select_actions' of `file_menu_save_as'.
 		deferred
 		end
 	
 	exit_app is
-			-- Called by `select_actions' of `exit_menu_item'.
+			-- Called by `select_actions' of `file_menu_exit'.
 		deferred
 		end
 	
 	on_copy is
-			-- Called by `select_actions' of `copy_menu_item'.
+			-- Called by `select_actions' of `edit_menu_copy'.
 		deferred
 		end
 	
 	on_select_all is
-			-- Called by `select_actions' of `select_all_menu_item'.
+			-- Called by `select_actions' of `edit_menu_select_all'.
 		deferred
 		end
 	
 	show_clipboard is
-			-- Called by `select_actions' of `clipboard_menu_item'.
+			-- Called by `select_actions' of `edit_menu_clipboard'.
 		deferred
 		end
 	
 	set_repository is
-			-- Called by `select_actions' of `set_repository_menu_item'.
+			-- Called by `select_actions' of `repository_menu_set_repository'.
 		deferred
 		end
 	
-	build_system is
-			-- Called by `select_actions' of `build_menu_build'.
+	build_all is
+			-- Called by `select_actions' of `repository_menu_build_all'.
 		deferred
 		end
 	
-	rebuild_system is
-			-- Called by `select_actions' of `build_menu_rebuild'.
+	rebuild_all is
+			-- Called by `select_actions' of `repository_menu_rebuild_all'.
+		deferred
+		end
+	
+	build_subtree is
+			-- Called by `select_actions' of `repository_menu_build_subtree'.
+		deferred
+		end
+	
+	rebuild_subtree is
+			-- Called by `select_actions' of `repository_menu_rebuild_subtree'.
+		deferred
+		end
+	
+	interrupt_build is
+			-- Called by `select_actions' of `repository_menu_interrupt_build'.
 		deferred
 		end
 	
 	set_options is
-			-- Called by `select_actions' of `options_menu_item'.
+			-- Called by `select_actions' of `tools_menu_options'.
 		deferred
 		end
 	
 	display_icon_help is
-			-- Called by `select_actions' of `icon_help_menu_item'.
+			-- Called by `select_actions' of `help_menu_icons'.
 		deferred
 		end
 	
 	display_news is
-			-- Called by `select_actions' of `news_menu_item'.
+			-- Called by `select_actions' of `help_menu_news'.
 		deferred
 		end
 	
 	show_online_help is
-			-- Called by `select_actions' of `online_menu_item'.
+			-- Called by `select_actions' of `help_menu_online'.
 		deferred
 		end
 	
 	display_about is
-			-- Called by `select_actions' of `about_menu_item'.
+			-- Called by `select_actions' of `help_menu_about'.
 		deferred
 		end
 	

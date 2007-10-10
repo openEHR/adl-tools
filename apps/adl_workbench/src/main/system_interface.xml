@@ -2,38 +2,36 @@
  <item type="Constants">
   <Constant>
    <type>INTEGER</type>
-   <Name>min_entry_control_width</Name>
-   <Value>200</Value>
-  </Constant>
-  <Constant>
-   <type>INTEGER</type>
-   <Name>arch_tree_min_width</Name>
-   <Value>350</Value>
-  </Constant>
-  <Constant>
-   <type>INTEGER</type>
    <Name>app_min_height</Name>
    <Value>350</Value>
   </Constant>
   <Constant>
-   <type>FONT</type>
-   <Name>label_font</Name>
-   <Value>FamilySans;WeightBold;ShapeRegular;8;System</Value>
+   <type>INTEGER</type>
+   <Name>min_combo_box_width</Name>
+   <Value>55</Value>
+  </Constant>
+  <Constant>
+   <type>PIXMAP</type>
+   <Name>adl_workbench_ico</Name>
+   <Value>C:\project\openehr\ref_impl_eiffel\apps\adl_workbench\app\icons\adl_gui_vision2.ico</Value>
+   <is_absolute>False</is_absolute>
+   <Directory>icons</Directory>
+   <Filename>adl_gui_vision2.ico</Filename>
   </Constant>
   <Constant>
    <type>INTEGER</type>
-   <Name>table_row_spacing</Name>
-   <Value>4</Value>
+   <Name>status_area_min_height</Name>
+   <Value>65</Value>
   </Constant>
   <Constant>
    <type>INTEGER</type>
-   <Name>source_notebook_min_width</Name>
-   <Value>600</Value>
+   <Name>main_hbox_min_height</Name>
+   <Value>560</Value>
   </Constant>
   <Constant>
    <type>INTEGER</type>
-   <Name>border_width</Name>
-   <Value>4</Value>
+   <Name>dialog_border_width</Name>
+   <Value>10</Value>
   </Constant>
   <Constant>
    <type>INTEGER</type>
@@ -42,7 +40,42 @@
   </Constant>
   <Constant>
    <type>INTEGER</type>
+   <Name>dialog_padding_width</Name>
+   <Value>15</Value>
+  </Constant>
+  <Constant>
+   <type>INTEGER</type>
    <Name>min_terms_status_height</Name>
+   <Value>200</Value>
+  </Constant>
+  <Constant>
+   <type>INTEGER</type>
+   <Name>source_notebook_min_width</Name>
+   <Value>600</Value>
+  </Constant>
+  <Constant>
+   <type>INTEGER</type>
+   <Name>app_initial_width</Name>
+   <Value>1024</Value>
+  </Constant>
+  <Constant>
+   <type>INTEGER</type>
+   <Name>max_arch_explorer_width</Name>
+   <Value>180</Value>
+  </Constant>
+  <Constant>
+   <type>INTEGER</type>
+   <Name>max_terms_height</Name>
+   <Value>400</Value>
+  </Constant>
+  <Constant>
+   <type>COLOR</type>
+   <Name>editable_colour</Name>
+   <Value>255255255</Value>
+  </Constant>
+  <Constant>
+   <type>INTEGER</type>
+   <Name>source_notebook_min_height</Name>
    <Value>200</Value>
   </Constant>
   <Constant>
@@ -52,8 +85,18 @@
   </Constant>
   <Constant>
    <type>INTEGER</type>
-   <Name>max_arch_explorer_width</Name>
-   <Value>180</Value>
+   <Name>arch_tree_min_height</Name>
+   <Value>60</Value>
+  </Constant>
+  <Constant>
+   <type>INTEGER</type>
+   <Name>app_max_height</Name>
+   <Value>2000</Value>
+  </Constant>
+  <Constant>
+   <type>INTEGER</type>
+   <Name>arch_notebook_min_height</Name>
+   <Value>500</Value>
   </Constant>
   <Constant>
    <type>INTEGER</type>
@@ -67,56 +110,6 @@
   </Constant>
   <Constant>
    <type>INTEGER</type>
-   <Name>app_initial_width</Name>
-   <Value>1024</Value>
-  </Constant>
-  <Constant>
-   <type>INTEGER</type>
-   <Name>dialog_border_width</Name>
-   <Value>10</Value>
-  </Constant>
-  <Constant>
-   <type>INTEGER</type>
-   <Name>max_terms_height</Name>
-   <Value>400</Value>
-  </Constant>
-  <Constant>
-   <type>INTEGER</type>
-   <Name>list_row_height</Name>
-   <Value>18</Value>
-  </Constant>
-  <Constant>
-   <type>INTEGER</type>
-   <Name>min_list_height</Name>
-   <Value>50</Value>
-  </Constant>
-  <Constant>
-   <type>INTEGER</type>
-   <Name>source_notebook_min_height</Name>
-   <Value>200</Value>
-  </Constant>
-  <Constant>
-   <type>INTEGER</type>
-   <Name>min_combo_box_width</Name>
-   <Value>55</Value>
-  </Constant>
-  <Constant>
-   <type>DIRECTORY</type>
-   <Name>icons</Name>
-   <Value>C:\project\openehr\ref_impl_eiffel\apps\adl_workbench\app\icons</Value>
-  </Constant>
-  <Constant>
-   <type>COLOR</type>
-   <Name>editable_colour</Name>
-   <Value>255255255</Value>
-  </Constant>
-  <Constant>
-   <type>INTEGER</type>
-   <Name>main_hbox_min_height</Name>
-   <Value>560</Value>
-  </Constant>
-  <Constant>
-   <type>INTEGER</type>
    <Name>app_initial_height</Name>
    <Value>768</Value>
   </Constant>
@@ -126,37 +119,9 @@
    <Value>600</Value>
   </Constant>
   <Constant>
-   <type>INTEGER</type>
-   <Name>status_area_min_height</Name>
-   <Value>65</Value>
-  </Constant>
-  <Constant>
-   <type>INTEGER</type>
-   <Name>dialog_padding_width</Name>
-   <Value>15</Value>
-  </Constant>
-  <Constant>
-   <type>INTEGER</type>
-   <Name>arch_tree_min_height</Name>
-   <Value>60</Value>
-  </Constant>
-  <Constant>
-   <type>INTEGER</type>
-   <Name>arch_notebook_min_height</Name>
-   <Value>500</Value>
-  </Constant>
-  <Constant>
-   <type>PIXMAP</type>
-   <Name>adl_workbench_ico</Name>
-   <Value>C:\project\openehr\ref_impl_eiffel\apps\adl_workbench\app\icons\adl_gui_vision2.ico</Value>
-   <is_absolute>False</is_absolute>
-   <Directory>icons</Directory>
-   <Filename>adl_gui_vision2.ico</Filename>
-  </Constant>
-  <Constant>
-   <type>INTEGER</type>
-   <Name>app_max_height</Name>
-   <Value>2000</Value>
+   <type>DIRECTORY</type>
+   <Name>icons</Name>
+   <Value>C:\project\openehr\ref_impl_eiffel\apps\adl_workbench\app\icons</Value>
   </Constant>
   <Constant>
    <type>INTEGER</type>
@@ -165,13 +130,48 @@
   </Constant>
   <Constant>
    <type>INTEGER</type>
+   <Name>desc_label_width</Name>
+   <Value>70</Value>
+  </Constant>
+  <Constant>
+   <type>INTEGER</type>
+   <Name>min_list_height</Name>
+   <Value>50</Value>
+  </Constant>
+  <Constant>
+   <type>INTEGER</type>
    <Name>app_min_width</Name>
    <Value>500</Value>
   </Constant>
   <Constant>
    <type>INTEGER</type>
-   <Name>desc_label_width</Name>
-   <Value>70</Value>
+   <Name>arch_tree_min_width</Name>
+   <Value>350</Value>
+  </Constant>
+  <Constant>
+   <type>INTEGER</type>
+   <Name>min_entry_control_width</Name>
+   <Value>200</Value>
+  </Constant>
+  <Constant>
+   <type>INTEGER</type>
+   <Name>list_row_height</Name>
+   <Value>18</Value>
+  </Constant>
+  <Constant>
+   <type>INTEGER</type>
+   <Name>table_row_spacing</Name>
+   <Value>4</Value>
+  </Constant>
+  <Constant>
+   <type>INTEGER</type>
+   <Name>border_width</Name>
+   <Value>4</Value>
+  </Constant>
+  <Constant>
+   <type>FONT</type>
+   <Name>label_font</Name>
+   <Value>FamilySans;WeightBold;ShapeRegular;8;System</Value>
   </Constant>
  </item>
  <item type="EV_DIALOG">
@@ -284,6 +284,8 @@
      </EV_WIDGET>
      <EV_TEXT_COMPONENT>
      </EV_TEXT_COMPONENT>
+     <EV_TEXT_ALIGNABLE>
+     </EV_TEXT_ALIGNABLE>
     </item>
     <item type="EV_BUTTON">
      <Internal_properties>
@@ -520,7 +522,7 @@
     <item type="EV_MENU_ITEM">
      <Internal_properties>
       <id>4</id>
-      <name>open_menu_item</name>
+      <name>file_menu_open</name>
       <Expanded>0</Expanded>
      </Internal_properties>
      <EV_SENSITIVE>
@@ -537,7 +539,7 @@
     <item type="EV_MENU_ITEM">
      <Internal_properties>
       <id>99</id>
-      <name>parse_menu_item</name>
+      <name>file_menu_parse</name>
       <Expanded>0</Expanded>
      </Internal_properties>
      <EV_SENSITIVE>
@@ -554,7 +556,7 @@
     <item type="EV_MENU_ITEM">
      <Internal_properties>
       <id>100</id>
-      <name>edit_archetype_menu_item</name>
+      <name>file_menu_edit</name>
       <Expanded>0</Expanded>
      </Internal_properties>
      <EV_SENSITIVE>
@@ -583,7 +585,7 @@
     <item type="EV_MENU_ITEM">
      <Internal_properties>
       <id>6</id>
-      <name>save_as_menu_item</name>
+      <name>file_menu_save_as</name>
       <Expanded>0</Expanded>
      </Internal_properties>
      <EV_SENSITIVE>
@@ -612,7 +614,7 @@
     <item type="EV_MENU_ITEM">
      <Internal_properties>
       <id>8</id>
-      <name>exit_menu_item</name>
+      <name>file_menu_exit</name>
       <Expanded>0</Expanded>
      </Internal_properties>
      <EV_SENSITIVE>
@@ -643,7 +645,7 @@
     <item type="EV_MENU_ITEM">
      <Internal_properties>
       <id>136</id>
-      <name>copy_menu_item</name>
+      <name>edit_menu_copy</name>
       <Expanded>0</Expanded>
      </Internal_properties>
      <EV_SENSITIVE>
@@ -660,7 +662,7 @@
     <item type="EV_MENU_ITEM">
      <Internal_properties>
       <id>193</id>
-      <name>select_all_menu_item</name>
+      <name>edit_menu_select_all</name>
       <Expanded>0</Expanded>
      </Internal_properties>
      <EV_SENSITIVE>
@@ -689,7 +691,7 @@
     <item type="EV_MENU_ITEM">
      <Internal_properties>
       <id>137</id>
-      <name>clipboard_menu_item</name>
+      <name>edit_menu_clipboard</name>
       <Expanded>0</Expanded>
      </Internal_properties>
      <EV_SENSITIVE>
@@ -720,7 +722,7 @@
     <item type="EV_MENU_ITEM">
      <Internal_properties>
       <id>125</id>
-      <name>set_repository_menu_item</name>
+      <name>repository_menu_set_repository</name>
       <Expanded>0</Expanded>
      </Internal_properties>
      <EV_SENSITIVE>
@@ -734,78 +736,152 @@
       <Event>select_actions EV_MENU_ITEM_ACTION_SEQUENCES set_repository</Event>
      </Events>
     </item>
-   </item>
-   <item type="EV_MENU">
-    <Internal_properties>
-     <id>196</id>
-     <name>build_menu</name>
-     <Expanded>1</Expanded>
-    </Internal_properties>
-    <EV_SENSITIVE>
-    </EV_SENSITIVE>
-    <EV_TEXTABLE>
-     <Text>&amp;Build</Text>
-    </EV_TEXTABLE>
-    <EV_PIXMAPABLE>
-    </EV_PIXMAPABLE>
-    <item type="EV_MENU_ITEM">
+    <item type="EV_MENU_SEPARATOR">
      <Internal_properties>
       <id>197</id>
-      <name>build_menu_build</name>
       <Expanded>0</Expanded>
      </Internal_properties>
      <EV_SENSITIVE>
      </EV_SENSITIVE>
      <EV_TEXTABLE>
-      <Text>&amp;Build</Text>
+     </EV_TEXTABLE>
+     <EV_PIXMAPABLE>
+     </EV_PIXMAPABLE>
+    </item>
+    <item type="EV_MENU_ITEM">
+     <Internal_properties>
+      <id>195</id>
+      <name>repository_menu_build_all</name>
+      <Expanded>0</Expanded>
+     </Internal_properties>
+     <EV_SENSITIVE>
+     </EV_SENSITIVE>
+     <EV_TEXTABLE>
+      <Text>&amp;Build All</Text>
      </EV_TEXTABLE>
      <EV_PIXMAPABLE>
      </EV_PIXMAPABLE>
      <Events>
-      <Event>select_actions EV_MENU_ITEM_ACTION_SEQUENCES build_system</Event>
+      <Event>select_actions EV_MENU_ITEM_ACTION_SEQUENCES build_all</Event>
      </Events>
     </item>
     <item type="EV_MENU_ITEM">
      <Internal_properties>
-      <id>198</id>
-      <name>build_menu_rebuild</name>
+      <id>196</id>
+      <name>repository_menu_rebuild_all</name>
       <Expanded>0</Expanded>
      </Internal_properties>
      <EV_SENSITIVE>
      </EV_SENSITIVE>
      <EV_TEXTABLE>
-      <Text>&amp;Rebuild</Text>
+      <Text>&amp;Rebuild All</Text>
      </EV_TEXTABLE>
      <EV_PIXMAPABLE>
      </EV_PIXMAPABLE>
      <Events>
-      <Event>select_actions EV_MENU_ITEM_ACTION_SEQUENCES rebuild_system</Event>
+      <Event>select_actions EV_MENU_ITEM_ACTION_SEQUENCES rebuild_all</Event>
+     </Events>
+    </item>
+    <item type="EV_MENU_SEPARATOR">
+     <Internal_properties>
+      <id>198</id>
+      <Expanded>0</Expanded>
+     </Internal_properties>
+     <EV_SENSITIVE>
+     </EV_SENSITIVE>
+     <EV_TEXTABLE>
+     </EV_TEXTABLE>
+     <EV_PIXMAPABLE>
+     </EV_PIXMAPABLE>
+    </item>
+    <item type="EV_MENU_ITEM">
+     <Internal_properties>
+      <id>199</id>
+      <name>repository_menu_build_subtree</name>
+      <Expanded>0</Expanded>
+     </Internal_properties>
+     <EV_SENSITIVE>
+     </EV_SENSITIVE>
+     <EV_TEXTABLE>
+      <Text>Build Sub&amp;tree</Text>
+     </EV_TEXTABLE>
+     <EV_PIXMAPABLE>
+     </EV_PIXMAPABLE>
+     <Events>
+      <Event>select_actions EV_MENU_ITEM_ACTION_SEQUENCES build_subtree</Event>
+     </Events>
+    </item>
+    <item type="EV_MENU_ITEM">
+     <Internal_properties>
+      <id>200</id>
+      <name>repository_menu_rebuild_subtree</name>
+      <Expanded>0</Expanded>
+     </Internal_properties>
+     <EV_SENSITIVE>
+     </EV_SENSITIVE>
+     <EV_TEXTABLE>
+      <Text>Rebuild S&amp;ubtree</Text>
+     </EV_TEXTABLE>
+     <EV_PIXMAPABLE>
+     </EV_PIXMAPABLE>
+     <Events>
+      <Event>select_actions EV_MENU_ITEM_ACTION_SEQUENCES rebuild_subtree</Event>
+     </Events>
+    </item>
+    <item type="EV_MENU_SEPARATOR">
+     <Internal_properties>
+      <id>201</id>
+      <Expanded>0</Expanded>
+     </Internal_properties>
+     <EV_SENSITIVE>
+     </EV_SENSITIVE>
+     <EV_TEXTABLE>
+     </EV_TEXTABLE>
+     <EV_PIXMAPABLE>
+     </EV_PIXMAPABLE>
+    </item>
+    <item type="EV_MENU_ITEM">
+     <Internal_properties>
+      <id>202</id>
+      <name>repository_menu_interrupt_build</name>
+      <Expanded>0</Expanded>
+     </Internal_properties>
+     <EV_SENSITIVE>
+      <Is_sensitive>False</Is_sensitive>
+     </EV_SENSITIVE>
+     <EV_TEXTABLE>
+      <Text>&amp;Interrupt Build</Text>
+     </EV_TEXTABLE>
+     <EV_PIXMAPABLE>
+     </EV_PIXMAPABLE>
+     <Events>
+      <Event>select_actions EV_MENU_ITEM_ACTION_SEQUENCES interrupt_build</Event>
      </Events>
     </item>
    </item>
    <item type="EV_MENU">
     <Internal_properties>
      <id>9</id>
-     <name>options_menu</name>
+     <name>tools_menu</name>
      <Expanded>1</Expanded>
     </Internal_properties>
     <EV_SENSITIVE>
     </EV_SENSITIVE>
     <EV_TEXTABLE>
-     <Text>&amp;Options</Text>
+     <Text>&amp;Tools</Text>
     </EV_TEXTABLE>
     <EV_PIXMAPABLE>
     </EV_PIXMAPABLE>
     <item type="EV_MENU_ITEM">
      <Internal_properties>
       <id>10</id>
-      <name>options_menu_item</name>
+      <name>tools_menu_options</name>
       <Expanded>0</Expanded>
      </Internal_properties>
      <EV_SENSITIVE>
      </EV_SENSITIVE>
      <EV_TEXTABLE>
-      <Text>&amp;Set Options...</Text>
+      <Text>&amp;Options...</Text>
      </EV_TEXTABLE>
      <EV_PIXMAPABLE>
      </EV_PIXMAPABLE>
@@ -830,7 +906,7 @@
     <item type="EV_MENU_ITEM">
      <Internal_properties>
       <id>89</id>
-      <name>icon_help_menu_item</name>
+      <name>help_menu_icons</name>
       <Expanded>0</Expanded>
      </Internal_properties>
      <EV_SENSITIVE>
@@ -847,7 +923,7 @@
     <item type="EV_MENU_ITEM">
      <Internal_properties>
       <id>78</id>
-      <name>news_menu_item</name>
+      <name>help_menu_news</name>
       <Expanded>0</Expanded>
      </Internal_properties>
      <EV_SENSITIVE>
@@ -864,7 +940,7 @@
     <item type="EV_MENU_ITEM">
      <Internal_properties>
       <id>94</id>
-      <name>online_menu_item</name>
+      <name>help_menu_online</name>
       <Expanded>0</Expanded>
      </Internal_properties>
      <EV_SENSITIVE>
@@ -893,7 +969,7 @@
     <item type="EV_MENU_ITEM">
      <Internal_properties>
       <id>11</id>
-      <name>about_menu_item</name>
+      <name>help_menu_about</name>
       <Expanded>0</Expanded>
      </Internal_properties>
      <EV_SENSITIVE>
@@ -1097,6 +1173,8 @@
       <EV_TEXT_COMPONENT>
        <Is_editable>False</Is_editable>
       </EV_TEXT_COMPONENT>
+      <EV_TEXT_ALIGNABLE>
+      </EV_TEXT_ALIGNABLE>
       <Events>
        <Event>focus_in_actions EV_WIDGET_ACTION_SEQUENCES on_select_all</Event>
       </Events>
@@ -1147,6 +1225,8 @@
       <EV_TEXT_COMPONENT>
        <Is_editable>False</Is_editable>
       </EV_TEXT_COMPONENT>
+      <EV_TEXT_ALIGNABLE>
+      </EV_TEXT_ALIGNABLE>
       <Events>
        <Event>focus_in_actions EV_WIDGET_ACTION_SEQUENCES on_select_all</Event>
       </Events>
@@ -1195,6 +1275,8 @@
       <EV_TEXT_COMPONENT>
        <Is_editable>False</Is_editable>
       </EV_TEXT_COMPONENT>
+      <EV_TEXT_ALIGNABLE>
+      </EV_TEXT_ALIGNABLE>
       <Events>
        <Event>focus_in_actions EV_WIDGET_ACTION_SEQUENCES on_select_all</Event>
       </Events>
@@ -1254,6 +1336,8 @@
       <EV_TEXT_COMPONENT>
        <Is_editable>False</Is_editable>
       </EV_TEXT_COMPONENT>
+      <EV_TEXT_ALIGNABLE>
+      </EV_TEXT_ALIGNABLE>
       <Events>
        <Event>select_actions EV_LIST_ITEM_LIST_ACTION_SEQUENCES select_language</Event>
       </Events>
@@ -1627,6 +1711,8 @@
               <EV_TEXT_COMPONENT>
                <Is_editable>False</Is_editable>
               </EV_TEXT_COMPONENT>
+              <EV_TEXT_ALIGNABLE>
+              </EV_TEXT_ALIGNABLE>
               <Events>
                <Event>focus_in_actions EV_WIDGET_ACTION_SEQUENCES on_select_all</Event>
               </Events>
@@ -1674,6 +1760,8 @@
               <EV_TEXT_COMPONENT>
                <Is_editable>False</Is_editable>
               </EV_TEXT_COMPONENT>
+              <EV_TEXT_ALIGNABLE>
+              </EV_TEXT_ALIGNABLE>
               <Events>
                <Event>focus_in_actions EV_WIDGET_ACTION_SEQUENCES on_select_all</Event>
               </Events>
@@ -2080,6 +2168,8 @@
             <EV_TEXT_COMPONENT>
              <Is_editable>False</Is_editable>
             </EV_TEXT_COMPONENT>
+            <EV_TEXT_ALIGNABLE>
+            </EV_TEXT_ALIGNABLE>
             <Events>
              <Event>focus_in_actions EV_WIDGET_ACTION_SEQUENCES on_select_all</Event>
             </Events>
@@ -2656,6 +2746,8 @@
             <EV_TEXT_COMPONENT>
              <Is_editable>False</Is_editable>
             </EV_TEXT_COMPONENT>
+            <EV_TEXT_ALIGNABLE>
+            </EV_TEXT_ALIGNABLE>
             <Events>
              <Event>focus_in_actions EV_WIDGET_ACTION_SEQUENCES on_select_all</Event>
             </Events>
@@ -3416,6 +3508,8 @@ Resources</Text>
              <EV_TEXT_COMPONENT>
               <Is_editable>False</Is_editable>
              </EV_TEXT_COMPONENT>
+             <EV_TEXT_ALIGNABLE>
+             </EV_TEXT_ALIGNABLE>
              <Events>
               <Event>select_actions EV_LIST_ITEM_LIST_ACTION_SEQUENCES path_row_set_filter</Event>
              </Events>
@@ -3685,6 +3779,8 @@ Resources</Text>
              <EV_TEXT_COMPONENT>
               <Is_editable>False</Is_editable>
              </EV_TEXT_COMPONENT>
+             <EV_TEXT_ALIGNABLE>
+             </EV_TEXT_ALIGNABLE>
              <Events>
               <Event>focus_in_actions EV_WIDGET_ACTION_SEQUENCES on_select_all</Event>
              </Events>
@@ -3756,6 +3852,8 @@ Resources</Text>
              <EV_TEXT_COMPONENT>
               <Is_editable>False</Is_editable>
              </EV_TEXT_COMPONENT>
+             <EV_TEXT_ALIGNABLE>
+             </EV_TEXT_ALIGNABLE>
              <Events>
               <Event>focus_in_actions EV_WIDGET_ACTION_SEQUENCES on_select_all</Event>
              </Events>
@@ -4154,6 +4252,8 @@ Resources</Text>
         <EV_TEXT_COMPONENT>
          <Is_editable>False</Is_editable>
         </EV_TEXT_COMPONENT>
+        <EV_TEXT_ALIGNABLE>
+        </EV_TEXT_ALIGNABLE>
         <Events>
          <Event>focus_in_actions EV_WIDGET_ACTION_SEQUENCES on_select_all</Event>
         </Events>
@@ -4534,6 +4634,8 @@ Resources</Text>
        </EV_WIDGET>
        <EV_TEXT_COMPONENT>
        </EV_TEXT_COMPONENT>
+       <EV_TEXT_ALIGNABLE>
+       </EV_TEXT_ALIGNABLE>
       </item>
       <item type="EV_BUTTON">
        <Internal_properties>
@@ -4652,6 +4754,8 @@ Resources</Text>
        </EV_WIDGET>
        <EV_TEXT_COMPONENT>
        </EV_TEXT_COMPONENT>
+       <EV_TEXT_ALIGNABLE>
+       </EV_TEXT_ALIGNABLE>
       </item>
       <item type="EV_BUTTON">
        <Internal_properties>

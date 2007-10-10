@@ -200,16 +200,18 @@ feature {NONE} -- Initialization
 			suppress_tab_key_insertion (arch_desc_copyright_text, arch_desc_resource_orig_res_mlist, parser_status_area)
 			suppress_tab_key_insertion (archetype_text_edit_area, arch_notebook, parser_status_area)
 
-			add_shortcut (agent build_system, {EV_KEY_CONSTANTS}.key_f7, False, False) -- F7 = rebuild
-			add_shortcut (agent rebuild_system, {EV_KEY_CONSTANTS}.key_f7, False, True) -- shift-F7 = force complete rebuild
-
 			add_shortcut (agent step_focused_notebook_tab (1), {EV_KEY_CONSTANTS}.key_tab, True, False)
 			add_shortcut (agent step_focused_notebook_tab (-1), {EV_KEY_CONSTANTS}.key_tab, True, True)
-	--		add_shortcut (agent FIXME-routine to stop build processing (-1), {EV_KEY_CONSTANTS}.FIXME-ctrl-c, True, True)
 
-			add_menu_shortcut (open_menu_item, {EV_KEY_CONSTANTS}.key_o, True, False)
-			add_menu_shortcut_for_action (copy_menu_item, agent call_unless_text_focused (agent on_copy), {EV_KEY_CONSTANTS}.key_c, True, False)
-			add_menu_shortcut (select_all_menu_item, {EV_KEY_CONSTANTS}.key_a, True, False)
+			add_menu_shortcut (repository_menu_build_all, {EV_KEY_CONSTANTS}.key_f7, False, False)
+			add_menu_shortcut (repository_menu_rebuild_all, {EV_KEY_CONSTANTS}.key_f7, False, True)
+			add_menu_shortcut (repository_menu_build_subtree, {EV_KEY_CONSTANTS}.key_f7, True, False)
+			add_menu_shortcut (repository_menu_rebuild_subtree, {EV_KEY_CONSTANTS}.key_f7, True, True)
+			add_menu_shortcut (repository_menu_interrupt_build, {EV_KEY_CONSTANTS}.key_escape, False, True)
+
+			add_menu_shortcut (file_menu_open, {EV_KEY_CONSTANTS}.key_o, True, False)
+			add_menu_shortcut_for_action (edit_menu_copy, agent call_unless_text_focused (agent on_copy), {EV_KEY_CONSTANTS}.key_c, True, False)
+			add_menu_shortcut (edit_menu_select_all, {EV_KEY_CONSTANTS}.key_a, True, False)
 		end
 
 feature -- Access
@@ -251,19 +253,19 @@ feature -- Application Commands
 		end
 
 	set_options is
-			--
+			-- Display the Options dialog.
 		do
 			option_dialog.show_modal_to_window (Current)
 		end
 
 	set_repository is
-			--
+			-- Display the Repository Settings dialog.
 		do
 			repository_dialog.show_modal_to_window (Current)
 		end
 
 	display_icon_help is
-			--
+			-- Display the Icons help dialog.
 		do
 			icon_dialog.show_modal_to_window (Current)
 		end
@@ -282,16 +284,34 @@ feature -- Application Commands
 
 feature -- Archetype Commands
 
-	build_system is
-			-- build the whole system
+	build_all
+			-- Build the whole system.
 		do
-			archetype_compiler.build_all(agent build_gui_update)
+			do_build_action (agent archetype_compiler.build_all (agent build_gui_update))
 		end
 
-	rebuild_system is
-			-- build the whole system
+	rebuild_all
+			-- Force the whole system to rebuild.
 		do
-			archetype_compiler.rebuild_all(agent build_gui_update)
+			do_build_action (agent archetype_compiler.rebuild_all (agent build_gui_update))
+		end
+
+	build_subtree
+			-- Build the subsystem below the currently selected node.
+		do
+			-- FIXME: do_with_wait_cursor (agent archetype_compiler.
+		end
+
+	rebuild_subtree
+			-- Force rebuilding of the whole subsystem below the currently selected node.
+		do
+			-- FIXME: do_with_wait_cursor (agent archetype_compiler.
+		end
+
+	interrupt_build
+			-- Cancel the build currently in progress.
+		do
+			-- FIXME: archetype_compiler.
 		end
 
 	parse_archetype
@@ -921,6 +941,30 @@ feature {NONE} -- Implementation
 			set_pointer_style (cursor)
 		rescue
 			set_pointer_style (cursor)
+		end
+
+	do_build_action (action: PROCEDURE [ANY, TUPLE])
+			-- Perform `action' with an hourglass mouse cursor, restoring the cursor when done.
+		local
+			menu_items: ARRAY [EV_MENU_ITEM]
+		do
+			menu_items := <<
+				repository_menu_build_all,
+				repository_menu_rebuild_all,
+				repository_menu_build_subtree,
+				repository_menu_rebuild_subtree
+				>>
+
+			menu_items.do_all (agent {EV_MENU_ITEM}.disable_sensitive)
+			repository_menu_interrupt_build.enable_sensitive
+
+			do_with_wait_cursor (action)
+
+			repository_menu_interrupt_build.disable_sensitive
+			menu_items.do_all (agent {EV_MENU_ITEM}.enable_sensitive)
+		rescue
+			repository_menu_interrupt_build.disable_sensitive
+			menu_items.do_all (agent {EV_MENU_ITEM}.enable_sensitive)
 		end
 
 	build_gui_update (ara: ARCH_REP_ARCHETYPE) is
