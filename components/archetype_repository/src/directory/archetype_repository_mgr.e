@@ -295,6 +295,8 @@ feature -- Traversal
 
 	do_all_archetype (node_enter_action, node_exit_action: PROCEDURE [ANY, TUPLE [ARCH_REP_ARCHETYPE]])
 			-- on archetype directory, execute node_enter_action on archetype nodes
+		require
+			node_enter_action_attached: node_enter_action /= Void
 		do
 			do_all_archetype_nodes (directory, node_enter_action, node_exit_action)
 		end

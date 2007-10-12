@@ -248,6 +248,7 @@ feature -- Application Commands
 				archetype_directory.put_repository (work_repository_path, "work")
 			end
 
+			archetype_compiler.set_visual_update_action (agent build_gui_update)
 			populate_archetype_directory
 			focus_first_widget (main_nb.selected_item)
 		end
@@ -270,14 +271,14 @@ feature -- Application Commands
 			icon_dialog.show_modal_to_window (Current)
 		end
 
-	update_status_area(s: STRING) is
+	update_status_area (s: STRING) is
 			-- update parse status area on screen
 		do
-			parser_status_area.append_text(s)
+			parser_status_area.append_text (s)
 		end
 
 	display_news is
-			-- Called by `pointer_button_press_actions' of `about_mi'.
+			-- Display news about the latest release.
 		do
 			News_dialog.show
 		end
@@ -287,25 +288,25 @@ feature -- Archetype Commands
 	build_all
 			-- Build the whole system.
 		do
-			do_build_action (agent archetype_compiler.build_all (agent build_gui_update))
+			do_build_action (agent archetype_compiler.build_all)
 		end
 
 	rebuild_all
 			-- Force the whole system to rebuild.
 		do
-			do_build_action (agent archetype_compiler.rebuild_all (agent build_gui_update))
+			do_build_action (agent archetype_compiler.rebuild_all)
 		end
 
 	build_subtree
 			-- Build the subsystem below the currently selected node.
 		do
-			-- FIXME: do_with_wait_cursor (agent archetype_compiler.
+			-- FIXME: do_build_action (agent archetype_compiler.
 		end
 
 	rebuild_subtree
 			-- Force rebuilding of the whole subsystem below the currently selected node.
 		do
-			-- FIXME: do_with_wait_cursor (agent archetype_compiler.
+			-- FIXME: do_build_action (agent archetype_compiler.
 		end
 
 	interrupt_build
@@ -320,17 +321,19 @@ feature -- Archetype Commands
 			if archetype_directory.selected_archetype /= last_selected_archetype then
 				arch_notebook_select
 			end
+
 			clear_all_controls
-			if archetype_directory.selected_archetype.is_valid then
-				populate_all_archetype_controls
-			elseif archetype_directory.selected_archetype.is_parsed then
-				populate_archetype_id
-			else
-				do_with_wait_cursor (agent archetype_compiler.build_lineage (archetype_directory.selected_archetype))
-				populate_all_archetype_controls
-				parser_status_area.append_text (archetype_compiler.status)
-			end
 			last_selected_archetype := archetype_directory.selected_archetype
+
+			if not last_selected_archetype.is_parsed then
+				do_with_wait_cursor (agent archetype_compiler.build_lineage (last_selected_archetype))
+			end
+
+			if last_selected_archetype.is_valid then
+				populate_all_archetype_controls
+			elseif last_selected_archetype.is_parsed then
+				populate_archetype_id
+			end
 		end
 
 	open_adl_file is
@@ -350,7 +353,7 @@ feature -- Archetype Commands
 
 				if ara /= Void then
 					archetype_directory.set_selected_archetype_descriptor (ara)
-					archetype_view_tree_control.repopulate
+					archetype_view_tree_control.populate
 				end
 			end
 		end
@@ -932,6 +935,8 @@ feature {NONE} -- Implementation
 
 	do_with_wait_cursor (action: PROCEDURE [ANY, TUPLE])
 			-- Perform `action' with an hourglass mouse cursor, restoring the cursor when done.
+		require
+			action_attached: action /= Void
 		local
 			cursor: EV_CURSOR
 		do
@@ -944,41 +949,38 @@ feature {NONE} -- Implementation
 		end
 
 	do_build_action (action: PROCEDURE [ANY, TUPLE])
-			-- Perform `action' with an hourglass mouse cursor, restoring the cursor when done.
+			-- Perform `action', with an hourglass mouse cursor and disabling the build menus, until done.
+		require
+			action_attached: action /= Void
 		local
 			menu_items: ARRAY [EV_MENU_ITEM]
 		do
-			menu_items := <<
-				repository_menu_build_all,
-				repository_menu_rebuild_all,
-				repository_menu_build_subtree,
-				repository_menu_rebuild_subtree
+			if menu_items = Void then
+				menu_items := <<
+					repository_menu_build_all,
+					repository_menu_rebuild_all,
+					repository_menu_build_subtree,
+					repository_menu_rebuild_subtree
 				>>
 
-			menu_items.do_all (agent {EV_MENU_ITEM}.disable_sensitive)
-			repository_menu_interrupt_build.enable_sensitive
+				menu_items.do_all (agent {EV_MENU_ITEM}.disable_sensitive)
+				repository_menu_interrupt_build.enable_sensitive
+				do_with_wait_cursor (action)
+			end
 
-			do_with_wait_cursor (action)
-
-			repository_menu_interrupt_build.disable_sensitive
 			menu_items.do_all (agent {EV_MENU_ITEM}.enable_sensitive)
+			repository_menu_interrupt_build.disable_sensitive
 		rescue
-			repository_menu_interrupt_build.disable_sensitive
-			menu_items.do_all (agent {EV_MENU_ITEM}.enable_sensitive)
+			retry
 		end
 
 	build_gui_update (ara: ARCH_REP_ARCHETYPE) is
-			-- update GUI with progress on build
+			-- Update GUI with progress on build.
 		require
-			ara /= Void
+			ara_attaced: ara /= Void
 		do
 			parser_status_area.set_text (utf8 (archetype_compiler.status))
-
-			-- FIXME: update the icons in the tree to show what is compiled and what is not:
-			-- Suggest: traffic light colours:
-			--	ARCH_REP_ARCHETYPE.is_parsed = False -> add a red marker to explorer icon
-			--  ARCH_REP_ARCHETYPE.is_parsed = True, ARCH_REP_ARCHETYPE.is_compiled = False -> add an orange marker to explorer icon
-			--  ARCH_REP_ARCHETYPE.is_compiled = True -> add green marker to explorer icon
+			archetype_view_tree_control.do_node_for_item (ara, agent archetype_view_tree_control.set_node_pixmap)
 			ev_application.process_events
 		end
 

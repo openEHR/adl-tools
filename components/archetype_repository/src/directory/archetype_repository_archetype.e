@@ -85,8 +85,10 @@ feature -- Access
 			-- Name distinguishing the type of item and the group to which its `repository' belongs.
 			-- Useful as a logical key to pixmap icons, etc.
 		do
-			if is_specialised then
-				Result := "archetype_specialised_" + file_repository.group_id.out
+			if is_valid then
+				Result := "archetype_valid_" + file_repository.group_id.out
+			elseif is_parsed then
+				Result := "archetype_parsed_" + file_repository.group_id.out
 			else
 				Result := "archetype_" + file_repository.group_id.out
 			end

@@ -292,188 +292,141 @@ feature -- Access
 			end
 		end
 
-	pixmap_help_table: DS_HASH_TABLE [STRING, STRING] is
-			-- table of pixmap file paths keyed by icon key used in this app
+	pixmap_table: DS_HASH_TABLE [TUPLE [file, help: STRING], STRING] is
+			-- Table of pixmap file paths and help messages, keyed by icon key.
 		once
 			create Result.make (0)
 
-			Result.force ("Archetype (ad hoc)", "archetype_1")
-			Result.force ("Specialised archetype (ad hoc)", "archetype_specialised_1")
+			Result.force (["archetype_1.ico", "Ad hoc archetype (not parsed yet)"], "archetype_1")
+			Result.force (["archetype_parsed_1.ico", "Ad hoc archetype (parsed but not compiled)"], "archetype_parsed_1")
+			Result.force (["archetype_valid_1.ico", "Ad hoc archetype (parsed and compiled)"], "archetype_valid_1")
 
-			Result.force ("Archetype (reference repository)", "archetype_2")
-			Result.force ("Specialised archetype (reference repository)", "archetype_specialised_2")
+			Result.force (["file_folder_2.ico", Void], "file_folder_2")
+			Result.force (["archetype_2.ico", "Archetype in the reference repository (not parsed yet)"], "archetype_2")
+			Result.force (["archetype_parsed_2.ico", "Archetype in the reference repository (parsed but not compiled)"], "archetype_parsed_2")
+			Result.force (["archetype_valid_2.ico", "Archetype in the reference repository (parsed and compiled)"], "archetype_valid_2")
 
-			Result.force ("Archetype (work repository)", "archetype_3")
-			Result.force ("Specialised archetype (work repository)", "archetype_specialised_3")
+			Result.force (["file_folder_3.ico", Void], "file_folder_3")
+			Result.force (["archetype_3.ico", "Archetype in the work repository (not parsed yet)"], "archetype_3")
+			Result.force (["archetype_parsed_3.ico", "Archetype in the work repository (parsed but not compiled)"], "archetype_parsed_3")
+			Result.force (["archetype_valid_3.ico", "Archetype in the work repository (parsed and compiled)"], "archetype_valid_3")
 
-			Result.force ("", 															"NO ICON")
+			Result.force ([Void, ""], "Gap in the help")
 
-			Result.force ("Single-valued attribute (mandatory)", 						"C_ATTRIBUTE")
-			Result.force ("Single-valued attribute (optional)",				 			"C_ATTRIBUTE.optional")
-			Result.force ("Container attribute (mandatory)",			 				"C_ATTRIBUTE.multiple")
-			Result.force ("Container attribute (optional)", 							"C_ATTRIBUTE.multiple.optional")
+			Result.force (["node_normal/c_attribute.ico", "Single-valued attribute (mandatory)"], "C_ATTRIBUTE")
+			Result.force (["node_normal/c_attribute_optional.ico", "Single-valued attribute (optional)"], "C_ATTRIBUTE.optional")
+			Result.force (["node_normal/c_attribute_multiple.ico", "Container attribute (mandatory)"], "C_ATTRIBUTE.multiple")
+			Result.force (["node_normal/c_attribute_multiple_optional.ico", "Container attribute (optional)"], "C_ATTRIBUTE.multiple.optional")
 
-			Result.force ("C_CODE_PHRASE (openEHR archetype profile)", 					"C_CODE_PHRASE")
-			Result.force ("C_DV_ORDINAL (openEHR archetype profile)",					"C_DV_ORDINAL")
-			Result.force ("C_DV_QUANTITY (openEHR archetype profile)", 					"C_DV_QUANTITY")
-			Result.force ("C_PRIMITIVE_OBJECT - any type (openEHR AOM)", 				"C_PRIMITIVE_OBJECT")
+			Result.force (["node_normal/c_code_phrase.ico", "C_CODE_PHRASE (openEHR archetype profile)"], "C_CODE_PHRASE")
+			Result.force (["node_normal/c_dv_ordinal.ico", "C_DV_ORDINAL (openEHR archetype profile)"], "C_DV_ORDINAL")
+			Result.force (["node_normal/c_dv_quantity.ico", "C_DV_QUANTITY (openEHR archetype profile)"], "C_DV_QUANTITY")
+			Result.force (["node_normal/c_quantity_item.ico", "C_QUANTITY_ITEM (openEHR archetype profile)"], "C_QUANTITY_ITEM")
+			Result.force (["node_normal/c_primitive_object.ico", "C_PRIMITIVE_OBJECT - any type (openEHR AOM)"], "C_PRIMITIVE_OBJECT")
 
-			Result.force ("Archetype slot (mandatory)", 								"ARCHETYPE_SLOT")
-			Result.force ("Archetype slot (optional)", 									"ARCHETYPE_SLOT.optional")
-			Result.force ("Archetype slot allowed archetypes", 							"CADL_INCLUDE")
-			Result.force ("Archetype slot excluded archetypes", 						"CADL_EXCLUDE")
+			Result.force (["node_normal/archetype_slot.ico", "Archetype slot (mandatory)"], "ARCHETYPE_SLOT")
+			Result.force (["node_normal/archetype_slot_optional.ico", "Archetype slot (optional)"], "ARCHETYPE_SLOT.optional")
+			Result.force (["node_normal/cadl_include.ico", "Archetype slot allowed archetypes"], "CADL_INCLUDE")
+			Result.force (["node_normal/cadl_include.ico", "Archetype slot excluded archetypes"], "CADL_EXCLUDE")
 
-			Result.force ("Complex ref model object (mandatory, single occurrence)", 	"C_COMPLEX_OBJECT")
-			Result.force ("Complex ref model object (mandatory, multiple occurrences)", "C_COMPLEX_OBJECT.multiple")
-			Result.force ("Complex ref model object (optional, single occurrence)", 	"C_COMPLEX_OBJECT.optional")
-			Result.force ("Complex ref model object (optional, multiple occurrences)", 	"C_COMPLEX_OBJECT.multiple.optional")
+			Result.force (["node_normal/c_complex_object.ico", "Complex ref model object (mandatory, single occurrence)"], "C_COMPLEX_OBJECT")
+			Result.force (["node_normal/c_complex_object_multiple.ico", "Complex ref model object (mandatory, multiple occurrences)"], "C_COMPLEX_OBJECT.multiple")
+			Result.force (["node_normal/c_complex_object_optional.ico", "Complex ref model object (optional, single occurrence)"], "C_COMPLEX_OBJECT.optional")
+			Result.force (["node_normal/c_complex_object_multiple_optional.ico", "Complex ref model object (optional, multiple occurrences)"], "C_COMPLEX_OBJECT.multiple.optional")
 
-			Result.force ("Archetype internal reference to previously defined node", 	"ARCHETYPE_INTERNAL_REF")
-			Result.force ("Constraint reference (openEHR AOM)", 						"CONSTRAINT_REF")
+			Result.force (["node_normal/archetype_internal_ref.ico", "Archetype internal reference to previously defined node"], "ARCHETYPE_INTERNAL_REF")
+			Result.force (["node_normal/archetype_code_ref.ico", "Constraint reference (openEHR AOM)"], "CONSTRAINT_REF")
 
-			Result.force ("Invariant section", 											"CADL_INVARIANT")
-			Result.force ("Invariant section item", 									"CADL_INVARIANT_ITEM")
-			Result.force ("X is inherited from parent archetype",						"icon_help_example.inherited")
-			Result.force ("X is redefined from parent archetype",						"icon_help_example.redefined")
-		end
+			Result.force (["node_normal/term.ico", Void], "TERM")
+			Result.force (["node_normal/ordinal.ico", Void], "ORDINAL")
+			Result.force (["node_normal/cadl_invariant.ico", "Invariant section"], "CADL_INVARIANT")
+			Result.force (["node_normal/cadl_invariant_item.ico","Invariant section item"], "CADL_INVARIANT_ITEM")
+			Result.force (["node_inherited/icon_help_example.ico", "X is inherited from parent archetype"], "icon_help_example.inherited")
+			Result.force (["node_redefined/icon_help_example.ico", "X is redefined from parent archetype"], "icon_help_example.redefined")
 
-	pixmap_file_table: HASH_TABLE [STRING, STRING] is
-			-- table of pixmap file paths keyed by icon key used in this app
-		local
-			file: RAW_FILE
-		once
-			create Result.make (0)
+			Result.force (["node_inherited/c_attribute.ico", Void], "C_ATTRIBUTE.inherited")
+			Result.force (["node_inherited/c_attribute_multiple.ico", Void], "C_ATTRIBUTE.multiple.inherited")
+			Result.force (["node_inherited/c_attribute.ico", Void], "C_ATTRIBUTE.optional.inherited")
+			Result.force (["node_inherited/c_attribute_multiple.ico", Void], "C_ATTRIBUTE.multiple.optional.inherited")
+			Result.force (["node_inherited/c_code_phrase.ico", Void], "C_CODE_PHRASE.inherited")
+			Result.force (["node_inherited/c_dv_ordinal.ico", Void], "C_DV_ORDINAL.inherited")
+			Result.force (["node_inherited/c_dv_quantity.ico", Void], "C_DV_QUANTITY.inherited")
+			Result.force (["node_inherited/c_quantity_item.ico", Void], "C_QUANTITY_ITEM.inherited")
+			Result.force (["node_inherited/c_primitive_object.ico", Void], "C_PRIMITIVE_OBJECT.inherited")
+			Result.force (["node_inherited/archetype_code_ref.ico", Void], "CONSTRAINT_REF.inherited")
+			Result.force (["node_inherited/archetype_slot_optional.ico", Void], "ARCHETYPE_SLOT.optional.inherited")
+			Result.force (["node_inherited/archetype_slot.ico", Void], "ARCHETYPE_SLOT.inherited")
+			Result.force (["node_inherited/c_complex_object.ico", Void], "C_COMPLEX_OBJECT.inherited")
+			Result.force (["node_inherited/c_complex_object_multiple.ico", Void], "C_COMPLEX_OBJECT.multiple.inherited")
+			Result.force (["node_inherited/c_complex_object_optional.ico", Void], "C_COMPLEX_OBJECT.optional.inherited")
+			Result.force (["node_inherited/c_complex_object_multiple_optional.ico", Void], "C_COMPLEX_OBJECT.multiple.optional.inherited")
+			Result.force (["node_inherited/archetype_internal_ref.ico", Void], "ARCHETYPE_INTERNAL_REF.inherited")
+			Result.force (["node_inherited/term.ico", Void], "TERM.inherited")
+			Result.force (["node_inherited/ordinal.ico", Void], "ORDINAL.inherited")
+			Result.force (["node_normal/archetype_slot_optional.ico", Void], "ARCHETYPE_SLOT.optional.inherited")
 
-			Result.put ("node_normal/c_attribute.ico", 							"C_ATTRIBUTE")
-			Result.put ("node_normal/c_attribute_optional.ico", 				"C_ATTRIBUTE.optional")
-			Result.put ("node_normal/c_attribute_multiple.ico",					"C_ATTRIBUTE.multiple")
-			Result.put ("node_normal/c_attribute_multiple_optional.ico", 		"C_ATTRIBUTE.multiple.optional")
-			Result.put ("node_normal/c_code_phrase.ico", 						"C_CODE_PHRASE")
-			Result.put ("node_normal/c_dv_ordinal.ico", 						"C_DV_ORDINAL")
-			Result.put ("node_normal/c_dv_quantity.ico", 						"C_DV_QUANTITY")
-			Result.put ("node_normal/c_quantity_item.ico", 						"C_QUANTITY_ITEM")
-			Result.put ("node_normal/c_primitive_object.ico", 					"C_PRIMITIVE_OBJECT")
-			Result.put ("node_normal/archetype_code_ref.ico", 					"CONSTRAINT_REF")
-			Result.put ("node_normal/archetype_slot.ico", 						"ARCHETYPE_SLOT")
-			Result.put ("node_normal/archetype_slot_optional.ico", 				"ARCHETYPE_SLOT.optional")
-	--		Result.put ("node_normal/c_complex_object_unknown.ico",				"C_COMPLEX_OBJECT.unknown")
-			Result.put ("node_normal/c_complex_object.ico", 					"C_COMPLEX_OBJECT")
-			Result.put ("node_normal/c_complex_object_multiple.ico", 			"C_COMPLEX_OBJECT.multiple")
-			Result.put ("node_normal/c_complex_object_optional.ico", 			"C_COMPLEX_OBJECT.optional")
-			Result.put ("node_normal/c_complex_object_multiple_optional.ico", 	"C_COMPLEX_OBJECT.multiple.optional")
-			Result.put ("node_normal/archetype_internal_ref.ico", 				"ARCHETYPE_INTERNAL_REF")
-			Result.put ("node_normal/term.ico", 								"TERM")
-			Result.put ("node_normal/ordinal.ico", 								"ORDINAL")
-			Result.put ("node_normal/cadl_invariant.ico", 						"CADL_INVARIANT")
-			Result.put ("node_normal/cadl_include.ico", 						"CADL_INCLUDE")
-			Result.put ("node_normal/cadl_exclude.ico", 						"CADL_EXCLUDE")
-			Result.put ("node_normal/cadl_invariant_item.ico", 					"CADL_INVARIANT_ITEM")
+			Result.force (["node_redefined/c_attribute.ico", Void], "C_ATTRIBUTE.redefined")
+			Result.force (["node_redefined/c_attribute_multiple.ico", Void], "C_ATTRIBUTE.multiple.redefined")
+			Result.force (["node_redefined/c_attribute.ico", Void], "C_ATTRIBUTE.optional.redefined")
+			Result.force (["node_redefined/c_attribute_multiple.ico", Void], "C_ATTRIBUTE.multiple.optional.redefined")
+			Result.force (["node_redefined/c_code_phrase.ico", Void], "C_CODE_PHRASE.redefined")
+			Result.force (["node_redefined/c_dv_ordinal.ico", Void], "C_DV_ORDINAL.redefined")
+			Result.force (["node_redefined/c_dv_quantity.ico", Void], "C_DV_QUANTITY.redefined")
+			Result.force (["node_redefined/c_quantity_item.ico", Void], "C_QUANTITY_ITEM.redefined")
+			Result.force (["node_redefined/c_primitive_object.ico", Void], "C_PRIMITIVE_OBJECT.redefined")
+			Result.force (["node_redefined/archetype_code_ref.ico", Void], "CONSTRAINT_REF.redefined")
+			Result.force (["node_redefined/archetype_slot_optional.ico", Void], "ARCHETYPE_SLOT.optional.redefined")
+			Result.force (["node_redefined/archetype_slot.ico", Void], "ARCHETYPE_SLOT.redefined")
+			Result.force (["node_redefined/c_complex_object.ico", Void], "C_COMPLEX_OBJECT.redefined")
+			Result.force (["node_redefined/c_complex_object_multiple.ico", Void], "C_COMPLEX_OBJECT.multiple.redefined")
+			Result.force (["node_redefined/c_complex_object_optional.ico", Void], "C_COMPLEX_OBJECT.optional.redefined")
+			Result.force (["node_redefined/c_complex_object_multiple_optional.ico", Void], "C_COMPLEX_OBJECT.multiple.optional.redefined")
+			Result.force (["node_redefined/archetype_internal_ref.ico", Void], "ARCHETYPE_INTERNAL_REF.redefined")
+			Result.force (["node_redefined/term.ico", Void], "TERM.redefined")
+			Result.force (["node_redefined/ordinal.ico", Void], "ORDINAL.redefined")
+			Result.force (["node_normal/archetype_slot_optional.ico", Void], "ARCHETYPE_SLOT.optional.redefined")
 
-			Result.put ("node_inherited/c_attribute.ico",						"C_ATTRIBUTE.inherited")
-			Result.put ("node_inherited/c_attribute_multiple.ico", 				"C_ATTRIBUTE.multiple.inherited")
-			Result.put ("node_inherited/c_attribute.ico",		 				"C_ATTRIBUTE.optional.inherited")
-			Result.put ("node_inherited/c_attribute_multiple.ico", 				"C_ATTRIBUTE.multiple.optional.inherited")
-			Result.put ("node_inherited/c_code_phrase.ico", 					"C_CODE_PHRASE.inherited")
-			Result.put ("node_inherited/c_dv_ordinal.ico", 						"C_DV_ORDINAL.inherited")
-			Result.put ("node_inherited/c_dv_quantity.ico", 					"C_DV_QUANTITY.inherited")
-			Result.put ("node_inherited/c_quantity_item.ico", 					"C_QUANTITY_ITEM.inherited")
-			Result.put ("node_inherited/c_primitive_object.ico", 				"C_PRIMITIVE_OBJECT.inherited")
-			Result.put ("node_inherited/archetype_code_ref.ico", 				"CONSTRAINT_REF.inherited")
-			Result.put ("node_inherited/archetype_slot_optional.ico", 			"ARCHETYPE_SLOT.optional.inherited")
-			Result.put ("node_inherited/archetype_slot.ico", 					"ARCHETYPE_SLOT.inherited")
-			Result.put ("node_inherited/c_complex_object.ico", 					"C_COMPLEX_OBJECT.inherited")
-			Result.put ("node_inherited/c_complex_object_multiple.ico", 		"C_COMPLEX_OBJECT.multiple.inherited")
-			Result.put ("node_inherited/c_complex_object_optional.ico", 		"C_COMPLEX_OBJECT.optional.inherited")
-			Result.put ("node_inherited/c_complex_object_multiple_optional.ico", "C_COMPLEX_OBJECT.multiple.optional.inherited")
-			Result.put ("node_inherited/archetype_internal_ref.ico", 			"ARCHETYPE_INTERNAL_REF.inherited")
-			Result.put ("node_inherited/term.ico", 								"TERM.inherited")
-			Result.put ("node_inherited/ordinal.ico", 							"ORDINAL.inherited")
-			Result.put ("node_normal/archetype_slot_optional.ico", 				"ARCHETYPE_SLOT.optional.inherited")
-			Result.put ("node_inherited/icon_help_example.ico", 				"icon_help_example.inherited")
+			Result.force (["pass.ico", Void], "test_passed")
+			Result.force (["fail.ico", Void], "test_failed")
+			Result.force (["not_applicable.ico", Void], "test_not_applicable")
 
-			Result.put ("node_redefined/c_attribute.ico",						"C_ATTRIBUTE.redefined")
-			Result.put ("node_redefined/c_attribute_multiple.ico", 				"C_ATTRIBUTE.multiple.redefined")
-			Result.put ("node_redefined/c_attribute.ico",		 				"C_ATTRIBUTE.optional.redefined")
-			Result.put ("node_redefined/c_attribute_multiple.ico", 				"C_ATTRIBUTE.multiple.optional.redefined")
-			Result.put ("node_redefined/c_code_phrase.ico", 					"C_CODE_PHRASE.redefined")
-			Result.put ("node_redefined/c_dv_ordinal.ico", 						"C_DV_ORDINAL.redefined")
-			Result.put ("node_redefined/c_dv_quantity.ico", 					"C_DV_QUANTITY.redefined")
-			Result.put ("node_redefined/c_quantity_item.ico", 					"C_QUANTITY_ITEM.redefined")
-			Result.put ("node_redefined/c_primitive_object.ico", 				"C_PRIMITIVE_OBJECT.redefined")
-			Result.put ("node_redefined/archetype_code_ref.ico", 				"CONSTRAINT_REF.redefined")
-			Result.put ("node_redefined/archetype_slot_optional.ico", 			"ARCHETYPE_SLOT.optional.redefined")
-			Result.put ("node_redefined/archetype_slot.ico", 					"ARCHETYPE_SLOT.redefined")
-			Result.put ("node_redefined/c_complex_object.ico", 					"C_COMPLEX_OBJECT.redefined")
-			Result.put ("node_redefined/c_complex_object_multiple.ico", 		"C_COMPLEX_OBJECT.multiple.redefined")
-			Result.put ("node_redefined/c_complex_object_optional.ico", 		"C_COMPLEX_OBJECT.optional.redefined")
-			Result.put ("node_redefined/c_complex_object_multiple_optional.ico", "C_COMPLEX_OBJECT.multiple.optional.redefined")
-			Result.put ("node_redefined/archetype_internal_ref.ico", 			"ARCHETYPE_INTERNAL_REF.redefined")
-			Result.put ("node_redefined/term.ico", 								"TERM.redefined")
-			Result.put ("node_redefined/ordinal.ico", 							"ORDINAL.redefined")
-			Result.put ("node_normal/archetype_slot_optional.ico", 				"ARCHETYPE_SLOT.optional.redefined")
-			Result.put ("node_redefined/icon_help_example.ico", 				"icon_help_example.redefined")
+			Result.force (["go.ico", Void], "go")
+			Result.force (["stop.ico", Void], "stop")
 
-			Result.put ("archetype_1.ico", "archetype_1")
-			Result.put ("archetype_specialised_1.ico", "archetype_specialised_1")
-
-			Result.put ("file_folder_2.ico", "file_folder_2")
-			Result.put ("archetype_2.ico", "archetype_2")
-			Result.put ("archetype_specialised_2.ico", "archetype_specialised_2")
-
-			Result.put ("file_folder_3.ico", "file_folder_3")
-			Result.put ("archetype_3.ico", "archetype_3")
-			Result.put ("archetype_specialised_3.ico", "archetype_specialised_3")
-
-			Result.put ("pass.ico", "test_passed")
-			Result.put ("fail.ico", "test_failed")
-			Result.put ("not_applicable.ico", "test_not_applicable")
-
-			Result.put ("go.ico", "go")
-			Result.put ("stop.ico", "stop")
-
-			Result.put ("Ocean_float.png", "Ocean logo")
-
-			-- check that icon files exist; for any that don't, output an error message and
-			-- use a blank icon
-			from
-				Result.start
-			until
-				Result.off
-			loop
-				create file.make (icon_directory + "/" + Result.item_for_iteration)
-
-				if not file.exists then
-					io.putstring ("Could not find icon " + file.name + "; using default%N")
-					Result.force ("default", Result.key_for_iteration)
-				end
-
-				Result.forth
-			end
+			Result.force (["Ocean_float.png", Void], "Ocean logo")
 		ensure
 			attached: Result /= Void
 			not_empty: not Result.is_empty
 		end
 
-	pixmaps: HASH_TABLE[EV_PIXMAP, STRING] is
-			-- table of pixmap file paths keyed by logical name
+	pixmaps: HASH_TABLE [EV_PIXMAP, STRING] is
+			-- Table of pixmap file paths keyed by logical name.
 		require
 			has_icon_directory
 		local
+			file: RAW_FILE
 			pixmap: EV_PIXMAP
 		once
-			create Result.make(0)
+			create Result.make (0)
 
 			from
-				pixmap_file_table.start
+				pixmap_table.start
 			until
-				pixmap_file_table.off
+				pixmap_table.off
 			loop
-				create pixmap
-				if not pixmap_file_table.item_for_iteration.is_equal("default") then
-					pixmap.set_with_named_file(icon_directory + "/" + pixmap_file_table.item_for_iteration)
+				if pixmap_table.item_for_iteration.file /= Void then
+					create file.make (icon_directory + "/" + pixmap_table.item_for_iteration.file)
+					create pixmap
+					Result [pixmap_table.key_for_iteration] := pixmap
+
+					if file.exists then
+						pixmap.set_with_named_file (file.name)
+					else
+						io.putstring ("Could not find icon " + file.name + "; using default%N")
+					end
 				end
-				Result.put(pixmap, pixmap_file_table.key_for_iteration)
-				pixmap_file_table.forth
+
+				pixmap_table.forth
 			end
 		end
 

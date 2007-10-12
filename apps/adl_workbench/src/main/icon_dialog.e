@@ -53,20 +53,26 @@ feature {NONE} -- Implementation
 			-- Add icon explanation row items
 		local
 			list_item: EV_LIST_ITEM
+			help: STRING
 		do
 			from
-				pixmap_help_table.start
+				pixmap_table.start
 			until
-				pixmap_help_table.off
+				pixmap_table.off
 			loop
-				create list_item.make_with_text (pixmap_help_table.item_for_iteration)
+				help := pixmap_table.item_for_iteration.help
 
-				if pixmaps.has (pixmap_help_table.key_for_iteration) then
-					list_item.set_pixmap (pixmaps [pixmap_help_table.key_for_iteration])
+				if help /= Void then
+					create list_item.make_with_text (help)
+
+					if pixmaps.has (pixmap_table.key_for_iteration) then
+						list_item.set_pixmap (pixmaps [pixmap_table.key_for_iteration])
+					end
+
+					icon_help_list.extend (list_item)
 				end
 
-				icon_help_list.extend (list_item)
-				pixmap_help_table.forth
+				pixmap_table.forth
 			end
 		end
 

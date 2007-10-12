@@ -48,34 +48,39 @@ feature -- Initialisation
 
 	make is
 		do
-			create status.make(0)
+			create status.make (0)
 		end
 
 feature -- Access
 
 	status: STRING
-			-- last status of compiler
+			-- Last status of compiler.
 
-feature -- Status Report
+	visual_update_action: PROCEDURE [ANY, TUPLE [ARCH_REP_ARCHETYPE]]
+			-- Called after processng each archetype (to perform GUI updates during processing).
 
 feature -- Commands
 
-	build_all(visual_update_action: PROCEDURE [ANY, TUPLE [ARCH_REP_ARCHETYPE]]) is
-			-- rebuild the whole system, but don't rebuild artefact that seem to already be built
-			-- the visual_update_action argument is called at the end of processng each archetype and
-			-- can be used to perform GUI updates during processing
+	set_visual_update_action (value: PROCEDURE [ANY, TUPLE [ARCH_REP_ARCHETYPE]])
+			-- Set `visual_update_action'.
+		do
+			visual_update_action := value
+		end
+
+	build_all
+			-- Rebuild the whole system, but don't rebuild artefacts that seem to already be built.
 		do
 			status.wipe_out
-			status.append("=============== building system ===============%N")
+			status.append ("=============== building system ===============%N")
 			force := False
 			archetype_directory.do_all_archetype (agent process_one_archetype, visual_update_action)
 		end
 
-	rebuild_all(visual_update_action: PROCEDURE [ANY, TUPLE [ARCH_REP_ARCHETYPE]]) is
-			-- force rebuild the whole system from scratch, regardless of previous previous attempts
+	rebuild_all
+			-- Force rebuild the whole system from scratch, regardless of previous previous attempts.
 		do
 			status.wipe_out
-			status.append("=============== rebuilding system from scratch ===============%N")
+			status.append ("=============== rebuilding system from scratch ===============%N")
 			force := True
 			archetype_directory.do_all_archetype (agent process_one_archetype, visual_update_action)
 		end
@@ -88,7 +93,7 @@ feature -- Commands
 		do
 			status.wipe_out
 			force := False
-			process_lineage(ara)
+			process_lineage (ara)
 		end
 
 	rebuild_lineage (ara: ARCH_REP_ARCHETYPE) is
@@ -98,7 +103,7 @@ feature -- Commands
 		do
 			status.wipe_out
 			force := True
-			process_lineage(ara)
+			process_lineage (ara)
 		end
 
 feature {NONE} -- Implementation
@@ -115,24 +120,29 @@ feature {NONE} -- Implementation
 			until
 				arch_lin.off
 			loop
-				process_one_archetype(arch_lin.item)
+				process_one_archetype (arch_lin.item)
+
+				if visual_update_action /= Void then
+					visual_update_action.call ([arch_lin.item])
+				end
+
 				arch_lin.forth
 			end
 		end
 
-	process_one_archetype(ara: ARCH_REP_ARCHETYPE) is
+	process_one_archetype (ara: ARCH_REP_ARCHETYPE) is
 			-- agent routine for processing one archetype
 		do
 			if force or not ara.is_parsed then
-				status.append("------------- compiling " + ara.id.value + " -------------%N")
-				archetype_parser.set_target(ara)
+				status.append ("------------- compiling " + ara.id.value + " -------------%N")
+				archetype_parser.set_target (ara)
 				archetype_parser.parse_archetype
-				status.append(archetype_parser.status)
+				status.append (archetype_parser.status)
 			end
 		end
 
 	force: BOOLEAN
-			-- if True, force processing even if archetype appears to be properly compiled already
+			-- If True, force processing even if archetype appears to be properly compiled already.
 
 end
 
