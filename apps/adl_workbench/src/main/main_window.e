@@ -22,8 +22,7 @@ inherit
 
 	MAIN_WINDOW_ACCELERATORS
 		undefine
-			copy,
-			default_create
+			copy, default_create
 		end
 
 	SHARED_ARCHETYPE_COMPILER
@@ -61,13 +60,6 @@ inherit
 		end
 
 	MESSAGE_BILLBOARD
-		export
-			{NONE} all
-		undefine
-			copy, default_create
-		end
-
-	EV_KEY_CONSTANTS
 		export
 			{NONE} all
 		undefine
@@ -200,18 +192,18 @@ feature {NONE} -- Initialization
 			suppress_tab_key_insertion (arch_desc_copyright_text, arch_desc_resource_orig_res_mlist, parser_status_area)
 			suppress_tab_key_insertion (archetype_text_edit_area, arch_notebook, parser_status_area)
 
-			add_shortcut (agent step_focused_notebook_tab (1), {EV_KEY_CONSTANTS}.key_tab, True, False)
-			add_shortcut (agent step_focused_notebook_tab (-1), {EV_KEY_CONSTANTS}.key_tab, True, True)
+			add_shortcut (agent step_focused_notebook_tab (1), key_tab, True, False)
+			add_shortcut (agent step_focused_notebook_tab (-1), key_tab, True, True)
 
-			add_menu_shortcut (repository_menu_build_all, {EV_KEY_CONSTANTS}.key_f7, False, False)
-			add_menu_shortcut (repository_menu_rebuild_all, {EV_KEY_CONSTANTS}.key_f7, False, True)
-			add_menu_shortcut (repository_menu_build_subtree, {EV_KEY_CONSTANTS}.key_f7, True, False)
-			add_menu_shortcut (repository_menu_rebuild_subtree, {EV_KEY_CONSTANTS}.key_f7, True, True)
-			add_menu_shortcut (repository_menu_interrupt_build, {EV_KEY_CONSTANTS}.key_escape, False, True)
+			add_menu_shortcut (repository_menu_build_all, key_f7, False, False)
+			add_menu_shortcut (repository_menu_rebuild_all, key_f7, False, True)
+			add_menu_shortcut (repository_menu_build_subtree, key_f7, True, False)
+			add_menu_shortcut (repository_menu_rebuild_subtree, key_f7, True, True)
+			add_menu_shortcut (repository_menu_interrupt_build, key_escape, False, True)
 
-			add_menu_shortcut (file_menu_open, {EV_KEY_CONSTANTS}.key_o, True, False)
-			add_menu_shortcut_for_action (edit_menu_copy, agent call_unless_text_focused (agent on_copy), {EV_KEY_CONSTANTS}.key_c, True, False)
-			add_menu_shortcut (edit_menu_select_all, {EV_KEY_CONSTANTS}.key_a, True, False)
+			add_menu_shortcut (file_menu_open, key_o, True, False)
+			add_menu_shortcut_for_action (edit_menu_copy, agent call_unless_text_focused (agent on_copy), key_c, True, False)
+			add_menu_shortcut (edit_menu_select_all, key_a, True, False)
 		end
 
 feature -- Access
@@ -1075,13 +1067,13 @@ feature {NONE} -- Standard Windows behaviour that EiffelVision ought to be manag
 			text.set_default_key_processing_handler (
 				agent (key: EV_KEY): BOOLEAN
 					do
-						Result := key.code /= {EV_KEY_CONSTANTS}.key_tab
+						Result := key.code /= key_tab
 					end)
 
 			text.key_press_actions.extend (
 				agent (key: EV_KEY; previous, next: EV_WIDGET)
 					do
-						if key /= Void and then key.code = {EV_KEY_CONSTANTS}.key_tab then
+						if key /= Void and then key.code = key_tab then
 							if not ev_application.ctrl_pressed and not ev_application.alt_pressed then
 								if ev_application.shift_pressed then
 									previous.set_focus

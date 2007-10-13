@@ -14,6 +14,12 @@ indexing
 deferred class
 	MAIN_WINDOW_ACCELERATORS
 
+inherit
+	EV_KEY_CONSTANTS
+		export
+			{NONE} all
+		end
+
 feature {NONE} -- Implementation
 
 	accelerators: EV_ACCELERATOR_LIST
@@ -25,7 +31,7 @@ feature {NONE} -- Implementation
 			-- Create a keyboard shortcut for `menu_item', to execute `menu_item.select_actions'.
 		require
 			menu_item_attached: menu_item /= Void
-			valid_key: (create {EV_KEY_CONSTANTS}).valid_key_code (key)
+			valid_key: valid_key_code (key)
 		do
 			menu_item.set_text (menu_item.text + "%T" + shortcut_text (key, ctrl, shift))
 			menu_item.select_actions.do_all (agent add_shortcut (?, key, ctrl, shift))
@@ -35,7 +41,7 @@ feature {NONE} -- Implementation
 			-- Create a keyboard shortcut for `menu_item', to execute `action' rather than `menu_item.select_actions'.
 		require
 			menu_item_attached: menu_item /= Void
-			valid_key: (create {EV_KEY_CONSTANTS}).valid_key_code (key)
+			valid_key: valid_key_code (key)
 		do
 			menu_item.set_text (menu_item.text + "%T" + shortcut_text (key, ctrl, shift))
 			add_shortcut (action, key, ctrl, shift)
@@ -45,7 +51,7 @@ feature {NONE} -- Implementation
 			-- Create a keyboard shortcut to execute `action'.
 		require
 			action_attached: action /= Void
-			valid_key: (create {EV_KEY_CONSTANTS}).valid_key_code (key)
+			valid_key: valid_key_code (key)
 		local
 			accelerator: EV_ACCELERATOR
 		do
@@ -59,23 +65,20 @@ feature {NONE} -- Implementation
 	shortcut_text (key: INTEGER; ctrl, shift: BOOLEAN): STRING
 			-- Text describing a keyboard shortcut.
 		require
-			valid_key: (create {EV_KEY_CONSTANTS}).valid_key_code (key)
-		local
-			key_constants: EV_KEY_CONSTANTS
+			valid_key: valid_key_code (key)
 		do
-			create key_constants
-			Result := key_constants.key_strings [key]
+			Result := key_strings [key]
 
 			if Result.count = 1 then
 				Result.to_upper
 			end
 
 			if shift then
-				Result := key_constants.key_strings [{EV_KEY_CONSTANTS}.key_shift] + "+" + Result
+				Result := key_strings [key_shift] + "+" + Result
 			end
 
 			if ctrl then
-				Result := key_constants.key_strings [{EV_KEY_CONSTANTS}.key_ctrl] + "+" + Result
+				Result := key_strings [key_ctrl] + "+" + Result
 			end
 		ensure
 			attached: Result /= Void
