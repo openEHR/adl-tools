@@ -16,8 +16,8 @@ class ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP
 
 inherit
 	ARCHETYPE_INDEXED_REPOSITORY_I
-		
-		
+
+
 
 	ARCHETYPE_FILE_REPOSITORY_IMP
 
@@ -59,7 +59,7 @@ feature {NONE} -- Implementation
 				loop
 					fn := fs_node_names.item
 
-					if not (fn.is_equal(".") or fn.is_equal("..") or fn.item (1) = '.') then
+					if fn.item (1) /= '.' then
 						full_path := tree.item.full_path + Os_directory_separator.out + fn
 
 						if (create {RAW_FILE}.make (full_path)).is_directory then
