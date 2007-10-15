@@ -27,6 +27,13 @@ inherit
 			copy, default_create
 		end
 
+	SHARED_ARCHETYPE_COMPILER
+		export
+			{NONE} all
+		undefine
+			copy, default_create
+		end
+
 	SHARED_UI_RESOURCES
 		export
 			{NONE} all
@@ -206,7 +213,7 @@ feature -- Commands
 				checkbox ?= row.item (2)
 
 				if checkbox /= Void and then checkbox.is_checked then
-					arch_item ?= row.item (1).data
+					arch_item ?= row.data
 
 					if arch_item /= Void then
 						row.ensure_visible
@@ -237,7 +244,7 @@ feature -- Commands
 
 							end
 
-							create gli.make_with_text ("")
+							create gli
 							gli.set_pixmap (pixmaps [res_label])
 							row.set_item (col_csr, gli)
 
@@ -279,6 +286,53 @@ feature -- Commands
 			end
 		end
 
+   	set_row_pixmap (row: EV_GRID_ROW) is
+   			-- Set the icon appropriate to the item attached to `row'.
+		require
+			row_attached: row /= Void
+   		local
+			gli: EV_GRID_LABEL_ITEM
+   			arch_item: ARCH_REP_ITEM
+			pixmap: EV_PIXMAP
+   		do
+   			gli ?= row.item (1)
+   			arch_item ?= row.data
+
+			if gli /= Void and arch_item /= Void then
+				pixmap := pixmaps [arch_item.group_name]
+
+				if pixmap /= Void then
+					gli.set_pixmap (pixmap)
+				end
+			end
+		end
+
+	do_row_for_item (an_item: ARCH_REP_ITEM; action: PROCEDURE [ANY, TUPLE [EV_GRID_ROW]])
+   			-- Perform `action' for the row containing `an_item', if any.
+		require
+			action_attached: action /= Void
+   		local
+   			i: INTEGER
+			row: EV_GRID_ROW
+   		do
+			if an_item /= Void then
+				from
+					i := grid.row_count
+				until
+					i = 0
+				loop
+					row := grid.row (i)
+
+					if row.data /= Void and then row.data.is_equal (an_item) then
+						action.call ([row])
+						i := 0
+					else
+						i := i - 1
+					end
+				end
+			end
+		end
+
 feature -- Tests
 
 	test_parse: INTEGER is
@@ -287,7 +341,7 @@ feature -- Tests
 			unused_at_codes, unused_ac_codes: ARRAYED_LIST [STRING]
 		do
 			Result := test_failed
-			archetype_parser.parse_archetype
+			archetype_compiler.rebuild_lineage (archetype_parser.target)
 
 			if archetype_parser.archetype_valid then
 				Result := test_passed
@@ -450,16 +504,11 @@ feature {NONE} -- Implementation
 			row.collapse_actions.extend (agent step_to_viewable_parent_of_selected_row)
 			row.insert_subrow (row.subrow_count + 1)
 			row := row.subrow (row.subrow_count)
+			row.set_data (an_item)
 			add_checkbox (row)
 			create gli.make_with_text (utf8 (an_item.base_name))
 			row.set_item (1, gli)
-			gli.set_data (an_item)
-			pixmap := pixmaps [an_item.group_name]
-
-			if pixmap /= Void then
-				gli.set_pixmap (pixmap)
-			end
-
+			set_row_pixmap (row)
 			ada ?= an_item
 
 			if ada /= Void then

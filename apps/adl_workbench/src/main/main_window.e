@@ -737,55 +737,55 @@ feature -- Controls
 
 	ontology_controls: GUI_ONTOLOGY_CONTROLS is
 		once
-			create Result.make(Current)
+			create Result.make (Current)
 		end
 
 	description_controls: GUI_DESCRIPTION_CONTROLS is
 		once
-			create Result.make(Current)
+			create Result.make (Current)
 		end
 
 	translation_controls: GUI_TRANSLATION_CONTROLS is
 		once
-			create Result.make(Current)
+			create Result.make (Current)
 		end
 
 	node_map_control: GUI_NODE_MAP_CONTROL is
 		once
-			create Result.make(Current)
+			create Result.make (Current)
 		end
 
 	adl_path_map_control: GUI_PATH_MAP_CONTROL is
 		once
-			create Result.make(Current)
+			create Result.make (Current)
 		end
 
 	archetype_view_tree_control: GUI_VIEW_ARCHETYPE_TREE_CONTROL is
 		once
-			create Result.make(Current)
+			create Result.make (Current)
 		end
 
 	archetype_test_tree_control: GUI_TEST_ARCHETYPE_TREE_CONTROL is
 		once
-			create Result.make(Current)
+			create Result.make (Current)
 		end
 
 	Option_dialog: OPTION_DIALOG is
 		once
 			create Result
-			Result.set_main_window(Current)
+			Result.set_main_window (Current)
 		end
 
 	Repository_dialog: REPOSITORY_DIALOG is
 		once
 			create Result
-			Result.set_main_window(Current)
+			Result.set_main_window (Current)
 		end
 
 	Icon_dialog: ICON_DIALOG is
 		once
 			create Result
-			Result.set_main_window(Current)
+			Result.set_main_window (Current)
 		end
 
 	Print_dialog: EV_PRINT_DIALOG is
@@ -798,7 +798,7 @@ feature -- Controls
 			-- about text
 		do
 			create result.make_with_text(splash_text)
-			result.set_background_color(create {EV_COLOR}.make_with_8_bit_rgb(255, 255, 255))
+			result.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 255))
 			result.propagate_background_color
 			result.set_pixmap(pixmaps.item("Ocean logo"))
 		end
@@ -808,22 +808,22 @@ feature -- Controls
 		do
 			create Result.make_with_text(News_text)
 			result.propagate_background_color
-			set_background_color(create {EV_COLOR}.make_with_8_bit_rgb(255, 255, 255))
-			Result.set_x_position(20)
-			Result.set_y_position(10)
+			set_background_color(create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 255))
+			Result.set_x_position (20)
+			Result.set_y_position (10)
 		end
 
 	Interrupt_dialog: EV_INFORMATION_DIALOG is
 			-- processing interrupted dialog
 		do
-			create Result.make_with_text("Processing aborted")
+			create Result.make_with_text ("Processing aborted")
 			result.propagate_background_color
 		end
 
 feature {EV_DIALOG} -- Implementation
 
-	populate_archetype_directory is
-			-- rebuild archetype directory & repopulate relevant GUI parts
+	populate_archetype_directory
+			-- Rebuild archetype directory & repopulate relevant GUI parts.
 		do
 			clear_all_controls
 			archetype_directory.build_directory
@@ -832,16 +832,10 @@ feature {EV_DIALOG} -- Implementation
 			archetype_test_tree_control.populate
 		end
 
-	clear_archetype_text_edit_area is
-			--
+	clear_all_controls
+			-- Wipe out content from visual controls.
 		do
-			archetype_text_edit_area.set_text("")
-		end
-
-	clear_all_controls is
-			-- wipe out content from visual controls
-		do
-			parser_status_area.set_text("")
+			parser_status_area.remove_text
 			language_combo.wipe_out
 			node_map_control.clear
 			ontology_controls.clear
@@ -850,16 +844,16 @@ feature {EV_DIALOG} -- Implementation
 			parsed_archetype_found_paths.wipe_out
 		end
 
-	populate_user_controls is
-			-- populate content from visual controls
+	populate_user_controls
+			-- Populate content from visual controls.
 		do
 			populate_archetype_id
 			populate_languages
 			populate_adl_version
 		end
 
-	populate_all_archetype_controls is
-			-- populate content from visual controls
+	populate_all_archetype_controls
+			-- Populate content from visual controls.
 		do
 			populate_user_controls
 			adl_path_map_control.populate
@@ -869,8 +863,8 @@ feature {EV_DIALOG} -- Implementation
 			translation_controls.populate
 		end
 
-	populate_view_controls is
-			-- populate content from visual controls
+	populate_view_controls
+			-- Populate content from visual controls.
 		do
 			adl_path_map_control.populate
 			node_map_control.repopulate
@@ -878,7 +872,7 @@ feature {EV_DIALOG} -- Implementation
 			description_controls.populate
 		end
 
-	populate_archetype_id is
+	populate_archetype_id
 		local
 			selected: ARCHETYPE
 		do
@@ -898,8 +892,8 @@ feature {EV_DIALOG} -- Implementation
 			end
 		end
 
-	populate_adl_version is
-			-- populate ADL version
+	populate_adl_version
+			-- Populate ADL version.
 		do
 			if archetype_directory.has_selected_archetype then
 				adl_version_text.set_text (utf8 (archetype_directory.selected_archetype.archetype_flat.adl_version))
@@ -908,7 +902,8 @@ feature {EV_DIALOG} -- Implementation
 			end
 		end
 
-	populate_languages is
+	populate_languages
+			-- Populate the languages combo box and the terminologies list.
 		do
 			language_combo.select_actions.block
 
@@ -969,10 +964,11 @@ feature {NONE} -- Implementation
 	build_gui_update (ara: ARCH_REP_ARCHETYPE) is
 			-- Update GUI with progress on build.
 		require
-			ara_attaced: ara /= Void
+			ara_attached: ara /= Void
 		do
 			parser_status_area.set_text (utf8 (archetype_compiler.status))
 			archetype_view_tree_control.do_node_for_item (ara, agent archetype_view_tree_control.set_node_pixmap)
+			archetype_test_tree_control.do_row_for_item (ara, agent archetype_test_tree_control.set_row_pixmap)
 			ev_application.process_events
 		end
 
