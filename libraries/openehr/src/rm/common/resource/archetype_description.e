@@ -237,18 +237,25 @@ feature -- Modification
 			create details.make(0)
 		end
 
-	add_other_detail(a_key, a_value: STRING) is
-			-- add the key, value pair to other_details
+	add_other_detail (a_key, a_value: STRING) is
+			-- Add the key, value pair to `other_details'.
 		require
 			Key_valid: a_key /= Void and then not a_key.is_empty
-			Value_valid: a_value /= Void and then not a_value.is_empty
+			value_attached: a_value /= Void
 		do
 			if other_details = Void then
-				create other_details.make(0)
+				create other_details.make (0)
 			end
-			other_details.force(a_value, a_key)
+
+			if not a_value.is_empty then
+				other_details.force (a_value, a_key)
+			else
+				other_details.remove (a_key)
+			end
 		ensure
-			Other_details_set: other_details.item(a_key) = a_value
+			other_details_attached: other_details /= Void
+			other_details_set: not a_value.is_empty implies other_details.item (a_key) = a_value
+			other_details_removed: a_value.is_empty implies not other_details.has (a_key)
 		end
 
 	set_parent_resource(a_res: AUTHORED_RESOURCE) is
