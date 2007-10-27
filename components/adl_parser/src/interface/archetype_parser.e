@@ -208,14 +208,9 @@ feature -- Commands
 				clear_billboard
 
 				if target.has_differential_file then
-					-- FIXME: if archetype is specialised, and parents not yet parsed, parse the archetypes up
-					-- the specialisation lineage first until we get to top or else an archetype that has been
-					-- parsed and validated.
-					if target.is_specialised then
-						-- do something
-					end
-
+					post_info (Current, "parse_archetype", "parse_archetype_i3", Void)
 					an_archetype := adl_engine.parse (target.differential_text, True)
+					an_archetype.set_differential
 
 					if an_archetype = Void then
 						post_error (Current, "parse_archetype", "parse_archetype_e1", <<adl_engine.parse_error_text>>)
@@ -242,8 +237,8 @@ feature -- Commands
 				-- Make sure that the language is set, and that it is one of the languages in the archetype.
 				if archetype_valid then
 					-- FIXME: in future this should use archetype_differential not archetype_flat
-					if current_language = Void or not archetype_flat.has_language (current_language) then
-						set_current_language (archetype_flat.original_language.code_string)
+					if current_language = Void or not archetype_differential.has_language (current_language) then
+						set_current_language (archetype_differential.original_language.code_string)
 					end
 				end
 			else
@@ -317,8 +312,8 @@ feature -- Commands
 			retry
 		end
 
-	save_archetype is
-			-- Save current target archetype to its file
+	save_archetype_differential is
+			-- Save current target archetype to its file in its source form
 		require
 			Has_target: has_target
 		do
@@ -326,21 +321,18 @@ feature -- Commands
 				status.wipe_out
 				save_succeeded := False
 				if archetype_valid then
-					serialised_flat := adl_engine.serialise(archetype_flat, "adl")
-					target.save_flat (serialised_flat)
-
 					if target.is_specialised then
-						serialised_differential := adl_engine.serialise(archetype_differential, "adl")
-						target.save_differential (serialised_differential)
+						serialised_differential := adl_engine.serialise(archetype_differential, archetype_flat.ontology, "adl")
 					else
-						serialised_differential := serialised_flat
+						serialised_differential := adl_engine.serialise(archetype_flat, archetype_flat.ontology, "adl")
 					end
+					target.save_differential (serialised_differential)
 					save_succeeded := True
 				else
-					post_error(Current, "save_archetype", "save_archetype_e2", Void)
+					post_error(Current, "save_archetype_differential", "save_archetype_e2", Void)
 				end
 			else
-				post_error(Current, "save_archetype", "save_archetype_e3", Void)
+				post_error(Current, "save_archetype_differential", "save_archetype_e3", Void)
 			end
 			status.wipe_out
 			status.append(billboard_content)
@@ -348,7 +340,36 @@ feature -- Commands
 		ensure
 			save_succeeded or else not status.is_empty
 		rescue
-			post_error(Current, "save_archetype", "report_exception", <<exception.out, exception_trace>>)
+			post_error(Current, "save_archetype_differential", "report_exception", <<exception.out, exception_trace>>)
+			exception_encountered := True
+			retry
+		end
+
+	save_archetype_flat is
+			-- Save current target archetype to its file in its flat form
+		require
+			Has_target: has_target
+		do
+			if not exception_encountered then
+				status.wipe_out
+				save_succeeded := False
+				if archetype_valid then
+					serialised_flat := adl_engine.serialise(archetype_flat, archetype_flat.ontology, "adl")
+					target.save_flat (serialised_flat)
+					save_succeeded := True
+				else
+					post_error(Current, "save_archetype_flat", "save_archetype_e2", Void)
+				end
+			else
+				post_error(Current, "save_archetype_flat", "save_archetype_e3", Void)
+			end
+			status.wipe_out
+			status.append(billboard_content)
+			clear_billboard
+		ensure
+			save_succeeded or else not status.is_empty
+		rescue
+			post_error(Current, "save_archetype_flat", "report_exception", <<exception.out, exception_trace>>)
 			exception_encountered := True
 			retry
 		end
@@ -364,14 +385,14 @@ feature -- Commands
 				status.wipe_out
 				save_succeeded := False
 				if archetype_valid then
-					serialised_flat := adl_engine.serialise(archetype_flat, serialise_format)
-					target.save_flat_as (a_full_path, serialised_flat)
 					if target.is_specialised then
-						serialised_differential := adl_engine.serialise(archetype_differential, serialise_format)
+						serialised_differential := adl_engine.serialise(archetype_differential, archetype_flat.ontology, serialise_format)
 						target.save_differential_as (a_full_path, serialised_differential)
 					else
 						serialised_differential := serialised_flat
 					end
+					serialised_flat := adl_engine.serialise(archetype_flat, archetype_flat.ontology, serialise_format)
+					target.save_flat_as (a_full_path, serialised_flat)
 					save_succeeded := True
 				else
 					post_error(Current, "save_archetype", "save_archetype_e2", Void)
@@ -398,8 +419,8 @@ feature -- Commands
 			Serialise_format_valid: serialise_format /= Void and then has_archetype_serialiser_format(serialise_format)
 		do
 			if not exception_encountered then
-				serialised_differential := adl_engine.serialise(archetype_differential, serialise_format)
-				serialised_flat := adl_engine.serialise(archetype_flat, serialise_format)
+				serialised_differential := adl_engine.serialise(archetype_differential, archetype_flat.ontology, serialise_format)
+				serialised_flat := adl_engine.serialise(archetype_flat, archetype_flat.ontology, serialise_format)
 			else
 				post_error(Current, "serialise_archetype", "serialise_archetype_e2", Void)
 			end

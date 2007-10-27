@@ -307,9 +307,9 @@ feature -- Validation
 			-- into account validity with respect to parent archetypes.
 			-- FIXME: for the moment, we don't validate differential archetypes
 		require
-			is_differential xor validated
+			validated
 		do
-			Result := is_differential or validator.passed
+			Result := validator.passed
 		end
 
 	validated: BOOLEAN is

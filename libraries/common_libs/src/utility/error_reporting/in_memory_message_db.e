@@ -72,6 +72,7 @@ feature -- Access
 			["serialise_archetype_e2"] = <"%NSERIALISE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
 			["parse_archetype_i1"] = <"Archetype $1 syntax VALIDATED">
 			["parse_archetype_i2"] = <"Archetype $1 semantics VALIDATED">
+			["parse_archetype_i3"] = <"Archetype differential form file found; parsing that">
 			["parse_archetype_e1"] = <"$1 (Parse failed)">
 			["parse_archetype_e2"] = <"Archetype $1 semantic validation FAILED; reasons:%N$2">
 			["parse_archetype_w2"] = <"Archetype $1 semantic validation Warnings:%N$2">

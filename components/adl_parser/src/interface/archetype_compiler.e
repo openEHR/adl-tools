@@ -138,6 +138,11 @@ feature {NONE} -- Implementation
 				archetype_parser.set_target (ara)
 				archetype_parser.parse_archetype
 				status.append (archetype_parser.status)
+
+				if archetype_parser.archetype_valid then
+					archetype_parser.save_archetype_differential
+					status.append (archetype_parser.status)
+				end
 			end
 		end
 

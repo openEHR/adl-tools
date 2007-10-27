@@ -118,6 +118,9 @@ feature -- Access
 			end
 		end
 
+	ontology_lineage: HASH_TABLE [ARCHETYPE_ONTOLOGY, INTEGER]
+			-- lineage of ontologies of archetypes from top to this one
+
 	archetype_differential: ARCHETYPE
 			-- archetype representing differential structure with respect to parent archetype;
 			-- if this is a non-specialised archetype, then it is the same as the flat form, else
@@ -149,7 +152,7 @@ feature -- Status Report
 	is_parsed: BOOLEAN is
 			-- True if archetype has been parsed and loaded in at least flat form
 		do
-			Result := archetype_flat /= Void
+			Result := archetype_differential /= Void
 		end
 
 	is_valid: BOOLEAN
@@ -204,6 +207,18 @@ feature -- Commands
 			file_repository.save_text_to_file (save_path, a_text)
 		end
 
+feature -- Comparison
+
+	infix "<" (other: like Current): BOOLEAN
+			-- Is current object less than `other'?
+		do
+			if id.is_equal (other.id) then
+				Result := full_path < other.full_path
+			else
+				Result := id < other.id
+			end
+		end
+
 feature -- Modification
 
 	set_archetype_differential(an_archetype: ARCHETYPE) is
@@ -212,24 +227,25 @@ feature -- Modification
 			Archetype_exists: an_archetype /= Void and then an_archetype.is_differential
 		do
 			archetype_differential := an_archetype
-			if not an_archetype.is_specialised then
-				-- FIXME for the moment
-				archetype_flat := archetype_differential
+			archetype_differential.validate
+			if archetype_differential.is_valid then
+				post_info(Current, "set_archetype_differential", "parse_archetype_i2", <<archetype_differential.archetype_id.as_string>>)
+				is_valid := True
 			else
-				-- FIXME set flat_form to structure generated from differential form in memory
+				post_error(Current, "set_archetype_differential", "parse_archetype_e2", <<archetype_differential.archetype_id.as_string, archetype_differential.validator.errors>>)
+			end
+			if archetype_differential.validator.has_warnings then
+				post_warning(Current, "set_archetype_differential", "parse_archetype_w2", <<archetype_differential.archetype_id.as_string, archetype_differential.validator.warnings>>)
 			end
 
-	-- FIXME: the following call yet to be properly implemented
-	--		archetype_differential.validate
-	--		if archetype_differential.is_valid then
-	--			post_info(Current, "parse_archetype", "parse_archetype_i2", <<archetype_differential.archetype_id.as_string>>)
-	--			is_valid := True
-	--		else
-	--			post_error(Current, "parse_archetype", "parse_archetype_e2", <<archetype_differential.archetype_id.as_string, archetype_differential.validator.errors>>)
-	--		end
-	--		if archetype_differential.validator.has_warnings then
-	--			post_warning(Current, "parse_archetype", "parse_archetype_w2", <<archetype_differential.archetype_id.as_string, archetype_differential.validator.warnings>>)
-	--		end
+			-- generate flat form
+			if is_valid then
+				if not an_archetype.is_specialised then
+					archetype_flat := archetype_differential
+				else
+					-- FIXME set flat_form to structure generated from differential form in memory
+				end
+			end
 		ensure
 			Archetype_loaded: archetype_differential /= Void
 	--		Archetype_validity: archetype_differential.is_valid implies archetype_flat /= Void
@@ -247,7 +263,7 @@ feature -- Modification
 			-- OR MAKE A NEW ROUTINE THAT VALIDATES THE DIFFERENTIAL FORM, TO BE CALLED BY BOTH make ROUTINES HERE.
 			archetype_flat.validate
 			if archetype_flat.is_valid then
-				post_info(Current, "parse_archetype", "parse_archetype_i2", <<archetype_flat.archetype_id.as_string>>)
+				post_info(Current, "set_archetype_flat", "parse_archetype_i2", <<archetype_flat.archetype_id.as_string>>)
 				is_valid := True
 
 				-- generate the differential form
@@ -258,32 +274,18 @@ feature -- Modification
 					-- first make a complete clone of the archetype; could also be done by copy of serialised form and parse
 					archetype_differential := archetype_flat.deep_twin
 					archetype_differential.convert_to_differential
-					post_info (Current, "make_flat", "arch_context_make_flat_i1", Void)
+					post_info (Current, "set_archetype_flat", "arch_context_make_flat_i1", Void)
 				end
 			else
-				post_error(Current, "parse_archetype", "parse_archetype_e2", <<archetype_flat.archetype_id.as_string, archetype_flat.validator.errors>>)
+				post_error(Current, "set_archetype_flat", "parse_archetype_e2", <<archetype_flat.archetype_id.as_string, archetype_flat.validator.errors>>)
 			end
 			if archetype_flat.validator.has_warnings then
-				post_warning(Current, "parse_archetype", "parse_archetype_w2", <<archetype_flat.archetype_id.as_string, archetype_flat.validator.warnings>>)
+				post_warning(Current, "set_archetype_flat", "parse_archetype_w2", <<archetype_flat.archetype_id.as_string, archetype_flat.validator.warnings>>)
 			end
 		ensure
 			Archetype_loaded: archetype_flat /= Void
 			Archetype_validity: archetype_flat.is_valid implies archetype_differential /= Void
 		end
-
-feature -- Comparison
-
-	infix "<" (other: like Current): BOOLEAN
-			-- Is current object less than `other'?
-		do
-			if id.is_equal (other.id) then
-				Result := full_path < other.full_path
-			else
-				Result := id < other.id
-			end
-		end
-
-feature -- Modification
 
 	set_specialisation_parent(a_parent: ARCH_REP_ARCHETYPE) is
 			-- set `parent'
@@ -322,6 +324,22 @@ feature {NONE} -- Implementation
 			end
 
 			base_name := id.domain_concept_tail + "(" + id.version_id + ")"
+		end
+
+	build_ontology_lineage is
+		local
+			arch_lin: ARRAYED_LIST [ARCH_REP_ARCHETYPE]
+		do
+			create ontology_lineage.make(1)
+			arch_lin := archetype_lineage
+			from
+				arch_lin.start
+			until
+				arch_lin.off
+			loop
+				ontology_lineage.put(arch_lin.item.archetype_differential.ontology, arch_lin.item.archetype_differential.specialisation_depth)
+				arch_lin.forth
+			end
 		end
 
 invariant

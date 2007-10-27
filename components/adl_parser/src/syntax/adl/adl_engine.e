@@ -199,16 +199,18 @@ feature -- Commands
 			end
 		end
 
-	serialise(an_archetype: ARCHETYPE; a_format: STRING):STRING is
-			-- serialise current archetype into format
+	serialise(an_archetype: ARCHETYPE; an_ontology: ARCHETYPE_ONTOLOGY; a_format: STRING):STRING is
+			-- serialise current archetype into format, using the supplied ontology. For serialising
+			-- any form of archetype, the flat-form ontology has to be supplied
 		require
 			Format_valid: has_archetype_serialiser_format(a_format)
 			Archetype_valid: an_archetype.is_valid
+			Ontology_valid: an_ontology /= Void
 		do
 			synchronise_from_archetype(an_archetype)
 			language_context.serialise(a_format)
 			description_context.serialise(a_format)
-			definition_context.serialise(a_format, an_archetype.ontology)
+			definition_context.serialise(a_format, an_ontology)
 
 			if an_archetype.has_invariants then
 				invariant_context.serialise(a_format)
@@ -216,7 +218,7 @@ feature -- Commands
 
 			ontology_context.serialise(a_format)
 
-			create serialiser_mgr.make(an_archetype, a_format, an_archetype.ontology)
+			create serialiser_mgr.make(an_archetype, a_format, an_ontology)
 			serialiser_mgr.serialise(
 				language_context.serialised,
 				description_context.serialised,

@@ -54,7 +54,7 @@ feature -- Validation
 			if passed then
 				target.build_xrefs
 				find_unused_ontology_codes
-				validate_xrefs
+				validate_codes
 				validate_internal_references
 			end
 
@@ -120,7 +120,7 @@ feature {NONE} -- Implementation
 			-- is languages_available list same as languages in ontology?
 		end
 
-	validate_xrefs is
+	validate_codes is
 			-- True if all found node_ids are defined in term_definitions,
 			-- and term_definitions contains no extras
 		local
@@ -221,39 +221,31 @@ feature {NONE} -- Implementation
 			-- populate lists of at-codes and ac-codes found in ontology that
 			-- are not referenced anywhere in the archetype definition
 		do
-
-			-- FIXME: this test will go when we are using differential archetypes
-			-- if not is_specialised then
-				from
-					ontology.term_codes.start
-				until
-					ontology.term_codes.off
-				loop
-					if not target.id_at_codes_xref_table.has(ontology.term_codes.item) and not
-							target.data_at_codes_xref_table.has(ontology.term_codes.item) then
-						target.ontology_unused_term_codes.extend(ontology.term_codes.item)
-						warnings.append("Term code " + ontology.term_codes.item + " in ontology not used in archetype definition%N")
-					end
-					ontology.term_codes.forth
+			from
+				ontology.term_codes.start
+			until
+				ontology.term_codes.off
+			loop
+				if not target.id_at_codes_xref_table.has(ontology.term_codes.item) and not
+						target.data_at_codes_xref_table.has(ontology.term_codes.item) then
+					target.ontology_unused_term_codes.extend(ontology.term_codes.item)
+					warnings.append("Term code " + ontology.term_codes.item + " in ontology not used in archetype definition%N")
 				end
-				target.ontology_unused_term_codes.prune(target.concept)
-			-- end
+				ontology.term_codes.forth
+			end
+			target.ontology_unused_term_codes.prune(target.concept)
 
-			-- FIXME: this test will go when we are using differential archetypes
-			-- if not is_specialised then
-
-				from
-					ontology.constraint_codes.start
-				until
-					ontology.constraint_codes.off
-				loop
-					if not target.ac_codes_xref_table.has(ontology.constraint_codes.item) then
-						target.ontology_unused_constraint_codes.extend(ontology.constraint_codes.item)
-						warnings.append("Constraint code " + ontology.constraint_codes.item + " in ontology not used in archetype definition%N")
-					end
-					ontology.constraint_codes.forth
+			from
+				ontology.constraint_codes.start
+			until
+				ontology.constraint_codes.off
+			loop
+				if not target.ac_codes_xref_table.has(ontology.constraint_codes.item) then
+					target.ontology_unused_constraint_codes.extend(ontology.constraint_codes.item)
+					warnings.append("Constraint code " + ontology.constraint_codes.item + " in ontology not used in archetype definition%N")
 				end
-			-- end
+				ontology.constraint_codes.forth
+			end
 		end
 
 	check_unidentified_nodes is
