@@ -44,11 +44,11 @@ inherit
 create
 	make
 
-feature -- Initialisation
+feature {NONE} -- Initialisation
 
 	make is
 		do
-			create status.make (0)
+			create status.make_empty
 		end
 
 feature -- Access
@@ -59,48 +59,71 @@ feature -- Access
 	visual_update_action: PROCEDURE [ANY, TUPLE [ARCH_REP_ARCHETYPE]]
 			-- Called after processng each archetype (to perform GUI updates during processing).
 
+feature -- Status
+
+	is_interrupted: BOOLEAN
+			-- Should building be cancelled immediately?
+
+feature -- Status Setting
+
+	interrupt
+			-- Cancel building immediately.
+		do
+			is_interrupted := True
+			status.append ("------------- interrupted -------------%N")
+		ensure
+			interrupted: is_interrupted
+			status_set: not status.is_empty
+		end
+
 feature -- Commands
 
 	set_visual_update_action (value: PROCEDURE [ANY, TUPLE [ARCH_REP_ARCHETYPE]])
 			-- Set `visual_update_action'.
 		do
 			visual_update_action := value
+		ensure
+			visual_update_action_set: visual_update_action = value
 		end
 
 	build_all
 			-- Rebuild the whole system, but don't rebuild artefacts that seem to already be built.
 		do
+			is_interrupted := False
 			status.wipe_out
 			status.append ("=============== building system ===============%N")
 			force := False
-			archetype_directory.do_all_archetype (agent process_one_archetype, visual_update_action)
+			archetype_directory.do_all_archetype (agent process_one_archetype, Void)
 		end
 
 	rebuild_all
 			-- Force rebuild the whole system from scratch, regardless of previous previous attempts.
 		do
+			is_interrupted := False
 			status.wipe_out
 			status.append ("=============== rebuilding system from scratch ===============%N")
 			force := True
-			archetype_directory.do_all_archetype (agent process_one_archetype, visual_update_action)
+			archetype_directory.do_all_archetype (agent process_one_archetype, Void)
 		end
 
 	build_lineage (ara: ARCH_REP_ARCHETYPE) is
 			-- build just the archetypes that need to be rebuilt in the lineage containing ara, down as far
 			-- as ara, and not including sibling branches (since this would create errors in unrelated archetypes)
 		require
-			ara /= Void
+			ara_attached: ara /= Void
 		do
+			is_interrupted := False
 			status.wipe_out
 			force := False
 			process_lineage (ara)
 		end
 
 	rebuild_lineage (ara: ARCH_REP_ARCHETYPE) is
-			-- force rebuild of the archetypes in the lineage containing ara
+			-- Force rebuild of the archetypes in the lineage containing `ara'.
 		require
-			ara /= Void
+			ara_attached: ara /= Void
 		do
+			is_interrupted := False
 			status.wipe_out
 			force := True
 			process_lineage (ara)
@@ -111,6 +134,8 @@ feature {NONE} -- Implementation
 	process_lineage (ara: ARCH_REP_ARCHETYPE) is
 			-- build just the archetypes that need to be rebuilt in the lineage containing ara, down as far
 			-- as ara, and not including sibling branches (since this would create errors in unrelated archetypes)
+		require
+			ara_attached: ara /= Void
 		local
 			arch_lin: ARRAYED_LIST [ARCH_REP_ARCHETYPE]
 		do
@@ -121,33 +146,39 @@ feature {NONE} -- Implementation
 				arch_lin.off
 			loop
 				process_one_archetype (arch_lin.item)
-
-				if visual_update_action /= Void then
-					visual_update_action.call ([arch_lin.item])
-				end
-
 				arch_lin.forth
 			end
 		end
 
 	process_one_archetype (ara: ARCH_REP_ARCHETYPE) is
-			-- agent routine for processing one archetype
+			-- Agent routine for processing one archetype.
+		require
+			ara_attached: ara /= Void
 		do
-			if force or not ara.is_parsed then
-				status.append ("------------- compiling " + ara.id.value + " -------------%N")
-				archetype_parser.set_target (ara)
-				archetype_parser.parse_archetype
-				status.append (archetype_parser.status)
-
-				if archetype_parser.archetype_valid then
-					archetype_parser.save_archetype_differential
+			if not is_interrupted then
+				if force or not ara.is_parsed then
+					status.append ("------------- compiling " + ara.id.value + " -------------%N")
+					archetype_parser.set_target (ara)
+					archetype_parser.parse_archetype
 					status.append (archetype_parser.status)
+
+					if archetype_parser.archetype_valid then
+						archetype_parser.save_archetype_differential
+						status.append (archetype_parser.status)
+					end
+
+					if visual_update_action /= Void then
+						visual_update_action.call ([ara])
+					end
 				end
 			end
 		end
 
 	force: BOOLEAN
 			-- If True, force processing even if archetype appears to be properly compiled already.
+
+invariant
+	status_attached: status /= Void
 
 end
 

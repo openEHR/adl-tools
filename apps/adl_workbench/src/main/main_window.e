@@ -304,7 +304,7 @@ feature -- Archetype Commands
 	interrupt_build
 			-- Cancel the build currently in progress.
 		do
-			-- FIXME: archetype_compiler.
+			archetype_compiler.interrupt
 		end
 
 	parse_archetype
