@@ -70,7 +70,8 @@ feature -- Status Setting
 			-- Cancel building immediately.
 		do
 			is_interrupted := True
-			status.append ("------------- interrupted -------------%N")
+			status.append ("************* interrupted *************%N")
+			call_visual_update_action (Void)
 		ensure
 			interrupted: is_interrupted
 			status_set: not status.is_empty
@@ -87,23 +88,29 @@ feature -- Commands
 		end
 
 	build_all
-			-- Rebuild the whole system, but don't rebuild artefacts that seem to already be built.
+			-- Rebuild the whole system, but don't rebuild artefacts that seem to be built already.
 		do
-			is_interrupted := False
-			status.wipe_out
-			status.append ("=============== building system ===============%N")
-			force := False
-			archetype_directory.do_all_archetype (agent process_one_archetype, Void)
+			process_subtree ("building system", False, archetype_directory.directory)
 		end
 
 	rebuild_all
 			-- Force rebuild the whole system from scratch, regardless of previous previous attempts.
 		do
-			is_interrupted := False
-			status.wipe_out
-			status.append ("=============== rebuilding system from scratch ===============%N")
-			force := True
-			archetype_directory.do_all_archetype (agent process_one_archetype, Void)
+			process_subtree ("rebuilding system from scratch", True, archetype_directory.directory)
+		end
+
+	build_subtree
+			-- Rebuild the sub-system at and below `archetype_directory.selected_node',
+			-- but don't rebuild artefacts that seem to be built already.
+		do
+			process_subtree ("building sub-system", False, archetype_directory.selected_node)
+		end
+
+	rebuild_subtree
+			-- Force rebuild the sub-system at and below `archetype_directory.selected_node',
+			-- regardless of previous attempts.
+		do
+			process_subtree ("rebuilding sub-system from scratch", True, archetype_directory.selected_node)
 		end
 
 	build_lineage (ara: ARCH_REP_ARCHETYPE) is
@@ -130,6 +137,30 @@ feature -- Commands
 		end
 
 feature {NONE} -- Implementation
+
+	process_subtree (message: STRING; from_scratch: BOOLEAN; subtree: TWO_WAY_TREE [ARCH_REP_ITEM])
+			-- Rebuild the whole system, but don't rebuild artefacts that seem to be built already.
+		do
+			status := "=============== " + message + " ===============%N"
+			call_visual_update_action (Void)
+			force := from_scratch
+			is_interrupted := False
+			archetype_directory.do_subtree (subtree, agent process_one_archetype_node, Void)
+		end
+
+	process_one_archetype_node (node: TWO_WAY_TREE [ARCH_REP_ITEM])
+			-- Process `node', if an archetype is attached to it.
+		require
+			node_attached: node /= Void
+		local
+			ara: ARCH_REP_ARCHETYPE
+		do
+			ara ?= node.item
+
+			if ara /= Void then
+				process_one_archetype (ara)
+			end
+		end
 
 	process_lineage (ara: ARCH_REP_ARCHETYPE) is
 			-- build just the archetypes that need to be rebuilt in the lineage containing ara, down as far
@@ -158,6 +189,7 @@ feature {NONE} -- Implementation
 			if not is_interrupted then
 				if force or not ara.is_parsed then
 					status.append ("------------- compiling " + ara.id.value + " -------------%N")
+					call_visual_update_action (ara)
 					archetype_parser.set_target (ara)
 					archetype_parser.parse_archetype
 					status.append (archetype_parser.status)
@@ -167,10 +199,16 @@ feature {NONE} -- Implementation
 						status.append (archetype_parser.status)
 					end
 
-					if visual_update_action /= Void then
-						visual_update_action.call ([ara])
-					end
+					call_visual_update_action (ara)
 				end
+			end
+		end
+
+	call_visual_update_action (ara: ARCH_REP_ARCHETYPE)
+			-- Call `visual_update_action', if it is attached.
+		do
+			if visual_update_action /= Void then
+				visual_update_action.call ([ara])
 			end
 		end
 

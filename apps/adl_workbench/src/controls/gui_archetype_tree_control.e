@@ -87,22 +87,21 @@ feature -- Commands
 		end
 
 	display_details_of_selected_item
-			-- Display the details of `selected_item'.
+			-- Display details of the archetype currently selected in `gui_file_tree'.
 		local
 			node: EV_TREE_NODE
-			ara: ARCH_REP_ARCHETYPE
+			item: ARCH_REP_ITEM
 		do
 			node := gui_file_tree.selected_item
 
 			if node /= Void then
-				ara ?= node.data
+				item ?= node.data
+			end
 
-				if ara /= Void then
-					archetype_directory.set_selected_archetype_descriptor (ara)
-					gui.parse_archetype
-				else
-					archetype_directory.clear_selected_archetype_descriptor
-				end
+			archetype_directory.set_selected_item (item)
+
+			if archetype_directory.has_selected_archetype then
+				gui.parse_archetype
 			end
 		end
 

@@ -100,8 +100,24 @@ feature -- Access
 	archetype_id_index: DS_HASH_TABLE [ARCH_REP_ARCHETYPE, STRING]
 			-- index of archetype nodes keyed by archetype id
 
+	selected_item: ARCH_REP_ITEM
+			-- The archetype or folder at `selected_node'.
+
 	selected_archetype: ARCH_REP_ARCHETYPE
-			-- selected archetype node
+			-- The archetype at `selected_node'.
+		do
+			Result ?= selected_item
+		ensure
+			consistent: Result /= Void implies Result = selected_item
+		end
+
+	selected_node: like directory
+			-- The selected node in `directory'.
+		do
+			Result ?= node_from_item (selected_item)
+		ensure
+			consistent: Result /= Void implies Result.item = selected_item
+		end
 
 	archetype_descriptor_from_full_path (full_path: STRING): ARCH_REP_ARCHETYPE
 			-- The archetype descriptor in the directory that is designated by `full_path'; else Void.
@@ -123,44 +139,20 @@ feature -- Access
 			has_full_path_if_attached: Result /= Void implies Result.full_path.is_equal (full_path)
 		end
 
+	node_from_item (item: ARCH_REP_ITEM): like directory
+			-- The node in `directory', if any, containing the archetype or folder `item'.
+		do
+			if item /= Void and then ontology_index.has (item.ontological_path) then
+				Result := ontology_index.item (item.ontological_path)
+			end
+		end
+
 feature -- Status Report
 
 	has_selected_archetype: BOOLEAN
 			-- Has an archetype been selected?
 		do
 			Result := selected_archetype /= Void
-		end
-
-	has_ontological_path (a_path: STRING): BOOLEAN
-			-- check if 'a_path' exists in ontology; path will be something like
-			-- "/ehr/entry/observation/lab-result/lipids"
-		require
-			Path_exists: a_path /= Void
-		do
-			Result := ontology_index.has (a_path)
-		end
-
-	has_archetype_id (an_archetype_id: STRING): BOOLEAN
-			-- check if an_id known in archetype index of directory
-		require
-			Archetype_id_exists: an_archetype_id /= Void
-		do
-			Result := archetype_id_index.has (an_archetype_id)
-		end
-
-	has_ontological_archetype_path (a_path: STRING): BOOLEAN
-			-- check if 'a_path' exists in ontology and refers to an archetype; path will be something like
-			-- "/ehr/entry/observation/lab-result/lipids"
-		require
-			Path_exists: a_path /= Void
-		local
-			ara: ARCH_REP_ARCHETYPE
-		do
-			if ontology_index.has (a_path) then
-				ara ?= ontology_index.item (a_path).item
-			end
-
-			Result := ara /= Void
 		end
 
 feature -- Comparison
@@ -196,7 +188,7 @@ feature -- Commands
 	clear
 			-- Clear `directory' and its index tables.
 		do
-			clear_selected_archetype_descriptor
+			selected_item := Void
 			create ontology_index.make (0)
 			create archetype_id_index.make (0)
 			create directory.make (Void)
@@ -213,7 +205,7 @@ feature -- Commands
 				source_repositories.off
 			loop
 				source_repositories.item_for_iteration.repopulate
-				repository_do_all (source_repositories.item_for_iteration, agent merge_enter, agent merge_exit)
+				do_subtree (source_repositories.item_for_iteration.directory, agent merge_enter, Void)
 				source_repositories.forth
 			end
 		end
@@ -242,7 +234,7 @@ feature -- Commands
 					archetype_in_same_semantic_category := archetype_id_index.item_for_iteration
 
 					if archetype_in_same_semantic_category.id.semantic_id.is_equal (ara.id.semantic_parent_id) then
-						parent_node := ontology_index.item (archetype_in_same_semantic_category.ontological_path)
+						parent_node := node_from_item (archetype_in_same_semantic_category)
 					end
 				end
 
@@ -252,8 +244,10 @@ feature -- Commands
 			create node.make (ara)
 
 			if parent_node = Void then
-				if archetype_in_same_semantic_category /= Void and then ontology_index.has (archetype_in_same_semantic_category.ontological_path) then
-					parent_node := ontology_index.item (archetype_in_same_semantic_category.ontological_path).parent
+				node := node_from_item (archetype_in_same_semantic_category)
+
+				if node /= Void then
+					parent_node := node.parent
 				else
 					parent_node := directory
 				end
@@ -286,63 +280,42 @@ feature -- Commands
 
 feature -- Traversal
 
-	do_all (node_enter_action, node_exit_action: PROCEDURE [ANY, TUPLE [ARCH_REP_ITEM]])
-			-- on archetype directory, execute node_enter_action when entering a node, then
-			-- recurse into subnodes, then execute node_exit_action when leaving node
-		do
-			do_all_nodes (directory, node_enter_action, node_exit_action)
-		end
-
-	do_all_archetype (node_enter_action, node_exit_action: PROCEDURE [ANY, TUPLE [ARCH_REP_ARCHETYPE]])
-			-- on archetype directory, execute node_enter_action on archetype nodes
+	do_subtree (subtree: like directory; enter_action, exit_action: PROCEDURE [ANY, TUPLE [like directory]])
+			-- On `subtree', execute `enter_action' when entering a node, then recurse
+			-- into its subnodes, then execute `exit_action' when leaving the node.
 		require
-			node_enter_action_attached: node_enter_action /= Void
+			enter_action_attached: enter_action /= Void
 		do
-			do_all_archetype_nodes (directory, node_enter_action, node_exit_action)
+			if subtree /= Void then
+				do_all_nodes (subtree, enter_action, exit_action,
+					agent (node: like directory): like directory
+						do
+							Result := node.child
+						end)
+			end
 		end
 
-	repository_do_all (a_rep: ARCHETYPE_INDEXED_REPOSITORY_I; node_enter_action, node_exit_action: PROCEDURE [ANY, TUPLE [like directory]])
-			-- execute node_enter_action when entering a node, then recurse into subnodes, then execute
-			-- node_exit_action when leaving node
+	do_all (enter_action, exit_action: PROCEDURE [ANY, TUPLE [ARCH_REP_ITEM]])
+			-- On `directory', execute `enter_action' when entering a node, then recurse
+			-- into subnodes, then execute `exit_action' when leaving the node.
+		require
+			enter_action_attached: enter_action /= Void
 		do
-			tree_do_all_nodes (a_rep.directory, node_enter_action, node_exit_action)
+			do_all_nodes (directory, enter_action, exit_action,
+				agent (node: like directory): ARCH_REP_ITEM
+					do
+						Result := node.child_item
+					end)
 		end
 
 feature -- Modification
 
-	set_selected_archetype_descriptor (an_arch_repos_item: ARCH_REP_ARCHETYPE)
-			-- Set `selected_archetype'.
-		require
-			item_attached: an_arch_repos_item /= Void
+	set_selected_item (value: ARCH_REP_ITEM)
+			-- Set `selected_archetype' and `selected_item'.
 		do
-			selected_archetype := an_arch_repos_item
+			selected_item := value
 		ensure
-			set: selected_archetype = an_arch_repos_item
-		end
-
-	set_selected_archetype_descriptor_from_ontological_path (a_path: STRING)
-			-- Set `selected_archetype' using an ontological path like "/ehr/entry/observation/lab-result".
-		require
-			path_valid: has_ontological_archetype_path (a_path)
-		do
-			selected_archetype ?= ontology_index.item (a_path).item
-		end
-
-	set_selected_archetype_descriptor_from_archetype_id (an_id: STRING)
-			-- Set `selected_archetype' using an id of archetype.
-		require
-			Path_valid: has_archetype_id (an_id)
-		do
-			selected_archetype := archetype_id_index.item (an_id)
-		ensure
-			has_selected_archetype_descriptor: has_selected_archetype
-			set: selected_archetype.id.value.is_equal (an_id)
-		end
-
-	clear_selected_archetype_descriptor
-			-- Clear `selected_archetype'.
-		do
-			selected_archetype := Void
+			selected_item_set: selected_item = value
 		end
 
 	add_adhoc_item (full_path: STRING)
@@ -361,87 +334,44 @@ feature -- Modification
 
 feature {NONE} -- Implementation
 
-	do_all_nodes (node: like directory; node_enter_action, node_exit_action: PROCEDURE [ANY, TUPLE [ARCH_REP_ITEM]])
+	do_all_nodes (node: like directory; enter_action, exit_action: PROCEDURE [ANY, TUPLE]; argument_generator: FUNCTION [ANY, TUPLE [like directory], ANY])
 			-- recursive version of routine due to lack of useful recursive routines on Eiffel tree structures
 			-- processes treats each node of the tree separately
 		require
-			Node_valid: node /= Void
-			Node_enter_action_valid: node_enter_action /= Void
-   		do
-  			from
- 				node.child_start
- 			until
- 				node.child_off
- 			loop
-  	 			debug("arch_dir")
-   					shifter.extend ('%T')
-   				end
-				node_enter_action.call([node.child_item])
- 				do_all_nodes(node.child, node_enter_action, node_exit_action)
-				node_exit_action.call([node.child_item])
-  	  			debug("arch_dir")
-   					shifter.remove_tail (1)
-    			end
- 				node.child_forth
-			end
-   		end
-
-	do_all_archetype_nodes (node: like directory; node_enter_action, node_exit_action: PROCEDURE [ANY, TUPLE [ARCH_REP_ARCHETYPE]])
-			-- recursive version of routine due to lack of useful recursive routines on Eiffel tree structures
-			-- processes treats each node of the tree separately
-		require
-			Node_valid: node /= Void
-			Node_enter_action_valid: node_enter_action /= Void
+			node_attached: node /= Void
+			enter_action_attached: enter_action /= Void
+			generator_attached: argument_generator /= Void
 		local
-			ara: ARCH_REP_ARCHETYPE
-   		do
-  			from
- 				node.child_start
- 			until
- 				node.child_off
- 			loop
-  	 			debug("arch_dir")
-   					shifter.extend ('%T')
-   				end
-   				ara ?= node.child_item
-   				if ara /= Void then
-					node_enter_action.call([ara])
-   				end
- 				do_all_archetype_nodes(node.child, node_enter_action, node_exit_action)
- 				if ara /= Void and node_exit_action /= Void then
-					node_exit_action.call([ara])
- 				end
-  	  			debug("arch_dir")
-   					shifter.remove_tail (1)
-    			end
- 				node.child_forth
-			end
-   		end
+			arg: ANY
+		do
+			from
+				node.child_start
+			until
+				node.child_off
+			loop
+	 			debug("arch_dir")
+					shifter.extend ('%T')
+				end
 
-	tree_do_all_nodes (node: like directory; node_enter_action, node_exit_action: PROCEDURE [ANY, TUPLE [like directory]])
-			-- recursive version of routine due to lack of useful recursive routines on Eiffel tree structures
-			-- processes the tree as sub-trees
-		require
-			Node_valid: node /= Void
-			Node_enter_action_valid: node_enter_action /= Void
-   		do
-  			from
- 				node.child_start
- 			until
- 				node.child_off
- 			loop
-  	 			debug("arch_dir")
-   					shifter.extend ('%T')
-   				end
-				node_enter_action.call([node.child])
- 				tree_do_all_nodes(node.child, node_enter_action, node_exit_action)
-				node_exit_action.call([node.child])
- 	  			debug("arch_dir")
-   					shifter.remove_tail (1)
-    			end
- 				node.child_forth
- 			end
-   		end
+				arg := argument_generator.item ([node])
+
+				if arg /= Void then
+					enter_action.call ([arg])
+				end
+
+				do_all_nodes (node.child, enter_action, exit_action, argument_generator)
+
+				if arg /= Void and exit_action /= Void then
+					exit_action.call ([arg])
+				end
+
+				debug("arch_dir")
+					shifter.remove_tail (1)
+				end
+
+				node.child_forth
+			end
+		end
 
 	merge_enter (a_node: like directory)
 			-- merge a_node into directory - node enter
@@ -450,9 +380,9 @@ feature {NONE} -- Implementation
 			ara, parent_ara: ARCH_REP_ARCHETYPE
 			arch_node, parent_node: like directory
 		do
-   			debug("arch_dir")
-   				io.put_string(shifter + "===> " + a_node.item.ontological_path)
-   			end
+			debug("arch_dir")
+				io.put_string(shifter + "===> " + a_node.item.ontological_path)
+			end
 
 			arf ?= a_node.item
 
@@ -470,26 +400,26 @@ feature {NONE} -- Implementation
 					ontology_index.force (arch_node, arf.ontological_path)
 				end
 
-   				debug("arch_dir")
-   					io.put_string(shifter + " (folder)%N")
-	   			end
+				debug("arch_dir")
+					io.put_string(shifter + " (folder)%N")
+				end
 			end
 
 			ara ?= a_node.item
 
 			if ara /= Void then
-   				debug("arch_dir")
-   					io.put_string(shifter + ara.id.as_string + " (archetype)")
-	   			end
+				debug("arch_dir")
+					io.put_string(shifter + ara.id.as_string + " (archetype)")
+				end
 
 				if ontology_index.has (ara.ontological_path) then
 					-- this is an error: it means there are archetypes from two different
 					-- file repositories claiming to be the same archetype
 					post_error (Current, "merge_enter", "arch_dir_dup_archetype", <<ara.full_path>>)
 
-  	 				debug("arch_dir")
-   						io.put_string(shifter + "DUPLICATE!%N")
-	   				end
+					debug("arch_dir")
+						io.put_string(shifter + "DUPLICATE!%N")
+					end
 				else
 					if ontology_index.has (ara.ontological_parent_path) then
 						parent_node := ontology_index.item (ara.ontological_parent_path)
@@ -510,14 +440,9 @@ feature {NONE} -- Implementation
 				end
 			end
 
-   			debug("arch_dir")
-   				io.put_string(shifter + "<===%N")
-   			end
-		end
-
-	merge_exit(a_node: like directory)
-			-- merge a_node into directory - node exit
-		do
+			debug("arch_dir")
+				io.put_string(shifter + "<===%N")
+			end
 		end
 
 	shifter: STRING

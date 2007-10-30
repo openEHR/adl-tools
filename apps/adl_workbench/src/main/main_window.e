@@ -144,6 +144,7 @@ feature {NONE} -- Initialization
 			parsed_archetype_found_paths.enable_multiple_selection
 
 			path_filter_combo.set_strings (path_control_filter_names)
+
 			if not path_filter_combo_selection.is_empty then
 				from
 					filter_combo_index := 1
@@ -153,20 +154,24 @@ feature {NONE} -- Initialization
 				loop
 					filter_combo_index := filter_combo_index + 1
 				end
+
 				if filter_combo_index > path_control_filter_names.count then -- non-existent string in session file
 					filter_combo_index := 1
 				end
 			else
 				filter_combo_index := 1
 			end
+
 			path_filter_combo.i_th (filter_combo_index).enable_select
 
 			path_view_check_list.set_strings (path_control_column_names)
 			path_view_check_list.set_minimum_height (path_control_column_names.count * List_row_height)
 
 			strs := path_view_check_list_settings
+
 			if not strs.is_empty then
 				strs.compare_objects
+
 				from
 					path_view_check_list.start
 				until
@@ -211,9 +216,6 @@ feature -- Access
 	need_to_set_repository: BOOLEAN
 			-- flag set on startup to indicate if repository needs to be specified by user
 
-	last_selected_archetype: ARCH_REP_ARCHETYPE
-			-- reference to last archetype selected due to user navigation of directory
-
 feature -- Application Commands
 
 	show
@@ -224,7 +226,7 @@ feature -- Application Commands
 			refresh_now
 
 			if editor_command.is_empty then
-				set_editor_command(Default_editor_command)
+				set_editor_command (default_editor_command)
 			end
 
 			if reference_repository_path.is_empty then
@@ -292,13 +294,13 @@ feature -- Archetype Commands
 	build_subtree
 			-- Build the subsystem below the currently selected node.
 		do
-			-- FIXME: do_build_action (agent archetype_compiler.
+			do_build_action (agent archetype_compiler.build_subtree)
 		end
 
 	rebuild_subtree
 			-- Force rebuilding of the whole subsystem below the currently selected node.
 		do
-			-- FIXME: do_build_action (agent archetype_compiler.
+			do_build_action (agent archetype_compiler.rebuild_subtree)
 		end
 
 	interrupt_build
@@ -308,23 +310,24 @@ feature -- Archetype Commands
 		end
 
 	parse_archetype
-			-- Load and parse archetype currently selected in archetype_directory.
+			-- Load and parse archetype currently selected in `archetype_directory'.
+		local
+			ara: ARCH_REP_ARCHETYPE
 		do
-			if archetype_directory.selected_archetype /= last_selected_archetype then
-				arch_notebook_select
-			end
-
 			clear_all_controls
-			last_selected_archetype := archetype_directory.selected_archetype
+			arch_notebook_select
+			ara := archetype_directory.selected_archetype
 
-			if not last_selected_archetype.is_parsed then
-				do_with_wait_cursor (agent archetype_compiler.build_lineage (last_selected_archetype))
-			end
+			if ara /= Void then
+				if not ara.is_parsed then
+					do_with_wait_cursor (agent archetype_compiler.build_lineage (ara))
+				end
 
-			if last_selected_archetype.is_valid then
-				populate_all_archetype_controls
-			elseif last_selected_archetype.is_parsed then
-				populate_archetype_id
+				if ara.is_valid then
+					populate_all_archetype_controls
+				elseif ara.is_parsed then
+					populate_archetype_id
+				end
 			end
 		end
 
@@ -344,7 +347,7 @@ feature -- Archetype Commands
 				ara := archetype_directory.archetype_descriptor_from_full_path (dialog.file_name)
 
 				if ara /= Void then
-					archetype_directory.set_selected_archetype_descriptor (ara)
+					archetype_directory.set_selected_item (ara)
 					archetype_view_tree_control.populate
 				end
 			end
@@ -586,19 +589,13 @@ feature {NONE} -- Application Commands
 	show_online_help is
 			-- Called by `select_actions' of `online_mi'.
 		do
-			execution_environment.launch(Default_browser_command + ADL_help_page_url)
+			execution_environment.launch (Default_browser_command + ADL_help_page_url)
 		end
 
 	display_about is
 			-- Called by `pointer_button_press_actions' of `about_mi'.
 		do
 			About_dialog.show_modal_to_window (Current)
-		end
-
-	display_interrupt is
-			-- Called by ESC keyboard accelerator.
-		do
-			Interrupt_dialog.show_modal_to_window (Current)
 		end
 
 	exit_app is
@@ -813,13 +810,6 @@ feature -- Controls
 			Result.set_y_position (10)
 		end
 
-	Interrupt_dialog: EV_INFORMATION_DIALOG is
-			-- processing interrupted dialog
-		do
-			create Result.make_with_text ("Processing aborted")
-			result.propagate_background_color
-		end
-
 feature {EV_DIALOG} -- Implementation
 
 	populate_archetype_directory
@@ -963,12 +953,14 @@ feature {NONE} -- Implementation
 
 	build_gui_update (ara: ARCH_REP_ARCHETYPE) is
 			-- Update GUI with progress on build.
-		require
-			ara_attached: ara /= Void
 		do
 			parser_status_area.set_text (utf8 (archetype_compiler.status))
-			archetype_view_tree_control.do_node_for_item (ara, agent archetype_view_tree_control.set_node_pixmap)
-			archetype_test_tree_control.do_row_for_item (ara, agent archetype_test_tree_control.set_row_pixmap)
+
+			if ara /= Void then
+				archetype_view_tree_control.do_node_for_item (ara, agent archetype_view_tree_control.set_node_pixmap)
+				archetype_test_tree_control.do_row_for_item (ara, agent archetype_test_tree_control.set_row_pixmap)
+			end
+
 			ev_application.process_events
 		end
 
