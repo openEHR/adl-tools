@@ -15,10 +15,10 @@ deferred class OWL_SERIALISATION_PROFILE
 
 inherit
 	SERIALISATION_PROFILE
-	
+
 	OWL_DEFINITIONS
 
-feature {NONE} -- Implementation
+feature {ANY_SERIALISER} -- Access
 
 	symbols: HASH_TABLE[STRING, INTEGER] is
 			-- keywords in this format, keyed by logical name
@@ -40,11 +40,11 @@ feature {NONE} -- Implementation
 			Result.put("cardinality",		SYM_CARDINALITY)
 			Result.put("minCardinality",		SYM_MIN_CARDINALITY)
 			Result.put("maxCardinality",		SYM_MAX_CARDINALITY)
-			
+
 			Result.put("(",					SYM_OPEN_PAREN)
 			Result.put(")",					SYM_CLOSE_PAREN)
-		end	
-		
+		end
+
 	format_items: HASH_TABLE[STRING, INTEGER] is
 			-- formatting items
 		once
@@ -54,7 +54,7 @@ feature {NONE} -- Implementation
 			Result.put("%N",			FMT_NEWLINE)
 			Result.put("%T",			FMT_INDENT)
 		end
-		
+
 	styles: HASH_TABLE[STRING, INTEGER] is
 			-- styles in this format, keyed by logical name
 		once
@@ -65,15 +65,15 @@ feature {NONE} -- Implementation
 			-- tag strings, keyed by logical name
 		once
 			create Result.make(0)
-		end	
+		end
 
 	quote_patterns: HASH_TABLE[STRING, STRING] is
 			-- styles in this format, keyed by logical name
 		once
 			create Result.make(0)
 		end
-	
-feature -- Factory
+
+feature {ANY_SERIALISER} -- Factory
 
 	apply_style(elem:STRING; a_style:INTEGER): STRING is
 			-- apply `a_style' to `elem', using attr 'class'
