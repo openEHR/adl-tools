@@ -41,9 +41,19 @@ feature -- Access
 		do
 		end
 
+	parent: PATHABLE is
+			-- parent node of this node in compositional structure
+		do
+		end
+
 feature -- Status Report
 
 	valid_path (a_path: STRING): BOOLEAN is
+			-- True if the path is valid with respect to the current item.
+		do
+		end
+
+	path_exists (a_path: STRING): BOOLEAN is
 			-- True if the path is valid with respect to the current item.
 		do
 		end
