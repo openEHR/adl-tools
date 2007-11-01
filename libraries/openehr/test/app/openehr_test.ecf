@@ -2,7 +2,7 @@
 	<target name="openehr_test_no_precompile">
 		<root class="APPLICATION" feature="make_and_launch"/>
 		<file_rule>
-			<exclude>/.svn$</exclude>
+			<exclude>/\.svn$</exclude>
 		</file_rule>
 		<option trace="false" profile="false" debug="false" warning="true" namespace="openehr">
 			<debug name="__unnamed_debug__" enabled="false"/>

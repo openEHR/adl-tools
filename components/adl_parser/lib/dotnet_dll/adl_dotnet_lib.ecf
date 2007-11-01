@@ -4,7 +4,7 @@
 		<root class="ARCHETYPE_PARSER" feature="make"/>
 		<version major="0" minor="0" release="0" build="2" company="Ocean Informatics" product="ADL Parser" copyright="Ocean Informatics, 2003-2007"/>
 		<file_rule>
-			<exclude>/.svn$</exclude>
+			<exclude>/\.svn$</exclude>
 		</file_rule>
 		<option trace="false" profile="false" debug="false" warning="true" msil_application_optimize="true" namespace="openehr">
 			<assertions precondition="true" supplier_precondition="true"/>
