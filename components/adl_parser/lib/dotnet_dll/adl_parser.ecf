@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-2-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-2-0 http://www.eiffel.com/developers/xml/configuration-1-2-0.xsd" name="adl_dotnet_lib" uuid="F1152FD5-F5A8-4937-8866-6F615D6F326C">
-	<target name="adl_dotnet_lib">
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-2-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-2-0 http://www.eiffel.com/developers/xml/configuration-1-2-0.xsd" name="adl_parser" uuid="F1152FD5-F5A8-4937-8866-6F615D6F326C">
+	<target name="adl_parser">
 		<root class="ADL_INTERFACE" feature="make"/>
 		<version major="0" minor="0" release="0" build="2" company="Ocean Informatics" product="ADL Parser" copyright="Ocean Informatics, 2003-2007"/>
 		<file_rule>
@@ -22,6 +22,7 @@
 		<setting name="dotnet_naming_convention" value="false"/>
 		<setting name="dynamic_runtime" value="false"/>
 		<setting name="exception_trace" value="true"/>
+		<setting name="executable_name" value="OceanInformatics.AdlParser"/>
 		<setting name="il_verifiable" value="true"/>
 		<setting name="inlining" value="false"/>
 		<setting name="msil_assembly_compatibility" value="None"/>
@@ -71,7 +72,7 @@
 		</cluster>
 		<override name="vendor_fixes" location="..\..\..\..\libraries\vendor-fixes\" recursive="true"/>
 	</target>
-	<target name="adl_dotnet_lib_debug" extends="adl_dotnet_lib">
+	<target name="adl_parser_debug" extends="adl_parser">
 		<setting name="line_generation" value="true"/>
 	</target>
 </system>
