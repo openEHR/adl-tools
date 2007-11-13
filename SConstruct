@@ -35,9 +35,10 @@ else:
 
 # Define how to build the Eiffel projects.
 
-def eiffel(target, ecf):
-	if platform == 'mac_osx': env['ECTARGET'] = target + '_no_precompile'
-	result = env.Eiffel(target, [ecf])
+def eiffel(target, ecf, ectarget = None):
+	if ectarget == None: ectarget = target
+	if platform == 'mac_osx': ectarget += '_no_precompile'
+	result = env.Eiffel(target, [ecf], ECTARGET = ectarget)
 	Alias(target, result)
 	return result
 
@@ -47,7 +48,7 @@ eiffel('adl_parser_test',  'components/adl_parser/test/app/adl_parser_test.ecf')
 eiffel('common_libs_test', 'libraries/common_libs/test/app/common_libs_test.ecf')
 
 if platform == 'windows':
-	adl_parser = eiffel('OceanInformatics.AdlParser.dll', 'components/adl_parser/lib/dotnet_dll/adl_parser.ecf')
+	adl_parser = eiffel('OceanInformatics.AdlParser.dll', 'components/adl_parser/lib/dotnet_dll/adl_parser.ecf', 'adl_parser')
 
 # Define how to put installers, etc., into the distribution directory.
 
@@ -93,7 +94,9 @@ if distrib:
 				env.Command(distrib + 'tools/OceanADLWorkbenchInstall.exe', sources, [command])
 
 		if len(adl_parser) > 2:
-			Install(distrib + 'adl_parser/dotnet', [adl_parser[2], os.path.dirname(str(adl_parser[2])) + '/libOceanInformatics.AdlParser.dll'])
+			unmanaged_dll = os.path.dirname(str(adl_parser[2])) + '/libOceanInformatics.AdlParser.dll'
+			SideEffect(unmanaged_dll, adl_parser[2])
+			Install(distrib + 'adl_parser/dotnet', [adl_parser[2], unmanaged_dll])
 
 	if platform == 'mac_osx':
 		if len(adl_workbench) > 2:
