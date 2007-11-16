@@ -97,7 +97,7 @@ feature -- Status Report
 		end
 
 	is_valid_directory_part (path: STRING): BOOLEAN
-			-- Is the directory part of `path', whose last section is a filename, valid on `file_repository'?
+			-- Is the directory part of `path', whose last section is a file name, valid on `file_repository'?
 		do
 			Result := file_repository.is_valid_directory_part (path)
 		ensure
@@ -111,6 +111,14 @@ feature {NONE} -- Implementation
 		deferred
 		end
 
+	ontological_path_starts_with (s: STRING): BOOLEAN
+			-- Does `ontological_path' begin with `s'?
+		require
+			s_attached: s /= Void
+		do
+			Result := ontological_path.substring_index (s, 1) = 1
+		end
+
 invariant
 	repository_attached: file_repository /= Void
 	root_path_valid: is_valid_directory (root_path)
@@ -118,8 +126,8 @@ invariant
 	full_path_not_empty: not full_path.is_empty
 	ontological_path_attached: ontological_path /= Void
 	ontological_parent_path_attached: ontological_parent_path /= Void
-	ontological_path_absolute: ontological_path.substring_index (ontological_path_separator, 1) = 1
-	ontological_parent_path_valid: ontological_path.substring_index (ontological_parent_path, 1) = 1
+	ontological_path_absolute: ontological_path_starts_with (ontological_path_separator)
+	ontological_parent_path_valid: ontological_path_starts_with (ontological_parent_path)
 	base_name_attached: base_name /= Void
 
 end

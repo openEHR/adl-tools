@@ -42,14 +42,6 @@ feature {NONE} -- Initialization
 				initialise_default_resource_config_file_name
 				main_window.show
 
-				if app_maximised then
-					main_window.maximize
-				end
-
-				if main_window.need_to_set_repository then
-					main_window.set_repository
-				end
-
 				if new_news then
 					main_window.display_news
 					update_status_file
@@ -71,12 +63,14 @@ feature {NONE} -- Initialization
 		end
 
 	show_splash_window
-			-- Show `splash_window' centred on the screen in front of `main_window'.
+			-- Show the splash window, centred on the screen in front of `main_window'.
+		local
+			splash: SPLASH_WINDOW
 		do
-			if splash_window = Void then
-				create splash_window.make
-				splash_window.show_relative_to_window (main_window)
-				splash_window.refresh_now
+			if splash = Void then
+				create splash.make
+				splash.show_relative_to_window (main_window)
+				splash.refresh_now
 			end
 		rescue
 			retry
@@ -91,9 +85,6 @@ feature {NONE} -- Implementation
 		ensure
 			attached: Result /= Void
 		end
-
-	splash_window: SPLASH_WINDOW
-			-- A splash screen to show while `main_window' is loading.
 
 	fail_reason: STRING
 

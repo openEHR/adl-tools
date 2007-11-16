@@ -14,7 +14,7 @@ indexing
 class SPLASH_WINDOW
 
 inherit
-	EV_MESSAGE_DIALOG
+	EV_POPUP_WINDOW
 		redefine
 			initialize
 		end
@@ -36,12 +36,7 @@ feature {NONE} -- Initialization
 		local
 			screen: EV_SCREEN
 		do
-			make_with_text (splash_text)
-			set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 255))
-
-			if has_icon_directory then
-				set_pixmap (pixmaps ["Ocean logo"])
-			end
+			make_with_shadow
 
 			create screen
 			set_position ((screen.width - width) // 2, (screen.height - height) // 2)
@@ -52,10 +47,35 @@ feature {NONE} -- Initialization
 
 	initialize is
 			-- HACK to work around crash in EV_MESSAGE_DIALOG.initialize.
+		local
+			hb: EV_HORIZONTAL_BOX
+			cell: EV_CELL
+			label: EV_LABEL
+			pixmap: EV_PIXMAP
 		do
-			foreground_color := implementation.foreground_color
-			background_color := implementation.background_color
 			Precursor
+
+			create hb
+			hb.set_padding (50)
+			hb.set_border_width (30)
+			extend (hb)
+
+			if has_icon_directory then
+				pixmap := pixmaps ["Ocean logo"]
+				create cell
+				cell.extend (pixmap)
+				cell.set_minimum_size (pixmap.width, pixmap.height)
+				hb.extend (cell)
+			end
+
+			create label
+			label.align_text_left
+			label.set_text (splash_text)
+			hb.extend (label)
+
+			set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 248))
+			propagate_background_color
+			cell.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 255))
 		end
 
 feature {NONE} -- Implementation

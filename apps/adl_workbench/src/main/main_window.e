@@ -211,40 +211,30 @@ feature {NONE} -- Initialization
 			add_menu_shortcut (edit_menu_select_all, key_a, True, False)
 		end
 
-feature -- Access
-
-	need_to_set_repository: BOOLEAN
-			-- flag set on startup to indicate if repository needs to be specified by user
-
 feature -- Application Commands
 
 	show
-			-- Do a few adjustments straight after display.
+			-- Do a few adjustments and load the repository before displaying the window.
 		do
-			initialise_gui_settings
-			Precursor
-			refresh_now
-
 			if editor_command.is_empty then
 				set_editor_command (default_editor_command)
 			end
 
 			if reference_repository_path.is_empty then
 				set_reference_repository_path (application_startup_directory)
-				need_to_set_repository := True
-			end
-
-			if archetype_directory.valid_repository_path (reference_repository_path) then
-				archetype_directory.put_repository (reference_repository_path, "reference")
-			end
-
-			if archetype_directory.valid_repository_path (work_repository_path) then
-				archetype_directory.put_repository (work_repository_path, "work")
+				set_repository
+			else
+				populate_archetype_directory
 			end
 
 			archetype_compiler.set_visual_update_action (agent build_gui_update)
-			populate_archetype_directory
+			initialise_gui_settings
+			Precursor
 			focus_first_widget (main_nb.selected_item)
+
+			if app_maximised then
+				maximize
+			end
 		end
 
 	set_options is
@@ -274,7 +264,7 @@ feature -- Application Commands
 	display_news is
 			-- Display news about the latest release.
 		do
-			News_dialog.show
+			News_dialog.show_modal_to_window (Current)
 		end
 
 feature -- Archetype Commands
@@ -403,9 +393,9 @@ feature -- Archetype Commands
 
 					if a_file.exists then
 						create question_dialog.make_with_text ("File " + save_dialog.file_title + " already exists. Replace it?")
-						question_dialog.set_buttons(<<"Yes", "No">>)
+						question_dialog.set_buttons (<<"Yes", "No">>)
 						question_dialog.show_modal_to_window (Current)
-						ok_to_write := question_dialog.selected_button.is_equal("Yes")
+						ok_to_write := question_dialog.selected_button.is_equal ("Yes")
 					end
 
 					if ok_to_write then
@@ -794,20 +784,19 @@ feature -- Controls
 	About_dialog: EV_INFORMATION_DIALOG is
 			-- about text
 		do
-			create result.make_with_text(splash_text)
-			result.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 255))
-			result.propagate_background_color
-			result.set_pixmap(pixmaps.item("Ocean logo"))
+			create Result.make_with_text (splash_text)
+			Result.set_title ("About ADL Workbench")
+			Result.set_pixmap (pixmaps ["Ocean logo"])
+			Result.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 248))
 		end
 
 	News_dialog: EV_INFORMATION_DIALOG is
 			-- news dialog
 		do
-			create Result.make_with_text(News_text)
-			result.propagate_background_color
-			set_background_color(create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 255))
+			create Result.make_with_text (news_text)
 			Result.set_x_position (20)
 			Result.set_y_position (10)
+			Result.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 248))
 		end
 
 feature {EV_DIALOG} -- Implementation
@@ -815,11 +804,24 @@ feature {EV_DIALOG} -- Implementation
 	populate_archetype_directory
 			-- Rebuild archetype directory & repopulate relevant GUI parts.
 		do
-			clear_all_controls
-			archetype_directory.build_directory
-			parser_status_area.set_text (utf8 (billboard_content))
-			archetype_view_tree_control.populate
-			archetype_test_tree_control.populate
+			do_with_wait_cursor (agent
+				do
+					clear_all_controls
+					archetype_directory.make
+
+					if archetype_directory.valid_repository_path (reference_repository_path) then
+						archetype_directory.put_repository (reference_repository_path, 2)
+					end
+
+					if archetype_directory.valid_repository_path (work_repository_path) then
+						archetype_directory.put_repository (work_repository_path, 3)
+					end
+
+					archetype_directory.build_directory
+					parser_status_area.set_text (utf8 (billboard_content))
+					archetype_view_tree_control.populate
+					archetype_test_tree_control.populate
+				end)
 		end
 
 	clear_all_controls

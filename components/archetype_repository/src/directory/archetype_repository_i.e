@@ -50,16 +50,22 @@ feature -- Status Report
 	is_valid_path (path: STRING): BOOLEAN
 			-- Is `path' a valid, existing file on the repository medium?
 		deferred
+		ensure
+			false_if_void: Result implies path /= Void
 		end
 
 	is_valid_directory (path: STRING): BOOLEAN
 			-- Is `path' a valid, existing directory on the repository medium?
 		deferred
+		ensure
+			false_if_void: Result implies path /= Void
 		end
 
-	is_valid_directory_part (a_path: STRING): BOOLEAN
+	is_valid_directory_part (path: STRING): BOOLEAN
 			-- Is the directory part of `path' valid on the repository medium?
 		deferred
+		ensure
+			false_if_void: Result implies path /= Void
 		end
 
 	has_file_changed_on_disk (a_path: STRING; a_timestamp: INTEGER): BOOLEAN

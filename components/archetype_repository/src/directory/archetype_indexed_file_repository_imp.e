@@ -17,8 +17,6 @@ class ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP
 inherit
 	ARCHETYPE_INDEXED_REPOSITORY_I
 
-
-
 	ARCHETYPE_FILE_REPOSITORY_IMP
 
 create
@@ -31,8 +29,8 @@ feature {NONE} -- Implementation
 		local
 			fn, full_path: STRING
 			a_dir: DIRECTORY
-			fs_node_names: ARRAYED_LIST[STRING]
-			dir_name_index: SORTED_TWO_WAY_LIST[STRING]
+			fs_node_names: ARRAYED_LIST [STRING]
+			dir_name_index: SORTED_TWO_WAY_LIST [STRING]
 			arch_index: SORTED_TWO_WAY_LIST [ARCH_REP_ARCHETYPE]
 			ara: ARCH_REP_ARCHETYPE
 			node: like directory
@@ -44,7 +42,7 @@ feature {NONE} -- Implementation
    				shifter.extend ('%T')
    			end
 
-			a_dir := directory_at (tree.item.full_path)
+			create a_dir.make (tree.item.full_path)
 
 			if a_dir.exists then
 				a_dir.open_read
@@ -60,7 +58,7 @@ feature {NONE} -- Implementation
 					fn := fs_node_names.item
 
 					if fn.item (1) /= '.' then
-						full_path := tree.item.full_path + Os_directory_separator.out + fn
+						full_path := file_system.pathname (tree.item.full_path, fn)
 
 						if (create {RAW_FILE}.make (full_path)).is_directory then
 							dir_name_index.extend (fn)
@@ -84,7 +82,7 @@ feature {NONE} -- Implementation
 			until
 				dir_name_index.off
 			loop
-				full_path := tree.item.full_path + os_directory_separator.out + dir_name_index.item
+				full_path := file_system.pathname (tree.item.full_path, dir_name_index.item)
 				node := new_folder_node (full_path)
 				build_directory (node)
 				tree.put_child_right (node)

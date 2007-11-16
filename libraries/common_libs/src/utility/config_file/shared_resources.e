@@ -225,17 +225,20 @@ feature -- Environment
 			Result := execution_environment.current_working_directory
 		end
 
-	directory_at (path: STRING): DIRECTORY
-			-- A directory object representing `path'.
-			-- Strips any trailing backslash to avoid Windows API defect.
-		require
-			path_attached: path /= Void
-			path_not_empty: not path.is_empty
+	file_exists (path: STRING): BOOLEAN is
+			-- Is `path' a valid, existing file?
 		do
-			create Result.make (file_system.canonical_pathname (path))
-		ensure
-			attached: Result /= Void
-			correct_path: path.substring (1, Result.name.count).is_equal (Result.name)
+			if path /= Void and then not path.is_empty then
+				Result := file_system.file_exists (file_system.canonical_pathname (path))
+			end
+		end
+
+	directory_exists (path: STRING): BOOLEAN is
+			-- Is `path' a valid, existing directory?
+		do
+			if path /= Void and then not path.is_empty then
+				Result := file_system.directory_exists (file_system.canonical_pathname (path))
+			end
 		end
 
 feature -- Element Change

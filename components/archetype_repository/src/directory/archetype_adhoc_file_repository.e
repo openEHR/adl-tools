@@ -56,14 +56,6 @@ feature -- Access
 
 feature -- Status Report
 
-	is_valid_work_path (path: STRING): BOOLEAN
-			-- Is `path' a valid value for `work_path'?
-		do
-			if path /= Void and then not path.is_empty then
-				Result := directory_at (path).exists
-			end
-		end
-
 	has (full_path: STRING): BOOLEAN
 			-- Has `full_path' been added to this repository?
 		do
@@ -76,7 +68,7 @@ feature -- Modification
 			-- Set `work_path'.
 		require
 			path_attached: path /= Void
-			path_not_empty: is_valid_work_path (path)
+			path_not_empty: is_valid_directory (path)
 		do
 			work_path := path.twin
 		ensure
@@ -109,7 +101,7 @@ feature {NONE} -- Implementation
 			-- as a list of descriptors keyed by full path.
 
 invariant
-	work_path_valid: is_valid_work_path (work_path)
+	work_path_valid: is_valid_directory (work_path)
 	directory_attached: directory /= Void
 
 end

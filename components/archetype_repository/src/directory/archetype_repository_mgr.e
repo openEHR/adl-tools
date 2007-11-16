@@ -68,37 +68,32 @@ feature -- Initialisation
 
 feature -- Access
 
-	source_repositories: DS_HASH_TABLE [ARCHETYPE_INDEXED_REPOSITORY_I, STRING]
-			-- physical repositories of archetypes, keyed by logical id
+	source_repositories: DS_HASH_TABLE [ARCHETYPE_INDEXED_REPOSITORY_I, INTEGER]
+			-- Physical repositories of archetypes, keyed by logical id.
 			-- Each such repository consists of archetypes arranged in a directory structure
-			-- mimicking an ontological structure, e.g. ehr/entry/observation etc
-			-- FIXME: this should be declared as
-			-- source_repositories: DS_HASH_TABLE [ARCHETYPE_INDEXED_REPOSITORY_I, STRING]
-			-- with the concrete types being instantiated at runtime, based on settings in
-			-- the .cfg file - i.e. have to determine from those settings what type of
-			-- repository it is - web, file system etc
+			-- mimicking an ontological structure, e.g. ehr/entry/observation, etc.
 
 	adhoc_source_repository: ARCHETYPE_ADHOC_FILE_REPOSITORY
-			-- an additional 'repository' where archetypes may be found, but not necessarily classified
+			-- An additional 'repository' where archetypes may be found, but not necessarily classified
 			-- under any structure - used e.g. to represent the file local system where isolated archetypes
 			-- may be found, e.g. in c:\temp, /tmp or wherever. This repository is just a list of
 			-- archetypes keyed by path on the file system. They are not merged onto the directory
-			-- but 'grafted' - a simpler operation
+			-- but 'grafted' - a simpler operation.
 
 	directory: TWO_WAY_TREE [ARCH_REP_ITEM]
-			-- the logical directory of archetypes, in an ontology-based structure.
+			-- The logical directory of archetypes, in an ontology-based structure.
 			-- Result of merging all source repositories in ontology structure (where specialised
 			-- archetypes now appear as child nodes, rather than sibling nodes, as they do
-			-- in the file system), as well as grafting on adhoc archetypes
+			-- in the file system), as well as grafting on adhoc archetypes.
 
 	ontology_index: DS_HASH_TABLE [like directory, STRING]
-			-- index of archetypes, keyed by ontology path
-			-- relative ontology path of item with respect to root; for folder nodes,
+			-- Index of archetypes, keyed by ontology path.
+			-- Relative ontology path of item with respect to root; for folder nodes,
 			-- this will look like the relative directory path; for archetype nodes, this will be
-			-- the concatenation of the directory path and archetype specialisation parent path
+			-- the concatenation of the directory path and archetype specialisation parent path.
 
 	archetype_id_index: DS_HASH_TABLE [ARCH_REP_ARCHETYPE, STRING]
-			-- index of archetype nodes keyed by archetype id
+			-- Index of archetype nodes keyed by archetype id.
 
 	selected_item: ARCH_REP_ITEM
 			-- The archetype or folder at `selected_node'.
@@ -161,22 +156,30 @@ feature -- Comparison
 			-- Does `dir_name' correspond to a real directory, which is not the same as, or a
 			-- parent or child of, any directory already used to populate the tree?
 		local
-			s: STRING
+			s1, s2: STRING
 		do
-			if dir_name /= Void and then not dir_name.is_empty then
-				if directory_at (dir_name).exists then
-					from
-						source_repositories.start
-					until
-						source_repositories.off or Result
-					loop
-						s := source_repositories.key_for_iteration
-						Result := dir_name.is_equal (s) or dir_name.has_substring (s) or s.has_substring (dir_name)
-						-- FIXME: The above test would say yes to "C:\x" and "C:\xx"!
-						source_repositories.forth
+			Result := directory_exists (dir_name)
+
+			if Result then
+				s1 := file_system.canonical_pathname (dir_name)
+
+				if s1.item (s1.count) /= os_directory_separator then
+					s1.append_character (os_directory_separator)
+				end
+
+				from
+					source_repositories.start
+				until
+					source_repositories.off or not Result
+				loop
+					s2 := source_repositories.item_for_iteration.root_path.twin
+
+					if s2.item (s2.count) /= os_directory_separator then
+						s2.append_character (os_directory_separator)
 					end
 
-					Result := not Result
+					Result := s1.substring_index (s2, 1) /= 1 and s2.substring_index (s1, 1) /= 1
+					source_repositories.forth
 				end
 			end
 		ensure
@@ -192,6 +195,20 @@ feature -- Commands
 			create ontology_index.make (0)
 			create archetype_id_index.make (0)
 			create directory.make (Void)
+		end
+
+	put_repository (dir_name: STRING; group_id: INTEGER)
+			-- Put the repository logically identified by `group_id' at path `dir_name'.
+		require
+			dir_name_valid: valid_repository_path (dir_name)
+			group_id_valid: group_id > 0
+		local
+			repository: ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP
+		do
+			create repository.make (file_system.canonical_pathname (dir_name), group_id)
+			source_repositories.force (repository, group_id)
+		ensure
+			has_group_id: source_repositories.has (group_id)
 		end
 
 	build_directory
@@ -262,20 +279,6 @@ feature -- Commands
 			parent_node.put_child_left (node)
 			ontology_index.force (node, ara.ontological_path)
 			archetype_id_index.force (ara, ara.id.as_string)
-		end
-
-	put_repository (dir_name, repository_id: STRING)
-			-- Put the repository logically identified by `repository_id' at path `dir_name'.
-		require
-			dir_name_valid: valid_repository_path (dir_name)
-			repository_id_attached: repository_id /= Void
-			repository_id_not_empty: not repository_id.is_empty
-		local
-			repository: ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP
-		do
-			-- FIXME: If there is no reference repository, this wrongly sets group id 2 to the work repository:
-			create repository.make (dir_name, source_repositories.count + 2)
-			source_repositories.force (repository, repository_id)
 		end
 
 feature -- Traversal

@@ -18,6 +18,9 @@ inherit
 	ARCHETYPE_REPOSITORY_I
 
 	SHARED_RESOURCES
+		rename
+			file_exists as is_valid_path,
+			directory_exists as is_valid_directory
 		export
 			{NONE} all
 		end
@@ -43,40 +46,11 @@ feature -- Access
 
 feature -- Status Report
 
-	is_valid_path (path: STRING): BOOLEAN is
-			-- Is `path' a valid, existing file on the repository medium?
-		local
-			s: STRING
-			rf: RAW_FILE
-		do
-			if path /= Void and then not path.is_empty then
-				s := file_system.canonical_pathname (path)
-				create rf.make (s)
-				Result := rf.exists and then rf.is_plain
-			end
-		end
-
-	is_valid_directory (path: STRING): BOOLEAN is
-			-- Is `path' a valid, existing directory on the repository medium?
-		local
-			s: STRING
-			rf: RAW_FILE
-		do
-			if path /= Void and then not path.is_empty then
-				s := file_system.canonical_pathname (path)
-				create rf.make (s)
-				Result := rf.exists and then rf.is_directory
-			end
-		end
-
 	is_valid_directory_part (path: STRING): BOOLEAN
 			-- Is the directory part of `path', whose last section is a filename, valid on the repository medium?
-		local
-			dir_name: STRING
 		do
 			if path /= Void and then not path.is_empty then
-				dir_name := path.substring(1, path.last_index_of (operating_environment.directory_separator, path.count) - 1)
-				Result := directory_at (dir_name).exists
+				Result := is_valid_directory (file_system.dirname (path))
 			end
 		end
 

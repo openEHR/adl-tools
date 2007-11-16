@@ -55,95 +55,124 @@ feature {NONE} -- Initialization
 feature -- Access
 
 	main_window: MAIN_WINDOW
-			-- main window of app
+			-- Main window of the applicaton.
 
 feature -- Modification
 
-	set_main_window (a_mw: MAIN_WINDOW) is
-			-- set main_window
+	set_main_window (value: MAIN_WINDOW) is
+			-- Set `main_window'.
 		require
-			a_mw /= Void
+			value_attached: value /= Void
 		do
-			main_window := a_mw
+			main_window := value
+		ensure
+			set: main_window = value
 		end
 
 feature {NONE} -- Implementation
 
 	populate_controls is
-			-- set dialog values from shared settings
+			-- Initialise the dialog's widgets from shared settings.
 		do
 			repository_dialog_reference_path_text.set_text (reference_repository_path)
 			repository_dialog_work_path_text.set_text (work_repository_path)
 		end
 
 	repository_dialog_ok is
-			-- Called by `select_actions' of `repository_dialog_ok_button'.
+			-- When the user clicks the OK button, save the changes and rebuild `archetype_directory'.
 		local
 			error_dialog: EV_INFORMATION_DIALOG
-			paths_changed, paths_valid: BOOLEAN
-			cur_csr: EV_CURSOR
+			paths_changed, paths_invalid: BOOLEAN
+			s: STRING
 		do
-			cur_csr := pointer_style
-			paths_valid := True
+			s := repository_dialog_reference_path_text.text
 
-			if not repository_dialog_reference_path_text.text.is_equal (reference_repository_path) then
-				if archetype_directory.valid_repository_path (repository_dialog_reference_path_text.text) then
+			if not s.is_equal (reference_repository_path) then
+				if directory_exists (s) then
+					set_reference_repository_path (s)
 					paths_changed := True
-					set_reference_repository_path(repository_dialog_reference_path_text.text)
 				else
-					create error_dialog.make_with_text("Invalid reference directory: %"" +
-						repository_dialog_reference_path_text.text +
-						"%" does not exist, or is the same as or a parent or a child of another repository path.")
+					create error_dialog.make_with_text ("Reference Repository %"" + s + "%" does not exist.")
 					error_dialog.show_modal_to_window (Current)
-					paths_valid := False
+					paths_invalid := True
 				end
 			end
 
-			if not repository_dialog_work_path_text.text.is_equal (work_repository_path) then
-				if repository_dialog_work_path_text.text.is_empty or else
-						archetype_directory.valid_repository_path (repository_dialog_work_path_text.text) then
-					set_work_repository_path(repository_dialog_work_path_text.text)
+			s := repository_dialog_work_path_text.text
+
+			if not s.is_equal (work_repository_path) then
+				if s.is_empty or else archetype_directory.valid_repository_path (s) then
+					set_work_repository_path (s)
 					paths_changed := True
 				else
-					create error_dialog.make_with_text("Invalid work directory: %"" +
-						repository_dialog_work_path_text.text +
-						"%" does not exist, or is the same as or a parent or a child of reference repository path.")
+					create error_dialog.make_with_text ("Work Repository %"" + s +
+						"%" does not exist, or is the same as or a parent or a child of the Reference Repository.")
 					error_dialog.show_modal_to_window (Current)
-					paths_valid := False
+					paths_invalid := True
 				end
 			end
 
 			if paths_changed then
-				set_pointer_style(wait_cursor)
-				archetype_directory.make
-
-				if archetype_directory.valid_repository_path (reference_repository_path) then
-					archetype_directory.put_repository (reference_repository_path, "repository")
-				end
-
-				if archetype_directory.valid_repository_path (work_repository_path) then
-					archetype_directory.put_repository (work_repository_path, "work")
-				end
-
-				main_window.populate_archetype_directory
 				save_resources
-				main_window.update_status_area("wrote config file " + Resource_config_file_name + "%N")
-				set_pointer_style(cur_csr)
+				main_window.update_status_area ("Wrote config file %"" + Resource_config_file_name + "%".%N")
+				main_window.populate_archetype_directory
 			end
 
-			if paths_valid then
+			if not paths_invalid then
 				hide
 			end
 		end
 
+	repository_dialog_okk
+			-- When the user clicks the OK button, save the changes and rebuild `archetype_directory'.
+		local
+			error_dialog: EV_INFORMATION_DIALOG
+			paths_invalid: BOOLEAN
+			s: STRING
+		do
+			archetype_directory.make
+			s := repository_dialog_reference_path_text.text
+
+			if directory_exists (s) then
+				set_reference_repository_path (s)
+				archetype_directory.put_repository (s, 2)
+			else
+				create error_dialog.make_with_text ("Reference Repository %"" + s + "%" does not exist.")
+				error_dialog.show_modal_to_window (Current)
+				paths_invalid := True
+			end
+
+			s := repository_dialog_work_path_text.text
+
+			if s.is_empty then
+				set_work_repository_path (s)
+			elseif archetype_directory.valid_repository_path (s) then
+				set_work_repository_path (s)
+				archetype_directory.put_repository (s, 3)
+			else
+				create error_dialog.make_with_text ("Work Repository %"" + s +
+					"%" does not exist, or is the same as or a parent or a child of the Reference Repository.")
+				error_dialog.show_modal_to_window (Current)
+				paths_invalid := True
+			end
+
+			if not paths_invalid then
+				hide
+			end
+
+			save_resources
+			main_window.update_status_area ("Wrote config file %"" + resource_config_file_name + "%"%N")
+			main_window.populate_archetype_directory
+		end
+
 	get_reference_repository_path is
-			-- Called by `select_actions' of `repository_dialog_reference_path_button'.
+			-- Display a dialog for the user select the Reference Repository.
 		do
 			repository_dialog_reference_path_text.set_text (get_directory (reference_repository_path, Current))
 		end
 
 	get_work_repository_path is
-			-- Called by `select_actions' of `repository_dialog_work_path_button'.
+			-- Display a dialog for the user select the Work Repository.
 		do
 			if work_repository_path.is_empty then
 				set_work_repository_path (reference_repository_path.twin)
