@@ -46,7 +46,7 @@ feature {NONE} -- Initialization
 		end
 
 	initialize is
-			-- HACK to work around crash in EV_MESSAGE_DIALOG.initialize.
+			-- Add the Ocean logo with the text label to its right.
 		local
 			hb: EV_HORIZONTAL_BOX
 			cell: EV_CELL
@@ -75,7 +75,10 @@ feature {NONE} -- Initialization
 
 			set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 248))
 			propagate_background_color
-			cell.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 255))
+
+			if cell /= Void then
+				cell.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 255))
+			end
 		end
 
 feature {NONE} -- Implementation

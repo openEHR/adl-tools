@@ -65,9 +65,11 @@ feature {NONE} -- Initialization
 	show_splash_window
 			-- Show the splash window, centred on the screen in front of `main_window'.
 		local
+			retrying: BOOLEAN
 			splash: SPLASH_WINDOW
 		do
-			if splash = Void then
+			if not retrying then
+				retrying := True
 				create splash.make
 				splash.show_relative_to_window (main_window)
 				splash.refresh_now
