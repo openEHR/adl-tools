@@ -39,6 +39,7 @@ feature {NONE}-- Initialization
 			create option_dialog_editor_command_button
 			create l_ev_horizontal_box_2
 			create option_dialog_node_tree_expand_cb
+			create show_line_numbers_check_button
 			create l_ev_horizontal_box_3
 			create l_ev_cell_1
 			create option_dialog_ok_button
@@ -52,6 +53,7 @@ feature {NONE}-- Initialization
 			l_ev_horizontal_box_1.extend (option_dialog_editor_command_button)
 			l_ev_vertical_box_1.extend (l_ev_horizontal_box_2)
 			l_ev_horizontal_box_2.extend (option_dialog_node_tree_expand_cb)
+			l_ev_horizontal_box_2.extend (show_line_numbers_check_button)
 			l_ev_vertical_box_1.extend (l_ev_horizontal_box_3)
 			l_ev_horizontal_box_3.extend (l_ev_cell_1)
 			l_ev_horizontal_box_3.extend (option_dialog_ok_button)
@@ -90,6 +92,7 @@ feature {NONE}-- Initialization
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_2.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent dialog_border_width)
 			option_dialog_node_tree_expand_cb.set_text ("Show defiinition tree expanded?")
+			show_line_numbers_check_button.set_text ("Show line numbers in ADL source?")
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_3.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent dialog_padding_width)
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_3.set_border_width (?))
@@ -124,7 +127,8 @@ feature -- Access
 	l_ev_horizontal_box_1,
 	l_ev_horizontal_box_2, l_ev_horizontal_box_3: EV_HORIZONTAL_BOX
 	l_ev_vertical_box_1: EV_VERTICAL_BOX
-	option_dialog_node_tree_expand_cb: EV_CHECK_BUTTON
+	option_dialog_node_tree_expand_cb,
+	show_line_numbers_check_button: EV_CHECK_BUTTON
 	l_ev_label_1: EV_LABEL
 	option_dialog_editor_command_text: EV_TEXT_FIELD
 

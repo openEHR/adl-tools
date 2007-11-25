@@ -59,8 +59,8 @@ feature -- Modification
 
 feature {NONE} -- Implementation
 
-	populate_controls is
-			-- set dialog values from shared settings
+	populate_controls
+			-- Set the dialog widgets from shared settings.
 		do
 			option_dialog_editor_command_text.set_text (editor_command)
 
@@ -69,14 +69,21 @@ feature {NONE} -- Implementation
 			else
 				option_dialog_node_tree_expand_cb.disable_select
 			end
+
+			if show_line_numbers then
+				show_line_numbers_check_button.enable_select
+			else
+				show_line_numbers_check_button.disable_select
+			end
 		end
 
-	option_dialog_ok is
-			-- Called by `select_actions' of `option_dialog_ok_button'.
+	option_dialog_ok
+			-- Set shared settings from the dialog widgets.
 		do
 			hide
 			set_editor_command (option_dialog_editor_command_text.text)
 			set_expand_node_tree (option_dialog_node_tree_expand_cb.is_selected)
+			set_show_line_numbers (show_line_numbers_check_button.is_selected)
 			save_resources
 			main_window.update_status_area ("wrote config file " + Resource_config_file_name + "%N")
 		end

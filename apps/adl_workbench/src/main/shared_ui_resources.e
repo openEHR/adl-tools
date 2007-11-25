@@ -214,12 +214,25 @@ feature -- Access
 			end
 		end
 
-	expand_node_tree: BOOLEAN is
-			-- flag for expand archetype definition node tree or not by default
+	expand_node_tree: BOOLEAN
+			-- Expand the archetype definition node tree by default?
 		local
 			str: STRING
 		do
-			str := resource_value("default", "expand_node_tree")
+			str := resource_value ("default", "expand_node_tree")
+
+			if str.is_boolean then
+				Result := str.to_boolean
+			end
+		end
+
+	show_line_numbers: BOOLEAN
+			-- Display line numbers in the ADL source text box?
+		local
+			str: STRING
+		do
+			str := resource_value ("default", "show_line_numbers")
+
 			if str.is_boolean then
 				Result := str.to_boolean
 			end
@@ -626,10 +639,16 @@ feature -- Modification
 			set_resource_value("default", "app_maximised", f.out)
 		end
 
-	set_expand_node_tree(flag: BOOLEAN) is
-			-- set flag for expand archetype definition node tree or not by default
+	set_expand_node_tree (flag: BOOLEAN) is
+			-- Set flag for whether to expand the archetype definition node tree by default.
 		do
-			set_resource_value("default", "expand_node_tree", flag.out)
+			set_resource_value ("default", "expand_node_tree", flag.out)
+		end
+
+	set_show_line_numbers (flag: BOOLEAN) is
+			-- Set flag for whether to show line numbers in the ADL source text box.
+		do
+			set_resource_value ("default", "show_line_numbers", flag.out)
 		end
 
 	set_path_filter_combo_selection(str: STRING) is

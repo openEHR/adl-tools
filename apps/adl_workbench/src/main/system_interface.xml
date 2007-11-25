@@ -4632,7 +4632,7 @@ Resources</Text>
      <Border>
       <Constant>dialog_border_width</Constant>
      </Border>
-     <Is_item_expanded>1</Is_item_expanded>
+     <Is_item_expanded>11</Is_item_expanded>
     </EV_BOX>
     <EV_PIXMAPABLE>
     </EV_PIXMAPABLE>
@@ -4654,6 +4654,32 @@ Resources</Text>
      </EV_SENSITIVE>
      <EV_TEXTABLE>
       <Text>Show defiinition tree expanded?</Text>
+     </EV_TEXTABLE>
+     <EV_TOOLTIPABLE>
+     </EV_TOOLTIPABLE>
+     <EV_WIDGET>
+     </EV_WIDGET>
+     <EV_TEXT_ALIGNABLE>
+     </EV_TEXT_ALIGNABLE>
+     <EV_PIXMAPABLE>
+     </EV_PIXMAPABLE>
+    </item>
+    <item type="EV_CHECK_BUTTON">
+     <Internal_properties>
+      <id>204</id>
+      <name>show_line_numbers_check_button</name>
+      <Expanded>0</Expanded>
+     </Internal_properties>
+     <EV_COLORIZABLE>
+     </EV_COLORIZABLE>
+     <EV_FONTABLE>
+     </EV_FONTABLE>
+     <EV_DESELECTABLE>
+     </EV_DESELECTABLE>
+     <EV_SENSITIVE>
+     </EV_SENSITIVE>
+     <EV_TEXTABLE>
+      <Text>Show line numbers in ADL source?</Text>
      </EV_TEXTABLE>
      <EV_TOOLTIPABLE>
      </EV_TOOLTIPABLE>

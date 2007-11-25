@@ -594,11 +594,14 @@ feature {NONE} -- Commands
 			len, left_pos, right_pos, line_cnt: INTEGER
 		do
 			if arch_notebook.selected_item = archetype_text_edit_area then
-				create s.make_empty
-
 				if archetype_directory.has_selected_archetype_descriptor then
 					src := archetype_directory.selected_descriptor.source
 					len := src.count
+					create s.make (len)
+
+					if show_line_numbers then
+						create leader.make_filled (' ', 4)
+					end
 
 					from
 						left_pos := 1
@@ -606,19 +609,22 @@ feature {NONE} -- Commands
 					until
 						left_pos > len
 					loop
-						create leader.make_filled (' ', 4)
-						int_val_str := line_cnt.out
-						leader.replace_substring (int_val_str, 1, int_val_str.count)
+						if leader /= Void then
+							int_val_str := line_cnt.out
+							leader.replace_substring (int_val_str, 1, int_val_str.count)
+							s.append (leader)
+						end
 
-						s.append (leader)
 						right_pos := src.index_of ('%N', left_pos)
 						s.append (src.substring (left_pos, right_pos))
 						left_pos := right_pos + 1
 						line_cnt := line_cnt + 1
 					end
-				end
 
-				archetype_text_edit_area.set_text (utf8 (s))
+					archetype_text_edit_area.set_text (utf8 (s))
+				else
+					archetype_text_edit_area.remove_text
+				end
 			end
 		end
 
