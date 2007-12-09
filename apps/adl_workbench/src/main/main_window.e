@@ -874,7 +874,7 @@ feature {EV_DIALOG} -- Implementation
 		local
 			selected: ARCHETYPE
 		do
-			selected := archetype_directory.selected_archetype.archetype_flat
+			selected := archetype_directory.selected_archetype.archetype_differential
 
 			if selected /= Void then
 				archetype_id.set_text (utf8 (selected.archetype_id.as_string))
@@ -894,7 +894,7 @@ feature {EV_DIALOG} -- Implementation
 			-- Populate ADL version.
 		do
 			if archetype_directory.has_selected_archetype then
-				adl_version_text.set_text (utf8 (archetype_directory.selected_archetype.archetype_flat.adl_version))
+				adl_version_text.set_text (utf8 (archetype_directory.selected_archetype.archetype_differential.adl_version))
 			else
 				adl_version_text.remove_text
 			end
@@ -906,8 +906,8 @@ feature {EV_DIALOG} -- Implementation
 			language_combo.select_actions.block
 
 			if archetype_directory.has_selected_archetype then
-				language_combo.set_strings (archetype_directory.selected_archetype.archetype_flat.languages_available)
-				terminologies_list.set_strings (archetype_directory.selected_archetype.archetype_flat.ontology.terminologies_available)
+				language_combo.set_strings (archetype_directory.selected_archetype.archetype_differential.languages_available)
+				terminologies_list.set_strings (archetype_directory.selected_archetype.archetype_differential.ontology.terminologies_available)
 			else
 				language_combo.wipe_out
 				terminologies_list.wipe_out

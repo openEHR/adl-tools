@@ -39,6 +39,7 @@ create
 feature -- Initialisation
 
 	make_minimal(an_id: ARCHETYPE_ID; an_original_language: STRING; a_specialisation_depth: INTEGER) is
+			-- make a new differential form archetype
 		require
 			Id_exists: an_id /= Void
 			Language_valid: an_original_language /= Void and then not an_original_language.is_empty
@@ -56,6 +57,7 @@ feature -- Initialisation
 			Original_language_set: original_language.as_string.is_equal(an_original_language)
 			Specialisation_depth_set: specialisation_depth = a_specialisation_depth
 			Definition_root_node_id: definition.node_id.is_equal (concept)
+			Differential_form: is_differential
 		end
 
 	make(an_id: ARCHETYPE_ID; a_concept_code: STRING;
@@ -462,7 +464,6 @@ feature -- Conversion
 				set_unvalidated
 
 				ontology.remove_inherited_codes
-				validate
 				set_differential
 			end
 		end

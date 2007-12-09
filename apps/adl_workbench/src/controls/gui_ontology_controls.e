@@ -81,7 +81,7 @@ feature {NONE} -- Implementation
 			-- access to ontology of selected archetype
 		do
 			if archetype_directory.has_selected_archetype then
-				Result := archetype_directory.selected_archetype.archetype_flat.ontology
+				Result := archetype_directory.selected_archetype.archetype_differential.ontology
 			end
 		end
 

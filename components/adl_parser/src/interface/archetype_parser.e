@@ -198,7 +198,7 @@ feature -- Modification
 feature -- Commands
 
 	parse_archetype is
-			-- parse the target archetype of this compiler
+			-- parse the target archetype of this parser
 		require
 			Has_target: has_target
 		local
@@ -210,7 +210,6 @@ feature -- Commands
 				if target.has_differential_file then
 					post_info (Current, "parse_archetype", "parse_archetype_i3", Void)
 					an_archetype := adl_engine.parse (target.differential_text, True)
-					an_archetype.set_differential
 
 					if an_archetype = Void then
 						post_error (Current, "parse_archetype", "parse_archetype_e1", <<adl_engine.parse_error_text>>)
@@ -322,9 +321,9 @@ feature -- Commands
 				save_succeeded := False
 				if archetype_valid then
 					if target.is_specialised then
-						serialised_differential := adl_engine.serialise(archetype_differential, archetype_flat.ontology, "adl")
+						serialised_differential := adl_engine.serialise(archetype_differential, "adl")
 					else
-						serialised_differential := adl_engine.serialise(archetype_flat, archetype_flat.ontology, "adl")
+						serialised_differential := adl_engine.serialise(archetype_flat, "adl")
 					end
 					target.save_differential (serialised_differential)
 					save_succeeded := True
@@ -354,7 +353,7 @@ feature -- Commands
 				status.wipe_out
 				save_succeeded := False
 				if archetype_valid then
-					serialised_flat := adl_engine.serialise(archetype_flat, archetype_flat.ontology, "adl")
+					serialised_flat := adl_engine.serialise(archetype_flat, "adl")
 					target.save_flat (serialised_flat)
 					save_succeeded := True
 				else
@@ -386,12 +385,12 @@ feature -- Commands
 				save_succeeded := False
 				if archetype_valid then
 					if target.is_specialised then
-						serialised_differential := adl_engine.serialise(archetype_differential, archetype_flat.ontology, serialise_format)
+						serialised_differential := adl_engine.serialise(archetype_differential, serialise_format)
 						target.save_differential_as (a_full_path, serialised_differential)
 					else
 						serialised_differential := serialised_flat
 					end
-					serialised_flat := adl_engine.serialise(archetype_flat, archetype_flat.ontology, serialise_format)
+					serialised_flat := adl_engine.serialise(archetype_flat, serialise_format)
 					target.save_flat_as (a_full_path, serialised_flat)
 					save_succeeded := True
 				else
@@ -419,8 +418,8 @@ feature -- Commands
 			Serialise_format_valid: serialise_format /= Void and then has_archetype_serialiser_format(serialise_format)
 		do
 			if not exception_encountered then
-				serialised_differential := adl_engine.serialise(archetype_differential, archetype_flat.ontology, serialise_format)
-				serialised_flat := adl_engine.serialise(archetype_flat, archetype_flat.ontology, serialise_format)
+				serialised_differential := adl_engine.serialise(archetype_differential, serialise_format)
+				serialised_flat := adl_engine.serialise(archetype_flat, serialise_format)
 			else
 				post_error(Current, "serialise_archetype", "serialise_archetype_e2", Void)
 			end

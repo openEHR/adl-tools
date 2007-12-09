@@ -110,7 +110,7 @@ feature -- Commands
 			create tree_item_stack.make (0)
 
 			if archetype_directory.has_selected_archetype then
-				create tree_iterator.make (archetype_directory.selected_archetype.archetype_flat.definition.representation)
+				create tree_iterator.make (archetype_directory.selected_archetype.archetype_differential.definition.representation)
 				tree_iterator.do_all (agent node_build_enter_action (?, ?), agent node_build_exit_action (?, ?))
 			end
 
@@ -159,7 +159,7 @@ feature -- Commands
 
 						if s /= Void then -- must be a term constraint item
 							if archetype_directory.has_selected_archetype then
-								if archetype_directory.selected_archetype.archetype_flat.ontology.has_term_code (s) then
+								if archetype_directory.selected_archetype.archetype_differential.ontology.has_term_code (s) then
 									gui.ontology_controls.select_term (s)
 								end
 							end
@@ -222,7 +222,7 @@ feature -- Commands
 			-- roll the tree up so that nodes whose rolled_up_specialisation_status is
 			-- ss_inherited are closed, but nodes with
 		do
-			if archetype_directory.selected_archetype.archetype_flat.is_specialised then
+			if archetype_directory.selected_archetype.archetype_differential.is_specialised then
 				create node_list.make(0)
 				gui_tree.recursive_do_all(agent ev_tree_item_roll_up(?))
 				from
@@ -278,7 +278,7 @@ feature {NONE} -- Implementation
 			if in_source_status_mode then
 				if archetype_directory.has_selected_archetype then
 					arch_const ?= an_og_node.content_item
-					spec_sts := arch_const.specialisation_status (archetype_directory.selected_archetype.archetype_flat.specialisation_depth).value
+					spec_sts := arch_const.specialisation_status (archetype_directory.selected_archetype.archetype_differential.specialisation_depth).value
 
 					if spec_sts = ss_inherited or spec_sts = ss_redefined then
 						pixmap_ext.append (".")
@@ -477,7 +477,7 @@ feature {NONE} -- Implementation
 						if in_technical_mode then
 							a_ti.set_tooltip (utf8 (c_o.representation.path.as_string))
 						elseif archetype_directory.has_selected_archetype then
-							a_ti.set_tooltip (utf8 (archetype_directory.selected_archetype.archetype_flat.ontology.logical_path_for_physical_path (c_o.representation.path.as_string, current_language)))
+							a_ti.set_tooltip (utf8 (archetype_directory.selected_archetype.archetype_differential.ontology.logical_path_for_physical_path (c_o.representation.path.as_string, current_language)))
 						end
 					end
 
@@ -488,7 +488,7 @@ feature {NONE} -- Implementation
 
 						if arch_const /= Void then
 							if archetype_directory.has_selected_archetype then
-								spec_sts := arch_const.specialisation_status (archetype_directory.selected_archetype.archetype_flat.specialisation_depth).value
+								spec_sts := arch_const.specialisation_status (archetype_directory.selected_archetype.archetype_differential.specialisation_depth).value
 
 								if spec_sts = ss_inherited or spec_sts = ss_redefined then
 									pixmap_ext.append (".")
@@ -520,7 +520,7 @@ feature {NONE} -- Implementation
 
 								if in_source_status_mode then
 									if archetype_directory.has_selected_archetype then
-										spec_sts := a_object_term.specialisation_status (archetype_directory.selected_archetype.archetype_flat.specialisation_depth).value
+										spec_sts := a_object_term.specialisation_status (archetype_directory.selected_archetype.archetype_differential.specialisation_depth).value
 
 										if spec_sts = ss_inherited or spec_sts = ss_redefined then
 											pixmap_ext.append (".")
@@ -555,7 +555,7 @@ feature {NONE} -- Implementation
 
 						if in_source_status_mode then
 							if archetype_directory.has_selected_archetype then
-								spec_sts := c_dv_ordinal.specialisation_status (archetype_directory.selected_archetype.archetype_flat.specialisation_depth).value
+								spec_sts := c_dv_ordinal.specialisation_status (archetype_directory.selected_archetype.archetype_differential.specialisation_depth).value
 
 								if spec_sts = ss_inherited or spec_sts = ss_redefined then
 									pixmap_ext.append (".")
@@ -589,7 +589,7 @@ feature {NONE} -- Implementation
 
 								if in_source_status_mode then
 									if archetype_directory.has_selected_archetype then
-										spec_sts := c_q.specialisation_status (archetype_directory.selected_archetype.archetype_flat.specialisation_depth).value
+										spec_sts := c_q.specialisation_status (archetype_directory.selected_archetype.archetype_differential.specialisation_depth).value
 
 										if spec_sts = ss_inherited or spec_sts = ss_redefined then
 											pixmap_ext.append(".")
@@ -641,7 +641,7 @@ feature {NONE} -- Implementation
 			if in_technical_mode then
 				Result.set_tooltip (utf8 (an_og_node.path.as_string))
 			elseif archetype_directory.has_selected_archetype then
-				Result.set_tooltip (utf8 (archetype_directory.selected_archetype.archetype_flat.ontology.logical_path_for_physical_path (an_og_node.path.as_string, current_language)))
+				Result.set_tooltip (utf8 (archetype_directory.selected_archetype.archetype_differential.ontology.logical_path_for_physical_path (an_og_node.path.as_string, current_language)))
 			end
 
 			if not archetype_tree_root_set then
@@ -803,8 +803,8 @@ feature {NONE} -- Implementation
 					Result.append (a_node.rm_type_name)
 				end
 
-				if archetype_directory.has_selected_archetype and archetype_directory.selected_archetype.archetype_flat.ontology.has_term_code(a_node.node_id) then
-					Result.append (" " + archetype_directory.selected_archetype.archetype_flat.ontology.term_definition (current_language, a_node.node_id).item ("text"))
+				if archetype_directory.has_selected_archetype and archetype_directory.selected_archetype.archetype_differential.ontology.has_term_code(a_node.node_id) then
+					Result.append (" " + archetype_directory.selected_archetype.archetype_differential.ontology.term_definition (current_language, a_node.node_id).item ("text"))
 				end
 
 				if in_technical_mode then
@@ -850,8 +850,8 @@ feature {NONE} -- Implementation
 			--end
 
 			if a_node.is_addressable then
-				if archetype_directory.has_selected_archetype and archetype_directory.selected_archetype.archetype_flat.ontology.has_term_code(a_node.node_id) then
-					Result.append (" " + archetype_directory.selected_archetype.archetype_flat.ontology.term_definition (current_language, a_node.node_id).item ("text"))
+				if archetype_directory.has_selected_archetype and archetype_directory.selected_archetype.archetype_differential.ontology.has_term_code(a_node.node_id) then
+					Result.append (" " + archetype_directory.selected_archetype.archetype_differential.ontology.term_definition (current_language, a_node.node_id).item ("text"))
 				end
 			end
 
@@ -891,7 +891,7 @@ feature {NONE} -- Implementation
 			if in_technical_mode then
 				Result.append ("use " + a_node.rm_type_name + " " + a_node.target_path)
 			elseif archetype_directory.has_selected_archetype then
-				Result.append ("use " + archetype_directory.selected_archetype.archetype_flat.ontology.logical_path_for_physical_path (a_node.target_path, current_language))
+				Result.append ("use " + archetype_directory.selected_archetype.archetype_differential.ontology.logical_path_for_physical_path (a_node.target_path, current_language))
 			end
 		end
 
@@ -901,8 +901,8 @@ feature {NONE} -- Implementation
 			create Result.make_empty
 
 			if archetype_directory.has_selected_archetype then
-				if archetype_directory.selected_archetype.archetype_flat.ontology.has_term_code(code) then
-					Result.append (" " + archetype_directory.selected_archetype.archetype_flat.ontology.term_definition (current_language, code).item ("text"))
+				if archetype_directory.selected_archetype.archetype_differential.ontology.has_term_code(code) then
+					Result.append (" " + archetype_directory.selected_archetype.archetype_differential.ontology.term_definition (current_language, code).item ("text"))
 				end
 			end
 
@@ -921,7 +921,7 @@ feature {NONE} -- Implementation
 			create Result.make_empty
 
 			if archetype_directory.has_selected_archetype then
-				Result.append (" " + archetype_directory.selected_archetype.archetype_flat.ontology.constraint_definition (current_language, a_constraint_ref.target).item ("text"))
+				Result.append (" " + archetype_directory.selected_archetype.archetype_differential.ontology.constraint_definition (current_language, a_constraint_ref.target).item ("text"))
 			end
 
 			if in_technical_mode then
@@ -939,8 +939,8 @@ feature {NONE} -- Implementation
 			Result.append (an_ordinal.value.out + an_ordinal.separator.out)
 
 			if archetype_directory.has_selected_archetype then
-				if archetype_directory.selected_archetype.archetype_flat.ontology.has_term_code(code) then
-					Result.append (" " + archetype_directory.selected_archetype.archetype_flat.ontology.term_definition (current_language, code).item ("text"))
+				if archetype_directory.selected_archetype.archetype_differential.ontology.has_term_code(code) then
+					Result.append (" " + archetype_directory.selected_archetype.archetype_differential.ontology.term_definition (current_language, code).item ("text"))
 				end
 			end
 
@@ -982,7 +982,7 @@ feature {NONE} -- Implementation
 
 			if archetype_directory.has_selected_archetype then
 				if not in_technical_mode then
-					Result := archetype_directory.selected_archetype.archetype_flat.ontology.substitute_codes (Result, current_language)
+					Result := archetype_directory.selected_archetype.archetype_differential.ontology.substitute_codes (Result, current_language)
 				end
 			end
 		end
@@ -995,8 +995,8 @@ feature {NONE} -- Implementation
 			s: STRING
 		do
 			if archetype_directory.has_selected_archetype then
-				if archetype_directory.selected_archetype.archetype_flat.has_invariants then
-					invariants := archetype_directory.selected_archetype.archetype_flat.invariants
+				if archetype_directory.selected_archetype.archetype_differential.has_invariants then
+					invariants := archetype_directory.selected_archetype.archetype_differential.invariants
 					create a_ti_sub.make_with_text ("invariants:")
 					a_ti_sub.set_pixmap(pixmaps.item ("CADL_INVARIANT"))
 					gui_tree.extend (a_ti_sub)

@@ -126,6 +126,9 @@ feature {NONE} -- Implementation
 		local
 			a_codes: HASH_TABLE[ARRAYED_LIST[C_OBJECT], STRING]
 		do
+			-- are there any codes from a lower level of specialisation than the archetype itself?
+			
+
 			-- see if all found codes are in each language table
 			a_codes := target.id_at_codes_xref_table
 			from
@@ -170,7 +173,8 @@ feature {NONE} -- Implementation
 		end
 
 	validate_internal_references is
-			-- validate items in `found_internal_references'
+			-- validate items in `found_internal_references'; these have to be validated against
+			-- the archetype flat path list
 		local
 			use_refs: HASH_TABLE[ARRAYED_LIST[ARCHETYPE_INTERNAL_REF], STRING]
 		do
@@ -204,8 +208,8 @@ feature {NONE} -- Implementation
 			loop
 				path_analyser.set_from_string(path_list.item)
 				if path_analyser.level /= target.specialisation_depth then
-					err_str := "specialisation depth of path " + path_list.item + " " + path_analyser.level.out +
-						" differs from archetype (" + target.specialisation_depth.out + ")%N"
+					err_str := "specialisation depth of path " + path_list.item + " (" + path_analyser.level.out +
+						") differs from archetype (" + target.specialisation_depth.out + ")%N"
 					if strict then
 						passed := False
 						errors.append("Error: " + err_str)

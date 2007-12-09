@@ -94,7 +94,7 @@ feature -- Commands
 		end
 
 	rebuild_all
-			-- Force rebuild the whole system from scratch, regardless of previous previous attempts.
+			-- Force rebuild of the whole system from scratch, regardless of previous attempts.
 		do
 			process_subtree ("rebuilding system from scratch", True, archetype_directory.directory)
 		end

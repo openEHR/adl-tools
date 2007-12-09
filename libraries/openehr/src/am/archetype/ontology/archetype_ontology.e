@@ -25,7 +25,7 @@ inherit
 	ARCHETYPE_TERM_CODE_TOOLS
 		export
 			{NONE} all;
-			{ANY} valid_concept_code
+			{ANY} valid_concept_code, specialisation_depth_from_code
 		undefine
 			default_create
 		end
@@ -73,9 +73,11 @@ feature -- Initialisation
 			create term_bindings.make (0)
 			create constraint_bindings.make (0)
 			create specialised_term_codes.make (0)
+		ensure then
+			In_flat_form: not is_differential
 		end
 
-	make_from_tree(a_primary_lang: STRING; a_dadl_tree: DT_COMPLEX_OBJECT_NODE; a_concept_code: STRING) is
+	make_from_tree(a_primary_lang: STRING; a_dadl_tree: DT_COMPLEX_OBJECT_NODE; a_concept_code: STRING; is_differential_flag: BOOLEAN) is
 			-- make ontology from parse tree and concept code, usually something
 			-- like 'at0000' or 'at0000.1'. The specialisation depth of the
 			-- ontology is determined from this code
@@ -85,6 +87,7 @@ feature -- Initialisation
 			Root_code_valid: a_concept_code /= Void and then valid_concept_code(a_concept_code)
 		do
 			default_create
+			is_differential := is_differential_flag
 			representation := a_dadl_tree
 			concept_code := a_concept_code
 
@@ -94,6 +97,7 @@ feature -- Initialisation
 
 			synchronise_from_tree
 		ensure
+			Differential_form_set: is_differential = is_differential_flag
 			Concept_code_set: concept_code.is_equal(a_concept_code) and valid_concept_code(concept_code)
 		end
 
@@ -102,15 +106,15 @@ feature -- Initialisation
 		require
 			Primary_language_valid: a_primary_lang /= Void and then not a_primary_lang.is_empty
 			Valid_specialisation_depth: at_specialisation_depth >= 0
-		local
-			a_term: ARCHETYPE_TERM
 		do
 			default_create
+			is_differential := True
 			add_language(a_primary_lang)
 			set_primary_language(a_primary_lang)
 			concept_code := new_concept_code_at_level (at_specialisation_depth)
 			initialise_term_definitions(create {ARCHETYPE_TERM}.make (concept_code))
 		ensure
+			In_differential_form: is_differential
 			Specialisation_level_set: specialisation_depth = at_specialisation_depth
 			Concept_code_set: valid_concept_code(concept_code) and specialisation_depth_from_code (concept_code) = at_specialisation_depth
 		end
@@ -135,7 +139,11 @@ feature -- Access
 			Language_valid: a_lang /= Void and then has_language(a_lang)
 			Term_code_valid: a_term_code /= Void and then has_term_code (a_term_code)
 		do
-			Result := term_definitions.item(a_lang).item(a_term_code)
+			if not is_differential or specialisation_depth_from_code (a_term_code) = specialisation_depth then
+				Result := term_definitions.item(a_lang).item(a_term_code)
+			elseif is_differential then
+				Result := parent_ontology.term_definition(a_lang, a_term_code)
+			end
 		ensure
 			Result_exists: Result /= Void
 		end
@@ -146,7 +154,11 @@ feature -- Access
 			Language_valid: a_lang /= Void and then has_language(a_lang)
 			Term_code_valid: a_term_code /= Void and then has_constraint_code(a_term_code)
 		do
-			Result := constraint_definitions.item(a_lang).item(a_term_code)
+			if not is_differential or specialisation_depth_from_code (a_term_code) = specialisation_depth then
+				Result := constraint_definitions.item(a_lang).item(a_term_code)
+			elseif is_differential then
+				Result := parent_ontology.constraint_definition(a_lang, a_term_code)
+			end
 		ensure
 			Result_exists: Result /= Void
 		end
@@ -157,7 +169,11 @@ feature -- Access
 			Terminology_valid: a_terminology /= Void and then terminologies_available.has(a_terminology)
 			Term_code_valid: a_term_code /= Void and then has_term_binding(a_terminology, a_term_code)
 		do
-			Result := term_bindings.item(a_terminology).item(a_term_code)
+			if not is_differential or specialisation_depth_from_code (a_term_code) = specialisation_depth then
+				Result := term_bindings.item(a_terminology).item(a_term_code)
+			elseif is_differential then
+				Result := parent_ontology.term_binding(a_terminology, a_term_code)
+			end
 		ensure
 			Result_exists: Result /= Void
 		end
@@ -179,7 +195,11 @@ feature -- Access
 			Terminology_valid: a_terminology /= Void and then terminologies_available.has(a_terminology)
 			Term_code_valid: a_term_code /= Void and then has_constraint_binding(a_terminology, a_term_code)
 		do
-			Result := constraint_bindings.item(a_terminology).item(a_term_code)
+			if not is_differential or specialisation_depth_from_code (a_term_code) = specialisation_depth then
+				Result := constraint_bindings.item(a_terminology).item(a_term_code)
+			elseif is_differential then
+				Result := parent_ontology.constraint_binding(a_terminology, a_term_code)
+			end
 		ensure
 			Result_exists: Result /= Void
 		end
@@ -283,7 +303,11 @@ feature -- Status Report
 	has_term_code(a_term_code: STRING): BOOLEAN is
 			-- is `a_term_code' known in this ontology
 		do
-			Result := term_codes.has(a_term_code)
+			if not is_differential or specialisation_depth_from_code (a_term_code) = specialisation_depth then
+				Result := term_codes.has(a_term_code)
+			elseif is_differential then
+				Result := parent_ontology.has_term_code(a_term_code)
+			end
 		end
 
 	has_constraint_code(a_constraint_code: STRING): BOOLEAN is
@@ -291,7 +315,11 @@ feature -- Status Report
 		require
 			Constraint_code_valid: a_constraint_code /= Void and then not a_constraint_code.is_empty
 		do
-			Result := constraint_codes.has(a_constraint_code)
+			if not is_differential or specialisation_depth_from_code (a_constraint_code) = specialisation_depth then
+				Result := constraint_codes.has(a_constraint_code)
+			elseif is_differential then
+				Result := parent_ontology.has_constraint_code(a_constraint_code)
+			end
 		end
 
 	has_term_bindings(a_terminology: STRING): BOOLEAN is
@@ -317,17 +345,21 @@ feature -- Status Report
 		local
 			p: ARRAYED_LIST_CURSOR
 		do
-			p := terminologies_available.cursor
-			from
-				terminologies_available.start
-			until
-				terminologies_available.off or Result
-			loop
-				Result := term_bindings.has(terminologies_available.item) and then
-					term_bindings.item(terminologies_available.item).has(a_term_code)
-				terminologies_available.forth
+			if not is_differential or specialisation_depth_from_code (a_term_code) = specialisation_depth then
+				p := terminologies_available.cursor
+				from
+					terminologies_available.start
+				until
+					terminologies_available.off or Result
+				loop
+					Result := term_bindings.has(terminologies_available.item) and then
+						term_bindings.item(terminologies_available.item).has(a_term_code)
+					terminologies_available.forth
+				end
+				terminologies_available.go_to (p)
+			elseif is_differential then
+				Result := parent_ontology.has_any_term_binding(a_term_code)
 			end
-			terminologies_available.go_to (p)
 		end
 
 	has_term_binding(a_terminology, a_term_code: STRING): BOOLEAN is
@@ -336,8 +368,12 @@ feature -- Status Report
 			Terminology_valid: a_terminology /= Void and then not terminologies_available.is_empty
 			Term_code_valid: a_term_code /= Void and then not a_term_code.is_empty
 		do
-			Result := term_bindings.has(a_terminology) and then
+			if not is_differential or specialisation_depth_from_code (a_term_code) = specialisation_depth then
+				Result := term_bindings.has(a_terminology) and then
 					term_bindings.item(a_terminology).has(a_term_code)
+			elseif is_differential then
+				Result := parent_ontology.has_term_binding(a_terminology, a_term_code)
+			end
 		end
 
 	has_any_constraint_binding(a_term_code: STRING): BOOLEAN is
@@ -347,17 +383,21 @@ feature -- Status Report
 		local
 			p: ARRAYED_LIST_CURSOR
 		do
-			p := terminologies_available.cursor
-			from
-				terminologies_available.start
-			until
-				terminologies_available.off or Result
-			loop
-				Result := constraint_bindings.has(terminologies_available.item) and then
-					constraint_bindings.item(terminologies_available.item).has(a_term_code)
-				terminologies_available.forth
+			if not is_differential or specialisation_depth_from_code (a_term_code) = specialisation_depth then
+				p := terminologies_available.cursor
+				from
+					terminologies_available.start
+				until
+					terminologies_available.off or Result
+				loop
+					Result := constraint_bindings.has(terminologies_available.item) and then
+						constraint_bindings.item(terminologies_available.item).has(a_term_code)
+					terminologies_available.forth
+				end
+				terminologies_available.go_to (p)
+			elseif is_differential then
+				Result := parent_ontology.has_any_constraint_binding(a_term_code)
 			end
-			terminologies_available.go_to (p)
 		end
 
 	has_constraint_binding(a_terminology, a_term_code: STRING): BOOLEAN is
@@ -366,8 +406,12 @@ feature -- Status Report
 			Terminology_valid: a_terminology /= Void and then not terminologies_available.is_empty
 			Term_code_valid: a_term_code /= Void and then not a_term_code.is_empty
 		do
-			Result := constraint_bindings.has(a_terminology) and then
+			if not is_differential or specialisation_depth_from_code (a_term_code) = specialisation_depth then
+				Result := constraint_bindings.has(a_terminology) and then
 						constraint_bindings.item(a_terminology).has(a_term_code)
+			elseif is_differential then
+				Result := parent_ontology.has_constraint_binding(a_terminology, a_term_code)
+			end
 		end
 
 feature -- Status Setting
@@ -461,11 +505,10 @@ feature -- Modification
 			Term_exists: a_term /= Void
 		do
 			term_codes.extend(a_term.code)
-			create term_definitions.make(0)
 			term_definitions.put(create {HASH_TABLE[ARCHETYPE_TERM, STRING]}.make(0), primary_language)
 			term_definitions.item(primary_language).put(a_term, a_term.code)
 		ensure
-			Term_definitions_created: term_definitions /= Void and then term_definitions.item(primary_language).item(concept_code) = a_term
+			Term_definitions_populated: term_definitions.item(primary_language).item(concept_code) = a_term
 		end
 
 	add_term_definition(a_lang: STRING; a_term: ARCHETYPE_TERM) is
@@ -473,7 +516,7 @@ feature -- Modification
 			-- automatically add translation placeholders in all other languages
 		require
 			Language_valid: a_lang /= Void and then has_language(a_lang)
-			Term_valid: a_term /= Void and then not has_term_code(a_term.code)
+			Term_valid: a_term /= Void and not has_term_code(a_term.code) and specialisation_depth_from_code (a_term.code) <= specialisation_depth
 		do
 			put_term_definition(a_lang, a_term)
 			term_codes.extend(a_term.code)
@@ -605,7 +648,7 @@ feature -- Modification
 			-- automatically add translation placeholders
 		require
 			Language_valid: a_lang /= Void and then has_language(a_lang)
-			Term_valid: a_term /= Void and then not has_constraint_code(a_term.code)
+			Term_valid: a_term /= Void and then not has_constraint_code(a_term.code) and specialisation_depth_from_code (a_term.code) <= specialisation_depth
 		do
 			put_constraint_definition(a_lang, a_term)
 			constraint_codes.extend(a_term.code)
@@ -778,6 +821,14 @@ feature -- Modification
 				remove_constraint_definition (rm_constraint_codes.item)
 				rm_constraint_codes.forth
 			end
+		end
+
+	set_parent_ontology(an_ontology: ARCHETYPE_ONTOLOGY) is
+			-- add a connection to the ontology of a parent archetype
+		require
+			Ontology_valid: an_ontology /= Void and then an_ontology.specialisation_depth + 1 = specialisation_depth
+		do
+			parent_ontology := an_ontology
 		end
 
 feature -- Factory
@@ -1038,6 +1089,9 @@ feature {NONE} -- Implementation
 	highest_constraint_code_index: INTEGER
 			-- index of the highest constraint code in the ontology
 
+	highest_code_specialisation_level: INTEGER
+			-- level of most specialised code in this ontology; used for detecting codes from a lower level than the archetype itself
+
 	synchronise_from_tree is
 			-- synchronise info from parse tree to data structures
 		local
@@ -1045,7 +1099,6 @@ feature {NONE} -- Implementation
 			term_bindings_one_terminology: HASH_TABLE[CODE_PHRASE, STRING]
 			constraint_bindings_one_terminology: HASH_TABLE[URI, STRING]
 			code, a_lang: STRING
-			sl: ARRAYED_LIST[STRING]
 			an_attr_node: DT_ATTRIBUTE_NODE
 		do
 			if representation.has_path("/" + Sym_terminologies_available) then
@@ -1178,6 +1231,11 @@ feature {NONE} -- Implementation
 						an_attr_node.off
 					loop
 						a_code := an_attr_node.item.node_id
+	-- for the moment, and probably permanently, get rid of codes from parent archetypes. Doinng this properly
+	-- means changing the parser to have a switch for differential/flat (assuming we still support flat form in ADL,
+	-- which might not be true) and to generate an error when it picks up such codes,
+--	if not is_differential or specialisation_depth_from_code (a_code) = specialisation_depth then
+
 						create adl_term.make (a_code)
 						object_node ?= an_attr_node.child_with_id(a_code)
 						from
@@ -1194,8 +1252,8 @@ feature {NONE} -- Implementation
 							adl_term.add_item(term_attr_name, t_val)
 							object_node.forth
 						end
-
 						term_defs_one_lang.force(adl_term, a_code)
+--	end
 						an_attr_node.forth
 					end
 				end
@@ -1218,7 +1276,13 @@ feature {NONE} -- Implementation
 				loop
 					a_simple_node ?= an_attr_node.item
 					a_term ?= a_simple_node.value
+	-- for the moment, and probably permanently, get rid of codes from parent archetypes. Doinng this properly
+	-- means changing the parser to have a switch for differential/flat (assuming we still support flat form in ADL,
+	-- which might not be true) and to generate an error when it picks up such codes,
+--	if specialisation_depth_from_code (a_simple_node.node_id) = specialisation_depth then
+
 					term_bindings_one_terminology.force(a_term, a_simple_node.node_id)
+--	end
 					an_attr_node.forth
 				end
 			end
@@ -1242,7 +1306,13 @@ feature {NONE} -- Implementation
 					if a_leaf_node /= Void then
 						a_uri ?= a_leaf_node.value
 						if a_uri /= Void then
+	-- for the moment, and probably permanently, get rid of codes from parent archetypes. Doinng this properly
+	-- means changing the parser to have a switch for differential/flat (assuming we still support flat form in ADL,
+	-- which might not be true) and to generate an error when it picks up such codes,
+--	if specialisation_depth_from_code (a_leaf_node.node_id) = specialisation_depth then
+
 							constraint_bindings_one_terminology.force(a_uri, a_leaf_node.node_id)
+--	end
 							an_attr_node.forth
 						else
 							errors.append("Expecting URI, e.g. <xxx://some.authority/x/y/z?query#fragment>%N")
@@ -1523,6 +1593,9 @@ feature {NONE} -- Implementation
 			-- e.g. the entry for at0005 might have a list of {at0005.1, at0005.2}
 			-- and at0005.1 might have at0005.1.1
 
+	parent_ontology: ARCHETYPE_ONTOLOGY
+			-- ARCHETYPE_ONTOLOGY objects of specialisation parent archetype
+
 feature {NONE} -- Obsolete in ADL2
 
 	x_primary_language: STRING
@@ -1534,6 +1607,7 @@ invariant
 	Languages_available_valid: languages_available /= Void and then not languages_available.is_empty
 	Terminologies_available_exists: terminologies_available /= Void
 
+	Term_definitions_exists: term_definitions /= Void
 	Term_codes_exists: term_codes /= Void
 	Constraint_codes_exists: constraint_codes /= Void
 	Term_bindings_exists: term_bindings /= Void

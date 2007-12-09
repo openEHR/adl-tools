@@ -89,8 +89,8 @@ feature -- Commands
 			mcl.set_column_titles (path_control_column_names)
 
 			if archetype_directory.has_selected_archetype then
-				p_paths := archetype_directory.selected_archetype.archetype_flat.physical_paths
-				l_paths := archetype_directory.selected_archetype.archetype_flat.logical_paths (current_language)
+				p_paths := archetype_directory.selected_archetype.archetype_differential.physical_paths
+				l_paths := archetype_directory.selected_archetype.archetype_differential.logical_paths (current_language)
 				all_selected := filter_combo.text.is_equal ("All")
 
 				from
@@ -103,7 +103,7 @@ feature -- Commands
 
 			--		if archetype_directory.selected_archetype.definition.has_object_path (p_paths.item) then
 			--		if archetype_directory.selected_archetype.has_physical_path (p_paths.item) then
-						c_o := archetype_directory.selected_archetype.archetype_flat.c_object_at_path (p_paths.item)
+						c_o := archetype_directory.selected_archetype.archetype_differential.c_object_at_path (p_paths.item)
 
 						if c_o /= Void then
 							c_l_o ?= c_o

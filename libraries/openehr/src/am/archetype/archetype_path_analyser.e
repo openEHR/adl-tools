@@ -38,6 +38,7 @@ feature -- Initialisation
 			a_path_valid: a_path /= Void
 		do
 			create target.make_from_string(a_path)
+			calculate_level
 		end
 
 feature -- Access

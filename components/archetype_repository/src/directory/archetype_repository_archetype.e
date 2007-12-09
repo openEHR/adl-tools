@@ -227,6 +227,9 @@ feature -- Modification
 			Archetype_exists: an_archetype /= Void and then an_archetype.is_differential
 		do
 			archetype_differential := an_archetype
+	 		if is_specialised then
+	 			archetype_differential.ontology.set_parent_ontology (specialisation_parent.archetype_differential.ontology)
+	 		end
 			archetype_differential.validate
 			if archetype_differential.is_valid then
 				post_info(Current, "set_archetype_differential", "parse_archetype_i2", <<archetype_differential.archetype_id.as_string>>)
@@ -258,9 +261,7 @@ feature -- Modification
 		do
 			archetype_flat := an_archetype
 			-- FIXME validation is currently done here on flat form; in future has to be done on the differential form,
-			-- but requires new validation code to be written. THE FOLLOWING LINES OF CODE WOULD THEN DISAPPEAR - AND THE
-			-- EQUIVALENT LINES IN THE make_differential ROUTINE ABOVE WOULD BE UNCOMMENTED, AND EITHER OPY THAT HERE
-			-- OR MAKE A NEW ROUTINE THAT VALIDATES THE DIFFERENTIAL FORM, TO BE CALLED BY BOTH make ROUTINES HERE.
+			-- but requires new validation code to be written.
 			archetype_flat.validate
 			if archetype_flat.is_valid then
 				post_info(Current, "set_archetype_flat", "parse_archetype_i2", <<archetype_flat.archetype_id.as_string>>)
@@ -274,6 +275,9 @@ feature -- Modification
 					-- first make a complete clone of the archetype; could also be done by copy of serialised form and parse
 					archetype_differential := archetype_flat.deep_twin
 					archetype_differential.convert_to_differential
+		 			archetype_differential.ontology.set_parent_ontology (specialisation_parent.archetype_differential.ontology)
+					archetype_differential.validate
+					is_valid := archetype_differential.is_valid
 					post_info (Current, "set_archetype_flat", "arch_context_make_flat_i1", Void)
 				end
 			else
