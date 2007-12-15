@@ -157,18 +157,28 @@ feature -- Access
 
 feature -- Comparison
 
-	is_valid_code(a_code: STRING): BOOLEAN is
-			-- 	a code is an 'at' or 'ac' code
+	is_valid_code (a_code: STRING): BOOLEAN is
+			-- Is `a_code' an "at" or "ac" code?
 		require
-			Code_valid: a_code /= Void
+			code_attached: a_code /= Void
 		local
+			i: INTEGER
 			str: STRING
 		do
 			if not a_code.is_empty then
-				Result := (a_code.substring_index (Term_code_leader, 1) > 0 or a_code.substring_index (Constraint_code_leader, 1) > 0)
-					str := a_code.substring(Term_code_leader.count + 1, a_code.count)
+				i := term_code_leader.count
+				Result := a_code.substring (1, i).same_string (term_code_leader)
+
+				if not Result then
+					i := constraint_code_leader.count
+					Result := a_code.substring (1, i).same_string (constraint_code_leader)
+				end
+
+				if Result then
+					str := a_code.substring (i + 1, a_code.count)
 					str.prune_all (specialisation_separator)
 					Result := str.is_integer
+				end
 			end
 		end
 
