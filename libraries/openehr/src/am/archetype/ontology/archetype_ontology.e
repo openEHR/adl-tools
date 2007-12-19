@@ -25,7 +25,7 @@ inherit
 	ARCHETYPE_TERM_CODE_TOOLS
 		export
 			{NONE} all;
-			{ANY} valid_concept_code, specialisation_depth_from_code
+			{ANY} valid_concept_code, is_valid_code, specialisation_depth_from_code
 		undefine
 			default_create
 		end
@@ -302,6 +302,8 @@ feature -- Status Report
 
 	has_term_code(a_term_code: STRING): BOOLEAN is
 			-- is `a_term_code' known in this ontology
+		require
+			Termt_code_valid: a_term_code /= Void and then is_valid_code(a_term_code)
 		do
 			if not is_differential or specialisation_depth_from_code (a_term_code) = specialisation_depth then
 				Result := term_codes.has(a_term_code)
@@ -313,7 +315,7 @@ feature -- Status Report
 	has_constraint_code(a_constraint_code: STRING): BOOLEAN is
 			--
 		require
-			Constraint_code_valid: a_constraint_code /= Void and then not a_constraint_code.is_empty
+			Constraint_code_valid: a_constraint_code /= Void and then is_valid_code(a_constraint_code)
 		do
 			if not is_differential or specialisation_depth_from_code (a_constraint_code) = specialisation_depth then
 				Result := constraint_codes.has(a_constraint_code)
@@ -341,7 +343,7 @@ feature -- Status Report
 	has_any_term_binding(a_term_code: STRING): BOOLEAN is
 			-- true if there is any term binding for code `a_term_code'
 		require
-			Term_code_valid: a_term_code /= Void and then not a_term_code.is_empty
+			Term_code_valid: a_term_code /= Void and then is_valid_code(a_term_code)
 		local
 			p: ARRAYED_LIST_CURSOR
 		do
@@ -366,7 +368,7 @@ feature -- Status Report
 			-- true if there is a term binding for code `a_term_code' in `a_terminology'
 		require
 			Terminology_valid: a_terminology /= Void and then not terminologies_available.is_empty
-			Term_code_valid: a_term_code /= Void and then not a_term_code.is_empty
+			Term_code_valid: a_term_code /= Void and then is_valid_code(a_term_code)
 		do
 			if not is_differential or specialisation_depth_from_code (a_term_code) = specialisation_depth then
 				Result := term_bindings.has(a_terminology) and then
@@ -379,7 +381,7 @@ feature -- Status Report
 	has_any_constraint_binding(a_term_code: STRING): BOOLEAN is
 			-- true if there is any constraint binding for code `a_term_code'
 		require
-			Term_code_valid: a_term_code /= Void and then not a_term_code.is_empty
+			Term_code_valid: a_term_code /= Void and then is_valid_code(a_term_code)
 		local
 			p: ARRAYED_LIST_CURSOR
 		do
@@ -404,7 +406,7 @@ feature -- Status Report
 			-- true if there is a term binding for code `a_term_code' in `a_terminology'
 		require
 			Terminology_valid: a_terminology /= Void and then not terminologies_available.is_empty
-			Term_code_valid: a_term_code /= Void and then not a_term_code.is_empty
+			Term_code_valid: a_term_code /= Void and then is_valid_code(a_term_code)
 		do
 			if not is_differential or specialisation_depth_from_code (a_term_code) = specialisation_depth then
 				Result := constraint_bindings.has(a_terminology) and then
