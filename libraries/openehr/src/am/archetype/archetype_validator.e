@@ -50,11 +50,12 @@ feature -- Validation
 			passed := True
 
 			validate_basics
+			validate_ontology_codes
 
 			if passed then
 				target.build_xrefs
 				find_unused_ontology_codes
-				validate_codes
+				validate_found_codes
 				validate_internal_references
 			end
 
@@ -120,15 +121,44 @@ feature {NONE} -- Implementation
 			-- is languages_available list same as languages in ontology?
 		end
 
-	validate_codes is
+	validate_ontology_codes is
+			-- see if there are any codes in the ontology that should not be there - either or lower or higher
+			-- level of specialisation
+		local
+			code_list: TWO_WAY_SORTED_SET[STRING]
+		do
+			code_list := ontology.term_codes
+			from
+				code_list.start
+			until
+				code_list.off
+			loop
+				if specialisation_depth_from_code (code_list.item) > ontology.specialisation_depth then
+					passed := False
+					errors.append("at-code " + code_list.item + " in ontology more specialised than archetype%N")
+				end
+				code_list.forth
+			end
+			code_list := ontology.constraint_codes
+			from
+				code_list.start
+			until
+				code_list.off
+			loop
+				if specialisation_depth_from_code (code_list.item) > ontology.specialisation_depth then
+					passed := False
+					errors.append("ac-code " + code_list.item + " in ontology more specialised than archetype%N")
+				end
+				code_list.forth
+			end
+		end
+
+	validate_found_codes is
 			-- True if all found node_ids are defined in term_definitions,
 			-- and term_definitions contains no extras
 		local
 			a_codes: HASH_TABLE[ARRAYED_LIST[C_OBJECT], STRING]
 		do
-			-- are there any codes from a lower level of specialisation than the archetype itself?
-			
-
 			-- see if all found codes are in each language table
 			a_codes := target.id_at_codes_xref_table
 			from

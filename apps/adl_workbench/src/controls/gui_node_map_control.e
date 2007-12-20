@@ -312,7 +312,7 @@ feature {NONE} -- Implementation
 					loop
 						assumed_flag := a_object_term.assumed_value /= Void and then
 							a_object_term.assumed_value.code_string.is_equal(a_object_term.code_list.item)
-						create a_ti_sub.make_with_text (utf8 (object_term_item_string (a_object_term.code_list.item, assumed_flag)))
+						create a_ti_sub.make_with_text (utf8 (object_term_item_string (a_object_term.code_list.item, assumed_flag, a_object_term.is_local)))
 						a_ti_sub.set_data(a_object_term.code_list.item) -- type STRING
 						a_ti_sub.set_pixmap(pixmaps.item("TERM" + pixmap_ext))
 						a_ti.extend(a_ti_sub)
@@ -515,7 +515,7 @@ feature {NONE} -- Implementation
 							if a_object_term /= Void then
 								assumed_flag := a_object_term.assumed_value /= Void and then
 									a_object_term.assumed_value.code_string.is_equal(s)
-								a_ti.set_text (utf8 (object_term_item_string (s, assumed_flag)))
+								a_ti.set_text (utf8 (object_term_item_string (s, assumed_flag, a_object_term.is_local)))
 								create pixmap_ext.make (0)
 
 								if in_source_status_mode then
@@ -895,14 +895,21 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	object_term_item_string(code: STRING; assumed_flag: BOOLEAN): STRING is
-			-- generate string form of node or object for use in tree node
+	object_term_item_string(code: STRING; assumed_flag, local_flag: BOOLEAN): STRING is
+			-- generate string form of node or object for use in tree node;
+			-- assumed_flag = True if this is an assumed value - will be marked visually
+			-- local_flag = True if his term is an at- or ac- code from within archetype
 		do
 			create Result.make_empty
 
 			if archetype_directory.has_selected_archetype then
-				if archetype_directory.selected_archetype.archetype_differential.ontology.has_term_code(code) then
-					Result.append (" " + archetype_directory.selected_archetype.archetype_differential.ontology.term_definition (current_language, code).item ("text"))
+				if local_flag then
+					if archetype_directory.selected_archetype.archetype_differential.ontology.has_term_code(code) then
+						Result.append (" " + archetype_directory.selected_archetype.archetype_differential.ontology.term_definition (current_language, code).item ("text"))
+					end
+				else
+					-- need a way to get it out of an external terminology; for the moment, just show code
+					Result.append (" (rubric for " + code + ")")
 				end
 			end
 

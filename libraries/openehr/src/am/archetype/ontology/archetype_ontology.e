@@ -303,7 +303,7 @@ feature -- Status Report
 	has_term_code(a_term_code: STRING): BOOLEAN is
 			-- is `a_term_code' known in this ontology
 		require
-			Termt_code_valid: a_term_code /= Void and then is_valid_code(a_term_code)
+			Term_code_valid: a_term_code /= Void and then is_valid_code(a_term_code)
 		do
 			if not is_differential or specialisation_depth_from_code (a_term_code) = specialisation_depth then
 				Result := term_codes.has(a_term_code)

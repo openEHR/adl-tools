@@ -47,6 +47,7 @@ feature -- Initialisation
 			make_adi (a_root_path, a_full_path, a_repository)
 			differential_path := full_path.twin
 			differential_path.replace_substring (Archetype_source_file_extension, differential_path.count - Archetype_flat_file_extension.count + 1, differential_path.count)
+			create parser_messages.make_empty
 		end
 
 feature -- Access
@@ -129,6 +130,9 @@ feature -- Access
 	archetype_flat: ARCHETYPE
 			-- inheritance-flattened form of archetype
 
+	parser_messages: STRING
+			-- errors from last compile attempt; allows redisplay if this archetype is reselected
+
 feature -- Status Report
 
 	has_differential_file: BOOLEAN is
@@ -150,7 +154,7 @@ feature -- Status Report
 		end
 
 	is_parsed: BOOLEAN is
-			-- True if archetype has been parsed and loaded in at least flat form
+			-- True if archetype has been parsed and loaded in at least differential form
 		do
 			Result := archetype_differential /= Void
 		end
@@ -226,6 +230,7 @@ feature -- Modification
 		require
 			Archetype_exists: an_archetype /= Void and then an_archetype.is_differential
 		do
+			clear_parser_messages
 			archetype_differential := an_archetype
 	 		if is_specialised then
 	 			archetype_differential.ontology.set_parent_ontology (specialisation_parent.archetype_differential.ontology)
@@ -236,9 +241,11 @@ feature -- Modification
 				is_valid := True
 			else
 				post_error(Current, "set_archetype_differential", "parse_archetype_e2", <<archetype_differential.archetype_id.as_string, archetype_differential.validator.errors>>)
+				parser_messages.append (archetype_differential.validator.errors)
 			end
 			if archetype_differential.validator.has_warnings then
 				post_warning(Current, "set_archetype_differential", "parse_archetype_w2", <<archetype_differential.archetype_id.as_string, archetype_differential.validator.warnings>>)
+				parser_messages.append (archetype_differential.validator.warnings)
 			end
 
 			-- generate flat form
@@ -259,6 +266,7 @@ feature -- Modification
 		require
 			Archetype_exists: an_archetype /= Void and then not an_archetype.is_differential
 		do
+			clear_parser_messages
 			archetype_flat := an_archetype
 			-- FIXME validation is currently done here on flat form; in future has to be done on the differential form,
 			-- but requires new validation code to be written.
@@ -282,9 +290,11 @@ feature -- Modification
 				end
 			else
 				post_error(Current, "set_archetype_flat", "parse_archetype_e2", <<archetype_flat.archetype_id.as_string, archetype_flat.validator.errors>>)
+				parser_messages.append(archetype_flat.validator.errors)
 			end
 			if archetype_flat.validator.has_warnings then
 				post_warning(Current, "set_archetype_flat", "parse_archetype_w2", <<archetype_flat.archetype_id.as_string, archetype_flat.validator.warnings>>)
+				parser_messages.append(archetype_flat.validator.warnings)
 			end
 		ensure
 			Archetype_loaded: archetype_flat /= Void
@@ -297,6 +307,20 @@ feature -- Modification
 			Parent_exists: a_parent /= Void
 		do
 			specialisation_parent := a_parent
+		end
+
+	set_parser_messages(str: STRING) is
+			-- set `parser_messages'
+		require
+			String_valid: str /= Void
+		do
+			parser_messages := str
+		end
+
+	clear_parser_messages is
+			-- clear `parser_messages'
+		do
+			parser_messages.wipe_out
 		end
 
 feature {NONE} -- Implementation

@@ -213,6 +213,7 @@ feature -- Commands
 
 					if an_archetype = Void then
 						post_error (Current, "parse_archetype", "parse_archetype_e1", <<adl_engine.parse_error_text>>)
+						target.set_parser_messages (adl_engine.parse_error_text)
 					else
 						post_info (Current, "parse_archetype", "parse_archetype_i1", <<target.id.as_string>>)
 
@@ -225,6 +226,7 @@ feature -- Commands
 
 					if an_archetype = Void then
 						post_error (Current, "parse_archetype", "parse_archetype_e1", <<adl_engine.parse_error_text>>)
+						target.set_parser_messages (adl_engine.parse_error_text)
 					else
 						post_info (Current, "parse_archetype", "parse_archetype_i1", <<target.id.as_string>>)
 
