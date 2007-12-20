@@ -309,8 +309,10 @@ feature -- Archetype Commands
 			ara := archetype_directory.selected_archetype
 
 			if ara /= Void then
-				if not ara.is_parsed then
+				if not ara.parse_attempted then
 					do_with_wait_cursor (agent archetype_compiler.build_lineage (ara))
+				elseif not ara.is_valid then
+					parser_status_area.set_text (utf8(ara.compiler_status))
 				end
 
 				if ara.is_valid then

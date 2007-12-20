@@ -213,7 +213,6 @@ feature -- Commands
 
 					if an_archetype = Void then
 						post_error (Current, "parse_archetype", "parse_archetype_e1", <<adl_engine.parse_error_text>>)
-						target.set_parser_messages (adl_engine.parse_error_text)
 					else
 						post_info (Current, "parse_archetype", "parse_archetype_i1", <<target.id.as_string>>)
 
@@ -226,7 +225,6 @@ feature -- Commands
 
 					if an_archetype = Void then
 						post_error (Current, "parse_archetype", "parse_archetype_e1", <<adl_engine.parse_error_text>>)
-						target.set_parser_messages (adl_engine.parse_error_text)
 					else
 						post_info (Current, "parse_archetype", "parse_archetype_i1", <<target.id.as_string>>)
 
@@ -242,12 +240,16 @@ feature -- Commands
 						set_current_language (archetype_differential.original_language.code_string)
 					end
 				end
+
+				target.set_parse_attempted
+
 			else
 				post_error (Current, "parse_archetype", "parse_archetype_e3", Void)
 			end
 
 			status.wipe_out
 			status.append (billboard_content)
+			target.set_compiler_status (billboard_content)
 			clear_billboard
 		rescue
 			post_error (Current, "parse_archetype", "report_exception", <<exception.out, exception_trace>>)

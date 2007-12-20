@@ -47,7 +47,7 @@ feature -- Initialisation
 			make_adi (a_root_path, a_full_path, a_repository)
 			differential_path := full_path.twin
 			differential_path.replace_substring (Archetype_source_file_extension, differential_path.count - Archetype_flat_file_extension.count + 1, differential_path.count)
-			create parser_messages.make_empty
+			create compiler_status.make_empty
 		end
 
 feature -- Access
@@ -90,6 +90,8 @@ feature -- Access
 				Result := "archetype_valid_" + file_repository.group_id.out
 			elseif is_parsed then
 				Result := "archetype_parsed_" + file_repository.group_id.out
+			elseif parse_attempted then
+				Result := "archetype_parse_failed_" + file_repository.group_id.out
 			else
 				Result := "archetype_" + file_repository.group_id.out
 			end
@@ -130,7 +132,7 @@ feature -- Access
 	archetype_flat: ARCHETYPE
 			-- inheritance-flattened form of archetype
 
-	parser_messages: STRING
+	compiler_status: STRING
 			-- errors from last compile attempt; allows redisplay if this archetype is reselected
 
 feature -- Status Report
@@ -153,6 +155,10 @@ feature -- Status Report
 			Result := not is_parsed or file_repository.has_file_changed_on_disk (full_path, flat_text_timestamp)
 		end
 
+	parse_attempted: BOOLEAN
+			-- True if a parse has been attempted on the currently available copy of this archetype
+			-- (should be cleared if file is touched in any way)
+
 	is_parsed: BOOLEAN is
 			-- True if archetype has been parsed and loaded in at least differential form
 		do
@@ -164,6 +170,14 @@ feature -- Status Report
 			-- actually been compiled and is available in memory. This is useful for specialised archetypes because
 			-- you want to know if the parent has been compiled (up the lineage) before you can compile the current
 			-- one
+
+feature -- Status Setting
+
+	set_parse_attempted is
+			-- set `parse_attempted'
+		do
+			parse_attempted := True
+		end
 
 feature -- Commands
 
@@ -230,22 +244,25 @@ feature -- Modification
 		require
 			Archetype_exists: an_archetype /= Void and then an_archetype.is_differential
 		do
-			clear_parser_messages
 			archetype_differential := an_archetype
 	 		if is_specialised then
-	 			archetype_differential.ontology.set_parent_ontology (specialisation_parent.archetype_differential.ontology)
-	 		end
-			archetype_differential.validate
+	 			if specialisation_parent.is_parsed then
+	 				archetype_differential.ontology.set_parent_ontology (specialisation_parent.archetype_differential.ontology)
+					archetype_differential.validate
+				else
+					post_error (Current, "set_archetype_differential", "parse_archetype_e2", <<"Parent failed to compile">>)
+				end
+			else
+				archetype_differential.validate
+			end
 			if archetype_differential.is_valid then
 				post_info(Current, "set_archetype_differential", "parse_archetype_i2", <<archetype_differential.archetype_id.as_string>>)
 				is_valid := True
 			else
 				post_error(Current, "set_archetype_differential", "parse_archetype_e2", <<archetype_differential.archetype_id.as_string, archetype_differential.validator.errors>>)
-				parser_messages.append (archetype_differential.validator.errors)
 			end
 			if archetype_differential.validator.has_warnings then
 				post_warning(Current, "set_archetype_differential", "parse_archetype_w2", <<archetype_differential.archetype_id.as_string, archetype_differential.validator.warnings>>)
-				parser_messages.append (archetype_differential.validator.warnings)
 			end
 
 			-- generate flat form
@@ -266,35 +283,36 @@ feature -- Modification
 		require
 			Archetype_exists: an_archetype /= Void and then not an_archetype.is_differential
 		do
-			clear_parser_messages
 			archetype_flat := an_archetype
 			-- FIXME validation is currently done here on flat form; in future has to be done on the differential form,
 			-- but requires new validation code to be written.
 			archetype_flat.validate
 			if archetype_flat.is_valid then
 				post_info(Current, "set_archetype_flat", "parse_archetype_i2", <<archetype_flat.archetype_id.as_string>>)
-				is_valid := True
 
 				-- generate the differential form
 				if not an_archetype.is_specialised then
 					-- FIXME for the moment; in future needs to be separate instances??
 					archetype_differential := archetype_flat
+					is_valid := True
 				else -- generate differential form from flat
 					-- first make a complete clone of the archetype; could also be done by copy of serialised form and parse
 					archetype_differential := archetype_flat.deep_twin
 					archetype_differential.convert_to_differential
-		 			archetype_differential.ontology.set_parent_ontology (specialisation_parent.archetype_differential.ontology)
-					archetype_differential.validate
-					is_valid := archetype_differential.is_valid
-					post_info (Current, "set_archetype_flat", "arch_context_make_flat_i1", Void)
+					if specialisation_parent.is_parsed then
+		 				archetype_differential.ontology.set_parent_ontology (specialisation_parent.archetype_differential.ontology)
+						archetype_differential.validate
+						is_valid := archetype_differential.is_valid
+						post_info (Current, "set_archetype_flat", "arch_context_make_flat_i1", Void)
+					else
+						post_error (Current, "set_archetype_flat", "parse_archetype_e2", <<"Parent failed to compile">>)
+					end
 				end
 			else
 				post_error(Current, "set_archetype_flat", "parse_archetype_e2", <<archetype_flat.archetype_id.as_string, archetype_flat.validator.errors>>)
-				parser_messages.append(archetype_flat.validator.errors)
 			end
 			if archetype_flat.validator.has_warnings then
 				post_warning(Current, "set_archetype_flat", "parse_archetype_w2", <<archetype_flat.archetype_id.as_string, archetype_flat.validator.warnings>>)
-				parser_messages.append(archetype_flat.validator.warnings)
 			end
 		ensure
 			Archetype_loaded: archetype_flat /= Void
@@ -309,18 +327,18 @@ feature -- Modification
 			specialisation_parent := a_parent
 		end
 
-	set_parser_messages(str: STRING) is
-			-- set `parser_messages'
+	set_compiler_status(str: STRING) is
+			-- set `compiler_status'
 		require
 			String_valid: str /= Void
 		do
-			parser_messages := str
+			compiler_status := str
 		end
 
-	clear_parser_messages is
-			-- clear `parser_messages'
+	clear_compiler_status is
+			-- clear `compiler_status'
 		do
-			parser_messages.wipe_out
+			compiler_status.wipe_out
 		end
 
 feature {NONE} -- Implementation

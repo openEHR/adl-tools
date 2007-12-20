@@ -189,7 +189,6 @@ feature -- Commands
 	run_tests is
 			-- execute tests on all marked archetypes
 		local
-			arch_item: ARCH_REP_ARCHETYPE
 			row_csr, col_csr: INTEGER
 			row: EV_GRID_ROW
 			gli: EV_GRID_LABEL_ITEM
@@ -213,12 +212,12 @@ feature -- Commands
 				checkbox ?= row.item (2)
 
 				if checkbox /= Void and then checkbox.is_checked then
-					arch_item ?= row.data
+					target ?= row.data
 
-					if arch_item /= Void then
+					if target /= Void then
 						row.ensure_visible
 						archetype_parser.reset
-						archetype_parser.set_target(arch_item)
+						archetype_parser.set_target(target)
 
 						from
 							tests.start
@@ -249,7 +248,7 @@ feature -- Commands
 							row.set_item (col_csr, gli)
 
 							if not test_status.is_empty then
-								gui.test_status_area.append_text ("--------------- " + arch_item.id.as_string + " -----------------%N" + test_status)
+								gui.test_status_area.append_text ("--------------- " + target.id.as_string + " -----------------%N" + test_status)
 							end
 
 							ev_application.process_events
@@ -292,14 +291,14 @@ feature -- Commands
 			row_attached: row /= Void
    		local
 			gli: EV_GRID_LABEL_ITEM
-   			arch_item: ARCH_REP_ITEM
+   			arch_item1: ARCH_REP_ITEM
 			pixmap: EV_PIXMAP
    		do
    			gli ?= row.item (1)
-   			arch_item ?= row.data
+   			arch_item1 ?= row.data
 
-			if gli /= Void and arch_item /= Void then
-				pixmap := pixmaps [arch_item.group_name]
+			if gli /= Void and arch_item1 /= Void then
+				pixmap := pixmaps [arch_item1.group_name]
 
 				if pixmap /= Void then
 					gli.set_pixmap (pixmap)
@@ -341,9 +340,9 @@ feature -- Tests
 			unused_at_codes, unused_ac_codes: ARRAYED_LIST [STRING]
 		do
 			Result := test_failed
-			archetype_compiler.rebuild_lineage (archetype_parser.target)
+			archetype_compiler.rebuild_lineage (target)
 
-			if archetype_parser.archetype_valid then
+			if target.is_valid then
 				Result := test_passed
 				test_status.append (" parse succeeded%N" + archetype_parser.status)
 
@@ -488,6 +487,9 @@ feature {NONE} -- Implementation
 
 	test_status: STRING
 			-- Cumulative status message during running of test.
+
+	target: ARCH_REP_ARCHETYPE
+			-- current target of compilation operation
 
 	populate_gui_tree_node_enter (an_item: ARCH_REP_ITEM) is
 			-- Add a node representing `an_item' to `gui_file_tree'.
