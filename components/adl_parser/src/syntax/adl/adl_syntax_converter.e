@@ -21,7 +21,7 @@ inherit
 		export
 			{NONE} all
 		end
-		
+
 	MESSAGE_BILLBOARD
 		export
 			{NONE} all
@@ -34,11 +34,9 @@ feature -- Access
 			-- dadl_text will be of form "C_SOME_TYPE <xxxxx>"
 		require
 			dadl_text /= Void
-		local
-			pos: INTEGER
 		do
 		end
-		
+
 	convert_dadl_language(dadl_text: STRING) is
 			-- converted language = <"xxx"> to language = <[ISO-639::xxx]>
 		require
@@ -58,7 +56,7 @@ feature -- Access
 				lang := dadl_text.substring (lpos+1, rpos-1)
 				rep_str := "[" + Terminology_ISO_639_1 + "::" + lang + "]"
 				dadl_text.replace_substring (rep_str, lpos, rpos)
-				post_info(Current, "convert_dadl_language", "syntax_upgraded_i1", 
+				post_info(Current, "convert_dadl_language", "syntax_upgraded_i1",
 					<<"language = <%"" + lang + "%">", "language = <[" + Terminology_ISO_639_1 + "::" + lang + "]>">>)
 				pos := dadl_text.substring_index("language = <%"", rpos)
 			end
@@ -86,10 +84,10 @@ feature -- Access
 				end
 			end
 		end
-		
+
 	convert_c_quantity_property(dadl_text: STRING) is
 			-- convert an old style C_QUANTITY property dADL fragment from ADL 1.x
-			-- to ADL 1.4 
+			-- to ADL 1.4
 			-- The old fragment looks like this:
 			--		property = <"xxxx">
 			-- The new one looks like this:
@@ -112,7 +110,7 @@ feature -- Access
 				else
 					new_str := "property = <[" + prop_name + "]>"
 				end
-				
+
 				dadl_text.replace_substring (new_str, lpos, rpos)
 				post_info(Current, "convert_dadl_language", "syntax_upgraded_i1", <<"property = <%"xxx%">", "language = <[openehr::xxx]>">>)
 			end
@@ -120,7 +118,7 @@ feature -- Access
 
 	convert_non_conforming_duration(a_str: STRING): STRING is
 			-- fix an ISO8601-like duration string which is missing a 'T' character
-			-- called from cADL lexer, matched by pattern: 
+			-- called from cADL lexer, matched by pattern:
 			-- P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[dD])?([0-9]+h)?([0-9]+m)?([0-9]+s)?
 		require
 			a_str /= Void and then not a_str.is_empty
@@ -128,7 +126,7 @@ feature -- Access
 			ind, i: INTEGER
 		do
 			Result := a_str.twin
-			
+
 			-- try lower case (can't use to_lower - not safe for some cultures/character sets)
 			ind := Result.index_of ('h', 1)
 			if ind = 0 then
@@ -148,7 +146,7 @@ feature -- Access
 					end
 				end
 			end
-			
+
 			if ind > 0 then
 				from
 					i := ind - 1
@@ -160,7 +158,7 @@ feature -- Access
 				-- have to insert a 'T' to the right of the cursor
 				Result.insert_character ('T', i+1)
 				post_info(Current, "convert_dadl_language", "syntax_upgraded_i1", <<"ISO 8601 duration", "(missing 'T' added)">>)
-			end	
+			end
 		end
 
 end

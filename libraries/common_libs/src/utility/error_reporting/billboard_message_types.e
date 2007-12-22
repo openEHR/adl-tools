@@ -21,18 +21,26 @@ feature -- Definitions
 	Message_type_info: INTEGER is 9001
 	Message_type_warning: INTEGER is 9002
 	Message_type_error: INTEGER is 9003
-	
+
 feature -- Access
 
-	Message_type_names: HASH_TABLE [STRING, INTEGER] is
+	message_type_names: DS_HASH_TABLE [STRING, INTEGER] is
 			-- names of message types
 		once
 			create Result.make(0)
-			Result.put("ERROR", Message_type_error)
-			Result.put("WARNING", Message_type_warning)
-			Result.put("INFO", Message_type_info)
+			Result.force("ERROR", Message_type_error)
+			Result.force("WARNING", Message_type_warning)
+			Result.force("INFO", Message_type_info)
 		end
-		
+
+	message_type_ids: DS_HASH_TABLE [INTEGER, STRING] is
+			-- ids of message types
+		once
+			create Result.make(0)
+			Result.force(Message_type_error, "ERROR")
+			Result.force(Message_type_warning, "WARNING")
+			Result.force(Message_type_info, "INFO")
+		end
 
 feature -- Status Report
 
@@ -80,4 +88,4 @@ end
 --| ***** END LICENSE BLOCK *****
 --|
 
- 
+

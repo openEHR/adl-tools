@@ -21,16 +21,21 @@ class MESSAGE_BILLBOARD
 inherit
 	BILLBOARD_MESSAGE_TYPES
 
+	SHARED_UI_RESOURCES
+		export
+			{NONE} all
+		end
+
 feature -- Access
 
 	billboard_content: STRING is
-			-- text of the billboard in locale current language 
+			-- text of the billboard in locale current language
 		do
-			Result := filtered_billboard_content(<<Message_type_info, Message_type_warning, Message_type_error>>)
+			Result := filtered_billboard_content(status_reporting_level)
 		end
 
 	billboard_most_recent: STRING is
-			-- text of the message in locale current language 
+			-- text of the message in locale current language
 		do
 			Result := billboard_item_formatted(billboard.first)
 		end
@@ -81,7 +86,7 @@ feature -- Modify
 
 	post_error(poster_object: ANY; poster_routine: STRING; id: STRING; args: ARRAY[STRING]) is
 			-- append to the  current contents of billboard an error message
-			-- corresponding to id, with positional parameters replaced 
+			-- corresponding to id, with positional parameters replaced
 			-- by contents of optional args
 		require
 			Poster_valid: poster_object /= Void and poster_routine /= Void and
@@ -98,7 +103,7 @@ feature -- Modify
 
 	post_warning(poster_object: ANY; poster_routine: STRING; id: STRING; args: ARRAY[STRING]) is
 			-- append to the  current contents of billboard a warning message
-			-- corresponding to id, with positional parameters replaced 
+			-- corresponding to id, with positional parameters replaced
 			-- by contents of optional args
 		require
 			Poster_valid: poster_object /= Void and poster_routine /= Void and
@@ -109,10 +114,10 @@ feature -- Modify
 		ensure
 			Warning_posted: not billboard_empty
 		end
-		
+
 	post_info(poster_object: ANY; poster_routine: STRING; id: STRING; args: ARRAY[STRING]) is
 			-- append to the  current contents of billboard an info message
-			-- corresponding to id, with positional parameters replaced 
+			-- corresponding to id, with positional parameters replaced
 			-- by contents of optional args
 		require
 			Poster_valid: poster_object /= Void and poster_routine /= Void and
@@ -123,7 +128,7 @@ feature -- Modify
 		ensure
 			Info_posted: not billboard_empty
 		end
-		
+
 feature {NONE} -- Implementation
 
 	billboard: ARRAYED_LIST [MESSAGE_BILLBOARD_ITEM] is
@@ -137,8 +142,10 @@ feature {NONE} -- Implementation
 			create {IN_MEMORY_MESSAGE_DB} Result.make
 		end
 
-	filtered_billboard_content(include_types: ARRAY[INTEGER]): STRING is
+	filtered_billboard_content(at_level: INTEGER): STRING is
 			-- text of the billboard in locale current language, filtered according to include_types
+		require
+			at_level_valid: is_valid_message_type (at_level)
 		local
 			bb_item: MESSAGE_BILLBOARD_ITEM
 		do
@@ -149,13 +156,13 @@ feature {NONE} -- Implementation
 				billboard.off
 			loop
 				bb_item := billboard.item
-				if include_types.has(bb_item.message_type) then			
+				if bb_item.message_type >= at_level then
 					Result.append(billboard_item_formatted(bb_item))
 				end
 				billboard.forth
 			end
 		end
-		
+
 	billboard_item_formatted(bb_item: MESSAGE_BILLBOARD_ITEM): STRING is
 			-- format one item
 		local
@@ -172,9 +179,9 @@ feature {NONE} -- Implementation
 			Result.append(leader)
 			Result.append(err_str)
 			Result.append(trailer)
-			Result.append("%N")		
+			Result.append("%N")
 		end
-		
+
 end
 
 --|
@@ -214,4 +221,4 @@ end
 --| ***** END LICENSE BLOCK *****
 --|
 
- 
+

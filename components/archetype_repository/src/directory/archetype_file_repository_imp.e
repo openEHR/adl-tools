@@ -17,15 +17,10 @@ deferred class
 inherit
 	ARCHETYPE_REPOSITORY_I
 
-	SHARED_RESOURCES
+	MESSAGE_BILLBOARD
 		rename
 			file_exists as is_valid_path,
 			directory_exists as is_valid_directory
-		export
-			{NONE} all
-		end
-
-	MESSAGE_BILLBOARD
 		export
 			{NONE} all
 		end

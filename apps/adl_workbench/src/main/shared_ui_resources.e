@@ -16,6 +16,11 @@ class SHARED_UI_RESOURCES
 inherit
 	SHARED_RESOURCES
 
+	BILLBOARD_MESSAGE_TYPES
+		export
+			{NONE} all
+		end
+
 	ADL_DEFINITIONS
 		export
 			{NONE} all
@@ -211,6 +216,20 @@ feature -- Access
 			str := resource_value("default", "main_notebook_tab_pos")
 			if str.is_integer then
 				Result := str.to_integer
+			end
+		end
+
+	status_reporting_level: INTEGER is
+			-- level of error reporting required; see BILLBOARD_MESSAGE_TYPES for levels
+			-- all levels >= the one stored will be displayed; Info is the minimum
+		local
+			str: STRING
+		do
+			str := resource_value("default", "status_reporting_level")
+			if str.is_integer then
+				Result := str.to_integer
+			else
+				Result := message_type_info
 			end
 		end
 
@@ -588,6 +607,12 @@ feature -- Modification
 			-- set app y position
 		do
 			set_resource_value("default", "app_y_position", v.out)
+		end
+
+	set_status_reporting_level (v: INTEGER) is
+			-- set status_reporting_level
+		do
+			set_resource_value("default", "status_reporting_level", v.out)
 		end
 
 	set_app_maximised (f: BOOLEAN) is

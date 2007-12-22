@@ -41,6 +41,9 @@ feature {NONE}-- Initialization
 			create option_dialog_node_tree_expand_cb
 			create show_line_numbers_check_button
 			create l_ev_horizontal_box_3
+			create l_ev_label_2
+			create option_dialog_status_reporting_level
+			create l_ev_horizontal_box_4
 			create l_ev_cell_1
 			create option_dialog_ok_button
 			create option_dialog_cancel_button
@@ -55,9 +58,12 @@ feature {NONE}-- Initialization
 			l_ev_horizontal_box_2.extend (option_dialog_node_tree_expand_cb)
 			l_ev_horizontal_box_2.extend (show_line_numbers_check_button)
 			l_ev_vertical_box_1.extend (l_ev_horizontal_box_3)
-			l_ev_horizontal_box_3.extend (l_ev_cell_1)
-			l_ev_horizontal_box_3.extend (option_dialog_ok_button)
-			l_ev_horizontal_box_3.extend (option_dialog_cancel_button)
+			l_ev_horizontal_box_3.extend (l_ev_label_2)
+			l_ev_horizontal_box_3.extend (option_dialog_status_reporting_level)
+			l_ev_vertical_box_1.extend (l_ev_horizontal_box_4)
+			l_ev_horizontal_box_4.extend (l_ev_cell_1)
+			l_ev_horizontal_box_4.extend (option_dialog_ok_button)
+			l_ev_horizontal_box_4.extend (option_dialog_cancel_button)
 			
 			create string_constant_set_procedures.make (10)
 			create string_constant_retrieval_functions.make (10)
@@ -74,7 +80,7 @@ feature {NONE}-- Initialization
 			create color_constant_retrieval_functions.make (10)
 			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_1)
 			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_2)
-			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_3)
+			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_4)
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_1.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent dialog_padding_width)
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_1.set_border_width (?))
@@ -93,12 +99,18 @@ feature {NONE}-- Initialization
 			integer_constant_retrieval_functions.extend (agent dialog_border_width)
 			option_dialog_node_tree_expand_cb.set_text ("Show defiinition tree expanded?")
 			show_line_numbers_check_button.set_text ("Show line numbers in ADL source?")
-			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_3.set_padding (?))
+			l_ev_horizontal_box_3.disable_item_expand (l_ev_label_2)
+			l_ev_horizontal_box_3.disable_item_expand (option_dialog_status_reporting_level)
+			l_ev_label_2.set_text ("Parser error reporting level:")
+			option_dialog_status_reporting_level.set_text ("Status Reporting Level")
+			option_dialog_status_reporting_level.set_tooltip ("Select the level of parser messages to display. All levels >= this level displayed.")
+			option_dialog_status_reporting_level.set_minimum_width (200)
+			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_4.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent dialog_padding_width)
-			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_3.set_border_width (?))
+			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_4.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent dialog_border_width)
-			l_ev_horizontal_box_3.disable_item_expand (option_dialog_ok_button)
-			l_ev_horizontal_box_3.disable_item_expand (option_dialog_cancel_button)
+			l_ev_horizontal_box_4.disable_item_expand (option_dialog_ok_button)
+			l_ev_horizontal_box_4.disable_item_expand (option_dialog_cancel_button)
 			l_ev_cell_1.set_minimum_width (100)
 			option_dialog_ok_button.set_text ("OK")
 			option_dialog_ok_button.set_minimum_width (100)
@@ -106,7 +118,7 @@ feature {NONE}-- Initialization
 			option_dialog_cancel_button.set_minimum_width (100)
 			integer_constant_set_procedures.extend (agent set_maximum_width (?))
 			integer_constant_retrieval_functions.extend (agent app_max_width)
-			set_maximum_height (156)
+			set_maximum_height (178)
 			set_title ("ADL Workbench Options")
 			
 			set_all_attributes_using_constants
@@ -114,6 +126,8 @@ feature {NONE}-- Initialization
 				-- Connect events.
 			option_dialog_editor_command_button.select_actions.extend (agent get_editor_command_directory)
 			option_dialog_ok_button.select_actions.extend (agent option_dialog_ok)
+				-- Close the application when an interface close
+				-- request is recieved on `Current'. i.e. the cross is clicked.
 
 				-- Call `user_initialization'.
 			user_initialization
@@ -122,14 +136,16 @@ feature {NONE}-- Initialization
 
 feature -- Access
 
+	option_dialog_status_reporting_level: EV_COMBO_BOX
 	l_ev_cell_1: EV_CELL
-	option_dialog_editor_command_button, option_dialog_ok_button, option_dialog_cancel_button: EV_BUTTON
-	l_ev_horizontal_box_1,
-	l_ev_horizontal_box_2, l_ev_horizontal_box_3: EV_HORIZONTAL_BOX
+	option_dialog_editor_command_button,
+	option_dialog_ok_button, option_dialog_cancel_button: EV_BUTTON
+	l_ev_horizontal_box_1, l_ev_horizontal_box_2,
+	l_ev_horizontal_box_3, l_ev_horizontal_box_4: EV_HORIZONTAL_BOX
 	l_ev_vertical_box_1: EV_VERTICAL_BOX
 	option_dialog_node_tree_expand_cb,
 	show_line_numbers_check_button: EV_CHECK_BUTTON
-	l_ev_label_1: EV_LABEL
+	l_ev_label_1, l_ev_label_2: EV_LABEL
 	option_dialog_editor_command_text: EV_TEXT_FIELD
 
 feature {NONE} -- Implementation

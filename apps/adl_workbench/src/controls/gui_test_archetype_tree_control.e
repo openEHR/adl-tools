@@ -498,7 +498,6 @@ feature {NONE} -- Implementation
 		local
 			gli: EV_GRID_LABEL_ITEM
 			row: EV_GRID_ROW
-			pixmap: EV_PIXMAP
 			ada: ARCH_REP_ARCHETYPE
 			col_csr: INTEGER
 		do
