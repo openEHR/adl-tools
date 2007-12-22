@@ -794,7 +794,7 @@ feature -- Controls
 		do
 			create Result.make_with_text (splash_text)
 			Result.set_title ("About ADL Workbench")
-			Result.set_pixmap (pixmaps ["Ocean logo"])
+			Result.set_pixmap (pixmaps ["openEHR and Ocean"])
 			Result.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 248))
 		end
 

@@ -2,7 +2,7 @@
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-Logo_icon    ICON    DISCARDABLE     "icons/adl_gui_vision2.ico"
+Logo_icon    ICON    DISCARDABLE     "icons/openEHR.ico"
 
 // It should be
 // CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "adl_workbench.exe.manifest"

@@ -46,10 +46,9 @@ feature {NONE} -- Initialization
 		end
 
 	initialize is
-			-- Add the Ocean logo with the text label to its right.
+			-- Add the openEHR and Ocean with the text label to its right.
 		local
 			hb: EV_HORIZONTAL_BOX
-			cell: EV_CELL
 			label: EV_LABEL
 			pixmap: EV_PIXMAP
 		do
@@ -61,11 +60,7 @@ feature {NONE} -- Initialization
 			extend (hb)
 
 			if has_icon_directory then
-				pixmap := pixmaps ["Ocean logo"]
-				create cell
-				cell.extend (pixmap)
-				cell.set_minimum_size (pixmap.width, pixmap.height)
-				hb.extend (cell)
+				hb.extend (pixmaps ["openEHR and Ocean"])
 			end
 
 			create label
@@ -75,10 +70,6 @@ feature {NONE} -- Initialization
 
 			set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 248))
 			propagate_background_color
-
-			if cell /= Void then
-				cell.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 255))
-			end
 		end
 
 feature {NONE} -- Implementation

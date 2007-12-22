@@ -409,7 +409,7 @@ feature -- Access
 			Result.force (["go.ico", Void], "go")
 			Result.force (["stop.ico", Void], "stop")
 
-			Result.force (["Ocean_float.png", Void], "Ocean logo")
+			Result.force (["openEHR_and_Ocean.png", Void], "openEHR and Ocean")
 		ensure
 			attached: Result /= Void
 			not_empty: not Result.is_empty
@@ -437,6 +437,7 @@ feature -- Access
 
 					if file.exists then
 						pixmap.set_with_named_file (file.name)
+						pixmap.set_minimum_size (pixmap.width, pixmap.height)
 					else
 						io.putstring ("Could not find icon " + file.name + "; using default%N")
 					end
@@ -450,7 +451,7 @@ feature -- Access
 			-- create a splash string for the console
 		once
 			create Result.make(0)
-			Result.append ("ADL Workbench (c)2003-2007 Ocean Informatics%N")
+			Result.append ("ADL Workbench (c) 2003-2007 Ocean Informatics%N")
 			Result.append ("%TADL version: " + Current_adl_version + "%N")
 			Result.append ("%TSource SVN - http://svn.openehr.org/ref_impl_eiffel%N%T" + (create {OPENEHR_VERSION}).version + "%N")
 			Result.append ("%TSource license: Mozilla tri-license (http://www.mozilla.org/MPL/boilerplate-1.1/mpl-tri-license-txt)%N")
