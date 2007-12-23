@@ -17,6 +17,11 @@ class SHARED_RESOURCES
 inherit
 	KL_SHARED_FILE_SYSTEM
 
+	BILLBOARD_MESSAGE_TYPES
+		export
+			{NONE} all
+		end
+
 feature -- Definitions
 
 	Default_windows_temp_dir: STRING is "C:\Temp"
@@ -74,6 +79,21 @@ feature -- Access
 			Result := resource_config_file.resource_category_values(a_category)
 		ensure
 			Result_not_void: Result /= Void
+		end
+
+	status_reporting_level: INTEGER
+			-- Level of error reporting required; see BILLBOARD_MESSAGE_TYPES for levels
+			-- all levels >= the one stored will be displayed; Info is the minimum.
+		local
+			str: STRING
+		do
+			str := resource_value ("default", "status_reporting_level")
+
+			if str.is_integer then
+				Result := str.to_integer
+			else
+				Result := message_type_info
+			end
 		end
 
 feature -- Environment
@@ -278,6 +298,12 @@ feature -- Element Change
 			Valid_value: a_value /= Void
 		do
 			resource_config_file.set_resource_value_list(a_category, a_resource_name, a_value)
+		end
+
+	set_status_reporting_level (v: INTEGER) is
+			-- Set `status_reporting_level'.
+		do
+			set_resource_value ("default", "status_reporting_level", v.out)
 		end
 
 feature -- Element Removal
