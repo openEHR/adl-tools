@@ -6,6 +6,7 @@ indexing
 		You should not modify this code by hand, as it will be re-generated every time
 		 modifications are made to the project.
 		 	]"
+	generator: "EiffelBuild"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -99,6 +100,10 @@ feature {NONE}-- Initialization
 			integer_constant_retrieval_functions.extend (agent dialog_border_width)
 			option_dialog_node_tree_expand_cb.set_text ("Show defiinition tree expanded?")
 			show_line_numbers_check_button.set_text ("Show line numbers in ADL source?")
+			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_3.set_padding (?))
+			integer_constant_retrieval_functions.extend (agent dialog_padding_width)
+			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_3.set_border_width (?))
+			integer_constant_retrieval_functions.extend (agent dialog_border_width)
 			l_ev_horizontal_box_3.disable_item_expand (l_ev_label_2)
 			l_ev_horizontal_box_3.disable_item_expand (option_dialog_status_reporting_level)
 			l_ev_label_2.set_text ("Parser error reporting level:")
@@ -118,7 +123,7 @@ feature {NONE}-- Initialization
 			option_dialog_cancel_button.set_minimum_width (100)
 			integer_constant_set_procedures.extend (agent set_maximum_width (?))
 			integer_constant_retrieval_functions.extend (agent app_max_width)
-			set_maximum_height (178)
+			set_maximum_height (198)
 			set_title ("ADL Workbench Options")
 			
 			set_all_attributes_using_constants
@@ -126,8 +131,6 @@ feature {NONE}-- Initialization
 				-- Connect events.
 			option_dialog_editor_command_button.select_actions.extend (agent get_editor_command_directory)
 			option_dialog_ok_button.select_actions.extend (agent option_dialog_ok)
-				-- Close the application when an interface close
-				-- request is recieved on `Current'. i.e. the cross is clicked.
 
 				-- Call `user_initialization'.
 			user_initialization

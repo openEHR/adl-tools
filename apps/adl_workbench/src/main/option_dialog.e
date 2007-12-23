@@ -24,13 +24,6 @@ inherit
 			copy, default_create
 		end
 
-	BILLBOARD_MESSAGE_TYPES
-		export
-			{NONE} all
-		undefine
-			copy, default_create
-		end
-
 	SHARED_UI_RESOURCES
 		export
 			{NONE} all
@@ -49,13 +42,6 @@ feature {NONE} -- Initialization
 		do
 			set_icon_pixmap (adl_workbench_ico)
 			option_dialog_cancel_button.select_actions.extend (agent hide)
-
-			-- status reporting level combo
-			option_dialog_status_reporting_level.select_actions.block
-			populate_ev_combo_from_hash_keys(option_dialog_status_reporting_level, message_type_ids)
-			-- make it display the current value correctly
-			option_dialog_status_reporting_level.select_actions.resume
-
 			set_default_cancel_button (option_dialog_cancel_button)
 			set_default_push_button (option_dialog_ok_button)
 			show_actions.extend (agent option_dialog_editor_command_text.set_focus)
@@ -96,6 +82,15 @@ feature {NONE} -- Implementation
 			else
 				show_line_numbers_check_button.disable_select
 			end
+
+			populate_ev_combo_from_hash_keys (option_dialog_status_reporting_level, message_type_ids)
+
+			option_dialog_status_reporting_level.do_all (agent (li: EV_LIST_ITEM)
+				do
+					if li.text.same_string (message_type_names.item (status_reporting_level)) then
+						li.enable_select
+					end
+				end)
 		end
 
 	option_dialog_ok
@@ -105,7 +100,7 @@ feature {NONE} -- Implementation
 			set_editor_command (option_dialog_editor_command_text.text)
 			set_expand_node_tree (option_dialog_node_tree_expand_cb.is_selected)
 			set_show_line_numbers (show_line_numbers_check_button.is_selected)
-			set_status_reporting_level (message_type_ids.item(option_dialog_status_reporting_level.text))
+			set_status_reporting_level (message_type_ids.item (option_dialog_status_reporting_level.text))
 			save_resources
 			main_window.update_status_area ("wrote config file " + Resource_config_file_name + "%N")
 		end

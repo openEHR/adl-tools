@@ -19,8 +19,6 @@ indexing
 class MESSAGE_BILLBOARD
 
 inherit
-	BILLBOARD_MESSAGE_TYPES
-
 	SHARED_RESOURCES
 		export
 			{NONE} all
