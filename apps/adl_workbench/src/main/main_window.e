@@ -44,13 +44,6 @@ inherit
 			copy, default_create
 		end
 
-	SHARED_UI_RESOURCES
-		export
-			{NONE} all
-		undefine
-			copy, default_create
-		end
-
 	SHARED_ARCHETYPE_SERIALISERS
 		export
 			{NONE} all
