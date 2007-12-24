@@ -5,7 +5,7 @@
 	<key>CFBundleExecutable</key>
 	<string>launcher.sh</string>
 	<key>CFBundleIconFile</key>
-	<string>ADL_Workbench.icns</string>
+	<string>openEHR.icns</string>
 	<key>CFBundleName</key>
 	<string>ADL Workbench</string>
 </dict>
