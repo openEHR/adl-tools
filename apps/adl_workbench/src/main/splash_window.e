@@ -46,7 +46,7 @@ feature {NONE} -- Initialization
 		end
 
 	initialize is
-			-- Add the openEHR and Ocean with the text label to its right.
+			-- Add the openEHR and Ocean logos with the text label to their right.
 		local
 			hb: EV_HORIZONTAL_BOX
 			label: EV_LABEL
