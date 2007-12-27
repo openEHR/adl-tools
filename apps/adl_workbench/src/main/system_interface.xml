@@ -18,10 +18,10 @@
   <Constant>
    <type>PIXMAP</type>
    <Name>adl_workbench_ico</Name>
-   <Value>C:\project\openehr\ref_impl_eiffel\apps\adl_workbench\app\icons\adl_gui_vision2.ico</Value>
+   <Value>C:\project\openehr\ref_impl_eiffel\apps\adl_workbench\app\icons\openEHR.ico</Value>
    <is_absolute>False</is_absolute>
    <Directory>icons</Directory>
-   <Filename>adl_gui_vision2.ico</Filename>
+   <Filename>openEHR.ico</Filename>
   </Constant>
   <Constant>
    <type>FONT</type>

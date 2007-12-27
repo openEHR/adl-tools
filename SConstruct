@@ -7,7 +7,7 @@ EnsureSConsVersion(0, 97, 0)
 env = Environment(ENV = os.environ, tools = ['Eiffel'], toolpath = ['.'])
 
 if env['PLATFORM'] == 'win32': platform = 'windows'
-if env['PLATFORM'] == 'darwin': platform = 'macintosh'
+if env['PLATFORM'] == 'darwin': platform = 'mac_osx'
 
 # Define how to build the parser classes.
 
@@ -36,7 +36,7 @@ else:
 # Define how to build the Eiffel projects.
 
 def eiffel(target, ecf):
-	if platform == 'macintosh': env['ECTARGET'] = target + '_no_precompile'
+	if platform == 'mac_osx': env['ECTARGET'] = target + '_no_precompile'
 	result = env.Eiffel(target, [ecf])
 	Alias(target, result)
 	return result
@@ -95,7 +95,7 @@ if distrib:
 		if len(adl_dotnet_lib) > 2:
 			Install(distrib + 'adl_parser/lib', [adl_dotnet_lib[2], os.path.dirname(str(adl_dotnet_lib[2])) + '/libadl_dotnet_lib.dll'])
 
-	if platform == 'macintosh':
+	if platform == 'mac_osx':
 		if len(adl_workbench) > 2:
 			packagemaker = '/Developer/Tools/packagemaker'
 

@@ -444,7 +444,7 @@ feature -- Access
 			Result.put ("go.ico", "go")
 			Result.put ("stop.ico", "stop")
 
-			Result.put ("Ocean_float.png", "Ocean logo")
+			Result.put ("openEHR_and_Ocean.png", "openEHR and Ocean")
 
 			-- check that icon files exist; for any that don't, output an error message and
 			-- use a blank icon
@@ -494,7 +494,7 @@ feature -- Access
 			-- create a splash string for the console
 		once
 			create Result.make(0)
-			Result.append ("ADL Workbench (c)2003-2007 Ocean Informatics%N")
+			Result.append ("ADL Workbench (c) 2003-2007 Ocean Informatics%N")
 			Result.append ("%TADL version: " + Current_adl_version + "%N")
 			Result.append ("%TSource SVN - http://svn.openehr.org/ref_impl_eiffel%N%T" + (create {OPENEHR_VERSION}).version + "%N")
 			Result.append ("%TSource license: Mozilla tri-license (http://www.mozilla.org/MPL/boilerplate-1.1/mpl-tri-license-txt)%N")

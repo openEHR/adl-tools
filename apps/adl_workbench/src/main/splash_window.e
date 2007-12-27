@@ -40,7 +40,7 @@ feature {NONE} -- Initialization
 			set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 255))
 
 			if has_icon_directory then
-				set_pixmap (pixmaps ["Ocean logo"])
+				set_pixmap (pixmaps ["openEHR and Ocean"])
 			end
 
 			create screen

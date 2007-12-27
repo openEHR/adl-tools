@@ -38,13 +38,6 @@ inherit
 			copy, default_create
 		end
 
-	SHARED_UI_RESOURCES
-		export
-			{NONE} all
-		undefine
-			copy, default_create
-		end
-
 	SHARED_ARCHETYPE_SERIALISERS
 		export
 			{NONE} all
@@ -763,20 +756,19 @@ feature -- Controls
 	About_dialog: EV_INFORMATION_DIALOG is
 			-- about text
 		do
-			create result.make_with_text(splash_text)
-			result.set_background_color(create {EV_COLOR}.make_with_8_bit_rgb(255, 255, 255))
-			result.propagate_background_color
-			result.set_pixmap(pixmaps.item("Ocean logo"))
+			create Result.make_with_text (splash_text)
+			Result.set_title ("About ADL Workbench")
+			Result.set_pixmap (pixmaps ["openEHR and Ocean"])
+			Result.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 248))
 		end
 
 	News_dialog: EV_INFORMATION_DIALOG is
 			-- news dialog
 		do
-			create Result.make_with_text(News_text)
-			result.propagate_background_color
-			set_background_color(create {EV_COLOR}.make_with_8_bit_rgb(255, 255, 255))
-			Result.set_x_position(20)
-			Result.set_y_position(10)
+			create Result.make_with_text (news_text)
+			Result.set_x_position (20)
+			Result.set_y_position (10)
+			Result.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 248))
 		end
 
 feature {EV_DIALOG} -- Implementation

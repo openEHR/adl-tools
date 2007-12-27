@@ -118,7 +118,7 @@ feature -- Access
 		once
 			create Result.put (create {EV_PIXMAP})
 			create a_file_name.make_from_string (icons)
-			a_file_name.set_file_name ("adl_gui_vision2.ico")
+			a_file_name.set_file_name ("openEHR.ico")
 			set_with_named_file (Result.item, a_file_name)
 		end
 

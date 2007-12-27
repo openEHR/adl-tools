@@ -26,13 +26,6 @@ inherit
 			copy, default_create
 		end
 
-	SHARED_UI_RESOURCES
-		export
-			{NONE} all
-		undefine
-			copy, default_create
-		end
-
 feature {NONE} -- Initialization
 
 	user_initialization is

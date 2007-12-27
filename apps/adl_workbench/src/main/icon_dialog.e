@@ -9,13 +9,6 @@ class
 inherit
 	ICON_DIALOG_IMP
 
-	SHARED_UI_RESOURCES
-		export
-			{NONE} all
-		undefine
-			copy, default_create
-		end
-
 feature {NONE} -- Initialization
 
 	user_initialization is

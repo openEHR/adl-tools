@@ -10,7 +10,7 @@ Name "ADL Workbench"
 !define URL www.oceaninformatics.com
 
 # MUI defines
-!define MUI_ICON "..\..\..\app\icons\adl_gui_vision2.ico"
+!define MUI_ICON "..\..\..\app\icons\openEHR.ico"
 !define MUI_FINISHPAGE_NOAUTOCLOSE
 !define MUI_LICENSEPAGE_RADIOBUTTONS
 !define MUI_STARTMENUPAGE_REGISTRY_ROOT HKLM
@@ -18,7 +18,7 @@ Name "ADL Workbench"
 !define MUI_STARTMENUPAGE_REGISTRY_KEY ${REGKEY}
 !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME StartMenuGroup
 !define MUI_STARTMENUPAGE_DEFAULTFOLDER "Ocean Informatics\ADL Workbench"
-!define MUI_UNICON "..\..\..\app\icons\adl_gui_vision2.ico"
+!define MUI_UNICON "..\..\..\app\icons\openEHR.ico"
 !define MUI_WELCOMEFINISHPAGE_BITMAP "ocean.bmp"
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_BITMAP "oceanheader.bmp"
