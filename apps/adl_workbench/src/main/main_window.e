@@ -304,7 +304,7 @@ feature -- Archetype Commands
 			if ara /= Void then
 				if not ara.parse_attempted then
 					do_with_wait_cursor (agent archetype_compiler.build_lineage (ara))
-				elseif not ara.is_valid then
+				elseif not ara.compiler_status.is_empty then
 					parser_status_area.set_text (utf8(ara.compiler_status))
 				end
 
@@ -758,6 +758,11 @@ feature -- Controls
 			create Result.make (Current)
 		end
 
+	compiler_error_control: GUI_COMPILER_ERROR_CONTROL is
+		once
+			create Result.make (Current)
+		end
+
 	Option_dialog: OPTION_DIALOG is
 		once
 			create Result
@@ -957,11 +962,14 @@ feature {NONE} -- Implementation
 	build_gui_update (ara: ARCH_REP_ARCHETYPE) is
 			-- Update GUI with progress on build.
 		do
-			parser_status_area.set_text (utf8 (archetype_compiler.status))
+			parser_status_area.append_text (utf8 (archetype_compiler.status))
 
 			if ara /= Void then
 				archetype_view_tree_control.do_node_for_item (ara, agent archetype_view_tree_control.set_node_pixmap)
 				archetype_test_tree_control.do_row_for_item (ara, agent archetype_test_tree_control.set_row_pixmap)
+				if ara.parse_attempted and not ara.is_valid then
+					compiler_error_control.add_item (ara)
+				end
 			end
 
 			ev_application.process_events

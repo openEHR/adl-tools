@@ -190,7 +190,7 @@ feature {NONE} -- Implementation
 		do
 			if not is_interrupted then
 				if force or not ara.is_parsed then
-					status.append ("------------- compiling " + ara.id.value + " -------------%N")
+					status := "------------- compiling " + ara.id.value + " -------------%N"
 					call_visual_update_action (ara)
 					archetype_parser.set_target (ara)
 					archetype_parser.parse_archetype

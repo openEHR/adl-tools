@@ -50,6 +50,9 @@ inherit
 		end
 
 	STRING_UTILITIES
+		export
+			{NONE} all
+		end
 
 create
 	make

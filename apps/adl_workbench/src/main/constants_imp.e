@@ -93,16 +93,16 @@ feature -- Access
 			create Result.put (350)
 		end
 
-	app_min_height: INTEGER is
-			-- `Result' is INTEGER constant named `app_min_height'.
+	desc_label_width: INTEGER is
+			-- `Result' is INTEGER constant named `desc_label_width'.
 		do
-			Result := app_min_height_cell.item
+			Result := desc_label_width_cell.item
 		end
 
-	app_min_height_cell: CELL [INTEGER] is
-			--`Result' is once access to a cell holding vale of `app_min_height'.
+	desc_label_width_cell: CELL [INTEGER] is
+			--`Result' is once access to a cell holding vale of `desc_label_width'.
 		once
-			create Result.put (350)
+			create Result.put (70)
 		end
 
 	label_font: EV_FONT is
@@ -122,16 +122,16 @@ feature -- Access
 			Result.item.preferred_families.extend ("System")
 		end
 
-	table_row_spacing: INTEGER is
-			-- `Result' is INTEGER constant named `table_row_spacing'.
+	min_list_height: INTEGER is
+			-- `Result' is INTEGER constant named `min_list_height'.
 		do
-			Result := table_row_spacing_cell.item
+			Result := min_list_height_cell.item
 		end
 
-	table_row_spacing_cell: CELL [INTEGER] is
-			--`Result' is once access to a cell holding vale of `table_row_spacing'.
+	min_list_height_cell: CELL [INTEGER] is
+			--`Result' is once access to a cell holding vale of `min_list_height'.
 		once
-			create Result.put (4)
+			create Result.put (50)
 		end
 
 	source_notebook_min_width: INTEGER is
@@ -146,28 +146,28 @@ feature -- Access
 			create Result.put (600)
 		end
 
-	border_width: INTEGER is
-			-- `Result' is INTEGER constant named `border_width'.
+	app_initial_width: INTEGER is
+			-- `Result' is INTEGER constant named `app_initial_width'.
 		do
-			Result := border_width_cell.item
+			Result := app_initial_width_cell.item
 		end
 
-	border_width_cell: CELL [INTEGER] is
-			--`Result' is once access to a cell holding vale of `border_width'.
+	app_initial_width_cell: CELL [INTEGER] is
+			--`Result' is once access to a cell holding vale of `app_initial_width'.
 		once
-			create Result.put (4)
+			create Result.put (1024)
 		end
 
-	app_max_width: INTEGER is
-			-- `Result' is INTEGER constant named `app_max_width'.
+	app_min_height: INTEGER is
+			-- `Result' is INTEGER constant named `app_min_height'.
 		do
-			Result := app_max_width_cell.item
+			Result := app_min_height_cell.item
 		end
 
-	app_max_width_cell: CELL [INTEGER] is
-			--`Result' is once access to a cell holding vale of `app_max_width'.
+	app_min_height_cell: CELL [INTEGER] is
+			--`Result' is once access to a cell holding vale of `app_min_height'.
 		once
-			create Result.put (2000)
+			create Result.put (350)
 		end
 
 	min_terms_status_height: INTEGER is
@@ -230,18 +230,6 @@ feature -- Access
 			create Result.put (35)
 		end
 
-	app_initial_width: INTEGER is
-			-- `Result' is INTEGER constant named `app_initial_width'.
-		do
-			Result := app_initial_width_cell.item
-		end
-
-	app_initial_width_cell: CELL [INTEGER] is
-			--`Result' is once access to a cell holding vale of `app_initial_width'.
-		once
-			create Result.put (1024)
-		end
-
 	dialog_border_width: INTEGER is
 			-- `Result' is INTEGER constant named `dialog_border_width'.
 		do
@@ -278,16 +266,28 @@ feature -- Access
 			create Result.put (18)
 		end
 
-	min_list_height: INTEGER is
-			-- `Result' is INTEGER constant named `min_list_height'.
+	table_row_spacing: INTEGER is
+			-- `Result' is INTEGER constant named `table_row_spacing'.
 		do
-			Result := min_list_height_cell.item
+			Result := table_row_spacing_cell.item
 		end
 
-	min_list_height_cell: CELL [INTEGER] is
-			--`Result' is once access to a cell holding vale of `min_list_height'.
+	table_row_spacing_cell: CELL [INTEGER] is
+			--`Result' is once access to a cell holding vale of `table_row_spacing'.
 		once
-			create Result.put (50)
+			create Result.put (4)
+		end
+
+	icons: STRING is
+			-- `Result' is DIRECTORY constant named `icons'.
+		do
+			Result := icons_cell.item
+		end
+
+	icons_cell: CELL [STRING] is
+			--`Result' is once access to a cell holding vale of `icons'.
+		once
+			create Result.put ("C:\project\openehr\ref_impl_eiffel\apps\adl_workbench\app\icons")
 		end
 
 	source_notebook_min_height: INTEGER is
@@ -314,16 +314,16 @@ feature -- Access
 			create Result.put (55)
 		end
 
-	icons: STRING is
-			-- `Result' is DIRECTORY constant named `icons'.
+	border_width: INTEGER is
+			-- `Result' is INTEGER constant named `border_width'.
 		do
-			Result := icons_cell.item
+			Result := border_width_cell.item
 		end
 
-	icons_cell: CELL [STRING] is
-			--`Result' is once access to a cell holding vale of `icons'.
+	border_width_cell: CELL [INTEGER] is
+			--`Result' is once access to a cell holding vale of `border_width'.
 		once
-			create Result.put ("C:\project\openehr\ref_impl_eiffel\apps\adl_workbench\app\icons")
+			create Result.put (4)
 		end
 
 	editable_colour: EV_COLOR is
@@ -475,16 +475,16 @@ feature -- Access
 			create Result.put (500)
 		end
 
-	desc_label_width: INTEGER is
-			-- `Result' is INTEGER constant named `desc_label_width'.
+	app_max_width: INTEGER is
+			-- `Result' is INTEGER constant named `app_max_width'.
 		do
-			Result := desc_label_width_cell.item
+			Result := app_max_width_cell.item
 		end
 
-	desc_label_width_cell: CELL [INTEGER] is
-			--`Result' is once access to a cell holding vale of `desc_label_width'.
+	app_max_width_cell: CELL [INTEGER] is
+			--`Result' is once access to a cell holding vale of `app_max_width'.
 		once
-			create Result.put (70)
+			create Result.put (2000)
 		end
 
 feature -- Access

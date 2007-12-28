@@ -1,9 +1,7 @@
 indexing
 	component:   "openEHR Archetype Project"
-	description: "[
-				 Validator of archeype paths.
-		         ]"
-	keywords:    "path"
+	description: "EV_GRID control for compiler error output"
+	keywords:    "ADL"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
@@ -13,58 +11,107 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class ARCHETYPE_PATH_ANALYSER
+
+class GUI_COMPILER_ERROR_CONTROL
 
 inherit
-	ARCHETYPE_TERM_CODE_TOOLS
+	SHARED_ARCHETYPE_DIRECTORY
 		export
-			{NONE} all;
-			{ANY} valid_concept_code
+			{NONE} all
 		end
 
-feature -- Initialisation
-
-	set_from_path (a_path: OG_PATH) is
-			-- create from an OG_PATH
-		require
-			a_path_valid: a_path /= Void
-		do
-			target := a_path
-			calculate_level
+	SHARED_UI_RESOURCES
+		export
+			{NONE} all
 		end
 
-	set_from_string (a_path: STRING) is
-			-- create from a STRING
+	STRING_UTILITIES
+		export
+			{NONE} all
+		end
+
+create
+	make
+
+feature -- Definitions
+
+feature {NONE} -- Initialisation
+
+	make (a_main_window: MAIN_WINDOW)
+			-- create control
 		require
-			a_path_valid: a_path /= Void
+			a_main_window /= Void
 		do
-			create target.make_from_string(a_path)
-			calculate_level
+			gui := a_main_window
+			grid := gui.compiler_output_grid
+			grid.enable_tree
+			grid.insert_new_column (1)
+			grid.insert_new_column (2)
+			grid.column (1).set_title ("Error")
+			grid.column (2).set_title ("Message")
 		end
 
 feature -- Access
 
-	target: OG_PATH
-			-- differential archetype
 
-	level: INTEGER
+feature -- Status Setting
+
+	is_expanded: BOOLEAN
+			-- True if archetype tree is in expanded state
+
+feature -- Commands
+
+	clear is
+			-- wipe out content from controls
+   		local
+			gli: EV_GRID_LABEL_ITEM
+		do
+			grid.wipe_out
+
+ 			-- Populate first column with archetype tree.
+			create gli.make_with_text ("Errors")
+			grid.set_item (1, 1, gli)
+			gli.enable_select
+		end
+
+	add_item (an_archetype: ARCH_REP_ARCHETYPE) is
+			-- Add a node representing the errors or warnings of the archetype
+		require
+			an_archetype /= Void
+		local
+			gli: EV_GRID_LABEL_ITEM
+			row: EV_GRID_ROW
+			pixmap: EV_PIXMAP
+		do
+			grid.insert_new_row (grid.row_count+1)
+			row := grid.row (grid.row_count)
+			create gli.make_with_text (utf8 (an_archetype.id.as_string))
+			row.set_item (1, gli)
+			pixmap := pixmaps [an_archetype.group_name]
+			if pixmap /= Void then
+				gli.set_pixmap (pixmap)
+			end
+
+			row.insert_subrow (row.subrow_count + 1)
+			row := row.subrow (row.subrow_count)
+			row.set_data (an_archetype)
+			create gli.make_with_text (utf8 (an_archetype.compiler_status))
+			row.set_item (2, gli)
+
+			grid.column (1).resize_to_content
+			grid.column (2).resize_to_content
+		end
 
 feature {NONE} -- Implementation
 
-	calculate_level is
-			-- get the deepest level of this path, determined from the depth of the object codes
-		do
-			from
-				target.start
-			until
-				target.off
-			loop
-				if is_valid_code (target.item.object_id) then
-					level := level.max(specialisation_depth_from_code (target.item.object_id))
-				end
-				target.forth
-			end
-		end
+	gui: MAIN_WINDOW
+			-- main window of system
+
+	grid: EV_GRID
+			-- reference to MAIN_WINDOW.compiler_output grid
+
+invariant
+	grid_attached: grid /= Void
 
 end
 
@@ -83,7 +130,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is archetype_local_validator.e.
+--| The Original Code is gui_compiler_error_control.e
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2007

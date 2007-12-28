@@ -184,7 +184,9 @@ feature {NONE}-- Initialization
 			create l_ev_frame_6
 			create l_ev_multi_column_list_2
 			create l_ev_frame_7
+			create l_ev_notebook_1
 			create parser_status_area
+			create compiler_output_grid
 			create test_view_area
 			create l_ev_horizontal_box_12
 			create archetype_test_tree_grid
@@ -351,7 +353,9 @@ feature {NONE}-- Initialization
 			l_ev_vertical_box_9.extend (l_ev_frame_6)
 			l_ev_frame_6.extend (l_ev_multi_column_list_2)
 			l_ev_horizontal_box_9.extend (l_ev_frame_7)
-			total_view_area.extend (parser_status_area)
+			total_view_area.extend (l_ev_notebook_1)
+			l_ev_notebook_1.extend (parser_status_area)
+			l_ev_notebook_1.extend (compiler_output_grid)
 			main_nb.extend (test_view_area)
 			test_view_area.extend (l_ev_horizontal_box_12)
 			l_ev_horizontal_box_12.extend (archetype_test_tree_grid)
@@ -475,8 +479,8 @@ feature {NONE}-- Initialization
 			integer_constant_retrieval_functions.extend (agent app_min_width)
 			integer_constant_set_procedures.extend (agent total_view_area.set_minimum_height (?))
 			integer_constant_retrieval_functions.extend (agent app_min_height)
-			total_view_area.disable_item_expand (arch_notebook)
-			total_view_area.enable_item_expand (parser_status_area)
+			total_view_area.enable_item_expand (arch_notebook)
+			total_view_area.disable_item_expand (l_ev_notebook_1)
 			integer_constant_set_procedures.extend (agent arch_notebook.set_minimum_width (?))
 			integer_constant_retrieval_functions.extend (agent app_min_width)
 			integer_constant_set_procedures.extend (agent arch_notebook.set_minimum_height (?))
@@ -832,6 +836,8 @@ feature {NONE}-- Initialization
 			l_ev_frame_5.set_text ("Primitive Node Counts")
 			l_ev_frame_6.set_text ("Reference Model Node Counts")
 			l_ev_frame_7.set_text ("Ontology")
+			l_ev_notebook_1.set_item_text (parser_status_area, "Status")
+			l_ev_notebook_1.set_item_text (compiler_output_grid, "Output")
 			parser_status_area.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
 			parser_status_area.set_minimum_width (0)
 			integer_constant_set_procedures.extend (agent parser_status_area.set_minimum_height (?))
@@ -978,27 +984,28 @@ feature -- Access
 	tree_domain_radio_button,
 	tree_technical_radio_button, tree_inheritance_radio_button, tree_flat_view_radio_button: EV_RADIO_BUTTON
 	main_nb,
-	arch_notebook, source_notebook, ontology_notebook: EV_NOTEBOOK
-	archetype_file_tree, parsed_archetype_tree: EV_TREE
+	arch_notebook, source_notebook, ontology_notebook, l_ev_notebook_1: EV_NOTEBOOK
+	archetype_file_tree,
+	parsed_archetype_tree: EV_TREE
 	explorer_view_area: EV_HORIZONTAL_SPLIT_AREA
-	total_view_area,
-	info_view_area, test_view_area: EV_VERTICAL_SPLIT_AREA
-	action_bar, author_lang_term_hbox, l_ev_horizontal_box_1,
-	arch_desc_status_hbox, l_ev_horizontal_box_2, l_ev_horizontal_box_3, arch_desc_details_hbox,
-	l_ev_horizontal_box_4, l_ev_horizontal_box_5, l_ev_horizontal_box_6, l_ev_horizontal_box_7,
-	l_ev_horizontal_box_8, arch_desc_copyright_hbox, parsed_archetype_tree_view, parsed_archetype_path_view,
-	l_ev_horizontal_box_9, l_ev_horizontal_box_10, l_ev_horizontal_box_11, l_ev_horizontal_box_12,
-	l_ev_horizontal_box_13: EV_HORIZONTAL_BOX
-	viewer_vbox, arch_desc_area_vbox, arch_desc_auth_hbox, l_ev_vertical_box_1,
-	arch_desc_contrib_hbox, terminology_vbox, lang_vbox, l_ev_vertical_box_2, l_ev_vertical_box_3,
-	l_ev_vertical_box_4, l_ev_vertical_box_5, l_ev_vertical_box_6, tree_controls, l_ev_vertical_box_7,
-	l_ev_vertical_box_8, path_controls, arch_stats_vbox, l_ev_vertical_box_9, l_ev_vertical_box_10: EV_VERTICAL_BOX
+	total_view_area, info_view_area, test_view_area: EV_VERTICAL_SPLIT_AREA
+	action_bar,
+	author_lang_term_hbox, l_ev_horizontal_box_1, arch_desc_status_hbox, l_ev_horizontal_box_2,
+	l_ev_horizontal_box_3, arch_desc_details_hbox, l_ev_horizontal_box_4, l_ev_horizontal_box_5,
+	l_ev_horizontal_box_6, l_ev_horizontal_box_7, l_ev_horizontal_box_8, arch_desc_copyright_hbox,
+	parsed_archetype_tree_view, parsed_archetype_path_view, l_ev_horizontal_box_9, l_ev_horizontal_box_10,
+	l_ev_horizontal_box_11, l_ev_horizontal_box_12, l_ev_horizontal_box_13: EV_HORIZONTAL_BOX
+	viewer_vbox,
+	arch_desc_area_vbox, arch_desc_auth_hbox, l_ev_vertical_box_1, arch_desc_contrib_hbox,
+	terminology_vbox, lang_vbox, l_ev_vertical_box_2, l_ev_vertical_box_3, l_ev_vertical_box_4,
+	l_ev_vertical_box_5, l_ev_vertical_box_6, tree_controls, l_ev_vertical_box_7, l_ev_vertical_box_8,
+	path_controls, arch_stats_vbox, l_ev_vertical_box_9, l_ev_vertical_box_10: EV_VERTICAL_BOX
+	compiler_output_grid,
 	archetype_test_tree_grid: EV_GRID
-	l_ev_label_1,
-	adl_version_label, language_label, arch_desc_auth_orig_auth_label, arch_desc_status_label,
-	arch_desc_original_language_label, arch_desc_auth_contrib_label, arch_translations_languages_label,
-	l_ev_label_2, l_ev_label_3, l_ev_label_4, arch_desc_purpose_label, arch_desc_use_label,
-	arch_desc_misuse_label, arch_desc_keywords_label, arch_desc_resource_package_label,
+	l_ev_label_1, adl_version_label, language_label, arch_desc_auth_orig_auth_label,
+	arch_desc_status_label, arch_desc_original_language_label, arch_desc_auth_contrib_label,
+	arch_translations_languages_label, l_ev_label_2, l_ev_label_3, l_ev_label_4, arch_desc_purpose_label,
+	arch_desc_use_label, arch_desc_misuse_label, arch_desc_keywords_label, arch_desc_resource_package_label,
 	arch_desc_resource_orig_res_label, arch_desc_copyright_label, l_ev_label_5, l_ev_label_6,
 	l_ev_label_7: EV_LABEL
 	file_menu_open, file_menu_parse, file_menu_edit, file_menu_save_as,
