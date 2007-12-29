@@ -45,6 +45,8 @@ feature {NONE} -- Initialisation
 			gui := a_main_window
 			grid := gui.compiler_output_grid
 			grid.enable_tree
+			grid.disable_row_height_fixed
+			grid.pointer_double_press_item_actions.extend (agent on_double_click)
 			grid.insert_new_column (1)
 			grid.insert_new_column (2)
 			grid.column (1).set_title ("Error")
@@ -86,17 +88,19 @@ feature -- Commands
 			grid.insert_new_row (grid.row_count+1)
 			row := grid.row (grid.row_count)
 			create gli.make_with_text (utf8 (an_archetype.id.as_string))
-			row.set_item (1, gli)
 			pixmap := pixmaps [an_archetype.group_name]
 			if pixmap /= Void then
 				gli.set_pixmap (pixmap)
 			end
+			gli.set_data (an_archetype)
+			row.set_item (1, gli)
 
 			row.insert_subrow (row.subrow_count + 1)
 			row := row.subrow (row.subrow_count)
 			row.set_data (an_archetype)
 			create gli.make_with_text (utf8 (an_archetype.compiler_status))
 			row.set_item (2, gli)
+			row.set_height (gli.text_height)
 
 			grid.column (1).resize_to_content
 			grid.column (2).resize_to_content
@@ -110,8 +114,25 @@ feature {NONE} -- Implementation
 	grid: EV_GRID
 			-- reference to MAIN_WINDOW.compiler_output grid
 
+	on_double_click (grid_x_pos, grid_y_pos, a_button_index: INTEGER; item: EV_GRID_ITEM) is
+			--
+		local
+			gli: EV_GRID_LABEL_ITEM
+			ara: ARCH_REP_ARCHETYPE
+		do
+			gli ?= item
+			if gli /= Void and gli.column.index = 1 then
+				ara ?= gli.data
+				if ara /= Void then
+					archetype_directory.set_selected_item (ara)
+					gui.archetype_view_tree_select_node
+				end
+			end
+		end
+
+
 invariant
-	grid_attached: grid /= Void
+	Grid_attached: grid /= Void
 
 end
 

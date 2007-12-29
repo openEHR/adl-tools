@@ -194,7 +194,7 @@ feature {NONE} -- Implementation
 					call_visual_update_action (ara)
 					archetype_parser.set_target (ara)
 					archetype_parser.parse_archetype
-					status.append (archetype_parser.status)
+					status := (archetype_parser.status)
 
 					if archetype_parser.archetype_valid then
 						archetype_parser.save_archetype_differential

@@ -427,6 +427,13 @@ feature -- Archetype Commands
 			archetype_view_tree_control.display_details_of_selected_item_after_delay
 		end
 
+	archetype_view_tree_select_node is
+			-- Display node of `archetype_file_tree' corresponding to a selected archetype in the ARCH_DIRECTORY
+		do
+			archetype_view_tree_control.make_node_visible (archetype_directory.selected_item)
+			parse_archetype
+		end
+
 	node_map_shrink_tree_one_level is
 		do
 			if archetype_directory.selected_archetype.is_valid then

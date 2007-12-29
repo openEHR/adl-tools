@@ -60,14 +60,7 @@ feature -- Commands
 			gui_file_tree.wipe_out
  			create gui_tree_item_stack.make (0)
  			archetype_directory.do_all (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
-
-			do_node_for_item (archetype_directory.selected_archetype, agent (node: EV_TREE_NODE)
-				require
-					node_attached: node /= Void
-				do
-					gui_file_tree.ensure_item_visible (node)
-					node.enable_select
-				end)
+			make_node_visible(archetype_directory.selected_archetype)
 		end
 
 	display_details_of_selected_item_after_delay
@@ -136,6 +129,18 @@ feature -- Commands
 			if node /= Void then
 				action.call ([node])
 			end
+		end
+
+	make_node_visible (an_item: ARCH_REP_ITEM) is
+			-- make node of currently selected archetype visible
+		do
+			do_node_for_item (an_item, agent (node: EV_TREE_NODE)
+				require
+					node_attached: node /= Void
+				do
+					gui_file_tree.ensure_item_visible (node)
+					node.enable_select
+				end)
 		end
 
 feature {NONE} -- Implementation
