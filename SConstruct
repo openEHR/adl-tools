@@ -1,4 +1,4 @@
-import os
+import os, re, subprocess
 from Eiffel import files
 
 EnsurePythonVersion(2, 4)
@@ -35,9 +35,10 @@ else:
 
 # Define how to build the Eiffel projects.
 
-def eiffel(target, ecf):
-	if platform == 'mac_osx': env['ECTARGET'] = target + '_no_precompile'
-	result = env.Eiffel(target, [ecf])
+def eiffel(target, ecf, ectarget = None):
+	if ectarget == None: ectarget = target
+	if platform == 'mac_osx': ectarget += '_no_precompile'
+	result = env.Eiffel(target, [ecf], ECTARGET = ectarget)
 	Alias(target, result)
 	return result
 
@@ -47,7 +48,7 @@ eiffel('adl_parser_test',  'components/adl_parser/test/app/adl_parser_test.ecf')
 eiffel('common_libs_test', 'libraries/common_libs/test/app/common_libs_test.ecf')
 
 if platform == 'windows':
-	adl_dotnet_lib = eiffel('adl_dotnet_lib.dll', 'components/adl_parser/lib/dotnet_dll/adl_dotnet_lib.ecf')
+	adl_parser = eiffel('adl_dotnet_lib.dll', 'components/adl_parser/lib/dotnet_dll/adl_dotnet_lib.ecf', 'adl_dotnet_lib')
 
 # Define how to put installers, etc., into the distribution directory.
 
@@ -92,8 +93,10 @@ if distrib:
 
 				env.Command(distrib + 'tools/OceanADLWorkbenchInstall.exe', sources, [command])
 
-		if len(adl_dotnet_lib) > 2:
-			Install(distrib + 'adl_parser/lib', [adl_dotnet_lib[2], os.path.dirname(str(adl_dotnet_lib[2])) + '/libadl_dotnet_lib.dll'])
+		if len(adl_parser) > 2:
+			unmanaged_dll = os.path.dirname(str(adl_parser[2])) + '/lib' + os.path.basename(str(adl_parser[2]))
+			SideEffect(unmanaged_dll, adl_parser[2])
+			Install(distrib + 'adl_parser/dotnet', [adl_parser[2], unmanaged_dll])
 
 	if platform == 'mac_osx':
 		if len(adl_workbench) > 2:
@@ -146,3 +149,52 @@ if distrib:
 				]
 
 				env.Command(distrib + 'tools/ADL Workbench.pkg/Contents/Archive.pax.gz', sources, [command])
+
+	# Set the Subversion revision number as the final part of the file version string.
+
+	if not env.Detect('svnversion'):
+		print 'WARNING! The svnversion command is missing from your path: cannot set the revision part of the version number.'
+	else:
+		revision = re.match(r'\d+', os.popen('svnversion').read())
+
+		if revision:
+			revision = revision.group()
+
+			def rename_file(src, dst):
+				if os.path.exists(src):
+					if os.path.exists(dst): os.remove(dst)
+					os.rename(src, dst)
+
+			def set_revision_from_subversion(target, source, env):
+				global backed_up_files
+				backed_up_files = []
+				substitutions = [['libraries/version/openehr_version.e', r'\b(revision:\s*INTEGER\s*=\s*)\d+']]
+
+				if target == adl_workbench and platform == 'windows':
+					substitutions += [['apps/adl_workbench/app/adl_workbench.rc', r'(#define\s+VER_\S+\s+"?\d+[,.]\d+[,.]\d+[,.])\d+']]
+
+				if target == adl_parser:
+					substitutions += [['components/adl_parser/lib/dotnet_dll/adl_dotnet_lib.ecf', r'(<version\s+major="\d+"\s+minor="\d+"\s+release="\d+"\s+build=")\d+']]
+
+				for filename, pattern in substitutions:
+					bak = filename + '.bak'
+					rename_file(filename, bak)
+					backed_up_files.append(filename)
+
+					f = open(bak, 'r')
+					try: s = f.read()
+					finally: f.close()
+
+					s = re.sub(pattern, r'\g<1>' + revision, s)
+					f = open(filename, 'w')
+					try: f.write(s)
+					finally: f.close()
+
+			def restore_backed_up_files(target, source, env):
+				global backed_up_files
+
+				for filename in backed_up_files:
+					rename_file(filename + '.bak', filename)
+
+			env.AddPreAction([adl_workbench, adl_parser], env.Action(set_revision_from_subversion, None))
+			env.AddPostAction([adl_workbench, adl_parser], env.Action(restore_backed_up_files, None))

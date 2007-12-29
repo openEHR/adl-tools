@@ -90,7 +90,7 @@ feature -- Definitions
 			-- version of openEHR implem-dev repository containing
 			-- this software
 		once
-			Result := (create {OPENEHR_VERSION}).version
+			Result := (create {OPENEHR_VERSION}).last_changed
 		end
 
 feature -- Access
