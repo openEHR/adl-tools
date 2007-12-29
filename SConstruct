@@ -96,7 +96,7 @@ if distrib:
 		if len(adl_parser) > 2:
 			unmanaged_dll = os.path.dirname(str(adl_parser[2])) + '/lib' + os.path.basename(str(adl_parser[2]))
 			SideEffect(unmanaged_dll, adl_parser[2])
-			Install(distrib + 'adl_parser/dotnet', [adl_parser[2], unmanaged_dll])
+			Install(distrib + 'adl_parser/lib', [adl_parser[2], unmanaged_dll])
 
 	if platform == 'mac_osx':
 		if len(adl_workbench) > 2:
