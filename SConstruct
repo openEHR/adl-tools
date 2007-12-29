@@ -1,4 +1,4 @@
-import os
+import os, re, subprocess
 from Eiffel import files
 
 EnsurePythonVersion(2, 4)
@@ -94,7 +94,7 @@ if distrib:
 				env.Command(distrib + 'tools/OceanADLWorkbenchInstall.exe', sources, [command])
 
 		if len(adl_parser) > 2:
-			unmanaged_dll = os.path.dirname(str(adl_parser[2])) + '/libOceanInformatics.AdlParser.dll'
+			unmanaged_dll = os.path.dirname(str(adl_parser[2])) + '/lib' + os.path.basename(str(adl_parser[2]))
 			SideEffect(unmanaged_dll, adl_parser[2])
 			Install(distrib + 'adl_parser/dotnet', [adl_parser[2], unmanaged_dll])
 
@@ -149,3 +149,52 @@ if distrib:
 				]
 
 				env.Command(distrib + 'tools/ADL Workbench.pkg/Contents/Archive.pax.gz', sources, [command])
+
+	# Set the Subversion revision number as the final part of the file version string.
+
+	if not env.Detect('svnversion'):
+		print 'WARNING! The svnversion command is missing from your path: cannot set the revision part of the version number.'
+	else:
+		revision = re.match(r'\d+', os.popen('svnversion').read())
+
+		if revision:
+			revision = revision.group()
+
+			def rename_file(src, dst):
+				if os.path.exists(src):
+					if os.path.exists(dst): os.remove(dst)
+					os.rename(src, dst)
+
+			def set_revision_from_subversion(target, source, env):
+				global backed_up_files
+				backed_up_files = []
+				substitutions = [['libraries/version/openehr_version.e', r'\b(revision:\s*INTEGER\s*=\s*)\d+']]
+
+				if target == adl_workbench and platform == 'windows':
+					substitutions += [['apps/adl_workbench/app/adl_workbench.rc', r'(#define\s+VER_\S+\s+"?\d+[,.]\d+[,.]\d+[,.])\d+']]
+
+				if target == adl_parser:
+					substitutions += [['components/adl_parser/lib/dotnet_dll/adl_parser.ecf', r'(<version\s+major="\d+"\s+minor="\d+"\s+release="\d+"\s+build=")\d+']]
+
+				for filename, pattern in substitutions:
+					bak = filename + '.bak'
+					rename_file(filename, bak)
+					backed_up_files.append(filename)
+
+					f = open(bak, 'r')
+					try: s = f.read()
+					finally: f.close()
+
+					s = re.sub(pattern, r'\g<1>' + revision, s)
+					f = open(filename, 'w')
+					try: f.write(s)
+					finally: f.close()
+
+			def restore_backed_up_files(target, source, env):
+				global backed_up_files
+
+				for filename in backed_up_files:
+					rename_file(filename + '.bak', filename)
+
+			env.AddPreAction([adl_workbench, adl_parser], env.Action(set_revision_from_subversion, None))
+			env.AddPostAction([adl_workbench, adl_parser], env.Action(restore_backed_up_files, None))
