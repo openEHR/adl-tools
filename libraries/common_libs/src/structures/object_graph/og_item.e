@@ -93,6 +93,11 @@ feature -- Status Report
 			Result := parent = Void
 		end
 
+	is_leaf: BOOLEAN is
+			-- True if this object is a leaf object
+		deferred
+		end
+
 feature -- Modification
 
 	set_node_id(a_node_id:STRING) is

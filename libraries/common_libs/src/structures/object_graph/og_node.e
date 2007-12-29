@@ -76,6 +76,12 @@ feature -- Access
 
 feature -- Status Report
 
+	is_leaf: BOOLEAN is
+			-- true if no children
+		do
+			Result := children.is_empty
+		end
+
 	has_children: BOOLEAN is
 			-- true if any children
 		do

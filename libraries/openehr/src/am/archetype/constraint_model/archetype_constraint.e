@@ -59,6 +59,12 @@ feature -- Source Control
 
 feature -- Status Report
 
+	is_leaf: BOOLEAN is
+			-- True if this node is a terminal node
+		do
+			Result := representation.is_leaf
+		end
+
 	is_addressable: BOOLEAN is
 			-- True if this node has a non-anonymous node_id
 		do

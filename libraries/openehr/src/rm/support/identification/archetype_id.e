@@ -278,7 +278,7 @@ feature -- Status Report
 	valid_id (an_id: STRING):BOOLEAN is
 			-- Does `an_id' have the valid basic form, containing 2 axis separators and at least 2 section separators?
 		do
-			Result := an_id.occurrences (axis_separator) = 2 and an_id.occurrences (section_separator) >= 2
+			Result := id_pattern_regex.matches (an_id)
 		end
 
 feature -- Factory
@@ -315,6 +315,17 @@ feature -- Output
 		ensure
 			attached: Result /= Void
 			not_empty: not Result.is_empty
+		end
+
+feature {NONE} -- Implementation
+
+	id_pattern_regex: LX_DFA_REGULAR_EXPRESSION
+			-- Pattern matcher for archetype ids.
+		once
+			-- note that the final [a-z]* should be removed one day to prevent archaic naming like .v1draft
+			create Result.compile_case_insensitive ("^[a-z][a-z0-9()#-_]*\.*[a-z][a-z0-9()#-_]*\.*v[0-9]+[a-z]*$")
+		ensure
+			attached: Result /= Void
 		end
 
 end

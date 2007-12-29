@@ -230,7 +230,7 @@ feature {NONE} -- Implementation
 			err_str: STRING
 		do
 			create path_analyser
-			path_list := target.physical_paths
+			path_list := target.physical_leaf_paths
 			from
 				path_list.start
 			until

@@ -62,11 +62,12 @@ feature {NONE} -- Implementation
 
 						if (create {RAW_FILE}.make (full_path)).is_directory then
 							dir_name_index.extend (fn)
-						else
+						elseif adl_flat_filename_pattern_regex.matches (fn) then
 							ara := create_repository_archetype_descriptor (root_path, full_path)
-
 							if ara /= Void then
 								arch_index.extend (ara)
+							else
+								post_error (Current, "build_directory", "invalid_filename_e1", <<fn>>)
 							end
 						end
 					end
@@ -106,6 +107,14 @@ feature {NONE} -- Implementation
    				shifter.remove_tail (1)
    				io.put_string(shifter + "<---%N")
    			end
+		end
+
+	adl_flat_filename_pattern_regex: LX_DFA_REGULAR_EXPRESSION
+			-- Pattern matcher for filenames ending in ".adl".
+		once
+			create Result.compile_case_insensitive (".*\." + Archetype_flat_file_extension + "$")
+		ensure
+			attached: Result /= Void
 		end
 
 	shifter: STRING

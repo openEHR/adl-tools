@@ -79,19 +79,19 @@ feature -- Commands
 			list_row: EV_MULTI_COLUMN_LIST_ROW
 			p_paths, l_paths: ARRAYED_LIST[STRING]
 			c_o: C_OBJECT
-			c_l_o: C_LEAF_OBJECT
-			c_r: CONSTRAINT_REF
-			c_c_o: C_COMPLEX_OBJECT
-			is_logical_leaf, all_selected: BOOLEAN
 		do
 			mcl := path_list
 			mcl.wipe_out
 			mcl.set_column_titles (path_control_column_names)
 
 			if archetype_directory.has_selected_archetype then
-				p_paths := archetype_directory.selected_archetype.archetype_differential.physical_paths
-				l_paths := archetype_directory.selected_archetype.archetype_differential.logical_paths (current_language)
-				all_selected := filter_combo.text.is_equal ("All")
+				if filter_combo.text.is_equal ("All") then
+					p_paths := archetype_directory.selected_archetype.archetype_differential.physical_paths
+					l_paths := archetype_directory.selected_archetype.archetype_differential.logical_paths (current_language, False)
+				else
+					p_paths := archetype_directory.selected_archetype.archetype_differential.physical_leaf_paths
+					l_paths := archetype_directory.selected_archetype.archetype_differential.logical_paths (current_language, True)
+				end
 
 				from
 					p_paths.start
@@ -101,26 +101,15 @@ feature -- Commands
 				loop
 					create list_row
 
-			--		if archetype_directory.selected_archetype.definition.has_object_path (p_paths.item) then
-			--		if archetype_directory.selected_archetype.has_physical_path (p_paths.item) then
-						c_o := archetype_directory.selected_archetype.archetype_differential.c_object_at_path (p_paths.item)
+					c_o := archetype_directory.selected_archetype.archetype_differential.c_object_at_path (p_paths.item)
 
-						if c_o /= Void then
-							c_l_o ?= c_o
-							c_r ?= c_o
-							c_c_o ?= c_o
-
-							is_logical_leaf := c_l_o /= Void or c_r /= Void or (c_c_o /= Void and c_c_o.attributes.count = 0)
-
-							if all_selected or else is_logical_leaf then
-								list_row.extend (utf8 (p_paths.item))
-								list_row.extend (utf8 (l_paths.item))
-								list_row.extend (utf8 (c_o.rm_type_name))
-								list_row.extend (utf8 (c_o.generating_type))
-								mcl.extend (list_row)
-							end
-						end
-			--		end
+					if c_o /= Void then
+							list_row.extend (utf8 (p_paths.item))
+							list_row.extend (utf8 (l_paths.item))
+							list_row.extend (utf8 (c_o.rm_type_name))
+							list_row.extend (utf8 (c_o.generating_type))
+							mcl.extend (list_row)
+					end
 
 					p_paths.forth
 					l_paths.forth

@@ -21,6 +21,11 @@ inherit
 create
 	make, make_anonymous
 
+feature -- Status Report
+
+	is_leaf: BOOLEAN is True
+			-- True if this object is a leaf object
+
 end
 
 

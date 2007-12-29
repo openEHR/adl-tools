@@ -80,14 +80,6 @@ feature {NONE} -- Implementation
 			attached: Result /= Void
 		end
 
-	adl_flat_filename_pattern_regex: LX_DFA_REGULAR_EXPRESSION
-			-- Pattern matcher for filenames ending in ".adl".
-		once
-			create Result.compile_case_insensitive (".*\." + Archetype_flat_file_extension + "$")
-		ensure
-			attached: Result /= Void
-		end
-
 	create_repository_archetype_descriptor (root_path, full_path: STRING): ARCH_REP_ARCHETYPE
 			-- create a descriptor of the archetype designated by `full_path' to this repository.
 		require
@@ -100,14 +92,12 @@ feature {NONE} -- Implementation
 		do
 			base_name := file_system.basename (full_path)
 
-			if adl_flat_filename_pattern_regex.matches (base_name) then
-				base_name.remove_tail (1 + Archetype_flat_file_extension.count)
-				create id
+			base_name.remove_tail (1 + Archetype_flat_file_extension.count)
+			create id
 
-				if id.valid_id (base_name) then
-					id.make_from_string (base_name)
-					create Result.make (root_path, full_path, id, Current)
-				end
+			if id.valid_id (base_name) then
+				id.make_from_string (base_name)
+				create Result.make (root_path, full_path, id, Current)
 			end
 		ensure
 			has_root_path: Result /= Void implies Result.root_path.is_equal (root_path)

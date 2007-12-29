@@ -135,77 +135,24 @@ feature -- Access
 	physical_paths: ARRAYED_LIST [STRING] is
 			-- generate physical paths from definition structure; if no changes made on archetype,
 			-- return cached value
-		local
-			src_node_path: OG_PATH
-			src_node_path_str: STRING
-			src_nodes: ARRAYED_LIST [ARCHETYPE_INTERNAL_REF]
-			tgt_path_c_objects: HASH_TABLE [C_OBJECT, STRING]
-			tgt_path_str: STRING
-			tgt_path: OG_PATH
-			c_o: C_OBJECT
-			sorted_physical_paths: SORTED_TWO_WAY_LIST [STRING]
 		do
 			if path_map = Void or not validated then
-				path_map := definition.all_paths
-
-				-- Add full paths of internal references thus giving full set of actual paths
-				from
-					use_node_path_xref_table.start
-				until
-					use_node_path_xref_table.off
-				loop
-					-- Hash table with arrayed list of ARCHETYPE_INTERNAL_REFs and Key of target
-					-- (ie the ref path of the internal reference)
-					src_nodes := use_node_path_xref_table.item_for_iteration
-					tgt_path_str := use_node_path_xref_table.key_for_iteration
-					create tgt_path.make_from_string(tgt_path_str)
-					tgt_path_c_objects := definition.all_paths_at_path (tgt_path_str)
-					c_o ?= definition.c_object_at_path (tgt_path_str)
-
-					-- now add the paths below it
-					from
-						src_nodes.start
-					until
-						src_nodes.off
-					loop
-						src_node_path := src_nodes.item.representation.path
-						src_node_path.last.set_object_id(tgt_path.last.object_id)
-						src_node_path_str := src_node_path.as_string
-
-						path_map.put (c_o, src_node_path_str)
-
-						from
-							tgt_path_c_objects.start
-						until
-							tgt_path_c_objects.off
-						loop
-							path_map.put (tgt_path_c_objects.item_for_iteration,
-								src_node_path_str + "/" + tgt_path_c_objects.key_for_iteration)
-							tgt_path_c_objects.forth
-						end
-						src_nodes.forth
-					end
-					use_node_path_xref_table.forth
-				end
-
-				create sorted_physical_paths.make
-				from
-					path_map.start
-				until
-					path_map.off
-				loop
-					sorted_physical_paths.extend(path_map.key_for_iteration)
-					path_map.forth
-				end
-
-				create physical_paths_cache.make(0)
-				physical_paths_cache.append (sorted_physical_paths)
+				build_physical_paths
 			end
-
 			Result := physical_paths_cache
 		end
 
-	logical_paths (a_lang: STRING): ARRAYED_LIST [STRING] is
+	physical_leaf_paths: ARRAYED_LIST [STRING] is
+			-- generate physical paths from definition structure; if no changes made on archetype,
+			-- return cached value
+		do
+			if path_map = Void or not validated then
+				build_physical_paths
+			end
+			Result := physical_leaf_paths_cache
+		end
+
+	logical_paths (a_lang: STRING; leaves_only: BOOLEAN): ARRAYED_LIST [STRING] is
 			-- paths with human readable terms substituted
 		require
 			language_attached: a_lang /= Void
@@ -213,12 +160,13 @@ feature -- Access
 		local
 			phys_paths: ARRAYED_LIST [STRING]
 		do
-			-- CHANGE Sam Heard 2004-05-19
-			-- made logical paths call physical paths directly
-			-- cache is held within physical paths
 			create Result.make (0)
 			Result.compare_objects
-			phys_paths := physical_paths
+			if leaves_only then
+				phys_paths := physical_leaf_paths
+			else
+				phys_paths := physical_paths
+			end
 
 			from
 				phys_paths.start
@@ -633,7 +581,7 @@ feature -- Output
 			Result.append(display_paths(physical_paths))
 
 			Result.append("%N--------------- logical paths(en) -------------%N")
-			Result.append(display_paths(logical_paths("en")))
+			Result.append(display_paths(logical_paths("en", False)))
 		end
 
 feature -- Serialisation
@@ -648,7 +596,84 @@ feature -- Serialisation
 
 feature {NONE} -- Implementation
 
+	build_physical_paths is
+			-- generate physical paths from definition structure; if no changes made on archetype
+		local
+			src_node_path: OG_PATH
+			src_node_path_str: STRING
+			src_nodes: ARRAYED_LIST [ARCHETYPE_INTERNAL_REF]
+			tgt_path_c_objects: HASH_TABLE [C_OBJECT, STRING]
+			tgt_path_str: STRING
+			tgt_path: OG_PATH
+			c_o: C_OBJECT
+			sorted_physical_paths, sorted_physical_leaf_paths: SORTED_TWO_WAY_LIST [STRING]
+		do
+			path_map := definition.all_paths
+
+			-- Add full paths of internal references thus giving full set of actual paths
+			from
+				use_node_path_xref_table.start
+			until
+				use_node_path_xref_table.off
+			loop
+				-- Hash table with arrayed list of ARCHETYPE_INTERNAL_REFs and Key of target
+				-- (ie the ref path of the internal reference)
+				src_nodes := use_node_path_xref_table.item_for_iteration
+				tgt_path_str := use_node_path_xref_table.key_for_iteration
+				create tgt_path.make_from_string(tgt_path_str)
+				tgt_path_c_objects := definition.all_paths_at_path (tgt_path_str)
+				c_o ?= definition.c_object_at_path (tgt_path_str)
+
+				-- now add the paths below it
+				from
+					src_nodes.start
+				until
+					src_nodes.off
+				loop
+					src_node_path := src_nodes.item.representation.path
+					src_node_path.last.set_object_id(tgt_path.last.object_id)
+					src_node_path_str := src_node_path.as_string
+
+					path_map.put (c_o, src_node_path_str)
+
+					from
+						tgt_path_c_objects.start
+					until
+						tgt_path_c_objects.off
+					loop
+						path_map.put (tgt_path_c_objects.item_for_iteration,
+							src_node_path_str + "/" + tgt_path_c_objects.key_for_iteration)
+						tgt_path_c_objects.forth
+					end
+					src_nodes.forth
+				end
+				use_node_path_xref_table.forth
+			end
+
+			create sorted_physical_paths.make
+			create sorted_physical_leaf_paths.make
+			from
+				path_map.start
+			until
+				path_map.off
+			loop
+				sorted_physical_paths.extend(path_map.key_for_iteration)
+				if path_map.item_for_iteration.is_leaf then
+					sorted_physical_leaf_paths.extend(path_map.key_for_iteration)
+				end
+				path_map.forth
+			end
+
+			create physical_paths_cache.make(0)
+			physical_paths_cache.append (sorted_physical_paths)
+
+			create physical_leaf_paths_cache.make(0)
+			physical_leaf_paths_cache.append (sorted_physical_leaf_paths)
+		end
+
 	physical_paths_cache: ARRAYED_LIST [STRING]
+
+	physical_leaf_paths_cache: ARRAYED_LIST [STRING]
 
 	path_map: HASH_TABLE [C_OBJECT, STRING]
 			-- complete map of object nodes keyed by path, including paths implied by
