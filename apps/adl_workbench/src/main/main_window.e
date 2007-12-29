@@ -415,9 +415,18 @@ feature -- Archetype Commands
 
 	edit_archetype is
 			-- launch external editor with archetype
+		local
+			info_dialog: EV_INFORMATION_DIALOG
 		do
-			if archetype_directory.has_selected_archetype then
-				execution_environment.launch (editor_command + " " + archetype_directory.selected_archetype.full_path)
+			if archetype_directory.has_selected_archetype and archetype_directory.selected_archetype.has_differential_file then
+				execution_environment.launch (editor_command + " " + archetype_directory.selected_archetype.differential_path)
+			else
+				create info_dialog.make_with_text ("No source (.adls) file available; opening flat (.adl) file.")
+				info_dialog.default_push_button.pointer_button_press_actions.extend (agent
+					(an_x: INTEGER_32; a_y: INTEGER_32; a_button: INTEGER_32; an_x_tilt: REAL_64; a_y_tilt: REAL_64; a_pressure: REAL_64;
+					a_screen_x: INTEGER_32; a_screen_y: INTEGER_32)
+					do execution_environment.launch (editor_command + " " + archetype_directory.selected_archetype.full_path) end)
+				info_dialog.show_modal_to_window (Current)
 			end
 		end
 
@@ -543,7 +552,13 @@ feature -- Archetype Commands
 		do
 			if arch_notebook.selected_item = archetype_text_edit_area then
 				if archetype_directory.has_selected_archetype then
-					src := archetype_directory.selected_archetype.flat_text
+					if archetype_directory.selected_archetype.has_differential_file then
+						src := archetype_directory.selected_archetype.differential_text
+					else
+						src := "==================== FLAT TEXT (no source .adls file available) ======================%N"
+						src.append (archetype_directory.selected_archetype.flat_text)
+					end
+
 					len := src.count
 					create s.make (len)
 
@@ -974,8 +989,8 @@ feature {NONE} -- Implementation
 			if ara /= Void then
 				archetype_view_tree_control.do_node_for_item (ara, agent archetype_view_tree_control.set_node_pixmap)
 				archetype_test_tree_control.do_row_for_item (ara, agent archetype_test_tree_control.set_row_pixmap)
-				if ara.parse_attempted and not ara.is_valid then
-					compiler_error_control.add_item (ara)
+				if ara.parse_attempted and not ara.is_valid and not compiler_error_control.has (ara) then
+					compiler_error_control.extend (ara)
 				end
 			end
 

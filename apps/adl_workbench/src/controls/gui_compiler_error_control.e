@@ -42,6 +42,7 @@ feature {NONE} -- Initialisation
 		require
 			a_main_window /= Void
 		do
+			create items.make(0)
 			gui := a_main_window
 			grid := gui.compiler_output_grid
 			grid.enable_tree
@@ -53,8 +54,15 @@ feature {NONE} -- Initialisation
 			grid.column (2).set_title ("Message")
 		end
 
-feature -- Access
+feature -- Status Report
 
+	has (an_archetype: ARCH_REP_ARCHETYPE): BOOLEAN is
+			-- True if this archetype already included
+		require
+			an_archetype /= Void
+		do
+			Result := items.has(an_archetype)
+		end
 
 feature -- Status Setting
 
@@ -69,6 +77,7 @@ feature -- Commands
 			gli: EV_GRID_LABEL_ITEM
 		do
 			grid.wipe_out
+			items.wipe_out
 
  			-- Populate first column with archetype tree.
 			create gli.make_with_text ("Errors")
@@ -76,7 +85,7 @@ feature -- Commands
 			gli.enable_select
 		end
 
-	add_item (an_archetype: ARCH_REP_ARCHETYPE) is
+	extend (an_archetype: ARCH_REP_ARCHETYPE) is
 			-- Add a node representing the errors or warnings of the archetype
 		require
 			an_archetype /= Void
@@ -104,6 +113,8 @@ feature -- Commands
 
 			grid.column (1).resize_to_content
 			grid.column (2).resize_to_content
+
+			items.extend(an_archetype)
 		end
 
 feature {NONE} -- Implementation
@@ -130,6 +141,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	items: ARRAYED_LIST [ARCH_REP_ARCHETYPE]
 
 invariant
 	Grid_attached: grid /= Void
