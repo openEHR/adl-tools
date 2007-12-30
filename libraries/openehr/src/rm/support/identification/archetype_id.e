@@ -323,7 +323,7 @@ feature {NONE} -- Implementation
 			-- Pattern matcher for archetype ids.
 		once
 			-- note that the final [a-z]* should be removed one day to prevent archaic naming like .v1draft
-			create Result.compile_case_insensitive ("^[a-z][a-z0-9()#-_]*\.*[a-z][a-z0-9()#-_]*\.*v[0-9]+[a-z]*$")
+			create Result.compile_case_insensitive ("^[a-z][a-z0-9()#_]+(-[a-z0-9()#_]+){2}\.[a-z][a-z0-9()#-_]+\.v[0-9]+[a-z]*$")
 		ensure
 			attached: Result /= Void
 		end
