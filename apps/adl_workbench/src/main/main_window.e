@@ -417,17 +417,17 @@ feature -- Archetype Commands
 			-- launch external editor with archetype
 		local
 			info_dialog: EV_INFORMATION_DIALOG
+			path: STRING
 		do
 			if archetype_directory.has_selected_archetype and archetype_directory.selected_archetype.has_differential_file then
-				execution_environment.launch (editor_command + " " + archetype_directory.selected_archetype.differential_path)
+				path := archetype_directory.selected_archetype.differential_path
 			else
+				path := archetype_directory.selected_archetype.full_path
 				create info_dialog.make_with_text ("No source (.adls) file available; opening flat (.adl) file.")
-				info_dialog.default_push_button.pointer_button_press_actions.extend (agent
-					(an_x: INTEGER_32; a_y: INTEGER_32; a_button: INTEGER_32; an_x_tilt: REAL_64; a_y_tilt: REAL_64; a_pressure: REAL_64;
-					a_screen_x: INTEGER_32; a_screen_y: INTEGER_32)
-					do execution_environment.launch (editor_command + " " + archetype_directory.selected_archetype.full_path) end)
 				info_dialog.show_modal_to_window (Current)
 			end
+
+			execution_environment.launch (editor_command + " " + path)
 		end
 
 	archetype_view_tree_item_select is
