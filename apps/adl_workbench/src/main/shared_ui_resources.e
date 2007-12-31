@@ -455,8 +455,8 @@ feature -- Access
 			create version
 			create Result.make_empty
 			Result.append ("ADL Workbench%N")
-			Result.append ("Version " + version.out + "%N")
-			Result.append ("(c) 2003-2008 Ocean Informatics%N")
+			Result.append ("%TVersion " + version.out + "%N")
+			Result.append ("%T(c) 2003-2008 Ocean Informatics%N")
 			Result.append ("%TADL version: " + current_adl_version + "%N")
 			Result.append ("%TSource SVN - http://svn.openehr.org/ref_impl_eiffel%N%T" + version.last_changed + "%N")
 			Result.append ("%TSource license: Mozilla tri-license (http://www.mozilla.org/MPL/boilerplate-1.1/mpl-tri-license-txt)%N")
