@@ -25,6 +25,9 @@ inherit
 			start_c_attribute
 		end
 
+create
+	initialise
+	
 feature -- Initialisation
 
 	initialise(an_ontology: ARCHETYPE_ONTOLOGY) is
@@ -75,7 +78,7 @@ feature -- Visitor
 							loop
 								a_c_c_o_2 ?= a_c_attr2.children.item
 								if a_c_c_o_2 /= Void then
-									warnings.append("child node of type " + a_c_c_o.rm_type_name + " at path " +
+									warnings.append("Warning: child node of type " + a_c_c_o.rm_type_name + " at path " +
 										a_node.path + " has no id.%N")
 									found := True
 								end

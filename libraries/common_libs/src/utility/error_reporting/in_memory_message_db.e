@@ -77,6 +77,7 @@ feature -- Access
 			["parse_archetype_e2"] = <"Archetype $1 semantic validation FAILED; reasons:%N$2">
 			["parse_archetype_w2"] = <"Archetype $1 semantic validation Warnings:%N$2">
 			["parse_archetype_e3"] = <"PARSE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
+			["parse_archetype_e4"] = <"Archetype $1 semantic validation of differential form FAILED; reasons:%N$2">
 
 			["arch_context_make_flat_i1"] = <"Generated differential archetype from specialised flat archetype">
 			

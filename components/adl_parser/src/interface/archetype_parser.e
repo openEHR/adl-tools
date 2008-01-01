@@ -206,6 +206,7 @@ feature -- Commands
 		do
 			if not exception_encountered then
 				clear_billboard
+				target.set_parse_attempted
 
 				if target.has_differential_file then
 					post_info (Current, "parse_archetype", "parse_archetype_i3", Void)
@@ -235,14 +236,10 @@ feature -- Commands
 
 				-- Make sure that the language is set, and that it is one of the languages in the archetype.
 				if archetype_valid then
-					-- FIXME: in future this should use archetype_differential not archetype_flat
 					if current_language = Void or not archetype_differential.has_language (current_language) then
 						set_current_language (archetype_differential.original_language.code_string)
 					end
 				end
-
-				target.set_parse_attempted
-
 			else
 				post_error (Current, "parse_archetype", "parse_archetype_e3", Void)
 			end

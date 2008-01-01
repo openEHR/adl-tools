@@ -1,6 +1,13 @@
 indexing
 	component:   "openEHR Archetype Project"
-	description: "EV_GRID control for compiler error output"
+	description: "[
+				 EV_GRID control for compiler error output. A preferable implementation is to separate the logical
+				 (i.e. non-GUI related) list) of errors, probably in the class ARCHETYPE_COMPILER, which would make
+				 it visible when built as a DLL or other component separate from the Vision GUI. To do that, it 
+				 would require some way of the GUI update knowing how to add the latest entry/ies to the grid, 
+				 without having to do a complete rebuild every time, which is what will happen when a complete
+				 build of the archetype system is done.
+				 ]"
 	keywords:    "ADL"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
@@ -50,7 +57,7 @@ feature {NONE} -- Initialisation
 			grid.pointer_double_press_item_actions.extend (agent on_double_click)
 			grid.insert_new_column (1)
 			grid.insert_new_column (2)
-			grid.column (1).set_title ("Error")
+			grid.column (1).set_title ("Archetype")
 			grid.column (2).set_title ("Message")
 		end
 
@@ -61,7 +68,7 @@ feature -- Status Report
 		require
 			an_archetype /= Void
 		do
-			Result := items.has(an_archetype)
+			Result := items.has(an_archetype.id.as_string)
 		end
 
 feature -- Status Setting
@@ -86,16 +93,29 @@ feature -- Commands
 		end
 
 	extend (an_archetype: ARCH_REP_ARCHETYPE) is
-			-- Add a node representing the errors or warnings of the archetype
+			-- Add a node representing the errors or warnings of the archetype, if any
 		require
 			an_archetype /= Void
 		local
 			gli: EV_GRID_LABEL_ITEM
-			row: EV_GRID_ROW
+			row, subrow: EV_GRID_ROW
 			pixmap: EV_PIXMAP
 		do
-			grid.insert_new_row (grid.row_count+1)
-			row := grid.row (grid.row_count)
+			if not has (an_archetype) then
+				-- FIXME: really have to find a proper sorted position in the list...currently going at the end
+				grid.insert_new_row (grid.row_count+1)
+				row := grid.row (grid.row_count)
+				row.insert_subrow (row.subrow_count + 1)
+				subrow := row.subrow (row.subrow_count)
+				subrow.set_data (an_archetype)
+				items.force(row, an_archetype.id.as_string)
+			else
+				-- find the existing row and get rid of its subrow
+				row := items.item(an_archetype.id.as_string)
+				subrow := row.subrow (1)
+			end
+
+			-- create the lable & icon - which might have changed since lat compile
 			create gli.make_with_text (utf8 (an_archetype.id.as_string))
 			pixmap := pixmaps [an_archetype.group_name]
 			if pixmap /= Void then
@@ -104,17 +124,12 @@ feature -- Commands
 			gli.set_data (an_archetype)
 			row.set_item (1, gli)
 
-			row.insert_subrow (row.subrow_count + 1)
-			row := row.subrow (row.subrow_count)
-			row.set_data (an_archetype)
 			create gli.make_with_text (utf8 (an_archetype.compiler_status))
-			row.set_item (2, gli)
-			row.set_height (gli.text_height)
+			subrow.set_item (2, gli)
+			subrow.set_height (gli.text_height)
 
 			grid.column (1).resize_to_content
 			grid.column (2).resize_to_content
-
-			items.extend(an_archetype)
 		end
 
 feature {NONE} -- Implementation
@@ -141,7 +156,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	items: ARRAYED_LIST [ARCH_REP_ARCHETYPE]
+	items: HASH_TABLE [EV_GRID_ROW, STRING]
 
 invariant
 	Grid_attached: grid /= Void

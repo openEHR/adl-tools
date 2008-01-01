@@ -52,12 +52,14 @@ feature -- Initialisation
 			create original_language.make (Default_language_code_set, an_original_language)
 			create description.default_create
 			create definition.make_identified(an_id.rm_entity, concept)
+			is_dirty := True
 		ensure
 			Id_set: archetype_id = an_id
 			Original_language_set: original_language.as_string.is_equal(an_original_language)
 			Specialisation_depth_set: specialisation_depth = a_specialisation_depth
 			Definition_root_node_id: definition.node_id.is_equal (concept)
 			Differential_form: is_differential
+			Is_dirty: is_dirty
 		end
 
 	make(an_id: ARCHETYPE_ID; a_concept_code: STRING;
@@ -84,11 +86,13 @@ feature -- Initialisation
 
 			definition := a_definition
 			ontology := an_ontology
+			is_dirty := True
 		ensure
 			Id_set: archetype_id = an_id
 			Concept_set: concept = a_concept_code
 			Definition_set: definition = a_definition
 			Ontology_set: ontology = an_ontology
+			Is_dirty: is_dirty
 		end
 
 	make_specialised_child(other: ARCHETYPE; a_spec_concept: STRING) is
@@ -136,7 +140,7 @@ feature -- Access
 			-- generate physical paths from definition structure; if no changes made on archetype,
 			-- return cached value
 		do
-			if path_map = Void or not validated then
+			if path_map = Void or not is_dirty then
 				build_physical_paths
 			end
 			Result := physical_paths_cache
@@ -208,7 +212,7 @@ feature -- Status Report
 	is_specialised: BOOLEAN is
 			-- 	True if this archetype identifies a specialisation parent
 		do
-			Result := parent_archetype_id /= Void
+			Result := specialisation_depth > 0
 		end
 
 	has_physical_path(a_path: STRING): BOOLEAN is
@@ -226,6 +230,10 @@ feature -- Status Report
 	is_differential: BOOLEAN
 			-- True if this archetype is in differential, i.e. source form. False means it is in a flattened, i.e. standalone form
 
+	is_dirty: BOOLEAN
+			-- marker to be used to indicate if structure has changed in such a way that cached elements have to be regenerated,
+			-- or re-validation is needed. Set to False after validation
+
 feature -- Status Setting
 
 	set_differential is
@@ -233,6 +241,13 @@ feature -- Status Setting
 		do
 			is_differential := True
 			ontology.set_differential
+		end
+
+	set_is_valid(a_validity: BOOLEAN) is
+			-- set is_valid flag
+		do
+			is_valid := a_validity
+			is_dirty := False
 		end
 
 feature -- Comparison
@@ -252,45 +267,11 @@ feature -- Comparison
 
 feature -- Validation
 
-	is_valid: BOOLEAN is
+	is_valid: BOOLEAN
 			-- is archetype locally in valid state? For specialised archetypes, this does not take
-			-- into account validity with respect to parent archetypes.
-			-- FIXME: for the moment, we don't validate differential archetypes
-		require
-			validated
-		do
-			Result := validator.passed
-		end
 
-	validated: BOOLEAN is
-			-- has the validator been run? Need to call validate if not.
-			-- FIXME - need to implement a dirty flag for calls to modifier routines
-			-- that forces revalidation
-		do
-			Result := validator /= Void
-		end
-
-	validate is
-			-- perform various levels validation of archetype
-			-- FIXME: this may stay here, or it may be moved out of the ARCHETYPE classes
-			-- to the compiler environment. Also have to decide on whether to have several
-			-- validators
-		do
-			create validator.make(Current)
-			validator.validate
-		ensure
-			validated
-		end
-
-	set_unvalidated is
-			--
-		do
-			validator := Void
-			path_map := Void
-		end
-
-	validator: ARCHETYPE_VALIDATOR
-			-- validation object for this archetype
+	validated: BOOLEAN
+			-- validate has been attempted
 
 	ontology_unused_term_codes: ARRAYED_LIST[STRING]
 			-- list of at codes found in ontology that are not referenced
@@ -304,7 +285,7 @@ feature -- Validation
 			-- FIXME: probably will be modified to do with separating what is unused, due
 			-- to being inherited versus from the current specialisation level
 
-feature {ARCHETYPE_VALIDATOR, C_XREF_BUILDER} -- Validation
+feature {ARCHETYPE_VALIDATOR, ARCH_REP_ARCHETYPE, C_XREF_BUILDER} -- Validation
 
 	build_xrefs is
 			-- build definition / ontology cross reference tables used for validation and
@@ -332,6 +313,8 @@ feature {ARCHETYPE_VALIDATOR, C_XREF_BUILDER} -- Validation
 	build_rolled_up_status is
 			-- set rolled_up_specialisation statuses in nodes of definition
 			-- only useful to call for specialised archetypes
+		require
+			is_specialised
 		local
 			a_c_iterator: C_VISITOR_ITERATOR
 			rollup_builder: C_ROLLUP_BUILDER
@@ -340,22 +323,6 @@ feature {ARCHETYPE_VALIDATOR, C_XREF_BUILDER} -- Validation
 			rollup_builder.initialise(ontology, Current.specialisation_depth)
 			create a_c_iterator.make(definition, rollup_builder)
 			a_c_iterator.do_all
-		end
-
-	build_inherited_subtree_list is
-			-- using rolled_up_specialisation statuses in nodes of definition
-			-- generate a list of nodes/paths for deletion from a flat-form archetype
-		require
-			is_valid
-		local
-			list_builder: C_ITERATOR
-		do
-			create inherited_subtree_list.make(0)
-			create list_builder.make(definition)
-			list_builder.do_at_surface(
-				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER) do inherited_subtree_list.put (a_c_node, a_c_node.path) end,
-				agent (a_c_node: ARCHETYPE_CONSTRAINT):BOOLEAN do Result := a_c_node.rolled_up_specialisation_status.value = ss_inherited end
-			)
 		end
 
 	id_at_codes_xref_table: HASH_TABLE[ARRAYED_LIST[C_OBJECT], STRING]
@@ -383,14 +350,21 @@ feature -- Conversion
 	convert_to_differential
 			-- modify archetype if specialised, to be in differential form by removing inherited parts
 		require
-			Valid: is_valid
 			In_flat_form: not is_differential
 		local
 			c_obj: C_COMPLEX_OBJECT
 			c_attr: C_ATTRIBUTE
+			list_builder: C_ITERATOR
 		do
 			if is_specialised then
-				build_inherited_subtree_list
+				-- using rolled_up_specialisation statuses in nodes of definition
+				-- generate a list of nodes/paths for deletion from a flat-form archetype
+				create inherited_subtree_list.make(0)
+				create list_builder.make(definition)
+				list_builder.do_at_surface(
+					agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER) do inherited_subtree_list.put (a_c_node, a_c_node.path) end,
+					agent (a_c_node: ARCHETYPE_CONSTRAINT):BOOLEAN do Result := a_c_node.rolled_up_specialisation_status.value = ss_inherited end
+				)
 
 				-- remove inherited subtrees
 				from
@@ -409,11 +383,10 @@ feature -- Conversion
 
 					inherited_subtree_list.forth
 				end
-				set_unvalidated
 
 				ontology.remove_inherited_codes
-				set_differential
 			end
+			set_differential
 		end
 
 feature -- Modification

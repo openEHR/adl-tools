@@ -169,16 +169,14 @@ feature {NONE} -- Implementation
 			ara_attached: ara /= Void
 		local
 			arch_lin: ARRAYED_LIST [ARCH_REP_ARCHETYPE]
-			failed: BOOLEAN
 		do
 			from
 				arch_lin := ara.archetype_lineage
 				arch_lin.start
 			until
-				arch_lin.off -- or failed
+				arch_lin.off
 			loop
 				process_one_archetype (arch_lin.item)
-				-- failed := not arch_lin.item.is_valid
 				arch_lin.forth
 			end
 		end

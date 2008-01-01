@@ -168,7 +168,7 @@ feature {NONE}-- Initialization
 			create ontology_notebook
 			create ontology_term_defs
 			create ontology_constraint_defs
-			create archetype_text_edit_area
+			create archetype_source_rich_text
 			create arch_stats_vbox
 			create l_ev_horizontal_box_9
 			create arch_stats_frame
@@ -337,7 +337,7 @@ feature {NONE}-- Initialization
 			info_view_area.extend (ontology_notebook)
 			ontology_notebook.extend (ontology_term_defs)
 			ontology_notebook.extend (ontology_constraint_defs)
-			arch_notebook.extend (archetype_text_edit_area)
+			arch_notebook.extend (archetype_source_rich_text)
 			arch_notebook.extend (arch_stats_vbox)
 			arch_stats_vbox.extend (l_ev_horizontal_box_9)
 			l_ev_horizontal_box_9.extend (arch_stats_frame)
@@ -487,7 +487,7 @@ feature {NONE}-- Initialization
 			integer_constant_retrieval_functions.extend (agent arch_notebook_min_height)
 			arch_notebook.set_item_text (arch_desc_area_vbox, "Description")
 			arch_notebook.set_item_text (info_view_area, "Definition")
-			arch_notebook.set_item_text (archetype_text_edit_area, "Source")
+			arch_notebook.set_item_text (archetype_source_rich_text, "Source")
 			arch_notebook.set_item_text (arch_stats_vbox, "Statistics")
 			arch_desc_area_vbox.disable_item_expand (arch_desc_details_frame)
 			arch_desc_area_vbox.disable_item_expand (arch_desc_resource_frame)
@@ -801,7 +801,7 @@ feature {NONE}-- Initialization
 			ontology_constraint_defs.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
 			ontology_constraint_defs.set_minimum_width (0)
 			ontology_constraint_defs.set_minimum_height (0)
-			archetype_text_edit_area.disable_edit
+			archetype_source_rich_text.disable_edit
 			integer_constant_set_procedures.extend (agent arch_stats_vbox.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
 			integer_constant_set_procedures.extend (agent arch_stats_vbox.set_border_width (?))
@@ -837,7 +837,7 @@ feature {NONE}-- Initialization
 			l_ev_frame_6.set_text ("Reference Model Node Counts")
 			l_ev_frame_7.set_text ("Ontology")
 			l_ev_notebook_1.set_item_text (parser_status_area, "Status")
-			l_ev_notebook_1.set_item_text (compiler_output_grid, "Output")
+			l_ev_notebook_1.set_item_text (compiler_output_grid, "Errors")
 			parser_status_area.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
 			parser_status_area.set_minimum_width (0)
 			integer_constant_set_procedures.extend (agent parser_status_area.set_minimum_height (?))
@@ -965,7 +965,7 @@ feature -- Access
 	l_ev_menu_separator_2, l_ev_menu_separator_3, l_ev_menu_separator_4, l_ev_menu_separator_5,
 	l_ev_menu_separator_6, l_ev_menu_separator_7: EV_MENU_SEPARATOR
 	path_view_check_list: EV_CHECKABLE_LIST
-	archetype_text_edit_area: EV_RICH_TEXT
+	archetype_source_rich_text: EV_RICH_TEXT
 	arch_desc_auth_orig_auth_mlist,
 	arch_translations_author_mlist, arch_translations_other_details_mlist, arch_desc_resource_orig_res_mlist,
 	parsed_archetype_found_paths, ontology_term_defs, ontology_constraint_defs, l_ev_multi_column_list_1,

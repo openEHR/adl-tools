@@ -159,6 +159,9 @@ feature -- Status Report
 			-- True if a parse has been attempted on the currently available copy of this archetype
 			-- (should be cleared if file is touched in any way)
 
+	validate_attempted: BOOLEAN
+			-- True if semantic validation has been attempted using ARCHETYPE_VALIDATOR
+
 	is_parsed: BOOLEAN is
 			-- True if archetype has been parsed and loaded in at least differential form
 		do
@@ -168,8 +171,13 @@ feature -- Status Report
 	is_valid: BOOLEAN
 			-- True if archetype object created and 'is_valid' True. This can be used to check if the archetype has
 			-- actually been compiled and is available in memory. This is useful for specialised archetypes because
-			-- you want to know if the parent has been compiled (up the lineage) before you can compile the current
-			-- one
+			-- you want to know if the parent has been compiled (up the lineage) before you can compile the current one
+
+	has_compiler_status: BOOLEAN is
+			-- True if there si any compiler errors or warnings
+		do
+			Result := not compiler_status.is_empty
+		end
 
 feature -- Status Setting
 
@@ -225,6 +233,33 @@ feature -- Commands
 			file_repository.save_text_to_file (save_path, a_text)
 		end
 
+	validate is
+			-- perform various levels validation of differential archetype
+		require
+			archetype_differential /= Void
+		local
+			validator: ARCHETYPE_VALIDATOR
+		do
+			is_valid := False
+			create validator.make(Current)
+			validator.validate
+			is_valid := validator.passed
+
+			if not is_valid then
+				post_error(Current, "set_archetype_differential", "parse_archetype_e2", <<id.as_string, validator.errors>>)
+			else
+				post_info(Current, "set_archetype_differential", "parse_archetype_i2", <<id.as_string>>)
+			end
+			if validator.has_warnings then
+				post_warning(Current, "set_archetype_differential", "parse_archetype_w2", <<id.as_string, validator.warnings>>)
+			end
+
+			archetype_differential.set_is_valid(is_valid)
+			validate_attempted := True
+		ensure
+			validate_attempted
+		end
+
 feature -- Comparison
 
 	infix "<" (other: like Current): BOOLEAN
@@ -245,78 +280,43 @@ feature -- Modification
 			Archetype_exists: an_archetype /= Void and then an_archetype.is_differential
 		do
 			archetype_differential := an_archetype
-	 		if is_specialised then
-	 			if specialisation_parent.is_parsed then
-	 				archetype_differential.ontology.set_parent_ontology (specialisation_parent.archetype_differential.ontology)
-					archetype_differential.validate
-				else
-					post_error (Current, "set_archetype_differential", "parse_archetype_e2", <<"Parent failed to compile">>)
-				end
-			else
-				archetype_differential.validate
-			end
-			if archetype_differential.is_valid then
-				post_info(Current, "set_archetype_differential", "parse_archetype_i2", <<archetype_differential.archetype_id.as_string>>)
-				is_valid := True
-			else
-				post_error(Current, "set_archetype_differential", "parse_archetype_e2", <<archetype_differential.archetype_id.as_string, archetype_differential.validator.errors>>)
-			end
-			if archetype_differential.validator.has_warnings then
-				post_warning(Current, "set_archetype_differential", "parse_archetype_w2", <<archetype_differential.archetype_id.as_string, archetype_differential.validator.warnings>>)
-			end
+			validate
 
 			-- generate flat form
 			if is_valid then
-				if not an_archetype.is_specialised then
+				if not archetype_differential.is_specialised then
 					archetype_flat := archetype_differential
+					-- FIXME: ARCHEYTPE.is_differential flag is not set correctly for archetype_flat
 				else
 					-- FIXME set flat_form to structure generated from differential form in memory
 				end
 			end
 		ensure
-			Archetype_loaded: archetype_differential /= Void
-	--		Archetype_validity: archetype_differential.is_valid implies archetype_flat /= Void
+			Is_parsed: archetype_differential /= Void
 		end
 
 	set_archetype_flat(an_archetype: ARCHETYPE) is
 			-- create with a flat form archetype
 		require
 			Archetype_exists: an_archetype /= Void and then not an_archetype.is_differential
+		local
+			a_diff_archetype: ARCHETYPE
 		do
+			post_info(Current, "set_archetype_flat", "parse_archetype_i2", <<id.as_string>>)
 			archetype_flat := an_archetype
-			-- FIXME validation is currently done here on flat form; in future has to be done on the differential form,
-			-- but requires new validation code to be written.
-			archetype_flat.validate
-			if archetype_flat.is_valid then
-				post_info(Current, "set_archetype_flat", "parse_archetype_i2", <<archetype_flat.archetype_id.as_string>>)
-
-				-- generate the differential form
-				if not an_archetype.is_specialised then
-					-- FIXME for the moment; in future needs to be separate instances??
-					archetype_differential := archetype_flat
-					is_valid := True
-				else -- generate differential form from flat
-					-- first make a complete clone of the archetype; could also be done by copy of serialised form and parse
-					archetype_differential := archetype_flat.deep_twin
-					archetype_differential.convert_to_differential
-					if specialisation_parent.is_parsed then
-		 				archetype_differential.ontology.set_parent_ontology (specialisation_parent.archetype_differential.ontology)
-						archetype_differential.validate
-						is_valid := archetype_differential.is_valid
-						post_info (Current, "set_archetype_flat", "arch_context_make_flat_i1", Void)
-					else
-						post_error (Current, "set_archetype_flat", "parse_archetype_e2", <<"Parent failed to compile">>)
-					end
-				end
+			if not an_archetype.is_specialised then
+				an_archetype.set_differential
+				set_archetype_differential(an_archetype)
 			else
-				post_error(Current, "set_archetype_flat", "parse_archetype_e2", <<archetype_flat.archetype_id.as_string, archetype_flat.validator.errors>>)
-			end
-			if archetype_flat.validator.has_warnings then
-				post_warning(Current, "set_archetype_flat", "parse_archetype_w2", <<archetype_flat.archetype_id.as_string, archetype_flat.validator.warnings>>)
+				-- make a complete clone of the archetype; could also be done by copy of serialised form and parse
+				a_diff_archetype := archetype_flat.deep_twin
+				a_diff_archetype.build_rolled_up_status
+				a_diff_archetype.convert_to_differential
+				set_archetype_differential(a_diff_archetype)
 			end
 		ensure
 			Archetype_loaded: archetype_flat /= Void
-			Archetype_validity: archetype_flat.is_valid implies archetype_differential /= Void
+		--	Archetype_validity: archetype_flat.is_valid implies archetype_differential /= Void
 		end
 
 	set_specialisation_parent(a_parent: ARCH_REP_ARCHETYPE) is

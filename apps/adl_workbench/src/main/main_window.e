@@ -265,6 +265,7 @@ feature -- Archetype Commands
 	rebuild_all
 			-- Force the whole system to rebuild.
 		do
+			compiler_error_control.clear
 			do_build_action (agent archetype_compiler.rebuild_all)
 		end
 
@@ -544,7 +545,7 @@ feature -- Archetype Commands
 			leader, int_val_str, src, s: STRING
 			len, left_pos, right_pos, line_cnt: INTEGER
 		do
-			if arch_notebook.selected_item = archetype_text_edit_area then
+			if arch_notebook.selected_item = archetype_source_rich_text then
 				if archetype_directory.has_selected_archetype then
 					if archetype_directory.selected_archetype.has_differential_file then
 						src := archetype_directory.selected_archetype.differential_text
@@ -578,9 +579,9 @@ feature -- Archetype Commands
 						line_cnt := line_cnt + 1
 					end
 
-					archetype_text_edit_area.set_text (utf8 (s))
+					archetype_source_rich_text.set_text (utf8 (s))
 				else
-					archetype_text_edit_area.remove_text
+					archetype_source_rich_text.remove_text
 				end
 			end
 		end
@@ -983,7 +984,7 @@ feature {NONE} -- Implementation
 			if ara /= Void then
 				archetype_view_tree_control.do_node_for_item (ara, agent archetype_view_tree_control.set_node_pixmap)
 				archetype_test_tree_control.do_row_for_item (ara, agent archetype_test_tree_control.set_row_pixmap)
-				if ara.parse_attempted and not ara.is_valid and not compiler_error_control.has (ara) then
+				if ara.parse_attempted and ara.has_compiler_status then
 					compiler_error_control.extend (ara)
 				end
 			end
@@ -1072,7 +1073,7 @@ feature {NONE} -- Standard Windows behaviour that EiffelVision ought to be manag
 			in_this_window: Result /= Void implies has_recursive (Result)
 		end
 
-end
+								end
 
 
 --|

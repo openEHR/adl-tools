@@ -35,7 +35,7 @@ create
 feature -- Access
 
 	target: ARCHETYPE
-			-- differential archetype
+			-- archetype descriptor
 
 	ontology: ARCHETYPE_ONTOLOGY is
 			-- the ontology of the current archetype
@@ -50,37 +50,40 @@ feature -- Validation
 			passed := True
 
 			validate_basics
-			validate_ontology_codes
+			validate_ontology_code_spec_levels
 
 			if passed then
 				target.build_xrefs
 				find_unused_ontology_codes
-				validate_found_codes
-				validate_internal_references
 			end
 
 			if passed then
 				precursor
 				validate_languages
 				check_unidentified_nodes
-				warnings.append(unidentified_node_finder.warnings)
+			end
+
+			-- validation requiring valid specialisation parent
+			if passed and target.is_specialised then
+				if target_descriptor.specialisation_parent.is_valid then
+		 			target.ontology.set_parent_ontology (target_descriptor.specialisation_parent.archetype_differential.ontology)
+		 		else
+					errors.append ("Error: Parent failed to validate")
+					passed := False
+				end
 			end
 
 			if passed then
-				-- look for paths that are not at the same level as the specialisation level of the archetype
-				validate_paths
+				validate_found_codes
 				if target.is_specialised then
-					-- mark nodes with rolled up status due to inheritance, so that copied subtrees can be found and deleted
 					target.build_rolled_up_status
 				end
+				validate_paths
+				validate_internal_references
 			end
 		end
 
 feature {NONE} -- Implementation
-
-	unidentified_node_finder: C_UNIDENTIFIED_NODE_CHECKER
-			-- C_OBJECT structure visitor that finds nodes that should have at-code
-			-- identifiers on them
 
 	validate_basics is
 			-- are basic features of archetype structurally intact and correct?
@@ -88,25 +91,25 @@ feature {NONE} -- Implementation
 		do
 			passed := False
 			if target.archetype_id = Void then
-				errors.append("No archetype_id%N")
+				errors.append("Error: no archetype_id%N")
 			elseif target.definition = Void then
-				errors.append("No definition%N")
+				errors.append("Error: no definition%N")
 			elseif target.invariants /= Void and target.invariants.is_empty then
-				errors.append("invariants cannot be empty if specified")
+				errors.append("Error: invariants cannot be empty if specified")
 			elseif ontology = Void then
-				errors.append("No ontology%N")
+				errors.append("Error: no ontology%N")
 			elseif not target.definition.rm_type_name.is_equal (target.archetype_id.rm_entity) then
-				errors.append("Archetype id type %"" + target.archetype_id.rm_entity +
+				errors.append("Error: archetype id type %"" + target.archetype_id.rm_entity +
 								"%" does not match type %"" + target.definition.rm_type_name +
 								"%" in definition section%N")
 			elseif specialisation_depth_from_code (target.concept) /= target.specialisation_depth then
-				errors.append("Specialisation depth of concept (root) code is incorrect - should be " + target.specialisation_depth.out + "%N")
+				errors.append("Error: specialisation depth of concept (root) code is incorrect - should be " + target.specialisation_depth.out + "%N")
 			elseif not target.definition.node_id.is_equal(target.concept) then
-				errors.append("Concept code " + target.concept + " not used in definition%N")
+				errors.append("Error: concept code " + target.concept + " not used in definition%N")
 			elseif not target.definition.is_valid then
 				-- FIXME - need to check definition validation; possibly this should be
 				-- done using another visitor pattern?
-				errors.append(target.definition.invalid_reason + "%N")
+				errors.append("Error: " + target.definition.invalid_reason + "%N")
 			else
 				passed := True
 			end
@@ -121,7 +124,7 @@ feature {NONE} -- Implementation
 			-- is languages_available list same as languages in ontology?
 		end
 
-	validate_ontology_codes is
+	validate_ontology_code_spec_levels is
 			-- see if there are any codes in the ontology that should not be there - either or lower or higher
 			-- level of specialisation
 		local
@@ -135,7 +138,7 @@ feature {NONE} -- Implementation
 			loop
 				if specialisation_depth_from_code (code_list.item) > ontology.specialisation_depth then
 					passed := False
-					errors.append("at-code " + code_list.item + " in ontology more specialised than archetype%N")
+					errors.append("Error: at-code " + code_list.item + " in ontology more specialised than archetype%N")
 				end
 				code_list.forth
 			end
@@ -147,7 +150,7 @@ feature {NONE} -- Implementation
 			loop
 				if specialisation_depth_from_code (code_list.item) > ontology.specialisation_depth then
 					passed := False
-					errors.append("ac-code " + code_list.item + " in ontology more specialised than archetype%N")
+					errors.append("Error: ac-code " + code_list.item + " in ontology more specialised than archetype%N")
 				end
 				code_list.forth
 			end
@@ -168,7 +171,7 @@ feature {NONE} -- Implementation
 			loop
 				if not ontology.has_term_code(a_codes.key_for_iteration) then
 					passed := False
-					errors.append("Node id at-code " + a_codes.key_for_iteration + " not defined in ontology%N")
+					errors.append("Error: node id at-code " + a_codes.key_for_iteration + " not defined in ontology%N")
 				end
 				a_codes.forth
 			end
@@ -182,7 +185,7 @@ feature {NONE} -- Implementation
 			loop
 				if not ontology.has_term_code(a_codes.key_for_iteration) then
 					passed := False
-					errors.append("Leaf at-code " + a_codes.key_for_iteration + " not defined in ontology%N")
+					errors.append("Error: leaf at-code " + a_codes.key_for_iteration + " not defined in ontology%N")
 				end
 				a_codes.forth
 			end
@@ -196,15 +199,14 @@ feature {NONE} -- Implementation
 			loop
 				if not ontology.has_constraint_code(a_codes.key_for_iteration) then
 					passed := False
-					errors.append("Found ac-code " + a_codes.key_for_iteration + " not defined in all languages in ontology%N")
+					errors.append("Error: found ac-code " + a_codes.key_for_iteration + " not defined in all languages in ontology%N")
 				end
 				a_codes.forth
 			end
 		end
 
 	validate_internal_references is
-			-- validate items in `found_internal_references'; these have to be validated against
-			-- the archetype flat path list
+			-- validate items in `found_internal_references'
 		local
 			use_refs: HASH_TABLE[ARRAYED_LIST[ARCHETYPE_INTERNAL_REF], STRING]
 		do
@@ -214,9 +216,10 @@ feature {NONE} -- Implementation
 			until
 				use_refs.off
 			loop
+				-- check on paths up the specialisation tree
 				if not target.definition.has_path(use_refs.key_for_iteration) then
 					passed := False
-					errors.append("Error: path " + use_refs.key_for_iteration + " not found in archetype%N")
+					errors.append("Error: use_node path " + use_refs.key_for_iteration + " not found in archetype%N")
 				end
 				use_refs.forth
 			end
@@ -263,7 +266,7 @@ feature {NONE} -- Implementation
 				if not target.id_at_codes_xref_table.has(ontology.term_codes.item) and not
 						target.data_at_codes_xref_table.has(ontology.term_codes.item) then
 					target.ontology_unused_term_codes.extend(ontology.term_codes.item)
-					warnings.append("Term code " + ontology.term_codes.item + " in ontology not used in archetype definition%N")
+					warnings.append("Warning: term code " + ontology.term_codes.item + " in ontology not used in archetype definition%N")
 				end
 				ontology.term_codes.forth
 			end
@@ -276,7 +279,7 @@ feature {NONE} -- Implementation
 			loop
 				if not target.ac_codes_xref_table.has(ontology.constraint_codes.item) then
 					target.ontology_unused_constraint_codes.extend(ontology.constraint_codes.item)
-					warnings.append("Constraint code " + ontology.constraint_codes.item + " in ontology not used in archetype definition%N")
+					warnings.append("Warning: constraint code " + ontology.constraint_codes.item + " in ontology not used in archetype definition%N")
 				end
 				ontology.constraint_codes.forth
 			end
@@ -288,11 +291,12 @@ feature {NONE} -- Implementation
 			-- C_C_Os whose values are C_PRMITIVEs. Record any such nodes as warnings
 		local
 			a_c_iterator: C_VISITOR_ITERATOR
+			unidentified_node_finder: C_UNIDENTIFIED_NODE_CHECKER
 		do
-			create unidentified_node_finder
-			unidentified_node_finder.initialise(ontology)
+			create unidentified_node_finder.initialise(ontology)
 			create a_c_iterator.make(target.definition, unidentified_node_finder)
 			a_c_iterator.do_all
+			warnings.append(unidentified_node_finder.warnings)
 		end
 
 end
