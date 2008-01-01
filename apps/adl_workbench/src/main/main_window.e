@@ -182,14 +182,8 @@ feature {NONE} -- Initialization
 		end
 
 	initialise_accelerators is
-			-- Initialise keybard accelerators for various controls.
+			-- Initialise keyboard accelerators for various widgets.
 		do
-			suppress_tab_key_insertion (arch_desc_purpose_text, arch_translations_other_details_mlist, arch_desc_use_text)
-			suppress_tab_key_insertion (arch_desc_use_text, arch_desc_purpose_text, arch_desc_misuse_text)
-			suppress_tab_key_insertion (arch_desc_misuse_text, arch_desc_use_text, arch_desc_keywords_list)
-			suppress_tab_key_insertion (arch_desc_copyright_text, arch_desc_resource_orig_res_mlist, parser_status_area)
-			suppress_tab_key_insertion (archetype_text_edit_area, arch_notebook, parser_status_area)
-
 			add_shortcut (agent step_focused_notebook_tab (1), key_tab, True, False)
 			add_shortcut (agent step_focused_notebook_tab (-1), key_tab, True, True)
 
@@ -1076,34 +1070,6 @@ feature {NONE} -- Standard Windows behaviour that EiffelVision ought to be manag
 		ensure
 			focused: Result /= Void implies Result.has_focus
 			in_this_window: Result /= Void implies has_recursive (Result)
-		end
-
-	suppress_tab_key_insertion (text: EV_TEXT; previous_widget, next_widget: EV_WIDGET)
-			-- Prevent insertion of tabs into `text', so that the user can tab out of it.
-		require
-			text_attached: text /= Void
-			previous_attached: previous_widget /= Void
-			next_attached: next_widget /= Void
-		do
-			text.set_default_key_processing_handler (
-				agent (key: EV_KEY): BOOLEAN
-					do
-						Result := key.code /= key_tab
-					end)
-
-			text.key_press_actions.extend (
-				agent (key: EV_KEY; previous, next: EV_WIDGET)
-					do
-						if key /= Void and then key.code = key_tab then
-							if not ev_application.ctrl_pressed and not ev_application.alt_pressed then
-								if ev_application.shift_pressed then
-									previous.set_focus
-								else
-									next.set_focus
-								end
-							end
-						end
-					end (?, previous_widget, next_widget))
 		end
 
 end
