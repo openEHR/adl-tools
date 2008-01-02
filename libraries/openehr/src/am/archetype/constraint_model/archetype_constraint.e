@@ -65,6 +65,12 @@ feature -- Status Report
 			Result := representation.is_leaf
 		end
 
+	is_root: BOOLEAN is
+			-- True if this node is a top node
+		do
+			Result := representation.is_root
+		end
+
 	is_addressable: BOOLEAN is
 			-- True if this node has a non-anonymous node_id
 		do

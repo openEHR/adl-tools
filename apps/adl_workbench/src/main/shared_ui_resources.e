@@ -406,6 +406,10 @@ feature -- Access
 			Result.force (["fail.ico", Void], "test_failed")
 			Result.force (["not_applicable.ico", Void], "test_not_applicable")
 
+			Result.force (["parse_errors.ico", Void], "parse_errors")
+			Result.force (["validity_errors.ico", Void], "validity_errors")
+			Result.force (["warnings.ico", Void], "warnings")
+
 			Result.force (["go.ico", Void], "go")
 			Result.force (["stop.ico", Void], "stop")
 

@@ -29,6 +29,13 @@ inherit
 			is_equal
 		end
 
+	COMPILER_ERROR_TYPES
+		export
+			{NONE} all
+		undefine
+			is_equal
+		end
+
 	COMPARABLE
 
 create
@@ -134,6 +141,24 @@ feature -- Access
 
 	compiler_status: STRING
 			-- errors from last compile attempt; allows redisplay if this archetype is reselected
+
+	compiler_error_type: INTEGER is
+			-- generate value from COMPILER_ERROR_TYPES as index for error classification elsewhere
+		do
+			if is_valid then
+				if compiler_status.is_empty then
+					Result := Err_type_valid
+				else
+					Result := Err_type_warning
+				end
+			elseif is_parsed then
+				Result := Err_type_validity_error
+			else
+				Result := Err_type_parse_error
+			end
+		ensure
+			Result_valid: valid_err_type(Result)
+		end
 
 feature -- Status Report
 
