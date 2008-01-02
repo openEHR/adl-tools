@@ -115,7 +115,7 @@ feature -- Commands
 				subrow := row.subrow (1)
 			end
 
-			-- create the lable & icon - which might have changed since lat compile
+			-- create the label & icon - which might have changed since lat compile
 			create gli.make_with_text (utf8 (an_archetype.id.as_string))
 			pixmap := pixmaps [an_archetype.group_name]
 			if pixmap /= Void then

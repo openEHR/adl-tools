@@ -165,6 +165,10 @@ feature -- Commands
 										definition_context.tree,
 										arch_ont
 									)
+									if adl_parser.parent_archetype_id /= Void then
+										Result.set_parent_archetype_id(adl_parser.parent_archetype_id)
+									end
+
 									if adl_parser.adl_version /= Void then
 										Result.set_adl_version(adl_parser.adl_version)
 									else
@@ -177,9 +181,6 @@ feature -- Commands
 
 									if adl_parser.is_controlled then
 										Result.set_is_controlled
-									end
-									if adl_parser.parent_archetype_id /= Void then
-										Result.set_parent_archetype_id(adl_parser.parent_archetype_id)
 									end
 
 									-- if there was no language section, then create the equivalent object

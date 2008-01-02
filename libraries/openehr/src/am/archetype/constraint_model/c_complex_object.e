@@ -92,7 +92,6 @@ feature -- Access
 			og_node ?= representation.object_node_at_path(create {OG_PATH}.make_from_string(a_path))
 			og_paths := og_node.all_paths
 			create Result.make(0)
---			Result.compare_objects
 			from
 				og_paths.start
 			until

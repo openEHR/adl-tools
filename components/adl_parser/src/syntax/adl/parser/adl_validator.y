@@ -109,6 +109,11 @@ arch_specialisation: -- empty is ok
 	| SYM_SPECIALIZE V_ARCHETYPE_ID 
 		{
 			create parent_archetype_id.make_from_string($2) -- FIXME - should be other make routine
+			if not parent_archetype_id.semantic_id.is_equal(archetype_id.semantic_parent_id) then
+				raise_error
+				report_error("Archetype id not based on specialisation parent archetype id")
+				abort
+			end
 		}
 	| SYM_SPECIALIZE error
 		{

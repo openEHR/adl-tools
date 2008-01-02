@@ -150,9 +150,15 @@ feature -- Status Report
 		end
 
 	is_flat_file_out_of_date: BOOLEAN
-			-- Has the loaded archetype designated by `full_path' changed on disk since last read?
+			-- Has the flat archetype file changed on disk since last read?
 		do
 			Result := not is_parsed or file_repository.has_file_changed_on_disk (full_path, flat_text_timestamp)
+		end
+
+	is_differential_file_out_of_date: BOOLEAN
+			-- Has the differential archetype file changed on disk since last read?
+		do
+			Result := not is_parsed or file_repository.has_file_changed_on_disk (differential_path, differential_text_timestamp)
 		end
 
 	parse_attempted: BOOLEAN

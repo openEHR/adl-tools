@@ -66,7 +66,7 @@ feature -- Validation
 			-- validation requiring valid specialisation parent
 			if passed and target.is_specialised then
 				if target_descriptor.specialisation_parent.is_valid then
-		 			target.ontology.set_parent_ontology (target_descriptor.specialisation_parent.archetype_differential.ontology)
+		 			target.set_parent_archetype (target_descriptor.specialisation_parent.archetype_differential)
 		 		else
 					errors.append ("Error: Parent failed to validate")
 					passed := False
@@ -78,8 +78,8 @@ feature -- Validation
 				if target.is_specialised then
 					target.build_rolled_up_status
 				end
-				validate_paths
 				validate_internal_references
+				validate_paths
 			end
 		end
 
@@ -217,7 +217,7 @@ feature {NONE} -- Implementation
 				use_refs.off
 			loop
 				-- check on paths up the specialisation tree
-				if not target.definition.has_path(use_refs.key_for_iteration) then
+				if not target.has_path(use_refs.key_for_iteration) then
 					passed := False
 					errors.append("Error: use_node path " + use_refs.key_for_iteration + " not found in archetype%N")
 				end

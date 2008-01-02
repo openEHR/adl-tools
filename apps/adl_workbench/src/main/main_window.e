@@ -299,6 +299,8 @@ feature -- Archetype Commands
 			if ara /= Void then
 				if not ara.parse_attempted then
 					do_with_wait_cursor (agent archetype_compiler.build_lineage (ara))
+				elseif ara.is_differential_file_out_of_date then
+					do_with_wait_cursor (agent archetype_compiler.rebuild_lineage (ara))
 				elseif not ara.compiler_status.is_empty then
 					parser_status_area.set_text (utf8(ara.compiler_status))
 				end

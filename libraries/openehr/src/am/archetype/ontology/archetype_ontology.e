@@ -825,6 +825,8 @@ feature -- Modification
 			end
 		end
 
+feature {ARCHETYPE} -- Modification
+
 	set_parent_ontology(an_ontology: ARCHETYPE_ONTOLOGY) is
 			-- add a connection to the ontology of a parent archetype
 		require

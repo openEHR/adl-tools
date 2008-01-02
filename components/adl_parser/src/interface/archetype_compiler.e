@@ -192,9 +192,9 @@ feature {NONE} -- Implementation
 					call_visual_update_action (ara)
 					archetype_parser.set_target (ara)
 					archetype_parser.parse_archetype
-					status := (archetype_parser.status)
+					status := archetype_parser.status.twin
 
-					if archetype_parser.archetype_valid then
+					if ara.is_valid and not ara.has_differential_file then
 						archetype_parser.save_archetype_differential
 						status.append (archetype_parser.status)
 					end
