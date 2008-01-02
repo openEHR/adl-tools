@@ -1075,7 +1075,7 @@ feature {NONE} -- Standard Windows behaviour that EiffelVision ought to be manag
 			in_this_window: Result /= Void implies has_recursive (Result)
 		end
 
-								end
+end
 
 
 --|
