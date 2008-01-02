@@ -3,18 +3,23 @@ indexing
 	description: "Populate ontology controls in ADL test workbench"
 	keywords:    "ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2008 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
+	file:        "$URL:  $"
 	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	last_change: "$LastChangedDate:  $"
 
 
 class GUI_TEST_ARCHETYPE_TREE_CONTROL
 
 inherit
+	GUI_GRID_CONTROLLER
+		redefine
+			on_grid_key_press
+		end
+
 	SHARED_ARCHETYPE_DIRECTORY
 		export
 			{NONE} all
@@ -40,11 +45,6 @@ inherit
 		end
 
 	ARCHETYPE_DEFINITIONS
-		export
-			{NONE} all
-		end
-
-	EV_SHARED_APPLICATION
 		export
 			{NONE} all
 		end
@@ -78,11 +78,8 @@ feature {NONE} -- Initialisation
 			a_main_window /= Void
 		do
 			gui := a_main_window
-			grid := gui.archetype_test_tree_grid
+			make_for_grid (gui.archetype_test_tree_grid)
 			grid.enable_tree
-			grid.key_press_actions.extend (agent on_grid_key_press)
-			grid.mouse_wheel_actions.extend (agent on_mouse_wheel)
-
 			gui.archetype_test_go_bn.set_pixmap (pixmaps ["go"])
 		end
 
@@ -482,9 +479,6 @@ feature {NONE} -- Implementation
 	gui: MAIN_WINDOW
 			-- main window of system
 
-	grid: EV_GRID
-			-- reference to MAIN_WINDOW.archetype_test_tree_grid
-
 	grid_row_stack: ARRAYED_STACK [EV_GRID_ROW]
 			-- Stack used during `populate_gui_tree_node_enter'.
 
@@ -575,179 +569,22 @@ feature {NONE} -- Implementation
 		end
 
 	on_grid_key_press (key: EV_KEY)
-			-- Process keystrokes in `grid' to scroll, expand and collapse rows, etc.
+			-- When the user presses the space key, toggle the selected check box.
 		local
-			selected: EV_GRID_ITEM
 			checkbox: EV_GRID_CHECKABLE_LABEL_ITEM
 		do
-			if key /= Void then
-				if not ev_application.shift_pressed and not ev_application.alt_pressed then
-					if ev_application.ctrl_pressed then
-						if key.code = {EV_KEY_CONSTANTS}.key_up then
-							key.set_code ({EV_KEY_CONSTANTS}.key_menu)
-							scroll_to_row (grid.first_visible_row.index - 1)
-						elseif key.code = {EV_KEY_CONSTANTS}.key_down then
-							key.set_code ({EV_KEY_CONSTANTS}.key_menu)
+			Precursor (key)
 
-							if grid.visible_row_indexes.count > 1 then
-								scroll_to_row (grid.visible_row_indexes [2])
-							end
-						elseif key.code = {EV_KEY_CONSTANTS}.key_home then
-							scroll_to_row (1)
-						elseif key.code = {EV_KEY_CONSTANTS}.key_end then
-							scroll_to_row (grid.row_count)
-						elseif key.code = {EV_KEY_CONSTANTS}.key_page_up then
-							scroll_to_row (index_of_viewable_offset_from_row (grid.first_visible_row.index, 1 - grid.visible_row_indexes.count))
-						elseif key.code = {EV_KEY_CONSTANTS}.key_page_down then
-							scroll_to_row (grid.last_visible_row.index)
-						end
-					elseif key.code = {EV_KEY_CONSTANTS}.key_home then
-						step_to_row (1)
-					elseif key.code = {EV_KEY_CONSTANTS}.key_end then
-						step_to_row (grid.row_count)
-					elseif not grid.selected_items.is_empty then
-						selected := grid.selected_items.first
+			if not (ev_application.shift_pressed or ev_application.alt_pressed or ev_application.ctrl_pressed) then
+				if key /= Void and then key.code = key_space then
+					checkbox ?= selected_cell
 
-						if key.code = {EV_KEY_CONSTANTS}.key_page_up then
-							step_to_row (index_of_viewable_offset_from_row (selected.row.index, 1 - grid.visible_row_indexes.count))
-						elseif key.code = {EV_KEY_CONSTANTS}.key_page_down then
-							step_to_row (index_of_viewable_offset_from_row (selected.row.index, grid.visible_row_indexes.count - 1))
-						elseif key.code = {EV_KEY_CONSTANTS}.key_numpad_multiply then
-							expand_tree (selected.row)
-						elseif key.code = {EV_KEY_CONSTANTS}.key_numpad_add or key.code = {EV_KEY_CONSTANTS}.key_right then
-							if selected.row.is_expandable then
-								selected.row.expand
-							end
-						elseif key.code = {EV_KEY_CONSTANTS}.key_numpad_subtract then
-							if selected.row.is_expanded then
-								selected.row.collapse
-							end
-						elseif key.code = {EV_KEY_CONSTANTS}.key_left then
-							if selected.column.index = 1 then
-								if selected.row.is_expanded then
-									selected.row.collapse
-								elseif selected.row.parent_row /= Void then
-									step_to_row (selected.row.parent_row.index)
-								end
-							end
-						elseif key.code = {EV_KEY_CONSTANTS}.key_back_space then
-							if selected.row.parent_row /= Void then
-								step_to_row (selected.row.parent_row.index)
-							end
-						elseif key.code = {EV_KEY_CONSTANTS}.key_space then
-							checkbox ?= selected
-
-							if checkbox /= Void then
-								checkbox.toggle_is_checked
-								set_checkboxes_recursively (checkbox)
-							end
-						end
+					if checkbox /= Void then
+						checkbox.toggle_is_checked
+						set_checkboxes_recursively (checkbox)
 					end
 				end
 			end
-		end
-
-	on_mouse_wheel (step: INTEGER) is
-			-- Scroll `grid' when the mouse wheel moves.
-		do
-			if step > 0 then
-				scroll_to_row (grid.first_visible_row.index - step)
-			else
-				scroll_to_row (grid.visible_row_indexes [grid.visible_row_indexes.count.min (1 - step)])
-			end
-		end
-
-	scroll_to_row (index: INTEGER)
-			-- Scroll `grid' so the row at `index' is at the top.
-		local
-			i: INTEGER
-		do
-			i := index.max (1).min (grid.row_count)
-			grid.set_first_visible_row (i)
-		end
-
-	step_to_row (index: INTEGER)
-			-- Select the row at `index'.
-		local
-			row: EV_GRID_ROW
-		do
-			row := grid.row (index_of_viewable_offset_from_row (index, 0))
-
-			if not row.item (1).is_selected then
-				grid.remove_selection
-				row.item (1).enable_select
-				row.ensure_visible
-			end
-		end
-
-	step_to_viewable_parent_of_selected_row
-			-- Select `row' or one its parents, such that the selected row is not hidden within a collapsed parent.
-		do
-			if not grid.selected_items.is_empty then
-				step_to_row (grid.selected_items.first.row.index)
-			end
-		end
-
-	index_of_viewable_offset_from_row (index, offset: INTEGER): INTEGER
-			-- The index of the row at viewable `offset' from the row at `index'.
-		local
-			indexes: ARRAYED_LIST [INTEGER]
-			i: INTEGER
-		do
-			from
-				indexes := grid.viewable_row_indexes
-				i := indexes.count
-			until
-				i = 1 or else indexes [i] <= index
-			loop
-				i := i - 1
-			end
-
-			Result := indexes [(i + offset).max (1).min (indexes.count)]
-		end
-
-	expand_tree (row: EV_GRID_ROW)
-			-- Expand `row' and all of its sub-rows, recursively.
-		require
-			row_attached: row /= Void
-		local
-			i: INTEGER
-		do
-			if row.is_expandable then
-				row.expand
-
-				from
-					i := 1
-				until
-					i > row.subrow_count
-				loop
-					expand_tree (row.subrow (i))
-					i := i + 1
-				end
-			end
-		ensure
-			row_expanded: row.is_expandable implies row.is_expanded
-		end
-
-	collapse_tree (row: EV_GRID_ROW)
-			-- Collapse `row' and all of its sub-rows, recursively.
-		require
-			row_attached: row /= Void
-		local
-			i: INTEGER
-		do
-			from
-				i := 1
-			until
-				i > row.subrow_count
-			loop
-				collapse_tree (row.subrow (i))
-				i := i + 1
-			end
-
-			row.collapse
-		ensure
-			row_collapsed: not row.is_expanded
 		end
 
 	set_archetype_test_go_bn_icon is
@@ -784,9 +621,6 @@ feature {NONE} -- Implementation
 			end
 		end
 
-invariant
-	grid_attached: grid /= Void
-
 end
 
 
@@ -804,10 +638,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is adl_node_control.e.
+--| The Original Code is gui_test_archetype_tree_control.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2003-2008
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

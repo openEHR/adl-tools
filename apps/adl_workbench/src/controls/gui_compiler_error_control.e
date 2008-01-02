@@ -22,6 +22,11 @@ indexing
 class GUI_COMPILER_ERROR_CONTROL
 
 inherit
+	GUI_GRID_CONTROLLER
+		redefine
+			on_grid_key_press
+		end
+
 	SHARED_ARCHETYPE_DIRECTORY
 		export
 			{NONE} all
@@ -51,7 +56,7 @@ feature {NONE} -- Initialisation
 		do
 			create items.make(0)
 			gui := a_main_window
-			grid := gui.compiler_output_grid
+			make_for_grid (gui.compiler_output_grid)
 			grid.enable_tree
 			grid.disable_row_height_fixed
 			grid.pointer_double_press_item_actions.extend (agent on_double_click)
@@ -105,6 +110,7 @@ feature -- Commands
 				-- FIXME: really have to find a proper sorted position in the list...currently going at the end
 				grid.insert_new_row (grid.row_count+1)
 				row := grid.row (grid.row_count)
+				row.collapse_actions.extend (agent step_to_viewable_parent_of_selected_row)
 				row.insert_subrow (row.subrow_count + 1)
 				subrow := row.subrow (row.subrow_count)
 				subrow.set_data (an_archetype)
@@ -115,7 +121,7 @@ feature -- Commands
 				subrow := row.subrow (1)
 			end
 
-			-- create the label & icon - which might have changed since lat compile
+			-- Create the label & icon - which might have changed since last compile.
 			create gli.make_with_text (utf8 (an_archetype.id.as_string))
 			pixmap := pixmaps [an_archetype.group_name]
 			if pixmap /= Void then
@@ -137,18 +143,32 @@ feature {NONE} -- Implementation
 	gui: MAIN_WINDOW
 			-- main window of system
 
-	grid: EV_GRID
-			-- reference to MAIN_WINDOW.compiler_output grid
+	on_double_click (grid_x_pos, grid_y_pos, a_button_index: INTEGER; item: EV_GRID_ITEM)
+			-- When the user double-clicks an archetype, select it in the main window's explorer tree.
+		do
+			select_node_in_archetype_tree_view
+		end
 
-	on_double_click (grid_x_pos, grid_y_pos, a_button_index: INTEGER; item: EV_GRID_ITEM) is
-			--
+	on_grid_key_press (key: EV_KEY)
+			-- When the user presses Enter on an archetype, select it in the main window's explorer tree.
+		do
+			Precursor (key)
+
+			if not (ev_application.shift_pressed or ev_application.alt_pressed or ev_application.ctrl_pressed) then
+				if key /= Void and then key.code = key_enter then
+					select_node_in_archetype_tree_view
+				end
+			end
+		end
+
+	select_node_in_archetype_tree_view
+			-- Select the archetype in the main window's explorer tree.
 		local
-			gli: EV_GRID_LABEL_ITEM
 			ara: ARCH_REP_ARCHETYPE
 		do
-			gli ?= item
-			if gli /= Void and gli.column.index = 1 then
-				ara ?= gli.data
+			if selected_cell /= Void and then selected_cell.column.index = 1 then
+				ara ?= selected_cell.data
+
 				if ara /= Void then
 					archetype_directory.set_selected_item (ara)
 					gui.archetype_view_tree_select_node
@@ -157,9 +177,10 @@ feature {NONE} -- Implementation
 		end
 
 	items: HASH_TABLE [EV_GRID_ROW, STRING]
+			-- IDs of archetypes that are displayed in the grid.
 
 invariant
-	Grid_attached: grid /= Void
+	items_attached: items /= Void
 
 end
 
