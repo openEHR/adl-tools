@@ -140,7 +140,7 @@ feature -- Access
 			-- generate physical paths from definition structure; if no changes made on archetype,
 			-- return cached value
 		do
-			if path_map = Void or not is_dirty then
+			if path_map = Void or is_dirty then
 				build_physical_paths
 			end
 			Result := physical_paths_cache
