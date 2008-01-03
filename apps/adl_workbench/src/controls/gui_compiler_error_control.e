@@ -138,6 +138,7 @@ feature -- Commands
 					end
 					grid.insert_new_row (row_idx)
 					cat_row := grid.row (row_idx)
+					cat_row.collapse_actions.extend (agent step_to_viewable_parent_of_selected_row)
 					create gli.make_with_text (utf8 (Err_type_names.item(err_cat)))
 					pixmap := pixmaps [Err_type_pixmap_names.item(err_cat)]
 					if pixmap /= Void then
