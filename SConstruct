@@ -100,7 +100,7 @@ if distrib:
 
 	if platform == 'mac_osx':
 		if len(adl_workbench) > 2:
-			packagemaker = '/Developer/Tools/packagemaker'
+			packagemaker = '/Developer/usr/bin/packagemaker'
 
 			if not os.path.exists(packagemaker):
 				print 'WARNING! ' + packagemaker + ' is missing: cannot build installer for ADL Workbench.'
@@ -196,5 +196,7 @@ if distrib:
 				for filename in backed_up_files:
 					rename_file(filename + '.bak', filename)
 
-			env.AddPreAction([adl_workbench, adl_parser], env.Action(set_revision_from_subversion, None))
-			env.AddPostAction([adl_workbench, adl_parser], env.Action(restore_backed_up_files, None))
+			targets = [adl_workbench]
+			if platform == 'windows': targets += [adl_parser]
+			env.AddPreAction(targets, env.Action(set_revision_from_subversion, None))
+			env.AddPostAction(targets, env.Action(restore_backed_up_files, None))
