@@ -170,11 +170,9 @@ if distrib:
 				backed_up_files = []
 				substitutions = [['libraries/version/openehr_version.e', r'\b(revision:\s*INTEGER\s*=\s*)\d+']]
 
-				if target == adl_workbench and platform == 'windows':
-					substitutions += [['apps/adl_workbench/app/adl_workbench.rc', r'(#define\s+VER_\S+\s+"?\d+[,.]\d+[,.]\d+[,.])\d+']]
-
-				if target == adl_parser:
-					substitutions += [['components/adl_parser/lib/dotnet_dll/adl_parser.ecf', r'(<version\s+major="\d+"\s+minor="\d+"\s+release="\d+"\s+build=")\d+']]
+				if platform == 'windows':
+					if target == adl_workbench: substitutions += [['apps/adl_workbench/app/adl_workbench.rc', r'(#define\s+VER_\S+\s+"?\d+[,.]\d+[,.]\d+[,.])\d+']]
+					if target == adl_parser: substitutions += [['components/adl_parser/lib/dotnet_dll/adl_parser.ecf', r'(<version\s+major="\d+"\s+minor="\d+"\s+release="\d+"\s+build=")\d+']]
 
 				for filename, pattern in substitutions:
 					bak = filename + '.bak'
