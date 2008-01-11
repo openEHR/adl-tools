@@ -39,10 +39,14 @@ feature -- Access
 			-- all paths below this point, including this node
 		do
 			Result := generate_all_paths(False)
+			if is_root then
+				Result.put(Current, path)
+			end
 		end
 
 	all_unique_paths: HASH_TABLE [OG_OBJECT, OG_PATH] is
-			-- all paths below this point, including this node
+			-- all paths below this point, including this node, including with auto-generate
+			-- uniqueness predicates, e.g. like [1] or [unknown_1] etc
 		do
 			Result := generate_all_paths(True)
 		end
@@ -52,8 +56,12 @@ feature -- Access
 		require
 			Path_valid: a_path /= Void and then has_path(a_path)
 		do
-			a_path.start
-			Result := internal_object_node_at_path(a_path)
+			if a_path.is_root then
+				Result := Current
+			else
+				a_path.start
+				Result := internal_object_node_at_path(a_path)
+			end
 		ensure
 			Result_exists: Result /= Void
 		end
@@ -76,8 +84,12 @@ feature -- Status Report
 		require
 			Path_valid: a_path /= Void and then a_path.is_absolute implies is_root
 		do
-			a_path.start
-			Result := internal_has_path(a_path)
+			if a_path.is_root then
+				Result := True
+			else
+				a_path.start
+				Result := internal_has_path(a_path)
+			end
 		end
 
 	has_object_path(a_path: OG_PATH): BOOLEAN is
@@ -85,8 +97,12 @@ feature -- Status Report
 		require
 			Path_valid: a_path /= Void and then a_path.is_absolute implies is_root
 		do
-			a_path.start
-			Result := internal_object_node_at_path(a_path) /= Void
+			if a_path.is_root then
+				Result := True
+			else
+				a_path.start
+				Result := internal_object_node_at_path(a_path) /= Void
+			end
 		end
 
 	has_attribute_path(a_path: OG_PATH): BOOLEAN is
@@ -94,8 +110,12 @@ feature -- Status Report
 		require
 			Path_valid: a_path /= Void and then a_path.is_absolute implies is_root
 		do
-			a_path.start
-			Result := internal_attribute_node_at_path(a_path) /= Void
+			if a_path.is_root then
+				Result := True
+			else
+				a_path.start
+				Result := internal_attribute_node_at_path(a_path) /= Void
+			end
 		end
 
 feature {OG_OBJECT_NODE} -- Implementation
@@ -187,7 +207,7 @@ feature {OG_OBJECT_NODE} -- Implementation
 			Result := children.item(a_path_segment.attr_name).child_with_id (a_path_segment.object_id)
 		end
 
-	generate_all_paths (unique_flag: BOOLEAN): HASH_TABLE [OG_OBJECT, OG_PATH] is
+	generate_all_paths (is_unique: BOOLEAN): HASH_TABLE [OG_OBJECT, OG_PATH] is
 			-- all paths below this point, including this node; if unique_flag is True,
 			-- then include the "unknown" ids on non-identified object nodes to give
 			-- completely unique paths
@@ -220,7 +240,7 @@ feature {OG_OBJECT_NODE} -- Implementation
 						child_objs.off
 					loop
 						child_obj ?= child_objs.item_for_iteration
-						obj_predicate_required := child_obj.is_addressable or (unique_flag and attr_node.is_multiple)
+						obj_predicate_required := (is_unique or child_obj.is_addressable) and attr_node.is_multiple
 						child_obj_node ?= child_obj
 						if child_obj_node /= Void then
 							child_paths := child_obj_node.all_paths

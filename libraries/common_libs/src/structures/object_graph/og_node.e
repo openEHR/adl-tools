@@ -118,7 +118,7 @@ feature -- Status Report
 			end
 		end
 
-	valid_child_for_insertion(a_node: like child_type):BOOLEAN is
+	valid_child_for_insertion(a_node: like child_type): BOOLEAN is
 		do
 			Result := not has_child(a_node)
 		end

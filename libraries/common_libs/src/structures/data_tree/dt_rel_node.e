@@ -37,7 +37,10 @@ feature -- Initialisation
 			a_name_valid: a_name /= Void and then not a_name.is_empty
 		do
 			default_create
-			create representation.make (a_name, Current)
+			create representation.make_single (a_name, Current)
+		ensure
+			not is_multiple
+			not is_generic
 		end
 
 	make_multiple(a_name:STRING) is
@@ -46,19 +49,16 @@ feature -- Initialisation
 			a_name_valid: a_name /= Void and then not a_name.is_empty
 		do
 			default_create
-			create representation.make (a_name, Current)
-			is_multiple := True
+			create representation.make_multiple (a_name, Current)
 		ensure
 			is_multiple
 		end
 
 	make_multiple_generic is
 			-- make as a multiple generic relationship;
-			-- create attr name = "gENERIC"
 		do
 			default_create
 			create representation.make_generic (Current)
-			is_multiple := True
 		ensure
 			is_multiple
 			is_generic
@@ -139,8 +139,11 @@ feature -- Iteration
 
 feature -- Status Report
 
-	is_multiple: BOOLEAN
+	is_multiple: BOOLEAN is
 			-- True if relationship is 1:N
+		do
+			Result := representation.is_multiple
+		end
 
 	is_generic: BOOLEAN is
 			-- True if relationship represents an assumed
@@ -204,7 +207,7 @@ feature -- Modification
 	set_multiple is
 			-- set an attribute created single to be multiple
 		do
-			is_multiple := True
+			representation.set_multiple
 		ensure
 			is_multiple
 		end

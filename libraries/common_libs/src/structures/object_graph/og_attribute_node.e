@@ -1,9 +1,12 @@
 indexing
 	component:   "openEHR Archetype Project"
-	description: "Attribute node in ADL parse tree"
+	description: "[
+				 Attribute node in ADL parse tree. This class does not model a direct idea of 'is_multiple' because it can be used
+				 to represent single attribute constraints which need multiple 'children' to represent the constraint.
+				 ]"
 	keywords:    "ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
 	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
@@ -15,19 +18,42 @@ class OG_ATTRIBUTE_NODE
 
 inherit
 	OG_NODE
+		rename
+			make as make_og_node
 		redefine
 			parent, child_type, put_child, valid_child_for_insertion
 		end
 
 create
-	make, make_generic
+	make_single, make_multiple, make_generic
 
 feature -- Definitions
 
 	Generic_attr_name: STRING is "_items"
 			-- name given to assumed multiple attribute of container types
-			
+
 feature -- Initialisation
+
+	make_single (a_node_id: STRING; a_content_item: VISITABLE) is
+			-- make an attribute representing a single-valued attribute in some model
+		require
+			Node_id_valid: a_node_id /= Void and then not a_node_id.is_empty
+		do
+			make_og_node(a_node_id, a_content_item)
+		ensure
+			Is_multiple: not is_multiple
+		end
+
+	make_multiple (a_node_id: STRING; a_content_item: VISITABLE) is
+			-- make an attribute representing a multiple-valued (i.e. container) attribute in some model
+		require
+			Node_id_valid: a_node_id /= Void and then not a_node_id.is_empty
+		do
+			make_og_node(a_node_id, a_content_item)
+			is_multiple := True
+		ensure
+			Is_multiple: is_multiple
+		end
 
 	make_generic (a_content_item: VISITABLE) is
 			-- create with pseudo-node id indicating that it is an unnamed
@@ -37,27 +63,28 @@ feature -- Initialisation
 			node_id := Generic_attr_name.twin
 			content_item := a_content_item
 			is_generic := True
+			is_multiple := True
 		ensure
 			Node_id_set: node_id.is_equal(Generic_attr_name)
 			Is_generic: is_generic
+			Is_multiple: is_multiple
 		end
-	
+
 feature -- Access
 
 	parent: OG_OBJECT_NODE
 
 feature -- Status Report
 
-	is_multiple: BOOLEAN is
-			-- True if there is more than one child
-		do
-			Result := children.count > 1
-		end
+	is_multiple: BOOLEAN
+			-- True if this node logically represents a container attribute. Note that even if is_multiple is False,
+			-- there can be multiple children, because for constraint representation, these correspond to alternatives, not
+			-- multiple concurrent members.
 
 	is_generic: BOOLEAN
 			-- True if this attribute is a created pseudo attribute
 			-- representing an unnamed attribute in a generic class like List<T>
-			
+
 	is_addressable: BOOLEAN is True
 			-- True if this node has a non-anonymous node_id
 
@@ -68,9 +95,17 @@ feature -- Status Report
 		do
 			Result := not children_ordered.has(a_node)
 		end
-		
+
+feature -- Status Setting
+
+	set_multiple is
+			-- set `is_multiple' True (sometimes discovered after make is done)
+		do
+			is_multiple := True
+		end
+
 feature -- Modification
-		
+
 	put_child(obj_node: like child_type) is
 			-- put a new child node
 		local
@@ -81,7 +116,7 @@ feature -- Modification
 				duplicate_child_id_count := duplicate_child_id_count + 1
 				new_id := obj_node.node_id + "_" + duplicate_child_id_count.out
 				obj_node.set_node_id(new_id)
-			end			
+			end
 			precursor(obj_node)
 		end
 
@@ -92,16 +127,10 @@ feature {NONE} -- Implementation
 
 	duplicate_child_id_count: INTEGER
 			-- cumulative count of children with 'unknown' ids - used to generate unique ids
-			
+
 invariant
-	Multiplicity_validity: children.count > 1 implies is_multiple
 	Generic_validity: not (is_generic xor node_id.is_equal(Generic_attr_name))
 
--- FIXME: the following would be preferable, but means all OG_ATTRIBUTE_NODEs need
--- to have OG_OBJECT_NODE parent supplied to make routines; which is probably ok, but
--- causes a fair few changes elsewhere
---	Not_is_root: not is_root
-	
 end
 
 

@@ -487,6 +487,8 @@ feature -- Archetype Commands
 		do
 			if archetype_directory.selected_archetype.is_valid then
 				node_map_control.set_flat_view
+				ontology_controls.set_flat_view
+				path_map_control.set_flat_view
 			end
 		end
 
@@ -494,7 +496,9 @@ feature -- Archetype Commands
 			-- Show the inherited/defined status of nodes in `parsed_archetype_tree'.
 		do
 			if archetype_directory.selected_archetype.is_valid then
-				node_map_control.set_inheritance_view
+				node_map_control.set_differential_view
+				ontology_controls.set_differential_view
+				path_map_control.set_differential_view
 			end
 		end
 
@@ -526,19 +530,19 @@ feature -- Archetype Commands
 	path_column_select (a_list_item: EV_LIST_ITEM) is
 			-- Called by `check_actions' of `path_view_check_list'.
 		do
-			adl_path_map_control.column_select(a_list_item)
+			path_map_control.column_select(a_list_item)
 		end
 
 	path_column_unselect (a_list_item: EV_LIST_ITEM) is
 			-- Called by `check_actions' of `path_view_check_list'.
 		do
-			adl_path_map_control.column_unselect(a_list_item)
+			path_map_control.column_unselect(a_list_item)
 		end
 
 	path_row_set_filter is
 			-- Called by `select_actions' of `path_filter_combo'.
 		do
-			adl_path_map_control.set_filter
+			path_map_control.set_filter
 		end
 
 	arch_notebook_select is
@@ -699,7 +703,7 @@ feature {NONE} -- Edit events
 			-- Copy the selected item, depending on which widget has focus.
 		do
 			if parsed_archetype_found_paths.has_focus then
-				adl_path_map_control.copy_path_to_clipboard
+				path_map_control.copy_path_to_clipboard
 			elseif focused_text /= Void then
 				if focused_text.has_selection then
 					focused_text.copy_selection
@@ -762,7 +766,7 @@ feature -- Controls
 			create Result.make (Current)
 		end
 
-	adl_path_map_control: GUI_PATH_MAP_CONTROL is
+	path_map_control: GUI_PATH_MAP_CONTROL is
 		once
 			create Result.make (Current)
 		end
@@ -873,7 +877,7 @@ feature {EV_DIALOG} -- Implementation
 			-- Populate content from visual controls.
 		do
 			populate_user_controls
-			adl_path_map_control.populate
+			path_map_control.populate
 			node_map_control.populate
 			ontology_controls.populate
 			description_controls.populate
@@ -883,7 +887,7 @@ feature {EV_DIALOG} -- Implementation
 	populate_view_controls
 			-- Populate content from visual controls.
 		do
-			adl_path_map_control.populate
+			path_map_control.populate
 			node_map_control.repopulate
 			ontology_controls.populate
 			description_controls.populate

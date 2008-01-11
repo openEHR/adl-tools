@@ -56,11 +56,19 @@ feature -- Command
 		end
 
 	do_at_surface(a_c_node_enter_action: PROCEDURE [ANY, TUPLE [ARCHETYPE_CONSTRAINT, INTEGER]]; a_c_node_test: FUNCTION [ANY, TUPLE [ARCHETYPE_CONSTRAINT], BOOLEAN]) is
-			-- start the serialisation process; the result will be in `serialiser_output'
+			-- do the enter action at the surface detected by a_c_node_test
 		do
 			c_node_enter_action := a_c_node_enter_action
 			c_node_test := a_c_node_test
-			tree_iterator.do_at_surface(agent node_enter_action(?, ?), agent node_is_at_surface(?))
+			tree_iterator.do_at_surface(agent node_enter_action(?, ?), agent node_is_included(?))
+		end
+
+	do_until_surface(a_c_node_enter_action: PROCEDURE [ANY, TUPLE [ARCHETYPE_CONSTRAINT, INTEGER]]; a_c_node_test: FUNCTION [ANY, TUPLE [ARCHETYPE_CONSTRAINT], BOOLEAN]) is
+			-- do the enter action a_c_node_test returns true; where it is false, stop processing child nodes
+		do
+			c_node_enter_action := a_c_node_enter_action
+			c_node_test := a_c_node_test
+			tree_iterator.do_until_surface(agent node_enter_action(?, ?), agent node_is_included(?))
 		end
 
 feature {NONE} -- Implementation
@@ -84,7 +92,7 @@ feature {NONE} -- Implementation
 			c_node_exit_action.call([arch_node, depth])
 		end
 
-	node_is_at_surface(a_node: OG_ITEM): BOOLEAN is
+	node_is_included(a_node: OG_ITEM): BOOLEAN is
 		require
 			Node_exists: a_node /= Void
 		do

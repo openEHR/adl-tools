@@ -65,6 +65,11 @@ feature -- Access
 
 	column_check_list: EV_CHECKABLE_LIST
 
+feature -- Status
+
+	in_differential_mode: BOOLEAN
+			-- True if visualisation should show contents of differential archetype, else flat archetype
+
 feature -- Commands
 
 	clear is
@@ -86,11 +91,11 @@ feature -- Commands
 
 			if archetype_directory.has_selected_archetype then
 				if filter_combo.text.is_equal ("All") then
-					p_paths := archetype_directory.selected_archetype.archetype_differential.physical_paths
-					l_paths := archetype_directory.selected_archetype.archetype_differential.logical_paths (current_language, False)
+					p_paths := target_archetype.physical_paths
+					l_paths := target_archetype.logical_paths (current_language, False)
 				else
-					p_paths := archetype_directory.selected_archetype.archetype_differential.physical_leaf_paths
-					l_paths := archetype_directory.selected_archetype.archetype_differential.logical_paths (current_language, True)
+					p_paths := target_archetype.physical_leaf_paths
+					l_paths := target_archetype.logical_paths (current_language, True)
 				end
 
 				from
@@ -101,7 +106,7 @@ feature -- Commands
 				loop
 					create list_row
 
-					c_o := archetype_directory.selected_archetype.archetype_differential.c_object_at_path (p_paths.item)
+					c_o := target_archetype.c_object_at_path (p_paths.item)
 
 					if c_o /= Void then
 							list_row.extend (utf8 (p_paths.item))
@@ -117,6 +122,20 @@ feature -- Commands
 			end
 
 			adjust_columns
+		end
+
+	set_differential_view
+			-- Set `in_differential_mode' on.
+		do
+			in_differential_mode := True
+			populate
+		end
+
+	set_flat_view
+			-- Set `in_differential_mode' off.
+		do
+			in_differential_mode := False
+			populate
 		end
 
 	column_select (a_list_item: EV_LIST_ITEM) is
@@ -193,6 +212,18 @@ feature {NONE} -- Implementation
 
 	gui: MAIN_WINDOW
 			-- main window of system
+
+	target_archetype: ARCHETYPE is
+			-- differential or flat version of archetype, depending on setting of `in_differential_mode'
+		require
+			archetype_directory.has_selected_archetype
+		do
+			if in_differential_mode then
+				Result := archetype_directory.selected_archetype.archetype_differential
+			else
+				Result := archetype_directory.selected_archetype.archetype_flat
+			end
+		end
 
 	adjust_columns is
 			-- adjust column view of paths control according to checklist

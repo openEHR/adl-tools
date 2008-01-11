@@ -57,6 +57,30 @@ feature -- Access
 			Code_valid: a_code /= Void and then specialisation_depth_from_code(a_code) > 0
 		do
 			Result := a_code.substring (1, a_code.last_index_of(Specialisation_separator, a_code.count)-1)
+		ensure
+			Valid_result: specialisation_depth_from_code(Result) = specialisation_depth_from_code(a_code) - 1
+		end
+
+	specialisation_parent_from_code_at_level(a_code: STRING; a_level: INTEGER): STRING is
+			-- get parent of this specialised code at `a_level'
+		require
+			Code_valid: a_code /= Void and then is_valid_code(a_code)
+			Level_valid: a_level >= 0 and a_level <= specialisation_depth_from_code(a_code)
+		local
+			i, idx: INTEGER
+		do
+			from
+				i := a_level
+				idx := a_code.count
+			until
+				i >= specialisation_depth_from_code(a_code)
+			loop
+				idx := a_code.last_index_of(Specialisation_separator, a_code.count)-1
+				i := i + 1
+			end
+			Result := a_code.substring (1, idx)
+		ensure
+			Valid_result: specialisation_depth_from_code(Result) = a_level
 		end
 
 	specialisation_status_from_code(a_code: STRING; a_depth: INTEGER): SPECIALISATION_STATUS is
@@ -66,27 +90,31 @@ feature -- Access
 			--		status of at0001.1 is added at depth 0, redefined at depth 1
 			--		status of at0.1 is undefined at depth 0, added at depth 1
 			--		status of at0.1.1 is undefined at depth 0, added at depth 1, redefined at depth 2
+			--		status of any code at a lower level than the code is inherited
 		require
-			Depth_valid: a_depth >= 0 and a_depth <= specialisation_depth_from_code(a_code)
+			Code_valid: a_code /= Void and then is_valid_code(a_code)
+			Depth_valid: a_depth >= 0
 		local
 			code_defined_in_this_level, parent_code_defined_in_level_above: BOOLEAN
 			code_at_this_level, code_at_parent_level: STRING
 		do
-			code_at_this_level := specialisation_section_from_code(a_code, a_depth)
-			code_defined_in_this_level := code_at_this_level.to_integer > 0 or else code_at_this_level.count = 4 -- takes account of anomalous "0000" code
-			if a_depth > 0 then
-				code_at_parent_level := specialisation_section_from_code(a_code, a_depth - 1)
-				parent_code_defined_in_level_above := code_at_parent_level.to_integer > 0 or else code_at_parent_level.count = 4 -- takes account of anomalous "0000" code
-			end
-
-			if code_defined_in_this_level then
-				if parent_code_defined_in_level_above then
-					create Result.make (ss_redefined)
-				else
-					create Result.make (ss_added)
-				end
+			if a_depth > specialisation_depth_from_code(a_code) then
+				create Result.make (ss_inherited)
 			else
-				if parent_code_defined_in_level_above then
+				code_at_this_level := specialisation_section_from_code(a_code, a_depth)
+				code_defined_in_this_level := code_at_this_level.to_integer > 0 or else code_at_this_level.count = 4 -- takes account of anomalous "0000" code
+				if a_depth > 0 then
+					code_at_parent_level := specialisation_section_from_code(a_code, a_depth - 1)
+					parent_code_defined_in_level_above := code_at_parent_level.to_integer > 0 or else code_at_parent_level.count = 4 -- takes account of anomalous "0000" code
+				end
+
+				if code_defined_in_this_level then
+					if parent_code_defined_in_level_above then
+						create Result.make (ss_redefined)
+					else
+						create Result.make (ss_added)
+					end
+				elseif parent_code_defined_in_level_above then
 					create Result.make (ss_inherited)
 				else
 					create Result.make (ss_undefined)

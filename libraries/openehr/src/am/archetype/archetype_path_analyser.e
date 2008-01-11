@@ -49,6 +49,37 @@ feature -- Access
 
 	level: INTEGER
 
+feature -- Conversion
+
+	path_at_level(a_level: INTEGER): STRING is
+			-- generate a form of the path at the specialisation level `a_level'
+		require
+			valid_level: a_level >= 0
+		local
+			a_path: OG_PATH
+		do
+			if a_level >= level then
+				Result := target.as_string
+			else
+				create a_path.make_from_other (target)
+				from
+					target.start
+					a_path.start
+				until
+					target.off
+				loop
+					if is_valid_code (target.item.object_id) and then specialisation_depth_from_code (target.item.object_id) > a_level then
+						a_path.item.set_object_id (specialisation_parent_from_code_at_level(target.item.object_id, a_level))
+					end
+					target.forth
+					a_path.forth
+				end
+				Result := a_path.as_string
+			end
+		ensure
+			Result_attached: Result /= Void
+		end
+
 feature {NONE} -- Implementation
 
 	calculate_level is

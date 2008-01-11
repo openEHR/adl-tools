@@ -110,6 +110,21 @@ feature {OG_ITEM} -- Implementation
 			Representation_set: representation = a_rep
 		end
 
+feature -- Duplication
+
+	safe_deep_twin: like Current is
+			-- safe version of deep_twin that Voids `parent' first so as not to clone backwards up tree
+		local
+			p: like parent
+		do
+			p := parent
+			parent := Void
+			Result := deep_twin
+			parent := p
+		ensure
+			Result.parent = Void
+		end
+
 end
 
 

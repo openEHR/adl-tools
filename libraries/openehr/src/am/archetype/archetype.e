@@ -3,8 +3,8 @@ indexing
 	description: "Archetype abstraction"
 	keywords:    "archetype"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2003-2008 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -238,6 +238,12 @@ feature -- Status Report
 	is_differential: BOOLEAN
 			-- True if this archetype is in differential, i.e. source form. False means it is in a flattened, i.e. standalone form
 
+	is_flat: BOOLEAN is
+			-- True if  not differential
+		do
+			Result := not is_differential
+		end
+
 	is_dirty: BOOLEAN
 			-- marker to be used to indicate if structure has changed in such a way that cached elements have to be regenerated,
 			-- or re-validation is needed. Set to False after validation
@@ -248,7 +254,7 @@ feature -- Status Report
 			a_path_valid: a_path /= Void and then not a_path.is_empty
 		do
 			Result := definition.has_path (a_path)
-			if not Result and is_specialised then
+			if not Result and is_differential and is_specialised then
 				Result := parent_archetype.has_path(a_path)
 			end
 		end
@@ -262,6 +268,14 @@ feature -- Status Setting
 			ontology.set_differential
 		end
 
+	set_flat is
+			-- set `is_differential' False
+		do
+			is_differential := False
+			parent_archetype := Void
+			ontology.set_flat
+		end
+
 	set_is_valid(a_validity: BOOLEAN) is
 			-- set is_valid flag
 		do
@@ -271,8 +285,6 @@ feature -- Status Setting
 
 	is_valid: BOOLEAN
 			-- True if archetype is completely validated, including with respect to specialisation parents, where they exist
-
-feature -- Comparison
 
 	valid_adl_version(a_ver: STRING): BOOLEAN is
 			-- set adl_version with a string containing only '.' and numbers,
@@ -287,7 +299,7 @@ feature -- Comparison
 			Result := str.is_integer and a_ver.item(1) /= '.' and a_ver.item (a_ver.count) /= '.'
 		end
 
-feature {ARCHETYPE_VALIDATOR, ARCH_REP_ARCHETYPE, C_XREF_BUILDER} -- Validation
+feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER} -- Validation
 
 	build_xrefs is
 			-- build definition / ontology cross reference tables used for validation and
@@ -352,12 +364,13 @@ feature -- Conversion
 	convert_to_differential
 			-- modify archetype if specialised, to be in differential form by removing inherited parts
 		require
-			In_flat_form: not is_differential
+			In_flat_form: is_flat
 		local
 			c_obj: C_COMPLEX_OBJECT
 			c_attr: C_ATTRIBUTE
 			list_builder: C_ITERATOR
 		do
+			build_rolled_up_status
 			if is_specialised then
 				-- using rolled_up_specialisation statuses in nodes of definition
 				-- generate a list of nodes/paths for deletion from a flat-form archetype
@@ -519,6 +532,12 @@ feature -- Modification
 			ontology.set_parent_ontology (an_archetype.ontology)
 		end
 
+	rebuild is
+			-- rebuild any cached state after changes
+		do
+			build_physical_paths
+		end
+
 feature -- Output
 
 -- FIXME: this is probably used in some test app; if so, a simple display_hash_table_keys
@@ -607,32 +626,37 @@ feature {NONE} -- Implementation
 				-- (ie the ref path of the internal reference)
 				src_nodes := use_node_path_xref_table.item_for_iteration
 				tgt_path_str := use_node_path_xref_table.key_for_iteration
-				create tgt_path.make_from_string(tgt_path_str)
-				tgt_path_c_objects := definition.all_paths_at_path (tgt_path_str)
-				c_o ?= definition.c_object_at_path (tgt_path_str)
 
-				-- now add the paths below it
-				from
-					src_nodes.start
-				until
-					src_nodes.off
-				loop
-					src_node_path := src_nodes.item.representation.path
-					src_node_path.last.set_object_id(tgt_path.last.object_id)
-					src_node_path_str := src_node_path.as_string
+				-- only generate derived paths if we are in a flat archetype that has them all, or else in a
+				-- differential archetype that happens to have them
+				if is_flat or else definition.has_object_path (tgt_path_str) then
+					create tgt_path.make_from_string(tgt_path_str)
+					tgt_path_c_objects := definition.all_paths_at_path (tgt_path_str)
+					c_o ?= definition.c_object_at_path (tgt_path_str)
 
-					path_map.put (c_o, src_node_path_str)
-
+					-- now add the paths below it
 					from
-						tgt_path_c_objects.start
+						src_nodes.start
 					until
-						tgt_path_c_objects.off
+						src_nodes.off
 					loop
-						path_map.put (tgt_path_c_objects.item_for_iteration,
-							src_node_path_str + "/" + tgt_path_c_objects.key_for_iteration)
-						tgt_path_c_objects.forth
+						src_node_path := src_nodes.item.representation.path
+						src_node_path.last.set_object_id(tgt_path.last.object_id)
+						src_node_path_str := src_node_path.as_string
+
+						path_map.put (c_o, src_node_path_str)
+
+						from
+							tgt_path_c_objects.start
+						until
+							tgt_path_c_objects.off
+						loop
+							path_map.put (tgt_path_c_objects.item_for_iteration,
+								src_node_path_str + "/" + tgt_path_c_objects.key_for_iteration)
+							tgt_path_c_objects.forth
+						end
+						src_nodes.forth
 					end
-					src_nodes.forth
 				end
 				use_node_path_xref_table.forth
 			end

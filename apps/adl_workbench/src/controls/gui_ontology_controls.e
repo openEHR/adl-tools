@@ -43,6 +43,11 @@ feature -- Initialisation
    			gui.ontology_notebook.set_minimum_height(gui.Status_area_min_height)
 		end
 
+feature -- Status
+
+	in_differential_mode: BOOLEAN
+			-- True if visualisation should show contents of differential archetype, else flat archetype
+
 feature -- Commands
 
 	clear is
@@ -60,6 +65,20 @@ feature -- Commands
 			populate_constraint_definitions
 		end
 
+	set_differential_view
+			-- Set `in_differential_mode' on.
+		do
+			in_differential_mode := True
+			populate
+		end
+
+	set_flat_view
+			-- Set `in_differential_mode' off.
+		do
+			in_differential_mode := False
+			populate
+		end
+
 	select_term(a_term_code: STRING) is
 			-- select row for a_term_code in term_definitions control
 		do
@@ -74,6 +93,18 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
+	target_archetype: ARCHETYPE is
+			-- differential or flat version of archetype, depending on setting of `in_differential_mode'
+		require
+			archetype_directory.has_selected_archetype
+		do
+			if in_differential_mode then
+				Result := archetype_directory.selected_archetype.archetype_differential
+			else
+				Result := archetype_directory.selected_archetype.archetype_flat
+			end
+		end
+
 	gui: MAIN_WINDOW
 			-- main window of system
 
@@ -81,7 +112,7 @@ feature {NONE} -- Implementation
 			-- access to ontology of selected archetype
 		do
 			if archetype_directory.has_selected_archetype then
-				Result := archetype_directory.selected_archetype.archetype_differential.ontology
+				Result := target_archetype.ontology
 			end
 		end
 

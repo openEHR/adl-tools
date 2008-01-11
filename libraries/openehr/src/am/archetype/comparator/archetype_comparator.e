@@ -23,7 +23,7 @@ feature -- Initialisation
 	make(a_reference_archetype, an_other_archetype: ARCHETYPE) is
 			-- create with two archetypes for comparison
 		require
-			A_reference_archetype_valid: a_reference_archetype /= Void
+			Valid_reference_archetype: valid_reference_archetype(a_reference_archetype)
 			An_other_archetype_valid: an_other_archetype /= Void
 		do
 			reference_archetype := a_reference_archetype

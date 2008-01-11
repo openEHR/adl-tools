@@ -3,8 +3,8 @@ indexing
 	description: "node in ADL parse tree"
 	keywords:    "test, ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2003-2008 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -32,24 +32,24 @@ feature -- Initialisation
 		end
 
 	make_single(a_name: STRING) is
-			-- set attr name
+			-- make representing a single-valued attribute with attr name
 		require
 			a_name_valid: a_name /= Void and then not a_name.is_empty
 		do
 			default_create
-			create representation.make(a_name, Current)
+			create representation.make_single (a_name, Current)
 		ensure
 			not is_multiple
 		end
 
 	make_multiple(a_name: STRING; a_cardinality: CARDINALITY) is
-			-- set attr name & cardinality
+			-- make representing a container attribute with attr name & cardinality
 		require
 			a_name_valid: a_name /= Void and then not a_name.is_empty
 			cardinality_exists: a_cardinality /= Void
 		do
 			default_create
-			create representation.make(a_name, Current)
+			create representation.make_multiple (a_name, Current)
 			set_cardinality(a_cardinality)
 		ensure
 			is_multiple
@@ -106,7 +106,7 @@ feature -- Status Report
 	is_multiple: BOOLEAN is
 			-- True if this attribute has multiple cardinality
 		do
-			Result := cardinality /= Void
+			Result := representation.is_multiple
 		end
 
 	is_valid: BOOLEAN is
@@ -220,6 +220,7 @@ invariant
 	Existence_set: existence /= Void
 	Children_validity: children /= Void
 	Any_allowed_validity: any_allowed xor not children.is_empty
+	Is_multiple_validity: is_multiple implies cardinality /= Void
 
 end
 

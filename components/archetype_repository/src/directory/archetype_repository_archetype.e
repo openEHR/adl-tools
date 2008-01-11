@@ -3,7 +3,7 @@ indexing
 	description: "Descriptor of an archetype in a directory of archetypes"
 	keywords:    "ADL, archetype"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
 	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
@@ -309,6 +309,8 @@ feature -- Modification
 			-- create with a new differential form (i.e. source form) archetype
 		require
 			Archetype_exists: an_archetype /= Void and then an_archetype.is_differential
+		local
+			arch_flattener: ARCHETYPE_FLATTENER
 		do
 			archetype_differential := an_archetype
 			validate
@@ -316,10 +318,12 @@ feature -- Modification
 			-- generate flat form
 			if is_valid then
 				if not archetype_differential.is_specialised then
-					archetype_flat := archetype_differential
-					-- FIXME: ARCHEYTPE.is_differential flag is not set correctly for archetype_flat
+					archetype_flat := archetype_differential.deep_twin
+					archetype_flat.set_flat
 				else
-					-- FIXME set flat_form to structure generated from differential form in memory
+					create arch_flattener.make (specialisation_parent.archetype_flat, archetype_differential)
+					arch_flattener.flatten_archetype
+					archetype_flat := arch_flattener.output
 				end
 			end
 		ensure
@@ -341,7 +345,6 @@ feature -- Modification
 			else
 				-- make a complete clone of the archetype; could also be done by copy of serialised form and parse
 				a_diff_archetype := archetype_flat.deep_twin
-				a_diff_archetype.build_rolled_up_status
 				a_diff_archetype.convert_to_differential
 				set_archetype_differential(a_diff_archetype)
 			end
