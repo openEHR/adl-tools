@@ -451,7 +451,7 @@ feature -- Status Report
 				from
 					terminologies_available.start
 				until
-					terminologies_available.off or not other.terminologies_available.has(terminologies_available.item_for_iteration)
+					terminologies_available.off or not other.terminologies_available.has(terminologies_available.item)
 				loop
 					terminologies_available.forth
 				end
