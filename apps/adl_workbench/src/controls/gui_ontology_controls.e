@@ -41,6 +41,7 @@ feature -- Initialisation
 		do
 			gui := a_main_window
    			gui.ontology_notebook.set_minimum_height(gui.Status_area_min_height)
+			in_differential_mode := True
 		end
 
 feature -- Status

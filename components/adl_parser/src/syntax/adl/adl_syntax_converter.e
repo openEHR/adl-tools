@@ -161,6 +161,23 @@ feature -- Access
 			end
 		end
 
+	convert_use_ref_paths(ref_node_list: ARRAYED_LIST[ARCHETYPE_INTERNAL_REF]; index_path: STRING; referree: ARCHETYPE) is
+			-- FIXME: the following only needed while old use_ref paths containing redundant node_ids are in existence
+			-- rewrite target path into standard Xpath format, removing [atnnn] predicates on objects below single attributes
+		local
+			xpath: STRING
+		do
+			xpath := referree.definition.c_object_at_path (index_path).path
+			from
+				ref_node_list.start
+			until
+				ref_node_list.off
+			loop
+				ref_node_list.item.set_target_path (xpath)
+				ref_node_list.forth
+			end
+		end
+
 end
 
 

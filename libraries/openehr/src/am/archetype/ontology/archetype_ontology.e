@@ -954,10 +954,7 @@ feature -- Modification
 				other.terminologies_available.off
 			loop
 				a_terminology := other.terminologies_available.item
-				if not terminologies_available.has (a_terminology) then
-					term_bindings.force (other.term_bindings_for_terminology (a_terminology).deep_twin, a_terminology)
-					terminologies_available.extend(a_terminology)
-				else
+				if other.has_term_bindings (a_terminology) then
 					term_bindings_1 := other.term_bindings_for_terminology (a_terminology)
 					from
 						term_bindings_1.start
@@ -981,10 +978,7 @@ feature -- Modification
 				other.terminologies_available.off
 			loop
 				a_terminology := other.terminologies_available.item
-				if not terminologies_available.has (a_terminology) then
-					constraint_bindings.force (other.constraint_bindings_for_terminology (a_terminology).deep_twin, a_terminology)
-					terminologies_available.extend(a_terminology)
-				else
+				if other.has_constraint_bindings (a_terminology) then
 					cons_bindings_1 := other.constraint_bindings_for_terminology (a_terminology)
 					from
 						cons_bindings_1.start

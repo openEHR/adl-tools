@@ -55,6 +55,7 @@ feature {NONE} -- Initialisation
 			path_list.enable_multiple_selection
 			filter_combo := gui.path_filter_combo
 			column_check_list := gui.path_view_check_list
+			in_differential_mode := True
 		end
 
 feature -- Access

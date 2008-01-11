@@ -22,9 +22,12 @@ inherit
 			{ANY} valid_concept_code
 		end
 
+create
+	make_from_path, make_from_string
+
 feature -- Initialisation
 
-	set_from_path (a_path: OG_PATH) is
+	make_from_path (a_path: OG_PATH) is
 			-- create from an OG_PATH
 		require
 			a_path_valid: a_path /= Void
@@ -33,7 +36,7 @@ feature -- Initialisation
 			calculate_level
 		end
 
-	set_from_string (a_path: STRING) is
+	make_from_string (a_path: STRING) is
 			-- create from a STRING
 		require
 			a_path_valid: a_path /= Void
@@ -96,6 +99,9 @@ feature {NONE} -- Implementation
 				target.forth
 			end
 		end
+
+invariant
+	Target_attached: target /= Void
 
 end
 

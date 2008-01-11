@@ -135,8 +135,7 @@ feature {NONE} -- Implementation
 				debug ("flatten")
 					io.put_string ("---------- at source object node " + src_cco.path + " ---------%N")
 				end
-				create apa
-				apa.set_from_string (src_cco.path)
+				create apa.make_from_string (src_cco.path)
 				debug ("flatten")
 					io.put_string ("%Tgetting parent object node using path " + apa.path_at_level (flat_archetype.specialisation_depth) + "%N")
 				end
@@ -237,8 +236,7 @@ feature {NONE} -- Implementation
 				io.put_string ("%T*** checking node " + a_c_node.path + " ... ")
 			end
 
-			create apa
-			apa.set_from_string(a_c_node.path)
+			create apa.make_from_string(a_c_node.path)
 
 			Result := flat_archetype.has_path (apa.path_at_level (flat_archetype.specialisation_depth))
 

@@ -29,6 +29,11 @@ inherit
 			{NONE} all
 		end
 
+	ADL_SYNTAX_CONVERTER
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -79,7 +84,6 @@ feature -- Validation
 					target.build_rolled_up_status
 				end
 				validate_internal_references
-				validate_paths
 			end
 		end
 
@@ -209,6 +213,8 @@ feature {NONE} -- Implementation
 			-- validate items in `found_internal_references'
 		local
 			use_refs: HASH_TABLE[ARRAYED_LIST[ARCHETYPE_INTERNAL_REF], STRING]
+			found: BOOLEAN
+			arch: ARCHETYPE
 		do
 			use_refs := target.use_node_path_xref_table
 			from
@@ -217,40 +223,22 @@ feature {NONE} -- Implementation
 				use_refs.off
 			loop
 				-- check on paths up the specialisation tree
-				if not target.has_path(use_refs.key_for_iteration) then
+				from
+					arch := target
+					found := arch.definition.has_path (use_refs.key_for_iteration)
+				until
+					found or not arch.is_specialised
+				loop
+					arch := arch.parent_archetype
+					found := arch.definition.has_path (use_refs.key_for_iteration)
+				end
+				if found then
+					convert_use_ref_paths(use_refs.item_for_iteration, use_refs.key_for_iteration, arch)
+				else
 					passed := False
 					errors.append("Error: use_node path " + use_refs.key_for_iteration + " not found in archetype%N")
 				end
 				use_refs.forth
-			end
-		end
-
-	validate_paths is
-			-- find paths that are not of the level of the archetype
-		local
-			path_analyser: ARCHETYPE_PATH_ANALYSER
-			path_list: ARRAYED_LIST [STRING]
-			err_str: STRING
-		do
-			create path_analyser
-			path_list := target.physical_leaf_paths
-			from
-				path_list.start
-			until
-				path_list.off
-			loop
-				path_analyser.set_from_string(path_list.item)
-				if path_analyser.level /= target.specialisation_depth then
-					err_str := "specialisation depth of path " + path_list.item + " (" + path_analyser.level.out +
-						") differs from archetype (" + target.specialisation_depth.out + ")%N"
-					if strict then
-						passed := False
-						errors.append("Error: " + err_str)
-					else
-						warnings.append("Warning: " + err_str)
-					end
-				end
-				path_list.forth
 			end
 		end
 
