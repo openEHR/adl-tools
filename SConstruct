@@ -101,6 +101,7 @@ if distrib:
 	if platform == 'mac_osx':
 		if len(adl_workbench) > 2:
 			packagemaker = '/Developer/usr/bin/packagemaker'
+			if not os.path.exists(packagemaker): packagemaker = '/Developer/Tools/packagemaker'
 
 			if not os.path.exists(packagemaker):
 				print 'WARNING! ' + packagemaker + ' is missing: cannot build installer for ADL Workbench.'
