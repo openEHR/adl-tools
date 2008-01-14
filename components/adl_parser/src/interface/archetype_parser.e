@@ -111,7 +111,7 @@ feature -- Access
 			Result := target.differential_text
 		end
 
-	archetype_differential: ARCHETYPE is
+	archetype_differential: DIFFERENTIAL_ARCHETYPE is
 			-- Differential form of currently compiled archetype.
 		require
 			has_context: archetype_parsed
@@ -119,7 +119,7 @@ feature -- Access
 			Result := target.archetype_differential
 		end
 
-	archetype_flat: ARCHETYPE is
+	archetype_flat: FLAT_ARCHETYPE is
 			-- Flat form of currently compiled archetype.
 		require
 			has_context: archetype_parsed
@@ -202,7 +202,8 @@ feature -- Commands
 		require
 			Has_target: has_target
 		local
-			an_archetype: ARCHETYPE
+			a_diff_arch: DIFFERENTIAL_ARCHETYPE
+			a_flat_arch: FLAT_ARCHETYPE
 		do
 			if not exception_encountered then
 				clear_billboard
@@ -210,27 +211,27 @@ feature -- Commands
 
 				if target.has_differential_file then
 					post_info (Current, "parse_archetype", "parse_archetype_i3", Void)
-					an_archetype := adl_engine.parse (target.differential_text, True)
+					a_diff_arch := adl_engine.parse_differential (target.differential_text)
 
-					if an_archetype = Void then
+					if a_diff_arch = Void then
 						post_error (Current, "parse_archetype", "parse_archetype_e1", <<adl_engine.parse_error_text>>)
 					else
 						post_info (Current, "parse_archetype", "parse_archetype_i1", <<target.id.as_string>>)
 
 						-- Put the archetype into its directory node; note that this runs its validator(s)
-						target.set_archetype_differential (an_archetype)
+						target.set_archetype_differential (a_diff_arch)
 					end
 
 				elseif target.is_flat_file_out_of_date then
-					an_archetype := adl_engine.parse (target.flat_text, False)
+					a_flat_arch := adl_engine.parse_flat (target.flat_text)
 
-					if an_archetype = Void then
+					if a_flat_arch = Void then
 						post_error (Current, "parse_archetype", "parse_archetype_e1", <<adl_engine.parse_error_text>>)
 					else
 						post_info (Current, "parse_archetype", "parse_archetype_i1", <<target.id.as_string>>)
 
 						-- Put the archetype into its directory node; note that this runs its validator(s).
-						target.set_archetype_flat (an_archetype)
+						target.set_archetype_flat (a_flat_arch)
 					end
 				end
 
@@ -255,14 +256,14 @@ feature -- Commands
 		end
 
 	create_new_archetype(a_im_originator, a_im_name, a_im_entity, a_primary_language: STRING) is
-			-- create a new top-level archetype and install it into the directory according to its id
+			-- create a new top-level differential archetype and install it into the directory according to its id
 		require
 			Info_model_originator_valid: a_im_originator /= void and then not a_im_originator.is_empty
 			Info_model_name_valid: a_im_name /= void and then not a_im_name.is_empty
 			Info_model_entity_valid: a_im_entity /= void and then not a_im_entity.is_empty
 			Primary_language_valid: a_primary_language /= void and then not a_primary_language.is_empty
 		local
-			an_archetype: ARCHETYPE
+			an_archetype: DIFFERENTIAL_ARCHETYPE
 		do
 			if not exception_encountered then
 				create an_archetype.make_minimal(create {ARCHETYPE_ID}.make(a_im_originator, a_im_name, a_im_entity,
@@ -294,7 +295,7 @@ feature -- Commands
 			Has_target: has_target
 			Concept_valid: specialised_domain_concept /= Void and then not specialised_domain_concept.is_empty
 		local
-			an_archetype: ARCHETYPE
+			an_archetype: DIFFERENTIAL_ARCHETYPE
 		do
 			if not exception_encountered then
 				create an_archetype.make_specialised_child(archetype_differential, specialised_domain_concept)

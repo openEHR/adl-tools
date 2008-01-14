@@ -27,7 +27,7 @@ create
 
 feature -- Initialisation
 
-	make(a_flat_archetype, a_src_archetype: ARCHETYPE) is
+	make(a_flat_archetype: FLAT_ARCHETYPE; a_src_archetype: DIFFERENTIAL_ARCHETYPE) is
 			-- create with flat archetype of parent and source (differential) archetype of
 			-- archetype for which we wish to generate a flat archetype
 		require
@@ -41,13 +41,13 @@ feature -- Initialisation
 
 feature -- Access
 
-	flat_archetype: ARCHETYPE
+	flat_archetype: FLAT_ARCHETYPE
 			-- flat archetype of parent, if applicable
 
-	src_archetype: ARCHETYPE
+	src_archetype: DIFFERENTIAL_ARCHETYPE
 			-- archetype for which flat form is being generated
 
-	output: ARCHETYPE
+	output: FLAT_ARCHETYPE
 			-- generated flat archetype - logically an overlay of `flat_archetype' and `src_archetype'
 
 feature -- Commands
@@ -58,27 +58,26 @@ feature -- Commands
 			debug ("flatten")
 				io.put_string ("============== flattening archetype " + src_archetype.archetype_id.as_string + " with " + flat_archetype.archetype_id.as_string + " ==============%N")
 			end
-			output := src_archetype.deep_twin
-			output.set_flat
+			create output.make_from_differential (src_archetype)
 			flatten_definition
 			flatten_invariants
 			flatten_ontology
 			output.rebuild
-			output.build_rolled_up_status
+			output.set_is_valid (True)
 		ensure
-			output /= Void and then not output.is_differential
+			output /= Void
 		end
 
 feature -- Comparison
 
-	comparable_archetypes(a_flat_archetype, a_src_archetype: ARCHETYPE): BOOLEAN is
+	comparable_archetypes(a_flat_archetype: FLAT_ARCHETYPE; a_src_archetype: DIFFERENTIAL_ARCHETYPE): BOOLEAN is
 		require
 			Valid_flat_archetype: a_flat_archetype /= Void
 			Valid_src_archetype: a_src_archetype /= Void
 		do
-			if a_src_archetype.is_valid and a_src_archetype.is_differential then
+			if a_src_archetype.is_valid then
 				if a_src_archetype.is_specialised then
-					if a_flat_archetype.is_valid and not a_flat_archetype.is_differential then
+					if a_flat_archetype.is_valid then
 						Result := a_src_archetype.parent_archetype_id.as_string.is_equal (a_flat_archetype.archetype_id.as_string)
 					end
 				else

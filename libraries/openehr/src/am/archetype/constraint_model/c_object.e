@@ -25,7 +25,7 @@ inherit
 
 	ARCHETYPE_TERM_CODE_TOOLS
 		export
-			{NONE} all
+			{NONE} all;
 		undefine
 			default_create
 		end

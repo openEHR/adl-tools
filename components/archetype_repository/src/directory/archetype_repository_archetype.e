@@ -128,15 +128,15 @@ feature -- Access
 			end
 		end
 
-	ontology_lineage: HASH_TABLE [ARCHETYPE_ONTOLOGY, INTEGER]
+	ontology_lineage: HASH_TABLE [DIFFERENTIAL_ARCHETYPE_ONTOLOGY, INTEGER]
 			-- lineage of ontologies of archetypes from top to this one
 
-	archetype_differential: ARCHETYPE
+	archetype_differential: DIFFERENTIAL_ARCHETYPE
 			-- archetype representing differential structure with respect to parent archetype;
 			-- if this is a non-specialised archetype, then it is the same as the flat form, else
 			-- it is just the differences (like an object-oriented source file for a subclass)
 
-	archetype_flat: ARCHETYPE
+	archetype_flat: FLAT_ARCHETYPE
 			-- inheritance-flattened form of archetype
 
 	compiler_status: STRING
@@ -305,10 +305,10 @@ feature -- Comparison
 
 feature -- Modification
 
-	set_archetype_differential(an_archetype: ARCHETYPE) is
+	set_archetype_differential(an_archetype: DIFFERENTIAL_ARCHETYPE) is
 			-- create with a new differential form (i.e. source form) archetype
 		require
-			Archetype_exists: an_archetype /= Void and then an_archetype.is_differential
+			Archetype_exists: an_archetype /= Void
 		local
 			arch_flattener: ARCHETYPE_FLATTENER
 		do
@@ -316,10 +316,9 @@ feature -- Modification
 			validate
 
 			-- generate flat form
-			if is_valid then
+			if is_valid and archetype_flat = Void then
 				if not archetype_differential.is_specialised then
-					archetype_flat := archetype_differential.deep_twin
-					archetype_flat.set_flat
+					create archetype_flat.make_from_differential (archetype_differential)
 				else
 					create arch_flattener.make (specialisation_parent.archetype_flat, archetype_differential)
 					arch_flattener.flatten_archetype
@@ -330,27 +329,17 @@ feature -- Modification
 			Is_parsed: archetype_differential /= Void
 		end
 
-	set_archetype_flat(an_archetype: ARCHETYPE) is
-			-- create with a flat form archetype
+	set_archetype_flat(an_archetype: FLAT_ARCHETYPE) is
+			-- create with a flat form archetype - used for legacy archetypes not yet parsed and
+			-- converted to differential form
 		require
-			Archetype_exists: an_archetype /= Void and then not an_archetype.is_differential
-		local
-			a_diff_archetype: ARCHETYPE
+			Archetype_exists: an_archetype /= Void
 		do
 			post_info(Current, "set_archetype_flat", "parse_archetype_i2", <<id.as_string>>)
 			archetype_flat := an_archetype
-			if not an_archetype.is_specialised then
-				an_archetype.set_differential
-				set_archetype_differential(an_archetype)
-			else
-				-- make a complete clone of the archetype; could also be done by copy of serialised form and parse
-				a_diff_archetype := archetype_flat.deep_twin
-				a_diff_archetype.convert_to_differential
-				set_archetype_differential(a_diff_archetype)
-			end
+			set_archetype_differential(an_archetype.to_differential)
 		ensure
-			Archetype_loaded: archetype_flat /= Void
-		--	Archetype_validity: archetype_flat.is_valid implies archetype_differential /= Void
+			Archetype_flat_set: archetype_flat /= Void
 		end
 
 	set_specialisation_parent(a_parent: ARCH_REP_ARCHETYPE) is

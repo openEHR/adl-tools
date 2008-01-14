@@ -30,16 +30,15 @@ inherit
 
 feature -- Initialisation
 
-	initialise(an_ontology: ARCHETYPE_ONTOLOGY; an_archetype: ARCHETYPE) is
+	initialise(an_archetype: ARCHETYPE) is
 			-- set ontology required for interpreting meaning of object nodes
 			-- archetype is required as well since it contains the xref tables that are
 			-- populated by this visitor
 		require
-			Ontology_valid: an_ontology /= Void
-			Archetype_valid: an_archetype /= Void and an_archetype.ontology = an_ontology
+			Archetype_valid: an_archetype /= Void
 		do
-			initialise_visitor(an_ontology)
 			archetype := an_archetype
+			initialise_visitor(archetype.ontology)
 		end
 
 feature -- Visitor

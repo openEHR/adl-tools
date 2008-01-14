@@ -638,7 +638,7 @@ end
 
 			debug("dADL_parse")
 				io.put_string(indent + "attr_id: complex_object_nodes.item(" + complex_object_nodes.item.node_id + 
-						").put_attribute(" + attr_node.rm_attr_name + ")%N")
+						").put_attribute(<<" + attr_node.rm_attr_name + ">>)%N")
 			end
 			if not complex_object_nodes.item.has_attribute(attr_node.rm_attr_name) then
 				complex_object_nodes.item.put_attribute(attr_node)

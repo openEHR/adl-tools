@@ -490,7 +490,7 @@ feature {NONE} -- Implementation
 						if in_technical_mode then
 							a_ti.set_tooltip (utf8 (c_o.representation.path.as_string))
 						elseif archetype_directory.has_selected_archetype then
-							a_ti.set_tooltip (utf8 (target_archetype.ontology.logical_path_for_physical_path (c_o.representation.path.as_string, current_language)))
+							a_ti.set_tooltip (utf8 (target_archetype.ontology.physical_to_logical_path (c_o.representation.path.as_string, current_language)))
 						end
 					end
 
@@ -655,7 +655,7 @@ feature {NONE} -- Implementation
 			if in_technical_mode then
 				Result.set_tooltip (utf8 (an_og_node.path.as_string))
 			elseif archetype_directory.has_selected_archetype then
-				Result.set_tooltip (utf8 (target_archetype.ontology.logical_path_for_physical_path (an_og_node.path.as_string, current_language)))
+				Result.set_tooltip (utf8 (target_archetype.ontology.physical_to_logical_path (an_og_node.path.as_string, current_language)))
 			end
 
 			if not archetype_tree_root_set then
@@ -905,7 +905,7 @@ feature {NONE} -- Implementation
 			if in_technical_mode then
 				Result.append ("use " + a_node.rm_type_name + " " + a_node.target_path)
 			elseif archetype_directory.has_selected_archetype then
-				Result.append ("use " + target_archetype.ontology.logical_path_for_physical_path (a_node.target_path, current_language))
+				Result.append ("use " + target_archetype.ontology.physical_to_logical_path (a_node.target_path, current_language))
 			end
 		end
 

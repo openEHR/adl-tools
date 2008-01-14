@@ -42,10 +42,13 @@ feature -- Definitions
 	Specialisation_separator: CHARACTER is '.'
 
 	Term_code_length: INTEGER is 6
-			-- length of internal top-level term codes, e.g. "at0001"
+			-- length of top-level term codes, e.g. "at0001"
 
 	Term_code_leader: STRING is "at"
 			-- leader of all internal term codes
+
+	Constraint_code_length: INTEGER is 6
+			-- length of top-level constraint codes, e.g. "ac0001"
 
 	Constraint_code_leader: STRING is "ac"
 
@@ -101,10 +104,10 @@ feature -- Access
 			if a_depth > specialisation_depth_from_code(a_code) then
 				create Result.make (ss_inherited)
 			else
-				code_at_this_level := specialisation_section_from_code(a_code, a_depth)
+				code_at_this_level := index_from_code_at_level(a_code, a_depth)
 				code_defined_in_this_level := code_at_this_level.to_integer > 0 or else code_at_this_level.count = 4 -- takes account of anomalous "0000" code
 				if a_depth > 0 then
-					code_at_parent_level := specialisation_section_from_code(a_code, a_depth - 1)
+					code_at_parent_level := index_from_code_at_level(a_code, a_depth - 1)
 					parent_code_defined_in_level_above := code_at_parent_level.to_integer > 0 or else code_at_parent_level.count = 4 -- takes account of anomalous "0000" code
 				end
 
@@ -122,7 +125,7 @@ feature -- Access
 			end
 		end
 
-	specialisation_section_from_code(a_code: STRING; a_depth: INTEGER): STRING is
+	index_from_code_at_level(a_code: STRING; a_depth: INTEGER): STRING is
 			-- get the numeric part of the code from this code, at a_depth
 			-- for example:
 			-- 		a_code = at0001		a_depth = 0 -> 0001
@@ -211,13 +214,18 @@ feature -- Comparison
 		end
 
 	is_specialised_code(a_code: STRING): BOOLEAN is
-			-- 	a code has been specialised if there is a non-zero number above the
-			-- specialisation depth of the code
+			-- a code has been specialised if there is a non-zero code index anywhere above the last index
+			-- e.g. at0.0.1, level=3 -> False
+			--      at0001.0.1, level=3 -> True
 		require
 			Code_valid: a_code /= Void and then is_valid_code(a_code)
+		local
+			idx_str: STRING
 		do
 			if specialisation_depth_from_code(a_code) > 0 then
-				Result := a_code.substring(Term_code_leader.count+1, a_code.last_index_of(Specialisation_separator, a_code.count)-1).to_integer > 0
+				idx_str := a_code.substring(Term_code_leader.count+1, a_code.last_index_of(Specialisation_separator, a_code.count)-1)
+				idx_str.prune_all (Specialisation_separator)
+				Result := idx_str.to_integer > 0
 			end
 		end
 
@@ -243,125 +251,6 @@ feature -- Comparison
 		end
 
 feature -- Factory
-
-	new_non_specialised_term_code_at_level(a_level, last_index_at_level: INTEGER): STRING is
-			-- create a new code at level of current top code at that level is `last_index_at_level'
-		require
-			Level_valid: a_level >= 0
-			Index_valid: last_index_at_level >= 0
-		local
-			new_idx_str: STRING
-			i: INTEGER
-		do
-			if a_level > 0 then
-				create Result.make(0)
-				Result.append(Term_code_leader)
-				from
-					i := 0
-				until
-					i = a_level
-				loop
-					Result.append_character('0')
-					Result.append_character(Specialisation_separator)
-					i := i + 1
-				end
-
-				Result.append_integer(last_index_at_level+1)
-			else
-				create Result.make_filled('0', Term_code_length)
-				Result.replace_substring(Term_code_leader, 1, Term_code_leader.count)
-				new_idx_str := (last_index_at_level + 1).out
-				Result.replace_substring(new_idx_str, Result.count-new_idx_str.count+1, Result.count)
-			end
-		ensure
-			Result_exists: Result /= Void
-		end
-
-	new_specialised_term_code_at_level(a_parent_code, last_code: STRING; at_level:INTEGER): STRING is
-			-- make a new specialised code based on `a_parent_code'
-			-- e.g. "at0001" at level 2 will produce "at0001.0.1"
-			-- Note: a code of "at0001" has specialisation depth 0
-		require
-			a_parent_code_valid: a_parent_code /= Void and then not a_parent_code.is_empty
-			last_code_valid: last_code /= Void and then not last_code.is_empty
-			level_valid: at_level > 0
-		local
-			i, n: INTEGER
-		do
-			create Result.make(0)
-			Result.append(a_parent_code)
-			from
-				i := specialisation_depth_from_code(a_parent_code) + 1
-			until
-				i >= at_level
-			loop
-				Result.append_character(Specialisation_separator)
-				Result.append_character('0')
-				i := i + 1
-			end
-
-			Result.append_character(Specialisation_separator)
-			n := specialised_code_tail(last_code).to_integer
-			Result.append_integer(n+1)
-		ensure
-			Result_valid: Result /= Void and then specialised_code_tail(Result).to_integer > 0
-		end
-
-	new_concept_code_at_level(at_level:INTEGER): STRING is
-			-- make a new term code for use as the root concept code of an archetype
-			-- at level = 0 -> Default_concept_code
-			-- at level = 1 -> Default_concept_code.1
-			-- at level = 2 -> Default_concept_code.1.1
-			-- etc
-		require
-			level_valid: at_level >= 0
-		local
-			i: INTEGER
-		do
-			create Result.make(0)
-			Result.append(Default_concept_code)
-			from
-			until
-				i >= at_level
-			loop
-				Result.append_character(Specialisation_separator)
-				Result.append_character('1')
-				i := i + 1
-			end
-		ensure
-			Result_valid: Result /= Void and then valid_concept_code(Result)
-		end
-
-	new_constraint_code_from_index(last_index, specialisation_depth: INTEGER): STRING is
-			-- create a new constraint code based on current highest code `last_index'
-		require
-			Index_valid: last_index >= 0
-		local
-			new_idx_str: STRING
-			i: INTEGER
-		do
-			new_idx_str := (last_index + 1).out
-			if specialisation_depth = 0 then
-				create Result.make_filled('0', Term_code_length)
-				Result.replace_substring(Constraint_code_leader, 1, Constraint_code_leader.count)
-				Result.replace_substring(new_idx_str, Result.count-new_idx_str.count+1, Result.count)
-			else
-				create Result.make(0)
-				Result.append(Constraint_code_leader)
-				from
-					i := 1
-				until
-					i > specialisation_depth
-				loop
-					Result.append_character('0')
-					Result.append_character(Specialisation_separator)
-					i := i + 1
-				end
-				Result.append(new_idx_str)
-			end
-		ensure
-			Result_exists: Result /= Void
-		end
 
 end
 

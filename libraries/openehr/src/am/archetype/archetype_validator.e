@@ -39,7 +39,7 @@ create
 
 feature -- Access
 
-	target: ARCHETYPE
+	target: DIFFERENTIAL_ARCHETYPE
 			-- archetype descriptor
 
 	ontology: ARCHETYPE_ONTOLOGY is
@@ -59,7 +59,7 @@ feature -- Validation
 
 			if passed then
 				target.build_xrefs
-				find_unused_ontology_codes
+				report_unused_ontology_codes
 			end
 
 			if passed then
@@ -187,7 +187,10 @@ feature {NONE} -- Implementation
 			until
 				a_codes.off
 			loop
-				if not ontology.has_term_code(a_codes.key_for_iteration) then
+				if specialisation_depth_from_code (a_codes.key_for_iteration) > ontology.specialisation_depth then
+					passed := False
+					errors.append("Error: at-code " + a_codes.key_for_iteration + " used in archetype more specialised than archetype%N")
+				elseif not ontology.has_term_code(a_codes.key_for_iteration) then
 					passed := False
 					errors.append("Error: leaf at-code " + a_codes.key_for_iteration + " not defined in ontology%N")
 				end
@@ -201,7 +204,10 @@ feature {NONE} -- Implementation
 			until
 				a_codes.off
 			loop
-				if not ontology.has_constraint_code(a_codes.key_for_iteration) then
+				if specialisation_depth_from_code (a_codes.key_for_iteration) > ontology.specialisation_depth then
+					passed := False
+					errors.append("Error: ac-code " + a_codes.key_for_iteration + " used in archetype more specialised than archetype%N")
+				elseif not ontology.has_constraint_code(a_codes.key_for_iteration) then
 					passed := False
 					errors.append("Error: found ac-code " + a_codes.key_for_iteration + " not defined in all languages in ontology%N")
 				end
@@ -214,7 +220,7 @@ feature {NONE} -- Implementation
 		local
 			use_refs: HASH_TABLE[ARRAYED_LIST[ARCHETYPE_INTERNAL_REF], STRING]
 			found: BOOLEAN
-			arch: ARCHETYPE
+			arch: DIFFERENTIAL_ARCHETYPE
 		do
 			use_refs := target.use_node_path_xref_table
 			from
@@ -242,34 +248,26 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	find_unused_ontology_codes is
+	report_unused_ontology_codes is
 			-- populate lists of at-codes and ac-codes found in ontology that
 			-- are not referenced anywhere in the archetype definition
 		do
 			from
-				ontology.term_codes.start
+				target.ontology_unused_term_codes.start
 			until
-				ontology.term_codes.off
+				target.ontology_unused_term_codes.off
 			loop
-				if not target.id_at_codes_xref_table.has(ontology.term_codes.item) and not
-						target.data_at_codes_xref_table.has(ontology.term_codes.item) then
-					target.ontology_unused_term_codes.extend(ontology.term_codes.item)
-					warnings.append("Warning: term code " + ontology.term_codes.item + " in ontology not used in archetype definition%N")
-				end
-				ontology.term_codes.forth
+				warnings.append("Warning: term code " + target.ontology_unused_term_codes.item + " in ontology not used in archetype definition%N")
+				target.ontology_unused_term_codes.forth
 			end
-			target.ontology_unused_term_codes.prune(target.concept)
 
 			from
-				ontology.constraint_codes.start
+				target.ontology_unused_constraint_codes.start
 			until
-				ontology.constraint_codes.off
+				target.ontology_unused_constraint_codes.off
 			loop
-				if not target.ac_codes_xref_table.has(ontology.constraint_codes.item) then
-					target.ontology_unused_constraint_codes.extend(ontology.constraint_codes.item)
-					warnings.append("Warning: constraint code " + ontology.constraint_codes.item + " in ontology not used in archetype definition%N")
-				end
-				ontology.constraint_codes.forth
+				warnings.append("Warning: constraint code " + target.ontology_unused_constraint_codes.item + " in ontology not used in archetype definition%N")
+				target.ontology_unused_constraint_codes.forth
 			end
 		end
 

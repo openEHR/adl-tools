@@ -1,34 +1,49 @@
 indexing
 	component:   "openEHR Archetype Project"
-	description: "Abstract model of any visitable object"
-	keywords:    "archetype, ADL"
+	description: "Archetype abstraction"
+	keywords:    "archetype"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2003-2008 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
+	file:        "$URL: http://www.openehr.org/svn/ref_impl_eiffel/BRANCHES/specialisation/libraries/openehr/src/am/archetype/archetype.e $"
 	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	last_change: "$LastChangedDate: 2008-01-11 20:33:58 +0000 (Fri, 11 Jan 2008) $"
 
-deferred class VISITABLE
+class FLAT_ARCHETYPE
 
-feature -- Visitor
-
-	enter_subtree(visitor: ANY; depth: INTEGER) is
-			-- perform action at start of block for this node
-		require
-			Visitor_exists: visitor /= Void
-			Depth_valid: depth >= 0
-		deferred
+inherit
+	ARCHETYPE
+		redefine
+			ontology
 		end
 
-	exit_subtree(visitor: ANY; depth: INTEGER) is
-			-- perform action at end of block for this node
-		require
-			Visitor_exists: visitor /= Void
-			Depth_valid: depth >= 0
-		deferred
+create
+	make, make_from_differential
+
+feature -- Initialisation
+
+	make_from_differential (a_diff: DIFFERENTIAL_ARCHETYPE) is
+			-- initialise from a differential archetype
+		do
+			make(a_diff.archetype_id.deep_twin, a_diff.concept.deep_twin,
+					a_diff.original_language.code_string, a_diff.description.deep_twin,
+					a_diff.definition.deep_twin, a_diff.ontology.to_flat)
+			rebuild
+			is_valid := True
+		end
+
+feature -- Access
+
+	ontology: FLAT_ARCHETYPE_ONTOLOGY
+
+feature -- Factory
+
+	to_differential: DIFFERENTIAL_ARCHETYPE
+			-- generate differential form of archetype if specialised, to be in differential form by removing inherited parts
+		do
+			create Result.make_from_flat(Current)
 		end
 
 end
@@ -48,13 +63,14 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is cadl_item.e.
+--| The Original Code is adl_archetype.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):
+--|	Sam Heard
 --|
 --| Alternatively, the contents of this file may be used under the terms of
 --| either the GNU General Public License Version 2 or later (the 'GPL'), or
