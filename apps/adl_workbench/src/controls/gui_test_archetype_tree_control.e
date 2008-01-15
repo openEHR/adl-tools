@@ -382,8 +382,8 @@ feature -- Tests
 				-- 'adl' directory in the repository path; 'html/adl' means "the ADL form of HTML", since
 				-- there are other things in the html directory.
 				html_fname := archetype_parser.target.full_path.twin
-				html_fname.replace_substring(".html", html_fname.count - Archetype_flat_file_extension.count, html_fname.count)
-				archetype_parser.save_archetype_as(html_fname, "html")
+				html_fname.append(".html")
+				archetype_parser.save_archetype_flat_as(html_fname, "html")
 
 				if archetype_parser.save_succeeded then
 					Result := test_passed
@@ -405,7 +405,7 @@ feature -- Tests
 					archetype_parser.save_archetype_flat
 				else
 					new_adl_file_path := file_system.pathname (system_temp_file_directory, file_system.basename (archetype_parser.target.full_path))
-					archetype_parser.save_archetype_as (new_adl_file_path, "adl")
+					archetype_parser.save_archetype_differential_as (new_adl_file_path, "adl")
 				end
 
 				if archetype_parser.save_succeeded then

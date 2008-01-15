@@ -322,11 +322,7 @@ feature -- Commands
 				status.wipe_out
 				save_succeeded := False
 				if archetype_valid then
-					if target.is_specialised then
-						serialised_differential := adl_engine.serialise(archetype_differential, "adl")
-					else
-						serialised_differential := adl_engine.serialise(archetype_flat, "adl")
-					end
+					serialised_differential := adl_engine.serialise(archetype_differential, "adl")
 					target.save_differential (serialised_differential)
 					save_succeeded := True
 				else
@@ -375,8 +371,8 @@ feature -- Commands
 			retry
 		end
 
-	save_archetype_as(a_full_path: STRING; serialise_format: STRING) is
-			-- Save current target archetype to `a_full_path' in `serialise_format'.
+	save_archetype_differential_as(a_full_path: STRING; serialise_format: STRING) is
+			-- Save current source archetype to `a_full_path' in `serialise_format'.
 		require
 			Has_target: has_target
 			path_valid: a_full_path /= Void and then not a_full_path.is_empty
@@ -386,12 +382,37 @@ feature -- Commands
 				status.wipe_out
 				save_succeeded := False
 				if archetype_valid then
-					if target.is_specialised then
-						serialised_differential := adl_engine.serialise(archetype_differential, serialise_format)
-						target.save_differential_as (a_full_path, serialised_differential)
-					else
-						serialised_differential := serialised_flat
-					end
+					serialised_differential := adl_engine.serialise(archetype_differential, serialise_format)
+					target.save_differential_as (a_full_path, serialised_differential)
+					save_succeeded := True
+				else
+					post_error(Current, "save_archetype", "save_archetype_e2", Void)
+				end
+			else
+				post_error(Current, "save_archetype", "save_archetype_e3", Void)
+			end
+			status.wipe_out
+			status.append(billboard_content)
+			clear_billboard
+		ensure
+			save_succeeded or else not status.is_empty
+		rescue
+			post_error(Current, "save_archetype", "report_exception", <<exception.out, exception_trace>>)
+			exception_encountered := True
+			retry
+		end
+
+	save_archetype_flat_as(a_full_path: STRING; serialise_format: STRING) is
+			-- Save current flat archetype to `a_full_path' in `serialise_format'.
+		require
+			Has_target: has_target
+			path_valid: a_full_path /= Void and then not a_full_path.is_empty
+			Serialise_format_valid: serialise_format /= Void and then has_archetype_serialiser_format(serialise_format)
+		do
+			if not exception_encountered then
+				status.wipe_out
+				save_succeeded := False
+				if archetype_valid then
 					serialised_flat := adl_engine.serialise(archetype_flat, serialise_format)
 					target.save_flat_as (a_full_path, serialised_flat)
 					save_succeeded := True

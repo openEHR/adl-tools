@@ -47,14 +47,14 @@ feature -- Initialisation
 			Is_dirty: is_dirty
 		end
 
-	make_specialised_child(other: ARCHETYPE; a_spec_concept: STRING) is
+	make_specialised_child(a_parent: ARCHETYPE; a_spec_concept: STRING) is
 			-- make this archetype as a specialisation 1 level below the 'other'
 		require
-			Other_valid: other /= Void and then other.is_valid
+			Other_valid: a_parent /= Void and then a_parent.is_valid
 			Concept_valid: a_spec_concept /= Void and then not a_spec_concept.is_empty
 		do
-			make_minimal(other.archetype_id.create_specialised_id(a_spec_concept), other.original_language.as_string, other.specialisation_depth+1)
-			create parent_archetype_id.make_from_string(other.archetype_id.value)
+			make_minimal(a_parent.archetype_id.create_specialised_id(a_spec_concept), a_parent.original_language.as_string, a_parent.specialisation_depth+1)
+			create parent_archetype_id.make_from_string(a_parent.archetype_id.value)
 		end
 
 	make_from_flat (a_flat: FLAT_ARCHETYPE) is

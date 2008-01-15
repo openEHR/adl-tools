@@ -338,6 +338,7 @@ feature -- Modification
 			post_info(Current, "set_archetype_flat", "parse_archetype_i2", <<id.as_string>>)
 			archetype_flat := an_archetype
 			set_archetype_differential(an_archetype.to_differential)
+			archetype_flat.set_is_valid (is_valid)
 		ensure
 			Archetype_flat_set: archetype_flat /= Void
 		end

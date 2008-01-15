@@ -336,7 +336,7 @@ feature -- Archetype Commands
 		end
 
 	save_adl_file is
-			-- Save ADL file via GUI File save dialog
+			-- Save ADL source file via GUI File save dialog
 		local
 			ok_to_write: BOOLEAN
 			question_dialog: EV_QUESTION_DIALOG
@@ -391,7 +391,7 @@ feature -- Archetype Commands
 					end
 
 					if ok_to_write then
-						archetype_parser.save_archetype_as (name, format)
+						archetype_parser.save_archetype_differential_as (name, format)
 						parser_status_area.append_text (archetype_parser.status)
 
 						-- FIXME: currently this refreshes the whole view and forgets what archetype the user was on;
