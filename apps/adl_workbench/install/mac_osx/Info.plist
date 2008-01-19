@@ -3,17 +3,19 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleGetInfoString</key>
-	<string>1.4.2, OpenEHR</string>
+	<string>1.4.1.0, Copyright © 2003-2008 Ocean Informatics Pty Ltd</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.openehr.adl_workbench</string>
+	<string>com.oceaninformatics.adl_workbench</string>
+	<key>CFBundleName</key>
+	<string>ADL Workbench</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.4.2</string>
+	<string>1.4.1</string>
 	<key>IFMajorVersion</key>
 	<integer>1</integer>
 	<key>IFMinorVersion</key>
 	<integer>4</integer>
 	<key>IFPkgFlagAllowBackRev</key>
-	<false/>
+	<true/>
 	<key>IFPkgFlagAuthorizationAction</key>
 	<string>AdminAuthorization</string>
 	<key>IFPkgFlagBackgroundAlignment</key>
@@ -21,13 +23,11 @@
 	<key>IFPkgFlagBackgroundScaling</key>
 	<string>none</string>
 	<key>IFPkgFlagDefaultLocation</key>
-	<string>/Applications/OpenEHR</string>
+	<string>/Applications/Ocean Informatics</string>
 	<key>IFPkgFlagFollowLinks</key>
-	<true/>
+	<false/>
 	<key>IFPkgFlagInstallFat</key>
 	<false/>
-	<key>IFPkgFlagInstalledSize</key>
-	<integer>21504</integer>
 	<key>IFPkgFlagIsRequired</key>
 	<false/>
 	<key>IFPkgFlagOverwritePermissions</key>

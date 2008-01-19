@@ -1,4 +1,4 @@
-import os, re, subprocess
+import os, shutil, re, subprocess
 from Eiffel import files
 
 EnsurePythonVersion(2, 4)
@@ -43,60 +43,61 @@ def eiffel(target, ecf, ectarget = None):
 	return result
 
 adl_workbench = eiffel('adl_workbench', 'apps/adl_workbench/app/adl_workbench.ecf')
+versioned_targets = [adl_workbench]
+
 eiffel('openehr_test',     'libraries/openehr/test/app/openehr_test.ecf')
 eiffel('adl_parser_test',  'components/adl_parser/test/app/adl_parser_test.ecf')
 eiffel('common_libs_test', 'libraries/common_libs/test/app/common_libs_test.ecf')
 
 if platform == 'windows':
 	adl_parser = eiffel('OceanInformatics.AdlParser.dll', 'components/adl_parser/lib/dotnet_dll/adl_parser.ecf', 'adl_parser')
+	versioned_targets += [adl_parser]
 
 # Define how to put installers, etc., into the distribution directory.
 
 distrib = None
+installer = None
 
 for target in COMMAND_LINE_TARGETS:
 	s = os.path.normpath(target)
 
 	while distrib == None and s != os.path.dirname(s):
 		if os.path.basename(s) == 'oe_distrib':
-			distrib = s + '/' + platform + '/'
+			distrib = s + '/' + platform
 		else:
 			s = os.path.dirname(s)
 
 if distrib:
-	icons = 'apps/adl_workbench/app/icons'
 	news = 'apps/adl_workbench/app/news.txt'
-	vim = files('apps/adl_workbench/etc/vim/*')
-	install = 'apps/adl_workbench/install/' + platform + '/'
-	root = install + 'ADL_Workbench/'
+	icons = 'apps/adl_workbench/app/icons'
+	vim = 'apps/adl_workbench/etc/vim'
+	install = 'apps/adl_workbench/install/' + platform
+
+	adl_workbench_installer_sources = [adl_workbench[2], news]
+
+	for dir in [icons, vim, install]:
+		for source, dirnames, filenames in os.walk(dir):
+			if '.svn' in dirnames: dirnames.remove('.svn')
+			adl_workbench_installer_sources += files(source + '/*')
 
 	if platform == 'windows':
 		if len(adl_workbench) > 2:
 			if not env.Detect('makensis'):
 				print 'WARNING! NSIS is missing from your path: cannot build installer for ADL Workbench.'
 			else:
-				sources = [
-					root + 'ADLWorkbenchInstall.nsi',
-					adl_workbench[2],
-					news
-				] + vim
-
-				for source, dirnames, filenames in os.walk(icons):
-					if '.svn' in dirnames: dirnames.remove('.svn')
-					sources += files(source + '/*')
-
 				command = [
 					'makensis', '-V1',
 					'-XOutFile ${TARGET.abspath}',
-					'$SOURCE'
+					install + '/ADL_Workbench/ADLWorkbenchInstall.nsi'
 				]
 
-				env.Command(distrib + 'tools/OceanADLWorkbenchInstall.exe', sources, [command])
+				installer = env.Command(distrib + '/tools/OceanADLWorkbenchInstall.exe', adl_workbench_installer_sources, [command])
+				versioned_targets += [installer]
 
 		if len(adl_parser) > 2:
 			unmanaged_dll = os.path.dirname(str(adl_parser[2])) + '/lib' + os.path.basename(str(adl_parser[2]))
 			SideEffect(unmanaged_dll, adl_parser[2])
-			Install(distrib + 'adl_parser/dotnet', [adl_parser[2], unmanaged_dll])
+			Install(distrib + '/adl_parser/dotnet', [adl_parser[2], unmanaged_dll])
 
 	if platform == 'mac_osx':
 		if len(adl_workbench) > 2:
@@ -106,65 +107,86 @@ if distrib:
 			if not os.path.exists(packagemaker):
 				print 'WARNING! ' + packagemaker + ' is missing: cannot build installer for ADL Workbench.'
 			else:
-				bin = root + 'ADL Workbench.app/Contents/Resources/bin/'
-				resources = install + 'English.lproj/'
-				info = install + 'Info.plist'
-				description = install + 'Description.plist'
+				pkg_work = distrib + '/' + platform
+				pkg_root = pkg_work + '/ADL_Workbench'
+				pkg_resources = pkg_work + '/English.lproj'
 
-				sources = [info, description]
-				sources += Install(bin, [adl_workbench[2], news])
-				sources += Install(root + 'vim', vim)
-				sources += InstallAs(resources + 'Welcome.txt', news)
+				def copy_tree(src, dir):
+					name = os.path.basename(src)
 
-				for source, dirnames, filenames in os.walk(icons):
-					if '.svn' in dirnames: dirnames.remove('.svn')
-					subdir = os.path.basename(source)
-					if subdir == 'icons': subdir = ''
-					sources += Install(bin + 'icons/' + subdir, files(source + '/*'))
+					if not name.startswith('.'):
+						dst = os.path.join(dir, name)
 
-				for source, dirnames, filenames in os.walk(root + 'ADL Workbench.app'):
-					if '.svn' in dirnames: dirnames.remove('.svn')
-					if 'bin' in dirnames: dirnames.remove('bin')
-					sources += files(source + '/*')
+						if os.path.isfile(src):
+							shutil.copy2(src, dst)
+						else:
+							os.mkdir(dst)
+							for name in os.listdir(src): copy_tree(os.path.join(src, name), dst)
 
-				for html, txt in [
-					[resources + 'ReadMe.html', 'apps/doc/README-adl_workbench.txt'],
-					[resources + 'License.html', 'apps/doc/LICENSE.txt']
-				]:
-					substitutions = 's|\&|\&amp;|;'
-					substitutions += 's|\<|\&lt;|;'
-					substitutions += 's|\>|\&gt;|;'
-					substitutions += '2s|^.+$|<h2>&</h2>|;'
-					substitutions += 's|^[A-Z].+$|<h3>&</h3>|;'
-					substitutions += 's|^$|<br><br>|;'
-					substitutions += 's|^-+$||'
-					sources += env.Command(html, txt, 'sed -E \'' + substitutions + '\' $SOURCE > $TARGET')
+				def copy_installer_sources(target, source, env):
+					copy_tree(install, distrib)
+					copy_tree(vim, pkg_root)
+
+					for src in [str(adl_workbench[2]), news, icons]:
+						copy_tree(src, pkg_root + '/ADL Workbench.app/Contents/Resources/')
+
+					shutil.copy2(news, pkg_resources + '/Welcome.txt')
+
+					for html, txt in [['ReadMe.html', 'README-adl_workbench.txt'], ['License.html', 'LICENSE.txt']]:
+						substitutions = 's|\&|\&amp;|;'
+						substitutions += 's|\<|\&lt;|;'
+						substitutions += 's|\>|\&gt;|;'
+						substitutions += '2s|^.+$|<h2>&</h2>|;'
+						substitutions += 's|^[A-Z].+$|<h3>&</h3>|;'
+						substitutions += 's|^$|<br><br>|;'
+						substitutions += 's|^-+$||'
+						f = open(pkg_resources + '/' + html, 'w')
+						f.write(os.popen('sed -E \'' + substitutions + '\' apps/doc/' + txt).read())
+						f.close()
+
+				pkg_name = ''
+				match = re.match(r'\d+', os.popen('uname -r').read())
+
+				if match:
+					pkg_name = match.group()
+					if pkg_name == '8': pkg_name = 'for Tiger '
+					if pkg_name == '9': pkg_name = 'for Leopard '
+
+				pkg_name = 'ADL Workbench ' + pkg_name + os.popen('uname -p').read().strip()
+				pkg_path = pkg_work + '/' + pkg_name + '.pkg'
 
 				command = [
 					packagemaker, '-build',
-					'-p', '${TARGET.dir.dir}',
-					'-f', root,
-					'-r', resources,
-					'-i', info,
-					'-d', description
+					'-p', pkg_path,
+					'-f', pkg_root,
+					'-r', pkg_resources,
+					'-i', pkg_work + '/Info.plist',
+					'-d', pkg_work + '/Description.plist'
 				]
 
-				env.Command(distrib + 'tools/ADL Workbench.pkg/Contents/Archive.pax.gz', sources, [command])
+				installer = env.Command(distrib + '/tools/' + pkg_name + '.dmg', adl_workbench_installer_sources + files('apps/doc/*.txt'), [
+					Delete(pkg_work),
+					env.Action(copy_installer_sources, 'Copying installer files to ' + pkg_work),
+					command,
+					Delete(pkg_root),
+					['hdiutil', 'create', '-srcfolder', pkg_path, '$TARGET']
+					])
+
+				versioned_targets += [installer]
 
 	# Set the Subversion revision number as the final part of the file version string.
 
 	if not env.Detect('svnversion'):
 		print 'WARNING! The svnversion command is missing from your path: cannot set the revision part of the version number.'
 	else:
-		revision = re.match(r'\d+', os.popen('svnversion').read())
+		match = re.match(r'\d+', os.popen('svnversion .').read())
 
-		if revision:
-			revision = revision.group()
+		if match:
+			revision = match.group()
 
-			def rename_file(src, dst):
-				if os.path.exists(src):
-					if os.path.exists(dst): os.remove(dst)
-					os.rename(src, dst)
+			def backup_filename(filename):
+				split = os.path.split(filename)
+				return os.path.join(split[0], '.' + split[1] + '.bak')
 
 			def set_revision_from_subversion(target, source, env):
 				global backed_up_files
@@ -172,30 +194,44 @@ if distrib:
 				substitutions = [['libraries/version/openehr_version.e', r'\b(revision:\s*INTEGER\s*=\s*)\d+']]
 
 				if platform == 'windows':
-					if target == adl_workbench: substitutions += [['apps/adl_workbench/app/adl_workbench.rc', r'(#define\s+VER_\S+\s+"?\d+[,.]\d+[,.]\d+[,.])\d+']]
-					if target == adl_parser: substitutions += [['components/adl_parser/lib/dotnet_dll/adl_parser.ecf', r'(<version\s+major="\d+"\s+minor="\d+"\s+release="\d+"\s+build=")\d+']]
+					if target == adl_workbench:
+						substitutions += [['apps/adl_workbench/app/adl_workbench.rc', r'(#define\s+VER_\S+\s+"?\d+[,.]\d+[,.]\d+[,.])\d+']]
+
+					if target == adl_parser:
+						substitutions += [['components/adl_parser/lib/dotnet_dll/adl_parser.ecf', r'(<version\s+major="\d+"\s+minor="\d+"\s+release="\d+"\s+build=")\d+']]
+					if target == installer:
+						substitutions = [[install + '/ADL_Workbench/ADLWorkbenchInstall.nsi', r'(VIProductVersion\s+\d+\.\d+\.\d+\.)\d+']]
+
+				if platform == 'mac_osx' and target == installer:
+					pattern = r'(<string>\d+\.\d+\.\d+\.)\d+'
+					substitutions = [
+						[install + '/Info.plist', pattern],
+						[install + '/ADL_Workbench/ADL Workbench.app/Contents/Info.plist', pattern]
+						]
 
 				for filename, pattern in substitutions:
-					bak = filename + '.bak'
-					rename_file(filename, bak)
-					backed_up_files.append(filename)
-
-					f = open(bak, 'r')
+					f = open(filename, 'r')
 					try: s = f.read()
 					finally: f.close()
 
-					s = re.sub(pattern, r'\g<1>' + revision, s)
-					f = open(filename, 'w')
-					try: f.write(s)
-					finally: f.close()
+					if s:
+						s = re.sub(pattern, r'\g<1>' + revision, s)
+						bak = backup_filename(filename)
+						if os.path.exists(filename) and not os.path.exists(bak): os.rename(filename, bak)
+						backed_up_files.append(filename)
+						f = open(filename, 'w')
+						try: f.write(s)
+						finally: f.close()
 
 			def restore_backed_up_files(target, source, env):
 				global backed_up_files
 
 				for filename in backed_up_files:
-					rename_file(filename + '.bak', filename)
+					bak = backup_filename(filename)
 
-			targets = [adl_workbench]
-			if platform == 'windows': targets += [adl_parser]
-			env.AddPreAction(targets, env.Action(set_revision_from_subversion, None))
-			env.AddPostAction(targets, env.Action(restore_backed_up_files, None))
+					if os.path.exists(bak):
+						if os.path.exists(filename): os.remove(filename)
+						os.rename(bak, filename)
+
+			env.AddPreAction(versioned_targets, env.Action(set_revision_from_subversion, 'Setting revision ' + revision + ' ...'))
+			env.AddPostAction(versioned_targets, env.Action(restore_backed_up_files, None))
