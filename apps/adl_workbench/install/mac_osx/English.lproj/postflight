@@ -1,0 +1,5 @@
+#!/bin/sh
+
+echo $SCRIPT_NAME: launching ADL Workbench
+open -b com.oceaninformatics.adl_workbench
+exit 0

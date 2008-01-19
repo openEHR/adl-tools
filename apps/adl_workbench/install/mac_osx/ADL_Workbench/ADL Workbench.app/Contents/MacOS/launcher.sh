@@ -1,60 +1,38 @@
 #!/bin/bash
 
 if [ -r ~/.bashrc ]; then
-    source ~/.bashrc
+	source ~/.bashrc
 fi
 
+open -a Console
+
+LAUNCH="$HOME/Library/Application Support/ADL Workbench"
 echo -----------------------------------------
-echo Launching the X server
+echo Launching $LAUNCH
 
-ps -wx -ocommand | grep -e '[X]11' > /dev/null
+if [ `uname -r | sed 's/\..*//'` == 8 ]; then
+	if [ -z "$DISPLAY" ]; then
+		echo 'Setting DISPLAY environment variable to default value.'
+		export DISPLAY=:0.0
+	fi
 
-if [ "$?" != "0" -a ! -f ~/.xinitrc ]; then
+	if [ -z "`ps -wx -ocommand | grep -e '[X]11'`" -a ! -f ~/.xinitrc ]; then
+		echo 'Opening X11 directly, with modified copy of xinitrc to prevent redundant xterm window.'
         echo "rm -f ~/.xinitrc" > ~/.xinitrc
-        sed 's/xterm/# xterm/' /usr/X11R6/lib/X11/xinit/xinitrc >> ~/.xinitrc
+		sed 's/xterm/# xterm/' /usr/X11R6/lib/X11/xinit/xinitrc >> ~/.xinitrc
+		open -a X11
+	fi
 fi
 
-CWD="`dirname \"\`dirname \"$0\"\`\"`/Resources"
-export "ETC=$HOME/Library/Application Support/ADL Workbench"
+mkdir -p "$LAUNCH"
+cd "$LAUNCH"
 
-mkdir -p "$ETC"
-rm -f "$ETC/display"
+for f in *; do
+	if [ -L "$f" ]; then rm "$f"; fi
+done
 
-echo '#!/bin/sh
-if [ "$DISPLAY"x == "x" ]; then
-    echo :0 > "'$ETC'/display"
-else
-    echo $DISPLAY > "'$ETC'/display"
-fi
-' > "$ETC/display.sh"
+for f in "`dirname \"\`dirname \"$0\"\`\"`"/Resources/*; do
+	ln -fsv "$f";
+done
 
-chmod 777 "$ETC/display.sh"
-
-/usr/bin/open-x11 "$ETC/display.sh" || \
-open -a XDarwin "$ETC/display.sh" || \
-echo ":0" > "$ETC/display"
-
-while [ "$?" == "0" -a ! -f "$ETC/display" ]; do sleep 1; done
-export "DISPLAY=`cat \"$ETC/display\"`"
-
-ps -wx -ocommand | grep -e '[X]11' > /dev/null || exit 11
-
-echo Setting up GTK environment variables
-
-export "PKG_CONFIG_PATH=$CWD/lib/pkgconfig"
-export "DYLD_LIBRARY_PATH=$CWD/lib"
-export "PATH=$CWD:$PATH:/usr/X11R6/bin"
-
-echo Creating GTK settings files
-
-sed 's|${HOME}|'"$HOME|g" "$CWD/etc/pango/pangorc" > "$ETC/pangorc"
-sed 's|${CWD}|'"$CWD|g" "$CWD/etc/pango/pango.modules" > "$ETC/pango.modules"
-cp -f "$CWD/etc/pango/pangox.aliases" "$ETC"
-sed 's|${CWD}|'"$CWD|g" "$CWD/etc/gtk-2.0/gtk.immodules" > "$ETC/gtk.immodules"
-sed 's|${CWD}|'"$CWD|g" "$CWD/etc/gtk-2.0/gdk-pixbuf.loaders" > "$ETC/gdk-pixbuf.loaders"
-
-echo Launching ADL Workbench
-
-cd "$ETC"
-for f in `ls "$CWD/bin"`; do ln -fsv "$CWD/bin/$f"; done
-./adl_workbench || open /Applications/Utilities/Console.app &
+./adl_workbench &

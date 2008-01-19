@@ -11,18 +11,18 @@ AUTHORS
 	Ocean Informatics <www.OceanInformatics.com>
 
 COPYRIGHT
-	The software, including all files in this directory and subdirectories 
-	is copyrighted to Ocean Informatics Pty Ltd, Australia, 2003-2007.
+	The software, including all files in this directory and subdirectories
+	is copyrighted to Ocean Informatics Pty Ltd, Australia, 2003-2008.
 
 	The source code is licensed under the Mozilla triple licence. See the
 	files mpl-tri-license-txt.txt, MPL-1.1.txt, gpl.txt and lgpl.txt in this
 	archive.
 
-	The ADL language specification document is copyright to The openEHR 
+	The ADL language specification document is copyright to The openEHR
 	Foundation, and licensed for open use according to the copyright notice
 	appearing in the front of the document.
 
 USE
 	The archetype files, ADL workbench, and PDF manual can all be freely
 	distributed provided they are kept intact, and are accompanied by this
-	file. 
+	file.

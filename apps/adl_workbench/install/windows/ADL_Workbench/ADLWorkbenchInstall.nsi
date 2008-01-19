@@ -57,7 +57,7 @@ VIAddVersionKey CompanyName "${COMPANY}"
 VIAddVersionKey CompanyWebsite "${URL}"
 VIAddVersionKey FileVersion "${VERSION}"
 VIAddVersionKey FileDescription "ADL Workbench Installer"
-VIAddVersionKey LegalCopyright "Copyright Ocean Informatics Pty Ltd 2007"
+VIAddVersionKey LegalCopyright "Copyright 2003-2008 Ocean Informatics Pty Ltd"
 InstallDirRegKey HKLM "${REGKEY}" Path
 ShowUninstDetails show
 
