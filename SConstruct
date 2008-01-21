@@ -7,6 +7,7 @@ EnsureSConsVersion(0, 97, 0)
 env = Environment(ENV = os.environ, tools = ['Eiffel'], toolpath = ['.'])
 
 if env['PLATFORM'] == 'win32': platform = 'windows'
+if env['PLATFORM'] == 'posix': platform = 'linux'
 if env['PLATFORM'] == 'darwin': platform = 'mac_osx'
 
 # Define how to build the parser classes.
@@ -56,7 +57,6 @@ if platform == 'windows':
 # Define how to put installers, etc., into the distribution directory.
 
 distrib = None
-installer = None
 
 for target in COMMAND_LINE_TARGETS:
 	s = os.path.normpath(target)
@@ -72,16 +72,19 @@ if distrib:
 	icons = 'apps/adl_workbench/app/icons'
 	vim = 'apps/adl_workbench/etc/vim'
 	install = 'apps/adl_workbench/install/' + platform
+	installer = None
+	adl_workbench_installer_sources = None
 
-	adl_workbench_installer_sources = [adl_workbench[2], news]
+	if len(adl_workbench) > 2:
+		adl_workbench_installer_sources = [adl_workbench[2], news]
 
-	for dir in [icons, vim, install]:
-		for source, dirnames, filenames in os.walk(dir):
-			if '.svn' in dirnames: dirnames.remove('.svn')
-			adl_workbench_installer_sources += files(source + '/*')
+		for dir in [icons, vim, install]:
+			for source, dirnames, filenames in os.walk(dir):
+				if '.svn' in dirnames: dirnames.remove('.svn')
+				adl_workbench_installer_sources += files(source + '/*')
 
 	if platform == 'windows':
-		if len(adl_workbench) > 2:
+		if adl_workbench_installer_sources:
 			if not env.Detect('makensis'):
 				print 'WARNING! NSIS is missing from your path: cannot build installer for ADL Workbench.'
 			else:
@@ -92,24 +95,41 @@ if distrib:
 				]
 
 				installer = env.Command(distrib + '/tools/OceanADLWorkbenchInstall.exe', adl_workbench_installer_sources, [command])
-				versioned_targets += [installer]
 
 		if len(adl_parser) > 2:
 			unmanaged_dll = os.path.dirname(str(adl_parser[2])) + '/lib' + os.path.basename(str(adl_parser[2]))
 			SideEffect(unmanaged_dll, adl_parser[2])
 			Install(distrib + '/adl_parser/dotnet', [adl_parser[2], unmanaged_dll])
 
+	if platform == 'linux':
+		if adl_workbench_installer_sources:
+			def create_linux_installer(target, source, env):
+				import tarfile
+				tar = tarfile.open(str(target[0]), 'w:bz2')
+				tar.add(str(adl_workbench[2]), os.path.basename(str(adl_workbench[2])))
+				tar.add(news, os.path.basename(news))
+
+				for root in [icons, vim]:
+					for dir, dirnames, filenames in os.walk(root):
+						if '.svn' in dirnames: dirnames.remove('.svn')
+						archived_dir = dir[len(os.path.dirname(root)) + 1:]
+						for name in filenames: tar.add(os.path.join(dir, name), os.path.join(archived_dir, name))
+
+				tar.close()
+
+			env.Command(distrib + '/tools/adl_workbench-linux.tar.bz2', adl_workbench_installer_sources, create_linux_installer)
+
 	if platform == 'mac_osx':
-		if len(adl_workbench) > 2:
+		if adl_workbench_installer_sources:
 			packagemaker = '/Developer/usr/bin/packagemaker'
 			if not os.path.exists(packagemaker): packagemaker = '/Developer/Tools/packagemaker'
 
 			if not os.path.exists(packagemaker):
 				print 'WARNING! ' + packagemaker + ' is missing: cannot build installer for ADL Workbench.'
 			else:
-				pkg_work = distrib + '/' + platform
-				pkg_root = pkg_work + '/ADL_Workbench'
-				pkg_resources = pkg_work + '/English.lproj'
+				pkg_tree = distrib + '/' + platform
+				pkg_root = pkg_tree + '/ADL_Workbench'
+				pkg_resources = pkg_tree + '/English.lproj'
 
 				def copy_tree(src, dir):
 					name = os.path.basename(src)
@@ -123,7 +143,7 @@ if distrib:
 							os.mkdir(dst)
 							for name in os.listdir(src): copy_tree(os.path.join(src, name), dst)
 
-				def copy_installer_sources(target, source, env):
+				def copy_mac_osx_installer_sources(target, source, env):
 					copy_tree(install, distrib)
 					copy_tree(vim, pkg_root)
 
@@ -153,26 +173,24 @@ if distrib:
 					if pkg_name == '9': pkg_name = 'for Leopard '
 
 				pkg_name = 'ADL Workbench ' + pkg_name + os.popen('uname -p').read().strip()
-				pkg_path = pkg_work + '/' + pkg_name + '.pkg'
+				pkg_path = pkg_tree + '/' + pkg_name + '.pkg'
 
 				command = [
 					packagemaker, '-build',
 					'-p', pkg_path,
 					'-f', pkg_root,
 					'-r', pkg_resources,
-					'-i', pkg_work + '/Info.plist',
-					'-d', pkg_work + '/Description.plist'
+					'-i', pkg_tree + '/Info.plist',
+					'-d', pkg_tree + '/Description.plist'
 				]
 
 				installer = env.Command(distrib + '/tools/' + pkg_name + '.dmg', adl_workbench_installer_sources + files('apps/doc/*.txt'), [
-					Delete(pkg_work),
-					env.Action(copy_installer_sources, 'Copying installer files to ' + pkg_work),
+					Delete(pkg_tree),
+					env.Action(copy_mac_osx_installer_sources, 'Copying installer files to ' + pkg_tree),
 					command,
 					Delete(pkg_root),
 					['hdiutil', 'create', '-srcfolder', pkg_path, '$TARGET']
 					])
-
-				versioned_targets += [installer]
 
 	# Set the Subversion revision number as the final part of the file version string.
 
@@ -199,6 +217,7 @@ if distrib:
 
 					if target == adl_parser:
 						substitutions += [['components/adl_parser/lib/dotnet_dll/adl_parser.ecf', r'(<version\s+major="\d+"\s+minor="\d+"\s+release="\d+"\s+build=")\d+']]
+
 					if target == installer:
 						substitutions = [[install + '/ADL_Workbench/ADLWorkbenchInstall.nsi', r'(VIProductVersion\s+\d+\.\d+\.\d+\.)\d+']]
 
@@ -233,5 +252,6 @@ if distrib:
 						if os.path.exists(filename): os.remove(filename)
 						os.rename(bak, filename)
 
+			if installer: versioned_targets += [installer]
 			env.AddPreAction(versioned_targets, env.Action(set_revision_from_subversion, 'Setting revision ' + revision + ' ...'))
 			env.AddPostAction(versioned_targets, env.Action(restore_backed_up_files, None))
