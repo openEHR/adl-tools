@@ -69,6 +69,7 @@ feature -- Initialisation
 
 			term_codes := a_flat_copy.term_codes
 			constraint_codes := a_flat_copy.constraint_codes
+			term_attribute_names := a_flat_copy.term_attribute_names
 
 			term_bindings := a_flat_copy.term_bindings
 			constraint_bindings := a_flat_copy.constraint_bindings

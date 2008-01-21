@@ -232,17 +232,29 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER} -- Validation
 			-- other purposes
 		local
 			a_c_iterator: C_VISITOR_ITERATOR
-			xref_builder: C_XREF_BUILDER
+			definition_xref_builder: C_XREF_BUILDER
+			invariants_xref_builder: EXPR_XREF_BUILDER
 		do
 			create id_at_codes_xref_table.make(0)
 			create data_at_codes_xref_table.make(0)
 			create use_node_path_xref_table.make(0)
 			create ac_codes_xref_table.make(0)
 
-			create xref_builder
-			xref_builder.initialise(Current)
-			create a_c_iterator.make(definition, xref_builder)
+			create definition_xref_builder
+			definition_xref_builder.initialise(Current)
+			create a_c_iterator.make(definition, definition_xref_builder)
 			a_c_iterator.do_all
+
+			create invariants_xref_table.make(0)
+			create invariants_xref_builder
+			from
+				invariants.start
+			until
+				invariants.off
+			loop
+				invariants_xref_builder.initialise(Current, invariants.item)
+				invariants.forth
+			end
 		end
 
 	build_rolled_up_status is
@@ -275,6 +287,10 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER} -- Validation
 	use_node_path_xref_table: HASH_TABLE[ARRAYED_LIST[ARCHETYPE_INTERNAL_REF], STRING]
 			-- table of {list<ARCHETYPE_INTERNAL_REF>, target_path}
 			-- i.e. <list of use_nodes> keyed by path they point to
+
+	invariants_path_xref_table: HASH_TABLE[ARRAYED_LIST[EXPR_LEAF], STRING]
+			-- table of {list<EXPR_LEAF>, target_path}
+			-- i.e. <list of invariant leaf nodes> keyed by path they point to
 
 feature -- Modification
 

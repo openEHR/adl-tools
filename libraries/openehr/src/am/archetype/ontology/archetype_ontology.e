@@ -922,7 +922,7 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 			end
 
 			-- populate term attribute names (assumed to be the same for terms and constraints)
-			if not term_codes.is_empty then
+			if not term_codes.is_empty and term_attribute_names = Void then
 				term_attribute_names := term_definition(primary_language, term_codes.first).keys
 			end
 
@@ -1209,6 +1209,7 @@ invariant
 	Constraint_bindings_exists: constraint_bindings /= Void
 	Root_code_valid: term_codes.has(concept_code)
 	Specialised_codes_valid: specialised_codes /= Void
+	Term_attribute_names_valid: term_attribute_names /= Void
 
 	Highest_term_code_index_valid: highest_term_code_index >= 0
 	Highest_constraint_code_index_valid: highest_constraint_code_index >= 0

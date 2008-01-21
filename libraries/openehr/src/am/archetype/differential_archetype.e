@@ -74,6 +74,7 @@ feature -- Initialisation
 			parent_archetype_id := a_flat_copy.parent_archetype_id
 			adl_version := a_flat_copy.adl_version
 			is_controlled := a_flat_copy.is_controlled
+			invariants := a_flat_copy.invariants
 
 			if is_specialised then
 				build_rolled_up_status
