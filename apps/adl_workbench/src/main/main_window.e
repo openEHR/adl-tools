@@ -431,7 +431,7 @@ feature {NONE} -- Commands
 			-- launch external editor with archetype
 		do
 			if archetype_directory.has_selected_archetype_descriptor then
-				execution_environment.launch (editor_command + " " + archetype_directory.selected_descriptor.full_path)
+				execution_environment.launch (editor_command + " %"" + archetype_directory.selected_descriptor.full_path + "%"")
 			end
 		end
 
