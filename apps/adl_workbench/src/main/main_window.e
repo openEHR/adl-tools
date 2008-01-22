@@ -424,7 +424,7 @@ feature -- Archetype Commands
 				info_dialog.show_modal_to_window (Current)
 			end
 
-			execution_environment.launch (editor_command + " " + path)
+			execution_environment.launch (editor_command + " %"" + path + "%"")
 		end
 
 	archetype_view_tree_item_select is
