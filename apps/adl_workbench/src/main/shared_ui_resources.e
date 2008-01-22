@@ -43,26 +43,30 @@ feature -- Definitions
 		end
 
 	Default_editor_command: STRING is
-			-- generate a reasonable name of an editor based on operating system
+			-- A reasonable name of an editor based on operating system.
 		once
-   			if os_type.substring_index("windows", 1) > 0 then
+   			if is_windows then
    				Result := "Notepad.exe"
+			elseif is_mac_os_x then
+				Result := "open -t"
 			else
    				Result := "vi"
    			end
    		end
 
 	Default_browser_command: STRING is
-			-- generate a command to launch a browser based on OS
+			-- A command to launch a browser based on operating system.
 		once
-   			if os_type.substring_index("windows", 1) > 0 then
-   				Result := "cmd /Q /c start "
+   			if is_windows then
+   				Result := "cmd /q /c start "
+			elseif is_mac_os_x then
+				Result := "open "
 			else
    				Result := "firefox "
    			end
 		end
 
-	ADL_help_page_url: STRING is "http://svn.openehr.org/ref_impl_eiffel/TRUNK/apps/doc/adl_workbench_help.htm"
+	ADL_help_page_url: STRING is "http://www.openehr.org/svn/ref_impl_eiffel/TRUNK/apps/doc/adl_workbench_help.htm"
 
 	path_control_filter_names: ARRAY [STRING] is
 			-- names of row filters of path control
@@ -501,7 +505,7 @@ feature -- Access
 			Result.append ("%TVersion " + version.out + "%N")
 			Result.append ("%T(c) 2003-2008 Ocean Informatics%N")
 			Result.append ("%TADL version: " + current_adl_version + "%N")
-			Result.append ("%TSource SVN - http://svn.openehr.org/ref_impl_eiffel%N%T" + version.last_changed + "%N")
+			Result.append ("%TSource SVN - http://www.openehr.org/svn/ref_impl_eiffel%N%T" + version.last_changed + "%N")
 			Result.append ("%TSource license: Mozilla tri-license (http://www.mozilla.org/MPL/boilerplate-1.1/mpl-tri-license-txt)%N")
 			Result.append ("Support: support@OceanInformatics.com%N")
 			Result.append ("Funded by: OceanInformatics.com%N")

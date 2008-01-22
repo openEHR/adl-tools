@@ -78,16 +78,26 @@ feature -- Access
 
 feature -- Environment
 
-	os_type: STRING is
-			-- name of operating system
+	is_windows: BOOLEAN is
+			-- Is the operating system Microsoft Windows?
 		once
-	   		Result := execution_environment.get("OS")
-   			if Result /= Void then
-   				Result.to_lower
-   			else
-   				Result := "unknown"
-   			end
-   		end
+			Result := operating_system.is_windows
+		end
+
+	is_unix: BOOLEAN is
+			-- Is the operating system some form of Unix?
+		once
+			Result := operating_system.is_unix
+		end
+
+	is_mac_os_x: BOOLEAN is
+			-- Is the operating system Mac OS X?
+		once
+			if is_unix then
+				execution_environment.system ("test `uname -s` == Darwin")
+				Result := execution_environment.return_code = 0
+			end
+		end
 
 	Global_config_directory: STRING is
 			-- location of global configuration files - /etc
@@ -117,7 +127,7 @@ feature -- Environment
 			if Result /= Void and then not Result.is_empty then
 				Result := (create {WINDOWS_SHORT_PATH}.make (Result)).as_long_path
 			else
-				if operating_system.is_windows then
+				if is_windows then
 					Result := default_windows_temp_dir.twin
 				else
 					Result := default_unix_temp_dir.twin
