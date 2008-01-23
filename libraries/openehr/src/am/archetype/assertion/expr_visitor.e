@@ -1,59 +1,71 @@
 indexing
 	component:   "openEHR Archetype Project"
-	description: "node in ADL parse tree"
-	keywords:    "test, ADL"
+	description: "Generic visitor class for ASSERTION objects"
+	keywords:    "visitor, assertion expressions"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2008 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class EXPR_UNARY_OPERATOR
+deferred class EXPR_VISITOR
 
-inherit
-	EXPR_OPERATOR
+feature -- Initialisation
 
-creation
-	make
-
-feature -- Access
-
-	operand: EXPR_ITEM
-
-feature -- Modification
-
-	set_operand(an_item: EXPR_ITEM) is
+	initialise(an_assertion: ASSERTION) is
+			-- set assertion
 		require
-			an_item_exists: an_item /= Void
+			Assertion_valid: an_assertion /= Void
 		do
-			operand := an_item
-		end
-
-feature -- Conversion
-
-	as_string: STRING is
-		do
-			create Result.make(0)
-			Result.append(operator.out + " ")
-			Result.append(operand.as_string)
+			assertion := an_assertion
 		end
 
 feature -- Visitor
 
-	enter_subtree(visitor: EXPR_VISITOR; depth: INTEGER) is
-			-- perform action at start of block for this node
+	start_expr_binary_operator(a_node: EXPR_BINARY_OPERATOR; depth: INTEGER) is
+			-- enter an EXPR_BINARY_OPERATOR
 		do
-			visitor.start_expr_unary_operator (Current, depth)
 		end
 
-	exit_subtree(visitor: EXPR_VISITOR; depth: INTEGER) is
-			-- perform action at end of block for this node
+	end_expr_binary_operator(a_node: EXPR_BINARY_OPERATOR; depth: INTEGER) is
+			-- exit an EXPR_BINARY_OPERATOR
 		do
-			visitor.end_expr_unary_operator (Current, depth)
 		end
+
+	start_expr_unary_operator(a_node: EXPR_UNARY_OPERATOR; depth: INTEGER) is
+			-- enter an EXPR_UNARY_OPERATOR
+		do
+		end
+
+	end_expr_unary_operator(a_node: EXPR_UNARY_OPERATOR; depth: INTEGER) is
+			-- exit an EXPR_UNARY_OPERATOR
+		do
+		end
+
+	start_expr_leaf(a_node: EXPR_LEAF; depth: INTEGER) is
+			-- enter an EXPR_LEAF
+		do
+		end
+
+	end_expr_leaf(a_node: EXPR_LEAF; depth: INTEGER) is
+			-- exit an EXPR_LEAF
+		do
+		end
+
+feature -- Finalisation
+
+	finalise is
+			-- finalise after all nodes visited
+		do
+			-- assume nothing; override in descendants
+		end
+
+feature {NONE} -- Implementation
+
+	assertion: ASSERTION
 
 end
 
@@ -72,10 +84,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is adl_expr_unary_operator.e.
+--| The Original Code is constraint_model_visitor.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2007
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

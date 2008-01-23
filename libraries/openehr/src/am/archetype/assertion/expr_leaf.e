@@ -5,9 +5,9 @@ indexing
 						* a manifest constant of any primitive type (Integer, Real, Boolean, 
 						  String, Character, Date, Time, Date_time, Duration), or (in future) 
 						  of any complex reference model type, e.g. a DV_CODED_TEXT;
-						* a path referring to a value in the archetype (paths with a leading ‘/’ 
-						  are in the definition section; paths with no leading ‘/’ are in the outer 
-						  part of the archetype, e.g. “archetype_id/value” refers to the String 
+						* a path referring to a value in the archetype (paths with a leading '/' 
+						  are in the definition section; paths with no leading '/'are in the outer 
+						  part of the archetype, e.g. 'archetype_id/value' refers to the String 
 						  value of the archetype_id attribute of the enclosing archetype;
 						* a constraint, expressed in the form of concrete subtype of C_OBJECT; 
 						  most often this will be a C_PRIMITIVE_OBJECT.
@@ -36,6 +36,12 @@ creation
 	make_ordinal, make_coded_term,
 	make_constraint
 
+feature -- Definitions
+
+	Ref_type_attribute: STRING is "attibute"
+	Ref_type_constant: STRING is "constant"
+	Ref_type_constraint: STRING is "constraint"
+
 feature -- Initialisation
 
 	make_archetype_ref(a_ref: STRING) is
@@ -46,7 +52,9 @@ feature -- Initialisation
 		do
 			item := a_ref
 			type := "String" -- FIXME: need access to ref model to know what type it really is
-			reference_type := "attribute"
+			reference_type := Ref_type_attribute.twin
+		ensure
+			is_archetype_ref
 		end
 
 	make_archetype_definition_ref(a_ref: STRING) is
@@ -56,7 +64,9 @@ feature -- Initialisation
 		do
 			item := a_ref
 			type := "Any" -- FIXME: need access to ref model to know what type it really is
-			reference_type := "attribute"
+			reference_type := Ref_type_attribute.twin
+		ensure
+			is_archetype_definition_ref
 		end
 
 	make_boolean(an_item: BOOLEAN) is
@@ -64,7 +74,7 @@ feature -- Initialisation
    		do
 			item := an_item
 			type := "Boolean"
-			reference_type := "constant"
+			reference_type := Ref_type_constant.twin
 		end
 
 	make_real(an_item: REAL) is
@@ -72,7 +82,7 @@ feature -- Initialisation
    		do
 			item := an_item
 			type := "Real"
-			reference_type := "constant"
+			reference_type := Ref_type_constant.twin
 		end
 
 	make_integer(an_item: INTEGER) is
@@ -80,7 +90,7 @@ feature -- Initialisation
    		do
 			item := an_item
 			type := "Integer"
-			reference_type := "constant"
+			reference_type := Ref_type_constant.twin
 		end
 
 	make_string(an_item: STRING) is
@@ -90,7 +100,7 @@ feature -- Initialisation
    		do
 			item := an_item
 			type := "String"
-			reference_type := "constant"
+			reference_type := Ref_type_constant
 		end
 
 	make_character(an_item: CHARACTER) is
@@ -98,7 +108,7 @@ feature -- Initialisation
    		do
 			item := an_item
 			type := "Character"
-			reference_type := "constant"
+			reference_type := Ref_type_constant
 		end
 
 	make_ordinal(an_item: ORDINAL) is
@@ -108,6 +118,7 @@ feature -- Initialisation
    		do
 			item := an_item
 			type := "ORDINAL"
+			reference_type := Ref_type_constant
 		end
 
 	make_coded_term(an_item: CODE_PHRASE) is
@@ -117,7 +128,7 @@ feature -- Initialisation
    		do
 			item := an_item
 			type := "CODE_PHRASE"
-			reference_type := "constraint"
+			reference_type := Ref_type_constraint
 		end
 
 	make_constraint(an_item: C_PRIMITIVE) is
@@ -127,7 +138,7 @@ feature -- Initialisation
    		do
 			item := an_item
 			type := an_item.generator
-			reference_type := "constraint"
+			reference_type := Ref_type_constraint
 		end
 
 feature -- Access
@@ -138,6 +149,30 @@ feature -- Access
 			-- a constraint operand, as happens in the case of the right-hand operand of the ‘matches’ operator.
 
 	item: ANY
+
+feature -- Status Report
+
+	is_archetype_ref: BOOLEAN is
+			-- True if this leaf node is a reference to a node in an archetype outer structure (i.e., not the definition part)
+		local
+			a_path: STRING
+		do
+			if reference_type.is_equal (Ref_type_attribute) then
+				a_path ?= item
+				Result := a_path.item(1) /= '/'
+			end
+		end
+
+	is_archetype_definition_ref: BOOLEAN is
+			-- True if this leaf node is a reference to a node in an archetype definition
+		local
+			a_path: STRING
+		do
+			if reference_type.is_equal (Ref_type_attribute) then
+				a_path ?= item
+				Result := a_path.item(1) = '/'
+			end
+		end
 
 feature -- Conversion
 
@@ -157,6 +192,20 @@ feature -- Conversion
 			if reference_type.is_equal("constraint") then
 				Result.append("}")
 			end
+		end
+
+feature -- Visitor
+
+	enter_subtree(visitor: EXPR_VISITOR; depth: INTEGER) is
+			-- perform action at start of block for this node
+		do
+			visitor.start_expr_leaf (Current, depth)
+		end
+
+	exit_subtree(visitor: EXPR_VISITOR; depth: INTEGER) is
+			-- perform action at end of block for this node
+		do
+			visitor.end_expr_leaf (Current, depth)
 		end
 
 end

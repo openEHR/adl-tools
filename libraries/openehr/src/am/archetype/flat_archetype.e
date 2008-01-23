@@ -30,6 +30,7 @@ feature -- Initialisation
 			make(a_diff.archetype_id.deep_twin, a_diff.concept.deep_twin,
 					a_diff.original_language.code_string, a_diff.description.deep_twin,
 					a_diff.definition.deep_twin, a_diff.ontology.to_flat)
+			invariants := a_diff.invariants
 			rebuild
 			is_valid := True
 		end

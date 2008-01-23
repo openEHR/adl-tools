@@ -1,59 +1,57 @@
 indexing
 	component:   "openEHR Archetype Project"
-	description: "node in ADL parse tree"
-	keywords:    "test, ADL"
+	description: "Visitor to build list of path references found in assertions"
+	keywords:    "visitor, assertion expressions"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2008 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class EXPR_UNARY_OPERATOR
+class EXPR_XREF_BUILDER
 
 inherit
-	EXPR_OPERATOR
-
-creation
-	make
-
-feature -- Access
-
-	operand: EXPR_ITEM
-
-feature -- Modification
-
-	set_operand(an_item: EXPR_ITEM) is
-		require
-			an_item_exists: an_item /= Void
-		do
-			operand := an_item
+	EXPR_VISITOR
+		rename
+			initialise as initialise_visitor
+		redefine
+			start_expr_leaf
 		end
 
-feature -- Conversion
+feature -- Initialisation
 
-	as_string: STRING is
+	initialise(an_archetype: ARCHETYPE; an_assertion: ASSERTION) is
+			-- set assertion
+		require
+			Archetype_valid: an_archetype /= Void
+			Assertion_valid: an_assertion /= Void
 		do
-			create Result.make(0)
-			Result.append(operator.out + " ")
-			Result.append(operand.as_string)
+			archetype := an_archetype
+			initialise_visitor(an_assertion)
 		end
 
 feature -- Visitor
 
-	enter_subtree(visitor: EXPR_VISITOR; depth: INTEGER) is
-			-- perform action at start of block for this node
+	start_expr_leaf(a_node: EXPR_LEAF; depth: INTEGER) is
+			-- enter an EXPR_LEAF
+		local
+			tgt_path: STRING
 		do
-			visitor.start_expr_unary_operator (Current, depth)
+			if a_node.is_archetype_definition_ref then
+				tgt_path ?= a_node.item
+				if not archetype.invariants_xref_table.has(tgt_path) then
+					archetype.invariants_xref_table.put(create {ARRAYED_LIST[EXPR_LEAF]}.make(0), tgt_path)
+				end
+				archetype.invariants_xref_table.item(tgt_path).extend(a_node)
+			end
 		end
 
-	exit_subtree(visitor: EXPR_VISITOR; depth: INTEGER) is
-			-- perform action at end of block for this node
-		do
-			visitor.end_expr_unary_operator (Current, depth)
-		end
+feature {NONE} -- Implementation
+
+	archetype: ARCHETYPE
 
 end
 
@@ -72,10 +70,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is adl_expr_unary_operator.e.
+--| The Original Code is expr_xref_builder.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2008
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

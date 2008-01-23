@@ -225,7 +225,7 @@ feature -- Status Setting
 			is_dirty := False
 		end
 
-feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER} -- Validation
+feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER, EXPR_XREF_BUILDER} -- Validation
 
 	build_xrefs is
 			-- build definition / ontology cross reference tables used for validation and
@@ -233,6 +233,7 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER} -- Validation
 		local
 			a_c_iterator: C_VISITOR_ITERATOR
 			definition_xref_builder: C_XREF_BUILDER
+			expr_iterator: EXPR_VISITOR_ITERATOR
 			invariants_xref_builder: EXPR_XREF_BUILDER
 		do
 			create id_at_codes_xref_table.make(0)
@@ -245,15 +246,19 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER} -- Validation
 			create a_c_iterator.make(definition, definition_xref_builder)
 			a_c_iterator.do_all
 
-			create invariants_xref_table.make(0)
-			create invariants_xref_builder
-			from
-				invariants.start
-			until
-				invariants.off
-			loop
-				invariants_xref_builder.initialise(Current, invariants.item)
-				invariants.forth
+			if has_invariants then
+				create invariants_xref_table.make(0)
+				create invariants_xref_builder
+				from
+					invariants.start
+				until
+					invariants.off
+				loop
+					invariants_xref_builder.initialise(Current, invariants.item)
+					create expr_iterator.make (invariants.item, invariants_xref_builder)
+					expr_iterator.do_all
+					invariants.forth
+				end
 			end
 		end
 
@@ -288,7 +293,7 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER} -- Validation
 			-- table of {list<ARCHETYPE_INTERNAL_REF>, target_path}
 			-- i.e. <list of use_nodes> keyed by path they point to
 
-	invariants_path_xref_table: HASH_TABLE[ARRAYED_LIST[EXPR_LEAF], STRING]
+	invariants_xref_table: HASH_TABLE[ARRAYED_LIST[EXPR_LEAF], STRING]
 			-- table of {list<EXPR_LEAF>, target_path}
 			-- i.e. <list of invariant leaf nodes> keyed by path they point to
 

@@ -84,6 +84,7 @@ feature -- Validation
 					target.build_rolled_up_status
 				end
 				validate_internal_references
+				validate_invariants
 			end
 		end
 
@@ -245,6 +246,22 @@ feature {NONE} -- Implementation
 					errors.append("Error: use_node path " + use_refs.key_for_iteration + " not found in archetype%N")
 				end
 				use_refs.forth
+			end
+		end
+
+	validate_invariants is
+			-- validate the invariants if any, which entails checking that all path references are valid against
+			-- the flat archetype
+		do
+			if target.has_invariants then
+				from
+					target.invariants_xref_table.start
+				until
+					target.invariants_xref_table.off
+				loop
+					convert_invariant_paths (target.invariants_xref_table.item_for_iteration, target)
+					target.invariants_xref_table.forth
+				end
 			end
 		end
 

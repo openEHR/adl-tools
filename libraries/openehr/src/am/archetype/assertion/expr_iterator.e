@@ -1,59 +1,81 @@
 indexing
 	component:   "openEHR Archetype Project"
-	description: "node in ADL parse tree"
-	keywords:    "test, ADL"
+	description: "[
+				 Expression tree iterator. This iterator currently supplies the standard 'do_all'
+				 function which performs an action on entry to each node, descends, and then performs
+				 an action on exiting each node; there are two agent actions supplied: node_enter_action
+				 and node_exit_action. This allows signficantly more power than just a single action per 
+				 node type.
+				 ]"
+	keywords:    "expressions, invariant, assertion, recursive iterator"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2008 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class EXPR_UNARY_OPERATOR
+class EXPR_ITERATOR
 
-inherit
-	EXPR_OPERATOR
-
-creation
+create
 	make
+
+feature -- Initialisation
+
+	make(a_target: EXPR_ITEM) is
+		require
+			a_target /= Void
+		do
+			target := a_target
+		end
 
 feature -- Access
 
-	operand: EXPR_ITEM
+	target: EXPR_ITEM
 
-feature -- Modification
+feature -- Traversal
 
-	set_operand(an_item: EXPR_ITEM) is
+	do_all(node_enter_action, node_exit_action: PROCEDURE[ANY, TUPLE[EXPR_ITEM, INTEGER]]) is
+			-- do enter_action and exit_action to all nodes in the structure
 		require
-			an_item_exists: an_item /= Void
+			Enter_action_valid: node_enter_action /= Void
+			Exit_action_valid: node_exit_action /= Void
 		do
-			operand := an_item
+			depth := 0
+			do_all_nodes(target, node_enter_action, node_exit_action)
 		end
 
-feature -- Conversion
+feature {NONE} -- Implementation
 
-	as_string: STRING is
+	do_all_nodes(a_target: EXPR_ITEM; node_enter_action, node_exit_action: PROCEDURE[ANY, TUPLE[EXPR_ITEM, INTEGER]]) is
+		require
+			Target_exists: a_target /= Void
+		local
+			a_binary_op: EXPR_BINARY_OPERATOR
+			a_unary_op: EXPR_UNARY_OPERATOR
 		do
-			create Result.make(0)
-			Result.append(operator.out + " ")
-			Result.append(operand.as_string)
+			depth := depth + 1
+			node_enter_action.call([a_target, depth])
+			a_binary_op ?= a_target
+			if a_binary_op /= Void then
+				do_all_nodes(a_binary_op.left_operand, node_enter_action, node_exit_action)
+				do_all_nodes(a_binary_op.right_operand, node_enter_action, node_exit_action)
+			else
+				a_unary_op ?= a_target
+				if a_unary_op /= Void then
+					do_all_nodes(a_unary_op.operand, node_enter_action, node_exit_action)
+				end
+			end
+			node_exit_action.call([a_target, depth])
+			depth := depth - 1
 		end
 
-feature -- Visitor
+	depth: INTEGER
 
-	enter_subtree(visitor: EXPR_VISITOR; depth: INTEGER) is
-			-- perform action at start of block for this node
-		do
-			visitor.start_expr_unary_operator (Current, depth)
-		end
-
-	exit_subtree(visitor: EXPR_VISITOR; depth: INTEGER) is
-			-- perform action at end of block for this node
-		do
-			visitor.end_expr_unary_operator (Current, depth)
-		end
+invariant
+	target_exists: target /= Void
 
 end
 
@@ -72,7 +94,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is adl_expr_unary_operator.e.
+--| The Original Code is cadl_tree_iterator.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

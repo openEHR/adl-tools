@@ -1,58 +1,59 @@
 indexing
 	component:   "openEHR Archetype Project"
-	description: "node in ADL parse tree"
-	keywords:    "test, ADL"
+	description: "Class to send a visitor to every node in an EXPR_ITEM tree."
+	keywords:    "assertion, iterator"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2008 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
+	file:        "$URL: http://svn.openehr.org/ref_impl_eiffel/BRANCHES/specialisation/libraries/openehr/src/am/archetype/constraint_model/c_visitor_iterator.e $"
 	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	last_change: "$LastChangedDate: 2007-08-10 02:25:30 +0100 (Fri, 10 Aug 2007) $"
 
-class EXPR_UNARY_OPERATOR
+class EXPR_VISITOR_ITERATOR
 
-inherit
-	EXPR_OPERATOR
-
-creation
+create
 	make
 
-feature -- Access
+feature -- Initialisation
 
-	operand: EXPR_ITEM
-
-feature -- Modification
-
-	set_operand(an_item: EXPR_ITEM) is
+	make(a_target: ASSERTION; a_visitor: EXPR_VISITOR) is
+			-- create a new manager targetted to the parse tree `a_target'
 		require
-			an_item_exists: an_item /= Void
+			Target_exists: a_target /= Void
+			Visitor_exists: a_visitor /= Void
 		do
-			operand := an_item
+			create tree_iterator.make(a_target.expression)
+			visitor := a_visitor
 		end
 
-feature -- Conversion
+feature -- Command
 
-	as_string: STRING is
+	do_all is
+			-- start the serialisation process; the result will be in `serialiser_output'
 		do
-			create Result.make(0)
-			Result.append(operator.out + " ")
-			Result.append(operand.as_string)
+			tree_iterator.do_all(agent node_enter_action(?,?), agent node_exit_action(?,?))
 		end
 
-feature -- Visitor
+feature {NONE} -- Implementation
 
-	enter_subtree(visitor: EXPR_VISITOR; depth: INTEGER) is
-			-- perform action at start of block for this node
+	tree_iterator: EXPR_ITERATOR
+
+	visitor: EXPR_VISITOR
+
+	node_enter_action(a_node: EXPR_ITEM; indent_level: INTEGER) is
+		require
+			Node_exists: a_node /= Void
 		do
-			visitor.start_expr_unary_operator (Current, depth)
+			a_node.enter_subtree(visitor, indent_level)
 		end
 
-	exit_subtree(visitor: EXPR_VISITOR; depth: INTEGER) is
-			-- perform action at end of block for this node
+	node_exit_action(a_node: EXPR_ITEM; indent_level: INTEGER) is
+		require
+			Node_exists: a_node /= Void
 		do
-			visitor.end_expr_unary_operator (Current, depth)
+			a_node.exit_subtree(visitor, indent_level)
 		end
 
 end
@@ -72,7 +73,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is adl_expr_unary_operator.e.
+--| The Original Code is cadl_serialiser_mgr.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

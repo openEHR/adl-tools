@@ -178,6 +178,24 @@ feature -- Access
 			end
 		end
 
+	convert_invariant_paths(expr_node_list: ARRAYED_LIST[EXPR_LEAF]; referree: ARCHETYPE) is
+			-- FIXME: the following only needed while old invariant paths containing redundant node_ids are in existence
+			-- rewrite target path into standard Xpath format, removing [atnnn] predicates on objects below single attributes
+		local
+			xpath, assertion_path: STRING
+		do
+			from
+				expr_node_list.start
+			until
+				expr_node_list.off
+			loop
+				assertion_path ?= expr_node_list.item.item
+				xpath := referree.definition.c_object_at_path (assertion_path).path
+				expr_node_list.item.make_archetype_definition_ref (xpath)
+				expr_node_list.forth
+			end
+		end
+
 end
 
 
