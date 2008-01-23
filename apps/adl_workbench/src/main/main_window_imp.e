@@ -6,6 +6,7 @@ indexing
 		You should not modify this code by hand, as it will be re-generated every time
 		 modifications are made to the project.
 		 	]"
+	generator: "EiffelBuild"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -408,31 +409,36 @@ feature {NONE}-- Initialization
 			action_bar.disable_item_expand (language_combo)
 			open_button.set_text ("Open")
 			open_button.set_tooltip ("Open new archetype")
-			open_button.set_minimum_width (40)
+			open_button.set_minimum_width (60)
 			open_button.set_minimum_height (23)
 			parse_button.set_text ("Parse")
 			parse_button.set_tooltip ("Parse currently loaded archetype")
-			parse_button.set_minimum_width (40)
+			parse_button.set_minimum_width (60)
 			edit_button.set_text ("Edit")
 			edit_button.set_tooltip ("Edit archetype with external editor")
-			edit_button.set_minimum_width (40)
+			edit_button.set_minimum_width (60)
 			edit_button.set_minimum_height (23)
 			color_constant_set_procedures.extend (agent archetype_id.set_background_color (?))
 			color_constant_retrieval_functions.extend (agent editable_colour)
 			archetype_id.set_minimum_width (120)
 			archetype_id.disable_edit
-			l_ev_label_1.set_text ("Specializes")
+			l_ev_label_1.set_text ("Specializes:")
+			l_ev_label_1.set_minimum_width (80)
+			l_ev_label_1.align_text_right
 			color_constant_set_procedures.extend (agent parent_archetype_id.set_background_color (?))
 			color_constant_retrieval_functions.extend (agent editable_colour)
 			parent_archetype_id.set_minimum_width (120)
 			parent_archetype_id.disable_edit
-			adl_version_label.set_text ("ADL version")
-			adl_version_text.set_minimum_width (30)
+			adl_version_label.set_text ("ADL Version:")
+			adl_version_label.set_minimum_width (80)
+			adl_version_label.align_text_right
+			adl_version_text.set_minimum_width (40)
 			adl_version_text.disable_edit
 			language_label.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
-			language_label.set_text ("Language")
-			language_label.set_minimum_width (50)
+			language_label.set_text ("Language:")
+			language_label.set_minimum_width (70)
 			language_label.set_minimum_height (23)
+			language_label.align_text_right
 			color_constant_set_procedures.extend (agent language_combo.set_background_color (?))
 			color_constant_retrieval_functions.extend (agent editable_colour)
 			language_combo.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
@@ -704,10 +710,10 @@ feature {NONE}-- Initialization
 			integer_constant_retrieval_functions.extend (agent arch_tree_min_width)
 			integer_constant_set_procedures.extend (agent parsed_archetype_tree.set_minimum_height (?))
 			integer_constant_retrieval_functions.extend (agent arch_tree_min_height)
-			tree_controls.set_minimum_width (120)
+			tree_controls.set_minimum_width (140)
 			integer_constant_set_procedures.extend (agent tree_controls.set_minimum_height (?))
 			integer_constant_retrieval_functions.extend (agent app_min_height)
-			tree_controls.set_padding (15)
+			tree_controls.set_padding (4)
 			tree_controls.set_border_width (10)
 			tree_controls.disable_item_expand (tree_expand_bn)
 			tree_controls.disable_item_expand (tree_expand_one_bn)
@@ -726,12 +732,16 @@ feature {NONE}-- Initialization
 			tree_shrink_one_bn.set_tooltip ("Collapse node map one level")
 			integer_constant_set_procedures.extend (agent tree_shrink_one_bn.set_minimum_width (?))
 			integer_constant_retrieval_functions.extend (agent tree_control_panel_width)
+			l_ev_frame_1.set_minimum_width (100)
+			l_ev_vertical_box_7.set_minimum_height (60)
 			integer_constant_set_procedures.extend (agent l_ev_vertical_box_7.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
 			tree_domain_radio_button.set_text ("Domain")
 			tree_domain_radio_button.set_tooltip ("Hide technical details")
 			tree_technical_radio_button.set_text ("Technical")
 			tree_technical_radio_button.set_tooltip ("Display technical details")
+			l_ev_frame_2.set_minimum_width (100)
+			l_ev_vertical_box_8.set_minimum_height (60)
 			integer_constant_set_procedures.extend (agent l_ev_vertical_box_8.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
 			tree_inheritance_radio_button.set_text ("Inheritance")
@@ -743,7 +753,7 @@ feature {NONE}-- Initialization
 			color_constant_retrieval_functions.extend (agent editable_colour)
 			parsed_archetype_found_paths.set_minimum_width (0)
 			parsed_archetype_found_paths.set_minimum_height (0)
-			path_controls.set_minimum_width (120)
+			path_controls.set_minimum_width (140)
 			integer_constant_set_procedures.extend (agent path_controls.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
 			integer_constant_set_procedures.extend (agent path_controls.set_border_width (?))
@@ -840,9 +850,12 @@ feature {NONE}-- Initialization
 			arch_test_refresh_bn.set_text ("Refresh")
 			arch_test_refresh_bn.set_tooltip ("Resync to file system and reset statuses")
 			l_ev_horizontal_box_13.set_minimum_width (110)
+			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_13.set_padding (?))
+			integer_constant_retrieval_functions.extend (agent padding_width)
 			l_ev_horizontal_box_13.disable_item_expand (l_ev_label_7)
-			l_ev_label_7.set_text ("Processed")
-			l_ev_label_7.set_minimum_width (65)
+			l_ev_label_7.set_text ("Processed:")
+			l_ev_label_7.set_minimum_width (80)
+			l_ev_label_7.align_text_right
 			arch_test_processed_count.disable_edit
 			l_ev_horizontal_separator_1.set_minimum_height (15)
 			archetype_test_go_bn.set_text ("Go")

@@ -27,6 +27,7 @@ indexing
 			of the constants that should have been loaded. Therefore, you must ensure that either the
 			file is accessible or you do not specify to load from a file.
 		]"
+	generator: "EiffelBuild"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -90,7 +91,7 @@ feature -- Access
 	min_combo_box_width_cell: CELL [INTEGER] is
 			--`Result' is once access to a cell holding vale of `min_combo_box_width'.
 		once
-			create Result.put (55)
+			create Result.put (60)
 		end
 
 	list_row_height: INTEGER is
@@ -102,7 +103,7 @@ feature -- Access
 	list_row_height_cell: CELL [INTEGER] is
 			--`Result' is once access to a cell holding vale of `list_row_height'.
 		once
-			create Result.put (18)
+			create Result.put (30)
 		end
 
 	adl_workbench_ico: EV_PIXMAP is

@@ -8,12 +8,12 @@
   <Constant>
    <type>INTEGER</type>
    <Name>min_combo_box_width</Name>
-   <Value>55</Value>
+   <Value>60</Value>
   </Constant>
   <Constant>
    <type>INTEGER</type>
    <Name>list_row_height</Name>
-   <Value>18</Value>
+   <Value>30</Value>
   </Constant>
   <Constant>
    <type>PIXMAP</type>
@@ -766,7 +766,7 @@
    <Internal_properties>
     <id>2</id>
     <name>menu</name>
-    <Expanded>1</Expanded>
+    <Expanded>0</Expanded>
    </Internal_properties>
    <item type="EV_MENU">
     <Internal_properties>
@@ -1161,7 +1161,7 @@
     <Internal_properties>
      <id>102</id>
      <name>viewer_vbox</name>
-     <Expanded>0</Expanded>
+     <Expanded>1</Expanded>
     </Internal_properties>
     <EV_COLORIZABLE>
     </EV_COLORIZABLE>
@@ -1180,7 +1180,7 @@
      <Internal_properties>
       <id>12</id>
       <name>action_bar</name>
-      <Expanded>0</Expanded>
+      <Expanded>1</Expanded>
      </Internal_properties>
      <EV_COLORIZABLE>
       <Foreground_color>064000000</Foreground_color>
@@ -1218,7 +1218,7 @@
        <Tooltip>Open new archetype</Tooltip>
       </EV_TOOLTIPABLE>
       <EV_WIDGET>
-       <Minimum_width>40</Minimum_width>
+       <Minimum_width>60</Minimum_width>
        <Minimum_height>23</Minimum_height>
       </EV_WIDGET>
       <EV_TEXT_ALIGNABLE>
@@ -1248,7 +1248,7 @@
        <Tooltip>Parse currently loaded archetype</Tooltip>
       </EV_TOOLTIPABLE>
       <EV_WIDGET>
-       <Minimum_width>40</Minimum_width>
+       <Minimum_width>60</Minimum_width>
       </EV_WIDGET>
       <EV_TEXT_ALIGNABLE>
       </EV_TEXT_ALIGNABLE>
@@ -1277,7 +1277,7 @@
        <Tooltip>Edit archetype with external editor</Tooltip>
       </EV_TOOLTIPABLE>
       <EV_WIDGET>
-       <Minimum_width>40</Minimum_width>
+       <Minimum_width>60</Minimum_width>
        <Minimum_height>23</Minimum_height>
       </EV_WIDGET>
       <EV_TEXT_ALIGNABLE>
@@ -1331,13 +1331,15 @@
       <EV_SENSITIVE>
       </EV_SENSITIVE>
       <EV_TEXTABLE>
-       <Text>Specializes</Text>
+       <Text>Specializes:</Text>
       </EV_TEXTABLE>
       <EV_TOOLTIPABLE>
       </EV_TOOLTIPABLE>
       <EV_WIDGET>
+       <Minimum_width>80</Minimum_width>
       </EV_WIDGET>
       <EV_TEXT_ALIGNABLE>
+       <Text_alignment>Right</Text_alignment>
       </EV_TEXT_ALIGNABLE>
      </item>
      <item type="EV_TEXT_FIELD">
@@ -1384,13 +1386,15 @@
       <EV_SENSITIVE>
       </EV_SENSITIVE>
       <EV_TEXTABLE>
-       <Text>ADL version</Text>
+       <Text>ADL Version:</Text>
       </EV_TEXTABLE>
       <EV_TOOLTIPABLE>
       </EV_TOOLTIPABLE>
       <EV_WIDGET>
+       <Minimum_width>80</Minimum_width>
       </EV_WIDGET>
       <EV_TEXT_ALIGNABLE>
+       <Text_alignment>Right</Text_alignment>
       </EV_TEXT_ALIGNABLE>
      </item>
      <item type="EV_TEXT_FIELD">
@@ -1410,7 +1414,7 @@
       <EV_TOOLTIPABLE>
       </EV_TOOLTIPABLE>
       <EV_WIDGET>
-       <Minimum_width>30</Minimum_width>
+       <Minimum_width>40</Minimum_width>
       </EV_WIDGET>
       <EV_TEXT_COMPONENT>
        <Is_editable>False</Is_editable>
@@ -1435,15 +1439,16 @@
       <EV_SENSITIVE>
       </EV_SENSITIVE>
       <EV_TEXTABLE>
-       <Text>Language</Text>
+       <Text>Language:</Text>
       </EV_TEXTABLE>
       <EV_TOOLTIPABLE>
       </EV_TOOLTIPABLE>
       <EV_WIDGET>
-       <Minimum_width>50</Minimum_width>
+       <Minimum_width>70</Minimum_width>
        <Minimum_height>23</Minimum_height>
       </EV_WIDGET>
       <EV_TEXT_ALIGNABLE>
+       <Text_alignment>Right</Text_alignment>
       </EV_TEXT_ALIGNABLE>
      </item>
      <item type="EV_COMBO_BOX">
@@ -1487,7 +1492,7 @@
      <Internal_properties>
       <id>21</id>
       <name>explorer_view_area</name>
-      <Expanded>1</Expanded>
+      <Expanded>0</Expanded>
      </Internal_properties>
      <EV_COLORIZABLE>
      </EV_COLORIZABLE>
@@ -3114,7 +3119,7 @@ Resources</Text>
           <Internal_properties>
            <id>62</id>
            <name>parsed_archetype_tree_view</name>
-           <Expanded>0</Expanded>
+           <Expanded>1</Expanded>
           </Internal_properties>
           <EV_COLORIZABLE>
           </EV_COLORIZABLE>
@@ -3174,13 +3179,13 @@ Resources</Text>
            <EV_SENSITIVE>
            </EV_SENSITIVE>
            <EV_WIDGET>
-            <Minimum_width>120</Minimum_width>
+            <Minimum_width>140</Minimum_width>
             <Minimum_height>
              <Constant>app_min_height</Constant>
             </Minimum_height>
            </EV_WIDGET>
            <EV_BOX>
-            <Padding>15</Padding>
+            <Padding>4</Padding>
             <Border>10</Border>
             <Is_item_expanded>00000</Is_item_expanded>
            </EV_BOX>
@@ -3295,6 +3300,7 @@ Resources</Text>
             <EV_TEXTABLE>
             </EV_TEXTABLE>
             <EV_WIDGET>
+             <Minimum_width>100</Minimum_width>
             </EV_WIDGET>
             <EV_FRAME>
             </EV_FRAME>
@@ -3314,6 +3320,7 @@ Resources</Text>
              <EV_SENSITIVE>
              </EV_SENSITIVE>
              <EV_WIDGET>
+              <Minimum_height>60</Minimum_height>
              </EV_WIDGET>
              <EV_BOX>
               <Border>
@@ -3397,6 +3404,7 @@ Resources</Text>
             <EV_TEXTABLE>
             </EV_TEXTABLE>
             <EV_WIDGET>
+             <Minimum_width>100</Minimum_width>
             </EV_WIDGET>
             <EV_FRAME>
             </EV_FRAME>
@@ -3416,6 +3424,7 @@ Resources</Text>
              <EV_SENSITIVE>
              </EV_SENSITIVE>
              <EV_WIDGET>
+              <Minimum_height>60</Minimum_height>
              </EV_WIDGET>
              <EV_BOX>
               <Border>
@@ -3537,7 +3546,7 @@ Resources</Text>
            <EV_SENSITIVE>
            </EV_SENSITIVE>
            <EV_WIDGET>
-            <Minimum_width>120</Minimum_width>
+            <Minimum_width>140</Minimum_width>
            </EV_WIDGET>
            <EV_BOX>
             <Padding>
@@ -4343,6 +4352,9 @@ Resources</Text>
         <Minimum_width>110</Minimum_width>
        </EV_WIDGET>
        <EV_BOX>
+        <Padding>
+         <Constant>padding_width</Constant>
+        </Padding>
         <Is_item_expanded>01</Is_item_expanded>
        </EV_BOX>
        <EV_PIXMAPABLE>
@@ -4361,14 +4373,15 @@ Resources</Text>
         <EV_SENSITIVE>
         </EV_SENSITIVE>
         <EV_TEXTABLE>
-         <Text>Processed</Text>
+         <Text>Processed:</Text>
         </EV_TEXTABLE>
         <EV_TOOLTIPABLE>
         </EV_TOOLTIPABLE>
         <EV_WIDGET>
-         <Minimum_width>65</Minimum_width>
+         <Minimum_width>80</Minimum_width>
         </EV_WIDGET>
         <EV_TEXT_ALIGNABLE>
+         <Text_alignment>Right</Text_alignment>
         </EV_TEXT_ALIGNABLE>
        </item>
        <item type="EV_TEXT_FIELD">
@@ -4666,7 +4679,7 @@ Resources</Text>
     </item>
     <item type="EV_CHECK_BUTTON">
      <Internal_properties>
-      <id>204</id>
+      <id>195</id>
       <name>show_line_numbers_check_button</name>
       <Expanded>0</Expanded>
      </Internal_properties>
