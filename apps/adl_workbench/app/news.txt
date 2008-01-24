@@ -1,4 +1,4 @@
-ADL_WORKBENCH NEWS (see About menu > News)
+ADL_WORKBENCH NEWS (see Help menu > News)
 -------------------------------------------------------------------------
 
 ADL Workbench is now available for Linux, as well as for Windows and Mac OS X Tiger and Leopard.
