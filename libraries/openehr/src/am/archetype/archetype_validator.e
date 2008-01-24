@@ -34,6 +34,16 @@ inherit
 			{NONE} all
 		end
 
+	OPERATOR_TYPES
+		export
+			{NONE} all
+		end
+
+	SHARED_ARCHETYPE_DIRECTORY
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -60,6 +70,9 @@ feature -- Validation
 			if passed then
 				target.build_xrefs
 				report_unused_ontology_codes
+				if target.has_slots then
+					build_slot_id_index
+				end
 			end
 
 			if passed then
@@ -168,7 +181,7 @@ feature {NONE} -- Implementation
 			a_codes: HASH_TABLE[ARRAYED_LIST[C_OBJECT], STRING]
 		do
 			-- see if all found codes are in each language table
-			a_codes := target.id_at_codes_xref_table
+			a_codes := target.id_atcodes_index
 			from
 				a_codes.start
 			until
@@ -182,7 +195,7 @@ feature {NONE} -- Implementation
 			end
 
 			-- see if every found leaf term code (in an ORDINAL or a CODED_TERM) is in ontology
-			a_codes := target.data_at_codes_xref_table
+			a_codes := target.data_atcodes_index
 			from
 				a_codes.start
 			until
@@ -199,7 +212,7 @@ feature {NONE} -- Implementation
 			end
 
 			-- check if all found constraint_codes are defined in constraint_definitions,
-			a_codes := target.ac_codes_xref_table
+			a_codes := target.accodes_index
 			from
 				a_codes.start
 			until
@@ -223,7 +236,7 @@ feature {NONE} -- Implementation
 			found: BOOLEAN
 			arch: DIFFERENTIAL_ARCHETYPE
 		do
-			use_refs := target.use_node_path_xref_table
+			use_refs := target.use_node_index
 			from
 				use_refs.start
 			until
@@ -255,12 +268,12 @@ feature {NONE} -- Implementation
 		do
 			if target.has_invariants then
 				from
-					target.invariants_xref_table.start
+					target.invariants_index.start
 				until
-					target.invariants_xref_table.off
+					target.invariants_index.off
 				loop
-					convert_invariant_paths (target.invariants_xref_table.item_for_iteration, target)
-					target.invariants_xref_table.forth
+					convert_invariant_paths (target.invariants_index.item_for_iteration, target)
+					target.invariants_index.forth
 				end
 			end
 		end
@@ -300,6 +313,84 @@ feature {NONE} -- Implementation
 			create a_c_iterator.make(target.definition, unidentified_node_finder)
 			a_c_iterator.do_all
 			warnings.append(unidentified_node_finder.warnings)
+		end
+
+	build_slot_id_index is
+			-- build slot_id_index in ARCH_REP_ARCHETYPE
+		require
+			target.has_slots
+		local
+			assn_list: ARRAYED_LIST[ASSERTION]
+			a_regex: STRING
+			id_list: ARRAYED_LIST[STRING]
+		do
+			from
+				target.slot_index.start
+			until
+				target.slot_index.off
+			loop
+				-- process the includes
+				assn_list := target.slot_index.item.includes
+				from
+					assn_list.start
+				until
+					assn_list.off
+				loop
+					a_regex := extract_regex(assn_list.item)
+					if a_regex /= Void then
+						target_descriptor.add_slot_id_list(archetype_directory.matching_ids (a_regex, target.slot_index.item.rm_type_name), target.slot_index.item.path)
+					end
+					assn_list.forth
+				end
+
+				-- if there are still no ids at all for this path, the implication is that all ids match, and that exclusions will remove some
+				if not target_descriptor.slot_id_index.has (target.slot_index.item.path) then
+					target_descriptor.add_slot_id_list(archetype_directory.matching_ids (".*", target.slot_index.item.rm_type_name), target.slot_index.item.path)
+				end
+
+				-- process the excludes
+				assn_list := target.slot_index.item.excludes
+				from
+					assn_list.start
+				until
+					assn_list.off
+				loop
+					a_regex := extract_regex(assn_list.item)
+					if a_regex /= Void then
+						id_list := archetype_directory.matching_ids (a_regex, target.slot_index.item.rm_type_name)
+
+						-- go through existing id list and remove any matched by the exclusion list
+						from
+							id_list.start
+						until
+							id_list.off
+						loop
+							target_descriptor.slot_id_index.item (target.slot_index.item.path).prune (id_list.item)
+							id_list.forth
+						end
+					end
+					assn_list.forth
+				end
+
+				target.slot_index.forth
+			end
+		end
+
+	extract_regex(an_assertion: ASSERTION): STRING is
+			-- extract regex from id matches {/regex/} style assertion used in slots
+		local
+			bin_op: EXPR_BINARY_OPERATOR
+			a_leaf: EXPR_LEAF
+			c_str: C_STRING
+		do
+			bin_op ?= an_assertion.expression
+			if bin_op /= Void and then bin_op.operator.value = op_matches then
+				a_leaf ?= bin_op.right_operand
+				if a_leaf /= Void then
+					c_str ?= a_leaf.item
+					Result := c_str.regexp
+				end
+			end
 		end
 
 end

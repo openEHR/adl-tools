@@ -347,7 +347,7 @@ feature -- Access
 			Result.force (["node_normal/archetype_slot.ico", "Archetype slot (mandatory)"], "ARCHETYPE_SLOT")
 			Result.force (["node_normal/archetype_slot_optional.ico", "Archetype slot (optional)"], "ARCHETYPE_SLOT.optional")
 			Result.force (["node_normal/cadl_include.ico", "Archetype slot allowed archetypes"], "CADL_INCLUDE")
-			Result.force (["node_normal/cadl_include.ico", "Archetype slot excluded archetypes"], "CADL_EXCLUDE")
+			Result.force (["node_normal/cadl_exclude.ico", "Archetype slot excluded archetypes"], "CADL_EXCLUDE")
 
 			Result.force (["node_normal/c_complex_object.ico", "Complex ref model object (mandatory, single occurrence)"], "C_COMPLEX_OBJECT")
 			Result.force (["node_normal/c_complex_object_multiple.ico", "Complex ref model object (mandatory, multiple occurrences)"], "C_COMPLEX_OBJECT.multiple")

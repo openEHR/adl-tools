@@ -42,10 +42,10 @@ feature -- Visitor
 		do
 			if a_node.is_archetype_definition_ref then
 				tgt_path ?= a_node.item
-				if not archetype.invariants_xref_table.has(tgt_path) then
-					archetype.invariants_xref_table.put(create {ARRAYED_LIST[EXPR_LEAF]}.make(0), tgt_path)
+				if not archetype.invariants_index.has(tgt_path) then
+					archetype.invariants_index.put(create {ARRAYED_LIST[EXPR_LEAF]}.make(0), tgt_path)
 				end
-				archetype.invariants_xref_table.item(tgt_path).extend(a_node)
+				archetype.invariants_index.item(tgt_path).extend(a_node)
 			end
 		end
 

@@ -141,8 +141,8 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER} -- Validation
 			until
 				ontology.term_codes.off
 			loop
-				if not id_at_codes_xref_table.has(ontology.term_codes.item) and not
-						data_at_codes_xref_table.has(ontology.term_codes.item) then
+				if not id_atcodes_index.has(ontology.term_codes.item) and not
+						data_atcodes_index.has(ontology.term_codes.item) then
 					ontology_unused_term_codes.extend(ontology.term_codes.item)
 				end
 				ontology.term_codes.forth
@@ -154,7 +154,7 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER} -- Validation
 			until
 				ontology.constraint_codes.off
 			loop
-				if not ac_codes_xref_table.has(ontology.constraint_codes.item) then
+				if not accodes_index.has(ontology.constraint_codes.item) then
 					ontology_unused_constraint_codes.extend(ontology.constraint_codes.item)
 				end
 				ontology.constraint_codes.forth

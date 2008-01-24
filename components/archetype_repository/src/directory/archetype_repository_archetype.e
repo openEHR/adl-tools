@@ -160,6 +160,9 @@ feature -- Access
 			Result_valid: valid_err_type(Result)
 		end
 
+	slot_id_index: HASH_TABLE [ARRAYED_LIST[STRING], STRING]
+			-- list of Archetype ids matching slot, keyed by slot path
+
 feature -- Status Report
 
 	has_differential_file: BOOLEAN is
@@ -364,6 +367,16 @@ feature -- Modification
 			-- clear `compiler_status'
 		do
 			compiler_status.wipe_out
+		end
+
+	add_slot_id_list (a_list: ARRAYED_LIST[STRING]; a_slot_path: STRING) is
+			-- add list of matching archetypes for slot at a_slot_path
+		do
+			if slot_id_index = Void then
+				create slot_id_index.make(0)
+			end
+			slot_id_index.put (a_list, a_slot_path)
+			a_list.compare_objects
 		end
 
 feature {NONE} -- Implementation

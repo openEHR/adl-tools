@@ -118,9 +118,9 @@ feature -- Commands
 			is_expanded := not expand_node_tree
 			toggle_expand_tree
 
-	--		if in_differential_mode then
-	--			roll_up_to_specialisation_level
-	--		end
+			if not in_differential_mode then
+				roll_up_to_specialisation_level
+			end
 		end
 
 	repopulate is

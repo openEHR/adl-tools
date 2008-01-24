@@ -771,6 +771,11 @@ feature -- Controls
 			create Result.make (Current)
 		end
 
+	slot_map_control: GUI_SLOT_MAP_CONTROL is
+		once
+			create Result.make (Current)
+		end
+
 	path_map_control: GUI_PATH_MAP_CONTROL is
 		once
 			create Result.make (Current)
@@ -883,6 +888,7 @@ feature {EV_DIALOG} -- Implementation
 		do
 			populate_user_controls
 			path_map_control.populate
+			slot_map_control.populate
 			node_map_control.populate
 			ontology_controls.populate
 			description_controls.populate

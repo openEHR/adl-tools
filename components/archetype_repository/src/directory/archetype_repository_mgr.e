@@ -142,6 +142,44 @@ feature -- Access
 			end
 		end
 
+	matching_ids (a_regex, an_rm_type: STRING): ARRAYED_LIST[STRING] is
+			-- generate list of archetype ids that match the pattern and optional rm_type. If rm_type is supplied,
+			-- we assume that the regex itself does not contain an rm type
+		require
+			Regex_valid: a_regex /= Void and then not a_regex.is_empty
+			Rm_type_valid: an_rm_type /= Void implies not an_rm_type.is_empty
+		local
+			regex_matcher: LX_DFA_REGULAR_EXPRESSION
+			arch_rm_type: STRING
+		do
+			create Result.make (0)
+			an_rm_type.to_lower
+			create regex_matcher.compile_case_insensitive (a_regex)
+			if regex_matcher.is_compiled then
+				from
+					archetype_id_index.start
+				until
+					archetype_id_index.off
+				loop
+					if regex_matcher.matches (archetype_id_index.key_for_iteration) then
+						if an_rm_type /= Void then
+							arch_rm_type := (create {ARCHETYPE_ID}.make_from_string (archetype_id_index.key_for_iteration)).rm_entity
+							arch_rm_type.to_lower
+							if an_rm_type.is_equal (arch_rm_type) then
+								Result.extend(archetype_id_index.key_for_iteration)
+							end
+						else
+							Result.extend(archetype_id_index.key_for_iteration)
+						end
+					end
+					archetype_id_index.forth
+				end
+			else
+				-- broken regex
+				Result.extend("ERROR: Invalid regular expression " + a_regex)
+			end
+		end
+
 feature -- Status Report
 
 	has_selected_archetype: BOOLEAN

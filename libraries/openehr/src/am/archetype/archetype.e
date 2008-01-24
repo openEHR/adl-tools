@@ -181,6 +181,12 @@ feature -- Status Report
 			Result := physical_paths.has(a_path)
 		end
 
+	has_slots: BOOLEAN is
+			-- true if there are any slots
+		do
+			Result := slot_index /= Void and then slot_index.count > 0
+		end
+
 	has_invariants: BOOLEAN is
 			-- true if there are invariants
 		do
@@ -236,10 +242,11 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER, EXPR_XREF_BUI
 			expr_iterator: EXPR_VISITOR_ITERATOR
 			invariants_xref_builder: EXPR_XREF_BUILDER
 		do
-			create id_at_codes_xref_table.make(0)
-			create data_at_codes_xref_table.make(0)
-			create use_node_path_xref_table.make(0)
-			create ac_codes_xref_table.make(0)
+			create id_atcodes_index.make(0)
+			create data_atcodes_index.make(0)
+			create use_node_index.make(0)
+			create accodes_index.make(0)
+			create slot_index.make(0)
 
 			create definition_xref_builder
 			definition_xref_builder.initialise(Current)
@@ -247,7 +254,7 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER, EXPR_XREF_BUI
 			a_c_iterator.do_all
 
 			if has_invariants then
-				create invariants_xref_table.make(0)
+				create invariants_index.make(0)
 				create invariants_xref_builder
 				from
 					invariants.start
@@ -277,25 +284,28 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER, EXPR_XREF_BUI
 			a_c_iterator.do_all
 		end
 
-	id_at_codes_xref_table: HASH_TABLE[ARRAYED_LIST[C_OBJECT], STRING]
+	id_atcodes_index: HASH_TABLE[ARRAYED_LIST[C_OBJECT], STRING]
 			-- table of {list<node>, code} for term codes which identify nodes in archetype (note that there
 			-- are other uses of term codes from the ontology, which is why this attribute is not just called
 			-- 'term_codes_xref_table')
 
-	ac_codes_xref_table: HASH_TABLE[ARRAYED_LIST[C_OBJECT], STRING]
-			-- table of {list<node>, code} for constraint codes in archetype
-
-	data_at_codes_xref_table: HASH_TABLE[ARRAYED_LIST[C_OBJECT], STRING]
+	data_atcodes_index: HASH_TABLE[ARRAYED_LIST[C_OBJECT], STRING]
 			-- table of {list<node>, code} for term codes which appear in archetype nodes as data,
 			-- e.g. in C_DV_ORDINAL and C_CODE_PHRASE types
 
-	use_node_path_xref_table: HASH_TABLE[ARRAYED_LIST[ARCHETYPE_INTERNAL_REF], STRING]
+	accodes_index: HASH_TABLE[ARRAYED_LIST[C_OBJECT], STRING]
+			-- table of {list<node>, code} for constraint codes in archetype
+
+	use_node_index: HASH_TABLE[ARRAYED_LIST[ARCHETYPE_INTERNAL_REF], STRING]
 			-- table of {list<ARCHETYPE_INTERNAL_REF>, target_path}
 			-- i.e. <list of use_nodes> keyed by path they point to
 
-	invariants_xref_table: HASH_TABLE[ARRAYED_LIST[EXPR_LEAF], STRING]
+	invariants_index: HASH_TABLE[ARRAYED_LIST[EXPR_LEAF], STRING]
 			-- table of {list<EXPR_LEAF>, target_path}
 			-- i.e. <list of invariant leaf nodes> keyed by path they point to
+
+	slot_index: ARRAYED_LIST [ARCHETYPE_SLOT]
+			-- list of archetype slots in this archetype
 
 feature -- Modification
 
@@ -449,16 +459,16 @@ feature {NONE} -- Implementation
 			path_map := definition.all_paths
 
 			-- Add full paths of internal references thus giving full set of actual paths
-			use_refs_csr := use_node_path_xref_table.cursor
+			use_refs_csr := use_node_index.cursor
 			from
-				use_node_path_xref_table.start
+				use_node_index.start
 			until
-				use_node_path_xref_table.off
+				use_node_index.off
 			loop
 				-- Hash table with arrayed list of ARCHETYPE_INTERNAL_REFs and Key of target
 				-- (ie the ref path of the internal reference)
-				src_nodes := use_node_path_xref_table.item_for_iteration
-				tgt_path_str := use_node_path_xref_table.key_for_iteration
+				src_nodes := use_node_index.item_for_iteration
+				tgt_path_str := use_node_index.key_for_iteration
 
 				-- only generate derived paths if we are in a flat archetype that has them all, or else in a
 				-- differential archetype that happens to have them
@@ -491,9 +501,9 @@ feature {NONE} -- Implementation
 						src_nodes.forth
 					end
 				end
-				use_node_path_xref_table.forth
+				use_node_index.forth
 			end
-			use_node_path_xref_table.go_to (use_refs_csr)
+			use_node_index.go_to (use_refs_csr)
 
 			create sorted_physical_paths.make
 			create sorted_physical_leaf_paths.make
