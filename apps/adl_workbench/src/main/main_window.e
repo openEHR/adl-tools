@@ -195,7 +195,7 @@ feature {NONE} -- Initialization
 			add_menu_shortcut (select_all_menu_item, {EV_KEY_CONSTANTS}.key_a, True, False)
 		end
 
-feature -- Commands
+feature -- Application Commands
 
 	show
 			-- Do a few adjustments and load the repository before displaying the window.
@@ -272,66 +272,7 @@ feature -- Commands
 			do_with_wait_cursor (agent parse_archetype)
 		end
 
-feature {NONE} -- Commands
-
-	show_online_help is
-			-- Called by `select_actions' of `online_mi'.
-		do
-			execution_environment.launch (Default_browser_command + ADL_help_page_url)
-		end
-
-	display_about is
-			-- Called by `pointer_button_press_actions' of `about_mi'.
-		do
-			About_dialog.show_modal_to_window (Current)
-		end
-
-	exit_app is
-			--
-		local
-			strs: ARRAYED_LIST [STRING]
-			ev_items: DYNAMIC_LIST[EV_LIST_ITEM]
-		do
-			set_total_view_area_split_position(total_view_area.split_position)
-			set_info_view_area_split_position(info_view_area.split_position)
-			set_test_view_area_split_position(test_view_area.split_position)
-			set_explorer_view_area_split_position(explorer_view_area.split_position)
-			set_app_width(width)
-			set_app_height(height)
-			set_app_x_position(x_position)
-			set_app_y_position(y_position)
-			set_app_maximised(is_maximized)
-			set_main_notebook_tab_pos(main_nb.selected_item_index)
-
-			set_path_filter_combo_selection(path_filter_combo.selected_item.text)
-
-			ev_items := path_view_check_list.checked_items
-			create strs.make(0)
-			from
-				ev_items.start
-			until
-				ev_items.off
-			loop
-				strs.extend(ev_items.item.text)
-				ev_items.forth
-			end
-			set_path_view_check_list_settings(strs)
-
-			save_resources
-			ev_application.destroy
-		end
-
-	select_language is
-			-- Called by `select_actions' of `language_combo'.
-		do
-			if not language_combo.text.is_empty then
-				archetype_compiler.set_current_language (language_combo.text)
-
-				if archetype_directory.selected_archetype_valid then
-					populate_view_controls
-				end
-			end
-		end
+feature {NONE} -- Archetype Commands
 
 	open_adl_file is
 			-- Let the user select an ADL file, and the load and parse it.
@@ -520,16 +461,6 @@ feature {NONE} -- Commands
 			end
 		end
 
-	move_cursor_to_pointer_location (a_x, a_y, a_button: INTEGER; a_x_tilt, a_y_tilt, a_pressure: DOUBLE; a_screen_x, a_screen_y: INTEGER) is
-			-- Called by `pointer_button_press_actions' of `archetype_text_edit_area'.
-		do
-		end
-
-	pointer_double_click_action (a_x, a_y, a_button: INTEGER; a_x_tilt, a_y_tilt, a_pressure: DOUBLE; a_screen_x, a_screen_y: INTEGER) is
-			-- Called by `pointer_double_press_actions' of `archetype_text_edit_area'.
-		do
-		end
-
 	archetype_text_edit_process_keystroke (a_keystring: STRING) is
 			-- Called by `key_press_string_actions' of `archetype_text_edit_area'.
 		do
@@ -555,32 +486,22 @@ feature {NONE} -- Commands
 			archetype_test_tree_control.populate
 		end
 
-	show_clipboard is
-			-- show the current contents of the clipboard
-		local
-			ev_info_dlg: EV_INFORMATION_DIALOG
-		do
-			create ev_info_dlg.make_with_text (ev_application.clipboard.text)
-			ev_info_dlg.set_title ("Clipboard Contents")
-			ev_info_dlg.show_modal_to_window (Current)
-		end
-
 	path_column_select (a_list_item: EV_LIST_ITEM) is
 			-- Called by `check_actions' of `path_view_check_list'.
 		do
-			adl_path_map_control.column_select(a_list_item)
+			path_map_control.column_select(a_list_item)
 		end
 
 	path_column_unselect (a_list_item: EV_LIST_ITEM) is
 			-- Called by `check_actions' of `path_view_check_list'.
 		do
-			adl_path_map_control.column_unselect(a_list_item)
+			path_map_control.column_unselect(a_list_item)
 		end
 
 	path_row_set_filter is
 			-- Called by `select_actions' of `path_filter_combo'.
 		do
-			adl_path_map_control.set_filter
+			path_map_control.set_filter
 		end
 
 	arch_notebook_select is
@@ -630,6 +551,87 @@ feature {NONE} -- Commands
 			translation_controls.populate_items
 		end
 
+feature {NONE} -- Application Commands
+
+	show_online_help is
+			-- Called by `select_actions' of `online_mi'.
+		do
+			execution_environment.launch (Default_browser_command + ADL_help_page_url)
+		end
+
+	display_about is
+			-- Called by `pointer_button_press_actions' of `about_mi'.
+		do
+			About_dialog.show_modal_to_window (Current)
+		end
+
+	exit_app is
+			--
+		local
+			strs: ARRAYED_LIST [STRING]
+			ev_items: DYNAMIC_LIST[EV_LIST_ITEM]
+		do
+			set_total_view_area_split_position(total_view_area.split_position)
+			set_info_view_area_split_position(info_view_area.split_position)
+			set_test_view_area_split_position(test_view_area.split_position)
+			set_explorer_view_area_split_position(explorer_view_area.split_position)
+			set_app_width(width)
+			set_app_height(height)
+			set_app_x_position(x_position)
+			set_app_y_position(y_position)
+			set_app_maximised(is_maximized)
+			set_main_notebook_tab_pos(main_nb.selected_item_index)
+
+			set_path_filter_combo_selection(path_filter_combo.selected_item.text)
+
+			ev_items := path_view_check_list.checked_items
+			create strs.make(0)
+			from
+				ev_items.start
+			until
+				ev_items.off
+			loop
+				strs.extend(ev_items.item.text)
+				ev_items.forth
+			end
+			set_path_view_check_list_settings(strs)
+
+			save_resources
+			ev_application.destroy
+		end
+
+	select_language is
+			-- Called by `select_actions' of `language_combo'.
+		do
+			if not language_combo.text.is_empty then
+				archetype_compiler.set_current_language (language_combo.text)
+
+				if archetype_directory.selected_archetype_valid then
+					populate_view_controls
+				end
+			end
+		end
+
+	move_cursor_to_pointer_location (a_x, a_y, a_button: INTEGER; a_x_tilt, a_y_tilt, a_pressure: DOUBLE; a_screen_x, a_screen_y: INTEGER) is
+			-- Called by `pointer_button_press_actions' of `archetype_text_edit_area'.
+		do
+		end
+
+	pointer_double_click_action (a_x, a_y, a_button: INTEGER; a_x_tilt, a_y_tilt, a_pressure: DOUBLE; a_screen_x, a_screen_y: INTEGER) is
+			-- Called by `pointer_double_press_actions' of `archetype_text_edit_area'.
+		do
+		end
+
+	show_clipboard is
+			-- show the current contents of the clipboard
+		local
+			ev_info_dlg: EV_INFORMATION_DIALOG
+		do
+			create ev_info_dlg.make_with_text (ev_application.clipboard.text)
+			ev_info_dlg.set_title ("Clipboard Contents")
+			ev_info_dlg.show_modal_to_window (Current)
+		end
+
 feature {NONE} -- Edit events
 
 	call_unless_text_focused (action: PROCEDURE [ANY, TUPLE])
@@ -654,7 +656,7 @@ feature {NONE} -- Edit events
 			-- Copy the selected item, depending on which widget has focus.
 		do
 			if parsed_archetype_found_paths.has_focus then
-				adl_path_map_control.copy_path_to_clipboard
+				path_map_control.copy_path_to_clipboard
 			elseif focused_text /= Void then
 				if focused_text.has_selection then
 					focused_text.copy_selection
@@ -699,55 +701,55 @@ feature -- Controls
 
 	ontology_controls: GUI_ONTOLOGY_CONTROLS is
 		once
-			create Result.make(Current)
+			create Result.make (Current)
 		end
 
 	description_controls: GUI_DESCRIPTION_CONTROLS is
 		once
-			create Result.make(Current)
+			create Result.make (Current)
 		end
 
 	translation_controls: GUI_TRANSLATION_CONTROLS is
 		once
-			create Result.make(Current)
+			create Result.make (Current)
 		end
 
 	node_map_control: GUI_NODE_MAP_CONTROL is
 		once
-			create Result.make(Current)
+			create Result.make (Current)
 		end
 
-	adl_path_map_control: GUI_PATH_MAP_CONTROL is
+	path_map_control: GUI_PATH_MAP_CONTROL is
 		once
-			create Result.make(Current)
+			create Result.make (Current)
 		end
 
 	archetype_view_tree_control: GUI_VIEW_ARCHETYPE_TREE_CONTROL is
 		once
-			create Result.make(Current)
+			create Result.make (Current)
 		end
 
 	archetype_test_tree_control: GUI_TEST_ARCHETYPE_TREE_CONTROL is
 		once
-			create Result.make(Current)
+			create Result.make (Current)
 		end
 
 	Option_dialog: OPTION_DIALOG is
 		once
 			create Result
-			Result.set_main_window(Current)
+			Result.set_main_window (Current)
 		end
 
 	Repository_dialog: REPOSITORY_DIALOG is
 		once
 			create Result
-			Result.set_main_window(Current)
+			Result.set_main_window (Current)
 		end
 
 	Icon_dialog: ICON_DIALOG is
 		once
 			create Result
-			Result.set_main_window(Current)
+			Result.set_main_window (Current)
 		end
 
 	Print_dialog: EV_PRINT_DIALOG is
@@ -776,8 +778,8 @@ feature -- Controls
 
 feature {EV_DIALOG} -- Implementation
 
-	populate_archetype_directory is
-			-- rebuild archetype directory & repopulate relevant GUI parts
+	populate_archetype_directory
+			-- Rebuild archetype directory & repopulate relevant GUI parts.
 		do
 			clear_all_controls
 			archetype_directory.build_directory
@@ -786,16 +788,10 @@ feature {EV_DIALOG} -- Implementation
 			archetype_test_tree_control.populate
 		end
 
-	clear_archetype_text_edit_area is
-			--
+	clear_all_controls
+			-- Wipe out content from visual controls.
 		do
-			archetype_text_edit_area.set_text("")
-		end
-
-	clear_all_controls is
-			-- wipe out content from visual controls
-		do
-			parser_status_area.set_text("")
+			parser_status_area.remove_text
 			language_combo.wipe_out
 			node_map_control.clear
 			ontology_controls.clear
@@ -804,35 +800,35 @@ feature {EV_DIALOG} -- Implementation
 			parsed_archetype_found_paths.wipe_out
 		end
 
-	populate_user_controls is
-			-- populate content from visual controls
+	populate_user_controls
+			-- Populate content from visual controls.
 		do
 			populate_archetype_id
 			populate_languages
 			populate_adl_version
 		end
 
-	populate_all_archetype_controls is
-			-- populate content from visual controls
+	populate_all_archetype_controls
+			-- Populate content from visual controls.
 		do
 			populate_user_controls
-			adl_path_map_control.populate
+			path_map_control.populate
 			node_map_control.populate
 			ontology_controls.populate
 			description_controls.populate
 			translation_controls.populate
 		end
 
-	populate_view_controls is
-			-- populate content from visual controls
+	populate_view_controls
+			-- Populate content from visual controls.
 		do
-			adl_path_map_control.populate
+			path_map_control.populate
 			node_map_control.repopulate
 			ontology_controls.populate
 			description_controls.populate
 		end
 
-	populate_archetype_id is
+	populate_archetype_id
 		local
 			selected: ARCHETYPE
 		do
@@ -840,20 +836,13 @@ feature {EV_DIALOG} -- Implementation
 
 			if selected /= Void then
 				archetype_id.set_text (utf8 (selected.archetype_id.as_string))
-
-				if selected.is_specialised then
-					parent_archetype_id.set_text (utf8 (selected.parent_archetype_id.as_string))
-				else
-					parent_archetype_id.remove_text
-				end
 			else
 				archetype_id.remove_text
-				parent_archetype_id.remove_text
 			end
 		end
 
-	populate_adl_version is
-			-- populate ADL version
+	populate_adl_version
+			-- Populate ADL version.
 		do
 			if archetype_directory.has_selected_archetype_descriptor then
 				adl_version_text.set_text (utf8 (archetype_directory.selected_archetype.adl_version))
@@ -862,7 +851,8 @@ feature {EV_DIALOG} -- Implementation
 			end
 		end
 
-	populate_languages is
+	populate_languages
+			-- Populate the languages combo box and the terminologies list.
 		do
 			language_combo.select_actions.block
 
@@ -881,6 +871,8 @@ feature {NONE} -- Implementation
 
 	do_with_wait_cursor (action: PROCEDURE [ANY, TUPLE])
 			-- Perform `action' with an hourglass mouse cursor, restoring the cursor when done.
+		require
+			action_attached: action /= Void
 		local
 			cursor: EV_CURSOR
 		do
