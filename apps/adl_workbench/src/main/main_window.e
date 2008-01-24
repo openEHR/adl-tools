@@ -906,15 +906,8 @@ feature {EV_DIALOG} -- Implementation
 
 			if selected /= Void then
 				archetype_id.set_text (utf8 (selected.archetype_id.as_string))
-
-				if selected.is_specialised then
-					parent_archetype_id.set_text (utf8 (selected.parent_archetype_id.as_string))
-				else
-					parent_archetype_id.remove_text
-				end
 			else
 				archetype_id.remove_text
-				parent_archetype_id.remove_text
 			end
 		end
 
