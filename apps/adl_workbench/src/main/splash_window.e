@@ -32,7 +32,7 @@ create
 feature {NONE} -- Initialization
 
 	make is
-			-- Create to be visible for one-and-a-half seconds.
+			-- Create to be visible for at least 5 seconds.
 		local
 			screen: EV_SCREEN
 		do
@@ -41,7 +41,7 @@ feature {NONE} -- Initialization
 			create screen
 			set_position ((screen.width - width) // 2, (screen.height - height) // 2)
 
-			create timer.make_with_interval (1500)
+			create timer.make_with_interval (5000)
 			timer.actions.extend (agent close)
 		end
 
@@ -50,7 +50,6 @@ feature {NONE} -- Initialization
 		local
 			hb: EV_HORIZONTAL_BOX
 			label: EV_LABEL
-			pixmap: EV_PIXMAP
 		do
 			Precursor
 

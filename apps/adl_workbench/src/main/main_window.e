@@ -75,6 +75,7 @@ feature {NONE} -- Initialization
 			-- (due to regeneration of implementation class)
 			-- can be added here.
 		do
+			initialise_default_resource_config_file_name
 			initialise_accelerators
 		end
 
@@ -203,17 +204,7 @@ feature -- Application Commands
 	show
 			-- Do a few adjustments and load the repository before displaying the window.
 		do
-			if editor_command.is_empty then
-				set_editor_command (default_editor_command)
-			end
-
-			if reference_repository_path.is_empty then
-				set_reference_repository_path (application_startup_directory)
-				set_repository
-			else
-				populate_archetype_directory
-			end
-
+			populate_archetype_directory
 			archetype_compiler.set_visual_update_action (agent build_gui_update)
 			initialise_gui_settings
 			Precursor
@@ -221,6 +212,20 @@ feature -- Application Commands
 
 			if app_maximised then
 				maximize
+			end
+
+			if editor_command.is_empty then
+				set_editor_command (default_editor_command)
+			end
+
+			if new_news then
+				display_news
+				update_status_file
+			end
+
+			if reference_repository_path.is_empty then
+				set_reference_repository_path (application_startup_directory)
+				set_repository
 			end
 		end
 
