@@ -76,6 +76,7 @@ feature {NONE} -- Initialization
 			-- (due to regeneration of implementation class)
 			-- can be added here.
 		do
+			initialise_default_resource_config_file_name
 			initialise_accelerators
 		end
 
@@ -194,29 +195,11 @@ feature {NONE} -- Initialization
 			add_menu_shortcut (select_all_menu_item, {EV_KEY_CONSTANTS}.key_a, True, False)
 		end
 
-feature -- Access
-
-	need_to_set_repository: BOOLEAN
-			-- flag set on startup to indicate if repository needs to be specified by user
-
 feature -- Commands
 
 	show
-			-- Do a few adjustments straight after display.
+			-- Do a few adjustments and load the repository before displaying the window.
 		do
-			initialise_gui_settings
-			Precursor
-			refresh_now
-
-			if editor_command.is_empty then
-				set_editor_command(Default_editor_command)
-			end
-
-			if reference_repository_path.is_empty then
-				set_reference_repository_path (application_startup_directory)
-				need_to_set_repository := True
-			end
-
 			if archetype_directory.valid_repository_path (reference_repository_path) then
 				archetype_directory.put_repository (reference_repository_path, "reference")
 			end
@@ -226,37 +209,57 @@ feature -- Commands
 			end
 
 			populate_archetype_directory
+			initialise_gui_settings
+			Precursor
 			focus_first_widget (main_nb.selected_item)
+
+			if app_maximised then
+				maximize
+			end
+
+			if editor_command.is_empty then
+				set_editor_command (default_editor_command)
+			end
+
+			if new_news then
+				display_news
+				update_status_file
+			end
+
+			if reference_repository_path.is_empty then
+				set_reference_repository_path (application_startup_directory)
+				set_repository
+			end
 		end
 
 	set_options is
-			--
+			-- Display the Options dialog.
 		do
 			option_dialog.show_modal_to_window (Current)
 		end
 
 	set_repository is
-			--
+			-- Display the Repository Settings dialog.
 		do
 			repository_dialog.show_modal_to_window (Current)
 		end
 
 	display_icon_help is
-			--
+			-- Display the Icons help dialog.
 		do
 			icon_dialog.show_modal_to_window (Current)
 		end
 
-	update_status_area(s: STRING) is
+	update_status_area (s: STRING) is
 			-- update parse status area on screen
 		do
-			parser_status_area.append_text(s)
+			parser_status_area.append_text (s)
 		end
 
 	display_news is
-			-- Called by `pointer_button_press_actions' of `about_mi'.
+			-- Display news about the latest release.
 		do
-			News_dialog.show
+			News_dialog.show_modal_to_window (Current)
 		end
 
 	load_and_parse_archetype
@@ -274,7 +277,7 @@ feature {NONE} -- Commands
 	show_online_help is
 			-- Called by `select_actions' of `online_mi'.
 		do
-			execution_environment.launch(Default_browser_command + ADL_help_page_url)
+			execution_environment.launch (Default_browser_command + ADL_help_page_url)
 		end
 
 	display_about is

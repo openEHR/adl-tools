@@ -14,7 +14,7 @@ indexing
 class SPLASH_WINDOW
 
 inherit
-	EV_MESSAGE_DIALOG
+	EV_POPUP_WINDOW
 		redefine
 			initialize
 		end
@@ -32,30 +32,43 @@ create
 feature {NONE} -- Initialization
 
 	make is
-			-- Create to be visible for one-and-a-half seconds.
+			-- Create to be visible for at least 5 seconds.
 		local
 			screen: EV_SCREEN
 		do
-			make_with_text (splash_text)
-			set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 255))
-
-			if has_icon_directory then
-				set_pixmap (pixmaps ["openEHR and Ocean"])
-			end
+			make_with_shadow
 
 			create screen
 			set_position ((screen.width - width) // 2, (screen.height - height) // 2)
 
-			create timer.make_with_interval (1500)
+			create timer.make_with_interval (5000)
 			timer.actions.extend (agent close)
 		end
 
 	initialize is
-			-- HACK to work around crash in EV_MESSAGE_DIALOG.initialize.
+			-- Add the openEHR and Ocean logos with the text label to their right.
+		local
+			hb: EV_HORIZONTAL_BOX
+			label: EV_LABEL
 		do
-			foreground_color := implementation.foreground_color
-			background_color := implementation.background_color
 			Precursor
+
+			create hb
+			hb.set_padding (50)
+			hb.set_border_width (30)
+			extend (hb)
+
+			if has_icon_directory then
+				hb.extend (pixmaps ["openEHR and Ocean"])
+			end
+
+			create label
+			label.align_text_left
+			label.set_text (splash_text)
+			hb.extend (label)
+
+			set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 248))
+			propagate_background_color
 		end
 
 feature {NONE} -- Implementation

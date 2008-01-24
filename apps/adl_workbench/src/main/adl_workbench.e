@@ -16,9 +16,6 @@ class
 
 inherit
 	EV_APPLICATION
-		redefine
-			initialize
-		end
 
 	SHARED_UI_RESOURCES
 		export
@@ -33,81 +30,60 @@ create
 feature {NONE} -- Initialization
 
 	make_and_launch
-			-- Create `Current', build and display `main_window',
-			-- then launch the application.
+			-- Create and launch the application, showing a splash window followed by the main window.
 		do
 			default_create
-
-			if has_resources then
-				initialise_default_resource_config_file_name
-				main_window.show
-
-				if app_maximised then
-					main_window.maximize
-				end
-
-				if main_window.need_to_set_repository then
-					main_window.set_repository
-				end
-
-				if new_news then
-					main_window.display_news
-					update_status_file
-				end
-
-				launch
-			else
-				io.put_string(fail_reason + "%N")
-				io.put_string("Hit any key to exit application%N")
-				io.read_character
-			end
-		end
-
-	initialize
-			-- Ensure that `splash_window' is shown at the earliest opportunity.
-		do
-			Precursor
 			show_splash_window
+
+			if not is_destroyed then
+				post_launch_actions.extend_kamikaze (agent show_main_window)
+				launch
+			end
 		end
 
 	show_splash_window
-			-- Show `splash_window' centred on the screen in front of `main_window'.
+			-- Display the splash window, but abort the application if there is no icons directory.
+			-- This avoids a resource leak, by ensuring that there is no reference to the splash window after launch.
+		local
+			splash: SPLASH_WINDOW
 		do
-			if splash_window = Void then
-				create splash_window.make
-				splash_window.show_relative_to_window (main_window)
-				splash_window.refresh_now
-			end
-		rescue
-			retry
-		end
-
-feature {NONE} -- Implementation
-
-	main_window: MAIN_WINDOW
-			-- The application's main window.
-		once
-			create Result
-		ensure
-			attached: Result /= Void
-		end
-
-	splash_window: SPLASH_WINDOW
-			-- A splash screen to show while `main_window' is loading.
-
-	fail_reason: STRING
-
-	has_resources: BOOLEAN is
-			-- True if all resources are available
-		do
-			Result := True
+			create splash.make
+			splash.show
 
 			if not has_icon_directory then
-				fail_reason := "Cannot run: 'icons' directory missing"
-				Result := False
+				new_abort_dialog ("The 'icons' directory is missing. Please reinstall ADL Workbench and try again.").show_modal_to_window (splash)
+				destroy
 			end
 		ensure
-			not Result implies fail_reason /= Void
+			aborting_if_no_icons: is_destroyed xor has_icon_directory
+		end
+
+	show_main_window
+			-- Build and display the application's main window.
+		local
+			main_window: MAIN_WINDOW
+		do
+			process_graphical_events
+			create main_window
+			main_window.show
+		end
+
+	new_abort_dialog (text: STRING): EV_MESSAGE_DIALOG
+			-- A newly created dialog containing an "Abort" button and `text'.
+		require
+			text_attached: text /= Void
+		do
+			create Result.make_with_text (text)
+			Result.set_title ("Cannot launch ADL Workbench")
+			Result.set_pixmap ((create {EV_STOCK_PIXMAPS}).error_pixmap)
+			Result.set_icon_pixmap (Result.pixmap)
+			Result.set_buttons (<<"Abort">>)
+			Result.set_default_push_button (Result.button ("Abort"))
+			Result.set_default_cancel_button (Result.button ("Abort"))
+		ensure
+			attached: Result /= Void
+			text_set: Result.text.same_string (text)
+			button_set: Result.has_button ("Abort")
 		end
 
 end

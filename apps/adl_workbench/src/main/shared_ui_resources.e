@@ -488,6 +488,7 @@ feature -- Access
 				create pixmap
 				if not pixmap_file_table.item_for_iteration.is_equal("default") then
 					pixmap.set_with_named_file(icon_directory + "/" + pixmap_file_table.item_for_iteration)
+					pixmap.set_minimum_size (pixmap.width, pixmap.height)
 				end
 				Result.put(pixmap, pixmap_file_table.key_for_iteration)
 				pixmap_file_table.forth
