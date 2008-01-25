@@ -199,7 +199,7 @@ feature {NONE} -- Initialization
 			add_menu_shortcut (edit_menu_select_all, key_a, True, False)
 		end
 
-feature -- Application Commands
+feature -- Status setting
 
 	show
 			-- Do a few adjustments and load the repository before displaying the window.
@@ -229,71 +229,40 @@ feature -- Application Commands
 			end
 		end
 
-	set_options is
-			-- Display the Options dialog.
+	update_status_area (text: STRING) is
+			-- Append `text' to `parser_status_area'.
+		require
+			text_attached: text /= Void
 		do
-			option_dialog.show_modal_to_window (Current)
+			parser_status_area.append_text (text)
 		end
 
-	set_repository is
-			-- Display the Repository Settings dialog.
-		do
-			repository_dialog.show_modal_to_window (Current)
-		end
+feature -- File events
 
-	display_icon_help is
-			-- Display the Icons help dialog.
+	open_adl_file is
+			-- Let the user select an ADL file, and then load and parse it.
+		local
+			dialog: EV_FILE_OPEN_DIALOG
+			ara: ARCH_REP_ARCHETYPE
 		do
-			icon_dialog.show_modal_to_window (Current)
-		end
+			create dialog
+			dialog.set_start_directory (current_work_directory)
+			dialog.filters.extend (["*." + archetype_native_syntax, "Files of type " + Archetype_flat_file_extension])
+			dialog.show_modal_to_window (Current)
 
-	update_status_area (s: STRING) is
-			-- update parse status area on screen
-		do
-			parser_status_area.append_text (s)
-		end
+			if not dialog.file_name.is_empty then
+				archetype_directory.add_adhoc_item (dialog.file_name)
+				ara := archetype_directory.archetype_descriptor_from_full_path (dialog.file_name)
 
-	display_news is
-			-- Display news about the latest release.
-		do
-			News_dialog.show_modal_to_window (Current)
-		end
-
-feature -- Archetype Commands
-
-	build_all
-			-- Build the whole system.
-		do
-			do_build_action (agent archetype_compiler.build_all)
-		end
-
-	rebuild_all
-			-- Force the whole system to rebuild.
-		do
-			compiler_error_control.clear
-			do_build_action (agent archetype_compiler.rebuild_all)
-		end
-
-	build_subtree
-			-- Build the subsystem below the currently selected node.
-		do
-			do_build_action (agent archetype_compiler.build_subtree)
-		end
-
-	rebuild_subtree
-			-- Force rebuilding of the whole subsystem below the currently selected node.
-		do
-			do_build_action (agent archetype_compiler.rebuild_subtree)
-		end
-
-	interrupt_build
-			-- Cancel the build currently in progress.
-		do
-			archetype_compiler.interrupt
+				if ara /= Void then
+					archetype_directory.set_selected_item (ara)
+					archetype_view_tree_control.populate
+				end
+			end
 		end
 
 	parse_archetype
-			-- Load and parse archetype currently selected in `archetype_directory'.
+			-- Load and parse the archetype currently selected in `archetype_directory'.
 		local
 			ara: ARCH_REP_ARCHETYPE
 		do
@@ -318,26 +287,21 @@ feature -- Archetype Commands
 			end
 		end
 
-	open_adl_file is
-			-- Let the user select an ADL file, and then load and parse it.
+	edit_archetype is
+			-- Launch the external editor with the archetype currently selected in `archetype_directory'.
 		local
-			dialog: EV_FILE_OPEN_DIALOG
-			ara: ARCH_REP_ARCHETYPE
+			info_dialog: EV_INFORMATION_DIALOG
+			path: STRING
 		do
-			create dialog
-			dialog.set_start_directory (current_work_directory)
-			dialog.filters.extend (["*." + archetype_native_syntax, "Files of type " + Archetype_flat_file_extension])
-			dialog.show_modal_to_window (Current)
-
-			if not dialog.file_name.is_empty then
-				archetype_directory.add_adhoc_item (dialog.file_name)
-				ara := archetype_directory.archetype_descriptor_from_full_path (dialog.file_name)
-
-				if ara /= Void then
-					archetype_directory.set_selected_item (ara)
-					archetype_view_tree_control.populate
-				end
+			if archetype_directory.has_selected_archetype and archetype_directory.selected_archetype.has_differential_file then
+				path := archetype_directory.selected_archetype.differential_path
+			else
+				path := archetype_directory.selected_archetype.full_path
+				create info_dialog.make_with_text ("No source (.adls) file available; opening flat (.adl) file.")
+				info_dialog.show_modal_to_window (Current)
 			end
+
+			execution_environment.launch (editor_command + " %"" + path + "%"")
 		end
 
 	save_adl_file is
@@ -415,22 +379,200 @@ feature -- Archetype Commands
 			end
 		end
 
-	edit_archetype is
-			-- launch external editor with archetype
+	exit_app is
+			-- Terminate the application, saving the window location.
 		local
-			info_dialog: EV_INFORMATION_DIALOG
-			path: STRING
+			strs: ARRAYED_LIST [STRING]
+			ev_items: DYNAMIC_LIST[EV_LIST_ITEM]
 		do
-			if archetype_directory.has_selected_archetype and archetype_directory.selected_archetype.has_differential_file then
-				path := archetype_directory.selected_archetype.differential_path
-			else
-				path := archetype_directory.selected_archetype.full_path
-				create info_dialog.make_with_text ("No source (.adls) file available; opening flat (.adl) file.")
-				info_dialog.show_modal_to_window (Current)
-			end
+			set_total_view_area_split_position(total_view_area.split_position)
+			set_info_view_area_split_position(info_view_area.split_position)
+			set_test_view_area_split_position(test_view_area.split_position)
+			set_explorer_view_area_split_position(explorer_view_area.split_position)
+			set_app_width(width)
+			set_app_height(height)
+			set_app_x_position(x_position)
+			set_app_y_position(y_position)
+			set_app_maximised(is_maximized)
+			set_main_notebook_tab_pos(main_nb.selected_item_index)
 
-			execution_environment.launch (editor_command + " %"" + path + "%"")
+			set_path_filter_combo_selection(path_filter_combo.selected_item.text)
+
+			ev_items := path_view_check_list.checked_items
+			create strs.make(0)
+			from
+				ev_items.start
+			until
+				ev_items.off
+			loop
+				strs.extend(ev_items.item.text)
+				ev_items.forth
+			end
+			set_path_view_check_list_settings(strs)
+
+			save_resources
+			ev_application.destroy
 		end
+
+feature {NONE} -- Edit events
+
+	call_unless_text_focused (action: PROCEDURE [ANY, TUPLE])
+			-- Some of the edit shortcuts are implemented automatically for text boxes.
+			-- If called from a keyboard shortcut, execute the action unless a text box is focused.
+			-- Executing it within a text box would cause it to be performed twice.
+			-- For some actions this wouldn't really matter (cut, copy), but for paste it would be a blatant bug.
+		do
+			if focused_text = Void then
+				action.call ([])
+			end
+		end
+
+	on_cut
+			-- Cut the selected item, depending on which widget has focus.
+		do
+			on_copy
+			on_delete
+		end
+
+	on_copy
+			-- Copy the selected item, depending on which widget has focus.
+		do
+			if parsed_archetype_found_paths.has_focus then
+				path_map_control.copy_path_to_clipboard
+			elseif focused_text /= Void then
+				if focused_text.has_selection then
+					focused_text.copy_selection
+				end
+			end
+		end
+
+	on_paste
+			-- Paste an item, depending on which widget has focus.
+		local
+			old_length: INTEGER
+		do
+			if focused_text /= Void then
+				if focused_text.is_editable then
+					on_delete
+					old_length := focused_text.text_length
+					focused_text.paste (focused_text.caret_position)
+					focused_text.set_caret_position (focused_text.caret_position + focused_text.text_length - old_length)
+				end
+			end
+		end
+
+	on_delete
+			-- Delete the selected item, depending on which widget has focus.
+		do
+			if focused_text /= Void then
+				if focused_text.is_editable and focused_text.has_selection then
+					focused_text.delete_selection
+				end
+			end
+		end
+
+	on_select_all
+			-- Select all text in the currently focused text box, if any.
+		do
+			if focused_text /= Void and then focused_text.text_length > 0 then
+				focused_text.select_all
+			end
+		end
+
+	show_clipboard is
+			-- Display the current contents of the clipboard.
+		local
+			dialog: EV_INFORMATION_DIALOG
+		do
+			create dialog.make_with_text (ev_application.clipboard.text)
+			dialog.set_title ("Clipboard Contents")
+			dialog.show_modal_to_window (Current)
+		end
+
+feature {NONE} -- Repository events
+
+	set_repository is
+			-- Display the Repository Settings dialog.
+		do
+			repository_dialog.show_modal_to_window (Current)
+		end
+
+	build_all
+			-- Build the whole system.
+		do
+			do_build_action (agent archetype_compiler.build_all)
+		end
+
+	rebuild_all
+			-- Force the whole system to rebuild.
+		do
+			compiler_error_control.clear
+			do_build_action (agent archetype_compiler.rebuild_all)
+		end
+
+	build_subtree
+			-- Build the subsystem below the currently selected node.
+		do
+			do_build_action (agent archetype_compiler.build_subtree)
+		end
+
+	rebuild_subtree
+			-- Force rebuilding of the whole subsystem below the currently selected node.
+		do
+			do_build_action (agent archetype_compiler.rebuild_subtree)
+		end
+
+	interrupt_build
+			-- Cancel the build currently in progress.
+		do
+			archetype_compiler.interrupt
+		end
+
+feature {NONE} -- Tools events
+
+	export_html
+			-- Generate HTML from flat archetypes into `html_export_directory'.
+		local
+			dialog: EV_INFORMATION_DIALOG
+		do
+			create dialog.make_with_text ("Export to HTML is NOT YET IMPLEMENTED.%N%N" + html_export_directory)
+			dialog.set_title ("Export HTML")
+			dialog.show_modal_to_window (Current)
+		end
+
+	set_options
+			-- Display the Options dialog.
+		do
+			option_dialog.show_modal_to_window (Current)
+		end
+
+feature {NONE} -- Help events
+
+	display_icon_help is
+			-- Display the Icons help dialog.
+		do
+			icon_dialog.show_modal_to_window (Current)
+		end
+
+	display_news is
+			-- Display news about the latest release.
+		do
+			News_dialog.show_modal_to_window (Current)
+		end
+
+	show_online_help is
+			-- Display the application's online help in an external browser.
+		do
+			execution_environment.launch (Default_browser_command + ADL_help_page_url)
+		end
+
+	display_about is
+			-- Display the application's About box.
+		do
+			About_dialog.show_modal_to_window (Current)
+		end
+
+feature -- Archetype Commands
 
 	archetype_view_tree_item_select is
 			-- Display details of `archetype_file_tree' when the user selects it.
@@ -605,53 +747,6 @@ feature -- Archetype Commands
 
 feature {NONE} -- Application Commands
 
-	show_online_help is
-			-- Called by `select_actions' of `online_mi'.
-		do
-			execution_environment.launch (Default_browser_command + ADL_help_page_url)
-		end
-
-	display_about is
-			-- Called by `pointer_button_press_actions' of `about_mi'.
-		do
-			About_dialog.show_modal_to_window (Current)
-		end
-
-	exit_app is
-			--
-		local
-			strs: ARRAYED_LIST [STRING]
-			ev_items: DYNAMIC_LIST[EV_LIST_ITEM]
-		do
-			set_total_view_area_split_position(total_view_area.split_position)
-			set_info_view_area_split_position(info_view_area.split_position)
-			set_test_view_area_split_position(test_view_area.split_position)
-			set_explorer_view_area_split_position(explorer_view_area.split_position)
-			set_app_width(width)
-			set_app_height(height)
-			set_app_x_position(x_position)
-			set_app_y_position(y_position)
-			set_app_maximised(is_maximized)
-			set_main_notebook_tab_pos(main_nb.selected_item_index)
-
-			set_path_filter_combo_selection(path_filter_combo.selected_item.text)
-
-			ev_items := path_view_check_list.checked_items
-			create strs.make(0)
-			from
-				ev_items.start
-			until
-				ev_items.off
-			loop
-				strs.extend(ev_items.item.text)
-				ev_items.forth
-			end
-			set_path_view_check_list_settings(strs)
-
-			save_resources
-			ev_application.destroy
-		end
-
 	select_language is
 			-- Called by `select_actions' of `language_combo'.
 		do
@@ -672,81 +767,6 @@ feature {NONE} -- Application Commands
 	pointer_double_click_action (a_x, a_y, a_button: INTEGER; a_x_tilt, a_y_tilt, a_pressure: DOUBLE; a_screen_x, a_screen_y: INTEGER) is
 			-- Called by `pointer_double_press_actions' of `archetype_text_edit_area'.
 		do
-		end
-
-	show_clipboard is
-			-- show the current contents of the clipboard
-		local
-			ev_info_dlg: EV_INFORMATION_DIALOG
-		do
-			create ev_info_dlg.make_with_text (ev_application.clipboard.text)
-			ev_info_dlg.set_title ("Clipboard Contents")
-			ev_info_dlg.show_modal_to_window (Current)
-		end
-
-feature {NONE} -- Edit events
-
-	call_unless_text_focused (action: PROCEDURE [ANY, TUPLE])
-			-- Some of the edit shortcuts are implemented automatically for text boxes.
-			-- If called from a keyboard shortcut, execute the action unless a text box is focused.
-			-- Executing it within a text box would cause it to be performed twice.
-			-- For some actions this wouldn't really matter (cut, copy), but for paste it would be a blatant bug.
-		do
-			if focused_text = Void then
-				action.call ([])
-			end
-		end
-
-	on_cut
-			-- Cut the selected item, depending on which widget has focus.
-		do
-			on_copy
-			on_delete
-		end
-
-	on_copy
-			-- Copy the selected item, depending on which widget has focus.
-		do
-			if parsed_archetype_found_paths.has_focus then
-				path_map_control.copy_path_to_clipboard
-			elseif focused_text /= Void then
-				if focused_text.has_selection then
-					focused_text.copy_selection
-				end
-			end
-		end
-
-	on_paste
-			-- Paste an item, depending on which widget has focus.
-		local
-			old_length: INTEGER
-		do
-			if focused_text /= Void then
-				if focused_text.is_editable then
-					on_delete
-					old_length := focused_text.text_length
-					focused_text.paste (focused_text.caret_position)
-					focused_text.set_caret_position (focused_text.caret_position + focused_text.text_length - old_length)
-				end
-			end
-		end
-
-	on_delete
-			-- Delete the selected item, depending on which widget has focus.
-		do
-			if focused_text /= Void then
-				if focused_text.is_editable and focused_text.has_selection then
-					focused_text.delete_selection
-				end
-			end
-		end
-
-	on_select_all
-			-- Select all text in the currently focused text box, if any.
-		do
-			if focused_text /= Void and then focused_text.text_length > 0 then
-				focused_text.select_all
-			end
 		end
 
 feature -- Controls

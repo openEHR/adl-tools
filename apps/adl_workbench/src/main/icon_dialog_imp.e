@@ -6,7 +6,8 @@ indexing
 		You should not modify this code by hand, as it will be re-generated every time
 		 modifications are made to the project.
 		 	]"
-	date: "$Date: 2006-09-21 16:27:08 -0700 (Thu, 21 Sep 2006) $"
+	generator: "EiffelBuild"
+	date: "$Date: 2007-09-05 12:09:14 -0700 (Wed, 05 Sep 2007) $"
 	revision: "$Revision$"
 
 deferred class
@@ -78,10 +79,6 @@ feature {NONE}-- Initialization
 			set_title ("ADL Workbench Icon Key")
 			
 			set_all_attributes_using_constants
-			
-				-- Connect events.
-				-- Close the application when an interface close
-				-- request is recieved on `Current'. i.e. the cross is clicked.
 
 				-- Call `user_initialization'.
 			user_initialization

@@ -245,26 +245,37 @@ feature -- Access
 	path_filter_combo_selection: STRING is
 			-- setting of path control filter combo-box
 		do
-			Result := resource_value("default", "path_filter_combo_selection")
+			Result := resource_value ("default", "path_filter_combo_selection")
 		end
 
 	path_view_check_list_settings: ARRAYED_LIST[STRING] is
 			-- path view column settings
 		do
-			Result := resource_value_list("default", "path_view_check_list_settings")
+			Result := resource_value_list ("default", "path_view_check_list_settings")
 		end
 
-	editor_command: STRING is
-			-- path of editor application for ADL files
+	editor_command: STRING
+			-- Path of editor application for ADL files.
 		do
-			Result := substitute_env_vars(resource_value("default", "editor"))
+			Result := substitute_env_vars (resource_value ("default", "editor"))
 		ensure
-			Result /= Void
+			attached: Result /= Void
+		end
+
+	html_export_directory: STRING
+			-- Path of directory to which HTML is exported.
+		do
+			Result := substitute_env_vars (resource_value ("default", "html_export_directory"))
+		ensure
+			attached: Result /= Void
 		end
 
 	icon_directory: STRING is
 		once
 			Result := application_startup_directory + os_directory_separator.out + "icons"
+		ensure
+			attached: Result /= Void
+			not_empty: not Result.is_empty
 		end
 
 	has_icon_directory: BOOLEAN is
@@ -527,12 +538,22 @@ feature -- Modification
 			end
 		end
 
-	set_editor_command(an_editor_command: STRING) is
+	set_editor_command (value: STRING) is
 			-- set editor
 		require
-			an_editor_command_valid: an_editor_command /= Void and then not an_editor_command.is_empty
+			value_attached: value /= Void
+			value_not_empty: not value.is_empty
 		do
-			set_resource_value("default", "editor", an_editor_command)
+			set_resource_value("default", "editor", value)
+		end
+
+	set_html_export_directory (value: STRING) is
+			-- Set the path of directory to which HTML is exported.
+		require
+			value_attached: value /= Void
+			value_not_empty: not value.is_empty
+		do
+			set_resource_value("default", "html_export_directory", value)
 		end
 
 	set_main_notebook_tab_pos(a_tab_pos: INTEGER) is
@@ -636,39 +657,43 @@ feature -- Modification
 
 feature {NONE} -- Implementation
 
-	get_file(init_value: STRING; a_parent_window: EV_WINDOW): STRING is
+	get_file (init_value: STRING; a_parent_window: EV_WINDOW): STRING is
 			-- get a file path from user
 		require
 			parent_window_valid: a_parent_window /= Void
 		local
-			file_dialog: EV_FILE_OPEN_DIALOG
+			dialog: EV_FILE_OPEN_DIALOG
 			a_file: RAW_FILE
 			error_dialog: EV_INFORMATION_DIALOG
 			end_pos: INTEGER
 			pathname: STRING
 		do
-			create file_dialog
-			end_pos := init_value.last_index_of(operating_environment.Directory_separator, init_value.count)
+			create dialog
+			end_pos := init_value.last_index_of (operating_environment.Directory_separator, init_value.count)
+
 			if end_pos = 0 then
 				end_pos := init_value.count
 			end
-			pathname := init_value.substring(1, end_pos)
-			file_dialog.set_start_directory (pathname)
+
+			pathname := init_value.substring (1, end_pos)
+			dialog.set_start_directory (pathname)
 
 			from
 			until
 				Result /= Void
 			loop
-				file_dialog.show_modal_to_window (a_parent_window)
-				if file_dialog.selected_button.is_equal("Cancel") then
+				dialog.show_modal_to_window (a_parent_window)
+
+				if dialog.selected_button = Void or else dialog.selected_button.is_equal ("Cancel") then
 					Result := init_value
 				else
-					if not file_dialog.file_name.is_empty then
-						create a_file.make(file_dialog.file_name)
+					if not dialog.file_name.is_empty then
+						create a_file.make (dialog.file_name)
+
 						if a_file.exists then
-							Result := file_dialog.file_name
+							Result := dialog.file_name
 						else
-							create error_dialog.make_with_text("File " + file_dialog.file_name + " does not exist")
+							create error_dialog.make_with_text ("File " + dialog.file_name + " does not exist")
 							error_dialog.show_modal_to_window (a_parent_window)
 						end
 					else
@@ -679,39 +704,41 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	get_directory(init_value: STRING; a_parent_window: EV_WINDOW): STRING is
+	get_directory (init_value: STRING; a_parent_window: EV_WINDOW): STRING is
 			-- get a directory from user
 		require
 			parent_window_valid: a_parent_window /= Void
 		local
-			dir_dialog: EV_DIRECTORY_DIALOG
+			dialog: EV_DIRECTORY_DIALOG
 			a_dir: DIRECTORY
 			error_dialog: EV_INFORMATION_DIALOG
 		do
-			create dir_dialog
+			create dialog
 
 			if (create {DIRECTORY}.make (init_value)).exists then
-				dir_dialog.set_start_directory (init_value)
+				dialog.set_start_directory (init_value)
 			end
 
 			from
 			until
 				Result /= Void
 			loop
-				dir_dialog.show_modal_to_window (a_parent_window)
-				if dir_dialog.selected_button.is_equal("Cancel") then
+				dialog.show_modal_to_window (a_parent_window)
+
+				if dialog.selected_button = Void or else dialog.selected_button.is_equal ("Cancel") then
 					Result := init_value
 				else
-					if not dir_dialog.directory.is_empty then
-						create a_dir.make(dir_dialog.directory)
+					if not dialog.directory.is_empty then
+						create a_dir.make(dialog.directory)
+
 						if a_dir.exists then
-							Result := dir_dialog.directory
+							Result := dialog.directory
 						else
-							create error_dialog.make_with_text("Directory " + dir_dialog.directory + " does not exist")
+							create error_dialog.make_with_text ("Directory " + dialog.directory + " does not exist")
 							error_dialog.show_modal_to_window (a_parent_window)
 						end
 					else
-						create error_dialog.make_with_text("Directory <empty dir> does not exist")
+						create error_dialog.make_with_text ("Directory <empty dir> does not exist")
 						error_dialog.show_modal_to_window (a_parent_window)
 					end
 				end
