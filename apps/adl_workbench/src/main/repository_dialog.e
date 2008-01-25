@@ -116,48 +116,6 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	repository_dialog_okk
-			-- When the user clicks the OK button, save the changes and rebuild `archetype_directory'.
-		local
-			error_dialog: EV_INFORMATION_DIALOG
-			paths_invalid: BOOLEAN
-			s: STRING
-		do
-			archetype_directory.make
-			s := repository_dialog_reference_path_text.text
-
-			if directory_exists (s) then
-				set_reference_repository_path (s)
-				archetype_directory.put_repository (s, 2)
-			else
-				create error_dialog.make_with_text ("Reference Repository %"" + s + "%" does not exist.")
-				error_dialog.show_modal_to_window (Current)
-				paths_invalid := True
-			end
-
-			s := repository_dialog_work_path_text.text
-
-			if s.is_empty then
-				set_work_repository_path (s)
-			elseif archetype_directory.valid_repository_path (s) then
-				set_work_repository_path (s)
-				archetype_directory.put_repository (s, 3)
-			else
-				create error_dialog.make_with_text ("Work Repository %"" + s +
-					"%" does not exist, or is the same as or a parent or a child of the Reference Repository.")
-				error_dialog.show_modal_to_window (Current)
-				paths_invalid := True
-			end
-
-			if not paths_invalid then
-				hide
-			end
-
-			save_resources
-			main_window.update_status_area ("Wrote config file %"" + resource_config_file_name + "%"%N")
-			main_window.populate_archetype_directory
-		end
-
 	get_reference_repository_path is
 			-- Display a dialog for the user select the Reference Repository.
 		do
