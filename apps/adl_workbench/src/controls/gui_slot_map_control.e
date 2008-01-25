@@ -24,6 +24,11 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_UI_RESOURCES
+		export
+			{NONE} all
+		end
+
 	STRING_UTILITIES
 		export
 			{NONE} all
@@ -76,35 +81,42 @@ feature -- Commands
 			eti: EV_TREE_ITEM
 			slot_id_list: ARRAYED_LIST[STRING]
 			a_path: STRING
+			ara: ARCH_REP_ARCHETYPE
 		do
 			clear
 			archetype_tree_root_set := False
 			create tree_item_stack.make (0)
 
-			if archetype_directory.has_selected_archetype and archetype_directory.selected_archetype.archetype_differential.has_slots then
-				from
-					archetype_directory.selected_archetype.slot_id_index.start
-				until
-					archetype_directory.selected_archetype.slot_id_index.off
-				loop
-					a_path := archetype_directory.selected_archetype.slot_id_index.key_for_iteration
-					create eti.make_with_text (utf8(archetype_directory.selected_archetype.archetype_differential.ontology.physical_to_logical_path (a_path, current_language)))
-					gui_tree.extend (eti)
-					tree_item_stack.extend (eti)
-
-					slot_id_list := archetype_directory.selected_archetype.slot_id_index.item_for_iteration
+			if archetype_directory.has_selected_archetype then
+				ara := archetype_directory.selected_archetype
+				if ara.has_slots then
 					from
-						slot_id_list.start
+						ara.slot_id_index.start
 					until
-						slot_id_list.off
+						ara.slot_id_index.off
 					loop
-						create eti.make_with_text (utf8(slot_id_list.item))
-						tree_item_stack.item.extend(eti)
-						slot_id_list.forth
-					end
+						a_path := ara.slot_id_index.key_for_iteration
+						create eti.make_with_text (utf8(ara.archetype_differential.ontology.physical_to_logical_path (a_path, current_language)))
+						eti.set_pixmap (pixmaps.item ("ARCHETYPE_SLOT"))
 
-					tree_item_stack.remove
-					archetype_directory.selected_archetype.slot_id_index.forth
+						gui_tree.extend (eti)
+						tree_item_stack.extend (eti)
+
+						slot_id_list := ara.slot_id_index.item_for_iteration
+						from
+							slot_id_list.start
+						until
+							slot_id_list.off
+						loop
+							create eti.make_with_text (utf8(slot_id_list.item))
+							eti.set_pixmap (pixmaps.item (ara.group_name))
+							tree_item_stack.item.extend(eti)
+							slot_id_list.forth
+						end
+
+						tree_item_stack.remove
+						ara.slot_id_index.forth
+					end
 				end
 			end
 		end

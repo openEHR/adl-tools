@@ -213,6 +213,12 @@ feature -- Status Report
 			Result := not compiler_status.is_empty
 		end
 
+	has_slots: BOOLEAN is
+			-- True if this archetype has one or more slots
+		do
+			Result := slot_id_index /= Void
+		end
+
 feature -- Status Setting
 
 	set_parse_attempted is
