@@ -35,20 +35,22 @@ feature {NONE}-- Initialization
 				-- Create all widgets.
 			create l_ev_vertical_box_1
 			create l_ev_horizontal_box_1
+			create l_ev_horizontal_box_2
 			create l_ev_label_1
 			create editor_command_text
 			create editor_command_button
-			create l_ev_horizontal_box_2
+			create l_ev_horizontal_box_3
 			create show_definition_tree_expanded_check_button
 			create show_line_numbers_check_button
-			create l_ev_horizontal_box_3
+			create l_ev_horizontal_box_4
 			create l_ev_label_2
 			create parser_error_reporting_level_combo_box
-			create l_ev_horizontal_box_4
+			create l_ev_horizontal_box_5
 			create l_ev_label_3
 			create export_html_text
 			create export_html_button
-			create l_ev_horizontal_box_5
+			create l_ev_horizontal_box_6
+			create l_ev_horizontal_box_7
 			create l_ev_cell_1
 			create ok_button
 			create cancel_button
@@ -56,23 +58,25 @@ feature {NONE}-- Initialization
 				-- Build widget structure.
 			extend (l_ev_vertical_box_1)
 			l_ev_vertical_box_1.extend (l_ev_horizontal_box_1)
-			l_ev_horizontal_box_1.extend (l_ev_label_1)
-			l_ev_horizontal_box_1.extend (editor_command_text)
-			l_ev_horizontal_box_1.extend (editor_command_button)
 			l_ev_vertical_box_1.extend (l_ev_horizontal_box_2)
-			l_ev_horizontal_box_2.extend (show_definition_tree_expanded_check_button)
-			l_ev_horizontal_box_2.extend (show_line_numbers_check_button)
+			l_ev_horizontal_box_2.extend (l_ev_label_1)
+			l_ev_horizontal_box_2.extend (editor_command_text)
+			l_ev_horizontal_box_2.extend (editor_command_button)
 			l_ev_vertical_box_1.extend (l_ev_horizontal_box_3)
-			l_ev_horizontal_box_3.extend (l_ev_label_2)
-			l_ev_horizontal_box_3.extend (parser_error_reporting_level_combo_box)
+			l_ev_horizontal_box_3.extend (show_definition_tree_expanded_check_button)
+			l_ev_horizontal_box_3.extend (show_line_numbers_check_button)
 			l_ev_vertical_box_1.extend (l_ev_horizontal_box_4)
-			l_ev_horizontal_box_4.extend (l_ev_label_3)
-			l_ev_horizontal_box_4.extend (export_html_text)
-			l_ev_horizontal_box_4.extend (export_html_button)
+			l_ev_horizontal_box_4.extend (l_ev_label_2)
+			l_ev_horizontal_box_4.extend (parser_error_reporting_level_combo_box)
 			l_ev_vertical_box_1.extend (l_ev_horizontal_box_5)
-			l_ev_horizontal_box_5.extend (l_ev_cell_1)
-			l_ev_horizontal_box_5.extend (ok_button)
-			l_ev_horizontal_box_5.extend (cancel_button)
+			l_ev_horizontal_box_5.extend (l_ev_label_3)
+			l_ev_horizontal_box_5.extend (export_html_text)
+			l_ev_horizontal_box_5.extend (export_html_button)
+			l_ev_vertical_box_1.extend (l_ev_horizontal_box_6)
+			l_ev_vertical_box_1.extend (l_ev_horizontal_box_7)
+			l_ev_horizontal_box_7.extend (l_ev_cell_1)
+			l_ev_horizontal_box_7.extend (ok_button)
+			l_ev_horizontal_box_7.extend (cancel_button)
 			
 			create string_constant_set_procedures.make (10)
 			create string_constant_retrieval_functions.make (10)
@@ -87,47 +91,47 @@ feature {NONE}-- Initialization
 			create pixmap_constant_retrieval_functions.make (10)
 			create color_constant_set_procedures.make (10)
 			create color_constant_retrieval_functions.make (10)
-			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_1)
 			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_2)
 			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_3)
 			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_4)
 			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_5)
-			l_ev_horizontal_box_1.set_padding (15)
-			l_ev_horizontal_box_1.set_border_width (10)
-			l_ev_horizontal_box_1.disable_item_expand (l_ev_label_1)
-			l_ev_horizontal_box_1.disable_item_expand (editor_command_button)
+			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_7)
+			l_ev_horizontal_box_2.set_padding (15)
+			l_ev_horizontal_box_2.set_border_width (10)
+			l_ev_horizontal_box_2.disable_item_expand (l_ev_label_1)
+			l_ev_horizontal_box_2.disable_item_expand (editor_command_button)
 			l_ev_label_1.set_text ("Editor:")
 			color_constant_set_procedures.extend (agent editor_command_text.set_background_color (?))
 			color_constant_retrieval_functions.extend (agent editable_colour)
 			editor_command_text.set_minimum_width (300)
 			editor_command_button.set_text ("Browse...")
 			editor_command_button.set_minimum_width (65)
-			l_ev_horizontal_box_2.set_padding (15)
-			l_ev_horizontal_box_2.set_border_width (10)
-			show_definition_tree_expanded_check_button.set_text ("Show defiinition tree expanded?")
-			show_line_numbers_check_button.set_text ("Show line numbers in ADL source?")
 			l_ev_horizontal_box_3.set_padding (15)
 			l_ev_horizontal_box_3.set_border_width (10)
-			l_ev_horizontal_box_3.disable_item_expand (l_ev_label_2)
-			l_ev_horizontal_box_3.disable_item_expand (parser_error_reporting_level_combo_box)
+			show_definition_tree_expanded_check_button.set_text ("Show defiinition tree expanded?")
+			show_line_numbers_check_button.set_text ("Show line numbers in ADL source?")
+			l_ev_horizontal_box_4.set_padding (15)
+			l_ev_horizontal_box_4.set_border_width (10)
+			l_ev_horizontal_box_4.disable_item_expand (l_ev_label_2)
+			l_ev_horizontal_box_4.disable_item_expand (parser_error_reporting_level_combo_box)
 			l_ev_label_2.set_text ("Parser error reporting level:")
 			parser_error_reporting_level_combo_box.set_text ("Status Reporting Level")
 			parser_error_reporting_level_combo_box.set_tooltip ("Select the level of parser messages to display. All levels >= this level displayed.")
 			parser_error_reporting_level_combo_box.set_minimum_width (200)
-			l_ev_horizontal_box_4.set_padding (15)
-			l_ev_horizontal_box_4.set_border_width (10)
-			l_ev_horizontal_box_4.disable_item_expand (l_ev_label_3)
-			l_ev_horizontal_box_4.disable_item_expand (export_html_button)
+			l_ev_horizontal_box_5.set_padding (15)
+			l_ev_horizontal_box_5.set_border_width (10)
+			l_ev_horizontal_box_5.disable_item_expand (l_ev_label_3)
+			l_ev_horizontal_box_5.disable_item_expand (export_html_button)
 			l_ev_label_3.set_text ("Export HTML to:")
 			color_constant_set_procedures.extend (agent export_html_text.set_background_color (?))
 			color_constant_retrieval_functions.extend (agent editable_colour)
 			export_html_text.set_minimum_width (300)
 			export_html_button.set_text ("Browse...")
 			export_html_button.set_minimum_width (65)
-			l_ev_horizontal_box_5.set_padding (15)
-			l_ev_horizontal_box_5.set_border_width (15)
-			l_ev_horizontal_box_5.disable_item_expand (ok_button)
-			l_ev_horizontal_box_5.disable_item_expand (cancel_button)
+			l_ev_horizontal_box_7.set_padding (15)
+			l_ev_horizontal_box_7.set_border_width (15)
+			l_ev_horizontal_box_7.disable_item_expand (ok_button)
+			l_ev_horizontal_box_7.disable_item_expand (cancel_button)
 			l_ev_cell_1.set_minimum_width (100)
 			ok_button.set_text ("OK")
 			ok_button.set_minimum_width (100)
@@ -135,9 +139,9 @@ feature {NONE}-- Initialization
 			cancel_button.set_text ("Cancel")
 			cancel_button.set_minimum_width (100)
 			cancel_button.set_minimum_height (26)
-			set_minimum_height (230)
+			set_minimum_height (250)
 			set_maximum_width (2000)
-			set_maximum_height (230)
+			set_maximum_height (250)
 			set_title ("ADL Workbench Options")
 			
 			set_all_attributes_using_constants
@@ -159,7 +163,7 @@ feature -- Access
 	editor_command_button, export_html_button,
 	ok_button, cancel_button: EV_BUTTON
 	l_ev_horizontal_box_1, l_ev_horizontal_box_2, l_ev_horizontal_box_3,
-	l_ev_horizontal_box_4, l_ev_horizontal_box_5: EV_HORIZONTAL_BOX
+	l_ev_horizontal_box_4, l_ev_horizontal_box_5, l_ev_horizontal_box_6, l_ev_horizontal_box_7: EV_HORIZONTAL_BOX
 	l_ev_vertical_box_1: EV_VERTICAL_BOX
 	show_definition_tree_expanded_check_button,
 	show_line_numbers_check_button: EV_CHECK_BUTTON
