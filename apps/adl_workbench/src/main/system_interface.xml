@@ -703,7 +703,7 @@
       <Text>&amp;Open...</Text>
      </EV_TEXTABLE>
      <EV_PIXMAPABLE>
-      <Pixmap_path>/Users/peter/Ocean/eiffel/BRANCHES/specialisation/apps/adl_workbench/app/icons/archetype_1.ico</Pixmap_path>
+      <Pixmap_path>icons/archetype_1.ico</Pixmap_path>
      </EV_PIXMAPABLE>
      <Events>
       <Event>select_actions EV_MENU_ITEM_ACTION_SEQUENCES open_adl_file</Event>

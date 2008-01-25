@@ -391,7 +391,7 @@ feature {NONE}-- Initialization
 			create color_constant_retrieval_functions.make (10)
 			file_menu.set_text ("&File")
 			file_menu_open.set_text ("&Open...")
-			internal_pixmap.set_with_named_file ("/Users/peter/Ocean/eiffel/BRANCHES/specialisation/apps/adl_workbench/app/icons/archetype_1.ico")
+			internal_pixmap.set_with_named_file ("icons/archetype_1.ico")
 			file_menu_open.set_pixmap (internal_pixmap)
 			file_menu_parse.set_text ("&Parse")
 			file_menu_edit.set_text ("&Edit")
