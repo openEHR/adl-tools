@@ -787,6 +787,7 @@ feature {NONE}-- Initialization
 			path_filter_combo.set_tooltip ("Choose path row filter")
 			path_filter_combo.set_minimum_width (80)
 			path_filter_combo.disable_edit
+			slot_map_tree.set_tooltip ("Archetype IDs that match slots in the current archetype")
 			ontology_notebook.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
 			ontology_notebook.set_minimum_width (1)
 			integer_constant_set_procedures.extend (agent ontology_notebook.set_minimum_height (?))
@@ -804,10 +805,8 @@ feature {NONE}-- Initialization
 			ontology_constraint_defs.set_minimum_width (1)
 			ontology_constraint_defs.set_minimum_height (1)
 			archetype_source_rich_text.disable_edit
-			integer_constant_set_procedures.extend (agent arch_stats_vbox.set_padding (?))
-			integer_constant_retrieval_functions.extend (agent padding_width)
-			integer_constant_set_procedures.extend (agent arch_stats_vbox.set_border_width (?))
-			integer_constant_retrieval_functions.extend (agent border_width)
+			arch_stats_vbox.set_padding (3)
+			arch_stats_vbox.set_border_width (4)
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_9.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_9.set_border_width (?))

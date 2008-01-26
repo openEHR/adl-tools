@@ -127,6 +127,9 @@ feature {NONE} -- Initialization
 			end
 
 			initialise_path_control
+
+			-- TODO: Implement the Statistics page (AWB-7). Until then, keep it hidden:
+			arch_notebook.prune (arch_stats_vbox)
 		end
 
 	initialise_path_control is

@@ -48,15 +48,19 @@ feature {NONE} -- Initialization
 	initialize is
 			-- Add the openEHR and Ocean logos with the text label to their right.
 		local
-			hb: EV_HORIZONTAL_BOX
+			hb, border: EV_HORIZONTAL_BOX
 			label: EV_LABEL
 		do
 			Precursor
 
+			create border
+			border.set_border_width (2)
+			extend (border)
+
 			create hb
 			hb.set_padding (50)
 			hb.set_border_width (30)
-			extend (hb)
+			border.extend (hb)
 
 			if has_icon_directory then
 				hb.extend (pixmaps ["openEHR and Ocean"])
@@ -69,6 +73,7 @@ feature {NONE} -- Initialization
 
 			set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 248))
 			propagate_background_color
+			border.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (240, 240, 200))
 		end
 
 feature {NONE} -- Implementation

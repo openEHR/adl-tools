@@ -294,8 +294,8 @@ feature -- Access
 		local
 			news_file, status_file: PLAIN_TEXT_FILE
 		once
-			create news_file.make(News_file_path)
-			create status_file.make(Status_file_path)
+			create news_file.make (news_file_path)
+			create status_file.make (status_file_path)
 
 			if status_file.exists and news_file.exists then
 				Result := news_file.date > status_file.date
@@ -464,6 +464,8 @@ feature -- Access
 
 				pixmap_table.forth
 			end
+		ensure
+			attached: Result /= Void
 		end
 
 	splash_text: STRING
@@ -486,6 +488,9 @@ feature -- Access
 			Result.append ("Built using%N")
 			Result.append ("%TEiffel Software Eiffel (http://www.eiffel.com)%N")
 			Result.append ("%TGobo parsing libraries & tools (http://www.gobosoft.com)%N")
+		ensure
+			attached: Result /= Void
+			not_empty: not Result.is_empty
 		end
 
 	News_text: STRING is
@@ -493,15 +498,19 @@ feature -- Access
 		local
 			news_file: PLAIN_TEXT_FILE
 		once
-			create news_file.make(News_file_path)
-			if news_file.exists and news_file.is_readable then
+			create news_file.make (news_file_path)
+
+			if news_file.exists and then news_file.is_readable then
 				news_file.open_read
-				news_file.read_stream(news_file.count)
+				news_file.read_stream (news_file.count)
 				Result := news_file.last_string
 				news_file.close
 			else
-				Result := "(news.txt file missing)"
+				Result := "(%"" + news_file_path + "%" file is missing)"
 			end
+		ensure
+			attached: Result /= Void
+			not_empty: not Result.is_empty
 		end
 
 feature -- Modification
