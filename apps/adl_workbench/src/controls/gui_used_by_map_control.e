@@ -45,6 +45,7 @@ feature -- Initialisation
 		do
 			gui := a_main_window
 			gui_tree := gui.used_by_map_tree
+			gui_tree.pointer_double_press_actions.extend (agent on_double_click)
 			in_differential_mode := True
 		end
 
@@ -94,6 +95,7 @@ feature -- Commands
 					loop
 						create eti.make_with_text (utf8(ara.used_by_index.item))
 						eti.set_pixmap (pixmaps.item (archetype_directory.archetype_id_index.item (ara.used_by_index.item).group_name))
+						eti.set_data (archetype_directory.archetype_id_index.item (ara.used_by_index.item))
 						gui_tree.extend (eti)
 
 						ara.used_by_index.forth
@@ -135,6 +137,26 @@ feature {NONE} -- Implementation
 				archetype_tree_root_set := True
 			else
 				tree_item_stack.item.extend(Result)
+			end
+		end
+
+	on_double_click (x: INTEGER_32; y: INTEGER_32; button: INTEGER_32; x_tilt: REAL_64; y_tilt: REAL_64; pressure: REAL_64; screen_x: INTEGER_32; screen_y: INTEGER_32)
+			-- When the user double-clicks an archetype, select it in the main window's explorer tree.
+		do
+			select_node_in_archetype_tree_view
+		end
+
+	select_node_in_archetype_tree_view
+			-- Select the archetype in the main window's explorer tree.
+		local
+			ara: ARCH_REP_ARCHETYPE
+		do
+			if gui_tree.selected_item /= Void then
+				ara ?= gui_tree.selected_item.data
+				if ara /= Void then
+					archetype_directory.set_selected_item (ara)
+					gui.archetype_view_tree_select_node
+				end
 			end
 		end
 
