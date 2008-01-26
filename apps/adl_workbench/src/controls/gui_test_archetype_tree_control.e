@@ -96,7 +96,6 @@ feature -- Access
 		once
 			create Result.make (0)
 			Result.force (agent test_parse, "Parse")
-			Result.force (agent test_save_flat_html, "Save to HTML")
 			Result.force (agent test_save, "Save to ADL")
 			Result.force (agent test_reparse_flat, "Reparse")
 			Result.force (agent test_diff, "Diff")
@@ -366,30 +365,6 @@ feature -- Tests
 				end
 			else
 				test_status.append (" parse failed%N" + archetype_parser.status)
-			end
-		end
-
-	test_save_flat_html: INTEGER is
-			-- parse archetype and return result
-		local
-			html_fname: STRING
-		do
-			Result := test_failed
-
-			if archetype_parser.archetype_valid then
-				-- FIXME: Sam doesn't want the html files to go in the same place as the adl files anymore
-				-- now they should go in the path html/adl, where html is a sibling directory of the main
-				-- 'adl' directory in the repository path; 'html/adl' means "the ADL form of HTML", since
-				-- there are other things in the html directory.
-				html_fname := archetype_parser.target.full_path.twin
-				html_fname.append(".html")
-				archetype_parser.save_archetype_flat_as(html_fname, "html")
-
-				if archetype_parser.save_succeeded then
-					Result := test_passed
-				else
-					test_status.append (archetype_parser.status + "%N")
-				end
 			end
 		end
 

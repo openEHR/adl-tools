@@ -229,6 +229,8 @@ feature -- Status setting
 			if reference_repository_path.is_empty then
 				set_reference_repository_path (application_startup_directory)
 				set_repository
+			elseif html_export_directory.is_empty then
+				set_html_export_directory (file_system.pathname (file_system.absolute_parent_directory (reference_repository_path), "html"))
 			end
 		end
 
@@ -536,11 +538,26 @@ feature {NONE} -- Tools events
 	export_html
 			-- Generate HTML from flat archetypes into `html_export_directory'.
 		local
-			dialog: EV_INFORMATION_DIALOG
+			filename: STRING
 		do
-			create dialog.make_with_text ("Export to HTML is NOT YET IMPLEMENTED.%N%N" + html_export_directory)
-			dialog.set_title ("Export HTML")
-			dialog.show_modal_to_window (Current)
+			if archetype_parser.archetype_valid then
+				filename := archetype_parser.target.ontological_path.twin
+				filename.remove_head (1)
+				filename := file_system.pathname (html_export_directory, filename) + ".adl.html"
+				filename := file_system.canonical_pathname (filename)
+
+				if not file_system.directory_exists (file_system.dirname (filename)) then
+					file_system.recursive_create_directory (file_system.dirname (filename))
+				end
+
+				archetype_parser.save_archetype_flat_as (filename, "html")
+
+				if archetype_parser.save_succeeded then
+					update_status_area ("INFO - Wrote " + filename)
+				else
+					update_status_area (archetype_parser.status)
+				end
+			end
 		end
 
 	set_options
