@@ -338,14 +338,14 @@ feature {NONE} -- Implementation
 				loop
 					a_regex := extract_regex(assn_list.item)
 					if a_regex /= Void then
-						target_descriptor.add_slot_id_list(archetype_directory.matching_ids (a_regex, target.slot_index.item.rm_type_name), target.slot_index.item.path)
+						target_descriptor.add_slot_ids(archetype_directory.matching_ids (a_regex, target.slot_index.item.rm_type_name), target.slot_index.item.path)
 					end
 					assn_list.forth
 				end
 
 				-- if there are still no ids at all for this path, the implication is that all ids match, and that exclusions will remove some
 				if not target_descriptor.slot_id_index.has (target.slot_index.item.path) then
-					target_descriptor.add_slot_id_list(archetype_directory.matching_ids (".*", target.slot_index.item.rm_type_name), target.slot_index.item.path)
+					target_descriptor.add_slot_ids(archetype_directory.matching_ids (".*", target.slot_index.item.rm_type_name), target.slot_index.item.path)
 				end
 
 				-- process the excludes

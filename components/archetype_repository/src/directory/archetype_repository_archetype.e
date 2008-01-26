@@ -384,14 +384,27 @@ feature -- Modification
 			compiler_status.wipe_out
 		end
 
-	add_slot_id_list (a_list: ARRAYED_LIST[STRING]; a_slot_path: STRING) is
-			-- add list of matching archetypes for slot at a_slot_path
+	add_slot_ids (a_list: ARRAYED_LIST[STRING]; a_slot_path: STRING) is
+			-- add list of matching archetypes to ids recorded for slot at a_slot_path
 		do
 			if slot_id_index = Void then
 				create slot_id_index.make(0)
 			end
-			slot_id_index.put (a_list, a_slot_path)
-			a_list.compare_objects
+			if not slot_id_index.has (a_slot_path) then
+				slot_id_index.put (a_list, a_slot_path)
+				a_list.compare_objects
+			else
+				from
+					a_list.start
+				until
+					a_list.off
+				loop
+					if not slot_id_index.item (a_slot_path).has (a_list.item) then
+						slot_id_index.item (a_slot_path).extend(a_list.item)
+					end
+					a_list.forth
+				end
+			end
 		end
 
 	add_used_by_item (an_archetype_id: STRING) is
