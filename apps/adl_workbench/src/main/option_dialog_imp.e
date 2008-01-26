@@ -6,7 +6,6 @@ indexing
 		You should not modify this code by hand, as it will be re-generated every time
 		 modifications are made to the project.
 		 	]"
-	generator: "EiffelBuild"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -152,6 +151,8 @@ feature {NONE}-- Initialization
 			editor_command_button.select_actions.extend (agent get_editor_command_directory)
 			export_html_button.select_actions.extend (agent get_html_export_directory)
 			ok_button.select_actions.extend (agent option_dialog_ok)
+				-- Close the application when an interface close
+				-- request is recieved on `Current'. i.e. the cross is clicked.
 
 				-- Call `user_initialization'.
 			user_initialization

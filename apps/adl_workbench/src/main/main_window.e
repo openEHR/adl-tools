@@ -816,6 +816,11 @@ feature -- Controls
 			create Result.make (Current)
 		end
 
+	used_by_map_control: GUI_USED_BY_MAP_CONTROL is
+		once
+			create Result.make (Current)
+		end
+
 	path_map_control: GUI_PATH_MAP_CONTROL is
 		once
 			create Result.make (Current)
@@ -929,6 +934,7 @@ feature {EV_DIALOG} -- Implementation
 			populate_user_controls
 			path_map_control.populate
 			slot_map_control.populate
+			used_by_map_control.populate
 			node_map_control.populate
 			ontology_controls.populate
 			description_controls.populate

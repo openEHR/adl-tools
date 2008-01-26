@@ -372,6 +372,20 @@ feature {NONE} -- Implementation
 					assn_list.forth
 				end
 
+				-- now post the results in the reverse indexes
+				id_list := target_descriptor.slot_id_index.item (target.slot_index.item.path)
+				from
+					id_list.start
+				until
+					id_list.off
+				loop
+					if not archetype_directory.archetype_id_index.item (id_list.item).is_used or else not
+						archetype_directory.archetype_id_index.item (id_list.item).used_by_index.has (target.archetype_id.as_string) then
+						archetype_directory.archetype_id_index.item (id_list.item).add_used_by_item (target.archetype_id.as_string)
+					end
+					id_list.forth
+				end
+
 				target.slot_index.forth
 			end
 		end

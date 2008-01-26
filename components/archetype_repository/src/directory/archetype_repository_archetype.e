@@ -139,6 +139,12 @@ feature -- Access
 	archetype_flat: FLAT_ARCHETYPE
 			-- inheritance-flattened form of archetype
 
+	slot_id_index: HASH_TABLE [ARRAYED_LIST[STRING], STRING]
+			-- list of Archetype ids matching slot, keyed by slot path
+
+	used_by_index: ARRAYED_LIST [STRING]
+			-- list of archetype_ids corresponding to archetypes that use this archetype
+
 	compiler_status: STRING
 			-- errors from last compile attempt; allows redisplay if this archetype is reselected
 
@@ -159,9 +165,6 @@ feature -- Access
 		ensure
 			Result_valid: valid_err_type(Result)
 		end
-
-	slot_id_index: HASH_TABLE [ARRAYED_LIST[STRING], STRING]
-			-- list of Archetype ids matching slot, keyed by slot path
 
 feature -- Status Report
 
@@ -217,6 +220,12 @@ feature -- Status Report
 			-- True if this archetype has one or more slots
 		do
 			Result := slot_id_index /= Void
+		end
+
+	is_used: BOOLEAN is
+			-- True if this archetype is used by other archetypes (i.e. matrches any of their slots)
+		do
+			Result := used_by_index /= Void
 		end
 
 feature -- Status Setting
@@ -385,6 +394,16 @@ feature -- Modification
 			a_list.compare_objects
 		end
 
+	add_used_by_item (an_archetype_id: STRING) is
+			-- add the id of an archetype that has a slot that matches this archetype, i.e. that 'uses' this archetype
+		do
+			if used_by_index = Void then
+				create used_by_index.make(0)
+				used_by_index.compare_objects
+			end
+			used_by_index.extend (an_archetype_id)
+		end
+
 feature {NONE} -- Implementation
 
 	make_ontological_paths
@@ -435,6 +454,8 @@ feature {NONE} -- Implementation
 invariant
 	Parent_existence: specialisation_parent /= Void implies is_specialised
 	Parent_validity: specialisation_parent /= Void implies specialisation_parent.id.semantic_id.is_equal(id.semantic_parent_id)
+	Slot_id_index_valid: slot_id_index /= Void implies not slot_id_index.is_empty
+	Used_by_index_valid: used_by_index /= Void implies not used_by_index.is_empty
 
 end
 
