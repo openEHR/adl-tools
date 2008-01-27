@@ -539,17 +539,14 @@ feature {NONE} -- Tools events
 			-- Generate HTML from flat archetypes into `html_export_directory'.
 		local
 			filename: STRING
+			dialog: EV_INFORMATION_DIALOG
 		do
+			create dialog.make_with_text ("Export to HTML is still under development. It currently creates HTML only for the selected archetype, but when finished it will optionally create HTML for the whole repository.")
+			dialog.show_modal_to_window (Current)
+
 			if archetype_parser.archetype_valid then
-				filename := archetype_parser.target.ontological_path.twin
-				filename.remove_head (1)
-				filename := file_system.pathname (html_export_directory, filename) + ".adl.html"
-				filename := file_system.canonical_pathname (filename)
-
-				if not file_system.directory_exists (file_system.dirname (filename)) then
-					file_system.recursive_create_directory (file_system.dirname (filename))
-				end
-
+				filename := file_system.pathname (html_export_directory, archetype_parser.target.relative_path) + ".html"
+				file_system.recursive_create_directory (file_system.dirname (filename))
 				archetype_parser.save_archetype_flat_as (filename, "html")
 
 				if archetype_parser.save_succeeded then

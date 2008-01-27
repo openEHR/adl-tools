@@ -33,7 +33,8 @@ feature {NONE} -- initialisation
 		require
 			repository_attached: a_repository /= Void
 			root_path_valid: a_repository.is_valid_directory (a_root_path)
-			full_path_under_root_path: a_full_path /= Void and then a_full_path.substring_index (a_root_path, 1) = 1
+			full_path_attached: a_full_path /= Void
+			full_path_under_root_path: a_full_path.starts_with (a_root_path)
 		do
 			root_path := a_root_path
 			full_path := a_full_path
@@ -52,6 +53,16 @@ feature -- Access
 
 	full_path: STRING
 			-- Full path to the item on the storage medium.
+
+	relative_path: STRING
+			-- Path to the item on the storage medium, excluding `root_path'.
+		do
+			Result := full_path.substring (root_path.count + 2, full_path.count)
+		ensure
+			attached: Result /= Void
+			relative: file_system.is_relative_pathname (Result)
+			under_full_path: full_path.ends_with (Result)
+		end
 
 	base_name: STRING
 			-- Name of last segment of `ontological_path'.
@@ -111,14 +122,6 @@ feature {NONE} -- Implementation
 		deferred
 		end
 
-	ontological_path_starts_with (s: STRING): BOOLEAN
-			-- Does `ontological_path' begin with `s'?
-		require
-			s_attached: s /= Void
-		do
-			Result := ontological_path.substring_index (s, 1) = 1
-		end
-
 invariant
 	repository_attached: file_repository /= Void
 	root_path_valid: is_valid_directory (root_path)
@@ -126,8 +129,8 @@ invariant
 	full_path_not_empty: not full_path.is_empty
 	ontological_path_attached: ontological_path /= Void
 	ontological_parent_path_attached: ontological_parent_path /= Void
-	ontological_path_absolute: ontological_path_starts_with (ontological_path_separator)
-	ontological_parent_path_valid: ontological_path_starts_with (ontological_parent_path)
+	ontological_path_absolute: ontological_path.starts_with (ontological_path_separator)
+	ontological_parent_path_valid: ontological_path.starts_with (ontological_parent_path)
 	base_name_attached: base_name /= Void
 
 end
