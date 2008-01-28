@@ -80,28 +80,27 @@ feature {NONE} -- Initialization
 		end
 
 	initialise_gui_settings is
-			-- initialise purely graphical elements
+			-- Initialise purely graphical elements.
 		local
 			cur_title: STRING
 		do
-			set_icon_name("ADL Editor")
 			set_icon_pixmap (adl_workbench_ico)
 			cur_title := title.twin
-			cur_title.replace_substring_all("VER", Current_adl_version)
-			set_title(cur_title)
+			cur_title.replace_substring_all ("VER", Current_adl_version)
+			set_title (cur_title)
 
 			set_position (app_x_position, app_y_position)
 
 			if app_width > 0 then
-				set_width(app_width)
+				set_width (app_width)
 			else
-				set_width(app_initial_width)
+				set_width (app_initial_width)
 			end
 
 			if app_height > 0 then
-				set_height(app_height)
+				set_height (app_height)
 			else
-				set_height(app_initial_height)
+				set_height (app_initial_height)
 			end
 
 			if main_notebook_tab_pos > 1 then
