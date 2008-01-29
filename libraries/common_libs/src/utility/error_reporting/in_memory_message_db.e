@@ -100,7 +100,7 @@ feature -- Access
 				<"[Exception caught]: $1.$2 - writing primitive object of type $3 into argument of type $4">
 				
 			-- ARCHETYPE_DIRECTORY
-			["arch_dir_no_arch_parent"] = <"No parent matching $1 found for archetype $2">
+			["arch_dir_orphan_archetype"] = <"No parent matching $1 found for archetype $2">
 			["arch_dir_dup_archetype"] = <"Duplicate archetype $1">
 
 			-- ADL_SYNTAX_CONTERTER

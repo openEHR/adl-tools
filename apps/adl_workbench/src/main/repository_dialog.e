@@ -107,7 +107,7 @@ feature {NONE} -- Implementation
 
 			if paths_changed then
 				save_resources
-				main_window.update_status_area ("Wrote config file %"" + Resource_config_file_name + "%".%N")
+				main_window.set_status_area ("Wrote config file %"" + Resource_config_file_name + "%".%N")
 				main_window.populate_archetype_directory
 			end
 

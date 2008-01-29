@@ -462,22 +462,25 @@ feature {NONE} -- Implementation
 						io.put_string(shifter + "DUPLICATE!%N")
 					end
 				else
-					if ontology_index.has (ara.ontological_parent_path) then
-						parent_node := ontology_index.item (ara.ontological_parent_path)
-
-						if ara.is_specialised then
-							parent_ara ?= parent_node.item
-							ara.set_specialisation_parent (parent_ara)
-						end
+					if not ontology_index.has (ara.ontological_parent_path) and ara.is_specialised then
+						post_error (Current, "merge_enter", "arch_dir_orphan_archetype", <<ara.ontological_parent_path, ara.full_path>>)
 					else
-						parent_node := directory
-					end
+						if ontology_index.has (ara.ontological_parent_path) then
+							parent_node := ontology_index.item (ara.ontological_parent_path)
+							if ara.is_specialised then
+								parent_ara ?= parent_node.item
+								ara.set_specialisation_parent (parent_ara)
+							end
+						else
+							parent_node := directory
+						end
 
-					create arch_node.make (ara)
-					parent_node.put_child_right (arch_node)
-					parent_node.child_forth
-					ontology_index.force (arch_node, ara.ontological_path)
-					archetype_id_index.force (ara, ara.id.as_string)
+						create arch_node.make (ara)
+						parent_node.put_child_right (arch_node)
+						parent_node.child_forth
+						ontology_index.force (arch_node, ara.ontological_path)
+						archetype_id_index.force (ara, ara.id.as_string)
+					end
 				end
 			end
 

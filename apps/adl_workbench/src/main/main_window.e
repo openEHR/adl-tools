@@ -241,6 +241,14 @@ feature -- Status setting
 			parser_status_area.append_text (text)
 		end
 
+	set_status_area (text: STRING) is
+			-- set `parser_status_area' to `text'
+		require
+			text_attached: text /= Void
+		do
+			parser_status_area.set_text (text)
+		end
+
 feature -- File events
 
 	open_adl_file is
