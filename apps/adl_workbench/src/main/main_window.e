@@ -293,7 +293,7 @@ feature -- File events
 
 				if ara.is_valid then
 					populate_all_archetype_controls
-				elseif ara.is_parsed then
+				else -- if ara.is_parsed then
 					populate_archetype_id
 				end
 			end
@@ -956,12 +956,12 @@ feature {EV_DIALOG} -- Implementation
 
 	populate_archetype_id
 		local
-			selected: ARCHETYPE
+			selected: ARCHETYPE_ID
 		do
-			selected := archetype_directory.selected_archetype.archetype_differential
+			selected := archetype_directory.selected_archetype.id
 
 			if selected /= Void then
-				archetype_id.set_text (utf8 (selected.archetype_id.as_string))
+				archetype_id.set_text (utf8 (selected.as_string))
 			else
 				archetype_id.remove_text
 			end
