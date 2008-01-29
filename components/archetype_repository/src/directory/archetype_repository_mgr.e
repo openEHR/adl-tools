@@ -150,10 +150,13 @@ feature -- Access
 			Rm_type_valid: an_rm_type /= Void implies not an_rm_type.is_empty
 		local
 			regex_matcher: LX_DFA_REGULAR_EXPRESSION
-			arch_rm_type: STRING
+			arch_rm_type, slot_rm_type: STRING
 		do
 			create Result.make (0)
-			an_rm_type.to_lower
+			if an_rm_type /= Void then
+				slot_rm_type := an_rm_type.twin
+				slot_rm_type.to_lower
+			end
 			create regex_matcher.compile_case_insensitive (a_regex)
 			if regex_matcher.is_compiled then
 				from
@@ -162,10 +165,10 @@ feature -- Access
 					archetype_id_index.off
 				loop
 					if regex_matcher.matches (archetype_id_index.key_for_iteration) then
-						if an_rm_type /= Void then
+						if slot_rm_type /= Void then
 							arch_rm_type := (create {ARCHETYPE_ID}.make_from_string (archetype_id_index.key_for_iteration)).rm_entity
 							arch_rm_type.to_lower
-							if an_rm_type.is_equal (arch_rm_type) then
+							if slot_rm_type.is_equal (arch_rm_type) then
 								Result.extend(archetype_id_index.key_for_iteration)
 							end
 						else
