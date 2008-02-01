@@ -564,6 +564,45 @@ feature {NONE} -- Tools events
 			end
 		end
 
+	clean_generated_files
+			-- Remove all generated files below the repository directory.
+		local
+			delete_adls_files_in_folder: PROCEDURE [ANY, TUPLE [ARCH_REP_ITEM]]
+		do
+			delete_adls_files_in_folder := agent (a: ARCH_REP_ITEM)
+				local
+					dir: DIRECTORY
+					name: STRING
+				do
+					if {folder: !ARCH_REP_FOLDER} a then
+						create dir.make_open_read (folder.full_path)
+
+						from
+							dir.start
+							dir.readentry
+						until
+							dir.lastentry = Void
+						loop
+							name := dir.lastentry
+							dir.readentry
+
+							if file_system.has_extension (name, "." + archetype_source_file_extension) then
+								name := file_system.pathname (dir.name, name)
+
+								if file_system.is_file_readable (name) then
+									file_system.delete_file (name)
+								end
+							end
+						end
+
+						dir.close
+
+					end
+				end
+
+			do_with_wait_cursor (agent archetype_directory.do_all (delete_adls_files_in_folder, Void))
+		end
+
 	set_options
 			-- Display the Options dialog.
 		do

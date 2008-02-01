@@ -62,6 +62,7 @@ feature {NONE}-- Initialization
 			create repository_menu_interrupt_build
 			create tools_menu
 			create tools_menu_export_html
+			create tools_menu_clean_generated_files
 			create l_ev_menu_separator_7
 			create tools_menu_options
 			create help_menu
@@ -234,6 +235,7 @@ feature {NONE}-- Initialization
 			repository_menu.extend (repository_menu_interrupt_build)
 			menu.extend (tools_menu)
 			tools_menu.extend (tools_menu_export_html)
+			tools_menu.extend (tools_menu_clean_generated_files)
 			tools_menu.extend (l_ev_menu_separator_7)
 			tools_menu.extend (tools_menu_options)
 			menu.extend (help_menu)
@@ -413,6 +415,7 @@ feature {NONE}-- Initialization
 			repository_menu_interrupt_build.set_text ("&Interrupt Build")
 			tools_menu.set_text ("&Tools")
 			tools_menu_export_html.set_text ("Export &HTML")
+			tools_menu_clean_generated_files.set_text ("&Clean Generated Files")
 			tools_menu_options.set_text ("&Options...")
 			help_menu.set_text ("&Help")
 			help_menu_icons.set_text ("&Icons ")
@@ -906,6 +909,7 @@ feature {NONE}-- Initialization
 			repository_menu_rebuild_subtree.select_actions.extend (agent rebuild_subtree)
 			repository_menu_interrupt_build.select_actions.extend (agent interrupt_build)
 			tools_menu_export_html.select_actions.extend (agent export_html)
+			tools_menu_clean_generated_files.select_actions.extend (agent clean_generated_files)
 			tools_menu_options.select_actions.extend (agent set_options)
 			help_menu_icons.select_actions.extend (agent display_icon_help)
 			help_menu_news.select_actions.extend (agent display_news)
@@ -998,14 +1002,14 @@ feature -- Access
 	file_menu_edit, file_menu_save_as, file_menu_exit, edit_menu_copy, edit_menu_select_all,
 	edit_menu_clipboard, repository_menu_set_repository, repository_menu_build_all, repository_menu_rebuild_all,
 	repository_menu_build_subtree, repository_menu_rebuild_subtree, repository_menu_interrupt_build,
-	tools_menu_export_html, tools_menu_options, help_menu_icons, help_menu_news, help_menu_online,
-	help_menu_about: EV_MENU_ITEM
-	adl_version_label, language_label, arch_desc_auth_orig_auth_label,
-	arch_desc_status_label, arch_desc_original_language_label, arch_desc_auth_contrib_label,
-	arch_translations_languages_label, l_ev_label_1, l_ev_label_2, l_ev_label_3, arch_desc_purpose_label,
-	arch_desc_use_label, arch_desc_misuse_label, arch_desc_keywords_label, arch_desc_resource_package_label,
-	arch_desc_resource_orig_res_label, arch_desc_copyright_label, l_ev_label_4, l_ev_label_5,
-	l_ev_label_6: EV_LABEL
+	tools_menu_export_html, tools_menu_clean_generated_files, tools_menu_options, help_menu_icons,
+	help_menu_news, help_menu_online, help_menu_about: EV_MENU_ITEM
+	adl_version_label, language_label,
+	arch_desc_auth_orig_auth_label, arch_desc_status_label, arch_desc_original_language_label,
+	arch_desc_auth_contrib_label, arch_translations_languages_label, l_ev_label_1, l_ev_label_2,
+	l_ev_label_3, arch_desc_purpose_label, arch_desc_use_label, arch_desc_misuse_label,
+	arch_desc_keywords_label, arch_desc_resource_package_label, arch_desc_resource_orig_res_label,
+	arch_desc_copyright_label, l_ev_label_4, l_ev_label_5, l_ev_label_6: EV_LABEL
 	path_view_check_list: EV_CHECKABLE_LIST
 	l_ev_horizontal_separator_1: EV_HORIZONTAL_SEPARATOR
 	arch_desc_auth_frame,
@@ -1105,6 +1109,11 @@ feature {NONE} -- Implementation
 	
 	export_html is
 			-- Called by `select_actions' of `tools_menu_export_html'.
+		deferred
+		end
+	
+	clean_generated_files is
+			-- Called by `select_actions' of `tools_menu_clean_generated_files'.
 		deferred
 		end
 	
