@@ -15,6 +15,11 @@ indexing
 class ARCH_REP_ARCHETYPE
 
 inherit
+	SHARED_ARCHETYPE_DIRECTORY
+		undefine
+			is_equal
+		end
+
 	ARCH_REP_ITEM
 		rename
 			make as make_adi
@@ -305,6 +310,7 @@ feature -- Commands
 
 			archetype_differential.set_is_valid(is_valid)
 			validate_attempted := True
+			archetype_directory.update_slot_statistics(Current)
 		ensure
 			validate_attempted
 		end

@@ -80,8 +80,6 @@ feature -- Commands
 			-- populate the ADL tree control by creating it from scratch
 		local
 			eti: EV_TREE_ITEM
-			slot_id_list: ARRAYED_LIST[STRING]
-			a_path: STRING
 			ara: ARCH_REP_ARCHETYPE
 		do
 			clear

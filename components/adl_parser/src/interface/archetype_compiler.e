@@ -59,6 +59,12 @@ feature -- Access
 	visual_update_action: PROCEDURE [ANY, TUPLE [ARCH_REP_ARCHETYPE]]
 			-- Called after processng each archetype (to perform GUI updates during processing).
 
+	initial_visual_update_action: PROCEDURE [ANY, TUPLE]
+			-- called before processing whole repository
+
+	final_visual_update_action: PROCEDURE [ANY, TUPLE]
+			-- called after processing whole repository
+
 feature -- Status
 
 	is_interrupted: BOOLEAN
@@ -87,16 +93,36 @@ feature -- Commands
 			visual_update_action_set: visual_update_action = value
 		end
 
+	set_initial_visual_update_action (value: PROCEDURE [ANY, TUPLE])
+			-- Set `initial_visual_update_action'.
+		do
+			initial_visual_update_action := value
+		ensure
+			initial_visual_update_action_set: initial_visual_update_action = value
+		end
+
+	set_final_visual_update_action (value: PROCEDURE [ANY, TUPLE])
+			-- Set `final_visual_update_action'.
+		do
+			final_visual_update_action := value
+		ensure
+			final_visual_update_action_set: final_visual_update_action = value
+		end
+
 	build_all
 			-- Rebuild the whole system, but don't rebuild artefacts that seem to be built already.
 		do
+			call_initial_visual_update_action
 			process_subtree ("building system", False, archetype_directory.directory)
+			call_final_visual_update_action
 		end
 
 	rebuild_all
 			-- Force rebuild of the whole system from scratch, regardless of previous attempts.
 		do
+			call_initial_visual_update_action
 			process_subtree ("rebuilding system from scratch", True, archetype_directory.directory)
+			call_final_visual_update_action
 		end
 
 	build_subtree
@@ -209,6 +235,22 @@ feature {NONE} -- Implementation
 		do
 			if visual_update_action /= Void then
 				visual_update_action.call ([ara])
+			end
+		end
+
+	call_initial_visual_update_action
+			-- Call `initial_visual_update_action', if it is attached.
+		do
+			if initial_visual_update_action /= Void then
+				initial_visual_update_action.call (Void)
+			end
+		end
+
+	call_final_visual_update_action
+			-- Call `final_visual_update_action', if it is attached.
+		do
+			if final_visual_update_action /= Void then
+				final_visual_update_action.call (Void)
 			end
 		end
 

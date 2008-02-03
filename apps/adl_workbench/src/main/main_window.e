@@ -126,9 +126,6 @@ feature {NONE} -- Initialization
 			end
 
 			initialise_path_control
-
-			-- TODO: Implement the Statistics page (AWB-7). Until then, keep it hidden:
-			arch_notebook.prune (arch_stats_vbox)
 		end
 
 	initialise_path_control is
@@ -208,6 +205,8 @@ feature -- Status setting
 		do
 			populate_archetype_directory
 			archetype_compiler.set_visual_update_action (agent build_gui_update)
+			archetype_compiler.set_initial_visual_update_action (agent build_gui_stats_update)
+			archetype_compiler.set_final_visual_update_action (agent build_gui_stats_update)
 			initialise_gui_settings
 			Precursor
 			focus_first_widget (main_nb.selected_item)
@@ -948,6 +947,7 @@ feature {EV_DIALOG} -- Implementation
 					parser_status_area.set_text (utf8 (billboard_content))
 					archetype_view_tree_control.populate
 					archetype_test_tree_control.populate
+					populate_statistics
 				end)
 		end
 
@@ -1032,6 +1032,16 @@ feature {EV_DIALOG} -- Implementation
 			language_combo.select_actions.resume
 		end
 
+	populate_statistics is
+			-- populate statistics
+		do
+			arch_total_count_tf.set_text (archetype_directory.total_archetype_count.out)
+			arch_spec_count_tf.set_text (archetype_directory.specialised_archetype_count.out)
+			arch_slotted_count_tf.set_text (archetype_directory.slotted_archetype_count.out)
+			arch_used_by_count_tf.set_text (archetype_directory.used_by_archetype_count.out)
+			arch_bad_count_tf.set_text (archetype_directory.bad_archetype_count.out)
+		end
+
 feature {NONE} -- Implementation
 
 	do_with_wait_cursor (action: PROCEDURE [ANY, TUPLE])
@@ -1088,6 +1098,13 @@ feature {NONE} -- Implementation
 				end
 			end
 
+			ev_application.process_events
+		end
+
+	build_gui_stats_update is
+			-- Update GUI with progress at end of build.
+		do
+			populate_statistics
 			ev_application.process_events
 		end
 

@@ -183,6 +183,21 @@ feature -- Access
 			end
 		end
 
+	total_archetype_count: INTEGER
+			-- count of all archetype descriptors in directory
+
+	specialised_archetype_count: INTEGER
+			-- count of specialised archetype descriptors in directory
+
+	slotted_archetype_count: INTEGER
+			-- count of slot-containing archetype descriptors in directory
+
+	used_by_archetype_count: INTEGER
+			-- count of archetype descriptors for archetypes used in slots in directory
+
+	bad_archetype_count: INTEGER
+			-- count of invalid archetype files found in repositories
+
 feature -- Status Report
 
 	has_selected_archetype: BOOLEAN
@@ -236,6 +251,8 @@ feature -- Commands
 			create ontology_index.make (0)
 			create archetype_id_index.make (0)
 			create directory.make (Void)
+
+			reset_statistics
 		end
 
 	put_repository (dir_name: STRING; group_id: INTEGER)
@@ -320,6 +337,37 @@ feature -- Commands
 			parent_node.put_child_left (node)
 			ontology_index.force (node, ara.ontological_path)
 			archetype_id_index.force (ara, ara.id.as_string)
+			update_statistics(ara)
+		end
+
+	update_statistics (ara: ARCH_REP_ARCHETYPE) is
+			-- update statistics counters
+		do
+			total_archetype_count := total_archetype_count + 1
+			if ara.is_specialised then
+				specialised_archetype_count := specialised_archetype_count + 1
+			end
+		end
+
+	update_slot_statistics (ara: ARCH_REP_ARCHETYPE) is
+			-- update slot-related statistics counters
+		do
+			if ara.has_slots then
+				slotted_archetype_count := slotted_archetype_count + 1
+			end
+			if ara.is_used then
+				used_by_archetype_count := used_by_archetype_count + 1
+			end
+		end
+
+	reset_statistics is
+			-- reset counters to 0
+		do
+			total_archetype_count := 0
+			specialised_archetype_count := 0
+			slotted_archetype_count := 0
+			used_by_archetype_count := 0
+			bad_archetype_count := 0
 		end
 
 feature -- Traversal
@@ -460,6 +508,7 @@ feature {NONE} -- Implementation
 					-- this is an error: it means there are archetypes from two different
 					-- file repositories claiming to be the same archetype
 					post_error (Current, "merge_enter", "arch_dir_dup_archetype", <<ara.full_path>>)
+					bad_archetype_count := bad_archetype_count + 1
 
 					debug("arch_dir")
 						io.put_string(shifter + "DUPLICATE!%N")
@@ -467,6 +516,7 @@ feature {NONE} -- Implementation
 				else
 					if not ontology_index.has (ara.ontological_parent_path) and ara.is_specialised then
 						post_error (Current, "merge_enter", "arch_dir_orphan_archetype", <<ara.ontological_parent_path, ara.full_path>>)
+						bad_archetype_count := bad_archetype_count + 1
 					else
 						if ontology_index.has (ara.ontological_parent_path) then
 							parent_node := ontology_index.item (ara.ontological_parent_path)
@@ -483,6 +533,7 @@ feature {NONE} -- Implementation
 						parent_node.child_forth
 						ontology_index.force (arch_node, ara.ontological_path)
 						archetype_id_index.force (ara, ara.id.as_string)
+						update_statistics(ara)
 					end
 				end
 			end
