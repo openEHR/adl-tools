@@ -139,7 +139,7 @@ feature -- Commands
 feature {NONE} -- Implementation
 
 	process_subtree (message: STRING; from_scratch: BOOLEAN; subtree: TWO_WAY_TREE [ARCH_REP_ITEM])
-			-- Rebuild the whole system, but don't rebuild artefacts that seem to be built already.
+			-- Display `message' and build the sub-system at and below `subtree', possibly from scratch.
 		do
 			status := "=============== " + message + " ===============%N"
 			call_visual_update_action (Void)
