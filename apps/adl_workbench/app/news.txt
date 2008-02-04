@@ -8,6 +8,7 @@ The application icon is now the openEHR logo.
 A new differential form of archetype implements the specialisation semantics partially documented in the openEHR Archetype Semantics PDF.
 There are new options to build (i.e. parse and validate) the whole repository tree (or sub-trees thereof).
 All errors and warnings that occur while building are shown at the bottom in a new Errors list.
+Basic repository-wide Statistics are now displayed.
 Specialisations are displayed more simply in the repository explorer.
 Opening an archetype ad hoc now grafts it into the repository explorer.
 HTML is no longer generated as a by-product of the Test view, but by an explicit function under the Tools menu.
