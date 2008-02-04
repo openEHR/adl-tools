@@ -59,7 +59,7 @@ feature -- Commands
 		do
 			gui_file_tree.wipe_out
  			create gui_tree_item_stack.make (0)
- 			archetype_directory.do_all (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
+ 			archetype_directory.do_subtree (archetype_directory.directory, agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
 			make_node_visible(archetype_directory.selected_archetype)
 		end
 

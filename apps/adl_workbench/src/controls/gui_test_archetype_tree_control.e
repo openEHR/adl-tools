@@ -148,7 +148,7 @@ feature -- Commands
 			gli.enable_select
 			grid_row_stack.extend (gli.row)
 
- 			archetype_directory.do_all (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
+ 			archetype_directory.do_subtree (archetype_directory.directory, agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
 			grid.column (1).set_title ("Archetype")
 
 			-- put names on columns

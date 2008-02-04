@@ -283,6 +283,7 @@ feature -- Commands
 		do
 			save_path := a_path.twin
 			-- FIXME: see if there is an extension; if there is, change it to .adl
+			-- WARNING: THIS IS CURRENTLY BEING USED TO SAVE OTHER FORMATS SUCH AS HTML, NOT JUST ADL!
 
 			file_repository.save_text_to_file (save_path, a_text)
 		end

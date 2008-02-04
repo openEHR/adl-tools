@@ -139,7 +139,7 @@ feature -- Commands
 			process_subtree ("rebuilding sub-system from scratch", True, archetype_directory.selected_node)
 		end
 
-	build_lineage (ara: ARCH_REP_ARCHETYPE) is
+	build_lineage (ara: ARCH_REP_ARCHETYPE)
 			-- build just the archetypes that need to be rebuilt in the lineage containing ara, down as far
 			-- as ara, and not including sibling branches (since this would create errors in unrelated archetypes)
 		require
@@ -151,7 +151,7 @@ feature -- Commands
 			process_lineage (ara)
 		end
 
-	rebuild_lineage (ara: ARCH_REP_ARCHETYPE) is
+	rebuild_lineage (ara: ARCH_REP_ARCHETYPE)
 			-- Force rebuild of the archetypes in the lineage containing `ara'.
 		require
 			ara_attached: ara /= Void
@@ -166,29 +166,17 @@ feature {NONE} -- Implementation
 
 	process_subtree (message: STRING; from_scratch: BOOLEAN; subtree: TWO_WAY_TREE [ARCH_REP_ITEM])
 			-- Display `message' and build the sub-system at and below `subtree', possibly from scratch.
+		require
+			message_attached: message /= Void
 		do
 			status := "=============== " + message + " ===============%N"
 			call_visual_update_action (Void)
 			force := from_scratch
 			is_interrupted := False
-			archetype_directory.do_subtree (subtree, agent process_one_archetype_node, Void)
+			archetype_directory.do_subtree (subtree, agent process_one_archetype, Void)
 		end
 
-	process_one_archetype_node (node: TWO_WAY_TREE [ARCH_REP_ITEM])
-			-- Process `node', if an archetype is attached to it.
-		require
-			node_attached: node /= Void
-		local
-			ara: ARCH_REP_ARCHETYPE
-		do
-			ara ?= node.item
-
-			if ara /= Void then
-				process_one_archetype (ara)
-			end
-		end
-
-	process_lineage (ara: ARCH_REP_ARCHETYPE) is
+	process_lineage (ara: ARCH_REP_ARCHETYPE)
 			-- build just the archetypes that need to be rebuilt in the lineage containing ara, down as far
 			-- as ara, and not including sibling branches (since this would create errors in unrelated archetypes)
 		require
@@ -207,12 +195,10 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	process_one_archetype (ara: ARCH_REP_ARCHETYPE) is
+	process_one_archetype (item: ARCH_REP_ITEM)
 			-- Agent routine for processing one archetype.
-		require
-			ara_attached: ara /= Void
 		do
-			if not is_interrupted then
+			if not is_interrupted and {ara: !ARCH_REP_ARCHETYPE} item then
 				if force or not ara.is_parsed then
 					status := "------------- compiling " + ara.id.value + " -------------%N"
 					call_visual_update_action (ara)

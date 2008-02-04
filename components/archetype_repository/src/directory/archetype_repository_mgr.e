@@ -250,6 +250,7 @@ feature -- Commands
 			create ontology_index.make (0)
 			create archetype_id_index.make (0)
 			create directory.make (Void)
+			ontology_index.force (directory, ontological_path_separator.twin)
 
 			reset_statistics
 		end
@@ -368,36 +369,6 @@ feature -- Commands
 			bad_archetype_count := 0
 		end
 
-feature -- Traversal
-
-	do_subtree (subtree: like directory; enter_action, exit_action: PROCEDURE [ANY, TUPLE [like directory]])
-			-- On `subtree', execute `enter_action' when entering a node, then recurse
-			-- into its subnodes, then execute `exit_action' when leaving the node.
-		require
-			enter_action_attached: enter_action /= Void
-		do
-			if subtree /= Void then
-				do_all_nodes (subtree, enter_action, exit_action,
-					agent (node: like directory): like directory
-						do
-							Result := node.child
-						end)
-			end
-		end
-
-	do_all (enter_action, exit_action: PROCEDURE [ANY, TUPLE [ARCH_REP_ITEM]])
-			-- On `directory', execute `enter_action' when entering a node, then recurse
-			-- into subnodes, then execute `exit_action' when leaving the node.
-		require
-			enter_action_attached: enter_action /= Void
-		do
-			do_all_nodes (directory, enter_action, exit_action,
-				agent (node: like directory): ARCH_REP_ITEM
-					do
-						Result := node.child_item
-					end)
-		end
-
 feature -- Modification
 
 	set_selected_item (value: ARCH_REP_ITEM)
@@ -409,7 +380,7 @@ feature -- Modification
 		end
 
 	add_adhoc_item (full_path: STRING)
-			-- Add the archetype designated by `full_path' to the ad hoc repository, and graft it into the directory.
+			-- Add the archetype designated by `full_path' to the ad hoc repository, and graft it into `directory'.
 		require
 			path_valid: adhoc_source_repository.is_valid_path (full_path)
 		do
@@ -422,61 +393,57 @@ feature -- Modification
 			end
 		end
 
-feature {NONE} -- Implementation
+feature -- Traversal
 
-	do_all_nodes (node: like directory; enter_action, exit_action: PROCEDURE [ANY, TUPLE]; argument_generator: FUNCTION [ANY, TUPLE [like directory], ANY])
-			-- recursive version of routine due to lack of useful recursive routines on Eiffel tree structures
-			-- processes treats each node of the tree separately
+	do_subtree (node: like directory; enter_action, exit_action: PROCEDURE [ANY, TUPLE [ARCH_REP_ITEM]])
+			-- On `node', execute `enter_action', then recurse into its subnodes, then execute `exit_action'.
 		require
-			node_attached: node /= Void
 			enter_action_attached: enter_action /= Void
-			generator_attached: argument_generator /= Void
 		local
-			arg: ANY
+			item: ARCH_REP_ITEM
 		do
-			from
-				node.child_start
-			until
-				node.child_off
-			loop
+			if node /= Void then
 	 			debug("arch_dir")
 					shifter.extend ('%T')
 				end
 
-				arg := argument_generator.item ([node])
+				item := node.item
 
-				if arg /= Void then
-					enter_action.call ([arg])
+				if item /= Void then
+					enter_action.call ([item])
 				end
 
-				do_all_nodes (node.child, enter_action, exit_action, argument_generator)
+				from
+					node.child_start
+				until
+					node.child_off
+				loop
+					do_subtree (node.child, enter_action, exit_action)
+					node.child_forth
+				end
 
-				if arg /= Void and exit_action /= Void then
-					exit_action.call ([arg])
+				if item /= Void and exit_action /= Void then
+					exit_action.call ([item])
 				end
 
 				debug("arch_dir")
 					shifter.remove_tail (1)
 				end
-
-				node.child_forth
 			end
 		end
 
-	merge_enter (a_node: like directory)
-			-- merge a_node into directory - node enter
+feature {NONE} -- Implementation
+
+	merge_enter (item: !ARCH_REP_ITEM)
+			-- Merge `item' into `directory' either as an archetype or as a folder.
 		local
-			arf: ARCH_REP_FOLDER
-			ara, parent_ara: ARCH_REP_ARCHETYPE
 			arch_node, parent_node: like directory
 		do
 			debug("arch_dir")
-				io.put_string(shifter + "===> " + a_node.item.ontological_path)
+				io.put_string(shifter + "===> " + item.ontological_path)
 			end
 
-			arf ?= a_node.item
-
-			if arf /= Void then
+			if {arf: !ARCH_REP_FOLDER} item then
 				if not ontology_index.has (arf.ontological_path) then
 					if ontology_index.has (arf.ontological_parent_path) then
 						parent_node := ontology_index.item (arf.ontological_parent_path)
@@ -493,11 +460,7 @@ feature {NONE} -- Implementation
 				debug("arch_dir")
 					io.put_string(shifter + " (folder)%N")
 				end
-			end
-
-			ara ?= a_node.item
-
-			if ara /= Void then
+			elseif {ara: !ARCH_REP_ARCHETYPE} item then
 				debug("arch_dir")
 					io.put_string(shifter + ara.id.as_string + " (archetype)")
 				end
@@ -518,8 +481,8 @@ feature {NONE} -- Implementation
 					else
 						if ontology_index.has (ara.ontological_parent_path) then
 							parent_node := ontology_index.item (ara.ontological_parent_path)
-							if ara.is_specialised then
-								parent_ara ?= parent_node.item
+
+							if ara.is_specialised and {parent_ara: !ARCH_REP_ARCHETYPE} parent_node.item then
 								ara.set_specialisation_parent (parent_ara)
 							end
 						else
@@ -531,7 +494,7 @@ feature {NONE} -- Implementation
 						parent_node.child_forth
 						ontology_index.force (arch_node, ara.ontological_path)
 						archetype_id_index.force (ara, ara.id.as_string)
-						update_statistics(ara)
+						update_statistics (ara)
 					end
 				end
 			end

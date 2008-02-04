@@ -544,23 +544,25 @@ feature {NONE} -- Tools events
 	export_html
 			-- Generate HTML from flat archetypes into `html_export_directory'.
 		local
-			filename: STRING
-			dialog: EV_INFORMATION_DIALOG
+			export_archetype: PROCEDURE [ANY, TUPLE [ARCH_REP_ITEM]]
 		do
-			create dialog.make_with_text ("Export to HTML is still under development. It currently creates HTML only for the selected archetype, but when finished it will optionally create HTML for the whole repository.")
-			dialog.show_modal_to_window (Current)
+			export_archetype := agent (a: ARCH_REP_ITEM)
+				local
+					filename: STRING
+				do
+					if {ara: !ARCH_REP_ARCHETYPE} a then
+						archetype_parser.set_target (ara)
 
-			if archetype_parser.archetype_valid then
-				filename := file_system.pathname (html_export_directory, archetype_parser.target.relative_path) + ".html"
-				file_system.recursive_create_directory (file_system.dirname (filename))
-				archetype_parser.save_archetype_flat_as (filename, "html")
-
-				if archetype_parser.save_succeeded then
-					update_status_area ("INFO - Wrote " + filename)
-				else
-					update_status_area (archetype_parser.status)
+						if archetype_parser.archetype_valid then
+							filename := file_system.pathname (html_export_directory, archetype_parser.target.relative_path) + ".html"
+							file_system.recursive_create_directory (file_system.dirname (filename))
+							archetype_parser.save_archetype_flat_as (filename, "html")
+							update_status_area (archetype_parser.status)
+						end
+					end
 				end
-			end
+
+			do_with_wait_cursor (agent archetype_directory.do_subtree (archetype_directory.selected_node, export_archetype, Void))
 		end
 
 	clean_generated_files
@@ -595,11 +597,10 @@ feature {NONE} -- Tools events
 						end
 
 						dir.close
-
 					end
 				end
 
-			do_with_wait_cursor (agent archetype_directory.do_all (delete_adls_files_in_folder, Void))
+			do_with_wait_cursor (agent archetype_directory.do_subtree (archetype_directory.selected_node, delete_adls_files_in_folder, Void))
 		end
 
 	set_options
