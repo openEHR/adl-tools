@@ -154,8 +154,7 @@ feature -- Access
 		do
 			create Result.make (0)
 			if an_rm_type /= Void then
-				slot_rm_type := an_rm_type.twin
-				slot_rm_type.to_lower
+				slot_rm_type := an_rm_type.as_lower
 			end
 			create regex_matcher.compile_case_insensitive (a_regex)
 			if regex_matcher.is_compiled then
@@ -234,7 +233,7 @@ feature -- Comparison
 						s2.append_character (os_directory_separator)
 					end
 
-					Result := s1.substring_index (s2, 1) /= 1 and s2.substring_index (s1, 1) /= 1
+					Result := not s1.starts_with (s2) and not s2.starts_with (s1)
 					source_repositories.forth
 				end
 			end
@@ -305,7 +304,7 @@ feature -- Commands
 			loop
 				key := archetype_id_index.key_for_iteration
 
-				if key.substring_index (semantic_category, 1) = 1 then
+				if key.starts_with (semantic_category) then
 					archetype_in_same_semantic_category := archetype_id_index.item_for_iteration
 
 					if archetype_in_same_semantic_category.id.semantic_id.is_equal (ara.id.semantic_parent_id) then
@@ -315,8 +314,6 @@ feature -- Commands
 
 				archetype_id_index.forth
 			end
-
-			create node.make (ara)
 
 			if parent_node = Void then
 				node := node_from_item (archetype_in_same_semantic_category)
@@ -333,6 +330,7 @@ feature -- Commands
 --				post_error (Current, "graft_adhoc_item", "arch_dir_dup_archetype", <<ara.full_path>>)
 --			else
 
+			create node.make (ara)
 			parent_node.child_start
 			parent_node.put_child_left (node)
 			ontology_index.force (node, ara.ontological_path)
