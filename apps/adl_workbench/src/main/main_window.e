@@ -79,8 +79,25 @@ feature {NONE} -- Initialization
 			initialise_accelerators
 		end
 
-	initialise_gui_settings is
-			-- Initialise purely graphical elements.
+	initialise_accelerators is
+			-- Initialise keyboard accelerators for various widgets.
+		do
+			add_shortcut (agent step_focused_notebook_tab (1), key_tab, True, False)
+			add_shortcut (agent step_focused_notebook_tab (-1), key_tab, True, True)
+
+			add_menu_shortcut (repository_menu_build_all, key_f7, False, False)
+			add_menu_shortcut (repository_menu_rebuild_all, key_f7, False, True)
+			add_menu_shortcut (repository_menu_build_subtree, key_f7, True, False)
+			add_menu_shortcut (repository_menu_rebuild_subtree, key_f7, True, True)
+			add_menu_shortcut (repository_menu_interrupt_build, key_escape, False, True)
+
+			add_menu_shortcut (file_menu_open, key_o, True, False)
+			add_menu_shortcut_for_action (edit_menu_copy, agent call_unless_text_focused (agent on_copy), key_c, True, False)
+			add_menu_shortcut (edit_menu_select_all, key_a, True, False)
+		end
+
+	initialise_overall_appearance is
+			-- Initialise the main properties of the window (size, appearance, title, etc.).
 		local
 			cur_title: STRING
 		do
@@ -106,7 +123,63 @@ feature {NONE} -- Initialization
 			if main_notebook_tab_pos > 1 then
 				main_nb.select_item (main_nb.i_th (main_notebook_tab_pos))
 			end
+		end
 
+	initialise_path_control is
+			-- Initialise widgets associated with the Node Map and the Path Analysis.
+		local
+			filter_combo_index: INTEGER
+			strs: ARRAYED_LIST [STRING]
+		do
+			parsed_archetype_found_paths.enable_multiple_selection
+
+			path_filter_combo.set_strings (path_control_filter_names)
+
+			if not path_filter_combo_selection.is_empty then
+				from
+					filter_combo_index := 1
+				until
+					filter_combo_index > path_control_filter_names.count or
+					path_control_filter_names.item (filter_combo_index).is_equal (path_filter_combo_selection)
+				loop
+					filter_combo_index := filter_combo_index + 1
+				end
+
+				if filter_combo_index > path_control_filter_names.count then -- non-existent string in session file
+					filter_combo_index := 1
+				end
+			else
+				filter_combo_index := 1
+			end
+
+			path_filter_combo.i_th (filter_combo_index).enable_select
+
+			path_view_check_list.set_strings (path_control_column_names)
+			strs := path_view_check_list_settings
+
+			if not strs.is_empty then
+				strs.compare_objects
+
+				from
+					path_view_check_list.start
+				until
+					path_view_check_list.off
+				loop
+					if strs.has (path_view_check_list.item.text) then
+						path_view_check_list.check_item (path_view_check_list.item)
+					end
+
+					path_view_check_list.forth
+				end
+			else -- default to physical paths
+				path_view_check_list.check_item (path_view_check_list.i_th (2))
+				path_view_check_list.check_item (path_view_check_list.i_th (3))
+			end
+		end
+
+	initialise_splitters is
+			-- Restore splitter widgets to their remembered positions.
+		do
 			if test_view_area_split_position > 0 then
 				test_view_area.set_split_position (test_view_area_split_position)
 			end
@@ -124,78 +197,6 @@ feature {NONE} -- Initialization
 			else
 				total_view_area.set_split_position (app_initial_height - parser_status_area.minimum_height)
 			end
-
-			initialise_path_control
-		end
-
-	initialise_path_control is
-			-- create tree control repersenting archetype files found in repository_path
-		local
-			filter_combo_index: INTEGER
-			strs: ARRAYED_LIST [STRING]
-		do
-			parsed_archetype_found_paths.enable_multiple_selection
-
-			path_filter_combo.set_strings (path_control_filter_names)
-
-			if not path_filter_combo_selection.is_empty then
-				from
-					filter_combo_index := 1
-				until
-					filter_combo_index > path_control_filter_names.count or
-					path_control_filter_names.item(filter_combo_index).is_equal(path_filter_combo_selection)
-				loop
-					filter_combo_index := filter_combo_index + 1
-				end
-
-				if filter_combo_index > path_control_filter_names.count then -- non-existent string in session file
-					filter_combo_index := 1
-				end
-			else
-				filter_combo_index := 1
-			end
-
-			path_filter_combo.i_th (filter_combo_index).enable_select
-
-			path_view_check_list.set_strings (path_control_column_names)
-			path_view_check_list.set_minimum_height (path_control_column_names.count * List_row_height)
-
-			strs := path_view_check_list_settings
-
-			if not strs.is_empty then
-				strs.compare_objects
-
-				from
-					path_view_check_list.start
-				until
-					path_view_check_list.off
-				loop
-					if strs.has(path_view_check_list.item.text) then
-						path_view_check_list.check_item (path_view_check_list.item)
-					end
-					path_view_check_list.forth
-				end
-			else -- default to physical paths
-				path_view_check_list.check_item (path_view_check_list.i_th(2))
-				path_view_check_list.check_item (path_view_check_list.i_th(3))
-			end
-		end
-
-	initialise_accelerators is
-			-- Initialise keyboard accelerators for various widgets.
-		do
-			add_shortcut (agent step_focused_notebook_tab (1), key_tab, True, False)
-			add_shortcut (agent step_focused_notebook_tab (-1), key_tab, True, True)
-
-			add_menu_shortcut (repository_menu_build_all, key_f7, False, False)
-			add_menu_shortcut (repository_menu_rebuild_all, key_f7, False, True)
-			add_menu_shortcut (repository_menu_build_subtree, key_f7, True, False)
-			add_menu_shortcut (repository_menu_rebuild_subtree, key_f7, True, True)
-			add_menu_shortcut (repository_menu_interrupt_build, key_escape, False, True)
-
-			add_menu_shortcut (file_menu_open, key_o, True, False)
-			add_menu_shortcut_for_action (edit_menu_copy, agent call_unless_text_focused (agent on_copy), key_c, True, False)
-			add_menu_shortcut (edit_menu_select_all, key_a, True, False)
 		end
 
 feature -- Status setting
@@ -207,8 +208,10 @@ feature -- Status setting
 			archetype_compiler.set_visual_update_action (agent build_gui_update)
 			archetype_compiler.set_initial_visual_update_action (agent build_gui_stats_update)
 			archetype_compiler.set_final_visual_update_action (agent build_gui_stats_update)
-			initialise_gui_settings
+			initialise_overall_appearance
+			initialise_path_control
 			Precursor
+			initialise_splitters
 			focus_first_widget (main_nb.selected_item)
 
 			if app_maximised then
@@ -549,25 +552,19 @@ feature {NONE} -- Tools events
 	export_html
 			-- Generate HTML from flat archetypes into `html_export_directory'.
 		local
-			export_archetype: PROCEDURE [ANY, TUPLE [ARCH_REP_ITEM]]
+			dialog: EV_QUESTION_DIALOG
 		do
-			export_archetype := agent (a: ARCH_REP_ITEM)
-				local
-					filename: STRING
-				do
-					if {ara: !ARCH_REP_ARCHETYPE} a then
-						archetype_parser.set_target (ara)
+			create dialog.make_with_text ("Only successfully built archetypes can be exported to HTML.%N%NDo you want to build each archetype before exporting it?%N")
+			dialog.set_title (title + " - Export HTML")
+			dialog.set_buttons (<<"Yes, Build and Export All", "No, Export only the built ones", "Cancel">>)
+			dialog.set_default_cancel_button (dialog.button ("Cancel"))
+			dialog.show_modal_to_window (Current)
 
-						if archetype_parser.archetype_valid then
-							filename := file_system.pathname (html_export_directory, archetype_parser.target.relative_path) + ".html"
-							file_system.recursive_create_directory (file_system.dirname (filename))
-							archetype_parser.save_archetype_flat_as (filename, "html")
-							update_status_area (archetype_parser.status)
-						end
-					end
-				end
-
-			do_with_wait_cursor (agent archetype_directory.do_subtree (archetype_directory.selected_node, export_archetype, Void))
+			if dialog.selected_button.starts_with ("Yes") then
+				do_with_wait_cursor (agent archetype_compiler.build_and_export_all_html (html_export_directory))
+			elseif dialog.selected_button.starts_with ("No") then
+				do_with_wait_cursor (agent archetype_compiler.export_all_html (html_export_directory))
+			end
 		end
 
 	clean_generated_files
@@ -605,7 +602,7 @@ feature {NONE} -- Tools events
 					end
 				end
 
-			do_with_wait_cursor (agent archetype_directory.do_subtree (archetype_directory.selected_node, delete_adls_files_in_folder, Void))
+			do_with_wait_cursor (agent archetype_directory.do_subtree (archetype_directory.directory, delete_adls_files_in_folder, Void))
 		end
 
 	set_options
@@ -1099,6 +1096,7 @@ feature {NONE} -- Implementation
 			if ara /= Void then
 				archetype_view_tree_control.do_node_for_item (ara, agent archetype_view_tree_control.set_node_pixmap)
 				archetype_test_tree_control.do_row_for_item (ara, agent archetype_test_tree_control.set_row_pixmap)
+
 				if ara.parse_attempted and ara.has_compiler_status then
 					compiler_error_control.extend (ara)
 				end

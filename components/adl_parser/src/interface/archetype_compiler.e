@@ -110,96 +110,99 @@ feature -- Commands
 		end
 
 	build_all
-			-- Rebuild the whole system, but don't rebuild artefacts that seem to be built already.
+			-- Build the whole system, but not artefacts that seem to be built already.
 		do
 			call_initial_visual_update_action
-			process_subtree ("building system", False, archetype_directory.directory)
+			do_subtree (archetype_directory.directory, agent build_archetype (False, ?), "building system")
 			call_final_visual_update_action
 		end
 
 	rebuild_all
-			-- Force rebuild of the whole system from scratch, regardless of previous attempts.
+			-- Rebuild the whole system from scratch, regardless of previous attempts.
 		do
 			call_initial_visual_update_action
-			process_subtree ("rebuilding system from scratch", True, archetype_directory.directory)
+			do_subtree (archetype_directory.directory, agent build_archetype (True, ?), "rebuilding system from scratch")
 			call_final_visual_update_action
 		end
 
 	build_subtree
-			-- Rebuild the sub-system at and below `archetype_directory.selected_node',
-			-- but don't rebuild artefacts that seem to be built already.
+			-- Build the sub-system at and below `archetype_directory.selected_node', but not artefacts that seem to be built already.
 		do
-			process_subtree ("building sub-system", False, archetype_directory.selected_node)
+			do_subtree (archetype_directory.selected_node, agent build_archetype (False, ?), "building sub-system")
 		end
 
 	rebuild_subtree
-			-- Force rebuild the sub-system at and below `archetype_directory.selected_node',
-			-- regardless of previous attempts.
+			-- Rebuild the sub-system at and below `archetype_directory.selected_node' from scratch, regardless of previous attempts.
 		do
-			process_subtree ("rebuilding sub-system from scratch", True, archetype_directory.selected_node)
+			do_subtree (archetype_directory.selected_node, agent build_archetype (True, ?), "rebuilding sub-system from scratch")
 		end
 
 	build_lineage (ara: ARCH_REP_ARCHETYPE)
-			-- build just the archetypes that need to be rebuilt in the lineage containing ara, down as far
-			-- as ara, and not including sibling branches (since this would create errors in unrelated archetypes)
+			-- Build the archetypes in the lineage containing `ara', except those that seem to be built already.
+			-- Go down as far as `ara'. Don't build sibling branches since this would create errors in unrelated archetypes.
 		require
 			ara_attached: ara /= Void
 		do
-			is_interrupted := False
-			status.wipe_out
-			force := False
-			process_lineage (ara)
+			do_lineage (ara, agent build_archetype (False, ?))
 		end
 
 	rebuild_lineage (ara: ARCH_REP_ARCHETYPE)
-			-- Force rebuild of the archetypes in the lineage containing `ara'.
+			-- Rebuild the archetypes in the lineage containing `ara'.
+			-- Go down as far as `ara'. Don't build sibling branches since this would create errors in unrelated archetypes.
 		require
 			ara_attached: ara /= Void
 		do
-			is_interrupted := False
-			status.wipe_out
-			force := True
-			process_lineage (ara)
+			do_lineage (ara, agent build_archetype (True, ?))
+		end
+
+	export_all_html (html_export_directory: STRING)
+			-- Generate HTML under `html_export_directory' from all archetypes that have already been built.
+		do
+			do_subtree (archetype_directory.directory, agent export_archetype_html (html_export_directory, False, ?), "exporting built system as html")
+		end
+
+	build_and_export_all_html (html_export_directory: STRING)
+			-- Generate HTML under `html_export_directory' from the whole system, building each archetype as necessary.
+		do
+			do_subtree (archetype_directory.directory, agent export_archetype_html (html_export_directory, True, ?), "building system and exporting as html")
 		end
 
 feature {NONE} -- Implementation
 
-	process_subtree (message: STRING; from_scratch: BOOLEAN; subtree: TWO_WAY_TREE [ARCH_REP_ITEM])
-			-- Display `message' and build the sub-system at and below `subtree', possibly from scratch.
+	do_subtree (subtree: TWO_WAY_TREE [ARCH_REP_ITEM]; action: PROCEDURE [ANY, TUPLE [ARCH_REP_ITEM]]; message: STRING)
+			-- Display `message' and perform `action' on the sub-system at and below `subtree'.
 		require
+			action_attached: action /= Void
 			message_attached: message /= Void
 		do
 			status := "=============== " + message + " ===============%N"
 			call_visual_update_action (Void)
-			force := from_scratch
 			is_interrupted := False
-			archetype_directory.do_subtree (subtree, agent process_one_archetype, Void)
+			archetype_directory.do_subtree (subtree, action, Void)
+			status := "=============== finished " + message + " ===============%N"
+			call_visual_update_action (Void)
 		end
 
-	process_lineage (ara: ARCH_REP_ARCHETYPE)
-			-- build just the archetypes that need to be rebuilt in the lineage containing ara, down as far
-			-- as ara, and not including sibling branches (since this would create errors in unrelated archetypes)
+	do_lineage (ara: ARCH_REP_ARCHETYPE; action: PROCEDURE [ANY, TUPLE [ARCH_REP_ITEM]])
+			-- Build the archetypes in the lineage containing `ara', possibly from scratch.
+			-- Go down as far as `ara'. Don't build sibling branches since this would create errors in unrelated archetypes.
 		require
 			ara_attached: ara /= Void
+			action_attached: action /= Void
 		local
-			arch_lin: ARRAYED_LIST [ARCH_REP_ARCHETYPE]
+			lineage: ARRAYED_LIST [ARCH_REP_ITEM]
 		do
-			from
-				arch_lin := ara.archetype_lineage
-				arch_lin.start
-			until
-				arch_lin.off
-			loop
-				process_one_archetype (arch_lin.item)
-				arch_lin.forth
-			end
+			status.wipe_out
+			is_interrupted := False
+			lineage := ara.archetype_lineage
+			lineage.do_all (action)
 		end
 
-	process_one_archetype (item: ARCH_REP_ITEM)
-			-- Agent routine for processing one archetype.
+	build_archetype (from_scratch: BOOLEAN; item: ARCH_REP_ITEM)
+			-- Build `item', if it is an archetype, unless `from_scratch' is false and it hasn't been parsed yet.
 		do
 			if not is_interrupted and {ara: !ARCH_REP_ARCHETYPE} item then
-				if force or not ara.is_parsed then
+				if from_scratch or not ara.is_parsed then
 					status := "------------- compiling " + ara.id.value + " -------------%N"
 					call_visual_update_action (ara)
 					archetype_parser.set_target (ara)
@@ -211,6 +214,27 @@ feature {NONE} -- Implementation
 						status.append (archetype_parser.status)
 					end
 
+					call_visual_update_action (ara)
+				end
+			end
+		end
+
+	export_archetype_html (html_export_directory: STRING; build_too: BOOLEAN; item: ARCH_REP_ITEM)
+			-- Generate HTML under `html_export_directory' from `item', optionally building it first if necessary.
+		local
+			filename: STRING
+		do
+			if not is_interrupted and {ara: !ARCH_REP_ARCHETYPE} item then
+				if build_too then
+					build_archetype (False, ara)
+				end
+
+				if ara.is_valid then
+					filename := file_system.pathname (html_export_directory, ara.relative_path) + ".html"
+					file_system.recursive_create_directory (file_system.dirname (filename))
+					archetype_parser.set_target (ara)
+					archetype_parser.save_archetype_flat_as (filename, "html")
+					status := archetype_parser.status
 					call_visual_update_action (ara)
 				end
 			end
@@ -239,9 +263,6 @@ feature {NONE} -- Implementation
 				final_visual_update_action.call (Void)
 			end
 		end
-
-	force: BOOLEAN
-			-- If True, force processing even if archetype appears to be properly compiled already.
 
 invariant
 	status_attached: status /= Void
