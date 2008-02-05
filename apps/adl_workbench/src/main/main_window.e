@@ -303,16 +303,21 @@ feature -- File events
 		local
 			info_dialog: EV_INFORMATION_DIALOG
 			path: STRING
+			ara: ARCH_REP_ARCHETYPE
 		do
-			if archetype_directory.has_selected_archetype and archetype_directory.selected_archetype.has_differential_file then
-				path := archetype_directory.selected_archetype.differential_path
-			else
-				path := archetype_directory.selected_archetype.full_path
-				create info_dialog.make_with_text ("No source (.adls) file available; opening flat (.adl) file.")
-				info_dialog.show_modal_to_window (Current)
-			end
+			ara := archetype_directory.selected_archetype
 
-			execution_environment.launch (editor_command + " %"" + path + "%"")
+			if ara /= Void then
+				if ara.has_differential_file then
+					path := ara.differential_path
+				else
+					path := ara.full_path
+					create info_dialog.make_with_text ("No source (.adls) file available; opening flat (.adl) file.")
+					info_dialog.show_modal_to_window (Current)
+				end
+
+				execution_environment.launch (editor_command + " %"" + path + "%"")
+			end
 		end
 
 	save_adl_file is
@@ -325,7 +330,7 @@ feature -- File events
 			save_dialog: EV_FILE_SAVE_DIALOG
 			name, format: STRING
 		do
-			if archetype_directory.selected_archetype.is_valid then
+			if archetype_directory.has_valid_selected_archetype then
 				ok_to_write := True
 
 				name := archetype_directory.selected_archetype.full_path.twin
@@ -652,21 +657,21 @@ feature -- Archetype Commands
 
 	node_map_shrink_tree_one_level is
 		do
-			if archetype_directory.selected_archetype.is_valid then
+			if archetype_directory.has_valid_selected_archetype then
 				node_map_control.shrink_one_level
 			end
 		end
 
 	node_map_expand_tree_one_level is
 		do
-			if archetype_directory.selected_archetype.is_valid then
+			if archetype_directory.has_valid_selected_archetype then
 				node_map_control.expand_one_level
 			end
 		end
 
 	node_map_toggle_expand_tree is
 		do
-			if archetype_directory.selected_archetype.is_valid then
+			if archetype_directory.has_valid_selected_archetype then
 				node_map_control.toggle_expand_tree
 			end
 		end
@@ -679,7 +684,7 @@ feature -- Archetype Commands
 	on_tree_domain_selected
 			-- Hide technical details in `parsed_archetype_tree'.
 		do
-			if archetype_directory.selected_archetype.is_valid then
+			if archetype_directory.has_valid_selected_archetype then
 				node_map_control.set_domain_mode
 			end
 		end
@@ -687,7 +692,7 @@ feature -- Archetype Commands
 	on_tree_technical_selected
 			-- Display technical details in `parsed_archetype_tree'.
 		do
-			if archetype_directory.selected_archetype.is_valid then
+			if archetype_directory.has_valid_selected_archetype then
 				node_map_control.set_technical_mode
 			end
 		end
@@ -695,7 +700,7 @@ feature -- Archetype Commands
 	on_tree_flat_view_selected
 			-- Do not show the inherited/defined status of nodes in `parsed_archetype_tree'.
 		do
-			if archetype_directory.selected_archetype.is_valid then
+			if archetype_directory.has_valid_selected_archetype then
 				node_map_control.set_flat_view
 				ontology_controls.set_flat_view
 				path_map_control.set_flat_view
@@ -705,7 +710,7 @@ feature -- Archetype Commands
 	on_tree_inheritance_selected
 			-- Show the inherited/defined status of nodes in `parsed_archetype_tree'.
 		do
-			if archetype_directory.selected_archetype.is_valid then
+			if archetype_directory.has_valid_selected_archetype then
 				node_map_control.set_differential_view
 				ontology_controls.set_differential_view
 				path_map_control.set_differential_view
@@ -816,7 +821,7 @@ feature {NONE} -- Application Commands
 			if not language_combo.text.is_empty then
 				set_current_language (language_combo.text)
 
-				if archetype_directory.selected_archetype.is_valid then
+				if archetype_directory.has_valid_selected_archetype then
 					populate_view_controls
 				end
 			end

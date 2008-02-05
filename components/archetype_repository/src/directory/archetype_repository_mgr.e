@@ -205,6 +205,12 @@ feature -- Status Report
 			Result := selected_archetype /= Void
 		end
 
+	has_valid_selected_archetype: BOOLEAN is
+			-- Has a valid archetype been selected?
+		do
+			Result := selected_archetype /= Void and then selected_archetype.is_valid
+		end
+
 feature -- Comparison
 
 	valid_repository_path (dir_name: STRING): BOOLEAN

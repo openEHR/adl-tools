@@ -21,9 +21,6 @@ inherit
 		end
 
 	SHARED_ARCHETYPE_DIRECTORY
-		export
-			{NONE} all
-		end
 
 	SHARED_APPLICATION_CONTEXT
 		export
@@ -96,8 +93,11 @@ feature -- Commands
 
 	populate is
 			-- populate ontology controls
+		require
+			archetype_selected: archetype_directory.has_selected_archetype
 		do
 			clear
+
 			if archetype_directory.selected_archetype.archetype_differential.description /= Void then
 				populate_authorship
 				populate_details
@@ -187,6 +187,8 @@ feature {NONE} -- Implementation
 
 	populate_copyright is
 			-- populate copyright field
+		require
+			archetype_selected: archetype_directory.has_selected_archetype
 		local
 			arch_desc_item: RESOURCE_DESCRIPTION_ITEM
 		do
