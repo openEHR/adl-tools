@@ -374,6 +374,7 @@ feature -- File events
 					end
 
 					if ok_to_write then
+						archetype_parser.set_target (archetype_directory.selected_archetype)
 						archetype_parser.save_archetype_differential_as (name, format)
 						parser_status_area.append_text (archetype_parser.status)
 
