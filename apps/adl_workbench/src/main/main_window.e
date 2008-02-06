@@ -535,14 +535,6 @@ feature {NONE} -- Repository events
 			do_build_action (agent archetype_compiler.rebuild_subtree)
 		end
 
-	interrupt_build
-			-- Cancel the build currently in progress.
-		do
-			archetype_compiler.interrupt
-		end
-
-feature {NONE} -- Tools events
-
 	export_html
 			-- Generate HTML from flat archetypes into `html_export_directory'.
 		local
@@ -555,11 +547,19 @@ feature {NONE} -- Tools events
 			dialog.show_modal_to_window (Current)
 
 			if dialog.selected_button.starts_with ("Yes") then
-				do_with_wait_cursor (agent archetype_compiler.build_and_export_all_html (html_export_directory))
+				do_build_action (agent archetype_compiler.build_and_export_all_html (html_export_directory))
 			elseif dialog.selected_button.starts_with ("No") then
-				do_with_wait_cursor (agent archetype_compiler.export_all_html (html_export_directory))
+				do_build_action (agent archetype_compiler.export_all_html (html_export_directory))
 			end
 		end
+
+	interrupt_build
+			-- Cancel the build currently in progress.
+		do
+			archetype_compiler.interrupt
+		end
+
+feature {NONE} -- Tools events
 
 	clean_generated_files
 			-- Remove all generated files below the repository directory.
@@ -1068,7 +1068,8 @@ feature {NONE} -- Implementation
 					repository_menu_build_all,
 					repository_menu_rebuild_all,
 					repository_menu_build_subtree,
-					repository_menu_rebuild_subtree
+					repository_menu_rebuild_subtree,
+					repository_menu_export_html
 				>>
 
 				menu_items.do_all (agent {EV_MENU_ITEM}.disable_sensitive)
