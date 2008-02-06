@@ -63,6 +63,7 @@ feature -- Commands
 			flatten_invariants
 			flatten_ontology
 			output.rebuild
+			output.set_parent_archetype_id (flat_archetype.archetype_id)
 			output.set_is_valid (True)
 		ensure
 			output /= Void
