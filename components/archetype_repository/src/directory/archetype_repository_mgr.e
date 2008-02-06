@@ -466,7 +466,9 @@ feature {NONE} -- Implementation
 				debug("arch_dir")
 					io.put_string(shifter + " (folder)%N")
 				end
-			elseif {ara: !ARCH_REP_ARCHETYPE} item then
+			end
+
+			if {ara: !ARCH_REP_ARCHETYPE} item then
 				debug("arch_dir")
 					io.put_string(shifter + ara.id.as_string + " (archetype)")
 				end
