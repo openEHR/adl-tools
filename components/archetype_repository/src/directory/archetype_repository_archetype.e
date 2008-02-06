@@ -260,7 +260,10 @@ feature -- Commands
 			save_path: STRING
 		do
 			save_path := a_path.twin
-			save_path.replace_substring (Archetype_source_file_extension, save_path.count - Archetype_flat_file_extension.count + 1, save_path.count)
+
+			if file_system.has_extension (save_path, archetype_flat_file_extension) then
+				save_path.replace_substring (archetype_source_file_extension, save_path.count - archetype_flat_file_extension.count + 1, save_path.count)
+			end
 
 			file_repository.save_text_to_file (save_path, a_text)
 		end
@@ -282,8 +285,10 @@ feature -- Commands
 			save_path: STRING
 		do
 			save_path := a_path.twin
-			-- FIXME: see if there is an extension; if there is, change it to .adl
-			-- WARNING: THIS IS CURRENTLY BEING USED TO SAVE OTHER FORMATS SUCH AS HTML, NOT JUST ADL!
+
+			if file_system.has_extension (save_path, archetype_source_file_extension) then
+				save_path.replace_substring (archetype_flat_file_extension, save_path.count - archetype_source_file_extension.count + 1, save_path.count)
+			end
 
 			file_repository.save_text_to_file (save_path, a_text)
 		end

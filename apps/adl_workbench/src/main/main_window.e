@@ -334,8 +334,6 @@ feature -- File events
 			name, format: STRING
 		do
 			if archetype_directory.has_valid_selected_archetype then
-				ok_to_write := True
-
 				name := archetype_directory.selected_archetype.full_path.twin
 				name.remove_tail (archetype_file_extensions [Archetype_flat_file_extension].count)
 
@@ -344,38 +342,35 @@ feature -- File events
 				save_dialog.set_start_directory (current_work_directory)
 
 				from
-					archetype_file_extensions.start
+					archetype_serialiser_formats.start
 				until
-					archetype_file_extensions.off
+					archetype_serialiser_formats.off
 				loop
-					format := archetype_file_extensions.key_for_iteration
-
-					if has_archetype_serialiser_format (format) then
-						save_dialog.filters.extend (["*" + archetype_file_extensions.item_for_iteration, "Files of type " + format])
-					end
-
-					archetype_file_extensions.forth
+					format := archetype_serialiser_formats.item_for_iteration
+					save_dialog.filters.extend (["*" + archetype_file_extensions [format], "Files of type " + format])
+					archetype_serialiser_formats.forth
 				end
 
 				save_dialog.show_modal_to_window (Current)
 				name := save_dialog.file_name
 
 				if not name.is_empty then
+					set_current_work_directory (file_system.dirname (name))
 					format ?= (save_dialog.filters [save_dialog.selected_filter_index]) [1]
 					format.remove_head (2)
 
 					if not file_system.has_extension (name, archetype_file_extensions [format]) then
 						name.append (archetype_file_extensions [format])
-						save_dialog.set_file_name (name)
 					end
 
+					ok_to_write := True
 					create a_file.make (name)
 
 					if a_file.exists then
-						create question_dialog.make_with_text ("File " + save_dialog.file_title + " already exists. Replace it?")
+						create question_dialog.make_with_text ("File " + file_system.basename (name) + " already exists. Replace it?")
 						question_dialog.set_buttons (<<"Yes", "No">>)
 						question_dialog.show_modal_to_window (Current)
-						ok_to_write := question_dialog.selected_button.is_equal ("Yes")
+						ok_to_write := question_dialog.selected_button.same_string ("Yes")
 					end
 
 					if ok_to_write then
@@ -384,13 +379,12 @@ feature -- File events
 
 						-- FIXME: currently this refreshes the whole view and forgets what archetype the user was on;
 						-- it is only useful to do this in any case if the archetype was written over the .adl file
-						-- in the repository area; if it is saved to e.g. the temp area, this should not even be done
+						-- in the repository area; if it is saved to e.g. the temp area, this should not even be done.
+						-- It also causes the compilation status of all of the archetypes to be forgotten.
 						if format.is_equal (archetype_native_syntax) then
 							populate_archetype_directory
 						end
 					end
-
-					set_current_work_directory (save_dialog.file_path)
 				end
 			else
 				create error_dialog.make_with_text ("Must parse before serialising.")
