@@ -291,60 +291,6 @@ feature -- Commands
 			end
 		end
 
-	graft_adhoc_item (ara: ARCH_REP_ARCHETYPE)
-			-- Graft ad hoc archetype `ara' into `directory'. Use its archetype id to figure out
-			-- its ontological path, by finding archetypes in the same semantic category.
-			-- If `ara' specialises an archetype already in `directory', graft it there.
-		require
-			ara_attached: ara /= Void
-		local
-			semantic_category, key: STRING
-			archetype_in_same_semantic_category: ARCH_REP_ARCHETYPE
-			node, parent_node: like directory
-		do
-			from
-				semantic_category := ara.id.qualified_rm_entity
-				semantic_category.append_character ({ARCHETYPE_ID}.axis_separator)
-				archetype_id_index.start
-			until
-				archetype_id_index.off or parent_node /= Void
-			loop
-				key := archetype_id_index.key_for_iteration
-
-				if key.starts_with (semantic_category) then
-					archetype_in_same_semantic_category := archetype_id_index.item_for_iteration
-
-					if archetype_in_same_semantic_category.id.semantic_id.is_equal (ara.id.semantic_parent_id) then
-						parent_node := node_from_item (archetype_in_same_semantic_category)
-					end
-				end
-
-				archetype_id_index.forth
-			end
-
-			if parent_node = Void then
-				node := node_from_item (archetype_in_same_semantic_category)
-
-				if node /= Void then
-					parent_node := node.parent
-				else
-					parent_node := directory
-				end
-			end
-
-			-- FIXME: Need to check that this doesn't duplicate another archetype:
---			if ontology_index.has (ara.ontological_path) then
---				post_error (Current, "graft_adhoc_item", "arch_dir_dup_archetype", <<ara.full_path>>)
---			else
-
-			create node.make (ara)
-			parent_node.child_start
-			parent_node.put_child_left (node)
-			ontology_index.force (node, ara.ontological_path)
-			archetype_id_index.force (ara, ara.id.as_string)
-			update_statistics(ara)
-		end
-
 	update_statistics (ara: ARCH_REP_ARCHETYPE) is
 			-- update statistics counters
 		do
@@ -395,6 +341,8 @@ feature -- Modification
 
 				if adhoc_source_repository.has (full_path) then
 					graft_adhoc_item (adhoc_source_repository [full_path])
+				else
+					post_error (Current, "add_adhoc_item", "invalid_filename_e1", <<full_path>>)
 				end
 			end
 		end
@@ -439,6 +387,64 @@ feature -- Traversal
 		end
 
 feature {NONE} -- Implementation
+
+	graft_adhoc_item (ara: ARCH_REP_ARCHETYPE)
+			-- Graft ad hoc archetype `ara' into `directory'. Use its archetype id to figure out
+			-- its ontological path, by finding archetypes in the same semantic category.
+			-- If `ara' specialises an archetype already in `directory', graft it there.
+		require
+			ara_attached: ara /= Void
+		local
+			semantic_category, key: STRING
+			archetype_in_same_semantic_category: ARCH_REP_ARCHETYPE
+			node, parent_node: like directory
+		do
+			from
+				semantic_category := ara.id.qualified_rm_entity
+				semantic_category.append_character ({ARCHETYPE_ID}.axis_separator)
+				archetype_id_index.start
+			until
+				archetype_id_index.off or parent_node /= Void
+			loop
+				key := archetype_id_index.key_for_iteration
+
+				if key.starts_with (semantic_category) then
+					archetype_in_same_semantic_category := archetype_id_index.item_for_iteration
+
+					if archetype_in_same_semantic_category.id.semantic_id.is_equal (ara.id.semantic_parent_id) then
+						parent_node := node_from_item (archetype_in_same_semantic_category)
+					end
+				end
+
+				archetype_id_index.forth
+			end
+
+			from
+				node := node_from_item (archetype_in_same_semantic_category)
+			until
+				parent_node /= Void
+			loop
+				if node = Void then
+					parent_node := directory
+				elseif {arf: !ARCH_REP_FOLDER} node.item then
+					parent_node := node
+				else
+					node := node.parent
+				end
+			end
+
+			-- FIXME: Need to check that this doesn't duplicate another archetype:
+--			if ontology_index.has (ara.ontological_path) then
+--				post_error (Current, "graft_adhoc_item", "arch_dir_dup_archetype", <<ara.full_path>>)
+--			else
+
+			create node.make (ara)
+			parent_node.child_start
+			parent_node.put_child_left (node)
+			ontology_index.force (node, ara.ontological_path)
+			archetype_id_index.force (ara, ara.id.as_string)
+			update_statistics(ara)
+		end
 
 	merge_enter (item: !ARCH_REP_ITEM)
 			-- Merge `item' into `directory' either as an archetype or as a folder.

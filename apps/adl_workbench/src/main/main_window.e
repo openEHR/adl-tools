@@ -235,25 +235,37 @@ feature -- Status setting
 			end
 		end
 
-	update_status_area (text: STRING) is
+	update_status_area (text: STRING)
 			-- Append `text' to `parser_status_area'.
 		require
 			text_attached: text /= Void
 		do
-			parser_status_area.append_text (text)
+			parser_status_area.append_text (utf8 (text))
+			parser_status_area.set_background_color (status_area_background_color)
 		end
 
-	set_status_area (text: STRING) is
-			-- set `parser_status_area' to `text'
+	set_status_area (text: STRING)
+			-- Set `parser_status_area' to `text'.
 		require
 			text_attached: text /= Void
 		do
-			parser_status_area.set_text (text)
+			parser_status_area.set_text (utf8 (text))
+			parser_status_area.set_background_color (status_area_background_color)
+		end
+
+	status_area_background_color: EV_COLOR
+			-- The colour for the background of `parser_status_area'.
+		do
+			if billboard_has_errors then
+				create Result.make_with_8_bit_rgb (255, 224, 224)
+			else
+				create Result.make_with_8_bit_rgb (240, 255, 255)
+			end
 		end
 
 feature -- File events
 
-	open_adl_file is
+	open_adl_file
 			-- Let the user select an ADL file, and then load and parse it.
 		local
 			dialog: EV_FILE_OPEN_DIALOG
@@ -261,7 +273,7 @@ feature -- File events
 		do
 			create dialog
 			dialog.set_start_directory (current_work_directory)
-			dialog.filters.extend (["*." + archetype_native_syntax, "Files of type " + Archetype_flat_file_extension])
+			dialog.filters.extend (["*." + archetype_native_syntax, "Files of type " + archetype_flat_file_extension])
 			dialog.show_modal_to_window (Current)
 
 			if not dialog.file_name.is_empty then
@@ -272,6 +284,8 @@ feature -- File events
 					archetype_directory.set_selected_item (ara)
 					archetype_view_tree_control.populate
 				end
+
+				set_status_area (billboard_content)
 			end
 		end
 
@@ -290,7 +304,7 @@ feature -- File events
 				elseif ara.is_differential_file_out_of_date then
 					do_with_wait_cursor (agent archetype_compiler.rebuild_lineage (ara))
 				elseif not ara.compiler_status.is_empty then
-					parser_status_area.set_text (utf8(ara.compiler_status))
+					set_status_area (ara.compiler_status)
 				end
 
 				if ara.is_valid then
@@ -301,7 +315,7 @@ feature -- File events
 			end
 		end
 
-	edit_archetype is
+	edit_archetype
 			-- Launch the external editor with the archetype currently selected in `archetype_directory'.
 		local
 			info_dialog: EV_INFORMATION_DIALOG
@@ -323,8 +337,8 @@ feature -- File events
 			end
 		end
 
-	save_adl_file is
-			-- Save ADL source file via GUI File save dialog
+	save_adl_file
+			-- Save ADL source file via GUI file save dialog.
 		local
 			ok_to_write: BOOLEAN
 			question_dialog: EV_QUESTION_DIALOG
@@ -376,7 +390,7 @@ feature -- File events
 					if ok_to_write then
 						archetype_parser.set_target (archetype_directory.selected_archetype)
 						archetype_parser.save_archetype_differential_as (name, format)
-						parser_status_area.append_text (archetype_parser.status)
+						update_status_area (archetype_parser.status)
 
 						-- FIXME: currently this refreshes the whole view and forgets what archetype the user was on;
 						-- it is only useful to do this in any case if the archetype was written over the .adl file
@@ -942,7 +956,7 @@ feature {EV_DIALOG} -- Implementation
 					end
 
 					archetype_directory.build_directory
-					parser_status_area.set_text (utf8 (billboard_content))
+					set_status_area (billboard_content)
 					archetype_view_tree_control.populate
 					archetype_test_tree_control.populate
 					populate_statistics
@@ -1087,7 +1101,7 @@ feature {NONE} -- Implementation
 	build_gui_update (ara: ARCH_REP_ARCHETYPE) is
 			-- Update GUI with progress on build.
 		do
-			parser_status_area.append_text (utf8 (archetype_compiler.status))
+			update_status_area (archetype_compiler.status)
 
 			if ara /= Void then
 				archetype_view_tree_control.do_node_for_item (ara, agent archetype_view_tree_control.set_node_pixmap)

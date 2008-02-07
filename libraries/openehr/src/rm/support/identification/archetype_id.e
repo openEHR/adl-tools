@@ -275,8 +275,8 @@ feature -- Status Report
 	is_specialised: BOOLEAN
 			-- Is this id a specialisation?
 
-	valid_id (an_id: STRING):BOOLEAN is
-			-- Does `an_id' have the valid basic form, containing 2 axis separators and at least 2 section separators?
+	valid_id (an_id: STRING): BOOLEAN is
+			-- Does `an_id' have the correct form for an archetype id?
 		do
 			Result := id_pattern_regex.matches (an_id)
 		end
