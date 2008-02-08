@@ -70,6 +70,7 @@ feature {NONE} -- Initialisation
 			make_for_grid (gui.compiler_output_grid)
 			grid.enable_tree
 			grid.disable_row_height_fixed
+			grid.hide_tree_node_connectors
 		ensure
 			gui_set: gui = a_main_window
 		end
