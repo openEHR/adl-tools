@@ -163,12 +163,12 @@ feature -- Access
 			end
 		end
 
-	total_view_area_split_position: INTEGER is
+	status_split_area_split_position: INTEGER is
 			-- split position of outer vertical split control
 		local
 			str: STRING
 		do
-			str := resource_value("default", "total_view_area_split_position")
+			str := resource_value("default", "status_split_area_split_position")
 			if str.is_integer then
 				Result := str.to_integer
 			end
@@ -573,12 +573,12 @@ feature -- Modification
 			set_resource_value("default", "main_notebook_tab_pos", a_tab_pos.out)
 		end
 
-	set_total_view_area_split_position (v: INTEGER) is
+	set_status_split_area_split_position (v: INTEGER) is
 			-- set split position of outer vertical split control
 		require
 			v > 0
 		do
-			set_resource_value("default", "total_view_area_split_position", v.out)
+			set_resource_value("default", "status_split_area_split_position", v.out)
 		end
 
 	set_info_view_area_split_position (v: INTEGER) is

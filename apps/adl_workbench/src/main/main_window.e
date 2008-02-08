@@ -192,8 +192,8 @@ feature {NONE} -- Initialization
 				info_view_area.set_split_position (info_view_area_split_position)
 			end
 
-			if total_view_area_split_position > 0 then
-				total_view_area.set_split_position (total_view_area_split_position)
+			if status_split_area_split_position > 0 then
+				status_split_area.set_split_position (status_split_area_split_position)
 			end
 		end
 
@@ -416,7 +416,7 @@ feature -- File events
 			strs: ARRAYED_LIST [STRING]
 			ev_items: DYNAMIC_LIST [EV_LIST_ITEM]
 		do
-			set_total_view_area_split_position (total_view_area.split_position)
+			set_status_split_area_split_position (status_split_area.split_position)
 			set_info_view_area_split_position (info_view_area.split_position)
 			set_test_view_area_split_position (test_view_area.split_position)
 			set_explorer_view_area_split_position (explorer_view_area.split_position)
