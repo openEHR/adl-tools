@@ -25,21 +25,6 @@ feature {NONE} -- Initialization
 			add_help_items
 		end
 
-feature -- Access
-
-	main_window: MAIN_WINDOW
-			-- main window of app
-
-feature -- Modification
-
-	set_main_window (a_mw: MAIN_WINDOW) is
-			-- set main_window
-		require
-			a_mw /= Void
-		do
-			main_window := a_mw
-		end
-
 feature {NONE} -- Implementation
 
 	add_help_items is
@@ -86,7 +71,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is archetype_id.e.
+--| The Original Code is icon_dialog.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

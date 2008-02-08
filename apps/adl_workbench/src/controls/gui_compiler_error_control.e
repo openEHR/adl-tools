@@ -59,55 +59,46 @@ feature -- Definitions
 feature {NONE} -- Initialisation
 
 	make (a_main_window: MAIN_WINDOW)
-			-- create control
+			-- Create to control `a_main_window.compiler_output_grid'.
 		require
 			a_main_window /= Void
 		do
-			create items.make(0)
-			create categories.make(Err_type_parse_error, Err_type_warning)
+			create items.make (0)
+			create categories.make (Err_type_parse_error, Err_type_warning)
 
 			gui := a_main_window
 			make_for_grid (gui.compiler_output_grid)
 			grid.enable_tree
 			grid.disable_row_height_fixed
-			grid.pointer_double_press_item_actions.extend (agent on_double_click)
+		ensure
+			gui_set: gui = a_main_window
+		end
+
+feature -- Status Report
+
+	has (ara: ARCH_REP_ARCHETYPE): BOOLEAN is
+			-- Is `ara' already in `grid'?
+		require
+			ara /= Void
+		do
+			Result := items.has (ara.id.as_string)
+		end
+
+feature -- Commands
+
+	clear is
+			-- Wipe out the content from `grid'.
+		do
+			grid.wipe_out
+			items.wipe_out
+			categories.discard_items
+
 			grid.insert_new_column (Col_category)
 			grid.insert_new_column (Col_location)
 			grid.insert_new_column (Col_message)
 			grid.column (Col_category).set_title ("Category")
 			grid.column (Col_location).set_title ("Archetype")
 			grid.column (Col_message).set_title ("Message")
-		end
-
-feature -- Status Report
-
-	has (ara: ARCH_REP_ARCHETYPE): BOOLEAN is
-			-- True if this archetype already included
-		require
-			ara /= Void
-		do
-			Result := items.has(ara.id.as_string)
-		end
-
-feature -- Status Setting
-
-	is_expanded: BOOLEAN
-			-- True if archetype tree is in expanded state
-
-feature -- Commands
-
-	clear is
-			-- wipe out content from controls
-   		local
-			gli: EV_GRID_LABEL_ITEM
-		do
-			grid.wipe_out
-			items.wipe_out
-
- 			-- Populate first column with archetype tree.
-			create gli.make_with_text ("Errors")
-			grid.set_item (Col_location, 1, gli)
-			gli.enable_select
 		end
 
 	extend (ara: ARCH_REP_ARCHETYPE) is
@@ -121,8 +112,11 @@ feature -- Commands
 			i, row_idx, err_cat: INTEGER
 		do
 			err_cat := ara.compiler_error_type
+
 			if err_cat /= Err_type_valid then
-				if categories[err_cat] = Void then
+				cat_row := categories [err_cat]
+
+				if cat_row = Void then
 					-- figure out which row in the grid we need to insert a new row for this category
 					from
 						i := Err_type_parse_error
@@ -130,27 +124,29 @@ feature -- Commands
 					until
 						i >= err_cat
 					loop
-						if categories[i] /= Void then
+						if categories [i] /= Void then
 							-- count the category row itself + all its subrows
-							row_idx := row_idx + categories[i].subrow_count_recursive + 1
+							row_idx := row_idx + categories [i].subrow_count_recursive + 1
 						end
+
 						i := i + 1
 					end
+
 					grid.insert_new_row (row_idx)
 					cat_row := grid.row (row_idx)
 					cat_row.collapse_actions.extend (agent step_to_viewable_parent_of_selected_row)
-					create gli.make_with_text (utf8 (Err_type_names.item(err_cat)))
-					pixmap := pixmaps [Err_type_pixmap_names.item(err_cat)]
+					create gli.make_with_text (utf8 (Err_type_names [err_cat]))
+					pixmap := pixmaps [Err_type_pixmap_names [err_cat]]
+
 					if pixmap /= Void then
 						gli.set_pixmap (pixmap)
 					end
+
 					cat_row.set_item (Col_category, gli)
-					categories.put(cat_row, err_cat)
-				else
-					cat_row := categories[err_cat]
+					categories.put (cat_row, err_cat)
 				end
 
-				if not items.has (ara.id.as_string) then
+				if not has (ara) then
 					-- FIXME: really have to find a proper sorted position in the list...currently going at the end
 					row_idx := cat_row.subrow_count + 1
 					cat_row.insert_subrow (row_idx)
@@ -159,21 +155,24 @@ feature -- Commands
 					row.insert_subrow (1)
 					subrow := row.subrow (1)
 					subrow.set_data (ara)
-					items.force(row, ara.id.as_string)
+					items.force (row, ara.id.as_string)
 					cat_row.expand
 				else
 					-- find the existing row and subrow
-					row := items.item(ara.id.as_string)
+					row := items [ara.id.as_string]
 					subrow := row.subrow (1)
 				end
 
 				-- Create the label & icon - which might have changed since last compile.
 				create gli.make_with_text (utf8 (ara.id.as_string))
 				pixmap := pixmaps [ara.group_name]
+
 				if pixmap /= Void then
 					gli.set_pixmap (pixmap)
 				end
+
 				gli.set_data (ara)
+				gli.pointer_double_press_actions.force_extend (agent select_node_in_archetype_tree_view)
 				row.set_item (Col_location, gli)
 
 				create gli.make_with_text (utf8 (ara.compiler_status))
@@ -191,12 +190,6 @@ feature {NONE} -- Implementation
 	gui: MAIN_WINDOW
 			-- main window of system
 
-	on_double_click (grid_x_pos, grid_y_pos, a_button_index: INTEGER; item: EV_GRID_ITEM)
-			-- When the user double-clicks an archetype, select it in the main window's explorer tree.
-		do
-			select_node_in_archetype_tree_view
-		end
-
 	on_grid_key_press (key: EV_KEY)
 			-- When the user presses Enter on an archetype, select it in the main window's explorer tree.
 		do
@@ -210,7 +203,7 @@ feature {NONE} -- Implementation
 		end
 
 	select_node_in_archetype_tree_view
-			-- Select the archetype in the main window's explorer tree.
+			-- Select the archetype represented by `selected_cell' in the main window's explorer tree.
 		local
 			ara: ARCH_REP_ARCHETYPE
 		do
@@ -231,8 +224,10 @@ feature {NONE} -- Implementation
 			-- IDs of archetypes that are displayed in the grid.
 
 invariant
+	gui_attached: gui /= Void
 	items_attached: items /= Void
 	categories_attached: categories /= Void
+	correct_grid: grid = gui.compiler_output_grid
 
 end
 

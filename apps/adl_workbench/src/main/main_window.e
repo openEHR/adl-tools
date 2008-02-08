@@ -68,7 +68,7 @@ inherit
 
 feature {NONE} -- Initialization
 
-	user_initialization is
+	user_initialization
 			-- called by `initialize'.
 			-- Any custom user initialization that
 			-- could not be performed in `initialize',
@@ -79,7 +79,7 @@ feature {NONE} -- Initialization
 			initialise_accelerators
 		end
 
-	initialise_accelerators is
+	initialise_accelerators
 			-- Initialise keyboard accelerators for various widgets.
 		do
 			add_shortcut (agent step_focused_notebook_tab (1), key_tab, True, False)
@@ -96,14 +96,14 @@ feature {NONE} -- Initialization
 			add_menu_shortcut (edit_menu_select_all, key_a, True, False)
 		end
 
-	initialise_overall_appearance is
+	initialise_overall_appearance
 			-- Initialise the main properties of the window (size, appearance, title, etc.).
 		local
 			cur_title: STRING
 		do
 			set_icon_pixmap (adl_workbench_ico)
 			cur_title := title.twin
-			cur_title.replace_substring_all ("VER", Current_adl_version)
+			cur_title.replace_substring_all ("VER", current_adl_version)
 			set_title (cur_title)
 
 			set_position (app_x_position, app_y_position)
@@ -121,11 +121,11 @@ feature {NONE} -- Initialization
 			end
 
 			if main_notebook_tab_pos > 1 then
-				main_nb.select_item (main_nb.i_th (main_notebook_tab_pos))
+				main_nb.select_item (main_nb [main_notebook_tab_pos])
 			end
 		end
 
-	initialise_path_control is
+	initialise_path_control
 			-- Initialise widgets associated with the Node Map and the Path Analysis.
 		local
 			filter_combo_index: INTEGER
@@ -140,7 +140,7 @@ feature {NONE} -- Initialization
 					filter_combo_index := 1
 				until
 					filter_combo_index > path_control_filter_names.count or
-					path_control_filter_names.item (filter_combo_index).is_equal (path_filter_combo_selection)
+					path_control_filter_names [filter_combo_index].is_equal (path_filter_combo_selection)
 				loop
 					filter_combo_index := filter_combo_index + 1
 				end
@@ -152,7 +152,7 @@ feature {NONE} -- Initialization
 				filter_combo_index := 1
 			end
 
-			path_filter_combo.i_th (filter_combo_index).enable_select
+			path_filter_combo [filter_combo_index].enable_select
 
 			path_view_check_list.set_strings (path_control_column_names)
 			strs := path_view_check_list_settings
@@ -172,12 +172,12 @@ feature {NONE} -- Initialization
 					path_view_check_list.forth
 				end
 			else -- default to physical paths
-				path_view_check_list.check_item (path_view_check_list.i_th (2))
-				path_view_check_list.check_item (path_view_check_list.i_th (3))
+				path_view_check_list.check_item (path_view_check_list [2])
+				path_view_check_list.check_item (path_view_check_list [3])
 			end
 		end
 
-	initialise_splitters is
+	initialise_splitters
 			-- Restore splitter widgets to their remembered positions.
 		do
 			if test_view_area_split_position > 0 then
@@ -228,7 +228,13 @@ feature -- Status setting
 			if reference_repository_path.is_empty then
 				set_reference_repository_path (application_startup_directory)
 				set_repository
-			elseif html_export_directory.is_empty then
+
+				if archetype_file_tree.is_empty then
+					populate_archetype_directory
+				end
+			end
+
+			if html_export_directory.is_empty then
 				set_html_export_directory (file_system.pathname (file_system.absolute_parent_directory (reference_repository_path), "html"))
 			end
 		end
@@ -240,6 +246,7 @@ feature -- Status setting
 		do
 			parser_status_area.append_text (utf8 (text))
 			parser_status_area.set_background_color (status_area_background_color)
+			ev_application.process_graphical_events
 		end
 
 	set_status_area (text: STRING)
@@ -249,16 +256,14 @@ feature -- Status setting
 		do
 			parser_status_area.set_text (utf8 (text))
 			parser_status_area.set_background_color (status_area_background_color)
+			ev_application.process_graphical_events
 		end
 
-	status_area_background_color: EV_COLOR
-			-- The colour for the background of `parser_status_area'.
+	save_resources_and_show_status
+			-- Save the application configuration file and update the status area.
 		do
-			if billboard_has_errors then
-				create Result.make_with_8_bit_rgb (255, 224, 224)
-			else
-				create Result.make_with_8_bit_rgb (240, 255, 255)
-			end
+			save_resources
+			update_status_area ("Wrote config file %"" + resource_config_file_name + "%".%N")
 		end
 
 feature -- File events
@@ -405,36 +410,38 @@ feature -- File events
 			end
 		end
 
-	exit_app is
+	exit_app
 			-- Terminate the application, saving the window location.
 		local
 			strs: ARRAYED_LIST [STRING]
-			ev_items: DYNAMIC_LIST[EV_LIST_ITEM]
+			ev_items: DYNAMIC_LIST [EV_LIST_ITEM]
 		do
-			set_total_view_area_split_position(total_view_area.split_position)
-			set_info_view_area_split_position(info_view_area.split_position)
-			set_test_view_area_split_position(test_view_area.split_position)
-			set_explorer_view_area_split_position(explorer_view_area.split_position)
-			set_app_width(width)
-			set_app_height(height)
-			set_app_x_position(x_position)
-			set_app_y_position(y_position)
-			set_app_maximised(is_maximized)
-			set_main_notebook_tab_pos(main_nb.selected_item_index)
+			set_total_view_area_split_position (total_view_area.split_position)
+			set_info_view_area_split_position (info_view_area.split_position)
+			set_test_view_area_split_position (test_view_area.split_position)
+			set_explorer_view_area_split_position (explorer_view_area.split_position)
+			set_app_width (width)
+			set_app_height (height)
+			set_app_x_position (x_position)
+			set_app_y_position (y_position)
+			set_app_maximised (is_maximized)
+			set_main_notebook_tab_pos (main_nb.selected_item_index)
 
-			set_path_filter_combo_selection(path_filter_combo.selected_item.text)
+			set_path_filter_combo_selection (path_filter_combo.selected_item.text)
 
 			ev_items := path_view_check_list.checked_items
-			create strs.make(0)
+			create strs.make (0)
+
 			from
 				ev_items.start
 			until
 				ev_items.off
 			loop
-				strs.extend(ev_items.item.text)
+				strs.extend (ev_items.item.text)
 				ev_items.forth
 			end
-			set_path_view_check_list_settings(strs)
+
+			set_path_view_check_list_settings (strs)
 
 			save_resources
 			ev_application.destroy
@@ -505,7 +512,7 @@ feature {NONE} -- Edit events
 			end
 		end
 
-	show_clipboard is
+	show_clipboard
 			-- Display the current contents of the clipboard.
 		local
 			dialog: EV_INFORMATION_DIALOG
@@ -517,10 +524,18 @@ feature {NONE} -- Edit events
 
 feature {NONE} -- Repository events
 
-	set_repository is
+	set_repository
 			-- Display the Repository Settings dialog.
+		local
+			dialog: REPOSITORY_DIALOG
 		do
-			repository_dialog.show_modal_to_window (Current)
+			create dialog
+			dialog.show_modal_to_window (Current)
+
+			if dialog.has_changed_paths then
+				populate_archetype_directory
+				save_resources_and_show_status
+			end
 		end
 
 	build_all
@@ -614,73 +629,92 @@ feature {NONE} -- Tools events
 
 	set_options
 			-- Display the Options dialog.
+		local
+			dialog: OPTION_DIALOG
 		do
-			option_dialog.show_modal_to_window (Current)
+			create dialog
+			dialog.show_modal_to_window (Current)
+
+			if dialog.has_changed_options then
+				save_resources_and_show_status
+			end
 		end
 
 feature {NONE} -- Help events
 
-	display_icon_help is
-			-- Display the Icons help dialog.
+	display_icon_help
+			-- Display the icons help dialog.
 		do
-			icon_dialog.show_modal_to_window (Current)
+			(create {ICON_DIALOG}).show_modal_to_window (Current)
 		end
 
-	display_news is
+	display_news
 			-- Display news about the latest release.
+		local
+			dialog: EV_INFORMATION_DIALOG
 		do
-			News_dialog.show_modal_to_window (Current)
+			create dialog.make_with_text (news_text)
+			dialog.set_x_position (20)
+			dialog.set_y_position (10)
+			dialog.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 248))
+			dialog.show_modal_to_window (Current)
 		end
 
-	show_online_help is
+	show_online_help
 			-- Display the application's online help in an external browser.
 		do
 			execution_environment.launch (Default_browser_command + ADL_help_page_url)
 		end
 
-	display_about is
+	display_about
 			-- Display the application's About box.
+		local
+			dialog: EV_INFORMATION_DIALOG
 		do
-			About_dialog.show_modal_to_window (Current)
+			create dialog.make_with_text (splash_text)
+			dialog.set_title ("About ADL Workbench")
+			dialog.set_pixmap (pixmaps ["openEHR and Ocean"])
+			dialog.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 248))
+			dialog.show_modal_to_window (Current)
 		end
 
 feature -- Archetype Commands
 
-	archetype_view_tree_item_select is
+	archetype_view_tree_item_select
 			-- Display details of `archetype_file_tree' when the user selects it.
 		do
 			archetype_view_tree_control.display_details_of_selected_item_after_delay
 		end
 
-	archetype_view_tree_select_node is
+	archetype_view_tree_select_node
 			-- Display node of `archetype_file_tree' corresponding to a selected archetype in the ARCH_DIRECTORY
 		do
 			archetype_view_tree_control.make_node_visible (archetype_directory.selected_item)
 			parse_archetype
 		end
 
-	node_map_shrink_tree_one_level is
+	node_map_shrink_tree_one_level
 		do
 			if archetype_directory.has_valid_selected_archetype then
 				node_map_control.shrink_one_level
 			end
 		end
 
-	node_map_expand_tree_one_level is
+	node_map_expand_tree_one_level
 		do
 			if archetype_directory.has_valid_selected_archetype then
 				node_map_control.expand_one_level
 			end
 		end
 
-	node_map_toggle_expand_tree is
+	node_map_toggle_expand_tree
 		do
 			if archetype_directory.has_valid_selected_archetype then
 				node_map_control.toggle_expand_tree
 			end
 		end
 
-	node_map_item_select is
+	node_map_item_select
 		do
 			node_map_control.item_select
 		end
@@ -721,24 +755,24 @@ feature -- Archetype Commands
 			end
 		end
 
-	archetype_text_edit_process_keystroke (a_keystring: STRING) is
+	archetype_text_edit_process_keystroke (a_keystring: STRING)
 			-- Called by `key_press_string_actions' of `archetype_text_edit_area'.
 		do
 		end
 
-	archetype_test_go_stop is
+	archetype_test_go_stop
 			-- start running tests in test page
 		do
 			archetype_test_tree_control.archetype_test_go_stop
 		end
 
-	archetype_test_tree_expand_toggle is
+	archetype_test_tree_expand_toggle
 			-- toggle logical state of test page archetype tree expandedness
 		do
 			archetype_test_tree_control.toggle_expand_tree
 		end
 
-	archetype_test_refresh is
+	archetype_test_refresh
 			-- refresh test environment back to vanilla state
 			-- i.e. synchronised with file system and with all
 			-- statuses cleared
@@ -746,25 +780,25 @@ feature -- Archetype Commands
 			archetype_test_tree_control.populate
 		end
 
-	path_column_select (a_list_item: EV_LIST_ITEM) is
+	path_column_select (a_list_item: EV_LIST_ITEM)
 			-- Called by `check_actions' of `path_view_check_list'.
 		do
 			path_map_control.column_select(a_list_item)
 		end
 
-	path_column_unselect (a_list_item: EV_LIST_ITEM) is
+	path_column_unselect (a_list_item: EV_LIST_ITEM)
 			-- Called by `check_actions' of `path_view_check_list'.
 		do
 			path_map_control.column_unselect(a_list_item)
 		end
 
-	path_row_set_filter is
+	path_row_set_filter
 			-- Called by `select_actions' of `path_filter_combo'.
 		do
 			path_map_control.set_filter
 		end
 
-	arch_notebook_select is
+	arch_notebook_select
 			-- Redisplay the archetype's source when the selected page changes in `arch_notebook'.
 		local
 			leader, int_val_str, src, s: STRING
@@ -811,16 +845,78 @@ feature -- Archetype Commands
 			end
 		end
 
-	translations_select_language is
+	translations_select_language
 			-- Called by `select_actions' of `arch_translations_languages_list'.
 		do
 			translation_controls.populate_items
 		end
 
-feature {NONE} -- Application Commands
+feature -- Controls
 
-	select_language is
-			-- Called by `select_actions' of `language_combo'.
+	ontology_controls: GUI_ONTOLOGY_CONTROLS
+		once
+			create Result.make (Current)
+		end
+
+	description_controls: GUI_DESCRIPTION_CONTROLS
+		once
+			create Result.make (Current)
+		end
+
+	translation_controls: GUI_TRANSLATION_CONTROLS
+		once
+			create Result.make (Current)
+		end
+
+	node_map_control: GUI_NODE_MAP_CONTROL
+		once
+			create Result.make (Current)
+		end
+
+	slot_map_control: GUI_SLOT_MAP_CONTROL
+		once
+			create Result.make (Current)
+		end
+
+	used_by_map_control: GUI_USED_BY_MAP_CONTROL
+		once
+			create Result.make (Current)
+		end
+
+	path_map_control: GUI_PATH_MAP_CONTROL
+		once
+			create Result.make (Current)
+		end
+
+	archetype_view_tree_control: GUI_VIEW_ARCHETYPE_TREE_CONTROL
+		once
+			create Result.make (Current)
+		end
+
+	archetype_test_tree_control: GUI_TEST_ARCHETYPE_TREE_CONTROL
+		once
+			create Result.make (Current)
+		end
+
+	compiler_error_control: GUI_COMPILER_ERROR_CONTROL
+		once
+			create Result.make (Current)
+		end
+
+feature {NONE} -- Implementation
+
+	status_area_background_color: EV_COLOR
+			-- The colour for the background of `parser_status_area'.
+		do
+			if billboard_has_errors then
+				create Result.make_with_8_bit_rgb (255, 224, 224)
+			else
+				create Result.make_with_8_bit_rgb (240, 255, 255)
+			end
+		end
+
+	select_language
+			-- Repopulate the view of the archetype when the user selects a different language.
 		do
 			if not language_combo.text.is_empty then
 				set_current_language (language_combo.text)
@@ -831,118 +927,15 @@ feature {NONE} -- Application Commands
 			end
 		end
 
-	move_cursor_to_pointer_location (a_x, a_y, a_button: INTEGER; a_x_tilt, a_y_tilt, a_pressure: DOUBLE; a_screen_x, a_screen_y: INTEGER) is
-			-- Called by `pointer_button_press_actions' of `archetype_text_edit_area'.
-		do
-		end
-
-	pointer_double_click_action (a_x, a_y, a_button: INTEGER; a_x_tilt, a_y_tilt, a_pressure: DOUBLE; a_screen_x, a_screen_y: INTEGER) is
-			-- Called by `pointer_double_press_actions' of `archetype_text_edit_area'.
-		do
-		end
-
-feature -- Controls
-
-	ontology_controls: GUI_ONTOLOGY_CONTROLS is
-		once
-			create Result.make (Current)
-		end
-
-	description_controls: GUI_DESCRIPTION_CONTROLS is
-		once
-			create Result.make (Current)
-		end
-
-	translation_controls: GUI_TRANSLATION_CONTROLS is
-		once
-			create Result.make (Current)
-		end
-
-	node_map_control: GUI_NODE_MAP_CONTROL is
-		once
-			create Result.make (Current)
-		end
-
-	slot_map_control: GUI_SLOT_MAP_CONTROL is
-		once
-			create Result.make (Current)
-		end
-
-	used_by_map_control: GUI_USED_BY_MAP_CONTROL is
-		once
-			create Result.make (Current)
-		end
-
-	path_map_control: GUI_PATH_MAP_CONTROL is
-		once
-			create Result.make (Current)
-		end
-
-	archetype_view_tree_control: GUI_VIEW_ARCHETYPE_TREE_CONTROL is
-		once
-			create Result.make (Current)
-		end
-
-	archetype_test_tree_control: GUI_TEST_ARCHETYPE_TREE_CONTROL is
-		once
-			create Result.make (Current)
-		end
-
-	compiler_error_control: GUI_COMPILER_ERROR_CONTROL is
-		once
-			create Result.make (Current)
-		end
-
-	Option_dialog: OPTION_DIALOG is
-		once
-			create Result
-			Result.set_main_window (Current)
-		end
-
-	Repository_dialog: REPOSITORY_DIALOG is
-		once
-			create Result
-			Result.set_main_window (Current)
-		end
-
-	Icon_dialog: ICON_DIALOG is
-		once
-			create Result
-			Result.set_main_window (Current)
-		end
-
-	Print_dialog: EV_PRINT_DIALOG is
-			-- 	EV_PRINT_DIALOG for test.
-		once
-			create Result
-		end
-
-	About_dialog: EV_INFORMATION_DIALOG is
-			-- about text
-		do
-			create Result.make_with_text (splash_text)
-			Result.set_title ("About ADL Workbench")
-			Result.set_pixmap (pixmaps ["openEHR and Ocean"])
-			Result.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 248))
-		end
-
-	News_dialog: EV_INFORMATION_DIALOG is
-			-- news dialog
-		do
-			create Result.make_with_text (news_text)
-			Result.set_x_position (20)
-			Result.set_y_position (10)
-			Result.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 248))
-		end
-
-feature {EV_DIALOG} -- Implementation
-
 	populate_archetype_directory
 			-- Rebuild archetype directory & repopulate relevant GUI parts.
 		do
 			do_with_wait_cursor (agent
 				do
+					clear_billboard
 					clear_all_controls
+					compiler_error_control.clear
+					set_status_area ("Populating repository ...")
 					archetype_directory.make
 
 					if archetype_directory.valid_repository_path (reference_repository_path) then
@@ -967,10 +960,12 @@ feature {EV_DIALOG} -- Implementation
 			parser_status_area.remove_text
 			language_combo.wipe_out
 			node_map_control.clear
+			path_map_control.clear
+			slot_map_control.clear
+			used_by_map_control.clear
 			ontology_controls.clear
 			description_controls.clear
 			translation_controls.clear
-			parsed_archetype_found_paths.wipe_out
 		end
 
 	populate_user_controls
@@ -985,10 +980,10 @@ feature {EV_DIALOG} -- Implementation
 			-- Populate content from visual controls.
 		do
 			populate_user_controls
+			node_map_control.populate
 			path_map_control.populate
 			slot_map_control.populate
 			used_by_map_control.populate
-			node_map_control.populate
 			ontology_controls.populate
 			description_controls.populate
 			translation_controls.populate
@@ -1042,7 +1037,7 @@ feature {EV_DIALOG} -- Implementation
 			language_combo.select_actions.resume
 		end
 
-	populate_statistics is
+	populate_statistics
 			-- populate statistics
 		do
 			arch_total_count_tf.set_text (archetype_directory.total_archetype_count.out)
@@ -1096,7 +1091,7 @@ feature {NONE} -- Implementation
 			retry
 		end
 
-	build_gui_update (ara: ARCH_REP_ARCHETYPE) is
+	build_gui_update (ara: ARCH_REP_ARCHETYPE)
 			-- Update GUI with progress on build.
 		do
 			update_status_area (archetype_compiler.status)
@@ -1113,7 +1108,7 @@ feature {NONE} -- Implementation
 			ev_application.process_events
 		end
 
-	build_gui_stats_update is
+	build_gui_stats_update
 			-- Update GUI with progress at end of build.
 		do
 			populate_statistics

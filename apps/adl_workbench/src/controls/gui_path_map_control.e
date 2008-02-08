@@ -76,6 +76,7 @@ feature -- Commands
 	clear is
 			-- wipe out content from controls
 		do
+			path_list.wipe_out
 		end
 
 	populate is
