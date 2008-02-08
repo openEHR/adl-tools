@@ -85,12 +85,8 @@ feature {NONE}-- Initialization
 			create language_combo
 			create explorer_view_area
 			create archetype_file_tree
+			create total_view_area
 			create arch_notebook
-			create status_split_area
-			create parser_status_area
-			create errors_and_warnings_frame
-			create l_ev_vertical_box_1
-			create compiler_output_grid
 			create arch_desc_area_vbox
 			create author_lang_term_hbox
 			create arch_desc_auth_frame
@@ -98,7 +94,7 @@ feature {NONE}-- Initialization
 			create arch_desc_auth_hbox
 			create arch_desc_auth_orig_auth_label
 			create arch_desc_auth_orig_auth_mlist
-			create l_ev_vertical_box_2
+			create l_ev_vertical_box_1
 			create arch_desc_status_hbox
 			create arch_desc_status_label
 			create arch_desc_status_text
@@ -116,17 +112,17 @@ feature {NONE}-- Initialization
 			create lang_vbox
 			create arch_translations_languages_label
 			create arch_translations_languages_list
-			create l_ev_vertical_box_3
+			create l_ev_vertical_box_2
 			create l_ev_label_1
 			create arch_translations_author_mlist
 			create l_ev_label_2
 			create arch_translations_accreditation_text
-			create l_ev_vertical_box_4
+			create l_ev_vertical_box_3
 			create l_ev_label_3
 			create arch_translations_other_details_mlist
 			create arch_desc_details_frame
 			create arch_desc_details_hbox
-			create l_ev_vertical_box_5
+			create l_ev_vertical_box_4
 			create l_ev_horizontal_box_4
 			create arch_desc_purpose_label
 			create arch_desc_purpose_text
@@ -136,11 +132,11 @@ feature {NONE}-- Initialization
 			create l_ev_horizontal_box_6
 			create arch_desc_misuse_label
 			create arch_desc_misuse_text
-			create l_ev_vertical_box_6
+			create l_ev_vertical_box_5
 			create arch_desc_keywords_label
 			create arch_desc_keywords_list
 			create arch_desc_resource_frame
-			create l_ev_vertical_box_7
+			create l_ev_vertical_box_6
 			create l_ev_horizontal_box_7
 			create arch_desc_resource_package_label
 			create arch_desc_resource_package_text
@@ -159,11 +155,11 @@ feature {NONE}-- Initialization
 			create tree_expand_one_bn
 			create tree_shrink_one_bn
 			create l_ev_frame_1
-			create l_ev_vertical_box_8
+			create l_ev_vertical_box_7
 			create tree_domain_radio_button
 			create tree_technical_radio_button
 			create l_ev_frame_2
-			create l_ev_vertical_box_9
+			create l_ev_vertical_box_8
 			create tree_inheritance_radio_button
 			create tree_flat_view_radio_button
 			create parsed_archetype_path_view
@@ -180,7 +176,7 @@ feature {NONE}-- Initialization
 			create ontology_constraint_defs
 			create archetype_source_rich_text
 			create arch_stats_vbox
-			create l_ev_vertical_box_10
+			create l_ev_vertical_box_9
 			create l_ev_horizontal_box_9
 			create l_ev_label_4
 			create arch_total_count_tf
@@ -196,10 +192,13 @@ feature {NONE}-- Initialization
 			create l_ev_horizontal_box_13
 			create l_ev_label_8
 			create arch_bad_count_tf
+			create l_ev_notebook_1
+			create parser_status_area
+			create compiler_output_grid
 			create test_view_area
 			create l_ev_horizontal_box_14
 			create archetype_test_tree_grid
-			create l_ev_vertical_box_11
+			create l_ev_vertical_box_10
 			create overwrite_adl_rb
 			create remove_unused_codes_rb
 			create arch_test_tree_toggle_expand_bn
@@ -262,12 +261,8 @@ feature {NONE}-- Initialization
 			action_bar.extend (language_combo)
 			viewer_vbox.extend (explorer_view_area)
 			explorer_view_area.extend (archetype_file_tree)
-			explorer_view_area.extend (arch_notebook)
-			arch_notebook.extend (status_split_area)
-			status_split_area.extend (parser_status_area)
-			status_split_area.extend (errors_and_warnings_frame)
-			errors_and_warnings_frame.extend (l_ev_vertical_box_1)
-			l_ev_vertical_box_1.extend (compiler_output_grid)
+			explorer_view_area.extend (total_view_area)
+			total_view_area.extend (arch_notebook)
 			arch_notebook.extend (arch_desc_area_vbox)
 			arch_desc_area_vbox.extend (author_lang_term_hbox)
 			author_lang_term_hbox.extend (arch_desc_auth_frame)
@@ -275,13 +270,13 @@ feature {NONE}-- Initialization
 			l_ev_horizontal_box_1.extend (arch_desc_auth_hbox)
 			arch_desc_auth_hbox.extend (arch_desc_auth_orig_auth_label)
 			arch_desc_auth_hbox.extend (arch_desc_auth_orig_auth_mlist)
-			l_ev_horizontal_box_1.extend (l_ev_vertical_box_2)
-			l_ev_vertical_box_2.extend (arch_desc_status_hbox)
+			l_ev_horizontal_box_1.extend (l_ev_vertical_box_1)
+			l_ev_vertical_box_1.extend (arch_desc_status_hbox)
 			arch_desc_status_hbox.extend (arch_desc_status_label)
 			arch_desc_status_hbox.extend (arch_desc_status_text)
 			arch_desc_status_hbox.extend (arch_desc_original_language_label)
 			arch_desc_status_hbox.extend (arch_desc_original_language_text)
-			l_ev_vertical_box_2.extend (arch_desc_contrib_hbox)
+			l_ev_vertical_box_1.extend (arch_desc_contrib_hbox)
 			arch_desc_contrib_hbox.extend (arch_desc_auth_contrib_label)
 			arch_desc_contrib_hbox.extend (arch_desc_auth_contrib_list)
 			author_lang_term_hbox.extend (term_frame)
@@ -293,35 +288,35 @@ feature {NONE}-- Initialization
 			l_ev_horizontal_box_3.extend (lang_vbox)
 			lang_vbox.extend (arch_translations_languages_label)
 			lang_vbox.extend (arch_translations_languages_list)
+			l_ev_horizontal_box_3.extend (l_ev_vertical_box_2)
+			l_ev_vertical_box_2.extend (l_ev_label_1)
+			l_ev_vertical_box_2.extend (arch_translations_author_mlist)
+			l_ev_vertical_box_2.extend (l_ev_label_2)
+			l_ev_vertical_box_2.extend (arch_translations_accreditation_text)
 			l_ev_horizontal_box_3.extend (l_ev_vertical_box_3)
-			l_ev_vertical_box_3.extend (l_ev_label_1)
-			l_ev_vertical_box_3.extend (arch_translations_author_mlist)
-			l_ev_vertical_box_3.extend (l_ev_label_2)
-			l_ev_vertical_box_3.extend (arch_translations_accreditation_text)
-			l_ev_horizontal_box_3.extend (l_ev_vertical_box_4)
-			l_ev_vertical_box_4.extend (l_ev_label_3)
-			l_ev_vertical_box_4.extend (arch_translations_other_details_mlist)
+			l_ev_vertical_box_3.extend (l_ev_label_3)
+			l_ev_vertical_box_3.extend (arch_translations_other_details_mlist)
 			arch_desc_area_vbox.extend (arch_desc_details_frame)
 			arch_desc_details_frame.extend (arch_desc_details_hbox)
-			arch_desc_details_hbox.extend (l_ev_vertical_box_5)
-			l_ev_vertical_box_5.extend (l_ev_horizontal_box_4)
+			arch_desc_details_hbox.extend (l_ev_vertical_box_4)
+			l_ev_vertical_box_4.extend (l_ev_horizontal_box_4)
 			l_ev_horizontal_box_4.extend (arch_desc_purpose_label)
 			l_ev_horizontal_box_4.extend (arch_desc_purpose_text)
-			l_ev_vertical_box_5.extend (l_ev_horizontal_box_5)
+			l_ev_vertical_box_4.extend (l_ev_horizontal_box_5)
 			l_ev_horizontal_box_5.extend (arch_desc_use_label)
 			l_ev_horizontal_box_5.extend (arch_desc_use_text)
-			l_ev_vertical_box_5.extend (l_ev_horizontal_box_6)
+			l_ev_vertical_box_4.extend (l_ev_horizontal_box_6)
 			l_ev_horizontal_box_6.extend (arch_desc_misuse_label)
 			l_ev_horizontal_box_6.extend (arch_desc_misuse_text)
-			arch_desc_details_hbox.extend (l_ev_vertical_box_6)
-			l_ev_vertical_box_6.extend (arch_desc_keywords_label)
-			l_ev_vertical_box_6.extend (arch_desc_keywords_list)
+			arch_desc_details_hbox.extend (l_ev_vertical_box_5)
+			l_ev_vertical_box_5.extend (arch_desc_keywords_label)
+			l_ev_vertical_box_5.extend (arch_desc_keywords_list)
 			arch_desc_area_vbox.extend (arch_desc_resource_frame)
-			arch_desc_resource_frame.extend (l_ev_vertical_box_7)
-			l_ev_vertical_box_7.extend (l_ev_horizontal_box_7)
+			arch_desc_resource_frame.extend (l_ev_vertical_box_6)
+			l_ev_vertical_box_6.extend (l_ev_horizontal_box_7)
 			l_ev_horizontal_box_7.extend (arch_desc_resource_package_label)
 			l_ev_horizontal_box_7.extend (arch_desc_resource_package_text)
-			l_ev_vertical_box_7.extend (l_ev_horizontal_box_8)
+			l_ev_vertical_box_6.extend (l_ev_horizontal_box_8)
 			l_ev_horizontal_box_8.extend (arch_desc_resource_orig_res_label)
 			l_ev_horizontal_box_8.extend (arch_desc_resource_orig_res_mlist)
 			arch_desc_area_vbox.extend (arch_desc_copyright_hbox)
@@ -336,13 +331,13 @@ feature {NONE}-- Initialization
 			tree_controls.extend (tree_expand_one_bn)
 			tree_controls.extend (tree_shrink_one_bn)
 			tree_controls.extend (l_ev_frame_1)
-			l_ev_frame_1.extend (l_ev_vertical_box_8)
-			l_ev_vertical_box_8.extend (tree_domain_radio_button)
-			l_ev_vertical_box_8.extend (tree_technical_radio_button)
+			l_ev_frame_1.extend (l_ev_vertical_box_7)
+			l_ev_vertical_box_7.extend (tree_domain_radio_button)
+			l_ev_vertical_box_7.extend (tree_technical_radio_button)
 			tree_controls.extend (l_ev_frame_2)
-			l_ev_frame_2.extend (l_ev_vertical_box_9)
-			l_ev_vertical_box_9.extend (tree_inheritance_radio_button)
-			l_ev_vertical_box_9.extend (tree_flat_view_radio_button)
+			l_ev_frame_2.extend (l_ev_vertical_box_8)
+			l_ev_vertical_box_8.extend (tree_inheritance_radio_button)
+			l_ev_vertical_box_8.extend (tree_flat_view_radio_button)
 			source_notebook.extend (parsed_archetype_path_view)
 			parsed_archetype_path_view.extend (parsed_archetype_found_paths)
 			parsed_archetype_path_view.extend (path_controls)
@@ -357,35 +352,38 @@ feature {NONE}-- Initialization
 			ontology_notebook.extend (ontology_constraint_defs)
 			arch_notebook.extend (archetype_source_rich_text)
 			arch_notebook.extend (arch_stats_vbox)
-			arch_stats_vbox.extend (l_ev_vertical_box_10)
-			l_ev_vertical_box_10.extend (l_ev_horizontal_box_9)
+			arch_stats_vbox.extend (l_ev_vertical_box_9)
+			l_ev_vertical_box_9.extend (l_ev_horizontal_box_9)
 			l_ev_horizontal_box_9.extend (l_ev_label_4)
 			l_ev_horizontal_box_9.extend (arch_total_count_tf)
-			l_ev_vertical_box_10.extend (l_ev_horizontal_box_10)
+			l_ev_vertical_box_9.extend (l_ev_horizontal_box_10)
 			l_ev_horizontal_box_10.extend (l_ev_label_5)
 			l_ev_horizontal_box_10.extend (arch_spec_count_tf)
-			l_ev_vertical_box_10.extend (l_ev_horizontal_box_11)
+			l_ev_vertical_box_9.extend (l_ev_horizontal_box_11)
 			l_ev_horizontal_box_11.extend (l_ev_label_6)
 			l_ev_horizontal_box_11.extend (arch_slotted_count_tf)
-			l_ev_vertical_box_10.extend (l_ev_horizontal_box_12)
+			l_ev_vertical_box_9.extend (l_ev_horizontal_box_12)
 			l_ev_horizontal_box_12.extend (l_ev_label_7)
 			l_ev_horizontal_box_12.extend (arch_used_by_count_tf)
-			l_ev_vertical_box_10.extend (l_ev_horizontal_box_13)
+			l_ev_vertical_box_9.extend (l_ev_horizontal_box_13)
 			l_ev_horizontal_box_13.extend (l_ev_label_8)
 			l_ev_horizontal_box_13.extend (arch_bad_count_tf)
+			total_view_area.extend (l_ev_notebook_1)
+			l_ev_notebook_1.extend (parser_status_area)
+			l_ev_notebook_1.extend (compiler_output_grid)
 			main_nb.extend (test_view_area)
 			test_view_area.extend (l_ev_horizontal_box_14)
 			l_ev_horizontal_box_14.extend (archetype_test_tree_grid)
-			l_ev_horizontal_box_14.extend (l_ev_vertical_box_11)
-			l_ev_vertical_box_11.extend (overwrite_adl_rb)
-			l_ev_vertical_box_11.extend (remove_unused_codes_rb)
-			l_ev_vertical_box_11.extend (arch_test_tree_toggle_expand_bn)
-			l_ev_vertical_box_11.extend (arch_test_refresh_bn)
-			l_ev_vertical_box_11.extend (l_ev_horizontal_box_15)
+			l_ev_horizontal_box_14.extend (l_ev_vertical_box_10)
+			l_ev_vertical_box_10.extend (overwrite_adl_rb)
+			l_ev_vertical_box_10.extend (remove_unused_codes_rb)
+			l_ev_vertical_box_10.extend (arch_test_tree_toggle_expand_bn)
+			l_ev_vertical_box_10.extend (arch_test_refresh_bn)
+			l_ev_vertical_box_10.extend (l_ev_horizontal_box_15)
 			l_ev_horizontal_box_15.extend (l_ev_label_9)
 			l_ev_horizontal_box_15.extend (arch_test_processed_count)
-			l_ev_vertical_box_11.extend (l_ev_horizontal_separator_1)
-			l_ev_vertical_box_11.extend (archetype_test_go_bn)
+			l_ev_vertical_box_10.extend (l_ev_horizontal_separator_1)
+			l_ev_vertical_box_10.extend (archetype_test_go_bn)
 			test_view_area.extend (test_status_area)
 			
 			create string_constant_set_procedures.make (10)
@@ -489,27 +487,24 @@ feature {NONE}-- Initialization
 			integer_constant_retrieval_functions.extend (agent app_min_width)
 			integer_constant_set_procedures.extend (agent explorer_view_area.set_minimum_height (?))
 			integer_constant_retrieval_functions.extend (agent main_hbox_min_height)
-			explorer_view_area.enable_item_expand (archetype_file_tree)
-			explorer_view_area.disable_item_expand (arch_notebook)
+			explorer_view_area.enable_item_expand (total_view_area)
+			explorer_view_area.disable_item_expand (archetype_file_tree)
 			color_constant_set_procedures.extend (agent archetype_file_tree.set_background_color (?))
 			color_constant_retrieval_functions.extend (agent editable_colour)
-			arch_notebook.set_minimum_width (500)
-			arch_notebook.set_minimum_height (350)
-			arch_notebook.set_item_text (status_split_area, "Status")
+			integer_constant_set_procedures.extend (agent total_view_area.set_minimum_width (?))
+			integer_constant_retrieval_functions.extend (agent app_min_width)
+			integer_constant_set_procedures.extend (agent total_view_area.set_minimum_height (?))
+			integer_constant_retrieval_functions.extend (agent app_min_height)
+			total_view_area.enable_item_expand (arch_notebook)
+			total_view_area.disable_item_expand (l_ev_notebook_1)
+			integer_constant_set_procedures.extend (agent arch_notebook.set_minimum_width (?))
+			integer_constant_retrieval_functions.extend (agent app_min_width)
+			integer_constant_set_procedures.extend (agent arch_notebook.set_minimum_height (?))
+			integer_constant_retrieval_functions.extend (agent arch_notebook_min_height)
 			arch_notebook.set_item_text (arch_desc_area_vbox, "Description")
 			arch_notebook.set_item_text (info_view_area, "Definition")
 			arch_notebook.set_item_text (archetype_source_rich_text, "Source")
 			arch_notebook.set_item_text (arch_stats_vbox, "Statistics")
-			status_split_area.set_minimum_width (500)
-			status_split_area.set_minimum_height (350)
-			status_split_area.enable_item_expand (parser_status_area)
-			status_split_area.disable_item_expand (errors_and_warnings_frame)
-			parser_status_area.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
-			parser_status_area.set_minimum_width (1)
-			parser_status_area.set_minimum_height (65)
-			parser_status_area.disable_edit
-			errors_and_warnings_frame.set_text ("Errors and Warnings")
-			l_ev_vertical_box_1.set_border_width (4)
 			arch_desc_area_vbox.disable_item_expand (arch_desc_details_frame)
 			arch_desc_area_vbox.disable_item_expand (arch_desc_resource_frame)
 			arch_desc_area_vbox.disable_item_expand (arch_desc_copyright_hbox)
@@ -528,12 +523,15 @@ feature {NONE}-- Initialization
 			integer_constant_retrieval_functions.extend (agent border_width)
 			arch_desc_auth_hbox.disable_item_expand (arch_desc_auth_orig_auth_label)
 			arch_desc_auth_orig_auth_label.set_text ("Original Author")
-			arch_desc_auth_orig_auth_label.set_minimum_width (70)
+			integer_constant_set_procedures.extend (agent arch_desc_auth_orig_auth_label.set_minimum_width (?))
+			integer_constant_retrieval_functions.extend (agent desc_label_width)
 			color_constant_set_procedures.extend (agent arch_desc_auth_orig_auth_mlist.set_background_color (?))
 			color_constant_retrieval_functions.extend (agent editable_colour)
-			arch_desc_auth_orig_auth_mlist.set_minimum_width (200)
-			arch_desc_auth_orig_auth_mlist.set_minimum_height (50)
-			l_ev_vertical_box_2.disable_item_expand (arch_desc_status_hbox)
+			integer_constant_set_procedures.extend (agent arch_desc_auth_orig_auth_mlist.set_minimum_width (?))
+			integer_constant_retrieval_functions.extend (agent min_entry_control_width)
+			integer_constant_set_procedures.extend (agent arch_desc_auth_orig_auth_mlist.set_minimum_height (?))
+			integer_constant_retrieval_functions.extend (agent min_list_height)
+			l_ev_vertical_box_1.disable_item_expand (arch_desc_status_hbox)
 			integer_constant_set_procedures.extend (agent arch_desc_status_hbox.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
 			integer_constant_set_procedures.extend (agent arch_desc_status_hbox.set_border_width (?))
@@ -595,30 +593,30 @@ feature {NONE}-- Initialization
 			arch_translations_languages_list.set_minimum_width (100)
 			integer_constant_set_procedures.extend (agent arch_translations_languages_list.set_minimum_height (?))
 			integer_constant_retrieval_functions.extend (agent min_list_height)
+			integer_constant_set_procedures.extend (agent l_ev_vertical_box_2.set_padding (?))
+			integer_constant_retrieval_functions.extend (agent padding_width)
+			integer_constant_set_procedures.extend (agent l_ev_vertical_box_2.set_border_width (?))
+			integer_constant_retrieval_functions.extend (agent border_width)
+			l_ev_vertical_box_2.disable_item_expand (l_ev_label_1)
+			l_ev_vertical_box_2.disable_item_expand (l_ev_label_2)
+			l_ev_label_1.set_text ("Author")
+			l_ev_label_2.set_text ("Accreditation")
+			arch_translations_accreditation_text.disable_edit
 			integer_constant_set_procedures.extend (agent l_ev_vertical_box_3.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
 			integer_constant_set_procedures.extend (agent l_ev_vertical_box_3.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
-			l_ev_vertical_box_3.disable_item_expand (l_ev_label_1)
-			l_ev_vertical_box_3.disable_item_expand (l_ev_label_2)
-			l_ev_label_1.set_text ("Author")
-			l_ev_label_2.set_text ("Accreditation")
-			arch_translations_accreditation_text.disable_edit
-			integer_constant_set_procedures.extend (agent l_ev_vertical_box_4.set_padding (?))
-			integer_constant_retrieval_functions.extend (agent padding_width)
-			integer_constant_set_procedures.extend (agent l_ev_vertical_box_4.set_border_width (?))
-			integer_constant_retrieval_functions.extend (agent border_width)
-			l_ev_vertical_box_4.disable_item_expand (l_ev_label_3)
+			l_ev_vertical_box_3.disable_item_expand (l_ev_label_3)
 			l_ev_label_3.set_text ("Other Details")
 			arch_translations_other_details_mlist.set_minimum_height (40)
 			font_constant_set_procedures.extend (agent arch_desc_details_frame.set_font (?))
 			font_constant_retrieval_functions.extend (agent label_font)
 			arch_desc_details_frame.set_text ("Archetype Details")
 			arch_desc_details_frame.set_style (1)
-			arch_desc_details_hbox.disable_item_expand (l_ev_vertical_box_6)
-			integer_constant_set_procedures.extend (agent l_ev_vertical_box_5.set_padding (?))
+			arch_desc_details_hbox.disable_item_expand (l_ev_vertical_box_5)
+			integer_constant_set_procedures.extend (agent l_ev_vertical_box_4.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
-			integer_constant_set_procedures.extend (agent l_ev_vertical_box_5.set_border_width (?))
+			integer_constant_set_procedures.extend (agent l_ev_vertical_box_4.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
 			l_ev_horizontal_box_4.disable_item_expand (arch_desc_purpose_label)
 			arch_desc_purpose_label.set_text ("Purpose")
@@ -653,11 +651,11 @@ feature {NONE}-- Initialization
 			integer_constant_set_procedures.extend (agent arch_desc_misuse_text.set_minimum_height (?))
 			integer_constant_retrieval_functions.extend (agent min_text_height)
 			arch_desc_misuse_text.disable_edit
-			integer_constant_set_procedures.extend (agent l_ev_vertical_box_6.set_padding (?))
+			integer_constant_set_procedures.extend (agent l_ev_vertical_box_5.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
-			integer_constant_set_procedures.extend (agent l_ev_vertical_box_6.set_border_width (?))
+			integer_constant_set_procedures.extend (agent l_ev_vertical_box_5.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
-			l_ev_vertical_box_6.disable_item_expand (arch_desc_keywords_label)
+			l_ev_vertical_box_5.disable_item_expand (arch_desc_keywords_label)
 			arch_desc_keywords_label.set_text ("Keywords")
 			arch_desc_keywords_label.set_minimum_width (75)
 			color_constant_set_procedures.extend (agent arch_desc_keywords_list.set_background_color (?))
@@ -669,8 +667,8 @@ feature {NONE}-- Initialization
 			font_constant_retrieval_functions.extend (agent label_font)
 			arch_desc_resource_frame.set_text ("Resources")
 			arch_desc_resource_frame.set_style (1)
-			l_ev_vertical_box_7.disable_item_expand (l_ev_horizontal_box_7)
-			l_ev_vertical_box_7.disable_item_expand (l_ev_horizontal_box_8)
+			l_ev_vertical_box_6.disable_item_expand (l_ev_horizontal_box_7)
+			l_ev_vertical_box_6.disable_item_expand (l_ev_horizontal_box_8)
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_7.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_7.set_border_width (?))
@@ -684,18 +682,24 @@ feature {NONE}-- Initialization
 			integer_constant_set_procedures.extend (agent arch_desc_resource_package_text.set_minimum_width (?))
 			integer_constant_retrieval_functions.extend (agent min_entry_control_width)
 			arch_desc_resource_package_text.disable_edit
-			l_ev_horizontal_box_8.set_padding (3)
-			l_ev_horizontal_box_8.set_border_width (4)
+			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_8.set_padding (?))
+			integer_constant_retrieval_functions.extend (agent padding_width)
+			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_8.set_border_width (?))
+			integer_constant_retrieval_functions.extend (agent border_width)
 			l_ev_horizontal_box_8.disable_item_expand (arch_desc_resource_orig_res_label)
 			arch_desc_resource_orig_res_label.set_text ("Original%NResources")
 			integer_constant_set_procedures.extend (agent arch_desc_resource_orig_res_label.set_minimum_width (?))
 			integer_constant_retrieval_functions.extend (agent desc_label_width)
 			color_constant_set_procedures.extend (agent arch_desc_resource_orig_res_mlist.set_background_color (?))
 			color_constant_retrieval_functions.extend (agent editable_colour)
-			arch_desc_resource_orig_res_mlist.set_minimum_width (200)
-			arch_desc_resource_orig_res_mlist.set_minimum_height (50)
-			arch_desc_copyright_hbox.set_padding (3)
-			arch_desc_copyright_hbox.set_border_width (4)
+			integer_constant_set_procedures.extend (agent arch_desc_resource_orig_res_mlist.set_minimum_width (?))
+			integer_constant_retrieval_functions.extend (agent min_entry_control_width)
+			integer_constant_set_procedures.extend (agent arch_desc_resource_orig_res_mlist.set_minimum_height (?))
+			integer_constant_retrieval_functions.extend (agent min_list_height)
+			integer_constant_set_procedures.extend (agent arch_desc_copyright_hbox.set_padding (?))
+			integer_constant_retrieval_functions.extend (agent padding_width)
+			integer_constant_set_procedures.extend (agent arch_desc_copyright_hbox.set_border_width (?))
+			integer_constant_retrieval_functions.extend (agent border_width)
 			arch_desc_copyright_hbox.disable_item_expand (arch_desc_copyright_label)
 			arch_desc_copyright_label.set_text ("Copyright")
 			integer_constant_set_procedures.extend (agent arch_desc_copyright_label.set_minimum_width (?))
@@ -709,8 +713,10 @@ feature {NONE}-- Initialization
 			info_view_area.set_minimum_height (1)
 			info_view_area.enable_item_expand (ontology_notebook)
 			info_view_area.disable_item_expand (source_notebook)
-			source_notebook.set_minimum_width (600)
-			source_notebook.set_minimum_height (200)
+			integer_constant_set_procedures.extend (agent source_notebook.set_minimum_width (?))
+			integer_constant_retrieval_functions.extend (agent source_notebook_min_width)
+			integer_constant_set_procedures.extend (agent source_notebook.set_minimum_height (?))
+			integer_constant_retrieval_functions.extend (agent source_notebook_min_height)
 			source_notebook.set_item_text (parsed_archetype_tree_view, "Node Map")
 			source_notebook.set_item_text (parsed_archetype_path_view, "Path Analysis")
 			source_notebook.set_item_text (slot_map_tree, "Slot Map")
@@ -751,8 +757,8 @@ feature {NONE}-- Initialization
 			integer_constant_retrieval_functions.extend (agent tree_control_panel_width)
 			l_ev_frame_1.set_minimum_width (100)
 			l_ev_frame_1.set_minimum_height (64)
-			l_ev_vertical_box_8.set_minimum_height (60)
-			integer_constant_set_procedures.extend (agent l_ev_vertical_box_8.set_border_width (?))
+			l_ev_vertical_box_7.set_minimum_height (60)
+			integer_constant_set_procedures.extend (agent l_ev_vertical_box_7.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
 			tree_domain_radio_button.set_text ("Domain")
 			tree_domain_radio_button.set_tooltip ("Hide technical details")
@@ -760,8 +766,8 @@ feature {NONE}-- Initialization
 			tree_technical_radio_button.set_tooltip ("Display technical details")
 			l_ev_frame_2.set_minimum_width (100)
 			l_ev_frame_2.set_minimum_height (64)
-			l_ev_vertical_box_9.set_minimum_height (60)
-			integer_constant_set_procedures.extend (agent l_ev_vertical_box_9.set_border_width (?))
+			l_ev_vertical_box_8.set_minimum_height (60)
+			integer_constant_set_procedures.extend (agent l_ev_vertical_box_8.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
 			tree_inheritance_radio_button.set_text ("Inheritance")
 			tree_inheritance_radio_button.set_tooltip ("Show the inherited/defined status of nodes	")
@@ -791,7 +797,8 @@ feature {NONE}-- Initialization
 			slot_map_tree.set_tooltip ("Archetype IDs that match slots in the current archetype")
 			ontology_notebook.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
 			ontology_notebook.set_minimum_width (1)
-			ontology_notebook.set_minimum_height (100)
+			integer_constant_set_procedures.extend (agent ontology_notebook.set_minimum_height (?))
+			integer_constant_retrieval_functions.extend (agent min_terms_height)
 			ontology_notebook.set_item_text (ontology_term_defs, "Term Defs")
 			ontology_notebook.set_item_text (ontology_constraint_defs, "Constraint Defs")
 			color_constant_set_procedures.extend (agent ontology_term_defs.set_background_color (?))
@@ -807,13 +814,15 @@ feature {NONE}-- Initialization
 			archetype_source_rich_text.disable_edit
 			arch_stats_vbox.set_padding (3)
 			arch_stats_vbox.set_border_width (4)
-			l_ev_vertical_box_10.set_padding (3)
-			l_ev_vertical_box_10.set_border_width (4)
-			l_ev_vertical_box_10.disable_item_expand (l_ev_horizontal_box_9)
-			l_ev_vertical_box_10.disable_item_expand (l_ev_horizontal_box_10)
-			l_ev_vertical_box_10.disable_item_expand (l_ev_horizontal_box_11)
-			l_ev_vertical_box_10.disable_item_expand (l_ev_horizontal_box_12)
-			l_ev_vertical_box_10.disable_item_expand (l_ev_horizontal_box_13)
+			integer_constant_set_procedures.extend (agent l_ev_vertical_box_9.set_padding (?))
+			integer_constant_retrieval_functions.extend (agent padding_width)
+			integer_constant_set_procedures.extend (agent l_ev_vertical_box_9.set_border_width (?))
+			integer_constant_retrieval_functions.extend (agent border_width)
+			l_ev_vertical_box_9.disable_item_expand (l_ev_horizontal_box_9)
+			l_ev_vertical_box_9.disable_item_expand (l_ev_horizontal_box_10)
+			l_ev_vertical_box_9.disable_item_expand (l_ev_horizontal_box_11)
+			l_ev_vertical_box_9.disable_item_expand (l_ev_horizontal_box_12)
+			l_ev_vertical_box_9.disable_item_expand (l_ev_horizontal_box_13)
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_9.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_9.set_border_width (?))
@@ -846,25 +855,37 @@ feature {NONE}-- Initialization
 			l_ev_horizontal_box_12.disable_item_expand (arch_used_by_count_tf)
 			l_ev_label_7.set_text ("Archetypes Used In Slots")
 			arch_used_by_count_tf.disable_edit
-			l_ev_horizontal_box_13.set_padding (3)
-			l_ev_horizontal_box_13.set_border_width (4)
+			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_13.set_padding (?))
+			integer_constant_retrieval_functions.extend (agent padding_width)
+			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_13.set_border_width (?))
+			integer_constant_retrieval_functions.extend (agent border_width)
 			l_ev_horizontal_box_13.disable_item_expand (l_ev_label_8)
 			l_ev_horizontal_box_13.disable_item_expand (arch_bad_count_tf)
 			l_ev_label_8.set_text ("Invalid Archetype Files")
 			arch_bad_count_tf.disable_edit
-			test_view_area.set_minimum_width (500)
+			l_ev_notebook_1.set_item_text (parser_status_area, "Status")
+			l_ev_notebook_1.set_item_text (compiler_output_grid, "Errors")
+			parser_status_area.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
+			parser_status_area.set_minimum_width (1)
+			integer_constant_set_procedures.extend (agent parser_status_area.set_minimum_height (?))
+			integer_constant_retrieval_functions.extend (agent status_area_min_height)
+			parser_status_area.disable_edit
+			integer_constant_set_procedures.extend (agent test_view_area.set_minimum_width (?))
+			integer_constant_retrieval_functions.extend (agent app_min_width)
 			test_view_area.enable_item_expand (l_ev_horizontal_box_14)
 			test_view_area.disable_item_expand (test_status_area)
-			l_ev_horizontal_box_14.disable_item_expand (l_ev_vertical_box_11)
-			l_ev_vertical_box_11.set_padding (3)
-			l_ev_vertical_box_11.set_border_width (4)
-			l_ev_vertical_box_11.disable_item_expand (overwrite_adl_rb)
-			l_ev_vertical_box_11.disable_item_expand (remove_unused_codes_rb)
-			l_ev_vertical_box_11.disable_item_expand (arch_test_tree_toggle_expand_bn)
-			l_ev_vertical_box_11.disable_item_expand (arch_test_refresh_bn)
-			l_ev_vertical_box_11.disable_item_expand (l_ev_horizontal_box_15)
-			l_ev_vertical_box_11.disable_item_expand (l_ev_horizontal_separator_1)
-			l_ev_vertical_box_11.disable_item_expand (archetype_test_go_bn)
+			l_ev_horizontal_box_14.disable_item_expand (l_ev_vertical_box_10)
+			integer_constant_set_procedures.extend (agent l_ev_vertical_box_10.set_padding (?))
+			integer_constant_retrieval_functions.extend (agent padding_width)
+			integer_constant_set_procedures.extend (agent l_ev_vertical_box_10.set_border_width (?))
+			integer_constant_retrieval_functions.extend (agent border_width)
+			l_ev_vertical_box_10.disable_item_expand (overwrite_adl_rb)
+			l_ev_vertical_box_10.disable_item_expand (remove_unused_codes_rb)
+			l_ev_vertical_box_10.disable_item_expand (arch_test_tree_toggle_expand_bn)
+			l_ev_vertical_box_10.disable_item_expand (arch_test_refresh_bn)
+			l_ev_vertical_box_10.disable_item_expand (l_ev_horizontal_box_15)
+			l_ev_vertical_box_10.disable_item_expand (l_ev_horizontal_separator_1)
+			l_ev_vertical_box_10.disable_item_expand (archetype_test_go_bn)
 			overwrite_adl_rb.set_text ("Overwrite ADL")
 			overwrite_adl_rb.set_tooltip ("Overwrite .adl files rather than save to .adlx")
 			remove_unused_codes_rb.set_text ("Remove unused codes")
@@ -874,7 +895,8 @@ feature {NONE}-- Initialization
 			arch_test_refresh_bn.set_text ("Refresh")
 			arch_test_refresh_bn.set_tooltip ("Resync to file system and reset statuses")
 			l_ev_horizontal_box_15.set_minimum_width (110)
-			l_ev_horizontal_box_15.set_padding (3)
+			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_15.set_padding (?))
+			integer_constant_retrieval_functions.extend (agent padding_width)
 			l_ev_horizontal_box_15.disable_item_expand (l_ev_label_9)
 			l_ev_label_9.set_text ("Processed:")
 			l_ev_label_9.set_minimum_width (80)
@@ -883,7 +905,8 @@ feature {NONE}-- Initialization
 			l_ev_horizontal_separator_1.set_minimum_height (15)
 			archetype_test_go_bn.set_text ("Go")
 			archetype_test_go_bn.set_tooltip ("Start running tests")
-			test_status_area.set_minimum_height (65)
+			integer_constant_set_procedures.extend (agent test_status_area.set_minimum_height (?))
+			integer_constant_retrieval_functions.extend (agent status_area_min_height)
 			test_status_area.disable_edit
 			set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
 			set_minimum_width (500)
@@ -963,31 +986,32 @@ feature -- Access
 	menu: EV_MENU_BAR
 	tree_domain_radio_button, tree_technical_radio_button,
 	tree_inheritance_radio_button, tree_flat_view_radio_button: EV_RADIO_BUTTON
-	parser_status_area, arch_desc_purpose_text,
-	arch_desc_use_text, arch_desc_misuse_text, arch_desc_copyright_text, test_status_area: EV_TEXT
-	archetype_source_rich_text: EV_RICH_TEXT
+	arch_desc_purpose_text,
+	arch_desc_use_text, arch_desc_misuse_text, arch_desc_copyright_text, parser_status_area,
+	test_status_area: EV_TEXT
+	total_view_area, info_view_area, test_view_area: EV_VERTICAL_SPLIT_AREA
 	archetype_file_tree,
 	parsed_archetype_tree, slot_map_tree, used_by_map_tree: EV_TREE
-	status_split_area, info_view_area,
-	test_view_area: EV_VERTICAL_SPLIT_AREA
-	arch_desc_auth_orig_auth_mlist, arch_translations_author_mlist, arch_translations_other_details_mlist,
-	arch_desc_resource_orig_res_mlist, parsed_archetype_found_paths, ontology_term_defs,
-	ontology_constraint_defs: EV_MULTI_COLUMN_LIST
-	compiler_output_grid, archetype_test_tree_grid: EV_GRID
-	viewer_vbox,
-	l_ev_vertical_box_1, arch_desc_area_vbox, arch_desc_auth_hbox, l_ev_vertical_box_2,
-	arch_desc_contrib_hbox, terminology_vbox, lang_vbox, l_ev_vertical_box_3, l_ev_vertical_box_4,
-	l_ev_vertical_box_5, l_ev_vertical_box_6, l_ev_vertical_box_7, tree_controls, l_ev_vertical_box_8,
-	l_ev_vertical_box_9, path_controls, arch_stats_vbox, l_ev_vertical_box_10, l_ev_vertical_box_11: EV_VERTICAL_BOX
+	archetype_source_rich_text: EV_RICH_TEXT
+	compiler_output_grid,
+	archetype_test_tree_grid: EV_GRID
+	viewer_vbox, arch_desc_area_vbox, arch_desc_auth_hbox,
+	l_ev_vertical_box_1, arch_desc_contrib_hbox, terminology_vbox, lang_vbox, l_ev_vertical_box_2,
+	l_ev_vertical_box_3, l_ev_vertical_box_4, l_ev_vertical_box_5, l_ev_vertical_box_6,
+	tree_controls, l_ev_vertical_box_7, l_ev_vertical_box_8, path_controls, arch_stats_vbox,
+	l_ev_vertical_box_9, l_ev_vertical_box_10: EV_VERTICAL_BOX
 	explorer_view_area: EV_HORIZONTAL_SPLIT_AREA
-	file_menu,
-	edit_menu, repository_menu, tools_menu, help_menu: EV_MENU
-	action_bar, author_lang_term_hbox,
-	l_ev_horizontal_box_1, arch_desc_status_hbox, l_ev_horizontal_box_2, l_ev_horizontal_box_3,
-	arch_desc_details_hbox, l_ev_horizontal_box_4, l_ev_horizontal_box_5, l_ev_horizontal_box_6,
-	l_ev_horizontal_box_7, l_ev_horizontal_box_8, arch_desc_copyright_hbox, parsed_archetype_tree_view,
-	parsed_archetype_path_view, l_ev_horizontal_box_9, l_ev_horizontal_box_10, l_ev_horizontal_box_11,
-	l_ev_horizontal_box_12, l_ev_horizontal_box_13, l_ev_horizontal_box_14, l_ev_horizontal_box_15: EV_HORIZONTAL_BOX
+	file_menu, edit_menu,
+	repository_menu, tools_menu, help_menu: EV_MENU
+	action_bar, author_lang_term_hbox, l_ev_horizontal_box_1,
+	arch_desc_status_hbox, l_ev_horizontal_box_2, l_ev_horizontal_box_3, arch_desc_details_hbox,
+	l_ev_horizontal_box_4, l_ev_horizontal_box_5, l_ev_horizontal_box_6, l_ev_horizontal_box_7,
+	l_ev_horizontal_box_8, arch_desc_copyright_hbox, parsed_archetype_tree_view, parsed_archetype_path_view,
+	l_ev_horizontal_box_9, l_ev_horizontal_box_10, l_ev_horizontal_box_11, l_ev_horizontal_box_12,
+	l_ev_horizontal_box_13, l_ev_horizontal_box_14, l_ev_horizontal_box_15: EV_HORIZONTAL_BOX
+	arch_desc_auth_orig_auth_mlist,
+	arch_translations_author_mlist, arch_translations_other_details_mlist, arch_desc_resource_orig_res_mlist,
+	parsed_archetype_found_paths, ontology_term_defs, ontology_constraint_defs: EV_MULTI_COLUMN_LIST
 	overwrite_adl_rb,
 	remove_unused_codes_rb: EV_CHECK_BUTTON
 	archetype_id, adl_version_text, arch_desc_status_text, arch_desc_original_language_text,
@@ -1013,11 +1037,11 @@ feature -- Access
 	l_ev_label_6, l_ev_label_7, l_ev_label_8, l_ev_label_9: EV_LABEL
 	path_view_check_list: EV_CHECKABLE_LIST
 	l_ev_horizontal_separator_1: EV_HORIZONTAL_SEPARATOR
-	errors_and_warnings_frame,
-	arch_desc_auth_frame, term_frame, arch_translations_frame, arch_desc_details_frame,
-	arch_desc_resource_frame, l_ev_frame_1, l_ev_frame_2, l_ev_frame_3, l_ev_frame_4: EV_FRAME
-	main_nb,
-	arch_notebook, source_notebook, ontology_notebook: EV_NOTEBOOK
+	arch_desc_auth_frame,
+	term_frame, arch_translations_frame, arch_desc_details_frame, arch_desc_resource_frame,
+	l_ev_frame_1, l_ev_frame_2, l_ev_frame_3, l_ev_frame_4: EV_FRAME
+	main_nb, arch_notebook, source_notebook,
+	ontology_notebook, l_ev_notebook_1: EV_NOTEBOOK
 	l_ev_menu_separator_1, l_ev_menu_separator_2,
 	l_ev_menu_separator_3, l_ev_menu_separator_4, l_ev_menu_separator_5, l_ev_menu_separator_6,
 	l_ev_menu_separator_7, l_ev_menu_separator_8, l_ev_menu_separator_9: EV_MENU_SEPARATOR
