@@ -197,15 +197,13 @@ feature -- Comparison
 			str: STRING
 		do
 			if not a_code.is_empty then
-				i := term_code_leader.count
-				Result := a_code.substring (1, i).same_string (term_code_leader)
-
-				if not Result then
+				if a_code.starts_with (term_code_leader) then
+					i := term_code_leader.count
+				elseif a_code.starts_with (constraint_code_leader) then
 					i := constraint_code_leader.count
-					Result := a_code.substring (1, i).same_string (constraint_code_leader)
 				end
 
-				if Result then
+				if i > 0 then
 					str := a_code.substring (i + 1, a_code.count)
 					str.prune_all (specialisation_separator)
 					Result := str.is_integer
@@ -218,7 +216,7 @@ feature -- Comparison
 			-- e.g. at0.0.1, level=3 -> False
 			--      at0001.0.1, level=3 -> True
 		require
-			Code_valid: a_code /= Void and then is_valid_code(a_code)
+			Code_valid: a_code /= Void and then is_valid_code (a_code)
 		local
 			idx_str: STRING
 		do
@@ -237,7 +235,8 @@ feature -- Comparison
 		local
 			csr: INTEGER
 		do
-			Result := a_code.substring(1, Default_concept_code.count).is_equal (default_concept_code)
+			Result := a_code.starts_with (default_concept_code)
+
 			if Result then
 				from
 					csr := Default_concept_code.count + 1
@@ -249,8 +248,6 @@ feature -- Comparison
 				end
 			end
 		end
-
-feature -- Factory
 
 end
 

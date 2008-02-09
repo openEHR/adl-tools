@@ -39,6 +39,11 @@ inherit
 			{NONE} all
 		end
 
+	ARCHETYPE_TERM_CODE_TOOLS
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -130,7 +135,7 @@ feature -- Commands
 		end
 
 	item_select is
-			-- do something when an item is selected
+			-- Do something when an item is selected.
 		local
 			node_data: ANY
 			obj_node: C_COMPLEX_OBJECT
@@ -140,16 +145,19 @@ feature -- Commands
 		do
 			node_data := gui_tree.selected_item.data
 			obj_node ?= node_data
+
 			if obj_node /= Void then
 				if obj_node.is_addressable then
 					gui.ontology_controls.select_term(obj_node.node_id)
 				end
 			else
 				constraint_ref_node ?= node_data
+
 				if constraint_ref_node /= Void then
 					gui.ontology_controls.select_constraint(constraint_ref_node.target)
 				else
 					an_ordinal ?= node_data
+
 					if an_ordinal /= Void then
 						if an_ordinal.symbol.terminology_id.is_local then
 							gui.ontology_controls.select_term(an_ordinal.symbol.code_string)
@@ -157,7 +165,7 @@ feature -- Commands
 					else
 						s ?= node_data
 
-						if s /= Void then -- must be a term constraint item
+						if s /= Void and then is_valid_code (s) then
 							if archetype_directory.has_selected_archetype then
 								if target_archetype.ontology.has_term_code (s) then
 									gui.ontology_controls.select_term (s)
