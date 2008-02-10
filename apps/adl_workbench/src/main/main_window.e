@@ -352,9 +352,10 @@ feature -- File events
 		do
 			if archetype_directory.has_valid_selected_archetype then
 				name := archetype_directory.selected_archetype.full_path.twin
-				name.remove_tail (archetype_file_extensions [Archetype_flat_file_extension].count)
+				name.remove_tail (archetype_flat_file_extension.count + 1)
 
 				create save_dialog
+				save_dialog.set_title ("Save Archetype")
 				save_dialog.set_file_name (name)
 				save_dialog.set_start_directory (current_work_directory)
 
@@ -364,7 +365,7 @@ feature -- File events
 					archetype_serialiser_formats.off
 				loop
 					format := archetype_serialiser_formats.item_for_iteration
-					save_dialog.filters.extend (["*" + archetype_file_extensions [format], "Files of type " + format])
+					save_dialog.filters.extend (["*" + archetype_file_extensions [format], "Save as " + format.as_upper])
 					archetype_serialiser_formats.forth
 				end
 
@@ -373,8 +374,7 @@ feature -- File events
 
 				if not name.is_empty then
 					set_current_work_directory (file_system.dirname (name))
-					format ?= (save_dialog.filters [save_dialog.selected_filter_index]) [1]
-					format.remove_head (2)
+					format := archetype_serialiser_formats [save_dialog.selected_filter_index]
 
 					if not file_system.has_extension (name, archetype_file_extensions [format]) then
 						name.append (archetype_file_extensions [format])
@@ -385,6 +385,7 @@ feature -- File events
 
 					if a_file.exists then
 						create question_dialog.make_with_text ("File " + file_system.basename (name) + " already exists. Replace it?")
+						question_dialog.set_title ("Save as " + format.as_upper)
 						question_dialog.set_buttons (<<"Yes", "No">>)
 						question_dialog.show_modal_to_window (Current)
 						ok_to_write := question_dialog.selected_button.same_string ("Yes")
@@ -394,14 +395,6 @@ feature -- File events
 						archetype_parser.set_target (archetype_directory.selected_archetype)
 						archetype_parser.save_archetype_differential_as (name, format)
 						update_status_area (archetype_parser.status)
-
-						-- FIXME: currently this refreshes the whole view and forgets what archetype the user was on;
-						-- it is only useful to do this in any case if the archetype was written over the .adl file
-						-- in the repository area; if it is saved to e.g. the temp area, this should not even be done.
-						-- It also causes the compilation status of all of the archetypes to be forgotten.
-						if format.is_equal (archetype_native_syntax) then
-							populate_archetype_directory
-						end
 					end
 				end
 			else
