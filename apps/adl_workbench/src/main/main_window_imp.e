@@ -830,7 +830,9 @@ feature {NONE}-- Initialization
 			l_ev_horizontal_box_9.disable_item_expand (l_ev_label_4)
 			l_ev_horizontal_box_9.disable_item_expand (arch_total_count_tf)
 			l_ev_label_4.set_text ("Total Archetypes")
+			l_ev_label_4.set_minimum_width (140)
 			arch_total_count_tf.disable_edit
+			arch_total_count_tf.align_text_right
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_10.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_10.set_border_width (?))
@@ -838,7 +840,9 @@ feature {NONE}-- Initialization
 			l_ev_horizontal_box_10.disable_item_expand (l_ev_label_5)
 			l_ev_horizontal_box_10.disable_item_expand (arch_spec_count_tf)
 			l_ev_label_5.set_text ("Specialised Archetypes")
+			l_ev_label_5.set_minimum_width (140)
 			arch_spec_count_tf.disable_edit
+			arch_spec_count_tf.align_text_right
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_11.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_11.set_border_width (?))
@@ -846,7 +850,9 @@ feature {NONE}-- Initialization
 			l_ev_horizontal_box_11.disable_item_expand (l_ev_label_6)
 			l_ev_horizontal_box_11.disable_item_expand (arch_slotted_count_tf)
 			l_ev_label_6.set_text ("Archetypes Containing Slots")
+			l_ev_label_6.set_minimum_width (140)
 			arch_slotted_count_tf.disable_edit
+			arch_slotted_count_tf.align_text_right
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_12.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_12.set_border_width (?))
@@ -854,7 +860,9 @@ feature {NONE}-- Initialization
 			l_ev_horizontal_box_12.disable_item_expand (l_ev_label_7)
 			l_ev_horizontal_box_12.disable_item_expand (arch_used_by_count_tf)
 			l_ev_label_7.set_text ("Archetypes Used In Slots")
+			l_ev_label_7.set_minimum_width (140)
 			arch_used_by_count_tf.disable_edit
+			arch_used_by_count_tf.align_text_right
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_13.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_13.set_border_width (?))
@@ -862,7 +870,9 @@ feature {NONE}-- Initialization
 			l_ev_horizontal_box_13.disable_item_expand (l_ev_label_8)
 			l_ev_horizontal_box_13.disable_item_expand (arch_bad_count_tf)
 			l_ev_label_8.set_text ("Invalid Archetype Files")
+			l_ev_label_8.set_minimum_width (140)
 			arch_bad_count_tf.disable_edit
+			arch_bad_count_tf.align_text_right
 			l_ev_notebook_1.set_item_text (parser_status_area, "Status")
 			l_ev_notebook_1.set_item_text (compiler_output_grid, "Errors")
 			parser_status_area.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
@@ -969,6 +979,9 @@ feature {NONE}-- Initialization
 			path_view_check_list.uncheck_actions.extend (agent path_column_unselect (?))
 			arch_total_count_tf.focus_in_actions.extend (agent on_select_all)
 			arch_spec_count_tf.focus_in_actions.extend (agent on_select_all)
+			arch_slotted_count_tf.focus_in_actions.extend (agent on_select_all)
+			arch_used_by_count_tf.focus_in_actions.extend (agent on_select_all)
+			arch_bad_count_tf.focus_in_actions.extend (agent on_select_all)
 			arch_test_tree_toggle_expand_bn.select_actions.extend (agent archetype_test_tree_expand_toggle)
 			arch_test_refresh_bn.select_actions.extend (agent archetype_test_refresh)
 			arch_test_processed_count.focus_in_actions.extend (agent on_select_all)
