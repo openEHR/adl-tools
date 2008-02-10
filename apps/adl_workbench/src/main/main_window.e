@@ -280,15 +280,19 @@ feature -- File events
 			dialog.show_modal_to_window (Current)
 
 			if not dialog.file_name.is_empty then
-				archetype_directory.add_adhoc_item (dialog.file_name)
-				ara := archetype_directory.archetype_descriptor_from_full_path (dialog.file_name)
+				if not file_system.file_exists (dialog.file_name) then
+					(create {EV_INFORMATION_DIALOG}.make_with_text ("%"" + dialog.file_name + "%" does not exist.")).show_modal_to_window (Current)
+				else
+					archetype_directory.add_adhoc_item (dialog.file_name)
+					ara := archetype_directory.archetype_descriptor_from_full_path (dialog.file_name)
 
-				if ara /= Void then
-					archetype_directory.set_selected_item (ara)
-					archetype_view_tree_control.populate
+					if ara /= Void then
+						archetype_directory.set_selected_item (ara)
+						archetype_view_tree_control.populate
+					end
+
+					set_status_area (billboard_content)
 				end
-
-				set_status_area (billboard_content)
 			end
 		end
 
