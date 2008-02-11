@@ -42,5 +42,10 @@
 	<false/>
 	<key>IFPkgFormatVersion</key>
 	<real>0.10000000149011612</real>
+	<key>IFPkgPathMappings</key>
+	<dict>
+		<key>./ADL Workbench.app</key>
+		<string>{ADLWorkbenchToken}</string>
+	</dict>
 </dict>
 </plist>
