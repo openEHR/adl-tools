@@ -128,7 +128,7 @@ if distrib:
 				print 'WARNING! ' + packagemaker + ' is missing: cannot build installer for ADL Workbench.'
 			else:
 				pkg_tree = distrib + '/' + platform
-				pkg_root = pkg_tree + '/ADL_Workbench'
+				pkg_contents = pkg_tree + '/ADL_Workbench'
 				pkg_resources = pkg_tree + '/English.lproj'
 
 				def copy_tree(src, dir):
@@ -145,10 +145,10 @@ if distrib:
 
 				def copy_mac_osx_installer_sources(target, source, env):
 					copy_tree(install, distrib)
-					copy_tree(vim, pkg_root)
+					copy_tree(vim, pkg_contents)
 
 					for src in [str(adl_workbench[2]), news, icons]:
-						copy_tree(src, pkg_root + '/ADL Workbench.app/Contents/Resources/')
+						copy_tree(src, pkg_contents + '/ADL Workbench.app/Contents/Resources/')
 
 					shutil.copy2(news, pkg_resources + '/Welcome.txt')
 
@@ -178,7 +178,7 @@ if distrib:
 				command = [
 					packagemaker, '-build',
 					'-p', pkg_path,
-					'-f', pkg_root,
+					'-f', pkg_contents,
 					'-r', pkg_resources,
 					'-i', pkg_tree + '/Info.plist',
 					'-d', pkg_tree + '/Description.plist'
@@ -188,8 +188,9 @@ if distrib:
 					Delete(pkg_tree),
 					env.Action(copy_mac_osx_installer_sources, 'Copying installer files to ' + pkg_tree),
 					command,
-					Delete(pkg_root),
-					['hdiutil', 'create', '-srcfolder', pkg_path, '$TARGET']
+					Move(pkg_path + '/Contents/Resources/TokenDefinitions.plist', pkg_tree + '/TokenDefinitions.plist'),
+					['hdiutil', 'create', '-srcfolder', pkg_path, '$TARGET'],
+					Delete(pkg_tree)
 					])
 
 	# Set the Subversion revision number as the final part of the file version string.
