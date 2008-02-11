@@ -20,7 +20,7 @@ inherit
 		end
 
 create
-	make, make_minimal, make_specialised_child, make_from_flat
+	make, make_minimal, make_specialised_child, make_from_flat, make_all
 
 feature -- Initialisation
 
@@ -68,13 +68,10 @@ feature -- Initialisation
 			a_flat_copy: FLAT_ARCHETYPE
 		do
 			a_flat_copy := a_flat.deep_twin
-			make(a_flat_copy.archetype_id, a_flat_copy.concept,
-					a_flat_copy.original_language.code_string, a_flat_copy.description,
-					a_flat_copy.definition, a_flat_copy.ontology.to_differential)
-			parent_archetype_id := a_flat_copy.parent_archetype_id
-			adl_version := a_flat_copy.adl_version
-			is_controlled := a_flat_copy.is_controlled
-			invariants := a_flat_copy.invariants
+			make_all(a_flat_copy.adl_version, a_flat_copy.archetype_id, a_flat_copy.parent_archetype_id, a_flat_copy.is_controlled,
+					a_flat_copy.concept, a_flat_copy.original_language.code_string, a_flat_copy.translations,
+					a_flat_copy.description, a_flat_copy.definition, a_flat_copy.invariants,
+					a_flat_copy.ontology.to_differential)
 
 			if is_specialised then
 				build_rolled_up_status
