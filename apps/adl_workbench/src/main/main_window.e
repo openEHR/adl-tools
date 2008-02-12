@@ -915,7 +915,9 @@ feature {NONE} -- Implementation
 	select_language
 			-- Repopulate the view of the archetype when the user selects a different language.
 		do
-			if not language_combo.text.is_empty then
+			if language_combo.text.is_empty then
+				set_current_language (default_language)
+			else
 				set_current_language (language_combo.text)
 
 				if archetype_directory.has_valid_selected_archetype then
@@ -1020,13 +1022,29 @@ feature {NONE} -- Implementation
 
 	populate_languages
 			-- Populate the languages combo box and the terminologies list.
+		local
+			archetype: ARCHETYPE
 		do
 			language_combo.select_actions.block
 
 			if archetype_directory.has_selected_archetype then
-				language_combo.set_strings (archetype_directory.selected_archetype.archetype_differential.languages_available)
-				terminologies_list.set_strings (archetype_directory.selected_archetype.archetype_differential.ontology.terminologies_available)
+				archetype := archetype_directory.selected_archetype.archetype_differential
+
+				if not archetype.has_language (current_language) then
+					set_current_language (default_language)
+				end
+
+				language_combo.set_strings (archetype.languages_available)
+				terminologies_list.set_strings (archetype.ontology.terminologies_available)
+
+				language_combo.do_all (agent (li: EV_LIST_ITEM)
+					do
+						if li.text.same_string (current_language) then
+							li.enable_select
+						end
+					end)
 			else
+				set_current_language (default_language)
 				language_combo.wipe_out
 				terminologies_list.wipe_out
 			end

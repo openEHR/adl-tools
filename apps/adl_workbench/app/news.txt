@@ -37,6 +37,7 @@ User interface improvements:
 
 These problems in the previous release are now fixed:
 * Unicode occasionally displayed wrongly in the Node Map.
+* After displaying two archetypes in a non-English language, the language combo box showed "en" rather than the other language.
 * On Mac OS X:
   * The splitter jumped to the left edge of the window, hiding the repository tree.
   * The mouse pointer became a white square after clicking the repository explorer.
