@@ -35,7 +35,7 @@ feature -- Access
 	build: INTEGER = 1
 			-- The build number: manually incremented for each public release.
 
-	revision: INTEGER = 507
+	revision: INTEGER = 0
 			-- The Subversion revision number: automatically set by the SConstruct.
 			-- Make sure this is zero whenever the class is committed to Subversion.
 			-- Builds done within EiffelStudio will therefore always show revision 0.
