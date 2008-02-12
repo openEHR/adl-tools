@@ -40,7 +40,7 @@ inherit
 create
 	make
 
-feature -- Initialisation
+feature {NONE} -- Initialisation
 
 	make (a_main_window: MAIN_WINDOW) is
 			-- Create tree control repersenting archetype files found in `archetype_directory'.
@@ -167,6 +167,7 @@ feature {NONE} -- Implementation
 			create node.make_with_text (utf8 (an_item.base_name))
  			node.set_data (an_item)
  			set_node_pixmap (node)
+ 			node.set_tooltip (utf8 (an_item.full_path))
 
 			if gui_tree_item_stack.is_empty then
 				gui_file_tree.extend (node)
