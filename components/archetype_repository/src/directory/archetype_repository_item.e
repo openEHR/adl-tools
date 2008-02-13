@@ -57,11 +57,13 @@ feature -- Access
 	relative_path: STRING
 			-- Path to the item on the storage medium, excluding `root_path'.
 		do
-			Result := full_path.substring (root_path.count + 2, full_path.count)
+			Result := full_path.substring (root_path.count + 1, full_path.count)
+			Result.prune_all_leading (os_directory_separator)
 		ensure
 			attached: Result /= Void
 			relative: file_system.is_relative_pathname (Result)
 			under_full_path: full_path.ends_with (Result)
+			same_basename: file_system.basename (Result).same_string (file_system.basename (full_path))
 		end
 
 	base_name: STRING
