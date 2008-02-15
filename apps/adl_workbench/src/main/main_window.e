@@ -82,18 +82,28 @@ feature {NONE} -- Initialization
 	initialise_accelerators
 			-- Initialise keyboard accelerators for various widgets.
 		do
-			add_shortcut (agent step_focused_notebook_tab (1), key_tab, True, False)
-			add_shortcut (agent step_focused_notebook_tab (-1), key_tab, True, True)
+			add_shortcut (agent step_focused_notebook_tab (1), key_tab, True, False, False)
+			add_shortcut (agent step_focused_notebook_tab (-1), key_tab, True, False, True)
 
-			add_menu_shortcut (repository_menu_build_all, key_f7, False, False)
-			add_menu_shortcut (repository_menu_rebuild_all, key_f7, False, True)
-			add_menu_shortcut (repository_menu_build_subtree, key_f7, True, False)
-			add_menu_shortcut (repository_menu_rebuild_subtree, key_f7, True, True)
-			add_menu_shortcut (repository_menu_interrupt_build, key_escape, False, True)
+			add_menu_shortcut (file_menu_open, key_o, True, False, False)
+			add_menu_shortcut_for_action (edit_menu_copy, agent call_unless_text_focused (agent on_copy), key_c, True, False, False)
+			add_menu_shortcut (edit_menu_select_all, key_a, True, False, False)
 
-			add_menu_shortcut (file_menu_open, key_o, True, False)
-			add_menu_shortcut_for_action (edit_menu_copy, agent call_unless_text_focused (agent on_copy), key_c, True, False)
-			add_menu_shortcut (edit_menu_select_all, key_a, True, False)
+			add_menu_shortcut (repository_menu_build_all, key_f7, False, False, False)
+			add_menu_shortcut (repository_menu_rebuild_all, key_f7, False, False, True)
+			add_menu_shortcut (repository_menu_build_subtree, key_f7, True, False, False)
+			add_menu_shortcut (repository_menu_rebuild_subtree, key_f7, True, False, True)
+			add_menu_shortcut (repository_menu_interrupt_build, key_escape, False, False, True)
+
+			add_menu_shortcut (history_menu_back, key_left, False, True, False)
+			add_menu_shortcut (history_menu_forward, key_right, False, True, False)
+
+			archetype_file_tree.set_default_key_processing_handler (
+				agent (key: EV_KEY): BOOLEAN
+						-- Workaround to prevent Alt+Left and Alt+Right being inappropriately handled by the tree view.
+					do
+						Result := (key.code /= key_left and key.code /= key_right) or not ev_application.alt_pressed
+					end)
 		end
 
 	initialise_overall_appearance
@@ -272,7 +282,6 @@ feature -- File events
 			-- Let the user select an ADL file, and then load and parse it.
 		local
 			dialog: EV_FILE_OPEN_DIALOG
-			ara: ARCH_REP_ARCHETYPE
 		do
 			create dialog
 			dialog.set_start_directory (current_work_directory)
@@ -284,9 +293,8 @@ feature -- File events
 					(create {EV_INFORMATION_DIALOG}.make_with_text ("%"" + dialog.file_name + "%" does not exist.")).show_modal_to_window (Current)
 				else
 					archetype_directory.add_adhoc_item (dialog.file_name)
-					ara := archetype_directory.archetype_descriptor_from_full_path (dialog.file_name)
 
-					if ara /= Void then
+					if {ara: !ARCH_REP_ARCHETYPE} archetype_directory.archetype_descriptor_from_full_path (dialog.file_name) then
 						archetype_directory.set_selected_item (ara)
 						archetype_view_tree_control.populate
 					end
@@ -584,6 +592,45 @@ feature {NONE} -- Repository events
 			archetype_compiler.interrupt
 		end
 
+feature {NONE} -- History events
+
+	on_history
+			-- On opening the History menu, append the list of recent archetypes.
+		do
+			history_menu.wipe_out
+			history_menu.extend (history_menu_back)
+			history_menu.extend (history_menu_forward)
+			history_menu.extend (history_menu_separator)
+
+			archetype_directory.recently_selected_archetypes (20).do_all (agent (ara: !ARCH_REP_ARCHETYPE)
+				local
+					mi: EV_MENU_ITEM
+				do
+					create mi.make_with_text (ara.id.as_string)
+					mi.select_actions.extend (agent select_archetype_from_gui_data (mi))
+					mi.set_data (ara)
+					history_menu.extend (mi)
+				end)
+		end
+
+	on_back
+			-- Go back to the last archetype previously selected.
+		do
+			if archetype_directory.selection_history_has_previous then
+				archetype_directory.selection_history_back
+				select_node_in_archetype_tree_view
+			end
+		end
+
+	on_forward
+			-- Go forth to the next archetype previously selected.
+		do
+			if archetype_directory.selection_history_has_next then
+				archetype_directory.selection_history_forth
+				select_node_in_archetype_tree_view
+			end
+		end
+
 feature {NONE} -- Tools events
 
 	clean_generated_files
@@ -683,11 +730,42 @@ feature -- Archetype Commands
 			archetype_view_tree_control.display_details_of_selected_item_after_delay
 		end
 
-	archetype_view_tree_select_node
-			-- Display node of `archetype_file_tree' corresponding to a selected archetype in the ARCH_DIRECTORY
+	select_archetype_from_gui_data (gui_item: EV_ANY)
+			-- Select and display the node of `archetype_file_tree' corresponding to the folder or archetype attached to `gui_item'.
 		do
-			archetype_view_tree_control.make_node_visible (archetype_directory.selected_item)
-			parse_archetype
+			if gui_item /= Void and then {a: !ARCH_REP_ITEM} gui_item.data then
+				archetype_directory.set_selected_item (a)
+				select_node_in_archetype_tree_view
+			end
+		end
+
+	select_node_in_archetype_tree_view
+			-- Select and display the node of `archetype_file_tree' corresponding to the selection in `archetype_directory'.
+		do
+			if {node: !EV_TREE_NODE} archetype_file_tree.retrieve_item_recursively_by_data (archetype_directory.selected_item, True) then
+				archetype_file_tree.ensure_item_visible (node)
+				node.enable_select
+			end
+
+			if archetype_directory.selection_history_has_previous then
+				history_menu_back.enable_sensitive
+				history_back_button.enable_sensitive
+			else
+				history_menu_back.disable_sensitive
+				history_back_button.disable_sensitive
+			end
+
+			if archetype_directory.selection_history_has_next then
+				history_menu_forward.enable_sensitive
+				history_forward_button.enable_sensitive
+			else
+				history_menu_forward.disable_sensitive
+				history_forward_button.disable_sensitive
+			end
+
+			if archetype_directory.has_selected_archetype then
+				parse_archetype
+			end
 		end
 
 	node_map_shrink_tree_one_level
@@ -936,6 +1014,7 @@ feature {NONE} -- Implementation
 					compiler_error_control.clear
 					set_status_area ("Populating repository ...")
 					archetype_directory.make
+					select_node_in_archetype_tree_view
 
 					if archetype_directory.valid_repository_path (reference_repository_path) then
 						archetype_directory.put_repository (reference_repository_path, 2)
@@ -1112,7 +1191,10 @@ feature {NONE} -- Implementation
 			update_status_area (archetype_compiler.status)
 
 			if ara /= Void then
-				archetype_view_tree_control.do_node_for_item (ara, agent archetype_view_tree_control.set_node_pixmap)
+				if {node: !EV_TREE_NODE} archetype_file_tree.retrieve_item_recursively_by_data (ara, True) then
+					archetype_view_tree_control.set_node_pixmap (node)
+				end
+
 				archetype_test_tree_control.do_row_for_item (ara, agent archetype_test_tree_control.set_row_pixmap)
 
 				if ara.parse_attempted and ara.has_compiler_status then
@@ -1171,15 +1253,9 @@ feature {NONE} -- Standard Windows behaviour that EiffelVision ought to be manag
 		require
 			widget_attached: widget /= Void
 		local
-			container: EV_CONTAINER
-			grid: EV_GRID
-			label: EV_LABEL
 			widgets: LINEAR [EV_WIDGET]
 		do
-			container ?= widget
-			grid ?= widget
-
-			if container /= Void and grid = Void then
+			if {container: !EV_CONTAINER} widget and not {grid: !EV_GRID} widget then
 				from
 					widgets := container.linear_representation
 					widgets.start
@@ -1190,9 +1266,7 @@ feature {NONE} -- Standard Windows behaviour that EiffelVision ought to be manag
 					widgets.forth
 				end
 			elseif widget.is_displayed and widget.is_sensitive then
-				label ?= widget
-
-				if label = Void then
+				if not {label: !EV_LABEL} widget and not {toolbar: !EV_TOOL_BAR} widget then
 					widget.set_focus
 				end
 			end

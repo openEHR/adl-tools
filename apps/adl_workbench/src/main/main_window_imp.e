@@ -62,6 +62,10 @@ feature {NONE}-- Initialization
 			create repository_menu_export_html
 			create l_ev_menu_separator_7
 			create repository_menu_interrupt_build
+			create history_menu
+			create history_menu_back
+			create history_menu_forward
+			create history_menu_separator
 			create tools_menu
 			create tools_menu_clean_generated_files
 			create l_ev_menu_separator_8
@@ -75,9 +79,15 @@ feature {NONE}-- Initialization
 			create main_nb
 			create viewer_vbox
 			create action_bar
+			create l_ev_tool_bar_1
 			create open_button
 			create parse_button
 			create edit_button
+			create l_ev_tool_bar_separator_1
+			create history_back_button
+			create l_ev_tool_bar_separator_2
+			create history_forward_button
+			create l_ev_tool_bar_separator_3
 			create archetype_id
 			create adl_version_label
 			create adl_version_text
@@ -238,6 +248,10 @@ feature {NONE}-- Initialization
 			repository_menu.extend (repository_menu_export_html)
 			repository_menu.extend (l_ev_menu_separator_7)
 			repository_menu.extend (repository_menu_interrupt_build)
+			menu.extend (history_menu)
+			history_menu.extend (history_menu_back)
+			history_menu.extend (history_menu_forward)
+			history_menu.extend (history_menu_separator)
 			menu.extend (tools_menu)
 			tools_menu.extend (tools_menu_clean_generated_files)
 			tools_menu.extend (l_ev_menu_separator_8)
@@ -251,9 +265,15 @@ feature {NONE}-- Initialization
 			extend (main_nb)
 			main_nb.extend (viewer_vbox)
 			viewer_vbox.extend (action_bar)
-			action_bar.extend (open_button)
-			action_bar.extend (parse_button)
-			action_bar.extend (edit_button)
+			action_bar.extend (l_ev_tool_bar_1)
+			l_ev_tool_bar_1.extend (open_button)
+			l_ev_tool_bar_1.extend (parse_button)
+			l_ev_tool_bar_1.extend (edit_button)
+			l_ev_tool_bar_1.extend (l_ev_tool_bar_separator_1)
+			l_ev_tool_bar_1.extend (history_back_button)
+			l_ev_tool_bar_1.extend (l_ev_tool_bar_separator_2)
+			l_ev_tool_bar_1.extend (history_forward_button)
+			l_ev_tool_bar_1.extend (l_ev_tool_bar_separator_3)
 			action_bar.extend (archetype_id)
 			action_bar.extend (adl_version_label)
 			action_bar.extend (adl_version_text)
@@ -404,7 +424,11 @@ feature {NONE}-- Initialization
 			internal_pixmap.set_with_named_file ("icons/archetype_1.ico")
 			file_menu_open.set_pixmap (internal_pixmap)
 			file_menu_parse.set_text ("&Parse")
+			internal_pixmap.set_with_named_file ("icons/parse.ico")
+			file_menu_parse.set_pixmap (internal_pixmap)
 			file_menu_edit.set_text ("&Edit")
+			internal_pixmap.set_with_named_file ("icons/edit.ico")
+			file_menu_edit.set_pixmap (internal_pixmap)
 			file_menu_save_as.set_text ("Save &As...")
 			file_menu_exit.set_text ("E&xit")
 			edit_menu.set_text ("&Edit")
@@ -420,6 +444,13 @@ feature {NONE}-- Initialization
 			repository_menu_export_html.set_text ("Export &HTML")
 			repository_menu_interrupt_build.disable_sensitive
 			repository_menu_interrupt_build.set_text ("&Interrupt Build")
+			history_menu.set_text ("Hi&story")
+			history_menu_back.set_text ("&Back")
+			internal_pixmap.set_with_named_file ("icons/history_back.ico")
+			history_menu_back.set_pixmap (internal_pixmap)
+			history_menu_forward.set_text ("&Forward")
+			internal_pixmap.set_with_named_file ("icons/history_forward.ico")
+			history_menu_forward.set_pixmap (internal_pixmap)
 			tools_menu.set_text ("&Tools")
 			tools_menu_clean_generated_files.set_text ("&Clean Generated Files")
 			tools_menu_options.set_text ("&Options...")
@@ -427,7 +458,7 @@ feature {NONE}-- Initialization
 			help_menu_icons.set_text ("&Icons ")
 			help_menu_news.set_text ("&News")
 			help_menu_online.set_text ("&Online...")
-			help_menu_about.set_text ("&About ")
+			help_menu_about.set_text ("&About ADL Workbench")
 			create internal_font
 			internal_font.set_family ({EV_FONT_CONSTANTS}.Family_sans)
 			internal_font.set_weight ({EV_FONT_CONSTANTS}.Weight_bold)
@@ -442,25 +473,31 @@ feature {NONE}-- Initialization
 			action_bar.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
 			action_bar.set_minimum_width (800)
 			action_bar.set_padding (10)
-			action_bar.set_border_width (5)
-			action_bar.disable_item_expand (open_button)
-			action_bar.disable_item_expand (parse_button)
-			action_bar.disable_item_expand (edit_button)
+			action_bar.set_border_width (4)
+			action_bar.disable_item_expand (l_ev_tool_bar_1)
 			action_bar.disable_item_expand (adl_version_label)
 			action_bar.disable_item_expand (adl_version_text)
 			action_bar.disable_item_expand (language_label)
 			action_bar.disable_item_expand (language_combo)
+			l_ev_tool_bar_1.disable_vertical_button_style
 			open_button.set_text ("Open")
-			open_button.set_tooltip ("Open new archetype")
-			open_button.set_minimum_width (60)
-			open_button.set_minimum_height (23)
+			open_button.set_tooltip ("Open an ad hoc archetype")
+			internal_pixmap.set_with_named_file ("icons/archetype_1.ico")
+			open_button.set_pixmap (internal_pixmap)
 			parse_button.set_text ("Parse")
-			parse_button.set_tooltip ("Parse currently loaded archetype")
-			parse_button.set_minimum_width (60)
+			parse_button.set_tooltip ("Parse the current archetype")
+			internal_pixmap.set_with_named_file ("icons/parse.ico")
+			parse_button.set_pixmap (internal_pixmap)
 			edit_button.set_text ("Edit")
-			edit_button.set_tooltip ("Edit archetype with external editor")
-			edit_button.set_minimum_width (60)
-			edit_button.set_minimum_height (23)
+			edit_button.set_tooltip ("Edit the current archetype with the external editor")
+			internal_pixmap.set_with_named_file ("icons/edit.ico")
+			edit_button.set_pixmap (internal_pixmap)
+			history_back_button.set_tooltip ("Go back one archetype")
+			internal_pixmap.set_with_named_file ("icons/history_back.ico")
+			history_back_button.set_pixmap (internal_pixmap)
+			history_forward_button.set_tooltip ("Go forward one archetype")
+			internal_pixmap.set_with_named_file ("icons/history_forward.ico")
+			history_forward_button.set_pixmap (internal_pixmap)
 			color_constant_set_procedures.extend (agent archetype_id.set_background_color (?))
 			color_constant_retrieval_functions.extend (agent editable_colour)
 			archetype_id.set_minimum_width (120)
@@ -943,6 +980,9 @@ feature {NONE}-- Initialization
 			repository_menu_rebuild_subtree.select_actions.extend (agent rebuild_subtree)
 			repository_menu_export_html.select_actions.extend (agent export_html)
 			repository_menu_interrupt_build.select_actions.extend (agent interrupt_build)
+			history_menu.select_actions.extend (agent on_history)
+			history_menu_back.select_actions.extend (agent on_back)
+			history_menu_forward.select_actions.extend (agent on_forward)
 			tools_menu_clean_generated_files.select_actions.extend (agent clean_generated_files)
 			tools_menu_options.select_actions.extend (agent set_options)
 			help_menu_icons.select_actions.extend (agent display_icon_help)
@@ -952,6 +992,8 @@ feature {NONE}-- Initialization
 			open_button.select_actions.extend (agent open_adl_file)
 			parse_button.select_actions.extend (agent parse_archetype)
 			edit_button.select_actions.extend (agent edit_archetype)
+			history_back_button.select_actions.extend (agent on_back)
+			history_forward_button.select_actions.extend (agent on_forward)
 			archetype_id.focus_in_actions.extend (agent on_select_all)
 			adl_version_text.focus_in_actions.extend (agent on_select_all)
 			language_combo.select_actions.extend (agent select_language)
@@ -1005,50 +1047,55 @@ feature -- Access
 	total_view_area, info_view_area, test_view_area: EV_VERTICAL_SPLIT_AREA
 	archetype_file_tree,
 	parsed_archetype_tree, slot_map_tree, used_by_map_tree: EV_TREE
-	archetype_source_rich_text: EV_RICH_TEXT
-	compiler_output_grid,
-	archetype_test_tree_grid: EV_GRID
-	viewer_vbox, arch_desc_area_vbox, arch_desc_auth_hbox,
-	l_ev_vertical_box_1, arch_desc_contrib_hbox, terminology_vbox, lang_vbox, l_ev_vertical_box_2,
-	l_ev_vertical_box_3, l_ev_vertical_box_4, l_ev_vertical_box_5, l_ev_vertical_box_6,
-	tree_controls, l_ev_vertical_box_7, l_ev_vertical_box_8, path_controls, arch_stats_vbox,
-	l_ev_vertical_box_9, l_ev_vertical_box_10: EV_VERTICAL_BOX
-	explorer_view_area: EV_HORIZONTAL_SPLIT_AREA
-	file_menu, edit_menu,
-	repository_menu, tools_menu, help_menu: EV_MENU
-	action_bar, author_lang_term_hbox, l_ev_horizontal_box_1,
-	arch_desc_status_hbox, l_ev_horizontal_box_2, l_ev_horizontal_box_3, arch_desc_details_hbox,
-	l_ev_horizontal_box_4, l_ev_horizontal_box_5, l_ev_horizontal_box_6, l_ev_horizontal_box_7,
-	l_ev_horizontal_box_8, arch_desc_copyright_hbox, parsed_archetype_tree_view, parsed_archetype_path_view,
-	l_ev_horizontal_box_9, l_ev_horizontal_box_10, l_ev_horizontal_box_11, l_ev_horizontal_box_12,
-	l_ev_horizontal_box_13, l_ev_horizontal_box_14, l_ev_horizontal_box_15: EV_HORIZONTAL_BOX
 	arch_desc_auth_orig_auth_mlist,
 	arch_translations_author_mlist, arch_translations_other_details_mlist, arch_desc_resource_orig_res_mlist,
 	parsed_archetype_found_paths, ontology_term_defs, ontology_constraint_defs: EV_MULTI_COLUMN_LIST
+	l_ev_tool_bar_separator_1,
+	l_ev_tool_bar_separator_2, l_ev_tool_bar_separator_3: EV_TOOL_BAR_SEPARATOR
+	viewer_vbox, arch_desc_area_vbox,
+	arch_desc_auth_hbox, l_ev_vertical_box_1, arch_desc_contrib_hbox, terminology_vbox,
+	lang_vbox, l_ev_vertical_box_2, l_ev_vertical_box_3, l_ev_vertical_box_4, l_ev_vertical_box_5,
+	l_ev_vertical_box_6, tree_controls, l_ev_vertical_box_7, l_ev_vertical_box_8, path_controls,
+	arch_stats_vbox, l_ev_vertical_box_9, l_ev_vertical_box_10: EV_VERTICAL_BOX
+	explorer_view_area: EV_HORIZONTAL_SPLIT_AREA
+	file_menu,
+	edit_menu, repository_menu, history_menu, tools_menu, help_menu: EV_MENU
+	action_bar, author_lang_term_hbox,
+	l_ev_horizontal_box_1, arch_desc_status_hbox, l_ev_horizontal_box_2, l_ev_horizontal_box_3,
+	arch_desc_details_hbox, l_ev_horizontal_box_4, l_ev_horizontal_box_5, l_ev_horizontal_box_6,
+	l_ev_horizontal_box_7, l_ev_horizontal_box_8, arch_desc_copyright_hbox, parsed_archetype_tree_view,
+	parsed_archetype_path_view, l_ev_horizontal_box_9, l_ev_horizontal_box_10, l_ev_horizontal_box_11,
+	l_ev_horizontal_box_12, l_ev_horizontal_box_13, l_ev_horizontal_box_14, l_ev_horizontal_box_15: EV_HORIZONTAL_BOX
 	overwrite_adl_rb,
 	remove_unused_codes_rb: EV_CHECK_BUTTON
 	archetype_id, adl_version_text, arch_desc_status_text, arch_desc_original_language_text,
 	arch_translations_accreditation_text, arch_desc_resource_package_text, arch_total_count_tf,
 	arch_spec_count_tf, arch_slotted_count_tf, arch_used_by_count_tf, arch_bad_count_tf,
 	arch_test_processed_count: EV_TEXT_FIELD
-	open_button, parse_button, edit_button, tree_expand_bn,
+	compiler_output_grid, archetype_test_tree_grid: EV_GRID
+	tree_expand_bn,
 	tree_expand_one_bn, tree_shrink_one_bn, arch_test_tree_toggle_expand_bn, arch_test_refresh_bn,
 	archetype_test_go_bn: EV_BUTTON
 	arch_desc_auth_contrib_list, terminologies_list, arch_translations_languages_list,
 	arch_desc_keywords_list: EV_LIST
-	file_menu_open, file_menu_parse, file_menu_edit, file_menu_save_as,
-	file_menu_exit, edit_menu_copy, edit_menu_select_all, edit_menu_clipboard, repository_menu_set_repository,
-	repository_menu_build_all, repository_menu_rebuild_all, repository_menu_build_subtree,
-	repository_menu_rebuild_subtree, repository_menu_export_html, repository_menu_interrupt_build,
-	tools_menu_clean_generated_files, tools_menu_options, help_menu_icons, help_menu_news,
-	help_menu_online, help_menu_about: EV_MENU_ITEM
-	adl_version_label, language_label, arch_desc_auth_orig_auth_label,
-	arch_desc_status_label, arch_desc_original_language_label, arch_desc_auth_contrib_label,
-	arch_translations_languages_label, l_ev_label_1, l_ev_label_2, l_ev_label_3, arch_desc_purpose_label,
-	arch_desc_use_label, arch_desc_misuse_label, arch_desc_keywords_label, arch_desc_resource_package_label,
-	arch_desc_resource_orig_res_label, arch_desc_copyright_label, l_ev_label_4, l_ev_label_5,
-	l_ev_label_6, l_ev_label_7, l_ev_label_8, l_ev_label_9: EV_LABEL
+	archetype_source_rich_text: EV_RICH_TEXT
+	file_menu_open, file_menu_parse,
+	file_menu_edit, file_menu_save_as, file_menu_exit, edit_menu_copy, edit_menu_select_all,
+	edit_menu_clipboard, repository_menu_set_repository, repository_menu_build_all, repository_menu_rebuild_all,
+	repository_menu_build_subtree, repository_menu_rebuild_subtree, repository_menu_export_html,
+	repository_menu_interrupt_build, history_menu_back, history_menu_forward, tools_menu_clean_generated_files,
+	tools_menu_options, help_menu_icons, help_menu_news, help_menu_online, help_menu_about: EV_MENU_ITEM
+	adl_version_label,
+	language_label, arch_desc_auth_orig_auth_label, arch_desc_status_label, arch_desc_original_language_label,
+	arch_desc_auth_contrib_label, arch_translations_languages_label, l_ev_label_1, l_ev_label_2,
+	l_ev_label_3, arch_desc_purpose_label, arch_desc_use_label, arch_desc_misuse_label,
+	arch_desc_keywords_label, arch_desc_resource_package_label, arch_desc_resource_orig_res_label,
+	arch_desc_copyright_label, l_ev_label_4, l_ev_label_5, l_ev_label_6, l_ev_label_7,
+	l_ev_label_8, l_ev_label_9: EV_LABEL
 	path_view_check_list: EV_CHECKABLE_LIST
+	l_ev_tool_bar_1: EV_TOOL_BAR
+	open_button, parse_button,
+	edit_button, history_back_button, history_forward_button: EV_TOOL_BAR_BUTTON
 	l_ev_horizontal_separator_1: EV_HORIZONTAL_SEPARATOR
 	arch_desc_auth_frame,
 	term_frame, arch_translations_frame, arch_desc_details_frame, arch_desc_resource_frame,
@@ -1057,7 +1104,7 @@ feature -- Access
 	ontology_notebook, l_ev_notebook_1: EV_NOTEBOOK
 	l_ev_menu_separator_1, l_ev_menu_separator_2,
 	l_ev_menu_separator_3, l_ev_menu_separator_4, l_ev_menu_separator_5, l_ev_menu_separator_6,
-	l_ev_menu_separator_7, l_ev_menu_separator_8, l_ev_menu_separator_9: EV_MENU_SEPARATOR
+	l_ev_menu_separator_7, history_menu_separator, l_ev_menu_separator_8, l_ev_menu_separator_9: EV_MENU_SEPARATOR
 
 feature {NONE} -- Implementation
 
@@ -1146,6 +1193,21 @@ feature {NONE} -- Implementation
 	
 	interrupt_build is
 			-- Called by `select_actions' of `repository_menu_interrupt_build'.
+		deferred
+		end
+	
+	on_history is
+			-- Called by `select_actions' of `history_menu'.
+		deferred
+		end
+	
+	on_back is
+			-- Called by `select_actions' of `history_menu_back'.
+		deferred
+		end
+	
+	on_forward is
+			-- Called by `select_actions' of `history_menu_forward'.
 		deferred
 		end
 	

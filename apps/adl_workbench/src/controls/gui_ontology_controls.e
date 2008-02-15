@@ -33,9 +33,9 @@ inherit
 create
 	make
 
-feature -- Initialisation
+feature {NONE} -- Initialisation
 
-	make(a_main_window: MAIN_WINDOW) is
+	make (a_main_window: MAIN_WINDOW) is
 		require
 			a_main_window /= Void
 		do

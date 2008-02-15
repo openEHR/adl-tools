@@ -37,15 +37,15 @@ inherit
 create
 	make
 
-feature -- Initialisation
+feature {NONE} -- Initialisation
 
-	make(a_main_window: MAIN_WINDOW) is
+	make (a_main_window: MAIN_WINDOW) is
 		require
 			a_main_window /= Void
 		do
 			gui := a_main_window
 			gui_tree := gui.used_by_map_tree
-			gui_tree.pointer_double_press_actions.extend (agent on_double_click)
+			gui_tree.pointer_double_press_actions.force_extend (agent select_node_in_archetype_tree_view)
 			in_differential_mode := True
 		end
 
@@ -138,24 +138,10 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	on_double_click (x: INTEGER_32; y: INTEGER_32; button: INTEGER_32; x_tilt: REAL_64; y_tilt: REAL_64; pressure: REAL_64; screen_x: INTEGER_32; screen_y: INTEGER_32)
-			-- When the user double-clicks an archetype, select it in the main window's explorer tree.
-		do
-			select_node_in_archetype_tree_view
-		end
-
 	select_node_in_archetype_tree_view
 			-- Select the archetype in the main window's explorer tree.
-		local
-			ara: ARCH_REP_ARCHETYPE
 		do
-			if gui_tree.selected_item /= Void then
-				ara ?= gui_tree.selected_item.data
-				if ara /= Void then
-					archetype_directory.set_selected_item (ara)
-					gui.archetype_view_tree_select_node
-				end
-			end
+			gui.select_archetype_from_gui_data (gui_tree.selected_item)
 		end
 
 end

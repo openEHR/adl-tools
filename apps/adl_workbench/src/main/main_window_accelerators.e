@@ -27,27 +27,37 @@ feature {NONE} -- Implementation
 		deferred
 		end
 
-	add_menu_shortcut (menu_item: EV_MENU_ITEM; key: INTEGER; ctrl, shift: BOOLEAN)
+	add_menu_shortcut (menu_item: EV_MENU_ITEM; key: INTEGER; ctrl, alt, shift: BOOLEAN)
 			-- Create a keyboard shortcut for `menu_item', to execute `menu_item.select_actions'.
 		require
 			menu_item_attached: menu_item /= Void
 			valid_key: valid_key_code (key)
 		do
-			menu_item.set_text (menu_item.text + "%T" + shortcut_text (key, ctrl, shift))
-			menu_item.select_actions.do_all (agent add_shortcut (?, key, ctrl, shift))
+			menu_item.set_text (menu_item.text + "%T" + shortcut_text (key, ctrl, alt, shift))
+			menu_item.select_actions.do_all (agent add_shortcut (?, key, ctrl, alt, shift))
+		ensure
+			has_key: menu_item.text.as_upper.ends_with ((key_strings [key]).as_upper)
+			has_ctrl: ctrl implies menu_item.text.has_substring (key_strings [key_ctrl])
+			has_alt: alt implies menu_item.text.has_substring (key_strings [key_alt])
+			has_shift: shift implies menu_item.text.has_substring (key_strings [key_shift])
 		end
 
-	add_menu_shortcut_for_action (menu_item: EV_MENU_ITEM; action: PROCEDURE [ANY, TUPLE]; key: INTEGER; ctrl, shift: BOOLEAN)
+	add_menu_shortcut_for_action (menu_item: EV_MENU_ITEM; action: PROCEDURE [ANY, TUPLE]; key: INTEGER; ctrl, alt, shift: BOOLEAN)
 			-- Create a keyboard shortcut for `menu_item', to execute `action' rather than `menu_item.select_actions'.
 		require
 			menu_item_attached: menu_item /= Void
 			valid_key: valid_key_code (key)
 		do
-			menu_item.set_text (menu_item.text + "%T" + shortcut_text (key, ctrl, shift))
-			add_shortcut (action, key, ctrl, shift)
+			menu_item.set_text (menu_item.text + "%T" + shortcut_text (key, ctrl, alt, shift))
+			add_shortcut (action, key, ctrl, alt, shift)
+		ensure
+			has_key: menu_item.text.as_upper.ends_with ((key_strings [key]).as_upper)
+			has_ctrl: ctrl implies menu_item.text.has_substring (key_strings [key_ctrl])
+			has_alt: alt implies menu_item.text.has_substring (key_strings [key_alt])
+			has_shift: shift implies menu_item.text.has_substring (key_strings [key_shift])
 		end
 
-	add_shortcut (action: PROCEDURE [ANY, TUPLE]; key: INTEGER; ctrl, shift: BOOLEAN)
+	add_shortcut (action: PROCEDURE [ANY, TUPLE]; key: INTEGER; ctrl, alt, shift: BOOLEAN)
 			-- Create a keyboard shortcut to execute `action'.
 		require
 			action_attached: action /= Void
@@ -55,14 +65,14 @@ feature {NONE} -- Implementation
 		local
 			accelerator: EV_ACCELERATOR
 		do
-			create accelerator.make_with_key_combination (create {EV_KEY}.make_with_code (key), ctrl, False, shift)
+			create accelerator.make_with_key_combination (create {EV_KEY}.make_with_code (key), ctrl, alt, shift)
 			accelerator.actions.extend (action)
 			accelerators.extend (accelerator)
 		ensure
 			accelerators_extended: accelerators.count = 1 + old accelerators.count
 		end
 
-	shortcut_text (key: INTEGER; ctrl, shift: BOOLEAN): STRING
+	shortcut_text (key: INTEGER; ctrl, alt, shift: BOOLEAN): STRING
 			-- Text describing a keyboard shortcut.
 		require
 			valid_key: valid_key_code (key)
@@ -71,6 +81,10 @@ feature {NONE} -- Implementation
 
 			if Result.count = 1 then
 				Result.to_upper
+			end
+
+			if alt then
+				Result := key_strings [key_alt] + "+" + Result
 			end
 
 			if shift then
@@ -83,6 +97,10 @@ feature {NONE} -- Implementation
 		ensure
 			attached: Result /= Void
 			not_empty: not Result.is_empty
+			has_key: Result.as_upper.ends_with ((key_strings [key]).as_upper)
+			has_ctrl: ctrl implies Result.has_substring (key_strings [key_ctrl])
+			has_alt: alt implies Result.has_substring (key_strings [key_alt])
+			has_shift: shift implies Result.has_substring (key_strings [key_shift])
 		end
 
 end

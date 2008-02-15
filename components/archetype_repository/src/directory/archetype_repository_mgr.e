@@ -27,7 +27,7 @@ indexing
 				 ]"
 	keywords:    "ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
 	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
@@ -68,12 +68,12 @@ feature -- Initialisation
 
 feature -- Access
 
-	source_repositories: DS_HASH_TABLE [ARCHETYPE_INDEXED_REPOSITORY_I, INTEGER]
+	source_repositories: !DS_HASH_TABLE [!ARCHETYPE_INDEXED_REPOSITORY_I, INTEGER]
 			-- Physical repositories of archetypes, keyed by logical id.
 			-- Each such repository consists of archetypes arranged in a directory structure
 			-- mimicking an ontological structure, e.g. ehr/entry/observation, etc.
 
-	adhoc_source_repository: ARCHETYPE_ADHOC_FILE_REPOSITORY
+	adhoc_source_repository: !ARCHETYPE_ADHOC_FILE_REPOSITORY
 			-- An additional 'repository' where archetypes may be found, but not necessarily classified
 			-- under any structure - used e.g. to represent the file local system where isolated archetypes
 			-- may be found, e.g. in c:\temp, /tmp or wherever. This repository is just a list of
@@ -86,24 +86,31 @@ feature -- Access
 			-- archetypes now appear as child nodes, rather than sibling nodes, as they do
 			-- in the file system), as well as grafting on adhoc archetypes.
 
-	ontology_index: DS_HASH_TABLE [like directory, STRING]
+	ontology_index: !DS_HASH_TABLE [like directory, STRING]
 			-- Index of archetypes, keyed by ontology path.
 			-- Relative ontology path of item with respect to root; for folder nodes,
 			-- this will look like the relative directory path; for archetype nodes, this will be
 			-- the concatenation of the directory path and archetype specialisation parent path.
 
-	archetype_id_index: DS_HASH_TABLE [ARCH_REP_ARCHETYPE, STRING]
+	archetype_id_index: !DS_HASH_TABLE [ARCH_REP_ARCHETYPE, STRING]
 			-- Index of archetype nodes keyed by archetype id.
 
 	selected_item: ARCH_REP_ITEM
-			-- The archetype or folder at `selected_node'.
+			-- The folder or archetype at `selected_node'.
+		do
+			if not selection_history.off then
+				Result := selection_history.item
+			end
+		ensure
+			consistent_with_history: Result /= Void implies Result = selection_history.item
+		end
 
 	selected_archetype: ARCH_REP_ARCHETYPE
 			-- The archetype at `selected_node'.
 		do
 			Result ?= selected_item
 		ensure
-			consistent: Result /= Void implies Result = selected_item
+			consistent_with_history: Result /= Void implies Result = selected_item
 		end
 
 	selected_node: like directory
@@ -111,7 +118,7 @@ feature -- Access
 		do
 			Result ?= node_from_item (selected_item)
 		ensure
-			consistent: Result /= Void implies Result.item = selected_item
+			consistent_with_history: Result /= Void implies Result.item = selected_item
 		end
 
 	archetype_descriptor_from_full_path (full_path: STRING): ARCH_REP_ARCHETYPE
@@ -182,6 +189,37 @@ feature -- Access
 			end
 		end
 
+	recently_selected_archetypes (n: INTEGER): !ARRAYED_LIST [!ARCH_REP_ARCHETYPE]
+			-- The `n' most recently used archetypes from `selection_history', excluding duplicates.
+		require
+			positive: n > 0
+		local
+			cursor: LINKED_LIST_CURSOR [!ARCH_REP_ITEM]
+		do
+			create Result.make (n)
+
+			from
+				cursor := selection_history.cursor
+				selection_history.finish
+			until
+				selection_history.off or Result.full
+			loop
+				if {ara: !ARCH_REP_ARCHETYPE} selection_history.item then
+					if not Result.has (ara) then
+						Result.extend (ara)
+					end
+				end
+
+				selection_history.back
+			end
+
+			selection_history.go_to (cursor)
+		ensure
+			not_too_long: Result.count <= n
+		end
+
+feature -- Statistics
+
 	total_archetype_count: INTEGER
 			-- count of all archetype descriptors in directory
 
@@ -209,6 +247,18 @@ feature -- Status Report
 			-- Has a valid archetype been selected?
 		do
 			Result := selected_archetype /= Void and then selected_archetype.is_valid
+		end
+
+	selection_history_has_previous: BOOLEAN
+			-- Can `selection_history' go back?
+		do
+			Result := not selection_history.off and not selection_history.isfirst
+		end
+
+	selection_history_has_next: BOOLEAN
+			-- Can `selection_history' go forth?
+		do
+			Result := not selection_history.off and not selection_history.islast
 		end
 
 feature -- Comparison
@@ -252,7 +302,7 @@ feature -- Commands
 	clear
 			-- Clear `directory' and its index tables.
 		do
-			selected_item := Void
+			create selection_history.make
 			create ontology_index.make (0)
 			create archetype_id_index.make (0)
 			create directory.make (Void)
@@ -267,7 +317,7 @@ feature -- Commands
 			dir_name_valid: valid_repository_path (dir_name)
 			group_id_valid: group_id > 0
 		local
-			repository: ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP
+			repository: !ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP
 		do
 			create repository.make (file_system.canonical_pathname (dir_name), group_id)
 			source_repositories.force (repository, group_id)
@@ -323,12 +373,41 @@ feature -- Commands
 
 feature -- Modification
 
-	set_selected_item (value: ARCH_REP_ITEM)
-			-- Set `selected_archetype' and `selected_item'.
+	set_selected_item (value: !ARCH_REP_ITEM)
+			-- Append `value' to `selection_history' and select it.
 		do
-			selected_item := value
+			if selected_item /= value then
+				if selection_history.is_empty or else selection_history.last /= value then
+					selection_history.extend (value)
+				end
+
+				selection_history.finish
+			end
 		ensure
 			selected_item_set: selected_item = value
+			history_is_last_if_value_different: old selected_item /= value implies selection_history.islast
+			history_extended_if_value_different_and_wasnt_last: selection_history.count = old
+				(selection_history.count + (selected_item /= value and (selection_history.is_empty or else selection_history.last /= value)).to_integer)
+		end
+
+	selection_history_back
+			-- Select the previous archetype or folder in `selection_history'.
+		require
+			history_can_go_back: selection_history_has_previous
+		do
+			selection_history.back
+		ensure
+			history_isnt_last: selection_history_has_next
+		end
+
+	selection_history_forth
+			-- Select the next archetype or folder in `selection_history'.
+		require
+			history_can_go_forth: selection_history_has_next
+		do
+			selection_history.forth
+		ensure
+			history_isnt_first: selection_history_has_previous
 		end
 
 	add_adhoc_item (full_path: STRING)
@@ -387,6 +466,9 @@ feature -- Traversal
 		end
 
 feature {NONE} -- Implementation
+
+	selection_history: !LINKED_LIST [!ARCH_REP_ITEM]
+			-- The history in which archetypes and folders have been selected, from earliest to most recent.
 
 	graft_adhoc_item (ara: ARCH_REP_ARCHETYPE)
 			-- Graft ad hoc archetype `ara' into `directory'. Use its archetype id to figure out
@@ -526,12 +608,8 @@ feature {NONE} -- Implementation
 
 invariant
 	directory_attached: directory /= Void
-	ontology_index_attached: ontology_index /= Void
-	archetype_id_index_attached: archetype_id_index /= Void
-	adhoc_source_repository_attached: adhoc_source_repository /= Void
 	adhoc_source_repository_group_id: adhoc_source_repository.group_id = 1
-	repositories_attached: source_repositories /= Void
-	repositories_group_ids: source_repositories.for_all (agent (repository: ARCHETYPE_INDEXED_REPOSITORY_I): BOOLEAN
+	repositories_group_ids: source_repositories.for_all (agent (repository: !ARCHETYPE_INDEXED_REPOSITORY_I): BOOLEAN
 		do
 			Result := repository.group_id > 1
 		end)
@@ -553,10 +631,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is adl_node_control.e.
+--| The Original Code is archetype_directory.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2003-2008
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

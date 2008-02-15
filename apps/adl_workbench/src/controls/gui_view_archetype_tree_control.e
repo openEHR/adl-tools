@@ -60,7 +60,7 @@ feature -- Commands
 			gui_file_tree.wipe_out
  			create gui_tree_item_stack.make (0)
  			archetype_directory.do_subtree (archetype_directory.directory, agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
-			make_node_visible (archetype_directory.selected_archetype)
+			gui.select_node_in_archetype_tree_view
 		end
 
 	display_details_of_selected_item_after_delay
@@ -72,30 +72,11 @@ feature -- Commands
 				delay_to_make_keyboard_navigation_practical.actions.extend (agent
 					do
 						delay_to_make_keyboard_navigation_practical.set_interval (0)
-						display_details_of_selected_item
+						gui.select_archetype_from_gui_data (gui_file_tree.selected_item)
 					end)
 			end
 
 			delay_to_make_keyboard_navigation_practical.set_interval (300)
-		end
-
-	display_details_of_selected_item
-			-- Display details of the archetype currently selected in `gui_file_tree'.
-		local
-			node: EV_TREE_NODE
-			item: ARCH_REP_ITEM
-		do
-			node := gui_file_tree.selected_item
-
-			if node /= Void then
-				item ?= node.data
-			end
-
-			archetype_directory.set_selected_item (item)
-
-			if archetype_directory.has_selected_archetype then
-				gui.parse_archetype
-			end
 		end
 
    	set_node_pixmap (node: EV_TREE_NODE)
@@ -115,32 +96,6 @@ feature -- Commands
 					node.set_pixmap (pixmap)
 				end
 			end
-		end
-
-	do_node_for_item (an_item: ARCH_REP_ITEM; action: PROCEDURE [ANY, TUPLE [EV_TREE_NODE]])
-   			-- Perform `action' for the node in `gui_file_tree' containing `an_item', if any.
-		require
-			action_attached: action /= Void
-   		local
-			node: EV_TREE_NODE
-   		do
-			node := gui_file_tree.retrieve_item_recursively_by_data (an_item, True)
-
-			if node /= Void then
-				action.call ([node])
-			end
-		end
-
-	make_node_visible (an_item: ARCH_REP_ITEM) is
-			-- Make node of `an_item' visible, is such a node exists.
-		do
-			do_node_for_item (an_item, agent (node: EV_TREE_NODE)
-				require
-					node_attached: node /= Void
-				do
-					gui_file_tree.ensure_item_visible (node)
-					node.enable_select
-				end)
 		end
 
 feature {NONE} -- Implementation

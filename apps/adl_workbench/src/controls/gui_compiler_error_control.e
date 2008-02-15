@@ -205,16 +205,9 @@ feature {NONE} -- Implementation
 
 	select_node_in_archetype_tree_view
 			-- Select the archetype represented by `selected_cell' in the main window's explorer tree.
-		local
-			ara: ARCH_REP_ARCHETYPE
 		do
 			if selected_cell /= Void and then selected_cell.column.index = Col_location then
-				ara ?= selected_cell.data
-
-				if ara /= Void then
-					archetype_directory.set_selected_item (ara)
-					gui.archetype_view_tree_select_node
-				end
+				gui.select_archetype_from_gui_data (selected_cell)
 			end
 		end
 
