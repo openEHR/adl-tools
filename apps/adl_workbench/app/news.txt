@@ -25,6 +25,7 @@ Other new functionality:
 * Duration units and interval can now be constrained both at the same time. 
 
 User interface improvements:
+* A new History menu lets the user go back and forth to a previously viewed archetype.
 * The Options dialog is now accessed via a Windows-standard Tools menu.
 * In the Options dialog, you can choose to hide the line numbers in the Source text.
 * The Save combo box on the tool bar has been replaced by a choice in the Save As dialog.
