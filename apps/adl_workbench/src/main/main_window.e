@@ -1009,6 +1009,11 @@ feature {NONE} -- Implementation
 		do
 			do_with_wait_cursor (agent
 				do
+					if title.has_substring (" - ") then
+						set_title (title.substring (title.substring_index (" - ", 1) + 3, title.count))
+					end
+
+					set_title (reference_repository_path + " - " + title)
 					clear_billboard
 					clear_all_controls
 					compiler_error_control.clear
