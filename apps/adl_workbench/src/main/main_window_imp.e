@@ -30,7 +30,6 @@ feature {NONE}-- Initialization
 			-- Initialize `Current'.
 		local
 			internal_font: EV_FONT
-			internal_pixmap: EV_PIXMAP
 		do
 			Precursor {EV_TITLED_WINDOW}
 			initialize_constants
@@ -219,7 +218,6 @@ feature {NONE}-- Initialization
 			create l_ev_horizontal_separator_1
 			create archetype_test_go_bn
 			create test_status_area
-			create internal_pixmap
 			
 				-- Build widget structure.
 			set_menu_bar (menu)
@@ -421,14 +419,8 @@ feature {NONE}-- Initialization
 			create color_constant_retrieval_functions.make (10)
 			file_menu.set_text ("&File")
 			file_menu_open.set_text ("&Open...")
-			internal_pixmap.set_with_named_file ("icons/archetype_1.ico")
-			file_menu_open.set_pixmap (internal_pixmap)
 			file_menu_parse.set_text ("&Parse")
-			internal_pixmap.set_with_named_file ("icons/parse.ico")
-			file_menu_parse.set_pixmap (internal_pixmap)
 			file_menu_edit.set_text ("&Edit")
-			internal_pixmap.set_with_named_file ("icons/edit.ico")
-			file_menu_edit.set_pixmap (internal_pixmap)
 			file_menu_save_as.set_text ("Save &As...")
 			file_menu_exit.set_text ("E&xit")
 			edit_menu.set_text ("&Edit")
@@ -446,11 +438,7 @@ feature {NONE}-- Initialization
 			repository_menu_interrupt_build.set_text ("&Interrupt Build")
 			history_menu.set_text ("Hi&story")
 			history_menu_back.set_text ("&Back")
-			internal_pixmap.set_with_named_file ("icons/history_back.ico")
-			history_menu_back.set_pixmap (internal_pixmap)
 			history_menu_forward.set_text ("&Forward")
-			internal_pixmap.set_with_named_file ("icons/history_forward.ico")
-			history_menu_forward.set_pixmap (internal_pixmap)
 			tools_menu.set_text ("&Tools")
 			tools_menu_clean_generated_files.set_text ("&Clean Generated Files")
 			tools_menu_options.set_text ("&Options...")
@@ -482,22 +470,12 @@ feature {NONE}-- Initialization
 			l_ev_tool_bar_1.disable_vertical_button_style
 			open_button.set_text ("Open")
 			open_button.set_tooltip ("Open an ad hoc archetype")
-			internal_pixmap.set_with_named_file ("icons/archetype_1.ico")
-			open_button.set_pixmap (internal_pixmap)
 			parse_button.set_text ("Parse")
 			parse_button.set_tooltip ("Parse the current archetype")
-			internal_pixmap.set_with_named_file ("icons/parse.ico")
-			parse_button.set_pixmap (internal_pixmap)
 			edit_button.set_text ("Edit")
 			edit_button.set_tooltip ("Edit the current archetype with the external editor")
-			internal_pixmap.set_with_named_file ("icons/edit.ico")
-			edit_button.set_pixmap (internal_pixmap)
 			history_back_button.set_tooltip ("Go back one archetype")
-			internal_pixmap.set_with_named_file ("icons/history_back.ico")
-			history_back_button.set_pixmap (internal_pixmap)
 			history_forward_button.set_tooltip ("Go forward one archetype")
-			internal_pixmap.set_with_named_file ("icons/history_forward.ico")
-			history_forward_button.set_pixmap (internal_pixmap)
 			color_constant_set_procedures.extend (agent archetype_id.set_background_color (?))
 			color_constant_retrieval_functions.extend (agent editable_colour)
 			archetype_id.set_minimum_width (120)

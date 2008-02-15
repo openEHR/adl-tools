@@ -427,6 +427,10 @@ feature -- Access
 
 			Result.force (["go.ico", Void], "go")
 			Result.force (["stop.ico", Void], "stop")
+			Result.force (["parse.ico", Void], "parse")
+			Result.force (["edit.ico", Void], "edit")
+			Result.force (["history_back.ico", Void], "history_back")
+			Result.force (["history_forward.ico", Void], "history_forward")
 
 			Result.force (["openEHR_and_Ocean.png", Void], "openEHR and Ocean")
 		ensure

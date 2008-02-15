@@ -116,6 +116,18 @@ feature {NONE} -- Initialization
 			cur_title.replace_substring_all ("VER", current_adl_version)
 			set_title (cur_title)
 
+			file_menu_open.set_pixmap (pixmaps ["archetype_1"])
+			file_menu_parse.set_pixmap (pixmaps ["parse"])
+			file_menu_edit.set_pixmap (pixmaps ["edit"])
+			history_menu_back.set_pixmap (pixmaps ["history_back"])
+			history_menu_forward.set_pixmap (pixmaps ["history_forward"])
+
+			open_button.set_pixmap (pixmaps ["archetype_1"])
+			parse_button.set_pixmap (pixmaps ["parse"])
+			edit_button.set_pixmap (pixmaps ["edit"])
+			history_back_button.set_pixmap (pixmaps ["history_back"])
+			history_forward_button.set_pixmap (pixmaps ["history_forward"])
+
 			set_position (app_x_position, app_y_position)
 
 			if app_width > 0 then
@@ -231,6 +243,7 @@ feature -- Status setting
 			end
 
 			if new_news then
+				clean_generated_files
 				display_news
 				update_status_file
 			end
