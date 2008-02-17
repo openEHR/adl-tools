@@ -229,7 +229,7 @@ creation
 			}
 
 ----------/* archetype id */ -------------------------------------------------
-[a-zA-Z][a-zA-Z0-9_-]+\.[a-zA-Z][a-zA-Z0-9_-]+\.[a-zA-Z0-9]+	{
+[a-zA-Z][a-zA-Z0-9()#_]+(-[a-zA-Z0-9()#_]+){2}\.[a-zA-Z][a-zA-Z0-9()#-_]+\.v[0-9]+[a-zA-Z]*	{
 					last_token := V_ARCHETYPE_ID
 					last_string_value := text
 			}
