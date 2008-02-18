@@ -62,7 +62,7 @@ feature {NONE} -- Grid events
 		local
 			row: EV_GRID_ROW
 		do
-			if key /= Void then
+			if key /= Void and grid.row_count > 0 then
 				if not ev_application.shift_pressed and not ev_application.alt_pressed then
 					if ev_application.ctrl_pressed then
 						if key.code = key_up then
@@ -125,10 +125,12 @@ feature {NONE} -- Grid events
 	on_mouse_wheel (step: INTEGER) is
 			-- Scroll `grid' when the mouse wheel moves.
 		do
-			if step > 0 then
-				scroll_to_row (grid.first_visible_row.index - step)
-			else
-				scroll_to_row (grid.visible_row_indexes [grid.visible_row_indexes.count.min (1 - step)])
+			if grid.row_count > 0 then
+				if step > 0 then
+					scroll_to_row (grid.first_visible_row.index - step)
+				else
+					scroll_to_row (grid.visible_row_indexes [grid.visible_row_indexes.count.min (1 - step)])
+				end
 			end
 		end
 
@@ -136,6 +138,8 @@ feature {NONE} -- Implementation
 
 	scroll_to_row (index: INTEGER)
 			-- Scroll `grid' so the row at `index' is at the top.
+		require
+			has_rows: grid.row_count > 0
 		local
 			i: INTEGER
 		do
@@ -146,6 +150,8 @@ feature {NONE} -- Implementation
 	step_to_row (index: INTEGER)
 			-- Select the first non-void cell on the row at `index'.
 			-- If that row is hidden within a collapsed parent, select its nearest viewable parent.
+		require
+			has_rows: grid.row_count > 0
 		local
 			row: EV_GRID_ROW
 			item: EV_GRID_ITEM
@@ -179,6 +185,8 @@ feature {NONE} -- Implementation
 
 	index_of_viewable_offset_from_row (index, offset: INTEGER): INTEGER
 			-- The index of the row at viewable `offset' from the row at `index'.
+		require
+			has_rows: grid.row_count > 0
 		local
 			indexes: ARRAYED_LIST [INTEGER]
 			i: INTEGER
