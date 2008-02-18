@@ -103,9 +103,9 @@ feature -- Commands
 		end
 
 	extend (ara: ARCH_REP_ARCHETYPE) is
-			-- Add a node representing the errors or warnings of the archetype, if any
+			-- Add a node representing the errors or warnings of the archetype, if any.
 		require
-			ara /= Void
+			ara_attached: ara /= Void
 		local
 			gli: EV_GRID_LABEL_ITEM
 			cat_row, row, subrow: EV_GRID_ROW
@@ -173,6 +173,7 @@ feature -- Commands
 				end
 
 				gli.set_data (ara)
+				gli.set_tooltip (utf8 (ara.compiler_status))
 				gli.pointer_double_press_actions.force_extend (agent select_node_in_archetype_tree_view)
 				row.set_item (Col_location, gli)
 

@@ -83,11 +83,14 @@ feature -- Validation
 
 			-- validation requiring valid specialisation parent
 			if passed and target.is_specialised then
-				if target_descriptor.specialisation_parent.is_valid then
-		 			target.set_parent_archetype (target_descriptor.specialisation_parent.archetype_differential)
-		 		else
+				if target_descriptor.specialisation_parent = Void then
+					errors.append ("Error: Parent is missing")
+					passed := False
+		 		elseif not target_descriptor.specialisation_parent.is_valid then
 					errors.append ("Error: Parent failed to validate")
 					passed := False
+		 		else
+		 			target.set_parent_archetype (target_descriptor.specialisation_parent.archetype_differential)
 				end
 			end
 
