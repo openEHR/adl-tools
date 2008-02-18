@@ -79,7 +79,8 @@ feature -- Initialisation
 		require
 			Primary_language_valid: a_primary_lang /= Void implies not a_primary_lang.is_empty -- FIXME make mandatory with ADL2
 			Tree_exists: a_dadl_tree /= Void
-			Root_code_valid: a_concept_code /= Void and then valid_concept_code(a_concept_code)
+			root_code_attached: a_concept_code /= Void
+			root_code_valid: valid_concept_code (a_concept_code)
 		do
 			default_create
 			representation := a_dadl_tree
@@ -91,7 +92,7 @@ feature -- Initialisation
 
 			synchronise_from_tree
 		ensure
-			Concept_code_set: concept_code.is_equal(a_concept_code) and valid_concept_code(concept_code)
+			concept_code_set: concept_code.is_equal (a_concept_code)
 		end
 
 feature -- Access
@@ -1207,14 +1208,15 @@ invariant
 	Constraint_codes_exists: constraint_codes /= Void
 	Term_bindings_exists: term_bindings /= Void
 	Constraint_bindings_exists: constraint_bindings /= Void
-	Root_code_valid: term_codes.has(concept_code)
+	root_code_attached: concept_code /= Void
+	root_code_valid: valid_concept_code (concept_code)
+	root_code_in_terms: term_codes.has (concept_code)
 	Specialised_codes_valid: specialised_codes /= Void
 	Term_attribute_names_valid: term_attribute_names /= Void
 
 	Highest_term_code_index_valid: highest_term_code_index >= 0
 	Highest_constraint_code_index_valid: highest_constraint_code_index >= 0
 	Highest_code_specialisation_level_valid: highest_code_specialisation_level >= 0
-
 
 end
 

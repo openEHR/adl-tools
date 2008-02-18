@@ -437,7 +437,7 @@ feature -- Factory
 			Result_valid: Result /= Void and then specialised_code_tail(Result).to_integer > 0
 		end
 
-	new_concept_code_at_level(at_level:INTEGER): STRING is
+	new_concept_code_at_level (at_level: INTEGER): STRING is
 			-- make a new term code for use as the root concept code of an archetype
 			-- at level = 0 -> Default_concept_code
 			-- at level = 1 -> Default_concept_code.1
@@ -448,18 +448,19 @@ feature -- Factory
 		local
 			i: INTEGER
 		do
-			create Result.make(0)
-			Result.append(Default_concept_code)
+			create Result.make_from_string (default_concept_code)
+
 			from
 			until
 				i >= at_level
 			loop
-				Result.append_character(Specialisation_separator)
-				Result.append_character('1')
+				Result.append_character (Specialisation_separator)
+				Result.append_character ('1')
 				i := i + 1
 			end
 		ensure
-			Result_valid: Result /= Void and then valid_concept_code(Result)
+			attached: Result /= Void
+			valid: valid_concept_code (Result)
 		end
 
 feature -- Conversion

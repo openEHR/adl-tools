@@ -22,6 +22,11 @@ inherit
 			{ANY} archetype_serialiser_formats, has_archetype_serialiser_format
 		end
 
+	ARCHETYPE_TERM_CODE_TOOLS
+		export
+			{NONE} all
+		end
+
 	SHARED_APPLICATION_CONTEXT
 		export
 			{NONE} all
@@ -37,10 +42,10 @@ inherit
 			{NONE} all
 		end
 
-creation
+create
 	make
 
-feature -- Initialisation
+feature {NONE} -- Initialisation
 
 	make is
 		do
@@ -118,8 +123,11 @@ feature {NONE} -- Implementation
 		do
 			create adl_parser.make
 			adl_parser.execute(text)
+
 			if adl_parser.syntax_error then
 				parse_error_text := adl_parser.error_text
+			elseif not valid_concept_code (adl_parser.concept) then
+				parse_error_text := "invalid concept code %"" + adl_parser.concept + "%""
 			else
 				------------------- language section ---------------
 				if adl_parser.language_text /= Void and then not adl_parser.language_text.is_empty then
