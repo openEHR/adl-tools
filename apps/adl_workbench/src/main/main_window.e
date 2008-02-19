@@ -143,7 +143,7 @@ feature {NONE} -- Initialization
 			end
 
 			if main_notebook_tab_pos > 1 then
-				main_nb.select_item (main_nb [main_notebook_tab_pos])
+				main_notebook.select_item (main_notebook [main_notebook_tab_pos])
 			end
 		end
 
@@ -202,20 +202,20 @@ feature {NONE} -- Initialization
 	initialise_splitters
 			-- Restore splitter widgets to their remembered positions.
 		do
-			if test_view_area_split_position > 0 then
-				test_view_area.set_split_position (test_view_area_split_position)
+			if test_split_position > 0 then
+				test_split_area.set_split_position (test_split_position)
 			end
 
-			if explorer_view_area_split_position > 0 then
-				explorer_view_area.set_split_position (explorer_view_area_split_position)
+			if explorer_split_position > 0 then
+				explorer_split_area.set_split_position (explorer_split_position)
 			end
 
-			if info_view_area_split_position > 0 then
-				info_view_area.set_split_position (info_view_area_split_position)
+			if definition_split_position > 0 then
+				definition_split_area.set_split_position (definition_split_position)
 			end
 
-			if total_view_area_split_position > 0 then
-				total_view_area.set_split_position (total_view_area_split_position)
+			if total_split_position > 0 then
+				total_split_area.set_split_position (total_split_position)
 			end
 		end
 
@@ -232,7 +232,7 @@ feature -- Status setting
 			initialise_path_control
 			Precursor
 			initialise_splitters
-			focus_first_widget (main_nb.selected_item)
+			focus_first_widget (main_notebook.selected_item)
 
 			if app_maximised then
 				maximize
@@ -434,16 +434,16 @@ feature -- File events
 			strs: ARRAYED_LIST [STRING]
 			ev_items: DYNAMIC_LIST [EV_LIST_ITEM]
 		do
-			set_total_view_area_split_position (total_view_area.split_position)
-			set_info_view_area_split_position (info_view_area.split_position)
-			set_test_view_area_split_position (test_view_area.split_position)
-			set_explorer_view_area_split_position (explorer_view_area.split_position)
+			set_total_split_position (total_split_area.split_position)
+			set_definition_split_position (definition_split_area.split_position)
+			set_test_split_position (test_split_area.split_position)
+			set_explorer_split_position (explorer_split_area.split_position)
 			set_app_width (width)
 			set_app_height (height)
 			set_app_x_position (x_position)
 			set_app_y_position (y_position)
 			set_app_maximised (is_maximized)
-			set_main_notebook_tab_pos (main_nb.selected_item_index)
+			set_main_notebook_tab_pos (main_notebook.selected_item_index)
 
 			set_path_filter_combo_selection (path_filter_combo.selected_item.text)
 
@@ -892,7 +892,7 @@ feature -- Archetype Commands
 			leader, int_val_str, src, s: STRING
 			len, left_pos, right_pos, line_cnt: INTEGER
 		do
-			if arch_notebook.selected_item = archetype_source_rich_text then
+			if arch_notebook.selected_item = source_rich_text then
 				if archetype_directory.has_selected_archetype then
 					if archetype_directory.selected_archetype.has_differential_file then
 						src := archetype_directory.selected_archetype.differential_text
@@ -926,9 +926,9 @@ feature -- Archetype Commands
 						line_cnt := line_cnt + 1
 					end
 
-					archetype_source_rich_text.set_text (utf8 (s))
+					source_rich_text.set_text (utf8 (s))
 				else
-					archetype_source_rich_text.remove_text
+					source_rich_text.remove_text
 				end
 			end
 		end

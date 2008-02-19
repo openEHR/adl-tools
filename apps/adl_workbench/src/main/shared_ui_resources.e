@@ -163,45 +163,45 @@ feature -- Access
 			end
 		end
 
-	total_view_area_split_position: INTEGER is
-			-- split position of outer vertical split control
+	total_split_position: INTEGER is
+			-- Split position of outer vertical split control.
 		local
 			str: STRING
 		do
-			str := resource_value("default", "total_view_area_split_position")
+			str := resource_value ("default", "total_split_position")
 			if str.is_integer then
 				Result := str.to_integer
 			end
 		end
 
-	info_view_area_split_position: INTEGER is
-			-- split position of inner vertical split control
+	definition_split_position: INTEGER is
+			-- Split position of inner vertical split control.
 		local
 			str: STRING
 		do
-			str := resource_value("default", "info_view_area_split_position")
+			str := resource_value ("default", "definition_split_position")
 			if str.is_integer then
 				Result := str.to_integer
 			end
 		end
 
-	test_view_area_split_position: INTEGER is
-			-- split position of vertical split control in test tool
+	test_split_position: INTEGER is
+			-- Split position of vertical split control in test tool.
 		local
 			str: STRING
 		do
-			str := resource_value("default", "test_view_area_split_position")
+			str := resource_value ("default", "test_split_position")
 			if str.is_integer then
 				Result := str.to_integer
 			end
 		end
 
-	explorer_view_area_split_position: INTEGER is
-			-- split position of explorer horizontal split control
+	explorer_split_position: INTEGER is
+			-- Split position of explorer horizontal split control.
 		local
 			str: STRING
 		do
-			str := resource_value("default", "explorer_view_area_split_position")
+			str := resource_value ("default", "explorer_split_position")
 			if str.is_integer then
 				Result := str.to_integer
 			end
@@ -577,36 +577,36 @@ feature -- Modification
 			set_resource_value("default", "main_notebook_tab_pos", a_tab_pos.out)
 		end
 
-	set_total_view_area_split_position (v: INTEGER) is
-			-- set split position of outer vertical split control
+	set_total_split_position (v: INTEGER) is
+			-- Set split position of outer vertical split control.
 		require
 			v > 0
 		do
-			set_resource_value("default", "total_view_area_split_position", v.out)
+			set_resource_value ("default", "total_split_position", v.out)
 		end
 
-	set_info_view_area_split_position (v: INTEGER) is
-			-- set split position of inner vertical split control
+	set_definition_split_position (v: INTEGER) is
+			-- Set split position of inner vertical split control.
 		require
 			v > 0
 		do
-			set_resource_value("default", "info_view_area_split_position", v.out)
+			set_resource_value ("default", "definition_split_position", v.out)
 		end
 
-	set_test_view_area_split_position (v: INTEGER) is
-			-- set split position of test tool vertical split control
+	set_test_split_position (v: INTEGER) is
+			-- Set split position of test tool vertical split control.
 		require
 			v > 0
 		do
-			set_resource_value("default", "test_view_area_split_position", v.out)
+			set_resource_value ("default", "test_split_position", v.out)
 		end
 
-	set_explorer_view_area_split_position (v: INTEGER) is
-			-- set split position of explorer horizontal split control
+	set_explorer_split_position (v: INTEGER) is
+			-- Set split position of explorer horizontal split control.
 		require
 			v > 0
 		do
-			set_resource_value("default", "explorer_view_area_split_position", v.out)
+			set_resource_value ("default", "explorer_split_position", v.out)
 		end
 
 	set_app_width (v: INTEGER) is

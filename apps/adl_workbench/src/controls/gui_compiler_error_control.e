@@ -63,9 +63,7 @@ feature {NONE} -- Initialisation
 		require
 			a_main_window /= Void
 		do
-			create items.make (0)
 			create categories.make (Err_type_parse_error, Err_type_warning)
-
 			gui := a_main_window
 			make_for_grid (gui.compiler_output_grid)
 			grid.enable_tree
@@ -75,23 +73,12 @@ feature {NONE} -- Initialisation
 			gui_set: gui = a_main_window
 		end
 
-feature -- Status Report
-
-	has (ara: ARCH_REP_ARCHETYPE): BOOLEAN is
-			-- Is `ara' already in `grid'?
-		require
-			ara /= Void
-		do
-			Result := items.has (ara.id.as_string)
-		end
-
 feature -- Commands
 
 	clear is
 			-- Wipe out the content from `grid'.
 		do
 			grid.wipe_out
-			items.wipe_out
 			categories.discard_items
 
 			grid.insert_new_column (Col_category)
@@ -115,6 +102,7 @@ feature -- Commands
 			err_cat := ara.compiler_error_type
 
 			if err_cat /= Err_type_valid then
+				gui.status_notebook.select_item (grid)
 				cat_row := categories [err_cat]
 
 				if cat_row = Void then
@@ -147,24 +135,36 @@ feature -- Commands
 					categories.put (cat_row, err_cat)
 				end
 
-				if not has (ara) then
-					-- FIXME: really have to find a proper sorted position in the list...currently going at the end
-					row_idx := cat_row.subrow_count + 1
+				from
+					row_idx := 0
+					i := 1
+				until
+					i /= 1
+				loop
+					row_idx := row_idx + 1
+
+					if row_idx <= cat_row.subrow_count then
+						row := cat_row.subrow (row_idx)
+						row.collapse
+
+						if {other: !ARCH_REP_ARCHETYPE} row.subrow (1).data then
+							i := ara.id.three_way_comparison (other.id)
+						end
+					else
+						i := -1
+					end
+				end
+
+				if i = -1 then
 					cat_row.insert_subrow (row_idx)
 					row := cat_row.subrow (row_idx)
 					row.collapse_actions.extend (agent step_to_viewable_parent_of_selected_row)
 					row.insert_subrow (1)
-					subrow := row.subrow (1)
-					subrow.set_data (ara)
-					items.force (row, ara.id.as_string)
-					cat_row.expand
-				else
-					-- find the existing row and subrow
-					row := items [ara.id.as_string]
-					subrow := row.subrow (1)
 				end
 
-				-- Create the label & icon - which might have changed since last compile.
+				subrow := row.subrow (1)
+				subrow.set_data (ara)
+				cat_row.expand
 				create gli.make_with_text (utf8 (ara.id.as_string))
 				pixmap := pixmaps [ara.group_name]
 
@@ -175,11 +175,15 @@ feature -- Commands
 				gli.set_data (ara)
 				gli.set_tooltip (utf8 (ara.compiler_status))
 				gli.pointer_double_press_actions.force_extend (agent select_node_in_archetype_tree_view)
-				row.set_item (Col_location, gli)
+				row.set_item (col_location, gli)
+				row.expand
+				gli.enable_select
+				gli.ensure_visible
 
 				create gli.make_with_text (utf8 (ara.compiler_status))
-				subrow.set_item (Col_message, gli)
+				subrow.set_item (col_message, gli)
 				subrow.set_height (gli.text_height)
+				gli.ensure_visible
 
 				grid.column (Col_category).resize_to_content
 				grid.column (Col_location).resize_to_content
@@ -213,14 +217,10 @@ feature {NONE} -- Implementation
 		end
 
 	categories: ARRAY [EV_GRID_ROW]
-			-- rows containing category grouper in column 1
-
-	items: HASH_TABLE [EV_GRID_ROW, STRING]
-			-- IDs of archetypes that are displayed in the grid.
+			-- Rows containing category grouper in column 1.
 
 invariant
 	gui_attached: gui /= Void
-	items_attached: items /= Void
 	categories_attached: categories /= Void
 	correct_grid: grid = gui.compiler_output_grid
 

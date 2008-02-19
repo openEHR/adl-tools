@@ -7,13 +7,13 @@
   </Constant>
   <Constant>
    <type>INTEGER</type>
-   <Name>dialog_padding_width</Name>
-   <Value>15</Value>
+   <Name>min_combo_box_width</Name>
+   <Value>60</Value>
   </Constant>
   <Constant>
    <type>INTEGER</type>
-   <Name>min_combo_box_width</Name>
-   <Value>60</Value>
+   <Name>list_row_height</Name>
+   <Value>30</Value>
   </Constant>
   <Constant>
    <type>PIXMAP</type>
@@ -22,6 +22,11 @@
    <is_absolute>False</is_absolute>
    <Directory>icons</Directory>
    <Filename>openEHR.ico</Filename>
+  </Constant>
+  <Constant>
+   <type>FONT</type>
+   <Name>label_font</Name>
+   <Value>FamilySans;WeightBold;ShapeRegular;8;System</Value>
   </Constant>
   <Constant>
    <type>INTEGER</type>
@@ -60,11 +65,6 @@
   </Constant>
   <Constant>
    <type>INTEGER</type>
-   <Name>app_initial_width</Name>
-   <Value>1024</Value>
-  </Constant>
-  <Constant>
-   <type>INTEGER</type>
    <Name>max_arch_explorer_width</Name>
    <Value>180</Value>
   </Constant>
@@ -80,8 +80,8 @@
   </Constant>
   <Constant>
    <type>INTEGER</type>
-   <Name>app_min_width</Name>
-   <Value>500</Value>
+   <Name>arch_notebook_min_height</Name>
+   <Value>350</Value>
   </Constant>
   <Constant>
    <type>INTEGER</type>
@@ -95,8 +95,8 @@
   </Constant>
   <Constant>
    <type>INTEGER</type>
-   <Name>arch_notebook_min_height</Name>
-   <Value>350</Value>
+   <Name>app_initial_height</Name>
+   <Value>768</Value>
   </Constant>
   <Constant>
    <type>INTEGER</type>
@@ -110,8 +110,8 @@
   </Constant>
   <Constant>
    <type>INTEGER</type>
-   <Name>app_initial_height</Name>
-   <Value>768</Value>
+   <Name>app_min_width</Name>
+   <Value>500</Value>
   </Constant>
   <Constant>
    <type>INTEGER</type>
@@ -130,8 +130,8 @@
   </Constant>
   <Constant>
    <type>INTEGER</type>
-   <Name>desc_label_width</Name>
-   <Value>70</Value>
+   <Name>dialog_padding_width</Name>
+   <Value>15</Value>
   </Constant>
   <Constant>
    <type>INTEGER</type>
@@ -155,8 +155,8 @@
   </Constant>
   <Constant>
    <type>INTEGER</type>
-   <Name>list_row_height</Name>
-   <Value>30</Value>
+   <Name>desc_label_width</Name>
+   <Value>70</Value>
   </Constant>
   <Constant>
    <type>INTEGER</type>
@@ -169,15 +169,15 @@
    <Value>2000</Value>
   </Constant>
   <Constant>
-   <type>FONT</type>
-   <Name>label_font</Name>
-   <Value>FamilySans;WeightBold;ShapeRegular;8;System</Value>
+   <type>INTEGER</type>
+   <Name>app_initial_width</Name>
+   <Value>1024</Value>
   </Constant>
  </item>
  <item type="EV_DIALOG">
   <Internal_properties>
-   <id>110</id>
-   <name>repository_dialog</name>
+   <id>67</id>
+   <name>option_dialog</name>
    <Expanded>1</Expanded>
   </Internal_properties>
   <EV_COLORIZABLE>
@@ -185,12 +185,12 @@
   <EV_SENSITIVE>
   </EV_SENSITIVE>
   <EV_WIDGET>
-   <Minimum_height>260</Minimum_height>
+   <Minimum_height>270</Minimum_height>
   </EV_WIDGET>
   <EV_WINDOW>
    <Maximum_width>2000</Maximum_width>
-   <Maximum_height>260</Maximum_height>
-   <Title>ADL Workbench Repository Settings</Title>
+   <Maximum_height>270</Maximum_height>
+   <Title>ADL Workbench Options</Title>
   </EV_WINDOW>
   <EV_PIXMAPABLE>
   </EV_PIXMAPABLE>
@@ -198,7 +198,7 @@
   </EV_CONTAINER>
   <item type="EV_VERTICAL_BOX">
    <Internal_properties>
-    <id>118</id>
+    <id>125</id>
     <Expanded>1</Expanded>
    </Internal_properties>
    <EV_COLORIZABLE>
@@ -208,39 +208,16 @@
    <EV_WIDGET>
    </EV_WIDGET>
    <EV_BOX>
-    <Padding>3</Padding>
     <Border>20</Border>
-    <Is_item_expanded>0101010</Is_item_expanded>
+    <Is_item_expanded>1000010</Is_item_expanded>
    </EV_BOX>
    <EV_PIXMAPABLE>
    </EV_PIXMAPABLE>
    <EV_CONTAINER>
    </EV_CONTAINER>
-   <item type="EV_LABEL">
-    <Internal_properties>
-     <id>111</id>
-     <Expanded>0</Expanded>
-    </Internal_properties>
-    <EV_COLORIZABLE>
-    </EV_COLORIZABLE>
-    <EV_FONTABLE>
-    </EV_FONTABLE>
-    <EV_SENSITIVE>
-    </EV_SENSITIVE>
-    <EV_TEXTABLE>
-     <Text>Choose directories above where the archetypes are:</Text>
-    </EV_TEXTABLE>
-    <EV_TOOLTIPABLE>
-    </EV_TOOLTIPABLE>
-    <EV_WIDGET>
-    </EV_WIDGET>
-    <EV_TEXT_ALIGNABLE>
-    </EV_TEXT_ALIGNABLE>
-   </item>
    <item type="EV_HORIZONTAL_BOX">
     <Internal_properties>
-     <id>204</id>
-     <name>top_horizontal_box_for_cross_platform_cosmetic_padding</name>
+     <id>203</id>
      <Expanded>0</Expanded>
     </Internal_properties>
     <EV_COLORIZABLE>
@@ -256,229 +233,344 @@
     <EV_CONTAINER>
     </EV_CONTAINER>
    </item>
-   <item type="EV_FRAME">
+   <item type="EV_HORIZONTAL_BOX">
     <Internal_properties>
-     <id>142</id>
+     <id>126</id>
      <Expanded>1</Expanded>
     </Internal_properties>
     <EV_COLORIZABLE>
     </EV_COLORIZABLE>
-    <EV_FONTABLE>
-    </EV_FONTABLE>
-    <EV_SENSITIVE>
-    </EV_SENSITIVE>
-    <EV_TEXTABLE>
-     <Text>Reference Repository Path</Text>
-    </EV_TEXTABLE>
-    <EV_WIDGET>
-     <Minimum_width>600</Minimum_width>
-    </EV_WIDGET>
-    <EV_FRAME>
-    </EV_FRAME>
-    <EV_TEXT_ALIGNABLE>
-    </EV_TEXT_ALIGNABLE>
-    <EV_PIXMAPABLE>
-    </EV_PIXMAPABLE>
-    <EV_CONTAINER>
-    </EV_CONTAINER>
-    <item type="EV_HORIZONTAL_BOX">
-     <Internal_properties>
-      <id>143</id>
-      <Expanded>1</Expanded>
-     </Internal_properties>
-     <EV_COLORIZABLE>
-     </EV_COLORIZABLE>
-     <EV_SENSITIVE>
-     </EV_SENSITIVE>
-     <EV_WIDGET>
-     </EV_WIDGET>
-     <EV_BOX>
-      <Padding>10</Padding>
-      <Border>8</Border>
-      <Is_item_expanded>10</Is_item_expanded>
-     </EV_BOX>
-     <EV_PIXMAPABLE>
-     </EV_PIXMAPABLE>
-     <EV_CONTAINER>
-     </EV_CONTAINER>
-     <item type="EV_TEXT_FIELD">
-      <Internal_properties>
-       <id>112</id>
-       <name>repository_dialog_reference_path_text</name>
-       <Expanded>0</Expanded>
-      </Internal_properties>
-      <EV_COLORIZABLE>
-       <Background_color>
-        <Constant>editable_colour</Constant>
-       </Background_color>
-      </EV_COLORIZABLE>
-      <EV_FONTABLE>
-      </EV_FONTABLE>
-      <EV_SENSITIVE>
-      </EV_SENSITIVE>
-      <EV_TEXTABLE>
-      </EV_TEXTABLE>
-      <EV_TOOLTIPABLE>
-      </EV_TOOLTIPABLE>
-      <EV_WIDGET>
-       <Minimum_width>50</Minimum_width>
-      </EV_WIDGET>
-      <EV_TEXT_COMPONENT>
-      </EV_TEXT_COMPONENT>
-      <EV_TEXT_ALIGNABLE>
-      </EV_TEXT_ALIGNABLE>
-     </item>
-     <item type="EV_BUTTON">
-      <Internal_properties>
-       <id>113</id>
-       <name>repository_dialog_reference_path_browse_button</name>
-       <Expanded>0</Expanded>
-      </Internal_properties>
-      <EV_COLORIZABLE>
-      </EV_COLORIZABLE>
-      <EV_FONTABLE>
-      </EV_FONTABLE>
-      <EV_SENSITIVE>
-      </EV_SENSITIVE>
-      <EV_TEXTABLE>
-       <Text>Browse...</Text>
-      </EV_TEXTABLE>
-      <EV_TOOLTIPABLE>
-      </EV_TOOLTIPABLE>
-      <EV_WIDGET>
-       <Minimum_width>65</Minimum_width>
-      </EV_WIDGET>
-      <EV_TEXT_ALIGNABLE>
-      </EV_TEXT_ALIGNABLE>
-      <EV_PIXMAPABLE>
-      </EV_PIXMAPABLE>
-      <Events>
-       <Event>select_actions EV_BUTTON_ACTION_SEQUENCES get_reference_repository_path</Event>
-      </Events>
-     </item>
-    </item>
-   </item>
-   <item type="EV_HORIZONTAL_BOX">
-    <Internal_properties>
-     <id>206</id>
-     <name>middle_horizontal_box_for_cross_platform_cosmetic_padding</name>
-     <Expanded>0</Expanded>
-    </Internal_properties>
-    <EV_COLORIZABLE>
-    </EV_COLORIZABLE>
     <EV_SENSITIVE>
     </EV_SENSITIVE>
     <EV_WIDGET>
     </EV_WIDGET>
     <EV_BOX>
+     <Padding>10</Padding>
+     <Border>10</Border>
+     <Is_item_expanded>010</Is_item_expanded>
     </EV_BOX>
     <EV_PIXMAPABLE>
     </EV_PIXMAPABLE>
     <EV_CONTAINER>
     </EV_CONTAINER>
+    <item type="EV_LABEL">
+     <Internal_properties>
+      <id>68</id>
+      <Expanded>0</Expanded>
+     </Internal_properties>
+     <EV_COLORIZABLE>
+     </EV_COLORIZABLE>
+     <EV_FONTABLE>
+     </EV_FONTABLE>
+     <EV_SENSITIVE>
+     </EV_SENSITIVE>
+     <EV_TEXTABLE>
+      <Text>Editor:</Text>
+     </EV_TEXTABLE>
+     <EV_TOOLTIPABLE>
+     </EV_TOOLTIPABLE>
+     <EV_WIDGET>
+     </EV_WIDGET>
+     <EV_TEXT_ALIGNABLE>
+     </EV_TEXT_ALIGNABLE>
+    </item>
+    <item type="EV_TEXT_FIELD">
+     <Internal_properties>
+      <id>69</id>
+      <name>editor_command_text</name>
+      <Expanded>0</Expanded>
+     </Internal_properties>
+     <EV_COLORIZABLE>
+      <Background_color>
+       <Constant>editable_colour</Constant>
+      </Background_color>
+     </EV_COLORIZABLE>
+     <EV_FONTABLE>
+     </EV_FONTABLE>
+     <EV_SENSITIVE>
+     </EV_SENSITIVE>
+     <EV_TEXTABLE>
+     </EV_TEXTABLE>
+     <EV_TOOLTIPABLE>
+     </EV_TOOLTIPABLE>
+     <EV_WIDGET>
+      <Minimum_width>300</Minimum_width>
+     </EV_WIDGET>
+     <EV_TEXT_COMPONENT>
+     </EV_TEXT_COMPONENT>
+     <EV_TEXT_ALIGNABLE>
+     </EV_TEXT_ALIGNABLE>
+    </item>
+    <item type="EV_BUTTON">
+     <Internal_properties>
+      <id>70</id>
+      <name>editor_command_button</name>
+      <Expanded>0</Expanded>
+     </Internal_properties>
+     <EV_COLORIZABLE>
+     </EV_COLORIZABLE>
+     <EV_FONTABLE>
+     </EV_FONTABLE>
+     <EV_SENSITIVE>
+     </EV_SENSITIVE>
+     <EV_TEXTABLE>
+      <Text>Browse...</Text>
+     </EV_TEXTABLE>
+     <EV_TOOLTIPABLE>
+     </EV_TOOLTIPABLE>
+     <EV_WIDGET>
+      <Minimum_width>65</Minimum_width>
+     </EV_WIDGET>
+     <EV_TEXT_ALIGNABLE>
+     </EV_TEXT_ALIGNABLE>
+     <EV_PIXMAPABLE>
+     </EV_PIXMAPABLE>
+     <Events>
+      <Event>select_actions EV_BUTTON_ACTION_SEQUENCES get_editor_command_directory</Event>
+     </Events>
+    </item>
    </item>
-   <item type="EV_FRAME">
+   <item type="EV_HORIZONTAL_BOX">
     <Internal_properties>
-     <id>144</id>
+     <id>127</id>
      <Expanded>1</Expanded>
     </Internal_properties>
     <EV_COLORIZABLE>
     </EV_COLORIZABLE>
-    <EV_FONTABLE>
-    </EV_FONTABLE>
     <EV_SENSITIVE>
     </EV_SENSITIVE>
-    <EV_TEXTABLE>
-     <Text>Work Repository Path (Optional)</Text>
-    </EV_TEXTABLE>
     <EV_WIDGET>
-     <Minimum_width>600</Minimum_width>
     </EV_WIDGET>
-    <EV_FRAME>
-    </EV_FRAME>
-    <EV_TEXT_ALIGNABLE>
-    </EV_TEXT_ALIGNABLE>
+    <EV_BOX>
+     <Padding>10</Padding>
+     <Border>10</Border>
+     <Is_item_expanded>11</Is_item_expanded>
+    </EV_BOX>
     <EV_PIXMAPABLE>
     </EV_PIXMAPABLE>
     <EV_CONTAINER>
     </EV_CONTAINER>
-    <item type="EV_HORIZONTAL_BOX">
+    <item type="EV_CHECK_BUTTON">
      <Internal_properties>
-      <id>139</id>
-      <Expanded>1</Expanded>
+      <id>124</id>
+      <name>show_definition_tree_expanded_check_button</name>
+      <Expanded>0</Expanded>
      </Internal_properties>
      <EV_COLORIZABLE>
      </EV_COLORIZABLE>
+     <EV_FONTABLE>
+     </EV_FONTABLE>
+     <EV_DESELECTABLE>
+     </EV_DESELECTABLE>
      <EV_SENSITIVE>
      </EV_SENSITIVE>
+     <EV_TEXTABLE>
+      <Text>Show defiinition tree expanded?</Text>
+     </EV_TEXTABLE>
+     <EV_TOOLTIPABLE>
+     </EV_TOOLTIPABLE>
      <EV_WIDGET>
      </EV_WIDGET>
-     <EV_BOX>
-      <Padding>10</Padding>
-      <Border>8</Border>
-      <Is_item_expanded>10</Is_item_expanded>
-     </EV_BOX>
+     <EV_TEXT_ALIGNABLE>
+     </EV_TEXT_ALIGNABLE>
      <EV_PIXMAPABLE>
      </EV_PIXMAPABLE>
-     <EV_CONTAINER>
-     </EV_CONTAINER>
-     <item type="EV_TEXT_FIELD">
-      <Internal_properties>
-       <id>140</id>
-       <name>repository_dialog_work_path_text</name>
-       <Expanded>0</Expanded>
-      </Internal_properties>
-      <EV_COLORIZABLE>
-      </EV_COLORIZABLE>
-      <EV_FONTABLE>
-      </EV_FONTABLE>
-      <EV_SENSITIVE>
-      </EV_SENSITIVE>
-      <EV_TEXTABLE>
-      </EV_TEXTABLE>
-      <EV_TOOLTIPABLE>
-      </EV_TOOLTIPABLE>
-      <EV_WIDGET>
-      </EV_WIDGET>
-      <EV_TEXT_COMPONENT>
-      </EV_TEXT_COMPONENT>
-      <EV_TEXT_ALIGNABLE>
-      </EV_TEXT_ALIGNABLE>
-     </item>
-     <item type="EV_BUTTON">
-      <Internal_properties>
-       <id>141</id>
-       <name>repository_dialog_work_path_button</name>
-       <Expanded>0</Expanded>
-      </Internal_properties>
-      <EV_COLORIZABLE>
-      </EV_COLORIZABLE>
-      <EV_FONTABLE>
-      </EV_FONTABLE>
-      <EV_SENSITIVE>
-      </EV_SENSITIVE>
-      <EV_TEXTABLE>
-       <Text>Browse...</Text>
-      </EV_TEXTABLE>
-      <EV_TOOLTIPABLE>
-      </EV_TOOLTIPABLE>
-      <EV_WIDGET>
-       <Minimum_width>65</Minimum_width>
-      </EV_WIDGET>
-      <EV_TEXT_ALIGNABLE>
-      </EV_TEXT_ALIGNABLE>
-      <EV_PIXMAPABLE>
-      </EV_PIXMAPABLE>
-      <Events>
-       <Event>select_actions EV_BUTTON_ACTION_SEQUENCES get_work_repository_path</Event>
-      </Events>
-     </item>
+    </item>
+    <item type="EV_CHECK_BUTTON">
+     <Internal_properties>
+      <id>189</id>
+      <name>show_line_numbers_check_button</name>
+      <Expanded>0</Expanded>
+     </Internal_properties>
+     <EV_COLORIZABLE>
+     </EV_COLORIZABLE>
+     <EV_FONTABLE>
+     </EV_FONTABLE>
+     <EV_DESELECTABLE>
+     </EV_DESELECTABLE>
+     <EV_SENSITIVE>
+     </EV_SENSITIVE>
+     <EV_TEXTABLE>
+      <Text>Show line numbers in ADL source?</Text>
+     </EV_TEXTABLE>
+     <EV_TOOLTIPABLE>
+     </EV_TOOLTIPABLE>
+     <EV_WIDGET>
+     </EV_WIDGET>
+     <EV_TEXT_ALIGNABLE>
+     </EV_TEXT_ALIGNABLE>
+     <EV_PIXMAPABLE>
+     </EV_PIXMAPABLE>
     </item>
    </item>
    <item type="EV_HORIZONTAL_BOX">
     <Internal_properties>
-     <id>205</id>
-     <name>bottom_horizontal_box_for_cross_platform_cosmetic_padding</name>
+     <id>190</id>
+     <Expanded>1</Expanded>
+    </Internal_properties>
+    <EV_COLORIZABLE>
+    </EV_COLORIZABLE>
+    <EV_SENSITIVE>
+    </EV_SENSITIVE>
+    <EV_WIDGET>
+    </EV_WIDGET>
+    <EV_BOX>
+     <Padding>10</Padding>
+     <Border>10</Border>
+     <Is_item_expanded>00</Is_item_expanded>
+    </EV_BOX>
+    <EV_PIXMAPABLE>
+    </EV_PIXMAPABLE>
+    <EV_CONTAINER>
+    </EV_CONTAINER>
+    <item type="EV_LABEL">
+     <Internal_properties>
+      <id>192</id>
+      <Expanded>0</Expanded>
+     </Internal_properties>
+     <EV_COLORIZABLE>
+     </EV_COLORIZABLE>
+     <EV_FONTABLE>
+     </EV_FONTABLE>
+     <EV_SENSITIVE>
+     </EV_SENSITIVE>
+     <EV_TEXTABLE>
+      <Text>Parser error reporting level:</Text>
+     </EV_TEXTABLE>
+     <EV_TOOLTIPABLE>
+     </EV_TOOLTIPABLE>
+     <EV_WIDGET>
+     </EV_WIDGET>
+     <EV_TEXT_ALIGNABLE>
+     </EV_TEXT_ALIGNABLE>
+    </item>
+    <item type="EV_COMBO_BOX">
+     <Internal_properties>
+      <id>191</id>
+      <name>parser_error_reporting_level_combo_box</name>
+      <Expanded>0</Expanded>
+     </Internal_properties>
+     <EV_COLORIZABLE>
+     </EV_COLORIZABLE>
+     <EV_FONTABLE>
+     </EV_FONTABLE>
+     <EV_SENSITIVE>
+     </EV_SENSITIVE>
+     <EV_TEXTABLE>
+      <Text>Status Reporting Level</Text>
+     </EV_TEXTABLE>
+     <EV_TOOLTIPABLE>
+      <Tooltip>Select the level of parser messages to display. All levels &gt;= this level displayed.</Tooltip>
+     </EV_TOOLTIPABLE>
+     <EV_WIDGET>
+      <Minimum_width>200</Minimum_width>
+     </EV_WIDGET>
+     <EV_TEXT_COMPONENT>
+     </EV_TEXT_COMPONENT>
+     <EV_TEXT_ALIGNABLE>
+     </EV_TEXT_ALIGNABLE>
+    </item>
+   </item>
+   <item type="EV_HORIZONTAL_BOX">
+    <Internal_properties>
+     <id>198</id>
+     <Expanded>1</Expanded>
+    </Internal_properties>
+    <EV_COLORIZABLE>
+    </EV_COLORIZABLE>
+    <EV_SENSITIVE>
+    </EV_SENSITIVE>
+    <EV_WIDGET>
+    </EV_WIDGET>
+    <EV_BOX>
+     <Padding>10</Padding>
+     <Border>10</Border>
+     <Is_item_expanded>010</Is_item_expanded>
+    </EV_BOX>
+    <EV_PIXMAPABLE>
+    </EV_PIXMAPABLE>
+    <EV_CONTAINER>
+    </EV_CONTAINER>
+    <item type="EV_LABEL">
+     <Internal_properties>
+      <id>199</id>
+      <Expanded>0</Expanded>
+     </Internal_properties>
+     <EV_COLORIZABLE>
+     </EV_COLORIZABLE>
+     <EV_FONTABLE>
+     </EV_FONTABLE>
+     <EV_SENSITIVE>
+     </EV_SENSITIVE>
+     <EV_TEXTABLE>
+      <Text>Export HTML to:</Text>
+     </EV_TEXTABLE>
+     <EV_TOOLTIPABLE>
+     </EV_TOOLTIPABLE>
+     <EV_WIDGET>
+     </EV_WIDGET>
+     <EV_TEXT_ALIGNABLE>
+     </EV_TEXT_ALIGNABLE>
+    </item>
+    <item type="EV_TEXT_FIELD">
+     <Internal_properties>
+      <id>200</id>
+      <name>export_html_text</name>
+      <Expanded>0</Expanded>
+     </Internal_properties>
+     <EV_COLORIZABLE>
+      <Background_color>
+       <Constant>editable_colour</Constant>
+      </Background_color>
+     </EV_COLORIZABLE>
+     <EV_FONTABLE>
+     </EV_FONTABLE>
+     <EV_SENSITIVE>
+     </EV_SENSITIVE>
+     <EV_TEXTABLE>
+     </EV_TEXTABLE>
+     <EV_TOOLTIPABLE>
+     </EV_TOOLTIPABLE>
+     <EV_WIDGET>
+      <Minimum_width>300</Minimum_width>
+     </EV_WIDGET>
+     <EV_TEXT_COMPONENT>
+     </EV_TEXT_COMPONENT>
+     <EV_TEXT_ALIGNABLE>
+     </EV_TEXT_ALIGNABLE>
+    </item>
+    <item type="EV_BUTTON">
+     <Internal_properties>
+      <id>201</id>
+      <name>export_html_button</name>
+      <Expanded>0</Expanded>
+     </Internal_properties>
+     <EV_COLORIZABLE>
+     </EV_COLORIZABLE>
+     <EV_FONTABLE>
+     </EV_FONTABLE>
+     <EV_SENSITIVE>
+     </EV_SENSITIVE>
+     <EV_TEXTABLE>
+      <Text>Browse...</Text>
+     </EV_TEXTABLE>
+     <EV_TOOLTIPABLE>
+     </EV_TOOLTIPABLE>
+     <EV_WIDGET>
+      <Minimum_width>65</Minimum_width>
+     </EV_WIDGET>
+     <EV_TEXT_ALIGNABLE>
+     </EV_TEXT_ALIGNABLE>
+     <EV_PIXMAPABLE>
+     </EV_PIXMAPABLE>
+     <Events>
+      <Event>select_actions EV_BUTTON_ACTION_SEQUENCES get_html_export_directory</Event>
+     </Events>
+    </item>
+   </item>
+   <item type="EV_HORIZONTAL_BOX">
+    <Internal_properties>
+     <id>202</id>
      <Expanded>0</Expanded>
     </Internal_properties>
     <EV_COLORIZABLE>
@@ -496,7 +588,7 @@
    </item>
    <item type="EV_HORIZONTAL_BOX">
     <Internal_properties>
-     <id>114</id>
+     <id>128</id>
      <Expanded>1</Expanded>
     </Internal_properties>
     <EV_COLORIZABLE>
@@ -518,7 +610,7 @@
     </EV_CONTAINER>
     <item type="EV_CELL">
      <Internal_properties>
-      <id>115</id>
+      <id>129</id>
       <Expanded>0</Expanded>
      </Internal_properties>
      <EV_COLORIZABLE>
@@ -526,6 +618,7 @@
      <EV_SENSITIVE>
      </EV_SENSITIVE>
      <EV_WIDGET>
+      <Minimum_width>100</Minimum_width>
      </EV_WIDGET>
      <EV_PIXMAPABLE>
      </EV_PIXMAPABLE>
@@ -534,161 +627,7 @@
     </item>
     <item type="EV_BUTTON">
      <Internal_properties>
-      <id>116</id>
-      <name>repository_dialog_ok_button</name>
-      <Expanded>0</Expanded>
-     </Internal_properties>
-     <EV_COLORIZABLE>
-     </EV_COLORIZABLE>
-     <EV_FONTABLE>
-     </EV_FONTABLE>
-     <EV_SENSITIVE>
-     </EV_SENSITIVE>
-     <EV_TEXTABLE>
-      <Text>OK</Text>
-     </EV_TEXTABLE>
-     <EV_TOOLTIPABLE>
-     </EV_TOOLTIPABLE>
-     <EV_WIDGET>
-      <Minimum_width>100</Minimum_width>
-      <Minimum_height>26</Minimum_height>
-     </EV_WIDGET>
-     <EV_TEXT_ALIGNABLE>
-     </EV_TEXT_ALIGNABLE>
-     <EV_PIXMAPABLE>
-     </EV_PIXMAPABLE>
-     <Events>
-      <Event>select_actions EV_BUTTON_ACTION_SEQUENCES repository_dialog_ok</Event>
-     </Events>
-    </item>
-    <item type="EV_BUTTON">
-     <Internal_properties>
-      <id>117</id>
-      <name>repository_dialog_cancel_button</name>
-      <Expanded>0</Expanded>
-     </Internal_properties>
-     <EV_COLORIZABLE>
-     </EV_COLORIZABLE>
-     <EV_FONTABLE>
-     </EV_FONTABLE>
-     <EV_SENSITIVE>
-     </EV_SENSITIVE>
-     <EV_TEXTABLE>
-      <Text>Cancel</Text>
-     </EV_TEXTABLE>
-     <EV_TOOLTIPABLE>
-     </EV_TOOLTIPABLE>
-     <EV_WIDGET>
-      <Minimum_width>100</Minimum_width>
-      <Minimum_height>26</Minimum_height>
-     </EV_WIDGET>
-     <EV_TEXT_ALIGNABLE>
-     </EV_TEXT_ALIGNABLE>
-     <EV_PIXMAPABLE>
-     </EV_PIXMAPABLE>
-    </item>
-   </item>
-  </item>
- </item>
- <item type="EV_DIALOG">
-  <Internal_properties>
-   <id>80</id>
-   <name>icon_dialog</name>
-   <Expanded>1</Expanded>
-  </Internal_properties>
-  <EV_COLORIZABLE>
-  </EV_COLORIZABLE>
-  <EV_SENSITIVE>
-  </EV_SENSITIVE>
-  <EV_WIDGET>
-   <Minimum_width>450</Minimum_width>
-   <Minimum_height>700</Minimum_height>
-  </EV_WIDGET>
-  <EV_WINDOW>
-   <Title>ADL Workbench Icon Key</Title>
-  </EV_WINDOW>
-  <EV_PIXMAPABLE>
-  </EV_PIXMAPABLE>
-  <EV_CONTAINER>
-  </EV_CONTAINER>
-  <item type="EV_VERTICAL_BOX">
-   <Internal_properties>
-    <id>81</id>
-    <Expanded>1</Expanded>
-   </Internal_properties>
-   <EV_COLORIZABLE>
-   </EV_COLORIZABLE>
-   <EV_SENSITIVE>
-   </EV_SENSITIVE>
-   <EV_WIDGET>
-    <Minimum_width>340</Minimum_width>
-   </EV_WIDGET>
-   <EV_BOX>
-    <Is_item_expanded>10</Is_item_expanded>
-   </EV_BOX>
-   <EV_PIXMAPABLE>
-   </EV_PIXMAPABLE>
-   <EV_CONTAINER>
-   </EV_CONTAINER>
-   <item type="EV_LIST">
-    <Internal_properties>
-     <id>88</id>
-     <name>icon_help_list</name>
-     <Expanded>0</Expanded>
-    </Internal_properties>
-    <EV_COLORIZABLE>
-     <Background_color>
-      <Constant>editable_colour</Constant>
-     </Background_color>
-    </EV_COLORIZABLE>
-    <EV_SENSITIVE>
-    </EV_SENSITIVE>
-    <EV_TOOLTIPABLE>
-    </EV_TOOLTIPABLE>
-    <EV_WIDGET>
-     <Minimum_width>300</Minimum_width>
-     <Minimum_height>400</Minimum_height>
-    </EV_WIDGET>
-   </item>
-   <item type="EV_HORIZONTAL_BOX">
-    <Internal_properties>
-     <id>85</id>
-     <Expanded>1</Expanded>
-    </Internal_properties>
-    <EV_COLORIZABLE>
-    </EV_COLORIZABLE>
-    <EV_SENSITIVE>
-    </EV_SENSITIVE>
-    <EV_WIDGET>
-    </EV_WIDGET>
-    <EV_BOX>
-     <Padding>15</Padding>
-     <Border>10</Border>
-     <Is_item_expanded>101</Is_item_expanded>
-    </EV_BOX>
-    <EV_PIXMAPABLE>
-    </EV_PIXMAPABLE>
-    <EV_CONTAINER>
-    </EV_CONTAINER>
-    <item type="EV_CELL">
-     <Internal_properties>
-      <id>86</id>
-      <Expanded>0</Expanded>
-     </Internal_properties>
-     <EV_COLORIZABLE>
-     </EV_COLORIZABLE>
-     <EV_SENSITIVE>
-     </EV_SENSITIVE>
-     <EV_WIDGET>
-     </EV_WIDGET>
-     <EV_PIXMAPABLE>
-     </EV_PIXMAPABLE>
-     <EV_CONTAINER>
-     </EV_CONTAINER>
-    </item>
-    <item type="EV_BUTTON">
-     <Internal_properties>
-      <id>82</id>
+      <id>71</id>
       <name>ok_button</name>
       <Expanded>0</Expanded>
      </Internal_properties>
@@ -711,22 +650,35 @@
      </EV_TEXT_ALIGNABLE>
      <EV_PIXMAPABLE>
      </EV_PIXMAPABLE>
+     <Events>
+      <Event>select_actions EV_BUTTON_ACTION_SEQUENCES option_dialog_ok</Event>
+     </Events>
     </item>
-    <item type="EV_CELL">
+    <item type="EV_BUTTON">
      <Internal_properties>
-      <id>87</id>
+      <id>72</id>
+      <name>cancel_button</name>
       <Expanded>0</Expanded>
      </Internal_properties>
      <EV_COLORIZABLE>
      </EV_COLORIZABLE>
+     <EV_FONTABLE>
+     </EV_FONTABLE>
      <EV_SENSITIVE>
      </EV_SENSITIVE>
+     <EV_TEXTABLE>
+      <Text>Cancel</Text>
+     </EV_TEXTABLE>
+     <EV_TOOLTIPABLE>
+     </EV_TOOLTIPABLE>
      <EV_WIDGET>
+      <Minimum_width>100</Minimum_width>
+      <Minimum_height>26</Minimum_height>
      </EV_WIDGET>
+     <EV_TEXT_ALIGNABLE>
+     </EV_TEXT_ALIGNABLE>
      <EV_PIXMAPABLE>
      </EV_PIXMAPABLE>
-     <EV_CONTAINER>
-     </EV_CONTAINER>
     </item>
    </item>
   </item>
@@ -763,7 +715,7 @@
    <Internal_properties>
     <id>2</id>
     <name>menu</name>
-    <Expanded>1</Expanded>
+    <Expanded>0</Expanded>
    </Internal_properties>
    <item type="EV_MENU">
     <Internal_properties>
@@ -1369,7 +1321,7 @@
   <item type="EV_NOTEBOOK">
    <Internal_properties>
     <id>96</id>
-    <name>main_nb</name>
+    <name>main_notebook</name>
     <Expanded>1</Expanded>
    </Internal_properties>
    <EV_COLORIZABLE>
@@ -1421,7 +1373,7 @@
      <Internal_properties>
       <id>12</id>
       <name>action_bar</name>
-      <Expanded>1</Expanded>
+      <Expanded>0</Expanded>
      </Internal_properties>
      <EV_COLORIZABLE>
       <Foreground_color>064000000</Foreground_color>
@@ -1728,7 +1680,7 @@
     <item type="EV_HORIZONTAL_SPLIT_AREA">
      <Internal_properties>
       <id>16</id>
-      <name>explorer_view_area</name>
+      <name>explorer_split_area</name>
       <Expanded>1</Expanded>
      </Internal_properties>
      <EV_COLORIZABLE>
@@ -1774,7 +1726,7 @@
      <item type="EV_VERTICAL_SPLIT_AREA">
       <Internal_properties>
        <id>18</id>
-       <name>total_view_area</name>
+       <name>total_split_area</name>
        <Expanded>1</Expanded>
       </Internal_properties>
       <EV_COLORIZABLE>
@@ -1836,7 +1788,7 @@
        <item type="EV_VERTICAL_BOX">
         <Internal_properties>
          <id>20</id>
-         <name>arch_desc_area_vbox</name>
+         <name>description_box</name>
          <Expanded>0</Expanded>
         </Internal_properties>
         <EV_COLORIZABLE>
@@ -1881,7 +1833,7 @@
           <Internal_properties>
            <id>24</id>
            <name>arch_desc_auth_frame</name>
-           <Expanded>0</Expanded>
+           <Expanded>1</Expanded>
           </Internal_properties>
           <EV_COLORIZABLE>
           </EV_COLORIZABLE>
@@ -2327,7 +2279,7 @@
          <Internal_properties>
           <id>155</id>
           <name>arch_translations_frame</name>
-          <Expanded>1</Expanded>
+          <Expanded>0</Expanded>
          </Internal_properties>
          <EV_COLORIZABLE>
          </EV_COLORIZABLE>
@@ -2624,7 +2576,7 @@
          <Internal_properties>
           <id>29</id>
           <name>arch_desc_details_frame</name>
-          <Expanded>1</Expanded>
+          <Expanded>0</Expanded>
          </Internal_properties>
          <EV_COLORIZABLE>
          </EV_COLORIZABLE>
@@ -3003,7 +2955,7 @@
          <Internal_properties>
           <id>43</id>
           <name>arch_desc_resource_frame</name>
-          <Expanded>1</Expanded>
+          <Expanded>0</Expanded>
          </Internal_properties>
          <EV_COLORIZABLE>
          </EV_COLORIZABLE>
@@ -3290,8 +3242,8 @@ Resources</Text>
        <item type="EV_VERTICAL_SPLIT_AREA">
         <Internal_properties>
          <id>54</id>
-         <name>info_view_area</name>
-         <Expanded>0</Expanded>
+         <name>definition_split_area</name>
+         <Expanded>1</Expanded>
         </Internal_properties>
         <EV_COLORIZABLE>
          <Foreground_color>064000000</Foreground_color>
@@ -3312,7 +3264,7 @@ Resources</Text>
         <item type="EV_NOTEBOOK">
          <Internal_properties>
           <id>55</id>
-          <name>source_notebook</name>
+          <name>definition_notebook</name>
           <Expanded>1</Expanded>
          </Internal_properties>
          <EV_COLORIZABLE>
@@ -3400,7 +3352,7 @@ Resources</Text>
            <Internal_properties>
             <id>59</id>
             <name>tree_controls</name>
-            <Expanded>1</Expanded>
+            <Expanded>0</Expanded>
            </Internal_properties>
            <EV_COLORIZABLE>
            </EV_COLORIZABLE>
@@ -4004,7 +3956,7 @@ Resources</Text>
        <item type="EV_RICH_TEXT">
         <Internal_properties>
          <id>145</id>
-         <name>archetype_source_rich_text</name>
+         <name>source_rich_text</name>
          <Expanded>0</Expanded>
         </Internal_properties>
         <EV_COLORIZABLE>
@@ -4026,7 +3978,7 @@ Resources</Text>
        <item type="EV_VERTICAL_BOX">
         <Internal_properties>
          <id>99</id>
-         <name>arch_stats_vbox</name>
+         <name>statistics_box</name>
          <Expanded>1</Expanded>
         </Internal_properties>
         <EV_COLORIZABLE>
@@ -4449,6 +4401,7 @@ Resources</Text>
       <item type="EV_NOTEBOOK">
        <Internal_properties>
         <id>193</id>
+        <name>status_notebook</name>
         <Expanded>1</Expanded>
        </Internal_properties>
        <EV_COLORIZABLE>
@@ -4524,7 +4477,7 @@ Resources</Text>
    <item type="EV_VERTICAL_SPLIT_AREA">
     <Internal_properties>
      <id>108</id>
-     <name>test_view_area</name>
+     <name>test_split_area</name>
      <Expanded>0</Expanded>
     </Internal_properties>
     <EV_COLORIZABLE>
@@ -4862,8 +4815,8 @@ Resources</Text>
  </item>
  <item type="EV_DIALOG">
   <Internal_properties>
-   <id>67</id>
-   <name>option_dialog</name>
+   <id>80</id>
+   <name>icon_dialog</name>
    <Expanded>1</Expanded>
   </Internal_properties>
   <EV_COLORIZABLE>
@@ -4871,12 +4824,11 @@ Resources</Text>
   <EV_SENSITIVE>
   </EV_SENSITIVE>
   <EV_WIDGET>
-   <Minimum_height>270</Minimum_height>
+   <Minimum_width>450</Minimum_width>
+   <Minimum_height>700</Minimum_height>
   </EV_WIDGET>
   <EV_WINDOW>
-   <Maximum_width>2000</Maximum_width>
-   <Maximum_height>270</Maximum_height>
-   <Title>ADL Workbench Options</Title>
+   <Title>ADL Workbench Icon Key</Title>
   </EV_WINDOW>
   <EV_PIXMAPABLE>
   </EV_PIXMAPABLE>
@@ -4884,7 +4836,7 @@ Resources</Text>
   </EV_CONTAINER>
   <item type="EV_VERTICAL_BOX">
    <Internal_properties>
-    <id>125</id>
+    <id>81</id>
     <Expanded>1</Expanded>
    </Internal_properties>
    <EV_COLORIZABLE>
@@ -4892,389 +4844,38 @@ Resources</Text>
    <EV_SENSITIVE>
    </EV_SENSITIVE>
    <EV_WIDGET>
+    <Minimum_width>340</Minimum_width>
    </EV_WIDGET>
    <EV_BOX>
-    <Border>20</Border>
-    <Is_item_expanded>1000010</Is_item_expanded>
+    <Is_item_expanded>10</Is_item_expanded>
    </EV_BOX>
    <EV_PIXMAPABLE>
    </EV_PIXMAPABLE>
    <EV_CONTAINER>
    </EV_CONTAINER>
-   <item type="EV_HORIZONTAL_BOX">
+   <item type="EV_LIST">
     <Internal_properties>
-     <id>203</id>
+     <id>88</id>
+     <name>icon_help_list</name>
      <Expanded>0</Expanded>
     </Internal_properties>
     <EV_COLORIZABLE>
+     <Background_color>
+      <Constant>editable_colour</Constant>
+     </Background_color>
     </EV_COLORIZABLE>
     <EV_SENSITIVE>
     </EV_SENSITIVE>
+    <EV_TOOLTIPABLE>
+    </EV_TOOLTIPABLE>
     <EV_WIDGET>
+     <Minimum_width>300</Minimum_width>
+     <Minimum_height>400</Minimum_height>
     </EV_WIDGET>
-    <EV_BOX>
-    </EV_BOX>
-    <EV_PIXMAPABLE>
-    </EV_PIXMAPABLE>
-    <EV_CONTAINER>
-    </EV_CONTAINER>
    </item>
    <item type="EV_HORIZONTAL_BOX">
     <Internal_properties>
-     <id>126</id>
-     <Expanded>1</Expanded>
-    </Internal_properties>
-    <EV_COLORIZABLE>
-    </EV_COLORIZABLE>
-    <EV_SENSITIVE>
-    </EV_SENSITIVE>
-    <EV_WIDGET>
-    </EV_WIDGET>
-    <EV_BOX>
-     <Padding>10</Padding>
-     <Border>10</Border>
-     <Is_item_expanded>010</Is_item_expanded>
-    </EV_BOX>
-    <EV_PIXMAPABLE>
-    </EV_PIXMAPABLE>
-    <EV_CONTAINER>
-    </EV_CONTAINER>
-    <item type="EV_LABEL">
-     <Internal_properties>
-      <id>68</id>
-      <Expanded>0</Expanded>
-     </Internal_properties>
-     <EV_COLORIZABLE>
-     </EV_COLORIZABLE>
-     <EV_FONTABLE>
-     </EV_FONTABLE>
-     <EV_SENSITIVE>
-     </EV_SENSITIVE>
-     <EV_TEXTABLE>
-      <Text>Editor:</Text>
-     </EV_TEXTABLE>
-     <EV_TOOLTIPABLE>
-     </EV_TOOLTIPABLE>
-     <EV_WIDGET>
-     </EV_WIDGET>
-     <EV_TEXT_ALIGNABLE>
-     </EV_TEXT_ALIGNABLE>
-    </item>
-    <item type="EV_TEXT_FIELD">
-     <Internal_properties>
-      <id>69</id>
-      <name>editor_command_text</name>
-      <Expanded>0</Expanded>
-     </Internal_properties>
-     <EV_COLORIZABLE>
-      <Background_color>
-       <Constant>editable_colour</Constant>
-      </Background_color>
-     </EV_COLORIZABLE>
-     <EV_FONTABLE>
-     </EV_FONTABLE>
-     <EV_SENSITIVE>
-     </EV_SENSITIVE>
-     <EV_TEXTABLE>
-     </EV_TEXTABLE>
-     <EV_TOOLTIPABLE>
-     </EV_TOOLTIPABLE>
-     <EV_WIDGET>
-      <Minimum_width>300</Minimum_width>
-     </EV_WIDGET>
-     <EV_TEXT_COMPONENT>
-     </EV_TEXT_COMPONENT>
-     <EV_TEXT_ALIGNABLE>
-     </EV_TEXT_ALIGNABLE>
-    </item>
-    <item type="EV_BUTTON">
-     <Internal_properties>
-      <id>70</id>
-      <name>editor_command_button</name>
-      <Expanded>0</Expanded>
-     </Internal_properties>
-     <EV_COLORIZABLE>
-     </EV_COLORIZABLE>
-     <EV_FONTABLE>
-     </EV_FONTABLE>
-     <EV_SENSITIVE>
-     </EV_SENSITIVE>
-     <EV_TEXTABLE>
-      <Text>Browse...</Text>
-     </EV_TEXTABLE>
-     <EV_TOOLTIPABLE>
-     </EV_TOOLTIPABLE>
-     <EV_WIDGET>
-      <Minimum_width>65</Minimum_width>
-     </EV_WIDGET>
-     <EV_TEXT_ALIGNABLE>
-     </EV_TEXT_ALIGNABLE>
-     <EV_PIXMAPABLE>
-     </EV_PIXMAPABLE>
-     <Events>
-      <Event>select_actions EV_BUTTON_ACTION_SEQUENCES get_editor_command_directory</Event>
-     </Events>
-    </item>
-   </item>
-   <item type="EV_HORIZONTAL_BOX">
-    <Internal_properties>
-     <id>127</id>
-     <Expanded>1</Expanded>
-    </Internal_properties>
-    <EV_COLORIZABLE>
-    </EV_COLORIZABLE>
-    <EV_SENSITIVE>
-    </EV_SENSITIVE>
-    <EV_WIDGET>
-    </EV_WIDGET>
-    <EV_BOX>
-     <Padding>10</Padding>
-     <Border>10</Border>
-     <Is_item_expanded>11</Is_item_expanded>
-    </EV_BOX>
-    <EV_PIXMAPABLE>
-    </EV_PIXMAPABLE>
-    <EV_CONTAINER>
-    </EV_CONTAINER>
-    <item type="EV_CHECK_BUTTON">
-     <Internal_properties>
-      <id>124</id>
-      <name>show_definition_tree_expanded_check_button</name>
-      <Expanded>0</Expanded>
-     </Internal_properties>
-     <EV_COLORIZABLE>
-     </EV_COLORIZABLE>
-     <EV_FONTABLE>
-     </EV_FONTABLE>
-     <EV_DESELECTABLE>
-     </EV_DESELECTABLE>
-     <EV_SENSITIVE>
-     </EV_SENSITIVE>
-     <EV_TEXTABLE>
-      <Text>Show defiinition tree expanded?</Text>
-     </EV_TEXTABLE>
-     <EV_TOOLTIPABLE>
-     </EV_TOOLTIPABLE>
-     <EV_WIDGET>
-     </EV_WIDGET>
-     <EV_TEXT_ALIGNABLE>
-     </EV_TEXT_ALIGNABLE>
-     <EV_PIXMAPABLE>
-     </EV_PIXMAPABLE>
-    </item>
-    <item type="EV_CHECK_BUTTON">
-     <Internal_properties>
-      <id>189</id>
-      <name>show_line_numbers_check_button</name>
-      <Expanded>0</Expanded>
-     </Internal_properties>
-     <EV_COLORIZABLE>
-     </EV_COLORIZABLE>
-     <EV_FONTABLE>
-     </EV_FONTABLE>
-     <EV_DESELECTABLE>
-     </EV_DESELECTABLE>
-     <EV_SENSITIVE>
-     </EV_SENSITIVE>
-     <EV_TEXTABLE>
-      <Text>Show line numbers in ADL source?</Text>
-     </EV_TEXTABLE>
-     <EV_TOOLTIPABLE>
-     </EV_TOOLTIPABLE>
-     <EV_WIDGET>
-     </EV_WIDGET>
-     <EV_TEXT_ALIGNABLE>
-     </EV_TEXT_ALIGNABLE>
-     <EV_PIXMAPABLE>
-     </EV_PIXMAPABLE>
-    </item>
-   </item>
-   <item type="EV_HORIZONTAL_BOX">
-    <Internal_properties>
-     <id>190</id>
-     <Expanded>1</Expanded>
-    </Internal_properties>
-    <EV_COLORIZABLE>
-    </EV_COLORIZABLE>
-    <EV_SENSITIVE>
-    </EV_SENSITIVE>
-    <EV_WIDGET>
-    </EV_WIDGET>
-    <EV_BOX>
-     <Padding>10</Padding>
-     <Border>10</Border>
-     <Is_item_expanded>00</Is_item_expanded>
-    </EV_BOX>
-    <EV_PIXMAPABLE>
-    </EV_PIXMAPABLE>
-    <EV_CONTAINER>
-    </EV_CONTAINER>
-    <item type="EV_LABEL">
-     <Internal_properties>
-      <id>192</id>
-      <Expanded>0</Expanded>
-     </Internal_properties>
-     <EV_COLORIZABLE>
-     </EV_COLORIZABLE>
-     <EV_FONTABLE>
-     </EV_FONTABLE>
-     <EV_SENSITIVE>
-     </EV_SENSITIVE>
-     <EV_TEXTABLE>
-      <Text>Parser error reporting level:</Text>
-     </EV_TEXTABLE>
-     <EV_TOOLTIPABLE>
-     </EV_TOOLTIPABLE>
-     <EV_WIDGET>
-     </EV_WIDGET>
-     <EV_TEXT_ALIGNABLE>
-     </EV_TEXT_ALIGNABLE>
-    </item>
-    <item type="EV_COMBO_BOX">
-     <Internal_properties>
-      <id>191</id>
-      <name>parser_error_reporting_level_combo_box</name>
-      <Expanded>0</Expanded>
-     </Internal_properties>
-     <EV_COLORIZABLE>
-     </EV_COLORIZABLE>
-     <EV_FONTABLE>
-     </EV_FONTABLE>
-     <EV_SENSITIVE>
-     </EV_SENSITIVE>
-     <EV_TEXTABLE>
-      <Text>Status Reporting Level</Text>
-     </EV_TEXTABLE>
-     <EV_TOOLTIPABLE>
-      <Tooltip>Select the level of parser messages to display. All levels &gt;= this level displayed.</Tooltip>
-     </EV_TOOLTIPABLE>
-     <EV_WIDGET>
-      <Minimum_width>200</Minimum_width>
-     </EV_WIDGET>
-     <EV_TEXT_COMPONENT>
-     </EV_TEXT_COMPONENT>
-     <EV_TEXT_ALIGNABLE>
-     </EV_TEXT_ALIGNABLE>
-    </item>
-   </item>
-   <item type="EV_HORIZONTAL_BOX">
-    <Internal_properties>
-     <id>198</id>
-     <Expanded>1</Expanded>
-    </Internal_properties>
-    <EV_COLORIZABLE>
-    </EV_COLORIZABLE>
-    <EV_SENSITIVE>
-    </EV_SENSITIVE>
-    <EV_WIDGET>
-    </EV_WIDGET>
-    <EV_BOX>
-     <Padding>10</Padding>
-     <Border>10</Border>
-     <Is_item_expanded>010</Is_item_expanded>
-    </EV_BOX>
-    <EV_PIXMAPABLE>
-    </EV_PIXMAPABLE>
-    <EV_CONTAINER>
-    </EV_CONTAINER>
-    <item type="EV_LABEL">
-     <Internal_properties>
-      <id>199</id>
-      <Expanded>0</Expanded>
-     </Internal_properties>
-     <EV_COLORIZABLE>
-     </EV_COLORIZABLE>
-     <EV_FONTABLE>
-     </EV_FONTABLE>
-     <EV_SENSITIVE>
-     </EV_SENSITIVE>
-     <EV_TEXTABLE>
-      <Text>Export HTML to:</Text>
-     </EV_TEXTABLE>
-     <EV_TOOLTIPABLE>
-     </EV_TOOLTIPABLE>
-     <EV_WIDGET>
-     </EV_WIDGET>
-     <EV_TEXT_ALIGNABLE>
-     </EV_TEXT_ALIGNABLE>
-    </item>
-    <item type="EV_TEXT_FIELD">
-     <Internal_properties>
-      <id>200</id>
-      <name>export_html_text</name>
-      <Expanded>0</Expanded>
-     </Internal_properties>
-     <EV_COLORIZABLE>
-      <Background_color>
-       <Constant>editable_colour</Constant>
-      </Background_color>
-     </EV_COLORIZABLE>
-     <EV_FONTABLE>
-     </EV_FONTABLE>
-     <EV_SENSITIVE>
-     </EV_SENSITIVE>
-     <EV_TEXTABLE>
-     </EV_TEXTABLE>
-     <EV_TOOLTIPABLE>
-     </EV_TOOLTIPABLE>
-     <EV_WIDGET>
-      <Minimum_width>300</Minimum_width>
-     </EV_WIDGET>
-     <EV_TEXT_COMPONENT>
-     </EV_TEXT_COMPONENT>
-     <EV_TEXT_ALIGNABLE>
-     </EV_TEXT_ALIGNABLE>
-    </item>
-    <item type="EV_BUTTON">
-     <Internal_properties>
-      <id>201</id>
-      <name>export_html_button</name>
-      <Expanded>0</Expanded>
-     </Internal_properties>
-     <EV_COLORIZABLE>
-     </EV_COLORIZABLE>
-     <EV_FONTABLE>
-     </EV_FONTABLE>
-     <EV_SENSITIVE>
-     </EV_SENSITIVE>
-     <EV_TEXTABLE>
-      <Text>Browse...</Text>
-     </EV_TEXTABLE>
-     <EV_TOOLTIPABLE>
-     </EV_TOOLTIPABLE>
-     <EV_WIDGET>
-      <Minimum_width>65</Minimum_width>
-     </EV_WIDGET>
-     <EV_TEXT_ALIGNABLE>
-     </EV_TEXT_ALIGNABLE>
-     <EV_PIXMAPABLE>
-     </EV_PIXMAPABLE>
-     <Events>
-      <Event>select_actions EV_BUTTON_ACTION_SEQUENCES get_html_export_directory</Event>
-     </Events>
-    </item>
-   </item>
-   <item type="EV_HORIZONTAL_BOX">
-    <Internal_properties>
-     <id>202</id>
-     <Expanded>0</Expanded>
-    </Internal_properties>
-    <EV_COLORIZABLE>
-    </EV_COLORIZABLE>
-    <EV_SENSITIVE>
-    </EV_SENSITIVE>
-    <EV_WIDGET>
-    </EV_WIDGET>
-    <EV_BOX>
-    </EV_BOX>
-    <EV_PIXMAPABLE>
-    </EV_PIXMAPABLE>
-    <EV_CONTAINER>
-    </EV_CONTAINER>
-   </item>
-   <item type="EV_HORIZONTAL_BOX">
-    <Internal_properties>
-     <id>128</id>
+     <id>85</id>
      <Expanded>1</Expanded>
     </Internal_properties>
     <EV_COLORIZABLE>
@@ -5285,10 +4886,8 @@ Resources</Text>
     </EV_WIDGET>
     <EV_BOX>
      <Padding>15</Padding>
-     <Border>
-      <Constant>border_width</Constant>
-     </Border>
-     <Is_item_expanded>100</Is_item_expanded>
+     <Border>10</Border>
+     <Is_item_expanded>101</Is_item_expanded>
     </EV_BOX>
     <EV_PIXMAPABLE>
     </EV_PIXMAPABLE>
@@ -5296,7 +4895,7 @@ Resources</Text>
     </EV_CONTAINER>
     <item type="EV_CELL">
      <Internal_properties>
-      <id>129</id>
+      <id>86</id>
       <Expanded>0</Expanded>
      </Internal_properties>
      <EV_COLORIZABLE>
@@ -5304,7 +4903,6 @@ Resources</Text>
      <EV_SENSITIVE>
      </EV_SENSITIVE>
      <EV_WIDGET>
-      <Minimum_width>100</Minimum_width>
      </EV_WIDGET>
      <EV_PIXMAPABLE>
      </EV_PIXMAPABLE>
@@ -5313,7 +4911,7 @@ Resources</Text>
     </item>
     <item type="EV_BUTTON">
      <Internal_properties>
-      <id>71</id>
+      <id>82</id>
       <name>ok_button</name>
       <Expanded>0</Expanded>
      </Internal_properties>
@@ -5336,14 +4934,417 @@ Resources</Text>
      </EV_TEXT_ALIGNABLE>
      <EV_PIXMAPABLE>
      </EV_PIXMAPABLE>
+    </item>
+    <item type="EV_CELL">
+     <Internal_properties>
+      <id>87</id>
+      <Expanded>0</Expanded>
+     </Internal_properties>
+     <EV_COLORIZABLE>
+     </EV_COLORIZABLE>
+     <EV_SENSITIVE>
+     </EV_SENSITIVE>
+     <EV_WIDGET>
+     </EV_WIDGET>
+     <EV_PIXMAPABLE>
+     </EV_PIXMAPABLE>
+     <EV_CONTAINER>
+     </EV_CONTAINER>
+    </item>
+   </item>
+  </item>
+ </item>
+ <item type="EV_DIALOG">
+  <Internal_properties>
+   <id>110</id>
+   <name>repository_dialog</name>
+   <Expanded>1</Expanded>
+  </Internal_properties>
+  <EV_COLORIZABLE>
+  </EV_COLORIZABLE>
+  <EV_SENSITIVE>
+  </EV_SENSITIVE>
+  <EV_WIDGET>
+   <Minimum_height>260</Minimum_height>
+  </EV_WIDGET>
+  <EV_WINDOW>
+   <Maximum_width>2000</Maximum_width>
+   <Maximum_height>260</Maximum_height>
+   <Title>ADL Workbench Repository Settings</Title>
+  </EV_WINDOW>
+  <EV_PIXMAPABLE>
+  </EV_PIXMAPABLE>
+  <EV_CONTAINER>
+  </EV_CONTAINER>
+  <item type="EV_VERTICAL_BOX">
+   <Internal_properties>
+    <id>118</id>
+    <Expanded>1</Expanded>
+   </Internal_properties>
+   <EV_COLORIZABLE>
+   </EV_COLORIZABLE>
+   <EV_SENSITIVE>
+   </EV_SENSITIVE>
+   <EV_WIDGET>
+   </EV_WIDGET>
+   <EV_BOX>
+    <Padding>3</Padding>
+    <Border>20</Border>
+    <Is_item_expanded>0101010</Is_item_expanded>
+   </EV_BOX>
+   <EV_PIXMAPABLE>
+   </EV_PIXMAPABLE>
+   <EV_CONTAINER>
+   </EV_CONTAINER>
+   <item type="EV_LABEL">
+    <Internal_properties>
+     <id>111</id>
+     <Expanded>0</Expanded>
+    </Internal_properties>
+    <EV_COLORIZABLE>
+    </EV_COLORIZABLE>
+    <EV_FONTABLE>
+    </EV_FONTABLE>
+    <EV_SENSITIVE>
+    </EV_SENSITIVE>
+    <EV_TEXTABLE>
+     <Text>Choose directories above where the archetypes are:</Text>
+    </EV_TEXTABLE>
+    <EV_TOOLTIPABLE>
+    </EV_TOOLTIPABLE>
+    <EV_WIDGET>
+    </EV_WIDGET>
+    <EV_TEXT_ALIGNABLE>
+    </EV_TEXT_ALIGNABLE>
+   </item>
+   <item type="EV_HORIZONTAL_BOX">
+    <Internal_properties>
+     <id>204</id>
+     <name>top_horizontal_box_for_cross_platform_cosmetic_padding</name>
+     <Expanded>0</Expanded>
+    </Internal_properties>
+    <EV_COLORIZABLE>
+    </EV_COLORIZABLE>
+    <EV_SENSITIVE>
+    </EV_SENSITIVE>
+    <EV_WIDGET>
+    </EV_WIDGET>
+    <EV_BOX>
+    </EV_BOX>
+    <EV_PIXMAPABLE>
+    </EV_PIXMAPABLE>
+    <EV_CONTAINER>
+    </EV_CONTAINER>
+   </item>
+   <item type="EV_FRAME">
+    <Internal_properties>
+     <id>142</id>
+     <Expanded>1</Expanded>
+    </Internal_properties>
+    <EV_COLORIZABLE>
+    </EV_COLORIZABLE>
+    <EV_FONTABLE>
+    </EV_FONTABLE>
+    <EV_SENSITIVE>
+    </EV_SENSITIVE>
+    <EV_TEXTABLE>
+     <Text>Reference Repository Path</Text>
+    </EV_TEXTABLE>
+    <EV_WIDGET>
+     <Minimum_width>600</Minimum_width>
+    </EV_WIDGET>
+    <EV_FRAME>
+    </EV_FRAME>
+    <EV_TEXT_ALIGNABLE>
+    </EV_TEXT_ALIGNABLE>
+    <EV_PIXMAPABLE>
+    </EV_PIXMAPABLE>
+    <EV_CONTAINER>
+    </EV_CONTAINER>
+    <item type="EV_HORIZONTAL_BOX">
+     <Internal_properties>
+      <id>143</id>
+      <Expanded>1</Expanded>
+     </Internal_properties>
+     <EV_COLORIZABLE>
+     </EV_COLORIZABLE>
+     <EV_SENSITIVE>
+     </EV_SENSITIVE>
+     <EV_WIDGET>
+     </EV_WIDGET>
+     <EV_BOX>
+      <Padding>10</Padding>
+      <Border>8</Border>
+      <Is_item_expanded>10</Is_item_expanded>
+     </EV_BOX>
+     <EV_PIXMAPABLE>
+     </EV_PIXMAPABLE>
+     <EV_CONTAINER>
+     </EV_CONTAINER>
+     <item type="EV_TEXT_FIELD">
+      <Internal_properties>
+       <id>112</id>
+       <name>repository_dialog_reference_path_text</name>
+       <Expanded>0</Expanded>
+      </Internal_properties>
+      <EV_COLORIZABLE>
+       <Background_color>
+        <Constant>editable_colour</Constant>
+       </Background_color>
+      </EV_COLORIZABLE>
+      <EV_FONTABLE>
+      </EV_FONTABLE>
+      <EV_SENSITIVE>
+      </EV_SENSITIVE>
+      <EV_TEXTABLE>
+      </EV_TEXTABLE>
+      <EV_TOOLTIPABLE>
+      </EV_TOOLTIPABLE>
+      <EV_WIDGET>
+       <Minimum_width>50</Minimum_width>
+      </EV_WIDGET>
+      <EV_TEXT_COMPONENT>
+      </EV_TEXT_COMPONENT>
+      <EV_TEXT_ALIGNABLE>
+      </EV_TEXT_ALIGNABLE>
+     </item>
+     <item type="EV_BUTTON">
+      <Internal_properties>
+       <id>113</id>
+       <name>repository_dialog_reference_path_browse_button</name>
+       <Expanded>0</Expanded>
+      </Internal_properties>
+      <EV_COLORIZABLE>
+      </EV_COLORIZABLE>
+      <EV_FONTABLE>
+      </EV_FONTABLE>
+      <EV_SENSITIVE>
+      </EV_SENSITIVE>
+      <EV_TEXTABLE>
+       <Text>Browse...</Text>
+      </EV_TEXTABLE>
+      <EV_TOOLTIPABLE>
+      </EV_TOOLTIPABLE>
+      <EV_WIDGET>
+       <Minimum_width>65</Minimum_width>
+      </EV_WIDGET>
+      <EV_TEXT_ALIGNABLE>
+      </EV_TEXT_ALIGNABLE>
+      <EV_PIXMAPABLE>
+      </EV_PIXMAPABLE>
+      <Events>
+       <Event>select_actions EV_BUTTON_ACTION_SEQUENCES get_reference_repository_path</Event>
+      </Events>
+     </item>
+    </item>
+   </item>
+   <item type="EV_HORIZONTAL_BOX">
+    <Internal_properties>
+     <id>206</id>
+     <name>middle_horizontal_box_for_cross_platform_cosmetic_padding</name>
+     <Expanded>0</Expanded>
+    </Internal_properties>
+    <EV_COLORIZABLE>
+    </EV_COLORIZABLE>
+    <EV_SENSITIVE>
+    </EV_SENSITIVE>
+    <EV_WIDGET>
+    </EV_WIDGET>
+    <EV_BOX>
+    </EV_BOX>
+    <EV_PIXMAPABLE>
+    </EV_PIXMAPABLE>
+    <EV_CONTAINER>
+    </EV_CONTAINER>
+   </item>
+   <item type="EV_FRAME">
+    <Internal_properties>
+     <id>144</id>
+     <Expanded>1</Expanded>
+    </Internal_properties>
+    <EV_COLORIZABLE>
+    </EV_COLORIZABLE>
+    <EV_FONTABLE>
+    </EV_FONTABLE>
+    <EV_SENSITIVE>
+    </EV_SENSITIVE>
+    <EV_TEXTABLE>
+     <Text>Work Repository Path (Optional)</Text>
+    </EV_TEXTABLE>
+    <EV_WIDGET>
+     <Minimum_width>600</Minimum_width>
+    </EV_WIDGET>
+    <EV_FRAME>
+    </EV_FRAME>
+    <EV_TEXT_ALIGNABLE>
+    </EV_TEXT_ALIGNABLE>
+    <EV_PIXMAPABLE>
+    </EV_PIXMAPABLE>
+    <EV_CONTAINER>
+    </EV_CONTAINER>
+    <item type="EV_HORIZONTAL_BOX">
+     <Internal_properties>
+      <id>139</id>
+      <Expanded>1</Expanded>
+     </Internal_properties>
+     <EV_COLORIZABLE>
+     </EV_COLORIZABLE>
+     <EV_SENSITIVE>
+     </EV_SENSITIVE>
+     <EV_WIDGET>
+     </EV_WIDGET>
+     <EV_BOX>
+      <Padding>10</Padding>
+      <Border>8</Border>
+      <Is_item_expanded>10</Is_item_expanded>
+     </EV_BOX>
+     <EV_PIXMAPABLE>
+     </EV_PIXMAPABLE>
+     <EV_CONTAINER>
+     </EV_CONTAINER>
+     <item type="EV_TEXT_FIELD">
+      <Internal_properties>
+       <id>140</id>
+       <name>repository_dialog_work_path_text</name>
+       <Expanded>0</Expanded>
+      </Internal_properties>
+      <EV_COLORIZABLE>
+      </EV_COLORIZABLE>
+      <EV_FONTABLE>
+      </EV_FONTABLE>
+      <EV_SENSITIVE>
+      </EV_SENSITIVE>
+      <EV_TEXTABLE>
+      </EV_TEXTABLE>
+      <EV_TOOLTIPABLE>
+      </EV_TOOLTIPABLE>
+      <EV_WIDGET>
+      </EV_WIDGET>
+      <EV_TEXT_COMPONENT>
+      </EV_TEXT_COMPONENT>
+      <EV_TEXT_ALIGNABLE>
+      </EV_TEXT_ALIGNABLE>
+     </item>
+     <item type="EV_BUTTON">
+      <Internal_properties>
+       <id>141</id>
+       <name>repository_dialog_work_path_button</name>
+       <Expanded>0</Expanded>
+      </Internal_properties>
+      <EV_COLORIZABLE>
+      </EV_COLORIZABLE>
+      <EV_FONTABLE>
+      </EV_FONTABLE>
+      <EV_SENSITIVE>
+      </EV_SENSITIVE>
+      <EV_TEXTABLE>
+       <Text>Browse...</Text>
+      </EV_TEXTABLE>
+      <EV_TOOLTIPABLE>
+      </EV_TOOLTIPABLE>
+      <EV_WIDGET>
+       <Minimum_width>65</Minimum_width>
+      </EV_WIDGET>
+      <EV_TEXT_ALIGNABLE>
+      </EV_TEXT_ALIGNABLE>
+      <EV_PIXMAPABLE>
+      </EV_PIXMAPABLE>
+      <Events>
+       <Event>select_actions EV_BUTTON_ACTION_SEQUENCES get_work_repository_path</Event>
+      </Events>
+     </item>
+    </item>
+   </item>
+   <item type="EV_HORIZONTAL_BOX">
+    <Internal_properties>
+     <id>205</id>
+     <name>bottom_horizontal_box_for_cross_platform_cosmetic_padding</name>
+     <Expanded>0</Expanded>
+    </Internal_properties>
+    <EV_COLORIZABLE>
+    </EV_COLORIZABLE>
+    <EV_SENSITIVE>
+    </EV_SENSITIVE>
+    <EV_WIDGET>
+    </EV_WIDGET>
+    <EV_BOX>
+    </EV_BOX>
+    <EV_PIXMAPABLE>
+    </EV_PIXMAPABLE>
+    <EV_CONTAINER>
+    </EV_CONTAINER>
+   </item>
+   <item type="EV_HORIZONTAL_BOX">
+    <Internal_properties>
+     <id>114</id>
+     <Expanded>1</Expanded>
+    </Internal_properties>
+    <EV_COLORIZABLE>
+    </EV_COLORIZABLE>
+    <EV_SENSITIVE>
+    </EV_SENSITIVE>
+    <EV_WIDGET>
+    </EV_WIDGET>
+    <EV_BOX>
+     <Padding>15</Padding>
+     <Border>
+      <Constant>border_width</Constant>
+     </Border>
+     <Is_item_expanded>100</Is_item_expanded>
+    </EV_BOX>
+    <EV_PIXMAPABLE>
+    </EV_PIXMAPABLE>
+    <EV_CONTAINER>
+    </EV_CONTAINER>
+    <item type="EV_CELL">
+     <Internal_properties>
+      <id>115</id>
+      <Expanded>0</Expanded>
+     </Internal_properties>
+     <EV_COLORIZABLE>
+     </EV_COLORIZABLE>
+     <EV_SENSITIVE>
+     </EV_SENSITIVE>
+     <EV_WIDGET>
+     </EV_WIDGET>
+     <EV_PIXMAPABLE>
+     </EV_PIXMAPABLE>
+     <EV_CONTAINER>
+     </EV_CONTAINER>
+    </item>
+    <item type="EV_BUTTON">
+     <Internal_properties>
+      <id>116</id>
+      <name>repository_dialog_ok_button</name>
+      <Expanded>0</Expanded>
+     </Internal_properties>
+     <EV_COLORIZABLE>
+     </EV_COLORIZABLE>
+     <EV_FONTABLE>
+     </EV_FONTABLE>
+     <EV_SENSITIVE>
+     </EV_SENSITIVE>
+     <EV_TEXTABLE>
+      <Text>OK</Text>
+     </EV_TEXTABLE>
+     <EV_TOOLTIPABLE>
+     </EV_TOOLTIPABLE>
+     <EV_WIDGET>
+      <Minimum_width>100</Minimum_width>
+      <Minimum_height>26</Minimum_height>
+     </EV_WIDGET>
+     <EV_TEXT_ALIGNABLE>
+     </EV_TEXT_ALIGNABLE>
+     <EV_PIXMAPABLE>
+     </EV_PIXMAPABLE>
      <Events>
-      <Event>select_actions EV_BUTTON_ACTION_SEQUENCES option_dialog_ok</Event>
+      <Event>select_actions EV_BUTTON_ACTION_SEQUENCES repository_dialog_ok</Event>
      </Events>
     </item>
     <item type="EV_BUTTON">
      <Internal_properties>
-      <id>72</id>
-      <name>cancel_button</name>
+      <id>117</id>
+      <name>repository_dialog_cancel_button</name>
       <Expanded>0</Expanded>
      </Internal_properties>
      <EV_COLORIZABLE>
