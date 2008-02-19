@@ -4,10 +4,6 @@ from Eiffel import files
 EnsurePythonVersion(2, 4)
 EnsureSConsVersion(0, 97, 0)
 
-# Temporary hack to try to fix CruiseControl, which should be overwriting local changes but instead is getting conflicts.
-os.remove('libraries/version/openehr_version.e')
-os.remove('apps/adl_workbench/app/adl_workbench.rc')
-
 env = Environment(ENV = os.environ, tools = ['Eiffel'], toolpath = ['.'])
 
 if env['PLATFORM'] == 'win32': platform = 'windows'
