@@ -169,11 +169,13 @@ feature -- Access
 		end
 
 	specialisation_depth_from_code(a_code: STRING): INTEGER is
-			-- infer number of levels of specialisation from concept code
+			-- Infer number of levels of specialisation from `a_code'.
 		require
-			Code_valid: a_code /= Void and then is_valid_code(a_code)
+			code_valid: a_code /= Void and then is_valid_code (a_code)
 		do
 			Result := a_code.occurrences (Specialisation_separator)
+		ensure
+			non_negative: Result >= 0
 		end
 
 	specialised_code_tail(a_code: STRING): STRING is

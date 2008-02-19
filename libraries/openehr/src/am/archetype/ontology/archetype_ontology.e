@@ -107,6 +107,8 @@ feature -- Access
 			-- depth of this ontology with relation to ontologies in other archetypes
 		do
 			Result := specialisation_depth_from_code (concept_code)
+		ensure
+			non_negative: Result >= 0
 		end
 
 	term_definition(a_lang, a_term_code: STRING): ARCHETYPE_TERM is
@@ -1049,15 +1051,15 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 			end
 		end
 
-	update_specialised_codes(a_code: STRING) is
-			-- update specialised_term_codes list with new code, if it happens to be specialised
+	update_specialised_codes (a_code: STRING) is
+			-- Update specialised_term_codes list with new code, if it happens to be specialised.
 		require
-			Code_valid: a_code /= Void and then not a_code.is_empty
+			Code_valid: a_code /= Void and then is_valid_code (a_code)
 		local
 			parent_code: STRING
 		do
 			if specialisation_depth_from_code (a_code) > 0 then
-				parent_code := specialisation_parent_from_code(a_code)
+				parent_code := specialisation_parent_from_code (a_code)
 
 				if not specialised_codes.has (parent_code) then
 					specialised_codes.force (create {TWO_WAY_SORTED_SET [STRING]}.make, parent_code)
@@ -1072,7 +1074,7 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 			-- spec depth = 0: at0047 -> use the 0047 & compare with current highest
 			-- spec depth = 3: at0.0.12 -> use the 12 & compare with current highest
 		require
-			Code_valid: a_code /= Void
+			Code_valid: a_code /= Void and then is_valid_code (a_code)
 		local
 			idx: INTEGER
 			idx_string: STRING
@@ -1092,7 +1094,7 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 			-- update highest_constraint_code_index for this level;
 			-- ignore acXXXX codes not of the level of this archetype
 		require
-			Code_valid: a_code /= Void
+			Code_valid: a_code /= Void and then is_valid_code (a_code)
 		local
 			idx: INTEGER
 			idx_string: STRING

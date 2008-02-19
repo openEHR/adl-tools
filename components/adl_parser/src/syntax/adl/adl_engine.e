@@ -127,7 +127,7 @@ feature {NONE} -- Implementation
 			if adl_parser.syntax_error then
 				parse_error_text := adl_parser.error_text
 			elseif not valid_concept_code (adl_parser.concept) then
-				parse_error_text := "invalid concept code %"" + adl_parser.concept + "%""
+				parse_error_text := "concept code " + adl_parser.concept + " is invalid"
 			else
 				------------------- language section ---------------
 				if adl_parser.language_text /= Void and then not adl_parser.language_text.is_empty then
