@@ -105,7 +105,7 @@ feature {NONE} -- Grid events
 								row.collapse
 							end
 						elseif key.code = key_left then
-							if selected_cell.column.index = 1 then
+							if selected_cell.column.index = row.index_of_first_item then
 								if row.is_expanded then
 									row.collapse
 								elseif row.parent_row /= Void then
