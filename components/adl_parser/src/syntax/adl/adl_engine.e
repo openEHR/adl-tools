@@ -116,10 +116,8 @@ feature {NONE} -- Implementation
 			language_error, description_error, invariant_error: BOOLEAN
 			res_desc: RESOURCE_DESCRIPTION
 			orig_lang_trans: LANGUAGE_TRANSLATIONS
-			arch_ont: ARCHETYPE_ONTOLOGY
-			flat_arch_ont: FLAT_ARCHETYPE_ONTOLOGY
-			diff_arch_ont: DIFFERENTIAL_ARCHETYPE_ONTOLOGY
-			orig_lang: STRING
+			differential_ontology: !DIFFERENTIAL_ARCHETYPE_ONTOLOGY
+			flat_ontology: !FLAT_ARCHETYPE_ONTOLOGY
 		do
 			create adl_parser.make
 			adl_parser.execute(text)
@@ -183,57 +181,41 @@ feature {NONE} -- Implementation
 								------------------- ontology section ---------------
 								ontology_context.set_source(adl_parser.ontology_text, adl_parser.ontology_text_start_line)
 								ontology_context.parse
+
 								if not ontology_context.parse_succeeded then
 									parse_error_text := ontology_context.parse_error_text
 								else
-									-- if there was a language section, get the original language
-									if orig_lang_trans /= Void then
-										orig_lang := orig_lang_trans.original_language.code_string
-									end
-
-									-- this call will forgive the first argument being Void for the moment
 									if is_differential_source then
-										create {DIFFERENTIAL_ARCHETYPE_ONTOLOGY} arch_ont.make_from_tree(orig_lang, ontology_context.tree, adl_parser.concept)
-									else
-										create {FLAT_ARCHETYPE_ONTOLOGY} arch_ont.make_from_tree(orig_lang, ontology_context.tree, adl_parser.concept)
-									end
-
-									-- if there was no language section, mine the original_language and translations from the ontology
-									if orig_lang_trans = Void then
-										orig_lang := arch_ont.primary_language
-										create orig_lang_trans.make
-										orig_lang_trans.set_original_language_from_string(orig_lang)
-										from
-											arch_ont.languages_available.start
-										until
-											arch_ont.languages_available.off
-										loop
-											if not arch_ont.languages_available.item.is_equal(arch_ont.primary_language) then
-												orig_lang_trans.add_new_translation (arch_ont.languages_available.item)
-											end
-											arch_ont.languages_available.forth
+										if orig_lang_trans /= Void then
+											create differential_ontology.make_from_tree (orig_lang_trans.original_language.code_string, ontology_context.tree, adl_parser.concept)
+										else
+											create differential_ontology.make_from_tree (Void, ontology_context.tree, adl_parser.concept)
+											orig_lang_trans := original_language_and_translations_from_ontology (differential_ontology)
 										end
-									end
 
-									if is_differential_source then
-										diff_arch_ont ?= arch_ont
-										create {DIFFERENTIAL_ARCHETYPE} Result.make(
+										create {DIFFERENTIAL_ARCHETYPE} Result.make (
 											adl_parser.archetype_id,
 											adl_parser.concept,
-											orig_lang,
+											orig_lang_trans.original_language.code_string,
 											res_desc,	-- may be Void
 											definition_context.tree,
-											diff_arch_ont
+											differential_ontology
 										)
 									else
-										flat_arch_ont ?= arch_ont
-										create {FLAT_ARCHETYPE} Result.make(
+										if orig_lang_trans /= Void then
+											create flat_ontology.make_from_tree (orig_lang_trans.original_language.code_string, ontology_context.tree, adl_parser.concept)
+										else
+											create flat_ontology.make_from_tree (Void, ontology_context.tree, adl_parser.concept)
+											orig_lang_trans := original_language_and_translations_from_ontology (flat_ontology)
+										end
+
+										create {FLAT_ARCHETYPE} Result.make (
 											adl_parser.archetype_id,
 											adl_parser.concept,
-											orig_lang,
+											orig_lang_trans.original_language.code_string,
 											res_desc,	-- may be Void
 											definition_context.tree,
-											flat_arch_ont
+											flat_ontology
 										)
 									end
 
@@ -310,6 +292,28 @@ feature {NONE} -- Implementation
 				invariant_context.set_tree(an_archetype.invariants)
 			end
 			ontology_context.set_tree(an_archetype.ontology.representation)
+		end
+
+	original_language_and_translations_from_ontology (ontology: !ARCHETYPE_ONTOLOGY): !LANGUAGE_TRANSLATIONS
+			-- The original language and translations, mined from `ontology'.
+		local
+			languages: SEQUENCE [STRING]
+		do
+			create Result.make
+			Result.set_original_language_from_string (ontology.primary_language)
+
+			from
+				languages := ontology.languages_available
+				languages.start
+			until
+				languages.off
+			loop
+				if not languages.item.is_equal (ontology.primary_language) then
+					Result.add_new_translation (languages.item)
+				end
+
+				languages.forth
+			end
 		end
 
 end

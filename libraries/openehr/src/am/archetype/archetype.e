@@ -42,7 +42,6 @@ feature -- Initialisation
 			Concept_exists: a_concept_code /= Void and then valid_concept_code(a_concept_code)
 			Language_valid: an_original_language /= Void and then not an_original_language.is_empty
 			Definition_exists: a_definition /= Void
-			Ontology_exists: an_ontology /= Void
 		do
 			adl_version := 	Current_adl_version
 			archetype_id := an_id
@@ -79,7 +78,6 @@ feature -- Initialisation
 			Translations_valid: a_translations /= Void implies not a_translations.is_empty
 			Definition_exists: a_definition /= Void
 			Invariants_valid: an_invariants /= Void implies not an_invariants.is_empty
-			Ontology_exists: an_ontology /= Void
 		do
 			make(an_id, a_concept_code,
 					an_original_language, a_description,
@@ -132,7 +130,7 @@ feature -- Access
 
 	invariants: ARRAYED_LIST[ASSERTION]
 
-	ontology: ARCHETYPE_ONTOLOGY
+	ontology: !ARCHETYPE_ONTOLOGY
 
 	physical_paths: ARRAYED_LIST [STRING] is
 			-- generate physical paths from definition structure; if no changes made on archetype,
@@ -391,9 +389,7 @@ feature -- Modification
 			invariants := assn_list
 		end
 
-	set_ontology(a_node: like ontology) is
-		require
-			a_node /= Void
+	set_ontology (a_node: like ontology) is
 		do
 			ontology := a_node
 		end
@@ -617,7 +613,6 @@ invariant
 	Description_exists: description /= Void
 	Definition_exists: definition /= Void
 	Invariants_valid: invariants /= Void implies not invariants.is_empty
-	Ontology_exists: ontology /= Void
 	RM_type_validity: definition.rm_type_name.as_lower.is_equal(archetype_id.rm_entity.as_lower)
 	Specialisation_validity: is_specialised implies (specialisation_depth > 0 and parent_archetype_id /= Void)
 

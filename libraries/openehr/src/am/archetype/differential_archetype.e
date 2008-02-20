@@ -112,7 +112,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	ontology: DIFFERENTIAL_ARCHETYPE_ONTOLOGY
+	ontology: !DIFFERENTIAL_ARCHETYPE_ONTOLOGY
 
 	ontology_unused_term_codes: ARRAYED_LIST[STRING]
 			-- list of at codes found in ontology that are not referenced

@@ -263,10 +263,10 @@ feature -- Modification
 
 feature -- Factory
 
-	to_differential: DIFFERENTIAL_ARCHETYPE_ONTOLOGY is
-			-- create a differential version from this flat ontology
+	to_differential: !DIFFERENTIAL_ARCHETYPE_ONTOLOGY
+			-- Create a differential version from this flat ontology.
 		do
-			create Result.make_from_flat(Current)
+			create Result.make_from_flat (Current)
 		end
 
 feature {ARCHETYPE_ONTOLOGY} -- Implementation

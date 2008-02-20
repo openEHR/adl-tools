@@ -130,23 +130,23 @@ feature -- Status Report
 			Result := errors.is_empty
 		end
 
-	has_term_code(a_term_code: STRING): BOOLEAN is
-			-- is `a_term_code' known in this ontology
+	has_term_code (a_term_code: STRING): BOOLEAN is
+			-- Is `a_term_code' known in this ontology?
 		do
 			if specialisation_depth_from_code (a_term_code) = specialisation_depth then
-				Result := term_codes.has(a_term_code)
-			else
-				Result := parent_ontology.has_term_code(a_term_code)
+				Result := term_codes.has (a_term_code)
+			elseif parent_ontology /= Void then
+				Result := parent_ontology.has_term_code (a_term_code)
 			end
 		end
 
-	has_constraint_code(a_constraint_code: STRING): BOOLEAN is
-			--
+	has_constraint_code (a_constraint_code: STRING): BOOLEAN is
+			-- Is `a_constraint_code' known in this ontology?
 		do
 			if specialisation_depth_from_code (a_constraint_code) = specialisation_depth then
-				Result := constraint_codes.has(a_constraint_code)
-			else
-				Result := parent_ontology.has_constraint_code(a_constraint_code)
+				Result := constraint_codes.has (a_constraint_code)
+			elseif parent_ontology /= Void then
+				Result := parent_ontology.has_constraint_code (a_constraint_code)
 			end
 		end
 
@@ -465,8 +465,8 @@ feature -- Factory
 
 feature -- Conversion
 
-	to_flat: FLAT_ARCHETYPE_ONTOLOGY is
-			-- create a flat version
+	to_flat: !FLAT_ARCHETYPE_ONTOLOGY
+			-- Create a flat version from this differential ontology.
 		do
 			create Result.make_from_tree (primary_language.deep_twin, representation.deep_twin, concept_code.deep_twin)
 		end

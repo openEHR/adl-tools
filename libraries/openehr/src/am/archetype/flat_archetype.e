@@ -37,7 +37,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	ontology: FLAT_ARCHETYPE_ONTOLOGY
+	ontology: !FLAT_ARCHETYPE_ONTOLOGY
 
 feature -- Factory
 

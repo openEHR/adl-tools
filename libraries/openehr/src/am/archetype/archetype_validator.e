@@ -52,8 +52,8 @@ feature -- Access
 	target: DIFFERENTIAL_ARCHETYPE
 			-- archetype descriptor
 
-	ontology: ARCHETYPE_ONTOLOGY is
-			-- the ontology of the current archetype
+	ontology: !ARCHETYPE_ONTOLOGY is
+			-- The ontology of the current archetype.
 		do
 			Result := target.ontology
 		end
@@ -70,13 +70,14 @@ feature -- Validation
 			if passed then
 				target.build_xrefs
 				report_unused_ontology_codes
+
 				if target.has_slots then
 					build_slot_id_index
 				end
 			end
 
 			if passed then
-				precursor
+				Precursor
 				validate_languages
 				check_unidentified_nodes
 			end
@@ -96,9 +97,11 @@ feature -- Validation
 
 			if passed then
 				validate_found_codes
+
 				if target.is_specialised then
 					target.build_rolled_up_status
 				end
+
 				validate_internal_references
 				validate_invariants
 			end
@@ -106,19 +109,18 @@ feature -- Validation
 
 feature {NONE} -- Implementation
 
-	validate_basics is
+	validate_basics
 			-- are basic features of archetype structurally intact and correct?
 			-- into account validity with respect to parent archetypes.
 		do
 			passed := False
+
 			if target.archetype_id = Void then
 				errors.append("Error: no archetype_id%N")
 			elseif target.definition = Void then
 				errors.append("Error: no definition%N")
 			elseif target.invariants /= Void and target.invariants.is_empty then
 				errors.append("Error: invariants cannot be empty if specified")
-			elseif ontology = Void then
-				errors.append("Error: no ontology%N")
 			elseif not target.definition.rm_type_name.is_equal (target.archetype_id.rm_entity) then
 				errors.append("Error: archetype id type %"" + target.archetype_id.rm_entity +
 								"%" does not match type %"" + target.definition.rm_type_name +
@@ -145,13 +147,14 @@ feature {NONE} -- Implementation
 			-- is languages_available list same as languages in ontology?
 		end
 
-	validate_ontology_code_spec_levels is
-			-- see if there are any codes in the ontology that should not be there - either or lower or higher
-			-- level of specialisation
+	validate_ontology_code_spec_levels
+			-- See if there are any codes in the ontology that should not be there - either or lower or higher
+			-- level of specialisation.
 		local
-			code_list: TWO_WAY_SORTED_SET[STRING]
+			code_list: TWO_WAY_SORTED_SET [STRING]
 		do
 			code_list := ontology.term_codes
+
 			from
 				code_list.start
 			until
@@ -161,9 +164,12 @@ feature {NONE} -- Implementation
 					passed := False
 					errors.append("Error: at-code " + code_list.item + " in ontology more specialised than archetype%N")
 				end
+
 				code_list.forth
 			end
+
 			code_list := ontology.constraint_codes
+
 			from
 				code_list.start
 			until
@@ -173,73 +179,87 @@ feature {NONE} -- Implementation
 					passed := False
 					errors.append("Error: ac-code " + code_list.item + " in ontology more specialised than archetype%N")
 				end
+
 				code_list.forth
 			end
 		end
 
-	validate_found_codes is
-			-- True if all found node_ids are defined in term_definitions,
-			-- and term_definitions contains no extras
+	validate_found_codes
+			-- Leave `passed' True if all found node_ids are defined in term_definitions,
+			-- and term_definitions contains no extras.
 		local
-			a_codes: HASH_TABLE[ARRAYED_LIST[C_OBJECT], STRING]
+			a_codes: HASH_TABLE [ARRAYED_LIST [C_OBJECT], STRING]
+			depth: INTEGER
 		do
+			depth := ontology.specialisation_depth
+
 			-- see if all found codes are in each language table
 			a_codes := target.id_atcodes_index
+
 			from
 				a_codes.start
 			until
 				a_codes.off
 			loop
-				if not ontology.has_term_code(a_codes.key_for_iteration) then
+				if specialisation_depth_from_code (a_codes.key_for_iteration) > depth then
 					passed := False
-					errors.append("Error: node id at-code " + a_codes.key_for_iteration + " not defined in ontology%N")
+					errors.append ("Error: at-code " + a_codes.key_for_iteration + " used in archetype more specialised than archetype%N")
+				elseif not ontology.has_term_code (a_codes.key_for_iteration) then
+					passed := False
+					errors.append ("Error: node id at-code " + a_codes.key_for_iteration + " not defined in ontology%N")
 				end
+
 				a_codes.forth
 			end
 
 			-- see if every found leaf term code (in an ORDINAL or a CODED_TERM) is in ontology
 			a_codes := target.data_atcodes_index
+
 			from
 				a_codes.start
 			until
 				a_codes.off
 			loop
-				if specialisation_depth_from_code (a_codes.key_for_iteration) > ontology.specialisation_depth then
+				if specialisation_depth_from_code (a_codes.key_for_iteration) > depth then
 					passed := False
-					errors.append("Error: at-code " + a_codes.key_for_iteration + " used in archetype more specialised than archetype%N")
-				elseif not ontology.has_term_code(a_codes.key_for_iteration) then
+					errors.append ("Error: at-code " + a_codes.key_for_iteration + " used in archetype more specialised than archetype%N")
+				elseif not ontology.has_term_code (a_codes.key_for_iteration) then
 					passed := False
-					errors.append("Error: leaf at-code " + a_codes.key_for_iteration + " not defined in ontology%N")
+					errors.append ("Error: leaf at-code " + a_codes.key_for_iteration + " not defined in ontology%N")
 				end
+
 				a_codes.forth
 			end
 
 			-- check if all found constraint_codes are defined in constraint_definitions,
 			a_codes := target.accodes_index
+
 			from
 				a_codes.start
 			until
 				a_codes.off
 			loop
-				if specialisation_depth_from_code (a_codes.key_for_iteration) > ontology.specialisation_depth then
+				if specialisation_depth_from_code (a_codes.key_for_iteration) > depth then
 					passed := False
-					errors.append("Error: ac-code " + a_codes.key_for_iteration + " used in archetype more specialised than archetype%N")
-				elseif not ontology.has_constraint_code(a_codes.key_for_iteration) then
+					errors.append ("Error: ac-code " + a_codes.key_for_iteration + " used in archetype more specialised than archetype%N")
+				elseif not ontology.has_constraint_code (a_codes.key_for_iteration) then
 					passed := False
-					errors.append("Error: found ac-code " + a_codes.key_for_iteration + " not defined in all languages in ontology%N")
+					errors.append ("Error: found ac-code " + a_codes.key_for_iteration + " not defined in all languages in ontology%N")
 				end
+
 				a_codes.forth
 			end
 		end
 
-	validate_internal_references is
-			-- validate items in `found_internal_references'
+	validate_internal_references
+			-- Validate items in `found_internal_references'.
 		local
-			use_refs: HASH_TABLE[ARRAYED_LIST[ARCHETYPE_INTERNAL_REF], STRING]
+			use_refs: HASH_TABLE [ARRAYED_LIST [ARCHETYPE_INTERNAL_REF], STRING]
 			found: BOOLEAN
 			arch: DIFFERENTIAL_ARCHETYPE
 		do
 			use_refs := target.use_node_index
+
 			from
 				use_refs.start
 			until
@@ -255,12 +275,14 @@ feature {NONE} -- Implementation
 					arch := arch.parent_archetype
 					found := arch.definition.has_path (use_refs.key_for_iteration)
 				end
+
 				if found then
-					convert_use_ref_paths(use_refs.item_for_iteration, use_refs.key_for_iteration, arch)
+					convert_use_ref_paths (use_refs.item_for_iteration, use_refs.key_for_iteration, arch)
 				else
 					passed := False
-					errors.append("Error: use_node path " + use_refs.key_for_iteration + " not found in archetype%N")
+					errors.append ("Error: use_node path " + use_refs.key_for_iteration + " not found in archetype%N")
 				end
+
 				use_refs.forth
 			end
 		end
