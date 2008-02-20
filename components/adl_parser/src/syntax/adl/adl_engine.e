@@ -79,12 +79,13 @@ feature -- Commands
 			Result ?= parse(text, False)
 		end
 
-	serialise(an_archetype: ARCHETYPE; a_format: STRING):STRING is
+	serialise (an_archetype: ARCHETYPE; a_format: STRING):STRING is
 			-- serialise current archetype into format, using the supplied ontology. For serialising
 			-- any form of archetype, the flat-form ontology has to be supplied
 		require
-			Format_valid: has_archetype_serialiser_format(a_format)
-			Archetype_valid: an_archetype.is_valid
+			archetype_attached: an_archetype /= Void
+			archetype_valid: an_archetype.is_valid
+			format_valid: has_archetype_serialiser_format (a_format)
 		do
 			synchronise_from_archetype(an_archetype)
 			language_context.serialise(a_format)
@@ -138,6 +139,7 @@ feature {NONE} -- Implementation
 				else
 					language_context.reset
 				end
+
 				if not language_error then
 					if language_context.tree /= Void then
 						orig_lang_trans ?= language_context.tree.as_object (trans_det_id)
@@ -154,6 +156,7 @@ feature {NONE} -- Implementation
 					else
 						description_context.reset
 					end
+
 					if not description_error then
 						if description_context.tree /= Void then
 							res_desc ?= description_context.tree.as_object (res_desc_id)
@@ -179,7 +182,7 @@ feature {NONE} -- Implementation
 
 							if not invariant_error then
 								------------------- ontology section ---------------
-								ontology_context.set_source(adl_parser.ontology_text, adl_parser.ontology_text_start_line)
+								ontology_context.set_source (adl_parser.ontology_text, adl_parser.ontology_text_start_line)
 								ontology_context.parse
 
 								if not ontology_context.parse_succeeded then

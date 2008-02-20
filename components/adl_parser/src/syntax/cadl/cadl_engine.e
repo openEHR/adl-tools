@@ -20,40 +20,39 @@ inherit
 			{ANY} has_c_serialiser_format
 		end
 
-creation
+create
 	make
 
-feature -- Initialisation
+feature {NONE} -- Initialisation
 
 	make is
 		do
 		end
 
-	reset is
-			-- clear current state
-		do
-			source := Void
-			tree := Void
-			serialised := Void
-		end
-
 feature -- Access
 
 	source: STRING
-			-- source of current artifact
+			-- Source of current artifact.
 
 	source_start_line: INTEGER
-			-- defaults to 0; can be set to line number of dADL text inside some other document
+			-- Defaults to 0; can be set to line number of cADL text inside some other document.
 
 	tree: C_COMPLEX_OBJECT
-			-- set if parse succeeded
+			-- Set if parse succeeded.
 
 	serialised: STRING
+			-- The last result of calling `serialise'.
 
 	parse_error_text: STRING is
-			-- result of last parse
+			-- Result of last parse.
 		do
-			Result := parser.error_text
+			if parser /= Void then
+				Result := parser.error_text
+			else
+				create Result.make_empty
+			end
+		ensure
+			attached: Result /= Void
 		end
 
 feature -- Status Report
@@ -69,30 +68,40 @@ feature -- Status Report
 
 feature -- Commands
 
-	set_source(in_text: STRING; a_source_start_line: INTEGER) is
-			-- set `in_text' as working artifact
+	reset
+			-- Clear current state.
+		do
+			source := Void
+			tree := Void
+			serialised := Void
+		end
+
+	set_source (in_text: STRING; a_source_start_line: INTEGER) is
+			-- Set `in_text' as working artifact.
 		require
-			Text_valid: in_text /= Void and then not in_text.is_empty
-			Start_line_valid: a_source_start_line > 0
+			text_attached: in_text /= Void
+			start_line_positive: a_source_start_line > 0
 		do
 			source := in_text
 			source_start_line := a_source_start_line
 			in_parse_mode := True
 		ensure
-			in_parse_mode
+			source_set: source = in_text
+			source_start_line_set: source_start_line = a_source_start_line
+			parsing: in_parse_mode
 		end
 
-	parse is
-			-- parse artifact. If successful, `tree' contains the parse
-			-- structure. Then validate the artifact
+	parse
+			-- Parse artifact into `tree', then validate the artifact.
 		require
-			Source_exists: source /= Void
-			in_parse_mode
+			source_attached: source /= Void
+			parsing: in_parse_mode
 		do
 			tree := Void
 			serialised := Void
 			create parser.make
-			parser.execute(source, source_start_line)
+			parser.execute (source, source_start_line)
+
 			if not parser.syntax_error then
 				tree := parser.output
 			end
@@ -100,33 +109,35 @@ feature -- Commands
 			parse_succeeded or else tree = Void
 		end
 
-	serialise(a_format: STRING; an_ontology: ARCHETYPE_ONTOLOGY) is
-			-- serialise current artifact into format
+	serialise (a_format: STRING; an_ontology: !ARCHETYPE_ONTOLOGY) is
+			-- Serialise current artifact into `a_format'.
 		require
-			Format_valid: has_c_serialiser_format(a_format)
+			Format_valid: has_c_serialiser_format (a_format)
 			Archetype_valid: tree.is_valid
-			Ontology_valid: an_ontology /= Void
 		local
 			a_c_serialiser: C_SERIALISER
 			a_c_iterator: C_VISITOR_ITERATOR
 		do
-			a_c_serialiser := c_serialiser_for_format(a_format)
-			a_c_serialiser.initialise(an_ontology)
-			create a_c_iterator.make(tree, a_c_serialiser)
+			a_c_serialiser := c_serialiser_for_format (a_format)
+			a_c_serialiser.initialise (an_ontology)
+			create a_c_iterator.make (tree, a_c_serialiser)
 			a_c_iterator.do_all
 			a_c_serialiser.finalise
 			serialised := a_c_serialiser.last_result
+		ensure
+			serialised_attached: serialised /= Void
 		end
 
-	set_tree(a_node: C_COMPLEX_OBJECT) is
-			-- set root node from e.g. GUI tool
+	set_tree (a_node: C_COMPLEX_OBJECT) is
+			-- Set root node of `tree' from e.g. GUI tool.
 		require
-			a_node /= Void
+			node_attached: a_node /= Void
 		do
 			tree := a_node
 			in_parse_mode := False
 		ensure
-			not in_parse_mode
+			tree_set: tree = a_node
+			not_parsing: not in_parse_mode
 		end
 
 feature {NONE} -- Implementation
