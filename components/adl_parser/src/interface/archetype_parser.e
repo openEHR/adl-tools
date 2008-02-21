@@ -266,10 +266,8 @@ feature -- Commands
 			an_archetype: DIFFERENTIAL_ARCHETYPE
 		do
 			if not exception_encountered then
-				create an_archetype.make_minimal(create {ARCHETYPE_ID}.make(a_im_originator, a_im_name, a_im_entity,
-					"UNKNOWN", "draft"), a_primary_language, 0)
-
-				set_current_language(a_primary_language)
+				create an_archetype.make_minimal (create {!ARCHETYPE_ID}.make (a_im_originator, a_im_name, a_im_entity, "UNKNOWN", "draft"), a_primary_language, 0)
+				set_current_language (a_primary_language)
 
 				-- FIXME: now add this archetype into the ARCHETYPE_DIRECTORY
 
@@ -277,6 +275,7 @@ feature -- Commands
 			else
 				post_error(Current, "create_new_archetype", "create_new_archetype_e1", Void)
 			end
+
 			status.wipe_out
 			status.append(billboard_content)
 			clear_billboard

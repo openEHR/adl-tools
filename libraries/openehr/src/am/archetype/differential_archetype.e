@@ -24,10 +24,9 @@ create
 
 feature -- Initialisation
 
-	make_minimal(an_id: ARCHETYPE_ID; an_original_language: STRING; a_specialisation_depth: INTEGER) is
+	make_minimal (an_id: like archetype_id; an_original_language: STRING; a_specialisation_depth: INTEGER) is
 			-- make a new differential form archetype
 		require
-			Id_exists: an_id /= Void
 			Language_valid: an_original_language /= Void and then not an_original_language.is_empty
 			Specialisation_depth_valid: a_specialisation_depth >= 0
 		do
@@ -53,7 +52,7 @@ feature -- Initialisation
 			Other_valid: a_parent /= Void and then a_parent.is_valid
 			Concept_valid: a_spec_concept /= Void and then not a_spec_concept.is_empty
 		do
-			make_minimal(a_parent.archetype_id.create_specialised_id(a_spec_concept), a_parent.original_language.as_string, a_parent.specialisation_depth+1)
+			make_minimal (a_parent.archetype_id.create_specialised_id (a_spec_concept), a_parent.original_language.as_string, a_parent.specialisation_depth+1)
 			create parent_archetype_id.make_from_string(a_parent.archetype_id.value)
 		end
 

@@ -33,15 +33,13 @@ inherit
 
 feature -- Initialisation
 
-	make(an_id: ARCHETYPE_ID; a_concept_code: STRING;
+	make (an_id: like archetype_id; a_concept_code: STRING;
 			an_original_language: STRING; a_description: RESOURCE_DESCRIPTION;
-			a_definition: C_COMPLEX_OBJECT;	an_ontology: like ontology) is
+			a_definition: like definition; an_ontology: like ontology) is
 				-- make from pieces obtained by parsing
 		require
-			Id_exists: an_id /= Void
 			Concept_exists: a_concept_code /= Void and then valid_concept_code(a_concept_code)
 			Language_valid: an_original_language /= Void and then not an_original_language.is_empty
-			Definition_exists: a_definition /= Void
 		do
 			adl_version := 	Current_adl_version
 			archetype_id := an_id
@@ -66,20 +64,18 @@ feature -- Initialisation
 			Is_dirty: is_dirty
 		end
 
-	make_all(an_adl_version: STRING; an_id, a_parent_archetype_id: ARCHETYPE_ID; is_controlled_flag: BOOLEAN;
+	make_all(an_adl_version: STRING; an_id: like archetype_id; a_parent_archetype_id: ARCHETYPE_ID; is_controlled_flag: BOOLEAN;
 			a_concept_code: STRING; an_original_language: STRING; a_translations: HASH_TABLE [TRANSLATION_DETAILS, STRING];
-			a_description: RESOURCE_DESCRIPTION; a_definition: C_COMPLEX_OBJECT; an_invariants: ARRAYED_LIST[ASSERTION];
+			a_description: RESOURCE_DESCRIPTION; a_definition: like definition; an_invariants: ARRAYED_LIST[ASSERTION];
 			an_ontology: like ontology) is
 				-- make from all possible items
 		require
-			Id_exists: an_id /= Void
 			Concept_exists: a_concept_code /= Void and then valid_concept_code(a_concept_code)
 			Language_valid: an_original_language /= Void and then not an_original_language.is_empty
 			Translations_valid: a_translations /= Void implies not a_translations.is_empty
-			Definition_exists: a_definition /= Void
 			Invariants_valid: an_invariants /= Void implies not an_invariants.is_empty
 		do
-			make(an_id, a_concept_code,
+			make (an_id, a_concept_code,
 					an_original_language, a_description,
 					a_definition, an_ontology)
 			parent_archetype_id := a_parent_archetype_id
@@ -103,7 +99,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	archetype_id: ARCHETYPE_ID
+	archetype_id: !ARCHETYPE_ID
 
 	adl_version: STRING
 			-- ADL version of this archetype
@@ -121,12 +117,14 @@ feature -- Access
 			-- infer number of levels of specialisation from concept code
 		do
 			Result := archetype_id.specialisation_depth
+		ensure
+			non_negative: Result >= 0
 		end
 
 	concept: STRING
 			-- at-code of concept of the archetype as a whole and the code of its root node
 
-	definition: C_COMPLEX_OBJECT
+	definition: !C_COMPLEX_OBJECT
 
 	invariants: ARRAYED_LIST[ASSERTION]
 
@@ -353,9 +351,7 @@ feature -- Modification
 			adl_version := a_ver
 		end
 
-	set_archetype_id(an_id: ARCHETYPE_ID) is
-		require
-			an_id_valid: an_id /= Void
+	set_archetype_id (an_id: like archetype_id) is
 		do
 			archetype_id := an_id
 		end
@@ -367,16 +363,12 @@ feature -- Modification
 			concept := str
 		end
 
-	set_parent_archetype_id(an_id: ARCHETYPE_ID) is
-		require
-			an_id_valid: an_id /= Void
+	set_parent_archetype_id (an_id: !ARCHETYPE_ID) is
 		do
 			parent_archetype_id := an_id
 		end
 
-	set_definition(a_node: C_COMPLEX_OBJECT) is
-		require
-			a_node /= Void
+	set_definition (a_node: like definition) is
 		do
 			definition := a_node
 		end
@@ -608,12 +600,10 @@ feature {NONE} -- Implementation
 		end
 
 invariant
-	Id_exists: archetype_id /= Void
-	Concept_valid: concept /= Void and then concept.is_equal(ontology.concept_code)
+	Concept_valid: concept /= Void and then concept.is_equal (ontology.concept_code)
 	Description_exists: description /= Void
-	Definition_exists: definition /= Void
 	Invariants_valid: invariants /= Void implies not invariants.is_empty
-	RM_type_validity: definition.rm_type_name.as_lower.is_equal(archetype_id.rm_entity.as_lower)
+	RM_type_validity: definition.rm_type_name.as_lower.is_equal (archetype_id.rm_entity.as_lower)
 	Specialisation_validity: is_specialised implies (specialisation_depth > 0 and parent_archetype_id /= Void)
 
 end

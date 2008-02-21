@@ -268,6 +268,8 @@ feature -- Access
 			-- specialisation level of this archetype id; non-specialised -> 0
 		do
 			Result := domain_concept.occurrences (section_separator)
+		ensure
+			non_negative: Result >= 0
 		end
 
 feature -- Status Report
@@ -283,7 +285,7 @@ feature -- Status Report
 
 feature -- Factory
 
-	create_specialised_id(a_spec_domain_concept: STRING): ARCHETYPE_ID is
+	create_specialised_id (a_spec_domain_concept: STRING): !ARCHETYPE_ID is
 			-- Create a specialised archetype id based on this one, using `a_spec_domain_concept'.
 			-- If the current id looks like:
 			--  openehr-ehr-OBSERVATION.lab_result.v3
@@ -295,8 +297,6 @@ feature -- Factory
 		do
 			create Result.make(rm_originator, rm_name, rm_entity, domain_concept + section_separator.out + a_spec_domain_concept, version_id)
 			is_specialised := True
-		ensure
-			Result_exists: Result /= Void
 		end
 
 feature -- Comparison

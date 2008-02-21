@@ -187,7 +187,7 @@ feature {NONE} -- Implementation
 
 								if not ontology_context.parse_succeeded then
 									parse_error_text := ontology_context.parse_error_text
-								else
+								elseif {definition: !C_COMPLEX_OBJECT} definition_context.tree and then {id: !ARCHETYPE_ID} adl_parser.archetype_id then
 									if is_differential_source then
 										if orig_lang_trans /= Void then
 											create differential_ontology.make_from_tree (orig_lang_trans.original_language.code_string, ontology_context.tree, adl_parser.concept)
@@ -197,11 +197,11 @@ feature {NONE} -- Implementation
 										end
 
 										create {DIFFERENTIAL_ARCHETYPE} Result.make (
-											adl_parser.archetype_id,
+											id,
 											adl_parser.concept,
 											orig_lang_trans.original_language.code_string,
 											res_desc,	-- may be Void
-											definition_context.tree,
+											definition,
 											differential_ontology
 										)
 									else
@@ -213,17 +213,17 @@ feature {NONE} -- Implementation
 										end
 
 										create {FLAT_ARCHETYPE} Result.make (
-											adl_parser.archetype_id,
+											id,
 											adl_parser.concept,
 											orig_lang_trans.original_language.code_string,
 											res_desc,	-- may be Void
-											definition_context.tree,
+											definition,
 											flat_ontology
 										)
 									end
 
-									if adl_parser.parent_archetype_id /= Void then
-										Result.set_parent_archetype_id(adl_parser.parent_archetype_id)
+									if {parent_id: !ARCHETYPE_ID} adl_parser.parent_archetype_id then
+										Result.set_parent_archetype_id (id)
 									end
 
 									if adl_parser.adl_version /= Void then

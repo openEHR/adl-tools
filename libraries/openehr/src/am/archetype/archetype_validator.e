@@ -115,11 +115,7 @@ feature {NONE} -- Implementation
 		do
 			passed := False
 
-			if target.archetype_id = Void then
-				errors.append("Error: no archetype_id%N")
-			elseif target.definition = Void then
-				errors.append("Error: no definition%N")
-			elseif target.invariants /= Void and target.invariants.is_empty then
+			if target.invariants /= Void and target.invariants.is_empty then
 				errors.append("Error: invariants cannot be empty if specified")
 			elseif not target.definition.rm_type_name.is_equal (target.archetype_id.rm_entity) then
 				errors.append("Error: archetype id type %"" + target.archetype_id.rm_entity +
