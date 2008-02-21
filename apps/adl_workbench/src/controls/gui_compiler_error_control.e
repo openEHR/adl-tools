@@ -212,6 +212,7 @@ feature {NONE} -- Implementation
 			-- Select the archetype represented by `selected_cell' in the main window's explorer tree.
 		do
 			if selected_cell /= Void and then selected_cell.column.index = Col_location then
+				selected_cell.row.expand
 				gui.select_archetype_from_gui_data (selected_cell)
 			end
 		end
