@@ -322,22 +322,6 @@ feature -- File events
 		local
 			ara: ARCH_REP_ARCHETYPE
 		do
-			if archetype_directory.selection_history_has_previous then
-				history_menu_back.enable_sensitive
-				history_back_button.enable_sensitive
-			else
-				history_menu_back.disable_sensitive
-				history_back_button.disable_sensitive
-			end
-
-			if archetype_directory.selection_history_has_next then
-				history_menu_forward.enable_sensitive
-				history_forward_button.enable_sensitive
-			else
-				history_menu_forward.disable_sensitive
-				history_forward_button.disable_sensitive
-			end
-
 			clear_all_controls
 			arch_notebook_select
 			ara := archetype_directory.selected_archetype
@@ -1023,11 +1007,11 @@ feature {NONE} -- Implementation
 					end
 
 					set_title (reference_repository_path + " - " + title)
+					archetype_directory.make
 					clear_billboard
 					clear_all_controls
 					compiler_error_control.clear
 					set_status_area ("Populating repository ...")
-					archetype_directory.make
 					select_node_in_archetype_tree_view
 
 					if archetype_directory.valid_repository_path (reference_repository_path) then
@@ -1049,6 +1033,22 @@ feature {NONE} -- Implementation
 	clear_all_controls
 			-- Wipe out content from visual controls.
 		do
+			if archetype_directory.selection_history_has_previous then
+				history_menu_back.enable_sensitive
+				history_back_button.enable_sensitive
+			else
+				history_menu_back.disable_sensitive
+				history_back_button.disable_sensitive
+			end
+
+			if archetype_directory.selection_history_has_next then
+				history_menu_forward.enable_sensitive
+				history_forward_button.enable_sensitive
+			else
+				history_menu_forward.disable_sensitive
+				history_forward_button.disable_sensitive
+			end
+
 			parser_status_area.remove_text
 			language_combo.wipe_out
 			node_map_control.clear
