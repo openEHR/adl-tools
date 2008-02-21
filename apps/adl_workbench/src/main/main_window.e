@@ -322,6 +322,22 @@ feature -- File events
 		local
 			ara: ARCH_REP_ARCHETYPE
 		do
+			if archetype_directory.selection_history_has_previous then
+				history_menu_back.enable_sensitive
+				history_back_button.enable_sensitive
+			else
+				history_menu_back.disable_sensitive
+				history_back_button.disable_sensitive
+			end
+
+			if archetype_directory.selection_history_has_next then
+				history_menu_forward.enable_sensitive
+				history_forward_button.enable_sensitive
+			else
+				history_menu_forward.disable_sensitive
+				history_forward_button.disable_sensitive
+			end
+
 			clear_all_controls
 			arch_notebook_select
 			ara := archetype_directory.selected_archetype
@@ -759,26 +775,6 @@ feature -- Archetype Commands
 				archetype_file_tree.ensure_item_visible (node)
 				node.enable_select
 			end
-
-			if archetype_directory.selection_history_has_previous then
-				history_menu_back.enable_sensitive
-				history_back_button.enable_sensitive
-			else
-				history_menu_back.disable_sensitive
-				history_back_button.disable_sensitive
-			end
-
-			if archetype_directory.selection_history_has_next then
-				history_menu_forward.enable_sensitive
-				history_forward_button.enable_sensitive
-			else
-				history_menu_forward.disable_sensitive
-				history_forward_button.disable_sensitive
-			end
-
-			if archetype_directory.has_selected_archetype then
-				parse_archetype
-			end
 		end
 
 	node_map_shrink_tree_one_level
@@ -1098,7 +1094,9 @@ feature {NONE} -- Implementation
 		local
 			selected: ARCHETYPE_ID
 		do
-			selected := archetype_directory.selected_archetype.id
+			if archetype_directory.has_selected_archetype then
+				selected := archetype_directory.selected_archetype.id
+			end
 
 			if selected /= Void then
 				archetype_id.set_text (utf8 (selected.as_string))

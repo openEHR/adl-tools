@@ -72,7 +72,11 @@ feature -- Commands
 				delay_to_make_keyboard_navigation_practical.actions.extend (agent
 					do
 						delay_to_make_keyboard_navigation_practical.set_interval (0)
-						gui.select_archetype_from_gui_data (gui_file_tree.selected_item)
+
+						if gui_file_tree.selected_item /= Void and then {a: !ARCH_REP_ITEM} gui_file_tree.selected_item.data then
+							archetype_directory.set_selected_item (a)
+							gui.parse_archetype
+						end
 					end)
 			end
 
