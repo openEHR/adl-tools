@@ -115,16 +115,14 @@ feature {NONE} -- Implementation
 		do
 			passed := False
 
-			if target.invariants /= Void and target.invariants.is_empty then
-				errors.append("Error: invariants cannot be empty if specified")
-			elseif not target.definition.rm_type_name.is_equal (target.archetype_id.rm_entity) then
+			if not target.definition.rm_type_name.is_equal (target.archetype_id.rm_entity) then
 				errors.append("Error: archetype id type %"" + target.archetype_id.rm_entity +
 								"%" does not match type %"" + target.definition.rm_type_name +
 								"%" in definition section%N")
 			elseif specialisation_depth_from_code (target.concept) /= target.specialisation_depth then
-				errors.append("Error: specialisation depth of concept (root) code is incorrect - should be " + target.specialisation_depth.out + "%N")
-			elseif not target.definition.node_id.is_equal(target.concept) then
-				errors.append("Error: concept code " + target.concept + " not used in definition%N")
+				errors.append ("Error: specialisation depth of concept (root) code is incorrect - should be " + target.specialisation_depth.out + "%N")
+			elseif not target.definition.node_id.is_equal (target.concept) then
+				errors.append ("Error: concept code " + target.concept + " not used in definition%N")
 			elseif not target.definition.is_valid then
 				-- FIXME - need to check definition validation; possibly this should be
 				-- done using another visitor pattern?
