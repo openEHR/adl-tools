@@ -73,7 +73,7 @@ feature -- Commands
 					do
 						delay_to_make_keyboard_navigation_practical.set_interval (0)
 
-						if gui_file_tree.selected_item /= Void and then {a: !ARCH_REP_ITEM} gui_file_tree.selected_item.data then
+						if {node: !EV_TREE_NODE} gui_file_tree.selected_item and then {a: !ARCH_REP_ITEM} node.data then
 							archetype_directory.set_selected_item (a)
 							gui.parse_archetype
 						end
