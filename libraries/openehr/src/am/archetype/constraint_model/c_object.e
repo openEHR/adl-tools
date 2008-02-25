@@ -131,7 +131,7 @@ feature -- Modification
 
 feature -- Representation
 
-	representation: OG_OBJECT
+	representation: !OG_OBJECT
 
 invariant
 	rm_type_name_valid: rm_type_name /= Void and then not rm_type_name.is_empty

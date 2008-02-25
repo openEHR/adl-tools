@@ -239,7 +239,7 @@ feature -- Output
 
 feature -- Representation
 
-	representation: OG_OBJECT_NODE
+	representation: !OG_OBJECT_NODE
 
 feature -- Visitor
 

@@ -27,8 +27,8 @@ feature -- Initialisation
 	default_create is
 			--
 		do
-			create children.make(0)
-			set_existence(create {INTERVAL[INTEGER]}.make_bounded(1,1, True, True))
+			create children.make (0)
+			set_existence (create {INTERVAL [INTEGER]}.make_bounded (1, 1, True, True))
 		end
 
 	make_single(a_name: STRING) is
@@ -63,7 +63,7 @@ feature -- Access
 			Result := representation.node_id
 		end
 
-	existence: INTERVAL[INTEGER]
+	existence: INTERVAL [INTEGER]
 
 	cardinality: CARDINALITY
 
@@ -89,13 +89,15 @@ feature -- Source Control
 feature -- Status Report
 
 	any_allowed: BOOLEAN is
-			-- True if any value allowed ('*' received in parsed input) - i.e. no childred
+			-- Is any value allowed ('*' received in parsed input) - i.e. no children?
 		do
 			Result := children.is_empty
 		end
 
 	is_relationship: BOOLEAN is
 			-- (in the UML sense) - True if attribute target type is not a primitive data type
+		require
+			has_children: not any_allowed
 		local
 			a_prim: C_PRIMITIVE_OBJECT
 		do
@@ -112,29 +114,29 @@ feature -- Status Report
 	is_valid: BOOLEAN is
 			-- report on validity
 		do
-			create invalid_reason.make(0)
-			invalid_reason.append(rm_attribute_name + ": ")
+			create invalid_reason.make (0)
+			invalid_reason.append (rm_attribute_name + ": ")
+
 			if not (any_allowed xor representation.has_children) then
 				invalid_reason.append("must be either 'any' node or have child nodes")
-			elseif existence = Void then
+			elseif existence = Void then	-- FIXME: Delete this check! It's guaranteed by the invariant, so why are we checking it here?
 				invalid_reason.append("existence must be specified")
 			else
-				Result := True
 				from
+					Result := True
 					children.start
 				until
-					not Result or else children.off
+					not Result or children.off
 				loop
 					-- check occurrences consistent with attribute cardinality
-					if Result and not is_multiple and children.item.occurrences.upper > 1 then
+					-- FIXME: Delete this check! It's already being caught by ADL_VALIDATOR.check_c_attribute_child, so why are we checking it here?
+					if not is_multiple and children.item.occurrences.upper > 1 then
 						Result := False
-						invalid_reason.append("occurrences on child node " + children.item.node_id.out +
+						invalid_reason.append ("occurrences on child node " + children.item.node_id.out +
 							" must be singular for non-container attribute")
-					end
-
-					if Result and not children.item.is_valid then
+					elseif not children.item.is_valid then
 						Result := False
-						invalid_reason.append("(invalid child node) " + children.item.invalid_reason + "%N")
+						invalid_reason.append ("(invalid child node) " + children.item.invalid_reason + "%N")
 					end
 
 					children.forth
@@ -199,7 +201,7 @@ feature -- Modification
 
 feature -- Representation
 
-	representation: OG_ATTRIBUTE_NODE
+	representation: !OG_ATTRIBUTE_NODE
 
 feature -- Serialisation
 

@@ -86,7 +86,7 @@ feature -- Status Report
 
 feature -- Representation
 
-	representation: OG_ITEM
+	representation: !OG_ITEM
 
 feature {ARCHETYPE_CONSTRAINT} -- Modification
 
