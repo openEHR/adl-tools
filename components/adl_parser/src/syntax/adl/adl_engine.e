@@ -223,7 +223,7 @@ feature {NONE} -- Implementation
 									end
 
 									if {parent_id: !ARCHETYPE_ID} adl_parser.parent_archetype_id then
-										Result.set_parent_archetype_id (id)
+										Result.set_parent_archetype_id (parent_id)
 									end
 
 									if adl_parser.adl_version /= Void then
