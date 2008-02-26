@@ -735,7 +735,7 @@ feature {NONE} -- Help events
 			dialog.show_modal_to_window (Current)
 		end
 
-feature -- Archetype Commands
+feature -- Archetype commands
 
 	archetype_view_tree_item_select
 			-- Display details of `archetype_file_tree' when the user selects it.
@@ -823,11 +823,6 @@ feature -- Archetype Commands
 			end
 		end
 
-	archetype_text_edit_process_keystroke (a_keystring: STRING)
-			-- Called by `key_press_string_actions' of `archetype_text_edit_area'.
-		do
-		end
-
 	archetype_test_go_stop
 			-- start running tests in test page
 		do
@@ -867,50 +862,61 @@ feature -- Archetype Commands
 		end
 
 	arch_notebook_select
-			-- Redisplay the archetype's source when the selected page changes in `arch_notebook'.
+			-- Display the archetype's source or flat text whenever the relevant page is selected in `arch_notebook'.
 		local
-			leader, int_val_str, src, s: STRING
-			len, left_pos, right_pos, line_cnt: INTEGER
+			ara: ARCH_REP_ARCHETYPE
 		do
+			ara := archetype_directory.selected_archetype
+
 			if arch_notebook.selected_item = source_rich_text then
-				if archetype_directory.has_selected_archetype then
-					if archetype_directory.selected_archetype.has_differential_file then
-						src := archetype_directory.selected_archetype.differential_text
-					else
-						src := "==================== FLAT TEXT (no source .adls file available) ======================%N"
-						src.append (archetype_directory.selected_archetype.flat_text)
-					end
-
-					len := src.count
-					create s.make (len)
-
-					if show_line_numbers then
-						create leader.make_filled (' ', 4)
-					end
-
-					from
-						left_pos := 1
-						line_cnt := 1
-					until
-						left_pos > len
-					loop
-						if leader /= Void then
-							int_val_str := line_cnt.out
-							leader.replace_substring (int_val_str, 1, int_val_str.count)
-							s.append (leader)
-						end
-
-						right_pos := src.index_of ('%N', left_pos)
-						s.append (src.substring (left_pos, right_pos))
-						left_pos := right_pos + 1
-						line_cnt := line_cnt + 1
-					end
-
-					source_rich_text.set_text (utf8 (s))
-				else
+				if ara = Void then
 					source_rich_text.remove_text
+				elseif ara.has_differential_file then
+					show_text_with_line_numbers (source_rich_text, ara.differential_text)
+				else
+					source_rich_text.set_text ("==================== No source (.adls) file available ======================")
+				end
+			elseif arch_notebook.selected_item = flat_rich_text then
+				if ara = Void then
+					flat_rich_text.remove_text
+				else
+					show_text_with_line_numbers (flat_rich_text, ara.flat_text)
 				end
 			end
+		end
+
+	show_text_with_line_numbers (widget: EV_TEXTABLE; text: STRING)
+			-- Display `text' in `widget', optionally with each line preceded by line numbers.
+		require
+			widget_attached: widget /= Void
+			text_attached: text /= Void
+		local
+			leader, s, number_string: STRING
+			len, left_pos, right_pos, number: INTEGER
+		do
+			if show_line_numbers then
+				from
+					len := text.count
+					create s.make (len)
+					create leader.make_filled (' ', 4)
+					left_pos := 1
+					number := 1
+				until
+					left_pos > len
+				loop
+					number_string := number.out
+					leader.replace_substring (number_string, 1, number_string.count)
+					s.append (leader)
+					right_pos := text.index_of ('%N', left_pos)
+					s.append (text.substring (left_pos, right_pos))
+					left_pos := right_pos + 1
+					number := number + 1
+				end
+			else
+				s := text
+			end
+
+			widget.set_text (utf8 (s))
 		end
 
 	translations_select_language
@@ -1157,8 +1163,6 @@ feature {NONE} -- Implementation
 			arch_bad_count_tf.set_text (archetype_directory.bad_archetype_count.out)
 		end
 
-feature {NONE} -- Implementation
-
 	do_with_wait_cursor (action: PROCEDURE [ANY, TUPLE])
 			-- Perform `action' with an hourglass mouse cursor, restoring the cursor when done.
 		require
@@ -1173,6 +1177,8 @@ feature {NONE} -- Implementation
 		rescue
 			set_pointer_style (cursor)
 		end
+
+feature {NONE} -- Build commands
 
 	do_build_action (action: PROCEDURE [ANY, TUPLE])
 			-- Perform `action', with an hourglass mouse cursor and disabling the build menus, until done.
@@ -1213,8 +1219,12 @@ feature {NONE} -- Implementation
 
 				archetype_test_tree_control.do_row_for_item (ara, agent archetype_test_tree_control.set_row_pixmap)
 
-				if ara.parse_attempted and ara.has_compiler_status then
-					compiler_error_control.extend (ara)
+				if ara.parse_attempted then
+					if ara.has_compiler_status then
+						compiler_error_control.extend (ara)
+					end
+
+					arch_notebook_select
 				end
 			end
 

@@ -184,6 +184,7 @@ feature {NONE}-- Initialization
 			create ontology_term_defs
 			create ontology_constraint_defs
 			create source_rich_text
+			create flat_rich_text
 			create statistics_box
 			create l_ev_vertical_box_9
 			create l_ev_horizontal_box_9
@@ -369,6 +370,7 @@ feature {NONE}-- Initialization
 			ontology_notebook.extend (ontology_term_defs)
 			ontology_notebook.extend (ontology_constraint_defs)
 			arch_notebook.extend (source_rich_text)
+			arch_notebook.extend (flat_rich_text)
 			arch_notebook.extend (statistics_box)
 			statistics_box.extend (l_ev_vertical_box_9)
 			l_ev_vertical_box_9.extend (l_ev_horizontal_box_9)
@@ -519,6 +521,7 @@ feature {NONE}-- Initialization
 			arch_notebook.set_item_text (description_box, "Description")
 			arch_notebook.set_item_text (definition_split_area, "Definition")
 			arch_notebook.set_item_text (source_rich_text, "Source")
+			arch_notebook.set_item_text (flat_rich_text, "Flat Text")
 			arch_notebook.set_item_text (statistics_box, "Statistics")
 			description_box.disable_item_expand (arch_desc_details_frame)
 			description_box.disable_item_expand (arch_desc_resource_frame)
@@ -827,6 +830,7 @@ feature {NONE}-- Initialization
 			ontology_constraint_defs.set_minimum_width (1)
 			ontology_constraint_defs.set_minimum_height (1)
 			source_rich_text.disable_edit
+			flat_rich_text.disable_edit
 			statistics_box.set_padding (3)
 			statistics_box.set_border_width (4)
 			integer_constant_set_procedures.extend (agent l_ev_vertical_box_9.set_padding (?))
@@ -1056,10 +1060,10 @@ feature -- Access
 	archetype_test_go_bn: EV_BUTTON
 	arch_desc_auth_contrib_list, terminologies_list, arch_translations_languages_list,
 	arch_desc_keywords_list: EV_LIST
-	source_rich_text: EV_RICH_TEXT
-	file_menu_open, file_menu_parse, file_menu_edit,
-	file_menu_save_as, file_menu_exit, edit_menu_copy, edit_menu_select_all, edit_menu_clipboard,
-	repository_menu_set_repository, repository_menu_build_all, repository_menu_rebuild_all,
+	source_rich_text, flat_rich_text: EV_RICH_TEXT
+	file_menu_open, file_menu_parse,
+	file_menu_edit, file_menu_save_as, file_menu_exit, edit_menu_copy, edit_menu_select_all,
+	edit_menu_clipboard, repository_menu_set_repository, repository_menu_build_all, repository_menu_rebuild_all,
 	repository_menu_build_subtree, repository_menu_rebuild_subtree, repository_menu_export_html,
 	repository_menu_interrupt_build, history_menu_back, history_menu_forward, tools_menu_clean_generated_files,
 	tools_menu_options, help_menu_icons, help_menu_news, help_menu_online, help_menu_about: EV_MENU_ITEM
