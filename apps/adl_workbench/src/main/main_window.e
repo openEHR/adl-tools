@@ -1224,7 +1224,9 @@ feature {NONE} -- Build commands
 						compiler_error_control.extend (ara)
 					end
 
-					arch_notebook_select
+					if ara = archetype_directory.selected_archetype then
+						arch_notebook_select
+					end
 				end
 			end
 
