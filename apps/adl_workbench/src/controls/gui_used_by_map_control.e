@@ -44,7 +44,7 @@ feature {NONE} -- Initialisation
 			a_main_window /= Void
 		do
 			gui := a_main_window
-			gui_tree := gui.used_by_map_tree
+			gui_tree := gui.used_by_tree
 			gui_tree.pointer_double_press_actions.force_extend (agent select_node_in_archetype_tree_view)
 			in_differential_mode := True
 		end
@@ -83,6 +83,7 @@ feature -- Commands
 			ara: ARCH_REP_ARCHETYPE
 		do
 			clear
+
 			if archetype_directory.has_selected_archetype then
 				ara := archetype_directory.selected_archetype
 				if ara.is_used then

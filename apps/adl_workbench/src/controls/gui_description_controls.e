@@ -93,16 +93,16 @@ feature -- Commands
 
 	populate is
 			-- populate ontology controls
-		require
-			archetype_selected: archetype_directory.has_selected_archetype
 		do
 			clear
 
-			if archetype_directory.selected_archetype.archetype_differential.description /= Void then
-				populate_authorship
-				populate_details
-				populate_resources
-				populate_copyright
+			if archetype_directory.has_valid_selected_archetype then
+				if archetype_directory.selected_archetype.archetype_differential.description /= Void then
+					populate_authorship
+					populate_details
+					populate_resources
+					populate_copyright
+				end
 			end
 		end
 

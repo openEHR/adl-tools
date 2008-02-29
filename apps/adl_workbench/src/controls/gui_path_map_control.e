@@ -51,10 +51,10 @@ feature {NONE} -- Initialisation
 			a_main_window /= Void
 		do
 			gui := a_main_window
-			path_list := gui.parsed_archetype_found_paths
+			path_list := gui.path_analysis_multi_column_list
 			path_list.enable_multiple_selection
-			filter_combo := gui.path_filter_combo
-			column_check_list := gui.path_view_check_list
+			filter_combo := gui.path_analysis_row_filter_combo_box
+			column_check_list := gui.path_analysis_column_view_checkable_list
 			in_differential_mode := True
 		end
 
@@ -91,7 +91,7 @@ feature -- Commands
 			mcl.wipe_out
 			mcl.set_column_titles (path_control_column_names)
 
-			if archetype_directory.has_selected_archetype then
+			if archetype_directory.has_valid_selected_archetype then
 				if filter_combo.text.is_equal ("All") then
 					p_paths := target_archetype.physical_paths
 					l_paths := target_archetype.logical_paths (current_language, False)

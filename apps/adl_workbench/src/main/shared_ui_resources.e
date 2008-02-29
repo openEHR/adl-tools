@@ -174,12 +174,12 @@ feature -- Access
 			end
 		end
 
-	definition_split_position: INTEGER is
+	node_map_and_ontology_split_position: INTEGER is
 			-- Split position of inner vertical split control.
 		local
 			str: STRING
 		do
-			str := resource_value ("default", "definition_split_position")
+			str := resource_value ("default", "node_map_and_ontology_split_position")
 			if str.is_integer then
 				Result := str.to_integer
 			end
@@ -585,12 +585,12 @@ feature -- Modification
 			set_resource_value ("default", "total_split_position", v.out)
 		end
 
-	set_definition_split_position (v: INTEGER) is
+	set_node_map_and_ontology_split_position (v: INTEGER) is
 			-- Set split position of inner vertical split control.
 		require
 			v > 0
 		do
-			set_resource_value ("default", "definition_split_position", v.out)
+			set_resource_value ("default", "node_map_and_ontology_split_position", v.out)
 		end
 
 	set_test_split_position (v: INTEGER) is

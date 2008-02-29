@@ -44,7 +44,7 @@ feature {NONE} -- Initialisation
 			a_main_window /= Void
 		do
 			gui := a_main_window
-			gui_tree := gui.slot_map_tree
+			gui_tree := gui.slots_tree
 			gui_tree.pointer_double_press_actions.force_extend (agent select_node_in_archetype_tree_view)
 			in_differential_mode := True
 		end
@@ -90,6 +90,7 @@ feature -- Commands
 
 			if archetype_directory.has_selected_archetype then
 				ara := archetype_directory.selected_archetype
+
 				if ara.has_slots then
 					from
 						ara.slot_id_index.start
@@ -97,7 +98,7 @@ feature -- Commands
 						ara.slot_id_index.off
 					loop
 						a_path := ara.slot_id_index.key_for_iteration
-						create eti.make_with_text (utf8(ara.archetype_differential.ontology.physical_to_logical_path (a_path, current_language)))
+						create eti.make_with_text (utf8 (ara.archetype_differential.ontology.physical_to_logical_path (a_path, current_language)))
 						eti.set_pixmap (pixmaps.item ("ARCHETYPE_SLOT"))
 
 						gui_tree.extend (eti)
@@ -109,10 +110,11 @@ feature -- Commands
 						until
 							slot_id_list.off
 						loop
-							create eti.make_with_text (utf8(slot_id_list.item))
+							create eti.make_with_text (utf8 (slot_id_list.item))
 							eti.set_pixmap (pixmaps.item (archetype_directory.archetype_id_index.item (slot_id_list.item).group_name))
 							eti.set_data (archetype_directory.archetype_id_index.item (slot_id_list.item))
-							tree_item_stack.item.extend(eti)
+							tree_item_stack.item.extend (eti)
+							tree_item_stack.item.expand
 							slot_id_list.forth
 						end
 

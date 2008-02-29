@@ -76,7 +76,7 @@ feature -- Access
 			Result := file_repository.text (full_path)
 			flat_text_timestamp := file_repository.text_timestamp
 		ensure
-			Result_exists: Result /= Void
+			attached: Result /= Void
 		end
 
 	differential_text: STRING
@@ -86,6 +86,8 @@ feature -- Access
 		do
 			Result := file_repository.text (differential_path)
 			differential_text_timestamp := file_repository.text_timestamp
+		ensure
+			attached: Result /= Void
 		end
 
 	flat_text_timestamp: INTEGER
@@ -294,29 +296,30 @@ feature -- Commands
 		end
 
 	validate is
-			-- perform various levels validation of differential archetype
+			-- Perform various levels validation on `archetype_differential'.
 		require
-			archetype_differential /= Void
+			differential_attached: archetype_differential /= Void
 		local
 			validator: ARCHETYPE_VALIDATOR
 		do
 			is_valid := False
-			create validator.make(Current)
+			create validator.make (Current)
 			validator.validate
-			is_valid := validator.passed
 
-			if not is_valid then
-				post_error(Current, "set_archetype_differential", "parse_archetype_e2", <<id.as_string, validator.errors>>)
+			if validator.passed then
+				post_info (Current, "set_archetype_differential", "parse_archetype_i2", <<id.as_string>>)
 			else
-				post_info(Current, "set_archetype_differential", "parse_archetype_i2", <<id.as_string>>)
-			end
-			if validator.has_warnings then
-				post_warning(Current, "set_archetype_differential", "parse_archetype_w2", <<id.as_string, validator.warnings>>)
+				post_error (Current, "set_archetype_differential", "parse_archetype_e2", <<id.as_string, validator.errors>>)
 			end
 
-			archetype_differential.set_is_valid(is_valid)
+			if validator.has_warnings then
+				post_warning (Current, "set_archetype_differential", "parse_archetype_w2", <<id.as_string, validator.warnings>>)
+			end
+
+			archetype_differential.set_is_valid (validator.passed)
 			validate_attempted := True
-			archetype_directory.update_slot_statistics(Current)
+			archetype_directory.update_slot_statistics (Current)
+			is_valid := validator.passed
 		ensure
 			validate_attempted
 		end
@@ -356,7 +359,7 @@ feature -- Modification
 				end
 			end
 		ensure
-			Is_parsed: archetype_differential /= Void
+			archetype_set: archetype_differential = an_archetype
 		end
 
 	set_archetype_flat(an_archetype: FLAT_ARCHETYPE) is
@@ -365,13 +368,13 @@ feature -- Modification
 		require
 			Archetype_exists: an_archetype /= Void
 		do
-			post_info(Current, "set_archetype_flat", "parse_archetype_i2", <<id.as_string>>)
+			post_info (Current, "set_archetype_flat", "parse_archetype_i2", <<id.as_string>>)
 			archetype_flat := an_archetype
 			set_archetype_differential(an_archetype.to_differential)
 			archetype_flat.rebuild
 			archetype_flat.set_is_valid (is_valid)
 		ensure
-			Archetype_flat_set: archetype_flat /= Void
+			archetype_set: archetype_flat = an_archetype
 		end
 
 	set_specialisation_parent(a_parent: ARCH_REP_ARCHETYPE) is
@@ -477,6 +480,8 @@ feature {NONE} -- Implementation
 		end
 
 invariant
+	differential_attached_if_valid: is_valid implies archetype_differential /= Void
+	flat_attached_if_valid: is_valid implies archetype_flat /= Void
 	Parent_existence: specialisation_parent /= Void implies is_specialised
 	Parent_validity: specialisation_parent /= Void implies specialisation_parent.id.semantic_id.is_equal(id.semantic_parent_id)
 	Slot_id_index_valid: slot_id_index /= Void implies not slot_id_index.is_empty

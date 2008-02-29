@@ -30,9 +30,6 @@ inherit
 		end
 
 	SHARED_ARCHETYPE_DIRECTORY
-		export
-			{NONE} all
-		end
 
 	SHARED_APPLICATION_CONTEXT
 		export
@@ -54,7 +51,7 @@ feature -- Initialisation
 			a_main_window /= Void
 		do
 			gui := a_main_window
-			gui_tree := gui.parsed_archetype_tree
+			gui_tree := gui.node_map_tree
 			in_differential_mode := True
 		end
 
@@ -114,24 +111,24 @@ feature -- Commands
 			archetype_tree_root_set := False
 			create tree_item_stack.make (0)
 
-			if archetype_directory.has_selected_archetype then
+			if archetype_directory.has_valid_selected_archetype then
 				create tree_iterator.make (target_archetype.definition.representation)
 				tree_iterator.do_all (agent node_build_enter_action (?, ?), agent node_build_exit_action (?, ?))
-			end
 
-			populate_invariants
-			is_expanded := not expand_node_tree
-			toggle_expand_tree
+				populate_invariants
+				is_expanded := not expand_node_tree
+				toggle_expand_tree
 
-			if not in_differential_mode then
-				roll_up_to_specialisation_level
+				if not in_differential_mode then
+					roll_up_to_specialisation_level
+				end
 			end
 		end
 
 	repopulate is
 			-- populate the ADL tree control by traversing the tree and modifying it
 		do
-			gui_tree.recursive_do_all(agent node_rebuild_enter_action(?))
+			gui_tree.recursive_do_all (agent node_rebuild_enter_action (?))
 		end
 
 	item_select is
@@ -183,10 +180,10 @@ feature -- Commands
 			is_expanded := not is_expanded
 			if is_expanded then
 				gui_tree.recursive_do_all(agent ev_tree_item_expand(?))
-				gui.tree_expand_bn.set_text("Collapse All")
+				gui.node_map_expand_button.set_text("Collapse All")
 			else
 				gui_tree.recursive_do_all(agent ev_tree_item_shrink(?))
-				gui.tree_expand_bn.set_text("Expand All")
+				gui.node_map_expand_button.set_text("Expand All")
 			end
 		end
 
@@ -226,9 +223,11 @@ feature -- Commands
 			end
 		end
 
-	roll_up_to_specialisation_level is
+	roll_up_to_specialisation_level
 			-- roll the tree up so that nodes whose rolled_up_specialisation_status is
 			-- ss_inherited are closed, but nodes with
+		require
+			archetype_selected: archetype_directory.has_selected_archetype
 		do
 			if target_archetype.is_specialised then
 				create node_list.make(0)
@@ -249,7 +248,7 @@ feature {NONE} -- Implementation
 	target_archetype: ARCHETYPE is
 			-- differential or flat version of archetype, depending on setting of `in_differential_mode'
 		require
-			archetype_directory.has_selected_archetype
+			archetype_selected: archetype_directory.has_selected_archetype
 		do
 			if in_differential_mode then
 				Result := archetype_directory.selected_archetype.archetype_differential

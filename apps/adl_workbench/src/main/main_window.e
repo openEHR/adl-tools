@@ -153,11 +153,10 @@ feature {NONE} -- Initialization
 			filter_combo_index: INTEGER
 			strs: ARRAYED_LIST [STRING]
 		do
-			parsed_archetype_found_paths.enable_multiple_selection
+			path_analysis_multi_column_list.enable_multiple_selection
+			path_analysis_row_filter_combo_box.set_strings (path_control_filter_names)
 
-			path_filter_combo.set_strings (path_control_filter_names)
-
-			if not path_filter_combo_selection.is_empty then
+			if not path_analysis_row_filter_combo_box.is_empty then
 				from
 					filter_combo_index := 1
 				until
@@ -174,28 +173,28 @@ feature {NONE} -- Initialization
 				filter_combo_index := 1
 			end
 
-			path_filter_combo [filter_combo_index].enable_select
+			path_analysis_row_filter_combo_box [filter_combo_index].enable_select
 
-			path_view_check_list.set_strings (path_control_column_names)
+			path_analysis_column_view_checkable_list.set_strings (path_control_column_names)
 			strs := path_view_check_list_settings
 
 			if not strs.is_empty then
 				strs.compare_objects
 
 				from
-					path_view_check_list.start
+					path_analysis_column_view_checkable_list.start
 				until
-					path_view_check_list.off
+					path_analysis_column_view_checkable_list.off
 				loop
-					if strs.has (path_view_check_list.item.text) then
-						path_view_check_list.check_item (path_view_check_list.item)
+					if strs.has (path_analysis_column_view_checkable_list.item.text) then
+						path_analysis_column_view_checkable_list.check_item (path_analysis_column_view_checkable_list.item)
 					end
 
-					path_view_check_list.forth
+					path_analysis_column_view_checkable_list.forth
 				end
 			else -- default to physical paths
-				path_view_check_list.check_item (path_view_check_list [2])
-				path_view_check_list.check_item (path_view_check_list [3])
+				path_analysis_column_view_checkable_list.check_item (path_analysis_column_view_checkable_list [2])
+				path_analysis_column_view_checkable_list.check_item (path_analysis_column_view_checkable_list [3])
 			end
 		end
 
@@ -210,8 +209,8 @@ feature {NONE} -- Initialization
 				explorer_split_area.set_split_position (explorer_split_position)
 			end
 
-			if definition_split_position > 0 then
-				definition_split_area.set_split_position (definition_split_position)
+			if node_map_and_ontology_split_position > 0 then
+				node_map_and_ontology_split_area.set_split_position (node_map_and_ontology_split_position)
 			end
 
 			if total_split_position > 0 then
@@ -323,7 +322,6 @@ feature -- File events
 			ara: ARCH_REP_ARCHETYPE
 		do
 			clear_all_controls
-			arch_notebook_select
 			ara := archetype_directory.selected_archetype
 
 			if ara /= Void then
@@ -335,11 +333,10 @@ feature -- File events
 					set_status_area (ara.compiler_status)
 				end
 
-				if ara.is_valid then
-					populate_all_archetype_controls
-				else -- if ara.is_parsed then
-					populate_archetype_id
-				end
+				populate_archetype_id
+				populate_languages
+				populate_adl_version
+				populate_view_controls
 			end
 		end
 
@@ -435,7 +432,7 @@ feature -- File events
 			ev_items: DYNAMIC_LIST [EV_LIST_ITEM]
 		do
 			set_total_split_position (total_split_area.split_position)
-			set_definition_split_position (definition_split_area.split_position)
+			set_node_map_and_ontology_split_position (node_map_and_ontology_split_area.split_position)
 			set_test_split_position (test_split_area.split_position)
 			set_explorer_split_position (explorer_split_area.split_position)
 			set_app_width (width)
@@ -445,9 +442,9 @@ feature -- File events
 			set_app_maximised (is_maximized)
 			set_main_notebook_tab_pos (main_notebook.selected_item_index)
 
-			set_path_filter_combo_selection (path_filter_combo.selected_item.text)
+			set_path_filter_combo_selection (path_analysis_row_filter_combo_box.selected_item.text)
 
-			ev_items := path_view_check_list.checked_items
+			ev_items := path_analysis_column_view_checkable_list.checked_items
 			create strs.make (0)
 
 			from
@@ -488,7 +485,7 @@ feature {NONE} -- Edit events
 	on_copy
 			-- Copy the selected item, depending on which widget has focus.
 		do
-			if parsed_archetype_found_paths.has_focus then
+			if path_analysis_multi_column_list.has_focus then
 				path_map_control.copy_path_to_clipboard
 			elseif focused_text /= Void then
 				if focused_text.has_selection then
@@ -761,65 +758,46 @@ feature -- Archetype commands
 			end
 		end
 
-	node_map_shrink_tree_one_level
+	on_node_map_shrink_tree_one_level
 		do
 			if archetype_directory.has_valid_selected_archetype then
 				node_map_control.shrink_one_level
 			end
 		end
 
-	node_map_expand_tree_one_level
+	on_node_map_expand_tree_one_level
 		do
 			if archetype_directory.has_valid_selected_archetype then
 				node_map_control.expand_one_level
 			end
 		end
 
-	node_map_toggle_expand_tree
+	on_node_map_toggle_expand_tree
 		do
 			if archetype_directory.has_valid_selected_archetype then
 				node_map_control.toggle_expand_tree
 			end
 		end
 
-	node_map_item_select
+	on_node_map_item_select
+			-- When the user selects a node in `node_map_tree'.
 		do
 			node_map_control.item_select
 		end
 
-	on_tree_domain_selected
-			-- Hide technical details in `parsed_archetype_tree'.
+	on_node_map_domain_selected
+			-- Hide technical details in `node_map_tree'.
 		do
 			if archetype_directory.has_valid_selected_archetype then
 				node_map_control.set_domain_mode
 			end
 		end
 
-	on_tree_technical_selected
-			-- Display technical details in `parsed_archetype_tree'.
+	on_node_map_technical_selected
+			-- Display technical details in `node_map_tree'.
 		do
 			if archetype_directory.has_valid_selected_archetype then
 				node_map_control.set_technical_mode
-			end
-		end
-
-	on_tree_flat_view_selected
-			-- Do not show the inherited/defined status of nodes in `parsed_archetype_tree'.
-		do
-			if archetype_directory.has_valid_selected_archetype then
-				node_map_control.set_flat_view
-				ontology_controls.set_flat_view
-				path_map_control.set_flat_view
-			end
-		end
-
-	on_tree_inheritance_selected
-			-- Show the inherited/defined status of nodes in `parsed_archetype_tree'.
-		do
-			if archetype_directory.has_valid_selected_archetype then
-				node_map_control.set_differential_view
-				ontology_controls.set_differential_view
-				path_map_control.set_differential_view
 			end
 		end
 
@@ -861,62 +839,19 @@ feature -- Archetype commands
 			path_map_control.set_filter
 		end
 
-	arch_notebook_select
-			-- Display the archetype's source or flat text whenever the relevant page is selected in `arch_notebook'.
-		local
-			ara: ARCH_REP_ARCHETYPE
+	on_archetype_notebook_select
+			-- Display either the differential or flat view of the archetype depending on the tab selected in `arch_notebook'.
 		do
-			ara := archetype_directory.selected_archetype
-
-			if arch_notebook.selected_item = source_rich_text then
-				if ara = Void then
-					source_rich_text.remove_text
-				elseif ara.has_differential_file then
-					show_text_with_line_numbers (source_rich_text, ara.differential_text)
-				else
-					source_rich_text.set_text ("==================== No source (.adls) file available ======================")
-				end
-			elseif arch_notebook.selected_item = flat_rich_text then
-				if ara = Void then
-					flat_rich_text.remove_text
-				else
-					show_text_with_line_numbers (flat_rich_text, ara.flat_text)
+			if {tab: !EV_CONTAINER} archetype_notebook.selected_item and {other: !EV_CONTAINER} definition_notebook.parent then
+				if tab /= other then
+					if tab = differential_view_box or tab = flat_view_box then
+						other.prune (definition_notebook)
+						tab.extend (definition_notebook)
+						ev_application.process_graphical_events
+						populate_view_controls
+					end
 				end
 			end
-		end
-
-	show_text_with_line_numbers (widget: EV_TEXTABLE; text: STRING)
-			-- Display `text' in `widget', optionally with each line preceded by line numbers.
-		require
-			widget_attached: widget /= Void
-			text_attached: text /= Void
-		local
-			leader, s, number_string: STRING
-			len, left_pos, right_pos, number: INTEGER
-		do
-			if show_line_numbers then
-				from
-					len := text.count
-					create s.make (len)
-					create leader.make_filled (' ', 4)
-					left_pos := 1
-					number := 1
-				until
-					left_pos > len
-				loop
-					number_string := number.out
-					leader.replace_substring (number_string, 1, number_string.count)
-					s.append (leader)
-					right_pos := text.index_of ('%N', left_pos)
-					s.append (text.substring (left_pos, right_pos))
-					left_pos := right_pos + 1
-					number := number + 1
-				end
-			else
-				s := text
-			end
-
-			widget.set_text (utf8 (s))
 		end
 
 	translations_select_language
@@ -1056,44 +991,85 @@ feature {NONE} -- Implementation
 			end
 
 			parser_status_area.remove_text
+			source_rich_text.remove_text
 			language_combo.wipe_out
+			description_controls.clear
+			translation_controls.clear
 			node_map_control.clear
+			ontology_controls.clear
 			path_map_control.clear
 			slot_map_control.clear
 			used_by_map_control.clear
-			ontology_controls.clear
-			description_controls.clear
-			translation_controls.clear
-		end
-
-	populate_user_controls
-			-- Populate content from visual controls.
-		do
-			populate_archetype_id
-			populate_languages
-			populate_adl_version
-		end
-
-	populate_all_archetype_controls
-			-- Populate content from visual controls.
-		do
-			populate_user_controls
-			node_map_control.populate
-			path_map_control.populate
-			slot_map_control.populate
-			used_by_map_control.populate
-			ontology_controls.populate
-			description_controls.populate
-			translation_controls.populate
 		end
 
 	populate_view_controls
 			-- Populate content from visual controls.
 		do
-			path_map_control.populate
-			node_map_control.repopulate
-			ontology_controls.populate
 			description_controls.populate
+			translation_controls.populate
+			slot_map_control.populate
+			used_by_map_control.populate
+
+			if archetype_notebook.selected_item = differential_view_box then
+				node_map_control.set_differential_view
+				path_map_control.set_differential_view
+				ontology_controls.set_differential_view
+				populate_source_text (False)
+			else
+				node_map_control.set_flat_view
+				path_map_control.set_flat_view
+				ontology_controls.set_flat_view
+				populate_source_text (True)
+			end
+		end
+
+	populate_source_text (flat: BOOLEAN)
+			-- Display the selected archetype's differential or flat text in `source_rich_text', optionally with line numbers.
+		do
+			if {ara: !ARCH_REP_ARCHETYPE} archetype_directory.selected_archetype then
+				if flat then
+					populate_source_text_with_line_numbers (ara.flat_text)
+				elseif ara.has_differential_file then
+					populate_source_text_with_line_numbers (ara.differential_text)
+				else
+					source_rich_text.set_text ("==================== No source (.adls) file available ======================")
+				end
+			else
+				source_rich_text.remove_text
+			end
+		end
+
+	populate_source_text_with_line_numbers (text: STRING)
+			-- Display `text' in `source_rich_text', optionally with each line preceded by line numbers.
+		require
+			text_attached: text /= Void
+		local
+			leader, s, number_string: STRING
+			len, left_pos, right_pos, number: INTEGER
+		do
+			if show_line_numbers then
+				from
+					len := text.count
+					create s.make (len)
+					create leader.make_filled (' ', 4)
+					left_pos := 1
+					number := 1
+				until
+					left_pos > len
+				loop
+					number_string := number.out
+					leader.replace_substring (number_string, 1, number_string.count)
+					s.append (leader)
+					right_pos := text.index_of ('%N', left_pos)
+					s.append (text.substring (left_pos, right_pos))
+					left_pos := right_pos + 1
+					number := number + 1
+				end
+			else
+				s := text
+			end
+
+			source_rich_text.set_text (utf8 (s))
 		end
 
 	populate_archetype_id
@@ -1114,7 +1090,7 @@ feature {NONE} -- Implementation
 	populate_adl_version
 			-- Populate ADL version.
 		do
-			if archetype_directory.has_selected_archetype then
+			if archetype_directory.has_valid_selected_archetype then
 				adl_version_text.set_text (utf8 (archetype_directory.selected_archetype.archetype_differential.adl_version))
 			else
 				adl_version_text.remove_text
@@ -1128,7 +1104,7 @@ feature {NONE} -- Implementation
 		do
 			language_combo.select_actions.block
 
-			if archetype_directory.has_selected_archetype then
+			if archetype_directory.has_valid_selected_archetype then
 				archetype := archetype_directory.selected_archetype.archetype_differential
 
 				if not archetype.has_language (current_language) then
@@ -1225,7 +1201,7 @@ feature {NONE} -- Build commands
 					end
 
 					if ara = archetype_directory.selected_archetype then
-						arch_notebook_select
+						populate_view_controls
 					end
 				end
 			end

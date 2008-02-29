@@ -54,16 +54,19 @@ feature -- Commands
 	clear is
 			-- wipe out content from ontology-related controls
 		do
-			gui.ontology_term_defs.wipe_out
-			gui.ontology_constraint_defs.wipe_out
+			gui.ontology_term_definitions_multi_column_list.wipe_out
+			gui.ontology_constraint_definitions_multi_column_list.wipe_out
 		end
 
 	populate is
 			-- populate ontology controls
 		do
 			clear
-			populate_term_definitions
-			populate_constraint_definitions
+
+			if archetype_directory.has_valid_selected_archetype then
+				populate_term_definitions
+				populate_constraint_definitions
+			end
 		end
 
 	set_differential_view
@@ -83,13 +86,13 @@ feature -- Commands
 	select_term(a_term_code: STRING) is
 			-- select row for a_term_code in term_definitions control
 		do
-			select_coded_term_row(a_term_code, gui.ontology_term_defs)
+			select_coded_term_row(a_term_code, gui.ontology_term_definitions_multi_column_list)
 		end
 
 	select_constraint(a_term_code: STRING) is
 			-- select row for a_term_code in term_definitions control
 		do
-			select_coded_term_row(a_term_code, gui.ontology_constraint_defs)
+			select_coded_term_row(a_term_code, gui.ontology_constraint_definitions_multi_column_list)
 		end
 
 feature {NONE} -- Implementation
@@ -109,16 +112,18 @@ feature {NONE} -- Implementation
 	gui: MAIN_WINDOW
 			-- main window of system
 
-	ontology: ARCHETYPE_ONTOLOGY is
+	ontology: !ARCHETYPE_ONTOLOGY is
 			-- access to ontology of selected archetype
+		require
+			archetype_selected: archetype_directory.has_selected_archetype
 		do
-			if archetype_directory.has_selected_archetype then
-				Result := target_archetype.ontology
-			end
+			Result := target_archetype.ontology
 		end
 
 	populate_term_definitions is
-			--
+			-- Populate the Term Definitions list.
+		require
+			archetype_selected: archetype_directory.has_selected_archetype
 		local
 			col_titles: ARRAYED_LIST[STRING]
 			pl: EV_MULTI_COLUMN_LIST
@@ -127,7 +132,7 @@ feature {NONE} -- Implementation
 			i: INTEGER
 		do
 			-- populate column titles
-			pl := gui.ontology_term_defs
+			pl := gui.ontology_term_definitions_multi_column_list
 			create col_titles.make(0)
 			col_titles.extend("code")
 --			col_titles.extend("text")
@@ -162,6 +167,7 @@ feature {NONE} -- Implementation
 				list_row.extend (utf8 (ontology.term_codes.item))
 				a_term := ontology.term_definition(current_language, ontology.term_codes.item)
 --				list_row.extend (a_term.item ("text"))
+
 				from
 					ontology.term_attribute_names.start
 				until
@@ -207,7 +213,9 @@ feature {NONE} -- Implementation
 		end
 
 	populate_constraint_definitions is
-			--
+			-- Populate the Constraint Definitions list
+		require
+			archetype_selected: archetype_directory.has_selected_archetype
 		local
 			col_titles: ARRAYED_LIST[STRING]
 			pl: EV_MULTI_COLUMN_LIST
@@ -216,7 +224,7 @@ feature {NONE} -- Implementation
 			i: INTEGER
 		do
 			-- build columns
-			pl := gui.ontology_constraint_defs
+			pl := gui.ontology_constraint_definitions_multi_column_list
 			create col_titles.make(0)
 			col_titles.extend("code")
 --			col_titles.extend("text")
