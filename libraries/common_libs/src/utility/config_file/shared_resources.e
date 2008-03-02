@@ -271,6 +271,24 @@ feature -- Environment
 			end
 		end
 
+	extension_replaced (path, new_extension: STRING): STRING
+			-- Copy of `path', with its extension replaced by `new_extension'.
+		require
+			path_attached: path /= Void
+			new_extension_attached: new_extension /= Void
+			new_extension_starts_with_dot: not new_extension.is_empty implies new_extension.item (1) = '.'
+		local
+			n: INTEGER
+		do
+			n := path.count
+			Result := path.twin
+			Result.replace_substring (new_extension, n - file_system.extension (path).count + 1, n)
+		ensure
+			attached: Result /= Void
+			cloned: Result /= path
+			ends_with_new_extension: Result.ends_with (new_extension)
+		end
+
 feature -- Element Change
 
 	record_resource_request(a_category, a_resource_name:STRING) is

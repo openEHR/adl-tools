@@ -81,18 +81,17 @@ feature {NONE} -- Implementation
 		end
 
 	create_repository_archetype_descriptor (root_path, full_path: STRING): ARCH_REP_ARCHETYPE
-			-- create a descriptor of the archetype designated by `full_path' to this repository.
+			-- Create a descriptor of the archetype designated by `full_path' to this repository.
 		require
 			root_path_valid: is_valid_directory (root_path)
 			full_path_valid: is_valid_path (full_path)
 			full_path_under_root_path: full_path.substring_index (root_path, 1) = 1
 		local
 			base_name: STRING
-			id: ARCHETYPE_ID
+			id: !ARCHETYPE_ID
 		do
 			base_name := file_system.basename (full_path)
-
-			base_name.remove_tail (1 + Archetype_flat_file_extension.count)
+			base_name.remove_tail (file_system.extension (base_name).count)
 			create id
 
 			if id.valid_id (base_name) then

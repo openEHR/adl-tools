@@ -57,7 +57,7 @@ feature -- Access
 			-- File extensions for logical serialisation formats.
 		once
 			create Result.make (0)
-			Result.put ("." + archetype_source_file_extension, archetype_native_syntax)
+			Result.put (archetype_source_file_extension, archetype_native_syntax)
 			Result.put (".html", "html")
 			Result.put (".xml", "xml")
 			Result.put (".owl", "owl")

@@ -46,28 +46,43 @@ inherit
 create
 	make
 
-feature -- Initialisation
+feature {NONE} -- Initialisation
 
-	make (a_root_path, a_full_path: STRING; an_id: ARCHETYPE_ID; a_repository: ARCHETYPE_REPOSITORY_I)
+	make (a_root_path, a_full_path: STRING; an_id: !ARCHETYPE_ID; a_repository: ARCHETYPE_REPOSITORY_I)
 		require
-			Repository_exists: a_repository /= Void
-			Root_path_valid: a_repository.is_valid_directory (a_root_path)
-			Full_path_valid: a_full_path /= Void and then a_full_path.substring_index (a_root_path, 1) = 1
-			Id_valid: an_id /= Void
+			repository_attached: a_repository /= Void
+			root_path_valid: a_repository.is_valid_directory (a_root_path)
+			full_path_attached: a_full_path /= Void
+			full_path_under_root_path: a_full_path.starts_with (a_root_path)
 		do
 			id := an_id
-			make_adi (a_root_path, a_full_path, a_repository)
-			differential_path := full_path.twin
-			differential_path.replace_substring (Archetype_source_file_extension, differential_path.count - Archetype_flat_file_extension.count + 1, differential_path.count)
 			create compiler_status.make_empty
+			make_adi (a_root_path, a_full_path, a_repository)
+
+			if file_system.has_extension (full_path, archetype_source_file_extension) then
+				differential_path := full_path
+				flat_path := extension_replaced (full_path, archetype_flat_file_extension)
+			else
+				differential_path := extension_replaced (full_path, archetype_source_file_extension)
+				flat_path := full_path
+			end
+		ensure
+			root_path_set: root_path = a_root_path
+			full_path_set: full_path = a_full_path
+			file_repository_set: file_repository = a_repository
+			id_set: id = an_id
+			no_compiler_status: compiler_status.is_empty
 		end
 
 feature -- Access
 
 	differential_path: STRING
-			-- path of differential source file of archetype
+			-- Path of differential source file of archetype.
 
-	id: ARCHETYPE_ID
+	flat_path: STRING
+			-- Path of flat file of archetype.
+
+	id: !ARCHETYPE_ID
 			-- Archetype identifier.
 
 	flat_text: STRING
@@ -175,6 +190,12 @@ feature -- Access
 
 feature -- Status Report
 
+	is_at_path (path: STRING): BOOLEAN
+			-- Is `path' the same as either `differential_path' or `flat_path'?
+		do
+			Result := differential_path.same_string (path) or flat_path.same_string (path)
+		end
+
 	has_differential_file: BOOLEAN is
 			-- True if repository has a source-form file for this archetype
 		do
@@ -190,7 +211,7 @@ feature -- Status Report
 	is_flat_file_out_of_date: BOOLEAN
 			-- Has the flat archetype file changed on disk since last read?
 		do
-			Result := not is_parsed or file_repository.has_file_changed_on_disk (full_path, flat_text_timestamp)
+			Result := not is_parsed or file_repository.has_file_changed_on_disk (flat_path, flat_text_timestamp)
 		end
 
 	is_differential_file_out_of_date: BOOLEAN
@@ -250,7 +271,7 @@ feature -- Commands
 		require
 			Text_valid: a_text /= Void and then not a_text.is_empty
 		do
-			file_repository.save_text_to_file(differential_path, a_text)
+			file_repository.save_text_to_file (differential_path, a_text)
 		end
 
 	save_differential_as (a_path, a_text: STRING)
@@ -258,16 +279,8 @@ feature -- Commands
 		require
 			Text_valid: a_text /= Void and then not a_text.is_empty
 			Path_valid: is_valid_directory_part (a_path)
-		local
-			save_path: STRING
 		do
-			save_path := a_path.twin
-
-			if file_system.has_extension (save_path, archetype_flat_file_extension) then
-				save_path.replace_substring (archetype_source_file_extension, save_path.count - archetype_flat_file_extension.count + 1, save_path.count)
-			end
-
-			file_repository.save_text_to_file (save_path, a_text)
+			file_repository.save_text_to_file (extension_replaced (a_path, archetype_source_file_extension), a_text)
 		end
 
 	save_flat (a_text: STRING)
@@ -275,7 +288,7 @@ feature -- Commands
 		require
 			Text_valid: a_text /= Void and then not a_text.is_empty
 		do
-			file_repository.save_text_to_file(full_path, a_text)
+			file_repository.save_text_to_file (flat_path, a_text)
 		end
 
 	save_flat_as (a_path, a_text: STRING)
@@ -283,16 +296,8 @@ feature -- Commands
 		require
 			Text_valid: a_text /= Void and then not a_text.is_empty
 			Path_valid: is_valid_directory_part (a_path)
-		local
-			save_path: STRING
 		do
-			save_path := a_path.twin
-
-			if file_system.has_extension (save_path, archetype_source_file_extension) then
-				save_path.replace_substring (archetype_flat_file_extension, save_path.count - archetype_source_file_extension.count + 1, save_path.count)
-			end
-
-			file_repository.save_text_to_file (save_path, a_text)
+			file_repository.save_text_to_file (extension_replaced (a_path, archetype_flat_file_extension), a_text)
 		end
 
 	validate is
@@ -480,12 +485,16 @@ feature {NONE} -- Implementation
 		end
 
 invariant
+	compiler_status_attached: compiler_status /= Void
+	differential_path_attached: differential_path /= Void
+	flat_path_attached: flat_path /= Void
+	full_is_flat_or_differential: full_path = flat_path xor full_path = differential_path
 	differential_attached_if_valid: is_valid implies archetype_differential /= Void
 	flat_attached_if_valid: is_valid implies archetype_flat /= Void
-	Parent_existence: specialisation_parent /= Void implies is_specialised
-	Parent_validity: specialisation_parent /= Void implies specialisation_parent.id.semantic_id.is_equal(id.semantic_parent_id)
-	Slot_id_index_valid: slot_id_index /= Void implies not slot_id_index.is_empty
-	Used_by_index_valid: used_by_index /= Void implies not used_by_index.is_empty
+	parent_existence: specialisation_parent /= Void implies is_specialised
+	parent_validity: specialisation_parent /= Void implies specialisation_parent.id.semantic_id.is_equal (id.semantic_parent_id)
+	slot_id_index_valid: slot_id_index /= Void implies not slot_id_index.is_empty
+	used_by_index_valid: used_by_index /= Void implies not used_by_index.is_empty
 
 end
 

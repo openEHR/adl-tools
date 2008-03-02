@@ -121,7 +121,7 @@ feature -- Access
 			consistent_with_history: Result /= Void implies Result.item = selected_item
 		end
 
-	archetype_descriptor_from_full_path (full_path: STRING): ARCH_REP_ARCHETYPE
+	archetype_descriptor_at_path (full_path: STRING): ARCH_REP_ARCHETYPE
 			-- The archetype descriptor in the directory that is designated by `full_path'; else Void.
 		require
 			path_valid: adhoc_source_repository.is_valid_path (full_path)
@@ -131,14 +131,15 @@ feature -- Access
 			until
 				archetype_id_index.off or Result /= Void
 			loop
-				if archetype_id_index.item_for_iteration.full_path.is_equal (full_path) then
-					Result := archetype_id_index.item_for_iteration
-				end
+				Result := archetype_id_index.item_for_iteration
 
-				archetype_id_index.forth
+				if not Result.is_at_path (full_path) then
+					Result := Void
+					archetype_id_index.forth
+				end
 			end
 		ensure
-			has_full_path_if_attached: Result /= Void implies Result.full_path.is_equal (full_path)
+			has_path_if_attached: Result /= Void implies Result.is_at_path (full_path)
 		end
 
 	node_from_item (item: ARCH_REP_ITEM): like directory
@@ -415,7 +416,7 @@ feature -- Modification
 		require
 			path_valid: adhoc_source_repository.is_valid_path (full_path)
 		do
-			if archetype_descriptor_from_full_path (full_path) = Void then
+			if archetype_descriptor_at_path (full_path) = Void then
 				adhoc_source_repository.add_item (full_path)
 
 				if adhoc_source_repository.has (full_path) then
