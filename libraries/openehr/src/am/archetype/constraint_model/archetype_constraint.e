@@ -102,8 +102,6 @@ feature {OG_ITEM} -- Implementation
 
 	set_representation(a_rep: like representation) is
 			--
-		require
-			a_rep /= Void
 		do
 			representation := a_rep
 		ensure
