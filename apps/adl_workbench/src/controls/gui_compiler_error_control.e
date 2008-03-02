@@ -102,7 +102,6 @@ feature -- Commands
 			err_cat := ara.compiler_error_type
 
 			if err_cat /= Err_type_valid then
-				gui.status_notebook.select_item (grid)
 				cat_row := categories [err_cat]
 
 				if cat_row = Void then
