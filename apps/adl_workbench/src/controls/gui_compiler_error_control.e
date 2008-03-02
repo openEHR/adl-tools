@@ -178,12 +178,18 @@ feature -- Commands
 				row.set_item (col_location, gli)
 				row.expand
 				gli.enable_select
-				gli.ensure_visible
+
+				if gli.is_displayed then
+					gli.ensure_visible
+				end
 
 				create gli.make_with_text (utf8 (ara.compiler_status))
 				subrow.set_item (col_message, gli)
 				subrow.set_height (gli.text_height)
-				gli.ensure_visible
+
+				if gli.is_displayed then
+					gli.ensure_visible
+				end
 
 				grid.column (Col_category).resize_to_content
 				grid.column (Col_location).resize_to_content
