@@ -89,7 +89,7 @@ feature -- Commands
 			grid.column (Col_message).set_title ("Message")
 		end
 
-	extend (ara: ARCH_REP_ARCHETYPE) is
+	extend_and_select (ara: ARCH_REP_ARCHETYPE) is
 			-- Add a node representing the errors or warnings of the archetype, if any.
 		require
 			ara_attached: ara /= Void

@@ -330,8 +330,12 @@ feature -- File events
 					do_with_wait_cursor (agent archetype_compiler.build_lineage (ara))
 				elseif ara.is_differential_file_out_of_date then
 					do_with_wait_cursor (agent archetype_compiler.rebuild_lineage (ara))
-				elseif not ara.compiler_status.is_empty then
-					set_status_area (ara.compiler_status)
+				else
+					compiler_error_control.extend_and_select (ara)
+
+					if ara.has_compiler_status then
+						set_status_area (ara.compiler_status)
+					end
 				end
 
 				populate_archetype_id
@@ -1197,9 +1201,7 @@ feature {NONE} -- Build commands
 				archetype_test_tree_control.do_row_for_item (ara, agent archetype_test_tree_control.set_row_pixmap)
 
 				if ara.parse_attempted then
-					if ara.has_compiler_status then
-						compiler_error_control.extend (ara)
-					end
+					compiler_error_control.extend_and_select (ara)
 
 					if ara = archetype_directory.selected_archetype then
 						populate_view_controls
