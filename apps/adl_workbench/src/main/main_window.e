@@ -848,9 +848,9 @@ feature -- Archetype commands
 	on_archetype_notebook_select
 			-- Display either the differential or flat view of the archetype depending on the tab selected in `arch_notebook'.
 		do
-			if {tab: !EV_CONTAINER} archetype_notebook.selected_item and {other: !EV_CONTAINER} definition_notebook.parent then
+			if {tab: !EV_VERTICAL_BOX} archetype_notebook.selected_item and {other: !EV_VERTICAL_BOX} definition_notebook.parent then
 				if tab /= other then
-					if tab = differential_view_box or tab = flat_view_box then
+					if (<<differential_view_box, flat_view_box>>).has (tab) then
 						other.prune (definition_notebook)
 						tab.extend (definition_notebook)
 						ev_application.process_graphical_events
