@@ -8,20 +8,22 @@ ADL Workbench is now available for:
 
 Differential archetypes:
 * A new differential form of archetype implements the specialisation semantics partially documented in the openEHR Archetype Semantics PDF.
-* The Repository menu has options to build (i.e. parse and validate) the whole or part of the repository tree.
-* Each archetype's icon in the repository tree indicates its build status.
-* The new Errors list at the bottom shows all errors and warnings while building.
+* The Definition tab is gone, replaced by Differential View and Flat View tabs.
 * Files with the new .adls (ADL Source) extension contain the differential form of archetype.
-* The .adls files are auto-generated, during building, from the old .adl files.
+* The Repository menu has options to build (i.e. parse and validate) the whole or part of the repository tree.
+* During building:
+  * Each archetype's icon in the repository tree indicates its status.
+  * The new Errors list at the bottom shows each archetype's errors and warnings.
+  * The .adls files are auto-generated from the old .adl files.
 * The .adls file, if it exists, is read in preference to the old .adl file.
 * The old .adl file is thereafter considered an auto-generated flat form of the archetype.
 * For this release only, to smooth the transition from .adl to .adls, the Tools menu has an option to clean all of the generated .adls files from the repository. 
 
 Other new functionality:
 * Opening an archetype ad hoc now grafts it into the repository explorer.
+* A new Slots tab shows the archetype's slots and the archetypes that use it.
 * Basic repository-wide Statistics are now displayed.
 * HTML is generated via an explicit menu option (not as a by-product of the Test view) into its own tree (not side-by-side with the ADL source files).
-* The Definition tab has two new sub-tabs to show the archetype's slots, as well as which other archetypes it is used by.
 * Duration units and interval can now be constrained both at the same time. 
 
 User interface improvements:
