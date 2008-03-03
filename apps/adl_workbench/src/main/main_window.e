@@ -696,6 +696,7 @@ feature {NONE} -- Tools events
 
 			if dialog.has_changed_options then
 				save_resources_and_show_status
+				populate_view_controls
 			end
 		end
 
