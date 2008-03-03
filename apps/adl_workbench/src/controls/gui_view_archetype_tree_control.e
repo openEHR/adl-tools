@@ -43,7 +43,7 @@ create
 feature {NONE} -- Initialisation
 
 	make (a_main_window: MAIN_WINDOW) is
-			-- Create tree control repersenting archetype files found in `archetype_directory'.
+			-- Create controller for the tree representing archetype files found in `archetype_directory'.
 		require
 			a_main_window /= Void
 		do
