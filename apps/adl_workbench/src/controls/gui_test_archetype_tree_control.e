@@ -44,11 +44,6 @@ inherit
 			{NONE} all
 		end
 
-	ARCHETYPE_DEFINITIONS
-		export
-			{NONE} all
-		end
-
 	STRING_UTILITIES
 		export
 			{NONE} all
@@ -73,7 +68,7 @@ feature -- Definitions
 feature {NONE} -- Initialisation
 
 	make (a_main_window: MAIN_WINDOW)
-			-- create tree control repersenting archetype files found in repository_path
+			-- Create controller for the test grid.
 		require
 			a_main_window /= Void
 		do
@@ -84,12 +79,6 @@ feature {NONE} -- Initialisation
 		end
 
 feature -- Access
-
-	selected_file_path: STRING
-			-- full path of file selected from tree control
-
-	has_selected_file: BOOLEAN
-			-- True if a file was selected
 
 	tests: DS_HASH_TABLE [FUNCTION [ANY, TUPLE, INTEGER], STRING] is
 			-- table of test routines
@@ -102,7 +91,7 @@ feature -- Access
 		end
 
 	last_tested_archetypes_count: INTEGER
-			-- number of archetypes tested in last run
+			-- Number of archetypes tested in last run.
 
 feature -- Status Setting
 
@@ -125,11 +114,10 @@ feature -- Status Setting
 feature -- Commands
 
 	clear is
-			-- wipe out content from controls
+			-- Wipe out content from widgets.
 		do
 			grid.wipe_out
 			gui.test_status_area.remove_text
-			has_selected_file := False
 		end
 
 	populate is
@@ -176,28 +164,27 @@ feature -- Commands
 		end
 
 	archetype_test_go_stop is
-			-- start or stop test run
+			-- Start or stop a test run.
 		do
 			if test_execution_underway then
 				test_stop_requested := True
 			else
+				test_stop_requested := False
+				test_execution_underway := True
+				gui.archetype_test_go_bn.set_pixmap (pixmaps ["stop"])
+				gui.archetype_test_go_bn.set_text ("Stop")
 				run_tests
+				test_execution_underway := False
+				gui.archetype_test_go_bn.set_pixmap (pixmaps ["go"])
+				gui.archetype_test_go_bn.set_text ("Go")
 			end
 		end
 
 	run_tests is
-			-- execute tests on all marked archetypes
+			-- Execute tests on all marked archetypes.
 		local
-			row_csr, col_csr: INTEGER
-			row: EV_GRID_ROW
-			gli: EV_GRID_LABEL_ITEM
-			checkbox: EV_GRID_CHECKABLE_LABEL_ITEM
-			res_label: STRING
-			test_result: INTEGER
+			row_csr: INTEGER
 		do
-			test_execution_underway := True
-			test_stop_requested := False
-			set_archetype_test_go_bn_icon
 			overwrite := gui.overwrite_adl_rb.is_selected
 			remove_unused_codes := gui.remove_unused_codes_rb.is_selected
 
@@ -207,67 +194,72 @@ feature -- Commands
 			until
 				row_csr > grid.row_count or test_stop_requested
 			loop
-				row := grid.row (row_csr)
-				checkbox ?= row.item (2)
-
-				if checkbox /= Void and then checkbox.is_checked then
-					target ?= row.data
-
-					if target /= Void then
-						row.ensure_visible
-						archetype_parser.reset
-						archetype_parser.set_target(target)
-
-						from
-							tests.start
-							col_csr := first_test_col
-							test_result := test_unknown
-						until
-							tests.off or test_result = test_failed
-						loop
-							row.set_item (col_csr, create {EV_GRID_LABEL_ITEM}.make_with_text ("processing..."))
-
-							create test_status.make_empty
-
-							test_result := tests.item_for_iteration.item([])
-
-							inspect test_result
-							when test_passed then
-								res_label := "test_passed"
-							when test_failed then
-								res_label := "test_failed"
-							when test_not_applicable then
-								res_label := "test_not_applicable"
-							else
-
-							end
-
-							create gli
-							gli.set_pixmap (pixmaps [res_label])
-							row.set_item (col_csr, gli)
-
-							if not test_status.is_empty then
-								gui.test_status_area.append_text ("--------------- " + target.id.as_string + " -----------------%N" + test_status)
-							end
-
-							ev_application.process_events
-							tests.forth
-							col_csr := col_csr + 1
-						end
-
-						last_tested_archetypes_count := last_tested_archetypes_count + 1
-						gui.arch_test_processed_count.set_text (last_tested_archetypes_count.out)
-					end
-
-					checkbox.set_is_checked (False)
-				end
-
+				run_tests_on_row (grid.row (row_csr))
 				row_csr := row_csr + 1
 			end
 
 			gui.test_status_area.append_text ("****** Executed tests on " + last_tested_archetypes_count.out + " Archetypes ******%N")
-			test_execution_underway := False
-			set_archetype_test_go_bn_icon
+		end
+
+	run_tests_on_row (row: EV_GRID_ROW)
+			-- Execute tests the archetype attached to `row' if it is marked for testing.
+		local
+			col_csr: INTEGER
+			gli: EV_GRID_LABEL_ITEM
+			res_label: STRING
+			test_result: INTEGER
+		do
+			if {checkbox: !EV_GRID_CHECKABLE_LABEL_ITEM} row.item (2) and then checkbox.is_checked then
+				target ?= row.data
+
+				if target /= Void then
+					row.ensure_visible
+					archetype_parser.reset
+					archetype_parser.set_target (target)
+
+					from
+						tests.start
+						col_csr := first_test_col
+						test_result := test_unknown
+					until
+						tests.off or test_result = test_failed
+					loop
+						row.set_item (col_csr, create {EV_GRID_LABEL_ITEM}.make_with_text ("processing..."))
+
+						create test_status.make_empty
+
+						test_result := tests.item_for_iteration.item ([])
+
+						inspect test_result
+						when test_passed then
+							res_label := "test_passed"
+						when test_failed then
+							res_label := "test_failed"
+						when test_not_applicable then
+							res_label := "test_not_applicable"
+						else
+
+						end
+
+						create gli
+						gli.set_pixmap (pixmaps [res_label])
+						row.set_item (col_csr, gli)
+
+						if not test_status.is_empty then
+							gui.test_status_area.append_text ("--------------- " + target.id.as_string + " -----------------%N" + test_status)
+						end
+
+						ev_application.process_events
+						tests.forth
+						col_csr := col_csr + 1
+					end
+
+					last_tested_archetypes_count := last_tested_archetypes_count + 1
+					gui.arch_test_processed_count.set_text (last_tested_archetypes_count.out)
+				end
+
+				checkbox.set_is_checked (False)
+			end
 		end
 
 	toggle_expand_tree is
@@ -422,27 +414,31 @@ feature -- Tests
 	test_diff: INTEGER is
 			-- parse archetype and return result
 		local
-			new_adl_file_path: STRING
-			orig_arch_source, new_arch_source: STRING
+			new_path: STRING
+			original_source, new_source: STRING
 		do
 			Result := Test_failed
 
 			if not overwrite then
-				orig_arch_source := archetype_parser.flat_text
+				original_source := archetype_parser.flat_text
 
-				new_adl_file_path := file_system.pathname (system_temp_file_directory, file_system.basename (archetype_parser.target.full_path))
-				-- FIXME: DO SOMETIHNG HERE TO OPEN THE NEW FILE
-				new_arch_source := archetype_parser.serialised_flat
+				new_path := file_system.pathname (system_temp_file_directory, file_system.basename (archetype_parser.target.full_path))
+				archetype_parser.save_archetype_flat_as (new_path, "adl")
 
-				if orig_arch_source.count = new_arch_source.count then
-					if orig_arch_source.is_equal (new_arch_source) then
-						Result := Test_passed
+				if archetype_parser.save_succeeded then
+					new_source := archetype_parser.serialised_flat
+
+					if original_source.count = new_source.count then
+						if original_source.same_string (new_source) then
+							Result := Test_passed
+						else
+							test_status.append ("Archetype source lengths same but texts differ%N")
+						end
 					else
-						test_status.append ("Archetype source lengths same but texts differ%N")
+						test_status.append ("Archetype source lengths differ: original =  " + original_source.count.out + "; new = " + new_source.count.out + "%N")
 					end
 				else
-					test_status.append ("Archetype source lengths differ: original =  " + orig_arch_source.count.out +
-						"; new = " + new_arch_source.count.out + "%N")
+					test_status.append ("Archetype save failed%N")
 				end
 			else
 				Result := Test_not_applicable
@@ -559,19 +555,6 @@ feature {NONE} -- Implementation
 						set_checkboxes_recursively (checkbox)
 					end
 				end
-			end
-		end
-
-	set_archetype_test_go_bn_icon is
-			-- Set go button to be either "go" or "stop" icon depending on
-			-- setting of test_execution_underway
-		do
-			if test_execution_underway then
-				gui.archetype_test_go_bn.set_pixmap (pixmaps ["stop"])
-				gui.archetype_test_go_bn.set_text ("Stop")
-			else
-				gui.archetype_test_go_bn.set_pixmap (pixmaps ["go"])
-				gui.archetype_test_go_bn.set_text ("Go")
 			end
 		end
 
