@@ -140,31 +140,25 @@ feature -- Commands
 			populate
 		end
 
-	column_select (a_list_item: EV_LIST_ITEM) is
-			-- Called by `check_actions' of `column_check_list'.
+	adjust_columns is
+			-- adjust column view of paths control according to checklist
 		local
-			i: INTEGER
+			i:INTEGER
 		do
-			if path_list.is_displayed then
-				i := column_check_list.index_of (a_list_item, 1)
-
-				if (1 |..| path_list.column_count).has (i) then
+			from
+				i := 1
+			until
+				i > path_list.column_count
+			loop
+				if not column_check_list.is_item_checked (column_check_list.i_th (i)) then
+					path_list.set_column_width (0, i)
+				elseif path_list.is_empty then
+					path_list.set_column_width (100, i)
+				else
 					path_list.resize_column_to_content (i)
 				end
-			end
-		end
 
-	column_unselect (a_list_item: EV_LIST_ITEM) is
-			-- Called by `check_actions' of `column_check_list'.
-		local
-			i: INTEGER
-		do
-			if path_list.is_displayed then
-				i := column_check_list.index_of (a_list_item, 1)
-
-				if (1 |..| path_list.column_count).has (i) then
-					path_list.set_column_width (0, i)
-				end
+				i := i + 1
 			end
 		end
 
@@ -224,25 +218,6 @@ feature {NONE} -- Implementation
 				Result := archetype_directory.selected_archetype.archetype_differential
 			else
 				Result := archetype_directory.selected_archetype.archetype_flat
-			end
-		end
-
-	adjust_columns is
-			-- adjust column view of paths control according to checklist
-		local
-			i:INTEGER
-		do
-			from
-				i := 1
-			until
-				i > path_list.column_count
-			loop
-				if column_check_list.is_item_checked (column_check_list.i_th(i)) then
-					path_list.resize_column_to_content(i)
-				else
-					path_list.set_column_width (0, i)
-				end
-				i := i + 1
 			end
 		end
 

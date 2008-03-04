@@ -828,15 +828,15 @@ feature -- Archetype commands
 		end
 
 	path_column_select (a_list_item: EV_LIST_ITEM)
-			-- Called by `check_actions' of `path_view_check_list'.
+			-- Show a column in the Path Analysis list after setting a check box in `path_view_check_list'.
 		do
-			path_map_control.column_select(a_list_item)
+			path_map_control.adjust_columns
 		end
 
 	path_column_unselect (a_list_item: EV_LIST_ITEM)
-			-- Called by `check_actions' of `path_view_check_list'.
+			-- Hide a column in the Path Analysis list after clearing a check box in `path_view_check_list'.
 		do
-			path_map_control.column_unselect(a_list_item)
+			path_map_control.adjust_columns
 		end
 
 	path_row_set_filter
