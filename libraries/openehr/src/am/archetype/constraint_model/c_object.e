@@ -91,10 +91,10 @@ feature -- Status Report
 			end
 			invalid_reason.append(": ")
 
-			if occurrences = Void then
+			if occurrences = Void then	-- FIXME: Delete this check! It's guaranteed by the invariant, so why are we checking it here?
 				invalid_reason.append("occurrences must be specified")
 			elseif parent /= Void then
-				if not parent.is_multiple and occurrences.upper > 1 then
+				if not parent.is_multiple and occurrences.upper > 1 then	-- FIXME: Delete this check! It's guaranteed by the invariant, so why are we checking it here?
 					invalid_reason.append("occurrences max can only be 1 for single parent attribute")
 				else
 					Result := True
