@@ -2,7 +2,7 @@ indexing
 	component:   "openEHR Reusable Libraries"
     description: "Token-handling string. NOTE: cannot have empty fields."
 	keywords:    "token, string"
-	
+
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
@@ -20,7 +20,7 @@ inherit
 			out
 		end
 
-creation
+create
 	make
 
 feature -- Initialisation
@@ -36,8 +36,8 @@ feature -- Initialisation
 	set_delimiter(a_delimiter: CHARACTER) is
 		do
 			delimiter := a_delimiter
-		end		
-	
+		end
+
 feature -- Access
 
 	Default_delimiter:CHARACTER is ','
@@ -47,10 +47,10 @@ feature -- Access
 		do
 			Result := str.is_empty
 		end
-		
+
 	token_count : INTEGER is
 	        -- return the number of tokens found
-		do 
+		do
 			Result := str.occurrences(delimiter) + 1
 		end
 
@@ -79,18 +79,18 @@ feature -- Iteration
 	token_forth is
 		require
 			Not_off: not token_off
-		do 
+		do
 			token_start_pos := token_end_pos + 2
 			if not token_off then
 				token_end_pos := str.index_of(delimiter, token_start_pos) - 1
-     				if token_end_pos < 0  then 
+     				if token_end_pos < 0  then
 					token_end_pos := str.count
 				end
 			end
 		end
 
 	token_off : BOOLEAN is
-		do 
+		do
 			Result := token_start_pos > str.count
 		end
 
@@ -115,15 +115,15 @@ feature -- Status setting
 	        Not_empty: not is_empty
 	    local
 	        change_pos :INTEGER
-	        one_tab, two_tabs, one_space:STRING 
+	        one_tab, two_tabs, one_space:STRING
 	    do
 	        create one_tab.make_filled ('%T', 1)
 	        create two_tabs.make_filled ('%T', 2)
-	        create one_space.make_filled (' ', 1) 
+	        create one_space.make_filled (' ', 1)
 
 	        -- remove leading and trailing white space
-  	        str.left_adjust 
-  	        str.right_adjust 
+  	        str.left_adjust
+  	        str.right_adjust
 
 	        -- convert SPACEs to TABs
 	        str.replace_substring_all(one_space, one_tab)
@@ -159,7 +159,7 @@ feature -- Modification
 			end
 			str.append(s)
 		end
-		
+
 	append(s: STRING) is
 			-- append s
 		require
@@ -167,15 +167,15 @@ feature -- Modification
 		do
 			str.append(s)
 		end
-		
+
 feature -- Output
 
 	out: STRING is
-			-- 
+			--
 		do
 			Result := str.twin
 		end
-		
+
 	as_list: ARRAYED_LIST [STRING] is
 			-- generate a list containing all the tokens in the original string
 		do
@@ -188,15 +188,15 @@ feature -- Output
 				Result.extend(token_item)
 				token_forth
 			end
-		end		
-		
+		end
+
 feature {NONE} -- Implementation
 
 	str: STRING
 			-- the data
 
 	delimiter: CHARACTER
-	
+
 	token_start_pos, token_end_pos : INTEGER
 
 end

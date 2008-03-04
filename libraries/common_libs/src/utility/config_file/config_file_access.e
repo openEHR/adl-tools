@@ -27,13 +27,13 @@ inherit
 			make
 		end
 
-creation
+create
 	make
 
 feature -- Definitions
 
 	default_category: STRING is "default"
-	
+
 feature -- Initialisation
 
 	make(a_file_name:STRING) is
@@ -85,7 +85,7 @@ feature -- Access
 		do
 			create Result.make(0)
 			str := resource_value(category,resource_name)
-                
+
 			if str /= Void and then not str.is_empty then
 				create token_str.make(resource_value(category, resource_name))
 				from
@@ -97,7 +97,7 @@ feature -- Access
 					Result.extend(str)
 					token_str.token_forth
 				end
-			end    
+			end
 		end
 
 	resource_category_values(category:STRING): HASH_TABLE[STRING,STRING] is
@@ -150,7 +150,7 @@ feature -- Modification
 	           		tstr.append_token(values.item)
 	           		values.forth
 	           	end
-	           	
+
                 if resources.has(category_name) then
 					resource_list := resources.item(category_name)
 					resource_list.force(tstr.out, resource_name)
@@ -176,7 +176,7 @@ feature -- Element Removal
 				resource_list.remove (resource_name)
 			end
 		end
-		
+
 feature -- template routines
 
 	initialise is
@@ -234,8 +234,8 @@ feature -- template routines
 					res_name.right_adjust -- remove spaces between name and '='
 
 					-- ensure a unique name; also document errors
-					if res_name.is_empty then 
-						res_name := "NONAME_" 
+					if res_name.is_empty then
+						res_name := "NONAME_"
 						res_name.append_integer(no_name_dup_count)
 						no_name_dup_count := no_name_dup_count + 1
 					elseif cur_res_list.has(res_name) then
@@ -248,8 +248,8 @@ feature -- template routines
 					if pos+1 <= linebuf.count then        -- something to read
 						res_value := linebuf.substring(pos+1,linebuf.count)
 						res_value.left_adjust  -- remove spaces between '=' and value
-						
-						-- parse any environment variables of the form $NAME which may be 
+
+						-- parse any environment variables of the form $NAME which may be
 						-- followed by any non-alphanumeric character
 						from
 							candidate_string := res_value.twin
@@ -288,15 +288,15 @@ feature -- template routines
 			category_name, s: STRING
 		do
 			file.create_read_write
-			from 
+			from
 				  resources.start
-			until 
+			until
 				  resources.off
 			loop
 				  category_name := resources.key_for_iteration
 				  if not category_name.is_equal(default_category) then
 					  file.put_string("[" + category_name + "]")
-					  file.new_line			  	
+					  file.new_line
 				  end
 				  resource_list:= resources.item_for_iteration
 				  from
@@ -321,16 +321,16 @@ feature {NONE} -- Implementation
 			-- pattern for detecting $NAME in config values
 		once
 			create Result.compile (env_var_pattern, True)
-		end			
-		
+		end
+
 	env_var_pattern:STRING is "\$[a-zA-Z0-9_]+"
-	
+
 	execution_environment: EXECUTION_ENVIRONMENT is
 		once
 			create Result
 		end
-			
-end 
+
+end
 
 --|
 --| ***** BEGIN LICENSE BLOCK *****

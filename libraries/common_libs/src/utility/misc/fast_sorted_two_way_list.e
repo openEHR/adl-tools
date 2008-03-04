@@ -6,7 +6,7 @@ indexing
 			 an item just after the last.
 			 ]"
 	keywords:    "type conversion"
-	
+
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
@@ -19,18 +19,19 @@ indexing
 
 class FAST_SORTED_TWO_WAY_LIST[G -> COMPARABLE ]
 
-    inherit
+inherit
 	SORTED_TWO_WAY_LIST[G]
 	    redefine
 	    	search_after, search_before
 	    end
 
-    creation
+create
 	make
 
 feature -- Access
+
 	search_after (v: like item) is
-			-- Go to first position with item greater than or 
+			-- Go to first position with item greater than or
 			-- equal to `v', using the binary split method.
 		local
 			i,j,k:INTEGER
@@ -57,7 +58,7 @@ feature -- Access
 		end
 
 	search_before (v: like item) is
-			-- Go to first position with item less than or 
+			-- Go to first position with item less than or
 			-- equal to `v', using the binary split method.
 		local
 			i,j,k:INTEGER
