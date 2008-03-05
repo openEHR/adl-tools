@@ -129,7 +129,6 @@ feature -- Status Report
 					not Result or children.off
 				loop
 					-- check occurrences consistent with attribute cardinality
-					-- FIXME: Delete this check! It's already being caught by ADL_VALIDATOR.check_c_attribute_child, so why are we checking it here?
 					if not is_multiple and children.item.occurrences.upper > 1 then
 						Result := False
 						invalid_reason.append ("occurrences on child node " + children.item.node_id.out +
