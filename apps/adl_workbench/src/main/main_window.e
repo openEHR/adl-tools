@@ -86,6 +86,7 @@ feature {NONE} -- Initialization
 			add_shortcut (agent step_focused_notebook_tab (-1), key_tab, True, False, True)
 
 			add_menu_shortcut (file_menu_open, key_o, True, False, False)
+			add_menu_shortcut (file_menu_save_as, key_s, True, False, False)
 			add_menu_shortcut_for_action (edit_menu_copy, agent call_unless_text_focused (agent on_copy), key_c, True, False, False)
 			add_menu_shortcut (edit_menu_select_all, key_a, True, False, False)
 
