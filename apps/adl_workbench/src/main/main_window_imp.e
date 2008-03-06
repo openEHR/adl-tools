@@ -845,8 +845,9 @@ feature {NONE}-- Initialization
 			l_ev_frame_5.set_text ("Archetypes that have slots matching the current archetype ID")
 			integer_constant_set_procedures.extend (agent l_ev_vertical_box_13.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
-			statistics_box.set_padding (3)
-			statistics_box.set_border_width (4)
+			statistics_box.set_border_width (15)
+			statistics_box.disable_item_expand (l_ev_vertical_box_14)
+			l_ev_vertical_box_14.set_minimum_width (250)
 			integer_constant_set_procedures.extend (agent l_ev_vertical_box_14.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
 			integer_constant_set_procedures.extend (agent l_ev_vertical_box_14.set_border_width (?))
@@ -856,54 +857,49 @@ feature {NONE}-- Initialization
 			l_ev_vertical_box_14.disable_item_expand (l_ev_horizontal_box_13)
 			l_ev_vertical_box_14.disable_item_expand (l_ev_horizontal_box_14)
 			l_ev_vertical_box_14.disable_item_expand (l_ev_horizontal_box_15)
-			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_11.set_padding (?))
-			integer_constant_retrieval_functions.extend (agent padding_width)
+			l_ev_horizontal_box_11.set_padding (10)
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_11.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
-			l_ev_horizontal_box_11.disable_item_expand (l_ev_label_4)
 			l_ev_horizontal_box_11.disable_item_expand (arch_total_count_tf)
-			l_ev_label_4.set_text ("Total Archetypes")
+			l_ev_label_4.set_text ("Total Archetypes:")
 			l_ev_label_4.set_minimum_width (140)
+			l_ev_label_4.align_text_right
 			arch_total_count_tf.disable_edit
 			arch_total_count_tf.align_text_right
-			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_12.set_padding (?))
-			integer_constant_retrieval_functions.extend (agent padding_width)
+			l_ev_horizontal_box_12.set_padding (10)
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_12.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
-			l_ev_horizontal_box_12.disable_item_expand (l_ev_label_5)
 			l_ev_horizontal_box_12.disable_item_expand (arch_spec_count_tf)
-			l_ev_label_5.set_text ("Specialised Archetypes")
+			l_ev_label_5.set_text ("Specialised Archetypes:")
 			l_ev_label_5.set_minimum_width (140)
+			l_ev_label_5.align_text_right
 			arch_spec_count_tf.disable_edit
 			arch_spec_count_tf.align_text_right
-			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_13.set_padding (?))
-			integer_constant_retrieval_functions.extend (agent padding_width)
+			l_ev_horizontal_box_13.set_padding (10)
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_13.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
-			l_ev_horizontal_box_13.disable_item_expand (l_ev_label_6)
 			l_ev_horizontal_box_13.disable_item_expand (arch_slotted_count_tf)
-			l_ev_label_6.set_text ("Archetypes Containing Slots")
+			l_ev_label_6.set_text ("Archetypes Containing Slots:")
 			l_ev_label_6.set_minimum_width (140)
+			l_ev_label_6.align_text_right
 			arch_slotted_count_tf.disable_edit
 			arch_slotted_count_tf.align_text_right
-			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_14.set_padding (?))
-			integer_constant_retrieval_functions.extend (agent padding_width)
+			l_ev_horizontal_box_14.set_padding (10)
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_14.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
-			l_ev_horizontal_box_14.disable_item_expand (l_ev_label_7)
 			l_ev_horizontal_box_14.disable_item_expand (arch_used_by_count_tf)
-			l_ev_label_7.set_text ("Archetypes Used In Slots")
+			l_ev_label_7.set_text ("Archetypes Used In Slots:")
 			l_ev_label_7.set_minimum_width (140)
+			l_ev_label_7.align_text_right
 			arch_used_by_count_tf.disable_edit
 			arch_used_by_count_tf.align_text_right
-			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_15.set_padding (?))
-			integer_constant_retrieval_functions.extend (agent padding_width)
+			l_ev_horizontal_box_15.set_padding (10)
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_15.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
-			l_ev_horizontal_box_15.disable_item_expand (l_ev_label_8)
 			l_ev_horizontal_box_15.disable_item_expand (arch_bad_count_tf)
-			l_ev_label_8.set_text ("Invalid Archetype Files")
+			l_ev_label_8.set_text ("Invalid Archetype Files:")
 			l_ev_label_8.set_minimum_width (140)
+			l_ev_label_8.align_text_right
 			arch_bad_count_tf.disable_edit
 			arch_bad_count_tf.align_text_right
 			status_notebook.set_item_text (parser_status_area, "Status")
@@ -1051,29 +1047,28 @@ feature -- Access
 	lang_vbox, l_ev_vertical_box_2, l_ev_vertical_box_3, l_ev_vertical_box_4, l_ev_vertical_box_5,
 	l_ev_vertical_box_6, differential_view_box, l_ev_vertical_box_7, l_ev_vertical_box_8,
 	l_ev_vertical_box_9, l_ev_vertical_box_10, l_ev_vertical_box_11, flat_view_box, slots_box,
-	l_ev_vertical_box_12, l_ev_vertical_box_13, statistics_box, l_ev_vertical_box_14,
-	l_ev_vertical_box_15: EV_VERTICAL_BOX
+	l_ev_vertical_box_12, l_ev_vertical_box_13, l_ev_vertical_box_14, l_ev_vertical_box_15: EV_VERTICAL_BOX
 	explorer_split_area: EV_HORIZONTAL_SPLIT_AREA
-	file_menu, edit_menu, repository_menu,
-	history_menu, tools_menu, help_menu: EV_MENU
-	action_bar, author_lang_term_hbox, l_ev_horizontal_box_1,
-	arch_desc_status_hbox, l_ev_horizontal_box_2, l_ev_horizontal_box_3, arch_desc_details_hbox,
-	l_ev_horizontal_box_4, l_ev_horizontal_box_5, l_ev_horizontal_box_6, l_ev_horizontal_box_7,
-	l_ev_horizontal_box_8, arch_desc_copyright_hbox, l_ev_horizontal_box_9, l_ev_horizontal_box_10,
-	l_ev_horizontal_box_11, l_ev_horizontal_box_12, l_ev_horizontal_box_13, l_ev_horizontal_box_14,
-	l_ev_horizontal_box_15, l_ev_horizontal_box_16, l_ev_horizontal_box_17: EV_HORIZONTAL_BOX
-	overwrite_adl_rb,
-	remove_unused_codes_rb: EV_CHECK_BUTTON
-	archetype_id, adl_version_text, arch_desc_status_text, arch_desc_original_language_text,
-	arch_translations_accreditation_text, arch_desc_resource_package_text, arch_total_count_tf,
-	arch_spec_count_tf, arch_slotted_count_tf, arch_used_by_count_tf, arch_bad_count_tf,
-	arch_test_processed_count: EV_TEXT_FIELD
-	compiler_output_grid, archetype_test_tree_grid: EV_GRID
-	node_map_expand_button,
-	node_map_expand_one_button, node_map_collapse_one_button, arch_test_tree_toggle_expand_bn,
-	arch_test_refresh_bn, archetype_test_go_bn: EV_BUTTON
-	arch_desc_auth_contrib_list, terminologies_list,
-	arch_translations_languages_list, arch_desc_keywords_list: EV_LIST
+	file_menu,
+	edit_menu, repository_menu, history_menu, tools_menu, help_menu: EV_MENU
+	action_bar, author_lang_term_hbox,
+	l_ev_horizontal_box_1, arch_desc_status_hbox, l_ev_horizontal_box_2, l_ev_horizontal_box_3,
+	arch_desc_details_hbox, l_ev_horizontal_box_4, l_ev_horizontal_box_5, l_ev_horizontal_box_6,
+	l_ev_horizontal_box_7, l_ev_horizontal_box_8, arch_desc_copyright_hbox, l_ev_horizontal_box_9,
+	l_ev_horizontal_box_10, statistics_box, l_ev_horizontal_box_11, l_ev_horizontal_box_12,
+	l_ev_horizontal_box_13, l_ev_horizontal_box_14, l_ev_horizontal_box_15, l_ev_horizontal_box_16,
+	l_ev_horizontal_box_17: EV_HORIZONTAL_BOX
+	overwrite_adl_rb, remove_unused_codes_rb: EV_CHECK_BUTTON
+	archetype_id, adl_version_text,
+	arch_desc_status_text, arch_desc_original_language_text, arch_translations_accreditation_text,
+	arch_desc_resource_package_text, arch_total_count_tf, arch_spec_count_tf, arch_slotted_count_tf,
+	arch_used_by_count_tf, arch_bad_count_tf, arch_test_processed_count: EV_TEXT_FIELD
+	compiler_output_grid,
+	archetype_test_tree_grid: EV_GRID
+	node_map_expand_button, node_map_expand_one_button, node_map_collapse_one_button,
+	arch_test_tree_toggle_expand_bn, arch_test_refresh_bn, archetype_test_go_bn: EV_BUTTON
+	arch_desc_auth_contrib_list,
+	terminologies_list, arch_translations_languages_list, arch_desc_keywords_list: EV_LIST
 	source_rich_text: EV_RICH_TEXT
 	file_menu_open,
 	file_menu_parse, file_menu_edit, file_menu_save_as, file_menu_exit, edit_menu_copy,
