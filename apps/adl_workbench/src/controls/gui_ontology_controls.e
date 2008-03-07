@@ -86,13 +86,13 @@ feature -- Commands
 	select_term(a_term_code: STRING) is
 			-- select row for a_term_code in term_definitions control
 		do
-			select_coded_term_row(a_term_code, gui.ontology_term_definitions_multi_column_list)
+			select_coded_term_row (a_term_code, gui.ontology_term_definitions_multi_column_list)
 		end
 
 	select_constraint(a_term_code: STRING) is
 			-- select row for a_term_code in term_definitions control
 		do
-			select_coded_term_row(a_term_code, gui.ontology_constraint_definitions_multi_column_list)
+			select_coded_term_row (a_term_code, gui.ontology_constraint_definitions_multi_column_list)
 		end
 
 feature {NONE} -- Implementation
@@ -301,22 +301,24 @@ feature {NONE} -- Implementation
 
 		end
 
-	select_coded_term_row(a_term_code: STRING; list_control: EV_MULTI_COLUMN_LIST) is
-			-- select row for a_term_code in term_definitions control
+	select_coded_term_row (a_term_code: STRING; list_control: EV_MULTI_COLUMN_LIST) is
+			-- Select the row for `a_term_code' in `list_control'.
 		do
 			list_control.remove_selection
+
 			from
 				list_control.start
 			until
 				list_control.off
 			loop
-				if list_control.item.first.is_equal(a_term_code) then
-					if gui.ontology_notebook.selected_item /= list_control then
-						gui.ontology_notebook.select_item(list_control)
-					end
+				if list_control.item.first.is_equal (a_term_code) then
 					list_control.item.enable_select
-					list_control.ensure_item_visible(list_control.item)
+
+					if list_control.is_displayed then
+						list_control.ensure_item_visible (list_control.item)
+					end
 				end
+
 				list_control.forth
 			end
 		end
