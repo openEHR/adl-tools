@@ -181,7 +181,7 @@ feature {NONE} -- Implementation
 		end
 
 	validate_definition_codes
-			-- check if all and ac-codes found in the definition node tree are in the ontology
+			-- Check if all at- and ac-codes found in the definition node tree are in the ontology.
 			-- Leave `passed' True if all found node_ids are defined in term_definitions,
 			-- and term_definitions contains no extras.
 		local
