@@ -224,9 +224,45 @@ feature -- Status Report
 
 	is_valid: BOOLEAN is
 			--
-		deferred
-		ensure
-			not Result implies errors /= Void and then not errors.is_empty
+		do
+			-- check that each at- and ac-code is found in all languages
+			from
+				term_codes.start
+			until
+				term_codes.off
+			loop
+				from
+					languages_available.start
+				until
+					languages_available.off
+				loop
+					if not term_definitions.item (languages_available.item).has (term_codes.item) then
+						errors.append ("Term code " + term_codes.item + " not defined for language " + languages_available.item + "%N")
+					end
+					languages_available.forth
+				end
+				term_codes.forth
+			end
+
+			from
+				constraint_codes.start
+			until
+				constraint_codes.off
+			loop
+				from
+					languages_available.start
+				until
+					languages_available.off
+				loop
+					if not constraint_definitions.item (languages_available.item).has (constraint_codes.item) then
+						errors.append ("Constraint code " + constraint_codes.item + " not defined for language " + languages_available.item + "%N")
+					end
+					languages_available.forth
+				end
+				constraint_codes.forth
+			end
+
+			Result := errors.is_empty
 		end
 
 	has_language(a_language:STRING): BOOLEAN is

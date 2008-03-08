@@ -369,7 +369,7 @@ feature -- Tests
 
 			if archetype_parser.archetype_valid then
 				if overwrite then
-					archetype_parser.save_archetype_flat
+					archetype_parser.save_archetype_differential
 				else
 					new_adl_file_path := file_system.pathname (system_temp_file_directory, file_system.basename (archetype_parser.target.full_path))
 					archetype_parser.save_archetype_differential_as (new_adl_file_path, "adl")

@@ -96,7 +96,7 @@ feature -- Validation
 			end
 
 			if passed then
-				validate_found_codes
+				validate_definition_codes
 
 				if target.is_specialised then
 					target.build_rolled_up_status
@@ -127,6 +127,8 @@ feature {NONE} -- Implementation
 				-- FIXME - need to check definition validation; possibly this should be
 				-- done using another visitor pattern?
 				errors.append("Error: " + target.definition.invalid_reason + "%N")
+			elseif not target.ontology.is_valid then
+				errors.append("Error: " + target.ontology.errors + "%N")
 			else
 				passed := True
 			end
@@ -178,7 +180,8 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	validate_found_codes
+	validate_definition_codes
+			-- check if all and ac-codes found in the definition node tree are in the ontology
 			-- Leave `passed' True if all found node_ids are defined in term_definitions,
 			-- and term_definitions contains no extras.
 		local
@@ -187,9 +190,7 @@ feature {NONE} -- Implementation
 		do
 			depth := ontology.specialisation_depth
 
-			-- see if all found codes are in each language table
 			a_codes := target.id_atcodes_index
-
 			from
 				a_codes.start
 			until

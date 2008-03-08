@@ -119,17 +119,6 @@ feature -- Access
 
 feature -- Status Report
 
-	is_valid: BOOLEAN is
-			--
-		do
-			-- FIXME: do some validity checking; some is already happening in syncrhonise_from_tree
-
-			-- there can be no code of a specialisation depth greater than that of the
-			-- ontology as a whole, which is derived from the concept code
-
-			Result := errors.is_empty
-		end
-
 	has_term_code (a_term_code: STRING): BOOLEAN is
 			-- Is `a_term_code' known in this ontology?
 		do
