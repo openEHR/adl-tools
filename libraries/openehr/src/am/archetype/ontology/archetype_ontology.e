@@ -1105,7 +1105,7 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 			end
 		end
 
-	update_highest_term_code_index(a_code: STRING) is
+	update_highest_term_code_index (a_code: STRING) is
 			-- update highest non-specialised term code index at the specialisation depth of this archetype
 			-- spec depth = 0: at0047 -> use the 0047 & compare with current highest
 			-- spec depth = 3: at0.0.12 -> use the 12 & compare with current highest
@@ -1117,8 +1117,10 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 		do
 			if not is_specialised_code (a_code) and then specialisation_depth_from_code (a_code) = specialisation_depth then
 				idx_string := index_from_code_at_level (a_code, specialisation_depth)
+
 				if idx_string.is_integer then
 					idx := idx_string.to_integer
+
 					if idx > highest_term_code_index then
 						highest_term_code_index := idx
 					end
@@ -1126,7 +1128,7 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 			end
 		end
 
-	update_highest_constraint_code_index(a_code: STRING) is
+	update_highest_constraint_code_index (a_code: STRING) is
 			-- update highest_constraint_code_index for this level;
 			-- ignore acXXXX codes not of the level of this archetype
 		require
@@ -1137,9 +1139,11 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 		do
 			if not is_specialised_code (a_code) and then specialisation_depth_from_code (a_code) = specialisation_depth then
 				idx_string := index_from_code_at_level (a_code, specialisation_depth)
+
 				if idx_string.is_integer then
 					idx := idx_string.to_integer
-					if idx > highest_term_code_index then
+
+					if idx > highest_constraint_code_index then
 						highest_constraint_code_index := idx
 					end
 				end
