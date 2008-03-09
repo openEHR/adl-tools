@@ -116,7 +116,7 @@ feature {NONE} -- Implementation
 			passed := False
 
 			if not target.definition.rm_type_name.is_equal (target.archetype_id.rm_entity) then
-				errors.append("Error: archetype id type %"" + target.archetype_id.rm_entity +
+				errors.append ("Error: archetype id type %"" + target.archetype_id.rm_entity +
 								"%" does not match type %"" + target.definition.rm_type_name +
 								"%" in definition section%N")
 			elseif specialisation_depth_from_code (target.concept) /= target.specialisation_depth then
@@ -126,9 +126,9 @@ feature {NONE} -- Implementation
 			elseif not target.definition.is_valid then
 				-- FIXME - need to check definition validation; possibly this should be
 				-- done using another visitor pattern?
-				errors.append("Error: " + target.definition.invalid_reason + "%N")
+				errors.append ("Error: " + target.definition.invalid_reason + "%N")
 			elseif not target.ontology.is_valid then
-				errors.append("Error: " + target.ontology.errors + "%N")
+				errors.append ("Error: " + target.ontology.errors + "%N")
 			else
 				passed := True
 			end
@@ -138,9 +138,16 @@ feature {NONE} -- Implementation
 			-- check to see that all linguistic items in ontology, description, etc
 			-- are all coherent
 		do
-			-- is languages_available list same as languages in description.details?
+			passed := False
 
-			-- is languages_available list same as languages in ontology?
+			if not target.languages_available.is_subset (target.ontology.languages_available) then
+				errors.append ("Error: translations are missing from ontology%N")
+				-- FIXME: Report exactly which languages are missing from the ontology.
+			else
+				passed := True
+			end
+
+			-- FIXME: Check whether languages_available list same as languages in description.details?
 		end
 
 	validate_ontology_code_spec_levels

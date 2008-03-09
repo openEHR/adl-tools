@@ -99,9 +99,9 @@ feature -- Access
 
 	primary_language: STRING
 
-	languages_available: ARRAYED_LIST[STRING]
+	languages_available: ARRAYED_SET [STRING]
 
-	terminologies_available: ARRAYED_LIST[STRING]
+	terminologies_available: ARRAYED_LIST [STRING]
 
 	specialisation_depth: INTEGER is
 			-- depth of this ontology with relation to ontologies in other archetypes
@@ -223,43 +223,49 @@ feature -- Access
 feature -- Status Report
 
 	is_valid: BOOLEAN is
-			--
+			-- Are all `term_codes' and `constraint_codes' found in all `languages_available'?
+		local
+			language: STRING
 		do
-			-- check that each at- and ac-code is found in all languages
 			from
-				term_codes.start
+				languages_available.start
 			until
-				term_codes.off
+				languages_available.off
 			loop
-				from
-					languages_available.start
-				until
-					languages_available.off
-				loop
-					if not term_definitions.item (languages_available.item).has (term_codes.item) then
-						errors.append ("Term code " + term_codes.item + " not defined for language " + languages_available.item + "%N")
-					end
-					languages_available.forth
-				end
-				term_codes.forth
-			end
+				language := languages_available.item
+				languages_available.forth
 
-			from
-				constraint_codes.start
-			until
-				constraint_codes.off
-			loop
-				from
-					languages_available.start
-				until
-					languages_available.off
-				loop
-					if not constraint_definitions.item (languages_available.item).has (constraint_codes.item) then
-						errors.append ("Constraint code " + constraint_codes.item + " not defined for language " + languages_available.item + "%N")
+				if {terms: !HASH_TABLE [ARCHETYPE_TERM, STRING]} term_definitions.item (language) then
+					from
+						term_codes.start
+					until
+						term_codes.off
+					loop
+						if not terms.has (term_codes.item) then
+							errors.append ("Term code " + term_codes.item + " not defined for language " + language + "%N")
+						end
+
+						term_codes.forth
 					end
-					languages_available.forth
+				elseif not term_codes.is_empty then
+					errors.append ("Term codes not defined for language " + language + "%N")
 				end
-				constraint_codes.forth
+
+				if {constraints: !HASH_TABLE [ARCHETYPE_TERM, STRING]} constraint_definitions.item (language) then
+					from
+						constraint_codes.start
+					until
+						constraint_codes.off
+					loop
+						if not constraints.has (constraint_codes.item) then
+							errors.append ("Constraint code " + constraint_codes.item + " not defined for language " + language + "%N")
+						end
+
+						constraint_codes.forth
+					end
+				elseif not constraint_codes.is_empty then
+					errors.append ("Constraint codes not defined for language " + language + "%N")
+				end
 			end
 
 			Result := errors.is_empty
