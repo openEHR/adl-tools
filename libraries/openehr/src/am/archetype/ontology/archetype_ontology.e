@@ -961,8 +961,9 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 				loop
 					code := constraint_definitions.item(primary_language).key_for_iteration
 					constraint_codes.extend(code)
-					constraint_definitions.item(primary_language).forth
+					update_specialised_codes (code)
 					update_highest_constraint_code_index(code)
+					constraint_definitions.item(primary_language).forth
 				end
 			end
 
@@ -1094,7 +1095,7 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 		end
 
 	update_specialised_codes (a_code: STRING) is
-			-- Update specialised_term_codes list with new code, if it happens to be specialised.
+			-- Update specialised_codes list with new code, if it happens to be specialised.
 		require
 			Code_valid: a_code /= Void and then is_valid_code (a_code)
 		local
