@@ -294,7 +294,7 @@ feature {NONE} -- Implementation
 			-- and use it to set the kind of pixmap to use
 			create pixmap_ext.make (0)
 
-			-- always colourise inherited & overrridden nodes. If we want a switch for this, implement a new flag
+			-- Always colourise inherited & overidden nodes. If we want a switch for this, implement a new flag.
 			-- if in_differential_mode then
 				if archetype_directory.has_selected_archetype then
 					arch_const ?= an_og_node.content_item
