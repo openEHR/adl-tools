@@ -369,7 +369,7 @@ feature -- File events
 		end
 
 	save_adl_file
-			-- Save ADL source file via GUI file save dialog.
+			-- Save to an ADL or HTML file via a GUI file save dialog.
 		local
 			ok_to_write: BOOLEAN
 			question_dialog: EV_QUESTION_DIALOG

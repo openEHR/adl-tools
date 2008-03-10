@@ -26,7 +26,7 @@ feature {ANY_SERIALISER} -- Access
 			Result.put("-- ",			FMT_COMMENT)
 			Result.put("%N",			FMT_NEWLINE)
 			Result.put("%T",			FMT_INDENT)
-	
+
 			Result.put("",			FMT_DOC_START)
 			Result.put("",			FMT_DOC_END)
 			Result.put("",			FMT_DOC_STYLES)
@@ -40,31 +40,33 @@ feature {ANY_SERIALISER} -- Access
 			Result.put(", ",		FMT_LIST_ITEM_SEPARATOR)
 			Result.put("; ",		FMT_ASSUMED_VALUE_SEPARATOR)
 		end
-		
+
 	styles: HASH_TABLE[STRING, INTEGER] is
 			-- styles in this format, keyed by logical name
 		once
-			create Result.make(0)
-			Result.put("",			STYLE_KEYWORD)
-			Result.put("",			STYLE_OPERATOR)
-			Result.put("",			STYLE_IDENTIFIER)
-			Result.put("",			STYLE_TERM_REF)
-			Result.put("",			STYLE_VALUE)
-			Result.put("",			STYLE_COMMENT)
+			create Result.make (0)
+			Result.put ("", style_keyword)
+			Result.put ("", style_operator)
+			Result.put ("", style_identifier)
+			Result.put ("", style_inherited_identifier)
+			Result.put ("", style_redefined_identifier)
+			Result.put ("", style_term_ref)
+			Result.put ("", style_value)
+			Result.put ("", style_comment)
 		end
 
 	tags: HASH_TABLE[STRING, INTEGER] is
 			-- tag strings, keyed by logical name
 		once
 			create Result.make(0)
-		end	
+		end
 
 	quote_patterns: HASH_TABLE[STRING, STRING] is
 			-- styles in this format, keyed by logical name
 		once
 			create Result.make(0)
 		end
-	
+
 feature {ANY_SERIALISER} -- Factory
 
 	apply_style(elem:STRING; a_style:INTEGER): STRING is

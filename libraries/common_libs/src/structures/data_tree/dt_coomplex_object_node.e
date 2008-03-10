@@ -279,11 +279,7 @@ feature -- Modification
 			-- create a new set of objects corresponding to `a_path'
 		require
 			a_path_valid: a_path /= Void and then not a_path.is_empty
-		local
-			an_attr_node: DT_ATTRIBUTE_NODE
-			an_obj_node: DT_COMPLEX_OBJECT_NODE
 		do
-
 		end
 
 feature -- Conversion
