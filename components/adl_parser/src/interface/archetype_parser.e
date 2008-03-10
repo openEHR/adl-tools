@@ -380,16 +380,24 @@ feature -- Commands
 			if not exception_encountered then
 				status.wipe_out
 				save_succeeded := False
+
 				if archetype_valid then
 					serialised_differential := adl_engine.serialise(archetype_differential, serialise_format)
-					target.save_differential_as (a_full_path, serialised_differential)
+
+					if serialise_format.same_string ("adl") then
+						target.save_differential_as (a_full_path, serialised_differential)
+					else
+						target.file_repository.save_text_to_file (a_full_path, serialised_differential)
+					end
+
 					save_succeeded := True
 				else
-					post_error(Current, "save_archetype", "save_archetype_e2", Void)
+					post_error (Current, "save_archetype", "save_archetype_e2", Void)
 				end
 			else
-				post_error(Current, "save_archetype", "save_archetype_e3", Void)
+				post_error (Current, "save_archetype", "save_archetype_e3", Void)
 			end
+
 			status.wipe_out
 			status.append(billboard_content)
 			clear_billboard
@@ -411,16 +419,24 @@ feature -- Commands
 			if not exception_encountered then
 				status.wipe_out
 				save_succeeded := False
+
 				if archetype_valid then
 					serialised_flat := adl_engine.serialise(archetype_flat, serialise_format)
-					target.save_flat_as (a_full_path, serialised_flat)
+
+					if serialise_format.same_string ("adl") then
+						target.save_flat_as (a_full_path, serialised_flat)
+					else
+						target.file_repository.save_text_to_file (a_full_path, serialised_flat)
+					end
+
 					save_succeeded := True
 				else
-					post_error(Current, "save_archetype", "save_archetype_e2", Void)
+					post_error (Current, "save_archetype", "save_archetype_e2", Void)
 				end
 			else
-				post_error(Current, "save_archetype", "save_archetype_e3", Void)
+				post_error (Current, "save_archetype", "save_archetype_e3", Void)
 			end
+
 			status.wipe_out
 			status.append(billboard_content)
 			clear_billboard
