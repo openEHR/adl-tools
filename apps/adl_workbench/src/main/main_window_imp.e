@@ -213,7 +213,6 @@ feature {NONE}-- Initialization
 			create l_ev_horizontal_box_16
 			create archetype_test_tree_grid
 			create l_ev_vertical_box_15
-			create overwrite_adl_rb
 			create remove_unused_codes_rb
 			create arch_test_tree_toggle_expand_bn
 			create arch_test_refresh_bn
@@ -403,7 +402,6 @@ feature {NONE}-- Initialization
 			test_split_area.extend (l_ev_horizontal_box_16)
 			l_ev_horizontal_box_16.extend (archetype_test_tree_grid)
 			l_ev_horizontal_box_16.extend (l_ev_vertical_box_15)
-			l_ev_vertical_box_15.extend (overwrite_adl_rb)
 			l_ev_vertical_box_15.extend (remove_unused_codes_rb)
 			l_ev_vertical_box_15.extend (arch_test_tree_toggle_expand_bn)
 			l_ev_vertical_box_15.extend (arch_test_refresh_bn)
@@ -918,15 +916,12 @@ feature {NONE}-- Initialization
 			integer_constant_retrieval_functions.extend (agent padding_width)
 			integer_constant_set_procedures.extend (agent l_ev_vertical_box_15.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
-			l_ev_vertical_box_15.disable_item_expand (overwrite_adl_rb)
 			l_ev_vertical_box_15.disable_item_expand (remove_unused_codes_rb)
 			l_ev_vertical_box_15.disable_item_expand (arch_test_tree_toggle_expand_bn)
 			l_ev_vertical_box_15.disable_item_expand (arch_test_refresh_bn)
 			l_ev_vertical_box_15.disable_item_expand (l_ev_horizontal_box_17)
 			l_ev_vertical_box_15.disable_item_expand (l_ev_horizontal_separator_1)
 			l_ev_vertical_box_15.disable_item_expand (archetype_test_go_bn)
-			overwrite_adl_rb.set_text ("Overwrite ADL")
-			overwrite_adl_rb.set_tooltip ("Overwrite .adl files rather than save to .adlx")
 			remove_unused_codes_rb.set_text ("Remove unused codes")
 			remove_unused_codes_rb.set_tooltip ("Remove unused codes in archetypes on parse")
 			arch_test_tree_toggle_expand_bn.set_text ("Collapse Tree")
@@ -1058,17 +1053,17 @@ feature -- Access
 	l_ev_horizontal_box_10, statistics_box, l_ev_horizontal_box_11, l_ev_horizontal_box_12,
 	l_ev_horizontal_box_13, l_ev_horizontal_box_14, l_ev_horizontal_box_15, l_ev_horizontal_box_16,
 	l_ev_horizontal_box_17: EV_HORIZONTAL_BOX
-	overwrite_adl_rb, remove_unused_codes_rb: EV_CHECK_BUTTON
-	archetype_id, adl_version_text,
-	arch_desc_status_text, arch_desc_original_language_text, arch_translations_accreditation_text,
-	arch_desc_resource_package_text, arch_total_count_tf, arch_spec_count_tf, arch_slotted_count_tf,
-	arch_used_by_count_tf, arch_bad_count_tf, arch_test_processed_count: EV_TEXT_FIELD
-	compiler_output_grid,
-	archetype_test_tree_grid: EV_GRID
-	node_map_expand_button, node_map_expand_one_button, node_map_collapse_one_button,
-	arch_test_tree_toggle_expand_bn, arch_test_refresh_bn, archetype_test_go_bn: EV_BUTTON
-	arch_desc_auth_contrib_list,
-	terminologies_list, arch_translations_languages_list, arch_desc_keywords_list: EV_LIST
+	remove_unused_codes_rb: EV_CHECK_BUTTON
+	archetype_id, adl_version_text, arch_desc_status_text,
+	arch_desc_original_language_text, arch_translations_accreditation_text, arch_desc_resource_package_text,
+	arch_total_count_tf, arch_spec_count_tf, arch_slotted_count_tf, arch_used_by_count_tf,
+	arch_bad_count_tf, arch_test_processed_count: EV_TEXT_FIELD
+	compiler_output_grid, archetype_test_tree_grid: EV_GRID
+	node_map_expand_button,
+	node_map_expand_one_button, node_map_collapse_one_button, arch_test_tree_toggle_expand_bn,
+	arch_test_refresh_bn, archetype_test_go_bn: EV_BUTTON
+	arch_desc_auth_contrib_list, terminologies_list,
+	arch_translations_languages_list, arch_desc_keywords_list: EV_LIST
 	source_rich_text: EV_RICH_TEXT
 	file_menu_open,
 	file_menu_parse, file_menu_edit, file_menu_save_as, file_menu_exit, edit_menu_copy,

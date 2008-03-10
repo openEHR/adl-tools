@@ -103,7 +103,7 @@ feature -- Access
 			Result := target.flat_text
 		end
 
-	source_text: STRING is
+	differential_text: STRING is
 			-- source of current archetype
 		require
 			has_target: has_target

@@ -85,8 +85,8 @@ feature -- Access
 		once
 			create Result.make (0)
 			Result.force (agent test_parse, "Parse")
-			Result.force (agent test_save, "Save to ADL")
-			Result.force (agent test_reparse_flat, "Reparse")
+			Result.force (agent test_save_differential, "Save to ADL")
+			Result.force (agent test_reparse_differential, "Reparse")
 			Result.force (agent test_diff, "Diff")
 		end
 
@@ -97,10 +97,6 @@ feature -- Status Setting
 
 	is_expanded: BOOLEAN
 			-- True if archetype tree is in expanded state
-
-	overwrite: BOOLEAN
-			-- set to True if old files are to be overwritten by new files
-			-- useful for upgrading ADL syntax in one go
 
 	remove_unused_codes: BOOLEAN
 			-- True means remove unused codes from every archetype	
@@ -160,7 +156,6 @@ feature -- Commands
 
 			gui.arch_test_processed_count.set_text ("0")
 			gui.remove_unused_codes_rb.disable_select
-			gui.overwrite_adl_rb.disable_select
 		end
 
 	archetype_test_go_stop is
@@ -185,7 +180,6 @@ feature -- Commands
 		local
 			row_csr: INTEGER
 		do
-			overwrite := gui.overwrite_adl_rb.is_selected
 			remove_unused_codes := gui.remove_unused_codes_rb.is_selected
 
 			from
@@ -360,47 +354,35 @@ feature -- Tests
 			end
 		end
 
-	test_save: INTEGER is
-			-- parse archetype and return result
-		local
-			new_adl_file_path: STRING
+	test_save_differential: INTEGER is
+			-- parse archetype, save in source form and return result
 		do
 			Result := test_failed
+			create test_orig_differential_source.make_empty
 
 			if archetype_parser.archetype_valid then
-				if overwrite then
-					archetype_parser.save_archetype_differential
-				else
-					new_adl_file_path := file_system.pathname (system_temp_file_directory, file_system.basename (archetype_parser.target.full_path))
-					archetype_parser.save_archetype_differential_as (new_adl_file_path, "adl")
-				end
+				archetype_parser.save_archetype_differential
 
 				if archetype_parser.save_succeeded then
 					Result := test_passed
+					test_orig_differential_source := archetype_parser.serialised_differential
 				else
 					test_status.append (archetype_parser.status + "%N")
 				end
 			else
 				Result := test_not_applicable
 			end
+		ensure
+			test_orig_differential_source_attached: test_orig_differential_source /= Void
 		end
 
-	test_reparse_flat: INTEGER is
+	test_reparse_differential: INTEGER is
 			-- parse archetype and return result
 		local
 			new_adl_file_path: STRING
 		do
 			Result := test_failed
-			if overwrite then
-				new_adl_file_path := archetype_parser.target.full_path
-			else
-				new_adl_file_path := file_system.pathname (system_temp_file_directory, file_system.basename (archetype_parser.target.full_path))
-			end
-
-			-- FIXME: these are the right paths, but we don't yet have a way of overriding the source
-			-- of an archetype from what is in its file
-			-- DO SOMETHING HERE
-
+			new_adl_file_path := archetype_parser.target.differential_path
 			archetype_parser.parse_archetype
 
 			if archetype_parser.archetype_valid then
@@ -414,38 +396,31 @@ feature -- Tests
 	test_diff: INTEGER is
 			-- parse archetype and return result
 		local
-			new_path: STRING
 			original_source, new_source: STRING
 		do
 			Result := Test_failed
+			if archetype_parser.archetype_valid then
+				original_source := test_orig_differential_source
+				new_source := archetype_parser.serialised_differential
 
-			if not overwrite then
-				original_source := archetype_parser.flat_text
-
-				new_path := file_system.pathname (system_temp_file_directory, file_system.basename (archetype_parser.target.full_path))
-				archetype_parser.save_archetype_flat_as (new_path, "adl")
-
-				if archetype_parser.save_succeeded then
-					new_source := archetype_parser.serialised_flat
-
-					if original_source.count = new_source.count then
-						if original_source.same_string (new_source) then
-							Result := Test_passed
-						else
-							test_status.append ("Archetype source lengths same but texts differ%N")
-						end
+				if original_source.count = new_source.count then
+					if original_source.same_string (new_source) then
+						Result := Test_passed
 					else
-						test_status.append ("Archetype source lengths differ: original =  " + original_source.count.out + "; new = " + new_source.count.out + "%N")
+						test_status.append ("Archetype source lengths same but texts differ%N")
 					end
 				else
-					test_status.append ("Archetype save failed%N")
+					test_status.append ("Archetype source lengths differ: original =  " + original_source.count.out + "; new = " + new_source.count.out + "%N")
 				end
 			else
-				Result := Test_not_applicable
+				test_status.append ("Archetype save failed%N")
 			end
 		end
 
 feature {NONE} -- Implementation
+
+	test_orig_differential_source: STRING
+			-- original differential source before parse and save
 
 	gui: MAIN_WINDOW
 			-- main window of system
