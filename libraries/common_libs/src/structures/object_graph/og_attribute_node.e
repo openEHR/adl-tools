@@ -108,13 +108,13 @@ feature -- Modification
 
 	put_child(obj_node: like child_type) is
 			-- put a new child node
+			-- if new child is an OBJECT_NODE id is already known in children, generate a unique id for it
 		local
 			new_id: STRING
 		do
-			-- if new child is an OBJECT_NODE id is known in children, generate a unique id for it
 			if children.has(obj_node.node_id) then
 				duplicate_child_id_count := duplicate_child_id_count + 1
-				new_id := obj_node.node_id + "_" + duplicate_child_id_count.out
+				new_id := obj_node.node_id + "_#" + duplicate_child_id_count.out
 				obj_node.set_node_id(new_id)
 			end
 			precursor(obj_node)

@@ -93,7 +93,7 @@ feature -- Status Report
 			node_id_valid: a_node_id /= Void
 		do
 			-- FIXME: should just be able to search with node_id, but we are still
-			-- using the 'unknown; node_ids rather than empty strings
+			-- using the 'unknown' node_ids rather than empty strings
 			if a_node_id.is_empty then
 				Result := has_children
 			else
