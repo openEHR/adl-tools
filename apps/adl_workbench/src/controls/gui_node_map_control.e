@@ -503,7 +503,7 @@ feature {NONE} -- Implementation
 
 					create pixmap_ext.make(0)
 
-					-- always colourise inherited & overrridden nodes. If we want a switch for this, implement a new flag
+					-- Always colourise inherited & overidden nodes. If we want a switch for this, implement a new flag.
 					-- if in_differential_mode then
 						arch_const ?= a_node
 
