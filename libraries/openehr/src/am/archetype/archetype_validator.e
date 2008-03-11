@@ -115,7 +115,10 @@ feature {NONE} -- Implementation
 		do
 			passed := False
 
-			if not target.definition.rm_type_name.is_equal (target.archetype_id.rm_entity) then
+			if not target_descriptor.id.as_string.is_equal (target.archetype_id.as_string) then
+				errors.append ("Error: archetype id in filename " + target_descriptor.id.as_string + " does not match id at top of file " +
+					target.archetype_id.as_string + "%N")
+			elseif not target.definition.rm_type_name.is_equal (target.archetype_id.rm_entity) then
 				errors.append ("Error: archetype id type %"" + target.archetype_id.rm_entity +
 								"%" does not match type %"" + target.definition.rm_type_name +
 								"%" in definition section%N")
