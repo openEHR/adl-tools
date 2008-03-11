@@ -140,7 +140,7 @@ def ecf_scanner(node, env, path):
 		else:
 			location = previous_cluster = os.path.abspath(os.path.join(os.path.dirname(str(node)), location))
 
-		if cluster.attributes.has_key("recursive") and cluster.attributes["recursive"]:
+		if cluster.attributes.get("recursive", None):
 			result += eiffel_classes_in_cluster(location)
 		else:
 			result += files(location + '/*.e')
