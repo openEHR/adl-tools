@@ -134,14 +134,13 @@ def ecf_scanner(node, env, path):
 
 	for cluster in ecf.getElementsByTagName("cluster") + ecf.getElementsByTagName("override"):
 		location = cluster.attributes["location"].value.replace('\\', '/')
-		recursive = cluster.attributes["recursive"]
 
 		if location.startswith('$|'):
 			location = os.path.join(previous_cluster, location.replace('$|', '', 1))
 		else:
 			location = previous_cluster = os.path.abspath(os.path.join(os.path.dirname(str(node)), location))
 
-		if recursive:
+		if cluster.attributes.has_key("recursive") and cluster.attributes["recursive"]:
 			result += eiffel_classes_in_cluster(location)
 		else:
 			result += files(location + '/*.e')
