@@ -193,6 +193,7 @@ feature -- Commands
 			end
 
 			gui.test_status_area.append_text ("****** Executed tests on " + last_tested_archetypes_count.out + " Archetypes ******%N")
+			gui.build_gui_stats_update
 		end
 
 	run_tests_on_row (row: EV_GRID_ROW)

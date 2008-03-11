@@ -1161,7 +1161,7 @@ feature {NONE} -- Implementation
 			set_pointer_style (cursor)
 		end
 
-feature {NONE} -- Build commands
+feature {GUI_TEST_ARCHETYPE_TREE_CONTROL} -- Build commands
 
 	do_build_action (action: PROCEDURE [ANY, TUPLE])
 			-- Perform `action', with an hourglass mouse cursor and disabling the build menus, until done.
