@@ -1,7 +1,7 @@
 indexing
 
 	description: "Parser token codes"
-	generator: "geyacc version 3.4"
+	generator: "geyacc version 3.7"
 
 class OG_PATH_TOKENS
 
@@ -24,14 +24,10 @@ feature -- Access
 				Result := "EOF token"
 			when -1 then
 				Result := "Error token"
-			when V_TYPE_IDENTIFIER then
-				Result := "V_TYPE_IDENTIFIER"
 			when V_ATTRIBUTE_IDENTIFIER then
 				Result := "V_ATTRIBUTE_IDENTIFIER"
 			when V_STRING then
 				Result := "V_STRING"
-			when V_FEATURE_CALL_IDENTIFIER then
-				Result := "V_FEATURE_CALL_IDENTIFIER"
 			when V_LOCAL_TERM_CODE_REF then
 				Result := "V_LOCAL_TERM_CODE_REF"
 			when ERR_STRING then
@@ -45,12 +41,10 @@ feature -- Access
 
 feature -- Token codes
 
-	V_TYPE_IDENTIFIER: INTEGER is 258
-	V_ATTRIBUTE_IDENTIFIER: INTEGER is 259
-	V_STRING: INTEGER is 260
-	V_FEATURE_CALL_IDENTIFIER: INTEGER is 261
-	V_LOCAL_TERM_CODE_REF: INTEGER is 262
-	ERR_STRING: INTEGER is 263
-	SYM_MOVABLE_LEADER: INTEGER is 264
+	V_ATTRIBUTE_IDENTIFIER: INTEGER is 258
+	V_STRING: INTEGER is 259
+	V_LOCAL_TERM_CODE_REF: INTEGER is 260
+	ERR_STRING: INTEGER is 261
+	SYM_MOVABLE_LEADER: INTEGER is 262
 
 end

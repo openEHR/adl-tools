@@ -14,7 +14,6 @@ indexing
 class OG_PATH_SCANNER
 
 inherit
-
 	YY_COMPRESSED_SCANNER_SKELETON
 		rename
 			make as make_compressed_scanner_skeleton,
@@ -38,8 +37,7 @@ inherit
 	KL_SHARED_EXCEPTIONS
 	KL_SHARED_ARGUMENTS
 
-creation
-
+create
 	make
 
 feature -- Status report
@@ -72,36 +70,36 @@ if yy_act <= 5 then
 if yy_act <= 3 then
 if yy_act <= 2 then
 if yy_act = 1 then
---|#line 63 "og_path_scanner.l"
+--|#line 61 "og_path_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 63")
+	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 61")
 end
 last_token := Dot_code
+else
+--|#line 62 "og_path_scanner.l"
+debug ("GELEX")
+	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 62")
+end
+last_token := Slash_code
+end
 else
 --|#line 64 "og_path_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 64")
 end
-last_token := Slash_code
-end
-else
---|#line 66 "og_path_scanner.l"
-debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 66")
-end
 last_token := Left_bracket_code
 end
 else
 if yy_act = 4 then
---|#line 67 "og_path_scanner.l"
+--|#line 65 "og_path_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 67")
+	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 65")
 end
 last_token := Right_bracket_code
 else
---|#line 69 "og_path_scanner.l"
+--|#line 67 "og_path_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 69")
+	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 67")
 end
 last_token := Left_parenthesis_code
 end
@@ -110,22 +108,22 @@ else
 if yy_act <= 8 then
 if yy_act <= 7 then
 if yy_act = 6 then
+--|#line 68 "og_path_scanner.l"
+debug ("GELEX")
+	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 68")
+end
+last_token := Right_parenthesis_code
+else
 --|#line 70 "og_path_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 70")
 end
-last_token := Right_parenthesis_code
-else
---|#line 72 "og_path_scanner.l"
-debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 72")
-end
 last_token := SYM_MOVABLE_LEADER
 end
 else
---|#line 75 "og_path_scanner.l"
+--|#line 73 "og_path_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 75")
+	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 73")
 end
 
 					last_token := V_LOCAL_TERM_CODE_REF
@@ -134,18 +132,18 @@ end
 end
 else
 if yy_act = 9 then
---|#line 81 "og_path_scanner.l"
+--|#line 79 "og_path_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 81")
+	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 79")
 end
 
 					last_token := V_ATTRIBUTE_IDENTIFIER
 					last_string_value := text
 			
 else
---|#line 87 "og_path_scanner.l"
+--|#line 85 "og_path_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 87")
+	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 85")
 end
 
 				last_token := V_STRING
@@ -159,9 +157,9 @@ if yy_act <= 15 then
 if yy_act <= 13 then
 if yy_act <= 12 then
 if yy_act = 11 then
---|#line 92 "og_path_scanner.l"
+--|#line 90 "og_path_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 92")
+	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 90")
 end
 				-- beginning of a string
 				if text_count > 1 then
@@ -170,32 +168,32 @@ end
 				set_start_condition (IN_STR)
 			
 else
---|#line 100 "og_path_scanner.l"
+--|#line 98 "og_path_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 100")
+	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 98")
 end
 in_buffer.append_character ('\')
 end
 else
---|#line 102 "og_path_scanner.l"
+--|#line 100 "og_path_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 102")
+	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 100")
 end
 in_buffer.append_character ('"')
 end
 else
 if yy_act = 14 then
---|#line 104 "og_path_scanner.l"
+--|#line 102 "og_path_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 104")
+	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 102")
 end
 
 				in_buffer.append_string (text)
 	
 else
---|#line 108 "og_path_scanner.l"
+--|#line 106 "og_path_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 108")
+	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 106")
 end
 in_buffer.append_string (text)
 end
@@ -204,25 +202,27 @@ else
 if yy_act <= 18 then
 if yy_act <= 17 then
 if yy_act = 16 then
---|#line 110 "og_path_scanner.l"
+--|#line 108 "og_path_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 110")
+	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 108")
 end
 
 				in_lineno := in_lineno + 1	-- match LF in line
 				in_buffer.append_character ('%N')
 			
 else
---|#line 115 "og_path_scanner.l"
+--|#line 113 "og_path_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 115")
+	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 113")
 end
 						-- match final end of string
 				last_token := V_STRING
+
 				if text_count > 1 then
 					in_buffer.append_string (text_substring (1, text_count - 1))
 				end
-				str_ := STRING_.make (in_buffer.count)
+
+				create str_.make (in_buffer.count)
 				str_.append_string (in_buffer)
 				in_buffer.wipe_out
 				last_string_value := str_
@@ -492,7 +492,7 @@ feature {NONE} -- Initialization
 			-- Create a new scanner.
 		do
 			make_compressed_scanner_skeleton
-			in_buffer := string_.make (Init_buffer_size)
+			create in_buffer.make (Init_buffer_size)
 			in_lineno := 1
 		end
 
