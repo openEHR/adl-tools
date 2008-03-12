@@ -17,52 +17,35 @@ deferred class
 inherit
 	ARCHETYPE_REPOSITORY_I
 
-	SHARED_RESOURCES
-		export
-			{NONE} all
-		end
-
 	MESSAGE_BILLBOARD
+		rename
+			file_exists as is_valid_path,
+			directory_exists as is_valid_directory
 		export
 			{NONE} all
 		end
 
 feature -- Access
 
-	source (full_path: STRING): STRING
+	text (full_path: STRING): STRING
 			-- Source of archetype designated by `full_path' from the repository medium.
 		do
 			file_context.set_target (full_path)
 			file_context.read_file
 			Result := file_context.file_content
-			source_timestamp := file_context.file_timestamp
+			text_timestamp := file_context.file_timestamp
 		end
 
-	source_timestamp: INTEGER
+	text_timestamp: INTEGER
 			-- Modification time of last opened file as an integer, for comparison purposes.
 
 feature -- Status Report
 
-	is_valid_path (path: STRING): BOOLEAN is
-			-- Is `path' a valid, existing file on the repository medium?
-		local
-			s: STRING
-		do
-			if path /= Void and then not path.is_empty then
-				s := path.twin
-				s.prune_all_trailing (os_directory_separator)
-				Result := (create {RAW_FILE}.make (s)).exists
-			end
-		end
-
 	is_valid_directory_part (path: STRING): BOOLEAN
 			-- Is the directory part of `path', whose last section is a filename, valid on the repository medium?
-		local
-			dir_name: STRING
 		do
 			if path /= Void and then not path.is_empty then
-				dir_name := path.substring(1, path.last_index_of (operating_environment.directory_separator, path.count) - 1)
-				Result := directory_at (dir_name).exists
+				Result := is_valid_directory (file_system.dirname (path))
 			end
 		end
 
@@ -75,15 +58,15 @@ feature -- Status Report
 
 feature -- Commands
 
-	save_as (full_path, archetype_source: STRING)
-			-- Save `archetype_source' to the file designated by `full_path'.
+	save_text_to_file (a_full_path, a_text: STRING)
+			-- Save `a_text' to the file designated by `a_full_path'.
 		do
-			if file_context.file_writable (full_path) then
-				file_context.save_file (full_path, archetype_source)
-				source_timestamp := file_context.file_timestamp
-				post_info (Current, "save_as", "save_as_i1", <<current_language, full_path>>)
+			if file_context.file_writable (a_full_path) then
+				file_context.save_file (a_full_path, a_text)
+				text_timestamp := file_context.file_timestamp
+				post_info (Current, "save_as", "save_as_i1", <<current_language, a_full_path>>)
 			else
-				post_error (Current, "save_as", "save_as_e1", <<full_path>>)
+				post_error (Current, "save_as", "save_as_e1", <<a_full_path>>)
 			end
 		end
 
@@ -97,41 +80,28 @@ feature {NONE} -- Implementation
 			attached: Result /= Void
 		end
 
-	base_name_pattern_regex: LX_DFA_REGULAR_EXPRESSION
-			-- Pattern matcher for filenames ending in ".adl".
-		once
-			create Result.compile_case_insensitive (".*\." + archetype_file_extension + "$")
-		ensure
-			attached: Result /= Void
-		end
-
-	repository_archetype (root_path, full_path: STRING): ARCH_REP_ARCHETYPE
-			-- A descriptor of the archetype designated by `full_path' to this repository.
+	create_repository_archetype_descriptor (root_path, full_path: STRING): ARCH_REP_ARCHETYPE
+			-- Create a descriptor of the archetype designated by `full_path' to this repository.
 		require
-			root_path_valid: is_valid_path (root_path)
+			root_path_valid: is_valid_directory (root_path)
 			full_path_valid: is_valid_path (full_path)
 			full_path_under_root_path: full_path.substring_index (root_path, 1) = 1
 		local
 			base_name: STRING
-			id: ARCHETYPE_ID
+			id: !ARCHETYPE_ID
 		do
-			if (create {RAW_FILE}.make (full_path)).is_plain then
-				base_name := file_system.basename (full_path)
+			base_name := file_system.basename (full_path)
+			base_name.remove_tail (file_system.extension (base_name).count)
+			create id
 
-				if base_name_pattern_regex.matches (base_name) then
-					base_name.remove_tail (1 + archetype_file_extension.count)
-					create id
-
-					if id.valid_id (base_name) then
-						id.make_from_string (base_name)
-						create Result.make (root_path, full_path, id, Current)
-					end
-				end
+			if id.valid_id (base_name) then
+				id.make_from_string (base_name)
+				create Result.make (root_path, full_path, id, Current)
 			end
 		ensure
 			has_root_path: Result /= Void implies Result.root_path.is_equal (root_path)
 			has_full_path: Result /= Void implies Result.full_path.is_equal (full_path)
-			has_this_repository: Result /= Void implies Result.source_repository = Current
+			has_this_repository: Result /= Void implies Result.file_repository = Current
 		end
 
 end

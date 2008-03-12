@@ -28,7 +28,7 @@ inherit
 
 feature -- Access
 
-	source (full_path: STRING): STRING
+	text (full_path: STRING): STRING
 			-- Source of archetype designated by `full_path' from the repository medium.
 		require
 			path_attached: full_path /= Void
@@ -37,7 +37,7 @@ feature -- Access
 			attached: Result /= Void
 		end
 
-	source_timestamp: INTEGER
+	text_timestamp: INTEGER
 			-- Modification time of last opened file as an integer, for comparison purposes.
 		deferred
 		end
@@ -48,31 +48,40 @@ feature -- Access
 feature -- Status Report
 
 	is_valid_path (path: STRING): BOOLEAN
-			-- Is `path' a valid, existing directory or file on the repository medium?
+			-- Is `path' a valid, existing file on the repository medium?
 		deferred
+		ensure
+			false_if_void: Result implies path /= Void
+		end
+
+	is_valid_directory (path: STRING): BOOLEAN
+			-- Is `path' a valid, existing directory on the repository medium?
+		deferred
+		ensure
+			false_if_void: Result implies path /= Void
 		end
 
 	is_valid_directory_part (path: STRING): BOOLEAN
 			-- Is the directory part of `path' valid on the repository medium?
 		deferred
+		ensure
+			false_if_void: Result implies path /= Void
 		end
 
-	has_file_changed_on_disk (path: STRING; timestamp: INTEGER): BOOLEAN
+	has_file_changed_on_disk (a_path: STRING; a_timestamp: INTEGER): BOOLEAN
 			-- Has the loaded archetype designated by `path' changed on disk since last read?
 		require
-			path_attached: path /= Void
-			path_not_empty: not path.is_empty
+			path_valid: a_path /= Void and then not a_path.is_empty
 		deferred
 		end
 
 feature -- Commands
 
-	save_as (full_path, archetype_source: STRING)
-			-- Save `archetype_source' to the file designated by `full_path'.
+	save_text_to_file (a_full_path, a_text: STRING)
+			-- Save `a_text' to the file designated by `a_full_path'.
 		require
-			path_valid: is_valid_directory_part (full_path)
-			archetype_source_attached: archetype_source /= Void
-			archetype_source_not_empty: not archetype_source.is_empty
+			path_valid: is_valid_directory_part (a_full_path)
+			text_valid: a_text /= Void and then not a_text.is_empty
 		deferred
 		end
 

@@ -17,6 +17,11 @@ class SHARED_RESOURCES
 inherit
 	KL_SHARED_FILE_SYSTEM
 
+	BILLBOARD_MESSAGE_TYPES
+		export
+			{NONE} all
+		end
+
 feature -- Definitions
 
 	Default_windows_temp_dir: STRING is "C:\Temp"
@@ -74,6 +79,21 @@ feature -- Access
 			Result := resource_config_file.resource_category_values(a_category)
 		ensure
 			Result_not_void: Result /= Void
+		end
+
+	status_reporting_level: INTEGER
+			-- Level of error reporting required; see BILLBOARD_MESSAGE_TYPES for levels
+			-- all levels >= the one stored will be displayed; Info is the minimum.
+		local
+			str: STRING
+		do
+			str := resource_value ("default", "status_reporting_level")
+
+			if str.is_integer then
+				Result := str.to_integer
+			else
+				Result := message_type_info
+			end
 		end
 
 feature -- Environment
@@ -235,17 +255,38 @@ feature -- Environment
 			Result := execution_environment.current_working_directory
 		end
 
-	directory_at (path: STRING): DIRECTORY
-			-- A directory object representing `path'.
-			-- Strips any trailing backslash to avoid Windows API defect.
+	file_exists (path: STRING): BOOLEAN is
+			-- Is `path' a valid, existing file?
+		do
+			if path /= Void and then not path.is_empty then
+				Result := file_system.file_exists (file_system.canonical_pathname (path))
+			end
+		end
+
+	directory_exists (path: STRING): BOOLEAN is
+			-- Is `path' a valid, existing directory?
+		do
+			if path /= Void and then not path.is_empty then
+				Result := file_system.directory_exists (file_system.canonical_pathname (path))
+			end
+		end
+
+	extension_replaced (path, new_extension: STRING): STRING
+			-- Copy of `path', with its extension replaced by `new_extension'.
 		require
 			path_attached: path /= Void
-			path_not_empty: not path.is_empty
+			new_extension_attached: new_extension /= Void
+			new_extension_starts_with_dot: not new_extension.is_empty implies new_extension.item (1) = '.'
+		local
+			n: INTEGER
 		do
-			create Result.make (file_system.canonical_pathname (path))
+			n := path.count
+			Result := path.twin
+			Result.replace_substring (new_extension, n - file_system.extension (path).count + 1, n)
 		ensure
 			attached: Result /= Void
-			correct_path: path.substring (1, Result.name.count).is_equal (Result.name)
+			cloned: Result /= path
+			ends_with_new_extension: Result.ends_with (new_extension)
 		end
 
 feature -- Element Change
@@ -285,6 +326,12 @@ feature -- Element Change
 			Valid_value: a_value /= Void
 		do
 			resource_config_file.set_resource_value_list(a_category, a_resource_name, a_value)
+		end
+
+	set_status_reporting_level (v: INTEGER) is
+			-- Set `status_reporting_level'.
+		do
+			set_resource_value ("default", "status_reporting_level", v.out)
 		end
 
 feature -- Element Removal

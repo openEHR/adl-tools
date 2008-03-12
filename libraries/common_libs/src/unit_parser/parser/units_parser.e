@@ -20,7 +20,6 @@ indexing
 class UNITS_PARSER
 
 inherit
-
 	YY_PARSER_SKELETON
 		rename
 			make as make_parser_skeleton
@@ -41,8 +40,7 @@ inherit
 	KL_SHARED_EXCEPTIONS
 	KL_SHARED_ARGUMENTS
 
-creation
-
+create
 	make
 
 
@@ -222,9 +220,9 @@ feature {NONE} -- Semantic actions
 		do
 			inspect yy_act
 when 1 then
---|#line 64 "units_parser.y"
+--|#line 62 "units_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 64")
+	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 62")
 end
 
 
@@ -233,9 +231,9 @@ if yy_parsing_status = yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 2 then
---|#line 65 "units_parser.y"
+--|#line 63 "units_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 65")
+	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 63")
 end
 
 
@@ -244,9 +242,9 @@ if yy_parsing_status = yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 3 then
---|#line 68 "units_parser.y"
+--|#line 66 "units_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 68")
+	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 66")
 end
 
 				create units.make(units_items)
@@ -256,9 +254,9 @@ if yy_parsing_status = yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 4 then
---|#line 71 "units_parser.y"
+--|#line 69 "units_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 71")
+	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 69")
 end
 
 				create units.make(units_items)
@@ -269,9 +267,9 @@ if yy_parsing_status = yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 5 then
---|#line 76 "units_parser.y"
+--|#line 74 "units_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 76")
+	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 74")
 end
 
 				units_items.extend(units_item)
@@ -281,9 +279,9 @@ if yy_parsing_status = yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 6 then
---|#line 79 "units_parser.y"
+--|#line 77 "units_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 79")
+	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 77")
 end
 
 				units_items.extend(units_item)
@@ -294,9 +292,9 @@ if yy_parsing_status = yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 7 then
---|#line 82 "units_parser.y"
+--|#line 80 "units_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 82")
+	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 80")
 end
 
 -- // make the exponent negative of what it was
@@ -309,9 +307,9 @@ if yy_parsing_status = yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 8 then
---|#line 88 "units_parser.y"
+--|#line 86 "units_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 88")
+	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 86")
 end
 
 -- // meaning is unit with exponent of +1 
@@ -323,9 +321,9 @@ if yy_parsing_status = yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 9 then
---|#line 92 "units_parser.y"
+--|#line 90 "units_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 92")
+	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 90")
 end
 
 -- // meaning is unit with exponent of +1 
@@ -338,9 +336,9 @@ if yy_parsing_status = yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 10 then
---|#line 98 "units_parser.y"
+--|#line 96 "units_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 98")
+	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 96")
 end
 
 -- // note - we cannot tell if prefix is included or not - that requires	
@@ -372,9 +370,9 @@ if yy_parsing_status = yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 11 then
---|#line 104 "units_parser.y"
+--|#line 102 "units_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 104")
+	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 102")
 end
 
 				str1 ?= yyvs3.item (yyvsp3)
@@ -387,9 +385,9 @@ if yy_parsing_status = yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 12 then
---|#line 111 "units_parser.y"
+--|#line 109 "units_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 111")
+	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 109")
 end
 
 				str1 ?= yyvs3.item (yyvsp3)
@@ -403,9 +401,9 @@ if yy_parsing_status = yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 13 then
---|#line 118 "units_parser.y"
+--|#line 116 "units_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 118")
+	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 116")
 end
 
 				str1 ?= yyvs3.item (yyvsp3)
@@ -419,9 +417,9 @@ if yy_parsing_status = yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 14 then
---|#line 125 "units_parser.y"
+--|#line 123 "units_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 125")
+	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 123")
 end
 
 				int_val := last_string_value.to_integer
@@ -450,9 +448,9 @@ if yy_parsing_status = yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 15 then
---|#line 129 "units_parser.y"
+--|#line 127 "units_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 129")
+	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 127")
 end
 
 				int_val := last_string_value.to_integer
@@ -464,9 +462,9 @@ if yy_parsing_status = yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 16 then
---|#line 133 "units_parser.y"
+--|#line 131 "units_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 133")
+	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 131")
 end
 
 				int_val := - last_string_value.to_integer
@@ -503,6 +501,7 @@ end
 feature {NONE} -- Table templates
 
 	yytranslate_template: SPECIAL [INTEGER] is
+			-- Template for `yytranslate'
 		once
 			Result := yyfixed_array (<<
 			    0,    2,    2,    2,    2,    2,    2,    2,    2,    2,
@@ -537,6 +536,7 @@ feature {NONE} -- Table templates
 		end
 
 	yyr1_template: SPECIAL [INTEGER] is
+			-- Template for `yyr1'
 		once
 			Result := yyfixed_array (<<
 			    0,   16,   16,   17,   17,   18,   18,   18,   20,   20,
@@ -544,6 +544,7 @@ feature {NONE} -- Table templates
 		end
 
 	yytypes1_template: SPECIAL [INTEGER] is
+			-- Template for `yytypes1'
 		once
 			Result := yyfixed_array (<<
 			    1,    3,    1,    1,    1,    1,    1,    1,    1,    1,
@@ -552,6 +553,7 @@ feature {NONE} -- Table templates
 		end
 
 	yytypes2_template: SPECIAL [INTEGER] is
+			-- Template for `yytypes2'
 		once
 			Result := yyfixed_array (<<
 			    1,    1,    1,    2,    3,    1,    1,    1,    1,    1,
@@ -559,6 +561,7 @@ feature {NONE} -- Table templates
 		end
 
 	yydefact_template: SPECIAL [INTEGER] is
+			-- Template for `yydefact'
 		once
 			Result := yyfixed_array (<<
 			    0,   10,    2,    1,    3,    5,    8,    0,   11,    0,
@@ -567,12 +570,14 @@ feature {NONE} -- Table templates
 		end
 
 	yydefgoto_template: SPECIAL [INTEGER] is
+			-- Template for `yydefgoto'
 		once
 			Result := yyfixed_array (<<
 			   26,    3,    4,   12,    5,    6,   21,    8, yyDummy>>)
 		end
 
 	yypact_template: SPECIAL [INTEGER] is
+			-- Template for `yypact'
 		once
 			Result := yyfixed_array (<<
 			    3,   16, -32768, -32768,   -8, -32768,    1,   15, -32768,   14,
@@ -581,12 +586,14 @@ feature {NONE} -- Table templates
 		end
 
 	yypgoto_template: SPECIAL [INTEGER] is
+			-- Template for `yypgoto'
 		once
 			Result := yyfixed_array (<<
 			 -32768, -32768, -32768, -32768,   -7, -32768, -32768, -32768, yyDummy>>)
 		end
 
 	yytable_template: SPECIAL [INTEGER] is
+			-- Template for `yytable'
 		once
 			Result := yyfixed_array (<<
 			   20,   11,   15,   16,    2,   10,    9,    1,   19,   18,
@@ -595,6 +602,7 @@ feature {NONE} -- Table templates
 		end
 
 	yycheck_template: SPECIAL [INTEGER] is
+			-- Template for `yycheck'
 		once
 			Result := yyfixed_array (<<
 			    3,    9,    9,   10,    1,   13,   14,    4,   11,   12,

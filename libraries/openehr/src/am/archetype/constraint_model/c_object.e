@@ -25,7 +25,7 @@ inherit
 
 	ARCHETYPE_TERM_CODE_TOOLS
 		export
-			{NONE} all
+			{NONE} all;
 		undefine
 			default_create
 		end
@@ -91,10 +91,10 @@ feature -- Status Report
 			end
 			invalid_reason.append(": ")
 
-			if occurrences = Void then
+			if occurrences = Void then	-- FIXME: Delete this check! It's guaranteed by the invariant, so why are we checking it here?
 				invalid_reason.append("occurrences must be specified")
 			elseif parent /= Void then
-				if not parent.is_multiple and occurrences.upper > 1 then
+				if not parent.is_multiple and occurrences.upper > 1 then	-- FIXME: Delete this check! It's guaranteed by the invariant, so why are we checking it here?
 					invalid_reason.append("occurrences max can only be 1 for single parent attribute")
 				else
 					Result := True
@@ -131,7 +131,7 @@ feature -- Modification
 
 feature -- Representation
 
-	representation: OG_OBJECT
+	representation: !OG_OBJECT
 
 invariant
 	rm_type_name_valid: rm_type_name /= Void and then not rm_type_name.is_empty

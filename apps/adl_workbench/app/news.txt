@@ -1,22 +1,50 @@
 ADL_WORKBENCH NEWS (see Help menu > News)
 -------------------------------------------------------------------------
 
-ADL Workbench is now available for Linux, as well as for Windows and Mac OS X Tiger and Leopard.
-The version number now has a fourth part, identifying the revision from which it was built.
-The application icon is now the openEHR logo.
+ADL Workbench is now available for:
+* Linux
+* Windows
+* Mac OS X Tiger and Leopard 
 
-In the Options dialog, you can choose to hide the line numbers in the Source text.
-The display of specialisations in the repository explorer has been simplified.
-In the Test view, you can select and deselect entire sub-hierarchies of archetypes.
-The Save combo box has been replaced by a standard choice in the Save As dialog.
-Usability via the keyboard and the mouse wheel has been improved.
-The splash screen is improved in appearance; it shows sooner and it disappears as soon as the main window is shown.
-The Options dialog is now accessed via a Windows-standard Tools menu.
+Differential archetypes:
+* A new differential form of archetype implements the specialisation semantics partially documented in the openEHR Archetype Semantics PDF.
+* The Definition tab is gone, replaced by Differential View and Flat View tabs.
+* Files with the new .adls (ADL Source) extension contain the differential form of archetype.
+* The Repository menu has options to build (i.e. parse and validate) the whole or part of the repository tree.
+* During building:
+  * Each archetype's icon in the repository tree indicates its status.
+  * The new Errors list at the bottom shows each archetype's errors and warnings.
+  * The .adls files are auto-generated from the old .adl files.
+* The .adls file, if it exists, is read in preference to the old .adl file.
+* The old .adl file is thereafter considered an auto-generated flat form of the archetype.
+* For this release only, to smooth the transition from .adl to .adls, the Tools menu has an option to clean all of the generated .adls files from the repository. 
 
-Fixed occasional wrong display of Unicode in the Node Map.
-Fixed bug on Mac OS X where the splitter would jump to the left edge of the window.
-Fixed bug on Mac OS X where the mouse pointer became a white square after clicking the repository explorer.
-Fixed bug on Mac OS X where some controls were difficult to use and some captions were hard to read because they were too small.
-Fixed bug on Mac OS X where the Edit and Online Help options did not work with the default configuration.
+Other new functionality:
+* Opening an archetype ad hoc now grafts it into the repository explorer.
+* A new Slots tab shows the archetype's slots and the archetypes that use it.
+* Basic repository-wide Statistics are now displayed.
+* HTML is generated via an explicit menu option (not as a by-product of the Test view) into its own tree (not side-by-side with the ADL source files).
+* Duration units and interval can now be constrained both at the same time. 
+
+User interface improvements:
+* A new History menu lets the user go back and forth to a previously viewed archetype.
+* The Options dialog is now accessed via a Windows-standard Tools menu.
+* In the Options dialog, you can choose to hide the line numbers in the Source text.
+* The Save combo box on the tool bar has been replaced by a choice in the Save As dialog.
+* Usability via the keyboard and the mouse wheel has been improved.
+* Specialisation domain concepts are displayed more simply in the repository explorer.
+* In the Test view, you can select and deselect entire sub-hierarchies of archetypes.
+* The splash screen is improved in appearance; it shows sooner and it disappears as soon as the main window is shown.
+* The application's version number now has a fourth part, identifying the revision from which it was built.
+* The application icon is now the openEHR logo. 
+
+These problems in the previous release are now fixed:
+* Unicode occasionally displayed wrongly in the Node Map.
+* After displaying two archetypes in a non-English language, the language combo box showed "en" rather than the other language.
+* On Mac OS X:
+  * The splitter jumped to the left edge of the window, hiding the repository tree.
+  * The mouse pointer became a white square after clicking the repository explorer.
+  * Some controls were difficult to use and some captions were hard to read because they were too small.
+  * The Edit and Online Help options did not work with the default configuration.
 
 See http://www.openehr.org/svn/ref_impl_eiffel/TRUNK/apps/doc/adl_workbench_help.htm for help.

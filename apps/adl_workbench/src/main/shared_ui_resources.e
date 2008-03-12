@@ -163,45 +163,45 @@ feature -- Access
 			end
 		end
 
-	total_view_area_split_position: INTEGER is
-			-- split position of outer vertical split control
+	total_split_position: INTEGER is
+			-- Split position of outer vertical split control.
 		local
 			str: STRING
 		do
-			str := resource_value("default", "total_view_area_split_position")
+			str := resource_value ("default", "total_split_position")
 			if str.is_integer then
 				Result := str.to_integer
 			end
 		end
 
-	info_view_area_split_position: INTEGER is
-			-- split position of inner vertical split control
+	node_map_and_ontology_split_position: INTEGER is
+			-- Split position of inner vertical split control.
 		local
 			str: STRING
 		do
-			str := resource_value("default", "info_view_area_split_position")
+			str := resource_value ("default", "node_map_and_ontology_split_position")
 			if str.is_integer then
 				Result := str.to_integer
 			end
 		end
 
-	test_view_area_split_position: INTEGER is
-			-- split position of vertical split control in test tool
+	test_split_position: INTEGER is
+			-- Split position of vertical split control in test tool.
 		local
 			str: STRING
 		do
-			str := resource_value("default", "test_view_area_split_position")
+			str := resource_value ("default", "test_split_position")
 			if str.is_integer then
 				Result := str.to_integer
 			end
 		end
 
-	explorer_view_area_split_position: INTEGER is
-			-- split position of explorer horizontal split control
+	explorer_split_position: INTEGER is
+			-- Split position of explorer horizontal split control.
 		local
 			str: STRING
 		do
-			str := resource_value("default", "explorer_view_area_split_position")
+			str := resource_value ("default", "explorer_split_position")
 			if str.is_integer then
 				Result := str.to_integer
 			end
@@ -245,26 +245,37 @@ feature -- Access
 	path_filter_combo_selection: STRING is
 			-- setting of path control filter combo-box
 		do
-			Result := resource_value("default", "path_filter_combo_selection")
+			Result := resource_value ("default", "path_filter_combo_selection")
 		end
 
 	path_view_check_list_settings: ARRAYED_LIST[STRING] is
 			-- path view column settings
 		do
-			Result := resource_value_list("default", "path_view_check_list_settings")
+			Result := resource_value_list ("default", "path_view_check_list_settings")
 		end
 
-	editor_command: STRING is
-			-- path of editor application for ADL files
+	editor_command: STRING
+			-- Path of editor application for ADL files.
 		do
-			Result := substitute_env_vars(resource_value("default", "editor"))
+			Result := substitute_env_vars (resource_value ("default", "editor"))
 		ensure
-			Result /= Void
+			attached: Result /= Void
+		end
+
+	html_export_directory: STRING
+			-- Path of directory to which HTML is exported.
+		do
+			Result := substitute_env_vars (resource_value ("default", "html_export_directory"))
+		ensure
+			attached: Result /= Void
 		end
 
 	icon_directory: STRING is
 		once
 			Result := application_startup_directory + os_directory_separator.out + "icons"
+		ensure
+			attached: Result /= Void
+			not_empty: not Result.is_empty
 		end
 
 	has_icon_directory: BOOLEAN is
@@ -283,8 +294,8 @@ feature -- Access
 		local
 			news_file, status_file: PLAIN_TEXT_FILE
 		once
-			create news_file.make(News_file_path)
-			create status_file.make(Status_file_path)
+			create news_file.make (news_file_path)
+			create status_file.make (status_file_path)
 
 			if status_file.exists and news_file.exists then
 				Result := news_file.date > status_file.date
@@ -309,190 +320,156 @@ feature -- Access
 			end
 		end
 
-	pixmap_help_table: DS_HASH_TABLE [STRING, STRING] is
-			-- table of pixmap file paths keyed by icon key used in this app
+	pixmap_table: DS_HASH_TABLE [TUPLE [file, help: STRING], STRING] is
+			-- Table of pixmap file paths and help messages, keyed by icon key.
 		once
 			create Result.make (0)
 
-			Result.force ("Archetype (ad hoc)", "archetype_1")
-			Result.force ("Specialised archetype (ad hoc)", "archetype_specialised_1")
+			Result.force (["archetype_1.ico", "Ad hoc archetype (not parsed yet)"], "archetype_1")
+			Result.force (["archetype_parsed_1.ico", "Ad hoc archetype (parsed but not compiled)"], "archetype_parsed_1")
+			Result.force (["archetype_parse_failed_1.ico", "Ad hoc archetype (parse failed)"], "archetype_parse_failed_1")
+			Result.force (["archetype_valid_1.ico", "Ad hoc archetype (parsed and compiled)"], "archetype_valid_1")
 
-			Result.force ("Archetype (reference repository)", "archetype_2")
-			Result.force ("Specialised archetype (reference repository)", "archetype_specialised_2")
+			Result.force (["file_folder_2.ico", Void], "file_folder_2")
+			Result.force (["archetype_2.ico", "Archetype in the reference repository (not parsed yet)"], "archetype_2")
+			Result.force (["archetype_parsed_2.ico", "Archetype in the reference repository (parsed but not compiled)"], "archetype_parsed_2")
+			Result.force (["archetype_parse_failed_2.ico", "Archetype in the reference repository (parse failed)"], "archetype_parse_failed_2")
+			Result.force (["archetype_valid_2.ico", "Archetype in the reference repository (parsed and compiled)"], "archetype_valid_2")
 
-			Result.force ("Archetype (work repository)", "archetype_3")
-			Result.force ("Specialised archetype (work repository)", "archetype_specialised_3")
+			Result.force (["file_folder_3.ico", Void], "file_folder_3")
+			Result.force (["archetype_3.ico", "Archetype in the work repository (not parsed yet)"], "archetype_3")
+			Result.force (["archetype_parsed_3.ico", "Archetype in the work repository (parsed but not compiled)"], "archetype_parsed_3")
+			Result.force (["archetype_parse_failed_3.ico", "Archetype in the work repository (parse failed)"], "archetype_parse_failed_3")
+			Result.force (["archetype_valid_3.ico", "Archetype in the work repository (parsed and compiled)"], "archetype_valid_3")
 
-			Result.force ("", 															"NO ICON")
+			Result.force ([Void, ""], "Gap in the help")
 
-			Result.force ("Single-valued attribute (mandatory)", 						"C_ATTRIBUTE")
-			Result.force ("Single-valued attribute (optional)",				 			"C_ATTRIBUTE.optional")
-			Result.force ("Container attribute (mandatory)",			 				"C_ATTRIBUTE.multiple")
-			Result.force ("Container attribute (optional)", 							"C_ATTRIBUTE.multiple.optional")
+			Result.force (["node_normal/c_attribute.ico", "Single-valued attribute (mandatory)"], "C_ATTRIBUTE")
+			Result.force (["node_normal/c_attribute_optional.ico", "Single-valued attribute (optional)"], "C_ATTRIBUTE.optional")
+			Result.force (["node_normal/c_attribute_multiple.ico", "Container attribute (mandatory)"], "C_ATTRIBUTE.multiple")
+			Result.force (["node_normal/c_attribute_multiple_optional.ico", "Container attribute (optional)"], "C_ATTRIBUTE.multiple.optional")
 
-			Result.force ("C_CODE_PHRASE (openEHR archetype profile)", 					"C_CODE_PHRASE")
-			Result.force ("C_DV_ORDINAL (openEHR archetype profile)",					"C_DV_ORDINAL")
-			Result.force ("C_DV_QUANTITY (openEHR archetype profile)", 					"C_DV_QUANTITY")
-			Result.force ("C_PRIMITIVE_OBJECT - any type (openEHR AOM)", 				"C_PRIMITIVE_OBJECT")
+			Result.force (["node_normal/c_code_phrase.ico", "C_CODE_PHRASE (openEHR archetype profile)"], "C_CODE_PHRASE")
+			Result.force (["node_normal/c_dv_ordinal.ico", "C_DV_ORDINAL (openEHR archetype profile)"], "C_DV_ORDINAL")
+			Result.force (["node_normal/c_dv_quantity.ico", "C_DV_QUANTITY (openEHR archetype profile)"], "C_DV_QUANTITY")
+			Result.force (["node_normal/c_quantity_item.ico", "C_QUANTITY_ITEM (openEHR archetype profile)"], "C_QUANTITY_ITEM")
+			Result.force (["node_normal/c_primitive_object.ico", "C_PRIMITIVE_OBJECT - any type (openEHR AOM)"], "C_PRIMITIVE_OBJECT")
 
-			Result.force ("Archetype slot (mandatory)", 								"ARCHETYPE_SLOT")
-			Result.force ("Archetype slot (optional)", 									"ARCHETYPE_SLOT.optional")
-			Result.force ("Archetype slot allowed archetypes", 							"CADL_INCLUDE")
-			Result.force ("Archetype slot excluded archetypes", 						"CADL_EXCLUDE")
+			Result.force (["node_normal/archetype_slot.ico", "Archetype slot (mandatory)"], "ARCHETYPE_SLOT")
+			Result.force (["node_normal/archetype_slot_optional.ico", "Archetype slot (optional)"], "ARCHETYPE_SLOT.optional")
+			Result.force (["node_normal/cadl_include.ico", "Archetype slot allowed archetypes"], "CADL_INCLUDE")
+			Result.force (["node_normal/cadl_exclude.ico", "Archetype slot excluded archetypes"], "CADL_EXCLUDE")
 
-			Result.force ("Complex ref model object (mandatory, single occurrence)", 	"C_COMPLEX_OBJECT")
-			Result.force ("Complex ref model object (mandatory, multiple occurrences)", "C_COMPLEX_OBJECT.multiple")
-			Result.force ("Complex ref model object (optional, single occurrence)", 	"C_COMPLEX_OBJECT.optional")
-			Result.force ("Complex ref model object (optional, multiple occurrences)", 	"C_COMPLEX_OBJECT.multiple.optional")
+			Result.force (["node_normal/c_complex_object.ico", "Complex ref model object (mandatory, single occurrence)"], "C_COMPLEX_OBJECT")
+			Result.force (["node_normal/c_complex_object_multiple.ico", "Complex ref model object (mandatory, multiple occurrences)"], "C_COMPLEX_OBJECT.multiple")
+			Result.force (["node_normal/c_complex_object_optional.ico", "Complex ref model object (optional, single occurrence)"], "C_COMPLEX_OBJECT.optional")
+			Result.force (["node_normal/c_complex_object_multiple_optional.ico", "Complex ref model object (optional, multiple occurrences)"], "C_COMPLEX_OBJECT.multiple.optional")
 
-			Result.force ("Archetype internal reference to previously defined node", 	"ARCHETYPE_INTERNAL_REF")
-			Result.force ("Constraint reference (openEHR AOM)", 						"CONSTRAINT_REF")
+			Result.force (["node_normal/archetype_internal_ref.ico", "Archetype internal reference to previously defined node"], "ARCHETYPE_INTERNAL_REF")
+			Result.force (["node_normal/archetype_code_ref.ico", "Constraint reference (openEHR AOM)"], "CONSTRAINT_REF")
 
-			Result.force ("Invariant section", 											"CADL_INVARIANT")
-			Result.force ("Invariant section item", 									"CADL_INVARIANT_ITEM")
-			Result.force ("X is inherited from parent archetype",						"icon_help_example.inherited")
-			Result.force ("X is redefined from parent archetype",						"icon_help_example.redefined")
-		end
+			Result.force (["node_normal/term.ico", Void], "TERM")
+			Result.force (["node_normal/ordinal.ico", Void], "ORDINAL")
+			Result.force (["node_normal/cadl_invariant.ico", "Invariant section"], "CADL_INVARIANT")
+			Result.force (["node_normal/cadl_invariant_item.ico","Invariant section item"], "CADL_INVARIANT_ITEM")
+			Result.force (["node_inherited/icon_help_example.ico", "X is inherited from parent archetype"], "icon_help_example.inherited")
+			Result.force (["node_redefined/icon_help_example.ico", "X is redefined from parent archetype"], "icon_help_example.redefined")
 
-	pixmap_file_table: HASH_TABLE [STRING, STRING] is
-			-- table of pixmap file paths keyed by icon key used in this app
-		local
-			file: RAW_FILE
-		once
-			create Result.make (0)
+			Result.force (["node_inherited/c_attribute.ico", Void], "C_ATTRIBUTE.inherited")
+			Result.force (["node_inherited/c_attribute_multiple.ico", Void], "C_ATTRIBUTE.multiple.inherited")
+			Result.force (["node_inherited/c_attribute.ico", Void], "C_ATTRIBUTE.optional.inherited")
+			Result.force (["node_inherited/c_attribute_multiple.ico", Void], "C_ATTRIBUTE.multiple.optional.inherited")
+			Result.force (["node_inherited/c_code_phrase.ico", Void], "C_CODE_PHRASE.inherited")
+			Result.force (["node_inherited/c_dv_ordinal.ico", Void], "C_DV_ORDINAL.inherited")
+			Result.force (["node_inherited/c_dv_quantity.ico", Void], "C_DV_QUANTITY.inherited")
+			Result.force (["node_inherited/c_quantity_item.ico", Void], "C_QUANTITY_ITEM.inherited")
+			Result.force (["node_inherited/c_primitive_object.ico", Void], "C_PRIMITIVE_OBJECT.inherited")
+			Result.force (["node_inherited/archetype_code_ref.ico", Void], "CONSTRAINT_REF.inherited")
+			Result.force (["node_inherited/archetype_slot_optional.ico", Void], "ARCHETYPE_SLOT.optional.inherited")
+			Result.force (["node_inherited/archetype_slot.ico", Void], "ARCHETYPE_SLOT.inherited")
+			Result.force (["node_inherited/c_complex_object.ico", Void], "C_COMPLEX_OBJECT.inherited")
+			Result.force (["node_inherited/c_complex_object_multiple.ico", Void], "C_COMPLEX_OBJECT.multiple.inherited")
+			Result.force (["node_inherited/c_complex_object_optional.ico", Void], "C_COMPLEX_OBJECT.optional.inherited")
+			Result.force (["node_inherited/c_complex_object_multiple_optional.ico", Void], "C_COMPLEX_OBJECT.multiple.optional.inherited")
+			Result.force (["node_inherited/archetype_internal_ref.ico", Void], "ARCHETYPE_INTERNAL_REF.inherited")
+			Result.force (["node_inherited/term.ico", Void], "TERM.inherited")
+			Result.force (["node_inherited/ordinal.ico", Void], "ORDINAL.inherited")
+			Result.force (["node_normal/archetype_slot_optional.ico", Void], "ARCHETYPE_SLOT.optional.inherited")
 
-			Result.put ("node_normal/c_attribute.ico", 							"C_ATTRIBUTE")
-			Result.put ("node_normal/c_attribute_optional.ico", 				"C_ATTRIBUTE.optional")
-			Result.put ("node_normal/c_attribute_multiple.ico",					"C_ATTRIBUTE.multiple")
-			Result.put ("node_normal/c_attribute_multiple_optional.ico", 		"C_ATTRIBUTE.multiple.optional")
-			Result.put ("node_normal/c_code_phrase.ico", 						"C_CODE_PHRASE")
-			Result.put ("node_normal/c_dv_ordinal.ico", 						"C_DV_ORDINAL")
-			Result.put ("node_normal/c_dv_quantity.ico", 						"C_DV_QUANTITY")
-			Result.put ("node_normal/c_quantity_item.ico", 						"C_QUANTITY_ITEM")
-			Result.put ("node_normal/c_primitive_object.ico", 					"C_PRIMITIVE_OBJECT")
-			Result.put ("node_normal/archetype_code_ref.ico", 					"CONSTRAINT_REF")
-			Result.put ("node_normal/archetype_slot.ico", 						"ARCHETYPE_SLOT")
-			Result.put ("node_normal/archetype_slot_optional.ico", 				"ARCHETYPE_SLOT.optional")
-	--		Result.put ("node_normal/c_complex_object_unknown.ico",				"C_COMPLEX_OBJECT.unknown")
-			Result.put ("node_normal/c_complex_object.ico", 					"C_COMPLEX_OBJECT")
-			Result.put ("node_normal/c_complex_object_multiple.ico", 			"C_COMPLEX_OBJECT.multiple")
-			Result.put ("node_normal/c_complex_object_optional.ico", 			"C_COMPLEX_OBJECT.optional")
-			Result.put ("node_normal/c_complex_object_multiple_optional.ico", 	"C_COMPLEX_OBJECT.multiple.optional")
-			Result.put ("node_normal/archetype_internal_ref.ico", 				"ARCHETYPE_INTERNAL_REF")
-			Result.put ("node_normal/term.ico", 								"TERM")
-			Result.put ("node_normal/ordinal.ico", 								"ORDINAL")
-			Result.put ("node_normal/cadl_invariant.ico", 						"CADL_INVARIANT")
-			Result.put ("node_normal/cadl_include.ico", 						"CADL_INCLUDE")
-			Result.put ("node_normal/cadl_exclude.ico", 						"CADL_EXCLUDE")
-			Result.put ("node_normal/cadl_invariant_item.ico", 					"CADL_INVARIANT_ITEM")
+			Result.force (["node_redefined/c_attribute.ico", Void], "C_ATTRIBUTE.redefined")
+			Result.force (["node_redefined/c_attribute_multiple.ico", Void], "C_ATTRIBUTE.multiple.redefined")
+			Result.force (["node_redefined/c_attribute.ico", Void], "C_ATTRIBUTE.optional.redefined")
+			Result.force (["node_redefined/c_attribute_multiple.ico", Void], "C_ATTRIBUTE.multiple.optional.redefined")
+			Result.force (["node_redefined/c_code_phrase.ico", Void], "C_CODE_PHRASE.redefined")
+			Result.force (["node_redefined/c_dv_ordinal.ico", Void], "C_DV_ORDINAL.redefined")
+			Result.force (["node_redefined/c_dv_quantity.ico", Void], "C_DV_QUANTITY.redefined")
+			Result.force (["node_redefined/c_quantity_item.ico", Void], "C_QUANTITY_ITEM.redefined")
+			Result.force (["node_redefined/c_primitive_object.ico", Void], "C_PRIMITIVE_OBJECT.redefined")
+			Result.force (["node_redefined/archetype_code_ref.ico", Void], "CONSTRAINT_REF.redefined")
+			Result.force (["node_redefined/archetype_slot_optional.ico", Void], "ARCHETYPE_SLOT.optional.redefined")
+			Result.force (["node_redefined/archetype_slot.ico", Void], "ARCHETYPE_SLOT.redefined")
+			Result.force (["node_redefined/c_complex_object.ico", Void], "C_COMPLEX_OBJECT.redefined")
+			Result.force (["node_redefined/c_complex_object_multiple.ico", Void], "C_COMPLEX_OBJECT.multiple.redefined")
+			Result.force (["node_redefined/c_complex_object_optional.ico", Void], "C_COMPLEX_OBJECT.optional.redefined")
+			Result.force (["node_redefined/c_complex_object_multiple_optional.ico", Void], "C_COMPLEX_OBJECT.multiple.optional.redefined")
+			Result.force (["node_redefined/archetype_internal_ref.ico", Void], "ARCHETYPE_INTERNAL_REF.redefined")
+			Result.force (["node_redefined/term.ico", Void], "TERM.redefined")
+			Result.force (["node_redefined/ordinal.ico", Void], "ORDINAL.redefined")
+			Result.force (["node_normal/archetype_slot_optional.ico", Void], "ARCHETYPE_SLOT.optional.redefined")
 
-			Result.put ("node_inherited/c_attribute.ico",						"C_ATTRIBUTE.inherited")
-			Result.put ("node_inherited/c_attribute_multiple.ico", 				"C_ATTRIBUTE.multiple.inherited")
-			Result.put ("node_inherited/c_attribute.ico",		 				"C_ATTRIBUTE.optional.inherited")
-			Result.put ("node_inherited/c_attribute_multiple.ico", 				"C_ATTRIBUTE.multiple.optional.inherited")
-			Result.put ("node_inherited/c_code_phrase.ico", 					"C_CODE_PHRASE.inherited")
-			Result.put ("node_inherited/c_dv_ordinal.ico", 						"C_DV_ORDINAL.inherited")
-			Result.put ("node_inherited/c_dv_quantity.ico", 					"C_DV_QUANTITY.inherited")
-			Result.put ("node_inherited/c_quantity_item.ico", 					"C_QUANTITY_ITEM.inherited")
-			Result.put ("node_inherited/c_primitive_object.ico", 				"C_PRIMITIVE_OBJECT.inherited")
-			Result.put ("node_inherited/archetype_code_ref.ico", 				"CONSTRAINT_REF.inherited")
-			Result.put ("node_inherited/archetype_slot_optional.ico", 			"ARCHETYPE_SLOT.optional.inherited")
-			Result.put ("node_inherited/archetype_slot.ico", 					"ARCHETYPE_SLOT.inherited")
-			Result.put ("node_inherited/c_complex_object.ico", 					"C_COMPLEX_OBJECT.inherited")
-			Result.put ("node_inherited/c_complex_object_multiple.ico", 		"C_COMPLEX_OBJECT.multiple.inherited")
-			Result.put ("node_inherited/c_complex_object_optional.ico", 		"C_COMPLEX_OBJECT.optional.inherited")
-			Result.put ("node_inherited/c_complex_object_multiple_optional.ico", "C_COMPLEX_OBJECT.multiple.optional.inherited")
-			Result.put ("node_inherited/archetype_internal_ref.ico", 			"ARCHETYPE_INTERNAL_REF.inherited")
-			Result.put ("node_inherited/term.ico", 								"TERM.inherited")
-			Result.put ("node_inherited/ordinal.ico", 							"ORDINAL.inherited")
-			Result.put ("node_normal/archetype_slot_optional.ico", 				"ARCHETYPE_SLOT.optional.inherited")
-			Result.put ("node_inherited/icon_help_example.ico", 				"icon_help_example.inherited")
+			Result.force (["pass.ico", Void], "test_passed")
+			Result.force (["fail.ico", Void], "test_failed")
+			Result.force (["not_applicable.ico", Void], "test_not_applicable")
 
-			Result.put ("node_redefined/c_attribute.ico",						"C_ATTRIBUTE.redefined")
-			Result.put ("node_redefined/c_attribute_multiple.ico", 				"C_ATTRIBUTE.multiple.redefined")
-			Result.put ("node_redefined/c_attribute.ico",		 				"C_ATTRIBUTE.optional.redefined")
-			Result.put ("node_redefined/c_attribute_multiple.ico", 				"C_ATTRIBUTE.multiple.optional.redefined")
-			Result.put ("node_redefined/c_code_phrase.ico", 					"C_CODE_PHRASE.redefined")
-			Result.put ("node_redefined/c_dv_ordinal.ico", 						"C_DV_ORDINAL.redefined")
-			Result.put ("node_redefined/c_dv_quantity.ico", 					"C_DV_QUANTITY.redefined")
-			Result.put ("node_redefined/c_quantity_item.ico", 					"C_QUANTITY_ITEM.redefined")
-			Result.put ("node_redefined/c_primitive_object.ico", 				"C_PRIMITIVE_OBJECT.redefined")
-			Result.put ("node_redefined/archetype_code_ref.ico", 				"CONSTRAINT_REF.redefined")
-			Result.put ("node_redefined/archetype_slot_optional.ico", 			"ARCHETYPE_SLOT.optional.redefined")
-			Result.put ("node_redefined/archetype_slot.ico", 					"ARCHETYPE_SLOT.redefined")
-			Result.put ("node_redefined/c_complex_object.ico", 					"C_COMPLEX_OBJECT.redefined")
-			Result.put ("node_redefined/c_complex_object_multiple.ico", 		"C_COMPLEX_OBJECT.multiple.redefined")
-			Result.put ("node_redefined/c_complex_object_optional.ico", 		"C_COMPLEX_OBJECT.optional.redefined")
-			Result.put ("node_redefined/c_complex_object_multiple_optional.ico", "C_COMPLEX_OBJECT.multiple.optional.redefined")
-			Result.put ("node_redefined/archetype_internal_ref.ico", 			"ARCHETYPE_INTERNAL_REF.redefined")
-			Result.put ("node_redefined/term.ico", 								"TERM.redefined")
-			Result.put ("node_redefined/ordinal.ico", 							"ORDINAL.redefined")
-			Result.put ("node_normal/archetype_slot_optional.ico", 				"ARCHETYPE_SLOT.optional.redefined")
-			Result.put ("node_redefined/icon_help_example.ico", 				"icon_help_example.redefined")
+			Result.force (["parse_errors.ico", Void], "parse_errors")
+			Result.force (["validity_errors.ico", Void], "validity_errors")
+			Result.force (["warnings.ico", Void], "warnings")
 
-			Result.put ("archetype_1.ico", "archetype_1")
-			Result.put ("archetype_specialised_1.ico", "archetype_specialised_1")
+			Result.force (["go.ico", Void], "go")
+			Result.force (["stop.ico", Void], "stop")
+			Result.force (["parse.ico", Void], "parse")
+			Result.force (["edit.ico", Void], "edit")
+			Result.force (["history_back.ico", Void], "history_back")
+			Result.force (["history_forward.ico", Void], "history_forward")
 
-			Result.put ("file_folder_2.ico", "file_folder_2")
-			Result.put ("archetype_2.ico", "archetype_2")
-			Result.put ("archetype_specialised_2.ico", "archetype_specialised_2")
-
-			Result.put ("file_folder_3.ico", "file_folder_3")
-			Result.put ("archetype_3.ico", "archetype_3")
-			Result.put ("archetype_specialised_3.ico", "archetype_specialised_3")
-
-			Result.put ("pass.ico", "test_passed")
-			Result.put ("fail.ico", "test_failed")
-			Result.put ("not_applicable.ico", "test_not_applicable")
-
-			Result.put ("go.ico", "go")
-			Result.put ("stop.ico", "stop")
-
-			Result.put ("openEHR_and_Ocean.png", "openEHR and Ocean")
-
-			-- check that icon files exist; for any that don't, output an error message and
-			-- use a blank icon
-			from
-				Result.start
-			until
-				Result.off
-			loop
-				create file.make (icon_directory + "/" + Result.item_for_iteration)
-
-				if not file.exists then
-					io.putstring ("Could not find icon " + file.name + "; using default%N")
-					Result.force ("default", Result.key_for_iteration)
-				end
-
-				Result.forth
-			end
+			Result.force (["openEHR_and_Ocean.png", Void], "openEHR and Ocean")
 		ensure
 			attached: Result /= Void
 			not_empty: not Result.is_empty
 		end
 
-	pixmaps: HASH_TABLE[EV_PIXMAP, STRING] is
-			-- table of pixmap file paths keyed by logical name
+	pixmaps: HASH_TABLE [EV_PIXMAP, STRING] is
+			-- Table of pixmap file paths keyed by logical name.
 		require
 			has_icon_directory
 		local
+			file: RAW_FILE
 			pixmap: EV_PIXMAP
 		once
-			create Result.make(0)
+			create Result.make (0)
 
 			from
-				pixmap_file_table.start
+				pixmap_table.start
 			until
-				pixmap_file_table.off
+				pixmap_table.off
 			loop
-				create pixmap
-				if not pixmap_file_table.item_for_iteration.is_equal("default") then
-					pixmap.set_with_named_file(icon_directory + "/" + pixmap_file_table.item_for_iteration)
-					pixmap.set_minimum_size (pixmap.width, pixmap.height)
+				if pixmap_table.item_for_iteration.file /= Void then
+					create file.make (icon_directory + "/" + pixmap_table.item_for_iteration.file)
+					create pixmap
+					Result [pixmap_table.key_for_iteration] := pixmap
+
+					if file.exists then
+						pixmap.set_with_named_file (file.name)
+						pixmap.set_minimum_size (pixmap.width, pixmap.height)
+					else
+						io.putstring ("Could not find icon " + file.name + "; using default%N")
+					end
 				end
-				Result.put(pixmap, pixmap_file_table.key_for_iteration)
-				pixmap_file_table.forth
+
+				pixmap_table.forth
 			end
+		ensure
+			attached: Result /= Void
 		end
 
 	splash_text: STRING
@@ -515,6 +492,9 @@ feature -- Access
 			Result.append ("Built using%N")
 			Result.append ("%TEiffel Software Eiffel (http://www.eiffel.com)%N")
 			Result.append ("%TGobo parsing libraries & tools (http://www.gobosoft.com)%N")
+		ensure
+			attached: Result /= Void
+			not_empty: not Result.is_empty
 		end
 
 	News_text: STRING is
@@ -522,15 +502,19 @@ feature -- Access
 		local
 			news_file: PLAIN_TEXT_FILE
 		once
-			create news_file.make(News_file_path)
-			if news_file.exists and news_file.is_readable then
+			create news_file.make (news_file_path)
+
+			if news_file.exists and then news_file.is_readable then
 				news_file.open_read
-				news_file.read_stream(news_file.count)
+				news_file.read_stream (news_file.count)
 				Result := news_file.last_string
 				news_file.close
 			else
-				Result := "(news.txt file missing)"
+				Result := "(%"" + news_file_path + "%" file is missing)"
 			end
+		ensure
+			attached: Result /= Void
+			not_empty: not Result.is_empty
 		end
 
 feature -- Modification
@@ -567,12 +551,22 @@ feature -- Modification
 			end
 		end
 
-	set_editor_command(an_editor_command: STRING) is
+	set_editor_command (value: STRING) is
 			-- set editor
 		require
-			an_editor_command_valid: an_editor_command /= Void and then not an_editor_command.is_empty
+			value_attached: value /= Void
+			value_not_empty: not value.is_empty
 		do
-			set_resource_value("default", "editor", an_editor_command)
+			set_resource_value("default", "editor", value)
+		end
+
+	set_html_export_directory (value: STRING) is
+			-- Set the path of directory to which HTML is exported.
+		require
+			value_attached: value /= Void
+			value_not_empty: not value.is_empty
+		do
+			set_resource_value("default", "html_export_directory", value)
 		end
 
 	set_main_notebook_tab_pos(a_tab_pos: INTEGER) is
@@ -583,36 +577,36 @@ feature -- Modification
 			set_resource_value("default", "main_notebook_tab_pos", a_tab_pos.out)
 		end
 
-	set_total_view_area_split_position (v: INTEGER) is
-			-- set split position of outer vertical split control
+	set_total_split_position (v: INTEGER) is
+			-- Set split position of outer vertical split control.
 		require
 			v > 0
 		do
-			set_resource_value("default", "total_view_area_split_position", v.out)
+			set_resource_value ("default", "total_split_position", v.out)
 		end
 
-	set_info_view_area_split_position (v: INTEGER) is
-			-- set split position of inner vertical split control
+	set_node_map_and_ontology_split_position (v: INTEGER) is
+			-- Set split position of inner vertical split control.
 		require
 			v > 0
 		do
-			set_resource_value("default", "info_view_area_split_position", v.out)
+			set_resource_value ("default", "node_map_and_ontology_split_position", v.out)
 		end
 
-	set_test_view_area_split_position (v: INTEGER) is
-			-- set split position of test tool vertical split control
+	set_test_split_position (v: INTEGER) is
+			-- Set split position of test tool vertical split control.
 		require
 			v > 0
 		do
-			set_resource_value("default", "test_view_area_split_position", v.out)
+			set_resource_value ("default", "test_split_position", v.out)
 		end
 
-	set_explorer_view_area_split_position (v: INTEGER) is
-			-- set split position of explorer horizontal split control
+	set_explorer_split_position (v: INTEGER) is
+			-- Set split position of explorer horizontal split control.
 		require
 			v > 0
 		do
-			set_resource_value("default", "explorer_view_area_split_position", v.out)
+			set_resource_value ("default", "explorer_split_position", v.out)
 		end
 
 	set_app_width (v: INTEGER) is
@@ -676,39 +670,43 @@ feature -- Modification
 
 feature {NONE} -- Implementation
 
-	get_file(init_value: STRING; a_parent_window: EV_WINDOW): STRING is
+	get_file (init_value: STRING; a_parent_window: EV_WINDOW): STRING is
 			-- get a file path from user
 		require
 			parent_window_valid: a_parent_window /= Void
 		local
-			file_dialog: EV_FILE_OPEN_DIALOG
+			dialog: EV_FILE_OPEN_DIALOG
 			a_file: RAW_FILE
 			error_dialog: EV_INFORMATION_DIALOG
 			end_pos: INTEGER
 			pathname: STRING
 		do
-			create file_dialog
-			end_pos := init_value.last_index_of(operating_environment.Directory_separator, init_value.count)
+			create dialog
+			end_pos := init_value.last_index_of (operating_environment.Directory_separator, init_value.count)
+
 			if end_pos = 0 then
 				end_pos := init_value.count
 			end
-			pathname := init_value.substring(1, end_pos)
-			file_dialog.set_start_directory (pathname)
+
+			pathname := init_value.substring (1, end_pos)
+			dialog.set_start_directory (pathname)
 
 			from
 			until
 				Result /= Void
 			loop
-				file_dialog.show_modal_to_window (a_parent_window)
-				if file_dialog.selected_button.is_equal("Cancel") then
+				dialog.show_modal_to_window (a_parent_window)
+
+				if dialog.selected_button = Void or else dialog.selected_button.is_equal ("Cancel") then
 					Result := init_value
 				else
-					if not file_dialog.file_name.is_empty then
-						create a_file.make(file_dialog.file_name)
+					if not dialog.file_name.is_empty then
+						create a_file.make (dialog.file_name)
+
 						if a_file.exists then
-							Result := file_dialog.file_name
+							Result := dialog.file_name
 						else
-							create error_dialog.make_with_text("File " + file_dialog.file_name + " does not exist")
+							create error_dialog.make_with_text ("File " + dialog.file_name + " does not exist")
 							error_dialog.show_modal_to_window (a_parent_window)
 						end
 					else
@@ -719,39 +717,41 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	get_directory(init_value: STRING; a_parent_window: EV_WINDOW): STRING is
+	get_directory (init_value: STRING; a_parent_window: EV_WINDOW): STRING is
 			-- get a directory from user
 		require
 			parent_window_valid: a_parent_window /= Void
 		local
-			dir_dialog: EV_DIRECTORY_DIALOG
+			dialog: EV_DIRECTORY_DIALOG
 			a_dir: DIRECTORY
 			error_dialog: EV_INFORMATION_DIALOG
 		do
-			create dir_dialog
+			create dialog
 
 			if (create {DIRECTORY}.make (init_value)).exists then
-				dir_dialog.set_start_directory (init_value)
+				dialog.set_start_directory (init_value)
 			end
 
 			from
 			until
 				Result /= Void
 			loop
-				dir_dialog.show_modal_to_window (a_parent_window)
-				if dir_dialog.selected_button.is_equal("Cancel") then
+				dialog.show_modal_to_window (a_parent_window)
+
+				if dialog.selected_button = Void or else dialog.selected_button.is_equal ("Cancel") then
 					Result := init_value
 				else
-					if not dir_dialog.directory.is_empty then
-						create a_dir.make(dir_dialog.directory)
+					if not dialog.directory.is_empty then
+						create a_dir.make(dialog.directory)
+
 						if a_dir.exists then
-							Result := dir_dialog.directory
+							Result := dialog.directory
 						else
-							create error_dialog.make_with_text("Directory " + dir_dialog.directory + " does not exist")
+							create error_dialog.make_with_text ("Directory " + dialog.directory + " does not exist")
 							error_dialog.show_modal_to_window (a_parent_window)
 						end
 					else
-						create error_dialog.make_with_text("Directory <empty dir> does not exist")
+						create error_dialog.make_with_text ("Directory <empty dir> does not exist")
 						error_dialog.show_modal_to_window (a_parent_window)
 					end
 				end

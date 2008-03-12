@@ -15,14 +15,34 @@ class AUTHORED_RESOURCE_VALIDATOR
 
 inherit
 	ANY_VALIDATOR
-		redefine
-			target
-		end
 
 create
 	make
 
+feature {NONE} -- Initialisation
+
+	make (a_target_desc: like target_descriptor) is
+			-- set target_descriptor
+			-- initialise reporting variables
+		require
+			target_desc_attached: a_target_desc /= Void
+			target_desc_valid: a_target_desc.archetype_differential /= Void
+		do
+			target_descriptor := a_target_desc
+			target := target_descriptor.archetype_differential
+			create errors.make (0)
+			create warnings.make (0)
+			passed := False
+		ensure
+			target_descriptor_set: target_descriptor = a_target_desc
+			target_set: target = a_target_desc.archetype_differential
+			Not_passed: not passed
+		end
+
 feature -- Access
+
+	target_descriptor: ARCH_REP_ARCHETYPE
+			-- descriptor object for a resource to be validated
 
 	target: AUTHORED_RESOURCE
 			-- target of this validator
@@ -39,6 +59,26 @@ feature -- Access
 			validate_translations
 		end
 
+feature -- Status Report
+
+	strict: BOOLEAN
+			-- True if strict validation is to be applied. When strict is on, the following things cause errors:
+			-- - paths at the wrong specialisation level
+
+feature -- Status Setting
+
+	set_strict is
+			-- set `strict' to True
+		do
+			strict := True
+		end
+
+	unset_strict is
+			-- set `strict' to False
+		do
+			strict := False
+		end
+
 feature {NONE} -- Implementation
 
 	validate_description is
@@ -50,6 +90,10 @@ feature {NONE} -- Implementation
 			-- TODO
 		do
 		end
+
+invariant
+	target_descriptor_attached: target_descriptor /= Void
+	target_attached: target /= Void
 
 end
 

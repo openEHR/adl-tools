@@ -30,7 +30,7 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_ARCHETYPE_COMPILER
+	SHARED_ARCHETYPE_PARSER
 		export
 			{NONE} all
 		end
@@ -40,43 +40,27 @@ inherit
 create
 	make
 
-feature -- Initialisation
+feature {NONE} -- Initialisation
 
-	make(a_main_window: MAIN_WINDOW) is
-			-- create tree control repersenting archetype files found in repository_path
+	make (a_main_window: MAIN_WINDOW) is
+			-- Create controller for the tree representing archetype files found in `archetype_directory'.
 		require
 			a_main_window /= Void
 		do
 			gui := a_main_window
    			gui_file_tree := gui.archetype_file_tree
-   			gui_file_tree.set_minimum_width(gui.max_arch_explorer_width)
+   			gui_file_tree.set_minimum_width (gui.max_arch_explorer_width)
 		end
 
 feature -- Commands
 
-	repopulate is
-			-- Repopulate `gui_file_tree' after changes on file system.
-		local
-			show_node: EV_TREE_NODE
-		do
-			populate
-
-			if archetype_directory.has_selected_archetype_descriptor then
-				show_node := gui_file_tree.retrieve_item_recursively_by_data (archetype_directory.selected_descriptor, True)
-
-				if show_node /= Void then
-					gui_file_tree.ensure_item_visible (show_node)
-					show_node.enable_select
-				end
-			end
-		end
-
 	populate is
-			-- Populate `gui_file_tree' by creating it from scratch.
+			-- Populate `gui_file_tree' from `archetype_directory'.
 		do
 			gui_file_tree.wipe_out
  			create gui_tree_item_stack.make (0)
- 			archetype_directory.do_all (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
+ 			archetype_directory.do_subtree (archetype_directory.directory, agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
+			gui.select_node_in_archetype_tree_view
 		end
 
 	display_details_of_selected_item_after_delay
@@ -88,25 +72,33 @@ feature -- Commands
 				delay_to_make_keyboard_navigation_practical.actions.extend (agent
 					do
 						delay_to_make_keyboard_navigation_practical.set_interval (0)
-						display_details_of_selected_item
+
+						if {node: !EV_TREE_NODE} gui_file_tree.selected_item and then {a: !ARCH_REP_ITEM} node.data then
+							archetype_directory.set_selected_item (a)
+							gui.parse_archetype
+						end
 					end)
 			end
 
 			delay_to_make_keyboard_navigation_practical.set_interval (300)
 		end
 
-	display_details_of_selected_item
-			-- Display the details of `selected_item'.
-		local
-			arch_item: ARCH_REP_ARCHETYPE
-		do
-			arch_item ?= gui_file_tree.selected_item.data
+   	set_node_pixmap (node: EV_TREE_NODE)
+   			-- Set the icon appropriate to the item attached to `node'.
+		require
+			node_attached: node /= Void
+   		local
+   			item: ARCH_REP_ITEM
+			pixmap: EV_PIXMAP
+   		do
+   			item ?= node.data
 
-			if arch_item /= Void then
-				archetype_directory.set_selected_archetype_descriptor (arch_item)
-				gui.load_and_parse_archetype
-			else
-				archetype_directory.clear_selected_archetype_descriptor
+			if item /= Void then
+				pixmap := pixmaps [item.group_name]
+
+				if pixmap /= Void then
+					node.set_pixmap (pixmap)
+				end
 			end
 		end
 
@@ -127,18 +119,14 @@ feature {NONE} -- Implementation
    	populate_gui_tree_node_enter (an_item: ARCH_REP_ITEM)
    			-- Add a node representing `an_item' to `gui_file_tree'.
 		require
-			an_item /= Void
+			item_attached: an_item /= Void
    		local
 			node: EV_TREE_ITEM
-			pixmap: EV_PIXMAP
-   		do
+		do
 			create node.make_with_text (utf8 (an_item.base_name))
  			node.set_data (an_item)
-			pixmap := pixmaps [an_item.group_name]
-
-			if pixmap /= Void then
-				node.set_pixmap (pixmap)
-			end
+ 			set_node_pixmap (node)
+ 			node.set_tooltip (utf8 (an_item.full_path))
 
 			if gui_tree_item_stack.is_empty then
 				gui_file_tree.extend (node)

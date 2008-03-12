@@ -21,7 +21,6 @@ indexing
 class UNITS_SCANNER
 
 inherit
-
 	YY_COMPRESSED_SCANNER_SKELETON
 		rename
 			make as make_compressed_scanner_skeleton,
@@ -45,8 +44,7 @@ inherit
 	KL_SHARED_EXCEPTIONS
 	KL_SHARED_ARGUMENTS
 
-creation
-
+create
 	make
 %}
 
@@ -115,7 +113,7 @@ feature {NONE} -- Initialization
 			-- Create a new scanner.
 		do
 			make_compressed_scanner_skeleton
-			in_buffer := string_.make (Init_buffer_size)
+			create in_buffer.make (Init_buffer_size)
 			in_lineno := 1
 		end
 

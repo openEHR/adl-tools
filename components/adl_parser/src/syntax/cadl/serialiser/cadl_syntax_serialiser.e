@@ -39,7 +39,7 @@ inherit
 			{NONE} all
 		end
 
-creation
+create
 	make
 
 feature -- Visitor
@@ -47,10 +47,10 @@ feature -- Visitor
 	start_c_complex_object(a_node: C_COMPLEX_OBJECT; depth: INTEGER) is
 			-- start serialising an C_COMPLEX_OBJECT
 		local
-			s:STRING
+			s: STRING
 		do
-			last_result.append(create_indent(depth))
-			last_result.append(apply_style(clean(a_node.rm_type_name), STYLE_IDENTIFIER))
+			last_result.append (create_indent (depth))
+			last_result.append (apply_style (clean (a_node.rm_type_name), identifier_style (a_node)))
 
 			if a_node.is_addressable then
 				last_result.append(apply_style("[" + a_node.node_id + "]", STYLE_TERM_REF))
@@ -65,8 +65,10 @@ feature -- Visitor
 				last_result.append(apply_style(symbol(SYM_ANY), STYLE_VALUE))
 			elseif a_node.is_addressable then
 				s := a_node.node_id
-				last_result.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
-					safe_comment(ontology.term_definition(current_language, s).item("text")), STYLE_COMMENT))
+				if ontology.has_term_code(s) then
+					last_result.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
+						safe_comment(ontology.term_definition(current_language, s).item("text")), STYLE_COMMENT))
+				end
 				last_result.append(format_item(FMT_NEWLINE))
 			else
 				last_result.append(format_item(FMT_NEWLINE))
@@ -91,7 +93,7 @@ feature -- Visitor
 
 			last_result.append(apply_style(symbol(SYM_ALLOW_ARCHETYPE), STYLE_KEYWORD) + format_item(FMT_SPACE))
 
-			last_result.append(apply_style(clean(a_node.rm_type_name), STYLE_IDENTIFIER))
+			last_result.append(apply_style(clean(a_node.rm_type_name), identifier_style (a_node)))
 
 			if a_node.is_addressable then
 				last_result.append(apply_style("[" + a_node.node_id + "]", STYLE_TERM_REF))
@@ -105,8 +107,10 @@ feature -- Visitor
 				last_result.append(apply_style(symbol(SYM_ANY), STYLE_VALUE))
 			elseif a_node.is_addressable then
 				s := a_node.node_id
-				last_result.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
-					safe_comment(ontology.term_definition(current_language, s).item("text")), STYLE_COMMENT))
+				if ontology.has_term_code(s) then
+					last_result.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
+						safe_comment(ontology.term_definition(current_language, s).item("text")), STYLE_COMMENT))
+				end
 				last_result.append(format_item(FMT_NEWLINE))
 			else
 				last_result.append(format_item(FMT_NEWLINE))
@@ -161,7 +165,7 @@ feature -- Visitor
 	start_c_attribute(a_node: C_ATTRIBUTE; depth: INTEGER) is
 			-- start serialising an C_ATTRIBUTE
 		do
-			last_result.append(create_indent(depth) + apply_style(a_node.rm_attribute_name, STYLE_IDENTIFIER) + format_item(FMT_SPACE))
+			last_result.append(create_indent(depth) + apply_style(a_node.rm_attribute_name, identifier_style (a_node)) + format_item(FMT_SPACE))
 			serialise_existence(a_node, depth)
 			serialise_cardinality(a_node, depth)
 			last_result.append(apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
@@ -248,7 +252,7 @@ feature -- Visitor
 				last_result.remove_tail(format_item(FMT_NEWLINE).count)	-- remove last newline due to OBJECT_REL_NODE	
 				last_result.append(apply_style(clean(a_node.as_string), STYLE_TERM_REF))
 				create last_object_simple_buffer.make(0)
-				if not a_node.any_allowed and then (a_node.is_local and a_node.code_count = 1) then
+				if not a_node.any_allowed and then (a_node.is_local and a_node.code_count = 1 and ontology.has_term_code(a_node.code_list.first)) then
 					last_object_simple_buffer.append(format_item(FMT_INDENT))
 
 					adl_term := ontology.term_definition(current_language, a_node.code_list.first)
@@ -276,7 +280,7 @@ feature -- Visitor
 						last_result.append(apply_style("]", STYLE_TERM_REF))
 					end
 
-					if a_node.is_local then
+					if a_node.is_local and ontology.has_term_code(a_node.code_list.item) then
 						adl_term := ontology.term_definition(current_language, a_node.code_list.item)
 						last_result.append(format_item(FMT_INDENT) +
 							apply_style(format_item(FMT_COMMENT) +
@@ -404,6 +408,19 @@ feature {NONE} -- Implementation
 	last_object_simple_buffer: STRING
 
 	dadl_engine: DADL_ENGINE
+
+	identifier_style (constraint: ARCHETYPE_CONSTRAINT): INTEGER
+			-- The formatting identifier style appropriate to the the specialisation status of `constraint'.
+		do
+			inspect constraint.specialisation_status (ontology.specialisation_depth).value
+			when {SPECIALISATION_STATUS}.ss_inherited then
+				Result := style_inherited_identifier
+			when {SPECIALISATION_STATUS}.ss_redefined then
+				Result := style_redefined_identifier
+			else
+				Result := style_identifier
+			end
+		end
 
 end
 

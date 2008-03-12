@@ -124,7 +124,8 @@ feature -- Access
 			end
 		end
 
-	items: HASH_TABLE[STRING, STRING]
+	items: DS_HASH_TABLE[STRING, STRING]
+			-- DS_HASH_TABLE maintains chronological order of insertion
 
 	item(a_key:STRING):STRING is
 			--
@@ -151,7 +152,7 @@ feature -- Modification
 			Key_valid: a_key /= Void and then not has_key(a_key)
 			Value_valid: value /= Void and then not value.is_empty
 		do
-			items.put(value, a_key)
+			items.force(value, a_key)
 		end
 
 	replace_item(a_key, value: STRING) is
@@ -162,7 +163,7 @@ feature -- Modification
 			items.replace(value, a_key)
 		end
 
-	set_items(ht: HASH_TABLE[STRING, STRING]) is
+	set_items(ht: DS_HASH_TABLE[STRING, STRING]) is
 		require
 			ht /= Void
 		do

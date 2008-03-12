@@ -15,7 +15,6 @@ indexing
 class ADL_SCANNER
 
 inherit
-
 	YY_COMPRESSED_SCANNER_SKELETON
 		rename
 			make as make_compressed_scanner_skeleton,
@@ -39,8 +38,7 @@ inherit
 	KL_SHARED_EXCEPTIONS
 	KL_SHARED_ARGUMENTS
 
-creation
-
+create
 	make
 %}
 
@@ -153,7 +151,7 @@ creation
 
 				-- get the dADL section sorted out
 				last_token := V_DADL_TEXT
-				str_ := STRING_.make (in_buffer.count)
+				create str_.make (in_buffer.count)
 				str_.append_string (in_buffer)
 				in_buffer.wipe_out
 				last_string_value := str_
@@ -171,7 +169,7 @@ creation
 	<<EOF>> {
 				-- get the dADL section sorted out
 				last_token := V_DADL_TEXT
-				str_ := STRING_.make (in_buffer.count)
+				create str_.make (in_buffer.count)
 				str_.append_string (in_buffer)
 				in_buffer.wipe_out
 				last_string_value := str_
@@ -192,7 +190,7 @@ creation
 	^[^ \t] { -- non-white space at start
 				unread_character(text.item(1))
 				last_token := V_CADL_TEXT
-				str_ := STRING_.make (in_buffer.count)
+				create str_.make (in_buffer.count)
 				str_.append_string (in_buffer)
 				in_buffer.wipe_out
 				last_string_value := str_
@@ -208,7 +206,7 @@ creation
 	^[^ \t] { -- non-white space at start
 				unread_character(text.item(1))
 				last_token := V_ASSERTION_TEXT
-				str_ := STRING_.make (in_buffer.count)
+				create str_.make (in_buffer.count)
 				str_.append_string (in_buffer)
 				in_buffer.wipe_out
 				last_string_value := str_
@@ -229,7 +227,7 @@ creation
 			}
 
 ----------/* archetype id */ -------------------------------------------------
-[a-zA-Z][a-zA-Z0-9_-]+\.[a-zA-Z][a-zA-Z0-9_-]+\.[a-zA-Z0-9]+	{
+[a-zA-Z][a-zA-Z0-9()#_]+(-[a-zA-Z0-9()#_]+){2}\.[a-zA-Z][a-zA-Z0-9()#-_]+\.v[0-9]+[a-zA-Z]*	{
 					last_token := V_ARCHETYPE_ID
 					last_string_value := text
 			}
@@ -260,7 +258,7 @@ feature {NONE} -- Initialization
 			-- Create a new scanner.
 		do
 			make_compressed_scanner_skeleton
-			in_buffer := string_.make (Init_buffer_size)
+			create in_buffer.make (Init_buffer_size)
 			in_lineno := 1
 		end
 

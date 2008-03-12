@@ -1,60 +1,29 @@
 indexing
 	component:   "openEHR Archetype Project"
 	description: "[
-				 Archetype compiler interface. This object is targetted to archetypes found in the 
-				 ARCHETYPE_DIRECTORY, and can then be used to parse (single archetype), compile
-				 (archetype lineage), save (serialise back to ADL), and save-as (serialise to
-				 another format).
+				 Archetype compiler interface. This object knows how to compile a system of archetypes
+				 found in the ARCHETYPE_DIRECTORY.
 				 ]"
 	keywords:    "test, ADL"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
+	file:        "$URL: http://svn.openehr.org/ref_impl_eiffel/BRANCHES/specialisation/components/adl_parser/src/interface/archetype_parser.e $"
 	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	last_change: "$LastChangedDate: 2007-10-02 16:49:19 +0100 (Tue, 02 Oct 2007) $"
 
 class ARCHETYPE_COMPILER
 
 inherit
 	SHARED_ARCHETYPE_DIRECTORY
 
-	SHARED_C_FACTORY
+	SHARED_ARCHETYPE_PARSER
 		export
 			{NONE} all
-			{ANY} constraint_model_factory
-		end
-
-	SHARED_APPLICATION_CONTEXT
-		export
-			{NONE} all
-			{ANY} current_language, set_current_language
-		end
-
-	SHARED_ARCHETYPE_SERIALISERS
-		export
-			{NONE} all
-			{ANY} has_archetype_serialiser_format, archetype_serialiser_formats
-		end
-
-	SHARED_DT_SERIALISERS
-		export
-			{NONE} all
-			{ANY} has_dt_serialiser_format
-		end
-
-	SHARED_C_SERIALISERS
-		export
-			{NONE} all
-			{ANY} has_c_serialiser_format
-		end
-
-	SHARED_ASSERTION_SERIALISERS
-		export
-			{NONE} all
-			{ANY} has_assertion_serialiser_format
+		undefine
+			copy, default_create
 		end
 
 	SHARED_RESOURCES
@@ -75,341 +44,228 @@ inherit
 create
 	make
 
-feature -- Initialisation
+feature {NONE} -- Initialisation
 
 	make is
 		do
-			create status.make(0)
-			create adl_engine.make
-			initialise_serialisers
-		end
-
-feature -- Definitions
-
-	openehr_version: STRING is
-			-- version of openEHR implem-dev repository containing
-			-- this software
-		once
-			Result := (create {OPENEHR_VERSION}).last_changed
+			create status.make_empty
 		end
 
 feature -- Access
 
-	target: ARCH_REP_ARCHETYPE
-			-- archetype currently being processed by this instance of the compiler
-
-	source: STRING is
-			-- source of current archetype
-		require
-			has_target: has_target
-		do
-			Result := target.source
-		end
-
-	archetype: ARCHETYPE is
-			-- Differential form of currently compiled archetype.
-		require
-			has_context: archetype_parsed
-		do
-			Result := target.compilation_context.archetype
-		end
-
-	serialised_archetype: STRING
-			-- archetype in serialised form, after call to serialise_archetype
-
 	status: STRING
-			-- status of last operation
+			-- Last status of compiler.
 
-feature -- Status Report
+	visual_update_action: PROCEDURE [ANY, TUPLE [ARCH_REP_ARCHETYPE]]
+			-- Called after processng each archetype (to perform GUI updates during processing).
 
-	has_target: BOOLEAN is
-			-- True if the compiler has been set to a target archetype descriptor in the ARCHETYPE_DIRECTORY
+	initial_visual_update_action: PROCEDURE [ANY, TUPLE]
+			-- called before processing whole repository
+
+	final_visual_update_action: PROCEDURE [ANY, TUPLE]
+			-- called after processing whole repository
+
+feature -- Status
+
+	is_interrupted: BOOLEAN
+			-- Should building be cancelled immediately?
+
+feature -- Status Setting
+
+	interrupt
+			-- Cancel building immediately.
 		do
-			Result := target /= Void
-		end
-
-	archetype_parsed: BOOLEAN
-			-- Has the archetype been parsed into an ARCHETYPE structure?
-		do
-			Result := target /= Void and then target.compilation_context /= Void
-		end
-
-	archetype_valid: BOOLEAN
-			-- Has the archetype been parsed into an ARCHETYPE structure and then validated?
-		do
-			Result := target /= Void and then target.compilation_context /= Void and then target.compilation_context.is_valid
-		end
-
-	save_succeeded: BOOLEAN
-			-- True if last save operation was successful
-
-	exception_encountered: BOOLEAN
-			-- True if last operation caused an exception
-
-feature -- Modification
-
-	set_target (ara: ARCH_REP_ARCHETYPE) is
-			-- set target of the compiler to designated archetype
-		require
-			descriptor_exists: ara /= Void
-		do
-			reset
-			target := ara
+			is_interrupted := True
+			status.append ("************* interrupted *************%N")
+			call_visual_update_action (Void)
 		ensure
-			has_target
-		end
-
-	set_target_to_selected is
-			-- set target of the compiler to archetype currently selected in archetype_directory
-		require
-			archetype_available: archetype_directory.has_selected_archetype_descriptor
-		do
-			set_target(archetype_directory.selected_descriptor)
-		ensure
-			has_target
-		end
-
-	reset is
-			-- reset after exception encountered
-		do
-			exception_encountered := False
-			status.wipe_out
-		ensure
-			Exception_cleared: not exception_encountered
-			Status_cleared: status.is_empty
+			interrupted: is_interrupted
+			status_set: not status.is_empty
 		end
 
 feature -- Commands
 
-	parse_archetype is
-			-- parse the target archetype of this compiler
-		require
-			Has_target: has_target
-		local
-			an_archetype: ARCHETYPE
+	set_visual_update_action (value: PROCEDURE [ANY, TUPLE [ARCH_REP_ARCHETYPE]])
+			-- Set `visual_update_action'.
 		do
-			if not exception_encountered then
-				clear_billboard
-
-				if target.is_out_of_date then
-					an_archetype := adl_engine.parse (target.source)
-
-					if an_archetype = Void then
-						post_error (Current, "parse_archetype", "parse_archetype_e1", <<adl_engine.parse_error_text>>)
-					else
-						post_info (Current, "parse_archetype", "parse_archetype_i1", <<target.id.as_string>>)
-
-						-- Put the archetype into its directory node; note that this runs its validator(s) and further
-						-- errors and warnings are reported on the billboard.
-						target.set_compilation_context (an_archetype)
-					end
-				end
-
-				-- Make sure that the language is set, and that it is one of the languages in the archetype.
-				if archetype_parsed then
-					if current_language = Void or not archetype.has_language (current_language) then
-						set_current_language (archetype.original_language.code_string)
-					end
-				end
-			else
-				post_error (Current, "parse_archetype", "parse_archetype_e3", Void)
-			end
-
-			status.wipe_out
-			status.append (billboard_content)
-			clear_billboard
-		rescue
-			post_error (Current, "parse_archetype", "report_exception", <<exception.out, exception_trace>>)
-			exception_encountered := True
-			retry
-		end
-
-	set_archetype_readonly is
-			-- set readonly flag in archetype to enable optimisations like path extraction
-		do
-			archetype.set_readonly
-		end
-
-	create_new_archetype(a_im_originator, a_im_name, a_im_entity, a_primary_language: STRING) is
-			-- create a new top-level archetype and install it into the directory according to its id
-		require
-			Info_model_originator_valid: a_im_originator /= void and then not a_im_originator.is_empty
-			Info_model_name_valid: a_im_name /= void and then not a_im_name.is_empty
-			Info_model_entity_valid: a_im_entity /= void and then not a_im_entity.is_empty
-			Primary_language_valid: a_primary_language /= void and then not a_primary_language.is_empty
-		local
-			an_archetype: ARCHETYPE
-		do
-			if not exception_encountered then
-				create an_archetype.make_minimal(create {ARCHETYPE_ID}.make(a_im_originator, a_im_name, a_im_entity,
-					"UNKNOWN", "draft"), a_primary_language, 0)
-
-				set_current_language(a_primary_language)
-
-				-- FIXME: now add this archetype into the ARCHETYPE_DIRECTORY
-
-				-- set it as the target
-			else
-				post_error(Current, "create_new_archetype", "create_new_archetype_e1", Void)
-			end
-			status.wipe_out
-			status.append(billboard_content)
-			clear_billboard
+			visual_update_action := value
 		ensure
-			-- FIXME: make the new archetype the target??
-		rescue
-			post_error(Current, "create_new_archetype", "report_exception", <<exception.out, exception_trace>>)
-			exception_encountered := True
-			retry
+			visual_update_action_set: visual_update_action = value
 		end
 
-	create_new_specialised_archetype(specialised_domain_concept: STRING) is
-			-- create a new specialised archetype as a child of the target archetype and install it in
-			-- the directory
-		require
-			Has_target: has_target
-			Concept_valid: specialised_domain_concept /= Void and then not specialised_domain_concept.is_empty
-		local
-			an_archetype: ARCHETYPE
+	set_initial_visual_update_action (value: PROCEDURE [ANY, TUPLE])
+			-- Set `initial_visual_update_action'.
 		do
-			if not exception_encountered then
-				create an_archetype.make_specialised_child(archetype, specialised_domain_concept)
-
-				-- FIXME: now add this archetype into the ARCHETYPE_DIRECTORY
-			else
-				post_error(Current, "create_new_specialised_archetype", "create_new_specialised_archetype_e1", Void)
-			end
-			status.wipe_out
-			status.append(billboard_content)
-			clear_billboard
-		rescue
-			post_error(Current, "create_new_specialised_archetype", "report_exception", <<exception.out, exception_trace>>)
-			exception_encountered := True
-			retry
-		end
-
-	save_archetype is
-			-- Save current target archetype to its file
-		require
-			Has_target: has_target
-		do
-			if not exception_encountered then
-				status.wipe_out
-				save_succeeded := False
-				if archetype_valid then
-					serialised_archetype := adl_engine.serialise(archetype, "adl")
-					target.save (serialised_archetype)
-					save_succeeded := True
-				else
-					post_error(Current, "save_archetype", "save_archetype_e2", Void)
-				end
-			else
-				post_error(Current, "save_archetype", "save_archetype_e3", Void)
-			end
-			status.wipe_out
-			status.append(billboard_content)
-			clear_billboard
+			initial_visual_update_action := value
 		ensure
-			save_succeeded or else not status.is_empty
-		rescue
-			post_error(Current, "save_archetype", "report_exception", <<exception.out, exception_trace>>)
-			exception_encountered := True
-			retry
+			initial_visual_update_action_set: initial_visual_update_action = value
 		end
 
-	save_archetype_as(a_full_path: STRING; serialise_format: STRING) is
-			-- Save current target archetype to `file_path' in `serialise_format'.
-		require
-			Has_target: has_target
-			path_valid: a_full_path /= Void and then not a_full_path.is_empty
-			Serialise_format_valid: serialise_format /= Void and then has_archetype_serialiser_format(serialise_format)
+	set_final_visual_update_action (value: PROCEDURE [ANY, TUPLE])
+			-- Set `final_visual_update_action'.
 		do
-			if not exception_encountered then
-				status.wipe_out
-				save_succeeded := False
-				if archetype_valid then
-					serialised_archetype := adl_engine.serialise(archetype, serialise_format)
-					save_succeeded := True
-					target.save_as (a_full_path, serialised_archetype)
-				else
-					post_error(Current, "save_archetype", "save_archetype_e2", Void)
-				end
-			else
-				post_error(Current, "save_archetype", "save_archetype_e3", Void)
-			end
-			status.wipe_out
-			status.append(billboard_content)
-			clear_billboard
+			final_visual_update_action := value
 		ensure
-			save_succeeded or else not status.is_empty
-		rescue
-			post_error(Current, "save_archetype", "report_exception", <<exception.out, exception_trace>>)
-			exception_encountered := True
-			retry
+			final_visual_update_action_set: final_visual_update_action = value
 		end
 
-	serialise_archetype(serialise_format: STRING) is
-			-- Serialise archetype into string; result available in `serialised_archetype'
+	build_all
+			-- Build the whole system, but not artefacts that seem to be built already.
+		do
+			call_initial_visual_update_action
+			do_subtree (archetype_directory.directory, agent build_archetype (False, ?), "building system")
+			call_final_visual_update_action
+		end
+
+	rebuild_all
+			-- Rebuild the whole system from scratch, regardless of previous attempts.
+		do
+			call_initial_visual_update_action
+			do_subtree (archetype_directory.directory, agent build_archetype (True, ?), "rebuilding system from scratch")
+			call_final_visual_update_action
+		end
+
+	build_subtree
+			-- Build the sub-system at and below `archetype_directory.selected_node', but not artefacts that seem to be built already.
+		do
+			do_subtree (archetype_directory.selected_node, agent build_archetype (False, ?), "building sub-system")
+		end
+
+	rebuild_subtree
+			-- Rebuild the sub-system at and below `archetype_directory.selected_node' from scratch, regardless of previous attempts.
+		do
+			do_subtree (archetype_directory.selected_node, agent build_archetype (True, ?), "rebuilding sub-system from scratch")
+		end
+
+	build_lineage (ara: ARCH_REP_ARCHETYPE)
+			-- Build the archetypes in the lineage containing `ara', except those that seem to be built already.
+			-- Go down as far as `ara'. Don't build sibling branches since this would create errors in unrelated archetypes.
 		require
-			Has_target: has_target and archetype_valid
-			Serialise_format_valid: serialise_format /= Void and then has_archetype_serialiser_format(serialise_format)
+			ara_attached: ara /= Void
 		do
-			if not exception_encountered then
-				serialised_archetype := adl_engine.serialise(archetype, serialise_format)
-			else
-				post_error(Current, "serialise_archetype", "serialise_archetype_e2", Void)
-			end
-			status.wipe_out
-			status.append(billboard_content)
-			clear_billboard
-		ensure
-			serialised_archetype /= Void or else not status.is_empty
-		rescue
-			post_error(Current, "serialise_archetype", "report_exception", <<exception.out, exception_trace>>)
-			exception_encountered := True
-			retry
+			do_lineage (ara, agent build_archetype (False, ?))
 		end
 
-feature -- External Java Interface
-
-	set_status(a_str: STRING) is
-			-- set status from external wrapper
+	rebuild_lineage (ara: ARCH_REP_ARCHETYPE)
+			-- Rebuild the archetypes in the lineage containing `ara'.
+			-- Go down as far as `ara'. Don't build sibling branches since this would create errors in unrelated archetypes.
+		require
+			ara_attached: ara /= Void
 		do
-			status := a_str
+			do_lineage (ara, agent build_archetype (True, ?))
 		end
 
-	set_exception_encountered is
-			--
+	export_all_html (html_export_directory: STRING)
+			-- Generate HTML under `html_export_directory' from all archetypes that have already been built.
 		do
-			exception_encountered := True
+			do_subtree (archetype_directory.directory, agent export_archetype_html (html_export_directory, False, ?), "exporting built system as html")
+		end
+
+	build_and_export_all_html (html_export_directory: STRING)
+			-- Generate HTML under `html_export_directory' from the whole system, building each archetype as necessary.
+		do
+			do_subtree (archetype_directory.directory, agent export_archetype_html (html_export_directory, True, ?), "building system and exporting as html")
 		end
 
 feature {NONE} -- Implementation
 
-	adl_engine: ADL_ENGINE
-
-	initialise_serialisers is
-		once
-			archetype_serialisers.put(create {ADL_SYNTAX_SERIALISER}.make(create {NATIVE_ADL_SERIALISATION_PROFILE}.make("adl")), "adl")
-			archetype_serialisers.put(create {ADL_SYNTAX_SERIALISER}.make(create {HTML_ADL_SERIALISATION_PROFILE}.make("html")), "html")
-			-- archetype_serialisers.put(create {ADL_TAGGED_SERIALISER}.make(create {XML_ADL_SERIALISATION_PROFILE}.make("xml")), "xml")
-			-- archetype_serialisers.put(create {ADL_OWL_SERIALISER}.make(create {OWL_ADL_SERIALISATION_PROFILE}.make("owl")), "owl")
-
-			c_serialisers.put(create {CADL_SYNTAX_SERIALISER}.make(create {NATIVE_CADL_SERIALISATION_PROFILE}.make("adl")), "adl")
-			c_serialisers.put(create {CADL_SYNTAX_SERIALISER}.make(create {HTML_CADL_SERIALISATION_PROFILE}.make("html")), "html")
-			-- c_serialisers.put(create {CADL_TAGGED_SERIALISER}.make(create {XML_CADL_SERIALISATION_PROFILE}.make("xml")), "xml")
-			-- c_serialisers.put(create {CADL_OWL_SERIALISER}.make(create {OWL_CADL_SERIALISATION_PROFILE}.make("owl")), "owl")
-
-			assertion_serialisers.put(create {ASSERTION_SYNTAX_SERIALISER}.make(create {NATIVE_CADL_SERIALISATION_PROFILE}.make("adl")), "adl")
-			assertion_serialisers.put(create {ASSERTION_SYNTAX_SERIALISER}.make(create {HTML_CADL_SERIALISATION_PROFILE}.make("html")), "html")
-			-- assertion_serialisers.put(create {ASSERTION_TAGGED_SERIALISER}.make(create {XML_CADL_SERIALISATION_PROFILE}.make("xml")), "xml")
-			-- assertion_serialisers.put(create {ASSERTION_OWL_SERIALISER}.make(create {OWL_CADL_SERIALISATION_PROFILE}.make("owl")), "owl")
-
-			dt_serialisers.put(create {DADL_SYNTAX_SERIALISER}.make(create {NATIVE_DADL_SERIALISATION_PROFILE}.make("adl")), "adl")
-			dt_serialisers.put(create {DADL_SYNTAX_SERIALISER}.make(create {HTML_DADL_SERIALISATION_PROFILE}.make("html")), "html")
-			-- dt_serialisers.put(create {DADL_TAGGED_SERIALISER}.make(create {XML_DADL_SERIALISATION_PROFILE}.make("xml")), "xml")
-			-- dt_serialisers.put(create {DADL_OWL_SERIALISER}.make(create {OWL_DADL_SERIALISATION_PROFILE}.make("owl")), "owl")
+	do_subtree (subtree: TWO_WAY_TREE [ARCH_REP_ITEM]; action: PROCEDURE [ANY, TUPLE [ARCH_REP_ITEM]]; message: STRING)
+			-- Display `message' and perform `action' on the sub-system at and below `subtree'.
+		require
+			action_attached: action /= Void
+			message_attached: message /= Void
+		do
+			status := "=============== " + message + " ===============%N"
+			call_visual_update_action (Void)
+			is_interrupted := False
+			archetype_directory.do_subtree (subtree, action, Void)
+			status := "=============== finished " + message + " ===============%N"
+			call_visual_update_action (Void)
 		end
+
+	do_lineage (ara: ARCH_REP_ARCHETYPE; action: PROCEDURE [ANY, TUPLE [ARCH_REP_ITEM]])
+			-- Build the archetypes in the lineage containing `ara', possibly from scratch.
+			-- Go down as far as `ara'. Don't build sibling branches since this would create errors in unrelated archetypes.
+		require
+			ara_attached: ara /= Void
+			action_attached: action /= Void
+		local
+			lineage: ARRAYED_LIST [ARCH_REP_ITEM]
+		do
+			status.wipe_out
+			is_interrupted := False
+			lineage := ara.archetype_lineage
+			lineage.do_all (action)
+		end
+
+	build_archetype (from_scratch: BOOLEAN; item: ARCH_REP_ITEM)
+			-- Build `item', if it is an archetype, unless `from_scratch' is false and it hasn't been parsed yet.
+		do
+			if not is_interrupted and {ara: !ARCH_REP_ARCHETYPE} item then
+				if from_scratch or not ara.is_parsed then
+					status := "------------- compiling " + ara.id.value + " -------------%N"
+					call_visual_update_action (ara)
+					archetype_parser.set_target (ara)
+					archetype_parser.parse_archetype
+					status := archetype_parser.status.twin
+
+					if ara.is_valid and not ara.has_differential_file then
+						archetype_parser.save_archetype_differential
+						status.append (archetype_parser.status)
+					end
+
+					call_visual_update_action (ara)
+				end
+			end
+		end
+
+	export_archetype_html (html_export_directory: STRING; build_too: BOOLEAN; item: ARCH_REP_ITEM)
+			-- Generate HTML under `html_export_directory' from `item', optionally building it first if necessary.
+		local
+			filename: STRING
+		do
+			if not is_interrupted and {ara: !ARCH_REP_ARCHETYPE} item then
+				if build_too then
+					build_archetype (False, ara)
+				end
+
+				if ara.is_valid then
+					filename := file_system.pathname (html_export_directory, ara.relative_path) + ".html"
+					file_system.recursive_create_directory (file_system.dirname (filename))
+					archetype_parser.set_target (ara)
+					archetype_parser.save_archetype_flat_as (filename, "html")
+					status := archetype_parser.status
+					call_visual_update_action (ara)
+				end
+			end
+		end
+
+	call_visual_update_action (ara: ARCH_REP_ARCHETYPE)
+			-- Call `visual_update_action', if it is attached.
+		do
+			if visual_update_action /= Void then
+				visual_update_action.call ([ara])
+			end
+		end
+
+	call_initial_visual_update_action
+			-- Call `initial_visual_update_action', if it is attached.
+		do
+			if initial_visual_update_action /= Void then
+				initial_visual_update_action.call (Void)
+			end
+		end
+
+	call_final_visual_update_action
+			-- Call `final_visual_update_action', if it is attached.
+		do
+			if final_visual_update_action /= Void then
+				final_visual_update_action.call (Void)
+			end
+		end
+
+invariant
+	status_attached: status /= Void
 
 end
 
@@ -429,10 +285,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is adl_interface.e.
+--| The Original Code is archetype_compiler.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2007
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

@@ -93,6 +93,11 @@ feature -- Status Report
 			Result := parent = Void
 		end
 
+	is_leaf: BOOLEAN is
+			-- True if this object is a leaf object
+		deferred
+		end
+
 feature -- Modification
 
 	set_node_id(a_node_id:STRING) is
@@ -178,11 +183,11 @@ feature {NONE} -- Implementation
 				create Result.make_root
 			else -- process the node list; we are starting on an OG_ATTR_NODE
 				og_nodes.start
-				create a_path_item.make(og_nodes.item.node_id)
+				create a_path_item.make(og_nodes.item.node_id) -- set the attribute id
 				og_attr ?= og_nodes.item
 				og_nodes.forth
 				if not og_nodes.off then -- now on an OG_OBJECT_NODE
-					if og_attr.is_addressable or (unique_flag and og_attr.is_multiple) then
+					if (og_nodes.item.is_addressable or unique_flag) and og_attr.is_multiple then
 						a_path_item.set_object_id(og_nodes.item.node_id)
 					end
 					og_nodes.forth
@@ -198,7 +203,7 @@ feature {NONE} -- Implementation
 					og_attr ?= og_nodes.item
 					og_nodes.forth
 					if not og_nodes.off then -- now on an OG_OBJECT_NODE
-						if og_attr.is_addressable or (unique_flag and og_attr.is_multiple) then
+						if (og_nodes.item.is_addressable or unique_flag) and og_attr.is_multiple then
 							a_path_item.set_object_id(og_nodes.item.node_id)
 						end
 						og_nodes.forth
@@ -206,6 +211,8 @@ feature {NONE} -- Implementation
 					Result.append_segment (a_path_item)
 				end
 			end
+		ensure
+			not unique_flag implies not Result.as_string.has_substring (anonymous_node_id)
 		end
 
 invariant

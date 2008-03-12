@@ -21,7 +21,7 @@ inherit
 			{NONE} all
 		end
 
-feature {NONE} -- Serialisation
+feature {ANY_SERIALISER} -- Access
 
 	format_items: HASH_TABLE[STRING, INTEGER] is
 			-- formatting items
@@ -47,7 +47,7 @@ feature {NONE} -- Serialisation
 			Result.put("value",			STYLE_VALUE)
 			Result.put("comment",			STYLE_COMMENT)
 		end
-	
+
 	quote_patterns: HASH_TABLE[STRING, STRING] is
 			-- styles in this format, keyed by logical name
 		once
@@ -56,13 +56,13 @@ feature {NONE} -- Serialisation
 			Result.put("&gt;",			">")
 		end
 
-feature -- Factory
+feature {ANY_SERIALISER} -- Factory
 
 	apply_style(elem:STRING; a_style:INTEGER): STRING is
 			-- apply `a_style' to `elem', using attr 'class'
 		do
 		end
-		
+
 end
 
 

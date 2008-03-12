@@ -30,14 +30,17 @@ feature -- Initialisation
 			create children.make (0)
 			create children_sorted.make
 		end
-	
+
 	make_single(a_name:STRING) is
 			-- make as a single relationship; set attr name
 		require
 			a_name_valid: a_name /= Void and then not a_name.is_empty
 		do
 			default_create
-			create representation.make (a_name, Current)
+			create representation.make_single (a_name, Current)
+		ensure
+			not is_multiple
+			not is_generic
 		end
 
 	make_multiple(a_name:STRING) is
@@ -46,59 +49,56 @@ feature -- Initialisation
 			a_name_valid: a_name /= Void and then not a_name.is_empty
 		do
 			default_create
-			create representation.make (a_name, Current)
-			is_multiple := True
+			create representation.make_multiple (a_name, Current)
 		ensure
 			is_multiple
 		end
 
 	make_multiple_generic is
 			-- make as a multiple generic relationship;
-			-- create attr name = "gENERIC"
 		do
 			default_create
 			create representation.make_generic (Current)
-			is_multiple := True
 		ensure
 			is_multiple
 			is_generic
 		end
 
 feature -- Access
-	
+
 	parent: DT_COMPLEX_OBJECT_NODE
 
 	children: ARRAYED_LIST [DT_OBJECT_ITEM]
 			-- next nodes, keyed by node id or attribute name
 
 	children_sorted: SORTED_TWO_WAY_LIST[DT_OBJECT_ITEM]
-	
+
 	rm_attr_name: STRING is
 			-- attribute name in reference model
 		do
 			Result := representation.node_id
 		end
-		
-	child(a_node_id: STRING): DT_OBJECT_ITEM is
+
+	child_with_id(a_node_id: STRING): DT_OBJECT_ITEM is
 			-- find the child node with `a_path_id'
 		do
-			Result ?= representation.child_at_node_id(a_node_id).content_item
+			Result ?= representation.child_with_id(a_node_id).content_item
 		ensure
 			Result_exists: Result /= Void
 		end
 
 	first_child: DT_OBJECT_ITEM is
-			-- 
+			--
 		do
 			Result := children.first
 		end
-		
+
 	child_count: INTEGER is
 			-- number of children
 		do
 			Result := children.count
 		end
-		
+
 feature -- Iteration
 
 	start is
@@ -136,11 +136,14 @@ feature -- Iteration
 				Result := children.item
 			end
 		end
-		
+
 feature -- Status Report
-					
-	is_multiple: BOOLEAN
+
+	is_multiple: BOOLEAN is
 			-- True if relationship is 1:N
+		do
+			Result := representation.is_multiple
+		end
 
 	is_generic: BOOLEAN is
 			-- True if relationship represents an assumed
@@ -148,7 +151,7 @@ feature -- Status Report
 		do
 			Result := representation.is_generic
 		end
-		
+
 	is_valid: BOOLEAN is
 			-- report on validity
 		do
@@ -156,7 +159,7 @@ feature -- Status Report
 			invalid_reason.append(rm_attr_name)
 			Result := True
 			if not children.is_empty then
-				from 
+				from
 					children.start
 				until
 					not Result or else representation.off
@@ -167,19 +170,25 @@ feature -- Status Report
 					else
 						invalid_reason.append("(invalid child node) " + children.item.invalid_reason)
 					end
-				end				
+				end
 			end
 		end
 
-	has_child(a_node_id: STRING): BOOLEAN is
+	has_child_with_id(a_node_id: STRING): BOOLEAN is
 			-- valid OBJ children of a REL node might not all be unique
 		do
-			Result := representation.has_child_node(a_node_id)
+			Result := representation.has_child_with_id(a_node_id)
 		end
-		
+
+	has_child(a_node: DT_OBJECT_ITEM): BOOLEAN is
+			-- True if a_node is among children of this node
+		do
+			Result := children.has (a_node)
+		end
+
 	using_children_sorted: BOOLEAN
 			-- True if using sorted child list
-		
+
 	is_empty: BOOLEAN is
 		do
 			Result := children.is_empty
@@ -194,11 +203,11 @@ feature -- Modification
 		do
 			representation.set_node_id(a_name)
 		end
-		
+
 	set_multiple is
 			-- set an attribute created single to be multiple
 		do
-			is_multiple := True
+			representation.set_multiple
 		ensure
 			is_multiple
 		end
@@ -206,7 +215,7 @@ feature -- Modification
 	put_child(a_node: DT_OBJECT_ITEM) is
 			-- put a new child node
 		require
-			Node_valid: a_node /= Void and then not has_child(a_node.node_id)
+			Node_valid: a_node /= Void and then not has_child(a_node)
 			Multiplicity_validity: is_multiple or else children.is_empty
 		do
 			representation.put_child (a_node.representation)
@@ -215,7 +224,7 @@ feature -- Modification
 			a_node.set_parent(Current)
 		end
 
-	use_children_sorted is 
+	use_children_sorted is
 			-- use sorted list
 		do
 			using_children_sorted := True
@@ -233,7 +242,7 @@ feature -- Serialisation
 		do
 			serialiser.start_attribute_node(Current, depth)
 		end
-		
+
 	exit_subtree(serialiser: DT_SERIALISER; depth: INTEGER) is
 			-- perform serialisation at end of block for this node
 		do

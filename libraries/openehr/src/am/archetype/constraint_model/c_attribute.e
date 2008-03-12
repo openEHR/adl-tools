@@ -3,8 +3,8 @@ indexing
 	description: "node in ADL parse tree"
 	keywords:    "test, ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2003-2008 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -27,29 +27,29 @@ feature -- Initialisation
 	default_create is
 			--
 		do
-			create children.make(0)
-			set_existence(create {INTERVAL[INTEGER]}.make_bounded(1,1, True, True))
+			create children.make (0)
+			set_existence (create {INTERVAL [INTEGER]}.make_bounded (1, 1, True, True))
 		end
 
 	make_single(a_name: STRING) is
-			-- set attr name
+			-- make representing a single-valued attribute with attr name
 		require
 			a_name_valid: a_name /= Void and then not a_name.is_empty
 		do
 			default_create
-			create representation.make(a_name, Current)
+			create representation.make_single (a_name, Current)
 		ensure
 			not is_multiple
 		end
 
 	make_multiple(a_name: STRING; a_cardinality: CARDINALITY) is
-			-- set attr name & cardinality
+			-- make representing a container attribute with attr name & cardinality
 		require
 			a_name_valid: a_name /= Void and then not a_name.is_empty
 			cardinality_exists: a_cardinality /= Void
 		do
 			default_create
-			create representation.make(a_name, Current)
+			create representation.make_multiple (a_name, Current)
 			set_cardinality(a_cardinality)
 		ensure
 			is_multiple
@@ -63,7 +63,7 @@ feature -- Access
 			Result := representation.node_id
 		end
 
-	existence: INTERVAL[INTEGER]
+	existence: INTERVAL [INTEGER]
 
 	cardinality: CARDINALITY
 
@@ -89,13 +89,15 @@ feature -- Source Control
 feature -- Status Report
 
 	any_allowed: BOOLEAN is
-			-- True if any value allowed ('*' received in parsed input) - i.e. no childred
+			-- Is any value allowed ('*' received in parsed input) - i.e. no children?
 		do
 			Result := children.is_empty
 		end
 
 	is_relationship: BOOLEAN is
 			-- (in the UML sense) - True if attribute target type is not a primitive data type
+		require
+			has_children: not any_allowed
 		local
 			a_prim: C_PRIMITIVE_OBJECT
 		do
@@ -106,35 +108,34 @@ feature -- Status Report
 	is_multiple: BOOLEAN is
 			-- True if this attribute has multiple cardinality
 		do
-			Result := cardinality /= Void
+			Result := representation.is_multiple
 		end
 
 	is_valid: BOOLEAN is
 			-- report on validity
 		do
-			create invalid_reason.make(0)
-			invalid_reason.append(rm_attribute_name + ": ")
+			create invalid_reason.make (0)
+			invalid_reason.append (rm_attribute_name + ": ")
+
 			if not (any_allowed xor representation.has_children) then
 				invalid_reason.append("must be either 'any' node or have child nodes")
-			elseif existence = Void then
+			elseif existence = Void then	-- FIXME: Delete this check! It's guaranteed by the invariant, so why are we checking it here?
 				invalid_reason.append("existence must be specified")
 			else
-				Result := True
 				from
+					Result := True
 					children.start
 				until
-					not Result or else children.off
+					not Result or children.off
 				loop
 					-- check occurrences consistent with attribute cardinality
-					if Result and not is_multiple and children.item.occurrences.upper > 1 then
+					if not is_multiple and children.item.occurrences.upper > 1 then
 						Result := False
-						invalid_reason.append("occurrences on child node " + children.item.node_id.out +
+						invalid_reason.append ("occurrences on child node " + children.item.node_id.out +
 							" must be singular for non-container attribute")
-					end
-
-					if Result and not children.item.is_valid then
+					elseif not children.item.is_valid then
 						Result := False
-						invalid_reason.append("(invalid child node) " + children.item.invalid_reason + "%N")
+						invalid_reason.append ("(invalid child node) " + children.item.invalid_reason + "%N")
 					end
 
 					children.forth
@@ -142,12 +143,20 @@ feature -- Status Report
 			end
 		end
 
-	has_child_node (a_path_id: STRING): BOOLEAN is
-			-- (from OG_NODE)
-		require -- from OG_NODE
-			path_id_valid: a_path_id /= void and then not a_path_id.is_empty
+	has_child_with_id (a_node_id: STRING): BOOLEAN is
+			-- has a child node with id a_node_id
+		require
+			Node_id_valid: a_node_id /= void and then not a_node_id.is_empty
 		do
-			Result := representation.has_child_node (a_path_id)
+			Result := representation.has_child_with_id (a_node_id)
+		end
+
+	has_child (a_node: C_OBJECT): BOOLEAN is
+			-- True if a_node is actually one of the children
+		require
+			Node_valid: a_node /= Void
+		do
+			Result := children.has (a_node)
 		end
 
 feature -- Modification
@@ -173,16 +182,25 @@ feature -- Modification
 		require
 			Object_exists: an_obj /= Void
 			Object_occurrences_valid: not is_multiple implies an_obj.occurrences.upper <= 1
-			Object_id_valid: not (an_obj.is_addressable and has_child_node(an_obj.node_id))
+			Object_id_valid: not (an_obj.is_addressable and has_child(an_obj))
 		do
 			representation.put_child(an_obj.representation)
 			children.extend(an_obj)
 			an_obj.set_parent(Current)
 		end
 
+	remove_child(an_obj: C_OBJECT) is
+			-- remove an existing child node
+		require
+			Object_valid: an_obj /= Void and then has_child (an_obj)
+		do
+			representation.remove_child (an_obj.node_id)
+			children.prune_all(an_obj)
+		end
+
 feature -- Representation
 
-	representation: OG_ATTRIBUTE_NODE
+	representation: !OG_ATTRIBUTE_NODE
 
 feature -- Serialisation
 
@@ -203,6 +221,7 @@ invariant
 	Existence_set: existence /= Void
 	Children_validity: children /= Void
 	Any_allowed_validity: any_allowed xor not children.is_empty
+	Is_multiple_validity: is_multiple implies cardinality /= Void
 
 end
 

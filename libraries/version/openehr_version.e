@@ -4,7 +4,7 @@ indexing
 	keywords:    "ADL"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2003-2007 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2003-2008 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -46,7 +46,7 @@ feature -- Access
 	out: STRING
 			-- The version as a string of the form "major.minor.build.revision".
 		do
-			Result := major.out + "." + minor.out + "." + build.out + "." + revision.out
+			Result := major.out + "." + minor.out + "." + build.out + "." + revision.out + " (Release Candidate)"
 		ensure then
 			long_enough: Result.count >= 7
 		end
@@ -72,7 +72,7 @@ end
 --| The Original Code is openehr_version.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2007
+--| Portions created by the Initial Developer are Copyright (C) 2003-2008
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

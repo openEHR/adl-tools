@@ -1,55 +1,29 @@
 indexing
-	component:   "openEHR EHR Reference Model"
-
+	component:   "openEHR Archetype Project"
 	description: "[
-	             The SECTION class models the headings and navigational 
-	             structure used by the clinician to organise the items in 
-	             a transaction.
+			 Shared access to ARCHETYPE_PARSER.
 			 ]"
-	keywords:    "organiser, navigation"
-
-	requirements:"ISO 18308 TS V1.0 ???"
-	design:      "openEHR EHR Reference Model 4.1"
-
+	keywords:    "C wrapper"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class SECTION
+class SHARED_ARCHETYPE_PARSER
 
 inherit
-	CONTENT_ITEM
+	SHARED_APPLICATION_CONTEXT
 
-feature -- Access
+feature {NONE} -- Implementation
 
-	items: LIST[CONTENT_ITEM]
-			-- clinical organisational (navigational) structure
-			-- and content appearing under this organiser
-
-	path_of_item (a_loc: LOCATABLE): STRING is
-			-- The path to an item relative to the root of this archetyped structure.
-		do
+	archetype_parser: ARCHETYPE_PARSER is
+		once
+			create Result.make
 		end
-
-	item_at_path (a_path: STRING): LOCATABLE is
-			-- The item at a path (relative to this item).
-		do
-		end
-
-feature -- Status Report
-
-	valid_path (a_path: STRING): BOOLEAN is
-			-- True if the path is valid with respect to the current item.
-		do
-		end
-
-invariant
-	Items_exists: items /= Void implies not items.is_empty
 
 end
 
@@ -69,7 +43,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is organiser.e.
+--| The Original Code is adl_interface.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

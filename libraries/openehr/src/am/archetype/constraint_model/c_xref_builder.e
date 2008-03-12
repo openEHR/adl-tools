@@ -30,16 +30,15 @@ inherit
 
 feature -- Initialisation
 
-	initialise(an_ontology: ARCHETYPE_ONTOLOGY; an_archetype: ARCHETYPE) is
+	initialise(an_archetype: ARCHETYPE) is
 			-- set ontology required for interpreting meaning of object nodes
 			-- archetype is required as well since it contains the xref tables that are
 			-- populated by this visitor
 		require
-			Ontology_valid: an_ontology /= Void
-			Archetype_valid: an_archetype /= Void and an_archetype.ontology = an_ontology
+			Archetype_valid: an_archetype /= Void
 		do
-			initialise_visitor(an_ontology)
 			archetype := an_archetype
+			initialise_visitor(archetype.ontology)
 		end
 
 feature -- Visitor
@@ -48,10 +47,10 @@ feature -- Visitor
 			-- enter an C_COMPLEX_OBJECT
 		do
 			if a_node.is_addressable then
-				if not archetype.id_at_codes_xref_table.has(a_node.node_id) then
-					archetype.id_at_codes_xref_table.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.node_id)
+				if not archetype.id_atcodes_index.has(a_node.node_id) then
+					archetype.id_atcodes_index.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.node_id)
 				end
-				archetype.id_at_codes_xref_table.item(a_node.node_id).extend(a_node)
+				archetype.id_atcodes_index.item(a_node.node_id).extend(a_node)
 			end
 		end
 
@@ -59,29 +58,30 @@ feature -- Visitor
 			-- enter an ARCHETYPE_SLOT
 		do
 			if a_node.is_addressable then
-				if not archetype.id_at_codes_xref_table.has(a_node.node_id) then
-					archetype.id_at_codes_xref_table.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.node_id)
+				if not archetype.id_atcodes_index.has(a_node.node_id) then
+					archetype.id_atcodes_index.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.node_id)
 				end
-				archetype.id_at_codes_xref_table.item(a_node.node_id).extend(a_node)
+				archetype.id_atcodes_index.item(a_node.node_id).extend(a_node)
 			end
+			archetype.slot_index.extend(a_node)
 		end
 
 	start_archetype_internal_ref(a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER) is
 			-- enter an ARCHETYPE_INTERNAL_REF
 		do
-			if not archetype.use_node_path_xref_table.has(a_node.target_path) then
-				archetype.use_node_path_xref_table.put(create {ARRAYED_LIST[ARCHETYPE_INTERNAL_REF]}.make(0), a_node.target_path)
+			if not archetype.use_node_index.has(a_node.target_path) then
+				archetype.use_node_index.put(create {ARRAYED_LIST[ARCHETYPE_INTERNAL_REF]}.make(0), a_node.target_path)
 			end
-			archetype.use_node_path_xref_table.item(a_node.target_path).extend(a_node)
+			archetype.use_node_index.item(a_node.target_path).extend(a_node)
 		end
 
 	start_constraint_ref(a_node: CONSTRAINT_REF; depth: INTEGER) is
 			-- enter a CONSTRAINT_REF
 		do
-			if not archetype.ac_codes_xref_table.has(a_node.target) then
-				archetype.ac_codes_xref_table.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.target)
+			if not archetype.accodes_index.has(a_node.target) then
+				archetype.accodes_index.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.target)
 			end
-			archetype.ac_codes_xref_table.item(a_node.target).extend(a_node)
+			archetype.accodes_index.item(a_node.target).extend(a_node)
 		end
 
 	start_c_code_phrase(a_node: C_CODE_PHRASE; depth: INTEGER) is
@@ -93,10 +93,10 @@ feature -- Visitor
 				until
 					a_node.code_list.off
 				loop
-					if not archetype.data_at_codes_xref_table.has(a_node.code_list.item) then
-						archetype.data_at_codes_xref_table.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.code_list.item)
+					if not archetype.data_atcodes_index.has(a_node.code_list.item) then
+						archetype.data_atcodes_index.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.code_list.item)
 					end
-					archetype.data_at_codes_xref_table.item(a_node.code_list.item).extend(a_node)
+					archetype.data_atcodes_index.item(a_node.code_list.item).extend(a_node)
 					a_node.code_list.forth
 				end
 			end
@@ -111,10 +111,10 @@ feature -- Visitor
 				until
 					a_node.items.off
 				loop
-					if not archetype.data_at_codes_xref_table.has(a_node.items.item.symbol.code_string) then
-						archetype.data_at_codes_xref_table.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.items.item.symbol.code_string)
+					if not archetype.data_atcodes_index.has(a_node.items.item.symbol.code_string) then
+						archetype.data_atcodes_index.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.items.item.symbol.code_string)
 					end
-					archetype.data_at_codes_xref_table.item(a_node.items.item.symbol.code_string).extend(a_node)
+					archetype.data_atcodes_index.item(a_node.items.item.symbol.code_string).extend(a_node)
 					a_node.items.forth
 				end
 			end

@@ -52,13 +52,22 @@ feature -- Traversal
 			do_all_nodes(target, node_enter_action, node_exit_action)
 		end
 
-	do_at_surface(node_action: PROCEDURE[ANY, TUPLE[OG_ITEM]]; node_is_at_surface: FUNCTION[ANY, TUPLE[OG_ITEM], BOOLEAN]) is
-			-- Do action only to nodes at surface, where membership is defined by `node_is_at_surface'.
+	do_at_surface(node_action: PROCEDURE[ANY, TUPLE[OG_ITEM, INTEGER]]; node_is_included: FUNCTION[ANY, TUPLE[OG_ITEM], BOOLEAN]) is
+			-- Do action only to nodes at surface, where membership is defined by `node_is_included'.
 		require
 			Node_action_valid: node_action /= Void
-			Surface_test_action_valid: node_is_at_surface /= Void
+			Surface_test_action_valid: node_is_included /= Void
 		do
-			do_at_surface_nodes(target, node_action, node_is_at_surface)
+			do_at_surface_nodes(target, node_action, node_is_included)
+		end
+
+	do_until_surface(node_action: PROCEDURE[ANY, TUPLE[OG_ITEM, INTEGER]]; node_is_included: FUNCTION[ANY, TUPLE[OG_ITEM], BOOLEAN]) is
+			-- Do action only to nodes from top until surface (inclusive), where membership is defined by `node_is_included'.
+		require
+			Node_action_valid: node_action /= Void
+			Surface_test_action_valid: node_is_included /= Void
+		do
+			do_until_surface_nodes(target, node_action, node_is_included)
 		end
 
 feature {NONE} -- Implementation
@@ -90,7 +99,7 @@ feature {NONE} -- Implementation
 			depth := depth - 1
 		end
 
-	do_at_surface_nodes(a_target: OG_NODE; node_action: PROCEDURE[ANY, TUPLE[OG_ITEM]]; node_is_at_surface: FUNCTION[ANY, TUPLE[OG_ITEM], BOOLEAN]) is
+	do_at_surface_nodes(a_target: OG_NODE; node_action: PROCEDURE[ANY, TUPLE[OG_ITEM, INTEGER]]; node_is_at_surface: FUNCTION[ANY, TUPLE[OG_ITEM], BOOLEAN]) is
 			-- Do action only to nodes at surface, where membership is defined by `node_is_at_surface'.
 		require
 			Target_exists: a_target /= Void
@@ -98,7 +107,7 @@ feature {NONE} -- Implementation
 			a_node: OG_NODE
 		do
 			if node_is_at_surface.item([a_target]) then
-				node_action.call([a_target])
+				node_action.call([a_target, 0])
 			else -- haven't hit the surface yet, descend...
 				from
 					a_target.start
@@ -110,7 +119,34 @@ feature {NONE} -- Implementation
 						do_at_surface_nodes(a_node, node_action, node_is_at_surface)
 					else -- terminal child node
 						if node_is_at_surface.item ([a_target.item_for_iteration]) then
-							node_action.call([a_target.item_for_iteration])
+							node_action.call([a_target.item_for_iteration, 0])
+						end
+					end
+					a_target.forth
+				end
+			end
+		end
+
+	do_until_surface_nodes(a_target: OG_NODE; node_action: PROCEDURE[ANY, TUPLE[OG_ITEM, INTEGER]]; node_is_included: FUNCTION[ANY, TUPLE[OG_ITEM], BOOLEAN]) is
+			-- Do action only to nodes from top down to surface, where membership is defined by `node_is_included'.
+		require
+			Target_exists: a_target /= Void
+		local
+			a_node: OG_NODE
+		do
+			if node_is_included.item([a_target]) then
+				node_action.call([a_target, 0])
+				from
+					a_target.start
+				until
+					a_target.off
+				loop
+					a_node ?= a_target.item_for_iteration
+					if a_node /= Void then
+						do_until_surface_nodes(a_node, node_action, node_is_included)
+					else -- terminal child node
+						if node_is_included.item ([a_target.item_for_iteration]) then
+							node_action.call([a_target.item_for_iteration, 0])
 						end
 					end
 					a_target.forth

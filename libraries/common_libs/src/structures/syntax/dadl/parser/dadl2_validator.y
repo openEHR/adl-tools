@@ -37,7 +37,7 @@ inherit
 	KL_SHARED_EXCEPTIONS
 	KL_SHARED_ARGUMENTS
 
-creation
+create
 	make
 
 %}
@@ -182,7 +182,7 @@ attr_id: V_ATTRIBUTE_IDENTIFIER
 
 			debug("dADL_parse")
 				io.put_string(indent + "attr_id: complex_object_nodes.item(" + complex_object_nodes.item.node_id + 
-						").put_attribute(" + attr_node.rm_attr_name + ")%N")
+						").put_attribute(<<" + attr_node.rm_attr_name + ">>)%N")
 			end
 			if not complex_object_nodes.item.has_attribute(attr_node.rm_attr_name) then
 				complex_object_nodes.item.put_attribute(attr_node)
@@ -273,7 +273,7 @@ multiple_attr_object_block_head: SYM_START_DBLOCK
 				-- we are in a multi-block which is the value of a keyed object
 				-- so create the object with the key id
 				create complex_object_node.make_identified(obj_id)
-				if not attr_nodes.item.has_child(complex_object_node.node_id) then
+				if not attr_nodes.item.has_child_with_id(complex_object_node.node_id) then
 					debug("dADL_parse")
 						io.put_string(indent + "multiple_attr_object_block_head; attr_nodes(<<" + 
 							attr_nodes.item.rm_attr_name + ">>).item.put_child(complex_object_node(" + 
@@ -282,8 +282,9 @@ multiple_attr_object_block_head: SYM_START_DBLOCK
 					attr_nodes.item.put_child(complex_object_node)
 				else
 					raise_error
-					report_error("Key must be unique; key [" + complex_object_node.node_id 
-							+ "] already exists under attribute %"" + attr_nodes.item.rm_attr_name + "%"")
+					report_error("Key must be unique; key [" + complex_object_node.node_id + 
+						"] already exists under attribute %"" + 
+						attr_nodes.item.rm_attr_name + "%"")
 					abort
 				end
 
@@ -323,14 +324,23 @@ multiple_attr_object_block_head: SYM_START_DBLOCK
 
 keyed_objects: keyed_object
 		{
+			debug("dADL_parse")
+				io.put_string(indent + "one keyed object%N")
+			end
 		}
 	| keyed_objects keyed_object
 		{
+			debug("dADL_parse")
+				io.put_string(indent + "multiple keyed objects%N")
+			end
 		}
 	;
 
 keyed_object: object_key SYM_EQ object_block
 		{
+			debug("dADL_parse")
+				io.put_string(indent + "(keyed object)%N")
+			end
 		}
 	;
 
@@ -421,16 +431,16 @@ single_attr_object_complex_head: SYM_START_DBLOCK
 
 			-- now put the new object under its attribute, if one exists
 			if not attr_nodes.is_empty then
-				if not attr_nodes.item.has_child(complex_object_node.node_id) then
+				if not attr_nodes.item.has_child_with_id(complex_object_node.node_id) then
 					debug("dADL_parse")
-						io.put_string(indent + "single_attr_object_complex_head; attr_nodes(<<" + 
+						io.put_string(indent + "single_attr_object_complex_head: attr_nodes(<<" + 
 							attr_nodes.item.rm_attr_name + ">>).item.put_child(complex_object_node(" + 
 							complex_object_node.node_id + "))%N")
 					end
 					attr_nodes.item.put_child(complex_object_node)
 				else
 					raise_error
-					report_error("Key must be unique; key [" + complex_object_nodes.item.node_id 
+					report_error("Key must be unique; key [" + complex_object_node.node_id 
 								+ "] already exists under attribute %"" + attr_nodes.item.rm_attr_name + "%"")
 					abort
 				end
@@ -473,7 +483,7 @@ untyped_primitive_object_block: SYM_START_DBLOCK primitive_object_value SYM_END_
 						attr_nodes.item.rm_attr_name + ">>).item.put_child(<<" + 
 						leaf_object_node.as_string + ">>)%N")
 			end
-			if not attr_nodes.item.has_child(leaf_object_node.node_id) then
+			if not attr_nodes.item.has_child_with_id(leaf_object_node.node_id) then
 				attr_nodes.item.put_child(leaf_object_node)
 				$$ := leaf_object_node
 			else

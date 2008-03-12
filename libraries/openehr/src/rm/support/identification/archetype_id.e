@@ -30,7 +30,9 @@ inherit
 		end
 
 create
-	make, make_from_string, default_create
+	make,
+	make_from_string,
+	default_create
 
 feature -- Definitions
 
@@ -44,8 +46,8 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make(a_rm_originator, a_rm_name, a_rm_entity, a_domain_concept, a_version_id: STRING) is
-			-- make from rm_originator-rm_name-rm_entity.domain_concept.ver_id
+	make (a_rm_originator, a_rm_name, a_rm_entity, a_domain_concept, a_version_id: STRING) is
+			-- Create from "rm_originator-rm_name-rm_entity.domain_concept.ver_id".
 		require
 			a_rm_originator /= Void and then not a_rm_originator.is_empty
 			a_rm_name /= Void and then not a_rm_name.is_empty
@@ -70,8 +72,8 @@ feature -- Initialisation
 			value.append(a_version_id)
 		end
 
-	make_from_string(an_id: STRING) is
-			-- make from "rm_entity.domain_concept.ver_id"
+	make_from_string (an_id: STRING) is
+			-- Create from "rm_entity.domain_concept.ver_id".
 		require
 			an_id /= Void and then valid_id(an_id)
 		do
@@ -82,9 +84,9 @@ feature -- Initialisation
 		end
 
 	default_create is
-			-- make a default id
+			-- Create a default id.
 		do
-			make_from_string(Default_id)
+			make_from_string (Default_id)
 		end
 
 feature -- Access
@@ -176,24 +178,24 @@ feature -- Access
 		end
 
 	specialisation: STRING is
-			-- optional specialisation of concept, e.g. "blood lipids"
-			-- extracted from domain_concept
+			-- Optional specialisation of `domain_concept'.
+			-- I.e. "problem-diagnosis-histological" -> "diagnosis-histological"
 		require
-			is_specialised
+			specialised: is_specialised
 		local
 			s: STRING
 		do
 			s := domain_concept
-			Result := s.substring(s.index_of(Section_separator, 1), s.count)
+			Result := s.substring (s.index_of (section_separator, 1), s.count)
 		ensure
-			Result_valid: Result /= Void implies not Result.is_empty
+			not_empty: not Result.is_empty
 		end
 
 	domain_concept_tail: STRING is
 			-- The last part of the domain concept.
-			-- i.e. "problem" 						-> "problem"
-			--		"problem-diagnosis" 			-> "diagnosis"
-			--		"problem-diagnosis-histological" -> "histological"
+			-- I.e. "problem"                        -> "problem"
+			--      "problem-diagnosis"              -> "diagnosis"
+			--      "problem-diagnosis-histological" -> "histological"
 		local
 			p: INTEGER
 		do
@@ -211,10 +213,10 @@ feature -- Access
 		end
 
 	domain_concept_base: STRING is
-			-- the part of the domain concept excluding the last specialisation
-			-- i.e. "problem" 						-> "" (no specialisation)
-			--		"problem-diagnosis" 			-> "problem"
-			--		"problem-diagnosis-histological" -> "problem-diagnosis"
+			-- The part of the domain concept excluding the last specialisation.
+			-- I.e. "problem"                        -> "" (no specialisation)
+			--      "problem-diagnosis"              -> "problem"
+			--      "problem-diagnosis-histological" -> "problem-diagnosis"
 		local
 			p: INTEGER
 		do
@@ -262,32 +264,39 @@ feature -- Access
 			excludes_last_specialisation: is_specialised implies Result.is_equal (qualified_rm_entity + axis_separator.out + domain_concept_base)
 		end
 
+	specialisation_depth: INTEGER is
+			-- specialisation level of this archetype id; non-specialised -> 0
+		do
+			Result := domain_concept.occurrences (section_separator)
+		ensure
+			non_negative: Result >= 0
+		end
+
 feature -- Status Report
 
 	is_specialised: BOOLEAN
 			-- Is this id a specialisation?
 
-	valid_id(an_id: STRING):BOOLEAN is
+	valid_id (an_id: STRING): BOOLEAN is
+			-- Does `an_id' have the correct form for an archetype id?
 		do
-			Result := an_id.occurrences(axis_separator) = 2 and an_id.occurrences(section_separator) >= 2
+			Result := id_pattern_regex.matches (an_id)
 		end
 
 feature -- Factory
 
-	create_specialised_id(a_spec_domain_concept: STRING): ARCHETYPE_ID is
-			-- create a specialised archetype id based on this one, using `a_spec_domain_concept'
-			-- if the current id looks like:
-			--	openehr-ehr-OBSERVATION.lab_result.v3
-			-- the result of this call will be:
-			--	openehr-ehr-OBSERVATION.lab_result-XXXX.v3
-			-- where the XXXX is the supplied specialised domain concept
+	create_specialised_id (a_spec_domain_concept: STRING): !ARCHETYPE_ID is
+			-- Create a specialised archetype id based on this one, using `a_spec_domain_concept'.
+			-- If the current id looks like:
+			--  openehr-ehr-OBSERVATION.lab_result.v3
+			-- The result of this call will be:
+			--  openehr-ehr-OBSERVATION.lab_result-XXXX.v3
+			-- where the XXXX is the supplied specialised domain concept.
 		require
 			Concept_valid: a_spec_domain_concept /= Void and then not a_spec_domain_concept.is_empty
 		do
 			create Result.make(rm_originator, rm_name, rm_entity, domain_concept + section_separator.out + a_spec_domain_concept, version_id)
 			is_specialised := True
-		ensure
-			Result_exists: Result /= Void
 		end
 
 feature -- Comparison
@@ -306,6 +315,17 @@ feature -- Output
 		ensure
 			attached: Result /= Void
 			not_empty: not Result.is_empty
+		end
+
+feature {NONE} -- Implementation
+
+	id_pattern_regex: LX_DFA_REGULAR_EXPRESSION
+			-- Pattern matcher for archetype ids.
+		once
+			-- note that the final [a-z]* should be removed one day to prevent archaic naming like .v1draft
+			create Result.compile_case_insensitive ("^[a-z][a-z0-9()#_]+(-[a-z0-9()#_]+){2}\.[a-z][a-z0-9()#-_]+\.v[0-9]+[a-z]*$")
+		ensure
+			attached: Result /= Void
 		end
 
 end

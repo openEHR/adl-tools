@@ -28,11 +28,12 @@ else:
 		['adl_scanner', 'adl_validator', 'adl_tokens', 'components/adl_parser/src/syntax/adl/parser/'],
 		['cadl_scanner', 'cadl_validator', 'cadl_tokens', 'components/adl_parser/src/syntax/cadl/parser/'],
 		['dadl_scanner', 'dadl2_validator', 'dadl_tokens', 'libraries/common_libs/src/structures/syntax/dadl/parser/'],
-		['units_scanner', 'units_parser', 'units_tokens', 'libraries/common_libs/src/unit_parser/parser/']
+		['units_scanner', 'units_parser', 'units_tokens', 'libraries/common_libs/src/unit_parser/parser/'],
+		['og_path_scanner', 'og_path_validator', 'og_path_tokens', 'libraries/common_libs/src/structures/object_graph/path/']
 	]:
-		gelex(dir + scanner + '.e', dir + scanner + '.l')
-		geyacc([dir + parser + '.e', dir + tokens + '.e'], dir + parser + '.y')
-		geyacc_html(dir + parser + '.html', dir + parser + '.y')
+		Alias(scanner, gelex(dir + scanner + '.e', dir + scanner + '.l'))
+		Alias(parser, geyacc([dir + parser + '.e', dir + tokens + '.e'], dir + parser + '.y'))
+		Alias(parser, geyacc_html(dir + parser + '.html', dir + parser + '.y'))
 
 # Define how to build the Eiffel projects.
 
@@ -51,7 +52,7 @@ eiffel('adl_parser_test',  'components/adl_parser/test/app/adl_parser_test.ecf')
 eiffel('common_libs_test', 'libraries/common_libs/test/app/common_libs_test.ecf')
 
 if platform == 'windows':
-	adl_parser = eiffel('adl_dotnet_lib.dll', 'components/adl_parser/lib/dotnet_dll/adl_dotnet_lib.ecf', 'adl_dotnet_lib')
+	adl_parser = eiffel('OceanInformatics.AdlParser.dll', 'components/adl_parser/lib/dotnet_dll/adl_parser.ecf', 'adl_parser')
 	versioned_targets += [adl_parser]
 
 # Define how to put installers, etc., into the distribution directory.
@@ -99,7 +100,7 @@ if distrib:
 		if len(adl_parser) > 2:
 			unmanaged_dll = os.path.dirname(str(adl_parser[2])) + '/lib' + os.path.basename(str(adl_parser[2]))
 			SideEffect(unmanaged_dll, adl_parser[2])
-			Install(distrib + '/adl_parser/lib', [adl_parser[2], unmanaged_dll])
+			Install(distrib + '/adl_parser/dotnet', [adl_parser[2], unmanaged_dll])
 
 	if platform == 'linux':
 		if adl_workbench_installer_sources:
@@ -217,7 +218,7 @@ if distrib:
 						substitutions += [['apps/adl_workbench/app/adl_workbench.rc', r'(#define\s+VER_\S+\s+"?\d+[,.]\d+[,.]\d+[,.])\d+']]
 
 					if target == adl_parser:
-						substitutions += [['components/adl_parser/lib/dotnet_dll/adl_dotnet_lib.ecf', r'(<version\s+major="\d+"\s+minor="\d+"\s+release="\d+"\s+build=")\d+']]
+						substitutions += [['components/adl_parser/lib/dotnet_dll/adl_parser.ecf', r'(<version\s+major="\d+"\s+minor="\d+"\s+release="\d+"\s+build=")\d+']]
 
 					if target == installer:
 						substitutions = [[install + '/ADL_Workbench/ADLWorkbenchInstall.nsi', r'(VIProductVersion\s+\d+\.\d+\.\d+\.)\d+']]

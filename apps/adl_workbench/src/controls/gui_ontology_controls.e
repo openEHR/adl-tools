@@ -33,60 +33,97 @@ inherit
 create
 	make
 
-feature -- Initialisation
+feature {NONE} -- Initialisation
 
-	make(a_main_window: MAIN_WINDOW) is
+	make (a_main_window: MAIN_WINDOW) is
 		require
 			a_main_window /= Void
 		do
 			gui := a_main_window
    			gui.ontology_notebook.set_minimum_height(gui.Status_area_min_height)
+			in_differential_mode := True
 		end
+
+feature -- Status
+
+	in_differential_mode: BOOLEAN
+			-- True if visualisation should show contents of differential archetype, else flat archetype
 
 feature -- Commands
 
 	clear is
 			-- wipe out content from ontology-related controls
 		do
-			gui.ontology_term_defs.wipe_out
-			gui.ontology_constraint_defs.wipe_out
+			gui.ontology_term_definitions_multi_column_list.wipe_out
+			gui.ontology_constraint_definitions_multi_column_list.wipe_out
 		end
 
 	populate is
 			-- populate ontology controls
 		do
 			clear
-			populate_term_definitions
-			populate_constraint_definitions
+
+			if archetype_directory.has_valid_selected_archetype then
+				populate_term_definitions
+				populate_constraint_definitions
+			end
+		end
+
+	set_differential_view
+			-- Set `in_differential_mode' on.
+		do
+			in_differential_mode := True
+			populate
+		end
+
+	set_flat_view
+			-- Set `in_differential_mode' off.
+		do
+			in_differential_mode := False
+			populate
 		end
 
 	select_term(a_term_code: STRING) is
 			-- select row for a_term_code in term_definitions control
 		do
-			select_coded_term_row(a_term_code, gui.ontology_term_defs)
+			select_coded_term_row (a_term_code, gui.ontology_term_definitions_multi_column_list)
 		end
 
 	select_constraint(a_term_code: STRING) is
 			-- select row for a_term_code in term_definitions control
 		do
-			select_coded_term_row(a_term_code, gui.ontology_constraint_defs)
+			select_coded_term_row (a_term_code, gui.ontology_constraint_definitions_multi_column_list)
 		end
 
 feature {NONE} -- Implementation
 
-	gui: MAIN_WINDOW
-			-- main window of system
-
-	ontology: ARCHETYPE_ONTOLOGY is
-			-- access to ontology of selected archetype
+	target_archetype: ARCHETYPE is
+			-- differential or flat version of archetype, depending on setting of `in_differential_mode'
+		require
+			archetype_directory.has_selected_archetype
 		do
-			if archetype_directory.has_selected_archetype_descriptor then
-				Result := archetype_directory.selected_archetype.ontology
+			if in_differential_mode then
+				Result := archetype_directory.selected_archetype.archetype_differential
+			else
+				Result := archetype_directory.selected_archetype.archetype_flat
 			end
 		end
 
+	gui: MAIN_WINDOW
+			-- main window of system
+
+	ontology: !ARCHETYPE_ONTOLOGY is
+			-- access to ontology of selected archetype
+		require
+			archetype_selected: archetype_directory.has_selected_archetype
+		do
+			Result := target_archetype.ontology
+		end
+
 	populate_term_definitions is
-			--
+			-- Populate the Term Definitions list.
+		require
+			archetype_selected: archetype_directory.has_selected_archetype
 		local
 			col_titles: ARRAYED_LIST[STRING]
 			pl: EV_MULTI_COLUMN_LIST
@@ -95,18 +132,18 @@ feature {NONE} -- Implementation
 			i: INTEGER
 		do
 			-- populate column titles
-			pl := gui.ontology_term_defs
+			pl := gui.ontology_term_definitions_multi_column_list
 			create col_titles.make(0)
 			col_titles.extend("code")
-			col_titles.extend("text")
+--			col_titles.extend("text")
 			from
 				ontology.term_attribute_names.start
 			until
 				ontology.term_attribute_names.off
 			loop
-				if not ontology.term_attribute_names.item.is_equal("text") then
-					col_titles.extend (utf8 (ontology.term_attribute_names.item))
-				end
+--				if not ontology.term_attribute_names.item.is_equal("text") then
+					col_titles.extend (ontology.term_attribute_names.item)
+--				end
 				ontology.term_attribute_names.forth
 			end
 
@@ -129,14 +166,18 @@ feature {NONE} -- Implementation
 				create list_row
 				list_row.extend (utf8 (ontology.term_codes.item))
 				a_term := ontology.term_definition(current_language, ontology.term_codes.item)
-				list_row.extend (utf8 (a_term.item ("text")))
+--				list_row.extend (a_term.item ("text"))
+
 				from
 					ontology.term_attribute_names.start
 				until
 					ontology.term_attribute_names.off
 				loop
-					if not ontology.term_attribute_names.item.is_equal("text") then
+--					if not ontology.term_attribute_names.item.is_equal("text") and a_term.has_key (ontology.term_attribute_names.item) then					
+					if a_term.has_key (ontology.term_attribute_names.item) then
 						list_row.extend (utf8 (a_term.item(ontology.term_attribute_names.item)))
+					else
+						list_row.extend (" - ")
 					end
 					ontology.term_attribute_names.forth
 				end
@@ -152,7 +193,7 @@ feature {NONE} -- Implementation
 							ontology.terminologies_available.item, a_term.code
 						).as_string))
 					else
-						list_row.extend("")
+						list_row.extend(" - ")
 					end
 					ontology.terminologies_available.forth
 				end
@@ -172,7 +213,9 @@ feature {NONE} -- Implementation
 		end
 
 	populate_constraint_definitions is
-			--
+			-- Populate the Constraint Definitions list
+		require
+			archetype_selected: archetype_directory.has_selected_archetype
 		local
 			col_titles: ARRAYED_LIST[STRING]
 			pl: EV_MULTI_COLUMN_LIST
@@ -181,18 +224,18 @@ feature {NONE} -- Implementation
 			i: INTEGER
 		do
 			-- build columns
-			pl := gui.ontology_constraint_defs
+			pl := gui.ontology_constraint_definitions_multi_column_list
 			create col_titles.make(0)
 			col_titles.extend("code")
-			col_titles.extend("text")
+--			col_titles.extend("text")
 			from
 				ontology.term_attribute_names.start
 			until
 				ontology.term_attribute_names.off
 			loop
-				if not ontology.term_attribute_names.item.is_equal("text") then
-					col_titles.extend (utf8 (ontology.term_attribute_names.item))
-				end
+--				if not ontology.term_attribute_names.item.is_equal("text") then
+					col_titles.extend (ontology.term_attribute_names.item)
+--				end
 				ontology.term_attribute_names.forth
 			end
 
@@ -216,14 +259,17 @@ feature {NONE} -- Implementation
 				-- populate constraint codes
 				list_row.extend (utf8 (ontology.constraint_codes.item))
 				a_term := ontology.constraint_definition(current_language, ontology.constraint_codes.item)
-				list_row.extend (utf8 (a_term.item ("text")))
+--				list_row.extend (utf8 (a_term.item ("text")))
 				from
 					ontology.term_attribute_names.start
 				until
 					ontology.term_attribute_names.off
 				loop
-					if not ontology.term_attribute_names.item.is_equal("text") then
+--					if not ontology.term_attribute_names.item.is_equal("text")  and a_term.has_key (ontology.term_attribute_names.item) then
+					if a_term.has_key (ontology.term_attribute_names.item) then
 						list_row.extend (utf8 (a_term.item (ontology.term_attribute_names.item)))
+					else
+						list_row.extend (" - ")
 					end
 					ontology.term_attribute_names.forth
 				end
@@ -238,7 +284,7 @@ feature {NONE} -- Implementation
 						list_row.extend (utf8 (ontology.constraint_binding(
 							ontology.terminologies_available.item, a_term.code).as_string))
 					else
-						list_row.extend("")
+						list_row.extend(" - ")
 					end
 					ontology.terminologies_available.forth
 				end
@@ -255,22 +301,24 @@ feature {NONE} -- Implementation
 
 		end
 
-	select_coded_term_row(a_term_code: STRING; list_control: EV_MULTI_COLUMN_LIST) is
-			-- select row for a_term_code in term_definitions control
+	select_coded_term_row (a_term_code: STRING; list_control: EV_MULTI_COLUMN_LIST) is
+			-- Select the row for `a_term_code' in `list_control'.
 		do
 			list_control.remove_selection
+
 			from
 				list_control.start
 			until
 				list_control.off
 			loop
-				if list_control.item.first.is_equal(a_term_code) then
-					if gui.ontology_notebook.selected_item /= list_control then
-						gui.ontology_notebook.select_item(list_control)
-					end
+				if list_control.item.first.is_equal (a_term_code) then
 					list_control.item.enable_select
-					list_control.ensure_item_visible(list_control.item)
+
+					if list_control.is_displayed then
+						list_control.ensure_item_visible (list_control.item)
+					end
 				end
+
 				list_control.forth
 			end
 		end

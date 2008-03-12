@@ -23,7 +23,7 @@ inherit
 		export
 			{NONE} all
 		end
-		
+
 feature -- Initialisation
 
 	initialise(an_ontology: ARCHETYPE_ONTOLOGY) is
@@ -34,7 +34,7 @@ feature -- Initialisation
 			initialise_any_serialiser
 			ontology := an_ontology
 		end
-		
+
 feature -- Serialisation
 
 	serialise (a_target: ARCHETYPE; lang_serialised, desc_serialised, def_serialised, inv_serialised, ont_serialised: STRING) is

@@ -39,24 +39,26 @@ feature {ANY_SERIALISER} -- Access
 			Result.put(", ",				FMT_LIST_ITEM_SEPARATOR)
 			Result.put("; ",				FMT_ASSUMED_VALUE_SEPARATOR)
 		end
-		
+
 	styles: HASH_TABLE[STRING, INTEGER] is
 			-- styles in this format, keyed by logical name
 		once
-			create Result.make(0)
-			Result.put("keyword",			STYLE_KEYWORD)
-			Result.put("operator",			STYLE_OPERATOR)
-			Result.put("identifier",		STYLE_IDENTIFIER)
-			Result.put("term_ref",			STYLE_TERM_REF)
-			Result.put("value",			STYLE_VALUE)
-			Result.put("comment",			STYLE_COMMENT)
+			create Result.make (0)
+			Result.put ("keyword", style_keyword)
+			Result.put ("operator", style_operator)
+			Result.put ("identifier", style_identifier)
+			Result.put ("inherited_identifier", style_inherited_identifier)
+			Result.put ("redefined_identifier", style_redefined_identifier)
+			Result.put ("term_ref", style_term_ref)
+			Result.put ("value", style_value)
+			Result.put ("comment", style_comment)
 		end
-	
+
 	tags: HASH_TABLE[STRING, INTEGER] is
 			-- tag strings, keyed by logical name
 		once
 			create Result.make(0)
-		end	
+		end
 
 	quote_patterns: HASH_TABLE[STRING, STRING] is
 			-- styles in this format, keyed by logical name
@@ -78,7 +80,7 @@ feature {ANY_SERIALISER} -- Factory
 
 feature {NONE} -- Implementation
 
-	html_style_header: STRING is 
+	html_style_header: STRING is
 "<style>%N%
 %BODY {%N%
 	%font-family:%"Courier New%";%N%
@@ -102,6 +104,26 @@ feature {NONE} -- Implementation
 	%font-weight: bold;%N%
 	%color: olive;%N%
 	%text-decoration:none;%N%
+	%}%N%
+%.inherited_identifier {%N%
+	%text-align:left;%N%
+	%font-size: 10pt;%N%
+	%font-family:%"Courier New%";%N%
+	%margin: 0px;%N%
+	%background: yellow;%N%
+	%font-weight: bold;%N%
+	%color: darkolivegreen;%N%
+	%text-decoration:none;%N%
+	%}%N%
+%.redefined_identifier {%N%
+	%text-align:left;%N%
+	%font-size: 10pt;%N%
+	%font-family:%"Courier New%";%N%
+	%margin: 0px;%N%
+	%background: yellow;%N%
+	%font-weight: bold;%N%
+	%color: darkolivegreen;%N%
+	%text-decoration:underline;%N%
 	%}%N%
 %.term_ref {%N%
 	%text-align:left;%N%
@@ -143,7 +165,7 @@ feature {NONE} -- Implementation
 	%}%N%
 %</style>"
 
-		
+
 end
 
 

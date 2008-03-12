@@ -40,7 +40,7 @@ feature -- Invocation
 
 feature -- Access
 
-	last_result: STRING
+	last_result: !STRING
 			-- result of last call to serialisation procedures
 
 	symbol(sym_id:INTEGER): STRING is

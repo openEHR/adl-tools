@@ -29,8 +29,8 @@ feature {NONE} -- Implementation
 		local
 			fn, full_path: STRING
 			a_dir: DIRECTORY
-			fs_node_names: ARRAYED_LIST[STRING]
-			dir_name_index: SORTED_TWO_WAY_LIST[STRING]
+			fs_node_names: ARRAYED_LIST [STRING]
+			dir_name_index: SORTED_TWO_WAY_LIST [STRING]
 			arch_index: SORTED_TWO_WAY_LIST [ARCH_REP_ARCHETYPE]
 			ara: ARCH_REP_ARCHETYPE
 			node: like directory
@@ -42,7 +42,7 @@ feature {NONE} -- Implementation
    				shifter.extend ('%T')
    			end
 
-			a_dir := directory_at (tree.item.full_path)
+			create a_dir.make (tree.item.full_path)
 
 			if a_dir.exists then
 				a_dir.open_read
@@ -57,16 +57,17 @@ feature {NONE} -- Implementation
 				loop
 					fn := fs_node_names.item
 
-					if not (fn.is_equal(".") or fn.is_equal("..") or fn.item (1) = '.') then
-						full_path := tree.item.full_path + Os_directory_separator.out + fn
+					if fn.item (1) /= '.' then
+						full_path := file_system.pathname (tree.item.full_path, fn)
 
 						if (create {RAW_FILE}.make (full_path)).is_directory then
 							dir_name_index.extend (fn)
-						else
-							ara := repository_archetype (root_path, full_path)
-
+						elseif adl_flat_filename_pattern_regex.matches (fn) then
+							ara := create_repository_archetype_descriptor (root_path, full_path)
 							if ara /= Void then
 								arch_index.extend (ara)
+							else
+								post_error (Current, "build_directory", "invalid_filename_e1", <<fn>>)
 							end
 						end
 					end
@@ -82,7 +83,7 @@ feature {NONE} -- Implementation
 			until
 				dir_name_index.off
 			loop
-				full_path := tree.item.full_path + os_directory_separator.out + dir_name_index.item
+				full_path := file_system.pathname (tree.item.full_path, dir_name_index.item)
 				node := new_folder_node (full_path)
 				build_directory (node)
 				tree.put_child_right (node)
@@ -106,6 +107,12 @@ feature {NONE} -- Implementation
    				shifter.remove_tail (1)
    				io.put_string(shifter + "<---%N")
    			end
+		end
+
+	adl_flat_filename_pattern_regex: !LX_DFA_REGULAR_EXPRESSION
+			-- Pattern matcher for filenames ending in ".adl".
+		once
+			create Result.compile_case_insensitive (".*\" + archetype_flat_file_extension + "$")
 		end
 
 	shifter: STRING

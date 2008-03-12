@@ -21,7 +21,6 @@ indexing
 class UNITS_PARSER
 
 inherit
-
 	YY_PARSER_SKELETON
 		rename
 			make as make_parser_skeleton
@@ -42,8 +41,7 @@ inherit
 	KL_SHARED_EXCEPTIONS
 	KL_SHARED_ARGUMENTS
 
-creation
-
+create
 	make
 
 %}

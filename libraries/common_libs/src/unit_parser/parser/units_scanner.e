@@ -20,7 +20,6 @@ indexing
 class UNITS_SCANNER
 
 inherit
-
 	YY_COMPRESSED_SCANNER_SKELETON
 		rename
 			make as make_compressed_scanner_skeleton,
@@ -44,8 +43,7 @@ inherit
 	KL_SHARED_EXCEPTIONS
 	KL_SHARED_ARGUMENTS
 
-creation
-
+create
 	make
 
 feature -- Status report
@@ -61,13 +59,13 @@ feature {NONE} -- Implementation
 	yy_build_tables is
 			-- Build scanner tables.
 		do
-			yy_nxt ?= yy_nxt_template
-			yy_chk ?= yy_chk_template
-			yy_base ?= yy_base_template
-			yy_def ?= yy_def_template
-			yy_ec ?= yy_ec_template
-			yy_meta ?= yy_meta_template
-			yy_accept ?= yy_accept_template
+			yy_nxt := yy_nxt_template
+			yy_chk := yy_chk_template
+			yy_base := yy_base_template
+			yy_def := yy_def_template
+			yy_ec := yy_ec_template
+			yy_meta := yy_meta_template
+			yy_accept := yy_accept_template
 		end
 
 	yy_execute_action (yy_act: INTEGER) is
@@ -78,36 +76,36 @@ if yy_act <= 5 then
 if yy_act <= 3 then
 if yy_act <= 2 then
 if yy_act = 1 then
---|#line 59 "units_scanner.l"
+--|#line 57 "units_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 59")
+	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 57")
 end
 last_token := Plus_code
 else
---|#line 60 "units_scanner.l"
+--|#line 58 "units_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 60")
+	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 58")
 end
 last_token := Minus_code
 end
 else
---|#line 61 "units_scanner.l"
+--|#line 59 "units_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 61")
+	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 59")
 end
 last_token := Slash_code
 end
 else
 if yy_act = 4 then
---|#line 62 "units_scanner.l"
+--|#line 60 "units_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 62")
+	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 60")
 end
 last_token := Star_code
 else
---|#line 63 "units_scanner.l"
+--|#line 61 "units_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 63")
+	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 61")
 end
 last_token := Caret_code
 end
@@ -115,29 +113,29 @@ end
 else
 if yy_act <= 7 then
 if yy_act = 6 then
---|#line 65 "units_scanner.l"
+--|#line 63 "units_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 65")
+	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 63")
 end
 last_token := SYM_OPEN_PAREN
 else
---|#line 66 "units_scanner.l"
+--|#line 64 "units_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 66")
+	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 64")
 end
 last_token := SYM_CLOSE_PAREN
 end
 else
 if yy_act = 8 then
---|#line 67 "units_scanner.l"
+--|#line 65 "units_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 67")
+	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 65")
 end
 last_token := SYM_START_SUFFIX
 else
---|#line 68 "units_scanner.l"
+--|#line 66 "units_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 68")
+	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 66")
 end
 last_token := SYM_END_SUFFIX
 end
@@ -147,32 +145,32 @@ else
 if yy_act <= 13 then
 if yy_act <= 11 then
 if yy_act = 10 then
---|#line 69 "units_scanner.l"
+--|#line 67 "units_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 69")
+	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 67")
 end
 last_token := SYM_START_ANNOT
 else
---|#line 70 "units_scanner.l"
+--|#line 68 "units_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 70")
+	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 68")
 end
 last_token := SYM_END_ANNOT
 end
 else
 if yy_act = 12 then
---|#line 74 "units_scanner.l"
+--|#line 72 "units_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 74")
+	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 72")
 end
 
 					last_token := V_IDENTIFIER
 					last_string_value := text
 			
 else
---|#line 80 "units_scanner.l"
+--|#line 78 "units_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 80")
+	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 78")
 end
 
 					last_token := V_INTEGER
@@ -183,9 +181,9 @@ end
 else
 if yy_act <= 15 then
 if yy_act = 14 then
---|#line 85 "units_scanner.l"
+--|#line 83 "units_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 85")
+	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 83")
 end
 
 					last_token := V_INTEGER
@@ -200,17 +198,17 @@ end
 					in_buffer.wipe_out
 			
 else
---|#line 99 "units_scanner.l"
+--|#line 97 "units_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 99")
+	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 97")
 end
  last_token := Semicolon_code; terminate 
 end
 else
 if yy_act = 16 then
---|#line 100 "units_scanner.l"
+--|#line 98 "units_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 100")
+	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 98")
 end
 ;
 else
@@ -243,53 +241,43 @@ terminate
 
 feature {NONE} -- Table templates
 
-	yy_nxt_template: ANY is
-			-- This is supposed to be "like FIXED_INTEGER_ARRAY_TYPE",
-			-- but once functions cannot be declared with anchored types.
+	yy_nxt_template: SPECIAL [INTEGER] is
 		once
 			Result := yy_fixed_array (<<
 			    0,    4,    5,    6,    7,    8,    9,    4,   10,   11,
 			   12,   13,   14,   15,   16,   17,   18,   19,   21,   21,
 			   21,   21,   22,   24,   26,   26,   27,   25,   23,   20,
 			   20,   28,    3,   28,   28,   28,   28,   28,   28,   28,
-			   28,   28,   28,   28,   28,   28,   28,   28,   28,   28>>)
+			   28,   28,   28,   28,   28,   28,   28,   28,   28,   28, yy_Dummy>>)
 		end
 
-	yy_chk_template: ANY is
-			-- This is supposed to be "like FIXED_INTEGER_ARRAY_TYPE",
-			-- but once functions cannot be declared with anchored types.
+	yy_chk_template: SPECIAL [INTEGER] is
 		once
 			Result := yy_fixed_array (<<
 			    0,    1,    1,    1,    1,    1,    1,    1,    1,    1,
 			    1,    1,    1,    1,    1,    1,    1,    1,   13,   22,
 			   24,   27,   13,   22,   24,   26,   25,   23,   21,   20,
 			    6,    3,   28,   28,   28,   28,   28,   28,   28,   28,
-			   28,   28,   28,   28,   28,   28,   28,   28,   28,   28>>)
+			   28,   28,   28,   28,   28,   28,   28,   28,   28,   28, yy_Dummy>>)
 		end
 
-	yy_base_template: ANY is
-			-- This is supposed to be "like FIXED_INTEGER_ARRAY_TYPE",
-			-- but once functions cannot be declared with anchored types.
+	yy_base_template: SPECIAL [INTEGER] is
 		once
 			Result := yy_fixed_array (<<
 			    0,    0,    0,   31,   32,   32,   27,   32,   32,   32,
 			   32,   32,   32,   11,   32,   32,   32,   32,   32,   32,
-			   26,   17,   12,   16,   13,   15,   14,   14,   32>>)
+			   26,   17,   12,   16,   13,   15,   14,   14,   32, yy_Dummy>>)
 		end
 
-	yy_def_template: ANY is
-			-- This is supposed to be "like FIXED_INTEGER_ARRAY_TYPE",
-			-- but once functions cannot be declared with anchored types.
+	yy_def_template: SPECIAL [INTEGER] is
 		once
 			Result := yy_fixed_array (<<
 			    0,   28,    1,   28,   28,   28,   28,   28,   28,   28,
 			   28,   28,   28,   28,   28,   28,   28,   28,   28,   28,
-			   28,   28,   28,   28,   28,   28,   28,   28,    0>>)
+			   28,   28,   28,   28,   28,   28,   28,   28,    0, yy_Dummy>>)
 		end
 
-	yy_ec_template: ANY is
-			-- This is supposed to be "like FIXED_INTEGER_ARRAY_TYPE",
-			-- but once functions cannot be declared with anchored types.
+	yy_ec_template: SPECIAL [INTEGER] is
 		once
 			Result := yy_fixed_array (<<
 			    0,    1,    1,    1,    1,    1,    1,    1,    1,    1,
@@ -319,26 +307,22 @@ feature {NONE} -- Table templates
 			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
 			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
 			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-			    1,    1,    1,    1,    1,    1,    1>>)
+			    1,    1,    1,    1,    1,    1,    1, yy_Dummy>>)
 		end
 
-	yy_meta_template: ANY is
-			-- This is supposed to be "like FIXED_INTEGER_ARRAY_TYPE",
-			-- but once functions cannot be declared with anchored types.
+	yy_meta_template: SPECIAL [INTEGER] is
 		once
 			Result := yy_fixed_array (<<
 			    0,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-			    1,    1,    1,    1,    1,    1,    1,    1>>)
+			    1,    1,    1,    1,    1,    1,    1,    1, yy_Dummy>>)
 		end
 
-	yy_accept_template: ANY is
-			-- This is supposed to be "like FIXED_INTEGER_ARRAY_TYPE",
-			-- but once functions cannot be declared with anchored types.
+	yy_accept_template: SPECIAL [INTEGER] is
 		once
 			Result := yy_fixed_array (<<
 			    0,    0,    0,   18,   16,   17,   12,    6,    7,    1,
 			    2,    4,    3,   13,   15,    8,    9,    5,   10,   11,
-			   12,    0,   13,    0,   13,    0,   13,   14,    0>>)
+			   12,    0,   13,    0,   13,    0,   13,   14,    0, yy_Dummy>>)
 		end
 
 feature {NONE} -- Constants
@@ -401,7 +385,7 @@ feature {NONE} -- Initialization
 			-- Create a new scanner.
 		do
 			make_compressed_scanner_skeleton
-			in_buffer := string_.make (Init_buffer_size)
+			create in_buffer.make (Init_buffer_size)
 			in_lineno := 1
 		end
 

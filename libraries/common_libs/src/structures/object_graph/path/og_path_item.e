@@ -34,7 +34,7 @@ feature -- Definitions
 feature -- Initialisation
 
 	make(an_attr_name: STRING) is
-			-- make a path segment with an attribute and an object id - 
+			-- make a path segment with an attribute and an empty object id -
 			-- corresponds to single cardinality attribute or it could be
 			-- a path segment for a multiple cardinality attribute but defaulting
 			-- to the first object in the collection
@@ -49,7 +49,7 @@ feature -- Initialisation
 		end
 
 	make_with_object_id(an_attr_name, an_object_id: STRING) is
-			-- make a path segment with an attribute name and an object id - 
+			-- make a path segment with an attribute name and an object id -
 			-- corresponds to multiple caridnality attribute case
 		require
 			an_attr_name_valid: an_attr_name /= Void and then not an_attr_name.is_empty
@@ -77,7 +77,7 @@ feature -- Initialisation
 			Attr_name_set: attr_name.is_equal(a_feat_name)
 			Is_feature_call: is_feature_call
 		end
-		
+
 	make_from_other(other: OG_PATH_ITEM) is
 			-- FIXME: created because clone does not work in dotnet
 		do
@@ -91,17 +91,17 @@ feature -- Definitions
 	Anonymous_node_id: STRING is "unknown"
 
 feature -- Access
-	
+
 	attr_name: STRING
 			-- name of attribute of this path segment
-	
+
 	object_id: STRING
 			-- id of object of this path segment, for attributes with cardinality > 1
-		
+
 feature -- Status Report
 
 	is_feature_call: BOOLEAN
-	
+
 	is_addressable: BOOLEAN is
 			-- True if the object in this segment is identified
 		do
@@ -120,7 +120,7 @@ feature -- Status Report
 feature -- Modification
 
 	set_object_id(an_object_id: STRING) is
-			-- make a path segment with an attribute name and an object id - 
+			-- make a path segment with an attribute name and an object id -
 			-- corresponds to multiple caridnality attribute case
 		require
 			an_object_id_valid: an_object_id /= Void
@@ -147,12 +147,12 @@ feature -- Output
 				Result.append(feature_call_arg_delimiters)
 			end
 		end
-		
+
 invariant
 	Validity: not (is_addressable and is_feature_call)
 	Attr_name_valid: attr_name /= Void and then not attr_name.is_empty
 	Object_id_valid: object_id /= Void
-	
+
 end
 
 

@@ -1,9 +1,9 @@
 indexing
 	component:   "openEHR Archetype Project"
 	description: "[
-			 Archetype comparator: generate differences between archetypes.
-		     ]"
-	keywords:    "ADL, archetype"
+				 Difference of two archetypes.
+		         ]"
+	keywords:    "archetype, comparison, diff"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
@@ -13,25 +13,22 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-
-class ARCHETYPE_COMPARATOR
-
-inherit
-	ARCHETYPE_DEFINITIONS
-		export
-			{NONE} all
-		end
-
-	MESSAGE_BILLBOARD
-		export
-			{NONE} all
-		end
+class ARCHETYPE_DIFF
 
 create
 	make
 
+feature -- Initialisation
+
+	make is
+		do
+		end
+
+feature -- Access
+
 feature -- Comparison
 
+feature {NONE} -- Implementation
 
 end
 
@@ -50,7 +47,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is archetype_comparator.e.
+--| The Original Code is archetype_diff.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2007

@@ -18,7 +18,14 @@ class ARCHETYPE_DEFINITIONS
 
 feature -- Definitions
 
-	Archetype_file_extension: STRING is "adl"
+	Archetype_native_syntax: STRING is "adl"
+			-- Name of native ADL syntax type.
+
+	Archetype_flat_file_extension: STRING is ".adl"
+			-- Extension for flat form archetype files.
+
+	Archetype_source_file_extension: STRING is ".adls"
+			-- Extension for source form (differential) archetype files.
 
 	Ontological_path_separator: STRING is "/"
 

@@ -1,55 +1,53 @@
 indexing
 	component:   "openEHR Archetype Project"
-	description: "Descriptor of a folder in a directory of archetypes"
-	keywords:    "ADL, archetype"
+	description: "Archetype abstraction"
+	keywords:    "archetype"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2003-2008 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL: $"
+	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate: $"
+	last_change: "$LastChangedDate$"
 
-
-class ARCH_REP_FOLDER
+class FLAT_ARCHETYPE
 
 inherit
-	ARCH_REP_ITEM
+	ARCHETYPE
+		redefine
+			ontology
+		end
 
 create
-	make
+	make, make_from_differential
 
-feature {NONE} -- Implementation
+feature -- Initialisation
 
-	make_ontological_paths
-			-- Make `base_name', `ontological_path' and `ontological_parent_path'.
-		local
-			pos: INTEGER
+	make_from_differential (a_diff: DIFFERENTIAL_ARCHETYPE) is
+			-- initialise from a differential archetype
 		do
-			ontological_path := full_path.substring (root_path.count + 1, full_path.count)
-			ontological_path.replace_substring_all (os_directory_separator.out, ontological_path_separator)
-
-			if ontological_path.is_empty then
-				ontological_path := ontological_path_separator.twin
-			end
-
-			pos := ontological_path.last_index_of (ontological_path_separator.item (1), ontological_path.count)
-			ontological_parent_path := ontological_path.substring (1, pos - 1)
-			base_name := ontological_path.substring (pos + ontological_path_separator.count, ontological_path.count)
+			make(a_diff.archetype_id.deep_twin, a_diff.concept.deep_twin,
+					a_diff.original_language.code_string, a_diff.description.deep_twin,
+					a_diff.definition.deep_twin, a_diff.ontology.to_flat)
+			invariants := a_diff.invariants
+			rebuild
+			is_valid := True
 		end
 
 feature -- Access
 
-	group_name: STRING
-			-- Name distinguishing the type of item and the group to which its `repository' belongs.
-			-- Useful as a logical key to pixmap icons, etc.
+	ontology: !FLAT_ARCHETYPE_ONTOLOGY
+
+feature -- Factory
+
+	to_differential: DIFFERENTIAL_ARCHETYPE
+			-- generate differential form of archetype if specialised, to be in differential form by removing inherited parts
 		do
-			Result := "file_folder_" + source_repository.group_id.out
+			create Result.make_from_flat(Current)
 		end
 
 end
-
 
 
 --|
@@ -66,13 +64,14 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is archetype_directory_item.e.
+--| The Original Code is adl_archetype.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2006
+--| Portions created by the Initial Developer are Copyright (C) 2003-2004
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):
+--|	Sam Heard
 --|
 --| Alternatively, the contents of this file may be used under the terms of
 --| either the GNU General Public License Version 2 or later (the 'GPL'), or

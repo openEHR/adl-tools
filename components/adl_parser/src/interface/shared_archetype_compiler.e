@@ -1,17 +1,17 @@
 indexing
 	component:   "openEHR Archetype Project"
 	description: "[
-			 Shared ADL_INTERFACE Object for C wrapper for ADL_INTERFACE.
+			 Shared access to ARCHETYPE_COMPILER
 			 ]"
-	keywords:    "C wrapper"
+	keywords:    "shared access, archetype compiler"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
+	file:        "$URL: http://svn.openehr.org/ref_impl_eiffel/BRANCHES/specialisation/components/adl_parser/src/interface/shared_archetype_parser.e $"
 	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	last_change: "$LastChangedDate: 2007-10-02 16:49:19 +0100 (Tue, 02 Oct 2007) $"
 
 class SHARED_ARCHETYPE_COMPILER
 
@@ -23,16 +23,6 @@ feature {NONE} -- Implementation
 	archetype_compiler: ARCHETYPE_COMPILER is
 		once
 			create Result.make
-		end
-
-	ontology: ARCHETYPE_ONTOLOGY is
-		do
-		--	Result := adl_interface.ontology
-		end
-
-	ontology_available: BOOLEAN is
-		do
-			Result := ontology /= Void
 		end
 
 end
@@ -53,10 +43,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is adl_interface.e.
+--| The Original Code is shared_archetype_compiler.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2007
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

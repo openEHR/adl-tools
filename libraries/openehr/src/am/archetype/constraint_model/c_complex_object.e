@@ -92,7 +92,6 @@ feature -- Access
 			og_node ?= representation.object_node_at_path(create {OG_PATH}.make_from_string(a_path))
 			og_paths := og_node.all_paths
 			create Result.make(0)
---			Result.compare_objects
 			from
 				og_paths.start
 			until
@@ -169,7 +168,7 @@ feature -- Status Report
 		require
 			an_attr_name_valid: an_attr_name /= Void and then not an_attr_name.is_empty
 		do
-			Result := representation.has_child_node(an_attr_name)
+			Result := representation.has_child_with_id(an_attr_name)
 		end
 
 	is_valid: BOOLEAN is
@@ -213,6 +212,15 @@ feature -- Modification
 			an_attr.set_parent(Current)
 		end
 
+	remove_attribute(an_attr: C_ATTRIBUTE) is
+			-- remove an existing attribute
+		require
+			Attribute_exists: an_attr /= Void and has_attribute (an_attr.rm_attribute_name)
+		do
+			attributes.prune_all(an_attr)
+			representation.remove_child (an_attr.rm_attribute_name)
+		end
+
 	remove_all_attributes is
 			--
 		do
@@ -231,7 +239,7 @@ feature -- Output
 
 feature -- Representation
 
-	representation: OG_OBJECT_NODE
+	representation: !OG_OBJECT_NODE
 
 feature -- Visitor
 

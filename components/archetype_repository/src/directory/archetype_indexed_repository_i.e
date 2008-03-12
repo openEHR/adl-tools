@@ -24,7 +24,7 @@ feature {NONE} -- Initialisation
 	make (dir_name: STRING; a_group_id: INTEGER)
 			-- Create as part of `a_group_id', based on valid directory path.
 		require
-			dir_name_valid: is_valid_path (dir_name)
+			dir_name_valid: is_valid_directory (dir_name)
 			group_id_valid: a_group_id > 0
 		do
 			group_id := a_group_id
@@ -86,15 +86,15 @@ feature {NONE} -- Implementation
 			attached: Result /= Void
 			root_path_set: Result.item.root_path = root_path
 			full_path_set: Result.item.full_path = path
-			repository_set: Result.item.source_repository = Current
+			repository_set: Result.item.file_repository = Current
 		end
 
 invariant
-	repository_path_valid: is_valid_path (root_path)
+	repository_path_valid: is_valid_directory (root_path)
 	directory_attached: directory /= Void
 	directory_root_path: directory.item.root_path = root_path
 	directory_full_path: directory.item.full_path = root_path
-	directory_repository: directory.item.source_repository = Current
+	directory_repository: directory.item.file_repository = Current
 
 end
 

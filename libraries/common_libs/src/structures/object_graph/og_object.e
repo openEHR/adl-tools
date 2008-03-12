@@ -30,19 +30,19 @@ feature -- Initialisation
 		do
 			make(Anonymous_node_id, a_content_item)
 		end
-	
+
 feature -- Access
-	
+
 	parent: OG_ATTRIBUTE_NODE
-		
+
 feature -- Status Report
 
 	is_object_node: BOOLEAN is True
 
 	is_addressable: BOOLEAN is
 			-- True if this node has a proper node_id
+			-- node_id must not be something like "unknown" or "unknown_1", "unknown_2" etc
 		do
-			-- node_id must be something like "unknown" or "unknown_1", "unknown_2" etc
 			Result := not node_id.has_substring(Anonymous_node_id)
 		end
 

@@ -51,10 +51,11 @@ feature {NONE} -- Initialisation
 			a_main_window /= Void
 		do
 			gui := a_main_window
-			path_list := gui.parsed_archetype_found_paths
+			path_list := gui.path_analysis_multi_column_list
 			path_list.enable_multiple_selection
-			filter_combo := gui.path_filter_combo
-			column_check_list := gui.path_view_check_list
+			filter_combo := gui.path_analysis_row_filter_combo_box
+			column_check_list := gui.path_analysis_column_view_checkable_list
+			in_differential_mode := True
 		end
 
 feature -- Access
@@ -65,11 +66,17 @@ feature -- Access
 
 	column_check_list: EV_CHECKABLE_LIST
 
+feature -- Status
+
+	in_differential_mode: BOOLEAN
+			-- True if visualisation should show contents of differential archetype, else flat archetype
+
 feature -- Commands
 
 	clear is
 			-- wipe out content from controls
 		do
+			path_list.wipe_out
 		end
 
 	populate is
@@ -79,19 +86,19 @@ feature -- Commands
 			list_row: EV_MULTI_COLUMN_LIST_ROW
 			p_paths, l_paths: ARRAYED_LIST[STRING]
 			c_o: C_OBJECT
-			c_l_o: C_LEAF_OBJECT
-			c_r: CONSTRAINT_REF
-			c_c_o: C_COMPLEX_OBJECT
-			is_logical_leaf, all_selected: BOOLEAN
 		do
 			mcl := path_list
 			mcl.wipe_out
 			mcl.set_column_titles (path_control_column_names)
 
-			if archetype_directory.has_selected_archetype_descriptor then
-				p_paths := archetype_directory.selected_archetype.physical_paths
-				l_paths := archetype_directory.selected_archetype.logical_paths (current_language)
-				all_selected := filter_combo.text.is_equal ("All")
+			if archetype_directory.has_valid_selected_archetype then
+				if filter_combo.text.is_equal ("All") then
+					p_paths := target_archetype.physical_paths
+					l_paths := target_archetype.logical_paths (current_language, False)
+				else
+					p_paths := target_archetype.physical_leaf_paths
+					l_paths := target_archetype.logical_paths (current_language, True)
+				end
 
 				from
 					p_paths.start
@@ -101,26 +108,15 @@ feature -- Commands
 				loop
 					create list_row
 
-			--		if archetype_directory.selected_archetype.definition.has_object_path (p_paths.item) then
-			--		if archetype_directory.selected_archetype.has_physical_path (p_paths.item) then
-						c_o := archetype_directory.selected_archetype.c_object_at_path (p_paths.item)
+					c_o := target_archetype.c_object_at_path (p_paths.item)
 
-						if c_o /= Void then
-							c_l_o ?= c_o
-							c_r ?= c_o
-							c_c_o ?= c_o
-
-							is_logical_leaf := c_l_o /= Void or c_r /= Void or (c_c_o /= Void and c_c_o.attributes.count = 0)
-
-							if all_selected or else is_logical_leaf then
-								list_row.extend (utf8 (p_paths.item))
-								list_row.extend (utf8 (l_paths.item))
-								list_row.extend (utf8 (c_o.rm_type_name))
-								list_row.extend (utf8 (c_o.generating_type))
-								mcl.extend (list_row)
-							end
-						end
-			--		end
+					if c_o /= Void then
+							list_row.extend (utf8 (p_paths.item))
+							list_row.extend (utf8 (l_paths.item))
+							list_row.extend (utf8 (c_o.rm_type_name))
+							list_row.extend (utf8 (c_o.generating_type))
+							mcl.extend (list_row)
+					end
 
 					p_paths.forth
 					l_paths.forth
@@ -130,31 +126,39 @@ feature -- Commands
 			adjust_columns
 		end
 
-	column_select (a_list_item: EV_LIST_ITEM) is
-			-- Called by `check_actions' of `column_check_list'.
-		local
-			i: INTEGER
+	set_differential_view
+			-- Set `in_differential_mode' on.
 		do
-			if path_list.is_displayed then
-				i := column_check_list.index_of (a_list_item, 1)
-
-				if (1 |..| path_list.column_count).has (i) then
-					path_list.resize_column_to_content (i)
-				end
-			end
+			in_differential_mode := True
+			populate
 		end
 
-	column_unselect (a_list_item: EV_LIST_ITEM) is
-			-- Called by `check_actions' of `column_check_list'.
-		local
-			i: INTEGER
+	set_flat_view
+			-- Set `in_differential_mode' off.
 		do
-			if path_list.is_displayed then
-				i := column_check_list.index_of (a_list_item, 1)
+			in_differential_mode := False
+			populate
+		end
 
-				if (1 |..| path_list.column_count).has (i) then
+	adjust_columns is
+			-- adjust column view of paths control according to checklist
+		local
+			i:INTEGER
+		do
+			from
+				i := 1
+			until
+				i > path_list.column_count
+			loop
+				if not column_check_list.is_item_checked (column_check_list.i_th (i)) then
 					path_list.set_column_width (0, i)
+				elseif path_list.is_empty then
+					path_list.set_column_width (100, i)
+				else
+					path_list.resize_column_to_content (i)
 				end
+
+				i := i + 1
 			end
 		end
 
@@ -205,22 +209,15 @@ feature {NONE} -- Implementation
 	gui: MAIN_WINDOW
 			-- main window of system
 
-	adjust_columns is
-			-- adjust column view of paths control according to checklist
-		local
-			i:INTEGER
+	target_archetype: ARCHETYPE is
+			-- differential or flat version of archetype, depending on setting of `in_differential_mode'
+		require
+			archetype_directory.has_selected_archetype
 		do
-			from
-				i := 1
-			until
-				i > path_list.column_count
-			loop
-				if column_check_list.is_item_checked (column_check_list.i_th(i)) then
-					path_list.resize_column_to_content(i)
-				else
-					path_list.set_column_width (0, i)
-				end
-				i := i + 1
+			if in_differential_mode then
+				Result := archetype_directory.selected_archetype.archetype_differential
+			else
+				Result := archetype_directory.selected_archetype.archetype_flat
 			end
 		end
 

@@ -72,15 +72,20 @@ feature -- Access
 			["serialise_archetype_e2"] = <"%NSERIALISE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
 			["parse_archetype_i1"] = <"Archetype $1 syntax VALIDATED">
 			["parse_archetype_i2"] = <"Archetype $1 semantics VALIDATED">
+			["parse_archetype_i3"] = <"Archetype differential form file found; parsing that">
 			["parse_archetype_e1"] = <"$1 (Parse failed)">
 			["parse_archetype_e2"] = <"Archetype $1 semantic validation FAILED; reasons:%N$2">
 			["parse_archetype_w2"] = <"Archetype $1 semantic validation Warnings:%N$2">
 			["parse_archetype_e3"] = <"PARSE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
+			["parse_archetype_e4"] = <"Archetype $1 semantic validation of differential form FAILED; reasons:%N$2">
+
+			["arch_context_make_flat_i1"] = <"Generated differential archetype from specialised flat archetype">
 			
 			-- ARCHETYPE_VALIDATOR
 			
 			
 			-- ARCHETYPE_FILE_REPOSITORY_IMP
+			["invalid_filename_e1"] = <"Invalid archetype filename $1">
 			["save_as_i1"] = <"Archetype saved in language $1 to $2">
 			["save_as_e1"] = <"Save-as failed; could not write to file $1">
 			
@@ -95,7 +100,7 @@ feature -- Access
 				<"[Exception caught]: $1.$2 - writing primitive object of type $3 into argument of type $4">
 				
 			-- ARCHETYPE_DIRECTORY
-			["arch_dir_no_arch_parent"] = <"No parent matching $1 found for archetype $2">
+			["arch_dir_orphan_archetype"] = <"No parent matching $1 found for archetype $2">
 			["arch_dir_dup_archetype"] = <"Duplicate archetype $1">
 
 			-- ADL_SYNTAX_CONTERTER

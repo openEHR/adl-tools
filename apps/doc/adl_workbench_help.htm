@@ -322,7 +322,7 @@
 
 
 
-The ADL workbench is available as a <a href="http://my.openehr.org/wsvn/oe_distrib/windows/tools/ADL_Workbench.msi?op=file&amp;rev=0&amp;sc=0">.msi file</a> (Windows) (Mac version coming soon). <br />
+The ADL Workbench is available as a <a href="http://my.openehr.org/wsvn/oe_distrib/windows/tools/ADL_Workbench.msi?op=file&amp;rev=0&amp;sc=0">.msi file</a> (Windows) (Mac version coming soon). <br />
 
 
 
@@ -938,8 +938,7 @@ Tester</td>
 
 
 
-The ADL workbench will process archetypes found in a "reference
-repository"
+The ADL Workbench will process archetypes found in a "reference repository"
 directory and an optional "work repository" directory. &nbsp;Typically
 the reference repository will be the 'dev' directory in the openEHR
 Subversion knowledge repository. <span style="text-decoration: underline;">You only need to specify a work repository if you are developing archetypes yourself</span>; its location may well be in another part of the <span style="font-style: italic;">open</span>EHR Subversion repository, or another version-controlled area used with colleagues.<br />
@@ -999,7 +998,7 @@ directory structure of a work repository should follow that used in the
 
 
 For both reference and work repositories, the repository location is
-specified in the Repository setting dialog, from the Repository menu,
+specified in the Repository Settings dialog, from the Repository menu,
 as shown in the screen shot. <span style="text-decoration: underline;">The directory just above the directories you want to see should </span><span style="text-decoration: underline;">be chosen</span>. <br />
 
 
@@ -1422,10 +1421,7 @@ The ADL Workbench has the following menus:<br />
 
 
 
-
-
-        
-        
+       
         
         
         
@@ -1447,7 +1443,15 @@ The ADL Workbench has the following menus:<br />
 
 
 
-          <li>Open, Parse, Edit, Save functions described below under&nbsp;Toolbar Buttons;&nbsp;</li>
+        <li><span style="font-weight: bold;">Open</span>: open an
+archetype manually. Whereas archetypes in the specified archetype repository
+can be opened and parsed automatically just by single-clicking on the
+archetype in the explorer, the Open option allows the user to open and
+parse an archetype somewhere else in the file system. Although this does not disturb
+ADL Workbench's idea of where the repository is, the manually-opened archetype is displayed
+in the explorer. If it happens to be an archetype within the repository, then it is
+simply selected in the explorer; otherwise, it is added to the appropriate place in
+the explorer tree, based on its semantic category.</li>
 
 
 
@@ -1459,7 +1463,63 @@ The ADL Workbench has the following menus:<br />
 
 
 
-          <li><span style="font-weight: bold;">Exit</span>: application</li>
+
+
+
+
+        <li><span style="font-weight: bold;">Parse</span>: manually parse an archetype, usually after doing a Save from an external editor.</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        <li><span style="font-weight: bold;">Edit</span>: use the external editor specified in Options to open the selected archetype.</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        <li><span style="font-weight: bold;">Save As</span>: save the
+archetype either over the top of the original file, or as a new file.
+The format is specified by a combo box in the Save dialog.</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          <li><span style="font-weight: bold;">Exit</span>: quit the application.</li>
 
 
 
@@ -1529,7 +1589,19 @@ The ADL Workbench has the following menus:<br />
 
 
 
-          <li><span style="font-weight: bold;">Copy</span>: copy a selected item to the clipboard; this only works on certain controls such as the path control;</li>
+          <li><span style="font-weight: bold;">Copy</span>: copy a selected item to the clipboard; this only works on certain controls such as the path control and text boxes;</li>
+
+
+
+
+
+
+
+
+
+
+
+          <li><span style="font-weight: bold;">Select All</span>: select all text in the focussed text box;</li>
 
 
 
@@ -1681,7 +1753,7 @@ The ADL Workbench has the following menus:<br />
 
 
 
-          <li><span style="font-weight: bold;">Set Options</span>: set various options</li>
+          <li><span style="font-weight: bold;">Set Options</span>: set various options, such as the external editor</li>
 
 
 
@@ -1751,7 +1823,7 @@ The ADL Workbench has the following menus:<br />
 
 
 
-          <li><span style="font-weight: bold;">Icons</span>: list of icons used in the archetype node map, and meanings</li>
+          <li><span style="font-weight: bold;">Icons</span>: list of icons used in the archetype node map, and their meanings</li>
 
 
 
@@ -1787,7 +1859,7 @@ The ADL Workbench has the following menus:<br />
 
 
 
-          <li><span style="font-weight: bold;">About</span>: "About" information for the ADL workbench.</li>
+          <li><span style="font-weight: bold;">About</span>: "About" information for the ADL Workbench.</li>
 
 
 
@@ -1950,8 +2022,8 @@ menus</td>
 
 The explorer on the left hand side of the tool provides a view on an
 archetype repository, which is simply a directory in the file
-system.&nbsp;The options menu is used to select the location of the
-archetype repository (see <a href="#Finding_an_archetype_repository">below</a>).<br />
+system.&nbsp;The <span style="font-weight: bold;">Repository</span> menu is used to select the location of the
+archetype repository.<br />
 
 
 
@@ -2339,131 +2411,11 @@ parse suceeded</td>
 
 
 
-
-
-
-
-
-
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      <ul>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        <li><span style="font-weight: bold;">Open</span>: open an
-archetype manually. Archetypes in the specified archetype repository
-can be opened and parsed automatically just by single-clicking on the
-archetype in the explorer. The Open option allows the user to open and
-parse an archetype somewhere else in the file system. without
-disturbing the explorer, or the tools idea of where the repository is.</li>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        <li><span style="font-weight: bold;">Parse</span>: manually parse an archetype, usually after doing a Save from an external editor.</li>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        <li><span style="font-weight: bold;">Edit</span>: use external editor specified in options to open archetype.</li>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        <li><span style="font-weight: bold;">Save</span>: save
-archetype either over the top of the original file, or as a new file,
-in whichever format is specified by the format Combo-box just to the
-right of the Save button.</li>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      </ul>
+The
+<span style="font-weight: bold;">Open</span>, 
+<span style="font-weight: bold;">Parse</span> and 
+<span style="font-weight: bold;">Edit</span> functions are those described above under the
+<span style="font-weight: bold;">File</span> menu.
 
 
 
@@ -2640,7 +2592,7 @@ The options are accessed via the Options menu, and are as follows:<br />
 
 
 
-        <li><span style="font-weight: bold;">Set external editor</span>: this allows an external editor to be specified for viewing editing archetypes when the Edit button is pressed;</li>
+        <li><span style="font-weight: bold;">Set external editor</span>: this allows an external editor to be specified for editing archetypes when the Edit button is pressed;</li>
 
 
 
@@ -2800,7 +2752,7 @@ if unset, the tree will be shown collapsed.</li>
 
 
 
-This screen shows the contents of the "description" section near the
+This tab shows the contents of the "description" section near the
 top of an archetype, as well as the languages, translation details and
 terminologies supported by the archetype. A drop-down menu provides access to the translation details in each language.</td>
 
@@ -2959,8 +2911,8 @@ When an archetype is parsed, its definition (cADL) section is displayed
 graphically in the Node Map tab of the Definition tab on the right hand
 side of the tool. This map is a direct representation of the tree
 structure of the archetype, and consists of alternating object and
-attribute constraints, &nbsp;culminating in leaf nodes representing
-constraints on primitive types such &nbsp;as integers, strings and
+attribute constraints, culminating in leaf nodes representing
+constraints on primitive types such as integers, strings and
 date/times.<br />
 
 
@@ -3005,29 +2957,7 @@ date/times.<br />
 
 
 
-When an archetype is first successfully parsed, the node tree is shown <br />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-collapsed to its root; repeatedly using the "Expand one" button reveals the structure of the archetype one tree level at a time.<br />
+When an archetype is first successfully parsed, the node tree is shown collapsed to its root; repeatedly using the "Expand One" button reveals the structure of the archetype one tree level at a time.<br />
 
 
 
@@ -3071,7 +3001,7 @@ collapsed to its root; repeatedly using the "Expand one" button reveals the stru
 
 
 
-Quantities, coded terms and ordinal values have&nbsp;special&nbsp;representations, as defined in the <span style="font-style: italic;">open</span>EHR Archetype Profile (oAP).</td>
+Quantities, coded terms and ordinal values have special representations, as defined in the <span style="font-style: italic;">open</span>EHR Archetype Profile (oAP).</td>
 
 
 
@@ -3326,7 +3256,7 @@ unicode example<br />
 
 
 
-The Technical/Domain button on the right hand side toggles between a
+The Technical and Domain radio buttons on the right hand side toggle between a
 view consisting of purely semantic labels and a technical view in which
 the reference model class names and node term codes are shown. This
 view enables the connection of semantic markers (local "at" codes) and
@@ -3589,9 +3519,9 @@ solely of these kinds of nodes.</li>
 
 
 
-The right hand Inheritance/Flat view button can be used to toggle the
-icon view used in the node display; "Flat view" shows the archetype as
-a result of "flattening" through inheritance, i.e. the&nbsp;effective
+The right hand Inheritance and Flat View radio buttons toggle the
+icon view used in the node display; "Flat View" shows the archetype as
+a result of "flattening" through inheritance, i.e. the effective
 archetype at runtime.<br />
 
 
@@ -3719,14 +3649,7 @@ node map specialisation example - problem diagnosis</td>
 The Path map tab shows the paths extracted from the definition section
 of the archetype in "physical" (coded) and "logical" (codes replaced by
 their descriptions). These paths are crucial to manipulating archetypes
-at<br />
-
-
-
-
-
-
-runtime, and also to building queries. The path syntax is&nbsp;a
+at runtime, and also to building queries. The path syntax is a
 slightly reduced form of XPath syntax, and can be converted to standard
 XPath for XML-based processing.<br />
 
@@ -3752,7 +3675,7 @@ XPath for XML-based processing.<br />
 
 
 
-The columns of the display can be controlled using the checkboxes on the right, and are as follows:<br />
+The columns of the display can be controlled using the check boxes on the right, and are as follows:<br />
 
 
 
@@ -3859,8 +3782,8 @@ The columns of the display can be controlled using the checkboxes on the right, 
 
 
 Paths can be selected and saved to the clipboard for use in other
-tools, by selecting rows (including multiple rows, by using the ctrl
-key) and then using ctrl-C (copy) to copy to the clipboard. The
+tools, by selecting rows (including multiple rows, by using the Ctrl
+key) and then using Ctrl+C (copy) to copy to the clipboard. The
 clipboard contents can be viewed from the Edit menu.</td>
 
 
@@ -4051,29 +3974,7 @@ save path to clipboard</td>
 
 
 
-The ontology view shows the contents of the ontology section of the<br />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-archetype, with terms and constraints shown under separate tabs. Mappings to external terminologies are also shown.</td>
+The ontology view shows the contents of the ontology section of the archetype, with terms and constraints shown under separate tabs. Mappings to external terminologies are also shown.</td>
 
 
 
@@ -4277,16 +4178,8 @@ unicode example<br />
 
 
 
-Archetypes can contains any number of translations of their linguistic <br />
-
-
-
-
-
-
-content, i.e. the description and ontology sections. The language
-combo-box on the top right of the tool enables the language to be
-chosen.</td>
+Archetypes can contain any number of translations of their linguistic content, i.e. the description and ontology sections. The language
+combo box on the top right of the tool enables the language to be chosen.</td>
 
 
 
@@ -4749,73 +4642,7 @@ unicode example<br />
 
 
 
-Find an archetype in the left-hand archetype explorer, and simply select its <br />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-icon; this will cause it to be parsed. The parse status is shown in the status bar<br />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-as described above. Once an archetype has parsed successfully, it can be <br />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-explored using the controls in the tool as shown above.</td>
+Find an archetype in the left-hand archetype explorer, and simply select its icon; this will cause it to be parsed. The parse status is shown in the status bar as described above. Once an archetype has parsed successfully, it can be explored using the controls in the tool as shown above.</td>
 
 
 
@@ -4925,73 +4752,7 @@ explored using the controls in the tool as shown above.</td>
 
 
 
-If desired the archetype can be edited via the "Edit" button at the top left. The<br />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-editor can be chosen via the Options menu. If changes are made to an <br />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-archetype in an external editor and saved, the "Parse" button needs to be used<br />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-to re-evaluate the archetype.</td>
+If desired the archetype can be edited via the "Edit" button at the top left. The editor can be chosen via the Options menu. If changes are made to an archetype in an external editor and saved, the "Parse" button needs to be used to re-evaluate the archetype.</td>
 
 
 
@@ -5101,73 +4862,9 @@ to re-evaluate the archetype.</td>
 
 
 
-Archetypes can be serialised (i.e. saved) using the "Save" button at the top left.<br />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-The serialisation form is chosen from the combo-box to the right of the Save<br />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-button. The ADL and HTML (colourised ADL) formats are currently supported. In<br />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-the future, a pure dADL form will be available.<br />
+Archetypes can be serialised (i.e. saved) using the "Save As" option under the File menu.
+The serialisation form is chosen from the combo box in the Save dialog.
+The ADL and HTML (colourised ADL) formats are currently supported. In the future, a pure dADL form will be available.<br />
 
 
 
@@ -5483,7 +5180,7 @@ controls on the right hand side, used to manage execution of the tests.<br />
 
 
 
-The archetype tree is collapsable, and contains the same information as
+The archetype tree is collapsible, and contains the same information as
 the explorer tree from the Viewer part of the application. <br />
 
 
@@ -5524,10 +5221,8 @@ the explorer tree from the Viewer part of the application. <br />
 
 
 
-The second column contains check-boxes used to mark an archetype for
-testing or not. The Check All/Uncheck All button on the right-hand side
-is used to check or uncheck all archetypes for inclusion in the next
-test run.<br />
+The second column contains check boxes used to mark an archetype for
+testing or not. Setting or clearing the check box of a node also sets or clears all of its child nodes. A quick way to set or clear all nodes is by clicking the check box of the Root node at the top.<br />
 
 
 
@@ -5567,7 +5262,7 @@ test run.<br />
 
 
 
-The remaining columns are used to indicate the results of executing the tests, which currently incude:<br />
+The remaining columns are used to indicate the results of executing the tests, which currently include:<br />
 
 
 
@@ -5628,7 +5323,7 @@ The remaining columns are used to indicate the results of executing the tests, w
 
         <li><span style="font-weight: bold;">Parse</span>: parse ADL
 file, in the same manner as the Viewer does. If the Remove Unused Codes
-checkbox on the right-hand side is selected, unused "at" and "ac" codes
+check box on the right-hand side is selected, unused "at" and "ac" codes
 from the archetype ontology are removed. If the Overwrite ADL checkbox
 is also selected, then the subsequent "Save to ADL" tests below will
 reflect this change.</li>
@@ -6056,7 +5751,7 @@ The status of each test is indicated by a green "tick" or red cross in the relev
 
 
 
-Any errors or other information to do with the tests is appended to the status window at the bottom.</td>
+Any errors, or other information to do with the tests, are appended to the status window at the bottom.</td>
 
 
 
@@ -6255,7 +5950,7 @@ To test only selected archetypes:<br />
 
 
 
-        <li>Collapse the archteype tree as desired to view archetypes of interest</li>
+        <li>Collapse the archetype tree as desired to view archetypes of interest</li>
 
 
 
@@ -6275,7 +5970,7 @@ To test only selected archetypes:<br />
 
 
 
-        <li>Use the Uncheck All button to uncheck all archetypes</li>
+        <li>Click the Root node's check box to uncheck all archetypes</li>
 
 
 
@@ -6672,7 +6367,7 @@ Archetypes can now be converted to being ADL 1.4 compliant by using the Overwrit
 
 
 
-      <td><span style="font-weight: bold;">Resynchronise with Filesystem</span><br />
+      <td><span style="font-weight: bold;">Resynchronise with File System</span><br />
 
 
 
@@ -6692,7 +6387,7 @@ Archetypes can now be converted to being ADL 1.4 compliant by using the Overwrit
 
 
 
-The Tester can be resynchronised at any time with the file-system by pressing the Refresh button on the right hand side.</td>
+The Tester can be resynchronised at any time with the file system by pressing the Refresh button on the right hand side.</td>
 
 
 
@@ -6819,7 +6514,7 @@ The Tester can be resynchronised at any time with the file-system by pressing th
 
 
 <hr style="width: 100%; height: 2px;" />
-<p class="footer">$LastChangedDate$
+<p class="footer">$LastChangedDate: $
 $LastChangedRevision$</p>
 
 

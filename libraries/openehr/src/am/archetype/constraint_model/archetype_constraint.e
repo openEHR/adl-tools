@@ -45,18 +45,10 @@ feature -- Source Control
 		deferred
 		end
 
-	effective_specialisation_status (archetype_specialisation_level: INTEGER): SPECIALISATION_STATUS is
-			-- status of this node either due to its own status or propagated status from a
-			-- parent node
-		require
-			valid_specialisation_level: archetype_specialisation_level >= 0
-		do
-			if specialisation_status(archetype_specialisation_level).value = ss_propagated then
-				create Result.make(parent.effective_specialisation_status(archetype_specialisation_level).value)
-			else
-				Result := specialisation_status(archetype_specialisation_level)
-			end
-		end
+	rolled_up_specialisation_status: SPECIALISATION_STATUS
+			-- status of this node taking into consideration effective_specialisation_status of
+			-- all sub-nodes. Used to roll up nodes on visualisation, and also to decide which
+			-- subtree to remove to convert an archetype to differential form
 
 	set_rolled_up_specialisation_status (a_status: SPECIALISATION_STATUS) is
 		require
@@ -65,12 +57,19 @@ feature -- Source Control
 			rolled_up_specialisation_status := a_status
 		end
 
-	rolled_up_specialisation_status: SPECIALISATION_STATUS
-			-- status of this node taking into consideration effective_specialisation_status of
-			-- all sub-nodes. Used to roll up nodes on visualisation, and also to decide which
-			-- subtree to remove to convert an archetype to differential form
-
 feature -- Status Report
+
+	is_leaf: BOOLEAN is
+			-- True if this node is a terminal node
+		do
+			Result := representation.is_leaf
+		end
+
+	is_root: BOOLEAN is
+			-- True if this node is a top node
+		do
+			Result := representation.is_root
+		end
 
 	is_addressable: BOOLEAN is
 			-- True if this node has a non-anonymous node_id
@@ -87,7 +86,7 @@ feature -- Status Report
 
 feature -- Representation
 
-	representation: OG_ITEM
+	representation: !OG_ITEM
 
 feature {ARCHETYPE_CONSTRAINT} -- Modification
 
@@ -103,12 +102,25 @@ feature {OG_ITEM} -- Implementation
 
 	set_representation(a_rep: like representation) is
 			--
-		require
-			a_rep /= Void
 		do
 			representation := a_rep
 		ensure
 			Representation_set: representation = a_rep
+		end
+
+feature -- Duplication
+
+	safe_deep_twin: like Current is
+			-- safe version of deep_twin that Voids `parent' first so as not to clone backwards up tree
+		local
+			p: like parent
+		do
+			p := parent
+			parent := Void
+			Result := deep_twin
+			parent := p
+		ensure
+			Result.parent = Void
 		end
 
 end

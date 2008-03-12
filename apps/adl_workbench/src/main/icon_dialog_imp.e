@@ -6,7 +6,8 @@ indexing
 		You should not modify this code by hand, as it will be re-generated every time
 		 modifications are made to the project.
 		 	]"
-	date: "$Date: 2006-09-21 16:27:08 -0700 (Thu, 21 Sep 2006) $"
+	generator: "EiffelBuild"
+	date: "$Date: 2007-09-05 12:09:14 -0700 (Wed, 05 Sep 2007) $"
 	revision: "$Revision$"
 
 deferred class
@@ -66,15 +67,14 @@ feature {NONE}-- Initialization
 			color_constant_retrieval_functions.extend (agent editable_colour)
 			icon_help_list.set_minimum_width (300)
 			icon_help_list.set_minimum_height (400)
-			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_1.set_padding (?))
-			integer_constant_retrieval_functions.extend (agent dialog_padding_width)
-			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_1.set_border_width (?))
-			integer_constant_retrieval_functions.extend (agent dialog_border_width)
+			l_ev_horizontal_box_1.set_padding (15)
+			l_ev_horizontal_box_1.set_border_width (10)
 			l_ev_horizontal_box_1.disable_item_expand (ok_button)
 			ok_button.set_text ("OK")
 			ok_button.set_minimum_width (100)
-			set_minimum_width (380)
-			set_minimum_height (580)
+			ok_button.set_minimum_height (26)
+			set_minimum_width (450)
+			set_minimum_height (700)
 			set_title ("ADL Workbench Icon Key")
 			
 			set_all_attributes_using_constants

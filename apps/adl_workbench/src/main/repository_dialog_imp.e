@@ -6,7 +6,8 @@ indexing
 		You should not modify this code by hand, as it will be re-generated every time
 		 modifications are made to the project.
 		 	]"
-	date: "$Date: 2006-09-21 16:27:08 -0700 (Thu, 21 Sep 2006) $"
+	generator: "EiffelBuild"
+	date: "$Date: 2007-09-05 12:09:14 -0700 (Wed, 05 Sep 2007) $"
 	revision: "$Revision$"
 
 deferred class
@@ -34,16 +35,17 @@ feature {NONE}-- Initialization
 				-- Create all widgets.
 			create l_ev_vertical_box_1
 			create l_ev_label_1
+			create top_horizontal_box_for_cross_platform_cosmetic_padding
 			create l_ev_frame_1
-			create l_ev_vertical_box_2
 			create l_ev_horizontal_box_1
 			create repository_dialog_reference_path_text
 			create repository_dialog_reference_path_browse_button
+			create middle_horizontal_box_for_cross_platform_cosmetic_padding
 			create l_ev_frame_2
-			create l_ev_vertical_box_3
 			create l_ev_horizontal_box_2
 			create repository_dialog_work_path_text
 			create repository_dialog_work_path_button
+			create bottom_horizontal_box_for_cross_platform_cosmetic_padding
 			create l_ev_horizontal_box_3
 			create l_ev_cell_1
 			create repository_dialog_ok_button
@@ -52,16 +54,17 @@ feature {NONE}-- Initialization
 				-- Build widget structure.
 			extend (l_ev_vertical_box_1)
 			l_ev_vertical_box_1.extend (l_ev_label_1)
+			l_ev_vertical_box_1.extend (top_horizontal_box_for_cross_platform_cosmetic_padding)
 			l_ev_vertical_box_1.extend (l_ev_frame_1)
-			l_ev_frame_1.extend (l_ev_vertical_box_2)
-			l_ev_vertical_box_2.extend (l_ev_horizontal_box_1)
+			l_ev_frame_1.extend (l_ev_horizontal_box_1)
 			l_ev_horizontal_box_1.extend (repository_dialog_reference_path_text)
 			l_ev_horizontal_box_1.extend (repository_dialog_reference_path_browse_button)
+			l_ev_vertical_box_1.extend (middle_horizontal_box_for_cross_platform_cosmetic_padding)
 			l_ev_vertical_box_1.extend (l_ev_frame_2)
-			l_ev_frame_2.extend (l_ev_vertical_box_3)
-			l_ev_vertical_box_3.extend (l_ev_horizontal_box_2)
+			l_ev_frame_2.extend (l_ev_horizontal_box_2)
 			l_ev_horizontal_box_2.extend (repository_dialog_work_path_text)
 			l_ev_horizontal_box_2.extend (repository_dialog_work_path_button)
+			l_ev_vertical_box_1.extend (bottom_horizontal_box_for_cross_platform_cosmetic_padding)
 			l_ev_vertical_box_1.extend (l_ev_horizontal_box_3)
 			l_ev_horizontal_box_3.extend (l_ev_cell_1)
 			l_ev_horizontal_box_3.extend (repository_dialog_ok_button)
@@ -80,47 +83,44 @@ feature {NONE}-- Initialization
 			create pixmap_constant_retrieval_functions.make (10)
 			create color_constant_set_procedures.make (10)
 			create color_constant_retrieval_functions.make (10)
-			integer_constant_set_procedures.extend (agent l_ev_vertical_box_1.set_padding (?))
-			integer_constant_retrieval_functions.extend (agent padding_width)
-			integer_constant_set_procedures.extend (agent l_ev_vertical_box_1.set_border_width (?))
-			integer_constant_retrieval_functions.extend (agent border_width)
+			l_ev_vertical_box_1.set_padding (3)
+			l_ev_vertical_box_1.set_border_width (20)
 			l_ev_vertical_box_1.disable_item_expand (l_ev_label_1)
 			l_ev_vertical_box_1.disable_item_expand (l_ev_frame_1)
 			l_ev_vertical_box_1.disable_item_expand (l_ev_frame_2)
 			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_3)
 			l_ev_label_1.set_text ("Choose directories above where the archetypes are:")
 			l_ev_frame_1.set_text ("Reference Repository Path")
-			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_1.set_padding (?))
-			integer_constant_retrieval_functions.extend (agent padding_width)
-			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_1.set_border_width (?))
-			integer_constant_retrieval_functions.extend (agent border_width)
+			l_ev_frame_1.set_minimum_width (600)
+			l_ev_horizontal_box_1.set_padding (10)
+			l_ev_horizontal_box_1.set_border_width (8)
 			l_ev_horizontal_box_1.disable_item_expand (repository_dialog_reference_path_browse_button)
 			color_constant_set_procedures.extend (agent repository_dialog_reference_path_text.set_background_color (?))
 			color_constant_retrieval_functions.extend (agent editable_colour)
-			repository_dialog_reference_path_text.set_minimum_width (300)
+			repository_dialog_reference_path_text.set_minimum_width (50)
 			repository_dialog_reference_path_browse_button.set_text ("Browse...")
 			repository_dialog_reference_path_browse_button.set_minimum_width (65)
 			l_ev_frame_2.set_text ("Work Repository Path (Optional)")
-			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_2.set_padding (?))
-			integer_constant_retrieval_functions.extend (agent padding_width)
-			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_2.set_border_width (?))
-			integer_constant_retrieval_functions.extend (agent border_width)
+			l_ev_frame_2.set_minimum_width (600)
+			l_ev_horizontal_box_2.set_padding (10)
+			l_ev_horizontal_box_2.set_border_width (8)
 			l_ev_horizontal_box_2.disable_item_expand (repository_dialog_work_path_button)
 			repository_dialog_work_path_button.set_text ("Browse...")
 			repository_dialog_work_path_button.set_minimum_width (65)
-			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_3.set_padding (?))
-			integer_constant_retrieval_functions.extend (agent dialog_padding_width)
+			l_ev_horizontal_box_3.set_padding (15)
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_3.set_border_width (?))
-			integer_constant_retrieval_functions.extend (agent dialog_border_width)
+			integer_constant_retrieval_functions.extend (agent border_width)
 			l_ev_horizontal_box_3.disable_item_expand (repository_dialog_ok_button)
 			l_ev_horizontal_box_3.disable_item_expand (repository_dialog_cancel_button)
 			repository_dialog_ok_button.set_text ("OK")
 			repository_dialog_ok_button.set_minimum_width (100)
+			repository_dialog_ok_button.set_minimum_height (26)
 			repository_dialog_cancel_button.set_text ("Cancel")
 			repository_dialog_cancel_button.set_minimum_width (100)
-			integer_constant_set_procedures.extend (agent set_maximum_width (?))
-			integer_constant_retrieval_functions.extend (agent app_max_width)
-			set_maximum_height (194)
+			repository_dialog_cancel_button.set_minimum_height (26)
+			set_minimum_height (260)
+			set_maximum_width (2000)
+			set_maximum_height (260)
 			set_title ("ADL Workbench Repository Settings")
 			
 			set_all_attributes_using_constants
@@ -140,14 +140,15 @@ feature -- Access
 	l_ev_cell_1: EV_CELL
 	repository_dialog_reference_path_browse_button, repository_dialog_work_path_button,
 	repository_dialog_ok_button, repository_dialog_cancel_button: EV_BUTTON
-	l_ev_horizontal_box_1,
-	l_ev_horizontal_box_2, l_ev_horizontal_box_3: EV_HORIZONTAL_BOX
-	l_ev_vertical_box_1, l_ev_vertical_box_2,
-	l_ev_vertical_box_3: EV_VERTICAL_BOX
+	top_horizontal_box_for_cross_platform_cosmetic_padding,
+	l_ev_horizontal_box_1, middle_horizontal_box_for_cross_platform_cosmetic_padding,
+	l_ev_horizontal_box_2, bottom_horizontal_box_for_cross_platform_cosmetic_padding,
+	l_ev_horizontal_box_3: EV_HORIZONTAL_BOX
+	l_ev_vertical_box_1: EV_VERTICAL_BOX
 	l_ev_label_1: EV_LABEL
-	repository_dialog_reference_path_text, repository_dialog_work_path_text: EV_TEXT_FIELD
-	l_ev_frame_1,
-	l_ev_frame_2: EV_FRAME
+	repository_dialog_reference_path_text,
+	repository_dialog_work_path_text: EV_TEXT_FIELD
+	l_ev_frame_1, l_ev_frame_2: EV_FRAME
 
 feature {NONE} -- Implementation
 

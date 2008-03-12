@@ -30,6 +30,7 @@ feature {NONE} -- Definitions
 		local
 			a_uri: URI -- keep to ensure compiled in
 			a_code_phrase: CODE_PHRASE -- keep to ensure compiled in
+			-- FIXME: Instead of the above declarations, which cause "unused local" warnings, we can add "visible" clauses to the .ecf file to keep these classes compiled in.
 		once
 			create Result.make (0)
 			Result.compare_objects
@@ -56,24 +57,25 @@ feature {NONE} -- Definitions
 			-- the list of dynamic types of abstract types from cvt_table
 			-- e.g. types like LIST[INTEGER] are there, but not LINKED_LIST[INTEGER]
 		local
-			-- these are just here to make sure the types are compiled in
-			seq_boolean: SEQUENCE[BOOLEAN]
-			seq_integer: SEQUENCE[INTEGER]
-			seq_real: SEQUENCE[REAL]
-			seq_double: SEQUENCE[DOUBLE]
-			seq_string: SEQUENCE[STRING]
-			seq_character: SEQUENCE[CHARACTER]
-			seq_boolean_ref: SEQUENCE[BOOLEAN_REF]
-			seq_integer_ref: SEQUENCE[INTEGER_REF]
-			seq_real_ref: SEQUENCE[REAL_REF]
-			seq_double_ref: SEQUENCE[DOUBLE_REF]
-			seq_character_ref: SEQUENCE[CHARACTER_REF]
-			seq_date: SEQUENCE[DATE]
-			seq_date_time: SEQUENCE[DATE_TIME]
-			seq_time: SEQUENCE[TIME]
-			seq_duration: SEQUENCE[DATE_TIME_DURATION]
-			seq_uri: SEQUENCE[URI]
-			seq_code_phrase: SEQUENCE[CODE_PHRASE]
+			-- These are just here to make sure the types are compiled in.
+			-- N.B. SEQUENCE is deferred; therefore we can't create a prototype object for it as we are doing for INTERVAL, etc.
+			seq_boolean: SEQUENCE [BOOLEAN]
+			seq_integer: SEQUENCE [INTEGER]
+			seq_real: SEQUENCE [REAL]
+			seq_double: SEQUENCE [DOUBLE]
+			seq_string: SEQUENCE [STRING]
+			seq_character: SEQUENCE [CHARACTER]
+			seq_boolean_ref: SEQUENCE [BOOLEAN_REF]
+			seq_integer_ref: SEQUENCE [INTEGER_REF]
+			seq_real_ref: SEQUENCE [REAL_REF]
+			seq_double_ref: SEQUENCE [DOUBLE_REF]
+			seq_character_ref: SEQUENCE [CHARACTER_REF]
+			seq_date: SEQUENCE [DATE]
+			seq_date_time: SEQUENCE [DATE_TIME]
+			seq_time: SEQUENCE [TIME]
+			seq_duration: SEQUENCE [DATE_TIME_DURATION]
+			seq_uri: SEQUENCE [URI]
+			seq_code_phrase: SEQUENCE [CODE_PHRASE]
 		once
 			Create Result.make (0)
 			Result.compare_objects
@@ -98,18 +100,6 @@ feature {NONE} -- Definitions
 
 	primitive_interval_types: ARRAYED_LIST [INTEGER] is
 			-- the list of dynamic types of intervals of primitives
-		local
-			-- these locals are to ensure that the types are compiled into the system
-			ivl_integer: INTERVAL[INTEGER]
-			ivl_real: INTERVAL[REAL]
-			ivl_double: INTERVAL[DOUBLE]
-			ivl_integer_ref: INTERVAL[INTEGER_REF]
-			ivl_real_ref: INTERVAL[REAL_REF]
-			ivl_double_ref: INTERVAL[DOUBLE_REF]
-			ivl_date: INTERVAL[DATE]
-			ivl_date_time: INTERVAL[DATE_TIME]
-			ivl_time: INTERVAL[TIME]
-			ivl_duration: INTERVAL[DATE_TIME_DURATION]
 		once
 			Create Result.make (0)
 			Result.compare_objects
@@ -309,11 +299,8 @@ feature {NONE} -- Implementation
 
 	hash_table_any_hashable_type_id: INTEGER is
 			-- dynamic type of HASH_TABLE[ANY, HASHABLE]
-		local
-			-- these locals are to ensure that the types are compiled into the system
-			a_seq: HASH_TABLE[ANY, HASHABLE]
 		once
-			Result := dynamic_type_from_string("HASH_TABLE[ANY, HASHABLE]")
+			Result := dynamic_type (create {HASH_TABLE [ANY, HASHABLE]}.make (0))
 		end
 
 	primitive_sequence_conforming_types: HASH_TABLE [INTEGER, INTEGER] is

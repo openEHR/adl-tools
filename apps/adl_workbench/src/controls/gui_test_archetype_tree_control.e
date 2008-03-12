@@ -3,21 +3,33 @@ indexing
 	description: "Populate ontology controls in ADL test workbench"
 	keywords:    "ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2008 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
+	file:        "$URL:  $"
 	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	last_change: "$LastChangedDate:  $"
 
 
 class GUI_TEST_ARCHETYPE_TREE_CONTROL
 
 inherit
+	GUI_GRID_CONTROLLER
+		redefine
+			on_grid_key_press
+		end
+
 	SHARED_ARCHETYPE_DIRECTORY
 		export
 			{NONE} all
+		end
+
+	SHARED_ARCHETYPE_PARSER
+		export
+			{NONE} all
+		undefine
+			copy, default_create
 		end
 
 	SHARED_ARCHETYPE_COMPILER
@@ -32,17 +44,10 @@ inherit
 			{NONE} all
 		end
 
-	ARCHETYPE_DEFINITIONS
-		export
-			{NONE} all
-		end
-
-	EV_SHARED_APPLICATION
-		export
-			{NONE} all
-		end
-
 	STRING_UTILITIES
+		export
+			{NONE} all
+		end
 
 create
 	make
@@ -63,50 +68,35 @@ feature -- Definitions
 feature {NONE} -- Initialisation
 
 	make (a_main_window: MAIN_WINDOW)
-			-- create tree control repersenting archetype files found in repository_path
+			-- Create controller for the test grid.
 		require
 			a_main_window /= Void
 		do
 			gui := a_main_window
-			grid := gui.archetype_test_tree_grid
+			make_for_grid (gui.archetype_test_tree_grid)
 			grid.enable_tree
-			grid.key_press_actions.extend (agent on_grid_key_press)
-			grid.mouse_wheel_actions.extend (agent on_mouse_wheel)
-
 			gui.archetype_test_go_bn.set_pixmap (pixmaps ["go"])
 		end
 
 feature -- Access
-
-	selected_file_path: STRING
-			-- full path of file selected from tree control
-
-	has_selected_file: BOOLEAN
-			-- True if a file was selected
 
 	tests: DS_HASH_TABLE [FUNCTION [ANY, TUPLE, INTEGER], STRING] is
 			-- table of test routines
 		once
 			create Result.make (0)
 			Result.force (agent test_parse, "Parse")
-			Result.force (agent test_save_html, "Save to HTML")
-			Result.force (agent test_save_adl, "Save to ADL")
-			Result.force (agent test_reparse, "Reparse")
-			Result.force (agent test_convert_to_differential, "-> Differential")
+			Result.force (agent test_save_differential, "Save to ADL")
+			Result.force (agent test_reparse_differential, "Reparse")
 			Result.force (agent test_diff, "Diff")
 		end
 
 	last_tested_archetypes_count: INTEGER
-			-- number of archetypes tested in last run
+			-- Number of archetypes tested in last run.
 
 feature -- Status Setting
 
 	is_expanded: BOOLEAN
 			-- True if archetype tree is in expanded state
-
-	overwrite: BOOLEAN
-			-- set to True if old files are to be overwritten by new files
-			-- useful for upgrading ADL syntax in one go
 
 	remove_unused_codes: BOOLEAN
 			-- True means remove unused codes from every archetype	
@@ -120,11 +110,10 @@ feature -- Status Setting
 feature -- Commands
 
 	clear is
-			-- wipe out content from controls
+			-- Wipe out content from widgets.
 		do
 			grid.wipe_out
 			gui.test_status_area.remove_text
-			has_selected_file := False
 		end
 
 	populate is
@@ -143,7 +132,7 @@ feature -- Commands
 			gli.enable_select
 			grid_row_stack.extend (gli.row)
 
- 			archetype_directory.do_all (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
+ 			archetype_directory.do_subtree (archetype_directory.directory, agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
 			grid.column (1).set_title ("Archetype")
 
 			-- put names on columns
@@ -167,34 +156,30 @@ feature -- Commands
 
 			gui.arch_test_processed_count.set_text ("0")
 			gui.remove_unused_codes_rb.disable_select
-			gui.overwrite_adl_rb.disable_select
 		end
 
 	archetype_test_go_stop is
-			-- start or stop test run
+			-- Start or stop a test run.
 		do
 			if test_execution_underway then
 				test_stop_requested := True
 			else
+				test_stop_requested := False
+				test_execution_underway := True
+				gui.archetype_test_go_bn.set_pixmap (pixmaps ["stop"])
+				gui.archetype_test_go_bn.set_text ("Stop")
 				run_tests
+				test_execution_underway := False
+				gui.archetype_test_go_bn.set_pixmap (pixmaps ["go"])
+				gui.archetype_test_go_bn.set_text ("Go")
 			end
 		end
 
 	run_tests is
-			-- execute tests on all marked archetypes
+			-- Execute tests on all marked archetypes.
 		local
-			arch_item: ARCH_REP_ARCHETYPE
-			row_csr, col_csr: INTEGER
-			row: EV_GRID_ROW
-			gli: EV_GRID_LABEL_ITEM
-			checkbox: EV_GRID_CHECKABLE_LABEL_ITEM
-			res_label: STRING
-			test_result: INTEGER
+			row_csr: INTEGER
 		do
-			test_execution_underway := True
-			test_stop_requested := False
-			set_archetype_test_go_bn_icon
-			overwrite := gui.overwrite_adl_rb.is_selected
 			remove_unused_codes := gui.remove_unused_codes_rb.is_selected
 
 			from
@@ -203,67 +188,73 @@ feature -- Commands
 			until
 				row_csr > grid.row_count or test_stop_requested
 			loop
-				row := grid.row (row_csr)
-				checkbox ?= row.item (2)
-
-				if checkbox /= Void and then checkbox.is_checked then
-					arch_item ?= row.item (1).data
-
-					if arch_item /= Void then
-						row.ensure_visible
-						archetype_compiler.reset
-						archetype_compiler.set_target(arch_item)
-
-						from
-							tests.start
-							col_csr := first_test_col
-							test_result := test_unknown
-						until
-							tests.off or test_result = test_failed
-						loop
-							row.set_item (col_csr, create {EV_GRID_LABEL_ITEM}.make_with_text ("processing..."))
-
-							create test_status.make_empty
-
-							test_result := tests.item_for_iteration.item([])
-
-							inspect test_result
-							when test_passed then
-								res_label := "test_passed"
-							when test_failed then
-								res_label := "test_failed"
-							when test_not_applicable then
-								res_label := "test_not_applicable"
-							else
-
-							end
-
-							create gli.make_with_text ("")
-							gli.set_pixmap (pixmaps [res_label])
-							row.set_item (col_csr, gli)
-
-							if not test_status.is_empty then
-								gui.test_status_area.append_text ("--------------- " + arch_item.id.as_string + " -----------------%N" + test_status)
-							end
-
-							ev_application.process_events
-							tests.forth
-							col_csr := col_csr + 1
-						end
-
-						last_tested_archetypes_count := last_tested_archetypes_count + 1
-						gui.arch_test_processed_count.set_text (last_tested_archetypes_count.out)
-					end
-
-					checkbox.set_is_checked (False)
-				end
-
+				run_tests_on_row (grid.row (row_csr))
 				row_csr := row_csr + 1
 			end
 
 			gui.test_status_area.append_text ("****** Executed tests on " + last_tested_archetypes_count.out + " Archetypes ******%N")
-			test_execution_underway := False
-			set_archetype_test_go_bn_icon
+			gui.build_gui_stats_update
+		end
+
+	run_tests_on_row (row: EV_GRID_ROW)
+			-- Execute tests the archetype attached to `row' if it is marked for testing.
+		local
+			col_csr: INTEGER
+			gli: EV_GRID_LABEL_ITEM
+			res_label: STRING
+			test_result: INTEGER
+		do
+			if {checkbox: !EV_GRID_CHECKABLE_LABEL_ITEM} row.item (2) and then checkbox.is_checked then
+				target ?= row.data
+
+				if target /= Void then
+					row.ensure_visible
+					archetype_parser.reset
+					archetype_parser.set_target (target)
+
+					from
+						tests.start
+						col_csr := first_test_col
+						test_result := test_unknown
+					until
+						tests.off or test_result = test_failed
+					loop
+						row.set_item (col_csr, create {EV_GRID_LABEL_ITEM}.make_with_text ("processing..."))
+
+						create test_status.make_empty
+
+						test_result := tests.item_for_iteration.item ([])
+
+						inspect test_result
+						when test_passed then
+							res_label := "test_passed"
+						when test_failed then
+							res_label := "test_failed"
+						when test_not_applicable then
+							res_label := "test_not_applicable"
+						else
+
+						end
+
+						create gli
+						gli.set_pixmap (pixmaps [res_label])
+						row.set_item (col_csr, gli)
+
+						if not test_status.is_empty then
+							gui.test_status_area.append_text ("--------------- " + target.id.as_string + " -----------------%N" + test_status)
+						end
+
+						ev_application.process_events
+						tests.forth
+						col_csr := col_csr + 1
+					end
+
+					last_tested_archetypes_count := last_tested_archetypes_count + 1
+					gui.arch_test_processed_count.set_text (last_tested_archetypes_count.out)
+				end
+
+				checkbox.set_is_checked (False)
+			end
 		end
 
 	toggle_expand_tree is
@@ -280,6 +271,53 @@ feature -- Commands
 			end
 		end
 
+   	set_row_pixmap (row: EV_GRID_ROW) is
+   			-- Set the icon appropriate to the item attached to `row'.
+		require
+			row_attached: row /= Void
+   		local
+			gli: EV_GRID_LABEL_ITEM
+   			arch_item1: ARCH_REP_ITEM
+			pixmap: EV_PIXMAP
+   		do
+   			gli ?= row.item (1)
+   			arch_item1 ?= row.data
+
+			if gli /= Void and arch_item1 /= Void then
+				pixmap := pixmaps [arch_item1.group_name]
+
+				if pixmap /= Void then
+					gli.set_pixmap (pixmap)
+				end
+			end
+		end
+
+	do_row_for_item (an_item: ARCH_REP_ITEM; action: PROCEDURE [ANY, TUPLE [EV_GRID_ROW]])
+   			-- Perform `action' for the row containing `an_item', if any.
+		require
+			action_attached: action /= Void
+   		local
+   			i: INTEGER
+			row: EV_GRID_ROW
+   		do
+			if an_item /= Void then
+				from
+					i := grid.row_count
+				until
+					i = 0
+				loop
+					row := grid.row (i)
+
+					if row.data /= Void and then row.data.is_equal (an_item) then
+						action.call ([row])
+						i := 0
+					else
+						i := i - 1
+					end
+				end
+			end
+		end
+
 feature -- Tests
 
 	test_parse: INTEGER is
@@ -288,14 +326,15 @@ feature -- Tests
 			unused_at_codes, unused_ac_codes: ARRAYED_LIST [STRING]
 		do
 			Result := test_failed
-			archetype_compiler.parse_archetype
+			archetype_compiler.rebuild_lineage (target)
 
-			if archetype_compiler.archetype_valid then
+			if target.is_valid then
 				Result := test_passed
+				test_status.append (" parse succeeded%N" + archetype_parser.status)
 
 				if remove_unused_codes then
-					unused_at_codes := archetype_compiler.archetype.ontology_unused_term_codes
-					unused_ac_codes := archetype_compiler.archetype.ontology_unused_constraint_codes
+					unused_at_codes := archetype_parser.archetype_differential.ontology_unused_term_codes
+					unused_ac_codes := archetype_parser.archetype_differential.ontology_unused_constraint_codes
 
 					if not unused_at_codes.is_empty or not unused_ac_codes.is_empty then
 						test_status.append (">>>>>>>>>> removing unused codes%N")
@@ -308,144 +347,93 @@ feature -- Tests
 							test_status.append ("Unused AC codes: " + display_arrayed_list (unused_ac_codes) + "%N")
 						end
 
-						archetype_compiler.archetype.ontology_remove_unused_codes
+						archetype_parser.archetype_differential.remove_ontology_unused_codes
 					end
 				end
 			else
-				test_status.append (" parse failed%N" + archetype_compiler.status)
+				test_status.append (" parse failed%N" + archetype_parser.status)
 			end
 		end
 
-	test_save_html: INTEGER is
-			-- parse archetype and return result
-		local
-			html_fname: STRING
+	test_save_differential: INTEGER is
+			-- parse archetype, save in source form and return result
 		do
 			Result := test_failed
+			create test_orig_differential_source.make_empty
 
-			if archetype_compiler.archetype_valid then
-				-- FIXME: Sam doesn't want the html files to go in the same place as the adl files anymore
-				-- now they should go in the path html/adl, where html is a sibling directory of the main
-				-- 'adl' directory in the repository path; 'html/adl' means "the ADL form of HTML", since
-				-- there are other things in the html directory.
-				html_fname := archetype_compiler.target.full_path.twin
-				html_fname.replace_substring(".html", html_fname.count - Archetype_file_extension.count, html_fname.count)
-				archetype_compiler.save_archetype_as(html_fname, "html")
+			if archetype_parser.archetype_valid then
+				archetype_parser.save_archetype_differential
 
-				if archetype_compiler.save_succeeded then
+				if archetype_parser.save_succeeded then
 					Result := test_passed
+					test_orig_differential_source := archetype_parser.serialised_differential
 				else
-					test_status.append (archetype_compiler.status + "%N")
-				end
-			end
-		end
-
-	test_save_adl: INTEGER is
-			-- parse archetype and return result
-		local
-			new_adl_file_path: STRING
-		do
-			Result := test_failed
-
-			if archetype_compiler.archetype_valid then
-				archetype_compiler.set_target(archetype_compiler.target)
-				if overwrite then
-					archetype_compiler.save_archetype
-				else
-					new_adl_file_path := file_system.pathname (system_temp_file_directory, file_system.basename (archetype_compiler.target.full_path))
-					archetype_compiler.save_archetype_as (new_adl_file_path, "adl")
-				end
-
-				if archetype_compiler.save_succeeded then
-					Result := test_passed
-				else
-					test_status.append (archetype_compiler.status + "%N")
+					test_status.append (archetype_parser.status + "%N")
 				end
 			else
 				Result := test_not_applicable
 			end
+		ensure
+			test_orig_differential_source_attached: test_orig_differential_source /= Void
 		end
 
-	test_reparse: INTEGER is
+	test_reparse_differential: INTEGER is
 			-- parse archetype and return result
 		local
 			new_adl_file_path: STRING
 		do
 			Result := test_failed
-			if overwrite then
-				new_adl_file_path := archetype_compiler.target.full_path
-			else
-				new_adl_file_path := file_system.pathname (system_temp_file_directory, file_system.basename (archetype_compiler.target.full_path))
-			end
+			new_adl_file_path := archetype_parser.target.differential_path
+			archetype_parser.parse_archetype
 
-			-- FIXME: these are the right paths, but we don't yet have a way of overriding the source
-			-- of an archetype from what is in its file
-			-- DO SOMETHING HERE
-
-			archetype_compiler.parse_archetype
-
-			if archetype_compiler.archetype_valid then
+			if archetype_parser.archetype_valid then
 				Result := test_passed
+				test_status.append ("Parse succeeded%N" + archetype_parser.status)
 			else
-				test_status.append ("Parse failed; reason: " + archetype_compiler.status + "%N")
+				test_status.append ("Parse failed; reason: " + archetype_parser.status + "%N")
 			end
 		end
 
 	test_diff: INTEGER is
 			-- parse archetype and return result
 		local
-			new_adl_file_path: STRING
-			orig_arch_source, new_arch_source: STRING
+			original_source, new_source: STRING
 		do
 			Result := Test_failed
+			if archetype_parser.archetype_valid then
+				original_source := test_orig_differential_source
+				new_source := archetype_parser.serialised_differential
 
-			if not overwrite then
-				orig_arch_source := archetype_compiler.source
-
-				new_adl_file_path := file_system.pathname (system_temp_file_directory, file_system.basename (archetype_compiler.target.full_path))
-				-- FIXME: DO SOMETIHNG HERE TO OPEN THE NEW FILE
-				new_arch_source := archetype_compiler.serialised_archetype
-
-				if orig_arch_source.count = new_arch_source.count then
-					if orig_arch_source.is_equal (new_arch_source) then
+				if original_source.count = new_source.count then
+					if original_source.same_string (new_source) then
 						Result := Test_passed
 					else
 						test_status.append ("Archetype source lengths same but texts differ%N")
 					end
 				else
-					test_status.append ("Archetype source lengths differ: original =  " + orig_arch_source.count.out +
-						"; new = " + new_arch_source.count.out + "%N")
+					test_status.append ("Archetype source lengths differ: original =  " + original_source.count.out + "; new = " + new_source.count.out + "%N")
 				end
 			else
-				Result := Test_not_applicable
-			end
-		end
-
-	test_convert_to_differential: INTEGER is
-			-- convert specialised archetypes to differential form;
-			-- FIXME: temporary - only needed while differential form not the standard form
-		do
-			if archetype_compiler.target.is_specialised then
-				archetype_compiler.target.compilation_context.convert_archetype_to_differential
-				Result := test_passed
-			else
-				Result := Test_not_applicable
+				test_status.append ("Archetype save failed%N")
 			end
 		end
 
 feature {NONE} -- Implementation
 
+	test_orig_differential_source: STRING
+			-- original differential source before parse and save
+
 	gui: MAIN_WINDOW
 			-- main window of system
-
-	grid: EV_GRID
-			-- reference to MAIN_WINDOW.archetype_test_tree_grid
 
 	grid_row_stack: ARRAYED_STACK [EV_GRID_ROW]
 			-- Stack used during `populate_gui_tree_node_enter'.
 
 	test_status: STRING
 			-- Cumulative status message during running of test.
+
+	target: ARCH_REP_ARCHETYPE
+			-- current target of compilation operation
 
 	populate_gui_tree_node_enter (an_item: ARCH_REP_ITEM) is
 			-- Add a node representing `an_item' to `gui_file_tree'.
@@ -454,7 +442,6 @@ feature {NONE} -- Implementation
 		local
 			gli: EV_GRID_LABEL_ITEM
 			row: EV_GRID_ROW
-			pixmap: EV_PIXMAP
 			ada: ARCH_REP_ARCHETYPE
 			col_csr: INTEGER
 		do
@@ -462,16 +449,11 @@ feature {NONE} -- Implementation
 			row.collapse_actions.extend (agent step_to_viewable_parent_of_selected_row)
 			row.insert_subrow (row.subrow_count + 1)
 			row := row.subrow (row.subrow_count)
+			row.set_data (an_item)
 			add_checkbox (row)
 			create gli.make_with_text (utf8 (an_item.base_name))
 			row.set_item (1, gli)
-			gli.set_data (an_item)
-			pixmap := pixmaps [an_item.group_name]
-
-			if pixmap /= Void then
-				gli.set_pixmap (pixmap)
-			end
-
+			set_row_pixmap (row)
 			ada ?= an_item
 
 			if ada /= Void then
@@ -534,191 +516,21 @@ feature {NONE} -- Implementation
 		end
 
 	on_grid_key_press (key: EV_KEY)
-			-- Process keystrokes in `grid' to scroll, expand and collapse rows, etc.
+			-- When the user presses the space key, toggle the selected check box.
 		local
-			selected: EV_GRID_ITEM
 			checkbox: EV_GRID_CHECKABLE_LABEL_ITEM
 		do
-			if key /= Void then
-				if not ev_application.shift_pressed and not ev_application.alt_pressed then
-					if ev_application.ctrl_pressed then
-						if key.code = {EV_KEY_CONSTANTS}.key_up then
-							key.set_code ({EV_KEY_CONSTANTS}.key_menu)
-							scroll_to_row (grid.first_visible_row.index - 1)
-						elseif key.code = {EV_KEY_CONSTANTS}.key_down then
-							key.set_code ({EV_KEY_CONSTANTS}.key_menu)
+			Precursor (key)
 
-							if grid.visible_row_indexes.count > 1 then
-								scroll_to_row (grid.visible_row_indexes [2])
-							end
-						elseif key.code = {EV_KEY_CONSTANTS}.key_home then
-							scroll_to_row (1)
-						elseif key.code = {EV_KEY_CONSTANTS}.key_end then
-							scroll_to_row (grid.row_count)
-						elseif key.code = {EV_KEY_CONSTANTS}.key_page_up then
-							scroll_to_row (index_of_viewable_offset_from_row (grid.first_visible_row.index, 1 - grid.visible_row_indexes.count))
-						elseif key.code = {EV_KEY_CONSTANTS}.key_page_down then
-							scroll_to_row (grid.last_visible_row.index)
-						end
-					elseif key.code = {EV_KEY_CONSTANTS}.key_home then
-						step_to_row (1)
-					elseif key.code = {EV_KEY_CONSTANTS}.key_end then
-						step_to_row (grid.row_count)
-					elseif not grid.selected_items.is_empty then
-						selected := grid.selected_items.first
+			if not (ev_application.shift_pressed or ev_application.alt_pressed or ev_application.ctrl_pressed) then
+				if key /= Void and then key.code = key_space then
+					checkbox ?= selected_cell
 
-						if key.code = {EV_KEY_CONSTANTS}.key_page_up then
-							step_to_row (index_of_viewable_offset_from_row (selected.row.index, 1 - grid.visible_row_indexes.count))
-						elseif key.code = {EV_KEY_CONSTANTS}.key_page_down then
-							step_to_row (index_of_viewable_offset_from_row (selected.row.index, grid.visible_row_indexes.count - 1))
-						elseif key.code = {EV_KEY_CONSTANTS}.key_numpad_multiply then
-							expand_tree (selected.row)
-						elseif key.code = {EV_KEY_CONSTANTS}.key_numpad_add or key.code = {EV_KEY_CONSTANTS}.key_right then
-							if selected.row.is_expandable then
-								selected.row.expand
-							end
-						elseif key.code = {EV_KEY_CONSTANTS}.key_numpad_subtract then
-							if selected.row.is_expanded then
-								selected.row.collapse
-							end
-						elseif key.code = {EV_KEY_CONSTANTS}.key_left then
-							if selected.column.index = 1 then
-								if selected.row.is_expanded then
-									selected.row.collapse
-								elseif selected.row.parent_row /= Void then
-									step_to_row (selected.row.parent_row.index)
-								end
-							end
-						elseif key.code = {EV_KEY_CONSTANTS}.key_back_space then
-							if selected.row.parent_row /= Void then
-								step_to_row (selected.row.parent_row.index)
-							end
-						elseif key.code = {EV_KEY_CONSTANTS}.key_space then
-							checkbox ?= selected
-
-							if checkbox /= Void then
-								checkbox.toggle_is_checked
-								set_checkboxes_recursively (checkbox)
-							end
-						end
+					if checkbox /= Void then
+						checkbox.toggle_is_checked
+						set_checkboxes_recursively (checkbox)
 					end
 				end
-			end
-		end
-
-	on_mouse_wheel (step: INTEGER) is
-			-- Scroll `grid' when the mouse wheel moves.
-		do
-			if step > 0 then
-				scroll_to_row (grid.first_visible_row.index - step)
-			else
-				scroll_to_row (grid.visible_row_indexes [grid.visible_row_indexes.count.min (1 - step)])
-			end
-		end
-
-	scroll_to_row (index: INTEGER)
-			-- Scroll `grid' so the row at `index' is at the top.
-		local
-			i: INTEGER
-		do
-			i := index.max (1).min (grid.row_count)
-			grid.set_first_visible_row (i)
-		end
-
-	step_to_row (index: INTEGER)
-			-- Select the row at `index'.
-		local
-			row: EV_GRID_ROW
-		do
-			row := grid.row (index_of_viewable_offset_from_row (index, 0))
-
-			if not row.item (1).is_selected then
-				grid.remove_selection
-				row.item (1).enable_select
-				row.ensure_visible
-			end
-		end
-
-	step_to_viewable_parent_of_selected_row
-			-- Select `row' or one its parents, such that the selected row is not hidden within a collapsed parent.
-		do
-			if not grid.selected_items.is_empty then
-				step_to_row (grid.selected_items.first.row.index)
-			end
-		end
-
-	index_of_viewable_offset_from_row (index, offset: INTEGER): INTEGER
-			-- The index of the row at viewable `offset' from the row at `index'.
-		local
-			indexes: ARRAYED_LIST [INTEGER]
-			i: INTEGER
-		do
-			from
-				indexes := grid.viewable_row_indexes
-				i := indexes.count
-			until
-				i = 1 or else indexes [i] <= index
-			loop
-				i := i - 1
-			end
-
-			Result := indexes [(i + offset).max (1).min (indexes.count)]
-		end
-
-	expand_tree (row: EV_GRID_ROW)
-			-- Expand `row' and all of its sub-rows, recursively.
-		require
-			row_attached: row /= Void
-		local
-			i: INTEGER
-		do
-			if row.is_expandable then
-				row.expand
-
-				from
-					i := 1
-				until
-					i > row.subrow_count
-				loop
-					expand_tree (row.subrow (i))
-					i := i + 1
-				end
-			end
-		ensure
-			row_expanded: row.is_expandable implies row.is_expanded
-		end
-
-	collapse_tree (row: EV_GRID_ROW)
-			-- Collapse `row' and all of its sub-rows, recursively.
-		require
-			row_attached: row /= Void
-		local
-			i: INTEGER
-		do
-			from
-				i := 1
-			until
-				i > row.subrow_count
-			loop
-				collapse_tree (row.subrow (i))
-				i := i + 1
-			end
-
-			row.collapse
-		ensure
-			row_collapsed: not row.is_expanded
-		end
-
-	set_archetype_test_go_bn_icon is
-			-- Set go button to be either "go" or "stop" icon depending on
-			-- setting of test_execution_underway
-		do
-			if test_execution_underway then
-				gui.archetype_test_go_bn.set_pixmap (pixmaps ["stop"])
-				gui.archetype_test_go_bn.set_text ("Stop")
-			else
-				gui.archetype_test_go_bn.set_pixmap (pixmaps ["go"])
-				gui.archetype_test_go_bn.set_text ("Go")
 			end
 		end
 
@@ -743,9 +555,6 @@ feature {NONE} -- Implementation
 			end
 		end
 
-invariant
-	grid_attached: grid /= Void
-
 end
 
 
@@ -763,10 +572,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is adl_node_control.e.
+--| The Original Code is gui_test_archetype_tree_control.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2003-2008
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

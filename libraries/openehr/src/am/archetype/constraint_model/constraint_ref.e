@@ -74,7 +74,7 @@ feature -- Conversion
 
 feature -- Representation
 
-	representation: OG_OBJECT_LEAF
+	representation: !OG_OBJECT_LEAF
 
 feature -- Visitor
 

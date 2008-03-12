@@ -1,10 +1,8 @@
 indexing
 	component:   "openEHR Archetype Project"
 	description: "[
-				 Find inherited subtrees in an archetype, i.e. subtrees of nodes that are
-				 inherited without change from a parent. These subtrees should only occur in 
-				 flat-form archetypes, and form the deletion list for turning a flat-form
-				 archetype into a differential form archetype.
+				 Generic Iterator for C_XXX class structures; this just applies various routines to
+				 Constraint model nodes. To send a visitor around, use C_VISITOR_ITERATOR.
 		         ]"
 	keywords:    "visitor, constraint model"
 	author:      "Thomas Beale"
@@ -42,38 +40,59 @@ feature -- Access
 
 	target: C_COMPLEX_OBJECT
 
-	c_node_action: PROCEDURE [ANY, TUPLE[C_OBJECT]]
+	c_node_enter_action: PROCEDURE [ANY, TUPLE[ARCHETYPE_CONSTRAINT, INTEGER]]
 
-	c_node_test: FUNCTION [ANY, TUPLE[C_OBJECT], BOOLEAN]
+	c_node_exit_action: PROCEDURE [ANY, TUPLE[ARCHETYPE_CONSTRAINT, INTEGER]]
+
+	c_node_test: FUNCTION [ANY, TUPLE[ARCHETYPE_CONSTRAINT], BOOLEAN]
 
 feature -- Command
 
-	do_all is
-			-- TODO: implement
+	do_all(a_c_node_enter_action, a_c_node_exit_action: PROCEDURE [ANY, TUPLE [ARCHETYPE_CONSTRAINT, INTEGER]]) is
 		do
-
+			c_node_enter_action := a_c_node_enter_action
+			c_node_exit_action := a_c_node_exit_action
+			tree_iterator.do_all(agent node_enter_action(?, ?), agent node_exit_action(?, ?))
 		end
 
-	do_at_surface(a_c_node_action: PROCEDURE [ANY, TUPLE[C_OBJECT]]; a_c_node_test: FUNCTION [ANY, TUPLE[C_OBJECT], BOOLEAN]) is
-			-- start the serialisation process; the result will be in `serialiser_output'
+	do_at_surface(a_c_node_enter_action: PROCEDURE [ANY, TUPLE [ARCHETYPE_CONSTRAINT, INTEGER]]; a_c_node_test: FUNCTION [ANY, TUPLE [ARCHETYPE_CONSTRAINT], BOOLEAN]) is
+			-- do the enter action at the surface detected by a_c_node_test
 		do
-			c_node_action := a_c_node_action
+			c_node_enter_action := a_c_node_enter_action
 			c_node_test := a_c_node_test
-			tree_iterator.do_at_surface(agent node_action(?), agent node_is_at_surface(?))
+			tree_iterator.do_at_surface(agent node_enter_action(?, ?), agent node_is_included(?))
+		end
+
+	do_until_surface(a_c_node_enter_action: PROCEDURE [ANY, TUPLE [ARCHETYPE_CONSTRAINT, INTEGER]]; a_c_node_test: FUNCTION [ANY, TUPLE [ARCHETYPE_CONSTRAINT], BOOLEAN]) is
+			-- do the enter action a_c_node_test returns true; where it is false, stop processing child nodes
+		do
+			c_node_enter_action := a_c_node_enter_action
+			c_node_test := a_c_node_test
+			tree_iterator.do_until_surface(agent node_enter_action(?, ?), agent node_is_included(?))
 		end
 
 feature {NONE} -- Implementation
 
 	tree_iterator: OG_ITERATOR
 
-	node_action(a_node: OG_ITEM) is
+	node_enter_action(a_node: OG_ITEM; depth: INTEGER) is
 		require
 			Node_exists: a_node /= Void
 		do
-			c_node_action.call([arch_node])
+			if arch_node = Void then
+				arch_node ?= a_node.content_item
+			end
+			c_node_enter_action.call([arch_node, depth])
 		end
 
-	node_is_at_surface(a_node: OG_ITEM): BOOLEAN is
+	node_exit_action(a_node: OG_ITEM; depth: INTEGER) is
+		require
+			Node_exists: a_node /= Void
+		do
+			c_node_exit_action.call([arch_node, depth])
+		end
+
+	node_is_included(a_node: OG_ITEM): BOOLEAN is
 		require
 			Node_exists: a_node /= Void
 		do
@@ -81,7 +100,8 @@ feature {NONE} -- Implementation
 			Result := arch_node /= Void and then c_node_test.item([arch_node])
 		end
 
-	arch_node: C_OBJECT
+	arch_node: ARCHETYPE_CONSTRAINT
+
 
 end
 

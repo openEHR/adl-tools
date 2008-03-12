@@ -22,38 +22,46 @@ inherit
 		redefine
 			parent
 		end
-	
+
 	OG_NODE
 		redefine
 			child_type, parent
 		end
-	
+
 create
 	make, make_anonymous
 
 feature -- Access
 
 	parent: OG_ATTRIBUTE_NODE
-	
+
 	all_paths: HASH_TABLE [OG_OBJECT, OG_PATH] is
 			-- all paths below this point, including this node
 		do
 			Result := generate_all_paths(False)
-		end	
+			if is_root then
+				Result.put(Current, path)
+			end
+		end
 
 	all_unique_paths: HASH_TABLE [OG_OBJECT, OG_PATH] is
-			-- all paths below this point, including this node
+			-- all paths below this point, including this node, including with auto-generate
+			-- uniqueness predicates, e.g. like [1] or [unknown_1] etc
 		do
 			Result := generate_all_paths(True)
-		end	
+		end
 
 	object_node_at_path(a_path: OG_PATH): OG_OBJECT is
 			-- find the object node at the relative path `a_path'
 		require
 			Path_valid: a_path /= Void and then has_path(a_path)
 		do
-			a_path.start				
-			Result := internal_object_node_at_path(a_path)		
+			if a_path.is_root then
+				Result := Current
+			else
+				a_path.start
+				Result := internal_object_node_at_path(a_path)
+			end
 		ensure
 			Result_exists: Result /= Void
 		end
@@ -63,8 +71,8 @@ feature -- Access
 		require
 			Path_valid: a_path /= Void and then has_path(a_path)
 		do
-			a_path.start				
-			Result := internal_attribute_node_at_path(a_path)		
+			a_path.start
+			Result := internal_attribute_node_at_path(a_path)
 		ensure
 			Result_exists: Result /= Void
 		end
@@ -76,8 +84,12 @@ feature -- Status Report
 		require
 			Path_valid: a_path /= Void and then a_path.is_absolute implies is_root
 		do
-			a_path.start
-			Result := internal_has_path(a_path)
+			if a_path.is_root then
+				Result := True
+			else
+				a_path.start
+				Result := internal_has_path(a_path)
+			end
 		end
 
 	has_object_path(a_path: OG_PATH): BOOLEAN is
@@ -85,8 +97,12 @@ feature -- Status Report
 		require
 			Path_valid: a_path /= Void and then a_path.is_absolute implies is_root
 		do
-			a_path.start
-			Result := internal_object_node_at_path(a_path) /= Void
+			if a_path.is_root then
+				Result := True
+			else
+				a_path.start
+				Result := internal_object_node_at_path(a_path) /= Void
+			end
 		end
 
 	has_attribute_path(a_path: OG_PATH): BOOLEAN is
@@ -94,8 +110,12 @@ feature -- Status Report
 		require
 			Path_valid: a_path /= Void and then a_path.is_absolute implies is_root
 		do
-			a_path.start
-			Result := internal_attribute_node_at_path(a_path) /= Void
+			if a_path.is_root then
+				Result := True
+			else
+				a_path.start
+				Result := internal_attribute_node_at_path(a_path) /= Void
+			end
 		end
 
 feature {OG_OBJECT_NODE} -- Implementation
@@ -108,7 +128,7 @@ feature {OG_OBJECT_NODE} -- Implementation
 		local
 			child_obj_node: OG_OBJECT_NODE
 			child_obj: OG_OBJECT
-		do			
+		do
 			-- find child node relating to first relation path item
 			if has_object_at_path_segment(a_path.item) then
 				child_obj := object_at_path_segment(a_path.item)
@@ -123,10 +143,10 @@ feature {OG_OBJECT_NODE} -- Implementation
 				end
 				a_path.back
 			else -- if it's the last segment, it could be valid as an attribute name, only if no object_id
-				Result := a_path.is_last and not a_path.last.is_addressable and has_child_node(a_path.last.attr_name)
+				Result := a_path.is_last and not a_path.last.is_addressable and has_child_with_id(a_path.last.attr_name)
 			end
 		end
-		
+
 	internal_object_node_at_path(a_path: OG_PATH): OG_OBJECT is
 			-- find the child at the path `a_path'
 		local
@@ -146,7 +166,7 @@ feature {OG_OBJECT_NODE} -- Implementation
 				end
 			end
 		end
-		
+
 	internal_attribute_node_at_path(a_path: OG_PATH): OG_ATTRIBUTE_NODE is
 			-- find the child at the path `a_path'
 		local
@@ -158,13 +178,13 @@ feature {OG_OBJECT_NODE} -- Implementation
 				if not a_path.off then
 					Result := child_obj_node.internal_attribute_node_at_path(a_path)   -- if no predicate in segment, only gets first item
 				else
-					Result := child_at_node_id(a_path.last.attr_name)
+					Result := child_with_id(a_path.last.attr_name)
 				end
 			elseif a_path.is_last then
-				Result := child_at_node_id(a_path.last.attr_name)
+				Result := child_with_id(a_path.last.attr_name)
 			end
 		end
-		
+
 	has_object_at_path_segment(a_path_segment: OG_PATH_ITEM): BOOLEAN is
 			-- True if this object node has an attribute node and an object node below that
 			-- that match the path_segment
@@ -173,8 +193,8 @@ feature {OG_OBJECT_NODE} -- Implementation
 		do
 			if children.has(a_path_segment.attr_name) then
 				an_attr_node := children.item(a_path_segment.attr_name)
-				if an_attr_node.has_children then 
-					Result := an_attr_node.has_child_node (a_path_segment.object_id)
+				if an_attr_node.has_children then
+					Result := an_attr_node.has_child_with_id (a_path_segment.object_id)
 				end
 			end
 		end
@@ -184,10 +204,10 @@ feature {OG_OBJECT_NODE} -- Implementation
 		require
 			has_object_at_path_segment(a_path_segment)
 		do
-			Result := children.item(a_path_segment.attr_name).child_at_node_id (a_path_segment.object_id)
+			Result := children.item(a_path_segment.attr_name).child_with_id (a_path_segment.object_id)
 		end
 
-	generate_all_paths (unique_flag: BOOLEAN): HASH_TABLE [OG_OBJECT, OG_PATH] is
+	generate_all_paths (is_unique: BOOLEAN): HASH_TABLE [OG_OBJECT, OG_PATH] is
 			-- all paths below this point, including this node; if unique_flag is True,
 			-- then include the "unknown" ids on non-identified object nodes to give
 			-- completely unique paths
@@ -202,25 +222,25 @@ feature {OG_OBJECT_NODE} -- Implementation
 		do
 			create Result.make(0)
 			Result.compare_objects
-			
+
 			-- get the attributes of this object
 			if has_children then
-				from 
+				from
 					children.start
 				until
 					children.off
 				loop
 					attr_node := children.item_for_iteration
-					
+
 					-- get the objects of this attribute
 					child_objs := attr_node.children
-					from	
+					from
 						child_objs.start
 					until
 						child_objs.off
 					loop
 						child_obj ?= child_objs.item_for_iteration
-						obj_predicate_required := child_obj.is_addressable or (unique_flag and attr_node.is_multiple)
+						obj_predicate_required := (is_unique or child_obj.is_addressable) and attr_node.is_multiple
 						child_obj_node ?= child_obj
 						if child_obj_node /= Void then
 							child_paths := child_obj_node.all_paths
@@ -241,25 +261,25 @@ feature {OG_OBJECT_NODE} -- Implementation
 								Result.put(child_paths.item_for_iteration, a_path)
 								child_paths.forth
 							end
-						end 
-						
+						end
+
 						-- add path for the current child
 						if obj_predicate_required then
-							create a_path.make_relative(create {OG_PATH_ITEM}.make_with_object_id(attr_node.node_id, child_obj.node_id))	
+							create a_path.make_relative(create {OG_PATH_ITEM}.make_with_object_id(attr_node.node_id, child_obj.node_id))
 						else
-							create a_path.make_relative(create {OG_PATH_ITEM}.make(attr_node.node_id))	
+							create a_path.make_relative(create {OG_PATH_ITEM}.make(attr_node.node_id))
 						end
 						if is_root then
 							a_path.set_absolute
 						end
-						Result.put(child_obj, a_path)														
+						Result.put(child_obj, a_path)
 						child_objs.forth
 					end
-					
+
 					children.forth
 				end
 			end
-		end	
+		end
 
 end
 

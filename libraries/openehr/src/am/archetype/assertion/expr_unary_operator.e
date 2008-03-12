@@ -22,7 +22,7 @@ creation
 feature -- Access
 
 	operand: EXPR_ITEM
-	
+
 feature -- Modification
 
 	set_operand(an_item: EXPR_ITEM) is
@@ -40,8 +40,20 @@ feature -- Conversion
 			Result.append(operator.out + " ")
 			Result.append(operand.as_string)
 		end
-		
-feature {NONE} -- Implementation
+
+feature -- Visitor
+
+	enter_subtree(visitor: EXPR_VISITOR; depth: INTEGER) is
+			-- perform action at start of block for this node
+		do
+			visitor.start_expr_unary_operator (Current, depth)
+		end
+
+	exit_subtree(visitor: EXPR_VISITOR; depth: INTEGER) is
+			-- perform action at end of block for this node
+		do
+			visitor.end_expr_unary_operator (Current, depth)
+		end
 
 end
 

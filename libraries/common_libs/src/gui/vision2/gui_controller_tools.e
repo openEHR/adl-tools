@@ -87,6 +87,25 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	populate_ev_combo_from_hash_keys(ev_combo: EV_COMBO_BOX; ht: DS_HASH_TABLE [INTEGER, STRING]) is
+			-- populate combo from hash table items
+		local
+			strs: ARRAYED_LIST[STRING]
+		do
+			create strs.make (0)
+			if ht /= Void then
+				from
+					ht.start
+				until
+					ht.off
+				loop
+					strs.extend (utf8 (ht.key_for_iteration))
+					ht.forth
+				end
+			end
+			ev_combo.set_strings (strs)
+		end
+
 end
 
 

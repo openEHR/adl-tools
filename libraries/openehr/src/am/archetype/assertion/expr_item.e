@@ -13,12 +13,15 @@ indexing
 
 deferred class EXPR_ITEM
 
+inherit
+	VISITABLE
+
 feature -- Access
 
 	type: STRING
-			-- Type name of this item in the mathematical sense. For leaf nodes, 
-			-- must be the name of a primitive type, or else a reference model type. 
-			-- The type for any relational or boolean operator will be "Boolean", 
+			-- Type name of this item in the mathematical sense. For leaf nodes,
+			-- must be the name of a primitive type, or else a reference model type.
+			-- The type for any relational or boolean operator will be "Boolean",
 			-- while the type for any arithmetic operator, will be "Real" or "Integer".
 
 feature -- Conversion
@@ -30,11 +33,9 @@ feature -- Conversion
 			Result /= Void
 		end
 
-feature {NONE} -- Implementation
-
 invariant
 	Type_valid: type /= Void and then not type.is_empty
-	
+
 end
 
 
