@@ -295,20 +295,24 @@ feature -- File events
 			-- Let the user select an ADL file, and then load and parse it.
 		local
 			dialog: EV_FILE_OPEN_DIALOG
+			name: STRING
 		do
 			create dialog
 			dialog.set_start_directory (current_work_directory)
 			dialog.filters.extend (["*" + archetype_source_file_extension, "ADL source files"])
 			dialog.filters.extend (["*" + archetype_flat_file_extension, "ADL flat files"])
 			dialog.show_modal_to_window (Current)
+			name := dialog.file_name
 
-			if not dialog.file_name.is_empty then
-				if not file_system.file_exists (dialog.file_name) then
-					(create {EV_INFORMATION_DIALOG}.make_with_text ("%"" + dialog.file_name + "%" does not exist.")).show_modal_to_window (Current)
+			if not name.is_empty then
+				set_current_work_directory (file_system.dirname (name))
+
+				if not file_system.file_exists (name) then
+					(create {EV_INFORMATION_DIALOG}.make_with_text ("%"" + name + "%" does not exist.")).show_modal_to_window (Current)
 				else
-					archetype_directory.add_adhoc_item (dialog.file_name)
+					archetype_directory.add_adhoc_item (name)
 
-					if {ara: !ARCH_REP_ARCHETYPE} archetype_directory.archetype_descriptor_at_path (dialog.file_name) then
+					if {ara: !ARCH_REP_ARCHETYPE} archetype_directory.archetype_descriptor_at_path (name) then
 						archetype_directory.set_selected_item (ara)
 						archetype_view_tree_control.populate
 					end
