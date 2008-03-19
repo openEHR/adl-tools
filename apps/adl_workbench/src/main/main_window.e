@@ -344,8 +344,8 @@ feature -- File events
 				end
 
 				populate_archetype_id
-				populate_languages
 				populate_adl_version
+				populate_languages
 				populate_view_controls
 			end
 		end
@@ -1001,9 +1001,12 @@ feature {NONE} -- Implementation
 				history_forward_button.disable_sensitive
 			end
 
+			populate_archetype_id
+			populate_adl_version
+			populate_languages
+
 			parser_status_area.remove_text
 			source_rich_text.remove_text
-			language_combo.wipe_out
 			description_controls.clear
 			translation_controls.clear
 			node_map_control.clear
@@ -1109,7 +1112,7 @@ feature {NONE} -- Implementation
 		end
 
 	populate_languages
-			-- Populate the languages combo box and the terminologies list.
+			-- Populate `language_combo' in the toolbar.
 		local
 			archetype: ARCHETYPE
 		do
@@ -1119,11 +1122,10 @@ feature {NONE} -- Implementation
 				archetype := archetype_directory.selected_archetype.archetype_differential
 
 				if not archetype.has_language (current_language) then
-					set_current_language (default_language)
+					set_current_language (archetype.original_language.code_string)
 				end
 
 				language_combo.set_strings (archetype.languages_available)
-				terminologies_list.set_strings (archetype.ontology.terminologies_available)
 
 				language_combo.do_all (agent (li: EV_LIST_ITEM)
 					do
@@ -1134,7 +1136,6 @@ feature {NONE} -- Implementation
 			else
 				set_current_language (default_language)
 				language_combo.wipe_out
-				terminologies_list.wipe_out
 			end
 
 			language_combo.select_actions.resume

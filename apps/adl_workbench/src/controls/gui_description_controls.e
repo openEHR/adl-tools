@@ -40,40 +40,24 @@ feature {NONE} -- Initialisation
 			gui := a_main_window
 			gui.arch_desc_resource_orig_res_mlist.hide_title_row
 			gui.arch_desc_auth_orig_auth_mlist.hide_title_row
-			enable_word_wrapping (gui.arch_desc_purpose_text)
-			enable_word_wrapping (gui.arch_desc_use_text)
-			enable_word_wrapping (gui.arch_desc_misuse_text)
-			enable_word_wrapping (gui.arch_desc_copyright_text)
 		ensure
 			gui_set: gui = a_main_window
-		end
-
-	enable_word_wrapping (text: EV_TEXT) is
-			-- Enable word-wrapping in `text', preserving `text.is_editable'.
-			-- This is a work-around for a bug in the Windows implementation of EV_TEXT.
-		require
-			text_attached: text /= Void
-		local
-			is_editable: BOOLEAN
-		do
-			is_editable := text.is_editable
-			text.enable_word_wrapping
-
-			if is_editable then
-				text.enable_edit
-			else
-				text.disable_edit
-			end
-		ensure
-			word_wrapping: text.has_word_wrapping
-			editable_preserved: text.is_editable = old text.is_editable
+			purpose_wrapping: gui.arch_desc_purpose_text.has_word_wrapping
+			use_wrapping: gui.arch_desc_use_text.has_word_wrapping
+			misuse_wrapping: gui.arch_desc_misuse_text.has_word_wrapping
+			copyright_wrapping: gui.arch_desc_copyright_text.has_word_wrapping
+			purpose_read_only: not gui.arch_desc_purpose_text.is_editable
+			use_read_only: not gui.arch_desc_use_text.is_editable
+			misuse_read_only: not gui.arch_desc_misuse_text.is_editable
+			copyright_read_only: not gui.arch_desc_copyright_text.is_editable
 		end
 
 feature -- Commands
 
-	clear is
-			-- wipe out content
+	clear
+			-- Wipe out content.
 		do
+			gui.terminologies_list.wipe_out
 			gui.arch_desc_status_text.remove_text
 
 			gui.arch_desc_auth_orig_auth_mlist.wipe_out
@@ -91,13 +75,18 @@ feature -- Commands
 			gui.arch_desc_copyright_text.remove_text
 		end
 
-	populate is
-			-- populate ontology controls
+	populate
+			-- Populate ontology controls.
+		local
+			archetype: ARCHETYPE
 		do
 			clear
 
 			if archetype_directory.has_valid_selected_archetype then
-				if archetype_directory.selected_archetype.archetype_differential.description /= Void then
+				archetype := archetype_directory.selected_archetype.archetype_differential
+				gui.terminologies_list.set_strings (archetype.ontology.terminologies_available)
+
+				if archetype.description /= Void then
 					populate_authorship
 					populate_details
 					populate_resources
