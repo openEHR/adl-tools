@@ -521,6 +521,10 @@ feature {NONE} -- Implementation
 --				post_error (Current, "graft_adhoc_item", "arch_dir_dup_archetype", <<ara.full_path>>)
 --			else
 
+			if ara.is_specialised and {parent_ara: !ARCH_REP_ARCHETYPE} parent_node.item then
+				ara.set_specialisation_parent (parent_ara)
+			end
+
 			create node.make (ara)
 			parent_node.child_start
 			parent_node.put_child_left (node)
