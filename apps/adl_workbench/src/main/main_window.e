@@ -199,23 +199,11 @@ feature {NONE} -- Initialization
 			end
 		end
 
-	initialise_splitters
-			-- Restore splitter widgets to their remembered positions.
+	initialise_splitter (split: EV_SPLIT_AREA; position: INTEGER)
+			-- Make `position' the position for `split'; but do nothing if `position' is outside the allowed bounds.
 		do
-			if test_split_position > 0 then
-				test_split_area.set_split_position (test_split_position)
-			end
-
-			if explorer_split_position > 0 then
-				explorer_split_area.set_split_position (explorer_split_position)
-			end
-
-			if node_map_and_ontology_split_position > 0 then
-				node_map_and_ontology_split_area.set_split_position (node_map_and_ontology_split_position)
-			end
-
-			if total_split_position > 0 then
-				total_split_area.set_split_position (total_split_position)
+			if split.minimum_split_position <= position and position <= split.maximum_split_position then
+				split.set_split_position (position)
 			end
 		end
 
@@ -231,7 +219,10 @@ feature -- Status setting
 			initialise_overall_appearance
 			initialise_path_control
 			Precursor
-			initialise_splitters
+			initialise_splitter (test_split_area, test_split_position)
+			initialise_splitter (explorer_split_area, explorer_split_position)
+			initialise_splitter (node_map_and_ontology_split_area, node_map_and_ontology_split_position)
+			initialise_splitter (total_split_area, total_split_position)
 			focus_first_widget (main_notebook.selected_item)
 
 			if app_maximised then
