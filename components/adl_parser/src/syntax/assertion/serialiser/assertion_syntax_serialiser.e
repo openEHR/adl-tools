@@ -16,19 +16,19 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class ASSERTION_SYNTAX_SERIALISER 
+class ASSERTION_SYNTAX_SERIALISER
 
 inherit
 	ASSERTION_SERIALISER
-	
+
 	CADL_TOKENS
 		export
 			{NONE} all
 		end
 
-creation
+create
 	make
-	
+
 feature -- Modification
 
 	start_assertion(invs: ARRAYED_LIST[ASSERTION]; depth: INTEGER) is
@@ -43,16 +43,16 @@ feature -- Modification
 				if invs.item.tag /= Void then
 					last_result.append(invs.item.tag + ": ")
 				end
-				last_result.append(invs.item.expression.as_string + format_item(FMT_NEWLINE))						
+				last_result.append(invs.item.expression.as_string + format_item(FMT_NEWLINE))
 				invs.forth
 			end
 		end
-		
+
 	end_assertion(a_node: ARRAYED_LIST[ASSERTION]; depth: INTEGER) is
 			-- end serialising an ASSERTION
-		do	
+		do
 		end
-			
+
 end
 
 

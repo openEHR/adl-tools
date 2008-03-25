@@ -39,7 +39,7 @@ inherit
 			out, default_create, is_equal
 		end
 
-creation
+create
 	make_identified, make_anonymous, make_typed, make_typed_identified, make_from_object
 
 feature -- Initialisation

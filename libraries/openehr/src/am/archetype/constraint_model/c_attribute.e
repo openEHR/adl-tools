@@ -19,7 +19,7 @@ inherit
 			default_create, parent, representation
 		end
 
-creation
+create
 	make_single, make_multiple
 
 feature -- Initialisation

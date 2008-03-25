@@ -16,7 +16,7 @@ class EXPR_BINARY_OPERATOR
 inherit
 	EXPR_OPERATOR
 
-creation
+create
 	make
 
 feature -- Access
