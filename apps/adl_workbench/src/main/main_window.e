@@ -1015,7 +1015,7 @@ feature {NONE} -- Implementation
 			slot_map_control.populate
 			used_by_map_control.populate
 
-			if archetype_notebook.selected_item = differential_view_box then
+			if definition_notebook.parent = differential_view_box then
 				node_map_control.set_differential_view
 				path_map_control.set_differential_view
 				ontology_controls.set_differential_view
