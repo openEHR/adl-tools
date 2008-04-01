@@ -1,0 +1,1249 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en">
+<head>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <title>ADL Workbench help - Getting Started</title>
+  <link rel="stylesheet" href="http://www.openehr.org/styles/oe.css" type="text/css" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <meta content="Thomas Beale, Ocean Informatics" name="author" />
+</head>
+
+
+<body>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h1>ADL Workbench Help Page - Getting Started
+</h1>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<hr style="width: 100%; height: 2px;" />
+<h2>Initial Configuration</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table style="text-align: left; background-color: rgb(255, 255, 255); width: 600px;" border="0" cellpadding="2" cellspacing="2">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <tbody>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <tr>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      <td>
+      
+      <h3><span style="color: rgb(204, 0, 0);"></span><span style="font-weight: bold;">Locate archetype repository</span><span style="font-weight: bold;"><span style="color: rgb(204, 0, 0);"></span></span></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+The ADL Workbench will process archetypes found in a "reference repository"
+directory and an optional "work repository" directory. &nbsp;Typically
+the reference repository will be the 'dev' directory in the openEHR
+Subversion knowledge repository. <span style="text-decoration: underline;">You only need to specify a work repository if you are developing archetypes yourself</span>; its location may well be in another part of the <span style="font-style: italic;">open</span>EHR Subversion repository, or another version-controlled area used with colleagues, or it can be a private area on your disk.<br />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      <br />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+If both are specified, the archetypes will be merged into a single tree
+in the ADL Workbench, under a common folder structure, and showing
+specialisation relationships. To make merging work properly, the
+directory structure of a work repository must follow that used in the
+      <span style="font-style: italic;">open</span>EHR Subversion knowledge repository.<br />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      <br />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+For both reference and work repositories, the repository location is
+specified in the Repository Settings dialog, from the Repository menu,
+as shown in the screen shot. <span style="text-decoration: underline;">The directory just above the directories you want to see should </span><span style="text-decoration: underline;">be chosen</span>. <br />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      <br />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+In the example here, the "dev/adl" directory in a local copy of the &nbsp;<span style="font-style: italic;">open</span>EHR Subversion knowledge repository&nbsp;(<a href="http://www.openehr.org/svn/knowledge">http://www.openehr.org/svn/knowledge</a>) is being chosen for the reference repository, and a directory "dev-nl-tno/adl" as the work repository.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </td>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      <td><span style="text-decoration: underline;"></span><a href="images/repository_setting.png"><img style="border: 0px solid ; width: 100px; height: 80px;" alt="ADL workbench" src="images/tn/repository_setting.jpg" /></a><br />
+
+Repository setting<br />
+
+      <br />
+
+      <br />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </td>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      
+
+
+
+
+
+
+    </tr>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <tr>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      <td><span style="font-weight: bold;"></span><span style="font-weight: bold;"><span style="color: rgb(204, 0, 0);"></span></span>If a work repository has been specified along with the reference
+repository, the appearance of the two groups of archetypes will be as
+shown in the example. Note that archetypes from the work repository
+that are specialisations of those in the reference repository will be
+displayed that way in the tree merge.<br />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </td>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      <td><a href="images/repository_merged.png"><img style="border: 0px solid ; width: 44px; height: 100px;" alt="Merged archetype repositories" src="images/tn/repository_merged.jpg" /></a><br />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Merged archetype repositories</td>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </tr>
+
+    <tr>
+
+      <td>
+      
+      <h3>Options</h3>
+
+Various options are available on the Tools &gt; Options menu selection, as follows: <br />
+
+      
+      <ul>
+
+        <li><span style="font-weight: bold;">Set External Editor</span>: set the path of an external editor tool for editing archetype source.<span style="font-weight: bold;"></span></li>
+
+        <li><span style="font-weight: bold;">Show Definition Tree Expanded</span>: if checked, this option causes the <span style="font-style: italic;">node map</span> tree to automatically be expanded when first viewed.</li>
+
+        <li><span style="font-weight: bold;">Show Line Numbers In ADL Source</span>:
+if checked, this option causes line numbers to be added to the source
+views of the archetype, which is useful for finding errors reported by
+the parser.</li>
+
+        <li><span style="font-weight: bold;">Parser Error Reporting Leve</span>l:
+allows various levels of parser error reporting to be set. The INFO
+level provides verbose output; WARNING provides only warnings and
+errors, and ERROR provides errors only. WARNING is typically the most
+useful setting.</li>
+
+        <li><span style="font-weight: bold;">HTML Export Directory</span>: indicates where HTML format archetypes should be exported to.
+The HTML Export function is available on the Repository menu, and
+causes a directory tree to be created containing a colourised HTML
+rendering of all archetypes in the repository. </li>
+
+      
+      </ul>
+
+      </td>
+
+      <td><a href="images/options.png"><img style="border: 0px solid ; width: 100px; height: 55px;" alt="Options dialog" src="images/tn/options.jpg" /></a><br />
+
+Options Dialog</td>
+
+    </tr>
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  </tbody>
+</table>
+
+<br />
+
+<h2>Menus</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table style="text-align: left; background-color: rgb(255, 255, 255); width: 600px;" border="0" cellpadding="2" cellspacing="2">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <tbody>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    <tr>
+
+
+      <td><span style="font-weight: bold;"></span>The ADL Workbench has the following menus:<br />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      <ul>
+
+        <li><span style="font-weight: bold;">File menu</span>:&nbsp;</li>
+
+        
+        <ul>
+
+          <li><span style="font-weight: bold;">Open</span>: open an
+archetype manually. Whereas archetypes in the specified archetype repository
+can be opened and parsed automatically just by single-clicking on the
+archetype in the explorer, the Open option allows the user to open and
+parse an archetype somewhere else in the file system. Although this does not disturb
+ADL Workbench's idea of where the repository is, the manually-opened archetype is displayed
+in the explorer. If it happens to be an archetype within the repository, then it is
+simply selected in the explorer; otherwise, it is added to the appropriate place in
+the explorer tree, based on its semantic category.</li>
+
+          <li><span style="font-weight: bold;">Parse</span>: manually parse an archetype, usually after doing a Save from an external editor.</li>
+
+          <li><span style="font-weight: bold;">Edit</span>: use the external editor specified in Options to open the selected archetype.</li>
+
+          <li><span style="font-weight: bold;">Save As</span>: save the
+archetype either over the top of the original file, or as a new file.
+The format is specified by a combo box in the Save dialog.</li>
+
+          <li><span style="font-weight: bold;">Exit</span>: quit the application.</li>
+
+        
+        </ul>
+
+        <li><span style="font-weight: bold;">Edit menu</span>:&nbsp;</li>
+
+        
+        <ul>
+
+          <li><span style="font-weight: bold;">Copy</span>: copy a selected item to the clipboard; this only works on certain controls such as the path control and text boxes;</li>
+
+          <li><span style="font-weight: bold;">Select All</span>: select all text in the focussed text box;</li>
+
+          <li><span style="font-weight: bold;">Clipboard</span>: view current contents of clipboard;</li>
+
+        
+        </ul>
+
+        <li><span style="font-weight: bold;">Repository</span>:</li>
+
+        
+        <ul>
+
+          <li><span style="font-weight: bold;">Set Repository</span>: set the archetype repository location (see above).</li>
+
+          <li><span style="font-weight: bold;">Build All</span> <span style="font-weight: bold;">(F7)</span>: parse every archetype in the entire repository, regardless of whether it has already been built.</li>
+
+          <li><span style="font-weight: bold;">Rebuild All (shift F7)</span>: rebuild all archetypes in the repository not already built.</li>
+
+          <li><span style="font-weight: bold;">Build Subtree (ctrl F7)</span>: parse all archetypes in the subtree under the currently selected node.</li>
+
+          <li><span style="font-weight: bold;">Rebuild Subtree (ctrl shift F7)</span>: reparse archetypes in the currently selected subtree.</li>
+
+        
+        </ul>
+
+        <li><span style="font-weight: bold;">History</span>: this feature provides access to the retained history of visiting archetypes</li>
+
+        
+        <ul>
+
+          <li><span style="font-weight: bold;">Forward</span>: go forward in the archetype visiting history</li>
+
+          <li><span style="font-weight: bold;">Backward</span>: go back in the archetype visiting history</li>
+
+        
+        </ul>
+
+        <li><span style="font-weight: bold;">Options</span>:</li>
+
+        
+        <ul>
+
+          <li><span style="font-weight: bold;">Set Options</span>: set various options, such as the external editor</li>
+
+        
+        </ul>
+
+        <li><span style="font-weight: bold;">Help</span>:</li>
+
+        
+        <ul>
+
+          <li><span style="font-weight: bold;">Icons</span>: list of icons used in the archetype node map, and their meanings</li>
+
+          <li><span style="font-weight: bold;">News</span>: latest news for this version of application</li>
+
+          <li><span style="font-weight: bold;">Online</span>: access to this online help page</li>
+
+          <li><span style="font-weight: bold;">About</span>: "About" information for the ADL Workbench.</li>
+
+        
+        </ul>
+
+      
+      </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </td>
+
+
+      <td><a href="images/menus_1.png"><img style="border: 0px solid ; width: 100px; height: 75px;" alt="Menus" src="images/tn/menus_1.jpg" /></a><br />
+
+Menus</td>
+
+
+    </tr>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  </tbody>
+</table>
+
+<br />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<hr style="width: 100%; height: 2px;" />
+<p class="footer">$LastChangedDate: $
+$LastChangedRevision$</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
