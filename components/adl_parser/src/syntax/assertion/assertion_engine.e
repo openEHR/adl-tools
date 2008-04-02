@@ -12,19 +12,19 @@ indexing
 	last_change: "$LastChangedDate$"
 
 class ASSERTION_ENGINE
-	
+
 inherit
 	SHARED_ASSERTION_SERIALISERS
 		export
 			{NONE} all
 			{ANY} has_assertion_serialiser_format
 		end
-	
-creation
+
+create
 	make
 
 feature -- Initialisation
-	
+
 	make is
 		do
 		end
@@ -36,20 +36,20 @@ feature -- Initialisation
 			tree := Void
 			serialised := Void
 		end
-		
+
 feature -- Access
 
 	source: STRING
 			-- source of current artifact
-			
+
 	source_start_line: INTEGER
 			-- defaults to 0; can be set to line number of input text inside some other document
-			
+
 	tree: ARRAYED_LIST [ASSERTION]
 			-- set if parse succeeded
-		
+
 	serialised: STRING
-	
+
 	parse_error_text: STRING is
 			-- result of last parse
 		do
@@ -60,7 +60,7 @@ feature -- Status Report
 
 	in_parse_mode: BOOLEAN
 			-- True if engine in mode where tree was created from source
-			
+
 	parse_succeeded: BOOLEAN is
 			-- True if parse succeeded; call after parse()
 		do
@@ -99,7 +99,7 @@ feature -- Commands
 		ensure
 			parse_succeeded or else tree = Void
 		end
-		
+
 	serialise(a_format: STRING) is
 			-- serialise current artifact into format
 		require
@@ -109,7 +109,7 @@ feature -- Commands
 			serialiser_mgr.serialise
 			serialised := serialiser_mgr.last_result
 		end
-	
+
 	set_tree(a_node: like tree) is
 			-- set root node from e.g. GUI tool
 		require
@@ -120,11 +120,11 @@ feature -- Commands
 		ensure
 			not in_parse_mode
 		end
-		
+
 feature {NONE} -- Implementation
 
 	parser: CADL_VALIDATOR
-	
+
 	serialiser_mgr: ASSERTION_SERIALISER_MGR
 
 end

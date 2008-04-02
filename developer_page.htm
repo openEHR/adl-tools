@@ -54,7 +54,7 @@
 
 
 
-<h1>The ref_impl_eiffel Project Developer's page
+<h1>The <span style="font-style: italic;">open</span>EHR ref_impl_eiffel Project Developer's page
 </h1>
 
 
@@ -115,7 +115,7 @@ demographic and archetype servers.</li>
 
   
 
-  <li>Download and install EiffelStudio 6.0 from <a href="http://eiffel.com">http://eiffel.com</a> (free use license).</li>
+  <li>Download and install EiffelStudio 6.1 from <a href="http://eiffel.com">http://eiffel.com</a> (free use license).</li>
 
 
 
@@ -152,11 +152,11 @@ demographic and archetype servers.</li>
 
 
 
-    <li>download and install Python 2.5 or higher from <a href="http://www.python.org">http://www.python.org</a>.</li>
+    <li>Download and install Python 2.5 or higher from <a href="http://www.python.org">http://www.python.org</a>.</li>
 
 
 
-    <li>download and install SCons 0.97 or higher from <a href="http://www.scons.org">http://www.scons.org</a>.</li>
+    <li>Download and install SCons 0.98 or higher from <a href="http://www.scons.org">http://www.scons.org</a>.</li>
 
 
 
@@ -187,7 +187,7 @@ demographic and archetype servers.</li>
 
 
 
-  <li>Make sure that SCons and the Eiffel compiler are in your PATH. The SCons installer may have already done so, but the EiffelStudio installer probably did not.</li>
+  <li>Make sure that SCons, Python and the Eiffel compiler are in your PATH. (On Windows, you can copy scons.bat from Python's Scripts directory up to the Python directory; or else add the Scripts directory to your path too.)</li>
 
 
 
@@ -195,10 +195,10 @@ demographic and archetype servers.</li>
 
 
 
-  <li>For example, on a PowerPC Mac, your <span style="font-weight: bold;">.profile</span> might contain this:
+  <li>For example, on an Intel Mac, your <span style="font-weight: bold;">.profile</span> might contain this:
     <ul>
-        <li>export <span style="font-weight: bold;">ISE_PLATFORM</span>=macosx-ppc</li>
-        <li>export <span style="font-weight: bold;">ISE_EIFFEL</span>=/Applications/MacPorts/Eiffel60</li>
+        <li>export <span style="font-weight: bold;">ISE_PLATFORM</span>=macosx-x86</li>
+        <li>export <span style="font-weight: bold;">ISE_EIFFEL</span>=/Applications/MacPorts/Eiffel61</li>
         <li>export <span style="font-weight: bold;">GOBO</span>=$ISE_EIFFEL/library/gobo</li>
         <li>export <span style="font-weight: bold;">ES_PATH</span>=$ISE_EIFFEL/studio/spec/$ISE_PLATFORM/bin</li>
         <li>export <span style="font-weight: bold;">PATH</span>=$ES_PATH:$GOBO/spec/$ISE_PLATFORM/bin:$PATH</li>

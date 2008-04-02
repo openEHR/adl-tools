@@ -27,7 +27,7 @@ inherit
 			default_create, representation, out, is_valid
 		end
 
-creation
+create
 	make_identified, make_anonymous
 
 feature -- Initialisation

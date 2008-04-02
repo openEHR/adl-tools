@@ -30,7 +30,7 @@ inherit
 			out
 		end
 
-creation
+create
 	make_boolean, make_integer, make_real, make_string, make_character,
 	make_archetype_definition_ref, make_archetype_ref,
 	make_ordinal, make_coded_term,

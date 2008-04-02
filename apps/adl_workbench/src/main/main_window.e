@@ -199,23 +199,11 @@ feature {NONE} -- Initialization
 			end
 		end
 
-	initialise_splitters
-			-- Restore splitter widgets to their remembered positions.
+	initialise_splitter (split: EV_SPLIT_AREA; position: INTEGER)
+			-- Make `position' the position for `split'; but do nothing if `position' is outside the allowed bounds.
 		do
-			if test_split_position > 0 then
-				test_split_area.set_split_position (test_split_position)
-			end
-
-			if explorer_split_position > 0 then
-				explorer_split_area.set_split_position (explorer_split_position)
-			end
-
-			if node_map_and_ontology_split_position > 0 then
-				node_map_and_ontology_split_area.set_split_position (node_map_and_ontology_split_position)
-			end
-
-			if total_split_position > 0 then
-				total_split_area.set_split_position (total_split_position)
+			if split.minimum_split_position <= position and position <= split.maximum_split_position then
+				split.set_split_position (position)
 			end
 		end
 
@@ -231,7 +219,10 @@ feature -- Status setting
 			initialise_overall_appearance
 			initialise_path_control
 			Precursor
-			initialise_splitters
+			initialise_splitter (test_split_area, test_split_position)
+			initialise_splitter (explorer_split_area, explorer_split_position)
+			initialise_splitter (node_map_and_ontology_split_area, node_map_and_ontology_split_position)
+			initialise_splitter (total_split_area, total_split_position)
 			focus_first_widget (main_notebook.selected_item)
 
 			if app_maximised then
@@ -295,20 +286,24 @@ feature -- File events
 			-- Let the user select an ADL file, and then load and parse it.
 		local
 			dialog: EV_FILE_OPEN_DIALOG
+			name: STRING
 		do
 			create dialog
 			dialog.set_start_directory (current_work_directory)
 			dialog.filters.extend (["*" + archetype_source_file_extension, "ADL source files"])
 			dialog.filters.extend (["*" + archetype_flat_file_extension, "ADL flat files"])
 			dialog.show_modal_to_window (Current)
+			name := dialog.file_name
 
-			if not dialog.file_name.is_empty then
-				if not file_system.file_exists (dialog.file_name) then
-					(create {EV_INFORMATION_DIALOG}.make_with_text ("%"" + dialog.file_name + "%" does not exist.")).show_modal_to_window (Current)
+			if not name.is_empty then
+				set_current_work_directory (file_system.dirname (name))
+
+				if not file_system.file_exists (name) then
+					(create {EV_INFORMATION_DIALOG}.make_with_text ("%"" + name + "%" does not exist.")).show_modal_to_window (Current)
 				else
-					archetype_directory.add_adhoc_item (dialog.file_name)
+					archetype_directory.add_adhoc_item (name)
 
-					if {ara: !ARCH_REP_ARCHETYPE} archetype_directory.archetype_descriptor_at_path (dialog.file_name) then
+					if {ara: !ARCH_REP_ARCHETYPE} archetype_directory.archetype_descriptor_at_path (name) then
 						archetype_directory.set_selected_item (ara)
 						archetype_view_tree_control.populate
 					end
@@ -340,8 +335,8 @@ feature -- File events
 				end
 
 				populate_archetype_id
-				populate_languages
 				populate_adl_version
+				populate_languages
 				populate_view_controls
 			end
 		end
@@ -997,9 +992,12 @@ feature {NONE} -- Implementation
 				history_forward_button.disable_sensitive
 			end
 
+			populate_archetype_id
+			populate_adl_version
+			populate_languages
+
 			parser_status_area.remove_text
 			source_rich_text.remove_text
-			language_combo.wipe_out
 			description_controls.clear
 			translation_controls.clear
 			node_map_control.clear
@@ -1017,7 +1015,7 @@ feature {NONE} -- Implementation
 			slot_map_control.populate
 			used_by_map_control.populate
 
-			if archetype_notebook.selected_item = differential_view_box then
+			if definition_notebook.parent = differential_view_box then
 				node_map_control.set_differential_view
 				path_map_control.set_differential_view
 				ontology_controls.set_differential_view
@@ -1105,7 +1103,7 @@ feature {NONE} -- Implementation
 		end
 
 	populate_languages
-			-- Populate the languages combo box and the terminologies list.
+			-- Populate `language_combo' in the toolbar.
 		local
 			archetype: ARCHETYPE
 		do
@@ -1115,11 +1113,10 @@ feature {NONE} -- Implementation
 				archetype := archetype_directory.selected_archetype.archetype_differential
 
 				if not archetype.has_language (current_language) then
-					set_current_language (default_language)
+					set_current_language (archetype.original_language.code_string)
 				end
 
 				language_combo.set_strings (archetype.languages_available)
-				terminologies_list.set_strings (archetype.ontology.terminologies_available)
 
 				language_combo.do_all (agent (li: EV_LIST_ITEM)
 					do
@@ -1130,7 +1127,6 @@ feature {NONE} -- Implementation
 			else
 				set_current_language (default_language)
 				language_combo.wipe_out
-				terminologies_list.wipe_out
 			end
 
 			language_combo.select_actions.resume

@@ -452,6 +452,7 @@ feature {NONE} -- Implementation
 			row.set_data (an_item)
 			add_checkbox (row)
 			create gli.make_with_text (utf8 (an_item.base_name))
+			gli.set_tooltip (utf8 (an_item.full_path))
 			row.set_item (1, gli)
 			set_row_pixmap (row)
 			ada ?= an_item

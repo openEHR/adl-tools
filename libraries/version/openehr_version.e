@@ -46,7 +46,7 @@ feature -- Access
 	out: STRING
 			-- The version as a string of the form "major.minor.build.revision".
 		do
-			Result := major.out + "." + minor.out + "." + build.out + "." + revision.out + " (Release Candidate)"
+			Result := major.out + "." + minor.out + "." + build.out + "." + revision.out
 		ensure then
 			long_enough: Result.count >= 7
 		end

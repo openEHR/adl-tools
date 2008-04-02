@@ -24,7 +24,7 @@ inherit
 			{ANY} valid_path_string, path_parse_error
 		end
 
-creation
+create
 	make
 
 feature -- Initialisation

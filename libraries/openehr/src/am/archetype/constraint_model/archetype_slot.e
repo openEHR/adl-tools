@@ -27,7 +27,7 @@ inherit
 			representation, default_create, out, enter_subtree, exit_subtree
 		end
 
-creation
+create
 	make_identified, make_anonymous
 
 feature -- Initialisation
