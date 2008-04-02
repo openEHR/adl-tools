@@ -95,7 +95,7 @@ if distrib:
 					install + '/ADL_Workbench/ADLWorkbenchInstall.nsi'
 				]
 
-				installer = env.Command(distrib + '/tools/OceanADLWorkbenchInstall.exe', adl_workbench_installer_sources, [command])
+				installer = env.Command(distrib + '/tools/ADLWorkbenchInstall.exe', adl_workbench_installer_sources, [command])
 
 		if len(adl_parser) > 2:
 			unmanaged_dll = os.path.dirname(str(adl_parser[2])) + '/lib' + os.path.basename(str(adl_parser[2]))
