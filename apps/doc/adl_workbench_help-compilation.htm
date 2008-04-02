@@ -43,6 +43,8 @@
 
 
 
+
+  
   
   
   
@@ -126,9 +128,12 @@
 
 
 
+
   
 
 
+  
+  
   
   
   
@@ -224,6 +229,8 @@
 
 
 
+
+  
   
   
   
@@ -241,6 +248,7 @@
 
 
 <body>
+
 
 
 
@@ -327,8 +335,10 @@
 
 
 
+
 <hr style="width: 100%; height: 2px;" />
 <h2>Overview</h2>
+
 
 
 The ADL workbench allows an entire archetype repository, or any part
@@ -359,7 +369,9 @@ well.<br />
 
 
 
+
 <table style="text-align: left; background-color: rgb(255, 255, 255); width: 600px;" border="0" cellpadding="2" cellspacing="2">
+
 
 
 
@@ -409,6 +421,7 @@ well.<br />
 
 
 
+
     
 
 
@@ -418,27 +431,38 @@ well.<br />
 
     
     <tr>
+
 
 
       <td><span style="font-weight: bold;">Compiling the Whole Repository</span><br />
 
 
-All archetypes in the repository can be compiled&nbsp;using Repository
-&gt; Build All or F7. The operation can be interrupted using Repository
-&gt; Interrupt Build or Shift+Esc. The Status tab (bottom right) shows
+
+All archetypes in the repository can be compiled&nbsp;using <span style="color: rgb(51, 51, 255);">Repository
+&gt; Build All or F7</span>.<span style="color: rgb(51, 51, 255);"> The operation can be interrupted using Repository
+&gt; Interrupt Build or Shift+Esc</span>. The Status tab (bottom right) shows
 the progress of the compilation operation, while the Error tab
-indicates archetypes that have errors or warnings.</td>
+indicates archetypes that have errors or warnings.<br />
+      <br />
+Every node in the tree indicates its compilation status. The key is shown at right.</td>
+
+
+
+      <td><a href="images/compiler_statuses.png"><img style="border: 0px solid ; width: 100px; height: 46px;" alt="Comipiler statuses" src="images/tn/compiler_statuses.jpg" /></a><br />
+Compiler status key.<br />
+      </td>
 
 
       <td></td>
 
-      <td></td>
 
 
     </tr>
 
 
+
     <tr>
+
 
 
 
@@ -466,9 +490,10 @@ indicates archetypes that have errors or warnings.</td>
       <td><span style="font-weight: bold;">Compiling a Subtree</span><br />
 
 
+
 In the same manner as for the whole repository, a specific subtree can
-be compiled. Select the folder node in the Explorer on the left, and
-then use Repository &gt; Build Subtree or Ctrl+F7 to build only the
+be compiled. <span style="color: rgb(51, 51, 255);">Select the folder node in the Explorer on the left, and
+then use Repository &gt; Build Subtree or Ctrl+F7</span> to build only the
 archetypes in that tree. The Status and Error tabs provide the same
 information as described above, for the relevant subtree.</td>
 
@@ -495,9 +520,12 @@ information as described above, for the relevant subtree.</td>
 
 
 
-      <td></td>
 
       <td></td>
+
+
+      <td></td>
+
 
 
 
@@ -547,9 +575,12 @@ information as described above, for the relevant subtree.</td>
 
 
 
+
     <tr>
 
+
       <td><span style="font-weight: bold;">Status Output</span><br />
+
 
 
 
@@ -563,6 +594,7 @@ The status window provides feedback from the parser, and indicates
 whether an archetype has parsed properly or not. It also indicates
 terms found in the ontology section of the archetype that are not used
 in the defnition.</td>
+
 
       <td><a href="images/status_1.png"><img style="border: 0px solid ; width: 100px; height: 19px;" alt="Status 1" src="images/tn/status_1.jpg" /></a><br />
 
@@ -589,7 +621,9 @@ in the defnition.</td>
 
 
 
+
 parse failure</td>
+
 
       <td><a href="images/status_2.png"><img style="border: 0px solid ; width: 100px; height: 20px;" alt="Status 2" src="images/tn/status_2.jpg" /></a><br />
 
@@ -616,29 +650,40 @@ parse failure</td>
 
 
 
+
 parse suceeded</td>
 
+
     </tr>
+
 
     <tr>
 
+
       <td><span style="font-weight: bold;">Error Output</span><br />
+The error output of the compiler is available in the Error tab at the
+bottom of the tool. It groups errors into three categories:<br />
+      <ul>
+        <li><span style="font-weight: bold;">Parse Errors</span>: files that failed to parse, i.e. archetypes containing ADL syntax errors, or that contain semantic errors, e.g. missing codes;</li>
+        <li><span style="font-weight: bold;">Validity Errors</span>: semantic errors rendering the archetype incorrect according to the specification.</li>
+        <li><span style="font-weight: bold;">Warnings</span>: anomalies
+in archetypes that are likely to be unintentional and need to be
+corrected, but which don't actually affect the correctness of the
+archetype.</li>
+      </ul>
+Errors are shown under the archetype id for which they occur, and the full message is available under each id. <br />
+      <br />
+      <span style="color: rgb(51, 51, 255);">Double-click on the archetype id to go to the archetype in the explorer. The error message is now available in the Status tab.</span></td>
 
 
+      <td><a href="images/errors_3.png"><img style="border: 0px solid ; width: 100px; height: 48px;" alt="Error tab" src="images/tn/errors_3.jpg" /></a></td>
 
 
+      <td><a href="images/errors_2.png"><img style="border: 0px solid ; width: 100px; height: 34px;" alt="Error tab" src="images/tn/errors_2.jpg" /></a></td>
 
-
-
-
-
-XXX.</td>
-
-      <td></td>
-
-      <td></td>
 
     </tr>
+
 
 
 
@@ -710,8 +755,10 @@ XXX.</td>
   
   
   
+  
   </tbody>
 </table>
+
 
 
 <br />
@@ -757,9 +804,11 @@ XXX.</td>
 
 
 
+
 <hr style="width: 100%; height: 2px;" />
 <p class="footer">$LastChangedDate: $
 $LastChangedRevision$</p>
+
 
 
 

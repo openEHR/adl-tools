@@ -44,6 +44,8 @@
 
 
 
+
+  
   
   
   
@@ -129,9 +131,12 @@
 
 
 
+
   
 
 
+  
+  
   
   
   
@@ -230,6 +235,8 @@
 
 
 
+
+  
   
   
   
@@ -248,6 +255,7 @@
 
 
 <body>
+
 
 
 
@@ -336,8 +344,10 @@
 
 
 
+
 <hr style="width: 100%; height: 2px;" />
 <h2>Accessing Archetype Files</h2>
+
 Both flat and differential archetypes can be accessed as files.
 
 
@@ -389,6 +399,7 @@ Both flat and differential archetypes can be accessed as files.
 
 
 
+
   <tbody>
 
 
@@ -415,6 +426,7 @@ Both flat and differential archetypes can be accessed as files.
 
 
 
+
     
 
 
@@ -469,19 +481,44 @@ Both flat and differential archetypes can be accessed as files.
 
 
     <tr>
+      <td>
+      <h3><span style="font-weight: bold;">Opening an ad hoc archetype file</span></h3>
+An archetype that is not in any of the configured repositories can be
+opened using the Open button, or File&gt;Open. When the archetype is
+opened, it will be attached into the explorer in the correct place
+according to its ontological type.<br />
+      <br />
+      <span style="font-weight: bold;">In the current release, either
+.adl or .adls files can be opened. The .adl file should be opened if
+that is what is considered the original source.&nbsp;</span></td>
+      <td></td>
+    </tr>
+    <tr>
 
 
-      <td><span style="font-weight: bold;">Using an External Editor</span><br />
+
+      <td>
+      <h3><span style="font-weight: bold;">Using an External Editor</span></h3>
+
 
 
 
 If desired the archetype can be edited via the "Edit" button at the top
 left. The editor can be chosen via the Options menu. If changes are
 made to an archetype in an external editor and saved, the "Parse"
-button needs to be used to re-evaluate the archetype.</td>
+button needs to be used to re-evaluate the archetype.<br />
+      <br />
+      <span style="font-weight: bold;">In the current release, if an
+.adls file is available, it will be loaded into the editor. If no .adls
+file is available, due to failure to compile, the original .adl file
+will be loaded. In future releases, when archetypes are represented
+primarily in .adls files, only this file type will be available in the
+editor.</span></td>
+
 
 
       <td><a href="images/external_editor.png"><img style="border: 0px solid ; width: 100px; height: 74px;" alt="External editor" src="images/tn/external_editor.jpg" /></a></td>
+
 
 
       
@@ -490,10 +527,14 @@ button needs to be used to re-evaluate the archetype.</td>
     </tr>
 
 
+
     <tr>
 
 
-      <td><span style="font-weight: bold;">Saving an archetype</span><br />
+
+      <td>
+      <h3><span style="font-weight: bold;">Saving an archetype</span></h3>
+
 
 
 
@@ -521,33 +562,9 @@ button needs to be used to re-evaluate the archetype.</td>
 
 Archetypes can be serialised (i.e. saved) using the "Save As" option under the File menu.
 The serialisation form is chosen from the combo box in the Save dialog.
-The ADL and HTML (colourised ADL) formats are currently supported. In the future, a pure dADL form will be available.<br />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+The ADL and HTML (colourised ADL) formats are currently supported. Save as ADL causes the .adls file to be saved.<br />
       <br />
+
 
 
 
@@ -576,7 +593,9 @@ The ADL and HTML (colourised ADL) formats are currently supported. In the future
 An example of an HTML serialised archetype is shown <a href="http://svn.openehr.org/knowledge/archetypes/dev/adl/openehr/ehr/entry/evaluation/openEHR-EHR-EVALUATION.adverse.v1.html">here</a>.</td>
 
 
+
       <td><a href="images/save_as.png"><img style="border: 0px solid ; width: 100px; height: 40px;" alt="save as" src="images/tn/save_as.jpg" /></a></td>
+
 
 
       
@@ -602,59 +621,8 @@ An example of an HTML serialised archetype is shown <a href="http://svn.openehr.
 
 
 
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-    
-
-
-
-
-
-
 
 
 
@@ -700,6 +668,24 @@ An example of an HTML serialised archetype is shown <a href="http://svn.openehr.
 
 
 
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -718,6 +704,17 @@ An example of an HTML serialised archetype is shown <a href="http://svn.openehr.
 
 
 
+
+
+
+
+
+
+
+
+
+
+    
 
 
 
@@ -797,6 +794,30 @@ An example of an HTML serialised archetype is shown <a href="http://svn.openehr.
 
 
 
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
   
   
   
@@ -824,6 +845,7 @@ An example of an HTML serialised archetype is shown <a href="http://svn.openehr.
   
   </tbody>
 </table>
+
 
 
 <br />
@@ -870,9 +892,11 @@ An example of an HTML serialised archetype is shown <a href="http://svn.openehr.
 
 
 
+
 <hr style="width: 100%; height: 2px;" />
 <p class="footer">$LastChangedDate: $
 $LastChangedRevision$</p>
+
 
 
 

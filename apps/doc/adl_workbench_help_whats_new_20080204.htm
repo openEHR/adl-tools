@@ -42,6 +42,8 @@
 
 
 
+
+  
   
   
   
@@ -123,9 +125,12 @@
 
 
 
+
   
 
 
+  
+  
   
   
   
@@ -218,6 +223,8 @@
 
 
 
+
+  
   
   
   
@@ -234,6 +241,7 @@
 
 
 <body>
+
 
 
 
@@ -318,8 +326,10 @@
 
 
 
+
 <hr style="width: 100%; height: 2px;" />
 <h2>Specialisation Semantics</h2>
+
 The workbench now works using two
 kinds of files: differential 'source' files (.adls extension) and flat
 files (.adl extension). Previously, .adl files were treated as the
@@ -328,23 +338,35 @@ form representation for specialised archetypes. Instead, a differential
 representation is used, rather like specialised classes in object
 oriented programming languages. The consequences of this change are as
 follows:<br />
+
 <ul>
+
   <li>specialised archetypes will be far more
 sustainable to author, as they will no longer contain copies of
 structural parts inherited from parent archetypes;</li>
+
   <li>there are now two kinds of files:</li>
+
+  
   <ul>
+
     <li><span style="font-weight: bold;">.adls file</span>: this will become the 'source' file type for all archetypes.&nbsp;</li>
+
     <li><span style="font-weight: bold;">.adl file</span>:
 this will become the file type for&nbsp;the 'flat' &nbsp;view of an archetype. In
 the future, .adl files will no longer be stored, but will be generated
 on the fly.</li>
+
+  
   </ul>
+
   <li>for existing archetype repositories consisting
 of .adl files, the .adl file will be treated as the initial source. A
 .adls file will be generated once only for each .adl file, and from
 then on, the .adls file will be used as the source.</li>
+
 </ul>
+
 <span style="color: rgb(153, 0, 0); font-weight: bold;"></span>
 
 
@@ -358,20 +380,25 @@ then on, the .adls file will be used as the source.</li>
 
 
 <h2>Compiler Mode of Operation</h2>
+
 The Archetype workbench now functions as a compiler over the entire
 archteype 'directory' (the merged result of the reference and work
 repositories). With a single command (F7; build repository), all
 archetypes are compiled, and an error report built up which can be
 perused at any time. Slot relationships between archetypes are now
 shown, as are statistics for the repositories.<br />
+
 <h2>Status of Tooling</h2>
-<span style="color: rgb(153, 0, 0); font-weight: bold;">Currently
+
+<span style="color: rgb(0, 0, 0);">Currently
 the tooling is in a proof-of-concept state with respect to
 specialisation. Some further small changes are needed to complete the
 semantics, including being able to specify ordering of branches in
-specialised archetypes.</span><br style="color: rgb(153, 0, 0); font-weight: bold;" />
-<br style="color: rgb(153, 0, 0); font-weight: bold;" />
-<span style="color: rgb(153, 0, 0); font-weight: bold;">The
+specialised archetypes, and various kinds of specialisations such as of slots.</span><br style="color: rgb(0, 0, 0);" />
+
+<br style="color: rgb(0, 0, 0);" />
+
+<span style="color: rgb(0, 0, 0);">The
 current release of the tool will not overwrite any .adl files, it will
 just silently create .adls files. These can be removed via the 'Clean
 Generated Files'&nbsp;option on the Tools menu.</span>
@@ -418,6 +445,7 @@ Generated Files'&nbsp;option on the Tools menu.</span>
 <hr style="width: 100%; height: 2px;" />
 <p class="footer">$LastChangedDate$
 $LastChangedRevision$</p>
+
 
 
 
