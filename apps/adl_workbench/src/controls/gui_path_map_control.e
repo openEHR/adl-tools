@@ -80,16 +80,17 @@ feature -- Commands
 		end
 
 	populate is
-			-- populate path control
+			-- Populate `path_list'.
 		local
-			mcl: EV_MULTI_COLUMN_LIST
 			list_row: EV_MULTI_COLUMN_LIST_ROW
 			p_paths, l_paths: ARRAYED_LIST[STRING]
 			c_o: C_OBJECT
 		do
-			mcl := path_list
-			mcl.wipe_out
-			mcl.set_column_titles (path_control_column_names)
+			path_list.wipe_out
+			path_list.set_column_titles (path_control_column_names)
+
+			-- Add am empty column at the end so the width of the true last column can be set to zero on all platforms.
+			path_list.set_column_title ("", path_control_column_names.count + 1)
 
 			if archetype_directory.has_valid_selected_archetype then
 				if filter_combo.text.is_equal ("All") then
@@ -106,16 +107,15 @@ feature -- Commands
 				until
 					p_paths.off
 				loop
-					create list_row
-
 					c_o := target_archetype.c_object_at_path (p_paths.item)
 
 					if c_o /= Void then
-							list_row.extend (utf8 (p_paths.item))
-							list_row.extend (utf8 (l_paths.item))
-							list_row.extend (utf8 (c_o.rm_type_name))
-							list_row.extend (utf8 (c_o.generating_type))
-							mcl.extend (list_row)
+						create list_row
+						list_row.extend (utf8 (p_paths.item))
+						list_row.extend (utf8 (l_paths.item))
+						list_row.extend (utf8 (c_o.rm_type_name))
+						list_row.extend (utf8 (c_o.generating_type))
+						path_list.extend (list_row)
 					end
 
 					p_paths.forth
@@ -141,21 +141,23 @@ feature -- Commands
 		end
 
 	adjust_columns is
-			-- adjust column view of paths control according to checklist
+			-- Adjust column view of paths control according to `column_check_list'.
 		local
-			i:INTEGER
+			i: INTEGER
 		do
 			from
 				i := 1
 			until
 				i > path_list.column_count
 			loop
-				if not column_check_list.is_item_checked (column_check_list.i_th (i)) then
+				if i > column_check_list.count or else not column_check_list.is_item_checked (column_check_list [i]) then
 					path_list.set_column_width (0, i)
-				elseif path_list.is_empty then
-					path_list.set_column_width (100, i)
 				else
 					path_list.resize_column_to_content (i)
+
+					if path_list.column_width (i) < 100 then
+						path_list.set_column_width (100, i)
+					end
 				end
 
 				i := i + 1
@@ -173,14 +175,12 @@ feature -- Commands
 	copy_path_to_clipboard is
 			-- copy a selected path row from the paths control to the OS clipboard
 		local
-			mcl: EV_MULTI_COLUMN_LIST
 			ev_rows: DYNAMIC_LIST[EV_MULTI_COLUMN_LIST_ROW]
 			ev_col: EV_MULTI_COLUMN_LIST_ROW
 			copy_text: STRING
 		do
-			mcl := path_list
-			ev_rows := mcl.selected_items
-			create copy_text.make(0)
+			ev_rows := path_list.selected_items
+			create copy_text.make (0)
 
 			if not ev_rows.is_empty then
 				from
@@ -189,6 +189,7 @@ feature -- Commands
 					ev_rows.off
 				loop
 					ev_col := ev_rows.item
+
 					from
 						ev_col.start
 					until
@@ -197,6 +198,7 @@ feature -- Commands
 						copy_text.append(ev_col.item.string + "%N")
 						ev_col.forth
 					end
+
 					ev_rows.forth
 				end
 			end
