@@ -625,6 +625,12 @@ feature {NONE}-- Initialization
 			l_ev_vertical_box_2.disable_item_expand (l_ev_label_2)
 			l_ev_label_1.set_text ("Author")
 			l_ev_label_2.set_text ("Accreditation")
+			color_constant_set_procedures.extend (agent arch_translations_accreditation_text.set_background_color (?))
+			color_constant_retrieval_functions.extend (agent editable_colour)
+			integer_constant_set_procedures.extend (agent arch_translations_accreditation_text.set_minimum_width (?))
+			integer_constant_retrieval_functions.extend (agent min_entry_control_width)
+			integer_constant_set_procedures.extend (agent arch_translations_accreditation_text.set_minimum_height (?))
+			integer_constant_retrieval_functions.extend (agent min_text_height)
 			arch_translations_accreditation_text.disable_edit
 			integer_constant_set_procedures.extend (agent l_ev_vertical_box_3.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
@@ -989,7 +995,6 @@ feature {NONE}-- Initialization
 			arch_desc_status_text.focus_in_actions.extend (agent on_select_all)
 			arch_desc_original_language_text.focus_in_actions.extend (agent on_select_all)
 			arch_translations_languages_list.select_actions.extend (agent translations_select_language)
-			arch_translations_accreditation_text.focus_in_actions.extend (agent on_select_all)
 			arch_desc_purpose_text.focus_in_actions.extend (agent on_select_all)
 			arch_desc_use_text.focus_in_actions.extend (agent on_select_all)
 			arch_desc_misuse_text.focus_in_actions.extend (agent on_select_all)
@@ -1026,12 +1031,12 @@ feature -- Access
 	menu: EV_MENU_BAR
 	node_map_domain_radio_button,
 	node_map_technical_radio_button: EV_RADIO_BUTTON
-	arch_desc_purpose_text, arch_desc_use_text, arch_desc_misuse_text,
-	arch_desc_copyright_text, parser_status_area, test_status_area: EV_TEXT
-	total_split_area,
-	node_map_and_ontology_split_area, test_split_area: EV_VERTICAL_SPLIT_AREA
-	archetype_file_tree, node_map_tree,
-	slots_tree, used_by_tree: EV_TREE
+	arch_translations_accreditation_text, arch_desc_purpose_text,
+	arch_desc_use_text, arch_desc_misuse_text, arch_desc_copyright_text, parser_status_area,
+	test_status_area: EV_TEXT
+	total_split_area, node_map_and_ontology_split_area, test_split_area: EV_VERTICAL_SPLIT_AREA
+	archetype_file_tree,
+	node_map_tree, slots_tree, used_by_tree: EV_TREE
 	arch_desc_auth_orig_auth_mlist, arch_translations_author_mlist,
 	arch_translations_other_details_mlist, arch_desc_resource_orig_res_mlist, ontology_term_definitions_multi_column_list,
 	ontology_constraint_definitions_multi_column_list, path_analysis_multi_column_list: EV_MULTI_COLUMN_LIST
@@ -1055,9 +1060,9 @@ feature -- Access
 	l_ev_horizontal_box_17: EV_HORIZONTAL_BOX
 	remove_unused_codes_rb: EV_CHECK_BUTTON
 	archetype_id, adl_version_text, arch_desc_status_text,
-	arch_desc_original_language_text, arch_translations_accreditation_text, arch_desc_resource_package_text,
-	arch_total_count_tf, arch_spec_count_tf, arch_slotted_count_tf, arch_used_by_count_tf,
-	arch_bad_count_tf, arch_test_processed_count: EV_TEXT_FIELD
+	arch_desc_original_language_text, arch_desc_resource_package_text, arch_total_count_tf,
+	arch_spec_count_tf, arch_slotted_count_tf, arch_used_by_count_tf, arch_bad_count_tf,
+	arch_test_processed_count: EV_TEXT_FIELD
 	compiler_output_grid, archetype_test_tree_grid: EV_GRID
 	node_map_expand_button,
 	node_map_expand_one_button, node_map_collapse_one_button, arch_test_tree_toggle_expand_bn,
