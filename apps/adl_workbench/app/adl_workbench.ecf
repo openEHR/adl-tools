@@ -86,6 +86,12 @@
 			<file_rule>
 				<exclude>/base_net$</exclude>
 			</file_rule>
+			<file_rule>
+				<exclude>/implementation_gtk$</exclude>
+				<condition>
+					<platform value="windows"/>
+				</condition>
+			</file_rule>
 		</override>
 	</target>
 	<target name="adl_workbench" extends="adl_workbench_no_precompile">
