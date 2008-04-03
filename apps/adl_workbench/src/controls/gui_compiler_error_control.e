@@ -87,6 +87,8 @@ feature -- Commands
 			grid.column (Col_category).set_title ("Category")
 			grid.column (Col_location).set_title ("Archetype")
 			grid.column (Col_message).set_title ("Message")
+
+			update_errors_tab_label
 		end
 
 	extend_and_select (ara: ARCH_REP_ARCHETYPE) is
@@ -193,7 +195,29 @@ feature -- Commands
 				grid.column (Col_category).resize_to_content
 				grid.column (Col_location).resize_to_content
 				grid.column (Col_message).resize_to_content
+
+				update_errors_tab_label
 			end
+		end
+
+feature -- Access
+
+	parse_error_count: INTEGER
+			-- Number of parser errors.
+		do
+			Result := count_for_category (err_type_parse_error)
+		end
+
+	validity_error_count: INTEGER
+			-- Number of parser errors.
+		do
+			Result := count_for_category (err_type_validity_error)
+		end
+
+	warning_count: INTEGER
+			-- Number of parser errors.
+		do
+			Result := count_for_category (err_type_warning)
 		end
 
 feature {NONE} -- Implementation
@@ -222,12 +246,28 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	categories: ARRAY [EV_GRID_ROW]
+	update_errors_tab_label
+			-- On the Errors tab, indicate parse errors, validity errors and warnings.
+		do
+			gui.status_notebook.set_item_text (gui.compiler_output_grid, "Errors (" + parse_error_count.out + "/" + validity_error_count.out + "/" + warning_count.out + ")")
+		end
+
+	count_for_category (err_type: INTEGER): INTEGER
+			-- Number of parser errors.
+		require
+			not_too_small: err_type >= categories.lower
+			not_too_big: err_type <= categories.upper
+		do
+			if {row: !EV_GRID_ROW} categories [err_type] then
+				Result := row.subrow_count
+			end
+		end
+
+	categories: !ARRAY [EV_GRID_ROW]
 			-- Rows containing category grouper in column 1.
 
 invariant
 	gui_attached: gui /= Void
-	categories_attached: categories /= Void
 	correct_grid: grid = gui.compiler_output_grid
 
 end
