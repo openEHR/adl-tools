@@ -745,9 +745,11 @@ feature -- Archetype commands
 	select_archetype_from_gui_data (gui_item: EV_ANY)
 			-- Select and display the node of `archetype_file_tree' corresponding to the folder or archetype attached to `gui_item'.
 		do
-			if gui_item /= Void and then {a: !ARCH_REP_ITEM} gui_item.data then
-				archetype_directory.set_selected_item (a)
-				select_node_in_archetype_tree_view
+			if gui_item /= Void then
+				if {a: !ARCH_REP_ITEM} gui_item.data then
+					archetype_directory.set_selected_item (a)
+					select_node_in_archetype_tree_view
+				end
 			end
 		end
 
