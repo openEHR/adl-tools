@@ -34,137 +34,131 @@ inherit
 			{NONE} all
 		end
 
+	EV_KEY_CONSTANTS
+
+	EV_SHARED_APPLICATION
+
 create
 	make
 
 feature {NONE} -- Initialisation
 
-	make (a_main_window: MAIN_WINDOW) is
+	make (a_main_window: MAIN_WINDOW)
+			-- Create to control `a_main_window.slots_tree' and `a_main_window.used_by_tree'.
 		require
 			a_main_window /= Void
 		do
 			gui := a_main_window
-			gui_tree := gui.slots_tree
-			gui_tree.pointer_double_press_actions.force_extend (agent select_node_in_archetype_tree_view)
-			in_differential_mode := True
+			gui.slots_tree.key_press_actions.force_extend (agent on_tree_key_press (gui.slots_tree, ?))
+			gui.used_by_tree.key_press_actions.force_extend (agent on_tree_key_press (gui.used_by_tree, ?))
+		ensure
+			gui_set: gui = a_main_window
 		end
-
-feature -- Status Report
-
-	in_differential_mode: BOOLEAN
-			-- True if node visualisation should show definition status of each node,
-			-- i.e. inherited, redefine etc
 
 feature -- Commands
 
-	set_differential_view
-			-- Set `in_differential_mode' on.
-		do
-			in_differential_mode := True
-			populate
-		end
-
-	set_flat_view
-			-- Set `in_differential_mode' off.
-		do
-			in_differential_mode := False
-			populate
-		end
-
 	clear is
 		do
-			gui_tree.wipe_out
+			gui.slots_tree.wipe_out
+			gui.used_by_tree.wipe_out
+			slots_count := 0
+			used_by_count := 0
+			update_slots_tab_label
 		end
 
 	populate is
 			-- populate the ADL tree control by creating it from scratch
 		local
 			eti: EV_TREE_ITEM
-			slot_id_list: ARRAYED_LIST[STRING]
-			a_path: STRING
 			ara: ARCH_REP_ARCHETYPE
+			slots: HASH_TABLE [ARRAYED_LIST [STRING], STRING]
 		do
 			clear
-			archetype_tree_root_set := False
-			create tree_item_stack.make (0)
 
 			if archetype_directory.has_selected_archetype then
 				ara := archetype_directory.selected_archetype
 
 				if ara.has_slots then
 					from
-						ara.slot_id_index.start
+						slots := ara.slot_id_index
+						slots.start
 					until
-						ara.slot_id_index.off
+						slots.off
 					loop
-						a_path := ara.slot_id_index.key_for_iteration
-						create eti.make_with_text (utf8 (ara.archetype_differential.ontology.physical_to_logical_path (a_path, current_language)))
-						eti.set_pixmap (pixmaps.item ("ARCHETYPE_SLOT"))
+						create eti.make_with_text (utf8 (ara.archetype_differential.ontology.physical_to_logical_path (slots.key_for_iteration, current_language)))
+						eti.set_pixmap (pixmaps ["ARCHETYPE_SLOT"])
+						gui.slots_tree.extend (eti)
+						append_tree (eti, slots.item_for_iteration)
+						slots_count := slots_count + eti.count
 
-						gui_tree.extend (eti)
-						tree_item_stack.extend (eti)
-
-						slot_id_list := ara.slot_id_index.item_for_iteration
-						from
-							slot_id_list.start
-						until
-							slot_id_list.off
-						loop
-							create eti.make_with_text (utf8 (slot_id_list.item))
-							eti.set_pixmap (pixmaps.item (archetype_directory.archetype_id_index.item (slot_id_list.item).group_name))
-							eti.set_data (archetype_directory.archetype_id_index.item (slot_id_list.item))
-							tree_item_stack.item.extend (eti)
-							tree_item_stack.item.expand
-							slot_id_list.forth
+						if eti.is_expandable then
+							eti.expand
 						end
 
-						tree_item_stack.remove
-						ara.slot_id_index.forth
+						slots.forth
 					end
 				end
+
+				if ara.is_used then
+					append_tree (gui.used_by_tree, ara.used_by_index)
+					used_by_count := used_by_count + gui.used_by_tree.count
+				end
+
+				update_slots_tab_label
 			end
 		end
+
+feature -- Access
+
+	slots_count: INTEGER
+			-- Number of slots in the current archetype.
+
+	used_by_count: INTEGER
+			-- Number of archetypes that use the current archetype.
 
 feature {NONE} -- Implementation
 
-	target_archetype: ARCHETYPE is
-			-- differential or flat version of archetype, depending on setting of `in_differential_mode'
-		require
-			archetype_directory.has_selected_archetype
-		do
-			if in_differential_mode then
-				Result := archetype_directory.selected_archetype.archetype_differential
-			else
-				Result := archetype_directory.selected_archetype.archetype_flat
-			end
-		end
-
 	gui: MAIN_WINDOW
-			-- main window of system
+			-- Main window of system.
 
-	gui_tree: EV_TREE
-
-	tree_item_stack: ARRAYED_STACK[EV_TREE_ITEM]
-
-	archetype_tree_root_set: BOOLEAN
-
-	attach_node(str: STRING): EV_TREE_ITEM is
-			-- attach a node into the tree
+	append_tree (subtree: EV_TREE_NODE_LIST; ids: ARRAYED_LIST [STRING])
+			-- Populate `subtree' from `ids'.
+		require
+			subtree_attached: subtree /= Void
+			ids_attached: ids /= Void
+		local
+			eti: EV_TREE_ITEM
 		do
-			create Result.make_with_text (utf8 (str))
-
-			if not archetype_tree_root_set then
-				gui_tree.extend (Result)
-				archetype_tree_root_set := True
-			else
-				tree_item_stack.item.extend(Result)
+			from
+				ids.start
+			until
+				ids.off
+			loop
+				create eti.make_with_text (utf8 (ids.item))
+				eti.set_pixmap (pixmaps [archetype_directory.archetype_id_index.item (ids.item).group_name])
+				eti.set_data (archetype_directory.archetype_id_index.item (ids.item))
+				eti.pointer_double_press_actions.force_extend (agent gui.select_archetype_from_gui_data (eti))
+				subtree.extend (eti)
+				ids.forth
 			end
+		ensure
+			appended: subtree.count = old subtree.count + ids.count
 		end
 
-	select_node_in_archetype_tree_view
-			-- Select the archetype in the main window's explorer tree.
+	update_slots_tab_label
+			-- On the Slots tab, indicate the numbers of slots and used-by's.
 		do
-			gui.select_archetype_from_gui_data (gui_tree.selected_item)
+			gui.archetype_notebook.set_item_text (gui.slots_box, "Slots (" + slots_count.out + "/" + used_by_count.out + ")")
+		end
+
+	on_tree_key_press (tree: EV_TREE; key: EV_KEY) is
+			-- When the user presses Enter on an archetype, select it in the main window's explorer tree.
+		do
+			if not (ev_application.shift_pressed or ev_application.alt_pressed or ev_application.ctrl_pressed) then
+				if key /= Void and then key.code = key_enter then
+					gui.select_archetype_from_gui_data (tree.selected_item)
+				end
+			end
 		end
 
 end

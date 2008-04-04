@@ -884,17 +884,12 @@ feature -- Controls
 			create Result.make (Current)
 		end
 
-	slot_map_control: GUI_SLOT_MAP_CONTROL
-		once
-			create Result.make (Current)
-		end
-
-	used_by_map_control: GUI_USED_BY_MAP_CONTROL
-		once
-			create Result.make (Current)
-		end
-
 	path_map_control: GUI_PATH_MAP_CONTROL
+		once
+			create Result.make (Current)
+		end
+
+	slot_map_control: GUI_SLOT_MAP_CONTROL
 		once
 			create Result.make (Current)
 		end
@@ -1001,10 +996,9 @@ feature {NONE} -- Implementation
 			description_controls.clear
 			translation_controls.clear
 			node_map_control.clear
-			ontology_controls.clear
 			path_map_control.clear
+			ontology_controls.clear
 			slot_map_control.clear
-			used_by_map_control.clear
 		end
 
 	populate_view_controls
@@ -1013,7 +1007,6 @@ feature {NONE} -- Implementation
 			description_controls.populate
 			translation_controls.populate
 			slot_map_control.populate
-			used_by_map_control.populate
 
 			if definition_notebook.parent = differential_view_box then
 				node_map_control.set_differential_view
