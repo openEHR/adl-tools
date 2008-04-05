@@ -327,17 +327,8 @@ feature -- File events
 				elseif ara.is_differential_file_out_of_date then
 					do_with_wait_cursor (agent archetype_compiler.rebuild_lineage (ara))
 				else
-					compiler_error_control.extend_and_select (ara)
-
-					if ara.has_compiler_status then
-						set_status_area (ara.compiler_status)
-					end
+					do_with_wait_cursor (agent build_gui_update (ara))
 				end
-
-				populate_archetype_id
-				populate_adl_version
-				populate_languages
-				populate_view_controls
 			end
 		end
 
@@ -1188,7 +1179,7 @@ feature {GUI_TEST_ARCHETYPE_TREE_CONTROL} -- Build commands
 
 			if ara /= Void then
 				if {node: !EV_TREE_NODE} archetype_file_tree.retrieve_item_recursively_by_data (ara, True) then
-					archetype_view_tree_control.set_node_pixmap (node)
+					archetype_view_tree_control.update_tree_node (node)
 				end
 
 				archetype_test_tree_control.do_row_for_item (ara, agent archetype_test_tree_control.set_row_pixmap)
@@ -1197,6 +1188,9 @@ feature {GUI_TEST_ARCHETYPE_TREE_CONTROL} -- Build commands
 					compiler_error_control.extend_and_select (ara)
 
 					if ara = archetype_directory.selected_archetype then
+						populate_archetype_id
+						populate_adl_version
+						populate_languages
 						populate_view_controls
 					end
 				end
