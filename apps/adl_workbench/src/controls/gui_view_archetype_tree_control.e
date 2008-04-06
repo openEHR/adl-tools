@@ -97,11 +97,11 @@ feature -- Commands
 
 				if {ara: !ARCH_REP_ARCHETYPE} item then
 					if ara.is_used then
-						text.append_code (0x21A9)	-- Unicode character: an arrow pointing left
+						text.append_code (0x2190)	-- Unicode character: an arrow pointing left
 					end
 
 					if ara.has_slots then
-						text.append_code (0x21AA)	-- Unicode character: an arrow pointing right
+						text.append_code (0x2192)	-- Unicode character: an arrow pointing right
 					end
 
 					if ara.has_compiler_status then
