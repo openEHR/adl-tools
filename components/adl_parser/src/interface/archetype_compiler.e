@@ -11,7 +11,7 @@ indexing
 	license:     "See notice at bottom of class"
 
 	file:        "$URL: http://svn.openehr.org/ref_impl_eiffel/BRANCHES/specialisation/components/adl_parser/src/interface/archetype_parser.e $"
-	revision:    "$LastChangedRevision$"
+	revision:    "$LastChangedRevision: 489 $"
 	last_change: "$LastChangedDate: 2007-10-02 16:49:19 +0100 (Tue, 02 Oct 2007) $"
 
 class ARCHETYPE_COMPILER
@@ -59,12 +59,6 @@ feature -- Access
 	visual_update_action: PROCEDURE [ANY, TUPLE [ARCH_REP_ARCHETYPE]]
 			-- Called after processng each archetype (to perform GUI updates during processing).
 
-	initial_visual_update_action: PROCEDURE [ANY, TUPLE]
-			-- called before processing whole repository
-
-	final_visual_update_action: PROCEDURE [ANY, TUPLE]
-			-- called after processing whole repository
-
 feature -- Status
 
 	is_interrupted: BOOLEAN
@@ -77,7 +71,6 @@ feature -- Status Setting
 		do
 			is_interrupted := True
 			status.append ("************* interrupted *************%N")
-			call_visual_update_action (Void)
 		ensure
 			interrupted: is_interrupted
 			status_set: not status.is_empty
@@ -93,36 +86,16 @@ feature -- Commands
 			visual_update_action_set: visual_update_action = value
 		end
 
-	set_initial_visual_update_action (value: PROCEDURE [ANY, TUPLE])
-			-- Set `initial_visual_update_action'.
-		do
-			initial_visual_update_action := value
-		ensure
-			initial_visual_update_action_set: initial_visual_update_action = value
-		end
-
-	set_final_visual_update_action (value: PROCEDURE [ANY, TUPLE])
-			-- Set `final_visual_update_action'.
-		do
-			final_visual_update_action := value
-		ensure
-			final_visual_update_action_set: final_visual_update_action = value
-		end
-
 	build_all
 			-- Build the whole system, but not artefacts that seem to be built already.
 		do
-			call_initial_visual_update_action
 			do_subtree (archetype_directory.directory, agent build_archetype (False, ?), "building system")
-			call_final_visual_update_action
 		end
 
 	rebuild_all
 			-- Rebuild the whole system from scratch, regardless of previous attempts.
 		do
-			call_initial_visual_update_action
 			do_subtree (archetype_directory.directory, agent build_archetype (True, ?), "rebuilding system from scratch")
-			call_final_visual_update_action
 		end
 
 	build_subtree
@@ -245,22 +218,6 @@ feature {NONE} -- Implementation
 		do
 			if visual_update_action /= Void then
 				visual_update_action.call ([ara])
-			end
-		end
-
-	call_initial_visual_update_action
-			-- Call `initial_visual_update_action', if it is attached.
-		do
-			if initial_visual_update_action /= Void then
-				initial_visual_update_action.call (Void)
-			end
-		end
-
-	call_final_visual_update_action
-			-- Call `final_visual_update_action', if it is attached.
-		do
-			if final_visual_update_action /= Void then
-				final_visual_update_action.call (Void)
 			end
 		end
 

@@ -214,8 +214,6 @@ feature -- Status setting
 		do
 			populate_archetype_directory
 			archetype_compiler.set_visual_update_action (agent build_gui_update)
-			archetype_compiler.set_initial_visual_update_action (agent build_gui_stats_update)
-			archetype_compiler.set_final_visual_update_action (agent build_gui_stats_update)
 			initialise_overall_appearance
 			initialise_path_control
 			Precursor
@@ -1118,16 +1116,6 @@ feature {NONE} -- Implementation
 			language_combo.select_actions.resume
 		end
 
-	populate_statistics
-			-- populate statistics
-		do
-			arch_total_count_tf.set_text (archetype_directory.total_archetype_count.out)
-			arch_spec_count_tf.set_text (archetype_directory.specialised_archetype_count.out)
-			arch_slotted_count_tf.set_text (archetype_directory.slotted_archetype_count.out)
-			arch_used_by_count_tf.set_text (archetype_directory.used_by_archetype_count.out)
-			arch_bad_count_tf.set_text (archetype_directory.bad_archetype_count.out)
-		end
-
 	do_with_wait_cursor (action: PROCEDURE [ANY, TUPLE])
 			-- Perform `action' with an hourglass mouse cursor, restoring the cursor when done.
 		require
@@ -1143,7 +1131,19 @@ feature {NONE} -- Implementation
 			set_pointer_style (cursor)
 		end
 
-feature {GUI_TEST_ARCHETYPE_TREE_CONTROL} -- Build commands
+feature {GUI_TEST_ARCHETYPE_TREE_CONTROL} -- Statistics
+
+	populate_statistics
+			-- Populate the statistics tab.
+		do
+			arch_total_count_tf.set_text (archetype_directory.total_archetype_count.out)
+			arch_spec_count_tf.set_text (archetype_directory.specialised_archetype_count.out)
+			arch_slotted_count_tf.set_text (archetype_directory.slotted_archetype_count.out)
+			arch_used_by_count_tf.set_text (archetype_directory.used_by_archetype_count.out)
+			arch_bad_count_tf.set_text (archetype_directory.bad_archetype_count.out)
+		end
+
+feature {NONE} -- Build commands
 
 	do_build_action (action: PROCEDURE [ANY, TUPLE])
 			-- Perform `action', with an hourglass mouse cursor and disabling the build menus, until done.
@@ -1186,6 +1186,7 @@ feature {GUI_TEST_ARCHETYPE_TREE_CONTROL} -- Build commands
 
 				if ara.parse_attempted then
 					compiler_error_control.extend_and_select (ara)
+					populate_statistics
 
 					if ara = archetype_directory.selected_archetype then
 						populate_archetype_id
@@ -1196,13 +1197,6 @@ feature {GUI_TEST_ARCHETYPE_TREE_CONTROL} -- Build commands
 				end
 			end
 
-			ev_application.process_events
-		end
-
-	build_gui_stats_update
-			-- Update GUI with progress at end of build.
-		do
-			populate_statistics
 			ev_application.process_events
 		end
 
