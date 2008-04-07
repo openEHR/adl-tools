@@ -3,9 +3,10 @@ ADL_WORKBENCH NEWS (see Help menu > News)
 
 User interface improvements:
 * The Errors and Slots tabs now show how many archetypes appear within them.
-* The repository explorer shows if an archetype has slots or is used by another archetype. 
+* The repository explorer shows a little arrow next to each archetype that has slots.
 
 These problems in the previous release are now fixed:
+* On the Statistics tab, the Slots counts were not updated correctly.
 * On Linux and Mac only:
   * Opening an archetype ad-hoc did not show it in the explorer tree.
   * Double-clicking an archetype in the Errors or Slots tabs did not show it in the explorer tree.
