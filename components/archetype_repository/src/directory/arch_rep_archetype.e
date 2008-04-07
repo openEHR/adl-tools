@@ -238,19 +238,19 @@ feature -- Status Report
 			-- actually been compiled and is available in memory. This is useful for specialised archetypes because
 			-- you want to know if the parent has been compiled (up the lineage) before you can compile the current one
 
-	has_compiler_status: BOOLEAN is
+	has_compiler_status: BOOLEAN
 			-- True if there si any compiler errors or warnings
 		do
 			Result := not compiler_status.is_empty
 		end
 
-	has_slots: BOOLEAN is
+	has_slots: BOOLEAN
 			-- True if this archetype has one or more slots
 		do
 			Result := slot_id_index /= Void
 		end
 
-	is_used: BOOLEAN is
+	is_used: BOOLEAN
 			-- True if this archetype is used by other archetypes (i.e. matrches any of their slots)
 		do
 			Result := used_by_index /= Void
@@ -258,10 +258,13 @@ feature -- Status Report
 
 feature -- Status Setting
 
-	set_parse_attempted is
-			-- set `parse_attempted'
+	set_parse_attempted
+			-- Set `parse_attempted' true.
 		do
-			parse_attempted := True
+			if not parse_attempted then
+				parse_attempted := True
+				archetype_directory.increment_parse_attempted_archetype_count
+			end
 		end
 
 feature -- Commands
@@ -343,7 +346,7 @@ feature -- Comparison
 
 feature -- Modification
 
-	set_archetype_differential(an_archetype: DIFFERENTIAL_ARCHETYPE) is
+	set_archetype_differential (an_archetype: DIFFERENTIAL_ARCHETYPE) is
 			-- create with a new differential form (i.e. source form) archetype
 		require
 			Archetype_exists: an_archetype /= Void
@@ -367,7 +370,7 @@ feature -- Modification
 			archetype_set: archetype_differential = an_archetype
 		end
 
-	set_archetype_flat(an_archetype: FLAT_ARCHETYPE) is
+	set_archetype_flat (an_archetype: FLAT_ARCHETYPE) is
 			-- create with a flat form archetype - used for legacy archetypes not yet parsed and
 			-- converted to differential form
 		require
@@ -375,14 +378,14 @@ feature -- Modification
 		do
 			post_info (Current, "set_archetype_flat", "parse_archetype_i2", <<id.as_string>>)
 			archetype_flat := an_archetype
-			set_archetype_differential(an_archetype.to_differential)
+			set_archetype_differential (an_archetype.to_differential)
 			archetype_flat.rebuild
 			archetype_flat.set_is_valid (is_valid)
 		ensure
 			archetype_set: archetype_flat = an_archetype
 		end
 
-	set_specialisation_parent(a_parent: ARCH_REP_ARCHETYPE) is
+	set_specialisation_parent (a_parent: ARCH_REP_ARCHETYPE) is
 			-- set `parent'
 		require
 			Parent_exists: a_parent /= Void
@@ -390,7 +393,7 @@ feature -- Modification
 			specialisation_parent := a_parent
 		end
 
-	set_compiler_status(str: STRING) is
+	set_compiler_status (str: STRING) is
 			-- set `compiler_status'
 		require
 			String_valid: str /= Void

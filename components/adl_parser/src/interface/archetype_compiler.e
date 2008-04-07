@@ -130,12 +130,16 @@ feature -- Commands
 
 	export_all_html (html_export_directory: STRING)
 			-- Generate HTML under `html_export_directory' from all archetypes that have already been built.
+		require
+			directory_attached: html_export_directory /= Void
 		do
 			do_subtree (archetype_directory.directory, agent export_archetype_html (html_export_directory, False, ?), "exporting built system as html")
 		end
 
 	build_and_export_all_html (html_export_directory: STRING)
 			-- Generate HTML under `html_export_directory' from the whole system, building each archetype as necessary.
+		require
+			directory_attached: html_export_directory /= Void
 		do
 			do_subtree (archetype_directory.directory, agent export_archetype_html (html_export_directory, True, ?), "building system and exporting as html")
 		end
@@ -194,6 +198,8 @@ feature {NONE} -- Implementation
 
 	export_archetype_html (html_export_directory: STRING; build_too: BOOLEAN; item: ARCH_REP_ITEM)
 			-- Generate HTML under `html_export_directory' from `item', optionally building it first if necessary.
+		require
+			directory_attached: html_export_directory /= Void
 		local
 			filename: STRING
 		do

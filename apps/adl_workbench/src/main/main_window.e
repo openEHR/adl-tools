@@ -951,7 +951,7 @@ feature {NONE} -- Implementation
 						archetype_directory.put_repository (work_repository_path, 3)
 					end
 
-					archetype_directory.build_directory
+					archetype_directory.populate_directory
 					set_status_area (billboard_content)
 					archetype_view_tree_control.populate
 					archetype_test_tree_control.populate

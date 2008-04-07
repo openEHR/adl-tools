@@ -99,6 +99,10 @@ feature -- Commands
 					end
 				end
 
+				if archetype_directory.parse_attempted_archetype_count < archetype_directory.total_archetype_count then
+					gui.used_by_tree.extend (create {EV_TREE_ITEM}.make_with_text ("WARNING: This list may be incomplete. To be sure, run Build All under the Repository menu."))
+				end
+
 				if ara.is_used then
 					append_tree (gui.used_by_tree, ara.used_by_index)
 					used_by_count := used_by_count + gui.used_by_tree.count
