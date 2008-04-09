@@ -322,7 +322,7 @@ feature -- File events
 			if ara /= Void then
 				if not ara.parse_attempted then
 					do_with_wait_cursor (agent archetype_compiler.build_lineage (ara))
-				elseif ara.is_differential_file_out_of_date then
+				elseif ara.is_differential_file_out_of_date or ara.is_flat_file_out_of_date then
 					do_with_wait_cursor (agent archetype_compiler.rebuild_lineage (ara))
 				else
 					do_with_wait_cursor (agent build_gui_update (ara))
