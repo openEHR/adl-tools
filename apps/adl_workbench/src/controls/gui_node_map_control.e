@@ -46,13 +46,22 @@ create
 
 feature -- Initialisation
 
-	make(a_main_window: MAIN_WINDOW) is
+	make (a_main_window: MAIN_WINDOW)
 		require
 			a_main_window /= Void
 		do
 			gui := a_main_window
 			gui_tree := gui.node_map_tree
 			in_differential_mode := True
+			in_technical_mode := show_technical_view
+
+			if in_technical_mode then
+				gui.node_map_technical_radio_button.enable_select
+			else
+				gui.node_map_domain_radio_button.enable_select
+			end
+		ensure
+			gui_set: gui = a_main_window
 		end
 
 feature -- Status Report
@@ -73,6 +82,7 @@ feature -- Commands
 			-- Set `in_technical_mode' on.
 		do
 			in_technical_mode := True
+			set_show_technical_view (True)
 			repopulate
 		end
 
@@ -80,6 +90,7 @@ feature -- Commands
 			-- Set `in_technical_mode' off.
 		do
 			in_technical_mode := False
+			set_show_technical_view (False)
 			repopulate
 		end
 
@@ -174,30 +185,32 @@ feature -- Commands
 			end
 		end
 
-	toggle_expand_tree is
-			-- expand or shrink the tree control
+	toggle_expand_tree
+			-- Expand or shrink the tree control.
 		do
 			is_expanded := not is_expanded
+
 			if is_expanded then
-				gui_tree.recursive_do_all(agent ev_tree_item_expand(?))
-				gui.node_map_expand_button.set_text("Collapse All")
+				gui_tree.recursive_do_all (agent ev_tree_item_expand)
+				gui.node_map_expand_button.set_text ("Collapse All")
 			else
-				gui_tree.recursive_do_all(agent ev_tree_item_shrink(?))
-				gui.node_map_expand_button.set_text("Expand All")
+				gui_tree.recursive_do_all (agent ev_tree_item_shrink)
+				gui.node_map_expand_button.set_text ("Expand All")
 			end
 		end
 
-	shrink_to_level(a_type: STRING) is
-			-- shrink the tree control up to items of type `a_type'
+	shrink_to_level (a_type: STRING) is
+			-- Shrink the tree control up to items of type `a_type'.
 		do
-			gui_tree.recursive_do_all(agent ev_tree_item_shrink_to_level(a_type, ?))
+			gui_tree.recursive_do_all (agent ev_tree_item_shrink_to_level (a_type, ?))
 		end
 
 	expand_one_level is
-			-- expand the tree control one level further
+			-- Expand the tree control one level further.
 		do
-			create node_list.make(0)
-			gui_tree.recursive_do_all(agent ev_tree_item_expand_one_level(?))
+			create node_list.make (0)
+			gui_tree.recursive_do_all (agent ev_tree_item_expand_one_level)
+
 			from
 				node_list.start
 			until
@@ -208,11 +221,12 @@ feature -- Commands
 			end
 		end
 
-	shrink_one_level is
-			-- shrink the tree control one level further
+	shrink_one_level
+			-- Shrink the tree control one level further.
 		do
-			create node_list.make(0)
-			gui_tree.recursive_do_all(agent ev_tree_item_collapse_one_level(?))
+			create node_list.make (0)
+			gui_tree.recursive_do_all (agent ev_tree_item_collapse_one_level)
+
 			from
 				node_list.start
 			until
@@ -232,6 +246,7 @@ feature -- Commands
 			if target_archetype.is_specialised then
 				create node_list.make(0)
 				gui_tree.recursive_do_all(agent ev_tree_item_roll_up(?))
+
 				from
 					node_list.start
 				until
@@ -1064,6 +1079,7 @@ feature {NONE} -- Implementation
 		end
 
 invariant
+	gui_attached: gui /= Void
 	ontology_has_language: archetype_directory.has_valid_selected_archetype implies ontology.has_language (current_language)
 
 end
