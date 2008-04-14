@@ -99,42 +99,13 @@ feature -- Commands
 			gli: EV_GRID_LABEL_ITEM
 			cat_row, row, subrow: EV_GRID_ROW
 			pixmap: EV_PIXMAP
-			i, row_idx, err_cat: INTEGER
+			i, row_idx: INTEGER
 		do
-			err_cat := ara.compiler_error_type
+			remove_archetype_row_if_in_wrong_category (ara)
 
-			if err_cat /= Err_type_valid then
-				cat_row := categories [err_cat]
-
-				if cat_row = Void then
-					-- figure out which row in the grid we need to insert a new row for this category
-					from
-						i := Err_type_parse_error
-						row_idx := 1
-					until
-						i >= err_cat
-					loop
-						if categories [i] /= Void then
-							-- count the category row itself + all its subrows
-							row_idx := row_idx + categories [i].subrow_count_recursive + 1
-						end
-
-						i := i + 1
-					end
-
-					grid.insert_new_row (row_idx)
-					cat_row := grid.row (row_idx)
-					cat_row.collapse_actions.extend (agent step_to_viewable_parent_of_selected_row)
-					create gli.make_with_text (utf8 (Err_type_names [err_cat]))
-					pixmap := pixmaps [Err_type_pixmap_names [err_cat]]
-
-					if pixmap /= Void then
-						gli.set_pixmap (pixmap)
-					end
-
-					cat_row.set_item (Col_category, gli)
-					categories.put (cat_row, err_cat)
-				end
+			if ara.compiler_error_type /= err_type_valid then
+				ensure_row_for_category (ara.compiler_error_type)
+				cat_row := categories [ara.compiler_error_type]
 
 				from
 					row_idx := 0
@@ -148,7 +119,7 @@ feature -- Commands
 						row := cat_row.subrow (row_idx)
 						row.collapse
 
-						if {other: !ARCH_REP_ARCHETYPE} row.subrow (1).data then
+						if {other: !ARCH_REP_ARCHETYPE} row.data then
 							i := ara.id.three_way_comparison (other.id)
 						end
 					else
@@ -159,12 +130,12 @@ feature -- Commands
 				if i = -1 then
 					cat_row.insert_subrow (row_idx)
 					row := cat_row.subrow (row_idx)
+					row.set_data (ara)
 					row.collapse_actions.extend (agent step_to_viewable_parent_of_selected_row)
 					row.insert_subrow (1)
 				end
 
 				subrow := row.subrow (1)
-				subrow.set_data (ara)
 				cat_row.expand
 				create gli.make_with_text (utf8 (ara.id.as_string))
 				pixmap := pixmaps [ara.group_name]
@@ -173,7 +144,6 @@ feature -- Commands
 					gli.set_pixmap (pixmap)
 				end
 
-				gli.set_data (ara)
 				gli.set_tooltip (utf8 (ara.compiler_status))
 				gli.pointer_double_press_actions.force_extend (agent select_node_in_archetype_tree_view)
 				row.set_item (col_location, gli)
@@ -206,24 +176,30 @@ feature -- Access
 			-- Number of parser errors.
 		do
 			Result := count_for_category (err_type_parse_error)
+		ensure
+			natural: Result >= 0
 		end
 
 	validity_error_count: INTEGER
 			-- Number of parser errors.
 		do
 			Result := count_for_category (err_type_validity_error)
+		ensure
+			natural: Result >= 0
 		end
 
 	warning_count: INTEGER
 			-- Number of parser errors.
 		do
 			Result := count_for_category (err_type_warning)
+		ensure
+			natural: Result >= 0
 		end
 
 feature {NONE} -- Implementation
 
 	gui: MAIN_WINDOW
-			-- main window of system
+			-- Main window of system.
 
 	on_grid_key_press (key: EV_KEY)
 			-- When the user presses Enter on an archetype, select it in the main window's explorer tree.
@@ -241,8 +217,7 @@ feature {NONE} -- Implementation
 			-- Select the archetype represented by `selected_cell' in the main window's explorer tree.
 		do
 			if selected_cell /= Void and then selected_cell.column.index = Col_location then
-				selected_cell.row.expand
-				gui.select_archetype_from_gui_data (selected_cell)
+				gui.select_archetype_from_gui_data (selected_cell.row)
 			end
 		end
 
@@ -250,6 +225,93 @@ feature {NONE} -- Implementation
 			-- On the Errors tab, indicate parse errors, validity errors and warnings.
 		do
 			gui.status_notebook.set_item_text (gui.compiler_output_grid, "Errors (" + parse_error_count.out + "/" + validity_error_count.out + "/" + warning_count.out + ")")
+		end
+
+	ensure_row_for_category (err_type: INTEGER)
+			-- Insert a row into `grid' representing `err_type', if there was no such row already.
+		require
+			not_too_small: err_type >= categories.lower
+			not_too_big: err_type <= categories.upper
+		local
+			gli: EV_GRID_LABEL_ITEM
+			pixmap: EV_PIXMAP
+			i, row_idx: INTEGER
+			row: EV_GRID_ROW
+		do
+			if categories [err_type] = Void then
+				from
+					i := categories.count
+					row_idx := grid.row_count + 1
+				until
+					i = err_type
+				loop
+					if categories [i] /= Void then
+						row_idx := categories [i].index
+					end
+
+					i := i - 1
+				end
+
+				grid.insert_new_row (row_idx)
+				row := grid.row (row_idx)
+				row.collapse_actions.extend (agent step_to_viewable_parent_of_selected_row)
+				create gli.make_with_text (utf8 (err_type_names [err_type]))
+				pixmap := pixmaps [err_type_pixmap_names [err_type]]
+
+				if pixmap /= Void then
+					gli.set_pixmap (pixmap)
+				end
+
+				row.set_item (col_category, gli)
+				categories [err_type] := row
+			end
+		ensure
+			category_row_attached: categories [err_type] /= Void
+		end
+
+	remove_archetype_row_if_in_wrong_category (ara: ARCH_REP_ARCHETYPE)
+			-- Remove the row representing `ara' from `grid' if it is under the wrong category.
+		require
+			ara_attached: ara /= Void
+		local
+			cat_row, row: EV_GRID_ROW
+			i, row_idx: INTEGER
+		do
+			from
+				row_idx := grid.row_count
+			until
+				row_idx = 0
+			loop
+				row := grid.row (row_idx)
+				row_idx := row_idx - 1
+
+				if {other: !ARCH_REP_ARCHETYPE} row.data then
+					if ara.id.is_equal (other.id) then
+						row_idx := 0
+						cat_row := row.parent_row
+
+						if cat_row /= categories [ara.compiler_error_type] then
+							if cat_row.subrow_count > 1 then
+								grid.remove_row (row.index)
+							else
+								grid.remove_row (cat_row.index)
+
+								from
+									i := categories.lower
+								until
+									i > categories.upper
+								loop
+									if categories [i] = cat_row then
+										categories [i] := Void
+									end
+
+									i := i + 1
+								end
+							end
+						end
+					end
+				end
+			end
 		end
 
 	count_for_category (err_type: INTEGER): INTEGER
@@ -261,6 +323,8 @@ feature {NONE} -- Implementation
 			if {row: !EV_GRID_ROW} categories [err_type] then
 				Result := row.subrow_count
 			end
+		ensure
+			natural: Result >= 0
 		end
 
 	categories: !ARRAY [EV_GRID_ROW]

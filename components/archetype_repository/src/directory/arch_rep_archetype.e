@@ -89,7 +89,7 @@ feature -- Access
 			-- The text of the flat form of the archetype.
 		do
 			Result := file_repository.text (full_path)
-			flat_text_timestamp := file_repository.text_timestamp
+			flat_text_timestamp := file_repository.text_timestamp	-- FIXME: This is a nasty side-effect. Replace it with an explicit command!
 		ensure
 			attached: Result /= Void
 		end
@@ -100,7 +100,7 @@ feature -- Access
 			has_differential_file
 		do
 			Result := file_repository.text (differential_path)
-			differential_text_timestamp := file_repository.text_timestamp
+			differential_text_timestamp := file_repository.text_timestamp	-- FIXME: This is a nasty side-effect. Replace it with an explicit command!
 		ensure
 			attached: Result /= Void
 		end

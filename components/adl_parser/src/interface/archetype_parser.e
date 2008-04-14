@@ -221,8 +221,7 @@ feature -- Commands
 						-- Put the archetype into its directory node; note that this runs its validator(s)
 						target.set_archetype_differential (a_diff_arch)
 					end
-
-				elseif target.is_flat_file_out_of_date then
+				else
 					a_flat_arch := adl_engine.parse_flat (target.flat_text)
 
 					if a_flat_arch = Void then
