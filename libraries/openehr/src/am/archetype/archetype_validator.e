@@ -100,6 +100,7 @@ feature -- Validation
 
 				if target.is_specialised then
 					target.build_rolled_up_status
+					validate_specialisation_paths
 				end
 
 				validate_internal_references
@@ -290,6 +291,12 @@ feature {NONE} -- Implementation
 
 				use_refs.forth
 			end
+		end
+
+	validate_specialisation_paths is
+			-- check that all
+		do
+			
 		end
 
 	validate_invariants is

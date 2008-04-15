@@ -121,6 +121,7 @@ feature {NONE} -- Implementation
 		end
 
 	node_graft (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)  is
+			-- only interested in C_COMPLEX_OBJECTs
 		local
 			src_cco, parent_cco, output_cco: C_COMPLEX_OBJECT
 			apa: ARCHETYPE_PATH_ANALYSER
@@ -141,7 +142,7 @@ feature {NONE} -- Implementation
 				end
 				parent_cco ?= flat_archetype.c_object_at_path (apa.path_at_level (flat_archetype.specialisation_depth))
 
-				-- iterate through children and clone any from flat tree that are not already overridden in src tree
+				-- iterate through child attributes and clone any from flat tree that are not already overridden in src tree
 				from
 					parent_cco.attributes.start
 				until
@@ -171,16 +172,20 @@ feature {NONE} -- Implementation
 								debug ("flatten")
 									io.put_string ("%T%Tchecking object with node id " + src_attr.children.item.node_id + " (path = " + src_attr.children.item.path + ") ... ")
 								end
-								spec_sts := specialisation_status_from_code(src_attr.children.item.node_id, src_archetype.specialisation_depth).value
+								if is_valid_code (src_attr.children.item.node_id) then
+									spec_sts := specialisation_status_from_code(src_attr.children.item.node_id, src_archetype.specialisation_depth).value
+								else
+									spec_sts := ss_propagated
+								end
 								if spec_sts = ss_redefined then
 									node_id_list.extend(specialisation_parent_from_code_at_level (src_attr.children.item.node_id, flat_archetype.specialisation_depth))
 									debug ("flatten")
-										io.put_string ("ignoring %N")
+										io.put_string ("will ignore - redefined%N")
 									end
 								elseif spec_sts = ss_inherited then
 									node_id_list.extend(src_attr.children.item.node_id)
 									debug ("flatten")
-										io.put_string ("ignoring %N")
+										io.put_string ("will ignore - inherited%N")
 									end
 								else
 									debug ("flatten")
@@ -211,13 +216,17 @@ feature {NONE} -- Implementation
 								end
 								parent_attr.children.forth
 							end
+						else
+							debug ("flatten")
+								io.put_string ("%T%T(single-valued attribute)%N")
+							end
 						end
 					else
 						debug ("flatten")
-							io.put_string ("in parent only%N")
+							io.put_string ("in parent only; deep_clone object at " + src_cco.path + " in parent%N")
 						end
 						an_attr := parent_cco.attributes.item.safe_deep_twin
-						output_cco ?= output.definition.c_object_at_path (parent_cco.path)
+						output_cco ?= output.definition.c_object_at_path (src_cco.path)
 						output_cco.put_attribute (an_attr)
 						debug ("flatten")
 							io.put_string ("%T%Tgrafted attribute to " + an_attr.path + "%N")
@@ -229,11 +238,13 @@ feature {NONE} -- Implementation
 		end
 
 	node_test (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN  is
+			-- return True if the path of a_c_node within its differential archetype is
+			-- found within the flat parent archetype
 		local
 			apa: ARCHETYPE_PATH_ANALYSER
 		do
 			debug ("flatten")
-				io.put_string ("%T*** checking node " + a_c_node.path + " ... ")
+				io.put_string ("%T*** checking " + a_c_node.generator + " node; path = " + a_c_node.path)
 			end
 
 			create apa.make_from_string(a_c_node.path)

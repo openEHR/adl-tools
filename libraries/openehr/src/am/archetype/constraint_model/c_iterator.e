@@ -64,7 +64,7 @@ feature -- Command
 		end
 
 	do_until_surface(a_c_node_enter_action: PROCEDURE [ANY, TUPLE [ARCHETYPE_CONSTRAINT, INTEGER]]; a_c_node_test: FUNCTION [ANY, TUPLE [ARCHETYPE_CONSTRAINT], BOOLEAN]) is
-			-- do the enter action a_c_node_test returns true; where it is false, stop processing child nodes
+			-- do the enter action while a_c_node_test returns true; where it is false, stop processing child nodes
 		do
 			c_node_enter_action := a_c_node_enter_action
 			c_node_test := a_c_node_test
