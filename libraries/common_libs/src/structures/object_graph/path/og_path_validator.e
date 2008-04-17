@@ -526,13 +526,14 @@ end
 feature {NONE} -- Table templates
 
 	yytranslate_template: SPECIAL [INTEGER] is
+			-- Template for `yytranslate'
 		once
 			Result := yyfixed_array (<<
 			    0,    2,    2,    2,    2,    2,    2,    2,    2,    2,
 			    2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
 			    2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
 			    2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
-			    2,    2,    2,    2,    2,    2,    2,   10,    2,    2,
+			    2,    2,    2,    2,    2,    2,    2,    8,    2,    2,
 			    2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
 			    2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
 			    2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
@@ -556,17 +557,19 @@ feature {NONE} -- Table templates
 			    2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
 			    2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
 			    2,    2,    2,    2,    2,    2,    1,    2,    3,    4,
-			    5,    6,    7,    8,    9, yyDummy>>)
+			    5,    6,    7, yyDummy>>)
 		end
 
 	yyr1_template: SPECIAL [INTEGER] is
+			-- Template for `yyr1'
 		once
 			Result := yyfixed_array (<<
-			    0,   15,   15,   15,   15,   13,   12,   12,   12,   14,
-			   14,   11,   11, yyDummy>>)
+			    0,   13,   13,   13,   13,   11,   10,   10,   10,   12,
+			   12,    9,    9, yyDummy>>)
 		end
 
 	yytypes1_template: SPECIAL [INTEGER] is
+			-- Template for `yytypes1'
 		once
 			Result := yyfixed_array (<<
 			    1,    1,    1,    2,    1,    3,    4,    4,    4,    4,
@@ -574,13 +577,14 @@ feature {NONE} -- Table templates
 		end
 
 	yytypes2_template: SPECIAL [INTEGER] is
+			-- Template for `yytypes2'
 		once
 			Result := yyfixed_array (<<
-			    1,    1,    1,    2,    2,    2,    2,    2,    1,    1,
-			    1, yyDummy>>)
+			    1,    1,    1,    2,    2,    2,    1,    1,    1, yyDummy>>)
 		end
 
 	yydefact_template: SPECIAL [INTEGER] is
+			-- Template for `yydefact'
 		once
 			Result := yyfixed_array (<<
 			    0,    6,    0,   12,    4,    9,    2,    1,    3,    7,
@@ -588,36 +592,41 @@ feature {NONE} -- Table templates
 		end
 
 	yydefgoto_template: SPECIAL [INTEGER] is
+			-- Template for `yydefgoto'
 		once
 			Result := yyfixed_array (<<
 			    5,    6,    7,    8,   16, yyDummy>>)
 		end
 
 	yypact_template: SPECIAL [INTEGER] is
+			-- Template for `yypact'
 		once
 			Result := yyfixed_array (<<
-			    3,    4,    4,    7, -32768, -32768,   -4, -32768,   -7,   -7,
-			   -7, -32768,    4,    4,   -7, -32768,    5,    2, -32768, yyDummy>>)
+			    1,    4,    4,    7, -32768, -32768,    2, -32768,   -2,   -2,
+			   -2, -32768,    4,    4,   -2, -32768,    5,    3, -32768, yyDummy>>)
 		end
 
 	yypgoto_template: SPECIAL [INTEGER] is
+			-- Template for `yypgoto'
 		once
 			Result := yyfixed_array (<<
-			   -3, -32768, -32768,   -1, -32768, yyDummy>>)
+			    0, -32768, -32768,   -1, -32768, yyDummy>>)
 		end
 
 	yytable_template: SPECIAL [INTEGER] is
+			-- Template for `yytable'
 		once
 			Result := yyfixed_array (<<
-			    9,   10,   18,   13,    4,   17,   12,    3,    3,    0,
-			   15,   14,    2,    1,   11, yyDummy>>)
+			    9,   10,    4,   18,    3,   17,   13,    3,    2,    1,
+			   12,   14,   11,   15, yyDummy>>)
 		end
 
 	yycheck_template: SPECIAL [INTEGER] is
+			-- Template for `yycheck'
 		once
 			Result := yyfixed_array (<<
-			    1,    2,    0,   10,    1,    0,   10,    4,    4,   -1,
-			   13,   12,    9,   10,    7, yyDummy>>)
+			    1,    2,    1,    0,    3,    0,    8,    3,    7,    8,
+			    8,   12,    5,   13, yyDummy>>)
 		end
 
 feature {NONE} -- Semantic value stacks
@@ -678,17 +687,17 @@ feature {NONE} -- Constants
 	yyFlag: INTEGER is -32768
 			-- Most negative INTEGER
 
-	yyNtbase: INTEGER is 11
+	yyNtbase: INTEGER is 9
 			-- Number of tokens
 
-	yyLast: INTEGER is 14
+	yyLast: INTEGER is 13
 			-- Upper bound of `yytable' and `yycheck'
 
-	yyMax_token: INTEGER is 264
+	yyMax_token: INTEGER is 262
 			-- Maximum token id
 			-- (upper bound of `yytranslate'.)
 
-	yyNsyms: INTEGER is 16
+	yyNsyms: INTEGER is 14
 			-- Number of symbols
 			-- (terminal and nonterminal)
 

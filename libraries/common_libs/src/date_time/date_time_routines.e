@@ -20,7 +20,7 @@ inherit
 feature -- Definitions
 
 	valid_date_constraint_patterns: ARRAYED_LIST [STRING] is
-			-- list of allowed date constraints
+			-- List of allowed date constraints.
 		once
 			create Result.make (0)
 			Result.compare_objects
@@ -36,29 +36,31 @@ feature -- Definitions
 		end
 
 	valid_time_constraint_patterns: ARRAYED_LIST [STRING] is
-			-- FIXME: remove one day
+			-- List of allowed time constraints.
 		once
 			create Result.make (0)
 			Result.compare_objects
 			Result.extend ("HH:MM:SS")	-- full time required
-			Result.extend ("HH:??:XX")	-- seconds optional
-			Result.extend ("HH:??:??")	-- any time ok
+			Result.extend ("HH:MM:??")	-- seconds optional
 			Result.extend ("HH:MM:XX")	-- seconds not allowed
+			Result.extend ("HH:??:??")	-- minutes and seconds optional
+			Result.extend ("HH:??:XX")	-- minutes optional but seconds not allowed
 		ensure
 			attached: Result /= Void
 			not_empty: not Result.is_empty
 		end
 
 	valid_date_time_constraint_patterns: ARRAYED_LIST [STRING] is
-			-- list of allowed date/time constraints
+			-- List of allowed date/time constraints.
 		once
 			create Result.make (0)
 			Result.compare_objects
 			Result.extend ("YYYY-MM-DDTHH:MM:SS")	-- full date/time required
 			Result.extend ("YYYY-MM-DDTHH:MM:??")	-- seconds optional
-			Result.extend ("YYYY-??-??T??:??:??")	-- any date/time ok
-			Result.extend ("YYYY-MM-DDTHH:??:XX")	-- seconds not allowed, minutes optional
 			Result.extend ("YYYY-MM-DDTHH:MM:XX")	-- seconds not allowed
+			Result.extend ("YYYY-MM-DDTHH:??:??")	-- minutes and seconds optional
+			Result.extend ("YYYY-MM-DDTHH:??:XX")	-- minutes optional but seconds not allowed
+			Result.extend ("YYYY-??-??T??:??:??")	-- any date/time ok
 		ensure
 			attached: Result /= Void
 			not_empty: not Result.is_empty
