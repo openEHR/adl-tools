@@ -2,9 +2,9 @@
 <system xmlns="http://www.eiffel.com/developers/xml/configuration-1-2-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-2-0 http://www.eiffel.com/developers/xml/configuration-1-2-0.xsd" name="adl_parser" uuid="F1152FD5-F5A8-4937-8866-6F615D6F326C">
 	<target name="adl_parser">
 		<root class="ADL_INTERFACE" feature="make"/>
-		<version major="0" minor="0" release="0" build="2" company="Ocean Informatics" product="ADL Parser" copyright="Ocean Informatics, 2003-2007"/>
+		<version major="1" minor="4" release="0" build="0" company="Ocean Informatics" product="ADL Parser" copyright="Ocean Informatics, 2003-2008"/>
 		<file_rule>
-			<exclude>/.svn$</exclude>
+			<exclude>/\.svn$</exclude>
 		</file_rule>
 		<option trace="false" profile="false" debug="false" warning="true" msil_application_optimize="true" namespace="openehr">
 			<assertions precondition="true" supplier_precondition="true"/>
