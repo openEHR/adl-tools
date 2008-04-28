@@ -68,7 +68,7 @@ for target in COMMAND_LINE_TARGETS:
 		else:
 			s = os.path.dirname(s)
 
-if distrib and len(adl_workbench) > 1:
+if distrib and len(adl_workbench) > 0:
 	news = 'apps/adl_workbench/app/news.txt'
 	icons = 'apps/adl_workbench/app/icons'
 	vim = 'apps/adl_workbench/etc/vim'
