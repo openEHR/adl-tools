@@ -50,14 +50,12 @@ def ec(target, source, env):
 	"""
 	The Eiffel Builder's action function, running the Eiffel compiler "ec".
 	Parameters are as returned by ec_emitter():
-	 * target[0]: the path to the "project.epr" file of the ECF target to build.
-	 * target[1]: the path to the workbench executable to be built.
-	 * target[2]: the path to the finalised executable to be built (only if finalizing).
+	 * target[0]: the path to the executable (application or dll) to be built (workbench or finalized).
 	 * source[0]: the ECF file.
 	 * source[1], source[2], etc.: any additional dependencies.
 	 * env['ECLOG']: name of file to which all compiler output is logged (stdout if empty).
 	 * env['ECFLAGS']: "ec" compiler flags: -finalize, -freeze, -melt, -clean, etc.
-	Result is 0 (success) if target[0] (the workbench executable) is built; else 1.
+	Result is 0 (success) if target[0] (the executable) is built; else 1.
 	(Note that ec's return code is unreliable: it returns 0 if C compilation fails.)
 	"""
 	result = 0
@@ -67,15 +65,9 @@ def ec(target, source, env):
 	log_date()
 
 	shutil.rmtree(ecf_target_dir(target))
-
 	log_process(['ec', '-batch', '-config', str(source[0]), '-target', ecf_target(target)] + env['ECFLAGS'].split() + ['-c_compile'], None)
 
-	if len(target) > 2 and os.path.exists(str(target[2])):
-		log('--------------------------')
-		log_date()
-		log_process(['finish_freezing', '-silent'], os.path.dirname(str(target[1])))
-
-	if not os.path.exists(str(target[1])):
+	if not os.path.exists(str(target[0])):
 		print log_file_tail()
 		result = 1
 
@@ -98,23 +90,23 @@ def ec_emitter(target, source, env):
 	exe = str(target[0])
 
 	if len(source) == 0:
-		print 'No source .ecf file specified: cannot build ' + exe
+		print '****** ERROR! No source .ecf file specified: cannot build ' + exe
 	elif not env.Detect('ec'):
-		print 'Please add "ec" to your path: cannot build ' + exe
+		print '****** ERROR! The Eiffel compiler "ec" is missing from your path: cannot build ' + exe
 	else:
-		if env['ECTARGET']:
-			project_dir = env['ECTARGET']
-		else:
-			project_dir = os.path.splitext(exe)[0]
+		exe_path = os.path.abspath(os.path.dirname(str(source[0]))) + '/EIFGENs/'
 
-		project_dir = os.path.abspath(os.path.dirname(str(source[0]))) + '/EIFGENs/' + project_dir
-		exe = project_dir + '/?_code/' + exe
-		result = [project_dir + '/project.epr', exe.replace('?', 'W')]
+		if env['ECTARGET']:
+			exe_path += env['ECTARGET']
+		else:
+			exe_path += os.path.splitext(exe)[0]
 
 		if '-finalize' in env['ECFLAGS']:
-			result += [exe.replace('?', 'F')]
+			exe_path += '/F_code/'
+		else:
+			exe_path += '/W_code/'
 
-		result = result, source
+		result = [exe_path + exe], source
 
 	return result
 
@@ -124,7 +116,7 @@ def ecf_target(target, source = None, env = None):
 
 def ecf_target_dir(target):
 	"""The ECF target directory corresponding to the given build target."""
-	return os.path.dirname(str(target[0]))
+	return os.path.dirname(os.path.dirname(str(target[0])))
 
 def ecf_scanner(node, env, path):
 	"""All Eiffel class files in all clusters mentioned in an ECF file."""
