@@ -129,7 +129,7 @@ feature -- Access
 	specialisation_parent: ARCH_REP_ARCHETYPE
 			-- parent descriptor, for specialised archetypes only
 
-	archetype_lineage: ARRAYED_LIST [ARCH_REP_ARCHETYPE] is
+	archetype_lineage: !ARRAYED_LIST [ARCH_REP_ARCHETYPE] is
 			-- lineage of archetypes from parent to this one, inclusive of the current one.
 			-- For non-specialised archetypes, contains just the top-level archetype.
 			-- NOTE: in theory this could be precomputed from ARCH_DIRECTORY, but modifications to
