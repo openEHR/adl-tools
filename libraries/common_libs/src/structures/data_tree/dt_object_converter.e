@@ -609,22 +609,27 @@ feature {NONE} -- Implementation
 			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_primitive_integer_field (?, ?, ?))
 			Result.put (a_dt_conv, dynamic_type (create {INTEGER}))
 			Result.put (a_dt_conv, dynamic_type (create {INTEGER_REF}))
+			Result.put (a_dt_conv, dynamic_type_from_string ("INTEGER_32"))
 
 			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_primitive_boolean_field (?, ?, ?))
 			Result.put (a_dt_conv, dynamic_type (create {BOOLEAN}))
 			Result.put (a_dt_conv, dynamic_type (create {BOOLEAN_REF}))
+			Result.put (a_dt_conv, dynamic_type_from_string ("BOOLEAN"))
 
 			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_primitive_real_field (?, ?, ?))
 			Result.put (a_dt_conv, dynamic_type (create {REAL}))
 			Result.put (a_dt_conv, dynamic_type (create {REAL_REF}))
+			Result.put (a_dt_conv, dynamic_type_from_string ("REAL_32"))
 
 			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_primitive_double_field (?, ?, ?))
 			Result.put (a_dt_conv, dynamic_type (create {DOUBLE}))
 			Result.put (a_dt_conv, dynamic_type (create {DOUBLE_REF}))
+			Result.put (a_dt_conv, dynamic_type_from_string ("REAL_64"))
 
 			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_primitive_character_field (?, ?, ?))
 			Result.put (a_dt_conv, dynamic_type (create {CHARACTER}))
 			Result.put (a_dt_conv, dynamic_type (create {CHARACTER_REF}))
+			Result.put (a_dt_conv, dynamic_type_from_string ("CHARACTER_8"))
 
 			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_reference_field (?, ?, ?))
 			Result.put (a_dt_conv, dynamic_type (create {STRING}.make_empty))
@@ -634,7 +639,6 @@ feature {NONE} -- Implementation
 			Result.put (a_dt_conv, dynamic_type (create {DATE_TIME_DURATION}.make_definite (1, 0, 0, 0)))
 			Result.put (a_dt_conv, dynamic_type (create {URI}.make_from_string ("http://no.way.home")))
 			Result.put (a_dt_conv, dynamic_type (create {CODE_PHRASE}))
-
 
 			-- primitive sequence types
 			from
@@ -646,7 +650,6 @@ feature {NONE} -- Implementation
 				Result.put (a_dt_conv, primitive_sequence_types.item)
 				primitive_sequence_types.forth
 			end
-
 
 			-- primitive interval types
 			create a_dt_conv.make (agent from_obj_interval_primitive_type (?, ?, ?), agent set_interval_integer_field (?, ?, ?))

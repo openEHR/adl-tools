@@ -2,7 +2,7 @@ indexing
 	component:   "openEHR Archetype Project"
 	description: "FIXME: temporary type for QUANTITY until reconciled with DV_QUANTITY"
 	keywords:    "quantity, ADL"
-	
+
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2003-2005 Ocean Informatics Pty Ltd"
@@ -27,7 +27,7 @@ feature -- Definitions
 
 	Default_units: STRING is "m"
 			-- metres
-			
+
 	Default_precision: INTEGER is -1
 
 feature -- Initialisation
@@ -40,7 +40,7 @@ feature -- Initialisation
 		ensure then
 			precision = Default_precision
 		end
-		
+
 	make(a_magnitude: REAL; a_units: STRING; a_precision: INTEGER) is
 			-- set magnitude and units; precision should be set to -1 if no precision
 		require
@@ -54,19 +54,19 @@ feature -- Initialisation
 			Units_set: units = a_units
 			Precision_set: precision = a_precision
 		end
-		
+
 feature -- Access
 
 	magnitude: REAL
 
 	units: STRING
-	
+
 	precision: INTEGER
 
 feature -- Conversion
 
 	as_string: STRING is
-			-- 
+			--
 		local
 			fd: FORMAT_DOUBLE
 		do
@@ -78,10 +78,10 @@ feature -- Conversion
 				Result.append(fd.formatted (magnitude))
 			end
 			if units /= Void then
-				Result.append (units)	
+				Result.append (units)
 			end
 		end
-		
+
 end
 
 
