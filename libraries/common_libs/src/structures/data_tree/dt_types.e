@@ -27,10 +27,6 @@ inherit
 feature {NONE} -- Definitions
 
 	primitive_types: ARRAYED_LIST[INTEGER] is
-		local
-			a_uri: URI -- keep to ensure compiled in
-			a_code_phrase: CODE_PHRASE -- keep to ensure compiled in
-			-- FIXME: Instead of the above declarations, which cause "unused local" warnings, we can add "visible" clauses to the .ecf file to keep these classes compiled in.
 		once
 			create Result.make (0)
 			Result.compare_objects
@@ -51,6 +47,17 @@ feature {NONE} -- Definitions
 			Result.extend (dynamic_type (create {DOUBLE_REF}))
 			Result.extend (dynamic_type (create {BOOLEAN_REF}))
 			Result.extend (dynamic_type (create {CHARACTER_REF}))
+
+			-- When DT_OBJECT_CONVERTER retrieves the type id of a .NET primitive type via field_static_type_of_type,
+			-- it receives a primitive .NET type (Int32, etc.), which is compatible with the corresponding Eiffel type,
+			-- but has different type id. We therefore need to list these .NET types too.
+			-- We can retrieve these .NET type ids from the Eiffel strings, as shown below.
+			-- This fixes the problem, without having to list .NET types explicitly here, which would not be portable of course.
+			Result.extend (dynamic_type_from_string ("INTEGER_32"))
+			Result.extend (dynamic_type_from_string ("REAL_32"))
+			Result.extend (dynamic_type_from_string ("REAL_64"))
+			Result.extend (dynamic_type_from_string ("BOOLEAN"))
+			Result.extend (dynamic_type_from_string ("CHARACTER_8"))
 		end
 
 	primitive_sequence_types: ARRAYED_LIST [INTEGER] is
