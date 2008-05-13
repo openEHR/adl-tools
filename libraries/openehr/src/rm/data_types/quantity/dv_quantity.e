@@ -19,26 +19,58 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class DV_QUANTITY
+class
+	DV_QUANTITY
 
 inherit
 	DV_AMOUNT
 		redefine
+			default_create,
 			as_canonical_string
 		end
 
 create
-	make_from_string, make_from_canonical_string, make, default_create
-	
-feature -- Initialization
-	
-	make_from_string(s: STRING) is
-			-- 
+	make_from_string,
+	make_from_canonical_string,
+	make,
+	default_create
+
+feature -- Definitions
+
+	default_units: STRING is "m"
+			-- Metres.
+
+	default_precision: INTEGER is -1
+			-- No limit, i.e. any number of decimal places.
+
+feature {NONE} -- Initialisation
+
+	default_create is
+			-- Create a reasonable default object.
 		do
-			
+			units := default_units.twin
+			precision := default_precision
+		ensure then
+			units_set_to_default: units.same_string (default_units)
+			precision_set_to_default: precision = default_precision
 		end
 
-	make_from_canonical_string(str:STRING) is
+	make (a_magnitude: like magnitude; a_units: like units; n: like precision) is
+		require
+			units_attached: a_units /= Void
+			units_not_empty: not a_units.is_empty
+			precision_valid: n >= 1
+		do
+			magnitude := a_magnitude
+			set_units (a_units)
+			precision := n
+		ensure
+			magnitude_set: magnitude = a_magnitude
+			units_set_else_unchanged: units.string.same_string (old units.string) or units.same_string (a_units)
+			precision_set: precision = n
+		end
+
+	make_from_string, make_from_canonical_string (str: STRING) is
 			-- make from string of form:
 			-- <magnitude>real</magnitude>
 			-- <units>string</units>
@@ -48,103 +80,109 @@ feature -- Initialization
 		local
 			s: STRING
 		do
-			s := xml_extract_from_tags(str, "magnitude", 1)
+			s := xml_extract_from_tags (str, "magnitude", 1)
 			create magnitude
-			magnitude.set_item(s.to_double)
-			if xml_has_tag(str, "accuracy", 1) then
-				s := xml_extract_from_tags(str, "accuracy_is_percent", 1)
+			magnitude.set_item (s.to_double)
+
+			if xml_has_tag (str, "accuracy", 1) then
+				s := xml_extract_from_tags (str, "accuracy_is_percent", 1)
+
 				if s.is_boolean then
 					accuracy_is_percent := s.to_boolean
 				end
+
 				s := xml_extract_from_tags(str, "accuracy", 1)
+
 				if s.is_integer then
 					accuracy := s.to_integer
 				end
 			end
-			set_units(xml_extract_from_tags(str, "units", 1))
-		end
 
-	make (a_magnitude: like magnitude; a_units: STRING) is
-		require
-			Units_exists: a_units /= Void and then not a_units.is_empty
-		do
-			magnitude := a_magnitude
-			set_units(a_units)
-		ensure
-			value_set: magnitude = a_magnitude
-			units_set: units.is_equal (a_units)
+			set_units (xml_extract_from_tags (str, "units", 1))
 		end
 
 feature -- Status Report
 
-	valid_canonical_string(str: STRING): BOOLEAN is
-			-- True if str contains required tags
+	valid_canonical_string (str: STRING): BOOLEAN is
+			-- True if `str' contains required tags.
 		do
-			Result := xml_has_tag(str, "magnitude", 1)
+			Result := xml_has_tag (str, "magnitude", 1)
 		end
-		
+
 	is_integral: BOOLEAN is
-			-- True if precision = 0
+			-- True if precision = 0.
 		do
 			Result := precision = 0
 		end
-		
 
 feature -- Access
 
-	magnitude: DOUBLE_REF
-			-- numeric value of the quantity
+	magnitude: REAL_REF
+			-- Numeric value of the quantity.
 
 	units: STRING
-			-- stringified units, expressed in UCUM unit syntax, e.g. "kg/m2", “mm[Hg]", "ms-1", "km/h". 
+			-- Stringified units, expressed in UCUM unit syntax, e.g. "kg/m2", “mm[Hg]", "ms-1", "km/h".
 
 	precision: INTEGER
-			-- precision  to  which  the  value  of  the  quantity  is expressed, in
+			-- Precision  to  which  the  value  of  the  quantity  is expressed, in
 			-- terms of number  of  significant  figures. 0 implies no precision.
-		
+
 feature -- Basic Operations
 
 	infix "+" (other: like Current): like Current is
-			-- addition
+			-- Addition.
+			-- FIXME: "infix" is not part of ECMA Eiffel. Use plus alias "+".
 		do
-			magnitude := magnitude + other.magnitude
+			create Result.make (magnitude + other.magnitude, units, precision)
 		end
 
 	infix "-" (other: like Current): like Current is
-			-- subtraction
+			-- Subtraction.
+			-- FIXME: "infix" is not part of ECMA Eiffel. Use minus alias "-".
 		do
-			magnitude := magnitude - other.magnitude
+			create Result.make (magnitude - other.magnitude, units, precision)
 		end
 
-	prefix "-": like Current is
-			-- Unary minus
+	negated alias "-": like Current
+			-- Unary minus.
 		do
-			magnitude := -magnitude
+			create Result.make (-magnitude, units.twin, precision)
+		ensure
+			attached: Result /= Void
+			minus_magnitude: (magnitude + Result.magnitude).abs < accuracy
+			same_units: units.same_string (Result.units)
+			same_precision: precision = Result.precision
 		end
 
 feature -- Modification
 
-	set_units(a_units: STRING) is
-			-- set units
+	set_units (a_units: STRING) is
+			-- Set units.
 		require
-			units_exists: a_units /= void and then not a_units.is_empty
+			units_attached: a_units /= Void
+			units_not_empty: not a_units.is_empty
 		local
-			parser:UNITS_PARSER
+			parser: UNITS_PARSER
 		do
 			create parser.make
-			parser.execute(a_units)
+			parser.execute (a_units)
+
 			if parser.units /= Void then
-				units_impl := parser.units				
-				units := a_units	
+				units_impl := parser.units
+				units := a_units
 			end
+		ensure
+			units_set_else_unchanged: units.string.same_string (old units.string) or units.same_string (a_units)
 		end
-		
+
 	set_precision (n: INTEGER) is
-			-- set precision tp 'n' decimal places
+			-- Set precision to `n' decimal places.
 		require
-			positive_value: n >= 0
+			precision_valid: n >= 1
 		do
 			precision := n
+		ensure
+			precision_set: precision = n
 		end
 
 feature -- Comparison
@@ -165,24 +203,33 @@ feature -- Output
 			-- standardised form of string guaranteed to contain all information
 			-- in data item
 		do
-			Result := precursor
-			Result.append("<units>" + units + "</units>")
-			Result.append("<precision>" + precision.out + "</precision>")
+			Result := Precursor
+			Result.append ("<units>" + units + "</units>")
+			Result.append ("<precision>" + precision.out + "</precision>")
 		end
 
 	magnitude_as_string: STRING is
-			-- output the magnitude in its natural form
+			-- The magnitude in its natural form.
+		local
+			formatter: FORMAT_DOUBLE
 		do
-			Result := magnitude.out + " " + units
+			if precision = default_precision then
+				Result := magnitude.out
+			else
+				create formatter.make (precision.max (50), precision)
+				Result := formatter.formatted (magnitude.to_double)
+			end
+
+			Result.append (" " + units)
 		end
 
 feature {NONE} -- Implementation
 
 	units_impl: UNITS
-	
+
 invariant
-	Precision_valid: precision >= 0
-	Units_valid: units /= void 
+	precision_valid: precision >= -1
+	units_valid: units /= void and then not units.is_empty
 
 end
 
