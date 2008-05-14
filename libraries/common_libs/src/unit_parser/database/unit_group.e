@@ -9,7 +9,7 @@ indexing
 				 UNIT_GROUP = Systeme International	
 				 [units]
 				 ;NAME:PROPERTY:CASE_SENSITIVE:CASE_INSENSITIVE:METRIC:VALUE:DEFINITION 
-				 ; 
+				 ;
 	             ]"
 	keywords:    "units, UCUM"
 
@@ -32,7 +32,7 @@ inherit
 			out
 		end
 
-creation
+create
 	make
 
 feature -- Initialisation
@@ -65,7 +65,7 @@ feature -- Initialisation
 feature -- Definitions
 
 	Id_section_name:STRING is "identification"
-			-- the first section in the file is indicated by "[Identification]" 
+			-- the first section in the file is indicated by "[Identification]"
 			-- (case insensitive match)
 
 	Units_section_name:STRING is "units"
@@ -142,7 +142,7 @@ feature {NONE} -- Implementation
 
 	units_file:CONFIG_FILE_ACCESS
 
-end 
+end
 
 --|
 --| ***** BEGIN LICENSE BLOCK *****

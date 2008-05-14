@@ -27,17 +27,17 @@ inherit
 			out
 		end
 
-creation
+create
 	make
 
 feature -- Definitions
 
 	File_extension: STRING is ".txt"
-	
+
 feature -- Initialisation
 
 	make(unit_groups_path_name, prefixes_file_name:STRING) is
-			-- look for unit group files ending in ".txt" in `unit_groups_path_name' directory, and 
+			-- look for unit group files ending in ".txt" in `unit_groups_path_name' directory, and
 			-- prefixes file called `prefixes_file_name'
 		require
 			Groups_path_name_exists: unit_groups_path_name /= Void and then not unit_groups_path_name.is_empty
@@ -51,15 +51,15 @@ feature -- Initialisation
 			create dir.make_open_read(unit_groups_path_name)
 			create unit_groups.make(0)
 			files := dir.linear_representation
-			from 
+			from
 				files.start
-			until 
-				files.off 
+			until
+				files.off
 			loop
 				if files.item.count >= File_extension.count and then files.item.substring_index(File_extension, 1) > 0 then
 					file_name := unit_groups_path_name.twin + operating_environment.directory_separator.out + files.item
 					create a_unit_group.make(file_name)
-					unit_groups.put(a_unit_group, a_unit_group.group_name)		
+					unit_groups.put(a_unit_group, a_unit_group.group_name)
 				end
 				files.forth
 			end
@@ -79,10 +79,10 @@ feature -- Access
 		require
 			Name_exists: a_unit_name /= Void and then not a_unit_name.is_empty
 		do
-			from 
-				unit_groups.start 
-			until 
-				unit_groups.off or else unit_groups.item_for_iteration.has_unit(a_unit_name) 
+			from
+				unit_groups.start
+			until
+				unit_groups.off or else unit_groups.item_for_iteration.has_unit(a_unit_name)
 			loop
 				unit_groups.forth
 			end
@@ -94,7 +94,7 @@ feature -- Access
 
 	unit_group_for_symbol(a_unit_symbol:STRING):UNIT_GROUP is
 			-- unit group for unit `a_unit_symbol' or Void if not found.
-			-- finds the unit group containing the longest match for `a_unit_symbol'. 
+			-- finds the unit group containing the longest match for `a_unit_symbol'.
 			-- E.g. the unit "ppm" will match "m" and also "ppm"; the algorithm will
 			-- choose the group containing "ppm"
 		require
@@ -102,10 +102,10 @@ feature -- Access
 		local
 			i, match_len:INTEGER
 		do
-			from 
-				unit_groups.start 
-			until 
-				unit_groups.off 
+			from
+				unit_groups.start
+			until
+				unit_groups.off
 			loop
 				i := unit_groups.item_for_iteration.match_length_for_symbol(a_unit_symbol)
 				if i > match_len then
@@ -185,7 +185,7 @@ feature -- Output
 			end
 		end
 
-end 
+end
 
 --|
 --| ***** BEGIN LICENSE BLOCK *****
