@@ -65,20 +65,20 @@ feature -- Access
 
 feature -- Conversion
 
-	as_string: STRING is
-			--
+	magnitude_as_string: STRING
+			-- The magnitude in its natural form.
 		local
-			fd: FORMAT_DOUBLE
+			formatter: FORMAT_DOUBLE
 		do
-			create Result.make(0)
-			if precision = Default_precision then
-				Result.append (magnitude.out)
+			if precision = default_precision then
+				Result := magnitude.out
 			else
-				create fd.make (50, precision)
-				Result.append(fd.formatted (magnitude))
+				create formatter.make (precision.max (50), precision)
+				Result := formatter.formatted (magnitude.to_double)
 			end
+
 			if units /= Void then
-				Result.append (units)
+				Result.append (" " + units)
 			end
 		end
 

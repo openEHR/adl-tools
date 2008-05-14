@@ -1006,10 +1006,10 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	object_quantity_string(a_q: QUANTITY; assumed_flag: BOOLEAN): STRING is
-			-- generate string form of node or object for use in tree node
+	object_quantity_string (a_q: QUANTITY; assumed_flag: BOOLEAN): STRING is
+			-- String form of node or object for use in tree node.
 		do
-			Result := a_q.magnitude.out + " " + a_q.units
+			Result := a_q.magnitude_as_string
 
 			if assumed_flag then
 				Result.append (" (Assumed)")
