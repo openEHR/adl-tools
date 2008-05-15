@@ -63,7 +63,7 @@ feature {NONE} -- Initialisation
 		require
 			a_main_window /= Void
 		do
-			create categories.make (Err_type_parse_error, Err_type_warning)
+			create categories.make (Err_type_valid, Err_type_warning)
 			gui := a_main_window
 			make_for_grid (gui.compiler_output_grid)
 			grid.enable_tree
@@ -165,9 +165,9 @@ feature -- Commands
 				grid.column (Col_category).resize_to_content
 				grid.column (Col_location).resize_to_content
 				grid.column (Col_message).resize_to_content
-
-				update_errors_tab_label
 			end
+
+			update_errors_tab_label
 		end
 
 feature -- Access
@@ -240,7 +240,7 @@ feature {NONE} -- Implementation
 		do
 			if categories [err_type] = Void then
 				from
-					i := categories.count
+					i := categories.upper
 					row_idx := grid.row_count + 1
 				until
 					i = err_type
@@ -254,6 +254,7 @@ feature {NONE} -- Implementation
 
 				grid.insert_new_row (row_idx)
 				row := grid.row (row_idx)
+				row.set_data (err_type)
 				row.collapse_actions.extend (agent step_to_viewable_parent_of_selected_row)
 				create gli.make_with_text (utf8 (err_type_names [err_type]))
 				pixmap := pixmaps [err_type_pixmap_names [err_type]]
@@ -275,7 +276,7 @@ feature {NONE} -- Implementation
 			ara_attached: ara /= Void
 		local
 			cat_row, row: EV_GRID_ROW
-			i, row_idx: INTEGER
+			row_idx: INTEGER
 		do
 			from
 				row_idx := grid.row_count
@@ -296,16 +297,8 @@ feature {NONE} -- Implementation
 							else
 								grid.remove_row (cat_row.index)
 
-								from
-									i := categories.lower
-								until
-									i > categories.upper
-								loop
-									if categories [i] = cat_row then
-										categories [i] := Void
-									end
-
-									i := i + 1
+								if {i: !INTEGER_REF} cat_row.data then
+									categories [i.item] := Void
 								end
 							end
 						end
