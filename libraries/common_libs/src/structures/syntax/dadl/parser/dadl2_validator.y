@@ -58,7 +58,7 @@ create
 -- FIXME: query syntax is obsolete from 01/jun/2005; remove when backward compatibility no longer needed
 %token SYM_QUERY_FUNC
 
-%token SYM_TRUE SYM_FALSE 
+%token SYM_TRUE SYM_FALSE
 %left SYM_LT SYM_GT SYM_LE SYM_GE
 
 %token ERR_CHARACTER ERR_STRING 
@@ -650,7 +650,15 @@ simple_interval_value: integer_interval_value
 
 ---------------------- BASIC DATA VALUES -----------------------
 
-type_identifier: V_TYPE_IDENTIFIER
+type_identifier: '(' V_TYPE_IDENTIFIER ')'
+		{
+			$$ := $2
+		}
+	| '(' V_GENERIC_TYPE_IDENTIFIER ')'
+		{
+			$$ := $2
+		}
+	| V_TYPE_IDENTIFIER
 		{
 			$$ := $1
 		}
