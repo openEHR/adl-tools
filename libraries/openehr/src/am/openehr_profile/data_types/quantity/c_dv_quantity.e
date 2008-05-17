@@ -70,23 +70,25 @@ feature -- Access
 	property: CODE_PHRASE
 			-- property
 
-	list: ARRAYED_LIST[C_QUANTITY_ITEM]
+	list: ARRAYED_LIST [C_QUANTITY_ITEM]
 			-- list of items constraining magnitude/units pairs
 
 	default_value: QUANTITY is
-			-- 	generate a default value from this constraint object
+			-- Generate a default value from this constraint object.
+			-- FIXME: This should be of type DV_QUANTITY.
 		local
 			a_mag: REAL
-			a_mag_ivl: INTERVAL[REAL]
+			a_mag_ivl: INTERVAL [REAL]
 			a_prec: INTEGER
-			a_prec_ivl: INTERVAL[INTEGER]
+			a_prec_ivl: INTERVAL [INTEGER]
  		do
  			if assumed_value /= Void then
  				Result := assumed_value
  			elseif any_allowed then
- 				Result := create {QUANTITY}.default_create
+ 				create Result
  			elseif list /= Void then
 				a_mag_ivl := list.first.magnitude
+
  				if a_mag_ivl /= Void then
 					if not a_mag_ivl.lower_unbounded then
 						a_mag := a_mag_ivl.upper
@@ -96,7 +98,9 @@ feature -- Access
 						-- a_mag := 0.0
 					end
 				end
+
 				a_prec_ivl := list.first.precIsion
+
  				if a_prec_ivl /= Void then
 					if not a_prec_ivl.lower_unbounded then
 						a_prec := a_prec_ivl.upper
@@ -106,15 +110,16 @@ feature -- Access
 						-- a_prec := 0.0
 					end
 				end
-				Result := create {QUANTITY}.make(a_mag, list.first.units, a_prec)
+
+				create Result.make (a_mag, list.first.units, a_prec)
 			else -- property must be the only thing set...
-				Result := create {QUANTITY}.make(a_mag, default_units, -1)
+				create Result.make (a_mag, default_units, -1)
  			end
 		end
 
 feature -- Modification
 
-	set_property(a_property: CODE_PHRASE) is
+	set_property (a_property: CODE_PHRASE) is
 			-- set property constraint
 		require
 			Property_valid: a_property /= Void and has_property (a_property)
@@ -123,26 +128,27 @@ feature -- Modification
 			default_units := units_for_property (a_property).first
 		end
 
-	set_assumed_value_from_units_magnitude(a_units: STRING; a_magnitude: REAL; a_precision: INTEGER) is
-			-- set `assumed_value'; set precision to -1 if no precision
+	set_assumed_value_from_units_magnitude (a_units: STRING; a_magnitude: REAL; a_precision: INTEGER) is
+			-- Set `assumed_value'; set precision to -1 if no precision.
 		require
 			Units_valid: a_units /= Void implies not a_units.is_empty
 		do
-			set_assumed_value(create {QUANTITY}.make(a_magnitude, a_units, a_precision))
+			set_assumed_value (create {like assumed_value}.make (a_magnitude, a_units, a_precision))
 		ensure
 			assumed_value_set: assumed_value.magnitude = a_magnitude and assumed_value.units = a_units and assumed_value.precision = a_precision
 		end
 
-	add_unit_constraint(a_units: STRING; a_magnitude: INTERVAL[REAL]; a_precision: INTERVAL[INTEGER]) is
+	add_unit_constraint (a_units: STRING; a_magnitude: INTERVAL [REAL]; a_precision: INTERVAL [INTEGER]) is
 			-- add a units constraint. Void magnitude means any magnitude allowed
 		require
 			Units_valid: a_units /= Void and then not a_units.is_empty
 			Magnitude_validity: a_magnitude /= Void implies a_units /= Void
 		do
 			if list = Void then
-				create list.make(0)
+				create list.make (0)
 			end
-			list.extend(create {C_QUANTITY_ITEM}.make(a_units, a_magnitude, a_precision))
+
+			list.extend (create {C_QUANTITY_ITEM}.make (a_units, a_magnitude, a_precision))
 		end
 
 feature -- Status Report
@@ -165,7 +171,7 @@ feature -- Conversion
 	as_string: STRING is
 			--
 		do
-			create Result.make (0)
+			create Result.make_empty
 		end
 
 	standard_equivalent: C_COMPLEX_OBJECT is
@@ -175,11 +181,11 @@ feature -- Conversion
 
 feature -- Visitor
 
-	enter_subtree(visitor: C_VISITOR; depth: INTEGER) is
+	enter_subtree (visitor: C_VISITOR; depth: INTEGER) is
 			-- perform action at start of block for this node
 		do
-            precursor(visitor, depth)
-			visitor.start_c_quantity(Current, depth)
+            Precursor (visitor, depth)
+			visitor.start_c_quantity (Current, depth)
 		end
 
 	exit_subtree(visitor: C_VISITOR; depth: INTEGER) is
@@ -195,10 +201,10 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 			-- list of attribute names to persist as DT structure
 			-- empty structure means all attributes
 		once
-			create Result.make(0)
-			Result.extend("property")
-			Result.extend("list")
-			Result.extend("assumed_value")
+			create Result.make (0)
+			Result.extend ("property")
+			Result.extend ("list")
+			Result.extend ("assumed_value")
 			Result.compare_objects
 		end
 

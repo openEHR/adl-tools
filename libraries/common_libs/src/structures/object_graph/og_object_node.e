@@ -218,7 +218,7 @@ feature {OG_OBJECT_NODE} -- Implementation
 			child_objs: HASH_TABLE [OG_OBJECT, STRING]
 			child_obj: OG_OBJECT
 			child_obj_node: OG_OBJECT_NODE
-			obj_predicate_required: BOOLEAN
+			obj_predicate_required, created_attr_path: BOOLEAN
 		do
 			create Result.make(0)
 			Result.compare_objects
@@ -234,6 +234,7 @@ feature {OG_OBJECT_NODE} -- Implementation
 
 					-- get the objects of this attribute
 					child_objs := attr_node.children
+					created_attr_path := False
 					from
 						child_objs.start
 					until
@@ -268,6 +269,7 @@ feature {OG_OBJECT_NODE} -- Implementation
 							create a_path.make_relative(create {OG_PATH_ITEM}.make_with_object_id(attr_node.node_id, child_obj.node_id))
 						else
 							create a_path.make_relative(create {OG_PATH_ITEM}.make(attr_node.node_id))
+							created_attr_path := True -- this kind of path (with no node id) is the same as the path to the attribute...
 						end
 						if is_root then
 							a_path.set_absolute
@@ -276,6 +278,13 @@ feature {OG_OBJECT_NODE} -- Implementation
 						child_objs.forth
 					end
 
+					if not created_attr_path then
+						create a_path.make_relative(create {OG_PATH_ITEM}.make(attr_node.node_id))
+						if is_root then
+							a_path.set_absolute
+						end
+						Result.put(child_obj, a_path)
+					end
 					children.forth
 				end
 			end

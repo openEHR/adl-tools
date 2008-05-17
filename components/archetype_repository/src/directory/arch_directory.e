@@ -31,9 +31,9 @@ indexing
 	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL: $"
+	file:        "$URL: http://www.openehr.org/svn/ref_impl_eiffel/TRUNK/components/archetype_repository/src/directory/arch_directory.e $"
 	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate: $"
+	last_change: "$LastChangedDate: 2008-04-07 06:22:44 +0100 (Mon, 07 Apr 2008) $"
 
 
 class ARCH_DIRECTORY
@@ -222,19 +222,22 @@ feature -- Access
 feature -- Statistics
 
 	total_archetype_count: INTEGER
-			-- count of all archetype descriptors in directory
+			-- Count of all archetype descriptors in directory.
 
 	specialised_archetype_count: INTEGER
-			-- count of specialised archetype descriptors in directory
+			-- Count of specialised archetype descriptors in directory.
 
 	slotted_archetype_count: INTEGER
-			-- count of slot-containing archetype descriptors in directory
+			-- Count of slot-containing archetype descriptors in directory.
 
 	used_by_archetype_count: INTEGER
-			-- count of archetype descriptors for archetypes used in slots in directory
+			-- Count of archetype descriptors for archetypes used in slots in directory.
 
 	bad_archetype_count: INTEGER
-			-- count of invalid archetype files found in repositories
+			-- Count of invalid archetype files found in repositories.
+
+	parse_attempted_archetype_count: INTEGER
+			-- Count of archetypes for which parsing has been attempted.
 
 feature -- Status Report
 
@@ -326,7 +329,7 @@ feature -- Commands
 			has_group_id: source_repositories.has (group_id)
 		end
 
-	build_directory
+	populate_directory
 			-- Rebuild `directory' from source repositories.
 		do
 			clear
@@ -342,34 +345,47 @@ feature -- Commands
 			end
 		end
 
-	update_statistics (ara: ARCH_REP_ARCHETYPE) is
-			-- update statistics counters
+	update_statistics (ara: ARCH_REP_ARCHETYPE)
+			-- Update statistics counters.
 		do
 			total_archetype_count := total_archetype_count + 1
+
 			if ara.is_specialised then
 				specialised_archetype_count := specialised_archetype_count + 1
 			end
 		end
 
-	update_slot_statistics (ara: ARCH_REP_ARCHETYPE) is
-			-- update slot-related statistics counters
+	update_slot_statistics (ara: ARCH_REP_ARCHETYPE)
+			-- Update slot-related statistics counters.
 		do
 			if ara.has_slots then
 				slotted_archetype_count := slotted_archetype_count + 1
 			end
+
 			if ara.is_used then
 				used_by_archetype_count := used_by_archetype_count + 1
 			end
 		end
 
-	reset_statistics is
-			-- reset counters to 0
+	increment_parse_attempted_archetype_count
+			-- Increment the count of archetypes for which parsing has been attempted.
+		require
+			can_increment: parse_attempted_archetype_count < total_archetype_count
+		do
+			parse_attempted_archetype_count := parse_attempted_archetype_count + 1
+		ensure
+			incremented: parse_attempted_archetype_count = old parse_attempted_archetype_count + 1
+		end
+
+	reset_statistics
+			-- Reset counters to zero.
 		do
 			total_archetype_count := 0
 			specialised_archetype_count := 0
 			slotted_archetype_count := 0
 			used_by_archetype_count := 0
 			bad_archetype_count := 0
+			parse_attempted_archetype_count := 0
 		end
 
 feature -- Modification
@@ -618,6 +634,17 @@ invariant
 		do
 			Result := repository.group_id > 1
 		end)
+	total_archetype_count_non_negative: total_archetype_count >= 0
+	specialised_archetype_count_non_negative: specialised_archetype_count >= 0
+	specialised_archetype_count_not_too_big: specialised_archetype_count <= total_archetype_count
+	slotted_archetype_count_non_negative: slotted_archetype_count >= 0
+	slotted_archetype_count_not_too_big: slotted_archetype_count <= total_archetype_count
+	used_by_archetype_count_non_negative: used_by_archetype_count >= 0
+	used_by_archetype_count_not_too_big: used_by_archetype_count <= total_archetype_count
+	bad_archetype_count_count_non_negative: bad_archetype_count >= 0
+	bad_archetype_count_not_too_big: bad_archetype_count <= total_archetype_count
+	parse_attempted_archetype_count_non_negative: parse_attempted_archetype_count >= 0
+	parse_attempted_archetype_count_not_too_big: parse_attempted_archetype_count <= total_archetype_count
 
 end
 

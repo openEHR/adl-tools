@@ -32,7 +32,7 @@ feature -- Access
 	minor: INTEGER = 4
 			-- The minor version number: manually incremented.
 
-	build: INTEGER = 1
+	build: INTEGER = 2
 			-- The build number: manually incremented for each public release.
 
 	revision: INTEGER = 0
@@ -46,7 +46,7 @@ feature -- Access
 	out: STRING
 			-- The version as a string of the form "major.minor.build.revision".
 		do
-			Result := major.out + "." + minor.out + "." + build.out + "." + revision.out
+			Result := major.out + "." + minor.out + "." + build.out + "." + revision.out + " Preview"
 		ensure then
 			long_enough: Result.count >= 7
 		end

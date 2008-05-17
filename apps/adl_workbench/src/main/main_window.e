@@ -214,8 +214,6 @@ feature -- Status setting
 		do
 			populate_archetype_directory
 			archetype_compiler.set_visual_update_action (agent build_gui_update)
-			archetype_compiler.set_initial_visual_update_action (agent build_gui_stats_update)
-			archetype_compiler.set_final_visual_update_action (agent build_gui_stats_update)
 			initialise_overall_appearance
 			initialise_path_control
 			Precursor
@@ -324,20 +322,11 @@ feature -- File events
 			if ara /= Void then
 				if not ara.parse_attempted then
 					do_with_wait_cursor (agent archetype_compiler.build_lineage (ara))
-				elseif ara.is_differential_file_out_of_date then
+				elseif ara.is_differential_file_out_of_date or ara.is_flat_file_out_of_date then
 					do_with_wait_cursor (agent archetype_compiler.rebuild_lineage (ara))
 				else
-					compiler_error_control.extend_and_select (ara)
-
-					if ara.has_compiler_status then
-						set_status_area (ara.compiler_status)
-					end
+					do_with_wait_cursor (agent build_gui_update (ara))
 				end
-
-				populate_archetype_id
-				populate_adl_version
-				populate_languages
-				populate_view_controls
 			end
 		end
 
@@ -745,9 +734,11 @@ feature -- Archetype commands
 	select_archetype_from_gui_data (gui_item: EV_ANY)
 			-- Select and display the node of `archetype_file_tree' corresponding to the folder or archetype attached to `gui_item'.
 		do
-			if gui_item /= Void and then {a: !ARCH_REP_ITEM} gui_item.data then
-				archetype_directory.set_selected_item (a)
-				select_node_in_archetype_tree_view
+			if gui_item /= Void then
+				if {a: !ARCH_REP_ITEM} gui_item.data then
+					archetype_directory.set_selected_item (a)
+					select_node_in_archetype_tree_view
+				end
 			end
 		end
 
@@ -884,17 +875,12 @@ feature -- Controls
 			create Result.make (Current)
 		end
 
-	slot_map_control: GUI_SLOT_MAP_CONTROL
-		once
-			create Result.make (Current)
-		end
-
-	used_by_map_control: GUI_USED_BY_MAP_CONTROL
-		once
-			create Result.make (Current)
-		end
-
 	path_map_control: GUI_PATH_MAP_CONTROL
+		once
+			create Result.make (Current)
+		end
+
+	slot_map_control: GUI_SLOT_MAP_CONTROL
 		once
 			create Result.make (Current)
 		end
@@ -965,7 +951,7 @@ feature {NONE} -- Implementation
 						archetype_directory.put_repository (work_repository_path, 3)
 					end
 
-					archetype_directory.build_directory
+					archetype_directory.populate_directory
 					set_status_area (billboard_content)
 					archetype_view_tree_control.populate
 					archetype_test_tree_control.populate
@@ -1001,10 +987,9 @@ feature {NONE} -- Implementation
 			description_controls.clear
 			translation_controls.clear
 			node_map_control.clear
-			ontology_controls.clear
 			path_map_control.clear
+			ontology_controls.clear
 			slot_map_control.clear
-			used_by_map_control.clear
 		end
 
 	populate_view_controls
@@ -1013,7 +998,6 @@ feature {NONE} -- Implementation
 			description_controls.populate
 			translation_controls.populate
 			slot_map_control.populate
-			used_by_map_control.populate
 
 			if definition_notebook.parent = differential_view_box then
 				node_map_control.set_differential_view
@@ -1132,16 +1116,6 @@ feature {NONE} -- Implementation
 			language_combo.select_actions.resume
 		end
 
-	populate_statistics
-			-- populate statistics
-		do
-			arch_total_count_tf.set_text (archetype_directory.total_archetype_count.out)
-			arch_spec_count_tf.set_text (archetype_directory.specialised_archetype_count.out)
-			arch_slotted_count_tf.set_text (archetype_directory.slotted_archetype_count.out)
-			arch_used_by_count_tf.set_text (archetype_directory.used_by_archetype_count.out)
-			arch_bad_count_tf.set_text (archetype_directory.bad_archetype_count.out)
-		end
-
 	do_with_wait_cursor (action: PROCEDURE [ANY, TUPLE])
 			-- Perform `action' with an hourglass mouse cursor, restoring the cursor when done.
 		require
@@ -1157,7 +1131,19 @@ feature {NONE} -- Implementation
 			set_pointer_style (cursor)
 		end
 
-feature {GUI_TEST_ARCHETYPE_TREE_CONTROL} -- Build commands
+feature {GUI_TEST_ARCHETYPE_TREE_CONTROL} -- Statistics
+
+	populate_statistics
+			-- Populate the statistics tab.
+		do
+			arch_total_count_tf.set_text (archetype_directory.total_archetype_count.out)
+			arch_spec_count_tf.set_text (archetype_directory.specialised_archetype_count.out)
+			arch_slotted_count_tf.set_text (archetype_directory.slotted_archetype_count.out)
+			arch_used_by_count_tf.set_text (archetype_directory.used_by_archetype_count.out)
+			arch_bad_count_tf.set_text (archetype_directory.bad_archetype_count.out)
+		end
+
+feature {NONE} -- Build commands
 
 	do_build_action (action: PROCEDURE [ANY, TUPLE])
 			-- Perform `action', with an hourglass mouse cursor and disabling the build menus, until done.
@@ -1193,27 +1179,24 @@ feature {GUI_TEST_ARCHETYPE_TREE_CONTROL} -- Build commands
 
 			if ara /= Void then
 				if {node: !EV_TREE_NODE} archetype_file_tree.retrieve_item_recursively_by_data (ara, True) then
-					archetype_view_tree_control.set_node_pixmap (node)
+					archetype_view_tree_control.update_tree_node (node)
 				end
 
 				archetype_test_tree_control.do_row_for_item (ara, agent archetype_test_tree_control.set_row_pixmap)
 
 				if ara.parse_attempted then
 					compiler_error_control.extend_and_select (ara)
+					populate_statistics
 
 					if ara = archetype_directory.selected_archetype then
+						populate_archetype_id
+						populate_adl_version
+						populate_languages
 						populate_view_controls
 					end
 				end
 			end
 
-			ev_application.process_events
-		end
-
-	build_gui_stats_update
-			-- Update GUI with progress at end of build.
-		do
-			populate_statistics
 			ev_application.process_events
 		end
 

@@ -59,12 +59,6 @@ feature -- Access
 	visual_update_action: PROCEDURE [ANY, TUPLE [ARCH_REP_ARCHETYPE]]
 			-- Called after processng each archetype (to perform GUI updates during processing).
 
-	initial_visual_update_action: PROCEDURE [ANY, TUPLE]
-			-- called before processing whole repository
-
-	final_visual_update_action: PROCEDURE [ANY, TUPLE]
-			-- called after processing whole repository
-
 feature -- Status
 
 	is_interrupted: BOOLEAN
@@ -77,7 +71,6 @@ feature -- Status Setting
 		do
 			is_interrupted := True
 			status.append ("************* interrupted *************%N")
-			call_visual_update_action (Void)
 		ensure
 			interrupted: is_interrupted
 			status_set: not status.is_empty
@@ -93,36 +86,16 @@ feature -- Commands
 			visual_update_action_set: visual_update_action = value
 		end
 
-	set_initial_visual_update_action (value: PROCEDURE [ANY, TUPLE])
-			-- Set `initial_visual_update_action'.
-		do
-			initial_visual_update_action := value
-		ensure
-			initial_visual_update_action_set: initial_visual_update_action = value
-		end
-
-	set_final_visual_update_action (value: PROCEDURE [ANY, TUPLE])
-			-- Set `final_visual_update_action'.
-		do
-			final_visual_update_action := value
-		ensure
-			final_visual_update_action_set: final_visual_update_action = value
-		end
-
 	build_all
 			-- Build the whole system, but not artefacts that seem to be built already.
 		do
-			call_initial_visual_update_action
 			do_subtree (archetype_directory.directory, agent build_archetype (False, ?), "building system")
-			call_final_visual_update_action
 		end
 
 	rebuild_all
 			-- Rebuild the whole system from scratch, regardless of previous attempts.
 		do
-			call_initial_visual_update_action
 			do_subtree (archetype_directory.directory, agent build_archetype (True, ?), "rebuilding system from scratch")
-			call_final_visual_update_action
 		end
 
 	build_subtree
@@ -157,19 +130,23 @@ feature -- Commands
 
 	export_all_html (html_export_directory: STRING)
 			-- Generate HTML under `html_export_directory' from all archetypes that have already been built.
+		require
+			directory_attached: html_export_directory /= Void
 		do
 			do_subtree (archetype_directory.directory, agent export_archetype_html (html_export_directory, False, ?), "exporting built system as html")
 		end
 
 	build_and_export_all_html (html_export_directory: STRING)
 			-- Generate HTML under `html_export_directory' from the whole system, building each archetype as necessary.
+		require
+			directory_attached: html_export_directory /= Void
 		do
 			do_subtree (archetype_directory.directory, agent export_archetype_html (html_export_directory, True, ?), "building system and exporting as html")
 		end
 
 feature {NONE} -- Implementation
 
-	do_subtree (subtree: TWO_WAY_TREE [ARCH_REP_ITEM]; action: PROCEDURE [ANY, TUPLE [ARCH_REP_ITEM]]; message: STRING)
+	do_subtree (subtree: TWO_WAY_TREE [ARCH_REP_ITEM]; action: PROCEDURE [ANY, TUPLE [!ARCH_REP_ARCHETYPE]]; message: STRING)
 			-- Display `message' and perform `action' on the sub-system at and below `subtree'.
 		require
 			action_attached: action /= Void
@@ -178,30 +155,34 @@ feature {NONE} -- Implementation
 			status := "=============== " + message + " ===============%N"
 			call_visual_update_action (Void)
 			is_interrupted := False
-			archetype_directory.do_subtree (subtree, action, Void)
+			archetype_directory.do_subtree (subtree, agent do_if_archetype (?, action), Void)
 			status := "=============== finished " + message + " ===============%N"
 			call_visual_update_action (Void)
 		end
 
-	do_lineage (ara: ARCH_REP_ARCHETYPE; action: PROCEDURE [ANY, TUPLE [ARCH_REP_ITEM]])
+	do_lineage (ara: ARCH_REP_ARCHETYPE; action: PROCEDURE [ANY, TUPLE [!ARCH_REP_ARCHETYPE]])
 			-- Build the archetypes in the lineage containing `ara', possibly from scratch.
 			-- Go down as far as `ara'. Don't build sibling branches since this would create errors in unrelated archetypes.
 		require
 			ara_attached: ara /= Void
 			action_attached: action /= Void
-		local
-			lineage: ARRAYED_LIST [ARCH_REP_ITEM]
 		do
 			status.wipe_out
 			is_interrupted := False
-			lineage := ara.archetype_lineage
-			lineage.do_all (action)
+			ara.archetype_lineage.do_all (action)
 		end
 
-	build_archetype (from_scratch: BOOLEAN; item: ARCH_REP_ITEM)
+	do_if_archetype (item: ARCH_REP_ITEM; action: PROCEDURE [ANY, TUPLE [!ARCH_REP_ARCHETYPE]])
+		do
+			if {ara: !ARCH_REP_ARCHETYPE} item then
+				action.call ([ara])
+			end
+		end
+
+	build_archetype (from_scratch: BOOLEAN; ara: !ARCH_REP_ARCHETYPE)
 			-- Build `item', if it is an archetype, unless `from_scratch' is false and it hasn't been parsed yet.
 		do
-			if not is_interrupted and {ara: !ARCH_REP_ARCHETYPE} item then
+			if not is_interrupted then
 				if from_scratch or not ara.is_parsed then
 					status := "------------- compiling " + ara.id.value + " -------------%N"
 					call_visual_update_action (ara)
@@ -219,12 +200,14 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	export_archetype_html (html_export_directory: STRING; build_too: BOOLEAN; item: ARCH_REP_ITEM)
+	export_archetype_html (html_export_directory: STRING; build_too: BOOLEAN; ara: !ARCH_REP_ARCHETYPE)
 			-- Generate HTML under `html_export_directory' from `item', optionally building it first if necessary.
+		require
+			directory_attached: html_export_directory /= Void
 		local
 			filename: STRING
 		do
-			if not is_interrupted and {ara: !ARCH_REP_ARCHETYPE} item then
+			if not is_interrupted then
 				if build_too then
 					build_archetype (False, ara)
 				end
@@ -245,22 +228,6 @@ feature {NONE} -- Implementation
 		do
 			if visual_update_action /= Void then
 				visual_update_action.call ([ara])
-			end
-		end
-
-	call_initial_visual_update_action
-			-- Call `initial_visual_update_action', if it is attached.
-		do
-			if initial_visual_update_action /= Void then
-				initial_visual_update_action.call (Void)
-			end
-		end
-
-	call_final_visual_update_action
-			-- Call `final_visual_update_action', if it is attached.
-		do
-			if final_visual_update_action /= Void then
-				final_visual_update_action.call (Void)
 			end
 		end
 

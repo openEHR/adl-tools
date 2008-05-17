@@ -83,17 +83,30 @@ feature -- Commands
 			delay_to_make_keyboard_navigation_practical.set_interval (300)
 		end
 
-   	set_node_pixmap (node: EV_TREE_NODE)
-   			-- Set the icon appropriate to the item attached to `node'.
+   	update_tree_node (node: EV_TREE_NODE)
+   			-- Set the text, tooltip and icon appropriate to the item attached to `node'.
 		require
 			node_attached: node /= Void
    		local
-   			item: ARCH_REP_ITEM
+			text, tooltip: STRING_32
 			pixmap: EV_PIXMAP
-   		do
-   			item ?= node.data
+		do
+			if {item: !ARCH_REP_ITEM} node.data then
+				text := utf8 (item.base_name)
+				tooltip := utf8 (item.full_path)
 
-			if item /= Void then
+				if {ara: !ARCH_REP_ARCHETYPE} item then
+					if ara.has_slots then
+						text.append_code (0x279C)	-- Unicode character: an arrow pointing right
+					end
+
+					if ara.has_compiler_status then
+						tooltip.append (utf8 ("%N%N" + ara.compiler_status))
+					end
+				end
+
+				node.set_text (text)
+	 			node.set_tooltip (tooltip)
 				pixmap := pixmaps [item.group_name]
 
 				if pixmap /= Void then
@@ -105,28 +118,27 @@ feature -- Commands
 feature {NONE} -- Implementation
 
 	gui: MAIN_WINDOW
-			-- main window of system
+			-- Main window of system.
 
 	gui_file_tree: EV_TREE
 			-- reference to MAIN_WINDOW.archetype_file_tree
 
-	gui_tree_item_stack: ARRAYED_STACK[EV_TREE_ITEM]
+	gui_tree_item_stack: ARRAYED_STACK [EV_TREE_ITEM]
 			-- Stack used during `populate_gui_tree_node_enter'.
 
 	delay_to_make_keyboard_navigation_practical: EV_TIMEOUT
 			-- Timer to delay a moment before calling `display_details_of_selected_item'.
 
-   	populate_gui_tree_node_enter (an_item: ARCH_REP_ITEM)
+   	populate_gui_tree_node_enter (an_item: ARCH_REP_ITEM) is
    			-- Add a node representing `an_item' to `gui_file_tree'.
 		require
 			item_attached: an_item /= Void
    		local
 			node: EV_TREE_ITEM
 		do
-			create node.make_with_text (utf8 (an_item.base_name))
+			create node
  			node.set_data (an_item)
- 			set_node_pixmap (node)
- 			node.set_tooltip (utf8 (an_item.full_path))
+ 			update_tree_node (node)
 
 			if gui_tree_item_stack.is_empty then
 				gui_file_tree.extend (node)
@@ -141,6 +153,10 @@ feature {NONE} -- Implementation
    		do
 			gui_tree_item_stack.remove
 		end
+
+invariant
+	gui_attached: gui /= Void
+	tree_attached: gui_file_tree /= Void
 
 end
 

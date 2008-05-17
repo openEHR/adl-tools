@@ -33,11 +33,11 @@ inherit
 feature -- Access
 
 	accuracy: REAL
-			-- optional accuracy of measurement instrument or method which applies 
-			-- to this specific instance of DV_QUANTIFIED, expressed as the value 
+			-- optional accuracy of measurement instrument or method which applies
+			-- to this specific instance of DV_QUANTIFIED, expressed as the value
 			-- of the half-range quoted for the accuracy, e.g. "+/- 5%" is represented 
 			-- as a DV_QUANTITY of value 5 and units "%".
-			
+
 feature -- Status Report
 
 	valid_canonical_string(str: STRING): BOOLEAN is
@@ -46,7 +46,7 @@ feature -- Status Report
 		end
 
 	accuracy_is_percent: BOOLEAN
-			-- If True, indicates that when this object was created, accuracy was recorded as a 
+			-- If True, indicates that when this object was created, accuracy was recorded as a
 			-- percent value; if False, as an absolute quantity value.
 
 feature -- Comparison
@@ -59,7 +59,7 @@ feature -- Comparison
 			a_comparable ?= v
 			Result := a_comparable >= 0.0 and a_comparable <= 1.0
 		end
-		
+
 feature -- Basic Operations
 
 	infix "+" (other: like Current): like Current is
@@ -107,7 +107,7 @@ feature -- Output
 				end
 			end
 		end
-		
+
 	as_canonical_string: STRING is
 			-- standardised form of string guaranteed to contain all information
 			-- in data item
@@ -122,11 +122,14 @@ feature -- Output
 	magnitude_as_string: STRING is
 			-- output the magnitude in its natural form
 		deferred
+		ensure
+			attached: Result /= Void
+			not_empty: not Result.is_empty
 		end
-		
+
 invariant
 	Accuracy_validity: accuracy_is_percent implies valid_percentage(accuracy)
-	
+
 end
 
 

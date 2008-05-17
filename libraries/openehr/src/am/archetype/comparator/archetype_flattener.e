@@ -10,9 +10,9 @@ indexing
 	copyright:   "Copyright (c) 2008 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
+	file:        "$URL: http://www.openehr.org/svn/ref_impl_eiffel/TRUNK/libraries/openehr/src/am/archetype/comparator/archetype_flattener.e $"
 	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	last_change: "$LastChangedDate: 2008-05-17 15:32:35 +0100 (Sat, 17 May 2008) $"
 
 class ARCHETYPE_FLATTENER
 
@@ -35,38 +35,38 @@ feature -- Initialisation
 			Src_archetype_attached: a_src_archetype /= Void
 			Comparability: comparable_archetypes(a_flat_archetype, a_src_archetype)
 		do
-			flat_archetype := a_flat_archetype
+			parent_archetype := a_flat_archetype
 			src_archetype := a_src_archetype
 		end
 
 feature -- Access
 
-	flat_archetype: FLAT_ARCHETYPE
+	parent_archetype: FLAT_ARCHETYPE
 			-- flat archetype of parent, if applicable
 
 	src_archetype: DIFFERENTIAL_ARCHETYPE
 			-- archetype for which flat form is being generated
 
-	output: FLAT_ARCHETYPE
-			-- generated flat archetype - logically an overlay of `flat_archetype' and `src_archetype'
+	output_archetype: FLAT_ARCHETYPE
+			-- generated flat archetype - logically an overlay of `parent_archetype' and `src_archetype'
 
 feature -- Commands
 
 	flatten_archetype is
-			-- create a flat form archetype in `output'
+			-- create a flat form archetype in `output_archetype'
 		do
 			debug ("flatten")
-				io.put_string ("============== flattening archetype " + src_archetype.archetype_id.as_string + " with " + flat_archetype.archetype_id.as_string + " ==============%N")
+				io.put_string ("============== flattening archetype " + src_archetype.archetype_id.as_string + " with " + parent_archetype.archetype_id.as_string + " ==============%N")
 			end
-			create output.make_from_differential (src_archetype)
+			create output_archetype.make_from_differential (src_archetype)
 			flatten_definition
 			flatten_invariants
 			flatten_ontology
-			output.rebuild
-			output.set_parent_archetype_id (flat_archetype.archetype_id)
-			output.set_is_valid (True)
+			output_archetype.rebuild
+			output_archetype.set_parent_archetype_id (parent_archetype.archetype_id)
+			output_archetype.set_is_valid (True)
 		ensure
-			output /= Void
+			output_archetype /= Void
 		end
 
 feature -- Comparison
@@ -102,14 +102,14 @@ feature {NONE} -- Implementation
 	flatten_invariants is
 			-- build the flat archetype invariants as the sum of parent and source invariants
 		do
-			if flat_archetype.has_invariants then
+			if parent_archetype.has_invariants then
 				from
-					flat_archetype.invariants.start
+					parent_archetype.invariants.start
 				until
-					flat_archetype.invariants.off
+					parent_archetype.invariants.off
 				loop
-					output.add_invariant (flat_archetype.invariants.item.deep_twin)
-					flat_archetype.invariants.forth
+					output_archetype.add_invariant (parent_archetype.invariants.item.deep_twin)
+					parent_archetype.invariants.forth
 				end
 			end
 		end
@@ -117,16 +117,17 @@ feature {NONE} -- Implementation
 	flatten_ontology is
 			-- build the flat archetype ontology as the sum of parent and source ontologies
 		do
-			output.ontology.merge(flat_archetype.ontology)
+			output_archetype.ontology.merge(parent_archetype.ontology)
 		end
 
 	node_graft (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)  is
+			-- only interested in C_COMPLEX_OBJECTs
 		local
 			src_cco, parent_cco, output_cco: C_COMPLEX_OBJECT
 			apa: ARCHETYPE_PATH_ANALYSER
-			attr_name: STRING
+			parent_attr_name: STRING
 			src_attr, parent_attr, an_attr, output_attr: C_ATTRIBUTE
-			node_id_list: ARRAYED_LIST[STRING]
+			obj_node_ids: ARRAYED_LIST[STRING]
 			an_obj: C_OBJECT
 			spec_sts: INTEGER
 		do
@@ -137,31 +138,38 @@ feature {NONE} -- Implementation
 				end
 				create apa.make_from_string (src_cco.path)
 				debug ("flatten")
-					io.put_string ("%Tgetting parent object node using path " + apa.path_at_level (flat_archetype.specialisation_depth) + "%N")
+					io.put_string ("%Tgetting parent object node using path " + apa.path_at_level (parent_archetype.specialisation_depth) + "%N")
 				end
-				parent_cco ?= flat_archetype.c_object_at_path (apa.path_at_level (flat_archetype.specialisation_depth))
+				parent_cco ?= parent_archetype.c_object_at_path (apa.path_at_level (parent_archetype.specialisation_depth))
 
-				-- iterate through children and clone any from flat tree that are not already overridden in src tree
+				-- iterate through child attributes and clone any from flat tree that are not already overridden in src tree
 				from
 					parent_cco.attributes.start
 				until
 					parent_cco.attributes.off
 				loop
-					attr_name := parent_cco.attributes.item.rm_attribute_name
+					parent_attr_name := parent_cco.attributes.item.rm_attribute_name
 					debug ("flatten")
-						io.put_string ("%T%Tattribute in parent: " + attr_name + " ... ")
+						io.put_string ("%T%Tattribute in parent: " + parent_attr_name + " ... ")
 					end
-					if src_cco.has_attribute (attr_name) then
+
+					-- for attributes that are found in the differential source tree, we need to check which of their children
+					-- if any need to be cloned into the output
+					if src_cco.has_attribute (parent_attr_name) then
 						debug ("flatten")
 							io.put_string ("found in source %N")
 						end
-						src_attr := src_cco.c_attribute_at_path (attr_name)
+
 						-- only interested in container attributes found in the source archetype, since they may not have all members
-						-- from the parent. Here we create a list of the children that are overridden in the source, so as to avoid
-						-- adding them back in from the parent. Children defined new in the source can be ignored since they don't
-						-- exist in the parent.
-						create node_id_list.make (0)
-						node_id_list.compare_objects
+						-- from the parent. Here we create a list of the children that are overridden or inherited in the source - these
+						-- children in the source _replace_ the equivalent children in the parent, so we want to avoid
+						-- adding them back in to the output (remember that this was created as a clone of the source differential
+						-- archetype). Children defined new in the source can be ignored since they don't exist in the parent and
+						-- must be in the output flat archetype already.
+
+						src_attr := src_cco.c_attribute_at_path (parent_attr_name)
+						create obj_node_ids.make (0)
+						obj_node_ids.compare_objects
 						if src_attr.is_multiple then
 							from
 								src_attr.children.start
@@ -171,18 +179,26 @@ feature {NONE} -- Implementation
 								debug ("flatten")
 									io.put_string ("%T%Tchecking object with node id " + src_attr.children.item.node_id + " (path = " + src_attr.children.item.path + ") ... ")
 								end
-								spec_sts := specialisation_status_from_code(src_attr.children.item.node_id, src_archetype.specialisation_depth).value
-								if spec_sts = ss_redefined then
-									node_id_list.extend(specialisation_parent_from_code_at_level (src_attr.children.item.node_id, flat_archetype.specialisation_depth))
-									debug ("flatten")
-										io.put_string ("ignoring %N")
+								if is_valid_code (src_attr.children.item.node_id) then
+									spec_sts := specialisation_status_from_code(src_attr.children.item.node_id, src_archetype.specialisation_depth).value
+									if spec_sts = ss_redefined then
+										obj_node_ids.extend(specialisation_parent_from_code_at_level (src_attr.children.item.node_id, parent_archetype.specialisation_depth))
+										debug ("flatten")
+											io.put_string ("will ignore - redefined%N")
+										end
+									elseif spec_sts = ss_inherited then
+										obj_node_ids.extend(src_attr.children.item.node_id)
+										debug ("flatten")
+											io.put_string ("will ignore - inherited%N")
+										end
+									else
+										debug ("flatten")
+											io.put_string ("%N")
+										end
 									end
-								elseif spec_sts = ss_inherited then
-									node_id_list.extend(src_attr.children.item.node_id)
-									debug ("flatten")
-										io.put_string ("ignoring %N")
-									end
-								else
+								elseif True then
+									 -- there is no code, i.e. it is either a single member of the container or else an
+									 -- anomalous slot, that should really have an id, or else a use_node
 									debug ("flatten")
 										io.put_string ("%N")
 									end
@@ -196,13 +212,13 @@ feature {NONE} -- Implementation
 								io.put_string ("%T%Titerating through child objects of " + parent_attr.path + "%N")
 							end
 
-							output_attr := output.definition.c_attribute_at_path (src_attr.path)
+							output_attr := output_archetype.definition.c_attribute_at_path (src_attr.path)
 							from
 								parent_attr.children.start
 							until
 								parent_attr.children.off
 							loop
-								if not node_id_list.has (parent_attr.children.item.node_id) then
+								if not obj_node_ids.has (parent_attr.children.item.node_id) then
 									an_obj := parent_attr.children.item.safe_deep_twin
 									output_attr.put_child (an_obj)
 									debug ("flatten")
@@ -211,13 +227,17 @@ feature {NONE} -- Implementation
 								end
 								parent_attr.children.forth
 							end
+						else
+							debug ("flatten")
+								io.put_string ("%T%T(single-valued attribute)%N")
+							end
 						end
-					else
+					else  -- otherwise just do a deep clone of the whole attribute from the parent flat to the output
 						debug ("flatten")
-							io.put_string ("in parent only%N")
+							io.put_string ("in parent only; deep_clone object at " + parent_cco.path + " from flat parent and graft to " + src_cco.path + " in output%N")
 						end
 						an_attr := parent_cco.attributes.item.safe_deep_twin
-						output_cco ?= output.definition.c_object_at_path (parent_cco.path)
+						output_cco ?= output_archetype.definition.c_object_at_path (src_cco.path)
 						output_cco.put_attribute (an_attr)
 						debug ("flatten")
 							io.put_string ("%T%Tgrafted attribute to " + an_attr.path + "%N")
@@ -229,16 +249,18 @@ feature {NONE} -- Implementation
 		end
 
 	node_test (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN  is
+			-- return True if a conformant path of a_c_node within the differential archetype is
+			-- found within the flat parent archetype - i.e. a_c_node is inherited or redefined from parent (but not new)
 		local
 			apa: ARCHETYPE_PATH_ANALYSER
 		do
 			debug ("flatten")
-				io.put_string ("%T*** checking node " + a_c_node.path + " ... ")
+				io.put_string ("%T*** checking " + a_c_node.generator + " node; path = " + a_c_node.path)
 			end
 
 			create apa.make_from_string(a_c_node.path)
 
-			Result := flat_archetype.has_path (apa.path_at_level (flat_archetype.specialisation_depth))
+			Result := parent_archetype.has_path (apa.path_at_level (parent_archetype.specialisation_depth))
 
 			if Result then
 				debug ("flatten")

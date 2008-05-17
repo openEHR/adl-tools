@@ -16,8 +16,7 @@ class EVENT_LOG_FACILITY
 inherit
 	EVENT_SEVERITY_CONSTANTS
 
-creation
-
+create
 	make
 
 feature -- Initialisation
@@ -38,7 +37,7 @@ feature -- Initialisation
 			-- decide what type of implementation to used based on resource setting
 			if type.is_equal("windows_event_log") then
 			    implementation := create {WINDOWS_EVENT_LOG_I}.make(Current)
-			    
+
 			elseif type.is_equal("file_event_log") then
 			    implementation := create {FILE_EVENT_LOG_I}.make(Current)
 
@@ -59,13 +58,13 @@ feature -- Initialisation
 feature -- Access
 
 	app_name:STRING
-	
+
 	name:STRING
-	
+
 	type:STRING
-	
+
 	severity_threshold:INTEGER
-	
+
 feature -- Status Report
 
 	exists: BOOLEAN
@@ -81,10 +80,10 @@ feature -- Modify
 		do
 			if severity >= severity_threshold then
 				create source_in_app.make(0)
-				source_in_app.append(class_name) 
-				source_in_app.to_upper 
+				source_in_app.append(class_name)
+				source_in_app.to_upper
 				source_in_app.append(".")
-				source_in_app.append(op_name) 
+				source_in_app.append(op_name)
 				source_in_app.append(": ")
 
 				implementation.append_event(severity, source_in_app, msg)
@@ -96,8 +95,8 @@ feature {NONE} -- Implementation
 	log_start_event is
 			-- log initial message
 	    do
-			append_event(generator, "make", 
-					"Started logging on facility " + name + " at " + (create {DATE_TIME}.make_now).out, 
+			append_event(generator, "make",
+					"Started logging on facility " + name + " at " + (create {DATE_TIME}.make_now).out,
 					Information)
 	    end
 

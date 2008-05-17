@@ -46,6 +46,12 @@
 
 
 
+
+
+
+  
+  
+  
   
   
   
@@ -135,9 +141,18 @@
 
 
 
+
+
+
   
 
 
+  
+  
+  
+  
+  
+  
   
   
   
@@ -242,6 +257,12 @@
 
 
 
+
+
+
+  
+  
+  
   
   
   
@@ -307,8 +328,14 @@
 
 
 
-<h1>ADL Workbench Help Page
+
+
+
+<h1>ADL Workbench Help Page - Release 1.4.1
 </h1>
+
+
+
 
 
 
@@ -382,7 +409,13 @@
 
 
 
-The ADL Workbench is available for the following platforms:<br />
+
+
+
+The ADL Workbench is available for the following platforms (see <a href="https://wiki.oceaninformatics.com/confluence/display/TTL/ADL%20Workbench%20Releases">Ocean wiki</a> for more detailed help, especially for Mac and Linux):<br />
+
+
+
 
 
 
@@ -394,25 +427,40 @@ The ADL Workbench is available for the following platforms:<br />
 
 
 
-  <li>Windows:&nbsp; <a href="http://www.openehr.org/wsvn/oe_distrib/windows/tools/OceanADLWorkbenchInstall.exe?op=file&amp;rev=52&amp;sc=0">.exe installer file</a></li>
+
+
+
+  <li>Windows:&nbsp; <a href="http://www.openehr.org/wsvn/oe_distrib/windows/tools/ADLWorkbenchInstall.exe?op=file&amp;rev=54&amp;sc=0">.exe installer file</a></li>
 
 
 
 
 
-  <li>Mac OS X 10.5 (Intel):&nbsp; <a href="http://www.openehr.org/wsvn/oe_distrib/mac_osx/tools/ADL%20Workbench%20for%20Leopard%20i386.dmg?op=file&amp;rev=52&amp;sc=0">.dmg disk image file</a></li>
+
+
+
+  <li>Mac OS X 10.5 (Intel):&nbsp; <a href="http://www.openehr.org/wsvn/oe_distrib/mac_osx/tools/ADL%20Workbench%20for%20Leopard%20i386.dmg?op=file&amp;rev=54&amp;sc=0">.dmg disk image file</a></li>
 
 
 
 
 
-  <li>Mac OS X  10.4 (PowerPC):&nbsp; <a href="http://www.openehr.org/wsvn/oe_distrib/mac_osx/tools/ADL%20Workbench%20for%20Tiger%20powerpc.dmg?op=file&amp;rev=52&amp;sc=0">.dmg disk image file</a></li>
+
+
+
+  <li>Mac OS X  10.4 (PowerPC):&nbsp; <a href="http://www.openehr.org/wsvn/oe_distrib/mac_osx/tools/ADL%20Workbench%20for%20Tiger%20powerpc.dmg?op=file&amp;rev=55&amp;sc=0">.dmg disk image file</a></li>
 
 
 
 
 
-  <li>Linux (32-bit Intel):&nbsp; <a href="http://www.openehr.org/wsvn/oe_distrib/linux/tools/adl_workbench-linux.tar.bz2?op=file&amp;rev=52&amp;sc=0">.tar.bz2 archive file</a></li>
+
+
+
+  <li>Linux (32-bit Intel):&nbsp; <a href="http://www.openehr.org/wsvn/oe_distrib/linux/tools/adl_workbench-linux.tar.bz2?op=file&amp;rev=54&amp;sc=0">.tar.bz2 archive file</a></li>
+
+
+
 
 
 
@@ -437,23 +485,35 @@ The ADL Workbench is available for the following platforms:<br />
 
 
 
-The <span style="font-style: italic;">open</span>EHR archetypes are available from the <span style="font-style: italic;">open</span>EHR Subversion repository at <a href="http://www.openehr.org/svn/knowledge">http://www.openehr.org/svn/knowledge</a>. See below for specific instructions.<br />
-<h2>Status</h2>
+
+
+
+The <span style="font-style: italic;">open</span>EHR archetypes are available from the <span style="font-style: italic;">open</span>EHR Subversion repository at <a href="http://www.openehr.org/svn/knowledge">http://www.openehr.org/svn/knowledge</a>. See below for specific instructions.
+
+
+<h2>Status - Release 1.4.1</h2>
+
+
+
 <big><span style="font-weight: bold;">This release of the Archetype
 Workbench brings two major changes. The first is the introduction of
 the .adls file type, for persisting ADL source files. The formalism is
 the same as for existing .adl files, i.e. </span><span style="font-style: italic; font-weight: bold;">open</span><span style="font-weight: bold;">EHR
 ADL, but for specialised archetypes, the content has changed to include
 only differences, i.e. further constraints with respect to parent
-archetypes.. The new file type will become the source file type for
+archetypes. The new file type will become the source file type for
 archetypes in the future, but for now, .adl files are not touched by
 the tool.</span></big><br />
+
+
+
 <br />
+
+
+
 The second major change is tha the tool now operates as a
 repository-wide compiler, and can compile all archetypes in one
-operation.<br />
-<br />
-See the Release Notes for details.
+operation. See the <a href="adl_workbench_help_whats_new_20080402.htm">Release Notes</a> for details.
 
 
 
@@ -465,6 +525,9 @@ See the Release Notes for details.
 
 
 <h2><span style="font-weight: bold;">Overview</span></h2>
+
+
+
 
 
 
@@ -520,7 +583,13 @@ See the Release Notes for details.
 
 
 
+
+
+
   <tbody>
+
+
+
 
 
 
@@ -576,6 +645,9 @@ See the Release Notes for details.
 
 
 
+
+
+
       <td>The ADL Workbench is a visual front-end for the <span style="font-style: italic;">open</span>EHR
 reference ADL parser. It can be used for <span style="font-weight: bold;">compiling, viewing</span> and <span style="font-weight: bold;">batch testing</span> archetypes created
 for any reference model, and in any number of languages. The tool is based on the <a href="http://www.openehr.org/svn/specification/TRUNK/publishing/architecture/am/adl.pdf">ADL 1.4 language specification</a>, the <a href="http://www.openehr.org/svn/specification/TRUNK/publishing/architecture/am/aom.pdf">Archetype Object Model (AOM) specification</a>, and the <a href="http://www.openehr.org/svn/specification/TRUNK/publishing/architecture/am/openehr_archetype_profile.pdf"><span style="font-style: italic;">open</span>EHR archetype Profile</a> specification.<br />
@@ -604,7 +676,13 @@ for any reference model, and in any number of languages. The tool is based on th
 
 
 
+
+
+
       <br />
+
+
+
 
 
 
@@ -682,7 +760,13 @@ The two parts of the tool are the <span style="font-weight: bold;">Compiler</spa
 
 
 
+
+
+
       <td><a href="images/overview.png"><img style="border: 0px solid ; width: 100px; height: 80px;" alt="ADL workbench" src="images/tn/overview.jpg" /></a><br />
+
+
+
 
 
 
@@ -736,7 +820,13 @@ Compiler<br />
 
 
 
+
+
+
       </td>
+
+
+
 
 
 
@@ -788,7 +878,13 @@ Compiler<br />
 
 
 
+
+
+
 Tester</td>
+
+
+
 
 
 
@@ -844,6 +940,12 @@ Tester</td>
 
 
 
+
+
+
+  
+  
+  
   
   
   
@@ -900,7 +1002,13 @@ Tester</td>
 
 
 
+
+
+
 <br />
+
+
+
 
 
 
@@ -912,7 +1020,13 @@ Tester</td>
 
 
 
+
+
+
 <ul>
+
+
+
 
 
 
@@ -924,7 +1038,13 @@ Tester</td>
 
 
 
+
+
+
   <li><a href="adl_workbench_help-getting_started.htm">Getting started</a></li>
+
+
+
 
 
 
@@ -936,9 +1056,18 @@ Tester</td>
 
 
 
+
+
+
   <li><a href="adl_workbench_help-view.htm">Viewing</a></li>
 
+
+
+
   <li><a href="adl_workbench_help-files.html">File access</a></li>
+
+
+
 
 
 
@@ -950,7 +1079,13 @@ Tester</td>
 
 
 
+
+
+
   <li><a href="adl_workbench_help-test_archetypes.html">Test archetypes</a></li>
+
+
+
 
 
 
@@ -1002,9 +1137,15 @@ Tester</td>
 
 
 
+
+
+
 <hr style="width: 100%; height: 2px;" />
 <p class="footer">$LastChangedDate: $
 $LastChangedRevision$</p>
+
+
+
 
 
 

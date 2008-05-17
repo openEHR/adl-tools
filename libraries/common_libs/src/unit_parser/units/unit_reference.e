@@ -19,7 +19,7 @@ inherit
 			out
 		end
 
-creation
+create
 	make
 
 feature -- Definitions
@@ -58,9 +58,9 @@ feature -- Access
 			-- can be used to key into prefix table in units database
 
 	suffix:STRING
-			-- string whose inclusion changes the meaning of the unit, e.g. 
+			-- string whose inclusion changes the meaning of the unit, e.g.
 			-- Hg in "mm[Hg]"
-	
+
 feature -- Modify
 
 	set_metric_prefix(str:STRING) is

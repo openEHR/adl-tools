@@ -115,7 +115,7 @@ demographic and archetype servers.</li>
 
   
 
-  <li>Download and install EiffelStudio 6.1 from <a href="http://eiffel.com">http://eiffel.com</a> (free use license).</li>
+  <li>Download and install <a href="http://eiffel.com">EiffelStudio 6.1</a> (free use license).</li>
 
 
 
@@ -152,11 +152,11 @@ demographic and archetype servers.</li>
 
 
 
-    <li>Download and install Python 2.5 or higher from <a href="http://www.python.org">http://www.python.org</a>.</li>
+    <li>Download and install <a href="http://www.python.org">Python 2.5</a> or higher.</li>
 
 
 
-    <li>Download and install SCons 0.98 or higher from <a href="http://www.scons.org">http://www.scons.org</a>.</li>
+    <li>Download and install <a href="http://www.scons.org">SCons 0.98</a> or higher.</li>
 
 
 
@@ -164,6 +164,10 @@ demographic and archetype servers.</li>
   
   
   </ul>
+
+
+
+  <li>On <span style="font-weight: bold;">Windows</span>, if you wish to build an installer for ADL Workbench, download and install <a href="http://nsis.sourceforge.net">NSIS</a>.</li>
 
 
 
@@ -187,15 +191,20 @@ demographic and archetype servers.</li>
 
 
 
-  <li>Make sure that SCons, Python and the Eiffel compiler are in your PATH. (On Windows, you can copy scons.bat from Python's Scripts directory up to the Python directory; or else add the Scripts directory to your path too.)</li>
+  <li>Make sure that SCons, Python and the Eiffel compiler are in your PATH.</li>
 
 
 
-  <li>On Linux or Mac, make sure that you have also set the EiffelStudio environment variables.</li>
+  <li>On <span style="font-weight: bold;">Windows</span>:
+    <ul>
+        <li>Mke sure NSIS is in your path too if you installed it.</li>
+        <li>For SCons, you can copy scons.bat from Python's Scripts directory up to the Python directory; or else add the Scripts directory to your path too.</li>
+    </ul>
+  </li>
 
 
 
-  <li>For example, on an Intel Mac, your <span style="font-weight: bold;">.profile</span> might contain this:
+  <li>On <span style="font-weight: bold;">Linux</span> or <span style="font-weight: bold;">Mac</span>, make sure that you have also set the EiffelStudio environment variables. For example, on an Intel Mac, your <span style="font-weight: bold;">.profile</span> might contain this:
     <ul>
         <li>export <span style="font-weight: bold;">ISE_PLATFORM</span>=macosx-x86</li>
         <li>export <span style="font-weight: bold;">ISE_EIFFEL</span>=/Applications/MacPorts/Eiffel61</li>

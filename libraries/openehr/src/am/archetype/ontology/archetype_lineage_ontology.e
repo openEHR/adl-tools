@@ -13,9 +13,9 @@ indexing
 	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
+	file:        "$URL: http://www.openehr.org/svn/ref_impl_eiffel/TRUNK/libraries/openehr/src/am/archetype/ontology/archetype_lineage_ontology.e $"
 	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	last_change: "$LastChangedDate: 2008-03-12 00:23:45 +0000 (Wed, 12 Mar 2008) $"
 
 class ARCHETYPE_LINEAGE_ONTOLOGY
 

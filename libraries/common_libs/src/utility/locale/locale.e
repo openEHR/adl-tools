@@ -14,7 +14,7 @@ indexing
 
 class LOCALE
 
-creation
+create
 	make
 
 feature -- Initialisation

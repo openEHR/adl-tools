@@ -230,6 +230,18 @@ feature -- Access
 			end
 		end
 
+	show_technical_view: BOOLEAN
+			-- Display the technical view in the archetype definition node tree by default?
+		local
+			str: STRING
+		do
+			str := resource_value ("default", "show_technical_view")
+
+			if str.is_boolean then
+				Result := str.to_boolean
+			end
+		end
+
 	show_line_numbers: BOOLEAN
 			-- Display line numbers in the ADL source text box?
 		local
@@ -647,6 +659,12 @@ feature -- Modification
 			-- Set flag for whether to expand the archetype definition node tree by default.
 		do
 			set_resource_value ("default", "expand_node_tree", flag.out)
+		end
+
+	set_show_technical_view (flag: BOOLEAN) is
+			-- Set flag for whether to show the technical view in the archetype definition node tree by default.
+		do
+			set_resource_value ("default", "show_technical_view", flag.out)
 		end
 
 	set_show_line_numbers (flag: BOOLEAN) is

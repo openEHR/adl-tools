@@ -8,7 +8,7 @@ indexing
 			 Contents of table taken from a file of form: 
 				 [prefixes]	
 				 ;NAME:CASE_SENSITIVE:CASE_INSENSITIVE:VALUE
-				 ; 
+				 ;
 	             ]"
 	keywords:    "metric, units, UCUM"
 
@@ -31,7 +31,7 @@ inherit
 			out
 		end
 
-creation
+create
 	make
 
 feature -- Initialisation
@@ -109,7 +109,7 @@ feature {NONE} -- Implementation
 
 	prefixes_file:CONFIG_FILE_ACCESS
 
-end 
+end
 
 --|
 --| ***** BEGIN LICENSE BLOCK *****

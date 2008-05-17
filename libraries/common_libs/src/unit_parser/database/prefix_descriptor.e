@@ -25,7 +25,7 @@ inherit
 			out
 		end
 
-creation
+create
 	make, make_from_string
 
 feature -- Definitions
@@ -67,7 +67,7 @@ feature -- Initialisation
 				invalid_reason.append_integer(line.token_count)
 			else
 	 			line.token_start
-	
+
 				-- get name
 				a_name := line.token_item
 				line.token_forth
@@ -120,12 +120,12 @@ feature -- Error
 
 	invalid_reason:STRING
 
-	is_valid:BOOLEAN is 
+	is_valid:BOOLEAN is
 		do
 			Result := invalid_reason = Void or else invalid_reason.is_empty
 		end
 
-end 
+end
 
 --|
 --| ***** BEGIN LICENSE BLOCK *****

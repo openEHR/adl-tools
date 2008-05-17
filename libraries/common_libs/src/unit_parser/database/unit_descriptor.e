@@ -28,7 +28,7 @@ inherit
 			out
 		end
 
-creation
+create
 	make, make_from_string
 
 feature -- Definitions
@@ -39,7 +39,7 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make(a_group_name, a_name, a_property, a_cs_symbol, a_ci_symbol:STRING; 
+	make(a_group_name, a_name, a_property, a_cs_symbol, a_ci_symbol:STRING;
 			a_metric:BOOLEAN; a_value:DOUBLE; a_definition:STRING) is
 		require
 			Group_name_valid: a_group_name /= Void and then not a_group_name.is_empty
@@ -81,7 +81,7 @@ feature -- Initialisation
 				invalid_reason.append_integer(line.token_count)
 			else
 	 			line.token_start
-	
+
 				-- get name
 				a_name := line.token_item
 				line.token_forth
@@ -149,12 +149,12 @@ feature -- Access
 	 		-- flag indicating whether metric prefixes can be used with unit
 
 	 value:DOUBLE
-	 		-- together with definition, the semantic meaning of the unit, in terms of more basic 
+	 		-- together with definition, the semantic meaning of the unit, in terms of more basic
 			-- quantity and units
 
 	 definition:STRING
 	 		-- unit part of the semantic definition of unit
-	
+
 feature -- Output
 
 	out:STRING is
@@ -173,12 +173,12 @@ feature -- Error
 
 	invalid_reason:STRING
 
-	is_valid:BOOLEAN is 
+	is_valid:BOOLEAN is
 		do
 			Result := invalid_reason = Void or else invalid_reason.is_empty
 		end
 
-end 
+end
 
 --|
 --| ***** BEGIN LICENSE BLOCK *****

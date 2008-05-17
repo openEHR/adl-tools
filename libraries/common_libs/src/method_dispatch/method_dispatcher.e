@@ -25,7 +25,7 @@ inherit
 			{NONE} all
 		end
 
-creation
+create
 	make
 
 feature -- Initialisation
@@ -105,7 +105,7 @@ feature -- Creation
 			-- marshalled in advance
 		require
 			Class_name_valid: a_type_name /= Void and then not a_type_name.is_empty
-			Make_proc_name_valid: make_proc_name /= Void implies not make_proc_name.is_empty 
+			Make_proc_name_valid: make_proc_name /= Void implies not make_proc_name.is_empty
 			Class_procedure_validity: is_valid_feature(a_type_name, make_proc_name)
 		do
 			Result := create_object_by_id(type_id(a_type_name), make_proc_name)
@@ -448,7 +448,7 @@ feature {NONE} -- External
 		end
 
 end
-	
+
 --|
 --| ***** BEGIN LICENSE BLOCK *****
 --| Version: MPL 1.1/GPL 2.0/LGPL 2.1

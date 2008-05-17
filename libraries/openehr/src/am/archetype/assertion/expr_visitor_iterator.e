@@ -7,9 +7,9 @@ indexing
 	copyright:   "Copyright (c) 2008 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL: http://svn.openehr.org/ref_impl_eiffel/BRANCHES/specialisation/libraries/openehr/src/am/archetype/constraint_model/c_visitor_iterator.e $"
+	file:        "$URL: http://www.openehr.org/svn/ref_impl_eiffel/TRUNK/libraries/openehr/src/am/archetype/assertion/expr_visitor_iterator.e $"
 	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate: 2007-08-10 02:25:30 +0100 (Fri, 10 Aug 2007) $"
+	last_change: "$LastChangedDate: 2008-03-12 00:23:45 +0000 (Wed, 12 Mar 2008) $"
 
 class EXPR_VISITOR_ITERATOR
 

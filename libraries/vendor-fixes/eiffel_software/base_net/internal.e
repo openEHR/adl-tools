@@ -28,32 +28,32 @@ feature -- Conformance
 		end
 
 	type_conforms_to (type1, type2: INTEGER): BOOLEAN is
-			-- Does `type1' conform to `type2'?. Take into account .NET generics.
+			-- Does `type1' conform to `type2'? Take into account .NET generics.
 		require
 			type1_nonnegative: type1 >= 0
 			type2_nonnegative: type2 >= 0
-        local
-            i, gen_type_count: INTEGER
-        do
-            if type1 = type2 then
-                Result := True
-            else
-                -- make sure base type conforms
-                Result := id_to_eiffel_type.item (type2).dotnet_type.is_assignable_from (id_to_eiffel_type.item (type1).dotnet_type)
+		local
+			i, gen_type_count: INTEGER
+		do
+			if type1 = type2 then
+				Result := True
+			else
+				-- make sure base type conforms
+				Result := id_to_eiffel_type.item (type2).dotnet_type.is_assignable_from (id_to_eiffel_type.item (type1).dotnet_type)
 
-                -- deal with generics
-                if Result then
-	                from
+				-- deal with generics
+				if Result then
+					from
 						gen_type_count := generic_count_of_type (type1).min (generic_count_of_type (type2))
 						i := 1
-            	    until
-                	    not Result or i > gen_type_count
-	                loop
-    	                Result := type_conforms_to (generic_dynamic_type_of_type (type1, i), generic_dynamic_type_of_type (type2, i))
-        	            i := i + 1
-            	    end
+					until
+						not Result or i > gen_type_count
+					loop
+						Result := type_conforms_to (generic_dynamic_type_of_type (type1, i), generic_dynamic_type_of_type (type2, i))
+						i := i + 1
+					end
 				end
-            end
+			end
 		end
 
 feature -- Creation
@@ -94,10 +94,10 @@ feature -- Creation
 			l_tuple ?= Result
 			if l_tuple /= Void then
 					-- Create `native_array' field from TUPLE, otherwise we would violate
-					-- TUPLE invariant.
-					-- Since TUPLE has only one attribute, thus `1' as position for `native_array'.
+					-- TUPLE invariant. Note that the `native_array' has one more element than
+					-- the number of generic parameters (see TUPLE.default_create).
 				tuple_native_array_field_info.set_value (l_tuple,
-					create {NATIVE_ARRAY [SYSTEM_OBJECT]}.make (generic_count (l_tuple)))
+					create {NATIVE_ARRAY [SYSTEM_OBJECT]}.make (generic_count (l_tuple) + 1))
 			end
 		ensure
 			not_special_type: not is_special (Result)

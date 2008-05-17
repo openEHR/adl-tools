@@ -16,9 +16,9 @@ indexing
 	copyright:   "Copyright (c) 2003,2004 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL: http://www.openehr.org/svn/ref_impl_eiffel/BRANCHES/specialisation/libraries/openehr/src/am/archetype/ontology/archetype_ontology.e $"
+	file:        "$URL: http://www.openehr.org/svn/ref_impl_eiffel/TRUNK/libraries/openehr/src/am/archetype/ontology/differential_archetype_ontology.e $"
 	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate: 2008-01-11 20:33:58 +0000 (Fri, 11 Jan 2008) $"
+	last_change: "$LastChangedDate: 2008-03-12 00:23:45 +0000 (Wed, 12 Mar 2008) $"
 
 class DIFFERENTIAL_ARCHETYPE_ONTOLOGY
 

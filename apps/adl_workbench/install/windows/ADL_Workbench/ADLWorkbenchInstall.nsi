@@ -50,7 +50,7 @@ InstallDir "$PROGRAMFILES\Ocean Informatics\ADL Workbench"
 CRCCheck on
 XPStyle on
 ShowInstDetails show
-VIProductVersion 1.4.1.0
+VIProductVersion 1.4.2.0
 VIAddVersionKey ProductName "Ocean ADL Workbench"
 VIAddVersionKey ProductVersion "${VERSION}"
 VIAddVersionKey CompanyName "${COMPANY}"

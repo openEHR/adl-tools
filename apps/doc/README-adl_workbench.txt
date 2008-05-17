@@ -6,7 +6,7 @@ VERSION
 	Last Change: $Date$
 
 AUTHORS
-	Thomas Beale, Sam Heard
+	Thomas Beale, Peter Gummer
 
 	Ocean Informatics <www.OceanInformatics.com>
 
@@ -105,7 +105,7 @@ Reading the ADL files
 
 	See the ADL PDF manual for a full description of the syntax. The latest
 	is currently available at
-	http://svn.openehr.org/specification/TRUNK/publishing/architecture/am/adl.pdf.
+	http://www.openehr.org/svn/specification/TRUNK/publishing/architecture/am/adl.pdf.
 
 FEEDBACK
 	Software support: mail <Thomas dot Beale at OceanInformatics dot com>

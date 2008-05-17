@@ -105,21 +105,28 @@ feature -- Access
 			Result_exists: Result /= Void
 		end
 
-	all_paths: HASH_TABLE[C_OBJECT, STRING] is
-			-- all paths below this point, including this node
+	all_paths: HASH_TABLE [C_OBJECT, STRING] is
+			-- All paths below this point, including this node.
 		local
 			og_paths: HASH_TABLE [OG_OBJECT, OG_PATH]
-			c_obj: C_OBJECT
+			og_obj: OG_OBJECT
 		do
 			og_paths := representation.all_paths
-			create Result.make(0)
+			create Result.make (0)
+
 			from
 				og_paths.start
 			until
 				og_paths.off
 			loop
-				c_obj ?= og_paths.item_for_iteration.content_item
-				Result.put(c_obj, og_paths.key_for_iteration.as_string)
+				og_obj := og_paths.item_for_iteration
+
+				if og_obj /= Void then
+					if {c_obj: !C_OBJECT} og_obj.content_item then
+						Result.put (c_obj, og_paths.key_for_iteration.as_string)
+					end
+				end
+
 				og_paths.forth
 			end
 		ensure

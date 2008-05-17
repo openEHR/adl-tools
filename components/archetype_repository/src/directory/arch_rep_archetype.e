@@ -7,9 +7,9 @@ indexing
 	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
+	file:        "$URL: http://www.openehr.org/svn/ref_impl_eiffel/TRUNK/components/archetype_repository/src/directory/arch_rep_archetype.e $"
 	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	last_change: "$LastChangedDate: 2008-05-17 15:32:35 +0100 (Sat, 17 May 2008) $"
 
 
 class ARCH_REP_ARCHETYPE
@@ -89,7 +89,7 @@ feature -- Access
 			-- The text of the flat form of the archetype.
 		do
 			Result := file_repository.text (full_path)
-			flat_text_timestamp := file_repository.text_timestamp
+			flat_text_timestamp := file_repository.text_timestamp	-- FIXME: This is a nasty side-effect. Replace it with an explicit command!
 		ensure
 			attached: Result /= Void
 		end
@@ -100,7 +100,7 @@ feature -- Access
 			has_differential_file
 		do
 			Result := file_repository.text (differential_path)
-			differential_text_timestamp := file_repository.text_timestamp
+			differential_text_timestamp := file_repository.text_timestamp	-- FIXME: This is a nasty side-effect. Replace it with an explicit command!
 		ensure
 			attached: Result /= Void
 		end
@@ -129,7 +129,7 @@ feature -- Access
 	specialisation_parent: ARCH_REP_ARCHETYPE
 			-- parent descriptor, for specialised archetypes only
 
-	archetype_lineage: ARRAYED_LIST [ARCH_REP_ARCHETYPE] is
+	archetype_lineage: !ARRAYED_LIST [ARCH_REP_ARCHETYPE] is
 			-- lineage of archetypes from parent to this one, inclusive of the current one.
 			-- For non-specialised archetypes, contains just the top-level archetype.
 			-- NOTE: in theory this could be precomputed from ARCH_DIRECTORY, but modifications to
@@ -238,19 +238,19 @@ feature -- Status Report
 			-- actually been compiled and is available in memory. This is useful for specialised archetypes because
 			-- you want to know if the parent has been compiled (up the lineage) before you can compile the current one
 
-	has_compiler_status: BOOLEAN is
+	has_compiler_status: BOOLEAN
 			-- True if there si any compiler errors or warnings
 		do
 			Result := not compiler_status.is_empty
 		end
 
-	has_slots: BOOLEAN is
+	has_slots: BOOLEAN
 			-- True if this archetype has one or more slots
 		do
 			Result := slot_id_index /= Void
 		end
 
-	is_used: BOOLEAN is
+	is_used: BOOLEAN
 			-- True if this archetype is used by other archetypes (i.e. matrches any of their slots)
 		do
 			Result := used_by_index /= Void
@@ -258,10 +258,13 @@ feature -- Status Report
 
 feature -- Status Setting
 
-	set_parse_attempted is
-			-- set `parse_attempted'
+	set_parse_attempted
+			-- Set `parse_attempted' true.
 		do
-			parse_attempted := True
+			if not parse_attempted then
+				parse_attempted := True
+				archetype_directory.increment_parse_attempted_archetype_count
+			end
 		end
 
 feature -- Commands
@@ -343,7 +346,7 @@ feature -- Comparison
 
 feature -- Modification
 
-	set_archetype_differential(an_archetype: DIFFERENTIAL_ARCHETYPE) is
+	set_archetype_differential (an_archetype: DIFFERENTIAL_ARCHETYPE) is
 			-- create with a new differential form (i.e. source form) archetype
 		require
 			Archetype_exists: an_archetype /= Void
@@ -360,14 +363,14 @@ feature -- Modification
 				else
 					create arch_flattener.make (specialisation_parent.archetype_flat, archetype_differential)
 					arch_flattener.flatten_archetype
-					archetype_flat := arch_flattener.output
+					archetype_flat := arch_flattener.output_archetype
 				end
 			end
 		ensure
 			archetype_set: archetype_differential = an_archetype
 		end
 
-	set_archetype_flat(an_archetype: FLAT_ARCHETYPE) is
+	set_archetype_flat (an_archetype: FLAT_ARCHETYPE) is
 			-- create with a flat form archetype - used for legacy archetypes not yet parsed and
 			-- converted to differential form
 		require
@@ -375,14 +378,14 @@ feature -- Modification
 		do
 			post_info (Current, "set_archetype_flat", "parse_archetype_i2", <<id.as_string>>)
 			archetype_flat := an_archetype
-			set_archetype_differential(an_archetype.to_differential)
+			set_archetype_differential (an_archetype.to_differential)
 			archetype_flat.rebuild
 			archetype_flat.set_is_valid (is_valid)
 		ensure
 			archetype_set: archetype_flat = an_archetype
 		end
 
-	set_specialisation_parent(a_parent: ARCH_REP_ARCHETYPE) is
+	set_specialisation_parent (a_parent: ARCH_REP_ARCHETYPE) is
 			-- set `parent'
 		require
 			Parent_exists: a_parent /= Void
@@ -390,7 +393,7 @@ feature -- Modification
 			specialisation_parent := a_parent
 		end
 
-	set_compiler_status(str: STRING) is
+	set_compiler_status (str: STRING) is
 			-- set `compiler_status'
 		require
 			String_valid: str /= Void
