@@ -170,6 +170,68 @@ feature -- Commands
 			update_errors_tab_label
 		end
 
+	export_error_report (file_name: STRING)
+			-- Export the contents of the grid to XML in `file_name'.
+		require
+			file_name_attached: file_name /= Void
+			file_name_not_empty: not file_name.is_empty
+		local
+			err_type, i: INTEGER
+			category: STRING
+			namespace: XM_NAMESPACE
+			document: XM_DOCUMENT
+			root, element, ara_element: XM_ELEMENT
+			attribute: XM_ATTRIBUTE
+			element_data: XM_CHARACTER_DATA
+			pretty_printer: XM_INDENT_PRETTY_PRINT_FILTER
+			xmlns_generator: XM_XMLNS_GENERATOR
+			file: KL_TEXT_OUTPUT_FILE
+		do
+			create namespace.make_default
+			create document.make_with_root_named ("errors", create {XM_NAMESPACE}.make ("openehr", "www.openehr.org"))
+			root := document.root_element
+			create element.make_last (root, "count", namespace)
+
+			from
+				err_type := categories.lower
+			until
+				err_type = categories.upper
+			loop
+				err_type := err_type + 1
+				category := err_type_names [err_type].split (' ').first.as_lower
+				create attribute.make_last (category, namespace, count_for_category (err_type).out, root.elements.first)
+
+				if {row: !EV_GRID_ROW} categories [err_type] then
+					from
+						create element.make_last (root, "category", namespace)
+						create attribute.make_last ("type", namespace, category, element)
+						create attribute.make_last ("count", namespace, count_for_category (err_type).out, element)
+						i := 0
+					until
+						i = row.subrow_count
+					loop
+						i := i + 1
+
+						if {ara: !ARCH_REP_ARCHETYPE} row.subrow (i).data then
+							create element_data.make_last (create {XM_ELEMENT}.make_last (element, "archetype", namespace), ara.id.as_string)
+							create element_data.make_last (create {XM_ELEMENT}.make_last (element, "message", namespace), ara.compiler_status)
+						end
+					end
+				end
+			end
+
+			create file.make (file_name)
+			file.open_write
+
+			if file.is_open_write then
+				create pretty_printer.make_null
+				pretty_printer.set_output_stream (file)
+				create xmlns_generator.set_next (pretty_printer)
+				document.process_to_events (xmlns_generator)
+				file.close
+			end
+		end
+
 feature -- Access
 
 	parse_error_count: INTEGER

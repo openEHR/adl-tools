@@ -280,7 +280,7 @@ feature -- Status setting
 
 feature -- File events
 
-	open_adl_file
+	open_archetype
 			-- Let the user select an ADL file, and then load and parse it.
 		local
 			dialog: EV_FILE_OPEN_DIALOG
@@ -352,13 +352,13 @@ feature -- File events
 			end
 		end
 
-	save_adl_file
+	save_archetype_as
 			-- Save to an ADL or HTML file via a GUI file save dialog.
 		local
 			ok_to_write: BOOLEAN
 			question_dialog: EV_QUESTION_DIALOG
 			error_dialog: EV_INFORMATION_DIALOG
-			a_file: PLAIN_TEXT_FILE
+			file: PLAIN_TEXT_FILE
 			save_dialog: EV_FILE_SAVE_DIALOG
 			name, format: STRING
 		do
@@ -393,9 +393,9 @@ feature -- File events
 					end
 
 					ok_to_write := True
-					create a_file.make (name)
+					create file.make (name)
 
-					if a_file.exists then
+					if file.exists then
 						create question_dialog.make_with_text ("File " + file_system.basename (name) + " already exists. Replace it?")
 						question_dialog.set_title ("Save as " + format.as_upper)
 						question_dialog.set_buttons (<<"Yes", "No">>)
@@ -669,6 +669,48 @@ feature {NONE} -- Tools events
 				end
 
 			do_with_wait_cursor (agent archetype_directory.do_subtree (archetype_directory.directory, delete_adls_files_in_folder, Void))
+		end
+
+	export_error_report
+			-- Export the contents of the Errors grid to an XML file via a GUI file save dialog.
+		local
+			ok_to_write: BOOLEAN
+			question_dialog: EV_QUESTION_DIALOG
+			file: PLAIN_TEXT_FILE
+			save_dialog: EV_FILE_SAVE_DIALOG
+			name: STRING
+		do
+			create save_dialog
+			save_dialog.set_title ("Export Error Report")
+			save_dialog.set_file_name ("ArchetypeErrors.xml")
+			save_dialog.set_start_directory (current_work_directory)
+			save_dialog.filters.extend (["*.xml", "Save as XML"])
+			save_dialog.show_modal_to_window (Current)
+			name := save_dialog.file_name
+
+			if not name.is_empty then
+				set_current_work_directory (file_system.dirname (name))
+
+				if not file_system.has_extension (name, ".xml") then
+					name.append (".xml")
+				end
+
+				ok_to_write := True
+				create file.make (name)
+
+				if file.exists then
+					create question_dialog.make_with_text ("File " + file_system.basename (name) + " already exists. Replace it?")
+					question_dialog.set_title ("Export Error Report")
+					question_dialog.set_buttons (<<"Yes", "No">>)
+					question_dialog.show_modal_to_window (Current)
+					ok_to_write := question_dialog.selected_button.same_string ("Yes")
+				end
+
+				if ok_to_write then
+					do_with_wait_cursor (agent compiler_error_control.export_error_report (name))
+					update_status_area ("Exported error report to " + name)
+				end
+			end
 		end
 
 	set_options
