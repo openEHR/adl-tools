@@ -1,6 +1,6 @@
 indexing
 	component:   "openEHR Archetype Project"
-	description: "Item representing a 'use' reference in an ADL parse tree"
+	description: "Item representing a 'use' reference in an ADL parse tree. The referenced node must be an object node."
 	keywords:    "test, ADL"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"

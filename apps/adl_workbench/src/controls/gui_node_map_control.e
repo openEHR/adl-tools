@@ -846,15 +846,11 @@ feature {NONE} -- Implementation
 
 			if a_node.is_addressable then
 				if in_technical_mode then
-					Result.append (a_node.rm_type_name)
+					Result.append (a_node.rm_type_name + "[" + a_node.node_id + "]")
 				end
 
 				if archetype_directory.has_valid_selected_archetype and ontology.has_term_code (a_node.node_id) then
 					Result.append (" " + ontology.term_definition (current_language, a_node.node_id).item ("text"))
-				end
-
-				if in_technical_mode then
-					Result.append(" [" + a_node.node_id + "]")
 				end
 			else -- put type even when not in technical mode
 				Result.append (a_node.rm_type_name)
@@ -894,16 +890,15 @@ feature {NONE} -- Implementation
 			--if in_technical_mode then
 				Result.append(a_node.rm_type_name)
 			--end
+			if in_technical_mode then
+				if a_node.is_addressable then
+					Result.append("[" + a_node.node_id + "]")
+				end
+			end
 
 			if a_node.is_addressable then
 				if archetype_directory.has_valid_selected_archetype and ontology.has_term_code (a_node.node_id) then
 					Result.append (" " + ontology.term_definition (current_language, a_node.node_id).item ("text"))
-				end
-			end
-
-			if in_technical_mode then
-				if a_node.is_addressable then
-					Result.append(" [" + a_node.node_id + "]")
 				end
 			end
 

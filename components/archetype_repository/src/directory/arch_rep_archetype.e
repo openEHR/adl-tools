@@ -363,7 +363,7 @@ feature -- Modification
 				else
 					create arch_flattener.make (specialisation_parent.archetype_flat, archetype_differential)
 					arch_flattener.flatten_archetype
-					archetype_flat := arch_flattener.output
+					archetype_flat := arch_flattener.output_archetype
 				end
 			end
 		ensure
