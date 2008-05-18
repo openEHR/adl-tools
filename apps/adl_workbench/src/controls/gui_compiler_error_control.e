@@ -179,25 +179,36 @@ feature -- Commands
 			err_type, i: INTEGER
 			category: STRING
 			message_lines: LIST [STRING]
-			namespace: XM_NAMESPACE
+			ns: XM_NAMESPACE
 			document: XM_DOCUMENT
-			root, statistics_element, element, archetype_element: XM_ELEMENT
+			root, statistics_element, category_element, archetype_element: XM_ELEMENT
 			attr: XM_ATTRIBUTE
-			element_data: XM_CHARACTER_DATA
+			data: XM_CHARACTER_DATA
+			create_category_element: PROCEDURE [ANY, TUPLE]
 			pretty_printer: XM_INDENT_PRETTY_PRINT_FILTER
 			xmlns_generator: XM_XMLNS_GENERATOR
 			file: KL_TEXT_OUTPUT_FILE
 		do
-			create namespace.make_default
-			create document.make_with_root_named ("archetype-repository-report", create {XM_NAMESPACE}.make ("openehr", "www.openehr.org"))
+			create ns.make_default
+			create document.make_with_root_named ("archetype-repository-report", ns)
 			root := document.root_element
 
-			create statistics_element.make_last (root, "statistics", namespace)
-			create attr.make_last ("total", namespace, archetype_directory.total_archetype_count.out, statistics_element)
-			create attr.make_last ("specialised", namespace, archetype_directory.specialised_archetype_count.out, statistics_element)
-			create attr.make_last ("slotted", namespace, archetype_directory.slotted_archetype_count.out, statistics_element)
-			create attr.make_last ("used-by", namespace, archetype_directory.used_by_archetype_count.out, statistics_element)
-			create attr.make_last ("bad", namespace, archetype_directory.bad_archetype_count.out, statistics_element)
+			create_category_element := agent (parent: XM_ELEMENT; description: STRING; count: INTEGER)
+				local
+					e: XM_ELEMENT
+					a: XM_ATTRIBUTE
+				do
+					create e.make_last (parent, "category", parent.namespace)
+					create a.make_last ("description", parent.namespace, description, e)
+					create a.make_last ("count", parent.namespace, count.out, e)
+				end
+
+			create statistics_element.make_last (root, "statistics", ns)
+			create_category_element.call ([statistics_element, "Total Archetypes", archetype_directory.total_archetype_count])
+			create_category_element.call ([statistics_element, "Specialised Archetypes", archetype_directory.specialised_archetype_count])
+			create_category_element.call ([statistics_element, "Archetypes with slots", archetype_directory.slotted_archetype_count])
+			create_category_element.call ([statistics_element, "Archetypes used by others", archetype_directory.used_by_archetype_count])
+			create_category_element.call ([statistics_element, "Bad Archetypes", archetype_directory.bad_archetype_count])
 
 			from
 				err_type := categories.lower
@@ -205,14 +216,12 @@ feature -- Commands
 				err_type = categories.upper
 			loop
 				err_type := err_type + 1
-				category := err_type_names [err_type].as_lower
-				category.replace_substring_all (" ", "-")
-				create attr.make_last (category, namespace, count_for_category (err_type).out, statistics_element)
+				category := err_type_names [err_type]
+				create_category_element.call ([statistics_element, category, count_for_category (err_type)])
 
 				if {row: !EV_GRID_ROW} categories [err_type] then
-					create element.make_last (root, "category", namespace)
-					create attr.make_last ("type", namespace, category, element)
-					create attr.make_last ("count", namespace, count_for_category (err_type).out, element)
+					create_category_element.call ([root, category, row.subrow_count])
+					category_element ?= root.last
 
 					from
 						i := 0
@@ -222,8 +231,8 @@ feature -- Commands
 						i := i + 1
 
 						if {ara: !ARCH_REP_ARCHETYPE} row.subrow (i).data then
-							create archetype_element.make_last (element, "archetype", namespace)
-							create attr.make_last ("id", namespace, ara.id.as_string, archetype_element)
+							create archetype_element.make_last (category_element, "archetype", ns)
+							create attr.make_last ("id", ns, ara.id.as_string, archetype_element)
 
 							from
 								message_lines := ara.compiler_status.split ('%N')
@@ -232,7 +241,7 @@ feature -- Commands
 								message_lines.off
 							loop
 								if not message_lines.item.is_empty then
-									create element_data.make_last (create {XM_ELEMENT}.make_last (archetype_element, "message", namespace), message_lines.item)
+									create data.make_last (create {XM_ELEMENT}.make_last (archetype_element, "message", ns), message_lines.item)
 								end
 
 								message_lines.forth
@@ -251,9 +260,46 @@ feature -- Commands
 				create xmlns_generator.set_next (pretty_printer)
 				document.process_to_events (xmlns_generator)
 				file.close
-				gui.update_status_area ("Exported error report to %"" + file_name + "%"")
+				gui.update_status_area ("Exported error report to %"" + file_name + "%"%N")
 			else
-				gui.update_status_area ("ERROR: Failed to export error report to %"" + file_name + "%"")
+				gui.update_status_area ("ERROR: Failed to export error report to %"" + file_name + "%"%N")
+			end
+		end
+
+	transform_repository_report (xml_file_name, html_file_name: STRING)
+			-- Transform the report data in `xml_file_name' to a report in `html_file_name'.
+		require
+			xml_file_name_attached: xml_file_name /= Void
+			xml_file_name_not_empty: not xml_file_name.is_empty
+			html_file_name_attached: html_file_name /= Void
+			html_file_name_not_empty: not html_file_name.is_empty
+		local
+			xpath_conformance: XM_XPATH_SHARED_CONFORMANCE
+			xslt_factory: XM_XSLT_TRANSFORMER_FACTORY
+			xslt_source, xml_source: XM_XSLT_URI_SOURCE
+			xslt_result: XM_XSLT_TRANSFORMATION_RESULT
+			html_output: XM_OUTPUT
+			file: KL_TEXT_OUTPUT_FILE
+		do
+			create xpath_conformance
+			xpath_conformance.conformance.set_basic_xslt_processor
+			create xslt_factory.make (create {XM_XSLT_CONFIGURATION}.make_with_defaults)
+			create xslt_source.make ((create {UT_FILE_URI_ROUTINES}).filename_to_uri (file_system.pathname (application_startup_directory, "repository_report_xml-to-html.xsl")).full_reference)
+			xslt_factory.create_new_transformer (xslt_source, create {UT_URI}.make ("dummy:"))
+
+			if xslt_factory.was_error then
+				gui.update_status_area ("ERROR: " + xslt_factory.last_error_message + "%N")
+			else
+				create file.make (html_file_name)
+				file.open_write
+				create html_output
+				html_output.set_output_stream (file)
+				create xslt_result.make (html_output, (create {UT_FILE_URI_ROUTINES}).filename_to_uri (html_file_name).full_reference)
+				create xml_source.make ((create {UT_FILE_URI_ROUTINES}).filename_to_uri (xml_file_name).full_reference)
+				xslt_factory.created_transformer.transform (xml_source, xslt_result)
+				file.close
+				gui.update_status_area ("Wrote error report to %"" + html_file_name + "%"%N")
+				execution_environment.launch (default_browser_command + html_file_name)
 			end
 		end
 

@@ -593,7 +593,7 @@ feature {NONE} -- Repository events
 			question_dialog: EV_QUESTION_DIALOG
 			file: PLAIN_TEXT_FILE
 			save_dialog: EV_FILE_SAVE_DIALOG
-			name: STRING
+			xml, html: STRING
 		do
 			create save_dialog
 			save_dialog.set_title ("Export Repository Report")
@@ -601,20 +601,20 @@ feature {NONE} -- Repository events
 			save_dialog.set_start_directory (current_work_directory)
 			save_dialog.filters.extend (["*.xml", "Save as XML"])
 			save_dialog.show_modal_to_window (Current)
-			name := save_dialog.file_name
+			xml := save_dialog.file_name
 
-			if not name.is_empty then
-				set_current_work_directory (file_system.dirname (name))
+			if not xml.is_empty then
+				set_current_work_directory (file_system.dirname (xml))
 
-				if not file_system.has_extension (name, ".xml") then
-					name.append (".xml")
+				if not file_system.has_extension (xml, ".xml") then
+					xml.append (".xml")
 				end
 
 				ok_to_write := True
-				create file.make (name)
+				create file.make (xml)
 
 				if file.exists then
-					create question_dialog.make_with_text ("File " + file_system.basename (name) + " already exists. Replace it?")
+					create question_dialog.make_with_text ("File " + file_system.basename (xml) + " already exists. Replace it?")
 					question_dialog.set_title ("Export Repository Report")
 					question_dialog.set_buttons (<<"Yes", "No">>)
 					question_dialog.show_modal_to_window (Current)
@@ -622,7 +622,21 @@ feature {NONE} -- Repository events
 				end
 
 				if ok_to_write then
-					do_with_wait_cursor (agent compiler_error_control.export_repository_report (name))
+					do_with_wait_cursor (agent compiler_error_control.export_repository_report (xml))
+
+					if file.exists then
+						create question_dialog.make_with_text ("Generate HTML report?")
+						question_dialog.set_title ("Export Repository Report")
+						question_dialog.set_buttons (<<"Yes", "No">>)
+						question_dialog.show_modal_to_window (Current)
+
+						if question_dialog.selected_button.same_string ("Yes") then
+							html := xml.twin
+							html.remove_tail (file_system.extension (html).count)
+							html.append (".html")
+							do_with_wait_cursor (agent compiler_error_control.transform_repository_report (xml, html))
+						end
+					end
 				end
 			end
 		end
