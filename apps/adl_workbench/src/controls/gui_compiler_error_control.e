@@ -300,7 +300,7 @@ feature -- Commands
 				file.close
 				gui.update_status_area ("Wrote report to %"" + html_file_name + "%"%N")
 				file_system.copy_file (file_system.pathname (application_startup_directory, "repository_report.css"), file_system.pathname (file_system.dirname (html_file_name), "repository_report.css"))
-				execution_environment.launch (default_browser_command + html_file_name)
+				show_in_system_browser (html_file_name)
 			end
 		end
 

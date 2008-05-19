@@ -763,7 +763,7 @@ feature {NONE} -- Help events
 	show_online_help
 			-- Display the application's online help in an external browser.
 		do
-			execution_environment.launch (Default_browser_command + ADL_help_page_url)
+			show_in_system_browser (adl_help_page_url)
 		end
 
 	display_about

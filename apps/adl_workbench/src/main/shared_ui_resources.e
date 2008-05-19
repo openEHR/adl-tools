@@ -54,18 +54,6 @@ feature -- Definitions
    			end
    		end
 
-	Default_browser_command: STRING is
-			-- A command to launch a browser based on operating system.
-		once
-   			if is_windows then
-   				Result := "cmd /q /c start "
-			elseif is_mac_os_x then
-				Result := "open "
-			else
-   				Result := "firefox "
-   			end
-		end
-
 	ADL_help_page_url: STRING is "http://www.openehr.org/svn/ref_impl_eiffel/TRUNK/apps/doc/adl_workbench_help.htm"
 
 	path_control_filter_names: ARRAY [STRING] is
@@ -78,6 +66,24 @@ feature -- Definitions
 			-- names of columns of path view control
 		once
 			Result := <<"Machine", "Nat lang", "RM Type", "AOM Type">>
+		end
+
+feature -- Commands
+
+	show_in_system_browser (url: STRING)
+			-- Launch the operating system's default browser to display the contents of `url'.
+		local
+			command: STRING
+		do
+   			if is_windows then
+   				command := "cmd /q /d /c start %"%" /b"
+			elseif is_mac_os_x then
+				command := "open"
+			else
+   				command := "firefox"
+   			end
+
+			execution_environment.launch (command + " %"" + url + "%"")
 		end
 
 feature -- Access
