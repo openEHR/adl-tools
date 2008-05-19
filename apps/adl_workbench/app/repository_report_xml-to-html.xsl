@@ -7,7 +7,7 @@
 			<head>
 				<title>Archetype Repository Report</title>
 				<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-				<link rel="stylesheet" type="text/css" media="all" href="./default.css"/>
+				<link rel="stylesheet" type="text/css" media="all" href="./repository_report.css"/>
 			</head>
 			<body>
 				<div id="html-body">
@@ -23,7 +23,7 @@
 
 	<xsl:template name="generate-statistics">
 		<div id="html-statistics">
-			<table>
+			<table id="statistics-table">
 				<tbody>
 					<xsl:for-each select="/archetype-repository-report/statistics/category">
 						<tr>
@@ -43,19 +43,19 @@
 	<xsl:template name="generate-errors">
 		<xsl:for-each select="/archetype-repository-report/category">
 			<div id="html-errors">
-				<table>
+				<table id="errors-table">
 					<tbody>
 						<tr>
-							<td colspan="2">
+							<td colspan="2" id="errors-heading">
 								<xsl:value-of select="@description"/>
 							</td>
 						</tr>
 						<xsl:for-each select="archetype">
 							<tr>
-								<td>
+								<td id="errors-cell">
 									<xsl:value-of select="@id"/>
 								</td>
-								<td>
+								<td id="errors-cell">
 									<xsl:for-each select="message">
 										<xsl:value-of select="text()"/>
 										<br/>

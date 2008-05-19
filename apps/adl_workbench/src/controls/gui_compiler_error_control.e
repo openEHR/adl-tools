@@ -260,9 +260,9 @@ feature -- Commands
 				create xmlns_generator.set_next (pretty_printer)
 				document.process_to_events (xmlns_generator)
 				file.close
-				gui.update_status_area ("Exported error report to %"" + file_name + "%"%N")
+				gui.update_status_area ("Exported report to %"" + file_name + "%"%N")
 			else
-				gui.update_status_area ("ERROR: Failed to export error report to %"" + file_name + "%"%N")
+				gui.update_status_area ("ERROR: Failed to export report to %"" + file_name + "%"%N")
 			end
 		end
 
@@ -298,7 +298,8 @@ feature -- Commands
 				create xml_source.make ((create {UT_FILE_URI_ROUTINES}).filename_to_uri (xml_file_name).full_reference)
 				xslt_factory.created_transformer.transform (xml_source, xslt_result)
 				file.close
-				gui.update_status_area ("Wrote error report to %"" + html_file_name + "%"%N")
+				gui.update_status_area ("Wrote report to %"" + html_file_name + "%"%N")
+				file_system.copy_file (file_system.pathname (application_startup_directory, "repository_report.css"), file_system.pathname (file_system.dirname (html_file_name), "repository_report.css"))
 				execution_environment.launch (default_browser_command + html_file_name)
 			end
 		end
