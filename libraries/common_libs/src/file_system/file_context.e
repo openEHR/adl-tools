@@ -38,18 +38,20 @@ feature {NONE} -- Initialisation
 	make is
 			-- basic initialisation
 		do
-			create current_directory.make(0)
-			create current_file_name.make(0)
-			create last_op_fail_reason.make(0)
+			create current_directory.make_empty
+			create current_file_name.make_empty
+			create last_op_fail_reason.make_empty
 			create file_content.make_empty
 		end
 
 feature -- Access
 
-	current_full_path: STRING is
+	current_full_path: STRING
 			-- derive from file name and path
 		do
 			Result := current_directory + operating_environment.Directory_separator.out + current_file_name
+		ensure
+			attached: Result /= Void
 		end
 
 	current_directory: STRING
@@ -65,32 +67,26 @@ feature -- Access
 
 	last_op_fail_reason: STRING
 
+	file_content: STRING
+			-- Text from current file as a string.
+
 	file_timestamp: INTEGER
-			-- Last marked change timestamp of file.
+			-- Last marked change timestamp of file, for file changes to be compared to.
 
 feature -- Status Report
 
 	has_file (a_file_name: STRING):BOOLEAN is
-			-- does `a_file_name' exist in `current_directory'
+			-- Does `a_file_name' exist in `current_directory'?
 		require
 			File_name_valid: a_file_name /= Void
 		local
 			a_file: PLAIN_TEXT_FILE
    		do
-			create a_file.make(current_directory + operating_environment.Directory_separator.out + a_file_name)
+			create a_file.make (current_directory + operating_environment.Directory_separator.out + a_file_name)
 			Result := a_file.exists
 		end
 
-	file_changed (a_timestamp: INTEGER): BOOLEAN is
-			-- Is `a_timestamp' older than file current modification date?
-		local
-			file: PLAIN_TEXT_FILE
-		do
-			create file.make (current_full_path)
-			Result := file.exists and then file.date /= a_timestamp
-		end
-
-	file_writable(a_file_name:STRING): BOOLEAN is
+	file_writable (a_file_name: STRING): BOOLEAN is
 			-- True if named file is writable, or else doesn't exist
 		require
 			File_name_valid: a_file_name /= Void and then not a_file_name.is_empty
@@ -101,13 +97,10 @@ feature -- Status Report
 			Result := not fd.exists or else fd.is_writable
 		end
 
-	file_content: STRING
-			-- text from current file as a string
+feature -- Commands
 
-feature -- Command
-
-	set_file_timestamp is
-			-- Set time mark for file changes to be compared to - read from modify date of current file.
+	read_file_timestamp
+			-- Set `file_timestamp' from the file modification date of `current_full_path'.
 		local
 			file: PLAIN_TEXT_FILE
 		do
@@ -175,7 +168,7 @@ feature -- Command
 			file_content_empty_on_failure: last_op_failed implies file_content.is_empty
 		end
 
-	save_file(a_file_name, content: STRING) is
+	save_file (a_file_name, content: STRING) is
 			-- write the content out to file `a_file_name' in `current_directory'
 		require
 			Arch_id_valid: a_file_name /= Void
@@ -202,7 +195,7 @@ feature -- Command
 			end
 		end
 
-	set_target(a_file_path: STRING) is
+	set_target (a_file_path: STRING) is
 			-- set context to `a_file_path'
 		require
 			a_file_path_valid: a_file_path /= Void and then not a_file_path.is_empty
@@ -220,14 +213,14 @@ feature -- Command
 			end
 		end
 
-	set_current_file_name(a_file_name: STRING) is
+	set_current_file_name (a_file_name: STRING) is
 		require
 			a_file_name_valid: a_file_name /= Void and then not a_file_name.is_empty
 		do
 			current_file_name := a_file_name
 		end
 
-	set_current_directory(a_dir: STRING) is
+	set_current_directory (a_dir: STRING) is
 		require
 			a_dir_valid: a_dir /= Void and then not a_dir.is_empty
 		do
@@ -235,7 +228,11 @@ feature -- Command
 		end
 
 invariant
-	file_content_attached: file_content /= Void
+	directory_attached: current_directory /= Void
+	file_name_attached: current_file_name /= Void
+	last_op_fail_reason_attached: last_op_fail_reason /= Void
+	content_attached: file_content /= Void
+	timestamp_natural: file_timestamp >= 0
 
 end
 

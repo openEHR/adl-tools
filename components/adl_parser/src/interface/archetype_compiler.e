@@ -57,7 +57,7 @@ feature -- Access
 			-- Last status of compiler.
 
 	visual_update_action: PROCEDURE [ANY, TUPLE [ARCH_REP_ARCHETYPE]]
-			-- Called after processng each archetype (to perform GUI updates during processing).
+			-- Called after processing each archetype (to perform GUI updates during processing).
 
 feature -- Status
 
@@ -173,6 +173,7 @@ feature {NONE} -- Implementation
 		end
 
 	do_if_archetype (item: ARCH_REP_ITEM; action: PROCEDURE [ANY, TUPLE [!ARCH_REP_ARCHETYPE]])
+			-- If `item' is an archetype, perform `action' on it.
 		do
 			if {ara: !ARCH_REP_ARCHETYPE} item then
 				action.call ([ara])
@@ -180,10 +181,10 @@ feature {NONE} -- Implementation
 		end
 
 	build_archetype (from_scratch: BOOLEAN; ara: !ARCH_REP_ARCHETYPE)
-			-- Build `item', if it is an archetype, unless `from_scratch' is false and it hasn't been parsed yet.
+			-- Build `ara' only if `from_scratch' is true or it is not yet validly built.
 		do
 			if not is_interrupted then
-				if from_scratch or not ara.is_parsed then
+				if from_scratch or not ara.is_valid or ara.is_out_of_date then
 					status := "------------- compiling " + ara.id.value + " -------------%N"
 					call_visual_update_action (ara)
 					archetype_parser.set_target (ara)
@@ -194,14 +195,16 @@ feature {NONE} -- Implementation
 						archetype_parser.save_archetype_differential
 						status.append (archetype_parser.status)
 					end
-
-					call_visual_update_action (ara)
+				else
+					status.wipe_out
 				end
+
+				call_visual_update_action (ara)
 			end
 		end
 
 	export_archetype_html (html_export_directory: STRING; build_too: BOOLEAN; ara: !ARCH_REP_ARCHETYPE)
-			-- Generate HTML under `html_export_directory' from `item', optionally building it first if necessary.
+			-- Generate HTML under `html_export_directory' from `ara', optionally building it first if necessary.
 		require
 			directory_attached: html_export_directory /= Void
 		local

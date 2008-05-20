@@ -76,7 +76,7 @@ feature -- Initialisation
 
 	make is
 		do
-			create status.make(0)
+			create status.make_empty
 			create adl_engine.make
 			initialise_serialisers
 		end
@@ -94,22 +94,6 @@ feature -- Access
 
 	target: ARCH_REP_ARCHETYPE
 			-- archetype currently being processed by this instance of the compiler
-
-	flat_text: STRING is
-			-- source of current archetype
-		require
-			has_target: has_target
-		do
-			Result := target.flat_text
-		end
-
-	differential_text: STRING is
-			-- source of current archetype
-		require
-			has_target: has_target
-		do
-			Result := target.differential_text
-		end
 
 	archetype_differential: DIFFERENTIAL_ARCHETYPE is
 			-- Differential form of currently compiled archetype.
@@ -198,7 +182,7 @@ feature -- Modification
 feature -- Commands
 
 	parse_archetype is
-			-- parse the target archetype of this parser
+			-- Parse and validate `target', in differential form if available, else in flat form.
 		require
 			Has_target: has_target
 		local
@@ -211,6 +195,7 @@ feature -- Commands
 
 				if target.has_differential_file then
 					post_info (Current, "parse_archetype", "parse_archetype_i3", Void)
+					target.read_differential
 					a_diff_arch := adl_engine.parse_differential (target.differential_text)
 
 					if a_diff_arch = Void then
@@ -218,10 +203,11 @@ feature -- Commands
 					else
 						post_info (Current, "parse_archetype", "parse_archetype_i1", <<target.id.as_string>>)
 
-						-- Put the archetype into its directory node; note that this runs its validator(s)
+						-- Put the archetype into its directory node; note that this runs its validator(s).
 						target.set_archetype_differential (a_diff_arch)
 					end
 				else
+					target.read_flat
 					a_flat_arch := adl_engine.parse_flat (target.flat_text)
 
 					if a_flat_arch = Void then
@@ -487,7 +473,7 @@ feature -- External Java Interface
 
 feature {NONE} -- Implementation
 
-	adl_engine: ADL_ENGINE
+	adl_engine: !ADL_ENGINE
 
 	initialise_serialisers is
 		once

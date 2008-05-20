@@ -251,7 +251,7 @@ feature -- Status setting
 			end
 		end
 
-	update_status_area (text: STRING)
+	append_status_area (text: STRING)
 			-- Append `text' to `parser_status_area'.
 		require
 			text_attached: text /= Void
@@ -266,16 +266,15 @@ feature -- Status setting
 		require
 			text_attached: text /= Void
 		do
-			parser_status_area.set_text (utf8 (text))
-			parser_status_area.set_background_color (status_area_background_color)
-			ev_application.process_graphical_events
+			parser_status_area.remove_text
+			append_status_area (text)
 		end
 
 	save_resources_and_show_status
 			-- Save the application configuration file and update the status area.
 		do
 			save_resources
-			update_status_area ("Wrote config file %"" + resource_config_file_name + "%".%N")
+			append_status_area ("Wrote config file %"" + resource_config_file_name + "%".%N")
 		end
 
 feature -- File events
@@ -320,13 +319,7 @@ feature -- File events
 			ara := archetype_directory.selected_archetype
 
 			if ara /= Void then
-				if not ara.parse_attempted then
-					do_with_wait_cursor (agent archetype_compiler.build_lineage (ara))
-				elseif ara.is_differential_file_out_of_date or ara.is_flat_file_out_of_date then
-					do_with_wait_cursor (agent archetype_compiler.rebuild_lineage (ara))
-				else
-					do_with_wait_cursor (agent build_gui_update (ara))
-				end
+				do_with_wait_cursor (agent archetype_compiler.build_lineage (ara))
 			end
 		end
 
@@ -406,7 +399,7 @@ feature -- File events
 					if ok_to_write then
 						archetype_parser.set_target (archetype_directory.selected_archetype)
 						archetype_parser.save_archetype_differential_as (name, format)
-						update_status_area (archetype_parser.status)
+						append_status_area (archetype_parser.status)
 					end
 				end
 			else
@@ -1069,21 +1062,33 @@ feature {NONE} -- Implementation
 
 	populate_source_text (flat: BOOLEAN)
 			-- Display the selected archetype's differential or flat text in `source_rich_text', optionally with line numbers.
+		local
+			text: STRING
 		do
 			if {ara: !ARCH_REP_ARCHETYPE} archetype_directory.selected_archetype then
 				if flat then
-					populate_source_text_with_line_numbers (ara.flat_text)
-				elseif ara.has_differential_file then
-					populate_source_text_with_line_numbers (ara.differential_text)
+					text := ara.flat_text
+
+					if text.is_empty then
+						source_rich_text.set_text ("===================== No flat (.adl) file available =======================")
+					else
+						populate_source_text_with_line_numbers (text)
+					end
 				else
-					source_rich_text.set_text ("==================== No source (.adls) file available ======================")
+					text := ara.differential_text
+
+					if text.is_empty then
+						source_rich_text.set_text ("==================== No source (.adls) file available ======================")
+					else
+						populate_source_text_with_line_numbers (text)
+					end
 				end
 			else
 				source_rich_text.remove_text
 			end
 		end
 
-	populate_source_text_with_line_numbers (text: STRING)
+	populate_source_text_with_line_numbers (text: STRING) is
 			-- Display `text' in `source_rich_text', optionally with each line preceded by line numbers.
 		require
 			text_attached: text /= Void
@@ -1102,9 +1107,20 @@ feature {NONE} -- Implementation
 					left_pos > len
 				loop
 					number_string := number.out
-					leader.replace_substring (number_string, 1, number_string.count)
-					s.append (leader)
+
+					if number < 1000 then
+						leader.replace_substring (number_string, 1, number_string.count)
+						s.append (leader)
+					else
+						s.append (number_string + " ")
+					end
+
 					right_pos := text.index_of ('%N', left_pos)
+
+					if right_pos = 0 then
+						right_pos := len
+					end
+
 					s.append (text.substring (left_pos, right_pos))
 					left_pos := right_pos + 1
 					number := number + 1
@@ -1230,7 +1246,7 @@ feature {NONE} -- Build commands
 	build_gui_update (ara: ARCH_REP_ARCHETYPE)
 			-- Update GUI with progress on build.
 		do
-			update_status_area (archetype_compiler.status)
+			append_status_area (archetype_compiler.status)
 
 			if ara /= Void then
 				if {node: !EV_TREE_NODE} archetype_file_tree.retrieve_item_recursively_by_data (ara, True) then

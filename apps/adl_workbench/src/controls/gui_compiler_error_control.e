@@ -260,9 +260,9 @@ feature -- Commands
 				create xmlns_generator.set_next (pretty_printer)
 				document.process_to_events (xmlns_generator)
 				file.close
-				gui.update_status_area ("Exported report to %"" + file_name + "%"%N")
+				gui.append_status_area ("Exported report to %"" + file_name + "%"%N")
 			else
-				gui.update_status_area ("ERROR: Failed to export report to %"" + file_name + "%"%N")
+				gui.append_status_area ("ERROR: Failed to export report to %"" + file_name + "%"%N")
 			end
 		end
 
@@ -288,7 +288,7 @@ feature -- Commands
 			xslt_factory.create_new_transformer (xslt_source, create {UT_URI}.make ("dummy:"))
 
 			if xslt_factory.was_error then
-				gui.update_status_area ("ERROR: " + xslt_factory.last_error_message + "%N")
+				gui.append_status_area ("ERROR: " + xslt_factory.last_error_message + "%N")
 			else
 				create file.make (html_file_name)
 				file.open_write
@@ -298,7 +298,7 @@ feature -- Commands
 				create xml_source.make ((create {UT_FILE_URI_ROUTINES}).filename_to_uri (xml_file_name).full_reference)
 				xslt_factory.created_transformer.transform (xml_source, xslt_result)
 				file.close
-				gui.update_status_area ("Wrote report to %"" + html_file_name + "%"%N")
+				gui.append_status_area ("Wrote report to %"" + html_file_name + "%"%N")
 				file_system.copy_file (file_system.pathname (application_startup_directory, "repository_report.css"), file_system.pathname (file_system.dirname (html_file_name), "repository_report.css"))
 				show_in_system_browser (html_file_name)
 			end
