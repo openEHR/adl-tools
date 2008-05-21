@@ -234,7 +234,7 @@
    </item>
    <item type="EV_HORIZONTAL_BOX">
     <Internal_properties>
-     <id>198</id>
+     <id>197</id>
      <name>top_horizontal_box_for_cross_platform_cosmetic_padding</name>
      <Expanded>0</Expanded>
     </Internal_properties>
@@ -355,7 +355,7 @@
    </item>
    <item type="EV_HORIZONTAL_BOX">
     <Internal_properties>
-     <id>200</id>
+     <id>199</id>
      <name>middle_horizontal_box_for_cross_platform_cosmetic_padding</name>
      <Expanded>0</Expanded>
     </Internal_properties>
@@ -472,7 +472,7 @@
    </item>
    <item type="EV_HORIZONTAL_BOX">
     <Internal_properties>
-     <id>199</id>
+     <id>198</id>
      <name>bottom_horizontal_box_for_cross_platform_cosmetic_padding</name>
      <Expanded>0</Expanded>
     </Internal_properties>
@@ -758,7 +758,7 @@
    <Internal_properties>
     <id>2</id>
     <name>menu</name>
-    <Expanded>0</Expanded>
+    <Expanded>1</Expanded>
    </Internal_properties>
    <item type="EV_MENU">
     <Internal_properties>
@@ -787,7 +787,7 @@
      <EV_PIXMAPABLE>
      </EV_PIXMAPABLE>
      <Events>
-      <Event>select_actions EV_MENU_ITEM_ACTION_SEQUENCES open_adl_file</Event>
+      <Event>select_actions EV_MENU_ITEM_ACTION_SEQUENCES open_archetype</Event>
      </Events>
     </item>
     <item type="EV_MENU_ITEM">
@@ -850,7 +850,7 @@
      <EV_PIXMAPABLE>
      </EV_PIXMAPABLE>
      <Events>
-      <Event>select_actions EV_MENU_ITEM_ACTION_SEQUENCES save_adl_file</Event>
+      <Event>select_actions EV_MENU_ITEM_ACTION_SEQUENCES save_archetype_as</Event>
      </Events>
     </item>
     <item type="EV_MENU_SEPARATOR">
@@ -915,7 +915,7 @@
     </item>
     <item type="EV_MENU_ITEM">
      <Internal_properties>
-      <id>173</id>
+      <id>172</id>
       <name>edit_menu_select_all</name>
       <Expanded>0</Expanded>
      </Internal_properties>
@@ -932,7 +932,7 @@
     </item>
     <item type="EV_MENU_SEPARATOR">
      <Internal_properties>
-      <id>174</id>
+      <id>173</id>
       <Expanded>0</Expanded>
      </Internal_properties>
      <EV_SENSITIVE>
@@ -964,7 +964,7 @@
     <Internal_properties>
      <id>117</id>
      <name>repository_menu</name>
-     <Expanded>0</Expanded>
+     <Expanded>1</Expanded>
     </Internal_properties>
     <EV_SENSITIVE>
     </EV_SENSITIVE>
@@ -992,7 +992,7 @@
     </item>
     <item type="EV_MENU_SEPARATOR">
      <Internal_properties>
-      <id>177</id>
+      <id>176</id>
       <Expanded>0</Expanded>
      </Internal_properties>
      <EV_SENSITIVE>
@@ -1004,7 +1004,7 @@
     </item>
     <item type="EV_MENU_ITEM">
      <Internal_properties>
-      <id>175</id>
+      <id>174</id>
       <name>repository_menu_build_all</name>
       <Expanded>0</Expanded>
      </Internal_properties>
@@ -1021,7 +1021,7 @@
     </item>
     <item type="EV_MENU_ITEM">
      <Internal_properties>
-      <id>176</id>
+      <id>175</id>
       <name>repository_menu_rebuild_all</name>
       <Expanded>0</Expanded>
      </Internal_properties>
@@ -1038,7 +1038,7 @@
     </item>
     <item type="EV_MENU_SEPARATOR">
      <Internal_properties>
-      <id>178</id>
+      <id>177</id>
       <Expanded>0</Expanded>
      </Internal_properties>
      <EV_SENSITIVE>
@@ -1050,7 +1050,7 @@
     </item>
     <item type="EV_MENU_ITEM">
      <Internal_properties>
-      <id>179</id>
+      <id>178</id>
       <name>repository_menu_build_subtree</name>
       <Expanded>0</Expanded>
      </Internal_properties>
@@ -1067,7 +1067,7 @@
     </item>
     <item type="EV_MENU_ITEM">
      <Internal_properties>
-      <id>180</id>
+      <id>179</id>
       <name>repository_menu_rebuild_subtree</name>
       <Expanded>0</Expanded>
      </Internal_properties>
@@ -1084,7 +1084,7 @@
     </item>
     <item type="EV_MENU_SEPARATOR">
      <Internal_properties>
-      <id>181</id>
+      <id>180</id>
       <Expanded>0</Expanded>
      </Internal_properties>
      <EV_SENSITIVE>
@@ -1096,14 +1096,14 @@
     </item>
     <item type="EV_MENU_ITEM">
      <Internal_properties>
-      <id>190</id>
+      <id>189</id>
       <name>repository_menu_export_html</name>
       <Expanded>0</Expanded>
      </Internal_properties>
      <EV_SENSITIVE>
      </EV_SENSITIVE>
      <EV_TEXTABLE>
-      <Text>Export &amp;HTML</Text>
+      <Text>Export &amp;HTML...</Text>
      </EV_TEXTABLE>
      <EV_PIXMAPABLE>
      </EV_PIXMAPABLE>
@@ -1111,9 +1111,26 @@
       <Event>select_actions EV_MENU_ITEM_ACTION_SEQUENCES export_html</Event>
      </Events>
     </item>
+    <item type="EV_MENU_ITEM">
+     <Internal_properties>
+      <id>236</id>
+      <name>repository_menu_export_repository_report</name>
+      <Expanded>0</Expanded>
+     </Internal_properties>
+     <EV_SENSITIVE>
+     </EV_SENSITIVE>
+     <EV_TEXTABLE>
+      <Text>&amp;Export Repository Report...</Text>
+     </EV_TEXTABLE>
+     <EV_PIXMAPABLE>
+     </EV_PIXMAPABLE>
+     <Events>
+      <Event>select_actions EV_MENU_ITEM_ACTION_SEQUENCES export_repository_report</Event>
+     </Events>
+    </item>
     <item type="EV_MENU_SEPARATOR">
      <Internal_properties>
-      <id>212</id>
+      <id>211</id>
       <Expanded>0</Expanded>
      </Internal_properties>
      <EV_SENSITIVE>
@@ -1125,7 +1142,7 @@
     </item>
     <item type="EV_MENU_ITEM">
      <Internal_properties>
-      <id>182</id>
+      <id>181</id>
       <name>repository_menu_interrupt_build</name>
       <Expanded>0</Expanded>
      </Internal_properties>
@@ -1144,7 +1161,7 @@
    </item>
    <item type="EV_MENU">
     <Internal_properties>
-     <id>221</id>
+     <id>220</id>
      <name>history_menu</name>
      <Expanded>1</Expanded>
     </Internal_properties>
@@ -1160,7 +1177,7 @@
     </Events>
     <item type="EV_MENU_ITEM">
      <Internal_properties>
-      <id>222</id>
+      <id>221</id>
       <name>history_menu_back</name>
       <Expanded>0</Expanded>
      </Internal_properties>
@@ -1177,7 +1194,7 @@
     </item>
     <item type="EV_MENU_ITEM">
      <Internal_properties>
-      <id>223</id>
+      <id>222</id>
       <name>history_menu_forward</name>
       <Expanded>0</Expanded>
      </Internal_properties>
@@ -1194,7 +1211,7 @@
     </item>
     <item type="EV_MENU_SEPARATOR">
      <Internal_properties>
-      <id>224</id>
+      <id>223</id>
       <name>history_menu_separator</name>
       <Expanded>0</Expanded>
      </Internal_properties>
@@ -1210,7 +1227,7 @@
     <Internal_properties>
      <id>9</id>
      <name>tools_menu</name>
-     <Expanded>0</Expanded>
+     <Expanded>1</Expanded>
     </Internal_properties>
     <EV_SENSITIVE>
     </EV_SENSITIVE>
@@ -1221,7 +1238,7 @@
     </EV_PIXMAPABLE>
     <item type="EV_MENU_ITEM">
      <Internal_properties>
-      <id>211</id>
+      <id>210</id>
       <name>tools_menu_clean_generated_files</name>
       <Expanded>0</Expanded>
      </Internal_properties>
@@ -1238,7 +1255,7 @@
     </item>
     <item type="EV_MENU_SEPARATOR">
      <Internal_properties>
-      <id>191</id>
+      <id>190</id>
       <Expanded>0</Expanded>
      </Internal_properties>
      <EV_SENSITIVE>
@@ -1416,7 +1433,7 @@
      <Internal_properties>
       <id>12</id>
       <name>action_bar</name>
-      <Expanded>0</Expanded>
+      <Expanded>1</Expanded>
      </Internal_properties>
      <EV_COLORIZABLE>
       <Foreground_color>064000000</Foreground_color>
@@ -1437,7 +1454,7 @@
      </EV_CONTAINER>
      <item type="EV_TOOL_BAR">
       <Internal_properties>
-       <id>213</id>
+       <id>212</id>
        <Expanded>1</Expanded>
       </Internal_properties>
       <EV_COLORIZABLE>
@@ -1453,7 +1470,7 @@
       </EV_TOOL_BAR>
       <item type="EV_TOOL_BAR_BUTTON">
        <Internal_properties>
-        <id>214</id>
+        <id>213</id>
         <name>open_button</name>
         <Expanded>0</Expanded>
        </Internal_properties>
@@ -1468,12 +1485,12 @@
        <EV_PIXMAPABLE>
        </EV_PIXMAPABLE>
        <Events>
-        <Event>select_actions EV_TOOL_BAR_BUTTON_ACTION_SEQUENCES open_adl_file</Event>
+        <Event>select_actions EV_TOOL_BAR_BUTTON_ACTION_SEQUENCES open_archetype</Event>
        </Events>
       </item>
       <item type="EV_TOOL_BAR_BUTTON">
        <Internal_properties>
-        <id>215</id>
+        <id>214</id>
         <name>parse_button</name>
         <Expanded>0</Expanded>
        </Internal_properties>
@@ -1493,7 +1510,7 @@
       </item>
       <item type="EV_TOOL_BAR_BUTTON">
        <Internal_properties>
-        <id>216</id>
+        <id>215</id>
         <name>edit_button</name>
         <Expanded>0</Expanded>
        </Internal_properties>
@@ -1513,7 +1530,7 @@
       </item>
       <item type="EV_TOOL_BAR_SEPARATOR">
        <Internal_properties>
-        <id>219</id>
+        <id>218</id>
         <Expanded>0</Expanded>
        </Internal_properties>
        <EV_PIXMAPABLE>
@@ -1521,7 +1538,7 @@
       </item>
       <item type="EV_TOOL_BAR_BUTTON">
        <Internal_properties>
-        <id>217</id>
+        <id>216</id>
         <name>history_back_button</name>
         <Expanded>0</Expanded>
        </Internal_properties>
@@ -1540,7 +1557,7 @@
       </item>
       <item type="EV_TOOL_BAR_SEPARATOR">
        <Internal_properties>
-        <id>225</id>
+        <id>224</id>
         <Expanded>0</Expanded>
        </Internal_properties>
        <EV_PIXMAPABLE>
@@ -1548,7 +1565,7 @@
       </item>
       <item type="EV_TOOL_BAR_BUTTON">
        <Internal_properties>
-        <id>218</id>
+        <id>217</id>
         <name>history_forward_button</name>
         <Expanded>0</Expanded>
        </Internal_properties>
@@ -1567,7 +1584,7 @@
       </item>
       <item type="EV_TOOL_BAR_SEPARATOR">
        <Internal_properties>
-        <id>220</id>
+        <id>219</id>
         <Expanded>0</Expanded>
        </Internal_properties>
        <EV_PIXMAPABLE>
@@ -1724,7 +1741,7 @@
      <Internal_properties>
       <id>16</id>
       <name>explorer_split_area</name>
-      <Expanded>1</Expanded>
+      <Expanded>0</Expanded>
      </Internal_properties>
      <EV_COLORIZABLE>
      </EV_COLORIZABLE>
@@ -2096,7 +2113,7 @@
              </item>
              <item type="EV_LABEL">
               <Internal_properties>
-               <id>167</id>
+               <id>166</id>
                <name>arch_desc_original_language_label</name>
                <Expanded>0</Expanded>
               </Internal_properties>
@@ -2118,7 +2135,7 @@
              </item>
              <item type="EV_TEXT_FIELD">
               <Internal_properties>
-               <id>168</id>
+               <id>167</id>
                <name>arch_desc_original_language_text</name>
                <Expanded>0</Expanded>
               </Internal_properties>
@@ -2526,7 +2543,7 @@
            </item>
            <item type="EV_TEXT">
             <Internal_properties>
-             <id>238</id>
+             <id>235</id>
              <name>arch_translations_accreditation_text</name>
              <Expanded>0</Expanded>
             </Internal_properties>
@@ -2558,7 +2575,7 @@
           </item>
           <item type="EV_VERTICAL_BOX">
            <Internal_properties>
-            <id>164</id>
+            <id>163</id>
             <Expanded>1</Expanded>
            </Internal_properties>
            <EV_COLORIZABLE>
@@ -2582,7 +2599,7 @@
            </EV_CONTAINER>
            <item type="EV_LABEL">
             <Internal_properties>
-             <id>165</id>
+             <id>164</id>
              <Expanded>0</Expanded>
             </Internal_properties>
             <EV_COLORIZABLE>
@@ -2603,7 +2620,7 @@
            </item>
            <item type="EV_MULTI_COLUMN_LIST">
             <Internal_properties>
-             <id>166</id>
+             <id>165</id>
              <name>arch_translations_other_details_mlist</name>
              <Expanded>0</Expanded>
             </Internal_properties>
@@ -3289,7 +3306,7 @@ Resources</Text>
        </item>
        <item type="EV_VERTICAL_BOX">
         <Internal_properties>
-         <id>234</id>
+         <id>233</id>
          <name>differential_view_box</name>
          <Expanded>0</Expanded>
         </Internal_properties>
@@ -3530,7 +3547,7 @@ Resources</Text>
             </item>
             <item type="EV_FRAME">
              <Internal_properties>
-              <id>169</id>
+              <id>168</id>
               <Expanded>1</Expanded>
              </Internal_properties>
              <EV_COLORIZABLE>
@@ -3555,7 +3572,7 @@ Resources</Text>
              </EV_CONTAINER>
              <item type="EV_VERTICAL_BOX">
               <Internal_properties>
-               <id>170</id>
+               <id>169</id>
                <Expanded>1</Expanded>
               </Internal_properties>
               <EV_COLORIZABLE>
@@ -3577,7 +3594,7 @@ Resources</Text>
               </EV_CONTAINER>
               <item type="EV_RADIO_BUTTON">
                <Internal_properties>
-                <id>172</id>
+                <id>171</id>
                 <name>node_map_domain_radio_button</name>
                 <Expanded>0</Expanded>
                </Internal_properties>
@@ -3605,7 +3622,7 @@ Resources</Text>
               </item>
               <item type="EV_RADIO_BUTTON">
                <Internal_properties>
-                <id>171</id>
+                <id>170</id>
                 <name>node_map_technical_radio_button</name>
                 <Expanded>0</Expanded>
                </Internal_properties>
@@ -3798,7 +3815,7 @@ Resources</Text>
             </EV_CONTAINER>
             <item type="EV_VERTICAL_BOX">
              <Internal_properties>
-              <id>229</id>
+              <id>228</id>
               <Expanded>1</Expanded>
              </Internal_properties>
              <EV_COLORIZABLE>
@@ -3875,7 +3892,7 @@ Resources</Text>
             </EV_CONTAINER>
             <item type="EV_VERTICAL_BOX">
              <Internal_properties>
-              <id>230</id>
+              <id>229</id>
               <Expanded>1</Expanded>
              </Internal_properties>
              <EV_COLORIZABLE>
@@ -3946,7 +3963,7 @@ Resources</Text>
        </item>
        <item type="EV_VERTICAL_BOX">
         <Internal_properties>
-         <id>233</id>
+         <id>232</id>
          <name>flat_view_box</name>
          <Expanded>0</Expanded>
         </Internal_properties>
@@ -3971,7 +3988,7 @@ Resources</Text>
        </item>
        <item type="EV_VERTICAL_BOX">
         <Internal_properties>
-         <id>226</id>
+         <id>225</id>
          <name>slots_box</name>
          <Expanded>1</Expanded>
         </Internal_properties>
@@ -3996,7 +4013,7 @@ Resources</Text>
         </EV_CONTAINER>
         <item type="EV_FRAME">
          <Internal_properties>
-          <id>227</id>
+          <id>226</id>
           <Expanded>1</Expanded>
          </Internal_properties>
          <EV_COLORIZABLE>
@@ -4007,6 +4024,68 @@ Resources</Text>
          </EV_SENSITIVE>
          <EV_TEXTABLE>
           <Text>Archetype IDs that match slots in the current archetype</Text>
+         </EV_TEXTABLE>
+         <EV_WIDGET>
+         </EV_WIDGET>
+         <EV_FRAME>
+         </EV_FRAME>
+         <EV_TEXT_ALIGNABLE>
+         </EV_TEXT_ALIGNABLE>
+         <EV_PIXMAPABLE>
+         </EV_PIXMAPABLE>
+         <EV_CONTAINER>
+         </EV_CONTAINER>
+         <item type="EV_VERTICAL_BOX">
+          <Internal_properties>
+           <id>230</id>
+           <Expanded>1</Expanded>
+          </Internal_properties>
+          <EV_COLORIZABLE>
+          </EV_COLORIZABLE>
+          <EV_SENSITIVE>
+          </EV_SENSITIVE>
+          <EV_WIDGET>
+          </EV_WIDGET>
+          <EV_BOX>
+           <Border>
+            <Constant>border_width</Constant>
+           </Border>
+           <Is_item_expanded>1</Is_item_expanded>
+          </EV_BOX>
+          <EV_PIXMAPABLE>
+          </EV_PIXMAPABLE>
+          <EV_CONTAINER>
+          </EV_CONTAINER>
+          <item type="EV_TREE">
+           <Internal_properties>
+            <id>188</id>
+            <name>slots_tree</name>
+            <Expanded>0</Expanded>
+           </Internal_properties>
+           <EV_COLORIZABLE>
+           </EV_COLORIZABLE>
+           <EV_SENSITIVE>
+           </EV_SENSITIVE>
+           <EV_TOOLTIPABLE>
+           </EV_TOOLTIPABLE>
+           <EV_WIDGET>
+           </EV_WIDGET>
+          </item>
+         </item>
+        </item>
+        <item type="EV_FRAME">
+         <Internal_properties>
+          <id>227</id>
+          <Expanded>1</Expanded>
+         </Internal_properties>
+         <EV_COLORIZABLE>
+         </EV_COLORIZABLE>
+         <EV_FONTABLE>
+         </EV_FONTABLE>
+         <EV_SENSITIVE>
+         </EV_SENSITIVE>
+         <EV_TEXTABLE>
+          <Text>Archetypes that have slots matching the current archetype ID</Text>
          </EV_TEXTABLE>
          <EV_WIDGET>
          </EV_WIDGET>
@@ -4041,69 +4120,7 @@ Resources</Text>
           </EV_CONTAINER>
           <item type="EV_TREE">
            <Internal_properties>
-            <id>189</id>
-            <name>slots_tree</name>
-            <Expanded>0</Expanded>
-           </Internal_properties>
-           <EV_COLORIZABLE>
-           </EV_COLORIZABLE>
-           <EV_SENSITIVE>
-           </EV_SENSITIVE>
-           <EV_TOOLTIPABLE>
-           </EV_TOOLTIPABLE>
-           <EV_WIDGET>
-           </EV_WIDGET>
-          </item>
-         </item>
-        </item>
-        <item type="EV_FRAME">
-         <Internal_properties>
-          <id>228</id>
-          <Expanded>1</Expanded>
-         </Internal_properties>
-         <EV_COLORIZABLE>
-         </EV_COLORIZABLE>
-         <EV_FONTABLE>
-         </EV_FONTABLE>
-         <EV_SENSITIVE>
-         </EV_SENSITIVE>
-         <EV_TEXTABLE>
-          <Text>Archetypes that have slots matching the current archetype ID</Text>
-         </EV_TEXTABLE>
-         <EV_WIDGET>
-         </EV_WIDGET>
-         <EV_FRAME>
-         </EV_FRAME>
-         <EV_TEXT_ALIGNABLE>
-         </EV_TEXT_ALIGNABLE>
-         <EV_PIXMAPABLE>
-         </EV_PIXMAPABLE>
-         <EV_CONTAINER>
-         </EV_CONTAINER>
-         <item type="EV_VERTICAL_BOX">
-          <Internal_properties>
-           <id>232</id>
-           <Expanded>1</Expanded>
-          </Internal_properties>
-          <EV_COLORIZABLE>
-          </EV_COLORIZABLE>
-          <EV_SENSITIVE>
-          </EV_SENSITIVE>
-          <EV_WIDGET>
-          </EV_WIDGET>
-          <EV_BOX>
-           <Border>
-            <Constant>border_width</Constant>
-           </Border>
-           <Is_item_expanded>1</Is_item_expanded>
-          </EV_BOX>
-          <EV_PIXMAPABLE>
-          </EV_PIXMAPABLE>
-          <EV_CONTAINER>
-          </EV_CONTAINER>
-          <item type="EV_TREE">
-           <Internal_properties>
-            <id>201</id>
+            <id>200</id>
             <name>used_by_tree</name>
             <Expanded>0</Expanded>
            </Internal_properties>
@@ -4121,7 +4138,7 @@ Resources</Text>
        </item>
        <item type="EV_HORIZONTAL_BOX">
         <Internal_properties>
-         <id>235</id>
+         <id>234</id>
          <name>statistics_box</name>
          <Expanded>1</Expanded>
         </Internal_properties>
@@ -4314,7 +4331,7 @@ Resources</Text>
          </item>
          <item type="EV_HORIZONTAL_BOX">
           <Internal_properties>
-           <id>204</id>
+           <id>203</id>
            <Expanded>1</Expanded>
           </Internal_properties>
           <EV_COLORIZABLE>
@@ -4336,7 +4353,7 @@ Resources</Text>
           </EV_CONTAINER>
           <item type="EV_LABEL">
            <Internal_properties>
-            <id>202</id>
+            <id>201</id>
             <Expanded>0</Expanded>
            </Internal_properties>
            <EV_COLORIZABLE>
@@ -4359,7 +4376,7 @@ Resources</Text>
           </item>
           <item type="EV_TEXT_FIELD">
            <Internal_properties>
-            <id>203</id>
+            <id>202</id>
             <name>arch_slotted_count_tf</name>
             <Expanded>0</Expanded>
            </Internal_properties>
@@ -4388,7 +4405,7 @@ Resources</Text>
          </item>
          <item type="EV_HORIZONTAL_BOX">
           <Internal_properties>
-           <id>207</id>
+           <id>206</id>
            <Expanded>1</Expanded>
           </Internal_properties>
           <EV_COLORIZABLE>
@@ -4410,7 +4427,7 @@ Resources</Text>
           </EV_CONTAINER>
           <item type="EV_LABEL">
            <Internal_properties>
-            <id>205</id>
+            <id>204</id>
             <Expanded>0</Expanded>
            </Internal_properties>
            <EV_COLORIZABLE>
@@ -4433,7 +4450,7 @@ Resources</Text>
           </item>
           <item type="EV_TEXT_FIELD">
            <Internal_properties>
-            <id>206</id>
+            <id>205</id>
             <name>arch_used_by_count_tf</name>
             <Expanded>0</Expanded>
            </Internal_properties>
@@ -4462,7 +4479,7 @@ Resources</Text>
          </item>
          <item type="EV_HORIZONTAL_BOX">
           <Internal_properties>
-           <id>210</id>
+           <id>209</id>
            <Expanded>1</Expanded>
           </Internal_properties>
           <EV_COLORIZABLE>
@@ -4484,7 +4501,7 @@ Resources</Text>
           </EV_CONTAINER>
           <item type="EV_LABEL">
            <Internal_properties>
-            <id>208</id>
+            <id>207</id>
             <Expanded>0</Expanded>
            </Internal_properties>
            <EV_COLORIZABLE>
@@ -4507,7 +4524,7 @@ Resources</Text>
           </item>
           <item type="EV_TEXT_FIELD">
            <Internal_properties>
-            <id>209</id>
+            <id>208</id>
             <name>arch_bad_count_tf</name>
             <Expanded>0</Expanded>
            </Internal_properties>
@@ -4539,7 +4556,7 @@ Resources</Text>
       </item>
       <item type="EV_NOTEBOOK">
        <Internal_properties>
-        <id>187</id>
+        <id>186</id>
         <name>status_notebook</name>
         <Expanded>0</Expanded>
        </Internal_properties>
@@ -4592,7 +4609,7 @@ Resources</Text>
        </item>
        <item type="EV_GRID">
         <Internal_properties>
-         <id>188</id>
+         <id>187</id>
          <name>compiler_output_grid</name>
          <Expanded>0</Expanded>
         </Internal_properties>
@@ -4617,7 +4634,7 @@ Resources</Text>
     <Internal_properties>
      <id>106</id>
      <name>test_split_area</name>
-     <Expanded>1</Expanded>
+     <Expanded>0</Expanded>
     </Internal_properties>
     <EV_COLORIZABLE>
     </EV_COLORIZABLE>
@@ -4968,7 +4985,7 @@ Resources</Text>
    </EV_CONTAINER>
    <item type="EV_HORIZONTAL_BOX">
     <Internal_properties>
-     <id>197</id>
+     <id>196</id>
      <Expanded>0</Expanded>
     </Internal_properties>
     <EV_COLORIZABLE>
@@ -5129,7 +5146,7 @@ Resources</Text>
     </item>
     <item type="EV_CHECK_BUTTON">
      <Internal_properties>
-      <id>183</id>
+      <id>182</id>
       <name>show_line_numbers_check_button</name>
       <Expanded>0</Expanded>
      </Internal_properties>
@@ -5156,7 +5173,7 @@ Resources</Text>
    </item>
    <item type="EV_HORIZONTAL_BOX">
     <Internal_properties>
-     <id>184</id>
+     <id>183</id>
      <Expanded>1</Expanded>
     </Internal_properties>
     <EV_COLORIZABLE>
@@ -5176,7 +5193,7 @@ Resources</Text>
     </EV_CONTAINER>
     <item type="EV_LABEL">
      <Internal_properties>
-      <id>186</id>
+      <id>185</id>
       <Expanded>0</Expanded>
      </Internal_properties>
      <EV_COLORIZABLE>
@@ -5197,7 +5214,7 @@ Resources</Text>
     </item>
     <item type="EV_COMBO_BOX">
      <Internal_properties>
-      <id>185</id>
+      <id>184</id>
       <name>parser_error_reporting_level_combo_box</name>
       <Expanded>0</Expanded>
      </Internal_properties>
@@ -5224,7 +5241,7 @@ Resources</Text>
    </item>
    <item type="EV_HORIZONTAL_BOX">
     <Internal_properties>
-     <id>192</id>
+     <id>191</id>
      <Expanded>1</Expanded>
     </Internal_properties>
     <EV_COLORIZABLE>
@@ -5244,7 +5261,7 @@ Resources</Text>
     </EV_CONTAINER>
     <item type="EV_LABEL">
      <Internal_properties>
-      <id>193</id>
+      <id>192</id>
       <Expanded>0</Expanded>
      </Internal_properties>
      <EV_COLORIZABLE>
@@ -5265,7 +5282,7 @@ Resources</Text>
     </item>
     <item type="EV_TEXT_FIELD">
      <Internal_properties>
-      <id>194</id>
+      <id>193</id>
       <name>export_html_text</name>
       <Expanded>0</Expanded>
      </Internal_properties>
@@ -5292,7 +5309,7 @@ Resources</Text>
     </item>
     <item type="EV_BUTTON">
      <Internal_properties>
-      <id>195</id>
+      <id>194</id>
       <name>export_html_button</name>
       <Expanded>0</Expanded>
      </Internal_properties>
@@ -5321,7 +5338,7 @@ Resources</Text>
    </item>
    <item type="EV_HORIZONTAL_BOX">
     <Internal_properties>
-     <id>196</id>
+     <id>195</id>
      <Expanded>0</Expanded>
     </Internal_properties>
     <EV_COLORIZABLE>

@@ -68,6 +68,8 @@ Section -Main SEC0000
     SetOutPath $INSTDIR
     File ..\..\..\app\EIFGENs\adl_workbench\F_code\adl_workbench.exe
     File ..\..\..\app\news.txt
+    File ..\..\..\app\repository_report_xml-to-html.xsl
+    File ..\..\..\app\repository_report.css
 
     SetOutPath $INSTDIR\vim
     File ..\..\..\etc\vim\*
@@ -116,6 +118,8 @@ Section /o un.Main UNSEC0000
 
     Delete /REBOOTOK $INSTDIR\adl_workbench.exe
     Delete /REBOOTOK $INSTDIR\news.txt
+    Delete /REBOOTOK $INSTDIR\repository_report_xml-to-html.xsl
+    Delete /REBOOTOK $INSTDIR\repository_report.css
     RMDir /r /REBOOTOK $INSTDIR\vim
     RMDir /r /REBOOTOK $INSTDIR\icons
     DeleteRegValue HKLM "${REGKEY}\Components" Main

@@ -16,7 +16,7 @@ indexing
 
 	file:        "$URL: http://www.openehr.org/svn/ref_impl_eiffel/TRUNK/apps/adl_workbench/src/controls/gui_compiler_error_control.e $"
 	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate: 2008-05-15 17:28:02 +0100 (Thu, 15 May 2008) $"
+	last_change: "$LastChangedDate: 2008-05-21 02:55:11 +1000 (Wed, 21 May 2008) $"
 
 
 class GUI_COMPILER_ERROR_CONTROL
@@ -168,6 +168,140 @@ feature -- Commands
 			end
 
 			update_errors_tab_label
+		end
+
+	export_repository_report (file_name: STRING)
+			-- Export the contents of the grid and other statistics to XML in `file_name'.
+		require
+			file_name_attached: file_name /= Void
+			file_name_not_empty: not file_name.is_empty
+		local
+			err_type, i: INTEGER
+			category: STRING
+			message_lines: LIST [STRING]
+			ns: XM_NAMESPACE
+			document: XM_DOCUMENT
+			root, statistics_element, category_element, archetype_element: XM_ELEMENT
+			attr: XM_ATTRIBUTE
+			data: XM_CHARACTER_DATA
+			create_category_element: PROCEDURE [ANY, TUPLE]
+			pretty_printer: XM_INDENT_PRETTY_PRINT_FILTER
+			xmlns_generator: XM_XMLNS_GENERATOR
+			file: KL_TEXT_OUTPUT_FILE
+		do
+			create ns.make_default
+			create document.make_with_root_named ("archetype-repository-report", ns)
+			root := document.root_element
+
+			create_category_element := agent (parent: XM_ELEMENT; description: STRING; count: INTEGER)
+				local
+					e: XM_ELEMENT
+					a: XM_ATTRIBUTE
+				do
+					create e.make_last (parent, "category", parent.namespace)
+					create a.make_last ("description", parent.namespace, description, e)
+					create a.make_last ("count", parent.namespace, count.out, e)
+				end
+
+			create statistics_element.make_last (root, "statistics", ns)
+			create_category_element.call ([statistics_element, "Total Archetypes", archetype_directory.total_archetype_count])
+			create_category_element.call ([statistics_element, "Specialised Archetypes", archetype_directory.specialised_archetype_count])
+			create_category_element.call ([statistics_element, "Archetypes with slots", archetype_directory.slotted_archetype_count])
+			create_category_element.call ([statistics_element, "Archetypes used by others", archetype_directory.used_by_archetype_count])
+			create_category_element.call ([statistics_element, "Bad Archetypes", archetype_directory.bad_archetype_count])
+
+			from
+				err_type := categories.lower
+			until
+				err_type = categories.upper
+			loop
+				err_type := err_type + 1
+				category := err_type_names [err_type]
+				create_category_element.call ([statistics_element, category, count_for_category (err_type)])
+
+				if {row: !EV_GRID_ROW} categories [err_type] then
+					create_category_element.call ([root, category, row.subrow_count])
+					category_element ?= root.last
+
+					from
+						i := 0
+					until
+						i = row.subrow_count
+					loop
+						i := i + 1
+
+						if {ara: !ARCH_REP_ARCHETYPE} row.subrow (i).data then
+							create archetype_element.make_last (category_element, "archetype", ns)
+							create attr.make_last ("id", ns, ara.id.as_string, archetype_element)
+
+							from
+								message_lines := ara.compiler_status.split ('%N')
+								message_lines.start
+							until
+								message_lines.off
+							loop
+								if not message_lines.item.is_empty then
+									create data.make_last (create {XM_ELEMENT}.make_last (archetype_element, "message", ns), message_lines.item)
+								end
+
+								message_lines.forth
+							end
+						end
+					end
+				end
+			end
+
+			create file.make (file_name)
+			file.open_write
+
+			if file.is_open_write then
+				create pretty_printer.make_null
+				pretty_printer.set_output_stream (file)
+				create xmlns_generator.set_next (pretty_printer)
+				document.process_to_events (xmlns_generator)
+				file.close
+				gui.append_status_area ("Exported report to %"" + file_name + "%"%N")
+			else
+				gui.append_status_area ("ERROR: Failed to export report to %"" + file_name + "%"%N")
+			end
+		end
+
+	transform_repository_report (xml_file_name, html_file_name: STRING)
+			-- Transform the report data in `xml_file_name' to a report in `html_file_name'.
+		require
+			xml_file_name_attached: xml_file_name /= Void
+			xml_file_name_not_empty: not xml_file_name.is_empty
+			html_file_name_attached: html_file_name /= Void
+			html_file_name_not_empty: not html_file_name.is_empty
+		local
+			xpath_conformance: XM_XPATH_SHARED_CONFORMANCE
+			xslt_factory: XM_XSLT_TRANSFORMER_FACTORY
+			xslt_source, xml_source: XM_XSLT_URI_SOURCE
+			xslt_result: XM_XSLT_TRANSFORMATION_RESULT
+			html_output: XM_OUTPUT
+			file: KL_TEXT_OUTPUT_FILE
+		do
+			create xpath_conformance
+			xpath_conformance.conformance.set_basic_xslt_processor
+			create xslt_factory.make (create {XM_XSLT_CONFIGURATION}.make_with_defaults)
+			create xslt_source.make ((create {UT_FILE_URI_ROUTINES}).filename_to_uri (file_system.pathname (application_startup_directory, "repository_report_xml-to-html.xsl")).full_reference)
+			xslt_factory.create_new_transformer (xslt_source, create {UT_URI}.make ("dummy:"))
+
+			if xslt_factory.was_error then
+				gui.append_status_area ("ERROR: " + xslt_factory.last_error_message + "%N")
+			else
+				create file.make (html_file_name)
+				file.open_write
+				create html_output
+				html_output.set_output_stream (file)
+				create xslt_result.make (html_output, (create {UT_FILE_URI_ROUTINES}).filename_to_uri (html_file_name).full_reference)
+				create xml_source.make ((create {UT_FILE_URI_ROUTINES}).filename_to_uri (xml_file_name).full_reference)
+				xslt_factory.created_transformer.transform (xml_source, xslt_result)
+				file.close
+				gui.append_status_area ("Wrote report to %"" + html_file_name + "%"%N")
+				file_system.copy_file (file_system.pathname (application_startup_directory, "repository_report.css"), file_system.pathname (file_system.dirname (html_file_name), "repository_report.css"))
+				show_in_system_browser (html_file_name)
+			end
 		end
 
 feature -- Access

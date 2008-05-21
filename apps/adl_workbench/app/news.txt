@@ -1,11 +1,15 @@
 ADL_WORKBENCH NEWS (see Help menu > News)
 -------------------------------------------------------------------------
 
+New functionality:
+* Export Repository Report option generates XML and HTML files of statistics and errors.
+
 User interface improvements:
 * The Errors and Slots tabs now show how many archetypes appear within them.
 * The repository explorer shows a little arrow next to each archetype that has slots.
 
 These problems in the previous release are now fixed:
+* The dADL parser did not accept parentheses around type identifiers.
 * In the Flat view of a specialised archetype, attribute paths were missing.
 * On the Statistics tab, the Slots counts were not updated correctly.
 * Clicking the Parse button did not re-parse an already-parsed archetype, despite the user editing the ADL file.

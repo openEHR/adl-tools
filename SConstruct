@@ -70,11 +70,13 @@ for target in COMMAND_LINE_TARGETS:
 
 if distrib and len(adl_workbench) > 0:
 	news = 'apps/adl_workbench/app/news.txt'
+	xsl = 'apps/adl_workbench/app/repository_report_xml-to-html.xsl'
+	css = 'apps/adl_workbench/app/repository_report.css'
 	icons = 'apps/adl_workbench/app/icons'
 	vim = 'apps/adl_workbench/etc/vim'
 	install = 'apps/adl_workbench/install/' + platform
 	installer = None
-	adl_workbench_installer_sources = [adl_workbench[0], news]
+	adl_workbench_installer_sources = [adl_workbench[0], news, xsl, css]
 
 	for dir in [icons, vim, install]:
 		for source, dirnames, filenames in os.walk(dir):
@@ -103,6 +105,8 @@ if distrib and len(adl_workbench) > 0:
 			tar = tarfile.open(str(target[0]), 'w:bz2')
 			tar.add(str(adl_workbench[0]), os.path.basename(str(adl_workbench[0])))
 			tar.add(news, os.path.basename(news))
+			tar.add(xsl, os.path.basename(xsl))
+			tar.add(css, os.path.basename(css))
 
 			for root in [icons, vim]:
 				for dir, dirnames, filenames in os.walk(root):
@@ -141,7 +145,7 @@ if distrib and len(adl_workbench) > 0:
 				copy_tree(install, distrib)
 				copy_tree(vim, pkg_contents)
 
-				for src in [str(adl_workbench[0]), news, icons]:
+				for src in [str(adl_workbench[0]), news, xsl, css, icons]:
 					copy_tree(src, pkg_contents + '/ADL Workbench.app/Contents/Resources/')
 
 				shutil.copy2(news, pkg_resources + '/Welcome.txt')

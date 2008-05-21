@@ -59,6 +59,7 @@ feature {NONE}-- Initialization
 			create repository_menu_rebuild_subtree
 			create l_ev_menu_separator_6
 			create repository_menu_export_html
+			create repository_menu_export_repository_report
 			create l_ev_menu_separator_7
 			create repository_menu_interrupt_build
 			create history_menu
@@ -248,6 +249,7 @@ feature {NONE}-- Initialization
 			repository_menu.extend (repository_menu_rebuild_subtree)
 			repository_menu.extend (l_ev_menu_separator_6)
 			repository_menu.extend (repository_menu_export_html)
+			repository_menu.extend (repository_menu_export_repository_report)
 			repository_menu.extend (l_ev_menu_separator_7)
 			repository_menu.extend (repository_menu_interrupt_build)
 			menu.extend (history_menu)
@@ -441,7 +443,8 @@ feature {NONE}-- Initialization
 			repository_menu_rebuild_all.set_text ("&Rebuild All")
 			repository_menu_build_subtree.set_text ("Build Sub&tree")
 			repository_menu_rebuild_subtree.set_text ("Rebuild S&ubtree")
-			repository_menu_export_html.set_text ("Export &HTML")
+			repository_menu_export_html.set_text ("Export &HTML...")
+			repository_menu_export_repository_report.set_text ("&Export Repository Report...")
 			repository_menu_interrupt_build.disable_sensitive
 			repository_menu_interrupt_build.set_text ("&Interrupt Build")
 			history_menu.set_text ("Hi&story")
@@ -958,10 +961,10 @@ feature {NONE}-- Initialization
 			set_all_attributes_using_constants
 			
 				-- Connect events.
-			file_menu_open.select_actions.extend (agent open_adl_file)
+			file_menu_open.select_actions.extend (agent open_archetype)
 			file_menu_parse.select_actions.extend (agent parse_archetype)
 			file_menu_edit.select_actions.extend (agent edit_archetype)
-			file_menu_save_as.select_actions.extend (agent save_adl_file)
+			file_menu_save_as.select_actions.extend (agent save_archetype_as)
 			file_menu_exit.select_actions.extend (agent exit_app)
 			edit_menu_copy.select_actions.extend (agent on_copy)
 			edit_menu_select_all.select_actions.extend (agent on_select_all)
@@ -972,6 +975,7 @@ feature {NONE}-- Initialization
 			repository_menu_build_subtree.select_actions.extend (agent build_subtree)
 			repository_menu_rebuild_subtree.select_actions.extend (agent rebuild_subtree)
 			repository_menu_export_html.select_actions.extend (agent export_html)
+			repository_menu_export_repository_report.select_actions.extend (agent export_repository_report)
 			repository_menu_interrupt_build.select_actions.extend (agent interrupt_build)
 			history_menu.select_actions.extend (agent on_history)
 			history_menu_back.select_actions.extend (agent on_back)
@@ -982,7 +986,7 @@ feature {NONE}-- Initialization
 			help_menu_news.select_actions.extend (agent display_news)
 			help_menu_online.select_actions.extend (agent show_online_help)
 			help_menu_about.select_actions.extend (agent display_about)
-			open_button.select_actions.extend (agent open_adl_file)
+			open_button.select_actions.extend (agent open_archetype)
 			parse_button.select_actions.extend (agent parse_archetype)
 			edit_button.select_actions.extend (agent edit_archetype)
 			history_back_button.select_actions.extend (agent on_back)
@@ -1074,11 +1078,11 @@ feature -- Access
 	file_menu_parse, file_menu_edit, file_menu_save_as, file_menu_exit, edit_menu_copy,
 	edit_menu_select_all, edit_menu_clipboard, repository_menu_set_repository, repository_menu_build_all,
 	repository_menu_rebuild_all, repository_menu_build_subtree, repository_menu_rebuild_subtree,
-	repository_menu_export_html, repository_menu_interrupt_build, history_menu_back,
-	history_menu_forward, tools_menu_clean_generated_files, tools_menu_options, help_menu_icons,
-	help_menu_news, help_menu_online, help_menu_about: EV_MENU_ITEM
-	adl_version_label, language_label,
-	arch_desc_auth_orig_auth_label, arch_desc_status_label, arch_desc_original_language_label,
+	repository_menu_export_html, repository_menu_export_repository_report, repository_menu_interrupt_build,
+	history_menu_back, history_menu_forward, tools_menu_clean_generated_files, tools_menu_options,
+	help_menu_icons, help_menu_news, help_menu_online, help_menu_about: EV_MENU_ITEM
+	adl_version_label,
+	language_label, arch_desc_auth_orig_auth_label, arch_desc_status_label, arch_desc_original_language_label,
 	arch_desc_auth_contrib_label, arch_translations_languages_label, l_ev_label_1, l_ev_label_2,
 	l_ev_label_3, arch_desc_purpose_label, arch_desc_use_label, arch_desc_misuse_label,
 	arch_desc_keywords_label, arch_desc_resource_package_label, arch_desc_resource_orig_res_label,
@@ -1114,7 +1118,7 @@ feature {NONE} -- Implementation
 		deferred
 		end
 	
-	open_adl_file is
+	open_archetype is
 			-- Called by `select_actions' of `file_menu_open'.
 		deferred
 		end
@@ -1129,7 +1133,7 @@ feature {NONE} -- Implementation
 		deferred
 		end
 	
-	save_adl_file is
+	save_archetype_as is
 			-- Called by `select_actions' of `file_menu_save_as'.
 		deferred
 		end
@@ -1181,6 +1185,11 @@ feature {NONE} -- Implementation
 	
 	export_html is
 			-- Called by `select_actions' of `repository_menu_export_html'.
+		deferred
+		end
+	
+	export_repository_report is
+			-- Called by `select_actions' of `repository_menu_export_repository_report'.
 		deferred
 		end
 	

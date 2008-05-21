@@ -27,17 +27,11 @@ inherit
 
 feature -- Access
 
-	text (full_path: STRING): STRING
-			-- Source of archetype designated by `full_path' from the repository medium.
-		do
-			file_context.set_target (full_path)
-			file_context.read_file
-			Result := file_context.file_content
-			text_timestamp := file_context.file_timestamp
-		end
+	text: STRING
+			-- Contents of the last opened archetype file.
 
 	text_timestamp: INTEGER
-			-- Modification time of last opened file as an integer, for comparison purposes.
+			-- Modification time of last opened archetype file as an integer, for comparison purposes.
 
 feature -- Status Report
 
@@ -53,20 +47,30 @@ feature -- Status Report
 			-- Has the loaded archetype designated by `path' changed on disk since last read?
 		do
 			file_context.set_target (path)
-			Result := file_context.file_changed (timestamp)
+			file_context.read_file_timestamp
+			Result := file_context.file_timestamp /= timestamp
 		end
 
 feature -- Commands
 
-	save_text_to_file (a_full_path, a_text: STRING)
-			-- Save `a_text' to the file designated by `a_full_path'.
+	read_text_from_file (full_path: STRING)
+			-- Read `text' and `text_timestamp' from the file designated by `full_path' on the repository medium.
 		do
-			if file_context.file_writable (a_full_path) then
-				file_context.save_file (a_full_path, a_text)
+			file_context.set_target (full_path)
+			file_context.read_file
+			text := file_context.file_content
+			text_timestamp := file_context.file_timestamp
+		end
+
+	save_text_to_file (full_path, a_text: STRING)
+			-- Save `a_text' to the file designated by `full_path' on the repository medium.
+		do
+			if file_context.file_writable (full_path) then
+				file_context.save_file (full_path, a_text)
 				text_timestamp := file_context.file_timestamp
-				post_info (Current, "save_as", "save_as_i1", <<current_language, a_full_path>>)
+				post_info (Current, "save_as", "save_as_i1", <<current_language, full_path>>)
 			else
-				post_error (Current, "save_as", "save_as_e1", <<a_full_path>>)
+				post_error (Current, "save_as", "save_as_e1", <<full_path>>)
 			end
 		end
 

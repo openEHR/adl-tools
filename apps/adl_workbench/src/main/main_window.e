@@ -251,7 +251,7 @@ feature -- Status setting
 			end
 		end
 
-	update_status_area (text: STRING)
+	append_status_area (text: STRING)
 			-- Append `text' to `parser_status_area'.
 		require
 			text_attached: text /= Void
@@ -266,21 +266,20 @@ feature -- Status setting
 		require
 			text_attached: text /= Void
 		do
-			parser_status_area.set_text (utf8 (text))
-			parser_status_area.set_background_color (status_area_background_color)
-			ev_application.process_graphical_events
+			parser_status_area.remove_text
+			append_status_area (text)
 		end
 
 	save_resources_and_show_status
 			-- Save the application configuration file and update the status area.
 		do
 			save_resources
-			update_status_area ("Wrote config file %"" + resource_config_file_name + "%".%N")
+			append_status_area ("Wrote config file %"" + resource_config_file_name + "%".%N")
 		end
 
 feature -- File events
 
-	open_adl_file
+	open_archetype
 			-- Let the user select an ADL file, and then load and parse it.
 		local
 			dialog: EV_FILE_OPEN_DIALOG
@@ -320,13 +319,7 @@ feature -- File events
 			ara := archetype_directory.selected_archetype
 
 			if ara /= Void then
-				if not ara.parse_attempted then
-					do_with_wait_cursor (agent archetype_compiler.build_lineage (ara))
-				elseif ara.is_differential_file_out_of_date or ara.is_flat_file_out_of_date then
-					do_with_wait_cursor (agent archetype_compiler.rebuild_lineage (ara))
-				else
-					do_with_wait_cursor (agent build_gui_update (ara))
-				end
+				do_with_wait_cursor (agent archetype_compiler.build_lineage (ara))
 			end
 		end
 
@@ -352,13 +345,13 @@ feature -- File events
 			end
 		end
 
-	save_adl_file
+	save_archetype_as
 			-- Save to an ADL or HTML file via a GUI file save dialog.
 		local
 			ok_to_write: BOOLEAN
 			question_dialog: EV_QUESTION_DIALOG
 			error_dialog: EV_INFORMATION_DIALOG
-			a_file: PLAIN_TEXT_FILE
+			file: PLAIN_TEXT_FILE
 			save_dialog: EV_FILE_SAVE_DIALOG
 			name, format: STRING
 		do
@@ -393,9 +386,9 @@ feature -- File events
 					end
 
 					ok_to_write := True
-					create a_file.make (name)
+					create file.make (name)
 
-					if a_file.exists then
+					if file.exists then
 						create question_dialog.make_with_text ("File " + file_system.basename (name) + " already exists. Replace it?")
 						question_dialog.set_title ("Save as " + format.as_upper)
 						question_dialog.set_buttons (<<"Yes", "No">>)
@@ -406,7 +399,7 @@ feature -- File events
 					if ok_to_write then
 						archetype_parser.set_target (archetype_directory.selected_archetype)
 						archetype_parser.save_archetype_differential_as (name, format)
-						update_status_area (archetype_parser.status)
+						append_status_area (archetype_parser.status)
 					end
 				end
 			else
@@ -574,7 +567,7 @@ feature {NONE} -- Repository events
 			dialog: EV_QUESTION_DIALOG
 		do
 			create dialog.make_with_text ("Only successfully built archetypes can be exported to HTML.%N%NDo you want to build each archetype before exporting it?%N")
-			dialog.set_title (title + " - Export HTML")
+			dialog.set_title ("Export HTML")
 			dialog.set_buttons (<<"Yes, Build and Export All", "No, Export only the built ones", "Cancel">>)
 			dialog.set_default_cancel_button (dialog.button ("Cancel"))
 			dialog.show_modal_to_window (Current)
@@ -583,6 +576,61 @@ feature {NONE} -- Repository events
 				do_build_action (agent archetype_compiler.build_and_export_all_html (html_export_directory))
 			elseif dialog.selected_button.starts_with ("No") then
 				do_build_action (agent archetype_compiler.export_all_html (html_export_directory))
+			end
+		end
+
+	export_repository_report
+			-- Export the contents of the Errors grid and other statistics to an XML file via a GUI file save dialog.
+		local
+			ok_to_write: BOOLEAN
+			question_dialog: EV_QUESTION_DIALOG
+			file: PLAIN_TEXT_FILE
+			save_dialog: EV_FILE_SAVE_DIALOG
+			xml, html: STRING
+		do
+			create save_dialog
+			save_dialog.set_title ("Export Repository Report")
+			save_dialog.set_file_name ("ArchetypeRepositoryReport.xml")
+			save_dialog.set_start_directory (current_work_directory)
+			save_dialog.filters.extend (["*.xml", "Save as XML"])
+			save_dialog.show_modal_to_window (Current)
+			xml := save_dialog.file_name
+
+			if not xml.is_empty then
+				set_current_work_directory (file_system.dirname (xml))
+
+				if not file_system.has_extension (xml, ".xml") then
+					xml.append (".xml")
+				end
+
+				ok_to_write := True
+				create file.make (xml)
+
+				if file.exists then
+					create question_dialog.make_with_text ("File " + file_system.basename (xml) + " already exists. Replace it?")
+					question_dialog.set_title ("Export Repository Report")
+					question_dialog.set_buttons (<<"Yes", "No">>)
+					question_dialog.show_modal_to_window (Current)
+					ok_to_write := question_dialog.selected_button.same_string ("Yes")
+				end
+
+				if ok_to_write then
+					do_with_wait_cursor (agent compiler_error_control.export_repository_report (xml))
+
+					if file.exists then
+						create question_dialog.make_with_text ("Generate HTML report?")
+						question_dialog.set_title ("Export Repository Report")
+						question_dialog.set_buttons (<<"Yes", "No">>)
+						question_dialog.show_modal_to_window (Current)
+
+						if question_dialog.selected_button.same_string ("Yes") then
+							html := xml.twin
+							html.remove_tail (file_system.extension (html).count)
+							html.append (".html")
+							do_with_wait_cursor (agent compiler_error_control.transform_repository_report (xml, html))
+						end
+					end
+				end
 			end
 		end
 
@@ -708,7 +756,7 @@ feature {NONE} -- Help events
 	show_online_help
 			-- Display the application's online help in an external browser.
 		do
-			execution_environment.launch (Default_browser_command + ADL_help_page_url)
+			show_in_system_browser (adl_help_page_url)
 		end
 
 	display_about
@@ -1014,21 +1062,33 @@ feature {NONE} -- Implementation
 
 	populate_source_text (flat: BOOLEAN)
 			-- Display the selected archetype's differential or flat text in `source_rich_text', optionally with line numbers.
+		local
+			text: STRING
 		do
 			if {ara: !ARCH_REP_ARCHETYPE} archetype_directory.selected_archetype then
 				if flat then
-					populate_source_text_with_line_numbers (ara.flat_text)
-				elseif ara.has_differential_file then
-					populate_source_text_with_line_numbers (ara.differential_text)
+					text := ara.flat_text
+
+					if text.is_empty then
+						source_rich_text.set_text ("===================== No flat (.adl) file available =======================")
+					else
+						populate_source_text_with_line_numbers (text)
+					end
 				else
-					source_rich_text.set_text ("==================== No source (.adls) file available ======================")
+					text := ara.differential_text
+
+					if text.is_empty then
+						source_rich_text.set_text ("==================== No source (.adls) file available ======================")
+					else
+						populate_source_text_with_line_numbers (text)
+					end
 				end
 			else
 				source_rich_text.remove_text
 			end
 		end
 
-	populate_source_text_with_line_numbers (text: STRING)
+	populate_source_text_with_line_numbers (text: STRING) is
 			-- Display `text' in `source_rich_text', optionally with each line preceded by line numbers.
 		require
 			text_attached: text /= Void
@@ -1047,9 +1107,20 @@ feature {NONE} -- Implementation
 					left_pos > len
 				loop
 					number_string := number.out
-					leader.replace_substring (number_string, 1, number_string.count)
-					s.append (leader)
+
+					if number < 1000 then
+						leader.replace_substring (number_string, 1, number_string.count)
+						s.append (leader)
+					else
+						s.append (number_string + " ")
+					end
+
 					right_pos := text.index_of ('%N', left_pos)
+
+					if right_pos = 0 then
+						right_pos := len
+					end
+
 					s.append (text.substring (left_pos, right_pos))
 					left_pos := right_pos + 1
 					number := number + 1
@@ -1175,7 +1246,7 @@ feature {NONE} -- Build commands
 	build_gui_update (ara: ARCH_REP_ARCHETYPE)
 			-- Update GUI with progress on build.
 		do
-			update_status_area (archetype_compiler.status)
+			append_status_area (archetype_compiler.status)
 
 			if ara /= Void then
 				if {node: !EV_TREE_NODE} archetype_file_tree.retrieve_item_recursively_by_data (ara, True) then

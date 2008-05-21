@@ -49,14 +49,18 @@ create
 feature {NONE} -- Initialisation
 
 	make (a_root_path, a_full_path: STRING; an_id: !ARCHETYPE_ID; a_repository: ARCHETYPE_REPOSITORY_I)
+			-- Create for the archetype with `an_id', stored at `a_full_path', belonging to `a_repository' at `a_root_path'.
 		require
 			repository_attached: a_repository /= Void
 			root_path_valid: a_repository.is_valid_directory (a_root_path)
 			full_path_attached: a_full_path /= Void
 			full_path_under_root_path: a_full_path.starts_with (a_root_path)
 		do
-			id := an_id
 			create compiler_status.make_empty
+			create differential_text.make_empty
+			create flat_text.make_empty
+
+			id := an_id
 			make_adi (a_root_path, a_full_path, a_repository)
 
 			if file_system.has_extension (full_path, archetype_source_file_extension) then
@@ -76,40 +80,23 @@ feature {NONE} -- Initialisation
 
 feature -- Access
 
+	id: !ARCHETYPE_ID
+			-- Archetype identifier.
+
 	differential_path: STRING
 			-- Path of differential source file of archetype.
 
 	flat_path: STRING
 			-- Path of flat file of archetype.
 
-	id: !ARCHETYPE_ID
-			-- Archetype identifier.
+	differential_text: STRING
+			-- The text of the archetype source file, i.e. the differential form.
 
 	flat_text: STRING
 			-- The text of the flat form of the archetype.
-		do
-			Result := file_repository.text (full_path)
-			flat_text_timestamp := file_repository.text_timestamp	-- FIXME: This is a nasty side-effect. Replace it with an explicit command!
-		ensure
-			attached: Result /= Void
-		end
 
-	differential_text: STRING
-			-- The text of the archetype source file, i.e. the differential form
-		require
-			has_differential_file
-		do
-			Result := file_repository.text (differential_path)
-			differential_text_timestamp := file_repository.text_timestamp	-- FIXME: This is a nasty side-effect. Replace it with an explicit command!
-		ensure
-			attached: Result /= Void
-		end
-
-	flat_text_timestamp: INTEGER
-			-- Date and time at which the archetype flat file was last modified.
-
-	differential_text_timestamp: INTEGER
-			-- Date and time at which the archetype source file was last modified.
+	text_timestamp: INTEGER
+			-- Date and time at which the archetype differential or flat file was last modified.
 
 	group_name: STRING
 			-- Name distinguishing the type of item and the group to which its `repository' belongs.
@@ -139,7 +126,8 @@ feature -- Access
 		local
 			csr: ARCH_REP_ARCHETYPE
 		do
-			create Result.make(1)
+			create Result.make (1)
+
 			from
 				csr := Current
 			until
@@ -148,6 +136,9 @@ feature -- Access
 				Result.put_front (csr)
 				csr := csr.specialisation_parent
 			end
+		ensure
+			not_empty: not Result.is_empty
+			current_last: Result.last = Current
 		end
 
 	ontology_lineage: HASH_TABLE [DIFFERENTIAL_ARCHETYPE_ONTOLOGY, INTEGER]
@@ -185,7 +176,7 @@ feature -- Access
 				Result := Err_type_parse_error
 			end
 		ensure
-			Result_valid: valid_err_type(Result)
+			valid: valid_err_type (Result)
 		end
 
 feature -- Status Report
@@ -208,16 +199,10 @@ feature -- Status Report
 			Result := id.is_specialised
 		end
 
-	is_flat_file_out_of_date: BOOLEAN
-			-- Has the flat archetype file changed on disk since last read?
+	is_out_of_date: BOOLEAN
+			-- Has the file at `full_path' changed on disk since last parsed?
 		do
-			Result := not is_parsed or file_repository.has_file_changed_on_disk (flat_path, flat_text_timestamp)
-		end
-
-	is_differential_file_out_of_date: BOOLEAN
-			-- Has the differential archetype file changed on disk since last read?
-		do
-			Result := not is_parsed or file_repository.has_file_changed_on_disk (differential_path, differential_text_timestamp)
+			Result := file_repository.has_file_changed_on_disk (full_path, text_timestamp)
 		end
 
 	parse_attempted: BOOLEAN
@@ -239,19 +224,19 @@ feature -- Status Report
 			-- you want to know if the parent has been compiled (up the lineage) before you can compile the current one
 
 	has_compiler_status: BOOLEAN
-			-- True if there si any compiler errors or warnings
+			-- Does this archetype have any compiler errors or warnings?
 		do
 			Result := not compiler_status.is_empty
 		end
 
 	has_slots: BOOLEAN
-			-- True if this archetype has one or more slots
+			-- Does this archetype have any slots?
 		do
 			Result := slot_id_index /= Void
 		end
 
 	is_used: BOOLEAN
-			-- True if this archetype is used by other archetypes (i.e. matrches any of their slots)
+			-- Is this archetype used by any other archetypes (i.e. matches any of their slots)?
 		do
 			Result := used_by_index /= Void
 		end
@@ -269,36 +254,66 @@ feature -- Status Setting
 
 feature -- Commands
 
+	read_differential
+			-- Read `differential_text' and `text_timestamp' from `differential_path'.
+		require
+			differential: has_differential_file
+		do
+			file_repository.read_text_from_file (differential_path)
+			differential_text := file_repository.text
+			full_path := differential_path
+			text_timestamp := file_repository.text_timestamp
+		end
+
+	read_flat
+			-- Read `flat_text' and `text_timestamp' from `flat_path'.
+		do
+			file_repository.read_text_from_file (flat_path)
+			flat_text := file_repository.text
+			full_path := flat_path
+			text_timestamp := file_repository.text_timestamp
+		end
+
 	save_differential (a_text: STRING)
 			-- save a_text (representing differential archetype) to a file; save to source file path (.adls extension)
 		require
-			Text_valid: a_text /= Void and then not a_text.is_empty
+			text_attached: a_text /= Void
+			text_not_empty: not a_text.is_empty
 		do
+			differential_text := a_text
 			file_repository.save_text_to_file (differential_path, a_text)
-		end
-
-	save_differential_as (a_path, a_text: STRING)
-			-- save a_text (representing differential archetype) to a file with source file (.adls) extension
-		require
-			Text_valid: a_text /= Void and then not a_text.is_empty
-			Path_valid: is_valid_directory_part (a_path)
-		do
-			file_repository.save_text_to_file (extension_replaced (a_path, archetype_source_file_extension), a_text)
+			full_path := differential_path
+			text_timestamp := file_repository.text_timestamp
 		end
 
 	save_flat (a_text: STRING)
 			-- save a_text (representing flat archetype) to a file; save to flat file path (.adl extension)
 		require
-			Text_valid: a_text /= Void and then not a_text.is_empty
+			text_attached: a_text /= Void
+			text_not_empty: not a_text.is_empty
 		do
+			flat_text := a_text
 			file_repository.save_text_to_file (flat_path, a_text)
+			full_path := flat_path
+			text_timestamp := file_repository.text_timestamp
+		end
+
+	save_differential_as (a_path, a_text: STRING)
+			-- save a_text (representing differential archetype) to a file with source file (.adls) extension
+		require
+			text_attached: a_text /= Void
+			text_not_empty: not a_text.is_empty
+			path_valid: is_valid_directory_part (a_path)
+		do
+			file_repository.save_text_to_file (extension_replaced (a_path, archetype_source_file_extension), a_text)
 		end
 
 	save_flat_as (a_path, a_text: STRING)
 			-- save a_text (representing flat archetype) to a file with flat file (.adl) extension
 		require
-			Text_valid: a_text /= Void and then not a_text.is_empty
-			Path_valid: is_valid_directory_part (a_path)
+			text_attached: a_text /= Void
+			text_not_empty: not a_text.is_empty
+			path_valid: is_valid_directory_part (a_path)
 		do
 			file_repository.save_text_to_file (extension_replaced (a_path, archetype_flat_file_extension), a_text)
 		end
@@ -365,6 +380,10 @@ feature -- Modification
 					arch_flattener.flatten_archetype
 					archetype_flat := arch_flattener.output_archetype
 				end
+
+				-- TODO: Consider setting `flat_text' from serialiser rather than by reading the flat file:
+				file_repository.read_text_from_file (flat_path)
+				flat_text := file_repository.text
 			end
 		ensure
 			archetype_set: archetype_differential = an_archetype
@@ -411,8 +430,9 @@ feature -- Modification
 			-- add list of matching archetypes to ids recorded for slot at a_slot_path
 		do
 			if slot_id_index = Void then
-				create slot_id_index.make(0)
+				create slot_id_index.make (0)
 			end
+
 			if not slot_id_index.has (a_slot_path) then
 				slot_id_index.put (a_list, a_slot_path)
 				a_list.compare_objects
@@ -423,8 +443,9 @@ feature -- Modification
 					a_list.off
 				loop
 					if not slot_id_index.item (a_slot_path).has (a_list.item) then
-						slot_id_index.item (a_slot_path).extend(a_list.item)
+						slot_id_index.item (a_slot_path).extend (a_list.item)
 					end
+
 					a_list.forth
 				end
 			end
@@ -434,9 +455,10 @@ feature -- Modification
 			-- add the id of an archetype that has a slot that matches this archetype, i.e. that 'uses' this archetype
 		do
 			if used_by_index = Void then
-				create used_by_index.make(0)
+				create used_by_index.make (0)
 				used_by_index.compare_objects
 			end
+
 			used_by_index.extend (an_archetype_id)
 		end
 
@@ -477,18 +499,22 @@ feature {NONE} -- Implementation
 		do
 			create ontology_lineage.make(1)
 			arch_lin := archetype_lineage
+
 			from
 				arch_lin.start
 			until
 				arch_lin.off
 			loop
-				ontology_lineage.put(arch_lin.item.archetype_differential.ontology, arch_lin.item.archetype_differential.specialisation_depth)
+				ontology_lineage.put (arch_lin.item.archetype_differential.ontology, arch_lin.item.archetype_differential.specialisation_depth)
 				arch_lin.forth
 			end
 		end
 
 invariant
 	compiler_status_attached: compiler_status /= Void
+	text_timestamp_natural: text_timestamp >= 0
+	differential_text_attached: differential_text /= Void
+	flat_text_attached: flat_text /= Void
 	differential_path_attached: differential_path /= Void
 	flat_path_attached: flat_path /= Void
 	full_is_flat_or_differential: full_path = flat_path xor full_path = differential_path

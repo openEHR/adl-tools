@@ -28,13 +28,9 @@ inherit
 
 feature -- Access
 
-	text (full_path: STRING): STRING
-			-- Source of archetype designated by `full_path' from the repository medium.
-		require
-			path_attached: full_path /= Void
+	text: STRING
+			-- Contents of the last opened archetype file.
 		deferred
-		ensure
-			attached: Result /= Void
 		end
 
 	text_timestamp: INTEGER
@@ -77,15 +73,25 @@ feature -- Status Report
 
 feature -- Commands
 
-	save_text_to_file (a_full_path, a_text: STRING)
-			-- Save `a_text' to the file designated by `a_full_path'.
+	read_text_from_file (full_path: STRING)
+			-- Read `text' and `text_timestamp' from the file designated by `full_path' on the repository medium.
 		require
-			path_valid: is_valid_directory_part (a_full_path)
+			path_valid: is_valid_directory_part (full_path)
+		deferred
+		ensure
+			text_attached: text /= Void
+		end
+
+	save_text_to_file (full_path, a_text: STRING)
+			-- Save `a_text' to the file designated by `full_path' on the repository medium.
+		require
+			path_valid: is_valid_directory_part (full_path)
 			text_valid: a_text /= Void and then not a_text.is_empty
 		deferred
 		end
 
 invariant
+	timestamp_natural: text_timestamp >= 0
 	group_id_valid: group_id > 0
 
 end
