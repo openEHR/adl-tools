@@ -28,6 +28,8 @@ feature {NONE}-- Initialization
 
 	initialize is
 			-- Initialize `Current'.
+		local
+			internal_font: EV_FONT
 		do
 			Precursor {EV_DIALOG}
 			initialize_constants
@@ -35,20 +37,22 @@ feature {NONE}-- Initialization
 				-- Create all widgets.
 			create l_ev_vertical_box_1
 			create l_ev_horizontal_box_1
+			create l_ev_frame_1
 			create l_ev_horizontal_box_2
-			create l_ev_label_1
 			create editor_command_text
-			create editor_command_button
+			create l_ev_vertical_box_2
+			create editor_command_add_button
+			create editor_command_browse_button
 			create l_ev_horizontal_box_3
 			create show_definition_tree_expanded_check_button
 			create show_line_numbers_check_button
 			create l_ev_horizontal_box_4
-			create l_ev_label_2
+			create l_ev_label_1
 			create parser_error_reporting_level_combo_box
 			create l_ev_horizontal_box_5
-			create l_ev_label_3
+			create l_ev_label_2
 			create export_html_text
-			create export_html_button
+			create export_html_browse_button
 			create l_ev_horizontal_box_6
 			create l_ev_horizontal_box_7
 			create l_ev_cell_1
@@ -58,20 +62,22 @@ feature {NONE}-- Initialization
 				-- Build widget structure.
 			extend (l_ev_vertical_box_1)
 			l_ev_vertical_box_1.extend (l_ev_horizontal_box_1)
-			l_ev_vertical_box_1.extend (l_ev_horizontal_box_2)
-			l_ev_horizontal_box_2.extend (l_ev_label_1)
+			l_ev_vertical_box_1.extend (l_ev_frame_1)
+			l_ev_frame_1.extend (l_ev_horizontal_box_2)
 			l_ev_horizontal_box_2.extend (editor_command_text)
-			l_ev_horizontal_box_2.extend (editor_command_button)
+			l_ev_horizontal_box_2.extend (l_ev_vertical_box_2)
+			l_ev_vertical_box_2.extend (editor_command_add_button)
+			l_ev_vertical_box_2.extend (editor_command_browse_button)
 			l_ev_vertical_box_1.extend (l_ev_horizontal_box_3)
 			l_ev_horizontal_box_3.extend (show_definition_tree_expanded_check_button)
 			l_ev_horizontal_box_3.extend (show_line_numbers_check_button)
 			l_ev_vertical_box_1.extend (l_ev_horizontal_box_4)
-			l_ev_horizontal_box_4.extend (l_ev_label_2)
+			l_ev_horizontal_box_4.extend (l_ev_label_1)
 			l_ev_horizontal_box_4.extend (parser_error_reporting_level_combo_box)
 			l_ev_vertical_box_1.extend (l_ev_horizontal_box_5)
-			l_ev_horizontal_box_5.extend (l_ev_label_3)
+			l_ev_horizontal_box_5.extend (l_ev_label_2)
 			l_ev_horizontal_box_5.extend (export_html_text)
-			l_ev_horizontal_box_5.extend (export_html_button)
+			l_ev_horizontal_box_5.extend (export_html_browse_button)
 			l_ev_vertical_box_1.extend (l_ev_horizontal_box_6)
 			l_ev_vertical_box_1.extend (l_ev_horizontal_box_7)
 			l_ev_horizontal_box_7.extend (l_ev_cell_1)
@@ -92,43 +98,51 @@ feature {NONE}-- Initialization
 			create color_constant_set_procedures.make (10)
 			create color_constant_retrieval_functions.make (10)
 			l_ev_vertical_box_1.set_border_width (20)
-			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_2)
+			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_1)
 			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_3)
 			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_4)
 			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_5)
+			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_6)
 			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_7)
+			l_ev_frame_1.set_text ("Editors")
 			l_ev_horizontal_box_2.set_padding (10)
 			l_ev_horizontal_box_2.set_border_width (10)
-			l_ev_horizontal_box_2.disable_item_expand (l_ev_label_1)
-			l_ev_horizontal_box_2.disable_item_expand (editor_command_button)
-			l_ev_label_1.set_text ("Editor:")
-			color_constant_set_procedures.extend (agent editor_command_text.set_background_color (?))
-			color_constant_retrieval_functions.extend (agent editable_colour)
-			editor_command_text.set_minimum_width (300)
-			editor_command_button.set_text ("Browse...")
-			editor_command_button.set_minimum_width (65)
+			l_ev_horizontal_box_2.disable_item_expand (l_ev_vertical_box_2)
+			editor_command_text.set_tooltip ("Define one or more applications for editing .adls or .adl files.%NOne application per line.")
+			l_ev_vertical_box_2.disable_item_expand (editor_command_add_button)
+			l_ev_vertical_box_2.disable_item_expand (editor_command_browse_button)
+			create internal_font
+			internal_font.set_family ({EV_FONT_CONSTANTS}.Family_screen)
+			internal_font.set_weight ({EV_FONT_CONSTANTS}.Weight_bold)
+			internal_font.set_shape ({EV_FONT_CONSTANTS}.Shape_regular)
+			internal_font.set_height_in_points (8)
+			editor_command_add_button.set_font (internal_font)
+			editor_command_add_button.set_text ("+")
+			editor_command_add_button.set_tooltip ("Add another editor command")
+			editor_command_browse_button.set_text ("Browse...")
+			editor_command_browse_button.set_minimum_width (65)
 			l_ev_horizontal_box_3.set_padding (10)
 			l_ev_horizontal_box_3.set_border_width (10)
 			show_definition_tree_expanded_check_button.set_text ("Show defiinition tree expanded?")
 			show_line_numbers_check_button.set_text ("Show line numbers in ADL source?")
 			l_ev_horizontal_box_4.set_padding (10)
 			l_ev_horizontal_box_4.set_border_width (10)
-			l_ev_horizontal_box_4.disable_item_expand (l_ev_label_2)
+			l_ev_horizontal_box_4.disable_item_expand (l_ev_label_1)
 			l_ev_horizontal_box_4.disable_item_expand (parser_error_reporting_level_combo_box)
-			l_ev_label_2.set_text ("Parser error reporting level:")
+			l_ev_label_1.set_text ("Parser error reporting level:")
 			parser_error_reporting_level_combo_box.set_text ("Status Reporting Level")
 			parser_error_reporting_level_combo_box.set_tooltip ("Select the level of parser messages to display. All levels >= this level displayed.")
 			parser_error_reporting_level_combo_box.set_minimum_width (200)
 			l_ev_horizontal_box_5.set_padding (10)
 			l_ev_horizontal_box_5.set_border_width (10)
-			l_ev_horizontal_box_5.disable_item_expand (l_ev_label_3)
-			l_ev_horizontal_box_5.disable_item_expand (export_html_button)
-			l_ev_label_3.set_text ("Export HTML to:")
+			l_ev_horizontal_box_5.disable_item_expand (l_ev_label_2)
+			l_ev_horizontal_box_5.disable_item_expand (export_html_browse_button)
+			l_ev_label_2.set_text ("Export HTML to:")
 			color_constant_set_procedures.extend (agent export_html_text.set_background_color (?))
 			color_constant_retrieval_functions.extend (agent editable_colour)
 			export_html_text.set_minimum_width (300)
-			export_html_button.set_text ("Browse...")
-			export_html_button.set_minimum_width (65)
+			export_html_browse_button.set_text ("Browse...")
+			export_html_browse_button.set_minimum_width (65)
 			l_ev_horizontal_box_7.set_padding (15)
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_7.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
@@ -141,17 +155,19 @@ feature {NONE}-- Initialization
 			cancel_button.set_text ("Cancel")
 			cancel_button.set_minimum_width (100)
 			cancel_button.set_minimum_height (26)
-			set_minimum_height (270)
+			set_minimum_width (700)
+			set_minimum_height (340)
 			set_maximum_width (2000)
-			set_maximum_height (270)
+			set_maximum_height (800)
 			set_title ("ADL Workbench Options")
 			
 			set_all_attributes_using_constants
 			
 				-- Connect events.
-			editor_command_button.select_actions.extend (agent get_editor_command_directory)
-			export_html_button.select_actions.extend (agent get_html_export_directory)
-			ok_button.select_actions.extend (agent option_dialog_ok)
+			editor_command_add_button.select_actions.extend (agent on_editor_command_add)
+			editor_command_browse_button.select_actions.extend (agent on_editor_command_browse)
+			export_html_browse_button.select_actions.extend (agent on_export_html_browse)
+			ok_button.select_actions.extend (agent on_ok)
 
 				-- Call `user_initialization'.
 			user_initialization
@@ -162,16 +178,18 @@ feature -- Access
 
 	parser_error_reporting_level_combo_box: EV_COMBO_BOX
 	l_ev_cell_1: EV_CELL
-	editor_command_button, export_html_button,
-	ok_button, cancel_button: EV_BUTTON
-	l_ev_horizontal_box_1, l_ev_horizontal_box_2, l_ev_horizontal_box_3,
-	l_ev_horizontal_box_4, l_ev_horizontal_box_5, l_ev_horizontal_box_6, l_ev_horizontal_box_7: EV_HORIZONTAL_BOX
-	l_ev_vertical_box_1: EV_VERTICAL_BOX
+	editor_command_add_button, editor_command_browse_button,
+	export_html_browse_button, ok_button, cancel_button: EV_BUTTON
+	editor_command_text: EV_TEXT
+	l_ev_horizontal_box_1,
+	l_ev_horizontal_box_2, l_ev_horizontal_box_3, l_ev_horizontal_box_4, l_ev_horizontal_box_5,
+	l_ev_horizontal_box_6, l_ev_horizontal_box_7: EV_HORIZONTAL_BOX
+	l_ev_vertical_box_1, l_ev_vertical_box_2: EV_VERTICAL_BOX
 	show_definition_tree_expanded_check_button,
 	show_line_numbers_check_button: EV_CHECK_BUTTON
-	l_ev_label_1, l_ev_label_2, l_ev_label_3: EV_LABEL
-	editor_command_text,
+	l_ev_label_1, l_ev_label_2: EV_LABEL
 	export_html_text: EV_TEXT_FIELD
+	l_ev_frame_1: EV_FRAME
 
 feature {NONE} -- Implementation
 
@@ -188,17 +206,22 @@ feature {NONE} -- Implementation
 		deferred
 		end
 	
-	get_editor_command_directory is
-			-- Called by `select_actions' of `editor_command_button'.
+	on_editor_command_add is
+			-- Called by `select_actions' of `editor_command_add_button'.
 		deferred
 		end
 	
-	get_html_export_directory is
-			-- Called by `select_actions' of `export_html_button'.
+	on_editor_command_browse is
+			-- Called by `select_actions' of `editor_command_browse_button'.
 		deferred
 		end
 	
-	option_dialog_ok is
+	on_export_html_browse is
+			-- Called by `select_actions' of `export_html_browse_button'.
+		deferred
+		end
+	
+	on_ok is
 			-- Called by `select_actions' of `ok_button'.
 		deferred
 		end

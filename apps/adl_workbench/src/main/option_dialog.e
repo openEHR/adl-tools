@@ -38,7 +38,7 @@ feature {NONE} -- Initialization
 			set_default_cancel_button (cancel_button)
 			set_default_push_button (ok_button)
 			show_actions.extend (agent editor_command_text.set_focus)
-			editor_command_text.focus_in_actions.extend (agent on_select_all (editor_command_text))
+			editor_command_text.disable_word_wrapping
 			export_html_text.focus_in_actions.extend (agent on_select_all (export_html_text))
 			populate_controls
 		end
@@ -52,8 +52,12 @@ feature {NONE} -- Implementation
 
 	populate_controls
 			-- Set the dialog widgets from shared settings.
+		local
+			s: STRING
 		do
-			editor_command_text.set_text (editor_command)
+			s := editor_command
+			s.replace_substring_all (",", "%N")
+			editor_command_text.set_text (s + "%N")
 
 			if expand_node_tree then
 				show_definition_tree_expanded_check_button.enable_select
@@ -79,11 +83,19 @@ feature {NONE} -- Implementation
 			export_html_text.set_text (html_export_directory)
 		end
 
-	option_dialog_ok
+	on_ok
 			-- Set shared settings from the dialog widgets.
+		local
+			s: STRING
 		do
 			hide
-			set_editor_command (editor_command_text.text)
+
+			s := editor_command_text.text
+			s.left_adjust
+			s.right_adjust
+			s.replace_substring_all ("%N", ",")
+			set_editor_command (s)
+
 			set_expand_node_tree (show_definition_tree_expanded_check_button.is_selected)
 			set_show_line_numbers (show_line_numbers_check_button.is_selected)
 			set_status_reporting_level (message_type_ids.item (parser_error_reporting_level_combo_box.text))
@@ -91,20 +103,39 @@ feature {NONE} -- Implementation
 			has_changed_options := True
 		end
 
-	get_editor_command_directory
-			-- Let the user browse for the application that will act as the external editor.
+	on_editor_command_add
+			-- Add a new line to `editor_command_text'.
 		do
-			editor_command_text.set_text (get_file (editor_command, Current))
+			editor_command_text.append_text ("%N")
+			editor_command_text.set_focus
+			editor_command_text.select_lines (editor_command_text.line_count, editor_command_text.line_count + 1)
 		end
 
-	get_html_export_directory
+	on_editor_command_browse
+			-- Let the user browse for an application that will act as the external editor.
+		local
+			s: STRING
+		do
+			editor_command_text.select_lines (editor_command_text.current_line_number, editor_command_text.current_line_number)
+			s := get_file (editor_command_text.selected_text, Current)
+
+			if editor_command_text.has_selection then
+				editor_command_text.delete_selection
+			end
+
+			editor_command_text.insert_text (s + "%N")
+			editor_command_text.set_focus
+			editor_command_text.select_lines (editor_command_text.current_line_number, editor_command_text.current_line_number)
+		end
+
+	on_export_html_browse
 			-- Let the user browse for the directory to which HTML will be exported.
 		do
-			export_html_text.set_text (get_directory (html_export_directory, Current))
+			export_html_text.set_text (get_directory (export_html_text.text, Current))
 		end
 
-	on_select_all (text: EV_TEXT_FIELD)
-			-- Select all text in  `text', if any.
+	on_select_all (text: EV_TEXT_COMPONENT) is
+			-- Select all text in `text', if any.
 		do
 			if text /= Void and then text.text_length > 0 then
 				text.select_all

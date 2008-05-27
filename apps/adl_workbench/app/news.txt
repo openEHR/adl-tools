@@ -2,7 +2,9 @@ ADL_WORKBENCH NEWS (see Help menu > News)
 -------------------------------------------------------------------------
 
 New functionality:
-* Export Repository Report option generates XML and HTML files of statistics and errors.
+* Export Repository Report option generates an XML file of statistics and errors.
+* Edit gives the choice of either the .adls or .adl file.
+* Edit gives a configurable choice of multiple editors, including the Archetype Editor.
 
 User interface improvements:
 * The Errors and Slots tabs now show how many archetypes appear within them.

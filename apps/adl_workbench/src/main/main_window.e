@@ -302,8 +302,11 @@ feature -- File events
 		local
 			question_dialog: EV_QUESTION_DIALOG
 			info_dialog: EV_INFORMATION_DIALOG
-			path, flat: STRING
+			editors_dialog: ICON_DIALOG
+			path, flat, command: STRING
 			ara: ARCH_REP_ARCHETYPE
+			editors: LIST [STRING]
+			list: EV_LIST
 		do
 			ara := archetype_directory.selected_archetype
 
@@ -327,7 +330,38 @@ feature -- File events
 					path := ara.flat_path
 				end
 
-				execution_environment.launch (editor_command + " %"" + path + "%"")
+				command := editor_command
+				editors := command.split (',')
+
+				if editors.count > 1 then
+					create editors_dialog
+					editors_dialog.set_title ("Edit with which application?")
+					list := editors_dialog.icon_help_list
+					list.wipe_out
+
+					from
+						editors.start
+					until
+						editors.off
+					loop
+						command := editors.item
+						command.left_adjust
+						command.right_adjust
+
+						if not command.is_empty then
+							list.extend (create {EV_LIST_ITEM}.make_with_text (command))
+							list.last.set_pixmap (pixmaps ["edit"])
+						end
+
+						editors.forth
+					end
+
+					list.first.enable_select
+					editors_dialog.show_modal_to_window (Current)
+					command := list.selected_item.text
+				end
+
+				execution_environment.launch (command + " %"" + path + "%"")
 			end
 		end
 
@@ -342,8 +376,7 @@ feature -- File events
 			name, format: STRING
 		do
 			if archetype_directory.has_valid_selected_archetype then
-				name := archetype_directory.selected_archetype.full_path.twin
-				name.remove_tail (file_system.extension (name).count)
+				name := extension_replaced (archetype_directory.selected_archetype.full_path, "")
 
 				create save_dialog
 				save_dialog.set_title ("Save Archetype")
