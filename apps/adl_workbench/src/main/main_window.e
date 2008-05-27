@@ -300,19 +300,31 @@ feature -- File events
 	edit_archetype
 			-- Launch the external editor with the archetype currently selected in `archetype_directory'.
 		local
+			question_dialog: EV_QUESTION_DIALOG
 			info_dialog: EV_INFORMATION_DIALOG
-			path: STRING
+			path, flat: STRING
 			ara: ARCH_REP_ARCHETYPE
 		do
 			ara := archetype_directory.selected_archetype
 
 			if ara /= Void then
-				if ara.has_differential_file then
-					path := ara.differential_path
-				else
-					path := ara.flat_path
-					create info_dialog.make_with_text ("No source (.adls) file available; opening flat (.adl) file.")
+				path := ara.differential_path
+				flat := file_system.basename (ara.flat_path)
+
+				if ara.has_differential_file and ara.has_flat_file then
+					create question_dialog.make_with_text ("Edit which file?%N%NDifferential: " + file_system.basename (path) + "%N%N    Flat: " + flat + "%N")
+					question_dialog.set_title ("Edit " + ara.id.as_string)
+					question_dialog.set_buttons (<<"Differential", "Flat">>)
+					question_dialog.show_modal_to_window (Current)
+
+					if question_dialog.selected_button.starts_with ("F") then
+						path := ara.flat_path
+					end
+				elseif ara.has_flat_file then
+					create info_dialog.make_with_text ("The Differential (.adls) file is not available.%N%NOpening the Flat file: " + flat + "%N")
+					info_dialog.set_title ("Edit " + ara.id.as_string)
 					info_dialog.show_modal_to_window (Current)
+					path := ara.flat_path
 				end
 
 				execution_environment.launch (editor_command + " %"" + path + "%"")
