@@ -70,8 +70,8 @@ for target in COMMAND_LINE_TARGETS:
 
 if distrib and len(adl_workbench) > 0:
 	news = 'apps/adl_workbench/app/news.txt'
-	xsl = 'apps/adl_workbench/app/repository_report_xml-to-html.xsl'
-	css = 'apps/adl_workbench/app/repository_report.css'
+	xsl = 'apps/adl_workbench/app/ArchetypeRepositoryReport.xsl'
+	css = 'apps/adl_workbench/app/ArchetypeRepositoryReport.css'
 	icons = 'apps/adl_workbench/app/icons'
 	vim = 'apps/adl_workbench/etc/vim'
 	install = 'apps/adl_workbench/install/' + platform

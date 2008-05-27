@@ -170,17 +170,18 @@ feature -- Commands
 			update_errors_tab_label
 		end
 
-	export_repository_report (file_name: STRING)
-			-- Export the contents of the grid and other statistics to XML in `file_name'.
+	export_repository_report (xml_name: STRING) is
+			-- Export the contents of the grid and other statistics to XML in `xml_name'.
 		require
-			file_name_attached: file_name /= Void
-			file_name_not_empty: not file_name.is_empty
+			xml_name_attached: xml_name /= Void
+			xml_name_not_empty: not xml_name.is_empty
 		local
 			err_type, i: INTEGER
 			category: STRING
 			message_lines: LIST [STRING]
 			ns: XM_NAMESPACE
 			document: XM_DOCUMENT
+			processing: XM_PROCESSING_INSTRUCTION
 			root, statistics_element, category_element, archetype_element: XM_ELEMENT
 			attr: XM_ATTRIBUTE
 			data: XM_CHARACTER_DATA
@@ -188,10 +189,12 @@ feature -- Commands
 			pretty_printer: XM_INDENT_PRETTY_PRINT_FILTER
 			xmlns_generator: XM_XMLNS_GENERATOR
 			file: KL_TEXT_OUTPUT_FILE
+			name1, name2: STRING
 		do
 			create ns.make_default
-			create document.make_with_root_named ("archetype-repository-report", ns)
-			root := document.root_element
+			create document.make
+			create processing.make_last_in_document (document, "xml-stylesheet", "type=%"text/xsl%" href=%"ArchetypeRepositoryReport.xsl%"")
+			create root.make_root (document, "archetype-repository-report", ns)
 
 			create_category_element := agent (parent: XM_ELEMENT; description: STRING; count: INTEGER)
 				local
@@ -251,7 +254,7 @@ feature -- Commands
 				end
 			end
 
-			create file.make (file_name)
+			create file.make (xml_name)
 			file.open_write
 
 			if file.is_open_write then
@@ -260,47 +263,11 @@ feature -- Commands
 				create xmlns_generator.set_next (pretty_printer)
 				document.process_to_events (xmlns_generator)
 				file.close
-				gui.append_status_area ("Exported report to %"" + file_name + "%"%N")
-			else
-				gui.append_status_area ("ERROR: Failed to export report to %"" + file_name + "%"%N")
-			end
-		end
 
-	transform_repository_report (xml_file_name, html_file_name: STRING)
-			-- Transform the report data in `xml_file_name' to a report in `html_file_name'.
-		require
-			xml_file_name_attached: xml_file_name /= Void
-			xml_file_name_not_empty: not xml_file_name.is_empty
-			html_file_name_attached: html_file_name /= Void
-			html_file_name_not_empty: not html_file_name.is_empty
-		local
-			xpath_conformance: XM_XPATH_SHARED_CONFORMANCE
-			xslt_factory: XM_XSLT_TRANSFORMER_FACTORY
-			xslt_source, xml_source: XM_XSLT_URI_SOURCE
-			xslt_result: XM_XSLT_TRANSFORMATION_RESULT
-			html_output: XM_OUTPUT
-			file: KL_TEXT_OUTPUT_FILE
-		do
-			create xpath_conformance
-			xpath_conformance.conformance.set_basic_xslt_processor
-			create xslt_factory.make (create {XM_XSLT_CONFIGURATION}.make_with_defaults)
-			create xslt_source.make ((create {UT_FILE_URI_ROUTINES}).filename_to_uri (file_system.pathname (application_startup_directory, "repository_report_xml-to-html.xsl")).full_reference)
-			xslt_factory.create_new_transformer (xslt_source, create {UT_URI}.make ("dummy:"))
-
-			if xslt_factory.was_error then
-				gui.append_status_area ("ERROR: " + xslt_factory.last_error_message + "%N")
-			else
-				create file.make (html_file_name)
-				file.open_write
-				create html_output
-				html_output.set_output_stream (file)
-				create xslt_result.make (html_output, (create {UT_FILE_URI_ROUTINES}).filename_to_uri (html_file_name).full_reference)
-				create xml_source.make ((create {UT_FILE_URI_ROUTINES}).filename_to_uri (xml_file_name).full_reference)
-				xslt_factory.created_transformer.transform (xml_source, xslt_result)
-				file.close
-				gui.append_status_area ("Wrote report to %"" + html_file_name + "%"%N")
-				file_system.copy_file (file_system.pathname (application_startup_directory, "repository_report.css"), file_system.pathname (file_system.dirname (html_file_name), "repository_report.css"))
-				show_in_system_browser (html_file_name)
+				name1 := file_system.pathname (application_startup_directory, "ArchetypeRepositoryReport.css")
+				name2 := file_system.pathname (file_system.dirname (xml_name), "ArchetypeRepositoryReport.css")
+				file_system.copy_file (name1, name2)
+				file_system.copy_file (extension_replaced (name1, ".xsl"), extension_replaced (name2, ".xsl"))
 			end
 		end
 

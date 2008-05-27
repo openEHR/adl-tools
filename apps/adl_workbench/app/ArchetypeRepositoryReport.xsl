@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0">
-	<xsl:param name="css-path">default.css</xsl:param>
-
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 	<xsl:template match="/">
 		<html>
 			<head>
 				<title>Archetype Repository Report</title>
 				<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-				<link rel="stylesheet" type="text/css" media="all" href="./repository_report.css"/>
+				<link rel="stylesheet" type="text/css" media="all" href="ArchetypeRepositoryReport.css"/>
 			</head>
 			<body>
 				<div id="html-body">
