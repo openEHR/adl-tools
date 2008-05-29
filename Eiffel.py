@@ -54,7 +54,7 @@ def ec(target, source, env):
 	 * source[0]: the ECF file.
 	 * source[1], source[2], etc.: any additional dependencies.
 	 * env['ECLOG']: name of file to which all compiler output is logged (stdout if empty).
-	 * env['ECFLAGS']: "ec" compiler flags: -finalize, -freeze, -melt, -clean, etc.
+	 * env['ECFLAGS']: "ec" compiler flags: -finalize, -freeze, -project_path, -target, etc.
 	Result is 0 (success) if target[0] (the executable) is built; else 1.
 	(Note that ec's return code is unreliable: it returns 0 if C compilation fails.)
 	"""
@@ -65,7 +65,7 @@ def ec(target, source, env):
 	log_date()
 
 	shutil.rmtree(ecf_target_dir(target))
-	log_process(['ec', '-batch', '-config', str(source[0]), '-target', ecf_target(target)] + env['ECFLAGS'].split() + ['-c_compile'], None)
+	log_process(['ec', '-batch', '-config', str(source[0])] + env['ECFLAGS'].split() + ['-c_compile'], None)
 
 	if not os.path.exists(str(target[0])):
 		print log_file_tail()
@@ -81,9 +81,11 @@ def ec_emitter(target, source, env):
 	 * target[0]: the base name of the executable (application or dll) produced by the Eiffel project.
 	 * source[0]: the ECF file.
 	 * source[1], source[2], etc.: optionally specify other dependencies.
-	 * env['ECFLAGS']: build F_code only if -finalize is in these flags.
-	 * env['ECTARGET']: optionally specifies the name of the ECF target to build;
-	   if not given, then the ECF target is target[0] minus the extension.
+	 * env['ECFLAGS']: some "ec" compiler flags affect the full path to the executable.
+	   The executable path is {-project_path}/EIFGENs/{-target}/{-finalize}/{target[0]}, where:
+		-project_path if omitted defaults to the ECF file's directory;
+		-target if omitted defaults to target[0] minus the extension;
+		-finalize if present is "F_code", else if omitted defaults to "W_code".
 	Result emits the target and source parameters passed to ec().
 	"""
 	result = None, source
@@ -94,19 +96,20 @@ def ec_emitter(target, source, env):
 	elif not env.Detect('ec'):
 		print '****** ERROR! The Eiffel compiler "ec" is missing from your path: cannot build ' + exe
 	else:
-		exe_path = os.path.abspath(os.path.dirname(str(source[0]))) + '/EIFGENs/'
+		ec_project_path = os.path.abspath(os.path.dirname(str(source[0])))
+		ec_target = os.path.splitext(exe)[0]
+		ec_code = '/W_code/'
+		flags = env['ECFLAGS'].split()
 
-		if env['ECTARGET']:
-			exe_path += env['ECTARGET']
-		else:
-			exe_path += os.path.splitext(exe)[0]
+		for i, flag in enumerate(flags):
+			if flag == '-project_path':
+				ec_project_path = flags[i + 1]
+			elif flag == '-target':
+				ec_target = flags[i + 1]
+			elif flag == '-finalize':
+				ec_code = '/F_code/'
 
-		if '-finalize' in env['ECFLAGS']:
-			exe_path += '/F_code/'
-		else:
-			exe_path += '/W_code/'
-
-		result = [exe_path + exe], source
+		result = [ec_project_path + '/EIFGENs/' + ec_target + ec_code + exe], source
 
 	return result
 
@@ -143,7 +146,6 @@ def generate(env):
 	"""Add a Builder and options for Eiffel to the given Environment."""
 	opts = Options()
 	opts.Add('ECFLAGS', 'Use ec -help to see possible options.', '-finalize')
-	opts.Add('ECTARGET', 'Target in the ECF file. Defaults to the base name of each built executable.', '')
 	opts.Add('ECLOG', 'File to log Eiffel compiler output.', 'SCons.Eiffel.log')
 	opts.Update(env)
 	Help(opts.GenerateHelpText(env))

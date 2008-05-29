@@ -40,7 +40,7 @@ else:
 def eiffel(target, ecf, ectarget = None):
 	if ectarget == None: ectarget = target
 	if platform == 'linux' or platform == 'mac_osx': ectarget += '_no_precompile'
-	result = env.Eiffel(target, [ecf], ECTARGET = ectarget)
+	result = env.Eiffel(target, [ecf], ECFLAGS = env['ECFLAGS'] + ' -target ' + ectarget)
 	Alias(target, result)
 	return result
 
