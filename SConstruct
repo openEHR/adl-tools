@@ -42,6 +42,7 @@ def eiffel(target, ecf, ectarget = None):
 	if platform == 'linux' or platform == 'mac_osx': ectarget += '_no_precompile'
 	result = env.Eiffel(target, [ecf], ECFLAGS = env['ECFLAGS'] + ' -target ' + ectarget)
 	Alias(target, result)
+	Alias(ectarget, result)
 	return result
 
 adl_workbench = eiffel('adl_workbench', 'apps/adl_workbench/app/adl_workbench.ecf')

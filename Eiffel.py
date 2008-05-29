@@ -65,7 +65,9 @@ def ec(target, source, env):
 	log_date()
 
 	shutil.rmtree(ecf_target_dir(target))
-	log_process(['ec', '-batch', '-config', str(source[0])] + env['ECFLAGS'].split() + ['-c_compile'], None)
+	flags = env['ECFLAGS'].split()
+	if not '-target' in flags: flags += ['-target', ecf_target(target)]
+	log_process(['ec', '-batch', '-config', str(source[0])] + flags + ['-c_compile'], None)
 
 	if not os.path.exists(str(target[0])):
 		print log_file_tail()
