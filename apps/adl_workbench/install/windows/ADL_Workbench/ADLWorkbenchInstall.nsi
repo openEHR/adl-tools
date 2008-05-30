@@ -66,7 +66,13 @@ Section -Main SEC0000
     SetOverwrite ifnewer
 
     SetOutPath $INSTDIR
-    File ..\..\..\app\EIFGENs\adl_workbench\F_code\adl_workbench.exe
+
+    !ifdef ADL_WORKBENCH_EXE
+        File ${ADL_WORKBENCH_EXE}
+    !else
+        File ..\..\..\app\EIFGENs\adl_workbench\F_code\adl_workbench.exe
+    !endif
+
     File ..\..\..\app\news.txt
     File ..\..\..\app\ArchetypeRepositoryReport.xsl
     File ..\..\..\app\ArchetypeRepositoryReport.css

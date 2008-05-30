@@ -91,6 +91,7 @@ if distrib and len(adl_workbench) > 0:
 			command = [
 				'makensis', '-V1',
 				'-XOutFile ${TARGET.abspath}',
+				'-DADL_WORKBENCH_EXE=${SOURCE.abspath}',
 				install + '/ADL_Workbench/ADLWorkbenchInstall.nsi'
 			]
 
