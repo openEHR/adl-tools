@@ -64,7 +64,6 @@ def ec(target, source, env):
 	log('=================== ' + ecf_target(target) + ' ===================')
 	log_date()
 
-	shutil.rmtree(ecf_target_dir(target))
 	flags = env['ECFLAGS'].split()
 	if not '-target' in flags: flags += ['-target', ecf_target(target)]
 	log_process(['ec', '-batch', '-config', str(source[0])] + flags + ['-c_compile'], None)
@@ -117,11 +116,7 @@ def ec_emitter(target, source, env):
 
 def ecf_target(target, source = None, env = None):
 	"""The ECF target corresponding to the given build target."""
-	return os.path.basename(ecf_target_dir(target))
-
-def ecf_target_dir(target):
-	"""The ECF target directory corresponding to the given build target."""
-	return os.path.dirname(os.path.dirname(str(target[0])))
+	return os.path.basename(os.path.dirname(os.path.dirname(str(target[0]))))
 
 def ecf_scanner(node, env, path):
 	"""All Eiffel class files in all clusters mentioned in an ECF file."""
@@ -147,7 +142,7 @@ def ecf_scanner(node, env, path):
 def generate(env):
 	"""Add a Builder and options for Eiffel to the given Environment."""
 	opts = Options()
-	opts.Add('ECFLAGS', 'Use ec -help to see possible options.', '-finalize')
+	opts.Add('ECFLAGS', 'Use ec -help to see possible options.', '-finalize -clean')
 	opts.Add('ECLOG', 'File to log Eiffel compiler output.', 'SCons.Eiffel.log')
 	opts.Update(env)
 	Help(opts.GenerateHelpText(env))
