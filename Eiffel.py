@@ -46,17 +46,17 @@ def log_file_tail():
 
 	return result
 
-def ec(target, source, env):
+def ec_action(target, source, env):
 	"""
-	The Eiffel Builder's action function, running the Eiffel compiler "ec".
+	The Eiffel Builder's action function, running the Eiffel compiler.
 	Parameters are as returned by ec_emitter():
 	 * target[0]: the path to the executable (application or dll) to be built (workbench or finalized).
 	 * source[0]: the ECF file.
 	 * source[1], source[2], etc.: any additional dependencies.
 	 * env['ECLOG']: name of file to which all compiler output is logged (stdout if empty).
-	 * env['ECFLAGS']: "ec" compiler flags: -finalize, -freeze, -project_path, -target, etc.
+	 * env['ECFLAGS']: Eiffel compiler flags: -finalize, -freeze, -clean, -project_path, -target, etc.
 	Result is 0 (success) if target[0] (the executable) is built; else 1.
-	(Note that ec's return code is unreliable: it returns 0 if C compilation fails.)
+	(Note that the Eiffel compiler's return code is unreliable: it returns 0 if C compilation fails.)
 	"""
 	result = 0
 
@@ -66,7 +66,7 @@ def ec(target, source, env):
 
 	flags = env['ECFLAGS'].split()
 	if not '-target' in flags: flags += ['-target', ecf_target(target)]
-	log_process(['ec', '-batch', '-config', str(source[0])] + flags + ['-c_compile'], None)
+	log_process([env['EC'], '-batch', '-config', str(source[0])] + flags + ['-c_compile'], None)
 
 	if not os.path.exists(str(target[0])):
 		print log_file_tail()
@@ -82,20 +82,20 @@ def ec_emitter(target, source, env):
 	 * target[0]: the base name of the executable (application or dll) produced by the Eiffel project.
 	 * source[0]: the ECF file.
 	 * source[1], source[2], etc.: optionally specify other dependencies.
-	 * env['ECFLAGS']: some "ec" compiler flags affect the full path to the executable.
+	 * env['ECFLAGS']: some Eiffel compiler flags affect the full path to the executable.
 	   The executable path is {-project_path}/EIFGENs/{-target}/{-finalize}/{target[0]}, where:
 		-project_path if omitted defaults to the ECF file's directory;
 		-target if omitted defaults to target[0] minus the extension;
 		-finalize if present is "F_code", else if omitted defaults to "W_code".
-	Result emits the target and source parameters passed to ec().
+	Result emits the target and source parameters passed to ec_action().
 	"""
 	result = None, source
 	exe = str(target[0])
 
 	if len(source) == 0:
 		print '****** ERROR! No source .ecf file specified: cannot build ' + exe
-	elif not env.Detect('ec'):
-		print '****** ERROR! The Eiffel compiler "ec" is missing from your path: cannot build ' + exe
+	elif not env.Detect(env['EC']):
+		print '****** ERROR! The Eiffel compiler ' + env['EC'] + ' is missing from your path: cannot build ' + exe
 	else:
 		ec_project_path = os.path.abspath(os.path.dirname(str(source[0])))
 		ec_target = os.path.splitext(exe)[0]
@@ -142,17 +142,18 @@ def ecf_scanner(node, env, path):
 def generate(env):
 	"""Add a Builder and options for Eiffel to the given Environment."""
 	opts = Options()
+	opts.Add('EC', 'The Eiffel command-line compiler.', 'ec')
 	opts.Add('ECFLAGS', 'Use ec -help to see possible options.', '-finalize -clean')
 	opts.Add('ECLOG', 'File to log Eiffel compiler output.', 'SCons.Eiffel.log')
 	opts.Update(env)
 	Help(opts.GenerateHelpText(env))
 
-	env['BUILDERS']['Eiffel'] = Builder(action = Action(ec, ecf_target), emitter = ec_emitter, suffix = env['PROGSUFFIX'])
+	env['BUILDERS']['Eiffel'] = Builder(action = Action(ec_action, ecf_target), emitter = ec_emitter, suffix = env['PROGSUFFIX'])
 	env.Append(SCANNERS = Scanner(function = ecf_scanner, skeys = ['.ecf']))
 
 def exists(env):
 	"""Is the Eiffel compiler available?"""
-	return env.Detect('ec')
+	return env.Detect(env['EC'])
 
 # Utility functions.
 
