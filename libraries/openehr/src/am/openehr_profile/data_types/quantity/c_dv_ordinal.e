@@ -93,7 +93,7 @@ feature -- Status Report
 
 	has_item(a_value: INTEGER): BOOLEAN is
 		do
-			Result := index.has(a_value)
+			Result := index /= Void and then index.has(a_value)
 		end
 
 	valid_value (a_value: like default_value): BOOLEAN is
