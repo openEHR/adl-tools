@@ -91,14 +91,30 @@ feature -- Status Report
 			Result := items.first.symbol.is_local
 		end
 
-	has_item(a_value: INTEGER): BOOLEAN is
+	has_code_phrase (code_phrase: CODE_PHRASE): BOOLEAN is
+			-- Is `code_phrase' in one of the ordinals in `index'?
 		do
-			Result := index /= Void and then index.has(a_value)
+			if index /= Void then
+				from
+					index.start
+				until
+					Result or index.off
+				loop
+					Result := index.item_for_iteration.symbol.is_equal (code_phrase)
+					index.forth
+				end
+			end
+		end
+
+	has_item (ordinal_value: INTEGER): BOOLEAN is
+			-- Is `ordinal_value' one of the keys in `index'?
+		do
+			Result := index /= Void and then index.has (ordinal_value)
 		end
 
 	valid_value (a_value: like default_value): BOOLEAN is
 		do
-			Result := any_allowed or else has_item(a_value.value)
+			Result := any_allowed or else has_item (a_value.value)
 		end
 
 feature -- Modification
