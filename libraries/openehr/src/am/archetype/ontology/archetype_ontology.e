@@ -423,11 +423,11 @@ feature -- Modification
 		require
 			Code_phrase_exists: a_code_phrase /= Void
 			Local_code_valid: a_term_code /= Void and then has_term_code(a_term_code)
-			Not_already_added: not has_term_binding(a_code_phrase.terminology_id.value, a_term_code)
+			Not_already_added: not has_term_binding(a_code_phrase.terminology_id.name, a_term_code)
 		local
 			a_terminology: STRING
 		do
-			a_terminology := a_code_phrase.terminology_id.value
+			a_terminology := a_code_phrase.terminology_id.name
 			if not terminologies_available.has(a_terminology) then
 				terminologies_available.extend(a_terminology)
 			end
@@ -438,7 +438,7 @@ feature -- Modification
 
 			term_bindings.item(a_terminology).put(a_code_phrase, a_term_code)
 		ensure
-			Binding_added: has_term_binding(a_code_phrase.terminology_id.value, a_term_code)
+			Binding_added: has_term_binding(a_code_phrase.terminology_id.name, a_term_code)
 		end
 
 	add_constraint_binding(a_uri: URI; a_terminology, a_constraint_code: STRING) is

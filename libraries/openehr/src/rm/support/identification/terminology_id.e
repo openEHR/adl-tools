@@ -1,6 +1,6 @@
 indexing
 	component:   "openEHR Common Reference Model"
-	
+
 	description: "[
 			 Terminology identifier subtype of OBJECT_ID. The syntax of the value 
 			 attribute is as follows:
@@ -34,23 +34,23 @@ inherit
 		undefine
 			default_create, is_equal
 		end
-		
+
 	OBJECT_ID
 		redefine
 			default_create
 		end
-		
+
 create
 	make, default_create, make_from_canonical_string
 
 feature -- Definitions
 
 	default_value:STRING is "openEHR"
-	
+
 	Local_terminology_id: STRING is "local"
 			-- predefined id of terminology to indicate it is local to
 			-- the knowledge resource in which it occurs, e.g. an archetype
-			
+
 	Version_id_left_delimiter: STRING is "("
 
 	Version_id_right_delimiter: STRING is ")"
@@ -82,11 +82,11 @@ feature -- Initialization
 		do
 			value := xml_extract_from_tags(str, "name", 1)
 			if xml_has_tag(str, "version_id", 1) then
-				value.append(Version_id_left_delimiter + xml_extract_from_tags(str, "version_id", 1) + 
+				value.append(Version_id_left_delimiter + xml_extract_from_tags(str, "version_id", 1) +
 						Version_id_right_delimiter)
 			end
 		end
-		
+
 	valid_canonical_string(str:STRING):BOOLEAN is
 		do
 			Result := xml_has_tag(str, "name", 1)
@@ -119,7 +119,9 @@ feature -- Access
 			right_pos := value.substring_index(Version_id_right_delimiter, 1)
 			Result := value.substring(left_pos+1, right_pos-1)
 		end
-		
+
+feature -- Status Report
+
 	has_version_id: BOOLEAN is
 			-- True if there is a version_id part of the identifier
 		local
@@ -130,13 +132,11 @@ feature -- Access
 			Result := left_pos > 0 and right_pos > left_pos
 		end
 
-feature -- Status Report
-
 	valid_id(an_id:STRING): BOOLEAN is
-			-- 
+			--
 		do
 		end
-		
+
 	is_local: BOOLEAN is
 			-- True if this terminology id = "local"
 		do
