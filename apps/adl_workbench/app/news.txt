@@ -5,6 +5,7 @@ New functionality:
 * Export Repository Report option generates an XML file of statistics and errors.
 * Edit gives the choice of either the .adls or .adl file.
 * Edit gives a configurable choice of multiple editors, including the Archetype Editor.
+* The parser detects duplicates and missing assumed values in ordinals and coded text.
 
 User interface improvements:
 * The Errors and Slots tabs now show how many archetypes appear within them.
@@ -12,6 +13,7 @@ User interface improvements:
 
 These problems in the previous release are now fixed:
 * The dADL parser did not accept parentheses around type identifiers.
+* Term bindings were grouped by terminology name and version rather than just by terminology name.
 * In the Flat view of a specialised archetype, attribute paths were missing.
 * On the Statistics tab, the Slots counts were not updated correctly.
 * Clicking the Parse button did not re-parse an already-parsed archetype, despite the user editing the ADL file.
