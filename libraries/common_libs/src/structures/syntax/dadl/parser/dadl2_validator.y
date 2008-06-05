@@ -37,7 +37,7 @@ inherit
 	KL_SHARED_EXCEPTIONS
 	KL_SHARED_ARGUMENTS
 
-creation
+create
 	make
 
 %}
@@ -640,7 +640,15 @@ simple_interval_value: integer_interval_value
 
 ---------------------- BASIC DATA VALUES -----------------------
 
-type_identifier: V_TYPE_IDENTIFIER
+type_identifier: '(' V_TYPE_IDENTIFIER ')'
+		{
+			$$ := $2
+		}
+	| '(' V_GENERIC_TYPE_IDENTIFIER ')'
+		{
+			$$ := $2
+		}
+	| V_TYPE_IDENTIFIER
 		{
 			$$ := $1
 		}

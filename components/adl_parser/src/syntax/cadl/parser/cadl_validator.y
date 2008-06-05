@@ -1430,12 +1430,18 @@ c_boolean: c_boolean_spec
 c_ordinal: c_ordinal_spec
  	| c_ordinal_spec ';' integer_value
  		{
- 			ordinal_node.set_assumed_value_from_integer($3)
+			if ordinal_node.has_item ($3) then
+				ordinal_node.set_assumed_value_from_integer ($3)
+			else
+				raise_error
+				report_error ("invalid assumed value " + $3.out + " not in list")
+				abort
+			end
  		}
  	| c_ordinal_spec ';' error
  		{
  			raise_error
- 			report_error("invalid assumed value; must be an ordinal integer value")
+ 			report_error ("invalid assumed value; must be an ordinal integer value")
  			abort
  		}
 	;
@@ -1449,14 +1455,35 @@ ordinal: integer_value SYM_INTERVAL_DELIM V_QUALIFIED_TERM_CODE_REF
 			if ordinal_node = Void then
 				create ordinal_node.make
 			end
-			create a_code_phrase.make_from_string($3)
-			ordinal_node.add_item(create {ORDINAL}.make($1, a_code_phrase))
+
+			create a_code_phrase.make_from_string ($3)
+			create an_ordinal.make ($1, a_code_phrase)
+
+			if ordinal_node.has_item ($1) then
+				raise_error
+				report_error ("invalid ordinal constraint: duplicated value " + $1.out)
+				abort
+			elseif ordinal_node.has_code_phrase (a_code_phrase) then
+				raise_error
+				report_error ("invalid ordinal constraint: duplicated code term " + $3)
+				abort
+			else
+				ordinal_node.add_item (an_ordinal)
+			end
 		}
 	;
 
 c_code_phrase: V_TERM_CODE_CONSTRAINT	-- e.g. "[local::at0040, at0041; at0040]"
 		{
-			create c_code_phrase_obj.make_from_pattern($1)
+			create c_code_phrase_obj
+
+			if c_code_phrase_obj.valid_pattern ($1) then
+				c_code_phrase_obj.make_from_pattern ($1)
+			else
+				raise_error
+				report_error ("invalid term code constraint: " + c_code_phrase_obj.fail_reason)
+				abort
+			end
 		}
 	| V_QUALIFIED_TERM_CODE_REF
 		{
