@@ -40,8 +40,9 @@ else:
 def eiffel(target, ecf, ectarget = None):
 	if ectarget == None: ectarget = target
 	if platform == 'linux' or platform == 'mac_osx': ectarget += '_no_precompile'
-	result = env.Eiffel(target, [ecf], ECTARGET = ectarget)
+	result = env.Eiffel(target, [ecf], ECFLAGS = env['ECFLAGS'] + ' -target ' + ectarget)
 	Alias(target, result)
+	Alias(ectarget, result)
 	return result
 
 adl_workbench = eiffel('adl_workbench', 'apps/adl_workbench/app/adl_workbench.ecf')
@@ -70,8 +71,8 @@ for target in COMMAND_LINE_TARGETS:
 
 if distrib and len(adl_workbench) > 0:
 	news = 'apps/adl_workbench/app/news.txt'
-	xsl = 'apps/adl_workbench/app/repository_report_xml-to-html.xsl'
-	css = 'apps/adl_workbench/app/repository_report.css'
+	xsl = 'apps/adl_workbench/app/ArchetypeRepositoryReport.xsl'
+	css = 'apps/adl_workbench/app/ArchetypeRepositoryReport.css'
 	icons = 'apps/adl_workbench/app/icons'
 	vim = 'apps/adl_workbench/etc/vim'
 	install = 'apps/adl_workbench/install/' + platform
@@ -90,6 +91,7 @@ if distrib and len(adl_workbench) > 0:
 			command = [
 				'makensis', '-V1',
 				'-XOutFile ${TARGET.abspath}',
+				'-DADL_WORKBENCH_EXE=${SOURCE.abspath}',
 				install + '/ADL_Workbench/ADLWorkbenchInstall.nsi'
 			]
 

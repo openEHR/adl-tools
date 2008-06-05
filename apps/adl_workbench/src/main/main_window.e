@@ -251,32 +251,6 @@ feature -- Status setting
 			end
 		end
 
-	append_status_area (text: STRING)
-			-- Append `text' to `parser_status_area'.
-		require
-			text_attached: text /= Void
-		do
-			parser_status_area.append_text (utf8 (text))
-			parser_status_area.set_background_color (status_area_background_color)
-			ev_application.process_graphical_events
-		end
-
-	set_status_area (text: STRING)
-			-- Set `parser_status_area' to `text'.
-		require
-			text_attached: text /= Void
-		do
-			parser_status_area.remove_text
-			append_status_area (text)
-		end
-
-	save_resources_and_show_status
-			-- Save the application configuration file and update the status area.
-		do
-			save_resources
-			append_status_area ("Wrote config file %"" + resource_config_file_name + "%".%N")
-		end
-
 feature -- File events
 
 	open_archetype
@@ -326,22 +300,68 @@ feature -- File events
 	edit_archetype
 			-- Launch the external editor with the archetype currently selected in `archetype_directory'.
 		local
+			question_dialog: EV_QUESTION_DIALOG
 			info_dialog: EV_INFORMATION_DIALOG
-			path: STRING
+			editors_dialog: ICON_DIALOG
+			path, flat, command: STRING
 			ara: ARCH_REP_ARCHETYPE
+			editors: LIST [STRING]
+			list: EV_LIST
 		do
 			ara := archetype_directory.selected_archetype
 
 			if ara /= Void then
-				if ara.has_differential_file then
-					path := ara.differential_path
-				else
-					path := ara.flat_path
-					create info_dialog.make_with_text ("No source (.adls) file available; opening flat (.adl) file.")
+				path := ara.differential_path
+				flat := file_system.basename (ara.flat_path)
+
+				if ara.has_differential_file and ara.has_flat_file then
+					create question_dialog.make_with_text ("Edit which file?%N%NDifferential: " + file_system.basename (path) + "%N%N    Flat: " + flat + "%N")
+					question_dialog.set_title ("Edit " + ara.id.as_string)
+					question_dialog.set_buttons (<<"Differential", "Flat">>)
+					question_dialog.show_modal_to_window (Current)
+
+					if question_dialog.selected_button.starts_with ("F") then
+						path := ara.flat_path
+					end
+				elseif ara.has_flat_file then
+					create info_dialog.make_with_text ("The Differential (.adls) file is not available.%N%NOpening the Flat file: " + flat + "%N")
+					info_dialog.set_title ("Edit " + ara.id.as_string)
 					info_dialog.show_modal_to_window (Current)
+					path := ara.flat_path
 				end
 
-				execution_environment.launch (editor_command + " %"" + path + "%"")
+				command := editor_command
+				editors := command.split (',')
+
+				if editors.count > 1 then
+					create editors_dialog
+					editors_dialog.set_title ("Edit with which application?")
+					list := editors_dialog.icon_help_list
+					list.wipe_out
+
+					from
+						editors.start
+					until
+						editors.off
+					loop
+						command := editors.item
+						command.left_adjust
+						command.right_adjust
+
+						if not command.is_empty then
+							list.extend (create {EV_LIST_ITEM}.make_with_text (command))
+							list.last.set_pixmap (pixmaps ["edit"])
+						end
+
+						editors.forth
+					end
+
+					list.first.enable_select
+					editors_dialog.show_modal_to_window (Current)
+					command := list.selected_item.text
+				end
+
+				execution_environment.launch (command + " %"" + path + "%"")
 			end
 		end
 
@@ -356,8 +376,7 @@ feature -- File events
 			name, format: STRING
 		do
 			if archetype_directory.has_valid_selected_archetype then
-				name := archetype_directory.selected_archetype.full_path.twin
-				name.remove_tail (file_system.extension (name).count)
+				name := extension_replaced (archetype_directory.selected_archetype.full_path, "")
 
 				create save_dialog
 				save_dialog.set_title ("Save Archetype")
@@ -586,7 +605,7 @@ feature {NONE} -- Repository events
 			question_dialog: EV_QUESTION_DIALOG
 			file: PLAIN_TEXT_FILE
 			save_dialog: EV_FILE_SAVE_DIALOG
-			xml, html: STRING
+			xml_name: STRING
 		do
 			create save_dialog
 			save_dialog.set_title ("Export Repository Report")
@@ -594,20 +613,20 @@ feature {NONE} -- Repository events
 			save_dialog.set_start_directory (current_work_directory)
 			save_dialog.filters.extend (["*.xml", "Save as XML"])
 			save_dialog.show_modal_to_window (Current)
-			xml := save_dialog.file_name
+			xml_name := save_dialog.file_name
 
-			if not xml.is_empty then
-				set_current_work_directory (file_system.dirname (xml))
+			if not xml_name.is_empty then
+				set_current_work_directory (file_system.dirname (xml_name))
 
-				if not file_system.has_extension (xml, ".xml") then
-					xml.append (".xml")
+				if not file_system.has_extension (xml_name, ".xml") then
+					xml_name.append (".xml")
 				end
 
 				ok_to_write := True
-				create file.make (xml)
+				create file.make (xml_name)
 
 				if file.exists then
-					create question_dialog.make_with_text ("File " + file_system.basename (xml) + " already exists. Replace it?")
+					create question_dialog.make_with_text ("File " + file_system.basename (xml_name) + " already exists. Replace it?")
 					question_dialog.set_title ("Export Repository Report")
 					question_dialog.set_buttons (<<"Yes", "No">>)
 					question_dialog.show_modal_to_window (Current)
@@ -615,20 +634,13 @@ feature {NONE} -- Repository events
 				end
 
 				if ok_to_write then
-					do_with_wait_cursor (agent compiler_error_control.export_repository_report (xml))
+					do_with_wait_cursor (agent compiler_error_control.export_repository_report (xml_name))
 
 					if file.exists then
-						create question_dialog.make_with_text ("Generate HTML report?")
-						question_dialog.set_title ("Export Repository Report")
-						question_dialog.set_buttons (<<"Yes", "No">>)
-						question_dialog.show_modal_to_window (Current)
-
-						if question_dialog.selected_button.same_string ("Yes") then
-							html := xml.twin
-							html.remove_tail (file_system.extension (html).count)
-							html.append (".html")
-							do_with_wait_cursor (agent compiler_error_control.transform_repository_report (xml, html))
-						end
+						append_status_area ("Exported report to %"" + xml_name + "%"%N")
+						show_in_system_browser (xml_name)
+					else
+						append_status_area ("ERROR: Failed to export report to %"" + xml_name + "%"%N")
 					end
 				end
 			end
@@ -949,6 +961,32 @@ feature -- Controls
 		end
 
 feature {NONE} -- Implementation
+
+	append_status_area (text: STRING) is
+			-- Append `text' to `parser_status_area'.
+		require
+			text_attached: text /= Void
+		do
+			parser_status_area.append_text (utf8 (text))
+			parser_status_area.set_background_color (status_area_background_color)
+			ev_application.process_graphical_events
+		end
+
+	set_status_area (text: STRING) is
+			-- Set `parser_status_area' to `text'.
+		require
+			text_attached: text /= Void
+		do
+			parser_status_area.remove_text
+			append_status_area (text)
+		end
+
+	save_resources_and_show_status
+			-- Save the application configuration file and update the status area.
+		do
+			save_resources
+			append_status_area ("Wrote config file %"" + resource_config_file_name + "%".%N")
+		end
 
 	status_area_background_color: EV_COLOR
 			-- The colour for the background of `parser_status_area'.

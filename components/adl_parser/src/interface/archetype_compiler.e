@@ -78,7 +78,7 @@ feature -- Status Setting
 
 feature -- Commands
 
-	set_visual_update_action (value: PROCEDURE [ANY, TUPLE [ARCH_REP_ARCHETYPE]])
+	set_visual_update_action (value: PROCEDURE [ANY, TUPLE [ARCH_REP_ARCHETYPE]]) is
 			-- Set `visual_update_action'.
 		do
 			visual_update_action := value
@@ -110,7 +110,7 @@ feature -- Commands
 			do_subtree (archetype_directory.selected_node, agent build_archetype (True, ?), "rebuilding sub-system from scratch")
 		end
 
-	build_lineage (ara: ARCH_REP_ARCHETYPE)
+	build_lineage (ara: ARCH_REP_ARCHETYPE) is
 			-- Build the archetypes in the lineage containing `ara', except those that seem to be built already.
 			-- Go down as far as `ara'. Don't build sibling branches since this would create errors in unrelated archetypes.
 		require
@@ -119,7 +119,7 @@ feature -- Commands
 			do_lineage (ara, agent build_archetype (False, ?))
 		end
 
-	rebuild_lineage (ara: ARCH_REP_ARCHETYPE)
+	rebuild_lineage (ara: ARCH_REP_ARCHETYPE) is
 			-- Rebuild the archetypes in the lineage containing `ara'.
 			-- Go down as far as `ara'. Don't build sibling branches since this would create errors in unrelated archetypes.
 		require
@@ -128,7 +128,7 @@ feature -- Commands
 			do_lineage (ara, agent build_archetype (True, ?))
 		end
 
-	export_all_html (html_export_directory: STRING)
+	export_all_html (html_export_directory: STRING) is
 			-- Generate HTML under `html_export_directory' from all archetypes that have already been built.
 		require
 			directory_attached: html_export_directory /= Void
@@ -136,7 +136,7 @@ feature -- Commands
 			do_subtree (archetype_directory.directory, agent export_archetype_html (html_export_directory, False, ?), "exporting built system as html")
 		end
 
-	build_and_export_all_html (html_export_directory: STRING)
+	build_and_export_all_html (html_export_directory: STRING) is
 			-- Generate HTML under `html_export_directory' from the whole system, building each archetype as necessary.
 		require
 			directory_attached: html_export_directory /= Void
@@ -146,7 +146,7 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
-	do_subtree (subtree: TWO_WAY_TREE [ARCH_REP_ITEM]; action: PROCEDURE [ANY, TUPLE [!ARCH_REP_ARCHETYPE]]; message: STRING)
+	do_subtree (subtree: TWO_WAY_TREE [ARCH_REP_ITEM]; action: PROCEDURE [ANY, TUPLE [!ARCH_REP_ARCHETYPE]]; message: STRING) is
 			-- Display `message' and perform `action' on the sub-system at and below `subtree'.
 		require
 			action_attached: action /= Void
@@ -160,7 +160,7 @@ feature {NONE} -- Implementation
 			call_visual_update_action (Void)
 		end
 
-	do_lineage (ara: ARCH_REP_ARCHETYPE; action: PROCEDURE [ANY, TUPLE [!ARCH_REP_ARCHETYPE]])
+	do_lineage (ara: ARCH_REP_ARCHETYPE; action: PROCEDURE [ANY, TUPLE [!ARCH_REP_ARCHETYPE]]) is
 			-- Build the archetypes in the lineage containing `ara', possibly from scratch.
 			-- Go down as far as `ara'. Don't build sibling branches since this would create errors in unrelated archetypes.
 		require
@@ -172,7 +172,7 @@ feature {NONE} -- Implementation
 			ara.archetype_lineage.do_all (action)
 		end
 
-	do_if_archetype (item: ARCH_REP_ITEM; action: PROCEDURE [ANY, TUPLE [!ARCH_REP_ARCHETYPE]])
+	do_if_archetype (item: ARCH_REP_ITEM; action: PROCEDURE [ANY, TUPLE [!ARCH_REP_ARCHETYPE]]) is
 			-- If `item' is an archetype, perform `action' on it.
 		do
 			if {ara: !ARCH_REP_ARCHETYPE} item then
@@ -180,11 +180,11 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	build_archetype (from_scratch: BOOLEAN; ara: !ARCH_REP_ARCHETYPE)
-			-- Build `ara' only if `from_scratch' is true or it is not yet validly built.
+	build_archetype (from_scratch: BOOLEAN; ara: !ARCH_REP_ARCHETYPE) is
+			-- Build `ara' only if `from_scratch' is true, or if it is has changed since it was last validly built.
 		do
 			if not is_interrupted then
-				if from_scratch or not ara.is_valid or ara.is_out_of_date then
+				if from_scratch or ara.is_out_of_date then
 					status := "------------- compiling " + ara.id.value + " -------------%N"
 					call_visual_update_action (ara)
 					archetype_parser.set_target (ara)
@@ -203,7 +203,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	export_archetype_html (html_export_directory: STRING; build_too: BOOLEAN; ara: !ARCH_REP_ARCHETYPE)
+	export_archetype_html (html_export_directory: STRING; build_too: BOOLEAN; ara: !ARCH_REP_ARCHETYPE) is
 			-- Generate HTML under `html_export_directory' from `ara', optionally building it first if necessary.
 		require
 			directory_attached: html_export_directory /= Void
@@ -226,7 +226,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	call_visual_update_action (ara: ARCH_REP_ARCHETYPE)
+	call_visual_update_action (ara: ARCH_REP_ARCHETYPE) is
 			-- Call `visual_update_action', if it is attached.
 		do
 			if visual_update_action /= Void then

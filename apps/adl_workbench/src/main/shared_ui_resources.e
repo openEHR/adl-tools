@@ -46,7 +46,7 @@ feature -- Definitions
 			-- A reasonable name of an editor based on operating system.
 		once
    			if is_windows then
-   				Result := "Notepad.exe"
+   				Result := "Notepad.exe,cmd /q /d /c start %"%" /b"
 			elseif is_mac_os_x then
 				Result := "open -t"
 			else

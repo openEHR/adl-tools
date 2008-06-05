@@ -187,10 +187,16 @@ feature -- Status Report
 			Result := differential_path.same_string (path) or flat_path.same_string (path)
 		end
 
-	has_differential_file: BOOLEAN is
-			-- True if repository has a source-form file for this archetype
+	has_differential_file: BOOLEAN
+			-- Does the repository have a source-form file for this archetype?
 		do
 			Result := file_repository.is_valid_path (differential_path)
+		end
+
+	has_flat_file: BOOLEAN
+			-- Does the repository have a flat-form file for this archetype?
+		do
+			Result := file_repository.is_valid_path (flat_path)
 		end
 
 	is_specialised: BOOLEAN is

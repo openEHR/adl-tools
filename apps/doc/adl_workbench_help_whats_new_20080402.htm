@@ -1,0 +1,522 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en">
+<head>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <title>ADL Workbench - 02 April 2008 release</title>
+  <link rel="stylesheet" href="http://www.openehr.org/styles/oe.css" type="text/css" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <meta content="Thomas Beale, Ocean Informatics" name="author" />
+</head>
+
+
+<body>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h1>ADL Workbench - 02 April 2008 Release - What's New?
+</h1>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<hr style="width: 100%; height: 2px;" /><a href="adl_workbench_help.htm"><img style="border: 0px solid ; width: 50px; height: 51px;" alt="Home" src="images/House.png" /></a>
+<h2>Specialisation Semantics</h2>
+
+
+The workbench now works using two
+kinds of files: differential 'source' files (.adls extension) and flat
+files (.adl extension). Previously, .adl files were treated as the
+source of all archetypes. However, they are not an appropriate source
+form representation for specialised archetypes. Instead, a differential
+representation is used, rather like specialised classes in object
+oriented programming languages. The consequences of this change are as
+follows:<br />
+
+
+<ul>
+
+
+  <li>specialised archetypes will be far more
+sustainable to author, as they will no longer contain copies of
+structural parts inherited from parent archetypes;</li>
+
+
+  <li>there are now two kinds of files:</li>
+
+
+  
+  
+  <ul>
+
+
+    <li><span style="font-weight: bold;">.adls file</span>: this will become the 'source' file type for all archetypes.&nbsp;</li>
+
+
+    <li><span style="font-weight: bold;">.adl file</span>:
+this will become the file type for&nbsp;the 'flat' &nbsp;view of an archetype. In
+the future, .adl files will no longer be stored, but will be generated
+on the fly.</li>
+
+
+  
+  
+  </ul>
+
+
+  <li>for existing archetype repositories consisting
+of .adl files, the .adl file will be treated as the initial source. A
+.adls file will be generated once only for each .adl file, and from
+then on, the .adls file will be used as the source.</li>
+
+
+</ul>
+The first time the an existing .adl file is compiled, a new .adls file
+will be created. All subsequent compilations will use the .adls file.
+The .adls files can be removed using <span style="color: rgb(0, 0, 0);">the 'Clean
+Generated Files'&nbsp;option on the Tools menu</span>
+
+<span style="color: rgb(153, 0, 0); font-weight: bold;"></span>
+
+
+
+
+
+
+
+
+
+
+
+<h2>Compiler Mode of Operation</h2>
+
+
+The Archetype workbench now functions as a compiler over the entire
+archteype 'directory' (the merged result of the reference and work
+repositories). With a single command (F7; build repository), all
+archetypes are compiled, and an error report built up which can be
+perused at any time. Slot relationships between archetypes are now
+shown, as are statistics for the repositories. See the <a href="adl_workbench_help-compilation.htm">compiler page</a> for specifics.<br />
+
+
+<h2>Status of Tooling</h2>
+
+
+<span style="color: rgb(0, 0, 0);">Currently
+the tooling implements most but not all aspects of archetype
+specialisation. Some further small changes are needed to complete the
+semantics, including being able to specify ordering of branches in
+specialised archetypes, and various kinds of specialisations such as&nbsp;slots.</span><br style="color: rgb(0, 0, 0);" />
+
+
+<br style="color: rgb(0, 0, 0);" />
+
+
+<span style="color: rgb(0, 0, 0);">The
+current release of the tool will not overwrite any .adl files, it will
+just silently create .adls files. These can be removed via the 'Clean
+Generated Files'&nbsp;option on the Tools menu.</span>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<hr style="width: 100%; height: 2px;" />
+<p class="footer">$LastChangedDate$
+$LastChangedRevision$</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
