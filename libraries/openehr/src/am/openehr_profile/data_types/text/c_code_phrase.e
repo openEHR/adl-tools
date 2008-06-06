@@ -32,13 +32,15 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	default_create is
-			--
+	default_create
+			-- Create in default state.
 		do
-			precursor
-			rm_type_name := (create {CODE_PHRASE}.default_create).generator
-			create representation.make_anonymous(Current)
+			Precursor
+			rm_type_name := (create {CODE_PHRASE}).generator
+			create representation.make_anonymous (Current)
 			fail_reason := Void
+			terminology_id := Void
+			code_list := Void
 		ensure then
 			Any_allowed: any_allowed
 		end
@@ -51,26 +53,26 @@ feature -- Initialisation
 			Any_allowed: any_allowed
 		end
 
-	make_from_terminology_id(a_terminology_id: STRING) is
-			-- make from terminology_id
+	make_from_terminology_id (a_terminology_id: STRING) is
+			-- Make from `terminology_id'.
 		do
 			default_create
-			create terminology_id.make(a_terminology_id)
+			create terminology_id.make (a_terminology_id)
 		ensure
 			Not_any_allowed: not any_allowed
-			Terminology_id_set: terminology_id.value.is_equal(a_terminology_id)
+			Terminology_id_set: terminology_id.value.is_equal (a_terminology_id)
 		end
 
-	make_from_pattern(a_pattern: STRING) is
-			-- make from pattern of form "terminology_id::code, code, ... [; code]"
-			-- Pattern "terminology_id::" is legal
+	make_from_pattern (a_pattern: STRING) is
+			-- Make from pattern of form "terminology_id::code, code, ... [; code]".
+			-- Pattern "terminology_id::" is legal.
 		require
-			a_pattern /= Void and then valid_pattern(a_pattern)
+			a_pattern /= Void and then valid_pattern (a_pattern)
 		do
 			if terminology_id /= Void then
-				-- parse_pattern has already been run and generated the results
+				-- `parse_pattern' has already been run and generated the results.
 			else
-				parse_pattern(a_pattern)
+				parse_pattern (a_pattern)
 			end
 		ensure
 			Not_any_allowed: not any_allowed
@@ -101,7 +103,7 @@ feature -- Access
 			if assumed_value /= Void then
 				Result := assumed_value
 			elseif any_allowed then
-				create Result.default_create
+				create Result
 			else -- must have a terminology_id	
 				if code_list /= Void then
 					create Result.make_from_string (terminology_id.value + separator + code_list.first)
@@ -137,47 +139,48 @@ feature -- Status Report
 				Result := True
 			else
 				if terminology_id /= Void then
-					Result := a_value.terminology_id.value.is_equal(terminology_id.value)
+					Result := a_value.terminology_id.value.is_equal (terminology_id.value)
 					if code_list /= Void then
-						Result := Result and code_list.has(a_value.code_string)
+						Result := Result and code_list.has (a_value.code_string)
 					end
 				end
 			end
 		end
 
-	has_code(a_code: STRING): BOOLEAN is
+	has_code (a_code: STRING): BOOLEAN is
 			-- True if 'a_code' found in code list
 		require
 			Code_valid: a_code /= Void and then not a_code.is_empty
 		do
-			Result := code_list /= Void and code_list.has(a_code)
+			Result := code_list /= Void and code_list.has (a_code)
 		end
 
-	valid_pattern(a_pattern: STRING): BOOLEAN is
-			-- verify that the pattern of form "terminology_id::code, code, ... [; code]"
-			-- is valid, i.e. that there are no repeats
+	valid_pattern (a_pattern: STRING): BOOLEAN is
+			-- Verify that the pattern of form "terminology_id::code, code, ... [; code]"
+			-- is valid, i.e. that there are no repeats.
+			-- FIXME: This has a nasty side-effect: it reinitialises `Current'!
 		require
 			Pattern_valid: a_pattern /= Void and then not a_pattern.is_empty
 		do
-			parse_pattern(a_pattern)
+			parse_pattern (a_pattern)
 			Result := fail_reason = Void
 		end
 
 feature -- Modification
 
-	add_code(a_code: STRING) is
+	add_code (a_code: STRING) is
 			-- 	add a term to the list
 		require
 			Not_any_allowed: not any_allowed
-			Code_valid: a_code /= Void and not has_code(a_code)
+			Code_valid: a_code /= Void and not has_code (a_code)
 		do
 			if code_list = Void then
-				create code_list.make(0)
+				create code_list.make (0)
 				code_list.compare_objects
 			end
-			code_list.extend(a_code)
+			code_list.extend (a_code)
 		ensure
-			Code_added: code_list.has(a_code)
+			Code_added: has_code (a_code)
 			Not_any_allowed: not any_allowed
 		end
 
@@ -186,11 +189,13 @@ feature -- Conversion
 	as_string: STRING is
 			--
 		do
-			create Result.make (0)
+			create Result.make_empty
+
 			if any_allowed then
-				Result.append("*")
+				Result.append ("*")
 			else
-				Result.append("[" + terminology_id.value + separator)
+				Result.append ("[" + terminology_id.value + separator)
+
 				if code_list /= Void then
 					from
 						code_list.start
@@ -206,8 +211,9 @@ feature -- Conversion
 				end
 
 				if assumed_value /= Void then
-					Result.append("; " + assumed_value.code_string)
+					Result.append ("; " + assumed_value.code_string)
 				end
+
 				Result.append ("]")
 			end
 		end
@@ -223,42 +229,42 @@ feature -- Synchronisation
 			-- synchronise to parse tree representation
 		do
             if any_allowed then -- only represent as an inline dADL if any_allowed, else use syntax
-				precursor
+				Precursor
 			end
 		end
 
 feature -- Visitor
 
-	enter_subtree(visitor: C_VISITOR; depth: INTEGER) is
+	enter_subtree (visitor: C_VISITOR; depth: INTEGER) is
 			-- perform action at start of block for this node
 		do
-            precursor(visitor, depth)
-			visitor.start_c_code_phrase(Current, depth)
+            Precursor (visitor, depth)
+			visitor.start_c_code_phrase (Current, depth)
 		end
 
-	exit_subtree(visitor: C_VISITOR; depth: INTEGER) is
+	exit_subtree (visitor: C_VISITOR; depth: INTEGER) is
 			-- perform action at end of block for this node
 		do
-            precursor(visitor, depth)
-			visitor.end_c_code_phrase(Current, depth)
+            Precursor (visitor, depth)
+			visitor.end_c_code_phrase (Current, depth)
 		end
 
 feature {DT_OBJECT_CONVERTER} -- Conversion
 
-	persistent_attributes: ARRAYED_LIST[STRING] is
+	persistent_attributes: ARRAYED_LIST [STRING] is
 			-- list of attribute names to persist as DT structure
 			-- empty structure means all attributes
 		once
-			create Result.make(0)
-			Result.extend("terminology_id")
-			Result.extend("code_list")
-			Result.extend("assumed_value")
+			create Result.make (0)
+			Result.extend ("terminology_id")
+			Result.extend ("code_list")
+			Result.extend ("assumed_value")
 			Result.compare_objects
 		end
 
 feature {NONE} -- Implementation
 
-	parse_pattern(a_pattern: STRING) is
+	parse_pattern (a_pattern: STRING) is
 			-- parse pattern of form "terminology_id::code, code, ... [; code]"
 			-- Pattern "terminology_id::" is legal
 		require
@@ -271,17 +277,17 @@ feature {NONE} -- Implementation
 		do
 			default_create
 
-			sep_pos := a_pattern.substring_index(separator, 1)
-			create terminology_id.make(a_pattern.substring(1, sep_pos-1))
+			sep_pos := a_pattern.substring_index (separator, 1)
+			create terminology_id.make (a_pattern.substring (1, sep_pos - 1))
 
 			-- get the part after the terminology_id
-			code_str := a_pattern.substring(sep_pos+separator.count, a_pattern.count)
+			code_str := a_pattern.substring (sep_pos + separator.count, a_pattern.count)
 
 			from
 				pos1 := 1
-				pos2 := code_str.index_of(',', pos1)-1
+				pos2 := code_str.index_of (',', pos1) - 1
 				if pos2 < 1 then
-					pos2 := code_str.index_of(';', pos1)-1 -- look for assumed value
+					pos2 := code_str.index_of (';', pos1) - 1 -- look for assumed value
 					if pos2 < 1 then
 						pos2 := code_str.count
 					else -- found assumed value
@@ -292,29 +298,30 @@ feature {NONE} -- Implementation
 				pos1 > code_str.count
 			loop
 				if pos2 >= pos1 then
-					a_code := code_str.substring(pos1, pos2)
+					a_code := code_str.substring (pos1, pos2)
 					a_code.left_adjust
 					a_code.right_adjust
-					if not has_code(a_code) then
-						add_code(a_code)
+					if not has_code (a_code) then
+						add_code (a_code)
 					else
 						fail_reason := " duplicate code " + a_code + " found in code list"
 					end
 				end
-				pos1 := pos2+2
+
+				pos1 := pos2 + 2
 
 				if found_assumed_value then
 					pos2 := code_str.count
-					assumed_code := code_str.substring(pos1, pos2)
+					assumed_code := code_str.substring (pos1, pos2)
 					assumed_code.left_adjust
 					assumed_code.right_adjust
-					pos1 := pos2+2
+					pos1 := pos2 + 2
 				end
 
 				if pos1 <= code_str.count then
-					pos2 := code_str.index_of(',', pos1)-1
+					pos2 := code_str.index_of (',', pos1) - 1
 					if pos2 < 1 then
-						pos2 := code_str.index_of(';', pos1)-1 -- look for assumed value
+						pos2 := code_str.index_of (';', pos1) - 1 -- look for assumed value
 						if pos2 < 1 then
 							pos2 := code_str.count
 						else -- found assumed value
@@ -323,9 +330,10 @@ feature {NONE} -- Implementation
 					end
 				end
 			end
+
 			if found_assumed_value then
-				if has_code(assumed_code) then
-					set_assumed_value(create {CODE_PHRASE}.make_from_string(terminology_id.value + separator + assumed_code))
+				if has_code (assumed_code) then
+					set_assumed_value (create {CODE_PHRASE}.make_from_string (terminology_id.value + separator + assumed_code))
 				else
 					fail_reason := "assumed value code " + assumed_code + " not found in code list"
 				end
