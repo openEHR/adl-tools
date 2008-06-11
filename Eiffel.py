@@ -220,7 +220,7 @@ def ecf_target(target, source = None, env = None):
 
 def generate(env):
 	"""Add a Builder and construction variables for Eiffel to the given Environment."""
-	vars = Options()
+	vars = Variables()
 	vars.Add('EC', "The Eiffel command-line compiler.", 'ec')
 	vars.Add('ECFLAGS', "Use ec -help to see possible options.", '-finalize -clean')
 	vars.Add('ECLOG', "File to log Eiffel compiler output.", 'SCons.Eiffel.log')
