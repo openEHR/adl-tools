@@ -58,7 +58,6 @@ def ec_action(target, source, env):
 	Result is 0 (success) if all targets are built; else 1.
 	(Note that the Eiffel compiler's return code is unreliable: it returns 0 if C compilation fails.)
 	"""
-	print 'Actioning target ' + str(target[0])
 	result = 0
 
 	log_open(env)
@@ -67,14 +66,19 @@ def ec_action(target, source, env):
 
 	flags = env['ECFLAGS'].split()
 	if not '-target' in flags: flags += ['-target', ecf_target(target)]
+	print datetime.datetime.now()
 	log_process([env['EC'], '-batch', '-config', str(source[0])] + flags + ['-c_compile'], None)
+	print datetime.datetime.now()
 
 	for t in target:
+		print str(t)
 		if result == 0 and not os.path.exists(str(t)):
+			print 'does not exist'
 			print log_file_tail()
 			result = 1
 
 	if log_file != sys.stdout: log_file.close()
+	print 'Finished ' + str(source[0])
 	return result
 
 def ec_emitter(target, source, env):
@@ -92,7 +96,6 @@ def ec_emitter(target, source, env):
 		-finalize evaluates to "F_code", else if omitted defaults to "W_code";
 		The exe_name depends on the contents of the ECF file; it is also affected by the -precompile flag.
 	"""
-	print 'Emitting target ' + str(target[0])
 	result = None
 
 	if len(target) > 0:
@@ -106,7 +109,6 @@ def ec_emitter(target, source, env):
 		print '****** ERROR! The Eiffel compiler ' + env['EC'] + ' is missing from your path: cannot build ' + ec_target
 	else:
 		ecf = str(source[0])
-		print '	Emitter source is ' + ecf
 		ec_path = os.path.abspath(os.path.dirname(ecf))
 		ec_code = '/W_code/'
 		exe_name = dotnet_type = is_dotnet = is_precompiling = is_shared_library = None
@@ -170,16 +172,12 @@ def ec_emitter(target, source, env):
 
 		ec_path += '/EIFGENs/' + ec_target + ec_code
 		result = [ec_path + exe_name + ext]
-		print 'result = ' + ec_path + exe_name + ext
 
 		if is_dotnet:
-			print '         ' + ec_path + 'lib' + exe_name + '.dll'
 			result += [ec_path + 'lib' + exe_name + '.dll']
 		elif is_precompiling:
-			print '         ' + ec_path + env['ISE_C_COMPILER'] + '/' + env['PROGPREFIX'] + 'driver' + env['PROGSUFFIX']
 			result += [ec_path + env['ISE_C_COMPILER'] + '/' + env['PROGPREFIX'] + 'driver' + env['PROGSUFFIX']]
 		elif is_shared_library and env['PLATFORM'] == 'win32':
-			print '         ' + exe_name + '.lib'
 			result += [exe_name + '.lib']
 
 	return result, source
@@ -195,7 +193,6 @@ def ecf_scanner(node, env, path):
 	 * All .h and .hpp files found in external include directories mentioned in the ECF file.
 	Because this ignores targets and conditionals in the ECF file, it may cause unnecessary builds.
 	"""
-	print 'Scanning ' + str(node)
 	result = []
 	previous_cluster = ''
 	ecf_as_xml = xml.dom.minidom.parse(str(node))
