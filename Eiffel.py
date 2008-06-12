@@ -66,19 +66,14 @@ def ec_action(target, source, env):
 
 	flags = env['ECFLAGS'].split()
 	if not '-target' in flags: flags += ['-target', ecf_target(target)]
-	print datetime.datetime.now()
 	log_process([env['EC'], '-batch', '-config', str(source[0])] + flags + ['-c_compile'], None)
-	print datetime.datetime.now()
 
 	for t in target:
-		print str(t)
 		if result == 0 and not os.path.exists(str(t)):
-			print 'does not exist'
 			print log_file_tail()
 			result = 1
 
 	if log_file != sys.stdout: log_file.close()
-	print 'Finished ' + str(source[0])
 	return result
 
 def ec_emitter(target, source, env):

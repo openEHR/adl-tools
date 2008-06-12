@@ -88,18 +88,6 @@ if distrib and len(adl_workbench) > 0:
 	if platform == 'windows':
 		Install(distrib + '/adl_parser/dotnet', adl_parser)
 
-		if not env.Detect('makensis'):
-			print 'WARNING! NSIS is missing from your path: cannot build installer for ADL Workbench.'
-		else:
-			command = [
-				'makensis', '-V1',
-				'-XOutFile ${TARGET.abspath}',
-				'-DADL_WORKBENCH_EXE=${SOURCE.abspath}',
-				install + '/ADL_Workbench/ADLWorkbenchInstall.nsi'
-			]
-
-			installer = env.Command(distrib + '/tools/ADLWorkbenchInstall.exe', adl_workbench_installer_sources, ['echo Installing $SOURCE to $TARGET', command])
-
 	if platform == 'linux':
 		def create_linux_installer(target, source, env):
 			import tarfile
@@ -244,6 +232,7 @@ else:
 
 		def restore_backed_up_files(target, source, env):
 			global backed_up_files
+			print 'Restoring from backed up files'
 
 			for filename in backed_up_files:
 				bak = backup_filename(filename)
