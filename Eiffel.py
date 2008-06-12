@@ -19,7 +19,7 @@ def log_open(env):
 		log_file = open(env['ECLOG'], 'a+')
 
 def log(s):
-	log_file.write(unicode(s) + '\n')
+	log_file.write(str(s) + '\n')
 
 def log_date():
 	log(datetime.datetime.now())
@@ -58,6 +58,7 @@ def ec_action(target, source, env):
 	Result is 0 (success) if all targets are built; else 1.
 	(Note that the Eiffel compiler's return code is unreliable: it returns 0 if C compilation fails.)
 	"""
+	print 'Actioning target ' + str(target[0])
 	result = 0
 
 	log_open(env)
@@ -66,10 +67,10 @@ def ec_action(target, source, env):
 
 	flags = env['ECFLAGS'].split()
 	if not '-target' in flags: flags += ['-target', ecf_target(target)]
-	log_process([env['EC'], '-batch', '-config', unicode(source[0])] + flags + ['-c_compile'], None)
+	log_process([env['EC'], '-batch', '-config', str(source[0])] + flags + ['-c_compile'], None)
 
 	for t in target:
-		if result == 0 and not os.path.exists(unicode(t)):
+		if result == 0 and not os.path.exists(str(t)):
 			print log_file_tail()
 			result = 1
 
@@ -91,10 +92,11 @@ def ec_emitter(target, source, env):
 		-finalize evaluates to "F_code", else if omitted defaults to "W_code";
 		The exe_name depends on the contents of the ECF file; it is also affected by the -precompile flag.
 	"""
+	print 'Emitting target ' + str(target[0])
 	result = None
 
 	if len(target) > 0:
-		ec_target = os.path.basename(unicode(target[0]))
+		ec_target = os.path.basename(str(target[0]))
 	else:
 		ec_target = ""
 
@@ -103,7 +105,8 @@ def ec_emitter(target, source, env):
 	elif not env.Detect(env['EC']):
 		print '****** ERROR! The Eiffel compiler ' + env['EC'] + ' is missing from your path: cannot build ' + ec_target
 	else:
-		ecf = unicode(source[0])
+		ecf = str(source[0])
+		print '	Emitter source is ' + ecf
 		ec_path = os.path.abspath(os.path.dirname(ecf))
 		ec_code = '/W_code/'
 		exe_name = dotnet_type = is_dotnet = is_precompiling = is_shared_library = None
@@ -167,12 +170,16 @@ def ec_emitter(target, source, env):
 
 		ec_path += '/EIFGENs/' + ec_target + ec_code
 		result = [ec_path + exe_name + ext]
+		print 'result = ' + ec_path + exe_name + ext
 
 		if is_dotnet:
+			print '         ' + ec_path + 'lib' + exe_name + '.dll'
 			result += [ec_path + 'lib' + exe_name + '.dll']
 		elif is_precompiling:
+			print '         ' + ec_path + env['ISE_C_COMPILER'] + '/' + env['PROGPREFIX'] + 'driver' + env['PROGSUFFIX']
 			result += [ec_path + env['ISE_C_COMPILER'] + '/' + env['PROGPREFIX'] + 'driver' + env['PROGSUFFIX']]
 		elif is_shared_library and env['PLATFORM'] == 'win32':
+			print '         ' + exe_name + '.lib'
 			result += [exe_name + '.lib']
 
 	return result, source
@@ -188,9 +195,10 @@ def ecf_scanner(node, env, path):
 	 * All .h and .hpp files found in external include directories mentioned in the ECF file.
 	Because this ignores targets and conditionals in the ECF file, it may cause unnecessary builds.
 	"""
+	print 'Scanning ' + str(node)
 	result = []
 	previous_cluster = ''
-	ecf_as_xml = xml.dom.minidom.parse(unicode(node))
+	ecf_as_xml = xml.dom.minidom.parse(str(node))
 
 	for tag in ['cluster', 'override', 'library', 'assembly', 'external_include', 'external_object']:
 		for element in ecf_as_xml.getElementsByTagName(tag):
@@ -199,7 +207,7 @@ def ecf_scanner(node, env, path):
 			if location.startswith('$|'):
 				location = os.path.join(previous_cluster, location.replace('$|', '', 1))
 			elif not os.path.isabs(location):
-				location = os.path.abspath(os.path.join(os.path.dirname(unicode(node)), location))
+				location = os.path.abspath(os.path.join(os.path.dirname(str(node)), location))
 
 			previous_cluster = location
 
@@ -216,7 +224,7 @@ def ecf_scanner(node, env, path):
 
 def ecf_target(target, source = None, env = None):
 	"""The ECF target corresponding to the given build target."""
-	return os.path.basename(os.path.dirname(os.path.dirname(unicode(target[0]))))
+	return os.path.basename(os.path.dirname(os.path.dirname(str(target[0]))))
 
 def generate(env):
 	"""Add a Builder and construction variables for Eiffel to the given Environment."""
