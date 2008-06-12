@@ -19,7 +19,7 @@ def log_open(env):
 		log_file = open(env['ECLOG'], 'a+')
 
 def log(s):
-	log_file.write(str(s) + '\n')
+	log_file.write(unicode(s) + '\n')
 
 def log_date():
 	log(datetime.datetime.now())
@@ -66,10 +66,10 @@ def ec_action(target, source, env):
 
 	flags = env['ECFLAGS'].split()
 	if not '-target' in flags: flags += ['-target', ecf_target(target)]
-	log_process([env['EC'], '-batch', '-config', str(source[0])] + flags + ['-c_compile'], None)
+	log_process([env['EC'], '-batch', '-config', unicode(source[0])] + flags + ['-c_compile'], None)
 
 	for t in target:
-		if result == 0 and not os.path.exists(str(t)):
+		if result == 0 and not os.path.exists(unicode(t)):
 			print log_file_tail()
 			result = 1
 
@@ -94,7 +94,7 @@ def ec_emitter(target, source, env):
 	result = None
 
 	if len(target) > 0:
-		ec_target = os.path.basename(str(target[0]))
+		ec_target = os.path.basename(unicode(target[0]))
 	else:
 		ec_target = ""
 
@@ -103,7 +103,7 @@ def ec_emitter(target, source, env):
 	elif not env.Detect(env['EC']):
 		print '****** ERROR! The Eiffel compiler ' + env['EC'] + ' is missing from your path: cannot build ' + ec_target
 	else:
-		ecf = str(source[0])
+		ecf = unicode(source[0])
 		ec_path = os.path.abspath(os.path.dirname(ecf))
 		ec_code = '/W_code/'
 		exe_name = dotnet_type = is_dotnet = is_precompiling = is_shared_library = None
@@ -190,7 +190,7 @@ def ecf_scanner(node, env, path):
 	"""
 	result = []
 	previous_cluster = ''
-	ecf_as_xml = xml.dom.minidom.parse(str(node))
+	ecf_as_xml = xml.dom.minidom.parse(unicode(node))
 
 	for tag in ['cluster', 'override', 'library', 'assembly', 'external_include', 'external_object']:
 		for element in ecf_as_xml.getElementsByTagName(tag):
@@ -199,7 +199,7 @@ def ecf_scanner(node, env, path):
 			if location.startswith('$|'):
 				location = os.path.join(previous_cluster, location.replace('$|', '', 1))
 			elif not os.path.isabs(location):
-				location = os.path.abspath(os.path.join(os.path.dirname(str(node)), location))
+				location = os.path.abspath(os.path.join(os.path.dirname(unicode(node)), location))
 
 			previous_cluster = location
 
@@ -216,7 +216,7 @@ def ecf_scanner(node, env, path):
 
 def ecf_target(target, source = None, env = None):
 	"""The ECF target corresponding to the given build target."""
-	return os.path.basename(os.path.dirname(os.path.dirname(str(target[0]))))
+	return os.path.basename(os.path.dirname(os.path.dirname(unicode(target[0]))))
 
 def generate(env):
 	"""Add a Builder and construction variables for Eiffel to the given Environment."""
