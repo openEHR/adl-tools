@@ -60,6 +60,7 @@ if platform == 'windows':
 # Define how to put installers, etc., into the distribution directory.
 
 distrib = None
+installer = None
 
 for target in COMMAND_LINE_TARGETS:
 	s = os.path.normpath(target)
@@ -77,7 +78,6 @@ if distrib and len(adl_workbench) > 0:
 	icons = 'apps/adl_workbench/app/icons'
 	vim = 'apps/adl_workbench/etc/vim'
 	install = 'apps/adl_workbench/install/' + platform
-	installer = None
 	adl_workbench_installer_sources = [adl_workbench[0], news, xsl, css]
 
 	for dir in [icons, vim, install]:
@@ -86,6 +86,8 @@ if distrib and len(adl_workbench) > 0:
 			adl_workbench_installer_sources += files(source + '/*')
 
 	if platform == 'windows':
+		Install(distrib + '/adl_parser/dotnet', adl_parser)
+
 		if not env.Detect('makensis'):
 			print 'WARNING! NSIS is missing from your path: cannot build installer for ADL Workbench.'
 		else:
@@ -97,8 +99,6 @@ if distrib and len(adl_workbench) > 0:
 			]
 
 			installer = env.Command(distrib + '/tools/ADLWorkbenchInstall.exe', adl_workbench_installer_sources, [command])
-
-		Install(distrib + '/adl_parser/dotnet', adl_parser)
 
 	if platform == 'linux':
 		def create_linux_installer(target, source, env):
@@ -192,66 +192,66 @@ if distrib and len(adl_workbench) > 0:
 				Delete(pkg_tree)
 				])
 
-	# Set the Subversion revision number as the final part of the file version string.
+# Set the Subversion revision number as the final part of the file version string.
 
-	if not env.Detect('svnversion'):
-		print 'WARNING! The svnversion command is missing from your path: cannot set the revision part of the version number.'
-	else:
-		match = re.match(r'\d+', os.popen('svnversion .').read())
+if not env.Detect('svnversion'):
+	print 'WARNING! The svnversion command is missing from your path: cannot set the revision part of the version number.'
+else:
+	match = re.match(r'\d+', os.popen('svnversion .').read())
 
-		if match:
-			revision = match.group()
+	if match:
+		revision = match.group()
 
-			def backup_filename(filename):
-				split = os.path.split(filename)
-				return os.path.join(split[0], '.' + split[1] + '.bak')
+		def backup_filename(filename):
+			split = os.path.split(filename)
+			return os.path.join(split[0], '.' + split[1] + '.bak')
 
-			def set_revision_from_subversion(target, source, env):
-				global backed_up_files
-				backed_up_files = []
-				substitutions = [['libraries/version/openehr_version.e', r'\b(revision:\s*INTEGER\s*=\s*)\d+']]
+		def set_revision_from_subversion(target, source, env):
+			global backed_up_files
+			backed_up_files = []
+			substitutions = [['libraries/version/openehr_version.e', r'\b(revision:\s*INTEGER\s*=\s*)\d+']]
 
-				if platform == 'windows':
-					if target == adl_workbench:
-						substitutions += [['apps/adl_workbench/app/adl_workbench.rc', r'(#define\s+VER_\S+\s+"?\d+[,.]\d+[,.]\d+[,.])\d+']]
+			if platform == 'windows':
+				if target == adl_workbench:
+					substitutions += [['apps/adl_workbench/app/adl_workbench.rc', r'(#define\s+VER_\S+\s+"?\d+[,.]\d+[,.]\d+[,.])\d+']]
 
-					if target == adl_parser:
-						substitutions += [['components/adl_parser/lib/dotnet_dll/adl_parser.ecf', r'(<version\s+major="\d+"\s+minor="\d+"\s+release="\d+"\s+build=")\d+']]
+				if target == adl_parser:
+					substitutions += [['components/adl_parser/lib/dotnet_dll/adl_parser.ecf', r'(<version\s+major="\d+"\s+minor="\d+"\s+release="\d+"\s+build=")\d+']]
 
-					if target == installer:
-						substitutions = [[install + '/ADL_Workbench/ADLWorkbenchInstall.nsi', r'(VIProductVersion\s+\d+\.\d+\.\d+\.)\d+']]
+				if target == installer:
+					substitutions = [[install + '/ADL_Workbench/ADLWorkbenchInstall.nsi', r'(VIProductVersion\s+\d+\.\d+\.\d+\.)\d+']]
 
-				if platform == 'mac_osx' and target == installer:
-					pattern = r'(<string>\d+\.\d+\.\d+\.)\d+'
-					substitutions = [
-						[install + '/Info.plist', pattern],
-						[install + '/ADL_Workbench/ADL Workbench.app/Contents/Info.plist', pattern]
-						]
+			if platform == 'mac_osx' and target == installer:
+				pattern = r'(<string>\d+\.\d+\.\d+\.)\d+'
+				substitutions = [
+					[install + '/Info.plist', pattern],
+					[install + '/ADL_Workbench/ADL Workbench.app/Contents/Info.plist', pattern]
+					]
 
-				for filename, pattern in substitutions:
-					f = open(filename, 'r')
-					try: s = f.read()
+			for filename, pattern in substitutions:
+				f = open(filename, 'r')
+				try: s = f.read()
+				finally: f.close()
+
+				if s:
+					s = re.sub(pattern, r'\g<1>' + revision, s)
+					bak = backup_filename(filename)
+					if os.path.exists(filename) and not os.path.exists(bak): os.rename(filename, bak)
+					backed_up_files.append(filename)
+					f = open(filename, 'w')
+					try: f.write(s)
 					finally: f.close()
 
-					if s:
-						s = re.sub(pattern, r'\g<1>' + revision, s)
-						bak = backup_filename(filename)
-						if os.path.exists(filename) and not os.path.exists(bak): os.rename(filename, bak)
-						backed_up_files.append(filename)
-						f = open(filename, 'w')
-						try: f.write(s)
-						finally: f.close()
+		def restore_backed_up_files(target, source, env):
+			global backed_up_files
 
-			def restore_backed_up_files(target, source, env):
-				global backed_up_files
+			for filename in backed_up_files:
+				bak = backup_filename(filename)
 
-				for filename in backed_up_files:
-					bak = backup_filename(filename)
+				if os.path.exists(bak):
+					if os.path.exists(filename): os.remove(filename)
+					os.rename(bak, filename)
 
-					if os.path.exists(bak):
-						if os.path.exists(filename): os.remove(filename)
-						os.rename(bak, filename)
-
-			if installer: versioned_targets += [installer]
-			env.AddPreAction(versioned_targets, env.Action(set_revision_from_subversion, 'Setting revision ' + revision + ' ...'))
-			env.AddPostAction(versioned_targets, env.Action(restore_backed_up_files, None))
+		if installer: versioned_targets += [installer]
+		env.AddPreAction(versioned_targets, env.Action(set_revision_from_subversion, 'Setting revision ' + revision + ' ...'))
+		env.AddPostAction(versioned_targets, env.Action(restore_backed_up_files, None))

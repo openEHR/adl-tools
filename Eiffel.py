@@ -152,7 +152,7 @@ def ec_emitter(target, source, env):
 								is_shared_library = True
 
 		if exe_name == None:
-			exe_name = ecf_as_xml.documentElement.attributes['name'].value
+			exe_name = str(ecf_as_xml.documentElement.attributes['name'].value)
 
 		if dotnet_type:
 			ext = dotnet_type
