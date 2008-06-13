@@ -50,12 +50,12 @@ def ec_action(target, source, env):
 	"""
 	The Eiffel Builder's action function, running the Eiffel compiler.
 	Parameters are as returned by ec_emitter():
-	 * target[0]: the path to the executable (application or dll) to be built (workbench or finalized).
+	 * target: the paths to the files to be built (a workbench or finalized application or dll).
 	 * source[0]: the ECF file.
 	 * source[1], source[2], etc.: any additional dependencies.
 	 * env['ECLOG']: name of file to which all compiler output is logged (stdout if empty).
 	 * env['ECFLAGS']: Eiffel compiler flags: -finalize, -freeze, -clean, -project_path, -target, etc.
-	Result is 0 (success) if target[0] (the executable) is built; else 1.
+	Result is 0 (success) if all targets are built; else 1.
 	(Note that the Eiffel compiler's return code is unreliable: it returns 0 if C compilation fails.)
 	"""
 	result = 0
@@ -68,9 +68,10 @@ def ec_action(target, source, env):
 	if not '-target' in flags: flags += ['-target', ecf_target(target)]
 	log_process([env['EC'], '-batch', '-config', str(source[0])] + flags + ['-c_compile'], None)
 
-	if not os.path.exists(str(target[0])):
-		print log_file_tail()
-		result = 1
+	for t in target:
+		if result == 0 and not os.path.exists(str(t)):
+			print log_file_tail()
+			result = 1
 
 	if log_file != sys.stdout: log_file.close()
 	return result
@@ -79,40 +80,102 @@ def ec_emitter(target, source, env):
 	"""
 	The Eiffel Builder's emitter function.
 	Parameters:
-	 * target[0]: the base name of the executable (application or dll) produced by the Eiffel project.
-	 * source[0]: the ECF file.
-	 * source[1], source[2], etc.: optionally specify other dependencies.
+	 * target[0]: the ECF target to be built; if empty then defaults to the first target in the ECF file.
+	 * source[0]: the ECF file. The paths to the files to be built are computed by reading this file.
+	 * source[1], source[2], etc.: additional optional dependencies (precompiled libraries, ".rc" files, etc.).
 	 * env['ECFLAGS']: some Eiffel compiler flags affect the full path to the executable.
-	   The executable path is {-project_path}/EIFGENs/{-target}/{-finalize}/{target[0]}, where:
-		-project_path if omitted defaults to the ECF file's directory;
-		-target if omitted defaults to target[0] minus the extension;
-		-finalize if present is "F_code", else if omitted defaults to "W_code".
 	Result emits the target and source parameters passed to ec_action().
+	 * The target path is {-project_path}/EIFGENs/{-target}/{-finalize}/{exe_name}, where:
+		-project_path if omitted defaults to the ECF file's directory;
+		-target if omitted defaults to the base name of target[0] (or else to the first target in the ECF file);
+		-finalize evaluates to "F_code", else if omitted defaults to "W_code";
+		The exe_name depends on the contents of the ECF file; it is also affected by the -precompile flag.
 	"""
-	result = None, source
-	exe = str(target[0])
+	result = None
+
+	if len(target) > 0:
+		ec_target = os.path.basename(str(target[0]))
+	else:
+		ec_target = ""
 
 	if len(source) == 0:
-		print '****** ERROR! No source .ecf file specified: cannot build ' + exe
+		print '****** ERROR! No source .ecf file specified: cannot build ' + ec_target
 	elif not env.Detect(env['EC']):
-		print '****** ERROR! The Eiffel compiler ' + env['EC'] + ' is missing from your path: cannot build ' + exe
+		print '****** ERROR! The Eiffel compiler ' + env['EC'] + ' is missing from your path: cannot build ' + ec_target
 	else:
-		ec_project_path = os.path.abspath(os.path.dirname(str(source[0])))
-		ec_target = os.path.splitext(exe)[0]
+		ecf = str(source[0])
+		ec_path = os.path.abspath(os.path.dirname(ecf))
 		ec_code = '/W_code/'
+		exe_name = dotnet_type = is_dotnet = is_precompiling = is_shared_library = None
+
 		flags = env['ECFLAGS'].split()
 
 		for i, flag in enumerate(flags):
 			if flag == '-project_path':
-				ec_project_path = flags[i + 1]
+				ec_path = flags[i + 1]
 			elif flag == '-target':
 				ec_target = flags[i + 1]
 			elif flag == '-finalize':
 				ec_code = '/F_code/'
+			elif flag == '-precompile':
+				is_precompiling = True
 
-		result = [ec_project_path + '/EIFGENs/' + ec_target + ec_code + exe], source
+		ecf_as_xml = xml.dom.minidom.parse(ecf)
+		ec_target_next = ec_target
 
-	return result
+		while ec_target_next <> None:
+			t = ec_target_next
+			ec_target_next = None
+
+			for element in ecf_as_xml.getElementsByTagName('target'):
+				name = element.attributes['name'].value
+				if ec_target == "": t = ec_target = name
+
+				if t == name:
+					if element.hasAttribute('extends'):
+						ec_target_next = element.attributes['extends'].value
+
+					for setting in element.getElementsByTagName('setting'):
+						name = setting.attributes['name'].value
+
+						if name == 'msil_generation':
+							if is_dotnet == None:
+								is_dotnet = setting.attributes['value'].value == 'true'
+						elif name == 'msil_generation_type':
+							if dotnet_type == None:
+								dotnet_type = '.' + setting.attributes['value'].value
+						elif name == 'executable_name':
+							if exe_name == None:
+								exe_name = setting.attributes['value'].value
+						elif name == 'shared_library_definition':
+							if is_shared_library == None:
+								is_shared_library = True
+
+		if exe_name == None:
+			exe_name = ecf_as_xml.documentElement.attributes['name'].value
+
+		if dotnet_type:
+			ext = dotnet_type
+		elif is_precompiling:
+			ext = '.melted'
+		elif is_shared_library:
+			exe_name = env['SHLIBPREFIX'] + exe_name
+			ext = env['SHLIBSUFFIX']
+		else:
+			exe_name = env['PROGPREFIX'] + exe_name
+			ext = env['PROGSUFFIX']
+
+		ec_path += '/EIFGENs/' + ec_target + ec_code
+		result = [ec_path + exe_name + ext]
+
+		if is_dotnet:
+			result += [ec_path + 'lib' + exe_name + '.dll']
+		elif is_precompiling:
+			result += [ec_path + env['ISE_C_COMPILER'] + '/' + env['PROGPREFIX'] + 'driver' + env['PROGSUFFIX']]
+		elif is_shared_library and env['PLATFORM'] == 'win32':
+			result += [exe_name + '.lib']
+
+	return result, source
 
 def ecf_scanner(node, env, path):
 	"""
@@ -127,10 +190,10 @@ def ecf_scanner(node, env, path):
 	"""
 	result = []
 	previous_cluster = ''
-	ecf = xml.dom.minidom.parse(open(str(node)))
+	ecf_as_xml = xml.dom.minidom.parse(str(node))
 
 	for tag in ['cluster', 'override', 'library', 'assembly', 'external_include', 'external_object']:
-		for element in ecf.getElementsByTagName(tag):
+		for element in ecf_as_xml.getElementsByTagName(tag):
 			location = env.subst(element.attributes['location'].value.replace('$(', '${').replace(')', '}')).replace('\\', '/')
 
 			if location.startswith('$|'):
@@ -156,20 +219,20 @@ def ecf_target(target, source = None, env = None):
 	return os.path.basename(os.path.dirname(os.path.dirname(str(target[0]))))
 
 def generate(env):
-	"""Add a Builder and options for Eiffel to the given Environment."""
-	opts = Options()
-	opts.Add('EC', "The Eiffel command-line compiler.", 'ec')
-	opts.Add('ECFLAGS', "Use ec -help to see possible options.", '-finalize -clean')
-	opts.Add('ECLOG', "File to log Eiffel compiler output.", 'SCons.Eiffel.log')
-	opts.Add('ISE_C_COMPILER', "EiffelStudio's C compiler: msc, gcc, mingw, etc.", ise_c_compiler(env))
-	opts.Add('ISE_EIFFEL', "EiffelStudio's installation path.", ise_eiffel(env))
-	opts.Add('ISE_LIBRARY', "EiffelStudio's library path.", ise_library(env))
-	opts.Add('ISE_PLATFORM', "EiffelStudio's platform variable: windows, etc.", ise_platform(env))
-	opts.Update(env)
-	Help(opts.GenerateHelpText(env))
+	"""Add a Builder and construction variables for Eiffel to the given Environment."""
+	vars = Options()
+	vars.Add('EC', "The Eiffel command-line compiler.", 'ec')
+	vars.Add('ECFLAGS', "Use ec -help to see possible options.", '-finalize -clean')
+	vars.Add('ECLOG', "File to log Eiffel compiler output.", 'SCons.Eiffel.log')
+	vars.Add('ISE_C_COMPILER', "EiffelStudio's C compiler: msc, gcc, mingw, etc.", ise_c_compiler(env))
+	vars.Add('ISE_EIFFEL', "EiffelStudio's installation path.", ise_eiffel(env))
+	vars.Add('ISE_LIBRARY', "EiffelStudio's library path.", ise_library(env))
+	vars.Add('ISE_PLATFORM', "EiffelStudio's platform variable: windows, etc.", ise_platform(env))
+	vars.Update(env)
+	Help(vars.GenerateHelpText(env))
 
-	env['BUILDERS']['Eiffel'] = Builder(action = Action(ec_action, ecf_target), emitter = ec_emitter, suffix = env['PROGSUFFIX'])
-	env.Append(SCANNERS = Scanner(function = ecf_scanner, skeys = ['.ecf']))
+	env['BUILDERS']['Eiffel'] = Builder(action = Action(ec_action, ecf_target), emitter = ec_emitter, target_factory = Entry)
+	env.Append(SCANNERS = Scanner(ecf_scanner, skeys = ['.ecf']))
 
 def exists(env):
 	"""Is the Eiffel compiler available?"""
