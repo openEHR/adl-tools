@@ -24,12 +24,12 @@ def log(s):
 def log_date():
 	log(datetime.datetime.now())
 
-def log_process(args, working_directory):
+def log_process(args):
 	commandline = subprocess.list2cmdline(args)
 	if log_file != sys.stdout: print '  ' + commandline
 	log(commandline)
 	log_file.flush()
-	return subprocess.call(args, cwd = working_directory, stdout = log_file, stderr = subprocess.STDOUT)
+	subprocess.call(args, stdout = log_file, stderr = subprocess.STDOUT)
 
 def log_file_tail():
 	"""The last thousand characters of the log file."""
@@ -66,7 +66,7 @@ def ec_action(target, source, env):
 
 	flags = env['ECFLAGS'].split()
 	if not '-target' in flags: flags += ['-target', ecf_target(target)]
-	log_process([env['EC'], '-batch', '-config', str(source[0])] + flags + ['-c_compile'], None)
+	log_process([env['EC'], '-batch', '-config', str(source[0])] + flags + ['-c_compile'])
 
 	for t in target:
 		if result == 0 and not os.path.exists(str(t)):
@@ -173,7 +173,7 @@ def ec_emitter(target, source, env):
 		elif is_precompiling:
 			result += [ec_path + env['ISE_C_COMPILER'] + '/' + env['PROGPREFIX'] + 'driver' + env['PROGSUFFIX']]
 		elif is_shared_library and env['PLATFORM'] == 'win32':
-			result += [exe_name + '.lib']
+			result += [ec_path + 'dll_' + exe_name + '.lib']
 
 	return result, source
 
