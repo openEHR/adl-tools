@@ -188,20 +188,30 @@ def ecf_scanner(node, env, path):
 	 * All .h and .hpp files found in external include directories mentioned in the ECF file.
 	Because this ignores targets and conditionals in the ECF file, it may cause unnecessary builds.
 	"""
+
+	def element_location(element):
+		"""
+		The 'location' attribute of 'element', processed to take care of:
+		 * Expansion of construction variables.
+		 * Conversion of backslashes to slashes.
+		 * If 'location' is relative, prefixing with the directory name of 'node'.
+		 * If 'location' is a nested cluster, prefixing with the location of the parent element (recursively).
+		"""
+		result = env.subst(element.attributes['location'].value.replace('$(', '${').replace(')', '}')).replace('\\', '/')
+
+		if result.startswith('$|'):
+			result = os.path.join(element_location(element.parentNode), result.replace('$|', '', 1))
+		elif not os.path.isabs(result):
+			result = os.path.abspath(os.path.join(os.path.dirname(str(node)), result))
+
+		return result
+
 	result = []
-	previous_cluster = ''
 	ecf_as_xml = xml.dom.minidom.parse(str(node))
 
 	for tag in ['cluster', 'override', 'library', 'assembly', 'external_include', 'external_object']:
 		for element in ecf_as_xml.getElementsByTagName(tag):
-			location = env.subst(element.attributes['location'].value.replace('$(', '${').replace(')', '}')).replace('\\', '/')
-
-			if location.startswith('$|'):
-				location = os.path.join(previous_cluster, location.replace('$|', '', 1))
-			elif not os.path.isabs(location):
-				location = os.path.abspath(os.path.join(os.path.dirname(str(node)), location))
-
-			previous_cluster = location
+			location = element_location(element)
 
 			if os.path.isfile(location):
 				result += [location]
