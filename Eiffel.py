@@ -3,7 +3,7 @@ Tool-specific initialisation for EiffelStudio.
 This does not work with EiffelStudio 5.6 or earlier.
 """
 
-import os, glob, sys, shutil, datetime, subprocess, xml.dom.minidom
+import os, glob, sys, shutil, datetime, subprocess, re, xml.dom.minidom
 from SCons.Script import *
 	
 log_file = None
@@ -171,11 +171,13 @@ def ec_emitter(target, source, env):
 		if is_dotnet:
 			result += [ec_path + 'lib' + exe_name + '.dll']
 		elif is_precompiling:
-			result += [ec_path + env['ISE_C_COMPILER'] + '/' + env['PROGPREFIX'] + 'driver' + env['PROGSUFFIX']]
+			result += [ec_path + environment_variable(env, 'ISE_C_COMPILER') + '/' + env['PROGPREFIX'] + 'driver' + env['PROGSUFFIX']]
 		elif is_shared_library and env['PLATFORM'] == 'win32':
 			result += [ec_path + 'dll_' + exe_name + '.lib']
 
 	return result, source
+
+ecf_environment_variable_regex = re.compile(r'(\$\||\$\(?\w*\)?|[^$]+)', re.M)
 
 def ecf_scanner(node, env, path):
 	"""
@@ -192,19 +194,29 @@ def ecf_scanner(node, env, path):
 	def element_location(element):
 		"""
 		The 'location' attribute of 'element', processed to take care of:
-		 * Expansion of construction variables.
-		 * Conversion of backslashes to slashes.
+		 * Expansion of environment variables.
 		 * If 'location' is relative, prefixing with the directory name of 'node'.
 		 * If 'location' is a nested cluster, prefixing with the location of the parent element (recursively).
 		"""
-		result = env.subst(element.attributes['location'].value.replace('$(', '${').replace(')', '}')).replace('\\', '/')
+		result = ''
 
-		if result.startswith('$|'):
-			result = os.path.join(element_location(element.parentNode), result.replace('$|', '', 1))
-		elif not os.path.isabs(result):
-			result = os.path.abspath(os.path.join(os.path.dirname(str(node)), result))
+		for token in ecf_environment_variable_regex.findall(element.attributes['location'].value):
+			if token[0] <> r'$':
+				result += token
+			elif token == r'$|':
+				result += element_location(element.parentNode) + '/'
+			else:
+				s = environment_variable(env, token)
 
-		return result
+				if s:
+					result += s
+				else:
+					print '****** WARNING!', str(node), 'uses undefined environment variable', token
+
+		if not os.path.isabs(result):
+			result = os.path.join(os.path.dirname(str(node)), result)
+
+		return os.path.abspath(result)
 
 	result = []
 	ecf_as_xml = xml.dom.minidom.parse(str(node))
@@ -234,10 +246,6 @@ def generate(env):
 	vars.Add('EC', "The Eiffel command-line compiler.", 'ec')
 	vars.Add('ECFLAGS', "Use ec -help to see possible options.", '-finalize -clean')
 	vars.Add('ECLOG', "File to log Eiffel compiler output.", 'SCons.Eiffel.log')
-	vars.Add('ISE_C_COMPILER', "EiffelStudio's C compiler: msc, gcc, mingw, etc.", ise_c_compiler(env))
-	vars.Add('ISE_EIFFEL', "EiffelStudio's installation path.", ise_eiffel(env))
-	vars.Add('ISE_LIBRARY', "EiffelStudio's library path.", ise_library(env))
-	vars.Add('ISE_PLATFORM', "EiffelStudio's platform variable: windows, etc.", ise_platform(env))
 	vars.Update(env)
 	Help(vars.GenerateHelpText(env))
 
@@ -248,43 +256,37 @@ def exists(env):
 	"""Is the Eiffel compiler available?"""
 	return env.Detect(env['EC'])
 
-def ise_c_compiler(env):
-	"""The given Environment's ISE_C_COMPILER variable, else a platform-specific assumption."""
-	if env['ENV'].has_key('ISE_C_COMPILER'):
-		return env['ENV']['ISE_C_COMPILER']
-	elif env['PLATFORM'] == 'win32':
-		return 'msc'
-	else:
-		return 'gcc'
-
-def ise_eiffel(env):
-	"""The given Environment's ISE_EIFFEL variable, else computed from the path to the "ec" compiler."""
-	if env['ENV'].has_key('ISE_EIFFEL'):
-		return env['ENV']['ISE_EIFFEL']
-	elif env.WhereIs('ec'):
-		return os.path.abspath(env.WhereIs('ec') + '/../../../../..')
-	else:
-		return ''
-
-def ise_library(env):
-	"""The given Environment's ISE_LIBRARY variable, else the same as ise_eiffel()."""
-	if env['ENV'].has_key('ISE_LIBRARY'):
-		return env['ENV']['ISE_LIBRARY']
-	else:
-		return ise_eiffel(env)
-
-def ise_platform(env):
-	"""The given Environment's ISE_PLATFORM variable, else a platform-specific assumption."""
-	if env['ENV'].has_key('ISE_PLATFORM'):
-		return env['ENV']['ISE_PLATFORM']
-	elif env['PLATFORM'] == 'win32':
-		return 'windows'
-	elif env['PLATFORM'] == 'darwin':
-		return 'macosx-x86'
-	else:
-		return 'linux-x86'
-
 # Utility functions.
+
+def environment_variable(env, var):
+	"""
+	The value of the environment variable 'var' within 'env'.
+	If undefined and it is one of the standard EiffelStudio variables, a sensible platform-specific assumption is used; else None.
+	"""
+	result = None
+	var = var.lstrip('$(').rstrip(')')
+
+	if env['ENV'].has_key(var):
+		result = env['ENV'][var]
+	elif var == 'ISE_PLATFORM':
+		if env['PLATFORM'] == 'win32':
+			result = 'windows'
+		elif env['PLATFORM'] == 'darwin':
+			result = 'macosx-x86'
+		else:
+			result = 'linux-x86'
+	elif var == 'ISE_C_COMPILER':
+		if env['PLATFORM'] == 'win32':
+			result = 'msc'
+		else:
+			result = 'gcc'
+	elif var == 'ISE_EIFFEL':
+		result = env.WhereIs(env['EC'])
+		if result: result = os.path.abspath(result + '/../../../../..')
+	elif var == 'ISE_LIBRARY':
+		result = environment_variable(env, 'ISE_EIFFEL')
+
+	return result
 
 def files(pattern):
 	"""All files matching a pattern, excluding directories."""
