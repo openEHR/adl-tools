@@ -56,16 +56,6 @@ feature -- Status Report
 			Result := a_status >= ss_undefined and a_status <= ss_propagated
 		end
 
-feature -- Comparison
-
-	specialisation_dominant_status(status_1, status_2: SPECIALISATION_STATUS): SPECIALISATION_STATUS is
-			-- determine which of status_1 and status_2 is dominant at a given node, due
-			-- to sub-node values; order is:
-			-- added, redefined, inherited, propagated
-		do
-			create Result.make(status_1.value.min(status_2.value))
-		end
-
 end
 
 

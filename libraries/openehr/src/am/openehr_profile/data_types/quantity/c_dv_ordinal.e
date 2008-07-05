@@ -17,7 +17,7 @@ class C_DV_ORDINAL
 inherit
 	C_DOMAIN_TYPE
 		redefine
-			default_create, enter_subtree, exit_subtree, synchronise_to_tree
+			default_create, enter_subtree, exit_subtree, synchronise_to_tree, specialisation_status
 		end
 
 create
@@ -73,6 +73,28 @@ feature -- Access
 			Valid_index: has_item(i)
 		do
 			Result := index.item(i)
+		end
+
+feature -- Source Control
+
+	specialisation_status (specialisation_level: INTEGER): SPECIALISATION_STATUS is
+			-- status of this node in the source text of this archetype with respect to the
+			-- specialisation hierarchy. Values are defined in SPECIALISATION_STATUSES
+			-- FIXME: this code is only an attempt to work out the specialisation status,
+			-- since it can only test if the codes are local to the archetype. If they come
+			-- from an outside terminology, there is no way to know definitively.
+		do
+			create Result.make (ss_inherited)
+			from
+				items.start
+			until
+				items.off
+			loop
+				if items.item.symbol.is_local then
+					Result := Result.specialisation_dominant_status (specialisation_status_from_code (items.item.symbol.code_string, specialisation_level))
+					items.forth
+				end
+			end
 		end
 
 feature -- Status Report

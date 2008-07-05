@@ -17,7 +17,7 @@ class C_CODE_PHRASE
 inherit
 	C_DOMAIN_TYPE
 		redefine
-			default_create, enter_subtree, exit_subtree, synchronise_to_tree
+			default_create, enter_subtree, exit_subtree, synchronise_to_tree, specialisation_status
 		end
 
 create
@@ -164,6 +164,28 @@ feature -- Status Report
 		do
 			parse_pattern (a_pattern)
 			Result := fail_reason = Void
+		end
+
+feature -- Source Control
+
+	specialisation_status (specialisation_level: INTEGER): SPECIALISATION_STATUS is
+			-- status of this node in the source text of this archetype with respect to the
+			-- specialisation hierarchy. Values are defined in SPECIALISATION_STATUSES
+			-- FIXME: this code is only an attempt to work out the specialisation status,
+			-- since it can only test if the codes are local to the archetype. If they come
+			-- from an outside terminology, there is no way to know definitively.
+		do
+			create Result.make (ss_inherited)
+			if terminology_id.is_local then
+				from
+					code_list.start
+				until
+					code_list.off
+				loop
+					Result := Result.specialisation_dominant_status (specialisation_status_from_code (code_list.item, specialisation_level))
+					code_list.forth
+				end
+			end
 		end
 
 feature -- Modification

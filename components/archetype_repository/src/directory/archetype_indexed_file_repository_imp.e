@@ -115,6 +115,12 @@ feature {NONE} -- Implementation
 			create Result.compile_case_insensitive (".*\" + archetype_flat_file_extension + "$")
 		end
 
+	adl_source_filename_pattern_regex: !LX_DFA_REGULAR_EXPRESSION
+			-- Pattern matcher for filenames ending in ".adls".
+		once
+			create Result.compile_case_insensitive (".*\" + Archetype_source_file_extension + "$")
+		end
+
 	shifter: STRING
 			-- Debug indenter.
 		once

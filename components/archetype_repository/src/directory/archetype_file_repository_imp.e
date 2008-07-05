@@ -17,6 +17,11 @@ deferred class
 inherit
 	ARCHETYPE_REPOSITORY_I
 
+	SHARED_ARCHETYPE_DIRECTORY
+		export
+			{NONE} all
+		end
+
 	MESSAGE_BILLBOARD
 		rename
 			file_exists as is_valid_path,
@@ -100,7 +105,9 @@ feature {NONE} -- Implementation
 
 			if id.valid_id (base_name) then
 				id.make_from_string (base_name)
-				create Result.make (root_path, full_path, id, Current)
+				if not archetype_directory.archetype_id_index.has (id.as_string) then
+					create Result.make (root_path, full_path, id, Current)
+				end
 			end
 		ensure
 			has_root_path: Result /= Void implies Result.root_path.is_equal (root_path)
