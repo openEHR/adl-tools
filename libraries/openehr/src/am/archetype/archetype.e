@@ -255,6 +255,9 @@ feature -- Status Report
 			Result := str.is_integer and a_ver.item(1) /= '.' and a_ver.item (a_ver.count) /= '.'
 		end
 
+	is_generated: BOOLEAN
+			-- True if this archetype was generated from another one, rather than being an original authored archetype
+
 feature -- Status Setting
 
 	set_is_valid(a_validity: BOOLEAN) is
@@ -262,6 +265,12 @@ feature -- Status Setting
 		do
 			is_valid := a_validity
 			is_dirty := False
+		end
+
+	set_is_generated is
+			-- set is_generated flag
+		do
+			is_generated := True
 		end
 
 feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER, EXPR_XREF_BUILDER} -- Validation

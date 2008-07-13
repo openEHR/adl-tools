@@ -70,6 +70,9 @@ feature -- Access
 	file_content: STRING
 			-- Text from current file as a string.
 
+	file_first_line: STRING
+			-- First line from current file as a string.
+
 	file_timestamp: INTEGER
 			-- Last marked change timestamp of file, for file changes to be compared to.
 
@@ -111,6 +114,28 @@ feature -- Commands
 			else
 				file_timestamp := 0
 			end
+		end
+
+	read_first_line
+			-- read first line from current file as a string
+		local
+			in_file: PLAIN_TEXT_FILE
+   		do
+   			last_op_failed := False
+			create in_file.make(current_full_path)
+			create file_first_line.make_empty
+
+			if in_file.exists then
+				in_file.open_read
+				in_file.read_line
+				file_first_line.append(in_file.last_string)
+				in_file.close
+			else
+				last_op_failed := True
+				last_op_fail_reason := "Read failed; file " + current_full_path + " does not exist"
+			end
+		ensure
+			file_first_line_empty_on_failure: last_op_failed implies file_first_line.is_empty
 		end
 
 	read_file is

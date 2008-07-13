@@ -11,7 +11,7 @@ indexing
 	license:     "See notice at bottom of class"
 
 	file:        "$URL: http://svn.openehr.org/ref_impl_eiffel/BRANCHES/specialisation/components/adl_parser/src/interface/archetype_parser.e $"
-	revision:    "$LastChangedRevision: 489 $"
+	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate: 2007-10-02 16:49:19 +0100 (Tue, 02 Oct 2007) $"
 
 class ARCHETYPE_COMPILER
@@ -52,6 +52,9 @@ feature {NONE} -- Initialisation
 		end
 
 feature -- Access
+
+	build_completed: BOOLEAN
+			-- True if an attempt has been made to build the whole repository
 
 	status: STRING
 			-- Last status of compiler.
@@ -155,9 +158,13 @@ feature {NONE} -- Implementation
 			status := "=============== " + message + " ===============%N"
 			call_visual_update_action (Void)
 			is_interrupted := False
+			build_completed := True
 			archetype_directory.do_subtree (subtree, agent do_if_archetype (?, action), Void)
 			status := "=============== finished " + message + " ===============%N"
 			call_visual_update_action (Void)
+			if not is_interrupted then
+				build_completed := True
+			end
 		end
 
 	do_lineage (ara: ARCH_REP_ARCHETYPE; action: PROCEDURE [ANY, TUPLE [!ARCH_REP_ARCHETYPE]]) is

@@ -58,6 +58,8 @@ feature -- Access
 				Result := "SYM_ADL_VERSION"
 			when SYM_IS_CONTROLLED then
 				Result := "SYM_IS_CONTROLLED"
+			when SYM_IS_GENERATED then
+				Result := "SYM_IS_GENERATED"
 			else
 				Result := yy_character_token_name (a_token)
 			end
@@ -82,5 +84,6 @@ feature -- Token codes
 	SYM_INVARIANT: INTEGER is 272
 	SYM_ADL_VERSION: INTEGER is 273
 	SYM_IS_CONTROLLED: INTEGER is 274
+	SYM_IS_GENERATED: INTEGER is 275
 
 end

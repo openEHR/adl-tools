@@ -46,7 +46,7 @@ create
 %token SYM_ARCHETYPE SYM_CONCEPT SYM_SPECIALIZE
 %token SYM_DEFINITION SYM_LANGUAGE
 %token SYM_DESCRIPTION SYM_ONTOLOGY SYM_INVARIANT
-%token SYM_ADL_VERSION SYM_IS_CONTROLLED
+%token SYM_ADL_VERSION SYM_IS_CONTROLLED SYM_IS_GENERATED
 
 %%
 
@@ -100,6 +100,10 @@ arch_meta_data_item: SYM_ADL_VERSION '=' V_VERSION_STRING
 	| SYM_IS_CONTROLLED
 		{
 			is_controlled := True
+		}
+	| SYM_IS_GENERATED
+		{
+			is_generated := True
 		}
 	;
 
@@ -244,6 +248,8 @@ feature -- Parse Output
 	adl_version: STRING
 
 	is_controlled: BOOLEAN
+
+	is_generated: BOOLEAN
 
 	parent_archetype_id: ARCHETYPE_ID
 

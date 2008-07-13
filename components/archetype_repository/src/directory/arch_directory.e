@@ -593,6 +593,8 @@ feature {NONE} -- Implementation
 					end
 				else
 					if not ontology_index.has (ara.ontological_parent_path) and ara.is_specialised then
+						-- NOTE: this test only works because the list of archetypes driving this loop is
+						-- sorted on name, and therefore parent archetypes come before specialisation children!
 						post_error (Current, "merge_enter", "arch_dir_orphan_archetype", <<ara.ontological_parent_path, ara.full_path>>)
 						bad_archetype_count := bad_archetype_count + 1
 					else
@@ -611,9 +613,9 @@ feature {NONE} -- Implementation
 						parent_node.child_forth
 						ontology_index.force (arch_node, ara.ontological_path)
 						archetype_id_index.force (ara, ara.id.as_string)
-						update_statistics (ara)
 					end
 				end
+				update_statistics (ara)
 			end
 
 			debug("arch_dir")

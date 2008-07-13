@@ -96,9 +96,15 @@ feature -- Serialisation
 				end
 				if target.is_controlled then
 					if target.has_adl_version then
-						arch_kw_str.append(" ;")
+						arch_kw_str.append("; ")
 					end
 					arch_kw_str.append(symbol(SYM_IS_CONTROLLED))
+				end
+				if target.is_generated then
+					if target.has_adl_version or target.is_controlled then
+						arch_kw_str.append("; ")
+					end
+					arch_kw_str.append(symbol(SYM_IS_GENERATED))
 				end
 				arch_kw_str.append_character(')')
 			end

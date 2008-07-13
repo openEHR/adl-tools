@@ -93,6 +93,10 @@ create
 				last_token := SYM_IS_CONTROLLED
 			}
 
+[Gg][Ee][Nn][Ee][Rr][Aa][Tt][Ee][Dd] 		{
+				last_token := SYM_IS_GENERATED
+			}
+
 ^[Ss][Pp][Ee][Cc][Ii][Aa][Ll][Ii][SsZz][Ee][ \t\r]*\n 	{
 				last_token := SYM_SPECIALIZE
 				in_lineno := in_lineno + 1

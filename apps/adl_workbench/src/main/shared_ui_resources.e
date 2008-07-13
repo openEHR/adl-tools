@@ -260,6 +260,18 @@ feature -- Access
 			end
 		end
 
+	display_archetype_source: BOOLEAN
+			-- Display "(f)" marker on archetypes created in flat form
+		local
+			str: STRING
+		do
+			str := resource_value ("default", "display_archetype_source")
+
+			if str.is_boolean then
+				Result := str.to_boolean
+			end
+		end
+
 	path_filter_combo_selection: STRING is
 			-- setting of path control filter combo-box
 		do
@@ -677,6 +689,12 @@ feature -- Modification
 			-- Set flag for whether to show line numbers in the ADL source text box.
 		do
 			set_resource_value ("default", "show_line_numbers", flag.out)
+		end
+
+	set_display_archetype_source (flag: BOOLEAN) is
+			-- Set flag for whether to display markers indicating archetype authoring form.
+		do
+			set_resource_value ("default", "display_archetype_source", flag.out)
 		end
 
 	set_path_filter_combo_selection(str: STRING) is

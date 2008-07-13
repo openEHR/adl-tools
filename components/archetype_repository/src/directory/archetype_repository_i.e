@@ -41,6 +41,16 @@ feature -- Access
 	group_id: INTEGER
 			-- Id of the group to which this repository belongs.
 
+	first_line (full_path: STRING): STRING
+			-- return the first line of the file at `full_path' (up to LF or end of file)
+			-- or Void if the file is empty
+		require
+			path_valid: is_valid_path (full_path)
+		deferred
+		ensure
+			Result_exists: Result /= Void
+		end
+
 feature -- Status Report
 
 	is_valid_path (path: STRING): BOOLEAN

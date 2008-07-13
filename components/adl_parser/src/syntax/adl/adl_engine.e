@@ -236,6 +236,10 @@ feature {NONE} -- Implementation
 										Result.set_is_controlled
 									end
 
+									if adl_parser.is_generated then
+										Result.set_is_generated
+									end
+
 									-- if there was no language section, then create the equivalent object
 									-- and use it to paste translations into the archetype
 									if orig_lang_trans.translations /= Void then
