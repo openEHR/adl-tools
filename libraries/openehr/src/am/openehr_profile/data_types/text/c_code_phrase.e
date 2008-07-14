@@ -176,7 +176,7 @@ feature -- Source Control
 			-- from an outside terminology, there is no way to know definitively.
 		do
 			create Result.make (ss_inherited)
-			if terminology_id.is_local then
+			if terminology_id.is_local and code_list /= Void then
 				from
 					code_list.start
 				until

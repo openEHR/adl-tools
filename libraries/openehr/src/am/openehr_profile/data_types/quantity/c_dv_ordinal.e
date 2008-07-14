@@ -85,14 +85,16 @@ feature -- Source Control
 			-- from an outside terminology, there is no way to know definitively.
 		do
 			create Result.make (ss_inherited)
-			from
-				items.start
-			until
-				items.off
-			loop
-				if items.item.symbol.is_local then
-					Result := Result.specialisation_dominant_status (specialisation_status_from_code (items.item.symbol.code_string, specialisation_level))
-					items.forth
+			if items /= Void then
+				from
+					items.start
+				until
+					items.off
+				loop
+					if items.item.symbol.is_local then
+						Result := Result.specialisation_dominant_status (specialisation_status_from_code (items.item.symbol.code_string, specialisation_level))
+						items.forth
+					end
 				end
 			end
 		end
