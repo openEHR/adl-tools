@@ -84,7 +84,7 @@ feature -- Source Control
 			-- since it can only test if the codes are local to the archetype. If they come
 			-- from an outside terminology, there is no way to know definitively.
 		do
-			create Result.make (ss_inherited)
+			create Result.make (ss_propagated)
 			if items /= Void then
 				from
 					items.start
