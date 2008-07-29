@@ -232,7 +232,6 @@ feature -- Status setting
 			end
 
 			if new_news then
-				clean_generated_files
 				display_news
 				update_status_file
 			end
