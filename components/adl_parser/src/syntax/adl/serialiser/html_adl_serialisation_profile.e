@@ -23,10 +23,10 @@ inherit
 		export
 			{NONE} all
 		end
-			
+
 create
 	make
-	
+
 feature {NONE} -- Implementation
 
 	symbols: HASH_TABLE[STRING, INTEGER] is
@@ -36,6 +36,7 @@ feature {NONE} -- Implementation
 			Result.put("archetype",		SYM_ARCHETYPE)
 			Result.put("adl_version",	SYM_ADL_VERSION)
 			Result.put("controlled",	SYM_IS_CONTROLLED)
+			Result.put("generated",	SYM_IS_GENERATED)
 			Result.put("concept",		SYM_CONCEPT)
 			Result.put("specialize",	SYM_SPECIALIZE)
 			Result.put("language",		SYM_LANGUAGE)
@@ -43,8 +44,8 @@ feature {NONE} -- Implementation
 			Result.put("definition",	SYM_DEFINITION)
 			Result.put("invariant",		SYM_INVARIANT)
 			Result.put("ontology",		SYM_ONTOLOGY)
-		end	
-		
+		end
+
 end
 
 

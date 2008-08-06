@@ -27,12 +27,14 @@ feature {NONE} -- Implementation
 	build_directory (tree: like directory)
 			-- Add archetype and folder meta-data to `tree'.
 		local
-			fn, full_path: STRING
+			fn, full_path, dir_full_path: STRING
 			a_dir: DIRECTORY
 			fs_node_names: ARRAYED_LIST [STRING]
 			dir_name_index: SORTED_TWO_WAY_LIST [STRING]
 			arch_index: SORTED_TWO_WAY_LIST [ARCH_REP_ARCHETYPE]
+			arch_name_index: SORTED_TWO_WAY_LIST [STRING]
 			ara: ARCH_REP_ARCHETYPE
+			arch_id_str: STRING
 			node: like directory
    		do
    			-- generate lists of immediate child directory and archetype file names
@@ -48,6 +50,8 @@ feature {NONE} -- Implementation
 				a_dir.open_read
 				fs_node_names := a_dir.linear_representation
 				create arch_index.make
+				create arch_name_index.make
+				arch_name_index.compare_objects
 				create dir_name_index.make
 
 				from
@@ -62,10 +66,16 @@ feature {NONE} -- Implementation
 
 						if (create {RAW_FILE}.make (full_path)).is_directory then
 							dir_name_index.extend (fn)
-						elseif adl_flat_filename_pattern_regex.matches (fn) then
-							ara := create_repository_archetype_descriptor (root_path, full_path)
-							if ara /= Void then
-								arch_index.extend (ara)
+						elseif adl_flat_filename_pattern_regex.matches (fn) or adl_differential_filename_pattern_regex.matches (fn) then
+							arch_id_str := archteype_id_from_path(full_path)
+							if arch_id_str /= Void then
+								if not arch_name_index.has (arch_id_str) then
+									create ara.make (root_path, full_path, create {!ARCHETYPE_ID}.make_from_string(arch_id_str), Current)
+									arch_index.extend (ara)
+									arch_name_index.extend (arch_id_str)
+								else
+									post_info (Current, "build_directory", "pair_filename_i1", <<fn>>)
+								end
 							else
 								post_error (Current, "build_directory", "invalid_filename_e1", <<fn>>)
 							end
@@ -83,8 +93,8 @@ feature {NONE} -- Implementation
 			until
 				dir_name_index.off
 			loop
-				full_path := file_system.pathname (tree.item.full_path, dir_name_index.item)
-				node := new_folder_node (full_path)
+				dir_full_path := file_system.pathname (tree.item.full_path, dir_name_index.item)
+				node := new_folder_node (dir_full_path)
 				build_directory (node)
 				tree.put_child_right (node)
 				tree.child_forth
@@ -113,6 +123,12 @@ feature {NONE} -- Implementation
 			-- Pattern matcher for filenames ending in ".adl".
 		once
 			create Result.compile_case_insensitive (".*\" + archetype_flat_file_extension + "$")
+		end
+
+	adl_differential_filename_pattern_regex: !LX_DFA_REGULAR_EXPRESSION
+			-- Pattern matcher for filenames ending in ".adls".
+		once
+			create Result.compile_case_insensitive (".*\" + Archetype_source_file_extension + "$")
 		end
 
 	shifter: STRING

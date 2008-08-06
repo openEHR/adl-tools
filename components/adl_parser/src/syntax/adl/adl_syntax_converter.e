@@ -196,6 +196,17 @@ feature -- Access
 			end
 		end
 
+	convert_dadl_type_name(a_type_name: STRING): STRING
+			-- convert type name preceding <> dADL block to (typename), i.e. add parentheses
+			-- part of ADL 1.4.1, Release 1.0.2 of openEHR
+		require
+			type_name_valid: a_type_name /= Void and then not a_type_name.is_empty
+		do
+			Result := "("
+			Result.append (a_type_name)
+			Result.append_character (')')
+		end
+
 end
 
 

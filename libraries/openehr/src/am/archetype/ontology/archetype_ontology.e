@@ -885,7 +885,7 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 			term_defs_one_lang: HASH_TABLE[ARCHETYPE_TERM, STRING]
 			term_bindings_one_terminology: HASH_TABLE[CODE_PHRASE, STRING]
 			constraint_bindings_one_terminology: HASH_TABLE[URI, STRING]
-			code, a_lang: STRING
+			code, a_lang, terminology_path: STRING
 			an_attr_node: DT_ATTRIBUTE_NODE
 		do
 			if representation.has_path("/" + Sym_terminologies_available) then
@@ -978,10 +978,12 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 			until
 				terminologies_available.off
 			loop
-				if has_path("/" + Sym_term_binding + "[" + terminologies_available.item + "]") then
-					create term_bindings_one_terminology.make(0)
-					populate_term_bindings(terminologies_available.item, term_bindings_one_terminology)
-					term_bindings.force(term_bindings_one_terminology , terminologies_available.item)
+				terminology_path := "/" + sym_term_binding + "[" + terminologies_available.item + "]/items"
+
+				if has_path (terminology_path) then
+					create term_bindings_one_terminology.make (0)
+					populate_term_bindings (terminology_path, term_bindings_one_terminology)
+					term_bindings.force (term_bindings_one_terminology, terminologies_available.item)
 				end
 
 				if has_path("/" + Sym_constraint_binding + "[" + terminologies_available.item + "]") then
@@ -1042,23 +1044,27 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 			end
 		end
 
-	populate_term_bindings(a_terminology: STRING; term_bindings_one_terminology: HASH_TABLE[CODE_PHRASE, STRING]) is
-			--
+	populate_term_bindings (terminology_path: STRING; term_bindings_one_terminology: HASH_TABLE[CODE_PHRASE, STRING]) is
+			-- Populate `term_bindings_one_terminology' from `terminology_path'.
+		require
+			has_terminology_path: has_path (terminology_path)
 		local
 			an_attr_node: DT_ATTRIBUTE_NODE
-			a_simple_node: DT_PRIMITIVE_OBJECT
-			a_term: CODE_PHRASE
 		do
-			an_attr_node := representation.attribute_node_at_path("/" + Sym_term_binding + "[" + a_terminology + "]/items")
+			an_attr_node := representation.attribute_node_at_path (terminology_path)
+
 			if an_attr_node.is_multiple then
 				from
 					an_attr_node.start
 				until
 					an_attr_node.off
 				loop
-					a_simple_node ?= an_attr_node.item
-					a_term ?= a_simple_node.value
-					term_bindings_one_terminology.force(a_term, a_simple_node.node_id)
+					if {a_simple_node: !DT_PRIMITIVE_OBJECT} an_attr_node.item then
+						if {a_term: !CODE_PHRASE} a_simple_node.value then
+							term_bindings_one_terminology.force (a_term, a_simple_node.node_id)
+						end
+					end
+
 					an_attr_node.forth
 				end
 			end

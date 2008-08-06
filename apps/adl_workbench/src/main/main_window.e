@@ -232,7 +232,6 @@ feature -- Status setting
 			end
 
 			if new_news then
-				clean_generated_files
 				display_news
 				update_status_file
 			end
@@ -696,39 +695,32 @@ feature {NONE} -- Tools events
 	clean_generated_files
 			-- Remove all generated files below the repository directory.
 		local
-			delete_adls_files_in_folder: PROCEDURE [ANY, TUPLE [ARCH_REP_ITEM]]
+			info_dialog: EV_INFORMATION_DIALOG
 		do
-			delete_adls_files_in_folder := agent (a: ARCH_REP_ITEM)
-				local
-					dir: DIRECTORY
-					name: STRING
-				do
-					if {folder: !ARCH_REP_FOLDER} a then
-						create dir.make_open_read (folder.full_path)
+			if not archetype_compiler.build_completed then
+				create info_dialog.make_with_text ("System needs to be compiled before generated files can be deleted")
+				info_dialog.set_title ("Information")
+				info_dialog.show_modal_to_window (Current)
+			else
+				do_with_wait_cursor (agent archetype_directory.do_subtree (archetype_directory.directory, agent delete_generated_files, Void))
+			end
+		end
 
-						from
-							dir.start
-							dir.readentry
-						until
-							dir.lastentry = Void
-						loop
-							name := dir.lastentry
-							dir.readentry
-
-							if file_system.has_extension (name, archetype_source_file_extension) then
-								name := file_system.pathname (dir.name, name)
-
-								if file_system.is_file_readable (name) then
-									file_system.delete_file (name)
-								end
-							end
-						end
-
-						dir.close
-					end
+	delete_generated_files (a: ARCH_REP_ITEM) is
+			-- delete a generated file associated with `a'
+		local
+			name: STRING
+		do
+			if {ara: !ARCH_REP_ARCHETYPE} a then
+				if ara.differential_generated then
+					name := ara.differential_path
+				elseif ara.flat_generated then
+					name := ara.flat_path
 				end
-
-			do_with_wait_cursor (agent archetype_directory.do_subtree (archetype_directory.directory, delete_adls_files_in_folder, Void))
+				if name /= Void and file_system.is_file_readable (name) then
+					file_system.delete_file (name)
+				end
+			end
 		end
 
 	set_options

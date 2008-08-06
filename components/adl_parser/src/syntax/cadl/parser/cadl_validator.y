@@ -1325,6 +1325,18 @@ c_duration_constraint: duration_pattern
 		}
 	;
 
+duration_pattern: V_ISO8601_DURATION_CONSTRAINT_PATTERN
+		{
+			if valid_iso8601_duration_constraint_pattern ($1) then
+				create c_duration.make_from_pattern ($1)
+			else
+				raise_error
+				report_error ("invalid duration constraint pattern; legal pattern: P[Y|y][M|m][W|w][D|d][T[H|h][M|m][S|s]] or P[W|w]")
+				abort
+			end
+		}
+	;
+
 c_duration: c_duration_constraint
 	| c_duration_constraint ';' duration_value
 		{
@@ -1513,7 +1525,15 @@ any_identifier: type_identifier
 -----------------------------------------------------------------
 ---------------------- BASIC DATA VALUES -----------------------
 
-type_identifier: V_TYPE_IDENTIFIER
+type_identifier: '(' V_TYPE_IDENTIFIER ')'
+		{
+			$$ := $2
+		}
+	| '(' V_GENERIC_TYPE_IDENTIFIER ')'
+		{
+			$$ := $2
+		}
+	| V_TYPE_IDENTIFIER
 		{
 			$$ := $1
 		}
@@ -2102,18 +2122,6 @@ date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_t
 		{
 			create date_time_interval.make_point($2)
 			$$ := date_time_interval
-		}
-	;
-
-duration_pattern: V_ISO8601_DURATION_CONSTRAINT_PATTERN
-		{
-			if valid_iso8601_duration_constraint_pattern ($1) then
-				create c_duration.make_from_pattern ($1)
-			else
-				raise_error
-				report_error ("invalid duration constraint pattern; legal pattern: P[Y|y][M|m][W|w][D|d][T[H|h][M|m][S|s]] or P[W|w]")
-				abort
-			end
 		}
 	;
 

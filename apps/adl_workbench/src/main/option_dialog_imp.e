@@ -46,6 +46,7 @@ feature {NONE}-- Initialization
 			create l_ev_horizontal_box_3
 			create show_definition_tree_expanded_check_button
 			create show_line_numbers_check_button
+			create display_archetype_source_check_button
 			create l_ev_horizontal_box_4
 			create l_ev_label_1
 			create parser_error_reporting_level_combo_box
@@ -71,6 +72,7 @@ feature {NONE}-- Initialization
 			l_ev_vertical_box_1.extend (l_ev_horizontal_box_3)
 			l_ev_horizontal_box_3.extend (show_definition_tree_expanded_check_button)
 			l_ev_horizontal_box_3.extend (show_line_numbers_check_button)
+			l_ev_horizontal_box_3.extend (display_archetype_source_check_button)
 			l_ev_vertical_box_1.extend (l_ev_horizontal_box_4)
 			l_ev_horizontal_box_4.extend (l_ev_label_1)
 			l_ev_horizontal_box_4.extend (parser_error_reporting_level_combo_box)
@@ -125,6 +127,7 @@ feature {NONE}-- Initialization
 			l_ev_horizontal_box_3.set_border_width (10)
 			show_definition_tree_expanded_check_button.set_text ("Show defiinition tree expanded?")
 			show_line_numbers_check_button.set_text ("Show line numbers in ADL source?")
+			display_archetype_source_check_button.set_text ("Indicate original creation form?")
 			l_ev_horizontal_box_4.set_padding (10)
 			l_ev_horizontal_box_4.set_border_width (10)
 			l_ev_horizontal_box_4.disable_item_expand (l_ev_label_1)
@@ -186,8 +189,9 @@ feature -- Access
 	l_ev_horizontal_box_6, l_ev_horizontal_box_7: EV_HORIZONTAL_BOX
 	l_ev_vertical_box_1, l_ev_vertical_box_2: EV_VERTICAL_BOX
 	show_definition_tree_expanded_check_button,
-	show_line_numbers_check_button: EV_CHECK_BUTTON
-	l_ev_label_1, l_ev_label_2: EV_LABEL
+	show_line_numbers_check_button, display_archetype_source_check_button: EV_CHECK_BUTTON
+	l_ev_label_1,
+	l_ev_label_2: EV_LABEL
 	export_html_text: EV_TEXT_FIELD
 	l_ev_frame_1: EV_FRAME
 

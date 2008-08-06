@@ -107,6 +107,8 @@ feature -- Initialisation
 				end
 			end
 			rebuild
+
+			is_generated := True
 		end
 
 feature -- Access

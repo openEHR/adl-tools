@@ -96,6 +96,10 @@ feature -- Commands
 				tooltip := utf8 (item.full_path)
 
 				if {ara: !ARCH_REP_ARCHETYPE} item then
+					if ara.differential_generated and display_archetype_source then
+						text.prepend (utf8("(f) "))
+					end
+
 					if ara.has_slots then
 						text.append_code (0x279C)	-- Unicode character: an arrow pointing right
 					end

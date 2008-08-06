@@ -67,7 +67,7 @@ feature -- Visitor
 			until
 				a_node.attributes.off -- or spec_sts.value < ss_inherited
 			loop
-				spec_sts := specialisation_dominant_status(spec_sts, a_node.attributes.item.rolled_up_specialisation_status)
+				spec_sts := spec_sts.specialisation_dominant_status(a_node.attributes.item.rolled_up_specialisation_status)
 				a_node.attributes.forth
 			end
 			a_node.set_rolled_up_specialisation_status(spec_sts)
@@ -84,7 +84,7 @@ feature -- Visitor
 			until
 				a_node.children.off -- or spec_sts.value < ss_inherited
 			loop
-				spec_sts := specialisation_dominant_status(spec_sts, a_node.children.item.rolled_up_specialisation_status)
+				spec_sts := spec_sts.specialisation_dominant_status(a_node.children.item.rolled_up_specialisation_status)
 				a_node.children.forth
 			end
 			a_node.set_rolled_up_specialisation_status(spec_sts)

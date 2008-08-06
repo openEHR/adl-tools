@@ -33,6 +33,7 @@ feature -- Initialisation
 			invariants := a_diff.invariants
 			rebuild
 			is_valid := True
+			is_generated := True
 		end
 
 feature -- Access

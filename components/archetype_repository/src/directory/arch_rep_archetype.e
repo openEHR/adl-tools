@@ -70,6 +70,15 @@ feature {NONE} -- Initialisation
 				differential_path := extension_replaced (full_path, archetype_source_file_extension)
 				flat_path := full_path
 			end
+
+			-- set status of flat archetype by reading its file for now; can't do this with .adls files
+			-- yet because there are versions of the AWB out there that have created .adls files, but
+			-- don't put the 'generated' marker in
+			if file_repository.is_valid_path (flat_path) then
+				flat_generated := has_adl_generated_status(file_repository.first_line (flat_path))
+			else
+				flat_generated := True
+			end
 		ensure
 			root_path_set: root_path = a_root_path
 			full_path_set: full_path = a_full_path
@@ -247,6 +256,16 @@ feature -- Status Report
 			Result := used_by_index /= Void
 		end
 
+	differential_generated: BOOLEAN is
+			-- True if the differential form was generated from the flat form
+		do
+			Result := (archetype_differential /= Void and then archetype_differential.is_generated) or else not flat_generated
+		end
+
+	flat_generated: BOOLEAN
+			-- True if the flat form was generated from the differential form (this status is taken
+			-- from the file)
+
 feature -- Status Setting
 
 	set_parse_attempted
@@ -325,7 +344,7 @@ feature -- Commands
 		end
 
 	validate is
-			-- Perform various levels validation on `archetype_differential'.
+			-- Perform various levels of validation on `archetype_differential'.
 		require
 			differential_attached: archetype_differential /= Void
 		local
@@ -513,6 +532,25 @@ feature {NONE} -- Implementation
 			loop
 				ontology_lineage.put (arch_lin.item.archetype_differential.ontology, arch_lin.item.archetype_differential.specialisation_depth)
 				arch_lin.forth
+			end
+		end
+
+	has_adl_generated_status(str: STRING):BOOLEAN
+			-- True if str is in ADL syntax of the first line of an archetype file and contains the
+			-- 'generated' flag in the meta-data part. The form of this string should be:
+			-- archetype_id (flag; flag; flag...)
+			-- FIXME: WARNING this is a hack because we are hard-coding for the 'generated' keyword here,
+			-- but currently it is too complicated to extract it from the serialisation objects.
+			-- This will be resolved in a few releases when all .adl archetypes are generated from.adls
+		require
+			str_exists: str /= Void
+		local
+			lpos, rpos: INTEGER
+		do
+			lpos := str.index_of('(', 1)
+			rpos := str.index_of(')', 1)
+			if lpos > 0 and rpos > lpos+1 then
+				Result := str.substring (lpos+1, rpos-1).has_substring("generated")
 			end
 		end
 

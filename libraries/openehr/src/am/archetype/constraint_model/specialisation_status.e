@@ -5,7 +5,7 @@ indexing
 				 what is inherited, what is redefined here, what is added here.
 				 ]"
 	keywords:    "ADL"
-	
+
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics<support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
@@ -34,13 +34,23 @@ feature -- Initialisation
 		end
 
 feature -- Access
-	
+
 	value: INTEGER
-			-- the specialisation status value
+			-- the specialisation status value	
+
+feature -- Comparison
+
+	specialisation_dominant_status(other_status: SPECIALISATION_STATUS): SPECIALISATION_STATUS is
+			-- determine which of Current and other_status is dominant at a given node, due
+			-- to sub-node values; order is:
+			-- added, redefined, inherited, propagated
+		do
+			create Result.make(value.min(other_status.value))
+		end
 
 invariant
 	Valid_value: valid_specialisation_status(value)
-	
+
 end
 
 

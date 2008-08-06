@@ -17,6 +17,11 @@ deferred class
 inherit
 	ARCHETYPE_REPOSITORY_I
 
+	SHARED_ARCHETYPE_DIRECTORY
+		export
+			{NONE} all
+		end
+
 	MESSAGE_BILLBOARD
 		rename
 			file_exists as is_valid_path,
@@ -32,6 +37,14 @@ feature -- Access
 
 	text_timestamp: INTEGER
 			-- Modification time of last opened archetype file as an integer, for comparison purposes.
+
+	first_line (full_path: STRING): STRING is
+			-- return the first line of the file at `full_path'.
+		do
+			file_context.set_target (full_path)
+			file_context.read_first_line
+			Result := file_context.file_first_line
+		end
 
 feature -- Status Report
 
@@ -84,12 +97,11 @@ feature {NONE} -- Implementation
 			attached: Result /= Void
 		end
 
-	create_repository_archetype_descriptor (root_path, full_path: STRING): ARCH_REP_ARCHETYPE
-			-- Create a descriptor of the archetype designated by `full_path' to this repository.
+	archteype_id_from_path (full_path: STRING): STRING
+			-- Create the id of the archetype designated by `full_path' to this repository
+			-- or else Void if not possible
 		require
-			root_path_valid: is_valid_directory (root_path)
 			full_path_valid: is_valid_path (full_path)
-			full_path_under_root_path: full_path.substring_index (root_path, 1) = 1
 		local
 			base_name: STRING
 			id: !ARCHETYPE_ID
@@ -97,15 +109,9 @@ feature {NONE} -- Implementation
 			base_name := file_system.basename (full_path)
 			base_name.remove_tail (file_system.extension (base_name).count)
 			create id
-
 			if id.valid_id (base_name) then
-				id.make_from_string (base_name)
-				create Result.make (root_path, full_path, id, Current)
+				Result := base_name
 			end
-		ensure
-			has_root_path: Result /= Void implies Result.root_path.is_equal (root_path)
-			has_full_path: Result /= Void implies Result.full_path.is_equal (full_path)
-			has_this_repository: Result /= Void implies Result.file_repository = Current
 		end
 
 end

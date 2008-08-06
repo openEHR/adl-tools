@@ -83,11 +83,18 @@ feature -- Modification
 			hasnt_path: not has (full_path)
 		local
 			ara: ARCH_REP_ARCHETYPE
+			arch_id_str: STRING
 		do
-			ara := create_repository_archetype_descriptor (file_system.dirname (full_path), full_path)
-
-			if ara /= Void then
-				directory [full_path] := ara
+			arch_id_str := archteype_id_from_path(full_path)
+			if arch_id_str /= Void then
+				if not archetype_directory.archetype_id_index.has (arch_id_str) then
+					create ara.make (file_system.dirname (full_path), full_path, create {!ARCHETYPE_ID}.make_from_string(arch_id_str), Current)
+					directory [full_path] := ara
+				else
+					post_info (Current, "build_directory", "pair_filename_i1", <<full_path>>)
+				end
+			else
+				post_error (Current, "build_directory", "invalid_filename_e1", <<full_path>>)
 			end
 		ensure
 			added_1_or_none: (0 |..| 1).has (directory.count - old directory.count)
