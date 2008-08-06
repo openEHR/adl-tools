@@ -54,7 +54,7 @@ feature {NONE} -- Initialisation
 feature -- Access
 
 	build_completed: BOOLEAN
-			-- True if an attempt has been made to build the whole repository
+			-- True if last attempt to build a subtree succeeded
 
 	status: STRING
 			-- Last status of compiler.
@@ -158,7 +158,7 @@ feature {NONE} -- Implementation
 			status := "=============== " + message + " ===============%N"
 			call_visual_update_action (Void)
 			is_interrupted := False
-			build_completed := True
+			build_completed := False
 			archetype_directory.do_subtree (subtree, agent do_if_archetype (?, action), Void)
 			status := "=============== finished " + message + " ===============%N"
 			call_visual_update_action (Void)
