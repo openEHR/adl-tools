@@ -21,6 +21,11 @@ inherit
 			{NONE} all
 		end
 
+	ADL_SYNTAX_CONVERTER
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -39,7 +44,7 @@ feature -- Visitor
 				last_result.append(apply_style(symbol(SYM_EQ), STYLE_OPERATOR) + format_item(FMT_SPACE))
 			end
 			if a_node.is_typed and a_node.type_visible then
-				last_result.append(a_node.rm_type_name + format_item(FMT_SPACE) + symbol(SYM_START_DBLOCK) +
+				last_result.append(convert_dadl_type_name(a_node.rm_type_name) + format_item(FMT_SPACE) + symbol(SYM_START_DBLOCK) +
 					format_item(FMT_NEWLINE))
 			elseif not a_node.is_root then
 				last_result.append(symbol(SYM_START_DBLOCK) + format_item(FMT_NEWLINE))
