@@ -889,7 +889,7 @@ if yy_act = 89 then
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 381")
 end
-	-- match a pattern like 'Type_Identifier whitespace <'
+	-- match a pattern like '(Type_Identifier) whitespace <'
 				set_start_condition (IN_C_DOMAIN_TYPE)
 				in_buffer.append_string (text)
 			
