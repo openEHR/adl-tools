@@ -65,9 +65,9 @@ feature -- Commands
 			end
 			create arch_output_flat.make_staging (arch_child_diff, arch_parent_flat)
 			flatten_definition
+			arch_output_flat.rebuild
 			flatten_invariants
 			flatten_ontology
-			arch_output_flat.rebuild
 			arch_output_flat.set_parent_archetype_id (arch_parent_flat.archetype_id)
 			arch_output_flat.set_is_valid (True)
 		ensure
@@ -129,13 +129,12 @@ feature {NONE} -- Implementation
 			-- perform grafts of node from differential archetype on corresponding node in flat parent
 			-- only interested in C_COMPLEX_OBJECTs
 		local
-			cco_child_diff, cco_output_flat: C_COMPLEX_OBJECT
+			cco_output_flat: C_COMPLEX_OBJECT
 			apa: ARCHETYPE_PATH_ANALYSER
 			child_attr_name: STRING
 			c_attr_child, c_attr_output: C_ATTRIBUTE
 		do
-			cco_child_diff ?= a_c_node
-			if cco_child_diff /= Void then
+			if {cco_child_diff: !C_COMPLEX_OBJECT} a_c_node then
 				debug ("flatten")
 					io.put_string ("---------- at child differential object node " + cco_child_diff.path + " ---------%N")
 				end
@@ -143,59 +142,77 @@ feature {NONE} -- Implementation
 				debug ("flatten")
 					io.put_string ("%Tgetting output object node using path " + apa.path_at_level (arch_output_flat.specialisation_depth) + "%N")
 				end
-				cco_output_flat ?= arch_output_flat.c_object_at_path (apa.path_at_level (arch_parent_flat.specialisation_depth))
-
-				-- firstly, add overrides from immediate child node to corresponding flat node
-				cco_output_flat.overlay_differential(cco_child_diff)
-
-				-- iterate through child attributes and overlay a) new nodes in existing container attributes, and b) new attributes from child
-				from
-					cco_child_diff.attributes.start
-				until
-					cco_child_diff.attributes.off
-				loop
-					child_attr_name := cco_child_diff.attributes.item.rm_attribute_name
+				-- have to make sure path exists in flat parent - it might not any more due to previous overlay from a sibling specialised node
+				if not arch_output_flat.definition.has_object_path (apa.path_at_level (arch_parent_flat.specialisation_depth)) then
+					-- have to graft in entire object as a sibling
 					debug ("flatten")
-						io.put_string ("%T%Tattribute in child: " + child_attr_name + " ... ")
+						io.put_string ("%Tgrafting sibling object " + cco_child_diff.path + "%N")
+					end
+					c_attr_output := arch_output_flat.definition.c_attribute_at_path (cco_child_diff.parent.path)
+					c_attr_output.put_sibling_child(cco_child_diff.safe_deep_twin)
+				else
+					cco_output_flat ?= arch_output_flat.definition.c_object_at_path (apa.path_at_level (arch_parent_flat.specialisation_depth))
+
+					-- firstly, add overrides from immediate child node to corresponding flat node
+					if cco_output_flat.parent /= Void then
+						cco_output_flat.parent.overlay_differential(cco_output_flat, cco_child_diff)
+					else
+						cco_output_flat.overlay_differential(cco_child_diff)
 					end
 
-					-- for attributes that are found in the flat parent tree, we need to check which of their children
-					-- if any need to be cloned into the output
-					if cco_output_flat.has_attribute (child_attr_name) then
+					-- iterate through child attributes and overlay a) new nodes in existing container attributes, and b) new attributes from child
+					from
+						cco_child_diff.attributes.start
+					until
+						cco_child_diff.attributes.off
+					loop
+						child_attr_name := cco_child_diff.attributes.item.rm_attribute_name
 						debug ("flatten")
-							io.put_string ("found attr " + child_attr_name + " in parent %N")
+							io.put_string ("%T%Tattribute in child: " + child_attr_name + " ... ")
 						end
 
-						-- only interested in container attributes found in the source archetype, since they may not have all members
-						-- from the parent. Here we create a list of the children that are overridden or inherited in the source - these
-						c_attr_child := cco_child_diff.c_attribute_at_path (child_attr_name)
-						c_attr_output := cco_output_flat.c_attribute_at_path(child_attr_name)
-						if c_attr_child.is_multiple then
-							-- graft the cardinality if that has been changed
-							if not c_attr_child.cardinality.interval.is_equal (c_attr_output.cardinality.interval) then
-								c_attr_output.set_cardinality (c_attr_child.cardinality.deep_twin)
+						-- for attributes that are found in the flat parent tree, we need to check which of their children
+						-- if any need to be cloned into the output
+						if cco_output_flat.has_attribute (child_attr_name) then
+							debug ("flatten")
+								io.put_string ("found attr " + child_attr_name + " in parent %N")
 							end
-							merge_container_attribute(c_attr_output, c_attr_child)
-						else
-							merge_single_attribute(c_attr_output, c_attr_child)
+
+							-- for container attributes in the source archetype, we graft in new elements; overrides will be
+							-- handled by being traversed by this routine later
+							c_attr_child := cco_child_diff.c_attribute_at_path (child_attr_name)
+							c_attr_output := cco_output_flat.c_attribute_at_path(child_attr_name)
+							if c_attr_child.is_multiple then
+								-- graft the cardinality if that has been changed
+								if not c_attr_child.cardinality.interval.is_equal (c_attr_output.cardinality.interval) then
+									c_attr_output.set_cardinality (c_attr_child.cardinality.deep_twin)
+								end
+								debug ("flatten")
+									io.put_string ("%T merge container attribute at " + c_attr_child.path + " into output%N")
+								end
+								merge_container_attribute(c_attr_output, c_attr_child)
+							else -- for single-valued attributes, have to merge any non-CCO children
+								debug ("flatten")
+									io.put_string ("%T merge single attribute at " + c_attr_child.path + " into output%N")
+								end
+								merge_single_attribute(c_attr_output, c_attr_child)
+							end
+						else  -- otherwise just do a deep clone of the whole attribute from the child flat to the output
+							c_attr_child := cco_child_diff.attributes.item.safe_deep_twin
+							debug ("flatten")
+								io.put_string ("in child only; deep_clone attribute at " + c_attr_child.path +
+										" from diff child and graft to " + cco_output_flat.path + " in output%N")
+							end
+							cco_output_flat.put_attribute (c_attr_child)
 						end
-					else  -- otherwise just do a deep clone of the whole attribute from the child flat to the output
-						debug ("flatten")
-							io.put_string ("in child only; deep_clone object at " + cco_child_diff.path + " from diff child and graft to " + cco_output_flat.path + " in output%N")
-						end
-						c_attr_child := cco_child_diff.attributes.item.safe_deep_twin
-						cco_output_flat.put_attribute (c_attr_child)
-						debug ("flatten")
-							io.put_string ("%T%Tgrafted attribute to " + c_attr_child.path + "%N")
-						end
+						cco_child_diff.attributes.forth
 					end
-					cco_child_diff.attributes.forth
 				end
 			end
 		end
 
 	merge_container_attribute(c_attr_output, c_attr_child: C_ATTRIBUTE) is
-			-- merge objects in container attribute `a_src_attr' into `an_output_attr', using ordering
+			-- merge new objects in container attribute `a_src_attr' into `an_output_attr', using ordering
 			-- information in source attribute objects, and replacing or inserting as appropriate
 		local
 			insert_obj: C_OBJECT
@@ -286,7 +303,7 @@ feature {NONE} -- Implementation
 			-- in the specialised attribute, or are non C_COMPLEX_OBJECTs (if they are the latter, they will get traversed
 			-- normally by node_graft())
 		local
-			rm_parent_classes: ARRAYED_LIST [STRING]
+			rm_super_classes: ARRAYED_LIST [STRING]
 		do
 			from
 				c_attr_child.children.start
@@ -300,15 +317,15 @@ feature {NONE} -- Implementation
 					elseif c_attr_output.has_child_with_rm_type_name(c_attr_child.children.item.rm_type_name) then -- find a node of same type, then replace completely
 						c_attr_output.replace_child_by_rm_type_name (c_attr_child.children.item.deep_twin)
 					else -- or a RM parent type, then add
-						rm_parent_classes := rm_checker.super_classes_of(c_attr_child.children.item.rm_type_name)
+						rm_super_classes := rm_checker.super_classes_of(c_attr_child.children.item.rm_type_name)
 						from
-							rm_parent_classes.start
+							rm_super_classes.start
 						until
-							rm_parent_classes.off or c_attr_output.has_child_with_rm_type_name(rm_parent_classes.item)
+							rm_super_classes.off or c_attr_output.has_child_with_rm_type_name(rm_super_classes.item)
 						loop
-							rm_parent_classes.forth
+							rm_super_classes.forth
 						end
-						if not rm_parent_classes.off then
+						if not rm_super_classes.off then
 							c_attr_output.put_child (c_attr_child.children.item.deep_twin)
 						end
 					end
@@ -336,7 +353,7 @@ feature {NONE} -- Implementation
 			merge_desc.put_boolean (before_flag, 4)
 			merge_list.extend (merge_desc)
 			debug ("flatten")
-				io.put_string ("%T=== added MERGE DESC " + src_start_pos.out + ", " + src_end_pos.out + ", " + tgt_insert_obj.node_id + ", " + before_flag.out + "%N")
+				io.put_string ("%T%T%T=== added MERGE DESC " + src_start_pos.out + ", " + src_end_pos.out + ", " + tgt_insert_obj.node_id + ", " + before_flag.out + "%N")
 			end
 		end
 

@@ -16,7 +16,7 @@
 			<debug name="dlg_dispatcher" enabled="false"/>
 			<debug name="dt" enabled="false"/>
 			<debug name="exclude list" enabled="false"/>
-			<debug name="flatten" enabled="false"/>
+			<debug name="flatten" enabled="true"/>
 			<debug name="gelex" enabled="false"/>
 			<debug name="geyacc" enabled="false"/>
 			<debug name="include list" enabled="false"/>

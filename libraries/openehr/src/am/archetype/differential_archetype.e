@@ -61,9 +61,7 @@ feature -- Initialisation
 		require
 			Flat_archetype_valid: a_flat /= Void
 		local
-			c_obj: C_COMPLEX_OBJECT
-			c_prev_obj, c_next_obj: C_OBJECT
-			c_attr: C_ATTRIBUTE
+			cco_prev, cco_next: C_OBJECT
 			list_builder: C_ITERATOR
 			a_flat_copy: FLAT_ARCHETYPE
 		do
@@ -91,17 +89,15 @@ feature -- Initialisation
 				until
 					inherited_subtree_list.off
 				loop
-					c_obj ?= inherited_subtree_list.item_for_iteration
-
-					if c_obj /= Void then
-						if c_obj.parent /= Void and c_obj.parent.is_ordered then
-							c_next_obj := c_obj.parent.child_after (c_obj)
-							if c_next_obj /= Void and c_next_obj.rolled_up_specialisation_status.value = ss_added then
-								c_next_obj.set_sibling_order_after (c_obj.node_id)
+					if {cco_1: !C_COMPLEX_OBJECT} inherited_subtree_list.item_for_iteration then
+						if cco_1.parent /= Void and cco_1.parent.is_ordered then
+							cco_next := cco_1.parent.child_after (cco_1)
+							if cco_next /= Void and cco_next.specialisation_status (specialisation_depth).value = ss_added then
+								cco_next.set_sibling_order_after (cco_1.node_id)
 							end
-							c_prev_obj := c_obj.parent.child_before (c_obj)
-							if c_prev_obj /= Void and c_prev_obj.rolled_up_specialisation_status.value = ss_added then
-								c_prev_obj.set_sibling_order_before (c_obj.node_id)
+							cco_prev := cco_1.parent.child_before (cco_1)
+							if cco_prev /= Void and cco_prev.specialisation_status (specialisation_depth).value = ss_added then
+								cco_prev.set_sibling_order_before (cco_1.node_id)
 							end
 						end
 					end
@@ -115,16 +111,13 @@ feature -- Initialisation
 				until
 					inherited_subtree_list.off
 				loop
-					c_obj ?= inherited_subtree_list.item_for_iteration
-
-					if c_obj /= Void then
-						if c_obj.parent /= Void then
-							c_obj.parent.remove_child (c_obj)
+					if {cco_2: !C_COMPLEX_OBJECT} inherited_subtree_list.item_for_iteration then
+						if cco_2.parent /= Void then
+							cco_2.parent.remove_child (cco_2)
 						else
-							-- c_obj must be the parent, which means the entire definition is a copy of that from the parent archetype
+							-- cco_2 must be the parent, which means the entire definition is a copy of that from the parent archetype
 						end
-					else
-						c_attr ?= inherited_subtree_list.item_for_iteration
+					elseif {c_attr: !C_ATTRIBUTE} inherited_subtree_list.item_for_iteration then
 						c_attr.parent.remove_attribute (c_attr)
 					end
 

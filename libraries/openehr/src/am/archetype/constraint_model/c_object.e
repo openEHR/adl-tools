@@ -158,13 +158,6 @@ feature -- Comparison
 
 feature -- Modification
 
-	set_object_id(an_object_id:STRING) is
-		require
-			Object_id_valid: an_object_id /= Void and then not an_object_id.is_empty
-		do
-			representation.set_node_id(an_object_id)
-		end
-
 	set_occurrences(ivl: INTERVAL[INTEGER]) is
 			--
 		require
@@ -203,6 +196,13 @@ feature -- Modification
 			create sibling_order.make_after (a_node_id)
 		ensure
 			sibling_order_set: sibling_order /= Void and (sibling_order.is_after and sibling_order.sibling_node_id.is_equal (a_node_id))
+		end
+
+	set_object_id(an_object_id:STRING) is
+		require
+			Object_id_valid: an_object_id /= Void and then not an_object_id.is_empty
+		do
+			representation.set_node_id(an_object_id)
 		end
 
 	overlay_differential(other: like Current) is

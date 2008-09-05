@@ -27,7 +27,7 @@ inherit
 
 create
 	initialise
-	
+
 feature -- Initialisation
 
 	initialise(an_ontology: ARCHETYPE_ONTOLOGY) is

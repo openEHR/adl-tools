@@ -19,6 +19,13 @@ inherit
 			default_create, parent, representation
 		end
 
+	ARCHETYPE_TERM_CODE_TOOLS
+		export {NONE}
+			all
+		undefine
+			default_create
+		end
+
 create
 	make_single, make_multiple
 
@@ -63,13 +70,13 @@ feature -- Access
 			Result := representation.node_id
 		end
 
+	children: ARRAYED_LIST [C_OBJECT]
+
 	existence: INTERVAL [INTEGER]
 
 	cardinality: CARDINALITY
 
 	parent: C_COMPLEX_OBJECT
-
-	children: ARRAYED_LIST [C_OBJECT]
 
 	child_count: INTEGER is
 			-- number of children; 0 if any_allowed is True
@@ -112,7 +119,33 @@ feature -- Access
 		require
 			has_child_with_id(a_node_id)
 		do
-			Result ?= representation.child_with_id (a_node_id).content_item
+			from
+				children.start
+			until
+				children.off or children.item.node_id.is_equal (a_node_id)
+			loop
+				children.forth
+			end
+			Result := children.item
+		ensure
+			Result_exists: Result /= Void
+		end
+
+	children_matching_id(a_node_id: STRING): ARRAYED_LIST[C_OBJECT] is
+			-- find child nodes with node_ids that contain `a_node_id', e.g. 'at0013' would match
+			-- nodes with ids 'at0013.1', 'at0013.2', 'at0013.1.5' and so on
+		do
+			create Result.make(0)
+			from
+				children.start
+			until
+				children.off
+			loop
+ 				if children.item.node_id.has_substring (a_node_id) then
+ 					Result.extend(children.item)
+ 				end
+				children.forth
+			end
 		ensure
 			Result_exists: Result /= Void
 		end
@@ -166,7 +199,7 @@ feature -- Status Report
 			Result := representation.is_multiple
 		end
 
-	is_ordered : BOOLEAN is
+	is_ordered: BOOLEAN is
 			-- 	True if this attribute is multiple and ordered
 		do
 			Result := is_multiple and then cardinality.is_ordered
@@ -317,6 +350,28 @@ feature -- Modification
 			an_obj.set_parent(Current)
 		end
 
+	put_sibling_child(an_obj: C_OBJECT) is
+			-- put a new child node after any sibling that is already there
+			-- 'sibling' is defined as an object with a node_id with the same parent as the node_id of `an_obj';
+			-- usually it is a specialised node id with a common parent, but may be a top level id
+			-- put `an_obj' at end if no sibling found
+		require
+			Object_exists: an_obj /= Void
+			Object_occurrences_valid: not is_multiple implies an_obj.occurrences.upper <= 1
+			Object_id_valid: an_obj.is_addressable
+		local
+			parent_id: STRING
+			siblings: ARRAYED_LIST [C_OBJECT]
+		do
+			parent_id := specialisation_parent_from_code (an_obj.node_id)
+			siblings := children_matching_id(parent_id)
+			if not siblings.is_empty then
+				put_child_right(an_obj, siblings.last)
+			else
+				put_child(an_obj)
+			end
+		end
+
 	replace_child_by_id(an_obj: C_OBJECT; an_id: STRING) is
 			-- replace node with id `an_id' by `an_obj'
 		require
@@ -349,6 +404,16 @@ feature -- Modification
 		do
 			representation.remove_child (an_obj.node_id)
 			children.prune_all(an_obj)
+		end
+
+	overlay_differential(an_obj, diff_obj: C_OBJECT) is
+			-- apply any differences from `diff_obj' to `old_obj' node including node_id
+		require
+			Obj_valid: has_child (an_obj)
+			Diff_obj_valid: diff_obj /= Void and then diff_obj.is_node_conformant_to (an_obj)
+		do
+			representation.replace_node_id(an_obj.representation, diff_obj.node_id)
+			an_obj.overlay_differential (diff_obj)
 		end
 
 feature -- Representation

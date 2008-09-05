@@ -236,6 +236,13 @@ feature -- Modification
 			create children_sorted.make
 		end
 
+	replace_node_id(an_obj: like child_type; a_node_id: STRING) is
+			-- replace the node_id of `an_obj' with `a_node_id'
+		do
+			children.replace_key (a_node_id, an_obj.node_id)
+			an_obj.set_node_id(a_node_id)
+		end
+
 feature {OG_NODE} -- Implementation
 
 	children: HASH_TABLE [like child_type, STRING]
