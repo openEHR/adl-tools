@@ -88,6 +88,8 @@ feature -- Access
 			if pos > 1 then
 				Result := children.i_th (pos-1)
 			end
+		ensure
+			has_result: Result /= Void implies has_child (Result)
 		end
 
 	child_after(an_obj: C_OBJECT): C_OBJECT is
@@ -102,7 +104,7 @@ feature -- Access
 				Result := children.i_th (pos+1)
 			end
 		ensure
-			Result /= Void implies has_child (Result)
+			has_result: Result /= Void implies has_child (Result)
 		end
 
 	child_with_id(a_node_id: STRING): C_OBJECT is
