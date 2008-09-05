@@ -22,6 +22,14 @@ inherit
 			is_equal
 		end
 
+	ARCHETYPE_TERM_CODE_TOOLS
+		export
+			{NONE} all;
+			{ANY} specialisation_depth_from_code;
+		undefine
+			is_equal
+		end
+
 	COMPARABLE
 
 feature -- Definitions
@@ -37,6 +45,9 @@ feature -- Initialisation
 		do
 			default_create
 			node_id := a_node_id
+			if is_valid_code (node_id) then
+				specialisation_depth := specialisation_depth_from_code(node_id)
+			end
 			content_item := a_content_item
 		ensure
 			Node_id_set: node_id = a_node_id
@@ -66,6 +77,9 @@ feature -- Access
 			-- position of this sibling as child of parent in parsed input
 
 	parent: OG_NODE
+
+	specialisation_depth: INTEGER
+			-- specialisation level of this node if identified
 
 feature -- Comparison
 
@@ -105,6 +119,9 @@ feature -- Modification
 			Node_id_valid: a_node_id /= Void and then not a_node_id.is_empty
 		do
 			node_id := a_node_id
+			if is_valid_code (node_id) then
+				specialisation_depth := specialisation_depth_from_code(node_id)
+			end
 		end
 
 	set_parent(a_node: like parent) is

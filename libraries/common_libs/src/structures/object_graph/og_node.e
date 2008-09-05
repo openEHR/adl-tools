@@ -160,7 +160,7 @@ feature -- Cursor Movement
 feature -- Modification
 
 	put_child(a_node: like child_type) is
-			-- put a new child node
+			-- put a new child node at the end of the list
 		require
 			Node_exists: a_node /= Void and then valid_child_for_insertion(a_node)
 		do
@@ -171,6 +171,49 @@ feature -- Modification
 			children_sorted.extend(a_node)
 		ensure
 			has_child (a_node)
+		end
+
+	put_child_left(a_node, before_node: like child_type) is
+			-- insert a new child node before another node in the list
+		require
+			Node_valid: a_node /= Void and then valid_child_for_insertion(a_node)
+			Before_node_valid: before_node /= Void and then has_child(before_node)
+		do
+			children.put(a_node, a_node.node_id)
+			a_node.set_parent(Current)
+			a_node.set_sibling_order(children.count)
+			children_ordered.go_i_th (children_ordered.index_of (before_node, 1))
+			children_ordered.put_left (a_node)
+			children_sorted.extend(a_node)
+		ensure
+			has_child (a_node)
+		end
+
+	put_child_right(a_node, after_node: like child_type) is
+			-- insert a new child node before another node in the list
+		require
+			Node_valid: a_node /= Void and then valid_child_for_insertion(a_node)
+			After_node_valid: after_node /= Void and then has_child(after_node)
+		do
+			children.put(a_node, a_node.node_id)
+			a_node.set_parent(Current)
+			a_node.set_sibling_order(children.count)
+			children_ordered.go_i_th (children_ordered.index_of (after_node, 1))
+			children_ordered.put_right (a_node)
+			children_sorted.extend(a_node)
+		ensure
+			has_child (a_node)
+		end
+
+	replace_child_by_id(a_node: like child_type; an_id: STRING) is
+			-- replace node with id `an_id' by `an_obj'
+		do
+			children_ordered.go_i_th (children_ordered.index_of (child_with_id(an_id), 1))
+			children_ordered.replace (a_node)
+			children_sorted.go_i_th (children_sorted.index_of (child_with_id(an_id), 1))
+			children_sorted.replace (a_node)
+			children.replace (a_node, an_id)
+			a_node.set_parent(Current)
 		end
 
 	remove_child(a_node_id: STRING) is

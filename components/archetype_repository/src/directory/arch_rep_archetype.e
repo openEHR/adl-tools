@@ -403,7 +403,7 @@ feature -- Modification
 				else
 					create arch_flattener.make (specialisation_parent.archetype_flat, archetype_differential)
 					arch_flattener.flatten_archetype
-					archetype_flat := arch_flattener.output_archetype
+					archetype_flat := arch_flattener.arch_output_flat
 				end
 
 				-- TODO: Consider setting `flat_text' from serialiser rather than by reading the flat file:

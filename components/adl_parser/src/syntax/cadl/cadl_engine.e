@@ -66,6 +66,9 @@ feature -- Status Report
 			Result := tree /= Void
 		end
 
+	is_differential: BOOLEAN
+			-- True if archetype is differential
+
 feature -- Commands
 
 	reset
@@ -76,7 +79,7 @@ feature -- Commands
 			serialised := Void
 		end
 
-	set_source (in_text: STRING; a_source_start_line: INTEGER) is
+	set_source (in_text: STRING; a_source_start_line: INTEGER; differential_flag: BOOLEAN) is
 			-- Set `in_text' as working artifact.
 		require
 			text_attached: in_text /= Void
@@ -85,10 +88,12 @@ feature -- Commands
 			source := in_text
 			source_start_line := a_source_start_line
 			in_parse_mode := True
+			is_differential := differential_flag
 		ensure
 			source_set: source = in_text
 			source_start_line_set: source_start_line = a_source_start_line
 			parsing: in_parse_mode
+			is_differential_set: is_differential = differential_flag
 		end
 
 	parse
@@ -100,7 +105,7 @@ feature -- Commands
 			tree := Void
 			serialised := Void
 			create parser.make
-			parser.execute (source, source_start_line)
+			parser.execute (source, source_start_line, is_differential)
 
 			if not parser.syntax_error then
 				tree := parser.output

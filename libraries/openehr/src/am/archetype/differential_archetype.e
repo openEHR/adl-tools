@@ -62,6 +62,7 @@ feature -- Initialisation
 			Flat_archetype_valid: a_flat /= Void
 		local
 			c_obj: C_COMPLEX_OBJECT
+			c_prev_obj, c_next_obj: C_OBJECT
 			c_attr: C_ATTRIBUTE
 			list_builder: C_ITERATOR
 			a_flat_copy: FLAT_ARCHETYPE
@@ -83,6 +84,30 @@ feature -- Initialisation
 					agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER) do inherited_subtree_list.put (a_c_node, a_c_node.path) end,
 					agent (a_c_node: ARCHETYPE_CONSTRAINT):BOOLEAN do Result := a_c_node.rolled_up_specialisation_status.value = ss_inherited end
 				)
+
+				-- add before/after ordering markers to new nodes whose parent attributes are ordered containers
+				from
+					inherited_subtree_list.start
+				until
+					inherited_subtree_list.off
+				loop
+					c_obj ?= inherited_subtree_list.item_for_iteration
+
+					if c_obj /= Void then
+						if c_obj.parent /= Void and c_obj.parent.is_ordered then
+							c_next_obj := c_obj.parent.child_after (c_obj)
+							if c_next_obj /= Void and c_next_obj.rolled_up_specialisation_status.value = ss_added then
+								c_next_obj.set_sibling_order_after (c_obj.node_id)
+							end
+							c_prev_obj := c_obj.parent.child_before (c_obj)
+							if c_prev_obj /= Void and c_prev_obj.rolled_up_specialisation_status.value = ss_added then
+								c_prev_obj.set_sibling_order_before (c_obj.node_id)
+							end
+						end
+					end
+
+					inherited_subtree_list.forth
+				end
 
 				-- remove inherited subtrees
 				from

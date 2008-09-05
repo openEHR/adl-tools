@@ -845,6 +845,10 @@ feature {NONE} -- Implementation
 			-- end
 
 			if a_node.is_addressable then
+				if a_node.sibling_order /= Void then
+					Result.append (a_node.sibling_order.as_string + " ")
+				end
+
 				if in_technical_mode then
 					Result.append (a_node.rm_type_name + "[" + a_node.node_id + "]")
 				end
@@ -887,6 +891,10 @@ feature {NONE} -- Implementation
 			-- if not a_node.is_occurrences_default then
 				-- Result.append(" [" + a_node.occurrences.as_occurrences_string + "] ")
 			-- end
+			if a_node.sibling_order /= Void then
+				Result.append (a_node.sibling_order.as_string + " ")
+			end
+
 			--if in_technical_mode then
 				Result.append(a_node.rm_type_name)
 			--end

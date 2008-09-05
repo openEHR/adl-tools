@@ -166,9 +166,35 @@ feature -- Status Report
 			Result := fail_reason = Void
 		end
 
+feature -- Comparison
+
+	is_subset_of (other: like Current): BOOLEAN is
+			-- True if this node is a subset, i.e. a redefinition of, `other' in the ADL constraint sense, i.e. that all
+			-- aspects of the definition of this node and all child nodes define a narrower, wholly
+			-- contained instance space of `other'.
+			-- Returns False if they are the same, or if they do not correspond
+		do
+			if other.any_allowed then
+				Result := True
+			elseif not any_allowed then
+				if terminology_id.is_equal (other.terminology_id) then
+					if code_list.count <= other.code_list.count then
+						from
+							code_list.start
+						until
+							code_list.off or not other.has_code (code_list.item)
+						loop
+							code_list.forth
+						end
+					end
+					Result := code_list.off
+				end
+			end
+		end
+
 feature -- Source Control
 
-	specialisation_status (specialisation_level: INTEGER): SPECIALISATION_STATUS is
+	specialisation_status (spec_level: INTEGER): SPECIALISATION_STATUS is
 			-- status of this node in the source text of this archetype with respect to the
 			-- specialisation hierarchy. Values are defined in SPECIALISATION_STATUSES
 			-- FIXME: this code is only an attempt to work out the specialisation status,
@@ -182,7 +208,7 @@ feature -- Source Control
 				until
 					code_list.off
 				loop
-					Result := Result.specialisation_dominant_status (specialisation_status_from_code (code_list.item, specialisation_level))
+					Result := Result.specialisation_dominant_status (specialisation_status_from_code (code_list.item, spec_level))
 					code_list.forth
 				end
 			end
@@ -366,7 +392,7 @@ feature {NONE} -- Implementation
 
 invariant
 	List_validity: code_list /= Void implies (not code_list.is_empty and terminology_id /= Void)
-	Any_allowed_validity: (terminology_id /= Void or code_list /= Void) xor any_allowed
+	Any_allowed_validity: terminology_id /= Void xor any_allowed
 
 end
 

@@ -14,6 +14,8 @@ indexing
 deferred class ARCHETYPE_CONSTRAINT
 
 inherit
+	SHARED_REFERENCE_MODEL_ACCESS
+
 	VISITABLE
 
 	SPECIALISATION_STATUSES
@@ -82,6 +84,23 @@ feature -- Status Report
 		deferred
 		ensure
 			not Result implies invalid_reason /= Void and then not invalid_reason.is_empty
+		end
+
+feature -- Comparison
+
+	is_node_conformant_to (other: like Current): BOOLEAN is
+			-- True if this node on its own (ignoring any subparts) expresses the same or narrower constraints as `other'.
+			-- An error message can be obtained by calling node_conformance_failure_reason
+		require
+			other /= Void
+		deferred
+		end
+
+	node_conformance_failure_reason (other: like Current): STRING is
+			-- generate an error message explaining why is_node_conformant_to() returned False
+		deferred
+		ensure
+			Result /= Void
 		end
 
 feature -- Representation

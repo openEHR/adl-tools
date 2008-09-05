@@ -166,6 +166,41 @@ feature -- Status Report
 			Result := any_allowed or else True
 		end
 
+feature -- Comparison
+
+	is_subset_of (other: like Current): BOOLEAN is
+			-- True if this node is a subset, i.e. a redefinition of, `other' in the ADL constraint sense, i.e. that all
+			-- aspects of the definition of this node and all child nodes define a narrower, wholly
+			-- contained instance space of `other'.
+			-- Returns False if they are the same, or if they do not correspond
+		local
+			other_item: C_QUANTITY_ITEM
+			fail: BOOLEAN
+		do
+			if other.any_allowed then
+				Result := True
+			elseif not any_allowed then
+				if (property = Void and other.property = Void) or else property.is_equal (other.property) then
+					if (list = Void and other.list = Void) then
+						Result := True
+					elseif list /= Void and other.list /= Void and list.count <= other.list.count then
+						from
+							list.start
+						until
+							list.off or fail
+						loop
+							other_item := other.list_item_by_units(list.item.units)
+							if other_item = Void or not other_item.magnitude.contains(list.item.magnitude) then
+								fail := True
+							end
+							list.forth
+						end
+						Result := list.off
+					end
+				end
+			end
+		end
+
 feature -- Conversion
 
 	as_string: STRING is
@@ -212,6 +247,24 @@ feature -- Implementation
 
 	default_units: STRING
 			-- record default units if proerty is set; used to generate a default value
+
+	list_item_by_units (a_units: STRING): C_QUANTITY_ITEM is
+			-- return item from `list' whose units match a_units' or else Void
+		require
+			a_units_valid: a_units /= Void and then not a_units.is_empty
+		do
+			from
+				list.start
+			until
+				list.off or list.item.units.is_equal (a_units)
+			loop
+				list.forth
+			end
+
+			if not list.off then
+				Result := list.item
+			end
+		end
 
 invariant
 	Items_valid: list /= Void implies not list.is_empty

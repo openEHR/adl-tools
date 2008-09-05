@@ -20,6 +20,8 @@ class ARCHETYPE_VALIDATOR
 
 inherit
 	AUTHORED_RESOURCE_VALIDATOR
+		rename
+			make as make_authored_resource
 		redefine
 			target, validate
 		end
@@ -47,10 +49,42 @@ inherit
 create
 	make
 
+feature {NONE} -- Initialisation
+
+	make (a_target_desc: like target_descriptor) is
+			-- set target_descriptor
+			-- initialise reporting variables
+		require
+			target_desc_attached: a_target_desc /= Void
+			target_desc_valid: a_target_desc.archetype_differential /= Void
+		do
+			target_descriptor := a_target_desc
+			make_authored_resource(target_descriptor.archetype_differential)
+			if target_descriptor.is_specialised then
+				if target_descriptor.specialisation_parent = Void then
+					errors.append ("Error: Specialisation parent is missing")
+					passed := False
+				else
+					flat_parent := target_descriptor.specialisation_parent.archetype_flat
+				end
+			end
+		ensure
+			target_descriptor_set: target_descriptor = a_target_desc
+			target_set: target = a_target_desc.archetype_differential
+			Parent_set: target_descriptor.is_specialised implies flat_parent /= Void
+			Passed: passed
+		end
+
 feature -- Access
 
+	target_descriptor: ARCH_REP_ARCHETYPE
+			-- differential archetype being validated
+
 	target: DIFFERENTIAL_ARCHETYPE
-			-- archetype descriptor
+			-- differential archetype being validated
+
+	flat_parent: FLAT_ARCHETYPE
+			-- flat version of parent archetype, if target is specialised
 
 	ontology: !ARCHETYPE_ONTOLOGY is
 			-- The ontology of the current archetype.
@@ -62,10 +96,10 @@ feature -- Validation
 
 	validate is
 		do
-			passed := True
-
-			validate_basics
-			validate_ontology_code_spec_levels
+			if passed then
+				validate_basics
+				validate_ontology_code_spec_levels
+			end
 
 			if passed then
 				target.build_xrefs
@@ -74,9 +108,7 @@ feature -- Validation
 				if target.has_slots then
 					build_slot_id_index
 				end
-			end
 
-			if passed then
 				Precursor
 				validate_languages
 				check_unidentified_nodes
@@ -84,10 +116,7 @@ feature -- Validation
 
 			-- validation requiring valid specialisation parent
 			if passed and target.is_specialised then
-				if target_descriptor.specialisation_parent = Void then
-					errors.append ("Error: Parent is missing")
-					passed := False
-		 		elseif not target_descriptor.specialisation_parent.is_valid then
+		 		if not target_descriptor.specialisation_parent.is_valid then
 					errors.append ("Error: Parent failed to validate")
 					passed := False
 		 		else
@@ -95,11 +124,13 @@ feature -- Validation
 				end
 			end
 
+			-- validation requiring parent links in place for specialised archetype
 			if passed then
 				validate_definition_codes
 
 				if target.is_specialised then
 					target.build_rolled_up_status
+					validate_specialised_definition
 				end
 
 				validate_internal_references
@@ -191,7 +222,7 @@ feature {NONE} -- Implementation
 		end
 
 	validate_definition_codes
-			-- Check if all at- and ac-codes found in the definition node tree are in the ontology.
+			-- Check if all at- and ac-codes found in the definition node tree are in the ontology (including inherited items).
 			-- Leave `passed' True if all found node_ids are defined in term_definitions,
 			-- and term_definitions contains no extras.
 		local
@@ -436,6 +467,82 @@ feature {NONE} -- Implementation
 				end
 			end
 		end
+
+	validate_specialised_definition is
+			-- validate definition of specialised archetype against flat parent
+		require
+			Target_specialised: target.is_specialised
+		local
+			def_it: C_ITERATOR
+		do
+			create def_it.make(target.definition)
+			def_it.do_until_surface(agent node_validate, agent node_test)
+		end
+
+	node_validate (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)  is
+			-- perform grafts of node from differential archetype on corresponding node in flat parent
+			-- only interested in C_COMPLEX_OBJECTs
+		local
+			co_parent_flat: !C_OBJECT
+			apa: ARCHETYPE_PATH_ANALYSER
+			child_attr_name: STRING
+			c_parent_attr: C_ATTRIBUTE
+		do
+			if {co_child_diff: !C_OBJECT} a_c_node then
+				create apa.make_from_string (co_child_diff.path)
+				co_parent_flat ?= flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth))
+
+				-- now determine if child object is same as or a specialisation of flat object
+				if not co_child_diff.is_node_conformant_to(co_parent_flat) then
+					passed := False
+					errors.append ("Error: node at path " + co_child_diff.path + " does not conform to parent path " + co_parent_flat.path +
+						"; reason:%N" + co_child_diff.node_conformance_failure_reason(co_parent_flat))
+				elseif co_child_diff.sibling_order /= Void then
+					if not co_parent_flat.parent.has_child_with_id (co_child_diff.sibling_order.sibling_node_id) then
+						passed := False
+						errors.append ("Error: node at path " + co_child_diff.path + " has order marker referring to non-existant sibling node " +
+							co_child_diff.sibling_order.sibling_node_id + "%N")
+					end
+				end
+
+				-- now look at attributes
+				if {cco_child_diff: !C_COMPLEX_OBJECT} co_child_diff then
+					from
+						cco_child_diff.attributes.start
+					until
+						cco_child_diff.attributes.off
+					loop
+						if {cco_parent_flat: !C_COMPLEX_OBJECT} co_parent_flat then
+							child_attr_name := cco_child_diff.attributes.item.rm_attribute_name
+							if cco_parent_flat.has_attribute (child_attr_name) then
+								c_parent_attr := cco_parent_flat.c_attribute_at_path (child_attr_name)
+								if not cco_child_diff.attributes.item.is_node_conformant_to(c_parent_attr) then
+									passed := False
+									errors.append ("Error: attribute " + child_attr_name + " at path " + co_child_diff.path + " does not conform to parent " +
+										co_parent_flat.path + "; reason:%N" + cco_child_diff.attributes.item.node_conformance_failure_reason(c_parent_attr))
+
+								end
+							end
+						end
+						cco_child_diff.attributes.forth
+					end
+				end
+			end
+		end
+
+	node_test (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN  is
+			-- return True if a conformant path of a_c_node within the differential archetype is
+			-- found within the flat parent archetype - i.e. a_c_node is inherited or redefined from parent (but not new)
+			-- and no previous errors encountered
+		local
+			apa: ARCHETYPE_PATH_ANALYSER
+		do
+			create apa.make_from_string(a_c_node.path)
+			Result := passed and flat_parent.has_path (apa.path_at_level (flat_parent.specialisation_depth))
+		end
+
+invariant
+	target_descriptor_attached: target_descriptor /= Void
 
 end
 

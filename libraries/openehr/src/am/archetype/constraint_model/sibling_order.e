@@ -1,108 +1,76 @@
 indexing
 	component:   "openEHR Archetype Project"
-	description: "[
-			 Object node type representing a reference to a constraint
-			 defined in the ontology section of the archetype.
-			 ]"
-	keywords:    "test, ADL"
-
+	description: "Represents the order of this node with respect to sibling nodes of the same (ordered) parent"
+	keywords:    "specialisation, ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics<support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.biz>"
+	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class CONSTRAINT_REF
-
-inherit
-	C_REFERENCE_OBJECT
-		redefine
-			default_create, representation, is_valid, enter_subtree, exit_subtree
-		end
+class SIBLING_ORDER
 
 create
-	make
+	make_before, make_after
 
 feature -- Initialisation
 
-	default_create is
-			--
+	make_before(a_sibling_node_id: STRING) is
+			-- make to indicate node is before another node
+		require
+			Sibling_node_id_valid: a_sibling_node_id /= Void and then not a_sibling_node_id.is_empty
 		do
-			precursor
-			rm_type_name := (create {CODE_PHRASE}.default_create).generator
+			sibling_node_id := a_sibling_node_id
+			is_before := True
+		ensure
+			Sibling_node_id_set: sibling_node_id = a_sibling_node_id
+			Is_before: is_before
 		end
 
-	make(a_code: STRING) is
-			-- make from pattern of form "[acNNNN[.NN[etc]]]"
+	make_after(a_sibling_node_id: STRING) is
+			-- make to indicate node is after another node
 		require
-			Code_exists: a_code /= Void and then not a_code.is_empty
+			Sibling_node_id_valid: a_sibling_node_id /= Void and then not a_sibling_node_id.is_empty
 		do
-			default_create
-			create representation.make_anonymous(Current)
-			target := a_code
+			sibling_node_id := a_sibling_node_id
 		ensure
-			Target_set: target = a_code
+			Sibling_node_id_set: sibling_node_id = a_sibling_node_id
+			Is_before: is_after
 		end
 
 feature -- Access
 
-	target: STRING
-			-- reference to another constraint object containing the logical
-			-- constraints for this object, defined outside the archetype,
-			-- usually in the ontology section of an ADL archetype
-			-- [called 'reference' in AOM, but that is a keyword in Eiffel]
+	sibling_node_id: STRING
 
 feature -- Status Report
 
-	is_valid: BOOLEAN is
-			-- report on validity
+	is_before: BOOLEAN
+
+	is_after: BOOLEAN is
 		do
-			Result := precursor
+			Result := not is_before
 		end
 
-feature -- Comparison
-
-	is_subset_of (other: like Current): BOOLEAN is
-			-- True if this node is a subset, i.e. a redefinition of, `other'
-			-- Returns False if they are the same, or if they do not correspond
-		do
-				-- FIXME - tobe implemented
-		end
-
-feature -- Conversion
+feature -- Output
 
 	as_string: STRING is
-			--
+			-- output as a string
 		do
-			create Result.make (0)
-			Result.append("[" + target + "]")
-		end
+			create Result.make(0)
 
-feature -- Representation
-
-	representation: !OG_OBJECT_LEAF
-
-feature -- Visitor
-
-	enter_subtree(visitor: C_VISITOR; depth: INTEGER) is
-			-- perform action at start of block for this node
-		do
-			precursor(visitor, depth)
-			visitor.start_constraint_ref(Current, depth)
-		end
-
-	exit_subtree(visitor: C_VISITOR; depth: INTEGER) is
-			-- perform action at end of block for this node
-		do
-			precursor(visitor, depth)
-			visitor.end_constraint_ref(Current, depth)
+			if is_before then
+				Result.append("before ")
+			else
+				Result.append("after ")
+			end
+			Result.append("[" + sibling_node_id + "]")
 		end
 
 invariant
-	Target_valid: target /= Void
+	Validity: sibling_node_id /= Void
 
 end
 
@@ -121,7 +89,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is cadl_object_term.e.
+--| The Original Code is cadl_cardinality.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

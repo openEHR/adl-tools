@@ -21,7 +21,7 @@ inherit
 		rename
 			make as make_og_node
 		redefine
-			parent, child_type, put_child, valid_child_for_insertion
+			parent, child_type, put_child, put_child_left, put_child_right, valid_child_for_insertion
 		end
 
 create
@@ -118,6 +118,34 @@ feature -- Modification
 				obj_node.set_node_id(new_id)
 			end
 			precursor(obj_node)
+		end
+
+	put_child_left(obj_node, before_obj_node: like child_type) is
+			-- insert a new child node before another object node
+			-- if new child is an OBJECT_NODE id is already known in children, generate a unique id for it
+		local
+			new_id: STRING
+		do
+			if children.has(obj_node.node_id) then
+				duplicate_child_id_count := duplicate_child_id_count + 1
+				new_id := obj_node.node_id + "_#" + duplicate_child_id_count.out
+				obj_node.set_node_id(new_id)
+			end
+			precursor(obj_node, before_obj_node)
+		end
+
+	put_child_right(obj_node, after_obj_node: like child_type) is
+			-- insert a new child node before another object node
+			-- if new child is an OBJECT_NODE id is already known in children, generate a unique id for it
+		local
+			new_id: STRING
+		do
+			if children.has(obj_node.node_id) then
+				duplicate_child_id_count := duplicate_child_id_count + 1
+				new_id := obj_node.node_id + "_#" + duplicate_child_id_count.out
+				obj_node.set_node_id(new_id)
+			end
+			precursor(obj_node, after_obj_node)
 		end
 
 feature {NONE} -- Implementation

@@ -1,55 +1,28 @@
 indexing
 	component:   "openEHR Archetype Project"
-	description: "Common routines for HTML ADL serialisation"
-	keywords:    "test, ADL"
+	description: "Shared access to service interface to object model"
+	keywords:    "ADL, archetype, reference model"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2008 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class HTML_CADL_SERIALISATION_PROFILE
 
-inherit
-	HTML_SERIALISATION_PROFILE
+class SHARED_REFERENCE_MODEL_ACCESS
 
-	CADL_TOKENS
-		export
-			{NONE} all
-		end
+feature -- Access
 
-create
-	make
-
-feature {NONE} -- Implementation
-
-	symbols: HASH_TABLE[STRING, INTEGER] is
-			-- keywords in this format, keyed by logical name
+	rm_checker: MODEL_ACCESS is
 		once
-			create Result.make(0)
-			Result.put("&isin;",			SYM_MATCHES)
-			Result.put("occurrences",		SYM_OCCURRENCES)
-			Result.put("existence",			SYM_EXISTENCE)
-			Result.put("cardinality",		SYM_CARDINALITY)
-			Result.put("use_node",			SYM_USE_NODE)
-			Result.put("allow_archetype",		SYM_ALLOW_ARCHETYPE)
-
-			Result.put("include",			SYM_INCLUDE)
-			Result.put("exclude",			SYM_EXCLUDE)
-
-			Result.put("before",			SYM_BEFORE)
-			Result.put("after",			SYM_AFTER)
-
-			Result.put("{",				SYM_START_CBLOCK)
-			Result.put("}",				SYM_END_CBLOCK)
-			Result.put("*",				SYM_ANY)
-			Result.put("invariant",			SYM_INVARIANT)
+			create Result
 		end
 
 end
+
 
 
 --|
@@ -66,10 +39,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is html_cadl_serialisation_profile.e.
+--| The Original Code is archetype_directory_item.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2006
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

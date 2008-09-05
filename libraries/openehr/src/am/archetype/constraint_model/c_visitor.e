@@ -27,6 +27,7 @@ feature -- Initialisation
 			Ontology_valid: an_ontology /= Void
 		do
 			ontology := an_ontology
+			is_differential := {an_ont: DIFFERENTIAL_ARCHETYPE_ONTOLOGY} an_ontology
 		end
 
 feature -- Visitor
@@ -162,6 +163,9 @@ feature -- Finalisation
 feature {NONE} -- Implementation
 
 	ontology: ARCHETYPE_ONTOLOGY
+
+	is_differential: BOOLEAN
+			-- True if archetype is differential form
 
 end
 

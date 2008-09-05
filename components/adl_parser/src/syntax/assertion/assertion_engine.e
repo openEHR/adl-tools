@@ -67,9 +67,12 @@ feature -- Status Report
 			Result := tree /= Void
 		end
 
+	is_differential: BOOLEAN
+			-- True if archteype is differential
+
 feature -- Commands
 
-	set_source(in_text: STRING; a_source_start_line: INTEGER) is
+	set_source(in_text: STRING; a_source_start_line: INTEGER; differential_flag: BOOLEAN) is
 			-- set `in_text' as working artifact
 		require
 			Text_valid: in_text /= Void and then not in_text.is_empty
@@ -78,8 +81,10 @@ feature -- Commands
 			source := in_text
 			source_start_line := a_source_start_line
 			in_parse_mode := True
+			is_differential := differential_flag
 		ensure
-			in_parse_mode
+			in_parse_mode: in_parse_mode
+			is_differential_set: is_differential = differential_flag
 		end
 
 	parse is
@@ -92,7 +97,7 @@ feature -- Commands
 			tree := Void
 			serialised := Void
 			create parser.make
-			parser.execute(source, source_start_line)
+			parser.execute(source, source_start_line, is_differential)
 			if not parser.syntax_error then
 				tree := parser.assertion_list
 			end

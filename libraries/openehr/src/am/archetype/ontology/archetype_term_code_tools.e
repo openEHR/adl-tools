@@ -251,6 +251,16 @@ feature -- Comparison
 			end
 		end
 
+	codes_conformant(a_child_code, a_parent_code: STRING): BOOLEAN is
+			-- True if `a_child_code' conforms to `a_parent_code' in the sense of specialisation, i.e.
+			-- is `a_child_code' the same as or more specialised than `a_parent_code'
+		require
+			Child_code_valid: a_child_code /= Void and then not a_child_code.is_empty
+			Parent_code_valid: a_parent_code /= Void and then not a_parent_code.is_empty
+		do
+			Result := a_child_code.substring (1, a_parent_code.count).is_equal (a_parent_code)
+		end
+
 end
 
 

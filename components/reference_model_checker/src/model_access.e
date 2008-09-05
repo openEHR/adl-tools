@@ -1,55 +1,68 @@
 indexing
 	component:   "openEHR Archetype Project"
-	description: "Common routines for HTML ADL serialisation"
-	keywords:    "test, ADL"
+	description: "Service interface to an object model access for types and attributes mentioned in archetypes"
+	keywords:    "ADL, archetype, reference model"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2008 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class HTML_CADL_SERIALISATION_PROFILE
 
-inherit
-	HTML_SERIALISATION_PROFILE
+class MODEL_ACCESS
 
-	CADL_TOKENS
-		export
-			{NONE} all
+feature {NONE} -- Initialisation
+
+feature -- Access
+
+	super_classes_of (a_class: STRING): ARRAYED_LIST [STRING] is
+			-- return all super classes of `a_class' up to top class (usually 'ANY', 'Object' or something similar)
+			-- does  not include current class. Returns empty list if none.
+		require
+			Class_valid: a_class /= Void and then has_class(a_class)
+		do
+			create Result.make(0)
+			-- FIXME: TO BE IMPLEMENTED
+		ensure
+			Result_exists: Result /= Void
 		end
 
-create
-	make
+feature -- Status Report
+
+	is_subclass_of (a_subclass, a_parent_class: STRING): BOOLEAN is
+			-- True if `a_subclass' is a sub-class in the model of `a_parent_class'
+		require
+			Sub_class_valid: a_subclass /= Void and then has_class (a_subclass)
+			Parent_class_valid: a_parent_class /= Void and then has_class (a_parent_class)
+		do
+			-- FIXME: TO BE IMPLEMENTED
+			Result := True
+		end
+
+	has_class (a_class: STRING): BOOLEAN is
+			-- True if `a_class' exists as a class in the model
+		require
+			Class_valid: a_class /= Void and then not a_class.is_empty
+		do
+			-- FIXME: TO BE IMPLEMENTED
+			Result := True
+		end
+
+feature -- Status Setting
+
+feature -- Commands
+
+feature -- Comparison
+
+feature -- Modification
 
 feature {NONE} -- Implementation
 
-	symbols: HASH_TABLE[STRING, INTEGER] is
-			-- keywords in this format, keyed by logical name
-		once
-			create Result.make(0)
-			Result.put("&isin;",			SYM_MATCHES)
-			Result.put("occurrences",		SYM_OCCURRENCES)
-			Result.put("existence",			SYM_EXISTENCE)
-			Result.put("cardinality",		SYM_CARDINALITY)
-			Result.put("use_node",			SYM_USE_NODE)
-			Result.put("allow_archetype",		SYM_ALLOW_ARCHETYPE)
-
-			Result.put("include",			SYM_INCLUDE)
-			Result.put("exclude",			SYM_EXCLUDE)
-
-			Result.put("before",			SYM_BEFORE)
-			Result.put("after",			SYM_AFTER)
-
-			Result.put("{",				SYM_START_CBLOCK)
-			Result.put("}",				SYM_END_CBLOCK)
-			Result.put("*",				SYM_ANY)
-			Result.put("invariant",			SYM_INVARIANT)
-		end
-
 end
+
 
 
 --|
@@ -66,10 +79,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is html_cadl_serialisation_profile.e.
+--| The Original Code is archetype_directory_item.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2006
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

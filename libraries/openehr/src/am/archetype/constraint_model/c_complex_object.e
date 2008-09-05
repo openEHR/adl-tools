@@ -207,6 +207,19 @@ feature -- Status Report
 			-- FIXME: to be implemented
 		end
 
+feature -- Comparison
+
+	is_subset_of (other: like Current): BOOLEAN is
+			-- True if this node is a subset, i.e. a redefinition of, `other'
+			-- Returns False if they are the same, or if they do not correspond
+		do
+			if other.any_allowed then
+				Result := True
+			elseif not any_allowed then
+				-- FIXME - tobe implemented
+			end
+		end
+
 feature -- Modification
 
 	put_attribute(an_attr: C_ATTRIBUTE) is

@@ -22,6 +22,9 @@ inherit
 create
 	make, make_from_differential
 
+create {ARCHETYPE_FLATTENER}
+	make_staging
+
 feature -- Initialisation
 
 	make_from_differential (a_diff: DIFFERENTIAL_ARCHETYPE) is
@@ -30,7 +33,28 @@ feature -- Initialisation
 			make(a_diff.archetype_id.deep_twin, a_diff.concept.deep_twin,
 					a_diff.original_language.code_string, a_diff.description.deep_twin,
 					a_diff.definition.deep_twin, a_diff.ontology.to_flat)
-			invariants := a_diff.invariants
+			if a_diff.has_invariants then
+				invariants := a_diff.invariants.deep_twin
+			end
+			rebuild
+			is_valid := True
+			is_generated := True
+		end
+
+feature {ARCHETYPE_FLATTENER} -- Initialisation
+
+	make_staging (a_diff: DIFFERENTIAL_ARCHETYPE; a_flat_parent: FLAT_ARCHETYPE) is
+			-- initialise from a differential archetype and its flat parent, as preparation
+			-- for generating a flat archetype. The items from the differential are used
+			-- except for the definition, which is the flat parent version, so that the
+			-- differential definition can be overlaid on it by a merging process.
+		do
+			make(a_diff.archetype_id.deep_twin, a_diff.concept.deep_twin,
+					a_diff.original_language.code_string, a_diff.description.deep_twin,
+					a_flat_parent.definition.deep_twin, a_diff.ontology.to_flat)
+			if a_flat_parent.has_invariants then
+				invariants := a_flat_parent.invariants.deep_twin
+			end
 			rebuild
 			is_valid := True
 			is_generated := True

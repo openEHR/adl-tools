@@ -77,6 +77,59 @@ feature -- Access
 			Result := children.count
 		end
 
+	child_before(an_obj: C_OBJECT): C_OBJECT is
+			-- return child node before `an_obj' if there is one, else Void
+		require
+			Object_valid: an_obj /= Void and then has_child (an_obj)
+		local
+			pos: INTEGER
+		do
+			pos := children.index_of (an_obj, 1)
+			if pos > 1 then
+				Result := children.i_th (pos-1)
+			end
+		end
+
+	child_after(an_obj: C_OBJECT): C_OBJECT is
+			-- return child node after `an_obj' if there is one, else Void
+		require
+			Object_valid: an_obj /= Void and then has_child (an_obj)
+		local
+			pos: INTEGER
+		do
+			pos := children.index_of (an_obj, 1)
+			if pos < children.count then
+				Result := children.i_th (pos+1)
+			end
+		ensure
+			Result /= Void implies has_child (Result)
+		end
+
+	child_with_id(a_node_id: STRING): C_OBJECT is
+			-- find the child node with `a_node_id'
+		require
+			has_child_with_id(a_node_id)
+		do
+			Result ?= representation.child_with_id (a_node_id).content_item
+		ensure
+			Result_exists: Result /= Void
+		end
+
+	child_with_rm_type_name (an_rm_type: STRING): C_OBJECT is
+			-- return a child node with rm_type_name = `an_rm_type'
+		require
+			Rm_type_valid: an_rm_type /= void and then has_child_with_rm_type_name(an_rm_type)
+		do
+			from
+				children.start
+			until
+				children.off or children.item.rm_type_name.is_equal (an_rm_type)
+			loop
+				children.forth
+			end
+			Result := children.item
+		end
+
 feature -- Source Control
 
 	specialisation_status (specialisation_level: INTEGER): SPECIALISATION_STATUS is
@@ -109,6 +162,12 @@ feature -- Status Report
 			-- True if this attribute has multiple cardinality
 		do
 			Result := representation.is_multiple
+		end
+
+	is_ordered : BOOLEAN is
+			-- 	True if this attribute is multiple and ordered
+		do
+			Result := is_multiple and then cardinality.is_ordered
 		end
 
 	is_valid: BOOLEAN is
@@ -151,12 +210,51 @@ feature -- Status Report
 			Result := representation.has_child_with_id (a_node_id)
 		end
 
+	has_child_with_rm_type_name (a_type_name: STRING): BOOLEAN is
+			-- has a child node with rm_type_name = `a_type_name'
+		require
+			Type_name_valid: a_type_name /= void and then not a_type_name.is_empty
+		do
+			from
+				children.start
+			until
+				children.off or children.item.rm_type_name.is_equal (a_type_name)
+			loop
+				children.forth
+			end
+			Result := not children.off
+		end
+
 	has_child (a_node: C_OBJECT): BOOLEAN is
 			-- True if a_node is actually one of the children
 		require
 			Node_valid: a_node /= Void
 		do
 			Result := children.has (a_node)
+		end
+
+feature -- Comparison
+
+	is_node_conformant_to (other: like Current): BOOLEAN is
+			-- True if this node on its own (ignoring any subparts) expresses the same or narrower constraints as `other'.
+			-- Returns False if any of the following is incompatible:
+			--	cardinality
+			--	existence
+			-- An error message can be obtained by calling node_conformance_failure_reason
+		do
+			Result := (existence.is_equal (other.existence) or other.existence.contains (existence)) and (not is_multiple or
+				(cardinality.interval.is_equal (other.cardinality.interval) or other.cardinality.contains (cardinality)))
+		end
+
+	node_conformance_failure_reason (other: like Current): STRING is
+			-- generate an error message explaining why is_node_conformant_to() returned False
+		do
+			create Result.make_empty
+			if not (existence.is_equal (other.existence) or other.existence.contains (existence)) then
+				Result.append("Existence " + existence.as_string + " does not conform to " + other.existence.as_string  + "%N")
+			elseif is_multiple and not (cardinality.interval.is_equal (other.cardinality.interval) or other.cardinality.contains (cardinality)) then
+				Result.append("Cardinality " + cardinality.as_string + " does not conform to " + other.cardinality.as_string  + "%N")
+			end
 		end
 
 feature -- Modification
@@ -186,6 +284,59 @@ feature -- Modification
 		do
 			representation.put_child(an_obj.representation)
 			children.extend(an_obj)
+			an_obj.set_parent(Current)
+		end
+
+	put_child_left(an_obj, before_obj: C_OBJECT) is
+			-- insert a new child node before another node
+		require
+			Object_exists: an_obj /= Void
+			Object_occurrences_valid: not is_multiple implies an_obj.occurrences.upper <= 1
+			Object_id_valid: not (an_obj.is_addressable and has_child(an_obj))
+			Before_obj_valid: before_obj /= Void and then has_child(before_obj)
+		do
+			representation.put_child_left(an_obj.representation, before_obj.representation)
+			children.go_i_th (children.index_of (before_obj, 1))
+			children.put_left (an_obj)
+			an_obj.set_parent(Current)
+		end
+
+	put_child_right(an_obj, after_obj: C_OBJECT) is
+			-- insert a new child node after another node
+		require
+			Object_exists: an_obj /= Void
+			Object_occurrences_valid: not is_multiple implies an_obj.occurrences.upper <= 1
+			Object_id_valid: not (an_obj.is_addressable and has_child(an_obj))
+			After_obj_valid: after_obj /= Void and then has_child(after_obj)
+		do
+			representation.put_child_right(an_obj.representation, after_obj.representation)
+			children.go_i_th (children.index_of (after_obj, 1))
+			children.put_right(an_obj)
+			an_obj.set_parent(Current)
+		end
+
+	replace_child_by_id(an_obj: C_OBJECT; an_id: STRING) is
+			-- replace node with id `an_id' by `an_obj'
+		require
+			Object_exists: an_obj /= Void
+			Object_occurrences_valid: not is_multiple implies an_obj.occurrences.upper <= 1
+			Id_valid: an_id /= Void and then has_child_with_id(an_id)
+		do
+			children.go_i_th (children.index_of (child_with_id(an_id), 1))
+			children.replace (an_obj)
+			representation.replace_child_by_id(an_obj.representation, an_id)
+			an_obj.set_parent(Current)
+		end
+
+	replace_child_by_rm_type_name(an_obj: C_OBJECT) is
+			-- replace node with rm_type_name `a_type_name' by `an_obj'
+		require
+			Object_exists: an_obj /= Void
+			Object_occurrences_valid: not is_multiple implies an_obj.occurrences.upper <= 1
+		do
+			representation.replace_child_by_id(an_obj.representation, child_with_rm_type_name(an_obj.rm_type_name).representation.node_id)
+			children.go_i_th (children.index_of (child_with_rm_type_name(an_obj.rm_type_name), 1))
+			children.replace (an_obj)
 			an_obj.set_parent(Current)
 		end
 

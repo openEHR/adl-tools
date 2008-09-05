@@ -78,6 +78,7 @@ create
 %token SYM_UNORDERED SYM_ORDERED SYM_UNIQUE SYM_ELLIPSIS SYM_INFINITY SYM_LIST_CONTINUE
 %token SYM_INVARIANT SYM_MATCHES SYM_ALLOW_ARCHETYPE SYM_USE_NODE 
 %token SYM_INCLUDE SYM_EXCLUDE
+%token SYM_AFTER SYM_BEFORE
 %token SYM_DT_UNKNOWN
 
 %token ERR_CHARACTER ERR_STRING ERR_C_DOMAIN_TYPE ERR_TERM_CODE_CONSTRAINT ERR_V_QUALIFIED_TERM_CODE_REF ERR_V_ISO8601_DURATION
@@ -94,6 +95,7 @@ create
 %type <ARRAYED_LIST [ASSERTION]> assertions c_includes c_excludes
 
 %type <STRING> type_identifier
+%type <SIBLING_ORDER> sibling_order
 %type <OG_PATH> absolute_path relative_path
 %type <INTEGER> cardinality_limit_value
 %type <INTERVAL[INTEGER]> c_occurrences c_existence occurrence_spec
@@ -209,6 +211,27 @@ c_complex_object_id: type_identifier
 	| type_identifier V_LOCAL_TERM_CODE_REF
 		{
 			create complex_obj.make_identified($1, $2)
+		}
+	| sibling_order type_identifier V_LOCAL_TERM_CODE_REF
+		{
+			if differential_syntax then
+				create complex_obj.make_identified($2, $3)
+				complex_obj.set_sibling_order($1)
+			else
+				raise_error
+				report_error("Differential syntax not allowed in flat archetype")
+				abort
+			end
+		}
+	;
+
+sibling_order: SYM_AFTER V_LOCAL_TERM_CODE_REF
+		{
+			$$ := create {SIBLING_ORDER}.make_after($2)
+		}
+	| SYM_BEFORE V_LOCAL_TERM_CODE_REF
+		{
+			$$ := create {SIBLING_ORDER}.make_before($2)
 		}
 	;
 
@@ -360,9 +383,31 @@ c_archetype_slot_id: SYM_ALLOW_ARCHETYPE type_identifier
 		{
 			create archetype_slot.make_anonymous($2)
 		}
+	| sibling_order SYM_ALLOW_ARCHETYPE type_identifier
+		{
+			if differential_syntax then
+				create archetype_slot.make_anonymous($3)
+				archetype_slot.set_sibling_order($1)
+			else
+				raise_error
+				report_error("Differential syntax not allowed in flat archetype")
+				abort
+			end
+		}
 	| SYM_ALLOW_ARCHETYPE type_identifier V_LOCAL_TERM_CODE_REF
 		{
 			create archetype_slot.make_identified($2, $3)
+		}
+	| sibling_order SYM_ALLOW_ARCHETYPE type_identifier V_LOCAL_TERM_CODE_REF
+		{
+			if differential_syntax then
+				create archetype_slot.make_identified($3, $4)
+				archetype_slot.set_sibling_order($1)
+			else
+				raise_error
+				report_error("Differential syntax not allowed in flat archetype")
+				abort
+			end
 		}
 	| SYM_ALLOW_ARCHETYPE error
 		{
@@ -2279,10 +2324,11 @@ feature -- Initialization
 			make_parser_skeleton
 		end
 
-	execute (in_text:STRING; a_source_start_line: INTEGER) is
+	execute (in_text:STRING; a_source_start_line: INTEGER; differential_flag: BOOLEAN) is
 		do
 			reset
 			source_start_line := a_source_start_line
+			differential_syntax := differential_flag
 
 			create indent.make(0)
 			create error_text.make(0)
@@ -2321,6 +2367,10 @@ feature -- Access
 	output: C_COMPLEX_OBJECT
 			
 	assertion_list: ARRAYED_LIST [ASSERTION]
+
+	differential_syntax: BOOLEAN
+			-- True if the supplied text to parse is differential, in which case it can contain the 
+			-- differential syntax variants, i.e. ordering markers and specialisation paths
 
 feature {NONE} -- Implementation
 

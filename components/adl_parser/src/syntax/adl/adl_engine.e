@@ -129,7 +129,7 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
-	parse (text: STRING; is_differential_source: BOOLEAN): ARCHETYPE is
+	parse (text: STRING; differential_source_flag: BOOLEAN): ARCHETYPE is
 			-- parse tree. If successful, `archetype' contains the parse
 			-- structure. Then validate the tree
 		local
@@ -182,14 +182,14 @@ feature {NONE} -- Implementation
 						end
 
 						------------------- definition section ---------------
-						definition_context.set_source(adl_parser.definition_text, adl_parser.definition_text_start_line)
+						definition_context.set_source(adl_parser.definition_text, adl_parser.definition_text_start_line, differential_source_flag)
 						definition_context.parse
 						if not definition_context.parse_succeeded then
 							parse_error_text := definition_context.parse_error_text
 						else
 							------------------- invariant section ---------------
 							if adl_parser.invariant_text /= Void and then not adl_parser.invariant_text.is_empty then
-								invariant_context.set_source(adl_parser.invariant_text, adl_parser.invariant_text_start_line)
+								invariant_context.set_source(adl_parser.invariant_text, adl_parser.invariant_text_start_line, differential_source_flag)
 								invariant_context.parse
 								if not invariant_context.parse_succeeded then
 									parse_error_text := invariant_context.parse_error_text
@@ -207,7 +207,7 @@ feature {NONE} -- Implementation
 								if not ontology_context.parse_succeeded then
 									parse_error_text := ontology_context.parse_error_text
 								elseif {definition: !C_COMPLEX_OBJECT} definition_context.tree and then {id: !ARCHETYPE_ID} adl_parser.archetype_id then
-									if is_differential_source then
+									if differential_source_flag then
 										if orig_lang_trans /= Void then
 											create differential_ontology.make_from_tree (orig_lang_trans.original_language.code_string, ontology_context.tree, adl_parser.concept)
 										else

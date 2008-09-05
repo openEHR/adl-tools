@@ -62,6 +62,15 @@ feature -- Status Report
 			end
 		end
 
+feature -- Comparison
+
+	is_subset_of (other: like Current): BOOLEAN is
+			-- True if this node is a subset, i.e. a redefinition of, `other'
+			-- Returns False if they are the same, or if they do not correspond
+		do
+			-- FIXME - tobe implemented
+		end
+
 feature -- Modification
 
 	set_target_path(a_path: STRING) is

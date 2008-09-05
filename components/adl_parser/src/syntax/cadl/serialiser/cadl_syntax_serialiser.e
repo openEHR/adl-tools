@@ -49,14 +49,9 @@ feature -- Visitor
 		local
 			s: STRING
 		do
+			serialise_sibling_order(a_node, depth)
 			last_result.append (create_indent (depth))
-			last_result.append (apply_style (clean (a_node.rm_type_name), identifier_style (a_node)))
-
-			if a_node.is_addressable then
-				last_result.append(apply_style("[" + a_node.node_id + "]", STYLE_TERM_REF))
-			end
-
-			last_result.append(format_item(FMT_SPACE))
+			serialise_type_node_id(a_node, depth)
 			serialise_occurrences(a_node, depth)
 			last_result.append(apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
 			last_result.append(symbol(SYM_START_CBLOCK))
@@ -89,16 +84,10 @@ feature -- Visitor
 		local
 			s:STRING
 		do
-			last_result.append(create_indent(depth))
-
+			serialise_sibling_order(a_node, depth)
+			last_result.append (create_indent (depth))
 			last_result.append(apply_style(symbol(SYM_ALLOW_ARCHETYPE), STYLE_KEYWORD) + format_item(FMT_SPACE))
-
-			last_result.append(apply_style(clean(a_node.rm_type_name), identifier_style (a_node)))
-
-			if a_node.is_addressable then
-				last_result.append(apply_style("[" + a_node.node_id + "]", STYLE_TERM_REF))
-			end
-			last_result.append(format_item(FMT_SPACE))
+			serialise_type_node_id(a_node, depth)
 			serialise_occurrences(a_node, depth)
 			last_result.append(apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
 			last_result.append(symbol(SYM_START_CBLOCK))
@@ -401,6 +390,33 @@ feature -- Visitor
 		end
 
 feature {NONE} -- Implementation
+
+	serialise_sibling_order(a_node: C_OBJECT; depth: INTEGER) is
+			-- serialise C_OBJECT.sibling_order if this is a differential archetype (it should not be there otherwise)
+		do
+			if is_differential and a_node.sibling_order /= Void then
+				last_result.append (create_indent (depth))
+				if a_node.sibling_order.is_after then
+					last_result.append(apply_style(symbol(SYM_AFTER), STYLE_KEYWORD) + format_item(FMT_SPACE))
+				else
+					last_result.append(apply_style(symbol(SYM_BEFORE), STYLE_KEYWORD) + format_item(FMT_SPACE))
+				end
+				last_result.append(apply_style("[" + a_node.sibling_order.sibling_node_id + "]", STYLE_TERM_REF))
+				last_result.append(format_item(FMT_NEWLINE))
+			end
+		end
+
+	serialise_type_node_id(a_node: C_OBJECT; depth: INTEGER) is
+			-- common serialising for all C_OBJECTs
+		do
+			last_result.append (apply_style (clean (a_node.rm_type_name), identifier_style (a_node)))
+
+			if a_node.is_addressable then
+				last_result.append(apply_style("[" + a_node.node_id + "]", STYLE_TERM_REF))
+			end
+
+			last_result.append(format_item(FMT_SPACE))
+		end
 
 	last_object_simple: BOOLEAN
 			-- True if last object traversed was an OBJECT_SIMPLE

@@ -181,6 +181,9 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 
 [Ee][Xx][Cc][Ll][Uu][Dd][Ee]					last_token := SYM_EXCLUDE
 
+[Aa][Ff][Tt][Ee][Rr]							last_token := SYM_AFTER
+
+[Bb][Ee][Ff][Oo][Rr][Ee]						last_token := SYM_BEFORE
 
 ----------/* V_URI */ -------------------------------------------------
 [a-z]+:\/\/[^<>|\\{}^~"\[\] ]*	{

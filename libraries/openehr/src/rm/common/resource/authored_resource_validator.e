@@ -16,33 +16,23 @@ class AUTHORED_RESOURCE_VALIDATOR
 inherit
 	ANY_VALIDATOR
 
-create
-	make
-
 feature {NONE} -- Initialisation
 
-	make (a_target_desc: like target_descriptor) is
-			-- set target_descriptor
-			-- initialise reporting variables
+	make (a_target: like target) is
+			-- set target and initialise reporting variables
 		require
-			target_desc_attached: a_target_desc /= Void
-			target_desc_valid: a_target_desc.archetype_differential /= Void
+			target_valid: a_target /= Void
 		do
-			target_descriptor := a_target_desc
-			target := target_descriptor.archetype_differential
+			target := a_target
 			create errors.make (0)
 			create warnings.make (0)
-			passed := False
+			passed := True
 		ensure
-			target_descriptor_set: target_descriptor = a_target_desc
-			target_set: target = a_target_desc.archetype_differential
-			Not_passed: not passed
+			target_set: target = a_target
+			Passed: passed
 		end
 
 feature -- Access
-
-	target_descriptor: ARCH_REP_ARCHETYPE
-			-- descriptor object for a resource to be validated
 
 	target: AUTHORED_RESOURCE
 			-- target of this validator
@@ -92,7 +82,6 @@ feature {NONE} -- Implementation
 		end
 
 invariant
-	target_descriptor_attached: target_descriptor /= Void
 	target_attached: target /= Void
 
 end

@@ -23,7 +23,7 @@ inherit
 
 create
 	make
-	
+
 feature {NONE} -- Implementation
 
 	symbols: HASH_TABLE[STRING, INTEGER] is
@@ -39,14 +39,17 @@ feature {NONE} -- Implementation
 
 			Result.put("include",			SYM_INCLUDE)
 			Result.put("exclude",			SYM_EXCLUDE)
-			
+
+			Result.put("before",			SYM_BEFORE)
+			Result.put("after",			SYM_AFTER)
+
 			Result.put("{",				SYM_START_CBLOCK)
 			Result.put("}",				SYM_END_CBLOCK)
 			Result.put("*",				SYM_ANY)
 			Result.put("invariant",			SYM_INVARIANT)
-	
-		end	
-	
+
+		end
+
 end
 
 

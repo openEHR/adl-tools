@@ -77,7 +77,7 @@ feature -- Access
 
 feature -- Source Control
 
-	specialisation_status (specialisation_level: INTEGER): SPECIALISATION_STATUS is
+	specialisation_status (spec_level: INTEGER): SPECIALISATION_STATUS is
 			-- status of this node in the source text of this archetype with respect to the
 			-- specialisation hierarchy. Values are defined in SPECIALISATION_STATUSES
 			-- FIXME: this code is only an attempt to work out the specialisation status,
@@ -92,7 +92,7 @@ feature -- Source Control
 					items.off
 				loop
 					if items.item.symbol.is_local then
-						Result := Result.specialisation_dominant_status (specialisation_status_from_code (items.item.symbol.code_string, specialisation_level))
+						Result := Result.specialisation_dominant_status (specialisation_status_from_code (items.item.symbol.code_string, spec_level))
 						items.forth
 					end
 				end
@@ -139,6 +139,30 @@ feature -- Status Report
 	valid_value (a_value: like default_value): BOOLEAN is
 		do
 			Result := any_allowed or else has_item (a_value.value)
+		end
+
+feature -- Comparison
+
+	is_subset_of (other: like Current): BOOLEAN is
+			-- True if this node is a subset, i.e. a redefinition of, `other' in the ADL constraint sense, i.e. that all
+			-- aspects of the definition of this node and all child nodes define a narrower, wholly
+			-- contained instance space of `other'.
+			-- Returns False if they are the same, or if they do not correspond
+		do
+			if other.any_allowed then
+				Result := True
+			elseif not any_allowed then
+				if items.count <= other.items.count then
+					from
+						items.start
+					until
+						items.off or not other.has_item (items.item.value)
+					loop
+						items.forth
+					end
+				end
+				Result := items.off
+			end
 		end
 
 feature -- Modification

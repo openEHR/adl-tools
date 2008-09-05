@@ -26,6 +26,7 @@ inherit
 	ARCHETYPE_TERM_CODE_TOOLS
 		export
 			{NONE} all;
+			{ANY} specialisation_depth_from_code;
 		undefine
 			default_create
 		end
@@ -59,22 +60,29 @@ feature -- Access
 
 	parent: C_ATTRIBUTE
 
+	sibling_order: SIBLING_ORDER
+			-- set if this node should be ordered with respect to an inherited sibling; only settable
+			-- on specialised nodes
+
+	specialisation_depth: INTEGER is
+			-- specialisation level of this node if identified
+		do
+			Result := representation.specialisation_depth
+		end
+
 feature -- Source Control
 
-	specialisation_status (specialisation_level: INTEGER): SPECIALISATION_STATUS is
+	specialisation_status (spec_level: INTEGER): SPECIALISATION_STATUS is
 			-- status of this node in the source text of this archetype with respect to the
 			-- specialisation hierarchy. Values are defined in SPECIALISATION_STATUSES
-		local
-			node_spec_level: INTEGER
 		do
 			if not is_valid_code(node_id) then
 				create Result.make(ss_propagated)
 			else
-				node_spec_level := specialisation_depth_from_code(node_id)
-				if node_spec_level < specialisation_level then
+				if specialisation_depth < spec_level then
 					create Result.make(ss_inherited)
 				else
-					Result := specialisation_status_from_code (node_id, specialisation_level)
+					Result := specialisation_status_from_code (node_id, spec_level)
 				end
 			end
 		end
@@ -110,6 +118,44 @@ feature -- Status Report
 			Result := occurrences.is_equal(default_occurrences)
 		end
 
+feature -- Comparison
+
+	is_subset_of (other: like Current): BOOLEAN is
+			-- True if this node is a subset, i.e. a redefinition of, `other' in the ADL constraint sense, i.e. that all
+			-- aspects of the definition of this node and all child nodes define a narrower, wholly
+			-- contained instance space of `other'.
+			-- Returns False if they are the same, or if they do not correspond
+		deferred
+		end
+
+	is_node_conformant_to (other: like Current): BOOLEAN is
+			-- True if this node on its own (ignoring any subparts) expresses the same or narrower constraints as `other'.
+			-- Returns False if any of the following is incompatible:
+			--	rm_type_name
+			--	occurrences
+			--	node_id (& specialisation depth)
+			-- An error message can be obtained by calling node_conformance_failure_reason
+		do
+			if rm_type_name.is_equal (other.rm_type_name) or rm_checker.is_subclass_of(rm_type_name, other.rm_type_name) then
+				if occurrences.is_equal (other.occurrences) or other.occurrences.contains (occurrences) then
+					Result := codes_conformant (node_id, other.node_id)
+				end
+			end
+		end
+
+	node_conformance_failure_reason (other: like Current): STRING is
+			-- generate an error message explaining why is_node_conformant_to() returned False
+		do
+			create Result.make_empty
+			if not (rm_type_name.is_equal (other.rm_type_name) or rm_checker.is_subclass_of(rm_type_name, other.rm_type_name)) then
+				Result.append("Class " + rm_type_name + " does not conform to type " + other.rm_type_name  + "%N")
+			elseif not (occurrences.is_equal (other.occurrences) or other.occurrences.contains (occurrences)) then
+				Result.append("Occurrences " + occurrences.as_string + " does not conform to " + other.occurrences.as_string  + "%N")
+			elseif not codes_conformant (node_id, other.node_id) then
+				Result.append("Code " + node_id + " does not conform to code " + other.node_id  + "%N")
+			end
+		end
+
 feature -- Modification
 
 	set_object_id(an_object_id:STRING) is
@@ -127,6 +173,55 @@ feature -- Modification
 			occurrences := ivl
 		ensure
 			occurrences = ivl
+		end
+
+	set_sibling_order (a_sibling_order: SIBLING_ORDER) is
+			-- set sibling order
+		require
+			a_sibling_order /= Void and specialisation_depth > 0
+		do
+			sibling_order := a_sibling_order
+		ensure
+			sibling_order_set: sibling_order = a_sibling_order
+		end
+
+	set_sibling_order_before (a_node_id: STRING) is
+			-- set sibling order of this node to be before the inherited sibling node with id a_node_id
+		require
+			a_node_id /= Void and not a_node_id.is_empty
+		do
+			create sibling_order.make_before (a_node_id)
+		ensure
+			sibling_order_set: sibling_order /= Void and (sibling_order.is_before and sibling_order.sibling_node_id.is_equal (a_node_id))
+		end
+
+	set_sibling_order_after (a_node_id: STRING) is
+			-- set sibling order of this node to be after the inherited sibling node with id a_node_id
+		require
+			a_node_id /= Void and specialisation_depth_from_code (a_node_id) < specialisation_depth
+		do
+			create sibling_order.make_after (a_node_id)
+		ensure
+			sibling_order_set: sibling_order /= Void and (sibling_order.is_after and sibling_order.sibling_node_id.is_equal (a_node_id))
+		end
+
+	overlay_differential(other: like Current) is
+			-- apply any differences from `other' to this object node including:
+			-- 	node_id
+			-- 	overridden rm_type_name
+			-- 	occurrences
+		require
+			Other_valid: other /= Void and then other.is_node_conformant_to (Current)
+		do
+			if not other.node_id.is_equal(node_id) then
+				set_object_id(other.node_id)
+			end
+			if not other.rm_type_name.is_equal(rm_type_name) then
+				rm_type_name := other.rm_type_name.twin
+			end
+			if not other.occurrences.is_equal (occurrences) then
+				set_occurrences (other.occurrences.deep_twin)
+			end
 		end
 
 feature -- Representation
