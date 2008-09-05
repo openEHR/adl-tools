@@ -68,7 +68,7 @@ feature -- Status Report
 		end
 
 	is_differential: BOOLEAN
-			-- True if archteype is differential
+			-- True if archetype is differential
 
 feature -- Commands
 
