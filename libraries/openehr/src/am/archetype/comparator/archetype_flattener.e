@@ -224,6 +224,7 @@ feature {NONE} -- Implementation
 			from
 				c_attr_child.children.start
 				start_pos := 1
+				insert_obj := c_attr_output.children.first
 			until
 				c_attr_child.children.off
 			loop
@@ -251,7 +252,7 @@ feature {NONE} -- Implementation
 						start_pos := end_pos + 1
 					else -- marker is 'after' - obtain any preceding series and make a descriptor for that
 						if not c_attr_child.children.isfirst and c_attr_child.children.index > start_pos then -- create a descriptor for the preceding section
-							add_merge_desc(start_pos, c_attr_child.children.index - 1, insert_obj, False)
+							add_merge_desc(start_pos, c_attr_child.children.index - 1, insert_obj, True)
 						end
 						-- now take care of series starting with current 'after' marker
 						start_pos := c_attr_child.children.index
@@ -343,6 +344,8 @@ feature {NONE} -- Implementation
 
 	add_merge_desc(src_start_pos, src_end_pos: INTEGER; tgt_insert_obj: C_OBJECT; before_flag: BOOLEAN) is
 			-- create a merge tuple for use in later merging
+		require
+			tgt_insert_obj /= Void
 		local
 			merge_desc: TUPLE [INTEGER, INTEGER, C_OBJECT, BOOLEAN]
 		do
