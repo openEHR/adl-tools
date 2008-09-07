@@ -198,6 +198,12 @@ feature -- Modification
 			sibling_order_set: sibling_order /= Void and (sibling_order.is_after and sibling_order.sibling_node_id.is_equal (a_node_id))
 		end
 
+	clear_sibling_order is
+			-- remove sibling order
+		do
+			sibling_order := Void
+		end
+
 	set_object_id(an_object_id:STRING) is
 		require
 			Object_id_valid: an_object_id /= Void and then not an_object_id.is_empty

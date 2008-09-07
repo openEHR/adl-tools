@@ -100,6 +100,8 @@ feature {NONE} -- Implementation
 		local
 			def_it: C_ITERATOR
 		do
+			create path_list.make(0)
+			path_list.compare_objects
 			create def_it.make(arch_child_diff.definition)
 			def_it.do_until_surface(agent node_graft, agent node_test)
 		end
@@ -131,26 +133,25 @@ feature {NONE} -- Implementation
 		local
 			cco_output_flat: C_COMPLEX_OBJECT
 			apa: ARCHETYPE_PATH_ANALYSER
-			child_attr_name: STRING
+			child_attr_name, a_path: STRING
 			c_attr_child, c_attr_output: C_ATTRIBUTE
 		do
 			if {cco_child_diff: !C_COMPLEX_OBJECT} a_c_node then
+				create apa.make_from_string (cco_child_diff.path)
+				a_path := apa.path_at_level (arch_parent_flat.specialisation_depth)
 				debug ("flatten")
 					io.put_string ("---------- at child differential object node " + cco_child_diff.path + " ---------%N")
+					io.put_string ("%Tsee if output object node at " + a_path + " exists ... ")
 				end
-				create apa.make_from_string (cco_child_diff.path)
-				debug ("flatten")
-					io.put_string ("%Tgetting output object node using path " + apa.path_at_level (arch_output_flat.specialisation_depth) + "%N")
-				end
-				-- have to make sure path exists in flat parent - it might not any more due to previous overlay from a sibling specialised node
-				if not arch_output_flat.definition.has_object_path (apa.path_at_level (arch_parent_flat.specialisation_depth)) then
-					-- have to graft in entire object as a sibling
+				-- have to make sure path exists in flat parent
+				if arch_output_flat.definition.has_object_path (a_path) then
 					debug ("flatten")
-						io.put_string ("%Tgrafting sibling object " + cco_child_diff.path + "%N")
+						io.put_string ("YES%N")
 					end
-					c_attr_output := arch_output_flat.definition.c_attribute_at_path (cco_child_diff.parent.path)
-					c_attr_output.put_sibling_child(cco_child_diff.safe_deep_twin)
-				else
+
+					-- record path in case sibling objects turn up
+					path_list.extend(a_path)
+
 					cco_output_flat ?= arch_output_flat.definition.c_object_at_path (apa.path_at_level (arch_parent_flat.specialisation_depth))
 
 					-- firstly, add overrides from immediate child node to corresponding flat node
@@ -207,6 +208,16 @@ feature {NONE} -- Implementation
 						end
 						cco_child_diff.attributes.forth
 					end
+				elseif path_list.has(a_path) then -- check for path that has been overlaid by a redefined node; have to graft in entire object as a sibling
+					debug ("flatten")
+						io.put_string ("WAS REPLACED - grafting sibling object " + cco_child_diff.path + "%N")
+					end
+					c_attr_output := arch_output_flat.definition.c_attribute_at_path (cco_child_diff.parent.path)
+					c_attr_output.put_sibling_child(cco_child_diff.safe_deep_twin)
+				else
+					debug ("flatten")
+						io.put_string ("NO%N")
+					end
 				end
 			end
 		end
@@ -215,7 +226,7 @@ feature {NONE} -- Implementation
 			-- merge new objects in container attribute `a_src_attr' into `an_output_attr', using ordering
 			-- information in source attribute objects, and replacing or inserting as appropriate
 		local
-			insert_obj: C_OBJECT
+			insert_obj, c_obj: C_OBJECT
 			i: INTEGER
 			after_pending: BOOLEAN
 			start_pos, end_pos: INTEGER
@@ -286,10 +297,12 @@ feature {NONE} -- Implementation
 					if is_valid_code (c_attr_child.children.i_th (i).node_id) and
 						specialisation_status_from_code (c_attr_child.children.i_th (i).node_id, arch_child_diff.specialisation_depth).value = ss_added then
 
+						c_obj := c_attr_child.children.i_th (i).safe_deep_twin
+						c_obj.clear_sibling_order
 						if merge_list.item.boolean_item (4) then -- True = insert before
-							c_attr_output.put_child_left(c_attr_child.children.i_th (i).safe_deep_twin, insert_obj)
+							c_attr_output.put_child_left(c_obj, insert_obj)
 						else
-							c_attr_output.put_child_right(c_attr_child.children.i_th (i).safe_deep_twin, insert_obj)
+							c_attr_output.put_child_right(c_obj, insert_obj)
 							insert_obj := c_attr_output.child_after (insert_obj)
 						end
 					end
@@ -356,7 +369,7 @@ feature {NONE} -- Implementation
 			merge_desc.put_boolean (before_flag, 4)
 			merge_list.extend (merge_desc)
 			debug ("flatten")
-				io.put_string ("%T%T%T=== added MERGE DESC " + src_start_pos.out + ", " + src_end_pos.out + ", " + tgt_insert_obj.node_id + ", " + before_flag.out + "%N")
+				io.put_string ("%T%T=== added MERGE DESC " + src_start_pos.out + ", " + src_end_pos.out + ", " + tgt_insert_obj.node_id + ", " + before_flag.out + "%N")
 			end
 		end
 
@@ -366,23 +379,14 @@ feature {NONE} -- Implementation
 		local
 			apa: ARCHETYPE_PATH_ANALYSER
 		do
-			debug ("flatten")
-				io.put_string ("%T*** checking " + a_c_node.generator + " node; path = " + a_c_node.path)
-			end
-
 			create apa.make_from_string(a_c_node.path)
 			Result := arch_parent_flat.has_path (apa.path_at_level (arch_parent_flat.specialisation_depth))
-
-			if Result then
-				debug ("flatten")
-					io.put_string (" ... INCLUDED %N")
-				end
-			else
-				debug ("flatten")
-					io.put_string (" ... excluded %N")
-				end
-			end
 		end
+
+	path_list: ARRAYED_LIST [STRING]
+			-- list of paths matched in parent archetype by child archetype nodes. Used to remember paths that
+			-- disappear due to being overwritten by a specialised node (e.g. at0013 becomes at0013.1 in the flat output)
+			-- but then specialised siblings (e.g. at0013.2, at0013.3) turn up and need to be grafted in.
 
 end
 
