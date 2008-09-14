@@ -61,11 +61,13 @@ feature -- Commands
 			-- create a flat form archetype in `arch_output_flat'
 		do
 			debug ("flatten")
-				io.put_string ("============== flattening archetype " + arch_child_diff.archetype_id.as_string + " with " + arch_parent_flat.archetype_id.as_string + " ==============%N")
+				io.put_string ("============== flattening archetype " + arch_child_diff.archetype_id.as_string + " with " +
+						arch_parent_flat.archetype_id.as_string + " ==============%N")
 			end
 			create arch_output_flat.make_staging (arch_child_diff, arch_parent_flat)
+
+	--		expand_definition_use_nodes
 			flatten_definition
-			arch_output_flat.rebuild
 			flatten_invariants
 			flatten_ontology
 			arch_output_flat.set_parent_archetype_id (arch_parent_flat.archetype_id)
@@ -94,6 +96,61 @@ feature -- Comparison
 
 feature {NONE} -- Implementation
 
+	expand_definition_use_nodes is
+			-- if there are overrides in the specialised child that are located at use_node positions, we
+			-- have to expand out a copy of the structures pointed to by the use_nodes in the parent, so that
+			-- the override can be correctly applied.
+		local
+			int_refs: ARRAYED_LIST[ARCHETYPE_INTERNAL_REF]
+			c_obj: C_OBJECT
+			child_paths: ARRAYED_LIST [STRING]
+			apa: ARCHETYPE_PATH_ANALYSER
+			a_path: STRING
+		do
+			child_paths := arch_child_diff.physical_paths
+			child_paths.compare_objects
+			from
+				child_paths.start
+			until
+				child_paths.off
+			loop
+				create apa.make_from_string (child_paths.item)
+				a_path := apa.path_at_level (arch_parent_flat.specialisation_depth)
+				child_paths.replace (a_path)
+				child_paths.forth
+			end
+
+			-- iterate through use nodes in parent and find any source paths that are matched by any paths
+			-- within the child archetype; clone the structure at the target location and replace the use_node
+			-- the flattened structure with it, so that the override will work properly.
+			from
+				arch_output_flat.use_node_index.start
+			until
+				arch_output_flat.use_node_index.off
+			loop
+				int_refs := arch_output_flat.use_node_index.item_for_iteration
+				from
+					int_refs.start
+				until
+					int_refs.off
+				loop
+					debug ("flatten")
+						io.put_string ("%T...checking path " + int_refs.item.path + "%N")
+					end
+					if child_paths.has (int_refs.item.path) then
+						debug ("flatten")
+							io.put_string ("%T...cloning node at " + arch_output_flat.use_node_index.key_for_iteration + " and replacing at " + int_refs.item.path + "%N")
+						end
+						c_obj := arch_output_flat.c_object_at_path (arch_output_flat.use_node_index.key_for_iteration).safe_deep_twin
+						int_refs.item.parent.replace_child_by_id (c_obj, int_refs.item.node_id)
+					end
+					int_refs.forth
+				end
+				arch_output_flat.use_node_index.forth
+			end
+			arch_output_flat.rebuild
+		end
+
 	flatten_definition is
 			-- build the flat archetype definition by traversing src_archetype and determining what
 			-- nodes from flat_archetype to add; do the changes to the output archetype
@@ -104,6 +161,7 @@ feature {NONE} -- Implementation
 			path_list.compare_objects
 			create def_it.make(arch_child_diff.definition)
 			def_it.do_until_surface(agent node_graft, agent node_test)
+			arch_output_flat.rebuild
 		end
 
 	flatten_invariants is
@@ -135,6 +193,8 @@ feature {NONE} -- Implementation
 			apa: ARCHETYPE_PATH_ANALYSER
 			child_attr_name, a_path: STRING
 			c_attr_child, c_attr_output: C_ATTRIBUTE
+			int_refs: ARRAYED_LIST[ARCHETYPE_INTERNAL_REF]
+			found: BOOLEAN
 		do
 			if {cco_child_diff: !C_COMPLEX_OBJECT} a_c_node then
 				create apa.make_from_string (cco_child_diff.path)
@@ -143,7 +203,7 @@ feature {NONE} -- Implementation
 					io.put_string ("---------- at child differential object node " + cco_child_diff.path + " ---------%N")
 					io.put_string ("%Tsee if output object node at " + a_path + " exists ... ")
 				end
-				-- have to make sure path exists in flat parent
+				-- check that path exists in nodes defined by value in flat parent
 				if arch_output_flat.definition.has_object_path (a_path) then
 					debug ("flatten")
 						io.put_string ("YES%N")
@@ -214,9 +274,39 @@ feature {NONE} -- Implementation
 					end
 					c_attr_output := arch_output_flat.definition.c_attribute_at_path (cco_child_diff.parent.path)
 					c_attr_output.put_sibling_child(cco_child_diff.safe_deep_twin)
+				elseif arch_output_flat.has_path (a_path) then -- must be paths corresponding to use_nodes
+					debug ("flatten")
+						io.put_string ("USE_NODE path%N")
+					end
+					from
+						arch_output_flat.use_node_index.start
+					until
+						arch_output_flat.use_node_index.off or found
+					loop
+						int_refs := arch_output_flat.use_node_index.item_for_iteration
+						from
+							int_refs.start
+						until
+							-- do check with specialised path because in flat archetype, intervening nodes back up this path have already
+							-- had their node ids replaced by earlier visits to this function for parent nodes
+							int_refs.off or cco_child_diff.path.substring (1, int_refs.item.path.count).is_equal (int_refs.item.path)
+						loop
+							debug ("flatten")
+								io.put_string ("%T...checking path " + int_refs.item.path + "%N")
+							end
+							int_refs.forth
+						end
+						arch_output_flat.use_node_index.forth
+						found := not int_refs.off
+					end
+					if found then
+						debug ("flatten")
+							io.put_string ("%T...found path = " + int_refs.item.path + "%N")
+						end
+					end
 				else
 					debug ("flatten")
-						io.put_string ("NO%N")
+						io.put_string ("NO - ERROR%N")
 					end
 				end
 			end
