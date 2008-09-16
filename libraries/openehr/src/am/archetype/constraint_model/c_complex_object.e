@@ -87,7 +87,7 @@ feature -- Access
 		local
 			og_paths: HASH_TABLE [OG_OBJECT, OG_PATH]
 			og_node: OG_OBJECT_NODE
-			c_obj: C_OBJECT
+			og_obj: OG_OBJECT
 		do
 			og_node ?= representation.object_node_at_path(create {OG_PATH}.make_from_string(a_path))
 			og_paths := og_node.all_paths
@@ -97,8 +97,14 @@ feature -- Access
 			until
 				og_paths.off
 			loop
-				c_obj ?= og_paths.item_for_iteration.content_item
-				Result.put(c_obj, og_paths.key_for_iteration.as_string)
+				og_obj := og_paths.item_for_iteration
+				if og_obj /= Void then
+					if {c_obj: !C_OBJECT} og_obj.content_item then
+						Result.put (c_obj, og_paths.key_for_iteration.as_string)
+					end
+				else
+					Result.put (Void, og_paths.key_for_iteration.as_string)
+				end
 				og_paths.forth
 			end
 		ensure
@@ -120,11 +126,12 @@ feature -- Access
 				og_paths.off
 			loop
 				og_obj := og_paths.item_for_iteration
-
 				if og_obj /= Void then
 					if {c_obj: !C_OBJECT} og_obj.content_item then
 						Result.put (c_obj, og_paths.key_for_iteration.as_string)
 					end
+				else
+					Result.put (Void, og_paths.key_for_iteration.as_string)
 				end
 
 				og_paths.forth

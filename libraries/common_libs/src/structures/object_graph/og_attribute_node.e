@@ -81,6 +81,12 @@ feature -- Status Report
 			-- there can be multiple children, because for constraint representation, these correspond to alternatives, not
 			-- multiple concurrent members.
 
+	is_single: BOOLEAN is
+			-- True if this node logically represents a single-valued attribute.
+		do
+			Result := not is_multiple
+		end
+
 	is_generic: BOOLEAN
 			-- True if this attribute is a created pseudo attribute
 			-- representing an unnamed attribute in a generic class like List<T>

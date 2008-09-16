@@ -131,7 +131,7 @@ feature -- Access
 	ontology: !ARCHETYPE_ONTOLOGY
 
 	physical_paths: ARRAYED_LIST [STRING] is
-			-- generate physical paths from definition structure; if no changes made on archetype,
+			-- physical paths from definition structure for all objects; if no changes made on archetype,
 			-- return cached value
 		do
 			if path_map = Void then
@@ -141,7 +141,7 @@ feature -- Access
 		end
 
 	physical_leaf_paths: ARRAYED_LIST [STRING] is
-			-- generate physical paths from definition structure; if no changes made on archetype,
+			-- physical paths from definition structure for leaf objects only; if no changes made on archetype,
 			-- return cached value
 		do
 			if path_map = Void then
@@ -521,7 +521,7 @@ feature {NONE} -- Implementation
 						src_node_path.last.set_object_id(tgt_path.last.object_id)
 						src_node_path_str := src_node_path.as_string
 
-						path_map.put (c_o, src_node_path_str)
+						path_map.force (c_o, src_node_path_str)
 
 						from
 							tgt_path_c_objects.start
@@ -547,7 +547,7 @@ feature {NONE} -- Implementation
 				path_map.off
 			loop
 				sorted_physical_paths.extend(path_map.key_for_iteration)
-				if path_map.item_for_iteration.is_leaf then
+				if path_map.item_for_iteration /= Void and path_map.item_for_iteration.is_leaf then
 					sorted_physical_leaf_paths.extend(path_map.key_for_iteration)
 				end
 				path_map.forth

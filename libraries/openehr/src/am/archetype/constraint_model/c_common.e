@@ -18,7 +18,7 @@ feature -- Access
 	default_occurrences: INTERVAL[INTEGER] is
 			-- default object occurrences object representing 1..1
 		once
-			create Result.make_bounded(1,1, True, True)
+			create Result.make_bounded(1, 1, True, True)
 		ensure
 			Result_exists: Result /= Void
 		end
@@ -26,7 +26,7 @@ feature -- Access
 	default_existence: INTERVAL[INTEGER] is
 			-- default property existence object representing 1..1
 		once
-			create Result.make_bounded(1,1, True, True)
+			create Result.make_bounded(1, 1, True, True)
 		ensure
 			Result_exists: Result /= Void
 		end

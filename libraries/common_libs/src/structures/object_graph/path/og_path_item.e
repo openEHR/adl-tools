@@ -50,7 +50,7 @@ feature -- Initialisation
 
 	make_with_object_id(an_attr_name, an_object_id: STRING) is
 			-- make a path segment with an attribute name and an object id -
-			-- corresponds to multiple caridnality attribute case
+			-- corresponds to multiple child attribute
 		require
 			an_attr_name_valid: an_attr_name /= Void and then not an_attr_name.is_empty
 			an_object_id_valid: an_object_id /= Void

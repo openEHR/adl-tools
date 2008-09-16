@@ -66,7 +66,7 @@ feature -- Commands
 			end
 			create arch_output_flat.make_staging (arch_child_diff, arch_parent_flat)
 
-	--		expand_definition_use_nodes
+			expand_definition_use_nodes
 			flatten_definition
 			flatten_invariants
 			flatten_ontology
@@ -107,7 +107,7 @@ feature {NONE} -- Implementation
 			apa: ARCHETYPE_PATH_ANALYSER
 			a_path: STRING
 		do
-			child_paths := arch_child_diff.physical_paths
+			child_paths := arch_child_diff.physical_paths.deep_twin
 			child_paths.compare_objects
 			from
 				child_paths.start
@@ -191,7 +191,8 @@ feature {NONE} -- Implementation
 		local
 			cco_output_flat: C_COMPLEX_OBJECT
 			apa: ARCHETYPE_PATH_ANALYSER
-			child_attr_name, a_path: STRING
+			a_path: STRING
+			child_attr_name: STRING
 			c_attr_child, c_attr_output: C_ATTRIBUTE
 			int_refs: ARRAYED_LIST[ARCHETYPE_INTERNAL_REF]
 			found: BOOLEAN
@@ -204,105 +205,77 @@ feature {NONE} -- Implementation
 					io.put_string ("%Tsee if output object node at " + a_path + " exists ... ")
 				end
 				-- check that path exists in nodes defined by value in flat parent
-				if arch_output_flat.definition.has_object_path (a_path) then
+				if arch_output_flat.has_path (a_path) then
 					debug ("flatten")
 						io.put_string ("YES%N")
 					end
 
-					-- record path in case sibling objects turn up
-					path_list.extend(a_path)
-
-					cco_output_flat ?= arch_output_flat.definition.c_object_at_path (apa.path_at_level (arch_parent_flat.specialisation_depth))
-
-					-- firstly, add overrides from immediate child node to corresponding flat node
-					if cco_output_flat.parent /= Void then
-						cco_output_flat.parent.overlay_differential(cco_output_flat, cco_child_diff)
+					if path_list.has(a_path) then -- check for path that has been overlaid by a redefined node; have to graft in entire object as a sibling
+						debug ("flatten")
+							io.put_string ("WAS REPLACED - grafting sibling object " + cco_child_diff.path + "%N")
+						end
+						c_attr_output := arch_output_flat.definition.c_attribute_at_path (cco_child_diff.parent.path)
+						c_attr_output.put_sibling_child(cco_child_diff.safe_deep_twin)
 					else
-						cco_output_flat.overlay_differential(cco_child_diff)
-					end
+						cco_output_flat ?= arch_output_flat.c_object_at_path (a_path)
 
-					-- iterate through child attributes and overlay a) new nodes in existing container attributes, and b) new attributes from child
-					from
-						cco_child_diff.attributes.start
-					until
-						cco_child_diff.attributes.off
-					loop
-						child_attr_name := cco_child_diff.attributes.item.rm_attribute_name
-						debug ("flatten")
-							io.put_string ("%T%Tattribute in child: " + child_attr_name + " ... ")
+						-- firstly, add overrides from immediate child node to corresponding flat node
+						if cco_output_flat.parent /= Void then
+							cco_output_flat.parent.overlay_differential(cco_output_flat, cco_child_diff)
+						else
+							cco_output_flat.overlay_differential(cco_child_diff)
 						end
 
-						-- for attributes that are found in the flat parent tree, we need to check which of their children
-						-- if any need to be cloned into the output
-						if cco_output_flat.has_attribute (child_attr_name) then
-							debug ("flatten")
-								io.put_string ("found attr " + child_attr_name + " in parent %N")
-							end
-
-							-- for container attributes in the source archetype, we graft in new elements; overrides will be
-							-- handled by being traversed by this routine later
-							c_attr_child := cco_child_diff.c_attribute_at_path (child_attr_name)
-							c_attr_output := cco_output_flat.c_attribute_at_path(child_attr_name)
-							if c_attr_child.is_multiple then
-								-- graft the cardinality if that has been changed
-								if not c_attr_child.cardinality.interval.is_equal (c_attr_output.cardinality.interval) then
-									c_attr_output.set_cardinality (c_attr_child.cardinality.deep_twin)
-								end
-								debug ("flatten")
-									io.put_string ("%T merge container attribute at " + c_attr_child.path + " into output%N")
-								end
-								merge_container_attribute(c_attr_output, c_attr_child)
-							else -- for single-valued attributes, have to merge any non-CCO children
-								debug ("flatten")
-									io.put_string ("%T merge single attribute at " + c_attr_child.path + " into output%N")
-								end
-								merge_single_attribute(c_attr_output, c_attr_child)
-							end
-						else  -- otherwise just do a deep clone of the whole attribute from the child flat to the output
-							c_attr_child := cco_child_diff.attributes.item.safe_deep_twin
-							debug ("flatten")
-								io.put_string ("in child only; deep_clone attribute at " + c_attr_child.path +
-										" from diff child and graft to " + cco_output_flat.path + " in output%N")
-							end
-							cco_output_flat.put_attribute (c_attr_child)
-						end
-						cco_child_diff.attributes.forth
-					end
-				elseif path_list.has(a_path) then -- check for path that has been overlaid by a redefined node; have to graft in entire object as a sibling
-					debug ("flatten")
-						io.put_string ("WAS REPLACED - grafting sibling object " + cco_child_diff.path + "%N")
-					end
-					c_attr_output := arch_output_flat.definition.c_attribute_at_path (cco_child_diff.parent.path)
-					c_attr_output.put_sibling_child(cco_child_diff.safe_deep_twin)
-				elseif arch_output_flat.has_path (a_path) then -- must be paths corresponding to use_nodes
-					debug ("flatten")
-						io.put_string ("USE_NODE path%N")
-					end
-					from
-						arch_output_flat.use_node_index.start
-					until
-						arch_output_flat.use_node_index.off or found
-					loop
-						int_refs := arch_output_flat.use_node_index.item_for_iteration
+						-- iterate through child attributes and overlay a) new nodes in existing container attributes, and b) new attributes from child
 						from
-							int_refs.start
+							cco_child_diff.attributes.start
 						until
-							-- do check with specialised path because in flat archetype, intervening nodes back up this path have already
-							-- had their node ids replaced by earlier visits to this function for parent nodes
-							int_refs.off or cco_child_diff.path.substring (1, int_refs.item.path.count).is_equal (int_refs.item.path)
+							cco_child_diff.attributes.off
 						loop
+							child_attr_name := cco_child_diff.attributes.item.rm_attribute_name
 							debug ("flatten")
-								io.put_string ("%T...checking path " + int_refs.item.path + "%N")
+								io.put_string ("%T%Tattribute in child: " + child_attr_name + " ... ")
 							end
-							int_refs.forth
+
+							-- for attributes that are found in the flat parent tree, we need to check which of their children
+							-- if any need to be cloned into the output
+							if cco_output_flat.has_attribute (child_attr_name) then
+								debug ("flatten")
+									io.put_string ("found attr " + child_attr_name + " in parent %N")
+								end
+
+								-- for container attributes in the source archetype, we graft in new elements; overrides will be
+								-- handled by being traversed by this routine later
+								c_attr_child := cco_child_diff.c_attribute_at_path (child_attr_name)
+								c_attr_output := cco_output_flat.c_attribute_at_path(child_attr_name)
+								if c_attr_child.is_multiple then
+									-- graft the cardinality if that has been changed
+									if not c_attr_child.cardinality.interval.is_equal (c_attr_output.cardinality.interval) then
+										c_attr_output.set_cardinality (c_attr_child.cardinality.deep_twin)
+									end
+									debug ("flatten")
+										io.put_string ("%T merge container attribute at " + c_attr_child.path + " into output%N")
+									end
+									merge_container_attribute(c_attr_output, c_attr_child)
+								else -- for single-valued attributes, have to merge any non-CCO children
+									debug ("flatten")
+										io.put_string ("%T merge single attribute at " + c_attr_child.path + " into output%N")
+									end
+									merge_single_attribute(c_attr_output, c_attr_child)
+								end
+							else  -- otherwise just do a deep clone of the whole attribute from the child flat to the output
+								c_attr_child := cco_child_diff.attributes.item.safe_deep_twin
+								debug ("flatten")
+									io.put_string ("in child only; deep_clone attribute at " + c_attr_child.path +
+										" from diff child and graft to " + cco_output_flat.path + " in output%N")
+								end
+								cco_output_flat.put_attribute (c_attr_child)
+							end
+							cco_child_diff.attributes.forth
 						end
-						arch_output_flat.use_node_index.forth
-						found := not int_refs.off
-					end
-					if found then
-						debug ("flatten")
-							io.put_string ("%T...found path = " + int_refs.item.path + "%N")
-						end
+
+						-- record path in case sibling objects turn up
+						path_list.extend(a_path)
 					end
 				else
 					debug ("flatten")

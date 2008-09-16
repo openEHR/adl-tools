@@ -199,6 +199,12 @@ feature -- Status Report
 			Result := representation.is_multiple
 		end
 
+	is_single: BOOLEAN is
+			-- True if this attribute is a single-valued attribute, i.e. not a container
+		do
+			Result := not representation.is_multiple
+		end
+
 	is_ordered: BOOLEAN is
 			-- 	True if this attribute is multiple and ordered
 		do
@@ -213,8 +219,6 @@ feature -- Status Report
 
 			if not (any_allowed xor representation.has_children) then
 				invalid_reason.append("must be either 'any' node or have child nodes")
-			elseif existence = Void then	-- FIXME: Delete this check! It's guaranteed by the invariant, so why are we checking it here?
-				invalid_reason.append("existence must be specified")
 			else
 				from
 					Result := True
@@ -223,7 +227,7 @@ feature -- Status Report
 					not Result or children.off
 				loop
 					-- check occurrences consistent with attribute cardinality
-					if not is_multiple and children.item.occurrences.upper > 1 then
+					if is_single and children.item.occurrences.upper > 1 then
 						Result := False
 						invalid_reason.append ("occurrences on child node " + children.item.node_id.out +
 							" must be singular for non-container attribute")
@@ -231,7 +235,6 @@ feature -- Status Report
 						Result := False
 						invalid_reason.append ("(invalid child node) " + children.item.invalid_reason + "%N")
 					end
-
 					children.forth
 				end
 			end
@@ -277,7 +280,7 @@ feature -- Comparison
 			--	existence
 			-- An error message can be obtained by calling node_conformance_failure_reason
 		do
-			Result := (existence.is_equal (other.existence) or other.existence.contains (existence)) and (not is_multiple or
+			Result := (existence.is_equal (other.existence) or other.existence.contains (existence)) and (is_single or
 				(cardinality.interval.is_equal (other.cardinality.interval) or other.cardinality.contains (cardinality)))
 		end
 
@@ -313,9 +316,7 @@ feature -- Modification
 	put_child(an_obj: C_OBJECT) is
 			-- put a new child node
 		require
-			Object_exists: an_obj /= Void
-			Object_occurrences_valid: not is_multiple implies an_obj.occurrences.upper <= 1
-			Object_id_valid: not (an_obj.is_addressable and has_child(an_obj))
+			Object_valid: an_obj /= Void and then valid_new_child(an_obj)
 		do
 			representation.put_child(an_obj.representation)
 			children.extend(an_obj)
@@ -325,9 +326,7 @@ feature -- Modification
 	put_child_left(an_obj, before_obj: C_OBJECT) is
 			-- insert a new child node before another node
 		require
-			Object_exists: an_obj /= Void
-			Object_occurrences_valid: not is_multiple implies an_obj.occurrences.upper <= 1
-			Object_id_valid: not (an_obj.is_addressable and has_child(an_obj))
+			Object_valid: an_obj /= Void and then valid_new_child(an_obj)
 			Before_obj_valid: before_obj /= Void and then has_child(before_obj)
 		do
 			representation.put_child_left(an_obj.representation, before_obj.representation)
@@ -339,9 +338,7 @@ feature -- Modification
 	put_child_right(an_obj, after_obj: C_OBJECT) is
 			-- insert a new child node after another node
 		require
-			Object_exists: an_obj /= Void
-			Object_occurrences_valid: not is_multiple implies an_obj.occurrences.upper <= 1
-			Object_id_valid: not (an_obj.is_addressable and has_child(an_obj))
+			Object_valid: an_obj /= Void and then valid_new_child(an_obj)
 			After_obj_valid: after_obj /= Void and then has_child(after_obj)
 		do
 			representation.put_child_right(an_obj.representation, after_obj.representation)
@@ -356,9 +353,7 @@ feature -- Modification
 			-- usually it is a specialised node id with a common parent, but may be a top level id
 			-- put `an_obj' at end if no sibling found
 		require
-			Object_exists: an_obj /= Void
-			Object_occurrences_valid: not is_multiple implies an_obj.occurrences.upper <= 1
-			Object_id_valid: an_obj.is_addressable
+			Object_valid: an_obj /= Void and then valid_new_child(an_obj)
 		local
 			parent_id: STRING
 			siblings: ARRAYED_LIST [C_OBJECT]
@@ -375,8 +370,7 @@ feature -- Modification
 	replace_child_by_id(an_obj: C_OBJECT; an_id: STRING) is
 			-- replace node with id `an_id' by `an_obj'
 		require
-			Object_exists: an_obj /= Void
-			Object_occurrences_valid: not is_multiple implies an_obj.occurrences.upper <= 1
+			Object_valid: an_obj /= Void and then valid_replacement_child(an_obj)
 			Id_valid: an_id /= Void and then has_child_with_id(an_id)
 		do
 			children.go_i_th (children.index_of (child_with_id(an_id), 1))
@@ -388,8 +382,8 @@ feature -- Modification
 	replace_child_by_rm_type_name(an_obj: C_OBJECT) is
 			-- replace node with rm_type_name `a_type_name' by `an_obj'
 		require
-			Object_exists: an_obj /= Void
-			Object_occurrences_valid: not is_multiple implies an_obj.occurrences.upper <= 1
+			Attribute_validity: is_single
+			Object_valid: an_obj /= Void and then valid_replacement_child(an_obj)
 		do
 			representation.replace_child_by_id(an_obj.representation, child_with_rm_type_name(an_obj.rm_type_name).representation.node_id)
 			children.go_i_th (children.index_of (child_with_rm_type_name(an_obj.rm_type_name), 1))
@@ -414,6 +408,54 @@ feature -- Modification
 		do
 			representation.replace_node_id(an_obj.representation, diff_obj.node_id)
 			an_obj.overlay_differential (diff_obj)
+		end
+
+feature -- Validation
+
+	valid_new_child(an_obj: C_OBJECT):BOOLEAN is
+			-- test an_obj for addition as a new child node (including for replacement)
+		require
+			Object_exists: an_obj /= Void
+		do
+			Result := valid_child(an_obj)
+			if Result then
+				if is_single then
+					Result := (an_obj.is_addressable and not has_child_with_id (an_obj.node_id))
+						or not has_child_with_rm_type_name(an_obj.rm_type_name)
+				else
+					Result := not has_child_with_id (an_obj.node_id)
+				end
+			end
+		end
+
+	valid_replacement_child(an_obj: C_OBJECT):BOOLEAN is
+			-- test an_obj for addition as a new child node (including for replacement)
+		require
+			Object_exists: an_obj /= Void
+		do
+			Result := valid_child(an_obj)
+			if Result then
+				if is_single then
+					Result := not an_obj.is_addressable or has_child_with_id (an_obj.node_id)
+				else
+					Result := has_child_with_id (an_obj.node_id)
+				end
+			end
+		end
+
+	valid_child(an_obj: C_OBJECT):BOOLEAN is
+			-- test an_obj for validity as a child node
+		do
+			Result := not has_child(an_obj)
+			if Result then
+				if is_single then
+					Result := not an_obj.occurrences.upper_unbounded and an_obj.occurrences.upper <= 1
+				else
+					Result := (cardinality.interval.upper_unbounded or (not an_obj.occurrences.upper_unbounded and
+						cardinality.interval.upper >= an_obj.occurrences.upper)) and
+						an_obj.is_addressable
+				end
+			end
 		end
 
 feature -- Representation

@@ -64,6 +64,9 @@ feature {NONE} -- Initialisation
 				if target_descriptor.specialisation_parent = Void then
 					errors.append ("Error: Specialisation parent is missing")
 					passed := False
+				elseif not target_descriptor.specialisation_parent.is_valid then
+					errors.append ("Error: Parent failed to validate")
+					passed := False
 				else
 					flat_parent := target_descriptor.specialisation_parent.archetype_flat
 				end
@@ -71,8 +74,7 @@ feature {NONE} -- Initialisation
 		ensure
 			target_descriptor_set: target_descriptor = a_target_desc
 			target_set: target = a_target_desc.archetype_differential
-			Parent_set: target_descriptor.is_specialised implies flat_parent /= Void
-			Passed: passed
+			Parent_set: (passed and target_descriptor.is_specialised) implies flat_parent /= Void
 		end
 
 feature -- Access
@@ -116,12 +118,7 @@ feature -- Validation
 
 			-- validation requiring valid specialisation parent
 			if passed and target.is_specialised then
-		 		if not target_descriptor.specialisation_parent.is_valid then
-					errors.append ("Error: Parent failed to validate")
-					passed := False
-		 		else
-		 			target.set_parent_archetype (target_descriptor.specialisation_parent.archetype_differential)
-				end
+	 			target.set_parent_archetype (target_descriptor.specialisation_parent.archetype_differential)
 			end
 
 			-- validation requiring parent links in place for specialised archetype

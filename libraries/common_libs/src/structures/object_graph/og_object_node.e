@@ -241,7 +241,9 @@ feature {OG_OBJECT_NODE} -- Implementation
 						child_objs.off
 					loop
 						child_obj ?= child_objs.item_for_iteration
-						obj_predicate_required := (is_unique or child_obj.is_addressable) and attr_node.is_multiple
+						obj_predicate_required := is_unique or
+												(attr_node.is_single and attr_node.child_count > 1 and child_obj.is_addressable) or
+												attr_node.is_multiple
 						child_obj_node ?= child_obj
 						if child_obj_node /= Void then
 							child_paths := child_obj_node.all_paths
@@ -283,7 +285,7 @@ feature {OG_OBJECT_NODE} -- Implementation
 						if is_root then
 							a_path.set_absolute
 						end
-						Result.put(child_obj, a_path)
+						Result.put(Void, a_path)
 					end
 					children.forth
 				end

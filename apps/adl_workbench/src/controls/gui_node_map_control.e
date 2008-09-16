@@ -938,7 +938,11 @@ feature {NONE} -- Implementation
 			end
 
 			if in_technical_mode then
-				Result.append ("use " + a_node.rm_type_name + " " + a_node.target_path)
+				Result.append ("use " + a_node.rm_type_name)
+				if a_node.is_addressable then
+					Result.append("[" + a_node.node_id + "]")
+				end
+				Result.append (" " + a_node.target_path)
 			elseif archetype_directory.has_valid_selected_archetype then
 				Result.append ("use " + ontology.physical_to_logical_path (a_node.target_path, current_language))
 			end

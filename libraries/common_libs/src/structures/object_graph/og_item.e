@@ -204,7 +204,8 @@ feature {NONE} -- Implementation
 				og_attr ?= og_nodes.item
 				og_nodes.forth
 				if not og_nodes.off then -- now on an OG_OBJECT_NODE
-					if (og_nodes.item.is_addressable or unique_flag) and og_attr.is_multiple then
+					if unique_flag or og_attr.is_multiple or
+								(og_attr.is_single and og_attr.child_count > 1 and og_nodes.item.is_addressable) then
 						a_path_item.set_object_id(og_nodes.item.node_id)
 					end
 					og_nodes.forth
@@ -220,7 +221,8 @@ feature {NONE} -- Implementation
 					og_attr ?= og_nodes.item
 					og_nodes.forth
 					if not og_nodes.off then -- now on an OG_OBJECT_NODE
-						if (og_nodes.item.is_addressable or unique_flag) and og_attr.is_multiple then
+						if unique_flag or og_attr.is_multiple or
+								(og_attr.is_single and og_attr.child_count > 1 and og_nodes.item.is_addressable) then
 							a_path_item.set_object_id(og_nodes.item.node_id)
 						end
 						og_nodes.forth
