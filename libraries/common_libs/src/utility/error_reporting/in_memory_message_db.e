@@ -24,6 +24,11 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_RESOURCES
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -40,8 +45,9 @@ feature -- Initialisation
 			if not parser.syntax_error then
 				dt_tree := parser.output
 				init_helper ?= dt_tree.as_object(dynamic_type_from_string("IN_MEMORY_MESSAGE_DB_INITIALISER"))
-				check init_helper /= Void end
-				templates := init_helper.templates
+				templates := init_helper.templates.item (locale_language_short)
+			else
+				io.put_string ("Message database failure: " + parser.error_text + "%N")
 			end
 		end
 
@@ -51,6 +57,7 @@ feature -- Access
 			-- string form of message template tables in one language
 		"[
 		templates = <
+		["en"] = <
 			-- MESSAGE_BILLBOARD
 			["none"] = <"No error">
 			["message_code_error"] = <"Error code $1 does not exist">
@@ -82,8 +89,62 @@ feature -- Access
 			["arch_context_make_flat_i1"] = <"Generated differential archetype from specialised flat archetype">
 			
 			-- ARCHETYPE_VALIDATOR
+			["validate_e1"] = <"Error: specialisation parent is missing">
+			["validate_e2"] = <"Error: specialisation parent failed to validate">
+			["validate_e3"] = <"Error: archetype id in filename $1 does not match id at top of file $2%N">
 			
+			-- syntax errors: see the cADL, dADL and ADL syntax validators
+			["SDSF"] = <"differential syntax not allowed in flat archetype">
+			["SDINV"] = <"invalid dADL section; error: $1">
+			["SCCOG"] = <"expecting a new node definition, primitive node definition, 'use' path, or 'archetype' reference">
+			["SOCCF"] = <"expecting an 'occurrences expression', e.g. 'occurrences matches {n..m}'">
+			["SUNPA"] = <"expecting absolute path in use_node statement">
+			["SUAS"] = <"error after 'use_archetype' keyword; expecting Object node definition">
+			["SCAS"] = <"expecting a 'any' node, 'leaf' node, or new node definition">
+			["SINVS"] = <"illegal invariant expression at identifier $1">
+			["SEXPT"] = <"expecting absolute path after exists keyword">
+			["SEXLSG"] = <"existence single value must be 0 or 1">
+			["SEXLU1"] = <"existence upper limit must be 0 or 1 when lower limit is 0">
+			["SEXLU2"] = <"existence upper limit must be 1 when lower limit is 1">
+			["SEXLMG"] = <"In existence; expecting 0..0, 0..1, or 1..1">
+
+			["SCIAV"] = <"invalid assumed value; must be an integer">
+			["SCRAV"] = <"invalid assumed value; must be a real number">
+			["SCDAV"] = <"invalid assumed value; must be an ISO8601 date">
+			["SCTAV"] = <"invalid assumed value; must be an ISO8601 time">
+			["SCDTAV"] = <"invalid assumed value; must be an ISO8601 date/time">
+			["SCDUAV"] = <"invalid assumed value; must be an ISO8601 duration">
+			["SCSAV"] = <"invalid assumed value; must be a string">
+			["SCBAV"] = <"invalid assumed value; must be a 'True' or 'False'">
+			["SCOAV"] = <"invalid assumed value; must be an ordinal integer value">
+
+			["SCDPT"] = <"invalid date constraint pattern; allowed patterns: $1">
+			["SCTPT"] = <"invalid time constraint pattern; allowed patterns: $1">
+			["SCDTPT"] = <"invalid date/time constraint pattern; allowed patterns: $1">
+			["SCDUPT"] = <"invalid duration constraint pattern; legal pattern: P[Y|y][M|m][W|w][D|d][T[H|h][M|m][S|s]] or P[W|w]">
+			["SCSRE"] = <"Regular expression compile error $1 is not a valid regular expression">
+
+			-- validity errors: unless otherwise notes, these codes are defined in the ADL 1.5 or later spec
+			["VARDT"] = <"Error (VARDT): archetype id type $1 does not match type $2 in definition section%N">
+			["VACSD"] = <"Error (VACSD): specialisation depth of concept code $1 does not match specialisation depth of archetype id $2%N">
+			["VACCD"] = <"Error (VACCD): archetype concept code $1 not used in definition%N">			
+			["VONSD"] = <"Error (VONSD): archetype code $1 in ontology more specialised than archetype%N">
+			["VOTM"] = <"Error (VOTM): translations missing in the term_definition and constraint_definition sections wit respect to languages defined in the description / translations section%N">
+			["VATCD"] = <"Error (VATCD): at-code $1 used in archetype more specialised than archetype%N">
+			["VATDF"] = <"Error (VATDF): node id at-code $1 not defined in ontology%N">
+			["VUNP"] = <"Error (VUNP): use_node path $1 not found in archetype%N">
+
+			["VSONC"] = <"Error (VSONC): object node at path $1 does not conform to node at parent path $2; reason:%N$3">
+			["VSANC"] = <"Error (VSANC): attribute $1 at path $2 does not conform to parent $3; reason:%N$4">
+			["VSSM"] = <"Error (VSSM): node at path $1 has order marker referring to non-existant sibling node $2%N">
+			["VATUN"] = <"Error (VATUN) duplicate attribute $1">
+
+			["VOBAV"] = <"Error (VOBAV): assumed value $1 not within constraint range">
+			["VOBAVL"] = <"Error (VOBAVL): assumed value $1 not found in constraint list"> -- additional to ADL spec
 			
+			-- validation warnings: in addition to spec, used to help archetype authors
+			["WOUC"] = <"Warning (WOUC): code $1 in ontology not used in archetype definition%N">
+							
 			-- ARCHETYPE_FILE_REPOSITORY_IMP
 			["invalid_filename_e1"] = <"Invalid archetype filename $1">
 			["pair_filename_i1"] = <"(Differential/flat pair archetype filename found $1)">
@@ -106,6 +167,7 @@ feature -- Access
 
 			-- ADL_SYNTAX_CONTERTER
 			["syntax_upgraded_i1"] = <"Syntax element upgraded: --$1-- changed to --$2--">
+		>
 		>
 		]"
 

@@ -24,6 +24,11 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_MESSAGE_DB
+		export
+			{NONE} all
+		end
+
 feature -- Access
 
 	billboard_content: STRING is
@@ -92,9 +97,6 @@ feature -- Modify
 		do
 			billboard.put_front(
 				create {MESSAGE_BILLBOARD_ITEM}.make(poster_object.generator, poster_routine, id, args, Message_type_error))
-			debug("BB")
-				io.put_string("MSG_BB: " + billboard_most_recent)
-			end
 		ensure
 			Error_posted: billboard_has_errors
 		end
@@ -134,12 +136,6 @@ feature {NONE} -- Implementation
 			create Result.make(0)
 		end
 
-	message_db: MESSAGE_DB is
-			-- error database keyed by id
-		once
-			create {IN_MEMORY_MESSAGE_DB} Result.make
-		end
-
 	filtered_billboard_content(at_level: INTEGER): STRING is
 			-- text of the billboard in locale current language, filtered according to include_types
 		require
@@ -170,9 +166,9 @@ feature {NONE} -- Implementation
 			leader := Message_type_names.item(bb_item.message_type) + " - "
 			trailer := " (" + bb_item.type_name + "." + bb_item.routine_name + ")"
 			if message_db.has_message(bb_item.message_id) then
-				err_str := message_db.stringify(bb_item.message_id, bb_item.args)
+				err_str := message_db.create_message(bb_item.message_id, bb_item.args)
 			else
-				err_str := message_db.stringify("message_code_error", Void)
+				err_str := message_db.create_message("message_code_error", Void)
 			end
 			Result.append(leader)
 			Result.append(err_str)

@@ -62,10 +62,10 @@ feature {NONE} -- Initialisation
 			make_authored_resource(target_descriptor.archetype_differential)
 			if target_descriptor.is_specialised then
 				if target_descriptor.specialisation_parent = Void then
-					errors.append ("Error: Specialisation parent is missing")
+					errors.append (create_message("validate_e1", Void))
 					passed := False
 				elseif not target_descriptor.specialisation_parent.is_valid then
-					errors.append ("Error: Parent failed to validate")
+					errors.append (create_message("validate_e2", Void))
 					passed := False
 				else
 					flat_parent := target_descriptor.specialisation_parent.archetype_flat
@@ -144,22 +144,19 @@ feature {NONE} -- Implementation
 			passed := False
 
 			if not target_descriptor.id.as_string.is_equal (target.archetype_id.as_string) then
-				errors.append ("Error: archetype id in filename " + target_descriptor.id.as_string + " does not match id at top of file " +
-					target.archetype_id.as_string + "%N")
+				errors.append (create_message("validate_e3", <<target_descriptor.id.as_string, target.archetype_id.as_string>>))
 			elseif not target.definition.rm_type_name.is_equal (target.archetype_id.rm_entity) then
-				errors.append ("Error: archetype id type %"" + target.archetype_id.rm_entity +
-								"%" does not match type %"" + target.definition.rm_type_name +
-								"%" in definition section%N")
+				errors.append (create_message("VARDT", <<target.archetype_id.rm_entity, target.definition.rm_type_name>>))
 			elseif specialisation_depth_from_code (target.concept) /= target.specialisation_depth then
-				errors.append ("Error: specialisation depth of concept (root) code is incorrect - should be " + target.specialisation_depth.out + "%N")
+				errors.append (create_message("VACSD", <<specialisation_depth_from_code (target.concept).out, target.specialisation_depth.out>>))
 			elseif not target.definition.node_id.is_equal (target.concept) then
-				errors.append ("Error: concept code " + target.concept + " not used in definition%N")
+				errors.append (create_message("VACCD", <<target.concept>>))
 			elseif not target.definition.is_valid then
 				-- FIXME - need to check definition validation; possibly this should be
 				-- done using another visitor pattern?
-				errors.append ("Error: " + target.definition.invalid_reason + "%N")
+				errors.append (create_message("general_error", <<target.definition.invalid_reason>>))
 			elseif not target.ontology.is_valid then
-				errors.append ("Error: " + target.ontology.errors + "%N")
+				errors.append (create_message("general_error", <<target.ontology.errors>>))
 			else
 				passed := True
 			end
@@ -172,7 +169,7 @@ feature {NONE} -- Implementation
 			passed := False
 
 			if not target.languages_available.is_subset (target.ontology.languages_available) then
-				errors.append ("Error: translations are missing from ontology%N")
+				errors.append (create_message("VOTM", Void))
 				-- FIXME: Report exactly which languages are missing from the ontology.
 			else
 				passed := True
@@ -196,7 +193,7 @@ feature {NONE} -- Implementation
 			loop
 				if specialisation_depth_from_code (code_list.item) > ontology.specialisation_depth then
 					passed := False
-					errors.append("Error: at-code " + code_list.item + " in ontology more specialised than archetype%N")
+					errors.append(create_message("VONSD", <<code_list.item>>))
 				end
 
 				code_list.forth
@@ -211,7 +208,7 @@ feature {NONE} -- Implementation
 			loop
 				if specialisation_depth_from_code (code_list.item) > ontology.specialisation_depth then
 					passed := False
-					errors.append("Error: ac-code " + code_list.item + " in ontology more specialised than archetype%N")
+					errors.append(create_message("VONSD", <<code_list.item>>))
 				end
 
 				code_list.forth
@@ -236,12 +233,11 @@ feature {NONE} -- Implementation
 			loop
 				if specialisation_depth_from_code (a_codes.key_for_iteration) > depth then
 					passed := False
-					errors.append ("Error: at-code " + a_codes.key_for_iteration + " used in archetype more specialised than archetype%N")
+					errors.append (create_message("VATCD", <<a_codes.key_for_iteration>>))
 				elseif not ontology.has_term_code (a_codes.key_for_iteration) then
 					passed := False
-					errors.append ("Error: node id at-code " + a_codes.key_for_iteration + " not defined in ontology%N")
+					errors.append (create_message("VATDF", <<a_codes.key_for_iteration>>))
 				end
-
 				a_codes.forth
 			end
 
@@ -255,10 +251,10 @@ feature {NONE} -- Implementation
 			loop
 				if specialisation_depth_from_code (a_codes.key_for_iteration) > depth then
 					passed := False
-					errors.append ("Error: at-code " + a_codes.key_for_iteration + " used in archetype more specialised than archetype%N")
+					errors.append (create_message("VATCD", <<a_codes.key_for_iteration>>))
 				elseif not ontology.has_term_code (a_codes.key_for_iteration) then
 					passed := False
-					errors.append ("Error: leaf at-code " + a_codes.key_for_iteration + " not defined in ontology%N")
+					errors.append (create_message("VATDF", <<a_codes.key_for_iteration>>))
 				end
 
 				a_codes.forth
@@ -274,10 +270,10 @@ feature {NONE} -- Implementation
 			loop
 				if specialisation_depth_from_code (a_codes.key_for_iteration) > depth then
 					passed := False
-					errors.append ("Error: ac-code " + a_codes.key_for_iteration + " used in archetype more specialised than archetype%N")
+					errors.append (create_message("VATCD", <<a_codes.key_for_iteration>>))
 				elseif not ontology.has_constraint_code (a_codes.key_for_iteration) then
 					passed := False
-					errors.append ("Error: found ac-code " + a_codes.key_for_iteration + " not defined in all languages in ontology%N")
+					errors.append (create_message("VATDF", <<a_codes.key_for_iteration>>))
 				end
 
 				a_codes.forth
@@ -313,7 +309,7 @@ feature {NONE} -- Implementation
 					convert_use_ref_paths (use_refs.item_for_iteration, use_refs.key_for_iteration, arch)
 				else
 					passed := False
-					errors.append ("Error: use_node path " + use_refs.key_for_iteration + " not found in archetype%N")
+					errors.append (create_message("VUNP", <<use_refs.key_for_iteration>>))
 				end
 
 				use_refs.forth
@@ -345,7 +341,7 @@ feature {NONE} -- Implementation
 			until
 				target.ontology_unused_term_codes.off
 			loop
-				warnings.append("Warning: term code " + target.ontology_unused_term_codes.item + " in ontology not used in archetype definition%N")
+				warnings.append(create_message("WOUC", <<target.ontology_unused_term_codes.item>>))
 				target.ontology_unused_term_codes.forth
 			end
 
@@ -354,7 +350,7 @@ feature {NONE} -- Implementation
 			until
 				target.ontology_unused_constraint_codes.off
 			loop
-				warnings.append("Warning: constraint code " + target.ontology_unused_constraint_codes.item + " in ontology not used in archetype definition%N")
+				warnings.append(create_message("WOUC", <<target.ontology_unused_constraint_codes.item>>))
 				target.ontology_unused_constraint_codes.forth
 			end
 		end
@@ -492,13 +488,11 @@ feature {NONE} -- Implementation
 				-- now determine if child object is same as or a specialisation of flat object
 				if not co_child_diff.is_node_conformant_to(co_parent_flat) then
 					passed := False
-					errors.append ("Error: node at path " + co_child_diff.path + " does not conform to parent path " + co_parent_flat.path +
-						"; reason:%N" + co_child_diff.node_conformance_failure_reason(co_parent_flat))
+					errors.append (create_message("VSONC", <<co_child_diff.path, co_parent_flat.path, co_child_diff.node_conformance_failure_reason(co_parent_flat)>>))
 				elseif co_child_diff.sibling_order /= Void then
 					if not co_parent_flat.parent.has_child_with_id (co_child_diff.sibling_order.sibling_node_id) then
 						passed := False
-						errors.append ("Error: node at path " + co_child_diff.path + " has order marker referring to non-existant sibling node " +
-							co_child_diff.sibling_order.sibling_node_id + "%N")
+						errors.append (create_message("VSSM", <<co_child_diff.path, co_child_diff.sibling_order.sibling_node_id>>))
 					end
 				end
 
@@ -515,9 +509,8 @@ feature {NONE} -- Implementation
 								c_parent_attr := cco_parent_flat.c_attribute_at_path (child_attr_name)
 								if not cco_child_diff.attributes.item.is_node_conformant_to(c_parent_attr) then
 									passed := False
-									errors.append ("Error: attribute " + child_attr_name + " at path " + co_child_diff.path + " does not conform to parent " +
-										co_parent_flat.path + "; reason:%N" + cco_child_diff.attributes.item.node_conformance_failure_reason(c_parent_attr))
-
+									errors.append (create_message("VSANC", <<child_attr_name, co_child_diff.path,
+										co_parent_flat.path, cco_child_diff.attributes.item.node_conformance_failure_reason(c_parent_attr)>>))
 								end
 							end
 						end

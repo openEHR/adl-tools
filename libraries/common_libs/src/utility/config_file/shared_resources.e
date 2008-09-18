@@ -289,6 +289,20 @@ feature -- Environment
 			ends_with_new_extension: Result.ends_with (new_extension)
 		end
 
+	locale_language_short: STRING is
+			-- return the ISO 2-char code for the locale language, e.g. "en"
+		do
+			-- FIXME: to be implemented
+			Result := "en"
+		end
+
+	locale_language_long: STRING is
+			-- return the ISO 2-char code for the locale language + 2 char code country variant, where appropriate, e.g. "en-uk", "en-au"
+		do
+			-- FIXME: to be implemented
+			Result := "en-uk"
+		end
+
 feature -- Element Change
 
 	record_resource_request(a_category, a_resource_name:STRING) is

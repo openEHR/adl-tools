@@ -1,62 +1,31 @@
 indexing
 	component:   "openEHR Reusable Libraries"
-	description: "[
-			     Error database abstraction. Subtypes can be easily turned into a file that is read in as
-			     a dADL text.
-				 ]"
-	keywords:    "error status reporting"
-
+	description: "Shared access to error and information messages."
+	keywords:    "logging"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2005 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2008 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-deferred class MESSAGE_DB
-
-feature -- Initialisation
-
-	make is
-		deferred
-		end
+class SHARED_MESSAGE_DB
 
 feature -- Access
 
-	templates: HASH_TABLE [STRING, STRING]
-			-- error templates in the form of a table of templates
-			-- keyed by id
-
-	has_message(an_id: STRING): BOOLEAN is
-		require
-			an_id /= Void
-		do
-			Result := templates.has(an_id)
+	message_db: MESSAGE_DB is
+			-- error database keyed by id
+		once
+			create {IN_MEMORY_MESSAGE_DB} Result.make
 		end
 
 	create_message(an_id: STRING; args: ARRAY[STRING]): STRING is
 		require
 			an_id /= Void
-		local
-			i: INTEGER
-			idx_str: STRING
 		do
-			Result := templates.item(an_id).twin
-			Result.replace_substring_all("%%N", "%N")
-			if args /= Void then
-				from
-					i := args.lower
-				until
-					i > args.upper
-				loop
-					idx_str := i.out
-					idx_str.left_adjust
-					Result.replace_substring_all("$" + idx_str, args.item(i))
-					i := i + 1
-				end
-			end
+			Result := message_db.create_message (an_id, args)
 		end
 
 end
@@ -75,10 +44,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is error_status.e.
+--| The Original Code is shared_message_db.e
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2008
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):
@@ -97,5 +66,3 @@ end
 --|
 --| ***** END LICENSE BLOCK *****
 --|
-
-

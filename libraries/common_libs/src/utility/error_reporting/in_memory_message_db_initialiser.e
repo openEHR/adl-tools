@@ -18,7 +18,7 @@ class IN_MEMORY_MESSAGE_DB_INITIALISER
 
 feature -- Access
 
-	templates: HASH_TABLE [STRING, STRING]
+	templates: HASH_TABLE [HASH_TABLE [STRING, STRING], STRING]
 			-- temporary copy of templates tables
 
 end
@@ -60,4 +60,4 @@ end
 --| ***** END LICENSE BLOCK *****
 --|
 
- 
+

@@ -717,7 +717,7 @@ end
 				complex_obj.set_sibling_order(yyvs9.item (yyvsp9))
 			else
 				raise_error
-				report_error("Differential syntax not allowed in flat archetype")
+				report_error(create_message("SDSF", Void))
 				abort
 			end
 		
@@ -987,7 +987,7 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error("invalid dADL section; error: " + dadl_parser_error)
+			report_error(create_message("SDINV", <<dadl_parser_error>>))
 			abort
 		
 if yy_parsing_status >= yyContinue then
@@ -1001,7 +1001,7 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error("expecting a new node definition, primitive node definition, 'use' path, or 'archetype' reference")
+			report_error(create_message("SCCOG", Void))
 			abort
 		
 if yy_parsing_status >= yyContinue then
@@ -1051,7 +1051,7 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error("expecting absolute path")
+			report_error(create_message("SUNPA", Void))
 			abort
 		
 if yy_parsing_status >= yyContinue then
@@ -1135,7 +1135,7 @@ end
 				archetype_slot.set_sibling_order(yyvs9.item (yyvsp9))
 			else
 				raise_error
-				report_error("Differential syntax not allowed in flat archetype")
+				report_error(create_message("SDSF", Void))
 				abort
 			end
 		
@@ -1169,7 +1169,7 @@ end
 				archetype_slot.set_sibling_order(yyvs9.item (yyvsp9))
 			else
 				raise_error
-				report_error("Differential syntax not allowed in flat archetype")
+				report_error(create_message("SDSF", Void))
 				abort
 			end
 		
@@ -1186,7 +1186,7 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error("error after 'use_archetype' keyword; expecting Object node definition")
+			report_error(create_message("SUAS", Void))
 			abort
 		
 if yy_parsing_status >= yyContinue then
@@ -1547,7 +1547,7 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error("expecting a 'any' node, 'leaf' node, or new node definition")
+			report_error(create_message("SCAS", Void))
 			abort
 		
 if yy_parsing_status >= yyContinue then
@@ -1578,7 +1578,7 @@ end
 				object_nodes.item.put_attribute(attr_node)
 			else
 				raise_error
-				report_error("duplicate attribute " + rm_attribute_name)
+				report_error(create_message("VATUN", <<rm_attribute_name>>))
 				abort
 			end
 		
@@ -1628,7 +1628,7 @@ end
 				object_nodes.item.put_attribute(attr_node)
 			else
 				raise_error
-				report_error("duplicate attribute " + rm_attribute_name)
+				report_error(create_message("VATUN", <<rm_attribute_name>>))
 				abort
 			end
 		
@@ -1880,7 +1880,7 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error("illegal invariant expression at identifier " + yyvs4.item (yyvsp4))
+			report_error(create_message("SINVS", <<yyvs4.item (yyvsp4)>>))
 			abort
 		
 if yy_parsing_status >= yyContinue then
@@ -1957,7 +1957,7 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error("expecting absolute path")
+			report_error(create_message("SEXPT", Void))
 			abort
 		
 if yy_parsing_status >= yyContinue then
@@ -2806,7 +2806,7 @@ end
 				create int_interval.make_point(1)
 			else
 				raise_error
-				report_error("In existence; expecting 0 or 1")
+				report_error(create_message("SEXLSG", Void))
 				abort
 			end
 		
@@ -2845,7 +2845,7 @@ end
 					create int_interval.make_bounded(0, 1, True, True)
 				else
 					raise_error
-					report_error("In existence; upper value must be 0 or 1")
+					report_error(create_message("SEXLU1", Void))
 					abort
 				end
 			elseif yyvs2.item (yyvsp2 - 1) = 1 then
@@ -2853,12 +2853,12 @@ end
 					create int_interval.make_point(1)
 				else
 					raise_error
-					report_error("In existence; upper value must be 1")
+					report_error(create_message("SEXLU2", Void))
 					abort
 				end
 			else
 				raise_error
-				report_error("In existence; expecting 0..0, 0..1, or 1..1")
+				report_error(create_message("SEXLMG", Void))
 				abort
 			end
 		
@@ -3127,7 +3127,7 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error("expecting an 'occurrences expression', e.g. 'occurrences matches {n..m}'")
+			report_error(create_message("SOCCF", Void))
 			abort
 		
 if yy_parsing_status >= yyContinue then
@@ -3347,7 +3347,7 @@ end
 				c_integer.set_assumed_value(yyvs2.item (yyvsp2))
 			else
 				raise_error
-				report_error("assumed value " + yyvs2.item (yyvsp2).out + " not inside constraint")
+				report_error(create_message("VOBAV", <<yyvs2.item (yyvsp2).out>>))
 				abort
 			end
 		
@@ -3364,7 +3364,7 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error("invalid assumed value; must be an integer")
+			report_error(create_message("SCIAV", Void))
 			abort
 		
 if yy_parsing_status >= yyContinue then
@@ -3494,7 +3494,7 @@ end
 				c_real.set_assumed_value(yyvs3.item (yyvsp3))
 			else
 				raise_error
-				report_error("assumed value " + yyvs3.item (yyvsp3).out + " not inside constraint")
+				report_error(create_message("VOBAV", <<yyvs3.item (yyvsp3).out>>))
 				abort
 			end
 		
@@ -3511,7 +3511,7 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error("invalid assumed value; must be a real number")
+			report_error(create_message("SCRAV", Void))
 			abort
 		
 if yy_parsing_status >= yyContinue then
@@ -3542,7 +3542,7 @@ end
 				end
 
 				raise_error
-				report_error("invalid date constraint pattern; allowed patterns: " + str)
+				report_error(create_message("SCDPT", <<str>>))
 				abort
 			end
 		
@@ -3650,7 +3650,7 @@ end
 				c_date.set_assumed_value(yyvs17.item (yyvsp17))
 			else
 				raise_error
-				report_error("assumed value " + yyvs17.item (yyvsp17).out + " not inside constraint")
+				report_error(create_message("VOBAV", <<yyvs17.item (yyvsp17).out>>))
 				abort
 			end
 		
@@ -3667,7 +3667,7 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error("invalid assumed value; must be valid ISO8601 date")
+			report_error(create_message("SCDAV", Void))
 			abort
 		
 if yy_parsing_status >= yyContinue then
@@ -3698,7 +3698,7 @@ end
 				end
 
 				raise_error
-				report_error("invalid time constraint pattern; allowed patterns: " + str)
+				report_error(create_message("SCTPT", <<str>>))
 				abort
 			end
 		
@@ -3806,7 +3806,7 @@ end
 				c_time.set_assumed_value(yyvs19.item (yyvsp19))
 			else
 				raise_error
-				report_error("assumed value " + yyvs19.item (yyvsp19).out + " not inside constraint")
+				report_error(create_message("VOBAV", <<yyvs19.item (yyvsp19).out>>))
 				abort
 			end
 		
@@ -3823,7 +3823,7 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error("invalid assumed value; must be valid ISO8601 time")
+			report_error(create_message("SCTAV", Void))
 			abort
 		
 if yy_parsing_status >= yyContinue then
@@ -3854,7 +3854,7 @@ end
 				end
 
 				raise_error
-				report_error("invalid date/time constraint pattern; allowed patterns: " + str)
+				report_error(create_message("SCDTPT", <<str>>))
 				abort
 			end
 		
@@ -3962,7 +3962,7 @@ end
 				c_date_time.set_assumed_value(yyvs18.item (yyvsp18))
 			else
 				raise_error
-				report_error("assumed value " + yyvs18.item (yyvsp18).out + " not inside constraint")
+				report_error(create_message("VOBAV", <<yyvs18.item (yyvsp18).out>>))
 				abort
 			end
 		
@@ -3979,7 +3979,7 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error("invalid assumed value; must be valid ISO8601 date_time")
+			report_error(create_message("SCDTAV", Void))
 			abort
 		
 if yy_parsing_status >= yyContinue then
@@ -4083,7 +4083,7 @@ end
 				create c_duration.make_from_pattern (yyvs4.item (yyvsp4))
 			else
 				raise_error
-				report_error ("invalid duration constraint pattern; legal pattern: P[Y|y][M|m][W|w][D|d][T[H|h][M|m][S|s]] or P[W|w]")
+				report_error(create_message("SCDUPT", Void))
 				abort
 			end
 		
@@ -4130,7 +4130,7 @@ end
 				c_duration.set_assumed_value(yyvs20.item (yyvsp20))
 			else
 				raise_error
-				report_error("assumed value " + yyvs20.item (yyvsp20).out + " not inside constraint")
+				report_error(create_message("VOBAV", <<yyvs20.item (yyvsp20).out>>))
 				abort
 			end
 		
@@ -4147,7 +4147,7 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error("invalid assumed value; must be valid ISO8601 duration")
+			report_error(create_message("SCDUAV", Void))
 			abort
 		
 if yy_parsing_status >= yyContinue then
@@ -4242,7 +4242,7 @@ end
 			create c_string.make_from_regexp(yyvs4.item (yyvsp4).substring (2, yyvs4.item (yyvsp4).count - 1), yyvs4.item (yyvsp4).item(1) = '/')
 			if c_string.regexp.is_equal(c_string.regexp_compile_error) then
 				raise_error
-				report_error("Regular expression compile error " + yyvs4.item (yyvsp4) + " is not a valid regular expression")
+				report_error(create_message("SCSRE", <<yyvs4.item (yyvsp4)>>))
 				abort
 			end
 		
@@ -4289,7 +4289,7 @@ end
 				c_string.set_assumed_value(yyvs4.item (yyvsp4))
 			else
 				raise_error
-				report_error("assumed value " + yyvs4.item (yyvsp4).out + " not inside constraint")
+				report_error(create_message("VOBAV", <<yyvs4.item (yyvsp4).out>>))
 				abort
 			end
 		
@@ -4306,7 +4306,7 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error("invalid assumed value; must be a string")
+			report_error(create_message("SCSAV", Void))
 			abort
 		
 if yy_parsing_status >= yyContinue then
@@ -4385,7 +4385,7 @@ end
 				c_boolean.set_assumed_value(yyvs16.item (yyvsp16))
 			else
 				raise_error
-				report_error("assumed value " + yyvs16.item (yyvsp16).out + " not inside constraint")
+				report_error(create_message("VOBAV", <<yyvs16.item (yyvsp16).out>>))
 				abort
 			end
 		
@@ -4402,7 +4402,7 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error("invalid assumed value; must be %"True%" or %"False%"")
+			report_error(create_message("SCBAV", Void))
 			abort
 		
 if yy_parsing_status >= yyContinue then
@@ -4431,7 +4431,7 @@ end
 				ordinal_node.set_assumed_value_from_integer (yyvs2.item (yyvsp2))
 			else
 				raise_error
-				report_error ("invalid assumed value " + yyvs2.item (yyvsp2).out + " not in list")
+				report_error(create_message("VOBAVL", <<yyvs2.item (yyvsp2).out>>))
 				abort
 			end
  		
@@ -4448,7 +4448,7 @@ debug ("GEYACC")
 end
 
  			raise_error
- 			report_error ("invalid assumed value; must be an ordinal integer value")
+			report_error(create_message("SCOAV", Void))
  			abort
  		
 if yy_parsing_status >= yyContinue then

@@ -219,7 +219,7 @@ c_complex_object_id: type_identifier
 				complex_obj.set_sibling_order($1)
 			else
 				raise_error
-				report_error("Differential syntax not allowed in flat archetype")
+				report_error(create_message("SDSF", Void))
 				abort
 			end
 		}
@@ -302,13 +302,13 @@ c_object: c_complex_object
 	| ERR_C_DOMAIN_TYPE
 		{
 			raise_error
-			report_error("invalid dADL section; error: " + dadl_parser_error)
+			report_error(create_message("SDINV", <<dadl_parser_error>>))
 			abort
 		}
 	| error		
 		{
 			raise_error
-			report_error("expecting a new node definition, primitive node definition, 'use' path, or 'archetype' reference")
+			report_error(create_message("SCCOG", Void))
 			abort
 		}
 	;
@@ -341,7 +341,7 @@ archetype_internal_ref: SYM_USE_NODE type_identifier c_occurrences absolute_path
 	| SYM_USE_NODE type_identifier error 
 		{
 			raise_error
-			report_error("expecting absolute path")
+			report_error(create_message("SUNPA", Void))
 			abort
 		}
 	;
@@ -393,7 +393,7 @@ c_archetype_slot_id: SYM_ALLOW_ARCHETYPE type_identifier
 				archetype_slot.set_sibling_order($1)
 			else
 				raise_error
-				report_error("Differential syntax not allowed in flat archetype")
+				report_error(create_message("SDSF", Void))
 				abort
 			end
 		}
@@ -408,14 +408,14 @@ c_archetype_slot_id: SYM_ALLOW_ARCHETYPE type_identifier
 				archetype_slot.set_sibling_order($1)
 			else
 				raise_error
-				report_error("Differential syntax not allowed in flat archetype")
+				report_error(create_message("SDSF", Void))
 				abort
 			end
 		}
 	| SYM_ALLOW_ARCHETYPE error
 		{
 			raise_error
-			report_error("error after 'use_archetype' keyword; expecting Object node definition")
+			report_error(create_message("SUAS", Void))
 			abort
 		}
 	;
@@ -511,7 +511,7 @@ c_attribute: c_attr_head SYM_MATCHES SYM_START_CBLOCK c_attr_values SYM_END_CBLO
 	| c_attr_head SYM_MATCHES SYM_START_CBLOCK error SYM_END_CBLOCK	
 		{
 			raise_error
-			report_error("expecting a 'any' node, 'leaf' node, or new node definition")
+			report_error(create_message("SCAS", Void))
 			abort
 		}
 	;
@@ -535,7 +535,7 @@ c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence
 				object_nodes.item.put_attribute(attr_node)
 			else
 				raise_error
-				report_error("duplicate attribute " + rm_attribute_name)
+				report_error(create_message("VATUN", <<rm_attribute_name>>))
 				abort
 			end
 		}
@@ -558,7 +558,7 @@ c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence
 				object_nodes.item.put_attribute(attr_node)
 			else
 				raise_error
-				report_error("duplicate attribute " + rm_attribute_name)
+				report_error(create_message("VATUN", <<rm_attribute_name>>))
 				abort
 			end
 		}
@@ -629,7 +629,7 @@ assertion: any_identifier ':' boolean_expression
 	| any_identifier ':' error
 		{
 			raise_error
-			report_error("illegal invariant expression at identifier " + $1)
+			report_error(create_message("SINVS", <<$1>>))
 			abort
 		}
 	;
@@ -659,7 +659,7 @@ boolean_node: SYM_EXISTS absolute_path
 	| SYM_EXISTS error 
 		{
 			raise_error
-			report_error("expecting absolute path")
+			report_error(create_message("SEXPT", Void))
 			abort
 		}
 	| relative_path SYM_MATCHES SYM_START_CBLOCK c_primitive SYM_END_CBLOCK
@@ -977,7 +977,7 @@ existence_spec:  V_INTEGER -- can only be 0 or 1
 				create int_interval.make_point(1)
 			else
 				raise_error
-				report_error("In existence; expecting 0 or 1")
+				report_error(create_message("SEXLSG", Void))
 				abort
 			end
 		}
@@ -990,7 +990,7 @@ existence_spec:  V_INTEGER -- can only be 0 or 1
 					create int_interval.make_bounded(0, 1, True, True)
 				else
 					raise_error
-					report_error("In existence; upper value must be 0 or 1")
+					report_error(create_message("SEXLU1", Void))
 					abort
 				end
 			elseif $1 = 1 then
@@ -998,12 +998,12 @@ existence_spec:  V_INTEGER -- can only be 0 or 1
 					create int_interval.make_point(1)
 				else
 					raise_error
-					report_error("In existence; upper value must be 1")
+					report_error(create_message("SEXLU2", Void))
 					abort
 				end
 			else
 				raise_error
-				report_error("In existence; expecting 0..0, 0..1, or 1..1")
+				report_error(create_message("SEXLMG", Void))
 				abort
 			end
 		}
@@ -1081,7 +1081,7 @@ c_occurrences:  -- default to 1..1
 	| SYM_OCCURRENCES error
 		{
 			raise_error
-			report_error("expecting an 'occurrences expression', e.g. 'occurrences matches {n..m}'")
+			report_error(create_message("SOCCF", Void))
 			abort
 		}
 	;
@@ -1142,14 +1142,14 @@ c_integer: c_integer_spec
 				c_integer.set_assumed_value($3)
 			else
 				raise_error
-				report_error("assumed value " + $3.out + " not inside constraint")
+				report_error(create_message("VOBAV", <<$3.out>>))
 				abort
 			end
 		}
 	| c_integer_spec ';' error
 		{
 			raise_error
-			report_error("invalid assumed value; must be an integer")
+			report_error(create_message("SCIAV", Void))
 			abort
 		}
 	;
@@ -1186,14 +1186,14 @@ c_real: c_real_spec
 				c_real.set_assumed_value($3)
 			else
 				raise_error
-				report_error("assumed value " + $3.out + " not inside constraint")
+				report_error(create_message("VOBAV", <<$3.out>>))
 				abort
 			end
 		}
 	| c_real_spec ';' error
 		{
 			raise_error
-			report_error("invalid assumed value; must be a real number")
+			report_error(create_message("SCRAV", Void))
 			abort
 		}
 	;
@@ -1217,7 +1217,7 @@ c_date_constraint: V_ISO8601_DATE_CONSTRAINT_PATTERN
 				end
 
 				raise_error
-				report_error("invalid date constraint pattern; allowed patterns: " + str)
+				report_error(create_message("SCDPT", <<str>>))
 				abort
 			end
 		}
@@ -1239,14 +1239,14 @@ c_date: c_date_constraint
 				c_date.set_assumed_value($3)
 			else
 				raise_error
-				report_error("assumed value " + $3.out + " not inside constraint")
+				report_error(create_message("VOBAV", <<$3.out>>))
 				abort
 			end
 		}
 	| c_date_constraint ';' error
 		{
 			raise_error
-			report_error("invalid assumed value; must be valid ISO8601 date")
+			report_error(create_message("SCDAV", Void))
 			abort
 		}
 	;
@@ -1270,7 +1270,7 @@ c_time_constraint: V_ISO8601_TIME_CONSTRAINT_PATTERN
 				end
 
 				raise_error
-				report_error("invalid time constraint pattern; allowed patterns: " + str)
+				report_error(create_message("SCTPT", <<str>>))
 				abort
 			end
 		}
@@ -1292,14 +1292,14 @@ c_time: c_time_constraint
 				c_time.set_assumed_value($3)
 			else
 				raise_error
-				report_error("assumed value " + $3.out + " not inside constraint")
+				report_error(create_message("VOBAV", <<$3.out>>))
 				abort
 			end
 		}
 	| c_time_constraint ';' error
 		{
 			raise_error
-			report_error("invalid assumed value; must be valid ISO8601 time")
+			report_error(create_message("SCTAV", Void))
 			abort
 		}
 	;
@@ -1323,7 +1323,7 @@ c_date_time_constraint: V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN
 				end
 
 				raise_error
-				report_error("invalid date/time constraint pattern; allowed patterns: " + str)
+				report_error(create_message("SCDTPT", <<str>>))
 				abort
 			end
 		}
@@ -1345,14 +1345,14 @@ c_date_time: c_date_time_constraint
 				c_date_time.set_assumed_value($3)
 			else
 				raise_error
-				report_error("assumed value " + $3.out + " not inside constraint")
+				report_error(create_message("VOBAV", <<$3.out>>))
 				abort
 			end
 		}
 	| c_date_time_constraint ';' error
 		{
 			raise_error
-			report_error("invalid assumed value; must be valid ISO8601 date_time")
+			report_error(create_message("SCDTAV", Void))
 			abort
 		}
 	;
@@ -1379,7 +1379,7 @@ duration_pattern: V_ISO8601_DURATION_CONSTRAINT_PATTERN
 				create c_duration.make_from_pattern ($1)
 			else
 				raise_error
-				report_error ("invalid duration constraint pattern; legal pattern: P[Y|y][M|m][W|w][D|d][T[H|h][M|m][S|s]] or P[W|w]")
+				report_error(create_message("SCDUPT", Void))
 				abort
 			end
 		}
@@ -1392,14 +1392,14 @@ c_duration: c_duration_constraint
 				c_duration.set_assumed_value($3)
 			else
 				raise_error
-				report_error("assumed value " + $3.out + " not inside constraint")
+				report_error(create_message("VOBAV", <<$3.out>>))
 				abort
 			end
 		}
 	| c_duration_constraint ';' error
 		{
 			raise_error
-			report_error("invalid assumed value; must be valid ISO8601 duration")
+			report_error(create_message("SCDUAV", Void))
 			abort
 		}
 	;
@@ -1425,7 +1425,7 @@ c_string_spec:  V_STRING 	-- single value, generates closed list
 			create c_string.make_from_regexp($1.substring (2, $1.count - 1), $1.item(1) = '/')
 			if c_string.regexp.is_equal(c_string.regexp_compile_error) then
 				raise_error
-				report_error("Regular expression compile error " + $1 + " is not a valid regular expression")
+				report_error(create_message("SCSRE", <<$1>>))
 				abort
 			end
 		}
@@ -1438,14 +1438,14 @@ c_string: c_string_spec
 				c_string.set_assumed_value($3)
 			else
 				raise_error
-				report_error("assumed value " + $3.out + " not inside constraint")
+				report_error(create_message("VOBAV", <<$3.out>>))
 				abort
 			end
 		}
 	| c_string_spec ';' error
 		{
 			raise_error
-			report_error("invalid assumed value; must be a string")
+			report_error(create_message("SCSAV", Void))
 			abort
 		}
 	;
@@ -1475,14 +1475,14 @@ c_boolean: c_boolean_spec
 				c_boolean.set_assumed_value($3)
 			else
 				raise_error
-				report_error("assumed value " + $3.out + " not inside constraint")
+				report_error(create_message("VOBAV", <<$3.out>>))
 				abort
 			end
 		}
 	| c_boolean_spec ';' error
 		{
 			raise_error
-			report_error("invalid assumed value; must be %"True%" or %"False%"")
+			report_error(create_message("SCBAV", Void))
 			abort
 		}
 	;
@@ -1494,14 +1494,14 @@ c_ordinal: c_ordinal_spec
 				ordinal_node.set_assumed_value_from_integer ($3)
 			else
 				raise_error
-				report_error ("invalid assumed value " + $3.out + " not in list")
+				report_error(create_message("VOBAVL", <<$3.out>>))
 				abort
 			end
  		}
  	| c_ordinal_spec ';' error
  		{
  			raise_error
- 			report_error ("invalid assumed value; must be an ordinal integer value")
+			report_error(create_message("SCOAV", Void))
  			abort
  		}
 	;
