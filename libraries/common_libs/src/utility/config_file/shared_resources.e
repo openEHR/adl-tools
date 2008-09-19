@@ -290,10 +290,12 @@ feature -- Environment
 		end
 
 	locale_language_short: STRING is
-			-- return the ISO 2-char code for the locale language, e.g. "en"
+			-- The ISO 2-char code for the locale language, e.g. "en"
+		local
+			i18n: I18N_LOCALE_MANAGER
 		do
-			-- FIXME: to be implemented
-			Result := "en"
+			create i18n.make (application_startup_directory)
+			Result := i18n.system_locale.info.id.language
 		end
 
 	locale_language_long: STRING is
