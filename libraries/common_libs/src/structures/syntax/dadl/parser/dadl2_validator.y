@@ -28,6 +28,11 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_MESSAGE_DB
+		export
+			{NONE} all
+		end
+
 	DADL_SCANNER
 		rename
 			make as make_scanner, 
@@ -188,7 +193,7 @@ attr_id: V_ATTRIBUTE_IDENTIFIER
 				complex_object_nodes.item.put_attribute(attr_node)
 			else
 				raise_error
-				report_error("Duplicate relationship: " + attr_node.rm_attr_name)
+				report_error(create_message("VDATU", <<attr_node.rm_attr_name>>))
 				abort
 			end
 
@@ -202,7 +207,7 @@ attr_id: V_ATTRIBUTE_IDENTIFIER
 	| V_ATTRIBUTE_IDENTIFIER error
 		{
 			raise_error
-			report_error("Error in attribute value")
+			report_error(create_message("SDAT", Void))
 			abort
 		}
 	;
@@ -282,9 +287,7 @@ multiple_attr_object_block_head: SYM_START_DBLOCK
 					attr_nodes.item.put_child(complex_object_node)
 				else
 					raise_error
-					report_error("Key must be unique; key [" + complex_object_node.node_id + 
-						"] already exists under attribute %"" + 
-						attr_nodes.item.rm_attr_name + "%"")
+					report_error(create_message("VDOBU", <<complex_object_node.node_id, attr_nodes.item.rm_attr_name >>))
 					abort
 				end
 
@@ -309,7 +312,7 @@ multiple_attr_object_block_head: SYM_START_DBLOCK
 					complex_object_node.put_attribute(attr_node)
 				else
 					raise_error
-					report_error("Duplicate relationship: " + attr_node.rm_attr_name)
+					report_error(create_message("VDATU", <<attr_node.rm_attr_name>>))
 					abort
 				end
 
@@ -356,7 +359,7 @@ object_key: '[' simple_value ']'
 				attr_nodes.item.set_multiple
 			else
 				raise_error
-				report_error("generic object not enclosed by normal object not allowed")
+				report_error(create_message("SGEE", <<attr_node.rm_attr_name>>))
 				abort
 			end
 		}
@@ -440,8 +443,7 @@ single_attr_object_complex_head: SYM_START_DBLOCK
 					attr_nodes.item.put_child(complex_object_node)
 				else
 					raise_error
-					report_error("Key must be unique; key [" + complex_object_node.node_id 
-								+ "] already exists under attribute %"" + attr_nodes.item.rm_attr_name + "%"")
+					report_error(create_message("VDOBU", <<complex_object_node.node_id, attr_nodes.item.rm_attr_name >>))
 					abort
 				end
 			end
@@ -488,8 +490,7 @@ untyped_primitive_object_block: SYM_START_DBLOCK primitive_object_value SYM_END_
 				$$ := leaf_object_node
 			else
 				raise_error
-				report_error("Key must be unique; key [" + leaf_object_node.node_id 
-						+ "] already exists under attribute %"" + attr_nodes.item.rm_attr_name + "%"")
+				report_error(create_message("VDOBU", <<leaf_object_node.node_id, attr_nodes.item.rm_attr_name >>))
 				abort
 			end
 		}
@@ -728,7 +729,7 @@ integer_interval_value: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_va
 				$$ := integer_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + $2.out + " must be <= " + $4.out)
+				report_error(create_message("VIVLO", <<$2.out, $4.out>>))
 				abort
 			end
 		}
@@ -739,7 +740,7 @@ integer_interval_value: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_va
 				$$ := integer_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + $3.out + " must be <= " + $5.out)
+				report_error(create_message("VIVLO", <<$3.out, $5.out>>))
 				abort
 			end
 		}
@@ -750,7 +751,7 @@ integer_interval_value: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_va
 				$$ := integer_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + $2.out + " must be <= " + $5.out)
+				report_error(create_message("VIVLO", <<$2.out, $5.out>>))
 				abort
 			end
 		}
@@ -761,7 +762,7 @@ integer_interval_value: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_va
 				$$ := integer_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + $3.out + " must be <= " + $6.out)
+				report_error(create_message("VIVLO", <<$3.out, $6.out>>))
 				abort
 			end
 		}
@@ -831,7 +832,7 @@ real_interval_value: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_I
 				$$ := real_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + $2.out + " must be <= " + $4.out)
+				report_error(create_message("VIVLO", <<$2.out, $4.out>>))
 				abort
 			end
 		}
@@ -842,7 +843,7 @@ real_interval_value: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_I
 				$$ := real_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + $3.out + " must be <= " + $5.out)
+				report_error(create_message("VIVLO", <<$3.out, $5.out>>))
 				abort
 			end
 		}
@@ -853,7 +854,7 @@ real_interval_value: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_I
 				$$ := real_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + $2.out + " must be <= " + $5.out)
+				report_error(create_message("VIVLO", <<$2.out, $5.out>>))
 				abort
 			end
 		}
@@ -864,7 +865,7 @@ real_interval_value: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_I
 				$$ := real_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + $3.out + " must be <= " + $6.out)
+				report_error(create_message("VIVLO", <<$3.out, $6.out>>))
 				abort
 			end
 		}
@@ -953,7 +954,7 @@ date_value: V_ISO8601_EXTENDED_DATE -- in ISO8601 form yyyy-MM-dd
 				create $$.make_from_string($1)
 			else
 				raise_error
-				report_error("invalid ISO8601 date: " + $1)
+				report_error(create_message("VIDV", <<$1>>))
 				abort
 			end
 		}
@@ -984,7 +985,7 @@ date_interval_value: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_I
 				$$ := date_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + $2.out + " must be <= " + $4.out)
+				report_error(create_message("VIVLO", <<$2.out, $4.out>>))
 				abort
 			end
 		}
@@ -995,7 +996,7 @@ date_interval_value: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_I
 				$$ := date_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + $3.out + " must be <= " + $5.out)
+				report_error(create_message("VIVLO", <<$3.out, $5.out>>))
 				abort
 			end
 		}
@@ -1006,7 +1007,7 @@ date_interval_value: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_I
 				$$ := date_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + $2.out + " must be <= " + $5.out)
+				report_error(create_message("VIVLO", <<$2.out, $5.out>>))
 				abort
 			end
 		}
@@ -1017,7 +1018,7 @@ date_interval_value: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_I
 				$$ := date_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + $3.out + " must be <= " + $6.out)
+				report_error(create_message("VIVLO", <<$3.out, $6.out>>))
 				abort
 			end
 		}
@@ -1054,7 +1055,7 @@ time_value: V_ISO8601_EXTENDED_TIME
 				create $$.make_from_string($1)
 			else
 				raise_error
-				report_error("invalid ISO8601 time: " + $1)
+				report_error(create_message("VITV", <<$1>>))
 				abort
 			end
 		}
@@ -1085,7 +1086,7 @@ time_interval_value: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_I
 				$$ := time_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + $2.out + " must be <= " + $4.out)
+				report_error(create_message("VIVLO", <<$2.out, $4.out>>))
 				abort
 			end
 		}
@@ -1096,7 +1097,7 @@ time_interval_value: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_I
 				$$ := time_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + $3.out + " must be <= " + $5.out)
+				report_error(create_message("VIVLO", <<$3.out, $5.out>>))
 				abort
 			end
 		}
@@ -1107,7 +1108,7 @@ time_interval_value: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_I
 				$$ := time_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + $2.out + " must be <= " + $5.out)
+				report_error(create_message("VIVLO", <<$2.out, $5.out>>))
 				abort
 			end
 		}
@@ -1118,7 +1119,7 @@ time_interval_value: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_I
 				$$ := time_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + $3.out + " must be <= " + $6.out)
+				report_error(create_message("VIVLO", <<$3.out, $6.out>>))
 				abort
 			end
 		}
@@ -1155,7 +1156,7 @@ date_time_value: V_ISO8601_EXTENDED_DATE_TIME
 				create $$.make_from_string($1)
 			else
 				raise_error
-				report_error("invalid ISO8601 date/time: " + $1)
+				report_error(create_message("VIDTV", <<$1>>))
 				abort
 			end
 		}
@@ -1186,7 +1187,7 @@ date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_t
 				$$ := date_time_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + $2.out + " must be <= " + $4.out)
+				report_error(create_message("VIVLO", <<$2.out, $4.out>>))
 				abort
 			end
 		}
@@ -1197,7 +1198,7 @@ date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_t
 				$$ := date_time_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + $3.out + " must be <= " + $5.out)
+				report_error(create_message("VIVLO", <<$3.out, $5.out>>))
 				abort
 			end
 		}
@@ -1208,7 +1209,7 @@ date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_t
 				$$ := date_time_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + $2.out + " must be <= " + $5.out)
+				report_error(create_message("VIVLO", <<$2.out, $5.out>>))
 				abort
 			end
 		}
@@ -1219,7 +1220,7 @@ date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_t
 				$$ := date_time_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + $3.out + " must be <= " + $6.out)
+				report_error(create_message("VIVLO", <<$3.out, $6.out>>))
 				abort
 			end
 		}
@@ -1256,7 +1257,7 @@ duration_value: V_ISO8601_DURATION
 				create $$.make_from_string($1)
 			else
 				raise_error
-				report_error("invalid ISO8601 duration: " + $1)
+				report_error(create_message("VIDUV", <<$1>>))
 				abort
 			end
 		}
@@ -1287,7 +1288,7 @@ duration_interval_value: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration
 				$$ := duration_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + $2.out + " must be <= " + $4.out)
+				report_error(create_message("VIVLO", <<$2.out, $4.out>>))
 				abort
 			end
 		}
@@ -1298,7 +1299,7 @@ duration_interval_value: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration
 				$$ := duration_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + $3.out + " must be <= " + $5.out)
+				report_error(create_message("VIVLO", <<$3.out, $5.out>>))
 				abort
 			end
 		}
@@ -1309,7 +1310,7 @@ duration_interval_value: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration
 				$$ := duration_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + $2.out + " must be <= " + $5.out)
+				report_error(create_message("VIVLO", <<$2.out, $5.out>>))
 				abort
 			end
 		}
@@ -1320,7 +1321,7 @@ duration_interval_value: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration
 				$$ := duration_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + $3.out + " must be <= " + $6.out)
+				report_error(create_message("VIVLO", <<$3.out, $6.out>>))
 				abort
 			end
 		}
@@ -1359,7 +1360,7 @@ term_code: V_QUALIFIED_TERM_CODE_REF
 	| ERR_V_QUALIFIED_TERM_CODE_REF
 		{
 			raise_error
-			report_error("Invalid term code reference: %"" + $1 + "%"; spaces not allowed in code string")
+			report_error(create_message("STCV", <<$1>>))
 			abort
 		}
 	;

@@ -476,7 +476,7 @@ end
 			end
 			accept
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
 end
@@ -493,7 +493,7 @@ end
 			end
 			accept
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
 end
@@ -508,7 +508,7 @@ end
 			end
 			abort
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
 end
@@ -522,7 +522,7 @@ end
 				io.put_string(indent + "typed_object_received " +  complex_object_nodes.item.node_id + "%N")
 			end
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp1 := yyvsp1 -3
 	yyvs1.put (yyval1, yyvsp1)
@@ -537,7 +537,7 @@ end
 				io.put_string(indent + "empty typed_object_received " +  complex_object_nodes.item.node_id + "%N")
 			end
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
 	yyvs1.put (yyval1, yyvsp1)
@@ -557,7 +557,7 @@ end
 			create object_node.make_typed(yyvs4.item (yyvsp4))
 			complex_object_nodes.extend(object_node)
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
 	yyvsp4 := yyvsp4 -1
@@ -594,7 +594,7 @@ end
 			create object_node.make_typed_identified(yyvs4.item (yyvsp4), yyvs4.item (yyvsp4 - 1))
 			complex_object_nodes.extend(object_node)
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp4 := yyvsp4 -2
 	yyvs1.put (yyval1, yyvsp1)
@@ -609,7 +609,7 @@ end
 				io.put_string(indent + "attr_val complete%N")
 			end
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
 end
@@ -623,7 +623,7 @@ end
 				io.put_string(indent + "attr_val complete%N")
 			end
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
 	yyvs1.put (yyval1, yyvsp1)
@@ -638,7 +638,7 @@ end
 				io.put_string(indent + "attr_val complete%N")
 			end
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
 	yyvs1.put (yyval1, yyvsp1)
@@ -657,7 +657,7 @@ end
 				attr_nodes.remove
 			end
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
 	yyvs1.put (yyval1, yyvsp1)
@@ -700,7 +700,7 @@ end
 				abort
 			end
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
 	yyvsp4 := yyvsp4 -1
@@ -774,7 +774,7 @@ end
 
 			node_qualifier := yyvs1.item (yyvsp1 - 1).out
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp1 := yyvsp1 -2
 	yyvsp4 := yyvsp4 -1
@@ -790,7 +790,7 @@ end
 			report_error("Error in qualifier; expecting string, integer, real, character, date/time")
 			abort
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
 	yyvsp4 := yyvsp4 -1
@@ -803,7 +803,7 @@ debug ("GEYACC")
 end
 
 
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
 end
@@ -814,7 +814,7 @@ debug ("GEYACC")
 end
 
 
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
 	yyvs1.put (yyval1, yyvsp1)
@@ -826,7 +826,7 @@ debug ("GEYACC")
 end
 
 
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
 end
@@ -867,7 +867,7 @@ end
 				abort
 			end
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
 end
@@ -899,7 +899,7 @@ end
 			end
 			complex_object_nodes.remove
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
 	yyvs1.put (yyval1, yyvsp1)
@@ -915,7 +915,7 @@ end
 			end
 			attr_nodes.item.put_child(object_item)
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
 	yyvs1.put (yyval1, yyvsp1)
@@ -930,7 +930,7 @@ end
 				io.put_string(indent + "object_empty; no child to put)%N")
 			end
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
 	yyvs1.put (yyval1, yyvsp1)
@@ -949,7 +949,7 @@ end
 			end
 			object_item := primitive_object_node
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
 end
@@ -967,7 +967,7 @@ end
 			end
 			object_item := primitive_object_list_node
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
 	yyvsp27 := yyvsp27 -1
@@ -1003,7 +1003,7 @@ end
 			end
 			object_item := primitive_object_interval_node
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
 	yyvsp36 := yyvsp36 -1
@@ -1039,7 +1039,7 @@ end
 			end
 			object_item := primitive_object_node
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
 	yyvsp11 := yyvsp11 -1
@@ -1075,7 +1075,7 @@ end
 			end
 			object_item := primitive_object_list_node
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
 	yyvsp26 := yyvsp26 -1
@@ -1105,7 +1105,7 @@ end
 
 			yyval1 := yyvs1.item (yyvsp1)
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
 end
@@ -1117,7 +1117,7 @@ end
 
 			yyval1 := yyvs2.item (yyvsp2)
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
 	yyvsp2 := yyvsp2 -1
@@ -1147,7 +1147,7 @@ end
 
 			yyval1 := yyvs3.item (yyvsp3)
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
 	yyvsp3 := yyvsp3 -1
@@ -1177,7 +1177,7 @@ end
 
 			yyval1 := yyvs6.item (yyvsp6)
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
 	yyvsp6 := yyvsp6 -1
@@ -1207,7 +1207,7 @@ end
 
 			yyval1 := yyvs5.item (yyvsp5)
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
 	yyvsp5 := yyvsp5 -1
@@ -1237,7 +1237,7 @@ end
 
 			yyval1 := yyvs7.item (yyvsp7)
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
 	yyvsp7 := yyvsp7 -1
@@ -1267,7 +1267,7 @@ end
 
 			yyval1 := yyvs9.item (yyvsp9)
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
 	yyvsp9 := yyvsp9 -1
@@ -1297,7 +1297,7 @@ end
 
 			yyval1 := yyvs8.item (yyvsp8)
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
 	yyvsp8 := yyvsp8 -1
@@ -1327,7 +1327,7 @@ end
 
 			yyval1 := yyvs10.item (yyvsp10)
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
 	yyvsp10 := yyvsp10 -1
@@ -1357,7 +1357,7 @@ end
 
 			yyval1 := yyvs12.item (yyvsp12)
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
 	yyvsp12 := yyvsp12 -1
@@ -1387,7 +1387,7 @@ end
 
 			yyval27 := yyvs13.item (yyvsp13)
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp27 := yyvsp27 + 1
 	yyvsp13 := yyvsp13 -1
@@ -1417,7 +1417,7 @@ end
 
 			yyval27 := yyvs15.item (yyvsp15)
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp27 := yyvsp27 + 1
 	yyvsp15 := yyvsp15 -1
@@ -1447,7 +1447,7 @@ end
 
 			yyval27 := yyvs17.item (yyvsp17)
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp27 := yyvsp27 + 1
 	yyvsp17 := yyvsp17 -1
@@ -1477,7 +1477,7 @@ end
 
 			yyval27 := yyvs21.item (yyvsp21)
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp27 := yyvsp27 + 1
 	yyvsp21 := yyvsp21 -1
@@ -1507,7 +1507,7 @@ end
 
 			yyval27 := yyvs19.item (yyvsp19)
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp27 := yyvsp27 + 1
 	yyvsp19 := yyvsp19 -1
@@ -1537,7 +1537,7 @@ end
 
 			yyval27 := yyvs22.item (yyvsp22)
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp27 := yyvsp27 + 1
 	yyvsp22 := yyvsp22 -1
@@ -1567,7 +1567,7 @@ end
 
 			yyval27 := yyvs23.item (yyvsp23)
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp27 := yyvsp27 + 1
 	yyvsp23 := yyvsp23 -1
@@ -1597,7 +1597,7 @@ end
 
 			yyval27 := yyvs24.item (yyvsp24)
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp27 := yyvsp27 + 1
 	yyvsp24 := yyvsp24 -1
@@ -1627,7 +1627,7 @@ end
 
 			yyval27 := yyvs25.item (yyvsp25)
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp27 := yyvsp27 + 1
 	yyvsp25 := yyvsp25 -1
@@ -1657,7 +1657,7 @@ end
 
 			yyval36 := yyvs28.item (yyvsp28)
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp36 := yyvsp36 + 1
 	yyvsp28 := yyvsp28 -1
@@ -1687,7 +1687,7 @@ end
 
 			yyval36 := yyvs29.item (yyvsp29)
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp36 := yyvsp36 + 1
 	yyvsp29 := yyvsp29 -1
@@ -1717,7 +1717,7 @@ end
 
 			yyval36 := yyvs31.item (yyvsp31)
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp36 := yyvsp36 + 1
 	yyvsp31 := yyvsp31 -1
@@ -1747,7 +1747,7 @@ end
 
 			yyval36 := yyvs30.item (yyvsp30)
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp36 := yyvsp36 + 1
 	yyvsp30 := yyvsp30 -1
@@ -1777,7 +1777,7 @@ end
 
 			yyval36 := yyvs32.item (yyvsp32)
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp36 := yyvsp36 + 1
 	yyvsp32 := yyvsp32 -1
@@ -1807,7 +1807,7 @@ end
 
 			yyval36 := yyvs34.item (yyvsp34)
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp36 := yyvsp36 + 1
 	yyvsp34 := yyvsp34 -1
@@ -1837,7 +1837,7 @@ end
 
 			yyval1 := yyvs4.item (yyvsp4)
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
 	yyvsp4 := yyvsp4 -1
@@ -1870,7 +1870,7 @@ end
 			string_list.extend(yyvs4.item (yyvsp4))
 			yyval13 := string_list
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp13 := yyvsp13 + 1
 	yyvsp4 := yyvsp4 -2
@@ -1902,7 +1902,7 @@ end
 			string_list.extend(yyvs4.item (yyvsp4))
 			yyval13 := string_list
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
 	yyvsp4 := yyvsp4 -1
@@ -1918,7 +1918,7 @@ end
 			string_list.extend(yyvs4.item (yyvsp4))
 			yyval13 := string_list
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp13 := yyvsp13 + 1
 	yyvsp4 := yyvsp4 -1
@@ -1950,7 +1950,7 @@ end
 			int_val := yyvs2.item (yyvsp2)
 			yyval2 := int_val
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs2.put (yyval2, yyvsp2)
 end
@@ -1963,7 +1963,7 @@ end
 			int_val := yyvs2.item (yyvsp2)
 			yyval2 := int_val
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
 	yyvs2.put (yyval2, yyvsp2)
@@ -1977,7 +1977,7 @@ end
 			int_val := - yyvs2.item (yyvsp2)
 			yyval2 := int_val
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
 	yyvs2.put (yyval2, yyvsp2)
@@ -1997,7 +1997,7 @@ end
 			integer_ref_list.extend(integer_ref)
 			yyval15 := integer_ref_list
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp15 := yyvsp15 + 1
 	yyvsp2 := yyvsp2 -2
@@ -2031,7 +2031,7 @@ end
 			integer_ref_list.extend(integer_ref)
 			yyval15 := integer_ref_list
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
 	yyvsp2 := yyvsp2 -1
@@ -2049,7 +2049,7 @@ end
 			integer_ref_list.extend(integer_ref)
 			yyval15 := integer_ref_list
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp15 := yyvsp15 + 1
 	yyvsp2 := yyvsp2 -1
@@ -2085,7 +2085,7 @@ end
 			create integer_interval.make_bounded(integer_ref, integer_ref_2, True, True)
 			yyval28 := integer_interval
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
 	yyvsp28 := yyvsp28 + 1
 	yyvsp1 := yyvsp1 -3
@@ -2119,7 +2119,7 @@ end
 			create integer_interval.make_lower_unbounded(integer_ref, False)
 			yyval28 := integer_interval
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp28 := yyvsp28 + 1
 	yyvsp1 := yyvsp1 -3
@@ -2153,7 +2153,7 @@ end
 			create integer_interval.make_lower_unbounded(integer_ref, True)
 			yyval28 := integer_interval
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp28 := yyvsp28 + 1
 	yyvsp1 := yyvsp1 -3
@@ -2187,7 +2187,7 @@ end
 			create integer_interval.make_upper_unbounded(integer_ref, False)
 			yyval28 := integer_interval
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp28 := yyvsp28 + 1
 	yyvsp1 := yyvsp1 -3
@@ -2221,7 +2221,7 @@ end
 			create integer_interval.make_upper_unbounded(integer_ref, True)
 			yyval28 := integer_interval
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp28 := yyvsp28 + 1
 	yyvsp1 := yyvsp1 -3
@@ -2255,7 +2255,7 @@ end
 			create integer_interval.make_point(integer_ref)
 			yyval28 := integer_interval
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp28 := yyvsp28 + 1
 	yyvsp1 := yyvsp1 -2
@@ -2287,7 +2287,7 @@ end
 			real_val := yyvs3.item (yyvsp3)
 			yyval3 := real_val
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs3.put (yyval3, yyvsp3)
 end
@@ -2300,7 +2300,7 @@ end
 			real_val := yyvs3.item (yyvsp3)
 			yyval3 := real_val
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
 	yyvs3.put (yyval3, yyvsp3)
@@ -2314,7 +2314,7 @@ end
 			real_val := - yyvs3.item (yyvsp3)
 			yyval3 := real_val
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
 	yyvs3.put (yyval3, yyvsp3)
@@ -2335,7 +2335,7 @@ end
 			real_ref_list.extend(real_ref)
 			yyval17 := real_ref_list
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp17 := yyvsp17 + 1
 	yyvsp3 := yyvsp3 -2
@@ -2369,7 +2369,7 @@ end
 			real_ref_list.extend(real_ref)
 			yyval17 := real_ref_list
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
 	yyvsp3 := yyvsp3 -1
@@ -2387,7 +2387,7 @@ end
 			real_ref_list.extend(real_ref)
 			yyval17 := real_ref_list
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp17 := yyvsp17 + 1
 	yyvsp3 := yyvsp3 -1
@@ -2423,7 +2423,7 @@ end
 			create real_interval.make_bounded(real_ref, real_ref_2, True, True)
 			yyval29 := real_interval
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
 	yyvsp29 := yyvsp29 + 1
 	yyvsp1 := yyvsp1 -3
@@ -2457,7 +2457,7 @@ end
 			create real_interval.make_lower_unbounded(real_ref, False)
 			yyval29 := real_interval
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp29 := yyvsp29 + 1
 	yyvsp1 := yyvsp1 -3
@@ -2491,7 +2491,7 @@ end
 			create real_interval.make_lower_unbounded(real_ref, True)
 			yyval29 := real_interval
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp29 := yyvsp29 + 1
 	yyvsp1 := yyvsp1 -3
@@ -2525,7 +2525,7 @@ end
 			create real_interval.make_upper_unbounded(real_ref, False)
 			yyval29 := real_interval
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp29 := yyvsp29 + 1
 	yyvsp1 := yyvsp1 -3
@@ -2559,7 +2559,7 @@ end
 			create real_interval.make_upper_unbounded(real_ref, True)
 			yyval29 := real_interval
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp29 := yyvsp29 + 1
 	yyvsp1 := yyvsp1 -3
@@ -2593,7 +2593,7 @@ end
 			create real_interval.make_point(real_ref)
 			yyval29 := real_interval
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp29 := yyvsp29 + 1
 	yyvsp1 := yyvsp1 -2
@@ -2624,7 +2624,7 @@ end
 
 			yyval6 := True
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp6 := yyvsp6 + 1
 	yyvsp1 := yyvsp1 -1
@@ -2654,7 +2654,7 @@ end
 
 			yyval6 := False
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp6 := yyvsp6 + 1
 	yyvsp1 := yyvsp1 -1
@@ -2691,7 +2691,7 @@ end
 			boolean_list.extend(boolean_ref)
 			yyval21 := boolean_list
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp21 := yyvsp21 + 1
 	yyvsp6 := yyvsp6 -2
@@ -2725,7 +2725,7 @@ end
 			boolean_list.extend(boolean_ref)
 			yyval21 := boolean_list
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
 	yyvsp6 := yyvsp6 -1
@@ -2743,7 +2743,7 @@ end
 			boolean_list.extend(boolean_ref)
 			yyval21 := boolean_list
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp21 := yyvsp21 + 1
 	yyvsp6 := yyvsp6 -1
@@ -2774,7 +2774,7 @@ end
 
 			yyval5 := yyvs5.item (yyvsp5)
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs5.put (yyval5, yyvsp5)
 end
@@ -2793,7 +2793,7 @@ end
 			character_list.extend(character_ref)
 			yyval19 := character_list
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp19 := yyvsp19 + 1
 	yyvsp5 := yyvsp5 -2
@@ -2827,7 +2827,7 @@ end
 			character_list.extend(character_ref)
 			yyval19 := character_list
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
 	yyvsp5 := yyvsp5 -1
@@ -2845,7 +2845,7 @@ end
 			character_list.extend(character_ref)
 			yyval19 := character_list
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp19 := yyvsp19 + 1
 	yyvsp5 := yyvsp5 -1
@@ -2883,7 +2883,7 @@ end
 				abort
 			end
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
 	yyvsp7 := yyvsp7 + 1
 	yyvsp2 := yyvsp2 -3
@@ -2917,7 +2917,7 @@ end
 			date_list.extend(yyvs7.item (yyvsp7))
 			yyval22 := date_list
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp22 := yyvsp22 + 1
 	yyvsp7 := yyvsp7 -2
@@ -2949,7 +2949,7 @@ end
 			date_list.extend(yyvs7.item (yyvsp7))
 			yyval22 := date_list
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
 	yyvsp7 := yyvsp7 -1
@@ -2965,7 +2965,7 @@ end
 			date_list.extend(yyvs7.item (yyvsp7))
 			yyval22 := date_list
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp22 := yyvsp22 + 1
 	yyvsp7 := yyvsp7 -1
@@ -2997,7 +2997,7 @@ end
 			create date_interval.make_bounded(yyvs7.item (yyvsp7 - 1), yyvs7.item (yyvsp7), True, True)
 			yyval31 := date_interval
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
 	yyvsp31 := yyvsp31 + 1
 	yyvsp1 := yyvsp1 -3
@@ -3029,7 +3029,7 @@ end
 			create date_interval.make_lower_unbounded(yyvs7.item (yyvsp7), False)
 			yyval31 := date_interval
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp31 := yyvsp31 + 1
 	yyvsp1 := yyvsp1 -3
@@ -3061,7 +3061,7 @@ end
 			create date_interval.make_lower_unbounded(yyvs7.item (yyvsp7), True)
 			yyval31 := date_interval
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp31 := yyvsp31 + 1
 	yyvsp1 := yyvsp1 -3
@@ -3093,7 +3093,7 @@ end
 			create date_interval.make_upper_unbounded(yyvs7.item (yyvsp7), False)
 			yyval31 := date_interval
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp31 := yyvsp31 + 1
 	yyvsp1 := yyvsp1 -3
@@ -3125,7 +3125,7 @@ end
 			create date_interval.make_upper_unbounded(yyvs7.item (yyvsp7), True)
 			yyval31 := date_interval
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp31 := yyvsp31 + 1
 	yyvsp1 := yyvsp1 -3
@@ -3157,7 +3157,7 @@ end
 			create date_interval.make_point(yyvs7.item (yyvsp7))
 			yyval31 := date_interval
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp31 := yyvsp31 + 1
 	yyvsp1 := yyvsp1 -2
@@ -3188,7 +3188,7 @@ end
 
 			yyval9 := a_time
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp9 := yyvsp9 + 1
 	yyvsp1 := yyvsp1 -1
@@ -3218,7 +3218,7 @@ end
 
 			yyval9 := a_time
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp9 := yyvsp9 + 1
 	yyvsp1 := yyvsp1 -2
@@ -3255,7 +3255,7 @@ end
 				abort
 			end
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
 	yyvsp1 := yyvsp1 -1
 	yyvsp2 := yyvsp2 -3
@@ -3276,7 +3276,7 @@ end
 				abort
 			end
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
 	yyvsp1 := yyvsp1 -1
 	yyvsp2 := yyvsp2 -2
@@ -3291,7 +3291,7 @@ end
 
 			-- set timezone to Greenwich
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
 end
@@ -3303,7 +3303,7 @@ end
 
 			-- set it to some other meridian
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp2 := yyvsp2 -1
 	yyvs1.put (yyval1, yyvsp1)
@@ -3319,7 +3319,7 @@ end
 			time_list.extend(yyvs9.item (yyvsp9))
 			yyval23 := time_list
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp23 := yyvsp23 + 1
 	yyvsp9 := yyvsp9 -2
@@ -3351,7 +3351,7 @@ end
 			time_list.extend(yyvs9.item (yyvsp9))
 			yyval23 := time_list
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
 	yyvsp9 := yyvsp9 -1
@@ -3367,7 +3367,7 @@ end
 			time_list.extend(yyvs9.item (yyvsp9))
 			yyval23 := time_list
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp23 := yyvsp23 + 1
 	yyvsp9 := yyvsp9 -1
@@ -3399,7 +3399,7 @@ end
 			create time_interval.make_bounded(yyvs9.item (yyvsp9 - 1), yyvs9.item (yyvsp9), True, True)
 			yyval30 := time_interval
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
 	yyvsp30 := yyvsp30 + 1
 	yyvsp1 := yyvsp1 -3
@@ -3431,7 +3431,7 @@ end
 			create time_interval.make_lower_unbounded(yyvs9.item (yyvsp9), False)
 			yyval30 := time_interval
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp30 := yyvsp30 + 1
 	yyvsp1 := yyvsp1 -3
@@ -3463,7 +3463,7 @@ end
 			create time_interval.make_lower_unbounded(yyvs9.item (yyvsp9), True)
 			yyval30 := time_interval
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp30 := yyvsp30 + 1
 	yyvsp1 := yyvsp1 -3
@@ -3495,7 +3495,7 @@ end
 			create time_interval.make_upper_unbounded(yyvs9.item (yyvsp9), False)
 			yyval30 := time_interval
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp30 := yyvsp30 + 1
 	yyvsp1 := yyvsp1 -3
@@ -3527,7 +3527,7 @@ end
 			create time_interval.make_upper_unbounded(yyvs9.item (yyvsp9), True)
 			yyval30 := time_interval
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp30 := yyvsp30 + 1
 	yyvsp1 := yyvsp1 -3
@@ -3559,7 +3559,7 @@ end
 			create time_interval.make_point(yyvs9.item (yyvsp9))
 			yyval30 := time_interval
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp30 := yyvsp30 + 1
 	yyvsp1 := yyvsp1 -2
@@ -3591,7 +3591,7 @@ end
 			create a_date_time.make_by_date_time(yyvs7.item (yyvsp7), yyvs9.item (yyvsp9))
 			yyval8 := a_date_time
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp8 := yyvsp8 + 1
 	yyvsp7 := yyvsp7 -1
@@ -3625,7 +3625,7 @@ end
 			date_time_list.extend(yyvs8.item (yyvsp8))
 			yyval24 := date_time_list
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp24 := yyvsp24 + 1
 	yyvsp8 := yyvsp8 -2
@@ -3657,7 +3657,7 @@ end
 			date_time_list.extend(yyvs8.item (yyvsp8))
 			yyval24 := date_time_list
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
 	yyvsp8 := yyvsp8 -1
@@ -3673,7 +3673,7 @@ end
 			date_time_list.extend(yyvs8.item (yyvsp8))
 			yyval24 := date_time_list
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp24 := yyvsp24 + 1
 	yyvsp8 := yyvsp8 -1
@@ -3705,7 +3705,7 @@ end
 			create date_time_interval.make_bounded(yyvs8.item (yyvsp8 - 1), yyvs8.item (yyvsp8), True, True)
 			yyval32 := date_time_interval
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
 	yyvsp32 := yyvsp32 + 1
 	yyvsp1 := yyvsp1 -3
@@ -3737,7 +3737,7 @@ end
 			create date_time_interval.make_lower_unbounded(yyvs8.item (yyvsp8), False)
 			yyval32 := date_time_interval
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp32 := yyvsp32 + 1
 	yyvsp1 := yyvsp1 -3
@@ -3769,7 +3769,7 @@ end
 			create date_time_interval.make_lower_unbounded(yyvs8.item (yyvsp8), True)
 			yyval32 := date_time_interval
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp32 := yyvsp32 + 1
 	yyvsp1 := yyvsp1 -3
@@ -3801,7 +3801,7 @@ end
 			create date_time_interval.make_upper_unbounded(yyvs8.item (yyvsp8), False)
 			yyval32 := date_time_interval
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp32 := yyvsp32 + 1
 	yyvsp1 := yyvsp1 -3
@@ -3833,7 +3833,7 @@ end
 			create date_time_interval.make_upper_unbounded(yyvs8.item (yyvsp8), True)
 			yyval32 := date_time_interval
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp32 := yyvsp32 + 1
 	yyvsp1 := yyvsp1 -3
@@ -3865,7 +3865,7 @@ end
 			create date_time_interval.make_point(yyvs8.item (yyvsp8))
 			yyval32 := date_time_interval
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp32 := yyvsp32 + 1
 	yyvsp1 := yyvsp1 -2
@@ -3896,7 +3896,7 @@ end
 
 			yyval10 := yyvs10.item (yyvsp10)
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs10.put (yyval10, yyvsp10)
 end
@@ -3908,7 +3908,7 @@ end
 
 			yyval10 := -yyvs10.item (yyvsp10)
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
 	yyvs10.put (yyval10, yyvsp10)
@@ -3921,7 +3921,7 @@ end
 
 			yyval10 := iso8601_string_to_duration(yyvs4.item (yyvsp4))
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp10 := yyvsp10 + 1
 	yyvsp4 := yyvsp4 -1
@@ -3954,7 +3954,7 @@ end
 			duration_list.extend(yyvs10.item (yyvsp10))
 			yyval25 := duration_list
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp25 := yyvsp25 + 1
 	yyvsp10 := yyvsp10 -2
@@ -3986,7 +3986,7 @@ end
 			duration_list.extend(yyvs10.item (yyvsp10))
 			yyval25 := duration_list
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
 	yyvsp10 := yyvsp10 -1
@@ -4002,7 +4002,7 @@ end
 			duration_list.extend(yyvs10.item (yyvsp10))
 			yyval25 := duration_list
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp25 := yyvsp25 + 1
 	yyvsp10 := yyvsp10 -1
@@ -4034,7 +4034,7 @@ end
 			create duration_interval.make_bounded(yyvs10.item (yyvsp10 - 1), yyvs10.item (yyvsp10), True, True)
 			yyval34 := duration_interval
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
 	yyvsp34 := yyvsp34 + 1
 	yyvsp1 := yyvsp1 -3
@@ -4066,7 +4066,7 @@ end
 			create duration_interval.make_lower_unbounded(yyvs10.item (yyvsp10), False)
 			yyval34 := duration_interval
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp34 := yyvsp34 + 1
 	yyvsp1 := yyvsp1 -3
@@ -4098,7 +4098,7 @@ end
 			create duration_interval.make_lower_unbounded(yyvs10.item (yyvsp10), True)
 			yyval34 := duration_interval
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp34 := yyvsp34 + 1
 	yyvsp1 := yyvsp1 -3
@@ -4130,7 +4130,7 @@ end
 			create duration_interval.make_upper_unbounded(yyvs10.item (yyvsp10), False)
 			yyval34 := duration_interval
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp34 := yyvsp34 + 1
 	yyvsp1 := yyvsp1 -3
@@ -4162,7 +4162,7 @@ end
 			create duration_interval.make_upper_unbounded(yyvs10.item (yyvsp10), True)
 			yyval34 := duration_interval
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp34 := yyvsp34 + 1
 	yyvsp1 := yyvsp1 -3
@@ -4194,7 +4194,7 @@ end
 			create duration_interval.make_point(yyvs10.item (yyvsp10))
 			yyval34 := duration_interval
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp34 := yyvsp34 + 1
 	yyvsp1 := yyvsp1 -2
@@ -4226,7 +4226,7 @@ end
 			create term.make(yyvs4.item (yyvsp4))
 			yyval11 := term
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp11 := yyvsp11 + 1
 	yyvsp4 := yyvsp4 -1
@@ -4259,7 +4259,7 @@ end
 			term_list.extend(yyvs11.item (yyvsp11))
 			yyval26 := term_list
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp26 := yyvsp26 + 1
 	yyvsp11 := yyvsp11 -2
@@ -4291,7 +4291,7 @@ end
 			term_list.extend(yyvs11.item (yyvsp11))
 			yyval26 := term_list
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
 	yyvsp11 := yyvsp11 -1
@@ -4307,7 +4307,7 @@ end
 			term_list.extend(yyvs11.item (yyvsp11))
 			yyval26 := term_list
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp26 := yyvsp26 + 1
 	yyvsp11 := yyvsp11 -1
@@ -4339,7 +4339,7 @@ end
 			create a_uri.make_from_string(yyvs4.item (yyvsp4))
 			yyval12 := a_uri
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp12 := yyvsp12 + 1
 	yyvsp4 := yyvsp4 -1

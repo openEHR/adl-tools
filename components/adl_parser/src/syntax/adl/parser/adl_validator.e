@@ -193,7 +193,7 @@ end
 
 			accept
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
 end
@@ -205,7 +205,7 @@ end
 
 			abort
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
 end
@@ -216,7 +216,7 @@ debug ("GEYACC")
 end
 
 
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 8
 	yyvsp1 := yyvsp1 -7
 	yyvs1.put (yyval1, yyvsp1)
@@ -229,7 +229,7 @@ end
 
 			create archetype_id.make_from_string(yyvs2.item (yyvsp2)) -- FIXME - should be other make routine
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp2 := yyvsp2 -1
 	yyvs1.put (yyval1, yyvsp1)
@@ -241,10 +241,10 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error("In 'archetype' clause; expecting archetype id (model_issuer-ref_model-model_class.concept.version)")
+			report_error(create_message("SARID", Void))
 			abort
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
 	yyvs1.put (yyval1, yyvsp1)
@@ -256,7 +256,7 @@ debug ("GEYACC")
 end
 
 
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
 end
@@ -267,7 +267,7 @@ debug ("GEYACC")
 end
 
 
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
 	yyvs1.put (yyval1, yyvsp1)
@@ -279,7 +279,7 @@ debug ("GEYACC")
 end
 
 
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
 	yyvs1.put (yyval1, yyvsp1)
@@ -291,7 +291,7 @@ debug ("GEYACC")
 end
 
 
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
 end
@@ -302,7 +302,7 @@ debug ("GEYACC")
 end
 
 
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
 	yyvs1.put (yyval1, yyvsp1)
@@ -315,7 +315,7 @@ end
 
 			adl_version := yyvs2.item (yyvsp2)
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
 	yyvsp2 := yyvsp2 -1
@@ -329,7 +329,7 @@ end
 
 			is_controlled := True
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
 end
@@ -341,7 +341,7 @@ end
 
 			is_generated := True
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
 end
@@ -352,7 +352,7 @@ debug ("GEYACC")
 end
 
 
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 0
 	yyvsp1 := yyvsp1 + 1
 	if yyvsp1 >= yyvsc1 then
@@ -382,11 +382,11 @@ end
 			create parent_archetype_id.make_from_string(yyvs2.item (yyvsp2)) -- FIXME - should be other make routine
 			if not parent_archetype_id.semantic_id.is_equal(archetype_id.semantic_parent_id) then
 				raise_error
-				report_error("Archetype id not based on specialisation parent archetype id")
+				report_error(create_message("VASID", Void))
 				abort
 			end
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp2 := yyvsp2 -1
 	yyvs1.put (yyval1, yyvsp1)
@@ -398,10 +398,10 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error("In 'specialise' clause; expecting parent archetype id (model_issuer-ref_model-model_class.concept.version)")
+			report_error(create_message("SASID", Void))
 			abort
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
 	yyvs1.put (yyval1, yyvsp1)
@@ -417,7 +417,7 @@ end
 				io.put_string("concept = " + concept + "%N")
 			end
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp2 := yyvsp2 -1
 	yyvs1.put (yyval1, yyvsp1)
@@ -429,10 +429,10 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error("In 'concept' clause; expecting TERM_CODE reference")
+			report_error(create_message("SACO", Void))
 			abort
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
 	yyvs1.put (yyval1, yyvsp1)
@@ -444,7 +444,7 @@ debug ("GEYACC")
 end
 
 
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 0
 	yyvsp1 := yyvsp1 + 1
 	if yyvsp1 >= yyvsc1 then
@@ -474,7 +474,7 @@ end
 			convert_dadl_language(yyvs2.item (yyvsp2))
 			language_text := yyvs2.item (yyvsp2)
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp2 := yyvsp2 -1
 	yyvs1.put (yyval1, yyvsp1)
@@ -486,10 +486,10 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error("Error in language section")
+			report_error(create_message("SALA", Void))
 			abort
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
 	yyvs1.put (yyval1, yyvsp1)
@@ -501,7 +501,7 @@ debug ("GEYACC")
 end
 
 
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 0
 	yyvsp1 := yyvsp1 + 1
 	if yyvsp1 >= yyvsc1 then
@@ -531,7 +531,7 @@ end
 			convert_dadl_language(yyvs2.item (yyvsp2))
 			description_text := yyvs2.item (yyvsp2)
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp2 := yyvsp2 -1
 	yyvs1.put (yyval1, yyvsp1)
@@ -543,10 +543,10 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error("Error in description section")
+			report_error(create_message("SADS", Void))
 			abort
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
 	yyvs1.put (yyval1, yyvsp1)
@@ -559,7 +559,7 @@ end
 
 			definition_text := yyvs2.item (yyvsp2)
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp2 := yyvsp2 -1
 	yyvs1.put (yyval1, yyvsp1)
@@ -571,10 +571,10 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error("Error in definition section")
+			report_error(create_message("SADF", Void))
 			abort
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
 	yyvs1.put (yyval1, yyvsp1)
@@ -586,7 +586,7 @@ debug ("GEYACC")
 end
 
 
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 0
 	yyvsp1 := yyvsp1 + 1
 	if yyvsp1 >= yyvsc1 then
@@ -615,7 +615,7 @@ end
 
 			invariant_text := yyvs2.item (yyvsp2)
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp2 := yyvsp2 -1
 	yyvs1.put (yyval1, yyvsp1)
@@ -627,10 +627,10 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error("Error in invariant section")
+			report_error(create_message("SAIV", Void))
 			abort
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
 	yyvs1.put (yyval1, yyvsp1)
@@ -643,7 +643,7 @@ end
 
 			ontology_text := yyvs2.item (yyvsp2)
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp2 := yyvsp2 -1
 	yyvs1.put (yyval1, yyvsp1)
@@ -655,10 +655,10 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error("Error in ontology section")
+			report_error(create_message("SAON", Void))
 			abort
 		
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
 	yyvs1.put (yyval1, yyvsp1)

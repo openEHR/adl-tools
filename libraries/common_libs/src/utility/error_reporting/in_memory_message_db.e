@@ -94,6 +94,15 @@ feature -- Access
 			["validate_e3"] = <"Error: archetype id in filename $1 does not match id at top of file $2%N">
 			
 			-- syntax errors: see the cADL, dADL and ADL syntax validators
+			["SARID"] = <"In 'archetype' clause; expecting archetype id (model_issuer-ref_model-model_class.concept.version)">
+			["SASID"] = <"In 'specialise' clause; expecting parent archetype id (model_issuer-ref_model-model_class.concept.version)">
+			["SACO"] = <"In 'concept' clause; expecting TERM_CODE reference">
+			["SALA"] = <"Error in language section">
+			["SADS"] = <"Error in description section">
+			["SADF"] = <"Error in definition section">
+			["SAIV"] = <"Error in invariant section">
+			["SAON"] = <"Error in ontology section">
+
 			["SDSF"] = <"differential syntax not allowed in flat archetype">
 			["SDINV"] = <"invalid dADL section; error: $1">
 			["SCCOG"] = <"expecting a new node definition, primitive node definition, 'use' path, or 'archetype' reference">
@@ -122,9 +131,16 @@ feature -- Access
 			["SCTPT"] = <"invalid time constraint pattern; allowed patterns: $1">
 			["SCDTPT"] = <"invalid date/time constraint pattern; allowed patterns: $1">
 			["SCDUPT"] = <"invalid duration constraint pattern; legal pattern: P[Y|y][M|m][W|w][D|d][T[H|h][M|m][S|s]] or P[W|w]">
-			["SCSRE"] = <"Regular expression compile error $1 is not a valid regular expression">
+			["SCSRE"] = <"Regular expression compile error '$1' is not a valid regular expression">
+			["SCPCV"] = <"invalid term code constraint pattern: $1">
+			["STCV"] = <"Invalid term code reference: '$1'; spaces not allowed in code string">
+
+			["SDAT"] = <"invalid attribute value">
+			["SGEE"] = <"generic object not enclosed by normal object not allowed">
 
 			-- validity errors: unless otherwise notes, these codes are defined in the ADL 1.5 or later spec
+			["VASID"] = <"Error (VASID): specialised archetype id not based on specialisation parent archetype id">
+
 			["VARDT"] = <"Error (VARDT): archetype id type $1 does not match type $2 in definition section%N">
 			["VACSD"] = <"Error (VACSD): specialisation depth of concept code $1 does not match specialisation depth of archetype id $2%N">
 			["VACCD"] = <"Error (VACCD): archetype concept code $1 not used in definition%N">			
@@ -137,10 +153,22 @@ feature -- Access
 			["VSONC"] = <"Error (VSONC): object node at path $1 does not conform to node at parent path $2; reason:%N$3">
 			["VSANC"] = <"Error (VSANC): attribute $1 at path $2 does not conform to parent $3; reason:%N$4">
 			["VSSM"] = <"Error (VSSM): node at path $1 has order marker referring to non-existant sibling node $2%N">
-			["VATUN"] = <"Error (VATUN) duplicate attribute $1">
+			["VCATU"] = <"Error (VCATU) cADL object duplicate attribute $1">
 
 			["VOBAV"] = <"Error (VOBAV): assumed value $1 not within constraint range">
 			["VOBAVL"] = <"Error (VOBAVL): assumed value $1 not found in constraint list"> -- additional to ADL spec
+			["VCPCV"] = <"Error (VCPCV): invalid term code constraint: $1">
+			["VCOV"] = <"Error (VCODV): invalid ordinal constraint: duplicated value $1">
+			["VCOC"] = <"Error (VCODT): invalid ordinal constraint: duplicated code $1">
+
+			["VIVLO"] = <"Error (VIVLO): Invalid interval: $1 must be <= $2"> -- dADL validity; additional to spec
+			["VIDV"] = <"Error (VIDV): invalid ISO8601 date: $1"> -- dADL validity; additional to spec
+			["VITV"] = <"Error (VITV): invalid ISO8601 time: $1"> -- dADL validity; additional to spec
+			["VIDTV"] = <"Error (VIDTV): invalid ISO8601 date/time: $1"> -- dADL validity; additional to spec
+			["VIDUV"] = <"Error (VIDUV): invalid ISO8601 duration: $1"> -- dADL validity; additional to spec
+
+			["VDATU"] = <"Error (VDATU): dADL object duplicate attribute: $1">
+			["VDOBU"] = <"Error (VDOBU): object key must be unique; key [$1] already exists under attribute '$1'">
 			
 			-- validation warnings: in addition to spec, used to help archetype authors
 			["WOUC"] = <"Warning (WOUC): code $1 in ontology not used in archetype definition%N">

@@ -77,7 +77,7 @@ arch_identification: arch_head V_ARCHETYPE_ID
 	| SYM_ARCHETYPE error
 		{
 			raise_error
-			report_error("In 'archetype' clause; expecting archetype id (model_issuer-ref_model-model_class.concept.version)")
+			report_error(create_message("SARID", Void))
 			abort
 		}
 	;
@@ -113,14 +113,14 @@ arch_specialisation: -- empty is ok
 			create parent_archetype_id.make_from_string($2) -- FIXME - should be other make routine
 			if not parent_archetype_id.semantic_id.is_equal(archetype_id.semantic_parent_id) then
 				raise_error
-				report_error("Archetype id not based on specialisation parent archetype id")
+				report_error(create_message("VASID", Void))
 				abort
 			end
 		}
 	| SYM_SPECIALIZE error
 		{
 			raise_error
-			report_error("In 'specialise' clause; expecting parent archetype id (model_issuer-ref_model-model_class.concept.version)")
+			report_error(create_message("SASID", Void))
 			abort
 		}
 	;
@@ -135,7 +135,7 @@ arch_concept: SYM_CONCEPT V_LOCAL_TERM_CODE_REF
 	| SYM_CONCEPT error
 		{
 			raise_error
-			report_error("In 'concept' clause; expecting TERM_CODE reference")
+			report_error(create_message("SACO", Void))
 			abort
 		}
 	;
@@ -149,7 +149,7 @@ arch_language: -- empty is ok for ADL 1.4 tools
 	| SYM_LANGUAGE error
 		{
 			raise_error
-			report_error("Error in language section")
+			report_error(create_message("SALA", Void))
 			abort
 		}
 	;
@@ -163,7 +163,7 @@ arch_description: -- no meta-data ok
 	| SYM_DESCRIPTION error
 		{
 			raise_error
-			report_error("Error in description section")
+			report_error(create_message("SADS", Void))
 			abort
 		}
 	;
@@ -176,7 +176,7 @@ arch_definition:	SYM_DEFINITION V_CADL_TEXT
 	| SYM_DEFINITION error
 		{
 			raise_error
-			report_error("Error in definition section")
+			report_error(create_message("SADF", Void))
 			abort
 		}
 	;
@@ -189,7 +189,7 @@ arch_invariant: -- no invariant ok
 	| SYM_INVARIANT error
 		{
 			raise_error
-			report_error("Error in invariant section")
+			report_error(create_message("SAIV", Void))
 			abort
 		}
 	;
@@ -201,7 +201,7 @@ arch_ontology: SYM_ONTOLOGY V_DADL_TEXT
 	| SYM_ONTOLOGY error
 		{
 			raise_error
-			report_error("Error in ontology section")
+			report_error(create_message("SAON", Void))
 			abort
 		}
 	;

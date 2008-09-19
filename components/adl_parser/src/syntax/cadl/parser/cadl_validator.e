@@ -1578,7 +1578,7 @@ end
 				object_nodes.item.put_attribute(attr_node)
 			else
 				raise_error
-				report_error(create_message("VATUN", <<rm_attribute_name>>))
+				report_error(create_message("VCATU", <<rm_attribute_name>>))
 				abort
 			end
 		
@@ -1628,7 +1628,7 @@ end
 				object_nodes.item.put_attribute(attr_node)
 			else
 				raise_error
-				report_error(create_message("VATUN", <<rm_attribute_name>>))
+				report_error(create_message("VCATU", <<rm_attribute_name>>))
 				abort
 			end
 		
@@ -4494,11 +4494,11 @@ end
 
 			if ordinal_node.has_item (yyvs2.item (yyvsp2)) then
 				raise_error
-				report_error ("invalid ordinal constraint: duplicated value " + yyvs2.item (yyvsp2).out)
+				report_error(create_message("VCOV", <<yyvs2.item (yyvsp2).out>>))
 				abort
 			elseif ordinal_node.has_code_phrase (a_code_phrase) then
 				raise_error
-				report_error ("invalid ordinal constraint: duplicated code term " + yyvs4.item (yyvsp4))
+				report_error(create_message("VCOC", <<yyvs4.item (yyvsp4)>>))
 				abort
 			else
 				ordinal_node.add_item (an_ordinal)
@@ -4522,7 +4522,7 @@ end
 				c_code_phrase_obj.make_from_pattern (yyvs4.item (yyvsp4))
 			else
 				raise_error
-				report_error ("invalid term code constraint: " + c_code_phrase_obj.fail_reason)
+				report_error(create_message("SCPCV", <<c_code_phrase_obj.fail_reason>>))
 				abort
 			end
 		
@@ -4903,7 +4903,7 @@ end
 				yyval11 := integer_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + yyvs2.item (yyvsp2 - 1).out + " must be <= " + yyvs2.item (yyvsp2).out)
+				report_error(create_message("VIVLO", <<yyvs2.item (yyvsp2 - 1).out, yyvs2.item (yyvsp2).out>>))
 				abort
 			end
 		
@@ -4941,7 +4941,7 @@ end
 				yyval11 := integer_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + yyvs2.item (yyvsp2 - 1).out + " must be <= " + yyvs2.item (yyvsp2).out)
+				report_error(create_message("VIVLO", <<yyvs2.item (yyvsp2 - 1).out, yyvs2.item (yyvsp2).out>>))
 				abort
 			end
 		
@@ -4979,7 +4979,7 @@ end
 				yyval11 := integer_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + yyvs2.item (yyvsp2 - 1).out + " must be <= " + yyvs2.item (yyvsp2).out)
+				report_error(create_message("VIVLO", <<yyvs2.item (yyvsp2 - 1).out, yyvs2.item (yyvsp2).out>>))
 				abort
 			end
 		
@@ -5017,7 +5017,7 @@ end
 				yyval11 := integer_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + yyvs2.item (yyvsp2 - 1).out + " must be <= " + yyvs2.item (yyvsp2).out)
+				report_error(create_message("VIVLO", <<yyvs2.item (yyvsp2 - 1).out, yyvs2.item (yyvsp2).out>>))
 				abort
 			end
 		
@@ -5333,7 +5333,7 @@ end
 				yyval36 := real_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + yyvs3.item (yyvsp3 - 1).out + " must be <= " + yyvs3.item (yyvsp3).out)
+				report_error(create_message("VIVLO", <<yyvs3.item (yyvsp3 - 1).out, yyvs3.item (yyvsp3).out>>))
 				abort
 			end
 		
@@ -5371,7 +5371,7 @@ end
 				yyval36 := real_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + yyvs3.item (yyvsp3 - 1).out + " must be <= " + yyvs3.item (yyvsp3).out)
+				report_error(create_message("VIVLO", <<yyvs3.item (yyvsp3 - 1).out, yyvs3.item (yyvsp3).out>>))
 				abort
 			end
 		
@@ -5409,7 +5409,7 @@ end
 				yyval36 := real_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + yyvs3.item (yyvsp3 - 1).out + " must be <= " + yyvs3.item (yyvsp3).out)
+				report_error(create_message("VIVLO", <<yyvs3.item (yyvsp3 - 1).out, yyvs3.item (yyvsp3).out>>))
 				abort
 			end
 		
@@ -5447,7 +5447,7 @@ end
 				yyval36 := real_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + yyvs3.item (yyvsp3 - 1).out + " must be <= " + yyvs3.item (yyvsp3).out)
+				report_error(create_message("VIVLO", <<yyvs3.item (yyvsp3 - 1).out, yyvs3.item (yyvsp3).out>>))
 				abort
 			end
 		
@@ -5704,7 +5704,7 @@ end
 				create yyval17.make_from_string(yyvs4.item (yyvsp4))
 			else
 				raise_error
-				report_error("invalid ISO8601 date: " + yyvs4.item (yyvsp4))
+				report_error(create_message("VIDV", <<yyvs4.item (yyvsp4)>>))
 				abort
 			end
 		
@@ -5741,7 +5741,7 @@ end
 				yyval38 := date_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + yyvs17.item (yyvsp17 - 1).out + " must be <= " + yyvs17.item (yyvsp17).out)
+				report_error(create_message("VIVLO", <<yyvs17.item (yyvsp17 - 1).out, yyvs17.item (yyvsp17).out>>))
 				abort
 			end
 		
@@ -5779,7 +5779,7 @@ end
 				yyval38 := date_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + yyvs17.item (yyvsp17 - 1).out + " must be <= " + yyvs17.item (yyvsp17).out)
+				report_error(create_message("VIVLO", <<yyvs17.item (yyvsp17 - 1).out, yyvs17.item (yyvsp17).out>>))
 				abort
 			end
 		
@@ -5817,7 +5817,7 @@ end
 				yyval38 := date_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + yyvs17.item (yyvsp17 - 1).out + " must be <= " + yyvs17.item (yyvsp17).out)
+				report_error(create_message("VIVLO", <<yyvs17.item (yyvsp17 - 1).out, yyvs17.item (yyvsp17).out>>))
 				abort
 			end
 		
@@ -5855,7 +5855,7 @@ end
 				yyval38 := date_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + yyvs17.item (yyvsp17 - 1).out + " must be <= " + yyvs17.item (yyvsp17).out)
+				report_error(create_message("VIVLO", <<yyvs17.item (yyvsp17 - 1).out, yyvs17.item (yyvsp17).out>>))
 				abort
 			end
 		
@@ -6052,7 +6052,7 @@ end
 				create yyval19.make_from_string(yyvs4.item (yyvsp4))
 			else
 				raise_error
-				report_error("invalid ISO8601 time: " + yyvs4.item (yyvsp4))
+				report_error(create_message("VITV", <<yyvs4.item (yyvsp4)>>))
 				abort
 			end
 		
@@ -6089,7 +6089,7 @@ end
 				yyval37 := time_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + yyvs19.item (yyvsp19 - 1).out + " must be <= " + yyvs19.item (yyvsp19).out)
+				report_error(create_message("VIVLO", <<yyvs19.item (yyvsp19 - 1).out, yyvs19.item (yyvsp19).out>>))
 				abort
 			end
 		
@@ -6127,7 +6127,7 @@ end
 				yyval37 := time_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + yyvs19.item (yyvsp19 - 1).out + " must be <= " + yyvs19.item (yyvsp19).out)
+				report_error(create_message("VIVLO", <<yyvs19.item (yyvsp19 - 1).out, yyvs19.item (yyvsp19).out>>))
 				abort
 			end
 		
@@ -6165,7 +6165,7 @@ end
 				yyval37 := time_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + yyvs19.item (yyvsp19 - 1).out + " must be <= " + yyvs19.item (yyvsp19).out)
+				report_error(create_message("VIVLO", <<yyvs19.item (yyvsp19 - 1).out, yyvs19.item (yyvsp19).out>>))
 				abort
 			end
 		
@@ -6203,7 +6203,7 @@ end
 				yyval37 := time_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + yyvs19.item (yyvsp19 - 1).out + " must be <= " + yyvs19.item (yyvsp19).out)
+				report_error(create_message("VIVLO", <<yyvs19.item (yyvsp19 - 1).out, yyvs19.item (yyvsp19).out>>))
 				abort
 			end
 		
@@ -6400,7 +6400,7 @@ end
 				create yyval18.make_from_string(yyvs4.item (yyvsp4))
 			else
 				raise_error
-				report_error("invalid ISO8601 date/time: " + yyvs4.item (yyvsp4))
+				report_error(create_message("VIDTV", <<yyvs4.item (yyvsp4)>>))
 				abort
 			end
 		
@@ -6437,7 +6437,7 @@ end
 				yyval39 := date_time_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + yyvs18.item (yyvsp18 - 1).out + " must be <= " + yyvs18.item (yyvsp18).out)
+				report_error(create_message("VIVLO", <<yyvs18.item (yyvsp18 - 1).out, yyvs18.item (yyvsp18).out>>))
 				abort
 			end
 		
@@ -6475,7 +6475,7 @@ end
 				yyval39 := date_time_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + yyvs18.item (yyvsp18 - 1).out + " must be <= " + yyvs18.item (yyvsp18).out)
+				report_error(create_message("VIVLO", <<yyvs18.item (yyvsp18 - 1).out, yyvs18.item (yyvsp18).out>>))
 				abort
 			end
 		
@@ -6513,7 +6513,7 @@ end
 				yyval39 := date_time_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + yyvs18.item (yyvsp18 - 1).out + " must be <= " + yyvs18.item (yyvsp18).out)
+				report_error(create_message("VIVLO", <<yyvs18.item (yyvsp18 - 1).out, yyvs18.item (yyvsp18).out>>))
 				abort
 			end
 		
@@ -6551,7 +6551,7 @@ end
 				yyval39 := date_time_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + yyvs18.item (yyvsp18 - 1).out + " must be <= " + yyvs18.item (yyvsp18).out)
+				report_error(create_message("VIVLO", <<yyvs18.item (yyvsp18 - 1).out, yyvs18.item (yyvsp18).out>>))
 				abort
 			end
 		
@@ -6748,7 +6748,7 @@ end
 				create yyval20.make_from_string(yyvs4.item (yyvsp4))
 			else
 				raise_error
-				report_error("invalid ISO8601 duration: " + yyvs4.item (yyvsp4))
+				report_error(create_message("VIDUV", <<yyvs4.item (yyvsp4)>>))
 				abort
 			end
 		
@@ -6785,7 +6785,7 @@ end
 				yyval40 := duration_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + yyvs20.item (yyvsp20 - 1).out + " must be <= " + yyvs20.item (yyvsp20).out)
+				report_error(create_message("VIVLO", <<yyvs20.item (yyvsp20 - 1).out, yyvs20.item (yyvsp20).out>>))
 				abort
 			end
 		
@@ -6823,7 +6823,7 @@ end
 				yyval40 := duration_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + yyvs20.item (yyvsp20 - 1).out + " must be <= " + yyvs20.item (yyvsp20).out)
+				report_error(create_message("VIVLO", <<yyvs20.item (yyvsp20 - 1).out, yyvs20.item (yyvsp20).out>>))
 				abort
 			end
 		
@@ -6861,7 +6861,7 @@ end
 				yyval40 := duration_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + yyvs20.item (yyvsp20 - 1).out + " must be <= " + yyvs20.item (yyvsp20).out)
+				report_error(create_message("VIVLO", <<yyvs20.item (yyvsp20 - 1).out, yyvs20.item (yyvsp20).out>>))
 				abort
 			end
 		
@@ -6899,7 +6899,7 @@ end
 				yyval40 := duration_interval
 			else
 				raise_error
-				report_error("Invalid interval: " + yyvs20.item (yyvsp20 - 1).out + " must be <= " + yyvs20.item (yyvsp20).out)
+				report_error(create_message("VIVLO", <<yyvs20.item (yyvsp20 - 1).out, yyvs20.item (yyvsp20).out>>))
 				abort
 			end
 		
