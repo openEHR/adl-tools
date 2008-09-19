@@ -94,14 +94,14 @@ feature -- Access
 			["validate_e3"] = <"Error: archetype id in filename $1 does not match id at top of file $2%N">
 			
 			-- syntax errors: see the cADL, dADL and ADL syntax validators
-			["SARID"] = <"In 'archetype' clause; expecting archetype id (model_issuer-ref_model-model_class.concept.version)">
-			["SASID"] = <"In 'specialise' clause; expecting parent archetype id (model_issuer-ref_model-model_class.concept.version)">
-			["SACO"] = <"In 'concept' clause; expecting TERM_CODE reference">
-			["SALA"] = <"Error in language section">
-			["SADS"] = <"Error in description section">
-			["SADF"] = <"Error in definition section">
-			["SAIV"] = <"Error in invariant section">
-			["SAON"] = <"Error in ontology section">
+			["SARID"] = <"in 'archetype' clause; expecting archetype id (model_issuer-ref_model-model_class.concept.version)">
+			["SASID"] = <"in 'specialise' clause; expecting parent archetype id (model_issuer-ref_model-model_class.concept.version)">
+			["SACO"] = <"in 'concept' clause; expecting TERM_CODE reference">
+			["SALA"] = <"error in language section">
+			["SADS"] = <"error in description section">
+			["SADF"] = <"error in definition section">
+			["SAIV"] = <"error in invariant section">
+			["SAON"] = <"error in ontology section">
 
 			["SDSF"] = <"differential syntax not allowed in flat archetype">
 			["SDINV"] = <"invalid dADL section; error: $1">
@@ -115,7 +115,7 @@ feature -- Access
 			["SEXLSG"] = <"existence single value must be 0 or 1">
 			["SEXLU1"] = <"existence upper limit must be 0 or 1 when lower limit is 0">
 			["SEXLU2"] = <"existence upper limit must be 1 when lower limit is 1">
-			["SEXLMG"] = <"In existence; expecting 0..0, 0..1, or 1..1">
+			["SEXLMG"] = <"existence must be one of 0..0, 0..1, or 1..1">
 
 			["SCIAV"] = <"invalid assumed value; must be an integer">
 			["SCRAV"] = <"invalid assumed value; must be a real number">
@@ -131,7 +131,7 @@ feature -- Access
 			["SCTPT"] = <"invalid time constraint pattern; allowed patterns: $1">
 			["SCDTPT"] = <"invalid date/time constraint pattern; allowed patterns: $1">
 			["SCDUPT"] = <"invalid duration constraint pattern; legal pattern: P[Y|y][M|m][W|w][D|d][T[H|h][M|m][S|s]] or P[W|w]">
-			["SCSRE"] = <"Regular expression compile error '$1' is not a valid regular expression">
+			["SCSRE"] = <"regular expression compile error '$1' is not a valid regular expression">
 			["SCPCV"] = <"invalid term code constraint pattern: $1">
 			["STCV"] = <"Invalid term code reference: '$1'; spaces not allowed in code string">
 
@@ -158,10 +158,10 @@ feature -- Access
 			["VOBAV"] = <"Error (VOBAV): assumed value $1 not within constraint range">
 			["VOBAVL"] = <"Error (VOBAVL): assumed value $1 not found in constraint list"> -- additional to ADL spec
 			["VCPCV"] = <"Error (VCPCV): invalid term code constraint: $1">
-			["VCOV"] = <"Error (VCODV): invalid ordinal constraint: duplicated value $1">
-			["VCOC"] = <"Error (VCODT): invalid ordinal constraint: duplicated code $1">
+			["VCOV"] = <"Error (VCOV): invalid ordinal constraint: duplicated value $1">
+			["VCOC"] = <"Error (VCOC): invalid ordinal constraint: duplicated code $1">
 
-			["VIVLO"] = <"Error (VIVLO): Invalid interval: $1 must be <= $2"> -- dADL validity; additional to spec
+			["VIVLO"] = <"Error (VIVLO): invalid interval: $1 must be <= $2"> -- dADL validity; additional to spec
 			["VIDV"] = <"Error (VIDV): invalid ISO8601 date: $1"> -- dADL validity; additional to spec
 			["VITV"] = <"Error (VITV): invalid ISO8601 time: $1"> -- dADL validity; additional to spec
 			["VIDTV"] = <"Error (VIDTV): invalid ISO8601 date/time: $1"> -- dADL validity; additional to spec
@@ -169,6 +169,14 @@ feature -- Access
 
 			["VDATU"] = <"Error (VDATU): dADL object duplicate attribute: $1">
 			["VDOBU"] = <"Error (VDOBU): object key must be unique; key [$1] already exists under attribute '$1'">
+
+			["VACSO"] = <"Error (VACSO): cannot add $1 object with $2 to singly-valued attribute $3 because object occurrences > 1">
+			["VACSI"] = <"Error (VACSI): cannot add $1 object with $2 to singly-valued attribute $3 because attribute already has child with same node id">
+			["VACSIT"] = <"Error (VACSIT): cannot add $1 object with $2 to singly-valued attribute $3 because attribute already has child with same RM type"> -- additional to spec
+
+			["VACMC"] = <"Error (VACMC): cannot add $1 object with $2 to multiply-valued attribute $3 because cardinality upper limit does not contain occurrences of object">
+			["VACMM"] = <"Error (VACMM): cannot add $1 object with $2 to multiply-valued attribute $3 because object has no node id">
+			["VACMI"] = <"Error (VACMI): cannot add $1 object with $2 to multiply-valued attribute $3 because attribute already has child with same node id">
 			
 			-- validation warnings: in addition to spec, used to help archetype authors
 			["WOUC"] = <"Warning (WOUC): code $1 in ontology not used in archetype definition%N">

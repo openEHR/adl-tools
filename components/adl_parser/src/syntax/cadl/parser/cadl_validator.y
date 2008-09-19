@@ -192,6 +192,7 @@ c_complex_object_head: c_complex_object_id c_occurrences
 				debug("ADL_parse")
 					io.put_string(indent + "ATTR_NODE " + c_attrs.item.rm_attribute_name + " put_child(OBJ)%N") 
 				end
+				check not c_attrs.item.has_child(complex_obj) end
 				if check_c_attribute_child(c_attrs.item, complex_obj) then
 					c_attrs.item.put_child(complex_obj)
 				end
@@ -334,6 +335,7 @@ archetype_internal_ref: SYM_USE_NODE type_identifier c_occurrences absolute_path
 			if (c_attrs.item.is_multiple or c_attrs.item.child_count > 1) and not archetype_internal_ref.is_addressable and not $4.last.object_id.is_empty then
 				archetype_internal_ref.set_object_id($4.last.object_id)
 			end
+			check not c_attrs.item.has_child(archetype_internal_ref) end
 			if check_c_attribute_child(c_attrs.item, archetype_internal_ref) then
 				c_attrs.item.put_child(archetype_internal_ref)
 			end
@@ -375,6 +377,7 @@ c_archetype_slot_head: c_archetype_slot_id c_occurrences
 				debug("ADL_parse")
 					io.put_string(indent + "C_ATTR " + c_attrs.item.rm_attribute_name + " put_child(ARCHETYPE_SLOT)%N") 
 				end
+				check not c_attrs.item.has_child(archetype_slot) end
 				if check_c_attribute_child(c_attrs.item, archetype_slot) then
 					c_attrs.item.put_child(archetype_slot)
 				end
@@ -2384,41 +2387,34 @@ feature {NONE} -- Implementation
 			Object_exists: an_obj /= Void
 		local
 			s: STRING
+			ar: ARRAYED_LIST[STRING]
 		do
-			-- FIXME: in future replace this with a pattern based message in multi-lingual message file
-			s := "Cannot add " + an_obj.generating_type + " object "
+			create ar.make(0)
+			ar.extend(an_obj.generating_type) -- $1
 			if an_obj.is_addressable then
-				s.append("with node id=" + an_obj.node_id)
+				ar.extend("node_id=" + an_obj.node_id) -- $2
 			else
-				s.append("with RM type=" + an_obj.rm_type_name)
+				ar.extend("rm_type_name=" + an_obj.rm_type_name) -- $2
 			end
-			s.append (" to ")
-			if an_attr.is_single then
-				s.append("single-valued ")
-			else
-				s.append("multiply-valued ")
-			end
-			s.append("attribute '" + an_attr.rm_attribute_name + "' because ")
+			ar.extend(an_attr.rm_attribute_name) -- $3
 
-			if an_attr.has_child(an_obj) then
-				s.append("attribute already has child object")
-			elseif an_attr.is_single then
+			if an_attr.is_single then
 				if an_obj.occurrences.upper_unbounded or an_obj.occurrences.upper > 1 then
-					s.append ("object occurrences > 1")
+					s := create_message("VACSO", ar)
 				elseif an_obj.is_addressable and an_attr.has_child_with_id(an_obj.node_id) then
-					s.append ("attribute already has child with same node id")
+					s := create_message("VACSI", ar)
 				elseif not an_obj.is_addressable and an_attr.has_child_with_rm_type_name(an_obj.rm_type_name) then
-					s.append ("attribute already has child with RM type")
+					s := create_message("VACSIT", ar)
 				else
 					Result := True
 				end
 			elseif an_attr.is_multiple then
 				if not an_attr.cardinality.interval.upper_unbounded and (an_obj.occurrences.upper_unbounded or cardinality.interval.upper < an_obj.occurrences.upper) then
-					s.append("cardinality upper limit does not contain occurrences of object")
+					s := create_message("VACMC", ar)
 				elseif not an_obj.is_addressable then
-					s.append ("object has no node id")
+					s := create_message("VACMM", ar)
 				elseif an_attr.has_child_with_id(an_obj.node_id) then
-					s.append ("attribute already has child with same node id")
+					s := create_message("VACMI", ar)
 				else
 					Result := True
 				end
