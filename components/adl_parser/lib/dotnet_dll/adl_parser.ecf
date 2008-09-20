@@ -36,6 +36,7 @@
 			<renaming old_name="C_STRING" new_name="BASE_C_STRING"/>
 		</library>
 		<library name="gobo" location="$ISE_LIBRARY\library\gobo\gobo.ecf"/>
+		<library name="i18n" location="..\..\..\..\libraries\externals\i18n\i18n.ecf"/>
 		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf">
 			<renaming old_name="C_DATE" new_name="TIME_C_DATE"/>
 			<renaming old_name="INTERVAL" new_name="TIME_INTERVAL"/>
@@ -80,11 +81,11 @@
 			<visible class="C_DV_QUANTITY"/>
 			<visible class="C_DV_ORDINAL"/>
 		</cluster>
-    <cluster name="reference_model_checker" location="..\..\..\reference_model_checker\src\" recursive="true">
-      <option namespace="reference_model_checker">
-      </option>
-    </cluster>
-    <cluster name="version" location="..\..\..\..\libraries\version\" recursive="true">
+		<cluster name="reference_model_checker" location="..\..\..\reference_model_checker\src\" recursive="true">
+			<option namespace="reference_model_checker">
+			</option>
+		</cluster>
+		<cluster name="version" location="..\..\..\..\libraries\version\" recursive="true">
 			<option namespace="version">
 			</option>
 		</cluster>
