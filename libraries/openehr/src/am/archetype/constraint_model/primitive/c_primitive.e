@@ -1,10 +1,10 @@
 indexing
 
 	component:   "openEHR Common Archetype Model"
-	
+
 	description: "parent type of constrainer types of simple types"
 	keywords:    "archetype, string, data"
-	
+
 	design:      "openEHR Common Archetype Model 0.2"
 
 	author:      "Thomas Beale"
@@ -23,34 +23,34 @@ inherit
 		redefine
 			out
 		end
-		
+
 feature -- Access
 
-	default_value: ANY is
-			-- 	generate a default value from this constraint object
+	prototype_value: ANY is
+			-- 	generate a prototype value from this constraint object
 		deferred
 		ensure
 			Result /= Void
 		end
-		
-	assumed_value: like default_value
+
+	assumed_value: like prototype_value
 			-- assumed value for this constraint object
 			-- FIXME: consider consolidating with assumed_value in C_DOMAIN_TYPE
-		
+
 feature -- Status Report
 
-	valid_value (a_value: like default_value): BOOLEAN is
+	valid_value (a_value: like prototype_value): BOOLEAN is
 		require
 			a_value /= Void
 		deferred
 		end
-		
+
 	has_assumed_value: BOOLEAN is
 			-- True if there is an assumed value
 		do
 			Result := assumed_value /= Void
 		end
-		
+
 feature -- Modification
 
 	set_assumed_value(a_value: like assumed_value) is
@@ -62,7 +62,16 @@ feature -- Modification
 		ensure
 			assumed_value_set: assumed_value = a_value
 		end
-		
+
+feature -- Comparison
+
+	node_conforms_to (other: like Current): BOOLEAN is
+			-- True if this node is a subset of, or the same as `other'
+		require
+			other /= Void
+		deferred
+		end
+
 feature -- Output
 
 	as_string:STRING is
@@ -78,7 +87,7 @@ feature -- Output
 
 invariant
 	Assumed_value_valid: assumed_value /= Void implies valid_value(assumed_value)
-	
+
 end
 
 

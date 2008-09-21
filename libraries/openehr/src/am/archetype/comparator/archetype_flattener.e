@@ -194,8 +194,6 @@ feature {NONE} -- Implementation
 			a_path: STRING
 			child_attr_name: STRING
 			c_attr_child, c_attr_output: C_ATTRIBUTE
-			int_refs: ARRAYED_LIST[ARCHETYPE_INTERNAL_REF]
-			found: BOOLEAN
 		do
 			if {cco_child_diff: !C_COMPLEX_OBJECT} a_c_node then
 				create apa.make_from_string (cco_child_diff.path)

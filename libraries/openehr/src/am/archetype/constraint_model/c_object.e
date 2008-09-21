@@ -120,40 +120,32 @@ feature -- Status Report
 
 feature -- Comparison
 
-	is_subset_of (other: like Current): BOOLEAN is
-			-- True if this node is a subset, i.e. a redefinition of, `other' in the ADL constraint sense, i.e. that all
-			-- aspects of the definition of this node and all child nodes define a narrower, wholly
-			-- contained instance space of `other'.
-			-- Returns False if they are the same, or if they do not correspond
-		deferred
-		end
-
-	is_node_conformant_to (other: like Current): BOOLEAN is
+	node_conforms_to (other: like Current): BOOLEAN is
 			-- True if this node on its own (ignoring any subparts) expresses the same or narrower constraints as `other'.
 			-- Returns False if any of the following is incompatible:
 			--	rm_type_name
 			--	occurrences
 			--	node_id (& specialisation depth)
-			-- An error message can be obtained by calling node_conformance_failure_reason
 		do
-			if rm_type_name.is_equal (other.rm_type_name) or rm_checker.is_subclass_of(rm_type_name, other.rm_type_name) then
-				if occurrences.is_equal (other.occurrences) or other.occurrences.contains (occurrences) then
-					Result := codes_conformant (node_id, other.node_id)
-				end
-			end
+			Result := rm_type_conforms_to(other) and occurrences_conforms_to (other) and node_id_conforms_to (other)
 		end
 
-	node_conformance_failure_reason (other: like Current): STRING is
-			-- generate an error message explaining why is_node_conformant_to() returned False
+	rm_type_conforms_to (other: like Current): BOOLEAN is
+			-- True if this node rm_type_name conforms to other.rm_type_name
 		do
-			create Result.make_empty
-			if not (rm_type_name.is_equal (other.rm_type_name) or rm_checker.is_subclass_of(rm_type_name, other.rm_type_name)) then
-				Result.append("Class " + rm_type_name + " does not conform to type " + other.rm_type_name  + "%N")
-			elseif not (occurrences.is_equal (other.occurrences) or other.occurrences.contains (occurrences)) then
-				Result.append("Occurrences " + occurrences.as_string + " does not conform to " + other.occurrences.as_string  + "%N")
-			elseif not codes_conformant (node_id, other.node_id) then
-				Result.append("Code " + node_id + " does not conform to code " + other.node_id  + "%N")
-			end
+			Result := rm_type_name.is_equal (other.rm_type_name) or rm_checker.is_subclass_of(rm_type_name, other.rm_type_name)
+		end
+
+	occurrences_conforms_to (other: like Current): BOOLEAN is
+			-- True if this node occurrences conforms to other.occurrences
+		do
+			Result := occurrences.is_equal (other.occurrences) or other.occurrences.contains (occurrences)
+		end
+
+	node_id_conforms_to (other: like Current): BOOLEAN is
+			-- True if this node id conforms to other.node_id
+		do
+			Result := codes_conformant (node_id, other.node_id)
 		end
 
 feature -- Modification
@@ -217,7 +209,7 @@ feature -- Modification
 			-- 	overridden rm_type_name
 			-- 	occurrences
 		require
-			Other_valid: other /= Void and then other.is_node_conformant_to (Current)
+			Other_valid: other /= Void and then other.node_conforms_to (Current)
 		do
 			if not other.node_id.is_equal(node_id) then
 				set_object_id(other.node_id)

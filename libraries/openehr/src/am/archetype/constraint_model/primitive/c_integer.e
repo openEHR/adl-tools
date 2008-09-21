@@ -1,10 +1,10 @@
 indexing
 
 	component:   "openEHR Common Archetype Model"
-	
+
 	description: "Constrainer type for instances of INTEGER"
 	keywords:    "archetype, boolean, data"
-	
+
 	design:      "openEHR Common Archetype Model 0.2"
 
 	author:      "Thomas Beale"
@@ -20,7 +20,7 @@ class C_INTEGER
 
 inherit
 	C_PRIMITIVE
-	
+
 	ADL_DEFINITIONS
 		export
 			{NONE} all
@@ -32,14 +32,14 @@ create
 	make_interval, make_list
 
 feature -- Initialisation
-	
+
 	make_interval(an_interval: INTERVAL[INTEGER]) is
 		require
 			Interval_exists: an_interval /= Void
 		do
 			interval := an_interval
 		end
-		
+
 	make_list(a_list: LIST[INTEGER]) is
 			-- make from a list of integers
 		require
@@ -53,28 +53,36 @@ feature -- Initialisation
 feature -- Access
 
 	interval: INTERVAL[INTEGER]
-	
+
 	list: LIST[INTEGER]
 
-	default_value: INTEGER_REF is
+	prototype_value: INTEGER_REF is
 		do
-			create Result 
+			create Result
 			if interval /= Void then
 				Result.set_item(interval.lower)
 			else
 				Result.set_item(list.first)
 			end
 		end
-	
+
 feature -- Status Report
 
-	valid_value (a_value: INTEGER_REF): BOOLEAN is 
+	valid_value (a_value: INTEGER_REF): BOOLEAN is
 		do
 			if interval /= Void then
 				Result := interval.has(a_value.item)
 			else
 				Result := list.has(a_value.item)
 			end
+		end
+
+feature -- Comparison
+
+	node_conforms_to (other: like Current): BOOLEAN is
+			-- True if this node is a subset of, or the same as `other'
+		do
+			-- FIXME: TO BE IMPLEMENTED
 		end
 
 feature -- Output
@@ -100,14 +108,14 @@ feature -- Output
 			if assumed_value /= Void then
 				Result.append("; " + assumed_value.out)
 			end
-			
+
 		end
 
 	as_canonical_string:STRING is
 		do
 			Result := as_string
 		end
-		
+
 invariant
 	interval /= Void xor list /= Void
 

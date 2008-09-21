@@ -140,9 +140,10 @@ feature -- Access
 			Result_exists: Result /= Void -- and then Result.object_comparison
 		end
 
-	default_value: ANY is
+	prototype_value: ANY is
 			-- 	generate a default value from this constraint object
 		do
+			-- FIXME: to be implemented
 		end
 
 feature -- Status Report
@@ -209,22 +210,9 @@ feature -- Status Report
 			end
 		end
 
-	valid_value (a_value: like default_value): BOOLEAN is
+	valid_value (a_value: like prototype_value): BOOLEAN is
 		do
 			-- FIXME: to be implemented
-		end
-
-feature -- Comparison
-
-	is_subset_of (other: like Current): BOOLEAN is
-			-- True if this node is a subset, i.e. a redefinition of, `other'
-			-- Returns False if they are the same, or if they do not correspond
-		do
-			if other.any_allowed then
-				Result := True
-			elseif not any_allowed then
-				-- FIXME - tobe implemented
-			end
 		end
 
 feature -- Modification

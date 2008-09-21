@@ -150,8 +150,12 @@ feature -- Access
 			["VATDF"] = <"Error (VATDF): node id at-code $1 not defined in ontology%N">
 			["VUNP"] = <"Error (VUNP): use_node path $1 not found in archetype%N">
 
-			["VSONC"] = <"Error (VSONC): object node at path $1 does not conform to node at parent path $2; reason:%N$3">
-			["VSANC"] = <"Error (VSANC): attribute $1 at path $2 does not conform to parent $3; reason:%N$4">
+			["VSONCT"] = <"Error (VSONCT): object node at path $1 RM type $2 does not conform to node at parent path $3 RM type $4">
+			["VSONCO"] = <"Error (VSONCO): object node at path $1 occurrences $2 does not conform to node at parent path $3 occurrences $4">
+			["VSONCI"] = <"Error (VSONCI): object node at path $1 node_id $2 does not conform to node at parent path $3 node_id $4">
+			["VSANCE"] = <"Error (VSANCE): attribute $1 at path $2 existence $3 does not conform to parent $4 existence $5">
+			["VSANCC"] = <"Error (VSANCC): attribute $1 at path $2 cardinality $3 does not conform to parent $4 cardinality $5">
+
 			["VSSM"] = <"Error (VSSM): node at path $1 has order marker referring to non-existant sibling node $2%N">
 			["VCATU"] = <"Error (VCATU) cADL object duplicate attribute $1">
 

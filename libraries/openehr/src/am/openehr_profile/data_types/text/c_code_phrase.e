@@ -17,7 +17,7 @@ class C_CODE_PHRASE
 inherit
 	C_DOMAIN_TYPE
 		redefine
-			default_create, enter_subtree, exit_subtree, synchronise_to_tree, specialisation_status
+			default_create, enter_subtree, exit_subtree, synchronise_to_tree, specialisation_status, node_conforms_to
 		end
 
 create
@@ -96,7 +96,7 @@ feature -- Access
 			end
 		end
 
-	default_value: CODE_PHRASE is
+	prototype_value: CODE_PHRASE is
 			-- generate a default value from this constraint object of the form
 			-- "terminology_id::code_string"
 		do
@@ -132,7 +132,7 @@ feature -- Status Report
 			Result := terminology_id.is_local
 		end
 
-	valid_value (a_value: like default_value): BOOLEAN is
+	valid_value (a_value: like prototype_value): BOOLEAN is
 			-- check a value of the form "terminology_id::code_string"
 		do
 			if any_allowed then
@@ -168,26 +168,28 @@ feature -- Status Report
 
 feature -- Comparison
 
-	is_subset_of (other: like Current): BOOLEAN is
+	node_conforms_to (other: like Current): BOOLEAN is
 			-- True if this node is a subset, i.e. a redefinition of, `other' in the ADL constraint sense, i.e. that all
 			-- aspects of the definition of this node and all child nodes define a narrower, wholly
 			-- contained instance space of `other'.
 			-- Returns False if they are the same, or if they do not correspond
 		do
-			if other.any_allowed then
-				Result := True
-			elseif not any_allowed then
-				if terminology_id.is_equal (other.terminology_id) then
-					if code_list.count <= other.code_list.count then
-						from
-							code_list.start
-						until
-							code_list.off or not other.has_code (code_list.item)
-						loop
-							code_list.forth
+			if precursor(other) then
+				if other.any_allowed then
+					Result := True
+				elseif not any_allowed then
+					if terminology_id.is_equal (other.terminology_id) then
+						if code_list.count <= other.code_list.count then
+							from
+								code_list.start
+							until
+								code_list.off or not other.has_code (code_list.item)
+							loop
+								code_list.forth
+							end
 						end
+						Result := code_list.off
 					end
-					Result := code_list.off
 				end
 			end
 		end

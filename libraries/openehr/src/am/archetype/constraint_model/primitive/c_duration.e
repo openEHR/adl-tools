@@ -131,7 +131,7 @@ feature -- Access
 	interval: INTERVAL [ISO8601_DURATION]
 			-- ISO8601-based interval.
 
-	default_value: ISO8601_DURATION is
+	prototype_value: ISO8601_DURATION is
 			-- Default duration value.
 		do
 			if interval /= Void then
@@ -153,6 +153,14 @@ feature -- Status Report
 			end
 
 			Result := Result and (interval /= Void implies interval.has (duration))
+		end
+
+feature -- Comparison
+
+	node_conforms_to (other: like Current): BOOLEAN is
+			-- True if this node is a subset of, or the same as `other'
+		do
+			-- FIXME: TO BE IMPLEMENTED
 		end
 
 feature -- Output

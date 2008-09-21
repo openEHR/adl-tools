@@ -17,7 +17,7 @@ class C_DV_QUANTITY
 inherit
 	C_DOMAIN_TYPE
 		redefine
-			default_create, enter_subtree, exit_subtree
+			default_create, enter_subtree, exit_subtree, node_conforms_to
 		end
 
 	TYPE_UTILITIES
@@ -73,7 +73,7 @@ feature -- Access
 	list: ARRAYED_LIST [C_QUANTITY_ITEM]
 			-- list of items constraining magnitude/units pairs
 
-	default_value: QUANTITY is
+	prototype_value: QUANTITY is
 			-- Generate a default value from this constraint object.
 			-- FIXME: This should be of type DV_QUANTITY.
 		local
@@ -160,7 +160,7 @@ feature -- Status Report
 			Result := list = Void and property = Void
 		end
 
-	valid_value (a_value: like default_value): BOOLEAN is
+	valid_value (a_value: like prototype_value): BOOLEAN is
 		do
 			-- FIXME: to be implemented
 			Result := any_allowed or else True
@@ -168,7 +168,7 @@ feature -- Status Report
 
 feature -- Comparison
 
-	is_subset_of (other: like Current): BOOLEAN is
+	node_conforms_to (other: like Current): BOOLEAN is
 			-- True if this node is a subset, i.e. a redefinition of, `other' in the ADL constraint sense, i.e. that all
 			-- aspects of the definition of this node and all child nodes define a narrower, wholly
 			-- contained instance space of `other'.
@@ -177,25 +177,27 @@ feature -- Comparison
 			other_item: C_QUANTITY_ITEM
 			fail: BOOLEAN
 		do
-			if other.any_allowed then
-				Result := True
-			elseif not any_allowed then
-				if (property = Void and other.property = Void) or else property.is_equal (other.property) then
-					if (list = Void and other.list = Void) then
-						Result := True
-					elseif list /= Void and other.list /= Void and list.count <= other.list.count then
-						from
-							list.start
-						until
-							list.off or fail
-						loop
-							other_item := other.list_item_by_units(list.item.units)
-							if other_item = Void or not other_item.magnitude.contains(list.item.magnitude) then
-								fail := True
+			if precursor(other) then
+				if other.any_allowed then
+					Result := True
+				elseif not any_allowed then
+					if (property = Void and other.property = Void) or else property.is_equal (other.property) then
+						if (list = Void and other.list = Void) then
+							Result := True
+						elseif list /= Void and other.list /= Void and list.count <= other.list.count then
+							from
+								list.start
+							until
+								list.off or fail
+							loop
+								other_item := other.list_item_by_units(list.item.units)
+								if other_item = Void or not other_item.magnitude.contains(list.item.magnitude) then
+									fail := True
+								end
+								list.forth
 							end
-							list.forth
+							Result := list.off
 						end
-						Result := list.off
 					end
 				end
 			end

@@ -1,10 +1,10 @@
 indexing
 
 	component:   "openEHR Common Archetype Model"
-	
+
 	description: "Constrainer type for instances of REAL"
 	keywords:    "archetype, boolean, data"
-	
+
 	design:      "openEHR Common Archetype Model 0.2"
 
 	author:      "Thomas Beale"
@@ -32,14 +32,14 @@ create
 	make_interval, make_list
 
 feature -- Initialisation
-	
+
 	make_interval(an_interval: INTERVAL[REAL]) is
 		require
 			Interval_exists: an_interval /= Void
 		do
 			interval := an_interval
 		end
-		
+
 	make_list(a_list: LIST[REAL]) is
 			-- make from a list of integers
 		require
@@ -56,25 +56,33 @@ feature -- Access
 
 	list: LIST[REAL]
 
-	default_value: REAL_REF is
+	prototype_value: REAL_REF is
 		do
-			create Result 
+			create Result
 			if interval /= Void then
 				Result.set_item(interval.lower)
 			else
 				Result.set_item(list.first)
 			end
 		end
-	
+
 feature -- Status Report
 
-	valid_value (a_value: REAL_REF): BOOLEAN is 
+	valid_value (a_value: REAL_REF): BOOLEAN is
 		do
 			if interval /= Void then
 				Result := interval.has(a_value.item)
 			else
 				Result := list.has(a_value.item)
 			end
+		end
+
+feature -- Comparison
+
+	node_conforms_to (other: like Current): BOOLEAN is
+			-- True if this node is a subset of, or the same as `other'
+		do
+			-- FIXME: TO BE IMPLEMENTED
 		end
 
 feature -- Output
@@ -95,7 +103,7 @@ feature -- Output
 					if not list.isfirst then
 						Result.append(", ")
 					end
-					
+
 					-- FIXME: REAL.out is broken; forgets to output '.0'
 					out_val := list.item.out
 					if out_val.index_of('.', 1) = 0 then
@@ -113,14 +121,14 @@ feature -- Output
 					out_val.append(".0")
 				end
 				Result.append("; " + out_val)
-			end			
+			end
 		end
 
 	as_canonical_string:STRING is
 		do
 			Result := as_string
 		end
-		
+
 invariant
 	interval /= Void xor list /= Void
 

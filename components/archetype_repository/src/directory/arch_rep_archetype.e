@@ -215,9 +215,10 @@ feature -- Status Report
 		end
 
 	is_out_of_date: BOOLEAN
-			-- Has the file at `full_path' changed on disk since last parsed?
+			-- Should this archetype be reparsed?
 		do
-			Result := file_repository.has_file_changed_on_disk (full_path, text_timestamp)
+			Result := file_repository.has_file_changed_on_disk (full_path, text_timestamp) or
+				is_specialised and specialisation_parent.is_out_of_date
 		end
 
 	parse_attempted: BOOLEAN

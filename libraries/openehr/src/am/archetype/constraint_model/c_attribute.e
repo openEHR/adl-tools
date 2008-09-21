@@ -15,6 +15,7 @@ class C_ATTRIBUTE
 
 inherit
 	ARCHETYPE_CONSTRAINT
+
 		redefine
 			default_create, parent, representation
 		end
@@ -273,26 +274,25 @@ feature -- Status Report
 
 feature -- Comparison
 
-	is_node_conformant_to (other: like Current): BOOLEAN is
+	node_conforms_to (other: like Current): BOOLEAN is
 			-- True if this node on its own (ignoring any subparts) expresses the same or narrower constraints as `other'.
 			-- Returns False if any of the following is incompatible:
 			--	cardinality
 			--	existence
-			-- An error message can be obtained by calling node_conformance_failure_reason
 		do
-			Result := (existence.is_equal (other.existence) or other.existence.contains (existence)) and (is_single or
-				(cardinality.interval.is_equal (other.cardinality.interval) or other.cardinality.contains (cardinality)))
+			Result := existence_conforms_to (other) and cardinality_conforms_to (other)
 		end
 
-	node_conformance_failure_reason (other: like Current): STRING is
-			-- generate an error message explaining why is_node_conformant_to() returned False
+	existence_conforms_to (other: like Current): BOOLEAN is
+			-- True if the existence of this node conforms to other.existence
 		do
-			create Result.make_empty
-			if not (existence.is_equal (other.existence) or other.existence.contains (existence)) then
-				Result.append("Existence " + existence.as_string + " does not conform to " + other.existence.as_string  + "%N")
-			elseif is_multiple and not (cardinality.interval.is_equal (other.cardinality.interval) or other.cardinality.contains (cardinality)) then
-				Result.append("Cardinality " + cardinality.as_string + " does not conform to " + other.cardinality.as_string  + "%N")
-			end
+			Result := existence.is_equal (other.existence) or other.existence.contains (existence)
+		end
+
+	cardinality_conforms_to (other: like Current): BOOLEAN is
+			-- True if the cardinality of this node conforms to other.cardinality
+		do
+			Result := is_single or (cardinality.interval.is_equal (other.cardinality.interval) or other.cardinality.contains (cardinality))
 		end
 
 feature -- Modification
@@ -404,7 +404,7 @@ feature -- Modification
 			-- apply any differences from `diff_obj' to `old_obj' node including node_id
 		require
 			Obj_valid: has_child (an_obj)
-			Diff_obj_valid: diff_obj /= Void and then diff_obj.is_node_conformant_to (an_obj)
+			Diff_obj_valid: diff_obj /= Void and then diff_obj.node_conforms_to (an_obj)
 		do
 			representation.replace_node_id(an_obj.representation, diff_obj.node_id)
 			an_obj.overlay_differential (diff_obj)

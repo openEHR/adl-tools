@@ -21,14 +21,14 @@ inherit
 
 feature -- Access
 	
-	default_value: ANY is
+	prototype_value: ANY is
 			-- 	generate a default value from this constraint object
 		deferred
 		ensure
 			Result /= Void
 		end
 		
-    assumed_value: like default_value
+    assumed_value: like prototype_value
             -- value to be assumed if none sent in data
 
 feature -- Status Report
@@ -38,7 +38,7 @@ feature -- Status Report
 		deferred
 		end
 
-	valid_value (a_value: like default_value): BOOLEAN is 
+	valid_value (a_value: like prototype_value): BOOLEAN is 
 		require
 			a_value /= Void
 		deferred

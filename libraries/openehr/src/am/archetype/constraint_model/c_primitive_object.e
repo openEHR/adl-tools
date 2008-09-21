@@ -20,7 +20,7 @@ class C_PRIMITIVE_OBJECT
 inherit
 	C_LEAF_OBJECT
 		redefine
-			representation, out, is_valid, enter_subtree, exit_subtree
+			representation, out, is_valid, enter_subtree, exit_subtree, node_conforms_to
 		end
 
 create
@@ -43,10 +43,10 @@ feature -- Access
 
 	item: C_PRIMITIVE
 
-	default_value: ANY is
+	prototype_value: ANY is
 			-- 	generate a default value from this constraint object
 		do
-			Result := item.default_value
+			Result := item.prototype_value
 		end
 
 feature -- Status Report
@@ -72,21 +72,22 @@ feature -- Status Report
 			end
 		end
 
-	valid_value (a_value: like default_value): BOOLEAN is
+	valid_value (a_value: like prototype_value): BOOLEAN is
 		do
 			Result := item.valid_value (a_value)
 		end
 
 feature -- Comparison
 
-	is_subset_of (other: like Current): BOOLEAN is
-			-- True if this node is a subset, i.e. a redefinition of, `other'
-			-- Returns False if they are the same, or if they do not correspond
+	node_conforms_to (other: like Current): BOOLEAN is
+			-- True if this node is a subset of, or the same as `other'
 		do
-			if other.any_allowed then
-				Result := True
-			elseif not any_allowed then
-				-- FIXME - tobe implemented
+			if precursor(other) then
+				if other.any_allowed then
+					Result := True
+				elseif not any_allowed then
+					Result := item.node_conforms_to(other.item)
+				end
 			end
 		end
 

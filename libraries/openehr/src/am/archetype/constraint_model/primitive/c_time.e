@@ -1,10 +1,10 @@
 indexing
 
 	component:   "openEHR Common Archetype Model"
-	
+
 	description: "Constrainer type for instances of TIME"
 	keywords:    "archetype, date, data"
-	
+
 	design:      "openEHR Common Archetype Model 0.2"
 
 	author:      "Thomas Beale"
@@ -31,7 +31,7 @@ inherit
 	DATE_TIME_ROUTINES
 		export
 			{NONE} all;
-			{ANY} valid_iso8601_time_constraint_pattern, valid_iso8601_time, 
+			{ANY} valid_iso8601_time_constraint_pattern, valid_iso8601_time,
 					iso8601_string_to_time
 		undefine
 			out
@@ -41,7 +41,7 @@ create
 	make_interval, make_string_interval, make_from_pattern
 
 feature -- Initialisation
-	
+
 	make_interval(an_interval: INTERVAL[ISO8601_TIME]) is
 			-- make from a time interval
 		require
@@ -60,17 +60,17 @@ feature -- Initialisation
 			valid_interval: a_lower /= Void or an_upper /= Void
 			lower_exists: a_lower /= void implies valid_iso8601_time(a_lower)
 			upper_exists: an_upper /= void implies valid_iso8601_time(an_upper)
-			valid_order: (a_lower /= Void and an_upper /= Void) implies 
+			valid_order: (a_lower /= Void and an_upper /= Void) implies
 						(iso8601_string_to_time(a_lower) <= iso8601_string_to_time(an_upper))
 		do
 			if a_lower = Void then
-				create interval.make_lower_unbounded(create {ISO8601_TIME}.make_from_string(an_upper), True)			
+				create interval.make_lower_unbounded(create {ISO8601_TIME}.make_from_string(an_upper), True)
 			else
 				if an_upper = Void then
 					create interval.make_upper_unbounded(create {ISO8601_TIME}.make_from_string(a_lower), True)
 				else
-					create interval.make_bounded(create {ISO8601_TIME}.make_from_string(a_lower), 
-						create {ISO8601_TIME}.make_from_string(an_upper), True, True)			
+					create interval.make_bounded(create {ISO8601_TIME}.make_from_string(a_lower),
+						create {ISO8601_TIME}.make_from_string(an_upper), True, True)
 				end
 			end
 		end
@@ -84,15 +84,15 @@ feature -- Initialisation
 		ensure
 			pattern_set: pattern = a_pattern
 		end
-		
+
 feature -- Access
 
 	interval: INTERVAL[ISO8601_TIME]
-	
+
 	pattern: STRING
 			-- ISO8601-based pattern like "hh:mm:??"
 
-	default_value: ISO8601_TIME is
+	prototype_value: ISO8601_TIME is
 		do
 			if interval /= Void then
 				Result := interval.lower
@@ -100,10 +100,10 @@ feature -- Access
 				-- Result := FIXME - generate a default from a pattern
 			end
 		end
-	
+
 feature -- Status Report
 
-	valid_value (a_value: ISO8601_TIME): BOOLEAN is 
+	valid_value (a_value: ISO8601_TIME): BOOLEAN is
 		do
 			if interval /= Void then
 				Result := interval.has(a_value)
@@ -111,6 +111,14 @@ feature -- Status Report
 				-- Result := a_value matches pattern FIXME - to be implemented
 				Result := True
 			end
+		end
+
+feature -- Comparison
+
+	node_conforms_to (other: like Current): BOOLEAN is
+			-- True if this node is a subset of, or the same as `other'
+		do
+			-- FIXME: TO BE IMPLEMENTED
 		end
 
 feature -- Output
@@ -130,7 +138,7 @@ feature -- Output
 
 invariant
 	Validity: interval /= Void xor pattern /= Void
-	
+
 end
 
 

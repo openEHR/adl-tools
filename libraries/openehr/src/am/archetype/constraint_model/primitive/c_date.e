@@ -1,10 +1,10 @@
 indexing
 
 	component:   "openEHR Common Archetype Model"
-	
+
 	description: "Constrainer type for instances of DATE"
 	keywords:    "archetype, date, data"
-	
+
 	design:      "openEHR Common Archetype Model 0.2"
 
 	author:      "Thomas Beale"
@@ -40,7 +40,7 @@ create
 	make_interval, make_string_interval, make_from_pattern
 
 feature -- Initialisation
-	
+
 	make_interval(an_interval: INTERVAL[ISO8601_DATE]) is
 		require
 			Interval_exists: an_interval /= Void
@@ -51,23 +51,23 @@ feature -- Initialisation
 		end
 
 	make_string_interval(a_lower, an_upper: STRING) is
-			-- make from two iso8601 strings. Either but not both may be Void, indicating an 
-			-- open-ended interval; they may also be the same, meaning a single point. 
+			-- make from two iso8601 strings. Either but not both may be Void, indicating an
+			-- open-ended interval; they may also be the same, meaning a single point.
 			-- Limits are automatically included in the range
 		require
 			valid_interval: a_lower /= Void or an_upper /= Void
 			lower_exists: a_lower /= void implies valid_iso8601_date(a_lower)
 			upper_exists: an_upper /= void implies valid_iso8601_date(an_upper)
-			valid_order: (a_lower /= Void and an_upper /= Void) implies 
+			valid_order: (a_lower /= Void and an_upper /= Void) implies
 						(iso8601_string_to_date(a_lower) <= iso8601_string_to_date(an_upper))
 		do
 			if a_lower = Void then
-				create interval.make_lower_unbounded(create {ISO8601_DATE}.make_from_string(an_upper), True)			
+				create interval.make_lower_unbounded(create {ISO8601_DATE}.make_from_string(an_upper), True)
 			else
 				if an_upper = Void then
 					create interval.make_upper_unbounded(create {ISO8601_DATE}.make_from_string(a_lower), True)
 				else
-					create interval.make_bounded(create {ISO8601_DATE}.make_from_string(a_lower), 
+					create interval.make_bounded(create {ISO8601_DATE}.make_from_string(a_lower),
 						create {ISO8601_DATE}.make_from_string(an_upper), True, True)
 				end
 			end
@@ -88,7 +88,7 @@ feature -- Initialisation
 		ensure
 			pattern_set: pattern = a_pattern
 		end
-		
+
 feature -- Access
 
 	interval: INTERVAL[ISO8601_DATE]
@@ -96,7 +96,7 @@ feature -- Access
 	pattern: STRING
 			-- ISO8601-based pattern like "yyyy-mm-??"
 
-	default_value: ISO8601_DATE is
+	prototype_value: ISO8601_DATE is
 		do
 			if interval /= Void then
 				Result := interval.lower
@@ -104,10 +104,10 @@ feature -- Access
 				-- Result := FIXME - generate a default from a pattern
 			end
 		end
-	
+
 feature -- Status Report
 
-	valid_value (a_value: ISO8601_DATE): BOOLEAN is 
+	valid_value (a_value: ISO8601_DATE): BOOLEAN is
 		do
 			if interval /= Void then
 				Result := interval.has(a_value)
@@ -115,6 +115,14 @@ feature -- Status Report
 				-- Result := a_value matches pattern FIXME - to be implemented
 				Result := True
 			end
+		end
+
+feature -- Comparison
+
+	node_conforms_to (other: like Current): BOOLEAN is
+			-- True if this node is a subset of, or the same as `other'
+		do
+			-- FIXME: TO BE IMPLEMENTED
 		end
 
 feature -- Output
