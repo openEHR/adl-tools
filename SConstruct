@@ -229,7 +229,7 @@ else:
 					]
 
 			for filename, pattern in substitutions:
-				if if os.path.exists(filename):
+				if os.path.exists(filename):
 					f = open(filename, 'r')
 					try: s = f.read()
 					finally: f.close()
