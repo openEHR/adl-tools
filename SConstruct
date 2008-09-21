@@ -1,8 +1,8 @@
-import os, shutil, re, subprocess
+import os, shutil, re
 from Eiffel import files
 
 EnsurePythonVersion(2, 4)
-EnsureSConsVersion(0, 97, 0)
+EnsureSConsVersion(1, 0, 0)
 
 env = Environment(ENV = os.environ, tools = ['Eiffel'], toolpath = ['.'])
 
@@ -229,18 +229,19 @@ else:
 					]
 
 			for filename, pattern in substitutions:
-				f = open(filename, 'r')
-				try: s = f.read()
-				finally: f.close()
-
-				if s:
-					s = re.sub(pattern, r'\g<1>' + revision, s)
-					bak = backup_filename(filename)
-					if os.path.exists(filename) and not os.path.exists(bak): os.rename(filename, bak)
-					backed_up_files.append(filename)
-					f = open(filename, 'w')
-					try: f.write(s)
+				if if os.path.exists(filename):
+					f = open(filename, 'r')
+					try: s = f.read()
 					finally: f.close()
+
+					if s:
+						s = re.sub(pattern, r'\g<1>' + revision, s)
+						bak = backup_filename(filename)
+						if not os.path.exists(bak): os.rename(filename, bak)
+						backed_up_files.append(filename)
+						f = open(filename, 'w')
+						try: f.write(s)
+						finally: f.close()
 
 		def restore_backed_up_files(target, source, env):
 			global backed_up_files
