@@ -51,6 +51,11 @@ inherit
 			{NONE} all
 		end
 
+	INTERNAL
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -490,53 +495,67 @@ feature {NONE} -- Implementation
 				create apa.make_from_string (co_child_diff.path)
 				co_parent_flat ?= flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth))
 
-				-- now determine if child object is same as or a specialisation of flat object
-				if not co_child_diff.node_conforms_to(co_parent_flat) then
-					passed := False
-					if not co_child_diff.rm_type_conforms_to (co_parent_flat) then
-						errors.append(create_message("VSONCT", <<co_child_diff.path, co_child_diff.rm_type_name, co_parent_flat.path, co_parent_flat.rm_type_name>>))
-					elseif not co_child_diff.occurrences_conforms_to (co_parent_flat) then
-						errors.append(create_message("VSONCO", <<co_child_diff.path, co_child_diff.occurrences.as_string, co_parent_flat.path, co_parent_flat.occurrences.as_string>>))
-					elseif not co_child_diff.node_id_conforms_to (co_parent_flat) then
-						errors.append(create_message("VSONCI", <<co_child_diff.path, co_child_diff.node_id, co_parent_flat.path, co_parent_flat.node_id>>))
-					end
+				-- C_CODE_PHRASE conforms to CONSTRAINT_REF, but is not testable in any way; sole exception in ADL/AOM; just warn
+				if {ccr: !CONSTRAINT_REF} co_parent_flat and {ccp: !C_CODE_PHRASE} co_child_diff then
+					warnings.append(create_message("WCRC", <<co_child_diff.path>>))
+					passed := True
 				else
-				--	if co_child_diff.x then
+					-- if the child is a redefine of a parent use_node, then we have to do the comparison to the use_node target,
+					-- unless they both are use_nodes, in which case leave them as is
+					if {air_p: !ARCHETYPE_INTERNAL_REF} co_parent_flat and not {air_c: !ARCHETYPE_INTERNAL_REF} co_child_diff then
+						co_parent_flat ?= flat_parent.c_object_at_path (air_p.path)
+					end
 
-				--	end
-					if co_child_diff.sibling_order /= Void and then not co_parent_flat.parent.has_child_with_id (co_child_diff.sibling_order.sibling_node_id) then
+					-- now determine if child object is same as or a specialisation of flat object
+					if dynamic_type (co_child_diff) /= dynamic_type (co_parent_flat) then
+						errors.append(create_message("VSONT", <<co_child_diff.path, co_child_diff.generating_type, co_parent_flat.path, co_parent_flat.generating_type>>))
+						passed := False
+					elseif not co_child_diff.node_conforms_to(co_parent_flat) then
+						passed := False
+						if not co_child_diff.rm_type_conforms_to (co_parent_flat) then
+							errors.append(create_message("VSONCT", <<co_child_diff.path, co_child_diff.rm_type_name, co_parent_flat.path, co_parent_flat.rm_type_name>>))
+						elseif not co_child_diff.occurrences_conforms_to (co_parent_flat) then
+							errors.append(create_message("VSONCO", <<co_child_diff.path, co_child_diff.occurrences.as_string, co_parent_flat.path, co_parent_flat.occurrences.as_string>>))
+						elseif co_child_diff.is_addressable then
+							if not co_child_diff.node_id_conforms_to (co_parent_flat) then
+								errors.append(create_message("VSONCI", <<co_child_diff.path, co_child_diff.node_id, co_parent_flat.path, co_parent_flat.node_id>>))
+							elseif co_child_diff.node_id.is_equal(co_parent_flat.node_id) then
+								errors.append(create_message("VSONIR", <<co_child_diff.path, co_parent_flat.path, co_child_diff.node_id>>))
+							end
+						else
+							errors.append(create_message("VSONNC", <<co_child_diff.rm_type_name, co_child_diff.path, co_parent_flat.rm_type_name, co_parent_flat.path>>))
+						end
+					elseif co_child_diff.sibling_order /= Void and then not co_parent_flat.parent.has_child_with_id (co_child_diff.sibling_order.sibling_node_id) then
 						passed := False
 						errors.append (create_message("VSSM", <<co_child_diff.path, co_child_diff.sibling_order.sibling_node_id>>))
-					end
-				end
-
-				-- now look at attributes
-				if {cco_child_diff: !C_COMPLEX_OBJECT} co_child_diff then
-					from
-						cco_child_diff.attributes.start
-					until
-						cco_child_diff.attributes.off
-					loop
-						c_child_attr := cco_child_diff.attributes.item
-						if {cco_parent_flat: !C_COMPLEX_OBJECT} co_parent_flat then
-							child_attr_name := c_child_attr.rm_attribute_name
-							if cco_parent_flat.has_attribute (child_attr_name) then
-								c_parent_attr := cco_parent_flat.c_attribute_at_path (child_attr_name)
-								if not c_child_attr.node_conforms_to(c_parent_attr) then
-									passed := False
-									if not c_child_attr.existence_conforms_to (c_parent_attr) then
-										errors.append (create_message("VSANCE", <<child_attr_name, co_child_diff.path, c_child_attr.existence.as_string,
-											co_parent_flat.path, c_parent_attr.existence.as_string>>))
-									elseif not c_child_attr.cardinality_conforms_to (c_parent_attr) then
-										errors.append (create_message("VSANCC", <<child_attr_name, co_child_diff.path, c_child_attr.cardinality.as_string,
-											co_parent_flat.path, c_parent_attr.cardinality.as_string>>))
+					else
+						-- now look at attributes
+						if {cco_child_diff: !C_COMPLEX_OBJECT} co_child_diff then
+							from
+								cco_child_diff.attributes.start
+							until
+								cco_child_diff.attributes.off
+							loop
+								c_child_attr := cco_child_diff.attributes.item
+								if {cco_parent_flat: !C_COMPLEX_OBJECT} co_parent_flat then
+									child_attr_name := c_child_attr.rm_attribute_name
+									if cco_parent_flat.has_attribute (child_attr_name) then
+										c_parent_attr := cco_parent_flat.c_attribute_at_path (child_attr_name)
+										if not c_child_attr.node_conforms_to(c_parent_attr) then
+											passed := False
+											if not c_child_attr.existence_conforms_to (c_parent_attr) then
+												errors.append (create_message("VSANCE", <<child_attr_name, co_child_diff.path, c_child_attr.existence.as_string,
+													co_parent_flat.path, c_parent_attr.existence.as_string>>))
+											elseif not c_child_attr.cardinality_conforms_to (c_parent_attr) then
+												errors.append (create_message("VSANCC", <<child_attr_name, co_child_diff.path, c_child_attr.cardinality.as_string,
+													co_parent_flat.path, c_parent_attr.cardinality.as_string>>))
+											end
+										end
 									end
-								else -- look at the non-CCO child objects
-
 								end
+								cco_child_diff.attributes.forth
 							end
 						end
-						cco_child_diff.attributes.forth
 					end
 				end
 			end

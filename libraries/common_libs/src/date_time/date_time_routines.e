@@ -35,6 +35,29 @@ feature -- Definitions
 			not_empty: not Result.is_empty
 		end
 
+	valid_date_constraint_replacements: HASH_TABLE[ARRAY [STRING], STRING] is
+			-- List of allowed date constraint replacements e.g. in specialised archetype
+		once
+			create Result.make (0)
+			Result.put (<<>>, "YYYY-MM-DD")	-- no replacements possible
+			Result.put (<<"YYYY-MM-DD", "YYYY-MM-XX">>, "YYYY-MM-??")
+			Result.put (<<>>, "YYYY-MM-XX")	-- no replacements possible
+			Result.put (<<"YYYY-MM-??", "YYYY-MM-DD", "YYYY-MM-XX", "YYYY-??-XX", "YYYY-XX-XX">>, "YYYY-??-??")
+			Result.put (<<"YYYY-MM-XX", "YYYY-XX-XX">>, "YYYY-??-XX")
+			Result.put (<<>>, "YYYY-XX-XX")	-- no replacements possible
+			from
+				Result.start
+			until
+				Result.off
+			loop
+				Result.item_for_iteration.compare_objects
+				Result.forth
+			end
+		ensure
+			attached: Result /= Void
+			not_empty: not Result.is_empty
+		end
+
 	valid_time_constraint_patterns: ARRAYED_LIST [STRING] is
 			-- List of allowed time constraints.
 		once
@@ -45,6 +68,28 @@ feature -- Definitions
 			Result.extend ("HH:MM:XX")	-- seconds not allowed
 			Result.extend ("HH:??:??")	-- minutes and seconds optional
 			Result.extend ("HH:??:XX")	-- minutes optional but seconds not allowed
+		ensure
+			attached: Result /= Void
+			not_empty: not Result.is_empty
+		end
+
+	valid_time_constraint_replacements: HASH_TABLE[ARRAY [STRING], STRING] is
+			-- List of allowed time constraint replacements e.g. in specialised archetype
+		once
+			create Result.make (0)
+			Result.put (<<>>, "HH:MM:SS")	-- no replacements possible
+			Result.put (<<"HH:MM:SS", "HH:MM:XX">>, "HH:MM:??")
+			Result.put (<<>>, "HH:MM:XX")	-- no replacements possible
+			Result.put (<<"HH:MM:??", "HH:MM:SS", "HH:MM:XX", "HH:??:XX">>, "HH:??:??")
+			Result.put (<<"HH:MM:XX">>, "HH:??:XX")
+			from
+				Result.start
+			until
+				Result.off
+			loop
+				Result.item_for_iteration.compare_objects
+				Result.forth
+			end
 		ensure
 			attached: Result /= Void
 			not_empty: not Result.is_empty
@@ -61,6 +106,29 @@ feature -- Definitions
 			Result.extend ("YYYY-MM-DDTHH:??:??")	-- minutes and seconds optional
 			Result.extend ("YYYY-MM-DDTHH:??:XX")	-- minutes optional but seconds not allowed
 			Result.extend ("YYYY-??-??T??:??:??")	-- any date/time ok
+		ensure
+			attached: Result /= Void
+			not_empty: not Result.is_empty
+		end
+
+	valid_date_time_constraint_replacements: HASH_TABLE[ARRAY [STRING], STRING] is
+			-- List of allowed date/time constraint replacements e.g. in specialised archetype
+		once
+			create Result.make (0)
+			Result.put (<<>>, "YYYY-MM-DDTHH:MM:SS")	-- no replacements possible
+			Result.put (<<"YYYY-MM-DDTHH:MM:SS", "YYYY-MM-DDTHH:MM:XX">>, "YYYY-MM-DDTHH:MM:??")
+			Result.put (<<>>, "YYYY-MM-DDTHH:MM:XX")	-- no replacements possible
+			Result.put (<<"YYYY-MM-DDTHH:??:XX", "YYYY-MM-DDTHH:MM:SS", "YYYY-MM-DDTHH:MM:??", "YYYY-MM-DDTHH:MM:XX">>, "YYYY-MM-DDTHH:??:??")
+			Result.put (<<"YYYY-MM-DDTHH:MM:XX">>, "YYYY-MM-DDTHH:??:XX")
+			Result.put (<<"YYYY-MM-DDTHH:MM:SS", "YYYY-MM-DDTHH:MM:??", "YYYY-MM-DDTHH:MM:XX", "YYYY-MM-DDTHH:??:??", "YYYY-MM-DDTHH:??:XX">>, "YYYY-??-??T??:??:??")
+			from
+				Result.start
+			until
+				Result.off
+			loop
+				Result.item_for_iteration.compare_objects
+				Result.forth
+			end
 		ensure
 			attached: Result /= Void
 			not_empty: not Result.is_empty

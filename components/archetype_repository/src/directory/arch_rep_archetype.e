@@ -353,16 +353,17 @@ feature -- Commands
 		do
 			is_valid := False
 			create validator.make (Current)
-			validator.validate
-
 			if validator.passed then
-				post_info (Current, "set_archetype_differential", "parse_archetype_i2", <<id.as_string>>)
-			else
-				post_error (Current, "set_archetype_differential", "parse_archetype_e2", <<id.as_string, validator.errors>>)
-			end
+				validator.validate
+				if validator.passed then
+					post_info (Current, "set_archetype_differential", "parse_archetype_i2", <<id.as_string>>)
+				else
+					post_error (Current, "set_archetype_differential", "parse_archetype_e2", <<id.as_string, validator.errors>>)
+				end
 
-			if validator.has_warnings then
-				post_warning (Current, "set_archetype_differential", "parse_archetype_w2", <<id.as_string, validator.warnings>>)
+				if validator.has_warnings then
+					post_warning (Current, "set_archetype_differential", "parse_archetype_w2", <<id.as_string, validator.warnings>>)
+				end
 			end
 
 			archetype_differential.set_is_valid (validator.passed)

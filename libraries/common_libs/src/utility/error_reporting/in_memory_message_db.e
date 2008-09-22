@@ -150,11 +150,14 @@ feature -- Access
 			["VATDF"] = <"Error (VATDF): node id at-code $1 not defined in ontology%N">
 			["VUNP"] = <"Error (VUNP): use_node path $1 not found in archetype%N">
 
+			["VSONT"] = <"Error (VSONT): object node at path $1 AOM type $2 does not conform to node at parent path $3 AOM type $4">
 			["VSONCT"] = <"Error (VSONCT): object node at path $1 RM type $2 does not conform to node at parent path $3 RM type $4">
 			["VSONCO"] = <"Error (VSONCO): object node at path $1 occurrences $2 does not conform to node at parent path $3 occurrences $4">
 			["VSONCI"] = <"Error (VSONCI): object node at path $1 node_id $2 does not conform to node at parent path $3 node_id $4">
 			["VSANCE"] = <"Error (VSANCE): attribute $1 at path $2 existence $3 does not conform to parent $4 existence $5">
 			["VSANCC"] = <"Error (VSANCC): attribute $1 at path $2 cardinality $3 does not conform to parent $4 cardinality $5">
+			["VSONNC"] = <"Error (VSONNC): $1 object node at path $2 does not conform to $3 node at parent path $4">
+			["VSONIR"] = <"Error (VSONIR): object node at path $1 conforms to node at parent path but node_id $3 not redefined">
 
 			["VSSM"] = <"Error (VSSM): node at path $1 has order marker referring to non-existant sibling node $2%N">
 			["VCATU"] = <"Error (VCATU) cADL object duplicate attribute $1">
@@ -184,6 +187,7 @@ feature -- Access
 			
 			-- validation warnings: in addition to spec, used to help archetype authors
 			["WOUC"] = <"Warning (WOUC): code $1 in ontology not used in archetype definition%N">
+			["WCRC"] = <"Warning (WCRC): redefinition of CONSTRAINT_REF (ac_code node) by C_CODE_PHRASE node at path $1 in child - not checked%N">
 							
 			-- ARCHETYPE_FILE_REPOSITORY_IMP
 			["invalid_filename_e1"] = <"Invalid archetype filename $1">

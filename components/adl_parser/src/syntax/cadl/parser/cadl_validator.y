@@ -1014,49 +1014,49 @@ existence_spec:  V_INTEGER -- can only be 0 or 1
 
 c_cardinality: SYM_CARDINALITY SYM_MATCHES SYM_START_CBLOCK cardinality_spec SYM_END_CBLOCK	
 		{
-			$$ := cardinality
+			$$ := a_cardinality
 		}
 	;
 
 cardinality_spec: occurrence_spec
 		{
-			create cardinality.make(int_interval)
+			create a_cardinality.make(int_interval)
 		}
 	| occurrence_spec ';' SYM_ORDERED
 		{
-			create cardinality.make(int_interval)
+			create a_cardinality.make(int_interval)
 		}
 	| occurrence_spec ';' SYM_UNORDERED
 		{
-			create cardinality.make(int_interval)
-			cardinality.set_unordered
+			create a_cardinality.make(int_interval)
+			a_cardinality.set_unordered
 		}
 	| occurrence_spec ';' SYM_UNIQUE
 		{
-			create cardinality.make(int_interval)
-			cardinality.set_unique
+			create a_cardinality.make(int_interval)
+			a_cardinality.set_unique
 		}
 	| occurrence_spec ';' SYM_ORDERED ';' SYM_UNIQUE
 		{
-			create cardinality.make(int_interval)
-			cardinality.set_unique
+			create a_cardinality.make(int_interval)
+			a_cardinality.set_unique
 		}
 	| occurrence_spec ';' SYM_UNORDERED ';' SYM_UNIQUE
 		{
-			create cardinality.make(int_interval)
-			cardinality.set_unique
-			cardinality.set_unordered
+			create a_cardinality.make(int_interval)
+			a_cardinality.set_unique
+			a_cardinality.set_unordered
 		}
 	| occurrence_spec ';' SYM_UNIQUE ';' SYM_ORDERED
 		{
-			create cardinality.make(int_interval)
-			cardinality.set_unique
+			create a_cardinality.make(int_interval)
+			a_cardinality.set_unique
 		}
 	| occurrence_spec ';' SYM_UNIQUE ';' SYM_UNORDERED
 		{
-			create cardinality.make(int_interval)
-			cardinality.set_unique
-			cardinality.set_unordered
+			create a_cardinality.make(int_interval)
+			a_cardinality.set_unique
+			a_cardinality.set_unordered
 		}
 	;
 
@@ -2409,7 +2409,7 @@ feature {NONE} -- Implementation
 					Result := True
 				end
 			elseif an_attr.is_multiple then
-				if not an_attr.cardinality.interval.upper_unbounded and (an_obj.occurrences.upper_unbounded or cardinality.interval.upper < an_obj.occurrences.upper) then
+				if not an_attr.cardinality.interval.upper_unbounded and (an_obj.occurrences.upper_unbounded or an_attr.cardinality.interval.upper < an_obj.occurrences.upper) then
 					s := create_message("VACMC", ar)
 				elseif not an_obj.is_addressable then
 					s := create_message("VACMM", ar)
@@ -2462,7 +2462,7 @@ feature {NONE} -- Parse Tree
 	c_date_time: C_DATE_TIME
 	c_duration: C_DURATION
 
-	cardinality: CARDINALITY
+	a_cardinality: CARDINALITY
 	cardinality_limit_pos_infinity: BOOLEAN
 
 	rm_attribute_name: STRING

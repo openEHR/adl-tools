@@ -120,6 +120,16 @@ feature -- Status Report
 
 feature -- Comparison
 
+	node_same_as (other: like Current): BOOLEAN is
+			-- True if this node on its own (ignoring any subparts) expresses the same constraints as `other'.
+			-- Returns False if any of the following is different:
+			--	rm_type_name
+			--	occurrences
+			--	node_id (& specialisation depth)
+		do
+			Result := rm_type_name.is_equal (other.rm_type_name) and occurrences.is_equal(other.occurrences) and node_id.is_equal (other.node_id)
+		end
+
 	node_conforms_to (other: like Current): BOOLEAN is
 			-- True if this node on its own (ignoring any subparts) expresses the same or narrower constraints as `other'.
 			-- Returns False if any of the following is incompatible:
@@ -127,7 +137,15 @@ feature -- Comparison
 			--	occurrences
 			--	node_id (& specialisation depth)
 		do
-			Result := rm_type_conforms_to(other) and occurrences_conforms_to (other) and node_id_conforms_to (other)
+			if is_addressable and other.is_addressable then
+				if node_id.is_equal (other.node_id) then
+					Result := rm_type_name.is_equal (other.rm_type_name) and occurrences.is_equal(other.occurrences)
+				else
+					Result := (rm_type_conforms_to(other) and occurrences_conforms_to (other) and node_id_conforms_to (other))
+				end
+			elseif not is_addressable and not other.is_addressable then
+				Result := rm_type_conforms_to(other) and occurrences_conforms_to (other)
+			end
 		end
 
 	rm_type_conforms_to (other: like Current): BOOLEAN is
@@ -229,7 +247,7 @@ feature -- Representation
 invariant
 	rm_type_name_valid: rm_type_name /= Void and then not rm_type_name.is_empty
 	Occurrences_validity: occurrences /= Void and then
-		(parent /= Void implies (not parent.is_multiple implies occurrences.upper <= 1))
+		(parent /= Void implies (parent.is_single implies occurrences.upper <= 1))
 
 end
 

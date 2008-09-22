@@ -2876,7 +2876,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1015")
 end
 
-			yyval15 := cardinality
+			yyval15 := a_cardinality
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
@@ -2906,7 +2906,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1021")
 end
 
-			create cardinality.make(int_interval)
+			create a_cardinality.make(int_interval)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -2936,7 +2936,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1025")
 end
 
-			create cardinality.make(int_interval)
+			create a_cardinality.make(int_interval)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
@@ -2950,8 +2950,8 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1029")
 end
 
-			create cardinality.make(int_interval)
-			cardinality.set_unordered
+			create a_cardinality.make(int_interval)
+			a_cardinality.set_unordered
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
@@ -2965,8 +2965,8 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1034")
 end
 
-			create cardinality.make(int_interval)
-			cardinality.set_unique
+			create a_cardinality.make(int_interval)
+			a_cardinality.set_unique
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
@@ -2980,8 +2980,8 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1039")
 end
 
-			create cardinality.make(int_interval)
-			cardinality.set_unique
+			create a_cardinality.make(int_interval)
+			a_cardinality.set_unique
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
@@ -2995,9 +2995,9 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1044")
 end
 
-			create cardinality.make(int_interval)
-			cardinality.set_unique
-			cardinality.set_unordered
+			create a_cardinality.make(int_interval)
+			a_cardinality.set_unique
+			a_cardinality.set_unordered
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
@@ -3011,8 +3011,8 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1050")
 end
 
-			create cardinality.make(int_interval)
-			cardinality.set_unique
+			create a_cardinality.make(int_interval)
+			a_cardinality.set_unique
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
@@ -3026,9 +3026,9 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1055")
 end
 
-			create cardinality.make(int_interval)
-			cardinality.set_unique
-			cardinality.set_unordered
+			create a_cardinality.make(int_interval)
+			a_cardinality.set_unique
+			a_cardinality.set_unordered
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
@@ -8149,7 +8149,7 @@ feature {NONE} -- Implementation
 					Result := True
 				end
 			elseif an_attr.is_multiple then
-				if not an_attr.cardinality.interval.upper_unbounded and (an_obj.occurrences.upper_unbounded or cardinality.interval.upper < an_obj.occurrences.upper) then
+				if not an_attr.cardinality.interval.upper_unbounded and (an_obj.occurrences.upper_unbounded or an_attr.cardinality.interval.upper < an_obj.occurrences.upper) then
 					s := create_message("VACMC", ar)
 				elseif not an_obj.is_addressable then
 					s := create_message("VACMM", ar)
@@ -8202,7 +8202,7 @@ feature {NONE} -- Parse Tree
 	c_date_time: C_DATE_TIME
 	c_duration: C_DURATION
 
-	cardinality: CARDINALITY
+	a_cardinality: CARDINALITY
 	cardinality_limit_pos_infinity: BOOLEAN
 
 	rm_attribute_name: STRING

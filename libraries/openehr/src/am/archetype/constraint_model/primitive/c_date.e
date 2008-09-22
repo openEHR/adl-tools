@@ -122,7 +122,11 @@ feature -- Comparison
 	node_conforms_to (other: like Current): BOOLEAN is
 			-- True if this node is a subset of, or the same as `other'
 		do
-			-- FIXME: TO BE IMPLEMENTED
+			if pattern /= Void then
+				Result := valid_date_constraint_replacements.item(other.pattern.as_upper).has(pattern.as_upper)
+			else
+				Result := other.interval.contains (interval)
+			end
 		end
 
 feature -- Output
