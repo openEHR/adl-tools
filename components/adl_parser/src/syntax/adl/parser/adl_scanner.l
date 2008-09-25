@@ -162,13 +162,12 @@ create
 
 				set_start_condition(INITIAL)
 			}
-	[^\n]+\n { -- any text on line with a LF
-				in_buffer.append_string(text)
+	\n 		{ -- LF
+				in_buffer.append_character('%N')
 				in_lineno := in_lineno + 1
 			}
 	[^\n]+ { -- any text on line with no LF
 				in_buffer.append_string(text)
-				in_lineno := in_lineno + 1
 			}
 	<<EOF>> {
 				-- get the dADL section sorted out

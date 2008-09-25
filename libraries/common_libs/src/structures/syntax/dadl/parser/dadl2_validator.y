@@ -67,7 +67,7 @@ create
 %left SYM_LT SYM_GT SYM_LE SYM_GE
 
 %token ERR_CHARACTER ERR_STRING 
-%token <STRING> ERR_V_QUALIFIED_TERM_CODE_REF
+%token <STRING> ERR_V_QUALIFIED_TERM_CODE_REF ERR_V_LOCAL_TERM_CODE_REF
 
 %type <STRING> type_identifier
 %type <INTEGER> integer_value

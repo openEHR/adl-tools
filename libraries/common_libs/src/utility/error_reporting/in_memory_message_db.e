@@ -133,7 +133,7 @@ feature -- Access
 			["SCDUPT"] = <"invalid duration constraint pattern; legal pattern: P[Y|y][M|m][W|w][D|d][T[H|h][M|m][S|s]] or P[W|w]">
 			["SCSRE"] = <"regular expression compile error '$1' is not a valid regular expression">
 			["SCPCV"] = <"invalid term code constraint pattern: $1">
-			["STCV"] = <"Invalid term code reference: '$1'; spaces not allowed in code string">
+			["STCV"] = <"Invalid term code reference: '$1'; code string can only contain digits, letters and '.', '_' and '-' and must commencs with a letter or digit">
 
 			["SDAT"] = <"invalid attribute value">
 			["SGEE"] = <"generic object not enclosed by normal object not allowed">
