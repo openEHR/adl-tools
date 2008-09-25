@@ -120,14 +120,14 @@ feature -- Status Report
 
 feature -- Comparison
 
-	node_same_as (other: like Current): BOOLEAN is
+	node_congruent_to (other: like Current): BOOLEAN is
 			-- True if this node on its own (ignoring any subparts) expresses the same constraints as `other'.
 			-- Returns False if any of the following is different:
 			--	rm_type_name
 			--	occurrences
-			--	node_id (& specialisation depth)
+			-- 	sibling order
 		do
-			Result := rm_type_name.is_equal (other.rm_type_name) and occurrences.is_equal(other.occurrences) and node_id.is_equal (other.node_id)
+			Result := rm_type_name.is_equal (other.rm_type_name) and occurrences.is_equal(other.occurrences) and node_id_conforms_to (other)
 		end
 
 	node_conforms_to (other: like Current): BOOLEAN is

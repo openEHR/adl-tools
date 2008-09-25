@@ -72,10 +72,10 @@ feature {NONE} -- Initialisation
 			make_authored_resource(target_descriptor.archetype_differential)
 			if target_descriptor.is_specialised then
 				if target_descriptor.specialisation_parent = Void then
-					errors.append (create_message("validate_e1", Void))
+					add_error("validate_e1", Void)
 					passed := False
 				elseif not target_descriptor.specialisation_parent.is_valid then
-					errors.append (create_message("validate_e2", Void))
+					add_error("validate_e2", Void)
 					passed := False
 				else
 					flat_parent := target_descriptor.specialisation_parent.archetype_flat
@@ -154,19 +154,19 @@ feature {NONE} -- Implementation
 			passed := False
 
 			if not target_descriptor.id.as_string.is_equal (target.archetype_id.as_string) then
-				errors.append (create_message("validate_e3", <<target_descriptor.id.as_string, target.archetype_id.as_string>>))
+				add_error("validate_e3", <<target_descriptor.id.as_string, target.archetype_id.as_string>>)
 			elseif not target.definition.rm_type_name.is_equal (target.archetype_id.rm_entity) then
-				errors.append (create_message("VARDT", <<target.archetype_id.rm_entity, target.definition.rm_type_name>>))
+				add_error("VARDT", <<target.archetype_id.rm_entity, target.definition.rm_type_name>>)
 			elseif specialisation_depth_from_code (target.concept) /= target.specialisation_depth then
-				errors.append (create_message("VACSD", <<specialisation_depth_from_code (target.concept).out, target.specialisation_depth.out>>))
+				add_error("VACSD", <<specialisation_depth_from_code (target.concept).out, target.specialisation_depth.out>>)
 			elseif not target.definition.node_id.is_equal (target.concept) then
-				errors.append (create_message("VACCD", <<target.concept>>))
+				add_error("VACCD", <<target.concept>>)
 			elseif not target.definition.is_valid then
 				-- FIXME - need to check definition validation; possibly this should be
 				-- done using another visitor pattern?
-				errors.append (create_message("general_error", <<target.definition.invalid_reason>>))
+				add_error("general_error", <<target.definition.invalid_reason>>)
 			elseif not target.ontology.is_valid then
-				errors.append (create_message("general_error", <<target.ontology.errors>>))
+				add_error("general_error", <<target.ontology.errors>>)
 			else
 				passed := True
 			end
@@ -179,7 +179,7 @@ feature {NONE} -- Implementation
 			passed := False
 
 			if not target.languages_available.is_subset (target.ontology.languages_available) then
-				errors.append (create_message("VOTM", Void))
+				add_error("VOTM", Void)
 				-- FIXME: Report exactly which languages are missing from the ontology.
 			else
 				passed := True
@@ -203,7 +203,7 @@ feature {NONE} -- Implementation
 			loop
 				if specialisation_depth_from_code (code_list.item) > ontology.specialisation_depth then
 					passed := False
-					errors.append(create_message("VONSD", <<code_list.item>>))
+					add_error("VONSD", <<code_list.item>>)
 				end
 
 				code_list.forth
@@ -218,7 +218,7 @@ feature {NONE} -- Implementation
 			loop
 				if specialisation_depth_from_code (code_list.item) > ontology.specialisation_depth then
 					passed := False
-					errors.append(create_message("VONSD", <<code_list.item>>))
+					add_error("VONSD", <<code_list.item>>)
 				end
 
 				code_list.forth
@@ -243,10 +243,10 @@ feature {NONE} -- Implementation
 			loop
 				if specialisation_depth_from_code (a_codes.key_for_iteration) > depth then
 					passed := False
-					errors.append (create_message("VATCD", <<a_codes.key_for_iteration>>))
+					add_error("VATCD", <<a_codes.key_for_iteration>>)
 				elseif not ontology.has_term_code (a_codes.key_for_iteration) then
 					passed := False
-					errors.append (create_message("VATDF", <<a_codes.key_for_iteration>>))
+					add_error("VATDF", <<a_codes.key_for_iteration>>)
 				end
 				a_codes.forth
 			end
@@ -261,10 +261,10 @@ feature {NONE} -- Implementation
 			loop
 				if specialisation_depth_from_code (a_codes.key_for_iteration) > depth then
 					passed := False
-					errors.append (create_message("VATCD", <<a_codes.key_for_iteration>>))
+					add_error("VATCD", <<a_codes.key_for_iteration>>)
 				elseif not ontology.has_term_code (a_codes.key_for_iteration) then
 					passed := False
-					errors.append (create_message("VATDF", <<a_codes.key_for_iteration>>))
+					add_error("VATDF", <<a_codes.key_for_iteration>>)
 				end
 
 				a_codes.forth
@@ -280,10 +280,10 @@ feature {NONE} -- Implementation
 			loop
 				if specialisation_depth_from_code (a_codes.key_for_iteration) > depth then
 					passed := False
-					errors.append (create_message("VATCD", <<a_codes.key_for_iteration>>))
+					add_error("VATCD", <<a_codes.key_for_iteration>>)
 				elseif not ontology.has_constraint_code (a_codes.key_for_iteration) then
 					passed := False
-					errors.append (create_message("VATDF", <<a_codes.key_for_iteration>>))
+					add_error("VATDF", <<a_codes.key_for_iteration>>)
 				end
 
 				a_codes.forth
@@ -319,7 +319,7 @@ feature {NONE} -- Implementation
 					convert_use_ref_paths (use_refs.item_for_iteration, use_refs.key_for_iteration, arch)
 				else
 					passed := False
-					errors.append (create_message("VUNP", <<use_refs.key_for_iteration>>))
+					add_error("VUNP", <<use_refs.key_for_iteration>>)
 				end
 
 				use_refs.forth
@@ -351,7 +351,7 @@ feature {NONE} -- Implementation
 			until
 				target.ontology_unused_term_codes.off
 			loop
-				warnings.append(create_message("WOUC", <<target.ontology_unused_term_codes.item>>))
+				add_warning("WOUC", <<target.ontology_unused_term_codes.item>>)
 				target.ontology_unused_term_codes.forth
 			end
 
@@ -360,7 +360,7 @@ feature {NONE} -- Implementation
 			until
 				target.ontology_unused_constraint_codes.off
 			loop
-				warnings.append(create_message("WOUC", <<target.ontology_unused_constraint_codes.item>>))
+				add_warning("WOUC", <<target.ontology_unused_constraint_codes.item>>)
 				target.ontology_unused_constraint_codes.forth
 			end
 		end
@@ -487,17 +487,22 @@ feature {NONE} -- Implementation
 			-- only interested in C_COMPLEX_OBJECTs
 		local
 			co_parent_flat: !C_OBJECT
+			ca_parent_flat: !C_ATTRIBUTE
 			apa: ARCHETYPE_PATH_ANALYSER
 			child_attr_name: STRING
-			c_parent_attr, c_child_attr: C_ATTRIBUTE
+			ca_parent, ca_child: C_ATTRIBUTE
 		do
-			if {co_child_diff: !C_OBJECT} a_c_node then
-				create apa.make_from_string (co_child_diff.path)
+			create apa.make_from_string (a_c_node.path)
+			if {ca_child_diff: !C_ATTRIBUTE} a_c_node then
+				ca_parent_flat ?= flat_parent.definition.c_attribute_at_path (apa.path_at_level (flat_parent.specialisation_depth))
+				ca_child_diff.set_is_congruent(ca_child_diff.node_congruent_to (ca_parent_flat))
+
+			elseif {co_child_diff: !C_OBJECT} a_c_node then
 				co_parent_flat ?= flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth))
 
 				-- C_CODE_PHRASE conforms to CONSTRAINT_REF, but is not testable in any way; sole exception in ADL/AOM; just warn
 				if {ccr: !CONSTRAINT_REF} co_parent_flat and {ccp: !C_CODE_PHRASE} co_child_diff then
-					warnings.append(create_message("WCRC", <<co_child_diff.path>>))
+					add_warning("WCRC", <<co_child_diff.path>>)
 					passed := True
 				else
 					-- if the child is a redefine of a parent use_node, then we have to do the comparison to the use_node target,
@@ -508,52 +513,57 @@ feature {NONE} -- Implementation
 
 					-- now determine if child object is same as or a specialisation of flat object
 					if dynamic_type (co_child_diff) /= dynamic_type (co_parent_flat) then
-						errors.append(create_message("VSONT", <<co_child_diff.path, co_child_diff.generating_type, co_parent_flat.path, co_parent_flat.generating_type>>))
+						add_error("VSONT", <<co_child_diff.path, co_child_diff.generating_type, co_parent_flat.path, co_parent_flat.generating_type>>)
 						passed := False
 					elseif not co_child_diff.node_conforms_to(co_parent_flat) then
 						passed := False
 						if not co_child_diff.rm_type_conforms_to (co_parent_flat) then
-							errors.append(create_message("VSONCT", <<co_child_diff.path, co_child_diff.rm_type_name, co_parent_flat.path, co_parent_flat.rm_type_name>>))
+							add_error("VSONCT", <<co_child_diff.path, co_child_diff.rm_type_name, co_parent_flat.path, co_parent_flat.rm_type_name>>)
 						elseif not co_child_diff.occurrences_conforms_to (co_parent_flat) then
-							errors.append(create_message("VSONCO", <<co_child_diff.path, co_child_diff.occurrences.as_string, co_parent_flat.path, co_parent_flat.occurrences.as_string>>))
+							add_error("VSONCO", <<co_child_diff.path, co_child_diff.occurrences.as_string, co_parent_flat.path, co_parent_flat.occurrences.as_string>>)
 						elseif co_child_diff.is_addressable then
 							if not co_child_diff.node_id_conforms_to (co_parent_flat) then
-								errors.append(create_message("VSONCI", <<co_child_diff.path, co_child_diff.node_id, co_parent_flat.path, co_parent_flat.node_id>>))
+								add_error("VSONCI", <<co_child_diff.path, co_child_diff.node_id, co_parent_flat.path, co_parent_flat.node_id>>)
 							elseif co_child_diff.node_id.is_equal(co_parent_flat.node_id) then
-								errors.append(create_message("VSONIR", <<co_child_diff.path, co_parent_flat.path, co_child_diff.node_id>>))
+								add_error("VSONIR", <<co_child_diff.path, co_parent_flat.path, co_child_diff.node_id>>)
 							end
 						else
-							errors.append(create_message("VSONNC", <<co_child_diff.rm_type_name, co_child_diff.path, co_parent_flat.rm_type_name, co_parent_flat.path>>))
+							add_error("VSONNC", <<co_child_diff.rm_type_name, co_child_diff.path, co_parent_flat.rm_type_name, co_parent_flat.path>>)
 						end
-					elseif co_child_diff.sibling_order /= Void and then not co_parent_flat.parent.has_child_with_id (co_child_diff.sibling_order.sibling_node_id) then
-						passed := False
-						errors.append (create_message("VSSM", <<co_child_diff.path, co_child_diff.sibling_order.sibling_node_id>>))
 					else
-						-- now look at attributes
-						if {cco_child_diff: !C_COMPLEX_OBJECT} co_child_diff then
-							from
-								cco_child_diff.attributes.start
-							until
-								cco_child_diff.attributes.off
-							loop
-								c_child_attr := cco_child_diff.attributes.item
-								if {cco_parent_flat: !C_COMPLEX_OBJECT} co_parent_flat then
-									child_attr_name := c_child_attr.rm_attribute_name
-									if cco_parent_flat.has_attribute (child_attr_name) then
-										c_parent_attr := cco_parent_flat.c_attribute_at_path (child_attr_name)
-										if not c_child_attr.node_conforms_to(c_parent_attr) then
-											passed := False
-											if not c_child_attr.existence_conforms_to (c_parent_attr) then
-												errors.append (create_message("VSANCE", <<child_attr_name, co_child_diff.path, c_child_attr.existence.as_string,
-													co_parent_flat.path, c_parent_attr.existence.as_string>>))
-											elseif not c_child_attr.cardinality_conforms_to (c_parent_attr) then
-												errors.append (create_message("VSANCC", <<child_attr_name, co_child_diff.path, c_child_attr.cardinality.as_string,
-													co_parent_flat.path, c_parent_attr.cardinality.as_string>>))
+						-- nodes are at least conformant; check for congruence for specalisation path replacement
+						co_child_diff.set_is_congruent(co_child_diff.node_congruent_to (co_parent_flat))
+
+						if co_child_diff.sibling_order /= Void and then not co_parent_flat.parent.has_child_with_id (co_child_diff.sibling_order.sibling_node_id) then
+							passed := False
+							add_error("VSSM", <<co_child_diff.path, co_child_diff.sibling_order.sibling_node_id>>)
+						else
+							-- now look at attributes
+							if {cco_child_diff: !C_COMPLEX_OBJECT} co_child_diff then
+								from
+									cco_child_diff.attributes.start
+								until
+									cco_child_diff.attributes.off
+								loop
+									ca_child := cco_child_diff.attributes.item
+									if {cco_parent_flat: !C_COMPLEX_OBJECT} co_parent_flat then
+										child_attr_name := ca_child.rm_attribute_name
+										if cco_parent_flat.has_attribute (child_attr_name) then
+											ca_parent := cco_parent_flat.c_attribute_at_path (child_attr_name)
+											if not ca_child.node_conforms_to(ca_parent) then
+												passed := False
+												if not ca_child.existence_conforms_to (ca_parent) then
+													add_error("VSANCE", <<child_attr_name, co_child_diff.path, ca_child.existence.as_string,
+														co_parent_flat.path, ca_parent.existence.as_string>>)
+												elseif not ca_child.cardinality_conforms_to (ca_parent) then
+													add_error("VSANCC", <<child_attr_name, co_child_diff.path, ca_child.cardinality.as_string,
+														co_parent_flat.path, ca_parent.cardinality.as_string>>)
+												end
 											end
 										end
 									end
+									cco_child_diff.attributes.forth
 								end
-								cco_child_diff.attributes.forth
 							end
 						end
 					end

@@ -30,6 +30,20 @@ feature -- Access
 	warnings: STRING
 			-- warnings output of validator
 
+feature -- Modification
+
+	add_error(a_key: STRING; args: ARRAY [STRING]) is
+			-- append an error with key `a_key' and `args' array to the `errors' string
+		do
+			errors.append(create_message(a_key, args))
+		end
+
+	add_warning(a_key: STRING; args: ARRAY [STRING]) is
+			-- append a warning with key `a_key' and `args' array to the `warnings' string
+		do
+			warnings.append(create_message(a_key, args))
+		end
+
 feature -- Status Report
 
 	passed: BOOLEAN

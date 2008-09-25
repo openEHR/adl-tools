@@ -40,6 +40,9 @@ feature -- Access
 			Result := representation.path.as_string
 		end
 
+	is_congruent: BOOLEAN
+			-- flag to indicate this node is congruent to a corresponding node in a specialisation parent
+
 feature -- Source Control
 
 	specialisation_status (archetype_specialisation_level: INTEGER): SPECIALISATION_STATUS is
@@ -91,12 +94,27 @@ feature -- Status Report
 
 feature -- Comparison
 
+	node_congruent_to (other: like Current): BOOLEAN is
+			-- True if this node on its own (ignoring any subparts) expresses the same constraints as `other'.
+		require
+			other /= Void
+		deferred
+		end
+
 	node_conforms_to (other: like Current): BOOLEAN is
 			-- True if this node on its own (ignoring any subparts) expresses the same or narrower constraints as `other'.
 			-- An error message can be obtained by calling node_conformance_failure_reason
 		require
 			other /= Void
 		deferred
+		end
+
+feature -- Modification
+
+	set_is_congruent(flag: BOOLEAN) is
+			-- set `is_congruent'
+		do
+			is_congruent := flag
 		end
 
 feature -- Representation

@@ -274,6 +274,12 @@ feature -- Status Report
 
 feature -- Comparison
 
+	node_congruent_to (other: like Current): BOOLEAN is
+			-- True if this node on its own (ignoring any subparts) expresses the same constraints as `other'.
+		do
+			Result := node_conforms_to(other)
+		end
+
 	node_conforms_to (other: like Current): BOOLEAN is
 			-- True if this node on its own (ignoring any subparts) expresses the same or narrower constraints as `other'.
 			-- Returns False if any of the following is incompatible:
@@ -406,7 +412,7 @@ feature -- Modification
 			Obj_valid: has_child (an_obj)
 			Diff_obj_valid: diff_obj /= Void and then diff_obj.node_conforms_to (an_obj)
 		do
-			representation.replace_node_id(an_obj.representation, diff_obj.node_id)
+			representation.replace_node_id(an_obj.node_id, diff_obj.node_id)
 			an_obj.overlay_differential (diff_obj)
 		end
 

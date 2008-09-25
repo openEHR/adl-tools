@@ -234,13 +234,16 @@ feature -- Modification
 			create children.make(0)
 			create children_ordered.make(0)
 			create children_sorted.make
+		ensure
+			children.is_empty
 		end
 
-	replace_node_id(an_obj: like child_type; a_node_id: STRING) is
-			-- replace the node_id of `an_obj' with `a_node_id'
+	replace_node_id(an_old_node_id, a_new_node_id: STRING) is
+			-- replace `an_old_node_id' with `a_new_node_id' in the children
+			-- this has the effect of making an object indexed by a new node id,
+			-- that it doesn't itself carry
 		do
-			children.replace_key (a_node_id, an_obj.node_id)
-			an_obj.set_node_id(a_node_id)
+			children.replace_key (a_new_node_id, an_old_node_id)
 		end
 
 feature {OG_NODE} -- Implementation

@@ -198,7 +198,7 @@ feature -- Access
 
 	convert_dadl_type_name(a_type_name: STRING): STRING
 			-- convert type name preceding <> dADL block to (typename), i.e. add parentheses
-			-- part of ADL 1.4.1, Release 1.0.2 of openEHR
+			-- spec change is part of ADL 1.4.1, Release 1.0.2 of openEHR
 		require
 			type_name_valid: a_type_name /= Void and then not a_type_name.is_empty
 		do
@@ -206,6 +206,33 @@ feature -- Access
 			Result.append (a_type_name)
 			Result.append_character (')')
 		end
+
+--	add_slot_node_identifiers (a_diff_arch: DIFFERENTIAL_ARCHETYPE) is
+--			-- add synthesised node identifiers to archetype slot nodes under multiple attributes
+--			-- ADL 1.5 only
+--		local
+--			a_term: ARCHETYPE_TERM
+--			old_key: STRING
+--		do
+--			from
+--				a_diff_arch.slot_index.start
+--			until
+--				a_diff_arch.slot_index.off
+--			loop
+--				if a_diff_arch.slot_index.item.parent.is_multiple then
+--					old_key := a_diff_arch.slot_index.item.node_id
+
+--					create a_term.make (a_diff_arch.ontology.new_non_specialised_term_code)
+--					a_term.add_item ("term", "(new slot node code)")
+--					a_term.add_item ("description", "(new slot node code description)")
+--					a_diff_arch.ontology.add_term_definition (a_diff_arch.ontology.primary_language, a_term)
+
+--					a_diff_arch.slot_index.item.set_object_id (a_term.code)
+--					a_diff_arch.slot_index.item.parent.replace_child_by_id (a_diff_arch.slot_index.item, old_key)
+--				end
+--				a_diff_arch.slot_index.forth
+--			end
+--		end
 
 end
 

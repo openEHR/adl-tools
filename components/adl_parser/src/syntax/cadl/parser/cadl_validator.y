@@ -188,14 +188,10 @@ c_complex_object_head: c_complex_object_id c_occurrences
 			
 			object_nodes.extend(complex_obj)
 
+			-- put it under current attribute, unless it is the root object, in which case it will be returned
+			-- via the 'output' attribute of this parser
 			if not c_attrs.is_empty then
-				debug("ADL_parse")
-					io.put_string(indent + "ATTR_NODE " + c_attrs.item.rm_attribute_name + " put_child(OBJ)%N") 
-				end
-				check not c_attrs.item.has_child(complex_obj) end
-				if check_c_attribute_child(c_attrs.item, complex_obj) then
-					c_attrs.item.put_child(complex_obj)
-				end
+				safe_put_c_attribute_child(c_attrs.item, complex_obj)
 			end
 
 			-- set root node to current node if not already set - guarantees it is set to outermost block
@@ -257,48 +253,32 @@ c_object: c_complex_object
 		}
 	| archetype_internal_ref 
 		{
+			safe_put_c_attribute_child(c_attrs.item, archetype_internal_ref)
 		}
 	| archetype_slot
 		{
-			debug("ADL_parse")
-				io.put_string(indent + "ARCHETYPE_SLOT " + archetype_slot.rm_type_name + " [id=" + archetype_slot.node_id + "]%N") 
-			end
+			safe_put_c_attribute_child(c_attrs.item, archetype_slot)
 		}
 	| constraint_ref
 		{
-			debug("ADL_parse")
-				io.put_string(indent + "ATTR_NODE " + c_attrs.item.rm_attribute_name + " put_child(constraint_ref LEAF_OBJ)%N") 
-			end
-			c_attrs.item.put_child(constraint_ref)
+			safe_put_c_attribute_child(c_attrs.item, constraint_ref)
 		}
 	| c_code_phrase
 		{
-			debug("ADL_parse")
-				io.put_string(indent + "ATTR_NODE " + c_attrs.item.rm_attribute_name + " put_child(c_code_phrase LEAF_OBJ)%N") 
-			end
-			c_attrs.item.put_child(c_code_phrase_obj)
+			safe_put_c_attribute_child(c_attrs.item, c_code_phrase_obj)
 		}
 	| c_ordinal 
 		{
-			debug("ADL_parse")
-				io.put_string(indent + "ATTR_NODE " + c_attrs.item.rm_attribute_name + " put_child(c_ordinal LEAF_OBJ)%N") 
-			end
-			c_attrs.item.put_child(ordinal_node)
+			safe_put_c_attribute_child(c_attrs.item, ordinal_node)
 			ordinal_node := Void
 		}
 	| c_primitive_object
 		{
-			debug("ADL_parse")
-				io.put_string(indent + "ATTR_NODE " + c_attrs.item.rm_attribute_name + " put_child(c_primitive LEAF_OBJ)%N") 
-			end
-			c_attrs.item.put_child(c_prim_obj)
+			safe_put_c_attribute_child(c_attrs.item, c_prim_obj)
 		}
 	| V_C_DOMAIN_TYPE
 		{
-			debug("ADL_parse")
-				io.put_string(indent + "ATTR_NODE " + c_attrs.item.rm_attribute_name + " put_child(c_domain_type)%N") 
-			end
-			c_attrs.item.put_child(c_domain_type)
+			safe_put_c_attribute_child(c_attrs.item, c_domain_type)
 		}
 	| ERR_C_DOMAIN_TYPE
 		{
@@ -335,10 +315,6 @@ archetype_internal_ref: SYM_USE_NODE type_identifier c_occurrences absolute_path
 			if (c_attrs.item.is_multiple or c_attrs.item.child_count > 1) and not archetype_internal_ref.is_addressable and not $4.last.object_id.is_empty then
 				archetype_internal_ref.set_object_id($4.last.object_id)
 			end
-			check not c_attrs.item.has_child(archetype_internal_ref) end
-			if check_c_attribute_child(c_attrs.item, archetype_internal_ref) then
-				c_attrs.item.put_child(archetype_internal_ref)
-			end
 		}
 	| SYM_USE_NODE type_identifier error 
 		{
@@ -371,16 +347,6 @@ c_archetype_slot_head: c_archetype_slot_id c_occurrences
 			debug("ADL_parse")
 				io.put_string(indent + "PUSH create ARCHETYPE_SLOT " + archetype_slot.rm_type_name + " [id=" + archetype_slot.node_id + "]; occurrences=(" + $2.as_string + ")%N") 
 				indent.append("%T")
-			end
-			
-			if not c_attrs.is_empty then
-				debug("ADL_parse")
-					io.put_string(indent + "C_ATTR " + c_attrs.item.rm_attribute_name + " put_child(ARCHETYPE_SLOT)%N") 
-				end
-				check not c_attrs.item.has_child(archetype_slot) end
-				if check_c_attribute_child(c_attrs.item, archetype_slot) then
-					c_attrs.item.put_child(archetype_slot)
-				end
 			end
 		}
 	;
@@ -567,7 +533,7 @@ c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence
 		}
 	;
 
-c_attr_values: c_object		
+c_attr_values: c_object
 		{
 		}
 	| c_attr_values c_object
@@ -2379,6 +2345,21 @@ feature -- Access
 			-- differential syntax variants, i.e. ordering markers and specialisation paths
 
 feature {NONE} -- Implementation
+
+	safe_put_c_attribute_child(an_attr: C_ATTRIBUTE; an_obj: C_OBJECT) is
+			-- check child object for validity and then put as new child
+		require
+			Not_already_added: not an_attr.has_child(an_obj)
+		do
+			debug("ADL_parse")
+				io.put_string(indent + "ATTR_NODE " + an_attr.rm_attribute_name + " put_child(" + 
+						an_obj.generating_type + ": " + an_obj.rm_type_name + " [id=" + an_obj.node_id + "])%N") 
+				
+			end
+			if check_c_attribute_child(an_attr, an_obj) then
+				c_attrs.item.put_child(an_obj)
+			end
+		end
 
 	check_c_attribute_child(an_attr: C_ATTRIBUTE; an_obj: C_OBJECT): BOOLEAN is
 			-- check a new child node

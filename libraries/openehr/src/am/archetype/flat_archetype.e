@@ -39,6 +39,9 @@ feature -- Initialisation
 			rebuild
 			is_valid := True
 			is_generated := True
+		ensure
+			is_valid: is_valid
+			is_generated: is_generated
 		end
 
 feature {ARCHETYPE_FLATTENER} -- Initialisation
@@ -58,6 +61,9 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 			rebuild
 			is_valid := True
 			is_generated := True
+		ensure
+			is_valid: is_valid
+			is_generated: is_generated
 		end
 
 feature -- Access

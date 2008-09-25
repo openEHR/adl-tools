@@ -95,6 +95,8 @@ feature -- Access
 				Result := "ERR_STRING"
 			when ERR_V_QUALIFIED_TERM_CODE_REF then
 				Result := "ERR_V_QUALIFIED_TERM_CODE_REF"
+			when ERR_V_LOCAL_TERM_CODE_REF then
+				Result := "ERR_V_LOCAL_TERM_CODE_REF"
 			else
 				Result := yy_character_token_name (a_token)
 			end
@@ -136,5 +138,6 @@ feature -- Token codes
 	ERR_CHARACTER: INTEGER is 289
 	ERR_STRING: INTEGER is 290
 	ERR_V_QUALIFIED_TERM_CODE_REF: INTEGER is 291
+	ERR_V_LOCAL_TERM_CODE_REF: INTEGER is 292
 
 end
