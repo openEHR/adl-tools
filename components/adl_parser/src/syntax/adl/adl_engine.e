@@ -55,6 +55,11 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_MESSAGE_DB
+		export
+			{NONE} all
+		end
+
 	INTERNAL
 		export
 			{NONE} all
@@ -145,7 +150,7 @@ feature {NONE} -- Implementation
 			if adl_parser.syntax_error then
 				parse_error_text := adl_parser.error_text
 			elseif not valid_concept_code (adl_parser.concept) then
-				parse_error_text := "concept code " + adl_parser.concept + " is invalid"
+				parse_error_text := create_message("VARCN", <<adl_parser.concept>>)
 			else
 				------------------- language section ---------------
 				if adl_parser.language_text /= Void and then not adl_parser.language_text.is_empty then
