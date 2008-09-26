@@ -151,13 +151,18 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 					last_string_value := text_substring (2, text_count - 1)
 			}
 
-\[{NAMECHAR_PAREN}+::{NAMECHAR_SPACE}+\]	{
+\[{NAMECHAR_PAREN}+::[^\]]+\]	{
 					last_token := ERR_V_QUALIFIED_TERM_CODE_REF
 					last_string_value := text_substring (2, text_count - 1)
 			}
 
 \[{ALPHANUM}{NAMECHAR}*\]	{
 					last_token := V_LOCAL_TERM_CODE_REF
+					last_string_value := text_substring (2, text_count - 1)
+			}
+
+\[{ALPHANUM}[^\]]+\]	{
+					last_token := ERR_V_LOCAL_TERM_CODE_REF
 					last_string_value := text_substring (2, text_count - 1)
 			}
 
@@ -288,16 +293,18 @@ P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])? {
 
 	[^\\\n"]+		in_buffer.append_string (text)
 
-	\n[ \t\r]*	{
+	\n		{
 				in_lineno := in_lineno + 1	-- match LF in line
 				in_buffer.append_character ('%N')
 			}
 
 	[^\\\n"]*\"	{						-- match final end of string
 				last_token := V_STRING
+
 				if text_count > 1 then
 					in_buffer.append_string (text_substring (1, text_count - 1))
 				end
+
 				str_ := STRING_.make (in_buffer.count)
 				str_.append_string (in_buffer)
 				in_buffer.wipe_out
