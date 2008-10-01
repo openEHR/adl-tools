@@ -923,7 +923,7 @@ feature {NONE} -- Implementation
 				Result.append(c_p_o.rm_type_name)
 			end
 			if not (c_p_o.occurrences.lower = 1 and c_p_o.occurrences.upper = 1) then
-				Result.append(" [" + c_p_o.occurrences.as_occurrences_string + "]")
+				Result.append(" [" + c_p_o.occurrences.as_string + "]")
 			end
 			Result.append(" " + c_p_o.item.as_string)
 		end
@@ -934,7 +934,7 @@ feature {NONE} -- Implementation
 			create Result.make_empty
 
 			if not a_node.use_target_occurrences then
-				Result.append (" [" + a_node.occurrences.as_occurrences_string + "] ")
+				Result.append (" [" + a_node.occurrences.as_string + "] ")
 			end
 
 			if in_technical_mode then

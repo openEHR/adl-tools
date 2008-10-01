@@ -489,13 +489,24 @@ feature {NONE} -- Implementation
 			co_parent_flat: !C_OBJECT
 			ca_parent_flat: !C_ATTRIBUTE
 			apa: ARCHETYPE_PATH_ANALYSER
-			child_attr_name: STRING
-			ca_parent, ca_child: C_ATTRIBUTE
 		do
 			create apa.make_from_string (a_c_node.path)
 			if {ca_child_diff: !C_ATTRIBUTE} a_c_node then
 				ca_parent_flat ?= flat_parent.definition.c_attribute_at_path (apa.path_at_level (flat_parent.specialisation_depth))
-				ca_child_diff.set_is_congruent(ca_child_diff.node_congruent_to (ca_parent_flat))
+				if not ca_child_diff.node_conforms_to(ca_parent_flat) then
+					passed := False
+					if ca_child_diff.is_single /= ca_parent_flat.is_single then
+						add_error("VSAM", <<ca_child_diff.path>>)
+					elseif not ca_child_diff.existence_conforms_to (ca_parent_flat) then
+						add_error("VSANCE", <<ca_child_diff.path, ca_child_diff.existence.as_string,
+									ca_parent_flat.path, ca_parent_flat.existence.as_string>>)
+					elseif not ca_child_diff.cardinality_conforms_to (ca_parent_flat) then
+						add_error("VSANCC", <<ca_child_diff.path, ca_child_diff.cardinality.as_string,
+									ca_parent_flat.path, ca_parent_flat.cardinality.as_string>>)
+					end
+				else
+					ca_child_diff.set_is_congruent(ca_child_diff.node_congruent_to (ca_parent_flat))
+				end
 
 			elseif {co_child_diff: !C_OBJECT} a_c_node then
 				co_parent_flat ?= flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth))
@@ -537,34 +548,6 @@ feature {NONE} -- Implementation
 						if co_child_diff.sibling_order /= Void and then not co_parent_flat.parent.has_child_with_id (co_child_diff.sibling_order.sibling_node_id) then
 							passed := False
 							add_error("VSSM", <<co_child_diff.path, co_child_diff.sibling_order.sibling_node_id>>)
-						else
-							-- now look at attributes
-							if {cco_child_diff: !C_COMPLEX_OBJECT} co_child_diff then
-								from
-									cco_child_diff.attributes.start
-								until
-									cco_child_diff.attributes.off
-								loop
-									ca_child := cco_child_diff.attributes.item
-									if {cco_parent_flat: !C_COMPLEX_OBJECT} co_parent_flat then
-										child_attr_name := ca_child.rm_attribute_name
-										if cco_parent_flat.has_attribute (child_attr_name) then
-											ca_parent := cco_parent_flat.c_attribute_at_path (child_attr_name)
-											if not ca_child.node_conforms_to(ca_parent) then
-												passed := False
-												if not ca_child.existence_conforms_to (ca_parent) then
-													add_error("VSANCE", <<child_attr_name, co_child_diff.path, ca_child.existence.as_string,
-														co_parent_flat.path, ca_parent.existence.as_string>>)
-												elseif not ca_child.cardinality_conforms_to (ca_parent) then
-													add_error("VSANCC", <<child_attr_name, co_child_diff.path, ca_child.cardinality.as_string,
-														co_parent_flat.path, ca_parent.cardinality.as_string>>)
-												end
-											end
-										end
-									end
-									cco_child_diff.attributes.forth
-								end
-							end
 						end
 					end
 				end

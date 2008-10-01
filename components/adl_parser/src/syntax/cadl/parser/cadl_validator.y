@@ -98,7 +98,7 @@ create
 %type <SIBLING_ORDER> sibling_order
 %type <OG_PATH> absolute_path relative_path
 %type <INTEGER> cardinality_limit_value
-%type <INTERVAL[INTEGER]> c_occurrences c_existence occurrence_spec
+%type <MULTIPLICITY_INTERVAL> c_occurrences c_existence occurrence_spec
 %type <C_PRIMITIVE_OBJECT> c_primitive_object
 %type <C_PRIMITIVE> c_primitive
 %type <EXPR_ITEM> boolean_expression boolean_node boolean_leaf
@@ -929,21 +929,21 @@ path_segment: V_ATTRIBUTE_IDENTIFIER V_LOCAL_TERM_CODE_REF
 
 c_existence:  	-- default to 1..1
 		{
-			int_interval := default_existence
-			$$ := int_interval
+			multiplicity_interval := default_existence
+			$$ := multiplicity_interval
 		}
 	| SYM_EXISTENCE SYM_MATCHES SYM_START_CBLOCK existence_spec SYM_END_CBLOCK	
 		{
-			$$ := int_interval
+			$$ := multiplicity_interval
 		}
 	;
 
 existence_spec:  V_INTEGER -- can only be 0 or 1
 		{
 			if $1 = 0 then
-				create int_interval.make_point(0)
+				create multiplicity_interval.make_point(0)
 			elseif $1 = 1 then
-				create int_interval.make_point(1)
+				create multiplicity_interval.make_point(1)
 			else
 				raise_error
 				report_error(create_message("SEXLSG", Void))
@@ -954,9 +954,9 @@ existence_spec:  V_INTEGER -- can only be 0 or 1
 		{
 			if $1 = 0 then
 				if $3 = 0 then
-					create int_interval.make_point(0)
+					create multiplicity_interval.make_point(0)
 				elseif $3 = 1 then
-					create int_interval.make_bounded(0, 1, True, True)
+					create multiplicity_interval.make_bounded(0, 1, True, True)
 				else
 					raise_error
 					report_error(create_message("SEXLU1", Void))
@@ -964,7 +964,7 @@ existence_spec:  V_INTEGER -- can only be 0 or 1
 				end
 			elseif $1 = 1 then
 				if $3 = 1 then
-					create int_interval.make_point(1)
+					create multiplicity_interval.make_point(1)
 				else
 					raise_error
 					report_error(create_message("SEXLU2", Void))
@@ -986,41 +986,41 @@ c_cardinality: SYM_CARDINALITY SYM_MATCHES SYM_START_CBLOCK cardinality_spec SYM
 
 cardinality_spec: occurrence_spec
 		{
-			create a_cardinality.make(int_interval)
+			create a_cardinality.make(multiplicity_interval)
 		}
 	| occurrence_spec ';' SYM_ORDERED
 		{
-			create a_cardinality.make(int_interval)
+			create a_cardinality.make(multiplicity_interval)
 		}
 	| occurrence_spec ';' SYM_UNORDERED
 		{
-			create a_cardinality.make(int_interval)
+			create a_cardinality.make(multiplicity_interval)
 			a_cardinality.set_unordered
 		}
 	| occurrence_spec ';' SYM_UNIQUE
 		{
-			create a_cardinality.make(int_interval)
+			create a_cardinality.make(multiplicity_interval)
 			a_cardinality.set_unique
 		}
 	| occurrence_spec ';' SYM_ORDERED ';' SYM_UNIQUE
 		{
-			create a_cardinality.make(int_interval)
+			create a_cardinality.make(multiplicity_interval)
 			a_cardinality.set_unique
 		}
 	| occurrence_spec ';' SYM_UNORDERED ';' SYM_UNIQUE
 		{
-			create a_cardinality.make(int_interval)
+			create a_cardinality.make(multiplicity_interval)
 			a_cardinality.set_unique
 			a_cardinality.set_unordered
 		}
 	| occurrence_spec ';' SYM_UNIQUE ';' SYM_ORDERED
 		{
-			create a_cardinality.make(int_interval)
+			create a_cardinality.make(multiplicity_interval)
 			a_cardinality.set_unique
 		}
 	| occurrence_spec ';' SYM_UNIQUE ';' SYM_UNORDERED
 		{
-			create a_cardinality.make(int_interval)
+			create a_cardinality.make(multiplicity_interval)
 			a_cardinality.set_unique
 			a_cardinality.set_unordered
 		}
@@ -1038,8 +1038,8 @@ cardinality_limit_value: integer_value
 
 c_occurrences:  -- default to 1..1 
 		{
-			int_interval := default_occurrences
-			$$ := int_interval
+			multiplicity_interval := default_occurrences
+			$$ := multiplicity_interval
 			c_occurrences_default := True
 		}
 	| SYM_OCCURRENCES SYM_MATCHES SYM_START_CBLOCK occurrence_spec SYM_END_CBLOCK	
@@ -1058,22 +1058,22 @@ c_occurrences:  -- default to 1..1
 occurrence_spec: cardinality_limit_value 	-- single integer or '*'
 		{
 			if not cardinality_limit_pos_infinity then
-				create int_interval.make_point($1)
+				create multiplicity_interval.make_point($1)
 			else
-				create int_interval.make_upper_unbounded(0, True)
+				create multiplicity_interval.make_upper_unbounded(0, True)
 				cardinality_limit_pos_infinity := False
 			end
-			$$ := int_interval
+			$$ := multiplicity_interval
 		}
 	| V_INTEGER SYM_ELLIPSIS cardinality_limit_value 
 		{
 			if cardinality_limit_pos_infinity then
-				create int_interval.make_upper_unbounded($1, True)
+				create multiplicity_interval.make_upper_unbounded($1, True)
 				cardinality_limit_pos_infinity := False
 			else
-				create int_interval.make_bounded($1, $3, True, True)
+				create multiplicity_interval.make_bounded($1, $3, True, True)
 			end
-			$$ := int_interval
+			$$ := multiplicity_interval
 		}
 	;
 
@@ -2363,6 +2363,8 @@ feature {NONE} -- Implementation
 
 	check_c_attribute_child(an_attr: C_ATTRIBUTE; an_obj: C_OBJECT): BOOLEAN is
 			-- check a new child node
+			-- FIXME: the semantics here should be rationalised with C_ATTRIBUTE.valid_child and related functions
+			-- but doing so probably requires splitting out C_SINGLE_ATTRIBUTE and C_MULTIPLE_ATTRIBUTE
 		require
 			Attribute_exists: an_attr /= Void
 			Object_exists: an_obj /= Void
@@ -2390,7 +2392,10 @@ feature {NONE} -- Implementation
 					Result := True
 				end
 			elseif an_attr.is_multiple then
-				if not an_attr.cardinality.interval.upper_unbounded and (an_obj.occurrences.upper_unbounded or an_attr.cardinality.interval.upper < an_obj.occurrences.upper) then
+				if not an_attr.cardinality.interval.upper_unbounded and (an_obj.occurrences.upper_unbounded or 
+								an_attr.cardinality.interval.upper < an_obj.occurrences.upper) then
+					ar.extend(an_attr.cardinality.interval.as_string)
+					ar.extend(an_obj.occurrences.as_string)
 					s := create_message("VACMC", ar)
 				elseif not an_obj.is_addressable then
 					s := create_message("VACMM", ar)
@@ -2461,6 +2466,7 @@ feature {NONE} -- Implementation
 	term: CODE_PHRASE
 	a_uri: URI
 
+	multiplicity_interval: MULTIPLICITY_INTERVAL
 	int_interval: INTERVAL [INTEGER]
 	rl_interval: INTERVAL [REAL]
 

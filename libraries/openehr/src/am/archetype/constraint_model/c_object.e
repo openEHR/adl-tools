@@ -56,7 +56,7 @@ feature -- Access
 			Result := representation.node_id
 		end
 
-	occurrences: INTERVAL[INTEGER]
+	occurrences: MULTIPLICITY_INTERVAL
 
 	parent: C_ATTRIBUTE
 
@@ -168,7 +168,7 @@ feature -- Comparison
 
 feature -- Modification
 
-	set_occurrences(ivl: INTERVAL[INTEGER]) is
+	set_occurrences(ivl: MULTIPLICITY_INTERVAL) is
 			--
 		require
 			Interval_exists: ivl /= Void

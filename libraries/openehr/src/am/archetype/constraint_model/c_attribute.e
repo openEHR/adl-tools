@@ -36,7 +36,7 @@ feature -- Initialisation
 			--
 		do
 			create children.make (0)
-			set_existence (create {INTERVAL [INTEGER]}.make_bounded (1, 1, True, True))
+			set_existence (create {MULTIPLICITY_INTERVAL}.make_bounded (1, 1, True, True))
 		end
 
 	make_single(a_name: STRING) is
@@ -73,9 +73,37 @@ feature -- Access
 
 	children: ARRAYED_LIST [C_OBJECT]
 
-	existence: INTERVAL [INTEGER]
+	existence: MULTIPLICITY_INTERVAL
 
 	cardinality: CARDINALITY
+
+	occurrences_total_range: MULTIPLICITY_INTERVAL is
+			-- calculate total possible cardinality range based on occurrences of all children
+		local
+			a_lower, an_upper: INTEGER
+			an_upper_unbounded: BOOLEAN
+		do
+			from
+				children.start
+			until
+				children.off
+			loop
+				a_lower := a_lower + children.item.occurrences.lower
+				an_upper_unbounded := children.item.occurrences.upper_unbounded
+				if not an_upper_unbounded then
+					an_upper := an_upper + children.item.occurrences.upper
+				end
+				children.forth
+			end
+
+			if an_upper_unbounded then
+				create Result.make_upper_unbounded (a_lower, True)
+			else
+				create Result.make_bounded (a_lower, an_upper, True, True)
+			end
+		ensure
+			Result_attached: Result /= Void
+		end
 
 	parent: C_COMPLEX_OBJECT
 
@@ -286,7 +314,7 @@ feature -- Comparison
 			--	cardinality
 			--	existence
 		do
-			Result := existence_conforms_to (other) and cardinality_conforms_to (other)
+			Result := existence_conforms_to (other) and ((is_single and other.is_single) or cardinality_conforms_to (other))
 		end
 
 	existence_conforms_to (other: like Current): BOOLEAN is
@@ -298,12 +326,12 @@ feature -- Comparison
 	cardinality_conforms_to (other: like Current): BOOLEAN is
 			-- True if the cardinality of this node conforms to other.cardinality
 		do
-			Result := is_single or (cardinality.interval.is_equal (other.cardinality.interval) or other.cardinality.contains (cardinality))
+			Result := cardinality.interval.is_equal (other.cardinality.interval) or other.cardinality.contains (cardinality)
 		end
 
 feature -- Modification
 
-	set_existence(an_interval: INTERVAL[INTEGER]) is
+	set_existence(an_interval: MULTIPLICITY_INTERVAL) is
 			-- set existence constraint on this relation - applies whether single or multiple
 		require
 			Interval_exists: an_interval /= Void
@@ -488,6 +516,7 @@ invariant
 	Children_validity: children /= Void
 	Any_allowed_validity: any_allowed xor not children.is_empty
 	Is_multiple_validity: is_multiple implies cardinality /= Void
+	Children_occurrences_validity: cardinality.interval.contains (occurrences_total_range)
 
 end
 

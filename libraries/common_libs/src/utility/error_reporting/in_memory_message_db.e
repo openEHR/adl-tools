@@ -154,13 +154,15 @@ feature -- Access
 			["VSONCT"] = <"Error (VSONCT): object node at path $1 RM type $2 does not conform to node at parent path $3 RM type $4">
 			["VSONCO"] = <"Error (VSONCO): object node at path $1 occurrences $2 does not conform to node at parent path $3 occurrences $4">
 			["VSONCI"] = <"Error (VSONCI): object node at path $1 node_id $2 does not conform to node at parent path $3 node_id $4">
-			["VSANCE"] = <"Error (VSANCE): attribute $1 at path $2 existence $3 does not conform to parent $4 existence $5">
-			["VSANCC"] = <"Error (VSANCC): attribute $1 at path $2 cardinality $3 does not conform to parent $4 cardinality $5">
+			["VCATU"] = <"Error (VCATU) cADL object duplicate attribute $1">
+			
+			["VSANCE"] = <"Error (VSANCE): attribute at path $1 existence $2 does not conform to parent $3 existence $4">
+			["VSANCC"] = <"Error (VSANCC): attribute at path $1 cardinality $2 does not conform to parent $3 cardinality $4">
+			["VSAM"] = <"Error (VSAM): attribute at path $1 multiplicity does not conform to that of attribute in parent">
 			["VSONNC"] = <"Error (VSONNC): $1 object node at path $2 does not conform to $3 node at parent path $4">
 			["VSONIR"] = <"Error (VSONIR): object node at path $1 conforms to node at parent path but node_id $3 not redefined">
 
 			["VSSM"] = <"Error (VSSM): node at path $1 has order marker referring to non-existant sibling node $2%N">
-			["VCATU"] = <"Error (VCATU) cADL object duplicate attribute $1">
 
 			["VOBAV"] = <"Error (VOBAV): assumed value $1 not within constraint range">
 			["VOBAVL"] = <"Error (VOBAVL): assumed value $1 not found in constraint list"> -- additional to ADL spec
@@ -181,7 +183,7 @@ feature -- Access
 			["VACSI"] = <"Error (VACSI): cannot add $1 object with $2 to singly-valued attribute $3 because attribute already has child with same node id">
 			["VACSIT"] = <"Error (VACSIT): cannot add $1 object with $2 to singly-valued attribute $3 because attribute already has child with same RM type"> -- additional to spec
 
-			["VACMC"] = <"Error (VACMC): cannot add $1 object with $2 to multiply-valued attribute $3 because cardinality upper limit does not contain occurrences of object">
+			["VACMC"] = <"Error (VACMC): cannot add $1 object with $2 to multiply-valued attribute $3 because cardinality $4 does not contain occurrences $5 of object">
 			["VACMM"] = <"Error (VACMM): cannot add $1 object with $2 to multiply-valued attribute $3 because object has no node id">
 			["VACMI"] = <"Error (VACMI): cannot add $1 object with $2 to multiply-valued attribute $3 because attribute already has child with same node id">
 

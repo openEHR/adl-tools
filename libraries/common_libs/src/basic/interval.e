@@ -1,7 +1,12 @@
 indexing
 	component:   "openEHR support types"
 
-	description: "Generic class defining an interval (i.e. range) of a comparable type."
+	description: "[
+				 Generic class defining an interval (i.e. range) of a comparable type, allowing half-ranges, i.e. with
+				 -infinity as lower limit or +infinity as upper limit.
+				 FIXME: should really be defined as INTERVAL[COMPARABLE] but DATE_TIME_DURATION (one of the types occurring
+				 as a generic parameter of this type) is strangely only PART_COMPARABLE.
+				 ]"
 	keywords:    "intervals"
 
 	author:      "Thomas Beale"
@@ -27,6 +32,7 @@ create
 	make_bounded,
 	make_lower_unbounded,
 	make_upper_unbounded,
+	make_unbounded,
 	make_point
 
 feature -- Initialization
@@ -101,6 +107,17 @@ feature -- Initialization
 			Lower_set: lower = a_lower
 			Upper_unbounded: upper_unbounded
 			lower_included_set: lower_included = lower_included_flag
+		end
+
+	make_unbounded is
+			-- make an interval from -infinity to +infinity, usually
+			-- only sensible as the result of to half-intervals
+		do
+			lower_unbounded := True
+			upper_unbounded := True
+		ensure
+			Lower_unbounded: lower_unbounded
+			Upper_unbounded: upper_unbounded
 		end
 
 feature -- Access
@@ -222,20 +239,6 @@ feature -- Output
 			Result := upper.out
 			if upper.generating_type.substring(1,4).is_equal("REAL") and then Result.index_of('.', 1) = 0 then
 				Result.append(".0")
-			end
-		end
-
-	as_occurrences_string: STRING is
-		do
-			create Result.make(0)
-			if lower_unbounded then
-				Result.append("(error - lower limit unbounded)")
-			elseif upper_unbounded then
-				Result.append(lower_out + "..*")
-			elseif not limits_equal then
-				Result.append(lower_out + ".." + upper_out)
-			else
-				Result.append(lower_out)
 			end
 		end
 

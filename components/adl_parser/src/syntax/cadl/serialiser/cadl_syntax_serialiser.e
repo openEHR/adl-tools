@@ -355,7 +355,7 @@ feature -- Visitor
 			if not a_node.occurrences.is_equal(default_occurrences) then
 				last_result.append(apply_style(symbol(SYM_OCCURRENCES), STYLE_OPERATOR) + format_item(FMT_SPACE))
 				last_result.append(apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
-				s := a_node.occurrences.as_occurrences_string
+				s := a_node.occurrences.as_string
 				last_result.append(symbol(SYM_START_CBLOCK) + apply_style(s, STYLE_VALUE) +
 					symbol(SYM_END_CBLOCK) + format_item(FMT_SPACE))
 			end
@@ -369,7 +369,7 @@ feature -- Visitor
 			if not a_node.existence.is_equal(default_existence) then
 				last_result.append(apply_style(symbol(SYM_EXISTENCE), STYLE_OPERATOR) + format_item(FMT_SPACE))
 				last_result.append(apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
-				s := a_node.existence.as_occurrences_string
+				s := a_node.existence.as_string
 				last_result.append(symbol(SYM_START_CBLOCK) + apply_style(s, STYLE_VALUE) +
 					symbol(SYM_END_CBLOCK) + format_item(FMT_SPACE))
 			end

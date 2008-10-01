@@ -1,37 +1,74 @@
 indexing
-	component:   "openEHR Archetype Project"
-	description: "Common things for all SML archetypes"
-	keywords:    "test, ADL"
+	component:   "openEHR support types"
+
+	description: "[
+				 Integer interval, used for representing cardinality, occurrences etc.
+				 ]"
+	keywords:    "intervals"
+
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2000-2005 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-deferred class C_COMMON
+class MULTIPLICITY_INTERVAL
 
-feature -- Access
+inherit INTERVAL [INTEGER]
+	redefine
+		as_string
+	end
 
-	default_occurrences: MULTIPLICITY_INTERVAL is
-			-- default object occurrences object representing 1..1
-		once
-			create Result.make_bounded(1, 1, True, True)
-		ensure
-			Result_exists: Result /= Void
+create
+	default_create,
+	make_bounded,
+	make_upper_unbounded,
+	make_point
+
+feature -- Operations
+
+	union (other: like Current): like Current is
+			-- generate the outer interval of Current and other
+		do
+			if upper_unbounded or other.upper_unbounded then
+				create Result.make_upper_unbounded (lower.min(other.lower), lower_included or other.lower_included)
+			else
+				create Result.make_bounded (lower.min(other.lower), upper.max(other.upper), lower_included or
+						other.lower_included, upper_included or other.upper_included)
+			end
 		end
 
-	default_existence: MULTIPLICITY_INTERVAL is
-			-- default property existence object representing 1..1
-		once
-			create Result.make_bounded(1, 1, True, True)
-		ensure
-			Result_exists: Result /= Void
+	add (other: like Current): like Current is
+			-- generate the interval resulting from sum(lower, other.lower)..sum(upper, other.upper)
+		do
+			if upper_unbounded or other.upper_unbounded then
+				create Result.make_upper_unbounded (lower + other.lower, lower_included or other.lower_included)
+			else
+				create Result.make_bounded (lower + other.lower, upper + other.upper, lower_included or
+						other.lower_included, upper_included or other.upper_included)
+			end
 		end
+
+	as_string: STRING is
+		do
+			create Result.make(0)
+			if upper_unbounded then
+				Result.append(lower_out + "..*")
+			elseif not limits_equal then
+				Result.append(lower_out + ".." + upper_out)
+			else
+				Result.append(lower_out)
+			end
+		end
+
+invariant
+	Lower_valid: lower >= 0
 
 end
+
 
 
 --|
@@ -48,7 +85,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is cadl_common.e.
+--| The Original Code is interval.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

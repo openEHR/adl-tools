@@ -15,11 +15,11 @@ class CARDINALITY
 
 create
 	make
-	
+
 feature -- Initialisation
 
-	make(an_interval: INTERVAL[INTEGER]) is
-			-- 
+	make(an_interval: MULTIPLICITY_INTERVAL) is
+			--
 		require
 			Interval_exists: an_interval /= Void and then not an_interval.lower_unbounded
 		do
@@ -28,10 +28,10 @@ feature -- Initialisation
 		ensure
 			Is_list: is_ordered and not is_unique
 		end
-		
+
 feature -- Access
 
-	interval: INTERVAL[INTEGER]
+	interval: MULTIPLICITY_INTERVAL
 
 feature -- Status Report
 
@@ -48,7 +48,7 @@ feature -- Status Report
 		do
 			Result := not is_ordered and is_unique
 		end
-	
+
 	is_bag: BOOLEAN is
 		do
 			Result := not is_ordered and not is_unique
@@ -73,27 +73,27 @@ feature -- Modification
 		do
 			is_unique := True
 		end
-		
+
 feature -- Output
 
 	as_string: STRING is
 			-- output as a string, excluding default items
 		do
 			create Result.make(0)
-			
+
 			Result.append(interval.lower.out)
 			if interval.upper_unbounded then
 				Result.append("..*")
 			elseif not interval.limits_equal then
 				Result.append(".." + interval.upper.out)
 			end
-			
+
 			if is_ordered then
 				Result.append("; ordered")
 			else
 				Result.append("; unordered")
 			end
-			
+
 			if is_unique then
 				Result.append("; unique")
 			end
@@ -101,7 +101,7 @@ feature -- Output
 
 invariant
 	Validity: not interval.lower_unbounded
-	
+
 end
 
 

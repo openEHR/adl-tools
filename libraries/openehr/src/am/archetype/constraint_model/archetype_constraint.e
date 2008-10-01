@@ -117,10 +117,6 @@ feature -- Modification
 			is_congruent := flag
 		end
 
-feature -- Representation
-
-	representation: !OG_ITEM
-
 feature {ARCHETYPE_CONSTRAINT} -- Modification
 
 	set_parent(a_node: like parent) is
@@ -130,6 +126,10 @@ feature {ARCHETYPE_CONSTRAINT} -- Modification
 		do
 			parent := a_node
 		end
+
+feature -- Representation
+
+	representation: !OG_ITEM
 
 feature {OG_ITEM} -- Implementation
 

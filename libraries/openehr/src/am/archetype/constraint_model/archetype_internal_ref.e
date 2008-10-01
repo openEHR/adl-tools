@@ -81,7 +81,7 @@ feature -- Modification
 			target_path := a_path
 		end
 
-	set_occurrences(ivl: INTERVAL[INTEGER]) is
+	set_occurrences(ivl: MULTIPLICITY_INTERVAL) is
 			--
 		do
 			precursor(ivl)
