@@ -512,9 +512,14 @@ feature {NONE} -- Implementation
 				co_parent_flat ?= flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth))
 
 				-- C_CODE_PHRASE conforms to CONSTRAINT_REF, but is not testable in any way; sole exception in ADL/AOM; just warn
-				if {ccr: !CONSTRAINT_REF} co_parent_flat and {ccp: !C_CODE_PHRASE} co_child_diff then
-					add_warning("WCRC", <<co_child_diff.path>>)
-					passed := True
+				if {ccr: !CONSTRAINT_REF} co_parent_flat and then not {ccp2: !CONSTRAINT_REF} co_child_diff then
+					if {ccp: !C_CODE_PHRASE} co_child_diff then
+						add_warning("WCRC", <<co_child_diff.path>>)
+						passed := True
+					else
+						add_error("VSCNR", <<co_parent_flat.generating_type, co_parent_flat.path, co_child_diff.generating_type, co_child_diff.path>>)
+						passed := False
+					end
 				else
 					-- if the child is a redefine of a parent use_node, then we have to do the comparison to the use_node target,
 					-- unless they both are use_nodes, in which case leave them as is

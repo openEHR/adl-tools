@@ -161,6 +161,7 @@ feature -- Access
 			["VSAM"] = <"Error (VSAM): attribute at path $1 multiplicity does not conform to that of attribute in parent">
 			["VSONNC"] = <"Error (VSONNC): $1 object node at path $2 does not conform to $3 node at parent path $4">
 			["VSONIR"] = <"Error (VSONIR): object node at path $1 conforms to node at parent path but node_id $3 not redefined">
+			["VSCNR"] = <"Error (VSCNR): illegal redefinition of $1 node at $2 in parent into $3 node at $4 in child">
 
 			["VSSM"] = <"Error (VSSM): node at path $1 has order marker referring to non-existant sibling node $2%N">
 
