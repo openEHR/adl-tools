@@ -77,6 +77,11 @@ feature -- Access
 
 	cardinality: CARDINALITY
 
+	differential_path: STRING
+			-- if set, contains the path to this attribute, excluding the attribute name, allowing this
+			-- C_ATTRIBUTE to stand as a 'path-compressed' replacement for a string of C_COMPLEX_OBJECT/
+			-- C_ATTRIBUTE constraint objects
+
 	occurrences_total_range: MULTIPLICITY_INTERVAL is
 			-- calculate total possible cardinality range based on occurrences of all children
 		local
@@ -345,6 +350,16 @@ feature -- Modification
 			cardinality_exists: a_cardinality /= Void
 		do
 			cardinality := a_cardinality
+		end
+
+	set_differential_path (a_path: STRING) is
+			-- set `differential_path'
+		require
+			Path_valid: a_path /= Void and then not a_path.is_empty
+		do
+			differential_path := a_path
+		ensure
+			Differential_path_set: differential_path = a_path
 		end
 
 	put_child(an_obj: C_OBJECT) is

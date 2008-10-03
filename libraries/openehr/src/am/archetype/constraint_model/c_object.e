@@ -38,6 +38,13 @@ inherit
 			default_create
 		end
 
+	SHARED_REFERENCE_MODEL_ACCESS
+		export
+			{NONE} all
+		undefine
+			default_create
+		end
+
 feature -- Initialisation
 
 	default_create is
@@ -126,6 +133,7 @@ feature -- Comparison
 			--	rm_type_name
 			--	occurrences
 			-- 	sibling order
+			-- The node_id may be redefined however.
 		do
 			Result := rm_type_name.is_equal (other.rm_type_name) and occurrences.is_equal(other.occurrences) and node_id_conforms_to (other)
 		end
@@ -149,9 +157,10 @@ feature -- Comparison
 		end
 
 	rm_type_conforms_to (other: like Current): BOOLEAN is
-			-- True if this node rm_type_name conforms to other.rm_type_name
+			-- True if this node rm_type_name conforms to other.rm_type_name by either being equal, or being a subtype
+			-- according to the underlying reference model
 		do
-			Result := rm_type_name.is_equal (other.rm_type_name) or rm_checker.is_subclass_of(rm_type_name, other.rm_type_name)
+			Result := rm_type_name.is_equal (other.rm_type_name) or rm_checker.is_sub_type_of(rm_type_name, other.rm_type_name)
 		end
 
 	occurrences_conforms_to (other: like Current): BOOLEAN is

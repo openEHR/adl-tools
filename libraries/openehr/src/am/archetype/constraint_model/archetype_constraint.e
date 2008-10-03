@@ -22,11 +22,6 @@ inherit
 			{ANY} valid_specialisation_status
 		end
 
-	SHARED_REFERENCE_MODEL_ACCESS
-		export
-			{NONE} all
-		end
-
 feature -- Access
 
 	invalid_reason: STRING
@@ -111,10 +106,10 @@ feature -- Comparison
 
 feature -- Modification
 
-	set_is_congruent(flag: BOOLEAN) is
+	set_is_congruent is
 			-- set `is_congruent'
 		do
-			is_congruent := flag
+			is_congruent := True
 		end
 
 feature {ARCHETYPE_CONSTRAINT} -- Modification

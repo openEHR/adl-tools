@@ -18,11 +18,11 @@ feature {NONE} -- Initialisation
 
 feature -- Access
 
-	super_classes_of (a_class: STRING): ARRAYED_LIST [STRING] is
-			-- return all super classes of `a_class' up to top class (usually 'ANY', 'Object' or something similar)
+	ancestor_types_of (a_type: STRING): ARRAYED_LIST [STRING] is
+			-- return all ancestor types of `a_type' up to root class (usually 'ANY', 'Object' or something similar)
 			-- does  not include current class. Returns empty list if none.
 		require
-			Class_valid: a_class /= Void and then has_class(a_class)
+			Type_valid: a_type /= Void and then has_type (a_type)
 		do
 			create Result.make(0)
 			-- FIXME: TO BE IMPLEMENTED
@@ -32,20 +32,35 @@ feature -- Access
 
 feature -- Status Report
 
-	is_subclass_of (a_subclass, a_parent_class: STRING): BOOLEAN is
-			-- True if `a_subclass' is a sub-class in the model of `a_parent_class'
+	model_loaded: BOOLEAN
+			-- True if a model is available to interrogate
+
+feature -- Validation
+
+	is_sub_type_of (a_sub_type, a_parent_type: STRING): BOOLEAN is
+			-- True if `a_subclass' is a sub-class in the model of `a_parent_type'
 		require
-			Sub_class_valid: a_subclass /= Void and then has_class (a_subclass)
-			Parent_class_valid: a_parent_class /= Void and then has_class (a_parent_class)
+			Sub_type_valid: a_sub_type /= Void and then has_type (a_sub_type)
+			Parent_type_valid: a_parent_type /= Void and then has_type (a_parent_type)
 		do
 			-- FIXME: TO BE IMPLEMENTED
 			Result := True
 		end
 
-	has_class (a_class: STRING): BOOLEAN is
-			-- True if `a_class' exists as a class in the model
+	has_attribute (a_type, an_attribute: STRING): BOOLEAN is
+			-- True if `a_type' has an attribute named `an_attribute'
 		require
-			Class_valid: a_class /= Void and then not a_class.is_empty
+			Type_valid: a_type /= Void and then not a_type.is_empty
+			Attribute_valid: an_attribute /= Void and then not an_attribute.is_empty
+		do
+			-- FIXME: TO BE IMPLEMENTED
+			Result := True
+		end
+
+	has_type (a_type: STRING): BOOLEAN is
+			-- True if `a_type' exists in the model
+		require
+			Type_valid: a_type /= Void and then not a_type.is_empty
 		do
 			-- FIXME: TO BE IMPLEMENTED
 			Result := True

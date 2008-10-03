@@ -155,6 +155,19 @@ feature -- Status Report
 			Result := code_list /= Void and code_list.has (a_code)
 		end
 
+	has_parent_code (a_code: STRING): BOOLEAN is
+			-- True if an immediate parent of 'a_code' found in code list, assuming a_code is sepcialised
+		require
+			Code_valid: a_code /= Void and then not a_code.is_empty
+		local
+			s_code: STRING
+		do
+			if code_list /= Void and is_specialised_code (a_code) then
+				s_code := specialisation_parent_from_code (a_code)
+				Result := code_list.has (a_code)
+			end
+		end
+
 	valid_pattern (a_pattern: STRING): BOOLEAN is
 			-- Verify that the pattern of form "terminology_id::code, code, ... [; code]"
 			-- is valid, i.e. that there are no repeats.
@@ -169,24 +182,21 @@ feature -- Status Report
 feature -- Comparison
 
 	node_conforms_to (other: like Current): BOOLEAN is
-			-- True if this node is a subset, i.e. a redefinition of, `other' in the ADL constraint sense, i.e. that all
-			-- aspects of the definition of this node and all child nodes define a narrower, wholly
-			-- contained instance space of `other'.
-			-- Returns False if they are the same, or if they do not correspond
+			-- True if this node is a subset, i.e. a redefinition of, `other'. Evaluated as True if
+			-- 	a) this node contains codes already in `other' (but with some removed) and/or
+			--	b) this node contains redefinitions of codes found in `other'
 		do
 			if precursor(other) then
 				if other.any_allowed then
 					Result := True
 				elseif not any_allowed then
 					if terminology_id.is_equal (other.terminology_id) then
-						if code_list.count <= other.code_list.count then
-							from
-								code_list.start
-							until
-								code_list.off or not other.has_code (code_list.item)
-							loop
-								code_list.forth
-							end
+						from
+							code_list.start
+						until
+							code_list.off or not (other.has_code (code_list.item) or else other.has_parent_code(code_list.item))
+						loop
+							code_list.forth
 						end
 						Result := code_list.off
 					end

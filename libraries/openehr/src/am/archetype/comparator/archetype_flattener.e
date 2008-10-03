@@ -378,7 +378,7 @@ feature {NONE} -- Implementation
 			-- in the specialised attribute, or are non C_COMPLEX_OBJECTs (if they are the latter, they will get traversed
 			-- normally by node_graft())
 		local
-			rm_super_classes: ARRAYED_LIST [STRING]
+			rm_ancestors: ARRAYED_LIST [STRING]
 		do
 			from
 				c_attr_child.children.start
@@ -392,15 +392,15 @@ feature {NONE} -- Implementation
 					elseif c_attr_output.has_child_with_rm_type_name(c_attr_child.children.item.rm_type_name) then -- find a node of same type, then replace completely
 						c_attr_output.replace_child_by_rm_type_name (c_attr_child.children.item.deep_twin)
 					else -- or a RM parent type, then add
-						rm_super_classes := rm_checker.super_classes_of(c_attr_child.children.item.rm_type_name)
+						rm_ancestors := rm_checker.ancestor_types_of(c_attr_child.children.item.rm_type_name)
 						from
-							rm_super_classes.start
+							rm_ancestors.start
 						until
-							rm_super_classes.off or c_attr_output.has_child_with_rm_type_name(rm_super_classes.item)
+							rm_ancestors.off or c_attr_output.has_child_with_rm_type_name(rm_ancestors.item)
 						loop
-							rm_super_classes.forth
+							rm_ancestors.forth
 						end
-						if not rm_super_classes.off then
+						if not rm_ancestors.off then
 							c_attr_output.put_child (c_attr_child.children.item.deep_twin)
 						end
 					end

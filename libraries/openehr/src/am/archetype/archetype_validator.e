@@ -126,6 +126,10 @@ feature -- Validation
 				check_unidentified_nodes
 			end
 
+			if passed then
+				validate_reference_model
+			end
+
 			-- validation requiring valid specialisation parent
 			if passed and target.is_specialised then
 	 			target.set_parent_archetype (target_descriptor.specialisation_parent.archetype_differential)
@@ -471,6 +475,17 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	validate_reference_model is
+			-- validate definition of archetype against reference model
+		local
+			def_it: C_ITERATOR
+		do
+			if rm_checker.model_loaded then
+				create def_it.make(target.definition)
+				def_it.do_all(agent rm_node_validate_enter, agent rm_node_validate_exit)
+			end
+		end
+
 	validate_specialised_definition is
 			-- validate definition of specialised archetype against flat parent
 		require
@@ -504,18 +519,21 @@ feature {NONE} -- Implementation
 						add_error("VSANCC", <<ca_child_diff.path, ca_child_diff.cardinality.as_string,
 									ca_parent_flat.path, ca_parent_flat.cardinality.as_string>>)
 					end
-				else
-					ca_child_diff.set_is_congruent(ca_child_diff.node_congruent_to (ca_parent_flat))
+				elseif ca_child_diff.node_congruent_to (ca_parent_flat) and ca_child_diff.parent.is_congruent then
+					debug("validate")
+						io.put_string ("Setting ATTR node congruent " + ca_child_diff.path + "%N")
+					end
+					ca_child_diff.set_is_congruent
+					ca_child_diff.set_differential_path(ca_child_diff.parent.path)
 				end
 
 			elseif {co_child_diff: !C_OBJECT} a_c_node then
 				co_parent_flat ?= flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth))
 
 				-- C_CODE_PHRASE conforms to CONSTRAINT_REF, but is not testable in any way; sole exception in ADL/AOM; just warn
-				if {ccr: !CONSTRAINT_REF} co_parent_flat and then not {ccp2: !CONSTRAINT_REF} co_child_diff then
+				if {ccr: !CONSTRAINT_REF} co_parent_flat and then not {ccr2: !CONSTRAINT_REF} co_child_diff then
 					if {ccp: !C_CODE_PHRASE} co_child_diff then
 						add_warning("WCRC", <<co_child_diff.path>>)
-						passed := True
 					else
 						add_error("VSCNR", <<co_parent_flat.generating_type, co_parent_flat.path, co_child_diff.generating_type, co_child_diff.path>>)
 						passed := False
@@ -548,7 +566,12 @@ feature {NONE} -- Implementation
 						end
 					else
 						-- nodes are at least conformant; check for congruence for specalisation path replacement
-						co_child_diff.set_is_congruent(co_child_diff.node_congruent_to (co_parent_flat))
+						if co_child_diff.node_congruent_to (co_parent_flat) and (co_child_diff.is_root or else co_child_diff.parent.is_congruent) then
+							debug("validate")
+								io.put_string ("Setting OBJ node congruent " + co_child_diff.path + "%N")
+							end
+							co_child_diff.set_is_congruent
+						end
 
 						if co_child_diff.sibling_order /= Void and then not co_parent_flat.parent.has_child_with_id (co_child_diff.sibling_order.sibling_node_id) then
 							passed := False
@@ -557,6 +580,25 @@ feature {NONE} -- Implementation
 					end
 				end
 			end
+		end
+
+	rm_node_validate_enter (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)  is
+			-- perform validation of node against reference model
+		do
+			if {ca: !C_ATTRIBUTE} a_c_node then
+				if not rm_checker.has_attribute(ca.parent.rm_type_name, ca.rm_attribute_name) then
+
+				end
+			elseif {co: !C_OBJECT} a_c_node then
+				if not rm_checker.has_type(co.rm_type_name) then
+
+				end
+			end
+		end
+
+	rm_node_validate_exit (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)  is
+			-- perform validation of node against reference model
+		do
 		end
 
 	node_test (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN  is
