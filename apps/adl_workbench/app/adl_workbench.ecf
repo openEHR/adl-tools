@@ -44,7 +44,6 @@
 		<setting name="inlining" value="false"/>
 		<setting name="line_generation" value="false"/>
 		<setting name="multithreaded" value="false"/>
-		<mapping old_name="NEW" new_name="NEW_VALUE"/>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf">
 			<renaming old_name="C_STRING" new_name="BASE_C_STRING"/>
 		</library>
