@@ -181,6 +181,43 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER} -- Validation
 			end
 		end
 
+feature {ADL_ENGINE} -- Serialisation
+
+	compress_paths is
+			-- compress paths of congruent nodes in specialised archetype so that equivalent paths
+			-- are recorded in the `compressed_path' attribute of terminal C_ATTRIBUTE nodes of congruent sections
+		require
+			Target_specialised: is_specialised
+		local
+			def_it: C_ITERATOR
+		do
+			create def_it.make(definition)
+			def_it.do_at_surface(agent compress_node, agent congruent_node_test)
+		end
+
+	congruent_node_test (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN  is
+			-- return True if node.is_congruent is True
+		do
+			Result := not a_c_node.is_congruent
+		end
+
+	compress_node (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)  is
+			-- perform validation of node against reference model
+		do
+			if {ca: !C_ATTRIBUTE} a_c_node then
+							debug("compress")
+								io.put_string ("Will compress path at ATTR " + ca.path + "%N")
+							end
+			elseif {co: !C_OBJECT} a_c_node then
+							debug("compress")
+								io.put_string ("Will compress path at OBJ " + co.path + "%N")
+							end
+				if not co.is_root and not co.parent.has_compressed_path then
+					co.parent.compress_path
+				end
+			end
+		end
+
 feature -- Modification
 
 	set_definition_node_id(a_term_code: STRING) is

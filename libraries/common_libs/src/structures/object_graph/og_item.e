@@ -81,6 +81,38 @@ feature -- Access
 	specialisation_depth: INTEGER
 			-- specialisation level of this node if identified
 
+	ultimate_parent: OG_NODE is
+			-- return the root node of the tree
+		require
+			not is_root
+		do
+			from
+				Result := parent
+			until
+				Result.is_root
+			loop
+				Result := Result.parent
+			end
+		end
+
+	has_parent(a_node: OG_NODE): BOOLEAN is
+			-- return True if `a_node' found in line of parent nodes back to ultimate_parent,
+			-- including if it is the immediate parent
+		require
+			a_node /= Void
+		local
+			csr: OG_NODE
+		do
+			from
+				csr := parent
+			until
+				csr.is_root or csr = a_node
+			loop
+				csr := csr.parent
+			end
+			Result := csr = a_node
+		end
+
 feature -- Comparison
 
 	infix "<" (other: like Current): BOOLEAN is
@@ -113,6 +145,14 @@ feature -- Status Report
 		end
 
 feature -- Modification
+
+	set_root is
+			-- set this node to root, i.e. remove its parent
+		do
+			parent := Void
+		ensure
+			is_root
+		end
 
 	set_node_id(a_node_id:STRING) is
 		require
@@ -199,26 +239,24 @@ feature {NONE} -- Implementation
 			if og_nodes.is_empty then
 				create Result.make_root
 			else -- process the node list; we are starting on an OG_ATTR_NODE
-				og_nodes.start
-				create a_path_item.make(og_nodes.item.node_id) -- set the attribute id
-				og_attr ?= og_nodes.item
-				og_nodes.forth
-				if not og_nodes.off then -- now on an OG_OBJECT_NODE
-					if unique_flag or og_attr.is_multiple or
-								(og_attr.is_single and og_attr.child_count > 1 and og_nodes.item.is_addressable) then
-						a_path_item.set_object_id(og_nodes.item.node_id)
-					end
-					og_nodes.forth
-				end
-				create Result.make_absolute(a_path_item)
-
 				from
+					og_nodes.start
+					og_attr ?= og_nodes.item
+					if og_attr.has_compressed_path then
+						Result := og_attr.compressed_path.deep_twin
+					end
 				until
 					og_nodes.off
 				loop
 					-- now on an OG_ATTR_NODE
-					create a_path_item.make(og_nodes.item.node_id)
 					og_attr ?= og_nodes.item
+					create a_path_item.make(og_attr.node_id)
+					if Result = Void then
+						create Result.make_absolute(a_path_item)
+					else
+						Result.append_segment (a_path_item)
+					end
+
 					og_nodes.forth
 					if not og_nodes.off then -- now on an OG_OBJECT_NODE
 						if unique_flag or og_attr.is_multiple or
@@ -227,7 +265,6 @@ feature {NONE} -- Implementation
 						end
 						og_nodes.forth
 					end
-					Result.append_segment (a_path_item)
 				end
 			end
 		ensure

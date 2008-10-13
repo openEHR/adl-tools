@@ -142,11 +142,17 @@ feature -- Duplication
 			-- safe version of deep_twin that Voids `parent' first so as not to clone backwards up tree
 		local
 			p: like parent
+			og_p: OG_NODE
 		do
 			p := parent
 			parent := Void
+
+			og_p := representation.parent
+			representation.set_root
 			Result := deep_twin
+
 			parent := p
+			representation.set_parent (og_p)
 		ensure
 			Result.parent = Void
 		end

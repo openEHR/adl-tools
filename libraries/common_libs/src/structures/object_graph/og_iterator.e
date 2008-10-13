@@ -75,8 +75,6 @@ feature {NONE} -- Implementation
 	do_all_nodes(a_target: OG_NODE; node_enter_action, node_exit_action: PROCEDURE[ANY, TUPLE[OG_ITEM, INTEGER]]) is
 		require
 			Target_exists: a_target /= Void
-		local
-			a_node: OG_NODE
 		do
 			depth := depth + 1
 			node_enter_action.call([a_target, depth])
@@ -85,14 +83,12 @@ feature {NONE} -- Implementation
 			until
 				a_target.off
 			loop
-				a_node ?= a_target.item_for_iteration
-				if a_node /= Void then
+				if {a_node: !OG_NODE} a_target.item_for_iteration then
 					do_all_nodes(a_node, node_enter_action, node_exit_action)
 				else -- terminal child node
 					node_enter_action.call([a_target.item_for_iteration, depth+1])
 					node_exit_action.call([a_target.item_for_iteration, depth+1])
 				end
-
 				a_target.forth
 			end
 			node_exit_action.call([a_target, depth])
@@ -103,8 +99,6 @@ feature {NONE} -- Implementation
 			-- Do action only to nodes at surface, where membership is defined by `node_is_at_surface'.
 		require
 			Target_exists: a_target /= Void
-		local
-			a_node: OG_NODE
 		do
 			if node_is_at_surface.item([a_target]) then
 				node_action.call([a_target, 0])
@@ -114,13 +108,10 @@ feature {NONE} -- Implementation
 				until
 					a_target.off
 				loop
-					a_node ?= a_target.item_for_iteration
-					if a_node /= Void then
+					if {a_node: !OG_NODE} a_target.item_for_iteration then
 						do_at_surface_nodes(a_node, node_action, node_is_at_surface)
-					else -- terminal child node
-						if node_is_at_surface.item ([a_target.item_for_iteration]) then
-							node_action.call([a_target.item_for_iteration, 0])
-						end
+					elseif node_is_at_surface.item ([a_target.item_for_iteration]) then -- terminal child node
+						node_action.call([a_target.item_for_iteration, 0])
 					end
 					a_target.forth
 				end
@@ -131,8 +122,6 @@ feature {NONE} -- Implementation
 			-- Do action only to nodes from top down to surface, where membership is defined by `node_is_included'.
 		require
 			Target_exists: a_target /= Void
-		local
-			a_node: OG_NODE
 		do
 			if node_is_included.item([a_target]) then
 				node_action.call([a_target, 0])
@@ -141,13 +130,10 @@ feature {NONE} -- Implementation
 				until
 					a_target.off
 				loop
-					a_node ?= a_target.item_for_iteration
-					if a_node /= Void then
+					if {a_node: !OG_NODE} a_target.item_for_iteration then
 						do_until_surface_nodes(a_node, node_action, node_is_included)
-					else -- terminal child node
-						if node_is_included.item ([a_target.item_for_iteration]) then
-							node_action.call([a_target.item_for_iteration, 0])
-						end
+					elseif node_is_included.item ([a_target.item_for_iteration]) then -- terminal child node
+						node_action.call([a_target.item_for_iteration, 0])
 					end
 					a_target.forth
 				end

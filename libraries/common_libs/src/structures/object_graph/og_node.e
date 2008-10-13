@@ -216,16 +216,30 @@ feature -- Modification
 			a_node.set_parent(Current)
 		end
 
-	remove_child(a_node_id: STRING) is
+	remove_child(a_node: like child_type) is
+			-- remove the child node `a_node'
+		require
+			Node_exists: a_node /= Void and then has_child(a_node)
+		do
+			children_ordered.prune_all (a_node)
+			children_sorted.prune_all (a_node)
+			children.remove (a_node.node_id)
+			a_node.set_root
+		ensure
+			Child_removed: not has_child (a_node)
+		end
+
+	remove_child_by_id(a_node_id: STRING) is
 			-- remove the child node identified by a_node_id
 		require
 			Node_exists: a_node_id /= Void and then has_child_with_id(a_node_id)
+		local
+			c: OG_ITEM
 		do
-			children_ordered.prune_all (children.item (a_node_id))
-			children_sorted.prune_all (children.item (a_node_id))
-			children.remove (a_node_id)
+			c := child_with_id (a_node_id)
+			remove_child(c)
 		ensure
-			not has_child_with_id (a_node_id)
+			Child_removed: not has_child_with_id (a_node_id)
 		end
 
 	remove_all_children is
@@ -235,7 +249,7 @@ feature -- Modification
 			create children_ordered.make(0)
 			create children_sorted.make
 		ensure
-			children.is_empty
+			Children_removed: children.is_empty
 		end
 
 	replace_node_id(an_old_node_id, a_new_node_id: STRING) is
