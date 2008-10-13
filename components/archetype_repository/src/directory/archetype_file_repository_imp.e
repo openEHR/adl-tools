@@ -114,6 +114,22 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	old_archteype_id_from_path (full_path: STRING): STRING
+			-- FIXME: to support old-style archetype ids with 'draft' in the name; remove when appropriate		
+		require
+			full_path_valid: is_valid_path (full_path)
+		local
+			base_name: STRING
+			id: !ARCHETYPE_ID
+		do
+			base_name := file_system.basename (full_path)
+			base_name.remove_tail (file_system.extension (base_name).count)
+			create id
+			if id.old_valid_id (base_name) then
+				Result := base_name
+			end
+		end
+
 end
 
 

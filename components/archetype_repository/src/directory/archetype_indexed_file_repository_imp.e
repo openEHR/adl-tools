@@ -77,7 +77,16 @@ feature {NONE} -- Implementation
 									post_info (Current, "build_directory", "pair_filename_i1", <<fn>>)
 								end
 							else
+	-- FIXME: to support old-style archetype ids with 'draft' in the name; remove when appropriate
+	arch_id_str := old_archteype_id_from_path(full_path)
+	if not arch_name_index.has (arch_id_str) then
+		create ara.make (root_path, full_path, create {!ARCHETYPE_ID}.old_make_from_string(arch_id_str), Current)
+		arch_index.extend (ara)
+		arch_name_index.extend (arch_id_str)
+								post_warning (Current, "build_directory", "invalid_filename_e1", <<fn>>)
+	else
 								post_error (Current, "build_directory", "invalid_filename_e1", <<fn>>)
+	end
 							end
 						end
 					end
