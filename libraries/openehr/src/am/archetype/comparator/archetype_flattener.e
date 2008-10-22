@@ -189,11 +189,12 @@ feature {NONE} -- Implementation
 			-- perform grafts of node from differential archetype on corresponding node in flat parent
 			-- only interested in C_COMPLEX_OBJECTs
 		local
-			cco_output_flat: C_COMPLEX_OBJECT
+			cco_output_flat, cco_output_flat_proximate, cco_csr: C_COMPLEX_OBJECT
 			apa: ARCHETYPE_PATH_ANALYSER
-			a_path: STRING
+			a_path, a_path2: STRING
+			c_path: OG_PATH
 			child_attr_name: STRING
-			c_attr_child, c_attr_output: C_ATTRIBUTE
+			c_attr_child, c_attr_child_copy, c_attr_output: C_ATTRIBUTE
 		do
 			if {cco_child_diff: !C_COMPLEX_OBJECT} a_c_node then
 				create apa.make_from_string (cco_child_diff.path)
@@ -230,22 +231,54 @@ feature {NONE} -- Implementation
 						until
 							cco_child_diff.attributes.off
 						loop
-							child_attr_name := cco_child_diff.attributes.item.rm_attribute_name
+							c_attr_child := cco_child_diff.attributes.item
+
+							-- now we have to figure out the 'proximate' C_COMPLEX_OBJECT in the flat parent - it is either the cc_output_flat that
+							-- corresponds to the parent object from the differential child with we started this routine, or if the current attribute
+							-- has a compressed path, its true object parent in the flat parent archetype is given by the compressed path
+							if c_attr_child.has_compressed_path then
+								create apa.make_from_string (c_attr_child.compressed_path)
+								cco_output_flat_proximate ?= arch_output_flat.c_object_at_path (apa.path_at_level (arch_parent_flat.specialisation_depth))
+
+								-- there may be object ids on the path from the original parent attribute to the proximate attribute in the flat parent
+								-- that are overridden by object-ids in the compressed path
+								create c_path.make_from_string (c_attr_child.compressed_path)
+								from
+									cco_csr := cco_output_flat_proximate
+									c_path.finish
+								until
+									cco_csr = cco_output_flat
+								loop
+									if c_path.item.is_addressable and then c_path.item.object_id.count /= cco_csr.node_id.count and then c_path.item.object_id.substring_index (cco_csr.node_id, 1) = 1 then
+										debug ("flatten")
+											io.put_string ("%T%Tc_path.item=" + c_path.item.object_id + "; cco_csr.node_id= " + cco_csr.node_id + "%N")
+										end
+										cco_csr.parent.replace_node_id (cco_csr.node_id, c_path.item.object_id)
+									end
+									cco_csr := cco_csr.parent.parent
+									c_path.back
+								end
+							else
+								cco_output_flat_proximate := cco_output_flat
+							end
 							debug ("flatten")
-								io.put_string ("%T%Tattribute in child: " + child_attr_name + " ... ")
+								io.put_string ("%T%Tattribute in child")
+								if c_attr_child.has_compressed_path then
+									io.put_string (" (compressed path - level-adjusted)")
+								end
+								io.put_string (": " + c_attr_child.rm_attribute_path + " ... ")
 							end
 
 							-- for attributes that are found in the flat parent tree, we need to check which of their children
 							-- if any need to be cloned into the output
-							if cco_output_flat.has_attribute (child_attr_name) then
+							if cco_output_flat_proximate.has_attribute (c_attr_child.rm_attribute_name) then
 								debug ("flatten")
-									io.put_string ("found attr " + child_attr_name + " in parent %N")
+									io.put_string ("found attr " + c_attr_child.rm_attribute_name + " in parent object in flat archetype%N")
 								end
 
 								-- for container attributes in the source archetype, we graft in new elements; overrides will be
 								-- handled by being traversed by this routine later
-								c_attr_child := cco_child_diff.c_attribute_at_path (child_attr_name)
-								c_attr_output := cco_output_flat.c_attribute_at_path(child_attr_name)
+								c_attr_output := cco_output_flat_proximate.attribute(c_attr_child.rm_attribute_name)
 								if c_attr_child.is_multiple then
 									-- graft the cardinality if that has been changed
 									if not c_attr_child.cardinality.interval.is_equal (c_attr_output.cardinality.interval) then
@@ -261,13 +294,14 @@ feature {NONE} -- Implementation
 									end
 									merge_single_attribute(c_attr_output, c_attr_child)
 								end
-							else  -- otherwise just do a deep clone of the whole attribute from the child flat to the output
-								c_attr_child := cco_child_diff.attributes.item.safe_deep_twin
+							else  -- otherwise just do a deep clone of the whole attribute from the child to the output
+								c_attr_child_copy := c_attr_child.safe_deep_twin
+								c_attr_child_copy.clear_compressed_path
 								debug ("flatten")
-									io.put_string ("in child only; deep_clone attribute at " + c_attr_child.path +
+									io.put_string ("in child only; deep_clone attribute at " + c_attr_child_copy.path +
 										" from diff child and graft to " + cco_output_flat.path + " in output%N")
 								end
-								cco_output_flat.put_attribute (c_attr_child)
+								cco_output_flat_proximate.put_attribute (c_attr_child_copy)
 							end
 							cco_child_diff.attributes.forth
 						end

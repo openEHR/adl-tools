@@ -153,8 +153,16 @@ feature -- Visitor
 
 	start_c_attribute(a_node: C_ATTRIBUTE; depth: INTEGER) is
 			-- start serialising an C_ATTRIBUTE
+		local
+			p: STRING
 		do
-			last_result.append(create_indent(depth) + apply_style(a_node.rm_attribute_name, identifier_style (a_node)) + format_item(FMT_SPACE))
+-- path-compressed output form
+if a_node.has_compressed_path then
+	p := a_node.path
+else
+	p := a_node.rm_attribute_name
+end
+			last_result.append(create_indent(depth) + apply_style(p, identifier_style (a_node)) + format_item(FMT_SPACE))
 			serialise_existence(a_node, depth)
 			serialise_cardinality(a_node, depth)
 			last_result.append(apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))

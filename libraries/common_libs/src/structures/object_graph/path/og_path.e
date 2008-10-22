@@ -200,6 +200,11 @@ feature -- Cursor Movement
 			items.start
 		end
 
+	finish is
+		do
+			items.finish
+		end
+
 	forth is
 		do
 			items.forth
@@ -327,6 +332,20 @@ feature -- Modification
 			path_valid: a_path /= Void
 		do
 			items.append(a_path.items)
+		end
+
+	prepend_path(a_path: OG_PATH) is
+			-- add a_path to the beginning, and copy `is_absolute' and `is_movable' if necessary
+		require
+			path_valid: a_path /= Void
+		local
+			p: ARRAYED_LIST[OG_PATH_ITEM]
+		do
+			p := items
+			items := a_path.items
+			items.append (p)
+			is_absolute := a_path.is_absolute
+			is_movable := a_path.is_movable
 		end
 
 feature -- Status Setting

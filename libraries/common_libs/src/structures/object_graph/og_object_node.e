@@ -258,6 +258,9 @@ feature {OG_OBJECT_NODE} -- Implementation
 								else
 									a_path.prepend_segment(create {OG_PATH_ITEM}.make(attr_node.node_id))
 								end
+								if attr_node.has_compressed_path then
+									a_path.prepend_path(attr_node.compressed_path.deep_twin)
+								end
 								if is_root then
 									a_path.set_absolute
 								end

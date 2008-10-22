@@ -21,7 +21,7 @@ inherit
 		rename
 			make as make_og_node
 		redefine
-			parent, child_type, put_child, put_child_left, put_child_right, valid_child_for_insertion
+			parent, child_type, put_child, put_child_left, put_child_right, valid_child_for_insertion, node_key
 		end
 
 create
@@ -74,6 +74,23 @@ feature -- Access
 
 	parent: OG_OBJECT_NODE
 
+	compressed_path: OG_PATH
+			-- if set, contains the path to this attribute, excluding the name of this attribute, allowing this
+			-- OG_ATTRIBUTE_NODE to stand as a 'path-compressed' replacement for a string of OG_OBJECT_NODE/
+			-- OG_ATTRIBUTE_NODE objects
+
+	node_key: STRING is
+			-- uses compressed path if it exists
+		do
+			if has_compressed_path then
+				Result := compressed_path.as_string
+				Result.append_character({OG_PATH}.segment_separator)
+				Result.append(node_id)
+			else
+				Result := node_id
+			end
+		end
+
 feature -- Status Report
 
 	is_multiple: BOOLEAN
@@ -95,6 +112,12 @@ feature -- Status Report
 			-- True if this node has a non-anonymous node_id
 
 	is_object_node: BOOLEAN is False
+
+	has_compressed_path: BOOLEAN is
+			-- True if this node has a compressed path
+		do
+			Result := compressed_path /= Void
+		end
 
 	valid_child_for_insertion(a_node: like child_type):BOOLEAN is
 			-- valid OBJ children of a REL node might not all be unique
@@ -154,6 +177,40 @@ feature -- Modification
 			precursor(obj_node, after_obj_node)
 		end
 
+	set_compressed_path(a_path: OG_PATH) is
+			-- set `compressed_path'
+		require
+			Path_attached: a_path /= Void
+		do
+			compressed_path := a_path
+			if not is_root then
+				parent.replace_node_id (node_id, node_key)
+			end
+		ensure
+			Compessed_path_set: compressed_path = a_path
+			Parent_has_child: not is_root implies parent.child_with_id (node_key) = Current
+			Compressed_path_flag_set: has_compressed_path
+		end
+
+	clear_compressed_path is
+			-- remove `compressed_path'
+		do
+			compressed_path := Void
+		ensure
+			not has_compressed_path
+		end
+
+	compress_path is
+			-- compress the path and reparent current node to root node
+		do
+			compressed_path := parent.path
+			if not parent.is_root then
+				reparent_to_root
+			end
+		ensure
+			Compressed_path_set: compressed_path /= Void
+		end
+
 feature {NONE} -- Implementation
 
 	child_type: OG_OBJECT
@@ -162,8 +219,30 @@ feature {NONE} -- Implementation
 	duplicate_child_id_count: INTEGER
 			-- cumulative count of children with 'unknown' ids - used to generate unique ids
 
+	reparent_to_root is
+			-- reparent this node to the root node, removing intervening orphaned nodes on the way
+		local
+			p: like parent
+			csr: OG_NODE
+		do
+			p := parent
+			p.remove_child (Current)
+			from
+				csr := p
+			until
+				csr.parent = Void
+			loop
+				if not csr.has_children then
+					csr.parent.remove_child (csr)
+				end
+				csr := csr.parent
+			end
+			csr.put_child (Current)
+		end
+
 invariant
 	Generic_validity: not (is_generic xor node_id.is_equal(Generic_attr_name))
+	Compressed_path_valid: compressed_path /= Void implies not compressed_path.is_empty
 
 end
 

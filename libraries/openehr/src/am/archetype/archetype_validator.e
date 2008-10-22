@@ -95,6 +95,9 @@ feature -- Access
 	target: DIFFERENTIAL_ARCHETYPE
 			-- differential archetype being validated
 
+	compressed_definition: !C_COMPLEX_OBJECT
+			-- path-compressed form of definition of target archetype
+
 	flat_parent: FLAT_ARCHETYPE
 			-- flat version of parent archetype, if target is specialised
 
@@ -298,8 +301,7 @@ feature {NONE} -- Implementation
 			-- Validate items in `found_internal_references'.
 		local
 			use_refs: HASH_TABLE [ARRAYED_LIST [ARCHETYPE_INTERNAL_REF], STRING]
-			found: BOOLEAN
-			arch: DIFFERENTIAL_ARCHETYPE
+			arch: ARCHETYPE
 		do
 			use_refs := target.use_node_index
 
@@ -308,24 +310,15 @@ feature {NONE} -- Implementation
 			until
 				use_refs.off
 			loop
-				-- check on paths up the specialisation tree
-				from
-					arch := target
-					found := arch.definition.has_path (use_refs.key_for_iteration)
-				until
-					found or not arch.is_specialised
-				loop
-					arch := arch.parent_archetype
-					found := arch.definition.has_path (use_refs.key_for_iteration)
-				end
-
-				if found then
-					convert_use_ref_paths (use_refs.item_for_iteration, use_refs.key_for_iteration, arch)
+				-- check on paths in the current archetype
+				if target.definition.has_path (use_refs.key_for_iteration) then
+					convert_use_ref_paths (use_refs.item_for_iteration, use_refs.key_for_iteration, target)
+				elseif target.is_specialised and flat_parent.definition.has_path (use_refs.key_for_iteration) then
+					convert_use_ref_paths (use_refs.item_for_iteration, use_refs.key_for_iteration, flat_parent)
 				else
 					passed := False
 					add_error("VUNP", <<use_refs.key_for_iteration>>)
 				end
-
 				use_refs.forth
 			end
 		end
@@ -520,11 +513,7 @@ feature {NONE} -- Implementation
 									ca_parent_flat.path, ca_parent_flat.cardinality.as_string>>)
 					end
 				elseif ca_child_diff.node_congruent_to (ca_parent_flat) and ca_child_diff.parent.is_congruent then
-					debug("validate")
-						io.put_string ("Setting ATTR node congruent " + ca_child_diff.path + "%N")
-					end
 					ca_child_diff.set_is_congruent
-					ca_child_diff.set_differential_path(ca_child_diff.parent.path)
 				end
 
 			elseif {co_child_diff: !C_OBJECT} a_c_node then
@@ -566,10 +555,7 @@ feature {NONE} -- Implementation
 						end
 					else
 						-- nodes are at least conformant; check for congruence for specalisation path replacement
-						if co_child_diff.node_congruent_to (co_parent_flat) and (co_child_diff.is_root or else co_child_diff.parent.is_congruent) then
-							debug("validate")
-								io.put_string ("Setting OBJ node congruent " + co_child_diff.path + "%N")
-							end
+						if {cco: !C_COMPLEX_OBJECT} co_child_diff and co_child_diff.node_congruent_to (co_parent_flat) and (co_child_diff.is_root or else co_child_diff.parent.is_congruent) then
 							co_child_diff.set_is_congruent
 						end
 

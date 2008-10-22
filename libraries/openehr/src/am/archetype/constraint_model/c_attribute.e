@@ -17,7 +17,7 @@ inherit
 	ARCHETYPE_CONSTRAINT
 
 		redefine
-			default_create, parent, representation
+			default_create, parent, representation, path
 		end
 
 	ARCHETYPE_TERM_CODE_TOOLS
@@ -71,16 +71,37 @@ feature -- Access
 			Result := representation.node_id
 		end
 
+	rm_attribute_path: STRING is
+			-- path of this attribute, including compressed path where applicable
+		do
+			Result := representation.node_key
+		end
+
 	children: ARRAYED_LIST [C_OBJECT]
 
 	existence: MULTIPLICITY_INTERVAL
 
 	cardinality: CARDINALITY
 
-	differential_path: STRING
-			-- if set, contains the path to this attribute, excluding the attribute name, allowing this
+	path: STRING is
+			-- take account of compressed path if it exists
+		do
+			if has_compressed_path then
+				Result := representation.node_key
+			else
+				Result := precursor
+			end
+		end
+
+	compressed_path: STRING is
+			-- if set, contains the path to this attribute, excluding the name of this attribute, allowing this
 			-- C_ATTRIBUTE to stand as a 'path-compressed' replacement for a string of C_COMPLEX_OBJECT/
 			-- C_ATTRIBUTE constraint objects
+		do
+			if representation.has_compressed_path then
+				Result := representation.compressed_path.as_string
+			end
+		end
 
 	occurrences_total_range: MULTIPLICITY_INTERVAL is
 			-- calculate total possible cardinality range based on occurrences of all children
@@ -216,6 +237,12 @@ feature -- Status Report
 			Result := children.is_empty
 		end
 
+	has_children: BOOLEAN is
+			-- True if any object nodes below this node
+		do
+			Result := children.count > 0
+		end
+
 	is_relationship: BOOLEAN is
 			-- (in the UML sense) - True if attribute target type is not a primitive data type
 		require
@@ -243,6 +270,12 @@ feature -- Status Report
 			-- 	True if this attribute is multiple and ordered
 		do
 			Result := is_multiple and then cardinality.is_ordered
+		end
+
+	has_compressed_path: BOOLEAN is
+			-- True if this node has a contracted path
+		do
+			Result := compressed_path /= Void
 		end
 
 	is_valid: BOOLEAN is
@@ -352,14 +385,31 @@ feature -- Modification
 			cardinality := a_cardinality
 		end
 
-	set_differential_path (a_path: STRING) is
-			-- set `differential_path'
+	set_compressed_path(a_path: STRING) is
+			-- set `compressed_path'
 		require
 			Path_valid: a_path /= Void and then not a_path.is_empty
 		do
-			differential_path := a_path
+			representation.set_compressed_path(create {OG_PATH}.make_from_string (a_path))
+		end
+
+	clear_compressed_path is
+			-- remove `compressed_path'
+		do
+			representation.clear_compressed_path
+		end
+
+	compress_path is
+			-- set `compressed_path'
+		require
+			not has_compressed_path
+		do
+			representation.set_compressed_path(representation.parent.path)
+			if not parent.is_root then
+				reparent_to_root
+			end
 		ensure
-			Differential_path_set: differential_path = a_path
+			Compressed_path_set: compressed_path /= Void
 		end
 
 	put_child(an_obj: C_OBJECT) is
@@ -434,7 +484,7 @@ feature -- Modification
 			Attribute_validity: is_single
 			Object_valid: an_obj /= Void and then valid_replacement_child(an_obj)
 		do
-			representation.replace_child_by_id(an_obj.representation, child_with_rm_type_name(an_obj.rm_type_name).representation.node_id)
+			representation.replace_child_by_id(an_obj.representation, child_with_rm_type_name(an_obj.rm_type_name).representation.node_key)
 			children.go_i_th (children.index_of (child_with_rm_type_name(an_obj.rm_type_name), 1))
 			children.replace (an_obj)
 			an_obj.set_parent(Current)
@@ -445,8 +495,20 @@ feature -- Modification
 		require
 			Object_valid: an_obj /= Void and then has_child (an_obj)
 		do
-			representation.remove_child (an_obj.node_id)
+			representation.remove_child_by_id (an_obj.node_id)
 			children.prune_all(an_obj)
+		end
+
+	replace_node_id(old_id, new_id: STRING) is
+			-- replace old_id with new_id in relevant child node, and also in attribute parent list
+		require
+			Old_id_valid: old_id /= Void and then has_child_with_id (old_id)
+			New_id_valid: new_id /= Void and then not new_id.is_empty
+		do
+			representation.replace_node_id(old_id, new_id)
+			representation.child_with_id (new_id).set_node_id (new_id)
+		ensure
+			has_child_with_id (new_id)
 		end
 
 	overlay_differential(an_obj, diff_obj: C_OBJECT) is
@@ -455,7 +517,9 @@ feature -- Modification
 			Obj_valid: has_child (an_obj)
 			Diff_obj_valid: diff_obj /= Void and then diff_obj.node_conforms_to (an_obj)
 		do
-			representation.replace_node_id(an_obj.node_id, diff_obj.node_id)
+			if not an_obj.node_id.is_equal(diff_obj.node_id) then
+				representation.replace_node_id(an_obj.node_id, diff_obj.node_id)
+			end
 			an_obj.overlay_differential (diff_obj)
 		end
 
@@ -525,6 +589,49 @@ feature -- Serialisation
 			visitor.end_c_attribute(Current, depth)
 		end
 
+feature {NONE} -- Implementation
+
+	reparent_to_root is
+			-- reparent this node to the root node, removing intervening orphaned nodes on the way
+		local
+			p: like parent
+			csr: ARCHETYPE_CONSTRAINT
+		do
+			p := parent
+			debug("compress")
+				io.put_string("%T%Tabout to REPARENT attribute Current (" + rm_attribute_path + ") from parent object " + p.rm_type_name + "[" + p.node_id + "]%N")
+			end
+			p.remove_attribute (Current)
+			from
+				csr := p
+			until
+				csr.parent = Void
+			loop
+				if {cco: !C_COMPLEX_OBJECT} csr.parent and {ca: !C_ATTRIBUTE} csr then
+					if not ca.has_children then
+						debug("compress")
+							io.put_string("%T%Tabout to remove ORPHAN attribute " + ca.rm_attribute_name + " from object " + cco.rm_type_name + "[" + cco.node_id + "]%N")
+						end
+						cco.remove_attribute (ca)
+					end
+				elseif {ca2: !C_ATTRIBUTE} csr.parent and {cco2: !C_COMPLEX_OBJECT} csr then
+					if not cco2.has_attributes then
+						debug("compress")
+							io.put_string("%T%Tabout to remove ORPHAN object " + cco2.rm_type_name + "[" + cco2.node_id + "] from attribute " + ca2.rm_attribute_name + "%N")
+						end
+						ca2.remove_child(cco2)
+					end
+				end
+				csr := csr.parent
+			end
+			if {cco3: !C_COMPLEX_OBJECT} csr then
+				debug("compress")
+					io.put_string("%T%Tabout to put REPARENTED attribute Current (" + rm_attribute_path + ") on ROOT object " + cco3.rm_type_name + "[" + cco3.node_id + "]%N")
+				end
+				cco3.put_attribute (Current)
+			end
+		end
+
 invariant
 	Rm_attribute_name_valid: rm_attribute_name /= Void and then not rm_attribute_name.is_empty
 	Existence_set: existence /= Void
@@ -532,6 +639,7 @@ invariant
 	Any_allowed_validity: any_allowed xor not children.is_empty
 	Is_multiple_validity: is_multiple implies cardinality /= Void
 	Children_occurrences_validity: cardinality.interval.contains (occurrences_total_range)
+	Compressed_path_valid: compressed_path /= Void implies not compressed_path.is_empty
 
 end
 

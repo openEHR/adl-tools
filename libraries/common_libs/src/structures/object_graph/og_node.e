@@ -31,17 +31,17 @@ feature -- Initialisation
 
 feature -- Access
 
-	child_with_id(a_node_id: STRING): like child_type is
-			-- find the child node with `a_node_id'
+	child_with_id(a_node_key: STRING): like child_type is
+			-- find the child node with `a_node_key'
 		require
-			has_child_with_id(a_node_id)
+			has_child_with_id(a_node_key)
 		do
-			-- FIXME: should just be able to search with node_id, but we are still
-			-- using the 'unknown; node_ids rather than empty strings
-			if a_node_id.is_empty then
+			-- FIXME: should just be able to search with node_key, but we are still
+			-- using the 'unknown' node_keys rather than empty strings
+			if a_node_key.is_empty then
 				Result := first_child
 			else
-				Result := children.item(a_node_id)
+				Result := children.item(a_node_key)
 			end
 		ensure
 			Result_exists: Result /= Void
@@ -88,16 +88,16 @@ feature -- Status Report
 			Result := not children.is_empty
 		end
 
-	has_child_with_id(a_node_id: STRING): BOOLEAN is
+	has_child_with_id(a_node_key: STRING): BOOLEAN is
 		require
-			node_id_valid: a_node_id /= Void
+			node_key_valid: a_node_key /= Void
 		do
-			-- FIXME: should just be able to search with node_id, but we are still
-			-- using the 'unknown' node_ids rather than empty strings
-			if a_node_id.is_empty then
+			-- FIXME: should just be able to search with node_key, but we are still
+			-- using the 'unknown' node_keys rather than empty strings
+			if a_node_key.is_empty then
 				Result := has_children
 			else
-				Result := children.has(a_node_id)
+				Result := children.has(a_node_key)
 			end
 		end
 
@@ -164,9 +164,8 @@ feature -- Modification
 		require
 			Node_exists: a_node /= Void and then valid_child_for_insertion(a_node)
 		do
-			children.put(a_node, a_node.node_id)
+			children.put(a_node, a_node.node_key)
 			a_node.set_parent(Current)
-			a_node.set_sibling_order(children.count)
 			children_ordered.extend(a_node)
 			children_sorted.extend(a_node)
 		ensure
@@ -179,9 +178,8 @@ feature -- Modification
 			Node_valid: a_node /= Void and then valid_child_for_insertion(a_node)
 			Before_node_valid: before_node /= Void and then has_child(before_node)
 		do
-			children.put(a_node, a_node.node_id)
+			children.put(a_node, a_node.node_key)
 			a_node.set_parent(Current)
-			a_node.set_sibling_order(children.count)
 			children_ordered.go_i_th (children_ordered.index_of (before_node, 1))
 			children_ordered.put_left (a_node)
 			children_sorted.extend(a_node)
@@ -195,9 +193,8 @@ feature -- Modification
 			Node_valid: a_node /= Void and then valid_child_for_insertion(a_node)
 			After_node_valid: after_node /= Void and then has_child(after_node)
 		do
-			children.put(a_node, a_node.node_id)
+			children.put(a_node, a_node.node_key)
 			a_node.set_parent(Current)
-			a_node.set_sibling_order(children.count)
 			children_ordered.go_i_th (children_ordered.index_of (after_node, 1))
 			children_ordered.put_right (a_node)
 			children_sorted.extend(a_node)
@@ -223,23 +220,23 @@ feature -- Modification
 		do
 			children_ordered.prune_all (a_node)
 			children_sorted.prune_all (a_node)
-			children.remove (a_node.node_id)
+			children.remove (a_node.node_key)
 			a_node.set_root
 		ensure
 			Child_removed: not has_child (a_node)
 		end
 
-	remove_child_by_id(a_node_id: STRING) is
-			-- remove the child node identified by a_node_id
+	remove_child_by_id(a_node_key: STRING) is
+			-- remove the child node identified by a_node_key
 		require
-			Node_exists: a_node_id /= Void and then has_child_with_id(a_node_id)
+			Node_exists: a_node_key /= Void and then has_child_with_id(a_node_key)
 		local
 			c: OG_ITEM
 		do
-			c := child_with_id (a_node_id)
+			c := child_with_id (a_node_key)
 			remove_child(c)
 		ensure
-			Child_removed: not has_child_with_id (a_node_id)
+			Child_removed: not has_child_with_id (a_node_key)
 		end
 
 	remove_all_children is
@@ -252,12 +249,16 @@ feature -- Modification
 			Children_removed: children.is_empty
 		end
 
-	replace_node_id(an_old_node_id, a_new_node_id: STRING) is
-			-- replace `an_old_node_id' with `a_new_node_id' in the children
+	replace_node_id(an_old_node_key, a_new_node_key: STRING) is
+			-- replace `an_old_node_key' with `a_new_node_key' in the children
 			-- this has the effect of making an object indexed by a new node id,
 			-- that it doesn't itself carry
+		require
+			Keys_different: not an_old_node_key.is_equal (a_new_node_key)
 		do
-			children.replace_key (a_new_node_id, an_old_node_id)
+			children.replace_key (a_new_node_key, an_old_node_key)
+		ensure
+			Child_indexed_by_path_not_id: not child_with_id (a_new_node_key).node_id.is_equal (a_new_node_key)
 		end
 
 feature {OG_NODE} -- Implementation

@@ -273,6 +273,8 @@ feature {NONE} -- Implementation
 									if invariant_context.tree /= Void then
 										Result.set_invariants(invariant_context.tree)
 									end
+
+									Result.rebuild
 								end
 							end
 						end

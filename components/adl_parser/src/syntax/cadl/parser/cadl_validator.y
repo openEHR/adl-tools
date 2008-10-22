@@ -494,9 +494,7 @@ c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence
 				attr_node.set_existence($2)
 				c_attrs.put(attr_node)
 				debug("ADL_parse")
-					io.put_string(indent + "PUSH create ATTR_NODE " + attr_node.rm_attribute_name + " existence=(" + $2.as_string + ")%N") 
-				
-
+					io.put_string(indent + "PUSH create SINGLE ATTR_NODE " + rm_attribute_name + " existence=(" + $2.as_string + ")%N") 
 					io.put_string(indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_child(REL)%N") 
 					indent.append("%T")
 				end
@@ -517,9 +515,7 @@ c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence
 				attr_node.set_existence($2)
 				c_attrs.put(attr_node)
 				debug("ADL_parse")
-					io.put_string(indent + "PUSH create ATTR_NODE " + attr_node.rm_attribute_name + " existence=(" + $2.as_string + "); cardinality=(" + $3.as_string + ")%N") 
-				
-
+					io.put_string(indent + "PUSH create MULTIPLE ATTR_NODE " + rm_attribute_name + " existence=(" + $2.as_string + "); cardinality=(" + $3.as_string + ")%N") 
 					io.put_string(indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_child(REL)%N") 
 					indent.append("%T")
 				end
@@ -528,6 +524,54 @@ c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence
 			else
 				raise_error
 				report_error(create_message("VCATU", <<rm_attribute_name>>))
+				abort
+			end
+		}
+	| absolute_path c_existence
+		{
+			rm_attribute_name := $1.last.attr_name
+			$1.remove_last
+			path_str := $1.as_string
+
+			if not object_nodes.item.has_attribute(rm_attribute_name) then
+				create attr_node.make_single(rm_attribute_name)
+				attr_node.set_compressed_path(path_str)
+				attr_node.set_existence($2)
+				c_attrs.put(attr_node)
+				debug("ADL_parse")
+					io.put_string(indent + "PUSH create SINGLE ATTR_NODE " + path_str + " existence=(" + $2.as_string + ")%N") 
+					io.put_string(indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_child(REL)%N") 
+					indent.append("%T")
+				end
+
+				object_nodes.item.put_attribute(attr_node)
+			else
+				raise_error
+				report_error(create_message("VCATU", <<path_str>>))
+				abort
+			end
+		}
+	| absolute_path c_existence c_cardinality
+		{
+			rm_attribute_name := $1.last.attr_name
+			$1.remove_last
+			path_str := $1.as_string
+
+			if not object_nodes.item.has_attribute(rm_attribute_name) then
+				create attr_node.make_multiple(rm_attribute_name, $3)
+				attr_node.set_existence($2)
+				attr_node.set_compressed_path(path_str)
+				c_attrs.put(attr_node)
+				debug("ADL_parse")
+					io.put_string(indent + "PUSH create MULTIPLE ATTR_NODE " + path_str + " existence=(" + $2.as_string + "); cardinality=(" + $3.as_string + ")%N") 
+					io.put_string(indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_child(REL)%N") 
+					indent.append("%T")
+				end
+
+				object_nodes.item.put_attribute(attr_node)
+			else
+				raise_error
+				report_error(create_message("VCATU", <<path_str>>))
 				abort
 			end
 		}
@@ -2419,6 +2463,11 @@ feature {NONE} -- Parse Tree
 	complex_obj: C_COMPLEX_OBJECT
 
 	c_attrs: ARRAYED_STACK [C_ATTRIBUTE]
+			-- main stack of attributes during construction
+
+	c_diff_attrs: ARRAYED_LIST [C_ATTRIBUTE]
+			-- reference list of attributes with compressed paths that require a special grafting process
+
 	attr_node: C_ATTRIBUTE
 
 	c_prim_obj: C_PRIMITIVE_OBJECT
@@ -2452,6 +2501,7 @@ feature {NONE} -- Parse Tree
 	cardinality_limit_pos_infinity: BOOLEAN
 
 	rm_attribute_name: STRING
+	path_str: STRING
 	occurrences: STRING
 	c_occurrences_default: BOOLEAN
 

@@ -811,7 +811,11 @@ feature {NONE} -- Implementation
 		--	if c_attr.is_multiple then
 		--	 	Result.append(" [" + c_attr.cardinality.as_string + "] ")
 		--	end
-			Result.append(c_attr.rm_attribute_name)
+		--	if c_attr.is_congruent then
+		--		Result.append ("^ ")
+		--	end
+
+			Result.append(c_attr.rm_attribute_path)
 			if c_attr.any_allowed then
 				Result.append(" matches {*}")
 			end
@@ -841,7 +845,11 @@ feature {NONE} -- Implementation
 		do
 			create Result.make_empty
 			-- if not a_node.is_occurrences_default then
-				-- Result.append(" [" + a_node.occurrences.as_occurrences_string + "] ")
+			-- 	Result.append(" [" + a_node.occurrences.as_occurrences_string + "] ")
+			-- end
+
+			-- if a_node.is_congruent then
+			-- 	Result.append ("^ ")
 			-- end
 
 			if a_node.is_addressable then

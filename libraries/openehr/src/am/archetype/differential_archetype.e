@@ -181,9 +181,10 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER} -- Validation
 			end
 		end
 
-feature {ADL_ENGINE} -- Serialisation
+feature {ARCH_REP_ARCHETYPE} -- Structure
 
 	compress_paths is
+			-- FIXME: only needed while differential archetype source is being created in uncompressed form
 			-- compress paths of congruent nodes in specialised archetype so that equivalent paths
 			-- are recorded in the `compressed_path' attribute of terminal C_ATTRIBUTE nodes of congruent sections
 		require
@@ -191,29 +192,58 @@ feature {ADL_ENGINE} -- Serialisation
 		local
 			def_it: C_ITERATOR
 		do
+			compressed_def := definition.deep_twin
 			create def_it.make(definition)
 			def_it.do_at_surface(agent compress_node, agent congruent_node_test)
+			definition := compressed_def
+			rebuild
 		end
 
+	compressed_def: !C_COMPLEX_OBJECT
+
 	congruent_node_test (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN  is
+			-- FIXME: only needed while differential archetype source is being created in uncompressed form
 			-- return True if node.is_congruent is True
 		do
 			Result := not a_c_node.is_congruent
 		end
 
 	compress_node (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)  is
+			-- FIXME: only needed while differential archetype source is being created in uncompressed form
 			-- perform validation of node against reference model
+		local
+			co2: C_OBJECT
+			ca2: C_ATTRIBUTE
 		do
 			if {ca: !C_ATTRIBUTE} a_c_node then
-							debug("compress")
-								io.put_string ("Will compress path at ATTR " + ca.path + "%N")
-							end
+				if compressed_def.has_attribute_path (ca.path) then
+					ca2 := compressed_def.c_attribute_at_path (ca.path)
+					if not ca2.has_compressed_path then
+						debug("compress")
+							io.put_string ("Will compress path at ATTR " + ca.path + "%N")
+						end
+						ca2.compress_path
+					else
+						debug("compress")
+							io.put_string ("Path " + ca.path + " no longer available - attribute moved (already compressed?)%N")
+						end
+					end
+				end
 			elseif {co: !C_OBJECT} a_c_node then
+				if not co.is_root then
+					if compressed_def.has_object_path (co.path) then
+						co2 := compressed_def.c_object_at_path (co.path)
+						if not co2.parent.has_compressed_path then
 							debug("compress")
-								io.put_string ("Will compress path at OBJ " + co.path + "%N")
+								io.put_string ("Will compress path of ATTR above OBJ with path " + co.path + "%N")
 							end
-				if not co.is_root and not co.parent.has_compressed_path then
-					co.parent.compress_path
+							co2.parent.compress_path
+						end
+					else
+						debug("compress")
+							io.put_string ("Path " + co.path + " no longer available - parent moved (already compressed?)%N")
+						end
+					end
 				end
 			end
 		end
@@ -225,7 +255,7 @@ feature -- Modification
 		require
 			Valid_term_code: ontology.has_term_code(a_term_code)
 		do
-			definition.set_object_id(a_term_code)
+			definition.set_node_id(a_term_code)
 		end
 
 	reset_definition is

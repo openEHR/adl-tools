@@ -64,6 +64,13 @@ feature -- Access
 
 	attributes: ARRAYED_LIST [C_ATTRIBUTE]
 
+	attribute(an_attr_name: STRING): C_ATTRIBUTE is
+		require
+			an_attr_name_valid: an_attr_name /= Void and then has_attribute(an_attr_name)
+		do
+			Result ?= representation.child_with_id(an_attr_name).content_item
+		end
+
 	c_attribute_at_path(a_path: STRING): C_ATTRIBUTE is
 			-- get C_ATTRIBUTE at a path (which doesn't terminate in '/')
 		require
@@ -155,6 +162,12 @@ feature -- Status Report
 			Result := attributes.is_empty
 		end
 
+	has_attributes: BOOLEAN is
+			-- True if any attribute nodes below this node
+		do
+			Result := attributes.count > 0
+		end
+
 	has_path(a_path: STRING): BOOLEAN is
 			-- does a_path exist from this node?
 		require
@@ -230,10 +243,12 @@ feature -- Modification
 	remove_attribute(an_attr: C_ATTRIBUTE) is
 			-- remove an existing attribute
 		require
-			Attribute_exists: an_attr /= Void and has_attribute (an_attr.rm_attribute_name)
+			Attribute_exists: an_attr /= Void and has_attribute (an_attr.rm_attribute_path)
 		do
 			attributes.prune_all(an_attr)
-			representation.remove_child_by_id (an_attr.rm_attribute_name)
+			representation.remove_child (an_attr.representation)
+		ensure
+			not has_attribute (an_attr.rm_attribute_path)
 		end
 
 	remove_all_attributes is

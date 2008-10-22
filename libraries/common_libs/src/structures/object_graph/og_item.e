@@ -25,7 +25,7 @@ inherit
 	ARCHETYPE_TERM_CODE_TOOLS
 		export
 			{NONE} all;
-			{ANY} specialisation_depth_from_code;
+			{ANY} specialisation_depth_from_code, is_valid_code;
 		undefine
 			is_equal
 		end
@@ -45,9 +45,6 @@ feature -- Initialisation
 		do
 			default_create
 			node_id := a_node_id
-			if is_valid_code (node_id) then
-				specialisation_depth := specialisation_depth_from_code(node_id)
-			end
 			content_item := a_content_item
 		ensure
 			Node_id_set: node_id = a_node_id
@@ -57,6 +54,12 @@ feature -- Access
 
 	node_id: STRING
 				-- id of this node
+
+	node_key: STRING is
+			-- uses compressed path if it exists
+		do
+			Result := node_id
+		end
 
 	content_item: VISITABLE
 				-- content of this node
@@ -73,13 +76,15 @@ feature -- Access
 			Result := generate_path(True)
 		end
 
-	sibling_order: INTEGER
-			-- position of this sibling as child of parent in parsed input
-
 	parent: OG_NODE
 
 	specialisation_depth: INTEGER
 			-- specialisation level of this node if identified
+		require
+			is_valid_code (node_id)
+		do
+			Result := specialisation_depth_from_code(node_id)
+		end
 
 	ultimate_parent: OG_NODE is
 			-- return the root node of the tree
@@ -159,9 +164,6 @@ feature -- Modification
 			Node_id_valid: a_node_id /= Void and then not a_node_id.is_empty
 		do
 			node_id := a_node_id
-			if is_valid_code (node_id) then
-				specialisation_depth := specialisation_depth_from_code(node_id)
-			end
 		end
 
 	set_parent(a_node: like parent) is
@@ -170,14 +172,6 @@ feature -- Modification
 			a_node /= Void
 		do
 			parent := a_node
-		end
-
-	set_sibling_order(i: INTEGER) is
-			-- set sibling order
-		require
-			i >= 1
-		do
-			sibling_order := i
 		end
 
 	set_content (a_content_item: VISITABLE) is

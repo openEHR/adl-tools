@@ -223,7 +223,7 @@ feature -- Modification
 			sibling_order := Void
 		end
 
-	set_object_id(an_object_id:STRING) is
+	set_node_id(an_object_id:STRING) is
 		require
 			Object_id_valid: an_object_id /= Void and then not an_object_id.is_empty
 		do
@@ -239,7 +239,7 @@ feature -- Modification
 			Other_valid: other /= Void and then other.node_conforms_to (Current)
 		do
 			if not other.node_id.is_equal(node_id) then
-				set_object_id(other.node_id)
+				set_node_id(other.node_id)
 			end
 			if not other.rm_type_name.is_equal(rm_type_name) then
 				rm_type_name := other.rm_type_name.twin

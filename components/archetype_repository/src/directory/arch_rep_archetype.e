@@ -399,18 +399,25 @@ feature -- Modification
 			validate
 
 			-- generate flat form
-			if is_valid and archetype_flat = Void then
-				if not archetype_differential.is_specialised then
-					create archetype_flat.make_from_differential (archetype_differential)
+			if is_valid then
+				-- if differential archetype was generated from an old-style flat, we need to perform path compression
+				if archetype_flat /= Void then
+					if archetype_differential.is_specialised then
+						archetype_differential.compress_paths
+					end
 				else
-					create arch_flattener.make (specialisation_parent.archetype_flat, archetype_differential)
-					arch_flattener.flatten_archetype
-					archetype_flat := arch_flattener.arch_output_flat
-				end
+					if not archetype_differential.is_specialised then
+						create archetype_flat.make_from_differential (archetype_differential)
+					else
+						create arch_flattener.make (specialisation_parent.archetype_flat, archetype_differential)
+						arch_flattener.flatten_archetype
+						archetype_flat := arch_flattener.arch_output_flat
+					end
 
-				-- TODO: Consider setting `flat_text' from serialiser rather than by reading the flat file:
-				file_repository.read_text_from_file (flat_path)
-				flat_text := file_repository.text
+					-- TODO: Consider setting `flat_text' from serialiser rather than by reading the flat file:
+					file_repository.read_text_from_file (flat_path)
+					flat_text := file_repository.text
+				end
 			end
 		ensure
 			archetype_set: archetype_differential = an_archetype
@@ -425,7 +432,6 @@ feature -- Modification
 			post_info (Current, "set_archetype_flat", "parse_archetype_i2", <<id.as_string>>)
 			archetype_flat := an_archetype
 			set_archetype_differential (an_archetype.to_differential)
-			archetype_flat.rebuild
 			archetype_flat.set_is_valid (is_valid)
 		ensure
 			archetype_set: archetype_flat = an_archetype
