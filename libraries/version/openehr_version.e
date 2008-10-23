@@ -29,7 +29,7 @@ feature -- Access
 	major: INTEGER = 1
 			-- The major version number: manually incremented.
 
-	minor: INTEGER = 4
+	minor: INTEGER = 5
 			-- The minor version number: manually incremented.
 
 	build: INTEGER = 2
