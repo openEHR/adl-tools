@@ -191,14 +191,18 @@ feature -- Comparison
 					Result := True
 				elseif not any_allowed then
 					if terminology_id.is_equal (other.terminology_id) then
-						from
-							code_list.start
-						until
-							code_list.off or not (other.has_code (code_list.item) or else other.has_parent_code(code_list.item))
-						loop
-							code_list.forth
+						if code_list /= Void then
+							from
+								code_list.start
+							until
+								code_list.off or not (other.has_code (code_list.item) or else other.has_parent_code(code_list.item))
+							loop
+								code_list.forth
+							end
+							Result := code_list.off
+						else
+							Result := True
 						end
-						Result := code_list.off
 					end
 				end
 			end
