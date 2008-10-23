@@ -117,6 +117,12 @@ feature -- Status Report
 			end
 		end
 
+	is_compressed: BOOLEAN is
+			-- True if this path segment has a compressed path in its first attribute
+		do
+			Result := attr_name.index_of ({OG_PATH}.segment_separator, 1) > 0
+		end
+
 feature -- Modification
 
 	set_object_id(an_object_id: STRING) is
@@ -132,6 +138,19 @@ feature -- Modification
 	--		end
 		ensure
 			Object_id_set: object_id.is_equal(an_object_id) or else object_id.is_empty
+		end
+
+feature {OG_PATH} -- Modification
+
+	set_compressed_attr(a_path: STRING) is
+			-- set attr_name to a path ending in an attribute rather than the usual single attribute name
+		require
+			Path_valid: a_path /= Void and then not a_path.is_empty
+		do
+			attr_name := a_path
+		ensure
+			Attr_name_set: attr_name = a_path
+			Is_compressed: is_compressed
 		end
 
 feature -- Output

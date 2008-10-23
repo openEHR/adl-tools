@@ -156,7 +156,7 @@ feature -- Access
 			from
 				start
 				forth	-- miss first item
-				create Result.make_relative(item)
+				create Result.make_relative(item.deep_twin)
 				if is_terminal then
 					Result.set_terminal
 				end
@@ -164,7 +164,7 @@ feature -- Access
 			until
 				off
 			loop
-				Result.items.extend(create {OG_PATH_ITEM}.make_from_other(item))
+				Result.items.extend(create {OG_PATH_ITEM}.make_from_other(item.deep_twin))
 				forth
 			end
 		ensure
@@ -176,7 +176,7 @@ feature -- Access
 		require
 			not is_final
 		do
-			create Result.make_relative(item)
+			create Result.make_relative(item.deep_twin)
 			if is_terminal then
 				Result.set_terminal
 			end
@@ -186,7 +186,7 @@ feature -- Access
 			until
 				off
 			loop
-				Result.items.extend(create {OG_PATH_ITEM}.make_from_other(item))
+				Result.items.extend(create {OG_PATH_ITEM}.make_from_other(item.deep_twin))
 				forth
 			end
 		ensure
@@ -213,6 +213,12 @@ feature -- Cursor Movement
 	back is
 		do
 			items.back
+		end
+
+	go_i_th(i: INTEGER) is
+			-- move to ith item from start
+		do
+			items.go_i_th (i)
 		end
 
 feature -- Status Report
@@ -252,6 +258,12 @@ feature -- Status Report
 	is_last: BOOLEAN is
 		do
 			Result := items.islast
+		end
+
+	is_compressed: BOOLEAN is
+			-- True if this path has a leading compressed path in its first attribute
+		do
+			Result := not is_empty and then items.first.is_compressed
 		end
 
 	off: BOOLEAN is
@@ -314,6 +326,7 @@ feature -- Modification
 			-- add segment to the end
 		require
 			item_valid: an_item /= Void and not items.last.is_feature_call
+			Segment_not_compressed: not an_item.is_compressed
 		do
 			items.extend(an_item)
 		end
@@ -322,6 +335,7 @@ feature -- Modification
 			-- add segment to the front
 		require
 			item_valid: an_item /= Void
+			Not_compressed: not is_compressed
 		do
 			items.put_front(an_item)
 		end
@@ -330,6 +344,7 @@ feature -- Modification
 			-- add a_path to the end
 		require
 			path_valid: a_path /= Void
+			Path_not_compressed: not a_path.is_compressed
 		do
 			items.append(a_path.items)
 		end
@@ -338,6 +353,7 @@ feature -- Modification
 			-- add a_path to the beginning, and copy `is_absolute' and `is_movable' if necessary
 		require
 			path_valid: a_path /= Void
+			Not_compressed: not is_compressed
 		local
 			p: ARRAYED_LIST[OG_PATH_ITEM]
 		do
@@ -346,6 +362,18 @@ feature -- Modification
 			items.append (p)
 			is_absolute := a_path.is_absolute
 			is_movable := a_path.is_movable
+		end
+
+	compress_path(a_path: STRING) is
+			-- set attr_name of first item to a path ending in an attribute rather than the usual single attribute name;
+			-- used for compressed path processing
+		require
+			Path_valid: a_path /= Void and then not a_path.is_empty
+		do
+			items.first.set_compressed_attr (a_path)
+		ensure
+			Attr_name_set: first.attr_name.is_equal (a_path)
+			Is_compressed: is_compressed
 		end
 
 feature -- Status Setting

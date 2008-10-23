@@ -55,12 +55,16 @@ feature -- Access
 			-- find the object node at the relative path `a_path'
 		require
 			Path_valid: a_path /= Void and then has_path(a_path)
+		local
+			s_path: OG_PATH
 		do
 			if a_path.is_root then
 				Result := Current
 			else
-				a_path.start
-				Result := internal_object_node_at_path(a_path)
+				-- check for compressed paths & convert path if necessary
+				s_path := compress_path(a_path)
+				s_path.start
+				Result := internal_object_node_at_path(s_path)
 			end
 		ensure
 			Result_exists: Result /= Void
@@ -70,9 +74,13 @@ feature -- Access
 			-- find the attribute node corresponding the the terminal segment of `a_path'
 		require
 			Path_valid: a_path /= Void and then has_path(a_path)
+		local
+			s_path: OG_PATH
 		do
-			a_path.start
-			Result := internal_attribute_node_at_path(a_path)
+			-- check for compressed paths & convert path if necessary
+			s_path := compress_path(a_path)
+			s_path.start
+			Result := internal_attribute_node_at_path(s_path)
 		ensure
 			Result_exists: Result /= Void
 		end
@@ -83,12 +91,16 @@ feature -- Status Report
 			-- `a_path' exists in object structure
 		require
 			Path_valid: a_path /= Void and then a_path.is_absolute implies is_root
+		local
+			s_path: OG_PATH
 		do
 			if a_path.is_root then
 				Result := True
 			else
-				a_path.start
-				Result := internal_has_path(a_path)
+				-- check for compressed paths & convert path if necessary
+				s_path := compress_path(a_path)
+				s_path.start
+				Result := internal_has_path(s_path)
 			end
 		end
 
@@ -96,12 +108,16 @@ feature -- Status Report
 			-- `a_path' refers to an object node in structure
 		require
 			Path_valid: a_path /= Void and then a_path.is_absolute implies is_root
+		local
+			s_path: OG_PATH
 		do
 			if a_path.is_root then
 				Result := True
 			else
-				a_path.start
-				Result := internal_object_node_at_path(a_path) /= Void
+				-- check for compressed paths & convert path if necessary
+				s_path := compress_path(a_path)
+				s_path.start
+				Result := internal_object_node_at_path(s_path) /= Void
 			end
 		end
 
@@ -109,12 +125,16 @@ feature -- Status Report
 			-- `a_path' refers to an attribute node in structure
 		require
 			Path_valid: a_path /= Void and then a_path.is_absolute implies is_root
+		local
+			s_path: OG_PATH
 		do
 			if a_path.is_root then
 				Result := True
 			else
-				a_path.start
-				Result := internal_attribute_node_at_path(a_path) /= Void
+				-- check for compressed paths & convert path if necessary
+				s_path := compress_path(a_path)
+				s_path.start
+				Result := internal_attribute_node_at_path(s_path) /= Void
 			end
 		end
 
@@ -293,6 +313,47 @@ feature {OG_OBJECT_NODE} -- Implementation
 					children.forth
 				end
 			end
+		end
+
+	compress_path(a_path: OG_PATH): OG_PATH is
+			-- if there is an attriute with a compressed path matching `a_path', generate a new path whose
+			-- first attribute contains the compressed section in it; else return the original `a_path'
+		require
+			Path_valid: a_path /= Void and not a_path.is_compressed
+		local
+			cand_path, a_path_str: STRING
+		do
+			if is_root then
+				a_path_str := a_path.as_string
+				create cand_path.make (0)
+				from
+					children.start
+				until
+					children.off
+				loop
+					-- if there is a compressed path and it fits inside the search path, the search path could be off that attribute
+					if children.item_for_iteration.has_compressed_path and then a_path_str.substring_index (children.key_for_iteration, 1) = 1 then
+						if children.key_for_iteration.count > cand_path.count then
+							cand_path := children.key_for_iteration
+						end
+					end
+					children.forth
+				end
+				if not cand_path.is_empty then
+					a_path.go_i_th(children.item (cand_path).compressed_path.count + 1)
+					Result := a_path.sub_path_from_item
+					Result.compress_path(cand_path)
+					if a_path.is_absolute then
+						Result.set_absolute
+					end
+				else
+					Result := a_path
+				end
+			else
+				Result := a_path
+			end
+		ensure
+			Result_exists: Result /= Void
 		end
 
 end

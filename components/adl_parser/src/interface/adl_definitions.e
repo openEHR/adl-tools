@@ -18,11 +18,11 @@ inherit
 		export
 			{NONE} all
 		end
-		
+
 feature -- Definitions
-		
-	Current_adl_version: STRING is "1.4"
-	
+
+	Current_adl_version: STRING is "1.5"
+
 end
 
 
