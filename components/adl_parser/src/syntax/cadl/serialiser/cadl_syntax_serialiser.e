@@ -266,7 +266,7 @@ feature -- Modification
 
 					adl_term := ontology.term_definition(current_language, a_node.code_list.first)
 					last_object_simple_buffer.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
-						adl_term.item("text"), STYLE_COMMENT))
+						safe_comment(adl_term.item("text")), STYLE_COMMENT))
 				end
 				last_object_simple := True
 
@@ -293,7 +293,7 @@ feature -- Modification
 						adl_term := ontology.term_definition(current_language, a_node.code_list.item)
 						last_result.append(format_item(FMT_INDENT) +
 							apply_style(format_item(FMT_COMMENT) +
-							adl_term.item("text"), STYLE_COMMENT))
+							safe_comment(adl_term.item("text")), STYLE_COMMENT))
 					end
 					last_result.append(format_item(FMT_NEWLINE))
 					a_node.code_list.forth
@@ -332,7 +332,7 @@ feature -- Modification
 					last_object_simple_buffer.append(format_item(FMT_INDENT))
 					adl_term := ontology.term_definition(current_language, a_node.items.first.symbol.code_string)
 					last_object_simple_buffer.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
-						adl_term.item("text"), STYLE_COMMENT))
+						safe_comment(adl_term.item("text")), STYLE_COMMENT))
 				end
 				last_object_simple := True
 
@@ -355,7 +355,7 @@ feature -- Modification
 						adl_term := ontology.term_definition(current_language, a_node.items.item.symbol.code_string)
 						last_result.append(format_item(FMT_INDENT) +
 							apply_style(format_item(FMT_COMMENT) +
-							adl_term.item("text"), STYLE_COMMENT))
+							safe_comment(adl_term.item("text")), STYLE_COMMENT))
 					end
 					last_result.append(format_item(FMT_NEWLINE))
 					a_node.items.forth
