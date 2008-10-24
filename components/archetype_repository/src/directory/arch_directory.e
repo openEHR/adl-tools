@@ -159,6 +159,7 @@ feature -- Access
 		local
 			regex_matcher: LX_DFA_REGULAR_EXPRESSION
 			arch_rm_type, slot_rm_type: STRING
+			an_arch_id: ARCHETYPE_ID
 		do
 			create Result.make (0)
 			if an_rm_type /= Void then
@@ -173,7 +174,13 @@ feature -- Access
 				loop
 					if regex_matcher.matches (archetype_id_index.key_for_iteration) then
 						if slot_rm_type /= Void then
+	-- FIXME: remove when support for old-style archetype ids no longer needed
+	create an_arch_id
+	if an_arch_id.valid_id (archetype_id_index.key_for_iteration) then
 							arch_rm_type := (create {ARCHETYPE_ID}.make_from_string (archetype_id_index.key_for_iteration)).rm_entity
+	else
+							arch_rm_type := (create {ARCHETYPE_ID}.old_make_from_string (archetype_id_index.key_for_iteration)).rm_entity
+	end
 							arch_rm_type.to_lower
 							if slot_rm_type.is_equal (arch_rm_type) then
 								Result.extend(archetype_id_index.key_for_iteration)

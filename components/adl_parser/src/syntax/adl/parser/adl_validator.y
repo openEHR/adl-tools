@@ -72,7 +72,11 @@ archetype: arch_identification
 
 arch_identification: arch_head V_ARCHETYPE_ID 
 		{
-			create archetype_id.make_from_string($2) -- FIXME - should be other make routine
+			if arch_id.valid_id($2) then
+				create archetype_id.make_from_string($2)
+			elseif arch_id.old_valid_id($2) then
+				create archetype_id.old_make_from_string($2)
+			end
 		}
 	| SYM_ARCHETYPE error
 		{
@@ -110,7 +114,11 @@ arch_meta_data_item: SYM_ADL_VERSION '=' V_VERSION_STRING
 arch_specialisation: -- empty is ok
 	| SYM_SPECIALIZE V_ARCHETYPE_ID 
 		{
-			create parent_archetype_id.make_from_string($2) -- FIXME - should be other make routine
+			if arch_id.valid_id($2) then
+				create parent_archetype_id.make_from_string($2)
+			elseif arch_id.old_valid_id($2) then
+				create parent_archetype_id.old_make_from_string($2)
+			end
 			if not parent_archetype_id.semantic_id.is_equal(archetype_id.semantic_parent_id) then
 				raise_error
 				report_error(create_message("VASID", Void))
@@ -272,5 +280,10 @@ feature -- Access
 feature {NONE} -- Implementation 
 
 	str: STRING
+
+	arch_id: ARCHETYPE_ID is
+		once
+			create Result
+		end
 
 end
