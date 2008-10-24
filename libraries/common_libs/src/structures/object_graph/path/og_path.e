@@ -173,8 +173,6 @@ feature -- Access
 
 	sub_path_from_item: OG_PATH is
 			-- the section of the current path from current `item' position to the end
-		require
-			not is_final
 		do
 			create Result.make_relative(item.deep_twin)
 			if is_terminal then
@@ -325,7 +323,7 @@ feature -- Modification
 	append_segment(an_item: OG_PATH_ITEM) is
 			-- add segment to the end
 		require
-			item_valid: an_item /= Void and not items.last.is_feature_call
+			item_valid: an_item /= Void
 			Segment_not_compressed: not an_item.is_compressed
 		do
 			items.extend(an_item)

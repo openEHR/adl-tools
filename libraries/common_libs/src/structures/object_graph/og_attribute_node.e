@@ -84,7 +84,9 @@ feature -- Access
 		do
 			if has_compressed_path then
 				Result := compressed_path.as_string
-				Result.append_character({OG_PATH}.segment_separator)
+				if not compressed_path.is_root then
+					Result.append_character({OG_PATH}.segment_separator)
+				end
 				Result.append(node_id)
 			else
 				Result := node_id
@@ -183,7 +185,7 @@ feature -- Modification
 			Path_attached: a_path /= Void
 		do
 			compressed_path := a_path
-			if not is_root then
+			if parent /= Void then
 				parent.replace_node_id (node_id, node_key)
 			end
 		ensure
@@ -242,7 +244,6 @@ feature {NONE} -- Implementation
 
 invariant
 	Generic_validity: not (is_generic xor node_id.is_equal(Generic_attr_name))
-	Compressed_path_valid: compressed_path /= Void implies not compressed_path.is_empty
 
 end
 
