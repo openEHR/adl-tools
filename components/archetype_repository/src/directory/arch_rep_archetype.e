@@ -513,6 +513,8 @@ feature {NONE} -- Implementation
 			-- changed to '/' so that the entire path is '/'-separated
 			arch_ont_path := id.domain_concept
 			arch_ont_path.replace_substring_all (id.section_separator.out, ontological_path_separator)
+--		arch_ont_path.append_character (id.axis_separator)
+--		arch_ont_path.append (id.version_id)
 			ontological_path.append (ontological_path_separator + arch_ont_path)
 
 			-- generate parent ontological path if appropriate
@@ -520,6 +522,8 @@ feature {NONE} -- Implementation
 
 			if not arch_ont_path.is_empty then
 				arch_ont_path.replace_substring_all (id.section_separator.out, ontological_path_separator)
+--		arch_ont_path.append_character (id.axis_separator)
+--		arch_ont_path.append (id.version_id)
 				ontological_parent_path.append (ontological_path_separator + arch_ont_path)
 			end
 

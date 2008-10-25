@@ -31,11 +31,12 @@ feature {NONE} -- Implementation
 			a_dir: DIRECTORY
 			fs_node_names: ARRAYED_LIST [STRING]
 			dir_name_index: SORTED_TWO_WAY_LIST [STRING]
-			arch_index: SORTED_TWO_WAY_LIST [ARCH_REP_ARCHETYPE]
-			arch_name_index: SORTED_TWO_WAY_LIST [STRING]
+			arch_index: HASH_TABLE [ARCH_REP_ARCHETYPE, STRING]
+			sorted_arch_index: SORTED_TWO_WAY_LIST[ARCH_REP_ARCHETYPE]
 			ara: ARCH_REP_ARCHETYPE
 			arch_id_str: STRING
 			node: like directory
+			arch_id: !ARCHETYPE_ID
    		do
    			-- generate lists of immediate child directory and archetype file names
    			-- in the current directory 'tree.item.full_path'
@@ -49,9 +50,7 @@ feature {NONE} -- Implementation
 			if a_dir.exists then
 				a_dir.open_read
 				fs_node_names := a_dir.linear_representation
-				create arch_index.make
-				create arch_name_index.make
-				arch_name_index.compare_objects
+				create arch_index.make(0)
 				create dir_name_index.make
 
 				from
@@ -69,25 +68,17 @@ feature {NONE} -- Implementation
 						elseif adl_flat_filename_pattern_regex.matches (fn) or adl_differential_filename_pattern_regex.matches (fn) then
 							arch_id_str := archteype_id_from_path(full_path)
 							if arch_id_str /= Void then
-								if not arch_name_index.has (arch_id_str) then
-									create ara.make (root_path, full_path, create {!ARCHETYPE_ID}.make_from_string(arch_id_str), Current)
-									arch_index.extend (ara)
-									arch_name_index.extend (arch_id_str)
-								else
-									post_info (Current, "build_directory", "pair_filename_i1", <<fn>>)
-								end
+								create arch_id.make_from_string(arch_id_str)
+								create ara.make (root_path, full_path, arch_id, Current)
+								arch_index.force (ara, arch_id.semantic_id)
 							else
 	-- FIXME: to support old-style archetype ids with 'draft' in the name; remove when appropriate
 	arch_id_str := old_archteype_id_from_path(full_path)
 	if arch_id_str /= Void then
-		if not arch_name_index.has (arch_id_str) then
-			create ara.make (root_path, full_path, create {!ARCHETYPE_ID}.old_make_from_string(arch_id_str), Current)
-			arch_index.extend (ara)
-			arch_name_index.extend (arch_id_str)
-			post_warning (Current, "build_directory", "invalid_filename_e1", <<fn>>)
-		else
-			post_warning (Current, "build_directory", "pair_filename_i1", <<fn>>)
-		end
+		create arch_id.old_make_from_string(arch_id_str)
+		create ara.make (root_path, full_path, arch_id, Current)
+		arch_index.force (ara, arch_id.semantic_id)
+		post_warning (Current, "build_directory", "invalid_filename_e1", <<fn>>)
 	else
 								post_error (Current, "build_directory", "invalid_filename_e1", <<fn>>)
 	end
@@ -115,15 +106,18 @@ feature {NONE} -- Implementation
 			end
 
 			-- now create nodes representing all the files for this point
+			create sorted_arch_index.make
+			sorted_arch_index.append (arch_index.linear_representation)
+			sorted_arch_index.sort
 			from
-				arch_index.start
+				sorted_arch_index.start
 			until
-				arch_index.off
+				sorted_arch_index.off
 			loop
-				create node.make (arch_index.item)
+				create node.make (sorted_arch_index.item)
 				tree.put_child_right (node)
 				tree.child_forth
-				arch_index.forth
+				sorted_arch_index.forth
 			end
 
    			debug("arch_dir")
