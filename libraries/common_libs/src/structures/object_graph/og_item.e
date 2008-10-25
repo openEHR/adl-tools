@@ -236,8 +236,8 @@ feature {NONE} -- Implementation
 				from
 					og_nodes.start
 					og_attr ?= og_nodes.item
-					if og_attr.has_compressed_path then
-						Result := og_attr.compressed_path.deep_twin
+					if og_attr.has_differential_path then
+						Result := og_attr.differential_path.deep_twin
 					end
 				until
 					og_nodes.off

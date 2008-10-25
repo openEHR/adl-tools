@@ -1640,7 +1640,7 @@ end
 
 			if not object_nodes.item.has_attribute(rm_attribute_name) then
 				create attr_node.make_single(rm_attribute_name)
-				attr_node.set_compressed_path(path_str)
+				attr_node.set_differential_path(path_str)
 				attr_node.set_existence(yyvs11.item (yyvsp11))
 				c_attrs.put(attr_node)
 				debug("ADL_parse")
@@ -1692,7 +1692,7 @@ end
 			if not object_nodes.item.has_attribute(rm_attribute_name) then
 				create attr_node.make_multiple(rm_attribute_name, yyvs15.item (yyvsp15))
 				attr_node.set_existence(yyvs11.item (yyvsp11))
-				attr_node.set_compressed_path(path_str)
+				attr_node.set_differential_path(path_str)
 				c_attrs.put(attr_node)
 				debug("ADL_parse")
 					io.put_string(indent + "PUSH create MULTIPLE ATTR_NODE " + path_str + " existence=(" + yyvs11.item (yyvsp11).as_string + "); cardinality=(" + yyvs15.item (yyvsp15).as_string + ")%N") 

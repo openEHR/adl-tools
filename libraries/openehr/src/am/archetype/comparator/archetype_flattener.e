@@ -236,13 +236,13 @@ feature {NONE} -- Implementation
 							-- now we have to figure out the 'proximate' C_COMPLEX_OBJECT in the flat parent - it is either the cc_output_flat that
 							-- corresponds to the parent object from the differential child with we started this routine, or if the current attribute
 							-- has a compressed path, its true object parent in the flat parent archetype is given by the compressed path
-							if c_attr_child.has_compressed_path then
-								create apa.make_from_string (c_attr_child.compressed_path)
+							if c_attr_child.has_differential_path then
+								create apa.make_from_string (c_attr_child.differential_path)
 								cco_output_flat_proximate ?= arch_output_flat.c_object_at_path (apa.path_at_level (arch_parent_flat.specialisation_depth))
 
 								-- there may be object ids on the path from the original parent attribute to the proximate attribute in the flat parent
 								-- that are overridden by object-ids in the compressed path
-								create c_path.make_from_string (c_attr_child.compressed_path)
+								create c_path.make_from_string (c_attr_child.differential_path)
 								from
 									cco_csr := cco_output_flat_proximate
 									c_path.finish
@@ -263,7 +263,7 @@ feature {NONE} -- Implementation
 							end
 							debug ("flatten")
 								io.put_string ("%T%Tattribute in child")
-								if c_attr_child.has_compressed_path then
+								if c_attr_child.has_differential_path then
 									io.put_string (" (compressed path - level-adjusted)")
 								end
 								io.put_string (": " + c_attr_child.rm_attribute_path + " ... ")
@@ -296,7 +296,7 @@ feature {NONE} -- Implementation
 								end
 							else  -- otherwise just do a deep clone of the whole attribute from the child to the output
 								c_attr_child_copy := c_attr_child.safe_deep_twin
-								c_attr_child_copy.clear_compressed_path
+								c_attr_child_copy.clear_differential_path
 								debug ("flatten")
 									io.put_string ("in child only; deep_clone attribute at " + c_attr_child_copy.path +
 										" from diff child and graft to " + cco_output_flat.path + " in output%N")

@@ -157,7 +157,7 @@ feature -- Visitor
 			p: STRING
 		do
 -- path-compressed output form
-if a_node.has_compressed_path then
+if a_node.has_differential_path then
 	p := a_node.path
 else
 	p := a_node.rm_attribute_name

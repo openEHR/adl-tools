@@ -183,23 +183,23 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER} -- Validation
 
 feature {ARCH_REP_ARCHETYPE} -- Structure
 
-	compress_paths is
+	convert_to_differential_paths is
 			-- FIXME: only needed while differential archetype source is being created in uncompressed form
 			-- compress paths of congruent nodes in specialised archetype so that equivalent paths
-			-- are recorded in the `compressed_path' attribute of terminal C_ATTRIBUTE nodes of congruent sections
+			-- are recorded in the `differential_path' attribute of terminal C_ATTRIBUTE nodes of congruent sections
 		require
 			Target_specialised: is_specialised
 		local
 			def_it: C_ITERATOR
 		do
-			compressed_def := definition.deep_twin
+			converted_def := definition.deep_twin
 			create def_it.make(definition)
-			def_it.do_at_surface(agent compress_node, agent congruent_node_test)
-			definition := compressed_def
+			def_it.do_at_surface(agent node_set_differential_path, agent congruent_node_test)
+			definition := converted_def
 			rebuild
 		end
 
-	compressed_def: !C_COMPLEX_OBJECT
+	converted_def: !C_COMPLEX_OBJECT
 
 	congruent_node_test (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN  is
 			-- FIXME: only needed while differential archetype source is being created in uncompressed form
@@ -208,7 +208,7 @@ feature {ARCH_REP_ARCHETYPE} -- Structure
 			Result := not a_c_node.is_congruent
 		end
 
-	compress_node (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)  is
+	node_set_differential_path (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)  is
 			-- FIXME: only needed while differential archetype source is being created in uncompressed form
 			-- perform validation of node against reference model
 		local
@@ -216,13 +216,13 @@ feature {ARCH_REP_ARCHETYPE} -- Structure
 			ca2: C_ATTRIBUTE
 		do
 			if {ca: !C_ATTRIBUTE} a_c_node then
-				if compressed_def.has_attribute_path (ca.path) then
-					ca2 := compressed_def.c_attribute_at_path (ca.path)
-					if not ca2.has_compressed_path then
+				if converted_def.has_attribute_path (ca.path) then
+					ca2 := converted_def.c_attribute_at_path (ca.path)
+					if not ca2.has_differential_path then
 						debug("compress")
 							io.put_string ("Will compress path at ATTR " + ca.path + "%N")
 						end
-						ca2.compress_path
+						ca2.set_differential_path_to_here
 					else
 						debug("compress")
 							io.put_string ("Path " + ca.path + " no longer available - attribute moved (already compressed?)%N")
@@ -231,13 +231,13 @@ feature {ARCH_REP_ARCHETYPE} -- Structure
 				end
 			elseif {co: !C_OBJECT} a_c_node then
 				if not co.is_root then
-					if compressed_def.has_object_path (co.path) then
-						co2 := compressed_def.c_object_at_path (co.path)
-						if not co2.parent.has_compressed_path then
+					if converted_def.has_object_path (co.path) then
+						co2 := converted_def.c_object_at_path (co.path)
+						if not co2.parent.has_differential_path then
 							debug("compress")
 								io.put_string ("Will compress path of ATTR above OBJ with path " + co.path + "%N")
 							end
-							co2.parent.compress_path
+							co2.parent.set_differential_path_to_here
 						end
 					else
 						debug("compress")

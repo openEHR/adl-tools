@@ -72,7 +72,7 @@ feature -- Access
 		end
 
 	rm_attribute_path: STRING is
-			-- path of this attribute, including compressed path where applicable
+			-- path of this attribute, including differential path where applicable
 		do
 			Result := representation.node_key
 		end
@@ -84,22 +84,22 @@ feature -- Access
 	cardinality: CARDINALITY
 
 	path: STRING is
-			-- take account of compressed path if it exists
+			-- take account of differential path if it exists
 		do
-			if has_compressed_path then
+			if has_differential_path then
 				Result := representation.node_key
 			else
 				Result := precursor
 			end
 		end
 
-	compressed_path: STRING is
+	differential_path: STRING is
 			-- if set, contains the path to this attribute, excluding the name of this attribute, allowing this
 			-- C_ATTRIBUTE to stand as a 'path-compressed' replacement for a string of C_COMPLEX_OBJECT/
 			-- C_ATTRIBUTE constraint objects
 		do
-			if representation.has_compressed_path then
-				Result := representation.compressed_path.as_string
+			if representation.has_differential_path then
+				Result := representation.differential_path.as_string
 			end
 		end
 
@@ -272,10 +272,10 @@ feature -- Status Report
 			Result := is_multiple and then cardinality.is_ordered
 		end
 
-	has_compressed_path: BOOLEAN is
+	has_differential_path: BOOLEAN is
 			-- True if this node has a contracted path
 		do
-			Result := compressed_path /= Void
+			Result := differential_path /= Void
 		end
 
 	is_valid: BOOLEAN is
@@ -385,31 +385,31 @@ feature -- Modification
 			cardinality := a_cardinality
 		end
 
-	set_compressed_path(a_path: STRING) is
-			-- set `compressed_path'
+	set_differential_path(a_path: STRING) is
+			-- set `differential_path'
 		require
 			Path_valid: a_path /= Void and then not a_path.is_empty
 		do
-			representation.set_compressed_path(create {OG_PATH}.make_from_string (a_path))
+			representation.set_differential_path(create {OG_PATH}.make_from_string (a_path))
 		end
 
-	clear_compressed_path is
-			-- remove `compressed_path'
+	clear_differential_path is
+			-- remove `differential_path'
 		do
-			representation.clear_compressed_path
+			representation.clear_differential_path
 		end
 
-	compress_path is
-			-- set `compressed_path'
+	set_differential_path_to_here is
+			-- set `differential_path'
 		require
-			not has_compressed_path
+			not has_differential_path
 		do
-			representation.set_compressed_path(representation.parent.path)
+			representation.set_differential_path(representation.parent.path)
 			if not parent.is_root then
 				reparent_to_root
 			end
 		ensure
-			Compressed_path_set: compressed_path /= Void
+			Differential_path_set: differential_path /= Void
 		end
 
 	put_child(an_obj: C_OBJECT) is
@@ -639,7 +639,7 @@ invariant
 	Any_allowed_validity: any_allowed xor not children.is_empty
 	Is_multiple_validity: is_multiple implies cardinality /= Void
 	Children_occurrences_validity: cardinality.interval.contains (occurrences_total_range)
-	Compressed_path_valid: compressed_path /= Void implies not compressed_path.is_empty
+	Differential_path_valid: differential_path /= Void implies not differential_path.is_empty
 
 end
 

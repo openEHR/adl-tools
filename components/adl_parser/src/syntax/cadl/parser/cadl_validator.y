@@ -535,7 +535,7 @@ c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence
 
 			if not object_nodes.item.has_attribute(rm_attribute_name) then
 				create attr_node.make_single(rm_attribute_name)
-				attr_node.set_compressed_path(path_str)
+				attr_node.set_differential_path(path_str)
 				attr_node.set_existence($2)
 				c_attrs.put(attr_node)
 				debug("ADL_parse")
@@ -560,7 +560,7 @@ c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence
 			if not object_nodes.item.has_attribute(rm_attribute_name) then
 				create attr_node.make_multiple(rm_attribute_name, $3)
 				attr_node.set_existence($2)
-				attr_node.set_compressed_path(path_str)
+				attr_node.set_differential_path(path_str)
 				c_attrs.put(attr_node)
 				debug("ADL_parse")
 					io.put_string(indent + "PUSH create MULTIPLE ATTR_NODE " + path_str + " existence=(" + $2.as_string + "); cardinality=(" + $3.as_string + ")%N") 
@@ -2466,7 +2466,7 @@ feature {NONE} -- Parse Tree
 			-- main stack of attributes during construction
 
 	c_diff_attrs: ARRAYED_LIST [C_ATTRIBUTE]
-			-- reference list of attributes with compressed paths that require a special grafting process
+			-- reference list of attributes with differential paths that require a special grafting process
 
 	attr_node: C_ATTRIBUTE
 

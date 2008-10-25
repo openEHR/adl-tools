@@ -74,17 +74,17 @@ feature -- Access
 
 	parent: OG_OBJECT_NODE
 
-	compressed_path: OG_PATH
+	differential_path: OG_PATH
 			-- if set, contains the path to this attribute, excluding the name of this attribute, allowing this
 			-- OG_ATTRIBUTE_NODE to stand as a 'path-compressed' replacement for a string of OG_OBJECT_NODE/
-			-- OG_ATTRIBUTE_NODE objects
+			-- OG_ATTRIBUTE_NODE objects. Only valid in differential archetypes and templates.
 
 	node_key: STRING is
-			-- uses compressed path if it exists
+			-- uses differential path if it exists
 		do
-			if has_compressed_path then
-				Result := compressed_path.as_string
-				if not compressed_path.is_root then
+			if has_differential_path then
+				Result := differential_path.as_string
+				if not differential_path.is_root then
 					Result.append_character({OG_PATH}.segment_separator)
 				end
 				Result.append(node_id)
@@ -115,10 +115,10 @@ feature -- Status Report
 
 	is_object_node: BOOLEAN is False
 
-	has_compressed_path: BOOLEAN is
-			-- True if this node has a compressed path
+	has_differential_path: BOOLEAN is
+			-- True if this node has a differential path
 		do
-			Result := compressed_path /= Void
+			Result := differential_path /= Void
 		end
 
 	valid_child_for_insertion(a_node: like child_type):BOOLEAN is
@@ -179,38 +179,38 @@ feature -- Modification
 			precursor(obj_node, after_obj_node)
 		end
 
-	set_compressed_path(a_path: OG_PATH) is
-			-- set `compressed_path'
+	set_differential_path(a_path: OG_PATH) is
+			-- set `differential_path'
 		require
 			Path_attached: a_path /= Void
 		do
-			compressed_path := a_path
+			differential_path := a_path
 			if parent /= Void then
 				parent.replace_node_id (node_id, node_key)
 			end
 		ensure
-			Compessed_path_set: compressed_path = a_path
+			Compessed_path_set: differential_path = a_path
 			Parent_has_child: not is_root implies parent.child_with_id (node_key) = Current
-			Compressed_path_flag_set: has_compressed_path
+			Differential_path_flag_set: has_differential_path
 		end
 
-	clear_compressed_path is
-			-- remove `compressed_path'
+	clear_differential_path is
+			-- remove `differential_path'
 		do
-			compressed_path := Void
+			differential_path := Void
 		ensure
-			not has_compressed_path
+			not has_differential_path
 		end
 
-	compress_path is
+	set_differential_path_to_here is
 			-- compress the path and reparent current node to root node
 		do
-			compressed_path := parent.path
+			differential_path := parent.path
 			if not parent.is_root then
 				reparent_to_root
 			end
 		ensure
-			Compressed_path_set: compressed_path /= Void
+			Differential_path_set: differential_path /= Void
 		end
 
 feature {NONE} -- Implementation

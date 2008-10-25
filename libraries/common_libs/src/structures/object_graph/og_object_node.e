@@ -278,8 +278,8 @@ feature {OG_OBJECT_NODE} -- Implementation
 								else
 									a_path.prepend_segment(create {OG_PATH_ITEM}.make(attr_node.node_id))
 								end
-								if attr_node.has_compressed_path then
-									a_path.prepend_path(attr_node.compressed_path.deep_twin)
+								if attr_node.has_differential_path then
+									a_path.prepend_path(attr_node.differential_path.deep_twin)
 								end
 								if is_root then
 									a_path.set_absolute
@@ -332,7 +332,7 @@ feature {OG_OBJECT_NODE} -- Implementation
 					children.off
 				loop
 					-- if there is a compressed path and it fits inside the search path, the search path could be off that attribute
-					if children.item_for_iteration.has_compressed_path and then a_path_str.substring_index (children.key_for_iteration, 1) = 1 then
+					if children.item_for_iteration.has_differential_path and then a_path_str.substring_index (children.key_for_iteration, 1) = 1 then
 						if children.key_for_iteration.count > cand_path.count then
 							cand_path := children.key_for_iteration
 						end
@@ -340,7 +340,7 @@ feature {OG_OBJECT_NODE} -- Implementation
 					children.forth
 				end
 				if not cand_path.is_empty then
-					a_path.go_i_th(children.item (cand_path).compressed_path.count + 1)
+					a_path.go_i_th(children.item (cand_path).differential_path.count + 1)
 					Result := a_path.sub_path_from_item
 					Result.compress_path(cand_path)
 					if a_path.is_absolute then

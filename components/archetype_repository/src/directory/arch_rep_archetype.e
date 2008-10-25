@@ -403,7 +403,7 @@ feature -- Modification
 				-- if differential archetype was generated from an old-style flat, we need to perform path compression
 				if archetype_flat /= Void then
 					if archetype_differential.is_specialised then
-						archetype_differential.compress_paths
+						archetype_differential.convert_to_differential_paths
 					end
 				else
 					if not archetype_differential.is_specialised then
