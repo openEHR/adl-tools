@@ -267,7 +267,7 @@ feature -- Factory
 			upper_exists: an_upper /= void and then valid_iso8601_time(an_upper)
 			valid_order: iso8601_string_to_time(a_lower) <= iso8601_string_to_time(an_upper)
 		do
-			create Result.make_string_interval(a_lower, an_upper)
+			create Result.make_string_range(a_lower, an_upper)
 		end
 
 	create_c_time_make_lower_unbounded (an_upper: STRING): C_TIME is
@@ -275,7 +275,7 @@ feature -- Factory
 		require
 			upper_exists: an_upper /= void and then valid_iso8601_time(an_upper)
 		do
-			create Result.make_string_interval(Void, an_upper)
+			create Result.make_string_range(Void, an_upper)
 		end
 
 	create_c_time_make_upper_unbounded (a_lower: STRING): C_TIME is
@@ -283,13 +283,13 @@ feature -- Factory
 		require
 			lower_exists: a_lower /= void and then valid_iso8601_time(a_lower)
 		do
-			create Result.make_string_interval(a_lower, Void)
+			create Result.make_string_range(a_lower, Void)
 		end
 
 	create_c_time_make_unbounded: C_TIME is
 			-- create Result as unbounded interval
 		do
-			create Result.make_string_interval(Void, Void)
+			create Result.make_string_range(Void, Void)
 		end
 
 	create_c_time_make_pattern (a_pattern: STRING): C_TIME is

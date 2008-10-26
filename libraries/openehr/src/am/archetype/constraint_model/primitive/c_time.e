@@ -38,7 +38,7 @@ inherit
 		end
 
 create
-	make_range, make_string_interval, make_from_pattern
+	make_range, make_string_range, make_from_pattern
 
 feature -- Initialisation
 
@@ -47,12 +47,12 @@ feature -- Initialisation
 		require
 			an_interval_exists: an_interval /= Void
 		do
-			interval := an_interval
+			range := an_interval
 		ensure
-			Interval_set: interval = an_interval
+			Interval_set: range = an_interval
 		end
 
-	make_string_interval(a_lower, an_upper: STRING) is
+	make_string_range(a_lower, an_upper: STRING) is
 			-- make from two iso8601 strings. Either may be Void, indicating an open-ended interval;
 			-- they may also be the same, meaning a single point. Limits, where provided are automatically
 			-- included in the interval
@@ -64,12 +64,12 @@ feature -- Initialisation
 						(iso8601_string_to_time(a_lower) <= iso8601_string_to_time(an_upper))
 		do
 			if a_lower = Void then
-				create interval.make_lower_unbounded(create {ISO8601_TIME}.make_from_string(an_upper), True)
+				create range.make_lower_unbounded(create {ISO8601_TIME}.make_from_string(an_upper), True)
 			else
 				if an_upper = Void then
-					create interval.make_upper_unbounded(create {ISO8601_TIME}.make_from_string(a_lower), True)
+					create range.make_upper_unbounded(create {ISO8601_TIME}.make_from_string(a_lower), True)
 				else
-					create interval.make_bounded(create {ISO8601_TIME}.make_from_string(a_lower),
+					create range.make_bounded(create {ISO8601_TIME}.make_from_string(a_lower),
 						create {ISO8601_TIME}.make_from_string(an_upper), True, True)
 				end
 			end
@@ -87,15 +87,15 @@ feature -- Initialisation
 
 feature -- Access
 
-	interval: INTERVAL[ISO8601_TIME]
+	range: INTERVAL[ISO8601_TIME]
 
 	pattern: STRING
 			-- ISO8601-based pattern like "hh:mm:??"
 
 	prototype_value: ISO8601_TIME is
 		do
-			if interval /= Void then
-				Result := interval.lower
+			if range /= Void then
+				Result := range.lower
 			else
 				-- Result := FIXME - generate a default from a pattern
 			end
@@ -105,8 +105,8 @@ feature -- Status Report
 
 	valid_value (a_value: ISO8601_TIME): BOOLEAN is
 		do
-			if interval /= Void then
-				Result := interval.has(a_value)
+			if range /= Void then
+				Result := range.has(a_value)
 			else
 				-- Result := a_value matches pattern FIXME - to be implemented
 				Result := True
@@ -121,7 +121,7 @@ feature -- Comparison
 			if pattern /= Void then
 				Result := valid_time_constraint_replacements.item(other.pattern.as_upper).has(pattern.as_upper)
 			else
-				Result := other.interval.contains (interval)
+				Result := other.range.contains (range)
 			end
 		end
 
@@ -130,8 +130,8 @@ feature -- Output
 	as_string: STRING is
 		do
 			create Result.make(0)
-			if interval /= Void then
-				Result.append("|" + interval.as_string + "|")
+			if range /= Void then
+				Result.append("|" + range.as_string + "|")
 			else
 				Result.append(pattern)
 			end
@@ -141,7 +141,7 @@ feature -- Output
 		end
 
 invariant
-	Validity: interval /= Void xor pattern /= Void
+	Validity: range /= Void xor pattern /= Void
 
 end
 

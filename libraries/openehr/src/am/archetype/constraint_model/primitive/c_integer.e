@@ -37,7 +37,7 @@ feature -- Initialisation
 		require
 			Interval_exists: an_interval /= Void
 		do
-			interval := an_interval
+			range := an_interval
 		end
 
 	make_list(a_list: LIST[INTEGER]) is
@@ -52,15 +52,15 @@ feature -- Initialisation
 
 feature -- Access
 
-	interval: INTERVAL[INTEGER]
+	range: INTERVAL[INTEGER]
 
 	list: LIST[INTEGER]
 
 	prototype_value: INTEGER_REF is
 		do
 			create Result
-			if interval /= Void then
-				Result.set_item(interval.lower)
+			if range /= Void then
+				Result.set_item(range.lower)
 			else
 				Result.set_item(list.first)
 			end
@@ -70,8 +70,8 @@ feature -- Status Report
 
 	valid_value (a_value: INTEGER_REF): BOOLEAN is
 		do
-			if interval /= Void then
-				Result := interval.has(a_value.item)
+			if range /= Void then
+				Result := range.has(a_value.item)
 			else
 				Result := list.has(a_value.item)
 			end
@@ -82,8 +82,8 @@ feature -- Comparison
 	node_conforms_to (other: like Current): BOOLEAN is
 			-- True if this node is a subset of, or the same as `other'
 		do
-			if interval /= Void and other.interval /= Void then
-				Result := other.interval.contains (interval)
+			if range /= Void and other.range /= Void then
+				Result := other.range.contains (range)
 			elseif list /= Void and other.list /= Void then
 				from
 					list.start
@@ -101,8 +101,8 @@ feature -- Output
 	as_string:STRING is
 		do
 			create Result.make(0)
-			if interval /= Void then
-				Result.append("|" + interval.as_string + "|")
+			if range /= Void then
+				Result.append("|" + range.as_string + "|")
 			else
 				from
 					list.start
@@ -128,7 +128,7 @@ feature -- Output
 		end
 
 invariant
-	interval /= Void xor list /= Void
+	range /= Void xor list /= Void
 
 end
 
