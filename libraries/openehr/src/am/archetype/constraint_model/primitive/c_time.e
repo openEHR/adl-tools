@@ -38,11 +38,11 @@ inherit
 		end
 
 create
-	make_interval, make_string_interval, make_from_pattern
+	make_range, make_string_interval, make_from_pattern
 
 feature -- Initialisation
 
-	make_interval(an_interval: INTERVAL[ISO8601_TIME]) is
+	make_range(an_interval: INTERVAL[ISO8601_TIME]) is
 			-- make from a time interval
 		require
 			an_interval_exists: an_interval /= Void

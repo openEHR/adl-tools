@@ -29,11 +29,11 @@ inherit
 		end
 
 create
-	make_interval, make_list
+	make_range, make_list
 
 feature -- Initialisation
 
-	make_interval(an_interval: INTERVAL[INTEGER]) is
+	make_range(an_interval: INTERVAL[INTEGER]) is
 		require
 			Interval_exists: an_interval /= Void
 		do
@@ -82,7 +82,18 @@ feature -- Comparison
 	node_conforms_to (other: like Current): BOOLEAN is
 			-- True if this node is a subset of, or the same as `other'
 		do
-			-- FIXME: TO BE IMPLEMENTED
+			if interval /= Void and other.interval /= Void then
+				Result := other.interval.contains (interval)
+			elseif list /= Void and other.list /= Void then
+				from
+					list.start
+				until
+					list.off or not other.list.has (list.item)
+				loop
+					list.forth
+				end
+				Result := list.off
+			end
 		end
 
 feature -- Output

@@ -68,7 +68,7 @@ feature -- Comparison
 	node_conforms_to (other: like Current): BOOLEAN is
 			-- True if this node is a subset of, or the same as `other'
 		do
-			Result := (other.true_valid implies true_valid) and (other.false_valid implies false_valid)
+			Result := (true_valid implies other.true_valid) and (false_valid implies other.false_valid)
 		end
 
 feature -- Output

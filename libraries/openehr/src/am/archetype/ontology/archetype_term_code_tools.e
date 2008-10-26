@@ -258,7 +258,7 @@ feature -- Comparison
 			Child_code_valid: a_child_code /= Void and then not a_child_code.is_empty
 			Parent_code_valid: a_parent_code /= Void and then not a_parent_code.is_empty
 		do
-			Result := a_child_code.substring (1, a_parent_code.count).is_equal (a_parent_code)
+			Result := a_child_code.starts_with (a_parent_code)
 		end
 
 end

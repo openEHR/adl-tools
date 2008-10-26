@@ -40,9 +40,9 @@ inherit
 
 create
 	make,
-	make_interval,
+	make_range,
 	make_from_pattern,
-	make_pattern_with_interval
+	make_pattern_with_range
 
 feature {NONE} -- Initialisation
 
@@ -72,26 +72,26 @@ feature {NONE} -- Initialisation
 				end
 
 				if lower_duration = Void then
-					create interval.make_lower_unbounded (upper_duration, include_upper)
+					create range.make_lower_unbounded (upper_duration, include_upper)
 				elseif upper_duration = Void then
-					create interval.make_upper_unbounded (lower_duration, include_lower)
+					create range.make_upper_unbounded (lower_duration, include_lower)
 				else
-					create interval.make_bounded (lower_duration, upper_duration, include_lower, include_upper)
+					create range.make_bounded (lower_duration, upper_duration, include_lower, include_upper)
 				end
 			end
 		ensure
 			pattern_set: pattern = a_pattern
-			interval_if_lower_or_upper: (a_lower /= Void or an_upper /= Void) xor interval = Void
+			interval_if_lower_or_upper: (a_lower /= Void or an_upper /= Void) xor range = Void
 		end
 
-	make_interval (an_interval: like interval)
+	make_range (an_interval: like range)
 			-- Create from an ISO8601-based interval.
 		require
 			interval_attached: an_interval /= Void
 		do
-			interval := an_interval
+			range := an_interval
 		ensure
-			interval_set: interval = an_interval
+			interval_set: range = an_interval
 			pattern_void: pattern = Void
 		end
 
@@ -104,10 +104,10 @@ feature {NONE} -- Initialisation
 			pattern := a_pattern
 		ensure
 			pattern_set: pattern = a_pattern
-			interval_void: interval = Void
+			interval_void: range = Void
 		end
 
-	make_pattern_with_interval (a_pattern: STRING; an_interval: like interval)
+	make_pattern_with_range (a_pattern: STRING; an_interval: like range)
 			-- Create from an ISO8601-based pattern, together with an ISO8601-based interval.
 		require
 			a_pattern_attached: a_pattern /= Void
@@ -115,10 +115,10 @@ feature {NONE} -- Initialisation
 			interval_attached: an_interval /= Void
 		do
 			pattern := a_pattern
-			interval := an_interval
+			range := an_interval
 		ensure
 			pattern_set: pattern = a_pattern
-			interval_set: interval = an_interval
+			interval_set: range = an_interval
 		end
 
 feature -- Access
@@ -128,14 +128,14 @@ feature -- Access
 			-- Allowed patterns:
 			-- P[Y|y][M|m][D|d][T[H|h][M|m][S|s]] or P[W|w]
 
-	interval: INTERVAL [ISO8601_DURATION]
+	range: INTERVAL [ISO8601_DURATION]
 			-- ISO8601-based interval.
 
 	prototype_value: ISO8601_DURATION is
 			-- Default duration value.
 		do
-			if interval /= Void then
-				Result := interval.lower
+			if range /= Void then
+				Result := range.lower
 			else
 				-- FIXME: Return something based on `pattern'.
 			end
@@ -144,7 +144,7 @@ feature -- Access
 feature -- Status Report
 
 	valid_value (duration: ISO8601_DURATION): BOOLEAN
-			-- Is `duration' within `interval'?
+			-- Is `duration' within `range'?
 		do
 			Result := True
 
@@ -152,7 +152,7 @@ feature -- Status Report
 				-- FIXME: TO BE IMPLEMENTED	
 			end
 
-			Result := Result and (interval /= Void implies interval.has (duration))
+			Result := Result and (range /= Void implies range.has (duration))
 		end
 
 feature -- Comparison
@@ -174,12 +174,12 @@ feature -- Output
 				Result.append (pattern)
 			end
 
-			if interval /= Void then
+			if range /= Void then
 				if pattern /= Void then
 					Result.append_character ('/')
 				end
 
-				Result.append ("|" + interval.as_string + "|")
+				Result.append ("|" + range.as_string + "|")
 			end
 
 			if assumed_value /= Void then
@@ -191,14 +191,14 @@ feature -- Output
 
 	as_canonical_string: STRING is
 		do
-			Result := interval.as_string
+			Result := range.as_string
 		ensure
 			attached: Result /= Void
 			not_empty: not Result.is_empty
 		end
 
 invariant
-	basic_validity: pattern /= Void or interval /= Void
+	basic_validity: pattern /= Void or range /= Void
 	pattern_valid: pattern /= Void implies valid_iso8601_duration_constraint_pattern (pattern)
 
 end

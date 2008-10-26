@@ -81,19 +81,19 @@ feature -- Factory
 		require
 			valid_order: a_lower <= an_upper
 		do
-			create Result.make_interval(create {INTERVAL[INTEGER]}.make_bounded(a_lower, an_upper, include_lower, include_upper))
+			create Result.make_range(create {INTERVAL[INTEGER]}.make_bounded(a_lower, an_upper, include_lower, include_upper))
 		end
 
 	create_c_integer_make_lower_unbounded (an_upper: INTEGER; include_upper: BOOLEAN): C_INTEGER is
 			-- create Result from -infinity to `an_upper'
 		do
-			create Result.make_interval(create {INTERVAL[INTEGER]}.make_lower_unbounded(an_upper, include_upper))
+			create Result.make_range(create {INTERVAL[INTEGER]}.make_lower_unbounded(an_upper, include_upper))
 		end
 
 	create_c_integer_make_upper_unbounded (a_lower: INTEGER; include_lower: BOOLEAN): C_INTEGER is
 			-- create Result from `a_lower' to +infinity
 		do
-			create Result.make_interval(create {INTERVAL[INTEGER]}.make_upper_unbounded(a_lower, include_lower))
+			create Result.make_range(create {INTERVAL[INTEGER]}.make_upper_unbounded(a_lower, include_lower))
 		end
 
 	create_c_integer_make_list (a_list: LIST[INTEGER]): C_INTEGER is
@@ -107,19 +107,19 @@ feature -- Factory
 		require
 			valid_order: a_lower <= an_upper
 		do
-			create Result.make_interval(create {INTERVAL[REAL]}.make_bounded(a_lower, an_upper, include_lower, include_upper))
+			create Result.make_range(create {INTERVAL[REAL]}.make_bounded(a_lower, an_upper, include_lower, include_upper))
 		end
 
 	create_c_real_make_lower_unbounded (an_upper: REAL; include_upper: BOOLEAN): C_REAL is
 			-- create Result from -infinity to `an_upper'
 		do
-			create Result.make_interval(create {INTERVAL[REAL]}.make_lower_unbounded(an_upper, include_upper))
+			create Result.make_range(create {INTERVAL[REAL]}.make_lower_unbounded(an_upper, include_upper))
 		end
 
 	create_c_real_make_upper_unbounded (a_lower: REAL; include_lower: BOOLEAN): C_REAL is
 			-- create Result from `a_lower' to +infinity
 		do
-			create Result.make_interval(create {INTERVAL[REAL]}.make_upper_unbounded(a_lower, include_lower))
+			create Result.make_range(create {INTERVAL[REAL]}.make_upper_unbounded(a_lower, include_lower))
 		end
 
 	create_c_real_make_list (a_list: LIST[REAL]): C_REAL is
@@ -187,7 +187,7 @@ feature -- Factory
 			upper_exists: an_upper /= void and then valid_iso8601_date(an_upper)
 			valid_order: iso8601_string_to_date(a_lower) <= iso8601_string_to_date(an_upper)
 		do
-			create Result.make_string_interval(a_lower, an_upper)
+			create Result.make_string_range(a_lower, an_upper)
 		end
 
 	create_c_date_make_lower_unbounded (an_upper: STRING): C_DATE is
@@ -195,7 +195,7 @@ feature -- Factory
 		require
 			upper_exists: an_upper /= void and then valid_iso8601_date(an_upper)
 		do
-			create Result.make_string_interval(Void, an_upper)
+			create Result.make_string_range(Void, an_upper)
 		end
 
 	create_c_date_make_upper_unbounded (a_lower: STRING): C_DATE is
@@ -203,13 +203,13 @@ feature -- Factory
 		require
 			lower_exists: a_lower /= void and then valid_iso8601_date(a_lower)
 		do
-			create Result.make_string_interval(a_lower, Void)
+			create Result.make_string_range(a_lower, Void)
 		end
 
 	create_c_date_make_unbounded: C_DATE is
 			-- create Result as unbounded interval
 		do
-			create Result.make_string_interval(Void, Void)
+			create Result.make_string_range(Void, Void)
 		end
 
 	create_c_date_make_pattern (a_pattern: STRING): C_DATE is
@@ -227,7 +227,7 @@ feature -- Factory
 			upper_exists: an_upper /= void and then valid_iso8601_date_time(an_upper)
 			valid_order: iso8601_string_to_date_time(a_lower) <= iso8601_string_to_date_time(an_upper)
 		do
-			create Result.make_string_interval(a_lower, an_upper)
+			create Result.make_string_range(a_lower, an_upper)
 		end
 
 	create_c_date_time_make_lower_unbounded (an_upper: STRING): C_DATE_TIME is
@@ -235,7 +235,7 @@ feature -- Factory
 		require
 			upper_exists: an_upper /= void and then valid_iso8601_date_time(an_upper)
 		do
-			create Result.make_string_interval(Void, an_upper)
+			create Result.make_string_range(Void, an_upper)
 		end
 
 	create_c_date_time_make_upper_unbounded (a_lower: STRING): C_DATE_TIME is
@@ -243,13 +243,13 @@ feature -- Factory
 		require
 			lower_exists: a_lower /= void and then valid_iso8601_date_time(a_lower)
 		do
-			create Result.make_string_interval(a_lower, Void)
+			create Result.make_string_range(a_lower, Void)
 		end
 
 	create_c_date_time_make_unbounded: C_DATE_TIME is
 			-- create Result as unbounded interval
 		do
-			create Result.make_string_interval(Void, Void)
+			create Result.make_string_range(Void, Void)
 		end
 
 	create_c_date_time_make_pattern (a_pattern: STRING): C_DATE_TIME is

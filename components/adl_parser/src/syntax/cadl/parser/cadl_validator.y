@@ -313,7 +313,7 @@ archetype_internal_ref: SYM_USE_NODE type_identifier c_occurrences absolute_path
 			end
 
 			if (c_attrs.item.is_multiple or c_attrs.item.child_count > 1) and not archetype_internal_ref.is_addressable and not $4.last.object_id.is_empty then
-				archetype_internal_ref.set_object_id($4.last.object_id)
+				archetype_internal_ref.set_node_id($4.last.object_id)
 			end
 		}
 	| SYM_USE_NODE type_identifier error 
@@ -1126,7 +1126,7 @@ occurrence_spec: cardinality_limit_value 	-- single integer or '*'
 c_integer_spec: integer_value
 		{
 			create int_interval.make_point($1)
-			create c_integer.make_interval(int_interval)
+			create c_integer.make_range(int_interval)
 		}
 	| integer_list_value
 		{
@@ -1144,7 +1144,7 @@ c_integer_spec: integer_value
 				end
 			end
 
-			create c_integer.make_interval(int_interval)
+			create c_integer.make_range(int_interval)
 		}
 	;
 
@@ -1170,7 +1170,7 @@ c_integer: c_integer_spec
 c_real_spec: real_value
 		{
 			create rl_interval.make_point($1)
-			create c_real.make_interval(rl_interval)
+			create c_real.make_range(rl_interval)
 		}
 	| real_list_value
 		{
@@ -1188,7 +1188,7 @@ c_real_spec: real_value
 				end
 			end
 
-			create c_real.make_interval(rl_interval)
+			create c_real.make_range(rl_interval)
 		}
 	;
 
@@ -1237,11 +1237,11 @@ c_date_constraint: V_ISO8601_DATE_CONSTRAINT_PATTERN
 	| date_value
 		{
 			create date_interval.make_point($1)
-			create c_date.make_interval(date_interval)
+			create c_date.make_range(date_interval)
 		}
 	| date_interval_value
 		{
-			create c_date.make_interval(date_interval)
+			create c_date.make_range(date_interval)
 		}
 	;
 
@@ -1290,11 +1290,11 @@ c_time_constraint: V_ISO8601_TIME_CONSTRAINT_PATTERN
 	| time_value
 		{
 			create time_interval.make_point($1)
-			create c_time.make_interval(time_interval)
+			create c_time.make_range(time_interval)
 		}
 	| time_interval_value
 		{
-			create c_time.make_interval(time_interval)
+			create c_time.make_range(time_interval)
 		}
 	;
 
@@ -1343,11 +1343,11 @@ c_date_time_constraint: V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN
 	| date_time_value
 		{
 			create date_time_interval.make_point($1)
-			create c_date_time.make_interval(date_time_interval)
+			create c_date_time.make_range(date_time_interval)
 		}
 	| date_time_interval_value
 		{
-			create c_date_time.make_interval(date_time_interval)
+			create c_date_time.make_range(date_time_interval)
 		}
 	;
 
@@ -1373,16 +1373,16 @@ c_date_time: c_date_time_constraint
 c_duration_constraint: duration_pattern
 	| duration_pattern '/' duration_interval_value
 		{
-			create c_duration.make_pattern_with_interval (c_duration.pattern, duration_interval)
+			create c_duration.make_pattern_with_range (c_duration.pattern, duration_interval)
 		}
 	| duration_value
 		{
 			create duration_interval.make_point($1)
-			create c_duration.make_interval(duration_interval)
+			create c_duration.make_range(duration_interval)
 		}
 	| duration_interval_value
 		{
-			create c_duration.make_interval(duration_interval)
+			create c_duration.make_range(duration_interval)
 		}
 	;
 

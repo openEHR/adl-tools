@@ -3307,7 +3307,7 @@ debug ("GEYACC")
 end
 
 			create int_interval.make_point(yyvs2.item (yyvsp2))
-			create c_integer.make_interval(int_interval)
+			create c_integer.make_range(int_interval)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -3377,7 +3377,7 @@ end
 				end
 			end
 
-			create c_integer.make_interval(int_interval)
+			create c_integer.make_range(int_interval)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -3454,7 +3454,7 @@ debug ("GEYACC")
 end
 
 			create rl_interval.make_point(yyvs3.item (yyvsp3))
-			create c_real.make_interval(rl_interval)
+			create c_real.make_range(rl_interval)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -3524,7 +3524,7 @@ end
 				end
 			end
 
-			create c_real.make_interval(rl_interval)
+			create c_real.make_range(rl_interval)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -3650,7 +3650,7 @@ debug ("GEYACC")
 end
 
 			create date_interval.make_point(yyvs17.item (yyvsp17))
-			create c_date.make_interval(date_interval)
+			create c_date.make_range(date_interval)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -3680,7 +3680,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1242")
 end
 
-			create c_date.make_interval(date_interval)
+			create c_date.make_range(date_interval)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -3806,7 +3806,7 @@ debug ("GEYACC")
 end
 
 			create time_interval.make_point(yyvs19.item (yyvsp19))
-			create c_time.make_interval(time_interval)
+			create c_time.make_range(time_interval)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -3836,7 +3836,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1295")
 end
 
-			create c_time.make_interval(time_interval)
+			create c_time.make_range(time_interval)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -3962,7 +3962,7 @@ debug ("GEYACC")
 end
 
 			create date_time_interval.make_point(yyvs18.item (yyvsp18))
-			create c_date_time.make_interval(date_time_interval)
+			create c_date_time.make_range(date_time_interval)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -3992,7 +3992,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1348")
 end
 
-			create c_date_time.make_interval(date_time_interval)
+			create c_date_time.make_range(date_time_interval)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -4079,7 +4079,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1374")
 end
 
-			create c_duration.make_pattern_with_interval (c_duration.pattern, duration_interval)
+			create c_duration.make_pattern_with_range (c_duration.pattern, duration_interval)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
@@ -4094,7 +4094,7 @@ debug ("GEYACC")
 end
 
 			create duration_interval.make_point(yyvs20.item (yyvsp20))
-			create c_duration.make_interval(duration_interval)
+			create c_duration.make_range(duration_interval)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -4124,7 +4124,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1383")
 end
 
-			create c_duration.make_interval(duration_interval)
+			create c_duration.make_range(duration_interval)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -8284,7 +8284,7 @@ feature {NONE} -- Parse Tree
 			-- main stack of attributes during construction
 
 	c_diff_attrs: ARRAYED_LIST [C_ATTRIBUTE]
-			-- reference list of attributes with compressed paths that require a special grafting process
+			-- reference list of attributes with differential paths that require a special grafting process
 
 	attr_node: C_ATTRIBUTE
 
