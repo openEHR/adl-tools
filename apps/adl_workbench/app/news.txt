@@ -2,23 +2,11 @@ ADL_WORKBENCH NEWS (see Help menu > News)
 -------------------------------------------------------------------------
 
 New functionality:
-* Export Repository Report option generates an XML file of statistics and errors.
-* Edit gives the choice of either the .adls or .adl file.
-* Edit gives a configurable choice of multiple editors, including the Archetype Editor.
-* The parser detects duplicates and missing assumed values in ordinals and coded text.
-
-User interface improvements:
-* The Errors and Slots tabs now show how many archetypes appear within them.
-* The repository explorer shows a little arrow next to each archetype that has slots.
+* Specialised archetypes are now represented keyed by path.
+* Much greater validation is performed.
 
 These problems in the previous release are now fixed:
-* The dADL parser did not accept parentheses around type identifiers.
-* Term bindings were grouped by terminology name and version rather than just by terminology name.
-* In the Flat view of a specialised archetype, attribute paths were missing.
-* On the Statistics tab, the Slots counts were not updated correctly.
-* Clicking the Parse button did not re-parse an already-parsed archetype, despite the user editing the ADL file.
-* On Linux and Mac only:
-  * Opening an archetype ad-hoc did not show it in the explorer tree.
-  * Double-clicking an archetype in the Errors or Slots tabs did not show it in the explorer tree.
+* Previously, the oldest version of any given archetype was picked up, now the newest is 
+  instead.
 
 See http://www.openehr.org/svn/ref_impl_eiffel/TRUNK/apps/doc/adl_workbench_help.htm for help.
