@@ -296,6 +296,8 @@ feature -- Environment
 		do
 			create i18n.make (application_startup_directory)
 			Result := i18n.system_locale.info.id.language
+		ensure
+			Result_attached: Result /= Void
 		end
 
 	locale_language_long: STRING is
@@ -303,6 +305,8 @@ feature -- Environment
 		do
 			-- FIXME: to be implemented
 			Result := "en-uk"
+		ensure
+			Result_attached: Result /= Void
 		end
 
 feature -- Element Change

@@ -59,6 +59,9 @@ feature -- Access
 			end
 		end
 
+invariant
+	templates /= Void
+
 end
 
 --|

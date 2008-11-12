@@ -32,6 +32,11 @@ inherit
 create
 	make
 
+feature -- Definitions
+
+	Default_message_language: STRING is "en"
+			-- default language of messages in this database
+
 feature -- Initialisation
 
 	make is
@@ -45,7 +50,11 @@ feature -- Initialisation
 			if not parser.syntax_error then
 				dt_tree := parser.output
 				init_helper ?= dt_tree.as_object(dynamic_type_from_string("IN_MEMORY_MESSAGE_DB_INITIALISER"))
-				templates := init_helper.templates.item (locale_language_short)
+				if init_helper.templates.has (locale_language_short) then
+					templates := init_helper.templates.item (locale_language_short)
+				else
+					templates := init_helper.templates.item (Default_message_language)
+				end
 			else
 				io.put_string ("Message database failure: " + parser.error_text + "%N")
 			end
