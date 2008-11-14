@@ -18,7 +18,17 @@ inherit
 		export
 			{NONE} all
 		end
-		
+
+	STRING_UTILITIES
+		export
+			{NONE} all
+		end
+
+feature -- Definitions
+
+	Quote_characters: STRING is "nrt\%"'"
+			-- characters that mean something special when following a backslash
+
 feature -- Initialisation
 
 	make(an_output_format: STRING) is
@@ -28,35 +38,35 @@ feature -- Initialisation
 		do
 			output_format := an_output_format
 		end
-		
+
 feature {ANY_SERIALISER} -- Access
 
 	output_format: STRING
-			-- the output format name this profile is 
+			-- the output format name this profile is
 			-- associated with, usually "adl", "xml", "html" etc; needed to allow
 			-- embedded dADL in cADL and vice-versa to be serialised
-			
+
 	symbols: HASH_TABLE[STRING, INTEGER] is
 			-- keywords in this format, keyed by logical name
 		deferred
 		ensure
 			Result_exists: Result /= Void
-		end	
-	
+		end
+
 	tags: HASH_TABLE[STRING, INTEGER] is
 			-- keywords in this format, keyed by logical name
 		deferred
 		ensure
 			Result_exists: Result /= Void
-		end	
-	
+		end
+
 	format_items: HASH_TABLE[STRING, INTEGER] is
 			-- formatting items
 		deferred
 		ensure
 			Result_exists: Result /= Void
 		end
-		
+
 	styles: HASH_TABLE[STRING, INTEGER] is
 			-- styles in this format, keyed by logical name
 		deferred
@@ -64,13 +74,6 @@ feature {ANY_SERIALISER} -- Access
 			Result_exists: Result /= Void
 		end
 
-	quote_patterns: HASH_TABLE[STRING, STRING] is
-			-- styles in this format, keyed by logical name
-		deferred
-		ensure
-			Result_exists: Result /= Void
-		end
-	
 feature  {ANY_SERIALISER} -- Factory
 
 	apply_style(elem:STRING; a_style:INTEGER): STRING is
@@ -79,22 +82,6 @@ feature  {ANY_SERIALISER} -- Factory
 			Elem_exists: elem /= Void
 			A_style_valid: styles.has(a_style)
 		deferred
-		end
-
-	clean(elem:STRING): STRING is
-			-- generate clean copy of `elem' by inserting correct quoting for formalism
-		require
-			Elem_exists: elem /= Void
-		do
-			Result := elem.twin
-			from
-				quote_patterns.start
-			until
-				quote_patterns.off
-			loop
-				Result.replace_substring_all(quote_patterns.key_for_iteration, quote_patterns.item_for_iteration)
-				quote_patterns.forth
-			end
 		end
 
 	create_indent(indent_level: INTEGER): STRING is
@@ -113,7 +100,44 @@ feature  {ANY_SERIALISER} -- Factory
 				i := i + 1
 			end
 		end
-		
+
+	clean(str:STRING): STRING is
+			-- generate clean copy of `str' by inserting \ quoting for chars in `quoted_chars' not already quoted in `str':
+			-- find all instances of '\' and '"' that are not already being used in the quote patterns, e.g. like:
+			--	\n, \r, \t, \\, \", \'
+			-- and convert
+			--	\ to \\
+			-- 	" to \"
+		require
+			String_attached: str /= Void
+		do
+			if not str.is_empty then
+				Result := quote_clean(str, Quote_characters, 1, str.count)
+			else
+				Result := str
+			end
+		end
+
+	clean_contents(str:STRING): STRING is
+			-- same as clean(), but only on contents of string, if it represents a literal string and is enclosed by '"'
+		require
+			String_attached: str /= Void
+		do
+			if not str.is_empty then
+				if str.item (1) = '"' and str.item (str.count) = '"' then
+					if str.count > 2 then
+						Result := quote_clean(str, Quote_characters, 2, str.count-1)
+					else
+						Result := str
+					end
+				else
+					Result := quote_clean(str, Quote_characters, 1, str.count)
+				end
+			else
+				Result := str
+			end
+		end
+
 end
 
 

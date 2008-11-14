@@ -143,7 +143,7 @@ feature {NONE} -- Implementation
 			end
 
 			last_result.append(symbol(SYM_START_DBLOCK))
-			last_result.append(apply_style(clean(a_node.as_string), STYLE_VALUE))
+			last_result.append(apply_style(clean_contents(a_node.as_string), STYLE_VALUE))
 		end
 
 end

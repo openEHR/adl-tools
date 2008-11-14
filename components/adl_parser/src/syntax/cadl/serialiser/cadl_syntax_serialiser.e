@@ -198,7 +198,7 @@ end
 			-- start serialising an ARCHETYPE_INTERNAL_REF
 		do
 			last_result.append(create_indent(depth) + apply_style(symbol(SYM_USE_NODE), STYLE_KEYWORD) + format_item(FMT_SPACE))
-			last_result.append(clean(a_node.rm_type_name) + format_item(FMT_SPACE))
+			last_result.append(a_node.rm_type_name + format_item(FMT_SPACE))
 			if not a_node.use_target_occurrences then
 				serialise_occurrences(a_node, depth)
 			end
@@ -209,7 +209,7 @@ end
 			-- start serialising a CONSTRAINT_REF
 		do
 			last_result.remove_tail(format_item(FMT_NEWLINE).count)	-- remove last newline due to OBJECT_REL_NODE	
-			last_result.append(apply_style(clean(a_node.as_string), STYLE_TERM_REF))
+			last_result.append(apply_style(a_node.as_string, STYLE_TERM_REF))
 			create last_object_simple_buffer.make(0)
 			last_object_simple_buffer.append(format_item(FMT_INDENT))
 
@@ -247,7 +247,7 @@ end
 		do
 			if a_node.code_count = 1 or a_node.code_count = 0 then
 				last_result.remove_tail(format_item(FMT_NEWLINE).count)	-- remove last newline due to OBJECT_REL_NODE	
-				last_result.append(apply_style(clean(a_node.as_string), STYLE_TERM_REF))
+				last_result.append(apply_style(a_node.as_string, STYLE_TERM_REF))
 				create last_object_simple_buffer.make(0)
 				if not a_node.any_allowed and then (a_node.is_local and a_node.code_count = 1 and ontology.has_term_code(a_node.code_list.first)) then
 					last_object_simple_buffer.append(format_item(FMT_INDENT))
@@ -259,16 +259,15 @@ end
 				last_object_simple := True
 
 			elseif a_node.code_count > 1 then
-				last_result.append(create_indent(depth) + apply_style(clean("[" +
-					a_node.terminology_id.value + a_node.separator), STYLE_TERM_REF) +
+				last_result.append(create_indent(depth) + apply_style("[" +
+					a_node.terminology_id.value + a_node.separator, STYLE_TERM_REF) +
 					format_item(FMT_NEWLINE))
 				from
 					a_node.code_list.start
 				until
 					a_node.code_list.off
 				loop
-					last_result.append(create_indent(depth) + apply_style(clean(a_node.code_list.item),
-						STYLE_TERM_REF))
+					last_result.append(create_indent(depth) + apply_style(a_node.code_list.item, STYLE_TERM_REF))
 					if not a_node.code_list.islast then
 						last_result.append (format_item(FMT_LIST_ITEM_SEPARATOR))
 					elseif a_node.assumed_value /= Void then
@@ -288,8 +287,7 @@ end
 				end
 
 				if a_node.assumed_value /= Void then
-					last_result.append(create_indent(depth) + apply_style(clean(a_node.assumed_value.code_string),
-						STYLE_TERM_REF))
+					last_result.append(create_indent(depth) + apply_style(a_node.assumed_value.code_string, STYLE_TERM_REF))
 					last_result.append(apply_style("]", STYLE_TERM_REF))
 					last_result.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
 							"assumed value", STYLE_COMMENT))
@@ -417,7 +415,7 @@ feature {NONE} -- Implementation
 	serialise_type_node_id(a_node: C_OBJECT; depth: INTEGER) is
 			-- common serialising for all C_OBJECTs
 		do
-			last_result.append (apply_style (clean (a_node.rm_type_name), identifier_style (a_node)))
+			last_result.append (apply_style (a_node.rm_type_name, identifier_style (a_node)))
 
 			if a_node.is_addressable then
 				last_result.append(apply_style("[" + a_node.node_id + "]", STYLE_TERM_REF))

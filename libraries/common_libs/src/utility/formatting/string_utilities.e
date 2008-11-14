@@ -14,6 +14,52 @@ indexing
 
 class STRING_UTILITIES
 
+feature -- Conversion
+
+	quote_clean(str, quote_chars:STRING; start_index, end_index: INTEGER): STRING is
+			-- if ay quoting needed, generate clean copy of `str' by inserting \ quoting for chars in `quoted_chars' not already quoted in `str':
+			-- find all instances of '\' and '"' that are not already being used in the quote patterns, e.g. like:
+			--	\n, \r, \t, \\, \", \'
+			-- and convert
+			--	\ to \\
+			-- 	" to \"
+			-- otherwise just return original string
+		require
+			String_attached: str /= Void
+			Quote_chars_attached: quote_chars /= Void
+			Start_index_valid: start_index >= 1
+			End_index_valid: end_index >= start_index and end_index <= str.count
+		local
+			i, j: INTEGER
+		do
+			if str.has ('\') or str.has('"') then
+				Result := str.twin
+				from
+					i := start_index
+					j := start_index
+				until
+					i > end_index
+				loop
+					if str.item(i) = '\' and (i = str.count or else not quote_chars.has(str.item(i + 1))) then -- i.e. not already a legal quote pattern
+						Result.insert_character ('\', j)
+						j := j + 1
+					end
+
+					if str.item(i) = '"' and (i = 1 or else str.item (i-1) /= '\') then
+						Result.insert_character ('\', j)
+						j := j + 1
+					end
+
+					i := i + 1
+					j := j + 1
+				end
+			else
+				Result := str
+			end
+		ensure
+			Result_attached: Result /= Void
+		end
+
 feature -- Element Change
 
 	translate (str, s1, s2: STRING) is
