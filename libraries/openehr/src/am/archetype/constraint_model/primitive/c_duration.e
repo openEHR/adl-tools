@@ -124,7 +124,7 @@ feature {NONE} -- Initialisation
 feature -- Access
 
 	pattern: STRING
-			-- ISO8601-based pattern like "yyyy-mm-XX".
+			-- ISO8601-based pattern.
 			-- Allowed patterns:
 			-- P[Y|y][M|m][D|d][T[H|h][M|m][S|s]] or P[W|w]
 

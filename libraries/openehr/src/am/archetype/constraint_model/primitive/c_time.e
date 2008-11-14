@@ -141,7 +141,8 @@ feature -- Output
 		end
 
 invariant
-	Validity: range /= Void xor pattern /= Void
+	Basic_validity: range /= Void xor pattern /= Void
+	Pattern_validity: pattern /= Void implies valid_iso8601_time_constraint_pattern(pattern)
 
 end
 
