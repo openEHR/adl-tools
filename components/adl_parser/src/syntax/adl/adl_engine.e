@@ -55,6 +55,11 @@ inherit
 			{NONE} all
 		end
 
+	ADL_SYNTAX_CONVERTER
+		export
+			{NONE} all
+		end
+
 	SHARED_MESSAGE_DB
 		export
 			{NONE} all
@@ -212,6 +217,7 @@ feature {NONE} -- Implementation
 								if not ontology_context.parse_succeeded then
 									parse_error_text := ontology_context.parse_error_text
 								elseif {definition: !C_COMPLEX_OBJECT} definition_context.tree and then {id: !ARCHETYPE_ID} adl_parser.archetype_id then
+									convert_ontology_syntax(ontology_context.tree)  -- perform any version upgrade conversions
 									if differential_source_flag then
 										if orig_lang_trans /= Void then
 											create differential_ontology.make_from_tree (orig_lang_trans.original_language.code_string, ontology_context.tree, adl_parser.concept)

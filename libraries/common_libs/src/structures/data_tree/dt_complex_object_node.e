@@ -282,6 +282,15 @@ feature -- Modification
 		do
 		end
 
+	replace_attribute_name(old_name, new_name: STRING) is
+			-- change the name of an attribute
+		require
+			Old_name_valid: old_name /= Void and then has_attribute(old_name)
+			New_name_valid: new_name /= Void and then not new_name.is_empty
+		do
+			representation.replace_attribute_name(old_name, new_name)
+		end
+
 feature -- Conversion
 
 	out: STRING is

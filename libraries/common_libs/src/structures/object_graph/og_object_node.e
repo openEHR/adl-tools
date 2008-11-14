@@ -138,6 +138,18 @@ feature -- Status Report
 			end
 		end
 
+feature -- Modification
+
+	replace_attribute_name(old_name, new_name: STRING) is
+			-- change the name of an attribute
+		require
+			Old_name_valid: old_name /= Void and then has_child_with_id (old_name)
+			New_name_valid: new_name /= Void and then not new_name.is_empty
+		do
+			child_with_id (old_name).set_node_id (new_name)
+			children.replace_key (new_name, old_name)
+		end
+
 feature {OG_OBJECT_NODE} -- Implementation
 
 	child_type: OG_ATTRIBUTE_NODE

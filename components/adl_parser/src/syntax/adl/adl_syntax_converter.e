@@ -37,6 +37,8 @@ feature -- Access
 		do
 		end
 
+feature -- ADL 1.4 conversions
+
 	convert_dadl_language(dadl_text: STRING) is
 			-- converted language = <"xxx"> to language = <[ISO-639::xxx]>
 		require
@@ -161,40 +163,7 @@ feature -- Access
 			end
 		end
 
-	convert_use_ref_paths(ref_node_list: ARRAYED_LIST[ARCHETYPE_INTERNAL_REF]; index_path: STRING; referree: ARCHETYPE) is
-			-- FIXME: the following only needed while old use_ref paths containing redundant node_ids are in existence
-			-- rewrite target path into standard Xpath format, removing [atnnn] predicates on objects below single attributes
-		local
-			xpath: STRING
-		do
-			xpath := referree.definition.c_object_at_path (index_path).path
-			from
-				ref_node_list.start
-			until
-				ref_node_list.off
-			loop
-				ref_node_list.item.set_target_path (xpath)
-				ref_node_list.forth
-			end
-		end
-
-	convert_invariant_paths(expr_node_list: ARRAYED_LIST[EXPR_LEAF]; referree: ARCHETYPE) is
-			-- FIXME: the following only needed while old invariant paths containing redundant node_ids are in existence
-			-- rewrite target path into standard Xpath format, removing [atnnn] predicates on objects below single attributes
-		local
-			xpath, assertion_path: STRING
-		do
-			from
-				expr_node_list.start
-			until
-				expr_node_list.off
-			loop
-				assertion_path ?= expr_node_list.item.item
-				xpath := referree.definition.c_object_at_path (assertion_path).path
-				expr_node_list.item.make_archetype_definition_ref (xpath)
-				expr_node_list.forth
-			end
-		end
+feature -- ADL 1.5 conversions
 
 	convert_dadl_type_name(a_type_name: STRING): STRING
 			-- convert type name preceding <> dADL block to (typename), i.e. add parentheses
@@ -238,6 +207,53 @@ feature -- Access
 			-- Pattern matcher for archetype ids with the 'draft' still in the version
 		once
 			create Result.compile_case_insensitive ("^[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z][a-zA-Z0-9_]+){2}\.[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z][a-zA-Z0-9_]+)*\.v[1-9][0-9a-z]*$")
+		end
+
+	convert_ontology_syntax(dt: DT_COMPLEX_OBJECT_NODE) is
+		do
+			if dt.has_attribute ("term_binding") then
+				dt.replace_attribute_name ("term_binding", "term_bindings")
+			end
+			if dt.has_attribute ("constraint_binding") then
+				dt.replace_attribute_name ("constraint_binding", "constraint_bindings")
+			end
+		end
+
+feature -- Path conversions
+
+	convert_use_ref_paths(ref_node_list: ARRAYED_LIST[ARCHETYPE_INTERNAL_REF]; index_path: STRING; referree: ARCHETYPE) is
+			-- FIXME: the following only needed while old use_ref paths containing redundant node_ids are in existence
+			-- rewrite target path into standard Xpath format, removing [atnnn] predicates on objects below single attributes
+		local
+			xpath: STRING
+		do
+			xpath := referree.definition.c_object_at_path (index_path).path
+			from
+				ref_node_list.start
+			until
+				ref_node_list.off
+			loop
+				ref_node_list.item.set_target_path (xpath)
+				ref_node_list.forth
+			end
+		end
+
+	convert_invariant_paths(expr_node_list: ARRAYED_LIST[EXPR_LEAF]; referree: ARCHETYPE) is
+			-- FIXME: the following only needed while old invariant paths containing redundant node_ids are in existence
+			-- rewrite target path into standard Xpath format, removing [atnnn] predicates on objects below single attributes
+		local
+			xpath, assertion_path: STRING
+		do
+			from
+				expr_node_list.start
+			until
+				expr_node_list.off
+			loop
+				assertion_path ?= expr_node_list.item.item
+				xpath := referree.definition.c_object_at_path (assertion_path).path
+				expr_node_list.item.make_archetype_definition_ref (xpath)
+				expr_node_list.forth
+			end
 		end
 
 end
