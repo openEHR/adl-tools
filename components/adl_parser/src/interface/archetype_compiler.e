@@ -202,8 +202,13 @@ feature {NONE} -- Implementation
 						archetype_parser.save_archetype_differential
 						status.append (archetype_parser.status)
 					end
-				else
-					status.wipe_out
+				elseif ara.has_compiler_status then
+					status := "(already attempted; status = " + ara.compiler_status
+					if status.item (status.count) = '%N' then
+						status.insert_character (')', status.count)
+					else
+						status.append (")%N")
+					end
 				end
 
 				call_visual_update_action (ara)

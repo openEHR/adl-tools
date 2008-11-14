@@ -218,7 +218,7 @@ feature -- Status Report
 			-- Should this archetype be reparsed?
 		do
 			Result := file_repository.has_file_changed_on_disk (full_path, text_timestamp) or
-				is_specialised and specialisation_parent.is_out_of_date
+				is_specialised and specialisation_parent /= Void and then specialisation_parent.is_out_of_date
 		end
 
 	parse_attempted: BOOLEAN
@@ -364,6 +364,8 @@ feature -- Commands
 				if validator.has_warnings then
 					post_warning (Current, "set_archetype_differential", "parse_archetype_w2", <<id.as_string, validator.warnings>>)
 				end
+			else
+				post_error (Current, "set_archetype_differential", "parse_archetype_e2", <<id.as_string, validator.errors>>)
 			end
 
 			archetype_differential.set_is_valid (validator.passed)
