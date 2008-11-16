@@ -24,11 +24,6 @@ inherit
 			{NONE} all
 		end
 
-feature -- Definitions
-
-	Quote_characters: STRING is "nrt\%"'"
-			-- characters that mean something special when following a backslash
-
 feature -- Initialisation
 
 	make(an_output_format: STRING) is
@@ -112,27 +107,7 @@ feature  {ANY_SERIALISER} -- Factory
 			String_attached: str /= Void
 		do
 			if not str.is_empty then
-				Result := quote_clean(str, Quote_characters, 1, str.count)
-			else
-				Result := str
-			end
-		end
-
-	clean_contents(str:STRING): STRING is
-			-- same as clean(), but only on contents of string, if it represents a literal string and is enclosed by '"'
-		require
-			String_attached: str /= Void
-		do
-			if not str.is_empty then
-				if str.item (1) = '"' and str.item (str.count) = '"' then
-					if str.count > 2 then
-						Result := quote_clean(str, Quote_characters, 2, str.count-1)
-					else
-						Result := str
-					end
-				else
-					Result := quote_clean(str, Quote_characters, 1, str.count)
-				end
+				Result := quote_clean(str, Default_quote_characters)
 			else
 				Result := str
 			end

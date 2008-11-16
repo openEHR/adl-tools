@@ -126,15 +126,6 @@ feature -- Factory
 			Result := profile.clean(elem)
 		end
 
-	clean_contents(elem:STRING): STRING is
-			-- clean contents of `elem' using quoting rules of ADL; i.e.
-			-- if elem represents a string, and is bounded by '"' characters, clean what is inside only
-		require
-			Elem_exists: elem /= Void
-		do
-			Result := profile.clean_contents(elem)
-		end
-
 	create_indent(indent_level: INTEGER): STRING is
 		require
 			indent_level >= 0

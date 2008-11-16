@@ -28,6 +28,13 @@ inherit
 			is_equal, default_create
 		end
 
+	STRING_UTILITIES
+		export
+			{NONE} all
+		undefine
+			is_equal, default_create
+		end
+
 create
 	make_identified, make_anonymous
 
@@ -96,7 +103,7 @@ feature -- Conversion
 			a_dur: DATE_TIME_DURATION
 		do
 			if is_string then
-				Result := "%"" + value.out + "%""
+				Result := "%"" + quote_clean(value.out, default_quote_characters) + "%""
 			elseif is_character then
 				Result := "%'" + value.out + "%'"
 			else

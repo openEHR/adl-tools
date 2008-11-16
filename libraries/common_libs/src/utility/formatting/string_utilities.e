@@ -14,9 +14,14 @@ indexing
 
 class STRING_UTILITIES
 
+feature -- Definitions
+
+	Default_quote_characters: STRING is "nrt\%"'"
+			-- characters that mean something special when following a backslash
+
 feature -- Conversion
 
-	quote_clean(str, quote_chars:STRING; start_index, end_index: INTEGER): STRING is
+	quote_clean(str, quote_chars:STRING): STRING is
 			-- if ay quoting needed, generate clean copy of `str' by inserting \ quoting for chars in `quoted_chars' not already quoted in `str':
 			-- find all instances of '\' and '"' that are not already being used in the quote patterns, e.g. like:
 			--	\n, \r, \t, \\, \", \'
@@ -27,18 +32,16 @@ feature -- Conversion
 		require
 			String_attached: str /= Void
 			Quote_chars_attached: quote_chars /= Void
-			Start_index_valid: start_index >= 1
-			End_index_valid: end_index >= start_index and end_index <= str.count
 		local
 			i, j: INTEGER
 		do
 			if str.has ('\') or str.has('"') then
 				Result := str.twin
 				from
-					i := start_index
-					j := start_index
+					i := 1
+					j := 1
 				until
-					i > end_index
+					i > str.count
 				loop
 					if str.item(i) = '\' and (i = str.count or else not quote_chars.has(str.item(i + 1))) then -- i.e. not already a legal quote pattern
 						Result.insert_character ('\', j)
