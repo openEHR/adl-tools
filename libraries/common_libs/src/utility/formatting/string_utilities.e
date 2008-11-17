@@ -21,17 +21,13 @@ feature -- Definitions
 
 feature -- Conversion
 
-	quote_clean(str, quote_chars:STRING): STRING is
-			-- if ay quoting needed, generate clean copy of `str' by inserting \ quoting for chars in `quoted_chars' not already quoted in `str':
-			-- find all instances of '\' and '"' that are not already being used in the quote patterns, e.g. like:
-			--	\n, \r, \t, \\, \", \'
-			-- and convert
+	quote_clean(str:STRING): STRING is
+			-- if any quoting needed, generate clean copy of `str' and convert
 			--	\ to \\
 			-- 	" to \"
 			-- otherwise just return original string
 		require
 			String_attached: str /= Void
-			Quote_chars_attached: quote_chars /= Void
 		local
 			i, j: INTEGER
 		do
@@ -43,16 +39,10 @@ feature -- Conversion
 				until
 					i > str.count
 				loop
-					if str.item(i) = '\' and (i = str.count or else not quote_chars.has(str.item(i + 1))) then -- i.e. not already a legal quote pattern
+					if str.item(i) = '\' or str.item(i) = '"' then
 						Result.insert_character ('\', j)
 						j := j + 1
 					end
-
-					if str.item(i) = '"' and (i = 1 or else str.item (i-1) /= '\') then
-						Result.insert_character ('\', j)
-						j := j + 1
-					end
-
 					i := i + 1
 					j := j + 1
 				end

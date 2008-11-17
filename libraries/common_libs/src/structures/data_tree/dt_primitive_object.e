@@ -103,7 +103,7 @@ feature -- Conversion
 			a_dur: DATE_TIME_DURATION
 		do
 			if is_string then
-				Result := "%"" + quote_clean(value.out, default_quote_characters) + "%""
+				Result := "%"" + quote_clean(value.out) + "%""
 			elseif is_character then
 				Result := "%'" + value.out + "%'"
 			else

@@ -107,7 +107,7 @@ feature -- Conversion
 				end
 				if is_string then
 					Result.append_character('"')
-					Result.append (quote_clean(value.item.out, default_quote_characters))
+					Result.append (quote_clean(value.item.out))
 					Result.append_character('"')
 				else
 					out_val := value.item.out

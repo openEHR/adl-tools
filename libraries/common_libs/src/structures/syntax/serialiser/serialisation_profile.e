@@ -107,7 +107,7 @@ feature  {ANY_SERIALISER} -- Factory
 			String_attached: str /= Void
 		do
 			if not str.is_empty then
-				Result := quote_clean(str, Default_quote_characters)
+				Result := quote_clean(str)
 			else
 				Result := str
 			end
