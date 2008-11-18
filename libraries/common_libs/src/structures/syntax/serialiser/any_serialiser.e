@@ -11,14 +11,14 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-deferred class ANY_SERIALISER 
+deferred class ANY_SERIALISER
 
 inherit
 	SERIALISER_DEFINITIONS
 		export
 			{NONE} all
 		end
-		
+
 feature -- Initialisation
 
 	make(a_profile: SERIALISATION_PROFILE) is
@@ -47,7 +47,7 @@ feature -- Access
 
 	last_result: STRING
 			-- result of last call to serialisation procedures
-	
+
 	symbol(sym_id:INTEGER): STRING is
 			-- retrieve symbol string for `sym_id'
 		require
@@ -55,7 +55,7 @@ feature -- Access
 		do
 			Result := profile.symbols.item(sym_id)
 		end
-		
+
 	tag(tag_id:INTEGER): STRING is
 			-- retrieve tag for `tag_id'
 		require
@@ -63,7 +63,7 @@ feature -- Access
 		do
 			Result := profile.tags.item(tag_id)
 		end
-		
+
 	format_item(fmt_id:INTEGER): STRING is
 			-- retrieve formatting string for `fmt_id'
 		require
@@ -79,13 +79,13 @@ feature -- Access
 		do
 			Result := profile.styles.item(style_id)
 		end
-		
+
 	output_format: STRING is
-			-- output format this serialiser is associated with 
+			-- output format this serialiser is associated with
 		do
 			Result := profile.output_format
 		end
-		
+
 feature -- Status Report
 
 	has_style(style_id: INTEGER): BOOLEAN is
@@ -93,19 +93,19 @@ feature -- Status Report
 		do
 			Result := profile.styles.has(style_id)
 		end
-	
+
 	has_symbol(sym_id: INTEGER): BOOLEAN is
 			-- true if `sym_id' exists in symbol table
 		do
 			Result := profile.symbols.has(sym_id)
 		end
-	
+
 	has_tag(tag_id: INTEGER): BOOLEAN is
 			-- true if `tag_id' exists in tag table
 		do
 			Result := profile.tags.has(tag_id)
 		end
-	
+
 	has_format_item(fmt_id: INTEGER): BOOLEAN is
 			-- true if `fmt_id' exists in format item table
 		do
@@ -124,7 +124,7 @@ feature -- Factory
 		end
 
 	clean(elem:STRING): STRING is
-			-- clean `elem' using quoting 
+			-- clean `elem' using quoting rules of ADL
 		require
 			Elem_exists: elem /= Void
 		do
@@ -137,7 +137,7 @@ feature -- Factory
 		do
 			Result := profile.create_indent(indent_level)
 		end
-		
+
 	safe_comment(a_text: STRING): STRING is
 			-- make a comment text taken from the ontology safe for inclusion
 			-- by removing newlines and restricting its length
@@ -149,7 +149,7 @@ feature -- Factory
 				create Result.make(nl_pos - 1)
 				Result.append(a_text.substring(1, nl_pos-1))
 			else
-				Result := a_text			
+				Result := a_text
 			end
 		end
 

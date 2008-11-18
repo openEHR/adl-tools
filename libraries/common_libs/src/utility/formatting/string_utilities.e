@@ -14,6 +14,45 @@ indexing
 
 class STRING_UTILITIES
 
+feature -- Definitions
+
+	Default_quote_characters: STRING is "nrt\%"'"
+			-- characters that mean something special when following a backslash
+
+feature -- Conversion
+
+	quote_clean(str:STRING): STRING is
+			-- if any quoting needed, generate clean copy of `str' and convert
+			--	\ to \\
+			-- 	" to \"
+			-- otherwise just return original string
+		require
+			String_attached: str /= Void
+		local
+			i, j: INTEGER
+		do
+			if str.has ('\') or str.has('"') then
+				Result := str.twin
+				from
+					i := 1
+					j := 1
+				until
+					i > str.count
+				loop
+					if str.item(i) = '\' or str.item(i) = '"' then
+						Result.insert_character ('\', j)
+						j := j + 1
+					end
+					i := i + 1
+					j := j + 1
+				end
+			else
+				Result := str
+			end
+		ensure
+			Result_attached: Result /= Void
+		end
+
 feature -- Element Change
 
 	translate (str, s1, s2: STRING) is

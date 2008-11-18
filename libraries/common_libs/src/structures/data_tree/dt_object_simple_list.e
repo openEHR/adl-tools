@@ -20,6 +20,13 @@ class DT_PRIMITIVE_OBJECT_LIST
 inherit
 	DT_OBJECT_LEAF
 
+	STRING_UTILITIES
+		export
+			{NONE} all
+		undefine
+			is_equal, default_create
+		end
+
 create
 	make_identified, make_anonymous
 
@@ -38,7 +45,7 @@ feature -- Initialisation
 			is_typed
 			is_addressable
 		end
-	
+
 	make_anonymous(a_value: SEQUENCE[ANY]) is
 		require
 			Item_valid: a_value /= Void
@@ -99,16 +106,16 @@ feature -- Conversion
 					Result.append(", ")
 				end
 				if is_string then
-					Result.append("%"")
-				end
-				out_val := value.item.out
-				Result.append(out_val)
-				-- FIXME: REAL.out is broken; forgets to output '.0'
-				if value.item.generating_type.substring(1,4).is_equal("REAL") and then out_val.index_of('.', 1) = 0 then
-					Result.append(".0")
-				end
-				if is_string then
-					Result.append("%"")
+					Result.append_character('"')
+					Result.append (quote_clean(value.item.out))
+					Result.append_character('"')
+				else
+					out_val := value.item.out
+					Result.append(out_val)
+					-- FIXME: REAL.out is broken; forgets to output '.0'
+					if value.item.generating_type.substring(1,4).is_equal("REAL") and then out_val.index_of('.', 1) = 0 then
+						Result.append(".0")
+					end
 				end
 				value.forth
 			end
@@ -116,7 +123,7 @@ feature -- Conversion
 				Result.append(", ...")
 			end
 		end
-		
+
 feature -- Serialisation
 
 	enter_block(serialiser: DT_SERIALISER; depth: INTEGER) is
@@ -124,7 +131,7 @@ feature -- Serialisation
 		do
 			serialiser.start_primitive_object_list(Current, depth)
 		end
-		
+
 	exit_block(serialiser: DT_SERIALISER; depth: INTEGER) is
 			-- perform serialisation at end of block for this node
 		do
@@ -134,7 +141,7 @@ feature -- Serialisation
 feature {NONE} -- Implementation
 
 	is_string: BOOLEAN
-	
+
 end
 
 

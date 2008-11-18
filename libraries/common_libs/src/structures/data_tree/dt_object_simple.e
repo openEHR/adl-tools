@@ -28,6 +28,13 @@ inherit
 			is_equal, default_create
 		end
 
+	STRING_UTILITIES
+		export
+			{NONE} all
+		undefine
+			is_equal, default_create
+		end
+
 create
 	make_identified, make_anonymous
 
@@ -85,18 +92,18 @@ feature -- Modification
 			value := a_value
 			rm_type_name := a_value.generating_type
 
-			is_string := rm_type_name.substring_index("STRING", 1) = 1
-			is_character := rm_type_name.substring_index("CHARACTER", 1) = 1
+			is_string := rm_type_name.starts_with ("STRING")
+			is_character := rm_type_name.starts_with ("CHARACTER")
 		end
 
 feature -- Conversion
 
 	as_string: STRING is
 		local
-a_dur: DATE_TIME_DURATION
+			a_dur: DATE_TIME_DURATION
 		do
 			if is_string then
-				Result := "%"" + value.out + "%""
+				Result := "%"" + quote_clean(value.out) + "%""
 			elseif is_character then
 				Result := "%'" + value.out + "%'"
 			else
