@@ -193,7 +193,10 @@ feature -- Modification
 			if not a_node.use_target_occurrences then
 				serialise_occurrences(a_node, depth)
 			end
-			last_result.append(a_node.target_path + format_item(FMT_NEWLINE))
+			last_result.append(a_node.target_path)
+			last_result.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
+						safe_comment(ontology.physical_to_logical_path (a_node.target_path, current_language)), STYLE_COMMENT))
+			last_result.append(format_item(FMT_NEWLINE))
 		end
 
 	end_archetype_internal_ref(a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER) is
