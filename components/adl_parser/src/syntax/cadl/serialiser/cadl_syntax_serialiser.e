@@ -156,12 +156,12 @@ feature -- Visitor
 		local
 			p: STRING
 		do
--- path-compressed output form
-if a_node.has_differential_path then
-	p := a_node.path
-else
-	p := a_node.rm_attribute_name
-end
+			-- path-compressed output form
+			if a_node.has_differential_path then
+				p := a_node.path
+			else
+				p := a_node.rm_attribute_name
+			end
 			last_result.append(create_indent(depth) + apply_style(p, identifier_style (a_node)) + format_item(FMT_SPACE))
 			serialise_existence(a_node, depth)
 			serialise_cardinality(a_node, depth)
@@ -202,7 +202,10 @@ end
 			if not a_node.use_target_occurrences then
 				serialise_occurrences(a_node, depth)
 			end
-			last_result.append(a_node.target_path + format_item(FMT_NEWLINE))
+			last_result.append(a_node.target_path)
+			last_result.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
+						safe_comment(ontology.physical_to_logical_path (a_node.target_path, current_language) ), STYLE_COMMENT))
+			last_result.append(format_item(FMT_NEWLINE))
 		end
 
 	start_constraint_ref(a_node: CONSTRAINT_REF; depth: INTEGER) is
