@@ -226,9 +226,17 @@ feature -- Modification
 
 	start_c_primitive_object(a_node: C_PRIMITIVE_OBJECT; depth: INTEGER) is
 			-- start serialising an C_PRIMITIVE_OBJECT
+		local
+			s: STRING
 		do
-			last_result.remove_tail(format_item(FMT_NEWLINE).count)	-- remove last newline due to OBJECT_REL_NODE
-			last_result.append(apply_style(clean(a_node.as_string), STYLE_VALUE))
+			last_result.remove_tail (format_item (FMT_NEWLINE).count)	-- remove last newline due to OBJECT_REL_NODE
+			s := a_node.as_string
+
+			if {c_str: C_STRING} a_node.item and then c_str.strings /= Void then
+				s := clean (s)
+			end
+
+			last_result.append (apply_style (s, STYLE_VALUE))
 			last_object_simple := True
 		end
 
