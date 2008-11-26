@@ -357,12 +357,16 @@ feature -- Comparison
 
 	existence_conforms_to (other: like Current): BOOLEAN is
 			-- True if the existence of this node conforms to other.existence
+		require
+			other_attached: other /= Void
 		do
 			Result := existence.is_equal (other.existence) or other.existence.contains (existence)
 		end
 
 	cardinality_conforms_to (other: like Current): BOOLEAN is
 			-- True if the cardinality of this node conforms to other.cardinality
+		require
+			other_attached: other /= Void
 		do
 			Result := cardinality.interval.is_equal (other.cardinality.interval) or other.cardinality.contains (cardinality)
 		end
@@ -607,14 +611,14 @@ feature {NONE} -- Implementation
 			until
 				csr.parent = Void
 			loop
-				if {cco: !C_COMPLEX_OBJECT} csr.parent and {ca: !C_ATTRIBUTE} csr then
+				if {cco: C_COMPLEX_OBJECT} csr.parent and {ca: C_ATTRIBUTE} csr then
 					if not ca.has_children then
 						debug("compress")
 							io.put_string("%T%Tabout to remove ORPHAN attribute " + ca.rm_attribute_name + " from object " + cco.rm_type_name + "[" + cco.node_id + "]%N")
 						end
 						cco.remove_attribute (ca)
 					end
-				elseif {ca2: !C_ATTRIBUTE} csr.parent and {cco2: !C_COMPLEX_OBJECT} csr then
+				elseif {ca2: C_ATTRIBUTE} csr.parent and {cco2: C_COMPLEX_OBJECT} csr then
 					if not cco2.has_attributes then
 						debug("compress")
 							io.put_string("%T%Tabout to remove ORPHAN object " + cco2.rm_type_name + "[" + cco2.node_id + "] from attribute " + ca2.rm_attribute_name + "%N")
@@ -624,7 +628,7 @@ feature {NONE} -- Implementation
 				end
 				csr := csr.parent
 			end
-			if {cco3: !C_COMPLEX_OBJECT} csr then
+			if {cco3: C_COMPLEX_OBJECT} csr then
 				debug("compress")
 					io.put_string("%T%Tabout to put REPARENTED attribute Current (" + rm_attribute_path + ") on ROOT object " + cco3.rm_type_name + "[" + cco3.node_id + "]%N")
 				end
