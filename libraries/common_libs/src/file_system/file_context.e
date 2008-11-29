@@ -17,39 +17,34 @@ class
 	FILE_CONTEXT
 
 inherit
-	UC_IMPORTED_UTF8_ROUTINES
+	UC_UTF8_ROUTINES
 
 create
 	make
 
 feature -- Definitions
 
-	UTF8_bom_char_1: CHARACTER is '%/239/'
-	UTF8_bom_char_2: CHARACTER is '%/187/'
-	UTF8_bom_char_3: CHARACTER is '%/191/'
-			-- UTF-8 files don't normally have a BOM (byte order marker) at the start as can be
-			-- required by UTF-16 files, but if the file has been converted from UTF-16 or UTF-32
-			-- then the BOM in a UTF-8 file will be 0xEF 0xBB 0xBF (dec equivalent: 239, 187, 191)
-
 	Default_current_directory: STRING is "."
 
-feature -- Initialisation
+feature {NONE} -- Initialisation
 
 	make is
 			-- basic initialisation
 		do
-			create current_directory.make(0)
-			create current_file_name.make(0)
-			create last_op_fail_reason.make(0)
+			create current_directory.make_empty
+			create current_file_name.make_empty
+			create last_op_fail_reason.make_empty
 			create file_content.make_empty
 		end
 
 feature -- Access
 
-	current_full_path: STRING is
+	current_full_path: STRING
 			-- derive from file name and path
 		do
 			Result := current_directory + operating_environment.Directory_separator.out + current_file_name
+		ensure
+			attached: Result /= Void
 		end
 
 	current_directory: STRING
@@ -59,35 +54,44 @@ feature -- Access
 			-- name of fle only
 
 	has_byte_order_marker: BOOLEAN
-			-- True if current file has a BOM, which means it is a UTF encoded unicode file
+			-- Does the current file have a BOM indicating it is a UTF-8 encoded unicode file?
 
 	last_op_failed: BOOLEAN
 
 	last_op_fail_reason: STRING
 
+	file_content: STRING
+			-- Text from current file as a string.
+
+	file_first_line: STRING
+			-- First line from current file as a string.
+
+	file_timestamp: INTEGER
+			-- Last marked change timestamp of file, for file changes to be compared to.
+
 feature -- Status Report
 
-	has_file(a_file_name: STRING):BOOLEAN is
-			-- does `a_file_name' exist in `current_directory'
+	has_file (a_file_name: STRING):BOOLEAN is
+			-- Does `a_file_name' exist in `current_directory'?
 		require
 			File_name_valid: a_file_name /= Void
 		local
 			a_file: PLAIN_TEXT_FILE
    		do
-			create a_file.make(current_directory + operating_environment.Directory_separator.out + a_file_name)
+			create a_file.make (current_directory + operating_environment.Directory_separator.out + a_file_name)
 			Result := a_file.exists
 		end
 
 	file_changed: BOOLEAN is
-			-- Has file changed in this epoch?
+			-- Has file changed?
 		local
 			file: PLAIN_TEXT_FILE
 		do
 			create file.make (current_full_path)
-			Result := file.exists and then file.date /= epoch
+			Result := file.exists and then file.date /= file_timestamp
 		end
 
-	file_writable(a_file_name:STRING): BOOLEAN is
+	file_writable (a_file_name: STRING): BOOLEAN is
 			-- True if named file is writable, or else doesn't exist
 		require
 			File_name_valid: a_file_name /= Void and then not a_file_name.is_empty
@@ -98,27 +102,46 @@ feature -- Status Report
 			Result := not fd.exists or else fd.is_writable
 		end
 
-	file_content: STRING
-			-- text from current file as a string
+feature -- Commands
 
-feature -- Command
-
-	set_epoch is
-			-- Set time mark for file changes to be compared to - read from modify date of current file.
+	read_file_timestamp
+			-- Set `file_timestamp' from the file modification date of `current_full_path'.
 		local
 			file: PLAIN_TEXT_FILE
 		do
 			create file.make (current_full_path)
 
 			if file.exists then
-				epoch := file.date
+				file_timestamp := file.date
 			else
-				epoch := 0
+				file_timestamp := 0
 			end
 		end
 
+	read_first_line
+			-- Read first line from current file as a string.
+		local
+			in_file: PLAIN_TEXT_FILE
+   		do
+   			last_op_failed := False
+			create in_file.make(current_full_path)
+			create file_first_line.make_empty
+
+			if in_file.exists then
+				in_file.open_read
+				in_file.read_line
+				file_first_line.append (in_file.last_string)
+				in_file.close
+			else
+				last_op_failed := True
+				last_op_fail_reason := "Read failed; file " + current_full_path + " does not exist"
+			end
+		ensure
+			file_first_line_empty_on_failure: last_op_failed implies file_first_line.is_empty
+		end
+
 	read_file is
-			-- read text from current file as a string
+			-- Read text from current file into `file_content'.
 		local
 			in_file: PLAIN_TEXT_FILE
    		do
@@ -128,7 +151,7 @@ feature -- Command
 			has_byte_order_marker := False
 
 			if in_file.exists then
-				epoch := in_file.date
+				file_timestamp := in_file.date
 				in_file.open_read
 
 				from
@@ -149,19 +172,19 @@ feature -- Command
 				in_file.close
 
 				if file_content.count >= 3 then
-					if file_content.item (1) = UTF8_bom_char_1 and file_content.item (2) = UTF8_bom_char_2 and file_content.item (3) = UTF8_bom_char_3 then
+					if is_endian_detection_character (file_content.item (1), file_content.item (2), file_content.item (3)) then
 						file_content.remove_head (3)
 						has_byte_order_marker := True
 					end
 				end
 
-				if not utf8.valid_utf8 (file_content) then
+				if not valid_utf8 (file_content) then
 					if has_byte_order_marker then
 						create file_content.make_empty
 						last_op_failed := True
 						last_op_fail_reason := "Read failed; file " + current_full_path + " has UTF-8 marker but is not valid UTF-8"
 					else
-						file_content := utf8.to_utf8 (file_content)
+						file_content := to_utf8 (file_content)
 					end
 				end
 			else
@@ -172,34 +195,38 @@ feature -- Command
 			file_content_empty_on_failure: last_op_failed implies file_content.is_empty
 		end
 
-	save_file(a_file_name, content: STRING) is
-			-- write the content out to file `a_file_name' in `current_directory'
+	save_file (a_file_name, content: STRING) is
+			-- Write `content' out to file `a_file_name' in `current_directory'.
 		require
 			Arch_id_valid: a_file_name /= Void
 			Content_valid: content /= Void
-			File_writable: file_writable(a_file_name)
+			File_writable: file_writable (a_file_name)
 		local
 			out_file: PLAIN_TEXT_FILE
    		do
    			last_op_failed := False
-			create out_file.make_create_read_write(a_file_name)
+			create out_file.make_create_read_write (a_file_name)
+
 			if out_file.exists then
 				if has_byte_order_marker then
 					-- only safe if the file was last read using this object
-					out_file.put_character (UTF8_bom_char_1)
-					out_file.put_character (UTF8_bom_char_2)
-					out_file.put_character (UTF8_bom_char_3)
+					out_file.put_character (byte_ef)
+					out_file.put_character (byte_bb)
+					out_file.put_character (byte_bf)
 				end
-				out_file.put_string(content)
+
+				file_content := content.twin
+				file_content.replace_substring_all ("%R%N", "%N")
+				out_file.put_string (file_content)
 				out_file.close
-				epoch := out_file.date
+				file_timestamp := out_file.date
 			else
 				last_op_failed := True
 				last_op_fail_reason := "Write failed; file " + a_file_name + " does not exist"
 			end
 		end
 
-	set_target(a_file_path: STRING) is
+	set_target (a_file_path: STRING) is
 			-- set context to `a_file_path'
 		require
 			a_file_path_valid: a_file_path /= Void and then not a_file_path.is_empty
@@ -217,27 +244,26 @@ feature -- Command
 			end
 		end
 
-	set_current_file_name(a_file_name: STRING) is
+	set_current_file_name (a_file_name: STRING) is
 		require
 			a_file_name_valid: a_file_name /= Void and then not a_file_name.is_empty
 		do
 			current_file_name := a_file_name
 		end
 
-	set_current_directory(a_dir: STRING) is
+	set_current_directory (a_dir: STRING) is
 		require
 			a_dir_valid: a_dir /= Void and then not a_dir.is_empty
 		do
 			current_directory := a_dir
 		end
 
-feature {NONE} -- Implementation
-
-	epoch: INTEGER
-			-- last marked change timestamp of file
-
 invariant
-	file_content_attached: file_content /= Void
+	directory_attached: current_directory /= Void
+	file_name_attached: current_file_name /= Void
+	last_op_fail_reason_attached: last_op_fail_reason /= Void
+	content_attached: file_content /= Void
+	timestamp_natural: file_timestamp >= 0
 
 end
 
