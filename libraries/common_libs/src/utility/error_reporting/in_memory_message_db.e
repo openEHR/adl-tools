@@ -191,11 +191,11 @@ feature -- Access
 
 			["VACSO"] = <"Error (VACSO): cannot add $1 object with $2 to singly-valued attribute $3 because object occurrences > 1">
 			["VACSI"] = <"Error (VACSI): cannot add $1 object with $2 to singly-valued attribute $3 because attribute already has child with same node id">
-			["VACSIT"] = <"Error (VACSIT): cannot add $1 object with $2 to singly-valued attribute $3 because attribute already has child with same RM type"> -- additional to spec
+			["VACSIT"] = <"Error (VACSIT): cannot add $1 object with $2 to singly-valued attribute $3 because attribute already has child with same RM type">
 
 			["VACMC"] = <"Error (VACMC): cannot add $1 object with $2 to multiply-valued attribute $3 because cardinality $4 does not contain occurrences $5 of object">
-			["VACMM"] = <"Error (VACMM): cannot add $1 object with $2 to multiply-valued attribute $3 because object has no node id">
-			["VACMI"] = <"Error (VACMI): cannot add $1 object with $2 to multiply-valued attribute $3 because attribute already has child with same node id">
+			["VACMI"] = <"Error (VACMM): cannot add $1 object with $2 to multiply-valued attribute $3 because object has no node id">
+			["VACMM"] = <"Error (VACMI): cannot add $1 object with $2 to multiply-valued attribute $3 because attribute already has child with same node id">
 
 			["VARCN"] = <"Error (VARCN): concept code $1 is invalid">
 					
