@@ -23,12 +23,12 @@ inherit
 			{NONE} all
 			{ANY} valid_path_string, path_parse_error
 		end
-	
-creation
+
+create
 	make
 
 feature -- Initialisation
-	
+
 	make is
 		do
 		end
@@ -40,12 +40,12 @@ feature -- Factory
 		require
 			parent_valid: a_parent /= Void
 			type_name_valid: a_type_name /= Void and then not a_type_name.is_empty
-			node_id_valid: a_node_id /= Void and then not a_parent.has_child_node(a_node_id)
+			node_id_valid: a_node_id /= Void and then not a_parent.has_child_with_id(a_node_id)
 		do
 			create Result.make_identified(a_type_name, a_node_id)
 			a_parent.put_child(Result)
 		end
-			
+
 	create_c_complex_object_anonymous(a_parent: C_ATTRIBUTE; a_type_name:STRING): C_COMPLEX_OBJECT is
 			-- create a new non-identified object node
 		require
@@ -55,7 +55,7 @@ feature -- Factory
 			create Result.make_anonymous(a_type_name)
 			a_parent.put_child(Result)
 		end
-			
+
 	create_archetype_slot_anonymous(a_parent: C_ATTRIBUTE; a_type_name:STRING): ARCHETYPE_SLOT is
 			-- create a new non-identified archetype slot
 		require
@@ -65,7 +65,7 @@ feature -- Factory
 			create Result.make_anonymous(a_type_name)
 			a_parent.put_child(Result)
 		end
-			
+
 	create_archetype_slot_identified(a_parent: C_ATTRIBUTE; a_type_name, a_node_id:STRING): ARCHETYPE_SLOT is
 			-- create a new non-identified archetype slot
 		require
@@ -75,7 +75,7 @@ feature -- Factory
 			create Result.make_identified(a_type_name, a_node_id)
 			a_parent.put_child(Result)
 		end
-			
+
 	create_c_attribute_single(a_parent: C_COMPLEX_OBJECT; an_attr_name: STRING): C_ATTRIBUTE is
 			-- create a C_ATTRIBUTE node with a simple name like "text" or "description"
 		require
@@ -98,7 +98,7 @@ feature -- Factory
 		end
 
 	create_c_primitive_object(a_parent: C_ATTRIBUTE; an_item: C_PRIMITIVE): C_PRIMITIVE_OBJECT is
-			-- an_item is C_STRING, C_INTEGER, C_REAL, C_DOUBLE, C_BOOLEAN 
+			-- an_item is C_STRING, C_INTEGER, C_REAL, C_DOUBLE, C_BOOLEAN
 		require
 			parent_valid: a_parent /= Void
 			an_item_valid: an_item /= Void
@@ -117,7 +117,7 @@ feature -- Factory
 			create Result.make(a_type_name, a_path)
 			a_parent.put_child(Result)
 		end
-		
+
 	create_c_code_phrase_from_pattern(a_parent: C_ATTRIBUTE; a_term_constraint: STRING): C_CODE_PHRASE is
 			-- create a "term" node from term in string form "terminology(version)::code_phrase, code_phrase, ..."
 		require
@@ -127,7 +127,7 @@ feature -- Factory
 			create Result.make_from_pattern(a_term_constraint)
 			a_parent.put_child(Result)
 		end
-		
+
 	create_constraint_ref(a_parent: C_ATTRIBUTE; a_code: STRING): CONSTRAINT_REF is
 			-- create a "term" node from term in string form "ac0039"
 		require
@@ -137,7 +137,7 @@ feature -- Factory
 			create Result.make(a_code)
 			a_parent.put_child(Result)
 		end
-		
+
 	create_c_dv_ordinal(a_parent: C_ATTRIBUTE): C_DV_ORDINAL is
 			-- create an empty "ordinal" node.
 			-- Populate it using create_ordinal in this factory, then
@@ -157,7 +157,7 @@ feature -- Factory
 		do
 			create Result.make(a_value, create {CODE_PHRASE}.make_from_string(a_symbol_code_phrase))
 		end
-		
+
 	create_c_dv_quantity(a_parent: C_ATTRIBUTE): C_DV_QUANTITY is
 			-- create an empty C_DV_QUANTITY node.
 		require
@@ -185,7 +185,7 @@ feature -- Factory
 			-- create Result as interval of 0 to +infinity
 		do
 			create Result.make(create {INTERVAL[INTEGER]}.make_upper_unbounded(0, True))
-		end		
+		end
 end
 
 

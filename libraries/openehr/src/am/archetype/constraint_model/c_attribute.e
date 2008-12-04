@@ -23,14 +23,14 @@ creation
 	make_single, make_multiple
 
 feature -- Initialisation
-	
+
 	default_create is
-			-- 
+			--
 		do
 			create children.make(0)
 			set_existence(create {INTERVAL[INTEGER]}.make_bounded(1,1, True, True))
 		end
-	
+
 	make_single(a_name: STRING) is
 			-- set attr name
 		require
@@ -64,13 +64,13 @@ feature -- Access
 		end
 
 	existence: INTERVAL[INTEGER]
-	
+
 	cardinality: CARDINALITY
-		
+
 	parent: C_COMPLEX_OBJECT
-	
+
 	children: ARRAYED_LIST [C_OBJECT]
-	
+
 	child_count: INTEGER is
 			-- number of children; 0 if any_allowed is True
 		do
@@ -80,12 +80,12 @@ feature -- Access
 feature -- Source Control
 
 	specialisation_status (specialisation_level: INTEGER): SPECIALISATION_STATUS is
-			-- status of this node in the source text of this archetype with respect to the 
+			-- status of this node in the source text of this archetype with respect to the
 			-- specialisation hierarchy. Values are: defined_here; redefined, added, unknown
 		do
 			create Result.make(ss_propagated)
 		end
-			
+
 	rolled_up_specialisation_status (archetype_specialisation_level: INTEGER): SPECIALISATION_STATUS is
 			-- status of this node taking into consideration effective_specialisation_status of
 			-- all sub-nodes.
@@ -93,31 +93,39 @@ feature -- Source Control
 			Result := effective_specialisation_status (archetype_specialisation_level)
 			from
 				children.start
-			until				
+			until
 				children.off or Result.value < ss_inherited
 			loop
 				Result := specialisation_xx(Result, children.item.rolled_up_specialisation_status (archetype_specialisation_level))
-				children.forth				
+				children.forth
 			end
 		end
-	
+
 feature -- Status Report
 
 	any_allowed: BOOLEAN is
-			-- True if any value allowed ('*' received in parsed input) - i.e. no childred
+			-- Is any value allowed ('*' received in parsed input) - i.e. no children?
 		do
 			Result := children.is_empty
 		end
 
+	has_children: BOOLEAN is
+			-- True if any object nodes below this node
+		do
+			Result := children.count > 0
+		end
+
 	is_relationship: BOOLEAN is
 			-- (in the UML sense) - True if attribute target type is not a primitive data type
+		require
+			has_children: not any_allowed
 		local
 			a_prim: C_PRIMITIVE_OBJECT
 		do
 			a_prim ?= children.first
 			Result := a_prim = Void
 		end
-		
+
 	is_multiple: BOOLEAN is
 			-- True if this attribute has multiple cardinality
 		do
@@ -135,7 +143,7 @@ feature -- Status Report
 				invalid_reason.append("existence must be specified")
 			else
 				Result := True
-				from 
+				from
 					children.start
 				until
 					not Result or else children.off
@@ -143,10 +151,10 @@ feature -- Status Report
 					-- check occurrences consistent with attribute cardinality
 					if Result and not is_multiple and children.item.occurrences.upper > 1 then
 						Result := False
-						invalid_reason.append("occurrences on child node " + children.item.node_id.out + 
-							" must be singular for non-container attribute")		
+						invalid_reason.append("occurrences on child node " + children.item.node_id.out +
+							" must be singular for non-container attribute")
 					end
-					
+
 					if Result and not children.item.is_valid then
 						Result := False
 						invalid_reason.append("(invalid child node) " + children.item.invalid_reason + "%N")
@@ -157,14 +165,14 @@ feature -- Status Report
 			end
 		end
 
-	has_child_node (a_path_id: STRING): BOOLEAN is
-			-- (from OG_NODE)
-		require -- from OG_NODE
-			path_id_valid: a_path_id /= void and then not a_path_id.is_empty
+	has_child_with_id (a_node_id: STRING): BOOLEAN is
+			-- has a child node with id a_node_id
+		require
+			Node_id_valid: a_node_id /= void and then not a_node_id.is_empty
 		do
-			Result := representation.has_child_node (a_path_id)
+			Result := representation.has_child_with_id (a_node_id)
 		end
-		
+
 feature -- Modification
 
 	set_existence(an_interval: INTERVAL[INTEGER]) is
@@ -174,21 +182,21 @@ feature -- Modification
 		do
 			existence := an_interval
 		end
-		
+
 	set_cardinality(a_cardinality: CARDINALITY) is
-			-- 
+			--
 		require
 			cardinality_exists: a_cardinality /= Void
 		do
 			cardinality := a_cardinality
-		end		
+		end
 
 	put_child(an_obj: C_OBJECT) is
 			-- put a new child node
 		require
 			Object_exists: an_obj /= Void
 			Object_occurrences_valid: not is_multiple implies an_obj.occurrences.upper <= 1
-			Object_id_valid: not (an_obj.is_addressable and has_child_node(an_obj.node_id))
+			Object_id_valid: not (an_obj.is_addressable and has_child_with_id(an_obj.node_id))
 		do
 			representation.put_child(an_obj.representation)
 			children.extend(an_obj)
@@ -206,19 +214,19 @@ feature -- Serialisation
 		do
 			serialiser.start_c_attribute(Current, depth)
 		end
-		
+
 	exit_block(serialiser: CONSTRAINT_MODEL_SERIALISER; depth: INTEGER) is
 			-- perform serialisation at end of block for this node
 		do
 			serialiser.end_c_attribute(Current, depth)
 		end
-	
+
 invariant
 	Rm_attribute_name_valid: rm_attribute_name /= Void and then not rm_attribute_name.is_empty
 	Existence_set: existence /= Void
 	Children_validity: children /= Void
 	Any_allowed_validity: any_allowed xor not children.is_empty
-	
+
 end
 
 

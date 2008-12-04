@@ -44,9 +44,9 @@ feature -- Definitions
 
 	Sym_constraint_definitions: STRING is "constraint_definitions"
 
-	Sym_term_binding: STRING is "term_binding"
+	Sym_term_bindings: STRING is "term_bindings"
 
-	Sym_constraint_binding: STRING is "constraint_binding"
+	Sym_constraint_bindings: STRING is "constraint_bindings"
 
 feature -- Initialisation
 
@@ -904,7 +904,7 @@ feature -- Synchronisation
 
 			-- term bindings
 			if not term_bindings.is_empty then
-				create attr_node_term_binding.make_multiple(Sym_term_binding)
+				create attr_node_term_binding.make_multiple(sym_term_bindings)
 				representation.put_attribute (attr_node_term_binding)
 				from
 					term_bindings.start
@@ -933,7 +933,7 @@ feature -- Synchronisation
 
 			-- constraint bindings
 			if not constraint_bindings.is_empty then
-				create attr_node_term_binding.make_multiple(Sym_constraint_binding)
+				create attr_node_term_binding.make_multiple(Sym_constraint_bindings)
 				representation.put_attribute (attr_node_term_binding)
 				from
 					constraint_bindings.start
@@ -1082,7 +1082,7 @@ feature {NONE} -- Implementation
 			until
 				terminologies_available.off
 			loop
-				terminology_path := "/" + sym_term_binding + "[" + terminologies_available.item + "]/items"
+				terminology_path := "/" + sym_term_bindings + "[" + terminologies_available.item + "]/items"
 
 				if has_path (terminology_path) then
 					create term_bindings_one_terminology.make (0)
@@ -1090,7 +1090,7 @@ feature {NONE} -- Implementation
 					term_bindings.force (term_bindings_one_terminology, terminologies_available.item)
 				end
 
-				if has_path("/" + Sym_constraint_binding + "[" + terminologies_available.item + "]") then
+				if has_path("/" + Sym_constraint_bindings + "[" + terminologies_available.item + "]") then
 					create constraint_bindings_one_terminology.make(0)
 					populate_constraint_bindings(terminologies_available.item, constraint_bindings_one_terminology)
 					constraint_bindings.force(constraint_bindings_one_terminology, terminologies_available.item)
@@ -1126,7 +1126,7 @@ feature {NONE} -- Implementation
 					loop
 						a_code := an_attr_node.item.node_id
 						create adl_term.make (a_code)
-						object_node ?= an_attr_node.child(a_code)
+						object_node ?= an_attr_node.child_with_id(a_code)
 						from
 							object_node.start
 						until
@@ -1182,7 +1182,7 @@ feature {NONE} -- Implementation
 			a_leaf_node: DT_PRIMITIVE_OBJECT
 			a_uri: URI
 		do
-			an_attr_node := representation.attribute_node_at_path("/" + Sym_constraint_binding + "[" + a_terminology + "]/items")
+			an_attr_node := representation.attribute_node_at_path("/" + Sym_constraint_bindings + "[" + a_terminology + "]/items")
 			if an_attr_node.is_multiple then
 				from
 					an_attr_node.start
