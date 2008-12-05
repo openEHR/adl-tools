@@ -495,6 +495,7 @@ feature {NONE} -- Implementation
 			-- only interested in C_COMPLEX_OBJECTs
 		local
 			co_parent_flat: !C_OBJECT
+			co_parent_flat_detachable: ?C_OBJECT
 			apa: ARCHETYPE_PATH_ANALYSER
 		do
 			create apa.make_from_string (a_c_node.path)
@@ -519,7 +520,9 @@ feature {NONE} -- Implementation
 					check ca_parent_flat_void: False end
 				end
 			elseif {co_child_diff: C_OBJECT} a_c_node then
-				co_parent_flat ?= flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth))
+				co_parent_flat_detachable := flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth))
+				check co_parent_flat_detachable /= Void end
+				co_parent_flat := co_parent_flat_detachable
 
 				-- C_CODE_PHRASE conforms to CONSTRAINT_REF, but is not testable in any way; sole exception in ADL/AOM; just warn
 				if {ccr: CONSTRAINT_REF} co_parent_flat and then not {ccr2: CONSTRAINT_REF} co_child_diff then
@@ -533,7 +536,9 @@ feature {NONE} -- Implementation
 					-- if the child is a redefine of a parent use_node, then we have to do the comparison to the use_node target,
 					-- unless they both are use_nodes, in which case leave them as is
 					if {air_p: ARCHETYPE_INTERNAL_REF} co_parent_flat and not {air_c: ARCHETYPE_INTERNAL_REF} co_child_diff then
-						co_parent_flat ?= flat_parent.c_object_at_path (air_p.path)
+						co_parent_flat_detachable := flat_parent.c_object_at_path (air_p.path)
+						check co_parent_flat_detachable /= Void end
+						co_parent_flat := co_parent_flat_detachable
 					end
 
 					-- now determine if child object is same as or a specialisation of flat object
