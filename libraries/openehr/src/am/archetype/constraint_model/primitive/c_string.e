@@ -196,6 +196,39 @@ feature -- Output
 
 		end
 
+	clean_as_string(cleaner: FUNCTION [ANY, TUPLE[STRING], STRING]):STRING is
+			-- generate a cleaned form of this object as a string, using `cleaner' to do the work
+		do
+			create Result.make(0)
+
+			if strings /= Void then
+				from
+					strings.start
+				until
+					strings.off
+				loop
+					if not strings.isfirst then
+						Result.append(", ")
+					end
+					Result.append_character('%"')
+					Result.append(cleaner.item ([strings.item]))
+					Result.append_character('%"')
+					strings.forth
+				end
+				if is_open then
+					Result.append(", ...")
+				end
+			else -- its a regexp
+				Result.append_character(regexp_delimiter)
+				Result.append(regexp)
+				Result.append_character(regexp_delimiter)
+			end
+			if assumed_value /= Void then
+				Result.append("; %"" + cleaner.item ([assumed_value.out]) + "%"")
+			end
+
+		end
+
 	as_canonical_string:STRING is
 		do
 		end

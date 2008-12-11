@@ -28,13 +28,6 @@ inherit
 			is_equal, default_create
 		end
 
-	STRING_UTILITIES
-		export
-			{NONE} all
-		undefine
-			is_equal, default_create
-		end
-
 create
 	make_identified, make_anonymous
 
@@ -103,7 +96,7 @@ feature -- Conversion
 			a_dur: DATE_TIME_DURATION
 		do
 			if is_string then
-				Result := "%"" + quote_clean(value.out) + "%""
+				Result := "%"" + value.out + "%""
 			elseif is_character then
 				Result := "%'" + value.out + "%'"
 			else
@@ -119,6 +112,18 @@ feature -- Conversion
 				else
 					Result := duration_to_iso8601_string(a_dur)
 				end
+			end
+		end
+
+	clean_as_string(cleaner: FUNCTION [ANY, TUPLE[STRING], STRING]):STRING is
+			-- generate a cleaned form of this object as a string, using `cleaner' to do the work
+		local
+			a_dur: DATE_TIME_DURATION
+		do
+			if is_string then
+				Result := "%"" + cleaner.item ([value.out]) + "%""
+			else
+				Result := as_string
 			end
 		end
 

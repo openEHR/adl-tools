@@ -39,6 +39,11 @@ inherit
 			{NONE} all
 		end
 
+	STRING_UTILITIES
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -227,13 +232,12 @@ feature -- Visitor
 		local
 			s: STRING
 		do
-			last_result.remove_tail (format_item (FMT_NEWLINE).count)	-- remove last newline due to OBJECT_REL_NODE
-			s := a_node.as_string
-
+			last_result.remove_tail(format_item(FMT_NEWLINE).count)	-- remove last newline due to OBJECT_REL_NODE
 			if {c_str: C_STRING} a_node.item and then c_str.strings /= Void then
-				s := clean (s)
+				s := c_str.clean_as_string(agent clean)
+			else
+				s := a_node.as_string
 			end
-
 			last_result.append (apply_style (s, STYLE_VALUE))
 			last_object_simple := True
 		end
