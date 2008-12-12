@@ -44,9 +44,9 @@ feature -- Definitions
 
 	Sym_constraint_definitions: STRING is "constraint_definitions"
 
-	Sym_term_bindings: STRING is "term_binding"
+	Sym_term_bindings: STRING is "term_bindings"
 
-	Sym_constraint_bindings: STRING is "constraint_binding"
+	Sym_constraint_bindings: STRING is "constraint_bindings"
 
 feature -- Initialisation
 
