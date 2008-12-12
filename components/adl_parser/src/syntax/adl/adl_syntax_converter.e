@@ -167,12 +167,13 @@ feature -- ADL 1.5 conversions
 
 	convert_ontology_syntax(dt: DT_COMPLEX_OBJECT_NODE) is
 		do
-			if dt.has_attribute ("term_binding") then
-				dt.replace_attribute_name ("term_binding", "term_bindings")
-			end
-			if dt.has_attribute ("constraint_binding") then
-				dt.replace_attribute_name ("constraint_binding", "constraint_bindings")
-			end
+-- TODO: Uncomment this when Archetype Editor 2.0 has been released.
+--			if dt.has_attribute ("term_binding") then
+--				dt.replace_attribute_name ("term_binding", "term_bindings")
+--			end
+--			if dt.has_attribute ("constraint_binding") then
+--				dt.replace_attribute_name ("constraint_binding", "constraint_bindings")
+--			end
 		end
 
 end
