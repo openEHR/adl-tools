@@ -107,7 +107,40 @@ feature -- Conversion
 				end
 				if is_string then
 					Result.append_character('"')
-					Result.append (quote_clean(value.item.out))
+					Result.append (value.item.out)
+					Result.append_character('"')
+				else
+					out_val := value.item.out
+					Result.append(out_val)
+					-- FIXME: REAL.out is broken; forgets to output '.0'
+					if value.item.generating_type.substring(1,4).is_equal("REAL") and then out_val.index_of('.', 1) = 0 then
+						Result.append(".0")
+					end
+				end
+				value.forth
+			end
+			if value.count = 1 then -- append syntactic indication of list continuation
+				Result.append(", ...")
+			end
+		end
+
+	clean_as_string(cleaner: FUNCTION [ANY, TUPLE[STRING], STRING]):STRING is
+			-- generate a cleaned form of this object as a string, using `cleaner' to do the work
+		local
+			out_val: STRING
+		do
+			create Result.make(0)
+			from
+				value.start
+			until
+				value.off
+			loop
+				if value.index > 1 then
+					Result.append(", ")
+				end
+				if is_string then
+					Result.append_character('"')
+					Result.append (cleaner.item([value.item.out]))
 					Result.append_character('"')
 				else
 					out_val := value.item.out

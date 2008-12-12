@@ -1,10 +1,10 @@
 indexing
 
 	component:   "openEHR Common Archetype Model"
-	
+
 	description: "Constrainer type for instances of STRING"
 	keywords:    "archetype, string, data"
-	
+
 	design:      "openEHR Common Archetype Model 0.2"
 
 	author:      "Thomas Beale"
@@ -27,11 +27,11 @@ create
 feature -- Definitions
 
 	default_delimiter: CHARACTER is '/'
-	
+
 	alternative_delimiter: CHARACTER is '^'
-	
+
 	Regexp_compile_error: STRING is "regexp COMPILE ERROR"
-	
+
 feature -- Initialization
 
 	make_any is
@@ -39,7 +39,7 @@ feature -- Initialization
 		do
 			is_open := True
 		end
-		
+
 	make_from_string(str: STRING) is
 			-- make from a single string
 		require
@@ -54,7 +54,7 @@ feature -- Initialization
 
 	make_from_regexp(str: STRING; using_default_delimiter: BOOLEAN) is
 			-- make from a regular expression contained in 'str' (not including delimiters);
-			-- if `using_default_delimiter' is True, the '/' delimiter is being used, 
+			-- if `using_default_delimiter' is True, the '/' delimiter is being used,
 			-- else the '^' delimiter is being used
 		require
 			str /= Void
@@ -100,7 +100,7 @@ feature -- Access
 
 	strings: ARRAYED_LIST[STRING]
 			-- representation of constraint as allowed values for the constrained string
-			
+
 	regexp: STRING
 			-- representation of constraint as PERL-compliant regexp pattern
 
@@ -121,8 +121,8 @@ feature -- Access
 		ensure then
 			Result /= Void
 		end
-		
-	regexp_delimiter: CHARACTER is 
+
+	regexp_delimiter: CHARACTER is
 			-- return correct delimiter according to `regexp_default_delimiter'
 		do
 			if regexp_default_delimiter then
@@ -131,7 +131,7 @@ feature -- Access
 				Result := alternative_delimiter
 			end
 		end
-	
+
 feature -- Status Report
 
 	is_open: BOOLEAN
@@ -139,19 +139,19 @@ feature -- Status Report
 
 feature -- Status Report
 
-	valid_value (a_value: STRING): BOOLEAN is 
+	valid_value (a_value: STRING): BOOLEAN is
 		do
 			if is_open then
 				Result := True
-			elseif strings /= Void then 
+			elseif strings /= Void then
 				Result := strings.has (a_value)
 			else
 				Result := regexp_parser.matches(a_value)
 			end
 		end
-		
+
 	regexp_default_delimiter: BOOLEAN
-			-- if True, the '/' delimiter is being used, 
+			-- if True, the '/' delimiter is being used,
 			-- else the '^' delimiter is being used		
 
 feature -- Output
@@ -159,14 +159,14 @@ feature -- Output
 	as_string:STRING is
 		do
 			create Result.make(0)
-			
+
 			if strings /= Void then
 				from
 					strings.start
 				until
 					strings.off
 				loop
-					if not strings.isfirst then 
+					if not strings.isfirst then
 						Result.append(", ")
 					end
 					Result.append_character('%"')
@@ -176,7 +176,7 @@ feature -- Output
 				end
 				if is_open then
 					Result.append(", ...")
-				end			
+				end
 			else -- its a regexp
 				Result.append_character(regexp_delimiter)
 				Result.append(regexp)
@@ -184,6 +184,39 @@ feature -- Output
 			end
 			if assumed_value /= Void then
 				Result.append("; %"" + assumed_value.out + "%"")
+			end
+
+		end
+
+	clean_as_string(cleaner: FUNCTION [ANY, TUPLE[STRING], STRING]):STRING is
+			-- generate a cleaned form of this object as a string, using `cleaner' to do the work
+		do
+			create Result.make(0)
+
+			if strings /= Void then
+				from
+					strings.start
+				until
+					strings.off
+				loop
+					if not strings.isfirst then
+						Result.append(", ")
+					end
+					Result.append_character('%"')
+					Result.append(cleaner.item ([strings.item]))
+					Result.append_character('%"')
+					strings.forth
+				end
+				if is_open then
+					Result.append(", ...")
+				end
+			else -- its a regexp
+				Result.append_character(regexp_delimiter)
+				Result.append(regexp)
+				Result.append_character(regexp_delimiter)
+			end
+			if assumed_value /= Void then
+				Result.append("; %"" + cleaner.item ([assumed_value.out]) + "%"")
 			end
 
 		end

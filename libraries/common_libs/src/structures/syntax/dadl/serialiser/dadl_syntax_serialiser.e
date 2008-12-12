@@ -21,10 +21,15 @@ inherit
 			{NONE} all
 		end
 
-creation
+	ADL_SYNTAX_CONVERTER
+		export
+			{NONE} all
+		end
+
+create
 	make
 
-feature -- Modification
+feature -- Visitor
 
 	start_complex_object_node(a_node: DT_COMPLEX_OBJECT_NODE; depth: INTEGER) is
 			-- start serialising a DT_COMPLEX_OBJECT_NODE
@@ -130,6 +135,8 @@ feature {NONE} -- Implementation
 
 	start_object_leaf(a_node: DT_OBJECT_LEAF; depth: INTEGER) is
 			-- start serialising a DT_OBJECT_LEAF
+		local
+			s: STRING
 		do
 			if a_node.parent.is_multiple then
 				last_result.append(create_indent(depth//2 + multiple_attr_count) + apply_style("[%"" + a_node.node_id + "%"]", STYLE_IDENTIFIER))
@@ -138,7 +145,16 @@ feature {NONE} -- Implementation
 			end
 
 			last_result.append(symbol(SYM_START_DBLOCK))
-			last_result.append(apply_style(a_node.as_string, STYLE_VALUE))
+
+			if {a_dt_p_o: DT_PRIMITIVE_OBJECT} a_node then
+				s := a_dt_p_o.clean_as_string(agent clean)
+			elseif {a_dt_p_o_l: DT_PRIMITIVE_OBJECT_LIST} a_node then
+				s := a_dt_p_o_l.clean_as_string(agent clean)
+			else
+				s := a_node.as_string
+			end
+
+			last_result.append(apply_style(s, STYLE_VALUE))
 		end
 
 end
