@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-2-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-2-0 http://www.eiffel.com/developers/xml/configuration-1-2-0.xsd" name="adl_parser" uuid="F1152FD5-F5A8-4937-8866-6F615D6F326C">
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-4-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-4-0 http://www.eiffel.com/developers/xml/configuration-1-4-0.xsd" name="adl_parser" uuid="F1152FD5-F5A8-4937-8866-6F615D6F326C">
 	<target name="adl_parser">
 		<root class="ADL_INTERFACE" feature="make"/>
 		<version major="1" minor="4" release="0" build="0" company="Ocean Informatics" product="ADL Parser" copyright="Ocean Informatics, 2003-2008"/>
@@ -29,6 +29,7 @@
 		<setting name="msil_clr_version" value="v2.0.50727"/>
 		<setting name="msil_generation" value="true"/>
 		<setting name="msil_generation_type" value="dll"/>
+		<setting name="msil_key_file_name" value="openEHR.snk"/>
 		<setting name="multithreaded" value="false"/>
 		<setting name="use_all_cluster_name_as_namespace" value="true"/>
 		<setting name="use_cluster_name_as_namespace" value="false"/>
