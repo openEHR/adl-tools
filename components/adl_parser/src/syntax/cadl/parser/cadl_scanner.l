@@ -297,9 +297,9 @@ a[ct][0-9.]+ {
 				last_string_value := text
 		}
 
-----------/* V_ISO8601_DURATION PnYnMnWnDtnnHnnMnnS */ -------------------------------------------------
+----------/* V_ISO8601_DURATION PnYnMnWnDtnnHnnMnn.nnnS */ -------------------------------------------------
 
-P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?T([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])? |
+P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?T([0-9]+[hH])?([0-9]+[mM])?([0-9]+(\.[0-9]+)?[sS])? |
 P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])? {
 				last_token := V_ISO8601_DURATION
 				last_string_value := text
@@ -307,13 +307,13 @@ P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])? {
 
 -- temporary...
 -- missing 'T' silently correct; assume 'm' means minutes not months
-P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[dD])?([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])? {
+P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[dD])?([0-9]+[hH])?([0-9]+[mM])?([0-9]+(\.[0-9]+)[sS])? {
 				last_token := V_ISO8601_DURATION
 				last_string_value := convert_non_conforming_duration(text)
 			}
 
 -- in future, use this instead to treat as an error
--- P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[dD])?([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])? {
+-- P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[dD])?([0-9]+[hH])?([0-9]+[mM])?([0-9]+(\.[0-9]+)[sS])? {
 -- 				last_token := ERR_V_ISO8601_DURATION
 --			}
 
