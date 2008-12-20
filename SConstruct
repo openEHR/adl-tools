@@ -1,5 +1,4 @@
 import os, shutil, re
-from Eiffel import files
 
 EnsurePythonVersion(2, 4)
 EnsureSConsVersion(1, 0, 0)
@@ -83,7 +82,7 @@ if distrib and len(adl_workbench) > 0:
 	for dir in [icons, vim, install]:
 		for source, dirnames, filenames in os.walk(dir):
 			if '.svn' in dirnames: dirnames.remove('.svn')
-			adl_workbench_installer_sources += files(source + '/*')
+			adl_workbench_installer_sources += env.Files(source + '/*')
 
 	if platform == 'windows':
 		Install(distrib + '/adl_parser/dotnet', adl_parser)
@@ -183,7 +182,7 @@ if distrib and len(adl_workbench) > 0:
 				'-d', pkg_tree + '/Description.plist'
 			]
 
-			installer = env.Command(distrib + '/tools/' + pkg_name + '.dmg', adl_workbench_installer_sources + files('apps/doc/*.txt'), [
+			installer = env.Command(distrib + '/tools/' + pkg_name + '.dmg', adl_workbench_installer_sources + env.Files('apps/doc/*.txt'), [
 				Delete(pkg_tree),
 				env.Action(copy_mac_osx_installer_sources, 'Copying installer files to ' + pkg_tree),
 				command,
