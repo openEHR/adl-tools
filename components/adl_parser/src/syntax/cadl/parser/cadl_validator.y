@@ -1125,8 +1125,9 @@ occurrence_spec: cardinality_limit_value 	-- single integer or '*'
 
 c_integer_spec: integer_value
 		{
-			create int_interval.make_point($1)
-			create c_integer.make_range(int_interval)
+			create int_list.make(0)
+			int_list.extend($1)
+			create c_integer.make_list(int_list)
 		}
 	| integer_list_value
 		{
@@ -1169,8 +1170,9 @@ c_integer: c_integer_spec
 
 c_real_spec: real_value
 		{
-			create rl_interval.make_point($1)
-			create c_real.make_range(rl_interval)
+			create real_list.make(0)
+			real_list.extend($1)
+			create c_real.make_list(real_list)
 		}
 	| real_list_value
 		{
@@ -2526,6 +2528,9 @@ feature {NONE} -- Implementation
 	time_interval: INTERVAL [ISO8601_TIME]
 	date_time_interval: INTERVAL [ISO8601_DATE_TIME]
 	duration_interval: INTERVAL [ISO8601_DURATION]
+
+	int_list: ARRAYED_LIST[INTEGER]
+	real_list: ARRAYED_LIST[REAL]
 
 	indent: STRING
 	str: STRING
