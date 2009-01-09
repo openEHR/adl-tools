@@ -229,6 +229,9 @@ feature -- Conversion
 							-- should never get here: it means that the DT data parsed as a
 							-- nested generic, but that the corresponding object types are not
 						end
+					else -- even if it is empty, we still have to create the generic object properly
+						-- note that the invariants of the containing business object might easily not be satisfied
+						make_empty_generic_object (Result)
 					end
 				else
 					-- for each field in the object
@@ -533,6 +536,31 @@ feature {NONE} -- Implementation
 					loop
 						a_sequence.extend(a_dt_attr.item.as_object(gen_param_1_type_id))
 						a_dt_attr.forth
+					end
+				end
+			end
+		end
+
+	make_empty_generic_object (a_gen_obj:ANY) is
+			-- just make sure make() is called so the object is in some sort of safe shape
+			-- only deals with first generic parameter; generally safe for HASH_TABLE and LIST types
+		require
+			Obj_exists: a_gen_obj /= Void
+		local
+			a_sequence: SEQUENCE[ANY]
+			an_arrayed_list: ARRAYED_LIST[ANY]
+			a_hash_table: HASH_TABLE [ANY, HASHABLE]
+		do
+			-- determine dynamic type of generic type
+			a_hash_table ?= a_gen_obj
+			if a_hash_table /= Void then
+				a_hash_table.make(0)
+			else
+				a_sequence ?= a_gen_obj
+				if a_sequence /= Void then
+					an_arrayed_list ?= a_sequence
+					if an_arrayed_list /= Void then
+						an_arrayed_list.make(0)
 					end
 				end
 			end
