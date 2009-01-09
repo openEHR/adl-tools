@@ -42,6 +42,14 @@ create
 	make
 %}
 
+--------------- Definitions --------------
+ALPHANUM [a-zA-Z0-9]
+IDCHAR [a-zA-Z0-9_]
+NAMECHAR [a-zA-Z0-9._\-]
+NAMESTR ([a-zA-Z][a-zA-Z0-9_]+)
+
+
+--------------- Options --------------
 %x IN_DADL_SECTION IN_CADL_SECTION IN_ASSERTION_SECTION
 %option outfile="adl_scanner.e"
 
@@ -230,7 +238,7 @@ create
 			}
 
 ----------/* archetype id */ -------------------------------------------------
-[a-zA-Z][a-zA-Z0-9()#_]+(-[a-zA-Z0-9()#_]+){2}\.[a-zA-Z][a-zA-Z0-9()#-_]+\.v[0-9]+[a-zA-Z]*	{
+{NAMESTR}(-{NAMESTR}){2}\.{NAMESTR}(-{NAMESTR})*\.v[1-9][0-9]* {
 					last_token := V_ARCHETYPE_ID
 					last_string_value := text
 			}
