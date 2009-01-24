@@ -90,7 +90,7 @@ feature -- Access
 			-- version of openEHR implem-dev repository containing
 			-- this software
 		once
-			Result := (create {OPENEHR_VERSION}).version
+			Result := (create {OPENEHR_VERSION}).out
 		end
 
 	adl_engine: ADL_ENGINE
