@@ -1,6 +1,9 @@
 indexing
 	component:   "openEHR re-usable library"
-	description: "Attributes whose type is a container type based on a generic paremeter constraint of the containing class."
+	description: "[
+				 Definition of a class in an object model. A class is type that may be open 
+				 or closed in terms of other types mentioned within.
+				 "
 	keywords:    "model, UML"
 
 	author:      "Thomas Beale"
@@ -12,18 +15,60 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class BMM_MULTIPLE_CONSTRAINED_ATTRIBUTE
-
-inherit
-	BMM_TYPE_CONSTRAINED_ATTRIBUTE
-
-	BMM_MULTIPLE_SPECIFIER
-
-feature -- Initialisation
+class BMM_CLASS_DEFINITION
 
 feature -- Access
 
+	generic_parameters: ARRAYED_SET [BMM_GENERIC_PARAMETER_DEFINITION]
+			-- list of generic parameter definitions
+
+	ancestors: ARRAYED_LIST [BMM_TYPE_SPECIFIER]
+			-- list of inheritance parents
+
+	attributes: HASH_TABLE [BMM_ATTRIBUTE_DEFINITION, STRING]
+			-- list of attributes
+
+	flat_attributes: HASH_TABLE [BMM_ATTRIBUTE_DEFINITION, STRING] is
+			-- list of all attributes due to current and ancestor classes
+		do
+			if flat_attributes_cache = Void then
+				create flat_attributes_cache.make(0)
+				flat_attributes_cache.merge (attributes)
+				from
+					ancestors.start
+				until
+					ancestors.off
+				loop
+					flat_attributes_cache.merge (ancestors.item.flat_attributes_cache)
+					ancestors.forth
+				end
+			end
+			Result := flat_attributes_cache
+		end
+
 feature -- Status Report
+
+	is_abstract: BOOLEAN
+			-- True if this is an abstract type
+
+	is_generic: BOOLEAN
+			-- True if this class is a generic class
+
+	has_attribute (an_attr_name: STRING): BOOLEAN is
+			-- True if an_attr_name valid in this type, due to this type definition, or any ancestor
+		require
+			Attr_name_valid: an_attr_name /= Void and then not an_attr_name.is_empty
+		do
+			Result := flat_attributes.has (an_attr_name)
+		end
+
+feature {BMM_TYPE} -- Implementation
+
+	flat_attributes_cache: HASH_TABLE [BMM_ATTRIBUTE_DEFINITION, STRING]
+			-- reference list of all attributes due to inheritance flattening of this type
+
+invariant
+	Generic_validity :is_generic implies generic_parameters /= Void and then not generic_parameters.is_empty
 
 end
 

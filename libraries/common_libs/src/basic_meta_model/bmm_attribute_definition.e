@@ -1,6 +1,6 @@
 indexing
 	component:   "openEHR re-usable library"
-	description: "Provide container type specification to concrete attribute definitions."
+	description: "Abstract idea of an attribute definition within a class definition"
 	keywords:    "model, UML"
 
 	author:      "Thomas Beale"
@@ -12,23 +12,26 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-deferred class BMM_MULTIPLE_SPECIFIER
+deferred class BMM_ATTRIBUTE_DEFINITION
 
 feature -- Initialisation
 
 feature -- Access
 
-	container_type: BMM_TYPE
-			-- type of the container of this attribute
+	name: STRING
+			-- name of this attribute
 
-	cardinality: INTERVAL [INTEGER]
+	type: BMM_TYPE_SPECIFIER
+			-- type of this attribute
 
 feature -- Status Report
 
-invariant
-	Container_type_exists: container_type /= Void
-	Cardinality_exists: cardinality /= Void
+	is_mandatory: BOOLEAN
+			-- True if this attribute is mandatory in its class
 
+invariant
+	Name_exists: name /= Void
+	
 end
 
 

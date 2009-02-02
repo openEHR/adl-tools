@@ -1,6 +1,6 @@
 indexing
 	component:   "openEHR re-usable library"
-	description: "Basic Meta-model abstraction of a multiple-valued (container) attribute"
+	description: "Concept of an attribute that has a generic type."
 	keywords:    "model, UML"
 
 	author:      "Thomas Beale"
@@ -12,14 +12,17 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class BMM_MULTIPLE_ATTRIBUTE
+class BMM_GENERIC_ATTRIBUTE_DEFINITION
 
 inherit
-	BMM_TYPED_ATTRIBUTE
-
-	BMM_MULTIPLE_SPECIFIER
-
+	BMM_ATTRIBUTE_DEFINITION
+	
 feature -- Initialisation
+
+feature -- Access
+
+	type: BMM_GENERIC_TYPE_SPECIFIER
+			-- type of the container of this attribute
 
 feature -- Status Report
 

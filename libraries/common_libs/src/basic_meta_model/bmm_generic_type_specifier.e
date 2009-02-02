@@ -1,6 +1,6 @@
 indexing
 	component:   "openEHR re-usable library"
-	description: "Concept of an attribute with a bound type"
+	description: "Concept of a constraint on a type"
 	keywords:    "model, UML"
 
 	author:      "Thomas Beale"
@@ -12,20 +12,22 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-deferred class BMM_TYPED_ATTRIBUTE
+class BMM_GENERIC_TYPE_SPECIFIER
 
 inherit
-	BMM_ATTRIBUTE
-		redefine
-			type
-		end
+	BMM_TYPE_SPECIFIER
 
 feature -- Initialisation
 
 feature -- Access
 
-	type: BMM_TYPE
-			-- type of this attribute
+	root_type: BMM_BOUND_TYPE_SPECIFIER
+			-- optional type to which this paramter conforms
+
+	generic_parameters: ARRAYED_LIST [BMM_TYPE_SPECIFIER]
+			-- parameters of the root_type in this type specifier
+
+feature -- Status Report
 
 end
 

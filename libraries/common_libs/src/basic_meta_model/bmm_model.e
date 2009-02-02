@@ -21,11 +21,6 @@ feature -- Initialisation
 
 	make_dt is
 			-- make in a safe way for DT building purposes
-		local
-			x: BMM_SINGLE_ATTRIBUTE
-			y: BMM_MULTIPLE_ATTRIBUTE
-			z: BMM_SINGLE_CONSTRAINED_ATTRIBUTE
-			w: BMM_MULTIPLE_CONSTRAINED_ATTRIBUTE
 		do
 
 		end
@@ -38,21 +33,21 @@ feature -- Access
 	model_release: STRING
 			-- release identifier of the model
 
-	primitive_types: HASH_TABLE [BMM_PRIMITIVE_TYPE, STRING]
+	primitive_types: HASH_TABLE [BMM_CLASS_DEFINITION, STRING]
 			-- types like Integer, Boolean etc
 
-	class_definitions: HASH_TABLE [BMM_CLASS, STRING]
+	class_definitions: HASH_TABLE [BMM_CLASS_DEFINITION, STRING]
 			-- constructed classes
 
-	type_definition (a_type_name: STRING): BMM_TYPE is
-			-- retrieve the type definition for `a_type_name' from either `primitive_types' or `classes'
+	class_definition (a_class_name: STRING): BMM_CLASS_DEFINITION is
+			-- retrieve the class definition for `a_class_name' from either `primitive_types' or `classes'
 		require
-			Type_name_valid: a_type_name /= Void and then has_type(a_type_name)
+			Type_name_valid: a_class_name /= Void and then has_class(a_class_name)
 		do
-			if primitive_types.has (a_type_name) then
-				Result := primitive_types.item (a_type_name)
+			if primitive_types.has (a_class_name) then
+				Result := primitive_types.item (a_class_name)
 			else
-				Result := class_definitions.item (a_type_name)
+				Result := class_definitions.item (a_class_name)
 			end
 		ensure
 			Result_exists: Result /= Void
@@ -60,19 +55,19 @@ feature -- Access
 
 feature -- Status Report
 
-	has_type (a_type_name: STRING): BOOLEAN is
-			-- True if the type `a_type_name' is know in either `primitive_types' or `classes'
+	has_class (a_class_name: STRING): BOOLEAN is
+			-- True if the type `a_class_name' is know in either `primitive_types' or `classes'
 		require
-			Type_name_valid: a_type_name /= Void and then not a_type_name.is_empty
+			Type_name_valid: a_class_name /= Void and then not a_class_name.is_empty
 		do
-			Result := primitive_types.has (a_type_name) or class_definitions.has (a_type_name)
+			Result := primitive_types.has (a_class_name) or class_definitions.has (a_class_name)
 		end
 
-	is_sub_type_of (a_sub_type, a_parent_type: STRING): BOOLEAN is
-			-- True if `a_subclass' is a sub-class in the model of `a_parent_type'
+	is_sub_class_of (a_class, a_parent_class: STRING): BOOLEAN is
+			-- True if `a_class' is a sub-class in the model of `a_parent_class'
 		require
-			Sub_type_valid: a_sub_type /= Void not a_sub_type.is_empty
-			Parent_type_valid: a_parent_type /= Void and then has_type (a_parent_type)
+			Sub_class_valid: a_sub_class /= Void not a_sub_class.is_empty
+			Parent_class_valid: a_parent_class /= Void and then has_class (a_parent_class)
 		do
 			Result := True
 		end

@@ -1,6 +1,11 @@
 indexing
 	component:   "openEHR re-usable library"
-	description: "Basic Meta-model abstraction of a primitive type"
+	description: "[
+				 Abstract idea of specifying a type in some context. This is not the same as 'defining' a class.
+				 A type specification is essentially a reference of some kind, that defines the type of an
+				 attribute, or function result or argument. It may include generic parameters that might or might
+				 not be bound. See subtypes
+				 "]
 	keywords:    "model, UML"
 
 	author:      "Thomas Beale"
@@ -12,15 +17,16 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class BMM_TYPE_SPECIFIER
+deferred class BMM_TYPE_SPECIFIER
 
-feature -- Access
+feature -- Output
 
-	name: STRING
+	as_string: STRING is
 			-- name of the type
-
-invariant
-	Name_exists: name /= Void
+		deferred
+		ensure
+			Result /= Void
+		end
 
 end
 
@@ -39,10 +45,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is bmm_model.e.
+--| The Original Code is bmm_type_specifier.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2009
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

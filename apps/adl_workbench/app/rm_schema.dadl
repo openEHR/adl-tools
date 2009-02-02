@@ -152,13 +152,18 @@ primitive_types = <
 ------------------------------------------------------
 
 class_definitions = <
+
+	--
+	--------------------- rm.data_types.basic ------------------
+	--
+
 	["DATA_VALUE"] = <
 		name = <"DATA_VALUE">
 		is_abstract = <True>
 	>
 	["DV_BOOLEAN"] = <
 		name = <"DV_BOOLEAN">
-		ancestors = </classes["DATA_VALUE"], ...>
+		ancestors = </class_definitions["DATA_VALUE"], ...>
 		attributes = <
 			["value"] = (BMM_SINGLE_ATTRIBUTE) <
 				name = <"value">
@@ -169,7 +174,7 @@ class_definitions = <
 	>
 	["DV_IDENTIFIER"] = <
 		name = <"DV_IDENTIFIER">
-		ancestors = </classes["DATA_VALUE"], ...>
+		ancestors = </class_definitions["DATA_VALUE"], ...>
 		attributes = <
 			["issuer"] = (BMM_SINGLE_ATTRIBUTE) <
 				name = <"issuer">
@@ -195,11 +200,11 @@ class_definitions = <
 	>
 	["DV_STATE"] = <
 		name = <"DV_STATE">
-		ancestors = </classes["DATA_VALUE"], ...>
+		ancestors = </class_definitions["DATA_VALUE"], ...>
 		attributes = <
 			["value"] = (BMM_SINGLE_ATTRIBUTE) <
 				name = <"value">
-				type = </classes["DV_CODED_TEXT"]>
+				type = </class_definitions["DV_CODED_TEXT"]>
 				is_mandatory = <True>
 			>
 			["is_terminal"] = (BMM_SINGLE_ATTRIBUTE) <
@@ -209,19 +214,24 @@ class_definitions = <
 			>
 		>
 	>
+
+	--
+	--------------------- rm.data_types.text ------------------
+	--
+
 	["TERM_MAPPING"] = <
 		name = <"TERM_MAPPING">
 		attributes = <
 			["defining_code"] = (BMM_SINGLE_ATTRIBUTE) <
 				name = <"defining_code">
-				type = </classes["CODE_PHRASE"]>
+				type = </class_definitions["CODE_PHRASE"]>
 				is_mandatory = <True>
 			>
 		>
 	>
 	["DV_TEXT"] = <
 		name = <"DV_TEXT">
-		ancestors = </classes["DATA_VALUE"], ...>
+		ancestors = </class_definitions["DATA_VALUE"], ...>
 		attributes = <
 			["value"] = (BMM_SINGLE_ATTRIBUTE) <
 				name = <"value">
@@ -230,15 +240,15 @@ class_definitions = <
 			>
 			["hyperlink"] = (BMM_SINGLE_ATTRIBUTE) <
 				name = <"hyperlink">
-				type = </classes["DV_URI"]>
+				type = </class_definitions["DV_URI"]>
 			>
 			["language"] = (BMM_SINGLE_ATTRIBUTE) <
 				name = <"language">
-				type = </classes["CODE_PHRASE"]>
+				type = </class_definitions["CODE_PHRASE"]>
 			>
 			["encoding"] = (BMM_SINGLE_ATTRIBUTE) <
 				name = <"encoding">
-				type = </classes["CODE_PHRASE"]>
+				type = </class_definitions["CODE_PHRASE"]>
 			>
 			["formatting"] = (BMM_SINGLE_ATTRIBUTE) <
 				name = <"formatting">
@@ -246,7 +256,7 @@ class_definitions = <
 			>
 			["mappings"] = (BMM_MULTIPLE_ATTRIBUTE) <
 				name = <"mappings">
-				type = </classes["TERM_MAPPING"]>
+				type = </class_definitions["TERM_MAPPING"]>
 				container_type = </primitive_types["Set"]>
 				cardinality = <|>=0|>
 			>
@@ -254,11 +264,11 @@ class_definitions = <
 	>
 	["DV_CODED_TEXT"] = <
 		name = <"DV_CODED_TEXT">
-		ancestors = </classes["DV_TEXT"], ...>
+		ancestors = </class_definitions["DV_TEXT"], ...>
 		attributes = <
 			["defining_code"] = (BMM_SINGLE_ATTRIBUTE) <
 				name = <"defining_code">
-				type = </classes["CODE_PHRASE"]>
+				type = </class_definitions["CODE_PHRASE"]>
 				is_mandatory = <True>
 			>
 		>
@@ -273,11 +283,73 @@ class_definitions = <
 			>
 			["hyperlink"] = (BMM_SINGLE_ATTRIBUTE) <
 				name = <"hyperlink">
-				type = </classes["DV_URI"]>
+				type = </class_definitions["DV_URI"]>
 			>
 			["formatting"] = (BMM_SINGLE_ATTRIBUTE) <
 				name = <"formatting">
 				type = </primitive_types["String"]>
+			>
+		>
+	>
+
+	--
+	--------------------- rm.data_types.quantity ------------------
+	--
+
+	["DV_INTERVAL"] = <
+		name = <"DV_INTERVAL">
+		ancestors = </primitive_types["Interval"], /class_definitions["DATA_VALUE"]>
+		is_generic = <True>
+		generic_parameters = <
+			["T"] = <
+				name = <"T">
+				conforms_to_type = </class_definitions["DV_ORDERED"]>
+			>
+		>
+		attributes = <
+			["lower"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"lower">
+				type = </class_definitions["DV_ORDERED"]>
+			>
+			["upper"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"upper">
+				type = </class_definitions["DV_ORDERED"]>
+			>
+		>
+	>
+
+	["REFERENCE_RANGE"] = <
+		name = <"REFERENCE_RANGE">
+		is_generic = <True>
+		generic_parameters = <
+			["T"] = <
+				name = <"T">
+				conforms_to_type = </class_definitions["DV_ORDERED"]>
+			>
+		>
+		attributes = <
+			["range"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"range">
+				type = </class_definitions["DV_INTERVAL"]>
+			>
+		>
+	>
+
+	["DV_ORDERED"] = <
+		name = <"DV_ORDERED">
+		ancestors = </primitive_types["Ordered"], /class_definitions["DATA_VALUE"]>
+		attributes = <
+			["normal_status"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"normal_status">
+				type = </class_definitions["CODE_PHRASE"]>
+			>
+			["normal_range"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"normal_range">
+				type = </class_definitions["DV_INTERVAL"]>
+			>
+			["other_reference_ranges"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"other_reference_ranges">
+				type = </class_definitions["REFERENCE_RANGE"]>
 			>
 		>
 	>

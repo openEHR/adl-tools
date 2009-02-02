@@ -1,7 +1,7 @@
 indexing
 	component:   "openEHR re-usable library"
-	description: "Attributes of generic classes, whose type specifier is one of the enclosing class's parameter definitions"
-	keywords:    "meta-model, UML"
+	description: "Subtype of GENERIC_ATTRIBUTE_DEFINITION that represents a typical container type."
+	keywords:    "model, UML"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
@@ -12,20 +12,16 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-deferred class BMM_TYPE_CONSTRAINED_ATTRIBUTE
+class BMM_CONTAINER_ATTRIBUTE_DEFINITION
 
 inherit
-	BMM_ATTRIBUTE
-		redefine
-			type
-		end
+	BMM_GENERIC_ATTRIBUTE_DEFINITION 
 
 feature -- Initialisation
 
 feature -- Access
-
-	type: BMM_TYPE_CONSTRAINT
-			-- type of this attribute
+	
+	type: BMM_CONTAINER_TYPE_SPECIFIER
 
 end
 
@@ -44,10 +40,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is bmm_model.e.
+--| The Original Code is bmm_container_attribute_definition.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2009
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

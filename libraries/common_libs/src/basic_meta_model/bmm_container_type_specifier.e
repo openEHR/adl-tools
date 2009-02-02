@@ -1,6 +1,6 @@
 indexing
 	component:   "openEHR re-usable library"
-	description: "Basic Meta-model abstraction of any kind of attribute"
+	description: "Subtype of BMM_GENERIC_TYPE_SPECIFIER that specifies containers with one generic parameter."
 	keywords:    "model, UML"
 
 	author:      "Thomas Beale"
@@ -12,26 +12,32 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-deferred class BMM_ATTRIBUTE
+class BMM_CONTAINER_TYPE_SPECIFIER
+
+inherit
+	BMM_TYPE_SPECIFIER
 
 feature -- Initialisation
 
 feature -- Access
 
-	name: STRING
-			-- name of this attribute
+	cardinality: INTERVAL [INTEGER]
 
-	type: BMM_TYPE_SPECIFIER
-			-- type of this attribute
+	container_type: BMM_CLASS
+			-- the type of the container. This converts to the root_type in BMM_GENERIC_TYPE_SPECIFIER
+
+	type: BMM_CLASS
+			-- the target type; this converts to the first parameter in generic_parameters in BMM_GENERIC_TYPE_SPECIFIER
 
 feature -- Status Report
 
-	is_mandatory: BOOLEAN
-			-- True if this attribute is mandatory in its class
+feature -- Conversion
 
-invariant
-	Name_exists: name /= Void
-	
+	as_generic_type_specifier: BMM_GENERIC_TYPE_SPECIFIER is
+			do
+				-- create Result.make(container_type, <<type>>)
+			end
+
 end
 
 

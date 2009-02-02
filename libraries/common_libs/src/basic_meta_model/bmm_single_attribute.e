@@ -15,11 +15,16 @@ indexing
 class BMM_SINGLE_ATTRIBUTE
 
 inherit
-	BMM_TYPED_ATTRIBUTE
+	BMM_ATTRIBUTE_DEFINITION
+		redefine
+			type
+		end
 
 feature -- Initialisation
 
 feature -- Access
+
+	type: BMM_BOUND_TYPE_SPECIFIER
 
 feature -- Status Report
 

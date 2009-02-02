@@ -1,6 +1,6 @@
 indexing
 	component:   "openEHR re-usable library"
-	description: "Basic Meta-model abstraction of a primitive type"
+	description: "Specifies a type as a particular class."
 	keywords:    "model, UML"
 
 	author:      "Thomas Beale"
@@ -12,14 +12,18 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class BMM_PRIMITIVE_TYPE 
+class BMM_BOUND_TYPE_SPECIFIER
 
 inherit
-	BMM_TYPE
+	BMM_TYPE_SPECIFIER
 
 feature -- Initialisation
 
 feature -- Access
+
+	type: BMM_CLASS_DEFINITION
+
+feature -- Status Report
 
 end
 
@@ -38,7 +42,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is bmm_model.e.
+--| The Original Code is bmm_bound_type_specifier.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004
