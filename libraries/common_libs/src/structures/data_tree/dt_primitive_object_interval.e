@@ -23,56 +23,13 @@ inherit
 create
 	make_identified, make_anonymous
 
-feature -- Initialisation
-
-	make_identified(a_value: INTERVAL[PART_COMPARABLE]; a_node_id: STRING) is
-		require
-			Item_valid: a_value /= Void
-			Node_id_valid: a_node_id /= Void and then not a_node_id.is_empty
-		do
-			default_create
-			create representation.make(a_node_id, Current)
-			set_value(a_value)
-		ensure
-			is_typed
-			is_addressable
-		end
-
-	make_anonymous(a_value: INTERVAL[PART_COMPARABLE]) is
-		require
-			Item_valid: a_value /= Void
-		do
-			default_create
-			create representation.make_anonymous(Current)
-			set_value(a_value)
-		ensure
-			is_typed
-			not is_addressable
-		end
-
 feature -- Access
 
 	value: INTERVAL[PART_COMPARABLE]
 
-feature -- Status Report
-
-	is_valid: BOOLEAN is
-			-- report on validity
-		do
-			create invalid_reason.make(0)
-			invalid_reason.append(rm_type_name + ": ")
-			if value = Void then
-				invalid_reason.append("simple interval constraint not specified")
-			else
-				Result := True
-			end
-		end
-
 feature -- Modification
 
-	set_value(a_value: INTERVAL[PART_COMPARABLE]) is
-		require
-			Item_valid: a_value /= Void
+	set_value(a_value: like value) is
 		do
 			value := a_value
 			rm_type_name := a_value.generating_type
@@ -84,7 +41,7 @@ feature -- Conversion
 		do
 			Result := "|" + value.as_string + "|"
 		end
-		
+
 feature -- Serialisation
 
 	enter_subtree(serialiser: DT_SERIALISER; depth: INTEGER) is
@@ -92,7 +49,7 @@ feature -- Serialisation
 		do
 			serialiser.start_primitive_object_interval(Current, depth)
 		end
-		
+
 	exit_subtree(serialiser: DT_SERIALISER; depth: INTEGER) is
 			-- perform serialisation at end of block for this node
 		do

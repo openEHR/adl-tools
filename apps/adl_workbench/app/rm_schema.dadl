@@ -1,0 +1,284 @@
+
+------------------------------------------------------
+-- Model meta-data
+------------------------------------------------------
+
+model_name = <"openEHR-RM">
+model_release = <"1.0.2">
+
+------------------------------------------------------
+-- primitive types
+------------------------------------------------------
+
+primitive_types = <
+	["Any"] = <
+		name = <"Any">
+		is_abstract = <True>
+	>
+	["Ordered"] = <
+		name = <"Ordered">
+		is_abstract = <True>
+		ancestors = </primitive_types["Any"], ...>
+	>
+	["Numeric"] = <
+		name = <"Numeric">
+		is_abstract = <True>
+		ancestors = </primitive_types["Any"], ...>
+	>
+	["Ordered_Numeric"] = <
+		name = <"Ordered_Numeric">
+		is_abstract = <True>
+		ancestors = </primitive_types["Numeric"], /primitive_types["Ordered"]>
+	>
+	["Boolean"] = <
+		name = <"Boolean">
+		ancestors = </primitive_types["Any"], ...>
+	>
+	["Integer"] = <
+		name = <"Integer">
+		ancestors = </primitive_types["Ordered_Numeric"], ...>
+	>
+	["Real"] = <
+		name = <"Real">
+		ancestors = </primitive_types["Ordered_Numeric"], ...>
+	>
+	["Double"] = <
+		name = <"Double">
+		ancestors = </primitive_types["Ordered_Numeric"], ...>
+	>
+	["Character"] = <
+		name = <"Character">
+		ancestors = </primitive_types["Any"], ...>
+	>
+	["String"] = <
+		name = <"String">
+		ancestors = </primitive_types["Any"], ...>
+	>
+	["List"] = <
+		name = <"List">
+		ancestors = </primitive_types["Any"], ...>
+		is_generic = <True>
+		generic_parameters = <
+			["T"] = <
+				name = <"T">
+			>
+		>
+	>
+	["Array"] = <
+		name = <"Array">
+		ancestors = </primitive_types["Any"], ...>
+		is_generic = <True>
+		generic_parameters = <
+			["T"] = <
+				name = <"T">
+			>
+		>
+	>
+	["Set"] = <
+		name = <"Set">
+		ancestors = </primitive_types["Any"], ...>
+		is_generic = <True>
+		generic_parameters = <
+			["T"] = <
+				name = <"T">
+			>
+		>
+	>
+	["Interval"] = <
+		name = <"Interval">
+		ancestors = </primitive_types["Any"], ...>
+		is_generic = <True>
+		generic_parameters = <
+			["T"] = <
+				name = <"T">
+				conforms_to_type = </primitive_types["Ordered"]>
+			>
+		>
+		attributes = <
+			["lower"] = (BMM_SINGLE_CONSTRAINED_ATTRIBUTE) <
+				name = <"lower">
+				type = </primitive_types["Interval"]/generic_parameters["T"]>
+			>
+			["upper"] = (BMM_SINGLE_CONSTRAINED_ATTRIBUTE) <
+				name = <"upper">
+				type = </primitive_types["Interval"]/generic_parameters["T"]>
+			>
+			["lower_unbounded"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"lower_unbounded">
+				type = </primitive_types["Boolean"]>
+			>
+			["upper_unbounded"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"upper_unbounded">
+				type = </primitive_types["Boolean"]>
+			>
+			["lower_included"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"lower_included">
+				type = </primitive_types["Boolean"]>
+			>
+			["upper_included"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"upper_included">
+				type = </primitive_types["Boolean"]>
+			>
+		>
+	>
+	["Hash"] = <
+		name = <"Hash">
+		ancestors = </primitive_types["Any"], ...>
+		is_generic = <True>
+		generic_parameters = <
+			["T"] = <
+				name = <"T">
+			>
+			["U"] = <
+				name = <"U">
+				conforms_to_type = </primitive_types["Comparable"]>
+			>
+		>
+	>
+	["Aggregate"] = <
+		name = <"Aggregate">
+		ancestors = </primitive_types["Any"], ...>
+		is_generic = <True>
+		generic_parameters = <
+			["T"] = <
+				name = <"T">
+			>
+		>
+	>
+>
+
+------------------------------------------------------
+-- classes
+------------------------------------------------------
+
+class_definitions = <
+	["DATA_VALUE"] = <
+		name = <"DATA_VALUE">
+		is_abstract = <True>
+	>
+	["DV_BOOLEAN"] = <
+		name = <"DV_BOOLEAN">
+		ancestors = </classes["DATA_VALUE"], ...>
+		attributes = <
+			["value"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"value">
+				type = </primitive_types["Boolean"]>
+				is_mandatory = <True>
+			>
+		>
+	>
+	["DV_IDENTIFIER"] = <
+		name = <"DV_IDENTIFIER">
+		ancestors = </classes["DATA_VALUE"], ...>
+		attributes = <
+			["issuer"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"issuer">
+				type = </primitive_types["String"]>
+				is_mandatory = <True>
+			>
+			["id"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"id">
+				type = </primitive_types["String"]>
+				is_mandatory = <True>
+			>
+			["type"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"type">
+				type = </primitive_types["String"]>
+				is_mandatory = <True>
+			>
+			["assigner"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"assigner">
+				type = </primitive_types["String"]>
+				is_mandatory = <True>
+			>
+		>
+	>
+	["DV_STATE"] = <
+		name = <"DV_STATE">
+		ancestors = </classes["DATA_VALUE"], ...>
+		attributes = <
+			["value"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"value">
+				type = </classes["DV_CODED_TEXT"]>
+				is_mandatory = <True>
+			>
+			["is_terminal"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"is_terminal">
+				type = </primitive_types["Boolean"]>
+				is_mandatory = <True>
+			>
+		>
+	>
+	["TERM_MAPPING"] = <
+		name = <"TERM_MAPPING">
+		attributes = <
+			["defining_code"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"defining_code">
+				type = </classes["CODE_PHRASE"]>
+				is_mandatory = <True>
+			>
+		>
+	>
+	["DV_TEXT"] = <
+		name = <"DV_TEXT">
+		ancestors = </classes["DATA_VALUE"], ...>
+		attributes = <
+			["value"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"value">
+				type = </primitive_types["String"]>
+				is_mandatory = <True>
+			>
+			["hyperlink"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"hyperlink">
+				type = </classes["DV_URI"]>
+			>
+			["language"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"language">
+				type = </classes["CODE_PHRASE"]>
+			>
+			["encoding"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"encoding">
+				type = </classes["CODE_PHRASE"]>
+			>
+			["formatting"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"formatting">
+				type = </primitive_types["String"]>
+			>
+			["mappings"] = (BMM_MULTIPLE_ATTRIBUTE) <
+				name = <"mappings">
+				type = </classes["TERM_MAPPING"]>
+				container_type = </primitive_types["Set"]>
+				cardinality = <|>=0|>
+			>
+		>
+	>
+	["DV_CODED_TEXT"] = <
+		name = <"DV_CODED_TEXT">
+		ancestors = </classes["DV_TEXT"], ...>
+		attributes = <
+			["defining_code"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"defining_code">
+				type = </classes["CODE_PHRASE"]>
+				is_mandatory = <True>
+			>
+		>
+	>
+	["CODE_PHRASE"] = <
+		name = <"CODE_PHRASE">
+		attributes = <
+			["value"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"value">
+				type = </primitive_types["String"]>
+				is_mandatory = <True>
+			>
+			["hyperlink"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"hyperlink">
+				type = </classes["DV_URI"]>
+			>
+			["formatting"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"formatting">
+				type = </primitive_types["String"]>
+			>
+		>
+	>
+>

@@ -16,7 +16,6 @@ indexing
 class DT_COMPLEX_OBJECT_NODE
 
 inherit
-
 	SHARED_DT_OBJECT_CONVERTER
 		export
 			{NONE} all
@@ -40,7 +39,7 @@ inherit
 		end
 
 create
-	make_identified, make_anonymous, make_typed, make_typed_identified, make_from_object
+	make_identified, make_anonymous, make_from_object -- , make_typed, make_typed_identified
 
 feature -- Initialisation
 
@@ -65,28 +64,33 @@ feature -- Initialisation
 			not is_typed
 		end
 
-	make_typed_identified(a_type_name, a_node_id: STRING) is
-			-- set node id, type_name
-		require
-			Node_id_valid: a_node_id /= Void and then not a_node_id.is_empty
-			Type_name_valid: a_type_name /= Void and then not a_type_name.is_empty
-		do
-			make_identified(a_node_id)
-			set_type_name(a_type_name)
-		ensure
-			is_typed
-		end
+--
+-- FIXME
+-- this code is a candidate for deletion - it is never used, because the parser always does two calls,
+-- one to make_xx and another to set_type.
+--
+--	make_typed_identified(a_type_name, a_node_id: STRING) is
+--			-- set node id, type_name
+--		require
+--			Node_id_valid: a_node_id /= Void and then not a_node_id.is_empty
+--			Type_name_valid: a_type_name /= Void and then not a_type_name.is_empty
+--		do
+--			make_identified(a_node_id)
+--			set_type_name(a_type_name)
+--		ensure
+--			is_typed
+--		end
 
-	make_typed(a_type_name: STRING) is
-			-- set type_name
-		require
-			Type_name_valid: a_type_name /= Void and then not a_type_name.is_empty
-		do
-			make_anonymous
-			set_type_name(a_type_name)
-		ensure
-			is_typed
-		end
+--	make_typed(a_type_name: STRING) is
+--			-- set type_name
+--		require
+--			Type_name_valid: a_type_name /= Void and then not a_type_name.is_empty
+--		do
+--			make_anonymous
+--			set_type_name(a_type_name)
+--		ensure
+--			is_typed
+--		end
 
 	make_anonymous is
 		do
@@ -305,6 +309,15 @@ feature -- Conversion
 			-- of this DT_OBJECT
 		do
 			Result := object_converter.dt_to_object(Current, a_type_id)
+			as_object_ref := Result
+		end
+
+	as_object_from_string(a_type_name: STRING): ANY is
+			-- make an object whose classes and attributes correspond to the structure
+			-- of this DT_OBJECT
+		do
+			Result := object_converter.dt_to_object_from_string(Current, a_type_name)
+			as_object_ref := Result
 		end
 
 feature -- Representation

@@ -1,45 +1,80 @@
 indexing
-	component:   "openEHR Archetype Project"
-	description: "[
-			     Abstract class providing convertibility from a DT structure to any object type.
-			     
-			     The `make_dt' routine provides a parameterless make routine that can be safely called by DT_OBJECT_CONVERTER during 
-			     deserialisation, to ensure invariants are satisfied directly after initial creation.
-			     
-			     The `persistent_attributes' attribute defines a list of names of attributes that should be persisted, since often 
-			     there are other extraneous attributes. If empty, the DT_OBJECT_CONVERTER
-			     routines will assume all. 
-			     ]"
-	keywords:    "Data Tree"
+	component:   "openEHR re-usable library"
+	description: "Basic Meta-model model abstraction"
+	keywords:    "model, UML"
+
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2003-2009 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2009 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-deferred class DT_CONVERTIBLE
+class BMM_MODEL
+
+inherit
+	DT_CONVERTIBLE
 
 feature -- Initialisation
 
 	make_dt is
-			-- basic make routine to guarantee validity on creation
-		deferred
+			-- make in a safe way for DT building purposes
+		local
+			x: BMM_SINGLE_ATTRIBUTE
+			y: BMM_MULTIPLE_ATTRIBUTE
+			z: BMM_SINGLE_CONSTRAINED_ATTRIBUTE
+			w: BMM_MULTIPLE_CONSTRAINED_ATTRIBUTE
+		do
+
 		end
 
-feature -- Representation
+feature -- Access
 
-	dt_representation: DT_COMPLEX_OBJECT_NODE
-			-- representation as a data tree
+	model_name: STRING
+			-- name of the model
 
-feature -- Synchronisation
+	model_release: STRING
+			-- release identifier of the model
 
-	synchronise_to_tree is
-			-- synchronise to parse tree representation
+	primitive_types: HASH_TABLE [BMM_PRIMITIVE_TYPE, STRING]
+			-- types like Integer, Boolean etc
+
+	class_definitions: HASH_TABLE [BMM_CLASS, STRING]
+			-- constructed classes
+
+	type_definition (a_type_name: STRING): BMM_TYPE is
+			-- retrieve the type definition for `a_type_name' from either `primitive_types' or `classes'
+		require
+			Type_name_valid: a_type_name /= Void and then has_type(a_type_name)
 		do
-			create dt_representation.make_from_object(Current)
+			if primitive_types.has (a_type_name) then
+				Result := primitive_types.item (a_type_name)
+			else
+				Result := class_definitions.item (a_type_name)
+			end
+		ensure
+			Result_exists: Result /= Void
+		end
+
+feature -- Status Report
+
+	has_type (a_type_name: STRING): BOOLEAN is
+			-- True if the type `a_type_name' is know in either `primitive_types' or `classes'
+		require
+			Type_name_valid: a_type_name /= Void and then not a_type_name.is_empty
+		do
+			Result := primitive_types.has (a_type_name) or class_definitions.has (a_type_name)
+		end
+
+	is_sub_type_of (a_sub_type, a_parent_type: STRING): BOOLEAN is
+			-- True if `a_subclass' is a sub-class in the model of `a_parent_type'
+		require
+			Sub_type_valid: a_sub_type /= Void not a_sub_type.is_empty
+			Parent_type_valid: a_parent_type /= Void and then has_type (a_parent_type)
+		do
+			Result := True
 		end
 
 feature {DT_OBJECT_CONVERTER} -- Conversion
@@ -47,9 +82,7 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 	persistent_attributes: ARRAYED_LIST[STRING] is
 			-- list of attribute names to persist as DT structure
 			-- empty structure means all attributes
-		deferred
-		ensure
-			Result.object_comparison
+		do
 		end
 
 end
@@ -69,7 +102,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is dadl_factory.e.
+--| The Original Code is bmm_model.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

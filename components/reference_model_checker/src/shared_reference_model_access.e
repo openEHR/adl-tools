@@ -18,7 +18,7 @@ feature -- Access
 
 	rm_checker: MODEL_ACCESS is
 		once
-			create Result
+			create Result.make
 		end
 
 end

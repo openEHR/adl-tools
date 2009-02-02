@@ -192,6 +192,14 @@ feature -- Environment
 			end
 		end
 
+	default_rm_schema_file_full_path: STRING is
+			-- default full path to Reference Model schema file; same as
+			-- full path to app, but config file has .cfg istead of .exe extension
+		once
+			Result := application_startup_directory.twin
+			Result.append(os_directory_separator.out + "rm_schema.dadl")
+		end
+
 	execution_environment: EXECUTION_ENVIRONMENT is
 	    once
 	        create Result

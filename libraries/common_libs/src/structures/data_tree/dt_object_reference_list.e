@@ -1,70 +1,78 @@
 indexing
 	component:   "openEHR Archetype Project"
-	description: "[
-				 General idea of a validator object that reports errors, warnings.
-				 ]"
-	keywords:    "ADL, archetype"
+	description: "A node that contains a list of references to other nodes, implemented by paths. Serialises an object non-containment reference list."
+	keywords:    "data tree, serialisation, ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2003-2009 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
+	file:        "$URL: http://svn.openehr.org/ref_impl_eiffel/TRUNK/libraries/common_libs/src/structures/data_tree/dt_object_leaf.e $"
 	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	last_change: "$LastChangedDate: 2005-07-27 12:30:22 +0100 (Wed, 27 Jul 2005) $"
 
-
-deferred class ANY_VALIDATOR
+class DT_OBJECT_REFERENCE_LIST
 
 inherit
-	MESSAGE_BILLBOARD
+	DT_REFERENCE
+
+	DT_OBJECT_LEAF
 		export
-			{NONE} all
+			{NONE} as_object
+		undefine
+			default_create
 		end
+
+create
+	make_anonymous, make_identified
 
 feature -- Access
 
-	errors: STRING
-			-- error output of validator
-
-	warnings: STRING
-			-- warnings output of validator
+	value: SEQUENCE[OG_PATH]
+			-- list of path references
 
 feature -- Modification
 
-	add_error(a_key: STRING; args: ARRAY [STRING]) is
-			-- append an error with key `a_key' and `args' array to the `errors' string
+	set_value(a_value: like value) is
 		do
-			errors.append(create_message(a_key, args))
-			passed := False
+			value := a_value
+			set_type_name (Reference_pseudo_type)
 		end
 
-	add_warning(a_key: STRING; args: ARRAY [STRING]) is
-			-- append a warning with key `a_key' and `args' array to the `warnings' string
+feature -- Output
+
+	as_string: STRING is
 		do
-			warnings.append(create_message(a_key, args))
+			create Result.make(0)
+			from
+				value.start
+			until
+				value.off
+			loop
+				if value.index > 1 then
+					Result.append(", ")
+				end
+					Result.append(value.item.as_string)
+				value.forth
+			end
+			if value.count = 1 then -- append syntactic indication of list continuation
+				Result.append(", ...")
+			end
 		end
 
-feature -- Status Report
+feature -- Serialisation
 
-	passed: BOOLEAN
-			-- True if validation succeeded
-
-	has_warnings: BOOLEAN is
-			-- True if warnings from last call to validate
+	enter_subtree(serialiser: DT_SERIALISER; depth: INTEGER) is
+			-- perform serialisation at start of block for this node
 		do
-			Result := warnings /= Void and then not warnings.is_empty
+			serialiser.start_object_reference_list(Current, depth)
 		end
 
-feature -- Validation
-
-	validate is
-		deferred
+	exit_subtree(serialiser: DT_SERIALISER; depth: INTEGER) is
+			-- perform serialisation at end of block for this node
+		do
+			serialiser.end_object_reference_list(Current, depth)
 		end
-
-invariant
-	Errors_exists: errors /= Void
-	Warnings_exists: warnings /= Void
 
 end
 
@@ -83,10 +91,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is any_validator.e.
+--| The Original Code is dt_object_reference.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2007
+--| Portions created by the Initial Developer are Copyright (C) 2009
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

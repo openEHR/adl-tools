@@ -1,70 +1,52 @@
 indexing
 	component:   "openEHR Archetype Project"
-	description: "[
-				 General idea of a validator object that reports errors, warnings.
-				 ]"
-	keywords:    "ADL, archetype"
+	description: "Abstract characteristics of a node that contains a reference to another node, implemented by paths. Serialises an object non-containment reference."
+	keywords:    "data tree, serialisation, ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2003-2009 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
+	file:        "$URL: http://svn.openehr.org/ref_impl_eiffel/TRUNK/libraries/common_libs/src/structures/data_tree/dt_object_leaf.e $"
 	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	last_change: "$LastChangedDate: 2005-07-27 12:30:22 +0100 (Wed, 27 Jul 2005) $"
 
-
-deferred class ANY_VALIDATOR
+deferred class DT_REFERENCE
 
 inherit
-	MESSAGE_BILLBOARD
-		export
-			{NONE} all
+	ANY
+		undefine
+			is_equal
 		end
 
-feature -- Access
+feature -- Definitions
 
-	errors: STRING
-			-- error output of validator
+	Reference_pseudo_type: STRING is "(reference)"
 
-	warnings: STRING
-			-- warnings output of validator
+feature -- Output
 
-feature -- Modification
-
-	add_error(a_key: STRING; args: ARRAY [STRING]) is
-			-- append an error with key `a_key' and `args' array to the `errors' string
-		do
-			errors.append(create_message(a_key, args))
-			passed := False
-		end
-
-	add_warning(a_key: STRING; args: ARRAY [STRING]) is
-			-- append a warning with key `a_key' and `args' array to the `warnings' string
-		do
-			warnings.append(create_message(a_key, args))
-		end
-
-feature -- Status Report
-
-	passed: BOOLEAN
-			-- True if validation succeeded
-
-	has_warnings: BOOLEAN is
-			-- True if warnings from last call to validate
-		do
-			Result := warnings /= Void and then not warnings.is_empty
-		end
-
-feature -- Validation
-
-	validate is
+	as_string: STRING is
 		deferred
+		ensure
+			Result_exists: Result /= Void
 		end
 
-invariant
-	Errors_exists: errors /= Void
-	Warnings_exists: warnings /= Void
+feature {DT_OBJECT_CONVERTER} -- Conversion
+
+	source_object_ref: ANY
+			-- reference to the object whose `source_object_field_index' field should be
+			-- connected to the object referred to by the reference in this DT object
+
+	source_object_field_index: INTEGER
+			-- index of field in `source_object_ref'; to be used in a call to
+			-- INTERNAL.set_reference_field(source_object_field_index, source_object_ref, the_target_object)
+
+	set_source_object_details(an_object_ref: ANY; a_field_index: INTEGER) is
+			-- set the source_object values
+		do
+			source_object_ref := an_object_ref
+			source_object_field_index := a_field_index
+		end
 
 end
 
@@ -83,10 +65,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is any_validator.e.
+--| The Original Code is dt_reference.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2007
+--| Portions created by the Initial Developer are Copyright (C) 2009
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

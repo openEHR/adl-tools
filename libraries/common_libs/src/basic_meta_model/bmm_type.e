@@ -1,70 +1,74 @@
 indexing
-	component:   "openEHR Archetype Project"
-	description: "[
-				 General idea of a validator object that reports errors, warnings.
-				 ]"
-	keywords:    "ADL, archetype"
+	component:   "openEHR re-usable library"
+	description: "Basic Meta-model abstraction of a primitive type"
+	keywords:    "model, UML"
+
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2009 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-
-deferred class ANY_VALIDATOR
+class BMM_TYPE
 
 inherit
-	MESSAGE_BILLBOARD
-		export
-			{NONE} all
-		end
+	BMM_TYPE_SPECIFIER
 
 feature -- Access
 
-	errors: STRING
-			-- error output of validator
+	generic_parameters: ARRAYED_SET [BMM_TYPE_CONSTRAINT]
+			-- list of generic parameters
 
-	warnings: STRING
-			-- warnings output of validator
+	ancestors: ARRAYED_LIST [BMM_TYPE]
+			-- list of inheritance parents
 
-feature -- Modification
+	attributes: HASH_TABLE [BMM_ATTRIBUTE, STRING]
+			-- list of attributes
 
-	add_error(a_key: STRING; args: ARRAY [STRING]) is
-			-- append an error with key `a_key' and `args' array to the `errors' string
+	flat_attributes: HASH_TABLE [BMM_ATTRIBUTE, STRING] is
+			-- list of all attributes due to current and ancestor classes
 		do
-			errors.append(create_message(a_key, args))
-			passed := False
-		end
-
-	add_warning(a_key: STRING; args: ARRAY [STRING]) is
-			-- append a warning with key `a_key' and `args' array to the `warnings' string
-		do
-			warnings.append(create_message(a_key, args))
+			if flat_attributes_cache = Void then
+				create flat_attributes_cache.make(0)
+				flat_attributes_cache.merge (attributes)
+				from
+					ancestors.start
+				until
+					ancestors.off
+				loop
+					flat_attributes_cache.merge (ancestors.item.flat_attributes_cache)
+					ancestors.forth
+				end
+			end
+			Result := flat_attributes_cache
 		end
 
 feature -- Status Report
 
-	passed: BOOLEAN
-			-- True if validation succeeded
+	is_abstract: BOOLEAN
+			-- True if this is an abstract type
 
-	has_warnings: BOOLEAN is
-			-- True if warnings from last call to validate
+	is_generic: BOOLEAN
+			-- True if this class is a generic class
+
+	has_attribute (an_attr_name: STRING): BOOLEAN is
+			-- True if an_attr_name valid in this type, due to this type definition, or any ancestor
+		require
+			Attr_name_valid: an_attr_name /= Void and then not an_attr_name.is_empty
 		do
-			Result := warnings /= Void and then not warnings.is_empty
+			Result := flat_attributes.has (an_attr_name)
 		end
 
-feature -- Validation
+feature {BMM_TYPE} -- Implementation
 
-	validate is
-		deferred
-		end
+	flat_attributes_cache: HASH_TABLE [BMM_ATTRIBUTE, STRING]
+			-- reference list of all attributes due to inheritance flattening of this type
 
 invariant
-	Errors_exists: errors /= Void
-	Warnings_exists: warnings /= Void
+	Generic_validity :is_generic implies generic_parameters /= Void and then not generic_parameters.is_empty
 
 end
 
@@ -83,10 +87,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is any_validator.e.
+--| The Original Code is bmm_model.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2007
+--| Portions created by the Initial Developer are Copyright (C) 2003-2004
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

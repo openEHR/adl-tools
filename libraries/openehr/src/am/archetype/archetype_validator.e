@@ -73,10 +73,8 @@ feature {NONE} -- Initialisation
 			if target_descriptor.is_specialised then
 				if target_descriptor.specialisation_parent = Void then
 					add_error("validate_e1", Void)
-					passed := False
 				elseif not target_descriptor.specialisation_parent.is_valid then
 					add_error("validate_e2", Void)
-					passed := False
 				else
 					flat_parent := target_descriptor.specialisation_parent.archetype_flat
 				end
@@ -129,10 +127,6 @@ feature -- Validation
 				check_unidentified_nodes
 			end
 
-			if passed then
-				validate_reference_model
-			end
-
 			-- validation requiring valid specialisation parent
 			if passed and target.is_specialised then
 	 			target.set_parent_archetype (target_descriptor.specialisation_parent.archetype_differential)
@@ -149,6 +143,10 @@ feature -- Validation
 
 				validate_internal_references
 				validate_invariants
+			end
+
+			if passed and rm_checker.model_loaded then
+				validate_reference_model
 			end
 		end
 
@@ -209,7 +207,6 @@ feature {NONE} -- Implementation
 				code_list.off
 			loop
 				if specialisation_depth_from_code (code_list.item) > ontology.specialisation_depth then
-					passed := False
 					add_error("VONSD", <<code_list.item>>)
 				end
 
@@ -224,7 +221,6 @@ feature {NONE} -- Implementation
 				code_list.off
 			loop
 				if specialisation_depth_from_code (code_list.item) > ontology.specialisation_depth then
-					passed := False
 					add_error("VONSD", <<code_list.item>>)
 				end
 
@@ -249,10 +245,8 @@ feature {NONE} -- Implementation
 				a_codes.off
 			loop
 				if specialisation_depth_from_code (a_codes.key_for_iteration) > depth then
-					passed := False
 					add_error("VATCD", <<a_codes.key_for_iteration>>)
 				elseif not ontology.has_term_code (a_codes.key_for_iteration) then
-					passed := False
 					add_error("VATDF", <<a_codes.key_for_iteration>>)
 				end
 				a_codes.forth
@@ -267,10 +261,8 @@ feature {NONE} -- Implementation
 				a_codes.off
 			loop
 				if specialisation_depth_from_code (a_codes.key_for_iteration) > depth then
-					passed := False
 					add_error("VATCD", <<a_codes.key_for_iteration>>)
 				elseif not ontology.has_term_code (a_codes.key_for_iteration) then
-					passed := False
 					add_error("VATDF", <<a_codes.key_for_iteration>>)
 				end
 
@@ -286,10 +278,8 @@ feature {NONE} -- Implementation
 				a_codes.off
 			loop
 				if specialisation_depth_from_code (a_codes.key_for_iteration) > depth then
-					passed := False
 					add_error("VATCD", <<a_codes.key_for_iteration>>)
 				elseif not ontology.has_constraint_code (a_codes.key_for_iteration) then
-					passed := False
 					add_error("VATDF", <<a_codes.key_for_iteration>>)
 				end
 
@@ -315,7 +305,6 @@ feature {NONE} -- Implementation
 				elseif target.is_specialised and flat_parent.definition.has_path (use_refs.key_for_iteration) then
 					convert_use_ref_paths (use_refs.item_for_iteration, use_refs.key_for_iteration, flat_parent)
 				else
-					passed := False
 					add_error("VUNP", <<use_refs.key_for_iteration>>)
 				end
 				use_refs.forth
@@ -469,13 +458,13 @@ feature {NONE} -- Implementation
 
 	validate_reference_model is
 			-- validate definition of archetype against reference model
+		require
+			rm_checker.model_loaded
 		local
 			def_it: C_ITERATOR
 		do
-			if rm_checker.model_loaded then
-				create def_it.make(target.definition)
-				def_it.do_all(agent rm_node_validate_enter, agent rm_node_validate_exit)
-			end
+			create def_it.make(target.definition)
+			def_it.do_all(agent rm_node_validate_enter, agent rm_node_validate_exit)
 		end
 
 	validate_specialised_definition is
@@ -529,7 +518,6 @@ feature {NONE} -- Implementation
 						add_warning("WCRC", <<co_child_diff.path>>)
 					else
 						add_error("VSCNR", <<co_parent_flat.generating_type, co_parent_flat.path, co_child_diff.generating_type, co_child_diff.path>>)
-						passed := False
 					end
 				else
 					-- if the child is a redefine of a parent use_node, then we have to do the comparison to the use_node target,
@@ -543,9 +531,7 @@ feature {NONE} -- Implementation
 					-- now determine if child object is same as or a specialisation of flat object
 					if dynamic_type (co_child_diff) /= dynamic_type (co_parent_flat) then
 						add_error("VSONT", <<co_child_diff.path, co_child_diff.generating_type, co_parent_flat.path, co_parent_flat.generating_type>>)
-						passed := False
 					elseif not co_child_diff.node_conforms_to(co_parent_flat) then
-						passed := False
 						if not co_child_diff.rm_type_conforms_to (co_parent_flat) then
 							add_error("VSONCT", <<co_child_diff.path, co_child_diff.rm_type_name, co_parent_flat.path, co_parent_flat.rm_type_name>>)
 						elseif not co_child_diff.occurrences_conforms_to (co_parent_flat) then
@@ -566,7 +552,6 @@ feature {NONE} -- Implementation
 						end
 
 						if co_child_diff.sibling_order /= Void and then not co_parent_flat.parent.has_child_with_id (co_child_diff.sibling_order.sibling_node_id) then
-							passed := False
 							add_error("VSSM", <<co_child_diff.path, co_child_diff.sibling_order.sibling_node_id>>)
 						end
 					end
@@ -578,18 +563,17 @@ feature {NONE} -- Implementation
 			-- perform validation of node against reference model
 		do
 			if {ca: C_ATTRIBUTE} a_c_node then
-				if not rm_checker.has_attribute(ca.parent.rm_type_name, ca.rm_attribute_name) then
-
+				if rm_checker.has_type(ca.parent.rm_type_name) and not rm_checker.has_attribute(ca.parent.rm_type_name, ca.rm_attribute_name) then
+					add_error("VCARM", <<ca.rm_attribute_name, ca.parent.path, ca.parent.rm_type_name>>)
 				end
 			elseif {co: C_OBJECT} a_c_node then
 				if not rm_checker.has_type(co.rm_type_name) then
-
+					add_error("VCORM", <<co.rm_type_name, co.path>>)
 				end
 			end
 		end
 
 	rm_node_validate_exit (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)  is
-			-- perform validation of node against reference model
 		do
 		end
 

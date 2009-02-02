@@ -125,6 +125,32 @@ feature -- Visitor
 			last_result.append(symbol(SYM_END_DBLOCK) + format_item(FMT_NEWLINE))
 		end
 
+	start_object_reference(a_node: DT_OBJECT_REFERENCE; depth: INTEGER) is
+			-- start serialising a DT_OBJECT_REFERENCE
+		do
+			start_object_leaf(a_node, depth)
+			last_object_simple := True
+		end
+
+	end_object_reference(a_node: DT_OBJECT_REFERENCE; depth: INTEGER) is
+			-- end serialising a DT_OBJECT_REFERENCE
+		do
+			last_result.append(symbol(SYM_END_DBLOCK) + format_item(FMT_NEWLINE))
+		end
+
+	start_object_reference_list(a_node: DT_OBJECT_REFERENCE_LIST; depth: INTEGER) is
+			-- start serialising a DT_OBJECT_REFERENCE_LIST
+		do
+			start_object_leaf(a_node, depth)
+			last_object_simple := True
+		end
+
+	end_object_reference_list(a_node: DT_OBJECT_REFERENCE_LIST; depth: INTEGER) is
+			-- end serialising a DT_OBJECT_REFERENCE_LIST
+		do
+			last_result.append(symbol(SYM_END_DBLOCK) + format_item(FMT_NEWLINE))
+		end
+
 feature {NONE} -- Implementation
 
 	multiple_attr_count: INTEGER

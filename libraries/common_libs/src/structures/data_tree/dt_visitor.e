@@ -65,6 +65,26 @@ feature -- Visitor
 		deferred
 		end
 
+	start_object_reference(a_node: DT_OBJECT_REFERENCE; depth: INTEGER) is
+			-- start serialising a DT_OBJECT_REFERENCE
+		deferred
+		end
+
+	end_object_reference(a_node: DT_OBJECT_REFERENCE; depth: INTEGER) is
+			-- end serialising a DT_OBJECT_REFERENCE
+		deferred
+		end
+
+	start_object_reference_list(a_node: DT_OBJECT_REFERENCE_LIST; depth: INTEGER) is
+			-- start serialising a DT_OBJECT_REFERENCE_LIST
+		deferred
+		end
+
+	end_object_reference_list(a_node: DT_OBJECT_REFERENCE_LIST; depth: INTEGER) is
+			-- end serialising a DT_OBJECT_REFERENCE_LIST
+		deferred
+		end
+
 end
 
 

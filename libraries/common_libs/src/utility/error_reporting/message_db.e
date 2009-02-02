@@ -57,6 +57,7 @@ feature -- Access
 					i := i + 1
 				end
 			end
+			Result.append_character ('%N')
 		end
 
 invariant

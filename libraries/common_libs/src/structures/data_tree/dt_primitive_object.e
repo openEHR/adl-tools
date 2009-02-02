@@ -31,56 +31,13 @@ inherit
 create
 	make_identified, make_anonymous
 
-feature -- Initialisation
-
-	make_identified(a_value: ANY; a_node_id: STRING) is
-		require
-			Item_valid: a_value /= Void
-			Node_id_valid: a_node_id /= Void and then not a_node_id.is_empty
-		do
-			default_create
-			create representation.make(a_node_id, Current)
-			set_value(a_value)
-		ensure
-			is_typed
-			is_addressable
-		end
-
-	make_anonymous(a_value: ANY) is
-		require
-			Item_valid: a_value /= Void
-		do
-			default_create
-			create representation.make_anonymous(Current)
-			set_value(a_value)
-		ensure
-			is_typed
-			not is_addressable
-		end
-
 feature -- Access
 
 	value: ANY
 
-feature -- Status Report
-
-	is_valid: BOOLEAN is
-			-- report on validity
-		do
-			create invalid_reason.make(0)
-			invalid_reason.append(rm_type_name + ": ")
-			if value = Void then
-				invalid_reason.append("simple type value not specified")
-			else
-				Result := True
-			end
-		end
-
 feature -- Modification
 
 	set_value(a_value: ANY) is
-		require
-			Item_valid: a_value /= Void
 		do
 			value := a_value
 			rm_type_name := a_value.generating_type
@@ -100,8 +57,7 @@ feature -- Conversion
 			elseif is_character then
 				Result := "%'" + value.out + "%'"
 			else
-				-- FIXME: duration.out does not exist in Eiffel, and in any case would not be ISO8601
-				-- compliant
+				-- FIXME: duration.out does not exist in Eiffel, and in any case would not be ISO8601-compliant
 				a_dur ?= value
 				if a_dur = Void then
 					Result := value.out

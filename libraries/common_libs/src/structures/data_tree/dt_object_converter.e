@@ -27,14 +27,15 @@ inherit
 feature -- Conversion
 
 	object_to_dt(an_obj: ANY): DT_COMPLEX_OBJECT_NODE is
-			-- generate a DT_OBJECT from an Eiffel object
+			-- generate a DT_OBJECT from an Eiffel object; called only on top-level object
 		do
 			create Result.make_anonymous
 			populate_dt_from_object(an_obj, Result)
 		end
 
 	populate_dt_from_object(an_obj:ANY; a_dt_obj:DT_COMPLEX_OBJECT_NODE) is
-			-- make a data tree from an object
+			-- make a data tree from an object;
+			-- This routine is recursive
 		local
 			a_dt_attr: DT_ATTRIBUTE_NODE
 			fld_dynamic_type: INTEGER
@@ -173,12 +174,90 @@ feature -- Conversion
 			end
 		end
 
-	dt_to_object(a_dt_obj: DT_COMPLEX_OBJECT_NODE; a_type_id: INTEGER): ANY is
+	dt_to_object_from_string(a_dt_obj: DT_COMPLEX_OBJECT_NODE; a_type_name: STRING): ANY is
 			-- make an object whose classes and attributes correspond to the structure
 			-- of this DT_OBJECT
+		do
+			Result := dt_to_object(a_dt_obj, dynamic_type_from_string (a_type_name))
+		end
+
+	dt_to_object(a_dt_obj: DT_COMPLEX_OBJECT_NODE; a_type_id: INTEGER): ANY is
+			-- make an object whose classes and attributes correspond to the structure
+			-- of this DT_OBJECT; should be called only on top-level DT structure, but recursive calling
+			-- from populate_object_from_dt calling set_generic_object_data_from_dt also occurs
+		require
+			Data_tree_valid: a_dt_obj /= Void
+		local
+			a_dt_obj_ref: DT_OBJECT_REFERENCE
+			a_dt_obj_ref_list: DT_OBJECT_REFERENCE_LIST
+			src_obj: ANY
+			a_sequence: SEQUENCE[ANY]
+			an_arr_list: ARRAYED_LIST[ANY]
+			src_obj_fld: INTEGER
+			path_list: SEQUENCE [OG_PATH]
+		do
+			-- wipe the reference list out if on a top-level object
+			if a_dt_obj.is_root then
+				create object_ref_list.make(0)
+			end
+
+			Result := populate_object_from_dt(a_dt_obj, a_type_id)
+
+			-- if there were object references in the DT structure, process them now
+			if a_dt_obj.is_root and not object_ref_list.is_empty then
+				from
+					object_ref_list.start
+				until
+					object_ref_list.off
+				loop
+					src_obj := object_ref_list.item.source_object_ref
+					src_obj_fld := object_ref_list.item.source_object_field_index
+					a_dt_obj_ref ?= object_ref_list.item
+					if a_dt_obj_ref /= Void then
+						if a_dt_obj.has_path (a_dt_obj_ref.value.as_string) then
+							set_reference_field(src_obj_fld, src_obj, a_dt_obj.node_at_path (a_dt_obj_ref.value.as_string).as_object_ref)
+						else
+							post_error(Current, "dt_to_object", "non_existent_path", <<a_dt_obj_ref.value.as_string>>)
+						end
+					else
+						a_dt_obj_ref_list ?= object_ref_list.item
+
+						-- make the generic container, it will be a SEQUENCE (some kind of list)
+						a_sequence ?= new_instance_of(field_static_type_of_type (src_obj_fld, dynamic_type (src_obj)))
+						set_reference_field(src_obj_fld, src_obj, a_sequence)
+						an_arr_list ?= a_sequence
+						if an_arr_list /= Void then
+							an_arr_list.make(0)
+						end
+
+						path_list := a_dt_obj_ref_list.value
+						from
+							path_list.start
+						until
+							path_list.off
+						loop
+							if a_dt_obj.has_path (path_list.item.as_string) then
+								a_sequence.extend(a_dt_obj.node_at_path (path_list.item.as_string).as_object_ref)
+							else
+								post_error(Current, "dt_to_object", "non_existent_path_in_list", <<path_list.item.as_string>>)
+							end
+							path_list.forth
+						end
+					end
+
+					object_ref_list.forth
+				end
+			end
+		end
+
+	populate_object_from_dt(a_dt_obj: DT_COMPLEX_OBJECT_NODE; a_type_id: INTEGER): ANY is
+			-- make an object whose classes and attributes correspond to the structure
+			-- of this DT_OBJECT; recursive
 		local
 			a_dt_attr: DT_ATTRIBUTE_NODE
+			a_dt_complex_obj: DT_COMPLEX_OBJECT_NODE
 			a_dt_obj_leaf: DT_OBJECT_LEAF
+			a_dt_ref: DT_REFERENCE
 			fld_name: STRING
 			fld_type_id, equiv_prim_type_id, i: INTEGER
 			a_gen_field: ANY
@@ -188,7 +267,7 @@ feature -- Conversion
 			if is_special_any_type(a_type_id) then
 				-- FIXME: how to determine the length of the SPECIAL?
 				debug ("DT")
-					io.put_string("DT_OBJECT_CONVERTER.dt_to_object: about to call new_special_any_instance(" +
+					io.put_string("DT_OBJECT_CONVERTER.populate_object_from_dt: about to call new_special_any_instance(" +
 						type_name_of_type(a_type_id) + ")%N")
 				end
 				Result := new_special_any_instance(a_type_id, 1)
@@ -197,7 +276,7 @@ feature -- Conversion
 				end
 			else
 				debug ("DT")
-					io.put_string("DT_OBJECT_CONVERTER.dt_to_object: about to call new_instance_of(" +
+					io.put_string("DT_OBJECT_CONVERTER.populate_object_from_dt: about to call new_instance_of(" +
 						type_name_of_type(a_type_id) + ")%N")
 				end
 				Result := new_instance_of(a_type_id)
@@ -250,7 +329,7 @@ feature -- Conversion
 								if is_container_type(fld_type_id) then
 									-- create container object
 									debug ("DT")
-										io.put_string("DT_OBJECT_CONVERTER.dt_to_object: about to call (2) new_instance_of(" +
+										io.put_string("DT_OBJECT_CONVERTER.populate_object_from_dt: about to call (2) new_instance_of(" +
 											type_name_of_type(fld_type_id) + ")%N")
 									end
 									a_gen_field := new_instance_of(fld_type_id)
@@ -261,8 +340,9 @@ feature -- Conversion
 
 									-- FIXME: can only deal with one generic parameter for the moment
 									set_generic_object_data_from_dt (a_gen_field, a_dt_attr)
+
 								else -- type in parsed data is container, but is not in Eiffel class		
-									post_error(Current, "dt_to_object", "container_type_mismatch",
+									post_error(Current, "populate_object_from_dt", "container_type_mismatch",
 										<<type_name_of_type(fld_type_id), type_name_of_type(a_type_id)>>
 									)
 								end
@@ -270,24 +350,40 @@ feature -- Conversion
 								a_dt_attr.start
 								a_dt_obj_leaf ?= a_dt_attr.item
 								if a_dt_obj_leaf /= Void then
-									equiv_prim_type_id := any_primitive_conforming_type(fld_type_id)
-									if equiv_prim_type_id /= 0 then
+									a_dt_ref ?= a_dt_obj_leaf
+									if a_dt_ref /= Void then
+										-- find object that was created at target path of this reference, in table of such objects
 										debug ("DT")
-											io.put_string("DT_OBJECT_CONVERTER.dt_to_object: from_dt_proc.call([" +
-												i.out + ", " + Result.generating_type + ", " +
-												a_dt_obj_leaf.value.generating_type + ")%N")
+											io.put_string ("%TDT_REFERENCE " + a_dt_ref.as_string + "%N")
 										end
-										cvt_tbl.item(equiv_prim_type_id).from_dt_proc.call([i, Result, a_dt_obj_leaf.value])
-										debug ("DT")
-											io.put_string("%T(return)%N")
+										a_dt_ref.set_source_object_details (Result, i)
+										object_ref_list.extend(a_dt_ref)
+									else
+										equiv_prim_type_id := any_primitive_conforming_type(fld_type_id)
+										if equiv_prim_type_id /= 0 then
+											debug ("DT")
+												io.put_string("DT_OBJECT_CONVERTER.populate_object_from_dt: from_dt_proc.call([" +
+													i.out + ", " + Result.generating_type + ", " +
+													a_dt_obj_leaf.value.generating_type + ")%N")
+											end
+											cvt_tbl.item(equiv_prim_type_id).from_dt_proc.call([i, Result, a_dt_obj_leaf.value])
+											debug ("DT")
+												io.put_string("%T(return)%N")
+											end
+										else -- type implied in data is primitive, but it is not a primitive type in Eiffel class
+											post_error(Current, "populate_object_from_dt", "primitive_type_mismatch",
+												<<type_name_of_type(fld_type_id), type_name_of_type(a_type_id)>>
+											)
 										end
-									else -- type implied in data is primitive, but it is not a primitive type in Eiffel class
-										post_error(Current, "dt_to_object", "primitive_type_mismatch",
-											<<type_name_of_type(fld_type_id), type_name_of_type(a_type_id)>>
-										)
 									end
-								else -- must be a reference type field
-									set_reference_field(i, Result, a_dt_attr.item.as_object(fld_type_id))
+								else -- must be a reference type field of type DT_COMPLEX_OBJECT
+									-- this is where the recursive call is
+									-- first, check if the static type is overridden by a type specified in the DT tree
+									a_dt_complex_obj ?= a_dt_attr.item
+									if a_dt_attr.item.type_visible then
+										fld_type_id := dynamic_type_from_string (a_dt_attr.item.rm_type_name)
+									end
+									set_reference_field(i, Result, populate_object_from_dt(a_dt_complex_obj, fld_type_id))
 								end
 							end
 						end
@@ -297,7 +393,7 @@ feature -- Conversion
 			end
 		rescue
 			if equiv_prim_type_id /= 0 then -- this must have been an argument type mismatch which killed the from_dt_proc.call[]
-				post_error(Current, "dt_to_object", "dt_proc_arg_type_mismatch",
+				post_error(Current, "populate_object_from_dt", "dt_proc_arg_type_mismatch",
 					<<type_name_of_type(a_type_id), fld_name, type_name_of_type(fld_type_id), type_name(a_dt_obj_leaf.value)>>)
 			end
 			exception_caught := True
@@ -495,6 +591,10 @@ feature -- Conversion from object
 
 feature {NONE} -- Implementation
 
+	object_ref_list: ARRAYED_LIST [DT_REFERENCE]
+			-- list of DT_OBJECT_REFERENCE and DT_OBJECT_REFERENCE_LIST objects found in last top-level
+			-- call to `dt_to_object'
+
 	set_generic_object_data_from_dt (a_gen_obj:ANY; a_dt_attr: DT_ATTRIBUTE_NODE) is
 			-- set generic values in a generic object, from a_dt_attr
 			-- only deals with first generic parameter; generally safe for HASH_TABLE and LIST types
@@ -505,9 +605,9 @@ feature {NONE} -- Implementation
 			a_sequence: SEQUENCE[ANY]
 			an_arrayed_list: ARRAYED_LIST[ANY]
 			a_hash_table: HASH_TABLE [ANY, HASHABLE]
-			gen_param_1_type_id: INTEGER
+			static_object_type_id, dynamic_object_type_id: INTEGER
 		do
-			gen_param_1_type_id := generic_dynamic_type(a_gen_obj, 1)
+			static_object_type_id := generic_dynamic_type(a_gen_obj, 1)
 
 			-- determine dynamic type of generic type
 			a_hash_table ?= a_gen_obj
@@ -518,8 +618,13 @@ feature {NONE} -- Implementation
 				until
 					a_dt_attr.off
 				loop
-					-- FIXME: should check to see whether node_id should be converted to another type
-					a_hash_table.extend(a_dt_attr.item.as_object(gen_param_1_type_id), a_dt_attr.item.node_id)
+					-- the static type may be overridden by a type specified in the DT tree
+					if a_dt_attr.item.type_visible then
+						dynamic_object_type_id := dynamic_type_from_string (a_dt_attr.item.rm_type_name)
+					else
+						dynamic_object_type_id := static_object_type_id
+					end
+					a_hash_table.extend(a_dt_attr.item.as_object (dynamic_object_type_id), a_dt_attr.item.node_id)
 					a_dt_attr.forth
 				end
 			else
@@ -534,7 +639,13 @@ feature {NONE} -- Implementation
 					until
 						a_dt_attr.off
 					loop
-						a_sequence.extend(a_dt_attr.item.as_object(gen_param_1_type_id))
+						-- the static type may be overridden by a type specified in the DT tree
+						if a_dt_attr.item.type_visible then
+							dynamic_object_type_id := dynamic_type_from_string (a_dt_attr.item.rm_type_name)
+						else
+							dynamic_object_type_id := static_object_type_id
+						end
+						a_sequence.extend(a_dt_attr.item.as_object (dynamic_object_type_id))
 						a_dt_attr.forth
 					end
 				end

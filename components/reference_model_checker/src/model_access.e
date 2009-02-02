@@ -14,7 +14,46 @@ indexing
 
 class MODEL_ACCESS
 
-feature {NONE} -- Initialisation
+inherit
+	SHARED_MESSAGE_DB
+		export
+			{NONE} all
+		end
+
+	SHARED_RESOURCES
+		export
+			{NONE} all
+		end
+
+create
+	make
+
+feature -- Initialisation
+
+	make is
+			-- set up model
+		local
+			model_file: PLAIN_TEXT_FILE
+			dt_tree: DT_COMPLEX_OBJECT_NODE
+			parser: DADL2_VALIDATOR
+		do
+			create model_file.make (default_rm_schema_file_full_path)
+			if not model_file.is_readable then
+				load_fail_reason := create_message ("model_access_e1", <<model_file.name>>)
+			else
+				model_file.open_read
+				model_file.read_stream (model_file.count)
+				create parser.make
+				parser.execute(model_file.last_string, 1)
+				if not parser.syntax_error then
+					dt_tree := parser.output
+					model ?= dt_tree.as_object_from_string("BMM_MODEL")
+				else
+					load_fail_reason := create_message ("model_access_e2", <<parser.error_text>>)
+				end
+				model_file.close
+			end
+		end
 
 feature -- Access
 
@@ -30,21 +69,33 @@ feature -- Access
 			Result_exists: Result /= Void
 		end
 
+	model: BMM_MODEL
+			-- computable form of model
+
 feature -- Status Report
 
-	model_loaded: BOOLEAN
+	model_loaded: BOOLEAN is
 			-- True if a model is available to interrogate
+		do
+			Result := model /= Void
+		end
+
+	load_fail_reason: STRING
+			-- set if model loading failed
 
 feature -- Validation
 
 	is_sub_type_of (a_sub_type, a_parent_type: STRING): BOOLEAN is
 			-- True if `a_subclass' is a sub-class in the model of `a_parent_type'
 		require
-			Sub_type_valid: a_sub_type /= Void and then has_type (a_sub_type)
-			Parent_type_valid: a_parent_type /= Void and then has_type (a_parent_type)
+			Sub_type_valid: a_sub_type /= Void and then not a_sub_type.is_empty
+			Parent_type_valid: a_parent_type /= Void and then not a_parent_type.is_empty
 		do
-			-- FIXME: TO BE IMPLEMENTED
-			Result := True
+			if model_loaded then
+				Result := model.has_type (a_parent_type) and then model.is_sub_type_of (a_sub_type, a_parent_type)
+			else
+				Result := True
+			end
 		end
 
 	has_attribute (a_type, an_attribute: STRING): BOOLEAN is
@@ -52,9 +103,17 @@ feature -- Validation
 		require
 			Type_valid: a_type /= Void and then not a_type.is_empty
 			Attribute_valid: an_attribute /= Void and then not an_attribute.is_empty
+		local
+			a_class_def: BMM_TYPE
 		do
-			-- FIXME: TO BE IMPLEMENTED
-			Result := True
+			if model_loaded then
+				if model.has_type (a_type) then
+					a_class_def := model.type_definition (a_type)
+					Result := a_class_def.has_attribute(an_attribute)
+				end
+			else
+				Result := True
+			end
 		end
 
 	has_type (a_type: STRING): BOOLEAN is
@@ -62,8 +121,11 @@ feature -- Validation
 		require
 			Type_valid: a_type /= Void and then not a_type.is_empty
 		do
-			-- FIXME: TO BE IMPLEMENTED
-			Result := True
+			if model_loaded then
+				Result := model.has_type (a_type)
+			else
+				Result := True
+			end
 		end
 
 feature -- Status Setting
@@ -75,6 +137,7 @@ feature -- Comparison
 feature -- Modification
 
 feature {NONE} -- Implementation
+
 
 end
 

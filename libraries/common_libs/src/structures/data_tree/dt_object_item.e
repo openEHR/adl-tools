@@ -20,7 +20,7 @@ inherit
 		redefine
 			parent, representation
 		end
-		
+
 	COMPARABLE
 
 feature -- Definitions
@@ -51,18 +51,18 @@ feature -- Comparison
 		do
 			Result := node_id < other.node_id
 		end
-		
+
 feature -- Status Report
 
 	is_typed: BOOLEAN is
 			-- True if this node has a known type
 		do
 			Result := not rm_type_name.is_equal(Unknown_type_name)
-		end		
+		end
 
 	type_visible: BOOLEAN
 			-- True if type names are to be shown in serialised forms
-			
+
 feature -- Modification
 
 	set_node_id(a_node_id:STRING) is
@@ -79,6 +79,7 @@ feature -- Modification
 			Type_name_valid: a_type_name /= Void and then not a_type_name.is_empty
 		do
 			rm_type_name := a_type_name
+			show_type
 		end
 
 	show_type is
@@ -86,25 +87,30 @@ feature -- Modification
 		do
 			type_visible := True
 		end
-		
+
 feature -- Conversion
 
 	as_object(a_type_id: INTEGER): ANY is
-			-- make an object whose classes and attributes correspond to the structure 
+			-- make an object of type `a_type_id' whose classes and attributes correspond to the structure
 			-- of this DT_OBJECT
 		require
 			a_type_id >= 0
-		deferred	
+		deferred
+		ensure
+			Result /= Void and as_object_ref = Result
 		end
+
+	as_object_ref: ANY
+			-- cached reference to object created from last call to as_object or as_object_from_string
 
 feature -- Representation
 
 	representation: OG_OBJECT
-	
+
 invariant
 	Type_name_valid: rm_type_name /= Void and then not rm_type_name.is_empty
 	Node_id_exists: node_id /= Void and then not node_id.is_empty
-	
+
 end
 
 

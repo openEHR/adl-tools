@@ -1,71 +1,37 @@
 indexing
-	component:   "openEHR Archetype Project"
-	description: "[
-				 General idea of a validator object that reports errors, warnings.
-				 ]"
-	keywords:    "ADL, archetype"
+	component:   "openEHR re-usable library"
+	description: "Basic Meta-model abstraction of any kind of attribute"
+	keywords:    "model, UML"
+
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2009 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
+deferred class BMM_ATTRIBUTE
 
-deferred class ANY_VALIDATOR
-
-inherit
-	MESSAGE_BILLBOARD
-		export
-			{NONE} all
-		end
+feature -- Initialisation
 
 feature -- Access
 
-	errors: STRING
-			-- error output of validator
+	name: STRING
+			-- name of this attribute
 
-	warnings: STRING
-			-- warnings output of validator
-
-feature -- Modification
-
-	add_error(a_key: STRING; args: ARRAY [STRING]) is
-			-- append an error with key `a_key' and `args' array to the `errors' string
-		do
-			errors.append(create_message(a_key, args))
-			passed := False
-		end
-
-	add_warning(a_key: STRING; args: ARRAY [STRING]) is
-			-- append a warning with key `a_key' and `args' array to the `warnings' string
-		do
-			warnings.append(create_message(a_key, args))
-		end
+	type: BMM_TYPE_SPECIFIER
+			-- type of this attribute
 
 feature -- Status Report
 
-	passed: BOOLEAN
-			-- True if validation succeeded
-
-	has_warnings: BOOLEAN is
-			-- True if warnings from last call to validate
-		do
-			Result := warnings /= Void and then not warnings.is_empty
-		end
-
-feature -- Validation
-
-	validate is
-		deferred
-		end
+	is_mandatory: BOOLEAN
+			-- True if this attribute is mandatory in its class
 
 invariant
-	Errors_exists: errors /= Void
-	Warnings_exists: warnings /= Void
-
+	Name_exists: name /= Void
+	
 end
 
 
@@ -83,10 +49,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is any_validator.e.
+--| The Original Code is bmm_model.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2007
+--| Portions created by the Initial Developer are Copyright (C) 2003-2004
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

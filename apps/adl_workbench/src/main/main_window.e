@@ -39,6 +39,11 @@ inherit
 			copy, default_create
 		end
 
+	SHARED_REFERENCE_MODEL_ACCESS
+		undefine
+			copy, default_create
+		end
+
 	SHARED_ARCHETYPE_DIRECTORY
 		undefine
 			copy, default_create
@@ -70,10 +75,8 @@ feature {NONE} -- Initialization
 
 	user_initialization
 			-- called by `initialize'.
-			-- Any custom user initialization that
-			-- could not be performed in `initialize',
-			-- (due to regeneration of implementation class)
-			-- can be added here.
+			-- Any custom user initialization that could not be performed in `initialize',
+			-- (due to regeneration of implementation class) can be added here.
 		do
 			initialise_default_resource_config_file_name
 			initialise_accelerators
@@ -247,6 +250,11 @@ feature -- Status setting
 
 			if html_export_directory.is_empty then
 				set_html_export_directory (file_system.pathname (file_system.absolute_parent_directory (reference_repository_path), "html"))
+			end
+
+			if not rm_checker.model_loaded then
+				post_error (Current, "user_initialisation", "general_error", <<rm_checker.load_fail_reason>>)
+				append_status_area (billboard_content)
 			end
 		end
 

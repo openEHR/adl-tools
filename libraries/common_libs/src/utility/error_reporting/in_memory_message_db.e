@@ -19,11 +19,6 @@ class IN_MEMORY_MESSAGE_DB
 inherit
 	MESSAGE_DB
 
-	INTERNAL
-		export
-			{NONE} all
-		end
-
 	SHARED_RESOURCES
 		export
 			{NONE} all
@@ -49,7 +44,7 @@ feature -- Initialisation
 			parser.execute(message_templates_text, 1)
 			if not parser.syntax_error then
 				dt_tree := parser.output
-				init_helper ?= dt_tree.as_object(dynamic_type_from_string("IN_MEMORY_MESSAGE_DB_INITIALISER"))
+				init_helper ?= dt_tree.as_object_from_string("IN_MEMORY_MESSAGE_DB_INITIALISER")
 				if init_helper.templates.has (locale_language_short) then
 					templates := init_helper.templates.item (locale_language_short)
 				else
@@ -102,7 +97,36 @@ feature -- Access
 			["validate_e2"] = <"Error: specialisation parent failed to validate">
 			["validate_e3"] = <"Error: archetype id in filename $1 does not match id at top of file $2%N">
 			
-			-- syntax errors: see the cADL, dADL and ADL syntax validators
+			-- MODEL_ACCESS (RM model checker)
+			["model_access_e1"] = <"Error: Reference Model DADL file $1 does not exist or not readable">
+			["model_access_e2"] = <"Error: Reference Model DADL parse failure; reason: $1">
+			
+			-- DT_OBJECT_CONVERTER.dt_to_object
+			["container_type_mismatch"] = 
+				<"Mismatch error in data and model for field $1 in type $2. Parsed data implies container type but is not in model">
+			["primitive_type_mismatch"] = 
+				<"Mismatch error in data and model for field $1 in type $2. Parsed data implies primitive, sequence<primitive> or interval<primitive> type but model does not">
+			["dt_proc_arg_type_mismatch"] = 
+				<"[Exception caught]: Mismatch between data and model for $1.$2. Expecting $3, read a $4">
+			["populate_dt_proc_arg_type_mismatch"] = 
+				<"[Exception caught]: $1.$2 - writing primitive object of type $3 into argument of type $4">
+			["non_existent_path"] = <"Error: non-existent path $1 in data tree structure">
+			["non_existent_path_in_list"] = <"Error: non-existent path (in list) $1 in data tree structure">
+				
+			-- ARCHETYPE_DIRECTORY
+			["arch_dir_orphan_archetype"] = <"No parent matching $1 found for archetype $2">
+			["arch_dir_dup_archetype"] = <"Duplicate archetype $1">
+
+			-- ADL_SYNTAX_CONTERTER
+			["syntax_upgraded_i1"] = <"Syntax element upgraded: --$1-- changed to --$2--">
+							
+			-- ARCHETYPE_FILE_REPOSITORY_IMP
+			["invalid_filename_e1"] = <"Invalid archetype filename $1">
+			["pair_filename_i1"] = <"(Differential/flat pair archetype filename found $1)">
+			["save_as_i1"] = <"Archetype saved in language $1 to $2">
+			["save_as_e1"] = <"Save-as failed; could not write to file $1">
+			
+			------------------------- syntax errors: see the cADL, dADL and ADL syntax validators ---------------------
 			["SARID"] = <"in 'archetype' clause; expecting archetype id (model_issuer-ref_model-model_class.concept.version)">
 			["SASID"] = <"in 'specialise' clause; expecting parent archetype id (model_issuer-ref_model-model_class.concept.version)">
 			["SACO"] = <"in 'concept' clause; expecting TERM_CODE reference">
@@ -147,7 +171,7 @@ feature -- Access
 			["SDAT"] = <"invalid attribute value">
 			["SGEE"] = <"generic object not enclosed by normal object not allowed">
 
-			-- validity errors: unless otherwise notes, these codes are defined in the ADL 1.5 or later spec
+			-------------- validity errors: unless otherwise notes, these codes are defined in the AOM 1.5 or later spec ------------------
 			["VASID"] = <"Error (VASID): specialised archetype id not based on specialisation parent archetype id">
 
 			["VARDT"] = <"Error (VARDT): archetype id type $1 does not match type $2 in definition section%N">
@@ -198,33 +222,14 @@ feature -- Access
 			["VACMM"] = <"Error (VACMI): cannot add $1 object with $2 to multiply-valued attribute $3 because attribute already has child with same node id">
 
 			["VARCN"] = <"Error (VARCN): concept code $1 is invalid">
+
+			-- reference model-related validation
+			["VCORM"] = <"Error (VCORM): type name $1 at object node at $2 not known in reference model">
+			["VCARM"] = <"Error (VCARM): attribute name $1 in object node at $2 (type=$3) not among flat set of attributes in reference model">
 					
 			-- validation warnings: in addition to spec, used to help archetype authors
 			["WOUC"] = <"Warning (WOUC): code $1 in ontology not used in archetype definition%N">
 			["WCRC"] = <"Warning (WCRC): redefinition of CONSTRAINT_REF (ac_code node) by C_CODE_PHRASE node at path $1 in child - not checked%N">
-							
-			-- ARCHETYPE_FILE_REPOSITORY_IMP
-			["invalid_filename_e1"] = <"Invalid archetype filename $1">
-			["pair_filename_i1"] = <"(Differential/flat pair archetype filename found $1)">
-			["save_as_i1"] = <"Archetype saved in language $1 to $2">
-			["save_as_e1"] = <"Save-as failed; could not write to file $1">
-			
-			-- DT_OBJECT_CONVERTER.dt_to_object
-			["container_type_mismatch"] = 
-				<"Mismatch error in data and model for field $1 in type $2. Parsed data implies container type but is not in model">
-			["primitive_type_mismatch"] = 
-				<"Mismatch error in data and model for field $1 in type $2. Parsed data implies primitive, sequence<primitive> or interval<primitive> type but model does not">
-			["dt_proc_arg_type_mismatch"] = 
-				<"[Exception caught]: Mismatch between data and model for $1.$2. Expecting $3, read a $4">
-			["populate_dt_proc_arg_type_mismatch"] = 
-				<"[Exception caught]: $1.$2 - writing primitive object of type $3 into argument of type $4">
-				
-			-- ARCHETYPE_DIRECTORY
-			["arch_dir_orphan_archetype"] = <"No parent matching $1 found for archetype $2">
-			["arch_dir_dup_archetype"] = <"Duplicate archetype $1">
-
-			-- ADL_SYNTAX_CONTERTER
-			["syntax_upgraded_i1"] = <"Syntax element upgraded: --$1-- changed to --$2--">
 		>
 		>
 		]"

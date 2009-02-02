@@ -30,57 +30,13 @@ inherit
 create
 	make_identified, make_anonymous
 
-feature -- Initialisation
-
-	make_identified(a_value: SEQUENCE[ANY]; a_node_id: STRING) is
-		require
-			Item_valid: a_value /= Void
-			Node_id_valid: a_node_id /= Void and then not a_node_id.is_empty
-		do
-			default_create
-			create representation.make(a_node_id, Current)
-			set_node_id(a_node_id)
-			set_value(a_value)
-		ensure
-			is_typed
-			is_addressable
-		end
-
-	make_anonymous(a_value: SEQUENCE[ANY]) is
-		require
-			Item_valid: a_value /= Void
-		do
-			default_create
-			create representation.make_anonymous(Current)
-			set_value(a_value)
-		ensure
-			is_typed
-			not is_addressable
-		end
-
 feature -- Access
 
 	value: SEQUENCE[ANY]
 
-feature -- Status Report
-
-	is_valid: BOOLEAN is
-			-- report on validity
-		do
-			create invalid_reason.make(0)
-			invalid_reason.append(rm_type_name + ": ")
-			if value = Void then
-				invalid_reason.append("simple type constraint not specified")
-			else
-				Result := True
-			end
-		end
-
 feature -- Modification
 
-	set_value(a_value: SEQUENCE[ANY]) is
-		require
-			Item_valid: a_value /= Void
+	set_value(a_value: like value) is
 		local
 			string_list: SEQUENCE[STRING]
 		do
