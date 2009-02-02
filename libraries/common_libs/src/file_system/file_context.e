@@ -17,12 +17,19 @@ class
 	FILE_CONTEXT
 
 inherit
-	UC_UTF8_ROUTINES
+	UC_IMPORTED_UTF8_ROUTINES
 
 create
 	make
 
 feature -- Definitions
+
+	UTF8_bom_char_1: CHARACTER is '%/239/'
+	UTF8_bom_char_2: CHARACTER is '%/187/'
+	UTF8_bom_char_3: CHARACTER is '%/191/'
+			-- UTF-8 files don't normally have a BOM (byte order marker) at the start as can be
+			-- required by UTF-16 files, but if the file has been converted from UTF-16 or UTF-32
+			-- then the BOM in a UTF-8 file will be 0xEF 0xBB 0xBF (dec equivalent: 239, 187, 191)
 
 	Default_current_directory: STRING is "."
 
@@ -172,19 +179,19 @@ feature -- Commands
 				in_file.close
 
 				if file_content.count >= 3 then
-					if is_endian_detection_character (file_content.item (1), file_content.item (2), file_content.item (3)) then
+					if utf8.is_endian_detection_character (file_content.item (1), file_content.item (2), file_content.item (3)) then
 						file_content.remove_head (3)
 						has_byte_order_marker := True
 					end
 				end
 
-				if not valid_utf8 (file_content) then
+				if not utf8.valid_utf8 (file_content) then
 					if has_byte_order_marker then
 						create file_content.make_empty
 						last_op_failed := True
 						last_op_fail_reason := "Read failed; file " + current_full_path + " has UTF-8 marker but is not valid UTF-8"
 					else
-						file_content := to_utf8 (file_content)
+						file_content := utf8.to_utf8 (file_content)
 					end
 				end
 			else
@@ -210,9 +217,9 @@ feature -- Commands
 			if out_file.exists then
 				if has_byte_order_marker then
 					-- only safe if the file was last read using this object
-					out_file.put_character (byte_ef)
-					out_file.put_character (byte_bb)
-					out_file.put_character (byte_bf)
+					out_file.put_character (UTF8_bom_char_1)
+					out_file.put_character (UTF8_bom_char_2)
+					out_file.put_character (UTF8_bom_char_3)
 				end
 
 				file_content := content.twin
