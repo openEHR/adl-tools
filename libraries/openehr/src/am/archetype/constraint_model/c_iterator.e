@@ -60,7 +60,7 @@ feature -- Command
 		do
 			c_node_enter_action := a_c_node_enter_action
 			c_node_test := a_c_node_test
-			tree_iterator.do_at_surface(agent node_enter_action(?, ?), agent node_is_included(?))
+			tree_iterator.do_at_surface(agent node_action(?, ?), agent node_is_included(?))
 		end
 
 	do_until_surface(a_c_node_enter_action: PROCEDURE [ANY, TUPLE [ARCHETYPE_CONSTRAINT, INTEGER]]; a_c_node_test: FUNCTION [ANY, TUPLE [ARCHETYPE_CONSTRAINT], BOOLEAN]) is
@@ -68,7 +68,7 @@ feature -- Command
 		do
 			c_node_enter_action := a_c_node_enter_action
 			c_node_test := a_c_node_test
-			tree_iterator.do_until_surface(agent node_enter_action(?, ?), agent node_is_included(?))
+			tree_iterator.do_until_surface(agent node_action(?, ?), agent node_is_included(?))
 		end
 
 feature {NONE} -- Implementation
@@ -79,9 +79,7 @@ feature {NONE} -- Implementation
 		require
 			Node_exists: a_node /= Void
 		do
-			if arch_node = Void then
-				arch_node ?= a_node.content_item
-			end
+			arch_node ?= a_node.content_item
 			c_node_enter_action.call([arch_node, depth])
 		end
 
@@ -100,8 +98,17 @@ feature {NONE} -- Implementation
 			Result := arch_node /= Void and then c_node_test.item([arch_node])
 		end
 
-	arch_node: ARCHETYPE_CONSTRAINT
+	node_action(a_node: OG_ITEM; depth: INTEGER) is
+		require
+			Node_exists: a_node /= Void
+		do
+--			if arch_node = Void then
+--				arch_node ?= a_node.content_item
+--			end
+			c_node_enter_action.call([arch_node, depth])
+		end
 
+	arch_node: ARCHETYPE_CONSTRAINT
 
 end
 
