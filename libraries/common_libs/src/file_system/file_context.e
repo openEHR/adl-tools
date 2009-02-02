@@ -17,12 +17,19 @@ class
 	FILE_CONTEXT
 
 inherit
-	UC_UTF8_ROUTINES
+	UC_IMPORTED_UTF8_ROUTINES
 
 create
 	make
 
 feature -- Definitions
+
+	UTF8_bom_char_1: CHARACTER is '%/239/'
+	UTF8_bom_char_2: CHARACTER is '%/187/'
+	UTF8_bom_char_3: CHARACTER is '%/191/'
+			-- UTF-8 files don't normally have a BOM (byte order marker) at the start as can be
+			-- required by UTF-16 files, but if the file has been converted from UTF-16 or UTF-32
+			-- then the BOM in a UTF-8 file will be 0xEF 0xBB 0xBF (dec equivalent: 239, 187, 191)
 
 	Default_current_directory: STRING is "."
 
@@ -54,7 +61,7 @@ feature -- Access
 			-- name of fle only
 
 	has_byte_order_marker: BOOLEAN
-			-- Does the current file have a BOM indicating it is a UTF-8 encoded unicode file?
+			-- True if current file has a BOM, which means it is a UTF encoded unicode file
 
 	last_op_failed: BOOLEAN
 
@@ -110,7 +117,7 @@ feature -- Commands
 		end
 
 	read_first_line
-			-- Read first line from current file as a string.
+			-- read first line from current file as a string
 		local
 			in_file: PLAIN_TEXT_FILE
    		do
@@ -121,7 +128,7 @@ feature -- Commands
 			if in_file.exists then
 				in_file.open_read
 				in_file.read_line
-				file_first_line.append (in_file.last_string)
+				file_first_line.append(in_file.last_string)
 				in_file.close
 			else
 				last_op_failed := True
@@ -132,7 +139,7 @@ feature -- Commands
 		end
 
 	read_file is
-			-- Read text from current file into `file_content'.
+			-- read text from current file as a string
 		local
 			in_file: PLAIN_TEXT_FILE
    		do
@@ -163,19 +170,19 @@ feature -- Commands
 				in_file.close
 
 				if file_content.count >= 3 then
-					if is_endian_detection_character (file_content.item (1), file_content.item (2), file_content.item (3)) then
+					if file_content.item (1) = UTF8_bom_char_1 and file_content.item (2) = UTF8_bom_char_2 and file_content.item (3) = UTF8_bom_char_3 then
 						file_content.remove_head (3)
 						has_byte_order_marker := True
 					end
 				end
 
-				if not valid_utf8 (file_content) then
+				if not utf8.valid_utf8 (file_content) then
 					if has_byte_order_marker then
 						create file_content.make_empty
 						last_op_failed := True
 						last_op_fail_reason := "Read failed; file " + current_full_path + " has UTF-8 marker but is not valid UTF-8"
 					else
-						file_content := to_utf8 (file_content)
+						file_content := utf8.to_utf8 (file_content)
 					end
 				end
 			else
@@ -187,28 +194,24 @@ feature -- Commands
 		end
 
 	save_file (a_file_name, content: STRING) is
-			-- Write `content' out to file `a_file_name' in `current_directory'.
+			-- write the content out to file `a_file_name' in `current_directory'
 		require
 			Arch_id_valid: a_file_name /= Void
 			Content_valid: content /= Void
-			File_writable: file_writable (a_file_name)
+			File_writable: file_writable(a_file_name)
 		local
 			out_file: PLAIN_TEXT_FILE
    		do
    			last_op_failed := False
-			create out_file.make_create_read_write (a_file_name)
-
+			create out_file.make_create_read_write(a_file_name)
 			if out_file.exists then
 				if has_byte_order_marker then
 					-- only safe if the file was last read using this object
-					out_file.put_character (byte_ef)
-					out_file.put_character (byte_bb)
-					out_file.put_character (byte_bf)
+					out_file.put_character (UTF8_bom_char_1)
+					out_file.put_character (UTF8_bom_char_2)
+					out_file.put_character (UTF8_bom_char_3)
 				end
-
-				file_content := content.twin
-				file_content.replace_substring_all ("%R%N", "%N")
-				out_file.put_string (file_content)
+				out_file.put_string(content)
 				out_file.close
 				file_timestamp := out_file.date
 			else
