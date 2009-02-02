@@ -61,7 +61,7 @@ feature -- Access
 			-- name of fle only
 
 	has_byte_order_marker: BOOLEAN
-			-- True if current file has a BOM, which means it is a UTF encoded unicode file
+			-- Does the current file have a BOM indicating it is a UTF-8 encoded unicode file?
 
 	last_op_failed: BOOLEAN
 
@@ -117,7 +117,7 @@ feature -- Commands
 		end
 
 	read_first_line
-			-- read first line from current file as a string
+			-- Read first line from current file as a string.
 		local
 			in_file: PLAIN_TEXT_FILE
    		do
@@ -128,7 +128,7 @@ feature -- Commands
 			if in_file.exists then
 				in_file.open_read
 				in_file.read_line
-				file_first_line.append(in_file.last_string)
+				file_first_line.append (in_file.last_string)
 				in_file.close
 			else
 				last_op_failed := True
@@ -139,7 +139,7 @@ feature -- Commands
 		end
 
 	read_file is
-			-- read text from current file as a string
+			-- Read text from current file into `file_content'.
 		local
 			in_file: PLAIN_TEXT_FILE
    		do
@@ -170,7 +170,7 @@ feature -- Commands
 				in_file.close
 
 				if file_content.count >= 3 then
-					if file_content.item (1) = UTF8_bom_char_1 and file_content.item (2) = UTF8_bom_char_2 and file_content.item (3) = UTF8_bom_char_3 then
+					if utf8.is_endian_detection_character (file_content.item (1), file_content.item (2), file_content.item (3)) then
 						file_content.remove_head (3)
 						has_byte_order_marker := True
 					end
@@ -194,16 +194,17 @@ feature -- Commands
 		end
 
 	save_file (a_file_name, content: STRING) is
-			-- write the content out to file `a_file_name' in `current_directory'
+			-- Write `content' out to file `a_file_name' in `current_directory'.
 		require
 			Arch_id_valid: a_file_name /= Void
 			Content_valid: content /= Void
-			File_writable: file_writable(a_file_name)
+			File_writable: file_writable (a_file_name)
 		local
 			out_file: PLAIN_TEXT_FILE
    		do
    			last_op_failed := False
-			create out_file.make_create_read_write(a_file_name)
+			create out_file.make_create_read_write (a_file_name)
+
 			if out_file.exists then
 				if has_byte_order_marker then
 					-- only safe if the file was last read using this object
@@ -211,7 +212,10 @@ feature -- Commands
 					out_file.put_character (UTF8_bom_char_2)
 					out_file.put_character (UTF8_bom_char_3)
 				end
-				out_file.put_string(content)
+
+				file_content := content.twin
+				file_content.replace_substring_all ("%R%N", "%N")
+				out_file.put_string (file_content)
 				out_file.close
 				file_timestamp := out_file.date
 			else
@@ -298,4 +302,3 @@ end
 --| the terms of any one of the MPL, the GPL or the LGPL.
 --|
 --| ***** END LICENSE BLOCK *****
---|
