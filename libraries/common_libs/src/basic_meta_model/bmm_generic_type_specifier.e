@@ -29,6 +29,14 @@ feature -- Access
 
 feature -- Status Report
 
+feature -- Output
+
+	as_string: STRING is
+			-- name of the type
+		do
+			-- TO_BE_IMPLEM
+		end
+
 end
 
 

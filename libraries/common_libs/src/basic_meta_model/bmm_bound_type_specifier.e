@@ -25,6 +25,13 @@ feature -- Access
 
 feature -- Status Report
 
+feature -- Output
+
+	as_string: STRING is
+			-- name of the type
+		do
+		end
+
 end
 
 

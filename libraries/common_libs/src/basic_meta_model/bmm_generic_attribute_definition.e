@@ -16,7 +16,10 @@ class BMM_GENERIC_ATTRIBUTE_DEFINITION
 
 inherit
 	BMM_ATTRIBUTE_DEFINITION
-	
+		redefine
+			type
+		end
+
 feature -- Initialisation
 
 feature -- Access

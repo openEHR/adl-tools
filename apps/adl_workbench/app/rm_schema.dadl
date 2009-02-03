@@ -254,7 +254,7 @@ class_definitions = <
 				name = <"formatting">
 				type = </primitive_types["String"]>
 			>
-			["mappings"] = (BMM_MULTIPLE_ATTRIBUTE) <
+			["mappings"] = (BMM_CONTAINER_ATTRIBUTE) <
 				name = <"mappings">
 				type = </class_definitions["TERM_MAPPING"]>
 				container_type = </primitive_types["Set"]>
@@ -331,6 +331,7 @@ class_definitions = <
 			["range"] = (BMM_SINGLE_ATTRIBUTE) <
 				name = <"range">
 				type = </class_definitions["DV_INTERVAL"]>
+				is_mandatory = <True>
 			>
 		>
 	>
@@ -343,11 +344,11 @@ class_definitions = <
 				name = <"normal_status">
 				type = </class_definitions["CODE_PHRASE"]>
 			>
-			["normal_range"] = (BMM_SINGLE_ATTRIBUTE) <
+			["normal_range"] = (BMM_GENERIC_ATTRIBUTE) <
 				name = <"normal_range">
 				type = </class_definitions["DV_INTERVAL"]>
 			>
-			["other_reference_ranges"] = (BMM_SINGLE_ATTRIBUTE) <
+			["other_reference_ranges"] = (BMM_GENERIC_ATTRIBUTE) <
 				name = <"other_reference_ranges">
 				type = </class_definitions["REFERENCE_RANGE"]>
 			>

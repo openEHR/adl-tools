@@ -1,6 +1,8 @@
 indexing
 	component:   "openEHR re-usable library"
-	description: "Subtype of BMM_GENERIC_TYPE_SPECIFIER that specifies containers with one generic parameter."
+	description: "[
+				 Definition of a generic parameter in a class definition of a generic type.
+				 ]"
 	keywords:    "model, UML"
 
 	author:      "Thomas Beale"
@@ -12,39 +14,15 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class BMM_CONTAINER_TYPE_SPECIFIER
-
-inherit
-	BMM_TYPE_SPECIFIER
-
-feature -- Initialisation
+deferred class BMM_GENERIC_PARAMETER_DEFINITION
 
 feature -- Access
 
-	cardinality: INTERVAL [INTEGER]
+	name: STRING
+			-- name of the parameter, e.g. 'T' etc
 
-	container_type: BMM_CLASS_DEFINITION
-			-- the type of the container. This converts to the root_type in BMM_GENERIC_TYPE_SPECIFIER
-
-	type: BMM_CLASS_DEFINITION
-			-- the target type; this converts to the first parameter in generic_parameters in BMM_GENERIC_TYPE_SPECIFIER
-
-feature -- Status Report
-
-feature -- Conversion
-
-	as_generic_type_specifier: BMM_GENERIC_TYPE_SPECIFIER is
-			do
-				-- create Result.make(container_type, <<type>>)
-			end
-
-feature -- Output
-
-	as_string: STRING is
-			-- name of the type
-		do
-			-- TO_BE_IMPLEM
-		end
+	conforms_to_type: BMM_TYPE_SPECIFIER
+			-- optional conformance constraint
 
 end
 
@@ -63,10 +41,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is bmm_model.e.
+--| The Original Code is bmm_generic_type_definition.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2009
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

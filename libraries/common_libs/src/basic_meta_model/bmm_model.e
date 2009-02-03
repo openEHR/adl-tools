@@ -21,6 +21,9 @@ feature -- Initialisation
 
 	make_dt is
 			-- make in a safe way for DT building purposes
+		local
+			a: BMM_SINGLE_ATTRIBUTE
+			b: BMM_CONTAINER_ATTRIBUTE
 		do
 
 		end

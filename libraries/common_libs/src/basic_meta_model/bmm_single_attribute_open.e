@@ -1,6 +1,6 @@
 indexing
 	component:   "openEHR re-usable library"
-	description: "Subtype of GENERIC_ATTRIBUTE_DEFINITION that represents a typical container type."
+	description: "Basic Meta-model abstraction of a single-valued attribute"
 	keywords:    "model, UML"
 
 	author:      "Thomas Beale"
@@ -12,16 +12,21 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class BMM_CONTAINER_ATTRIBUTE_DEFINITION
+class BMM_SINGLE_ATTRIBUTE_OPEN
 
 inherit
-	BMM_GENERIC_ATTRIBUTE_DEFINITION 
+	BMM_ATTRIBUTE_DEFINITION
+		redefine
+			type
+		end
 
 feature -- Initialisation
 
 feature -- Access
-	
-	type: BMM_CONTAINER_TYPE_SPECIFIER
+
+	type: BMM_OPEN_TYPE_SPECIFIER
+
+feature -- Status Report
 
 end
 
@@ -40,10 +45,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is bmm_container_attribute_definition.e.
+--| The Original Code is bmm_model.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2009
+--| Portions created by the Initial Developer are Copyright (C) 2003-2004
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):
