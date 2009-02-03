@@ -24,6 +24,7 @@ feature -- Initialisation
 		local
 			a: BMM_SINGLE_ATTRIBUTE
 			b: BMM_CONTAINER_ATTRIBUTE
+			c: BMM_SINGLE_ATTRIBUTE_OPEN
 		do
 
 		end

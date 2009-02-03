@@ -24,7 +24,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	type: BMM_CONTAINER_TYPE_SPECIFIER
+	type: BMM_CONTAINER_TYPE_REFERENCE
 
 end
 

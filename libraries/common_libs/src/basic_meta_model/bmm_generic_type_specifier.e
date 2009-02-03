@@ -12,16 +12,16 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class BMM_GENERIC_TYPE_SPECIFIER
+class BMM_GENERIC_TYPE_REFERENCE
 
 inherit
-	BMM_TYPE_SPECIFIER
+	BMM_TYPE_REFERENCE
 
 feature -- Initialisation
 
 feature -- Access
 
-	root_type: BMM_BOUND_TYPE_SPECIFIER
+	root_type: BMM_CLASS_DEFINITION
 			-- optional type to which this paramter conforms
 
 	generic_parameters: ARRAYED_LIST [BMM_TYPE_SPECIFIER]

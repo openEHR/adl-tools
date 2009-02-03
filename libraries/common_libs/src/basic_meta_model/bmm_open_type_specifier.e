@@ -15,7 +15,7 @@ indexing
 class BMM_OPEN_TYPE_SPECIFIER
 
 inherit
-	BMM_TYPE_SPECIFIER
+	BMM_TYPE_REFERENCE
 
 feature -- Initialisation
 
@@ -24,6 +24,13 @@ feature -- Access
 	type: BMM_GENERIC_PARAMETER_DEFINITION
 
 feature -- Status Report
+
+feature -- Output
+
+	as_string: STRING is
+			-- name of the type
+		do
+		end
 
 end
 

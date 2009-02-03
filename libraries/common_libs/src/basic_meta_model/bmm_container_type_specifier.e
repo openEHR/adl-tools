@@ -12,10 +12,10 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class BMM_CONTAINER_TYPE_SPECIFIER
+class BMM_CONTAINER_TYPE_REFERENCE
 
 inherit
-	BMM_TYPE_SPECIFIER
+	BMM_TYPE_REFERENCE
 
 feature -- Initialisation
 
@@ -33,7 +33,7 @@ feature -- Status Report
 
 feature -- Conversion
 
-	as_generic_type_specifier: BMM_GENERIC_TYPE_SPECIFIER is
+	as_generic_type_specifier: BMM_GENERIC_TYPE_REFERENCE is
 			do
 				-- create Result.make(container_type, <<type>>)
 			end

@@ -21,7 +21,7 @@ feature -- Access
 	name: STRING
 			-- name of this attribute
 
-	type: BMM_TYPE_SPECIFIER
+	type: BMM_TYPE_REFERENCE
 			-- type of this attribute
 
 feature -- Status Report

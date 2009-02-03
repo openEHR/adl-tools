@@ -17,7 +17,7 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-deferred class BMM_TYPE_SPECIFIER
+deferred class BMM_TYPE_REFERENCE
 
 feature -- Output
 

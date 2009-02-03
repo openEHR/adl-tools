@@ -21,7 +21,7 @@ feature -- Access
 	name: STRING
 			-- name of the parameter, e.g. 'T' etc
 
-	conforms_to_type: BMM_TYPE_SPECIFIER
+	conforms_to_type: BMM_CLASS_DEFINITION
 			-- optional conformance constraint
 
 end

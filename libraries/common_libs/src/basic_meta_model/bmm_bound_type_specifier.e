@@ -15,7 +15,7 @@ indexing
 class BMM_BOUND_TYPE_SPECIFIER
 
 inherit
-	BMM_TYPE_SPECIFIER
+	BMM_TYPE_REFERENCE
 
 feature -- Initialisation
 
