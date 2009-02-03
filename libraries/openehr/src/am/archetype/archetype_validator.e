@@ -563,11 +563,11 @@ feature {NONE} -- Implementation
 			-- perform validation of node against reference model
 		do
 			if {ca: C_ATTRIBUTE} a_c_node then
-				if rm_checker.has_type(ca.parent.rm_type_name) and not rm_checker.has_attribute(ca.parent.rm_type_name, ca.rm_attribute_name) then
+				if rm_checker.has_class_definition(ca.parent.rm_type_name) and not rm_checker.has_attribute(ca.parent.rm_type_name, ca.rm_attribute_name) then
 					add_error("VCARM", <<ca.rm_attribute_name, ca.parent.path, ca.parent.rm_type_name>>)
 				end
 			elseif {co: C_OBJECT} a_c_node then
-				if not rm_checker.has_type(co.rm_type_name) then
+				if not rm_checker.has_class_definition(co.rm_type_name) then
 					add_error("VCORM", <<co.rm_type_name, co.path>>)
 				end
 			end

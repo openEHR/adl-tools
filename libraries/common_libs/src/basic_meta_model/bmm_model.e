@@ -42,7 +42,7 @@ feature -- Access
 	class_definition (a_class_name: STRING): BMM_CLASS_DEFINITION is
 			-- retrieve the class definition for `a_class_name' from either `primitive_types' or `classes'
 		require
-			Type_name_valid: a_class_name /= Void and then has_class(a_class_name)
+			Type_name_valid: a_class_name /= Void and then has_class_definition(a_class_name)
 		do
 			if primitive_types.has (a_class_name) then
 				Result := primitive_types.item (a_class_name)
@@ -55,7 +55,7 @@ feature -- Access
 
 feature -- Status Report
 
-	has_class (a_class_name: STRING): BOOLEAN is
+	has_class_definition (a_class_name: STRING): BOOLEAN is
 			-- True if the type `a_class_name' is know in either `primitive_types' or `classes'
 		require
 			Type_name_valid: a_class_name /= Void and then not a_class_name.is_empty
@@ -66,8 +66,8 @@ feature -- Status Report
 	is_sub_class_of (a_class, a_parent_class: STRING): BOOLEAN is
 			-- True if `a_class' is a sub-class in the model of `a_parent_class'
 		require
-			Sub_class_valid: a_sub_class /= Void not a_sub_class.is_empty
-			Parent_class_valid: a_parent_class /= Void and then has_class (a_parent_class)
+			Sub_class_valid: a_class /= Void not a_class.is_empty
+			Parent_class_valid: a_parent_class /= Void and then has_class_definition (a_parent_class)
 		do
 			Result := True
 		end

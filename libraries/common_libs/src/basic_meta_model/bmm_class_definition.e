@@ -3,7 +3,7 @@ indexing
 	description: "[
 				 Definition of a class in an object model. A class is type that may be open 
 				 or closed in terms of other types mentioned within.
-				 "
+				 ]"
 	keywords:    "model, UML"
 
 	author:      "Thomas Beale"
@@ -22,7 +22,7 @@ feature -- Access
 	generic_parameters: ARRAYED_SET [BMM_GENERIC_PARAMETER_DEFINITION]
 			-- list of generic parameter definitions
 
-	ancestors: ARRAYED_LIST [BMM_TYPE_SPECIFIER]
+	ancestors: ARRAYED_LIST [BMM_CLASS_DEFINITION]
 			-- list of inheritance parents
 
 	attributes: HASH_TABLE [BMM_ATTRIBUTE_DEFINITION, STRING]
@@ -62,7 +62,7 @@ feature -- Status Report
 			Result := flat_attributes.has (an_attr_name)
 		end
 
-feature {BMM_TYPE} -- Implementation
+feature {BMM_CLASS_DEFINITION} -- Implementation
 
 	flat_attributes_cache: HASH_TABLE [BMM_ATTRIBUTE_DEFINITION, STRING]
 			-- reference list of all attributes due to inheritance flattening of this type

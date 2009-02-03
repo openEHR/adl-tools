@@ -57,11 +57,11 @@ feature -- Initialisation
 
 feature -- Access
 
-	ancestor_types_of (a_type: STRING): ARRAYED_LIST [STRING] is
-			-- return all ancestor types of `a_type' up to root class (usually 'ANY', 'Object' or something similar)
+	ancestor_types_of (a_class_name: STRING): ARRAYED_LIST [STRING] is
+			-- return all ancestor types of `a_class_name' up to root class (usually 'ANY', 'Object' or something similar)
 			-- does  not include current class. Returns empty list if none.
 		require
-			Type_valid: a_type /= Void and then has_type (a_type)
+			Type_valid: a_class_name /= Void and then has_class_definition (a_class_name)
 		do
 			create Result.make(0)
 			-- FIXME: TO BE IMPLEMENTED
@@ -92,23 +92,23 @@ feature -- Validation
 			Parent_type_valid: a_parent_type /= Void and then not a_parent_type.is_empty
 		do
 			if model_loaded then
-				Result := model.has_type (a_parent_type) and then model.is_sub_type_of (a_sub_type, a_parent_type)
+				Result := model.has_class_definition (a_parent_type) and then model.is_sub_class_of (a_sub_type, a_parent_type)
 			else
 				Result := True
 			end
 		end
 
-	has_attribute (a_type, an_attribute: STRING): BOOLEAN is
+	has_attribute (a_class_name, an_attribute: STRING): BOOLEAN is
 			-- True if `a_type' has an attribute named `an_attribute'
 		require
-			Type_valid: a_type /= Void and then not a_type.is_empty
+			Class_name_valid: a_class_name /= Void and then not a_class_name.is_empty
 			Attribute_valid: an_attribute /= Void and then not an_attribute.is_empty
 		local
-			a_class_def: BMM_TYPE
+			a_class_def: BMM_CLASS_DEFINITION
 		do
 			if model_loaded then
-				if model.has_type (a_type) then
-					a_class_def := model.type_definition (a_type)
+				if model.has_class_definition (a_class_name) then
+					a_class_def := model.class_definition (a_class_name)
 					Result := a_class_def.has_attribute(an_attribute)
 				end
 			else
@@ -116,13 +116,13 @@ feature -- Validation
 			end
 		end
 
-	has_type (a_type: STRING): BOOLEAN is
-			-- True if `a_type' exists in the model
+	has_class_definition (a_class_name: STRING): BOOLEAN is
+			-- True if `a_class_name' exists in the model
 		require
-			Type_valid: a_type /= Void and then not a_type.is_empty
+			Type_valid: a_class_name /= Void and then not a_class_name.is_empty
 		do
 			if model_loaded then
-				Result := model.has_type (a_type)
+				Result := model.has_class_definition (a_class_name)
 			else
 				Result := True
 			end
