@@ -36,7 +36,7 @@ feature -- Access
 			Result := templates.has(an_id)
 		end
 
-	create_message(an_id: STRING; args: ARRAY[STRING]): STRING is
+	create_message_content(an_id: STRING; args: ARRAY[STRING]): STRING is
 		require
 			an_id /= Void
 		local
@@ -57,6 +57,14 @@ feature -- Access
 					i := i + 1
 				end
 			end
+		end
+
+	create_message(an_id: STRING; args: ARRAY[STRING]): STRING is
+			-- create message as a full line
+		require
+			an_id /= Void
+		do
+			Result := create_message_content(an_id, args)
 			Result.append_character ('%N')
 		end
 

@@ -12,7 +12,7 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class BMM_GENERIC_ATTRIBUTE_DEFINITION
+class BMM_GENERIC_ATTRIBUTE
 
 inherit
 	BMM_ATTRIBUTE_DEFINITION

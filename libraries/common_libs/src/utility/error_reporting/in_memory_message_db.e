@@ -98,8 +98,10 @@ feature -- Access
 			["validate_e3"] = <"Error: archetype id in filename $1 does not match id at top of file $2%N">
 			
 			-- MODEL_ACCESS (RM model checker)
-			["model_access_e1"] = <"Error: Reference Model DADL file $1 does not exist or not readable">
-			["model_access_e2"] = <"Error: Reference Model DADL parse failure; reason: $1">
+			["model_access_e1"] = <"Reference Model DADL file $1 does not exist or not readable">
+			["model_access_e2"] = <"Reference Model DADL parse failure; reason: $1">
+			["model_access_e3"] = <"Reference Model DADL containes unknown type $1 (object add failed)">
+			["model_access_e4"] = <"Reference Model load failure due to exception during processing">
 			
 			-- DT_OBJECT_CONVERTER.dt_to_object
 			["container_type_mismatch"] = 
@@ -112,6 +114,7 @@ feature -- Access
 				<"[Exception caught]: $1.$2 - writing primitive object of type $3 into argument of type $4">
 			["non_existent_path"] = <"Error: non-existent path $1 in data tree structure">
 			["non_existent_path_in_list"] = <"Error: non-existent path (in list) $1 in data tree structure">
+			["dt_to_object_type_mismatch"] = <"[Exception caught]: Mismatch error - original recipient = $1">
 				
 			-- ARCHETYPE_DIRECTORY
 			["arch_dir_orphan_archetype"] = <"No parent matching $1 found for archetype $2">

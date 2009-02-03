@@ -24,6 +24,13 @@ inherit
 			{NONE} all
 		end
 
+	EXCEPTIONS
+		rename
+			class_name as exc_class_name
+		export
+			{NONE} all
+		end
+
 feature -- Conversion
 
 	object_to_dt(an_obj: ANY): DT_COMPLEX_OBJECT_NODE is
@@ -188,66 +195,92 @@ feature -- Conversion
 		require
 			Data_tree_valid: a_dt_obj /= Void
 		local
-			a_dt_obj_ref: DT_OBJECT_REFERENCE
-			a_dt_obj_ref_list: DT_OBJECT_REFERENCE_LIST
-			src_obj: ANY
-			a_sequence: SEQUENCE[ANY]
-			an_arr_list: ARRAYED_LIST[ANY]
+			src_obj, targ_obj: ANY
 			src_obj_fld: INTEGER
 			path_list: SEQUENCE [OG_PATH]
+			exception_caught: BOOLEAN
 		do
-			-- wipe the reference list out if on a top-level object
-			if a_dt_obj.is_root then
-				create object_ref_list.make(0)
-			end
-
-			Result := populate_object_from_dt(a_dt_obj, a_type_id)
-
-			-- if there were object references in the DT structure, process them now
-			if a_dt_obj.is_root and not object_ref_list.is_empty then
-				from
-					object_ref_list.start
-				until
-					object_ref_list.off
-				loop
-					src_obj := object_ref_list.item.source_object_ref
-					src_obj_fld := object_ref_list.item.source_object_field_index
-					a_dt_obj_ref ?= object_ref_list.item
-					if a_dt_obj_ref /= Void then
-						if a_dt_obj.has_path (a_dt_obj_ref.value.as_string) then
-							set_reference_field(src_obj_fld, src_obj, a_dt_obj.node_at_path (a_dt_obj_ref.value.as_string).as_object_ref)
-						else
-							post_error(Current, "dt_to_object", "non_existent_path", <<a_dt_obj_ref.value.as_string>>)
-						end
-					else
-						a_dt_obj_ref_list ?= object_ref_list.item
-
-						-- make the generic container, it will be a SEQUENCE (some kind of list)
-						a_sequence ?= new_instance_of(field_static_type_of_type (src_obj_fld, dynamic_type (src_obj)))
-						set_reference_field(src_obj_fld, src_obj, a_sequence)
-						an_arr_list ?= a_sequence
-						if an_arr_list /= Void then
-							an_arr_list.make(0)
-						end
-
-						path_list := a_dt_obj_ref_list.value
-						from
-							path_list.start
-						until
-							path_list.off
-						loop
-							if a_dt_obj.has_path (path_list.item.as_string) then
-								a_sequence.extend(a_dt_obj.node_at_path (path_list.item.as_string).as_object_ref)
-							else
-								post_error(Current, "dt_to_object", "non_existent_path_in_list", <<path_list.item.as_string>>)
-							end
-							path_list.forth
-						end
-					end
-
-					object_ref_list.forth
+			if not exception_caught then
+				-- wipe the reference list out if on a top-level object
+				if a_dt_obj.is_root then
+					create object_ref_list.make(0)
 				end
+
+				Result := populate_object_from_dt(a_dt_obj, a_type_id)
+
+				-- if there were object references in the DT structure, process them now
+				if a_dt_obj.is_root and not object_ref_list.is_empty then
+					from
+						object_ref_list.start
+					until
+						object_ref_list.off
+					loop
+						src_obj := object_ref_list.item.source_object_ref
+						src_obj_fld := object_ref_list.item.source_object_field_index
+						if {a_dt_obj_ref: DT_OBJECT_REFERENCE} object_ref_list.item then
+							if a_dt_obj.has_path (a_dt_obj_ref.value.as_string) then
+								targ_obj := a_dt_obj.node_at_path (a_dt_obj_ref.value.as_string).as_object_ref
+								if a_dt_obj_ref.is_source_object_container then
+									if {a_hash_table: HASH_TABLE [ANY, HASHABLE]} src_obj then
+										a_hash_table.extend(targ_obj, a_dt_obj_ref.hash_key)
+									elseif {a_sequence: SEQUENCE [ANY]} src_obj then
+										a_sequence.extend(targ_obj)
+									end
+								else
+									set_reference_field(src_obj_fld, src_obj, targ_obj)
+								end
+							else
+								post_error(Current, "dt_to_object", "non_existent_path", <<a_dt_obj_ref.value.as_string>>)
+							end
+						elseif {a_dt_obj_ref_list: DT_OBJECT_REFERENCE_LIST} object_ref_list.item then
+							-- make the generic container, it will be a SEQUENCE (some kind of list)
+							if {a_sequence2: SEQUENCE[ANY]} new_instance_of(field_static_type_of_type (src_obj_fld, dynamic_type (src_obj))) then
+								if {an_arr_list: ARRAYED_LIST[ANY]} a_sequence2 then
+									an_arr_list.make(0)
+								end
+
+								path_list := a_dt_obj_ref_list.value
+								from
+									path_list.start
+								until
+									path_list.off
+								loop
+									if a_dt_obj.has_path (path_list.item.as_string) then
+										a_sequence2.extend(a_dt_obj.node_at_path (path_list.item.as_string).as_object_ref)
+									else
+										post_error(Current, "dt_to_object", "non_existent_path_in_list", <<path_list.item.as_string>>)
+									end
+									path_list.forth
+								end
+
+								-- now we detect if the whole thing is going inside another container, or a standard object
+								if a_dt_obj_ref_list.is_source_object_container then
+									if {a_hash_table2: HASH_TABLE [ANY, HASHABLE]} src_obj then
+										a_hash_table2.extend(a_sequence2, a_dt_obj_ref_list.hash_key)
+									elseif {a_sequence3: SEQUENCE [ANY]} src_obj then
+										a_sequence3.extend(a_sequence2)
+									end
+								else
+									set_reference_field(src_obj_fld, src_obj, a_sequence2)
+								end
+							end
+						else
+							-- should never arrive here
+						end
+
+						object_ref_list.forth
+					end
+				end
+			else
+				Result := Void
 			end
+		rescue
+			if assertion_violation then
+				-- check that the original was set_reference_field() - this indicates a type mismatch
+				post_error(Current, "dt_to_object", "dt_to_object_type_mismatch", <<original_recipient_name>>)
+			end
+			exception_caught := True
+			retry
 		end
 
 	populate_object_from_dt(a_dt_obj: DT_COMPLEX_OBJECT_NODE; a_type_id: INTEGER): ANY is
@@ -602,36 +635,43 @@ feature {NONE} -- Implementation
 			Obj_exists: a_gen_obj /= Void
 			Dt_attr_node_valid: a_dt_attr /= Void and then a_dt_attr.is_multiple
 		local
-			a_sequence: SEQUENCE[ANY]
-			an_arrayed_list: ARRAYED_LIST[ANY]
-			a_hash_table: HASH_TABLE [ANY, HASHABLE]
 			static_object_type_id, dynamic_object_type_id: INTEGER
 		do
 			static_object_type_id := generic_dynamic_type(a_gen_obj, 1)
 
 			-- determine dynamic type of generic type
-			a_hash_table ?= a_gen_obj
-			if a_hash_table /= Void then
+			if {a_hash_table: HASH_TABLE [ANY, HASHABLE]} a_gen_obj then
 				a_hash_table.make(0)
 				from
 					a_dt_attr.start
 				until
 					a_dt_attr.off
 				loop
-					-- the static type may be overridden by a type specified in the DT tree
-					if a_dt_attr.item.type_visible then
-						dynamic_object_type_id := dynamic_type_from_string (a_dt_attr.item.rm_type_name)
+					if {a_dt_ref: DT_REFERENCE} a_dt_attr.item then
+						debug ("DT")
+							io.put_string ("%TDT_REFERENCE (inside HASH_TABLE DT_ATTRIBUTE)" + a_dt_ref.as_string + "%N")
+						end
+						a_dt_ref.set_hash_table_source_object_details (a_hash_table, a_dt_attr.item.node_id)
+						object_ref_list.extend(a_dt_ref)
 					else
-						dynamic_object_type_id := static_object_type_id
+						-- the static type may be overridden by a type specified in the DT tree
+						if a_dt_attr.item.type_visible then
+							dynamic_object_type_id := dynamic_type_from_string (a_dt_attr.item.rm_type_name)
+							if dynamic_object_type_id <= 0 then
+								post_error(Current, "set_generic_object_data_from_dt", "model_access_e3", <<a_dt_attr.item.rm_type_name>>)
+							end
+						else
+							dynamic_object_type_id := static_object_type_id
+						end
+						if dynamic_object_type_id > 0 then
+							a_hash_table.extend(a_dt_attr.item.as_object (dynamic_object_type_id), a_dt_attr.item.node_id)
+						end
 					end
-					a_hash_table.extend(a_dt_attr.item.as_object (dynamic_object_type_id), a_dt_attr.item.node_id)
 					a_dt_attr.forth
 				end
 			else
-				a_sequence ?= a_gen_obj
-				if a_sequence /= Void then
-					an_arrayed_list ?= a_sequence
-					if an_arrayed_list /= Void then
+				if {a_sequence: SEQUENCE[ANY]} a_gen_obj then
+					if {an_arrayed_list: ARRAYED_LIST[ANY]} a_sequence then
 						an_arrayed_list.make(0)
 					end
 					from
@@ -639,13 +679,26 @@ feature {NONE} -- Implementation
 					until
 						a_dt_attr.off
 					loop
-						-- the static type may be overridden by a type specified in the DT tree
-						if a_dt_attr.item.type_visible then
-							dynamic_object_type_id := dynamic_type_from_string (a_dt_attr.item.rm_type_name)
+						if {a_dt_ref2: DT_REFERENCE} a_dt_attr.item then
+							debug ("DT")
+								io.put_string ("%TDT_REFERENCE (inside SEQUENCE DT_ATTRIBUTE)" + a_dt_ref2.as_string + "%N")
+							end
+							a_dt_ref2.set_sequence_source_object_details (a_sequence)
+							object_ref_list.extend(a_dt_ref2)
 						else
-							dynamic_object_type_id := static_object_type_id
+							-- the static type may be overridden by a type specified in the DT tree
+							if a_dt_attr.item.type_visible then
+								dynamic_object_type_id := dynamic_type_from_string (a_dt_attr.item.rm_type_name)
+								if dynamic_object_type_id <= 0 then
+									post_error(Current, "set_generic_object_data_from_dt", "model_access_e3", <<a_dt_attr.item.rm_type_name>>)
+								end
+							else
+								dynamic_object_type_id := static_object_type_id
+							end
+							if dynamic_object_type_id > 0 then
+								a_sequence.extend(a_dt_attr.item.as_object (dynamic_object_type_id))
+							end
 						end
-						a_sequence.extend(a_dt_attr.item.as_object (dynamic_object_type_id))
 						a_dt_attr.forth
 					end
 				end

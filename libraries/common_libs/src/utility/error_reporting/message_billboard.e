@@ -164,11 +164,11 @@ feature {NONE} -- Implementation
 		do
 			create Result.make(0)
 			leader := Message_type_names.item(bb_item.message_type) + " - "
-			trailer := " (" + bb_item.type_name + "." + bb_item.routine_name + ")"
+			trailer := "      (" + bb_item.type_name + "." + bb_item.routine_name + ")"
 			if message_db.has_message(bb_item.message_id) then
-				err_str := message_db.create_message(bb_item.message_id, bb_item.args)
+				err_str := message_db.create_message_content(bb_item.message_id, bb_item.args)
 			else
-				err_str := message_db.create_message("message_code_error", Void)
+				err_str := message_db.create_message_content("message_code_error", Void)
 			end
 			Result.append(leader)
 			Result.append(err_str)

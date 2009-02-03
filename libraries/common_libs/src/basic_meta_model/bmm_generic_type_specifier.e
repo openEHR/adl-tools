@@ -25,7 +25,7 @@ feature -- Access
 			-- optional type to which this paramter conforms
 
 	generic_parameters: ARRAYED_LIST [BMM_TYPE_SPECIFIER]
-			-- parameters of the root_type in this type specifier
+			-- generic parameters of the root_type in this type specifier
 
 feature -- Status Report
 

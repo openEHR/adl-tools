@@ -253,7 +253,7 @@ feature -- Status setting
 			end
 
 			if not rm_checker.model_loaded then
-				post_error (Current, "user_initialisation", "general_error", <<rm_checker.load_fail_reason>>)
+				post_error (Current, "show", "general_error", <<rm_checker.load_fail_reason>>)
 				append_status_area (billboard_content)
 			end
 		end

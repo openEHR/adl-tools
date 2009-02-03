@@ -25,7 +25,7 @@ feature -- Access
 	name: STRING
 			-- name of the class
 
-	generic_parameters: ARRAYED_SET [BMM_GENERIC_PARAMETER_DEFINITION]
+	generic_parameters: HASH_TABLE [BMM_GENERIC_PARAMETER_DEFINITION, STRING]
 			-- list of generic parameter definitions
 
 	ancestors: ARRAYED_LIST [BMM_CLASS_DEFINITION]
@@ -36,17 +36,23 @@ feature -- Access
 
 	flat_attributes: HASH_TABLE [BMM_ATTRIBUTE_DEFINITION, STRING] is
 			-- list of all attributes due to current and ancestor classes
+		local
+			local_attrs: HASH_TABLE [BMM_ATTRIBUTE_DEFINITION, STRING]
 		do
 			if flat_attributes_cache = Void then
 				create flat_attributes_cache.make(0)
-				flat_attributes_cache.merge (attributes)
-				from
-					ancestors.start
-				until
-					ancestors.off
-				loop
-					flat_attributes_cache.merge (ancestors.item.flat_attributes_cache)
-					ancestors.forth
+				if ancestors /= Void then
+					from
+						ancestors.start
+					until
+						ancestors.off
+					loop
+						flat_attributes_cache.merge (ancestors.item.flat_attributes)
+						if attributes /= Void then
+							flat_attributes_cache.merge (attributes)
+						end
+						ancestors.forth
+					end
 				end
 			end
 			Result := flat_attributes_cache

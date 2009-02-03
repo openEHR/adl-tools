@@ -48,6 +48,9 @@ feature -- Initialisation
 				if not parser.syntax_error then
 					dt_tree := parser.output
 					model ?= dt_tree.as_object_from_string("BMM_MODEL")
+					if model = Void then
+						load_fail_reason := create_message ("model_access_e4", Void)
+					end
 				else
 					load_fail_reason := create_message ("model_access_e2", <<parser.error_text>>)
 				end

@@ -26,6 +26,9 @@ feature -- Access
 
 feature -- Status Report
 
+	is_abstract: BOOLEAN
+			-- this property is abstract, i.e. whether it is computed or stored is not yet defined
+
 	is_mandatory: BOOLEAN
 			-- True if this attribute is mandatory in its class
 

@@ -14,11 +14,11 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-deferred class BMM_GENERIC_PARAMETER_DEFINITION
+class BMM_GENERIC_PARAMETER_DEFINITION
 
 inherit
 	BMM_TYPE_SPECIFIER
-	
+
 feature -- Access
 
 	name: STRING

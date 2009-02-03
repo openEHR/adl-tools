@@ -463,6 +463,8 @@ feature {NONE} -- Implementation
 		local
 			def_it: C_ITERATOR
 		do
+			create failed_types.make(0)
+			failed_types.compare_objects
 			create def_it.make(target.definition)
 			def_it.do_all(agent rm_node_validate_enter, agent rm_node_validate_exit)
 		end
@@ -567,8 +569,9 @@ feature {NONE} -- Implementation
 					add_error("VCARM", <<ca.rm_attribute_name, ca.parent.path, ca.parent.rm_type_name>>)
 				end
 			elseif {co: C_OBJECT} a_c_node then
-				if not rm_checker.has_class_definition(co.rm_type_name) then
+				if not rm_checker.has_class_definition(co.rm_type_name) and not failed_types.has(co.rm_type_name) then
 					add_error("VCORM", <<co.rm_type_name, co.path>>)
+					failed_types.extend (co.rm_type_name)
 				end
 			end
 		end
@@ -576,6 +579,8 @@ feature {NONE} -- Implementation
 	rm_node_validate_exit (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)  is
 		do
 		end
+
+	failed_types: ARRAYED_LIST [STRING]
 
 	node_test (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN  is
 			-- return True if a conformant path of a_c_node within the differential archetype is
