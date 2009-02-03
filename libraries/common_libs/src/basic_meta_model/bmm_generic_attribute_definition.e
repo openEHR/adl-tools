@@ -24,7 +24,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	type: BMM_GENERIC_TYPE_SPECIFIER
+	type: BMM_GENERIC_TYPE_REFERENCE
 			-- type of the container of this attribute
 
 feature -- Status Report

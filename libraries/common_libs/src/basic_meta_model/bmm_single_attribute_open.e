@@ -24,7 +24,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	type: BMM_OPEN_TYPE_SPECIFIER
+	type: BMM_GENERIC_PARAMETER_DEFINITION
 
 feature -- Status Report
 

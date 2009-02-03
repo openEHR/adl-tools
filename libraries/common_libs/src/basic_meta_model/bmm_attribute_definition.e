@@ -21,7 +21,7 @@ feature -- Access
 	name: STRING
 			-- name of this attribute
 
-	type: BMM_TYPE_REFERENCE
+	type: BMM_TYPE_SPECIFIER
 			-- type of this attribute
 
 feature -- Status Report
@@ -31,7 +31,7 @@ feature -- Status Report
 
 invariant
 	Name_exists: name /= Void
-	
+
 end
 
 

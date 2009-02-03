@@ -16,6 +16,9 @@ indexing
 
 deferred class BMM_GENERIC_PARAMETER_DEFINITION
 
+inherit
+	BMM_TYPE_SPECIFIER
+	
 feature -- Access
 
 	name: STRING

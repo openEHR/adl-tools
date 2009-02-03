@@ -17,11 +17,14 @@ indexing
 
 class BMM_CLASS_DEFINITION
 
+inherit
+	BMM_TYPE_SPECIFIER
+
 feature -- Access
 
 	name: STRING
 			-- name of the class
-			
+
 	generic_parameters: ARRAYED_SET [BMM_GENERIC_PARAMETER_DEFINITION]
 			-- list of generic parameter definitions
 

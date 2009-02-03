@@ -37,6 +37,10 @@ feature -- Output
 			-- TO_BE_IMPLEM
 		end
 
+invariant
+	Root_type_exists: root_type /= Void
+	Generic_parameters_valid: generic_parameters /= Void
+
 end
 
 

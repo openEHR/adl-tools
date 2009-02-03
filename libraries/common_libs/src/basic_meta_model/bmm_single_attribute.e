@@ -24,7 +24,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	type: BMM_BOUND_TYPE_SPECIFIER
+	type: BMM_CLASS_DEFINITION
 
 feature -- Status Report
 

@@ -1,6 +1,6 @@
 indexing
 	component:   "openEHR re-usable library"
-	description: "Specifies a type as a particular class."
+	description: "Abstract idea of specifying a type either by definition or by reference."
 	keywords:    "model, UML"
 
 	author:      "Thomas Beale"
@@ -12,25 +12,7 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class BMM_BOUND_TYPE_SPECIFIER
-
-inherit
-	BMM_TYPE_REFERENCE
-
-feature -- Initialisation
-
-feature -- Access
-
-	type: BMM_CLASS_DEFINITION
-
-feature -- Status Report
-
-feature -- Output
-
-	as_string: STRING is
-			-- name of the type
-		do
-		end
+deferred class BMM_TYPE_SPECIFIER
 
 end
 
@@ -49,10 +31,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is bmm_bound_type_specifier.e.
+--| The Original Code is bmm_type_specifier.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2009
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

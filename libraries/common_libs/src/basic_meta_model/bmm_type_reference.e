@@ -19,6 +19,9 @@ indexing
 
 deferred class BMM_TYPE_REFERENCE
 
+inherit
+	BMM_TYPE_SPECIFIER
+	
 feature -- Output
 
 	as_string: STRING is
