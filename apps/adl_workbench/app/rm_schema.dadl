@@ -1,7 +1,18 @@
-
-------------------------------------------------------
--- Model meta-data
-------------------------------------------------------
+-- 
+-- 	component:   openEHR Archetype Project
+-- 	description: openEHR Reference Model formal expression. This file is a DADL serialisation of
+--               the BMM object meta-model classes found at 
+--               http://www.openehr.org/svn/ref_impl_eiffel/BRANCHES/specialisation/libraries/common_libs/src/basic_meta_model
+-- 	keywords:    reference model, meta-model, archetypes
+-- 	author:      Thomas Beale
+-- 	support:     Ocean Informatics <support@OceanInformatics.com>
+-- 	copyright:   Copyright (c) 2009 openEHR Foundation
+-- 	license:     See end of file
+-- 
+-- 	file:        $URL$
+-- 	revision:    $LastChangedRevision$
+-- 	last_change: $LastChangedDate$
+-- 
 
 model_name = <"openEHR-RM">
 model_release = <"1.0.2">
@@ -29,6 +40,10 @@ primitive_types = <
 		name = <"Ordered_Numeric">
 		is_abstract = <True>
 		ancestors = </primitive_types["Numeric"], /primitive_types["Ordered"]>
+	>
+	["Octet"] = <
+		name = <"Octet">
+		ancestors = </primitive_types["Any"], ...>
 	>
 	["Boolean"] = <
 		name = <"Boolean">
@@ -135,6 +150,7 @@ primitive_types = <
 			>
 		>
 	>
+
 	["Aggregate"] = <
 		name = <"Aggregate">
 		ancestors = </primitive_types["Any"], ...>
@@ -145,6 +161,26 @@ primitive_types = <
 			>
 		>
 	>
+
+	["ISO8601_DATE"] = <
+		name = <"ISO8601_DATE">
+		ancestors = </primitive_types["Any"], ...>
+	>
+
+	["ISO8601_TIME"] = <
+		name = <"ISO8601_TIME">
+		ancestors = </primitive_types["Any"], ...>
+	>
+
+	["ISO8601_DATE_TIME"] = <
+		name = <"ISO8601_DATE_TIME">
+		ancestors = </primitive_types["Any"], ...>
+	>
+
+	["ISO8601_DURATION"] = <
+		name = <"ISO8601_DURATION">
+		ancestors = </primitive_types["Any"], ...>
+	>
 >
 
 ------------------------------------------------------
@@ -152,6 +188,111 @@ primitive_types = <
 ------------------------------------------------------
 
 class_definitions = <
+
+	------------------------------------------------------------
+	------------------ rm.support.identification ---------------
+	------------------------------------------------------------
+
+	["OBJECT_REF"] = <
+		name = <"OBJECT_REF">
+		ancestors = </primitive_types["Any"], ...>
+		attributes = <
+			["namespace"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"namespace">
+				type = </primitive_types["String"]>
+				is_mandatory = <True>
+			>
+			["type"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"type">
+				type = </primitive_types["String"]>
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	["PARTY_REF"] = <
+		name = <"PARTY_REF">
+		ancestors = </class_definitions["OBJECT_REF"], ...>
+	>
+
+	["OBJECT_ID"] = <
+		name = <"OBJECT_ID">
+		is_abstract = <True>
+		ancestors = </primitive_types["Any"], ...>
+		attributes = <
+			["value"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"value">
+				type = </primitive_types["String"]>
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	["TERMINOLOGY_ID"] = <
+		name = <"TERMINOLOGY_ID">
+		ancestors = </class_definitions["OBJECT_ID"], ...>
+	>
+	
+	["UID_BASED_ID"] = <
+		name = <"UID_BASED_ID">
+		ancestors = </class_definitions["OBJECT_ID"], ...>
+		is_abstract = <True>
+	>
+	
+	["GENERIC_ID"] = <
+		name = <"GENERIC_ID">
+		ancestors = </class_definitions["OBJECT_ID"], ...>
+	>
+	
+	["ARCHETYPE_ID"] = <
+		name = <"ARCHETYPE_ID">
+		ancestors = </class_definitions["OBJECT_ID"], ...>
+	>
+	
+	["TEMPLATE_ID"] = <
+		name = <"TEMPLATE_ID">
+		ancestors = </class_definitions["OBJECT_ID"], ...>
+	>
+	
+	["OBJECT_VERSION_ID"] = <
+		name = <"OBJECT_VERSION_ID">
+		ancestors = </class_definitions["UID_BASED_ID"], ...>
+	>
+	
+	["HIER_OBJECT_ID"] = <
+		name = <"HIER_OBJECT_ID">
+		ancestors = </class_definitions["UID_BASED_ID"], ...>
+	>
+	
+	["VERSION_TREE_ID"] = <
+		name = <"VERSION_TREE_ID">
+		ancestors = </primitive_types["Any"], ...>
+	>
+	
+	["UID"] = <
+		name = <"UID">
+		is_abstract = <True>
+		ancestors = </primitive_types["Any"], ...>
+	>
+	
+	["INTERNET_ID"] = <
+		name = <"INTERNET_ID">
+		ancestors = </class_definitions["UID"], ...>
+	>
+	
+	["UUID"] = <
+		name = <"UUID">
+		ancestors = </class_definitions["UID"], ...>
+	>
+	
+	["ISO_OID"] = <
+		name = <"ISO_OID">
+		ancestors = </class_definitions["UID"], ...>
+	>
+	
+	------------------------------------------------------------
+	--------------------- rm.data_types ------------------------
+	------------------------------------------------------------
 
 	--
 	--------------------- rm.data_types.basic ------------------
@@ -161,6 +302,7 @@ class_definitions = <
 		name = <"DATA_VALUE">
 		is_abstract = <True>
 	>
+
 	["DV_BOOLEAN"] = <
 		name = <"DV_BOOLEAN">
 		ancestors = </class_definitions["DATA_VALUE"], ...>
@@ -172,6 +314,7 @@ class_definitions = <
 			>
 		>
 	>
+
 	["DV_IDENTIFIER"] = <
 		name = <"DV_IDENTIFIER">
 		ancestors = </class_definitions["DATA_VALUE"], ...>
@@ -198,6 +341,7 @@ class_definitions = <
 			>
 		>
 	>
+
 	["DV_STATE"] = <
 		name = <"DV_STATE">
 		ancestors = </class_definitions["DATA_VALUE"], ...>
@@ -229,6 +373,7 @@ class_definitions = <
 			>
 		>
 	>
+
 	["DV_TEXT"] = <
 		name = <"DV_TEXT">
 		ancestors = </class_definitions["DATA_VALUE"], ...>
@@ -264,6 +409,7 @@ class_definitions = <
 			>
 		>
 	>
+
 	["DV_CODED_TEXT"] = <
 		name = <"DV_CODED_TEXT">
 		ancestors = </class_definitions["DV_TEXT"], ...>
@@ -275,6 +421,7 @@ class_definitions = <
 			>
 		>
 	>
+
 	["CODE_PHRASE"] = <
 		name = <"CODE_PHRASE">
 		attributes = <
@@ -477,4 +624,915 @@ class_definitions = <
 			>
 		>
 	>
+
+	--
+	--------------------- rm.data_types.quantity.date_time ------------------
+	--
+
+	["DV_TEMPORAL"] = <
+		name = <"DV_TEMPORAL">
+		is_abstract = <True>
+		ancestors = </class_definitions["DV_ABSOLUTE_QUANTITY"], ...>
+	>
+
+	["DV_DATE"] = <
+		name = <"DV_DATE">
+		ancestors = </class_definitions["DV_TEMPORAL"], /primitive_types["ISO8601_DATE"]>
+		attributes = <
+			["value"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"value">
+				type = </primitive_types["String"]>
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	["DV_TIME"] = <
+		name = <"DV_TIME">
+		ancestors = </class_definitions["DV_TEMPORAL"], /primitive_types["ISO8601_TIME"]>
+		attributes = <
+			["value"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"value">
+				type = </primitive_types["String"]>
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	["DV_DATE_TIME"] = <
+		name = <"DV_DATE_TIME">
+		ancestors = </class_definitions["DV_TEMPORAL"], /primitive_types["ISO8601_DATE_TIME"]>
+		attributes = <
+			["value"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"value">
+				type = </primitive_types["String"]>
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	["DV_DURATION"] = <
+		name = <"DV_DURATION">
+		ancestors = </class_definitions["DV_AMOUNT"], /primitive_types["ISO8601_DURATION"]>
+		attributes = <
+			["value"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"value">
+				type = </primitive_types["String"]>
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	--
+	--------------------- rm.data_types.encapsulated ------------------
+	--
+
+	["DV_ENCAPSULATED"] = <
+		name = <"DV_ENCAPSULATED">
+		is_abstract = <True>
+		ancestors = </class_definitions["DATA_VALUE"], ...>
+		attributes = <
+			["charset"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"charset">
+				type = </class_definitions["CODE_PHRASE"]>
+			>
+			["language"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"language">
+				type = </class_definitions["CODE_PHRASE"]>
+			>
+		>
+	>
+
+	["DV_MULTIMEDIA"] = <
+		name = <"DV_MULTIMEDIA">
+		ancestors = </class_definitions["DV_ENCAPSULATED"], ...>
+		attributes = <
+			["alternate_text"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"alternate_text">
+				type = </primitive_types["String"]>
+			>
+			["uri"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"uri">
+				type = </class_definitions["DV_URI"]>
+			>
+			["data"] = (BMM_CONTAINER_ATTRIBUTE) <
+				name = <"uri">
+				type = <
+					type = </primitive_types["Octet"]>
+					container_type = </primitive_types["Array"]>
+					cardinality = <|>=0|>
+				>
+			>
+			["media_type"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"media_type">
+				type = </class_definitions["CODE_PHRASE"]>
+				is_mandatory = <True>
+			>
+			["compression_algorithm"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"compression_algorithm">
+				type = </class_definitions["CODE_PHRASE"]>
+			>
+			["integrity_check"] = (BMM_CONTAINER_ATTRIBUTE) <
+				name = <"integrity_check">
+				type = <
+					type = </primitive_types["Octet"]>
+					container_type = </primitive_types["Array"]>
+					cardinality = <|>=0|>
+				>
+			>
+			["integrity_check_algorithm"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"integrity_check_algorithm">
+				type = </class_definitions["CODE_PHRASE"]>
+			>
+			["size"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"size">
+				type = </primitive_types["Integer"]>
+			>
+		>
+	>
+
+	["DV_PARSABLE"] = <
+		name = <"DV_PARSABLE">
+		ancestors = </class_definitions["DV_ENCAPSULATED"], ...>
+		attributes = <
+			["value"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"value">
+				type = </primitive_types["String"]>
+			>
+			["formalism"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"formalism">
+				type = </primitive_types["String"]>
+			>
+		>
+	>
+
+	--
+	--------------------- rm.data_types.uri ------------------
+	--
+
+	["DV_URI"] = <
+		name = <"DV_URI">
+		ancestors = </class_definitions["DATA_VALUE"], ...>
+		attributes = <
+			["value"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"value">
+				type = </primitive_types["String"]>
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	["DV_EHR_URI"] = <
+		name = <"DV_EHR_URI">
+		ancestors = </class_definitions["DV_URI"], ...>
+	>
+
+	--
+	--------------------- rm.data_types.time_specification ------------------
+	--
+
+	["DV_TIME_SPECIFICATION"] = <
+		name = <"DV_TIME_SPECIFICATION">
+		is_abstract = <True>
+		ancestors = </class_definitions["DATA_VALUE"], ...>
+		attributes = <
+			["value"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"value">
+				type = </class_definitions["DV_PARSABLE"]>
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	["DV_PERIODIC_TIME_SPECIFICATION"] = <
+		name = <"DV_PERIODIC_TIME_SPECIFICATION">
+		ancestors = </class_definitions["DV_TIME_SPECIFICATION"], ...>
+	>
+
+	["DV_GENERAL_TIME_SPECIFICATION"] = <
+		name = <"DV_GENERAL_TIME_SPECIFICATION">
+		ancestors = </class_definitions["DV_TIME_SPECIFICATION"], ...>
+	>
+
+
+	------------------------------------------------------------
+	---------------------- rm.data_structures ------------------
+	------------------------------------------------------------
+
+	["DATA_STRUCTURE"] = <
+		name = <"DATA_STRUCTURE">
+		is_abstract = <True>
+		ancestors = </class_definitions["LOCATABLE"], ...>
+	>
+
+	["ITEM_STRUCTURE"] = <
+		name = <"ITEM_STRUCTURE">
+		is_abstract = <True>
+		ancestors = </class_definitions["DATA_STRUCTURE"], ...>
+	>
+
+	["ITEM_SINGLE"] = <
+		name = <"ITEM_SINGLE">
+		ancestors = </class_definitions["ITEM_STRUCTURE"], ...>
+		attributes = <
+			["item"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"item">
+				type = </class_definitions["ELEMENT"]>
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	["ITEM_LIST"] = <
+		name = <"ITEM_LIST">
+		ancestors = </class_definitions["ITEM_STRUCTURE"], ...>
+		attributes = <
+			["items"] = (BMM_CONTAINER_ATTRIBUTE) <
+				name = <"items">
+				type = <
+					type = </class_definitions["ELEMENT"]>
+					container_type = </primitive_types["List"]>
+					cardinality = <|>=0|>
+				>
+			>
+		>
+	>
+
+	["ITEM_TABLE"] = <
+		name = <"ITEM_TABLE">
+		ancestors = </class_definitions["ITEM_STRUCTURE"], ...>
+		attributes = <
+			["rows"] = (BMM_CONTAINER_ATTRIBUTE) <
+				name = <"rows">
+				type = <
+					type = </class_definitions["CLUSTER"]>
+					container_type = </primitive_types["List"]>
+					cardinality = <|>=0|>
+				>
+			>
+		>
+	>
+
+	["ITEM_TREE"] = <
+		name = <"ITEM_TREE">
+		ancestors = </class_definitions["ITEM_STRUCTURE"], ...>
+		attributes = <
+			["items"] = (BMM_CONTAINER_ATTRIBUTE) <
+				name = <"items">
+				type = <
+					type = </class_definitions["ITEM"]>
+					container_type = </primitive_types["List"]>
+					cardinality = <|>=0|>
+				>
+			>
+		>
+	>
+
+	["ITEM"] = <
+		name = <"ITEM">
+		ancestors = </class_definitions["LOCATABLE"], ...>
+		is_abstract = <True>
+	>
+
+	["CLUSTER"] = <
+		name = <"CLUSTER">
+		ancestors = </class_definitions["ITEM"], ...>
+		attributes = <
+			["items"] = (BMM_CONTAINER_ATTRIBUTE) <
+				name = <"items">
+				type = <
+					type = </class_definitions["ELEMENT"]>
+					container_type = </primitive_types["List"]>
+					cardinality = <|>=1|>
+				>
+			>
+		>
+	>
+
+	["ELEMENT"] = <
+		name = <"ELEMENT">
+		ancestors = </class_definitions["ITEM"], ...>
+		attributes = <
+			["null_flavour"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"null_flavour">
+				type = </class_definitions["DV_CODED_TEXT"]>
+				is_mandatory = <True>
+			>
+			["value"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"value">
+				type = </class_definitions["DATA_VALUE"]>
+			>
+		>
+	>
+
+	["HISTORY"] = <
+		name = <"HISTORY">
+		ancestors = </class_definitions["DATA_STRUCTURE"], ...>
+		is_generic = <True>
+		generic_parameters = <
+			["T"] = <
+				name = <"T">
+				conforms_to_type = </class_definitions["ITEM_STRUCTURE"]>
+			>
+		>
+		attributes = <
+			["origin"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"origin">
+				type = </class_definitions["DV_DATE_TIME"]>
+				is_mandatory = <True>
+			>
+			["period"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"period">
+				type = </class_definitions["DV_DURATION"]>
+			>
+			["duration"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"duration">
+				type = </class_definitions["DV_DURATION"]>
+			>
+			["summary"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"summary">
+				type = </class_definitions["ITEM_STRUCTURE"]>
+			>
+			["events"] = (BMM_CONTAINER_ATTRIBUTE) <
+				name = <"events">
+				type = <
+					type = </class_definitions["EVENT"]>
+					container_type = </primitive_types["List"]>
+					cardinality = <|>=0|>
+				>
+			>
+		>
+	>
+
+	["EVENT"] = <
+		name = <"EVENT">
+		ancestors = </class_definitions["LOCATABLE"], ...>
+		is_abstract = <True>
+		is_generic = <True>
+		generic_parameters = <
+			["T"] = <
+				name = <"T">
+				conforms_to_type = </class_definitions["ITEM_STRUCTURE"]>
+			>
+		>
+		attributes = <
+			["time"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"time">
+				type = </class_definitions["DV_DATE_TIME"]>
+				is_mandatory = <True>
+			>
+			["state"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"state">
+				type = </class_definitions["ITEM_STRUCTURE"]>
+			>
+			["data"] = (BMM_SINGLE_ATTRIBUTE_OPEN) <
+				name = <"data">
+				type = </class_definitions["ITEM_STRUCTURE"]/generic_parameters["T"]>
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	["POINT_EVENT"] = <
+		name = <"POINT_EVENT">
+		ancestors = </class_definitions["EVENT"], ...>
+		is_generic = <True>
+		generic_parameters = <
+			["T"] = <
+				name = <"T">
+			>
+		>
+	>
+
+	["INTERVAL_EVENT"] = <
+		name = <"INTERVAL_EVENT">
+		ancestors = </class_definitions["EVENT"], ...>
+		is_generic = <True>
+		generic_parameters = <
+			["T"] = <
+				name = <"T">
+			>
+		>
+		attributes = <
+			["width"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"width">
+				type = </class_definitions["DV_DURATION"]>
+				is_mandatory = <True>
+			>
+			["sample_count"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"sample_count">
+				type = </primitive_types["Integer"]>
+			>
+			["math_function"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"math_function">
+				type = </class_definitions["DV_CODED_TEXT"]>
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	------------------------------------------------------------
+	---------------------- rm.common.generic -------------------
+	------------------------------------------------------------
+
+	["PARTICIPATION"] = <
+		name = <"PARTICIPATION">
+		ancestors = </primitive_types["Any"], ...>
+		attributes = <
+			["function"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"function">
+				type = </class_definitions["DV_TEXT"]>
+				is_mandatory = <True>
+			>
+			["time"] = (BMM_GENERIC_ATTRIBUTE) <
+				name = <"time">
+				type = <
+					root_type = </class_definitions["DV_INTERVAL"]>
+					generic_parameters = <
+						["T"] = </class_definitions["DV_DATE_TIME"]>
+					>
+				>
+			>
+			["mode"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"mode">
+				type = </class_definitions["DV_CODED_TEXT"]>
+				is_mandatory = <True>
+			>
+			["performer"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"performer">
+				type = </class_definitions["PARTY_PROXY"]>
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	["PARTY_PROXY"] = <
+		name = <"PARTY_PROXY">
+		is_abstract = <True>
+		ancestors = </primitive_types["Any"], ...>
+		attributes = <
+			["external_ref"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"external_ref">
+				type = </class_definitions["PARTY_REF"]>
+			>
+		>
+	>
+
+	["PARTY_IDENTIFIED"] = <
+		name = <"PARTY_IDENTIFIED">
+		ancestors = </class_definitions["PARTY_PROXY"], ...>
+		attributes = <
+			["name"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"name">
+				type = </primitive_types["String"]>
+			>
+			["identifiers"] = (BMM_CONTAINER_ATTRIBUTE) <
+				name = <"identifiers">
+				type = <
+					type = </class_definitions["DV_IDENTIFIER"]>
+					container_type = </primitive_types["List"]>
+					cardinality = <|>=0|>
+				>
+			>
+		>
+	>
+
+	["PARTY_RELATED"] = <
+		name = <"PARTY_RELATED">
+		ancestors = </class_definitions["PARTY_IDENTIFIED"], ...>
+		attributes = <
+			["relationship"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"relationship">
+				type = </class_definitions["DV_CODED_TEXT"]>
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	["PARTY_SELF"] = <
+		name = <"PARTY_SELF">
+		ancestors = </class_definitions["PARTY_PROXY"], ...>
+	>
+
+	------------------------------------------------------------
+	--------------------- rm.common.archetyped -----------------
+	------------------------------------------------------------
+
+	["PATHABLE"] = <
+		name = <"PATHABLE">
+		is_abstract = <True>
+		ancestors = </primitive_types["Any"], ...>
+	>
+
+	["LOCATABLE"] = <
+		name = <"LOCATABLE">
+		is_abstract = <True>
+		ancestors = </class_definitions["PATHABLE"], ...>
+		attributes = <
+			["uid"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"uid">
+				type = </class_definitions["UID_BASED_ID"]>
+			>
+			["archetype_node_id"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"archetype_node_id">
+				type = </primitive_types["String"]>
+				is_mandatory = <True>
+			>
+			["name"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"name">
+				type = </class_definitions["DV_TEXT"]>
+				is_mandatory = <True>
+			>
+			["archetype_details"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"archetype_details">
+				type = </class_definitions["ARCHETYPED"]>
+			>
+			["feeder_audit"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"feeder_audit">
+				type = </class_definitions["FEEDER_AUDIT"]>
+			>
+			["links"] = (BMM_CONTAINER_ATTRIBUTE) <
+				name = <"links">
+				type = <
+					type = </class_definitions["LINK"]>
+					container_type = </primitive_types["Set"]>
+					cardinality = <|>=0|>
+				>
+			>
+		>
+	>
+
+	["LINK"] = <
+		name = <"LINK">
+		ancestors = </primitive_types["Any"], ...>
+		attributes = <
+			["meaning"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"meaning">
+				type = </class_definitions["DV_TEXT"]>
+				is_mandatory = <True>
+			>
+			["type"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"type">
+				type = </class_definitions["DV_TEXT"]>
+				is_mandatory = <True>
+			>
+			["target"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"target">
+				type = </class_definitions["DV_EHR_URI"]>
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	["ARCHETYPED"] = <
+		name = <"ARCHETYPED">
+		ancestors = </primitive_types["Any"], ...>
+		attributes = <
+			["archetype_id"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"archetype_id">
+				type = </class_definitions["ARCHETYPE_ID"]>
+				is_mandatory = <True>
+			>
+			["template_id"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"template_id">
+				type = </class_definitions["TEMPLATE_ID"]>
+			>
+			["rm_version"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"rm_version">
+				type = </primitive_types["String"]>
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	["FEEDER_AUDIT"] = <
+		name = <"FEEDER_AUDIT">
+		ancestors = </primitive_types["Any"], ...>
+		attributes = <
+			["originating_system_ids"] = (BMM_CONTAINER_ATTRIBUTE) <
+				name = <"originating_system_ids">
+				type = <
+					type = </class_definitions["DV_IDENTIFIER"]>
+					container_type = </primitive_types["List"]>
+					cardinality = <|>=0|>
+				>
+			>
+			["feeder_system_item_ids"] = (BMM_CONTAINER_ATTRIBUTE) <
+				name = <"feeder_system_item_ids">
+				type = <
+					type = </class_definitions["DV_IDENTIFIER"]>
+					container_type = </primitive_types["List"]>
+					cardinality = <|>=0|>
+				>
+			>
+			["original_content"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"original_content">
+				type = </class_definitions["DV_ENCAPSULATED"]>
+			>
+			["originating_system_audit"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"originating_system_audit">
+				type = </class_definitions["FEEDER_AUDIT_DETAILS"]>
+				is_mandatory = <True>
+			>
+			["feeder_system_audit"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"feeder_system_audit">
+				type = </class_definitions["FEEDER_AUDIT_DETAILS"]>
+			>
+		>
+	>
+
+	["FEEDER_AUDIT_DETAILS"] = <
+		name = <"FEEDER_AUDIT_DETAILS">
+		ancestors = </primitive_types["Any"], ...>
+		attributes = <
+			["system_id"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"system_id">
+				type = </primitive_types["String"]>
+				is_mandatory = <True>
+			>
+			["location"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"location">
+				type = </class_definitions["PARTY_IDENTIFIED"]>
+			>
+			["provider"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"provider">
+				type = </class_definitions["PARTY_IDENTIFIED"]>
+			>
+			["subject"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"subject">
+				type = </class_definitions["PARTY_PROXY"]>
+			>
+			["time"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"time">
+				type = </class_definitions["DV_DATE_TIME"]>
+			>
+			["version_id"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"version_id">
+				type = </primitive_types["String"]>
+			>
+		>
+	>
+
+	------------------------------------------------------------
+	--------------------- rm.composition -----------------------
+	------------------------------------------------------------
+
+	["COMPOSITION"] = <
+		name = <"COMPOSITION">
+		ancestors = </class_definitions["LOCATABLE"], ...>
+		attributes = <
+			["language"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"language">
+				type = </class_definitions["CODE_PHRASE"]>
+				is_mandatory = <True>
+			>
+			["territory"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"territory">
+				type = </class_definitions["CODE_PHRASE"]>
+				is_mandatory = <True>
+			>
+			["category"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"category">
+				type = </class_definitions["DV_CODED_TEXT"]>
+				is_mandatory = <True>
+			>
+			["composer"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"composer">
+				type = </class_definitions["PARTY_PROXY"]>
+				is_mandatory = <True>
+			>
+			["context"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"context">
+				type = </class_definitions["EVENT_CONTEXT"]>
+			>
+			["content"] = (BMM_CONTAINER_ATTRIBUTE) <
+				name = <"content">
+				type = <
+					type = </class_definitions["CONTENT_ITEM"]>
+					container_type = </primitive_types["List"]>
+					cardinality = <|>=0|>
+				>
+			>
+		>
+	>
+
+	["EVENT_CONTEXT"] = <
+		name = <"EVENT_CONTEXT">
+		ancestors = </class_definitions["PATHABLE"], ...>
+		attributes = <
+			["health_care_facility"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"health_care_facility">
+				type = </class_definitions["PARTY_IDENTIFIED"]>
+			>
+			["start_time"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"start_time">
+				type = </class_definitions["DV_DATE_TIME"]>
+				is_mandatory = <True>
+			>
+			["end_time"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"end_time">
+				type = </class_definitions["DV_DATE_TIME"]>
+			>
+			["participations"] = (BMM_CONTAINER_ATTRIBUTE) <
+				name = <"participations">
+				type = <
+					type = </class_definitions["PARTICIPATION"]>
+					container_type = </primitive_types["List"]>
+					cardinality = <|>=0|>
+				>
+			>
+			["location"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"location">
+				type = </primitive_types["String"]>
+			>
+			["setting"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"setting">
+				type = </class_definitions["DV_CODED_TEXT"]>
+				is_mandatory = <True>
+			>
+			["other_context"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"other_context">
+				type = </class_definitions["ITEM_STRUCTURE"]>
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	--
+	--------------------- rm.data_types.composition.content ------------------
+	--
+
+	["CONTENT_ITEM"] = <
+		name = <"CONTENT_ITEM">
+		ancestors = </class_definitions["LOCATABLE"], ...>
+		is_abstract = <True>
+	>
+
+	--
+	--------------- rm.data_types.composition.content.navigation -------------
+	--
+
+	["SECTION"] = <
+		name = <"SECTION">
+		ancestors = </class_definitions["CONTENT_ITEM"], ...>
+		attributes = <
+			["items"] = (BMM_CONTAINER_ATTRIBUTE) <
+				name = <"items">
+				type = <
+					type = </class_definitions["CONTENT_ITEM"]>
+					container_type = </primitive_types["List"]>
+					cardinality = <|>=0|>
+				>
+			>
+		>
+	>
+
+	--
+	--------------- rm.data_types.composition.content.navigation -------------
+	--
+
+	["ENTRY"] = <
+		name = <"ENTRY">
+		is_abstract = <True>
+		ancestors = </class_definitions["CONTENT_ITEM"], ...>
+		attributes = <
+			["language"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"language">
+				type = </class_definitions["CODE_PHRASE"]>
+				is_mandatory = <True>
+			>
+			["encoding"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"encoding">
+				type = </class_definitions["CODE_PHRASE"]>
+				is_mandatory = <True>
+			>
+			["subject"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"subject">
+				type = </class_definitions["PARTY_PROXY"]>
+				is_mandatory = <True>
+			>
+			["provider"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"provider">
+				type = </class_definitions["PARTY_PROXY"]>
+				is_mandatory = <True>
+			>
+			["other_participations"] = (BMM_CONTAINER_ATTRIBUTE) <
+				name = <"other_participations">
+				type = <
+					type = </class_definitions["PARTICIPATION"]>
+					container_type = </primitive_types["List"]>
+					cardinality = <|>=0|>
+				>
+			>
+			["workflow_id"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"workflow_id">
+				type = </class_definitions["OBJECT_REF"]>
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	["ADMIN_ENTRY"] = <
+		name = <"ADMIN_ENTRY">
+		ancestors = </class_definitions["ENTRY"], ...>
+		attributes = <
+			["data"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"data">
+				type = </class_definitions["ITEM_STRUCTURE"]>
+				is_mandatory = <True>
+			>
+		>
+	>
+	
+	["CARE_ENTRY"] = <
+		name = <"CARE_ENTRY">
+		is_abstract = <True>
+		ancestors = </class_definitions["ENTRY"], ...>
+		attributes = <
+			["protocol"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"protocol">
+				type = </class_definitions["ITEM_STRUCTURE"]>
+			>
+			["guideline_id"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"guideline_id">
+				type = </class_definitions["OBJECT_REF"]>
+			>
+		>
+	>
+
+	["OBSERVATION"] = <
+		name = <"OBSERVATION">
+		ancestors = </class_definitions["CARE_ENTRY"], ...>
+		attributes = <
+			["data"] = (BMM_GENERIC_ATTRIBUTE) <
+				name = <"data">
+				is_mandatory = <True>
+				type = <
+					root_type = </class_definitions["HISTORY"]>
+					generic_parameters = <
+						["T"] = </class_definitions["ITEM_STRUCTURE"]>
+					>
+				>
+			>
+			["state"] = (BMM_GENERIC_ATTRIBUTE) <
+				name = <"state">
+				type = <
+					root_type = </class_definitions["HISTORY"]>
+					generic_parameters = <
+						["T"] = </class_definitions["ITEM_STRUCTURE"]>
+					>
+				>
+			>
+		>
+	>
+
+	["EVALUATION"] = <
+		name = <"EVALUATION">
+		ancestors = </class_definitions["CARE_ENTRY"], ...>
+		attributes = <
+			["data"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"data">
+				type = </class_definitions["ITEM_STRUCTURE"]>
+				is_mandatory = <True>
+			>
+		>
+	>
 >
+
+--|
+--| ***** BEGIN LICENSE BLOCK *****
+--| Version: MPL 1.1/GPL 2.0/LGPL 2.1
+--|
+--| The contents of this file are subject to the Mozilla Public License Version
+--| 1.1 (the 'License'); you may not use this file except in compliance with
+--| the License. You may obtain a copy of the License at
+--| http://www.mozilla.org/MPL/
+--|
+--| Software distributed under the License is distributed on an 'AS IS' basis,
+--| WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+--| for the specific language governing rights and limitations under the
+--| License.
+--|
+--| The Original Code is rm_schema.dadl
+--|
+--| The Initial Developer of the Original Code is Thomas Beale.
+--| Portions created by the Initial Developer are Copyright (C) 2009
+--| the Initial Developer. All Rights Reserved.
+--|
+--| Contributor(s):
+--|
+--| Alternatively, the contents of this file may be used under the terms of
+--| either the GNU General Public License Version 2 or later (the 'GPL'), or
+--| the GNU Lesser General Public License Version 2.1 or later (the 'LGPL'),
+--| in which case the provisions of the GPL or the LGPL are applicable instead
+--| of those above. If you wish to allow use of your version of this file only
+--| under the terms of either the GPL or the LGPL, and not to allow others to
+--| use your version of this file under the terms of the MPL, indicate your
+--| decision by deleting the provisions above and replace them with the notice
+--| and other provisions required by the GPL or the LGPL. If you do not delete
+--| the provisions above, a recipient may use your version of this file under
+--| the terms of any one of the MPL, the GPL or the LGPL.
+--|
+--| ***** END LICENSE BLOCK *****
+--|
+
