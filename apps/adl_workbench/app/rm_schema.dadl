@@ -110,11 +110,11 @@ primitive_types = <
 			>
 		>
 		attributes = <
-			["lower"] = (BMM_SINGLE_CONSTRAINED_ATTRIBUTE) <
+			["lower"] = (BMM_SINGLE_ATTRIBUTE_OPEN) <
 				name = <"lower">
 				type = </primitive_types["Interval"]/generic_parameters["T"]>
 			>
-			["upper"] = (BMM_SINGLE_CONSTRAINED_ATTRIBUTE) <
+			["upper"] = (BMM_SINGLE_ATTRIBUTE_OPEN) <
 				name = <"upper">
 				type = </primitive_types["Interval"]/generic_parameters["T"]>
 			>
@@ -146,7 +146,7 @@ primitive_types = <
 			>
 			["U"] = <
 				name = <"U">
-				conforms_to_type = </primitive_types["Comparable"]>
+				conforms_to_type = </primitive_types["Ordered"]>
 			>
 		>
 	>
@@ -206,6 +206,17 @@ class_definitions = <
 				name = <"type">
 				type = </primitive_types["String"]>
 				is_mandatory = <True>
+			>
+		>
+	>
+
+	["LOCATABLE_REF"] = <
+		name = <"LOCATABLE_REF">
+		ancestors = </class_definitions["OBJECT_REF"], ...>
+		attributes = <
+			["path"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"path">
+				type = </primitive_types["String"]>
 			>
 		>
 	>
@@ -555,8 +566,8 @@ class_definitions = <
 		>
 	>
 
-	["DV_ABSOLUTE_QUANITTY"] = <
-		name = <"DV_ABSOLUTE_QUANITTY">
+	["DV_ABSOLUTE_QUANTITY"] = <
+		name = <"DV_ABSOLUTE_QUANTITY">
 		is_abstract = <True>
 		ancestors = </class_definitions["DV_QUANTIFIED"], ...>
 		attributes = <
@@ -987,7 +998,7 @@ class_definitions = <
 			>
 			["data"] = (BMM_SINGLE_ATTRIBUTE_OPEN) <
 				name = <"data">
-				type = </class_definitions["ITEM_STRUCTURE"]/generic_parameters["T"]>
+				type = </class_definitions["EVENT"]/generic_parameters["T"]>
 				is_mandatory = <True>
 			>
 		>
@@ -1497,6 +1508,125 @@ class_definitions = <
 			>
 		>
 	>
+
+	["INSTRUCTION"] = <
+		name = <"INSTRUCTION">
+		ancestors = </class_definitions["CARE_ENTRY"], ...>
+		attributes = <
+			["narrative"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"narrative">
+				type = </class_definitions["DV_TEXT"]>
+				is_mandatory = <True>
+			>
+			["expiry_time"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"expiry_time">
+				type = </class_definitions["DV_DATE_TIME"]>
+			>
+			["wf_definition"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"wf_definition">
+				type = </class_definitions["DV_PARSABLE"]>
+				is_mandatory = <True>
+			>
+			["activities"] = (BMM_CONTAINER_ATTRIBUTE) <
+				name = <"activities">
+				type = <
+					type = </class_definitions["ACTIVITY"]>
+					container_type = </primitive_types["List"]>
+					cardinality = <|>=0|>
+				>
+			>
+		>
+	>
+
+	["ACTIVITY"] = <
+		name = <"ACTIVITY">
+		ancestors = </class_definitions["LOCATABLE"], ...>
+		attributes = <
+			["description"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"description">
+				type = </class_definitions["ITEM_STRUCTURE"]>
+				is_mandatory = <True>
+			>
+			["timing"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"timing">
+				type = </class_definitions["DV_PARSABLE"]>
+				is_mandatory = <True>
+			>
+			["action_archetype_id"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"action_archetype_id">
+				type = </primitive_types["String"]>
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	["ACTION"] = <
+		name = <"ACTION">
+		ancestors = </class_definitions["CARE_ENTRY"], ...>
+		attributes = <
+			["time"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"time">
+				type = </class_definitions["DV_DATE_TIME"]>
+				is_mandatory = <True>
+			>
+			["description"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"description">
+				type = </class_definitions["ITEM_STRUCTURE"]>
+				is_mandatory = <True>
+			>
+			["ism_transition"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"ism_transition">
+				type = </class_definitions["ISM_TRANSITION"]>
+				is_mandatory = <True>
+			>
+			["instruction_details"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"instruction_details">
+				type = </class_definitions["INSTRUCTION_DETAILS"]>
+			>
+		>
+	>
+
+	["INSTRUCTION_DETAILS"] = <
+		name = <"INSTRUCTION_DETAILS">
+		ancestors = </class_definitions["PATHABLE"], ...>
+		attributes = <
+			["instruction_id"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"instruction_id">
+				type = </class_definitions["LOCATABLE_REF"]>
+				is_mandatory = <True>
+			>
+			["wf_details"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"wf_details">
+				type = </class_definitions["ITEM_STRUCTURE"]>
+			>
+			["activity_id"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"activity_id">
+				type = </primitive_types["String"]>
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	["ISM_TRANSITION"] = <
+		name = <"ISM_TRANSITION">
+		ancestors = </class_definitions["PATHABLE"], ...>
+		attributes = <
+			["current_state"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"current_state">
+				type = </class_definitions["DV_CODED_TEXT"]>
+				is_mandatory = <True>
+			>
+			["transition"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"transition">
+				type = </class_definitions["DV_CODED_TEXT"]>
+			>
+			["careflow_step"] = (BMM_SINGLE_ATTRIBUTE) <
+				name = <"careflow_step">
+				type = </class_definitions["DV_CODED_TEXT"]>
+			>
+		>
+	>
+
 >
 
 --|

@@ -34,8 +34,7 @@ feature -- Initialisation
 		do
 			default_create
 			item := an_item
-			rm_type_name := an_item.generating_type
-			rm_type_name.remove_head (2)
+			rm_type_name := an_item.rm_type_name
 			create representation.make_anonymous (Current)
 		end
 

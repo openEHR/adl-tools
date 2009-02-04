@@ -16,7 +16,7 @@ class ISO8601_ROUTINES
 
 inherit
 	DATE_TIME_CONSTANTS
-	
+
 feature -- Definitions
 
 	Date_separator: CHARACTER is '-'
@@ -26,7 +26,9 @@ feature -- Definitions
 	Duration_leader: CHARACTER is 'P'
 	Iso8601_decimal_separator: CHARACTER is ','
 	Decimal_separator: CHARACTER is '.'
-	
+
+	Iso_class_name_leader: STRING is "ISO8601_"
+
 feature -- Conversion
 
 	date_to_iso8601_string (a_date: DATE): STRING is
@@ -34,14 +36,14 @@ feature -- Conversion
 		require
 			a_date /= Void
 		local
-			an_iso_date: ISO8601_DATE			
+			an_iso_date: ISO8601_DATE
 		do
 			create an_iso_date.make_ymd (a_date.year, a_date.month, a_date.day, True)
 			Result := an_iso_date.as_string
 		ensure
-			Result_valid: Result /= Void and then valid_iso8601_date(Result)				
+			Result_valid: Result /= Void and then valid_iso8601_date(Result)
 		end
-		
+
 	iso8601_string_to_date (str: STRING): DATE is
 			-- make from string using ISO8601 format "YYYY-MM-DD"
 		require
@@ -79,9 +81,9 @@ feature -- Conversion
 			create an_iso_time.make_hmsf (a_time.hour, a_time.minute, a_time.second, a_time.fine_second, True)
 			Result := an_iso_time.as_string
 		ensure
-			Result_valid: Result /= Void and then valid_iso8601_time(Result)		
+			Result_valid: Result /= Void and then valid_iso8601_time(Result)
 		end
-		
+
 	iso8601_string_to_time (str: STRING): TIME is
 			-- make from string using ISO8601 format "Thh:mm:ss[.ssss]"
 		require
@@ -123,7 +125,7 @@ feature -- Conversion
 		ensure
 			Result_valid: Result /= Void and then valid_iso8601_date_time(Result)
 		end
-		
+
 	iso8601_string_to_date_time (str: STRING): DATE_TIME is
 			-- make from string using ISO8601 format "YYYY-MM-DDThh:mm:ss[.ssss]"
 		require
@@ -153,7 +155,7 @@ feature -- Conversion
 		ensure
 			Result_valid: Result /= Void and then valid_iso8601_duration(Result)
 		end
-		
+
 	iso8601_string_to_duration (str: STRING): DATE_TIME_DURATION is
 			-- make from string using ISO8601 format "PNNDTNNhNNmNNs"
 		require
@@ -164,9 +166,9 @@ feature -- Conversion
 			create an_iso_dur.make_from_string (str)
 			if an_iso_dur.weeks > 0 then
 				create Result.make_definite (an_iso_dur.weeks * Days_in_week, 0, 0, 0)
-			else				
+			else
 				create Result.make_fine (an_iso_dur.years, an_iso_dur.months, an_iso_dur.days,
-					an_iso_dur.hours, an_iso_dur.minutes, 
+					an_iso_dur.hours, an_iso_dur.minutes,
 					an_iso_dur.seconds + an_iso_dur.fractional_seconds)
 			end
 		ensure
@@ -201,8 +203,8 @@ feature -- Validity
 			str /= Void
 		do
 			Result := iso8601_parser.valid_iso8601_time(str)
-		end		
-		
+		end
+
 	valid_iso8601_date(str: STRING): BOOLEAN is
 			-- True if string in one of the forms
 			--	YYYY
@@ -215,7 +217,7 @@ feature -- Validity
 		do
 			Result := iso8601_parser.valid_iso8601_date(str)
 		end
-		
+
 	valid_iso8601_date_time(str: STRING): BOOLEAN is
 			-- True if string in form "YYYY-MM-DDThh:mm:ss[,sss]"
 		require
@@ -223,7 +225,7 @@ feature -- Validity
 		do
 			Result := iso8601_parser.valid_iso8601_date_time(str)
 		end
-		
+
 	valid_iso8601_duration(str: STRING): BOOLEAN is
 			-- True if string in form "PnDTnHnMnS"
 		require
@@ -231,7 +233,7 @@ feature -- Validity
 		do
 			Result := iso8601_parser.valid_iso8601_duration(str)
 		end
-					
+
 	valid_year (y: INTEGER): BOOLEAN is
 			-- True if year >= 0
 		do
@@ -250,25 +252,25 @@ feature -- Validity
 			Result := d >= 1 and d <= days_in_month(m, y)
 		end
 
-	valid_hour(h, m, s: INTEGER): BOOLEAN is 
+	valid_hour(h, m, s: INTEGER): BOOLEAN is
 			-- True if (h >= 0 and h < Hours_in_day) or (h = Hours_in_day and m = 0 and s = 0)
 		do
 			Result := (h >= 0 and h < Hours_in_day) or (h = Hours_in_day and m = 0 and s = 0)
 		end
-		
-	valid_minute(m: INTEGER): BOOLEAN is 
+
+	valid_minute(m: INTEGER): BOOLEAN is
 			-- True if m >= 0 and m < Minutes_in_hour
 		do
 			Result := m >= 0 and m < Minutes_in_hour
 		end
-		
-	valid_second(s: INTEGER): BOOLEAN is 
+
+	valid_second(s: INTEGER): BOOLEAN is
 			-- True if s >= 0 and s < Seconds_in_minute
 		do
 			Result := s >= 0 and s < Seconds_in_minute
 		end
-		
-	valid_fractional_second(fs: DOUBLE): BOOLEAN is 
+
+	valid_fractional_second(fs: DOUBLE): BOOLEAN is
 			-- True if fs >= 0.0 and fs < 1.0
 		do
 			Result := fs >= 0.0 and fs < 1.0
@@ -281,7 +283,7 @@ feature {NONE} -- Implementation
 		once
 			create Result.make
 		end
-	
+
 end
 
 

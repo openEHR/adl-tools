@@ -102,6 +102,7 @@ feature -- Access
 			["model_access_e2"] = <"Reference Model DADL parse failure; reason: $1">
 			["model_access_e3"] = <"Reference Model DADL containes unknown type $1 (object add failed)">
 			["model_access_e4"] = <"Reference Model load failure due to exception during processing">
+			["model_access_i1"] = <"Reference Model $1 $2 loaded: $3 primitive types, $4 class definitions">
 			
 			-- DT_OBJECT_CONVERTER.dt_to_object
 			["container_type_mismatch"] = 
@@ -231,8 +232,8 @@ feature -- Access
 			["VCARM"] = <"Error (VCARM): attribute name $1 in object node at $2 (type=$3) not among flat set of attributes in reference model">
 					
 			-- validation warnings: in addition to spec, used to help archetype authors
-			["WOUC"] = <"Warning (WOUC): code $1 in ontology not used in archetype definition%N">
-			["WCRC"] = <"Warning (WCRC): redefinition of CONSTRAINT_REF (ac_code node) by C_CODE_PHRASE node at path $1 in child - not checked%N">
+			["WOUC"] = <"Warning (WOUC): code $1 in ontology not used in archetype definition">
+			["WCRC"] = <"Warning (WCRC): redefinition of CONSTRAINT_REF (ac_code node) by C_CODE_PHRASE node at path $1 in child - not checked">
 		>
 		>
 		]"

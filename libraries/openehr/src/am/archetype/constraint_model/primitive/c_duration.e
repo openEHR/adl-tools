@@ -20,6 +20,9 @@ class C_DURATION
 
 inherit
 	C_PRIMITIVE
+		redefine
+			rm_type_name
+		end
 
 	ADL_DEFINITIONS
 		export
@@ -139,6 +142,12 @@ feature -- Access
 			else
 				-- FIXME: Return something based on `pattern'.
 			end
+		end
+
+	rm_type_name: STRING is
+		once
+			Result := Iso_class_name_leader.twin
+			Result.append(generating_type.substring (3, generating_type.count))
 		end
 
 feature -- Status Report

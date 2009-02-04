@@ -127,10 +127,6 @@ feature -- Conversion
 			-- non-conformance problem. It has been made a separate
 			-- routine to allow exception handling to function properly
 		local
-			-- FIXME: all this code just to handle expanded nonconformance of INTERVAL[INTEGER] -> INTERVAL[PART_COMPARABLE]
-			-- REMOVE when this problem fixed
-			oe_int_real: INTERVAL[REAL]
-			oe_int_integer: INTERVAL[INTEGER]
 			exception_caught: BOOLEAN
 		do
 			if not exception_caught then
@@ -144,27 +140,25 @@ feature -- Conversion
 					io.put_string("%T(return)%N")
 				end
 			else
+io.put_string ("ENTERED DT_OBJECT_CONVERTER.populate_prim_type_attribute exception path%N")
 				-- FIXME: all this code just to handle expanded nonconformance of INTERVAL[INTEGER] -> INTERVAL[PART_COMPARABLE]
 				-- REMOVE when this problem fixed
-				oe_int_integer ?= fld_val
-				if oe_int_integer /= Void then
+				if {oe_ivl_integer: INTERVAL[INTEGER]} fld_val then
 					debug ("DT")
 						io.put_string("Using INTERVAL[INTEGER_REF] conversion%N")
 					end
+					cvt_tbl.item(equiv_prim_type_id).from_obj_proc.call([a_dt_attr, fld_val, Void])
+--					cvt_tbl.item(equiv_prim_type_id).from_obj_proc.call([a_dt_attr,
+--						interval_integer_to_interval_integer_ref(oe_ivl_integer), Void])
+				elseif {oe_ivl_real: INTERVAL[REAL]} fld_val then
+					debug ("DT")
+						io.put_string("Using INTERVAL[REAL_REF] conversion%N")
+					end
 					cvt_tbl.item(equiv_prim_type_id).from_obj_proc.call([a_dt_attr,
-						interval_integer_to_interval_integer_ref(oe_int_integer), Void])
+						interval_real_to_interval_real_ref(oe_ivl_real), Void])
 				else
-					oe_int_real ?= fld_val
-					if oe_int_real /= Void then
-						debug ("DT")
-							io.put_string("Using INTERVAL[REAL_REF] conversion%N")
-						end
-						cvt_tbl.item(equiv_prim_type_id).from_obj_proc.call([a_dt_attr,
-							interval_real_to_interval_real_ref(oe_int_real), Void])
-					else
-						debug ("DT")
-							io.put_string("No conversion available%N")
-						end
+					debug ("DT")
+						io.put_string("No conversion available%N")
 					end
 				end
 			end
@@ -734,15 +728,10 @@ feature {NONE} -- Implementation
 			--
 		local
 			generic_param_type: INTEGER
-			a_sequence: SEQUENCE[ANY]
-			a_hash_table: HASH_TABLE [ANY, HASHABLE]
 		do
-			a_hash_table ?= an_obj
-			a_sequence ?= an_obj
-
 			generic_param_type := generic_dynamic_type(an_obj, 1)
 			-- FIXME: only deal with the 1st generic param at the moment
-			if a_hash_table /= Void then
+			if {a_hash_table: HASH_TABLE [ANY, HASHABLE]} an_obj then
 				from
 					a_hash_table.start
 				until
@@ -765,7 +754,7 @@ feature {NONE} -- Implementation
 					end
 					a_hash_table.forth
 				end
-			elseif a_sequence /= Void then
+			elseif {a_sequence: SEQUENCE[ANY]} an_obj then
 				from
 					a_sequence.start
 				until

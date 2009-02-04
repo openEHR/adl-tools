@@ -37,6 +37,15 @@ feature -- Access
 			-- assumed value for this constraint object
 			-- FIXME: consider consolidating with assumed_value in C_DOMAIN_TYPE
 
+	rm_type_name: STRING is
+			-- generate a Reference Model type name that this type constrains. Generally this is
+			-- the same as the C_XX clas name with the "C_" removed, but for some types e.g. Date/time types
+			-- it is not true.
+		once
+			Result := generating_type
+			rm_type_name.remove_head (2)
+		end
+
 feature -- Status Report
 
 	valid_value (a_value: like prototype_value): BOOLEAN is

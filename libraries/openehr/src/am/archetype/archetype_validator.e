@@ -492,20 +492,20 @@ feature {NONE} -- Implementation
 
 			if {ca_child_diff: C_ATTRIBUTE} a_c_node then
 				if {ca_parent_flat: C_ATTRIBUTE} flat_parent.definition.c_attribute_at_path (apa.path_at_level (flat_parent.specialisation_depth)) then
-				if not ca_child_diff.node_conforms_to(ca_parent_flat) then
-					passed := False
-					if ca_child_diff.is_single /= ca_parent_flat.is_single then
-						add_error("VSAM", <<ca_child_diff.path>>)
-					elseif not ca_child_diff.existence_conforms_to (ca_parent_flat) then
-						add_error("VSANCE", <<ca_child_diff.path, ca_child_diff.existence.as_string,
-									ca_parent_flat.path, ca_parent_flat.existence.as_string>>)
-					elseif not ca_child_diff.cardinality_conforms_to (ca_parent_flat) then
-						add_error("VSANCC", <<ca_child_diff.path, ca_child_diff.cardinality.as_string,
-									ca_parent_flat.path, ca_parent_flat.cardinality.as_string>>)
+					if not ca_child_diff.node_conforms_to(ca_parent_flat) then
+						passed := False
+						if ca_child_diff.is_single /= ca_parent_flat.is_single then
+							add_error("VSAM", <<ca_child_diff.path>>)
+						elseif not ca_child_diff.existence_conforms_to (ca_parent_flat) then
+							add_error("VSANCE", <<ca_child_diff.path, ca_child_diff.existence.as_string,
+										ca_parent_flat.path, ca_parent_flat.existence.as_string>>)
+						elseif not ca_child_diff.cardinality_conforms_to (ca_parent_flat) then
+							add_error("VSANCC", <<ca_child_diff.path, ca_child_diff.cardinality.as_string,
+										ca_parent_flat.path, ca_parent_flat.cardinality.as_string>>)
+						end
+					elseif ca_child_diff.node_congruent_to (ca_parent_flat) and ca_child_diff.parent.is_congruent then
+						ca_child_diff.set_is_congruent
 					end
-				elseif ca_child_diff.node_congruent_to (ca_parent_flat) and ca_child_diff.parent.is_congruent then
-					ca_child_diff.set_is_congruent
-				end
 				else
 					check ca_parent_flat_void: False end
 				end
@@ -563,10 +563,23 @@ feature {NONE} -- Implementation
 
 	rm_node_validate_enter (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)  is
 			-- perform validation of node against reference model
+		local
+			attr_class, attr_parent_path: STRING
+			co_parent_flat: C_OBJECT
+			apa: ARCHETYPE_PATH_ANALYSER
 		do
 			if {ca: C_ATTRIBUTE} a_c_node then
-				if rm_checker.has_class_definition(ca.parent.rm_type_name) and not rm_checker.has_attribute(ca.parent.rm_type_name, ca.rm_attribute_name) then
-					add_error("VCARM", <<ca.rm_attribute_name, ca.parent.path, ca.parent.rm_type_name>>)
+				if target.is_specialised and then ca.has_differential_path then
+					attr_parent_path := ca.differential_path
+					create apa.make_from_string (attr_parent_path)
+					co_parent_flat := flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth))
+					attr_class := co_parent_flat.rm_type_name
+				else
+					attr_class := ca.parent.rm_type_name
+					attr_parent_path := ca.parent.path
+				end
+				if rm_checker.has_class_definition(attr_class) and not rm_checker.has_attribute(attr_class, ca.rm_attribute_name) then
+					add_error("VCARM", <<ca.rm_attribute_name, ca.path , attr_class>>)
 				end
 			elseif {co: C_OBJECT} a_c_node then
 				if not rm_checker.has_class_definition(co.rm_type_name) and not failed_types.has(co.rm_type_name) then

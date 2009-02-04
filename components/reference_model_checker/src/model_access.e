@@ -39,7 +39,7 @@ feature -- Initialisation
 		do
 			create model_file.make (default_rm_schema_file_full_path)
 			if not model_file.is_readable then
-				load_fail_reason := create_message ("model_access_e1", <<model_file.name>>)
+				status := create_message ("model_access_e1", <<model_file.name>>)
 			else
 				model_file.open_read
 				model_file.read_stream (model_file.count)
@@ -49,10 +49,13 @@ feature -- Initialisation
 					dt_tree := parser.output
 					model ?= dt_tree.as_object_from_string("BMM_MODEL")
 					if model = Void then
-						load_fail_reason := create_message ("model_access_e4", Void)
+						status := create_message ("model_access_e4", Void)
+					else
+						model.finalise
+						status := model.status
 					end
 				else
-					load_fail_reason := create_message ("model_access_e2", <<parser.error_text>>)
+					status := create_message ("model_access_e2", <<parser.error_text>>)
 				end
 				model_file.close
 			end
@@ -83,8 +86,8 @@ feature -- Status Report
 			Result := model /= Void
 		end
 
-	load_fail_reason: STRING
-			-- set if model loading failed
+	status: STRING
+			-- status of model loading operation; if successful, includes model details
 
 feature -- Validation
 

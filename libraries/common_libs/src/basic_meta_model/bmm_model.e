@@ -15,6 +15,11 @@ indexing
 class BMM_MODEL
 
 inherit
+	SHARED_MESSAGE_DB
+		export
+			{NONE} all
+		end
+
 	DT_CONVERTIBLE
 
 feature -- Initialisation
@@ -58,6 +63,13 @@ feature -- Access
 			Result_exists: Result /= Void
 		end
 
+	status: STRING is
+			-- status report on model
+		do
+			create Result.make(0)
+			Result.append (create_message ("model_access_i1", << model_name, model_release, primitive_types.count.out, class_definitions.count.out >>))
+		end
+
 feature -- Status Report
 
 	has_class_definition (a_class_name: STRING): BOOLEAN is
@@ -75,6 +87,35 @@ feature -- Status Report
 			Parent_class_valid: a_parent_class /= Void and then has_class_definition (a_parent_class)
 		do
 			Result := True
+		end
+
+feature -- Commands
+
+	finalise
+			-- clean up after build of model
+		local
+			keys: ARRAY [STRING]
+			i: INTEGER
+		do
+			-- convert primitive type names of the form 'Integer' to all uppercase; has to be done in
+			-- two goes, because changing keys messs with the table structure if done in one pass
+			from
+				primitive_types.start
+			until
+				primitive_types.off
+			loop
+				primitive_types.item_for_iteration.name.to_upper
+				primitive_types.forth
+			end
+			keys := primitive_types.current_keys
+			from
+				i := 1
+			until
+				i > keys.count
+			loop
+				primitive_types.replace_key (keys.item(i).as_upper, keys.item(i))
+				i := i + 1
+			end
 		end
 
 feature {DT_OBJECT_CONVERTER} -- Conversion

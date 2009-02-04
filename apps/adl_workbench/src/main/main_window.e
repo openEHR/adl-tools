@@ -253,9 +253,11 @@ feature -- Status setting
 			end
 
 			if not rm_checker.model_loaded then
-				post_error (Current, "show", "general_error", <<rm_checker.load_fail_reason>>)
-				append_status_area (billboard_content)
+				post_error (Current, "show", "general_error", <<rm_checker.status>>)
+			else
+				post_info (Current, "show", "general", <<rm_checker.status>>)
 			end
+			append_status_area (billboard_content)
 		end
 
 feature -- File events
@@ -293,13 +295,9 @@ feature -- File events
 
 	parse_archetype
 			-- Load and parse the archetype currently selected in `archetype_directory'.
-		local
-			ara: ARCH_REP_ARCHETYPE
 		do
-			clear_all_controls
-			ara := archetype_directory.selected_archetype
-
-			if ara /= Void then
+			if {ara: ARCH_REP_ARCHETYPE} archetype_directory.selected_archetype then
+				clear_all_controls
 				do_with_wait_cursor (agent archetype_compiler.build_lineage (ara))
 			end
 		end
@@ -1039,6 +1037,7 @@ feature {NONE} -- Implementation
 
 					archetype_directory.populate_directory
 					set_status_area (billboard_content)
+					clear_billboard
 					archetype_view_tree_control.populate
 					archetype_test_tree_control.populate
 					populate_statistics
