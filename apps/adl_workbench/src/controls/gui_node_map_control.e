@@ -41,6 +41,11 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_REFERENCE_MODEL_ACCESS
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -296,6 +301,7 @@ feature {NONE} -- Implementation
 			Node_exists: an_og_node /= Void
 		local
 			a_ti, a_ti_sub, a_ti_sub2: EV_TREE_ITEM
+			c_o: C_OBJECT
 			c_attr: C_ATTRIBUTE
 			c_c_o: C_COMPLEX_OBJECT
 			c_p_o: C_PRIMITIVE_OBJECT

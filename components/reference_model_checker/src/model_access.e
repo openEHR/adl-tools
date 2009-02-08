@@ -32,10 +32,6 @@ feature -- Initialisation
 
 	make is
 			-- set up model
-		local
-			model_file: PLAIN_TEXT_FILE
-			dt_tree: DT_COMPLEX_OBJECT_NODE
-			parser: DADL2_VALIDATOR
 		do
 			if rm_checking_on then
 				load_model
