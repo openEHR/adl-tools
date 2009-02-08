@@ -85,7 +85,8 @@ feature -- Access
 		once
 			create Result.make (0)
 			Result.force (agent test_parse, "Parse")
-			Result.force (agent test_save_differential, "Save to ADL")
+			Result.force (agent test_save_flat, "Save ADL")
+			Result.force (agent test_save_differential, "Save ADLS")
 			Result.force (agent test_reparse_differential, "Reparse")
 			Result.force (agent test_diff, "Diff")
 		end
@@ -377,6 +378,22 @@ feature -- Tests
 			test_orig_differential_source_attached: test_orig_differential_source /= Void
 		end
 
+	test_save_flat: INTEGER is
+			-- parse archetype, save in flat form and return result
+		do
+			Result := test_failed
+			if archetype_parser.archetype_valid then
+				archetype_parser.save_archetype_flat
+				if archetype_parser.save_succeeded then
+					Result := test_passed
+				else
+					test_status.append (archetype_parser.status + "%N")
+				end
+			else
+				Result := test_not_applicable
+			end
+		end
+
 	test_reparse_differential: INTEGER is
 			-- parse archetype and return result
 		local
@@ -385,7 +402,6 @@ feature -- Tests
 			Result := test_failed
 			new_adl_file_path := archetype_parser.target.differential_path
 			archetype_parser.parse_archetype
-
 			if archetype_parser.archetype_valid then
 				Result := test_passed
 				test_status.append ("Parse succeeded%N" + archetype_parser.status)

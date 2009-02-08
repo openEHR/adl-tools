@@ -387,7 +387,7 @@ single_attr_object_block: untyped_single_attr_object_block
 			debug("dADL_parse")
 				io.put_string(indent + "typed single_attr_object_block; type = " + $1 + "%N")
 			end
-			$2.set_type_name($1)
+			$2.set_visible_type_name($1)
 			$$ := $2
 		}
 	;
@@ -478,7 +478,7 @@ primitive_object_block: untyped_primitive_object_block
 			debug("dADL_parse")
 				io.put_string(indent + "typed primitive_object_block; type = " + $1 + "%N")
 			end
-			$2.set_type_name($1)
+			$2.set_visible_type_name($1)
 			$$ := $2
 		}
 	;

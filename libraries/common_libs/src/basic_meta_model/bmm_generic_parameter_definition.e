@@ -27,6 +27,57 @@ feature -- Access
 	conforms_to_type: BMM_CLASS_DEFINITION
 			-- optional conformance constraint
 
+	flattened_conforms_to_type: BMM_CLASS_DEFINITION
+			-- get any ultimate type conformance constraint on this generic parameter due to inheritance
+		do
+			if conforms_to_type /= Void then
+				Result := conforms_to_type
+			elseif inheritance_precursor /= Void then
+				Result := inheritance_precursor.flattened_conforms_to_type
+			end
+		end
+
+	flattened_type_list: ARRAYED_LIST [STRING] is
+			-- completely flattened list of type names, flattening out all generic parameters
+			-- note that for this type, we throw away the container_type because we are tring to match
+			-- the type of an object as being a valid member of the container, e.g. ELEMENT in List<ELEMENT>
+		do
+			create Result.make(0)
+			if flattened_conforms_to_type = Void then
+				Result.extend (Any_type)
+			else
+				Result.append (flattened_conforms_to_type.flattened_type_list)
+			end
+		end
+
+	inheritance_precursor: BMM_GENERIC_PARAMETER_DEFINITION
+			-- if set, is the corresponding generic parameter definition in an ancestor class
+
+feature -- Status Report
+
+feature -- Modification
+
+	set_inheritance_precursor (a_gen_parm_def: BMM_GENERIC_PARAMETER_DEFINITION) is
+			-- set `inheritance_precursor'
+		require
+			a_gen_parm_def /= Void
+		do
+			inheritance_precursor := a_gen_parm_def
+		end
+
+feature -- Output
+
+	as_type_string: STRING is
+			-- name of the type
+		do
+			create Result.make(0)
+			Result.append(name)
+		end
+
+feature {NONE} -- Implementation
+
+	owning_class: BMM_CLASS_DEFINITION
+
 end
 
 

@@ -51,7 +51,7 @@ feature -- Initialisation
 					if model = Void then
 						status := create_message ("model_access_e4", Void)
 					else
-						model.finalise
+						model.dt_finalise
 						status := model.status
 					end
 				else
@@ -75,8 +75,32 @@ feature -- Access
 			Result_exists: Result /= Void
 		end
 
+	property_type (a_class_name, a_property: STRING): STRING is
+			-- Type of `an a_property' in class `a_class_name'
+		require
+			Class_name_valid: a_class_name /= Void and then has_class_definition (a_class_name)
+			Property_valid: a_property /= Void and then has_property(a_class_name, a_property)
+		do
+			if model_loaded then
+				Result := model.property_definition (a_class_name, a_property).type.as_type_string
+			end
+		ensure
+			Result_exists: Result /= Void
+		end
+
 	model: BMM_MODEL
 			-- computable form of model
+
+	substitutions: HASH_TABLE [STRING, STRING] is
+			-- allowed type substitutions due to archetyping as a table of
+			-- allowable substitution keyed by expected type
+		once
+			create Result.make(0)
+			Result.put("STRING", "ISO8601_DURATION")
+			Result.put("STRING", "ISO8601_DATE")
+			Result.put("STRING", "ISO8601_DATE_TIME")
+			Result.put("STRING", "ISO8601_TIME")
+		end
 
 feature -- Status Report
 
@@ -104,19 +128,14 @@ feature -- Validation
 			end
 		end
 
-	has_attribute (a_class_name, an_attribute: STRING): BOOLEAN is
+	has_property (a_class_name, a_property: STRING): BOOLEAN is
 			-- True if `a_type' has an attribute named `an_attribute'
 		require
-			Class_name_valid: a_class_name /= Void and then not a_class_name.is_empty
-			Attribute_valid: an_attribute /= Void and then not an_attribute.is_empty
-		local
-			a_class_def: BMM_CLASS_DEFINITION
+			Class_name_valid: a_class_name /= Void and then has_class_definition (a_class_name)
+			Property_valid: a_property /= Void and then not a_property.is_empty
 		do
 			if model_loaded then
-				if model.has_class_definition (a_class_name) then
-					a_class_def := model.class_definition (a_class_name)
-					Result := a_class_def.has_attribute(an_attribute)
-				end
+				Result := model.has_property(a_class_name, a_property)
 			else
 				Result := True
 			end
@@ -133,6 +152,48 @@ feature -- Validation
 				Result := True
 			end
 		end
+
+	valid_property_type (a_class_name, a_property, a_prop_type: STRING): BOOLEAN is
+			-- True if `a_prop_type' is a valid dynamic type for `an a_property' in class `a_class_name'
+		require
+			Class_name_valid: a_class_name /= Void and then has_class_definition (a_class_name)
+			Property_valid: a_property /= Void and then has_property(a_class_name, a_property)
+			Property_type_valid: a_prop_type /= Void and then has_class_definition (a_prop_type)
+		do
+			if model_loaded then
+				Result := type_conforms_to (model.class_definition (a_prop_type), model.property_definition (a_class_name, a_property).type)
+			else
+				Result := True
+			end
+		end
+
+	type_conforms_to (type_spec_1, type_spec_2: BMM_TYPE_SPECIFIER): BOOLEAN is
+			-- check conformance of type 1 to type 2
+		require
+			Type_spec_1_exists: type_spec_1 /= Void
+			Type_spec_2_exists: type_spec_2 /= Void
+		local
+			tlist1, tlist2: ARRAYED_LIST[STRING]
+		do
+			tlist1 := type_spec_1.flattened_type_list
+			tlist2 := type_spec_2.flattened_type_list
+			if tlist1.count = tlist2.count then
+				Result := True
+				from
+					tlist1.start
+					tlist2.start
+				until
+					tlist1.off or not Result or not has_class_definition (tlist1.item) or not has_class_definition (tlist2.item)
+				loop
+					Result := Result and
+						(tlist1.item.is_equal (tlist2.item) or else
+						model.class_definition (tlist1.item).has_ancestor(tlist2.item))
+					tlist1.forth
+					tlist2.forth
+				end
+			end
+		end
+
 
 feature -- Status Setting
 

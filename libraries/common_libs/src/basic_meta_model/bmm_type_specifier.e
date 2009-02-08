@@ -14,6 +14,30 @@ indexing
 
 deferred class BMM_TYPE_SPECIFIER
 
+feature -- Definitions
+
+	Generic_left_delim: STRING is "<"
+
+	Generic_right_delim: STRING is ">"
+
+	Any_type: STRING is "ANY"
+
+feature -- Access
+
+	flattened_type_list: ARRAYED_LIST [STRING] is
+			-- completely flattened list of type names, flattening out all generic parameters
+		deferred
+		end
+
+feature -- Output
+
+	as_type_string: STRING is
+			-- string form of the type
+		deferred
+		ensure
+			Result /= Void
+		end
+
 end
 
 

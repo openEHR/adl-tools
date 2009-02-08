@@ -27,10 +27,10 @@ feature -- Initialisation
 	make_dt is
 			-- make in a safe way for DT building purposes
 		local
-			a: BMM_SINGLE_ATTRIBUTE
-			b: BMM_CONTAINER_ATTRIBUTE
-			c: BMM_SINGLE_ATTRIBUTE_OPEN
-			d: BMM_GENERIC_ATTRIBUTE
+			a: BMM_SINGLE_PROPERTY
+			b: BMM_CONTAINER_PROPERTY
+			c: BMM_SINGLE_PROPERTY_OPEN
+			d: BMM_GENERIC_PROPERTY
 		do
 
 		end
@@ -63,6 +63,20 @@ feature -- Access
 			Result_exists: Result /= Void
 		end
 
+	property_definition (a_class_name, a_prop_name: STRING): BMM_PROPERTY_DEFINITION is
+			-- retrieve the attribute definition for `an_attribute' in flattened class `a_class_name'
+		require
+			Class_name_valid: a_class_name /= Void and then has_class_definition(a_class_name)
+			Property_valid: a_prop_name /= Void and then has_property(a_class_name, a_prop_name)
+		local
+			class_def: BMM_CLASS_DEFINITION
+		do
+			class_def := class_definition(a_class_name)
+			Result := class_def.flat_properties.item(a_prop_name)
+		ensure
+			Result_exists: Result /= Void
+		end
+
 	status: STRING is
 			-- status report on model
 		do
@@ -75,9 +89,18 @@ feature -- Status Report
 	has_class_definition (a_class_name: STRING): BOOLEAN is
 			-- True if the type `a_class_name' is know in either `primitive_types' or `classes'
 		require
-			Type_name_valid: a_class_name /= Void and then not a_class_name.is_empty
+			Class_name_valid: a_class_name /= Void and then not a_class_name.is_empty
 		do
 			Result := primitive_types.has (a_class_name) or class_definitions.has (a_class_name)
+		end
+
+	has_property (a_class_name, a_prop_name: STRING): BOOLEAN is
+			-- True if `a_type' has an attribute named `an_attribute'
+		require
+			Class_name_valid: a_class_name /= Void and then has_class_definition (a_class_name)
+			Property_valid: a_prop_name /= Void and then not a_prop_name.is_empty
+		do
+			Result := class_definition (a_class_name).has_property(a_prop_name)
 		end
 
 	is_sub_class_of (a_class, a_parent_class: STRING): BOOLEAN is
@@ -91,7 +114,7 @@ feature -- Status Report
 
 feature -- Commands
 
-	finalise
+	dt_finalise
 			-- clean up after build of model
 		local
 			keys: ARRAY [STRING]
@@ -99,22 +122,24 @@ feature -- Commands
 		do
 			-- convert primitive type names of the form 'Integer' to all uppercase; has to be done in
 			-- two goes, because changing keys messs with the table structure if done in one pass
-			from
-				primitive_types.start
-			until
-				primitive_types.off
-			loop
+			from primitive_types.start until primitive_types.off loop
 				primitive_types.item_for_iteration.name.to_upper
 				primitive_types.forth
 			end
 			keys := primitive_types.current_keys
-			from
-				i := 1
-			until
-				i > keys.count
-			loop
+			from i := 1 until i > keys.count loop
 				primitive_types.replace_key (keys.item(i).as_upper, keys.item(i))
 				i := i + 1
+			end
+
+			-- now finalise all classes
+			from primitive_types.start until primitive_types.off loop
+				primitive_types.item_for_iteration.dt_finalise
+				primitive_types.forth
+			end
+			from class_definitions.start until class_definitions.off loop
+				class_definitions.item_for_iteration.dt_finalise
+				class_definitions.forth
 			end
 		end
 

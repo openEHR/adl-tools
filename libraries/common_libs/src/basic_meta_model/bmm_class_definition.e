@@ -29,33 +29,50 @@ feature -- Access
 			-- list of generic parameter definitions
 
 	ancestors: ARRAYED_LIST [BMM_CLASS_DEFINITION]
-			-- list of inheritance parents
+			-- list of immediate inheritance parents
 
-	attributes: HASH_TABLE [BMM_ATTRIBUTE_DEFINITION, STRING]
-			-- list of attributes
+	properties: HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
+			-- list of attributes defined in this class
 
-	flat_attributes: HASH_TABLE [BMM_ATTRIBUTE_DEFINITION, STRING] is
+	flat_properties: HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING] is
 			-- list of all attributes due to current and ancestor classes
-		local
-			local_attrs: HASH_TABLE [BMM_ATTRIBUTE_DEFINITION, STRING]
 		do
-			if flat_attributes_cache = Void then
-				create flat_attributes_cache.make(0)
+			if flat_properties_cache = Void then
+				create flat_properties_cache.make(0)
 				if ancestors /= Void then
 					from
 						ancestors.start
 					until
 						ancestors.off
 					loop
-						flat_attributes_cache.merge (ancestors.item.flat_attributes)
-						if attributes /= Void then
-							flat_attributes_cache.merge (attributes)
+						flat_properties_cache.merge (ancestors.item.flat_properties)
+						if properties /= Void then
+							flat_properties_cache.merge (properties)
 						end
 						ancestors.forth
 					end
 				end
 			end
-			Result := flat_attributes_cache
+			Result := flat_properties_cache
+		end
+
+	flattened_type_list: ARRAYED_LIST [STRING] is
+			-- completely flattened list of type names, flattening out all generic parameters
+			-- note that for this type, we throw away the container_type because we are tring to match
+			-- the type of an object as being a valid member of the container, e.g. ELEMENT in List<ELEMENT>
+		do
+			create Result.make(0)
+			Result.extend (name)
+			if is_generic then
+				from
+					generic_parameters.start
+				until
+					generic_parameters.off
+				loop
+					Result.append(generic_parameters.item_for_iteration.flattened_type_list)
+					generic_parameters.forth
+				end
+			end
 		end
 
 feature -- Status Report
@@ -66,17 +83,65 @@ feature -- Status Report
 	is_generic: BOOLEAN
 			-- True if this class is a generic class
 
-	has_attribute (an_attr_name: STRING): BOOLEAN is
-			-- True if an_attr_name valid in this type, due to this type definition, or any ancestor
+	has_property (a_prop_name: STRING): BOOLEAN is
+			-- True if a_prop_name valid in this type, due to this type definition, or any ancestor
 		require
-			Attr_name_valid: an_attr_name /= Void and then not an_attr_name.is_empty
+			Attr_name_valid: a_prop_name /= Void and then not a_prop_name.is_empty
 		do
-			Result := flat_attributes.has (an_attr_name)
+			Result := flat_properties.has (a_prop_name)
+		end
+
+	has_ancestor (a_class_name: STRING): BOOLEAN is
+			-- True if a_class_name is among the ancestor classes
+		require
+			Class_name_valid: a_class_name /= Void and then not a_class_name.is_empty
+		do
+			if ancestors /= Void then
+				from ancestors.start until ancestors.off or Result loop
+					Result := ancestors.item.name.is_equal(a_class_name) or else ancestors.item.has_ancestor (a_class_name)
+					ancestors.forth
+				end
+			end
+		end
+
+feature -- Commands
+
+	dt_finalise is
+			-- synchronise structures after creation by DT deserialiser
+		do
+			-- connect attribute defs with parent attribute defs
+
+			-- connect generic parm defs with defs in parent classes if any
+			-- first find a direct ancestor that has generic parameters
+			if ancestors /= Void then
+				from ancestors.start until ancestors.off or ancestors.item.is_generic loop ancestors.forth end
+				if not ancestors.off then
+					from
+						generic_parameters.start
+					until
+						generic_parameters.off
+					loop
+						if ancestors.item.generic_parameters.has (generic_parameters.key_for_iteration) then
+							generic_parameters.item_for_iteration.set_inheritance_precursor(ancestors.item.generic_parameters.item (generic_parameters.key_for_iteration))
+						end
+						generic_parameters.forth
+					end
+				end
+			end
+		end
+
+feature -- Output
+
+	as_type_string: STRING is
+			-- name of the type
+		do
+			create Result.make(0)
+			Result.append(name)
 		end
 
 feature {BMM_CLASS_DEFINITION} -- Implementation
 
-	flat_attributes_cache: HASH_TABLE [BMM_ATTRIBUTE_DEFINITION, STRING]
+	flat_properties_cache: HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
 			-- reference list of all attributes due to inheritance flattening of this type
 
 invariant

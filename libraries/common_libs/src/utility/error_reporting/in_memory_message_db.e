@@ -229,6 +229,8 @@ feature -- Access
 
 			-- reference model-related validation
 			["VCORM"] = <"Error (VCORM): type name $1 at object node at $2 not known in reference model">
+			["VCORMT"] = <"Error (VCORMT): type $1 of object node at $2 not does not conform to type $3 of $4.$5 in reference model">
+			["VCORMTS"] = <"Warning (VCORMT): type $1 of object node at $2 not does not conform to type $3 of $4.$5 in reference model but substitution allowed">
 			["VCARM"] = <"Error (VCARM): attribute name $1 in object node at $2 (type=$3) not among flat set of attributes in reference model">
 					
 			-- validation warnings: in addition to spec, used to help archetype authors

@@ -230,6 +230,7 @@ feature {NONE} -- Implementation
 											id,
 											adl_parser.concept,
 											orig_lang_trans.original_language.code_string,
+											orig_lang_trans.translations, -- may be Void
 											res_desc,	-- may be Void
 											definition,
 											differential_ontology
@@ -246,6 +247,7 @@ feature {NONE} -- Implementation
 											id,
 											adl_parser.concept,
 											orig_lang_trans.original_language.code_string,
+											orig_lang_trans.translations, -- may be Void
 											res_desc,	-- may be Void
 											definition,
 											flat_ontology
@@ -268,12 +270,6 @@ feature {NONE} -- Implementation
 
 									if adl_parser.is_generated then
 										Result.set_is_generated
-									end
-
-									-- if there was no language section, then create the equivalent object
-									-- and use it to paste translations into the archetype
-									if orig_lang_trans.translations /= Void then
-										Result.set_translations(orig_lang_trans.translations)
 									end
 
 									if invariant_context.tree /= Void then

@@ -1,6 +1,6 @@
 indexing
 	component:   "openEHR re-usable library"
-	description: "Abstract idea of an attribute definition within a class definition"
+	description: "Abstract idea of a property definition within a class definition"
 	keywords:    "model, UML"
 
 	author:      "Thomas Beale"
@@ -12,7 +12,7 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-deferred class BMM_ATTRIBUTE_DEFINITION
+deferred class BMM_PROPERTY_DEFINITION
 
 feature -- Initialisation
 
@@ -30,7 +30,10 @@ feature -- Status Report
 			-- this property is abstract, i.e. whether it is computed or stored is not yet defined
 
 	is_mandatory: BOOLEAN
-			-- True if this attribute is mandatory in its class
+			-- True if this propert is mandatory in its class
+
+	is_computed: BOOLEAN
+			-- True if this property is computed rather than stored in objects of this class
 
 invariant
 	Name_exists: name /= Void

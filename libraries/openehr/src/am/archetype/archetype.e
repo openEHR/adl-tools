@@ -33,18 +33,24 @@ inherit
 
 feature -- Initialisation
 
-	make (an_id: like archetype_id; a_concept_code: STRING;
-			an_original_language: STRING; a_description: RESOURCE_DESCRIPTION;
-			a_definition: like definition; an_ontology: like ontology) is
+	make (an_id: like archetype_id;
+			a_concept_code: STRING;
+			an_original_language: STRING;
+			a_translations: HASH_TABLE [TRANSLATION_DETAILS, STRING];
+			a_description: RESOURCE_DESCRIPTION;
+			a_definition: like definition;
+			an_ontology: like ontology) is
 				-- make from pieces obtained by parsing
 		require
 			Concept_exists: a_concept_code /= Void and then valid_concept_code(a_concept_code)
 			Language_valid: an_original_language /= Void and then not an_original_language.is_empty
+			Translations_valid: a_translations /= Void implies not a_translations.is_empty
 		do
 			adl_version := 	Current_adl_version
 			archetype_id := an_id
 			concept := a_concept_code
 			create original_language.make (Default_language_code_set, an_original_language)
+			translations := a_translations
 
 			if a_description = Void then
 				create description.default_create
@@ -59,14 +65,22 @@ feature -- Initialisation
 			Id_set: archetype_id = an_id
 			Concept_set: concept = a_concept_code
 			Original_language_set: original_language.code_string.is_equal (an_original_language)
+			Translations_set: translations = a_translations
 			Definition_set: definition = a_definition
 			Ontology_set: ontology = an_ontology
 			Is_dirty: is_dirty
 		end
 
-	make_all(an_adl_version: STRING; an_id: like archetype_id; a_parent_archetype_id: ARCHETYPE_ID; is_controlled_flag: BOOLEAN;
-			a_concept_code: STRING; an_original_language: STRING; a_translations: HASH_TABLE [TRANSLATION_DETAILS, STRING];
-			a_description: RESOURCE_DESCRIPTION; a_definition: like definition; an_invariants: ARRAYED_LIST[ASSERTION];
+	make_all(an_adl_version: STRING;
+			an_id: like archetype_id;
+			a_parent_archetype_id: ARCHETYPE_ID;
+			is_controlled_flag: BOOLEAN;
+			a_concept_code: STRING;
+			an_original_language: STRING;
+			a_translations: HASH_TABLE [TRANSLATION_DETAILS, STRING];
+			a_description: RESOURCE_DESCRIPTION;
+			a_definition: like definition;
+			an_invariants: ARRAYED_LIST[ASSERTION];
 			an_ontology: like ontology) is
 				-- make from all possible items
 		require
@@ -76,7 +90,7 @@ feature -- Initialisation
 			Invariants_valid: an_invariants /= Void implies not an_invariants.is_empty
 		do
 			make (an_id, a_concept_code,
-					an_original_language, a_description,
+					an_original_language, a_translations, a_description,
 					a_definition, an_ontology)
 			parent_archetype_id := a_parent_archetype_id
 			translations := a_translations

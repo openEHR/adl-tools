@@ -1,6 +1,6 @@
 indexing
 	component:   "openEHR re-usable library"
-	description: "Subtype of GENERIC_ATTRIBUTE_DEFINITION that represents a typical container type."
+	description: "Subtype of GENERIC_PROPERTY_DEFINITION that represents a typical container type."
 	keywords:    "model, UML"
 
 	author:      "Thomas Beale"
@@ -12,10 +12,10 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class BMM_CONTAINER_ATTRIBUTE
+class BMM_CONTAINER_PROPERTY
 
 inherit
-	BMM_ATTRIBUTE_DEFINITION
+	BMM_PROPERTY_DEFINITION
 		redefine
 			type
 		end

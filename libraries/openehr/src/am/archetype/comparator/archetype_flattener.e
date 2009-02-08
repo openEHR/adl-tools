@@ -191,9 +191,8 @@ feature {NONE} -- Implementation
 		local
 			cco_output_flat, cco_output_flat_proximate, cco_csr: C_COMPLEX_OBJECT
 			apa: ARCHETYPE_PATH_ANALYSER
-			a_path, a_path2: STRING
+			a_path: STRING
 			c_path: OG_PATH
-			child_attr_name: STRING
 			c_attr_child, c_attr_child_copy, c_attr_output: C_ATTRIBUTE
 		do
 			if {cco_child_diff: !C_COMPLEX_OBJECT} a_c_node then

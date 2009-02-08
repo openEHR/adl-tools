@@ -21,15 +21,6 @@ deferred class BMM_TYPE_REFERENCE
 
 inherit
 	BMM_TYPE_SPECIFIER
-	
-feature -- Output
-
-	as_string: STRING is
-			-- name of the type
-		deferred
-		ensure
-			Result /= Void
-		end
 
 end
 

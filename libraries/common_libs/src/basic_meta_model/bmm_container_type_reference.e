@@ -29,21 +29,31 @@ feature -- Access
 	type: BMM_CLASS_DEFINITION
 			-- the target type; this converts to the first parameter in generic_parameters in BMM_GENERIC_TYPE_SPECIFIER
 
+	flattened_type_list: ARRAYED_LIST [STRING] is
+			-- completely flattened list of type names, flattening out all generic parameters
+			-- note that for this type, we throw away the container_type because we are tring to match
+			-- the type of an object as being a valid member of the container, e.g. ELEMENT in List<ELEMENT>
+		do
+			create Result.make(0)
+			Result.append (type.flattened_type_list)
+		end
+
 feature -- Status Report
 
 feature -- Conversion
 
 	as_generic_type_specifier: BMM_GENERIC_TYPE_REFERENCE is
-			do
-				-- create Result.make(container_type, <<type>>)
-			end
+		do
+			-- create Result.make(container_type, <<type>>)
+		end
 
 feature -- Output
 
-	as_string: STRING is
+	as_type_string: STRING is
 			-- name of the type
 		do
-			-- TO_BE_IMPLEM
+			create Result.make (0)
+			Result.append (container_type.name + Generic_left_delim + type.name + Generic_right_delim)
 		end
 
 end

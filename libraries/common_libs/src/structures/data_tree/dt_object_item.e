@@ -79,10 +79,18 @@ feature -- Modification
 			Type_name_valid: a_type_name /= Void and then not a_type_name.is_empty
 		do
 			rm_type_name := a_type_name
-			show_type
 		end
 
-	show_type is
+	set_visible_type_name(a_type_name:STRING) is
+			-- set type name
+		require
+			Type_name_valid: a_type_name /= Void and then not a_type_name.is_empty
+		do
+			set_type_name(a_type_name)
+			set_type_visible
+		end
+
+	set_type_visible is
 			-- show type of this object in generated form like dADL
 		do
 			type_visible := True

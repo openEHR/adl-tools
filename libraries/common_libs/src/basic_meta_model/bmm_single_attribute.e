@@ -1,6 +1,6 @@
 indexing
 	component:   "openEHR re-usable library"
-	description: "Basic Meta-model abstraction of a single-valued attribute"
+	description: "Basic Meta-model abstraction of a single-valued property"
 	keywords:    "model, UML"
 
 	author:      "Thomas Beale"
@@ -12,10 +12,10 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class BMM_SINGLE_ATTRIBUTE
+class BMM_SINGLE_PROPERTY
 
 inherit
-	BMM_ATTRIBUTE_DEFINITION
+	BMM_PROPERTY_DEFINITION
 		redefine
 			type
 		end

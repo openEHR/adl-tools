@@ -104,6 +104,7 @@ create
 %type <EXPR_ITEM> boolean_expression boolean_node boolean_leaf
 %type <EXPR_ITEM> arithmetic_expression arithmetic_node arithmetic_leaf
 %type <CARDINALITY> c_cardinality
+%type <C_DATE> c_date_constraint c_date
 
 %type <INTEGER> integer_value
 %type <REAL> real_value
@@ -413,9 +414,8 @@ c_primitive: c_integer
 	| c_date
 		{
 			debug("ADL_parse")
-				io.put_string(indent + "C_DATE: " +  c_date.as_string + "%N")
+				io.put_string(indent + "C_DATE: " +  $1.as_string + "%N")
 			end
-			$$ := c_date
 		}
 	| c_time
 		{
@@ -1216,14 +1216,10 @@ c_real: c_real_spec
 c_date_constraint: V_ISO8601_DATE_CONSTRAINT_PATTERN
 		{
 			if valid_iso8601_date_constraint_pattern($1) then
-				create c_date.make_from_pattern($1)
+				create $$.make_from_pattern($1)
 			else
 				create str.make(0)
-				from 
-					valid_date_constraint_patterns.start
-				until
-					valid_date_constraint_patterns.off
-				loop
+				from valid_date_constraint_patterns.start until valid_date_constraint_patterns.off loop
 					if not valid_date_constraint_patterns.isfirst then
 						str.append(", ")
 					end
@@ -1239,19 +1235,20 @@ c_date_constraint: V_ISO8601_DATE_CONSTRAINT_PATTERN
 	| date_value
 		{
 			create date_interval.make_point($1)
-			create c_date.make_range(date_interval)
+			create $$.make_range(date_interval)
 		}
 	| date_interval_value
 		{
-			create c_date.make_range(date_interval)
+			create $$.make_range(date_interval)
 		}
 	;
 
 c_date: c_date_constraint
 	| c_date_constraint ';' date_value
 		{
-			if c_date.valid_value($3) then
-				c_date.set_assumed_value($3)
+			if $1.valid_value($3) then
+				$1.set_assumed_value($3)
+				$$ := $1
 			else
 				raise_error
 				report_error(create_message("VOBAV", <<$3.out>>))
@@ -2493,7 +2490,6 @@ feature {NONE} -- Parse Tree
 	string_list: ARRAYED_LIST [STRING]
 	c_boolean: C_BOOLEAN
 	c_real: C_REAL
-	c_date: C_DATE
 	c_integer:  C_INTEGER
 	c_time: C_TIME
 	c_date_time: C_DATE_TIME

@@ -49,7 +49,7 @@ feature -- Synchronisation
 			-- synchronise to parse tree representation
 		do
 			precursor
-			dt_representation.show_type
+			dt_representation.set_type_visible
 		end
 
 feature -- Visitor

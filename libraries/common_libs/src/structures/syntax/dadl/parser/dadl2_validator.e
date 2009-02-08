@@ -1052,7 +1052,7 @@ end
 			debug("dADL_parse")
 				io.put_string(indent + "typed single_attr_object_block; type = " + yyvs4.item (yyvsp4) + "%N")
 			end
-			yyvs13.item (yyvsp13).set_type_name(yyvs4.item (yyvsp4))
+			yyvs13.item (yyvsp13).set_visible_type_name(yyvs4.item (yyvsp4))
 			yyval13 := yyvs13.item (yyvsp13)
 		
 if yy_parsing_status >= yyContinue then
@@ -1203,7 +1203,7 @@ end
 			debug("dADL_parse")
 				io.put_string(indent + "typed primitive_object_block; type = " + yyvs4.item (yyvsp4) + "%N")
 			end
-			yyvs14.item (yyvsp14).set_type_name(yyvs4.item (yyvsp4))
+			yyvs14.item (yyvsp14).set_visible_type_name(yyvs4.item (yyvsp4))
 			yyval14 := yyvs14.item (yyvsp14)
 		
 if yy_parsing_status >= yyContinue then

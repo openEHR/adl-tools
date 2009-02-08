@@ -12,10 +12,10 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class BMM_GENERIC_ATTRIBUTE
+class BMM_GENERIC_PROPERTY
 
 inherit
-	BMM_ATTRIBUTE_DEFINITION
+	BMM_PROPERTY_DEFINITION
 		redefine
 			type
 		end

@@ -27,14 +27,43 @@ feature -- Access
 	generic_parameters: ARRAYED_LIST [BMM_TYPE_SPECIFIER]
 			-- generic parameters of the root_type in this type specifier
 
+	flattened_type_list: ARRAYED_LIST [STRING] is
+			-- completely flattened list of type names, flattening out all generic parameters
+		do
+			create Result.make(0)
+			Result.extend (root_type.name)
+			from
+				generic_parameters.start
+			until
+				generic_parameters.off
+			loop
+				Result.append(generic_parameters.item.flattened_type_list)
+				generic_parameters.forth
+			end
+		end
+
 feature -- Status Report
 
 feature -- Output
 
-	as_string: STRING is
+	as_type_string: STRING is
 			-- name of the type
 		do
-			-- TO_BE_IMPLEM
+			create Result.make (0)
+			Result.append (root_type.name)
+			Result.append (Generic_left_delim)
+			from
+				generic_parameters.start
+			until
+				generic_parameters.off
+			loop
+				Result.append(generic_parameters.item.as_type_string)
+				if not generic_parameters.islast then
+					Result.append(" ,")
+				end
+				generic_parameters.forth
+			end
+			Result.append (Generic_right_delim)
 		end
 
 invariant
