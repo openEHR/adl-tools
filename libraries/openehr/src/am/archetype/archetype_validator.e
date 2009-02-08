@@ -581,6 +581,8 @@ feature {NONE} -- Implementation
 				if not failed_types.has(arch_attr_class) and rm_checker.has_class_definition(arch_attr_class) and then
 												not rm_checker.has_property(arch_attr_class, ca.rm_attribute_name) then
 					add_error("VCARM", <<ca.rm_attribute_name, ca.path , arch_attr_class>>)
+				elseif rm_checker.property_definition(arch_attr_class, ca.rm_attribute_name).is_computed then
+					add_warning("VCARMC", <<ca.rm_attribute_name, ca.path , arch_attr_class>>)
 				end
 			elseif {co: C_OBJECT} a_c_node then
 				if not rm_checker.has_class_definition(co.rm_type_name) and not failed_types.has(co.rm_type_name) then

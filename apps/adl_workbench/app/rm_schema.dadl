@@ -633,6 +633,11 @@ class_definitions = <
 				name = <"precision">
 				type = </primitive_types["Integer"]>
 			>
+			["is_integral"] = (BMM_SINGLE_PROPERTY) <
+				name = <"is_integral">
+				type = </primitive_types["Boolean"]>
+				is_computed = <True>
+			>
 		>
 	>
 

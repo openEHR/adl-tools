@@ -128,8 +128,19 @@ feature -- Validation
 			end
 		end
 
+	property_definition (a_class_name, a_property: STRING): BMM_PROPERTY_DEFINITION is
+			-- definition of  `a_type' has a property named `a_property'
+		require
+			Class_name_valid: a_class_name /= Void and then has_class_definition (a_class_name)
+			Property_valid: a_property /= Void and then has_property(a_class_name, a_property)
+		do
+			if model_loaded then
+				Result := model.property_definition(a_class_name, a_property)
+			end
+		end
+
 	has_property (a_class_name, a_property: STRING): BOOLEAN is
-			-- True if `a_type' has an attribute named `an_attribute'
+			-- True if `a_type' has a property named `a_property'
 		require
 			Class_name_valid: a_class_name /= Void and then has_class_definition (a_class_name)
 			Property_valid: a_property /= Void and then not a_property.is_empty

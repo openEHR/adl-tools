@@ -31,9 +31,12 @@ feature -- Initialisation
 			-- initialise from a differential archetype
 		do
 			make(a_diff.archetype_id.deep_twin, a_diff.concept.deep_twin,
-					a_diff.original_language.code_string, a_diff.translations.deep_twin,
+					a_diff.original_language.code_string,
 					a_diff.description.deep_twin,
 					a_diff.definition.deep_twin, a_diff.ontology.to_flat)
+			if a_diff.has_translations then
+				translations := a_diff.translations.deep_twin
+			end
 			if a_diff.has_invariants then
 				invariants := a_diff.invariants.deep_twin
 			end
@@ -54,9 +57,12 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 			-- differential definition can be overlaid on it by a merging process.
 		do
 			make(a_diff.archetype_id.deep_twin, a_diff.concept.deep_twin,
-					a_diff.original_language.code_string, a_diff.translations.deep_twin,
+					a_diff.original_language.code_string,
 					a_diff.description.deep_twin,
 					a_flat_parent.definition.deep_twin, a_diff.ontology.to_flat)
+			if a_flat_parent.has_translations then
+				translations := a_diff.translations.deep_twin
+			end
 			if a_flat_parent.has_invariants then
 				invariants := a_flat_parent.invariants.deep_twin
 			end

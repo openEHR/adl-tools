@@ -100,6 +100,12 @@ feature -- Status Report
 			Result := original_language.code_string.is_equal(a_lang) or else (translations /= Void and then translations.has(a_lang))
 		end
 
+	has_translations: BOOLEAN is
+			-- True if there are translations
+		do
+			Result := translations /= Void
+		end
+
 -- FIXME: we may re-instate this, but needs something like a list
 -- of XX_VALIDATOR objects that can be added to down the inheritance chain (e.g. by ARCHETYPE as well)
 --	is_valid_resource: BOOLEAN is
