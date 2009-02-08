@@ -103,6 +103,7 @@ feature -- Access
 			["model_access_e3"] = <"Reference Model DADL containes unknown type $1 (object add failed)">
 			["model_access_e4"] = <"Reference Model load failure due to exception during processing">
 			["model_access_i1"] = <"Reference Model $1 $2 loaded: $3 primitive types, $4 class definitions">
+			["model_access_w1"] = <"Reference Model checking is OFF">
 			
 			-- DT_OBJECT_CONVERTER.dt_to_object
 			["container_type_mismatch"] = 

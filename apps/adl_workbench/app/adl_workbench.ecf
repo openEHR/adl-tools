@@ -5,19 +5,19 @@
 		<file_rule>
 			<exclude>/\.svn$</exclude>
 		</file_rule>
-		<option trace="false" profile="false" debug="false" warning="true" full_class_checking="false" namespace="openehr">
+		<option trace="false" profile="false" debug="true" warning="true" full_class_checking="false" namespace="openehr">
 			<debug name="__unnamed_debug__" enabled="false"/>
 			<debug name="adl_invariant" enabled="false"/>
 			<debug name="adl_parse" enabled="false"/>
 			<debug name="adl_tree" enabled="false"/>
 			<debug name="arch_dir" enabled="false"/>
 			<debug name="bb" enabled="false"/>
-			<debug name="compress" enabled="true"/>
+			<debug name="compress" enabled="false"/>
 			<debug name="dadl_parse" enabled="false"/>
 			<debug name="dlg_dispatcher" enabled="false"/>
 			<debug name="dt" enabled="false"/>
 			<debug name="exclude list" enabled="false"/>
-			<debug name="flatten" enabled="true"/>
+			<debug name="flatten" enabled="false"/>
 			<debug name="gelex" enabled="false"/>
 			<debug name="geyacc" enabled="false"/>
 			<debug name="include list" enabled="false"/>

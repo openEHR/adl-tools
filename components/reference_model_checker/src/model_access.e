@@ -20,7 +20,7 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_RESOURCES
+	SHARED_UI_RESOURCES
 		export
 			{NONE} all
 		end
@@ -37,27 +37,44 @@ feature -- Initialisation
 			dt_tree: DT_COMPLEX_OBJECT_NODE
 			parser: DADL2_VALIDATOR
 		do
-			create model_file.make (default_rm_schema_file_full_path)
-			if not model_file.is_readable then
-				status := create_message ("model_access_e1", <<model_file.name>>)
+			if rm_checking_on then
+				load_model
 			else
-				model_file.open_read
-				model_file.read_stream (model_file.count)
-				create parser.make
-				parser.execute(model_file.last_string, 1)
-				if not parser.syntax_error then
-					dt_tree := parser.output
-					model ?= dt_tree.as_object_from_string("BMM_MODEL")
-					if model = Void then
-						status := create_message ("model_access_e4", Void)
-					else
-						model.dt_finalise
-						status := model.status
-					end
+				status := create_message ("model_access_w1", Void)
+				model := Void
+			end
+		end
+
+	load_model is
+			-- set up model
+		local
+			model_file: PLAIN_TEXT_FILE
+			dt_tree: DT_COMPLEX_OBJECT_NODE
+			parser: DADL2_VALIDATOR
+		do
+			if not model_loaded then
+				create model_file.make (default_rm_schema_file_full_path)
+				if not model_file.is_readable then
+					status := create_message ("model_access_e1", <<model_file.name>>)
 				else
-					status := create_message ("model_access_e2", <<parser.error_text>>)
+					model_file.open_read
+					model_file.read_stream (model_file.count)
+					create parser.make
+					parser.execute(model_file.last_string, 1)
+					if not parser.syntax_error then
+						dt_tree := parser.output
+						model ?= dt_tree.as_object_from_string("BMM_MODEL")
+						if model = Void then
+							status := create_message ("model_access_e4", Void)
+						else
+							model.dt_finalise
+							status := model.status
+						end
+					else
+						status := create_message ("model_access_e2", <<parser.error_text>>)
+					end
+					model_file.close
 				end
-				model_file.close
 			end
 		end
 
@@ -121,7 +138,7 @@ feature -- Validation
 			Sub_type_valid: a_sub_type /= Void and then not a_sub_type.is_empty
 			Parent_type_valid: a_parent_type /= Void and then not a_parent_type.is_empty
 		do
-			if model_loaded then
+			if rm_checking_on then
 				Result := model.has_class_definition (a_parent_type) and then model.is_sub_class_of (a_sub_type, a_parent_type)
 			else
 				Result := True
@@ -134,7 +151,7 @@ feature -- Validation
 			Class_name_valid: a_class_name /= Void and then has_class_definition (a_class_name)
 			Property_valid: a_property /= Void and then has_property(a_class_name, a_property)
 		do
-			if model_loaded then
+			if rm_checking_on then
 				Result := model.property_definition(a_class_name, a_property)
 			end
 		end
@@ -145,7 +162,7 @@ feature -- Validation
 			Class_name_valid: a_class_name /= Void and then has_class_definition (a_class_name)
 			Property_valid: a_property /= Void and then not a_property.is_empty
 		do
-			if model_loaded then
+			if rm_checking_on then
 				Result := model.has_property(a_class_name, a_property)
 			else
 				Result := True
@@ -157,7 +174,7 @@ feature -- Validation
 		require
 			Type_valid: a_class_name /= Void and then not a_class_name.is_empty
 		do
-			if model_loaded then
+			if rm_checking_on then
 				Result := model.has_class_definition (a_class_name)
 			else
 				Result := True
@@ -171,7 +188,7 @@ feature -- Validation
 			Property_valid: a_property /= Void and then has_property(a_class_name, a_property)
 			Property_type_valid: a_prop_type /= Void and then has_class_definition (a_prop_type)
 		do
-			if model_loaded then
+			if rm_checking_on then
 				Result := type_conforms_to (model.class_definition (a_prop_type), model.property_definition (a_class_name, a_property).type)
 			else
 				Result := True
@@ -204,7 +221,6 @@ feature -- Validation
 				end
 			end
 		end
-
 
 feature -- Status Setting
 

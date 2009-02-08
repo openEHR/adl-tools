@@ -88,218 +88,6 @@ feature -- Commands
 
 feature -- Access
 
-	reference_repository_path: STRING is
-			-- path of root of ADL file tree
-		do
-			Result := substitute_env_vars(resource_value("default", "reference_repository"))
-		ensure
-			Result /= Void
-		end
-
-	work_repository_path: STRING is
-			-- path of root of ADL file tree
-		do
-			Result := substitute_env_vars(resource_value("default", "work_repository"))
-		ensure
-			Result /= Void
-		end
-
-	current_work_directory: STRING
-			-- Directory where archetypes are currently being opened and saved
-			-- from GUI open and save buttons; automatic opens (due to clicking
-			-- on archetype name) still use main repository directory.
-		do
-			Result := resource_value ("default", "current_work_directory")
-		ensure
-			attached: Result /= Void
-		end
-
-	app_width: INTEGER is
-			-- application width
-		local
-			str: STRING
-		do
-			str := resource_value("default", "app_width")
-			if str.is_integer then
-				Result := str.to_integer
-			end
-		end
-
-	app_height: INTEGER is
-			-- application height
-		local
-			str: STRING
-		do
-			str := resource_value("default", "app_height")
-			if str.is_integer then
-				Result := str.to_integer
-			end
-		end
-
-	app_x_position: INTEGER is
-			-- application horizontal position
-		local
-			str: STRING
-		do
-			str := resource_value("default", "app_x_position")
-			if str.is_integer then
-				Result := str.to_integer
-			end
-		end
-
-	app_y_position: INTEGER is
-			-- application vertical position
-		local
-			str: STRING
-		do
-			str := resource_value("default", "app_y_position")
-			if str.is_integer then
-				Result := str.to_integer
-			end
-		end
-
-	app_maximised: BOOLEAN is
-			-- True if app should be maximised
-		local
-			str: STRING
-		do
-			str := resource_value("default", "app_maximised")
-			if str.is_boolean then
-				Result := str.to_boolean
-			end
-		end
-
-	total_split_position: INTEGER is
-			-- Split position of outer vertical split control.
-		local
-			str: STRING
-		do
-			str := resource_value ("default", "total_split_position")
-			if str.is_integer then
-				Result := str.to_integer
-			end
-		end
-
-	node_map_and_ontology_split_position: INTEGER is
-			-- Split position of inner vertical split control.
-		local
-			str: STRING
-		do
-			str := resource_value ("default", "node_map_and_ontology_split_position")
-			if str.is_integer then
-				Result := str.to_integer
-			end
-		end
-
-	test_split_position: INTEGER is
-			-- Split position of vertical split control in test tool.
-		local
-			str: STRING
-		do
-			str := resource_value ("default", "test_split_position")
-			if str.is_integer then
-				Result := str.to_integer
-			end
-		end
-
-	explorer_split_position: INTEGER is
-			-- Split position of explorer horizontal split control.
-		local
-			str: STRING
-		do
-			str := resource_value ("default", "explorer_split_position")
-			if str.is_integer then
-				Result := str.to_integer
-			end
-		end
-
-	main_notebook_tab_pos: INTEGER is
-			-- which tab of the main notebook was visible at the end of the last session
-		local
-			str: STRING
-		do
-			str := resource_value("default", "main_notebook_tab_pos")
-			if str.is_integer then
-				Result := str.to_integer
-			end
-		end
-
-	expand_node_tree: BOOLEAN
-			-- Expand the archetype definition node tree by default?
-		local
-			str: STRING
-		do
-			str := resource_value ("default", "expand_node_tree")
-
-			if str.is_boolean then
-				Result := str.to_boolean
-			end
-		end
-
-	show_technical_view: BOOLEAN
-			-- Display the technical view in the archetype definition node tree by default?
-		local
-			str: STRING
-		do
-			str := resource_value ("default", "show_technical_view")
-
-			if str.is_boolean then
-				Result := str.to_boolean
-			end
-		end
-
-	show_line_numbers: BOOLEAN
-			-- Display line numbers in the ADL source text box?
-		local
-			str: STRING
-		do
-			str := resource_value ("default", "show_line_numbers")
-
-			if str.is_boolean then
-				Result := str.to_boolean
-			end
-		end
-
-	display_archetype_source: BOOLEAN
-			-- Display "(f)" marker on archetypes created in flat form
-		local
-			str: STRING
-		do
-			str := resource_value ("default", "display_archetype_source")
-
-			if str.is_boolean then
-				Result := str.to_boolean
-			end
-		end
-
-	path_filter_combo_selection: STRING is
-			-- setting of path control filter combo-box
-		do
-			Result := resource_value ("default", "path_filter_combo_selection")
-		end
-
-	path_view_check_list_settings: ARRAYED_LIST[STRING] is
-			-- path view column settings
-		do
-			Result := resource_value_list ("default", "path_view_check_list_settings")
-		end
-
-	editor_command: STRING
-			-- Path of editor application for ADL files.
-		do
-			Result := substitute_env_vars (resource_value ("default", "editor"))
-		ensure
-			attached: Result /= Void
-		end
-
-	html_export_directory: STRING
-			-- Path of directory to which HTML is exported.
-		do
-			Result := substitute_env_vars (resource_value ("default", "html_export_directory"))
-		ensure
-			attached: Result /= Void
-		end
-
 	icon_directory: STRING is
 		once
 			Result := application_startup_directory + os_directory_separator.out + "icons"
@@ -547,7 +335,230 @@ feature -- Access
 			not_empty: not Result.is_empty
 		end
 
-feature -- Modification
+feature -- Application Switches
+
+	reference_repository_path: STRING is
+			-- path of root of ADL file tree
+		do
+			Result := substitute_env_vars(resource_value("default", "reference_repository"))
+		ensure
+			Result /= Void
+		end
+
+	work_repository_path: STRING is
+			-- path of root of ADL file tree
+		do
+			Result := substitute_env_vars(resource_value("default", "work_repository"))
+		ensure
+			Result /= Void
+		end
+
+	current_work_directory: STRING
+			-- Directory where archetypes are currently being opened and saved
+			-- from GUI open and save buttons; automatic opens (due to clicking
+			-- on archetype name) still use main repository directory.
+		do
+			Result := resource_value ("default", "current_work_directory")
+		ensure
+			attached: Result /= Void
+		end
+
+	app_width: INTEGER is
+			-- application width
+		local
+			str: STRING
+		do
+			str := resource_value("default", "app_width")
+			if str.is_integer then
+				Result := str.to_integer
+			end
+		end
+
+	app_height: INTEGER is
+			-- application height
+		local
+			str: STRING
+		do
+			str := resource_value("default", "app_height")
+			if str.is_integer then
+				Result := str.to_integer
+			end
+		end
+
+	app_x_position: INTEGER is
+			-- application horizontal position
+		local
+			str: STRING
+		do
+			str := resource_value("default", "app_x_position")
+			if str.is_integer then
+				Result := str.to_integer
+			end
+		end
+
+	app_y_position: INTEGER is
+			-- application vertical position
+		local
+			str: STRING
+		do
+			str := resource_value("default", "app_y_position")
+			if str.is_integer then
+				Result := str.to_integer
+			end
+		end
+
+	app_maximised: BOOLEAN is
+			-- True if app should be maximised
+		local
+			str: STRING
+		do
+			str := resource_value("default", "app_maximised")
+			if str.is_boolean then
+				Result := str.to_boolean
+			end
+		end
+
+	total_split_position: INTEGER is
+			-- Split position of outer vertical split control.
+		local
+			str: STRING
+		do
+			str := resource_value ("default", "total_split_position")
+			if str.is_integer then
+				Result := str.to_integer
+			end
+		end
+
+	node_map_and_ontology_split_position: INTEGER is
+			-- Split position of inner vertical split control.
+		local
+			str: STRING
+		do
+			str := resource_value ("default", "node_map_and_ontology_split_position")
+			if str.is_integer then
+				Result := str.to_integer
+			end
+		end
+
+	test_split_position: INTEGER is
+			-- Split position of vertical split control in test tool.
+		local
+			str: STRING
+		do
+			str := resource_value ("default", "test_split_position")
+			if str.is_integer then
+				Result := str.to_integer
+			end
+		end
+
+	explorer_split_position: INTEGER is
+			-- Split position of explorer horizontal split control.
+		local
+			str: STRING
+		do
+			str := resource_value ("default", "explorer_split_position")
+			if str.is_integer then
+				Result := str.to_integer
+			end
+		end
+
+	main_notebook_tab_pos: INTEGER is
+			-- which tab of the main notebook was visible at the end of the last session
+		local
+			str: STRING
+		do
+			str := resource_value("default", "main_notebook_tab_pos")
+			if str.is_integer then
+				Result := str.to_integer
+			end
+		end
+
+	expand_node_tree: BOOLEAN
+			-- Expand the archetype definition node tree by default?
+		local
+			str: STRING
+		do
+			str := resource_value ("default", "expand_node_tree")
+
+			if str.is_boolean then
+				Result := str.to_boolean
+			end
+		end
+
+	show_technical_view: BOOLEAN
+			-- Display the technical view in the archetype definition node tree by default?
+		local
+			str: STRING
+		do
+			str := resource_value ("default", "show_technical_view")
+
+			if str.is_boolean then
+				Result := str.to_boolean
+			end
+		end
+
+	show_line_numbers: BOOLEAN
+			-- Display line numbers in the ADL source text box?
+		local
+			str: STRING
+		do
+			str := resource_value ("default", "show_line_numbers")
+			if str.is_boolean then
+				Result := str.to_boolean
+			end
+		end
+
+	display_archetype_source: BOOLEAN
+			-- Display "(f)" marker on archetypes created in flat form
+		local
+			str: STRING
+		do
+			str := resource_value ("default", "display_archetype_source")
+			if str.is_boolean then
+				Result := str.to_boolean
+			end
+		end
+
+	path_filter_combo_selection: STRING is
+			-- setting of path control filter combo-box
+		do
+			Result := resource_value ("default", "path_filter_combo_selection")
+		end
+
+	path_view_check_list_settings: ARRAYED_LIST[STRING] is
+			-- path view column settings
+		do
+			Result := resource_value_list ("default", "path_view_check_list_settings")
+		end
+
+	editor_command: STRING
+			-- Path of editor application for ADL files.
+		do
+			Result := substitute_env_vars (resource_value ("default", "editor"))
+		ensure
+			attached: Result /= Void
+		end
+
+	html_export_directory: STRING
+			-- Path of directory to which HTML is exported.
+		do
+			Result := substitute_env_vars (resource_value ("default", "html_export_directory"))
+		ensure
+			attached: Result /= Void
+		end
+
+	rm_checking_on: BOOLEAN is
+			-- True if Reference Model checking should be on
+		local
+			str: STRING
+		do
+			str := resource_value("default", "rm_checking_on")
+			if str.is_boolean then
+				Result := str.to_boolean
+			end
+		end
+
+feature -- Application Switch Setting
 
 	set_reference_repository_path(a_path: STRING) is
 			-- set reference_repository_path
@@ -708,6 +719,12 @@ feature -- Modification
 		do
 			set_resource_value_list("default", "path_view_check_list_settings", strs)
 
+		end
+
+	set_rm_checking_on (flag: BOOLEAN) is
+			-- Set flag for whether to do reference model checking of archetypes
+		do
+			set_resource_value ("default", "rm_checking_on", flag.out)
 		end
 
 feature {NONE} -- Implementation

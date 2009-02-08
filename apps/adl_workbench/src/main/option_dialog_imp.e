@@ -48,14 +48,16 @@ feature {NONE}-- Initialization
 			create show_line_numbers_check_button
 			create display_archetype_source_check_button
 			create l_ev_horizontal_box_4
+			create rm_checking_check_button
+			create l_ev_horizontal_box_5
 			create l_ev_label_1
 			create parser_error_reporting_level_combo_box
-			create l_ev_horizontal_box_5
+			create l_ev_horizontal_box_6
 			create l_ev_label_2
 			create export_html_text
 			create export_html_browse_button
-			create l_ev_horizontal_box_6
 			create l_ev_horizontal_box_7
+			create l_ev_horizontal_box_8
 			create l_ev_cell_1
 			create ok_button
 			create cancel_button
@@ -74,17 +76,19 @@ feature {NONE}-- Initialization
 			l_ev_horizontal_box_3.extend (show_line_numbers_check_button)
 			l_ev_horizontal_box_3.extend (display_archetype_source_check_button)
 			l_ev_vertical_box_1.extend (l_ev_horizontal_box_4)
-			l_ev_horizontal_box_4.extend (l_ev_label_1)
-			l_ev_horizontal_box_4.extend (parser_error_reporting_level_combo_box)
+			l_ev_horizontal_box_4.extend (rm_checking_check_button)
 			l_ev_vertical_box_1.extend (l_ev_horizontal_box_5)
-			l_ev_horizontal_box_5.extend (l_ev_label_2)
-			l_ev_horizontal_box_5.extend (export_html_text)
-			l_ev_horizontal_box_5.extend (export_html_browse_button)
+			l_ev_horizontal_box_5.extend (l_ev_label_1)
+			l_ev_horizontal_box_5.extend (parser_error_reporting_level_combo_box)
 			l_ev_vertical_box_1.extend (l_ev_horizontal_box_6)
+			l_ev_horizontal_box_6.extend (l_ev_label_2)
+			l_ev_horizontal_box_6.extend (export_html_text)
+			l_ev_horizontal_box_6.extend (export_html_browse_button)
 			l_ev_vertical_box_1.extend (l_ev_horizontal_box_7)
-			l_ev_horizontal_box_7.extend (l_ev_cell_1)
-			l_ev_horizontal_box_7.extend (ok_button)
-			l_ev_horizontal_box_7.extend (cancel_button)
+			l_ev_vertical_box_1.extend (l_ev_horizontal_box_8)
+			l_ev_horizontal_box_8.extend (l_ev_cell_1)
+			l_ev_horizontal_box_8.extend (ok_button)
+			l_ev_horizontal_box_8.extend (cancel_button)
 			
 			create string_constant_set_procedures.make (10)
 			create string_constant_retrieval_functions.make (10)
@@ -102,10 +106,10 @@ feature {NONE}-- Initialization
 			l_ev_vertical_box_1.set_border_width (20)
 			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_1)
 			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_3)
-			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_4)
 			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_5)
 			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_6)
 			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_7)
+			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_8)
 			l_ev_frame_1.set_text ("Editors")
 			l_ev_horizontal_box_2.set_padding (10)
 			l_ev_horizontal_box_2.set_border_width (10)
@@ -130,27 +134,31 @@ feature {NONE}-- Initialization
 			display_archetype_source_check_button.set_text ("Indicate original creation form?")
 			l_ev_horizontal_box_4.set_padding (10)
 			l_ev_horizontal_box_4.set_border_width (10)
-			l_ev_horizontal_box_4.disable_item_expand (l_ev_label_1)
-			l_ev_horizontal_box_4.disable_item_expand (parser_error_reporting_level_combo_box)
+			rm_checking_check_button.set_text ("Turn RM checking on?")
+			rm_checking_check_button.set_tooltip ("Turns reference model checking of archetypes, if a reference model schema is available")
+			l_ev_horizontal_box_5.set_padding (10)
+			l_ev_horizontal_box_5.set_border_width (10)
+			l_ev_horizontal_box_5.disable_item_expand (l_ev_label_1)
+			l_ev_horizontal_box_5.disable_item_expand (parser_error_reporting_level_combo_box)
 			l_ev_label_1.set_text ("Parser error reporting level:")
 			parser_error_reporting_level_combo_box.set_text ("Status Reporting Level")
 			parser_error_reporting_level_combo_box.set_tooltip ("Select the level of parser messages to display. All levels >= this level displayed.")
 			parser_error_reporting_level_combo_box.set_minimum_width (200)
-			l_ev_horizontal_box_5.set_padding (10)
-			l_ev_horizontal_box_5.set_border_width (10)
-			l_ev_horizontal_box_5.disable_item_expand (l_ev_label_2)
-			l_ev_horizontal_box_5.disable_item_expand (export_html_browse_button)
+			l_ev_horizontal_box_6.set_padding (10)
+			l_ev_horizontal_box_6.set_border_width (10)
+			l_ev_horizontal_box_6.disable_item_expand (l_ev_label_2)
+			l_ev_horizontal_box_6.disable_item_expand (export_html_browse_button)
 			l_ev_label_2.set_text ("Export HTML to:")
 			color_constant_set_procedures.extend (agent export_html_text.set_background_color (?))
 			color_constant_retrieval_functions.extend (agent editable_colour)
 			export_html_text.set_minimum_width (300)
 			export_html_browse_button.set_text ("Browse...")
 			export_html_browse_button.set_minimum_width (65)
-			l_ev_horizontal_box_7.set_padding (15)
-			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_7.set_border_width (?))
+			l_ev_horizontal_box_8.set_padding (15)
+			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_8.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
-			l_ev_horizontal_box_7.disable_item_expand (ok_button)
-			l_ev_horizontal_box_7.disable_item_expand (cancel_button)
+			l_ev_horizontal_box_8.disable_item_expand (ok_button)
+			l_ev_horizontal_box_8.disable_item_expand (cancel_button)
 			l_ev_cell_1.set_minimum_width (100)
 			ok_button.set_text ("OK")
 			ok_button.set_minimum_width (100)
@@ -186,12 +194,12 @@ feature -- Access
 	editor_command_text: EV_TEXT
 	l_ev_horizontal_box_1,
 	l_ev_horizontal_box_2, l_ev_horizontal_box_3, l_ev_horizontal_box_4, l_ev_horizontal_box_5,
-	l_ev_horizontal_box_6, l_ev_horizontal_box_7: EV_HORIZONTAL_BOX
-	l_ev_vertical_box_1, l_ev_vertical_box_2: EV_VERTICAL_BOX
-	show_definition_tree_expanded_check_button,
-	show_line_numbers_check_button, display_archetype_source_check_button: EV_CHECK_BUTTON
-	l_ev_label_1,
-	l_ev_label_2: EV_LABEL
+	l_ev_horizontal_box_6, l_ev_horizontal_box_7, l_ev_horizontal_box_8: EV_HORIZONTAL_BOX
+	l_ev_vertical_box_1,
+	l_ev_vertical_box_2: EV_VERTICAL_BOX
+	show_definition_tree_expanded_check_button, show_line_numbers_check_button,
+	display_archetype_source_check_button, rm_checking_check_button: EV_CHECK_BUTTON
+	l_ev_label_1, l_ev_label_2: EV_LABEL
 	export_html_text: EV_TEXT_FIELD
 	l_ev_frame_1: EV_FRAME
 

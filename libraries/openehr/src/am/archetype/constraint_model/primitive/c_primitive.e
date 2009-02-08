@@ -41,9 +41,9 @@ feature -- Access
 			-- generate a Reference Model type name that this type constrains. Generally this is
 			-- the same as the C_XX clas name with the "C_" removed, but for some types e.g. Date/time types
 			-- it is not true.
-		once
+		do
 			Result := generating_type
-			rm_type_name.remove_head (2)
+			Result.remove_head (2)
 		end
 
 feature -- Status Report
