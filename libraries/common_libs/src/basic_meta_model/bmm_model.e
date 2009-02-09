@@ -15,6 +15,11 @@ indexing
 class BMM_MODEL
 
 inherit
+	BMM_DEFINITIONS
+		export
+			{NONE} all
+		end
+
 	SHARED_MESSAGE_DB
 		export
 			{NONE} all
@@ -49,11 +54,15 @@ feature -- Access
 	class_definitions: HASH_TABLE [BMM_CLASS_DEFINITION, STRING]
 			-- constructed classes
 
-	class_definition (a_class_name: STRING): BMM_CLASS_DEFINITION is
-			-- retrieve the class definition for `a_class_name' from either `primitive_types' or `classes'
+	class_definition (a_type_name: STRING): BMM_CLASS_DEFINITION is
+			-- retrieve the class definition corresponding to `a_type_name' (which contain a generic part)
+			-- from either `primitive_types' or `classes'
 		require
-			Type_name_valid: a_class_name /= Void and then has_class_definition(a_class_name)
+			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
+		local
+			a_class_name: STRING
 		do
+			a_class_name := type_to_class(a_type_name)
 			if primitive_types.has (a_class_name) then
 				Result := primitive_types.item (a_class_name)
 			else
@@ -63,15 +72,15 @@ feature -- Access
 			Result_exists: Result /= Void
 		end
 
-	property_definition (a_class_name, a_prop_name: STRING): BMM_PROPERTY_DEFINITION is
-			-- retrieve the attribute definition for `an_attribute' in flattened class `a_class_name'
+	property_definition (a_type_name, a_prop_name: STRING): BMM_PROPERTY_DEFINITION is
+			-- retrieve the property definition for `a_prop_name' in flattened class corresponding to `a_type_name'
 		require
-			Class_name_valid: a_class_name /= Void and then has_class_definition(a_class_name)
-			Property_valid: a_prop_name /= Void and then has_property(a_class_name, a_prop_name)
+			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
+			Property_valid: a_prop_name /= Void and then has_property(a_type_name, a_prop_name)
 		local
 			class_def: BMM_CLASS_DEFINITION
 		do
-			class_def := class_definition(a_class_name)
+			class_def := class_definition(type_to_class(a_type_name))
 			Result := class_def.flat_properties.item(a_prop_name)
 		ensure
 			Result_exists: Result /= Void
@@ -86,21 +95,25 @@ feature -- Access
 
 feature -- Status Report
 
-	has_class_definition (a_class_name: STRING): BOOLEAN is
-			-- True if the type `a_class_name' is know in either `primitive_types' or `classes'
+	has_class_definition (a_type_name: STRING): BOOLEAN is
+			-- True if `a_type_name' has a class definition in the model. Note that a_type_name
+			-- could be a generic type string; only the root class is considered
 		require
-			Class_name_valid: a_class_name /= Void and then not a_class_name.is_empty
+			Type_valid: a_type_name /= Void and then not a_type_name.is_empty
+		local
+			a_class_name: STRING
 		do
+			a_class_name := type_to_class(a_type_name)
 			Result := primitive_types.has (a_class_name) or class_definitions.has (a_class_name)
 		end
 
-	has_property (a_class_name, a_prop_name: STRING): BOOLEAN is
-			-- True if `a_type' has an attribute named `an_attribute'
+	has_property (a_type_name, a_prop_name: STRING): BOOLEAN is
+			-- True if `a_type_name'  (which contain a generic part) has an property named `a_prop_name'
 		require
-			Class_name_valid: a_class_name /= Void and then has_class_definition (a_class_name)
+			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
 			Property_valid: a_prop_name /= Void and then not a_prop_name.is_empty
 		do
-			Result := class_definition (a_class_name).has_property(a_prop_name)
+			Result := class_definition (a_type_name).has_property(a_prop_name)
 		end
 
 	is_sub_class_of (a_class, a_parent_class: STRING): BOOLEAN is
@@ -149,6 +162,24 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 			-- list of attribute names to persist as DT structure
 			-- empty structure means all attributes
 		do
+		end
+
+feature {NONE} -- Implementation
+
+	type_to_class (a_type_name: STRING): STRING is
+			-- convert a type name which might have a generic part to a simple class name
+		require
+			Type_valid: a_type_name /= Void and then not a_type_name.is_empty
+		local
+			gen_pos: INTEGER
+		do
+			gen_pos := a_type_name.substring_index (generic_left_delim, 1)
+			if gen_pos > 0 then
+				Result := a_type_name.substring (1, gen_pos-1)
+				Result.right_adjust
+			else
+				Result := a_type_name
+			end
 		end
 
 end

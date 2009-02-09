@@ -14,13 +14,8 @@ indexing
 
 deferred class BMM_TYPE_SPECIFIER
 
-feature -- Definitions
-
-	Generic_left_delim: STRING is "<"
-
-	Generic_right_delim: STRING is ">"
-
-	Any_type: STRING is "ANY"
+inherit
+	BMM_DEFINITIONS
 
 feature -- Access
 

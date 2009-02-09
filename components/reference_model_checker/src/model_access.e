@@ -47,13 +47,13 @@ feature -- Access
 			Result_exists: Result /= Void
 		end
 
-	properties_of (a_class_name: STRING): HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING] is
+	properties_of (a_type_name: STRING): HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING] is
 			-- return properties defined directly on class.
 		require
-			Type_valid: a_class_name /= Void and then has_class_definition (a_class_name)
+			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
 		do
 			if rm_checking_on and model_loaded then
-				Result := model.class_definition (a_class_name).properties
+				Result := model.class_definition (a_type_name).properties
 			else
 				create Result.make(0)
 			end
@@ -61,13 +61,13 @@ feature -- Access
 			Result_exists: Result /= Void
 		end
 
-	flat_properties_of (a_class_name: STRING): HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING] is
+	flat_properties_of (a_type_name: STRING): HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING] is
 			-- return all properties of inheritance-flattened class.
 		require
-			Type_valid: a_class_name /= Void and then has_class_definition (a_class_name)
+			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
 		do
 			if rm_checking_on and model_loaded then
-				Result := model.class_definition (a_class_name).flat_properties
+				Result := model.class_definition (a_type_name).flat_properties
 			else
 				create Result.make(0)
 			end
@@ -75,17 +75,28 @@ feature -- Access
 			Result_exists: Result /= Void
 		end
 
-	property_type (a_class_name, a_property: STRING): STRING is
-			-- Type of `an a_property' in class `a_class_name'
+	property_type (a_type_name, a_property: STRING): STRING is
+			-- Type of `an a_property' in class corresponding to `a_type_name'
 		require
-			Class_name_valid: a_class_name /= Void and then has_class_definition (a_class_name)
-			Property_valid: a_property /= Void and then has_property(a_class_name, a_property)
+			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
+			Property_valid: a_property /= Void and then has_property(a_type_name, a_property)
 		do
 			if rm_checking_on and model_loaded then
-				Result := model.property_definition (a_class_name, a_property).type.as_type_string
+				Result := model.property_definition (a_type_name, a_property).type.as_type_string
 			end
 		ensure
 			Result_exists: Result /= Void
+		end
+
+	property_definition (a_type_name, a_property: STRING): BMM_PROPERTY_DEFINITION is
+			-- definition of  `a_type' has a property named `a_property'
+		require
+			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
+			Property_valid: a_property /= Void and then has_property(a_type_name, a_property)
+		do
+			if rm_checking_on and model_loaded then
+				Result := model.property_definition(a_type_name, a_property)
+			end
 		end
 
 	model: BMM_MODEL
@@ -131,51 +142,41 @@ feature -- Validation
 			end
 		end
 
-	property_definition (a_class_name, a_property: STRING): BMM_PROPERTY_DEFINITION is
-			-- definition of  `a_type' has a property named `a_property'
+	has_property (a_type_name, a_property: STRING): BOOLEAN is
+			-- True if `a_type_name' has a property named `a_property'
 		require
-			Class_name_valid: a_class_name /= Void and then has_class_definition (a_class_name)
-			Property_valid: a_property /= Void and then has_property(a_class_name, a_property)
-		do
-			if rm_checking_on and model_loaded then
-				Result := model.property_definition(a_class_name, a_property)
-			end
-		end
-
-	has_property (a_class_name, a_property: STRING): BOOLEAN is
-			-- True if `a_type' has a property named `a_property'
-		require
-			Class_name_valid: a_class_name /= Void and then has_class_definition (a_class_name)
+			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
 			Property_valid: a_property /= Void and then not a_property.is_empty
 		do
 			if rm_checking_on and model_loaded then
-				Result := model.has_property(a_class_name, a_property)
+				Result := model.has_property(a_type_name, a_property)
 			else
 				Result := True
 			end
 		end
 
-	has_class_definition (a_class_name: STRING): BOOLEAN is
-			-- True if `a_class_name' exists in the model
+	has_class_definition (a_type_name: STRING): BOOLEAN is
+			-- True if `a_type_name' has a class definition in the model. Note that a_type_name
+			-- could be a generic type string; only the root class is considered
 		require
-			Type_valid: a_class_name /= Void and then not a_class_name.is_empty
+			Type_valid: a_type_name /= Void and then not a_type_name.is_empty
 		do
 			if rm_checking_on and model_loaded then
-				Result := model.has_class_definition (a_class_name)
+				Result := model.has_class_definition (a_type_name)
 			else
 				Result := True
 			end
 		end
 
-	valid_property_type (a_class_name, a_property, a_prop_type: STRING): BOOLEAN is
+	valid_property_type (a_type_name, a_property, a_property_type: STRING): BOOLEAN is
 			-- True if `a_prop_type' is a valid dynamic type for `an a_property' in class `a_class_name'
 		require
-			Class_name_valid: a_class_name /= Void and then has_class_definition (a_class_name)
-			Property_valid: a_property /= Void and then has_property(a_class_name, a_property)
-			Property_type_valid: a_prop_type /= Void and then has_class_definition (a_prop_type)
+			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
+			Property_valid: a_property /= Void and then has_property(a_type_name, a_property)
+			Property_type_valid: a_property_type /= Void and then has_class_definition (a_property_type)
 		do
 			if rm_checking_on and model_loaded then
-				Result := type_conforms_to (model.class_definition (a_prop_type), model.property_definition (a_class_name, a_property).type)
+				Result := type_conforms_to (model.class_definition (a_property_type), model.property_definition (a_type_name, a_property).type)
 			else
 				Result := True
 			end
@@ -192,13 +193,13 @@ feature -- Validation
 			if rm_checking_on and model_loaded then
 				tlist1 := type_spec_1.flattened_type_list
 				tlist2 := type_spec_2.flattened_type_list
-				if tlist1.count = tlist2.count then
+				if tlist1.count >= tlist2.count then
 					Result := True
 					from
 						tlist1.start
 						tlist2.start
 					until
-						tlist1.off or not Result or not has_class_definition (tlist1.item) or not has_class_definition (tlist2.item)
+						tlist2.off or not Result or not has_class_definition (tlist1.item) or not has_class_definition (tlist2.item)
 					loop
 						Result := Result and
 							(tlist1.item.is_equal (tlist2.item) or else

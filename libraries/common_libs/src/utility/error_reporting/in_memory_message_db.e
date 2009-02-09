@@ -231,9 +231,9 @@ feature -- Access
 			-- reference model-related validation
 			["VCORM"] = <"Error (VCORM): type name $1 at object node at $2 not known in reference model">
 			["VCORMT"] = <"Error (VCORMT): type $1 of object node at $2 not does not conform to type $3 of $4.$5 in reference model">
-			["VCORMTS"] = <"Warning (VCORMT): type $1 of object node at $2 not does not conform to type $3 of $4.$5 in reference model but substitution allowed">
 			["VCARM"] = <"Error (VCARM): attribute name $1 in object node at $2 (type=$3) not among flat set of properties in reference model">
-			["VCARMC"] = <"Warning (VCARMC): attribute name $1 in object node at $2 (type=$3) is a computed property in reference model">
+			["ICARMC"] = <"(info) attribute name $1 in object node at $2 (type=$3) is a computed property in reference model">
+			["ICORMTS"] = <"(info) type $1 of object node at $2 not does not conform to type $3 of $4.$5 in reference model but substitution allowed">
 					
 			-- validation warnings: in addition to spec, used to help archetype authors
 			["WOUC"] = <"Warning (WOUC): code $1 in ontology not used in archetype definition">

@@ -1,89 +1,26 @@
 indexing
-	component:   "openEHR Common Information Model"
-	description: "Validator for AUTHOR_RESOURCE objects"
-	keywords:    "archetype"
+	component:   "openEHR re-usable library"
+	description: "Definition concepts for the basic meta-model"
+	keywords:    "model, UML"
+
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2009 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class AUTHORED_RESOURCE_VALIDATOR
+class BMM_DEFINITIONS
 
-inherit
-	ANY_VALIDATOR
-		rename
-			make as make_any_validator
-		end
+feature -- Definitions
 
-feature {NONE} -- Initialisation
+	Generic_left_delim: STRING is "<"
 
-	make (a_target: like target) is
-			-- set target and initialise reporting variables
-		require
-			target_valid: a_target /= Void
-		do
-			target := a_target
-			make_any_validator
-		ensure
-			target_set: target = a_target
-			Passed: passed
-		end
+	Generic_right_delim: STRING is ">"
 
-feature -- Access
-
-	target: AUTHORED_RESOURCE
-			-- target of this validator
-
-	validate is
-			-- True if all structures obey their invariants
-		do
-			passed := True
-			if target.original_language = Void then
-				errors.append("No original language%N")
-				passed := False
-			end
-			validate_description
-			validate_translations
-		end
-
-feature -- Status Report
-
-	strict: BOOLEAN
-			-- True if strict validation is to be applied. When strict is on, the following things cause errors:
-			-- - paths at the wrong specialisation level
-
-feature -- Status Setting
-
-	set_strict is
-			-- set `strict' to True
-		do
-			strict := True
-		end
-
-	unset_strict is
-			-- set `strict' to False
-		do
-			strict := False
-		end
-
-feature {NONE} -- Implementation
-
-	validate_description is
-			-- TODO
-		do
-		end
-
-	validate_translations is
-			-- TODO
-		do
-		end
-
-invariant
-	target_attached: target /= Void
+	Any_type: STRING is "ANY"
 
 end
 
@@ -102,14 +39,13 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is authored_resource_validator.e.
+--| The Original Code is bmm_definitions.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2007
+--| Portions created by the Initial Developer are Copyright (C) 2009
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):
---|	Sam Heard
 --|
 --| Alternatively, the contents of this file may be used under the terms of
 --| either the GNU General Public License Version 2 or later (the 'GPL'), or

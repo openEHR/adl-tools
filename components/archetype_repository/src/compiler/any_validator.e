@@ -22,13 +22,29 @@ inherit
 			{NONE} all
 		end
 
+feature -- Initialisation
+
+	make is
+			-- initialise reporting variables
+		do
+			create errors.make (0)
+			create warnings.make (0)
+			create info.make (0)
+			passed := True
+		ensure
+			Passed: passed
+		end
+
 feature -- Access
 
 	errors: STRING
-			-- error output of validator
+			-- error output of validator - things that must be corrected
 
 	warnings: STRING
-			-- warnings output of validator
+			-- warnings output of validator - things that can be acted upon
+
+	info: STRING
+			-- informative messages that will not normally be acted upon
 
 feature -- Modification
 
@@ -43,6 +59,12 @@ feature -- Modification
 			-- append a warning with key `a_key' and `args' array to the `warnings' string
 		do
 			warnings.append(create_message(a_key, args))
+		end
+
+	add_info(a_key: STRING; args: ARRAY [STRING]) is
+			-- append an information message with key `a_key' and `args' array to the `information' string
+		do
+			info.append(create_message(a_key, args))
 		end
 
 feature -- Status Report
@@ -63,6 +85,7 @@ feature -- Validation
 		end
 
 invariant
+	Info_exists: info /= Void
 	Errors_exists: errors /= Void
 	Warnings_exists: warnings /= Void
 
