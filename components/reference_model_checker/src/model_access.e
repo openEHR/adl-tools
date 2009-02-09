@@ -20,58 +20,9 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_UI_RESOURCES
+	SHARED_RESOURCES
 		export
 			{NONE} all
-		end
-
-create
-	make
-
-feature -- Initialisation
-
-	make is
-			-- set up model
-		do
-			if rm_checking_on then
-				load_model
-			else
-				status := create_message ("model_access_w1", Void)
-				model := Void
-			end
-		end
-
-	load_model is
-			-- set up model
-		local
-			model_file: PLAIN_TEXT_FILE
-			dt_tree: DT_COMPLEX_OBJECT_NODE
-			parser: DADL2_VALIDATOR
-		do
-			if not model_loaded then
-				create model_file.make (default_rm_schema_file_full_path)
-				if not model_file.is_readable then
-					status := create_message ("model_access_e1", <<model_file.name>>)
-				else
-					model_file.open_read
-					model_file.read_stream (model_file.count)
-					create parser.make
-					parser.execute(model_file.last_string, 1)
-					if not parser.syntax_error then
-						dt_tree := parser.output
-						model ?= dt_tree.as_object_from_string("BMM_MODEL")
-						if model = Void then
-							status := create_message ("model_access_e4", Void)
-						else
-							model.dt_finalise
-							status := model.status
-						end
-					else
-						status := create_message ("model_access_e2", <<parser.error_text>>)
-					end
-					model_file.close
-				end
-			end
 		end
 
 feature -- Access
@@ -81,9 +32,45 @@ feature -- Access
 			-- does  not include current class. Returns empty list if none.
 		require
 			Type_valid: a_class_name /= Void and then has_class_definition (a_class_name)
+		local
+			anc: ARRAYED_LIST[BMM_CLASS_DEFINITION]
 		do
 			create Result.make(0)
-			-- FIXME: TO BE IMPLEMENTED
+			if rm_checking_on and model_loaded then
+				anc := model.class_definition (a_class_name).ancestors
+				from anc.start until anc.off loop
+					Result.extend(anc.item.name)
+					anc.forth
+				end
+			end
+		ensure
+			Result_exists: Result /= Void
+		end
+
+	properties_of (a_class_name: STRING): HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING] is
+			-- return properties defined directly on class.
+		require
+			Type_valid: a_class_name /= Void and then has_class_definition (a_class_name)
+		do
+			if rm_checking_on and model_loaded then
+				Result := model.class_definition (a_class_name).properties
+			else
+				create Result.make(0)
+			end
+		ensure
+			Result_exists: Result /= Void
+		end
+
+	flat_properties_of (a_class_name: STRING): HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING] is
+			-- return all properties of inheritance-flattened class.
+		require
+			Type_valid: a_class_name /= Void and then has_class_definition (a_class_name)
+		do
+			if rm_checking_on and model_loaded then
+				Result := model.class_definition (a_class_name).flat_properties
+			else
+				create Result.make(0)
+			end
 		ensure
 			Result_exists: Result /= Void
 		end
@@ -94,7 +81,7 @@ feature -- Access
 			Class_name_valid: a_class_name /= Void and then has_class_definition (a_class_name)
 			Property_valid: a_property /= Void and then has_property(a_class_name, a_property)
 		do
-			if model_loaded then
+			if rm_checking_on and model_loaded then
 				Result := model.property_definition (a_class_name, a_property).type.as_type_string
 			end
 		ensure
@@ -117,6 +104,9 @@ feature -- Access
 
 feature -- Status Report
 
+	rm_checking_on: BOOLEAN
+			-- True if reference model checking turned on
+
 	model_loaded: BOOLEAN is
 			-- True if a model is available to interrogate
 		do
@@ -134,7 +124,7 @@ feature -- Validation
 			Sub_type_valid: a_sub_type /= Void and then not a_sub_type.is_empty
 			Parent_type_valid: a_parent_type /= Void and then not a_parent_type.is_empty
 		do
-			if rm_checking_on then
+			if rm_checking_on and model_loaded then
 				Result := model.has_class_definition (a_parent_type) and then model.is_sub_class_of (a_sub_type, a_parent_type)
 			else
 				Result := True
@@ -147,7 +137,7 @@ feature -- Validation
 			Class_name_valid: a_class_name /= Void and then has_class_definition (a_class_name)
 			Property_valid: a_property /= Void and then has_property(a_class_name, a_property)
 		do
-			if rm_checking_on then
+			if rm_checking_on and model_loaded then
 				Result := model.property_definition(a_class_name, a_property)
 			end
 		end
@@ -158,7 +148,7 @@ feature -- Validation
 			Class_name_valid: a_class_name /= Void and then has_class_definition (a_class_name)
 			Property_valid: a_property /= Void and then not a_property.is_empty
 		do
-			if rm_checking_on then
+			if rm_checking_on and model_loaded then
 				Result := model.has_property(a_class_name, a_property)
 			else
 				Result := True
@@ -170,7 +160,7 @@ feature -- Validation
 		require
 			Type_valid: a_class_name /= Void and then not a_class_name.is_empty
 		do
-			if rm_checking_on then
+			if rm_checking_on and model_loaded then
 				Result := model.has_class_definition (a_class_name)
 			else
 				Result := True
@@ -184,7 +174,7 @@ feature -- Validation
 			Property_valid: a_property /= Void and then has_property(a_class_name, a_property)
 			Property_type_valid: a_prop_type /= Void and then has_class_definition (a_prop_type)
 		do
-			if rm_checking_on then
+			if rm_checking_on and model_loaded then
 				Result := type_conforms_to (model.class_definition (a_prop_type), model.property_definition (a_class_name, a_property).type)
 			else
 				Result := True
@@ -199,28 +189,77 @@ feature -- Validation
 		local
 			tlist1, tlist2: ARRAYED_LIST[STRING]
 		do
-			tlist1 := type_spec_1.flattened_type_list
-			tlist2 := type_spec_2.flattened_type_list
-			if tlist1.count = tlist2.count then
-				Result := True
-				from
-					tlist1.start
-					tlist2.start
-				until
-					tlist1.off or not Result or not has_class_definition (tlist1.item) or not has_class_definition (tlist2.item)
-				loop
-					Result := Result and
-						(tlist1.item.is_equal (tlist2.item) or else
-						model.class_definition (tlist1.item).has_ancestor(tlist2.item))
-					tlist1.forth
-					tlist2.forth
+			if rm_checking_on and model_loaded then
+				tlist1 := type_spec_1.flattened_type_list
+				tlist2 := type_spec_2.flattened_type_list
+				if tlist1.count = tlist2.count then
+					Result := True
+					from
+						tlist1.start
+						tlist2.start
+					until
+						tlist1.off or not Result or not has_class_definition (tlist1.item) or not has_class_definition (tlist2.item)
+					loop
+						Result := Result and
+							(tlist1.item.is_equal (tlist2.item) or else
+							model.class_definition (tlist1.item).has_ancestor(tlist2.item))
+						tlist1.forth
+						tlist2.forth
+					end
 				end
+			else
+				Result := True
 			end
 		end
 
 feature -- Status Setting
 
+	set_rm_checking_on (flag: BOOLEAN) is
+			-- turn rm_checking_on on
+		do
+			rm_checking_on := flag
+			initialise
+		end
+
 feature -- Commands
+
+	initialise is
+			-- set up model
+		local
+			model_file: PLAIN_TEXT_FILE
+			dt_tree: DT_COMPLEX_OBJECT_NODE
+			parser: DADL2_VALIDATOR
+		do
+			if rm_checking_on then
+				if not model_loaded then
+					create model_file.make (default_rm_schema_file_full_path)
+					if not model_file.is_readable then
+						status := create_message ("model_access_e1", <<model_file.name>>)
+					else
+						model_file.open_read
+						model_file.read_stream (model_file.count)
+						create parser.make
+						parser.execute(model_file.last_string, 1)
+						if not parser.syntax_error then
+							dt_tree := parser.output
+							model ?= dt_tree.as_object_from_string("BMM_MODEL")
+							if model = Void then
+								status := create_message ("model_access_e4", Void)
+							else
+								model.dt_finalise
+								status := model.status
+							end
+						else
+							status := create_message ("model_access_e2", <<parser.error_text>>)
+						end
+						model_file.close
+					end
+				end
+			else
+				status := create_message ("model_access_w1", Void)
+				model := Void
+			end
+		end
 
 feature -- Comparison
 

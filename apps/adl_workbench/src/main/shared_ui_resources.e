@@ -235,6 +235,9 @@ feature -- Access
 			Result.force (["node_redefined/ordinal.ico", Void], "ORDINAL.redefined")
 			Result.force (["node_normal/archetype_slot_optional.ico", Void], "ARCHETYPE_SLOT.optional.redefined")
 
+			Result.force (["node_reference_model/c_attribute.ico", Void], "C_ATTRIBUTE.reference_model")
+			Result.force (["node_reference_model/c_attribute_multiple.ico", Void], "C_ATTRIBUTE.multiple.reference_model")
+
 			Result.force (["pass.ico", Void], "test_passed")
 			Result.force (["fail.ico", Void], "test_failed")
 			Result.force (["not_applicable.ico", Void], "test_not_applicable")
@@ -491,7 +494,17 @@ feature -- Application Switches
 			str: STRING
 		do
 			str := resource_value ("default", "show_technical_view")
+			if str.is_boolean then
+				Result := str.to_boolean
+			end
+		end
 
+	show_reference_model_view: BOOLEAN
+			-- Display the reference model view in the archetype definition node tree by default?
+		local
+			str: STRING
+		do
+			str := resource_value ("default", "show_reference_model_view")
 			if str.is_boolean then
 				Result := str.to_boolean
 			end
@@ -694,6 +707,12 @@ feature -- Application Switch Setting
 			-- Set flag for whether to show the technical view in the archetype definition node tree by default.
 		do
 			set_resource_value ("default", "show_technical_view", flag.out)
+		end
+
+	set_show_reference_model_view (flag: BOOLEAN) is
+			-- Set flag for whether to show the technical view in the archetype definition node tree by default.
+		do
+			set_resource_value ("default", "show_reference_model_view", flag.out)
 		end
 
 	set_show_line_numbers (flag: BOOLEAN) is

@@ -74,6 +74,7 @@ Section -Main SEC0000
     !endif
 
     File ..\..\..\app\news.txt
+    File ..\..\..\app\rm_schema.dadl
     File ..\..\..\app\ArchetypeRepositoryReport.xsl
     File ..\..\..\app\ArchetypeRepositoryReport.css
 
@@ -124,6 +125,7 @@ Section /o un.Main UNSEC0000
 
     Delete /REBOOTOK $INSTDIR\adl_workbench.exe
     Delete /REBOOTOK $INSTDIR\news.txt
+    Delete /REBOOTOK $INSTDIR\rm_schema.dadl
     Delete /REBOOTOK $INSTDIR\ArchetypeRepositoryReport.xsl
     Delete /REBOOTOK $INSTDIR\ArchetypeRepositoryReport.css
     RMDir /r /REBOOTOK $INSTDIR\vim

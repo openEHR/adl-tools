@@ -252,7 +252,8 @@ feature -- Status setting
 				set_html_export_directory (file_system.pathname (file_system.absolute_parent_directory (reference_repository_path), "html"))
 			end
 
-			if not rm_checker.model_loaded then
+			rm_checker.set_rm_checking_on(rm_checking_on)
+			if rm_checking_on and not rm_checker.model_loaded then
 				post_error (Current, "show", "general_error", <<rm_checker.status>>)
 			else
 				post_info (Current, "show", "general", <<rm_checker.status>>)
@@ -849,6 +850,18 @@ feature -- Archetype commands
 		do
 			if archetype_directory.has_valid_selected_archetype then
 				node_map_control.set_technical_mode
+			end
+		end
+
+	on_node_map_reference_model_selected
+			-- turn on or off the display of reference model details in `node_map_tree'.
+		do
+			if archetype_directory.has_valid_selected_archetype then
+				if node_map_reference_model_check_button.is_selected then
+					node_map_control.set_reference_model_mode
+				else
+					node_map_control.set_no_reference_model_mode
+				end
 			end
 		end
 

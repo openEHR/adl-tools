@@ -20,6 +20,17 @@ class BMM_CLASS_DEFINITION
 inherit
 	BMM_TYPE_SPECIFIER
 
+	DT_CONVERTIBLE
+
+feature -- Initialisation
+
+	make_dt is
+			-- make in a safe way for DT building purposes
+		do
+			create properties.make (0)
+			create ancestors.make (0)
+		end
+
 feature -- Access
 
 	name: STRING
@@ -54,6 +65,8 @@ feature -- Access
 				end
 			end
 			Result := flat_properties_cache
+		ensure
+			Result_exists: Result /= Void
 		end
 
 	flattened_type_list: ARRAYED_LIST [STRING] is
@@ -144,7 +157,18 @@ feature {BMM_CLASS_DEFINITION} -- Implementation
 	flat_properties_cache: HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
 			-- reference list of all attributes due to inheritance flattening of this type
 
+feature {DT_OBJECT_CONVERTER} -- Conversion
+
+	persistent_attributes: ARRAYED_LIST[STRING] is
+			-- list of attribute names to persist as DT structure
+			-- empty structure means all attributes
+		do
+			-- FIXME: not in use, since no serialisatoin back out at this stage
+		end
+
 invariant
+	Properties_exists: properties /= Void
+	Ancestors_exists: ancestors /= Void
 	Generic_validity :is_generic implies generic_parameters /= Void and then not generic_parameters.is_empty
 
 end

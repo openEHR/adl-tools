@@ -35,6 +35,14 @@ feature -- Status Report
 	is_computed: BOOLEAN
 			-- True if this property is computed rather than stored in objects of this class
 
+	is_container: BOOLEAN is
+			-- True if type is a container type
+		do
+			if {a_cont: BMM_CONTAINER_TYPE_REFERENCE} type then
+				Result := True
+			end
+		end
+
 invariant
 	Name_exists: name /= Void
 

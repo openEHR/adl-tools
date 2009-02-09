@@ -169,6 +169,7 @@ feature {NONE}-- Initialization
 			create l_ev_vertical_box_8
 			create node_map_domain_radio_button
 			create node_map_technical_radio_button
+			create node_map_reference_model_check_button
 			create ontology_notebook
 			create ontology_term_definitions_multi_column_list
 			create ontology_constraint_definitions_multi_column_list
@@ -359,6 +360,7 @@ feature {NONE}-- Initialization
 			l_ev_frame_1.extend (l_ev_vertical_box_8)
 			l_ev_vertical_box_8.extend (node_map_domain_radio_button)
 			l_ev_vertical_box_8.extend (node_map_technical_radio_button)
+			l_ev_vertical_box_7.extend (node_map_reference_model_check_button)
 			node_map_and_ontology_split_area.extend (ontology_notebook)
 			ontology_notebook.extend (ontology_term_definitions_multi_column_list)
 			ontology_notebook.extend (ontology_constraint_definitions_multi_column_list)
@@ -774,6 +776,7 @@ feature {NONE}-- Initialization
 			l_ev_vertical_box_7.disable_item_expand (node_map_expand_one_button)
 			l_ev_vertical_box_7.disable_item_expand (node_map_collapse_one_button)
 			l_ev_vertical_box_7.disable_item_expand (l_ev_frame_1)
+			l_ev_vertical_box_7.disable_item_expand (node_map_reference_model_check_button)
 			node_map_expand_button.set_text ("Expand All")
 			node_map_expand_button.set_tooltip ("Completely expand or collapse the Node Map")
 			integer_constant_set_procedures.extend (agent node_map_expand_button.set_minimum_width (?))
@@ -795,6 +798,8 @@ feature {NONE}-- Initialization
 			node_map_domain_radio_button.set_tooltip ("Hide technical details of the Node Map")
 			node_map_technical_radio_button.set_text ("Technical")
 			node_map_technical_radio_button.set_tooltip ("Display technical details of the Node Map")
+			node_map_reference_model_check_button.set_text ("RM visible")
+			node_map_reference_model_check_button.set_tooltip ("Make non-archetyped reference model attrbutes visible in node tree")
 			ontology_notebook.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
 			ontology_notebook.set_minimum_width (1)
 			integer_constant_set_procedures.extend (agent ontology_notebook.set_minimum_height (?))
@@ -1010,6 +1015,7 @@ feature {NONE}-- Initialization
 			node_map_collapse_one_button.select_actions.extend (agent on_node_map_shrink_tree_one_level)
 			node_map_domain_radio_button.select_actions.extend (agent on_node_map_domain_selected)
 			node_map_technical_radio_button.select_actions.extend (agent on_node_map_technical_selected)
+			node_map_reference_model_check_button.select_actions.extend (agent on_node_map_reference_model_selected)
 			path_analysis_row_filter_combo_box.select_actions.extend (agent path_row_set_filter)
 			path_analysis_column_view_checkable_list.check_actions.extend (agent path_column_select (?))
 			path_analysis_column_view_checkable_list.uncheck_actions.extend (agent path_column_unselect (?))
@@ -1062,11 +1068,11 @@ feature -- Access
 	l_ev_horizontal_box_10, statistics_box, l_ev_horizontal_box_11, l_ev_horizontal_box_12,
 	l_ev_horizontal_box_13, l_ev_horizontal_box_14, l_ev_horizontal_box_15, l_ev_horizontal_box_16,
 	l_ev_horizontal_box_17: EV_HORIZONTAL_BOX
-	remove_unused_codes_rb: EV_CHECK_BUTTON
-	archetype_id, adl_version_text, arch_desc_status_text,
-	arch_desc_original_language_text, arch_desc_resource_package_text, arch_total_count_tf,
-	arch_spec_count_tf, arch_slotted_count_tf, arch_used_by_count_tf, arch_bad_count_tf,
-	arch_test_processed_count: EV_TEXT_FIELD
+	node_map_reference_model_check_button, remove_unused_codes_rb: EV_CHECK_BUTTON
+	archetype_id,
+	adl_version_text, arch_desc_status_text, arch_desc_original_language_text, arch_desc_resource_package_text,
+	arch_total_count_tf, arch_spec_count_tf, arch_slotted_count_tf, arch_used_by_count_tf,
+	arch_bad_count_tf, arch_test_processed_count: EV_TEXT_FIELD
 	compiler_output_grid, archetype_test_tree_grid: EV_GRID
 	node_map_expand_button,
 	node_map_expand_one_button, node_map_collapse_one_button, arch_test_tree_toggle_expand_bn,
@@ -1290,6 +1296,11 @@ feature {NONE} -- Implementation
 	
 	on_node_map_technical_selected is
 			-- Called by `select_actions' of `node_map_technical_radio_button'.
+		deferred
+		end
+	
+	on_node_map_reference_model_selected is
+			-- Called by `select_actions' of `node_map_reference_model_check_button'.
 		deferred
 		end
 	
