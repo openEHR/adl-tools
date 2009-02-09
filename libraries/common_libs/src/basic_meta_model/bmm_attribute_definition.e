@@ -24,6 +24,16 @@ feature -- Access
 	type: BMM_TYPE_SPECIFIER
 			-- type of this attribute
 
+	existence: MULTIPLICITY_INTERVAL is
+			-- interval form of 0..1, 1..1 etc, generated from is_mandatory
+		do
+			if is_mandatory then
+				create Result.make_point (1)
+			else
+				create Result.make_bounded (0, 1)
+			end
+		end
+
 feature -- Status Report
 
 	is_abstract: BOOLEAN

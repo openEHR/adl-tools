@@ -18,7 +18,7 @@ feature -- Access
 	default_occurrences: MULTIPLICITY_INTERVAL is
 			-- default object occurrences object representing 1..1
 		once
-			create Result.make_bounded(1, 1, True, True)
+			create Result.make_point(1)
 		ensure
 			Result_exists: Result /= Void
 		end
@@ -26,7 +26,7 @@ feature -- Access
 	default_existence: MULTIPLICITY_INTERVAL is
 			-- default property existence object representing 1..1
 		once
-			create Result.make_bounded(1, 1, True, True)
+			create Result.make_point(1)
 		ensure
 			Result_exists: Result /= Void
 		end

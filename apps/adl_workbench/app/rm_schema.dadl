@@ -921,6 +921,7 @@ class_definitions = <
 					container_type = </primitive_types["List"]>
 					cardinality = <|>=1|>
 				>
+				is_mandatory = <True>
 			>
 		>
 	>

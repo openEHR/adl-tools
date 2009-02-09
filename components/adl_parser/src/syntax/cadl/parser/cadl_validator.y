@@ -416,6 +416,7 @@ c_primitive: c_integer
 			debug("ADL_parse")
 				io.put_string(indent + "C_DATE: " +  $1.as_string + "%N")
 			end
+			$$ := $1
 		}
 	| c_time
 		{
@@ -1000,7 +1001,7 @@ existence_spec:  V_INTEGER -- can only be 0 or 1
 				if $3 = 0 then
 					create multiplicity_interval.make_point(0)
 				elseif $3 = 1 then
-					create multiplicity_interval.make_bounded(0, 1, True, True)
+					create multiplicity_interval.make_bounded(0, 1)
 				else
 					raise_error
 					report_error(create_message("SEXLU1", Void))
@@ -1104,7 +1105,7 @@ occurrence_spec: cardinality_limit_value 	-- single integer or '*'
 			if not cardinality_limit_pos_infinity then
 				create multiplicity_interval.make_point($1)
 			else
-				create multiplicity_interval.make_upper_unbounded(0, True)
+				create multiplicity_interval.make_upper_unbounded(0)
 				cardinality_limit_pos_infinity := False
 			end
 			$$ := multiplicity_interval
@@ -1112,10 +1113,10 @@ occurrence_spec: cardinality_limit_value 	-- single integer or '*'
 	| V_INTEGER SYM_ELLIPSIS cardinality_limit_value 
 		{
 			if cardinality_limit_pos_infinity then
-				create multiplicity_interval.make_upper_unbounded($1, True)
+				create multiplicity_interval.make_upper_unbounded($1)
 				cardinality_limit_pos_infinity := False
 			else
-				create multiplicity_interval.make_bounded($1, $3, True, True)
+				create multiplicity_interval.make_bounded($1, $3)
 			end
 			$$ := multiplicity_interval
 		}
@@ -1244,6 +1245,9 @@ c_date_constraint: V_ISO8601_DATE_CONSTRAINT_PATTERN
 	;
 
 c_date: c_date_constraint
+		{
+			$$ := $1
+		}
 	| c_date_constraint ';' date_value
 		{
 			if $1.valid_value($3) then

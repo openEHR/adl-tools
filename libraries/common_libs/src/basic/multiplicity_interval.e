@@ -18,6 +18,9 @@ indexing
 class MULTIPLICITY_INTERVAL
 
 inherit INTERVAL [INTEGER]
+	rename
+		make_bounded as make_bounded_interval,
+		make_upper_unbounded as make_upper_unbounded_interval
 	redefine
 		as_string
 	end
@@ -28,16 +31,39 @@ create
 	make_upper_unbounded,
 	make_point
 
+feature -- Initialisation
+
+	make_bounded(a_lower, an_upper: INTEGER) is
+			-- make with both limits set
+		require
+			Valid_order: a_lower <= an_upper
+		do
+			make_bounded_interval(a_lower, an_upper, True, True)
+		ensure
+			Lower_set: lower = a_lower
+			Upper_set: upper = an_upper
+		end
+
+	make_upper_unbounded(a_lower: INTEGER) is
+			-- make an interval from `a_lower' to +infinity
+		require
+			Lower_exists: a_lower /= Void
+		do
+			make_upper_unbounded_interval(a_lower, True)
+		ensure
+			Lower_set: lower = a_lower
+			Upper_unbounded: upper_unbounded
+		end
+
 feature -- Operations
 
 	union (other: like Current): like Current is
 			-- generate the outer interval of Current and other
 		do
 			if upper_unbounded or other.upper_unbounded then
-				create Result.make_upper_unbounded (lower.min(other.lower), lower_included or other.lower_included)
+				create Result.make_upper_unbounded (lower.min(other.lower))
 			else
-				create Result.make_bounded (lower.min(other.lower), upper.max(other.upper), lower_included or
-						other.lower_included, upper_included or other.upper_included)
+				create Result.make_bounded (lower.min(other.lower), upper.max(other.upper))
 			end
 		end
 
@@ -45,10 +71,9 @@ feature -- Operations
 			-- generate the interval resulting from sum(lower, other.lower)..sum(upper, other.upper)
 		do
 			if upper_unbounded or other.upper_unbounded then
-				create Result.make_upper_unbounded (lower + other.lower, lower_included or other.lower_included)
+				create Result.make_upper_unbounded (lower + other.lower)
 			else
-				create Result.make_bounded (lower + other.lower, upper + other.upper, lower_included or
-						other.lower_included, upper_included or other.upper_included)
+				create Result.make_bounded (lower + other.lower, upper + other.upper)
 			end
 		end
 

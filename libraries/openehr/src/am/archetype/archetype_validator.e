@@ -567,6 +567,7 @@ feature {NONE} -- Implementation
 			arch_attr_type, attr_parent_path, model_attr_class: STRING
 			co_parent_flat: C_OBJECT
 			apa: ARCHETYPE_PATH_ANALYSER
+			prop_def: BMM_PROPERTY_DEFINITION
 		do
 			if {co: C_OBJECT} a_c_node then
 				if not unknown_types.has(co.rm_type_name) then
@@ -610,8 +611,31 @@ feature {NONE} -- Implementation
 					if rm_checker.has_class_definition(arch_attr_type) and then
 												not rm_checker.has_property(arch_attr_type, ca.rm_attribute_name) then
 						add_error("VCARM", <<ca.rm_attribute_name, ca.path , arch_attr_type>>)
-					elseif rm_checker.property_definition(arch_attr_type, ca.rm_attribute_name).is_computed then
-						add_info("ICARMC", <<ca.rm_attribute_name, ca.path , arch_attr_type>>)
+					else
+						prop_def := rm_checker.property_definition(arch_attr_type, ca.rm_attribute_name)
+						if prop_def.existence.contains(ca.existence) then
+							if prop_def.existence.is_equal(ca.existence) then
+								add_warning("WCAEX", <<ca.rm_attribute_name, ca.path, ca.existence.as_string>>)
+							end
+						else
+							add_error("VCAEX", <<ca.rm_attribute_name, ca.path, ca.existence.as_string, prop_def.existence.as_string>>)
+						end
+						if ca.is_multiple then
+							if {cont_prop: BMM_CONTAINER_PROPERTY} prop_def then
+								if cont_prop.type.cardinality.contains(ca.cardinality.interval) then
+									if cont_prop.type.cardinality.is_equal(ca.cardinality.interval) then
+										add_warning("WCACA", <<ca.rm_attribute_name, ca.path, ca.cardinality.interval.as_string>>)
+									end
+								else -- archetype has cardinality not contained by RM
+									add_error("VCACA", <<ca.rm_attribute_name, ca.path, ca.cardinality.interval.as_string, cont_prop.type.cardinality.as_string>>)
+								end
+							else -- archetype has multiple attribute but RM does not
+								add_error("VCAM", <<ca.rm_attribute_name, ca.path>>)
+							end
+						end
+						if rm_checker.property_definition(arch_attr_type, ca.rm_attribute_name).is_computed then
+							add_info("ICARMC", <<ca.rm_attribute_name, ca.path , arch_attr_type>>)
+						end
 					end
 				end
 			end

@@ -172,19 +172,19 @@ feature -- Factory
 		require
 			valid_order: a_lower <= an_upper
 		do
-			create Result.make(create {MULTIPLICITY_INTERVAL}.make_bounded(a_lower, an_upper, True, True))
+			create Result.make(create {MULTIPLICITY_INTERVAL}.make_bounded(a_lower, an_upper))
 		end
 
 	create_cardinality_make_upper_unbounded (a_lower: INTEGER): CARDINALITY is
 			-- create Result from `a_lower' to +infinity
 		do
-			create Result.make(create {MULTIPLICITY_INTERVAL}.make_upper_unbounded(a_lower, True))
+			create Result.make(create {MULTIPLICITY_INTERVAL}.make_upper_unbounded(a_lower))
 		end
 
 	create_cardinality_make_unbounded: CARDINALITY is
 			-- create Result as interval of 0 to +infinity
 		do
-			create Result.make(create {MULTIPLICITY_INTERVAL}.make_upper_unbounded(0, True))
+			create Result.make(create {MULTIPLICITY_INTERVAL}.make_upper_unbounded(0))
 		end
 end
 

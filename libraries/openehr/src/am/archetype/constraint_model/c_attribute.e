@@ -36,7 +36,7 @@ feature -- Initialisation
 			--
 		do
 			create children.make (0)
-			set_existence (create {MULTIPLICITY_INTERVAL}.make_bounded (1, 1, True, True))
+			set_existence (create {MULTIPLICITY_INTERVAL}.make_point (1))
 		end
 
 	make_single(a_name: STRING) is
@@ -123,9 +123,9 @@ feature -- Access
 			end
 
 			if an_upper_unbounded then
-				create Result.make_upper_unbounded (a_lower, True)
+				create Result.make_upper_unbounded (a_lower)
 			else
-				create Result.make_bounded (a_lower, an_upper, True, True)
+				create Result.make_bounded (a_lower, an_upper)
 			end
 		ensure
 			Result_attached: Result /= Void

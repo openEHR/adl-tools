@@ -196,7 +196,7 @@ feature -- Access
 			
 			["VSANCE"] = <"Error (VSANCE): attribute at path $1 existence $2 does not conform to parent $3 existence $4">
 			["VSANCC"] = <"Error (VSANCC): attribute at path $1 cardinality $2 does not conform to parent $3 cardinality $4">
-			["VSAM"] = <"Error (VSAM): attribute at path $1 multiplicity does not conform to that of attribute in parent">
+			["VSAM"] = <"Error (VSAM): attribute at path $1 multiplicity does not correspond to that of attribute in parent">
 			["VSONNC"] = <"Error (VSONNC): $1 object node at path $2 does not conform to $3 node at parent path $4">
 			["VSONIR"] = <"Error (VSONIR): object node at path $1 conforms to node at parent path but node_id $3 not redefined">
 			["VSCNR"] = <"Error (VSCNR): illegal redefinition of $1 node at $2 in parent into $3 node at $4 in child">
@@ -232,6 +232,11 @@ feature -- Access
 			["VCORM"] = <"Error (VCORM): type name $1 at object node at $2 not known in reference model">
 			["VCORMT"] = <"Error (VCORMT): type $1 of object node at $2 not does not conform to type $3 of $4.$5 in reference model">
 			["VCARM"] = <"Error (VCARM): attribute name $1 in object node at $2 (type=$3) not among flat set of properties in reference model">
+			["VCAEX"] = <"Error (VCAEX): attribute $1 in object node at $2 existence $3 does not conform to existence $4 in reference model">
+			["VCACA"] = <"Error (VCACA): attribute $1 in object node at $2 cardinality $3 does not conform to cardinality $4 in reference model">
+			["VCAM"] = <"Error (VCAM): attribute $1 at path $2 multiplicity does not correspond to that of attribute in reference model">
+			["WCACA"] = <"Error (WCACA): attribute $1 in object node at $2 cardinality $3 same as in reference model">
+			["WCAEX"] = <"Warning (WCAEX): attribute $1 in object node at $2 existence $3 same as in reference model">
 			["ICARMC"] = <"(info) attribute name $1 in object node at $2 (type=$3) is a computed property in reference model">
 			["ICORMTS"] = <"(info) type $1 of object node at $2 not does not conform to type $3 of $4.$5 in reference model but substitution allowed">
 					
