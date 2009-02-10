@@ -223,8 +223,8 @@ feature -- Access
 			["VACSIT"] = <"Error (VACSIT): cannot add $1 object with $2 to singly-valued attribute $3 because attribute already has child with same RM type">
 
 			["VACMC"] = <"Error (VACMC): cannot add $1 object with $2 to multiply-valued attribute $3 because cardinality $4 does not contain occurrences $5 of object">
-			["VACMI"] = <"Error (VACMM): cannot add $1 object with $2 to multiply-valued attribute $3 because object has no node id">
-			["VACMM"] = <"Error (VACMI): cannot add $1 object with $2 to multiply-valued attribute $3 because attribute already has child with same node id">
+			["VACMI"] = <"Error (VACMI): cannot add $1 object with $2 to multiply-valued attribute $3 because object has no node id">
+			["VACMM"] = <"Error (VACMM): cannot add $1 object with $2 to multiply-valued attribute $3 because attribute already has child with same node id">
 
 			["VARCN"] = <"Error (VARCN): concept code $1 is invalid">
 
@@ -235,7 +235,7 @@ feature -- Access
 			["VCAEX"] = <"Error (VCAEX): attribute $1 in object node at $2 existence $3 does not conform to existence $4 in reference model">
 			["VCACA"] = <"Error (VCACA): attribute $1 in object node at $2 cardinality $3 does not conform to cardinality $4 in reference model">
 			["VCAM"] = <"Error (VCAM): attribute $1 at path $2 multiplicity does not correspond to that of attribute in reference model">
-			["WCACA"] = <"Error (WCACA): attribute $1 in object node at $2 cardinality $3 same as in reference model">
+			["WCACA"] = <"Warning (WCACA): attribute $1 in object node at $2 cardinality $3 same as in reference model">
 			["WCAEX"] = <"Warning (WCAEX): attribute $1 in object node at $2 existence $3 same as in reference model">
 			["ICARMC"] = <"(info) attribute name $1 in object node at $2 (type=$3) is a computed property in reference model">
 			["ICORMTS"] = <"(info) type $1 of object node at $2 not does not conform to type $3 of $4.$5 in reference model but substitution allowed">

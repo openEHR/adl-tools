@@ -107,21 +107,6 @@ feature -- Access
 	text_timestamp: INTEGER
 			-- Date and time at which the archetype differential or flat file was last modified.
 
-	group_name: STRING
-			-- Name distinguishing the type of item and the group to which its `repository' belongs.
-			-- Useful as a logical key to pixmap icons, etc.
-		do
-			if is_valid then
-				Result := "archetype_valid_" + file_repository.group_id.out
-			elseif is_parsed then
-				Result := "archetype_parsed_" + file_repository.group_id.out
-			elseif parse_attempted then
-				Result := "archetype_parse_failed_" + file_repository.group_id.out
-			else
-				Result := "archetype_" + file_repository.group_id.out
-			end
-		end
-
 	specialisation_parent: ARCH_REP_ARCHETYPE
 			-- parent descriptor, for specialised archetypes only
 
@@ -186,6 +171,25 @@ feature -- Access
 			end
 		ensure
 			valid: valid_err_type (Result)
+		end
+
+	group_name: STRING
+			-- Name distinguishing the type of item and the group to which its `repository' belongs.
+			-- Useful as a logical key to pixmap icons, etc.
+		do
+			if is_valid then
+				if compiler_status.is_empty then
+					Result := "archetype_valid_" + file_repository.group_id.out
+				else
+					Result := "archetype_warning_" + file_repository.group_id.out
+				end
+			elseif is_parsed then
+				Result := "archetype_parsed_" + file_repository.group_id.out
+			elseif parse_attempted then
+				Result := "archetype_parse_failed_" + file_repository.group_id.out
+			else
+				Result := "archetype_" + file_repository.group_id.out
+			end
 		end
 
 feature -- Status Report
