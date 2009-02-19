@@ -222,6 +222,8 @@ feature {NONE}-- Initialization
 			create l_ev_label_9
 			create arch_test_processed_count
 			create l_ev_horizontal_separator_1
+			create save_adl_check_button
+			create save_adls_check_button
 			create archetype_test_go_bn
 			create test_status_area
 			
@@ -413,6 +415,8 @@ feature {NONE}-- Initialization
 			l_ev_horizontal_box_17.extend (l_ev_label_9)
 			l_ev_horizontal_box_17.extend (arch_test_processed_count)
 			l_ev_vertical_box_15.extend (l_ev_horizontal_separator_1)
+			l_ev_vertical_box_15.extend (save_adl_check_button)
+			l_ev_vertical_box_15.extend (save_adls_check_button)
 			l_ev_vertical_box_15.extend (archetype_test_go_bn)
 			test_split_area.extend (test_status_area)
 			
@@ -935,6 +939,8 @@ feature {NONE}-- Initialization
 			l_ev_vertical_box_15.disable_item_expand (arch_test_refresh_bn)
 			l_ev_vertical_box_15.disable_item_expand (l_ev_horizontal_box_17)
 			l_ev_vertical_box_15.disable_item_expand (l_ev_horizontal_separator_1)
+			l_ev_vertical_box_15.disable_item_expand (save_adl_check_button)
+			l_ev_vertical_box_15.disable_item_expand (save_adls_check_button)
 			l_ev_vertical_box_15.disable_item_expand (archetype_test_go_bn)
 			remove_unused_codes_rb.set_text ("Remove unused codes")
 			remove_unused_codes_rb.set_tooltip ("Remove unused codes in archetypes on parse")
@@ -951,6 +957,10 @@ feature {NONE}-- Initialization
 			l_ev_label_9.align_text_right
 			arch_test_processed_count.disable_edit
 			l_ev_horizontal_separator_1.set_minimum_height (15)
+			save_adl_check_button.set_text ("Save ADL")
+			save_adl_check_button.set_tooltip ("Overwrite ADL flat files")
+			save_adls_check_button.set_text ("Save ADLS")
+			save_adls_check_button.set_tooltip ("Overwrite ADLS differential	 files")
 			archetype_test_go_bn.set_text ("Go")
 			archetype_test_go_bn.set_tooltip ("Start running tests")
 			integer_constant_set_procedures.extend (agent test_status_area.set_minimum_height (?))
@@ -1068,11 +1078,12 @@ feature -- Access
 	l_ev_horizontal_box_10, statistics_box, l_ev_horizontal_box_11, l_ev_horizontal_box_12,
 	l_ev_horizontal_box_13, l_ev_horizontal_box_14, l_ev_horizontal_box_15, l_ev_horizontal_box_16,
 	l_ev_horizontal_box_17: EV_HORIZONTAL_BOX
-	node_map_reference_model_check_button, remove_unused_codes_rb: EV_CHECK_BUTTON
-	archetype_id,
-	adl_version_text, arch_desc_status_text, arch_desc_original_language_text, arch_desc_resource_package_text,
-	arch_total_count_tf, arch_spec_count_tf, arch_slotted_count_tf, arch_used_by_count_tf,
-	arch_bad_count_tf, arch_test_processed_count: EV_TEXT_FIELD
+	node_map_reference_model_check_button, remove_unused_codes_rb,
+	save_adl_check_button, save_adls_check_button: EV_CHECK_BUTTON
+	archetype_id, adl_version_text, arch_desc_status_text,
+	arch_desc_original_language_text, arch_desc_resource_package_text, arch_total_count_tf,
+	arch_spec_count_tf, arch_slotted_count_tf, arch_used_by_count_tf, arch_bad_count_tf,
+	arch_test_processed_count: EV_TEXT_FIELD
 	compiler_output_grid, archetype_test_tree_grid: EV_GRID
 	node_map_expand_button,
 	node_map_expand_one_button, node_map_collapse_one_button, arch_test_tree_toggle_expand_bn,

@@ -161,11 +161,32 @@ feature -- Commands
 
 	archetype_test_go_stop is
 			-- Start or stop a test run.
+		local
+			dialog: EV_WARNING_DIALOG
+			message: STRING
 		do
 			if test_execution_underway then
 				test_stop_requested := True
 			else
 				test_stop_requested := False
+
+				if gui.save_adl_check_button.is_selected and gui.save_adls_check_button.is_selected then
+					message := "ADL and ADLS"
+				elseif gui.save_adl_check_button.is_selected then
+					message := "ADL"
+				elseif gui.save_adls_check_button.is_selected then
+					message := "ADLS"
+				end
+
+				if message /= Void then
+					message := "This will overwrite all selected " + message + " files.%N%NDo you want to continue?";
+					create dialog.make_with_text (message)
+					dialog.set_title ("Overwriting Archetypes")
+					dialog.set_buttons (<<"Stop", "Go">>)
+					dialog.show_modal_to_window (gui)
+					test_stop_requested := dialog.selected_button.is_equal ("Stop")
+				end
+
 				test_execution_underway := True
 				gui.archetype_test_go_bn.set_pixmap (pixmaps ["stop"])
 				gui.archetype_test_go_bn.set_text ("Stop")
@@ -356,13 +377,31 @@ feature -- Tests
 			end
 		end
 
+	test_save_flat: INTEGER is
+			-- parse archetype, save in flat form and return result
+		do
+			Result := test_failed
+
+			if gui.save_adl_check_button.is_selected and archetype_parser.archetype_valid then
+				archetype_parser.save_archetype_flat
+
+				if archetype_parser.save_succeeded then
+					Result := test_passed
+				else
+					test_status.append (archetype_parser.status + "%N")
+				end
+			else
+				Result := test_not_applicable
+			end
+		end
+
 	test_save_differential: INTEGER is
 			-- parse archetype, save in source form and return result
 		do
 			Result := test_failed
 			create test_orig_differential_source.make_empty
 
-			if archetype_parser.archetype_valid then
+			if gui.save_adls_check_button.is_selected and archetype_parser.archetype_valid then
 				archetype_parser.save_archetype_differential
 
 				if archetype_parser.save_succeeded then
@@ -376,22 +415,6 @@ feature -- Tests
 			end
 		ensure
 			test_orig_differential_source_attached: test_orig_differential_source /= Void
-		end
-
-	test_save_flat: INTEGER is
-			-- parse archetype, save in flat form and return result
-		do
-			Result := test_failed
-			if archetype_parser.archetype_valid then
-				archetype_parser.save_archetype_flat
-				if archetype_parser.save_succeeded then
-					Result := test_passed
-				else
-					test_status.append (archetype_parser.status + "%N")
-				end
-			else
-				Result := test_not_applicable
-			end
 		end
 
 	test_reparse_differential: INTEGER is
