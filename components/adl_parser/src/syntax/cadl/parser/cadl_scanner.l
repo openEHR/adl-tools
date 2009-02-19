@@ -365,10 +365,18 @@ P[yY]?[mM]?[Ww]?[dD]? {
 
 -- this is an attempt to match a dADL section inside cADL. It will probably never work properly since 
 -- there can be '>' inside "||" ranges, and also strings containing any character, e.g. units string
--- contining "{}" chars. The real solution is to use the dADL parser on the buffer from the current
+-- containing "{}" chars. The real solution is to use the dADL parser on the buffer from the current
 -- point on and be able to fast-forward the cursor to the last character matched by the dADL scanner
 
-[A-Z][a-zA-Z0-9_]*[	 \n]*< 			{	-- match a pattern like 'Type_Identifier whitespace <'
+-- The following version is deprecated, since it does not have the ADL 1.4 dADL parentheses. It should
+-- be removed when there are no longer any archetypes containing it.
+[A-Z]{IDCHAR}*[	 \n]*< 			{	-- match a pattern like 'Type_Identifier whitespace <'
+				set_start_condition (IN_C_DOMAIN_TYPE)
+				in_buffer.append_string (text)
+			}
+
+-- The following version is the correct version.
+\([A-Z]{IDCHAR}*\)[	 \n]*< 			{	-- match a pattern like '(Type_Identifier) whitespace <'
 				set_start_condition (IN_C_DOMAIN_TYPE)
 				in_buffer.append_string (text)
 			}
