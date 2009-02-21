@@ -340,7 +340,7 @@ feature -- Commands
 			end
 		end
 
-feature -- Tests
+feature {NONE} -- Tests
 
 	test_parse: INTEGER is
 			-- parse archetype and return result
@@ -423,23 +423,30 @@ feature -- Tests
 			new_adl_file_path: STRING
 		do
 			Result := test_failed
-			new_adl_file_path := archetype_parser.target.differential_path
+			new_adl_file_path := archetype_parser.target.differential_path	-- FIXME: `new_adl_file_path' is unused!
 			archetype_parser.parse_archetype
+
 			if archetype_parser.archetype_valid then
 				Result := test_passed
 				test_status.append ("Parse succeeded%N" + archetype_parser.status)
 			else
 				test_status.append ("Parse failed; reason: " + archetype_parser.status + "%N")
 			end
+		ensure
+			-- FIXME: The following postcondition fails. This in turn causes `test_diff' to be meaningless:
+			-- source_regenerated: Result = test_passed implies archetype_parser.serialised_differential /= old archetype_parser.serialised_differential
 		end
 
 	test_diff: INTEGER is
 			-- parse archetype and return result
+		require
+			test_orig_differential_source_attached: test_orig_differential_source /= Void
 		local
 			original_source, new_source: STRING
 		do
 			Result := Test_failed
-			if archetype_parser.archetype_valid then
+
+			if archetype_parser.archetype_valid and not test_orig_differential_source.is_empty then
 				original_source := test_orig_differential_source
 				new_source := archetype_parser.serialised_differential
 
@@ -453,7 +460,7 @@ feature -- Tests
 					test_status.append ("Archetype source lengths differ: original =  " + original_source.count.out + "; new = " + new_source.count.out + "%N")
 				end
 			else
-				test_status.append ("Archetype save failed%N")
+				Result := test_not_applicable
 			end
 		end
 
