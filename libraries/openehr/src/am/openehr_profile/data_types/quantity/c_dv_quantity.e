@@ -20,13 +20,6 @@ inherit
 			default_create, enter_subtree, exit_subtree, node_conforms_to
 		end
 
-	TYPE_UTILITIES
-		export
-			{NONE} all
-		undefine
-			default_create
-		end
-
 	EXTERNAL_ENVIRONMENT_ACCESS
 		export
 			{ANY} has_property

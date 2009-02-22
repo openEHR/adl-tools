@@ -19,11 +19,6 @@ inherit
 			{NONE} all
 		end
 
-	TYPE_UTILITIES
-		export
-			{NONE} all
-		end
-
 feature {NONE} -- Definitions
 
 	primitive_types: ARRAYED_LIST[INTEGER] is

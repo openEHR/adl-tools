@@ -19,6 +19,11 @@ class DT_OBJECT_CONVERTER
 inherit
 	DT_FACTORY
 
+	TYPE_UTILITIES
+		export
+			{NONE} all
+		end
+
 	MESSAGE_BILLBOARD
 		export
 			{NONE} all
@@ -140,7 +145,7 @@ feature -- Conversion
 					io.put_string("%T(return)%N")
 				end
 			else
-io.put_string ("ENTERED DT_OBJECT_CONVERTER.populate_prim_type_attribute exception path%N")
+io.put_string ("ENTERED DT_OBJECT_CONVERTER.populate_prim_type_attribute exception path - see code%N")
 				-- FIXME: all this code just to handle expanded nonconformance of INTERVAL[INTEGER] -> INTERVAL[PART_COMPARABLE]
 				-- REMOVE when this problem fixed
 				if {oe_ivl_integer: INTERVAL[INTEGER]} fld_val then
