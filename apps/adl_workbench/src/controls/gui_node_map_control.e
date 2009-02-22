@@ -84,6 +84,9 @@ feature -- Status Report
 	in_reference_model_mode: BOOLEAN
 			-- True if reference model should be visible in tree
 
+	in_reference_model_mode_changed: BOOLEAN
+			-- True if last call to set/unset in_reference_model_mode changed the flag's value
+
 	is_expanded: BOOLEAN
 			-- True if last whole tree operation was expand
 
@@ -112,6 +115,7 @@ feature -- Commands
 	set_reference_model_mode
 			-- Set `in_reference_model_mode' on.
 		do
+			in_reference_model_mode_changed := not in_reference_model_mode
 			in_reference_model_mode := True
 			set_show_reference_model_view (True)
 			repopulate
@@ -120,6 +124,7 @@ feature -- Commands
 	set_no_reference_model_mode
 			-- Set `in_reference_model_mode' off.
 		do
+			in_reference_model_mode_changed := in_reference_model_mode
 			in_reference_model_mode := False
 			set_show_reference_model_view (False)
 			repopulate
@@ -175,10 +180,13 @@ feature -- Commands
 			-- populate the ADL tree control by traversing the tree and modifying it
 		do
 			gui_tree.recursive_do_all (agent node_rebuild_enter_action (?))
-			if in_reference_model_mode then
-				gui_tree.recursive_do_all (agent node_add_rm_attributes (?))
-			else
-				gui_tree.recursive_do_all (agent node_remove_rm_attributes (?))
+			if in_reference_model_mode_changed then
+				if in_reference_model_mode then
+					gui_tree.recursive_do_all (agent node_add_rm_attributes (?))
+				else
+					gui_tree.recursive_do_all (agent node_remove_rm_attributes (?))
+				end
+				in_reference_model_mode_changed := False
 			end
 		end
 
@@ -677,12 +685,7 @@ feature {NONE} -- Implementation
 						end
 						from props.start until props.off loop
 							if not c_c_o.has_attribute(props.key_for_iteration) then
-								if props.item_for_iteration.is_container then
-									pixmap := pixmaps.item("C_ATTRIBUTE.multiple.reference_model")
-								else
-									pixmap := pixmaps.item("C_ATTRIBUTE.reference_model")
-								end
-
+								pixmap := pixmaps.item(rm_attribute_pixmap_string(props.item_for_iteration))
 								create attr_ti.make_with_text (utf8 (props.key_for_iteration + ": " + props.item_for_iteration.type.as_type_string))
 								attr_ti.set_data (props.item_for_iteration)
 								attr_ti.set_pixmap (pixmap)
@@ -858,19 +861,32 @@ feature {NONE} -- Implementation
 			-- string name of pixmap for attribute c_attr
 		do
 			create Result.make(0)
+			Result.append("C_ATTRIBUTE")
 			if c_attr.is_multiple then
 				if c_attr.cardinality.interval.lower > 0 then
-					Result.append("C_ATTRIBUTE.multiple")
+					Result.append(".multiple")
 				else
-					Result.append("C_ATTRIBUTE.multiple.optional")
+					Result.append(".multiple.optional")
 				end
 			else
-				if c_attr.existence.lower = 1 then
-					Result.append("C_ATTRIBUTE")
-				else
-					Result.append("C_ATTRIBUTE.optional")
+				if c_attr.existence.lower = 0 then
+					Result.append(".optional")
 				end
 			end
+		end
+
+	rm_attribute_pixmap_string(rm_attr: BMM_PROPERTY_DEFINITION): STRING is
+			-- string name of pixmap for attribute rm_attr
+		do
+			create Result.make(0)
+			Result.append("C_ATTRIBUTE")
+			if rm_attr.is_container then
+				Result.append(".multiple")
+			end
+			if not rm_attr.is_mandatory then
+				Result.append(".optional")
+			end
+			Result.append(".reference_model")
 		end
 
 	c_complex_object_string(a_node: C_COMPLEX_OBJECT): STRING is

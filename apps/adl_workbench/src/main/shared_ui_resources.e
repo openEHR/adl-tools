@@ -240,6 +240,8 @@ feature -- Access
 
 			Result.force (["node_reference_model/c_attribute.ico", Void], "C_ATTRIBUTE.reference_model")
 			Result.force (["node_reference_model/c_attribute_multiple.ico", Void], "C_ATTRIBUTE.multiple.reference_model")
+			Result.force (["node_reference_model/c_attribute_optional.ico", Void], "C_ATTRIBUTE.optional.reference_model")
+			Result.force (["node_reference_model/c_attribute_multiple_optional.ico", Void], "C_ATTRIBUTE.multiple.optional.reference_model")
 
 			Result.force (["pass.ico", Void], "test_passed")
 			Result.force (["fail.ico", Void], "test_failed")
