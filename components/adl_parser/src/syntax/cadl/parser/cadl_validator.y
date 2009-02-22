@@ -2445,9 +2445,9 @@ feature {NONE} -- Implementation
 					ar.extend(an_obj.occurrences.as_string)
 					s := create_message("VACMC", ar)
 				elseif not an_obj.is_addressable then
-					s := create_message("VACMM", ar)
-				elseif an_attr.has_child_with_id(an_obj.node_id) then
 					s := create_message("VACMI", ar)
+				elseif an_attr.has_child_with_id(an_obj.node_id) then
+					s := create_message("VACMM", ar)
 				else
 					Result := True
 				end
