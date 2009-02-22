@@ -62,6 +62,12 @@ feature -- Status Report
 			Result := interval.contains(other.interval)
 		end
 
+	is_open: BOOLEAN is
+			-- True if this interval imposes no constraints, i.e. is set to 0..*
+		do
+			Result := interval.is_open
+		end
+
 feature -- Modification
 
 	set_unordered is

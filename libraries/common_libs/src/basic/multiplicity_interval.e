@@ -29,7 +29,12 @@ create
 	default_create,
 	make_bounded,
 	make_upper_unbounded,
-	make_point
+	make_point,
+	make_from_interval,
+	make_open
+
+convert
+	make_from_interval({INTERVAL[INTEGER]})
 
 feature -- Initialisation
 
@@ -42,17 +47,46 @@ feature -- Initialisation
 		ensure
 			Lower_set: lower = a_lower
 			Upper_set: upper = an_upper
+			Bounded_lower: not lower_unbounded
+			Bounded_upper: not upper_unbounded
 		end
 
 	make_upper_unbounded(a_lower: INTEGER) is
 			-- make an interval from `a_lower' to +infinity
-		require
-			Lower_exists: a_lower /= Void
 		do
 			make_upper_unbounded_interval(a_lower, True)
 		ensure
 			Lower_set: lower = a_lower
+			Bounded_lower: not lower_unbounded
 			Upper_unbounded: upper_unbounded
+		end
+
+	make_from_interval (an_int: INTERVAL[INTEGER]) is
+			-- make from a standard INTERVAL[INTEGER]
+		do
+			lower := an_int.lower
+			upper := an_int.upper
+			lower_included := True
+			upper_included := an_int.upper_included
+			upper_unbounded := an_int.upper_unbounded
+		end
+
+	make_open is
+			-- make an open interval from 0 to +infinity
+		do
+			make_upper_unbounded_interval(0, True)
+		ensure
+			Lower_set: lower = 0
+			Bounded_lower: not lower_unbounded
+			Upper_unbounded: upper_unbounded
+		end
+
+feature -- Status Report
+
+	is_open: BOOLEAN is
+			-- True if this interval imposes no constraints, i.e. is set to 0..*
+		do
+			Result := lower = 0 and upper_unbounded
 		end
 
 feature -- Operations
