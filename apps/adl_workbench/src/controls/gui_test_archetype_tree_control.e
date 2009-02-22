@@ -49,6 +49,11 @@ inherit
 			{NONE} all
 		end
 
+	ARCHETYPE_DEFINITIONS
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -403,7 +408,6 @@ feature {NONE} -- Tests
 
 			if gui.save_adls_check_button.is_selected and archetype_parser.archetype_valid then
 				archetype_parser.save_archetype_differential
-
 				if archetype_parser.save_succeeded then
 					Result := test_passed
 					test_orig_differential_source := archetype_parser.serialised_differential
@@ -419,22 +423,18 @@ feature {NONE} -- Tests
 
 	test_reparse_differential: INTEGER is
 			-- parse archetype and return result
-		local
-			new_adl_file_path: STRING
 		do
 			Result := test_failed
-			new_adl_file_path := archetype_parser.target.differential_path	-- FIXME: `new_adl_file_path' is unused!
 			archetype_parser.parse_archetype
-
 			if archetype_parser.archetype_valid then
+				archetype_parser.serialise_archetype (Archetype_native_syntax)
 				Result := test_passed
 				test_status.append ("Parse succeeded%N" + archetype_parser.status)
 			else
 				test_status.append ("Parse failed; reason: " + archetype_parser.status + "%N")
 			end
 		ensure
-			-- FIXME: The following postcondition fails. This in turn causes `test_diff' to be meaningless:
-			-- source_regenerated: Result = test_passed implies archetype_parser.serialised_differential /= old archetype_parser.serialised_differential
+			source_regenerated: Result = test_passed implies archetype_parser.serialised_differential /= old archetype_parser.serialised_differential
 		end
 
 	test_diff: INTEGER is
@@ -442,22 +442,19 @@ feature {NONE} -- Tests
 		require
 			test_orig_differential_source_attached: test_orig_differential_source /= Void
 		local
-			original_source, new_source: STRING
+			new_source: STRING
 		do
 			Result := Test_failed
-
 			if archetype_parser.archetype_valid and not test_orig_differential_source.is_empty then
-				original_source := test_orig_differential_source
 				new_source := archetype_parser.serialised_differential
-
-				if original_source.count = new_source.count then
-					if original_source.same_string (new_source) then
+				if test_orig_differential_source.count = new_source.count then
+					if test_orig_differential_source.same_string (new_source) then
 						Result := Test_passed
 					else
 						test_status.append ("Archetype source lengths same but texts differ%N")
 					end
 				else
-					test_status.append ("Archetype source lengths differ: original =  " + original_source.count.out + "; new = " + new_source.count.out + "%N")
+					test_status.append ("Archetype source lengths differ: original =  " + test_orig_differential_source.count.out + "; new = " + new_source.count.out + "%N")
 				end
 			else
 				Result := test_not_applicable
