@@ -357,25 +357,17 @@ feature {NONE} -- Implementation
 
 	initialise_serialisers is
 		once
-			archetype_serialisers.put(create {ADL_SYNTAX_SERIALISER}.make(create {NATIVE_ADL_SERIALISATION_PROFILE}.make("adl")), "adl")
-			archetype_serialisers.put(create {ADL_SYNTAX_SERIALISER}.make(create {HTML_ADL_SERIALISATION_PROFILE}.make("html")), "html")
-			-- archetype_serialisers.put(create {ADL_TAGGED_SERIALISER}.make(create {XML_ADL_SERIALISATION_PROFILE}.make("xml")), "xml")
-			-- archetype_serialisers.put(create {ADL_OWL_SERIALISER}.make(create {OWL_ADL_SERIALISATION_PROFILE}.make("owl")), "owl")
+			archetype_serialisers.put(create {ADL_SYNTAX_SERIALISER}.make(create {NATIVE_ADL_SERIALISATION_PROFILE}.make(Archetype_native_syntax)), Archetype_native_syntax)
+			archetype_serialisers.put(create {ADL_SYNTAX_SERIALISER}.make(create {HTML_ADL_SERIALISATION_PROFILE}.make(Archetype_web_syntax)), Archetype_web_syntax)
 
-			c_serialisers.put(create {CADL_SYNTAX_SERIALISER}.make(create {NATIVE_CADL_SERIALISATION_PROFILE}.make("adl")), "adl")
-			c_serialisers.put(create {CADL_SYNTAX_SERIALISER}.make(create {HTML_CADL_SERIALISATION_PROFILE}.make("html")), "html")
-			-- c_serialisers.put(create {CADL_TAGGED_SERIALISER}.make(create {XML_CADL_SERIALISATION_PROFILE}.make("xml")), "xml")
-			-- c_serialisers.put(create {CADL_OWL_SERIALISER}.make(create {OWL_CADL_SERIALISATION_PROFILE}.make("owl")), "owl")
+			c_serialisers.put(create {CADL_SYNTAX_SERIALISER}.make(create {NATIVE_CADL_SERIALISATION_PROFILE}.make(Archetype_native_syntax)), Archetype_native_syntax)
+			c_serialisers.put(create {CADL_SYNTAX_SERIALISER}.make(create {HTML_CADL_SERIALISATION_PROFILE}.make(Archetype_web_syntax)), Archetype_web_syntax)
 
-			assertion_serialisers.put(create {ASSERTION_SYNTAX_SERIALISER}.make(create {NATIVE_CADL_SERIALISATION_PROFILE}.make("adl")), "adl")
-			assertion_serialisers.put(create {ASSERTION_SYNTAX_SERIALISER}.make(create {HTML_CADL_SERIALISATION_PROFILE}.make("html")), "html")
-			-- assertion_serialisers.put(create {ASSERTION_TAGGED_SERIALISER}.make(create {XML_CADL_SERIALISATION_PROFILE}.make("xml")), "xml")
-			-- assertion_serialisers.put(create {ASSERTION_OWL_SERIALISER}.make(create {OWL_CADL_SERIALISATION_PROFILE}.make("owl")), "owl")
+			assertion_serialisers.put(create {ASSERTION_SYNTAX_SERIALISER}.make(create {NATIVE_CADL_SERIALISATION_PROFILE}.make(Archetype_native_syntax)), Archetype_native_syntax)
+			assertion_serialisers.put(create {ASSERTION_SYNTAX_SERIALISER}.make(create {HTML_CADL_SERIALISATION_PROFILE}.make(Archetype_web_syntax)), Archetype_web_syntax)
 
-			dt_serialisers.put(create {DADL_SYNTAX_SERIALISER}.make(create {NATIVE_DADL_SERIALISATION_PROFILE}.make("adl")), "adl")
-			dt_serialisers.put(create {DADL_SYNTAX_SERIALISER}.make(create {HTML_DADL_SERIALISATION_PROFILE}.make("html")), "html")
-			-- dt_serialisers.put(create {DADL_TAGGED_SERIALISER}.make(create {XML_DADL_SERIALISATION_PROFILE}.make("xml")), "xml")
-			-- dt_serialisers.put(create {DADL_OWL_SERIALISER}.make(create {OWL_DADL_SERIALISATION_PROFILE}.make("owl")), "owl")
+			dt_serialisers.put(create {DADL_SYNTAX_SERIALISER}.make(create {NATIVE_DADL_SERIALISATION_PROFILE}.make(Archetype_native_syntax)), Archetype_native_syntax)
+			dt_serialisers.put(create {DADL_SYNTAX_SERIALISER}.make(create {HTML_DADL_SERIALISATION_PROFILE}.make(Archetype_web_syntax)), Archetype_web_syntax)
 		end
 
 end

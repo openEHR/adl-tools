@@ -21,6 +21,9 @@ feature -- Definitions
 	Archetype_native_syntax: STRING is "adl"
 			-- Name of native ADL syntax type.
 
+	Archetype_web_syntax: STRING is "html"
+			-- Name of web publishing syntax type.
+
 	Archetype_flat_file_extension: STRING is ".adl"
 			-- Extension for flat form archetype files.
 

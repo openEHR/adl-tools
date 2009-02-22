@@ -287,7 +287,7 @@ feature -- Commands
 				status.wipe_out
 				save_succeeded := False
 				if archetype_valid then
-					serialised_differential := adl_engine.serialise(archetype_differential, "adl")
+					serialised_differential := adl_engine.serialise(archetype_differential, Archetype_native_syntax)
 					target.save_differential (serialised_differential)
 					save_succeeded := True
 				else
@@ -316,7 +316,7 @@ feature -- Commands
 				status.wipe_out
 				save_succeeded := False
 				if archetype_valid then
-					serialised_flat := adl_engine.serialise(archetype_flat, "adl")
+					serialised_flat := adl_engine.serialise(archetype_flat, Archetype_native_syntax)
 					target.save_flat (serialised_flat)
 					save_succeeded := True
 				else
