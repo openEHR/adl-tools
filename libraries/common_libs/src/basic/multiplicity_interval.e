@@ -31,7 +31,9 @@ create
 	make_upper_unbounded,
 	make_point,
 	make_from_interval,
-	make_open
+	make_open,
+	make_mandatory,
+	make_optional
 
 convert
 	make_from_interval({INTERVAL[INTEGER]})
@@ -77,8 +79,30 @@ feature -- Initialisation
 			make_upper_unbounded_interval(0, True)
 		ensure
 			Lower_set: lower = 0
-			Bounded_lower: not lower_unbounded
+			Lower_bounded: not lower_unbounded
 			Upper_unbounded: upper_unbounded
+		end
+
+	make_optional is
+			-- make an interval representing optionality, i.e. 0..1
+		do
+			make_bounded_interval(0, 1, True, True)
+		ensure
+			Lower_set: lower = 0
+			Upper_set: upper = 1
+			Lower_bounded: not lower_unbounded
+			Upper_bounded: not upper_unbounded
+		end
+
+	make_mandatory is
+			-- make an interval representing mandatoryness, i.e. 1..1
+		do
+			make_point(1)
+		ensure
+			Lower_set: lower = 1
+			Upper_set: upper = 1
+			Lower_bounded: not lower_unbounded
+			Upper_bounded: not upper_unbounded
 		end
 
 feature -- Status Report
@@ -87,6 +111,12 @@ feature -- Status Report
 			-- True if this interval imposes no constraints, i.e. is set to 0..*
 		do
 			Result := lower = 0 and upper_unbounded
+		end
+
+	is_optional: BOOLEAN is
+			-- True if this interval expresses optionality, i.e. 0..1
+		do
+			Result := lower = 0 and upper = 1
 		end
 
 feature -- Operations

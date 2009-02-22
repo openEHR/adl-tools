@@ -587,6 +587,8 @@ feature {NONE} -- Implementation
 						if rm_checker.has_property (arch_attr_type, co.parent.rm_attribute_name) and not
 											rm_checker.valid_property_type (arch_attr_type, co.parent.rm_attribute_name, co.rm_type_name) then
 							model_attr_class := rm_checker.property_type (arch_attr_type, co.parent.rm_attribute_name)
+
+							-- flag if constraint is equal to reference model; FUTURE: remove if equal
 							if rm_checker.substitutions.has (co.rm_type_name) and then rm_checker.substitutions.item (co.rm_type_name).is_equal (model_attr_class) then
 								add_info("ICORMTS", <<co.rm_type_name, co.path, model_attr_class,
 									arch_attr_type, co.parent.rm_attribute_name>>)
@@ -613,14 +615,16 @@ feature {NONE} -- Implementation
 						add_error("VCARM", <<ca.rm_attribute_name, ca.path , arch_attr_type>>)
 					else
 						prop_def := rm_checker.property_definition(arch_attr_type, ca.rm_attribute_name)
-						if prop_def.existence.contains(ca.existence) then
-							if prop_def.existence.is_equal(ca.existence) then
-								add_warning("WCAEX", <<ca.rm_attribute_name, ca.path, ca.existence.as_string>>)
+						if not ca.existence.is_optional then
+							if prop_def.existence.contains(ca.existence) then
+								if prop_def.existence.is_equal(ca.existence) then
+									add_warning("WCAEX", <<ca.rm_attribute_name, ca.path, ca.existence.as_string>>)
+								end
+							else
+								add_error("VCAEX", <<ca.rm_attribute_name, ca.path, ca.existence.as_string, prop_def.existence.as_string>>)
 							end
-						else
-							add_error("VCAEX", <<ca.rm_attribute_name, ca.path, ca.existence.as_string, prop_def.existence.as_string>>)
 						end
-						if ca.is_multiple then
+						if ca.is_multiple and not ca.cardinality.is_open then
 							if {cont_prop: BMM_CONTAINER_PROPERTY} prop_def then
 								if cont_prop.type.cardinality.contains(ca.cardinality.interval) then
 									if cont_prop.type.cardinality.is_equal(ca.cardinality.interval) then
@@ -634,6 +638,7 @@ feature {NONE} -- Implementation
 							end
 						end
 						if rm_checker.property_definition(arch_attr_type, ca.rm_attribute_name).is_computed then
+							-- flag if constraint is equal to reference model; FUTURE: remove if equal
 							add_info("ICARMC", <<ca.rm_attribute_name, ca.path , arch_attr_type>>)
 						end
 					end

@@ -163,12 +163,19 @@ feature -- Access
 			Result.force (["archetype_warning_3.ico", "Archetype in the work repository (parsed and compiled with warnings)"], "archetype_warning_3")
 			Result.force (["archetype_valid_3.ico", "Archetype in the work repository (parsed and compiled)"], "archetype_valid_3")
 
-			Result.force ([Void, ""], "Gap in the help")
+			Result.force ([Void, ""], "Gap 1 in the help")
 
 			Result.force (["node_normal/c_attribute.ico", "Single-valued attribute (mandatory)"], "C_ATTRIBUTE")
 			Result.force (["node_normal/c_attribute_optional.ico", "Single-valued attribute (optional)"], "C_ATTRIBUTE.optional")
 			Result.force (["node_normal/c_attribute_multiple.ico", "Container attribute (mandatory)"], "C_ATTRIBUTE.multiple")
 			Result.force (["node_normal/c_attribute_multiple_optional.ico", "Container attribute (optional)"], "C_ATTRIBUTE.multiple.optional")
+
+			Result.force (["node_reference_model/c_attribute.ico", "Single-valued RM attribute (mandatory)"], "C_ATTRIBUTE.reference_model")
+			Result.force (["node_reference_model/c_attribute_multiple.ico", "Container RM attribute (mandatory)"], "C_ATTRIBUTE.multiple.reference_model")
+			Result.force (["node_reference_model/c_attribute_optional.ico", "Single-valued RM attribute (optional)"], "C_ATTRIBUTE.optional.reference_model")
+			Result.force (["node_reference_model/c_attribute_multiple_optional.ico", "Container RM attribute (optional)"], "C_ATTRIBUTE.multiple.optional.reference_model")
+
+			Result.force ([Void, ""], "Gap 2 in the help")
 
 			Result.force (["node_normal/c_code_phrase.ico", "C_CODE_PHRASE (openEHR archetype profile)"], "C_CODE_PHRASE")
 			Result.force (["node_normal/c_dv_ordinal.ico", "C_DV_ORDINAL (openEHR archetype profile)"], "C_DV_ORDINAL")
@@ -237,11 +244,6 @@ feature -- Access
 			Result.force (["node_redefined/term.ico", Void], "TERM.redefined")
 			Result.force (["node_redefined/ordinal.ico", Void], "ORDINAL.redefined")
 			Result.force (["node_normal/archetype_slot_optional.ico", Void], "ARCHETYPE_SLOT.optional.redefined")
-
-			Result.force (["node_reference_model/c_attribute.ico", Void], "C_ATTRIBUTE.reference_model")
-			Result.force (["node_reference_model/c_attribute_multiple.ico", Void], "C_ATTRIBUTE.multiple.reference_model")
-			Result.force (["node_reference_model/c_attribute_optional.ico", Void], "C_ATTRIBUTE.optional.reference_model")
-			Result.force (["node_reference_model/c_attribute_multiple_optional.ico", Void], "C_ATTRIBUTE.multiple.optional.reference_model")
 
 			Result.force (["pass.ico", Void], "test_passed")
 			Result.force (["fail.ico", Void], "test_failed")

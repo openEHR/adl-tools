@@ -15,12 +15,18 @@ class C_ATTRIBUTE
 
 inherit
 	ARCHETYPE_CONSTRAINT
-
 		redefine
 			default_create, parent, representation, path
 		end
 
 	ARCHETYPE_TERM_CODE_TOOLS
+		export {NONE}
+			all
+		undefine
+			default_create
+		end
+
+	C_COMMON
 		export {NONE}
 			all
 		undefine
@@ -36,7 +42,7 @@ feature -- Initialisation
 			--
 		do
 			create children.make (0)
-			set_existence (create {MULTIPLICITY_INTERVAL}.make_point (1))
+			set_existence (default_existence.deep_twin)
 		end
 
 	make_single(a_name: STRING) is
@@ -360,7 +366,7 @@ feature -- Comparison
 		require
 			other_attached: other /= Void
 		do
-			Result := existence.is_equal (other.existence) or other.existence.contains (existence)
+			Result := existence.is_open or existence.is_equal (other.existence) or other.existence.contains (existence)
 		end
 
 	cardinality_conforms_to (other: like Current): BOOLEAN is
@@ -368,7 +374,7 @@ feature -- Comparison
 		require
 			other_attached: other /= Void
 		do
-			Result := cardinality.interval.is_equal (other.cardinality.interval) or other.cardinality.contains (cardinality)
+			Result :=  cardinality.is_open or cardinality.interval.is_equal (other.cardinality.interval) or other.cardinality.contains (cardinality)
 		end
 
 feature -- Modification

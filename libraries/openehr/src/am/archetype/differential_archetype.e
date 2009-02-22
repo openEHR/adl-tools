@@ -62,7 +62,7 @@ feature -- Initialisation
 			Flat_archetype_valid: a_flat /= Void
 		local
 			cco_prev, cco_next: C_OBJECT
-			list_builder: C_ITERATOR
+			c_it: C_ITERATOR
 			a_flat_copy: FLAT_ARCHETYPE
 		do
 			a_flat_copy := a_flat.deep_twin
@@ -77,8 +77,8 @@ feature -- Initialisation
 				-- using rolled_up_specialisation statuses in nodes of definition
 				-- generate a list of nodes/paths for deletion from a flat-form archetype
 				create inherited_subtree_list.make(0)
-				create list_builder.make(definition)
-				list_builder.do_at_surface(
+				create c_it.make(definition)
+				c_it.do_at_surface(
 					agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER) do inherited_subtree_list.put (a_c_node, a_c_node.path) end,
 					agent (a_c_node: ARCHETYPE_CONSTRAINT):BOOLEAN do Result := a_c_node.rolled_up_specialisation_status.value = ss_inherited end
 				)
@@ -105,7 +105,7 @@ feature -- Initialisation
 					inherited_subtree_list.forth
 				end
 
-				-- remove inherited subtrees
+				-- now remove inherited subtrees
 				from
 					inherited_subtree_list.start
 				until
@@ -124,6 +124,12 @@ feature -- Initialisation
 					inherited_subtree_list.forth
 				end
 			end
+
+			-- now go and remove any existences that are the same as the reference model
+--			create c_it.make(definition)
+--			c_it.do_all(agent node_remove_defaults)
+
+			-- now rebuild all internal references, path cache etc
 			rebuild
 
 			is_generated := True

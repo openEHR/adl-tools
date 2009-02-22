@@ -23,16 +23,13 @@ inherit
 		end
 
 	SHARED_REFERENCE_MODEL_ACCESS
-		export {NONE}
-			all
-		end
 
 create
-	make
+	make_specialised, make_non_specialised
 
 feature -- Initialisation
 
-	make(a_flat_archetype: FLAT_ARCHETYPE; a_src_archetype: DIFFERENTIAL_ARCHETYPE) is
+	make_specialised(a_flat_archetype: FLAT_ARCHETYPE; a_src_archetype: DIFFERENTIAL_ARCHETYPE) is
 			-- create with flat archetype of parent and source (differential) archetype of
 			-- archetype for which we wish to generate a flat archetype
 		require
@@ -41,6 +38,14 @@ feature -- Initialisation
 			Comparability: comparable_archetypes(a_flat_archetype, a_src_archetype)
 		do
 			arch_parent_flat := a_flat_archetype
+			arch_child_diff := a_src_archetype
+		end
+
+	make_non_specialised(a_src_archetype: DIFFERENTIAL_ARCHETYPE) is
+			-- create with source (differential) archetype
+		require
+			Src_archetype_attached: a_src_archetype /= Void
+		do
 			arch_child_diff := a_src_archetype
 		end
 
@@ -57,8 +62,10 @@ feature -- Access
 
 feature -- Commands
 
-	flatten_archetype is
+	flatten_specialised_archetype is
 			-- create a flat form archetype in `arch_output_flat'
+		require
+			Source_archetype_specialised: arch_child_diff.is_specialised
 		do
 			debug ("flatten")
 				io.put_string ("============== flattening archetype " + arch_child_diff.archetype_id.as_string + " with " +
@@ -74,6 +81,18 @@ feature -- Commands
 			arch_output_flat.set_is_valid (True)
 		ensure
 			arch_output_flat /= Void
+		end
+
+	rm_flatten_archetype is
+			-- flatten non-specialised archetype with respect to reference model
+		require
+			Rm_available: rm_checker.model_loaded
+			Source_archetype_not_specialised: not arch_child_diff.is_specialised
+		local
+			def_it: C_ITERATOR
+		do
+			create def_it.make(arch_child_diff.definition)
+			def_it.do_all(agent rm_node_flatten_enter, agent rm_node_flatten_exit)
 		end
 
 feature -- Comparison
@@ -481,6 +500,37 @@ feature {NONE} -- Implementation
 			-- list of paths matched in parent archetype by child archetype nodes. Used to remember paths that
 			-- disappear due to being overwritten by a specialised node (e.g. at0013 becomes at0013.1 in the flat output)
 			-- but then specialised siblings (e.g. at0013.2, at0013.3) turn up and need to be grafted in.
+
+	rm_node_flatten_enter (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)  is
+			-- copy assumed elements of reference model to node
+		local
+			arch_attr_type, attr_parent_path, model_attr_class: STRING
+			co_parent_flat: C_OBJECT
+			apa: ARCHETYPE_PATH_ANALYSER
+			prop_def: BMM_PROPERTY_DEFINITION
+		do
+			if {ca: C_ATTRIBUTE} a_c_node then
+				arch_attr_type := ca.parent.rm_type_name -- can be a generic type like DV_INTERVAL <DV_QUANTITY>
+				attr_parent_path := ca.parent.path
+				prop_def := rm_checker.property_definition(arch_attr_type, ca.rm_attribute_name)
+
+				if ca.existence.is_open then
+					ca.set_existence(prop_def.existence.deep_twin)
+				end
+				if ca.is_multiple and not ca.cardinality.is_open then
+					if {cont_prop: BMM_CONTAINER_PROPERTY} prop_def then
+
+					end
+				end
+			end
+		end
+
+	rm_node_flatten_exit (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)  is
+		do
+		end
+
+invariant
+	Source_archetype_exists: arch_child_diff /= Void
 
 end
 

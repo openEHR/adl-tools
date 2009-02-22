@@ -179,14 +179,14 @@ feature -- Access
 			-------------- validity errors: unless otherwise notes, these codes are defined in the AOM 1.5 or later spec ------------------
 			["VASID"] = <"Error (VASID): specialised archetype id not based on specialisation parent archetype id">
 
-			["VARDT"] = <"Error (VARDT): archetype id type $1 does not match type $2 in definition section%N">
-			["VACSD"] = <"Error (VACSD): specialisation depth of concept code $1 does not match specialisation depth of archetype id $2%N">
-			["VACCD"] = <"Error (VACCD): archetype concept code $1 not used in definition%N">			
-			["VONSD"] = <"Error (VONSD): archetype code $1 in ontology more specialised than archetype%N">
+			["VARDT"] = <"Error (VARDT): archetype id type $1 does not match type $2 in definition section">
+			["VACSD"] = <"Error (VACSD): specialisation depth of concept code $1 does not match specialisation depth of archetype id $2">
+			["VACCD"] = <"Error (VACCD): archetype concept code $1 not used in definition">			
+			["VONSD"] = <"Error (VONSD): archetype code $1 in ontology more specialised than archetype">
 			["VOTM"] = <"Error (VOTM): translations missing in the term_definition and constraint_definition sections wit respect to languages defined in the description / translations section%N">
-			["VATCD"] = <"Error (VATCD): at-code $1 used in archetype more specialised than archetype%N">
-			["VATDF"] = <"Error (VATDF): node id at-code $1 not defined in ontology%N">
-			["VUNP"] = <"Error (VUNP): use_node path $1 not found in archetype%N">
+			["VATCD"] = <"Error (VATCD): at-code $1 used in archetype more specialised than archetype">
+			["VATDF"] = <"Error (VATDF): node id at-code $1 not defined in ontology">
+			["VUNP"] = <"Error (VUNP): use_node path $1 not found in archetype">
 
 			["VSONT"] = <"Error (VSONT): object node at path $1 AOM type $2 does not conform to node at parent path $3 AOM type $4">
 			["VSONCT"] = <"Error (VSONCT): object node at path $1 RM type $2 does not conform to node at parent path $3 RM type $4">
@@ -201,7 +201,7 @@ feature -- Access
 			["VSONIR"] = <"Error (VSONIR): object node at path $1 conforms to node at parent path but node_id $3 not redefined">
 			["VSCNR"] = <"Error (VSCNR): illegal redefinition of $1 node at $2 in parent into $3 node at $4 in child">
 
-			["VSSM"] = <"Error (VSSM): node at path $1 has order marker referring to non-existant sibling node $2%N">
+			["VSSM"] = <"Error (VSSM): node at path $1 has order marker referring to non-existant sibling node $2">
 
 			["VOBAV"] = <"Error (VOBAV): assumed value $1 not within constraint range">
 			["VOBAVL"] = <"Error (VOBAVL): assumed value $1 not found in constraint list"> -- additional to ADL spec
