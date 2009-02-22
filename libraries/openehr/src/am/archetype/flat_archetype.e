@@ -56,15 +56,15 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 			-- except for the definition, which is the flat parent version, so that the
 			-- differential definition can be overlaid on it by a merging process.
 		do
-			make(a_diff.archetype_id.deep_twin, a_diff.concept.deep_twin,
+			make (a_diff.archetype_id.deep_twin, a_diff.concept.deep_twin,
 					a_diff.original_language.code_string,
 					a_diff.description.deep_twin,
 					a_flat_parent.definition.deep_twin, a_diff.ontology.to_flat)
-			if a_flat_parent.has_translations then
+			if a_diff.has_translations then
 				translations := a_diff.translations.deep_twin
 			end
-			if a_flat_parent.has_invariants then
-				invariants := a_flat_parent.invariants.deep_twin
+			if a_diff.has_invariants then
+				invariants := a_diff.invariants.deep_twin
 			end
 			rebuild
 			is_valid := True
