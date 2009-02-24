@@ -54,6 +54,8 @@
 
 
 
+
+  
   
   
   
@@ -159,9 +161,12 @@
 
 
 
+
   
 
 
+  
+  
   
   
   
@@ -290,6 +295,8 @@
 
 
 
+
+  
   
   
   
@@ -318,6 +325,7 @@
 
 
 <body>
+
 
 
 
@@ -426,8 +434,10 @@
 
 
 
+
 <hr style="width: 100%; height: 2px;" />
 <h2>Download</h2>
+
 
 
 
@@ -466,7 +476,9 @@ The ADL Workbench is available for the following platforms (see <a href="https:/
 
 
 
+
 <br />
+
 
 
 
@@ -474,7 +486,9 @@ The ADL Workbench is available for the following platforms (see <a href="https:/
 
 
 
+
   <tbody>
+
 
 
 
@@ -482,7 +496,9 @@ The ADL Workbench is available for the following platforms (see <a href="https:/
 
 
 
+
       <td style="font-weight: bold; background-color: rgb(204, 204, 255);">Platform</td>
+
 
 
 
@@ -493,7 +509,9 @@ The ADL Workbench is available for the following platforms (see <a href="https:/
 
 
 
+
     </tr>
+
 
 
 
@@ -501,7 +519,9 @@ The ADL Workbench is available for the following platforms (see <a href="https:/
 
 
 
+
       <td style="font-weight: bold; background-color: rgb(204, 255, 255);">Windows</td>
+
 
 
 
@@ -512,7 +532,9 @@ The ADL Workbench is available for the following platforms (see <a href="https:/
 
 
 
+
     </tr>
+
 
 
 
@@ -520,7 +542,9 @@ The ADL Workbench is available for the following platforms (see <a href="https:/
 
 
 
+
       <td style="font-weight: bold; background-color: rgb(204, 255, 255);">Mac OS X 10.5 (Intel)</td>
+
 
 
 
@@ -531,7 +555,9 @@ The ADL Workbench is available for the following platforms (see <a href="https:/
 
 
 
+
     </tr>
+
 
 
 
@@ -539,7 +565,9 @@ The ADL Workbench is available for the following platforms (see <a href="https:/
 
 
 
+
       <td style="font-weight: bold; background-color: rgb(204, 255, 255);">Mac OS X  10.4 (PowerPC)</td>
+
 
 
 
@@ -550,7 +578,9 @@ The ADL Workbench is available for the following platforms (see <a href="https:/
 
 
 
+
     </tr>
+
 
 
 
@@ -558,7 +588,9 @@ The ADL Workbench is available for the following platforms (see <a href="https:/
 
 
 
+
       <td style="font-weight: bold; background-color: rgb(204, 255, 255);">Linux (32-bit Intel)</td>
+
 
 
 
@@ -569,15 +601,19 @@ The ADL Workbench is available for the following platforms (see <a href="https:/
 
 
 
+
     </tr>
 
 
 
+
+  
   
   
   
   </tbody>
 </table>
+
 
 
 
@@ -618,10 +654,17 @@ The ADL Workbench is available for the following platforms (see <a href="https:/
 
 
 
-The <span style="font-style: italic;">open</span>EHR archetypes are available from the <span style="font-style: italic;">open</span>EHR Subversion repository at <a href="http://www.openehr.org/svn/knowledge">http://www.openehr.org/svn/knowledge</a>. See below for specific instructions.
 
+The <span style="font-style: italic;">open</span>EHR archetypes are available from the Clinical Knowledge Manager (CKM) at <a href="http://www.openEHR.org/knowledge">http://www.openEHR.org/knowledge</a>.
+Obtain a login in order to download all the archetypes. This repository
+is gradually being populated with archetypes from various sources,
+including the&nbsp;<span style="font-style: italic;">open</span>EHR Subversion repository at <a href="http://www.openehr.org/svn/knowledge">http://www.openehr.org/svn/knowledge</a>,
+which is no longer being maintained. However, you may wish to access it
+to see archetypes that have not yet been inducted into the CKM. Note
+that such archetypes are not recommended for clinical use.
 
 <h2>Status</h2>
+
 
 
 
@@ -631,13 +674,17 @@ The <span style="font-style: italic;">open</span>EHR archetypes are available fr
 
 
 
+
 This ADL 1.5 preview build contains improved validation and flattening functionality:<br />
 
 
 
 
+
 <ul>
+
   <li>astly improved validation, with code-based error messages matching ADL 1.5 draft</li>
+
 
 
 
@@ -647,14 +694,18 @@ This ADL 1.5 preview build contains improved validation and flattening functiona
 
 
 
+
   <li>Ordering of children of multiply-valued attributes over inheritance</li>
+
 
   <li>Reference model based validation and visualisation</li>
 
 
 
 
+
 </ul>
+
 
 
 <span style="font-weight: bold; color: rgb(255, 0, 0);">This version of the workbench should generally be used except where less strict checking is required for legacy reasons.</span>
@@ -669,6 +720,7 @@ This ADL 1.5 preview build contains improved validation and flattening functiona
 
 
 <h2><span style="font-weight: bold;">Overview</span></h2>
+
 
 
 
@@ -740,7 +792,9 @@ This ADL 1.5 preview build contains improved validation and flattening functiona
 
 
 
+
   <tbody>
+
 
 
 
@@ -812,6 +866,7 @@ This ADL 1.5 preview build contains improved validation and flattening functiona
 
 
 
+
       <td>The ADL Workbench is a visual front-end for the <span style="font-style: italic;">open</span>EHR
 reference ADL parser. It can be used for <span style="font-weight: bold;">compiling, viewing</span> and <span style="font-weight: bold;">batch testing</span> archetypes created
 for any reference model, and in any number of languages. The tool is based on the <a href="http://www.openehr.org/svn/specification/TRUNK/publishing/architecture/am/adl.pdf">ADL 1.4 language specification</a>, the <a href="http://www.openehr.org/svn/specification/TRUNK/publishing/architecture/am/aom.pdf">Archetype Object Model (AOM) specification</a>, and the <a href="http://www.openehr.org/svn/specification/TRUNK/publishing/architecture/am/openehr_archetype_profile.pdf"><span style="font-style: italic;">open</span>EHR archetype Profile</a> specification.<br />
@@ -848,7 +903,9 @@ for any reference model, and in any number of languages. The tool is based on th
 
 
 
+
       <br />
+
 
 
 
@@ -942,7 +999,9 @@ The two parts of the tool are the <span style="font-weight: bold;">Compiler</spa
 
 
 
+
       <td><a href="images/overview.png"><img style="border: 0px solid ; width: 100px; height: 80px;" alt="ADL workbench" src="images/tn/overview.jpg" /></a><br />
+
 
 
 
@@ -1012,7 +1071,9 @@ Compiler<br />
 
 
 
+
       </td>
+
 
 
 
@@ -1080,7 +1141,9 @@ Compiler<br />
 
 
 
+
 Tester</td>
+
 
 
 
@@ -1152,6 +1215,8 @@ Tester</td>
 
 
 
+
+  
   
   
   
@@ -1224,7 +1289,9 @@ Tester</td>
 
 
 
+
 <br />
+
 
 
 
@@ -1252,7 +1319,9 @@ Tester</td>
 
 
 
+
 <ul>
+
 
 
 
@@ -1280,7 +1349,9 @@ Tester</td>
 
 
 
+
   <li><a href="adl_workbench_help-getting_started.htm">Getting started</a></li>
+
 
 
 
@@ -1308,6 +1379,7 @@ Tester</td>
 
 
 
+
   <li><a href="adl_workbench_help-view.htm">Viewing</a></li>
 
 
@@ -1318,7 +1390,9 @@ Tester</td>
 
 
 
+
   <li><a href="adl_workbench_help-files.html">File access</a></li>
+
 
 
 
@@ -1346,7 +1420,9 @@ Tester</td>
 
 
 
+
   <li><a href="adl_workbench_help-test_archetypes.html">Test archetypes</a></li>
+
 
 
 
@@ -1414,9 +1490,11 @@ Tester</td>
 
 
 
+
 <hr style="width: 100%; height: 2px;" />
 <p class="footer">$LastChangedDate: $
 $LastChangedRevision$</p>
+
 
 
 
