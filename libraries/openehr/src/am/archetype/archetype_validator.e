@@ -541,8 +541,8 @@ feature {NONE} -- Implementation
 						elseif co_child_diff.is_addressable then
 							if not co_child_diff.node_id_conforms_to (co_parent_flat) then
 								add_error("VSONCI", <<co_child_diff.path, co_child_diff.node_id, co_parent_flat.path, co_parent_flat.node_id>>)
-							elseif co_child_diff.node_id.is_equal(co_parent_flat.node_id) then
-								add_error("VSONIR", <<co_child_diff.path, co_parent_flat.path, co_child_diff.node_id>>)
+							elseif co_child_diff.node_id.is_equal(co_parent_flat.node_id) then -- id same, something else must be different
+								add_error("VSONIR", <<co_child_diff.path, co_child_diff.rm_type_name, co_parent_flat.rm_type_name, co_child_diff.node_id>>)
 							end
 						else
 							add_error("VSONNC", <<co_child_diff.rm_type_name, co_child_diff.path, co_parent_flat.rm_type_name, co_parent_flat.path>>)

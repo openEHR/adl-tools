@@ -188,8 +188,8 @@ feature -- Access
 			["VATDF"] = <"Error (VATDF): node id at-code $1 not defined in ontology">
 			["VUNP"] = <"Error (VUNP): use_node path $1 not found in archetype">
 
-			["VSONT"] = <"Error (VSONT): object node at path $1 AOM type $2 does not conform to node at parent path $3 AOM type $4">
-			["VSONCT"] = <"Error (VSONCT): object node at path $1 RM type $2 does not conform to node at parent path $3 RM type $4">
+			["VSONT"] = <"Error (VSONT): object node at path $1 (AOM type $2) does not conform to node at parent path $3 AOM type $4">
+			["VSONCT"] = <"Error (VSONCT): object node at path $1 (RM type $2) does not conform to node at parent path $3 RM type $4">
 			["VSONCO"] = <"Error (VSONCO): object node at path $1 occurrences $2 does not conform to node at parent path $3 occurrences $4">
 			["VSONCI"] = <"Error (VSONCI): object node at path $1 node_id $2 does not conform to node at parent path $3 node_id $4">
 			["VCATU"] = <"Error (VCATU) cADL object duplicate attribute $1">
@@ -198,7 +198,7 @@ feature -- Access
 			["VSANCC"] = <"Error (VSANCC): attribute at path $1 cardinality $2 does not conform to parent $3 cardinality $4">
 			["VSAM"] = <"Error (VSAM): attribute at path $1 multiplicity does not correspond to that of attribute in parent">
 			["VSONNC"] = <"Error (VSONNC): $1 object node at path $2 does not conform to $3 node at parent path $4">
-			["VSONIR"] = <"Error (VSONIR): object node at path $1 conforms to node at parent path but node_id $3 not redefined">
+			["VSONIR"] = <"Error (VSONIR): object node at path $1 (RM type $2) redefines parent node (RM type = $3) but node_id $4 not redefined">
 			["VSCNR"] = <"Error (VSCNR): illegal redefinition of $1 node at $2 in parent into $3 node at $4 in child">
 
 			["VSSM"] = <"Error (VSSM): node at path $1 has order marker referring to non-existant sibling node $2">
