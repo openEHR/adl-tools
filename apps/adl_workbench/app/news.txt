@@ -7,7 +7,7 @@ Improved functionality:
 
 New functionality:
 * Reference Model checking - turn on via the Tools > Options dialog
-* Reference Model visualisation - turn on via the 'RM visible' checkbox in the Node ap tab.
+* Reference Model visualisation - turn on via the 'RM visible' checkbox in the Node Map tab.
 
 The reference model definition is in the application install directory, file rm_schema.dadl. The
 format and location of this file may change in the future due to the direction developed for
