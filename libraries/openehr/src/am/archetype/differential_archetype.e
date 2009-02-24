@@ -89,7 +89,7 @@ feature -- Initialisation
 				until
 					inherited_subtree_list.off
 				loop
-					if {cco_1: !C_COMPLEX_OBJECT} inherited_subtree_list.item_for_iteration then
+					if {cco_1: !C_OBJECT} inherited_subtree_list.item_for_iteration then
 						if cco_1.parent /= Void and cco_1.parent.is_ordered then
 							cco_next := cco_1.parent.child_after (cco_1)
 							if cco_next /= Void and cco_next.specialisation_status (specialisation_depth).value = ss_added then
@@ -111,7 +111,7 @@ feature -- Initialisation
 				until
 					inherited_subtree_list.off
 				loop
-					if {cco_2: !C_COMPLEX_OBJECT} inherited_subtree_list.item_for_iteration then
+					if {cco_2: !C_OBJECT} inherited_subtree_list.item_for_iteration then
 						if cco_2.parent /= Void then
 							cco_2.parent.remove_child (cco_2)
 						else
