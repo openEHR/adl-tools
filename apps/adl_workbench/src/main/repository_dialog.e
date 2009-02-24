@@ -58,11 +58,12 @@ feature {NONE} -- Implementation
 			ref_rep_paths: ARRAYED_LIST [STRING]
 		do
 			ref_rep_paths := reference_repository_paths
-			if ref_rep_paths.is_empty then
-				ref_rep_paths.extend(reference_repository_path)
+			if ref_rep_paths.is_empty or not ref_rep_paths.has (reference_repository_path) then
+				ref_rep_paths.put_front (reference_repository_path)
 				set_reference_repository_paths (ref_rep_paths)
 			end
 			repository_dialog_reference_path_cb.set_strings (ref_rep_paths)
+			repository_dialog_reference_path_cb.i_th (ref_rep_paths.index_of (reference_repository_path, 1)).enable_select
 			repository_dialog_work_path_text.set_text (work_repository_path)
 		end
 
