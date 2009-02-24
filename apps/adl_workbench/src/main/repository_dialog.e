@@ -39,8 +39,8 @@ feature {NONE} -- Initialization
 			repository_dialog_cancel_button.select_actions.extend (agent hide)
 			set_default_cancel_button (repository_dialog_cancel_button)
 			set_default_push_button (repository_dialog_ok_button)
-			show_actions.extend (agent repository_dialog_reference_path_text.set_focus)
-			repository_dialog_reference_path_text.focus_in_actions.extend (agent on_select_all (repository_dialog_reference_path_text))
+--			show_actions.extend (agent repository_dialog_reference_path_cb.set_focus)
+--			repository_dialog_reference_path_cb.focus_in_actions.extend (agent on_select_all (repository_dialog_reference_path_cb))
 			repository_dialog_work_path_text.focus_in_actions.extend (agent on_select_all (repository_dialog_work_path_text))
 			populate_controls
 		end
@@ -54,8 +54,15 @@ feature {NONE} -- Implementation
 
 	populate_controls
 			-- Initialise the dialog's widgets from shared settings.
+		local
+			ref_rep_paths: ARRAYED_LIST [STRING]
 		do
-			repository_dialog_reference_path_text.set_text (reference_repository_path)
+			ref_rep_paths := reference_repository_paths
+			if ref_rep_paths.is_empty then
+				ref_rep_paths.extend(reference_repository_path)
+				set_reference_repository_paths (ref_rep_paths)
+			end
+			repository_dialog_reference_path_cb.set_strings (ref_rep_paths)
 			repository_dialog_work_path_text.set_text (work_repository_path)
 		end
 
@@ -66,8 +73,7 @@ feature {NONE} -- Implementation
 			paths_invalid: BOOLEAN
 			s: STRING
 		do
-			s := repository_dialog_reference_path_text.text
-
+			s := repository_dialog_reference_path_cb.text
 			if not s.is_equal (reference_repository_path) then
 				if directory_exists (s) then
 					set_reference_repository_path (s)
@@ -78,9 +84,9 @@ feature {NONE} -- Implementation
 					paths_invalid := True
 				end
 			end
+			set_reference_repository_paths (repository_dialog_reference_path_cb.strings_8)
 
 			s := repository_dialog_work_path_text.text
-
 			if not s.is_equal (work_repository_path) then
 				if s.is_empty or else archetype_directory.valid_repository_path (s) then
 					set_work_repository_path (s)
@@ -99,9 +105,15 @@ feature {NONE} -- Implementation
 		end
 
 	get_reference_repository_path
-			-- Display a dialog for the user select the Reference Repository.
+			-- Display a dialog for the user to select a new Reference Repository.
+		local
+			rep_path: STRING
 		do
-			repository_dialog_reference_path_text.set_text (get_directory (reference_repository_path, Current))
+			rep_path := get_directory (reference_repository_path, Current)
+			if not reference_repository_paths.has (rep_path) then
+				repository_dialog_reference_path_cb.put_front (create {EV_LIST_ITEM}.make_with_text (rep_path))
+				repository_dialog_reference_path_cb.first.enable_select
+			end
 		end
 
 	get_work_repository_path
@@ -110,7 +122,6 @@ feature {NONE} -- Implementation
 			if work_repository_path.is_empty then
 				set_work_repository_path (reference_repository_path.twin)
 			end
-
 			repository_dialog_work_path_text.set_text (get_directory (work_repository_path, Current))
 		end
 

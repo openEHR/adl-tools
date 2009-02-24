@@ -347,6 +347,20 @@ feature -- Access
 
 feature -- Application Switches
 
+	reference_repository_paths: ARRAYED_LIST[STRING] is
+			-- path of root of ADL file tree
+		do
+			Result := resource_value_list("default", "reference_repositories")
+			from Result.start until Result.off loop
+				Result.replace(substitute_env_vars(Result.item))
+				Result.forth
+			end
+			Result.compare_objects
+		ensure
+			Result_attached: Result /= Void
+			Value_comparison: Result.object_comparison
+		end
+
 	reference_repository_path: STRING is
 			-- path of root of ADL file tree
 		do
@@ -586,6 +600,14 @@ feature -- Application Switch Setting
 			a_path_valid: a_path /= Void and then not a_path.is_empty
 		do
 			set_resource_value("default", "reference_repository", a_path)
+		end
+
+	set_reference_repository_paths(a_path_list: ARRAYED_LIST[STRING]) is
+			-- set reference_repository_path(s)
+		require
+			a_path_list_valid: a_path_list /= Void and then not a_path_list.is_empty
+		do
+			set_resource_value_list("default", "reference_repositories", a_path_list)
 		end
 
 	set_work_repository_path(a_path: STRING) is

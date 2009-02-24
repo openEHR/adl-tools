@@ -38,7 +38,7 @@ feature {NONE}-- Initialization
 			create top_horizontal_box_for_cross_platform_cosmetic_padding
 			create l_ev_frame_1
 			create l_ev_horizontal_box_1
-			create repository_dialog_reference_path_text
+			create repository_dialog_reference_path_cb
 			create repository_dialog_reference_path_browse_button
 			create middle_horizontal_box_for_cross_platform_cosmetic_padding
 			create l_ev_frame_2
@@ -57,7 +57,7 @@ feature {NONE}-- Initialization
 			l_ev_vertical_box_1.extend (top_horizontal_box_for_cross_platform_cosmetic_padding)
 			l_ev_vertical_box_1.extend (l_ev_frame_1)
 			l_ev_frame_1.extend (l_ev_horizontal_box_1)
-			l_ev_horizontal_box_1.extend (repository_dialog_reference_path_text)
+			l_ev_horizontal_box_1.extend (repository_dialog_reference_path_cb)
 			l_ev_horizontal_box_1.extend (repository_dialog_reference_path_browse_button)
 			l_ev_vertical_box_1.extend (middle_horizontal_box_for_cross_platform_cosmetic_padding)
 			l_ev_vertical_box_1.extend (l_ev_frame_2)
@@ -95,9 +95,6 @@ feature {NONE}-- Initialization
 			l_ev_horizontal_box_1.set_padding (10)
 			l_ev_horizontal_box_1.set_border_width (8)
 			l_ev_horizontal_box_1.disable_item_expand (repository_dialog_reference_path_browse_button)
-			color_constant_set_procedures.extend (agent repository_dialog_reference_path_text.set_background_color (?))
-			color_constant_retrieval_functions.extend (agent editable_colour)
-			repository_dialog_reference_path_text.set_minimum_width (50)
 			repository_dialog_reference_path_browse_button.set_text ("Browse...")
 			repository_dialog_reference_path_browse_button.set_minimum_width (65)
 			l_ev_frame_2.set_text ("Work Repository Path (Optional)")
@@ -137,18 +134,19 @@ feature {NONE}-- Initialization
 
 feature -- Access
 
+	repository_dialog_reference_path_cb: EV_COMBO_BOX
 	l_ev_cell_1: EV_CELL
-	repository_dialog_reference_path_browse_button, repository_dialog_work_path_button,
-	repository_dialog_ok_button, repository_dialog_cancel_button: EV_BUTTON
+	repository_dialog_reference_path_browse_button,
+	repository_dialog_work_path_button, repository_dialog_ok_button, repository_dialog_cancel_button: EV_BUTTON
 	top_horizontal_box_for_cross_platform_cosmetic_padding,
 	l_ev_horizontal_box_1, middle_horizontal_box_for_cross_platform_cosmetic_padding,
 	l_ev_horizontal_box_2, bottom_horizontal_box_for_cross_platform_cosmetic_padding,
 	l_ev_horizontal_box_3: EV_HORIZONTAL_BOX
 	l_ev_vertical_box_1: EV_VERTICAL_BOX
 	l_ev_label_1: EV_LABEL
-	repository_dialog_reference_path_text,
 	repository_dialog_work_path_text: EV_TEXT_FIELD
-	l_ev_frame_1, l_ev_frame_2: EV_FRAME
+	l_ev_frame_1,
+	l_ev_frame_2: EV_FRAME
 
 feature {NONE} -- Implementation
 
