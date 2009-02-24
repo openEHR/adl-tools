@@ -20,6 +20,13 @@ inherit
 			is_equal
 		end
 
+	SHARED_REFERENCE_MODEL_ACCESS
+		export
+			{NONE} all
+		undefine
+			is_equal
+		end
+
 	ARCH_REP_ITEM
 		rename
 			make as make_adi
@@ -414,8 +421,10 @@ feature -- Modification
 				else
 					if not archetype_differential.is_specialised then
 						create archetype_flat.make_from_differential (archetype_differential)
-						create arch_flattener.make_non_specialised (archetype_differential)
-						arch_flattener.rm_flatten_archetype
+						if rm_checker.model_loaded then
+							create arch_flattener.make_non_specialised (archetype_differential)
+							arch_flattener.rm_flatten_archetype
+						end
 					else
 						create arch_flattener.make_specialised (specialisation_parent.archetype_flat, archetype_differential)
 						arch_flattener.flatten_specialised_archetype

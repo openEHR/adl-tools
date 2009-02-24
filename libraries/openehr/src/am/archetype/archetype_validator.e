@@ -466,7 +466,7 @@ feature {NONE} -- Implementation
 			create unknown_types.make(0)
 			unknown_types.compare_objects
 			create def_it.make(target.definition)
-			def_it.do_all(agent rm_node_validate_enter, agent rm_node_validate_exit)
+			def_it.do_until_surface(agent rm_node_validate, agent rm_node_validate_test)
 		end
 
 	validate_specialised_definition is
@@ -477,7 +477,7 @@ feature {NONE} -- Implementation
 			def_it: C_ITERATOR
 		do
 			create def_it.make(target.definition)
-			def_it.do_until_surface(agent specialised_node_validate, agent node_test)
+			def_it.do_until_surface(agent specialised_node_validate, agent specialised_node_validate_test)
 		end
 
 	specialised_node_validate (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)  is
@@ -561,7 +561,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	rm_node_validate_enter (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)  is
+	rm_node_validate (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)  is
 			-- perform validation of node against reference model
 		local
 			arch_attr_type, attr_parent_path, model_attr_class: STRING
@@ -570,32 +570,27 @@ feature {NONE} -- Implementation
 			prop_def: BMM_PROPERTY_DEFINITION
 		do
 			if {co: C_OBJECT} a_c_node then
-				if not unknown_types.has(co.rm_type_name) then
-					if not rm_checker.has_class_definition(co.rm_type_name) then
-						add_error("VCORM", <<co.rm_type_name, co.path>>)
-						unknown_types.extend (co.rm_type_name)
-					elseif not co.is_root then -- now check if this object a valid type of its owning attribute
-						if target.is_specialised and then co.parent.has_differential_path then
-							attr_parent_path := co.parent.differential_path
-							create apa.make_from_string (attr_parent_path)
-							co_parent_flat := flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth))
-							arch_attr_type := co_parent_flat.rm_type_name
-						else
-							arch_attr_type := co.parent.parent.rm_type_name
-							attr_parent_path := co.parent.parent.path
-						end
-						if rm_checker.has_property (arch_attr_type, co.parent.rm_attribute_name) and not
-											rm_checker.valid_property_type (arch_attr_type, co.parent.rm_attribute_name, co.rm_type_name) then
-							model_attr_class := rm_checker.property_type (arch_attr_type, co.parent.rm_attribute_name)
+				if not co.is_root then -- now check if this object a valid type of its owning attribute
+					if target.is_specialised and then co.parent.has_differential_path then
+						attr_parent_path := co.parent.differential_path
+						create apa.make_from_string (attr_parent_path)
+						co_parent_flat := flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth))
+						arch_attr_type := co_parent_flat.rm_type_name
+					else
+						arch_attr_type := co.parent.parent.rm_type_name
+						attr_parent_path := co.parent.parent.path
+					end
+					if rm_checker.has_property (arch_attr_type, co.parent.rm_attribute_name) and not
+										rm_checker.valid_property_type (arch_attr_type, co.parent.rm_attribute_name, co.rm_type_name) then
+						model_attr_class := rm_checker.property_type (arch_attr_type, co.parent.rm_attribute_name)
 
-							-- flag if constraint is equal to reference model; FUTURE: remove if equal
-							if rm_checker.substitutions.has (co.rm_type_name) and then rm_checker.substitutions.item (co.rm_type_name).is_equal (model_attr_class) then
-								add_info("ICORMTS", <<co.rm_type_name, co.path, model_attr_class,
-									arch_attr_type, co.parent.rm_attribute_name>>)
-							else
-								add_error("VCORMT", <<co.rm_type_name, co.path, model_attr_class,
-									arch_attr_type, co.parent.rm_attribute_name>>)
-							end
+						-- flag if constraint is equal to reference model; FUTURE: remove if equal
+						if rm_checker.substitutions.has (co.rm_type_name) and then rm_checker.substitutions.item (co.rm_type_name).is_equal (model_attr_class) then
+							add_info("ICORMTS", <<co.rm_type_name, co.path, model_attr_class,
+								arch_attr_type, co.parent.rm_attribute_name>>)
+						else
+							add_error("VCORMT", <<co.rm_type_name, co.path, model_attr_class,
+								arch_attr_type, co.parent.rm_attribute_name>>)
 						end
 					end
 				end
@@ -609,7 +604,7 @@ feature {NONE} -- Implementation
 					arch_attr_type := ca.parent.rm_type_name -- can be a generic type like DV_INTERVAL <DV_QUANTITY>
 					attr_parent_path := ca.parent.path
 				end
-				if not unknown_types.has(arch_attr_type) then
+--				if not unknown_types.has(arch_attr_type) then
 					if rm_checker.has_class_definition(arch_attr_type) and then
 												not rm_checker.has_property(arch_attr_type, ca.rm_attribute_name) then
 						add_error("VCARM", <<ca.rm_attribute_name, ca.path , arch_attr_type>>)
@@ -642,17 +637,13 @@ feature {NONE} -- Implementation
 							add_info("ICARMC", <<ca.rm_attribute_name, ca.path , arch_attr_type>>)
 						end
 					end
-				end
+--				end
 			end
-		end
-
-	rm_node_validate_exit (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)  is
-		do
 		end
 
 	unknown_types: ARRAYED_LIST [STRING]
 
-	node_test (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN  is
+	specialised_node_validate_test (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN  is
 			-- return True if a conformant path of a_c_node within the differential archetype is
 			-- found within the flat parent archetype - i.e. a_c_node is inherited or redefined from parent (but not new)
 			-- and no previous errors encountered
@@ -661,6 +652,21 @@ feature {NONE} -- Implementation
 		do
 			create apa.make_from_string(a_c_node.path)
 			Result := passed and flat_parent.has_path (apa.path_at_level (flat_parent.specialisation_depth))
+		end
+
+	rm_node_validate_test (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN  is
+			-- return True if node is a C_OBJECT and class is known in RM, or if it is a C_ATTRIBUTE
+		do
+			if {co: C_OBJECT} a_c_node then
+				if not unknown_types.has(co.rm_type_name) and not rm_checker.has_class_definition(co.rm_type_name) then
+					add_error("VCORM", <<co.rm_type_name, co.path>>)
+					unknown_types.extend (co.rm_type_name)
+				else
+					Result := True
+				end
+			else
+				Result := True
+			end
 		end
 
 invariant
