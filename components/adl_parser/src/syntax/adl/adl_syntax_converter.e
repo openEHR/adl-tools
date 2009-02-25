@@ -6,8 +6,8 @@ indexing
 				 ]"
 	keywords:    "ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2006-2009 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -176,7 +176,7 @@ feature -- ADL 1.5 conversions
 		require
 			type_name_valid: a_type_name /= Void and then not a_type_name.is_empty
 		do
-			if use_adl_version.is_real and then use_adl_version.to_real >= 1.5 then
+			if use_adl_version_numeric >= 150 then
 				Result := "("
 				Result.append (a_type_name)
 				Result.append_character (')')
@@ -285,7 +285,7 @@ end
 --| The Original Code is adl_syntax_converter.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2003-2009
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

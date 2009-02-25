@@ -37,6 +37,17 @@ feature -- Access
 			Result_exists: Result /= Void
 		end
 
+	use_adl_version_numeric: INTEGER is
+		local
+			s: STRING
+		do
+			s := use_adl_version.twin
+			s.prune_all ('.')
+			if s.is_integer then
+				Result := s.to_integer
+			end
+		end
+
 feature -- Modification
 
 	set_current_language(a_lang: STRING) is
