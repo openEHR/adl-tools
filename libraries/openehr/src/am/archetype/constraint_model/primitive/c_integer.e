@@ -21,13 +21,6 @@ class C_INTEGER
 inherit
 	C_PRIMITIVE
 
-	ADL_DEFINITIONS
-		export
-			{NONE} all
-		undefine
-			out
-		end
-
 create
 	make_range, make_list
 

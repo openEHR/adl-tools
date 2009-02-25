@@ -24,13 +24,6 @@ inherit
 			rm_type_name
 		end
 
-	ADL_DEFINITIONS
-		export
-			{NONE} all
-		undefine
-			out
-		end
-
 	DATE_TIME_ROUTINES
 		export
 			{NONE} all
