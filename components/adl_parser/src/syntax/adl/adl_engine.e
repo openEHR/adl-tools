@@ -115,7 +115,13 @@ feature -- Commands
 			archetype_attached: an_archetype /= Void
 			archetype_valid: an_archetype.is_valid
 			format_valid: has_archetype_serialiser_format (a_format)
+		local
+			arch_ver: STRING
 		do
+			-- set archetype ADL version to currently chosen version
+			arch_ver := an_archetype.adl_version
+			an_archetype.set_adl_version (use_adl_version)
+
 			synchronise_from_archetype(an_archetype)
 			language_context.serialise(a_format)
 			description_context.serialise(a_format)
@@ -135,6 +141,9 @@ feature -- Commands
 				invariant_context.serialised,
 				ontology_context.serialised)
 			Result := serialiser_mgr.last_result
+
+			-- reset ADL archetype version
+			an_archetype.set_adl_version (arch_ver)
 		end
 
 feature {NONE} -- Implementation
@@ -259,7 +268,7 @@ feature {NONE} -- Implementation
 									if adl_parser.adl_version /= Void then
 										Result.set_adl_version(adl_parser.adl_version)
 									else
-										Result.set_adl_version(Current_adl_version)
+										Result.set_adl_version(latest_adl_version)
 									end
 
 									if adl_parser.is_controlled then

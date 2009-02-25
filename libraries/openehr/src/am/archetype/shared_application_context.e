@@ -19,16 +19,20 @@ inherit
 			{NONE} all
 		end
 
-	ADL_DEFINITIONS
-		export
-			{NONE} all
-		end
+	ARCHETYPE_DEFINITIONS
 
 feature -- Access
 
 	current_language: STRING is
 		do
 			Result := cell_language.item
+		ensure
+			Result_exists: Result /= Void
+		end
+
+	use_adl_version: STRING is
+		do
+			Result := cell_use_adl_version.item
 		ensure
 			Result_exists: Result /= Void
 		end
@@ -43,12 +47,26 @@ feature -- Modification
 			cell_language.put(a_lang)
 		end
 
+	set_use_adl_version(a_ver: STRING) is
+			-- set `use_adl_version'
+		require
+			a_ver /= Void and then adl_versions.has (a_ver)
+		do
+			cell_use_adl_version.put(a_ver)
+		end
+
 feature {NONE} -- Implementation
 
 	cell_language: CELL[STRING] is
 			-- language to serialise in, for comments and other language-specific items
 		once
 			create Result.put(Default_language)
+		end
+
+	cell_use_adl_version: CELL[STRING] is
+			-- ADL version to serialise archetypes in
+		once
+			create Result.put(latest_adl_version)
 		end
 
 end

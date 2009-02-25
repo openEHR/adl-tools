@@ -117,7 +117,7 @@ feature {NONE} -- Initialization
 		do
 			set_icon_pixmap (adl_workbench_ico)
 			cur_title := title.twin
-			cur_title.replace_substring_all ("VER", current_adl_version)
+			cur_title.replace_substring_all ("VER", latest_adl_version)
 			set_title (cur_title)
 
 			file_menu_open.set_pixmap (pixmaps ["archetype_1"])
@@ -258,6 +258,11 @@ feature -- Status setting
 			else
 				post_info (Current, "show", "general", <<rm_checker.status>>)
 			end
+
+			if not adl_version_for_flat_output.is_empty then
+				set_use_adl_version (adl_version_for_flat_output)
+			end
+
 			append_status_area (billboard_content)
 		end
 
@@ -1016,7 +1021,6 @@ feature {NONE} -- Implementation
 				set_current_language (default_language)
 			else
 				set_current_language (language_combo.text)
-
 				if archetype_directory.has_valid_selected_archetype then
 					populate_view_controls
 				end

@@ -21,8 +21,6 @@ inherit
 
 feature -- Definitions
 
-	Current_adl_version: STRING is "1.5"
-
 end
 
 

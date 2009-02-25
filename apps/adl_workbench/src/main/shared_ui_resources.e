@@ -16,7 +16,7 @@ class SHARED_UI_RESOURCES
 inherit
 	SHARED_RESOURCES
 
-	ADL_DEFINITIONS
+	ARCHETYPE_DEFINITIONS
 		export
 			{NONE} all
 		end
@@ -310,7 +310,7 @@ feature -- Access
 			Result.append ("ADL Workbench%N")
 			Result.append ("%TVersion " + version.out + "%N")
 			Result.append ("%T(c) 2003-2009 Ocean Informatics%N")
-			Result.append ("%TADL version: " + current_adl_version + "%N")
+			Result.append ("%TADL version: " + Latest_adl_version + "%N")
 			Result.append ("%TSource SVN - http://www.openehr.org/svn/ref_impl_eiffel%N%T" + version.last_changed + "%N")
 			Result.append ("%TSource license: Mozilla tri-license (http://www.mozilla.org/MPL/boilerplate-1.1/mpl-tri-license-txt)%N")
 			Result.append ("Support: support@OceanInformatics.com%N")
@@ -592,6 +592,14 @@ feature -- Application Switches
 			end
 		end
 
+	adl_version_for_flat_output: STRING
+			-- version of ADL syntax to use for outputting flat archetypes
+		do
+			Result := substitute_env_vars (resource_value ("default", "adl_version_for_flat_output"))
+		ensure
+			attached: Result /= Void
+		end
+
 feature -- Application Switch Setting
 
 	set_reference_repository_path(a_path: STRING) is
@@ -650,6 +658,15 @@ feature -- Application Switch Setting
 			value_not_empty: not value.is_empty
 		do
 			set_resource_value("default", "html_export_directory", value)
+		end
+
+	set_adl_version_for_flat_output (value: STRING) is
+			-- Set version of ADL syntax to use for outputting flat archetypes.
+		require
+			value_attached: value /= Void
+			value_not_empty: not value.is_empty
+		do
+			set_resource_value("default", "adl_version_for_flat_output", value)
 		end
 
 	set_main_notebook_tab_pos(a_tab_pos: INTEGER) is

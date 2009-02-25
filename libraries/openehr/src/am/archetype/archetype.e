@@ -14,7 +14,7 @@ indexing
 deferred class ARCHETYPE
 
 inherit
-	ADL_DEFINITIONS
+	ARCHETYPE_DEFINITIONS
 		export
 			{NONE} all;
 			{ANY} deep_twin
@@ -44,7 +44,7 @@ feature -- Initialisation
 			Concept_exists: a_concept_code /= Void and then valid_concept_code(a_concept_code)
 			Language_valid: an_original_language /= Void and then not an_original_language.is_empty
 		do
-			adl_version := 	Current_adl_version
+			adl_version := 	Latest_adl_version
 			archetype_id := an_id
 			concept := a_concept_code
 			create original_language.make (Default_language_code_set, an_original_language)

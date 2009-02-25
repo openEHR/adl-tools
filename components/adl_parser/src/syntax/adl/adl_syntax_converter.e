@@ -27,6 +27,11 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_APPLICATION_CONTEXT
+		export
+			{NONE} all
+		end
+
 feature -- Access
 
 	perform_syntax_upgrade(dadl_text: STRING) is
@@ -171,9 +176,13 @@ feature -- ADL 1.5 conversions
 		require
 			type_name_valid: a_type_name /= Void and then not a_type_name.is_empty
 		do
-			Result := "("
-			Result.append (a_type_name)
-			Result.append_character (')')
+			if use_adl_version.is_real and then use_adl_version.to_real >= 1.5 then
+				Result := "("
+				Result.append (a_type_name)
+				Result.append_character (')')
+			else
+				Result := a_type_name
+			end
 		end
 
 --	add_slot_node_identifiers (a_diff_arch: DIFFERENTIAL_ARCHETYPE) is

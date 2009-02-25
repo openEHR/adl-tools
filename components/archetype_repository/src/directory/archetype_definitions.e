@@ -32,6 +32,22 @@ feature -- Definitions
 
 	Ontological_path_separator: STRING is "/"
 
+	Adl_versions: ARRAYED_LIST [STRING] is
+			-- list of ADL versions known in this tool
+		once
+			create Result.make(0)
+			Result.extend("1.4")
+			Result.extend("1.4.1")
+			Result.extend("1.5")
+			Result.compare_objects
+		end
+
+	Latest_adl_version: STRING is
+			-- return current latest known ADL version in this tool
+		once
+			Result := Adl_versions.last
+		end
+
 end
 
 
