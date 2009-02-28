@@ -358,7 +358,7 @@ feature -- Comparison
 			--	cardinality
 			--	existence
 		do
-			Result := existence_conforms_to (other) and ((is_single and other.is_single) or cardinality_conforms_to (other))
+			Result := existence_conforms_to (other) and ((is_single and other.is_single) or (is_multiple and cardinality_conforms_to (other)))
 		end
 
 	existence_conforms_to (other: like Current): BOOLEAN is
