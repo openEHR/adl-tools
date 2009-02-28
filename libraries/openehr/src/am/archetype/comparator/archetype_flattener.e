@@ -122,52 +122,55 @@ feature {NONE} -- Implementation
 		local
 			int_refs: ARRAYED_LIST[ARCHETYPE_INTERNAL_REF]
 			c_obj: C_OBJECT
-			child_paths: ARRAYED_LIST [STRING]
+			child_paths, child_paths_at_parent_level: ARRAYED_LIST [STRING]
 			apa: ARCHETYPE_PATH_ANALYSER
 			a_path: STRING
 		do
-			child_paths := arch_child_diff.physical_paths.deep_twin
-			child_paths.compare_objects
-			from
-				child_paths.start
-			until
-				child_paths.off
-			loop
-				create apa.make_from_string (child_paths.item)
-				a_path := apa.path_at_level (arch_parent_flat.specialisation_depth)
-				child_paths.replace (a_path)
-				child_paths.forth
-			end
-
-			-- iterate through use nodes in parent and find any source paths that are matched by any paths
-			-- within the child archetype; clone the structure at the target location and replace the use_node
-			-- the flattened structure with it, so that the override will work properly.
-			from
-				arch_output_flat.use_node_index.start
-			until
-				arch_output_flat.use_node_index.off
-			loop
-				int_refs := arch_output_flat.use_node_index.item_for_iteration
+			if not arch_output_flat.use_node_index.is_empty then
+				create child_paths_at_parent_level.make (0)
+				child_paths_at_parent_level.compare_objects
+				child_paths := arch_child_diff.physical_paths
 				from
-					int_refs.start
+					child_paths.start
 				until
-					int_refs.off
+					child_paths.off
 				loop
-					debug ("flatten")
-						io.put_string ("%T...checking path " + int_refs.item.path + "%N")
-					end
-					if child_paths.has (int_refs.item.path) then
-						debug ("flatten")
-							io.put_string ("%T...cloning node at " + arch_output_flat.use_node_index.key_for_iteration + " and replacing at " + int_refs.item.path + "%N")
-						end
-						c_obj := arch_output_flat.c_object_at_path (arch_output_flat.use_node_index.key_for_iteration).safe_deep_twin
-						int_refs.item.parent.replace_child_by_id (c_obj, int_refs.item.node_id)
-					end
-					int_refs.forth
+					create apa.make_from_string (child_paths.item)
+					a_path := apa.path_at_level (arch_parent_flat.specialisation_depth)
+					child_paths_at_parent_level.extend (a_path)
+					child_paths.forth
 				end
-				arch_output_flat.use_node_index.forth
+
+				-- iterate through use nodes in parent and find any source paths that are matched by any paths
+				-- within the child archetype; clone the structure at the target location and replace the use_node
+				-- the flattened structure with it, so that the override will work properly.
+				from
+					arch_output_flat.use_node_index.start
+				until
+					arch_output_flat.use_node_index.off
+				loop
+					int_refs := arch_output_flat.use_node_index.item_for_iteration
+					from
+						int_refs.start
+					until
+						int_refs.off
+					loop
+						debug ("flatten")
+							io.put_string ("%T...checking path " + int_refs.item.path + "%N")
+						end
+						if child_paths_at_parent_level.has (int_refs.item.path) then
+							debug ("flatten")
+								io.put_string ("%T...cloning node at " + arch_output_flat.use_node_index.key_for_iteration + " and replacing at " + int_refs.item.path + "%N")
+							end
+							c_obj := arch_output_flat.c_object_at_path (arch_output_flat.use_node_index.key_for_iteration).safe_deep_twin
+							int_refs.item.parent.replace_child_by_id (c_obj, int_refs.item.node_id)
+						end
+						int_refs.forth
+					end
+					arch_output_flat.use_node_index.forth
+				end
+				arch_output_flat.rebuild
 			end
-			arch_output_flat.rebuild
 		end
 
 	flatten_definition is

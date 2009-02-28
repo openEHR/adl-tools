@@ -151,23 +151,25 @@ feature -- Commands
 			if in_file.exists then
 				file_timestamp := in_file.date
 				in_file.open_read
-
-				from
-					in_file.start
-				until
-					in_file.off
-				loop
-					in_file.read_line
-					file_content.append(in_file.last_string)
-
-					if file_content.item (file_content.count) = '%R' then
-						file_content.put ('%N', file_content.count)
-					else
-						file_content.append_character('%N')
-					end
-				end
-
+				in_file.read_stream (in_file.count)
+				file_content := in_file.last_string
 				in_file.close
+				file_content.prune_all ('%R')
+
+--				from
+--					in_file.start
+--				until
+--					in_file.off
+--				loop
+--					in_file.read_line
+--					file_content.append(in_file.last_string)
+--					if file_content.item (file_content.count) = '%R' then
+--						file_content.put ('%N', file_content.count)
+--					else
+--						file_content.append_character('%N')
+--					end
+--				end
+--				in_file.close
 
 				if file_content.count >= 3 then
 					if utf8.is_endian_detection_character (file_content.item (1), file_content.item (2), file_content.item (3)) then
