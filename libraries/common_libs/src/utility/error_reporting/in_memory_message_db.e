@@ -72,6 +72,9 @@ feature -- Access
 			["general_error"] = <"Error: $1">
 			["general"] = <"$1">
 			
+			-- MAIN_WINDOW
+			["adl_version_warning"] = <"Using ADL version $1 for output serialisation">
+
 			-- ARCHETYPE_COMPILER
 			["create_new_archetype_1"] = <"CREATE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
 			["specialise_archetype_1"] = <"SPECIALISE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
