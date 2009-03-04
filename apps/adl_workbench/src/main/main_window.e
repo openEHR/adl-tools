@@ -253,7 +253,7 @@ feature -- Status setting
 			end
 
 			if not adl_version_for_flat_output.is_empty then
-				set_use_adl_version (adl_version_for_flat_output)
+				set_use_flat_adl_version (adl_version_for_flat_output)
 				post_warning (Current, "show", "adl_version_warning", <<adl_version_for_flat_output>>)
 			end
 

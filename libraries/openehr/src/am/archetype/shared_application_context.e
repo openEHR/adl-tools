@@ -30,21 +30,21 @@ feature -- Access
 			Result_exists: Result /= Void
 		end
 
-	use_adl_version: STRING is
+	use_flat_adl_version: STRING is
 		do
-			Result := cell_use_adl_version.item
+			Result := cell_use_flat_adl_version.item
 		ensure
 			Result_exists: Result /= Void
 		end
 
-	use_adl_version_numeric: INTEGER is
+	use_flat_adl_version_numeric: INTEGER is
 			-- generate a numeric equivalent of the ADL version in use, e.g.
 			-- '1.5' -> 150
 			-- '1.4.1' -> 141
 		local
 			s: STRING
 		once
-			s := use_adl_version.twin
+			s := use_flat_adl_version.twin
 			s.prune_all ('.')
 			if s.count < 3 then
 				s.append (create {STRING}.make_filled ('0', 3 - s.count))
@@ -66,12 +66,12 @@ feature -- Modification
 			cell_language.put(a_lang)
 		end
 
-	set_use_adl_version(a_ver: STRING) is
-			-- set `use_adl_version'
+	set_use_flat_adl_version(a_ver: STRING) is
+			-- set `use_flat_adl_version'
 		require
 			a_ver /= Void and then adl_versions.has (a_ver)
 		do
-			cell_use_adl_version.put(a_ver)
+			cell_use_flat_adl_version.put(a_ver)
 		end
 
 feature {NONE} -- Implementation
@@ -82,7 +82,7 @@ feature {NONE} -- Implementation
 			create Result.put(Default_language)
 		end
 
-	cell_use_adl_version: CELL[STRING] is
+	cell_use_flat_adl_version: CELL[STRING] is
 			-- ADL version to serialise archetypes in
 		once
 			create Result.put(latest_adl_version)

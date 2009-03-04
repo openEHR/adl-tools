@@ -176,7 +176,7 @@ feature -- ADL 1.5 conversions
 		require
 			type_name_valid: a_type_name /= Void and then not a_type_name.is_empty
 		do
-			if use_adl_version_numeric >= 150 then
+			if use_flat_adl_version_numeric >= 150 then
 				Result := "("
 				Result.append (a_type_name)
 				Result.append_character (')')

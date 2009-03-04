@@ -92,7 +92,11 @@ feature -- Serialisation
 			if target.has_adl_version or target.is_controlled or target.is_generated then
 				arch_kw_str.append(" (")
 				if target.has_adl_version then
-					arch_kw_str.append(symbol(SYM_ADL_VERSION) + "=" + use_adl_version)
+					if {diff_arch1: DIFFERENTIAL_ARCHETYPE} target then
+						arch_kw_str.append(symbol(SYM_ADL_VERSION) + "=" + target.adl_version)
+					else
+						arch_kw_str.append(symbol(SYM_ADL_VERSION) + "=" + use_flat_adl_version)
+					end
 				end
 				if target.is_controlled then
 					if target.has_adl_version then
@@ -104,7 +108,7 @@ feature -- Serialisation
 				-- something like a table of small functions, and the lowest ALD version each one should be used at
 				-- but this appears to be the sole non-1.4 syntax item that is not handled by ADL_SYNTAX_CONVERTER
 				-- so for now we will just do this and hope not too many people see the horror.....
-				if target.is_generated and use_adl_version_numeric > 141 then
+				if {diff_arch2: DIFFERENTIAL_ARCHETYPE} target or (target.is_generated and use_flat_adl_version_numeric > 141) then
 					if target.has_adl_version or target.is_controlled then
 						arch_kw_str.append("; ")
 					end
