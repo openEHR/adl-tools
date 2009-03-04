@@ -158,16 +158,16 @@ feature {NONE} -- Implementation
 				parse_error_text := create_message("VARCN", <<adl_parser.concept>>)
 			else
 				------------------- language section ---------------
-				if adl_parser.language_text /= Void and then not adl_parser.language_text.is_empty then
+--				if adl_parser.language_text /= Void and then not adl_parser.language_text.is_empty then
 					language_context.set_source(adl_parser.language_text, adl_parser.language_text_start_line)
 					language_context.parse
 					if not language_context.parse_succeeded then
 						parse_error_text := language_context.parse_error_text
 						language_error := True
 					end
-				else
-					language_context.reset
-				end
+--				else
+--					language_context.reset
+--				end
 
 				if not language_error then
 					if language_context.tree /= Void then

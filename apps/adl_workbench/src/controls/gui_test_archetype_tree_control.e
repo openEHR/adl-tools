@@ -25,13 +25,6 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_ARCHETYPE_PARSER
-		export
-			{NONE} all
-		undefine
-			copy, default_create
-		end
-
 	SHARED_ARCHETYPE_COMPILER
 		export
 			{NONE} all
@@ -236,8 +229,6 @@ feature -- Commands
 
 				if target /= Void then
 					row.ensure_visible
-					archetype_parser.reset
-					archetype_parser.set_target (target)
 
 					from
 						tests.start
@@ -357,11 +348,11 @@ feature {NONE} -- Tests
 
 			if target.is_valid then
 				Result := test_passed
-				test_status.append (" parse succeeded%N" + archetype_parser.status)
+				test_status.append (" parse succeeded%N" + target.compiler_status)
 
 				if remove_unused_codes then
-					unused_at_codes := archetype_parser.archetype_differential.ontology_unused_term_codes
-					unused_ac_codes := archetype_parser.archetype_differential.ontology_unused_constraint_codes
+					unused_at_codes := target.differential_archetype.ontology_unused_term_codes
+					unused_ac_codes := target.differential_archetype.ontology_unused_constraint_codes
 
 					if not unused_at_codes.is_empty or not unused_ac_codes.is_empty then
 						test_status.append (">>>>>>>>>> removing unused codes%N")
@@ -374,11 +365,11 @@ feature {NONE} -- Tests
 							test_status.append ("Unused AC codes: " + display_arrayed_list (unused_ac_codes) + "%N")
 						end
 
-						archetype_parser.archetype_differential.remove_ontology_unused_codes
+						target.differential_archetype.remove_ontology_unused_codes
 					end
 				end
 			else
-				test_status.append (" parse failed%N" + archetype_parser.status)
+				test_status.append (" parse failed%N" + target.compiler_status)
 			end
 		end
 
@@ -386,14 +377,12 @@ feature {NONE} -- Tests
 			-- parse archetype, save in flat form and return result
 		do
 			Result := test_failed
-
-			if gui.save_adl_check_button.is_selected and archetype_parser.archetype_valid then
-				archetype_parser.save_archetype_flat
-
-				if archetype_parser.save_succeeded then
+			if gui.save_adl_check_button.is_selected and target.is_valid then
+				target.save_flat
+				if target.save_succeeded then
 					Result := test_passed
 				else
-					test_status.append (archetype_parser.status + "%N")
+					test_status.append (target.status + "%N")
 				end
 			else
 				Result := test_not_applicable
@@ -405,14 +394,13 @@ feature {NONE} -- Tests
 		do
 			Result := test_failed
 			create test_orig_differential_source.make_empty
-
-			if gui.save_adls_check_button.is_selected and archetype_parser.archetype_valid then
-				archetype_parser.save_archetype_differential
-				if archetype_parser.save_succeeded then
+			if gui.save_adls_check_button.is_selected and target.is_valid then
+				target.save_differential
+				if target.save_succeeded then
 					Result := test_passed
-					test_orig_differential_source := archetype_parser.serialised_differential
+					test_orig_differential_source := target.differential_text
 				else
-					test_status.append (archetype_parser.status + "%N")
+					test_status.append (target.status + "%N")
 				end
 			else
 				Result := test_not_applicable
@@ -425,16 +413,14 @@ feature {NONE} -- Tests
 			-- parse archetype and return result
 		do
 			Result := test_failed
-			archetype_parser.parse_archetype
-			if archetype_parser.archetype_valid then
-				archetype_parser.serialise_archetype (Archetype_native_syntax)
+			target.parse_archetype
+			if target.is_valid then
+				target.serialise_differential
 				Result := test_passed
-				test_status.append ("Parse succeeded%N" + archetype_parser.status)
+				test_status.append ("Parse succeeded%N" + target.compiler_status)
 			else
-				test_status.append ("Parse failed; reason: " + archetype_parser.status + "%N")
+				test_status.append ("Parse failed; reason: " + target.compiler_status + "%N")
 			end
-		ensure
-			source_regenerated: Result = test_passed implies archetype_parser.serialised_differential /= old archetype_parser.serialised_differential
 		end
 
 	test_diff: INTEGER is
@@ -445,8 +431,8 @@ feature {NONE} -- Tests
 			new_source: STRING
 		do
 			Result := Test_failed
-			if archetype_parser.archetype_valid and not test_orig_differential_source.is_empty then
-				new_source := archetype_parser.serialised_differential
+			if target.is_valid and not test_orig_differential_source.is_empty then
+				new_source := target.differential_text
 				if test_orig_differential_source.count = new_source.count then
 					if test_orig_differential_source.same_string (new_source) then
 						Result := Test_passed

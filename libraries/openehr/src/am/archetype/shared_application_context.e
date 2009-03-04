@@ -38,14 +38,22 @@ feature -- Access
 		end
 
 	use_adl_version_numeric: INTEGER is
+			-- generate a numeric equivalent of the ADL version in use, e.g.
+			-- '1.5' -> 150
+			-- '1.4.1' -> 141
 		local
 			s: STRING
-		do
+		once
 			s := use_adl_version.twin
 			s.prune_all ('.')
+			if s.count < 3 then
+				s.append (create {STRING}.make_filled ('0', 3 - s.count))
+			end
 			if s.is_integer then
 				Result := s.to_integer
 			end
+		ensure
+			Result > 100 and Result <= 999
 		end
 
 feature -- Modification

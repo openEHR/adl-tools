@@ -195,6 +195,7 @@ feature {ARCH_REP_ARCHETYPE} -- Structure
 			-- are recorded in the `differential_path' attribute of terminal C_ATTRIBUTE nodes of congruent sections
 		require
 			Target_specialised: is_specialised
+			Is_generated: is_generated
 		local
 			def_it: C_ITERATOR
 		do

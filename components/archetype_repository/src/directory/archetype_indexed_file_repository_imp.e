@@ -69,16 +69,20 @@ feature {NONE} -- Implementation
 							arch_id_str := archteype_id_from_path(full_path)
 							if arch_id_str /= Void then
 								create arch_id.make_from_string(arch_id_str)
-								create ara.make (root_path, full_path, arch_id, Current)
-								arch_index.force (ara, arch_id.semantic_id)
+								if not arch_index.has (arch_id.semantic_id) then
+									create ara.make (root_path, full_path, arch_id, Current)
+									arch_index.force (ara, arch_id.semantic_id)
+								end
 							else
 	-- FIXME: to support old-style archetype ids with 'draft' in the name; remove when appropriate
 	arch_id_str := old_archteype_id_from_path(full_path)
 	if arch_id_str /= Void then
 		create arch_id.old_make_from_string(arch_id_str)
-		create ara.make (root_path, full_path, arch_id, Current)
-		arch_index.force (ara, arch_id.semantic_id)
-		post_warning (Current, "build_directory", "invalid_filename_e1", <<fn>>)
+		if not arch_index.has (arch_id.semantic_id) then
+			create ara.make (root_path, full_path, arch_id, Current)
+			arch_index.force (ara, arch_id.semantic_id)
+			post_warning (Current, "build_directory", "invalid_filename_e1", <<fn>>)
+		end
 	else
 								post_error (Current, "build_directory", "invalid_filename_e1", <<fn>>)
 	end

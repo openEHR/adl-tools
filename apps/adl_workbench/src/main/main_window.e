@@ -32,13 +32,6 @@ inherit
 			copy, default_create
 		end
 
-	SHARED_ARCHETYPE_PARSER
-		export
-			{NONE} all
-		undefine
-			copy, default_create
-		end
-
 	SHARED_REFERENCE_MODEL_ACCESS
 		undefine
 			copy, default_create
@@ -428,9 +421,8 @@ feature -- File events
 					end
 
 					if ok_to_write then
-						archetype_parser.set_target (archetype_directory.selected_archetype)
-						archetype_parser.save_archetype_differential_as (name, format)
-						append_status_area (archetype_parser.status)
+						archetype_directory.selected_archetype.save_differential_as (name, format)
+						append_status_area (archetype_directory.selected_archetype.status)
 					end
 				end
 			else
@@ -722,16 +714,17 @@ feature {NONE} -- Tools events
 	delete_generated_files (a: ARCH_REP_ITEM) is
 			-- delete a generated file associated with `a'
 		local
-			name: STRING
+			a_path: STRING
 		do
 			if {ara: !ARCH_REP_ARCHETYPE} a then
 				if ara.differential_generated then
-					name := ara.differential_path
+					a_path := ara.differential_path
 				elseif ara.flat_generated then
-					name := ara.flat_path
+					a_path := ara.flat_path
 				end
-				if name /= Void and file_system.is_file_readable (name) then
-					file_system.delete_file (name)
+				if a_path /= Void and file_system.is_file_readable (a_path) then
+					file_system.delete_file (a_path)
+					append_status_area (create_message ("clean_generated_file", <<a_path>>))
 				end
 			end
 		end
@@ -1123,17 +1116,15 @@ feature {NONE} -- Implementation
 			if {ara: !ARCH_REP_ARCHETYPE} archetype_directory.selected_archetype then
 				if flat then
 					text := ara.flat_text
-
-					if text.is_empty then
-						source_rich_text.set_text ("===================== No flat (.adl) file available =======================")
+					if text = Void then
+						source_rich_text.set_text ("===================== No flat (.adl) text available =======================")
 					else
 						populate_source_text_with_line_numbers (text)
 					end
 				else
 					text := ara.differential_text
-
-					if text.is_empty then
-						source_rich_text.set_text ("==================== No source (.adls) file available ======================")
+					if text = Void then
+						source_rich_text.set_text ("==================== No source (.adls) text available ======================")
 					else
 						populate_source_text_with_line_numbers (text)
 					end
@@ -1206,7 +1197,7 @@ feature {NONE} -- Implementation
 			-- Populate ADL version.
 		do
 			if archetype_directory.has_valid_selected_archetype then
-				adl_version_text.set_text (utf8 (archetype_directory.selected_archetype.archetype_differential.adl_version))
+				adl_version_text.set_text (utf8 (archetype_directory.selected_archetype.differential_archetype.adl_version))
 			else
 				adl_version_text.remove_text
 			end
@@ -1220,7 +1211,7 @@ feature {NONE} -- Implementation
 			language_combo.select_actions.block
 
 			if archetype_directory.has_valid_selected_archetype then
-				archetype := archetype_directory.selected_archetype.archetype_differential
+				archetype := archetype_directory.selected_archetype.differential_archetype
 
 				if not archetype.has_language (current_language) then
 					set_current_language (archetype.original_language.code_string)

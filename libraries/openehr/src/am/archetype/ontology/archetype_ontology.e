@@ -77,7 +77,7 @@ feature -- Initialisation
 			-- like 'at0000' or 'at0000.1'. The specialisation depth of the
 			-- ontology is determined from this code
 		require
-			Primary_language_valid: a_primary_lang /= Void implies not a_primary_lang.is_empty -- FIXME make mandatory with ADL2
+			Primary_language_valid: a_primary_lang /= Void and then not a_primary_lang.is_empty
 			Tree_exists: a_dadl_tree /= Void
 			root_code_attached: a_concept_code /= Void
 			root_code_valid: valid_concept_code (a_concept_code)
@@ -86,9 +86,7 @@ feature -- Initialisation
 			representation := a_dadl_tree
 			concept_code := a_concept_code
 
-			if a_primary_lang /= Void then
-				set_primary_language (a_primary_lang)
-			end
+			set_primary_language (a_primary_lang)
 
 			synchronise_from_tree
 		ensure
@@ -1254,7 +1252,7 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 			-- and ac0005.1 might have ac0005.1.1
 
 invariant
-	Primary_language_valid: primary_language /= Void implies not primary_language.is_empty
+	Primary_language_valid: primary_language /= Void and then not primary_language.is_empty
 	Languages_available_valid: languages_available /= Void and then not languages_available.is_empty
 	Terminologies_available_exists: terminologies_available /= Void
 

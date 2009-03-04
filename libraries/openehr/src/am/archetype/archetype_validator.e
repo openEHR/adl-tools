@@ -66,22 +66,22 @@ feature {NONE} -- Initialisation
 			-- initialise reporting variables
 		require
 			target_desc_attached: a_target_desc /= Void
-			target_desc_valid: a_target_desc.archetype_differential /= Void
+			target_desc_valid: a_target_desc.differential_archetype /= Void
 		do
 			target_descriptor := a_target_desc
-			make_authored_resource(target_descriptor.archetype_differential)
+			make_authored_resource(target_descriptor.differential_archetype)
 			if target_descriptor.is_specialised then
 				if target_descriptor.specialisation_parent = Void then
 					add_error("validate_e1", Void)
 				elseif not target_descriptor.specialisation_parent.is_valid then
 					add_error("validate_e2", Void)
 				else
-					flat_parent := target_descriptor.specialisation_parent.archetype_flat
+					flat_parent := target_descriptor.specialisation_parent.flat_archetype
 				end
 			end
 		ensure
 			target_descriptor_set: target_descriptor = a_target_desc
-			target_set: target = a_target_desc.archetype_differential
+			target_set: target = a_target_desc.differential_archetype
 			Parent_set: (passed and target_descriptor.is_specialised) implies flat_parent /= Void
 		end
 
@@ -129,7 +129,7 @@ feature -- Validation
 
 			-- validation requiring valid specialisation parent
 			if passed and target.is_specialised then
-	 			target.set_parent_archetype (target_descriptor.specialisation_parent.archetype_differential)
+	 			target.set_parent_archetype (target_descriptor.specialisation_parent.differential_archetype)
 			end
 
 			-- validation requiring parent links in place for specialised archetype
@@ -481,8 +481,8 @@ feature {NONE} -- Implementation
 		end
 
 	specialised_node_validate (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)  is
-			-- perform grafts of node from differential archetype on corresponding node in flat parent
-			-- only interested in C_COMPLEX_OBJECTs
+			-- validate nodes in differential specialised archetype
+			-- SIDE-EFFECT: sets is_congruent markers on child archetype nodes
 		local
 			co_parent_flat: !C_OBJECT
 			co_parent_flat_detachable: ?C_OBJECT

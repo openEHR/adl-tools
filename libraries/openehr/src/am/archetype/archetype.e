@@ -417,7 +417,7 @@ feature -- Modification
 		end
 
 	rebuild is
-			-- rebuild any cached state after changes
+			-- rebuild any cached state after changes to definition or invariant structure
 		do
 			build_xrefs
 			build_physical_paths

@@ -85,7 +85,7 @@ feature -- Commands
 					until
 						slots.off
 					loop
-						create eti.make_with_text (utf8 (ara.archetype_differential.ontology.physical_to_logical_path (slots.key_for_iteration, current_language)))
+						create eti.make_with_text (utf8 (ara.differential_archetype.ontology.physical_to_logical_path (slots.key_for_iteration, current_language)))
 						eti.set_pixmap (pixmaps ["ARCHETYPE_SLOT"])
 						gui.slots_tree.extend (eti)
 						append_tree (eti, slots.item_for_iteration)

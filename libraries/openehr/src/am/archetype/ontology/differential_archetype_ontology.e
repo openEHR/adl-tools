@@ -62,6 +62,8 @@ feature -- Initialisation
 			concept_code := a_flat_copy.concept_code
 
 			languages_available := a_flat_copy.languages_available
+			languages_available.start
+			set_primary_language(languages_available.item)
 			terminologies_available := a_flat_copy.terminologies_available
 
 			term_definitions := a_flat_copy.term_definitions
@@ -457,6 +459,9 @@ feature -- Conversion
 	to_flat: !FLAT_ARCHETYPE_ONTOLOGY
 			-- Create a flat version from this differential ontology.
 		do
+			if representation = Void then
+				synchronise_to_tree
+			end
 			create Result.make_from_tree (primary_language.deep_twin, representation.deep_twin, concept_code.deep_twin)
 		end
 

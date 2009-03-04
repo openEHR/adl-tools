@@ -74,6 +74,7 @@ feature -- Access
 			
 			-- MAIN_WINDOW
 			["adl_version_warning"] = <"Using ADL version $1 for output serialisation">
+			["clean_generated_file"] = <"Removing generated file $1">
 
 			-- ARCHETYPE_COMPILER
 			["create_new_archetype_1"] = <"CREATE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
@@ -139,6 +140,7 @@ feature -- Access
 			["SASID"] = <"in 'specialise' clause; expecting parent archetype id (model_issuer-ref_model-model_class.concept.version)">
 			["SACO"] = <"in 'concept' clause; expecting TERM_CODE reference">
 			["SALA"] = <"error in language section">
+			["SALAN"] = <"no language section found">
 			["SADS"] = <"error in description section">
 			["SADF"] = <"error in definition section">
 			["SAIV"] = <"error in invariant section">

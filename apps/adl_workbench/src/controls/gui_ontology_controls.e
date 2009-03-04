@@ -103,9 +103,9 @@ feature {NONE} -- Implementation
 			archetype_directory.has_selected_archetype
 		do
 			if in_differential_mode then
-				Result := archetype_directory.selected_archetype.archetype_differential
+				Result := archetype_directory.selected_archetype.differential_archetype
 			else
-				Result := archetype_directory.selected_archetype.archetype_flat
+				Result := archetype_directory.selected_archetype.flat_archetype
 			end
 		end
 

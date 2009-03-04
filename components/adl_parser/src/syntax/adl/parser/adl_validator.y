@@ -148,7 +148,12 @@ arch_concept: SYM_CONCEPT V_LOCAL_TERM_CODE_REF
 		}
 	;
 
-arch_language: -- empty is ok for ADL 1.4 tools
+arch_language: 
+		{
+			raise_error
+			report_error(create_message("SALAN", Void))
+			abort
+		}
 	| SYM_LANGUAGE V_DADL_TEXT
 		{
 			convert_dadl_language($2)

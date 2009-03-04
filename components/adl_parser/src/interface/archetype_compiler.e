@@ -19,13 +19,6 @@ class ARCHETYPE_COMPILER
 inherit
 	SHARED_ARCHETYPE_DIRECTORY
 
-	SHARED_ARCHETYPE_PARSER
-		export
-			{NONE} all
-		undefine
-			copy, default_create
-		end
-
 	SHARED_RESOURCES
 		export
 			{NONE} all
@@ -194,13 +187,11 @@ feature {NONE} -- Implementation
 				if from_scratch or ara.is_out_of_date then
 					status := "------------- compiling " + ara.id.value + " -------------%N"
 					call_visual_update_action (ara)
-					archetype_parser.set_target (ara)
-					archetype_parser.parse_archetype
-					status := archetype_parser.status.twin
-
+					ara.parse_archetype
+					status := ara.compiler_status.twin
 					if ara.is_valid and not ara.has_differential_file then
-						archetype_parser.save_archetype_differential
-						status.append (archetype_parser.status)
+						ara.save_differential
+						status.append (ara.status)
 					end
 				elseif ara.has_compiler_status then
 					status := "(already attempted; status = " + ara.compiler_status
@@ -210,7 +201,6 @@ feature {NONE} -- Implementation
 						status.append (")%N")
 					end
 				end
-
 				call_visual_update_action (ara)
 			end
 		end
@@ -230,9 +220,8 @@ feature {NONE} -- Implementation
 				if ara.is_valid then
 					filename := file_system.pathname (html_export_directory, ara.relative_path) + ".html"
 					file_system.recursive_create_directory (file_system.dirname (filename))
-					archetype_parser.set_target (ara)
-					archetype_parser.save_archetype_flat_as (filename, "html")
-					status := archetype_parser.status
+					ara.save_flat_as (filename, "html")
+					status := ara.status
 					call_visual_update_action (ara)
 				end
 			end
