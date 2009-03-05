@@ -233,7 +233,7 @@ feature {NONE} -- Implementation
 			-- Leave `passed' True if all found node_ids are defined in term_definitions,
 			-- and term_definitions contains no extras.
 		local
-			a_codes: HASH_TABLE [ARRAYED_LIST [C_OBJECT], STRING]
+			a_codes: HASH_TABLE [ARRAYED_LIST [ARCHETYPE_CONSTRAINT], STRING]
 			depth: INTEGER
 		do
 			depth := ontology.specialisation_depth

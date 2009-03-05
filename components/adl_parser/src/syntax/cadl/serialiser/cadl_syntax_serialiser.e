@@ -247,9 +247,6 @@ feature -- Visitor
 			-- C_DOMAIN_TYPEs not having a special syntax like C_CODE_PHRASE and C_DV_ORDINAL (and note
 			-- that in some archetypes, these types can be represented with dADL blocks)
 		do
-			if dadl_engine = Void then
-				create dadl_engine.make
-			end
 			dadl_engine.set_tree (a_node.dt_representation)
 			dadl_engine.serialise (output_format)
 			last_result.append((create {STRING_UTILITIES}).indented(dadl_engine.serialised, create_indent(depth)))
@@ -319,7 +316,9 @@ feature -- Visitor
 		do
 			if a_node.any_allowed then
 				-- output in C_DV_ORDINAL style
-				start_c_domain_type(a_node, depth)
+				dadl_engine.set_tree (a_node.dt_representation)
+				dadl_engine.serialise (output_format)
+				last_result.append((create {STRING_UTILITIES}).indented(dadl_engine.serialised, create_indent(depth)))
 			elseif a_node.items.count = 1 then
 				last_result.remove_tail(format_item(FMT_NEWLINE).count)	-- remove last newline due to OBJECT_REL_NODE	
 				last_result.append(apply_style(clean(a_node.as_string), STYLE_TERM_REF))
@@ -444,7 +443,11 @@ feature {NONE} -- Implementation
 
 	last_object_simple_buffer: STRING
 
-	dadl_engine: DADL_ENGINE
+	dadl_engine: DADL_ENGINE is
+			-- for handling inline dADL sections like for C_QUANTITY
+		once
+			create Result.make
+		end
 
 	identifier_style (constraint: ARCHETYPE_CONSTRAINT): INTEGER
 			-- The formatting identifier style appropriate to the the specialisation status of `constraint'.

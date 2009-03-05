@@ -336,7 +336,7 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER, EXPR_XREF_BUI
 			a_c_iterator.do_all
 		end
 
-	id_atcodes_index: HASH_TABLE[ARRAYED_LIST[C_OBJECT], STRING]
+	id_atcodes_index: HASH_TABLE[ARRAYED_LIST[ARCHETYPE_CONSTRAINT], STRING]
 			-- table of {list<node>, code} for term codes which identify nodes in archetype (note that there
 			-- are other uses of term codes from the ontology, which is why this attribute is not just called
 			-- 'term_codes_xref_table')

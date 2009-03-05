@@ -25,7 +25,7 @@ inherit
 			initialise as initialise_visitor
 		redefine
 			start_c_complex_object, start_archetype_slot, start_archetype_internal_ref,
-			start_constraint_ref, start_c_code_phrase, start_c_ordinal
+			start_constraint_ref, start_c_code_phrase, start_c_ordinal, start_c_attribute
 		end
 
 feature -- Initialisation
@@ -44,7 +44,7 @@ feature -- Initialisation
 feature -- Visitor
 
 	start_c_complex_object(a_node: C_COMPLEX_OBJECT; depth: INTEGER) is
-			-- enter an C_COMPLEX_OBJECT
+			-- enter a C_COMPLEX_OBJECT
 		do
 			if a_node.is_addressable then
 				if not archetype.id_atcodes_index.has(a_node.node_id) then
@@ -117,6 +117,28 @@ feature -- Visitor
 					archetype.data_atcodes_index.item(a_node.items.item.symbol.code_string).extend(a_node)
 					a_node.items.forth
 				end
+			end
+		end
+
+	start_c_attribute(a_node: C_ATTRIBUTE; depth: INTEGER) is
+			-- enter a C_ATTRIBUTE; see if it has a differential path, in which case there may be at-codes
+			-- referenced there not visible elsewhere in the structure; these need to be found and added to
+			-- the id_atcodes list
+		local
+			og_path: OG_PATH
+		do
+			if a_node.has_differential_path then
+				create og_path.make_from_string (a_node.differential_path)
+				from og_path.start until og_path.off loop
+					if og_path.item.is_addressable then
+						if not archetype.id_atcodes_index.has(og_path.item.object_id) then
+							archetype.id_atcodes_index.put(create {ARRAYED_LIST[ARCHETYPE_CONSTRAINT]}.make(0), og_path.item.object_id)
+						end
+						archetype.id_atcodes_index.item(og_path.item.object_id).extend(a_node)
+					end
+					og_path.forth
+				end
+
 			end
 		end
 
