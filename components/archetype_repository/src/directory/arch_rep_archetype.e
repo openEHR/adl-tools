@@ -403,7 +403,7 @@ feature -- Commands
 					end
 				else
 					read_flat
-					flat_archetype_cache := adl_engine.parse_flat (flat_text)
+					flat_archetype_cache := adl_engine.parse_flat (flat_text_cache)
 					if flat_archetype_cache = Void then
 						post_error (Current, "parse_archetype", "parse_archetype_e1", <<adl_engine.parse_error_text>>)
 					else
@@ -753,8 +753,6 @@ feature {NONE} -- Implementation
 			flat_text_cache := file_repository.text
 			full_path := flat_path
 			flat_text_timestamp := file_repository.text_timestamp
-		ensure
-			flat_text_set: flat_text /= old flat_text
 		end
 
 	make_ontological_paths

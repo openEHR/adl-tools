@@ -148,12 +148,12 @@ feature {NONE} -- Implementation
 			action_attached: action /= Void
 			message_attached: message /= Void
 		do
-			status := "=============== " + message + " ===============%N"
+			status := create_message ("compiler_status", <<message>>)
 			call_visual_update_action (Void)
 			is_interrupted := False
 			build_completed := False
 			archetype_directory.do_subtree (subtree, agent do_if_archetype (?, action), Void)
-			status := "=============== finished " + message + " ===============%N"
+			status := create_message ("compiler_finished_status", <<message>>)
 			call_visual_update_action (Void)
 			if not is_interrupted then
 				build_completed := True
@@ -185,7 +185,7 @@ feature {NONE} -- Implementation
 		do
 			if not is_interrupted then
 				if from_scratch or ara.is_out_of_date then
-					status := "------------- compiling " + ara.id.value + " -------------%N"
+					status := create_message("compiler_compiling_archetype", <<ara.id.value>>)
 					call_visual_update_action (ara)
 					ara.parse_archetype
 					status := ara.compiler_status.twin
@@ -194,12 +194,7 @@ feature {NONE} -- Implementation
 						status.append (ara.status)
 					end
 				elseif ara.has_compiler_status then
-					status := "(already attempted; status = " + ara.compiler_status
-					if status.item (status.count) = '%N' then
-						status.insert_character (')', status.count)
-					else
-						status.append (")%N")
-					end
+					status := create_message ("compiler_already_attempted", <<ara.compiler_status>>)
 				end
 				call_visual_update_action (ara)
 			end

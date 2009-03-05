@@ -76,7 +76,7 @@ feature -- Access
 			["adl_version_warning"] = <"Using ADL version $1 for output serialisation">
 			["clean_generated_file"] = <"Removing generated file $1">
 
-			-- ARCHETYPE_COMPILER
+			-- ARCHETYPE compilation
 			["create_new_archetype_1"] = <"CREATE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
 			["specialise_archetype_1"] = <"SPECIALISE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
 			["open_adl_file_1"] = <"%NOPEN FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
@@ -93,8 +93,11 @@ feature -- Access
 			["parse_archetype_w2"] = <"Archetype $1 semantic validation Warnings:%N$2">
 			["parse_archetype_e3"] = <"PARSE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
 			["parse_archetype_e4"] = <"Archetype $1 semantic validation of differential form FAILED; reasons:%N$2">
-
 			["arch_context_make_flat_i1"] = <"Generated differential archetype from specialised flat archetype">
+			["compiler_status"] = <"=============== $1 ===============">
+			["compiler_finished_status"] = <"=============== finished $1 ===============">
+			["compiler_compiling_archetype"] = <"------------- compiling $1 -------------">
+			["compiler_already_attempted"] = <"(already attempted; status = $1">
 			
 			-- ARCHETYPE_VALIDATOR
 			["validate_e1"] = <"Error: specialisation parent is missing">
