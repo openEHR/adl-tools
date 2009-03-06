@@ -179,8 +179,12 @@ feature {NONE} -- Implementation
 		local
 			def_it: C_ITERATOR
 		do
-			create path_list.make(0)
-			path_list.compare_objects
+			create parent_path_list.make(0)
+			parent_path_list.compare_objects
+
+			create child_grafted_path_list.make(0)
+			child_grafted_path_list.compare_objects
+
 			create def_it.make(arch_child_diff.definition)
 			def_it.do_until_surface(agent node_graft, agent node_test)
 			arch_output_flat.rebuild
@@ -230,12 +234,13 @@ feature {NONE} -- Implementation
 						io.put_string ("YES%N")
 					end
 
-					if path_list.has(a_path) then -- check for path that has been overlaid by a redefined node; have to graft in entire object as a sibling
+					if parent_path_list.has(a_path) then -- check for path that has been overlaid by a redefined node; have to graft in entire object as a sibling
 						debug ("flatten")
 							io.put_string ("WAS REPLACED - grafting sibling object " + cco_child_diff.path + "%N")
 						end
 						c_attr_output := arch_output_flat.definition.c_attribute_at_path (cco_child_diff.parent.path)
 						c_attr_output.put_sibling_child(cco_child_diff.safe_deep_twin)
+						child_grafted_path_list.extend(cco_child_diff.path)
 					else
 						cco_output_flat ?= arch_output_flat.c_object_at_path (a_path)
 
@@ -254,7 +259,7 @@ feature {NONE} -- Implementation
 						loop
 							c_attr_child := cco_child_diff.attributes.item
 
-							-- now we have to figure out the 'proximate' C_COMPLEX_OBJECT in the flat parent - it is either the cc_output_flat that
+							-- now we have to figure out the 'proximate' C_COMPLEX_OBJECT in the flat parent - it is either the cco_output_flat that
 							-- corresponds to the parent object from the differential child with we started this routine, or if the current attribute
 							-- has a compressed path, its true object parent in the flat parent archetype is given by the compressed path
 							if c_attr_child.has_differential_path then
@@ -328,7 +333,7 @@ feature {NONE} -- Implementation
 						end
 
 						-- record path in case sibling objects turn up
-						path_list.extend(a_path)
+						parent_path_list.extend(a_path)
 					end
 				else
 					debug ("flatten")
@@ -442,10 +447,10 @@ feature {NONE} -- Implementation
 			loop
 				if not {cco: !C_COMPLEX_OBJECT} c_attr_child.children.item then
 					if c_attr_child.children.item.is_addressable then -- if identified, find corresponding node in parent & replace completely
-						c_attr_output.replace_child_by_id (c_attr_child.children.item.deep_twin,
+						c_attr_output.replace_child_by_id (c_attr_child.children.item.safe_deep_twin,
 							specialisation_parent_from_code_at_level (c_attr_child.children.item.node_id, arch_parent_flat.specialisation_depth))
 					elseif c_attr_output.has_child_with_rm_type_name(c_attr_child.children.item.rm_type_name) then -- find a node of same type, then replace completely
-						c_attr_output.replace_child_by_rm_type_name (c_attr_child.children.item.deep_twin)
+						c_attr_output.replace_child_by_rm_type_name (c_attr_child.children.item.safe_deep_twin)
 					else -- or a RM parent type, then add
 						rm_ancestors := rm_checker.ancestor_types_of(c_attr_child.children.item.rm_type_name)
 						from
@@ -456,9 +461,10 @@ feature {NONE} -- Implementation
 							rm_ancestors.forth
 						end
 						if not rm_ancestors.off then
-							c_attr_output.put_child (c_attr_child.children.item.deep_twin)
+							c_attr_output.put_child (c_attr_child.children.item.safe_deep_twin)
 						end
 					end
+					child_grafted_path_list.extend(c_attr_child.children.item.path)
 				end
 				c_attr_child.children.forth
 			end
@@ -492,17 +498,34 @@ feature {NONE} -- Implementation
 	node_test (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN  is
 			-- return True if a conformant path of a_c_node within the differential archetype is
 			-- found within the flat parent archetype - i.e. a_c_node is inherited or redefined from parent (but not new)
+			-- but not if the node is already in the child_grafted_path_list
 		local
 			apa: ARCHETYPE_PATH_ANALYSER
+			np: STRING
+			found_child: BOOLEAN
 		do
-			create apa.make_from_string(a_c_node.path)
-			Result := arch_parent_flat.has_path (apa.path_at_level (arch_parent_flat.specialisation_depth))
+			np := a_c_node.path
+			create apa.make_from_string(np)
+			from child_grafted_path_list.start until found_child or child_grafted_path_list.off loop
+				if np.starts_with(child_grafted_path_list.item) then
+					found_child := True
+					debug ("flatten")
+						io.put_string ("%T%Tchild path " + np + " found in child_grafted_path_list - not descending%N")
+					end
+				end
+				child_grafted_path_list.forth
+			end
+			Result := not found_child and arch_parent_flat.has_path (apa.path_at_level (arch_parent_flat.specialisation_depth))
 		end
 
-	path_list: ARRAYED_LIST [STRING]
+	parent_path_list: ARRAYED_LIST [STRING]
 			-- list of paths matched in parent archetype by child archetype nodes. Used to remember paths that
 			-- disappear due to being overwritten by a specialised node (e.g. at0013 becomes at0013.1 in the flat output)
 			-- but then specialised siblings (e.g. at0013.2, at0013.3) turn up and need to be grafted in.
+
+	child_grafted_path_list: ARRAYED_LIST [STRING]
+			-- list of root paths of child sub-trees in the child that have been completely grafted from child to parent
+			-- don't descend into paths lower than any path in this list
 
 	rm_node_flatten_enter (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)  is
 			-- copy assumed elements of reference model to node
