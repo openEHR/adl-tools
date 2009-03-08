@@ -713,19 +713,10 @@ feature {NONE} -- Tools events
 
 	delete_generated_files (a: ARCH_REP_ITEM) is
 			-- delete a generated file associated with `a'
-		local
-			a_path: STRING
 		do
 			if {ara: !ARCH_REP_ARCHETYPE} a then
-				if ara.differential_generated then
-					a_path := ara.differential_path
-				elseif ara.flat_generated then
-					a_path := ara.flat_path
-				end
-				if a_path /= Void and file_system.is_file_readable (a_path) then
-					file_system.delete_file (a_path)
-					append_status_area (create_message ("clean_generated_file", <<a_path>>))
-				end
+				ara.clean_generated
+				append_status_area (ara.status)
 			end
 		end
 

@@ -376,9 +376,11 @@ feature -- Status Setting
 		do
 			exception_encountered := False
 			status.wipe_out
+			compiler_status.wipe_out
 		ensure
 			Exception_cleared: not exception_encountered
 			Status_cleared: status.is_empty
+			Compiler_status_cleared: compiler_status.is_empty
 		end
 
 feature -- Commands
@@ -439,6 +441,16 @@ feature -- Commands
 			post_error (Current, "parse_archetype", "report_exception", <<exception.out, exception_trace>>)
 			exception_encountered := True
 			retry
+		end
+
+	clean_generated is
+			-- delete generated file and compiler products; forces next compilation to start from primary expression
+		do
+			if differential_generated then
+				clean_differential
+			elseif flat_generated then
+				clean_flat
+			end
 		end
 
 feature -- Comparison
@@ -695,6 +707,28 @@ feature -- Modification
 			post_error(Current, "create_new_specialised_archetype", "report_exception", <<exception.out, exception_trace>>)
 			exception_encountered := True
 			retry
+		end
+
+	clean_differential is
+			-- delete differential file and compilation products
+		do
+			if has_differential_file then
+				file_system.delete_file (differential_path)
+				status := create_message ("clean_generated_file", <<differential_path>>)
+			end
+			differential_text := Void
+			differential_text_timestamp := 0
+		end
+
+	clean_flat is
+			-- delete flat file and compilation products
+		do
+			if has_flat_file then
+				file_system.delete_file (flat_path)
+				status := create_message ("clean_generated_file", <<flat_path>>)
+			end
+			flat_text_cache := Void
+			flat_text_timestamp := 0
 		end
 
 feature {NONE} -- Implementation
