@@ -426,6 +426,7 @@ feature {NONE} -- Implementation
 							c_attr_output.put_child_right(c_obj, insert_obj)
 							insert_obj := c_attr_output.child_after (insert_obj)
 						end
+						child_grafted_path_list.extend(c_attr_child.children.i_th (i).path)
 					end
 					i := i + 1
 				end
