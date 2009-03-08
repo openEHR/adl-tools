@@ -137,19 +137,18 @@ feature -- Modification
 		do
 			create a_trans.make_from_language(a_lang)
 			a_trans.add_author_detail ("name", "unknown")
-			add_translation (a_trans, a_lang)
+			add_translation (a_trans)
 		end
 
-	add_translation(a_trans: TRANSLATION_DETAILS; a_lang: STRING) is
+	add_translation(a_trans: TRANSLATION_DETAILS) is
 			-- add a translation for a_lang
 		require
-			Lang_valid: a_lang /= Void and then not languages_available.has(a_lang)
-			Translation_valid: a_trans /= Void
+			Translation_valid: a_trans /= Void and then not languages_available.has(a_trans.language.code_string)
 		do
 			if translations = Void then
 				create translations.make(0)
 			end
-			translations.put (a_trans, a_lang)
+			translations.put (a_trans, a_trans.language.code_string)
 			stored_languages_available := Void
 		end
 

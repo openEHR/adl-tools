@@ -78,7 +78,8 @@ feature -- Access
 		end
 
 	rm_attribute_path: STRING is
-			-- path of this attribute, including differential path where applicable
+			-- path of this attribute with respect to owning C_OBJECT,
+			-- including differential path where applicable
 		do
 			Result := representation.node_key
 		end
@@ -93,7 +94,7 @@ feature -- Access
 			-- take account of differential path if it exists
 		do
 			if has_differential_path then
-				Result := representation.node_key
+				Result := rm_attribute_path
 			else
 				Result := precursor
 			end
@@ -650,6 +651,7 @@ invariant
 	Is_multiple_validity: is_multiple implies cardinality /= Void
 	Children_occurrences_validity: cardinality.interval.contains (occurrences_total_range)
 	Differential_path_valid: differential_path /= Void implies not differential_path.is_empty
+	Has_differential_path_valid: differential_path = Void xor has_differential_path
 
 end
 

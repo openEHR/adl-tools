@@ -180,17 +180,53 @@ feature {NONE} -- Implementation
 	validate_languages is
 			-- check to see that all linguistic items in ontology, description, etc
 			-- are all coherent
+		local
+			langs: ARRAYED_SET [STRING]
+			err_str: STRING
 		do
-			passed := False
+			passed := True
 
-			if not target.languages_available.is_subset (target.ontology.languages_available) then
-				add_error("VOTM", Void)
-				-- FIXME: Report exactly which languages are missing from the ontology.
-			else
-				passed := True
+			-- check that languages defined in translations section are in the archetype ontology
+			langs := target.languages_available
+			if not langs.is_subset (target.ontology.languages_available) then
+				create err_str.make (0)
+				from langs.start until langs.off loop
+					if not target.ontology.languages_available.has (langs.item) then
+						if not err_str.is_empty then
+							err_str.append (", ")
+						end
+						err_str.append (langs.item)
+					end
+					langs.forth
+				end
+				add_error("VOTM", <<err_str>>)
 			end
 
-			-- FIXME: Check whether languages_available list same as languages in description.details?
+			-- check that AUTHORED_RESOURCE.translations items match their Hash keys
+			if target.has_translations then
+				from
+					target.translations.start
+				until
+					target.translations.off or not target.translations.key_for_iteration.is_equal (target.translations.item_for_iteration.language.code_string)
+				loop
+					target.translations.forth
+				end
+				if not target.translations.off then
+					add_error("VTRLA", <<target.translations.key_for_iteration, target.translations.item_for_iteration.language.code_string>>)
+				end
+			end
+
+			-- check that RESOURCE_DESCRIPTION.details items match their Hash keys
+			from
+				target.description.details.start
+			until
+				target.description.details.off or not target.description.details.key_for_iteration.is_equal (target.description.details.item_for_iteration.language.code_string)
+			loop
+				target.description.details.forth
+			end
+			if not target.description.details.off then
+				add_error("VRDLA", <<target.description.details.key_for_iteration, target.description.details.item_for_iteration.language.code_string>>)
+			end
 		end
 
 	validate_ontology_code_spec_levels

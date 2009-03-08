@@ -191,10 +191,13 @@ feature -- Access
 			["VACSD"] = <"Error (VACSD): specialisation depth of concept code $1 does not match specialisation depth of archetype id $2">
 			["VACCD"] = <"Error (VACCD): archetype concept code $1 not used in definition">			
 			["VONSD"] = <"Error (VONSD): archetype code $1 in ontology more specialised than archetype">
-			["VOTM"] = <"Error (VOTM): translations missing in the term_definition and constraint_definition sections wit respect to languages defined in the description / translations section%N">
+			["VOTM"] = <"Error (VOTM): translations for $1 defined in the description / translations section but missing in the term_definition and constraint_definition sections">
 			["VATCD"] = <"Error (VATCD): at-code $1 used in archetype more specialised than archetype">
 			["VATDF"] = <"Error (VATDF): node id at-code $1 not defined in ontology">
 			["VUNP"] = <"Error (VUNP): use_node path $1 not found in archetype">
+
+			["VTRLA"] = <"Error (VTRLA): translations key $1 does not match translation item language $2">
+			["VRDLA"] = <"Error (VRDLA): resource detail key $1 does not match resource detail item language $2">
 
 			["VSONT"] = <"Error (VSONT): object node at path $1 (AOM type $2) does not conform to node at parent path $3 AOM type $4">
 			["VSONCT"] = <"Error (VSONCT): object node at path $1 (RM type $2) does not conform to node at parent path $3 RM type $4">
