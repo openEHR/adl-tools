@@ -687,7 +687,9 @@ feature {NONE} -- Implementation
 			apa: ARCHETYPE_PATH_ANALYSER
 		do
 			create apa.make_from_string(a_c_node.path)
-			Result := passed and flat_parent.has_path (apa.path_at_level (flat_parent.specialisation_depth))
+			if not apa.is_phantom_path_at_level (flat_parent.specialisation_depth) then
+				Result := passed and flat_parent.has_path (apa.path_at_level (flat_parent.specialisation_depth))
+			end
 		end
 
 	rm_node_validate_test (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN  is

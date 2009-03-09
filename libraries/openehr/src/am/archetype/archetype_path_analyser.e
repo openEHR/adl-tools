@@ -55,9 +55,11 @@ feature -- Access
 feature -- Conversion
 
 	path_at_level(a_level: INTEGER): STRING is
-			-- generate a form of the path at the specialisation level `a_level'
+			-- generate a form of the path at the specialisation level `a_level';
+			-- only applicable if the path can actually exist at the level indicated, which
+			-- cannot be the case if there are any '0's in any path node id at the requested level
 		require
-			valid_level: a_level >= 0
+			valid_level: a_level >= 0 and not is_phantom_path_at_level(a_level)
 		local
 			a_path: OG_PATH
 		do
@@ -83,16 +85,29 @@ feature -- Conversion
 			Result_attached: Result /= Void
 		end
 
+feature -- Status Report
+
+	 is_phantom_path_at_level (a_level: INTEGER): BOOLEAN is
+	 		-- True if this path corresponds to a node that does not exist in the specified level, i.e.
+	 		-- if it contains any object code whose parent ends in a '0', e.g. at0001.0.9 would return True
+	 	require
+	 		Level_valid: a_level >= 0 and a_level <= level
+	 	do
+			from target.start until target.off or Result loop
+				if is_valid_code (target.item.object_id) then
+					Result := index_from_code_at_level (target.item.object_id, a_level).is_equal ("0")
+				end
+				target.forth
+			end
+	 	end
+
 feature {NONE} -- Implementation
 
 	calculate_level is
 			-- get the deepest level of this path, determined from the depth of the object codes
+			-- set `level'
 		do
-			from
-				target.start
-			until
-				target.off
-			loop
+			from target.start until target.off loop
 				if is_valid_code (target.item.object_id) then
 					level := level.max(specialisation_depth_from_code (target.item.object_id))
 				end
