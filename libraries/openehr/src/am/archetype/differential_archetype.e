@@ -193,9 +193,12 @@ feature {ARCH_REP_ARCHETYPE} -- Structure
 			-- FIXME: only needed while differential archetype source is being created in uncompressed form
 			-- compress paths of congruent nodes in specialised archetype so that equivalent paths
 			-- are recorded in the `differential_path' attribute of terminal C_ATTRIBUTE nodes of congruent sections
+			-- This routine only works is validation has successfully completed because the latter process sets
+			-- is_conrgruent markers in the structure.
 		require
 			Target_specialised: is_specialised
 			Is_generated: is_generated
+			Is_valid: is_valid
 		local
 			def_it: C_ITERATOR
 		do

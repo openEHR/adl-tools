@@ -237,29 +237,19 @@ feature {NONE} -- Implementation
 		do
 			code_list := ontology.term_codes
 
-			from
-				code_list.start
-			until
-				code_list.off
-			loop
+			from code_list.start until code_list.off loop
 				if specialisation_depth_from_code (code_list.item) > ontology.specialisation_depth then
 					add_error("VONSD", <<code_list.item>>)
 				end
-
 				code_list.forth
 			end
 
 			code_list := ontology.constraint_codes
 
-			from
-				code_list.start
-			until
-				code_list.off
-			loop
+			from code_list.start until code_list.off loop
 				if specialisation_depth_from_code (code_list.item) > ontology.specialisation_depth then
 					add_error("VONSD", <<code_list.item>>)
 				end
-
 				code_list.forth
 			end
 		end
@@ -275,11 +265,7 @@ feature {NONE} -- Implementation
 			depth := ontology.specialisation_depth
 
 			a_codes := target.id_atcodes_index
-			from
-				a_codes.start
-			until
-				a_codes.off
-			loop
+			from a_codes.start until a_codes.off loop
 				if specialisation_depth_from_code (a_codes.key_for_iteration) > depth then
 					add_error("VATCD", <<a_codes.key_for_iteration>>)
 				elseif not ontology.has_term_code (a_codes.key_for_iteration) then
@@ -290,12 +276,7 @@ feature {NONE} -- Implementation
 
 			-- see if every found leaf term code (in an ORDINAL or a CODED_TERM) is in ontology
 			a_codes := target.data_atcodes_index
-
-			from
-				a_codes.start
-			until
-				a_codes.off
-			loop
+			from a_codes.start until a_codes.off loop
 				if specialisation_depth_from_code (a_codes.key_for_iteration) > depth then
 					add_error("VATCD", <<a_codes.key_for_iteration>>)
 				elseif not ontology.has_term_code (a_codes.key_for_iteration) then
@@ -307,18 +288,12 @@ feature {NONE} -- Implementation
 
 			-- check if all found constraint_codes are defined in constraint_definitions,
 			a_codes := target.accodes_index
-
-			from
-				a_codes.start
-			until
-				a_codes.off
-			loop
+			from a_codes.start until a_codes.off loop
 				if specialisation_depth_from_code (a_codes.key_for_iteration) > depth then
 					add_error("VATCD", <<a_codes.key_for_iteration>>)
 				elseif not ontology.has_constraint_code (a_codes.key_for_iteration) then
 					add_error("VATDF", <<a_codes.key_for_iteration>>)
 				end
-
 				a_codes.forth
 			end
 		end
@@ -330,11 +305,7 @@ feature {NONE} -- Implementation
 		do
 			use_refs := target.use_node_index
 
-			from
-				use_refs.start
-			until
-				use_refs.off
-			loop
+			from use_refs.start until use_refs.off loop
 				-- check on paths in the current archetype
 				if target.definition.has_path (use_refs.key_for_iteration) then
 					convert_use_ref_paths (use_refs.item_for_iteration, use_refs.key_for_iteration, target)
@@ -352,11 +323,7 @@ feature {NONE} -- Implementation
 			-- the flat archetype
 		do
 			if target.has_invariants then
-				from
-					target.invariants_index.start
-				until
-					target.invariants_index.off
-				loop
+				from target.invariants_index.start until target.invariants_index.off loop
 					convert_invariant_paths (target.invariants_index.item_for_iteration, target)
 					target.invariants_index.forth
 				end
@@ -367,20 +334,12 @@ feature {NONE} -- Implementation
 			-- populate lists of at-codes and ac-codes found in ontology that
 			-- are not referenced anywhere in the archetype definition
 		do
-			from
-				target.ontology_unused_term_codes.start
-			until
-				target.ontology_unused_term_codes.off
-			loop
+			from target.ontology_unused_term_codes.start until target.ontology_unused_term_codes.off loop
 				add_warning("WOUC", <<target.ontology_unused_term_codes.item>>)
 				target.ontology_unused_term_codes.forth
 			end
 
-			from
-				target.ontology_unused_constraint_codes.start
-			until
-				target.ontology_unused_constraint_codes.off
-			loop
+			from target.ontology_unused_constraint_codes.start until target.ontology_unused_constraint_codes.off loop
 				add_warning("WOUC", <<target.ontology_unused_constraint_codes.item>>)
 				target.ontology_unused_constraint_codes.forth
 			end
@@ -409,18 +368,10 @@ feature {NONE} -- Implementation
 			a_regex: STRING
 			id_list: ARRAYED_LIST[STRING]
 		do
-			from
-				target.slot_index.start
-			until
-				target.slot_index.off
-			loop
+			from target.slot_index.start until target.slot_index.off loop
 				-- process the includes
 				assn_list := target.slot_index.item.includes
-				from
-					assn_list.start
-				until
-					assn_list.off
-				loop
+				from assn_list.start until assn_list.off loop
 					a_regex := extract_regex(assn_list.item)
 					if a_regex /= Void then
 						target_descriptor.add_slot_ids(archetype_directory.matching_ids (a_regex, target.slot_index.item.rm_type_name), target.slot_index.item.path)
@@ -435,11 +386,7 @@ feature {NONE} -- Implementation
 
 				-- process the excludes
 				assn_list := target.slot_index.item.excludes
-				from
-					assn_list.start
-				until
-					assn_list.off
-				loop
+				from assn_list.start until assn_list.off loop
 					a_regex := extract_regex(assn_list.item)
 					if a_regex /= Void then
 						id_list := archetype_directory.matching_ids (a_regex, target.slot_index.item.rm_type_name)
@@ -459,18 +406,13 @@ feature {NONE} -- Implementation
 
 				-- now post the results in the reverse indexes
 				id_list := target_descriptor.slot_id_index.item (target.slot_index.item.path)
-				from
-					id_list.start
-				until
-					id_list.off
-				loop
+				from id_list.start until id_list.off loop
 					if not archetype_directory.archetype_id_index.item (id_list.item).is_used or else not
 						archetype_directory.archetype_id_index.item (id_list.item).used_by_index.has (target.archetype_id.as_string) then
 						archetype_directory.archetype_id_index.item (id_list.item).add_used_by_item (target.archetype_id.as_string)
 					end
 					id_list.forth
 				end
-
 				target.slot_index.forth
 			end
 		end
@@ -587,6 +529,13 @@ feature {NONE} -- Implementation
 						-- nodes are at least conformant; check for congruence for specalisation path replacement
 						if {cco: C_COMPLEX_OBJECT} co_child_diff and co_child_diff.node_congruent_to (co_parent_flat) and (co_child_diff.is_root or else co_child_diff.parent.is_congruent) then
 							co_child_diff.set_is_congruent
+							debug ("validate")
+								io.put_string (">>>>> validate: node in child at " + co_child_diff.path + " CONGRUENT to parent node " + co_parent_flat.path + " %N")
+							end
+						else
+							debug ("validate")
+								io.put_string (">>>>> validate: node in child at " + co_child_diff.path + " CONFORMANT to parent node " + co_parent_flat.path + " %N")
+							end
 						end
 
 						if co_child_diff.sibling_order /= Void and then not co_parent_flat.parent.has_child_with_id (co_child_diff.sibling_order.sibling_node_id) then
