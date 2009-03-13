@@ -481,7 +481,10 @@ feature {NONE} -- Implementation
 							add_error("VSANCC", <<ca_child_diff.path, ca_child_diff.cardinality.as_string,
 										ca_parent_flat.path, ca_parent_flat.cardinality.as_string>>)
 						end
-					elseif ca_child_diff.node_congruent_to (ca_parent_flat) and ca_child_diff.parent.is_congruent then
+					elseif ca_child_diff.node_congruent_to (ca_parent_flat) and ca_child_diff.parent.is_mergeable then
+						debug ("validate")
+							io.put_string (">>>>> validate: C_ATTRIBUTE in child at " + ca_child_diff.path + " CONGRUENT to parent node " + ca_parent_flat.path + " %N")
+						end
 						ca_child_diff.set_is_congruent
 					end
 				else
@@ -527,14 +530,27 @@ feature {NONE} -- Implementation
 						end
 					else
 						-- nodes are at least conformant; check for congruence for specalisation path replacement
-						if {cco: C_COMPLEX_OBJECT} co_child_diff and co_child_diff.node_congruent_to (co_parent_flat) and (co_child_diff.is_root or else co_child_diff.parent.is_congruent) then
-							co_child_diff.set_is_congruent
+						if {cco: C_COMPLEX_OBJECT} co_child_diff and co_child_diff.node_congruent_to (co_parent_flat) and (co_child_diff.is_root or else co_child_diff.parent.is_mergeable) then
 							debug ("validate")
-								io.put_string (">>>>> validate: node in child at " + co_child_diff.path + " CONGRUENT to parent node " + co_parent_flat.path + " %N")
+								io.put_string (">>>>> validate: C_OBJECT in child at " + co_child_diff.path + " CONGRUENT to parent node " + co_parent_flat.path)
+							end
+							-- if the parent C_ATTRIBUTE node of the object node in the flat parent has no children, this object can be assumed to be a total
+							-- replacement, so don't mark it as an overlay
+							if {cco_pf: C_COMPLEX_OBJECT} co_parent_flat then
+								if  co_child_diff.is_root or cco_pf.has_attributes then
+									co_child_diff.set_is_congruent
+									debug ("validate")
+										io.put_string ("%N")
+									end
+								else
+									debug ("validate")
+										io.put_string ("(TURNED OFF due to being replacement)")
+									end
+								end
 							end
 						else
 							debug ("validate")
-								io.put_string (">>>>> validate: node in child at " + co_child_diff.path + " CONFORMANT to parent node " + co_parent_flat.path + " %N")
+								io.put_string (">>>>> validate: C_OBJECT in child at " + co_child_diff.path + " CONFORMANT to parent node " + co_parent_flat.path + " %N")
 							end
 						end
 
@@ -644,15 +660,13 @@ feature {NONE} -- Implementation
 	rm_node_validate_test (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN  is
 			-- return True if node is a C_OBJECT and class is known in RM, or if it is a C_ATTRIBUTE
 		do
+			Result := True
 			if {co: C_OBJECT} a_c_node then
 				if not unknown_types.has(co.rm_type_name) and not rm_checker.has_class_definition(co.rm_type_name) then
 					add_error("VCORM", <<co.rm_type_name, co.path>>)
 					unknown_types.extend (co.rm_type_name)
-				else
-					Result := True
+					Result := False
 				end
-			else
-				Result := True
 			end
 		end
 

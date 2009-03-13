@@ -82,6 +82,7 @@ feature -- Source Control
 	specialisation_status (spec_level: INTEGER): SPECIALISATION_STATUS is
 			-- status of this node in the source text of this archetype with respect to the
 			-- specialisation hierarchy. Values are defined in SPECIALISATION_STATUSES
+			-- detects specialisation status for identified nodes
 		do
 			if not is_valid_code(node_id) then
 				create Result.make(ss_propagated)
@@ -98,19 +99,21 @@ feature -- Status Report
 
 	is_valid: BOOLEAN is
 			-- report on validity
+		local
+			s: STRING
 		do
 			create invalid_reason.make(0)
-			invalid_reason.append(rm_type_name + "{" + generating_type + "} ")
+			s := rm_type_name + "{" + generating_type + "} "
 			if is_addressable then
-				invalid_reason.append("[" + node_id + "]")
+				s.append("[" + node_id + "]")
 			end
-			invalid_reason.append(": ")
+			s.append(": ")
 
 			if occurrences = Void then	-- FIXME: Delete this check! It's guaranteed by the invariant, so why are we checking it here?
-				invalid_reason.append("occurrences must be specified")
+				invalid_reason.append(s + "occurrences must be specified")
 			elseif parent /= Void then
 				if not parent.is_multiple and occurrences.upper > 1 then	-- FIXME: Delete this check! It's guaranteed by the invariant, so why are we checking it here?
-					invalid_reason.append("occurrences max can only be 1 for single parent attribute")
+					invalid_reason.append(s + "occurrences max can only be 1 for single parent attribute")
 				else
 					Result := True
 				end

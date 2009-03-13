@@ -254,9 +254,9 @@ feature {NONE} -- Implementation
 						end
 
 						-- if output_flat node has matches any, then just do a complete clone of the current child tree
-						if cco_output_flat.any_allowed then
+						if cco_output_flat.any_allowed and cco_output_flat.is_addressable then
 							debug ("flatten")
-								io.put_string ("*T** parent matches ANY - doing complete clone of child **%N")
+								io.put_string ("%T** parent matches ANY - doing complete clone of child **%N")
 							end
 							cco_output_flat.parent.replace_node_id (cco_output_flat.node_id, cco_child_diff.node_id)
 							cco_output_flat.parent.replace_child_by_id (cco_child_diff.safe_deep_twin, cco_child_diff.node_id)

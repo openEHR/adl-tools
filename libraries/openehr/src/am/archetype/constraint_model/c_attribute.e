@@ -287,12 +287,14 @@ feature -- Status Report
 
 	is_valid: BOOLEAN is
 			-- report on validity
+		local
+			s: STRING
 		do
 			create invalid_reason.make (0)
-			invalid_reason.append (rm_attribute_name + ": ")
+			s := rm_attribute_name + ": "
 
 			if not (any_allowed xor representation.has_children) then
-				invalid_reason.append("must be either 'any' node or have child nodes")
+				invalid_reason.append(s + "must be either 'any' node or have child nodes")
 			else
 				from
 					Result := True
@@ -303,13 +305,16 @@ feature -- Status Report
 					-- check occurrences consistent with attribute cardinality
 					if is_single and children.item.occurrences.upper > 1 then
 						Result := False
-						invalid_reason.append ("occurrences on child node " + children.item.node_id.out +
+						s.append ("occurrences on child node " + children.item.node_id.out +
 							" must be singular for non-container attribute")
 					elseif not children.item.is_valid then
 						Result := False
-						invalid_reason.append ("(invalid child node) " + children.item.invalid_reason + "%N")
+						s.append ("(invalid child node) " + children.item.invalid_reason + "%N")
 					end
 					children.forth
+				end
+				if not Result then
+					invalid_reason.append(s)
 				end
 			end
 		end

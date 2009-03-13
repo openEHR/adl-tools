@@ -84,11 +84,7 @@ feature -- Initialisation
 				)
 
 				-- add before/after ordering markers to new nodes whose parent attributes are ordered containers
-				from
-					inherited_subtree_list.start
-				until
-					inherited_subtree_list.off
-				loop
+				from inherited_subtree_list.start until inherited_subtree_list.off loop
 					if {cco_1: !C_OBJECT} inherited_subtree_list.item_for_iteration then
 						if cco_1.parent /= Void and cco_1.parent.is_ordered then
 							cco_next := cco_1.parent.child_after (cco_1)
@@ -101,16 +97,11 @@ feature -- Initialisation
 							end
 						end
 					end
-
 					inherited_subtree_list.forth
 				end
 
 				-- now remove inherited subtrees
-				from
-					inherited_subtree_list.start
-				until
-					inherited_subtree_list.off
-				loop
+				from inherited_subtree_list.start until inherited_subtree_list.off loop
 					if {cco_2: !C_OBJECT} inherited_subtree_list.item_for_iteration then
 						if cco_2.parent /= Void then
 							cco_2.parent.remove_child (cco_2)
@@ -120,7 +111,6 @@ feature -- Initialisation
 					elseif {c_attr: !C_ATTRIBUTE} inherited_subtree_list.item_for_iteration then
 						c_attr.parent.remove_attribute (c_attr)
 					end
-
 					inherited_subtree_list.forth
 				end
 			end
@@ -162,11 +152,7 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER} -- Validation
 			create ontology_unused_constraint_codes.make(0)
 			ontology_unused_constraint_codes.compare_objects
 
-			from
-				ontology.term_codes.start
-			until
-				ontology.term_codes.off
-			loop
+			from ontology.term_codes.start until ontology.term_codes.off loop
 				if not id_atcodes_index.has(ontology.term_codes.item) and not
 						data_atcodes_index.has(ontology.term_codes.item) then
 					ontology_unused_term_codes.extend(ontology.term_codes.item)
@@ -175,11 +161,7 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER} -- Validation
 			end
 			ontology_unused_term_codes.prune(concept)
 
-			from
-				ontology.constraint_codes.start
-			until
-				ontology.constraint_codes.off
-			loop
+			from ontology.constraint_codes.start until ontology.constraint_codes.off loop
 				if not accodes_index.has(ontology.constraint_codes.item) then
 					ontology_unused_constraint_codes.extend(ontology.constraint_codes.item)
 				end
@@ -215,22 +197,25 @@ feature {ARCH_REP_ARCHETYPE} -- Structure
 			-- FIXME: only needed while differential archetype source is being created in uncompressed form
 			-- return True if node.is_congruent is True
 		do
-			Result := not a_c_node.is_congruent
+			Result := not a_c_node.is_mergeable
 		end
 
 	node_set_differential_path (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)  is
 			-- FIXME: only needed while differential archetype source is being created in uncompressed form
 			-- perform validation of node against reference model
+			-- This function gets executed on nodes 1 level BELOW where the is_congruent marker is True
 		local
 			co2: C_OBJECT
 			ca2: C_ATTRIBUTE
 		do
 			if {ca: !C_ATTRIBUTE} a_c_node then
+				-- these are attributes that are not congruent to any node in the parent archetype,
+				-- i.e. they don't exist in the parent.
 				if converted_def.has_attribute_path (ca.path) then
 					ca2 := converted_def.c_attribute_at_path (ca.path)
 					if not ca2.has_differential_path then
 						debug("compress")
-							io.put_string ("Will compress path at ATTR " + ca.path + "%N")
+							io.put_string ("Compressing path at ATTR " + ca.path + "%N")
 						end
 						ca2.set_differential_path_to_here
 					else
@@ -245,7 +230,7 @@ feature {ARCH_REP_ARCHETYPE} -- Structure
 						co2 := converted_def.c_object_at_path (co.path)
 						if not co2.parent.has_differential_path then
 							debug("compress")
-								io.put_string ("Will compress path of ATTR above OBJ with path " + co.path + "%N")
+								io.put_string ("Compressing path of ATTR above OBJ with path " + co.path + "%N")
 							end
 							co2.parent.set_differential_path_to_here
 						end
@@ -294,21 +279,13 @@ feature -- Modification
 			end
 
 			code_list := ontology_unused_term_codes
-			from
-				code_list.start
-			until
-				code_list.off
-			loop
+			from code_list.start until code_list.off loop
 				ontology.remove_term_definition(code_list.item)
 				code_list.forth
 			end
 
 			code_list := ontology_unused_constraint_codes
-			from
-				code_list.start
-			until
-				code_list.off
-			loop
+			from code_list.start until code_list.off loop
 				ontology.remove_constraint_definition(code_list.item)
 				code_list.forth
 			end

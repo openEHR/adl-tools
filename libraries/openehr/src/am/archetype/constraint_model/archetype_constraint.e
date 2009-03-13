@@ -35,8 +35,14 @@ feature -- Access
 			Result := representation.path.as_string
 		end
 
-	is_congruent: BOOLEAN
-			-- flag to indicate this node is congruent to a corresponding node in a specialisation parent
+	is_mergeable: BOOLEAN
+			-- flag to indicate this node is in a specialised archetype can be merged with the
+			-- corresponding node in the parent archetype. If False, it means that there is
+			-- either no corresponding parent (this is a node introduced new in this archetype)
+			-- or that this node should just completely replace rather than be merged with
+			-- its parent counterpart. Here, 'merging' means the piece-wise process of taking
+			-- elements of this node, including its children and overlaying them on the flat
+			-- parent node.
 
 feature -- Source Control
 
@@ -107,9 +113,9 @@ feature -- Comparison
 feature -- Modification
 
 	set_is_congruent is
-			-- set `is_congruent'
+			-- set `is_mergeable'
 		do
-			is_congruent := True
+			is_mergeable := True
 		end
 
 feature {ARCHETYPE_CONSTRAINT} -- Modification
