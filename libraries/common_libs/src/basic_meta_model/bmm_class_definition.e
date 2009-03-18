@@ -38,6 +38,8 @@ feature -- Access
 
 	generic_parameters: HASH_TABLE [BMM_GENERIC_PARAMETER_DEFINITION, STRING]
 			-- list of generic parameter definitions
+			-- FIXME: this won't function correctly unless ordering is guaranteed;
+			-- use DS_HASH_TABLE - but not yet supported by DT_OBJECT_CONVERTER
 
 	ancestors: ARRAYED_LIST [BMM_CLASS_DEFINITION]
 			-- list of immediate inheritance parents
@@ -71,8 +73,6 @@ feature -- Access
 
 	flattened_type_list: ARRAYED_LIST [STRING] is
 			-- completely flattened list of type names, flattening out all generic parameters
-			-- note that for this type, we throw away the container_type because we are tring to match
-			-- the type of an object as being a valid member of the container, e.g. ELEMENT in List<ELEMENT>
 		do
 			create Result.make(0)
 			Result.extend (name)
@@ -126,16 +126,14 @@ feature -- Commands
 
 			-- connect generic parm defs with defs in parent classes if any
 			-- first find a direct ancestor that has generic parameters
-			if ancestors /= Void then
-				from ancestors.start until ancestors.off or ancestors.item.is_generic loop ancestors.forth end
+			if is_generic and ancestors /= Void then
+				from ancestors.start until ancestors.off or ancestors.item.is_generic loop
+					ancestors.forth
+				end
 				if not ancestors.off then
-					from
-						generic_parameters.start
-					until
-						generic_parameters.off
-					loop
+					from generic_parameters.start until generic_parameters.off loop
 						if ancestors.item.generic_parameters.has (generic_parameters.key_for_iteration) then
-							generic_parameters.item_for_iteration.set_inheritance_precursor(ancestors.item.generic_parameters.item (generic_parameters.key_for_iteration))
+							generic_parameters.item_for_iteration.set_inheritance_precursor(ancestors.item.generic_parameters.item(generic_parameters.key_for_iteration))
 						end
 						generic_parameters.forth
 					end
@@ -147,9 +145,32 @@ feature -- Output
 
 	as_type_string: STRING is
 			-- name of the type
+		local
+			i: INTEGER
 		do
 			create Result.make(0)
 			Result.append(name)
+			if is_generic then
+				Result.append_character (generic_left_delim)
+				from
+					generic_parameters.start
+					i := 1
+				until generic_parameters.off loop
+					Result.append(generic_parameters.item_for_iteration.as_type_string)
+					if i < generic_parameters.count then
+						Result.append_character(generic_separator)
+					end
+					generic_parameters.forth
+					i := i + 1
+				end
+				Result.append_character (generic_right_delim)
+			end
+		end
+
+	as_flattened_type_string: STRING is
+			-- name of the type
+		do
+			Result := as_type_string
 		end
 
 feature {BMM_CLASS_DEFINITION} -- Implementation

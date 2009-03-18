@@ -434,19 +434,6 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	validate_reference_model is
-			-- validate definition of archetype against reference model
-		require
-			rm_checker.model_loaded
-		local
-			def_it: C_ITERATOR
-		do
-			create unknown_types.make(0)
-			unknown_types.compare_objects
-			create def_it.make(target.definition)
-			def_it.do_until_surface(agent rm_node_validate, agent rm_node_validate_test)
-		end
-
 	validate_specialised_definition is
 			-- validate definition of specialised archetype against flat parent
 		require
@@ -562,66 +549,79 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	validate_reference_model is
+			-- validate definition of archetype against reference model
+		require
+			rm_checker.model_loaded
+		local
+			def_it: C_ITERATOR
+		do
+			create invalid_types.make(0)
+			invalid_types.compare_objects
+			create def_it.make(target.definition)
+			def_it.do_until_surface(agent rm_node_validate, agent rm_node_validate_test)
+		end
+
 	rm_node_validate (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)  is
 			-- perform validation of node against reference model
 		local
-			arch_attr_type, attr_parent_path, model_attr_class: STRING
+			arch_parent_attr_type, model_attr_class: STRING
 			co_parent_flat: C_OBJECT
 			apa: ARCHETYPE_PATH_ANALYSER
-			prop_def: BMM_PROPERTY_DEFINITION
+			rm_prop_def: BMM_PROPERTY_DEFINITION
 		do
 			if {co: C_OBJECT} a_c_node then
 				if not co.is_root then -- now check if this object a valid type of its owning attribute
 					if target.is_specialised and then co.parent.has_differential_path then
-						attr_parent_path := co.parent.differential_path
-						create apa.make_from_string (attr_parent_path)
+						create apa.make_from_string (co.parent.differential_path)
 						co_parent_flat := flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth))
-						arch_attr_type := co_parent_flat.rm_type_name
+						arch_parent_attr_type := co_parent_flat.rm_type_name
 					else
-						arch_attr_type := co.parent.parent.rm_type_name
-						attr_parent_path := co.parent.parent.path
+						arch_parent_attr_type := co.parent.parent.rm_type_name
 					end
-					if rm_checker.has_property (arch_attr_type, co.parent.rm_attribute_name) and not
-										rm_checker.valid_property_type (arch_attr_type, co.parent.rm_attribute_name, co.rm_type_name) then
-						model_attr_class := rm_checker.property_type (arch_attr_type, co.parent.rm_attribute_name)
 
-						-- flag if constraint is equal to reference model; FUTURE: remove if equal
-						if rm_checker.substitutions.has (co.rm_type_name) and then rm_checker.substitutions.item (co.rm_type_name).is_equal (model_attr_class) then
-							add_info("ICORMTS", <<co.rm_type_name, co.path, model_attr_class,
-								arch_attr_type, co.parent.rm_attribute_name>>)
-						else
-							add_error("VCORMT", <<co.rm_type_name, co.path, model_attr_class,
-								arch_attr_type, co.parent.rm_attribute_name>>)
+					if not invalid_types.has (arch_parent_attr_type) then
+						if rm_checker.has_property (arch_parent_attr_type, co.parent.rm_attribute_name) and not
+											rm_checker.valid_property_type (arch_parent_attr_type, co.parent.rm_attribute_name, co.rm_type_name) then
+							model_attr_class := rm_checker.property_type (arch_parent_attr_type, co.parent.rm_attribute_name)
+
+							-- flag if constraint is equal to reference model; FUTURE: remove if equal
+							if rm_checker.substitutions.has (co.rm_type_name) and then rm_checker.substitutions.item (co.rm_type_name).is_equal (model_attr_class) then
+								add_info("ICORMTS", <<co.rm_type_name, co.path, model_attr_class,
+									arch_parent_attr_type, co.parent.rm_attribute_name>>)
+							else
+								add_error("VCORMT", <<co.rm_type_name, co.path, model_attr_class, arch_parent_attr_type, co.parent.rm_attribute_name>>)
+								invalid_types.extend (co.rm_type_name)
+							end
 						end
 					end
 				end
 			elseif {ca: C_ATTRIBUTE} a_c_node then
 				if target.is_specialised and then ca.has_differential_path then
-					attr_parent_path := ca.differential_path
-					create apa.make_from_string (attr_parent_path)
+					create apa.make_from_string (ca.differential_path)
 					co_parent_flat := flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth))
-					arch_attr_type := co_parent_flat.rm_type_name
+					arch_parent_attr_type := co_parent_flat.rm_type_name
 				else
-					arch_attr_type := ca.parent.rm_type_name -- can be a generic type like DV_INTERVAL <DV_QUANTITY>
-					attr_parent_path := ca.parent.path
+					arch_parent_attr_type := ca.parent.rm_type_name -- can be a generic type like DV_INTERVAL <DV_QUANTITY>
 				end
---				if not unknown_types.has(arch_attr_type) then
-					if rm_checker.has_class_definition(arch_attr_type) and then
-												not rm_checker.has_property(arch_attr_type, ca.rm_attribute_name) then
-						add_error("VCARM", <<ca.rm_attribute_name, ca.path , arch_attr_type>>)
-					else
-						prop_def := rm_checker.property_definition(arch_attr_type, ca.rm_attribute_name)
-						if not ca.existence.is_optional then
-							if prop_def.existence.contains(ca.existence) then
-								if prop_def.existence.is_equal(ca.existence) then
-									add_warning("WCAEX", <<ca.rm_attribute_name, ca.path, ca.existence.as_string>>)
-								end
-							else
-								add_error("VCAEX", <<ca.rm_attribute_name, ca.path, ca.existence.as_string, prop_def.existence.as_string>>)
+				if not rm_checker.has_property(arch_parent_attr_type, ca.rm_attribute_name) then
+					add_error("VCARM", <<ca.rm_attribute_name, ca.path, arch_parent_attr_type>>)
+				else
+					rm_prop_def := rm_checker.property_definition(arch_parent_attr_type, ca.rm_attribute_name)
+					if not ca.existence.is_optional then -- i.e. it is constrained in some way
+						if rm_prop_def.existence.contains(ca.existence) then
+							if rm_prop_def.existence.is_equal(ca.existence) then
+								add_warning("WCAEX", <<ca.rm_attribute_name, ca.path, ca.existence.as_string>>)
 							end
+						else
+							add_error("VCAEX", <<ca.rm_attribute_name, ca.path, ca.existence.as_string, rm_prop_def.existence.as_string>>)
 						end
-						if ca.is_multiple and not ca.cardinality.is_open then
-							if {cont_prop: BMM_CONTAINER_PROPERTY} prop_def then
+					else
+						-- should be removed; or reported as same as RM; but too many legacy archetypes have this right now
+					end
+					if ca.is_multiple then
+						if {cont_prop: BMM_CONTAINER_PROPERTY} rm_prop_def then
+							if not ca.cardinality.is_open then
 								if cont_prop.type.cardinality.contains(ca.cardinality.interval) then
 									if cont_prop.type.cardinality.is_equal(ca.cardinality.interval) then
 										add_warning("WCACA", <<ca.rm_attribute_name, ca.path, ca.cardinality.interval.as_string>>)
@@ -629,20 +629,24 @@ feature {NONE} -- Implementation
 								else -- archetype has cardinality not contained by RM
 									add_error("VCACA", <<ca.rm_attribute_name, ca.path, ca.cardinality.interval.as_string, cont_prop.type.cardinality.as_string>>)
 								end
-							else -- archetype has multiple attribute but RM does not
-								add_error("VCAM", <<ca.rm_attribute_name, ca.path>>)
+							else
+								-- should be removed; or reported as same as RM; but too many legacy archetypes have this right now
 							end
+						else -- archetype has multiple attribute but RM does not
+							add_error("VCAM", <<ca.rm_attribute_name, ca.path, ca.cardinality.as_string, "(single-valued)">>)
 						end
-						if rm_checker.property_definition(arch_attr_type, ca.rm_attribute_name).is_computed then
-							-- flag if constraint is equal to reference model; FUTURE: remove if equal
-							add_info("ICARMC", <<ca.rm_attribute_name, ca.path , arch_attr_type>>)
-						end
+					elseif {cont_prop_2: BMM_CONTAINER_PROPERTY} rm_prop_def then
+						add_error("VCAM", <<ca.rm_attribute_name, ca.path, "(single-valued)", cont_prop_2.type.cardinality.as_string>>)
 					end
---				end
+					if rm_checker.property_definition(arch_parent_attr_type, ca.rm_attribute_name).is_computed then
+						-- flag if constraint is equal to reference model; FUTURE: remove if equal
+						add_warning("ICARMC", <<ca.rm_attribute_name, ca.path, arch_parent_attr_type>>)
+					end
+				end
 			end
 		end
 
-	unknown_types: ARRAYED_LIST [STRING]
+	invalid_types: ARRAYED_LIST [STRING]
 
 	specialised_node_validate_test (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN  is
 			-- return True if a conformant path of a_c_node within the differential archetype is
@@ -662,9 +666,11 @@ feature {NONE} -- Implementation
 		do
 			Result := True
 			if {co: C_OBJECT} a_c_node then
-				if not unknown_types.has(co.rm_type_name) and not rm_checker.has_class_definition(co.rm_type_name) then
-					add_error("VCORM", <<co.rm_type_name, co.path>>)
-					unknown_types.extend (co.rm_type_name)
+				if not rm_checker.has_class_definition(co.rm_type_name) then
+					if not invalid_types.has(co.rm_type_name) then
+						add_error("VCORM", <<co.rm_type_name, co.path>>)
+						invalid_types.extend (co.rm_type_name)
+					end
 					Result := False
 				end
 			end

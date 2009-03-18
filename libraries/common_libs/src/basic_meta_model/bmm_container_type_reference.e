@@ -50,10 +50,17 @@ feature -- Conversion
 feature -- Output
 
 	as_type_string: STRING is
+			-- formal name of the type
+		do
+			create Result.make (0)
+			Result.append (container_type.name + Generic_left_delim.out + type.name + Generic_right_delim.out)
+		end
+
+	as_flattened_type_string: STRING is
 			-- name of the type
 		do
 			create Result.make (0)
-			Result.append (container_type.name + Generic_left_delim + type.name + Generic_right_delim)
+			Result.append (type.as_type_string)
 		end
 
 end

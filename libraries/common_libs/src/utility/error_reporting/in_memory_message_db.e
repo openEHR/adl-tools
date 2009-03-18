@@ -196,8 +196,8 @@ feature -- Access
 			["VATDF"] = <"Error (VATDF): node id at-code $1 not defined in ontology">
 			["VUNP"] = <"Error (VUNP): use_node path $1 not found in archetype">
 
-			["VTRLA"] = <"Error (VTRLA): translations key $1 does not match translation item language $2">
-			["VRDLA"] = <"Error (VRDLA): resource detail key $1 does not match resource detail item language $2">
+			["VTRLA"] = <"Error (VTRLA): translations key '$1' does not match translation item language '$2'">
+			["VRDLA"] = <"Error (VRDLA): resource detail key '$1' does not match resource detail item language '$2'">
 
 			["VSONT"] = <"Error (VSONT): object node at path $1 (AOM type $2) does not conform to node at parent path $3 AOM type $4">
 			["VSONCT"] = <"Error (VSONCT): object node at path $1 (RM type $2) does not conform to node at parent path $3 RM type $4">
@@ -240,16 +240,16 @@ feature -- Access
 			["VARCN"] = <"Error (VARCN): concept code $1 is invalid">
 
 			-- reference model-related validation
-			["VCORM"] = <"Error (VCORM): type name $1 at object node at $2 not known in reference model">
-			["VCORMT"] = <"Error (VCORMT): type $1 of object node at $2 not does not conform to type $3 of $4.$5 in reference model">
-			["VCARM"] = <"Error (VCARM): attribute name $1 in object node at $2 (type=$3) not among flat set of properties in reference model">
+			["VCORM"] = <"Error (VCORM): type name '$1' at object node at $2 not known in reference model">
+			["VCORMT"] = <"Error (VCORMT): type '$1' of object node at $2 not does not conform to type '$3' of $4.$5 in reference model">
+			["VCARM"] = <"Error (VCARM): attribute name '$1' in object node at $2 (type=$3) not among flat set of properties in reference model">
 			["VCAEX"] = <"Error (VCAEX): attribute $1 in object node at $2 existence $3 does not conform to existence $4 in reference model">
 			["VCACA"] = <"Error (VCACA): attribute $1 in object node at $2 cardinality $3 does not conform to cardinality $4 in reference model">
-			["VCAM"] = <"Error (VCAM): attribute $1 at path $2 multiplicity does not correspond to that of attribute in reference model">
+			["VCAM"] = <"Error (VCAM): attribute $1 at path $2 multiplicity $3 does not correspond to multiplicity $4 of attribute in reference model">
 			["WCACA"] = <"Warning (WCACA): attribute $1 in object node at $2 cardinality $3 same as in reference model">
 			["WCAEX"] = <"Warning (WCAEX): attribute $1 in object node at $2 existence $3 same as in reference model">
-			["ICARMC"] = <"(info) attribute name $1 in object node at $2 (type=$3) is a computed property in reference model">
-			["ICORMTS"] = <"(info) type $1 of object node at $2 not does not conform to type $3 of $4.$5 in reference model but substitution allowed">
+			["ICARMC"] = <"(info) attribute name '$1' in object node at $2 (type=$3) is a computed property in reference model">
+			["ICORMTS"] = <"(info) type '$1' of object node at $2 not does not conform to type $3 of $4.$5 in reference model but substitution allowed">
 					
 			-- validation warnings: in addition to spec, used to help archetype authors
 			["WOUC"] = <"Warning (WOUC): code $1 in ontology not used in archetype definition">

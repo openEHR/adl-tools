@@ -27,7 +27,14 @@ feature -- Access
 feature -- Output
 
 	as_type_string: STRING is
-			-- string form of the type
+			-- formal string form of the type
+		deferred
+		ensure
+			Result /= Void
+		end
+
+	as_flattened_type_string: STRING is
+			-- string form of the type for matching in archetypes - i.e. ignoring container type names
 		deferred
 		ensure
 			Result /= Void

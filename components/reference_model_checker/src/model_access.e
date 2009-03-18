@@ -27,21 +27,15 @@ inherit
 
 feature -- Access
 
-	ancestor_types_of (a_class_name: STRING): ARRAYED_LIST [STRING] is
+	ancestor_classes_of (a_class_name: STRING): ARRAYED_LIST [STRING] is
 			-- return all ancestor types of `a_class_name' up to root class (usually 'ANY', 'Object' or something similar)
 			-- does  not include current class. Returns empty list if none.
 		require
 			Type_valid: a_class_name /= Void and then has_class_definition (a_class_name)
-		local
-			anc: ARRAYED_LIST[BMM_CLASS_DEFINITION]
 		do
 			create Result.make(0)
 			if rm_checking_on and model_loaded then
-				anc := model.class_definition (a_class_name).ancestors
-				from anc.start until anc.off loop
-					Result.extend(anc.item.name)
-					anc.forth
-				end
+				Result := model.ancestor_classes_of(a_class_name)
 			end
 		ensure
 			Result_exists: Result /= Void
@@ -82,7 +76,7 @@ feature -- Access
 			Property_valid: a_property /= Void and then has_property(a_type_name, a_property)
 		do
 			if rm_checking_on and model_loaded then
-				Result := model.property_definition (a_type_name, a_property).type.as_type_string
+				Result := model.property_definition (a_type_name, a_property).type.as_flattened_type_string
 			end
 		ensure
 			Result_exists: Result /= Void
@@ -168,15 +162,17 @@ feature -- Validation
 			end
 		end
 
-	valid_property_type (a_type_name, a_property, a_property_type: STRING): BOOLEAN is
-			-- True if `a_prop_type' is a valid dynamic type for `an a_property' in class `a_class_name'
+	valid_property_type (a_type_name, a_property_name, a_property_type_name: STRING): BOOLEAN is
+			-- True if `a_property_type_name' is a valid dynamic type for `a_property' in class `a_type_name'
 		require
 			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
-			Property_valid: a_property /= Void and then has_property(a_type_name, a_property)
-			Property_type_valid: a_property_type /= Void and then has_class_definition (a_property_type)
+			Property_valid: a_property_name /= Void and then has_property(a_type_name, a_property_name)
+			Property_type_name_valid: a_property_type_name /= Void and then has_class_definition (a_property_type_name)
 		do
 			if rm_checking_on and model_loaded then
-				Result := type_conforms_to (model.class_definition (a_property_type), model.property_definition (a_type_name, a_property).type)
+				if model.valid_type_for_class (a_type_name, a_type_name) and model.valid_type_for_class(a_property_type_name, a_property_type_name) then
+					Result := type_conforms_to (model.class_definition (a_property_type_name), model.property_definition (a_type_name, a_property_name).type)
+				end
 			else
 				Result := True
 			end

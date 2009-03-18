@@ -51,7 +51,7 @@ feature -- Output
 		do
 			create Result.make (0)
 			Result.append (root_type.name)
-			Result.append (Generic_left_delim)
+			Result.append_character (Generic_left_delim)
 			from
 				generic_parameters.start
 			until
@@ -59,11 +59,17 @@ feature -- Output
 			loop
 				Result.append(generic_parameters.item.as_type_string)
 				if not generic_parameters.islast then
-					Result.append(" ,")
+					Result.append_character(generic_separator)
 				end
 				generic_parameters.forth
 			end
-			Result.append (Generic_right_delim)
+			Result.append_character (Generic_right_delim)
+		end
+
+	as_flattened_type_string: STRING is
+			-- string form of the type for matching in archetypes - i.e. ignoring container type names
+		do
+			Result := as_type_string
 		end
 
 invariant

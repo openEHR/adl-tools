@@ -482,7 +482,7 @@ feature {NONE} -- Implementation
 					elseif c_attr_output.has_child_with_rm_type_name(c_attr_child.children.item.rm_type_name) then -- find a node of same type, then replace completely
 						c_attr_output.replace_child_by_rm_type_name (c_attr_child.children.item.safe_deep_twin)
 					else -- or a RM parent type, then add
-						rm_ancestors := rm_checker.ancestor_types_of(c_attr_child.children.item.rm_type_name)
+						rm_ancestors := rm_checker.ancestor_classes_of(c_attr_child.children.item.rm_type_name)
 						from
 							rm_ancestors.start
 						until

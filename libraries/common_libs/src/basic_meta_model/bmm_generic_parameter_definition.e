@@ -39,11 +39,10 @@ feature -- Access
 
 	flattened_type_list: ARRAYED_LIST [STRING] is
 			-- completely flattened list of type names, flattening out all generic parameters
-			-- note that for this type, we throw away the container_type because we are tring to match
-			-- the type of an object as being a valid member of the container, e.g. ELEMENT in List<ELEMENT>
+			-- note that for this type, we output "ANY" if there is no constraint
 		do
 			create Result.make(0)
-			if flattened_conforms_to_type = Void then
+			if not is_constrained then
 				Result.extend (Any_type)
 			else
 				Result.append (flattened_conforms_to_type.flattened_type_list)
@@ -54,6 +53,12 @@ feature -- Access
 			-- if set, is the corresponding generic parameter definition in an ancestor class
 
 feature -- Status Report
+
+	is_constrained: BOOLEAN is
+			-- True if this generic parameter has a type constraint
+		do
+			Result := flattened_conforms_to_type /= Void
+		end
 
 feature -- Modification
 
@@ -72,6 +77,16 @@ feature -- Output
 		do
 			create Result.make(0)
 			Result.append(name)
+			if is_constrained then
+				Result.append_character(Generic_constraint_delimiter)
+				Result.append(conforms_to_type.as_type_string)
+			end
+		end
+
+	as_flattened_type_string: STRING is
+			-- string form of the type for matching in archetypes - i.e. ignoring container type names
+		do
+			Result := as_type_string
 		end
 
 feature {NONE} -- Implementation

@@ -93,6 +93,24 @@ feature -- Access
 			Result.append (create_message ("model_access_i1", << model_name, model_release, primitive_types.count.out, class_definitions.count.out >>))
 		end
 
+	ancestor_classes_of (a_class_name: STRING): ARRAYED_LIST [STRING] is
+			-- return all ancestor types of `a_class_name' up to root class (usually 'ANY', 'Object' or something similar)
+			-- does  not include current class. Returns empty list if none.
+		require
+			Type_valid: a_class_name /= Void and then has_class_definition (a_class_name)
+		local
+			anc: ARRAYED_LIST[BMM_CLASS_DEFINITION]
+		do
+			create Result.make(0)
+			anc := class_definition (a_class_name).ancestors
+			from anc.start until anc.off loop
+				Result.extend(anc.item.name)
+				anc.forth
+			end
+		ensure
+			Result_exists: Result /= Void
+		end
+
 feature -- Status Report
 
 	has_class_definition (a_type_name: STRING): BOOLEAN is
@@ -123,6 +141,42 @@ feature -- Status Report
 			Parent_class_valid: a_parent_class /= Void and then has_class_definition (a_parent_class)
 		do
 			Result := True
+		end
+
+	valid_type_for_class(a_class_name, a_type_name: STRING): BOOLEAN is
+			-- True if `a_type_name' is valid with respect to this class. Will always be true for
+			-- non-generic types, but needs to be checked for generic / container types
+		require
+			A_class_name_valid: a_class_name /= Void and then not a_class_name.is_empty
+			A_type_name_valid: a_type_name /= Void and then not a_type_name.is_empty
+		local
+			is_gen_type: BOOLEAN
+			type_strs: ARRAYED_LIST [STRING]
+			a_class_def: BMM_CLASS_DEFINITION
+		do
+			is_gen_type := is_well_formed_generic_type_name (a_type_name)
+			a_class_def := class_definition (a_class_name)
+			if a_class_def.is_generic then
+				type_strs := type_name_as_flattened_type_list(a_type_name)
+				type_strs.compare_objects
+				type_strs.start
+				if type_strs.item.is_equal (a_class_def.name) or class_definitions.item (type_strs.item).has_ancestor(a_class_def.name)  then
+					from
+						type_strs.forth
+						a_class_def.generic_parameters.start
+					until
+						type_strs.off or not has_class_definition (type_strs.item) or
+							(a_class_def.generic_parameters.item_for_iteration.is_constrained and then not
+							class_definitions.item (type_strs.item).has_ancestor (a_class_def.generic_parameters.item_for_iteration.conforms_to_type.name))
+					loop
+						type_strs.forth
+						a_class_def.generic_parameters.forth
+					end
+					Result := type_strs.off
+				end
+			elseif not a_class_def.is_generic and not is_gen_type then
+				Result := a_type_name.is_equal (a_class_def.name)
+			end
 		end
 
 feature -- Commands
@@ -173,7 +227,7 @@ feature {NONE} -- Implementation
 		local
 			gen_pos: INTEGER
 		do
-			gen_pos := a_type_name.substring_index (generic_left_delim, 1)
+			gen_pos := a_type_name.substring_index (generic_left_delim.out, 1)
 			if gen_pos > 0 then
 				Result := a_type_name.substring (1, gen_pos-1)
 				Result.right_adjust

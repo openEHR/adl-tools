@@ -16,11 +16,93 @@ class BMM_DEFINITIONS
 
 feature -- Definitions
 
-	Generic_left_delim: STRING is "<"
+	Generic_left_delim: CHARACTER is '<'
 
-	Generic_right_delim: STRING is ">"
+	Generic_right_delim: CHARACTER is '>'
+
+	Generic_separator: CHARACTER is ','
+
+	Generic_constraint_delimiter: CHARACTER is ':'
+			-- appears between 'T' and constraining type if there is one
 
 	Any_type: STRING is "ANY"
+
+feature -- Comparison
+
+	is_well_formed_type_name (a_type_name: STRING): BOOLEAN is
+			-- True if the type name has a valid form, either a single name or a well-formed generic
+		require
+			Valid_type_name: a_type_name /= Void and then not a_type_name.is_empty
+		do
+			Result := well_formed_type_name_regex.matches(a_type_name)
+		end
+
+	is_well_formed_class_name (a_class_name: STRING): BOOLEAN is
+			-- True if the class name has a valid form
+		require
+			Valid_class_name: a_class_name /= Void and then not a_class_name.is_empty
+		do
+			Result := well_formed_class_name_regex.matches(a_class_name)
+		end
+
+	is_well_formed_generic_type_name (a_type_name: STRING): BOOLEAN is
+			-- True if the type name includes a generic parameters part; should be used after is_well_formed_type_name
+		require
+			Valid_type_name: a_type_name /= Void and then is_well_formed_class_name(a_type_name)
+		do
+			Result := a_type_name.has (generic_left_delim)
+		end
+
+feature -- Conversion
+
+	type_name_as_flattened_type_list(a_type_name: STRING): ARRAYED_LIST [STRING] is
+			-- convert a type name to a flat set of strings
+		require
+			Valid_type_name: a_type_name /= Void and then is_well_formed_type_name(a_type_name)
+		local
+			is_gen_type: BOOLEAN
+			stype: STRING
+			lpos, rpos: INTEGER
+		do
+			create Result.make(0)
+			stype := a_type_name.twin
+			stype.prune_all (' ')
+			if stype.has (generic_left_delim) then
+				rpos := stype.index_of (generic_left_delim, 1) - 1
+				is_gen_type := True
+			else
+				rpos := stype.count
+			end
+			Result.extend(a_type_name.substring(1, rpos))
+
+			if is_gen_type then
+				stype.replace_substring_all (generic_left_delim.out, Generic_separator.out)
+				stype.replace_substring_all (generic_right_delim.out, Generic_separator.out)
+				from
+					lpos := rpos + 2
+				until
+					lpos > stype.count
+				loop
+					rpos := stype.index_of (Generic_separator, lpos) - 1
+					Result.extend(stype.substring (lpos, rpos))
+					lpos := rpos + 2
+				end
+			end
+		end
+
+feature {NONE} -- Implementation
+
+	well_formed_type_name_regex: !LX_DFA_REGULAR_EXPRESSION
+			-- Pattern matcher for well-formed type names
+		once
+			create Result.compile_case_insensitive ("[a-z][a-z0-9_]+(< *[a-z][a-z0-9_]+( *, *[a-z][a-z0-9_]+)*>)?")
+		end
+
+	well_formed_class_name_regex: !LX_DFA_REGULAR_EXPRESSION
+			-- Pattern matcher for well-formed class names
+		once
+			create Result.compile_case_insensitive ("[a-z][a-z0-9_]+")
+		end
 
 end
 
