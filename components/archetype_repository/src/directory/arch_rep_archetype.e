@@ -399,6 +399,7 @@ feature -- Commands
 					differential_archetype := adl_engine.parse_differential (differential_text)
 					if differential_archetype = Void then
 						post_error (Current, "parse_archetype", "parse_archetype_e1", <<adl_engine.parse_error_text>>)
+						is_valid := False
 					else
 						post_info (Current, "parse_archetype", "parse_archetype_i1", <<id.as_string>>)
 						validate
@@ -408,6 +409,7 @@ feature -- Commands
 					flat_archetype_cache := adl_engine.parse_flat (flat_text_cache)
 					if flat_archetype_cache = Void then
 						post_error (Current, "parse_archetype", "parse_archetype_e1", <<adl_engine.parse_error_text>>)
+						is_valid := False
 					else
 						post_info (Current, "parse_archetype", "parse_archetype_i1", <<id.as_string>>)
 						differential_archetype := flat_archetype.to_differential
