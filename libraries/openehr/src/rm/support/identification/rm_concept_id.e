@@ -120,6 +120,19 @@ feature -- Access
 			Result := value.substring(p, value.count)
 		end
 
+	version_number: INTEGER is
+			-- generate the version number as an integer, for comparison purposes; if the version number is
+			-- not a valid numeric, 0 is returned
+		local
+			s: STRING
+		do
+			s := version_id
+			s.remove_head (1)
+			if s.is_integer then
+				Result := s.to_integer
+			end
+		end
+
 	rm_originator: STRING is
 			-- name of organisation which created the reference model on
 			-- which archetypes in this system are based, e.g. "openehr"

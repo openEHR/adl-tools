@@ -137,6 +137,7 @@ feature -- Access
 			["pair_filename_i1"] = <"(Differential/flat pair archetype filename found $1)">
 			["save_as_i1"] = <"Archetype saved in language $1 to $2">
 			["save_as_e1"] = <"Save-as failed; could not write to file $1">
+			["duplicate_filename"] = <"Duplicate file name or alternate version $1">
 			
 			------------------------- syntax errors: see the cADL, dADL and ADL syntax validators ---------------------
 			["SARID"] = <"in 'archetype' clause; expecting archetype id (model_issuer-ref_model-model_class.concept.version)">
