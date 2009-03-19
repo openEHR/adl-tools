@@ -279,7 +279,7 @@ feature -- Status Report - Compilation
 		do
 			Result := not parse_attempted or
 				is_differential_out_of_date or is_flat_out_of_date or
-				(is_specialised and specialisation_parent.last_compile_attempt_timestamp > last_compile_attempt_timestamp)
+				(specialisation_parent /= Void and then specialisation_parent.last_compile_attempt_timestamp > last_compile_attempt_timestamp)
 		end
 
 	is_differential_out_of_date: BOOLEAN
