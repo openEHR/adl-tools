@@ -4,14 +4,23 @@ ADL WORKBENCH NEWS (see Help menu > News)
 Improved functionality:
 * Greater validation is performed.
 * Errors are more clearly categorised
+* Various errors in the inheritance flattening functionality have been fixed
 
 New functionality:
 * Reference Model checking - turn on via the Tools > Options dialog
 * Reference Model visualisation - turn on via the 'RM visible' checkbox in the Node Map tab.
+* ability to save out flattened ADL archetypes. The ADL version of the output format can be 
+  controlled via a setting in the .cfg file, called adl_version_for_flat_output. This could be 
+  set as follows: 
+  	adl_version_for_flat_output=1.4
+  If this is not set, the default output version will be 1.5. The main differences setting of 1.4
+  enables is removal of () around C_DV_QUANTITY and other dADL sections, and also the 'generated'
+  keyword is not output. This would allow such archetypes to be processed by non-ADL 1.5 compliant
+  tools.
 
 The reference model definition is in the application install directory, file rm_schema.dadl. The
 format and location of this file may change in the future due to the direction developed for
 machine-representable models in the openEHR community.
 
-See http://www.openehr.org/svn/ref_impl_eiffel/TRUNK/apps/doc/adl_workbench_help.htm for help.
+See http://www.openehr.org/svn/ref_impl_eiffel/BRANCHES/specialisation/apps/doc/adl_workbench_help.htm for help.
 
