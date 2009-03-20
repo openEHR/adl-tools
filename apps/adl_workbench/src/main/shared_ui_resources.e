@@ -54,7 +54,17 @@ feature -- Definitions
    			end
    		end
 
-	ADL_help_page_url: STRING is "http://www.openehr.org/svn/ref_impl_eiffel/TRUNK/apps/doc/adl_workbench_help.htm"
+	ADL_help_page_url: STRING is
+		local
+			version: OPENEHR_VERSION
+		once
+			create version
+			if version.location.has_substring ("specialisation") then
+				Result := "http://www.openehr.org/svn/ref_impl_eiffel/BRANCHES/specialisation/apps/doc/adl_workbench_help.htm"
+			else
+				Result := "http://www.openehr.org/svn/ref_impl_eiffel/TRUNK/apps/doc/adl_workbench_help.htm"
+			end
+		end
 
 	path_control_filter_names: ARRAY [STRING] is
 			-- names of row filters of path control

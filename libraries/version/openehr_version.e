@@ -22,6 +22,8 @@ inherit
 
 feature -- Access
 
+	location: STRING = "$URL$"
+
 	last_changed: STRING = "$LastChangedRevision$%N%T$LastChangedDate$"
 			-- Details of when this class was last committed to Subversion.
 			-- This would typically be whenever `major', `minor', `build' or `out' are manually edited.
