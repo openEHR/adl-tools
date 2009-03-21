@@ -230,7 +230,7 @@ feature -- Commands
 			if rm_checking_on then
 				if not model_loaded then
 					create model_file.make (default_rm_schema_file_full_path)
-					if not model_file.is_readable then
+					if not model_file.exists or else not model_file.is_readable then
 						status := create_message ("model_access_e1", <<model_file.name>>)
 					else
 						model_file.open_read
