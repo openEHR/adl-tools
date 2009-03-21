@@ -8,8 +8,8 @@ Improved functionality:
 
 New functionality:
 * Reference Model checking - turn on via the Tools > Options dialog
-* Reference Model visualisation - turn on via the 'RM visible' checkbox in the Node Map tab.
-* ability to save out flattened ADL archetypes. The ADL version of the output format can be 
+* Reference Model visualisation - turn on via the 'RM visible' checkbox in the Node Map tab
+* Ability to save out flattened ADL archetypes. The ADL version of the output format can be 
   controlled via a setting in the .cfg file, called adl_version_for_flat_output. This could be 
   set as follows: 
   	adl_version_for_flat_output=1.4
