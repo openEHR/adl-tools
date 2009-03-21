@@ -299,11 +299,8 @@ feature -- Environment
 
 	locale_language_short: STRING is
 			-- The ISO 2-char code for the locale language, e.g. "en"
-		local
-			i18n: I18N_LOCALE_MANAGER
 		do
-			create i18n.make (application_startup_directory)
-			Result := i18n.system_locale.info.id.language
+			Result := "en"
 		ensure
 			Result_attached: Result /= Void
 		end
