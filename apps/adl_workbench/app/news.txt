@@ -1,12 +1,12 @@
 ADL WORKBENCH NEWS (see Help menu > News)
 -------------------------------------------------------------------------
 
-Improved functionality:
+IMPROVED FUNCTIONALITY
 * Greater validation is performed.
 * Errors are more clearly categorised
 * Various errors in the inheritance flattening functionality have been fixed
 
-New functionality:
+NEW FUNCTIONALITY
 * Reference Model checking - turn on via the Tools > Options dialog
 * Reference Model visualisation - turn on via the 'RM visible' checkbox in the Node Map tab
 * Ability to save out flattened ADL archetypes. The ADL version of the output format can be 
@@ -18,9 +18,22 @@ New functionality:
   keyword is not output. This would allow such archetypes to be processed by non-ADL 1.5 compliant
   tools.
 
+  WARNING: this option should preferably be used in a Subversion work area or similar situation
+	where previous versions can be reverted to if required. 
+	
 The reference model definition is in the application install directory, file rm_schema.dadl. The
 format and location of this file may change in the future due to the direction developed for
 machine-representable models in the openEHR community.
 
-See http://www.openehr.org/svn/ref_impl_eiffel/BRANCHES/specialisation/apps/doc/adl_workbench_help.htm for help.
+See 
+http://www.openehr.org/svn/ref_impl_eiffel/BRANCHES/specialisation/apps/doc/adl_workbench_help.htm 
+for help.
+
+LIMITATIONS
+  The current .adl differencing algorithm (generates .adls from a .adl file and its 
+  specialisation parent) is not perfect, and occasionally misses redefinitions on leaf nodes
+  not having any higher node with a redefined node id. The consequence is that the .adls
+  generated in such situations is not always guaranteed to be lossless with respect to the 
+  legacy .adl file from which it was generated. This problem affects a very small number of 
+  archetypes, and is being worked on.
 
