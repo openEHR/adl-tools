@@ -46,8 +46,8 @@ feature {NONE}-- Initialization
 			create l_ev_horizontal_box_3
 			create show_definition_tree_expanded_check_button
 			create show_line_numbers_check_button
-			create display_archetype_source_check_button
 			create l_ev_horizontal_box_4
+			create display_archetype_source_check_button
 			create rm_checking_check_button
 			create l_ev_horizontal_box_5
 			create l_ev_label_1
@@ -74,8 +74,8 @@ feature {NONE}-- Initialization
 			l_ev_vertical_box_1.extend (l_ev_horizontal_box_3)
 			l_ev_horizontal_box_3.extend (show_definition_tree_expanded_check_button)
 			l_ev_horizontal_box_3.extend (show_line_numbers_check_button)
-			l_ev_horizontal_box_3.extend (display_archetype_source_check_button)
 			l_ev_vertical_box_1.extend (l_ev_horizontal_box_4)
+			l_ev_horizontal_box_4.extend (display_archetype_source_check_button)
 			l_ev_horizontal_box_4.extend (rm_checking_check_button)
 			l_ev_vertical_box_1.extend (l_ev_horizontal_box_5)
 			l_ev_horizontal_box_5.extend (l_ev_label_1)
@@ -106,6 +106,7 @@ feature {NONE}-- Initialization
 			l_ev_vertical_box_1.set_border_width (20)
 			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_1)
 			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_3)
+			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_4)
 			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_5)
 			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_6)
 			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_7)
@@ -131,9 +132,9 @@ feature {NONE}-- Initialization
 			l_ev_horizontal_box_3.set_border_width (10)
 			show_definition_tree_expanded_check_button.set_text ("Show defiinition tree expanded?")
 			show_line_numbers_check_button.set_text ("Show line numbers in ADL source?")
-			display_archetype_source_check_button.set_text ("Indicate original creation form?")
 			l_ev_horizontal_box_4.set_padding (10)
 			l_ev_horizontal_box_4.set_border_width (10)
+			display_archetype_source_check_button.set_text ("Indicate original creation form?")
 			rm_checking_check_button.set_text ("Turn RM checking on?")
 			rm_checking_check_button.set_tooltip ("Turns reference model checking of archetypes, if a reference model schema is available")
 			l_ev_horizontal_box_5.set_padding (10)
@@ -167,7 +168,7 @@ feature {NONE}-- Initialization
 			cancel_button.set_minimum_width (100)
 			cancel_button.set_minimum_height (26)
 			set_minimum_width (700)
-			set_minimum_height (340)
+			set_minimum_height (400)
 			set_maximum_width (2000)
 			set_maximum_height (800)
 			set_title ("ADL Workbench Options")
