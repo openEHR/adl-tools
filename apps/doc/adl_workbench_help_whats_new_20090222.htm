@@ -45,6 +45,8 @@
 
 
 
+
+  
   
   
   
@@ -132,6 +134,7 @@
 
 
 
+
   
 
 
@@ -220,7 +223,9 @@
   
   
   
-  <title>ADL Workbench - 22 February 2009 ADL 1.5 preview release</title>
+  
+  
+  <title>ADL Workbench - 22 March 2009 ADL 1.5 interim release</title>
   <link rel="stylesheet" href="http://www.openehr.org/styles/oe.css" type="text/css" />
 
 
@@ -236,6 +241,8 @@
 
 
 
+
+  
   
   
   
@@ -299,10 +306,13 @@
 
 
 
+
 <h1>ADL Workbench - 22 March 2009 <br />
+
 
 Specialisation Release - What's New?
 </h1>
+
 
 
 
@@ -352,41 +362,58 @@ Specialisation Release - What's New?
 
 
 
+
 This ADL 1.5 preview release of the workbench includes the following changes:<br />
 
+
 <ul>
+
 
   <li>performs
 stricter validation than previous versions, now reporting 40 syntax
 errors, 47 validity errors, and 4 validity warnings.</li>
 
+
   <li>Errors are more clearly differentiated into the following categories:</li>
 
+
+  
   
   <ul>
 
+
     <li>syntax error: the file is not valid ADL - shown in red</li>
+
 
     <li>validity
 error: the archetype semantics are not valid when validated against
 parent archetypes and the reference model - shown in orange</li>
 
+
     <li>validity warning: the semantics are valid, but there are redundant elements or other small issues to correct - shown in yellow</li>
+
 
     <li>passed - shown in green</li>
 
+
+  
   
   </ul>
 
+
 </ul>
+
 
 <h2>New features</h2>
 
 
 
+
 This release includes the following new features:<br />
 
+
 <ul>
+
 
   <li>it now uses the reference model (RM) to validate all archetypes.
 The reference model is currently expressed in a custom meta-model
@@ -397,10 +424,12 @@ The meta-model can be found at
 future, and its current format should not be taken as normative for
 openEHR.</li>
 
+
   <li>RM attributes are now shown in the node map visualisation (<a href="images/rm_differential.png">differential form</a>, <a href="images/rm_flat.png">flattened form</a>). In the
 differential view, only attributes defined on the concrete class
 mentioned in the archetype are shown; in the flat view, all inherited
 attributes are shown.</li>
+
 
   <li>A new&nbsp;test has been added to the test page that allows
 original ADL fles to be overwritten with the result of the flattening
@@ -412,13 +441,17 @@ then see diffs of the files). For this reason, both the 'Save ADL' and
 operate. The intention of the new 'Save ADL' operation is to experiment
 with removal of some kinds of errors from legacy ADL fles.</li>
 
+
 </ul>
+
 
 
 
 <ul>
 
+
 </ul>
+
 
 
 
@@ -466,6 +499,7 @@ with removal of some kinds of errors from legacy ADL fles.</li>
 <hr style="width: 100%; height: 2px;" />
 <p class="footer">$LastChangedDate$
 $LastChangedRevision$</p>
+
 
 
 
