@@ -1,6 +1,6 @@
 indexing
 	component:   "openEHR Data Types"
-	
+
 	description: "[
 				 Abstract class defining the concept of true quantified values, i.e. values which are 
 				 not only ordered, but which have a precise magnitude.
@@ -47,7 +47,7 @@ feature -- Access
 
 feature -- Comparison
 
-	infix "<" (other: like Current): BOOLEAN is
+	is_less alias "<" (other: like Current): BOOLEAN is
 		local
 			this_c, other_c: COMPARABLE
 		do
@@ -60,17 +60,17 @@ feature -- Comparison
 			-- Test whether a string value is one of the valid
 			-- values for the magnitude_status attribute.
 		do
-			Result := s.is_equal("=") or s.is_equal("<") or s.is_equal(">") or 
+			Result := s.is_equal("=") or s.is_equal("<") or s.is_equal(">") or
 				s.is_equal("<=") or s.is_equal(">=") or s.is_equal("~")
 		ensure
-			Result = s.is_equal("=") or s.is_equal("<") or s.is_equal(">") or 
+			Result = s.is_equal("=") or s.is_equal("<") or s.is_equal(">") or
 				s.is_equal("<=") or s.is_equal(">=") or s.is_equal("~")
 		end
 
 invariant
 	Magnitude_exists: magnitude /= Void
 	Magnitude_status_valid: magnitude_status /= Void implies valid_magnitude_status(magnitude_status)
-	
+
 end
 
 

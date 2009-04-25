@@ -32,15 +32,15 @@ inherit
 		redefine
 			out
 		end
-		
+
 	COMPARABLE
 		undefine
 			out
 		redefine
 			default_create
 		end
-		
-create 
+
+create
 	default_create,
 	make, make_from_string, make_from_canonical_string
 
@@ -114,7 +114,7 @@ feature -- Status Report
 		do
 			Result := terminology_id.is_local
 		end
-		
+
 	valid_canonical_string(str: STRING): BOOLEAN is
 			-- True if str contains required tags
 		do
@@ -124,18 +124,18 @@ feature -- Status Report
 feature -- Access
 
 	terminology_id: TERMINOLOGY_ID
-			-- Identifier of the distinct terminology from which the code_string 
+			-- Identifier of the distinct terminology from which the code_string
 			-- (or its elements) was extracted
-		
+
 	code_string: STRING
 			-- The key used by the terminology service to identify a concept or
-			-- coordination of concepts. This string is most likely parsable inside 
+			-- coordination of concepts. This string is most likely parsable inside
 			-- the terminology service, but nothing can be assumed about its syntax
 			-- outside that context.
-		
+
 feature -- Comparison
 
-	infix "<" (other: like Current): BOOLEAN is
+	is_less alias "<" (other: like Current): BOOLEAN
 			-- Compare two terms
 		local
 			s, s_other:STRING
@@ -146,11 +146,11 @@ feature -- Comparison
 
 			create s_other.make(0)
 			s_other.append(other.terminology_id.value)
-			s_other.append(other.code_string)		
-			
+			s_other.append(other.code_string)
+
 			Result := s < s_other
 		end
-		
+
 feature -- Output
 
 	as_string: STRING is
@@ -161,14 +161,14 @@ feature -- Output
 			Result.append(separator)
 			Result.append(code_string)
 		end
-		
+
 	out: STRING is
 			-- '['  + `as_string' + ']'
 		do
 			Result := "[" + as_string + "]"
 		end
-		
-	
+
+
 	as_canonical_string: STRING is
 			-- standardised form of string guaranteed to contain all information
 			-- in data item
@@ -180,7 +180,7 @@ feature -- Output
 invariant
 	terminology_id_exists: terminology_id /= Void
 	code_string_valid: code_string /= Void and then not code_string.is_empty
-	
+
 end
 
 

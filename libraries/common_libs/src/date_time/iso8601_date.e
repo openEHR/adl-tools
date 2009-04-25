@@ -32,15 +32,15 @@ inherit
 		undefine
 			is_equal, out
 		end
-	
+
 	COMPARABLE
 		redefine
 			out
 		end
-	
+
 create
 	make_from_string, make_y, make_ym, make_ymd
-	
+
 feature -- Initialisation
 
 	make_from_string(str: STRING) is
@@ -97,7 +97,7 @@ feature -- Initialisation
 			is_extended := is_extended_flag
 			value := as_string
 		end
-		
+
 feature -- Access
 
 	value: STRING
@@ -105,18 +105,18 @@ feature -- Access
 
 	year: INTEGER
 			-- extracted year
-	
+
 	month: INTEGER
 			-- extracted month
-	
+
 	day: INTEGER
 			-- extracted day
-	
+
 feature -- Status Report
 
 	is_extended: BOOLEAN
 			-- True if syntax format uses separators
-			
+
 	month_unknown: BOOLEAN
 			-- True if month is unknown
 
@@ -131,7 +131,7 @@ feature -- Status Report
 
 feature -- Comparison
 
-	infix "<" (other: like Current): BOOLEAN is
+	is_less alias "<" (other: like Current): BOOLEAN is
 			-- Is current object less than `other'?
 		do
 			Result := to_days < other.to_days
@@ -176,27 +176,27 @@ feature -- Output
 
 			if not month_unknown then
 				if is_extended then
-					Result.append_character(Date_separator)			
+					Result.append_character(Date_separator)
 				end
 				s := month.out
 				if s.count = 1 then
 					Result.append_character ('0')
 				end
 				Result.append(s)
-				
+
 				if not day_unknown then
 					if is_extended then
-						Result.append_character(Date_separator)			
+						Result.append_character(Date_separator)
 					end
 					s := day.out
 					if s.count = 1 then
 						Result.append_character ('0')
 					end
-					Result.append(s)					
+					Result.append(s)
 				end
-			end			
+			end
 		ensure
-			Result_valid: Result /= Void and then valid_iso8601_date(Result)				
+			Result_valid: Result /= Void and then valid_iso8601_date(Result)
 		end
 
 	out: STRING is
@@ -208,11 +208,11 @@ invariant
 	Year_valid: valid_year(year)
 	Month_valid: not month_unknown implies valid_month(month)
 	Day_valid: not day_unknown implies valid_day(year, month, day)
-	
+
 	Partial_validity: month_unknown implies day_unknown
-	
+
 	Value_validity: value.is_equal(as_string)
-		
+
 end
 
 

@@ -25,7 +25,8 @@ deferred class RM_CONCEPT_ID
 inherit
 	OBJECT_ID
 		redefine
-			default_create, infix "<"
+			default_create,
+			is_less
 		end
 
 feature -- Definitions
@@ -204,7 +205,7 @@ feature -- Status Report
 
 feature -- Comparison
 
-	infix "<" (other: like Current): BOOLEAN is
+	is_less alias "<" (other: like Current): BOOLEAN is
 			-- Is current object less than `other'?
 		do
 			Result := sortable_id < other.sortable_id

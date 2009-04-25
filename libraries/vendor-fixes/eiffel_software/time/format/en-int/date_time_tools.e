@@ -8,17 +8,17 @@ indexing
 	date: 		"$LastChangedDate$"
 	revision: 	"$LastChangedRevision$"
 
-class 
-	DATE_TIME_TOOLS	
+class
+	DATE_TIME_TOOLS
 
-inherit 	
+inherit
 	DATE_TIME_LANGUAGE_CONSTANTS
 
-feature 
+feature
 
-	name: STRING is "English"
+	name: STRING = "English"
 
-	days_text: ARRAY [STRING] is
+	days_text: ARRAY [STRING]
 		once
 			Result := <<
 				"SUN",
@@ -33,7 +33,7 @@ feature
 			Result.compare_objects
 		end
 
-	months_text: ARRAY [STRING] is
+	months_text: ARRAY [STRING]
 		once
 			Result := <<
 				"JAN",
@@ -52,7 +52,7 @@ feature
 			Result.compare_objects
 		end
 
-	long_days_text: ARRAY [STRING] is
+	long_days_text: ARRAY [STRING]
 		once
 			Result := <<
 				"SUNDAY",
@@ -67,7 +67,7 @@ feature
 			Result.compare_objects
 		end
 
-	long_months_text: ARRAY [STRING] is
+	long_months_text: ARRAY [STRING]
 		once
 			Result := <<
 				"JANUARY",
@@ -86,16 +86,16 @@ feature
 			Result.compare_objects
 		end
 
-	date_default_format_string: STRING is "yyyy-[0]mm-[0]dd"
+	date_default_format_string: STRING = "yyyy-[0]mm-[0]dd"
 			-- ISO 8601 standard
 
-	time_default_format_string: STRING is "[0]hh:[0]mi:[0]ss.ff3"
+	time_default_format_string: STRING = "[0]hh:[0]mi:[0]ss.ff3"
 			-- ISO 8601 standard
 
-	default_format_string: STRING is "yyyy-[0]mm-[0]dd [0]hh:[0]mi:[0]ss.ff3"
+	default_format_string: STRING = "yyyy-[0]mm-[0]dd [0]hh:[0]mi:[0]ss.ff3"
 			-- ISO 8601 standard
 
-end -- class DATE_TIME_TOOLS 
+end -- class DATE_TIME_TOOLS
 
 
 --|----------------------------------------------------------------

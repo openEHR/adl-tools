@@ -457,7 +457,7 @@ feature -- Commands
 
 feature -- Comparison
 
-	infix "<" (other: like Current): BOOLEAN
+	is_less alias "<" (other: like Current): BOOLEAN
 			-- Is current object less than `other'?
 		do
 			if id.is_equal (other.id) then

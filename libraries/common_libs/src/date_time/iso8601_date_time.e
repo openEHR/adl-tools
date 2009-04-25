@@ -29,15 +29,15 @@ inherit
 		undefine
 			is_equal, out
 		end
-	
+
 	COMPARABLE
 		redefine
 			out
 		end
-	
+
 create
 	make_from_string, make_date_time
-	
+
 feature -- Initialisation
 
 	make_from_string(str: STRING) is
@@ -62,7 +62,7 @@ feature -- Initialisation
 			time_part := a_time
 			value := as_string
 		end
-		
+
 feature -- Access
 
 	value: STRING
@@ -72,17 +72,17 @@ feature -- Access
 		do
 			Result := date_part.year
 		end
-	
+
 	month: INTEGER is
 		do
 			Result := date_part.month
 		end
-	
+
 	day: INTEGER is
 		do
 			Result := date_part.day
 		end
-	
+
 	hour: INTEGER is
 		do
 			if time_part /= Void then
@@ -110,19 +110,19 @@ feature -- Access
 				Result := time_part.fractional_second
 			end
 		end
-	
+
 	timezone: ISO8601_TIMEZONE is
 		do
 			if time_part /= Void then
 				Result := time_part.timezone
 			end
 		end
-			
+
 feature -- Status Report
 
 	is_extended: BOOLEAN
 			-- True if syntax format uses separators
-			
+
 	month_unknown: BOOLEAN is
 			-- True if month is unknown
 		do
@@ -166,8 +166,8 @@ feature -- Status Report
 		end
 
 feature -- Comparison
-	
-	infix "<" (other: like Current): BOOLEAN is
+
+	is_less alias "<" (other: like Current): BOOLEAN is
 			-- Is current object less than `other'?
 		do
 			Result := to_seconds < other.to_seconds
@@ -190,23 +190,23 @@ feature -- Output
 			Result.append(date_part.as_string)
 			if time_part /= Void then
 				Result.append_character(Time_leader)
-				Result.append(time_part.as_string)			
+				Result.append(time_part.as_string)
 			end
 		ensure
 			valid_iso8601_date_time(Result)
 		end
-			
+
 	out: STRING is
 		do
 			Result := as_string
 		end
-		
+
 feature {ISO8601_DATE_TIME} -- Implementation
 
 	date_part: ISO8601_DATE
-	
+
 	time_part: ISO8601_TIME
-	
+
 invariant
 	Year_valid: valid_year(year)
 	Month_valid: valid_month(month)
@@ -216,14 +216,14 @@ invariant
 	Minute_valid: not minute_unknown implies valid_minute(minute)
 	Seconds_valid: not second_unknown implies valid_second(second)
 	Fractional_second_valid: has_fractional_second implies (not second_unknown and valid_fractional_second(fractional_second))
-	
+
 	Partial_validity_month: not month_unknown
 	Partial_validity_day: not day_unknown
 	Partial_validity_hour: not hour_unknown
 	Partial_validity_minute: minute_unknown implies second_unknown
 
 	Value_validity: value.is_equal(as_string)
-	
+
 end
 
 

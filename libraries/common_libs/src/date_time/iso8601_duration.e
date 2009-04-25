@@ -130,7 +130,7 @@ feature -- Status Report
 
 feature -- Comparison
 
-	infix "<" (other: like Current): BOOLEAN is
+	is_less alias "<" (other: like Current): BOOLEAN
 			-- Is current object less than `other'?
 		do
 			Result := to_seconds < other.to_seconds

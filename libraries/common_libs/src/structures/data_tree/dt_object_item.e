@@ -46,7 +46,7 @@ feature -- Access
 
 feature -- Comparison
 
-	infix "<" (other: like Current): BOOLEAN is
+	is_less alias "<" (other: like Current): BOOLEAN
 			-- compare based on node_id
 		do
 			Result := node_id < other.node_id

@@ -1,6 +1,6 @@
 indexing
 	component:   "openEHR Data Types"
-	
+
 	description: "[
 	             Models rankings and scores, e.g. pain, Apgar values, etc, where there
 	             is a) implied ordering, b) no implication that the distance between 
@@ -28,9 +28,9 @@ inherit
 
 create
 	make, make_from_string, make_from_canonical_string
-	
+
 feature -- Initialization
-	
+
 	make(a_value: INTEGER; a_symbol: DV_CODED_TEXT) is
 			-- make from a value/symbol pair
 		require
@@ -42,7 +42,7 @@ feature -- Initialization
 			Value_set: value = a_value
 			Symbol_set: symbol = a_symbol
 		end
-		
+
 	make_from_string(str:STRING) is
 		do
 		end
@@ -57,7 +57,7 @@ feature -- Status Report
 			-- True if str contains required tags
 		do
 		end
-		
+
 feature -- Access
 
 	value: INTEGER
@@ -65,7 +65,7 @@ feature -- Access
 
 	symbol: DV_CODED_TEXT
 			-- symbolic representation of this value in the enumeration,
-			-- which may be strings made from “+” symbols, or other enumerations 
+			-- which may be strings made from “+” symbols, or other enumerations
 			-- of terms such as “mild”, “moderate”, “severe”.
 
 	limits: REFERENCE_RANGE [DV_ORDINAL] is
@@ -81,7 +81,7 @@ feature -- Comparison
 			Result := symbol.is_comparable(other.symbol)
 		end
 
-	infix "<" (other: DV_ORDINAL): BOOLEAN is
+	is_less alias "<" (other: DV_ORDINAL): BOOLEAN is
 			-- Is current object less than `other'?
 		do
 			Result := value < other.value
@@ -94,19 +94,19 @@ feature -- Conversion
 			create Result.make(0)
 			Result.append(symbol.as_string)
 		end
-	
+
 	as_canonical_string: STRING is
 		do
 			Result := "<value>" + value.out + "</value>" +
 					"<symbol>" + symbol.as_canonical_string + "</symbol>"
 		end
-	
+
 invariant
 	Value_validity: value > 0
 	Symbol_valid: symbol /= Void
 	Limits_valid: limits /= Void and then limits.meaning.value.is_equal("limits")
 	Reference_range_valid: other_reference_ranges /= Void and then other_reference_ranges.has(limits)
-	
+
 end
 
 

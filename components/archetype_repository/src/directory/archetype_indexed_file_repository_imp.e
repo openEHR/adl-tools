@@ -69,7 +69,7 @@ feature {NONE} -- Implementation
 							arch_id_str := archteype_id_from_path(full_path)
 							if arch_id_str /= Void then
 								create arch_id.make_from_string(arch_id_str)
-								
+
 								-- the following check ensures only one of a .adl/.adls pair goes into the repository
 								if not arch_index.has (arch_id.semantic_id) then
 									create ara.make (root_path, full_path, arch_id, Current)

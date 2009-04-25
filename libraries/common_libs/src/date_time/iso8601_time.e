@@ -40,12 +40,12 @@ inherit
 
 create
 	make_from_string, make_h, make_hm, make_hms, make_hmsf
-	
+
 feature -- Initialisation
 
 	make_from_string(str: STRING) is
-			-- make from a time of form: 
-			-- hhmmss[,sss][Z|+/-hhmm] or 
+			-- make from a time of form:
+			-- hhmmss[,sss][Z|+/-hhmm] or
 			-- hh:mm:ss[,sss][,sss][Z|+/-hhmm]
 		require
 			String_valid: str /= Void and valid_iso8601_time(str)
@@ -111,7 +111,7 @@ feature -- Initialisation
 			is_extended := is_extended_flag
 			value := as_string
 		end
-				
+
 feature -- Access
 
 	value: STRING
@@ -128,15 +128,15 @@ feature -- Access
 
 	fractional_second: DOUBLE
 			-- extracted fractional second
-	
+
 	timezone: ISO8601_TIMEZONE
 			-- extracted timezone
-	
+
 feature -- Status Report
 
 	is_extended: BOOLEAN
 			-- True if syntax format uses separators
-			
+
 	minute_unknown: BOOLEAN
 			-- True if minute unknown
 
@@ -169,10 +169,10 @@ feature -- Modification
 			is_extended := True
 			value := as_string
 		end
-		
+
 feature -- Comparison
 
-	infix "<" (other: like Current): BOOLEAN is
+	is_less alias "<" (other: like Current): BOOLEAN is
 			-- Is current time less than `other', i.e. earlier? This comparison takes
 			-- into account timezone, i.e. it compares actual instants in world time, not
 			-- numeric values.
@@ -185,9 +185,9 @@ feature -- Conversion
 	to_seconds: DOUBLE is
 			-- convert to signed numeric form for comparison. The result is the number of
 			-- seconds since midnight at the 0000 meridian, and may be negative if the timezone is negative.
-			-- Timezone is taken into account, so that 00:00:00+0100 gives 3600, not 0. For missing parts, 
+			-- Timezone is taken into account, so that 00:00:00+0100 gives 3600, not 0. For missing parts,
 			-- substitute mid point values, creating a statistical approximation for
-			-- sorting purposes. 
+			-- sorting purposes.
 		local
 			m, s, tz: INTEGER
 			fs: DOUBLE
@@ -226,20 +226,20 @@ feature -- Output
 				Result.append_character ('0')
 			end
 			Result.append(s)
-			
+
 			if not minute_unknown then
 				if is_extended then
-					Result.append_character(Time_separator)			
+					Result.append_character(Time_separator)
 				end
 				s := minute.out
 				if s.count = 1 then
 					Result.append_character ('0')
 				end
 				Result.append(s)
-				
+
 				if not second_unknown then
 					if is_extended then
-						Result.append_character(Time_separator)			
+						Result.append_character(Time_separator)
 					end
 					s := second.out
 					if s.count = 1 then
@@ -254,19 +254,19 @@ feature -- Output
 					end
 				end
 			end
-			
+
 			if timezone /= Void then
 				Result.append(timezone.as_string)
 			end
 		ensure
-			Result_valid: Result /= Void and then valid_iso8601_time(Result)		
+			Result_valid: Result /= Void and then valid_iso8601_time(Result)
 		end
 
 	out: STRING is
 		do
 			Result := as_string
 		end
-		
+
 invariant
 	Hour_valid: valid_hour(hour, minute, second)
 	Minute_valid: not minute_unknown implies valid_minute(minute)

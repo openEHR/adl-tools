@@ -299,11 +299,17 @@ feature -- Environment
 
 	locale_language_short: STRING is
 			-- The ISO 2-char code for the locale language, e.g. "en"
-		local
-			i18n: I18N_LOCALE_MANAGER
+-- FIXME: In our "libraries/externals" folder, I tried updating the Subversion externals revision number to -r78090.
+-- But it's even more difficult than before to use this library because it now has a dependency on the encoding library.
+-- Like i18n, we would have to the encoding library get as an external too.
+-- Unfortunately, i18n.ecf specifies that the path to encoding.ecf is under $ISE_LIBRARY, which of course it is not for us.
+-- I decided to avoid this difficulty by hard-coding "en" in SHARED_RESOURCES.locale_language_short, for now at least.
+--		local
+--			i18n: I18N_LOCALE_MANAGER
 		do
-			create i18n.make (application_startup_directory)
-			Result := i18n.system_locale.info.id.language
+--			create i18n.make (application_startup_directory)
+--			Result := i18n.system_locale.info.id.language
+			Result := "en"
 		ensure
 			Result_attached: Result /= Void
 		end

@@ -21,21 +21,21 @@ class DV_DATE_TIME
 inherit
 	DV_ABSOLUTE_QUANTITY
 		undefine
-			out, infix "<", default_create
+			out, is_less, default_create
 		end
-		
+
 	ISO8601_DATE_TIME
 		undefine
 			default_create
 		end
 
-create 
+create
 	default_create,	make_from_string, make_date_time
 
 feature -- Definitions
-			
+
 	Default_value: STRING is "1800-01-01T00:00:00"
-	
+
 feature -- Initialisation
 
 	default_create is
@@ -66,19 +66,19 @@ feature -- Access
 		do
 			Result := to_seconds
 		end
-		
+
 feature -- Basic Operations
 
 	add (a_diff: like diff): like Current	is
 			-- Addition of a differential amount to this quantity.
 		do
 		end
-	
+
 	subtract (a_diff: like diff): like Current is
 			-- Result of subtracting a differential amount from this quantity.
 		do
 		end
-	
+
 	diff (other: like Current): DV_DURATION is
 			-- Difference of two quantities.
 		do
@@ -93,12 +93,12 @@ feature -- Comparison
 		end
 
 feature -- Output
-	
+
 	as_canonical_string: STRING is
 		do
 			Result := as_string
 		end
-		
+
 end
 
 
