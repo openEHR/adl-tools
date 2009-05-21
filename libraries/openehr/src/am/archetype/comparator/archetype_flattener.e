@@ -328,7 +328,7 @@ feature {NONE} -- Implementation
 
 									-- for container attributes in the source archetype, we graft in new elements; overrides will be
 									-- handled by being traversed by this routine later
-									c_attr_output := cco_output_flat_proximate.attribute(c_attr_child.rm_attribute_name)
+									c_attr_output := cco_output_flat_proximate.c_attribute (c_attr_child.rm_attribute_name)
 									if c_attr_child.is_multiple then
 										-- graft the cardinality if that has been changed
 										if not c_attr_child.cardinality.interval.is_equal (c_attr_output.cardinality.interval) then

@@ -600,7 +600,7 @@ feature -- Modification
 feature -- Conversion
 
 	substitute_codes(str, lang: STRING): STRING is
-			-- substitute all occurrences of archetype codes in 'str' 
+			-- substitute all occurrences of archetype codes in 'str'
 			-- with their term texts from this ontology, in 'lang'
 		require
 			Str_valid: str /= Void and then not str.is_empty
@@ -1105,14 +1105,14 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 		local
 			parent_code: STRING
 		do
-			if specialisation_depth_from_code (a_code) > 0 then
+			if is_specialised_code (a_code) then
 				parent_code := specialisation_parent_from_code (a_code)
 
 				if not specialised_codes.has (parent_code) then
-					specialised_codes.force (create {TWO_WAY_SORTED_SET [STRING]}.make, parent_code)
+					specialised_codes.force (create {attached TWO_WAY_SORTED_SET [INTEGER]}.make, parent_code)
 				end
 
-				specialised_codes.item (parent_code).extend (a_code)
+				specialised_codes.item (parent_code).extend (specialised_code_tail (a_code).to_integer)
 			end
 		end
 
@@ -1246,10 +1246,13 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 			end
 		end
 
-	specialised_codes: HASH_TABLE[TWO_WAY_SORTED_SET[STRING], STRING]
-			-- table of child codes keyed by immediate parent code
-			-- e.g. the entry for at0005 might have a list of {at0005.1, at0005.2}
-			-- and ac0005.1 might have ac0005.1.1
+	specialised_codes: attached HASH_TABLE [attached TWO_WAY_SORTED_SET [INTEGER], STRING]
+			-- Table of child code tails keyed by immediate parent code.
+			-- E.g. the entry for at0005 might have a list of {1, 2} to represent at0005.1 and at0005.2;
+			-- and ac0005.1 might have {1} to represent ac0005.1.1.
+			-- The code tails are represented as integers, not as the full code strings, because:
+			-- (a) strings do not sort correctly for more than one digit (e.g. "10" < "9");
+			-- (b) integers are more efficient (faster comparisons, no need to convert from string to integer).
 
 invariant
 	Primary_language_valid: primary_language /= Void and then not primary_language.is_empty
@@ -1264,7 +1267,6 @@ invariant
 	root_code_attached: concept_code /= Void
 	root_code_valid: valid_concept_code (concept_code)
 	root_code_in_terms: term_codes.has (concept_code)
-	Specialised_codes_valid: specialised_codes /= Void
 	Term_attribute_names_valid: term_attribute_names /= Void
 
 	Highest_term_code_index_valid: highest_term_code_index >= 0

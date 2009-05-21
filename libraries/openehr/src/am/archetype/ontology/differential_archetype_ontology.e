@@ -13,7 +13,7 @@ indexing
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2003,2004 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2003-2009 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL: http://www.openehr.org/svn/ref_impl_eiffel/TRUNK/libraries/openehr/src/am/archetype/ontology/differential_archetype_ontology.e $"
@@ -319,6 +319,7 @@ feature -- Factory
 			if specialisation_depth > 0 then
 				create Result.make(0)
 				Result.append(Term_code_leader)
+
 				from
 					i := 0
 				until
@@ -328,19 +329,20 @@ feature -- Factory
 					Result.append_character(Specialisation_separator)
 					i := i + 1
 				end
+
 				Result.append_integer(highest_term_code_index + 1)
 			else
 				create Result.make_filled('0', Term_code_length)
 				Result.replace_substring(Term_code_leader, 1, Term_code_leader.count)
 				new_idx_str := (highest_term_code_index + 1).out
-				Result.replace_substring(new_idx_str, Result.count-new_idx_str.count+1, Result.count)
+				Result.replace_substring(new_idx_str, Result.count-new_idx_str.count + 1, Result.count)
 			end
 		ensure
 			Result_exists: Result /= Void and then specialisation_depth_from_code(Result) = specialisation_depth
 		end
 
 	new_specialised_term_code(a_parent_code: STRING): STRING is
-			-- make a new specialised code based on `a_parent_code'
+			-- Make a new specialised code based on `a_parent_code'
 			-- e.g. "at0001" at level 2 will produce "at0001.0.1"
 			-- Note: a code of "at0001" has specialisation depth 0
 		require
@@ -351,6 +353,7 @@ feature -- Factory
 		do
 			create Result.make(0)
 			Result.append(a_parent_code)
+
 			from
 				i := specialisation_depth_from_code(a_parent_code) + 1
 			until
@@ -362,8 +365,12 @@ feature -- Factory
 			end
 
 			Result.append_character(Specialisation_separator)
-			n := specialised_code_tail(specialised_codes.item(a_parent_code).last).to_integer
-			Result.append_integer(n+1)
+
+			if specialised_codes.has (a_parent_code) then
+				n := specialised_codes.item (a_parent_code).last
+			end
+
+			Result.append_integer (n + 1)
 		ensure
 			Result_valid: Result /= Void and then specialised_code_tail(Result).to_integer > 0
 		end
@@ -400,7 +407,7 @@ feature -- Factory
 		end
 
 	new_specialised_constraint_code(a_parent_code: STRING): STRING is
-			-- make a new specialised code based on `a_parent_code'
+			-- Make a new specialised code based on `a_parent_code'
 			-- e.g. "ac0001" at level 2 will produce "ac0001.0.1"
 			-- Note: a code of "ac0001" has specialisation depth 0
 		require
@@ -411,6 +418,7 @@ feature -- Factory
 		do
 			create Result.make(0)
 			Result.append(a_parent_code)
+
 			from
 				i := specialisation_depth_from_code(a_parent_code) + 1
 			until
@@ -422,8 +430,12 @@ feature -- Factory
 			end
 
 			Result.append_character(Specialisation_separator)
-			n := specialised_code_tail(specialised_codes.item(a_parent_code).last).to_integer
-			Result.append_integer(n+1)
+
+			if specialised_codes.has (a_parent_code) then
+				n := specialised_codes.item (a_parent_code).last
+			end
+
+			Result.append_integer (n + 1)
 		ensure
 			Result_valid: Result /= Void and then specialised_code_tail(Result).to_integer > 0
 		end
@@ -544,7 +556,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is adl_ontology.e.
+--| The Original Code is differential_archetype_ontology.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

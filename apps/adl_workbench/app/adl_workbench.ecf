@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-4-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-4-0 http://www.eiffel.com/developers/xml/configuration-1-4-0.xsd" name="adl_workbench" uuid="C99BD5CC-111C-4EE7-9BCF-337A924E2783">
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-5-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-5-0 http://www.eiffel.com/developers/xml/configuration-1-5-0.xsd" name="adl_workbench" uuid="C99BD5CC-111C-4EE7-9BCF-337A924E2783">
 	<target name="adl_workbench_no_precompile">
 		<root class="ADL_WORKBENCH" feature="make_and_launch"/>
 		<file_rule>
 			<exclude>/\.svn$</exclude>
 		</file_rule>
-		<option trace="false" profile="false" debug="false" warning="true" full_class_checking="false" namespace="openehr">
+		<option trace="false" profile="false" debug="false" warning="true" full_class_checking="false" syntax="transitional" namespace="openehr">
 			<debug name="__unnamed_debug__" enabled="false"/>
 			<debug name="adl_invariant" enabled="false"/>
 			<debug name="adl_parse" enabled="false"/>
@@ -52,6 +52,7 @@
 		</library>
 		<library name="gobo" location="$ISE_LIBRARY\library\gobo\gobo.ecf"/>
 		<library name="i18n" location="..\..\..\libraries\externals\i18n.ecf"/>
+		<library name="testing" location="$ISE_LIBRARY\library\testing\testing.ecf"/>
 		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf">
 			<renaming old_name="C_DATE" new_name="TIME_C_DATE"/>
 			<renaming old_name="INTERVAL" new_name="TIME_INTERVAL"/>
@@ -101,5 +102,6 @@
 	</target>
 	<target name="adl_workbench" extends="adl_workbench_no_precompile">
 		<precompile name="precompile" location="$ISE_PRECOMP\vision2.ecf"/>
+		<tests name="openehr_tests" location="..\..\..\libraries\openehr\tests\"/>
 	</target>
 </system>

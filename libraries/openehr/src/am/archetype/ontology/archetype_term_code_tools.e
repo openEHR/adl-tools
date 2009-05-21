@@ -73,17 +73,18 @@ feature -- Access
 			i, idx: INTEGER
 		do
 			from
-				i := a_level
+				i := specialisation_depth_from_code (a_code)
 				idx := a_code.count
 			until
-				i >= specialisation_depth_from_code(a_code)
+				i = a_level
 			loop
-				idx := a_code.last_index_of(Specialisation_separator, a_code.count)-1
-				i := i + 1
+				idx := a_code.last_index_of (Specialisation_separator, idx) - 1
+				i := i - 1
 			end
+
 			Result := a_code.substring (1, idx)
 		ensure
-			Valid_result: specialisation_depth_from_code(Result) = a_level
+			Valid_result: specialisation_depth_from_code (Result) = a_level
 		end
 
 	specialisation_status_from_code(a_code: STRING; a_depth: INTEGER): SPECIALISATION_STATUS is
@@ -226,6 +227,10 @@ feature -- Comparison
 				idx_str := a_code.substring(Term_code_leader.count+1, a_code.last_index_of(Specialisation_separator, a_code.count)-1)
 				idx_str.prune_all (Specialisation_separator)
 				Result := idx_str.to_integer > 0
+
+				if not Result then
+					Result := specialisation_parent_from_code_at_level (a_code, 0).same_string (default_concept_code)
+				end
 			end
 		end
 

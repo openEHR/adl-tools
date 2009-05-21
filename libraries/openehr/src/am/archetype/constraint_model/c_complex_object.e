@@ -64,7 +64,7 @@ feature -- Access
 
 	attributes: ARRAYED_LIST [C_ATTRIBUTE]
 
-	attribute(an_attr_name: STRING): C_ATTRIBUTE is
+	c_attribute (an_attr_name: STRING): C_ATTRIBUTE is
 		require
 			an_attr_name_valid: an_attr_name /= Void and then has_attribute(an_attr_name)
 		do
