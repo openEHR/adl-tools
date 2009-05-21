@@ -26,19 +26,25 @@ class ARCHETYPE_TERM_CODE_TOOLS
 
 inherit
 	SPECIALISATION_STATUSES
-		export
-			{NONE} all
-		end
 
 feature -- Definitions
+
+	Default_concept_code: STRING is "at0000"
+			-- FIXME: the 0000 code should not be allowed to be used in an archetype
+			-- definition secton, since it violates the rule that a '0' code means
+			-- "not defined here" (i.e. it is normally a filler for lower down codes)
+			-- THIS SHOULD BE CHANGED to at0001
 
 	Specialisation_separator: CHARACTER is '.'
 
 	Term_code_length: INTEGER is 6
-			-- length of internal term codes, e.g. "at0001"
+			-- length of top-level term codes, e.g. "at0001"
 
 	Term_code_leader: STRING is "at"
 			-- leader of all internal term codes
+
+	Constraint_code_length: INTEGER is 6
+			-- length of top-level constraint codes, e.g. "ac0001"
 
 	Constraint_code_leader: STRING is "ac"
 
@@ -50,6 +56,31 @@ feature -- Access
 			Code_valid: a_code /= Void and then specialisation_depth_from_code(a_code) > 0
 		do
 			Result := a_code.substring (1, a_code.last_index_of(Specialisation_separator, a_code.count)-1)
+		ensure
+			Valid_result: specialisation_depth_from_code(Result) = specialisation_depth_from_code(a_code) - 1
+		end
+
+	specialisation_parent_from_code_at_level(a_code: STRING; a_level: INTEGER): STRING is
+			-- get parent of this specialised code at `a_level'
+		require
+			Code_valid: a_code /= Void and then is_valid_code(a_code)
+			Level_valid: a_level >= 0 and a_level <= specialisation_depth_from_code(a_code)
+		local
+			i, idx: INTEGER
+		do
+			from
+				i := specialisation_depth_from_code (a_code)
+				idx := a_code.count
+			until
+				i = a_level
+			loop
+				idx := a_code.last_index_of (Specialisation_separator, idx) - 1
+				i := i - 1
+			end
+
+			Result := a_code.substring (1, idx)
+		ensure
+			Valid_result: specialisation_depth_from_code (Result) = a_level
 		end
 
 	specialisation_status_from_code(a_code: STRING; a_depth: INTEGER): SPECIALISATION_STATUS is
@@ -128,9 +159,11 @@ feature -- Access
 	specialisation_depth_from_code(a_code: STRING): INTEGER is
 			-- infer number of levels of specialisation from concept code
 		require
-			Code_valid: a_code /= Void and then is_valid_code(a_code)
+			Code_valid: a_code /= Void and then is_valid_code (a_code)
 		do
 			Result := a_code.occurrences (Specialisation_separator)
+		ensure
+			non_negative: Result >= 0
 		end
 
 	specialised_code_tail(a_code: STRING): STRING is
@@ -145,77 +178,103 @@ feature -- Access
 
 feature -- Comparison
 
-	is_valid_code(a_code: STRING): BOOLEAN is
-			-- 	a code is an 'at' or 'ac' code
+	is_valid_code (a_code: STRING): BOOLEAN is
+			-- Is `a_code' an "at" or "ac" code?
 		require
-			Code_valid: a_code /= Void and then not a_code.is_empty
+			code_attached: a_code /= Void
+		local
+			i: INTEGER
+			str: STRING
 		do
-			Result := a_code.substring_index (Term_code_leader, 1) > 0 or a_code.substring_index (Constraint_code_leader, 1) > 0
+			if not a_code.is_empty then
+				if a_code.starts_with (term_code_leader) then
+					i := term_code_leader.count
+				elseif a_code.starts_with (constraint_code_leader) then
+					i := constraint_code_leader.count
+				end
+
+				if i > 0 then
+					str := a_code.substring (i + 1, a_code.count)
+					str.prune_all (specialisation_separator)
+					Result := str.is_integer
+				end
+			end
 		end
 
 	is_specialised_code(a_code: STRING): BOOLEAN is
-			-- 	a code has been specialised if there is a non-zero number above the
-			-- specialisation depth of the code
+			-- a code has been specialised if there is a non-zero code index anywhere above the last index
+			-- e.g. at0.0.1, level=3 -> False
+			--      at0001.0.1, level=3 -> True
 		require
-			Code_valid: a_code /= Void and then is_valid_code(a_code)
+			Code_valid: a_code /= Void and then is_valid_code (a_code)
+		local
+			idx_str: STRING
 		do
 			if specialisation_depth_from_code(a_code) > 0 then
-				Result := a_code.substring(Term_code_leader.count+1, a_code.last_index_of(Specialisation_separator, a_code.count)-1).to_integer > 0
+				idx_str := a_code.substring(Term_code_leader.count+1, a_code.last_index_of(Specialisation_separator, a_code.count)-1)
+				idx_str.prune_all (Specialisation_separator)
+				Result := idx_str.to_integer > 0
+
+				if not Result then
+					Result := specialisation_parent_from_code_at_level (a_code, 0).same_string (default_concept_code)
+				end
 			end
 		end
 
 feature -- Factory
 
-	new_non_specialised_term_code_at_level(a_level, last_index_at_level: INTEGER): STRING is
-			-- create a new code at level of current top code at that level is `last_code_at_level'
+	new_non_specialised_term_code_at_level(specialisation_depth, highest_term_code_index: INTEGER): STRING is
+			-- create a new code at level of given top code index at given specialisation depth
+			-- code will have form atnnn or at0.n or at0.0.n etc
 		require
-			Level_valid: a_level >= 0
-			Index_valid: last_index_at_level >= 0
+			Level_valid: specialisation_depth >= 0
+			Index_valid: highest_term_code_index >= 0
 		local
 			new_idx_str: STRING
 			i: INTEGER
 		do
-			if a_level > 0 then
+			if specialisation_depth > 0 then
 				create Result.make(0)
 				Result.append(Term_code_leader)
+
 				from
 					i := 0
 				until
-					i = a_level
+					i = specialisation_depth
 				loop
 					Result.append_character('0')
 					Result.append_character(Specialisation_separator)
 					i := i + 1
 				end
 
-				Result.append_integer(last_index_at_level+1)
+				Result.append_integer(highest_term_code_index + 1)
 			else
 				create Result.make_filled('0', Term_code_length)
 				Result.replace_substring(Term_code_leader, 1, Term_code_leader.count)
-				new_idx_str := (last_index_at_level + 1).out
-				Result.replace_substring(new_idx_str, Result.count-new_idx_str.count+1, Result.count)
+				new_idx_str := (highest_term_code_index + 1).out
+				Result.replace_substring(new_idx_str, Result.count-new_idx_str.count + 1, Result.count)
 			end
 		ensure
 			Result_exists: Result /= Void
 		end
 
-	new_specialised_term_code_at_level(a_parent_code: STRING; at_level:INTEGER): STRING is
-			-- get a new specialised code based on `a_parent_code'
+	new_specialised_term_code_at_level(a_parent_code: STRING; specialisation_depth: INTEGER): STRING is
+			-- Make a new specialised code based on `a_parent_code'
 			-- e.g. "at0001" at level 2 will produce "at0001.0.1"
 			-- Note: a code of "at0001" has specialisation depth 0
 		require
 			a_parent_code_valid: a_parent_code /= Void and then not a_parent_code.is_empty
-			level_valid: at_level > 0
+			level_valid: specialisation_depth > 0
 		local
 			i, n: INTEGER
-			last_code: STRING
 		do
 			create Result.make(0)
 			Result.append(a_parent_code)
+
 			from
 				i := specialisation_depth_from_code(a_parent_code) + 1
 			until
-				i >= at_level
+				i >= specialisation_depth
 			loop
 				Result.append_character(Specialisation_separator)
 				Result.append_character('0')
@@ -223,11 +282,12 @@ feature -- Factory
 			end
 
 			Result.append_character(Specialisation_separator)
-			if specialised_term_codes.has(a_parent_code) then
-				last_code := specialised_term_codes.item(a_parent_code).last
-				n := specialised_code_tail(last_code).to_integer
+
+			if specialised_codes.has (a_parent_code) then
+				n := specialised_codes.item (a_parent_code).last
 			end
-			Result.append_integer(n+1)
+
+			Result.append_integer (n + 1)
 		ensure
 			Result_valid: Result /= Void and then specialised_code_tail(Result).to_integer > 0
 		end
@@ -265,10 +325,13 @@ feature -- Factory
 
 feature {NONE} -- Implementation
 
-	specialised_term_codes: HASH_TABLE[TWO_WAY_SORTED_SET[STRING], STRING]
-			-- table of immediate child codes keyed by immediate parent code
-			-- e.g. the entry for at0005 might have a list of {at0005.1, at0005.2}
-			-- and at0005.1 might have at0005.1.1
+	specialised_codes:  HASH_TABLE [TWO_WAY_SORTED_SET [INTEGER], STRING]
+			-- Table of child code tails keyed by immediate parent code.
+			-- E.g. the entry for at0005 might have a list of {1, 2} to represent at0005.1 and at0005.2;
+			-- and ac0005.1 might have {1} to represent ac0005.1.1.
+			-- The code tails are represented as integers, not as the full code strings, because:
+			-- (a) strings do not sort correctly for more than one digit (e.g. "10" < "9");
+			-- (b) integers are more efficient (faster comparisons, no need to convert from string to integer).
 
 end
 

@@ -471,7 +471,7 @@ feature -- Modification
 		do
 			put_term_definition(a_lang, a_term)
 			term_codes.extend(a_term.code)
-			update_specialised_term_codes(a_term.code)
+			update_specialised_codes(a_term.code)
 			update_highest_non_specialised_term_code_index(a_term.code)
 		ensure
 			Code_valid: has_term_code(a_term.code)
@@ -1052,7 +1052,7 @@ feature {NONE} -- Implementation
 			loop
 				code := term_definitions.item(primary_language).key_for_iteration
 				term_codes.extend(code)
-				update_specialised_term_codes(code)
+				update_specialised_codes(code)
 				update_highest_non_specialised_term_code_index(code)
 				term_definitions.item(primary_language).forth
 			end
@@ -1205,19 +1205,21 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	update_specialised_term_codes(a_code: STRING) is
-			-- update specialised_term_codes list with new code
+	update_specialised_codes (a_code: STRING) is
+			-- Update specialised_codes list with new code, if it happens to be specialised.
 		require
-			Code_valid: a_code /= Void and then not a_code.is_empty
+			Code_valid: a_code /= Void and then is_valid_code (a_code)
 		local
 			parent_code: STRING
 		do
-			if specialisation_depth_from_code(a_code) > 0 then
-				parent_code := specialisation_parent_from_code(a_code)
-				if not specialised_term_codes.has(parent_code) then
-					specialised_term_codes.force(create {TWO_WAY_SORTED_SET[STRING]}.make, parent_code)
+			if is_specialised_code (a_code) then
+				parent_code := specialisation_parent_from_code (a_code)
+
+				if not specialised_codes.has (parent_code) then
+					specialised_codes.force (create {TWO_WAY_SORTED_SET [INTEGER]}.make, parent_code)
 				end
-				specialised_term_codes.item(parent_code).extend(a_code)
+
+				specialised_codes.item (parent_code).extend (specialised_code_tail (a_code).to_integer)
 			end
 		end
 
@@ -1272,8 +1274,8 @@ feature {NONE} -- Implementation
 		do
 			concept_code := a_concept_code
 			specialisation_depth := specialisation_depth_from_code(a_concept_code)
-			if specialised_term_codes = Void then
-				create specialised_term_codes.make(0)
+			if specialised_codes = Void then
+				create specialised_codes.make(0)
 			end
 		ensure
 			concept_code /= Void
@@ -1489,7 +1491,7 @@ invariant
 	Term_bindings_exists: term_bindings /= Void
 	Constraint_bindings_exists: constraint_bindings /= Void
 	Root_code_valid: term_codes.has(concept_code)
-	Specialised_term_codes_valid: specialised_term_codes /= Void
+	specialised_codes_valid: specialised_codes /= Void
 
 end
 
