@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "shared access to LOCALE object"
 	keywords:    "locale"
@@ -16,7 +16,7 @@ class SHARED_LOCALE
 
 feature -- Shared Access
 
-	locale: LOCALE is
+	locale: LOCALE
 		once
 			create Result.make
 		end

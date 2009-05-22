@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Types"
 	description: "[
 			 A specialisation of DV_ENCAPSULATED for audiovisual and biosignal types. 
@@ -25,17 +25,17 @@ inherit
 
 feature -- Initialization
 
-	make_from_string(str:STRING) is
+	make_from_string(str:STRING)
 		do
 		end
 
-	make_from_canonical_string(str:STRING) is
+	make_from_canonical_string(str:STRING)
 		do
 		end
 		
 feature -- Status Report
 
-	valid_canonical_string(str: STRING): BOOLEAN is
+	valid_canonical_string(str: STRING): BOOLEAN
 			-- True if str contains required tags
 		do
 		end
@@ -68,14 +68,14 @@ feature -- Access
 
 feature -- Status
 
-	is_external: BOOLEAN is
+	is_external: BOOLEAN
 		do
 			Result := uri /= Void
 		ensure
 			uri /= Void implies Result
 		end
 
-	is_inline: BOOLEAN is
+	is_inline: BOOLEAN
 		do
 			Result := data /= Void
 		ensure
@@ -84,12 +84,12 @@ feature -- Status
 
 feature -- Output
 
-	as_string: STRING is
+	as_string: STRING
 			-- string form displayable for humans
 		do
 		end
 	
-	as_canonical_string: STRING is
+	as_canonical_string: STRING
 			-- standardised form of string guaranteed to contain all information
 			-- in data item
 		do

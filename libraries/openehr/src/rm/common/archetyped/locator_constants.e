@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reference Object Model"
 	description: "Locator constants."
 	keywords:    "content, path, locator"
@@ -17,19 +17,19 @@ class LOCATOR_CONSTANTS
 
 feature {NONE} -- Definitions
 
-	Current_transaction_id:STRING is "current"
+	Current_transaction_id:STRING = "current"
 
-	Fragment_separator:STRING is "#"
+	Fragment_separator:STRING = "#"
 			-- separator between identifiers for whole document, and for fragments. In the EHR, this is
 			-- between the transaction id, and id of organiser and/or content
 
-	Content_path_separator:STRING is "|"
+	Content_path_separator:STRING = "|"
 			-- separator between path items in content paths
 
-	Organiser_path_separator:STRING is "/"
+	Organiser_path_separator:STRING = "/"
 			-- separator between path items in organiser paths
 
-	Multipart_id_delimiter:STRING is "::"
+	Multipart_id_delimiter:STRING = "::"
 			-- separator between sections in multi-part ids, such as the transaction id
 
 end

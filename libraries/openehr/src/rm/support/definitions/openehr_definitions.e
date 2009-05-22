@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR common definitions"
 	
 	description: "Definitions of constant values for the openEHR models"
@@ -20,7 +20,7 @@ inherit
 
 feature -- Definitions
 	
-	Default_language: STRING is "en"
+	Default_language: STRING = "en"
 	
 end
 

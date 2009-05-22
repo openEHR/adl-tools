@@ -6,7 +6,7 @@
 		<file_rule>
 			<exclude>/\.svn$</exclude>
 		</file_rule>
-		<option trace="false" profile="false" debug="false" warning="true" msil_application_optimize="true" syntax="transitional" namespace="openehr">
+		<option trace="false" profile="false" debug="false" warning="true" msil_application_optimize="true" syntax="standard" namespace="openehr">
 			<assertions precondition="true" supplier_precondition="true"/>
 			<warning name="export_class_missing" enabled="false"/>
 			<warning name="old_verbatim_strings" enabled="false"/>

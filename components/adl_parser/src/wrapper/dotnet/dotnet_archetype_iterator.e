@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "dotNet wrapper for CADL Tree cursor"
 	keywords:    "test, ADL, CADL"
@@ -21,7 +21,7 @@ create
 
 feature -- Initialisation
 
-	make_dotnet(a_call_target: SYSTEM_OBJECT; root_node: C_COMPLEX_OBJECT) is
+	make_dotnet(a_call_target: SYSTEM_OBJECT; root_node: C_COMPLEX_OBJECT)
 		require
 			Call_target_exists: a_call_target /= Void
 			root_node /= Void
@@ -38,7 +38,7 @@ feature -- Access
 
 feature -- Element Change
 
-	set_enter_action(handle: RUNTIME_METHOD_HANDLE) is
+	set_enter_action(handle: RUNTIME_METHOD_HANDLE)
 			-- turn a C# function into an Eiffel agent
 		local
 			omap: ARRAY[INTEGER]
@@ -55,7 +55,7 @@ feature -- Element Change
 --			enter_action.set_rout_disp(handle, args, omap)
 		end
 		
-	set_exit_action(handle: RUNTIME_METHOD_HANDLE) is
+	set_exit_action(handle: RUNTIME_METHOD_HANDLE)
 			-- turn a C# function into an Eiffel agent
 		local
 			omap: ARRAY[INTEGER]
@@ -73,7 +73,7 @@ feature -- Element Change
 		
 feature -- Iteration
 
-	dotnet_do_all is
+	dotnet_do_all
 			-- dotnet version of do_all
 		do
 			do_all(enter_action, exit_action)

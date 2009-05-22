@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR EHR Reference Model"
 	description: "[
 			 A versioned controlled repository for COMPOSITIONs.  Information 
@@ -26,7 +26,7 @@ inherit
 
 feature -- Status Report
 
-	is_persistent: BOOLEAN is
+	is_persistent: BOOLEAN
 			-- derived persistent status from type of COMPOSITION
 		do
 			Result := first_version.data.is_persistent

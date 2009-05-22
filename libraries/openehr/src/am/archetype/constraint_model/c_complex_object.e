@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 			     Object node representing any non-simple type in ADL parse tree. 
@@ -32,14 +32,14 @@ create
 
 feature -- Initialisation
 
-	default_create is
+	default_create
 			--
 		do
 			precursor
 			create attributes.make(0)
 		end
 
-	make_identified(a_rm_type_name, an_object_id:STRING) is
+	make_identified (a_rm_type_name, an_object_id: STRING)
 			-- set type name, object_id
 		require
 			Rm_type_name_valid: a_rm_type_name /= Void and then not a_rm_type_name.is_empty
@@ -50,7 +50,7 @@ feature -- Initialisation
 			rm_type_name := a_rm_type_name
 		end
 
-	make_anonymous(a_rm_type_name:STRING) is
+	make_anonymous (a_rm_type_name: STRING)
 			-- set type name
 		require
 			Rm_type_name_valid: a_rm_type_name /= Void and then not a_rm_type_name.is_empty
@@ -64,14 +64,14 @@ feature -- Access
 
 	attributes: ARRAYED_LIST [C_ATTRIBUTE]
 
-	c_attribute (an_attr_name: STRING): C_ATTRIBUTE is
+	c_attribute (an_attr_name: STRING): C_ATTRIBUTE
 		require
 			an_attr_name_valid: an_attr_name /= Void and then has_attribute(an_attr_name)
 		do
 			Result ?= representation.child_with_id(an_attr_name).content_item
 		end
 
-	c_attribute_at_path(a_path: STRING): C_ATTRIBUTE is
+	c_attribute_at_path(a_path: STRING): C_ATTRIBUTE
 			-- get C_ATTRIBUTE at a path (which doesn't terminate in '/')
 		require
 			a_path_valid: a_path /= Void and then has_path(a_path)
@@ -79,7 +79,7 @@ feature -- Access
 			Result ?= representation.attribute_node_at_path (create {OG_PATH}.make_from_string(a_path)).content_item
 		end
 
-	c_object_at_path(a_path: STRING): C_OBJECT is
+	c_object_at_path(a_path: STRING): C_OBJECT
 			-- get C_OBJECT at a path (which terminates in '/')
 		require
 			a_path_valid: a_path /= Void and then has_path(a_path)
@@ -87,7 +87,7 @@ feature -- Access
 			Result ?= representation.object_node_at_path (create {OG_PATH}.make_from_string(a_path)).content_item
 		end
 
-	all_paths_at_path(a_path: STRING): HASH_TABLE[C_OBJECT, STRING] is
+	all_paths_at_path(a_path: STRING): HASH_TABLE[C_OBJECT, STRING]
 			-- all paths starting at node found at a_path, including itself
 		require
 			Path_valid: a_path /= Void and then has_path(a_path)
@@ -106,7 +106,7 @@ feature -- Access
 			loop
 				og_obj := og_paths.item_for_iteration
 				if og_obj /= Void then
-					if {c_obj: !C_OBJECT} og_obj.content_item then
+					if attached {C_OBJECT} og_obj.content_item as c_obj then
 						Result.put (c_obj, og_paths.key_for_iteration.as_string)
 					end
 				else
@@ -118,7 +118,7 @@ feature -- Access
 			Result_exists: Result /= Void
 		end
 
-	all_paths: HASH_TABLE [C_OBJECT, STRING] is
+	all_paths: HASH_TABLE [C_OBJECT, STRING]
 			-- All paths below this point, including this node.
 		local
 			og_paths: HASH_TABLE [OG_OBJECT, OG_PATH]
@@ -134,7 +134,7 @@ feature -- Access
 			loop
 				og_obj := og_paths.item_for_iteration
 				if og_obj /= Void then
-					if {c_obj: !C_OBJECT} og_obj.content_item then
+					if attached {C_OBJECT} og_obj.content_item as c_obj then
 						Result.put (c_obj, og_paths.key_for_iteration.as_string)
 					end
 				else
@@ -147,7 +147,7 @@ feature -- Access
 			Result_exists: Result /= Void -- and then Result.object_comparison
 		end
 
-	prototype_value: ANY is
+	prototype_value: ANY
 			-- 	generate a default value from this constraint object
 		do
 			-- FIXME: to be implemented
@@ -155,20 +155,20 @@ feature -- Access
 
 feature -- Status Report
 
-	any_allowed: BOOLEAN is
+	any_allowed: BOOLEAN
 			-- True if any value allowed ('*' received in parsed input)
 			-- i.e. no attributes
 		do
 			Result := attributes.is_empty
 		end
 
-	has_attributes: BOOLEAN is
+	has_attributes: BOOLEAN
 			-- True if any attribute nodes below this node
 		do
 			Result := attributes.count > 0
 		end
 
-	has_path(a_path: STRING): BOOLEAN is
+	has_path(a_path: STRING): BOOLEAN
 			-- does a_path exist from this node?
 		require
 			Path_valid: a_path /= Void
@@ -176,7 +176,7 @@ feature -- Status Report
 			Result := representation.has_path(create {OG_PATH}.make_from_string(a_path))
 		end
 
-	has_object_path(a_path: STRING): BOOLEAN is
+	has_object_path(a_path: STRING): BOOLEAN
 			-- does a_path exist to an object node from this node?
 		require
 			Path_valid: a_path /= Void
@@ -184,7 +184,7 @@ feature -- Status Report
 			Result := representation.has_object_path(create {OG_PATH}.make_from_string(a_path))
 		end
 
-	has_attribute_path(a_path: STRING): BOOLEAN is
+	has_attribute_path(a_path: STRING): BOOLEAN
 			-- does a_path to an object node exist from this node?
 		require
 			Path_valid: a_path /= Void
@@ -192,14 +192,14 @@ feature -- Status Report
 			Result := representation.has_attribute_path(create {OG_PATH}.make_from_string(a_path))
 		end
 
-	has_attribute(an_attr_name: STRING): BOOLEAN is
+	has_attribute(an_attr_name: STRING): BOOLEAN
 		require
 			an_attr_name_valid: an_attr_name /= Void and then not an_attr_name.is_empty
 		do
 			Result := representation.has_child_with_id(an_attr_name)
 		end
 
-	is_valid: BOOLEAN is
+	is_valid: BOOLEAN
 			-- report on validity
 		do
 			if precursor then
@@ -223,14 +223,14 @@ feature -- Status Report
 			end
 		end
 
-	valid_value (a_value: like prototype_value): BOOLEAN is
+	valid_value (a_value: like prototype_value): BOOLEAN
 		do
 			-- FIXME: to be implemented
 		end
 
 feature -- Modification
 
-	put_attribute(an_attr: C_ATTRIBUTE) is
+	put_attribute(an_attr: C_ATTRIBUTE)
 			-- put a new attribute
 		require
 			Attribute_exists: an_attr /= Void
@@ -240,7 +240,7 @@ feature -- Modification
 			an_attr.set_parent(Current)
 		end
 
-	remove_attribute(an_attr: C_ATTRIBUTE) is
+	remove_attribute(an_attr: C_ATTRIBUTE)
 			-- remove an existing attribute
 		require
 			Attribute_exists: an_attr /= Void and has_attribute (an_attr.rm_attribute_path)
@@ -251,7 +251,7 @@ feature -- Modification
 			not has_attribute (an_attr.rm_attribute_path)
 		end
 
-	remove_all_attributes is
+	remove_all_attributes
 			--
 		do
 			representation.remove_all_children
@@ -260,7 +260,7 @@ feature -- Modification
 
 feature -- Output
 
-	out: STRING is
+	out: STRING
 			--
 		do
 			create Result.make(0)
@@ -269,17 +269,17 @@ feature -- Output
 
 feature -- Representation
 
-	representation: !OG_OBJECT_NODE
+	representation: attached OG_OBJECT_NODE
 
 feature -- Visitor
 
-	enter_subtree(visitor: C_VISITOR; depth: INTEGER) is
+	enter_subtree(visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at start of block for this node
 		do
 			visitor.start_c_complex_object(Current, depth)
 		end
 
-	exit_subtree(visitor: C_VISITOR; depth: INTEGER) is
+	exit_subtree(visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at end of block for this node
 		do
 			visitor.end_c_complex_object(Current, depth)

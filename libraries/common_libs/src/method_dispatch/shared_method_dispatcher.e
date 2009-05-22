@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Library Project"
 	description: "Shared method dispatcher"
 	keywords:    "method dispatch"
@@ -23,7 +23,7 @@ inherit
 
 feature -- Access
 
-	method_dispatcher: METHOD_DISPATCHER is
+	method_dispatcher: METHOD_DISPATCHER
 	    once
 			create Result.make(True, True)
 	    end

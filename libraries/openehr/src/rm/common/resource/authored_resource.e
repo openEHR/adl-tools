@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Common Information Model"
 	description: "Abstract idea of an online resource authored by a (usually) human author."
 	keywords:    "archetype"
@@ -21,7 +21,7 @@ inherit
 
 feature -- Definitions
 
-	Uncontrolled_revision_name: STRING is "(uncontrolled)"
+	Uncontrolled_revision_name: STRING = "(uncontrolled)"
 
 feature -- Access
 
@@ -43,7 +43,7 @@ feature -- Access
 			-- The revision history of the resource. Only required if is_controlled = True
 			-- (avoids large revision histories for informal or private editing situations).
 
-	current_revision: STRING is
+	current_revision: STRING
 			-- Current revision if revision_history exists else "(uncontrolled)".
 		do
 			if revision_history /= Void then
@@ -53,7 +53,7 @@ feature -- Access
 			end
 		end
 
-	languages_available: ARRAYED_SET [STRING] is
+	languages_available: ARRAYED_SET [STRING]
 			-- Total list of languages available in this resource, derived from
 			-- original_language and translations. Guaranteed to at least include original_language
 		do
@@ -77,7 +77,7 @@ feature -- Access
 			Result /= Void and then not Result.is_empty
 		end
 
-	translation_for_language(a_lang: STRING): TRANSLATION_DETAILS is
+	translation_for_language(a_lang: STRING): TRANSLATION_DETAILS
 			-- get translation details for a_lang
 			-- Void if nothing for that language
 		require
@@ -92,7 +92,7 @@ feature -- Status Report
 			-- True if this resource is under any kind of change control (even file
 			-- copying), in which case revision history is created.
 
-	has_language(a_lang: STRING): BOOLEAN is
+	has_language(a_lang: STRING): BOOLEAN
 			-- True if either original_language or translations has a_lang
 		require
 			Language_valid: a_lang /= Void
@@ -100,7 +100,7 @@ feature -- Status Report
 			Result := original_language.code_string.is_equal(a_lang) or else (translations /= Void and then translations.has(a_lang))
 		end
 
-	has_translations: BOOLEAN is
+	has_translations: BOOLEAN
 			-- True if there are translations
 		do
 			Result := translations /= Void
@@ -121,14 +121,14 @@ feature -- Status Report
 
 feature -- Modification
 
-	set_description(a_desc: RESOURCE_DESCRIPTION) is
+	set_description(a_desc: RESOURCE_DESCRIPTION)
 		require
 			Description_valid: a_desc /= Void and then a_desc.languages.is_equal(languages_available)
 		do
 			description := a_desc
 		end
 
-	add_default_translation(a_lang: STRING) is
+	add_default_translation(a_lang: STRING)
 			-- add a blank translation object for a_lang
 		require
 			Lang_valid: a_lang /= Void and then not has_language(a_lang)
@@ -140,7 +140,7 @@ feature -- Modification
 			add_translation (a_trans)
 		end
 
-	add_translation(a_trans: TRANSLATION_DETAILS) is
+	add_translation(a_trans: TRANSLATION_DETAILS)
 			-- add a translation for a_lang
 		require
 			Translation_valid: a_trans /= Void and then not languages_available.has(a_trans.language.code_string)
@@ -152,7 +152,7 @@ feature -- Modification
 			stored_languages_available := Void
 		end
 
-	add_language(a_lang: STRING) is
+	add_language(a_lang: STRING)
 			-- add a new translation language to the resource, creating appropriate copies
 		require
 			Lang_valid: a_lang /= Void and then not has_language(a_lang)
@@ -164,7 +164,7 @@ feature -- Modification
 
 feature {ADL_ENGINE} -- Construction
 
-	set_translations(a_trans: HASH_TABLE [TRANSLATION_DETAILS, STRING]) is
+	set_translations(a_trans: HASH_TABLE [TRANSLATION_DETAILS, STRING])
 			-- set translations
 		require
 			a_trans /= Void
@@ -175,7 +175,7 @@ feature {ADL_ENGINE} -- Construction
 
 feature -- Status setting
 
-	set_is_controlled is
+	set_is_controlled
 			-- set 'is_controlled'
 		do
 			is_controlled := True
@@ -183,7 +183,7 @@ feature -- Status setting
 
 feature -- Serialisation
 
-	synchronise is
+	synchronise
 			-- synchronise object representation of resource to forms suitable for
 			-- serialisation
 		do

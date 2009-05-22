@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Archetype abstraction"
 	keywords:    "archetype"
@@ -27,7 +27,7 @@ create {ARCHETYPE_FLATTENER}
 
 feature -- Initialisation
 
-	make_from_differential (a_diff: DIFFERENTIAL_ARCHETYPE) is
+	make_from_differential (a_diff: DIFFERENTIAL_ARCHETYPE)
 			-- initialise from a differential archetype
 		do
 			make(a_diff.archetype_id.deep_twin, a_diff.concept.deep_twin,
@@ -50,7 +50,7 @@ feature -- Initialisation
 
 feature {ARCHETYPE_FLATTENER} -- Initialisation
 
-	make_staging (a_diff: DIFFERENTIAL_ARCHETYPE; a_flat_parent: FLAT_ARCHETYPE) is
+	make_staging (a_diff: DIFFERENTIAL_ARCHETYPE; a_flat_parent: FLAT_ARCHETYPE)
 			-- initialise from a differential archetype and its flat parent, as preparation
 			-- for generating a flat archetype. The items from the differential are used
 			-- except for the definition, which is the flat parent version, so that the
@@ -77,7 +77,7 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 
 feature -- Access
 
-	ontology: !FLAT_ARCHETYPE_ONTOLOGY
+	ontology: attached FLAT_ARCHETYPE_ONTOLOGY
 
 feature -- Factory
 

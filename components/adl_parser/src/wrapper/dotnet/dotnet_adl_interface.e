@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "dotNet wrapper for CADL Tree cursor"
 	keywords:    "test, ADL, CADL"

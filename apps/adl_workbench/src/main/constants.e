@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Application constant redefinitions"
 	keywords:    "constants"
@@ -33,7 +33,7 @@ inherit
 
 feature -- Access
 
-	icons: STRING is
+	icons: STRING
 			-- The path to the directory containing icon files.
 		once
 			Result := application_startup_directory + os_directory_separator.out + "icons"

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR re-usable library"
 	description: "Concept of an attribute that has a generic type."
 	keywords:    "model, UML"

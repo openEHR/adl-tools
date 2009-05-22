@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "File-system repository of archetypes - implementation of ARCHETYPE_REPOSITORY_I."
 	keywords:    "ADL"
@@ -38,7 +38,7 @@ feature -- Access
 	text_timestamp: INTEGER
 			-- Modification time of last opened archetype file as an integer, for comparison purposes.
 
-	first_line (full_path: STRING): STRING is
+	first_line (full_path: STRING): STRING
 			-- return the first line of the file at `full_path'.
 		do
 			file_context.set_target (full_path)
@@ -89,12 +89,10 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
-	file_context: FILE_CONTEXT
+	file_context: attached FILE_CONTEXT
 			-- Access to the file system.
 		once
 			create Result.make
-		ensure
-			attached: Result /= Void
 		end
 
 	archteype_id_from_path (full_path: STRING): STRING
@@ -104,7 +102,7 @@ feature {NONE} -- Implementation
 			full_path_valid: is_valid_path (full_path)
 		local
 			base_name: STRING
-			id: !ARCHETYPE_ID
+			id: attached ARCHETYPE_ID
 		do
 			base_name := file_system.basename (full_path)
 			base_name.remove_tail (file_system.extension (base_name).count)
@@ -120,7 +118,7 @@ feature {NONE} -- Implementation
 			full_path_valid: is_valid_path (full_path)
 		local
 			base_name: STRING
-			id: !ARCHETYPE_ID
+			id: attached ARCHETYPE_ID
 		do
 			base_name := file_system.basename (full_path)
 			base_name.remove_tail (file_system.extension (base_name).count)

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 			 Tools for manipulating archetype codes. Term codes take the form of 'atNNNN.N..'.
@@ -33,28 +33,28 @@ inherit
 
 feature -- Definitions
 
-	Default_concept_code: STRING is "at0000"
+	Default_concept_code: STRING = "at0000"
 			-- FIXME: the 0000 code should not be allowed to be used in an archetype
 			-- definition secton, since it violates the rule that a '0' code means
 			-- "not defined here" (i.e. it is normally a filler for lower down codes)
 			-- THIS SHOULD BE CHANGED to at0001
 
-	Specialisation_separator: CHARACTER is '.'
+	Specialisation_separator: CHARACTER = '.'
 
-	Term_code_length: INTEGER is 6
+	Term_code_length: INTEGER = 6
 			-- length of top-level term codes, e.g. "at0001"
 
-	Term_code_leader: STRING is "at"
+	Term_code_leader: STRING = "at"
 			-- leader of all internal term codes
 
-	Constraint_code_length: INTEGER is 6
+	Constraint_code_length: INTEGER = 6
 			-- length of top-level constraint codes, e.g. "ac0001"
 
-	Constraint_code_leader: STRING is "ac"
+	Constraint_code_leader: STRING = "ac"
 
 feature -- Access
 
-	specialisation_parent_from_code(a_code: STRING): STRING is
+	specialisation_parent_from_code(a_code: STRING): STRING
 			-- get parent of this specialised code
 		require
 			Code_valid: a_code /= Void and then specialisation_depth_from_code(a_code) > 0
@@ -64,7 +64,7 @@ feature -- Access
 			Valid_result: specialisation_depth_from_code(Result) = specialisation_depth_from_code(a_code) - 1
 		end
 
-	specialisation_parent_from_code_at_level(a_code: STRING; a_level: INTEGER): STRING is
+	specialisation_parent_from_code_at_level(a_code: STRING; a_level: INTEGER): STRING
 			-- get parent of this specialised code at `a_level'
 		require
 			Code_valid: a_code /= Void and then is_valid_code(a_code)
@@ -87,7 +87,7 @@ feature -- Access
 			Valid_result: specialisation_depth_from_code (Result) = a_level
 		end
 
-	specialisation_status_from_code(a_code: STRING; a_depth: INTEGER): SPECIALISATION_STATUS is
+	specialisation_status_from_code(a_code: STRING; a_depth: INTEGER): SPECIALISATION_STATUS
 			-- get the specialisation status (added, inherited, redefined) from this code, at a_depth
 			-- for example:
 			-- 		status of at0001 is added at depth 0
@@ -126,7 +126,7 @@ feature -- Access
 			end
 		end
 
-	index_from_code_at_level(a_code: STRING; a_depth: INTEGER): STRING is
+	index_from_code_at_level(a_code: STRING; a_depth: INTEGER): STRING
 			-- get the numeric part of the code from this code, at a_depth
 			-- for example:
 			-- 		a_code = at0001		a_depth = 0 -> 0001
@@ -169,7 +169,7 @@ feature -- Access
 			Result := code_num_part.substring(lpos, rpos)
 		end
 
-	specialisation_depth_from_code(a_code: STRING): INTEGER is
+	specialisation_depth_from_code(a_code: STRING): INTEGER
 			-- Infer number of levels of specialisation from `a_code'.
 		require
 			code_valid: a_code /= Void and then is_valid_code (a_code)
@@ -179,7 +179,7 @@ feature -- Access
 			non_negative: Result >= 0
 		end
 
-	specialised_code_tail(a_code: STRING): STRING is
+	specialised_code_tail(a_code: STRING): STRING
 			-- get code tail from a specialised code, e.g. from
 			-- "at0032.0.1", the result is "1"; from
 			-- "at0004.3", the result is "3"
@@ -191,7 +191,7 @@ feature -- Access
 
 feature -- Comparison
 
-	is_valid_code (a_code: STRING): BOOLEAN is
+	is_valid_code (a_code: STRING): BOOLEAN
 			-- Is `a_code' an "at" or "ac" code?
 		require
 			code_attached: a_code /= Void
@@ -214,7 +214,7 @@ feature -- Comparison
 			end
 		end
 
-	is_specialised_code(a_code: STRING): BOOLEAN is
+	is_specialised_code(a_code: STRING): BOOLEAN
 			-- a code has been specialised if there is a non-zero code index anywhere above the last index
 			-- e.g. at0.0.1, level=3 -> False
 			--      at0001.0.1, level=3 -> True
@@ -234,7 +234,7 @@ feature -- Comparison
 			end
 		end
 
-	valid_concept_code(a_code: STRING): BOOLEAN is
+	valid_concept_code(a_code: STRING): BOOLEAN
 			-- check if `a_code' is a valid root concept code of an archetype
 			-- True if a_code has form at0000, or at0000.1, at0000.1.1 etc
 		require
@@ -256,7 +256,7 @@ feature -- Comparison
 			end
 		end
 
-	codes_conformant(a_child_code, a_parent_code: STRING): BOOLEAN is
+	codes_conformant(a_child_code, a_parent_code: STRING): BOOLEAN
 			-- True if `a_child_code' conforms to `a_parent_code' in the sense of specialisation, i.e.
 			-- is `a_child_code' the same as or more specialised than `a_parent_code'
 		require

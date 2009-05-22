@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "node in ADL parse tree"
 	keywords:    "test, ADL"
@@ -25,7 +25,7 @@ feature -- Access
 
 feature -- Modification
 
-	set_operand(an_item: EXPR_ITEM) is
+	set_operand (an_item: EXPR_ITEM)
 		require
 			an_item_exists: an_item /= Void
 		do
@@ -34,22 +34,22 @@ feature -- Modification
 
 feature -- Conversion
 
-	as_string: STRING is
+	as_string: STRING
 		do
 			create Result.make(0)
-			Result.append(operator.out + " ")
-			Result.append(operand.as_string)
+			Result.append (operator.out + " ")
+			Result.append (operand.as_string)
 		end
 
 feature -- Visitor
 
-	enter_subtree(visitor: EXPR_VISITOR; depth: INTEGER) is
+	enter_subtree(visitor: EXPR_VISITOR; depth: INTEGER)
 			-- perform action at start of block for this node
 		do
 			visitor.start_expr_unary_operator (Current, depth)
 		end
 
-	exit_subtree(visitor: EXPR_VISITOR; depth: INTEGER) is
+	exit_subtree(visitor: EXPR_VISITOR; depth: INTEGER)
 			-- perform action at end of block for this node
 		do
 			visitor.end_expr_unary_operator (Current, depth)

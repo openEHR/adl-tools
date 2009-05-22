@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR EHR Extract Reference Model"
 
 	description: "[

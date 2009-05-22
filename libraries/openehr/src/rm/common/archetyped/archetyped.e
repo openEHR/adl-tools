@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Common Reference Model"
 	description: "Parent of root classes whose construction is mediated by archetypes."
 	keywords:    "archetype"
@@ -21,7 +21,7 @@ feature -- Access
 	archetype_id: ARCHETYPE_ID
 			-- id of the archetype in the global archetype library
 
-	rm_version: STRING is "1"
+	rm_version: STRING = "1"
 			-- relevant for exchange and implementations the version  of  the  RM  at  the  time  of creation 
 			-- of this archetyped object. 
 

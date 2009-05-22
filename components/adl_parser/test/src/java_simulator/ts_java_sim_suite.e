@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "Test suite for simulating Java calls into JNI-wrapped DLL"
 	keywords:    "test"
@@ -22,18 +22,18 @@ create
 	
 feature -- Access
 
-	test_cases: LINKED_LIST[TEST_CASE] is
+	test_cases: LINKED_LIST[TEST_CASE]
 			-- the list of tests available
 		once
 			create Result.make
 			Result.extend(create {TC_JS_ARCHETYPE_PARSE}.make(Void))
 		end
 
-	title: STRING is "Java simulator test cases"
+	title: STRING = "Java simulator test cases"
 
 feature -- Initialisation
 
-	make(arg: ANY) is
+	make(arg: ANY)
 		do
 		end
 

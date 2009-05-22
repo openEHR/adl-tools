@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Test case for archetype creation"
 	keywords:    "test, ADL, CADL"
@@ -37,9 +37,9 @@ inherit
 
 feature -- Access
 
-	serialise_format: STRING is "adl"
+	serialise_format: STRING = "adl"
 
-	dadl_engine: DADL_ENGINE is
+	dadl_engine: DADL_ENGINE
 			--
 		once
 			create Result.make
@@ -47,7 +47,7 @@ feature -- Access
 
 feature -- Conversion
 
-	print_list (a_list: LIST[STRING]):STRING is
+	print_list (a_list: LIST[STRING]):STRING
 		do
 			create Result.make(0)
 			from a_list.start until a_list.off loop

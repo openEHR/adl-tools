@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Types"
 
 	description: "[
@@ -31,19 +31,19 @@ create
 
 feature -- Initialisation
 
-	make(a_val: INTEGER) is
+	make(a_val: INTEGER)
 			-- make from an integer count
 		do
 			magnitude := a_val
 		end
 
-	make_from_string(s: STRING) is
+	make_from_string(s: STRING)
 			-- 
 		do
 			
 		end
 		
-	make_from_canonical_string(s: STRING) is
+	make_from_canonical_string(s: STRING)
 			-- 
 		do
 			
@@ -51,7 +51,7 @@ feature -- Initialisation
 		
 feature -- Status Report
 
-	valid_canonical_string(str: STRING): BOOLEAN is
+	valid_canonical_string(str: STRING): BOOLEAN
 			-- True if str contains required tags
 		do
 		end
@@ -63,12 +63,12 @@ feature -- Access
 	
 feature -- Basic Operations
 
-	infix "+" (other: like Current): like Current is
+	infix "+" (other: like Current): like Current
 		do
 			create Result.make(magnitude + other.magnitude)
 		end
 
-	infix "-" (other: like Current): like Current is
+	infix "-" (other: like Current): like Current
 			-- subtraction
 		do
 			create Result.make(magnitude - other.magnitude)
@@ -76,17 +76,17 @@ feature -- Basic Operations
 
 feature -- Comparison
 
-	is_strictly_comparable_to (other: like Current): BOOLEAN is
+	is_strictly_comparable_to (other: like Current): BOOLEAN
 		do
 		end
 
 feature -- Output
 
-	as_string: STRING is
+	as_string: STRING
 		do
 		end
 	
-	as_canonical_string: STRING is
+	as_canonical_string: STRING
 		do
 		end
 	

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Objects that provide access to constants loaded from files."
 	date: "$LastChangedDate$"
 	revision: "$LastChangedRevision$"

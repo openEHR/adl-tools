@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "Model of Locale"
 	keywords:    "internationalisation, locale"
@@ -19,7 +19,7 @@ create
 
 feature -- Initialisation
 
-	make is
+	make
 			-- FIXME: just fake it for the moment
 		local
 			start_date, finish_date:DATE

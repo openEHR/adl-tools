@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "C wrapper tools"
 	keywords:    "C wrapper"
@@ -15,7 +15,7 @@ class C_WRAPPER_TOOLS
 
 feature -- Conversion
 
-	eif_list_string_to_c_array(a_list: LIST [STRING]): POINTER is
+	eif_list_string_to_c_array(a_list: LIST [STRING]): POINTER
 			-- convert and Eiffel a_list: ARRAYED_LIST [STRING] to
 			-- ARRAY<POINTER>, which is passed back as a POINTER
         local
@@ -40,7 +40,7 @@ feature -- Conversion
 
    eif_ptr_array: ARRAY [POINTER]
 
-   c_array_string_to_eif_list (a_str_lst: ARRAY [POINTER]): ARRAYED_LIST [STRING] is
+   c_array_string_to_eif_list (a_str_lst: ARRAY [POINTER]): ARRAYED_LIST [STRING]
 			-- convert a C ARRAY<POINTER> to an Eiffel ARRAYED_LIST [STRING]
 		require
 			a_str_lst /= void

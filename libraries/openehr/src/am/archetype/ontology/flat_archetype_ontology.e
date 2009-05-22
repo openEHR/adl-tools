@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "ADL Terminology class"
 	keywords:    "archetype, ontology, terminology"
@@ -22,25 +22,25 @@ create
 
 feature -- Access
 
-	term_definition(a_lang, a_term_code: STRING): ARCHETYPE_TERM is
+	term_definition(a_lang, a_term_code: STRING): ARCHETYPE_TERM
 			-- retrieve the term definition in language `a_lang' for code `a_term_code'
 		do
 			Result := term_definitions.item(a_lang).item(a_term_code)
 		end
 
-	constraint_definition(a_lang, a_term_code: STRING): ARCHETYPE_TERM is
+	constraint_definition(a_lang, a_term_code: STRING): ARCHETYPE_TERM
 			-- retrieve the constraint definition in language `a_lang' for code `a_term_code'
 		do
 			Result := constraint_definitions.item(a_lang).item(a_term_code)
 		end
 
-	term_binding(a_terminology, a_term_code: STRING): CODE_PHRASE is
+	term_binding(a_terminology, a_term_code: STRING): CODE_PHRASE
 			-- retrieve the term definition in language `a_lang' for code `a_term_code'
 		do
 			Result := term_bindings.item(a_terminology).item(a_term_code)
 		end
 
-	constraint_binding(a_terminology, a_term_code: STRING): URI is
+	constraint_binding(a_terminology, a_term_code: STRING): URI
 			-- retrieve the constraint definition in language `a_lang' for code `a_term_code'
 			-- in form of a string: "service::query"
 		do
@@ -49,19 +49,19 @@ feature -- Access
 
 feature -- Status Report
 
-	has_term_code(a_term_code: STRING): BOOLEAN is
+	has_term_code(a_term_code: STRING): BOOLEAN
 			-- is `a_term_code' known in this ontology
 		do
 			Result := term_codes.has(a_term_code)
 		end
 
-	has_constraint_code(a_constraint_code: STRING): BOOLEAN is
+	has_constraint_code(a_constraint_code: STRING): BOOLEAN
 			--
 		do
 			Result := constraint_codes.has(a_constraint_code)
 		end
 
-	has_any_term_binding(a_term_code: STRING): BOOLEAN is
+	has_any_term_binding(a_term_code: STRING): BOOLEAN
 			-- true if there is any term binding for code `a_term_code'
 		local
 			p: ARRAYED_LIST_CURSOR
@@ -79,13 +79,13 @@ feature -- Status Report
 			terminologies_available.go_to (p)
 		end
 
-	has_term_binding(a_terminology, a_term_code: STRING): BOOLEAN is
+	has_term_binding(a_terminology, a_term_code: STRING): BOOLEAN
 			-- true if there is a term binding for code `a_term_code' in `a_terminology'
 		do
 			Result := term_bindings.has(a_terminology) and then term_bindings.item(a_terminology).has(a_term_code)
 		end
 
-	has_any_constraint_binding(a_term_code: STRING): BOOLEAN is
+	has_any_constraint_binding(a_term_code: STRING): BOOLEAN
 			-- true if there is any constraint binding for code `a_term_code'
 		local
 			p: ARRAYED_LIST_CURSOR
@@ -103,13 +103,13 @@ feature -- Status Report
 			terminologies_available.go_to (p)
 		end
 
-	has_constraint_binding(a_terminology, a_term_code: STRING): BOOLEAN is
+	has_constraint_binding(a_terminology, a_term_code: STRING): BOOLEAN
 			-- true if there is a term binding for code `a_term_code' in `a_terminology'
 		do
 			Result := constraint_bindings.has(a_terminology) and then constraint_bindings.item(a_terminology).has(a_term_code)
 		end
 
-	semantically_conforms_to(other: FLAT_ARCHETYPE_ONTOLOGY): BOOLEAN is
+	semantically_conforms_to(other: FLAT_ARCHETYPE_ONTOLOGY): BOOLEAN
 			-- True if this ontology conforms to `other' in the sense of being a specialisation child of it
 			-- - must have the same or subset of languages, and the same or a superset of terminologies
 		require
@@ -138,7 +138,7 @@ feature -- Status Report
 
 feature -- Modification
 
-	merge(other: FLAT_ARCHETYPE_ONTOLOGY) is
+	merge(other: FLAT_ARCHETYPE_ONTOLOGY)
 			-- append all the codes from the other ontology to this one; used to create the ontology for flat-form archetypes
 		require
 			Other_valid: other /= Void and then semantically_conforms_to(other)
@@ -252,7 +252,7 @@ feature -- Modification
 
 feature -- Factory
 
-	to_differential: !DIFFERENTIAL_ARCHETYPE_ONTOLOGY
+	to_differential: attached DIFFERENTIAL_ARCHETYPE_ONTOLOGY
 			-- Create a differential version from this flat ontology.
 		do
 			create Result.make_from_flat (Current)
@@ -260,7 +260,7 @@ feature -- Factory
 
 feature {ARCHETYPE_ONTOLOGY} -- Implementation
 
-	remove_inherited_codes is
+	remove_inherited_codes
 			-- remove all at- and ac- codes inherited from ancestor archetypes
 		local
 			rm_term_codes: ARRAYED_LIST[STRING]

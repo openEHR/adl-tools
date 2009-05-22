@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Help dialog acting as a legend for the various icons displayed in ADL Workbench."
 	date: "$Date: 2005/01/07 19:38:13 $"
 	revision: "$Revision$"
@@ -11,7 +11,7 @@ inherit
 
 feature {NONE} -- Initialization
 
-	user_initialization is
+	user_initialization
 			-- Called by `initialize'.
 			-- Any custom user initialization that
 			-- could not be performed in `initialize',
@@ -27,7 +27,7 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Implementation
 
-	add_help_items is
+	add_help_items
 			-- Add icon explanation row items
 		local
 			list_item: EV_LIST_ITEM

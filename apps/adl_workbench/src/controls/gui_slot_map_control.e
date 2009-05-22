@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Slot map control - Visualise archetype ids matching slots"
 	keywords:    "archetype, slot, gui"
@@ -57,7 +57,7 @@ feature {NONE} -- Initialisation
 
 feature -- Commands
 
-	clear is
+	clear
 		do
 			gui.slots_tree.wipe_out
 			gui.used_by_tree.wipe_out
@@ -66,7 +66,7 @@ feature -- Commands
 			update_slots_tab_label
 		end
 
-	populate is
+	populate
 			-- populate the ADL tree control by creating it from scratch
 		local
 			eti: EV_TREE_ITEM
@@ -155,7 +155,7 @@ feature {NONE} -- Implementation
 			gui.archetype_notebook.set_item_text (gui.slots_box, "Slots (" + slots_count.out + "/" + used_by_count.out + ")")
 		end
 
-	on_tree_key_press (tree: EV_TREE; key: EV_KEY) is
+	on_tree_key_press (tree: EV_TREE; key: EV_KEY)
 			-- When the user presses Enter on an archetype, select it in the main window's explorer tree.
 		do
 			if not (ev_application.shift_pressed or ev_application.alt_pressed or ev_application.ctrl_pressed) then

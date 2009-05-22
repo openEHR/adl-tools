@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Service interface to handing ADL files and parsing."
 	keywords:    "test, ADL"
@@ -53,7 +53,7 @@ create
 	
 feature -- Initialisation
 
-	make is
+	make
 		do
 			create status.make(0)
 			create adl_engine.make
@@ -67,7 +67,7 @@ feature -- Access
 	file_context: FILE_CONTEXT
 			-- file handling context
 		
-	working_directory: STRING is
+	working_directory: STRING
 			-- current working directory of application
 		do
 			Result := file_context.current_directory
@@ -81,7 +81,7 @@ feature -- Access
 			
 feature -- Status Report
 
-	archetype_source_loaded: BOOLEAN is
+	archetype_source_loaded: BOOLEAN
 			-- True if an ADL file has been opened and loaded
 		do
 			Result := adl_engine.source /= Void
@@ -93,17 +93,17 @@ feature -- Status Report
 	save_succeeded: BOOLEAN
 			-- True if last save operation was successful
 
-	archetype_available: BOOLEAN is
+	archetype_available: BOOLEAN
 		do
 			Result := adl_engine.archetype_available
 		end
 		
-	archetype_valid: BOOLEAN is
+	archetype_valid: BOOLEAN
 		do
 			Result := adl_engine.archetype.is_valid
 		end
 		
-	file_changed_on_disk: BOOLEAN is
+	file_changed_on_disk: BOOLEAN
 			-- True if loaded archetype has changed on disk since last read;
 			-- To fix, call resync_file
 		do
@@ -115,14 +115,14 @@ feature -- Status Report
 		
 feature -- Commands
 
-	set_current_directory (a_dir: STRING) is
+	set_current_directory (a_dir: STRING)
 		require
 			a_dir_valid: a_dir /= void and then not a_dir.is_empty
 		do
 			file_context.set_current_directory(a_dir)
 		end
 		
-	create_new_archetype(a_im_originator, a_im_name, a_im_entity, a_primary_language: STRING) is
+	create_new_archetype(a_im_originator, a_im_name, a_im_entity, a_primary_language: STRING)
 			-- create a new tree and throw away previous state
 		require
 			Info_model_originator_valid: a_im_originator /= void and then not a_im_originator.is_empty
@@ -143,7 +143,7 @@ feature -- Commands
 			retry
 		end
 		
-	specialise_archetype(specialised_domain_concept: STRING) is
+	specialise_archetype(specialised_domain_concept: STRING)
 			-- convert current archetype to specialised version of itself,
 			-- supplying a specialised domain concept string to go in the new archetype id
 			-- (which is a duplicate of the old one, with this concept string inserted)
@@ -164,7 +164,7 @@ feature -- Commands
 			retry
 		end
 		
-	open_adl_file(file_path: STRING) is
+	open_adl_file(file_path: STRING)
 		require
 			file_path_valid: file_path /= Void and then not file_path.is_empty
 		local
@@ -191,13 +191,13 @@ feature -- Commands
 			retry
 		end
 		
-	resync_file is
+	resync_file
 			-- resync from disc
 		do
 			adl_engine.set_source(file_context.read_file)
 		end
 		
-	save_archetype(file_path, save_format: STRING) is
+	save_archetype(file_path, save_format: STRING)
 			-- Save ADL file via GUI File save dialog
 		require
 			archetype_available
@@ -232,7 +232,7 @@ feature -- Commands
 			retry
 		end
 
-	parse_archetype is
+	parse_archetype
 			-- Called by `select_actions' of `parse'.
 		require
 			archetype_source_loaded
@@ -278,7 +278,7 @@ feature -- Commands
 			retry
 		end
 
-	reset is
+	reset
 			-- reset after exception encountered
 		do
 			exception_encountered := False

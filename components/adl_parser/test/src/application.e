@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Test application for ADL validating parser"
 	keywords:    "test, ADL"
@@ -38,12 +38,12 @@ inherit
 			{NONE} all
 		end
 
-creation
+create
 	make
 
 feature -- Template
 
-	test_init is
+	test_init
 			-- application-specific initialisation
 		local
 			rep_path: STRING
@@ -63,7 +63,7 @@ feature -- Template
 			test_initialised := True
 		end
 
-	test_suites: LINKED_LIST[TEST_SUITE] is
+	test_suites: LINKED_LIST[TEST_SUITE]
 		once
 			create Result.make
 			Result.extend(create {TS_ADL_SUITE}.make(Void))
@@ -72,7 +72,7 @@ feature -- Template
 
 feature -- Template
 
-	read_resource_file is
+	read_resource_file
 			--
 		local
 			s: STRING
@@ -84,7 +84,7 @@ feature -- Template
 
 	repository: FILE_REPOSITORY
 
-	splash: STRING is
+	splash: STRING
 			-- create a splash string for the console
 		do
 			create Result.make_empty
@@ -102,7 +102,7 @@ feature -- Template
 
 	working_directory: STRING
 
-	archetype_file_name_pattern: STRING is "^[a-z][a-z0-9_]*-[a-z][a-z0-9_]*-[a-z][a-z0-9_]*\.[a-z][a-z0-9\-_]*\.[a-z][a-z0-9_]*\.adl$"
+	archetype_file_name_pattern: STRING = "^[a-z][a-z0-9_]*-[a-z][a-z0-9_]*-[a-z][a-z0-9_]*\.[a-z][a-z0-9\-_]*\.[a-z][a-z0-9_]*\.adl$"
 			-- matches "rm_originator-rm_name-rm_entity.concept.version.adl"
 
 end

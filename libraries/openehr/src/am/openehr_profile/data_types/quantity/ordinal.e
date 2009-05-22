@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "FIXME: temporary type for ORDINAL until reconciled with DV_ORDINAL"
 	keywords:    "ordinal, ADL"
@@ -25,12 +25,12 @@ create
 
 feature -- Definitions
 
-	Separator: CHARACTER is '|'
+	Separator: CHARACTER = '|'
 			-- separates each value from its code-phrase
 
 feature -- Initialisation
 
-	make(a_value: INTEGER; a_symbol: CODE_PHRASE) is
+	make(a_value: INTEGER; a_symbol: CODE_PHRASE)
 			-- set value & symbol
 		require
 			A_symbol_valid: a_symbol /= Void
@@ -50,14 +50,14 @@ feature -- Access
 
 feature -- Conversion
 
-	as_string: STRING is
+	as_string: STRING
 			-- 
 		do
 			create Result.make(0)
 			Result.append (value.out + Separator.out + "[" + symbol.as_string + "]")	
 		end
 		
-	out: STRING is
+	out: STRING
 			-- 
 		do
 			Result := as_string

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Miscellaneous String utilities."
 	keywords:    "formatting"
@@ -16,12 +16,12 @@ class STRING_UTILITIES
 
 feature -- Definitions
 
-	Default_quote_characters: STRING is "nrt\%"'"
+	Default_quote_characters: STRING = "nrt\%"'"
 			-- characters that mean something special when following a backslash
 
 feature -- Conversion
 
-	quote_clean(str:STRING): STRING is
+	quote_clean (str: STRING): STRING
 			-- if any quoting needed, generate clean copy of `str' and convert
 			--	\ to \\
 			-- 	" to \"
@@ -55,7 +55,7 @@ feature -- Conversion
 
 feature -- Element Change
 
-	translate (str, s1, s2: STRING) is
+	translate (str, s1, s2: STRING)
 			-- in str, replace every occurrence of each char in s1
 			-- by corr char in s2, or delete them, if s2 empty
 	    require
@@ -90,7 +90,7 @@ feature -- Element Change
 			end
 	    end
 
-	concatenate(items:ARRAY[STRING]):STRING is
+	concatenate (items: ARRAY [STRING]): STRING
 			-- turn <<str, str, str...>> into a STRING
 		require
 			Args_valid: items /= Void
@@ -106,14 +106,14 @@ feature -- Element Change
 			Result_exists: Result /= Void
 		end
 
-	indented(s, indent:STRING):STRING is
+	indented (s, indent: STRING): STRING
 			-- indent every line in 's' by 'indent' and return result
 		require
 			String_exists: s /= Void
 			Indent_exists: indent /= Void
 		local
-			insert_str:STRING
-			final_return:BOOLEAN
+			insert_str: STRING
+			final_return: BOOLEAN
 		do
 			Result := s.twin
 			create insert_str.make(0)
@@ -143,7 +143,7 @@ feature -- Element Change
 
 feature -- Unicode
 
-	utf8 (utf8_bytes: STRING): STRING_32
+	utf8 (utf8_bytes: STRING): attached STRING_32
 			-- `utf8_bytes' converted from a sequence of UTF-8 bytes to 32-bit Unicode characters.
 		require
 			utf8_bytes_attached: utf8_bytes /= Void
@@ -154,13 +154,12 @@ feature -- Unicode
 			create {UC_UTF8_STRING} s.make_from_utf8 (utf8_bytes)
 			Result := s.as_string_32
 		ensure
-			attached: Result /= Void
 			not_longer: Result.count <= utf8_bytes.count
 		end
 
 feature -- Matching
 
-	soundex(a_str: STRING): STRING is
+	soundex (a_str: STRING): STRING
 			-- generate the soundex equivalent of 'a_str'
 		require
 			a_str /= Void
@@ -203,11 +202,11 @@ feature -- Matching
 
 feature {NONE} -- Implementation
 
-	punctuation: STRING is "!%"#$%%&%'()_=-~^@`{[;+:*]},<.>/?\|"
+	punctuation: STRING = "!%"#$%%&%'()_=-~^@`{[;+:*]},<.>/?\|"
 
-	alphabet: STRING is  "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	alphabet: STRING =  "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-	soundex_map: STRING is " 123 12  22455 12623 1 2 2"
+	soundex_map: STRING = " 123 12  22455 12623 1 2 2"
 
 end
 

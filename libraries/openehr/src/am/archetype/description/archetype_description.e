@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Archetype meta-data"
 	keywords:    "archetype"
@@ -24,13 +24,13 @@ create
 	
 feature -- Definitions
 
-	Default_lifecycle_state: STRING is "initial"
+	Default_lifecycle_state: STRING = "initial"
 
-	Default_original_author: STRING is "unknown"
+	Default_original_author: STRING = "unknown"
 		
 feature -- Initialisation
 
-	default_create is
+	default_create
 			-- 
 		do
 			lifecycle_state := Default_lifecycle_state.twin
@@ -41,20 +41,20 @@ feature -- Initialisation
 			details_exists: details /= Void
 		end
 		
-	make is
+	make
 			-- default make
 		do
 			default_create
 			make_author(Default_original_author)
 		end
 		
-	make_dt is
+	make_dt
 			-- make used by DT_OBJECT_CONVERTER
 		do
 			make
 		end
 		
-	make_author(an_author_name: STRING) is
+	make_author(an_author_name: STRING)
 			-- make an empty description
 		require
 			An_author_name_exists: an_author_name /= Void and then not an_author_name.is_empty
@@ -86,7 +86,7 @@ feature -- Access
 
 	other_details: HASH_TABLE [STRING, STRING]
 
-	details_for_lang(a_lang: STRING): ARCHETYPE_DESCRIPTION_ITEM is
+	details_for_lang(a_lang: STRING): ARCHETYPE_DESCRIPTION_ITEM
 			-- get details for given language
 			-- Void if nothing for that language
 		require
@@ -99,7 +99,7 @@ feature -- Access
 	
 feature -- Modification
 
-	add_original_author_item(a_key, a_value: STRING) is
+	add_original_author_item(a_key, a_value: STRING)
 			-- add the key, value pair to original_author
 		require
 			Key_valid: a_key /= Void and then not a_key.is_empty
@@ -110,13 +110,13 @@ feature -- Modification
 			Original_author_set: original_author.item(a_key) = a_value
 		end
 		
-	clear_original_author is
+	clear_original_author
 			-- wipeout current items in original_author list
 		do
 			create original_author.make(0)
 		end
 		
-	add_other_contributor(a_contributor: STRING) is
+	add_other_contributor(a_contributor: STRING)
 			-- add a_contributor to add_other_contributor
 		require
 			Contributor_valid: a_contributor /= Void and then not a_contributor.is_empty
@@ -129,13 +129,13 @@ feature -- Modification
 			Other_contributor_set: other_contributors.has(a_contributor)
 		end
 		
-	clear_other_contributors is
+	clear_other_contributors
 			-- wipeout current items in other_contributors list
 		do
 			create other_contributors.make(0)
 		end	
 		
-	set_archetype_package_uri(a_uri: STRING) is
+	set_archetype_package_uri(a_uri: STRING)
 			-- set archetype_package_uri
 		require
 			Uri_valid: a_uri /= Void and then not a_uri.is_empty
@@ -145,7 +145,7 @@ feature -- Modification
 			Archetype_package_uri_set: archetype_package_uri.out.is_equal(a_uri)
 		end
 		
-	set_lifecycle_state(a_lifecycle_state: STRING) is
+	set_lifecycle_state(a_lifecycle_state: STRING)
 			-- set lifecycle_state
 		require
 			Lifecycle_state_valid: a_lifecycle_state /= Void and then not a_lifecycle_state.is_empty
@@ -155,7 +155,7 @@ feature -- Modification
 			Lifecycle_state_set: lifecycle_state = a_lifecycle_state
 		end
 
-	add_detail(a_language: STRING; a_value: ARCHETYPE_DESCRIPTION_ITEM) is
+	add_detail(a_language: STRING; a_value: ARCHETYPE_DESCRIPTION_ITEM)
 			-- add the a_language, value pair to other_details
 		require
 			Key_valid: a_language /= Void and then not a_language.is_empty
@@ -169,13 +169,13 @@ feature -- Modification
 			Details_set: details.has(a_language)
 		end
 		
-	clear_details is
+	clear_details
 			-- wipeout current items in details list
 		do
 			create details.make(0)
 		end	
 		
-	add_other_detail(a_key, a_value: STRING) is
+	add_other_detail(a_key, a_value: STRING)
 			-- add the key, value pair to other_details
 		require
 			Key_valid: a_key /= Void and then not a_key.is_empty
@@ -189,7 +189,7 @@ feature -- Modification
 			Other_details_set: other_details.item(a_key) = a_value
 		end
 
-	clear_other_details is
+	clear_other_details
 			-- wipeout current items in other_details list
 		do
 			create other_details.make(0)
@@ -197,7 +197,7 @@ feature -- Modification
 		
 feature {DT_OBJECT_CONVERTER} -- Conversion
 
-	persistent_attributes: ARRAYED_LIST[STRING] is
+	persistent_attributes: ARRAYED_LIST[STRING]
 			-- list of attribute names to persist as DT structure
 			-- empty structure means all attributes
 		once

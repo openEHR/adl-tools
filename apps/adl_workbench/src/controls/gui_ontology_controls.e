@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Populate ontology controls in ADL editor"
 	keywords:    "test, ADL"
@@ -35,7 +35,7 @@ create
 
 feature {NONE} -- Initialisation
 
-	make (a_main_window: MAIN_WINDOW) is
+	make (a_main_window: MAIN_WINDOW)
 		require
 			a_main_window /= Void
 		do
@@ -51,14 +51,14 @@ feature -- Status
 
 feature -- Commands
 
-	clear is
+	clear
 			-- wipe out content from ontology-related controls
 		do
 			gui.ontology_term_definitions_multi_column_list.wipe_out
 			gui.ontology_constraint_definitions_multi_column_list.wipe_out
 		end
 
-	populate is
+	populate
 			-- populate ontology controls
 		do
 			clear
@@ -83,13 +83,13 @@ feature -- Commands
 			populate
 		end
 
-	select_term(a_term_code: STRING) is
+	select_term(a_term_code: STRING)
 			-- select row for a_term_code in term_definitions control
 		do
 			select_coded_term_row (a_term_code, gui.ontology_term_definitions_multi_column_list)
 		end
 
-	select_constraint(a_term_code: STRING) is
+	select_constraint(a_term_code: STRING)
 			-- select row for a_term_code in term_definitions control
 		do
 			select_coded_term_row (a_term_code, gui.ontology_constraint_definitions_multi_column_list)
@@ -97,7 +97,7 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
-	target_archetype: ARCHETYPE is
+	target_archetype: ARCHETYPE
 			-- differential or flat version of archetype, depending on setting of `in_differential_mode'
 		require
 			archetype_directory.has_selected_archetype
@@ -112,7 +112,7 @@ feature {NONE} -- Implementation
 	gui: MAIN_WINDOW
 			-- main window of system
 
-	ontology: !ARCHETYPE_ONTOLOGY is
+	ontology: attached ARCHETYPE_ONTOLOGY
 			-- access to ontology of selected archetype
 		require
 			archetype_selected: archetype_directory.has_selected_archetype
@@ -120,7 +120,7 @@ feature {NONE} -- Implementation
 			Result := target_archetype.ontology
 		end
 
-	populate_term_definitions is
+	populate_term_definitions
 			-- Populate the Term Definitions list.
 		require
 			archetype_selected: archetype_directory.has_selected_archetype
@@ -134,8 +134,8 @@ feature {NONE} -- Implementation
 			-- populate column titles
 			pl := gui.ontology_term_definitions_multi_column_list
 			create col_titles.make(0)
-			col_titles.extend("code")
---			col_titles.extend("text")
+			col_titles.extend ("code")
+--			col_titles.extend ("text")
 			from
 				ontology.term_attribute_names.start
 			until
@@ -193,12 +193,12 @@ feature {NONE} -- Implementation
 							ontology.terminologies_available.item, a_term.code
 						).as_string))
 					else
-						list_row.extend(" - ")
+						list_row.extend (" - ")
 					end
 					ontology.terminologies_available.forth
 				end
 
-				pl.extend(list_row)
+				pl.extend (list_row)
 				ontology.term_codes.forth
 			end
 
@@ -212,7 +212,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	populate_constraint_definitions is
+	populate_constraint_definitions
 			-- Populate the Constraint Definitions list
 		require
 			archetype_selected: archetype_directory.has_selected_archetype
@@ -226,8 +226,8 @@ feature {NONE} -- Implementation
 			-- build columns
 			pl := gui.ontology_constraint_definitions_multi_column_list
 			create col_titles.make(0)
-			col_titles.extend("code")
---			col_titles.extend("text")
+			col_titles.extend ("code")
+--			col_titles.extend ("text")
 			from
 				ontology.term_attribute_names.start
 			until
@@ -284,12 +284,12 @@ feature {NONE} -- Implementation
 						list_row.extend (utf8 (ontology.constraint_binding(
 							ontology.terminologies_available.item, a_term.code).as_string))
 					else
-						list_row.extend(" - ")
+						list_row.extend (" - ")
 					end
 					ontology.terminologies_available.forth
 				end
 
-				pl.extend(list_row)
+				pl.extend (list_row)
 				ontology.constraint_codes.forth
 			end
 
@@ -301,7 +301,7 @@ feature {NONE} -- Implementation
 
 		end
 
-	select_coded_term_row (a_term_code: STRING; list_control: EV_MULTI_COLUMN_LIST) is
+	select_coded_term_row (a_term_code: STRING; list_control: EV_MULTI_COLUMN_LIST)
 			-- Select the row for `a_term_code' in `list_control'.
 		do
 			list_control.remove_selection

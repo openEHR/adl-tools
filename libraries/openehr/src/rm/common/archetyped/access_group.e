@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reference Object Model"
 	description: "[
 	             Access control data.

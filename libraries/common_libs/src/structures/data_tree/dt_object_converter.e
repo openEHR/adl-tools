@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 object birectional converter. Errors due to mismatching data and object 
@@ -38,14 +38,14 @@ inherit
 
 feature -- Conversion
 
-	object_to_dt(an_obj: ANY): DT_COMPLEX_OBJECT_NODE is
+	object_to_dt(an_obj: ANY): DT_COMPLEX_OBJECT_NODE
 			-- generate a DT_OBJECT from an Eiffel object; called only on top-level object
 		do
 			create Result.make_anonymous
 			populate_dt_from_object(an_obj, Result)
 		end
 
-	populate_dt_from_object(an_obj:ANY; a_dt_obj:DT_COMPLEX_OBJECT_NODE) is
+	populate_dt_from_object (an_obj: ANY; a_dt_obj: DT_COMPLEX_OBJECT_NODE)
 			-- make a data tree from an object;
 			-- This routine is recursive
 		local
@@ -127,7 +127,7 @@ feature -- Conversion
 			end
 		end
 
-	populate_prim_type_attribute(an_obj:ANY; a_dt_attr: DT_ATTRIBUTE_NODE; fld_val:ANY; equiv_prim_type_id: INTEGER) is
+	populate_prim_type_attribute (an_obj: ANY; a_dt_attr: DT_ATTRIBUTE_NODE; fld_val: ANY; equiv_prim_type_id: INTEGER)
 			-- FIXME: this routine exists because of the Eiffel expanded
 			-- non-conformance problem. It has been made a separate
 			-- routine to allow exception handling to function properly
@@ -148,14 +148,14 @@ feature -- Conversion
 io.put_string ("ENTERED DT_OBJECT_CONVERTER.populate_prim_type_attribute exception path - see code%N")
 				-- FIXME: all this code just to handle expanded nonconformance of INTERVAL[INTEGER] -> INTERVAL[PART_COMPARABLE]
 				-- REMOVE when this problem fixed
-				if {oe_ivl_integer: INTERVAL[INTEGER]} fld_val then
+				if attached {INTERVAL[INTEGER]} fld_val as oe_ivl_integer then
 					debug ("DT")
 						io.put_string("Using INTERVAL[INTEGER_REF] conversion%N")
 					end
 					cvt_tbl.item(equiv_prim_type_id).from_obj_proc.call([a_dt_attr, fld_val, Void])
 --					cvt_tbl.item(equiv_prim_type_id).from_obj_proc.call([a_dt_attr,
 --						interval_integer_to_interval_integer_ref(oe_ivl_integer), Void])
-				elseif {oe_ivl_real: INTERVAL[REAL]} fld_val then
+				elseif attached {INTERVAL[REAL]} fld_val as oe_ivl_real then
 					debug ("DT")
 						io.put_string("Using INTERVAL[REAL_REF] conversion%N")
 					end
@@ -180,14 +180,14 @@ io.put_string ("ENTERED DT_OBJECT_CONVERTER.populate_prim_type_attribute excepti
 			end
 		end
 
-	dt_to_object_from_string(a_dt_obj: DT_COMPLEX_OBJECT_NODE; a_type_name: STRING): ANY is
+	dt_to_object_from_string(a_dt_obj: DT_COMPLEX_OBJECT_NODE; a_type_name: STRING): ANY
 			-- make an object whose classes and attributes correspond to the structure
 			-- of this DT_OBJECT
 		do
 			Result := dt_to_object(a_dt_obj, dynamic_type_from_string (a_type_name))
 		end
 
-	dt_to_object(a_dt_obj: DT_COMPLEX_OBJECT_NODE; a_type_id: INTEGER): ANY is
+	dt_to_object(a_dt_obj: DT_COMPLEX_OBJECT_NODE; a_type_id: INTEGER): ANY
 			-- make an object whose classes and attributes correspond to the structure
 			-- of this DT_OBJECT; should be called only on top-level DT structure, but recursive calling
 			-- from populate_object_from_dt calling set_generic_object_data_from_dt also occurs
@@ -216,13 +216,13 @@ io.put_string ("ENTERED DT_OBJECT_CONVERTER.populate_prim_type_attribute excepti
 					loop
 						src_obj := object_ref_list.item.source_object_ref
 						src_obj_fld := object_ref_list.item.source_object_field_index
-						if {a_dt_obj_ref: DT_OBJECT_REFERENCE} object_ref_list.item then
+						if attached {DT_OBJECT_REFERENCE} object_ref_list.item as a_dt_obj_ref then
 							if a_dt_obj.has_path (a_dt_obj_ref.value.as_string) then
 								targ_obj := a_dt_obj.node_at_path (a_dt_obj_ref.value.as_string).as_object_ref
 								if a_dt_obj_ref.is_source_object_container then
-									if {a_hash_table: HASH_TABLE [ANY, HASHABLE]} src_obj then
+									if attached {HASH_TABLE [ANY, HASHABLE]} src_obj as a_hash_table then
 										a_hash_table.extend(targ_obj, a_dt_obj_ref.hash_key)
-									elseif {a_sequence: SEQUENCE [ANY]} src_obj then
+									elseif attached {SEQUENCE [ANY]} src_obj as a_sequence then
 										a_sequence.extend(targ_obj)
 									end
 								else
@@ -231,10 +231,10 @@ io.put_string ("ENTERED DT_OBJECT_CONVERTER.populate_prim_type_attribute excepti
 							else
 								post_error(Current, "dt_to_object", "non_existent_path", <<a_dt_obj_ref.value.as_string>>)
 							end
-						elseif {a_dt_obj_ref_list: DT_OBJECT_REFERENCE_LIST} object_ref_list.item then
+						elseif attached {DT_OBJECT_REFERENCE_LIST} object_ref_list.item as a_dt_obj_ref_list then
 							-- make the generic container, it will be a SEQUENCE (some kind of list)
-							if {a_sequence2: SEQUENCE[ANY]} new_instance_of(field_static_type_of_type (src_obj_fld, dynamic_type (src_obj))) then
-								if {an_arr_list: ARRAYED_LIST[ANY]} a_sequence2 then
+							if attached {SEQUENCE[ANY]} new_instance_of(field_static_type_of_type (src_obj_fld, dynamic_type (src_obj))) as a_sequence2 then
+								if attached {ARRAYED_LIST[ANY]} a_sequence2 as an_arr_list then
 									an_arr_list.make(0)
 								end
 
@@ -254,9 +254,9 @@ io.put_string ("ENTERED DT_OBJECT_CONVERTER.populate_prim_type_attribute excepti
 
 								-- now we detect if the whole thing is going inside another container, or a standard object
 								if a_dt_obj_ref_list.is_source_object_container then
-									if {a_hash_table2: HASH_TABLE [ANY, HASHABLE]} src_obj then
+									if attached {HASH_TABLE [ANY, HASHABLE]} src_obj as a_hash_table2 then
 										a_hash_table2.extend(a_sequence2, a_dt_obj_ref_list.hash_key)
-									elseif {a_sequence3: SEQUENCE [ANY]} src_obj then
+									elseif attached {SEQUENCE [ANY]} src_obj as a_sequence3 then
 										a_sequence3.extend(a_sequence2)
 									end
 								else
@@ -282,7 +282,7 @@ io.put_string ("ENTERED DT_OBJECT_CONVERTER.populate_prim_type_attribute excepti
 			retry
 		end
 
-	populate_object_from_dt(a_dt_obj: DT_COMPLEX_OBJECT_NODE; a_type_id: INTEGER): ANY is
+	populate_object_from_dt(a_dt_obj: DT_COMPLEX_OBJECT_NODE; a_type_id: INTEGER): ANY
 			-- make an object whose classes and attributes correspond to the structure
 			-- of this DT_OBJECT; recursive
 		local
@@ -432,7 +432,7 @@ io.put_string ("ENTERED DT_OBJECT_CONVERTER.populate_prim_type_attribute excepti
 			retry
 		end
 
-	prim_object_to_dt(a_parent: DT_ATTRIBUTE_NODE; an_obj: ANY; a_node_id: STRING) is
+	prim_object_to_dt(a_parent: DT_ATTRIBUTE_NODE; an_obj: ANY; a_node_id: STRING)
 		require
 			Type_valid: has_primitive_type(an_obj)
 			Obj_exists: an_obj /= Void
@@ -450,32 +450,32 @@ io.put_string ("ENTERED DT_OBJECT_CONVERTER.populate_prim_type_attribute excepti
 
 feature {NONE} -- Conversion to object
 
-	set_primitive_integer_field (i: INTEGER; object: ANY; value: INTEGER_REF) is
+	set_primitive_integer_field (i: INTEGER; object: ANY; value: INTEGER_REF)
 		do
 			set_integer_field (i, object, value)
 		end
 
-	set_primitive_real_field (i: INTEGER; object: ANY; value: REAL_REF) is
+	set_primitive_real_field (i: INTEGER; object: ANY; value: REAL_REF)
 		do
 			set_real_field (i, object, value)
 		end
 
-	set_primitive_double_field (i: INTEGER; object: ANY; value: DOUBLE_REF) is
+	set_primitive_double_field (i: INTEGER; object: ANY; value: DOUBLE_REF)
 		do
 			set_double_field (i, object, value)
 		end
 
-	set_primitive_boolean_field (i: INTEGER; object: ANY; value: BOOLEAN_REF) is
+	set_primitive_boolean_field (i: INTEGER; object: ANY; value: BOOLEAN_REF)
 		do
 			set_boolean_field (i, object, value)
 		end
 
-	set_primitive_character_field (i: INTEGER; object: ANY; value: CHARACTER_REF) is
+	set_primitive_character_field (i: INTEGER; object: ANY; value: CHARACTER_REF)
 		do
 			set_character_field (i, object, value)
 		end
 
-	set_primitive_sequence_field (i: INTEGER; object: ANY; value: ANY) is
+	set_primitive_sequence_field (i: INTEGER; object: ANY; value: ANY)
 			-- set i-th field of object which is some kind of sequence of a primitive type,
 			-- from a value which is either an ARRAYED_LIST or a single object like a INTEGER_REF
 		require
@@ -525,7 +525,7 @@ feature {NONE} -- Conversion to object
 			end
 		end
 
-	set_interval_integer_field (i: INTEGER; object: ANY; value: INTERVAL[INTEGER_REF]) is
+	set_interval_integer_field (i: INTEGER; object: ANY; value: INTERVAL[INTEGER_REF])
 			-- set INTERVAL[INTEGER] field in an object from a value of type INTERVAL[INTEGER_REF]
 			-- FIXME: This routine only exists because of the difference between expanded and reference
 		local
@@ -539,7 +539,7 @@ feature {NONE} -- Conversion to object
 			end
 		end
 
-	set_interval_real_field (i: INTEGER; object: ANY; value: INTERVAL[REAL_REF]) is
+	set_interval_real_field (i: INTEGER; object: ANY; value: INTERVAL[REAL_REF])
 			-- set INTERVAL[REAL] field in an object from a value of type INTERVAL[REAL_REF]
 			-- FIXME: This routine only exists because of the difference between expanded and reference
 		local
@@ -553,7 +553,7 @@ feature {NONE} -- Conversion to object
 			end
 		end
 
-	set_interval_double_field (i: INTEGER; object: ANY; value: INTERVAL[DOUBLE_REF]) is
+	set_interval_double_field (i: INTEGER; object: ANY; value: INTERVAL[DOUBLE_REF])
 			-- set INTERVAL[DOUBLE] field in an object from a value of type INTERVAL[DOUBLE_REF]
 			-- FIXME: This routine only exists because of the difference between expanded and reference
 		local
@@ -569,7 +569,7 @@ feature {NONE} -- Conversion to object
 
 feature -- Conversion from object
 
-	from_obj_primitive_type(a_parent: DT_ATTRIBUTE_NODE; an_obj: ANY; a_node_id: STRING) is
+	from_obj_primitive_type(a_parent: DT_ATTRIBUTE_NODE; an_obj: ANY; a_node_id: STRING)
 		local
 			a_dt_obj: DT_PRIMITIVE_OBJECT
 		do
@@ -583,7 +583,7 @@ feature -- Conversion from object
 			end
 		end
 
-	from_obj_sequence_primitive_type(a_parent: DT_ATTRIBUTE_NODE; an_obj: SEQUENCE[ANY]; a_node_id: STRING) is
+	from_obj_sequence_primitive_type(a_parent: DT_ATTRIBUTE_NODE; an_obj: SEQUENCE[ANY]; a_node_id: STRING)
 		local
 			a_dt_obj: DT_PRIMITIVE_OBJECT_LIST
 		do
@@ -602,7 +602,7 @@ feature -- Conversion from object
 			end
 		end
 
-	from_obj_interval_primitive_type(a_parent: DT_ATTRIBUTE_NODE; an_obj: INTERVAL[PART_COMPARABLE]; a_node_id: STRING) is
+	from_obj_interval_primitive_type(a_parent: DT_ATTRIBUTE_NODE; an_obj: INTERVAL[PART_COMPARABLE]; a_node_id: STRING)
 		local
 			a_dt_obj: DT_PRIMITIVE_OBJECT_INTERVAL
 		do
@@ -627,7 +627,7 @@ feature {NONE} -- Implementation
 			-- list of DT_OBJECT_REFERENCE and DT_OBJECT_REFERENCE_LIST objects found in last top-level
 			-- call to `dt_to_object'
 
-	set_generic_object_data_from_dt (a_gen_obj:ANY; a_dt_attr: DT_ATTRIBUTE_NODE) is
+	set_generic_object_data_from_dt (a_gen_obj: ANY; a_dt_attr: DT_ATTRIBUTE_NODE)
 			-- set generic values in a generic object, from a_dt_attr
 			-- only deals with first generic parameter; generally safe for HASH_TABLE and LIST types
 		require
@@ -639,14 +639,14 @@ feature {NONE} -- Implementation
 			static_object_type_id := generic_dynamic_type(a_gen_obj, 1)
 
 			-- determine dynamic type of generic type
-			if {a_hash_table: HASH_TABLE [ANY, HASHABLE]} a_gen_obj then
+			if attached {HASH_TABLE [ANY, HASHABLE]} a_gen_obj as a_hash_table then
 				a_hash_table.make(0)
 				from
 					a_dt_attr.start
 				until
 					a_dt_attr.off
 				loop
-					if {a_dt_ref: DT_REFERENCE} a_dt_attr.item then
+					if attached {DT_REFERENCE} a_dt_attr.item as a_dt_ref then
 						debug ("DT")
 							io.put_string ("%TDT_REFERENCE (inside HASH_TABLE DT_ATTRIBUTE)" + a_dt_ref.as_string + "%N")
 						end
@@ -669,8 +669,8 @@ feature {NONE} -- Implementation
 					a_dt_attr.forth
 				end
 			else
-				if {a_sequence: SEQUENCE[ANY]} a_gen_obj then
-					if {an_arrayed_list: ARRAYED_LIST[ANY]} a_sequence then
+				if attached {SEQUENCE[ANY]} a_gen_obj as a_sequence then
+					if attached {ARRAYED_LIST[ANY]} a_sequence as an_arrayed_list then
 						an_arrayed_list.make(0)
 					end
 					from
@@ -678,7 +678,7 @@ feature {NONE} -- Implementation
 					until
 						a_dt_attr.off
 					loop
-						if {a_dt_ref2: DT_REFERENCE} a_dt_attr.item then
+						if attached {DT_REFERENCE} a_dt_attr.item as a_dt_ref2 then
 							debug ("DT")
 								io.put_string ("%TDT_REFERENCE (inside SEQUENCE DT_ATTRIBUTE)" + a_dt_ref2.as_string + "%N")
 							end
@@ -704,7 +704,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	make_empty_generic_object (a_gen_obj:ANY) is
+	make_empty_generic_object (a_gen_obj: ANY)
 			-- just make sure make() is called so the object is in some sort of safe shape
 			-- only deals with first generic parameter; generally safe for HASH_TABLE and LIST types
 		require
@@ -729,14 +729,14 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	create_dt_from_generic_obj(a_dt_attr: DT_ATTRIBUTE_NODE; an_obj: ANY) is
+	create_dt_from_generic_obj (a_dt_attr: DT_ATTRIBUTE_NODE; an_obj: ANY)
 			--
 		local
 			generic_param_type: INTEGER
 		do
 			generic_param_type := generic_dynamic_type(an_obj, 1)
 			-- FIXME: only deal with the 1st generic param at the moment
-			if {a_hash_table: HASH_TABLE [ANY, HASHABLE]} an_obj then
+			if attached {HASH_TABLE [ANY, HASHABLE]} an_obj as a_hash_table then
 				from
 					a_hash_table.start
 				until
@@ -759,7 +759,7 @@ feature {NONE} -- Implementation
 					end
 					a_hash_table.forth
 				end
-			elseif {a_sequence: SEQUENCE[ANY]} an_obj then
+			elseif attached {SEQUENCE[ANY]} an_obj as a_sequence then
 				from
 					a_sequence.start
 				until
@@ -785,7 +785,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	cvt_tbl: HASH_TABLE [DT_CONV_DESC, INTEGER] is
+	cvt_tbl: HASH_TABLE [DT_CONV_DESC, INTEGER]
 		local
 			a_dt_conv: DT_CONV_DESC
 		once

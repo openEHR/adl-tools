@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Abstract characteristics of a node that contains a reference to another node, implemented by paths. Serialises an object non-containment reference."
 	keywords:    "data tree, serialisation, ADL"
@@ -21,11 +21,11 @@ inherit
 
 feature -- Definitions
 
-	Reference_pseudo_type: STRING is "(reference)"
+	Reference_pseudo_type: STRING = "(reference)"
 
 feature -- Output
 
-	as_string: STRING is
+	as_string: STRING
 		deferred
 		ensure
 			Result_exists: Result /= Void
@@ -47,7 +47,7 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 	hash_key: HASHABLE
 			-- key for hash insertion if is_source_object_container set and the container is a hash_table
 
-	set_source_object_details(an_object_ref: ANY; a_field_index: INTEGER) is
+	set_source_object_details(an_object_ref: ANY; a_field_index: INTEGER)
 			-- set the source_object values for a non-container source object into with the reference has to
 			-- pasted at the i-th field
 		do
@@ -55,7 +55,7 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 			source_object_field_index := a_field_index
 		end
 
-	set_hash_table_source_object_details(an_object_ref: ANY; a_hash_key: HASHABLE) is
+	set_hash_table_source_object_details(an_object_ref: ANY; a_hash_key: HASHABLE)
 			-- set the source_object values for a container object, for which the reference has
 			-- to be added to the container via a call to extend, after a check on whether it is a
 			-- SEQUENCE or HASH_TABLE
@@ -68,7 +68,7 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 			hash_key := a_hash_key
 		end
 
-	set_sequence_source_object_details(an_object_ref: ANY) is
+	set_sequence_source_object_details(an_object_ref: ANY)
 			-- set the source_object values for a SEQUENCE object, for which the reference has
 			-- to be added to the container via a call to extend, after a check on whether it is a
 			-- SEQUENCE or HASH_TABLE

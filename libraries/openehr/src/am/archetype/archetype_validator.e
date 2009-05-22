@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Validator of standalone archetype (i.e. without reference to parent archetypes
@@ -61,7 +61,7 @@ create
 
 feature {NONE} -- Initialisation
 
-	make (a_target_desc: like target_descriptor) is
+	make (a_target_desc: like target_descriptor)
 			-- set target_descriptor
 			-- initialise reporting variables
 		require
@@ -93,13 +93,13 @@ feature -- Access
 	target: DIFFERENTIAL_ARCHETYPE
 			-- differential archetype being validated
 
-	compressed_definition: !C_COMPLEX_OBJECT
+	compressed_definition: attached C_COMPLEX_OBJECT
 			-- path-compressed form of definition of target archetype
 
 	flat_parent: FLAT_ARCHETYPE
 			-- flat version of parent archetype, if target is specialised
 
-	ontology: !ARCHETYPE_ONTOLOGY is
+	ontology: attached ARCHETYPE_ONTOLOGY
 			-- The ontology of the current archetype.
 		do
 			Result := target.ontology
@@ -107,7 +107,7 @@ feature -- Access
 
 feature -- Validation
 
-	validate is
+	validate
 		do
 			if passed then
 				validate_basics
@@ -177,7 +177,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	validate_languages is
+	validate_languages
 			-- check to see that all linguistic items in ontology, description, etc
 			-- are all coherent
 		local
@@ -318,7 +318,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	validate_invariants is
+	validate_invariants
 			-- validate the invariants if any, which entails checking that all path references are valid against
 			-- the flat archetype
 		do
@@ -330,7 +330,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	report_unused_ontology_codes is
+	report_unused_ontology_codes
 			-- populate lists of at-codes and ac-codes found in ontology that
 			-- are not referenced anywhere in the archetype definition
 		do
@@ -345,7 +345,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	check_unidentified_nodes is
+	check_unidentified_nodes
 			-- look for attributes that are either multiple or have multiple alternatives, whose
 			-- child objects are not identified, but only if the children are not C_PRIMITIVEs or
 			-- C_C_Os whose values are C_PRMITIVEs. Record any such nodes as warnings
@@ -359,7 +359,7 @@ feature {NONE} -- Implementation
 			warnings.append(unidentified_node_finder.warnings)
 		end
 
-	build_slot_id_index is
+	build_slot_id_index
 			-- build slot_id_index in ARCH_REP_ARCHETYPE
 		require
 			target.has_slots
@@ -417,7 +417,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	extract_regex(an_assertion: ASSERTION): STRING is
+	extract_regex(an_assertion: ASSERTION): STRING
 			-- extract regex from id matches {/regex/} style assertion used in slots
 		local
 			bin_op: EXPR_BINARY_OPERATOR
@@ -434,7 +434,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	validate_specialised_definition is
+	validate_specialised_definition
 			-- validate definition of specialised archetype against flat parent
 		require
 			Target_specialised: target.is_specialised
@@ -445,18 +445,18 @@ feature {NONE} -- Implementation
 			def_it.do_until_surface(agent specialised_node_validate, agent specialised_node_validate_test)
 		end
 
-	specialised_node_validate (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)  is
+	specialised_node_validate (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 			-- validate nodes in differential specialised archetype
 			-- SIDE-EFFECT: sets is_congruent markers on child archetype nodes
 		local
-			co_parent_flat: !C_OBJECT
-			co_parent_flat_detachable: ?C_OBJECT
+			co_parent_flat: attached C_OBJECT
+			co_parent_flat_detachable: detachable C_OBJECT
 			apa: ARCHETYPE_PATH_ANALYSER
 		do
 			create apa.make_from_string (a_c_node.path)
 
-			if {ca_child_diff: C_ATTRIBUTE} a_c_node then
-				if {ca_parent_flat: C_ATTRIBUTE} flat_parent.definition.c_attribute_at_path (apa.path_at_level (flat_parent.specialisation_depth)) then
+			if attached {C_ATTRIBUTE} a_c_node as ca_child_diff then
+				if attached {C_ATTRIBUTE} flat_parent.definition.c_attribute_at_path (apa.path_at_level (flat_parent.specialisation_depth)) as ca_parent_flat then
 					if not ca_child_diff.node_conforms_to(ca_parent_flat) then
 						passed := False
 						if ca_child_diff.is_single /= ca_parent_flat.is_single then
@@ -477,14 +477,14 @@ feature {NONE} -- Implementation
 				else
 					check ca_parent_flat_void: False end
 				end
-			elseif {co_child_diff: C_OBJECT} a_c_node then
+			elseif attached {C_OBJECT} a_c_node as co_child_diff then
 				co_parent_flat_detachable := flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth))
 				check co_parent_flat_detachable /= Void end
 				co_parent_flat := co_parent_flat_detachable
 
 				-- C_CODE_PHRASE conforms to CONSTRAINT_REF, but is not testable in any way; sole exception in ADL/AOM; just warn
-				if {ccr: CONSTRAINT_REF} co_parent_flat and then not {ccr2: CONSTRAINT_REF} co_child_diff then
-					if {ccp: C_CODE_PHRASE} co_child_diff then
+				if attached {CONSTRAINT_REF} co_parent_flat as ccr and then not attached {CONSTRAINT_REF} co_child_diff as ccr2 then
+					if attached {C_CODE_PHRASE} co_child_diff as ccp then
 						add_warning("WCRC", <<co_child_diff.path>>)
 					else
 						add_error("VSCNR", <<co_parent_flat.generating_type, co_parent_flat.path, co_child_diff.generating_type, co_child_diff.path>>)
@@ -492,7 +492,7 @@ feature {NONE} -- Implementation
 				else
 					-- if the child is a redefine of a parent use_node, then we have to do the comparison to the use_node target,
 					-- unless they both are use_nodes, in which case leave them as is
-					if {air_p: ARCHETYPE_INTERNAL_REF} co_parent_flat and not {air_c: ARCHETYPE_INTERNAL_REF} co_child_diff then
+					if attached {ARCHETYPE_INTERNAL_REF} co_parent_flat as air_p and not attached {ARCHETYPE_INTERNAL_REF} co_child_diff as air_c then
 						co_parent_flat_detachable := flat_parent.c_object_at_path (air_p.path)
 						check co_parent_flat_detachable /= Void end
 						co_parent_flat := co_parent_flat_detachable
@@ -517,13 +517,13 @@ feature {NONE} -- Implementation
 						end
 					else
 						-- nodes are at least conformant; check for congruence for specalisation path replacement
-						if {cco: C_COMPLEX_OBJECT} co_child_diff and co_child_diff.node_congruent_to (co_parent_flat) and (co_child_diff.is_root or else co_child_diff.parent.is_mergeable) then
+						if attached {C_COMPLEX_OBJECT} co_child_diff as cco and co_child_diff.node_congruent_to (co_parent_flat) and (co_child_diff.is_root or else co_child_diff.parent.is_mergeable) then
 							debug ("validate")
 								io.put_string (">>>>> validate: C_OBJECT in child at " + co_child_diff.path + " CONGRUENT to parent node " + co_parent_flat.path)
 							end
 							-- if the parent C_ATTRIBUTE node of the object node in the flat parent has no children, this object can be assumed to be a total
 							-- replacement, so don't mark it as an overlay
-							if {cco_pf: C_COMPLEX_OBJECT} co_parent_flat then
+							if attached {C_COMPLEX_OBJECT} co_parent_flat as cco_pf then
 								if  co_child_diff.is_root or cco_pf.has_attributes then
 									co_child_diff.set_is_congruent
 									debug ("validate")
@@ -549,7 +549,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	validate_reference_model is
+	validate_reference_model
 			-- validate definition of archetype against reference model
 		require
 			rm_checker.model_loaded
@@ -562,7 +562,7 @@ feature {NONE} -- Implementation
 			def_it.do_until_surface(agent rm_node_validate, agent rm_node_validate_test)
 		end
 
-	rm_node_validate (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)  is
+	rm_node_validate (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 			-- perform validation of node against reference model
 		local
 			arch_parent_attr_type, model_attr_class: STRING
@@ -570,7 +570,7 @@ feature {NONE} -- Implementation
 			apa: ARCHETYPE_PATH_ANALYSER
 			rm_prop_def: BMM_PROPERTY_DEFINITION
 		do
-			if {co: C_OBJECT} a_c_node then
+			if attached {C_OBJECT} a_c_node as co then
 				if not co.is_root then -- now check if this object a valid type of its owning attribute
 					if target.is_specialised and then co.parent.has_differential_path then
 						create apa.make_from_string (co.parent.differential_path)
@@ -596,7 +596,7 @@ feature {NONE} -- Implementation
 						end
 					end
 				end
-			elseif {ca: C_ATTRIBUTE} a_c_node then
+			elseif attached {C_ATTRIBUTE} a_c_node as ca then
 				if target.is_specialised and then ca.has_differential_path then
 					create apa.make_from_string (ca.differential_path)
 					co_parent_flat := flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth))
@@ -620,7 +620,7 @@ feature {NONE} -- Implementation
 						-- should be removed; or reported as same as RM; but too many legacy archetypes have this right now
 					end
 					if ca.is_multiple then
-						if {cont_prop: BMM_CONTAINER_PROPERTY} rm_prop_def then
+						if attached {BMM_CONTAINER_PROPERTY} rm_prop_def as cont_prop then
 							if not ca.cardinality.is_open then
 								if cont_prop.type.cardinality.contains(ca.cardinality.interval) then
 									if cont_prop.type.cardinality.is_equal(ca.cardinality.interval) then
@@ -635,7 +635,7 @@ feature {NONE} -- Implementation
 						else -- archetype has multiple attribute but RM does not
 							add_error("VCAM", <<ca.rm_attribute_name, ca.path, ca.cardinality.as_string, "(single-valued)">>)
 						end
-					elseif {cont_prop_2: BMM_CONTAINER_PROPERTY} rm_prop_def then
+					elseif attached {BMM_CONTAINER_PROPERTY} rm_prop_def as cont_prop_2 then
 						add_error("VCAM", <<ca.rm_attribute_name, ca.path, "(single-valued)", cont_prop_2.type.cardinality.as_string>>)
 					end
 					if rm_checker.property_definition(arch_parent_attr_type, ca.rm_attribute_name).is_computed then
@@ -648,7 +648,7 @@ feature {NONE} -- Implementation
 
 	invalid_types: ARRAYED_LIST [STRING]
 
-	specialised_node_validate_test (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN  is
+	specialised_node_validate_test (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN
 			-- return True if a conformant path of a_c_node within the differential archetype is
 			-- found within the flat parent archetype - i.e. a_c_node is inherited or redefined from parent (but not new)
 			-- and no previous errors encountered
@@ -661,11 +661,11 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	rm_node_validate_test (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN  is
+	rm_node_validate_test (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN
 			-- return True if node is a C_OBJECT and class is known in RM, or if it is a C_ATTRIBUTE
 		do
 			Result := True
-			if {co: C_OBJECT} a_c_node then
+			if attached {C_OBJECT} a_c_node as co then
 				if not rm_checker.has_class_definition(co.rm_type_name) then
 					if not invalid_types.has(co.rm_type_name) then
 						add_error("VCORM", <<co.rm_type_name, co.path>>)

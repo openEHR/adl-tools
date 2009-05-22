@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Structures Reference Model"
 
 	description: "[
@@ -81,7 +81,7 @@ inherit
 
 feature -- Access
 
-	element_at_path(a_path:STRING): ELEMENT is
+	element_at_path(a_path:STRING): ELEMENT
 			-- Return the leaf element at the path ‘a_path’
 		require
 			has_element_path(a_path)	
@@ -90,14 +90,14 @@ feature -- Access
 
 feature -- Status Report
 
-	has_element_path(a_path:STRING): BOOLEAN is
+	has_element_path(a_path:STRING): BOOLEAN
 			-- True if path ‘a_path’ is a valid leaf path
 		do
 		end
 
 feature -- Conversion
 
-	as_hierarchy: CLUSTER is
+	as_hierarchy: CLUSTER
 			-- the physical representation as a CEN 13606-compliant structure
 		do
 		end

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "[
 				 Access to a .ini style configuration file. Comment
@@ -32,11 +32,11 @@ create
 
 feature -- Definitions
 
-	default_category: STRING is "default"
+	default_category: STRING = "default"
 
 feature -- Initialisation
 
-	make(a_file_name:STRING) is
+	make (a_file_name: STRING)
 		do
 			create resources.make(0)
 			create requested_resources.make(0)
@@ -49,7 +49,7 @@ feature -- Access
 
 	requested_resources: HASH_TABLE[HASH_TABLE[STRING,STRING],STRING]
 
-	resource_value(category, resource_name: STRING): STRING is
+	resource_value (category, resource_name: STRING): STRING
 			-- get the value for resource_name, in 'category'
 		require
                 Valid_category: category /= Void and then not category.is_empty
@@ -73,7 +73,7 @@ feature -- Access
                 Result_not_void: Result /= Void
 		end
 
-	resource_value_list(category, resource_name:STRING): ARRAYED_LIST[STRING] is
+	resource_value_list (category, resource_name: STRING): ARRAYED_LIST [STRING]
 			-- List of items specified in file setting
 			-- of the form of a comma-separated list.
 		require
@@ -100,7 +100,7 @@ feature -- Access
 			end
 		end
 
-	resource_category_values(category:STRING): HASH_TABLE[STRING,STRING] is
+	resource_category_values (category: STRING): HASH_TABLE [STRING, STRING]
 			-- get all name/value pairs in 'category'
 		require
                 Valid_category: category /= Void and then not category.is_empty
@@ -115,7 +115,7 @@ feature -- Access
 
 feature -- Modification
 
-	set_resource_value(category_name: STRING; resource_name: STRING; value:STRING) is
+	set_resource_value (category_name: STRING; resource_name: STRING; value:STRING)
            require
                 Valid_category: category_name /= Void and then not category_name.is_empty
                 Valid_resource_name: resource_name /= Void and then not resource_name.is_empty
@@ -132,7 +132,7 @@ feature -- Modification
                 end
            end
 
-	set_resource_value_list(category_name: STRING; resource_name: STRING; values: LIST[STRING]) is
+	set_resource_value_list (category_name: STRING; resource_name: STRING; values: LIST [STRING])
            require
                 Valid_category: category_name /= Void and then not category_name.is_empty
                 Valid_resource_name: resource_name /= Void and then not resource_name.is_empty
@@ -163,7 +163,7 @@ feature -- Modification
 
 feature -- Element Removal
 
-	remove_resource(category_name, resource_name:STRING) is
+	remove_resource (category_name, resource_name: STRING)
 			-- remove the resource resource_name
 		require
 			Valid_category: category_name /= Void and then not category_name.is_empty
@@ -179,28 +179,28 @@ feature -- Element Removal
 
 feature -- template routines
 
-	initialise is
+	initialise
 		do
 		end
 
-	read_initialise is
+	read_initialise
 		do
             resources.clear_all
 		end
 
-	read_finalise is
+	read_finalise
 		do
 		end
 
-	read_process_file is
+	read_process_file
 		local
-			category_name, res_name, res_value:STRING
-			pos, res_name_dup_count, no_name_dup_count:INTEGER
-			cur_res_list:HASH_TABLE[STRING, STRING]
-			env_var_value:STRING
-			env_var_name:STRING
-			candidate_string:STRING
-			pos_pair:DS_PAIR[INTEGER, INTEGER]
+			category_name, res_name, res_value: STRING
+			pos, res_name_dup_count, no_name_dup_count: INTEGER
+			cur_res_list: HASH_TABLE [STRING, STRING]
+			env_var_value: STRING
+			env_var_name: STRING
+			candidate_string: STRING
+			pos_pair: DS_PAIR [INTEGER, INTEGER]
 		do
 			from
 				read_line
@@ -277,14 +277,14 @@ feature -- template routines
 			end
 		end
 
-	is_valid:BOOLEAN is
+	is_valid: BOOLEAN
 		do
 			Result := not last_op_fail
 		end
 
-	write_file is
+	write_file
 		local
-			resource_list: HASH_TABLE[STRING,STRING]
+			resource_list: HASH_TABLE [STRING,STRING]
 			category_name, s: STRING
 		do
 			file.create_read_write
@@ -317,15 +317,15 @@ feature -- template routines
 
 feature {NONE} -- Implementation
 
-	env_var_pattern_matcher: LX_DFA_REGULAR_EXPRESSION is
+	env_var_pattern_matcher: LX_DFA_REGULAR_EXPRESSION
 			-- pattern for detecting $NAME in config values
 		once
 			create Result.compile (env_var_pattern, True)
 		end
 
-	env_var_pattern:STRING is "\$[a-zA-Z0-9_]+"
+	env_var_pattern: STRING = "\$[a-zA-Z0-9_]+"
 
-	execution_environment: EXECUTION_ENVIRONMENT is
+	execution_environment: EXECUTION_ENVIRONMENT
 		once
 			create Result
 		end

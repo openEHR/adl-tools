@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Shared UI resources"
 	keywords:    "test, ADL"
@@ -32,17 +32,17 @@ inherit
 
 feature -- Definitions
 
-	News_file_path: STRING is
+	News_file_path: STRING
 		once
 			Result := application_startup_directory + os_directory_separator.out + "news.txt"
 		end
 
-	Status_file_path: STRING is
+	Status_file_path: STRING
 		once
 			Result := application_startup_directory + os_directory_separator.out + ".status"
 		end
 
-	Default_editor_command: STRING is
+	Default_editor_command: STRING
 			-- A reasonable name of an editor based on operating system.
 		once
    			if is_windows then
@@ -54,7 +54,7 @@ feature -- Definitions
    			end
    		end
 
-	ADL_help_page_url: STRING is
+	ADL_help_page_url: STRING
 		local
 			version: OPENEHR_VERSION
 		once
@@ -66,13 +66,13 @@ feature -- Definitions
 			end
 		end
 
-	path_control_filter_names: ARRAY [STRING] is
+	path_control_filter_names: ARRAY [STRING]
 			-- names of row filters of path control
 		once
 			Result := <<"All", "Leaf">>
 		end
 
-	path_control_column_names: ARRAY [STRING] is
+	path_control_column_names: ARRAY [STRING]
 			-- names of columns of path view control
 		once
 			Result := <<"Machine", "Nat lang", "RM Type", "AOM Type">>
@@ -98,15 +98,14 @@ feature -- Commands
 
 feature -- Access
 
-	icon_directory: STRING is
+	icon_directory: attached STRING
 		once
 			Result := application_startup_directory + os_directory_separator.out + "icons"
 		ensure
-			attached: Result /= Void
 			not_empty: not Result.is_empty
 		end
 
-	has_icon_directory: BOOLEAN is
+	has_icon_directory: BOOLEAN
 			-- True if icon directory available
 		local
 			a_dir: DIRECTORY
@@ -115,7 +114,7 @@ feature -- Access
 			Result := a_dir.exists
 		end
 
-	new_news: BOOLEAN is
+	new_news: BOOLEAN
 			-- is there new news due to last installation?
 			-- work this out by seeing if there is a file called ".status" which is
 			-- older than the news file
@@ -132,7 +131,7 @@ feature -- Access
 			end
 		end
 
-	update_status_file is
+	update_status_file
 			-- renew the status file, currently only used to indicate that
 			-- news has been shown at startup
 		local
@@ -148,7 +147,7 @@ feature -- Access
 			end
 		end
 
-	pixmap_table: DS_HASH_TABLE [TUPLE [file, help: STRING], STRING] is
+	pixmap_table: attached DS_HASH_TABLE [TUPLE [file, help: STRING], STRING]
 			-- Table of pixmap file paths and help messages, keyed by icon key.
 		once
 			create Result.make (0)
@@ -272,11 +271,10 @@ feature -- Access
 
 			Result.force (["openEHR_and_Ocean.png", Void], "openEHR and Ocean")
 		ensure
-			attached: Result /= Void
 			not_empty: not Result.is_empty
 		end
 
-	pixmaps: HASH_TABLE [EV_PIXMAP, STRING] is
+	pixmaps: attached HASH_TABLE [EV_PIXMAP, STRING]
 			-- Table of pixmap file paths keyed by logical name.
 		require
 			has_icon_directory
@@ -306,11 +304,9 @@ feature -- Access
 
 				pixmap_table.forth
 			end
-		ensure
-			attached: Result /= Void
 		end
 
-	splash_text: STRING
+	splash_text: attached STRING
 			-- Text for splash screens, About boxes, etc.
 		local
 			version: OPENEHR_VERSION
@@ -331,12 +327,11 @@ feature -- Access
 			Result.append ("%TEiffel Software Eiffel (http://www.eiffel.com)%N")
 			Result.append ("%TGobo parsing libraries & tools (http://www.gobosoft.com)%N")
 		ensure
-			attached: Result /= Void
 			not_empty: not Result.is_empty
 		end
 
-	News_text: STRING is
-			-- news dialog
+	News_text: attached STRING
+			-- News dialog.
 		local
 			news_file: PLAIN_TEXT_FILE
 		once
@@ -351,13 +346,12 @@ feature -- Access
 				Result := "(%"" + news_file_path + "%" file is missing)"
 			end
 		ensure
-			attached: Result /= Void
 			not_empty: not Result.is_empty
 		end
 
 feature -- Application Switches
 
-	reference_repository_paths: ARRAYED_LIST[STRING] is
+	reference_repository_paths: ARRAYED_LIST[STRING]
 			-- path of root of ADL file tree
 		do
 			Result := resource_value_list("default", "reference_repositories")
@@ -371,7 +365,7 @@ feature -- Application Switches
 			Value_comparison: Result.object_comparison
 		end
 
-	reference_repository_path: STRING is
+	reference_repository_path: STRING
 			-- path of root of ADL file tree
 		do
 			Result := substitute_env_vars(resource_value("default", "reference_repository"))
@@ -379,7 +373,7 @@ feature -- Application Switches
 			Result /= Void
 		end
 
-	work_repository_path: STRING is
+	work_repository_path: STRING
 			-- path of root of ADL file tree
 		do
 			Result := substitute_env_vars(resource_value("default", "work_repository"))
@@ -387,17 +381,15 @@ feature -- Application Switches
 			Result /= Void
 		end
 
-	current_work_directory: STRING
+	current_work_directory: attached STRING
 			-- Directory where archetypes are currently being opened and saved
 			-- from GUI open and save buttons; automatic opens (due to clicking
 			-- on archetype name) still use main repository directory.
 		do
 			Result := resource_value ("default", "current_work_directory")
-		ensure
-			attached: Result /= Void
 		end
 
-	app_width: INTEGER is
+	app_width: INTEGER
 			-- application width
 		local
 			str: STRING
@@ -408,7 +400,7 @@ feature -- Application Switches
 			end
 		end
 
-	app_height: INTEGER is
+	app_height: INTEGER
 			-- application height
 		local
 			str: STRING
@@ -419,7 +411,7 @@ feature -- Application Switches
 			end
 		end
 
-	app_x_position: INTEGER is
+	app_x_position: INTEGER
 			-- application horizontal position
 		local
 			str: STRING
@@ -430,7 +422,7 @@ feature -- Application Switches
 			end
 		end
 
-	app_y_position: INTEGER is
+	app_y_position: INTEGER
 			-- application vertical position
 		local
 			str: STRING
@@ -441,7 +433,7 @@ feature -- Application Switches
 			end
 		end
 
-	app_maximised: BOOLEAN is
+	app_maximised: BOOLEAN
 			-- True if app should be maximised
 		local
 			str: STRING
@@ -452,7 +444,7 @@ feature -- Application Switches
 			end
 		end
 
-	total_split_position: INTEGER is
+	total_split_position: INTEGER
 			-- Split position of outer vertical split control.
 		local
 			str: STRING
@@ -463,7 +455,7 @@ feature -- Application Switches
 			end
 		end
 
-	node_map_and_ontology_split_position: INTEGER is
+	node_map_and_ontology_split_position: INTEGER
 			-- Split position of inner vertical split control.
 		local
 			str: STRING
@@ -474,7 +466,7 @@ feature -- Application Switches
 			end
 		end
 
-	test_split_position: INTEGER is
+	test_split_position: INTEGER
 			-- Split position of vertical split control in test tool.
 		local
 			str: STRING
@@ -485,7 +477,7 @@ feature -- Application Switches
 			end
 		end
 
-	explorer_split_position: INTEGER is
+	explorer_split_position: INTEGER
 			-- Split position of explorer horizontal split control.
 		local
 			str: STRING
@@ -496,7 +488,7 @@ feature -- Application Switches
 			end
 		end
 
-	main_notebook_tab_pos: INTEGER is
+	main_notebook_tab_pos: INTEGER
 			-- which tab of the main notebook was visible at the end of the last session
 		local
 			str: STRING
@@ -563,35 +555,31 @@ feature -- Application Switches
 			end
 		end
 
-	path_filter_combo_selection: STRING is
+	path_filter_combo_selection: STRING
 			-- setting of path control filter combo-box
 		do
 			Result := resource_value ("default", "path_filter_combo_selection")
 		end
 
-	path_view_check_list_settings: ARRAYED_LIST[STRING] is
+	path_view_check_list_settings: ARRAYED_LIST[STRING]
 			-- path view column settings
 		do
 			Result := resource_value_list ("default", "path_view_check_list_settings")
 		end
 
-	editor_command: STRING
+	editor_command: attached STRING
 			-- Path of editor application for ADL files.
 		do
 			Result := substitute_env_vars (resource_value ("default", "editor"))
-		ensure
-			attached: Result /= Void
 		end
 
-	html_export_directory: STRING
+	html_export_directory: attached STRING
 			-- Path of directory to which HTML is exported.
 		do
 			Result := substitute_env_vars (resource_value ("default", "html_export_directory"))
-		ensure
-			attached: Result /= Void
 		end
 
-	rm_checking_on: BOOLEAN is
+	rm_checking_on: BOOLEAN
 			-- True if Reference Model checking should be on
 		local
 			str: STRING
@@ -602,17 +590,15 @@ feature -- Application Switches
 			end
 		end
 
-	adl_version_for_flat_output: STRING
+	adl_version_for_flat_output: attached STRING
 			-- version of ADL syntax to use for outputting flat archetypes
 		do
 			Result := substitute_env_vars (resource_value ("default", "adl_version_for_flat_output"))
-		ensure
-			attached: Result /= Void
 		end
 
 feature -- Application Switch Setting
 
-	set_reference_repository_path(a_path: STRING) is
+	set_reference_repository_path(a_path: STRING)
 			-- set reference_repository_path
 		require
 			a_path_valid: a_path /= Void and then not a_path.is_empty
@@ -620,7 +606,7 @@ feature -- Application Switch Setting
 			set_resource_value("default", "reference_repository", a_path)
 		end
 
-	set_reference_repository_paths(a_path_list: ARRAYED_LIST[STRING]) is
+	set_reference_repository_paths(a_path_list: ARRAYED_LIST[STRING])
 			-- set reference_repository_path(s)
 		require
 			a_path_list_valid: a_path_list /= Void and then not a_path_list.is_empty
@@ -628,7 +614,7 @@ feature -- Application Switch Setting
 			set_resource_value_list("default", "reference_repositories", a_path_list)
 		end
 
-	set_work_repository_path(a_path: STRING) is
+	set_work_repository_path(a_path: STRING)
 			-- set work repository_path
 		require
 			a_path_valid: a_path /= Void
@@ -640,7 +626,7 @@ feature -- Application Switch Setting
 			end
 		end
 
-	set_current_work_directory (a_path: STRING) is
+	set_current_work_directory (a_path: STRING)
 			-- set the directory where archetypes are currently being opened and saved.
 		require
 			a_path_attached: a_path /= Void
@@ -652,7 +638,7 @@ feature -- Application Switch Setting
 			end
 		end
 
-	set_editor_command (value: STRING) is
+	set_editor_command (value: STRING)
 			-- set editor
 		require
 			value_attached: value /= Void
@@ -661,7 +647,7 @@ feature -- Application Switch Setting
 			set_resource_value("default", "editor", value)
 		end
 
-	set_html_export_directory (value: STRING) is
+	set_html_export_directory (value: STRING)
 			-- Set the path of directory to which HTML is exported.
 		require
 			value_attached: value /= Void
@@ -670,7 +656,7 @@ feature -- Application Switch Setting
 			set_resource_value("default", "html_export_directory", value)
 		end
 
-	set_adl_version_for_flat_output (value: STRING) is
+	set_adl_version_for_flat_output (value: STRING)
 			-- Set version of ADL syntax to use for outputting flat archetypes.
 		require
 			value_attached: value /= Void
@@ -679,7 +665,7 @@ feature -- Application Switch Setting
 			set_resource_value("default", "adl_version_for_flat_output", value)
 		end
 
-	set_main_notebook_tab_pos(a_tab_pos: INTEGER) is
+	set_main_notebook_tab_pos(a_tab_pos: INTEGER)
 			-- set main notebook tab pos
 		require
 			a_tab_pos_valid: a_tab_pos > 0
@@ -687,7 +673,7 @@ feature -- Application Switch Setting
 			set_resource_value("default", "main_notebook_tab_pos", a_tab_pos.out)
 		end
 
-	set_total_split_position (v: INTEGER) is
+	set_total_split_position (v: INTEGER)
 			-- Set split position of outer vertical split control.
 		require
 			v > 0
@@ -695,7 +681,7 @@ feature -- Application Switch Setting
 			set_resource_value ("default", "total_split_position", v.out)
 		end
 
-	set_node_map_and_ontology_split_position (v: INTEGER) is
+	set_node_map_and_ontology_split_position (v: INTEGER)
 			-- Set split position of inner vertical split control.
 		require
 			v > 0
@@ -703,7 +689,7 @@ feature -- Application Switch Setting
 			set_resource_value ("default", "node_map_and_ontology_split_position", v.out)
 		end
 
-	set_test_split_position (v: INTEGER) is
+	set_test_split_position (v: INTEGER)
 			-- Set split position of test tool vertical split control.
 		require
 			v > 0
@@ -711,7 +697,7 @@ feature -- Application Switch Setting
 			set_resource_value ("default", "test_split_position", v.out)
 		end
 
-	set_explorer_split_position (v: INTEGER) is
+	set_explorer_split_position (v: INTEGER)
 			-- Set split position of explorer horizontal split control.
 		require
 			v > 0
@@ -719,7 +705,7 @@ feature -- Application Switch Setting
 			set_resource_value ("default", "explorer_split_position", v.out)
 		end
 
-	set_app_width (v: INTEGER) is
+	set_app_width (v: INTEGER)
 			-- set app width
 		require
 			v > 0
@@ -727,7 +713,7 @@ feature -- Application Switch Setting
 			set_resource_value("default", "app_width", v.out)
 		end
 
-	set_app_height (v: INTEGER) is
+	set_app_height (v: INTEGER)
 			-- set app height
 		require
 			v > 0
@@ -735,68 +721,68 @@ feature -- Application Switch Setting
 			set_resource_value("default", "app_height", v.out)
 		end
 
-	set_app_x_position (v: INTEGER) is
+	set_app_x_position (v: INTEGER)
 			-- set app x position
 		do
 			set_resource_value("default", "app_x_position", v.out)
 		end
 
-	set_app_y_position (v: INTEGER) is
+	set_app_y_position (v: INTEGER)
 			-- set app y position
 		do
 			set_resource_value("default", "app_y_position", v.out)
 		end
 
-	set_app_maximised (f: BOOLEAN) is
+	set_app_maximised (f: BOOLEAN)
 			-- set app maximised flag
 		do
 			set_resource_value("default", "app_maximised", f.out)
 		end
 
-	set_expand_node_tree (flag: BOOLEAN) is
+	set_expand_node_tree (flag: BOOLEAN)
 			-- Set flag for whether to expand the archetype definition node tree by default.
 		do
 			set_resource_value ("default", "expand_node_tree", flag.out)
 		end
 
-	set_show_technical_view (flag: BOOLEAN) is
+	set_show_technical_view (flag: BOOLEAN)
 			-- Set flag for whether to show the technical view in the archetype definition node tree by default.
 		do
 			set_resource_value ("default", "show_technical_view", flag.out)
 		end
 
-	set_show_reference_model_view (flag: BOOLEAN) is
+	set_show_reference_model_view (flag: BOOLEAN)
 			-- Set flag for whether to show the technical view in the archetype definition node tree by default.
 		do
 			set_resource_value ("default", "show_reference_model_view", flag.out)
 		end
 
-	set_show_line_numbers (flag: BOOLEAN) is
+	set_show_line_numbers (flag: BOOLEAN)
 			-- Set flag for whether to show line numbers in the ADL source text box.
 		do
 			set_resource_value ("default", "show_line_numbers", flag.out)
 		end
 
-	set_display_archetype_source (flag: BOOLEAN) is
+	set_display_archetype_source (flag: BOOLEAN)
 			-- Set flag for whether to display markers indicating archetype authoring form.
 		do
 			set_resource_value ("default", "display_archetype_source", flag.out)
 		end
 
-	set_path_filter_combo_selection(str: STRING) is
+	set_path_filter_combo_selection(str: STRING)
 			--
 		do
 			set_resource_value("default", "path_filter_combo_selection", str)
 		end
 
-	set_path_view_check_list_settings (strs: ARRAYED_LIST[STRING]) is
+	set_path_view_check_list_settings (strs: ARRAYED_LIST[STRING])
 			-- save path view column settings
 		do
 			set_resource_value_list("default", "path_view_check_list_settings", strs)
 
 		end
 
-	set_rm_checking_on (flag: BOOLEAN) is
+	set_rm_checking_on (flag: BOOLEAN)
 			-- Set flag for whether to do reference model checking of archetypes
 		do
 			set_resource_value ("default", "rm_checking_on", flag.out)
@@ -804,7 +790,7 @@ feature -- Application Switch Setting
 
 feature {NONE} -- Implementation
 
-	get_file (init_value: STRING; a_parent_window: EV_WINDOW): STRING is
+	get_file (init_value: STRING; a_parent_window: EV_WINDOW): STRING
 			-- get a file path from user
 		require
 			parent_window_valid: a_parent_window /= Void
@@ -851,7 +837,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	get_directory (init_value: STRING; a_parent_window: EV_WINDOW): STRING is
+	get_directory (init_value: STRING; a_parent_window: EV_WINDOW): STRING
 			-- get a directory from user
 		require
 			parent_window_valid: a_parent_window /= Void

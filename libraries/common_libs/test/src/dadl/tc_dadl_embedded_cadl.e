@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "Test case for embedded cADL in dADL"
 	keywords:    "test, object graph, cADL, dADL, ADL"
@@ -25,20 +25,20 @@ inherit
 			{NONE} all
 		end
 
-creation
+create
 	make
 
 feature -- Access
 
-	title:STRING is "dADL with embedded cADL"
+	title:STRING = "dADL with embedded cADL"
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 		do
 		end
 
-	execute is
+	execute
 		do
 			io.put_string("---------- original dADL  -----------%N")
 			io.put_string(dadl_text)
@@ -55,13 +55,13 @@ feature -- Initialisation
 
 feature -- Access
 
-	check_result is
+	check_result
 	    do
 	    end
 
 feature -- Implementation
 
-	dadl_text: STRING is  
+	dadl_text: STRING  
 		local
 			from_file: PLAIN_TEXT_FILE
 		do

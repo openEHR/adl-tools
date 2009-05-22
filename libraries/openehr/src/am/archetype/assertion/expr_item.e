@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "node in ADL parse tree"
 	keywords:    "test, ADL"
@@ -26,7 +26,7 @@ feature -- Access
 
 feature -- Conversion
 
-	as_string: STRING is
+	as_string: STRING
 			-- output expression as a string
 		deferred
 		ensure

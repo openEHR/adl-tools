@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "ADL editor"
 
 	description: "file handling context for ADL back-end"
@@ -24,18 +24,18 @@ create
 
 feature -- Definitions
 
-	UTF8_bom_char_1: CHARACTER is '%/239/'
-	UTF8_bom_char_2: CHARACTER is '%/187/'
-	UTF8_bom_char_3: CHARACTER is '%/191/'
+	UTF8_bom_char_1: CHARACTER = '%/239/'
+	UTF8_bom_char_2: CHARACTER = '%/187/'
+	UTF8_bom_char_3: CHARACTER = '%/191/'
 			-- UTF-8 files don't normally have a BOM (byte order marker) at the start as can be
 			-- required by UTF-16 files, but if the file has been converted from UTF-16 or UTF-32
 			-- then the BOM in a UTF-8 file will be 0xEF 0xBB 0xBF (dec equivalent: 239, 187, 191)
 
-	Default_current_directory: STRING is "."
+	Default_current_directory: STRING = "."
 
 feature {NONE} -- Initialisation
 
-	make is
+	make
 			-- basic initialisation
 		do
 			create current_directory.make_empty
@@ -46,12 +46,10 @@ feature {NONE} -- Initialisation
 
 feature -- Access
 
-	current_full_path: STRING
+	current_full_path: attached STRING
 			-- derive from file name and path
 		do
 			Result := current_directory + operating_environment.Directory_separator.out + current_file_name
-		ensure
-			attached: Result /= Void
 		end
 
 	current_directory: STRING
@@ -78,7 +76,7 @@ feature -- Access
 
 feature -- Status Report
 
-	has_file (a_file_name: STRING):BOOLEAN is
+	has_file (a_file_name: STRING): BOOLEAN
 			-- Does `a_file_name' exist in `current_directory'?
 		require
 			File_name_valid: a_file_name /= Void
@@ -89,7 +87,7 @@ feature -- Status Report
 			Result := a_file.exists
 		end
 
-	file_writable (a_file_name: STRING): BOOLEAN is
+	file_writable (a_file_name: STRING): BOOLEAN
 			-- True if named file is writable, or else doesn't exist
 		require
 			File_name_valid: a_file_name /= Void and then not a_file_name.is_empty
@@ -138,7 +136,7 @@ feature -- Commands
 			file_first_line_empty_on_failure: last_op_failed implies file_first_line.is_empty
 		end
 
-	read_file is
+	read_file
 			-- Read text from current file into `file_content'.
 		local
 			in_file: PLAIN_TEXT_FILE
@@ -195,7 +193,7 @@ feature -- Commands
 			file_content_empty_on_failure: last_op_failed implies file_content.is_empty
 		end
 
-	save_file (a_file_name, content: STRING) is
+	save_file (a_file_name, content: STRING)
 			-- Write `content' out to file `a_file_name' in `current_directory'.
 		require
 			Arch_id_valid: a_file_name /= Void
@@ -226,7 +224,7 @@ feature -- Commands
 			end
 		end
 
-	set_target (a_file_path: STRING) is
+	set_target (a_file_path: STRING)
 			-- set context to `a_file_path'
 		require
 			a_file_path_valid: a_file_path /= Void and then not a_file_path.is_empty
@@ -244,14 +242,14 @@ feature -- Commands
 			end
 		end
 
-	set_current_file_name (a_file_name: STRING) is
+	set_current_file_name (a_file_name: STRING)
 		require
 			a_file_name_valid: a_file_name /= Void and then not a_file_name.is_empty
 		do
 			current_file_name := a_file_name
 		end
 
-	set_current_directory (a_dir: STRING) is
+	set_current_directory (a_dir: STRING)
 		require
 			a_dir_valid: a_dir /= Void and then not a_dir.is_empty
 		do

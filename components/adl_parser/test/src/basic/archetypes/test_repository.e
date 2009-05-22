@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Test all archetypes in repository"
 	keywords:    "test, ADL"
@@ -15,16 +15,16 @@ class TEST_REPOSITORY
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 	    do
 	    end
 
 feature -- Access
 
-	title: STRING is "Test repository archetypes"
+	title: STRING = "Test repository archetypes"
 			-- the name of the test
 
-	prereqs:ARRAY[STRING] is 
+	prereqs:ARRAY[STRING] 
 			-- names of prerequisite test cases
 		once
 			Result := <<>>
@@ -32,12 +32,12 @@ feature -- Access
 
 feature -- testing
 
-	execute is
+	execute
 			-- test routine
 		do
 		end
 
-	check_result is
+	check_result
 			-- compare actual result with required result and set 'failed' as necessary
 		do
 		ensure

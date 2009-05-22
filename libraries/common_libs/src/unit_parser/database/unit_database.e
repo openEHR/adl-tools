@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "[
 			 Database of unit tables, designed on the basis of the Unified Code for Units
@@ -32,11 +32,11 @@ create
 
 feature -- Definitions
 
-	File_extension: STRING is ".txt"
+	File_extension: STRING = ".txt"
 
 feature -- Initialisation
 
-	make(unit_groups_path_name, prefixes_file_name:STRING) is
+	make(unit_groups_path_name, prefixes_file_name:STRING)
 			-- look for unit group files ending in ".txt" in `unit_groups_path_name' directory, and
 			-- prefixes file called `prefixes_file_name'
 		require
@@ -74,7 +74,7 @@ feature -- Access
 
 	metric_prefixes:PREFIXES
 
-	unit_group(a_unit_name:STRING):UNIT_GROUP is
+	unit_group(a_unit_name:STRING):UNIT_GROUP
 			-- unit group for unit `a_unit_name' or Void if not found
 		require
 			Name_exists: a_unit_name /= Void and then not a_unit_name.is_empty
@@ -92,7 +92,7 @@ feature -- Access
 			end
 		end
 
-	unit_group_for_symbol(a_unit_symbol:STRING):UNIT_GROUP is
+	unit_group_for_symbol(a_unit_symbol:STRING):UNIT_GROUP
 			-- unit group for unit `a_unit_symbol' or Void if not found.
 			-- finds the unit group containing the longest match for `a_unit_symbol'.
 			-- E.g. the unit "ppm" will match "m" and also "ppm"; the algorithm will
@@ -116,7 +116,7 @@ feature -- Access
 			end
 		end
 
-	unit_descriptor(a_unit_name:STRING):UNIT_DESCRIPTOR is
+	unit_descriptor(a_unit_name:STRING):UNIT_DESCRIPTOR
 			-- unit descriptor for unit `a_unit_name' or Void if not found
 		require
 			Name_exists: a_unit_name /= Void and then not a_unit_name.is_empty
@@ -129,7 +129,7 @@ feature -- Access
 			end
 		end
 
-	unit_descriptor_for_symbol(a_unit_symbol:STRING):UNIT_DESCRIPTOR is
+	unit_descriptor_for_symbol(a_unit_symbol:STRING):UNIT_DESCRIPTOR
 			-- unit descriptor for unit `a_unit_symbol' (case/sensitive symbol) or Void if not found
 		require
 			Name_exists: a_unit_symbol /= Void and then not a_unit_symbol.is_empty
@@ -142,28 +142,28 @@ feature -- Access
 			end
 		end
 
-	has_unit(a_name:STRING):BOOLEAN is
+	has_unit(a_name:STRING):BOOLEAN
 		require
 			Name_exists: a_name /= Void and then not a_name.is_empty
 		do
 			Result := unit_group(a_name) /= Void
 		end
 
-	has_prefix(a_prefix:STRING):BOOLEAN is
+	has_prefix(a_prefix:STRING):BOOLEAN
 		require
 			Prefix_exists: a_prefix /= Void and then not a_prefix.is_empty
 		do
 			Result := metric_prefixes.has_prefix(a_prefix)
 		end
 
-	has_prefix_symbol(a_symbol:STRING):BOOLEAN is
+	has_prefix_symbol(a_symbol:STRING):BOOLEAN
 		require
 			Symbol_exists: a_symbol /= Void and then not a_symbol.is_empty
 		do
 			Result := metric_prefixes.has_prefix_symbol(a_symbol)
 		end
 
-	is_metric_unit(a_unit_name:STRING):BOOLEAN is
+	is_metric_unit(a_unit_name:STRING):BOOLEAN
 			-- unit `a_unit_name' is allowed to have a metric prefix
 		require
 			Unit_valid: a_unit_name /= Void and then has_unit(a_unit_name)
@@ -173,7 +173,7 @@ feature -- Access
 
 feature -- Output
 
-	out:STRING is
+	out:STRING
 		do
 			create Result.make(0)
 			Result.append("METRIC PREFIXES%N")

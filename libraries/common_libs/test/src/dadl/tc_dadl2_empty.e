@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "Test case for empty dadl2 section"
 	keywords:    "test, object graph, creation"
@@ -25,20 +25,20 @@ inherit
 			{NONE} all
 		end
 
-creation
+create
 	make
 
 feature -- Access
 
-	title:STRING is "dADL2 empty"
+	title:STRING = "dADL2 empty"
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 		do
 		end
 
-	execute is
+	execute
 		do
 			dadl_engine.set_source (dadl_term_definitions, 1)
 			dadl_engine.parse
@@ -57,13 +57,13 @@ feature -- Initialisation
 
 feature -- Access
 
-	check_result is
+	check_result
 	    do
 	    end
 
 feature -- Implementation
 
-	dadl_term_definitions: STRING is "%
+	dadl_term_definitions: STRING = "%
 		%constraint_definitions = <	%N%
 		%	[%"en%"] = <	%N%
 		%		items = <	%N%

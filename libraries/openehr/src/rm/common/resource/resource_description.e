@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Common Information Model"
 	description: "Resource descriptive meta-data"
 	keywords:    "resource, meta-data"
@@ -31,13 +31,13 @@ create
 
 feature -- Definitions
 
-	Default_lifecycle_state: STRING is "initial"
+	Default_lifecycle_state: STRING = "initial"
 
-	Default_original_author: STRING is "????"
+	Default_original_author: STRING = "????"
 
 feature -- Initialisation
 
-	default_create is
+	default_create
 			--
 		do
 			lifecycle_state := Default_lifecycle_state.twin
@@ -50,13 +50,13 @@ feature -- Initialisation
 			details_exists: details /= Void
 		end
 
-	make_dt is
+	make_dt
 			-- make used by DT_OBJECT_CONVERTER
 		do
 			default_create
 		end
 
-	make(an_author_name, orig_lang: STRING) is
+	make(an_author_name, orig_lang: STRING)
 			-- make an empty description
 		require
 			An_author_name_exists: an_author_name /= Void and then not an_author_name.is_empty
@@ -95,7 +95,7 @@ feature -- Access
 	parent_resource: AUTHORED_RESOURCE
 			-- Reference to owning resource.
 
-	languages: ARRAYED_SET[STRING] is
+	languages: ARRAYED_SET[STRING]
 			-- list of all languages in details
 		do
 			create Result.make(0)
@@ -104,12 +104,12 @@ feature -- Access
 			until
 				details.off
 			loop
-				Result.extend(details.key_for_iteration.twin)
+				Result.extend (details.key_for_iteration.twin)
 				details.forth
 			end
 		end
 
-	detail_for_language(a_lang: STRING): RESOURCE_DESCRIPTION_ITEM is
+	detail_for_language(a_lang: STRING): RESOURCE_DESCRIPTION_ITEM
 			-- get the RESOURCE_DESCRIPTION_ITEM for a_lang
 		require
 			Language_valid: a_lang /= Void and then details.has (a_lang)
@@ -122,7 +122,7 @@ feature -- Access
 
 feature -- Comparison
 
-	valid_detail(a_detail: RESOURCE_DESCRIPTION_ITEM): BOOLEAN is
+	valid_detail(a_detail: RESOURCE_DESCRIPTION_ITEM): BOOLEAN
 			-- is a_detail valid to be added to details list? Checks to see
 			-- that two detail objects both with is_original_language set
 			-- cannot be added.
@@ -145,7 +145,7 @@ feature -- Comparison
 
 feature -- Modification
 
-	add_original_author_item(a_key, a_value: STRING) is
+	add_original_author_item(a_key, a_value: STRING)
 			-- add the key, value pair to original_author
 		require
 			Key_valid: a_key /= Void and then not a_key.is_empty
@@ -156,13 +156,13 @@ feature -- Modification
 			Original_author_set: original_author.item(a_key) = a_value
 		end
 
-	clear_original_author is
+	clear_original_author
 			-- wipeout current items in original_author list
 		do
 			create original_author.make(0)
 		end
 
-	add_other_contributor(a_contributor: STRING) is
+	add_other_contributor(a_contributor: STRING)
 			-- add a_contributor to add_other_contributor
 		require
 			Contributor_valid: a_contributor /= Void and then not a_contributor.is_empty
@@ -170,18 +170,18 @@ feature -- Modification
 			if other_contributors = Void then
 				create other_contributors.make(0)
 			end
-			other_contributors.extend(a_contributor)
+			other_contributors.extend (a_contributor)
 		ensure
 			Other_contributor_set: other_contributors.has(a_contributor)
 		end
 
-	clear_other_contributors is
+	clear_other_contributors
 			-- wipeout current items in other_contributors list
 		do
 			create other_contributors.make(0)
 		end
 
-	set_resource_package_uri(a_uri: STRING) is
+	set_resource_package_uri(a_uri: STRING)
 			-- set resource_package_uri
 		require
 			Uri_valid: a_uri /= Void and then not a_uri.is_empty
@@ -191,7 +191,7 @@ feature -- Modification
 			Archetype_package_uri_set: resource_package_uri.out.is_equal(a_uri)
 		end
 
-	set_lifecycle_state(a_lifecycle_state: STRING) is
+	set_lifecycle_state(a_lifecycle_state: STRING)
 			-- set lifecycle_state
 		require
 			Lifecycle_state_valid: a_lifecycle_state /= Void and then not a_lifecycle_state.is_empty
@@ -201,7 +201,7 @@ feature -- Modification
 			Lifecycle_state_set: lifecycle_state = a_lifecycle_state
 		end
 
-	add_detail(a_detail: RESOURCE_DESCRIPTION_ITEM) is
+	add_detail(a_detail: RESOURCE_DESCRIPTION_ITEM)
 			-- add the a_language, value pair to other_details
 		require
 			Detail_valid: a_detail /= Void and then valid_detail(a_detail)
@@ -214,7 +214,7 @@ feature -- Modification
 			Details_set: details.has(a_detail.language.code_string)
 		end
 
-	add_language(a_new_lang: STRING) is
+	add_language(a_new_lang: STRING)
 			-- add a new details object created from the object for orig_lang,
 			-- with all string fields ready for translation
 		require
@@ -223,7 +223,7 @@ feature -- Modification
 			add_detail(details.item (original_language.code_string).translated_copy (a_new_lang))
 		end
 
-	remove_detail, remove_language(a_lang: STRING) is
+	remove_detail, remove_language(a_lang: STRING)
 			-- remove details item for a_lang from the resource
 		require
 			Lang_valid: a_lang /= Void and then details.has(a_lang)
@@ -231,13 +231,13 @@ feature -- Modification
 			details.remove (a_lang)
 		end
 
-	clear_details is
+	clear_details
 			-- wipeout current items in details list
 		do
 			create details.make(0)
 		end
 
-	add_other_detail (a_key, a_value: STRING) is
+	add_other_detail (a_key, a_value: STRING)
 			-- Add the key, value pair to `other_details'.
 		require
 			Key_valid: a_key /= Void and then not a_key.is_empty
@@ -258,7 +258,7 @@ feature -- Modification
 			other_details_removed: a_value.is_empty implies not other_details.has (a_key)
 		end
 
-	set_parent_resource(a_res: AUTHORED_RESOURCE) is
+	set_parent_resource(a_res: AUTHORED_RESOURCE)
 			-- set parent_resource
 		require
 			a_res /= Void
@@ -270,17 +270,17 @@ feature -- Modification
 
 feature {DT_OBJECT_CONVERTER} -- Conversion
 
-	persistent_attributes: ARRAYED_LIST[STRING] is
+	persistent_attributes: ARRAYED_LIST[STRING]
 			-- list of attribute names to persist as DT structure
 			-- empty structure means all attributes
 		once
 			create Result.make(0)
-			Result.extend("original_author")
-			Result.extend("other_contributors")
-			Result.extend("resource_package_uri")
-			Result.extend("details")
-			Result.extend("lifecycle_state")
-			Result.extend("other_details")
+			Result.extend ("original_author")
+			Result.extend ("other_contributors")
+			Result.extend ("resource_package_uri")
+			Result.extend ("details")
+			Result.extend ("lifecycle_state")
+			Result.extend ("other_details")
 			Result.compare_objects
 		end
 

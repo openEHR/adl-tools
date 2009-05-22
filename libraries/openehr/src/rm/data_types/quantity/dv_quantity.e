@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Types"
 
 	description: "[
@@ -37,15 +37,15 @@ create
 
 feature -- Definitions
 
-	default_units: STRING is "m"
+	default_units: STRING = "m"
 			-- Metres.
 
-	default_precision: INTEGER is -1
+	default_precision: INTEGER = -1
 			-- No limit, i.e. any number of decimal places.
 
 feature {NONE} -- Initialisation
 
-	default_create is
+	default_create
 			-- Create a reasonable default object.
 		do
 			units := default_units.twin
@@ -55,7 +55,7 @@ feature {NONE} -- Initialisation
 			precision_set_to_default: precision = default_precision
 		end
 
-	make (a_magnitude: like magnitude; a_units: like units; n: like precision) is
+	make (a_magnitude: like magnitude; a_units: like units; n: like precision)
 		require
 			units_attached: a_units /= Void
 			units_not_empty: not a_units.is_empty
@@ -70,7 +70,7 @@ feature {NONE} -- Initialisation
 			precision_set: precision = n
 		end
 
-	make_from_string, make_from_canonical_string (str: STRING) is
+	make_from_string, make_from_canonical_string (str: STRING)
 			-- make from string of form:
 			-- <magnitude>real</magnitude>
 			-- <units>string</units>
@@ -103,13 +103,13 @@ feature {NONE} -- Initialisation
 
 feature -- Status Report
 
-	valid_canonical_string (str: STRING): BOOLEAN is
+	valid_canonical_string (str: STRING): BOOLEAN
 			-- True if `str' contains required tags.
 		do
 			Result := xml_has_tag (str, "magnitude", 1)
 		end
 
-	is_integral: BOOLEAN is
+	is_integral: BOOLEAN
 			-- True if precision = 0.
 		do
 			Result := precision = 0
@@ -129,14 +129,14 @@ feature -- Access
 
 feature -- Basic Operations
 
-	infix "+" (other: like Current): like Current is
+	infix "+" (other: like Current): like Current
 			-- Addition.
 			-- FIXME: "infix" is not part of ECMA Eiffel. Use plus alias "+".
 		do
 			create Result.make (magnitude + other.magnitude, units, precision)
 		end
 
-	infix "-" (other: like Current): like Current is
+	infix "-" (other: like Current): like Current
 			-- Subtraction.
 			-- FIXME: "infix" is not part of ECMA Eiffel. Use minus alias "-".
 		do
@@ -156,7 +156,7 @@ feature -- Basic Operations
 
 feature -- Modification
 
-	set_units (a_units: STRING) is
+	set_units (a_units: STRING)
 			-- Set units.
 		require
 			units_attached: a_units /= Void
@@ -175,7 +175,7 @@ feature -- Modification
 			units_set_else_unchanged: units.string.same_string (old units.string) or units.same_string (a_units)
 		end
 
-	set_precision (n: INTEGER) is
+	set_precision (n: INTEGER)
 			-- Set precision to `n' decimal places.
 		require
 			precision_valid: n >= 1
@@ -187,7 +187,7 @@ feature -- Modification
 
 feature -- Comparison
 
-	is_strictly_comparable_to (other: like Current): BOOLEAN is
+	is_strictly_comparable_to (other: like Current): BOOLEAN
 			-- two quantities are strictly comparable if they are measuring the same property
 			-- Ideally, we would allow different units within the same property, but there is
 			-- no converter currently implemented, so we also require that the units are identical
@@ -199,7 +199,7 @@ feature -- Comparison
 
 feature -- Output
 
-	as_canonical_string: STRING is
+	as_canonical_string: STRING
 			-- standardised form of string guaranteed to contain all information
 			-- in data item
 		do
@@ -208,7 +208,7 @@ feature -- Output
 			Result.append ("<precision>" + precision.out + "</precision>")
 		end
 
-	magnitude_as_string: STRING is
+	magnitude_as_string: STRING
 			-- The magnitude in its natural form.
 		local
 			formatter: FORMAT_DOUBLE

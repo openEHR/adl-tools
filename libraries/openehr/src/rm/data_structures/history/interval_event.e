@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Structures Reference Model"
 	
 	description: "[
@@ -40,7 +40,7 @@ feature -- Access
 			-- number of original point samples to which this interval example
 			-- corresponds
 
-	interval_start_time: DV_DATE_TIME is
+	interval_start_time: DV_DATE_TIME
 			-- time point of the start of the interval
 		do
 			Result := time.subtract(width)

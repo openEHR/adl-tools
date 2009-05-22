@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Common Reference Model"
 
 	description: "[
@@ -27,9 +27,9 @@ inherit
 
 feature -- Initialization
 
-	make(a_system_id: STRING; a_committer: PARTY_PROXY; 
+	make(a_system_id: STRING; a_committer: PARTY_PROXY;
 						a_time_committed: DV_DATE_TIME; a_change_type: DV_CODED_TEXT;
-						a_description: DV_TEXT) is
+						a_description: DV_TEXT)
 		require
 			a_system_id_valid: a_system_id /= Void and then not a_system_id.is_empty
 			a_committer_valid: a_committer /= Void
@@ -51,13 +51,13 @@ feature -- Initialization
 
 feature -- Access
 
-	system_id: STRING	
+	system_id: STRING
 			-- Identity of the node where the item was committed.
 
-	committer: PARTY_PROXY	
+	committer: PARTY_PROXY
 			-- Identity of party who committed the item.
 
-	time_committed: DV_DATE_TIME	
+	time_committed: DV_DATE_TIME
 			-- Time of committal of the item.
 
 	change_type: DV_CODED_TEXT
@@ -69,9 +69,9 @@ feature -- Access
 invariant
 	System_id_exists: system_id /= Void and then not system_id.is_empty
 	Committer_exists: committer /= Void
-	Time_committed_exists: time_committed /= Void	
-	Change_type_exists: change_type /= Void and then 
-		terminology(Terminology_id_openehr).has_code_for_group_id(Group_id_audit_change_type, change_type.defining_code)			
+	Time_committed_exists: time_committed /= Void
+	Change_type_exists: change_type /= Void and then
+		terminology(Terminology_id_openehr).has_code_for_group_id (Group_id_audit_change_type, change_type.defining_code)
 
 end
 

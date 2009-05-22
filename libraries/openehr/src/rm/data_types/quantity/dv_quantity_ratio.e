@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Types"
 
 	description: "[
@@ -37,15 +37,15 @@ create
 
 feature -- Initialization
 	
-	make_from_string(str:STRING) is
+	make_from_string(str:STRING)
 		do
 		end
 
-	make_from_canonical_string(str:STRING) is
+	make_from_canonical_string(str:STRING)
 		do
 		end
 
-	default_create is
+	default_create
 		local
 			q1, q2: DV_QUANTITY
 		do
@@ -57,7 +57,7 @@ feature -- Initialization
 			value_default: numerator.magnitude = 0 and denominator.magnitude = 0
 		end
 
-	make (num, denom: DV_QUANTIFIED) is
+	make (num, denom: DV_QUANTIFIED)
 		require
 			numerator_exists: num /= void
 			denominator_exists: denom /= void
@@ -71,7 +71,7 @@ feature -- Initialization
 
 feature -- Status Report
 
-	valid_canonical_string(str: STRING): BOOLEAN is
+	valid_canonical_string(str: STRING): BOOLEAN
 			-- True if str contains required tags
 		do
 		end
@@ -86,13 +86,13 @@ feature -- Access
 	
 feature -- Output
 
-	as_string: STRING is
+	as_string: STRING
 			-- string form displayable for humans
 		do
 			Result := numerator.as_string + ":" + denominator.as_string
 		end
 	
-	as_canonical_string: STRING is
+	as_canonical_string: STRING
 			-- Output in form of string of form "<numerator>" + numerator.as_canonical_string + "</numerator>" +
 			--	"<denominator>" + denominator.as_canonical_string + "</denominator>" 
 		do

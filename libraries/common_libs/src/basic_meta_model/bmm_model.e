@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR re-usable library"
 	description: "Basic Meta-model model abstraction"
 	keywords:    "model, UML"
@@ -29,7 +29,7 @@ inherit
 
 feature -- Initialisation
 
-	make_dt is
+	make_dt
 			-- make in a safe way for DT building purposes
 		local
 			a: BMM_SINGLE_PROPERTY
@@ -54,7 +54,7 @@ feature -- Access
 	class_definitions: HASH_TABLE [BMM_CLASS_DEFINITION, STRING]
 			-- constructed classes
 
-	class_definition (a_type_name: STRING): BMM_CLASS_DEFINITION is
+	class_definition (a_type_name: STRING): BMM_CLASS_DEFINITION
 			-- retrieve the class definition corresponding to `a_type_name' (which contain a generic part)
 			-- from either `primitive_types' or `classes'
 		require
@@ -72,7 +72,7 @@ feature -- Access
 			Result_exists: Result /= Void
 		end
 
-	property_definition (a_type_name, a_prop_name: STRING): BMM_PROPERTY_DEFINITION is
+	property_definition (a_type_name, a_prop_name: STRING): BMM_PROPERTY_DEFINITION
 			-- retrieve the property definition for `a_prop_name' in flattened class corresponding to `a_type_name'
 		require
 			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
@@ -86,14 +86,14 @@ feature -- Access
 			Result_exists: Result /= Void
 		end
 
-	status: STRING is
+	status: STRING
 			-- status report on model
 		do
 			create Result.make(0)
 			Result.append (create_message ("model_access_i1", << model_name, model_release, primitive_types.count.out, class_definitions.count.out >>))
 		end
 
-	ancestor_classes_of (a_class_name: STRING): ARRAYED_LIST [STRING] is
+	ancestor_classes_of (a_class_name: STRING): ARRAYED_LIST [STRING]
 			-- return all ancestor types of `a_class_name' up to root class (usually 'ANY', 'Object' or something similar)
 			-- does  not include current class. Returns empty list if none.
 		require
@@ -113,7 +113,7 @@ feature -- Access
 
 feature -- Status Report
 
-	has_class_definition (a_type_name: STRING): BOOLEAN is
+	has_class_definition (a_type_name: STRING): BOOLEAN
 			-- True if `a_type_name' has a class definition in the model. Note that a_type_name
 			-- could be a generic type string; only the root class is considered
 		require
@@ -125,7 +125,7 @@ feature -- Status Report
 			Result := primitive_types.has (a_class_name) or class_definitions.has (a_class_name)
 		end
 
-	has_property (a_type_name, a_prop_name: STRING): BOOLEAN is
+	has_property (a_type_name, a_prop_name: STRING): BOOLEAN
 			-- True if `a_type_name'  (which contain a generic part) has an property named `a_prop_name'
 		require
 			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
@@ -134,7 +134,7 @@ feature -- Status Report
 			Result := class_definition (a_type_name).has_property(a_prop_name)
 		end
 
-	is_sub_class_of (a_class, a_parent_class: STRING): BOOLEAN is
+	is_sub_class_of (a_class, a_parent_class: STRING): BOOLEAN
 			-- True if `a_class' is a sub-class in the model of `a_parent_class'
 		require
 			Sub_class_valid: a_class /= Void not a_class.is_empty
@@ -143,7 +143,7 @@ feature -- Status Report
 			Result := True
 		end
 
-	valid_type_for_class(a_class_name, a_type_name: STRING): BOOLEAN is
+	valid_type_for_class(a_class_name, a_type_name: STRING): BOOLEAN
 			-- True if `a_type_name' is valid with respect to this class. Will always be true for
 			-- non-generic types, but needs to be checked for generic / container types
 		require
@@ -212,7 +212,7 @@ feature -- Commands
 
 feature {DT_OBJECT_CONVERTER} -- Conversion
 
-	persistent_attributes: ARRAYED_LIST[STRING] is
+	persistent_attributes: ARRAYED_LIST[STRING]
 			-- list of attribute names to persist as DT structure
 			-- empty structure means all attributes
 		do
@@ -220,7 +220,7 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 
 feature {NONE} -- Implementation
 
-	type_to_class (a_type_name: STRING): STRING is
+	type_to_class (a_type_name: STRING): STRING
 			-- convert a type name which might have a generic part to a simple class name
 		require
 			Type_valid: a_type_name /= Void and then not a_type_name.is_empty

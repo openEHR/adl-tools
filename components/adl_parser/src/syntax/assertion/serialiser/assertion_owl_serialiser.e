@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 			 Serialise archetype assertions to OWL abstract syntax
@@ -20,17 +20,17 @@ inherit
 	
 	OWL_DEFINITIONS
 	
-creation
+create
 	make
 
 feature -- Modification
 
-	start_assertion(a_node: ARRAYED_LIST[ASSERTION]; depth: INTEGER) is
+	start_assertion(a_node: ARRAYED_LIST[ASSERTION]; depth: INTEGER)
 			-- start serialising an ASSERTION
 		do
 		end
 		
-	end_assertion(a_node: ARRAYED_LIST[ASSERTION]; depth: INTEGER) is
+	end_assertion(a_node: ARRAYED_LIST[ASSERTION]; depth: INTEGER)
 			-- end serialising an ASSERTION
 		do	
 		end

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "cADL serialisers"
 	keywords:    "test, ADL"
@@ -15,11 +15,11 @@ class SHARED_DT_SERIALISERS
 
 feature -- Access
 
-	dt_serialiser_formats: ARRAYED_LIST[STRING] is
+	dt_serialiser_formats: ARRAYED_LIST[STRING]
 			-- list of format names
 		once
 			create Result.make(0)
-			from 
+			from
 				dt_serialisers.start
 			until
 				dt_serialisers.off
@@ -30,7 +30,7 @@ feature -- Access
 			Result.compare_objects
 		end
 
-	dt_serialiser_for_format(a_format:STRING): DT_SERIALISER is
+	dt_serialiser_for_format (a_format: STRING): DT_SERIALISER
 			-- get a specific ADL serialiser
 		require
 			Format_valid: a_format /= Void and then has_dt_serialiser_format(a_format)
@@ -39,20 +39,20 @@ feature -- Access
 		ensure
 			Result_exists: Result /= Void
 		end
-		
+
 feature -- Status Report
 
-	has_dt_serialiser_format(a_format:STRING): BOOLEAN is
-			-- 
+	has_dt_serialiser_format (a_format: STRING): BOOLEAN
+			--
 		require
 			a_format /= Void
 		do
 			Result := dt_serialisers.has(a_format)
 		end
-	
+
 feature {NONE} -- Implementation
 
-	dt_serialisers: HASH_TABLE [DT_SERIALISER, STRING] is
+	dt_serialisers: HASH_TABLE [DT_SERIALISER, STRING]
 		once
 			create Result.make(0)
 		end

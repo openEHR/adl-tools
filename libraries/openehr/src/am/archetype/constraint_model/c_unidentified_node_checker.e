@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Archetype visitor to look for attributes that are either multiple or have multiple alternatives, whose
@@ -30,7 +30,7 @@ create
 
 feature -- Initialisation
 
-	initialise(an_ontology: ARCHETYPE_ONTOLOGY) is
+	initialise(an_ontology: ARCHETYPE_ONTOLOGY)
 			-- set ontology required for interpreting meaning of object nodes
 		require
 			Ontology_valid: an_ontology /= Void
@@ -45,7 +45,7 @@ feature -- Access
 
 feature -- Visitor
 
-	start_c_attribute(a_node: C_ATTRIBUTE; depth: INTEGER) is
+	start_c_attribute(a_node: C_ATTRIBUTE; depth: INTEGER)
 			-- FIXME: this can probably be done in a smarter way by an analysis of paths?
 		local
 			a_c_c_o, a_c_c_o_2: C_COMPLEX_OBJECT

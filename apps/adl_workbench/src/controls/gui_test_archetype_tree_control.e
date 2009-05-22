@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Populate ontology controls in ADL test workbench"
 	keywords:    "ADL"
@@ -52,16 +52,16 @@ create
 
 feature -- Definitions
 
-	First_test_col: INTEGER is 3
+	First_test_col: INTEGER = 3
 			-- Number of first column in grid to be used for test results.
 
-	Test_passed: INTEGER is 101
+	Test_passed: INTEGER = 101
 
-	Test_failed: INTEGER is 102
+	Test_failed: INTEGER = 102
 
-	Test_not_applicable: INTEGER is 103
+	Test_not_applicable: INTEGER = 103
 
-	Test_unknown: INTEGER is 104
+	Test_unknown: INTEGER = 104
 
 feature {NONE} -- Initialisation
 
@@ -78,7 +78,7 @@ feature {NONE} -- Initialisation
 
 feature -- Access
 
-	tests: DS_HASH_TABLE [FUNCTION [ANY, TUPLE, INTEGER], STRING] is
+	tests: DS_HASH_TABLE [FUNCTION [ANY, TUPLE, INTEGER], STRING]
 			-- table of test routines
 		once
 			create Result.make (0)
@@ -108,14 +108,14 @@ feature -- Status Setting
 
 feature -- Commands
 
-	clear is
+	clear
 			-- Wipe out content from widgets.
 		do
 			grid.wipe_out
 			gui.test_status_area.remove_text
 		end
 
-	populate is
+	populate
 			-- populate the ADL tree control by creating it from scratch
 		local
 			gli: EV_GRID_LABEL_ITEM
@@ -157,7 +157,7 @@ feature -- Commands
 			gui.remove_unused_codes_rb.disable_select
 		end
 
-	archetype_test_go_stop is
+	archetype_test_go_stop
 			-- Start or stop a test run.
 		local
 			dialog: EV_WARNING_DIALOG
@@ -195,7 +195,7 @@ feature -- Commands
 			end
 		end
 
-	run_tests is
+	run_tests
 			-- Execute tests on all marked archetypes.
 		local
 			row_csr: INTEGER
@@ -224,7 +224,7 @@ feature -- Commands
 			res_label: STRING
 			test_result: INTEGER
 		do
-			if {checkbox: !EV_GRID_CHECKABLE_LABEL_ITEM} row.item (2) and then checkbox.is_checked then
+			if attached {EV_GRID_CHECKABLE_LABEL_ITEM} row.item (2) as checkbox and then checkbox.is_checked then
 				target ?= row.data
 
 				if target /= Void then
@@ -275,7 +275,7 @@ feature -- Commands
 			end
 		end
 
-	toggle_expand_tree is
+	toggle_expand_tree
 			-- toggle expanded status of tree view
 		do
 			if is_expanded then
@@ -289,7 +289,7 @@ feature -- Commands
 			end
 		end
 
-   	set_row_pixmap (row: EV_GRID_ROW) is
+   	set_row_pixmap (row: EV_GRID_ROW)
    			-- Set the icon appropriate to the item attached to `row'.
 		require
 			row_attached: row /= Void
@@ -338,7 +338,7 @@ feature -- Commands
 
 feature {NONE} -- Tests
 
-	test_parse: INTEGER is
+	test_parse: INTEGER
 			-- parse archetype and return result
 		local
 			unused_at_codes, unused_ac_codes: ARRAYED_LIST [STRING]
@@ -373,7 +373,7 @@ feature {NONE} -- Tests
 			end
 		end
 
-	test_save_flat: INTEGER is
+	test_save_flat: INTEGER
 			-- parse archetype, save in flat form and return result
 		do
 			Result := test_failed
@@ -389,7 +389,7 @@ feature {NONE} -- Tests
 			end
 		end
 
-	test_save_differential: INTEGER is
+	test_save_differential: INTEGER
 			-- parse archetype, save in source form and return result
 		do
 			Result := test_failed
@@ -409,7 +409,7 @@ feature {NONE} -- Tests
 			test_orig_differential_source_attached: test_orig_differential_source /= Void
 		end
 
-	test_reparse_differential: INTEGER is
+	test_reparse_differential: INTEGER
 			-- parse archetype and return result
 		do
 			Result := test_failed
@@ -423,7 +423,7 @@ feature {NONE} -- Tests
 			end
 		end
 
-	test_diff: INTEGER is
+	test_diff: INTEGER
 			-- parse archetype and return result
 		require
 			test_orig_differential_source_attached: test_orig_differential_source /= Void
@@ -464,7 +464,7 @@ feature {NONE} -- Implementation
 	target: ARCH_REP_ARCHETYPE
 			-- current target of compilation operation
 
-	populate_gui_tree_node_enter (an_item: ARCH_REP_ITEM) is
+	populate_gui_tree_node_enter (an_item: ARCH_REP_ITEM)
 			-- Add a node representing `an_item' to `gui_file_tree'.
 		require
 			an_item /= Void
@@ -502,7 +502,7 @@ feature {NONE} -- Implementation
 			grid_row_stack.extend (row)
 		end
 
-	populate_gui_tree_node_exit (an_item: ARCH_REP_ITEM) is
+	populate_gui_tree_node_exit (an_item: ARCH_REP_ITEM)
 		do
 			grid_row_stack.remove
 		end
@@ -564,7 +564,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	display_arrayed_list (str_lst: ARRAYED_LIST [STRING]): STRING is
+	display_arrayed_list (str_lst: ARRAYED_LIST [STRING]): STRING
 			--
 		require
 			str_lst /= Void

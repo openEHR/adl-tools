@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Structures Reference Model"
 
 	description: "[
@@ -49,12 +49,12 @@ feature -- Access
 			-- duration of all the events, and/or the duration represented by
 			-- the summary, if it exists
 
-	path_of_item (a_loc: LOCATABLE): STRING is
+	path_of_item (a_loc: LOCATABLE): STRING
 			-- The path to an item relative to the root of this archetyped structure.
 		do
 		end
 
-	item_at_path (a_path: STRING): LOCATABLE is
+	item_at_path (a_path: STRING): LOCATABLE
 			-- The item at a path (relative to this item).
 		do
 		end
@@ -66,7 +66,7 @@ feature -- Access
 
 feature -- Status Report
 
-	path_exists (a_path: STRING): BOOLEAN is
+	path_exists (a_path: STRING): BOOLEAN
 			-- True if the path is valid with respect to the current item.
 		do
 		end
@@ -76,7 +76,7 @@ feature -- Status Report
 
 feature -- Conversion
 
-	as_hierarchy: CLUSTER is
+	as_hierarchy: CLUSTER
 			-- the physical representation as a CEN 13606-compliant structure
 		do
 		end

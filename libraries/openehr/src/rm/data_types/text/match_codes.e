@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Types"
 
 	description: "[
@@ -27,10 +27,10 @@ indexing
 
 
 class MATCH_CODES
-	
+
 feature -- Access
 
-	match_codes: HASH_TABLE [STRING, CHARACTER] is
+	match_codes: HASH_TABLE [STRING, CHARACTER]
 			-- correspondence of match codes and meanings
 		once
 			create Result.make(0)
@@ -40,7 +40,7 @@ feature -- Access
 			Result.put("unknown", '?')
 		end
 
-	match_code_meaning(a_code: CHARACTER):STRING is
+	match_code_meaning (a_code: CHARACTER): STRING
 		require
 			is_valid_match_code(a_code)
 		do
@@ -49,11 +49,11 @@ feature -- Access
 
 feature -- Status
 
-	is_valid_match_code(c: CHARACTER):BOOLEAN is
+	is_valid_match_code (c: CHARACTER): BOOLEAN
 		do
 			Result := c = '<' or c = '=' or c = '>' or c = '?'
 		end
-	
+
 end
 
 

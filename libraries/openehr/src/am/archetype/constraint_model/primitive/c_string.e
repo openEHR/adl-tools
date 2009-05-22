@@ -1,4 +1,4 @@
-indexing
+note
 
 	component:   "openEHR Common Archetype Model"
 
@@ -26,21 +26,21 @@ create
 
 feature -- Definitions
 
-	default_delimiter: CHARACTER is '/'
+	default_delimiter: CHARACTER = '/'
 
-	alternative_delimiter: CHARACTER is '^'
+	alternative_delimiter: CHARACTER = '^'
 
-	Regexp_compile_error: STRING is "regexp COMPILE ERROR"
+	Regexp_compile_error: STRING = "regexp COMPILE ERROR"
 
 feature -- Initialization
 
-	make_any is
+	make_any
 			-- make completely open
 		do
 			is_open := True
 		end
 
-	make_from_string(str: STRING) is
+	make_from_string(str: STRING)
 			-- make from a single string
 		require
 			str /= Void
@@ -52,7 +52,7 @@ feature -- Initialization
 			not is_open
 		end
 
-	make_from_regexp(str: STRING; using_default_delimiter: BOOLEAN) is
+	make_from_regexp(str: STRING; using_default_delimiter: BOOLEAN)
 			-- make from a regular expression contained in 'str' (not including delimiters);
 			-- if `using_default_delimiter' is True, the '/' delimiter is being used,
 			-- else the '^' delimiter is being used
@@ -70,7 +70,7 @@ feature -- Initialization
 			regexp.is_equal(str) xor regexp.is_equal(Regexp_compile_error)
 		end
 
-	make_from_string_list(lst: LIST[STRING]) is
+	make_from_string_list(lst: LIST[STRING])
 		require
 			lst /= Void
 		do
@@ -84,12 +84,12 @@ feature -- Initialization
 
 feature -- Modification
 
-	set_open is
+	set_open
 		do
 			is_open := True
 		end
 
-	add_string(str: STRING) is
+	add_string(str: STRING)
 		require
 			str /= Void
 		do
@@ -104,7 +104,7 @@ feature -- Access
 	regexp: STRING
 			-- representation of constraint as PERL-compliant regexp pattern
 
-	prototype_value: STRING is
+	prototype_value: STRING
 			-- 	generate a default value from this constraint object
 		do
 			if strings /= Void then
@@ -122,7 +122,7 @@ feature -- Access
 			Result /= Void
 		end
 
-	regexp_delimiter: CHARACTER is
+	regexp_delimiter: CHARACTER
 			-- return correct delimiter according to `regexp_default_delimiter'
 		do
 			if regexp_default_delimiter then
@@ -139,7 +139,7 @@ feature -- Status Report
 
 feature -- Status Report
 
-	valid_value (a_value: STRING): BOOLEAN is
+	valid_value (a_value: STRING): BOOLEAN
 		do
 			if is_open then
 				Result := True
@@ -156,7 +156,7 @@ feature -- Status Report
 
 feature -- Comparison
 
-	node_conforms_to (other: like Current): BOOLEAN is
+	node_conforms_to (other: like Current): BOOLEAN
 			-- True if this node is a subset of, or the same as `other'
 		do
 			-- FIXME: TO BE IMPLEMENTED
@@ -164,7 +164,7 @@ feature -- Comparison
 
 feature -- Output
 
-	as_string:STRING is
+	as_string: STRING
 		do
 			create Result.make(0)
 
@@ -196,7 +196,7 @@ feature -- Output
 
 		end
 
-	clean_as_string(cleaner: FUNCTION [ANY, TUPLE[STRING], STRING]):STRING is
+	clean_as_string (cleaner: FUNCTION [ANY, TUPLE [STRING], STRING]): STRING
 			-- generate a cleaned form of this object as a string, using `cleaner' to do the work
 		do
 			create Result.make(0)
@@ -229,7 +229,7 @@ feature -- Output
 
 		end
 
-	as_canonical_string:STRING is
+	as_canonical_string: STRING
 		do
 		end
 

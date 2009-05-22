@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "[
 			     Enumeration of message types
@@ -18,13 +18,13 @@ deferred class BILLBOARD_MESSAGE_TYPES
 
 feature -- Definitions
 
-	Message_type_info: INTEGER is 9001
-	Message_type_warning: INTEGER is 9002
-	Message_type_error: INTEGER is 9003
+	Message_type_info: INTEGER = 9001
+	Message_type_warning: INTEGER = 9002
+	Message_type_error: INTEGER = 9003
 
 feature -- Access
 
-	message_type_names: DS_HASH_TABLE [STRING, INTEGER] is
+	message_type_names: DS_HASH_TABLE [STRING, INTEGER]
 			-- names of message types
 		once
 			create Result.make(0)
@@ -33,7 +33,7 @@ feature -- Access
 			Result.force("INFO", Message_type_info)
 		end
 
-	message_type_ids: DS_HASH_TABLE [INTEGER, STRING] is
+	message_type_ids: DS_HASH_TABLE [INTEGER, STRING]
 			-- ids of message types
 		once
 			create Result.make(0)
@@ -44,7 +44,7 @@ feature -- Access
 
 feature -- Status Report
 
-	is_valid_message_type(i: INTEGER): BOOLEAN is
+	is_valid_message_type(i: INTEGER): BOOLEAN
 		do
 			Result := i >= Message_type_info and i <= Message_type_error
 		end

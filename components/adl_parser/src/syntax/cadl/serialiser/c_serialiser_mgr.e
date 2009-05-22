@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Serialiser Manager for archetype definition"
 	keywords:    "archetype constraint definition"
@@ -22,7 +22,7 @@ create
 
 feature -- Initialisation
 
-	make(a_target: C_COMPLEX_OBJECT; format: STRING; an_ontology: ARCHETYPE_ONTOLOGY) is
+	make(a_target: C_COMPLEX_OBJECT; format: STRING; an_ontology: ARCHETYPE_ONTOLOGY)
 			-- create a new manager targetted to the parse tree `a_target'
 		require
 			Target_exists: a_target /= Void
@@ -36,7 +36,7 @@ feature -- Initialisation
 
 feature -- Command
 
-	serialise is
+	serialise
 			-- start the serialisation process; the result will be in `serialiser_output'
 		do
 			do_all
@@ -45,7 +45,7 @@ feature -- Command
 
 feature -- Access
 
-	last_result: STRING is
+	last_result: STRING
 		do
 			Result := visitor.last_result
 		end
@@ -54,12 +54,12 @@ feature {NONE} -- Implementation
 
 	visitor: C_SERIALISER
 
-	node_enter_action(a_node: OG_ITEM; indent_level: INTEGER) is
+	node_enter_action(a_node: OG_ITEM; indent_level: INTEGER)
 		do
 			a_node.enter_subtree(visitor, indent_level)
 		end
 
-	node_exit_action(a_node: OG_ITEM; indent_level: INTEGER) is
+	node_exit_action(a_node: OG_ITEM; indent_level: INTEGER)
 		do
 			a_node.exit_subtree(visitor, indent_level)
 		end

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Types Archetype Model"
 
 	description: "Time Specification test suite"
@@ -18,12 +18,12 @@ class TS_C_TIME_SPECIFICATION
 inherit 
 	TEST_SUITE
 
-creation
+create
 	make
 
 feature -- Access
 
-	test_cases: LINKED_LIST[TEST_CASE] is
+	test_cases: LINKED_LIST[TEST_CASE]
 		local
 			tc: TEST_CASE
 		once
@@ -32,16 +32,16 @@ feature -- Access
 			create {TC_C_DV_PERIODIC_TIME_SPECIFICATION} tc.make(Void) 		Result.extend(tc)
 		end
 
-	title:STRING is "C_Time_specification tests"
+	title:STRING = "C_Time_specification tests"
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 	    do
 
 	    end
 
-	finalise is
+	finalise
 	    do
 	    end
 

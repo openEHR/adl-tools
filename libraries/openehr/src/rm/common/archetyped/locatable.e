@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Common Reference Model"
 	description: "[
 				 Root class of all information model classes that can be archetyped.
@@ -47,7 +47,7 @@ feature -- Access
 
 feature -- Status Report
 
-	is_archetype_root: BOOLEAN is
+	is_archetype_root: BOOLEAN
 			-- True if root point of an archetyped structure
 		do
 			Result := archetype_details /= Void

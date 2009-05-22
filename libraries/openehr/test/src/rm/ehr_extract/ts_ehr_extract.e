@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR EHR Extract Reference Model"
 
 	description: "EHR Extract test suite"
@@ -18,12 +18,12 @@ class TS_EHR_EXTRACT
 inherit 
 	TEST_SUITE
 
-creation
+create
 	make
 
 feature -- Access
 
-	test_cases: LINKED_LIST[TEST_CASE] is
+	test_cases: LINKED_LIST[TEST_CASE]
 		local
 			tc:TEST_CASE
 		once
@@ -33,11 +33,11 @@ feature -- Access
 			create {TC_SYNC_EXTRACT} tc.make(Void) 		Result.extend(tc)
 		end
 
-	title:STRING is "EHR Extract tests"
+	title:STRING = "EHR Extract tests"
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 	    do
 
 	    end

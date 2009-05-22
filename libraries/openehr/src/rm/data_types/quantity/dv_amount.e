@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Types"
 
 	description: "[
@@ -40,7 +40,7 @@ feature -- Access
 
 feature -- Status Report
 
-	valid_canonical_string(str: STRING): BOOLEAN is
+	valid_canonical_string(str: STRING): BOOLEAN
 			-- True if str contains required tags
 		deferred
 		end
@@ -51,7 +51,7 @@ feature -- Status Report
 
 feature -- Comparison
 
-	valid_percentage(v: REAL):BOOLEAN is
+	valid_percentage (v: REAL): BOOLEAN
 			-- True if v between 0 and 1
 		local
 			a_comparable: COMPARABLE
@@ -62,7 +62,7 @@ feature -- Comparison
 
 feature -- Basic Operations
 
-	infix "+" (other: like Current): like Current is
+	plus alias "+" (other: like Current): like Current
 			-- addition
 		require
 			is_strictly_comparable_to(other)
@@ -71,7 +71,7 @@ feature -- Basic Operations
 			is_strictly_comparable_to(Result)
 		end
 
-	infix "-" (other: like Current): like Current is
+	minus alias "-" (other: like Current): like Current
 			-- difference
 		require
 			is_strictly_comparable_to(other)
@@ -82,7 +82,7 @@ feature -- Basic Operations
 
 feature -- Modification
 
-	set_accuracy(v: REAL; is_percent:BOOLEAN) is
+	set_accuracy (v: REAL; is_percent: BOOLEAN)
 			-- set accuracy as half-range v, flag indicates whether understood as a percentage or not
 		require
 			is_percent implies valid_percentage(v)
@@ -96,7 +96,7 @@ feature -- Modification
 
 feature -- Output
 
-	as_string: STRING is
+	as_string: STRING
 			-- string form displayable for humans
 		do
 			Result := magnitude_as_string
@@ -108,7 +108,7 @@ feature -- Output
 			end
 		end
 
-	as_canonical_string: STRING is
+	as_canonical_string: STRING
 			-- standardised form of string guaranteed to contain all information
 			-- in data item
 		do
@@ -119,11 +119,10 @@ feature -- Output
 			end
 		end
 
-	magnitude_as_string: STRING is
+	magnitude_as_string: attached STRING
 			-- output the magnitude in its natural form
 		deferred
 		ensure
-			attached: Result /= Void
 			not_empty: not Result.is_empty
 		end
 

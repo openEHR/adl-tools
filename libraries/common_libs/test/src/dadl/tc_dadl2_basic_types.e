@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "Test case for basic dADL types"
 	keywords:    "test, object graph, creation"
@@ -25,20 +25,20 @@ inherit
 			{NONE} all
 		end
 
-creation
+create
 	make
 
 feature -- Access
 
-	title:STRING is "dADL2 basic types"
+	title:STRING = "dADL2 basic types"
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 		do
 		end
 
-	execute is
+	execute
 		do
 			io.put_string("---------- original dADL (working types) -----------%N")
 			io.put_string(basic_types_dadl)
@@ -67,13 +67,13 @@ feature -- Initialisation
 
 feature -- Access
 
-	check_result is
+	check_result
 	    do
 	    end
 
 feature -- Implementation
 
-	basic_types_dadl: STRING is "an_obj = <			%N%
+	basic_types_dadl: STRING = "an_obj = <			%N%
 		%string_1 = <%"this is how it goes%"> 		%N%
 		%char_1 = <'p'>						%N%
 		%int_1 = <24>	 					%N%
@@ -107,7 +107,7 @@ feature -- Implementation
 		%>								%N%
 		%"
 
-	types_that_fail: STRING is "an_obj = <			%N%
+	types_that_fail: STRING = "an_obj = <			%N%
 		%interval_real_2 = <|5.0 +/-0.5|>			%N%
 		%>								%N%
 		%"

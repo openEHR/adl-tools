@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Common Reference Model"
 
 	description: "[
@@ -25,7 +25,7 @@ create
 
 feature -- Initialization
 
-	make(a_committer, a_committer_organisation: STRING; a_time_committed: DV_DATE_TIME; a_change_type: DV_CODED_TEXT) is
+	make(a_committer, a_committer_organisation: STRING; a_time_committed: DV_DATE_TIME; a_change_type: DV_CODED_TEXT)
 		require
 			a_committer_valid: a_committer /= Void
 			a_committer_organisation_valid: a_committer_organisation /= Void implies not a_committer_organisation.is_empty

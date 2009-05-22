@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reference Model"
 
 	description: "Reference Model testing application"
@@ -65,7 +65,7 @@ inherit
 
 feature {NONE} -- Initialization
 
-	user_initialization is
+	user_initialization
 			-- called by `initialize'.
 			-- Any custom user initialization that
 			-- could not be performed in `initialize',
@@ -86,13 +86,13 @@ feature {NONE} -- Initialization
 
 feature -- Template
 
-	test_init is
+	test_init
 			-- application-specific initialisation
    		do
 			test_initialised := True
 		end
 
-	test_suites: LINKED_LIST[TEST_SUITE] is
+	test_suites: LINKED_LIST[TEST_SUITE]
 		once
 			create Result.make
 			Result.extend(create {TS_DT_BASIC}.make(Void))
@@ -126,7 +126,7 @@ feature {NONE} -- Implementation
 	exception_encountered: BOOLEAN
 			-- True if last operation caused an exception
 	
-	populate_test_suite_list is
+	populate_test_suite_list
 			-- 
 		local
 			ts_list: ARRAYED_LIST[STRING]
@@ -143,7 +143,7 @@ feature {NONE} -- Implementation
 			test_suite_list.set_strings (ts_list)
 		end
 
-	select_test_suite is
+	select_test_suite
 		local
 			tc_list: ARRAYED_LIST [STRING]
 		do
@@ -163,7 +163,7 @@ feature {NONE} -- Implementation
 	selected_test_suite: TEST_SUITE
 			-- curently selected test suite
 			
-	run_test_case is
+	run_test_case
 		local
 			tc: TEST_CASE
 		do
@@ -183,7 +183,7 @@ feature {NONE} -- Implementation
 			retry			
 		end
 
-	exit_app is
+	exit_app
 			-- 
 		do
 			((create {EV_ENVIRONMENT}).application).destroy

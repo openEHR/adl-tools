@@ -1,5 +1,5 @@
 %{
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Validating parser for Archetype Description Language (ADL)"
 	keywords:    "ADL, dADL"
@@ -1521,14 +1521,14 @@ path_segment: V_ATTRIBUTE_IDENTIFIER '[' V_STRING ']'
 
 feature -- Initialization
 
-	make is
+	make
 			-- Create a new parser.
 		do
 			make_scanner
 			make_parser_skeleton
 		end
 
-	execute(in_text:STRING; a_source_start_line: INTEGER) is
+	execute (in_text:STRING; a_source_start_line: INTEGER)
 		do
 			reset_scanner
 			accept -- ensure no syntax errors lying around from previous invocation
@@ -1551,7 +1551,7 @@ feature -- Initialization
 
 feature {YY_PARSER_ACTION} -- Basic Operations
 
-	report_error (a_message: STRING) is
+	report_error (a_message: STRING)
 			-- Print error message.
 		local
 			f_buffer: YY_FILE_BUFFER
@@ -1583,11 +1583,11 @@ feature -- Access
 
 feature {NONE} -- Parse Tree
 
-	complex_object_nodes: ARRAYED_STACK[DT_COMPLEX_OBJECT_NODE]
+	complex_object_nodes: ARRAYED_STACK [DT_COMPLEX_OBJECT_NODE]
 	complex_object_node: DT_COMPLEX_OBJECT_NODE
 	last_object_node: DT_OBJECT_ITEM
 
-	attr_nodes: ARRAYED_STACK[DT_ATTRIBUTE_NODE]
+	attr_nodes: ARRAYED_STACK [DT_ATTRIBUTE_NODE]
 	attr_node: DT_ATTRIBUTE_NODE
 
 	obj_id: STRING

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "Test dadl simple object address part"
 	keywords:    "test, object graph, creation"

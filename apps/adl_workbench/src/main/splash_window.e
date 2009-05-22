@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Splash window"
 	keywords:    "test, ADL"
@@ -31,7 +31,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Create to be visible for at least 5 seconds.
 		local
 			screen: EV_SCREEN
@@ -45,7 +45,7 @@ feature {NONE} -- Initialization
 			timer.actions.extend (agent close)
 		end
 
-	initialize is
+	initialize
 			-- Add the openEHR and Ocean logos with the text label to their right.
 		local
 			hb, border: EV_HORIZONTAL_BOX
@@ -81,7 +81,7 @@ feature {NONE} -- Implementation
 	timer: EV_TIMEOUT
 			-- Timer to keep window visible for a limited number of seconds.
 
-	close is
+	close
 			-- Close the window and destroy `timer'.
 		do
 			timer.destroy

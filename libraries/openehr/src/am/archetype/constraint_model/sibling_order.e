@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Represents the order of this node with respect to sibling nodes of the same (ordered) parent"
 	keywords:    "specialisation, ADL"
@@ -18,7 +18,7 @@ create
 
 feature -- Initialisation
 
-	make_before(a_sibling_node_id: STRING) is
+	make_before(a_sibling_node_id: STRING)
 			-- make to indicate node is before another node
 		require
 			Sibling_node_id_valid: a_sibling_node_id /= Void and then not a_sibling_node_id.is_empty
@@ -30,7 +30,7 @@ feature -- Initialisation
 			Is_before: is_before
 		end
 
-	make_after(a_sibling_node_id: STRING) is
+	make_after(a_sibling_node_id: STRING)
 			-- make to indicate node is after another node
 		require
 			Sibling_node_id_valid: a_sibling_node_id /= Void and then not a_sibling_node_id.is_empty
@@ -49,24 +49,24 @@ feature -- Status Report
 
 	is_before: BOOLEAN
 
-	is_after: BOOLEAN is
+	is_after: BOOLEAN
 		do
 			Result := not is_before
 		end
 
 feature -- Output
 
-	as_string: STRING is
+	as_string: STRING
 			-- output as a string
 		do
 			create Result.make(0)
 
 			if is_before then
-				Result.append("before ")
+				Result.append ("before ")
 			else
-				Result.append("after ")
+				Result.append ("after ")
 			end
-			Result.append("[" + sibling_node_id + "]")
+			Result.append ("[" + sibling_node_id + "]")
 		end
 
 invariant

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Directory representation of a file-system archetype repository.
@@ -76,14 +76,13 @@ feature {NONE} -- Implementation
    		deferred
 		end
 
-	new_folder_node (path: STRING): like directory
+	new_folder_node (path: STRING): attached like directory
 			-- A newly-created folder for `path', ready to be added to `directory'.
 		require
 			path_valid: path /= Void and then path.substring_index (root_path, 1) = 1
    		do
 			create Result.make (create {ARCH_REP_FOLDER}.make (root_path, path, Current))
 		ensure
-			attached: Result /= Void
 			root_path_set: Result.item.root_path = root_path
 			full_path_set: Result.item.full_path = path
 			repository_set: Result.item.file_repository = Current

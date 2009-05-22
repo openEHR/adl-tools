@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "[
 			     In-memory implementation of message database abstraction
@@ -29,12 +29,12 @@ create
 
 feature -- Definitions
 
-	Default_message_language: STRING is "en"
+	Default_message_language: STRING = "en"
 			-- default language of messages in this database
 
 feature -- Initialisation
 
-	make is
+	make
 		local
 			parser: DADL2_VALIDATOR
 			dt_tree: DT_COMPLEX_OBJECT_NODE
@@ -57,7 +57,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	message_templates_text: STRING is
+	message_templates_text: STRING =
 			-- string form of message template tables in one language
 		"[
 		templates = <

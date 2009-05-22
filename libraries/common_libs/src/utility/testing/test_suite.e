@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "Test suite abstraction for simple test framework"
 	keywords:    "test"
@@ -22,12 +22,12 @@ inherit
 
 feature -- Access
 
-	test_cases: LINKED_LIST[TEST_CASE] is
+	test_cases: LINKED_LIST[TEST_CASE]
 			-- the list of tests available
 		deferred
 		end
 		
-	test_case_index: HASH_TABLE [TEST_CASE, STRING] is
+	test_case_index: HASH_TABLE [TEST_CASE, STRING]
 		do
 			if stored_test_case_index = Void then
 				create stored_test_case_index.make(0)
@@ -43,44 +43,44 @@ feature -- Access
 			Result := stored_test_case_index
 		end
 
-	title:STRING is
+	title:STRING
 	        -- title of this suite of tests
 	    deferred
 	    end
 
-	start is
+	start
 		do
 			test_cases.start
 		end
 		
-	forth is
+	forth
 		do
 			test_cases.forth
 		end
 		
-	off: BOOLEAN is
+	off: BOOLEAN
 		do
 			Result := test_cases.off
 		end
 		
-	item: TEST_CASE is
+	item: TEST_CASE
 		do
 			Result := test_cases.item
 		end
 		
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 		deferred
 		end
 
-	finalise is
+	finalise
 		do
 		end
 
 feature -- Execution
 
-	do_all is
+	do_all
 		local
 			str:STRING
 		do
@@ -105,7 +105,7 @@ feature -- Execution
 			io_message.put_string("---------------------------------%N")
 	    end
 
-	display_results is
+	display_results
 		do
 			io_output.put_string("RESULTS:%N")
 			from test_case_results.start until test_case_results.off loop
@@ -114,7 +114,7 @@ feature -- Execution
 			end
 		end
 
-	store_results(a_directory: STRING) is
+	store_results(a_directory: STRING)
 		require
 			Directory_exists: a_directory /= Void
 		local

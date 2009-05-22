@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Path map control and logic"
 	keywords:    "ADL"
@@ -45,7 +45,7 @@ create
 
 feature {NONE} -- Initialisation
 
-	make (a_main_window: MAIN_WINDOW) is
+	make (a_main_window: MAIN_WINDOW)
 			-- create tree control repersenting archetype files found in repository_path
 		require
 			a_main_window /= Void
@@ -73,13 +73,13 @@ feature -- Status
 
 feature -- Commands
 
-	clear is
+	clear
 			-- wipe out content from controls
 		do
 			path_list.wipe_out
 		end
 
-	populate is
+	populate
 			-- Populate `path_list'.
 		local
 			list_row: EV_MULTI_COLUMN_LIST_ROW
@@ -140,7 +140,7 @@ feature -- Commands
 			populate
 		end
 
-	adjust_columns is
+	adjust_columns
 			-- Adjust column view of paths control according to `column_check_list'.
 		local
 			i: INTEGER
@@ -164,7 +164,7 @@ feature -- Commands
 			end
 		end
 
-	set_filter is
+	set_filter
 			-- Called by `select_actions' of `filter_combo'.
 		do
 			if path_list.is_displayed then
@@ -172,7 +172,7 @@ feature -- Commands
 			end
 		end
 
-	copy_path_to_clipboard is
+	copy_path_to_clipboard
 			-- copy a selected path row from the paths control to the OS clipboard
 		local
 			ev_rows: DYNAMIC_LIST[EV_MULTI_COLUMN_LIST_ROW]
@@ -195,7 +195,7 @@ feature -- Commands
 					until
 						ev_col.off
 					loop
-						copy_text.append(ev_col.item.string + "%N")
+						copy_text.append (ev_col.item.string + "%N")
 						ev_col.forth
 					end
 
@@ -211,7 +211,7 @@ feature {NONE} -- Implementation
 	gui: MAIN_WINDOW
 			-- main window of system
 
-	target_archetype: ARCHETYPE is
+	target_archetype: ARCHETYPE
 			-- differential or flat version of archetype, depending on setting of `in_differential_mode'
 		require
 			archetype_directory.has_selected_archetype

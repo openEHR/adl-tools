@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 			 Storage on Eiffel side for objects created by factory and other routines.
@@ -21,7 +21,7 @@ create
 
 feature -- Initialisation
 
-	make is
+	make
 		do
 			-- C_OBJECTs
 			create c_objects.make(0) -- used for routines which are defined on C_OBJECT
@@ -50,13 +50,13 @@ feature -- Initialisation
 
 feature -- Access
 
-	new_handle: INTEGER is
+	new_handle: INTEGER
 		do
 			last_handle := last_handle + 1
 			Result := last_handle
 		end
 
-	set_archetype_definition_handle(a_handle: INTEGER) is
+	set_archetype_definition_handle(a_handle: INTEGER)
 			-- record handle of archetype.definition in c_complex_objects hash
 		do
 			archetype_definition_handle := a_handle

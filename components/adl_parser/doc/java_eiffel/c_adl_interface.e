@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "C wrapper for ADL_INTERFACE"
 	keywords:    "C wrapper"
@@ -24,13 +24,13 @@ create
 	
 feature -- Initialisation
 
-	make is
+	make
 		do
 		end
 
 feature -- Access
 	
-	status: POINTER is 
+	status: POINTER 
 			-- status of last operation
 		local
 			obj: ANY
@@ -39,7 +39,7 @@ feature -- Access
 			Result := $obj
 		end		
 		
-	serialised_archetype: POINTER is
+	serialised_archetype: POINTER
 			-- call after loading and parsing, if no errors encountered
 			-- require
 			--  archetype_available
@@ -52,48 +52,48 @@ feature -- Access
 
 feature -- Status Report
 
-	archetype_source_loaded: BOOLEAN is
+	archetype_source_loaded: BOOLEAN
 			-- True if an ADL file has been opened and loaded
 		do
 			Result := impl.archetype_source_loaded
 		end
 
-	parse_succeeded: BOOLEAN is
+	parse_succeeded: BOOLEAN
 			-- True if parse has been successfully executed
 		do
 			Result := impl.parse_succeeded
 		end
 			
-	save_succeeded: BOOLEAN is
+	save_succeeded: BOOLEAN
 			-- True if last save operation was successful
 		do
 			Result := impl.save_succeeded
 		end
 
-	archetype_available: BOOLEAN is
+	archetype_available: BOOLEAN
 		do
 			Result := impl.archetype_available
 		end
 		
-	archetype_valid: BOOLEAN is
+	archetype_valid: BOOLEAN
 		do
 			Result := impl.archetype_valid
 		end
 		
-	file_changed_on_disk: BOOLEAN is
+	file_changed_on_disk: BOOLEAN
 			-- True if loaded archetype has changed on disk since last read;
 			-- To fix, call resync_file
 		do
 			Result := impl.file_changed_on_disk
 		end
 		
-	exception_encountered: BOOLEAN is
+	exception_encountered: BOOLEAN
 			-- True if last operation caused an exception
 		do
 			Result := impl.exception_encountered
 		end
 		
-	has_archetype_serialiser_format(a_format: POINTER): BOOLEAN is
+	has_archetype_serialiser_format(a_format: POINTER): BOOLEAN
 			-- True if a_format known
 			-- REQUIRE
 			-- 	a_format /= void
@@ -106,7 +106,7 @@ feature -- Status Report
 
 feature -- Commands
 
-	set_current_directory (a_dir: POINTER) is
+	set_current_directory (a_dir: POINTER)
 			-- REQUIRE
 			-- a_dir_valid: a_dir /= void and then not a_dir.is_empty
 		local
@@ -116,7 +116,7 @@ feature -- Commands
 			impl.set_current_directory (c_a_dir.string)
 		end
 		
-	create_new_archetype(a_im_originator, a_im_name, a_im_entity, a_primary_language: POINTER) is
+	create_new_archetype(a_im_originator, a_im_name, a_im_entity, a_primary_language: POINTER)
 			-- create a new tree and throw away previous state
 			-- REQUIRE
 			--  info_model_originator_valid: a_im_originator /= void and then not a_im_originator.is_empty
@@ -136,7 +136,7 @@ feature -- Commands
 					c_a_primary_language.string)
 		end
 		
-	specialise_archetype(specialised_domain_concept: POINTER) is
+	specialise_archetype(specialised_domain_concept: POINTER)
 			-- convert current archetype to specialised version of itself,
 			-- supplying a specialised domain concept string to go in the new archetype id
 			-- (which is a duplicate of the old one, with this concept string inserted)
@@ -151,7 +151,7 @@ feature -- Commands
 			impl.specialise_archetype(c_specialised_domain_concept.string)
 		end
 		
-	open_adl_file(file_path: POINTER) is
+	open_adl_file(file_path: POINTER)
 			-- REQUIRE
 			--	file_path_valid: file_path /= Void and then not file_path.is_empty
 		local
@@ -164,13 +164,13 @@ feature -- Commands
 			io.put_string("Exited C_ADL_INTERFACE.open_adl_file%N")
 		end
 		
-	resync_file is
+	resync_file
 			-- resync from disc
 		do
 			impl.resync_file
 		end
 		
-	save_archetype(file_path, save_format: POINTER) is
+	save_archetype(file_path, save_format: POINTER)
 			-- Save ADL file via GUI File save dialog
 			-- REQUIRE
 			-- 	archetype_available
@@ -185,7 +185,7 @@ feature -- Commands
 			impl.save_archetype(c_file_path.string, c_save_format.string)
 		end
 
-	parse_archetype is
+	parse_archetype
 			-- Called by `select_actions' of `parse'.
 		require
 			archetype_source_loaded
@@ -193,7 +193,7 @@ feature -- Commands
 			impl.parse_archetype
 		end
 
-	reset is
+	reset
 			-- reset after exception encountered
 		do
 			impl.reset
@@ -201,7 +201,7 @@ feature -- Commands
 	
 feature {NONE} -- Implementation
 
-	impl: ADL_INTERFACE is 
+	impl: ADL_INTERFACE 
 		once
 			create Result.make			
 		end

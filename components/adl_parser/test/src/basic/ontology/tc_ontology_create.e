@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Test case for ADL ontology population"
 	keywords:    "test, ADL"
@@ -30,15 +30,15 @@ create
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 	    do
 	    end
 
 feature -- Access
 
-	title: STRING is "Populate ontology with terms"
+	title: STRING = "Populate ontology with terms"
 
-	prereqs: ARRAY[STRING] is
+	prereqs: ARRAY[STRING]
 			-- ids of prerequisite test cases
 		once
 			Result := <<"TC_ARCHETYPE_CREATE">>
@@ -46,7 +46,7 @@ feature -- Access
 
 feature -- testing
 
-	execute is
+	execute
 		local
 			code_1: STRING
 			a_term: ARCHETYPE_TERM

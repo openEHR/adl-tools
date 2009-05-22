@@ -1,5 +1,5 @@
 %{
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Validating parser for Archetype Description Language (ADL)"
 	keywords:    "ADL, dADL"
@@ -21,7 +21,7 @@ inherit
 			report_error
 		end
 
-creation
+create
 	make
 
 %}
@@ -1114,14 +1114,14 @@ uri_value: V_URI
 
 feature -- Initialization
 
-	make is
+	make
 			-- Create a new Eiffel parser.
 		do
 			make_eiffel_scanner
 			make_parser_skeleton
 		end
 
-	execute(in_text:STRING; a_source_start_line: INTEGER) is
+	execute (in_text:STRING; a_source_start_line: INTEGER)
 		do
 			reset
 			recover
@@ -1143,7 +1143,7 @@ feature -- Initialization
 
 feature {YY_PARSER_ACTION} -- Basic Operations
 
-	report_error (a_message: STRING) is
+	report_error (a_message: STRING)
 			-- Print error message.
 		local
 			f_buffer: YY_FILE_BUFFER
@@ -1174,10 +1174,10 @@ feature -- Access
 
 feature {NONE} -- Parse Tree
 
-	complex_object_nodes: ARRAYED_STACK[DT_COMPLEX_OBJECT_NODE]
+	complex_object_nodes: ARRAYED_STACK [DT_COMPLEX_OBJECT_NODE]
 	object_node: DT_COMPLEX_OBJECT_NODE
 
-	attr_nodes: ARRAYED_STACK[DT_ATTRIBUTE_NODE]
+	attr_nodes: ARRAYED_STACK [DT_ATTRIBUTE_NODE]
 	attr_node: DT_ATTRIBUTE_NODE
 
 	primitive_object_node: DT_PRIMITIVE_OBJECT
@@ -1206,18 +1206,18 @@ feature {NONE} -- Implementation
 	term: CODE_PHRASE
 	a_uri: URI
 
-	term_list: ARRAYED_LIST[CODE_PHRASE]
-	string_list: ARRAYED_LIST[STRING]
-	integer_ref_list: ARRAYED_LIST[INTEGER_REF]
-	integer_list: ARRAYED_LIST[INTEGER]
-	real_ref_list: ARRAYED_LIST[REAL_REF]
-	real_list: ARRAYED_LIST[REAL]
-	character_list: ARRAYED_LIST[CHARACTER_REF]
-	boolean_list: ARRAYED_LIST[BOOLEAN_REF]
-	date_list: ARRAYED_LIST[DATE]
-	time_list: ARRAYED_LIST[TIME]
-	date_time_list: ARRAYED_LIST[DATE_TIME]
-	duration_list: ARRAYED_LIST[DATE_TIME_DURATION]
+	term_list: ARRAYED_LIST [CODE_PHRASE]
+	string_list: ARRAYED_LIST [STRING]
+	integer_ref_list: ARRAYED_LIST [INTEGER_REF]
+	integer_list: ARRAYED_LIST [INTEGER]
+	real_ref_list: ARRAYED_LIST [REAL_REF]
+	real_list: ARRAYED_LIST [REAL]
+	character_list: ARRAYED_LIST [CHARACTER_REF]
+	boolean_list: ARRAYED_LIST [BOOLEAN_REF]
+	date_list: ARRAYED_LIST [DATE]
+	time_list: ARRAYED_LIST [TIME]
+	date_time_list: ARRAYED_LIST [DATE_TIME]
+	duration_list: ARRAYED_LIST [DATE_TIME_DURATION]
 
 	integer_interval: INTERVAL [INTEGER_REF]
 	real_interval: INTERVAL [REAL_REF]

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Serialise archetype definition to any format"
 	keywords:    "test, constraint model"
@@ -26,7 +26,7 @@ inherit
 
 feature -- Initialisation
 
-	initialise(an_ontology: ARCHETYPE_ONTOLOGY) is
+	initialise(an_ontology: ARCHETYPE_ONTOLOGY)
 			-- set ontology required for serialising cADL, and perform basic initialisation
 		require
 			Ontology_valid: an_ontology /= Void
@@ -37,17 +37,17 @@ feature -- Initialisation
 
 feature {NONE} -- Implementation
 
-	serialise_occurrences(a_node: C_OBJECT; depth: INTEGER) is
+	serialise_occurrences(a_node: C_OBJECT; depth: INTEGER)
 			-- any positive range
 		deferred
 		end
 
-	serialise_existence(a_node: C_ATTRIBUTE; depth: INTEGER) is
+	serialise_existence(a_node: C_ATTRIBUTE; depth: INTEGER)
 			-- can only  be a range of 0..1 or 1..1
 		deferred
 		end
 
-	serialise_cardinality(a_node: C_ATTRIBUTE; depth: INTEGER) is
+	serialise_cardinality(a_node: C_ATTRIBUTE; depth: INTEGER)
 			-- includes a range and possibly ordered, unique qualifiers
 		deferred
 		end

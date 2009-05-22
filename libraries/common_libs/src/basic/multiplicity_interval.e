@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR support types"
 
 	description: "[
@@ -40,7 +40,7 @@ convert
 
 feature -- Initialisation
 
-	make_bounded(a_lower, an_upper: INTEGER) is
+	make_bounded(a_lower, an_upper: INTEGER)
 			-- make with both limits set
 		require
 			Valid_order: a_lower <= an_upper
@@ -53,7 +53,7 @@ feature -- Initialisation
 			Bounded_upper: not upper_unbounded
 		end
 
-	make_upper_unbounded(a_lower: INTEGER) is
+	make_upper_unbounded(a_lower: INTEGER)
 			-- make an interval from `a_lower' to +infinity
 		do
 			make_upper_unbounded_interval(a_lower, True)
@@ -63,7 +63,7 @@ feature -- Initialisation
 			Upper_unbounded: upper_unbounded
 		end
 
-	make_from_interval (an_int: INTERVAL[INTEGER]) is
+	make_from_interval (an_int: INTERVAL[INTEGER])
 			-- make from a standard INTERVAL[INTEGER]
 		do
 			lower := an_int.lower
@@ -73,7 +73,7 @@ feature -- Initialisation
 			upper_unbounded := an_int.upper_unbounded
 		end
 
-	make_open is
+	make_open
 			-- make an open interval from 0 to +infinity
 		do
 			make_upper_unbounded_interval(0, True)
@@ -83,7 +83,7 @@ feature -- Initialisation
 			Upper_unbounded: upper_unbounded
 		end
 
-	make_optional is
+	make_optional
 			-- make an interval representing optionality, i.e. 0..1
 		do
 			make_bounded_interval(0, 1, True, True)
@@ -94,7 +94,7 @@ feature -- Initialisation
 			Upper_bounded: not upper_unbounded
 		end
 
-	make_mandatory is
+	make_mandatory
 			-- make an interval representing mandatoryness, i.e. 1..1
 		do
 			make_point(1)
@@ -107,13 +107,13 @@ feature -- Initialisation
 
 feature -- Status Report
 
-	is_open: BOOLEAN is
+	is_open: BOOLEAN
 			-- True if this interval imposes no constraints, i.e. is set to 0..*
 		do
 			Result := lower = 0 and upper_unbounded
 		end
 
-	is_optional: BOOLEAN is
+	is_optional: BOOLEAN
 			-- True if this interval expresses optionality, i.e. 0..1
 		do
 			Result := lower = 0 and upper = 1
@@ -121,7 +121,7 @@ feature -- Status Report
 
 feature -- Operations
 
-	union (other: like Current): like Current is
+	union (other: like Current): like Current
 			-- generate the outer interval of Current and other
 		do
 			if upper_unbounded or other.upper_unbounded then
@@ -131,7 +131,7 @@ feature -- Operations
 			end
 		end
 
-	add (other: like Current): like Current is
+	add (other: like Current): like Current
 			-- generate the interval resulting from sum(lower, other.lower)..sum(upper, other.upper)
 		do
 			if upper_unbounded or other.upper_unbounded then
@@ -141,7 +141,7 @@ feature -- Operations
 			end
 		end
 
-	as_string: STRING is
+	as_string: STRING
 		do
 			create Result.make(0)
 			if upper_unbounded then

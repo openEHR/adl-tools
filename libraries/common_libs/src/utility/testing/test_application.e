@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "[
 		       Test bed application template. To be inherited by any application 
@@ -25,23 +25,23 @@ inherit
 
 feature -- Template
 
-	test_init is
+	test_init
 			-- application-specific initialisation
    		deferred
 		end
 
-	test_suites: LINKED_LIST[TEST_SUITE] is
+	test_suites: LINKED_LIST[TEST_SUITE]
 		deferred
 		end
 
 feature -- Access
 
-	test_result_dir: STRING is "c:\temp"
+	test_result_dir: STRING = "c:\temp"
 
 	test_initialised: BOOLEAN
 			-- must be set True by test_init for application to run
 			
-	test_suite_index: HASH_TABLE [TEST_SUITE, STRING] is
+	test_suite_index: HASH_TABLE [TEST_SUITE, STRING]
 			-- test suites, keyed by title
 		once
 			create Result.make(0)
@@ -57,7 +57,7 @@ feature -- Access
 
 feature -- Initialisation
 
-	make is
+	make
 		do
 			-- set up output streams
 			set_default_streams(create {STD_TEST_STREAM}, create {STD_TEST_STREAM})
@@ -73,7 +73,7 @@ feature -- Initialisation
 			end
 		end
 	
-	test_run is
+	test_run
 		local
 			suite_nr, test_case_nr, i: INTEGER
 			finished_suites, finished_test_cases, all_test_cases: BOOLEAN
@@ -168,7 +168,7 @@ feature -- Initialisation
 			io.put_string("Test Facility  TERMINATED%N")
 		end
 
-	splash: STRING is
+	splash: STRING
 			-- create a splash string for the console
 		do
 			create Result.make(0)

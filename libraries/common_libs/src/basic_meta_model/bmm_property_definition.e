@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR re-usable library"
 	description: "Abstract idea of a property definition within a class definition"
 	keywords:    "model, UML"
@@ -24,7 +24,7 @@ feature -- Access
 	type: BMM_TYPE_SPECIFIER
 			-- type of this attribute
 
-	existence: MULTIPLICITY_INTERVAL is
+	existence: MULTIPLICITY_INTERVAL
 			-- interval form of 0..1, 1..1 etc, generated from is_mandatory
 		do
 			if is_mandatory then
@@ -45,10 +45,10 @@ feature -- Status Report
 	is_computed: BOOLEAN
 			-- True if this property is computed rather than stored in objects of this class
 
-	is_container: BOOLEAN is
+	is_container: BOOLEAN
 			-- True if type is a container type
 		do
-			if {a_cont: BMM_CONTAINER_TYPE_REFERENCE} type then
+			if attached {BMM_CONTAINER_TYPE_REFERENCE} type as a_cont then
 				Result := True
 			end
 		end

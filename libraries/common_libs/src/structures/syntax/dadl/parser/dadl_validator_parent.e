@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Common parent of dADL validators; temporary class while dADL1 still exists"
 	keywords:    "ADL, dADL"
@@ -36,12 +36,12 @@ inherit
 
 feature -- Initialization
 
-	make is
+	make
 			-- Create a new Eiffel parser.
 		deferred
 		end
 
-	execute(in_text:STRING; a_source_start_line: INTEGER) is
+	execute(in_text:STRING; a_source_start_line: INTEGER)
 		deferred
 		end
 

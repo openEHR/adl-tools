@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "parent of all ADL serialisers"
 	keywords:    "ADL, serialiser"
@@ -16,12 +16,12 @@ class ADL_OWL_SERIALISER
 inherit
 	ARCHETYPE_SERIALISER
 
-creation
+create
 	make
 
 feature -- Serialisation
 
-	serialise (a_target: ARCHETYPE; desc_serialised, def_serialised, inv_serialised, ont_serialised: STRING) is
+	serialise (a_target: ARCHETYPE; desc_serialised, def_serialised, inv_serialised, ont_serialised: STRING)
 		do
 			target := a_target
 			
@@ -49,7 +49,7 @@ feature -- Serialisation
 			serialise_finalise
 		end
 
-	serialise_initialise is
+	serialise_initialise
 		do
 			last_result.append("Namespace(rdf = http://www.w3.org/1999/02/22-rdf-syntax-ns#)")
 			last_result.append(format_item(FMT_NEWLINE))
@@ -66,7 +66,7 @@ feature -- Serialisation
 			last_result.append(format_item(FMT_NEWLINE))
 		end
 
-	serialise_archetype_id is
+	serialise_archetype_id
 		do
 			last_result.append("Namespace(this = http://archetypes.org/" + target.archetype_id.as_string + "#)")
 			last_result.append(format_item(FMT_NEWLINE))
@@ -74,15 +74,15 @@ feature -- Serialisation
 			last_result.append(format_item(FMT_NEWLINE))
 		end
 
-	serialise_archetype_concept is
+	serialise_archetype_concept
 		do
 		end
 
-	serialise_archetype_specialise is
+	serialise_archetype_specialise
 		do
 		end
 
-	serialise_finalise is
+	serialise_finalise
 		do
 			last_result.append(")")
 			last_result.append(format_item(FMT_NEWLINE))

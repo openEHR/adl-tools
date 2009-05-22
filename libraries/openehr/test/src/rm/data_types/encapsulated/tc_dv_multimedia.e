@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR test framework"
 	description: "Test DV_MULTIMEDIA"
 	keywords:    "test, encapsulated, multimedia"
@@ -20,20 +20,20 @@ inherit
 			check_result
 		end
 
-creation
+create
 	make
 
 feature -- Access
 
-	title: STRING is "DV_MULTIMEDIA"
+	title: STRING = "DV_MULTIMEDIA"
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 		do
 		end
 
-	execute is
+	execute
 		local
 			v: DV_MULTIMEDIA
 		do
@@ -41,7 +41,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	check_result is
+	check_result
 		do
 		end
 

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Attribute node in ADL parse tree. This class does not model a direct idea of 'is_multiple' because it can be used
@@ -29,12 +29,12 @@ create
 
 feature -- Definitions
 
-	Generic_attr_name: STRING is "_items"
+	Generic_attr_name: STRING = "_items"
 			-- name given to assumed multiple attribute of container types
 
 feature -- Initialisation
 
-	make_single (a_node_id: STRING; a_content_item: VISITABLE) is
+	make_single (a_node_id: STRING; a_content_item: VISITABLE)
 			-- make an attribute representing a single-valued attribute in some model
 		require
 			Node_id_valid: a_node_id /= Void and then not a_node_id.is_empty
@@ -44,7 +44,7 @@ feature -- Initialisation
 			Is_multiple: not is_multiple
 		end
 
-	make_multiple (a_node_id: STRING; a_content_item: VISITABLE) is
+	make_multiple (a_node_id: STRING; a_content_item: VISITABLE)
 			-- make an attribute representing a multiple-valued (i.e. container) attribute in some model
 		require
 			Node_id_valid: a_node_id /= Void and then not a_node_id.is_empty
@@ -55,7 +55,7 @@ feature -- Initialisation
 			Is_multiple: is_multiple
 		end
 
-	make_generic (a_content_item: VISITABLE) is
+	make_generic (a_content_item: VISITABLE)
 			-- create with pseudo-node id indicating that it is an unnamed
 			-- container attribute of a generic type
 		do
@@ -79,7 +79,7 @@ feature -- Access
 			-- OG_ATTRIBUTE_NODE to stand as a 'path-compressed' replacement for a string of OG_OBJECT_NODE/
 			-- OG_ATTRIBUTE_NODE objects. Only valid in differential archetypes and templates.
 
-	node_key: STRING is
+	node_key: STRING
 			-- uses differential path if it exists
 		do
 			if has_differential_path then
@@ -100,7 +100,7 @@ feature -- Status Report
 			-- there can be multiple children, because for constraint representation, these correspond to alternatives, not
 			-- multiple concurrent members.
 
-	is_single: BOOLEAN is
+	is_single: BOOLEAN
 			-- True if this node logically represents a single-valued attribute.
 		do
 			Result := not is_multiple
@@ -110,18 +110,18 @@ feature -- Status Report
 			-- True if this attribute is a created pseudo attribute
 			-- representing an unnamed attribute in a generic class like List<T>
 
-	is_addressable: BOOLEAN is True
+	is_addressable: BOOLEAN = True
 			-- True if this node has a non-anonymous node_id
 
-	is_object_node: BOOLEAN is False
+	is_object_node: BOOLEAN = False
 
-	has_differential_path: BOOLEAN is
+	has_differential_path: BOOLEAN
 			-- True if this node has a differential path
 		do
 			Result := differential_path /= Void
 		end
 
-	valid_child_for_insertion(a_node: like child_type):BOOLEAN is
+	valid_child_for_insertion (a_node: like child_type): BOOLEAN
 			-- valid OBJ children of a REL node might not all be unique
 		do
 			Result := not children_ordered.has(a_node)
@@ -129,7 +129,7 @@ feature -- Status Report
 
 feature -- Status Setting
 
-	set_multiple is
+	set_multiple
 			-- set `is_multiple' True (sometimes discovered after make is done)
 		do
 			is_multiple := True
@@ -137,7 +137,7 @@ feature -- Status Setting
 
 feature -- Modification
 
-	put_child(obj_node: like child_type) is
+	put_child(obj_node: like child_type)
 			-- put a new child node
 			-- if new child is an OBJECT_NODE id is already known in children, generate a unique id for it
 		local
@@ -151,7 +151,7 @@ feature -- Modification
 			precursor(obj_node)
 		end
 
-	put_child_left(obj_node, before_obj_node: like child_type) is
+	put_child_left(obj_node, before_obj_node: like child_type)
 			-- insert a new child node before another object node
 			-- if new child is an OBJECT_NODE id is already known in children, generate a unique id for it
 		local
@@ -165,7 +165,7 @@ feature -- Modification
 			precursor(obj_node, before_obj_node)
 		end
 
-	put_child_right(obj_node, after_obj_node: like child_type) is
+	put_child_right(obj_node, after_obj_node: like child_type)
 			-- insert a new child node before another object node
 			-- if new child is an OBJECT_NODE id is already known in children, generate a unique id for it
 		local
@@ -179,7 +179,7 @@ feature -- Modification
 			precursor(obj_node, after_obj_node)
 		end
 
-	set_differential_path(a_path: OG_PATH) is
+	set_differential_path(a_path: OG_PATH)
 			-- set `differential_path'
 		require
 			Path_attached: a_path /= Void
@@ -194,7 +194,7 @@ feature -- Modification
 			Differential_path_flag_set: has_differential_path
 		end
 
-	clear_differential_path is
+	clear_differential_path
 			-- remove `differential_path'
 		do
 			differential_path := Void
@@ -202,7 +202,7 @@ feature -- Modification
 			not has_differential_path
 		end
 
-	set_differential_path_to_here is
+	set_differential_path_to_here
 			-- compress the path and reparent current node to root node
 		do
 			differential_path := parent.path
@@ -221,7 +221,7 @@ feature {NONE} -- Implementation
 	duplicate_child_id_count: INTEGER
 			-- cumulative count of children with 'unknown' ids - used to generate unique ids
 
-	reparent_to_root is
+	reparent_to_root
 			-- reparent this node to the root node, removing intervening orphaned nodes on the way
 		local
 			p: like parent

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Initialisation of the main window's accelerator keys."
 	keywords:    "test, ADL"
@@ -95,7 +95,7 @@ feature {NONE} -- Implementation
 				Result := key_strings [key_ctrl] + "+" + Result
 			end
 		ensure
-			attached: Result /= Void
+			not_void: attached Result
 			not_empty: not Result.is_empty
 			has_key: Result.as_upper.ends_with ((key_strings [key]).as_upper)
 			has_ctrl: ctrl implies Result.has_substring (key_strings [key_ctrl])

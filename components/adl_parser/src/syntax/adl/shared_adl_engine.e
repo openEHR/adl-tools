@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 			 Shared access to ARCHETYPE_PARSER.
@@ -17,7 +17,7 @@ class SHARED_ADL_ENGINE
 
 feature {NONE} -- Implementation
 
-	adl_engine: !ADL_ENGINE is
+	adl_engine: attached ADL_ENGINE
 		once
 			create Result.make
 		end

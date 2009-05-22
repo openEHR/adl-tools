@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Types"
 
 	description: "Implementation of DV_DATE_TIME"
@@ -34,11 +34,11 @@ create
 
 feature -- Definitions
 
-	Default_value: STRING is "1800-01-01T00:00:00"
+	Default_value: STRING = "1800-01-01T00:00:00"
 
 feature -- Initialisation
 
-	default_create is
+	default_create
 			-- create the date/time "1800-01-01T00:00:00"
 		do
 			make_from_string (value)
@@ -46,14 +46,14 @@ feature -- Initialisation
 			default: as_string.is_equal (Default_value)
 		end
 
-	make_from_canonical_string(str: STRING) is
+	make_from_canonical_string(str: STRING)
 		do
 			make_from_string(str)
 		end
 
 feature -- Status Report
 
-	valid_canonical_string(str: STRING): BOOLEAN is
+	valid_canonical_string(str: STRING): BOOLEAN
 			-- True if str contains required tags
 		do
 			Result := valid_iso8601_date_time(str)
@@ -61,7 +61,7 @@ feature -- Status Report
 
 feature -- Access
 
-	magnitude: DOUBLE_REF is
+	magnitude: DOUBLE_REF
 			-- numeric value of the quantity in seconds
 		do
 			Result := to_seconds
@@ -69,24 +69,24 @@ feature -- Access
 
 feature -- Basic Operations
 
-	add (a_diff: like diff): like Current	is
+	add (a_diff: like diff): like Current
 			-- Addition of a differential amount to this quantity.
 		do
 		end
 
-	subtract (a_diff: like diff): like Current is
+	subtract (a_diff: like diff): like Current
 			-- Result of subtracting a differential amount from this quantity.
 		do
 		end
 
-	diff (other: like Current): DV_DURATION is
+	diff (other: like Current): DV_DURATION
 			-- Difference of two quantities.
 		do
 		end
 
 feature -- Comparison
 
-	is_strictly_comparable_to (other: like Current): BOOLEAN is
+	is_strictly_comparable_to (other: like Current): BOOLEAN
 			-- True for all date/time types
 		do
 			Result := True
@@ -94,7 +94,7 @@ feature -- Comparison
 
 feature -- Output
 
-	as_canonical_string: STRING is
+	as_canonical_string: STRING
 		do
 			Result := as_string
 		end

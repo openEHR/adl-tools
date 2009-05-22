@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "File-system repository of archetypes - implementation of ARCHETYPE_INDEXED_REPOSITORY_I."
 	keywords:    "ADL"
@@ -36,7 +36,7 @@ feature {NONE} -- Implementation
 			ara: ARCH_REP_ARCHETYPE
 			arch_id_str: STRING
 			node: like directory
-			arch_id: !ARCHETYPE_ID
+			arch_id: attached ARCHETYPE_ID
    		do
    			-- generate lists of immediate child directory and archetype file names
    			-- in the current directory 'tree.item.full_path'
@@ -136,13 +136,13 @@ feature {NONE} -- Implementation
    			end
 		end
 
-	adl_flat_filename_pattern_regex: !LX_DFA_REGULAR_EXPRESSION
+	adl_flat_filename_pattern_regex: attached LX_DFA_REGULAR_EXPRESSION
 			-- Pattern matcher for filenames ending in ".adl".
 		once
 			create Result.compile_case_insensitive (".*\" + archetype_flat_file_extension + "$")
 		end
 
-	adl_differential_filename_pattern_regex: !LX_DFA_REGULAR_EXPRESSION
+	adl_differential_filename_pattern_regex: attached LX_DFA_REGULAR_EXPRESSION
 			-- Pattern matcher for filenames ending in ".adls".
 		once
 			create Result.compile_case_insensitive (".*\" + Archetype_source_file_extension + "$")

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Types"
 
 	description: "Test DV_QUANTITY"
@@ -21,21 +21,21 @@ inherit
 			check_result
 		end
 
-creation
+create
 	make
 
 feature -- Access
 
-	title: STRING is "DV_COUNT"
+	title: STRING = "DV_COUNT"
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 		do
 			
 		end
 
-	execute is
+	execute
 		local
 			a_datum: DV_COUNT
 			mass_property: DV_CODED_TEXT
@@ -45,7 +45,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	check_result is
+	check_result
 		do
 		end
 

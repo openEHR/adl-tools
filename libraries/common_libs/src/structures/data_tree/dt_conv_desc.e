@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "descriptor for conversion for one type into and out of DT_OBJECT"
 	keywords:    "test, ADL"
@@ -18,7 +18,7 @@ create
 
 feature -- Initialisation
 
-	make (a_from_obj_proc: like from_obj_proc; a_from_dt_proc: like from_dt_proc) is
+	make (a_from_obj_proc: like from_obj_proc; a_from_dt_proc: like from_dt_proc)
 		require
 			From_proc_valid: a_from_obj_proc /= Void
 			To_proc_valid: a_from_dt_proc /= Void

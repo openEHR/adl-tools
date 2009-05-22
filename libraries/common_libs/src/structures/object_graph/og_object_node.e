@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Any complex OBJECT node in object parse tree
@@ -35,7 +35,7 @@ feature -- Access
 
 	parent: OG_ATTRIBUTE_NODE
 
-	all_paths: HASH_TABLE [OG_OBJECT, OG_PATH] is
+	all_paths: HASH_TABLE [OG_OBJECT, OG_PATH]
 			-- all paths below this point, including this node
 		do
 			Result := generate_all_paths(False)
@@ -44,14 +44,14 @@ feature -- Access
 			end
 		end
 
-	all_unique_paths: HASH_TABLE [OG_OBJECT, OG_PATH] is
+	all_unique_paths: HASH_TABLE [OG_OBJECT, OG_PATH]
 			-- all paths below this point, including this node, including with auto-generate
 			-- uniqueness predicates, e.g. like [1] or [unknown_1] etc
 		do
 			Result := generate_all_paths(True)
 		end
 
-	object_node_at_path(a_path: OG_PATH): OG_OBJECT is
+	object_node_at_path(a_path: OG_PATH): OG_OBJECT
 			-- find the object node at the relative path `a_path'
 		require
 			Path_valid: a_path /= Void and then has_path(a_path)
@@ -70,7 +70,7 @@ feature -- Access
 			Result_exists: Result /= Void
 		end
 
-	attribute_node_at_path(a_path: OG_PATH): OG_ATTRIBUTE_NODE is
+	attribute_node_at_path(a_path: OG_PATH): OG_ATTRIBUTE_NODE
 			-- find the attribute node corresponding the the terminal segment of `a_path'
 		require
 			Path_valid: a_path /= Void and then has_path(a_path)
@@ -87,7 +87,7 @@ feature -- Access
 
 feature -- Status Report
 
-	has_path(a_path: OG_PATH): BOOLEAN is
+	has_path(a_path: OG_PATH): BOOLEAN
 			-- `a_path' exists in object structure
 		require
 			Path_valid: a_path /= Void and then a_path.is_absolute implies is_root
@@ -104,7 +104,7 @@ feature -- Status Report
 			end
 		end
 
-	has_object_path(a_path: OG_PATH): BOOLEAN is
+	has_object_path(a_path: OG_PATH): BOOLEAN
 			-- `a_path' refers to an object node in structure
 		require
 			Path_valid: a_path /= Void and then a_path.is_absolute implies is_root
@@ -121,7 +121,7 @@ feature -- Status Report
 			end
 		end
 
-	has_attribute_path(a_path: OG_PATH): BOOLEAN is
+	has_attribute_path(a_path: OG_PATH): BOOLEAN
 			-- `a_path' refers to an attribute node in structure
 		require
 			Path_valid: a_path /= Void and then a_path.is_absolute implies is_root
@@ -140,7 +140,7 @@ feature -- Status Report
 
 feature -- Modification
 
-	replace_attribute_name(old_name, new_name: STRING) is
+	replace_attribute_name(old_name, new_name: STRING)
 			-- change the name of an attribute
 		require
 			Old_name_valid: old_name /= Void and then has_child_with_id (old_name)
@@ -155,7 +155,7 @@ feature {OG_OBJECT_NODE} -- Implementation
 	child_type: OG_ATTRIBUTE_NODE
 			-- relationship target type
 
-	internal_has_path(a_path: OG_PATH): BOOLEAN is
+	internal_has_path(a_path: OG_PATH): BOOLEAN
 			-- find the child at the path `a_path'
 		local
 			child_obj_node: OG_OBJECT_NODE
@@ -179,7 +179,7 @@ feature {OG_OBJECT_NODE} -- Implementation
 			end
 		end
 
-	internal_object_node_at_path(a_path: OG_PATH): OG_OBJECT is
+	internal_object_node_at_path(a_path: OG_PATH): OG_OBJECT
 			-- find the child at the path `a_path'
 		local
 			child_obj: OG_OBJECT
@@ -199,7 +199,7 @@ feature {OG_OBJECT_NODE} -- Implementation
 			end
 		end
 
-	internal_attribute_node_at_path(a_path: OG_PATH): OG_ATTRIBUTE_NODE is
+	internal_attribute_node_at_path(a_path: OG_PATH): OG_ATTRIBUTE_NODE
 			-- find the child at the path `a_path'
 		local
 			child_obj_node: OG_OBJECT_NODE
@@ -217,7 +217,7 @@ feature {OG_OBJECT_NODE} -- Implementation
 			end
 		end
 
-	has_object_at_path_segment(a_path_segment: OG_PATH_ITEM): BOOLEAN is
+	has_object_at_path_segment(a_path_segment: OG_PATH_ITEM): BOOLEAN
 			-- True if this object node has an attribute node and an object node below that
 			-- that match the path_segment
 		local
@@ -231,7 +231,7 @@ feature {OG_OBJECT_NODE} -- Implementation
 			end
 		end
 
-	object_at_path_segment(a_path_segment: OG_PATH_ITEM): OG_OBJECT is
+	object_at_path_segment(a_path_segment: OG_PATH_ITEM): OG_OBJECT
 			-- object node at path_segment - strict match on object part
 		require
 			has_object_at_path_segment(a_path_segment)
@@ -239,7 +239,7 @@ feature {OG_OBJECT_NODE} -- Implementation
 			Result := children.item(a_path_segment.attr_name).child_with_id (a_path_segment.object_id)
 		end
 
-	generate_all_paths (is_unique: BOOLEAN): HASH_TABLE [OG_OBJECT, OG_PATH] is
+	generate_all_paths (is_unique: BOOLEAN): HASH_TABLE [OG_OBJECT, OG_PATH]
 			-- all paths below this point, including this node; if unique_flag is True,
 			-- then include the "unknown" ids on non-identified object nodes to give
 			-- completely unique paths
@@ -327,7 +327,7 @@ feature {OG_OBJECT_NODE} -- Implementation
 			end
 		end
 
-	compress_path(a_path: OG_PATH): OG_PATH is
+	compress_path(a_path: OG_PATH): OG_PATH
 			-- if there is an attriute with a compressed path matching `a_path', generate a new path whose
 			-- first attribute contains the compressed section in it; else return the original `a_path'
 		require

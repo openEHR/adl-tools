@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Descriptor of an archetype in a directory of archetypes"
 	keywords:    "ADL, archetype"
@@ -84,7 +84,7 @@ create
 
 feature {NONE} -- Initialisation
 
-	make (a_root_path, a_full_path: STRING; an_id: !ARCHETYPE_ID; a_repository: ARCHETYPE_REPOSITORY_I)
+	make (a_root_path, a_full_path: STRING; an_id: attached ARCHETYPE_ID; a_repository: ARCHETYPE_REPOSITORY_I)
 			-- Create for the archetype with `an_id', stored at `a_full_path', belonging to `a_repository' at `a_root_path'.
 			-- Can be created with a .adl or .adls file name extension
 		require
@@ -125,7 +125,7 @@ feature {NONE} -- Initialisation
 
 feature -- Access
 
-	id: !ARCHETYPE_ID
+	id: attached ARCHETYPE_ID
 			-- Archetype identifier.
 
 	differential_path: STRING
@@ -137,7 +137,7 @@ feature -- Access
 	differential_text: STRING
 			-- The text of the archetype source file, i.e. the differential form.
 
-	flat_text: STRING is
+	flat_text: STRING
 			-- The text of the flat form of the archetype
 		do
 			if is_valid then
@@ -163,7 +163,7 @@ feature -- Access
 	specialisation_parent: ARCH_REP_ARCHETYPE
 			-- parent descriptor, for specialised archetypes only
 
-	archetype_lineage: !ARRAYED_LIST [ARCH_REP_ARCHETYPE] is
+	archetype_lineage: attached ARRAYED_LIST [ARCH_REP_ARCHETYPE]
 			-- lineage of archetypes from parent to this one, inclusive of the current one.
 			-- For non-specialised archetypes, contains just the top-level archetype.
 			-- NOTE: in theory this could be precomputed from ARCH_DIRECTORY, but modifications to
@@ -196,7 +196,7 @@ feature -- Access
 			-- if this is a non-specialised archetype, then it is the same as the flat form, else
 			-- it is just the differences (like an object-oriented source file for a subclass)
 
-	flat_archetype: FLAT_ARCHETYPE is
+	flat_archetype: FLAT_ARCHETYPE
 			-- inheritance-flattened form of archetype
 		do
 			if flat_archetype_cache = Void and is_valid then
@@ -217,7 +217,7 @@ feature -- Access
 	status: STRING
 			-- status of last operation
 
-	compiler_error_type: INTEGER is
+	compiler_error_type: INTEGER
 			-- generate value from COMPILER_ERROR_TYPES as index for error classification elsewhere
 		do
 			if is_valid then
@@ -301,7 +301,7 @@ feature -- Status Report - Compilation
 	validate_attempted: BOOLEAN
 			-- True if semantic validation has been attempted using ARCHETYPE_VALIDATOR
 
-	is_parsed: BOOLEAN is
+	is_parsed: BOOLEAN
 			-- True if archetype has been parsed and loaded in at least differential form
 		do
 			Result := differential_archetype /= Void
@@ -315,7 +315,7 @@ feature -- Status Report - Compilation
 
 feature -- Status Report - Semantic
 
-	is_specialised: BOOLEAN is
+	is_specialised: BOOLEAN
 			-- True if this archetype is a specialisation of another archetype
 		do
 			Result := id.is_specialised
@@ -344,7 +344,7 @@ feature -- Status Report - Semantic
 			Result := used_by_index /= Void
 		end
 
-	differential_generated: BOOLEAN is
+	differential_generated: BOOLEAN
 			-- True if the differential form was generated from the flat form
 		do
 			Result := differential_archetype /= Void and then differential_archetype.is_generated
@@ -353,7 +353,7 @@ feature -- Status Report - Semantic
 	flat_generated: BOOLEAN
 			-- Set to True if ADL file contains 'is_generated' marker
 
-	flat_is_primary: BOOLEAN is
+	flat_is_primary: BOOLEAN
 			-- True if the flat legacy file is the primary source
 		do
 			Result := (differential_archetype /= Void and differential_generated) or not flat_generated
@@ -371,7 +371,7 @@ feature -- Status Setting
 			create last_compile_attempt_timestamp.make_now
 		end
 
-	reset is
+	reset
 			-- reset after exception encountered
 		do
 			exception_encountered := False
@@ -385,7 +385,7 @@ feature -- Status Setting
 
 feature -- Commands
 
-	parse_archetype is
+	parse_archetype
 			-- Parse and validate `target', in differential form if available, else in flat form.
 		do
 			reset
@@ -445,7 +445,7 @@ feature -- Commands
 			retry
 		end
 
-	clean_generated is
+	clean_generated
 			-- delete generated file and compiler products; forces next compilation to start from primary expression
 		do
 			if differential_generated then
@@ -469,7 +469,7 @@ feature -- Comparison
 
 feature {ARCH_DIRECTORY} -- Modification
 
-	set_specialisation_parent (a_parent: ARCH_REP_ARCHETYPE) is
+	set_specialisation_parent (a_parent: ARCH_REP_ARCHETYPE)
 			-- set `parent'
 		require
 			Parent_exists: a_parent /= Void
@@ -479,7 +479,7 @@ feature {ARCH_DIRECTORY} -- Modification
 
 feature {ARCHETYPE_VALIDATOR} -- Modification
 
-	add_slot_ids (a_list: ARRAYED_LIST[STRING]; a_slot_path: STRING) is
+	add_slot_ids (a_list: ARRAYED_LIST[STRING]; a_slot_path: STRING)
 			-- add list of matching archetypes to ids recorded for slot at a_slot_path
 		do
 			if slot_id_index = Void then
@@ -504,7 +504,7 @@ feature {ARCHETYPE_VALIDATOR} -- Modification
 			end
 		end
 
-	add_used_by_item (an_archetype_id: STRING) is
+	add_used_by_item (an_archetype_id: STRING)
 			-- add the id of an archetype that has a slot that matches this archetype, i.e. that 'uses' this archetype
 		do
 			if used_by_index = Void then
@@ -517,7 +517,7 @@ feature {ARCHETYPE_VALIDATOR} -- Modification
 
 feature -- Modification
 
-	save_differential is
+	save_differential
 			-- Save archetype to its file in its source form
 		require
 			is_valid
@@ -545,7 +545,7 @@ feature -- Modification
 			retry
 		end
 
-	save_flat is
+	save_flat
 			-- Save current target archetype to its file in its flat form
 		require
 			is_valid
@@ -571,7 +571,7 @@ feature -- Modification
 			retry
 		end
 
-	save_differential_as(a_full_path: STRING; serialise_format: STRING) is
+	save_differential_as(a_full_path: STRING; serialise_format: STRING)
 			-- Save current source archetype to `a_full_path' in `serialise_format'.
 		require
 			Archetype_valid: is_valid
@@ -605,7 +605,7 @@ feature -- Modification
 			retry
 		end
 
-	save_flat_as(a_full_path: STRING; serialise_format: STRING) is
+	save_flat_as(a_full_path: STRING; serialise_format: STRING)
 			-- Save current flat archetype to `a_full_path' in `serialise_format'.
 		require
 			Archetype_valid: is_valid
@@ -636,7 +636,7 @@ feature -- Modification
 			retry
 		end
 
-	serialise_differential is
+	serialise_differential
 			-- Force serialisation of differential_archetype into differential_text
 		require
 			Is_valid: is_valid
@@ -658,7 +658,7 @@ feature -- Modification
 			retry
 		end
 
-	create_new_archetype(a_im_originator, a_im_name, a_im_entity, a_primary_language: STRING) is
+	create_new_archetype(a_im_originator, a_im_name, a_im_entity, a_primary_language: STRING)
 			-- create a new top-level differential archetype and install it into the directory according to its id
 		require
 			Info_model_originator_valid: a_im_originator /= void and then not a_im_originator.is_empty
@@ -667,7 +667,7 @@ feature -- Modification
 			Primary_language_valid: a_primary_language /= void and then not a_primary_language.is_empty
 		do
 			if not exception_encountered then
-				create differential_archetype.make_minimal (create {!ARCHETYPE_ID}.make (a_im_originator, a_im_name, a_im_entity, "UNKNOWN", "draft"), a_primary_language, 0)
+				create differential_archetype.make_minimal (create {attached ARCHETYPE_ID}.make (a_im_originator, a_im_name, a_im_entity, "UNKNOWN", "draft"), a_primary_language, 0)
 				set_current_language (a_primary_language)
 
 				-- FIXME: now add this archetype into the ARCHETYPE_DIRECTORY
@@ -689,7 +689,7 @@ feature -- Modification
 			retry
 		end
 
-	create_new_specialised_archetype(specialised_domain_concept: STRING) is
+	create_new_specialised_archetype(specialised_domain_concept: STRING)
 			-- create a new specialised archetype as a child of the target archetype and install it in
 			-- the directory
 		require
@@ -711,7 +711,7 @@ feature -- Modification
 			retry
 		end
 
-	clean_differential is
+	clean_differential
 			-- delete differential file and compilation products
 		do
 			if has_differential_file then
@@ -722,7 +722,7 @@ feature -- Modification
 			differential_text_timestamp := 0
 		end
 
-	clean_flat is
+	clean_flat
 			-- delete flat file and compilation products
 		do
 			if has_flat_file then
@@ -735,7 +735,7 @@ feature -- Modification
 
 feature {NONE} -- Implementation
 
-	validate is
+	validate
 			-- Perform various levels of validation on `differential_archetype'.
 		require
 			differential_attached: differential_archetype /= Void
@@ -824,7 +824,7 @@ feature {NONE} -- Implementation
 			base_name := id.domain_concept_tail + "(" + id.version_id + ")"
 		end
 
-	build_ontology_lineage is
+	build_ontology_lineage
 		local
 			arch_lin: ARRAYED_LIST [ARCH_REP_ARCHETYPE]
 		do
@@ -841,7 +841,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	has_adl_generated_status(str: STRING):BOOLEAN
+	has_adl_generated_status (str: STRING): BOOLEAN
 			-- True if str is in ADL syntax of the first line of an archetype file and contains the
 			-- 'generated' flag in the meta-data part. The form of this string should be:
 			-- archetype_id (flag; flag; flag...)
@@ -860,7 +860,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	flatten is
+	flatten
 			-- (re)generate flat-form of this archetype
 		require
 			is_valid

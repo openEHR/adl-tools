@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Options dialog window"
 	keywords:    "ADL"
@@ -33,7 +33,7 @@ inherit
 
 feature {NONE} -- Initialization
 
-	user_initialization is
+	user_initialization
 			-- called by `initialize'.
 			-- Any custom user initialization that
 			-- could not be performed in `initialize',
@@ -157,7 +157,7 @@ feature {NONE} -- Implementation
 			export_html_text.set_text (get_directory (export_html_text.text, Current))
 		end
 
-	on_select_all (text: EV_TEXT_COMPONENT) is
+	on_select_all (text: EV_TEXT_COMPONENT)
 			-- Select all text in `text', if any.
 		do
 			if text /= Void and then text.text_length > 0 then

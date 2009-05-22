@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR re-usable library"
 	description: "[
 				 Definition of a class in an object model. A class is type that may be open 
@@ -24,7 +24,7 @@ inherit
 
 feature -- Initialisation
 
-	make_dt is
+	make_dt
 			-- make in a safe way for DT building purposes
 		do
 			create properties.make (0)
@@ -47,7 +47,7 @@ feature -- Access
 	properties: HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
 			-- list of attributes defined in this class
 
-	flat_properties: HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING] is
+	flat_properties: HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
 			-- list of all attributes due to current and ancestor classes
 		do
 			if flat_properties_cache = Void then
@@ -71,7 +71,7 @@ feature -- Access
 			Result_exists: Result /= Void
 		end
 
-	flattened_type_list: ARRAYED_LIST [STRING] is
+	flattened_type_list: ARRAYED_LIST [STRING]
 			-- completely flattened list of type names, flattening out all generic parameters
 		do
 			create Result.make(0)
@@ -96,7 +96,7 @@ feature -- Status Report
 	is_generic: BOOLEAN
 			-- True if this class is a generic class
 
-	has_property (a_prop_name: STRING): BOOLEAN is
+	has_property (a_prop_name: STRING): BOOLEAN
 			-- True if a_prop_name valid in this type, due to this type definition, or any ancestor
 		require
 			Attr_name_valid: a_prop_name /= Void and then not a_prop_name.is_empty
@@ -104,7 +104,7 @@ feature -- Status Report
 			Result := flat_properties.has (a_prop_name)
 		end
 
-	has_ancestor (a_class_name: STRING): BOOLEAN is
+	has_ancestor (a_class_name: STRING): BOOLEAN
 			-- True if a_class_name is among the ancestor classes
 		require
 			Class_name_valid: a_class_name /= Void and then not a_class_name.is_empty
@@ -119,7 +119,7 @@ feature -- Status Report
 
 feature -- Commands
 
-	dt_finalise is
+	dt_finalise
 			-- synchronise structures after creation by DT deserialiser
 		do
 			-- connect attribute defs with parent attribute defs
@@ -143,7 +143,7 @@ feature -- Commands
 
 feature -- Output
 
-	as_type_string: STRING is
+	as_type_string: STRING
 			-- name of the type
 		local
 			i: INTEGER
@@ -167,7 +167,7 @@ feature -- Output
 			end
 		end
 
-	as_flattened_type_string: STRING is
+	as_flattened_type_string: STRING
 			-- name of the type
 		do
 			Result := as_type_string
@@ -180,7 +180,7 @@ feature {BMM_CLASS_DEFINITION} -- Implementation
 
 feature {DT_OBJECT_CONVERTER} -- Conversion
 
-	persistent_attributes: ARRAYED_LIST[STRING] is
+	persistent_attributes: ARRAYED_LIST[STRING]
 			-- list of attribute names to persist as DT structure
 			-- empty structure means all attributes
 		do
@@ -190,7 +190,7 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 invariant
 	Properties_exists: properties /= Void
 	Ancestors_exists: ancestors /= Void
-	Generic_validity :is_generic implies generic_parameters /= Void and then not generic_parameters.is_empty
+	Generic_validity: is_generic implies generic_parameters /= Void and then not generic_parameters.is_empty
 
 end
 

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "[
 			     Error status billboard item: contains id of message template
@@ -22,14 +22,13 @@ class MESSAGE_BILLBOARD_ITEM
 
 inherit
 	BILLBOARD_MESSAGE_TYPES
-		
+
 create
 	make
-	
+
 feature -- Initialisation
-		
-	make(a_type_name, a_routine_name: STRING; a_message_id: STRING; an_args:
-			ARRAY[STRING]; a_message_type:INTEGER) is
+
+	make (a_type_name, a_routine_name: STRING; a_message_id: STRING; an_args: ARRAY[STRING]; a_message_type: INTEGER)
 		require
 			Type_name_valid: a_type_name /= Void and then not a_type_name.is_empty
 			Routine_name_valid: a_routine_name /= Void and then not a_routine_name.is_empty
@@ -101,4 +100,4 @@ end
 --| ***** END LICENSE BLOCK *****
 --|
 
- 
+

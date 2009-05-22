@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Resuable Library Project"
 	description: "[
 			 UML class abstraction, as defined in OMG UML 2.0 Infrastructure 
@@ -29,7 +29,7 @@ create
 
 feature -- Initialisation
 
-	make(a_name: STRING; target: UML_CLASS) is
+	make(a_name: STRING; target: UML_CLASS)
 			-- make a single relationship
 		require
 			Name_valid: a_name /= Void and then not a_name.is_empty

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Abstract model of serialisation profile"
 	keywords:    "test, ADL"
@@ -26,7 +26,7 @@ inherit
 
 feature -- Initialisation
 
-	make(an_output_format: STRING) is
+	make(an_output_format: STRING)
 			-- make with the output format name this serialiser is to be associated with
 		require
 			an_output_format_valid: an_output_format /= Void and then not an_output_format.is_empty
@@ -41,28 +41,28 @@ feature {ANY_SERIALISER} -- Access
 			-- associated with, usually "adl", "xml", "html" etc; needed to allow
 			-- embedded dADL in cADL and vice-versa to be serialised
 
-	symbols: HASH_TABLE[STRING, INTEGER] is
+	symbols: HASH_TABLE[STRING, INTEGER]
 			-- keywords in this format, keyed by logical name
 		deferred
 		ensure
 			Result_exists: Result /= Void
 		end
 
-	tags: HASH_TABLE[STRING, INTEGER] is
+	tags: HASH_TABLE[STRING, INTEGER]
 			-- keywords in this format, keyed by logical name
 		deferred
 		ensure
 			Result_exists: Result /= Void
 		end
 
-	format_items: HASH_TABLE[STRING, INTEGER] is
+	format_items: HASH_TABLE[STRING, INTEGER]
 			-- formatting items
 		deferred
 		ensure
 			Result_exists: Result /= Void
 		end
 
-	styles: HASH_TABLE[STRING, INTEGER] is
+	styles: HASH_TABLE[STRING, INTEGER]
 			-- styles in this format, keyed by logical name
 		deferred
 		ensure
@@ -71,7 +71,7 @@ feature {ANY_SERIALISER} -- Access
 
 feature  {ANY_SERIALISER} -- Factory
 
-	apply_style(elem:STRING; a_style:INTEGER): STRING is
+	apply_style (elem: STRING; a_style: INTEGER): STRING
 			-- apply `a_style' to `elem', using attr 'class'
 		require
 			Elem_exists: elem /= Void
@@ -79,7 +79,7 @@ feature  {ANY_SERIALISER} -- Factory
 		deferred
 		end
 
-	create_indent(indent_level: INTEGER): STRING is
+	create_indent (indent_level: INTEGER): STRING
 		require
 			indent_level >= 0
 		local
@@ -96,7 +96,7 @@ feature  {ANY_SERIALISER} -- Factory
 			end
 		end
 
-	clean(str:STRING): STRING is
+	clean (str: STRING): STRING
 			-- generate clean copy of `str' by inserting \ quoting for chars in `quoted_chars' not already quoted in `str':
 			-- find all instances of '\' and '"' that are not already being used in the quote patterns, e.g. like:
 			--	\n, \r, \t, \\, \", \'

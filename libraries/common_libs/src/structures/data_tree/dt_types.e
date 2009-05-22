@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Type definitions for DT structures and coversion"
 	keywords:    "Data Tree"
@@ -21,7 +21,7 @@ inherit
 
 feature {NONE} -- Definitions
 
-	primitive_types: ARRAYED_LIST[INTEGER] is
+	primitive_types: ARRAYED_LIST[INTEGER]
 		once
 			create Result.make (0)
 			Result.compare_objects
@@ -55,7 +55,7 @@ feature {NONE} -- Definitions
 			Result.extend (dynamic_type_from_string ("CHARACTER_8"))
 		end
 
-	primitive_sequence_types: ARRAYED_LIST [INTEGER] is
+	primitive_sequence_types: ARRAYED_LIST [INTEGER]
 			-- the list of dynamic types of abstract types from cvt_table
 			-- e.g. types like LIST[INTEGER] are there, but not LINKED_LIST[INTEGER]
 		local
@@ -100,7 +100,7 @@ feature {NONE} -- Definitions
 			Result.extend (dynamic_type_from_string ("SEQUENCE [CHARACTER_REF]"))
 		end
 
-	primitive_interval_types: ARRAYED_LIST [INTEGER] is
+	primitive_interval_types: ARRAYED_LIST [INTEGER]
 			-- the list of dynamic types of intervals of primitives
 		once
 			Create Result.make (0)
@@ -119,7 +119,7 @@ feature {NONE} -- Definitions
 
 feature -- Access
 
-	primitive_sequence_conforming_type(a_type_id: INTEGER): INTEGER is
+	primitive_sequence_conforming_type(a_type_id: INTEGER): INTEGER
 			-- Type which is the primitive_sequence type to which a_type_id conforms
 			-- Returns 0 if not found
 		require
@@ -164,7 +164,7 @@ feature -- Access
 			end
 		end
 
-	any_primitive_conforming_type(a_type_id: INTEGER): INTEGER is
+	any_primitive_conforming_type(a_type_id: INTEGER): INTEGER
 			-- Returns a_type_id if in any of the primitive types which
 			-- a_type_id, or
 			-- one of the primitive_sequence types to which a_type_id conforms
@@ -187,7 +187,7 @@ end
 
 feature -- Status Report
 
-	is_any_primitive_type(a_type_id: INTEGER): BOOLEAN is
+	is_any_primitive_type(a_type_id: INTEGER): BOOLEAN
 			-- True if a_type_id is any of the primitive, primitive_sequence or
 			-- primitive_interval types
 		require
@@ -200,7 +200,7 @@ feature -- Status Report
 			end
 		end
 
-	is_any_primitive_conforming_type(a_type_id: INTEGER): BOOLEAN is
+	is_any_primitive_conforming_type(a_type_id: INTEGER): BOOLEAN
 			-- True if a_type_id is any of the primitive, primitive_sequence or
 			-- primitive_interval types, or conforms to one of those
 		require
@@ -209,7 +209,7 @@ feature -- Status Report
 			Result := any_primitive_conforming_type(a_type_id) /= 0
 		end
 
-	is_primitive_type(a_type_id: INTEGER): BOOLEAN is
+	is_primitive_type(a_type_id: INTEGER): BOOLEAN
 			-- True if one of the types STRING, INTEGER, REAL, BOOLEAN, CHARACTER,
 			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION
 		require
@@ -218,7 +218,7 @@ feature -- Status Report
 			Result := primitive_types.has(a_type_id)
 		end
 
-	is_primitive_sequence_type(a_type_id: INTEGER): BOOLEAN is
+	is_primitive_sequence_type(a_type_id: INTEGER): BOOLEAN
 			-- True if a_type_id conforms to SEQUENCE of STRING, INTEGER, REAL, BOOLEAN, CHARACTER,
 			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION, CODE_PHRASE, URI
 		require
@@ -227,7 +227,7 @@ feature -- Status Report
 			Result := primitive_sequence_types.has(a_type_id)
 		end
 
-	is_primitive_interval_type(a_type_id: INTEGER): BOOLEAN is
+	is_primitive_interval_type(a_type_id: INTEGER): BOOLEAN
 			-- True if a_type_id conforms to INTERVAL of STRING, INTEGER, REAL, BOOLEAN, CHARACTER,
 			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION, CODE_PHRASE, URI
 		require
@@ -236,7 +236,7 @@ feature -- Status Report
 			Result := primitive_interval_types.has(a_type_id)
 		end
 
-	is_primitive_sequence_conforming_type(a_type_id: INTEGER): BOOLEAN is
+	is_primitive_sequence_conforming_type(a_type_id: INTEGER): BOOLEAN
 			-- True if a_type_id is either any of the primitive_sequence types, or else
 			-- a type which conforms to one of those types
 		require
@@ -245,7 +245,7 @@ feature -- Status Report
 			Result := primitive_sequence_conforming_type(a_type_id) /= 0
 		end
 
-	has_primitive_type(an_obj: ANY): BOOLEAN is
+	has_primitive_type(an_obj: ANY): BOOLEAN
 			-- True if one of the types STRING, INTEGER, REAL, BOOLEAN, CHARACTER,
 			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION
 		require
@@ -254,7 +254,7 @@ feature -- Status Report
 			Result := is_primitive_type(dynamic_type(an_obj))
 		end
 
-	has_primitive_sequence_type(an_obj: ANY): BOOLEAN is
+	has_primitive_sequence_type(an_obj: ANY): BOOLEAN
 			-- True if an_obj conforms to SEQUENCE of STRING, INTEGER, REAL, BOOLEAN, CHARACTER,
 			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION, CODE_PHRASE, URI
 		require
@@ -263,7 +263,7 @@ feature -- Status Report
 			Result := is_primitive_sequence_type(dynamic_type(an_obj))
 		end
 
-	has_primitive_interval_type(an_obj: ANY): BOOLEAN is
+	has_primitive_interval_type(an_obj: ANY): BOOLEAN
 			-- True if an_obj conforms to INTERVAL of STRING, INTEGER, REAL, BOOLEAN, CHARACTER,
 			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION, CODE_PHRASE, URI
 		require
@@ -272,7 +272,7 @@ feature -- Status Report
 			Result := is_primitive_interval_type(dynamic_type(an_obj))
 		end
 
-	is_container_type(a_type_id: INTEGER): BOOLEAN is
+	is_container_type(a_type_id: INTEGER): BOOLEAN
 			-- True if a_type_id is of a type which is a SEQUENCE or HASH_TABLE, which are the only
 			-- CONTAINERs used in DT structures
 		do
@@ -293,19 +293,19 @@ feature -- Status Report
 
 feature {NONE} -- Implementation
 
-	sequence_any_type_id: INTEGER is
+	sequence_any_type_id: INTEGER
 			-- dynamic type of SEQUENCE[ANY]
 		once
 			Result := dynamic_type_from_string("SEQUENCE[ANY]")
 		end
 
-	hash_table_any_hashable_type_id: INTEGER is
+	hash_table_any_hashable_type_id: INTEGER
 			-- dynamic type of HASH_TABLE[ANY, HASHABLE]
 		once
 			Result := dynamic_type (create {HASH_TABLE [ANY, HASHABLE]}.make (0))
 		end
 
-	primitive_sequence_conforming_types: HASH_TABLE [INTEGER, INTEGER] is
+	primitive_sequence_conforming_types: HASH_TABLE [INTEGER, INTEGER]
 		once
 			create Result.make(0)
 		end

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "Test case for basic path parsing"
 	keywords:    "test, path"
@@ -25,20 +25,20 @@ inherit
 			{NONE} all
 		end
 
-creation
+create
 	make
 
 feature -- Access
 
-	title:STRING is "Basic path test"
+	title:STRING = "Basic path test"
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 		do
 		end
 
-	execute is
+	execute
 		local
 			path: OG_PATH
 		do
@@ -81,11 +81,11 @@ feature -- Initialisation
 
 feature -- Access
 
-	check_result is
+	check_result
 	    do
 	    end
 	    
-	test_path_set: LINKED_LIST[STRING] is
+	test_path_set: LINKED_LIST[STRING]
 			-- list of test paths
 		once
 			create Result.make

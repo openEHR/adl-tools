@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Object node type representing constraint on QUANTITY"
 	keywords:    "quantity, archetype, clinical type, ADL"
@@ -32,25 +32,25 @@ create
 
 feature -- Initialisation
 
-	default_create is
+	default_create
 			--
 		do
 			precursor {C_DOMAIN_TYPE}
 			rm_type_name := generator
-			rm_type_name.remove_head(2) -- remove "C_"
+			rm_type_name.remove_head (2) -- remove "C_"
 			create representation.make_anonymous(Current)
 		ensure then
 			Any_allowed: any_allowed
 		end
 
-	make is
+	make
 		do
 			default_create
 		ensure
 			Any_allowed: any_allowed
 		end
 
-	make_dt is
+	make_dt
 			-- make used by DT_OBJECT_CONVERTER
 		do
 			make
@@ -66,7 +66,7 @@ feature -- Access
 	list: ARRAYED_LIST [C_QUANTITY_ITEM]
 			-- list of items constraining magnitude/units pairs
 
-	prototype_value: QUANTITY is
+	prototype_value: QUANTITY
 			-- Generate a default value from this constraint object.
 			-- FIXME: This should be of type DV_QUANTITY.
 		local
@@ -112,7 +112,7 @@ feature -- Access
 
 feature -- Modification
 
-	set_property (a_property: CODE_PHRASE) is
+	set_property (a_property: CODE_PHRASE)
 			-- set property constraint
 		require
 			Property_valid: a_property /= Void and has_property (a_property)
@@ -121,7 +121,7 @@ feature -- Modification
 			default_units := units_for_property (a_property).first
 		end
 
-	set_assumed_value_from_units_magnitude (a_units: STRING; a_magnitude: REAL; a_precision: INTEGER) is
+	set_assumed_value_from_units_magnitude (a_units: STRING; a_magnitude: REAL; a_precision: INTEGER)
 			-- Set `assumed_value'; set precision to -1 if no precision.
 		require
 			Units_valid: a_units /= Void implies not a_units.is_empty
@@ -131,7 +131,7 @@ feature -- Modification
 			assumed_value_set: assumed_value.magnitude = a_magnitude and assumed_value.units = a_units and assumed_value.precision = a_precision
 		end
 
-	add_unit_constraint (a_units: STRING; a_magnitude: INTERVAL [REAL]; a_precision: INTERVAL [INTEGER]) is
+	add_unit_constraint (a_units: STRING; a_magnitude: INTERVAL [REAL]; a_precision: INTERVAL [INTEGER])
 			-- add a units constraint. Void magnitude means any magnitude allowed
 		require
 			Units_valid: a_units /= Void and then not a_units.is_empty
@@ -146,14 +146,14 @@ feature -- Modification
 
 feature -- Status Report
 
-	any_allowed: BOOLEAN is
+	any_allowed: BOOLEAN
 			-- True if any value allowed
 			-- i.e. no property or list
 		do
 			Result := list = Void and property = Void
 		end
 
-	valid_value (a_value: like prototype_value): BOOLEAN is
+	valid_value (a_value: like prototype_value): BOOLEAN
 		do
 			-- FIXME: to be implemented
 			Result := any_allowed or else True
@@ -161,7 +161,7 @@ feature -- Status Report
 
 feature -- Comparison
 
-	node_conforms_to (other: like Current): BOOLEAN is
+	node_conforms_to (other: like Current): BOOLEAN
 			-- True if this node is a subset, i.e. a redefinition of, `other' in the ADL constraint sense, i.e. that all
 			-- aspects of the definition of this node and all child nodes define a narrower, wholly
 			-- contained instance space of `other'.
@@ -198,27 +198,27 @@ feature -- Comparison
 
 feature -- Conversion
 
-	as_string: STRING is
+	as_string: STRING
 			--
 		do
 			create Result.make_empty
 		end
 
-	standard_equivalent: C_COMPLEX_OBJECT is
+	standard_equivalent: C_COMPLEX_OBJECT
 		do
 			-- FIXME: to be implemented
 		end
 
 feature -- Visitor
 
-	enter_subtree (visitor: C_VISITOR; depth: INTEGER) is
+	enter_subtree (visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at start of block for this node
 		do
             Precursor (visitor, depth)
 			visitor.start_c_quantity (Current, depth)
 		end
 
-	exit_subtree(visitor: C_VISITOR; depth: INTEGER) is
+	exit_subtree(visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at end of block for this node
 		do
             precursor(visitor, depth)
@@ -227,7 +227,7 @@ feature -- Visitor
 
 feature {DT_OBJECT_CONVERTER} -- Conversion
 
-	persistent_attributes: ARRAYED_LIST[STRING] is
+	persistent_attributes: ARRAYED_LIST[STRING]
 			-- list of attribute names to persist as DT structure
 			-- empty structure means all attributes
 		once
@@ -243,7 +243,7 @@ feature -- Implementation
 	default_units: STRING
 			-- record default units if proerty is set; used to generate a default value
 
-	list_item_by_units (a_units: STRING): C_QUANTITY_ITEM is
+	list_item_by_units (a_units: STRING): C_QUANTITY_ITEM
 			-- return item from `list' whose units match a_units' or else Void
 		require
 			a_units_valid: a_units /= Void and then not a_units.is_empty

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Assertion operator instance"
 	keywords:    "ADL, assertion"
@@ -24,7 +24,7 @@ create
 
 feature -- Initialisation
 
-	make(an_op: INTEGER) is
+	make(an_op: INTEGER)
 			-- make from operator code
 		require
 			valid_operator: valid_operator(an_op)
@@ -32,7 +32,7 @@ feature -- Initialisation
 			value := an_op
 		end
 
-	make_from_string(an_op_name: STRING) is
+	make_from_string(an_op_name: STRING)
 			-- make from operator name
 		require
 			valid_operator_name: an_op_name /= Void and then valid_operator_name(an_op_name)
@@ -47,24 +47,24 @@ feature -- Access
 
 feature -- Output
 
-	out: STRING is
+	out: STRING
 			-- output symbolic form
 		do
 			Result := as_string_symbol
 		end
 
-	as_string_symbol: STRING is
+	as_string_symbol: STRING
 			-- output symbolic form, e.g. "="
 		do
 			create Result.make(0)
-			Result.append(operator_symbols.item(value))
+			Result.append (operator_symbols.item(value))
 		end
 
-	as_string_name: STRING is
+	as_string_name: STRING
 			-- output word form e.g. "equals"
 		do
 			create Result.make(0)
-			Result.append(operator_names.item(value))
+			Result.append (operator_names.item(value))
 		end
 
 invariant

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Common Reference Model"
 	
 	description: "[
@@ -43,7 +43,7 @@ feature -- Access
 
 feature -- Conversion
 	
-	as_string: STRING is
+	as_string: STRING
 			-- generate string form of identifier
 		do
 			create Result.make(0)

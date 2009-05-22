@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "interface class to ADL parser and parse tree"
 	keywords:    "ADL"
@@ -25,7 +25,7 @@ create
 
 feature {NONE} -- Initialisation
 
-	make is
+	make
 		do
 		end
 
@@ -43,7 +43,7 @@ feature -- Access
 	serialised: STRING
 			-- The last result of calling `serialise'.
 
-	parse_error_text: STRING is
+	parse_error_text: attached STRING
 			-- Result of last parse.
 		do
 			if parser /= Void then
@@ -51,8 +51,6 @@ feature -- Access
 			else
 				create Result.make_empty
 			end
-		ensure
-			attached: Result /= Void
 		end
 
 feature -- Status Report
@@ -60,7 +58,7 @@ feature -- Status Report
 	in_parse_mode: BOOLEAN
 			-- True if engine in mode where tree was created from source
 
-	parse_succeeded: BOOLEAN is
+	parse_succeeded: BOOLEAN
 			-- True if parse succeeded; call after parse()
 		do
 			Result := tree /= Void
@@ -79,7 +77,7 @@ feature -- Commands
 			serialised := Void
 		end
 
-	set_source (in_text: STRING; a_source_start_line: INTEGER; differential_flag: BOOLEAN) is
+	set_source (in_text: STRING; a_source_start_line: INTEGER; differential_flag: BOOLEAN)
 			-- Set `in_text' as working artifact.
 		require
 			text_attached: in_text /= Void
@@ -114,7 +112,7 @@ feature -- Commands
 			parse_succeeded or else tree = Void
 		end
 
-	serialise (a_format: STRING; an_ontology: !ARCHETYPE_ONTOLOGY) is
+	serialise (a_format: STRING; an_ontology: attached ARCHETYPE_ONTOLOGY)
 			-- Serialise current artifact into `a_format'.
 		require
 			Format_valid: has_c_serialiser_format (a_format)
@@ -133,7 +131,7 @@ feature -- Commands
 			serialised_attached: serialised /= Void
 		end
 
-	set_tree (a_node: C_COMPLEX_OBJECT) is
+	set_tree (a_node: C_COMPLEX_OBJECT)
 			-- Set root node of `tree' from e.g. GUI tool.
 		require
 			node_attached: a_node /= Void

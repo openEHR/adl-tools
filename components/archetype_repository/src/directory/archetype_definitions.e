@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Basic archetype definitions
@@ -18,21 +18,21 @@ class ARCHETYPE_DEFINITIONS
 
 feature -- Definitions
 
-	Archetype_native_syntax: STRING is "adl"
+	Archetype_native_syntax: STRING = "adl"
 			-- Name of native ADL syntax type.
 
-	Archetype_web_syntax: STRING is "html"
+	Archetype_web_syntax: STRING = "html"
 			-- Name of web publishing syntax type.
 
-	Archetype_flat_file_extension: STRING is ".adl"
+	Archetype_flat_file_extension: STRING = ".adl"
 			-- Extension for flat form archetype files.
 
-	Archetype_source_file_extension: STRING is ".adls"
+	Archetype_source_file_extension: STRING = ".adls"
 			-- Extension for source form (differential) archetype files.
 
-	Ontological_path_separator: STRING is "/"
+	Ontological_path_separator: STRING = "/"
 
-	Adl_versions: ARRAYED_LIST [STRING] is
+	Adl_versions: ARRAYED_LIST [STRING]
 			-- list of ADL versions known in this tool
 		once
 			create Result.make(0)
@@ -42,7 +42,7 @@ feature -- Definitions
 			Result.compare_objects
 		end
 
-	Latest_adl_version: STRING is
+	Latest_adl_version: STRING
 			-- return current latest known ADL version in this tool
 		once
 			Result := Adl_versions.last

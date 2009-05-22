@@ -1,6 +1,6 @@
-indexing
+note
 	component:   "openEHR support types"
-	
+
 	description: "[
 				  Model of a URI, or Universal Resource Identifier, as defined by W3C
 	              RFC 3896.  See %"Universal Resource Identifiers in WWW%" by 
@@ -33,13 +33,13 @@ inherit
 		redefine
 			out
 		end
-		
+
 create
 	make, make_from_string
-	
+
 feature -- Initialisation
 
-	make(a_scheme, a_path, a_query, a_fragment:STRING) is
+	make (a_scheme, a_path, a_query, a_fragment: STRING)
 		require
 			Scheme_exists: a_scheme /= Void and then not a_scheme.is_empty
 			Path_exists: a_path /= Void and then not a_path.is_empty
@@ -49,7 +49,7 @@ feature -- Initialisation
 			value := format(a_scheme, a_path, a_query, a_fragment)
 		end
 
-	make_from_string(a_uri_string: STRING) is
+	make_from_string (a_uri_string: STRING)
 		require
 			valid_string: a_uri_string /= Void and then valid_uri(a_uri_string)
 		do
@@ -58,29 +58,29 @@ feature -- Initialisation
 
 feature -- Definitions
 
-	Scheme_delimiter: STRING is ":"
+	Scheme_delimiter: STRING = ":"
 			-- indicates the end of the scheme name
 
-	Authority_delimiter: STRING is "//"
+	Authority_delimiter: STRING = "//"
 			-- indicates start of authority id under which next level of ids are sensible
 
-	Fragment_delimiter: STRING is "#"
+	Fragment_delimiter: STRING = "#"
 			-- Indicates the start of a fragment identifier
 
-	Query_delimiter: STRING is "?"
+	Query_delimiter: STRING = "?"
 			-- Indicates the start of a query string
 
-	Hierarchy_delimiter: STRING is "/"
+	Hierarchy_delimiter: STRING = "/"
 			-- Delimiter character for objects whose  relationship  is
 			-- hierarchical.
 
-	Escape_char: STRING is "%%"
+	Escape_char: STRING = "%%"
 			-- Used for escaping characters in a  local  scheme  which
 			-- have specific significance in a URI. Note that a double
 			-- %% must be used here since % is also the Eiffel Escape
 			-- character.
 
-	Reserved_chars: STRING is "/#?*.!+%%"
+	Reserved_chars: STRING = "/#?*.!+%%"
 			-- Characters  reserved  for  use  in  URIs.  Where  these
 			-- characters  occur  in local names, they will be escaped
 			-- with the escape character.
@@ -90,7 +90,7 @@ feature -- Access
 	value: STRING
 			-- the complete URI value
 
-	scheme: STRING is
+	scheme: STRING
 			-- A distributed information "space" in which  information
 			-- objects  exist.  The scheme simultaneously specifies an
 			-- information space and a mechanism for accessing objects
@@ -106,7 +106,7 @@ feature -- Access
 		do
 		end
 
-	path: STRING is
+	path: STRING
 			-- A string whose format is  a  function  of  the  scheme.
 			-- Identifies   the   location  in  <scheme>-space  of  an
 			-- information entity. Typical values include hierarchical
@@ -118,7 +118,7 @@ feature -- Access
 		do
 		end
 
-	fragment_id: STRING is
+	fragment_id: STRING
 			-- A part of, a  fragment  or  a  sub-function  within  an
 			-- object. Allows references to sub-parts of objects, such
 			-- as a certain line and  character  position  in  a  text
@@ -127,7 +127,7 @@ feature -- Access
 		do
 		end
 
-	query: STRING is
+	query: STRING
 			-- Query string to send to application implied  by  scheme
 			-- and  path  Enables  queries  to applications, including
 			-- databases  to  be  included  in  the  URI   Any   query
@@ -137,7 +137,7 @@ feature -- Access
 
 feature -- Status Report
 
-	valid_uri(a_str: STRING): BOOLEAN is
+	valid_uri(a_str: STRING): BOOLEAN
 			-- True if a_str in valid URI syntax
 		require
 			str_valid: a_str /= Void
@@ -146,24 +146,24 @@ feature -- Status Report
 			-- do proper validation
 			Result := not a_str.is_empty -- a_str.substring_index(Scheme_delimiter + Authority_delimiter, 1) > 1
 		end
-		
+
 feature -- Conversion
 
-	as_string: STRING is
+	as_string: STRING
 		do
 			Result := value
 		end
-		
+
 feature -- output
 
-	out: STRING is
+	out: STRING
 		do
 			Result := as_string
 		end
-		
+
 feature {NONE} -- Implementation
 
-	format(a_scheme, a_path, a_query, a_fragment:STRING): STRING is
+	format(a_scheme, a_path, a_query, a_fragment:STRING): STRING
 		do
 			Result := a_scheme.twin
 			Result.append(Scheme_delimiter + Authority_delimiter + a_path)
@@ -176,6 +176,6 @@ feature {NONE} -- Implementation
 			    Result.append(Fragment_delimiter + a_fragment)
 			end
 		end
-			
+
 end
 

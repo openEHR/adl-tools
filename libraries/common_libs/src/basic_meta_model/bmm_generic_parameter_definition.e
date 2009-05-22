@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR re-usable library"
 	description: "[
 				 Definition of a generic parameter in a class definition of a generic type.
@@ -37,7 +37,7 @@ feature -- Access
 			end
 		end
 
-	flattened_type_list: ARRAYED_LIST [STRING] is
+	flattened_type_list: ARRAYED_LIST [STRING]
 			-- completely flattened list of type names, flattening out all generic parameters
 			-- note that for this type, we output "ANY" if there is no constraint
 		do
@@ -54,7 +54,7 @@ feature -- Access
 
 feature -- Status Report
 
-	is_constrained: BOOLEAN is
+	is_constrained: BOOLEAN
 			-- True if this generic parameter has a type constraint
 		do
 			Result := flattened_conforms_to_type /= Void
@@ -62,7 +62,7 @@ feature -- Status Report
 
 feature -- Modification
 
-	set_inheritance_precursor (a_gen_parm_def: BMM_GENERIC_PARAMETER_DEFINITION) is
+	set_inheritance_precursor (a_gen_parm_def: BMM_GENERIC_PARAMETER_DEFINITION)
 			-- set `inheritance_precursor'
 		require
 			a_gen_parm_def /= Void
@@ -72,7 +72,7 @@ feature -- Modification
 
 feature -- Output
 
-	as_type_string: STRING is
+	as_type_string: STRING
 			-- name of the type
 		do
 			create Result.make(0)
@@ -83,7 +83,7 @@ feature -- Output
 			end
 		end
 
-	as_flattened_type_string: STRING is
+	as_flattened_type_string: STRING
 			-- string form of the type for matching in archetypes - i.e. ignoring container type names
 		do
 			Result := as_type_string

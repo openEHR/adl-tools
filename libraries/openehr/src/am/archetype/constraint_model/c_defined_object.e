@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 ADL object nodes that are defined in line, rather than being
@@ -21,7 +21,7 @@ inherit
 
 feature -- Access
 	
-	prototype_value: ANY is
+	prototype_value: ANY
 			-- 	generate a default value from this constraint object
 		deferred
 		ensure
@@ -33,18 +33,18 @@ feature -- Access
 
 feature -- Status Report
 
-	any_allowed: BOOLEAN is
+	any_allowed: BOOLEAN
 			-- True if any value allowed ('*' received in parsed input)
 		deferred
 		end
 
-	valid_value (a_value: like prototype_value): BOOLEAN is 
+	valid_value (a_value: like prototype_value): BOOLEAN 
 		require
 			a_value /= Void
 		deferred
 		end
 	
-	has_assumed_value: BOOLEAN is
+	has_assumed_value: BOOLEAN
 			-- True if there is an assumed value
 		do
 			Result := assumed_value /= Void
@@ -52,7 +52,7 @@ feature -- Status Report
 		
 feature -- Modification
 
-	set_assumed_value(a_value: like assumed_value) is
+	set_assumed_value(a_value: like assumed_value)
 			-- set `assumed_value'
 		require
 			a_value /= Void and then valid_value(a_value)

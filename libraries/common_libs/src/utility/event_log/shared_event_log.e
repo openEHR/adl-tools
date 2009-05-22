@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "Shared access to event log."
 	keywords:    "logging"
@@ -19,7 +19,7 @@ inherit
 
 feature -- Initialisation
 
-	set_log_facility(a_lf: EVENT_LOG_FACILITY) is
+	set_log_facility(a_lf: EVENT_LOG_FACILITY)
 		require
 			Facility_exists: a_lf /= Void
 		do
@@ -28,12 +28,12 @@ feature -- Initialisation
 
 feature -- Event Logging
 
-	log_event(class_name, op_name, msg:STRING; severity:INTEGER) is
+	log_event(class_name, op_name, msg:STRING; severity:INTEGER)
 		do
 			log_facility.item.append_event(class_name, op_name, msg, severity)
 		end
 
-	log_event2(class_name, op_name:STRING; msg_items:ARRAY[ANY]; severity:INTEGER) is
+	log_event2(class_name, op_name:STRING; msg_items:ARRAY[ANY]; severity:INTEGER)
 		local
 			msg:STRING
 			i:INTEGER
@@ -48,7 +48,7 @@ feature -- Event Logging
 
 feature {NONE} -- Implementation
 
-	log_facility: CELL[EVENT_LOG_FACILITY] is
+	log_facility: CELL[EVENT_LOG_FACILITY]
 	    once
 	        create Result.put(Void)
 	    end

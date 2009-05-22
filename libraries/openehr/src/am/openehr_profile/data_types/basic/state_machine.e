@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Types Archetype Model"
 	
 	description: "Definition of a state machine"
@@ -23,7 +23,7 @@ feature -- Access
 
 feature -- Output
 
-	as_display_string:STRING is
+	as_display_string:STRING
 		do
 			create Result.make(0)
 			from 
@@ -36,7 +36,7 @@ feature -- Output
 			end
 		end
 
-	as_canonical_string:STRING is
+	as_canonical_string:STRING
 		do
 			create Result.make(0)
 		end

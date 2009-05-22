@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Common Information Model"
 
 	description: "[
@@ -35,49 +35,49 @@ feature -- Access
 	time_created: DV_DATE_TIME
 			-- Time of initial creation of this versioned object.
 
-	all_version_ids: LIST [OBJECT_VERSION_ID] is
+	all_version_ids: LIST [OBJECT_VERSION_ID]
 			-- Return a list of ids of all versions in this object.
 		do
 		end
 
-	all_versions: LIST [VERSION[G]] is
+	all_versions: LIST [VERSION[G]]
 			-- Return a list of all versions in this object.
 		do
 		end
 
-	version_count: INTEGER is
+	version_count: INTEGER
 			-- Return the total number of versions in this object
 		do
 		end
 
-	first_version: VERSION[G] is
+	first_version: VERSION[G]
 			-- extract first version
 		do
 		end
 		
-	latest_version: VERSION[G] is
+	latest_version: VERSION[G]
 			-- extract most recent version
 		do
 		end
 
-	latest_trunk_version: VERSION[G] is
+	latest_trunk_version: VERSION[G]
 			-- extract most recent version on the trunk
 		do
 		end
 
-	latest_version_id: STRING is
+	latest_version_id: STRING
 			-- id of most recent version; if no transactions, "none"
 		do
 		end
 
-	version_with_id (a_ver_id: OBJECT_VERSION_ID): VERSION[G] is
+	version_with_id (a_ver_id: OBJECT_VERSION_ID): VERSION[G]
 			-- extract version known by 'a_ver_id'
 		require
 			Ver_id_valid: a_ver_id /= Void and then has_version_id(a_ver_id)
 		do
 		end
 
-	version_at_time (a_dt: DV_DATE_TIME): VERSION [G] is
+	version_at_time (a_dt: DV_DATE_TIME): VERSION [G]
 			-- extract version for time 'a_dt'
 		require
 			Ver_time_valid: a_dt /= Void and then has_version_at_time(a_dt)
@@ -87,7 +87,7 @@ feature -- Access
 	revision_history: REVISION_HISTORY	
 			-- History of all audits and attestations in this versioned repository.
 			
-	trunk_lifecycle_state: DV_CODED_TEXT is
+	trunk_lifecycle_state: DV_CODED_TEXT
 			-- Return the lifecycle state from the latest trunk version. Useful for 
 			-- determining if the version container is logically deleted.
 		do		
@@ -97,21 +97,21 @@ feature -- Access
 
 feature -- Status Report
 
-	has_version_id (a_ver_id: OBJECT_VERSION_ID): BOOLEAN is
+	has_version_id (a_ver_id: OBJECT_VERSION_ID): BOOLEAN
 			-- does this VERSIONED<T> include a version known as 'a_ver_id'? 
 		require
 			Ver_id_exists: a_ver_id /= Void
 		do
 		end
 
-	has_version_at_time (a_dt: DV_DATE_TIME):BOOLEAN is
+	has_version_at_time (a_dt: DV_DATE_TIME):BOOLEAN
 			-- does this VERSIONED<T> include a version for time 'a_dt'? 
 		require
 			Ver_time_valid: a_dt /= Void
 		do
 		end
 
-	is_original_version (a_ver_id: OBJECT_VERSION_ID): BOOLEAN is
+	is_original_version (a_ver_id: OBJECT_VERSION_ID): BOOLEAN
 			-- True if version with an_id is an ORIGINAL_VERSION
 		require
 			a_ver_id /= Void and has_version_id(a_ver_id)
@@ -124,7 +124,7 @@ feature -- Modify
 	commit_original_version (a_contribution: OBJECT_REF;
 				a_new_version_uid, a_preceding_version_uid: OBJECT_VERSION_ID; 
 				an_audit: AUDIT_DETAILS; a_lifecycle_state: DV_CODED_TEXT; 
-				a_data: G; signing_key: STRING) is
+				a_data: G; signing_key: STRING)
 			-- commit a new ORIGINAL_VERSION to a VERSIONED_OBJECT; a_preceding_version_uid is compared
 			-- to the current latest version on the same branch, to determine if the new version 
 			-- can be committed
@@ -142,7 +142,7 @@ feature -- Modify
 	commit_original_merged_version (a_contribution: OBJECT_REF;
 				a_new_version_uid, a_preceding_version_uid: OBJECT_VERSION_ID; 
 				an_audit: AUDIT_DETAILS; a_lifecycle_state: DV_CODED_TEXT;
-				a_data: G; an_other_input_uids: SET[OBJECT_VERSION_ID]; signing_key: STRING) is
+				a_data: G; an_other_input_uids: SET[OBJECT_VERSION_ID]; signing_key: STRING)
 			-- commit a new merged ORIGINAL_VERSION, i.e. one containing content from more than one
 			-- other version. This commit function adds a parameter containing the ids of other versions merged 
 			-- into the current one.
@@ -158,7 +158,7 @@ feature -- Modify
 
 		end
 
-	commit_imported_version (a_contribution: OBJECT_REF; an_audit: AUDIT_DETAILS; a_version: ORIGINAL_VERSION[G]) is
+	commit_imported_version (a_contribution: OBJECT_REF; an_audit: AUDIT_DETAILS; a_version: ORIGINAL_VERSION[G])
 			-- Add a new imported version. Details of version id etc come from the ORIGINAL_VERSION being committed.
 		require
 			Contribution_valid: a_contribution /= Void
@@ -167,7 +167,7 @@ feature -- Modify
 		do
 		end
 
-	commit_attestation (an_attestation: ATTESTATION; a_ver_id: OBJECT_VERSION_ID; signing_key: STRING) is
+	commit_attestation (an_attestation: ATTESTATION; a_ver_id: OBJECT_VERSION_ID; signing_key: STRING)
 			-- Add a new attestation to a specified original version. Attestations can only be added to Original versions.
 		require
 			Attestation_valid: an_attestation /= Void

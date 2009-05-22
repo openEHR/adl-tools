@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Library Project"
 	description: "Feature type definitions for method dispatch"
 	keywords:    "method dispatch"
@@ -16,20 +16,20 @@ class FEATURE_TYPES
 
 feature -- Access
 
-	Procedure:INTEGER is 0
-	Function_reference:INTEGER is 1
-	Function_boolean:INTEGER is 2
-	Function_character:INTEGER is 3
-	Function_integer:INTEGER is 4
-	Function_real:INTEGER is 5
-	Function_double:INTEGER is 6
-	Function_pointer:INTEGER is 7
-	Function_bit:INTEGER is 8
-	Field_reference:INTEGER is 9
+	Procedure:INTEGER = 0
+	Function_reference:INTEGER = 1
+	Function_boolean:INTEGER = 2
+	Function_character:INTEGER = 3
+	Function_integer:INTEGER = 4
+	Function_real:INTEGER = 5
+	Function_double:INTEGER = 6
+	Function_pointer:INTEGER = 7
+	Function_bit:INTEGER = 8
+	Field_reference:INTEGER = 9
 
 feature -- Status
 
-	is_valid_feature_type(n:INTEGER):BOOLEAN is
+	is_valid_feature_type(n:INTEGER):BOOLEAN
 		do
 			Result := n >= Procedure and n <= Field_reference
 		end

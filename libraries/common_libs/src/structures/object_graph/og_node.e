@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "node in ADL parse tree"
 	keywords:    "test, ADL"
@@ -21,7 +21,7 @@ inherit
 
 feature -- Initialisation
 
-	default_create is
+	default_create
 			--
 		do
 			create children.make(0)
@@ -31,7 +31,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	child_with_id(a_node_key: STRING): like child_type is
+	child_with_id(a_node_key: STRING): like child_type
 			-- find the child node with `a_node_key'
 		require
 			has_child_with_id(a_node_key)
@@ -47,7 +47,7 @@ feature -- Access
 			Result_exists: Result /= Void
 		end
 
-	first_child: like child_type is
+	first_child: like child_type
 			-- 	get first child; typically used when it is known that there is only one child
 			-- and we don't care what it is called
 		do
@@ -58,7 +58,7 @@ feature -- Access
 			end
 		end
 
-	item_for_iteration: like child_type is
+	item_for_iteration: like child_type
 			--
 		do
 			if using_children_sorted then
@@ -68,7 +68,7 @@ feature -- Access
 			end
 		end
 
-	child_count: INTEGER is
+	child_count: INTEGER
 			-- number of child nodes
 		do
 			Result := children.count
@@ -76,19 +76,19 @@ feature -- Access
 
 feature -- Status Report
 
-	is_leaf: BOOLEAN is
+	is_leaf: BOOLEAN
 			-- true if no children
 		do
 			Result := children.is_empty
 		end
 
-	has_children: BOOLEAN is
+	has_children: BOOLEAN
 			-- true if any children
 		do
 			Result := not children.is_empty
 		end
 
-	has_child_with_id(a_node_key: STRING): BOOLEAN is
+	has_child_with_id(a_node_key: STRING): BOOLEAN
 		require
 			node_key_valid: a_node_key /= Void
 		do
@@ -101,14 +101,14 @@ feature -- Status Report
 			end
 		end
 
-	has_child(a_node: like child_type): BOOLEAN is
+	has_child(a_node: like child_type): BOOLEAN
 		require
 			node_valid: a_node /= Void
 		do
 			Result := children.has_item (a_node)
 		end
 
-	off: BOOLEAN is
+	off: BOOLEAN
 			--
 		do
 			if using_children_sorted then
@@ -118,7 +118,7 @@ feature -- Status Report
 			end
 		end
 
-	valid_child_for_insertion(a_node: like child_type): BOOLEAN is
+	valid_child_for_insertion(a_node: like child_type): BOOLEAN
 		do
 			Result := not has_child(a_node)
 		end
@@ -129,7 +129,7 @@ feature -- Status Report
 
 feature -- Status Setting
 
-	use_children_sorted is
+	use_children_sorted
 			-- use sorted list
 		do
 			using_children_sorted := True
@@ -137,7 +137,7 @@ feature -- Status Setting
 
 feature -- Cursor Movement
 
-	start is
+	start
 			-- iteration children in insertion order
 		do
 			if using_children_sorted then
@@ -147,7 +147,7 @@ feature -- Cursor Movement
 			end
 		end
 
-	forth is
+	forth
 			--
 		do
 			if using_children_sorted then
@@ -159,7 +159,7 @@ feature -- Cursor Movement
 
 feature -- Modification
 
-	put_child(a_node: like child_type) is
+	put_child(a_node: like child_type)
 			-- put a new child node at the end of the list
 		require
 			Node_exists: a_node /= Void and then valid_child_for_insertion(a_node)
@@ -172,7 +172,7 @@ feature -- Modification
 			has_child (a_node)
 		end
 
-	put_child_left(a_node, before_node: like child_type) is
+	put_child_left(a_node, before_node: like child_type)
 			-- insert a new child node before another node in the list
 		require
 			Node_valid: a_node /= Void and then valid_child_for_insertion(a_node)
@@ -187,7 +187,7 @@ feature -- Modification
 			has_child (a_node)
 		end
 
-	put_child_right(a_node, after_node: like child_type) is
+	put_child_right(a_node, after_node: like child_type)
 			-- insert a new child node before another node in the list
 		require
 			Node_valid: a_node /= Void and then valid_child_for_insertion(a_node)
@@ -202,7 +202,7 @@ feature -- Modification
 			has_child (a_node)
 		end
 
-	replace_child_by_id(a_node: like child_type; an_id: STRING) is
+	replace_child_by_id(a_node: like child_type; an_id: STRING)
 			-- replace node with id `an_id' by `an_obj'
 		do
 			children_ordered.go_i_th (children_ordered.index_of (child_with_id(an_id), 1))
@@ -213,7 +213,7 @@ feature -- Modification
 			a_node.set_parent(Current)
 		end
 
-	remove_child(a_node: like child_type) is
+	remove_child(a_node: like child_type)
 			-- remove the child node `a_node'
 		require
 			Node_exists: a_node /= Void and then has_child(a_node)
@@ -226,7 +226,7 @@ feature -- Modification
 			Child_removed: not has_child (a_node)
 		end
 
-	remove_child_by_id(a_node_key: STRING) is
+	remove_child_by_id(a_node_key: STRING)
 			-- remove the child node identified by a_node_key
 		require
 			Node_exists: a_node_key /= Void and then has_child_with_id(a_node_key)
@@ -239,7 +239,7 @@ feature -- Modification
 			Child_removed: not has_child_with_id (a_node_key)
 		end
 
-	remove_all_children is
+	remove_all_children
 			-- remove all children
 		do
 			create children.make(0)
@@ -249,7 +249,7 @@ feature -- Modification
 			Children_removed: children.is_empty
 		end
 
-	replace_node_id(an_old_node_key, a_new_node_key: STRING) is
+	replace_node_id(an_old_node_key, a_new_node_key: STRING)
 			-- replace `an_old_node_key' with `a_new_node_key' in the children
 			-- this has the effect of making an object indexed by a new node id,
 			-- that it doesn't itself carry

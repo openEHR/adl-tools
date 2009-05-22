@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Common Reference Model"
 
 	description: "[
@@ -44,11 +44,11 @@ create
 
 feature -- Definitions
 
-	Default_id: STRING is "openehr-ehr-ENTRY.any.v1"
+	Default_id: STRING = "openehr-ehr-ENTRY.any.v1"
 
 feature -- Initialisation
 
-	make (a_rm_originator, a_rm_name, a_rm_entity, a_domain_concept, a_version_id: STRING) is
+	make (a_rm_originator, a_rm_name, a_rm_entity, a_domain_concept, a_version_id: STRING)
 			-- Create from "rm_originator-rm_name-rm_entity.domain_concept.ver_id".
 		do
 			precursor(a_rm_originator, a_rm_name, a_rm_entity, a_domain_concept, a_version_id)
@@ -57,7 +57,7 @@ feature -- Initialisation
 			end
 		end
 
-	make_from_string (an_id: STRING) is
+	make_from_string (an_id: STRING)
 			-- Create from "rm_entity.domain_concept.ver_id".
 		do
 			precursor(an_id)
@@ -66,10 +66,10 @@ feature -- Initialisation
 			end
 		end
 
-	old_make_from_string (an_id: STRING) is
+	old_make_from_string (an_id: STRING)
 			-- Create from "rm_entity.domain_concept.ver_id", allows 'draft' in the version name
 		require
-			an_id /= Void and then old_valid_id(an_id)
+			an_id /= Void and then old_valid_id (an_id)
 		do
 			value := an_id
 			if domain_concept.has(section_separator) then
@@ -79,7 +79,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	specialisation: STRING is
+	specialisation: STRING
 			-- Optional specialisation of `domain_concept'.
 			-- I.e. "problem-diagnosis-histological" -> "diagnosis-histological"
 		require
@@ -93,7 +93,7 @@ feature -- Access
 			not_empty: not Result.is_empty
 		end
 
-	domain_concept_tail: STRING is
+	domain_concept_tail: attached STRING
 			-- The last part of the domain concept.
 			-- I.e. "problem"                        -> "problem"
 			--      "problem-diagnosis"              -> "diagnosis"
@@ -108,13 +108,12 @@ feature -- Access
 				Result := Result.substring (p + 1, Result.count)
 			end
 		ensure
-			attached: Result /= Void
 			not_empty: not Result.is_empty
 			domain_concept_unless_specialised: not is_specialised implies domain_concept.is_equal (Result)
 			last_specialisation: is_specialised implies domain_concept.is_equal (domain_concept_base + section_separator.out + Result)
 		end
 
-	domain_concept_base: STRING is
+	domain_concept_base: attached STRING
 			-- The part of the domain concept excluding the last specialisation.
 			-- I.e. "problem"                        -> "" (no specialisation)
 			--      "problem-diagnosis"              -> "problem"
@@ -126,12 +125,11 @@ feature -- Access
 			p := Result.last_index_of (section_separator, Result.count) - 1
 			Result := Result.substring (1, p)
 		ensure
-			attached: Result /= Void
 			empty_unless_specialised: not is_specialised implies Result.is_empty
 			excludes_last_specialisation: is_specialised implies domain_concept.is_equal (Result + section_separator.out + domain_concept_tail)
 		end
 
-	semantic_parent_id: STRING is
+	semantic_parent_id: attached STRING
 			-- Semantic id of parent as a string minus the version part at the end.
 			-- Equivalent to `semantic_id' including `domain_concept_base' only.
 		local
@@ -149,12 +147,11 @@ feature -- Access
 			p := Result.last_index_of (separator, Result.count) - 1
 			Result := Result.substring (1, p)
 		ensure
-			attached: Result /= Void
 			empty_unless_specialised: not is_specialised implies Result.is_equal (qualified_rm_entity)
 			excludes_last_specialisation: is_specialised implies Result.is_equal (qualified_rm_entity + axis_separator.out + domain_concept_base)
 		end
 
-	specialisation_depth: INTEGER is
+	specialisation_depth: INTEGER
 			-- specialisation level of this archetype id; non-specialised -> 0
 		do
 			Result := domain_concept.occurrences (section_separator)
@@ -167,7 +164,7 @@ feature -- Status Report
 	is_specialised: BOOLEAN
 			-- Is this id a specialisation?
 
-	old_valid_id (an_id: STRING): BOOLEAN is
+	old_valid_id (an_id: STRING): BOOLEAN
 			-- Does `an_id' have the correct form for an archetype id?
 		do
 			Result := old_archetype_id_pattern_regex.matches (an_id)
@@ -175,7 +172,7 @@ feature -- Status Report
 
 feature -- Factory
 
-	create_specialised_id (a_spec_domain_concept: STRING): !ARCHETYPE_ID is
+	create_specialised_id (a_spec_domain_concept: STRING): attached ARCHETYPE_ID
 			-- Create a specialised archetype id based on this one, using `a_spec_domain_concept'.
 			-- If the current id looks like:
 			--  openehr-ehr-OBSERVATION.lab_result.v3

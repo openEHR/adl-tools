@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "[
 				 Short (8-dot-3) MS-DOS style paths on Windows.

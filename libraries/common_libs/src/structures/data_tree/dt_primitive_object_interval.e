@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Node of interval of ordered simple types,
@@ -29,7 +29,7 @@ feature -- Access
 
 feature -- Modification
 
-	set_value(a_value: like value) is
+	set_value(a_value: like value)
 		do
 			value := a_value
 			rm_type_name := a_value.generating_type
@@ -37,20 +37,20 @@ feature -- Modification
 
 feature -- Conversion
 
-	as_string: STRING is
+	as_string: STRING
 		do
 			Result := "|" + value.as_string + "|"
 		end
 
 feature -- Serialisation
 
-	enter_subtree(serialiser: DT_SERIALISER; depth: INTEGER) is
+	enter_subtree(serialiser: DT_SERIALISER; depth: INTEGER)
 			-- perform serialisation at start of block for this node
 		do
 			serialiser.start_primitive_object_interval(Current, depth)
 		end
 
-	exit_subtree(serialiser: DT_SERIALISER; depth: INTEGER) is
+	exit_subtree(serialiser: DT_SERIALISER; depth: INTEGER)
 			-- perform serialisation at end of block for this node
 		do
 			serialiser.end_primitive_object_interval(Current, depth)

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Status of node definition in source text, i.e. what is define in this archetype,
@@ -25,7 +25,7 @@ create
 
 feature -- Initialisation
 
-	make(a_value: INTEGER) is
+	make(a_value: INTEGER)
 			-- make with an ss_xxx value
 		require
 			Valid_valid: valid_specialisation_status(a_value)
@@ -40,7 +40,7 @@ feature -- Access
 
 feature -- Comparison
 
-	specialisation_dominant_status(other_status: SPECIALISATION_STATUS): SPECIALISATION_STATUS is
+	specialisation_dominant_status(other_status: SPECIALISATION_STATUS): SPECIALISATION_STATUS
 			-- determine which of Current and other_status is dominant at a given node, due
 			-- to sub-node values; order is:
 			-- added, redefined, inherited, propagated

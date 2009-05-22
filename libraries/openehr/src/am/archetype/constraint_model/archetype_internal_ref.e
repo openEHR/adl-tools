@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Item representing a 'use' reference in an ADL parse tree. The referenced node must be an object node."
 	keywords:    "test, ADL"
@@ -24,7 +24,7 @@ create
 
 feature -- Initialisation
 
-	make(a_rm_type_name:STRING; a_path: STRING) is
+	make (a_rm_type_name: STRING; a_path: STRING)
 			-- set reference model type name
 		require
 			a_rm_type_name_valid: a_rm_type_name /= Void and then not a_rm_type_name.is_empty
@@ -50,12 +50,12 @@ feature -- Status Report
 			-- True if target occurrences are to be used as the value of occurrences in this object;
 			-- by the time of runtime use, the target occurrences value has to be set into this object
 
-	is_valid: BOOLEAN is
+	is_valid: BOOLEAN
 			-- report on validity
 		do
 			if precursor then
 				if target_path = Void or else target_path.is_empty then
-					invalid_reason.append("'use' reference path not specified")
+					invalid_reason.append ("'use' reference path not specified")
 				else
 					Result := True
 				end
@@ -64,7 +64,7 @@ feature -- Status Report
 
 feature -- Comparison
 
-	is_subset_of (other: like Current): BOOLEAN is
+	is_subset_of (other: like Current): BOOLEAN
 			-- True if this node is a subset, i.e. a redefinition of, `other'
 			-- Returns False if they are the same, or if they do not correspond
 		do
@@ -73,7 +73,7 @@ feature -- Comparison
 
 feature -- Modification
 
-	set_target_path(a_path: STRING) is
+	set_target_path(a_path: STRING)
 			-- set reference path with a valid ADL path string
 		require
 			a_path /= Void
@@ -81,7 +81,7 @@ feature -- Modification
 			target_path := a_path
 		end
 
-	set_occurrences(ivl: MULTIPLICITY_INTERVAL) is
+	set_occurrences(ivl: MULTIPLICITY_INTERVAL)
 			--
 		do
 			precursor(ivl)
@@ -92,18 +92,18 @@ feature -- Modification
 
 feature -- Representation
 
-	representation: !OG_OBJECT_LEAF
+	representation: attached OG_OBJECT_LEAF
 
 feature -- Visitor
 
-	enter_subtree(visitor: C_VISITOR; depth: INTEGER) is
+	enter_subtree(visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at start of block for this node
 		do
 			precursor(visitor, depth)
 			visitor.start_archetype_internal_ref(Current, depth)
 		end
 
-	exit_subtree(visitor: C_VISITOR; depth: INTEGER) is
+	exit_subtree(visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at end of block for this node
 		do
 			precursor(visitor, depth)

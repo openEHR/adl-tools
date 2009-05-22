@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Archetype ontology section class for differential, i.e. source form archetypes. The routines in this class
@@ -30,7 +30,7 @@ create
 
 feature -- Initialisation
 
-	make_empty(a_primary_lang: STRING; at_specialisation_depth: INTEGER) is
+	make_empty(a_primary_lang: STRING; at_specialisation_depth: INTEGER)
 			-- make an empty ontology at specified specialisation depth
 		require
 			Primary_language_valid: a_primary_lang /= Void and then not a_primary_lang.is_empty
@@ -46,7 +46,7 @@ feature -- Initialisation
 			Concept_code_set: valid_concept_code(concept_code) and specialisation_depth_from_code (concept_code) = at_specialisation_depth
 		end
 
-	make_from_flat(a_flat: FLAT_ARCHETYPE_ONTOLOGY) is
+	make_from_flat(a_flat: FLAT_ARCHETYPE_ONTOLOGY)
 			-- create from a flat ontology
 		require
 			a_flat /= Void
@@ -80,7 +80,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	term_definition(a_lang, a_term_code: STRING): ARCHETYPE_TERM is
+	term_definition(a_lang, a_term_code: STRING): ARCHETYPE_TERM
 			-- retrieve the term definition in language `a_lang' for code `a_term_code'
 		do
 			if specialisation_depth_from_code (a_term_code) = specialisation_depth then
@@ -90,7 +90,7 @@ feature -- Access
 			end
 		end
 
-	constraint_definition(a_lang, a_term_code: STRING): ARCHETYPE_TERM is
+	constraint_definition(a_lang, a_term_code: STRING): ARCHETYPE_TERM
 			-- retrieve the constraint definition in language `a_lang' for code `a_term_code'
 		do
 			if specialisation_depth_from_code (a_term_code) = specialisation_depth then
@@ -100,7 +100,7 @@ feature -- Access
 			end
 		end
 
-	term_binding(a_terminology, a_term_code: STRING): CODE_PHRASE is
+	term_binding(a_terminology, a_term_code: STRING): CODE_PHRASE
 			-- retrieve the term definition in language `a_lang' for code `a_term_code'
 		do
 			if specialisation_depth_from_code (a_term_code) = specialisation_depth then
@@ -110,7 +110,7 @@ feature -- Access
 			end
 		end
 
-	constraint_binding(a_terminology, a_term_code: STRING): URI is
+	constraint_binding(a_terminology, a_term_code: STRING): URI
 			-- retrieve the constraint definition in language `a_lang' for code `a_term_code'
 			-- in form of a string: "service::query"
 		do
@@ -121,7 +121,7 @@ feature -- Access
 
 feature -- Status Report
 
-	has_term_code (a_term_code: STRING): BOOLEAN is
+	has_term_code (a_term_code: STRING): BOOLEAN
 			-- Is `a_term_code' known in this ontology?
 		do
 			if specialisation_depth_from_code (a_term_code) = specialisation_depth then
@@ -131,7 +131,7 @@ feature -- Status Report
 			end
 		end
 
-	has_constraint_code (a_constraint_code: STRING): BOOLEAN is
+	has_constraint_code (a_constraint_code: STRING): BOOLEAN
 			-- Is `a_constraint_code' known in this ontology?
 		do
 			if specialisation_depth_from_code (a_constraint_code) = specialisation_depth then
@@ -141,7 +141,7 @@ feature -- Status Report
 			end
 		end
 
-	has_any_term_binding(a_term_code: STRING): BOOLEAN is
+	has_any_term_binding(a_term_code: STRING): BOOLEAN
 			-- true if there is any term binding for code `a_term_code'
 		local
 			p: ARRAYED_LIST_CURSOR
@@ -163,7 +163,7 @@ feature -- Status Report
 			end
 		end
 
-	has_term_binding(a_terminology, a_term_code: STRING): BOOLEAN is
+	has_term_binding(a_terminology, a_term_code: STRING): BOOLEAN
 			-- true if there is a term binding for code `a_term_code' in `a_terminology'
 		do
 			if specialisation_depth_from_code (a_term_code) = specialisation_depth then
@@ -174,7 +174,7 @@ feature -- Status Report
 			end
 		end
 
-	has_any_constraint_binding(a_term_code: STRING): BOOLEAN is
+	has_any_constraint_binding(a_term_code: STRING): BOOLEAN
 			-- true if there is any constraint binding for code `a_term_code'
 		local
 			p: ARRAYED_LIST_CURSOR
@@ -196,7 +196,7 @@ feature -- Status Report
 			end
 		end
 
-	has_constraint_binding(a_terminology, a_term_code: STRING): BOOLEAN is
+	has_constraint_binding(a_terminology, a_term_code: STRING): BOOLEAN
 			-- true if there is a term binding for code `a_term_code' in `a_terminology'
 		do
 			if specialisation_depth_from_code (a_term_code) = specialisation_depth then
@@ -209,7 +209,7 @@ feature -- Status Report
 
 feature -- Modification
 
-	add_language(a_lang: STRING) is
+	add_language(a_lang: STRING)
 			-- add a new language to list of languages available
 			-- No action if language already exists
 		require
@@ -259,19 +259,19 @@ feature -- Modification
 			Language_added: has_language(a_lang)
 		end
 
-	initialise_term_definitions(a_term: ARCHETYPE_TERM) is
+	initialise_term_definitions(a_term: ARCHETYPE_TERM)
 			-- set concept of ontology from a term
 		require
 			Term_exists: a_term /= Void
 		do
-			term_codes.extend(a_term.code)
+			term_codes.extend (a_term.code)
 			term_definitions.put(create {HASH_TABLE[ARCHETYPE_TERM, STRING]}.make(0), primary_language)
 			term_definitions.item(primary_language).put(a_term, a_term.code)
 		ensure
 			Term_definitions_populated: term_definitions.item(primary_language).item(concept_code) = a_term
 		end
 
-	replace_term_binding(a_code_phrase: CODE_PHRASE; a_term_code: STRING) is
+	replace_term_binding(a_code_phrase: CODE_PHRASE; a_term_code: STRING)
 			-- replaces existing a term binding to local code a_term_code, in group a_terminology
 		require
 			Code_phrase_exists: a_code_phrase /= Void
@@ -284,7 +284,7 @@ feature -- Modification
 			Binding_added: has_term_binding(a_code_phrase.terminology_id.value, a_term_code)
 		end
 
-	replace_constraint_binding(a_uri: URI; a_terminology, a_constraint_code: STRING) is
+	replace_constraint_binding(a_uri: URI; a_terminology, a_constraint_code: STRING)
 			-- replaces existing constraint binding to local code a_term_code, in group a_terminology
 		require
 			Uri_exists: a_uri /= Void
@@ -299,7 +299,7 @@ feature -- Modification
 
 feature {ARCHETYPE} -- Modification
 
-	set_parent_ontology(an_ontology: ARCHETYPE_ONTOLOGY) is
+	set_parent_ontology(an_ontology: ARCHETYPE_ONTOLOGY)
 			-- add a connection to the ontology of a parent archetype
 		require
 			Ontology_valid: an_ontology /= Void and then an_ontology.specialisation_depth + 1 = specialisation_depth
@@ -309,7 +309,7 @@ feature {ARCHETYPE} -- Modification
 
 feature -- Factory
 
-	new_non_specialised_term_code: STRING is
+	new_non_specialised_term_code: STRING
 			-- create a new code at level of current top code index at current specialisation depth
 			-- code will have form atnnn or at0.n or at0.0.n etc
 		local
@@ -318,7 +318,7 @@ feature -- Factory
 		do
 			if specialisation_depth > 0 then
 				create Result.make(0)
-				Result.append(Term_code_leader)
+				Result.append (Term_code_leader)
 
 				from
 					i := 0
@@ -332,7 +332,7 @@ feature -- Factory
 
 				Result.append_integer(highest_term_code_index + 1)
 			else
-				create Result.make_filled('0', Term_code_length)
+				create Result.make_filled ('0', Term_code_length)
 				Result.replace_substring(Term_code_leader, 1, Term_code_leader.count)
 				new_idx_str := (highest_term_code_index + 1).out
 				Result.replace_substring(new_idx_str, Result.count-new_idx_str.count + 1, Result.count)
@@ -341,7 +341,7 @@ feature -- Factory
 			Result_exists: Result /= Void and then specialisation_depth_from_code(Result) = specialisation_depth
 		end
 
-	new_specialised_term_code(a_parent_code: STRING): STRING is
+	new_specialised_term_code(a_parent_code: STRING): STRING
 			-- Make a new specialised code based on `a_parent_code'
 			-- e.g. "at0001" at level 2 will produce "at0001.0.1"
 			-- Note: a code of "at0001" has specialisation depth 0
@@ -352,7 +352,7 @@ feature -- Factory
 			i, n: INTEGER
 		do
 			create Result.make(0)
-			Result.append(a_parent_code)
+			Result.append (a_parent_code)
 
 			from
 				i := specialisation_depth_from_code(a_parent_code) + 1
@@ -375,7 +375,7 @@ feature -- Factory
 			Result_valid: Result /= Void and then specialised_code_tail(Result).to_integer > 0
 		end
 
-	new_non_specialised_constraint_code: STRING is
+	new_non_specialised_constraint_code: STRING
 			-- create a new code at level of current top code index at current specialisation depth
 			-- code will have form acnnn or ac0.n or ac0.0.n etc
 		local
@@ -384,7 +384,7 @@ feature -- Factory
 		do
 			if specialisation_depth > 0 then
 				create Result.make(0)
-				Result.append(Constraint_code_leader)
+				Result.append (Constraint_code_leader)
 				from
 					i := 0
 				until
@@ -397,7 +397,7 @@ feature -- Factory
 
 				Result.append_integer(highest_constraint_code_index + 1)
 			else
-				create Result.make_filled('0', Constraint_code_length)
+				create Result.make_filled ('0', Constraint_code_length)
 				Result.replace_substring(Constraint_code_leader, 1, Constraint_code_leader.count)
 				new_idx_str := (highest_constraint_code_index + 1).out
 				Result.replace_substring(new_idx_str, Result.count-new_idx_str.count+1, Result.count)
@@ -406,7 +406,7 @@ feature -- Factory
 			Result_exists: Result /= Void and then specialisation_depth_from_code(Result) = specialisation_depth
 		end
 
-	new_specialised_constraint_code(a_parent_code: STRING): STRING is
+	new_specialised_constraint_code(a_parent_code: STRING): STRING
 			-- Make a new specialised code based on `a_parent_code'
 			-- e.g. "ac0001" at level 2 will produce "ac0001.0.1"
 			-- Note: a code of "ac0001" has specialisation depth 0
@@ -417,7 +417,7 @@ feature -- Factory
 			i, n: INTEGER
 		do
 			create Result.make(0)
-			Result.append(a_parent_code)
+			Result.append (a_parent_code)
 
 			from
 				i := specialisation_depth_from_code(a_parent_code) + 1
@@ -440,7 +440,7 @@ feature -- Factory
 			Result_valid: Result /= Void and then specialised_code_tail(Result).to_integer > 0
 		end
 
-	new_concept_code_at_level (at_level: INTEGER): STRING is
+	new_concept_code_at_level (at_level: INTEGER): attached STRING
 			-- make a new term code for use as the root concept code of an archetype
 			-- at level = 0 -> Default_concept_code
 			-- at level = 1 -> Default_concept_code.1
@@ -462,13 +462,12 @@ feature -- Factory
 				i := i + 1
 			end
 		ensure
-			attached: Result /= Void
 			valid: valid_concept_code (Result)
 		end
 
 feature -- Conversion
 
-	to_flat: !FLAT_ARCHETYPE_ONTOLOGY
+	to_flat: attached FLAT_ARCHETYPE_ONTOLOGY
 			-- Create a flat version from this differential ontology.
 		do
 			if representation = Void then
@@ -479,7 +478,7 @@ feature -- Conversion
 
 feature {ARCHETYPE_ONTOLOGY} -- Implementation
 
-	add_coded_term_definition(group, a_lang: STRING; a_term: ARCHETYPE_TERM) is
+	add_coded_term_definition(group, a_lang: STRING; a_term: ARCHETYPE_TERM)
 			-- add a new term definition for language `a_lang'
 		require
 			Group_valid: group /= Void and then not group.is_empty
@@ -491,7 +490,7 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 			keys: ARRAYED_LIST [STRING]
 		do
 			create t_path.make(0)
-			t_path.append("/" + group + "[" + a_lang + "]/items")
+			t_path.append ("/" + group + "[" + a_lang + "]/items")
 			if has_path(t_path) then
 				attr_node := representation.attribute_node_at_path(t_path)
 				object_node := dt_factory.create_complex_object_node(attr_node, a_term.code)
@@ -508,17 +507,17 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 			end
 		end
 
-	add_binding_terminology(a_terminology: STRING) is
+	add_binding_terminology(a_terminology: STRING)
 			-- add a new terminology to list of terminologies available
 		require
 			a_terminology /= Void and then not a_terminology.is_empty
 			Terminology_valid: not terminologies_available.has(a_terminology)
 		do
-			terminologies_available.extend(a_terminology)
+			terminologies_available.extend (a_terminology)
 			term_bindings.put(create {HASH_TABLE[CODE_PHRASE, STRING]}.make(0), a_terminology)
 		end
 
-	remove_binding_terminology(a_terminology: STRING) is
+	remove_binding_terminology(a_terminology: STRING)
 			-- remove a terminology from list of terminologies available
 		require
 			Terminology_valid: a_terminology /= Void and then terminologies_available.has(a_terminology)

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Types"
 
 	description: "[
@@ -51,18 +51,18 @@ inherit
 		undefine
 			default_create, is_equal
 		end
-		
-create 
+
+create
 	default_create,
 	make, make_from_string, make_from_canonical_string
 
 feature -- Definitions
-	
-	Default_value:STRING is "(default)"
+
+	Default_value: STRING = "(default)"
 
 feature -- Initialization
 
-	default_create is
+	default_create
 		do
 			language := Default_language_code.deep_twin
 			value := Default_value.twin
@@ -71,7 +71,7 @@ feature -- Initialization
 			Language_set: language.code_string.is_equal(default_language)
 		end
 
-	make, make_from_string(str:STRING) is
+	make, make_from_string (str: STRING)
 			-- make from str of form "xxxxx(terminology::lang_code)"
 			-- e.g. "tension de sang(ISO:639-1(1988)::fr-fr)"
 		do
@@ -80,7 +80,7 @@ feature -- Initialization
 			Value_set: value.is_equal(str)
 		end
 
-	make_from_canonical_string(str:STRING) is
+	make_from_canonical_string (str: STRING)
 			-- make from a string of the form
 			-- <value>xxxx</value>
 			-- <language>
@@ -120,15 +120,15 @@ feature -- Initialization
 			value := xml_extract_from_tags(str, "value", 1)
 			create language.make_from_canonical_string(xml_extract_from_tags(str, "language", 1))
 			create encoding.make_from_canonical_string(xml_extract_from_tags(str, "encoding", 1))
-			
+
 			if xml_has_tag(str, "hyperlink", 1) then
 				create hyperlink.make_from_canonical_string(xml_extract_from_tags(str, "hyperlink", 1))
 			end
-			
+
 			if xml_has_tag(str, "formatting", 1) then
 				formatting := xml_extract_from_tags(str, "formatting", 1)
 			end
-			
+
 			csr := xml_tag_position(str, "mappings", 1)
 			if csr > 0 then
 				create mappings.make
@@ -138,7 +138,7 @@ feature -- Initialization
 					csr = 0
 				loop
 					create a_tm.make_from_canonical_string(xml_extract_from_tags(str, "item", csr))
-					mappings.extend(a_tm)
+					mappings.extend (a_tm)
 					csr := xml_tag_position(str, "item", csr)
 				end
 			end
@@ -146,7 +146,7 @@ feature -- Initialization
 
 feature -- Status Report
 
-	valid_canonical_string(str: STRING): BOOLEAN is
+	valid_canonical_string (str: STRING): BOOLEAN
 			-- True if str contains required tags
 		do
 			Result := xml_has_tag(str, "value", 1) and xml_has_tag(str, "language", 1) and xml_has_tag(str, "charset", 1)
@@ -154,31 +154,31 @@ feature -- Status Report
 
 feature -- Access
 
-	value:STRING
+	value: STRING
 			-- displayable rendition of the item, regardless of its underlying structure
 
 	mappings: LINKED_LIST [TERM_MAPPING]
 			-- terms mapped to this term
 
 	formatting: STRING
-			-- optional format string of the form "name:value; name:value...", 
-			-- e.g. "font-weight : bold; font-family : Arial; font-size : 12pt;". 
+			-- optional format string of the form "name:value; name:value...",
+			-- e.g. "font-weight : bold; font-family : Arial; font-size : 12pt;".
 			-- Values taken from W3C CSS2 properties lists "background" and "font".
-	
+
 	hyperlink: DV_URI
 			-- optional link behind this item of text
 
 	language: CODE_PHRASE
-			-- The localised language in which the value is written. Coded from 
+			-- The localised language in which the value is written. Coded from
 			-- openEHR Code Set “languages”.
 
 	encoding: CODE_PHRASE
-			-- Name of character set in which value expressed. Coded from openEHR 
+			-- Name of character set in which value expressed. Coded from openEHR
 			-- Code Set “character sets”.
 
 feature -- Status Report
 
-	has_mapping (other: CODE_PHRASE): BOOLEAN is
+	has_mapping (other: CODE_PHRASE): BOOLEAN
 			-- True if there is any mapping `other' in the list of mappings
 		do
 			if mappings /= void then
@@ -192,18 +192,18 @@ feature -- Status Report
 				Result := not mappings.off
 			end
 		end
-	
+
 feature -- Comparison
 
-	is_equal (other: like Current): BOOLEAN is
+	is_equal (other: like Current): BOOLEAN
 			-- two DV_TEXTs are equal as long as their values (rubrics) are lexically the same
 		do
 			Result := value.is_equal (other.value)
 		end
-	
+
 feature -- Modification
 
-	add_mapping (a_target: CODE_PHRASE; a_match:CHARACTER; a_purpose: DV_CODED_TEXT) is
+	add_mapping (a_target: CODE_PHRASE; a_match:CHARACTER; a_purpose: DV_CODED_TEXT)
 		require
 			mapping: a_target /= void and then not has_mapping (a_target)
 			match: is_valid_match_code(a_match)
@@ -218,54 +218,54 @@ feature -- Modification
 			create tm.make(a_target, a_match, a_purpose)
 			mappings.extend (tm)
 		end
-	
+
 feature -- Output
 
-	as_string: STRING is
+	as_string: STRING
 		do
 			create Result.make(0)
 
 		end
-	
-	as_canonical_string: STRING is
+
+	as_canonical_string: STRING
 		do
 			create Result.make(0)
-			Result.append("<value>" + value + "</value>")
+			Result.append ("<value>" + value + "</value>")
 			if language /= Void then
-				Result.append("<language>" + language.as_canonical_string + "</language>")			
+				Result.append ("<language>" + language.as_canonical_string + "</language>")
 			end
 			if encoding /= Void then
-				Result.append("<encoding>" + encoding.as_canonical_string + "</encoding>")				
+				Result.append ("<encoding>" + encoding.as_canonical_string + "</encoding>")
 			end
-			
+
 			if mappings /= Void then
-				Result.append("<mappings>")
+				Result.append ("<mappings>")
 				from mappings.start
 				until mappings.off
-				loop Result.append("<item>" + mappings.item.as_canonical_string + "</item>")
+				loop Result.append ("<item>" + mappings.item.as_canonical_string + "</item>")
 				end
-				Result.append("</mappings>")
+				Result.append ("</mappings>")
 			end
-			
+
 			if formatting /= Void then
-				Result.append("<formatting>" + formatting + "</formatting>")
+				Result.append ("<formatting>" + formatting + "</formatting>")
 			end
-			
+
 			if hyperlink /= Void then
-				Result.append("<hyperlink>" + hyperlink.as_canonical_string + "</hyperlink>")
+				Result.append ("<hyperlink>" + hyperlink.as_canonical_string + "</hyperlink>")
 			end
 		end
-	
+
 feature {DV_TEXT} -- Implementation
 
-	hash_code: INTEGER is
+	hash_code: INTEGER
 		do
 			Result := value.hash_code
 		end
-	
+
 invariant
-	Value_valid: value /= void and then not value.is_empty and then not 
-		(value.has(CR) or value.has(LF))	
+	Value_valid: value /= void and then not value.is_empty and then not
+		(value.has(CR) or value.has(LF))
 	Mappings_valid: mappings /= void implies not mappings.is_empty
 	Formatting_valid: formatting /= void implies not formatting.is_empty
 

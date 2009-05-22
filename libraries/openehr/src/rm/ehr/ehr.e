@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR EHR Reference Model"
 
 	description: "THe root class of the Electronic Health Record"
@@ -51,7 +51,7 @@ feature -- Access
 
 feature -- Status Setting
 
-	set_historical_state (dt: DV_DATE_TIME)	is
+	set_historical_state (dt: DV_DATE_TIME)
 			-- 
 		do
 			

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Types"
 
 	description: "[
@@ -30,7 +30,7 @@ inherit
 
 feature -- Access
 
-	magnitude: NUMERIC is
+	magnitude: NUMERIC
 			-- numeric value of the quantity
 		deferred
 		end
@@ -47,7 +47,7 @@ feature -- Access
 
 feature -- Comparison
 
-	is_less alias "<" (other: like Current): BOOLEAN is
+	is_less alias "<" (other: like Current): BOOLEAN
 		local
 			this_c, other_c: COMPARABLE
 		do
@@ -56,7 +56,7 @@ feature -- Comparison
 			Result := other_c < this_c
 		end
 
-	valid_magnitude_status(s: STRING): BOOLEAN is
+	valid_magnitude_status(s: STRING): BOOLEAN
 			-- Test whether a string value is one of the valid
 			-- values for the magnitude_status attribute.
 		do

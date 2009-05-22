@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Archetype parser. This object can parse single archetypes. It is used by the 
@@ -50,13 +50,13 @@ create
 
 feature -- Initialisation
 
-	make is
+	make
 		do
 		end
 
 feature -- Definitions
 
-	openehr_version: STRING is
+	openehr_version: STRING
 			-- version of openEHR implem-dev repository containing
 			-- this software
 		once

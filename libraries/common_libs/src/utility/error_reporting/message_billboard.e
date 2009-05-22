@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "[
 			     Message billboard for posting and reading information and errors.
@@ -31,19 +31,19 @@ inherit
 
 feature -- Access
 
-	billboard_content: STRING is
+	billboard_content: STRING
 			-- text of the billboard in locale current language
 		do
 			Result := filtered_billboard_content(status_reporting_level)
 		end
 
-	billboard_most_recent: STRING is
+	billboard_most_recent: STRING
 			-- text of the message in locale current language
 		do
 			Result := billboard_item_formatted(billboard.first)
 		end
 
-	billboard_ith (i: INTEGER): STRING is
+	billboard_ith (i: INTEGER): STRING
 			-- text of the i-th message in language lang
 		require
 			Index_valid: i > 0 and i < billboard_count
@@ -51,7 +51,7 @@ feature -- Access
 			Result := billboard_item_formatted(billboard.i_th(i))
 		end
 
-	billboard_count: INTEGER is
+	billboard_count: INTEGER
 			-- return number of messages currently posted
 		do
 			Result := billboard.count
@@ -59,13 +59,13 @@ feature -- Access
 
 feature -- Status Report
 
-	billboard_empty: BOOLEAN is
+	billboard_empty: BOOLEAN
 			-- True if there are messages posted at the moment
 		do
 			Result := billboard.is_empty
 		end
 
-	billboard_has_errors: BOOLEAN is
+	billboard_has_errors: BOOLEAN
 			-- True if billboard has any error messages (note: it may be non-empty
 			-- and still have no error messages, just info messages)
 		do
@@ -81,13 +81,13 @@ feature -- Status Report
 
 feature -- Modify
 
-	clear_billboard is
+	clear_billboard
 			-- wipe out error billboard and set is_error_posted False
 		do
 			billboard.wipe_out
 		end
 
-	post_error(poster_object: ANY; poster_routine: STRING; id: STRING; args: ARRAY[STRING]) is
+	post_error(poster_object: ANY; poster_routine: STRING; id: STRING; args: ARRAY[STRING])
 			-- append to the  current contents of billboard an error message
 			-- corresponding to id, with positional parameters replaced
 			-- by contents of optional args
@@ -101,7 +101,7 @@ feature -- Modify
 			Error_posted: billboard_has_errors
 		end
 
-	post_warning(poster_object: ANY; poster_routine: STRING; id: STRING; args: ARRAY[STRING]) is
+	post_warning(poster_object: ANY; poster_routine: STRING; id: STRING; args: ARRAY[STRING])
 			-- append to the  current contents of billboard a warning message
 			-- corresponding to id, with positional parameters replaced
 			-- by contents of optional args
@@ -115,7 +115,7 @@ feature -- Modify
 			Warning_posted: not billboard_empty
 		end
 
-	post_info(poster_object: ANY; poster_routine: STRING; id: STRING; args: ARRAY[STRING]) is
+	post_info(poster_object: ANY; poster_routine: STRING; id: STRING; args: ARRAY[STRING])
 			-- append to the  current contents of billboard an info message
 			-- corresponding to id, with positional parameters replaced
 			-- by contents of optional args
@@ -131,12 +131,12 @@ feature -- Modify
 
 feature {NONE} -- Implementation
 
-	billboard: ARRAYED_LIST [MESSAGE_BILLBOARD_ITEM] is
+	billboard: ARRAYED_LIST [MESSAGE_BILLBOARD_ITEM]
 		once
 			create Result.make(0)
 		end
 
-	filtered_billboard_content(at_level: INTEGER): STRING is
+	filtered_billboard_content(at_level: INTEGER): STRING
 			-- text of the billboard in locale current language, filtered according to include_types
 		require
 			at_level_valid: is_valid_message_type (at_level)
@@ -157,7 +157,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	billboard_item_formatted(bb_item: MESSAGE_BILLBOARD_ITEM): STRING is
+	billboard_item_formatted(bb_item: MESSAGE_BILLBOARD_ITEM): STRING
 			-- format one item
 		local
 			err_str, leader, trailer: STRING

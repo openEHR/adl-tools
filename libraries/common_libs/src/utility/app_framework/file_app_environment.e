@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Common Library"
 	description: "Implementation of APP_ENVIRONMENT using text config file."
 	keywords:    "framework"
@@ -19,7 +19,7 @@ inherit
 
 feature --- Initiatialisation
 
-	app_env_initialise is
+	app_env_initialise
 		local
 			cfg_file_full_path: STRING
 			cfg_file: PLAIN_TEXT_FILE
@@ -77,7 +77,7 @@ feature --- Initiatialisation
 
 feature -- Application Resources
 
-	app_cfg_file_name:STRING is 
+	app_cfg_file_name:STRING 
 		once 
 			create Result.make(0)
 			Result.append(Default_cfg_file_name)
@@ -85,12 +85,12 @@ feature -- Application Resources
 
 feature -- Resource Configuration
 
-	app_cmd_line_option_sign:CHARACTER is 
+	app_cmd_line_option_sign:CHARACTER 
 		once
 			Result := Default_cmd_line_option_sign
 		end
 
-	app_cfg_file_cmt_char:CHARACTER is 
+	app_cfg_file_cmt_char:CHARACTER 
 		once 
 			Result := Default_cfg_file_cmt_char
 		end

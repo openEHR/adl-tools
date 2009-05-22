@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "Shared access to error and information messages."
 	keywords:    "logging"
@@ -15,13 +15,13 @@ class SHARED_MESSAGE_DB
 
 feature -- Access
 
-	message_db: MESSAGE_DB is
+	message_db: MESSAGE_DB
 			-- error database keyed by id
 		once
 			create {IN_MEMORY_MESSAGE_DB} Result.make
 		end
 
-	create_message(an_id: STRING; args: ARRAY[STRING]): STRING is
+	create_message(an_id: STRING; args: ARRAY[STRING]): STRING
 		require
 			an_id /= Void
 		do

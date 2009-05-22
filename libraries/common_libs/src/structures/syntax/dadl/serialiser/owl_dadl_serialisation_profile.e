@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Common routines for HTML ADL serialisation"
 	keywords:    "serialisation, OWL"

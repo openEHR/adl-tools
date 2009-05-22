@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Common Information Model"
 	description: "Validator for AUTHOR_RESOURCE objects"
 	keywords:    "archetype"
@@ -21,7 +21,7 @@ inherit
 
 feature {NONE} -- Initialisation
 
-	make (a_target: like target) is
+	make (a_target: like target)
 			-- set target and initialise reporting variables
 		require
 			target_valid: a_target /= Void
@@ -38,12 +38,12 @@ feature -- Access
 	target: AUTHORED_RESOURCE
 			-- target of this validator
 
-	validate is
+	validate
 			-- True if all structures obey their invariants
 		do
 			passed := True
 			if target.original_language = Void then
-				errors.append("No original language%N")
+				errors.append ("No original language%N")
 				passed := False
 			end
 			validate_description
@@ -58,13 +58,13 @@ feature -- Status Report
 
 feature -- Status Setting
 
-	set_strict is
+	set_strict
 			-- set `strict' to True
 		do
 			strict := True
 		end
 
-	unset_strict is
+	unset_strict
 			-- set `strict' to False
 		do
 			strict := False
@@ -72,12 +72,12 @@ feature -- Status Setting
 
 feature {NONE} -- Implementation
 
-	validate_description is
+	validate_description
 			-- TODO
 		do
 		end
 
-	validate_translations is
+	validate_translations
 			-- TODO
 		do
 		end

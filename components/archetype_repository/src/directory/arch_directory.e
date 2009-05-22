@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Archteype directory - a data structure containing archetypes found in one or more
@@ -68,12 +68,12 @@ feature -- Initialisation
 
 feature -- Access
 
-	source_repositories: !DS_HASH_TABLE [!ARCHETYPE_INDEXED_REPOSITORY_I, INTEGER]
+	source_repositories: attached DS_HASH_TABLE [attached ARCHETYPE_INDEXED_REPOSITORY_I, INTEGER]
 			-- Physical repositories of archetypes, keyed by logical id.
 			-- Each such repository consists of archetypes arranged in a directory structure
 			-- mimicking an ontological structure, e.g. ehr/entry/observation, etc.
 
-	adhoc_source_repository: !ARCHETYPE_ADHOC_FILE_REPOSITORY
+	adhoc_source_repository: attached ARCHETYPE_ADHOC_FILE_REPOSITORY
 			-- An additional 'repository' where archetypes may be found, but not necessarily classified
 			-- under any structure - used e.g. to represent the file local system where isolated archetypes
 			-- may be found, e.g. in c:\temp, /tmp or wherever. This repository is just a list of
@@ -86,13 +86,13 @@ feature -- Access
 			-- archetypes now appear as child nodes, rather than sibling nodes, as they do
 			-- in the file system), as well as grafting on adhoc archetypes.
 
-	ontology_index: !DS_HASH_TABLE [like directory, STRING]
+	ontology_index: attached DS_HASH_TABLE [like directory, STRING]
 			-- Index of archetypes, keyed by ontology path.
 			-- Relative ontology path of item with respect to root; for folder nodes,
 			-- this will look like the relative directory path; for archetype nodes, this will be
 			-- the concatenation of the directory path and archetype specialisation parent path.
 
-	archetype_id_index: !DS_HASH_TABLE [ARCH_REP_ARCHETYPE, STRING]
+	archetype_id_index: attached DS_HASH_TABLE [ARCH_REP_ARCHETYPE, STRING]
 			-- Index of archetype nodes keyed by archetype id.
 
 	selected_item: ARCH_REP_ITEM
@@ -150,7 +150,7 @@ feature -- Access
 			end
 		end
 
-	matching_ids (a_regex, an_rm_type: STRING): ARRAYED_LIST[STRING] is
+	matching_ids (a_regex, an_rm_type: STRING): ARRAYED_LIST[STRING]
 			-- generate list of archetype ids that match the pattern and optional rm_type. If rm_type is supplied,
 			-- we assume that the regex itself does not contain an rm type
 		require
@@ -197,12 +197,12 @@ feature -- Access
 			end
 		end
 
-	recently_selected_archetypes (n: INTEGER): !ARRAYED_LIST [!ARCH_REP_ARCHETYPE]
+	recently_selected_archetypes (n: INTEGER): attached ARRAYED_LIST [attached ARCH_REP_ARCHETYPE]
 			-- The `n' most recently used archetypes from `selection_history', excluding duplicates.
 		require
 			positive: n > 0
 		local
-			cursor: LINKED_LIST_CURSOR [!ARCH_REP_ITEM]
+			cursor: LINKED_LIST_CURSOR [attached ARCH_REP_ITEM]
 		do
 			create Result.make (n)
 
@@ -212,7 +212,7 @@ feature -- Access
 			until
 				selection_history.off or Result.full
 			loop
-				if {ara: !ARCH_REP_ARCHETYPE} selection_history.item then
+				if attached {ARCH_REP_ARCHETYPE} selection_history.item as ara then
 					if not Result.has (ara) then
 						Result.extend (ara)
 					end
@@ -254,7 +254,7 @@ feature -- Status Report
 			Result := selected_archetype /= Void
 		end
 
-	has_valid_selected_archetype: BOOLEAN is
+	has_valid_selected_archetype: BOOLEAN
 			-- Has a valid archetype been selected?
 		do
 			Result := selected_archetype /= Void and then selected_archetype.is_valid
@@ -328,7 +328,7 @@ feature -- Commands
 			dir_name_valid: valid_repository_path (dir_name)
 			group_id_valid: group_id > 0
 		local
-			repository: !ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP
+			repository: attached ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP
 		do
 			create repository.make (file_system.canonical_pathname (dir_name), group_id)
 			source_repositories.force (repository, group_id)
@@ -397,7 +397,7 @@ feature -- Commands
 
 feature -- Modification
 
-	set_selected_item (value: !ARCH_REP_ITEM)
+	set_selected_item (value: attached ARCH_REP_ITEM)
 			-- Append `value' to `selection_history' and select it.
 		do
 			if selected_item /= value then
@@ -491,7 +491,7 @@ feature -- Traversal
 
 feature {NONE} -- Implementation
 
-	selection_history: !LINKED_LIST [!ARCH_REP_ITEM]
+	selection_history: attached LINKED_LIST [attached ARCH_REP_ITEM]
 			-- The history in which archetypes and folders have been selected, from earliest to most recent.
 
 	graft_adhoc_item (ara: ARCH_REP_ARCHETYPE)
@@ -532,7 +532,7 @@ feature {NONE} -- Implementation
 			loop
 				if node = Void then
 					parent_node := directory
-				elseif {arf: !ARCH_REP_FOLDER} node.item then
+				elseif attached {ARCH_REP_FOLDER} node.item as arf then
 					parent_node := node
 				else
 					node := node.parent
@@ -544,7 +544,7 @@ feature {NONE} -- Implementation
 --				post_error (Current, "graft_adhoc_item", "arch_dir_dup_archetype", <<ara.full_path>>)
 --			else
 
-			if ara.is_specialised and {parent_ara: !ARCH_REP_ARCHETYPE} parent_node.item then
+			if ara.is_specialised and attached {ARCH_REP_ARCHETYPE} parent_node.item as parent_ara then
 				ara.set_specialisation_parent (parent_ara)
 			end
 
@@ -556,7 +556,7 @@ feature {NONE} -- Implementation
 			update_statistics(ara)
 		end
 
-	merge_enter (item: !ARCH_REP_ITEM)
+	merge_enter (item: attached ARCH_REP_ITEM)
 			-- Merge `item' into `directory' either as an archetype or as a folder.
 		local
 			arch_node, parent_node: like directory
@@ -565,7 +565,7 @@ feature {NONE} -- Implementation
 				io.put_string(shifter + "===> " + item.ontological_path)
 			end
 
-			if {arf: !ARCH_REP_FOLDER} item then
+			if attached {ARCH_REP_FOLDER} item as arf then
 				if not ontology_index.has (arf.ontological_path) then
 					if ontology_index.has (arf.ontological_parent_path) then
 						parent_node := ontology_index.item (arf.ontological_parent_path)
@@ -584,7 +584,7 @@ feature {NONE} -- Implementation
 				end
 			end
 
-			if {ara: !ARCH_REP_ARCHETYPE} item then
+			if attached {ARCH_REP_ARCHETYPE} item as ara then
 				debug("arch_dir")
 					io.put_string(shifter + ara.id.as_string + " (archetype)")
 				end
@@ -608,7 +608,7 @@ feature {NONE} -- Implementation
 						if ontology_index.has (ara.ontological_parent_path) then
 							parent_node := ontology_index.item (ara.ontological_parent_path)
 
-							if ara.is_specialised and {parent_ara: !ARCH_REP_ARCHETYPE} parent_node.item then
+							if ara.is_specialised and attached {ARCH_REP_ARCHETYPE} parent_node.item as parent_ara then
 								ara.set_specialisation_parent (parent_ara)
 							end
 						else
@@ -639,7 +639,7 @@ feature {NONE} -- Implementation
 invariant
 	directory_attached: directory /= Void
 	adhoc_source_repository_group_id: adhoc_source_repository.group_id = 1
-	repositories_group_ids: source_repositories.for_all (agent (repository: !ARCHETYPE_INDEXED_REPOSITORY_I): BOOLEAN
+	repositories_group_ids: source_repositories.for_all (agent (repository: attached ARCHETYPE_INDEXED_REPOSITORY_I): BOOLEAN
 		do
 			Result := repository.group_id > 1
 		end)

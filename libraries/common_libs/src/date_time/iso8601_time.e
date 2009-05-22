@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR re-usable library"
 	description: "[
 				ISO8601:2004 compliant Time class, including facility to represent 
@@ -43,7 +43,7 @@ create
 
 feature -- Initialisation
 
-	make_from_string(str: STRING) is
+	make_from_string(str: STRING)
 			-- make from a time of form:
 			-- hhmmss[,sss][Z|+/-hhmm] or
 			-- hh:mm:ss[,sss][,sss][Z|+/-hhmm]
@@ -56,7 +56,7 @@ feature -- Initialisation
 			value := as_string
 		end
 
-	make_h(h: INTEGER; is_extended_flag: BOOLEAN) is
+	make_h(h: INTEGER; is_extended_flag: BOOLEAN)
 			-- make partial time from hour only
 		require
 			Hours_valid: valid_hour(h, 0, 0)
@@ -68,7 +68,7 @@ feature -- Initialisation
 			value := as_string
 		end
 
-	make_hm(h, m: INTEGER; is_extended_flag: BOOLEAN) is
+	make_hm(h, m: INTEGER; is_extended_flag: BOOLEAN)
 			-- make partial time from hour and minute
 		require
 			Hours_valid: valid_hour(h, m, 0)
@@ -81,7 +81,7 @@ feature -- Initialisation
 			value := as_string
 		end
 
-	make_hms(h, m, s: INTEGER; is_extended_flag: BOOLEAN) is
+	make_hms(h, m, s: INTEGER; is_extended_flag: BOOLEAN)
 			-- make complete time
 		require
 			Hours_valid: valid_hour(h, m, s)
@@ -95,7 +95,7 @@ feature -- Initialisation
 			value := as_string
 		end
 
-	make_hmsf(h, m, s: INTEGER; sf: DOUBLE; is_extended_flag: BOOLEAN) is
+	make_hmsf(h, m, s: INTEGER; sf: DOUBLE; is_extended_flag: BOOLEAN)
 			-- make complete time from hour, minute, second and fine second
 		require
 			Hours_valid: valid_hour(h, m, s)
@@ -146,7 +146,7 @@ feature -- Status Report
 	has_fractional_second: BOOLEAN
 			-- True if second unknown
 
-	is_partial: BOOLEAN is
+	is_partial: BOOLEAN
 			-- True if either minute or second unknown
 		do
 			Result := second_unknown
@@ -154,7 +154,7 @@ feature -- Status Report
 
 feature -- Modification
 
-	set_timezone(a_tz: ISO8601_TIMEZONE) is
+	set_timezone(a_tz: ISO8601_TIMEZONE)
 			-- set timezone
 		require
 			a_tz /= Void
@@ -163,7 +163,7 @@ feature -- Modification
 			value := as_string
 		end
 
-	set_extended is
+	set_extended
 			-- set is_extended
 		do
 			is_extended := True
@@ -172,7 +172,7 @@ feature -- Modification
 
 feature -- Comparison
 
-	is_less alias "<" (other: like Current): BOOLEAN is
+	is_less alias "<" (other: like Current): BOOLEAN
 			-- Is current time less than `other', i.e. earlier? This comparison takes
 			-- into account timezone, i.e. it compares actual instants in world time, not
 			-- numeric values.
@@ -182,7 +182,7 @@ feature -- Comparison
 
 feature -- Conversion
 
-	to_seconds: DOUBLE is
+	to_seconds: DOUBLE
 			-- convert to signed numeric form for comparison. The result is the number of
 			-- seconds since midnight at the 0000 meridian, and may be negative if the timezone is negative.
 			-- Timezone is taken into account, so that 00:00:00+0100 gives 3600, not 0. For missing parts,
@@ -214,7 +214,7 @@ feature -- Conversion
 
 feature -- Output
 
-	as_string: STRING is
+	as_string: STRING
 			-- express as ISO8601 format string "hh:mm:ss[,ssss]"
 		local
 			s: STRING
@@ -262,7 +262,7 @@ feature -- Output
 			Result_valid: Result /= Void and then valid_iso8601_time(Result)
 		end
 
-	out: STRING is
+	out: STRING
 		do
 			Result := as_string
 		end

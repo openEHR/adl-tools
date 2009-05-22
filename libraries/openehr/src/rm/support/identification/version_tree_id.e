@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Common Reference Model"
 	
 	description: "[
@@ -26,11 +26,11 @@ create
 	
 feature -- Definitions
 
-	Separator: CHARACTER is '.'
+	Separator: CHARACTER = '.'
 	
 feature -- Initialisation
 
-	make(s: STRING) is
+	make(s: STRING)
 			-- make from a single string
 		require
 			String_valid: s /= Void and then valid_version_tree_id(s)
@@ -46,12 +46,12 @@ feature -- Access
 			-- in the form "1.2.3", i.e. with 2 decimal points and only
 			-- integers in all slots
 	
-	trunk_version: STRING is
+	trunk_version: STRING
 			-- Trunk version number.
 		do
 		end
 
-	branch_number: STRING is
+	branch_number: STRING
 			-- Number of branch from the trunk point; empty if not a branch
 		local
 			decpoint1_pos, decpoint2_pos: INTEGER
@@ -63,7 +63,7 @@ feature -- Access
 			end
 		end
 
-	branch_version: STRING is
+	branch_version: STRING
 			-- Version of the branch.
 		local
 			decpoint1_pos, decpoint2_pos: INTEGER
@@ -77,21 +77,21 @@ feature -- Access
 
 feature -- Status Report
 
-	is_first: BOOLEAN is
+	is_first: BOOLEAN
 			-- True if this version is a first version - i.e. trunk_version = 1 and
 			-- not is_branch
 		do
 			Result := trunk_version.to_integer = 1 and not is_branch
 		end
 		
-	is_branch: BOOLEAN is
+	is_branch: BOOLEAN
 			-- True if this version identifier represents a branch, 
 			-- i.e. has branch_number and branch_version parts.
 		do
 			Result := value.index_of (Separator, 1) = 0
 		end
 	
-	valid_version_tree_id(s: STRING): BOOLEAN is
+	valid_version_tree_id(s: STRING): BOOLEAN
 			-- True if s is a valid id
 		require
 			String_valid: s /= Void and then not s.is_empty

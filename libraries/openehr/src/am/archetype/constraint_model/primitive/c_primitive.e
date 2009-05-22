@@ -1,4 +1,4 @@
-indexing
+note
 
 	component:   "openEHR Common Archetype Model"
 
@@ -26,7 +26,7 @@ inherit
 
 feature -- Access
 
-	prototype_value: ANY is
+	prototype_value: ANY
 			-- 	generate a prototype value from this constraint object
 		deferred
 		ensure
@@ -37,7 +37,7 @@ feature -- Access
 			-- assumed value for this constraint object
 			-- FIXME: consider consolidating with assumed_value in C_DOMAIN_TYPE
 
-	rm_type_name: STRING is
+	rm_type_name: STRING
 			-- generate a Reference Model type name that this type constrains. Generally this is
 			-- the same as the C_XX clas name with the "C_" removed, but for some types e.g. Date/time types
 			-- it is not true.
@@ -48,13 +48,13 @@ feature -- Access
 
 feature -- Status Report
 
-	valid_value (a_value: like prototype_value): BOOLEAN is
+	valid_value (a_value: like prototype_value): BOOLEAN
 		require
 			a_value /= Void
 		deferred
 		end
 
-	has_assumed_value: BOOLEAN is
+	has_assumed_value: BOOLEAN
 			-- True if there is an assumed value
 		do
 			Result := assumed_value /= Void
@@ -62,7 +62,7 @@ feature -- Status Report
 
 feature -- Modification
 
-	set_assumed_value(a_value: like assumed_value) is
+	set_assumed_value(a_value: like assumed_value)
 			-- set `assumed_value'
 		require
 			a_value /= Void and then valid_value(a_value)
@@ -74,7 +74,7 @@ feature -- Modification
 
 feature -- Comparison
 
-	node_conforms_to (other: like Current): BOOLEAN is
+	node_conforms_to (other: like Current): BOOLEAN
 			-- True if this node is a subset of, or the same as `other'
 		require
 			other /= Void
@@ -83,13 +83,13 @@ feature -- Comparison
 
 feature -- Output
 
-	as_string:STRING is
+	as_string: STRING
 		deferred
 		ensure
 			Result_exists: Result /= Void
 		end
 
-	out: STRING is
+	out: STRING
 		do
 			Result := as_string
 		end

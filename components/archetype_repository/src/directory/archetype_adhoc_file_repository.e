@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 File-system ad hoc repository of archetypes - where archetypes are not arranged as a tree
@@ -40,7 +40,7 @@ feature {NONE} -- Initialisation
 
 feature -- Access
 
-	work_path: STRING assign set_work_path
+	work_path: attached STRING assign set_work_path
 			-- The current work path on the file system, normally used to tell GUI or other
 			-- file searching method where to start looking.
 
@@ -50,8 +50,6 @@ feature -- Access
 			has_full_path: has (full_path)
 		do
 			Result := directory [full_path]
-		ensure
-			attached: Result /= Void
 		end
 
 feature -- Status Report
@@ -88,7 +86,7 @@ feature -- Modification
 			arch_id_str := archteype_id_from_path(full_path)
 			if arch_id_str /= Void then
 				if not archetype_directory.archetype_id_index.has (arch_id_str) then
-					create ara.make (file_system.dirname (full_path), full_path, create {!ARCHETYPE_ID}.make_from_string(arch_id_str), Current)
+					create ara.make (file_system.dirname (full_path), full_path, create {attached ARCHETYPE_ID}.make_from_string(arch_id_str), Current)
 					directory [full_path] := ara
 				else
 					post_info (Current, "build_directory", "pair_filename_i1", <<full_path>>)
@@ -98,7 +96,7 @@ feature -- Modification
 	arch_id_str := old_archteype_id_from_path(full_path)
 	if arch_id_str /= Void then
 		if not archetype_directory.archetype_id_index.has (arch_id_str) then
-			create ara.make (file_system.dirname (full_path), full_path, create {!ARCHETYPE_ID}.old_make_from_string(arch_id_str), Current)
+			create ara.make (file_system.dirname (full_path), full_path, create {attached ARCHETYPE_ID}.old_make_from_string(arch_id_str), Current)
 			directory [full_path] := ara
 			post_warning (Current, "build_directory", "invalid_filename_e1", <<full_path>>)
 		else

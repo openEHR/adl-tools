@@ -1,9 +1,9 @@
-indexing
+note
 	component:   "openEHR Data Types"
-	
+
 	description: "Abstract parent type of all concrete data value types"
 	keywords:    "data"
-	
+
 	requirements:"ISO 18308 TS V1.0 STR 3.1 - 3.13"
 	design:      "openEHR Data Types Reference Model 1.7"
 
@@ -20,15 +20,15 @@ deferred class DATA_VALUE
 
 inherit
 	CANONICAL_FRAGMENT
-	
+
 	EXTERNAL_ENVIRONMENT_ACCESS
 		export
 			{NONE} all
 		end
 
 feature -- Initialization
-	
-	make_from_string(a_str:STRING) is
+
+	make_from_string (a_str: STRING)
 		require
 			String_exists: a_str /= Void
 		deferred
@@ -36,13 +36,13 @@ feature -- Initialization
 
 feature -- Output
 
-	as_string: STRING is
+	as_string: STRING
 			-- string form displayable for humans
 		deferred
 		ensure
 			Result_exists: Result /= Void
 		end
-	
+
 end
 
 

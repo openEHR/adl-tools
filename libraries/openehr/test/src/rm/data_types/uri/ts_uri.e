@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Types"
 
 	description: "URI test suite"
@@ -18,12 +18,12 @@ class TS_DT_URI
 inherit 
 	TEST_SUITE
 
-creation
+create
 	make
 
 feature -- Access
 
-	test_cases: LINKED_LIST[TEST_CASE] is
+	test_cases: LINKED_LIST[TEST_CASE]
 		local
 			tc:TEST_CASE
 		once
@@ -32,11 +32,11 @@ feature -- Access
 			create {TC_DV_EHR_URI} tc.make(Void) 		Result.extend(tc)
 		end
 
-	title: STRING is "DATA TYPE - URI tests"
+	title: STRING = "DATA TYPE - URI tests"
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 	    do
 
 	    end

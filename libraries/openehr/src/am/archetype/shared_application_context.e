@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Shared context settings for serialisation"
 	keywords:    "test, ADL"
@@ -23,21 +23,21 @@ inherit
 
 feature -- Access
 
-	current_language: STRING is
+	current_language: STRING
 		do
 			Result := cell_language.item
 		ensure
 			Result_exists: Result /= Void
 		end
 
-	use_flat_adl_version: STRING is
+	use_flat_adl_version: STRING
 		do
 			Result := cell_use_flat_adl_version.item
 		ensure
 			Result_exists: Result /= Void
 		end
 
-	use_flat_adl_version_numeric: INTEGER is
+	use_flat_adl_version_numeric: INTEGER
 			-- generate a numeric equivalent of the ADL version in use, e.g.
 			-- '1.5' -> 150
 			-- '1.4.1' -> 141
@@ -58,7 +58,7 @@ feature -- Access
 
 feature -- Modification
 
-	set_current_language(a_lang: STRING) is
+	set_current_language(a_lang: STRING)
 			-- set `language'
 		require
 			a_lang /= Void and then not a_lang.is_empty
@@ -66,7 +66,7 @@ feature -- Modification
 			cell_language.put(a_lang)
 		end
 
-	set_use_flat_adl_version(a_ver: STRING) is
+	set_use_flat_adl_version(a_ver: STRING)
 			-- set `use_flat_adl_version'
 		require
 			a_ver /= Void and then adl_versions.has (a_ver)
@@ -76,13 +76,13 @@ feature -- Modification
 
 feature {NONE} -- Implementation
 
-	cell_language: CELL[STRING] is
+	cell_language: CELL[STRING]
 			-- language to serialise in, for comments and other language-specific items
 		once
 			create Result.put(Default_language)
 		end
 
-	cell_use_flat_adl_version: CELL[STRING] is
+	cell_use_flat_adl_version: CELL[STRING]
 			-- ADL version to serialise archetypes in
 		once
 			create Result.put(latest_adl_version)

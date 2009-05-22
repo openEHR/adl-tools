@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Descriptor of a node in a directory of archetypes"
 	keywords:    "ADL, archetype"
@@ -54,13 +54,12 @@ feature -- Access
 	full_path: STRING
 			-- Full path to the item on the storage medium.
 
-	relative_path: STRING
+	relative_path: attached STRING
 			-- Path to the item on the storage medium, excluding `root_path'.
 		do
 			Result := full_path.substring (root_path.count + 1, full_path.count)
 			Result.prune_all_leading (os_directory_separator)
 		ensure
-			attached: Result /= Void
 			relative: file_system.is_relative_pathname (Result)
 			under_full_path: full_path.ends_with (Result)
 			same_basename: file_system.basename (Result).same_string (file_system.basename (full_path))
@@ -82,12 +81,11 @@ feature -- Access
 	file_repository: ARCHETYPE_REPOSITORY_I
 			-- The repository on which this item is found.
 
-	group_name: STRING
+	group_name: attached STRING
 			-- Name distinguishing the type of item and the group to which its `repository' belongs.
 			-- Useful as a logical key to pixmap icons, etc.
 		deferred
 		ensure
-			attached: Result /= Void
 			not_empty: not Result.is_empty
 		end
 

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR re-usable library"
 	description: "[
 				ISO8601:2004 compliant Duration class. Handles patterns of form:
@@ -122,7 +122,7 @@ feature -- Status Report
 	has_time: BOOLEAN
 			-- True if any hms component present
 
-	is_zero: BOOLEAN is
+	is_zero: BOOLEAN
 			-- True if total value is zero
 		do
 			Result := weeks = 0 and years + months + days + hours + minutes + seconds = 0 and fractional_seconds = 0.0
@@ -138,7 +138,7 @@ feature -- Comparison
 
 feature -- Output
 
-	as_string: STRING is
+	as_string: attached STRING
 			-- output as ISO8601 duration string
 		local
 			sec_frac_str: STRING
@@ -193,18 +193,17 @@ feature -- Output
 				end
 			end
 		ensure
-			attached: Result /= Void
 			valid: valid_iso8601_duration (Result)
 		end
 
-	out: STRING is
+	out: STRING
 		do
 			Result := as_string
 		end
 
 feature -- Conversion
 
-	to_seconds: DOUBLE is
+	to_seconds: DOUBLE
 			-- convert to signed numeric form for comparison. The result is a number of seconds.
 			-- If there are months, the value is based on an average number of seconds per month and
 			-- is therefore slightly statistical

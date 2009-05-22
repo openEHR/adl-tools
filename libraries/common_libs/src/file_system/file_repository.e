@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 			 Simple notion of a library of archetypes, implemented simply
@@ -22,12 +22,12 @@ inherit
 			{NONE} all
 		end
 
-creation
+create
 	make
 
 feature -- Initialisation
 
-	make(a_dir_name, a_base_name_pattern: STRING) is
+	make(a_dir_name, a_base_name_pattern: STRING)
 			-- initialise with root directory, and file basename pattern
 			-- (default will be set if `a_base_name_pattern' is Void)
 		require
@@ -61,7 +61,7 @@ feature -- Access
 	make_error: STRING
 			-- set if make failed
 
-	file_ids: ARRAYED_LIST[STRING] is
+	file_ids: ARRAYED_LIST[STRING]
 			-- file names not including extension
 		do
 			if stored_file_ids = Void then
@@ -78,7 +78,7 @@ feature -- Access
 			Result := stored_file_ids
 		end
 	
-	file_path(id: STRING): STRING is
+	file_path(id: STRING): STRING
 			-- get path for archetype id `id'
 		require
 			Id_valid: id /= Void and then has_file_id(id)
@@ -88,13 +88,13 @@ feature -- Access
 		
 feature -- Status Report
 
-	make_failed: BOOLEAN is 
+	make_failed: BOOLEAN 
 			-- True if created with invalid directory
 		do
 			Result := make_error /= Void
 		end
 		
-	has_file_id(file_id: STRING): BOOLEAN is
+	has_file_id(file_id: STRING): BOOLEAN
 		require
 			file_id /= Void and then not file_id.is_empty
 		do
@@ -110,7 +110,7 @@ feature {NONE} -- Implementation
 	file_paths: HASH_TABLE[STRING, STRING]
 			-- archetype full pathnames keyed by archetype ids
 
-	find_file_paths(a_dir_name: STRING) is
+	find_file_paths(a_dir_name: STRING)
 			-- add archetype ids found in directory and subdirectories to file_ids table
 		require
 			Dir_name_exists: a_dir_name /= Void and then not a_dir_name.is_empty

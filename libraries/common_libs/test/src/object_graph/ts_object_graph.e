@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "Test suite for object graph parse tree."
 	keywords:    "test, parse, parsing, object graph"
@@ -17,20 +17,20 @@ class TS_OBJECT_GRAPH
 inherit
 	TEST_SUITE
 
-creation
+create
 	make
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 	    do
 	    end
 
 feature -- Access
 
-	title:STRING is "Object Graph test suite"
+	title:STRING = "Object Graph test suite"
 
-	test_cases: LINKED_LIST[TEST_CASE] is
+	test_cases: LINKED_LIST[TEST_CASE]
 		local
 			tc:TEST_CASE
 		once

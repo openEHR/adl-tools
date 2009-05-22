@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Support Information Model"
 
 	description: "[
@@ -31,21 +31,21 @@ inherit
 
 feature -- Definitions
 
-	axis_separator: CHARACTER is '.'
+	axis_separator: CHARACTER = '.'
 			-- major separator between values on the different axes
 
-	section_separator: CHARACTER is '-'
+	section_separator: CHARACTER = '-'
 			-- separator between sections in an axis
 
 feature -- Definitions
 
-	Default_id: STRING is
+	Default_id: STRING
 		deferred
 		end
 
 feature -- Initialisation
 
-	make (a_rm_originator, a_rm_name, a_rm_entity, a_domain_concept, a_version_id: STRING) is
+	make (a_rm_originator, a_rm_name, a_rm_entity, a_domain_concept, a_version_id: STRING)
 			-- Create from "rm_originator-rm_name-rm_entity.domain_concept.ver_id".
 		require
 			a_rm_originator /= Void and then not a_rm_originator.is_empty
@@ -55,28 +55,28 @@ feature -- Initialisation
 			a_version_id /= Void and then not a_version_id.is_empty
 		do
 			create value.make(0)
-			value.append(a_rm_originator)
+			value.append (a_rm_originator)
 			value.append_character(section_separator)
-			value.append(a_rm_name)
+			value.append (a_rm_name)
 			value.append_character(section_separator)
-			value.append(a_rm_entity)
+			value.append (a_rm_entity)
 
 			value.append_character(axis_separator)
-			value.append(a_domain_concept)
+			value.append (a_domain_concept)
 
 			value.append_character(axis_separator)
-			value.append(a_version_id)
+			value.append (a_version_id)
 		end
 
-	make_from_string (an_id: STRING) is
+	make_from_string (an_id: STRING)
 			-- Create from "rm_entity.domain_concept.ver_id".
 		require
-			an_id /= Void and then valid_id(an_id)
+			an_id /= Void and then valid_id (an_id)
 		do
 			value := an_id
 		end
 
-	default_create is
+	default_create
 			-- Create a default id.
 		do
 			make_from_string (Default_id)
@@ -84,7 +84,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	qualified_rm_entity: STRING is
+	qualified_rm_entity: attached STRING
 			-- identification of Reference Model entity being archetyped
 			-- e.g. openehr-ehr_rm-entry, hl7-cda-section, hl7-rim-act_relationship
 		local
@@ -93,11 +93,10 @@ feature -- Access
 			p := value.index_of (axis_separator, 1) - 1
 			Result := value.substring (1, p)
 		ensure
-			attached: Result /= Void
 			not_empty: not Result.is_empty
 		end
 
-	domain_concept: STRING is
+	domain_concept: attached STRING
 			-- shortened version of concept name, e.g.
 			-- "blood_pressure", "problem-diagnosis"
 			-- extracted from `value'
@@ -108,11 +107,10 @@ feature -- Access
 			q := value.index_of (axis_separator, p) - 1
 			Result := value.substring (p, q)
 		ensure
-			attached: Result /= Void
 			not_empty: not Result.is_empty
 		end
 
-	version_id: STRING is
+	version_id: STRING
 		local
 			p: INTEGER
 		do
@@ -121,7 +119,7 @@ feature -- Access
 			Result := value.substring(p, value.count)
 		end
 
-	version_number: INTEGER is
+	version_number: INTEGER
 			-- generate the version number as an integer, for comparison purposes; if the version number is
 			-- not a valid numeric, 0 is returned
 		local
@@ -134,7 +132,7 @@ feature -- Access
 			end
 		end
 
-	rm_originator: STRING is
+	rm_originator: STRING
 			-- name of organisation which created the reference model on
 			-- which archetypes in this system are based, e.g. "openehr"
 			-- Extracted from qualified_rm_entity
@@ -149,7 +147,7 @@ feature -- Access
 			Result_valid: Result /= Void and then not Result.is_empty
 		end
 
-	rm_name: STRING is
+	rm_name: STRING
 			-- name of the reference model on which the identified archetype is based,
 			-- e.g. "ehr", "demographic", "rim"
 			-- Extracted from qualified_rm_entity
@@ -165,7 +163,7 @@ feature -- Access
 			Result_valid: Result /= Void and then not Result.is_empty
 		end
 
-	rm_entity: STRING is
+	rm_entity: STRING
 			-- level in the reference model which this archetype applies to, e.g.
 			-- "organiser", "transaction", "entry" in the openehr RM;
 			-- "headed_section", "composition" in CEN 13606
@@ -183,7 +181,7 @@ feature -- Access
 			Result_valid: Result /= Void and then not Result.is_empty
 		end
 
-	sortable_id, semantic_id: STRING is
+	sortable_id, semantic_id: attached STRING
 			-- Semantic id as a string minus the version part at the end (which interferes with sensible sorting).
 		local
 			p: INTEGER
@@ -191,13 +189,12 @@ feature -- Access
 			p := value.last_index_of (axis_separator, value.count) - 1
 			Result := value.substring (1, p)
 		ensure
-			attached: Result /= Void
 			rm_entity_plus_domain_concept: Result.is_equal (qualified_rm_entity + axis_separator.out + domain_concept)
 		end
 
 feature -- Status Report
 
-	valid_id (an_id: STRING): BOOLEAN is
+	valid_id (an_id: STRING): BOOLEAN
 			-- Does `an_id' have the correct form for an archetype id?
 		do
 			Result := id_pattern_regex.matches (an_id)
@@ -205,7 +202,7 @@ feature -- Status Report
 
 feature -- Comparison
 
-	is_less alias "<" (other: like Current): BOOLEAN is
+	is_less alias "<" (other: like Current): BOOLEAN
 			-- Is current object less than `other'?
 		do
 			Result := sortable_id < other.sortable_id
@@ -213,21 +210,18 @@ feature -- Comparison
 
 feature -- Output
 
-	as_string: STRING is
+	as_string: attached STRING
 		do
 			Result := value.twin
 		ensure
-			attached: Result /= Void
 			not_empty: not Result.is_empty
 		end
 
 feature {NONE} -- Implementation
 
-	id_pattern_regex: LX_DFA_REGULAR_EXPRESSION is
+	id_pattern_regex: attached LX_DFA_REGULAR_EXPRESSION
 			-- Pattern matcher for archetype ids.
 		deferred
-		ensure
-			attached: Result /= Void
 		end
 
 end

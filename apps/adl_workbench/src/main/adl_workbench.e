@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Main Application"
 	keywords:    "test, ADL"
@@ -68,7 +68,7 @@ feature {NONE} -- Initialization
 			main_window.show
 		end
 
-	new_abort_dialog (text: STRING): EV_MESSAGE_DIALOG
+	new_abort_dialog (text: STRING): attached EV_MESSAGE_DIALOG
 			-- A newly created dialog containing an "Abort" button and `text'.
 		require
 			text_attached: text /= Void
@@ -81,7 +81,6 @@ feature {NONE} -- Initialization
 			Result.set_default_push_button (Result.button ("Abort"))
 			Result.set_default_cancel_button (Result.button ("Abort"))
 		ensure
-			attached: Result /= Void
 			text_set: Result.text.same_string (text)
 			button_set: Result.has_button ("Abort")
 		end

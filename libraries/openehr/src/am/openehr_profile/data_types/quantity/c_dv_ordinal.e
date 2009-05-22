@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Object node type representing constraint on ordinal quantity"
 	keywords:    "ordinal, ADL"
@@ -25,7 +25,7 @@ create
 
 feature -- Initialisation
 
-	default_create is
+	default_create
 			--
 		do
 			precursor
@@ -35,7 +35,7 @@ feature -- Initialisation
 			any_allowed
 		end
 
-	make is
+	make
 			-- make empty, add members with add_item
 		do
 			default_create
@@ -44,7 +44,7 @@ feature -- Initialisation
 			any_allowed
 		end
 
-	make_dt is
+	make_dt
 			-- make used by DT_OBJECT_CONVERTER
 		do
 			make
@@ -56,7 +56,7 @@ feature -- Access
 
 	items: LINKED_SET [ORDINAL]
 
-	prototype_value: ORDINAL is
+	prototype_value: ORDINAL
 			-- 	generate a default value from this constraint object
 		do
 			if any_allowed then
@@ -66,7 +66,7 @@ feature -- Access
 			end
 		end
 
-	item_at_ordinal(i: INTEGER): ORDINAL is
+	item_at_ordinal(i: INTEGER): ORDINAL
 			-- get the item in the list which has the ordinal value i
 		require
 			Not_any_allowed: not any_allowed
@@ -77,7 +77,7 @@ feature -- Access
 
 feature -- Source Control
 
-	specialisation_status (spec_level: INTEGER): SPECIALISATION_STATUS is
+	specialisation_status (spec_level: INTEGER): SPECIALISATION_STATUS
 			-- status of this node in the source text of this archetype with respect to the
 			-- specialisation hierarchy. Values are defined in SPECIALISATION_STATUSES
 			-- FIXME: this code is only an attempt to work out the specialisation status,
@@ -101,13 +101,13 @@ feature -- Source Control
 
 feature -- Status Report
 
-	any_allowed: BOOLEAN is
+	any_allowed: BOOLEAN
 			-- True if any value allowed i.e. no items
 		do
 			Result := items = Void
 		end
 
-	is_local: BOOLEAN is
+	is_local: BOOLEAN
 			-- True if terminology id = "local"
 		require
 			not any_allowed
@@ -115,7 +115,7 @@ feature -- Status Report
 			Result := items.first.symbol.is_local
 		end
 
-	has_code_phrase (code_phrase: CODE_PHRASE): BOOLEAN is
+	has_code_phrase (code_phrase: CODE_PHRASE): BOOLEAN
 			-- Is `code_phrase' in one of the ordinals in `index'?
 		do
 			if index /= Void then
@@ -130,20 +130,20 @@ feature -- Status Report
 			end
 		end
 
-	has_item (ordinal_value: INTEGER): BOOLEAN is
+	has_item (ordinal_value: INTEGER): BOOLEAN
 			-- Is `ordinal_value' one of the keys in `index'?
 		do
 			Result := index /= Void and then index.has (ordinal_value)
 		end
 
-	valid_value (a_value: like prototype_value): BOOLEAN is
+	valid_value (a_value: like prototype_value): BOOLEAN
 		do
 			Result := any_allowed or else has_item (a_value.value)
 		end
 
 feature -- Comparison
 
-	node_conforms_to (other: like Current): BOOLEAN is
+	node_conforms_to (other: like Current): BOOLEAN
 			-- True if this node is a subset, i.e. a redefinition of, `other' in the ADL constraint sense, i.e. that all
 			-- aspects of the definition of this node and all child nodes define a narrower, wholly
 			-- contained instance space of `other'.
@@ -169,7 +169,7 @@ feature -- Comparison
 
 feature -- Modification
 
-	add_item(an_ordinal: ORDINAL) is
+	add_item(an_ordinal: ORDINAL)
 			-- add an ordinal to the list
 		require
 			An_ordinal_valid: not any_allowed implies not has_item(an_ordinal.value)
@@ -184,7 +184,7 @@ feature -- Modification
 			Item_added: items.has(an_ordinal)
 		end
 
-	set_assumed_value_from_integer(a_value: INTEGER) is
+	set_assumed_value_from_integer(a_value: INTEGER)
 			-- set `assumed_value' from an integer in the ordinal enumeration
 		require
 			Not_any_allowed: not any_allowed
@@ -197,7 +197,7 @@ feature -- Modification
 
 feature -- Conversion
 
-	as_string: STRING is
+	as_string: STRING
 			--
 		do
 			create Result.make (0)
@@ -218,13 +218,13 @@ feature -- Conversion
 			end
 		end
 
-	standard_equivalent: C_COMPLEX_OBJECT is
+	standard_equivalent: C_COMPLEX_OBJECT
 		do
 		end
 
 feature -- Synchronisation
 
-	synchronise_to_tree is
+	synchronise_to_tree
 			-- synchronise to parse tree representation
 		do
             if any_allowed then -- only represent as an inline dADL if any_allowed, else use syntax
@@ -234,14 +234,14 @@ feature -- Synchronisation
 
 feature -- Visitor
 
-	enter_subtree(visitor: C_VISITOR; depth: INTEGER) is
+	enter_subtree(visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at start of block for this node
 		do
             precursor(visitor, depth)
 			visitor.start_c_ordinal(Current, depth)
 		end
 
-	exit_subtree(visitor: C_VISITOR; depth: INTEGER) is
+	exit_subtree(visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at end of block for this node
 		do
             precursor(visitor, depth)
@@ -255,7 +255,7 @@ feature {NONE} -- Implementation
 
 feature {DT_OBJECT_CONVERTER} -- Conversion
 
-	persistent_attributes: ARRAYED_LIST[STRING] is
+	persistent_attributes: ARRAYED_LIST[STRING]
 			-- list of attribute names to persist as DT structure
 			-- empty structure means all attributes
 		once

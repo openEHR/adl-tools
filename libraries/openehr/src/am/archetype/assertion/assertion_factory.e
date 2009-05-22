@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "operand in an expression tree"
 	keywords:    "assertion, ADL"
@@ -15,7 +15,7 @@ class ASSERTION_FACTORY
 
 feature -- Factory
 
-	create_expr_leaf_archetype_definition_ref(an_absolute_path: STRING): EXPR_LEAF is
+	create_expr_leaf_archetype_definition_ref(an_absolute_path: STRING): EXPR_LEAF
 			-- node refers to a feature in an archetype definition
 		require
 			path_exists: an_absolute_path /= Void and then not an_absolute_path.is_empty
@@ -23,7 +23,7 @@ feature -- Factory
 			create Result.make_archetype_definition_ref(an_absolute_path)
 		end
 
-	create_expr_leaf_archetype_ref(a_rel_path: STRING): EXPR_LEAF is
+	create_expr_leaf_archetype_ref(a_rel_path: STRING): EXPR_LEAF
 			-- node refers to a feature in an outer archetype structure (not the
 			-- definition - use create_expr_leaf_archetype_definition_ref for that)
 			-- e.g. 'archetype_id' - see AOM for allowable features; / notation
@@ -34,25 +34,25 @@ feature -- Factory
 			create Result.make_archetype_ref(a_rel_path)
 		end
 
-	create_expr_leaf_boolean(an_item: BOOLEAN): EXPR_LEAF is
+	create_expr_leaf_boolean(an_item: BOOLEAN): EXPR_LEAF
 			-- node is a boolean value
    		do
 			create Result.make_boolean(an_item)
 		end
 
-	create_expr_leaf_real(an_item: REAL): EXPR_LEAF is
+	create_expr_leaf_real(an_item: REAL): EXPR_LEAF
 			-- node is a real value
    		do
 			create Result.make_real(an_item)
 		end
 
-	create_expr_leaf_integer(an_item: INTEGER): EXPR_LEAF is
+	create_expr_leaf_integer(an_item: INTEGER): EXPR_LEAF
 			-- node is an integer value
    		do
 			create Result.make_integer(an_item)
 		end
 
-	create_expr_leaf_string(an_item: STRING): EXPR_LEAF is
+	create_expr_leaf_string(an_item: STRING): EXPR_LEAF
 			-- node is a string value
 		require
 			Item_exists: an_item /= Void
@@ -60,25 +60,25 @@ feature -- Factory
 			create Result.make_string(an_item)
 		end
 
-	create_expr_leaf_character(an_item: CHARACTER): EXPR_LEAF is
+	create_expr_leaf_character(an_item: CHARACTER): EXPR_LEAF
 			-- node is a character value
    		do
 			create Result.make_character(an_item)
 		end
 
-	create_expr_leaf_ordinal(an_item: ORDINAL): EXPR_LEAF is
+	create_expr_leaf_ordinal(an_item: ORDINAL): EXPR_LEAF
 			-- node is a ordinal value
    		do
 			create Result.make_ordinal(an_item)
 		end
 
-	create_expr_leaf_coded_term(an_item: CODE_PHRASE): EXPR_LEAF is
+	create_expr_leaf_coded_term(an_item: CODE_PHRASE): EXPR_LEAF
 			-- node is a coded term value
    		do
 			create Result.make_coded_term(an_item)
 		end
 
-	create_expr_leaf_constraint(an_item: C_PRIMITIVE): EXPR_LEAF is
+	create_expr_leaf_constraint(an_item: C_PRIMITIVE): EXPR_LEAF
 			-- node is a constraint on a primitive type; can only be used with "matches" function
 			-- an_item is C_STRING, C_INTEGER, C_REAL, C_DOUBLE, C_BOOLEAN
 		require
@@ -87,17 +87,17 @@ feature -- Factory
 			create Result.make_constraint(an_item)
 		end
 
-	create_expr_unary_operator_node(an_operator: OPERATOR_KIND; an_operand: EXPR_ITEM): EXPR_UNARY_OPERATOR is
+	create_expr_unary_operator_node(an_operator: OPERATOR_KIND; an_operand: EXPR_ITEM): EXPR_UNARY_OPERATOR
 			-- operators with one operand, e.g. not x, -5 etc
 		require
 			an_operator_exists: an_operator /= Void
 			an_operand_exists: an_operand /= Void
    		do
 			create Result.make(an_operator)
-			Result.set_operand(an_operand)
+			Result.set_operand (an_operand)
 		end
 
-	create_expr_binary_operator_node(an_operator: OPERATOR_KIND; a_left_operand, a_right_operand: EXPR_ITEM): EXPR_BINARY_OPERATOR is
+	create_expr_binary_operator_node(an_operator: OPERATOR_KIND; a_left_operand, a_right_operand: EXPR_ITEM): EXPR_BINARY_OPERATOR
 			-- operators with boolean results, e.g.
 			-- and, or, xor, etc
 		require
@@ -106,11 +106,11 @@ feature -- Factory
 			a_right_operand_exists: a_right_operand /= Void
    		do
 			create Result.make(an_operator)
-			Result.set_left_operand(a_left_operand)
-			Result.set_right_operand(a_right_operand)
+			Result.set_left_operand (a_left_operand)
+			Result.set_right_operand (a_right_operand)
 		end
 
-	create_assertion(an_expr: EXPR_ITEM; a_tag:STRING): ASSERTION is
+	create_assertion (an_expr: EXPR_ITEM; a_tag: STRING): ASSERTION
 			-- make assertion with an expression and an optional tag
 		require
 			Tag_valid: a_tag /= Void implies not a_tag.is_empty

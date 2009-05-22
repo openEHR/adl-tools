@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "parent of all ADL serialisers"
 	keywords:    "test, ADL"
@@ -31,12 +31,12 @@ inherit
 			{NONE} all
 		end
 
-creation
+create
 	make
 
 feature -- Serialisation
 
-	serialise (a_target: ARCHETYPE; desc_serialised, def_serialised, inv_serialised, ont_serialised: STRING) is
+	serialise (a_target: ARCHETYPE; desc_serialised, def_serialised, inv_serialised, ont_serialised: STRING)
 		do
 			target := a_target
 			
@@ -79,13 +79,13 @@ feature -- Serialisation
 			serialise_finalise
 		end
 
-	serialise_initialise is
+	serialise_initialise
 		do
 			last_result.append(format_item(FMT_DOC_START))
 			last_result.append(experimental_message)
 		end
 
-	serialise_archetype_id is
+	serialise_archetype_id
 		local
 			attrs: HASH_TABLE [STRING, STRING]
 		do
@@ -96,7 +96,7 @@ feature -- Serialisation
 			last_result.append(xml_tag_start("archetype", attrs))
 		end
 
-	serialise_archetype_concept is
+	serialise_archetype_concept
 		do
 			last_result.append(create_indent(1) + xml_tag_start(symbol(SYM_CONCEPT), Void) + format_item(FMT_NEWLINE))
 			last_result.append(create_indent(2) + xml_tag_enclose(tag(TAG_CODE), target.concept_code, Void) + format_item(FMT_NEWLINE))
@@ -105,7 +105,7 @@ feature -- Serialisation
 			last_result.append(create_indent(1) + xml_tag_end(symbol(SYM_CONCEPT)) + format_item(FMT_NEWLINE))
 		end
 
-	serialise_archetype_specialise is
+	serialise_archetype_specialise
 		do
 			if target.is_specialised then
 				last_result.append(format_item(FMT_NEWLINE) + create_indent(1) + 
@@ -115,7 +115,7 @@ feature -- Serialisation
 			last_result.append(format_item(FMT_NEWLINE))
 		end
 
-	serialise_finalise is
+	serialise_finalise
 		do
 			last_result.append(xml_tag_end("archetype"))
 		end
@@ -123,7 +123,7 @@ feature -- Serialisation
 feature {NONE} -- Implementation
 
 
-	experimental_message: STRING is 
+	experimental_message: STRING 
 		once
 			create Result.make(0)
 			Result.append("%N")

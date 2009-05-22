@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "[
 		       Access to the contents of a text file, in memory, 
@@ -21,7 +21,7 @@ inherit
 
 feature -- Initialisation
 
-	make(a_file_name:STRING) is
+	make (a_file_name: STRING)
 			-- initialise config file
 		require
 			Args_valid: a_file_name /= Void and then not a_file_name.is_empty
@@ -30,7 +30,7 @@ feature -- Initialisation
 			file_cmt_char := file_default_cmt_char
 
 			create file.make(file_name)
-        
+
 			if not file.exists then
 				set_fail_reason("File " + file_name + " does not exist")
 
@@ -55,11 +55,11 @@ feature -- Initialisation
 
 feature -- Access
 
-	file_name:STRING
+	file_name: STRING
 
-	file_default_cmt_char:CHARACTER is ';'
+	file_default_cmt_char: CHARACTER = ';'
 
-	file_cmt_char:CHARACTER
+	file_cmt_char: CHARACTER
 
 feature -- Status
 
@@ -71,18 +71,18 @@ feature -- Status
 
 feature -- Modification
 
-	set_file_cmt_char(c:CHARACTER) is
+	set_file_cmt_char (c: CHARACTER)
 		do
 			file_cmt_char := c
 		end
 
 feature {NONE} -- Implementation
 
-	file:RAW_FILE
+	file: RAW_FILE
 
-	linebuf:STRING
+	linebuf: STRING
 
-	read_file is
+	read_file
 			-- read the whole file
 		do
 			read_initialise
@@ -90,10 +90,10 @@ feature {NONE} -- Implementation
 			read_finalise
 		end
 
-	read_line is
+	read_line
 			-- read a significant line, i.e. a non-blank, non-comment line
 		local
-			pos:INTEGER
+			pos: INTEGER
 		do
 			from
 				linebuf.wipe_out
@@ -125,40 +125,40 @@ feature {NONE} -- Implementation
 
 feature -- template routines
 
-	initialise is
+	initialise
 			-- once-only initialisation for file access
 		deferred
 		end
 
-	read_initialise is
+	read_initialise
 			-- do any specific initialisation before each read of file
 		deferred
 		end
 
-	read_finalise is
+	read_finalise
 			-- do any specific finalisation after each read of file
 		deferred
 		end
 
-	read_process_file is
+	read_process_file
 			-- process linebuf contents; guaranteed to be leading and trailing
 			-- space stripped; no blank lines or comment lines
 		deferred
 		end
-        
-	is_valid:BOOLEAN is
+
+	is_valid:BOOLEAN
 		deferred
 		ensure
 			Is_valid: not Result implies fail_reason /= Void
 		end
 
-	write_file is
+	write_file
 		deferred
 		ensure
 			File_closed: file.is_closed
 		end
 
-end 
+end
 
 
 --|

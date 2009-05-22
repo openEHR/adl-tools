@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "Test dadl simple address"
 	keywords:    "test, object graph, creation"
@@ -14,12 +14,12 @@ indexing
 
 class DADL_SIMPLE_ADDRESS
 
-creation
+create
 	make
 
 feature -- Initialisation
 
-	make is
+	make
 		do
 		end
 

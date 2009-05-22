@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Any OBJECT node in ADL parse tree, including real OBJECTs,
@@ -47,7 +47,7 @@ inherit
 
 feature -- Initialisation
 
-	default_create is
+	default_create
 		do
 			occurrences := default_occurrences.deep_twin
 		end
@@ -57,7 +57,7 @@ feature -- Access
 	rm_type_name: STRING
 			-- type name from reference model, of object to instantiate
 
-	node_id: STRING is
+	node_id: STRING
 			--
 		do
 			Result := representation.node_id
@@ -71,7 +71,7 @@ feature -- Access
 			-- set if this node should be ordered with respect to an inherited sibling; only settable
 			-- on specialised nodes
 
-	specialisation_depth: INTEGER is
+	specialisation_depth: INTEGER
 			-- specialisation level of this node if identified
 		do
 			Result := representation.specialisation_depth
@@ -79,7 +79,7 @@ feature -- Access
 
 feature -- Source Control
 
-	specialisation_status (spec_level: INTEGER): SPECIALISATION_STATUS is
+	specialisation_status (spec_level: INTEGER): SPECIALISATION_STATUS
 			-- status of this node in the source text of this archetype with respect to the
 			-- specialisation hierarchy. Values are defined in SPECIALISATION_STATUSES
 			-- detects specialisation status for identified nodes
@@ -97,7 +97,7 @@ feature -- Source Control
 
 feature -- Status Report
 
-	is_valid: BOOLEAN is
+	is_valid: BOOLEAN
 			-- report on validity
 		local
 			s: STRING
@@ -105,15 +105,15 @@ feature -- Status Report
 			create invalid_reason.make(0)
 			s := rm_type_name + "{" + generating_type + "} "
 			if is_addressable then
-				s.append("[" + node_id + "]")
+				s.append ("[" + node_id + "]")
 			end
-			s.append(": ")
+			s.append (": ")
 
 			if occurrences = Void then	-- FIXME: Delete this check! It's guaranteed by the invariant, so why are we checking it here?
-				invalid_reason.append(s + "occurrences must be specified")
+				invalid_reason.append (s + "occurrences must be specified")
 			elseif parent /= Void then
 				if not parent.is_multiple and occurrences.upper > 1 then	-- FIXME: Delete this check! It's guaranteed by the invariant, so why are we checking it here?
-					invalid_reason.append(s + "occurrences max can only be 1 for single parent attribute")
+					invalid_reason.append (s + "occurrences max can only be 1 for single parent attribute")
 				else
 					Result := True
 				end
@@ -122,7 +122,7 @@ feature -- Status Report
 			end
 		end
 
-	is_occurrences_default: BOOLEAN is
+	is_occurrences_default: BOOLEAN
 			-- True if occurrences is set at default value
 		do
 			Result := occurrences.is_equal(default_occurrences)
@@ -130,7 +130,7 @@ feature -- Status Report
 
 feature -- Comparison
 
-	node_congruent_to (other: like Current): BOOLEAN is
+	node_congruent_to (other: like Current): BOOLEAN
 			-- True if this node on its own (ignoring any subparts) expresses the same constraints as `other'.
 			-- Returns False if any of the following is different:
 			--	rm_type_name
@@ -141,7 +141,7 @@ feature -- Comparison
 			Result := rm_type_name.is_equal (other.rm_type_name) and occurrences.is_equal(other.occurrences) and node_id_conforms_to (other)
 		end
 
-	node_conforms_to (other: like Current): BOOLEAN is
+	node_conforms_to (other: like Current): BOOLEAN
 			-- True if this node on its own (ignoring any subparts) expresses the same or narrower constraints as `other'.
 			-- Returns False if any of the following is incompatible:
 			--	rm_type_name
@@ -159,20 +159,20 @@ feature -- Comparison
 			end
 		end
 
-	rm_type_conforms_to (other: like Current): BOOLEAN is
+	rm_type_conforms_to (other: like Current): BOOLEAN
 			-- True if this node rm_type_name conforms to other.rm_type_name by either being equal, or being a subtype
 			-- according to the underlying reference model
 		do
 			Result := rm_type_name.is_equal (other.rm_type_name) or rm_checker.is_sub_type_of(rm_type_name, other.rm_type_name)
 		end
 
-	occurrences_conforms_to (other: like Current): BOOLEAN is
+	occurrences_conforms_to (other: like Current): BOOLEAN
 			-- True if this node occurrences conforms to other.occurrences
 		do
 			Result := occurrences.is_equal (other.occurrences) or other.occurrences.contains (occurrences)
 		end
 
-	node_id_conforms_to (other: like Current): BOOLEAN is
+	node_id_conforms_to (other: like Current): BOOLEAN
 			-- True if this node id conforms to other.node_id
 		do
 			Result := codes_conformant (node_id, other.node_id)
@@ -180,7 +180,7 @@ feature -- Comparison
 
 feature -- Modification
 
-	set_occurrences(ivl: MULTIPLICITY_INTERVAL) is
+	set_occurrences(ivl: MULTIPLICITY_INTERVAL)
 			--
 		require
 			Interval_exists: ivl /= Void
@@ -190,7 +190,7 @@ feature -- Modification
 			occurrences = ivl
 		end
 
-	set_sibling_order (a_sibling_order: SIBLING_ORDER) is
+	set_sibling_order (a_sibling_order: SIBLING_ORDER)
 			-- set sibling order
 		require
 			a_sibling_order /= Void and specialisation_depth > 0
@@ -200,7 +200,7 @@ feature -- Modification
 			sibling_order_set: sibling_order = a_sibling_order
 		end
 
-	set_sibling_order_before (a_node_id: STRING) is
+	set_sibling_order_before (a_node_id: STRING)
 			-- set sibling order of this node to be before the inherited sibling node with id a_node_id
 		require
 			a_node_id /= Void and not a_node_id.is_empty
@@ -210,7 +210,7 @@ feature -- Modification
 			sibling_order_set: sibling_order /= Void and (sibling_order.is_before and sibling_order.sibling_node_id.is_equal (a_node_id))
 		end
 
-	set_sibling_order_after (a_node_id: STRING) is
+	set_sibling_order_after (a_node_id: STRING)
 			-- set sibling order of this node to be after the inherited sibling node with id a_node_id
 		require
 			a_node_id /= Void and specialisation_depth_from_code (a_node_id) < specialisation_depth
@@ -220,20 +220,20 @@ feature -- Modification
 			sibling_order_set: sibling_order /= Void and (sibling_order.is_after and sibling_order.sibling_node_id.is_equal (a_node_id))
 		end
 
-	clear_sibling_order is
+	clear_sibling_order
 			-- remove sibling order
 		do
 			sibling_order := Void
 		end
 
-	set_node_id(an_object_id:STRING) is
+	set_node_id (an_object_id: STRING)
 		require
 			Object_id_valid: an_object_id /= Void and then not an_object_id.is_empty
 		do
-			representation.set_node_id(an_object_id)
+			representation.set_node_id (an_object_id)
 		end
 
-	overlay_differential(other: like Current) is
+	overlay_differential (other: like Current)
 			-- apply any differences from `other' to this object node including:
 			-- 	node_id
 			-- 	overridden rm_type_name
@@ -242,7 +242,7 @@ feature -- Modification
 			Other_valid: other /= Void and then other.node_conforms_to (Current)
 		do
 			if not other.node_id.is_equal(node_id) then
-				set_node_id(other.node_id.twin)
+				set_node_id (other.node_id.twin)
 			end
 			if not other.rm_type_name.is_equal(rm_type_name) then
 				rm_type_name := other.rm_type_name.twin
@@ -254,7 +254,7 @@ feature -- Modification
 
 feature -- Representation
 
-	representation: !OG_OBJECT
+	representation: attached OG_OBJECT
 
 invariant
 	rm_type_name_valid: rm_type_name /= Void and then not rm_type_name.is_empty

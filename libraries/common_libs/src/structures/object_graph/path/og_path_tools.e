@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "ADL archetype path"
 	keywords:    "test, ADL"
@@ -20,7 +20,7 @@ feature -- Access
 	
 feature -- Validation
 
-	valid_path_string(a_path: STRING): BOOLEAN is
+	valid_path_string(a_path: STRING): BOOLEAN
 			-- True if a_path parses properly
 		require
 			a_path /= Void and then not a_path.is_empty

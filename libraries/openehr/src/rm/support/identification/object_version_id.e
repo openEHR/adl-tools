@@ -1,6 +1,6 @@
-indexing
+note
 	component:   "openEHR Common Reference Model"
-	
+
 	description: "[
 			 Globally uniqie identifier of a Version within a version
 			 container. Supports distributed version control.
@@ -25,16 +25,16 @@ inherit
 
 feature -- Access
 
-	object_id: UID is
-			-- Unique identifier for logical object of which this identifier identifies one version; 
-			-- normally the object_id will be the unique identifier of the version container containing 
+	object_id: UID
+			-- Unique identifier for logical object of which this identifier identifies one version;
+			-- normally the object_id will be the unique identifier of the version container containing
 			-- the version referred to by this OBJECT_VERSION_ID instance.
 		do
 			Result := root
 		end
 
-	version_tree_id: VERSION_TREE_ID is
-			-- tree identifier of this version with respect to other versions in the same version tree, 
+	version_tree_id: VERSION_TREE_ID
+			-- tree identifier of this version with respect to other versions in the same version tree,
 			-- as either 1 or 3 part dot-separated numbers, e.g. “1”, “2.1.4”.
 		local
 			sep_pos1, sep_pos2: INTEGER
@@ -44,22 +44,22 @@ feature -- Access
 			create Result.make(value.substring(sep_pos1, sep_pos2))
 		end
 
-	creating_system_id: UID is
+	creating_system_id: UID
 			-- Identifier of the system that created the Version corresponding to this Object version id.
 		do
 		end
 
 feature -- Status Report
 
-	valid_id(an_id:STRING): BOOLEAN is
-			-- 
+	valid_id (an_id: STRING): BOOLEAN
+			--
 		do
 		end
-		
+
 invariant
 	Object_valid: object_id /= Void
 	Version_tree_id: version_tree_id /= Void
-	creating_system_id: creating_system_id /= Void	
+	creating_system_id: creating_system_id /= Void
 
 end
 

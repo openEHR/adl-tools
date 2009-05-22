@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 			 C wrapper for CONSTRAINT_MODEL_FACTORY (flattened). In this wrapper, the following
@@ -42,13 +42,13 @@ inherit
 
 feature -- Initialisation
 
-	make is
+	make
 		do
 		end
 
 feature -- Date/Time Routines
 
-	is_valid_iso8601_date_constraint_pattern (a_str: POINTER): BOOLEAN is
+	is_valid_iso8601_date_constraint_pattern (a_str: POINTER): BOOLEAN
 			-- True if string literal like "yyyy-MM-dd"
 			-- with XX or ?? allowed in MM or dd slots
 			-- REQUIRE
@@ -60,7 +60,7 @@ feature -- Date/Time Routines
 			Result := constraint_model_factory.valid_iso8601_date_constraint_pattern(c_a_str.string)
 		end
 
-	is_valid_iso8601_date_string (a_str: POINTER): BOOLEAN is
+	is_valid_iso8601_date_string (a_str: POINTER): BOOLEAN
 			-- True if string in form "yyyy-MM-dd"
 			-- REQUIRE
 			-- a_str /= void
@@ -71,7 +71,7 @@ feature -- Date/Time Routines
 			Result := constraint_model_factory.valid_iso8601_date(c_a_str.string)
 		end
 
-	is_valid_iso8601_date_time_constraint_pattern (a_str: POINTER): BOOLEAN is
+	is_valid_iso8601_date_time_constraint_pattern (a_str: POINTER): BOOLEAN
 			-- True if string in form "yyyy-MM-dd hh:mm:ss[.ssss]"
 			-- REQUIRE
 			-- a_str /= void
@@ -82,7 +82,7 @@ feature -- Date/Time Routines
 			Result := constraint_model_factory.valid_iso8601_date_time_constraint_pattern(c_a_str.string)
 		end
 
-	is_valid_iso8601_date_time_string (a_str: POINTER): BOOLEAN is
+	is_valid_iso8601_date_time_string (a_str: POINTER): BOOLEAN
 			-- True if string in form "yyyy-MM-dd hh:mm:ss[.ssss]"
 			-- REQUIRE
 			-- a_str /= void
@@ -93,7 +93,7 @@ feature -- Date/Time Routines
 			Result := constraint_model_factory.valid_iso8601_date_time(c_a_str.string)
 		end
 
-	is_valid_iso8601_duration_string (a_str: POINTER): BOOLEAN is
+	is_valid_iso8601_duration_string (a_str: POINTER): BOOLEAN
 			-- True if string in form "PnYnMnWnDTnHnMnS"
 			-- REQUIRE
 			-- a_str /= void
@@ -104,7 +104,7 @@ feature -- Date/Time Routines
 			Result := constraint_model_factory.valid_iso8601_duration(c_a_str.string)
 		end
 
-	is_valid_iso8601_duration_constraint_pattern (a_str: POINTER): BOOLEAN is
+	is_valid_iso8601_duration_constraint_pattern (a_str: POINTER): BOOLEAN
 			-- True if string literal like PYMWDTHMS
 			-- REQUIRE
 			-- a_str /= void
@@ -115,7 +115,7 @@ feature -- Date/Time Routines
 			Result := constraint_model_factory.valid_iso8601_duration_constraint_pattern(c_a_str.string)
 		end
 
-	is_valid_iso8601_time_constraint_pattern (a_str: POINTER): BOOLEAN is
+	is_valid_iso8601_time_constraint_pattern (a_str: POINTER): BOOLEAN
 			-- True if string literal like "hh:mm:ss[.ssss]"
 			-- with XX or ?? allowed in mm or ss slots
 			-- REQUIRE
@@ -127,7 +127,7 @@ feature -- Date/Time Routines
 			Result := constraint_model_factory.valid_iso8601_time_constraint_pattern(c_a_str.string)
 		end
 
-	is_valid_iso8601_time_string (a_str: POINTER): BOOLEAN is
+	is_valid_iso8601_time_string (a_str: POINTER): BOOLEAN
 			-- True if string in form "hh:mm:ss[.ssss]"
 			-- REQUIRE
 			-- a_str /= void
@@ -140,7 +140,7 @@ feature -- Date/Time Routines
 
 feature -- Primitive Object Creation
 
-	create_integer_interval_make_bounded (a_lower, an_upper: INTEGER; include_lower, include_upper: BOOLEAN): INTEGER is
+	create_integer_interval_make_bounded (a_lower, an_upper: INTEGER; include_lower, include_upper: BOOLEAN): INTEGER
 			-- create Result with both limits set
 			-- REQUIRE
 			-- valid_order: a_lower <= an_upper
@@ -150,21 +150,21 @@ feature -- Primitive Object Creation
 				a_lower, an_upper, include_lower, include_upper), Result)
 		end
 
-	create_integer_interval_make_lower_unbounded (an_upper: INTEGER; include_upper: BOOLEAN): INTEGER is
+	create_integer_interval_make_lower_unbounded (an_upper: INTEGER; include_upper: BOOLEAN): INTEGER
 			-- create Result from -infinity to `an_upper'
 		do
 			Result := new_handle
 			put_integer_interval(constraint_model_factory.create_integer_interval_make_lower_unbounded(an_upper, include_upper), Result)
 		end
 
-	create_integer_interval_make_upper_unbounded (a_lower: INTEGER; include_lower: BOOLEAN): INTEGER is
+	create_integer_interval_make_upper_unbounded (a_lower: INTEGER; include_lower: BOOLEAN): INTEGER
 			-- create Result from `a_lower' to +infinity
 		do
 			Result := new_handle
 			put_integer_interval(constraint_model_factory.create_integer_interval_make_upper_unbounded(a_lower, include_lower), Result)
 		end
 
-	create_real_interval_make_bounded (a_lower, an_upper: REAL; include_lower, include_upper: BOOLEAN): INTEGER is
+	create_real_interval_make_bounded (a_lower, an_upper: REAL; include_lower, include_upper: BOOLEAN): INTEGER
 			-- create Result with both limits set
 			-- REQUIRE
 			-- valid_order: a_lower <= an_upper
@@ -173,21 +173,21 @@ feature -- Primitive Object Creation
 			put_real_interval(constraint_model_factory.create_real_interval_make_bounded(a_lower, an_upper, include_lower, include_upper), Result)
 		end
 
-	create_real_interval_make_lower_unbounded (an_upper: REAL; include_upper: BOOLEAN): INTEGER is
+	create_real_interval_make_lower_unbounded (an_upper: REAL; include_upper: BOOLEAN): INTEGER
 			-- create Result from -infinity to `an_upper'
 		do
 			Result := new_handle
 			put_real_interval(constraint_model_factory.create_real_interval_make_lower_unbounded(an_upper, include_upper), Result)
 		end
 
-	create_real_interval_make_upper_unbounded (a_lower: REAL; include_lower: BOOLEAN): INTEGER is
+	create_real_interval_make_upper_unbounded (a_lower: REAL; include_lower: BOOLEAN): INTEGER
 			-- create Result from `a_lower' to +infinity
 		do
 			Result := new_handle
 			put_real_interval(constraint_model_factory.create_real_interval_make_upper_unbounded(a_lower, include_lower), Result)
 		end
 
-	create_c_integer_make_bounded (a_lower, an_upper: INTEGER; include_lower, include_upper: BOOLEAN): INTEGER is
+	create_c_integer_make_bounded (a_lower, an_upper: INTEGER; include_lower, include_upper: BOOLEAN): INTEGER
 			-- create Result with both limits set
 			-- REQUIRE
 			-- valid_order: a_lower <= an_upper
@@ -196,21 +196,21 @@ feature -- Primitive Object Creation
 			put_c_primitive(constraint_model_factory.create_c_integer_make_bounded(a_lower, an_upper, include_lower, include_upper), Result)
 		end
 
-	create_c_integer_make_lower_unbounded (an_upper: INTEGER; include_upper: BOOLEAN): INTEGER is
+	create_c_integer_make_lower_unbounded (an_upper: INTEGER; include_upper: BOOLEAN): INTEGER
 			-- create Result from -infinity to `an_upper'
 		do
 			Result := new_handle
 			put_c_primitive(constraint_model_factory.create_c_integer_make_lower_unbounded(an_upper, include_upper), Result)
 		end
 
-	create_c_integer_make_upper_unbounded (a_lower: INTEGER; include_lower: BOOLEAN): INTEGER is
+	create_c_integer_make_upper_unbounded (a_lower: INTEGER; include_lower: BOOLEAN): INTEGER
 			-- create Result from `a_lower' to +infinity
 		do
 			Result := new_handle
 			put_c_primitive(constraint_model_factory.create_c_integer_make_upper_unbounded(a_lower, include_lower), Result)
 		end
 
-	create_c_real_make_bounded (a_lower, an_upper: REAL; include_lower, include_upper: BOOLEAN): INTEGER is
+	create_c_real_make_bounded (a_lower, an_upper: REAL; include_lower, include_upper: BOOLEAN): INTEGER
 			-- create Result with both limits set
 			-- REQUIRE
 			-- valid_order: a_lower <= an_upper
@@ -219,49 +219,49 @@ feature -- Primitive Object Creation
 			put_c_primitive(constraint_model_factory.create_c_real_make_bounded(a_lower, an_upper, include_lower, include_upper), Result)
 		end
 
-	create_c_real_make_lower_unbounded (an_upper: REAL; include_upper: BOOLEAN): INTEGER is
+	create_c_real_make_lower_unbounded (an_upper: REAL; include_upper: BOOLEAN): INTEGER
 			-- create Result from -infinity to `an_upper'
 		do
 			Result := new_handle
 			put_c_primitive(constraint_model_factory.create_c_real_make_lower_unbounded(an_upper, include_upper), Result)
 		end
 
-	create_c_real_make_upper_unbounded (a_lower: REAL; include_lower: BOOLEAN): INTEGER is
+	create_c_real_make_upper_unbounded (a_lower: REAL; include_lower: BOOLEAN): INTEGER
 			-- create Result from `a_lower' to +infinity
 		do
 			Result := new_handle
 			put_c_primitive(constraint_model_factory.create_c_real_make_upper_unbounded(a_lower, include_lower), Result)
 		end
 
-	create_c_boolean_make_true: INTEGER is
+	create_c_boolean_make_true: INTEGER
 			-- create Result allowing True only
 		do
 			Result := new_handle
 			put_c_primitive(constraint_model_factory.create_c_boolean_make_true, Result)
 		end
 
-	create_c_boolean_make_false: INTEGER is
+	create_c_boolean_make_false: INTEGER
 			-- create Result allowing False only
 		do
 			Result := new_handle
 			put_c_primitive(constraint_model_factory.create_c_boolean_make_false, Result)
 		end
 
-	create_c_boolean_make_true_false: INTEGER is
+	create_c_boolean_make_true_false: INTEGER
 			-- create Result allowing True and False
 		do
 			Result := new_handle
 			put_c_primitive(constraint_model_factory.create_c_boolean_make_true_false, Result)
 		end
 
-	create_c_string_make_any: INTEGER is
+	create_c_string_make_any: INTEGER
 			-- create Result completely open
 		do
 			Result := new_handle
 			put_c_primitive(constraint_model_factory.create_c_string_make_any, Result)
 		end
 
-	create_c_string_make_from_string (a_str: POINTER): INTEGER is
+	create_c_string_make_from_string (a_str: POINTER): INTEGER
 			-- create Result from a single string
 		local
 			c_a_str: BASE_C_STRING
@@ -272,7 +272,7 @@ feature -- Primitive Object Creation
 			put_c_primitive(constraint_model_factory.create_c_string_make_from_string(c_a_str.string), Result)
 		end
 
-	create_c_string_make_from_regexp (a_str: POINTER): INTEGER is
+	create_c_string_make_from_regexp (a_str: POINTER): INTEGER
 			-- create Result from a regular expression
 		local
 			c_a_str: BASE_C_STRING
@@ -283,7 +283,7 @@ feature -- Primitive Object Creation
 			put_c_primitive(constraint_model_factory.create_c_string_make_from_regexp(c_a_str.string), Result)
 		end
 
-	create_c_string_make_from_string_list (a_str_lst: ARRAY [POINTER]): INTEGER is
+	create_c_string_make_from_string_list (a_str_lst: ARRAY [POINTER]): INTEGER
 			-- create Result from a list of strings
 			-- REQUIRE
 			-- lst /= void
@@ -292,7 +292,7 @@ feature -- Primitive Object Creation
 			put_c_primitive(constraint_model_factory.create_c_string_make_from_string_list(c_array_string_to_eif_list (a_str_lst)), Result)
 		end
 
-	create_c_date_make_bounded (a_lower, an_upper: POINTER): INTEGER is
+	create_c_date_make_bounded (a_lower, an_upper: POINTER): INTEGER
 			-- create Result with both limits set from ISO8601 strings
 			-- REQUIRE
 			-- lower_valid: a_lower /= void and then is_valid_iso8601_date_string(a_lower)
@@ -308,7 +308,7 @@ feature -- Primitive Object Creation
 			put_c_primitive(constraint_model_factory.create_c_date_make_bounded (c_a_lower.string, c_an_upper.string), Result)
 		end
 
-	create_c_date_make_lower_unbounded (an_upper: POINTER): INTEGER is
+	create_c_date_make_lower_unbounded (an_upper: POINTER): INTEGER
 			-- create Result from -infinity to `an_upper' in ISO8601 string form
 			-- REQUIRE
 			-- upper_valid: an_upper /= void and then is_valid_iso8601_date_string(an_upper)
@@ -321,7 +321,7 @@ feature -- Primitive Object Creation
 			put_c_primitive(constraint_model_factory.create_c_date_make_lower_unbounded (c_an_upper.string), Result)
 		end
 
-	create_c_date_make_upper_unbounded (a_lower: POINTER): INTEGER is
+	create_c_date_make_upper_unbounded (a_lower: POINTER): INTEGER
 			-- create Result from `a_lower' in ISO8601 string form, to +infinity
 			-- REQUIRE
 			-- lower_valid: a_lower /= void and then is_valid_iso8601_date_string(a_lower)
@@ -334,7 +334,7 @@ feature -- Primitive Object Creation
 			put_c_primitive(constraint_model_factory.create_c_date_make_upper_unbounded (c_a_lower.string), Result)
 		end
 
-	create_c_date_make_pattern (a_pattern: POINTER): INTEGER is
+	create_c_date_make_pattern (a_pattern: POINTER): INTEGER
 			-- create Result from an ISO8601-based pattern like "yyyy-mm-??"
 			-- REQUIRE
 			-- pattern_valid: a_pattern /= void and then is_valid_iso8601_date_constraint_pattern(a_pattern)
@@ -347,14 +347,14 @@ feature -- Primitive Object Creation
 			put_c_primitive(constraint_model_factory.create_c_date_make_pattern (c_a_pattern.string), Result)
 		end
 
-	create_c_date_make_unbounded: INTEGER is
+	create_c_date_make_unbounded: INTEGER
 			-- create Result as unbounded interval
 		do
 			Result := new_handle
 			put_c_primitive(constraint_model_factory.create_c_date_make_unbounded, Result)
 		end
 
-	create_c_date_time_make_bounded (a_lower, an_upper: POINTER): INTEGER is
+	create_c_date_time_make_bounded (a_lower, an_upper: POINTER): INTEGER
 			-- create Result with both limits set from ISO8601 strings
 			-- REQUIRE
 			-- lower_valid: a_lower /= void and then is_valid_iso8601_date_time_string(a_lower)
@@ -370,7 +370,7 @@ feature -- Primitive Object Creation
 			put_c_primitive(constraint_model_factory.create_c_date_time_make_bounded (c_a_lower.string, c_an_upper.string), Result)
 		end
 
-	create_c_date_time_make_lower_unbounded (an_upper: POINTER; include_upper: BOOLEAN): INTEGER is
+	create_c_date_time_make_lower_unbounded (an_upper: POINTER; include_upper: BOOLEAN): INTEGER
 			-- create Result from -infinity to `an_upper' in ISO8601 string form
 			-- REQUIRE
 			-- upper_valid: an_upper /= void and then is_valid_iso8601_date_time_string(an_upper)
@@ -383,7 +383,7 @@ feature -- Primitive Object Creation
 			put_c_primitive(constraint_model_factory.create_c_date_time_make_lower_unbounded (c_an_upper.string), Result)
 		end
 
-	create_c_date_time_make_upper_unbounded (a_lower: POINTER): INTEGER is
+	create_c_date_time_make_upper_unbounded (a_lower: POINTER): INTEGER
 			-- create Result from `a_lower' in ISO8601 string form, to +infinity
 			-- REQUIRE
 			-- lower_valid: a_lower /= void and then is_valid_iso8601_date_time_string(a_lower)
@@ -396,7 +396,7 @@ feature -- Primitive Object Creation
 			put_c_primitive(constraint_model_factory.create_c_date_time_make_upper_unbounded (c_a_lower.string), Result)
 		end
 
-	create_c_date_time_make_pattern (a_pattern: POINTER): INTEGER is
+	create_c_date_time_make_pattern (a_pattern: POINTER): INTEGER
 			-- create Result from an ISO8601-based pattern like "yyyy-mm-dd hh:??:XX"
 			-- REQUIRE
 			-- pattern_valid: a_pattern /= void and then is_valid_iso8601_date_time_constraint_pattern(a_pattern)
@@ -409,14 +409,14 @@ feature -- Primitive Object Creation
 			put_c_primitive(constraint_model_factory.create_c_date_time_make_pattern (c_a_pattern.string), Result)
 		end
 
-	create_c_date_time_make_unbounded: INTEGER is
+	create_c_date_time_make_unbounded: INTEGER
 			-- create Result as unbounded interval
 		do
 			Result := new_handle
 			put_c_primitive(constraint_model_factory.create_c_date_time_make_unbounded, Result)
 		end
 
-	create_c_time_make_bounded (a_lower, an_upper: POINTER): INTEGER is
+	create_c_time_make_bounded (a_lower, an_upper: POINTER): INTEGER
 			-- create Result with both limits set from ISO8601 strings
 			-- REQUIRE
 			-- lower_valid: a_lower /= void and then is_valid_iso8601_time_string(a_lower)
@@ -432,7 +432,7 @@ feature -- Primitive Object Creation
 			put_c_primitive(constraint_model_factory.create_c_time_make_bounded (c_a_lower.string, c_an_upper.string), Result)
 		end
 
-	create_c_time_make_lower_unbounded (an_upper: POINTER): INTEGER is
+	create_c_time_make_lower_unbounded (an_upper: POINTER): INTEGER
 			-- create Result from -infinity to `an_upper' in ISO8601 string form
 			-- REQUIRE
 			-- upper_valid: an_upper /= void and then is_valid_iso8601_time_string(an_upper)
@@ -445,7 +445,7 @@ feature -- Primitive Object Creation
 			put_c_primitive(constraint_model_factory.create_c_time_make_lower_unbounded (c_an_upper.string), Result)
 		end
 
-	create_c_time_make_upper_unbounded (a_lower: POINTER): INTEGER is
+	create_c_time_make_upper_unbounded (a_lower: POINTER): INTEGER
 			-- create Result from `a_lower' in ISO8601 string form, to +infinity
 			-- REQUIRE
 			-- lower_valid: a_lower /= void and then is_valid_iso8601_time_string(a_lower)
@@ -458,7 +458,7 @@ feature -- Primitive Object Creation
 			put_c_primitive(constraint_model_factory.create_c_time_make_upper_unbounded (c_a_lower.string), Result)
 		end
 
-	create_c_time_make_pattern (a_pattern: POINTER): INTEGER is
+	create_c_time_make_pattern (a_pattern: POINTER): INTEGER
 			-- create Result from an ISO8601-based pattern like "hh:mm:??"
 			-- REQUIRE
 			-- pattern_valid: a_pattern /= void and then is_valid_iso8601_time_constraint_pattern(a_pattern)
@@ -471,14 +471,14 @@ feature -- Primitive Object Creation
 			put_c_primitive(constraint_model_factory.create_c_time_make_pattern (c_a_pattern.string), Result)
 		end
 
-	create_c_time_make_unbounded: INTEGER is
+	create_c_time_make_unbounded: INTEGER
 			-- create Result as unbounded interval
 		do
 			Result := new_handle
 			put_c_primitive(constraint_model_factory.create_c_time_make_unbounded, Result)
 		end
 
-	create_c_duration_make_bounded (a_lower, an_upper: POINTER; include_lower, include_upper: BOOLEAN): INTEGER is
+	create_c_duration_make_bounded (a_lower, an_upper: POINTER; include_lower, include_upper: BOOLEAN): INTEGER
 			-- create Result with both limits set from ISO8601 strings
 			-- REQUIRE
 			-- lower_valid: a_lower /= void and then is_valid_iso8601_duration_string(a_lower)
@@ -494,7 +494,7 @@ feature -- Primitive Object Creation
 			put_c_primitive (constraint_model_factory.create_c_duration_make (Void, c_a_lower.string, c_an_upper.string, include_lower, include_upper), Result)
 		end
 
-	create_c_duration_make_lower_unbounded (an_upper: POINTER; include_upper: BOOLEAN): INTEGER is
+	create_c_duration_make_lower_unbounded (an_upper: POINTER; include_upper: BOOLEAN): INTEGER
 			-- create Result from -infinity to `an_upper' in ISO8601 string form
 			-- REQUIRE
 			-- upper_valid: an_upper /= void and then is_valid_iso8601_duration_string(an_upper)
@@ -507,7 +507,7 @@ feature -- Primitive Object Creation
 			put_c_primitive (constraint_model_factory.create_c_duration_make (Void, Void, c_an_upper.string, False, include_upper), Result)
 		end
 
-	create_c_duration_make_upper_unbounded (a_lower: POINTER; include_lower: BOOLEAN): INTEGER is
+	create_c_duration_make_upper_unbounded (a_lower: POINTER; include_lower: BOOLEAN): INTEGER
 			-- create Result from `a_lower' in ISO8601 string form, to +infinity
 			-- REQUIRE
 			-- lower_valid: a_lower /= void and then is_valid_iso8601_duration_string(a_lower)
@@ -520,7 +520,7 @@ feature -- Primitive Object Creation
 			put_c_primitive (constraint_model_factory.create_c_duration_make (Void, c_a_lower.string, Void, include_lower, False), Result)
 		end
 
-	create_c_duration_make_unbounded: INTEGER is
+	create_c_duration_make_unbounded: INTEGER
 			-- create Result as unbounded interval
 		do
 			Result := new_handle
@@ -529,7 +529,7 @@ feature -- Primitive Object Creation
 
 feature -- Domain object creation
 
-	create_c_code_phrase_from_pattern (h_parent_c_attribute: INTEGER; a_term_constraint: POINTER): INTEGER is
+	create_c_code_phrase_from_pattern (h_parent_c_attribute: INTEGER; a_term_constraint: POINTER): INTEGER
 			-- create a "term" node from term in string form "terminology(version)::code_phrase, code_phrase, ..."
 			-- REQUIRE
 			-- parent_valid: has_c_attribute(h_parent_c_attribute)
@@ -543,7 +543,7 @@ feature -- Domain object creation
 			put_c_code_phrase(constraint_model_factory.create_c_code_phrase_from_pattern(c_attribute(h_parent_c_attribute), c_a_term_constraint.string), Result)
 		end
 
-	create_c_ordinal (h_parent_c_attribute: INTEGER): INTEGER is
+	create_c_ordinal (h_parent_c_attribute: INTEGER): INTEGER
 			-- create an empty "ordinal" node.
 			-- REQUIRE
 			-- parent_valid: has_c_attribute(h_parent_c_attribute)
@@ -554,7 +554,7 @@ feature -- Domain object creation
 			put_c_ordinal(constraint_model_factory.create_c_dv_ordinal(c_attribute(h_parent_c_attribute)), Result)
 		end
 
-	create_ordinal (h_c_ordinal: INTEGER; a_value: INTEGER; a_symbol_code_phrase: POINTER) is
+	create_ordinal (h_c_ordinal: INTEGER; a_value: INTEGER; a_symbol_code_phrase: POINTER)
 			-- create an ORDINAL from an integer value, and a symbol defined as a term
 			-- string of the usual form, i.e. "[ttt::code]", and add it to h_c_ordinal's object
 			-- REQUIRE
@@ -568,7 +568,7 @@ feature -- Domain object creation
 			c_ordinal(h_c_ordinal).add_item(constraint_model_factory.create_ordinal(a_value, c_a_symbol_code_phrase.string))
 		end
 
-	create_c_primitive_object (h_parent_c_attribute: INTEGER; h_c_primitive: INTEGER): INTEGER is
+	create_c_primitive_object (h_parent_c_attribute: INTEGER; h_c_primitive: INTEGER): INTEGER
 			-- h_c_primitive is BASE_C_STRING, C_INTEGER, C_REAL, C_DOUBLE, C_BOOLEAN
 			-- REQUIRE
 			-- parent_valid: has_c_attribute(h_parent_c_attribute)
@@ -580,7 +580,7 @@ feature -- Domain object creation
 				c_primitive(h_c_primitive)), Result)
 		end
 
-	create_c_quantity (h_parent_c_attribute: INTEGER): INTEGER is
+	create_c_quantity (h_parent_c_attribute: INTEGER): INTEGER
 			-- create an empty C_QUANTITY node.
 			-- REQUIRE
 			-- parent_valid: has_c_attribute(h_parent_c_attribute)
@@ -589,7 +589,7 @@ feature -- Domain object creation
 			put_c_quantity(constraint_model_factory.create_c_dv_quantity(c_attribute(h_parent_c_attribute)), Result)
 		end
 
-	create_cardinality_make_bounded (a_lower, an_upper: INTEGER): INTEGER is
+	create_cardinality_make_bounded (a_lower, an_upper: INTEGER): INTEGER
 			-- create Result with both limits set
 			-- REQUIRE
 			-- valid_order: a_lower <= an_upper
@@ -598,14 +598,14 @@ feature -- Domain object creation
 			put_cardinality(constraint_model_factory.create_cardinality_make_bounded(a_lower, an_upper), Result)
 		end
 
-	create_cardinality_make_unbounded: INTEGER is
+	create_cardinality_make_unbounded: INTEGER
 			-- create Result as unbounded interval
 		do
 			Result := new_handle
 			put_cardinality(constraint_model_factory.create_cardinality_make_unbounded, Result)
 		end
 
-	create_cardinality_make_upper_unbounded (a_lower: INTEGER): INTEGER is
+	create_cardinality_make_upper_unbounded (a_lower: INTEGER): INTEGER
 			-- create Result from `a_lower' to +infinity
 			-- REQUIRE
 		do
@@ -615,7 +615,7 @@ feature -- Domain object creation
 
 feature -- Archetype Node Creation
 
-	create_archetype_internal_ref (h_parent_c_attribute: INTEGER; a_type_name, a_path: POINTER): INTEGER is
+	create_archetype_internal_ref (h_parent_c_attribute: INTEGER; a_type_name, a_path: POINTER): INTEGER
 			-- create a "use" node using C_ATTRIBUTE referred to by h_parent_c_attribute handle
 			-- REQUIRE
 			-- parent_valid: has_c_attribute(h_parent_c_attribute)
@@ -632,7 +632,7 @@ feature -- Archetype Node Creation
 				c_a_type_name.string, c_a_path.string), Result)
 		end
 
-	create_archetype_slot_anonymous (h_parent_c_attribute: INTEGER; a_type_name: POINTER): INTEGER is
+	create_archetype_slot_anonymous (h_parent_c_attribute: INTEGER; a_type_name: POINTER): INTEGER
 			-- create a new non-identified archetype slot using C_ATTRIBUTE referred to by h_parent_c_attribute handle
 			-- REQUIRE
 			-- parent_valid: has_c_attribute(h_parent_c_attribute)
@@ -647,7 +647,7 @@ feature -- Archetype Node Creation
 					c_attribute(h_parent_c_attribute), c_a_type_name.string), Result)
 		end
 
-	create_archetype_slot_identified (h_parent_c_attribute: INTEGER; a_type_name, a_node_id: POINTER): INTEGER is
+	create_archetype_slot_identified (h_parent_c_attribute: INTEGER; a_type_name, a_node_id: POINTER): INTEGER
 			-- create a new non-identified archetype slot using C_ATTRIBUTE referred to by h_parent_c_attribute handle
 			-- REQUIRE
 			-- parent_valid: has_c_attribute(h_parent_c_attribute)
@@ -663,7 +663,7 @@ feature -- Archetype Node Creation
 					c_attribute(h_parent_c_attribute), c_a_type_name.string, c_a_node_id.string), Result)
 		end
 
-	create_c_attribute_multiple (h_parent_c_complex_object: INTEGER; an_attr_name: POINTER; h_cardinality: INTEGER): INTEGER is
+	create_c_attribute_multiple (h_parent_c_complex_object: INTEGER; an_attr_name: POINTER; h_cardinality: INTEGER): INTEGER
 			-- create a C_ATTRIBUTE with a simple name like "text" or "description" using last-created C_COMPLEX_OBJECT
 			--	and last-created CARDINALITY
 			-- REQUIRE
@@ -681,7 +681,7 @@ feature -- Archetype Node Creation
 				c_an_attr_name.string, cardinality(h_cardinality)), Result)
 		end
 
-	create_c_attribute_single (h_parent_c_complex_object: INTEGER; an_attr_name: POINTER): INTEGER is
+	create_c_attribute_single (h_parent_c_complex_object: INTEGER; an_attr_name: POINTER): INTEGER
 			-- create a C_ATTRIBUTE node with a simple name like "text" or "description"
 			-- REQUIRE
 			-- parent_valid: has_c_complex_object(h_parent_c_complex_object)
@@ -695,7 +695,7 @@ feature -- Archetype Node Creation
 			put_c_attribute(constraint_model_factory.create_c_attribute_single(c_complex_object(h_parent_c_complex_object), c_an_attr_name.string), Result)
 		end
 
-	create_c_complex_object_anonymous (h_parent_c_attribute: INTEGER; a_type_name: POINTER): INTEGER is
+	create_c_complex_object_anonymous (h_parent_c_attribute: INTEGER; a_type_name: POINTER): INTEGER
 			-- create a new non-identified object node
 			-- REQUIRE
 			-- parent_valid: has_c_attribute(h_parent_c_attribute)
@@ -709,7 +709,7 @@ feature -- Archetype Node Creation
 			put_c_complex_object(constraint_model_factory.create_c_complex_object_anonymous(c_attribute(h_parent_c_attribute), c_a_type_name.string), Result)
 		end
 
-	create_c_complex_object_identified (h_parent_c_attribute: INTEGER; a_type_name, a_node_id: POINTER): INTEGER is
+	create_c_complex_object_identified (h_parent_c_attribute: INTEGER; a_type_name, a_node_id: POINTER): INTEGER
 			-- create a new identified object node
 			-- REQUIRE
 			-- parent_valid: has_c_attribute(h_parent_c_attribute)
@@ -726,7 +726,7 @@ feature -- Archetype Node Creation
 				c_attribute(h_parent_c_attribute), c_a_type_name.string, c_a_node_id.string), Result)
 		end
 
-	create_constraint_ref (h_parent_c_attribute: INTEGER; a_code: POINTER): INTEGER is
+	create_constraint_ref (h_parent_c_attribute: INTEGER; a_code: POINTER): INTEGER
 			-- create a "term" node from term in string form "ac0039"
 			-- REQUIRE
 			-- parent_valid: has_c_attribute(h_parent_c_attribute)
@@ -740,19 +740,19 @@ feature -- Archetype Node Creation
 			put_constraint_ref(constraint_model_factory.create_constraint_ref(c_attribute(h_parent_c_attribute), c_a_code.string), Result)
 		end
 
-	set_occurrences_c_object(h_c_object, h_integer_interval: INTEGER) is
+	set_occurrences_c_object(h_c_object, h_integer_interval: INTEGER)
 			-- set_occurrences for any C_OBJECT
 		do
 			c_object(h_c_object).set_occurrences(integer_interval(h_integer_interval))
 		end
 
-	archetype_slot_add_include(h_archetype_slot, h_assertion: INTEGER) is
+	archetype_slot_add_include(h_archetype_slot, h_assertion: INTEGER)
 			-- add_include to an ARCHETYPE_SLOT
 		do
 			archetype_slot(h_archetype_slot).add_include(assertion(h_assertion))
 		end
 
-	archetype_slot_add_exclude(h_archetype_slot, h_assertion: INTEGER) is
+	archetype_slot_add_exclude(h_archetype_slot, h_assertion: INTEGER)
 			-- add_exclude to an ARCHETYPE_SLOT
 		do
 			archetype_slot(h_archetype_slot).add_exclude(assertion(h_assertion))
@@ -760,7 +760,7 @@ feature -- Archetype Node Creation
 
 feature -- Assertions
 
-	create_assertion (h_an_expr: INTEGER): INTEGER is
+	create_assertion (h_an_expr: INTEGER): INTEGER
 			-- make assertion with an expression
 			-- REQUIRE
 			-- expr_valid: an_expr /= void
@@ -769,7 +769,7 @@ feature -- Assertions
 			put_assertion(constraint_model_factory.create_assertion(expr_item(h_an_expr), void), Result)
 		end
 
-	create_assertion_with_tag (h_an_expr: INTEGER; a_tag: POINTER): INTEGER is
+	create_assertion_with_tag (h_an_expr: INTEGER; a_tag: POINTER): INTEGER
 			-- make assertion with an expression and tag
 			-- REQUIRE
 			-- tag_valid: a_tag /= void and then a_tag.is_empty
@@ -783,7 +783,7 @@ feature -- Assertions
 				expr_item(h_an_expr), c_a_tag.string), Result)
 		end
 
-	create_expr_binary_operator_node (an_operator: INTEGER; h_a_left_operand, h_a_right_operand: INTEGER): INTEGER is
+	create_expr_binary_operator_node (an_operator: INTEGER; h_a_left_operand, h_a_right_operand: INTEGER): INTEGER
 			-- REQUIRE
 			-- an_operator_exists: {OPERATOR_KIND}.is_valid_operator(an_operator)
 			-- a_left_operand_exists: a_left_operand /= void
@@ -795,7 +795,7 @@ feature -- Assertions
 				expr_item(h_a_left_operand), expr_item(h_a_right_operand)), Result)
 		end
 
-	create_expr_unary_operator_node (an_operator: INTEGER; h_an_operand: INTEGER): INTEGER is
+	create_expr_unary_operator_node (an_operator: INTEGER; h_an_operand: INTEGER): INTEGER
 			-- REQUIRE
 			-- an_operator_exists: an_operator /= void and then not an_operator.is_empty
 			-- an_operand_exists: an_operand /= void
@@ -806,21 +806,21 @@ feature -- Assertions
 				expr_item(h_an_operand)), Result)
 		end
 
-	create_expr_leaf_boolean (an_item: BOOLEAN): INTEGER is
+	create_expr_leaf_boolean (an_item: BOOLEAN): INTEGER
 			-- node is a boolean value
 		do
 			Result := new_handle
 			put_expr_item(constraint_model_factory.create_expr_leaf_boolean(an_item), Result)
 		end
 
-	create_expr_leaf_character (an_item: CHARACTER): INTEGER is
+	create_expr_leaf_character (an_item: CHARACTER): INTEGER
 			-- node is a character value
 		do
 			Result := new_handle
 			put_expr_item(constraint_model_factory.create_expr_leaf_character(an_item), Result)
 		end
 
-	create_expr_leaf_constraint (h_an_item: INTEGER): INTEGER is
+	create_expr_leaf_constraint (h_an_item: INTEGER): INTEGER
 			-- node is a constraint on a primitive type; can only be used with "matches" function
 			-- an_item is BASE_C_STRING, C_INTEGER, C_REAL, C_DOUBLE, C_BOOLEAN
 			-- REQUIRE
@@ -831,7 +831,7 @@ feature -- Assertions
 				c_primitive(h_an_item)), Result)
 		end
 
-	create_expr_leaf_archetype_feature_call (a_ref: POINTER): INTEGER is
+	create_expr_leaf_archetype_feature_call (a_ref: POINTER): INTEGER
 			-- leaf node represents a feature call on Archetype object itself
 			-- REQUIRE
 			-- ref_exists: a_ref /= void and then not a_ref.is_empty
@@ -843,14 +843,14 @@ feature -- Assertions
 			put_expr_item (constraint_model_factory.create_expr_leaf_archetype_ref (c_a_ref.string), Result)
 		end
 
-	create_expr_leaf_integer (an_item: INTEGER): INTEGER is
+	create_expr_leaf_integer (an_item: INTEGER): INTEGER
 			-- node is an integer value
 		do
 			Result := new_handle
 			put_expr_item(constraint_model_factory.create_expr_leaf_integer(an_item), Result)
 		end
 
-	create_expr_leaf_object_ref (a_ref_path: POINTER): INTEGER is
+	create_expr_leaf_object_ref (a_ref_path: POINTER): INTEGER
 			-- node refers to an object in the runtime data
 			-- REQUIRE
 			-- ref_exists: a_ref_path /= void and then not a_ref_path.is_empty
@@ -862,14 +862,14 @@ feature -- Assertions
 			put_expr_item (constraint_model_factory.create_expr_leaf_archetype_definition_ref (c_a_ref_path.string), Result)
 		end
 
-	create_expr_leaf_real (an_item: REAL): INTEGER is
+	create_expr_leaf_real (an_item: REAL): INTEGER
 			-- node is a real value
 		do
 			Result := new_handle
 			put_expr_item(constraint_model_factory.create_expr_leaf_real(an_item), Result)
 		end
 
-	create_expr_leaf_string (an_item: POINTER): INTEGER is
+	create_expr_leaf_string (an_item: POINTER): INTEGER
 			-- node is a string value
 			-- REQUIRE
 			-- item_exists: an_item /= void

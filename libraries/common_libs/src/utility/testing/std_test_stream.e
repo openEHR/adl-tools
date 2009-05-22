@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
       description: "Std file input/output stream"
 	keywords:    "test"
@@ -19,19 +19,19 @@ inherit
 
 feature -- Access
 
-	put_string (a_text: STRING) is
+	put_string (a_text: STRING)
 		do
 			io.put_string (a_text)
 		end
 
-	search (str: STRING; start: INTEGER): INTEGER is
+	search (str: STRING; start: INTEGER): INTEGER
 			-- Position of first occurrence of `str' at or after `start';
 			-- 0 if none.
 		do
 			Result := 0
 		end
 
-	new_line is
+	new_line
 		do
 			io.new_line
 		end

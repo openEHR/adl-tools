@@ -1,6 +1,6 @@
-indexing
+note
 	component:   "openEHR Data Types"
-	
+
 	description: "[
 				 Abstract class defining the concept of ordered values, which includes 
 				 ordinals as well as true quantities. It defines the functions less_than 
@@ -28,7 +28,7 @@ inherit
 		undefine
 			is_equal
 		end
-		
+
 	COMPARABLE
 
 feature -- Access
@@ -38,15 +38,15 @@ feature -- Access
 
 	normal_range: DV_INTERVAL[like Current]
 			-- Optional normal range
-	
-	normal_status: DV_ORDINAL	
-			-- Optional normal status indicator of value with respect to normal range for this value. 
+
+	normal_status: DV_ORDINAL
+			-- Optional normal status indicator of value with respect to normal range for this value.
 			-- Often included by lab, even if the normal range itself is not included.
 			-- Coded by ordinals in series HHH, HH, H, (nothing), L, LL, LLL
 
 feature -- Comparison
 
-	is_strictly_comparable_to (other: like Current): BOOLEAN is
+	is_strictly_comparable_to (other: like Current): BOOLEAN
 		require
 			other_exists: other /= Void
 		deferred
@@ -54,30 +54,30 @@ feature -- Comparison
 
 feature -- Status Report
 
-	is_simple: BOOLEAN is
+	is_simple: BOOLEAN
 			-- simple DV_ORDERED objects have no reference ranges or accuracy
 		do
 			Result := normal_range = Void and other_reference_ranges = Void
 		end
 
-	has_normal_range: BOOLEAN is
+	has_normal_range: BOOLEAN
 		do
 			Result := normal_range /= Void
 		end
 
-	is_normal: BOOLEAN is
+	is_normal: BOOLEAN
 			-- True if there is the current value is inside the normal range
 		require
 			has_normal_range
 		do
 			Result := normal_range.has(Current)
 		ensure
-			Result = normal_range.has(Current)			
+			Result = normal_range.has(Current)
 		end
-		
+
 feature -- Modification
 
-	add_other_reference_range(a_rr:REFERENCE_RANGE[like Current]) is
+	add_other_reference_range (a_rr: REFERENCE_RANGE [like Current])
 			-- add a new reference range
 		require
 			Range_exists: a_rr /= Void
@@ -87,14 +87,14 @@ feature -- Modification
 			end
 			other_reference_ranges.extend(a_rr)
 		end
-		
+
 invariant
 	Other_reference_range_validity: other_reference_ranges /= Void implies not other_reference_ranges.is_empty
 	Is_simple_validity: (normal_range = Void and other_reference_ranges = Void and normal_status = Void) implies is_simple
 	Normal_status_validity: normal_status /= Void implies normal_status.is_simple
 	Normal_status_symbol_validity: normal_status /= Void implies terminology(Terminology_id_openehr).
 		has_code_for_group_id(Group_id_normal_status, normal_status.symbol.defining_code)
-		
+
 end
 
 

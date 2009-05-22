@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Populate description controls in ADL editor"
 	keywords:    "test, ADL"
@@ -100,7 +100,7 @@ feature {NONE} -- Implementation
 	gui: MAIN_WINDOW
 			-- main window of system
 
-	populate_authorship is
+	populate_authorship
 			-- populate authorship fields
 		require
 			archetype_selected: archetype_directory.has_selected_archetype
@@ -127,7 +127,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	populate_details is
+	populate_details
 			-- Populate details (language sensitive).
 		require
 			archetype_selected: archetype_directory.has_selected_archetype
@@ -153,7 +153,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	populate_resources is
+	populate_resources
 			-- populate resources fields
 		require
 			archetype_selected: archetype_directory.has_selected_archetype
@@ -174,7 +174,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	populate_copyright is
+	populate_copyright
 			-- populate copyright field
 		require
 			archetype_selected: archetype_directory.has_selected_archetype

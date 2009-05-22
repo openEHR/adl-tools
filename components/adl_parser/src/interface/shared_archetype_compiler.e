@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 			 Shared access to ARCHETYPE_COMPILER
@@ -20,7 +20,7 @@ inherit
 
 feature {NONE} -- Implementation
 
-	archetype_compiler: ARCHETYPE_COMPILER is
+	archetype_compiler: ARCHETYPE_COMPILER
 		once
 			create Result.make
 		end

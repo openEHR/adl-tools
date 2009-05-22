@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "cardinality representation in ADL parse tree"
 	keywords:    "cardinality, ADL"
@@ -18,7 +18,7 @@ create
 
 feature -- Initialisation
 
-	make(an_interval: MULTIPLICITY_INTERVAL) is
+	make(an_interval: MULTIPLICITY_INTERVAL)
 			--
 		require
 			Interval_exists: an_interval /= Void and then not an_interval.lower_unbounded
@@ -39,22 +39,22 @@ feature -- Status Report
 
 	is_unique: BOOLEAN
 
-	is_list: BOOLEAN is
+	is_list: BOOLEAN
 		do
 			Result := is_ordered and not is_unique
 		end
 
-	is_set: BOOLEAN is
+	is_set: BOOLEAN
 		do
 			Result := not is_ordered and is_unique
 		end
 
-	is_bag: BOOLEAN is
+	is_bag: BOOLEAN
 		do
 			Result := not is_ordered and not is_unique
 		end
 
-	contains (other: CARDINALITY): BOOLEAN is
+	contains (other: CARDINALITY): BOOLEAN
 			-- Does current cardinality contain `other'?
 		require
 			Other_exists: other /= void
@@ -62,7 +62,7 @@ feature -- Status Report
 			Result := interval.contains(other.interval)
 		end
 
-	is_open: BOOLEAN is
+	is_open: BOOLEAN
 			-- True if this interval imposes no constraints, i.e. is set to 0..*
 		do
 			Result := interval.is_open
@@ -70,19 +70,19 @@ feature -- Status Report
 
 feature -- Modification
 
-	set_unordered is
+	set_unordered
 		do
 			is_ordered := False
 		end
 
-	set_unique is
+	set_unique
 		do
 			is_unique := True
 		end
 
 feature -- Output
 
-	as_string: STRING is
+	as_string: STRING
 			-- output as a string, excluding default items
 		do
 			create Result.make(0)

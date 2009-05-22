@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "leaf OBJECT item in an dADL parse tree"
 	keywords:    "test, ADL"
@@ -25,13 +25,13 @@ inherit
 
 feature -- Definitions
 
-	Anonymous_node_id: STRING is "unknown"
+	Anonymous_node_id: STRING = "unknown"
 
-	Unknown_type_name: STRING is "UNKNOWN"
+	Unknown_type_name: STRING = "UNKNOWN"
 
 feature -- Access
 
-	node_id: STRING is
+	node_id: STRING
 			-- locally unique node id
 		do
 			Result := representation.node_id
@@ -54,7 +54,7 @@ feature -- Comparison
 
 feature -- Status Report
 
-	is_typed: BOOLEAN is
+	is_typed: BOOLEAN
 			-- True if this node has a known type
 		do
 			Result := not rm_type_name.is_equal(Unknown_type_name)
@@ -65,7 +65,7 @@ feature -- Status Report
 
 feature -- Modification
 
-	set_node_id(a_node_id:STRING) is
+	set_node_id (a_node_id: STRING)
 			-- set node id
 		require
 			Node_id_valid: a_node_id /= Void and then not a_node_id.is_empty
@@ -73,7 +73,7 @@ feature -- Modification
 			representation.set_node_id(a_node_id)
 		end
 
-	set_type_name(a_type_name:STRING) is
+	set_type_name (a_type_name: STRING)
 			-- set type name
 		require
 			Type_name_valid: a_type_name /= Void and then not a_type_name.is_empty
@@ -81,7 +81,7 @@ feature -- Modification
 			rm_type_name := a_type_name
 		end
 
-	set_visible_type_name(a_type_name:STRING) is
+	set_visible_type_name (a_type_name: STRING)
 			-- set type name
 		require
 			Type_name_valid: a_type_name /= Void and then not a_type_name.is_empty
@@ -90,7 +90,7 @@ feature -- Modification
 			set_type_visible
 		end
 
-	set_type_visible is
+	set_type_visible
 			-- show type of this object in generated form like dADL
 		do
 			type_visible := True
@@ -98,7 +98,7 @@ feature -- Modification
 
 feature -- Conversion
 
-	as_object(a_type_id: INTEGER): ANY is
+	as_object(a_type_id: INTEGER): ANY
 			-- make an object of type `a_type_id' whose classes and attributes correspond to the structure
 			-- of this DT_OBJECT
 		require

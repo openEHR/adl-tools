@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR EHR Reference Model"
 
 	description: "[
@@ -58,13 +58,13 @@ feature -- Access
 	other_context: ITEM_STRUCTURE
 			-- Other optional context which will be archetyped.
 
-	path_of_item (a_loc: LOCATABLE): STRING is
+	path_of_item (a_loc: LOCATABLE): STRING
 			-- The path to an item relative to the root of this archetyped structure.
 		do
 				-- TO_BE_IMPLEM
 		end
 
-	item_at_path (a_path: STRING): LOCATABLE is
+	item_at_path (a_path: STRING): LOCATABLE
 			-- The item at a path (relative to this item).
 		do
 				-- TO_BE_IMPLEM
@@ -75,7 +75,7 @@ feature -- Access
 
 feature -- Status Report
 
-	path_exists (a_path: STRING): BOOLEAN is
+	path_exists (a_path: STRING): BOOLEAN
 			-- True if the path is valid with respect to the current item.
 		do
 				-- TO_BE_IMPLEM

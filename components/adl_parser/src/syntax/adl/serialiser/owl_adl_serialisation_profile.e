@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Common routines for native ADL serialisation"
 	keywords:    "test, ADL"

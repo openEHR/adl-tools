@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Main window"
 	keywords:    "test, ADL"
@@ -283,7 +283,7 @@ feature -- File events
 				else
 					archetype_directory.add_adhoc_item (name)
 
-					if {ara: !ARCH_REP_ARCHETYPE} archetype_directory.archetype_descriptor_at_path (name) then
+					if attached {ARCH_REP_ARCHETYPE} archetype_directory.archetype_descriptor_at_path (name) as ara then
 						archetype_directory.set_selected_item (ara)
 						archetype_view_tree_control.populate
 					end
@@ -296,7 +296,7 @@ feature -- File events
 	parse_archetype
 			-- Load and parse the archetype currently selected in `archetype_directory'.
 		do
-			if {ara: ARCH_REP_ARCHETYPE} archetype_directory.selected_archetype then
+			if attached {ARCH_REP_ARCHETYPE} archetype_directory.selected_archetype as ara then
 				clear_all_controls
 				do_with_wait_cursor (agent archetype_compiler.build_lineage (ara))
 			end
@@ -666,7 +666,7 @@ feature {NONE} -- History events
 			history_menu.extend (history_menu_forward)
 			history_menu.extend (history_menu_separator)
 
-			archetype_directory.recently_selected_archetypes (20).do_all (agent (ara: !ARCH_REP_ARCHETYPE)
+			archetype_directory.recently_selected_archetypes (20).do_all (agent (ara: attached ARCH_REP_ARCHETYPE)
 				local
 					mi: EV_MENU_ITEM
 				do
@@ -711,10 +711,10 @@ feature {NONE} -- Tools events
 			end
 		end
 
-	delete_generated_files (a: ARCH_REP_ITEM) is
+	delete_generated_files (a: ARCH_REP_ITEM)
 			-- delete a generated file associated with `a'
 		do
-			if {ara: !ARCH_REP_ARCHETYPE} a then
+			if attached {ARCH_REP_ARCHETYPE} a as ara then
 				ara.clean_generated
 				append_status_area (ara.status)
 			end
@@ -784,7 +784,7 @@ feature -- Archetype commands
 			-- Select and display the node of `archetype_file_tree' corresponding to the folder or archetype attached to `gui_item'.
 		do
 			if gui_item /= Void then
-				if {a: !ARCH_REP_ITEM} gui_item.data then
+				if attached {ARCH_REP_ITEM} gui_item.data as a then
 					archetype_directory.set_selected_item (a)
 					select_node_in_archetype_tree_view
 				end
@@ -794,7 +794,7 @@ feature -- Archetype commands
 	select_node_in_archetype_tree_view
 			-- Select and display the node of `archetype_file_tree' corresponding to the selection in `archetype_directory'.
 		do
-			if {node: !EV_TREE_NODE} archetype_file_tree.retrieve_item_recursively_by_data (archetype_directory.selected_item, True) then
+			if attached {EV_TREE_NODE} archetype_file_tree.retrieve_item_recursively_by_data (archetype_directory.selected_item, True) as node then
 				archetype_file_tree.ensure_item_visible (node)
 				node.enable_select
 			end
@@ -896,7 +896,7 @@ feature -- Archetype commands
 	on_archetype_notebook_select
 			-- Display either the differential or flat view of the archetype depending on the tab selected in `arch_notebook'.
 		do
-			if {tab: !EV_VERTICAL_BOX} archetype_notebook.selected_item and {other: !EV_VERTICAL_BOX} definition_notebook.parent then
+			if attached {EV_VERTICAL_BOX} archetype_notebook.selected_item as tab and attached {EV_VERTICAL_BOX} definition_notebook.parent as other then
 				if tab /= other then
 					if (<<differential_view_box, flat_view_box>>).has (tab) then
 						other.prune (definition_notebook)
@@ -963,7 +963,7 @@ feature -- Controls
 
 feature {NONE} -- Implementation
 
-	append_status_area (text: STRING) is
+	append_status_area (text: STRING)
 			-- Append `text' to `parser_status_area'.
 		require
 			text_attached: text /= Void
@@ -973,7 +973,7 @@ feature {NONE} -- Implementation
 			ev_application.process_graphical_events
 		end
 
-	set_status_area (text: STRING) is
+	set_status_area (text: STRING)
 			-- Set `parser_status_area' to `text'.
 		require
 			text_attached: text /= Void
@@ -1104,7 +1104,7 @@ feature {NONE} -- Implementation
 		local
 			text: STRING
 		do
-			if {ara: !ARCH_REP_ARCHETYPE} archetype_directory.selected_archetype then
+			if attached {ARCH_REP_ARCHETYPE} archetype_directory.selected_archetype as ara then
 				if flat then
 					text := ara.flat_text
 					if text = Void then
@@ -1125,7 +1125,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	populate_source_text_with_line_numbers (text: STRING) is
+	populate_source_text_with_line_numbers (text: STRING)
 			-- Display `text' in `source_rich_text', optionally with each line preceded by line numbers.
 		require
 			text_attached: text /= Void
@@ -1286,7 +1286,7 @@ feature {NONE} -- Build commands
 			append_status_area (archetype_compiler.status)
 
 			if ara /= Void then
-				if {node: !EV_TREE_NODE} archetype_file_tree.retrieve_item_recursively_by_data (ara, True) then
+				if attached {EV_TREE_NODE} archetype_file_tree.retrieve_item_recursively_by_data (ara, True) as node then
 					archetype_view_tree_control.update_tree_node (node)
 				end
 
@@ -1351,7 +1351,7 @@ feature {NONE} -- Standard Windows behaviour that EiffelVision ought to be manag
 		local
 			widgets: LINEAR [EV_WIDGET]
 		do
-			if {container: !EV_CONTAINER} widget and not {grid: !EV_GRID} widget then
+			if attached {EV_CONTAINER} widget as container and not attached {EV_GRID} widget as grid then
 				from
 					widgets := container.linear_representation
 					widgets.start
@@ -1362,7 +1362,7 @@ feature {NONE} -- Standard Windows behaviour that EiffelVision ought to be manag
 					widgets.forth
 				end
 			elseif widget.is_displayed and widget.is_sensitive then
-				if not {label: !EV_LABEL} widget and not {toolbar: !EV_TOOL_BAR} widget then
+				if not attached {EV_LABEL} widget as label and not attached {EV_TOOL_BAR} widget as toolbar then
 					widget.set_focus
 				end
 			end

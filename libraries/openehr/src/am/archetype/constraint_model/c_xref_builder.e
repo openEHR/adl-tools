@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Archetype cross-reference table validator. The ARCHEYPE class has a number of
@@ -30,7 +30,7 @@ inherit
 
 feature -- Initialisation
 
-	initialise(an_archetype: ARCHETYPE) is
+	initialise(an_archetype: ARCHETYPE)
 			-- set ontology required for interpreting meaning of object nodes
 			-- archetype is required as well since it contains the xref tables that are
 			-- populated by this visitor
@@ -43,48 +43,48 @@ feature -- Initialisation
 
 feature -- Visitor
 
-	start_c_complex_object(a_node: C_COMPLEX_OBJECT; depth: INTEGER) is
+	start_c_complex_object(a_node: C_COMPLEX_OBJECT; depth: INTEGER)
 			-- enter a C_COMPLEX_OBJECT
 		do
 			if a_node.is_addressable then
 				if not archetype.id_atcodes_index.has(a_node.node_id) then
 					archetype.id_atcodes_index.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.node_id)
 				end
-				archetype.id_atcodes_index.item(a_node.node_id).extend(a_node)
+				archetype.id_atcodes_index.item(a_node.node_id).extend (a_node)
 			end
 		end
 
-	start_archetype_slot(a_node: ARCHETYPE_SLOT; depth: INTEGER) is
+	start_archetype_slot(a_node: ARCHETYPE_SLOT; depth: INTEGER)
 			-- enter an ARCHETYPE_SLOT
 		do
 			if a_node.is_addressable then
 				if not archetype.id_atcodes_index.has(a_node.node_id) then
 					archetype.id_atcodes_index.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.node_id)
 				end
-				archetype.id_atcodes_index.item(a_node.node_id).extend(a_node)
+				archetype.id_atcodes_index.item(a_node.node_id).extend (a_node)
 			end
-			archetype.slot_index.extend(a_node)
+			archetype.slot_index.extend (a_node)
 		end
 
-	start_archetype_internal_ref(a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER) is
+	start_archetype_internal_ref(a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER)
 			-- enter an ARCHETYPE_INTERNAL_REF
 		do
 			if not archetype.use_node_index.has(a_node.target_path) then
 				archetype.use_node_index.put(create {ARRAYED_LIST[ARCHETYPE_INTERNAL_REF]}.make(0), a_node.target_path)
 			end
-			archetype.use_node_index.item(a_node.target_path).extend(a_node)
+			archetype.use_node_index.item(a_node.target_path).extend (a_node)
 		end
 
-	start_constraint_ref(a_node: CONSTRAINT_REF; depth: INTEGER) is
+	start_constraint_ref(a_node: CONSTRAINT_REF; depth: INTEGER)
 			-- enter a CONSTRAINT_REF
 		do
 			if not archetype.accodes_index.has(a_node.target) then
 				archetype.accodes_index.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.target)
 			end
-			archetype.accodes_index.item(a_node.target).extend(a_node)
+			archetype.accodes_index.item(a_node.target).extend (a_node)
 		end
 
-	start_c_code_phrase(a_node: C_CODE_PHRASE; depth: INTEGER) is
+	start_c_code_phrase(a_node: C_CODE_PHRASE; depth: INTEGER)
 			-- enter an C_CODE_PHRASE
 		do
 			if not a_node.any_allowed and then (a_node.is_local and a_node.code_count > 0) then
@@ -96,13 +96,13 @@ feature -- Visitor
 					if not archetype.data_atcodes_index.has(a_node.code_list.item) then
 						archetype.data_atcodes_index.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.code_list.item)
 					end
-					archetype.data_atcodes_index.item(a_node.code_list.item).extend(a_node)
+					archetype.data_atcodes_index.item(a_node.code_list.item).extend (a_node)
 					a_node.code_list.forth
 				end
 			end
 		end
 
-	start_c_ordinal(a_node: C_DV_ORDINAL; depth: INTEGER) is
+	start_c_ordinal(a_node: C_DV_ORDINAL; depth: INTEGER)
 			-- enter an C_DV_ORDINAL
 		do
 			if not a_node.any_allowed and then a_node.is_local then
@@ -114,13 +114,13 @@ feature -- Visitor
 					if not archetype.data_atcodes_index.has(a_node.items.item.symbol.code_string) then
 						archetype.data_atcodes_index.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.items.item.symbol.code_string)
 					end
-					archetype.data_atcodes_index.item(a_node.items.item.symbol.code_string).extend(a_node)
+					archetype.data_atcodes_index.item(a_node.items.item.symbol.code_string).extend (a_node)
 					a_node.items.forth
 				end
 			end
 		end
 
-	start_c_attribute(a_node: C_ATTRIBUTE; depth: INTEGER) is
+	start_c_attribute(a_node: C_ATTRIBUTE; depth: INTEGER)
 			-- enter a C_ATTRIBUTE; see if it has a differential path, in which case there may be at-codes
 			-- referenced there not visible elsewhere in the structure; these need to be found and added to
 			-- the id_atcodes list
@@ -134,7 +134,7 @@ feature -- Visitor
 						if not archetype.id_atcodes_index.has(og_path.item.object_id) then
 							archetype.id_atcodes_index.put(create {ARRAYED_LIST[ARCHETYPE_CONSTRAINT]}.make(0), og_path.item.object_id)
 						end
-						archetype.id_atcodes_index.item(og_path.item.object_id).extend(a_node)
+						archetype.id_atcodes_index.item(og_path.item.object_id).extend (a_node)
 					end
 					og_path.forth
 				end

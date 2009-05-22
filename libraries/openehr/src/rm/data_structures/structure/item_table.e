@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Structures Reference Model"
 
 	description: "[
@@ -65,67 +65,67 @@ feature -- Access
 	columns: LIST[CLUSTER]
 			-- CLUSTERs containing column data
 
-	row_count:INTEGER is
+	row_count:INTEGER
 			-- Return the number of rows
 		do
 		end
 
-	row_names: LIST[DV_TEXT] is
+	row_names: LIST[DV_TEXT]
 			-- Return the row names
 		do
 		end
 
-	column_count: INTEGER is
+	column_count: INTEGER
 			-- Return the number of columns
 		do
 		end
 
-	column_names: LIST[DV_TEXT] is
+	column_names: LIST[DV_TEXT]
 			-- Return the column names
 		do
 		end
 
-	ith_row(i:INTEGER): LIST[ELEMENT] is
+	ith_row(i:INTEGER): LIST[ELEMENT]
 			-- Return the i-th row
 		require
 			i >0 and i < row_count
 		do
 		end
 
-	has_row_with_name(a_key:STRING): BOOLEAN is
+	has_row_with_name(a_key:STRING): BOOLEAN
 			-- True if there is a row whose first column has the name ‘a_key’
 		require
 			a_key /= Void and then not a_key.is_empty
 		do
 		end
 
-	has_column_with_name(a_key:STRING): BOOLEAN is
+	has_column_with_name(a_key:STRING): BOOLEAN
 			-- True if there is a column with name ‘a_key’
 		require
 			a_key /= Void and then not a_key.is_empty
 		do
 		end
 
-	named_row(a_key:STRING): LIST[ELEMENT] is
+	named_row(a_key:STRING): LIST[ELEMENT]
 			-- Return the row whose first column has the name ‘a_key’
 		require
 			Valid_key: has_row_with_name(a_key)
 		do
 		end
 
-	has_row_with_keys(keys:SET[STRING]): BOOLEAN  is
+	has_row_with_keys(keys:SET[STRING]): BOOLEAN
 			-- True if there is a row whose first n columns have the names in ‘keys’
 		do
 		end
 
-	keyed_row(keys:SET[STRING]): LIST[ELEMENT] is
+	keyed_row(keys:SET[STRING]): LIST[ELEMENT]
 			-- Return the row whose first n columns have the names in ‘keys’
 		require
 			has_row_with_keys(keys)
 		do
 		end
 
-	element_at_cell_ij(i, j:INTEGER): ELEMENT is
+	element_at_cell_ij(i, j:INTEGER): ELEMENT
 			-- Return the element at the column i, row j.
 		require
 			Valid_column: i >= 1 and i <= column_count
@@ -133,7 +133,7 @@ feature -- Access
 		do
 		end
 
-	element_at_named_cell(row_key, column_key:STRING): ELEMENT is
+	element_at_named_cell(row_key, column_key:STRING): ELEMENT
 			-- Return the element at the row whose first column has the name ‘row_key’ and column has the name ‘col_key’
 		require
 			Valid_row: has_row_with_name(row_key)
@@ -141,26 +141,26 @@ feature -- Access
 		do
 		end
 
-	path_of_item (a_loc: LOCATABLE): STRING is
+	path_of_item (a_loc: LOCATABLE): STRING
 			-- The path to an item relative to the root of this archetyped structure.
 		do
 		end
 
-	item_at_path (a_path: STRING): LOCATABLE is
+	item_at_path (a_path: STRING): LOCATABLE
 			-- The item at a path (relative to this item).
 		do
 		end
 
 feature -- Status Report
 
-	path_exists (a_path: STRING): BOOLEAN is
+	path_exists (a_path: STRING): BOOLEAN
 			-- True if the path is valid with respect to the current item.
 		do
 		end
 
 feature -- Conversion
 
-	as_hierarchy: CLUSTER is
+	as_hierarchy: CLUSTER
 			-- the physical representation as a CEN 13606-compliant structure
 		do
 		end

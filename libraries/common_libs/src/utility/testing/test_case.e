@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "Abstract test case"
 	keywords:    "test"
@@ -30,25 +30,25 @@ inherit
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 			-- 
 		deferred
 		end
 
 feature -- Access
 
-	id: STRING is
+	id: STRING
 			-- allocated on creation
 		do
 			Result := generating_type
 		end
 
-	title: STRING is 
+	title: STRING 
 			-- the name of the test
 		deferred
 		end
 
-	prereqs: ARRAY[STRING] is 
+	prereqs: ARRAY[STRING] 
 			-- ids of prerequisite test cases
 		once
 			Result := <<>>
@@ -56,24 +56,24 @@ feature -- Access
 
 feature -- testing
 
-	set_up is
+	set_up
 			-- set up for this test; redefine in descendants
 		do
 		end
 
-	execute is
+	execute
 			-- test routine
 		deferred
 		end
 
-	check_result is
+	check_result
 			-- compare actual result with required result and set 'failed' as necessary
 		do
 		ensure
 			Failure_reason_given: failed implies fail_reason /= Void and then not fail_reason.is_empty
 		end
 
-	tear_down is
+	tear_down
 			-- clean_up after this test; redefine in descendants
 		do
 		end

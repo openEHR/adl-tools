@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Node of simple type in an dADL parse tree. Simple
@@ -37,7 +37,7 @@ feature -- Access
 
 feature -- Modification
 
-	set_value(a_value: ANY) is
+	set_value(a_value: ANY)
 		do
 			value := a_value
 			rm_type_name := a_value.generating_type
@@ -48,7 +48,7 @@ feature -- Modification
 
 feature -- Conversion
 
-	as_string: STRING is
+	as_string: STRING
 		local
 			a_dur: DATE_TIME_DURATION
 		do
@@ -71,10 +71,8 @@ feature -- Conversion
 			end
 		end
 
-	clean_as_string(cleaner: FUNCTION [ANY, TUPLE[STRING], STRING]):STRING is
+	clean_as_string (cleaner: FUNCTION [ANY, TUPLE [STRING], STRING]): STRING
 			-- generate a cleaned form of this object as a string, using `cleaner' to do the work
-		local
-			a_dur: DATE_TIME_DURATION
 		do
 			if is_string then
 				Result := "%"" + cleaner.item ([value.out]) + "%""
@@ -85,13 +83,13 @@ feature -- Conversion
 
 feature -- Serialisation
 
-	enter_subtree(serialiser: DT_SERIALISER; depth: INTEGER) is
+	enter_subtree (serialiser: DT_SERIALISER; depth: INTEGER)
 			-- perform serialisation at start of block for this node
 		do
 			serialiser.start_primitive_object(Current, depth)
 		end
 
-	exit_subtree(serialiser: DT_SERIALISER; depth: INTEGER) is
+	exit_subtree (serialiser: DT_SERIALISER; depth: INTEGER)
 			-- perform serialisation at end of block for this node
 		do
 			serialiser.end_primitive_object(Current, depth)
@@ -100,6 +98,7 @@ feature -- Serialisation
 feature {NONE} -- Implementation
 
 	is_string: BOOLEAN
+
 	is_character: BOOLEAN
 
 end

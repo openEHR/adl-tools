@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Test case for removing term binding from ontology"
 	keywords:    "test, ADL, CADL"
@@ -32,15 +32,15 @@ create
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 	    do
 	    end
 
 feature -- Access
 
-	title: STRING is "Remove Constraint Binding"
+	title: STRING = "Remove Constraint Binding"
 
-	prereqs: ARRAY[STRING] is
+	prereqs: ARRAY[STRING]
 			-- ids of prerequisite test cases
 		once
 			Result := <<"TS_ARCHETYPE_CREATE">>
@@ -48,7 +48,7 @@ feature -- Access
 
 feature -- testing
 
-	execute is
+	execute
 		local
 			a_code: STRING
 			a_term: ARCHETYPE_TERM

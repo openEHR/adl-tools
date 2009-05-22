@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Resuable Library Project"
 	description: "Shared UML model"
 	keywords:    "UML, introspection, reflection"
@@ -21,18 +21,18 @@ inherit
 
 feature -- Access
 
-	model: UML_MODEL is
+	model: UML_MODEL
 		once
 			create Result.make
 		end
 
-	classes: HASH_TABLE [UML_CLASS, STRING] is
+	classes: HASH_TABLE [UML_CLASS, STRING]
 			-- hash of UML classes keyed by name
 		once
 			create Result.make(0)
 		end
 		
-	has_class(a_name: STRING): BOOLEAN is
+	has_class(a_name: STRING): BOOLEAN
 			-- has class already been created?
 		require
 			a_name_valid: a_name /= Void and then not a_name.is_empty
@@ -40,7 +40,7 @@ feature -- Access
 			Result := classes.has(a_name)
 		end
 		
-	class_for_name(a_name: STRING): UML_CLASS is
+	class_for_name(a_name: STRING): UML_CLASS
 			-- has class already been created?
 		require
 			a_name_valid: a_name /= Void and then not a_name.is_empty
@@ -48,7 +48,7 @@ feature -- Access
 			Result := classes.item(a_name)
 		end
 
-	put_class(a_class: UML_CLASS) is
+	put_class(a_class: UML_CLASS)
 			-- add class to index
 		require
 			a_class_exists: a_class /= Void
@@ -58,7 +58,7 @@ feature -- Access
 		
 feature -- Conversion
 
-	convert_to_standard_name(a_name: STRING): STRING is
+	convert_to_standard_name(a_name: STRING): STRING
 			-- convert to form ClassName
 		local
 			i: INTEGER
@@ -79,7 +79,7 @@ feature -- Conversion
 			end
 		end
 
-	convert_to_class_name(a_name: STRING): STRING is
+	convert_to_class_name(a_name: STRING): STRING
 			-- convert to form ClassName
 		do
 			Result := convert_to_standard_name(a_name)
@@ -88,7 +88,7 @@ feature -- Conversion
 
 feature {NONE} -- Implementation
 
-	indent: STRING is
+	indent: STRING
 			-- debug indent string
 		once
 			create Result.make(0)

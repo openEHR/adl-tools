@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "Utility functions for XML text"
 	keywords:    "xml, utility"
@@ -13,10 +13,10 @@ indexing
 	last_change: "$LastChangedDate$"
 
 class XML_TOOLS
-	
+
 feature -- Access
 
-	xml_tag_position(a_str, tag:STRING; start:INTEGER):INTEGER is
+	xml_tag_position (a_str, tag: STRING; start: INTEGER): INTEGER
 			-- Position of "<" character of leading tag 'tag' in 'a_str'
 			-- 'a_str' must contain a matching pair of tags
 		require
@@ -33,7 +33,7 @@ feature -- Access
 			end
 		end
 
-	xml_has_tag(a_str, tag:STRING; start:INTEGER):BOOLEAN is
+	xml_has_tag (a_str, tag: STRING; start: INTEGER): BOOLEAN
 			-- True if a_str has the tag pair <tag></tag> at or after position start
 		require
 			a_str /= Void and then not a_str.is_empty
@@ -47,8 +47,8 @@ feature -- Access
 			Result := lpos > 1 and rpos > lpos
 		end
 
-	xml_extract_from_tags(a_str, tag:STRING; start:INTEGER):STRING is
-			-- extract string xxx from first occurrence of matching tags 
+	xml_extract_from_tags (a_str, tag: STRING; start: INTEGER): STRING
+			-- extract string xxx from first occurrence of matching tags
 			-- pair "<tag>xxx</tag>" starting from 'start'
 		require
 			xml_has_tag(a_str, tag, start)
@@ -57,7 +57,7 @@ feature -- Access
 		do
 			lpos := a_str.substring_index("<" + tag + ">", start) + tag.count + 2
 			rpos := a_str.substring_index("</" + tag + ">", start) - 1
-			
+
 			from
 				next_lpos := a_str.substring_index("<" + tag + ">", lpos)
 			until
@@ -66,13 +66,13 @@ feature -- Access
 				rpos := a_str.substring_index("</" + tag + ">", rpos + tag.count + 2) - 1
 				next_lpos := a_str.substring_index("<" + tag + ">", next_lpos + tag.count + 2)
 			end
-			
+
 			Result := a_str.substring(lpos, rpos)
 		ensure
 			Result /= Void
 		end
-		
-	xml_remove_tags(a_str: STRING):STRING is
+
+	xml_remove_tags (a_str: STRING): STRING
 			-- remove outer level of XML-style tags from string
 		require
 			String_exists: a_str /= Void and then xml_tag_pattern.matches(a_str)
@@ -86,13 +86,13 @@ feature -- Access
 			Result.mirror
 		end
 
-	xml_tag_pattern: LX_DFA_REGULAR_EXPRESSION is
+	xml_tag_pattern: LX_DFA_REGULAR_EXPRESSION
 			-- RE for "<..*>..*</..*>"
 		once
 			create Result.compile("<..*>..*<\/..*>", False)
 		end
-	
-	xml_tag_indent(xml_string:STRING): STRING is
+
+	xml_tag_indent (xml_string: STRING): STRING
 			-- indented output for XML
 		require
 			xml_string /= Void
@@ -102,11 +102,11 @@ feature -- Access
 			last_c, c: CHARACTER
 			indent_str: STRING
 		do
-			create indent_str.make_filled('%T', 50)			
+			create indent_str.make_filled('%T', 50)
 			create Result.make(0)
-			from 
+			from
 				csr := 1
-			until 
+			until
 				csr > xml_string.count
 			loop
 				c := xml_string.item(csr)
@@ -121,7 +121,7 @@ feature -- Access
 						Result.append(indent_str.substring(1, tag_depth))
 					end
 					Result.append_character(c)
-					
+
 				elseif c = '>' then
 					if in_start_tag then
 						tag_depth := tag_depth + 1
@@ -130,7 +130,7 @@ feature -- Access
 					Result.append_character(c)
 					Result.append_character('%N')
 					Result.append(indent_str.substring(1, tag_depth))
-					
+
 				else
 					Result.append_character(c)
 				end
@@ -139,32 +139,32 @@ feature -- Access
 			end
 		end
 
-	xml_tag_start(tag_name: STRING; attributes: HASH_TABLE [STRING, STRING]): STRING is
+	xml_tag_start (tag_name: STRING; attributes: HASH_TABLE [STRING, STRING]): STRING
 			-- output opening tag `content' in tags of `tag_name', optionally with attributes in the
 			-- lead tag, e.g. '<tag_name attr1="val_1" attr2="val_2">'
 		require
 			Tag_name_valid: tag_name /= Void and then not tag_name.is_empty
 		do
 			create Result.make(0)
-			
+
 			Result.append("<" + tag_name)
-			
+
 			if attributes /= Void then
-				from 
+				from
 					attributes.start
 				until
 					attributes.off
 				loop
 					Result.append(" " + attributes.key_for_iteration + "=%"" + attributes.item_for_iteration + "%"")
 					attributes.forth
-				end			
+				end
 			end
 			Result.append(">")
 		ensure
 			Result_exists: Result /= Void
 		end
 
-	xml_tag_end(tag_name: STRING): STRING is
+	xml_tag_end (tag_name: STRING): STRING
 			-- output closing tag  `tag_name'; use for finishing a block
 		require
 			Tag_name_valid: tag_name /= Void and then not tag_name.is_empty
@@ -175,9 +175,9 @@ feature -- Access
 			Result_exists: Result /= Void
 		end
 
-	xml_tag_enclose(tag_name, content: STRING; attributes: HASH_TABLE [STRING, STRING]): STRING is
-			-- enclose `content' in tags of `tag_name' in inline style, 
-			-- optionally with attributes in the lead tag, e.g. 
+	xml_tag_enclose (tag_name, content: STRING; attributes: HASH_TABLE [STRING, STRING]): STRING
+			-- enclose `content' in tags of `tag_name' in inline style,
+			-- optionally with attributes in the lead tag, e.g.
 			-- 	'<tag_name attr1="val_1" attr2="val_2">content</tag_name>'
 		require
 			Content_exists: content /= Void
@@ -185,16 +185,16 @@ feature -- Access
 		do
 			-- lead tag
 			Result := xml_tag_start(tag_name, attributes)
-			
+
 			-- content
 			Result.append(content)
-			
+
 			-- trailing tag
 			Result.append(xml_tag_end(tag_name))
 		ensure
 			Result_exists: Result /= Void
 		end
-		
+
 end
 
 --|

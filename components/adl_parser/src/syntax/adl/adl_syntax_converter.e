@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 			     Converter for fragments of ADL syntax that need to be upgraded in archetypes 
@@ -34,7 +34,7 @@ inherit
 
 feature -- Access
 
-	perform_syntax_upgrade(dadl_text: STRING) is
+	perform_syntax_upgrade(dadl_text: STRING)
 			-- perform any upgrades likely to be required on older archetypes
 			-- dadl_text will be of form "C_SOME_TYPE <xxxxx>"
 		require
@@ -44,7 +44,7 @@ feature -- Access
 
 feature -- ADL 1.4 conversions
 
-	convert_dadl_language(dadl_text: STRING) is
+	convert_dadl_language(dadl_text: STRING)
 			-- converted language = <"xxx"> to language = <[ISO-639::xxx]>
 		require
 			dadl_text /= Void
@@ -69,7 +69,7 @@ feature -- ADL 1.4 conversions
 			end
 		end
 
-	convert_c_dv_names(dadl_text: STRING) is
+	convert_c_dv_names(dadl_text: STRING)
 			-- convert C_QUANTITY and C_ORDINAL in embedded dADL sections of cADL to
 			-- C_DV_QUANTITY and C_DV_ORDINAL
 		require
@@ -92,7 +92,7 @@ feature -- ADL 1.4 conversions
 			end
 		end
 
-	convert_c_quantity_property(dadl_text: STRING) is
+	convert_c_quantity_property(dadl_text: STRING)
 			-- convert an old style C_QUANTITY property dADL fragment from ADL 1.x
 			-- to ADL 1.4
 			-- The old fragment looks like this:
@@ -123,7 +123,7 @@ feature -- ADL 1.4 conversions
 			end
 		end
 
-	convert_non_conforming_duration(a_str: STRING): STRING is
+	convert_non_conforming_duration(a_str: STRING): STRING
 			-- fix an ISO8601-like duration string which is missing a 'T' character
 			-- called from cADL lexer, matched by pattern:
 			-- P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[dD])?([0-9]+h)?([0-9]+m)?([0-9]+s)?
@@ -218,7 +218,7 @@ feature -- ADL 1.5 conversions
 			create Result.compile_case_insensitive ("^[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z][a-zA-Z0-9_]+){2}\.[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z][a-zA-Z0-9_]+)*\.v[1-9][0-9a-z]*$")
 		end
 
-	convert_ontology_syntax(dt: DT_COMPLEX_OBJECT_NODE) is
+	convert_ontology_syntax(dt: DT_COMPLEX_OBJECT_NODE)
 		do
 			if dt.has_attribute ("term_binding") then
 				dt.replace_attribute_name ("term_binding", "term_bindings")
@@ -230,7 +230,7 @@ feature -- ADL 1.5 conversions
 
 feature -- Path conversions
 
-	convert_use_ref_paths(ref_node_list: ARRAYED_LIST[ARCHETYPE_INTERNAL_REF]; index_path: STRING; referree: ARCHETYPE) is
+	convert_use_ref_paths(ref_node_list: ARRAYED_LIST[ARCHETYPE_INTERNAL_REF]; index_path: STRING; referree: ARCHETYPE)
 			-- FIXME: the following only needed while old use_ref paths containing redundant node_ids are in existence
 			-- rewrite target path into standard Xpath format, removing [atnnn] predicates on objects below single attributes
 		local
@@ -247,7 +247,7 @@ feature -- Path conversions
 			end
 		end
 
-	convert_invariant_paths(expr_node_list: ARRAYED_LIST[EXPR_LEAF]; referree: ARCHETYPE) is
+	convert_invariant_paths(expr_node_list: ARRAYED_LIST[EXPR_LEAF]; referree: ARCHETYPE)
 			-- FIXME: the following only needed while old invariant paths containing redundant node_ids are in existence
 			-- rewrite target path into standard Xpath format, removing [atnnn] predicates on objects below single attributes
 		local

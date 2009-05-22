@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Common Reference Model"
 
 	description: "[
@@ -45,19 +45,19 @@ create
 
 feature -- Definitions
 
-	default_value:STRING is "openEHR"
+	default_value: STRING = "openEHR"
 
-	Local_terminology_id: STRING is "local"
+	Local_terminology_id: STRING = "local"
 			-- predefined id of terminology to indicate it is local to
 			-- the knowledge resource in which it occurs, e.g. an archetype
 
-	Version_id_left_delimiter: STRING is "("
+	Version_id_left_delimiter: STRING = "("
 
-	Version_id_right_delimiter: STRING is ")"
+	Version_id_right_delimiter: STRING = ")"
 
 feature -- Initialization
 
-	default_create is
+	default_create
 			-- create a default terminology identifier
 		do
 			value := default_value.twin
@@ -65,36 +65,36 @@ feature -- Initialization
 			value.is_equal(default_value)
 		end
 
-	make(a_terminology_id:STRING) is
+	make (a_terminology_id: STRING)
 		require
 			Id_exists: a_terminology_id /= Void and then not a_terminology_id.is_empty
 		do
 			create value.make(0)
-			value.append(a_terminology_id)
+			value.append (a_terminology_id)
 		ensure
 			value.is_equal(a_terminology_id)
 		end
 
-	make_from_canonical_string(str:STRING) is
+	make_from_canonical_string (str: STRING)
 			-- make from string of form:
 			-- <name>string</name>
 			-- [<version_id>string</version_id>]
 		do
 			value := xml_extract_from_tags(str, "name", 1)
 			if xml_has_tag(str, "version_id", 1) then
-				value.append(Version_id_left_delimiter + xml_extract_from_tags(str, "version_id", 1) +
+				value.append (Version_id_left_delimiter + xml_extract_from_tags(str, "version_id", 1) +
 						Version_id_right_delimiter)
 			end
 		end
 
-	valid_canonical_string(str:STRING):BOOLEAN is
+	valid_canonical_string(str:STRING):BOOLEAN
 		do
 			Result := xml_has_tag(str, "name", 1)
 		end
 
 feature -- Access
 
-	name: STRING is
+	name: STRING
 			-- Return the terminology id (which includes the "version" in some cases). Distinct names
 			-- correspond to distinct (i.e. non-compatible) terminologies. Thus the names "ICD10AM" and "ICD10"
 			-- refer to distinct terminologies.
@@ -108,7 +108,7 @@ feature -- Access
 			Result /= Void
 		end
 
-	version_id: STRING is
+	version_id: STRING
 			-- version id if there is a version or else Void
 		require
 			has_version_id
@@ -122,7 +122,7 @@ feature -- Access
 
 feature -- Status Report
 
-	has_version_id: BOOLEAN is
+	has_version_id: BOOLEAN
 			-- True if there is a version_id part of the identifier
 		local
 			left_pos, right_pos: INTEGER
@@ -132,12 +132,12 @@ feature -- Status Report
 			Result := left_pos > 0 and right_pos > left_pos
 		end
 
-	valid_id(an_id:STRING): BOOLEAN is
+	valid_id (an_id: STRING): BOOLEAN
 			--
 		do
 		end
 
-	is_local: BOOLEAN is
+	is_local: BOOLEAN
 			-- True if this terminology id = "local"
 		do
 			Result := name.is_equal(Local_terminology_id)
@@ -145,14 +145,14 @@ feature -- Status Report
 
 feature -- Output
 
-	as_canonical_string: STRING is
+	as_canonical_string: STRING
 			-- standardised form of string guaranteed to contain all information
 			-- in data item
 		do
 			create Result.make(0)
-			Result.append("<name>" + name + "</name>")
+			Result.append ("<name>" + name + "</name>")
 			if not version_id.is_empty then
-				Result.append("<version_id>" + version_id + "</version_id>")
+				Result.append ("<version_id>" + version_id + "</version_id>")
 			end
 		end
 

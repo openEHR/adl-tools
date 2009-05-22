@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "item in an OBJECT/ATTRIBUTE parse tree"
 	keywords:    "test, ADL"
@@ -34,11 +34,11 @@ inherit
 
 feature -- Definitions
 
-	Anonymous_node_id: STRING is "unknown"
+	Anonymous_node_id: STRING = "unknown"
 
 feature -- Initialisation
 
-	make (a_node_id: STRING; a_content_item: VISITABLE) is
+	make (a_node_id: STRING; a_content_item: VISITABLE)
 			-- create with node id and optional content_item
 		require
 			Node_id_valid: a_node_id /= Void and then not a_node_id.is_empty
@@ -55,7 +55,7 @@ feature -- Access
 	node_id: STRING
 				-- id of this node
 
-	node_key: STRING is
+	node_key: STRING
 			-- uses compressed path if it exists
 		do
 			Result := node_id
@@ -64,13 +64,13 @@ feature -- Access
 	content_item: VISITABLE
 				-- content of this node
 
-	path: OG_PATH is
+	path: OG_PATH
 			-- absolute path of this node relative to the root; may produce non-unique paths
 		do
 			Result := generate_path(False)
 		end
 
-	unique_path: OG_PATH is
+	unique_path: OG_PATH
 			-- absolute unique path of this node relative to the root
 		do
 			Result := generate_path(True)
@@ -86,7 +86,7 @@ feature -- Access
 			Result := specialisation_depth_from_code(node_id)
 		end
 
-	ultimate_parent: OG_NODE is
+	ultimate_parent: OG_NODE
 			-- return the root node of the tree
 		require
 			not is_root
@@ -100,7 +100,7 @@ feature -- Access
 			end
 		end
 
-	has_parent(a_node: OG_NODE): BOOLEAN is
+	has_parent(a_node: OG_NODE): BOOLEAN
 			-- return True if `a_node' found in line of parent nodes back to ultimate_parent,
 			-- including if it is the immediate parent
 		require
@@ -120,7 +120,7 @@ feature -- Access
 
 feature -- Comparison
 
-	is_less alias "<" (other: like Current): BOOLEAN is
+	is_less alias "<" (other: like Current): BOOLEAN
 			-- compare based on node_id
 		do
 			Result := node_id < other.node_id
@@ -128,30 +128,30 @@ feature -- Comparison
 
 feature -- Status Report
 
-	is_addressable: BOOLEAN is
+	is_addressable: BOOLEAN
 			-- True if this node has a non-anonymous node_id
 		deferred
 		end
 
-	is_object_node: BOOLEAN is
+	is_object_node: BOOLEAN
 			-- True if this node is an object type
 		deferred
 		end
 
-	is_root: BOOLEAN is
+	is_root: BOOLEAN
 			-- True if is root of parse tree structure
 		do
 			Result := parent = Void
 		end
 
-	is_leaf: BOOLEAN is
+	is_leaf: BOOLEAN
 			-- True if this object is a leaf object
 		deferred
 		end
 
 feature -- Modification
 
-	set_root is
+	set_root
 			-- set this node to root, i.e. remove its parent
 		do
 			parent := Void
@@ -159,14 +159,14 @@ feature -- Modification
 			is_root
 		end
 
-	set_node_id(a_node_id:STRING) is
+	set_node_id (a_node_id: STRING)
 		require
 			Node_id_valid: a_node_id /= Void and then not a_node_id.is_empty
 		do
 			node_id := a_node_id
 		end
 
-	set_parent(a_node: like parent) is
+	set_parent (a_node: like parent)
 			-- connect child to parent
 		require
 			a_node /= Void
@@ -174,7 +174,7 @@ feature -- Modification
 			parent := a_node
 		end
 
-	set_content (a_content_item: VISITABLE) is
+	set_content (a_content_item: VISITABLE)
 			-- set item
 		require
 			Content_item_valid: a_content_item /= Void
@@ -186,7 +186,7 @@ feature -- Modification
 
 feature -- Serialisation
 
-	enter_subtree(visitor: ANY; depth: INTEGER) is
+	enter_subtree(visitor: ANY; depth: INTEGER)
 			-- perform action at start of block for this node
 		require
 			Visitor_exists: visitor /= Void
@@ -195,7 +195,7 @@ feature -- Serialisation
 			content_item.enter_subtree(visitor, depth)
 		end
 
-	exit_subtree(visitor: ANY; depth: INTEGER) is
+	exit_subtree(visitor: ANY; depth: INTEGER)
 			-- perform action at end of block for this node
 		require
 			Visitor_exists: visitor /= Void
@@ -206,7 +206,7 @@ feature -- Serialisation
 
 feature {NONE} -- Implementation
 
-	generate_path(unique_flag: BOOLEAN): OG_PATH is
+	generate_path(unique_flag: BOOLEAN): OG_PATH
 			-- absolute path of this node relative to the root; if unique_flag set then
 			-- generate a completely unique path by including the "unknown" ids that are
 			-- automatically set at node-creation time on nodes that otherwise would have no id

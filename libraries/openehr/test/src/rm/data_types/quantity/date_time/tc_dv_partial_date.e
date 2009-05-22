@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "Ocean openEHR kernel test framework"
 	description: "Test DV_PARTIAL_DATE"
 	keywords:    "test, date"
@@ -20,20 +20,20 @@ inherit
 			check_result
 		end
 
-creation
+create
 	make
 
 feature -- Access
 
-	title: STRING is "DV_PARTIAL_DATE"
+	title: STRING = "DV_PARTIAL_DATE"
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 		do
 		end
 
-	execute is
+	execute
 		local
 			a_date:DV_PARTIAL_DATE
 		do
@@ -41,7 +41,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	check_result is
+	check_result
 		do
 		end
 

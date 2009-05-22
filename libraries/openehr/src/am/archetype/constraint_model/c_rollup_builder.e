@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Archetype specialisation status roll-up builder.
@@ -41,7 +41,7 @@ inherit
 
 feature -- Initialisation
 
-	initialise(an_ontology: ARCHETYPE_ONTOLOGY; an_archetype_specialisation_level: INTEGER) is
+	initialise(an_ontology: ARCHETYPE_ONTOLOGY; an_archetype_specialisation_level: INTEGER)
 			-- set ontology required for interpreting meaning of object nodes
 			-- archetype is required as well since it contains the xref tables that are
 			-- populated by this visitor
@@ -55,7 +55,7 @@ feature -- Initialisation
 
 feature -- Visitor
 
-	end_c_complex_object(a_node: C_COMPLEX_OBJECT; depth: INTEGER) is
+	end_c_complex_object(a_node: C_COMPLEX_OBJECT; depth: INTEGER)
 			-- status of this node taking into consideration effective_specialisation_status of
 			-- all sub-nodes.
 		local
@@ -73,7 +73,7 @@ feature -- Visitor
 			a_node.set_rolled_up_specialisation_status(spec_sts)
 		end
 
-	end_c_attribute(a_node: C_ATTRIBUTE; depth: INTEGER) is
+	end_c_attribute(a_node: C_ATTRIBUTE; depth: INTEGER)
 			-- exit an C_ATTRIBUTE
 		local
 			spec_sts: SPECIALISATION_STATUS
@@ -90,13 +90,13 @@ feature -- Visitor
 			a_node.set_rolled_up_specialisation_status(spec_sts)
 		end
 
-	start_c_leaf_object(a_node: C_LEAF_OBJECT; depth: INTEGER) is
+	start_c_leaf_object(a_node: C_LEAF_OBJECT; depth: INTEGER)
 			-- enter an C_LEAF_OBJECT
 		do
 			a_node.set_rolled_up_specialisation_status(a_node.specialisation_status (archetype_specialisation_level))
 		end
 
-	start_c_reference_object(a_node: C_REFERENCE_OBJECT; depth: INTEGER) is
+	start_c_reference_object(a_node: C_REFERENCE_OBJECT; depth: INTEGER)
 			-- enter an C_REFERENCE_OBJECT
 		do
 			a_node.set_rolled_up_specialisation_status(a_node.specialisation_status (archetype_specialisation_level))

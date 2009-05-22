@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Abstract model of any visitable object"
 	keywords:    "archetype, ADL"
@@ -15,7 +15,7 @@ deferred class VISITABLE
 
 feature -- Visitor
 
-	enter_subtree(visitor: ANY; depth: INTEGER) is
+	enter_subtree(visitor: ANY; depth: INTEGER)
 			-- perform action at start of block for this node
 		require
 			Visitor_exists: visitor /= Void
@@ -23,7 +23,7 @@ feature -- Visitor
 		deferred
 		end
 
-	exit_subtree(visitor: ANY; depth: INTEGER) is
+	exit_subtree(visitor: ANY; depth: INTEGER)
 			-- perform action at end of block for this node
 		require
 			Visitor_exists: visitor /= Void

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Common Reference Model"
 
 	description: "[
@@ -30,7 +30,7 @@ feature -- Access
 
 feature -- Status Report
 
-	valid_id(an_id:STRING): BOOLEAN is
+	valid_id (an_id: STRING): BOOLEAN
 			--
 		require
 			an_id_valid: an_id /= Void and then not an_id.is_empty
@@ -39,7 +39,7 @@ feature -- Status Report
 
 feature -- Comparison
 
-	is_less alias "<" (other: like Current): BOOLEAN is
+	is_less alias "<" (other: like Current): BOOLEAN
 			-- Is current object less than `other'?
 		do
 			Result := value < other.value

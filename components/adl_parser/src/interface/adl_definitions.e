@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Common ADL syntax definitions"
 	keywords:    "ADL"

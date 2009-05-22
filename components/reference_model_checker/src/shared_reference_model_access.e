@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Shared access to service interface to object model"
 	keywords:    "ADL, archetype, reference model"
@@ -16,7 +16,7 @@ class SHARED_REFERENCE_MODEL_ACCESS
 
 feature -- Access
 
-	rm_checker: MODEL_ACCESS is
+	rm_checker: MODEL_ACCESS
 		once
 			create Result
 		end

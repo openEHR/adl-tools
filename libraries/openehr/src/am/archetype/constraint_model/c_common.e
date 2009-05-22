@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Common things for all SML archetypes"
 	keywords:    "test, ADL"
@@ -15,7 +15,7 @@ deferred class C_COMMON
 
 feature -- Access
 
-	default_occurrences: MULTIPLICITY_INTERVAL is
+	default_occurrences: MULTIPLICITY_INTERVAL
 			-- default object occurrences object representing 1..1
 		once
 			create Result.make_mandatory
@@ -23,7 +23,7 @@ feature -- Access
 			Result_exists: Result /= Void
 		end
 
-	default_existence: MULTIPLICITY_INTERVAL is
+	default_existence: MULTIPLICITY_INTERVAL
 			-- default property existence object representing 0..1
 		once
 			create Result.make_optional

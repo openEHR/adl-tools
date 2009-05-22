@@ -1,5 +1,5 @@
 %{
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Scanner for CADL syntax items"
 	keywords:    "CADL, archetype"
@@ -615,7 +615,7 @@ feature {NONE} -- Local variables
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Create a new scanner.
 		do
 			make_compressed_scanner_skeleton
@@ -625,7 +625,7 @@ feature {NONE} -- Initialization
 
 feature -- Initialization
 
-	reset is
+	reset
 			-- Reset scanner before scanning next input.
 		do
 			reset_compressed_scanner_skeleton
@@ -649,10 +649,10 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	Init_buffer_size: INTEGER is 256
+	Init_buffer_size: INTEGER = 256
 				-- Initial size for `in_buffer'
 
-	dadl_parser: DADL2_VALIDATOR is
+	dadl_parser: DADL2_VALIDATOR
 		once
 			create Result.make
 		end

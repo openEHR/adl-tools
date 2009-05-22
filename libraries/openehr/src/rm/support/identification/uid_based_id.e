@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Support Reference Model"
 	
 	description: "[
@@ -25,11 +25,11 @@ inherit
 	
 feature -- Definitions
 	
-	Extension_separator: STRING is "::"
+	Extension_separator: STRING = "::"
 
 feature -- Access
 
-	root: UID is
+	root: UID
 			-- The identifier of the conceptual namespace in which the object exists, 
 			-- within the identification scheme.  Returns the part to the left of the 
 			-- first '::' separator, if any, or else the whole string.
@@ -43,7 +43,7 @@ feature -- Access
 			Result := string_to_uid(value.substring (1, end_pos))
 		end
 
-	extension: STRING is
+	extension: STRING
 			-- Optional local identifier of the object within the context of the root identifier.
 			-- Returns the part to the right of the first '::' separator if any, or else any empty String.
 		require
@@ -57,7 +57,7 @@ feature -- Access
 
 feature -- Status Report
 
-	has_extension: BOOLEAN is
+	has_extension: BOOLEAN
 			-- True if there is a root part - at least one '.' in id before version part
 		do
 			Result := value.substring_index(Extension_separator, 1) > 0
@@ -65,7 +65,7 @@ feature -- Status Report
 
 feature -- Output
 
-	as_string: STRING is
+	as_string: STRING
 			-- string form displayable for humans - e.g. ICD9;1989::M17(en-au)
 		do
 			create Result.make(0)
@@ -76,7 +76,7 @@ feature -- Output
 			end
 		end
 
-	as_canonical_string: STRING is
+	as_canonical_string: STRING
 			-- standardised form of string guaranteed to contain all information
 			-- in data item
 		do
@@ -89,7 +89,7 @@ feature -- Output
 
 feature {NONE} -- Implementation
 
-	string_to_uid(s: STRING): UID is
+	string_to_uid(s: STRING): UID
 			-- The identifier of the conceptual namespace in which the object exists, 
 			-- within the identification scheme.  Returns the part to the left of the 
 			-- first '::' separator, if any, or else the whole string.

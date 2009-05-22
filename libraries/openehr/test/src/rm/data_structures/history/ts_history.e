@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Structures Reference Model"
 
 	description: "History test suite"
@@ -18,12 +18,12 @@ class TS_HISTORY
 inherit 
 	TEST_SUITE
 
-creation
+create
 	make
 
 feature -- Access
 
-	test_cases: LINKED_LIST[TEST_CASE] is
+	test_cases: LINKED_LIST[TEST_CASE]
 		local
 			tc:TEST_CASE
 		once
@@ -32,11 +32,11 @@ feature -- Access
 			create {TC_INTERVAL_SERIES} tc.make(Void) 		Result.extend(tc)
 		end
 
-	title:STRING is "History tests"
+	title:STRING = "History tests"
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 	    do
 
 	    end

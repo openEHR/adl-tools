@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "Event logging facility Implementation"
 	keywords:    "logging"
@@ -18,7 +18,7 @@ inherit
 
 feature -- Initialisation
 
-	make(a_facility_interface:like facility_interface) is
+	make(a_facility_interface:like facility_interface)
 		require
 			Args_valid: a_facility_interface /= Void
 		do
@@ -39,7 +39,7 @@ feature -- Status Report
 
 feature {EVENT_LOG_FACILITY} -- Modify
 
-	append_event(severity:INTEGER; source,msg:STRING) is
+	append_event(severity:INTEGER; source,msg:STRING)
 		require
 			is_valid_severity(severity)
 		deferred

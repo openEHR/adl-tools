@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "cADL serialisers"
 	keywords:    "test, ADL"
@@ -18,7 +18,7 @@ inherit
 
 feature -- Access
 
-	archetype_serialiser_formats: ARRAYED_LIST [STRING]
+	archetype_serialiser_formats: attached ARRAYED_LIST [STRING]
 			-- List of format names.
 		once
 			create Result.make (0)
@@ -34,7 +34,6 @@ feature -- Access
 
 			Result.compare_objects
 		ensure
-			attached: Result /= Void
 			not_empty: not Result.is_empty
 			each_format_has_file_extension: Result.for_all (agent (format: STRING): BOOLEAN
 				do
@@ -53,7 +52,7 @@ feature -- Access
 			Result_exists: Result /= Void
 		end
 
-	archetype_file_extensions: HASH_TABLE [STRING, STRING]
+	archetype_file_extensions: attached HASH_TABLE [STRING, STRING]
 			-- File extensions for logical serialisation formats.
 		once
 			create Result.make (0)
@@ -62,7 +61,6 @@ feature -- Access
 			Result.put (".xml", "xml")
 			Result.put (".owl", "owl")
 		ensure
-			attached: Result /= Void
 			not_empty: not Result.is_empty
 		end
 
@@ -78,12 +76,10 @@ feature -- Status Report
 
 feature {NONE} -- Implementation
 
-	archetype_serialisers: HASH_TABLE [ARCHETYPE_SERIALISER, STRING]
+	archetype_serialisers: attached HASH_TABLE [ARCHETYPE_SERIALISER, STRING]
 			-- The supported archetype serialisers.
 		once
 			create Result.make (0)
-		ensure
-			attached: Result /= Void
 		end
 
 end

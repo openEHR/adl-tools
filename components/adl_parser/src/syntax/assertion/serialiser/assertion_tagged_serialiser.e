@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 			 Serialise assertion archetype to a tagged format, where each attribute
@@ -34,12 +34,12 @@ inherit
 			{NONE} all
 		end
 
-creation
+create
 	make
 	
 feature -- Modification
 
-	start_assertion(invs: ARRAYED_LIST[ASSERTION]; depth: INTEGER) is
+	start_assertion(invs: ARRAYED_LIST[ASSERTION]; depth: INTEGER)
 			-- start serialising an ASSERTION
 		local
 			attrs: HASH_TABLE [STRING, STRING]
@@ -60,7 +60,7 @@ feature -- Modification
 			last_result.append(create_indent(depth+1) + xml_tag_end(symbol(SYM_INVARIANT)) + format_item(FMT_NEWLINE))
 		end
 		
-	end_assertion(a_node: ARRAYED_LIST[ASSERTION]; depth: INTEGER) is
+	end_assertion(a_node: ARRAYED_LIST[ASSERTION]; depth: INTEGER)
 			-- end serialising an ASSERTION
 		do	
 		end

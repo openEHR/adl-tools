@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR EHR Reference Model"
 	description: "[
 				 A versioned controlled object for EHR_STATUS

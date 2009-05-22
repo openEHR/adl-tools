@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Serialise Data Tree archetype to any format"
 	keywords:    "test, Data Tree"

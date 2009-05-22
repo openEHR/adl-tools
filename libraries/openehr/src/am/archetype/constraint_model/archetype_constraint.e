@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Abstract model of any archetype constraint"
 	keywords:    "archetype, ADL"
@@ -28,7 +28,7 @@ feature -- Access
 
 	parent: ARCHETYPE_CONSTRAINT
 
-	path: STRING is
+	path: STRING
 			-- path to this object in the tree with respect to root
 		do
 			create Result.make(0)
@@ -46,7 +46,7 @@ feature -- Access
 
 feature -- Source Control
 
-	specialisation_status (archetype_specialisation_level: INTEGER): SPECIALISATION_STATUS is
+	specialisation_status (archetype_specialisation_level: INTEGER): SPECIALISATION_STATUS
 			-- status of this node in the source text of this archetype with respect to the
 			-- specialisation hierarchy. Values are: defined_here; redefined, added, unknown
 		require
@@ -59,7 +59,7 @@ feature -- Source Control
 			-- all sub-nodes. Used to roll up nodes on visualisation, and also to decide which
 			-- subtree to remove to convert an archetype to differential form
 
-	set_rolled_up_specialisation_status (a_status: SPECIALISATION_STATUS) is
+	set_rolled_up_specialisation_status (a_status: SPECIALISATION_STATUS)
 		require
 			valid_specialisation_status: valid_specialisation_status(a_status.value)
 		do
@@ -68,25 +68,25 @@ feature -- Source Control
 
 feature -- Status Report
 
-	is_leaf: BOOLEAN is
+	is_leaf: BOOLEAN
 			-- True if this node is a terminal node
 		do
 			Result := representation.is_leaf
 		end
 
-	is_root: BOOLEAN is
+	is_root: BOOLEAN
 			-- True if this node is a top node
 		do
 			Result := representation.is_root
 		end
 
-	is_addressable: BOOLEAN is
+	is_addressable: BOOLEAN
 			-- True if this node has a non-anonymous node_id
 		do
 			Result := representation.is_addressable
 		end
 
-	is_valid: BOOLEAN is
+	is_valid: BOOLEAN
 			-- True if node valid; if False, reason in `invalid_reason'
 		deferred
 		ensure
@@ -95,14 +95,14 @@ feature -- Status Report
 
 feature -- Comparison
 
-	node_congruent_to (other: like Current): BOOLEAN is
+	node_congruent_to (other: like Current): BOOLEAN
 			-- True if this node on its own (ignoring any subparts) expresses the same constraints as `other'.
 		require
 			other /= Void
 		deferred
 		end
 
-	node_conforms_to (other: like Current): BOOLEAN is
+	node_conforms_to (other: like Current): BOOLEAN
 			-- True if this node on its own (ignoring any subparts) expresses the same or narrower constraints as `other'.
 			-- An error message can be obtained by calling node_conformance_failure_reason
 		require
@@ -112,7 +112,7 @@ feature -- Comparison
 
 feature -- Modification
 
-	set_is_congruent is
+	set_is_congruent
 			-- set `is_mergeable'
 		do
 			is_mergeable := True
@@ -120,7 +120,7 @@ feature -- Modification
 
 feature {ARCHETYPE_CONSTRAINT} -- Modification
 
-	set_parent(a_node: like parent) is
+	set_parent(a_node: like parent)
 			-- set parent
 		require
 			Node_exists: a_node /= Void
@@ -130,11 +130,11 @@ feature {ARCHETYPE_CONSTRAINT} -- Modification
 
 feature -- Representation
 
-	representation: !OG_ITEM
+	representation: attached OG_ITEM
 
 feature {OG_ITEM} -- Implementation
 
-	set_representation(a_rep: like representation) is
+	set_representation(a_rep: like representation)
 			--
 		do
 			representation := a_rep
@@ -144,7 +144,7 @@ feature {OG_ITEM} -- Implementation
 
 feature -- Duplication
 
-	safe_deep_twin: like Current is
+	safe_deep_twin: like Current
 			-- safe version of deep_twin that Voids `parent' first so as not to clone backwards up tree
 		local
 			p: like parent

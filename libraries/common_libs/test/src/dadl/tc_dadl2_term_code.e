@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "Test case for term code as primitive object value"
 	keywords:    "test, object graph, creation"
@@ -25,20 +25,20 @@ inherit
 			{NONE} all
 		end
 
-creation
+create
 	make
 
 feature -- Access
 
-	title:STRING is "dADL2 term code test"
+	title:STRING = "dADL2 term code test"
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 		do
 		end
 
-	execute is
+	execute
 		do
 			dadl_engine.set_source (dadl_data, 1)
 			dadl_engine.parse
@@ -57,13 +57,13 @@ feature -- Initialisation
 
 feature -- Access
 
-	check_result is
+	check_result
 	    do
 	    end
 
 feature -- Implementation
 
-	dadl_data: STRING is "												%N%
+	dadl_data: STRING = "												%N%
 		%term_binding = <												%N%
 		%	[%"HL7_ParticipationType%"] = <								%N%
 		%		items = <												%N%

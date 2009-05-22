@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Support Reference Model"
 
 	description: "[
@@ -28,7 +28,7 @@ create
 
 feature -- Initialization
 
-	make(a_root: UID; an_extension: STRING) is
+	make(a_root: UID; an_extension: STRING)
 			-- build an external ID
 		require
 			Root_valid: a_root /= Void
@@ -44,7 +44,7 @@ feature -- Initialization
 			Extension_set: extension.is_equal(an_extension)
 		end
 
-	make_from_string(a_string:STRING) is
+	make_from_string(a_string:STRING)
 			-- make from a string of the same form as `id', i.e. "root::extension"
 		require
 			String_exists: a_string /= Void and then valid_id(a_string)
@@ -54,7 +54,7 @@ feature -- Initialization
 
 feature -- Status Report
 
-	valid_id(a_str:STRING): BOOLEAN is
+	valid_id(a_str:STRING): BOOLEAN
 			--
 		do
 			-- Result :=

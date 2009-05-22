@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "[
 		       Units as used for measuring quantities. Made of a series of 
@@ -30,7 +30,7 @@ create
 
 feature -- Initialisation
 
-	make(item_list:ARRAYED_LIST[UNITS_ITEM]) is
+	make(item_list:ARRAYED_LIST[UNITS_ITEM])
 		require
 			Unit_list_valid: item_list /= Void and then not item_list.is_empty
 		do
@@ -45,7 +45,7 @@ feature -- Access
 
 feature -- Element Change
 
-	add_unit (a_unit: UNITS_ITEM) is
+	add_unit (a_unit: UNITS_ITEM)
 			-- FIXME: this probably needs to be in UNITS
 		require
 			Unit_valid: a_unit /= Void and then not items.has(a_unit)
@@ -59,7 +59,7 @@ feature -- Element Change
 
 feature -- Output
 
-	as_string:STRING is
+	as_string:STRING
 		do
 			create Result.make(0)
 			from items.start until items.off loop
@@ -74,7 +74,7 @@ feature -- Output
 			end
 		end
 
-	out:STRING is
+	out:STRING
 		do
 			create Result.make(0)
 			Result.append(as_string)

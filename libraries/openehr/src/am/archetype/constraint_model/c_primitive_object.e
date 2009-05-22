@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Node of simple type in an ADL parse tree. Simple
@@ -28,7 +28,7 @@ create
 
 feature -- Initialisation
 
-	make(an_item: C_PRIMITIVE) is
+	make(an_item: C_PRIMITIVE)
 		require
 			an_item /= Void
 		do
@@ -42,7 +42,7 @@ feature -- Access
 
 	item: C_PRIMITIVE
 
-	prototype_value: ANY is
+	prototype_value: ANY
 			-- 	generate a default value from this constraint object
 		do
 			Result := item.prototype_value
@@ -50,35 +50,35 @@ feature -- Access
 
 feature -- Status Report
 
-	any_allowed: BOOLEAN is
+	any_allowed: BOOLEAN
 			-- True if any value allowed ('*' received in parsed input)
 			-- i.e. no item
 		do
 			Result := item = Void
 		end
 
-	is_valid: BOOLEAN is
+	is_valid: BOOLEAN
 			-- report on validity
 		do
 			if precursor then
 				if item = Void then
-					invalid_reason.append("simple type constraint not specified")
+					invalid_reason.append ("simple type constraint not specified")
 				elseif occurrences = Void then
-					invalid_reason.append("occurrences must not be Void")
+					invalid_reason.append ("occurrences must not be Void")
 				else
 					Result := True
 				end
 			end
 		end
 
-	valid_value (a_value: like prototype_value): BOOLEAN is
+	valid_value (a_value: like prototype_value): BOOLEAN
 		do
 			Result := item.valid_value (a_value)
 		end
 
 feature -- Comparison
 
-	node_conforms_to (other: like Current): BOOLEAN is
+	node_conforms_to (other: like Current): BOOLEAN
 			-- True if this node is a subset of, or the same as `other'
 		do
 			if precursor(other) then
@@ -92,32 +92,32 @@ feature -- Comparison
 
 feature -- Output
 
-	as_string: STRING is
+	as_string: STRING
 		do
 			Result := item.as_string
 		ensure
 			Result_exists: Result /= Void
 		end
 
-	out: STRING is
+	out: STRING
 		do
 			Result := as_string
 		end
 
 feature -- Representation
 
-	representation: !OG_OBJECT_LEAF
+	representation: attached OG_OBJECT_LEAF
 
 feature -- Visitor
 
-	enter_subtree(visitor: C_VISITOR; depth: INTEGER) is
+	enter_subtree(visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at start of block for this node
 		do
 			precursor(visitor, depth)
 			visitor.start_c_primitive_object(Current, depth)
 		end
 
-	exit_subtree(visitor: C_VISITOR; depth: INTEGER) is
+	exit_subtree(visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at end of block for this node
 		do
 			precursor(visitor, depth)

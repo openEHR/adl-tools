@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Library Project"
 	description: "Shared cache for object type ids and type names"
 	keywords:    "type"
@@ -22,7 +22,7 @@ inherit
 		
 feature -- Access
 
-	type_id (a_type_name: STRING): INTEGER is
+	type_id (a_type_name: STRING): INTEGER
 		require
 			a_type_name /= Void and then not a_type_name.is_empty
 		do
@@ -38,7 +38,7 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-    type_id_cache: HASH_TABLE [INTEGER, STRING] is
+    type_id_cache: HASH_TABLE [INTEGER, STRING]
 			-- table of type ids keyed by type name
 		once
 			create Result.make(0)

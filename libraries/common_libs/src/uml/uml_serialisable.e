@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Resuable Library Project"
 	description: "[
 			 routines for generating a generic tree representation that
@@ -21,7 +21,7 @@ inherit
 
 feature -- Serialisation
 
-	synchronise_to_tree is
+	synchronise_to_tree
 			-- serialise to representation
 		do
 		end

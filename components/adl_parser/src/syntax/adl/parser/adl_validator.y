@@ -1,5 +1,5 @@
 %{
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Validating parser for Archetype Description Language (ADL)"
 	keywords:    "ADL"
@@ -223,14 +223,14 @@ arch_ontology: SYM_ONTOLOGY V_DADL_TEXT
 
 feature -- Initialization
 
-	make is
+	make
 			-- Create a new Eiffel parser.
 		do
 			make_eiffel_scanner
 			make_parser_skeleton
 		end
 
-	execute(in_text:STRING) is
+	execute (in_text: STRING)
 		do
 			reset
 			create error_text.make(0)
@@ -240,7 +240,7 @@ feature -- Initialization
 
 feature {YY_PARSER_ACTION} -- Basic Operations
 
-	report_error (a_message: STRING) is
+	report_error (a_message: STRING)
 			-- Print error message.
 		local
 			f_buffer: YY_FILE_BUFFER
@@ -286,7 +286,7 @@ feature {NONE} -- Implementation
 
 	str: STRING
 
-	arch_id: ARCHETYPE_ID is
+	arch_id: ARCHETYPE_ID
 		once
 			create Result
 		end

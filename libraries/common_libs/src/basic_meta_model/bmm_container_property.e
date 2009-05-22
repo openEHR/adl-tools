@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR re-usable library"
 	description: "Subtype of GENERIC_PROPERTY_DEFINITION that represents a typical container type."
 	keywords:    "model, UML"

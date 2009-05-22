@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Common Libraries"
 	description: "[
 				 Basic template for any application with access to external resources, event log"
@@ -30,37 +30,37 @@ inherit
 		
 feature -- Template
 
-	application_register is
+	application_register
 			-- override in descendants; set `application_registering' appropriately
 		do
 		end
 		
-	application_initialise is
+	application_initialise
 			-- effect in descendants; set `application_initialised' appropriately
 		do
 			application_initialised := True
 		end
 		
-	persistence_initialise is
+	persistence_initialise
 			-- effect in descendants; set `persistence_initialised' appropriately
 		do
 			persistence_initialised := True
 		end
 		
-	persistence_finalise is
+	persistence_finalise
 			-- effect in descendants
 		do
 			
 		end
 		
-	main is
+	main
 			-- effect in descendants - the main business of the application
 		deferred
 		end
 		
 feature -- Initialisation
 
-	make is
+	make
 			-- connect app to environment, find resources, open media etc;
 			-- Once resources and event log are initialised, call `application_initialise', to be defined by
 			-- descendant applications. If that works, open all media.
@@ -95,7 +95,7 @@ feature -- Initialisation
 
 feature {NONE} -- Implementation
 		
-	initialise_event_log is
+	initialise_event_log
 			-- initialisation the logging facility in SHARED_EVENT_LOG
 		local
 			app_log_facility: EVENT_LOG_FACILITY

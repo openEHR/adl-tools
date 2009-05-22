@@ -1,4 +1,4 @@
-indexing
+note
 
 	component:   "openEHR Common Archetype Model"
 
@@ -26,14 +26,14 @@ create
 
 feature -- Initialisation
 
-	make_range(an_interval: INTERVAL[INTEGER]) is
+	make_range(an_interval: INTERVAL[INTEGER])
 		require
 			Interval_exists: an_interval /= Void
 		do
 			range := an_interval
 		end
 
-	make_list(a_list: LIST[INTEGER]) is
+	make_list(a_list: LIST[INTEGER])
 			-- make from a list of integers
 		require
 			a_list_exists: a_list /= Void and then not a_list.is_empty
@@ -49,7 +49,7 @@ feature -- Access
 
 	list: LIST[INTEGER]
 
-	prototype_value: INTEGER_REF is
+	prototype_value: INTEGER_REF
 		do
 			create Result
 			if range /= Void then
@@ -61,7 +61,7 @@ feature -- Access
 
 feature -- Status Report
 
-	valid_value (a_value: INTEGER_REF): BOOLEAN is
+	valid_value (a_value: INTEGER_REF): BOOLEAN
 		do
 			if range /= Void then
 				Result := range.has(a_value.item)
@@ -72,7 +72,7 @@ feature -- Status Report
 
 feature -- Comparison
 
-	node_conforms_to (other: like Current): BOOLEAN is
+	node_conforms_to (other: like Current): BOOLEAN
 			-- True if this node is a subset of, or the same as `other'
 		do
 			if range /= Void and other.range /= Void then
@@ -91,7 +91,7 @@ feature -- Comparison
 
 feature -- Output
 
-	as_string:STRING is
+	as_string: STRING
 		do
 			create Result.make(0)
 			if range /= Void then
@@ -115,7 +115,7 @@ feature -- Output
 
 		end
 
-	as_canonical_string:STRING is
+	as_canonical_string: STRING
 		do
 			Result := as_string
 		end

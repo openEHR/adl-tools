@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "parent of all ADL serialisers"
 	keywords:    "test, ADL"
@@ -26,7 +26,7 @@ inherit
 
 feature -- Initialisation
 
-	initialise(an_ontology: ARCHETYPE_ONTOLOGY) is
+	initialise(an_ontology: ARCHETYPE_ONTOLOGY)
 			-- set ontology required for serialising cADL, and perform basic initialisation
 		require
 			Ontology_valid: an_ontology /= Void
@@ -37,7 +37,7 @@ feature -- Initialisation
 
 feature -- Serialisation
 
-	serialise (a_target: ARCHETYPE; lang_serialised, desc_serialised, def_serialised, inv_serialised, ont_serialised: STRING) is
+	serialise (a_target: ARCHETYPE; lang_serialised, desc_serialised, def_serialised, inv_serialised, ont_serialised: STRING)
 		require
 			a_target /= Void
 			lang_serialised /= Void
@@ -47,23 +47,23 @@ feature -- Serialisation
 		deferred
 		end
 
-	serialise_initialise is
+	serialise_initialise
 		deferred
 		end
 
-	serialise_archetype_id is
+	serialise_archetype_id
 		deferred
 		end
 
-	serialise_archetype_concept is
+	serialise_archetype_concept
 		deferred
 		end
 
-	serialise_archetype_specialise is
+	serialise_archetype_specialise
 		deferred
 		end
 
-	serialise_finalise is
+	serialise_finalise
 		deferred
 		end
 

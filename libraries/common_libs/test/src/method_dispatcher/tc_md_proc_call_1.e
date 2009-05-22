@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "Test case for procedure call"
 	keywords:    "test, method dispatcher"
@@ -21,21 +21,21 @@ inherit
 			check_result
 		end
 		
-creation
+create
 	make
 
 feature -- Initialisation
-	make(arg:ANY) is
+	make(arg:ANY)
 		do
 		end
 
 feature -- Access
 
-	title:STRING is "Procedure call"
+	title:STRING = "Procedure call"
 
 feature -- testing
 
-	execute is
+	execute
 		local
 			new_entry, proc_name:STRING
 		do
@@ -59,7 +59,7 @@ feature -- testing
 			io.put_string(print_list(string_list))
 		end
 
-	check_result is
+	check_result
 		do
 		end
 

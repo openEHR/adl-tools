@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Types"
 
 	description: "Test C_DV_GENERAL_TIME_SPECIFICATION"
@@ -21,25 +21,25 @@ inherit
 			check_result
 		end
 
-creation
+create
 	make
 
 feature -- Access
 
-	title: STRING is "C_DV_GENERAL_TIME_SPECIFICATION"
+	title: STRING = "C_DV_GENERAL_TIME_SPECIFICATION"
 
-	prereqs: ARRAY[STRING] is
+	prereqs: ARRAY[STRING]
 		once
 			Result := <<>>
 		end
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 		do
 		end
 
-	execute is
+	execute
 		local
 			a_datum: C_DV_GENERAL_TIME_SPECIFICATION
 		do
@@ -47,7 +47,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	check_result is
+	check_result
 		do
 		end
 

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR re-usable library"
 	description: "Abstract idea of specifying a type either by definition or by reference."
 	keywords:    "model, UML"
@@ -19,21 +19,21 @@ inherit
 
 feature -- Access
 
-	flattened_type_list: ARRAYED_LIST [STRING] is
+	flattened_type_list: ARRAYED_LIST [STRING]
 			-- completely flattened list of type names, flattening out all generic parameters
 		deferred
 		end
 
 feature -- Output
 
-	as_type_string: STRING is
+	as_type_string: STRING
 			-- formal string form of the type
 		deferred
 		ensure
 			Result /= Void
 		end
 
-	as_flattened_type_string: STRING is
+	as_flattened_type_string: STRING
 			-- string form of the type for matching in archetypes - i.e. ignoring container type names
 		deferred
 		ensure

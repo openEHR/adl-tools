@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Serialise DADL archetype to any syntax format"
 	keywords:    "test, DADL"
@@ -31,7 +31,7 @@ create
 
 feature -- Visitor
 
-	start_complex_object_node(a_node: DT_COMPLEX_OBJECT_NODE; depth: INTEGER) is
+	start_complex_object_node(a_node: DT_COMPLEX_OBJECT_NODE; depth: INTEGER)
 			-- start serialising a DT_COMPLEX_OBJECT_NODE
 		do
 			if not a_node.is_root and then a_node.parent.is_multiple then
@@ -51,7 +51,7 @@ feature -- Visitor
 			end
 		end
 
-	end_complex_object_node(a_node: DT_COMPLEX_OBJECT_NODE; depth: INTEGER) is
+	end_complex_object_node(a_node: DT_COMPLEX_OBJECT_NODE; depth: INTEGER)
 			-- end serialising a DT_COMPLEX_OBJECT_NODE
 		do
 			last_result.append(create_indent(depth//2 + multiple_attr_count))
@@ -60,7 +60,7 @@ feature -- Visitor
 			end
 		end
 
-	start_attribute_node(a_node: DT_ATTRIBUTE_NODE; depth: INTEGER) is
+	start_attribute_node(a_node: DT_ATTRIBUTE_NODE; depth: INTEGER)
 			-- start serialising a DT_ATTRIBUTE_NODE
 		do
 			if not a_node.is_generic then
@@ -74,7 +74,7 @@ feature -- Visitor
 			end
 		end
 
-	end_attribute_node(a_node: DT_ATTRIBUTE_NODE; depth: INTEGER) is
+	end_attribute_node(a_node: DT_ATTRIBUTE_NODE; depth: INTEGER)
 			-- end serialising an DT_ATTRIBUTE_NODE
 		do
 			last_object_simple := False
@@ -86,66 +86,66 @@ feature -- Visitor
 			end
 		end
 
-	start_primitive_object(a_node: DT_PRIMITIVE_OBJECT; depth: INTEGER) is
+	start_primitive_object(a_node: DT_PRIMITIVE_OBJECT; depth: INTEGER)
 			-- start serialising a DT_PRIMITIVE_OBJECT
 		do
 			start_object_leaf(a_node, depth)
 			last_object_simple := True
 		end
 
-	end_primitive_object(a_node: DT_PRIMITIVE_OBJECT; depth: INTEGER) is
+	end_primitive_object(a_node: DT_PRIMITIVE_OBJECT; depth: INTEGER)
 			-- end serialising a DT_PRIMITIVE_OBJECT
 		do
 			last_result.append(symbol(SYM_END_DBLOCK) + format_item(FMT_NEWLINE))
 		end
 
-	start_primitive_object_list(a_node: DT_PRIMITIVE_OBJECT_LIST; depth: INTEGER) is
+	start_primitive_object_list(a_node: DT_PRIMITIVE_OBJECT_LIST; depth: INTEGER)
 			-- start serialising an DT_PRIMITIVE_OBJECT_LIST
 		do
 			start_object_leaf(a_node, depth)
 			last_object_simple := True
 		end
 
-	end_primitive_object_list(a_node: DT_PRIMITIVE_OBJECT_LIST; depth: INTEGER) is
+	end_primitive_object_list(a_node: DT_PRIMITIVE_OBJECT_LIST; depth: INTEGER)
 			-- end serialising an DT_PRIMITIVE_OBJECT_LIST
 		do
 			last_result.append(symbol(SYM_END_DBLOCK) + format_item(FMT_NEWLINE))
 		end
 
-	start_primitive_object_interval(a_node: DT_PRIMITIVE_OBJECT_INTERVAL; depth: INTEGER) is
+	start_primitive_object_interval(a_node: DT_PRIMITIVE_OBJECT_INTERVAL; depth: INTEGER)
 			-- start serialising a DT_PRIMITIVE_OBJECT_INTERVAL
 		do
 			start_object_leaf(a_node, depth)
 			last_object_simple := True
 		end
 
-	end_primitive_object_interval(a_node: DT_PRIMITIVE_OBJECT_INTERVAL; depth: INTEGER) is
+	end_primitive_object_interval(a_node: DT_PRIMITIVE_OBJECT_INTERVAL; depth: INTEGER)
 			-- end serialising a DT_PRIMITIVE_OBJECT_INTERVAL
 		do
 			last_result.append(symbol(SYM_END_DBLOCK) + format_item(FMT_NEWLINE))
 		end
 
-	start_object_reference(a_node: DT_OBJECT_REFERENCE; depth: INTEGER) is
+	start_object_reference(a_node: DT_OBJECT_REFERENCE; depth: INTEGER)
 			-- start serialising a DT_OBJECT_REFERENCE
 		do
 			start_object_leaf(a_node, depth)
 			last_object_simple := True
 		end
 
-	end_object_reference(a_node: DT_OBJECT_REFERENCE; depth: INTEGER) is
+	end_object_reference(a_node: DT_OBJECT_REFERENCE; depth: INTEGER)
 			-- end serialising a DT_OBJECT_REFERENCE
 		do
 			last_result.append(symbol(SYM_END_DBLOCK) + format_item(FMT_NEWLINE))
 		end
 
-	start_object_reference_list(a_node: DT_OBJECT_REFERENCE_LIST; depth: INTEGER) is
+	start_object_reference_list(a_node: DT_OBJECT_REFERENCE_LIST; depth: INTEGER)
 			-- start serialising a DT_OBJECT_REFERENCE_LIST
 		do
 			start_object_leaf(a_node, depth)
 			last_object_simple := True
 		end
 
-	end_object_reference_list(a_node: DT_OBJECT_REFERENCE_LIST; depth: INTEGER) is
+	end_object_reference_list(a_node: DT_OBJECT_REFERENCE_LIST; depth: INTEGER)
 			-- end serialising a DT_OBJECT_REFERENCE_LIST
 		do
 			last_result.append(symbol(SYM_END_DBLOCK) + format_item(FMT_NEWLINE))
@@ -159,7 +159,7 @@ feature {NONE} -- Implementation
 	last_object_simple: BOOLEAN
 			-- True if last object traversed was an OBJECT_SIMPLE
 
-	start_object_leaf(a_node: DT_OBJECT_LEAF; depth: INTEGER) is
+	start_object_leaf(a_node: DT_OBJECT_LEAF; depth: INTEGER)
 			-- start serialising a DT_OBJECT_LEAF
 		local
 			s: STRING
@@ -172,9 +172,9 @@ feature {NONE} -- Implementation
 
 			last_result.append(symbol(SYM_START_DBLOCK))
 
-			if {a_dt_p_o: DT_PRIMITIVE_OBJECT} a_node then
+			if attached {DT_PRIMITIVE_OBJECT} a_node as a_dt_p_o then
 				s := a_dt_p_o.clean_as_string(agent clean)
-			elseif {a_dt_p_o_l: DT_PRIMITIVE_OBJECT_LIST} a_node then
+			elseif attached {DT_PRIMITIVE_OBJECT_LIST} a_node as a_dt_p_o_l then
 				s := a_dt_p_o_l.clean_as_string(agent clean)
 			else
 				s := a_node.as_string

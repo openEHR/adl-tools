@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				ADL archetype path segment, consisting of an attribute name and an object id, which is 
@@ -29,11 +29,11 @@ create
 
 feature -- Definitions
 
-	feature_call_arg_delimiters: STRING is "()"
+	feature_call_arg_delimiters: STRING = "()"
 
 feature -- Initialisation
 
-	make(an_attr_name: STRING) is
+	make(an_attr_name: STRING)
 			-- make a path segment with an attribute and an empty object id -
 			-- corresponds to single cardinality attribute or it could be
 			-- a path segment for a multiple cardinality attribute but defaulting
@@ -48,7 +48,7 @@ feature -- Initialisation
 			Object_id_empty: object_id.is_empty
 		end
 
-	make_with_object_id(an_attr_name, an_object_id: STRING) is
+	make_with_object_id(an_attr_name, an_object_id: STRING)
 			-- make a path segment with an attribute name and an object id -
 			-- corresponds to multiple child attribute
 		require
@@ -66,7 +66,7 @@ feature -- Initialisation
 			Object_id_set: object_id.is_equal(an_object_id) or else object_id.is_empty
 		end
 
-	make_feature_call(a_feat_name: STRING) is
+	make_feature_call(a_feat_name: STRING)
 		require
 			a_feat_name_valid: a_feat_name /= Void and then not a_feat_name.is_empty
 		do
@@ -78,7 +78,7 @@ feature -- Initialisation
 			Is_feature_call: is_feature_call
 		end
 
-	make_from_other(other: OG_PATH_ITEM) is
+	make_from_other(other: OG_PATH_ITEM)
 			-- FIXME: created because clone does not work in dotnet
 		do
 			is_feature_call := other.is_feature_call
@@ -88,7 +88,7 @@ feature -- Initialisation
 
 feature -- Definitions
 
-	Anonymous_node_id: STRING is "unknown"
+	Anonymous_node_id: STRING = "unknown"
 
 feature -- Access
 
@@ -102,13 +102,13 @@ feature -- Status Report
 
 	is_feature_call: BOOLEAN
 
-	is_addressable: BOOLEAN is
+	is_addressable: BOOLEAN
 			-- True if the object in this segment is identified
 		do
 			Result := not object_id.is_empty
 		end
 
-	is_equal(other: OG_PATH_ITEM): BOOLEAN is
+	is_equal(other: OG_PATH_ITEM): BOOLEAN
 			-- True if `other' and this path item are identical
 		do
 			if other /= Void then
@@ -117,7 +117,7 @@ feature -- Status Report
 			end
 		end
 
-	is_compressed: BOOLEAN is
+	is_compressed: BOOLEAN
 			-- True if this path segment has a compressed path in its first attribute
 		do
 			Result := attr_name.index_of ({OG_PATH}.segment_separator, 1) > 0
@@ -125,7 +125,7 @@ feature -- Status Report
 
 feature -- Modification
 
-	set_object_id(an_object_id: STRING) is
+	set_object_id(an_object_id: STRING)
 			-- make a path segment with an attribute name and an object id -
 			-- corresponds to multiple caridnality attribute case
 		require
@@ -142,7 +142,7 @@ feature -- Modification
 
 feature {OG_PATH} -- Modification
 
-	set_compressed_attr(a_path: STRING) is
+	set_compressed_attr(a_path: STRING)
 			-- set attr_name to a path ending in an attribute rather than the usual single attribute name
 		require
 			Path_valid: a_path /= Void and then not a_path.is_empty
@@ -155,7 +155,7 @@ feature {OG_PATH} -- Modification
 
 feature -- Output
 
-	as_string: STRING is
+	as_string: STRING
 			-- output in string form
 		do
 			create Result.make(0)

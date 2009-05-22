@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "A node that contains a list of references to other nodes, implemented by paths. Serialises an object non-containment reference list."
 	keywords:    "data tree, serialisation, ADL"
@@ -33,7 +33,7 @@ feature -- Access
 
 feature -- Modification
 
-	set_value(a_value: like value) is
+	set_value(a_value: like value)
 		do
 			value := a_value
 			set_type_name (Reference_pseudo_type)
@@ -41,7 +41,7 @@ feature -- Modification
 
 feature -- Output
 
-	as_string: STRING is
+	as_string: STRING
 		do
 			create Result.make(0)
 			from
@@ -62,13 +62,13 @@ feature -- Output
 
 feature -- Serialisation
 
-	enter_subtree(serialiser: DT_SERIALISER; depth: INTEGER) is
+	enter_subtree(serialiser: DT_SERIALISER; depth: INTEGER)
 			-- perform serialisation at start of block for this node
 		do
 			serialiser.start_object_reference_list(Current, depth)
 		end
 
-	exit_subtree(serialiser: DT_SERIALISER; depth: INTEGER) is
+	exit_subtree(serialiser: DT_SERIALISER; depth: INTEGER)
 			-- perform serialisation at end of block for this node
 		do
 			serialiser.end_object_reference_list(Current, depth)

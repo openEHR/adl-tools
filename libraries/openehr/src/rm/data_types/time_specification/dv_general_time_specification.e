@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Types"
 	
 	description: "[
@@ -29,17 +29,17 @@ create
 
 feature -- Initialization
 	
-	make_from_string(str:STRING) is
+	make_from_string(str:STRING)
 		do
 			-- TO_BE_IMPLEM
 		end
 
-	make_from_canonical_string(str:STRING) is
+	make_from_canonical_string(str:STRING)
 		do
 			-- TO_BE_IMPLEM
 		end
 
-	make(str:STRING) is
+	make(str:STRING)
 			-- make from a single string
 		do
 			-- TO_BE_IMPLEM
@@ -47,22 +47,22 @@ feature -- Initialization
 
 feature -- Access
 
-	calendar_alignment: STRING is
+	calendar_alignment: STRING
 		do
 		end
 			
-	event_alignment: STRING	is
+	event_alignment: STRING
 		do
 		end
 
 feature -- Status Report
 
-	valid_canonical_string(str: STRING): BOOLEAN is
+	valid_canonical_string(str: STRING): BOOLEAN
 			-- True if str contains required tags
 		do
 		end
 
-	institution_specified: BOOLEAN is
+	institution_specified: BOOLEAN
 		do
 		end
 		

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "node in ADL parse tree"
 	keywords:    "test, ADL"
@@ -24,14 +24,14 @@ create
 
 feature -- Initialisation
 
-	default_create is
+	default_create
 			--
 		do
 			create children.make (0)
 			create children_sorted.make
 		end
 
-	make_single(a_name:STRING) is
+	make_single (a_name: STRING)
 			-- make as a single relationship; set attr name
 		require
 			a_name_valid: a_name /= Void and then not a_name.is_empty
@@ -43,7 +43,7 @@ feature -- Initialisation
 			not is_generic
 		end
 
-	make_multiple(a_name:STRING) is
+	make_multiple (a_name: STRING)
 			-- make as a multiple relationship; set attr name
 		require
 			a_name_valid: a_name /= Void and then not a_name.is_empty
@@ -54,7 +54,7 @@ feature -- Initialisation
 			is_multiple
 		end
 
-	make_multiple_generic is
+	make_multiple_generic
 			-- make as a multiple generic relationship;
 		do
 			default_create
@@ -73,13 +73,13 @@ feature -- Access
 
 	children_sorted: SORTED_TWO_WAY_LIST[DT_OBJECT_ITEM]
 
-	rm_attr_name: STRING is
+	rm_attr_name: STRING
 			-- attribute name in reference model
 		do
 			Result := representation.node_id
 		end
 
-	child_with_id(a_node_id: STRING): DT_OBJECT_ITEM is
+	child_with_id(a_node_id: STRING): DT_OBJECT_ITEM
 			-- find the child node with `a_path_id'
 		do
 			Result ?= representation.child_with_id(a_node_id).content_item
@@ -87,13 +87,13 @@ feature -- Access
 			Result_exists: Result /= Void
 		end
 
-	first_child: DT_OBJECT_ITEM is
+	first_child: DT_OBJECT_ITEM
 			--
 		do
 			Result := children.first
 		end
 
-	child_count: INTEGER is
+	child_count: INTEGER
 			-- number of children
 		do
 			Result := children.count
@@ -101,7 +101,7 @@ feature -- Access
 
 feature -- Iteration
 
-	start is
+	start
 		do
 			if using_children_sorted then
 				children_sorted.start
@@ -110,7 +110,7 @@ feature -- Iteration
 			end
 		end
 
-	forth is
+	forth
 		do
 			if using_children_sorted then
 				children_sorted.forth
@@ -119,7 +119,7 @@ feature -- Iteration
 			end
 		end
 
-	off: BOOLEAN is
+	off: BOOLEAN
 		do
 			if using_children_sorted then
 				Result := children_sorted.off
@@ -128,7 +128,7 @@ feature -- Iteration
 			end
 		end
 
-	item: DT_OBJECT_ITEM is
+	item: DT_OBJECT_ITEM
 		do
 			if using_children_sorted then
 				Result := children_sorted.item
@@ -139,20 +139,20 @@ feature -- Iteration
 
 feature -- Status Report
 
-	is_multiple: BOOLEAN is
+	is_multiple: BOOLEAN
 			-- True if relationship is 1:N
 		do
 			Result := representation.is_multiple
 		end
 
-	is_generic: BOOLEAN is
+	is_generic: BOOLEAN
 			-- True if relationship represents an assumed
 			-- attribute of a container class
 		do
 			Result := representation.is_generic
 		end
 
-	is_valid: BOOLEAN is
+	is_valid: BOOLEAN
 			-- report on validity
 		do
 			create invalid_reason.make(0)
@@ -174,13 +174,13 @@ feature -- Status Report
 			end
 		end
 
-	has_child_with_id(a_node_id: STRING): BOOLEAN is
+	has_child_with_id(a_node_id: STRING): BOOLEAN
 			-- valid OBJ children of a REL node might not all be unique
 		do
 			Result := representation.has_child_with_id(a_node_id)
 		end
 
-	has_child(a_node: DT_OBJECT_ITEM): BOOLEAN is
+	has_child(a_node: DT_OBJECT_ITEM): BOOLEAN
 			-- True if a_node is among children of this node
 		do
 			Result := children.has (a_node)
@@ -189,14 +189,14 @@ feature -- Status Report
 	using_children_sorted: BOOLEAN
 			-- True if using sorted child list
 
-	is_empty: BOOLEAN is
+	is_empty: BOOLEAN
 		do
 			Result := children.is_empty
 		end
 
 feature -- Modification
 
-	set_attr_name(a_name:STRING) is
+	set_attr_name (a_name: STRING)
 			-- set attr name
 		require
 			a_name_valid: a_name /= Void and then not a_name.is_empty
@@ -204,7 +204,7 @@ feature -- Modification
 			representation.set_node_id(a_name)
 		end
 
-	set_multiple is
+	set_multiple
 			-- set an attribute created single to be multiple
 		do
 			representation.set_multiple
@@ -212,7 +212,7 @@ feature -- Modification
 			is_multiple
 		end
 
-	put_child(a_node: DT_OBJECT_ITEM) is
+	put_child(a_node: DT_OBJECT_ITEM)
 			-- put a new child node
 		require
 			Node_valid: a_node /= Void and then not has_child(a_node)
@@ -224,7 +224,7 @@ feature -- Modification
 			a_node.set_parent(Current)
 		end
 
-	use_children_sorted is
+	use_children_sorted
 			-- use sorted list
 		do
 			using_children_sorted := True
@@ -237,13 +237,13 @@ feature -- Representation
 
 feature -- Serialisation
 
-	enter_subtree(serialiser: DT_SERIALISER; depth: INTEGER) is
+	enter_subtree(serialiser: DT_SERIALISER; depth: INTEGER)
 			-- perform serialisation at start of block for this node
 		do
 			serialiser.start_attribute_node(Current, depth)
 		end
 
-	exit_subtree(serialiser: DT_SERIALISER; depth: INTEGER) is
+	exit_subtree(serialiser: DT_SERIALISER; depth: INTEGER)
 			-- perform serialisation at end of block for this node
 		do
 			serialiser.end_attribute_node(Current, depth)

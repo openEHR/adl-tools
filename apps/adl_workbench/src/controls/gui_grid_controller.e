@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Controller to add keyboard and mouse wheel accessibility to a grid widget."
 	keywords:    "ADL"
@@ -122,7 +122,7 @@ feature {NONE} -- Grid events
 			end
 		end
 
-	on_mouse_wheel (step: INTEGER) is
+	on_mouse_wheel (step: INTEGER)
 			-- Scroll `grid' when the mouse wheel moves.
 		do
 			if grid.row_count > 0 then

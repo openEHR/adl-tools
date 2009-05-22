@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR support types"
 
 	description: "[
@@ -46,7 +46,7 @@ feature -- Initialization
 			unbounded: lower_unbounded and upper_unbounded
 		end
 
-	make_point(a_value:G) is
+	make_point (a_value: G)
 			-- make with both limits set to the same value
 		require
 			Value_exists: a_value /= Void
@@ -63,7 +63,7 @@ feature -- Initialization
 			Is_point: is_point
 		end
 
-	make_bounded(a_lower, an_upper:G; lower_included_flag, upper_included_flag: BOOLEAN) is
+	make_bounded (a_lower, an_upper: G; lower_included_flag, upper_included_flag: BOOLEAN)
 			-- make with both limits set
 		require
 			Lower_exists: a_lower /= Void
@@ -81,7 +81,7 @@ feature -- Initialization
 			upper_included_set: upper_included = upper_included_flag
 		end
 
-	make_lower_unbounded(an_upper:G; upper_included_flag: BOOLEAN) is
+	make_lower_unbounded (an_upper: G; upper_included_flag: BOOLEAN)
 			-- make an interval from -infinity to `an_upper'
 		require
 			Upper_exists: an_upper /= Void
@@ -95,7 +95,7 @@ feature -- Initialization
 			upper_included_set: upper_included = upper_included_flag
 		end
 
-	make_upper_unbounded(a_lower:G; lower_included_flag: BOOLEAN) is
+	make_upper_unbounded (a_lower: G; lower_included_flag: BOOLEAN)
 			-- make an interval from `a_lower' to +infinity
 		require
 			Lower_exists: a_lower /= Void
@@ -109,7 +109,7 @@ feature -- Initialization
 			lower_included_set: lower_included = lower_included_flag
 		end
 
-	make_unbounded is
+	make_unbounded
 			-- make an interval from -infinity to +infinity, usually
 			-- only sensible as the result of to half-intervals
 		do
@@ -128,7 +128,7 @@ feature -- Access
 	upper: G
 			-- upper limit of interval
 
-	midpoint: G is
+	midpoint: G
 			-- generate midpoint of limits
 		do
 
@@ -148,7 +148,7 @@ feature -- Status report
 	upper_included: BOOLEAN
 			-- True if upper limit point included in interval
 
-	is_point: BOOLEAN is
+	is_point: BOOLEAN
 			-- Is current interval a point (width = 0)?
 		do
 			Result := not (lower_unbounded or upper_unbounded) and
@@ -158,7 +158,7 @@ feature -- Status report
 				lower_included and upper_included and lower.is_equal (upper))
 		end
 
-	has (v: G): BOOLEAN is
+	has (v: G): BOOLEAN
 			-- Does current interval have `v' between its bounds?
 		require
 			exists: v /= void
@@ -170,7 +170,7 @@ feature -- Status report
 			(upper_unbounded or ((upper_included and v <= upper or v < upper)))
 		end
 
-	contains (other: like Current): BOOLEAN is
+	contains (other: like Current): BOOLEAN
 			-- Does current interval contain `other'?
 		require
 			Other_exists: other /= void
@@ -188,7 +188,7 @@ feature -- Status report
 			end
 		end
 
-	is_equal(other: like Current): BOOLEAN is
+	is_equal (other: like Current): BOOLEAN
 			-- compare two intervals
 		do
 			if lower_unbounded then
@@ -208,7 +208,7 @@ feature -- Status report
 			end
 		end
 
-	limits_equal: BOOLEAN is
+	limits_equal: BOOLEAN
 			-- true if limits bounded and equal
 		do
 			Result := not (lower_unbounded or upper_unbounded) and (lower.is_equal(upper))
@@ -216,7 +216,7 @@ feature -- Status report
 
 feature -- Output
 
-	lower_out: STRING is
+	lower_out: STRING
 			-- same as out but fixed to make REALs with no decimal part
 			-- output as NNN.0 anyway
 		require
@@ -229,7 +229,7 @@ feature -- Output
 			end
 		end
 
-	upper_out: STRING is
+	upper_out: STRING
 			-- same as out but fixed to make REALs with no decimal part
 			-- output as NNN.0 anyway
 		require
@@ -242,7 +242,7 @@ feature -- Output
 			end
 		end
 
-	as_string: STRING is
+	as_string: STRING
 		do
 			create Result.make(0)
 			if lower_unbounded then

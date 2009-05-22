@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Used-by map control - Visualise archetype ids that have slots that match the current archetype"
 	keywords:    "archetype, slot, gui"
@@ -39,7 +39,7 @@ create
 
 feature {NONE} -- Initialisation
 
-	make (a_main_window: MAIN_WINDOW) is
+	make (a_main_window: MAIN_WINDOW)
 		require
 			a_main_window /= Void
 		do
@@ -71,12 +71,12 @@ feature -- Commands
 			populate
 		end
 
-	clear is
+	clear
 		do
 			gui_tree.wipe_out
 		end
 
-	populate is
+	populate
 			-- populate the ADL tree control by creating it from scratch
 		local
 			eti: EV_TREE_ITEM
@@ -105,7 +105,7 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
-	target_archetype: ARCHETYPE is
+	target_archetype: ARCHETYPE
 			-- differential or flat version of archetype, depending on setting of `in_differential_mode'
 		require
 			archetype_directory.has_selected_archetype
@@ -126,7 +126,7 @@ feature {NONE} -- Implementation
 
 	archetype_tree_root_set: BOOLEAN
 
-	attach_node(str: STRING): EV_TREE_ITEM is
+	attach_node(str: STRING): EV_TREE_ITEM
 			-- attach a node into the tree
 		do
 			create Result.make_with_text (utf8 (str))

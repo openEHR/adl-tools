@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Validator of archeype paths.
@@ -27,7 +27,7 @@ create
 
 feature -- Initialisation
 
-	make_from_path (a_path: OG_PATH) is
+	make_from_path (a_path: OG_PATH)
 			-- create from an OG_PATH
 		require
 			a_path_valid: a_path /= Void
@@ -36,7 +36,7 @@ feature -- Initialisation
 			calculate_level
 		end
 
-	make_from_string (a_path: STRING) is
+	make_from_string (a_path: STRING)
 			-- create from a STRING
 		require
 			a_path_valid: a_path /= Void
@@ -54,7 +54,7 @@ feature -- Access
 
 feature -- Conversion
 
-	path_at_level(a_level: INTEGER): STRING is
+	path_at_level(a_level: INTEGER): STRING
 			-- generate a form of the path at the specialisation level `a_level';
 			-- only applicable if the path can actually exist at the level indicated, which
 			-- cannot be the case if there are any '0's in any path node id at the requested level
@@ -87,7 +87,7 @@ feature -- Conversion
 
 feature -- Status Report
 
-	 is_phantom_path_at_level (a_level: INTEGER): BOOLEAN is
+	 is_phantom_path_at_level (a_level: INTEGER): BOOLEAN
 	 		-- True if this path corresponds to a node that does not exist in the specified level, i.e.
 	 		-- if it contains any object code whose parent ends in a '0', e.g. .../items[at0001.0.9]/...
 	 		-- would return True for a_level = 1, because at0001.0.9 is a new node, only introduced at
@@ -105,7 +105,7 @@ feature -- Status Report
 
 feature {NONE} -- Implementation
 
-	calculate_level is
+	calculate_level
 			-- get the deepest level of this path, determined from the depth of the object codes
 			-- set `level'
 		do

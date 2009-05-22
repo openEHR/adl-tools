@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Populate translation controls in ADL editor"
 	keywords:    "test, ADL"
@@ -30,7 +30,7 @@ create
 
 feature -- Initialisation
 
-	make(a_main_window: MAIN_WINDOW) is
+	make(a_main_window: MAIN_WINDOW)
 		require
 			a_main_window /= Void
 		do
@@ -41,14 +41,14 @@ feature -- Initialisation
 
 feature -- Commands
 
-	clear is
+	clear
 			-- wipe out content
 		do
 			gui.arch_translations_languages_list.wipe_out
 			clear_items
 		end
 
-	clear_items is
+	clear_items
 			-- wipe out content
 		do
 			gui.arch_translations_accreditation_text.remove_text
@@ -56,7 +56,7 @@ feature -- Commands
 			gui.arch_translations_other_details_mlist.wipe_out
 		end
 
-	populate is
+	populate
 			-- populate controls
 		do
 			clear
@@ -69,7 +69,7 @@ feature -- Commands
 			end
 		end
 
-	populate_items is
+	populate_items
 			-- populate controls
 		local
 			trans_item: TRANSLATION_DETAILS

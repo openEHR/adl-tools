@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR common definitions"
 	
 	description: "Simple terminology service interface definition"
@@ -24,18 +24,18 @@ inherit
 
 feature -- Definitions
 	
-	Default_language_code_set: STRING is "ISO_639-1"
+	Default_language_code_set: STRING = "ISO_639-1"
 			-- FIXME - replace by call to code_sets for 'language'; need
 			-- a dADL config file
 	
-	Default_language_code: CODE_PHRASE is 
+	Default_language_code: CODE_PHRASE 
 		do
 			create Result.make("ISO_639-1", Default_language)
 		end
 		
 feature -- Access
 
-	terminology(name: STRING): TERMINOLOGY_ACCESS is
+	terminology(name: STRING): TERMINOLOGY_ACCESS
 			-- return a terminology access object for a terminology identified in openEHR by openehr_id
 			-- Allowable names are:
 			--    * official names from the US NLM UMLS meta-data list at http://www.nlm.nih.gov/research/umls/metaa1.html
@@ -50,7 +50,7 @@ feature -- Access
 			Result /= Void
 		end
 
-	code_set(openehr_id: STRING): CODE_SET_ACCESS is
+	code_set(openehr_id: STRING): CODE_SET_ACCESS
 			-- Allowable names are taken from OPENEHR_CODE_SET_IDENTIFIERS class
 		require
 			name_valid: openehr_id /= Void and then has_code_set(openehr_id)
@@ -63,7 +63,7 @@ feature -- Access
 
 feature -- Status Report
 
-	has_terminology(name: STRING): BOOLEAN is
+	has_terminology(name: STRING): BOOLEAN
 			-- True if terminology with name is known by this service
 			-- Allowable names are:
 			--    * official names from the US NLM UMLS meta-data list at http://www.nlm.nih.gov/research/umls/metaa1.html
@@ -74,7 +74,7 @@ feature -- Status Report
 		do
 		end
 	
-	has_code_set(name: STRING): BOOLEAN is
+	has_code_set(name: STRING): BOOLEAN
 			-- True if code set with name is known by this service
 			-- Allowable names are taken from OPENEHR_CODE_SET_IDENTIFIERS class
 		require

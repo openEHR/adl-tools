@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "Test case for typed anonymous dADL"
 	keywords:    "test, object graph, creation"
@@ -25,20 +25,20 @@ inherit
 			{NONE} all
 		end
 
-creation
+create
 	make
 
 feature -- Access
 
-	title:STRING is "dADL2 typed anonymous object block"
+	title:STRING = "dADL2 typed anonymous object block"
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 		do
 		end
 
-	execute is
+	execute
 		do
 			dadl_engine.set_source (dadl_tour_data, 1)
 			dadl_engine.parse
@@ -71,13 +71,13 @@ feature -- Initialisation
 
 feature -- Access
 
-	check_result is
+	check_result
 	    do
 	    end
 
 feature -- Implementation
 
-	dadl_tour_data: STRING is "[
+	dadl_tour_data: STRING = "[
 			TOURIST_DESTINATION <
 				profile = DESTINATION_PROFILE <>
 				hotels = LODGING <
@@ -92,7 +92,7 @@ feature -- Implementation
 			>
 		]"
 
-	c_dv_quantity: STRING is "[
+	c_dv_quantity: STRING = "[
 			C_DV_QUANTITY <
 				assumed_value = <
 					units = <"C">

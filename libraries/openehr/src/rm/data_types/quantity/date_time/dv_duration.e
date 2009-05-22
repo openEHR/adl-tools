@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Types"
 
 	description: "Implementation of DV_DATE_TIME_DURATION"
@@ -38,7 +38,7 @@ create
 
 feature -- Initialization
 
-	default_create is
+	default_create
 			-- make of duration days = 0, hours = 0, mins = 0, seconds = 0
 		do
 			make(0, 0, 0, 0, 0, 0, 0, 0.0)
@@ -52,13 +52,13 @@ feature -- Initialization
 			seconds_set: seconds = 0
 		end
 
-	make_from_seconds(v: DOUBLE) is
+	make_from_seconds(v: DOUBLE)
 			-- create from a number of seconds, and turn into DHMS canonical form
 		do
 
 		end
 
-	make_from_canonical_string (str: STRING) is
+	make_from_canonical_string (str: STRING)
 			-- make from string using default format
 		do
 			make_from_string(str)
@@ -66,7 +66,7 @@ feature -- Initialization
 
 feature -- Status Report
 
-	valid_canonical_string(str: STRING): BOOLEAN is
+	valid_canonical_string(str: STRING): BOOLEAN
 			-- True if str contains required tags
 		do
 			Result := valid_iso8601_duration (str)
@@ -74,7 +74,7 @@ feature -- Status Report
 
 feature -- Access
 
-	magnitude: DOUBLE_REF is
+	magnitude: DOUBLE_REF
 			-- numeric value of the quantity
 		do
 			Result := to_seconds
@@ -82,20 +82,20 @@ feature -- Access
 
 feature -- Comparison
 
-	is_strictly_comparable_to (other: like Current): BOOLEAN is
+	is_strictly_comparable_to (other: like Current): BOOLEAN
 		do
 			Result := True
 		end
 
 feature -- Basic Operations
 
-	infix "+" (other: like Current): like Current is
+	plus alias "+" (other: like Current): like Current
 			-- addition
 		do
 			create Result.make_from_seconds(magnitude + other.magnitude)
 		end
 
-	infix "-" (other: like Current): like Current is
+	minus alias "-" (other: like Current): like Current
 			-- difference
 		do
 			create Result.make_from_seconds(magnitude - other.magnitude)
@@ -103,7 +103,7 @@ feature -- Basic Operations
 
 feature -- Output
 
-	as_string: STRING is
+	as_string: STRING
 			-- string form displayable for humans
 		do
 			Result := magnitude_as_string

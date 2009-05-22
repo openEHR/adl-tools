@@ -1,4 +1,4 @@
-indexing
+note
 
 	component:   "openEHR Common Archetype Model"
 
@@ -26,14 +26,14 @@ create
 
 feature -- Initialisation
 
-	make_range(an_interval: INTERVAL[REAL]) is
+	make_range(an_interval: INTERVAL[REAL])
 		require
 			Interval_exists: an_interval /= Void
 		do
 			range := an_interval
 		end
 
-	make_list(a_list: LIST[REAL]) is
+	make_list(a_list: LIST[REAL])
 			-- make from a list of integers
 		require
 			a_list_exists: a_list /= Void and then not a_list.is_empty
@@ -49,7 +49,7 @@ feature -- Access
 
 	list: LIST[REAL]
 
-	prototype_value: REAL_REF is
+	prototype_value: REAL_REF
 		do
 			create Result
 			if range /= Void then
@@ -61,7 +61,7 @@ feature -- Access
 
 feature -- Status Report
 
-	valid_value (a_value: REAL_REF): BOOLEAN is
+	valid_value (a_value: REAL_REF): BOOLEAN
 		do
 			if range /= Void then
 				Result := range.has(a_value.item)
@@ -72,7 +72,7 @@ feature -- Status Report
 
 feature -- Comparison
 
-	node_conforms_to (other: like Current): BOOLEAN is
+	node_conforms_to (other: like Current): BOOLEAN
 			-- True if this node is a subset of, or the same as `other'
 		do
 			if range /= Void and other.range /= Void then
@@ -91,13 +91,13 @@ feature -- Comparison
 
 feature -- Output
 
-	as_string: STRING is
+	as_string: STRING
 		local
 			out_val: STRING
 		do
 			create Result.make(0)
 			if range /= Void then
-				Result.append("|" + range.as_string + "|")
+				Result.append ("|" + range.as_string + "|")
 			else
 				from
 					list.start
@@ -105,15 +105,15 @@ feature -- Output
 					list.off
 				loop
 					if not list.isfirst then
-						Result.append(", ")
+						Result.append (", ")
 					end
 
 					-- FIXME: REAL.out is broken; forgets to output '.0'
 					out_val := list.item.out
 					if out_val.index_of('.', 1) = 0 then
-						out_val.append(".0")
+						out_val.append (".0")
 					end
-					Result.append(out_val)
+					Result.append (out_val)
 
 					list.forth
 				end
@@ -122,13 +122,13 @@ feature -- Output
 				-- FIXME: REAL.out is broken; forgets to output '.0'
 				out_val := assumed_value.out
 				if out_val.index_of('.', 1) = 0 then
-					out_val.append(".0")
+					out_val.append (".0")
 				end
-				Result.append("; " + out_val)
+				Result.append ("; " + out_val)
 			end
 		end
 
-	as_canonical_string:STRING is
+	as_canonical_string: STRING
 		do
 			Result := as_string
 		end

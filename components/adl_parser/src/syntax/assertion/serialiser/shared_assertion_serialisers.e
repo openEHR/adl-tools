@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Assertoin serialisers"
 	keywords:    "assertoin"
@@ -15,46 +15,46 @@ class SHARED_ASSERTION_SERIALISERS
 
 feature -- Access
 
-	assertion_serialiser_formats: ARRAYED_LIST[STRING] is
+	assertion_serialiser_formats: ARRAYED_LIST[STRING]
 			-- list of format names
 		once
-			create Result.make(0)
-			from 
+			create Result.make (0)
+			from
 				assertion_serialisers.start
 			until
 				assertion_serialisers.off
 			loop
-				Result.extend(assertion_serialisers.key_for_iteration)
+				Result.extend (assertion_serialisers.key_for_iteration)
 				assertion_serialisers.forth
 			end
 			Result.compare_objects
 		end
 
-	assertion_serialiser_for_format(a_format:STRING): ASSERTION_SERIALISER is
+	assertion_serialiser_for_format (a_format: STRING): ASSERTION_SERIALISER
 			-- get a specific ADL serialiser
 		require
 			Format_valid: a_format /= Void and then has_assertion_serialiser_format(a_format)
 		do
-			Result := assertion_serialisers.item(a_format)
+			Result := assertion_serialisers.item (a_format)
 		ensure
 			Result_exists: Result /= Void
 		end
 
 feature -- Status Report
 
-	has_assertion_serialiser_format(a_format:STRING): BOOLEAN is
-			-- 
+	has_assertion_serialiser_format (a_format: STRING): BOOLEAN
+			--
 		require
 			a_format /= Void
 		do
-			Result := assertion_serialisers.has(a_format)
+			Result := assertion_serialisers.has (a_format)
 		end
-		
+
 feature {NONE} -- Implementation
 
-	assertion_serialisers: HASH_TABLE [ASSERTION_SERIALISER, STRING] is
+	assertion_serialisers: HASH_TABLE [ASSERTION_SERIALISER, STRING]
 		once
-			create Result.make(0)
+			create Result.make (0)
 		end
 
 end

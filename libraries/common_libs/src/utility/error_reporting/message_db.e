@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "[
 			     Error database abstraction. Subtypes can be easily turned into a file that is read in as
@@ -19,7 +19,7 @@ deferred class MESSAGE_DB
 
 feature -- Initialisation
 
-	make is
+	make
 		deferred
 		end
 
@@ -29,14 +29,14 @@ feature -- Access
 			-- error templates in the form of a table of templates
 			-- keyed by id
 
-	has_message(an_id: STRING): BOOLEAN is
+	has_message(an_id: STRING): BOOLEAN
 		require
 			an_id /= Void
 		do
 			Result := templates.has(an_id)
 		end
 
-	create_message_content(an_id: STRING; args: ARRAY[STRING]): STRING is
+	create_message_content(an_id: STRING; args: ARRAY[STRING]): STRING
 		require
 			an_id /= Void
 		local
@@ -59,7 +59,7 @@ feature -- Access
 			end
 		end
 
-	create_message(an_id: STRING; args: ARRAY[STRING]): STRING is
+	create_message(an_id: STRING; args: ARRAY[STRING]): STRING
 			-- create message as a full line
 		require
 			an_id /= Void

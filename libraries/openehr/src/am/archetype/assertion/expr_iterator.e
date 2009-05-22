@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Expression tree iterator. This iterator currently supplies the standard 'do_all'
@@ -24,7 +24,7 @@ create
 
 feature -- Initialisation
 
-	make(a_target: EXPR_ITEM) is
+	make(a_target: EXPR_ITEM)
 		require
 			a_target /= Void
 		do
@@ -37,7 +37,7 @@ feature -- Access
 
 feature -- Traversal
 
-	do_all(node_enter_action, node_exit_action: PROCEDURE[ANY, TUPLE[EXPR_ITEM, INTEGER]]) is
+	do_all(node_enter_action, node_exit_action: PROCEDURE[ANY, TUPLE[EXPR_ITEM, INTEGER]])
 			-- do enter_action and exit_action to all nodes in the structure
 		require
 			Enter_action_valid: node_enter_action /= Void
@@ -49,7 +49,7 @@ feature -- Traversal
 
 feature {NONE} -- Implementation
 
-	do_all_nodes(a_target: EXPR_ITEM; node_enter_action, node_exit_action: PROCEDURE[ANY, TUPLE[EXPR_ITEM, INTEGER]]) is
+	do_all_nodes(a_target: EXPR_ITEM; node_enter_action, node_exit_action: PROCEDURE[ANY, TUPLE[EXPR_ITEM, INTEGER]])
 		require
 			Target_exists: a_target /= Void
 		local

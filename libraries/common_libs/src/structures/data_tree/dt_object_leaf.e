@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "leaf OBJECT item in a dADL parse tree"
 	keywords:    "data tree, serialisation, ADL"
@@ -21,7 +21,7 @@ inherit
 
 feature -- Initialisation
 
-	make_identified(a_value: like value; a_node_id: STRING) is
+	make_identified(a_value: like value; a_node_id: STRING)
 		require
 			Item_valid: a_value /= Void
 			Node_id_valid: a_node_id /= Void and then not a_node_id.is_empty
@@ -34,7 +34,7 @@ feature -- Initialisation
 			is_addressable
 		end
 
-	make_anonymous(a_value: like value) is
+	make_anonymous(a_value: like value)
 		require
 			Item_valid: a_value /= Void
 		do
@@ -46,7 +46,7 @@ feature -- Initialisation
 			not is_addressable
 		end
 
-	default_create is
+	default_create
 			-- create with unknown type
 		do
 			create rm_type_name.make(0)
@@ -55,14 +55,14 @@ feature -- Initialisation
 
 feature -- Access
 
-	value: ANY is
+	value: ANY
 			-- data item of this node
 		deferred
 		end
 
 feature -- Status Report
 
-	is_valid: BOOLEAN is
+	is_valid: BOOLEAN
 			-- report on validity
 		do
 			create invalid_reason.make(0)
@@ -80,7 +80,7 @@ feature -- Representation
 
 feature -- Conversion
 
-	as_object(a_type_id: INTEGER): ANY is
+	as_object(a_type_id: INTEGER): ANY
 			-- make an object whose classes and attributes correspond to the structure
 			-- of this DT_OBJECT
 		do
@@ -90,7 +90,7 @@ feature -- Conversion
 
 feature -- Modification
 
-	set_value(a_value: like value) is
+	set_value(a_value: like value)
 		require
 			Item_valid: a_value /= Void
 		deferred
@@ -100,7 +100,7 @@ feature -- Modification
 
 feature -- Output
 
-	as_string: STRING is
+	as_string: STRING
 		deferred
 		ensure
 			Result_exists: Result /= Void

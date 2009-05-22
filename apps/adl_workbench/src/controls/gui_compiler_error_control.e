@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 EV_GRID control for compiler error output. A preferable implementation is to separate the logical
@@ -52,9 +52,9 @@ create
 
 feature -- Definitions
 
-	Col_category: INTEGER is 1
-	Col_location: INTEGER is 2
-	Col_message: INTEGER is 3
+	Col_category: INTEGER = 1
+	Col_location: INTEGER = 2
+	Col_message: INTEGER = 3
 
 feature {NONE} -- Initialisation
 
@@ -75,7 +75,7 @@ feature {NONE} -- Initialisation
 
 feature -- Commands
 
-	clear is
+	clear
 			-- Wipe out the content from `grid'.
 		do
 			grid.wipe_out
@@ -91,7 +91,7 @@ feature -- Commands
 			update_errors_tab_label
 		end
 
-	extend_and_select (ara: ARCH_REP_ARCHETYPE) is
+	extend_and_select (ara: ARCH_REP_ARCHETYPE)
 			-- Add a node representing the errors or warnings of the archetype, if any.
 		require
 			ara_attached: ara /= Void
@@ -119,7 +119,7 @@ feature -- Commands
 						row := cat_row.subrow (row_idx)
 						row.collapse
 
-						if {other: !ARCH_REP_ARCHETYPE} row.data then
+						if attached {ARCH_REP_ARCHETYPE} row.data as other then
 							i := ara.id.three_way_comparison (other.id)
 						end
 					else
@@ -170,7 +170,7 @@ feature -- Commands
 			update_errors_tab_label
 		end
 
-	export_repository_report (xml_name: STRING) is
+	export_repository_report (xml_name: STRING)
 			-- Export the contents of the grid and other statistics to XML in `xml_name'.
 		require
 			xml_name_attached: xml_name /= Void
@@ -222,7 +222,7 @@ feature -- Commands
 				category := err_type_names [err_type]
 				create_category_element.call ([statistics_element, category, count_for_category (err_type)])
 
-				if {row: !EV_GRID_ROW} categories [err_type] then
+				if attached {EV_GRID_ROW} categories [err_type] as row then
 					create_category_element.call ([root, category, row.subrow_count])
 					category_element ?= root.last
 
@@ -233,7 +233,7 @@ feature -- Commands
 					loop
 						i := i + 1
 
-						if {ara: !ARCH_REP_ARCHETYPE} row.subrow (i).data then
+						if attached {ARCH_REP_ARCHETYPE} row.subrow (i).data as ara then
 							create archetype_element.make_last (category_element, "archetype", ns)
 							create attr.make_last ("id", ns, ara.id.as_string, archetype_element)
 
@@ -387,7 +387,7 @@ feature {NONE} -- Implementation
 				row := grid.row (row_idx)
 				row_idx := row_idx - 1
 
-				if {other: !ARCH_REP_ARCHETYPE} row.data then
+				if attached {ARCH_REP_ARCHETYPE} row.data as other then
 					if ara.id.is_equal (other.id) then
 						row_idx := 0
 						cat_row := row.parent_row
@@ -398,7 +398,7 @@ feature {NONE} -- Implementation
 							else
 								grid.remove_row (cat_row.index)
 
-								if {i: !INTEGER_REF} cat_row.data then
+								if attached {INTEGER_REF} cat_row.data as i then
 									categories [i.item] := Void
 								end
 							end
@@ -414,14 +414,14 @@ feature {NONE} -- Implementation
 			not_too_small: err_type >= categories.lower
 			not_too_big: err_type <= categories.upper
 		do
-			if {row: !EV_GRID_ROW} categories [err_type] then
+			if attached {EV_GRID_ROW} categories [err_type] as row then
 				Result := row.subrow_count
 			end
 		ensure
 			natural: Result >= 0
 		end
 
-	categories: !ARRAY [EV_GRID_ROW]
+	categories: attached ARRAY [EV_GRID_ROW]
 			-- Rows containing category grouper in column 1.
 
 invariant

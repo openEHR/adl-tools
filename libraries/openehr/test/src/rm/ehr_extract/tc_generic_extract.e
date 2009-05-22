@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR EHR Extract Reference Model"
 
 	description: "Extract test suite"
@@ -21,20 +21,20 @@ inherit
 			check_result
 		end
 
-creation
+create
 	make
 
 feature -- Access
 
-	title: STRING is "GENERIC_EXTRACT"
+	title: STRING = "GENERIC_EXTRACT"
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 		do
 		end
 
-	execute is
+	execute
 		local
 			ee: GENERIC_EXTRACT
 		do
@@ -42,7 +42,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	check_result is
+	check_result
 		do
 		end
 

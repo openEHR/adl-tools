@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Common Information Model"
 
 	description: "Resource package test suite"
@@ -18,12 +18,12 @@ class TS_COMMON_RESOURCE
 inherit 
 	TEST_SUITE
 
-creation
+create
 	make
 
 feature -- Access
 
-	test_cases: LINKED_LIST[TEST_CASE] is
+	test_cases: LINKED_LIST[TEST_CASE]
 		local
 			tc:TEST_CASE
 		once
@@ -34,11 +34,11 @@ feature -- Access
 			create {TC_TRANSLATION_DETAILS} tc.make(Void) 			Result.extend(tc)
 		end
 
-	title:STRING is "Authored Resource tests"
+	title:STRING = "Authored Resource tests"
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 	    do
 
 	    end

@@ -1,4 +1,4 @@
-indexing
+note
 
 	component:   "openEHR Common Archetype Model"
 
@@ -38,7 +38,7 @@ create
 
 feature -- Initialisation
 
-	make_range(an_interval: INTERVAL[ISO8601_TIME]) is
+	make_range(an_interval: INTERVAL[ISO8601_TIME])
 			-- make from a time interval
 		require
 			an_interval_exists: an_interval /= Void
@@ -48,7 +48,7 @@ feature -- Initialisation
 			Interval_set: range = an_interval
 		end
 
-	make_string_range(a_lower, an_upper: STRING) is
+	make_string_range(a_lower, an_upper: STRING)
 			-- make from two iso8601 strings. Either may be Void, indicating an open-ended interval;
 			-- they may also be the same, meaning a single point. Limits, where provided are automatically
 			-- included in the interval
@@ -60,18 +60,18 @@ feature -- Initialisation
 						(iso8601_string_to_time(a_lower) <= iso8601_string_to_time(an_upper))
 		do
 			if a_lower = Void then
-				create range.make_lower_unbounded(create {ISO8601_TIME}.make_from_string(an_upper), True)
+				create range.make_lower_unbounded (create {ISO8601_TIME}.make_from_string(an_upper), True)
 			else
 				if an_upper = Void then
-					create range.make_upper_unbounded(create {ISO8601_TIME}.make_from_string(a_lower), True)
+					create range.make_upper_unbounded (create {ISO8601_TIME}.make_from_string(a_lower), True)
 				else
-					create range.make_bounded(create {ISO8601_TIME}.make_from_string(a_lower),
+					create range.make_bounded (create {ISO8601_TIME}.make_from_string(a_lower),
 						create {ISO8601_TIME}.make_from_string(an_upper), True, True)
 				end
 			end
 		end
 
-	make_from_pattern(a_pattern: STRING) is
+	make_from_pattern(a_pattern: STRING)
 			-- create Result from an ISO8601-based pattern like "hh:mm:??"
 		require
 			a_pattern_valid: a_pattern /= Void and then valid_iso8601_time_constraint_pattern(a_pattern)
@@ -88,7 +88,7 @@ feature -- Access
 	pattern: STRING
 			-- ISO8601-based pattern like "hh:mm:??"
 
-	prototype_value: ISO8601_TIME is
+	prototype_value: ISO8601_TIME
 		do
 			if range /= Void then
 				Result := range.lower
@@ -97,15 +97,15 @@ feature -- Access
 			end
 		end
 
-	rm_type_name: STRING is
+	rm_type_name: STRING
 		once
 			Result := Iso_class_name_leader.twin
-			Result.append(generating_type.substring (3, generating_type.count))
+			Result.append (generating_type.substring (3, generating_type.count))
 		end
 
 feature -- Status Report
 
-	valid_value (a_value: ISO8601_TIME): BOOLEAN is
+	valid_value (a_value: ISO8601_TIME): BOOLEAN
 		do
 			if range /= Void then
 				Result := range.has(a_value)
@@ -117,7 +117,7 @@ feature -- Status Report
 
 feature -- Comparison
 
-	node_conforms_to (other: like Current): BOOLEAN is
+	node_conforms_to (other: like Current): BOOLEAN
 			-- True if this node is a subset of, or the same as `other'
 		do
 			if pattern /= Void then
@@ -129,16 +129,16 @@ feature -- Comparison
 
 feature -- Output
 
-	as_string: STRING is
+	as_string: STRING
 		do
 			create Result.make(0)
 			if range /= Void then
-				Result.append("|" + range.as_string + "|")
+				Result.append ("|" + range.as_string + "|")
 			else
-				Result.append(pattern)
+				Result.append (pattern)
 			end
 			if assumed_value /= Void then
-				Result.append("; " + assumed_value.out)
+				Result.append ("; " + assumed_value.out)
 			end
 		end
 

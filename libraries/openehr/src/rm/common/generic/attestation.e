@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Common Reference Model"
 	
 	description: "Abstract model of attestation of a party to some information"

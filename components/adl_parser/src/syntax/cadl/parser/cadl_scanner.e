@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Scanner for CADL syntax items"
 	keywords:    "CADL, archetype"
@@ -58,7 +58,7 @@ create
 
 feature -- Status report
 
-	valid_start_condition (sc: INTEGER): BOOLEAN is
+	valid_start_condition (sc: INTEGER): BOOLEAN
 			-- Is `sc' a valid start condition?
 		do
 			Result := (INITIAL <= sc and sc <= IN_C_DOMAIN_TYPE)
@@ -66,7 +66,7 @@ feature -- Status report
 
 feature {NONE} -- Implementation
 
-	yy_build_tables is
+	yy_build_tables
 			-- Build scanner tables.
 		do
 			yy_nxt := yy_nxt_template
@@ -78,7 +78,7 @@ feature {NONE} -- Implementation
 			yy_accept := yy_accept_template
 		end
 
-	yy_execute_action (yy_act: INTEGER) is
+	yy_execute_action (yy_act: INTEGER)
 			-- Execute semantic action.
 		do
 if yy_act <= 65 then
@@ -1377,7 +1377,7 @@ end
 end
 		end
 
-	yy_execute_eof_action (yy_sc: INTEGER) is
+	yy_execute_eof_action (yy_sc: INTEGER)
 			-- Execute EOF semantic action.
 		do
 			inspect yy_sc
@@ -1403,7 +1403,7 @@ end
 
 feature {NONE} -- Table templates
 
-	yy_nxt_template: SPECIAL [INTEGER] is
+	yy_nxt_template: SPECIAL [INTEGER]
 		local
 			an_array: ARRAY [INTEGER]
 		once
@@ -1417,7 +1417,7 @@ feature {NONE} -- Table templates
 			Result := yy_fixed_array (an_array)
 		end
 
-	yy_nxt_template_1 (an_array: ARRAY [INTEGER]) is
+	yy_nxt_template_1 (an_array: ARRAY [INTEGER])
 		do
 			yy_array_subcopy (an_array, <<
 			    0,   14,   15,   16,   15,   15,   17,   18,   19,   20,
@@ -1532,7 +1532,7 @@ feature {NONE} -- Table templates
 			1, 1000, 0)
 		end
 
-	yy_nxt_template_2 (an_array: ARRAY [INTEGER]) is
+	yy_nxt_template_2 (an_array: ARRAY [INTEGER])
 		do
 			yy_array_subcopy (an_array, <<
 			  118,  351,  118,  120,  293,  327,  101,  286,  328,   99,
@@ -1647,7 +1647,7 @@ feature {NONE} -- Table templates
 			1, 1000, 1000)
 		end
 
-	yy_nxt_template_3 (an_array: ARRAY [INTEGER]) is
+	yy_nxt_template_3 (an_array: ARRAY [INTEGER])
 		do
 			yy_array_subcopy (an_array, <<
 			  120,  118,  118,  118,  120,  118,  494,  118,  118,  834,
@@ -1762,7 +1762,7 @@ feature {NONE} -- Table templates
 			1, 1000, 2000)
 		end
 
-	yy_nxt_template_4 (an_array: ARRAY [INTEGER]) is
+	yy_nxt_template_4 (an_array: ARRAY [INTEGER])
 		do
 			yy_array_subcopy (an_array, <<
 			  688,  685,  709,  711,  686,  686,  686,  686,  686,  686,
@@ -1877,7 +1877,7 @@ feature {NONE} -- Table templates
 			1, 1000, 3000)
 		end
 
-	yy_nxt_template_5 (an_array: ARRAY [INTEGER]) is
+	yy_nxt_template_5 (an_array: ARRAY [INTEGER])
 		do
 			yy_array_subcopy (an_array, <<
 			   94,   94,   94,   94,   94,   94,   94,   94,   94,   94,
@@ -1992,7 +1992,7 @@ feature {NONE} -- Table templates
 			1, 1000, 4000)
 		end
 
-	yy_nxt_template_6 (an_array: ARRAY [INTEGER]) is
+	yy_nxt_template_6 (an_array: ARRAY [INTEGER])
 		do
 			yy_array_subcopy (an_array, <<
 			  516,  834,  834,  834,  516,  516,  516,  516,  516,  516,
@@ -2028,7 +2028,7 @@ feature {NONE} -- Table templates
 			1, 276, 5000)
 		end
 
-	yy_chk_template: SPECIAL [INTEGER] is
+	yy_chk_template: SPECIAL [INTEGER]
 		local
 			an_array: ARRAY [INTEGER]
 		once
@@ -2042,7 +2042,7 @@ feature {NONE} -- Table templates
 			Result := yy_fixed_array (an_array)
 		end
 
-	yy_chk_template_1 (an_array: ARRAY [INTEGER]) is
+	yy_chk_template_1 (an_array: ARRAY [INTEGER])
 		do
 			yy_array_subcopy (an_array, <<
 			    0,    1,    1,    1,    1,    1,    1,    1,    1,    1,
@@ -2157,7 +2157,7 @@ feature {NONE} -- Table templates
 			1, 1000, 0)
 		end
 
-	yy_chk_template_2 (an_array: ARRAY [INTEGER]) is
+	yy_chk_template_2 (an_array: ARRAY [INTEGER])
 		do
 			yy_array_subcopy (an_array, <<
 			  146,  202,  146,  144,  145,  181,   18,  142,  181,   17,
@@ -2272,7 +2272,7 @@ feature {NONE} -- Table templates
 			1, 1000, 1000)
 		end
 
-	yy_chk_template_3 (an_array: ARRAY [INTEGER]) is
+	yy_chk_template_3 (an_array: ARRAY [INTEGER])
 		do
 			yy_array_subcopy (an_array, <<
 			  395,  398,  399,  399,  396,  399,  401,  400,  400,    0,
@@ -2387,7 +2387,7 @@ feature {NONE} -- Table templates
 			1, 1000, 2000)
 		end
 
-	yy_chk_template_4 (an_array: ARRAY [INTEGER]) is
+	yy_chk_template_4 (an_array: ARRAY [INTEGER])
 		do
 			yy_array_subcopy (an_array, <<
 			  630,  627,  659,  662,  627,  627,  627,  627,  627,  628,
@@ -2502,7 +2502,7 @@ feature {NONE} -- Table templates
 			1, 1000, 3000)
 		end
 
-	yy_chk_template_5 (an_array: ARRAY [INTEGER]) is
+	yy_chk_template_5 (an_array: ARRAY [INTEGER])
 		do
 			yy_array_subcopy (an_array, <<
 			  838,  838,  838,  838,  838,  838,  838,  838,  838,  838,
@@ -2617,7 +2617,7 @@ feature {NONE} -- Table templates
 			1, 1000, 4000)
 		end
 
-	yy_chk_template_6 (an_array: ARRAY [INTEGER]) is
+	yy_chk_template_6 (an_array: ARRAY [INTEGER])
 		do
 			yy_array_subcopy (an_array, <<
 			  859,    0,    0,    0,  859,  859,  859,  859,  859,  859,
@@ -2653,7 +2653,7 @@ feature {NONE} -- Table templates
 			1, 276, 5000)
 		end
 
-	yy_base_template: SPECIAL [INTEGER] is
+	yy_base_template: SPECIAL [INTEGER]
 		once
 			Result := yy_fixed_array (<<
 			    0,    0,    0,   88,   93,   75,   76,    0,    0,  183,
@@ -2753,7 +2753,7 @@ feature {NONE} -- Table templates
 			 5036, 5084, 5133, yy_Dummy>>)
 		end
 
-	yy_def_template: SPECIAL [INTEGER] is
+	yy_def_template: SPECIAL [INTEGER]
 		once
 			Result := yy_fixed_array (<<
 			    0,  834,    1,  835,  835,  836,  836,  837,  837,  834,
@@ -2853,7 +2853,7 @@ feature {NONE} -- Table templates
 			  834,  834,  834, yy_Dummy>>)
 		end
 
-	yy_ec_template: SPECIAL [INTEGER] is
+	yy_ec_template: SPECIAL [INTEGER]
 		once
 			Result := yy_fixed_array (<<
 			    0,    1,    1,    1,    1,    1,    1,    1,    1,    2,
@@ -2886,7 +2886,7 @@ feature {NONE} -- Table templates
 			    1,    1,    1,    1,    1,    1,    1, yy_Dummy>>)
 		end
 
-	yy_meta_template: SPECIAL [INTEGER] is
+	yy_meta_template: SPECIAL [INTEGER]
 		once
 			Result := yy_fixed_array (<<
 			    0,    1,    2,    3,    1,    4,    1,    5,    1,    1,
@@ -2901,7 +2901,7 @@ feature {NONE} -- Table templates
 			    1, yy_Dummy>>)
 		end
 
-	yy_accept_template: SPECIAL [INTEGER] is
+	yy_accept_template: SPECIAL [INTEGER]
 		once
 			Result := yy_fixed_array (<<
 			    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
@@ -3000,50 +3000,50 @@ feature {NONE} -- Table templates
 
 feature {NONE} -- Constants
 
-	yyJam_base: INTEGER is 5185
+	yyJam_base: INTEGER = 5185
 			-- Position in `yy_nxt'/`yy_chk' tables
 			-- where default jam table starts
 
-	yyJam_state: INTEGER is 834
+	yyJam_state: INTEGER = 834
 			-- State id corresponding to jam state
 
-	yyTemplate_mark: INTEGER is 835
+	yyTemplate_mark: INTEGER = 835
 			-- Mark between normal states and templates
 
-	yyNull_equiv_class: INTEGER is 1
+	yyNull_equiv_class: INTEGER = 1
 			-- Equivalence code for NULL character
 
-	yyReject_used: BOOLEAN is false
+	yyReject_used: BOOLEAN = false
 			-- Is `reject' called?
 
-	yyVariable_trail_context: BOOLEAN is false
+	yyVariable_trail_context: BOOLEAN = false
 			-- Is there a regular expression with
 			-- both leading and trailing parts having
 			-- variable length?
 
-	yyReject_or_variable_trail_context: BOOLEAN is false
+	yyReject_or_variable_trail_context: BOOLEAN = false
 			-- Is `reject' called or is there a
 			-- regular expression with both leading
 			-- and trailing parts having variable length?
 
-	yyNb_rules: INTEGER is 129
+	yyNb_rules: INTEGER = 129
 			-- Number of rules
 
-	yyEnd_of_buffer: INTEGER is 130
+	yyEnd_of_buffer: INTEGER = 130
 			-- End of buffer rule code
 
-	yyLine_used: BOOLEAN is false
+	yyLine_used: BOOLEAN = false
 			-- Are line and column numbers used?
 
-	yyPosition_used: BOOLEAN is false
+	yyPosition_used: BOOLEAN = false
 			-- Is `position' used?
 
-	INITIAL: INTEGER is 0
-	IN_STR: INTEGER is 1
-	IN_REGEXP1: INTEGER is 2
-	IN_REGEXP2: INTEGER is 3
-	IN_TERM_CONSTRAINT: INTEGER is 4
-	IN_C_DOMAIN_TYPE: INTEGER is 5
+	INITIAL: INTEGER = 0
+	IN_STR: INTEGER = 1
+	IN_REGEXP1: INTEGER = 2
+	IN_REGEXP2: INTEGER = 3
+	IN_TERM_CONSTRAINT: INTEGER = 4
+	IN_C_DOMAIN_TYPE: INTEGER = 5
 			-- Start condition codes
 
 feature -- User-defined features
@@ -3059,7 +3059,7 @@ feature {NONE} -- Local variables
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Create a new scanner.
 		do
 			make_compressed_scanner_skeleton
@@ -3069,7 +3069,7 @@ feature {NONE} -- Initialization
 
 feature -- Initialization
 
-	reset is
+	reset
 			-- Reset scanner before scanning next input.
 		do
 			reset_compressed_scanner_skeleton
@@ -3093,10 +3093,10 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	Init_buffer_size: INTEGER is 256
+	Init_buffer_size: INTEGER = 256
 				-- Initial size for `in_buffer'
 
-	dadl_parser: DADL2_VALIDATOR is
+	dadl_parser: DADL2_VALIDATOR
 		once
 			create Result.make
 		end

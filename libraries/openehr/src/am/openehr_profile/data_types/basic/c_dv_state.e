@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Types Archetype Model"
 	
 	description: "[
@@ -27,7 +27,7 @@ inherit
 
 feature -- Access
 
-	default_value: DV_BOOLEAN is
+	default_value: DV_BOOLEAN
 		do
 		end
 
@@ -36,19 +36,19 @@ feature -- Access
 
 feature -- Status Report
 
-	valid_value (a_value: DV_STATE): BOOLEAN is 
+	valid_value (a_value: DV_STATE): BOOLEAN 
 		do
 		end
 
 feature -- Output
 
-	as_display_string:STRING is
+	as_display_string:STRING
 		do
 			create Result.make(0)
 			Result.append("{" + c_value.as_display_string + "}")
 		end
 
-	as_canonical_string:STRING is
+	as_canonical_string:STRING
 		do
 			create Result.make(0)
 			Result.append( "<c_value>" + c_value.as_canonical_string + "</c_value>")

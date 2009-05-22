@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "parser for Object Graph paths"
 	keywords:    "OG_PATH"
@@ -35,7 +35,7 @@ create
 
 feature {NONE} -- Implementation
 
-	yy_build_parser_tables is
+	yy_build_parser_tables
 			-- Build parser tables.
 		do
 			yytranslate := yytranslate_template
@@ -50,12 +50,12 @@ feature {NONE} -- Implementation
 			yycheck := yycheck_template
 		end
 
-	yy_create_value_stacks is
+	yy_create_value_stacks
 			-- Create value stacks.
 		do
 		end
 
-	yy_init_value_stacks is
+	yy_init_value_stacks
 			-- Initialize value stacks.
 		do
 			yyvsp1 := -1
@@ -64,7 +64,7 @@ feature {NONE} -- Implementation
 			yyvsp4 := -1
 		end
 
-	yy_clear_value_stacks is
+	yy_clear_value_stacks
 			-- Clear objects in semantic value stacks so that
 			-- they can be collected by the garbage collector.
 		do
@@ -82,7 +82,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	yy_push_last_value (yychar1: INTEGER) is
+	yy_push_last_value (yychar1: INTEGER)
 			-- Push semantic value associated with token `last_token'
 			-- (with internal id `yychar1') on top of corresponding
 			-- value stack.
@@ -136,7 +136,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	yy_push_error_value is
+	yy_push_error_value
 			-- Push semantic value associated with token 'error'
 			-- on top of corresponding value stack.
 		local
@@ -162,7 +162,7 @@ feature {NONE} -- Implementation
 			yyvs1.put (yyval1, yyvsp1)
 		end
 
-	yy_pop_last_value (yystate: INTEGER) is
+	yy_pop_last_value (yystate: INTEGER)
 			-- Pop semantic value from stack when in state `yystate'.
 		local
 			yy_type_id: INTEGER
@@ -189,7 +189,7 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Semantic actions
 
-	yy_do_action (yy_act: INTEGER) is
+	yy_do_action (yy_act: INTEGER)
 			-- Execute semantic action.
 		local
 			yyval1: ANY
@@ -205,7 +205,7 @@ end
 
 			output := yyvs4.item (yyvsp4)
 			accept
-		
+
 if yy_parsing_status = yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
@@ -236,7 +236,7 @@ end
 
 			output := yyvs4.item (yyvsp4)
 			accept
-		
+
 if yy_parsing_status = yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
@@ -267,7 +267,7 @@ end
 
 			output := yyvs4.item (yyvsp4)
 			accept
-		
+
 if yy_parsing_status = yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
@@ -300,7 +300,7 @@ end
 				io.put_string("....OG_PATH NOT validated%N")
 			end
 			abort
-		
+
 if yy_parsing_status = yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
@@ -313,7 +313,7 @@ end
 
 			yyval4 := yyvs4.item (yyvsp4)
 			yyval4.set_movable
-		
+
 if yy_parsing_status = yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
@@ -329,7 +329,7 @@ end
 			debug("OG_PATH_parse")
 				io.put_string("....absolute_path (root); %N")
 			end
-		
+
 if yy_parsing_status = yyContinue then
 	yyssp := yyssp - 1
 	yyvsp4 := yyvsp4 + 1
@@ -363,7 +363,7 @@ end
 			debug("OG_PATH_parse")
 				io.put_string("....absolute_path; %N")
 			end
-		
+
 if yy_parsing_status = yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
@@ -380,7 +380,7 @@ end
 			debug("OG_PATH_parse")
 				io.put_string("....absolute_path (appended relative path); %N")
 			end
-		
+
 if yy_parsing_status = yyContinue then
 	yyssp := yyssp - 3
 	yyvsp4 := yyvsp4 -1
@@ -394,7 +394,7 @@ debug ("GEYACC")
 end
 
 			create yyval4.make_relative(yyvs3.item (yyvsp3))
-		
+
 if yy_parsing_status = yyContinue then
 	yyssp := yyssp - 1
 	yyvsp4 := yyvsp4 + 1
@@ -425,7 +425,7 @@ end
 
 			yyval4 := yyvs4.item (yyvsp4)
 			yyval4.append_segment(yyvs3.item (yyvsp3))
-		
+
 if yy_parsing_status = yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -442,7 +442,7 @@ end
 			debug("OG_PATH_parse")
 				io.put_string("...path_segment: " + yyvs2.item (yyvsp2 - 1) + "[" + yyvs2.item (yyvsp2) + "]%N")
 			end
-		
+
 if yy_parsing_status = yyContinue then
 	yyssp := yyssp - 2
 	yyvsp3 := yyvsp3 + 1
@@ -475,7 +475,7 @@ end
 			debug("OG_PATH_parse")
 				io.put_string("...path_segment: " + yyvs2.item (yyvsp2) + "%N")
 			end
-		
+
 if yy_parsing_status = yyContinue then
 	yyssp := yyssp - 1
 	yyvsp3 := yyvsp3 + 1
@@ -508,7 +508,7 @@ end
 			end
 		end
 
-	yy_do_error_action (yy_act: INTEGER) is
+	yy_do_error_action (yy_act: INTEGER)
 			-- Execute error action.
 		do
 			inspect yy_act
@@ -523,7 +523,7 @@ end
 
 feature {NONE} -- Table templates
 
-	yytranslate_template: SPECIAL [INTEGER] is
+	yytranslate_template: SPECIAL [INTEGER]
 			-- Template for `yytranslate'
 		once
 			Result := yyfixed_array (<<
@@ -558,7 +558,7 @@ feature {NONE} -- Table templates
 			    5,    6,    7, yyDummy>>)
 		end
 
-	yyr1_template: SPECIAL [INTEGER] is
+	yyr1_template: SPECIAL [INTEGER]
 			-- Template for `yyr1'
 		once
 			Result := yyfixed_array (<<
@@ -566,7 +566,7 @@ feature {NONE} -- Table templates
 			   12,    9,    9, yyDummy>>)
 		end
 
-	yytypes1_template: SPECIAL [INTEGER] is
+	yytypes1_template: SPECIAL [INTEGER]
 			-- Template for `yytypes1'
 		once
 			Result := yyfixed_array (<<
@@ -574,14 +574,14 @@ feature {NONE} -- Table templates
 			    4,    2,    1,    1,    4,    3,    1,    1,    1, yyDummy>>)
 		end
 
-	yytypes2_template: SPECIAL [INTEGER] is
+	yytypes2_template: SPECIAL [INTEGER]
 			-- Template for `yytypes2'
 		once
 			Result := yyfixed_array (<<
 			    1,    1,    1,    2,    2,    2,    1,    1,    1, yyDummy>>)
 		end
 
-	yydefact_template: SPECIAL [INTEGER] is
+	yydefact_template: SPECIAL [INTEGER]
 			-- Template for `yydefact'
 		once
 			Result := yyfixed_array (<<
@@ -589,14 +589,14 @@ feature {NONE} -- Table templates
 			    5,   11,    0,    0,    8,   10,    0,    0,    0, yyDummy>>)
 		end
 
-	yydefgoto_template: SPECIAL [INTEGER] is
+	yydefgoto_template: SPECIAL [INTEGER]
 			-- Template for `yydefgoto'
 		once
 			Result := yyfixed_array (<<
 			    5,    6,    7,    8,   16, yyDummy>>)
 		end
 
-	yypact_template: SPECIAL [INTEGER] is
+	yypact_template: SPECIAL [INTEGER]
 			-- Template for `yypact'
 		once
 			Result := yyfixed_array (<<
@@ -604,14 +604,14 @@ feature {NONE} -- Table templates
 			   -2, -32768,    4,    4,   -2, -32768,    5,    3, -32768, yyDummy>>)
 		end
 
-	yypgoto_template: SPECIAL [INTEGER] is
+	yypgoto_template: SPECIAL [INTEGER]
 			-- Template for `yypgoto'
 		once
 			Result := yyfixed_array (<<
 			    0, -32768, -32768,   -1, -32768, yyDummy>>)
 		end
 
-	yytable_template: SPECIAL [INTEGER] is
+	yytable_template: SPECIAL [INTEGER]
 			-- Template for `yytable'
 		once
 			Result := yyfixed_array (<<
@@ -619,7 +619,7 @@ feature {NONE} -- Table templates
 			   12,   14,   11,   15, yyDummy>>)
 		end
 
-	yycheck_template: SPECIAL [INTEGER] is
+	yycheck_template: SPECIAL [INTEGER]
 			-- Template for `yycheck'
 		once
 			Result := yyfixed_array (<<
@@ -679,23 +679,23 @@ feature {NONE} -- Semantic value stacks
 
 feature {NONE} -- Constants
 
-	yyFinal: INTEGER is 18
+	yyFinal: INTEGER = 18
 			-- Termination state id
 
-	yyFlag: INTEGER is -32768
+	yyFlag: INTEGER = -32768
 			-- Most negative INTEGER
 
-	yyNtbase: INTEGER is 9
+	yyNtbase: INTEGER = 9
 			-- Number of tokens
 
-	yyLast: INTEGER is 13
+	yyLast: INTEGER = 13
 			-- Upper bound of `yytable' and `yycheck'
 
-	yyMax_token: INTEGER is 262
+	yyMax_token: INTEGER = 262
 			-- Maximum token id
 			-- (upper bound of `yytranslate'.)
 
-	yyNsyms: INTEGER is 14
+	yyNsyms: INTEGER = 14
 			-- Number of symbols
 			-- (terminal and nonterminal)
 
@@ -705,7 +705,7 @@ feature -- User-defined features
 
 feature -- Initialization
 
-	make is
+	make
 			-- Create a new Eiffel parser.
 		do
 			make_eiffel_scanner
@@ -713,7 +713,7 @@ feature -- Initialization
 			create indent.make(0)
 		end
 
-	execute(in_text:STRING) is
+	execute (in_text: STRING)
 		do
 			reset
 			create error_text.make(0)
@@ -723,7 +723,7 @@ feature -- Initialization
 
 feature {YY_PARSER_ACTION} -- Basic Operations
 
-	report_error (a_message: STRING) is
+	report_error (a_message: STRING)
 			-- Print error message.
 		do
 			error_text.append (a_message)

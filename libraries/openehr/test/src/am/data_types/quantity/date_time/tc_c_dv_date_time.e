@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "Ocean openEHR kernel test framework"
 	description: "Test C_DV_DATE_TIME"
 	keywords:    "test, date"
@@ -20,25 +20,25 @@ inherit
 			check_result
 		end
 
-creation
+create
 	make
 
 feature -- Access
 
-	title: STRING is "C_DV_DATE_TIME"
+	title: STRING = "C_DV_DATE_TIME"
 
-	prereqs: ARRAY[STRING] is
+	prereqs: ARRAY[STRING]
 		once
 			Result := <<>>
 		end
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 		do
 		end
 
-	execute is
+	execute
 		local
 			a_date:C_DV_DATE_TIME
 		do
@@ -46,7 +46,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	check_result is
+	check_result
 		do
 		end
 

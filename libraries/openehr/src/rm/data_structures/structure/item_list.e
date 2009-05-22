@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Structures Reference Model"
 
 	description: "[
@@ -47,48 +47,48 @@ feature -- Access
 	items: LIST [ELEMENT]
 			-- Retrieve all items
 
-	item_count: INTEGER is
+	item_count: INTEGER
 			-- Count of all items
 		do
 		end
 
-	names: LIST [DV_TEXT] is
+	names: LIST [DV_TEXT]
 			-- Retrieve the names of all items
 		do
 		end
 
-	named_item(a_name:STRING): ELEMENT is
+	named_item(a_name:STRING): ELEMENT
 			-- Retrieve the item with name ‘a_name’
 		do
 		end
 
-	ith_item(i:INTEGER): ELEMENT is
+	ith_item(i:INTEGER): ELEMENT
 			-- Retrieve the i-th item with name
 		require
 			i >= 1 and i <= item_count
 		do
 		end
 
-	path_of_item (a_loc: LOCATABLE): STRING is
+	path_of_item (a_loc: LOCATABLE): STRING
 			-- The path to an item relative to the root of this archetyped structure.
 		do
 		end
 
-	item_at_path (a_path: STRING): LOCATABLE is
+	item_at_path (a_path: STRING): LOCATABLE
 			-- The item at a path (relative to this item).
 		do
 		end
 
 feature -- Status Report
 
-	path_exists (a_path: STRING): BOOLEAN is
+	path_exists (a_path: STRING): BOOLEAN
 			-- True if the path is valid with respect to the current item.
 		do
 		end
 
 feature -- Conversion
 
-	as_hierarchy: CLUSTER is
+	as_hierarchy: CLUSTER
 			-- the physical representation as a CEN 13606-compliant structure
 		do
 		end

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Shared UI resources"
 	keywords:    "test, ADL"
@@ -18,7 +18,7 @@ inherit
 	
 feature -- Access
 
-	has_icon_directory: BOOLEAN is
+	has_icon_directory: BOOLEAN
 			-- True if icon directory available
 		local
 			a_dir: DIRECTORY
@@ -27,7 +27,7 @@ feature -- Access
 			Result := a_dir.exists
 		end
 		
-	pixmaps: HASH_TABLE[EV_PIXMAP, STRING] is
+	pixmaps: HASH_TABLE[EV_PIXMAP, STRING]
 			-- table of pixmap file paths keyed by logical name
 		require
 			has_icon_directory
@@ -41,7 +41,7 @@ feature -- Access
 			Result.put(pixmap, "openEHR logo")
 		end
 
-	splash_text: STRING is
+	splash_text: STRING
 			-- create a splash string for the console
 		once
 			create Result.make(0)

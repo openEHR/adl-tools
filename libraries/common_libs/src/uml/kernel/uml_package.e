@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Resuable Library Project"
 	description: "[
 			 UML TypedElement abstraction, as defined in OMG UML 2.0 Infrastructure 
@@ -32,7 +32,7 @@ create
 
 feature -- Initialisation
 
-	make(a_name: STRING) is
+	make(a_name: STRING)
 		require
 			Name_valid: a_name /= Void and then not a_name.is_empty
 		do
@@ -58,7 +58,7 @@ feature -- Access
 
 feature -- Modification
 
-	add_nested_package(a_pkg: UML_PACKAGE) is
+	add_nested_package(a_pkg: UML_PACKAGE)
 			-- add another child package
 		require
 			a_package_exists: a_pkg /= Void
@@ -68,7 +68,7 @@ feature -- Modification
 			owned_member.extend(a_pkg)
 		end
 
-	add_class(a_class: UML_CLASS) is
+	add_class(a_class: UML_CLASS)
 			-- add another class
 		require
 			a_class_exists: a_class /= Void
@@ -77,7 +77,7 @@ feature -- Modification
 			owned_member.extend(a_class)
 		end
 
-	set_nesting_package(a_pkg: UML_PACKAGE) is
+	set_nesting_package(a_pkg: UML_PACKAGE)
 			-- set parent
 		require
 			a_package_exists: a_pkg /= Void
@@ -87,7 +87,7 @@ feature -- Modification
 
 feature -- Serialisation
 
-	synchronise_to_tree is
+	synchronise_to_tree
 		local
 			an_attr_node: DT_ATTRIBUTE_NODE
 			dummy_node: DT_OBJECT_ITEM

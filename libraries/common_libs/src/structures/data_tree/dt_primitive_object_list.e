@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Node of simple type in an dADL parse tree. Simple
@@ -36,7 +36,7 @@ feature -- Access
 
 feature -- Modification
 
-	set_value(a_value: like value) is
+	set_value(a_value: like value)
 		local
 			string_list: SEQUENCE[STRING]
 		do
@@ -48,7 +48,7 @@ feature -- Modification
 
 feature -- Conversion
 
-	as_string: STRING is
+	as_string: STRING
 		local
 			out_val: STRING
 		do
@@ -80,7 +80,7 @@ feature -- Conversion
 			end
 		end
 
-	clean_as_string(cleaner: FUNCTION [ANY, TUPLE[STRING], STRING]):STRING is
+	clean_as_string (cleaner: FUNCTION [ANY, TUPLE [STRING], STRING]): STRING
 			-- generate a cleaned form of this object as a string, using `cleaner' to do the work
 		local
 			out_val: STRING
@@ -115,13 +115,13 @@ feature -- Conversion
 
 feature -- Serialisation
 
-	enter_subtree(serialiser: DT_SERIALISER; depth: INTEGER) is
+	enter_subtree(serialiser: DT_SERIALISER; depth: INTEGER)
 			-- perform serialisation at start of block for this node
 		do
 			serialiser.start_primitive_object_list(Current, depth)
 		end
 
-	exit_subtree(serialiser: DT_SERIALISER; depth: INTEGER) is
+	exit_subtree(serialiser: DT_SERIALISER; depth: INTEGER)
 			-- perform serialisation at end of block for this node
 		do
 			serialiser.end_primitive_object_list(Current, depth)

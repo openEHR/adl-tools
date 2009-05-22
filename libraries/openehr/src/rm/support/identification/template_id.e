@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Common Reference Model"
 
 	description: "[
@@ -33,7 +33,7 @@ create
 
 feature -- Definitions
 
-	Default_id: STRING is "openehr-ehr-COMPOSITION.any.v1"
+	Default_id: STRING = "openehr-ehr-COMPOSITION.any.v1"
 
 feature -- Access
 

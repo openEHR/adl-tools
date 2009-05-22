@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 			     Abstract class providing convertibility from a DT structure to any object type.
@@ -24,7 +24,7 @@ deferred class DT_CONVERTIBLE
 
 feature -- Initialisation
 
-	make_dt is
+	make_dt
 			-- basic make routine to guarantee validity on creation
 		deferred
 		end
@@ -36,7 +36,7 @@ feature -- Representation
 
 feature -- Synchronisation
 
-	synchronise_to_tree is
+	synchronise_to_tree
 			-- synchronise to parse tree representation
 		do
 			create dt_representation.make_from_object(Current)
@@ -44,7 +44,7 @@ feature -- Synchronisation
 
 feature {DT_OBJECT_CONVERTER} -- Conversion
 
-	persistent_attributes: ARRAYED_LIST[STRING] is
+	persistent_attributes: ARRAYED_LIST[STRING]
 			-- list of attribute names to persist as DT structure
 			-- empty structure means all attributes
 		deferred

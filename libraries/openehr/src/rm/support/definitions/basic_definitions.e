@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR common definitions"
 	
 	description: "Definitions of some basic constant values for the openEHR models"
@@ -17,9 +17,9 @@ class BASIC_DEFINITIONS
 
 feature -- Definitions
 
-	CR: CHARACTER is '%/015/'
+	CR: CHARACTER = '%/015/'
 
-	LF: CHARACTER is '%/012/'
+	LF: CHARACTER = '%/012/'
 
 end
 

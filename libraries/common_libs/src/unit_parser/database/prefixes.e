@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "[
 			 Metric prefixes table, designed on the basis of the Unified Code for Units of
@@ -36,7 +36,7 @@ create
 
 feature -- Initialisation
 
-	make(a_file_name:STRING) is
+	make(a_file_name:STRING)
 		require
 			File_name_exists: a_file_name /= Void and then not a_file_name.is_empty
 		local
@@ -62,7 +62,7 @@ feature -- Initialisation
 
 feature -- Definitions
 
-	Prefixes_section_name:STRING is "prefixes"
+	Prefixes_section_name:STRING = "prefixes"
 			-- the main section in the file is indicated by "[prefixes]
 
 feature -- Access
@@ -73,21 +73,21 @@ feature -- Access
 	prefixes_by_symbol: HASH_TABLE[PREFIX_DESCRIPTOR, STRING]
 			-- prefix table, in the form of a series of PREFIX_DESCRIPTORs, keyed by prefix symbol
 
-	prefix_with_name(a_name:STRING):PREFIX_DESCRIPTOR is
+	prefix_with_name(a_name:STRING):PREFIX_DESCRIPTOR
 		require
 			Name_exists: a_name /= Void and then has_prefix(a_name)
 		do
 			Result := prefixes.item(a_name)
 		end
 
-	has_prefix(a_name:STRING):BOOLEAN is
+	has_prefix(a_name:STRING):BOOLEAN
 		require
 			Name_exists: a_name /= Void and then not a_name.is_empty
 		do
 			Result := prefixes.has(a_name)
 		end
 
-	has_prefix_symbol(a_symbol:STRING):BOOLEAN is
+	has_prefix_symbol(a_symbol:STRING):BOOLEAN
 		require
 			Symbol_exists: a_symbol /= Void and then not a_symbol.is_empty
 		do
@@ -96,7 +96,7 @@ feature -- Access
 
 feature -- Output
 
-	out:STRING is
+	out:STRING
 		do
 			create Result.make(0)
 			from prefixes.start until prefixes.off loop

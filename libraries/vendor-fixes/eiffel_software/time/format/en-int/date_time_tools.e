@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 				International locale English settings; this class corrects ES's 
 				US english versoin which contains the US non-standard way of 

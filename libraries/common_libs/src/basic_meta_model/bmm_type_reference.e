@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR re-usable library"
 	description: "[
 				 Abstract idea of specifying a type in some context. This is not the same as 'defining' a class.

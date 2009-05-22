@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Resuable Library Project"
 	description: "[
 			 UML class abstraction, as defined in OMG UML 2.0 Infrastructure 
@@ -30,7 +30,7 @@ create
 
 feature -- Initialisation
 
-	make(a_name: STRING) is
+	make(a_name: STRING)
 		require
 			Name_exists: a_name /= Void and then not a_name.is_empty
 		do
@@ -52,7 +52,7 @@ feature -- Access
 	
 feature -- Modification
 
-	add_attribute (a_property: UML_PROPERTY) is
+	add_attribute (a_property: UML_PROPERTY)
 			-- add an attribute
 		require
 			a_property /= Void
@@ -61,7 +61,7 @@ feature -- Modification
 			owned_element.extend(a_property)
 		end
 
-	add_operation (a_property: UML_OPERATION) is
+	add_operation (a_property: UML_OPERATION)
 			-- add an operation
 		require
 			a_property /= Void
@@ -70,7 +70,7 @@ feature -- Modification
 			owned_element.extend(a_property)
 		end
 
-	add_parent(a_parent: UML_CLASS) is
+	add_parent(a_parent: UML_CLASS)
 			-- 
 		require
 			A_parent_exists: a_parent /= Void
@@ -80,7 +80,7 @@ feature -- Modification
 	
 feature -- Serialisation
 
-	synchronise_to_tree is
+	synchronise_to_tree
 		local
 			dummy_node: DT_OBJECT_ITEM
 			super_classes: ARRAYED_LIST[STRING]

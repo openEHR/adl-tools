@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Language-specific detail of resource description. When a resource 
@@ -39,11 +39,11 @@ create
 	
 feature -- Definitions
 
-	Default_purpose: STRING is "???"
+	Default_purpose: STRING = "???"
 	
 feature -- Initialisation
 
-	make_dt is
+	make_dt
 			-- 
 		do
 			language := Default_language_code
@@ -51,7 +51,7 @@ feature -- Initialisation
 			purpose.append (Default_purpose)
 		end
 		
-	make(a_lang: CODE_PHRASE; a_purpose: STRING) is
+	make(a_lang: CODE_PHRASE; a_purpose: STRING)
 		require
 			Lang_valid: a_lang /= Void
 			Purpose_valid: a_purpose /= Void and then not a_purpose.is_empty
@@ -63,7 +63,7 @@ feature -- Initialisation
 			Purpose_set: purpose = a_purpose
 		end
 
-	make_from_language(a_lang_name: STRING; a_purpose: STRING) is
+	make_from_language(a_lang_name: STRING; a_purpose: STRING)
 			-- make using a_lang_name and default language code ste
 		require
 			Lang_valid: a_lang_name /= Void and then not a_lang_name.is_empty
@@ -113,7 +113,7 @@ feature -- Status
 
 feature -- Modification
 
-	set_purpose(a_purpose: STRING) is
+	set_purpose(a_purpose: STRING)
 			-- set purpose
 		require
 			Purpose_valid: a_purpose /= Void and then not a_purpose.is_empty
@@ -123,7 +123,7 @@ feature -- Modification
 			Purpose_set: purpose = a_purpose
 		end
 
-	set_use(a_use: STRING) is
+	set_use(a_use: STRING)
 			-- set use
 		require
 			Purpose_valid: a_use /= Void and then not a_use.is_empty
@@ -133,7 +133,7 @@ feature -- Modification
 			Use_set: use = a_use
 		end
 
-	set_misuse(a_misuse: STRING) is
+	set_misuse(a_misuse: STRING)
 			-- set misuse
 		require
 			Misuse_valid: a_misuse /= Void and then not a_misuse.is_empty
@@ -143,7 +143,7 @@ feature -- Modification
 			Misuse_set: misuse = a_misuse
 		end
 
-	set_copyright(a_copyright: STRING) is
+	set_copyright(a_copyright: STRING)
 			-- set copyright
 		require
 			Copyright_valid: a_copyright /= Void and then not a_copyright.is_empty
@@ -153,7 +153,7 @@ feature -- Modification
 			Copyright_set: copyright = a_copyright
 		end
 
-	add_keyword(a_keyword: STRING) is
+	add_keyword(a_keyword: STRING)
 			-- add a_keyword to keywords
 		require
 			Contributor_valid: a_keyword /= Void and then not a_keyword.is_empty
@@ -166,7 +166,7 @@ feature -- Modification
 			Keyword_added: keywords.has(a_keyword)
 		end
 		
-	add_other_detail(a_key, a_value: STRING) is
+	add_other_detail(a_key, a_value: STRING)
 			-- add the key, value pair to other_details
 		require
 			Key_valid: a_key /= Void and then not a_key.is_empty
@@ -180,7 +180,7 @@ feature -- Modification
 			Other_details_set: other_details.item(a_key) = a_value
 		end
 
-	add_original_resource_uri(a_key, a_value: STRING) is
+	add_original_resource_uri(a_key, a_value: STRING)
 			-- add the key, value pair to original_resource_uri
 		require
 			Key_valid: a_key /= Void and then not a_key.is_empty
@@ -197,7 +197,7 @@ feature -- Modification
 		
 feature -- Copying
 
-	translated_copy(a_lang: STRING): RESOURCE_DESCRIPTION_ITEM is
+	translated_copy(a_lang: STRING): RESOURCE_DESCRIPTION_ITEM
 			-- generate a copy of this object, with all strings sss replaced by
 			-- "*sss(orig_lang)"
 		require
@@ -254,7 +254,7 @@ feature -- Copying
 		
 feature {DT_OBJECT_CONVERTER} -- Conversion
 
-	persistent_attributes: ARRAYED_LIST[STRING] is
+	persistent_attributes: ARRAYED_LIST[STRING]
 			-- list of attribute names to persist as DT structure
 			-- empty structure means all attributes
 		once

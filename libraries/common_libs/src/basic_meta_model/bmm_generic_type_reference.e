@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR re-usable library"
 	description: "Concept of a constraint on a type"
 	keywords:    "model, UML"
@@ -27,7 +27,7 @@ feature -- Access
 	generic_parameters: ARRAYED_LIST [BMM_TYPE_SPECIFIER]
 			-- generic parameters of the root_type in this type specifier
 
-	flattened_type_list: ARRAYED_LIST [STRING] is
+	flattened_type_list: ARRAYED_LIST [STRING]
 			-- completely flattened list of type names, flattening out all generic parameters
 		do
 			create Result.make(0)
@@ -46,7 +46,7 @@ feature -- Status Report
 
 feature -- Output
 
-	as_type_string: STRING is
+	as_type_string: STRING
 			-- name of the type
 		do
 			create Result.make (0)
@@ -66,7 +66,7 @@ feature -- Output
 			Result.append_character (Generic_right_delim)
 		end
 
-	as_flattened_type_string: STRING is
+	as_flattened_type_string: STRING
 			-- string form of the type for matching in archetypes - i.e. ignoring container type names
 		do
 			Result := as_type_string

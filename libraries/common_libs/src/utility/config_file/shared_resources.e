@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "Shared access to a .ini style configuration file."
 	keywords:    "config, resources"
@@ -24,13 +24,13 @@ inherit
 
 feature -- Definitions
 
-	Default_windows_temp_dir: STRING is "C:\Temp"
+	Default_windows_temp_dir: STRING = "C:\Temp"
 
-	Default_unix_temp_dir: STRING is "/tmp"
+	Default_unix_temp_dir: STRING = "/tmp"
 
 feature -- Initialisation
 
-	initialise_resource_config_file_name(str:STRING) is
+	initialise_resource_config_file_name (str: STRING)
 		require
 			File_name_exists: str /= Void and then not str.is_empty
 		do
@@ -39,7 +39,7 @@ feature -- Initialisation
 			resource_config_file_name.is_equal(str)
 		end
 
-	initialise_default_resource_config_file_name is
+	initialise_default_resource_config_file_name
 			-- initialise resources from default resource file location
 		do
 			resource_config_file_name.append(default_resource_config_file_full_path)
@@ -47,7 +47,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	resource_value(a_category, a_resource_name:STRING): STRING is
+	resource_value (a_category, a_resource_name: STRING): STRING
 			-- The value for `a_resource_name', in `a_category', preferably from a command-line option.
 		require
 			Valid_category: a_category /= Void and then not a_category.is_empty
@@ -61,7 +61,7 @@ feature -- Access
 			Result_not_void: Result /= Void
 		end
 
-	resource_value_list(a_category, a_resource_name:STRING):ARRAYED_LIST[STRING] is
+	resource_value_list (a_category, a_resource_name: STRING): ARRAYED_LIST [STRING]
 			-- List of items specified in file setting
 			-- of the form of a comma-separated list.
 		require
@@ -71,7 +71,7 @@ feature -- Access
 			Result := resource_config_file.resource_value_list(a_category, a_resource_name)
 		end
 
-	resource_category_values(a_category:STRING): HASH_TABLE[STRING,STRING] is
+	resource_category_values (a_category: STRING): HASH_TABLE [STRING, STRING]
 			-- get all name/value pairs in 'a_category'
 		require
 			Valid_category: a_category /= Void and then not a_category.is_empty
@@ -98,19 +98,19 @@ feature -- Access
 
 feature -- Environment
 
-	is_windows: BOOLEAN is
+	is_windows: BOOLEAN
 			-- Is the operating system Microsoft Windows?
 		once
 			Result := operating_system.is_windows
 		end
 
-	is_unix: BOOLEAN is
+	is_unix: BOOLEAN
 			-- Is the operating system some form of Unix?
 		once
 			Result := operating_system.is_unix
 		end
 
-	is_mac_os_x: BOOLEAN is
+	is_mac_os_x: BOOLEAN
 			-- Is the operating system Mac OS X?
 		once
 			if is_unix then
@@ -119,21 +119,21 @@ feature -- Environment
 			end
 		end
 
-	Global_config_directory: STRING is
+	Global_config_directory: STRING
 			-- location of global configuration files - /etc
 		once
 			create Result.make(0)
 			Result.append(os_directory_separator.out + "etc")
 		end
 
-	system_config_file_directory: STRING is
+	system_config_file_directory: STRING
 			-- place for config files common to multiple applications
 		once
 			create Result.make(0)
 			Result.append(execution_environment.root_directory_name + "etc")
 		end
 
-	system_temp_file_directory: STRING is
+	system_temp_file_directory: attached STRING
 			-- Standard place for temporary files.
 			-- By default /tmp on unix-like systems and C:\Temp on windows-like systems.
 			-- Windows would normally be "C:\Documents and Settings\(user)\Local Settings\Temp".
@@ -157,18 +157,17 @@ feature -- Environment
 			Result.prune_all_trailing (os_directory_separator)
 			Result.append_character (os_directory_separator)
 		ensure
-			attached: Result /= Void
 			not_empty: not Result.is_empty
 			ends_with_directory_separator: Result @ Result.count = os_directory_separator
 		end
 
-	resource_config_file_name: STRING is
+	resource_config_file_name: STRING
 			-- name of configuration file from which settings are read
 		once
 			create Result.make_empty
 		end
 
-	default_global_resource_config_file_full_path: STRING is
+	default_global_resource_config_file_full_path: STRING
 			-- full path to default global resource configuration file area
 		once
 			Result := Global_config_directory.twin
@@ -180,7 +179,7 @@ feature -- Environment
 			end
 		end
 
-	default_resource_config_file_full_path: STRING is
+	default_resource_config_file_full_path: STRING
 			-- default full path to resource configuration file; same as
 			-- full path to app, but config file has .cfg istead of .exe extension
 		once
@@ -192,7 +191,7 @@ feature -- Environment
 			end
 		end
 
-	default_rm_schema_file_full_path: STRING is
+	default_rm_schema_file_full_path: STRING
 			-- default full path to Reference Model schema file; same as
 			-- full path to app, but config file has .cfg istead of .exe extension
 		once
@@ -200,17 +199,17 @@ feature -- Environment
 			Result.append(os_directory_separator.out + "rm_schema.dadl")
 		end
 
-	execution_environment: EXECUTION_ENVIRONMENT is
+	execution_environment: EXECUTION_ENVIRONMENT
 	    once
 	        create Result
 	    end
 
-	os_directory_separator: CHARACTER is
+	os_directory_separator: CHARACTER
 	    once
 			Result := operating_environment.directory_separator
 	    end
 
-	application_full_path: STRING is
+	application_full_path: attached STRING
 			-- The full path to the application;
 			-- else, if the application is in an Eiffel project's W_code
 			-- or F_code directory, a path within the Eiffel project directory.
@@ -235,11 +234,10 @@ feature -- Environment
 				end
 			end
 		ensure
-			attached: Result /= Void
 			not_empty: not Result.is_empty
 	    end
 
-	application_startup_directory: STRING is
+	application_startup_directory: attached STRING
 			-- The directory in which the application is installed;
 			-- else, if the application is in an Eiffel project's W_code
 			-- or F_code directory, the Eiffel project directory.
@@ -248,22 +246,21 @@ feature -- Environment
 		once
 			Result := file_system.dirname (application_full_path)
 		ensure
-			attached: Result /= Void
 			not_empty: not Result.is_empty
 		end
 
-	application_name: STRING is
+	application_name: STRING
 			-- The name of the application executable, with any leading directory components removed.
 	    once
 			Result := file_system.basename (application_full_path)
 	    end
 
-	current_working_directory: STRING is
+	current_working_directory: STRING
 		do
 			Result := execution_environment.current_working_directory
 		end
 
-	file_exists (path: STRING): BOOLEAN is
+	file_exists (path: STRING): BOOLEAN
 			-- Is `path' a valid, existing file?
 		do
 			if path /= Void and then not path.is_empty then
@@ -271,7 +268,7 @@ feature -- Environment
 			end
 		end
 
-	directory_exists (path: STRING): BOOLEAN is
+	directory_exists (path: STRING): BOOLEAN
 			-- Is `path' a valid, existing directory?
 		do
 			if path /= Void and then not path.is_empty then
@@ -279,7 +276,7 @@ feature -- Environment
 			end
 		end
 
-	extension_replaced (path, new_extension: STRING): STRING
+	extension_replaced (path, new_extension: STRING): attached STRING
 			-- Copy of `path', with its extension replaced by `new_extension'.
 		require
 			path_attached: path /= Void
@@ -292,12 +289,11 @@ feature -- Environment
 			Result := path.twin
 			Result.replace_substring (new_extension, n - file_system.extension (path).count + 1, n)
 		ensure
-			attached: Result /= Void
 			cloned: Result /= path
 			ends_with_new_extension: Result.ends_with (new_extension)
 		end
 
-	locale_language_short: STRING is
+	locale_language_short: STRING
 			-- The ISO 2-char code for the locale language, e.g. "en"
 		local
 			i18n: I18N_LOCALE_MANAGER
@@ -308,7 +304,7 @@ feature -- Environment
 			Result_attached: Result /= Void
 		end
 
-	locale_language_long: STRING is
+	locale_language_long: STRING
 			-- return the ISO 2-char code for the locale language + 2 char code country variant, where appropriate, e.g. "en-uk", "en-au"
 		do
 			-- FIXME: to be implemented
@@ -319,7 +315,7 @@ feature -- Environment
 
 feature -- Element Change
 
-	record_resource_request(a_category, a_resource_name:STRING) is
+	record_resource_request (a_category, a_resource_name: STRING)
 		require
 			Valid_category: a_category /= Void and then not a_category.is_empty
 			Valid_resource_name: a_resource_name /= Void and then not a_resource_name.is_empty
@@ -338,7 +334,7 @@ feature -- Element Change
 			end
 		end
 
-	set_resource_value(a_category, a_resource_name, a_value:STRING) is
+	set_resource_value (a_category, a_resource_name, a_value: STRING)
 		require
 			Valid_category: a_category /= Void and then not a_category.is_empty
 			Valid_resource_name: a_resource_name /= Void and then not a_resource_name.is_empty
@@ -347,7 +343,7 @@ feature -- Element Change
 			resource_config_file.set_resource_value(a_category, a_resource_name, a_value)
 		end
 
-	set_resource_value_list(a_category, a_resource_name: STRING; a_value: LIST[STRING]) is
+	set_resource_value_list(a_category, a_resource_name: STRING; a_value: LIST[STRING])
 		require
 			Valid_category: a_category /= Void and then not a_category.is_empty
 			Valid_resource_name: a_resource_name /= Void and then not a_resource_name.is_empty
@@ -356,7 +352,7 @@ feature -- Element Change
 			resource_config_file.set_resource_value_list(a_category, a_resource_name, a_value)
 		end
 
-	set_status_reporting_level (v: INTEGER) is
+	set_status_reporting_level (v: INTEGER)
 			-- Set `status_reporting_level'.
 		do
 			set_resource_value ("default", "status_reporting_level", v.out)
@@ -364,7 +360,7 @@ feature -- Element Change
 
 feature -- Element Removal
 
-	remove_resource(a_category, a_resource_name:STRING) is
+	remove_resource (a_category, a_resource_name: STRING)
 			-- remove the resource a_resource_name
 		require
 			Valid_category: a_category /= Void and then not a_category.is_empty
@@ -375,7 +371,7 @@ feature -- Element Removal
 
 feature -- Conversion
 
-	substitute_env_vars(s:STRING): STRING is
+	substitute_env_vars (s: STRING): STRING
 			-- expand the environment variables, delimited by a '$' and any
 			-- non alphanumeric character except underscore, or end of string,
 			-- in the string s
@@ -423,7 +419,7 @@ feature -- Conversion
 
 feature -- Output
 
-	resources_as_list: ARRAYED_LIST[STRING] is
+	resources_as_list: ARRAYED_LIST[STRING]
 			-- list of resources configured for application, in format:
 			--         category        res_name                res_val
 		do
@@ -432,7 +428,7 @@ feature -- Output
 			Result_exists: Result /= Void
 		end
 
-	resources_requested_as_list: ARRAYED_LIST[STRING] is
+	resources_requested_as_list: ARRAYED_LIST[STRING]
 			-- list of resources requested by application, in format:
 			--         category        res_name                res_val
 		do
@@ -443,7 +439,7 @@ feature -- Output
 
 feature -- Persistence
 
-	save_resources is
+	save_resources
 			-- save current resource settings in file
 			-- of same name as application, with extnsion '.cfg'
 		do
@@ -452,22 +448,22 @@ feature -- Persistence
 
 feature {NONE} -- Implementation
 
-	resources: HASH_TABLE[HASH_TABLE[STRING,STRING], STRING] is
+	resources: HASH_TABLE[HASH_TABLE[STRING,STRING], STRING]
 		do
 			Result := resource_config_file.resources
 		end
 
-	requested_resources: HASH_TABLE[HASH_TABLE[STRING,STRING],STRING] is
+	requested_resources: HASH_TABLE[HASH_TABLE[STRING,STRING],STRING]
 		do
 			Result := resource_config_file.requested_resources
 		end
 
-	res_to_list (res: HASH_TABLE[HASH_TABLE[STRING,STRING],STRING]): ARRAYED_LIST[STRING] is
+	res_to_list (res: HASH_TABLE[HASH_TABLE [STRING, STRING], STRING]): ARRAYED_LIST [STRING]
 			-- actual resources read in resource file; result in format
 			--         category        res_name                res_val
         local
-			str:STRING
-			resource_list:HASH_TABLE[STRING,STRING]
+			str: STRING
+			resource_list: HASH_TABLE [STRING, STRING]
 		do
 			create Result.make(0)
 
@@ -503,7 +499,7 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Implementation
 
-	resource_config_file: CONFIG_FILE_ACCESS is
+	resource_config_file: CONFIG_FILE_ACCESS
 		once
 			create Result.make(resource_config_file_name)
 		end

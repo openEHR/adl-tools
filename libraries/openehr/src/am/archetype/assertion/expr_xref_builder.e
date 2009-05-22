@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Visitor to build list of path references found in assertions"
 	keywords:    "visitor, assertion expressions"
@@ -23,7 +23,7 @@ inherit
 
 feature -- Initialisation
 
-	initialise(an_archetype: ARCHETYPE; an_assertion: ASSERTION) is
+	initialise(an_archetype: ARCHETYPE; an_assertion: ASSERTION)
 			-- set assertion
 		require
 			Archetype_valid: an_archetype /= Void
@@ -35,7 +35,7 @@ feature -- Initialisation
 
 feature -- Visitor
 
-	start_expr_leaf(a_node: EXPR_LEAF; depth: INTEGER) is
+	start_expr_leaf(a_node: EXPR_LEAF; depth: INTEGER)
 			-- enter an EXPR_LEAF
 		local
 			tgt_path: STRING
@@ -45,7 +45,7 @@ feature -- Visitor
 				if not archetype.invariants_index.has(tgt_path) then
 					archetype.invariants_index.put(create {ARRAYED_LIST[EXPR_LEAF]}.make(0), tgt_path)
 				end
-				archetype.invariants_index.item(tgt_path).extend(a_node)
+				archetype.invariants_index.item(tgt_path).extend (a_node)
 			end
 		end
 

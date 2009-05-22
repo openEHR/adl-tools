@@ -1,4 +1,4 @@
-indexing
+note
 
 	component:   "openEHR Common Archetype Model"
 
@@ -37,7 +37,7 @@ create
 
 feature -- Initialisation
 
-	make_range(an_interval: INTERVAL[ISO8601_DATE]) is
+	make_range(an_interval: INTERVAL[ISO8601_DATE])
 		require
 			Interval_exists: an_interval /= Void
 		do
@@ -46,7 +46,7 @@ feature -- Initialisation
 			range = an_interval
 		end
 
-	make_string_range(a_lower, an_upper: STRING) is
+	make_string_range(a_lower, an_upper: STRING)
 			-- make from two iso8601 strings. Either but not both may be Void, indicating an
 			-- open-ended interval; they may also be the same, meaning a single point.
 			-- Limits are automatically included in the range
@@ -69,7 +69,7 @@ feature -- Initialisation
 			end
 		end
 
-	make_from_pattern(a_pattern: STRING) is
+	make_from_pattern(a_pattern: STRING)
 			-- create Result from an ISO8601-based pattern like "yyyy-mm-XX"
 			-- allowed patterns:
 			--	"yyyy-mm-dd" - full date required
@@ -92,7 +92,7 @@ feature -- Access
 	pattern: STRING
 			-- ISO8601-based pattern like "yyyy-mm-??"
 
-	prototype_value: ISO8601_DATE is
+	prototype_value: ISO8601_DATE
 		do
 			if range /= Void then
 				Result := range.lower
@@ -101,7 +101,7 @@ feature -- Access
 			end
 		end
 
-	rm_type_name: STRING is
+	rm_type_name: STRING
 		once
 			Result := Iso_class_name_leader.twin
 			Result.append(generating_type.substring (3, generating_type.count))
@@ -109,7 +109,7 @@ feature -- Access
 
 feature -- Status Report
 
-	valid_value (a_value: ISO8601_DATE): BOOLEAN is
+	valid_value (a_value: ISO8601_DATE): BOOLEAN
 		do
 			if range /= Void then
 				Result := range.has(a_value)
@@ -121,7 +121,7 @@ feature -- Status Report
 
 feature -- Comparison
 
-	node_conforms_to (other: like Current): BOOLEAN is
+	node_conforms_to (other: like Current): BOOLEAN
 			-- True if this node is a subset of, or the same as `other'
 		do
 			if pattern /= Void then
@@ -133,7 +133,7 @@ feature -- Comparison
 
 feature -- Output
 
-	as_string: STRING is
+	as_string: STRING
 		do
 			create Result.make(0)
 			if range /= Void then

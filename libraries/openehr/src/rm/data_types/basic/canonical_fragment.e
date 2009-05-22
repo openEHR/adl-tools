@@ -1,9 +1,9 @@
-indexing
+note
 	component:   "openEHR Data Types"
-	
+
 	description: "Abstract parent type of all concrete data value types"
 	keywords:    "data"
-	
+
 	requirements:"ISO 18308 TS V1.0 STR 3.1 - 3.13"
 	design:      "openEHR Data Types Reference Model 1.7"
 
@@ -22,32 +22,32 @@ inherit
 	XML_TOOLS
 		export {NONE} all
 	end
-	
+
 feature -- Initialization
-	
-	make_from_canonical_string(str:STRING) is
+
+	make_from_canonical_string (str: STRING)
 		require
 			String_exists: str /= Void and then valid_canonical_string(str)
 		deferred
 		end
-		
+
 feature -- Status Report
 
-	valid_canonical_string(str: STRING): BOOLEAN is
+	valid_canonical_string (str: STRING): BOOLEAN
 			-- True if str contains required tags
 		deferred
 		end
 
 feature -- Output
 
-	as_canonical_string: STRING is
+	as_canonical_string: STRING
 			-- standardised form of string guaranteed to contain all information
 			-- in data item
 		deferred
 		ensure
 			Result_exists: Result /= Void
 		end
-	
+
 end
 
 

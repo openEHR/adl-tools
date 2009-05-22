@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "shared access to DT_OBJECT_CONVERTER"
 	keywords:    "dADL"
@@ -15,7 +15,7 @@ class SHARED_DT_OBJECT_CONVERTER
 
 feature -- Access
 	
-	object_converter: DT_OBJECT_CONVERTER is
+	object_converter: DT_OBJECT_CONVERTER
 		once
 			create Result
 		end

@@ -1,5 +1,5 @@
 %{
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "[
 			 Parser for unit strings conforming to the Unified Code for Units 
@@ -137,14 +137,14 @@ integer_value: V_INTEGER {
 
 feature -- Initialization
 
-	make is
+	make
 			-- Create a new Eiffel parser.
 		do
 			make_eiffel_scanner
 			make_parser_skeleton
 		end
 
-	execute(unit_text:STRING) is
+	execute (unit_text:STRING)
 		require
 			Units_exist: unit_text /= Void and then not unit_text.is_empty
 		do
@@ -158,7 +158,7 @@ feature -- Initialization
 
 feature {YY_PARSER_ACTION} -- Basic Operations
 
-	report_error (a_message: STRING) is
+	report_error (a_message: STRING)
 			-- report errors to do with parsing failure
 		do
 			error_message.append(a_message)
@@ -167,10 +167,10 @@ feature {YY_PARSER_ACTION} -- Basic Operations
 
 feature -- Access
 
-	units:UNITS
+	units: UNITS
 			-- parsing result
 
-	output:STRING
+	output: STRING
 			-- parser output
 
 	error_message: STRING
@@ -178,7 +178,7 @@ feature -- Access
 
 feature {NONE} -- Implementation 
 
-	create_unit_ref(a_unit_name:STRING; suffix_flag:BOOLEAN) is
+	create_unit_ref (a_unit_name: STRING; suffix_flag: BOOLEAN)
 			-- try and create a simple unit from a_unit_name, using unit database.
 			-- nothing created if unit not found
 		require
@@ -230,18 +230,18 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	str1, str2:STRING
-	unit_ref:UNIT_REFERENCE
-	units_item:UNITS_ITEM
-	units_items:ARRAYED_LIST[UNITS_ITEM]
-	annot:STRING
-	suffix:STRING
+	str1, str2: STRING
+	unit_ref: UNIT_REFERENCE
+	units_item: UNITS_ITEM
+	units_items: ARRAYED_LIST[UNITS_ITEM]
+	annot: STRING
+	suffix: STRING
 
-	int_val_str:STRING
-	int_val:INTEGER
+	int_val_str: STRING
+	int_val: INTEGER
 
-	pd:PREFIX_DESCRIPTOR
-	pf:PREFIXES
+	pd: PREFIX_DESCRIPTOR
+	pf: PREFIXES
 
 end
 

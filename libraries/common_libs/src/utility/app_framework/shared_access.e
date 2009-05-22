@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "Good Electronic Health Record (GEHR) kernel"
 	description: "Common shared access class"
 	keywords:    "framework, shared"

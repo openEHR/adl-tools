@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Populate ontology controls in ADL editor"
 	keywords:    "ADL"
@@ -37,11 +37,11 @@ create
 
 feature -- Definitions
 
-	Right_arrow_char: NATURAL_32 is 0x279C
+	Right_arrow_char: NATURAL_32 = 0x279C
 
 feature {NONE} -- Initialisation
 
-	make (a_main_window: MAIN_WINDOW) is
+	make (a_main_window: MAIN_WINDOW)
 			-- Create controller for the tree representing archetype files found in `archetype_directory'.
 		require
 			a_main_window /= Void
@@ -53,7 +53,7 @@ feature {NONE} -- Initialisation
 
 feature -- Commands
 
-	populate is
+	populate
 			-- Populate `gui_file_tree' from `archetype_directory'.
 		do
 			gui_file_tree.wipe_out
@@ -72,7 +72,7 @@ feature -- Commands
 					do
 						delay_to_make_keyboard_navigation_practical.set_interval (0)
 
-						if {node: !EV_TREE_NODE} gui_file_tree.selected_item and then {a: !ARCH_REP_ITEM} node.data then
+						if attached {EV_TREE_NODE} gui_file_tree.selected_item as node and then attached {ARCH_REP_ITEM} node.data as a then
 							archetype_directory.set_selected_item (a)
 							gui.parse_archetype
 						end
@@ -90,11 +90,11 @@ feature -- Commands
 			text, tooltip: STRING_32
 			pixmap: EV_PIXMAP
 		do
-			if {item: !ARCH_REP_ITEM} node.data then
+			if attached {ARCH_REP_ITEM} node.data as item then
 				text := utf8 (item.base_name)
 				tooltip := utf8 (item.full_path)
 
-				if {ara: !ARCH_REP_ARCHETYPE} item then
+				if attached {ARCH_REP_ARCHETYPE} item as ara then
 					if ara.flat_is_primary and display_archetype_source then
 						text.prepend (utf8("(f) "))
 					end
@@ -132,7 +132,7 @@ feature {NONE} -- Implementation
 	delay_to_make_keyboard_navigation_practical: EV_TIMEOUT
 			-- Timer to delay a moment before calling `display_details_of_selected_item'.
 
-   	populate_gui_tree_node_enter (an_item: ARCH_REP_ITEM) is
+   	populate_gui_tree_node_enter (an_item: ARCH_REP_ITEM)
    			-- Add a node representing `an_item' to `gui_file_tree'.
 		require
 			item_attached: an_item /= Void

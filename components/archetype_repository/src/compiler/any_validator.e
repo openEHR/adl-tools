@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 General idea of a validator object that reports errors, warnings.
@@ -24,7 +24,7 @@ inherit
 
 feature -- Initialisation
 
-	make is
+	make
 			-- initialise reporting variables
 		do
 			create errors.make (0)
@@ -48,20 +48,20 @@ feature -- Access
 
 feature -- Modification
 
-	add_error(a_key: STRING; args: ARRAY [STRING]) is
+	add_error(a_key: STRING; args: ARRAY [STRING])
 			-- append an error with key `a_key' and `args' array to the `errors' string
 		do
 			errors.append(create_message(a_key, args))
 			passed := False
 		end
 
-	add_warning(a_key: STRING; args: ARRAY [STRING]) is
+	add_warning(a_key: STRING; args: ARRAY [STRING])
 			-- append a warning with key `a_key' and `args' array to the `warnings' string
 		do
 			warnings.append(create_message(a_key, args))
 		end
 
-	add_info(a_key: STRING; args: ARRAY [STRING]) is
+	add_info(a_key: STRING; args: ARRAY [STRING])
 			-- append an information message with key `a_key' and `args' array to the `information' string
 		do
 			info.append(create_message(a_key, args))
@@ -72,7 +72,7 @@ feature -- Status Report
 	passed: BOOLEAN
 			-- True if validation succeeded
 
-	has_warnings: BOOLEAN is
+	has_warnings: BOOLEAN
 			-- True if warnings from last call to validate
 		do
 			Result := warnings /= Void and then not warnings.is_empty
@@ -80,7 +80,7 @@ feature -- Status Report
 
 feature -- Validation
 
-	validate is
+	validate
 		deferred
 		end
 

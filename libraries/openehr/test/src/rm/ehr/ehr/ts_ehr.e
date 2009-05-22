@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR EHR Reference Model"
 
 	description: "EHR test suite"
@@ -18,12 +18,12 @@ class TS_EHR_EHR
 inherit 
 	TEST_SUITE
 
-creation
+create
 	make
 
 feature -- Access
 
-	test_cases: LINKED_LIST[TEST_CASE] is
+	test_cases: LINKED_LIST[TEST_CASE]
 		local
 			tc:TEST_CASE
 		once
@@ -32,11 +32,11 @@ feature -- Access
 			create {TC_COMPOSITION} tc.make(Void) 		Result.extend(tc)
 		end
 
-	title:STRING is "EHR tests"
+	title:STRING = "EHR tests"
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 	    do
 
 	    end

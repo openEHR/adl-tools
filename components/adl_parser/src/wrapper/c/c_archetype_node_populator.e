@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 		`	 Archetype node populator: when an archetype is read in,
@@ -36,7 +36,7 @@ create
 
 feature -- Initialisation
 
-	make(a_target: C_COMPLEX_OBJECT) is
+	make(a_target: C_COMPLEX_OBJECT)
 			-- create a new manager targetted to the parse tree `a_target'
 		require
 			Target_exists: a_target /= Void
@@ -52,7 +52,7 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	node_enter_action(a_node: OG_ITEM; indent_level: INTEGER) is
+	node_enter_action(a_node: OG_ITEM; indent_level: INTEGER)
 		local
 			l_c_object: C_OBJECT
 			l_c_complex_object: C_COMPLEX_OBJECT
@@ -81,7 +81,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	node_exit_action(a_node: OG_ITEM; indent_level: INTEGER) is
+	node_exit_action(a_node: OG_ITEM; indent_level: INTEGER)
 		do
 		end
 

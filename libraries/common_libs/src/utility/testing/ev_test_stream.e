@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
       description: "Test input/output stream for Eiffel Vision"
 	keywords:    "test"
@@ -22,7 +22,7 @@ create
 
 feature -- Initialisation
 
-	make(an_impl: like implementation) is
+	make(an_impl: like implementation)
 		require
 			an_impl /= Void
 		do
@@ -31,19 +31,19 @@ feature -- Initialisation
 
 feature -- Access
 
-	put_string (a_text: STRING) is
+	put_string (a_text: STRING)
 		do
 			implementation.append_text (a_text)
 		end
 
-	search (str: STRING; start: INTEGER): INTEGER is
+	search (str: STRING; start: INTEGER): INTEGER
 			-- Position of first occurrence of `str' at or after `start';
 			-- 0 if none.
 		do
 			Result := implementation.search (str, start)
 		end
 
-	new_line is
+	new_line
 		do
 			implementation.append_text ("%N")
 		end

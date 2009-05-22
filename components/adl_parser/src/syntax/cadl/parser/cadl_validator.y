@@ -1,5 +1,5 @@
 %{
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Validating parser for Archetype Description Language (ADL)"
 	keywords:	 "ADL"
@@ -2336,14 +2336,14 @@ uri_value: V_URI
 
 feature -- Initialization
 
-	make is
+	make
 			-- Create a new Eiffel parser.
 		do
 			make_eiffel_scanner
 			make_parser_skeleton
 		end
 
-	execute (in_text:STRING; a_source_start_line: INTEGER; differential_flag: BOOLEAN) is
+	execute (in_text:STRING; a_source_start_line: INTEGER; differential_flag: BOOLEAN)
 		do
 			reset
 			source_start_line := a_source_start_line
@@ -2365,7 +2365,7 @@ feature -- Initialization
 
 feature {YY_PARSER_ACTION} -- Basic Operations
 
-	report_error (a_message: STRING) is
+	report_error (a_message: STRING)
 			-- Print error message.
 		local
 			f_buffer: YY_FILE_BUFFER
@@ -2393,7 +2393,7 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	safe_put_c_attribute_child(an_attr: C_ATTRIBUTE; an_obj: C_OBJECT) is
+	safe_put_c_attribute_child (an_attr: C_ATTRIBUTE; an_obj: C_OBJECT)
 			-- check child object for validity and then put as new child
 		require
 			Not_already_added: not an_attr.has_child(an_obj)
@@ -2408,7 +2408,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	check_c_attribute_child(an_attr: C_ATTRIBUTE; an_obj: C_OBJECT): BOOLEAN is
+	check_c_attribute_child (an_attr: C_ATTRIBUTE; an_obj: C_OBJECT): BOOLEAN
 			-- check a new child node
 			-- FIXME: the semantics here should be rationalised with C_ATTRIBUTE.valid_child and related functions
 			-- but doing so probably requires splitting out C_SINGLE_ATTRIBUTE and C_MULTIPLE_ATTRIBUTE
@@ -2529,8 +2529,8 @@ feature {NONE} -- Implementation
 	date_time_interval: INTERVAL [ISO8601_DATE_TIME]
 	duration_interval: INTERVAL [ISO8601_DURATION]
 
-	int_list: ARRAYED_LIST[INTEGER]
-	real_list: ARRAYED_LIST[REAL]
+	int_list: ARRAYED_LIST [INTEGER]
+	real_list: ARRAYED_LIST [REAL]
 
 	indent: STRING
 	str: STRING

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Object Graph Tree iterator. This iterator currently supplies the standard 'do_all'
@@ -29,7 +29,7 @@ create
 
 feature -- Initialisation
 
-	make(a_target: OG_OBJECT_NODE) is
+	make(a_target: OG_OBJECT_NODE)
 		require
 			a_target /= Void
 		do
@@ -42,7 +42,7 @@ feature -- Access
 
 feature -- Traversal
 
-	do_all(node_enter_action, node_exit_action: PROCEDURE[ANY, TUPLE[OG_ITEM, INTEGER]]) is
+	do_all(node_enter_action, node_exit_action: PROCEDURE[ANY, TUPLE[OG_ITEM, INTEGER]])
 			-- do enter_action and exit_action to all nodes in the structure
 		require
 			Enter_action_valid: node_enter_action /= Void
@@ -52,7 +52,7 @@ feature -- Traversal
 			do_all_nodes(target, node_enter_action, node_exit_action)
 		end
 
-	do_at_surface(node_action: PROCEDURE[ANY, TUPLE[OG_ITEM, INTEGER]]; node_is_included: FUNCTION[ANY, TUPLE[OG_ITEM], BOOLEAN]) is
+	do_at_surface(node_action: PROCEDURE[ANY, TUPLE[OG_ITEM, INTEGER]]; node_is_included: FUNCTION[ANY, TUPLE[OG_ITEM], BOOLEAN])
 			-- Do action only to nodes at surface, where membership is defined by `node_is_included'.
 		require
 			Node_action_valid: node_action /= Void
@@ -61,7 +61,7 @@ feature -- Traversal
 			do_at_surface_nodes(target, node_action, node_is_included)
 		end
 
-	do_until_surface(node_action: PROCEDURE[ANY, TUPLE[OG_ITEM, INTEGER]]; node_is_included: FUNCTION[ANY, TUPLE[OG_ITEM], BOOLEAN]) is
+	do_until_surface(node_action: PROCEDURE[ANY, TUPLE[OG_ITEM, INTEGER]]; node_is_included: FUNCTION[ANY, TUPLE[OG_ITEM], BOOLEAN])
 			-- Do action only to nodes from top until surface (inclusive), where membership is defined by `node_is_included'.
 		require
 			Node_action_valid: node_action /= Void
@@ -72,7 +72,7 @@ feature -- Traversal
 
 feature {NONE} -- Implementation
 
-	do_all_nodes(a_target: OG_NODE; node_enter_action, node_exit_action: PROCEDURE[ANY, TUPLE[OG_ITEM, INTEGER]]) is
+	do_all_nodes(a_target: OG_NODE; node_enter_action, node_exit_action: PROCEDURE[ANY, TUPLE[OG_ITEM, INTEGER]])
 		require
 			Target_exists: a_target /= Void
 		do
@@ -83,7 +83,7 @@ feature {NONE} -- Implementation
 			until
 				a_target.off
 			loop
-				if {a_node: !OG_NODE} a_target.item_for_iteration then
+				if attached {OG_NODE} a_target.item_for_iteration as a_node then
 					do_all_nodes(a_node, node_enter_action, node_exit_action)
 				else -- terminal child node
 					node_enter_action.call([a_target.item_for_iteration, depth+1])
@@ -95,7 +95,7 @@ feature {NONE} -- Implementation
 			depth := depth - 1
 		end
 
-	do_at_surface_nodes(a_target: OG_NODE; node_action: PROCEDURE[ANY, TUPLE[OG_ITEM, INTEGER]]; node_is_at_surface: FUNCTION[ANY, TUPLE[OG_ITEM], BOOLEAN]) is
+	do_at_surface_nodes(a_target: OG_NODE; node_action: PROCEDURE[ANY, TUPLE[OG_ITEM, INTEGER]]; node_is_at_surface: FUNCTION[ANY, TUPLE[OG_ITEM], BOOLEAN])
 			-- Do action only to nodes at surface, where membership is defined by `node_is_at_surface'.
 		require
 			Target_exists: a_target /= Void
@@ -108,7 +108,7 @@ feature {NONE} -- Implementation
 				until
 					a_target.off
 				loop
-					if {a_node: !OG_NODE} a_target.item_for_iteration then
+					if attached {OG_NODE} a_target.item_for_iteration as a_node then
 						do_at_surface_nodes(a_node, node_action, node_is_at_surface)
 					elseif node_is_at_surface.item ([a_target.item_for_iteration]) then -- terminal child node
 						node_action.call([a_target.item_for_iteration, 0])
@@ -118,7 +118,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	do_until_surface_nodes(a_target: OG_NODE; node_action: PROCEDURE[ANY, TUPLE[OG_ITEM, INTEGER]]; node_is_included: FUNCTION[ANY, TUPLE[OG_ITEM], BOOLEAN]) is
+	do_until_surface_nodes(a_target: OG_NODE; node_action: PROCEDURE[ANY, TUPLE[OG_ITEM, INTEGER]]; node_is_included: FUNCTION[ANY, TUPLE[OG_ITEM], BOOLEAN])
 			-- Do action only to nodes from top down to surface, where membership is defined by `node_is_included'.
 		require
 			Target_exists: a_target /= Void
@@ -130,7 +130,7 @@ feature {NONE} -- Implementation
 				until
 					a_target.off
 				loop
-					if {a_node: !OG_NODE} a_target.item_for_iteration then
+					if attached {OG_NODE} a_target.item_for_iteration as a_node then
 						do_until_surface_nodes(a_node, node_action, node_is_included)
 					elseif node_is_included.item ([a_target.item_for_iteration]) then -- terminal child node
 						node_action.call([a_target.item_for_iteration, 0])

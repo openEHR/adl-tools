@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Service interface to an object model access for types and attributes mentioned in archetypes"
 	keywords:    "ADL, archetype, reference model"
@@ -27,7 +27,7 @@ inherit
 
 feature -- Access
 
-	ancestor_classes_of (a_class_name: STRING): ARRAYED_LIST [STRING] is
+	ancestor_classes_of (a_class_name: STRING): ARRAYED_LIST [STRING]
 			-- return all ancestor types of `a_class_name' up to root class (usually 'ANY', 'Object' or something similar)
 			-- does  not include current class. Returns empty list if none.
 		require
@@ -41,7 +41,7 @@ feature -- Access
 			Result_exists: Result /= Void
 		end
 
-	properties_of (a_type_name: STRING): HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING] is
+	properties_of (a_type_name: STRING): HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
 			-- return properties defined directly on class.
 		require
 			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
@@ -55,7 +55,7 @@ feature -- Access
 			Result_exists: Result /= Void
 		end
 
-	flat_properties_of (a_type_name: STRING): HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING] is
+	flat_properties_of (a_type_name: STRING): HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
 			-- return all properties of inheritance-flattened class.
 		require
 			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
@@ -69,7 +69,7 @@ feature -- Access
 			Result_exists: Result /= Void
 		end
 
-	property_type (a_type_name, a_property: STRING): STRING is
+	property_type (a_type_name, a_property: STRING): STRING
 			-- Type of `an a_property' in class corresponding to `a_type_name'
 		require
 			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
@@ -82,7 +82,7 @@ feature -- Access
 			Result_exists: Result /= Void
 		end
 
-	property_definition (a_type_name, a_property: STRING): BMM_PROPERTY_DEFINITION is
+	property_definition (a_type_name, a_property: STRING): BMM_PROPERTY_DEFINITION
 			-- definition of  `a_type' has a property named `a_property'
 		require
 			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
@@ -96,7 +96,7 @@ feature -- Access
 	model: BMM_MODEL
 			-- computable form of model
 
-	substitutions: HASH_TABLE [STRING, STRING] is
+	substitutions: HASH_TABLE [STRING, STRING]
 			-- allowed type substitutions due to archetyping as a table of
 			-- allowable substitution keyed by expected type
 		once
@@ -112,7 +112,7 @@ feature -- Status Report
 	rm_checking_on: BOOLEAN
 			-- True if reference model checking turned on
 
-	model_loaded: BOOLEAN is
+	model_loaded: BOOLEAN
 			-- True if a model is available to interrogate
 		do
 			Result := model /= Void
@@ -123,7 +123,7 @@ feature -- Status Report
 
 feature -- Validation
 
-	is_sub_type_of (a_sub_type, a_parent_type: STRING): BOOLEAN is
+	is_sub_type_of (a_sub_type, a_parent_type: STRING): BOOLEAN
 			-- True if `a_subclass' is a sub-class in the model of `a_parent_type'
 		require
 			Sub_type_valid: a_sub_type /= Void and then not a_sub_type.is_empty
@@ -136,7 +136,7 @@ feature -- Validation
 			end
 		end
 
-	has_property (a_type_name, a_property: STRING): BOOLEAN is
+	has_property (a_type_name, a_property: STRING): BOOLEAN
 			-- True if `a_type_name' has a property named `a_property'
 		require
 			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
@@ -149,7 +149,7 @@ feature -- Validation
 			end
 		end
 
-	has_class_definition (a_type_name: STRING): BOOLEAN is
+	has_class_definition (a_type_name: STRING): BOOLEAN
 			-- True if `a_type_name' has a class definition in the model. Note that a_type_name
 			-- could be a generic type string; only the root class is considered
 		require
@@ -162,7 +162,7 @@ feature -- Validation
 			end
 		end
 
-	valid_property_type (a_type_name, a_property_name, a_property_type_name: STRING): BOOLEAN is
+	valid_property_type (a_type_name, a_property_name, a_property_type_name: STRING): BOOLEAN
 			-- True if `a_property_type_name' is a valid dynamic type for `a_property' in class `a_type_name'
 		require
 			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
@@ -178,7 +178,7 @@ feature -- Validation
 			end
 		end
 
-	type_conforms_to (type_spec_1, type_spec_2: BMM_TYPE_SPECIFIER): BOOLEAN is
+	type_conforms_to (type_spec_1, type_spec_2: BMM_TYPE_SPECIFIER): BOOLEAN
 			-- check conformance of type 1 to type 2
 		require
 			Type_spec_1_exists: type_spec_1 /= Void
@@ -211,7 +211,7 @@ feature -- Validation
 
 feature -- Status Setting
 
-	set_rm_checking_on (flag: BOOLEAN) is
+	set_rm_checking_on (flag: BOOLEAN)
 			-- turn rm_checking_on on
 		do
 			rm_checking_on := flag
@@ -220,7 +220,7 @@ feature -- Status Setting
 
 feature -- Commands
 
-	initialise is
+	initialise
 			-- set up model
 		local
 			model_file: PLAIN_TEXT_FILE

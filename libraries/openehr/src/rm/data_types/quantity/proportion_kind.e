@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Types"
 	
 	description: "[
@@ -19,25 +19,25 @@ class PROPORTION_KIND
 
 feature -- Definitions
 
-	pk_ratio: INTEGER is 0	
+	pk_ratio: INTEGER = 0	
 			-- Ratio type. Numerator and denominator may be any value
 
-	pk_unitary: INTEGER is 1	
+	pk_unitary: INTEGER = 1	
 			-- Denominator must be 1
 
-	pk_percent: INTEGER is 2	
+	pk_percent: INTEGER = 2	
 			-- Denominator is 100, numerator is understood as a percentage value.
 
-	pk_fraction: INTEGER is 3	
+	pk_fraction: INTEGER = 3	
 			-- Numerator and denominator are integral, and the presentation method uses a slash, e.g. ¿1/2¿.
 
-	pk_integer_fraction: INTEGER is 4	
+	pk_integer_fraction: INTEGER = 4	
 			-- Numerator and denominator are integral, and the presentation method uses a slash, e.g. ¿1/2¿; 
 			-- if the numerator is greated than the denominator, e.g. n=3, d=2, the presentation is ¿1 1/2¿.
 
 feature -- Validity
 
-	valid_proportion_kind (n: INTEGER): BOOLEAN is
+	valid_proportion_kind (n: INTEGER): BOOLEAN
 			-- True if n is one of the defined types.
 		do
 			Result := n >= pk_ratio and n <= pk_integer_fraction

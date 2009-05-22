@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Node map control - Visualise an archetype structure as a node map"
 	keywords:    "archetype, cadl, gui"
@@ -144,12 +144,12 @@ feature -- Commands
 			populate
 		end
 
-	clear is
+	clear
 		do
 			gui_tree.wipe_out
 		end
 
-	populate is
+	populate
 			-- populate the ADL tree control by creating it from scratch
 		local
 			tree_iterator: OG_ITERATOR
@@ -176,7 +176,7 @@ feature -- Commands
 			end
 		end
 
-	repopulate is
+	repopulate
 			-- populate the ADL tree control by traversing the tree and modifying it
 		do
 			gui_tree.recursive_do_all (agent node_rebuild_enter_action (?))
@@ -190,7 +190,7 @@ feature -- Commands
 			end
 		end
 
-	item_select is
+	item_select
 			-- Do something when an item is selected.
 		local
 			node_data: ANY
@@ -247,13 +247,13 @@ feature -- Commands
 			end
 		end
 
-	shrink_to_level (a_type: STRING) is
+	shrink_to_level (a_type: STRING)
 			-- Shrink the tree control up to items of type `a_type'.
 		do
 			gui_tree.recursive_do_all (agent ev_tree_item_shrink_to_level (a_type, ?))
 		end
 
-	expand_one_level is
+	expand_one_level
 			-- Expand the tree control one level further.
 		do
 			create node_list.make (0)
@@ -308,7 +308,7 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
-	target_archetype: ARCHETYPE
+	target_archetype: attached ARCHETYPE
 			-- Differential or flat version of archetype, depending on setting of `in_differential_mode'.
 		require
 			archetype_selected: archetype_directory.has_valid_selected_archetype
@@ -318,11 +318,9 @@ feature {NONE} -- Implementation
 			else
 				Result := archetype_directory.selected_archetype.flat_archetype
 			end
-		ensure
-			attached: Result /= Void
 		end
 
-	ontology: !ARCHETYPE_ONTOLOGY
+	ontology: attached ARCHETYPE_ONTOLOGY
 			-- The ontology for `target_archetype'.
 		require
 			archetype_selected: archetype_directory.has_valid_selected_archetype
@@ -339,7 +337,7 @@ feature {NONE} -- Implementation
 
 	archetype_tree_root_set: BOOLEAN
 
-	node_build_enter_action (an_og_node: OG_ITEM; indent_level: INTEGER) is
+	node_build_enter_action (an_og_node: OG_ITEM; indent_level: INTEGER)
 		require
 			Node_exists: an_og_node /= Void
 		local
@@ -371,15 +369,15 @@ feature {NONE} -- Implementation
 				end
 			-- end
 
-			if {c_attr: C_ATTRIBUTE} an_og_node.content_item then
+			if attached {C_ATTRIBUTE} an_og_node.content_item as c_attr then
 				a_ti := attach_node(c_attribute_string(c_attr), pixmaps.item(c_attribute_pixmap_string(c_attr) + pixmap_ext), an_og_node)
 
-			elseif {a_constraint_ref: CONSTRAINT_REF} an_og_node.content_item then
+			elseif attached {CONSTRAINT_REF} an_og_node.content_item as a_constraint_ref then
 				a_ti := attach_node(constraint_ref_string(a_constraint_ref), pixmaps.item("CONSTRAINT_REF" + pixmap_ext), an_og_node)
 
-			elseif {a_object_term: C_CODE_PHRASE} an_og_node.content_item then
+			elseif attached {C_CODE_PHRASE} an_og_node.content_item as a_object_term then
 				if not a_object_term.any_allowed then
-					s.append(a_object_term.terminology_id.value)
+					s.append (a_object_term.terminology_id.value)
 				end
 
 				a_ti := attach_node(s, pixmaps.item(a_object_term.generating_type + pixmap_ext), an_og_node)
@@ -393,15 +391,15 @@ feature {NONE} -- Implementation
 						assumed_flag := a_object_term.assumed_value /= Void and then
 							a_object_term.assumed_value.code_string.is_equal(a_object_term.code_list.item)
 						create a_ti_sub.make_with_text (utf8 (object_term_item_string (a_object_term.code_list.item, assumed_flag, a_object_term.is_local)))
-						a_ti_sub.set_data(a_object_term.code_list.item) -- type STRING
+						a_ti_sub.set_data (a_object_term.code_list.item) -- type STRING
 						a_ti_sub.set_pixmap(pixmaps.item("TERM" + pixmap_ext))
-						a_ti.extend(a_ti_sub)
+						a_ti.extend (a_ti_sub)
 						a_object_term.code_list.forth
 					end
 				end
 
-			elseif {c_dv_ordinal: C_DV_ORDINAL} an_og_node.content_item then
-				s.append(c_dv_ordinal.rm_type_name)
+			elseif attached {C_DV_ORDINAL} an_og_node.content_item as c_dv_ordinal then
+				s.append (c_dv_ordinal.rm_type_name)
 				a_ti := attach_node(s, pixmaps.item(c_dv_ordinal.generating_type + pixmap_ext), an_og_node)
 
 				if not c_dv_ordinal.any_allowed then
@@ -413,19 +411,19 @@ feature {NONE} -- Implementation
 						assumed_flag := c_dv_ordinal.assumed_value /= Void and then
 							c_dv_ordinal.assumed_value.value = c_dv_ordinal.items.item.value
 						create a_ti_sub.make_with_text (utf8 (object_ordinal_item_string (c_dv_ordinal.items.item, assumed_flag)))
-						a_ti_sub.set_data(c_dv_ordinal.items.item) -- of type ORDINAL
+						a_ti_sub.set_data (c_dv_ordinal.items.item) -- of type ORDINAL
 						a_ti_sub.set_pixmap(pixmaps.item("ORDINAL" + pixmap_ext))
-						a_ti.extend(a_ti_sub)
+						a_ti.extend (a_ti_sub)
 						c_dv_ordinal.items.forth
 					end
 				end
 
-			elseif {c_q: C_DV_QUANTITY} an_og_node.content_item then
+			elseif attached {C_DV_QUANTITY} an_og_node.content_item as c_q then
 				if in_technical_mode then
-					s.append(c_q.rm_type_name)
+					s.append (c_q.rm_type_name)
 				end
 				if c_q.property /= Void then
-					s.append(" (" + c_q.property.as_string + ")")
+					s.append (" (" + c_q.property.as_string + ")")
 				end
 				a_ti := attach_node(s, pixmaps.item(c_q.generating_type + pixmap_ext), an_og_node)
 				if c_q.list /= Void then
@@ -449,13 +447,13 @@ feature {NONE} -- Implementation
 					a_ti.extend (a_ti_sub)
 				end
 
-			elseif {c_p_o: C_PRIMITIVE_OBJECT} an_og_node.content_item then
+			elseif attached {C_PRIMITIVE_OBJECT} an_og_node.content_item as c_p_o then
 				a_ti := attach_node(c_primitive_object_string(c_p_o), pixmaps.item(c_p_o.generating_type + pixmap_ext), an_og_node)
 
-			elseif {c_c_o: C_COMPLEX_OBJECT} an_og_node.content_item then
+			elseif attached {C_COMPLEX_OBJECT} an_og_node.content_item as c_c_o then
 				a_ti := attach_node(c_complex_object_string(c_c_o), pixmaps.item(c_complex_object_pixmap_string(c_c_o) + pixmap_ext), an_og_node)
 
-			elseif {a_slot: ARCHETYPE_SLOT} an_og_node.content_item then
+			elseif attached {ARCHETYPE_SLOT} an_og_node.content_item as a_slot then
 				if a_slot.occurrences.lower = 1 then
 					pixmap := pixmaps.item(a_slot.generating_type + pixmap_ext)
 				else
@@ -496,19 +494,19 @@ feature {NONE} -- Implementation
 					-- FIXME: TO BE IMPLEM - need to add sub nodes for each assertion
 				end
 
-			elseif {a_node_ref: ARCHETYPE_INTERNAL_REF} an_og_node.content_item then
+			elseif attached {ARCHETYPE_INTERNAL_REF} an_og_node.content_item as a_node_ref then
 				a_ti := attach_node(archetype_internal_ref_string(a_node_ref), pixmaps.item(a_node_ref.generating_type + pixmap_ext), an_og_node)
 			end
 		end
 
-	node_build_exit_action(an_og_node: OG_ITEM; indent_level: INTEGER) is
+	node_build_exit_action(an_og_node: OG_ITEM; indent_level: INTEGER)
 		require
 			Node_exists: an_og_node /= Void
 		do
 			tree_item_stack.remove
 		end
 
-	node_rebuild_enter_action(a_tree_node: EV_TREE_NODE) is
+	node_rebuild_enter_action(a_tree_node: EV_TREE_NODE)
 		require
 			Node_exists: a_tree_node /= Void
 		local
@@ -560,14 +558,14 @@ feature {NONE} -- Implementation
 
 					a_type := a_node.generating_type
 
-					if {c_attr: C_ATTRIBUTE} a_node then
+					if attached {C_ATTRIBUTE} a_node as c_attr then
 						a_ti.set_text (utf8 (c_attribute_string (c_attr)))
 						a_ti.set_pixmap(pixmaps.item(c_attribute_pixmap_string(c_attr) + pixmap_ext))
 
 					elseif a_type.substring_index ("STRING", 1) = 1 then
 						s ?= a_node
-						if {parent_ti1: EV_TREE_NODE} a_ti.parent then
-							if {c_c_p: C_CODE_PHRASE} parent_ti1.data then
+						if attached {EV_TREE_NODE} a_ti.parent as parent_ti1 then
+							if attached {C_CODE_PHRASE} parent_ti1.data as c_c_p then
 								assumed_flag := c_c_p.assumed_value /= Void and then c_c_p.assumed_value.code_string.is_equal(s)
 								a_ti.set_text (utf8 (object_term_item_string (s, assumed_flag, c_c_p.is_local)))
 								create pixmap_ext.make (0)
@@ -585,17 +583,17 @@ feature {NONE} -- Implementation
 							end
 						end
 
-					elseif {a_constraint_ref: CONSTRAINT_REF} a_node then
+					elseif attached {CONSTRAINT_REF} a_node as a_constraint_ref then
 						a_ti.set_text (utf8 (constraint_ref_string (a_constraint_ref)))
 						a_ti.set_pixmap(pixmaps.item(a_constraint_ref.generating_type + pixmap_ext))
 
-					elseif {a_c_p: C_CODE_PHRASE} a_node then
+					elseif attached {C_CODE_PHRASE} a_node as a_c_p then
 						a_ti.set_pixmap(pixmaps.item(a_c_p.generating_type + pixmap_ext))
 
-					elseif {c_d_o: C_DV_ORDINAL} a_node then
+					elseif attached {C_DV_ORDINAL} a_node as c_d_o then
 						a_ti.set_pixmap(pixmaps.item(c_d_o.generating_type + pixmap_ext))
 
-					elseif {an_ordinal: ORDINAL} a_node then
+					elseif attached {ORDINAL} a_node as an_ordinal then
 						parent ?= a_ti.parent
 						c_dv_ordinal ?= parent.data
 						assumed_flag := c_dv_ordinal.assumed_value /= Void and then c_dv_ordinal.assumed_value.value = an_ordinal.value
@@ -615,48 +613,48 @@ feature {NONE} -- Implementation
 						end
 						a_ti.set_pixmap(pixmaps.item("ORDINAL" + pixmap_ext))
 
-					elseif {c_q: C_DV_QUANTITY} a_node then
+					elseif attached {C_DV_QUANTITY} a_node as c_q then
 						create s.make(0)
 						if in_technical_mode then
-							s.append(c_q.rm_type_name)
+							s.append (c_q.rm_type_name)
 						end
 						if c_q.property /= Void then
-							s.append(" (" + c_q.property.as_string + ")")
+							s.append (" (" + c_q.property.as_string + ")")
 						end
 						a_ti.set_text (utf8 (s))
 						a_ti.set_pixmap(pixmaps.item("C_DV_QUANTITY" + pixmap_ext))
 
-					elseif {c_q_i: C_QUANTITY_ITEM} a_node then
-						if {parent_ti: EV_TREE_NODE} a_ti.parent then
-							if {c_q2: C_DV_QUANTITY} parent_ti.data then
+					elseif attached {C_QUANTITY_ITEM} a_node as c_q_i then
+						if attached {EV_TREE_NODE} a_ti.parent as parent_ti then
+							if attached {C_DV_QUANTITY} parent_ti.data as c_q2 then
 								create pixmap_ext.make(0)
 								if in_differential_mode and archetype_directory.has_valid_selected_archetype then
 									spec_sts := c_q2.specialisation_status (target_archetype.specialisation_depth).value
 									if spec_sts = ss_inherited or spec_sts = ss_redefined then
-										pixmap_ext.append("." + specialisation_status_names.item(spec_sts))
+										pixmap_ext.append ("." + specialisation_status_names.item(spec_sts))
 									end
 								end
 							end
 						end
 						a_ti.set_pixmap(pixmaps.item(c_q_i.generating_type + pixmap_ext))
 
-					elseif {c_p_o: C_PRIMITIVE_OBJECT} a_node then
+					elseif attached {C_PRIMITIVE_OBJECT} a_node as c_p_o then
 						a_ti.set_text (utf8 (c_primitive_object_string (c_p_o)))
 						a_ti.set_pixmap(pixmaps.item(c_p_o.generating_type + pixmap_ext))
 
-					elseif {c_c_o: C_COMPLEX_OBJECT} a_node then
+					elseif attached {C_COMPLEX_OBJECT} a_node as c_c_o then
 						a_ti.set_text (utf8 (c_complex_object_string (c_c_o)))
 						a_ti.set_pixmap(pixmaps.item(c_complex_object_pixmap_string(c_c_o) + pixmap_ext))
 
-					elseif {a_node_ref: ARCHETYPE_INTERNAL_REF} a_node then
+					elseif attached {ARCHETYPE_INTERNAL_REF} a_node as a_node_ref then
 						a_ti.set_text (utf8 (archetype_internal_ref_string (a_node_ref)))
 						a_ti.set_pixmap(pixmaps.item(a_node_ref.generating_type + pixmap_ext))
 
-					elseif {a_slot: ARCHETYPE_SLOT} a_node then
+					elseif attached {ARCHETYPE_SLOT} a_node as a_slot then
 						a_ti.set_text (utf8 (archetype_slot_string (a_slot)))
 						a_ti.set_pixmap(pixmaps.item(a_slot.generating_type + pixmap_ext))
 
-					elseif {an_inv: ASSERTION} a_node then
+					elseif attached {ASSERTION} a_node as an_inv then
 						a_ti.set_text (utf8 (object_invariant_string (an_inv)))
 					end
 				end
@@ -665,7 +663,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	node_add_rm_attributes(a_tree_node: EV_TREE_NODE) is
+	node_add_rm_attributes(a_tree_node: EV_TREE_NODE)
 		require
 			Node_exists: a_tree_node /= Void
 		local
@@ -674,9 +672,9 @@ feature {NONE} -- Implementation
 			props: HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
 			attr_ti: EV_TREE_ITEM
 		do
-			if {a_ti: EV_TREE_ITEM} a_tree_node then
+			if attached {EV_TREE_ITEM} a_tree_node as a_ti then
 				a_node := a_ti.data
-				if a_node /= Void and {c_c_o: C_COMPLEX_OBJECT} a_node then
+				if a_node /= Void and attached {C_COMPLEX_OBJECT} a_node as c_c_o then
 					if rm_checker.has_class_definition (c_c_o.rm_type_name) then
 						if in_differential_mode then
 							props := rm_checker.properties_of(c_c_o.rm_type_name)
@@ -698,13 +696,13 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	node_remove_rm_attributes(a_tree_node: EV_TREE_NODE) is
+	node_remove_rm_attributes(a_tree_node: EV_TREE_NODE)
 		require
 			Node_exists: a_tree_node /= Void
 		do
-			if {c_c_o: C_COMPLEX_OBJECT} a_tree_node.data then
+			if attached {C_COMPLEX_OBJECT} a_tree_node.data as c_c_o then
 				from a_tree_node.start until a_tree_node.off loop
-					if {a_bmm_prop: BMM_PROPERTY_DEFINITION} a_tree_node.item.data then
+					if attached {BMM_PROPERTY_DEFINITION} a_tree_node.item.data as a_bmm_prop then
 						a_tree_node.remove
 					else
 						a_tree_node.forth
@@ -713,7 +711,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	attach_node(str: STRING; pixmap: EV_PIXMAP; an_og_node: OG_ITEM): EV_TREE_ITEM is
+	attach_node(str: STRING; pixmap: EV_PIXMAP; an_og_node: OG_ITEM): EV_TREE_ITEM
 			-- attach a node into the tree
 		do
 			create Result.make_with_text (utf8 (str))
@@ -730,13 +728,13 @@ feature {NONE} -- Implementation
 				gui_tree.extend (Result)
 				archetype_tree_root_set := True
 			else
-				tree_item_stack.item.extend(Result)
+				tree_item_stack.item.extend (Result)
 			end
 
-			tree_item_stack.extend(Result)
+			tree_item_stack.extend (Result)
 		end
 
-	ev_tree_item_expand(an_ev_tree_node: EV_TREE_NODE) is
+	ev_tree_item_expand (an_ev_tree_node: EV_TREE_NODE)
 			--
 		do
 			if an_ev_tree_node.is_expandable then -- and node_data.is_addressable then
@@ -744,7 +742,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	ev_tree_item_shrink(an_ev_tree_node: EV_TREE_NODE) is
+	ev_tree_item_shrink(an_ev_tree_node: EV_TREE_NODE)
 			--
 		do
 			if an_ev_tree_node.is_expandable then -- and node_data.is_addressable then
@@ -752,7 +750,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	ev_tree_item_shrink_to_level(a_type: STRING; an_ev_tree_node: EV_TREE_NODE) is
+	ev_tree_item_shrink_to_level(a_type: STRING; an_ev_tree_node: EV_TREE_NODE)
 			--
 		local
 			node_data: ANY
@@ -785,7 +783,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	ev_tree_item_expand_one_level(an_ev_tree_node: EV_TREE_NODE) is
+	ev_tree_item_expand_one_level(an_ev_tree_node: EV_TREE_NODE)
 			--
 		do
 			if an_ev_tree_node.is_expanded then
@@ -795,16 +793,16 @@ feature {NONE} -- Implementation
 					an_ev_tree_node.off
 				loop
 					if an_ev_tree_node.item.is_expandable and then not an_ev_tree_node.item.is_expanded then
-						node_list.extend(an_ev_tree_node.item)
+						node_list.extend (an_ev_tree_node.item)
 					end
 					an_ev_tree_node.forth
 				end
 			elseif an_ev_tree_node = gui_tree.item then
-				node_list.extend(an_ev_tree_node)
+				node_list.extend (an_ev_tree_node)
 			end
 		end
 
-	ev_tree_item_collapse_one_level(an_ev_tree_node: EV_TREE_NODE) is
+	ev_tree_item_collapse_one_level(an_ev_tree_node: EV_TREE_NODE)
 			--
 		do
 			if an_ev_tree_node.is_expanded then
@@ -817,12 +815,12 @@ feature {NONE} -- Implementation
 				end
 
 				if an_ev_tree_node.off then -- didn't find any expanded children
-					node_list.extend(an_ev_tree_node)
+					node_list.extend (an_ev_tree_node)
 				end
 			end
 		end
 
-	ev_tree_item_roll_up(an_ev_tree_node: EV_TREE_NODE) is
+	ev_tree_item_roll_up(an_ev_tree_node: EV_TREE_NODE)
 			-- close nodes that have rolled_up_specialisation_status = ss_inherited; open others
 		local
 			arch_cons: ARCHETYPE_CONSTRAINT
@@ -839,62 +837,62 @@ feature {NONE} -- Implementation
 
 	node_list: ARRAYED_LIST[EV_TREE_NODE]
 
-	c_attribute_string(c_attr: C_ATTRIBUTE): STRING is
+	c_attribute_string(c_attr: C_ATTRIBUTE): STRING
 			-- generate string form of node or object for use in tree node
 		do
 			create Result.make(0)
-		--	Result.append(" [" + c_attr.existence.as_occurrences_string + "] ")
+		--	Result.append (" [" + c_attr.existence.as_occurrences_string + "] ")
 		--	if c_attr.is_multiple then
-		--	 	Result.append(" [" + c_attr.cardinality.as_string + "] ")
+		--	 	Result.append (" [" + c_attr.cardinality.as_string + "] ")
 		--	end
 		--	if c_attr.is_congruent then
 		--		Result.append ("^ ")
 		--	end
 
-			Result.append(c_attr.rm_attribute_path)
+			Result.append (c_attr.rm_attribute_path)
 			if c_attr.any_allowed then
-				Result.append(" matches {*}")
+				Result.append (" matches {*}")
 			end
 		end
 
-	c_attribute_pixmap_string(c_attr: C_ATTRIBUTE): STRING is
+	c_attribute_pixmap_string(c_attr: C_ATTRIBUTE): STRING
 			-- string name of pixmap for attribute c_attr
 		do
 			create Result.make(0)
-			Result.append("C_ATTRIBUTE")
+			Result.append ("C_ATTRIBUTE")
 			if c_attr.is_multiple then
 				if c_attr.cardinality.interval.lower > 0 then
-					Result.append(".multiple")
+					Result.append (".multiple")
 				else
-					Result.append(".multiple.optional")
+					Result.append (".multiple.optional")
 				end
 			else
 				if c_attr.existence.lower = 0 then
-					Result.append(".optional")
+					Result.append (".optional")
 				end
 			end
 		end
 
-	rm_attribute_pixmap_string(rm_attr: BMM_PROPERTY_DEFINITION): STRING is
+	rm_attribute_pixmap_string(rm_attr: BMM_PROPERTY_DEFINITION): STRING
 			-- string name of pixmap for attribute rm_attr
 		do
 			create Result.make(0)
-			Result.append("C_ATTRIBUTE")
+			Result.append ("C_ATTRIBUTE")
 			if rm_attr.is_container then
-				Result.append(".multiple")
+				Result.append (".multiple")
 			end
 			if not rm_attr.is_mandatory then
-				Result.append(".optional")
+				Result.append (".optional")
 			end
-			Result.append(".reference_model")
+			Result.append (".reference_model")
 		end
 
-	c_complex_object_string(a_node: C_COMPLEX_OBJECT): STRING is
+	c_complex_object_string(a_node: C_COMPLEX_OBJECT): STRING
 			-- generate string form of node or object for use in tree node
 		do
 			create Result.make_empty
 			-- if not a_node.is_occurrences_default then
-			-- 	Result.append(" [" + a_node.occurrences.as_occurrences_string + "] ")
+			-- 	Result.append (" [" + a_node.occurrences.as_occurrences_string + "] ")
 			-- end
 
 			-- if a_node.is_congruent then
@@ -922,42 +920,42 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	c_complex_object_pixmap_string(c_c_o: C_COMPLEX_OBJECT): STRING is
+	c_complex_object_pixmap_string(c_c_o: C_COMPLEX_OBJECT): STRING
 		do
 			create Result.make_empty
 
 			if c_c_o.occurrences.lower > 0 then
 				if c_c_o.occurrences.upper = 1 then
-					Result.append("C_COMPLEX_OBJECT")
+					Result.append ("C_COMPLEX_OBJECT")
 				else
-					Result.append("C_COMPLEX_OBJECT.multiple")
+					Result.append ("C_COMPLEX_OBJECT.multiple")
 				end
 			else
 				if c_c_o.occurrences.upper = 1 then
-					Result.append("C_COMPLEX_OBJECT.optional")
+					Result.append ("C_COMPLEX_OBJECT.optional")
 				else
-					Result.append("C_COMPLEX_OBJECT.multiple.optional")
+					Result.append ("C_COMPLEX_OBJECT.multiple.optional")
 				end
 			end
 		end
 
-	archetype_slot_string(a_node: ARCHETYPE_SLOT): STRING is
+	archetype_slot_string(a_node: ARCHETYPE_SLOT): STRING
 			-- generate string form of node or object for use in tree node
 		do
 			create Result.make_empty
 			-- if not a_node.is_occurrences_default then
-				-- Result.append(" [" + a_node.occurrences.as_occurrences_string + "] ")
+				-- Result.append (" [" + a_node.occurrences.as_occurrences_string + "] ")
 			-- end
 			if a_node.sibling_order /= Void then
 				Result.append (a_node.sibling_order.as_string + " ")
 			end
 
 			--if in_technical_mode then
-				Result.append(a_node.rm_type_name)
+				Result.append (a_node.rm_type_name)
 			--end
 			if in_technical_mode then
 				if a_node.is_addressable then
-					Result.append("[" + a_node.node_id + "]")
+					Result.append ("[" + a_node.node_id + "]")
 				end
 			end
 
@@ -972,20 +970,20 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	c_primitive_object_string(c_p_o: C_PRIMITIVE_OBJECT): STRING is
+	c_primitive_object_string(c_p_o: C_PRIMITIVE_OBJECT): STRING
 			-- generate string form of node or object for use in tree node
 		do
 			create Result.make(0)
 			if in_technical_mode then
-				Result.append(c_p_o.rm_type_name)
+				Result.append (c_p_o.rm_type_name)
 			end
 			if not (c_p_o.occurrences.lower = 1 and c_p_o.occurrences.upper = 1) then
-				Result.append(" [" + c_p_o.occurrences.as_string + "]")
+				Result.append (" [" + c_p_o.occurrences.as_string + "]")
 			end
-			Result.append(" " + c_p_o.item.as_string)
+			Result.append (" " + c_p_o.item.as_string)
 		end
 
-	archetype_internal_ref_string(a_node: ARCHETYPE_INTERNAL_REF): STRING is
+	archetype_internal_ref_string(a_node: ARCHETYPE_INTERNAL_REF): STRING
 			-- generate string form of node or object for use in tree node
 		do
 			create Result.make_empty
@@ -997,7 +995,7 @@ feature {NONE} -- Implementation
 			if in_technical_mode then
 				Result.append ("use " + a_node.rm_type_name)
 				if a_node.is_addressable then
-					Result.append("[" + a_node.node_id + "]")
+					Result.append ("[" + a_node.node_id + "]")
 				end
 				Result.append (" " + a_node.target_path)
 			elseif archetype_directory.has_valid_selected_archetype then
@@ -1005,7 +1003,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	object_term_item_string(code: STRING; assumed_flag, local_flag: BOOLEAN): STRING is
+	object_term_item_string(code: STRING; assumed_flag, local_flag: BOOLEAN): STRING
 			-- generate string form of node or object for use in tree node;
 			-- assumed_flag = True if this is an assumed value - will be marked visually
 			-- local_flag = True if his term is an at- or ac- code from within archetype
@@ -1032,7 +1030,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	constraint_ref_string(a_constraint_ref: CONSTRAINT_REF): STRING is
+	constraint_ref_string(a_constraint_ref: CONSTRAINT_REF): STRING
 			-- generate string form of node or object for use in tree node
 		do
 			create Result.make_empty
@@ -1046,7 +1044,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	object_ordinal_item_string(an_ordinal: ORDINAL; assumed_flag: BOOLEAN): STRING is
+	object_ordinal_item_string(an_ordinal: ORDINAL; assumed_flag: BOOLEAN): STRING
 			-- generate string form of node or object for use in tree node
 		local
 			code: STRING
@@ -1070,7 +1068,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	object_quantity_string (a_q: QUANTITY; assumed_flag: BOOLEAN): STRING is
+	object_quantity_string (a_q: QUANTITY; assumed_flag: BOOLEAN): STRING
 			-- String form of node or object for use in tree node.
 		do
 			Result := a_q.magnitude_as_string
@@ -1080,19 +1078,19 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	object_c_quantity_item_string(a_object_c_quantity: C_QUANTITY_ITEM): STRING is
+	object_c_quantity_item_string(a_object_c_quantity: C_QUANTITY_ITEM): STRING
 			-- generate string form of node or object for use in tree node
 		do
 			create Result.make(0)
 			if a_object_c_quantity.units /= Void then
-				Result.append(a_object_c_quantity.units)
+				Result.append (a_object_c_quantity.units)
 			end
 			if a_object_c_quantity.magnitude /= Void then
-				Result.append(": " + a_object_c_quantity.magnitude.as_string)
+				Result.append (": " + a_object_c_quantity.magnitude.as_string)
 			end
 		end
 
-	object_invariant_string(an_inv: ASSERTION): STRING is
+	object_invariant_string(an_inv: ASSERTION): STRING
 			-- generate string form of node or object for use in tree node
 		do
 			Result := an_inv.as_string
@@ -1104,7 +1102,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	populate_invariants is
+	populate_invariants
 			-- populate invariants of archetype into bottom nodes of tree
 		local
 			a_ti_sub, a_ti_sub2: EV_TREE_ITEM

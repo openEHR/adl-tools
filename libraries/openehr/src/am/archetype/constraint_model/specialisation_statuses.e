@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Values of status of node definition in source text, i.e. what is define 
@@ -20,24 +20,24 @@ class SPECIALISATION_STATUSES
 
 feature -- Definitions
 
-	ss_undefined: INTEGER is 5000
+	ss_undefined: INTEGER = 5000
 			-- this node is inherited here and is redefined here
 
-	ss_added: INTEGER is 5001
+	ss_added: INTEGER = 5001
 			-- this node was defined here for the first time
 
-	ss_redefined: INTEGER is 5002
+	ss_redefined: INTEGER = 5002
 			-- this node is inherited here and is redefined here
 
-	ss_inherited: INTEGER is 5003
+	ss_inherited: INTEGER = 5003
 			-- this node is inherited here unchanged
 
-	ss_propagated: INTEGER is 5004
+	ss_propagated: INTEGER = 5004
 			-- this node is inherited here and is redefined here
 
 feature -- Access
 
-	specialisation_status_names: HASH_TABLE [STRING, INTEGER] is
+	specialisation_status_names: HASH_TABLE [STRING, INTEGER]
 			-- names of specialsiation statuses
 		once
 			create Result.make(0)
@@ -50,7 +50,7 @@ feature -- Access
 
 feature -- Status Report
 
-	valid_specialisation_status (a_status: INTEGER): BOOLEAN is
+	valid_specialisation_status (a_status: INTEGER): BOOLEAN
 			-- True if a_status is a valid source status
 		do
 			Result := a_status >= ss_undefined and a_status <= ss_propagated

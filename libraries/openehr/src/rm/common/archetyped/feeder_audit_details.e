@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Common Information Model"
 	description: "[
 			     Audit details from any system in feeder audit chain
@@ -20,7 +20,7 @@ class FEEDER_AUDIT_DETAILS
 
 feature -- Initialisation
 	
-	make(a_system_id:STRING) is
+	make(a_system_id:STRING)
 		require
 			a_system_id_exists: a_system_id /= Void and then not a_system_id.is_empty
 		do

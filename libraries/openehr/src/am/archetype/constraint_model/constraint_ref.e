@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 			 Object node type representing a reference to a constraint
@@ -28,14 +28,14 @@ create
 
 feature -- Initialisation
 
-	default_create is
+	default_create
 			--
 		do
 			precursor
 			rm_type_name := (create {CODE_PHRASE}.default_create).generator
 		end
 
-	make(a_code: STRING) is
+	make(a_code: STRING)
 			-- make from pattern of form "[acNNNN[.NN[etc]]]"
 		require
 			Code_exists: a_code /= Void and then not a_code.is_empty
@@ -57,7 +57,7 @@ feature -- Access
 
 feature -- Status Report
 
-	is_valid: BOOLEAN is
+	is_valid: BOOLEAN
 			-- report on validity
 		do
 			Result := precursor
@@ -65,7 +65,7 @@ feature -- Status Report
 
 feature -- Comparison
 
-	is_subset_of (other: like Current): BOOLEAN is
+	is_subset_of (other: like Current): BOOLEAN
 			-- True if this node is a subset, i.e. a redefinition of, `other'
 			-- Returns False if they are the same, or if they do not correspond
 		do
@@ -74,27 +74,27 @@ feature -- Comparison
 
 feature -- Conversion
 
-	as_string: STRING is
+	as_string: STRING
 			--
 		do
 			create Result.make (0)
-			Result.append("[" + target + "]")
+			Result.append ("[" + target + "]")
 		end
 
 feature -- Representation
 
-	representation: !OG_OBJECT_LEAF
+	representation: attached OG_OBJECT_LEAF
 
 feature -- Visitor
 
-	enter_subtree(visitor: C_VISITOR; depth: INTEGER) is
+	enter_subtree(visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at start of block for this node
 		do
 			precursor(visitor, depth)
 			visitor.start_constraint_ref(Current, depth)
 		end
 
-	exit_subtree(visitor: C_VISITOR; depth: INTEGER) is
+	exit_subtree(visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at end of block for this node
 		do
 			precursor(visitor, depth)

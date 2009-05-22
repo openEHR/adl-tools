@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Common Reference Model"
 
 	description: "[
@@ -22,9 +22,9 @@ class VERSION_NAMES
 
 feature -- Definitions
 	
-	Latest_version_pseudo_id: STRING is "latest"
+	Latest_version_pseudo_id: STRING = "latest"
 
-	First_version_parent_pseudo_id: STRING is "first"
+	First_version_parent_pseudo_id: STRING = "first"
 
 end
 

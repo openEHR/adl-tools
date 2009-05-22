@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Version of openEHR"
 	keywords:    "ADL"

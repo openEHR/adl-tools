@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR EHR Reference Model"
 	description: "[
 	             A particular version of content extracted from a  VERSIONED_COMPOSITION. 
@@ -34,7 +34,7 @@ inherit
 
 feature -- Definitions
 
-	Id_delimiter: STRING is "!"
+	Id_delimiter: STRING = "!"
 			-- delimiter for sections of id.
 
 feature -- Access
@@ -62,32 +62,32 @@ feature -- Access
 			-- Indicates what broad category this Composition is belogs to, 
 			-- e.g. "persistent” - of longitudinal validity, “event”, “process” etc.
 
-	path_of_item (a_loc: LOCATABLE): STRING is
+	path_of_item (a_loc: LOCATABLE): STRING
 			-- The path to an item relative to the root of this archetyped structure.
 		do
 				-- TO_BE_IMPLEM
 		end
 
-	item_at_path (a_path: STRING): LOCATABLE is
+	item_at_path (a_path: STRING): LOCATABLE
 			-- The item at a path (relative to this item).
 		do
 				-- TO_BE_IMPLEM
 		end
 
-	parent: LOCATABLE is
+	parent: LOCATABLE
 			-- parent node of this node in compositional structure
 		once			
 		end
 
 feature -- Status Report
 
-	is_persistent: BOOLEAN is
+	is_persistent: BOOLEAN
 			-- Indicates whether this transaction is considered persistent, i.e. of longitudinal validity or not.
 		do
 			
 		end
 		
-	path_exists (a_path: STRING): BOOLEAN is
+	path_exists (a_path: STRING): BOOLEAN
 			-- True if the path is valid with respect to the current item.
 		do
 				-- TO_BE_IMPLEM

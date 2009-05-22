@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR re-usable library"
 	description: "Basic Meta-model abstraction of a single-valued property"
 	keywords:    "model, UML"

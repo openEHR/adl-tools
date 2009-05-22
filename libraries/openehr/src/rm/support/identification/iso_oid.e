@@ -1,6 +1,6 @@
-indexing
+note
 	component:   "openEHR Support Information Model"
-	
+
 	description: "[
 				 Model of ISO’s Object Identifier (oid) as defined by the standard 
 				 ISO/IEC 8824 . Oids are formed from integers separated by dots. 
@@ -28,19 +28,19 @@ inherit
 
 create
 	default_create, make
-	
+
 feature -- Definitions
 
-	Default_value: STRING is "1"
+	Default_value: STRING = "1"
 			-- ISO Oid
 
 feature -- Status Report
 
-	valid_id(an_id:STRING): BOOLEAN is
-			-- 
+	valid_id (an_id: STRING): BOOLEAN
+			--
 		do
 		end
-		
+
 end
 
 

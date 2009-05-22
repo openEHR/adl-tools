@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Object node type representing constraint on text or term"
 	keywords:    "test, ADL"
@@ -28,7 +28,7 @@ feature -- Definitions
 	-- FIXME: these have been copied from CODE_PHRASE for now;
 	-- in future, this class should just use C_CODE_PHRASE to represent its data
 
-	separator: STRING is "::"
+	separator: STRING = "::"
 
 feature -- Initialisation
 
@@ -45,7 +45,7 @@ feature -- Initialisation
 			Any_allowed: any_allowed
 		end
 
-	make_dt is
+	make_dt
 			--
 		do
 			default_create
@@ -53,7 +53,7 @@ feature -- Initialisation
 			Any_allowed: any_allowed
 		end
 
-	make_from_terminology_id (a_terminology_id: STRING) is
+	make_from_terminology_id (a_terminology_id: STRING)
 			-- Make from `terminology_id'.
 		do
 			default_create
@@ -63,7 +63,7 @@ feature -- Initialisation
 			Terminology_id_set: terminology_id.value.is_equal (a_terminology_id)
 		end
 
-	make_from_pattern (a_pattern: STRING) is
+	make_from_pattern (a_pattern: STRING)
 			-- Make from pattern of form "terminology_id::code, code, ... [; code]".
 			-- Pattern "terminology_id::" is legal.
 		require
@@ -88,7 +88,7 @@ feature -- Access
 	code_list: ARRAYED_LIST[STRING]
 			-- list of codes in terminology designated by terminology_id
 
-	code_count: INTEGER is
+	code_count: INTEGER
 			-- number of codes in code_list
 		do
 			if code_list /= Void then
@@ -96,7 +96,7 @@ feature -- Access
 			end
 		end
 
-	prototype_value: CODE_PHRASE is
+	prototype_value: CODE_PHRASE
 			-- generate a default value from this constraint object of the form
 			-- "terminology_id::code_string"
 		do
@@ -117,14 +117,14 @@ feature -- Access
 
 feature -- Status Report
 
-	any_allowed: BOOLEAN is
+	any_allowed: BOOLEAN
 			-- True if any value allowed
 			-- i.e. no terminology_id or code_list
 		do
 			Result := terminology_id = Void and code_list = Void
 		end
 
-	is_local: BOOLEAN is
+	is_local: BOOLEAN
 			-- True if this terminology id = "local"
 		require
 			not any_allowed
@@ -132,7 +132,7 @@ feature -- Status Report
 			Result := terminology_id.is_local
 		end
 
-	valid_value (a_value: like prototype_value): BOOLEAN is
+	valid_value (a_value: like prototype_value): BOOLEAN
 			-- check a value of the form "terminology_id::code_string"
 		do
 			if any_allowed then
@@ -147,7 +147,7 @@ feature -- Status Report
 			end
 		end
 
-	has_code (a_code: STRING): BOOLEAN is
+	has_code (a_code: STRING): BOOLEAN
 			-- True if 'a_code' found in code list
 		require
 			Code_valid: a_code /= Void and then not a_code.is_empty
@@ -155,7 +155,7 @@ feature -- Status Report
 			Result := code_list /= Void and code_list.has (a_code)
 		end
 
-	has_parent_code (a_code: STRING): BOOLEAN is
+	has_parent_code (a_code: STRING): BOOLEAN
 			-- True if an immediate parent of 'a_code' found in code list, assuming a_code is sepcialised
 		require
 			Code_valid: a_code /= Void and then not a_code.is_empty
@@ -168,7 +168,7 @@ feature -- Status Report
 			end
 		end
 
-	valid_pattern (a_pattern: STRING): BOOLEAN is
+	valid_pattern (a_pattern: STRING): BOOLEAN
 			-- Verify that the pattern of form "terminology_id::code, code, ... [; code]"
 			-- is valid, i.e. that there are no repeats.
 			-- FIXME: This has a nasty side-effect: it reinitialises `Current'!
@@ -181,7 +181,7 @@ feature -- Status Report
 
 feature -- Comparison
 
-	node_conforms_to (other: like Current): BOOLEAN is
+	node_conforms_to (other: like Current): BOOLEAN
 			-- True if this node is a subset, i.e. a redefinition of, `other'. Evaluated as True if
 			-- 	a) this node contains codes already in `other' (but with some removed) and/or
 			--	b) this node contains redefinitions of codes found in `other'
@@ -210,7 +210,7 @@ feature -- Comparison
 
 feature -- Source Control
 
-	specialisation_status (spec_level: INTEGER): SPECIALISATION_STATUS is
+	specialisation_status (spec_level: INTEGER): SPECIALISATION_STATUS
 			-- status of this node in the source text of this archetype with respect to the
 			-- specialisation hierarchy. Values are defined in SPECIALISATION_STATUSES
 			-- FIXME: this code is only an attempt to work out the specialisation status,
@@ -232,7 +232,7 @@ feature -- Source Control
 
 feature -- Modification
 
-	add_code (a_code: STRING) is
+	add_code (a_code: STRING)
 			-- 	add a term to the list
 		require
 			Not_any_allowed: not any_allowed
@@ -250,7 +250,7 @@ feature -- Modification
 
 feature -- Conversion
 
-	as_string: STRING is
+	as_string: STRING
 			--
 		do
 			create Result.make_empty
@@ -282,14 +282,14 @@ feature -- Conversion
 			end
 		end
 
-	standard_equivalent: C_COMPLEX_OBJECT is
+	standard_equivalent: C_COMPLEX_OBJECT
 		do
 			-- FIXME: to be implemented
 		end
 
 feature -- Synchronisation
 
-	synchronise_to_tree is
+	synchronise_to_tree
 			-- synchronise to parse tree representation
 		do
             if any_allowed then -- only represent as an inline dADL if any_allowed, else use syntax
@@ -299,14 +299,14 @@ feature -- Synchronisation
 
 feature -- Visitor
 
-	enter_subtree (visitor: C_VISITOR; depth: INTEGER) is
+	enter_subtree (visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at start of block for this node
 		do
             Precursor (visitor, depth)
 			visitor.start_c_code_phrase (Current, depth)
 		end
 
-	exit_subtree (visitor: C_VISITOR; depth: INTEGER) is
+	exit_subtree (visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at end of block for this node
 		do
             Precursor (visitor, depth)
@@ -315,7 +315,7 @@ feature -- Visitor
 
 feature {DT_OBJECT_CONVERTER} -- Conversion
 
-	persistent_attributes: ARRAYED_LIST [STRING] is
+	persistent_attributes: ARRAYED_LIST [STRING]
 			-- list of attribute names to persist as DT structure
 			-- empty structure means all attributes
 		once
@@ -328,7 +328,7 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 
 feature {NONE} -- Implementation
 
-	parse_pattern (a_pattern: STRING) is
+	parse_pattern (a_pattern: STRING)
 			-- parse pattern of form "terminology_id::code, code, ... [; code]"
 			-- Pattern "terminology_id::" is legal
 		require

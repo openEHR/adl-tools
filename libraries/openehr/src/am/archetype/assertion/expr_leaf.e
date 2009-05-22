@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 					Expression tree leaf item. This can represent one of:
@@ -38,13 +38,13 @@ create
 
 feature -- Definitions
 
-	Ref_type_attribute: STRING is "attibute"
-	Ref_type_constant: STRING is "constant"
-	Ref_type_constraint: STRING is "constraint"
+	Ref_type_attribute: STRING = "attibute"
+	Ref_type_constant: STRING = "constant"
+	Ref_type_constraint: STRING = "constraint"
 
 feature -- Initialisation
 
-	make_archetype_ref(a_ref: STRING) is
+	make_archetype_ref(a_ref: STRING)
 			-- node refers to a feature in the main part of an archetype
 			-- (not the definition section)
 		require
@@ -57,7 +57,7 @@ feature -- Initialisation
 			is_archetype_ref
 		end
 
-	make_archetype_definition_ref(a_ref: STRING) is
+	make_archetype_definition_ref(a_ref: STRING)
 			-- node refers to a feature in the archetype definition
 		require
 			ref_exists: a_ref /= Void and then not a_ref.is_empty
@@ -69,7 +69,7 @@ feature -- Initialisation
 			is_archetype_definition_ref
 		end
 
-	make_boolean(an_item: BOOLEAN) is
+	make_boolean(an_item: BOOLEAN)
 			-- node is a boolean value
    		do
 			item := an_item
@@ -77,7 +77,7 @@ feature -- Initialisation
 			reference_type := Ref_type_constant.twin
 		end
 
-	make_real(an_item: REAL) is
+	make_real(an_item: REAL)
 			-- node is a real value
    		do
 			item := an_item
@@ -85,7 +85,7 @@ feature -- Initialisation
 			reference_type := Ref_type_constant.twin
 		end
 
-	make_integer(an_item: INTEGER) is
+	make_integer(an_item: INTEGER)
 			-- node is an integer value
    		do
 			item := an_item
@@ -93,7 +93,7 @@ feature -- Initialisation
 			reference_type := Ref_type_constant.twin
 		end
 
-	make_string(an_item: STRING) is
+	make_string(an_item: STRING)
 			-- node is a string value
 		require
 			Item_exists: an_item /= Void
@@ -103,7 +103,7 @@ feature -- Initialisation
 			reference_type := Ref_type_constant
 		end
 
-	make_character(an_item: CHARACTER) is
+	make_character(an_item: CHARACTER)
 			-- node is a character value
    		do
 			item := an_item
@@ -111,7 +111,7 @@ feature -- Initialisation
 			reference_type := Ref_type_constant
 		end
 
-	make_ordinal(an_item: ORDINAL) is
+	make_ordinal(an_item: ORDINAL)
 			-- node is a ordinal value
 		require
 			Item_exists: an_item /= Void
@@ -121,7 +121,7 @@ feature -- Initialisation
 			reference_type := Ref_type_constant
 		end
 
-	make_coded_term(an_item: CODE_PHRASE) is
+	make_coded_term(an_item: CODE_PHRASE)
 			-- node is a term value
 		require
 			Item_exists: an_item /= Void
@@ -131,7 +131,7 @@ feature -- Initialisation
 			reference_type := Ref_type_constraint
 		end
 
-	make_constraint(an_item: C_PRIMITIVE) is
+	make_constraint(an_item: C_PRIMITIVE)
 			-- node is a constraint on a primitive type; can only be used with "matches" function
 		require
 			Item_exists: an_item /= Void
@@ -152,7 +152,7 @@ feature -- Access
 
 feature -- Status Report
 
-	is_archetype_ref: BOOLEAN is
+	is_archetype_ref: BOOLEAN
 			-- True if this leaf node is a reference to a node in an archetype outer structure (i.e., not the definition part)
 		local
 			a_path: STRING
@@ -163,7 +163,7 @@ feature -- Status Report
 			end
 		end
 
-	is_archetype_definition_ref: BOOLEAN is
+	is_archetype_definition_ref: BOOLEAN
 			-- True if this leaf node is a reference to a node in an archetype definition
 		local
 			a_path: STRING
@@ -176,33 +176,33 @@ feature -- Status Report
 
 feature -- Conversion
 
-	out: STRING is
+	out: STRING
 		do
 			create Result.make(0)
-			Result.append(item.out)
+			Result.append (item.out)
 		end
 
-	as_string: STRING is
+	as_string: STRING
 		do
 			create Result.make(0)
 			if reference_type.is_equal("constraint") then
-				Result.append("{")
+				Result.append ("{")
 			end
-			Result.append(item.out)
+			Result.append (item.out)
 			if reference_type.is_equal("constraint") then
-				Result.append("}")
+				Result.append ("}")
 			end
 		end
 
 feature -- Visitor
 
-	enter_subtree(visitor: EXPR_VISITOR; depth: INTEGER) is
+	enter_subtree(visitor: EXPR_VISITOR; depth: INTEGER)
 			-- perform action at start of block for this node
 		do
 			visitor.start_expr_leaf (Current, depth)
 		end
 
-	exit_subtree(visitor: EXPR_VISITOR; depth: INTEGER) is
+	exit_subtree(visitor: EXPR_VISITOR; depth: INTEGER)
 			-- perform action at end of block for this node
 		do
 			visitor.end_expr_leaf (Current, depth)

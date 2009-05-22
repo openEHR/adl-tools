@@ -1,4 +1,4 @@
-indexing
+note
 
 	component:   "openEHR Common Archetype Model"
 
@@ -127,7 +127,7 @@ feature -- Access
 	range: INTERVAL [ISO8601_DURATION]
 			-- ISO8601-based interval.
 
-	prototype_value: ISO8601_DURATION is
+	prototype_value: ISO8601_DURATION
 			-- Default duration value.
 		do
 			if range /= Void then
@@ -137,7 +137,7 @@ feature -- Access
 			end
 		end
 
-	rm_type_name: STRING is
+	rm_type_name: STRING
 		once
 			Result := Iso_class_name_leader.twin
 			Result.append(generating_type.substring (3, generating_type.count))
@@ -159,7 +159,7 @@ feature -- Status Report
 
 feature -- Comparison
 
-	node_conforms_to (other: like Current): BOOLEAN is
+	node_conforms_to (other: like Current): BOOLEAN
 			-- True if this node is a subset of, or the same as `other'
 		do
 			-- FIXME: TO BE IMPLEMENTED
@@ -167,7 +167,7 @@ feature -- Comparison
 
 feature -- Output
 
-	as_string: STRING is
+	as_string: STRING
 			-- Textual representation.
 		do
 			create Result.make_empty
@@ -191,11 +191,10 @@ feature -- Output
 			not_empty: not Result.is_empty
 		end
 
-	as_canonical_string: STRING is
+	as_canonical_string: attached STRING
 		do
 			Result := range.as_string
 		ensure
-			attached: Result /= Void
 			not_empty: not Result.is_empty
 		end
 
