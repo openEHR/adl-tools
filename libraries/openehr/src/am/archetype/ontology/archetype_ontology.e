@@ -53,24 +53,25 @@ feature -- Initialisation
 	default_create is
 			--
 		do
-			create errors.make(0)
-			create warnings.make(0)
+			create errors.make (0)
+			create warnings.make (0)
 
-			create languages_available.make(0)
+			create languages_available.make (0)
 			languages_available.compare_objects
-			create terminologies_available.make(0)
+			create terminologies_available.make (0)
 			terminologies_available.compare_objects
 
-			create term_definitions.make(0)
-			create constraint_definitions.make(0)
+			create term_definitions.make (0)
+			create constraint_definitions.make (0)
 
 			create term_codes.make
 			term_codes.compare_objects
 			create constraint_codes.make
 			constraint_codes.compare_objects
 
-			create term_bindings.make(0)
-			create constraint_bindings.make(0)
+			create term_bindings.make (0)
+			create constraint_bindings.make (0)
+			create highest_specialised_code_indexes.make (0)
 		end
 
 	make_from_tree(a_primary_lang: STRING; a_dadl_tree: DT_COMPLEX_OBJECT_NODE; a_concept_code: STRING) is
@@ -469,10 +470,10 @@ feature -- Modification
 			Language_valid: a_lang /= Void and then has_language(a_lang)
 			Term_valid: a_term /= Void and then not has_term_code(a_term.code)
 		do
-			put_term_definition(a_lang, a_term)
-			term_codes.extend(a_term.code)
-			update_specialised_codes(a_term.code)
-			update_highest_non_specialised_term_code_index(a_term.code)
+			put_term_definition (a_lang, a_term)
+			term_codes.extend (a_term.code)
+			update_highest_specialised_code_index (a_term.code)
+			update_highest_non_specialised_term_code_index (a_term.code)
 		ensure
 			Code_valid: has_term_code(a_term.code)
 		end
@@ -1051,10 +1052,10 @@ feature {NONE} -- Implementation
 				term_definitions.item(primary_language).off
 			loop
 				code := term_definitions.item(primary_language).key_for_iteration
-				term_codes.extend(code)
-				update_specialised_codes(code)
-				update_highest_non_specialised_term_code_index(code)
-				term_definitions.item(primary_language).forth
+				term_codes.extend (code)
+				update_highest_specialised_code_index (code)
+				update_highest_non_specialised_term_code_index (code)
+				term_definitions.item (primary_language).forth
 			end
 
 			-- populate constraint code list
@@ -1205,21 +1206,21 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	update_specialised_codes (a_code: STRING) is
-			-- Update specialised_codes list with new code, if it happens to be specialised.
+	update_highest_specialised_code_index (a_code: STRING) is
+			-- Update `highest_specialised_code_indexes' list with `a_code', if it happens to be specialised.
 		require
 			Code_valid: a_code /= Void and then is_valid_code (a_code)
 		local
 			parent_code: STRING
+			idx: INTEGER
 		do
 			if is_specialised_code (a_code) then
 				parent_code := specialisation_parent_from_code (a_code)
+				idx := specialised_code_tail (a_code).to_integer
 
-				if not specialised_codes.has (parent_code) then
-					specialised_codes.force (create {TWO_WAY_SORTED_SET [INTEGER]}.make, parent_code)
+				if idx > highest_specialised_code_indexes [parent_code] then
+					highest_specialised_code_indexes.force (idx, parent_code)
 				end
-
-				specialised_codes.item (parent_code).extend (specialised_code_tail (a_code).to_integer)
 			end
 		end
 
@@ -1274,9 +1275,6 @@ feature {NONE} -- Implementation
 		do
 			concept_code := a_concept_code
 			specialisation_depth := specialisation_depth_from_code(a_concept_code)
-			if specialised_codes = Void then
-				create specialised_codes.make(0)
-			end
 		ensure
 			concept_code /= Void
 		end
@@ -1491,7 +1489,7 @@ invariant
 	Term_bindings_exists: term_bindings /= Void
 	Constraint_bindings_exists: constraint_bindings /= Void
 	Root_code_valid: term_codes.has(concept_code)
-	specialised_codes_valid: specialised_codes /= Void
+	highest_specialised_code_indexes_valid: highest_specialised_code_indexes /= Void
 
 end
 

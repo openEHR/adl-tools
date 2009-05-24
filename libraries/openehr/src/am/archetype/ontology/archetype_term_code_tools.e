@@ -156,7 +156,7 @@ feature -- Access
 			Result := code_num_part.substring(lpos, rpos)
 		end
 
-	specialisation_depth_from_code(a_code: STRING): INTEGER is
+	specialisation_depth_from_code (a_code: STRING): INTEGER is
 			-- infer number of levels of specialisation from concept code
 		require
 			Code_valid: a_code /= Void and then is_valid_code (a_code)
@@ -166,14 +166,15 @@ feature -- Access
 			non_negative: Result >= 0
 		end
 
-	specialised_code_tail(a_code: STRING): STRING is
+	specialised_code_tail (a_code: STRING): STRING is
 			-- get code tail from a specialised code, e.g. from
 			-- "at0032.0.1", the result is "1"; from
 			-- "at0004.3", the result is "3"
 		require
-			Code_valid: a_code /= Void and then is_specialised_code(a_code)
+			code_valid: a_code /= Void and then is_valid_code (a_code)
+			not_root_code: is_specialised_code (a_code)
 		do
-			Result := a_code.substring(a_code.last_index_of(Specialisation_separator, a_code.count)+1, a_code.count)
+			Result := a_code.substring (a_code.last_index_of (Specialisation_separator, a_code.count) + 1, a_code.count)
 		end
 
 feature -- Comparison
@@ -235,7 +236,7 @@ feature -- Factory
 		do
 			if specialisation_depth > 0 then
 				create Result.make(0)
-				Result.append(Term_code_leader)
+				Result.append (Term_code_leader)
 
 				from
 					i := 0
@@ -249,7 +250,7 @@ feature -- Factory
 
 				Result.append_integer(highest_term_code_index + 1)
 			else
-				create Result.make_filled('0', Term_code_length)
+				create Result.make_filled ('0', Term_code_length)
 				Result.replace_substring(Term_code_leader, 1, Term_code_leader.count)
 				new_idx_str := (highest_term_code_index + 1).out
 				Result.replace_substring(new_idx_str, Result.count-new_idx_str.count + 1, Result.count)
@@ -266,10 +267,10 @@ feature -- Factory
 			a_parent_code_valid: a_parent_code /= Void and then not a_parent_code.is_empty
 			level_valid: specialisation_depth > 0
 		local
-			i, n: INTEGER
+			i: INTEGER
 		do
 			create Result.make(0)
-			Result.append(a_parent_code)
+			Result.append (a_parent_code)
 
 			from
 				i := specialisation_depth_from_code(a_parent_code) + 1
@@ -282,12 +283,7 @@ feature -- Factory
 			end
 
 			Result.append_character(Specialisation_separator)
-
-			if specialised_codes.has (a_parent_code) then
-				n := specialised_codes.item (a_parent_code).last
-			end
-
-			Result.append_integer (n + 1)
+			Result.append_integer (highest_specialised_code_indexes [a_parent_code] + 1)
 		ensure
 			Result_valid: Result /= Void and then specialised_code_tail(Result).to_integer > 0
 		end
@@ -325,13 +321,8 @@ feature -- Factory
 
 feature {NONE} -- Implementation
 
-	specialised_codes:  HASH_TABLE [TWO_WAY_SORTED_SET [INTEGER], STRING]
+	highest_specialised_code_indexes: HASH_TABLE [INTEGER, STRING]
 			-- Table of child code tails keyed by immediate parent code.
-			-- E.g. the entry for at0005 might have a list of {1, 2} to represent at0005.1 and at0005.2;
-			-- and ac0005.1 might have {1} to represent ac0005.1.1.
-			-- The code tails are represented as integers, not as the full code strings, because:
-			-- (a) strings do not sort correctly for more than one digit (e.g. "10" < "9");
-			-- (b) integers are more efficient (faster comparisons, no need to convert from string to integer).
 
 end
 
