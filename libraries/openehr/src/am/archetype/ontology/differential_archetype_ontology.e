@@ -75,7 +75,7 @@ feature -- Initialisation
 
 			term_bindings := a_flat_copy.term_bindings
 			constraint_bindings := a_flat_copy.constraint_bindings
-			specialised_codes := a_flat_copy.specialised_codes
+			highest_specialised_code_indexes := a_flat_copy.highest_specialised_code_indexes
 		end
 
 feature -- Access
@@ -349,7 +349,7 @@ feature -- Factory
 			a_parent_code_valid: a_parent_code /= Void and then has_term_code (a_parent_code)
 			level_valid: specialisation_depth > 0
 		local
-			i, n: INTEGER
+			i: INTEGER
 		do
 			create Result.make(0)
 			Result.append (a_parent_code)
@@ -365,14 +365,9 @@ feature -- Factory
 			end
 
 			Result.append_character(Specialisation_separator)
-
-			if specialised_codes.has (a_parent_code) then
-				n := specialised_codes.item (a_parent_code).last
-			end
-
-			Result.append_integer (n + 1)
+			Result.append_integer (highest_specialised_code_indexes [a_parent_code] + 1)
 		ensure
-			Result_valid: Result /= Void and then specialised_code_tail(Result).to_integer > 0
+			Result_valid: Result /= Void and then specialised_code_tail (Result).to_integer > 0
 		end
 
 	new_non_specialised_constraint_code: STRING
@@ -414,7 +409,7 @@ feature -- Factory
 			a_parent_code_valid: a_parent_code /= Void and then has_constraint_code (a_parent_code)
 			level_valid: specialisation_depth > 0
 		local
-			i, n: INTEGER
+			i: INTEGER
 		do
 			create Result.make(0)
 			Result.append (a_parent_code)
@@ -430,14 +425,9 @@ feature -- Factory
 			end
 
 			Result.append_character(Specialisation_separator)
-
-			if specialised_codes.has (a_parent_code) then
-				n := specialised_codes.item (a_parent_code).last
-			end
-
-			Result.append_integer (n + 1)
+			Result.append_integer (highest_specialised_code_indexes [a_parent_code] + 1)
 		ensure
-			Result_valid: Result /= Void and then specialised_code_tail(Result).to_integer > 0
+			Result_valid: Result /= Void and then specialised_code_tail (Result).to_integer > 0
 		end
 
 	new_concept_code_at_level (at_level: INTEGER): attached STRING

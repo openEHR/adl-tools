@@ -69,7 +69,7 @@ feature -- Initialisation
 
 			create term_bindings.make (0)
 			create constraint_bindings.make (0)
-			create specialised_codes.make (0)
+			create highest_specialised_code_indexes.make (0)
 		end
 
 	make_from_tree(a_primary_lang: STRING; a_dadl_tree: DT_COMPLEX_OBJECT_NODE; a_concept_code: STRING)
@@ -364,10 +364,10 @@ feature -- Modification
 			Language_valid: a_lang /= Void and then has_language(a_lang)
 			Term_valid: a_term /= Void and not has_term_code(a_term.code) and specialisation_depth_from_code (a_term.code) <= specialisation_depth
 		do
-			put_term_definition(a_lang, a_term)
+			put_term_definition (a_lang, a_term)
 			term_codes.extend (a_term.code)
-			update_specialised_codes(a_term.code)
-			update_highest_term_code_index(a_term.code)
+			update_highest_specialised_code_index (a_term.code)
+			update_highest_term_code_index (a_term.code)
 		ensure
 			Code_valid: has_term_code(a_term.code)
 		end
@@ -393,10 +393,10 @@ feature -- Modification
 			Language_valid: a_lang /= Void and then has_language(a_lang)
 			Term_valid: a_term /= Void and then not has_constraint_code(a_term.code) and specialisation_depth_from_code (a_term.code) <= specialisation_depth
 		do
-			put_constraint_definition(a_lang, a_term)
+			put_constraint_definition (a_lang, a_term)
 			constraint_codes.extend (a_term.code)
-			update_specialised_codes(a_term.code)
-			update_highest_constraint_code_index(a_term.code)
+			update_highest_specialised_code_index (a_term.code)
+			update_highest_constraint_code_index (a_term.code)
 		ensure
 			has_constraint_code(a_term.code)
 		end
@@ -816,6 +816,9 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 	constraint_bindings: HASH_TABLE[HASH_TABLE[URI, STRING], STRING]
 			-- table of constraint bindings in the form of strings "service::query", keyed by terminology
 
+	highest_specialised_code_indexes: attached HASH_TABLE [INTEGER, STRING]
+			-- Table of child code tails keyed by immediate parent code.
+
 	highest_term_code_index: INTEGER
 			-- index of highest non-specialised code at the level of this ontology; 0 if none so far
 
@@ -944,7 +947,7 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 				loop
 					code := term_definitions.item (primary_language).key_for_iteration
 					term_codes.extend (code)
-					update_specialised_codes (code)
+					update_highest_specialised_code_index (code)
 					update_highest_term_code_index (code)
 					term_definitions.item (primary_language).forth
 				end
@@ -959,7 +962,7 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 				loop
 					code := constraint_definitions.item(primary_language).key_for_iteration
 					constraint_codes.extend (code)
-					update_specialised_codes (code)
+					update_highest_specialised_code_index (code)
 					update_highest_constraint_code_index(code)
 					constraint_definitions.item(primary_language).forth
 				end
@@ -1098,21 +1101,21 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 			end
 		end
 
-	update_specialised_codes (a_code: STRING)
-			-- Update specialised_codes list with new code, if it happens to be specialised.
+	update_highest_specialised_code_index (a_code: STRING)
+			-- Update `highest_specialised_code_indexes' list with `a_code', if it happens to be specialised.
 		require
 			Code_valid: a_code /= Void and then is_valid_code (a_code)
 		local
 			parent_code: STRING
+			idx: INTEGER
 		do
 			if is_specialised_code (a_code) then
 				parent_code := specialisation_parent_from_code (a_code)
+				idx := specialised_code_tail (a_code).to_integer
 
-				if not specialised_codes.has (parent_code) then
-					specialised_codes.force (create {attached TWO_WAY_SORTED_SET [INTEGER]}.make, parent_code)
+				if idx > highest_specialised_code_indexes [parent_code] then
+					highest_specialised_code_indexes [parent_code] := idx
 				end
-
-				specialised_codes.item (parent_code).extend (specialised_code_tail (a_code).to_integer)
 			end
 		end
 
@@ -1245,14 +1248,6 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 				constraint_definitions.forth
 			end
 		end
-
-	specialised_codes: attached HASH_TABLE [attached TWO_WAY_SORTED_SET [INTEGER], STRING]
-			-- Table of child code tails keyed by immediate parent code.
-			-- E.g. the entry for at0005 might have a list of {1, 2} to represent at0005.1 and at0005.2;
-			-- and ac0005.1 might have {1} to represent ac0005.1.1.
-			-- The code tails are represented as integers, not as the full code strings, because:
-			-- (a) strings do not sort correctly for more than one digit (e.g. "10" < "9");
-			-- (b) integers are more efficient (faster comparisons, no need to convert from string to integer).
 
 invariant
 	Primary_language_valid: primary_language /= Void and then not primary_language.is_empty

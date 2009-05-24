@@ -169,7 +169,7 @@ feature -- Access
 			Result := code_num_part.substring(lpos, rpos)
 		end
 
-	specialisation_depth_from_code(a_code: STRING): INTEGER
+	specialisation_depth_from_code (a_code: STRING): INTEGER
 			-- Infer number of levels of specialisation from `a_code'.
 		require
 			code_valid: a_code /= Void and then is_valid_code (a_code)
@@ -179,14 +179,15 @@ feature -- Access
 			non_negative: Result >= 0
 		end
 
-	specialised_code_tail(a_code: STRING): STRING
+	specialised_code_tail (a_code: STRING): STRING
 			-- get code tail from a specialised code, e.g. from
 			-- "at0032.0.1", the result is "1"; from
 			-- "at0004.3", the result is "3"
 		require
-			Code_valid: a_code /= Void and then is_specialised_code(a_code)
+			code_valid: a_code /= Void and then is_valid_code (a_code)
+			not_root_code: is_specialised_code (a_code)
 		do
-			Result := a_code.substring(a_code.last_index_of(Specialisation_separator, a_code.count)+1, a_code.count)
+			Result := a_code.substring (a_code.last_index_of (Specialisation_separator, a_code.count) + 1, a_code.count)
 		end
 
 feature -- Comparison
