@@ -24,17 +24,6 @@ inherit
 	SHARED_ARCHETYPE_COMPILER
 
 	MESSAGE_BILLBOARD
-		redefine
-			status_reporting_level
-		end
-
-feature -- Configuration
-
-	status_reporting_level: INTEGER
-			-- Hard-coded message reporting level to avoid exceptions due to missing config file.
-		do
-			Result := message_type_error
-		end
 
 feature -- Test routines
 
@@ -43,14 +32,23 @@ feature -- Test routines
 		note
 			testing:  "covers/{ARCH_DIRECTORY}.populate_directory"
 		local
+			repository: STRING
 			expected: STRING
 		do
+			initialise_default_resource_config_file_name
+			set_status_reporting_level (message_type_error)
+			repository := resource_value ("tests", "validation_repository")
+
 			archetype_directory.make
-			archetype_directory.put_repository ("C:\Ocean\adl\test\validation", 2)
+			archetype_directory.put_repository (repository, 2)
 			archetype_directory.populate_directory
 
-			expected := "ERROR - No parent matching /specialisation_parent_term found for archetype C:\Ocean\adl\test\validation\adl-test-ENTRY.specialisation_parent_term-missing.v1.adl      (ARCH_DIRECTORY.merge_enter)%N" +
-						"ERROR - No parent matching /specialisation_parent found for archetype C:\Ocean\adl\test\validation\adl-test-ENTRY.specialisation_parent-missing.v1.adl      (ARCH_DIRECTORY.merge_enter)%N"
+			expected := "ERROR - No parent matching /specialisation_parent_term found for archetype " +
+						repository +
+						"\adl-test-ENTRY.specialisation_parent_term-missing.v1.adl      (ARCH_DIRECTORY.merge_enter)%N" +
+						"ERROR - No parent matching /specialisation_parent found for archetype " +
+						repository +
+						"\adl-test-ENTRY.specialisation_parent-missing.v1.adl      (ARCH_DIRECTORY.merge_enter)%N"
 
 			assert_equal (expected, billboard_content)
 			archetype_compiler.build_all
@@ -64,7 +62,7 @@ end
 --| ***** BEGIN LICENSE BLOCK *****
 --| Version: MPL 1.1/GPL 2.0/LGPL 2.1
 --|
---| The contents of this file are subject to the Mozilla Public License Version
+										--| The contents of this file are subject to the Mozilla Public License Version
 --| 1.1 (the 'License'); you may not use this file except in compliance with
 --| the License. You may obtain a copy of the License at
 --| http://www.mozilla.org/MPL/

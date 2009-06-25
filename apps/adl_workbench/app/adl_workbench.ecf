@@ -102,6 +102,7 @@
 	</target>
 	<target name="adl_workbench" extends="adl_workbench_no_precompile">
 		<precompile name="precompile" location="$ISE_PRECOMP\vision2.ecf"/>
+		<tests name="archetype_repository_tests" location="..\..\..\components\archetype_repository\tests\"/>
 		<tests name="common_libs_tests" location="..\..\..\libraries\common_libs\tests\"/>
 		<tests name="openehr_tests" location="..\..\..\libraries\openehr\tests\"/>
 	</target>
