@@ -179,6 +179,22 @@ feature -- Status Report
 			end
 		end
 
+	has_path (a_path, an_obj_type: STRING): BOOLEAN
+			-- is `a_path' possible based on this reference model? Path format must be standard forward-slash
+			-- delimited path, or Xpath. Any predicates (i.e. [] sections) in an Xpath will be ignored.
+		require
+			path_attached: a_path /= Void
+			object_type_attached: an_obj_type /= Void
+		local
+			an_og_path: OG_PATH
+		do
+			create an_og_path.make_pure_from_string(a_path)
+			an_og_path.start
+			if has_class_definition (an_obj_type) then
+				Result := class_definition (an_obj_type).has_path(an_og_path)
+			end
+		end
+
 feature -- Commands
 
 	dt_finalise
@@ -186,9 +202,10 @@ feature -- Commands
 		local
 			keys: ARRAY [STRING]
 			i: INTEGER
+			anc_list: ARRAYED_LIST [BMM_CLASS_DEFINITION]
 		do
 			-- convert primitive type names of the form 'Integer' to all uppercase; has to be done in
-			-- two goes, because changing keys messs with the table structure if done in one pass
+			-- two gos, because changing keys messs with the table structure if done in one pass
 			from primitive_types.start until primitive_types.off loop
 				primitive_types.item_for_iteration.name.to_upper
 				primitive_types.forth
@@ -201,11 +218,25 @@ feature -- Commands
 
 			-- now finalise all classes
 			from primitive_types.start until primitive_types.off loop
-				primitive_types.item_for_iteration.dt_finalise
+				primitive_types.item_for_iteration.dt_finalise(Current)
+				anc_list := primitive_types.item_for_iteration.ancestors
+
+				-- set all class def descendants property
+				from anc_list.start until anc_list.off loop
+					anc_list.item.add_immediate_descendant (primitive_types.item_for_iteration)
+					anc_list.forth
+				end
 				primitive_types.forth
 			end
 			from class_definitions.start until class_definitions.off loop
-				class_definitions.item_for_iteration.dt_finalise
+				class_definitions.item_for_iteration.dt_finalise(Current)
+
+				-- set all class def descendants property
+				anc_list := class_definitions.item_for_iteration.ancestors
+				from anc_list.start until anc_list.off loop
+					anc_list.item.add_immediate_descendant (class_definitions.item_for_iteration)
+					anc_list.forth
+				end
 				class_definitions.forth
 			end
 		end

@@ -29,42 +29,46 @@ feature -- Initialisation
 		do
 			create properties.make (0)
 			create ancestors.make (0)
+			create immediate_descendants.make (0)
 		end
 
 feature -- Access
 
 	name: STRING
-			-- name of the class
+			-- name of the class FROM SCHEMA
+			-- DON'T RENAME THIS ATTRIBUTE
 
 	generic_parameters: HASH_TABLE [BMM_GENERIC_PARAMETER_DEFINITION, STRING]
 			-- list of generic parameter definitions
 			-- FIXME: this won't function correctly unless ordering is guaranteed;
 			-- use DS_HASH_TABLE - but not yet supported by DT_OBJECT_CONVERTER
+			-- DON'T RENAME THIS ATTRIBUTE
 
 	ancestors: ARRAYED_LIST [BMM_CLASS_DEFINITION]
-			-- list of immediate inheritance parents
+			-- list of immediate inheritance parents FROM SCHEMA
+			-- DON'T RENAME THIS ATTRIBUTE
+
+	immediate_descendants: ARRAYED_LIST [BMM_CLASS_DEFINITION]
+			-- list of immediate inheritance descendants
 
 	properties: HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
-			-- list of attributes defined in this class
+			-- list of attributes defined in this class FROM SCHEMA
+			-- DON'T RENAME THIS ATTRIBUTE
 
 	flat_properties: HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
-			-- list of all attributes due to current and ancestor classes
+			-- list of all attributes due to current and ancestor classes, keyed by property name
 		do
 			if flat_properties_cache = Void then
 				create flat_properties_cache.make(0)
-				if ancestors /= Void then
-					from
-						ancestors.start
-					until
-						ancestors.off
-					loop
-						flat_properties_cache.merge (ancestors.item.flat_properties)
-						if properties /= Void then
-							flat_properties_cache.merge (properties)
-						end
-						ancestors.forth
-					end
+				from
+					ancestors.start
+				until
+					ancestors.off
+				loop
+					flat_properties_cache.merge (ancestors.item.flat_properties)
+					ancestors.forth
 				end
+				flat_properties_cache.merge (properties)
 			end
 			Result := flat_properties_cache
 		ensure
@@ -73,6 +77,7 @@ feature -- Access
 
 	flattened_type_list: ARRAYED_LIST [STRING]
 			-- completely flattened list of type names, flattening out all generic parameters
+			-- e.g. "HASH_TABLE [LINKED_LIST[STRING], STRING]" => <<"HASH_TABLE", "LINKED_LIST", "STRING", "STRING">>
 		do
 			create Result.make(0)
 			Result.extend (name)
@@ -109,19 +114,46 @@ feature -- Status Report
 		require
 			Class_name_valid: a_class_name /= Void and then not a_class_name.is_empty
 		do
-			if ancestors /= Void then
-				from ancestors.start until ancestors.off or Result loop
-					Result := ancestors.item.name.is_equal(a_class_name) or else ancestors.item.has_ancestor (a_class_name)
-					ancestors.forth
+			from ancestors.start until ancestors.off or Result loop
+				Result := ancestors.item.name.is_equal(a_class_name) or else ancestors.item.has_ancestor (a_class_name)
+				ancestors.forth
+			end
+		end
+
+	has_path (a_path: OG_PATH): BOOLEAN
+			-- is `a_path' possible based on this reference model?
+		require
+			path_attached: a_path /= Void
+		local
+			a_path_pos: INTEGER
+			class_def: BMM_CLASS_DEFINITION
+		do
+			a_path_pos := a_path.items.index
+			if has_property (a_path.item.attr_name) then
+				class_def := bmm_model.class_definition(flat_properties.item (a_path.item.attr_name).type.root_class)
+				a_path.forth
+				if not a_path.off then
+					Result := class_def.has_path(a_path)
+				else
+					Result := True
+				end
+			end
+			if not Result then -- look in the descendants
+				from immediate_descendants.start until immediate_descendants.off or Result loop
+					a_path.go_i_th (a_path_pos)
+					Result := immediate_descendants.item.has_path(a_path)
+					immediate_descendants.forth
 				end
 			end
 		end
 
 feature -- Commands
 
-	dt_finalise
+	dt_finalise (a_bmmm: BMM_MODEL) is
 			-- synchronise structures after creation by DT deserialiser
 		do
+			bmm_model := a_bmmm
+
 			-- connect attribute defs with parent attribute defs
 
 			-- connect generic parm defs with defs in parent classes if any
@@ -173,10 +205,21 @@ feature -- Output
 			Result := as_type_string
 		end
 
+feature {BMM_MODEL} -- Implementation
+
+	add_immediate_descendant(a_bmm_class: BMM_CLASS_DEFINITION)
+			-- add a class def to the descendants list
+		do
+			immediate_descendants.extend (a_bmm_class)
+		end
+
 feature {BMM_CLASS_DEFINITION} -- Implementation
 
 	flat_properties_cache: HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
 			-- reference list of all attributes due to inheritance flattening of this type
+
+	bmm_model: BMM_MODEL
+			-- reverse reference, set after initialisation from input schema
 
 feature {DT_OBJECT_CONVERTER} -- Conversion
 
@@ -190,6 +233,7 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 invariant
 	Properties_exists: properties /= Void
 	Ancestors_exists: ancestors /= Void
+	Descendants_exists: immediate_descendants /= Void
 	Generic_validity: is_generic implies generic_parameters /= Void and then not generic_parameters.is_empty
 
 end

@@ -1,10 +1,18 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "ADL archetype path"
+	description: "[
+				 ADL archetype path. This abstraction allows ADL style paths to be created and manipulated. An ADL path
+				 is a simplified form of an Xpath, and contains 'predicate' sections, e.g. /items[at0004] which in pure Xpath
+				 would be /items[@node_id = 'at0004']. At the moment there is no constraint on what can be in predicates (e.g. 
+				 there is no Xpath parsing).
+				 
+				 'Pure' paths, i.e. with no predicates can also be handled; a path string containing predicates can be parsed
+				 as if it contained no predicates, i.e. /items[at0004/events[1] would be read as /items/events.
+				 ]"
 	keywords:    "test, ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2003-2009 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -20,7 +28,7 @@ inherit
 		end
 
 create
-	make_absolute, make_relative, make_movable, make_from_string, make_from_other, make_root
+	make_absolute, make_relative, make_movable, make_from_string, make_from_other, make_root, make_pure_from_string
 
 feature -- Definitions
 
@@ -85,6 +93,21 @@ feature -- Initialisation
 		do
 			create parser.make
 			parser.execute(s)
+			is_absolute := parser.output.is_absolute
+			is_terminal := parser.output.is_terminal
+			items := parser.output.items
+		end
+
+	make_pure_from_string(s: STRING)
+			-- make a path containing no predicates, only attribute names
+		require
+			s /= Void and then valid_path_string(s)
+		local
+			s1: STRING
+		do
+			s1 := strip_predicates(s)
+			create parser.make
+			parser.execute(s1)
 			is_absolute := parser.output.is_absolute
 			is_terminal := parser.output.is_terminal
 			items := parser.output.items
@@ -389,7 +412,7 @@ feature -- Status Setting
 feature -- Comparison
 
 	matches (a_path: STRING): BOOLEAN
-			--
+			-- is `a_path' the same is the current path?
 		require
 			a_path /= Void and then valid_path_string(a_path)
 		do
@@ -451,6 +474,26 @@ feature -- Output
 feature {NONE} -- Implementation
 
 	parser: OG_PATH_VALIDATOR
+
+	strip_predicates (a_path: STRING): STRING
+			-- remove all [] enclosed sections of `a_path'
+		require
+			a_path /= Void
+		local
+			i: INTEGER
+		do
+			create Result.make_empty
+			from i := 1 until i > a_path.count loop
+				if a_path.item(i) = '[' then
+					from until a_path.item(i) = ']' or i = a_path.count loop
+						i := i + 1
+					end
+				else
+					Result.append_character (a_path.item (i))
+				end
+				i := i + 1
+			end
+		end
 
 invariant
 	Items_valid: items /= Void

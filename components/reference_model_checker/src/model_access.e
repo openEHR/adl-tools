@@ -121,7 +121,7 @@ feature -- Status Report
 	status: STRING
 			-- status of model loading operation; if successful, includes model details
 
-feature -- Validation
+feature -- Status Report
 
 	is_sub_type_of (a_sub_type, a_parent_type: STRING): BOOLEAN
 			-- True if `a_subclass' is a sub-class in the model of `a_parent_type'
@@ -204,6 +204,22 @@ feature -- Validation
 						tlist2.forth
 					end
 				end
+			else
+				Result := True
+			end
+		end
+
+	has_path (a_path, an_obj_type: STRING): BOOLEAN
+			-- is `a_path' possible based on this reference model? Path format must be standard forward-slash
+			-- delimited path, or Xpath. Any predicates (i.e. [] sections) in an Xpath will be ignored.
+		require
+			path_attached: a_path /= Void
+			object_type_attached: an_obj_type /= Void
+		local
+			struct_path: OG_PATH
+		do
+			if rm_checking_on and model_loaded then
+				Result := model.has_path (a_path, an_obj_type)
 			else
 				Result := True
 			end

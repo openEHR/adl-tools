@@ -24,6 +24,12 @@ feature -- Access
 		deferred
 		end
 
+	root_class: STRING
+			-- root class of type
+		do
+			Result := flattened_type_list.first
+		end
+		
 feature -- Output
 
 	as_type_string: STRING
