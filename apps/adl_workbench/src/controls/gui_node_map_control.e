@@ -454,7 +454,7 @@ feature {NONE} -- Implementation
 				a_ti := attach_node(c_complex_object_string(c_c_o), pixmaps.item(c_complex_object_pixmap_string(c_c_o) + pixmap_ext), an_og_node)
 
 			elseif attached {ARCHETYPE_SLOT} an_og_node.content_item as a_slot then
-				if a_slot.occurrences.lower = 1 then
+				if a_slot.occurrences /= Void and then a_slot.occurrences.lower = 1 then
 					pixmap := pixmaps.item(a_slot.generating_type + pixmap_ext)
 				else
 					pixmap := pixmaps.item(a_slot.generating_type + ".optional" + pixmap_ext)
@@ -861,13 +861,13 @@ feature {NONE} -- Implementation
 			create Result.make(0)
 			Result.append ("C_ATTRIBUTE")
 			if c_attr.is_multiple then
-				if c_attr.cardinality.interval.lower > 0 then
-					Result.append (".multiple")
-				else
+				if c_attr.cardinality = Void or else c_attr.cardinality.interval.lower = 0 then
 					Result.append (".multiple.optional")
+				else
+					Result.append (".multiple")
 				end
 			else
-				if c_attr.existence.lower = 0 then
+				if c_attr.existence = Void or else c_attr.existence.lower = 0 then
 					Result.append (".optional")
 				end
 			end
@@ -924,7 +924,9 @@ feature {NONE} -- Implementation
 		do
 			create Result.make_empty
 
-			if c_c_o.occurrences.lower > 0 then
+			if c_c_o.occurrences = Void then
+				Result.append ("C_COMPLEX_OBJECT.optional")
+			elseif c_c_o.occurrences.lower > 0 then
 				if c_c_o.occurrences.upper = 1 then
 					Result.append ("C_COMPLEX_OBJECT")
 				else
@@ -977,7 +979,7 @@ feature {NONE} -- Implementation
 			if in_technical_mode then
 				Result.append (c_p_o.rm_type_name)
 			end
-			if not (c_p_o.occurrences.lower = 1 and c_p_o.occurrences.upper = 1) then
+			if c_p_o.occurrences /= Void and then not (c_p_o.occurrences.lower = 1 and c_p_o.occurrences.upper = 1) then
 				Result.append (" [" + c_p_o.occurrences.as_string + "]")
 			end
 			Result.append (" " + c_p_o.item.as_string)
@@ -988,7 +990,7 @@ feature {NONE} -- Implementation
 		do
 			create Result.make_empty
 
-			if not a_node.use_target_occurrences then
+			if not a_node.use_target_occurrences and a_node.occurrences /= Void then
 				Result.append (" [" + a_node.occurrences.as_string + "] ")
 			end
 

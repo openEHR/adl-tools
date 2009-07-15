@@ -118,6 +118,7 @@ feature -- Initialisation
 		do
 			is_absolute := other.is_absolute
 			is_terminal := other.is_terminal
+			is_movable := other.is_movable
 			create items.make(0)
 			from
 				other.items.start
@@ -169,6 +170,15 @@ feature -- Access
 			-- hashing code based on hash code of string form
 		do
 			Result := as_string.hash_code
+		end
+
+	parent_path: OG_PATH
+			-- the parent path of the current path, i.e. same path minus the last segment
+		require
+			not is_final
+		do
+			create Result.make_from_other(Current)
+			Result.remove_last
 		end
 
 	sub_path: OG_PATH
@@ -323,12 +333,6 @@ feature -- Validation
 
 feature -- Modification
 
-	set_movable
-			-- set is_movable true
-		do
-			is_movable := True
-		end
-
 	remove_first
 			-- remove the first path item
 		do
@@ -407,6 +411,12 @@ feature -- Status Setting
 	set_terminal
 		do
 			is_terminal := True
+		end
+
+	set_movable
+			-- set is_movable true
+		do
+			is_movable := True
 		end
 
 feature -- Comparison

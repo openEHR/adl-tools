@@ -31,7 +31,6 @@ feature -- Initialisation
 	default_create
 			--
 		do
-			precursor
 			rm_type_name := (create {CODE_PHRASE}.default_create).generator
 		end
 

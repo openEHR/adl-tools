@@ -22,6 +22,8 @@ feature -- Initialisation
 feature -- Access
 
 	cardinality: INTERVAL [INTEGER]
+			-- needs to be this basic type because this attribute is scanned in from schema, else would
+			-- have used MULTIPLICITY_INTERVAL
 
 	container_type: BMM_CLASS_DEFINITION
 			-- the type of the container. This converts to the root_type in BMM_GENERIC_TYPE_SPECIFIER

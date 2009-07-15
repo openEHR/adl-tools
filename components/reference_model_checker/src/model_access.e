@@ -4,7 +4,7 @@ note
 	keywords:    "ADL, archetype, reference model"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2008 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2009 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -25,18 +25,52 @@ inherit
 			{NONE} all
 		end
 
+create
+	make
+
+feature -- Initialisation
+
+	make
+			-- set up model
+		local
+			model_file: PLAIN_TEXT_FILE
+			dt_tree: DT_COMPLEX_OBJECT_NODE
+			parser: DADL2_VALIDATOR
+		do
+			create model_file.make (default_rm_schema_file_full_path)
+			if not model_file.exists or else not model_file.is_readable then
+				status := create_message ("model_access_e1", <<model_file.name>>)
+			else
+				model_file.open_read
+				model_file.read_stream (model_file.count)
+				create parser.make
+				parser.execute(model_file.last_string, 1)
+				if not parser.syntax_error then
+					dt_tree := parser.output
+					model ?= dt_tree.as_object_from_string("BMM_MODEL")
+					if model = Void then
+						status := create_message ("model_access_e4", Void)
+					else
+						model.dt_finalise
+						status := model.status
+					end
+				else
+					status := create_message ("model_access_e2", <<parser.error_text>>)
+				end
+				model_file.close
+			end
+		end
+
 feature -- Access
 
 	ancestor_classes_of (a_class_name: STRING): ARRAYED_LIST [STRING]
 			-- return all ancestor types of `a_class_name' up to root class (usually 'ANY', 'Object' or something similar)
 			-- does  not include current class. Returns empty list if none.
 		require
+			Model_loaded: model_loaded
 			Type_valid: a_class_name /= Void and then has_class_definition (a_class_name)
 		do
-			create Result.make(0)
-			if rm_checking_on and model_loaded then
-				Result := model.ancestor_classes_of(a_class_name)
-			end
+			Result := model.ancestor_classes_of(a_class_name)
 		ensure
 			Result_exists: Result /= Void
 		end
@@ -44,13 +78,10 @@ feature -- Access
 	properties_of (a_type_name: STRING): HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
 			-- return properties defined directly on class.
 		require
+			Model_loaded: model_loaded
 			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
 		do
-			if rm_checking_on and model_loaded then
-				Result := model.class_definition (a_type_name).properties
-			else
-				create Result.make(0)
-			end
+			Result := model.class_definition (a_type_name).properties
 		ensure
 			Result_exists: Result /= Void
 		end
@@ -58,13 +89,10 @@ feature -- Access
 	flat_properties_of (a_type_name: STRING): HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
 			-- return all properties of inheritance-flattened class.
 		require
+			Model_loaded: model_loaded
 			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
 		do
-			if rm_checking_on and model_loaded then
-				Result := model.class_definition (a_type_name).flat_properties
-			else
-				create Result.make(0)
-			end
+			Result := model.class_definition (a_type_name).flat_properties
 		ensure
 			Result_exists: Result /= Void
 		end
@@ -72,12 +100,11 @@ feature -- Access
 	property_type (a_type_name, a_property: STRING): STRING
 			-- Type of `an a_property' in class corresponding to `a_type_name'
 		require
+			Model_loaded: model_loaded
 			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
 			Property_valid: a_property /= Void and then has_property(a_type_name, a_property)
 		do
-			if rm_checking_on and model_loaded then
-				Result := model.property_definition (a_type_name, a_property).type.as_flattened_type_string
-			end
+			Result := model.property_definition (a_type_name, a_property).type.as_flattened_type_string
 		ensure
 			Result_exists: Result /= Void
 		end
@@ -85,12 +112,21 @@ feature -- Access
 	property_definition (a_type_name, a_property: STRING): BMM_PROPERTY_DEFINITION
 			-- definition of  `a_type' has a property named `a_property'
 		require
+			Model_loaded: model_loaded
 			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
 			Property_valid: a_property /= Void and then has_property(a_type_name, a_property)
 		do
-			if rm_checking_on and model_loaded then
-				Result := model.property_definition(a_type_name, a_property)
-			end
+			Result := model.property_definition(a_type_name, a_property)
+		end
+
+	property_definition_at_path (a_type_name, a_property_path: STRING): BMM_PROPERTY_DEFINITION
+			-- retrieve the property definition for `a_property_path' in flattened class corresponding to `a_type_name'
+		require
+			Model_loaded: model_loaded
+			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
+			Property_path_valid: a_property_path /= Void and then has_property_path(a_type_name, a_property_path)
+		do
+			Result := model.property_definition_at_path (a_type_name, a_property_path)
 		end
 
 	model: BMM_MODEL
@@ -109,9 +145,6 @@ feature -- Access
 
 feature -- Status Report
 
-	rm_checking_on: BOOLEAN
-			-- True if reference model checking turned on
-
 	model_loaded: BOOLEAN
 			-- True if a model is available to interrogate
 		do
@@ -121,165 +154,87 @@ feature -- Status Report
 	status: STRING
 			-- status of model loading operation; if successful, includes model details
 
-feature -- Status Report
-
 	is_sub_type_of (a_sub_type, a_parent_type: STRING): BOOLEAN
 			-- True if `a_subclass' is a sub-class in the model of `a_parent_type'
 		require
+			Model_loaded: model_loaded
 			Sub_type_valid: a_sub_type /= Void and then not a_sub_type.is_empty
 			Parent_type_valid: a_parent_type /= Void and then not a_parent_type.is_empty
 		do
-			if rm_checking_on and model_loaded then
-				Result := model.has_class_definition (a_parent_type) and then model.is_sub_class_of (a_sub_type, a_parent_type)
-			else
-				Result := True
-			end
+			Result := model.has_class_definition (a_parent_type) and then model.is_sub_class_of (a_sub_type, a_parent_type)
 		end
 
 	has_property (a_type_name, a_property: STRING): BOOLEAN
 			-- True if `a_type_name' has a property named `a_property'
 		require
+			Model_loaded: model_loaded
 			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
 			Property_valid: a_property /= Void and then not a_property.is_empty
 		do
-			if rm_checking_on and model_loaded then
-				Result := model.has_property(a_type_name, a_property)
-			else
-				Result := True
-			end
+			Result := model.has_property(a_type_name, a_property)
 		end
 
 	has_class_definition (a_type_name: STRING): BOOLEAN
 			-- True if `a_type_name' has a class definition in the model. Note that a_type_name
 			-- could be a generic type string; only the root class is considered
 		require
+			Model_loaded: model_loaded
 			Type_valid: a_type_name /= Void and then not a_type_name.is_empty
 		do
-			if rm_checking_on and model_loaded then
-				Result := model.has_class_definition (a_type_name)
-			else
-				Result := True
-			end
+			Result := model.has_class_definition (a_type_name)
 		end
 
 	valid_property_type (a_type_name, a_property_name, a_property_type_name: STRING): BOOLEAN
 			-- True if `a_property_type_name' is a valid dynamic type for `a_property' in class `a_type_name'
 		require
+			Model_loaded: model_loaded
 			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
 			Property_valid: a_property_name /= Void and then has_property(a_type_name, a_property_name)
 			Property_type_name_valid: a_property_type_name /= Void and then has_class_definition (a_property_type_name)
 		do
-			if rm_checking_on and model_loaded then
-				if model.valid_type_for_class (a_type_name, a_type_name) and model.valid_type_for_class(a_property_type_name, a_property_type_name) then
-					Result := type_conforms_to (model.class_definition (a_property_type_name), model.property_definition (a_type_name, a_property_name).type)
-				end
-			else
-				Result := True
+			if model.valid_type_for_class (a_type_name, a_type_name) and model.valid_type_for_class(a_property_type_name, a_property_type_name) then
+				Result := type_conforms_to (model.class_definition (a_property_type_name), model.property_definition (a_type_name, a_property_name).type)
 			end
 		end
 
 	type_conforms_to (type_spec_1, type_spec_2: BMM_TYPE_SPECIFIER): BOOLEAN
 			-- check conformance of type 1 to type 2
 		require
+			Model_loaded: model_loaded
 			Type_spec_1_exists: type_spec_1 /= Void
 			Type_spec_2_exists: type_spec_2 /= Void
 		local
 			tlist1, tlist2: ARRAYED_LIST[STRING]
 		do
-			if rm_checking_on and model_loaded then
-				tlist1 := type_spec_1.flattened_type_list
-				tlist2 := type_spec_2.flattened_type_list
-				if tlist1.count >= tlist2.count then
-					Result := True
-					from
-						tlist1.start
-						tlist2.start
-					until
-						tlist2.off or not Result or not has_class_definition (tlist1.item) or not has_class_definition (tlist2.item)
-					loop
-						Result := Result and
-							(tlist1.item.is_equal (tlist2.item) or else
-							model.class_definition (tlist1.item).has_ancestor(tlist2.item))
-						tlist1.forth
-						tlist2.forth
-					end
-				end
-			else
+			tlist1 := type_spec_1.flattened_type_list
+			tlist2 := type_spec_2.flattened_type_list
+			if tlist1.count >= tlist2.count then
 				Result := True
+				from
+					tlist1.start
+					tlist2.start
+				until
+					tlist2.off or not Result or not has_class_definition (tlist1.item) or not has_class_definition (tlist2.item)
+				loop
+					Result := Result and
+						(tlist1.item.is_equal (tlist2.item) or else
+						model.class_definition (tlist1.item).has_ancestor(tlist2.item))
+					tlist1.forth
+					tlist2.forth
+				end
 			end
 		end
 
-	has_path (a_path, an_obj_type: STRING): BOOLEAN
+	has_property_path (an_obj_type, a_path: STRING): BOOLEAN
 			-- is `a_path' possible based on this reference model? Path format must be standard forward-slash
 			-- delimited path, or Xpath. Any predicates (i.e. [] sections) in an Xpath will be ignored.
 		require
-			path_attached: a_path /= Void
+			Model_loaded: model_loaded
 			object_type_attached: an_obj_type /= Void
-		local
-			struct_path: OG_PATH
+			path_attached: a_path /= Void
 		do
-			if rm_checking_on and model_loaded then
-				Result := model.has_path (a_path, an_obj_type)
-			else
-				Result := True
-			end
+			Result := model.has_property_path (an_obj_type, a_path)
 		end
-
-feature -- Status Setting
-
-	set_rm_checking_on (flag: BOOLEAN)
-			-- turn rm_checking_on on
-		do
-			rm_checking_on := flag
-			initialise
-		end
-
-feature -- Commands
-
-	initialise
-			-- set up model
-		local
-			model_file: PLAIN_TEXT_FILE
-			dt_tree: DT_COMPLEX_OBJECT_NODE
-			parser: DADL2_VALIDATOR
-		do
-			if rm_checking_on then
-				if not model_loaded then
-					create model_file.make (default_rm_schema_file_full_path)
-					if not model_file.exists or else not model_file.is_readable then
-						status := create_message ("model_access_e1", <<model_file.name>>)
-					else
-						model_file.open_read
-						model_file.read_stream (model_file.count)
-						create parser.make
-						parser.execute(model_file.last_string, 1)
-						if not parser.syntax_error then
-							dt_tree := parser.output
-							model ?= dt_tree.as_object_from_string("BMM_MODEL")
-							if model = Void then
-								status := create_message ("model_access_e4", Void)
-							else
-								model.dt_finalise
-								status := model.status
-							end
-						else
-							status := create_message ("model_access_e2", <<parser.error_text>>)
-						end
-						model_file.close
-					end
-				end
-			else
-				status := create_message ("model_access_w1", Void)
-				model := Void
-			end
-		end
-
-feature -- Comparison
-
-feature -- Modification
-
-feature {NONE} -- Implementation
-
 
 end
 

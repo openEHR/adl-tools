@@ -7,7 +7,7 @@ note
 		 modifications are made to the project.
 		 	]"
 	generator: "EiffelBuild"
-	date: "$Date: 2007-09-05 12:09:14 -0700 (Wed, 05 Sep 2007) $"
+	date: "$Date: 2008-12-31 09:58:34 -0800 (Wed, 31 Dec 2008) $"
 	revision: "$Revision$"
 
 deferred class
@@ -163,17 +163,17 @@ feature {NONE} -- Implementation
 		deferred
 		end
 	
-	get_reference_repository_path
+	get_reference_repository_path is
 			-- Called by `select_actions' of `repository_dialog_reference_path_browse_button'.
 		deferred
 		end
 	
-	get_work_repository_path
+	get_work_repository_path is
 			-- Called by `select_actions' of `repository_dialog_work_path_button'.
 		deferred
 		end
 	
-	repository_dialog_ok
+	repository_dialog_ok is
 			-- Called by `select_actions' of `repository_dialog_ok_button'.
 		deferred
 		end

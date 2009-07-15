@@ -505,7 +505,7 @@ feature {NONE} -- Implementation
 						if not co_child_diff.rm_type_conforms_to (co_parent_flat) then
 							add_error("VSONCT", <<co_child_diff.path, co_child_diff.rm_type_name, co_parent_flat.path, co_parent_flat.rm_type_name>>)
 						elseif not co_child_diff.occurrences_conforms_to (co_parent_flat) then
-							add_error("VSONCO", <<co_child_diff.path, co_child_diff.occurrences.as_string, co_parent_flat.path, co_parent_flat.occurrences.as_string>>)
+							add_error("VSONCO", <<co_child_diff.path, co_child_diff.occurrences_as_string, co_parent_flat.path, co_parent_flat.occurrences.as_string>>)
 						elseif co_child_diff.is_addressable then
 							if not co_child_diff.node_id_conforms_to (co_parent_flat) then
 								add_error("VSONCI", <<co_child_diff.path, co_child_diff.node_id, co_parent_flat.path, co_parent_flat.node_id>>)
@@ -608,7 +608,7 @@ feature {NONE} -- Implementation
 					add_error("VCARM", <<ca.rm_attribute_name, ca.path, arch_parent_attr_type>>)
 				else
 					rm_prop_def := rm_checker.property_definition(arch_parent_attr_type, ca.rm_attribute_name)
-					if not ca.existence.is_optional then -- i.e. it is constrained in some way
+					if ca.existence /= Void then
 						if rm_prop_def.existence.contains(ca.existence) then
 							if rm_prop_def.existence.is_equal(ca.existence) then
 								add_warning("WCAEX", <<ca.rm_attribute_name, ca.path, ca.existence.as_string>>)
@@ -616,12 +616,10 @@ feature {NONE} -- Implementation
 						else
 							add_error("VCAEX", <<ca.rm_attribute_name, ca.path, ca.existence.as_string, rm_prop_def.existence.as_string>>)
 						end
-					else
-						-- should be removed; or reported as same as RM; but too many legacy archetypes have this right now
 					end
 					if ca.is_multiple then
 						if attached {BMM_CONTAINER_PROPERTY} rm_prop_def as cont_prop then
-							if not ca.cardinality.is_open then
+							if ca.cardinality /= Void then
 								if cont_prop.type.cardinality.contains(ca.cardinality.interval) then
 									if cont_prop.type.cardinality.is_equal(ca.cardinality.interval) then
 										add_warning("WCACA", <<ca.rm_attribute_name, ca.path, ca.cardinality.interval.as_string>>)
@@ -629,8 +627,6 @@ feature {NONE} -- Implementation
 								else -- archetype has cardinality not contained by RM
 									add_error("VCACA", <<ca.rm_attribute_name, ca.path, ca.cardinality.interval.as_string, cont_prop.type.cardinality.as_string>>)
 								end
-							else
-								-- should be removed; or reported as same as RM; but too many legacy archetypes have this right now
 							end
 						else -- archetype has multiple attribute but RM does not
 							add_error("VCAM", <<ca.rm_attribute_name, ca.path, ca.cardinality.as_string, "(single-valued)">>)

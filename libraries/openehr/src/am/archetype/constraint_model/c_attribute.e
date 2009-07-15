@@ -42,31 +42,40 @@ feature -- Initialisation
 			--
 		do
 			create children.make (0)
-			set_existence (default_existence.deep_twin)
 		end
 
-	make_single(a_name: STRING)
-			-- make representing a single-valued attribute with attr name
+	make_single(a_name: STRING; an_existence: MULTIPLICITY_INTERVAL)
+			-- make representing a single-valued attribute with attr name and optional existence
 		require
 			a_name_valid: a_name /= Void and then not a_name.is_empty
 		do
 			default_create
 			create representation.make_single (a_name, Current)
+			if an_existence /= Void then
+				existence := an_existence
+			end
 		ensure
-			not is_multiple
+			Is_single: not is_multiple
+			Existence_set: an_existence /= Void implies existence = an_existence
 		end
 
-	make_multiple(a_name: STRING; a_cardinality: CARDINALITY)
-			-- make representing a container attribute with attr name & cardinality
+	make_multiple(a_name: STRING; an_existence: MULTIPLICITY_INTERVAL; a_cardinality: CARDINALITY)
+			-- make representing a container attribute with attr name & optional existence and cardinality
 		require
 			a_name_valid: a_name /= Void and then not a_name.is_empty
-			cardinality_exists: a_cardinality /= Void
 		do
 			default_create
 			create representation.make_multiple (a_name, Current)
-			set_cardinality(a_cardinality)
+			if an_existence /= Void then
+				existence := an_existence
+			end
+			if a_cardinality /= Void then
+				set_cardinality(a_cardinality)
+			end
 		ensure
-			is_multiple
+			Is_multiple: is_multiple
+			Existence_set: an_existence /= Void implies existence = an_existence
+			Cardinality_set: a_cardinality /= Void implies cardinality = a_cardinality
 		end
 
 feature -- Access
@@ -112,6 +121,9 @@ feature -- Access
 
 	occurrences_total_range: MULTIPLICITY_INTERVAL
 			-- calculate total possible cardinality range based on occurrences of all children
+			-- only valid on flat archetypes
+		require
+			all_children_have_occurrences: all_children_have_occurrences
 		local
 			a_lower, an_upper: INTEGER
 			an_upper_unbounded: BOOLEAN
@@ -274,7 +286,8 @@ feature -- Status Report
 		end
 
 	is_ordered: BOOLEAN
-			-- 	True if this attribute is multiple and ordered
+			-- True if this attribute is multiple and ordered;
+			-- if no cardinality, assume it is ordered; should really be checked in the RM schema
 		do
 			Result := is_multiple and then cardinality.is_ordered
 		end
@@ -303,7 +316,7 @@ feature -- Status Report
 					not Result or children.off
 				loop
 					-- check occurrences consistent with attribute cardinality
-					if is_single and children.item.occurrences.upper > 1 then
+					if is_single and children.item.occurrences /= Void and children.item.occurrences.upper > 1 then
 						Result := False
 						s.append ("occurrences on child node " + children.item.node_id.out +
 							" must be singular for non-container attribute")
@@ -350,6 +363,15 @@ feature -- Status Report
 			Result := children.has (a_node)
 		end
 
+	all_children_have_occurrences: BOOLEAN
+			-- True if all immediate child nodes have occurrences set
+		do
+			from children.start until children.off or children.item.occurrences = Void loop
+				children.forth
+			end
+			Result := children.off
+		end
+
 feature -- Comparison
 
 	node_congruent_to (other: like Current): BOOLEAN
@@ -370,17 +392,23 @@ feature -- Comparison
 	existence_conforms_to (other: like Current): BOOLEAN
 			-- True if the existence of this node conforms to other.existence
 		require
-			other_attached: other /= Void
+			other_exists: other /= Void
+			other_is_flat: other.existence /= Void
 		do
-			Result := existence.is_open or existence.is_equal (other.existence) or other.existence.contains (existence)
+			Result := existence = Void or
+					existence.is_equal (other.existence) or
+					other.existence.contains (existence)
 		end
 
 	cardinality_conforms_to (other: like Current): BOOLEAN
 			-- True if the cardinality of this node conforms to other.cardinality
 		require
-			other_attached: other /= Void
+			other_exists: other /= Void
+			other_is_flat: other.cardinality /= Void
 		do
-			Result :=  cardinality.is_open or cardinality.interval.is_equal (other.cardinality.interval) or other.cardinality.contains (cardinality)
+			Result := cardinality = Void or
+				cardinality.interval.is_equal (other.cardinality.interval) or
+				other.cardinality.contains (cardinality)
 		end
 
 feature -- Modification
@@ -527,16 +555,16 @@ feature -- Modification
 			has_child_with_id (new_id)
 		end
 
-	overlay_differential(an_obj, diff_obj: C_OBJECT)
-			-- apply any differences from `diff_obj' to `old_obj' node including node_id
+	overlay_differential(a_flat_obj, diff_obj: C_OBJECT)
+			-- apply any differences from `diff_obj' to `an_obj' node including node_id
 		require
-			Obj_valid: has_child (an_obj)
-			Diff_obj_valid: diff_obj /= Void and then diff_obj.node_conforms_to (an_obj)
+			Flat_obj_valid: has_child (a_flat_obj)
+			Diff_obj_valid: diff_obj /= Void and then diff_obj.node_conforms_to (a_flat_obj)
 		do
-			if not an_obj.node_id.is_equal(diff_obj.node_id) then
-				representation.replace_node_id (an_obj.node_id, diff_obj.node_id)
+			if not a_flat_obj.node_id.is_equal(diff_obj.node_id) then
+				representation.replace_node_id (a_flat_obj.node_id, diff_obj.node_id)
 			end
-			an_obj.overlay_differential (diff_obj)
+			a_flat_obj.overlay_differential (diff_obj)
 		end
 
 feature -- Validation
@@ -578,9 +606,10 @@ feature -- Validation
 			Result := not has_child (an_obj)
 			if Result then
 				if is_single then
-					Result := not an_obj.occurrences.upper_unbounded and an_obj.occurrences.upper <= 1
+					Result := an_obj.occurrences = Void or else (not an_obj.occurrences.upper_unbounded and an_obj.occurrences.upper <= 1)
 				else
-					Result := (cardinality.interval.upper_unbounded or (not an_obj.occurrences.upper_unbounded and
+					Result := an_obj.occurrences = Void or cardinality = Void or else
+						(cardinality.interval.upper_unbounded or (not an_obj.occurrences.upper_unbounded and
 						cardinality.interval.upper >= an_obj.occurrences.upper)) and
 						an_obj.is_addressable
 				end
@@ -650,11 +679,9 @@ feature {NONE} -- Implementation
 
 invariant
 	Rm_attribute_name_valid: rm_attribute_name /= Void and then not rm_attribute_name.is_empty
-	Existence_set: existence /= Void
 	Children_validity: children /= Void
 	Any_allowed_validity: any_allowed xor not children.is_empty
-	Is_multiple_validity: is_multiple implies cardinality /= Void
-	Children_occurrences_validity: cardinality.interval.contains (occurrences_total_range)
+--	Children_occurrences_validity: cardinality /= Void implies cardinality.interval.contains (occurrences_total_range)
 	Differential_path_valid: differential_path /= Void implies not differential_path.is_empty
 	Has_differential_path_valid: differential_path = Void xor has_differential_path
 

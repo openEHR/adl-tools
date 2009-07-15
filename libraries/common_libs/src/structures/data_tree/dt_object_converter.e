@@ -93,7 +93,9 @@ feature -- Conversion
 							equiv_prim_type_id := any_primitive_conforming_type(fld_dynamic_type)
 							if equiv_prim_type_id /= 0 then
 								create a_dt_attr.make_single(fld_name)
-								populate_prim_type_attribute(an_obj, a_dt_attr, fld_val, equiv_prim_type_id)
+								cvt_tbl.item(equiv_prim_type_id).from_obj_proc.call([a_dt_attr, fld_val, Void])
+								-- following line can be removed after testing;
+--								populate_prim_type_attribute(an_obj, a_dt_attr, fld_val, equiv_prim_type_id)
 								a_dt_obj.put_attribute(a_dt_attr)
 							else -- its a complex object, or else a SEQUENCE or HASH_TABLE of a complex object
 								debug ("DT")
@@ -131,6 +133,7 @@ feature -- Conversion
 			-- FIXME: this routine exists because of the Eiffel expanded
 			-- non-conformance problem. It has been made a separate
 			-- routine to allow exception handling to function properly
+			-- as of 6.2, this should be able to removed
 		local
 			exception_caught: BOOLEAN
 		do
@@ -145,7 +148,6 @@ feature -- Conversion
 					io.put_string("%T(return)%N")
 				end
 			else
-io.put_string ("ENTERED DT_OBJECT_CONVERTER.populate_prim_type_attribute exception path - see code%N")
 				-- FIXME: all this code just to handle expanded nonconformance of INTERVAL[INTEGER] -> INTERVAL[PART_COMPARABLE]
 				-- REMOVE when this problem fixed
 				if attached {INTERVAL[INTEGER]} fld_val as oe_ivl_integer then
@@ -159,6 +161,7 @@ io.put_string ("ENTERED DT_OBJECT_CONVERTER.populate_prim_type_attribute excepti
 					debug ("DT")
 						io.put_string("Using INTERVAL[REAL_REF] conversion%N")
 					end
+					cvt_tbl.item(equiv_prim_type_id).from_obj_proc.call([a_dt_attr, fld_val, Void])
 					cvt_tbl.item(equiv_prim_type_id).from_obj_proc.call([a_dt_attr,
 						interval_real_to_interval_real_ref(oe_ivl_real), Void])
 				else

@@ -7,7 +7,7 @@ note
 		 modifications are made to the project.
 		 	]"
 	generator: "EiffelBuild"
-	date: "$Date: 2007-09-05 12:09:14 -0700 (Wed, 05 Sep 2007) $"
+	date: "$Date: 2008-12-31 09:58:34 -0800 (Wed, 31 Dec 2008) $"
 	revision: "$Revision$"
 
 deferred class

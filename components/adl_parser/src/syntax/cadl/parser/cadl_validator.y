@@ -5,8 +5,8 @@ note
 	keywords:	 "ADL"
 
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2003-2009 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -41,6 +41,11 @@ inherit
 		end
 
 	DATE_TIME_ROUTINES
+		export
+			{NONE} all
+		end
+
+	SHARED_REFERENCE_MODEL_ACCESS
 		export
 			{NONE} all
 		end
@@ -179,11 +184,16 @@ c_complex_object: c_complex_object_head SYM_MATCHES SYM_START_CBLOCK c_complex_o
 
 c_complex_object_head: c_complex_object_id c_occurrences 
 		{
-			complex_obj.set_occurrences($2)
+			if $2 /= Void then
+				complex_obj.set_occurrences($2)
+			end
 
 			debug("ADL_parse")
-				io.put_string(indent + "PUSH create OBJECT_NODE " + complex_obj.rm_type_name + 
-						" [id=" + complex_obj.node_id + "]; occurrences=(" + $2.as_string + ")%N") 
+				io.put_string(indent + "PUSH create OBJECT_NODE " + complex_obj.rm_type_name + " [id=" + complex_obj.node_id + "] ")
+				if $2 /= Void then
+					io.put_string("; occurrences=(" + $2.as_string + ")") 
+				end
+				io.new_line
 				indent.append("%T")
 			end
 			
@@ -216,9 +226,7 @@ c_complex_object_id: type_identifier
 				create complex_obj.make_identified($2, $3)
 				complex_obj.set_sibling_order($1)
 			else
-				raise_error
-				report_error(create_message("SDSF", Void))
-				abort
+				abort_with_error("SDSF", Void)
 			end
 		}
 	;
@@ -283,22 +291,18 @@ c_object: c_complex_object
 		}
 	| ERR_C_DOMAIN_TYPE
 		{
-			raise_error
-			report_error(create_message("SDINV", <<dadl_parser_error>>))
-			abort
+			abort_with_error("SDINV", <<dadl_parser_error>>)
 		}
 	| error		
 		{
-			raise_error
-			report_error(create_message("SCCOG", Void))
-			abort
+			abort_with_error("SCCOG", Void)
 		}
 	;
 
 archetype_internal_ref: SYM_USE_NODE type_identifier c_occurrences absolute_path 
 		{
 			create archetype_internal_ref.make($2, $4.as_string)
-			if not c_occurrences_default then
+			if $3 /= Void then
 				archetype_internal_ref.set_occurrences($3)
 			end
 
@@ -306,7 +310,7 @@ archetype_internal_ref: SYM_USE_NODE type_identifier c_occurrences absolute_path
 				io.put_string(indent + "create ARCHETYPE_INTERNAL_REF ")
 				if archetype_internal_ref.use_target_occurrences then
 					io.put_string("occurrences=(use target) ")
-				else
+				elseif $3 /= Void then
 					io.put_string("occurrences=" + archetype_internal_ref.occurrences.as_string + " ")
 				end
 				io.put_string(archetype_internal_ref.rm_type_name + " path=" + archetype_internal_ref.target_path + "%N") 
@@ -319,9 +323,7 @@ archetype_internal_ref: SYM_USE_NODE type_identifier c_occurrences absolute_path
 		}
 	| SYM_USE_NODE type_identifier error 
 		{
-			raise_error
-			report_error(create_message("SUNPA", Void))
-			abort
+			abort_with_error("SUNPA", Void)
 		}
 	;
 
@@ -343,10 +345,16 @@ archetype_slot: c_archetype_slot_head SYM_MATCHES SYM_START_CBLOCK c_includes c_
 
 c_archetype_slot_head: c_archetype_slot_id c_occurrences 
 		{
-			archetype_slot.set_occurrences($2)
+			if $2 /= Void then
+				archetype_slot.set_occurrences($2)
+			end
 
 			debug("ADL_parse")
-				io.put_string(indent + "PUSH create ARCHETYPE_SLOT " + archetype_slot.rm_type_name + " [id=" + archetype_slot.node_id + "]; occurrences=(" + $2.as_string + ")%N") 
+				io.put_string(indent + "PUSH create ARCHETYPE_SLOT " + archetype_slot.rm_type_name + " [id=" + archetype_slot.node_id + "]")
+				if $2 /= Void then
+					io.put_string("; occurrences=(" + $2.as_string + ")") 
+				end
+				io.new_line
 				indent.append("%T")
 			end
 		}
@@ -362,9 +370,7 @@ c_archetype_slot_id: SYM_ALLOW_ARCHETYPE type_identifier
 				create archetype_slot.make_anonymous($3)
 				archetype_slot.set_sibling_order($1)
 			else
-				raise_error
-				report_error(create_message("SDSF", Void))
-				abort
+				abort_with_error("SDSF", Void)
 			end
 		}
 	| SYM_ALLOW_ARCHETYPE type_identifier V_LOCAL_TERM_CODE_REF
@@ -377,16 +383,12 @@ c_archetype_slot_id: SYM_ALLOW_ARCHETYPE type_identifier
 				create archetype_slot.make_identified($3, $4)
 				archetype_slot.set_sibling_order($1)
 			else
-				raise_error
-				report_error(create_message("SDSF", Void))
-				abort
+				abort_with_error("SDSF", Void)
 			end
 		}
 	| SYM_ALLOW_ARCHETYPE error
 		{
-			raise_error
-			report_error(create_message("SUAS", Void))
-			abort
+			abort_with_error("SUAS", Void)
 		}
 	;
 
@@ -480,100 +482,98 @@ c_attribute: c_attr_head SYM_MATCHES SYM_START_CBLOCK c_attr_values SYM_END_CBLO
 		}
 	| c_attr_head SYM_MATCHES SYM_START_CBLOCK error SYM_END_CBLOCK	
 		{
-			raise_error
-			report_error(create_message("SCAS", Void))
-			abort
+			abort_with_error("SCAS", Void)
 		}
 	;
 
-c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence
+c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality
 		{
 			rm_attribute_name := $1
-
 			if not object_nodes.item.has_attribute(rm_attribute_name) then
-				create attr_node.make_single(rm_attribute_name)
-				attr_node.set_existence($2)
-				c_attrs.put(attr_node)
-				debug("ADL_parse")
-					io.put_string(indent + "PUSH create SINGLE ATTR_NODE " + rm_attribute_name + " existence=(" + $2.as_string + ")%N") 
-					io.put_string(indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_child(REL)%N") 
-					indent.append("%T")
+				if rm_checker.has_property (object_nodes.item.rm_type_name, rm_attribute_name) then
+					bmm_prop_def := rm_checker.property_definition (object_nodes.item.rm_type_name, rm_attribute_name)
+					if $2 /= Void and then bmm_prop_def.existence.is_equal($2) then
+						$2 := Void -- throw out constraint that is same as RM
+					end
+					if bmm_prop_def.is_container then
+						if attached {BMM_CONTAINER_PROPERTY} bmm_prop_def as bmm_cont_prop and $3 /= Void then
+							if $3.interval.equal_interval(bmm_cont_prop.type.cardinality) then
+								$3 := Void -- throw out constraint that is same as RM
+							end
+						end
+						create attr_node.make_multiple(rm_attribute_name, $2, $3)
+						c_attrs.put(attr_node)
+						debug("ADL_parse")
+							io.put_string(indent + "PUSH create ATTR_NODE " + rm_attribute_name + "; container = " + attr_node.is_multiple.out + " existence=(" + $2.as_string + "); cardinality=(" + $3.as_string + ")%N") 
+							io.put_string(indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_child(REL)%N") 
+							indent.append("%T")
+						end
+						object_nodes.item.put_attribute(attr_node)
+					elseif $3 = Void then
+						create attr_node.make_single(rm_attribute_name, $2)
+						c_attrs.put(attr_node)
+						debug("ADL_parse")
+							io.put_string(indent + "PUSH create ATTR_NODE " + rm_attribute_name + "; container = " + attr_node.is_multiple.out + " existence=(" + $2.as_string + "); cardinality=(" + $3.as_string + ")%N") 
+							io.put_string(indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_child(REL)%N") 
+							indent.append("%T")
+						end
+						object_nodes.item.put_attribute(attr_node)
+					else -- error - cardinality stated, but on a non-container attribute
+						abort_with_error("VSAM", <<rm_attribute_name>>)
+					end
+				else
+					abort_with_error("VCARM", <<rm_attribute_name, object_nodes.item.path, object_nodes.item.rm_type_name>>)
 				end
-
-				object_nodes.item.put_attribute(attr_node)
 			else
-				raise_error
-				report_error(create_message("VCATU", <<rm_attribute_name>>))
-				abort
-			end
-		}
-	| V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality
-		{
-			rm_attribute_name := $1
-
-			if not object_nodes.item.has_attribute(rm_attribute_name) then
-				create attr_node.make_multiple(rm_attribute_name, $3)
-				attr_node.set_existence($2)
-				c_attrs.put(attr_node)
-				debug("ADL_parse")
-					io.put_string(indent + "PUSH create MULTIPLE ATTR_NODE " + rm_attribute_name + " existence=(" + $2.as_string + "); cardinality=(" + $3.as_string + ")%N") 
-					io.put_string(indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_child(REL)%N") 
-					indent.append("%T")
-				end
-
-				object_nodes.item.put_attribute(attr_node)
-			else
-				raise_error
-				report_error(create_message("VCATU", <<rm_attribute_name>>))
-				abort
-			end
-		}
-	| absolute_path c_existence
-		{
-			rm_attribute_name := $1.last.attr_name
-			$1.remove_last
-			path_str := $1.as_string
-
-			if not object_nodes.item.has_attribute(rm_attribute_name) then
-				create attr_node.make_single(rm_attribute_name)
-				attr_node.set_differential_path(path_str)
-				attr_node.set_existence($2)
-				c_attrs.put(attr_node)
-				debug("ADL_parse")
-					io.put_string(indent + "PUSH create SINGLE ATTR_NODE " + path_str + " existence=(" + $2.as_string + ")%N") 
-					io.put_string(indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_child(REL)%N") 
-					indent.append("%T")
-				end
-
-				object_nodes.item.put_attribute(attr_node)
-			else
-				raise_error
-				report_error(create_message("VCATU", <<path_str>>))
-				abort
+				abort_with_error("VCATU", <<rm_attribute_name>>)
 			end
 		}
 	| absolute_path c_existence c_cardinality
 		{
 			rm_attribute_name := $1.last.attr_name
-			$1.remove_last
+			parent_path_str := $1.parent_path.as_string
 			path_str := $1.as_string
 
 			if not object_nodes.item.has_attribute(rm_attribute_name) then
-				create attr_node.make_multiple(rm_attribute_name, $3)
-				attr_node.set_existence($2)
-				attr_node.set_differential_path(path_str)
-				c_attrs.put(attr_node)
-				debug("ADL_parse")
-					io.put_string(indent + "PUSH create MULTIPLE ATTR_NODE " + path_str + " existence=(" + $2.as_string + "); cardinality=(" + $3.as_string + ")%N") 
-					io.put_string(indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_child(REL)%N") 
-					indent.append("%T")
+				-- check RM to see if path is valid, and if it is a container
+				if rm_checker.has_property_path (object_nodes.item.rm_type_name, path_str) then
+					bmm_prop_def := rm_checker.property_definition_at_path (object_nodes.item.rm_type_name, path_str)
+					if $2 /= Void and then bmm_prop_def.existence.is_equal($2) then
+						$2 := Void -- throw out constraint that is same as RM
+					end
+					if bmm_prop_def.is_container then
+						if attached {BMM_CONTAINER_PROPERTY} bmm_prop_def as bmm_cont_prop and $3 /= Void then
+							if $3.interval.equal_interval(bmm_cont_prop.type.cardinality) then
+								$3 := Void -- throw out constraint that is same as RM
+							end
+						end
+						create attr_node.make_multiple(rm_attribute_name, $2, $3)
+						attr_node.set_differential_path(parent_path_str)
+						c_attrs.put(attr_node)
+						debug("ADL_parse")
+							io.put_string(indent + "PUSH create ATTR_NODE " + path_str + "; container = " + attr_node.is_multiple.out + " existence=(" + $2.as_string + ")%N") 
+							io.put_string(indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_child(REL)%N") 
+							indent.append("%T")
+						end
+						object_nodes.item.put_attribute(attr_node)
+					elseif $3 = Void then
+						create attr_node.make_single(rm_attribute_name, $2)
+						attr_node.set_differential_path(parent_path_str)
+						c_attrs.put(attr_node)
+						debug("ADL_parse")
+							io.put_string(indent + "PUSH create ATTR_NODE " + path_str + "; container = " + attr_node.is_multiple.out + " existence=(" + $2.as_string + ")%N") 
+							io.put_string(indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_child(REL)%N") 
+							indent.append("%T")
+						end
+						object_nodes.item.put_attribute(attr_node)
+					else -- error - cardinality stated, but on a non-container attribute
+						abort_with_error("VSAM", <<path_str>>)
+					end
+				else
+					abort_with_error("VDIFP", <<path_str>>)
 				end
-
-				object_nodes.item.put_attribute(attr_node)
 			else
-				raise_error
-				report_error(create_message("VCATU", <<path_str>>))
-				abort
+				abort_with_error("VCATU", <<path_str>>)
 			end
 		}
 	;
@@ -642,9 +642,7 @@ assertion: any_identifier ':' boolean_expression
 		}
 	| any_identifier ':' error
 		{
-			raise_error
-			report_error(create_message("SINVS", <<$1>>))
-			abort
+			abort_with_error("SINVS", <<$1>>)
 		}
 	;
 
@@ -672,9 +670,7 @@ boolean_node: SYM_EXISTS absolute_path
 		}
 	| SYM_EXISTS error 
 		{
-			raise_error
-			report_error(create_message("SEXPT", Void))
-			abort
+			abort_with_error("SEXPT", Void)
 		}
 	| relative_path SYM_MATCHES SYM_START_CBLOCK c_primitive SYM_END_CBLOCK
 		{
@@ -972,11 +968,7 @@ path_segment: V_ATTRIBUTE_IDENTIFIER V_LOCAL_TERM_CODE_REF
 
 ---------------- existence, occurrences, cardinality ----------------
 
-c_existence:  	-- default to 1..1
-		{
-			multiplicity_interval := default_existence
-			$$ := multiplicity_interval
-		}
+c_existence:  	-- empty is ok
 	| SYM_EXISTENCE SYM_MATCHES SYM_START_CBLOCK existence_spec SYM_END_CBLOCK	
 		{
 			$$ := multiplicity_interval
@@ -990,9 +982,7 @@ existence_spec:  V_INTEGER -- can only be 0 or 1
 			elseif $1 = 1 then
 				create multiplicity_interval.make_point(1)
 			else
-				raise_error
-				report_error(create_message("SEXLSG", Void))
-				abort
+				abort_with_error("SEXLSG", Void)
 			end
 		}
 	| V_INTEGER SYM_ELLIPSIS V_INTEGER -- can only be 0..0, 0..1, 1..1
@@ -1003,27 +993,22 @@ existence_spec:  V_INTEGER -- can only be 0 or 1
 				elseif $3 = 1 then
 					create multiplicity_interval.make_bounded(0, 1)
 				else
-					raise_error
-					report_error(create_message("SEXLU1", Void))
-					abort
+					abort_with_error("SEXLU1", Void)
 				end
 			elseif $1 = 1 then
 				if $3 = 1 then
 					create multiplicity_interval.make_point(1)
 				else
-					raise_error
-					report_error(create_message("SEXLU2", Void))
-					abort
+					abort_with_error("SEXLU2", Void)
 				end
 			else
-				raise_error
-				report_error(create_message("SEXLMG", Void))
-				abort
+				abort_with_error("SEXLMG", Void)
 			end
 		}
 	;
 
-c_cardinality: SYM_CARDINALITY SYM_MATCHES SYM_START_CBLOCK cardinality_spec SYM_END_CBLOCK	
+c_cardinality: -- empty is ok
+	| SYM_CARDINALITY SYM_MATCHES SYM_START_CBLOCK cardinality_spec SYM_END_CBLOCK	
 		{
 			$$ := a_cardinality
 		}
@@ -1081,22 +1066,14 @@ cardinality_limit_value: integer_value
 		}
 	;
 
-c_occurrences:  -- default to 1..1 
-		{
-			multiplicity_interval := default_occurrences
-			$$ := multiplicity_interval
-			c_occurrences_default := True
-		}
+c_occurrences:  -- empty is ok
 	| SYM_OCCURRENCES SYM_MATCHES SYM_START_CBLOCK occurrence_spec SYM_END_CBLOCK	
 		{
 			$$ := $4
-			c_occurrences_default := False
 		}
 	| SYM_OCCURRENCES error
 		{
-			raise_error
-			report_error(create_message("SOCCF", Void))
-			abort
+			abort_with_error("SOCCF", Void)
 		}
 	;
 
@@ -1156,16 +1133,12 @@ c_integer: c_integer_spec
 			if c_integer.valid_value($3) then
 				c_integer.set_assumed_value($3)
 			else
-				raise_error
-				report_error(create_message("VOBAV", <<$3.out>>))
-				abort
+				abort_with_error("VOBAV", <<$3.out>>)
 			end
 		}
 	| c_integer_spec ';' error
 		{
-			raise_error
-			report_error(create_message("SCIAV", Void))
-			abort
+			abort_with_error("SCIAV", Void)
 		}
 	;
 
@@ -1201,16 +1174,12 @@ c_real: c_real_spec
 			if c_real.valid_value($3) then
 				c_real.set_assumed_value($3)
 			else
-				raise_error
-				report_error(create_message("VOBAV", <<$3.out>>))
-				abort
+				abort_with_error("VOBAV", <<$3.out>>)
 			end
 		}
 	| c_real_spec ';' error
 		{
-			raise_error
-			report_error(create_message("SCRAV", Void))
-			abort
+			abort_with_error("SCRAV", Void)
 		}
 	;
 
@@ -1228,9 +1197,7 @@ c_date_constraint: V_ISO8601_DATE_CONSTRAINT_PATTERN
 					valid_date_constraint_patterns.forth
 				end
 
-				raise_error
-				report_error(create_message("SCDPT", <<str>>))
-				abort
+				abort_with_error("SCDPT", <<str>>)
 			end
 		}
 	| date_value
@@ -1254,16 +1221,12 @@ c_date: c_date_constraint
 				$1.set_assumed_value($3)
 				$$ := $1
 			else
-				raise_error
-				report_error(create_message("VOBAV", <<$3.out>>))
-				abort
+				abort_with_error("VOBAV", <<$3.out>>)
 			end
 		}
 	| c_date_constraint ';' error
 		{
-			raise_error
-			report_error(create_message("SCDAV", Void))
-			abort
+			abort_with_error("SCDAV", Void)
 		}
 	;
 
@@ -1285,9 +1248,7 @@ c_time_constraint: V_ISO8601_TIME_CONSTRAINT_PATTERN
 					valid_time_constraint_patterns.forth
 				end
 
-				raise_error
-				report_error(create_message("SCTPT", <<str>>))
-				abort
+				abort_with_error("SCTPT", <<str>>)
 			end
 		}
 	| time_value
@@ -1307,16 +1268,12 @@ c_time: c_time_constraint
 			if c_time.valid_value($3) then
 				c_time.set_assumed_value($3)
 			else
-				raise_error
-				report_error(create_message("VOBAV", <<$3.out>>))
-				abort
+				abort_with_error("VOBAV", <<$3.out>>)
 			end
 		}
 	| c_time_constraint ';' error
 		{
-			raise_error
-			report_error(create_message("SCTAV", Void))
-			abort
+			abort_with_error("SCTAV", Void)
 		}
 	;
 
@@ -1338,9 +1295,7 @@ c_date_time_constraint: V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN
 					valid_date_time_constraint_patterns.forth
 				end
 
-				raise_error
-				report_error(create_message("SCDTPT", <<str>>))
-				abort
+				abort_with_error("SCDTPT", <<str>>)
 			end
 		}
 	| date_time_value
@@ -1360,16 +1315,12 @@ c_date_time: c_date_time_constraint
 			if c_date_time.valid_value($3) then
 				c_date_time.set_assumed_value($3)
 			else
-				raise_error
-				report_error(create_message("VOBAV", <<$3.out>>))
-				abort
+				abort_with_error("VOBAV", <<$3.out>>)
 			end
 		}
 	| c_date_time_constraint ';' error
 		{
-			raise_error
-			report_error(create_message("SCDTAV", Void))
-			abort
+			abort_with_error("SCDTAV", Void)
 		}
 	;
 
@@ -1394,9 +1345,7 @@ duration_pattern: V_ISO8601_DURATION_CONSTRAINT_PATTERN
 			if valid_iso8601_duration_constraint_pattern ($1) then
 				create c_duration.make_from_pattern ($1)
 			else
-				raise_error
-				report_error(create_message("SCDUPT", Void))
-				abort
+				abort_with_error("SCDUPT", Void)
 			end
 		}
 	;
@@ -1407,16 +1356,12 @@ c_duration: c_duration_constraint
 			if c_duration.valid_value($3) then
 				c_duration.set_assumed_value($3)
 			else
-				raise_error
-				report_error(create_message("VOBAV", <<$3.out>>))
-				abort
+				abort_with_error("VOBAV", <<$3.out>>)
 			end
 		}
 	| c_duration_constraint ';' error
 		{
-			raise_error
-			report_error(create_message("SCDUAV", Void))
-			abort
+			abort_with_error("SCDUAV", Void)
 		}
 	;
 
@@ -1440,9 +1385,7 @@ c_string_spec:  V_STRING 	-- single value, generates closed list
 		{
 			create c_string.make_from_regexp($1.substring (2, $1.count - 1), $1.item(1) = '/')
 			if c_string.regexp.is_equal(c_string.regexp_compile_error) then
-				raise_error
-				report_error(create_message("SCSRE", <<$1>>))
-				abort
+				abort_with_error("SCSRE", <<$1>>)
 			end
 		}
 	;
@@ -1453,16 +1396,12 @@ c_string: c_string_spec
 			if c_string.valid_value($3) then
 				c_string.set_assumed_value($3)
 			else
-				raise_error
-				report_error(create_message("VOBAV", <<$3.out>>))
-				abort
+				abort_with_error("VOBAV", <<$3.out>>)
 			end
 		}
 	| c_string_spec ';' error
 		{
-			raise_error
-			report_error(create_message("SCSAV", Void))
-			abort
+			abort_with_error("SCSAV", Void)
 		}
 	;
 
@@ -1490,16 +1429,12 @@ c_boolean: c_boolean_spec
 			if c_boolean.valid_value($3) then
 				c_boolean.set_assumed_value($3)
 			else
-				raise_error
-				report_error(create_message("VOBAV", <<$3.out>>))
-				abort
+				abort_with_error("VOBAV", <<$3.out>>)
 			end
 		}
 	| c_boolean_spec ';' error
 		{
-			raise_error
-			report_error(create_message("SCBAV", Void))
-			abort
+			abort_with_error("SCBAV", Void)
 		}
 	;
 
@@ -1509,16 +1444,12 @@ c_ordinal: c_ordinal_spec
 			if ordinal_node.has_item ($3) then
 				ordinal_node.set_assumed_value_from_integer ($3)
 			else
-				raise_error
-				report_error(create_message("VOBAVL", <<$3.out>>))
-				abort
+				abort_with_error("VOBAVL", <<$3.out>>)
 			end
  		}
  	| c_ordinal_spec ';' error
  		{
- 			raise_error
-			report_error(create_message("SCOAV", Void))
- 			abort
+			abort_with_error("SCOAV", Void)
  		}
 	;
 
@@ -1536,13 +1467,9 @@ ordinal: integer_value SYM_INTERVAL_DELIM V_QUALIFIED_TERM_CODE_REF
 			create an_ordinal.make ($1, a_code_phrase)
 
 			if ordinal_node.has_item ($1) then
-				raise_error
-				report_error(create_message("VCOV", <<$1.out>>))
-				abort
+				abort_with_error("VCOV", <<$1.out>>)
 			elseif ordinal_node.has_code_phrase (a_code_phrase) then
-				raise_error
-				report_error(create_message("VCOC", <<$3>>))
-				abort
+				abort_with_error("VCOC", <<$3>>)
 			else
 				ordinal_node.add_item (an_ordinal)
 			end
@@ -1556,9 +1483,7 @@ c_code_phrase: V_TERM_CODE_CONSTRAINT	-- e.g. "[local::at0040, at0041; at0040]"
 			if c_code_phrase_obj.valid_pattern ($1) then
 				c_code_phrase_obj.make_from_pattern ($1)
 			else
-				raise_error
-				report_error(create_message("SCPCV", <<c_code_phrase_obj.fail_reason>>))
-				abort
+				abort_with_error("SCPCV", <<c_code_phrase_obj.fail_reason>>)
 			end
 		}
 	| V_QUALIFIED_TERM_CODE_REF
@@ -1666,9 +1591,7 @@ integer_interval_value: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_va
 				create integer_interval.make_bounded($2, $4, True, True)
 				$$ := integer_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$2.out, $4.out>>))
-				abort
+				abort_with_error("VIVLO", <<$2.out, $4.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT integer_value SYM_ELLIPSIS integer_value SYM_INTERVAL_DELIM
@@ -1677,9 +1600,7 @@ integer_interval_value: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_va
 				create integer_interval.make_bounded($3, $5, False, True)
 				$$ := integer_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$3.out, $5.out>>))
-				abort
+				abort_with_error("VIVLO", <<$3.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS SYM_LT integer_value SYM_INTERVAL_DELIM
@@ -1688,9 +1609,7 @@ integer_interval_value: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_va
 				create integer_interval.make_bounded($2, $5, True, False)
 				$$ := integer_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$2.out, $5.out>>))
-				abort
+				abort_with_error("VIVLO", <<$2.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT integer_value SYM_ELLIPSIS SYM_LT integer_value SYM_INTERVAL_DELIM
@@ -1699,9 +1618,7 @@ integer_interval_value: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_va
 				create integer_interval.make_bounded($3, $6, False, False)
 				$$ := integer_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$3.out, $6.out>>))
-				abort
+				abort_with_error("VIVLO", <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT integer_value SYM_INTERVAL_DELIM
@@ -1769,9 +1686,7 @@ real_interval_value: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_I
 				create real_interval.make_bounded($2, $4, True, True)
 				$$ := real_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$2.out, $4.out>>))
-				abort
+				abort_with_error("VIVLO", <<$2.out, $4.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT real_value SYM_ELLIPSIS real_value SYM_INTERVAL_DELIM
@@ -1780,9 +1695,7 @@ real_interval_value: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_I
 				create real_interval.make_bounded($3, $5, False, True)
 				$$ := real_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$3.out, $5.out>>))
-				abort
+				abort_with_error("VIVLO", <<$3.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS SYM_LT real_value SYM_INTERVAL_DELIM
@@ -1791,9 +1704,7 @@ real_interval_value: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_I
 				create real_interval.make_bounded($2, $5, True, False)
 				$$ := real_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$2.out, $5.out>>))
-				abort
+				abort_with_error("VIVLO", <<$2.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT real_value SYM_ELLIPSIS SYM_LT real_value SYM_INTERVAL_DELIM
@@ -1802,9 +1713,7 @@ real_interval_value: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_I
 				create real_interval.make_bounded($3, $6, False, False)
 				$$ := real_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$3.out, $6.out>>))
-				abort
+				abort_with_error("VIVLO", <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT real_value SYM_INTERVAL_DELIM
@@ -1891,9 +1800,7 @@ date_value: V_ISO8601_EXTENDED_DATE -- in ISO8601 form yyyy-MM-dd
 			if valid_iso8601_date($1) then
 				create $$.make_from_string($1)
 			else
-				raise_error
-				report_error(create_message("VIDV", <<$1>>))
-				abort
+				abort_with_error("VIDV", <<$1>>)
 			end
 		}
 	;
@@ -1922,9 +1829,7 @@ date_interval_value: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_I
 				create date_interval.make_bounded($2, $4, True, True)
 				$$ := date_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$2.out, $4.out>>))
-				abort
+				abort_with_error("VIVLO", <<$2.out, $4.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT date_value SYM_ELLIPSIS date_value SYM_INTERVAL_DELIM
@@ -1933,9 +1838,7 @@ date_interval_value: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_I
 				create date_interval.make_bounded($3, $5, False, True)
 				$$ := date_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$3.out, $5.out>>))
-				abort
+				abort_with_error("VIVLO", <<$3.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS SYM_LT date_value SYM_INTERVAL_DELIM
@@ -1944,9 +1847,7 @@ date_interval_value: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_I
 				create date_interval.make_bounded($2, $5, True, False)
 				$$ := date_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$2.out, $5.out>>))
-				abort
+				abort_with_error("VIVLO", <<$2.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT date_value SYM_ELLIPSIS SYM_LT date_value SYM_INTERVAL_DELIM
@@ -1955,9 +1856,7 @@ date_interval_value: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_I
 				create date_interval.make_bounded($3, $6, False, False)
 				$$ := date_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$3.out, $6.out>>))
-				abort
+				abort_with_error("VIVLO", <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT date_value SYM_INTERVAL_DELIM
@@ -1992,9 +1891,7 @@ time_value: V_ISO8601_EXTENDED_TIME
 			if valid_iso8601_time($1) then
 				create $$.make_from_string($1)
 			else
-				raise_error
-				report_error(create_message("VITV", <<$1>>))
-				abort
+				abort_with_error("VITV", <<$1>>)
 			end
 		}
 	;
@@ -2023,9 +1920,7 @@ time_interval_value: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_I
 				create time_interval.make_bounded($2, $4, True, True)
 				$$ := time_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$2.out, $4.out>>))
-				abort
+				abort_with_error("VIVLO", <<$2.out, $4.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT time_value SYM_ELLIPSIS time_value SYM_INTERVAL_DELIM
@@ -2034,9 +1929,7 @@ time_interval_value: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_I
 				create time_interval.make_bounded($3, $5, False, True)
 				$$ := time_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$3.out, $5.out>>))
-				abort
+				abort_with_error("VIVLO", <<$3.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS SYM_LT time_value SYM_INTERVAL_DELIM
@@ -2045,9 +1938,7 @@ time_interval_value: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_I
 				create time_interval.make_bounded($2, $5, True, False)
 				$$ := time_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$2.out, $5.out>>))
-				abort
+				abort_with_error("VIVLO", <<$2.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT time_value SYM_ELLIPSIS SYM_LT time_value SYM_INTERVAL_DELIM
@@ -2056,9 +1947,7 @@ time_interval_value: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_I
 				create time_interval.make_bounded($3, $6, False, False)
 				$$ := time_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$3.out, $6.out>>))
-				abort
+				abort_with_error("VIVLO", <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT time_value SYM_INTERVAL_DELIM
@@ -2093,9 +1982,7 @@ date_time_value: V_ISO8601_EXTENDED_DATE_TIME
 			if valid_iso8601_date_time($1) then
 				create $$.make_from_string($1)
 			else
-				raise_error
-				report_error(create_message("VIDTV", <<$1>>))
-				abort
+				abort_with_error("VIDTV", <<$1>>)
 			end
 		}
 	;
@@ -2124,9 +2011,7 @@ date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_t
 				create date_time_interval.make_bounded($2, $4, True, True)
 				$$ := date_time_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$2.out, $4.out>>))
-				abort
+				abort_with_error("VIVLO", <<$2.out, $4.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT date_time_value SYM_ELLIPSIS date_time_value SYM_INTERVAL_DELIM
@@ -2135,9 +2020,7 @@ date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_t
 				create date_time_interval.make_bounded($3, $5, False, True)
 				$$ := date_time_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$3.out, $5.out>>))
-				abort
+				abort_with_error("VIVLO", <<$3.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS SYM_LT date_time_value SYM_INTERVAL_DELIM
@@ -2146,9 +2029,7 @@ date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_t
 				create date_time_interval.make_bounded($2, $5, True, False)
 				$$ := date_time_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$2.out, $5.out>>))
-				abort
+				abort_with_error("VIVLO", <<$2.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT date_time_value SYM_ELLIPSIS SYM_LT date_time_value SYM_INTERVAL_DELIM
@@ -2157,9 +2038,7 @@ date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_t
 				create date_time_interval.make_bounded($3, $6, False, False)
 				$$ := date_time_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$3.out, $6.out>>))
-				abort
+				abort_with_error("VIVLO", <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT date_time_value SYM_INTERVAL_DELIM
@@ -2194,9 +2073,7 @@ duration_value: V_ISO8601_DURATION
 			if valid_iso8601_duration($1) then
 				create $$.make_from_string($1)
 			else
-				raise_error
-				report_error(create_message("VIDUV", <<$1>>))
-				abort
+				abort_with_error("VIDUV", <<$1>>)
 			end
 		}
 	;
@@ -2225,9 +2102,7 @@ duration_interval_value: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration
 				create duration_interval.make_bounded($2, $4, True, True)
 				$$ := duration_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$2.out, $4.out>>))
-				abort
+				abort_with_error("VIVLO", <<$2.out, $4.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT duration_value SYM_ELLIPSIS duration_value SYM_INTERVAL_DELIM
@@ -2236,9 +2111,7 @@ duration_interval_value: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration
 				create duration_interval.make_bounded($3, $5, False, True)
 				$$ := duration_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$3.out, $5.out>>))
-				abort
+				abort_with_error("VIVLO", <<$3.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS SYM_LT duration_value SYM_INTERVAL_DELIM
@@ -2247,9 +2120,7 @@ duration_interval_value: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration
 				create duration_interval.make_bounded($2, $5, True, False)
 				$$ := duration_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$2.out, $5.out>>))
-				abort
+				abort_with_error("VIVLO", <<$2.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT duration_value SYM_ELLIPSIS SYM_LT duration_value SYM_INTERVAL_DELIM
@@ -2258,9 +2129,7 @@ duration_interval_value: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration
 				create duration_interval.make_bounded($3, $6, False, False)
 				$$ := duration_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$3.out, $6.out>>))
-				abort
+				abort_with_error("VIVLO", <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT duration_value SYM_INTERVAL_DELIM
@@ -2297,9 +2166,7 @@ term_code: V_QUALIFIED_TERM_CODE_REF
 		}
 	| ERR_V_QUALIFIED_TERM_CODE_REF
 		{
-			raise_error
-			report_error(create_message("STCV", <<$1>>))
-			abort
+			abort_with_error("STCV", <<$1>>)
 		}
 	;
 
@@ -2379,6 +2246,13 @@ feature {YY_PARSER_ACTION} -- Basic Operations
 			error_text.append ((in_lineno + source_start_line).out + ": " + a_message + " [last cADL token = " + token_name(last_token) + "]%N")
 		end
 
+	abort_with_error (err_code: STRING; params: ARRAY [STRING])
+		do
+			raise_error
+			report_error(create_message(err_code, params))
+			abort
+		end
+
 feature -- Access
 
 	error_text: STRING
@@ -2416,7 +2290,7 @@ feature {NONE} -- Implementation
 			Attribute_exists: an_attr /= Void
 			Object_exists: an_obj /= Void
 		local
-			s: STRING
+			err_code: STRING
 			ar: ARRAYED_LIST[STRING]
 		do
 			create ar.make(0)
@@ -2429,34 +2303,33 @@ feature {NONE} -- Implementation
 			ar.extend(an_attr.rm_attribute_name) -- $3
 
 			if an_attr.is_single then
-				if an_obj.occurrences.upper_unbounded or an_obj.occurrences.upper > 1 then
-					s := create_message("VACSO", ar)
+				if an_obj.occurrences /= Void and then (an_obj.occurrences.upper_unbounded or an_obj.occurrences.upper > 1) then
+					err_code := "VACSO"
 				elseif an_obj.is_addressable and an_attr.has_child_with_id(an_obj.node_id) then
-					s := create_message("VACSI", ar)
+					err_code := "VACSI"
 				elseif not an_obj.is_addressable and an_attr.has_child_with_rm_type_name(an_obj.rm_type_name) then
-					s := create_message("VACSIT", ar)
+					err_code := "VACSIT"
 				else
 					Result := True
 				end
 			elseif an_attr.is_multiple then
-				if not an_attr.cardinality.interval.upper_unbounded and (an_obj.occurrences.upper_unbounded or 
-								an_attr.cardinality.interval.upper < an_obj.occurrences.upper) then
+				if an_attr.cardinality /= Void and an_obj.occurrences /= Void and (
+					not an_attr.cardinality.interval.upper_unbounded and (an_obj.occurrences.upper_unbounded or 
+								an_attr.cardinality.interval.upper < an_obj.occurrences.upper)) then
 					ar.extend(an_attr.cardinality.interval.as_string)
 					ar.extend(an_obj.occurrences.as_string)
-					s := create_message("VACMC", ar)
+					err_code := "VACMC"
 				elseif not an_obj.is_addressable then
-					s := create_message("VACMI", ar)
+					err_code := "VACMI"
 				elseif an_attr.has_child_with_id(an_obj.node_id) then
-					s := create_message("VACMM", ar)
+					err_code := "VACMM"
 				else
 					Result := True
 				end
 			end
 
 			if not Result then
-				raise_error
-				report_error(s)
-				abort
+				abort_with_error(err_code, ar)
 			end
 		end
 
@@ -2503,14 +2376,16 @@ feature {NONE} -- Parse Tree
 	cardinality_limit_pos_infinity: BOOLEAN
 
 	rm_attribute_name: STRING
-	path_str: STRING
+	parent_path_str, path_str: STRING
+
 	occurrences: STRING
-	c_occurrences_default: BOOLEAN
 
 	invariant_expr: STRING
 
 	time_vc: TIME_VALIDITY_CHECKER
 	date_vc: DATE_VALIDITY_CHECKER
+
+	bmm_prop_def: BMM_PROPERTY_DEFINITION
 
 -------------- FOLLOWING TAKEN FROM DADL_VALIDATOR.Y ---------------
 feature {NONE} -- Implementation 

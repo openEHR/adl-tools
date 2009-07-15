@@ -62,37 +62,33 @@ feature -- Access
 
 feature -- Commands
 
-	flatten_specialised_archetype
-			-- create a flat form archetype in `arch_output_flat'
-		require
-			Source_archetype_specialised: arch_child_diff.is_specialised
-		do
-			debug ("flatten")
-				io.put_string ("============== flattening archetype " + arch_child_diff.archetype_id.as_string + " with " +
-						arch_parent_flat.archetype_id.as_string + " ==============%N")
-			end
-			create arch_output_flat.make_staging (arch_child_diff, arch_parent_flat)
-
-			expand_definition_use_nodes
-			flatten_definition
-			flatten_invariants
-			flatten_ontology
-			arch_output_flat.set_parent_archetype_id (arch_parent_flat.archetype_id)
-			arch_output_flat.set_is_valid (True)
-		ensure
-			arch_output_flat /= Void
-		end
-
-	rm_flatten_archetype
-			-- flatten non-specialised archetype with respect to reference model
+	flatten
+			-- flatten archetype to `arch_output_flat'; if non-specialised, then flatten against reference model
+			-- (just pick up existence and cardinality); if specialised, flatten against a flat parent archetype
 		require
 			Rm_available: rm_checker.model_loaded
-			Source_archetype_not_specialised: not arch_child_diff.is_specialised
 		local
 			def_it: C_ITERATOR
 		do
-			create def_it.make(arch_child_diff.definition)
-			def_it.do_all(agent rm_node_flatten_enter, agent rm_node_flatten_exit)
+			if arch_child_diff.is_specialised then
+				debug ("flatten")
+					io.put_string ("============== flattening specialised archetype " + arch_child_diff.archetype_id.as_string + " with " +
+							arch_parent_flat.archetype_id.as_string + " ==============%N")
+				end
+				create arch_output_flat.make_staging (arch_child_diff, arch_parent_flat)
+				expand_definition_use_nodes
+				flatten_definition
+				flatten_invariants
+				flatten_ontology
+				arch_output_flat.set_parent_archetype_id (arch_parent_flat.archetype_id)
+				arch_output_flat.set_is_valid (True)
+			else
+				create arch_output_flat.make_from_differential (arch_child_diff)
+				create def_it.make(arch_output_flat.definition)
+				def_it.do_all(agent rm_node_flatten_enter, agent rm_node_flatten_exit)
+			end
+		ensure
+			arch_output_flat /= Void
 		end
 
 feature -- Comparison
@@ -225,7 +221,7 @@ feature {NONE} -- Implementation
 			apa: ARCHETYPE_PATH_ANALYSER
 			a_path: STRING
 			c_path_in_diff: OG_PATH
-			c_attr_child, c_attr_child_copy, c_attr_output: C_ATTRIBUTE
+			ca_child, ca_child_copy, ca_output: C_ATTRIBUTE
 		do
 			if attached {C_COMPLEX_OBJECT} a_c_node as cco_child_diff then
 				create apa.make_from_string (cco_child_diff.path)
@@ -244,8 +240,8 @@ feature {NONE} -- Implementation
 						debug ("flatten")
 							io.put_string ("%TObject in flat parent ALREADY REPLACED - grafting sibling object " + cco_child_diff.path + "%N")
 						end
-						c_attr_output := arch_output_flat.definition.c_attribute_at_path (cco_child_diff.parent.path)
-						c_attr_output.put_sibling_child (cco_child_diff.safe_deep_twin)
+						ca_output := arch_output_flat.definition.c_attribute_at_path (cco_child_diff.parent.path)
+						ca_output.put_sibling_child (cco_child_diff.safe_deep_twin)
 						child_grafted_path_list.extend (cco_child_diff.path)
 					else
 						cco_output_flat ?= arch_output_flat.c_object_at_path (a_path)
@@ -277,31 +273,27 @@ feature {NONE} -- Implementation
 								io.put_string ("%T%T~~~~~~~~ iterating cco_child_diff attributes ~~~~~~~~~%N")
 							end
 							from cco_child_diff.attributes.start until cco_child_diff.attributes.off loop
-								c_attr_child := cco_child_diff.attributes.item
+								ca_child := cco_child_diff.attributes.item
 								debug ("flatten")
-									io.put_string ("%T%T~~~~ attribute = " + c_attr_child.rm_attribute_name + "%N")
+									io.put_string ("%T%T~~~~ attribute = " + ca_child.rm_attribute_name + "%N")
 								end
 
 								-- now we have to figure out the 'proximate' C_COMPLEX_OBJECT in the flat parent - it is either the cco_output_flat that
 								-- corresponds to the parent object from the differential child with we started this routine, or if the current attribute
 								-- has a differential path, its true object parent in the flat parent archetype is given by the differential path
-								if c_attr_child.has_differential_path then
-									create apa.make_from_string (c_attr_child.differential_path)
+								if ca_child.has_differential_path then
+									create apa.make_from_string (ca_child.differential_path)
 									cco_output_flat_proximate ?= arch_output_flat.c_object_at_path (apa.path_at_level (arch_parent_flat.specialisation_depth))
 									debug ("flatten")
-										io.put_string ("%T%Tchild has differential path " + c_attr_child.differential_path + "; flat proximate path = " +
+										io.put_string ("%T%Tchild has differential path " + ca_child.differential_path + "; flat proximate path = " +
 												cco_output_flat_proximate.path + "%N")
 									end
 
 									-- there may be object ids on the path from the original parent attribute to the proximate attribute in the flat parent
 									-- that are overridden by object-ids in the differential path
-									create c_path_in_diff.make_from_string (c_attr_child.differential_path)
-									from
-										cco_csr := cco_output_flat_proximate
-										c_path_in_diff.finish
-									until
-										cco_csr = cco_output_flat
-									loop
+									create c_path_in_diff.make_from_string (ca_child.differential_path)
+									c_path_in_diff.finish
+									from cco_csr := cco_output_flat_proximate until cco_csr = cco_output_flat loop
 										if c_path_in_diff.item.is_addressable and then c_path_in_diff.item.object_id.count > cco_csr.node_id.count and then
 												c_path_in_diff.item.object_id.starts_with (cco_csr.node_id) then
 											debug ("flatten")
@@ -321,38 +313,43 @@ feature {NONE} -- Implementation
 
 								-- for attributes that are found in the flat parent tree, we need to check which of their children
 								-- if any need to be cloned into the output
-								if cco_output_flat_proximate.has_attribute (c_attr_child.rm_attribute_name) then
+								if cco_output_flat_proximate.has_attribute (ca_child.rm_attribute_name) then
 									debug ("flatten")
-										io.put_string ("%T%Tmatched attr " + c_attr_child.rm_attribute_name + " in parent object in flat archetype%N")
+										io.put_string ("%T%Tmatched attr " + ca_child.rm_attribute_name + " in parent object in flat archetype%N")
 									end
 
-									-- for container attributes in the source archetype, we graft in new elements; overrides will be
-									-- handled by being traversed by this routine later
-									c_attr_output := cco_output_flat_proximate.c_attribute (c_attr_child.rm_attribute_name)
-									if c_attr_child.is_multiple then
+									ca_output := cco_output_flat_proximate.c_attribute (ca_child.rm_attribute_name)
+
+									-- graft the existence if that has been changed
+									if ca_child.existence /= Void and then not ca_child.existence.is_equal (ca_output.existence) then
+										ca_output.set_existence (ca_child.existence.deep_twin)
+									end
+									if ca_child.is_multiple then
+										-- for container attributes in the source archetype, we graft in new elements; overrides will be
+										-- handled by being traversed by this routine later
 										-- graft the cardinality if that has been changed
-										if not c_attr_child.cardinality.interval.is_equal (c_attr_output.cardinality.interval) then
-											c_attr_output.set_cardinality (c_attr_child.cardinality.deep_twin)
+										if ca_child.cardinality /= Void and then not ca_child.cardinality.interval.is_equal (ca_output.cardinality.interval) then
+											ca_output.set_cardinality (ca_child.cardinality.deep_twin)
 										end
 										debug ("flatten")
-											io.put_string ("%T%T%Tmerge container attribute at " + c_attr_child.path + " into output%N")
+											io.put_string ("%T%T%Tmerge container attribute at " + ca_child.path + " into output%N")
 										end
-										merge_container_attribute(c_attr_output, c_attr_child)
+										merge_container_attribute(ca_output, ca_child)
 									else -- for single-valued attributes, have to merge any non-CCO children
 										debug ("flatten")
-											io.put_string ("%T%T%Tmerge single attribute at " + c_attr_child.path + " into output%N")
+											io.put_string ("%T%T%Tmerge single attribute at " + ca_child.path + " into output%N")
 										end
-										merge_single_attribute(c_attr_output, c_attr_child)
+										merge_single_attribute(ca_output, ca_child)
 									end
 								else  -- otherwise just do a deep clone of the whole attribute from the child to the output
-									c_attr_child_copy := c_attr_child.safe_deep_twin
-									child_grafted_path_list.extend (c_attr_child.path)
-									c_attr_child_copy.clear_differential_path
+									ca_child_copy := ca_child.safe_deep_twin
+									child_grafted_path_list.extend (ca_child.path)
+									ca_child_copy.clear_differential_path
 									debug ("flatten")
-										io.put_string ("%T%Tin child only; deep_clone attribute " + c_attr_child.rm_attribute_name + " at " + c_attr_child.path +
+										io.put_string ("%T%Tin child only; deep_clone attribute " + ca_child.rm_attribute_name + " at " + ca_child.path +
 											" from diff child and graft to " + cco_output_flat_proximate.path + " in output%N")
 									end
-									cco_output_flat_proximate.put_attribute (c_attr_child_copy)
+									cco_output_flat_proximate.put_attribute (ca_child_copy)
 								end
 								cco_child_diff.attributes.forth
 							end
@@ -372,7 +369,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	merge_container_attribute(c_attr_output, c_attr_child: C_ATTRIBUTE)
+	merge_container_attribute(ca_output, ca_child: C_ATTRIBUTE)
 			-- merge new objects in container attribute `a_src_attr' into `an_output_attr', using ordering
 			-- information in source attribute objects, and replacing or inserting as appropriate
 		local
@@ -383,78 +380,67 @@ feature {NONE} -- Implementation
 		do
 			create merge_list.make (0)
 			from
-				c_attr_child.children.start
+				ca_child.children.start
 				start_pos := 1
-				insert_obj := c_attr_output.children.first
+				insert_obj := ca_output.children.first
 			until
-				c_attr_child.children.off
+				ca_child.children.off
 			loop
 				-- find the next ordering marker, or end of list
-				from
-				until
-					c_attr_child.children.off or c_attr_child.children.item.sibling_order /= Void
-				loop
-					c_attr_child.children.forth
+				from until ca_child.children.off or ca_child.children.item.sibling_order /= Void loop
+					ca_child.children.forth
 				end
 
-				if not c_attr_child.children.off then
+				if not ca_child.children.off then
 					if after_pending then
 						-- grab the series from start_pos to here -1 and make a desc for it
-						end_pos := c_attr_child.children.index - 1
+						end_pos := ca_child.children.index - 1
 						add_merge_desc (start_pos, end_pos, insert_obj, False)
 						after_pending := False
 						start_pos := end_pos + 1
 					end
 
-					if c_attr_child.children.item.sibling_order.is_before then
-						end_pos := c_attr_child.children.index
-						insert_obj := c_attr_output.child_with_id (c_attr_child.children.item.sibling_order.sibling_node_id)
+					if ca_child.children.item.sibling_order.is_before then
+						end_pos := ca_child.children.index
+						insert_obj := ca_output.child_with_id (ca_child.children.item.sibling_order.sibling_node_id)
 						add_merge_desc (start_pos, end_pos, insert_obj, True)
 						start_pos := end_pos + 1
 					else -- marker is 'after' - obtain any preceding series and make a descriptor for that
-						if not c_attr_child.children.isfirst and c_attr_child.children.index > start_pos then -- create a descriptor for the preceding section
-							add_merge_desc (start_pos, c_attr_child.children.index - 1, insert_obj, True)
+						if not ca_child.children.isfirst and ca_child.children.index > start_pos then -- create a descriptor for the preceding section
+							add_merge_desc (start_pos, ca_child.children.index - 1, insert_obj, True)
 						end
 						-- now take care of series starting with current 'after' marker
-						start_pos := c_attr_child.children.index
-						insert_obj := c_attr_output.child_with_id (c_attr_child.children.item.sibling_order.sibling_node_id)
+						start_pos := ca_child.children.index
+						insert_obj := ca_output.child_with_id (ca_child.children.item.sibling_order.sibling_node_id)
 						after_pending := True
 					end
-					c_attr_child.children.forth
+					ca_child.children.forth
 				else
-					insert_obj := c_attr_output.children.last
-					add_merge_desc (start_pos, c_attr_child.children.count, insert_obj, False)
+					insert_obj := ca_output.children.last
+					add_merge_desc (start_pos, ca_child.children.count, insert_obj, False)
 					after_pending := False
 				end
 			end
 			if after_pending then -- grab the series from start_pos to here -1 and make a desc for it
-				add_merge_desc (start_pos, c_attr_child.children.count, insert_obj, False)
+				add_merge_desc (start_pos, ca_child.children.count, insert_obj, False)
 			end
 
 			-- now use the merge descriptors to clone objects of the (differential) source list onto the target (flat) output list,
 			-- ignoring any redefined nodes - only handle new ones
-			from
-				merge_list.start
-			until
-				merge_list.off
-			loop
+			from merge_list.start until merge_list.off loop
 				insert_obj ?= merge_list.item.reference_item (3)
-				from
-					i := merge_list.item.integer_item (1)
-				until
-					i > merge_list.item.integer_item (2)
-				loop
-					if is_valid_code (c_attr_child.children.i_th (i).node_id) and
-						specialisation_status_from_code (c_attr_child.children.i_th (i).node_id, arch_child_diff.specialisation_depth).value = ss_added then
+				from i := merge_list.item.integer_item (1) until i > merge_list.item.integer_item (2) loop
+					if is_valid_code (ca_child.children.i_th (i).node_id) and
+						specialisation_status_from_code (ca_child.children.i_th (i).node_id, arch_child_diff.specialisation_depth).value = ss_added then
 
-						child_grafted_path_list.extend (c_attr_child.children.i_th (i).path)
-						c_obj := c_attr_child.children.i_th (i).safe_deep_twin
+						child_grafted_path_list.extend (ca_child.children.i_th (i).path)
+						c_obj := ca_child.children.i_th (i).safe_deep_twin
 						c_obj.clear_sibling_order
 						if merge_list.item.boolean_item (4) then -- True = insert before
-							c_attr_output.put_child_left(c_obj, insert_obj)
+							ca_output.put_child_left(c_obj, insert_obj)
 						else
-							c_attr_output.put_child_right(c_obj, insert_obj)
-							insert_obj := c_attr_output.child_after (insert_obj)
+							ca_output.put_child_right(c_obj, insert_obj)
+							insert_obj := ca_output.child_after (insert_obj)
 						end
 					end
 					i := i + 1
@@ -463,40 +449,32 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	merge_single_attribute(c_attr_output, c_attr_child: C_ATTRIBUTE)
+	merge_single_attribute(ca_output, ca_child: C_ATTRIBUTE)
 			-- merge objects from a single-valued attribute (multiple objects if alternatives defined) which are either new
 			-- in the specialised attribute, or are non C_COMPLEX_OBJECTs (if they are the latter, they will get traversed
 			-- normally by node_graft())
 		local
 			rm_ancestors: ARRAYED_LIST [STRING]
 		do
-			from
-				c_attr_child.children.start
-			until
-				c_attr_child.children.off
-			loop
-				if not attached {C_COMPLEX_OBJECT} c_attr_child.children.item as cco then
-					if c_attr_child.children.item.is_addressable then -- if identified, find corresponding node in parent & replace completely
-						c_attr_output.replace_child_by_id (c_attr_child.children.item.safe_deep_twin,
-							specialisation_parent_from_code_at_level (c_attr_child.children.item.node_id, arch_parent_flat.specialisation_depth))
-					elseif c_attr_output.has_child_with_rm_type_name(c_attr_child.children.item.rm_type_name) then -- find a node of same type, then replace completely
-						c_attr_output.replace_child_by_rm_type_name (c_attr_child.children.item.safe_deep_twin)
+			from ca_child.children.start until ca_child.children.off loop
+				if not attached {C_COMPLEX_OBJECT} ca_child.children.item as cco then
+					if ca_child.children.item.is_addressable then -- if identified, find corresponding node in parent & replace completely
+						ca_output.replace_child_by_id (ca_child.children.item.safe_deep_twin,
+							specialisation_parent_from_code_at_level (ca_child.children.item.node_id, arch_parent_flat.specialisation_depth))
+					elseif ca_output.has_child_with_rm_type_name(ca_child.children.item.rm_type_name) then -- find a node of same type, then replace completely
+						ca_output.replace_child_by_rm_type_name (ca_child.children.item.safe_deep_twin)
 					else -- or a RM parent type, then add
-						rm_ancestors := rm_checker.ancestor_classes_of(c_attr_child.children.item.rm_type_name)
-						from
-							rm_ancestors.start
-						until
-							rm_ancestors.off or c_attr_output.has_child_with_rm_type_name(rm_ancestors.item)
-						loop
+						rm_ancestors := rm_checker.ancestor_classes_of(ca_child.children.item.rm_type_name)
+						from rm_ancestors.start until rm_ancestors.off or ca_output.has_child_with_rm_type_name(rm_ancestors.item) loop
 							rm_ancestors.forth
 						end
 						if not rm_ancestors.off then
-							c_attr_output.put_child (c_attr_child.children.item.safe_deep_twin)
+							ca_output.put_child (ca_child.children.item.safe_deep_twin)
 						end
 					end
-					child_grafted_path_list.extend (c_attr_child.children.item.path)
+					child_grafted_path_list.extend (ca_child.children.item.path)
 				end
-				c_attr_child.children.forth
+				ca_child.children.forth
 			end
 		end
 
@@ -560,7 +538,7 @@ feature {NONE} -- Implementation
 			-- don't descend into paths lower than any path in this list
 
 	rm_node_flatten_enter (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
-			-- copy assumed elements of reference model to node
+			-- copy existence, cardinality and occurrences from reference model to node if it doesn't have them set
 		local
 			arch_attr_type, attr_parent_path, model_attr_class: STRING
 			co_parent_flat: C_OBJECT
@@ -568,16 +546,32 @@ feature {NONE} -- Implementation
 			prop_def: BMM_PROPERTY_DEFINITION
 		do
 			if attached {C_ATTRIBUTE} a_c_node as ca then
-				arch_attr_type := ca.parent.rm_type_name -- can be a generic type like DV_INTERVAL <DV_QUANTITY>
-				attr_parent_path := ca.parent.path
-				prop_def := rm_checker.property_definition(arch_attr_type, ca.rm_attribute_name)
-
-				if ca.existence.is_open then
+				if ca.existence = Void or ca.cardinality = Void then
+					arch_attr_type := ca.parent.rm_type_name -- can be a generic type like DV_INTERVAL <DV_QUANTITY>
+					attr_parent_path := ca.parent.path
+					prop_def := rm_checker.property_definition(arch_attr_type, ca.rm_attribute_name)
+				end
+				if ca.existence = Void then
 					ca.set_existence(prop_def.existence.deep_twin)
 				end
-				if ca.is_multiple and not ca.cardinality.is_open then
+				if ca.is_multiple and ca.cardinality = Void then
 					if attached {BMM_CONTAINER_PROPERTY} prop_def as cont_prop then
-
+						ca.set_cardinality (create {CARDINALITY}.make(cont_prop.type.cardinality))
+					end
+				end
+			elseif attached {C_OBJECT} a_c_node as co then
+				-- here the logic is a bit trickier: there is no such thing as 'occurrences' in the reference model
+				-- so it is set from the enclosing attribute cardinality if a container, or existence if not.
+				if co.occurrences = Void then
+					if co.is_root then -- assume 0..1
+						co.set_occurrences (create {MULTIPLICITY_INTERVAL}.make_bounded(0,1))
+					else
+						prop_def := rm_checker.property_definition(co.parent.parent.rm_type_name, co.parent.rm_attribute_name)
+						if attached {BMM_CONTAINER_PROPERTY} prop_def as cont_prop then
+							co.set_occurrences (cont_prop.type.cardinality)
+						else
+							co.set_occurrences (prop_def.existence)
+						end
 					end
 				end
 			end

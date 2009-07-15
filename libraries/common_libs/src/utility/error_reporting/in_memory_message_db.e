@@ -208,7 +208,8 @@ feature -- Access
 			
 			["VSANCE"] = <"Error (VSANCE): attribute at path $1 existence $2 does not conform to parent $3 existence $4">
 			["VSANCC"] = <"Error (VSANCC): attribute at path $1 cardinality $2 does not conform to parent $3 cardinality $4">
-			["VSAM"] = <"Error (VSAM): attribute at path $1 multiplicity does not correspond to that of attribute in parent">
+			["VDIFP"] = <"Error (VDIFP): differential path $1 does not exist in reference model">
+			["VSAM"] = <"Error (VSAM): attribute at path $1 multiplicity does not correspond to that of attribute in parent or reference model">
 			["VSONNC"] = <"Error (VSONNC): $1 object node at path $2 does not conform to $3 node at parent path $4">
 			["VSONIR"] = <"Error (VSONIR): object node at path $1 (RM type $2) redefines parent node (RM type = $3) but node_id $4 not redefined">
 			["VSCNR"] = <"Error (VSCNR): illegal redefinition of $1 node at $2 in parent into $3 node at $4 in child">

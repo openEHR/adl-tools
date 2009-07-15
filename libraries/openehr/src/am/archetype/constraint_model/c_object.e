@@ -7,8 +7,8 @@ note
 				 ]"
 	keywords:    "test, ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2003-2009 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -20,36 +20,18 @@ deferred class C_OBJECT
 inherit
 	ARCHETYPE_CONSTRAINT
 		redefine
-			parent, default_create, representation
+			parent, representation
 		end
 
 	ARCHETYPE_TERM_CODE_TOOLS
 		export
 			{NONE} all;
 			{ANY} specialisation_depth_from_code;
-		undefine
-			default_create
-		end
-
-	C_COMMON
-		export
-			{NONE} all
-		undefine
-			default_create
 		end
 
 	SHARED_REFERENCE_MODEL_ACCESS
 		export
 			{NONE} all
-		undefine
-			default_create
-		end
-
-feature -- Initialisation
-
-	default_create
-		do
-			occurrences := default_occurrences.deep_twin
 		end
 
 feature -- Access
@@ -109,10 +91,8 @@ feature -- Status Report
 			end
 			s.append (": ")
 
-			if occurrences = Void then	-- FIXME: Delete this check! It's guaranteed by the invariant, so why are we checking it here?
-				invalid_reason.append (s + "occurrences must be specified")
-			elseif parent /= Void then
-				if not parent.is_multiple and occurrences.upper > 1 then	-- FIXME: Delete this check! It's guaranteed by the invariant, so why are we checking it here?
+			if parent /= Void and occurrences /= Void then
+				if parent.is_single and occurrences.upper > 1 then	-- FIXME: Delete this check! It's guaranteed by the invariant, so why are we checking it here?
 					invalid_reason.append (s + "occurrences max can only be 1 for single parent attribute")
 				else
 					Result := True
@@ -122,27 +102,23 @@ feature -- Status Report
 			end
 		end
 
-	is_occurrences_default: BOOLEAN
-			-- True if occurrences is set at default value
-		do
-			Result := occurrences.is_equal(default_occurrences)
-		end
-
 feature -- Comparison
 
 	node_congruent_to (other: like Current): BOOLEAN
 			-- True if this node on its own (ignoring any subparts) expresses the same constraints as `other'.
+			-- `other' is assumed to be in a flat archetype
 			-- Returns False if any of the following is different:
 			--	rm_type_name
 			--	occurrences
 			-- 	sibling order
 			-- The node_id may be redefined however.
 		do
-			Result := rm_type_name.is_equal (other.rm_type_name) and occurrences.is_equal(other.occurrences) and node_id_conforms_to (other)
+			Result := rm_type_name.is_equal (other.rm_type_name) and (occurrences = Void or occurrences.is_equal(other.occurrences)) and node_id_conforms_to (other)
 		end
 
 	node_conforms_to (other: like Current): BOOLEAN
 			-- True if this node on its own (ignoring any subparts) expresses the same or narrower constraints as `other'.
+			-- `other' is assumed to be in a flat archetype
 			-- Returns False if any of the following is incompatible:
 			--	rm_type_name
 			--	occurrences
@@ -150,7 +126,7 @@ feature -- Comparison
 		do
 			if is_addressable and other.is_addressable then
 				if node_id.is_equal (other.node_id) then
-					Result := rm_type_name.is_equal (other.rm_type_name) and occurrences.is_equal(other.occurrences)
+					Result := rm_type_name.is_equal (other.rm_type_name) and (occurrences = Void or else occurrences.is_equal(other.occurrences))
 				else
 					Result := (rm_type_conforms_to(other) and occurrences_conforms_to (other) and node_id_conforms_to (other))
 				end
@@ -162,32 +138,46 @@ feature -- Comparison
 	rm_type_conforms_to (other: like Current): BOOLEAN
 			-- True if this node rm_type_name conforms to other.rm_type_name by either being equal, or being a subtype
 			-- according to the underlying reference model
+			-- `other' is assumed to be in a flat archetype
 		do
 			Result := rm_type_name.is_equal (other.rm_type_name) or rm_checker.is_sub_type_of(rm_type_name, other.rm_type_name)
 		end
 
 	occurrences_conforms_to (other: like Current): BOOLEAN
-			-- True if this node occurrences conforms to other.occurrences
+			-- True if this node occurrences conforms to other.occurrences; `other' is assumed to be in a flat archetype
+		require
+			other_exists: other /= Void
+			other_is_flat: other.occurrences /= Void
 		do
-			Result := occurrences.is_equal (other.occurrences) or other.occurrences.contains (occurrences)
+			Result := occurrences = Void or
+					occurrences.is_equal (other.occurrences) or
+					other.occurrences.contains (occurrences)
 		end
 
 	node_id_conforms_to (other: like Current): BOOLEAN
-			-- True if this node id conforms to other.node_id
+			-- True if this node id conforms to other.node_id; `other' is assumed to be in a flat archetype
 		do
 			Result := codes_conformant (node_id, other.node_id)
 		end
 
+	valid_occurrences(occ: MULTIPLICITY_INTERVAL): BOOLEAN
+			-- check if `occ' is valid to be set as occurrences on this object
+		require
+			Occurrences_attached: occ /= Void
+		do
+			Result := parent /= Void and parent.is_single implies occ.upper <= 1
+		end
+
 feature -- Modification
 
-	set_occurrences(ivl: MULTIPLICITY_INTERVAL)
+	set_occurrences(occ: MULTIPLICITY_INTERVAL)
 			--
 		require
-			Interval_exists: ivl /= Void
+			Occurrences_valid: occ /= Void and then valid_occurrences(occ)
 		do
-			occurrences := ivl
+			occurrences := occ
 		ensure
-			occurrences = ivl
+			occurrences = occ
 		end
 
 	set_sibling_order (a_sibling_order: SIBLING_ORDER)
@@ -238,8 +228,10 @@ feature -- Modification
 			-- 	node_id
 			-- 	overridden rm_type_name
 			-- 	occurrences
+			-- Current is assumed to be in a flat archetype
 		require
 			Other_valid: other /= Void and then other.node_conforms_to (Current)
+			Flat_archetype: occurrences /= Void
 		do
 			if not other.node_id.is_equal(node_id) then
 				set_node_id (other.node_id.twin)
@@ -247,8 +239,20 @@ feature -- Modification
 			if not other.rm_type_name.is_equal(rm_type_name) then
 				rm_type_name := other.rm_type_name.twin
 			end
-			if not other.occurrences.is_equal (occurrences) then
+			if other.occurrences /= Void and then not other.occurrences.is_equal (occurrences) then
 				set_occurrences (other.occurrences.deep_twin)
+			end
+		end
+
+feature -- Output
+
+	occurrences_as_string: STRING is
+			-- output string representing `occurrences', even if occurrences is Void
+		do
+			if occurrences = Void then
+				Result := "(none)"
+			else
+				Result := occurrences.as_string
 			end
 		end
 
@@ -258,8 +262,7 @@ feature -- Representation
 
 invariant
 	rm_type_name_valid: rm_type_name /= Void and then not rm_type_name.is_empty
-	Occurrences_validity: occurrences /= Void and then
-		(parent /= Void implies (parent.is_single implies occurrences.upper <= 1))
+	Occurrences_validity: occurrences /= Void implies valid_occurrences(occurrences)
 
 end
 

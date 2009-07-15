@@ -13,12 +13,6 @@ note
 
 deferred class C_VISITOR
 
-inherit
-	C_COMMON
-		export
-			{NONE} all
-		end
-
 feature -- Initialisation
 
 	initialise(an_ontology: ARCHETYPE_ONTOLOGY)

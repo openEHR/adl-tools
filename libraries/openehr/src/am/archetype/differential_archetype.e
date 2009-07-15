@@ -86,7 +86,10 @@ feature -- Initialisation
 				-- add before/after ordering markers to new nodes whose parent attributes are ordered containers
 				from inherited_subtree_list.start until inherited_subtree_list.off loop
 					if attached {C_OBJECT} inherited_subtree_list.item_for_iteration as cco_1 then
-						if cco_1.parent /= Void and cco_1.parent.is_ordered then
+						-- FIXME: in the following statement, we are assuming that if the cardinality of the parent attribute
+						-- does not exist (typical for a differential archetype), that it is ordered; really we should look up
+						-- the RM schema
+						if cco_1.parent /= Void and (cco_1.parent.cardinality = Void or cco_1.parent.is_ordered) then
 							cco_next := cco_1.parent.child_after (cco_1)
 							if cco_next /= Void and cco_next.specialisation_status (specialisation_depth).value = ss_added then
 								cco_next.set_sibling_order_after (cco_1.node_id)

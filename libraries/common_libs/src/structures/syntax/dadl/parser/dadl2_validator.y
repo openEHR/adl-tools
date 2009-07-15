@@ -5,8 +5,8 @@ note
 	keywords:    "ADL, dADL"
 	
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2004, 2005 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2004-2009 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -656,6 +656,7 @@ simple_interval_value: integer_interval_value
 
 ---------------------- BASIC DATA VALUES -----------------------
 
+
 type_identifier: '(' V_TYPE_IDENTIFIER ')'
 		{
 			$$ := $2
@@ -733,9 +734,7 @@ integer_interval_value: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_va
 				create integer_interval.make_bounded($2, $4, True, True)
 				$$ := integer_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$2.out, $4.out>>))
-				abort
+				abort_with_error("VIVLO", <<$2.out, $4.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT integer_value SYM_ELLIPSIS integer_value SYM_INTERVAL_DELIM
@@ -744,9 +743,7 @@ integer_interval_value: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_va
 				create integer_interval.make_bounded($3, $5, False, True)
 				$$ := integer_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$3.out, $5.out>>))
-				abort
+				abort_with_error("VIVLO", <<$3.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS SYM_LT integer_value SYM_INTERVAL_DELIM
@@ -755,9 +752,7 @@ integer_interval_value: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_va
 				create integer_interval.make_bounded($2, $5, True, False)
 				$$ := integer_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$2.out, $5.out>>))
-				abort
+				abort_with_error("VIVLO", <<$2.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT integer_value SYM_ELLIPSIS SYM_LT integer_value SYM_INTERVAL_DELIM
@@ -766,9 +761,7 @@ integer_interval_value: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_va
 				create integer_interval.make_bounded($3, $6, False, False)
 				$$ := integer_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$3.out, $6.out>>))
-				abort
+				abort_with_error("VIVLO", <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT integer_value SYM_INTERVAL_DELIM
@@ -836,9 +829,7 @@ real_interval_value: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_I
 				create real_interval.make_bounded($2, $4, True, True)
 				$$ := real_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$2.out, $4.out>>))
-				abort
+				abort_with_error("VIVLO", <<$2.out, $4.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT real_value SYM_ELLIPSIS real_value SYM_INTERVAL_DELIM
@@ -847,9 +838,7 @@ real_interval_value: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_I
 				create real_interval.make_bounded($3, $5, False, True)
 				$$ := real_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$3.out, $5.out>>))
-				abort
+				abort_with_error("VIVLO", <<$3.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS SYM_LT real_value SYM_INTERVAL_DELIM
@@ -858,9 +847,7 @@ real_interval_value: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_I
 				create real_interval.make_bounded($2, $5, True, False)
 				$$ := real_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$2.out, $5.out>>))
-				abort
+				abort_with_error("VIVLO", <<$2.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT real_value SYM_ELLIPSIS SYM_LT real_value SYM_INTERVAL_DELIM
@@ -869,9 +856,7 @@ real_interval_value: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_I
 				create real_interval.make_bounded($3, $6, False, False)
 				$$ := real_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$3.out, $6.out>>))
-				abort
+				abort_with_error("VIVLO", <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT real_value SYM_INTERVAL_DELIM
@@ -958,9 +943,7 @@ date_value: V_ISO8601_EXTENDED_DATE -- in ISO8601 form yyyy-MM-dd
 			if valid_iso8601_date($1) then
 				create $$.make_from_string($1)
 			else
-				raise_error
-				report_error(create_message("VIDV", <<$1>>))
-				abort
+				abort_with_error("VIDV", <<$1>>)
 			end
 		}
 	;
@@ -989,9 +972,7 @@ date_interval_value: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_I
 				create date_interval.make_bounded($2, $4, True, True)
 				$$ := date_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$2.out, $4.out>>))
-				abort
+				abort_with_error("VIVLO", <<$2.out, $4.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT date_value SYM_ELLIPSIS date_value SYM_INTERVAL_DELIM
@@ -1000,9 +981,7 @@ date_interval_value: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_I
 				create date_interval.make_bounded($3, $5, False, True)
 				$$ := date_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$3.out, $5.out>>))
-				abort
+				abort_with_error("VIVLO", <<$3.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS SYM_LT date_value SYM_INTERVAL_DELIM
@@ -1011,9 +990,7 @@ date_interval_value: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_I
 				create date_interval.make_bounded($2, $5, True, False)
 				$$ := date_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$2.out, $5.out>>))
-				abort
+				abort_with_error("VIVLO", <<$2.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT date_value SYM_ELLIPSIS SYM_LT date_value SYM_INTERVAL_DELIM
@@ -1022,9 +999,7 @@ date_interval_value: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_I
 				create date_interval.make_bounded($3, $6, False, False)
 				$$ := date_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$3.out, $6.out>>))
-				abort
+				abort_with_error("VIVLO", <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT date_value SYM_INTERVAL_DELIM
@@ -1059,9 +1034,7 @@ time_value: V_ISO8601_EXTENDED_TIME
 			if valid_iso8601_time($1) then
 				create $$.make_from_string($1)
 			else
-				raise_error
-				report_error(create_message("VITV", <<$1>>))
-				abort
+				abort_with_error("VITV", <<$1>>)
 			end
 		}
 	;
@@ -1090,9 +1063,7 @@ time_interval_value: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_I
 				create time_interval.make_bounded($2, $4, True, True)
 				$$ := time_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$2.out, $4.out>>))
-				abort
+				abort_with_error("VIVLO", <<$2.out, $4.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT time_value SYM_ELLIPSIS time_value SYM_INTERVAL_DELIM
@@ -1101,9 +1072,7 @@ time_interval_value: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_I
 				create time_interval.make_bounded($3, $5, False, True)
 				$$ := time_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$3.out, $5.out>>))
-				abort
+				abort_with_error("VIVLO", <<$3.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS SYM_LT time_value SYM_INTERVAL_DELIM
@@ -1112,9 +1081,7 @@ time_interval_value: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_I
 				create time_interval.make_bounded($2, $5, True, False)
 				$$ := time_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$2.out, $5.out>>))
-				abort
+				abort_with_error("VIVLO", <<$2.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT time_value SYM_ELLIPSIS SYM_LT time_value SYM_INTERVAL_DELIM
@@ -1123,9 +1090,7 @@ time_interval_value: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_I
 				create time_interval.make_bounded($3, $6, False, False)
 				$$ := time_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$3.out, $6.out>>))
-				abort
+				abort_with_error("VIVLO", <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT time_value SYM_INTERVAL_DELIM
@@ -1160,9 +1125,7 @@ date_time_value: V_ISO8601_EXTENDED_DATE_TIME
 			if valid_iso8601_date_time($1) then
 				create $$.make_from_string($1)
 			else
-				raise_error
-				report_error(create_message("VIDTV", <<$1>>))
-				abort
+				abort_with_error("VIDTV", <<$1>>)
 			end
 		}
 	;
@@ -1191,9 +1154,7 @@ date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_t
 				create date_time_interval.make_bounded($2, $4, True, True)
 				$$ := date_time_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$2.out, $4.out>>))
-				abort
+				abort_with_error("VIVLO", <<$2.out, $4.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT date_time_value SYM_ELLIPSIS date_time_value SYM_INTERVAL_DELIM
@@ -1202,9 +1163,7 @@ date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_t
 				create date_time_interval.make_bounded($3, $5, False, True)
 				$$ := date_time_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$3.out, $5.out>>))
-				abort
+				abort_with_error("VIVLO", <<$3.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS SYM_LT date_time_value SYM_INTERVAL_DELIM
@@ -1213,9 +1172,7 @@ date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_t
 				create date_time_interval.make_bounded($2, $5, True, False)
 				$$ := date_time_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$2.out, $5.out>>))
-				abort
+				abort_with_error("VIVLO", <<$2.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT date_time_value SYM_ELLIPSIS SYM_LT date_time_value SYM_INTERVAL_DELIM
@@ -1224,9 +1181,7 @@ date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_t
 				create date_time_interval.make_bounded($3, $6, False, False)
 				$$ := date_time_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$3.out, $6.out>>))
-				abort
+				abort_with_error("VIVLO", <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT date_time_value SYM_INTERVAL_DELIM
@@ -1261,9 +1216,7 @@ duration_value: V_ISO8601_DURATION
 			if valid_iso8601_duration($1) then
 				create $$.make_from_string($1)
 			else
-				raise_error
-				report_error(create_message("VIDUV", <<$1>>))
-				abort
+				abort_with_error("VIDUV", <<$1>>)
 			end
 		}
 	;
@@ -1292,9 +1245,7 @@ duration_interval_value: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration
 				create duration_interval.make_bounded($2, $4, True, True)
 				$$ := duration_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$2.out, $4.out>>))
-				abort
+				abort_with_error("VIVLO", <<$2.out, $4.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT duration_value SYM_ELLIPSIS duration_value SYM_INTERVAL_DELIM
@@ -1303,9 +1254,7 @@ duration_interval_value: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration
 				create duration_interval.make_bounded($3, $5, False, True)
 				$$ := duration_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$3.out, $5.out>>))
-				abort
+				abort_with_error("VIVLO", <<$3.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS SYM_LT duration_value SYM_INTERVAL_DELIM
@@ -1314,9 +1263,7 @@ duration_interval_value: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration
 				create duration_interval.make_bounded($2, $5, True, False)
 				$$ := duration_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$2.out, $5.out>>))
-				abort
+				abort_with_error("VIVLO", <<$2.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT duration_value SYM_ELLIPSIS SYM_LT duration_value SYM_INTERVAL_DELIM
@@ -1325,9 +1272,7 @@ duration_interval_value: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration
 				create duration_interval.make_bounded($3, $6, False, False)
 				$$ := duration_interval
 			else
-				raise_error
-				report_error(create_message("VIVLO", <<$3.out, $6.out>>))
-				abort
+				abort_with_error("VIVLO", <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT duration_value SYM_INTERVAL_DELIM
@@ -1364,9 +1309,7 @@ term_code: V_QUALIFIED_TERM_CODE_REF
 		}
 	| ERR_V_QUALIFIED_TERM_CODE_REF
 		{
-			raise_error
-			report_error(create_message("STCV", <<$1>>))
-			abort
+			abort_with_error("STCV", <<$1>>)
 		}
 	;
 
@@ -1394,7 +1337,6 @@ uri_value: V_URI
 			$$ := a_uri
 		}
 	;
-
 
 --
 -- ------------------------- object reference ---------------------
@@ -1565,6 +1507,13 @@ feature {YY_PARSER_ACTION} -- Basic Operations
 				error_text.append ("line ")
 			end
 			error_text.append ((in_lineno + source_start_line).out + ": " + error_message + "%N")
+		end
+
+	abort_with_error (err_code: STRING; params: ARRAY [STRING])
+		do
+			raise_error
+			report_error(create_message(err_code, params))
+			abort
 		end
 
 feature -- Access

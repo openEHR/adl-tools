@@ -84,12 +84,6 @@ feature {NONE} -- Implementation
 				display_archetype_source_check_button.disable_select
 			end
 
-			if rm_checking_on then
-				rm_checking_check_button.enable_select
-			else
-				rm_checking_check_button.disable_select
-			end
-
 			populate_ev_combo_from_hash_keys (parser_error_reporting_level_combo_box, message_type_ids)
 
 			parser_error_reporting_level_combo_box.do_all (agent (li: EV_LIST_ITEM)
@@ -118,8 +112,6 @@ feature {NONE} -- Implementation
 			set_expand_node_tree (show_definition_tree_expanded_check_button.is_selected)
 			set_show_line_numbers (show_line_numbers_check_button.is_selected)
 			set_display_archetype_source (display_archetype_source_check_button.is_selected)
-			set_rm_checking_on (rm_checking_check_button.is_selected)
-			rm_checker.set_rm_checking_on (rm_checking_check_button.is_selected)
 			set_status_reporting_level (message_type_ids.item (parser_error_reporting_level_combo_box.text))
 			set_html_export_directory (export_html_text.text)
 

@@ -35,7 +35,6 @@ feature -- Initialisation
 	default_create
 			--
 		do
-			precursor
 			create includes.make(0)
 			create excludes.make(0)
 		end
@@ -155,7 +154,10 @@ feature -- Output
 			--
 		do
 			create Result.make(0)
-			Result.append (rm_type_name + "[" + representation.node_id + "] " + occurrences.as_string)
+			Result.append (rm_type_name + "[" + representation.node_id + "] ")
+			if occurrences /= Void then
+				Result.append(occurrences.as_string)
+			end
 		end
 
 feature -- Representation

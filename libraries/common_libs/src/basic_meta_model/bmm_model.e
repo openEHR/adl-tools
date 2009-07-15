@@ -86,6 +86,23 @@ feature -- Access
 			Result_exists: Result /= Void
 		end
 
+	property_definition_at_path (a_type_name, a_property_path: STRING): BMM_PROPERTY_DEFINITION
+			-- retrieve the property definition for `a_property_path' in flattened class corresponding to `a_type_name'
+		require
+			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
+			Property_path_valid: a_property_path /= Void and then has_property_path(a_type_name, a_property_path)
+		local
+			an_og_path: OG_PATH
+			class_def: BMM_CLASS_DEFINITION
+		do
+			class_def := class_definition(type_to_class(a_type_name))
+			create an_og_path.make_pure_from_string(a_property_path)
+			an_og_path.start
+			Result := class_def.property_definition_at_path(an_og_path)
+		ensure
+			Result_exists: Result /= Void
+		end
+
 	status: STRING
 			-- status report on model
 		do
@@ -143,6 +160,22 @@ feature -- Status Report
 			Result := True
 		end
 
+	has_property_path (an_obj_type, a_property_path: STRING): BOOLEAN
+			-- is `a_property_path' possible based on this reference model? Path format must be standard forward-slash
+			-- delimited path, or Xpath. Any predicates (i.e. [] sections) in an Xpath will be ignored.
+		require
+			path_attached: a_property_path /= Void
+			object_type_attached: an_obj_type /= Void
+		local
+			an_og_path: OG_PATH
+		do
+			create an_og_path.make_pure_from_string(a_property_path)
+			an_og_path.start
+			if has_class_definition (an_obj_type) then
+				Result := class_definition (an_obj_type).has_property_path(an_og_path)
+			end
+		end
+
 	valid_type_for_class(a_class_name, a_type_name: STRING): BOOLEAN
 			-- True if `a_type_name' is valid with respect to this class. Will always be true for
 			-- non-generic types, but needs to be checked for generic / container types
@@ -176,22 +209,6 @@ feature -- Status Report
 				end
 			elseif not a_class_def.is_generic and not is_gen_type then
 				Result := a_type_name.is_equal (a_class_def.name)
-			end
-		end
-
-	has_path (a_path, an_obj_type: STRING): BOOLEAN
-			-- is `a_path' possible based on this reference model? Path format must be standard forward-slash
-			-- delimited path, or Xpath. Any predicates (i.e. [] sections) in an Xpath will be ignored.
-		require
-			path_attached: a_path /= Void
-			object_type_attached: an_obj_type /= Void
-		local
-			an_og_path: OG_PATH
-		do
-			create an_og_path.make_pure_from_string(a_path)
-			an_og_path.start
-			if has_class_definition (an_obj_type) then
-				Result := class_definition (an_obj_type).has_path(an_og_path)
 			end
 		end
 

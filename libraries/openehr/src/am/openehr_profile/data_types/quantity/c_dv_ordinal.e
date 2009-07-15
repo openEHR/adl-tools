@@ -28,7 +28,6 @@ feature -- Initialisation
 	default_create
 			--
 		do
-			precursor
 			rm_type_name := generator
 			rm_type_name.remove_head(2) -- remove "C_"
 		ensure then

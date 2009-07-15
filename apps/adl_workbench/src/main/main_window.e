@@ -207,6 +207,8 @@ feature -- Status setting
 
 	show
 			-- Do a few adjustments and load the repository before displaying the window.
+		local
+			quit_dialog: EV_INFORMATION_DIALOG
 		do
 			populate_archetype_directory
 			archetype_compiler.set_visual_update_action (agent build_gui_update)
@@ -245,9 +247,11 @@ feature -- Status setting
 				set_html_export_directory (file_system.pathname (file_system.absolute_parent_directory (reference_repository_path), "html"))
 			end
 
-			rm_checker.set_rm_checking_on(rm_checking_on)
-			if rm_checking_on and not rm_checker.model_loaded then
-				post_error (Current, "show", "general_error", <<rm_checker.status>>)
+			if not rm_checker.model_loaded then
+				create quit_dialog.make_with_text (create_message ("general_error", <<rm_checker.status>>))
+				quit_dialog.set_title ("Reference Model schema load failure")
+				quit_dialog.show_modal_to_window (Current)
+				ev_application.destroy
 			else
 				post_info (Current, "show", "general", <<rm_checker.status>>)
 			end

@@ -30,7 +30,6 @@ feature -- Initialisation
 			a_rm_type_name_valid: a_rm_type_name /= Void and then not a_rm_type_name.is_empty
 			a_path_exists: a_path /= Void and then not a_path.is_empty
 		do
-			default_create
 			create representation.make_anonymous(Current)
 			rm_type_name := a_rm_type_name
 			set_target_path(a_path)

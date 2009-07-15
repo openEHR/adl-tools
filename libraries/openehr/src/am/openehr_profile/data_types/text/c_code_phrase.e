@@ -35,7 +35,6 @@ feature -- Initialisation
 	default_create
 			-- Create in default state.
 		do
-			Precursor
 			rm_type_name := (create {CODE_PHRASE}).generator
 			create representation.make_anonymous (Current)
 			fail_reason := Void

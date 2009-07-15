@@ -372,7 +372,7 @@ feature -- Visitor
 		local
 			s: STRING
 		do
-			if not a_node.occurrences.is_equal(default_occurrences) then
+			if a_node.occurrences /= Void then
 				last_result.append (apply_style(symbol(SYM_OCCURRENCES), STYLE_OPERATOR) + format_item(FMT_SPACE))
 				last_result.append (apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
 				s := a_node.occurrences.as_string
@@ -386,7 +386,7 @@ feature -- Visitor
 		local
 			s: STRING
 		do
-			if not a_node.existence.is_equal(default_existence) then
+			if a_node.existence /= Void then
 				last_result.append (apply_style(symbol(SYM_EXISTENCE), STYLE_OPERATOR) + format_item(FMT_SPACE))
 				last_result.append (apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
 				s := a_node.existence.as_string
@@ -400,7 +400,7 @@ feature -- Visitor
 		local
 			s: STRING
 		do
-			if a_node.is_multiple then
+			if a_node.is_multiple and a_node.cardinality /= Void then
 				last_result.append (apply_style(symbol(SYM_CARDINALITY), STYLE_OPERATOR) + format_item(FMT_SPACE))
 				last_result.append (apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
 				s := a_node.cardinality.as_string

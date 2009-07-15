@@ -457,7 +457,7 @@ feature -- Traversal
 		require
 			enter_action_attached: enter_action /= Void
 		local
-			item: ARCH_REP_ITEM
+			item: attached ARCH_REP_ITEM
 		do
 			if node /= Void then
 	 			debug("arch_dir")

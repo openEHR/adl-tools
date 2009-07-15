@@ -48,7 +48,6 @@ feature {NONE}-- Initialization
 			create show_line_numbers_check_button
 			create l_ev_horizontal_box_4
 			create display_archetype_source_check_button
-			create rm_checking_check_button
 			create l_ev_horizontal_box_5
 			create l_ev_label_1
 			create parser_error_reporting_level_combo_box
@@ -76,7 +75,6 @@ feature {NONE}-- Initialization
 			l_ev_horizontal_box_3.extend (show_line_numbers_check_button)
 			l_ev_vertical_box_1.extend (l_ev_horizontal_box_4)
 			l_ev_horizontal_box_4.extend (display_archetype_source_check_button)
-			l_ev_horizontal_box_4.extend (rm_checking_check_button)
 			l_ev_vertical_box_1.extend (l_ev_horizontal_box_5)
 			l_ev_horizontal_box_5.extend (l_ev_label_1)
 			l_ev_horizontal_box_5.extend (parser_error_reporting_level_combo_box)
@@ -135,8 +133,6 @@ feature {NONE}-- Initialization
 			l_ev_horizontal_box_4.set_padding (10)
 			l_ev_horizontal_box_4.set_border_width (10)
 			display_archetype_source_check_button.set_text ("Indicate original creation form?")
-			rm_checking_check_button.set_text ("Turn RM checking on?")
-			rm_checking_check_button.set_tooltip ("Turns reference model checking of archetypes, if a reference model schema is available")
 			l_ev_horizontal_box_5.set_padding (10)
 			l_ev_horizontal_box_5.set_border_width (10)
 			l_ev_horizontal_box_5.disable_item_expand (l_ev_label_1)
@@ -199,7 +195,7 @@ feature -- Access
 	l_ev_vertical_box_1,
 	l_ev_vertical_box_2: EV_VERTICAL_BOX
 	show_definition_tree_expanded_check_button, show_line_numbers_check_button,
-	display_archetype_source_check_button, rm_checking_check_button: EV_CHECK_BUTTON
+	display_archetype_source_check_button: EV_CHECK_BUTTON
 	l_ev_label_1, l_ev_label_2: EV_LABEL
 	export_html_text: EV_TEXT_FIELD
 	l_ev_frame_1: EV_FRAME
@@ -219,22 +215,22 @@ feature {NONE} -- Implementation
 		deferred
 		end
 	
-	on_editor_command_add
+	on_editor_command_add is
 			-- Called by `select_actions' of `editor_command_add_button'.
 		deferred
 		end
 	
-	on_editor_command_browse
+	on_editor_command_browse is
 			-- Called by `select_actions' of `editor_command_browse_button'.
 		deferred
 		end
 	
-	on_export_html_browse
+	on_export_html_browse is
 			-- Called by `select_actions' of `export_html_browse_button'.
 		deferred
 		end
 	
-	on_ok
+	on_ok is
 			-- Called by `select_actions' of `ok_button'.
 		deferred
 		end

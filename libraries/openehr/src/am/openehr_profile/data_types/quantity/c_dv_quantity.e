@@ -35,7 +35,6 @@ feature -- Initialisation
 	default_create
 			--
 		do
-			precursor {C_DOMAIN_TYPE}
 			rm_type_name := generator
 			rm_type_name.remove_head (2) -- remove "C_"
 			create representation.make_anonymous(Current)

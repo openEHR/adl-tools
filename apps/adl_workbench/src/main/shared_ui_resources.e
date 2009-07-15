@@ -579,17 +579,6 @@ feature -- Application Switches
 			Result := substitute_env_vars (resource_value ("default", "html_export_directory"))
 		end
 
-	rm_checking_on: BOOLEAN
-			-- True if Reference Model checking should be on
-		local
-			str: STRING
-		do
-			str := resource_value("default", "rm_checking_on")
-			if str.is_boolean then
-				Result := str.to_boolean
-			end
-		end
-
 	adl_version_for_flat_output: attached STRING
 			-- version of ADL syntax to use for outputting flat archetypes
 		do
@@ -780,12 +769,6 @@ feature -- Application Switch Setting
 		do
 			set_resource_value_list("default", "path_view_check_list_settings", strs)
 
-		end
-
-	set_rm_checking_on (flag: BOOLEAN)
-			-- Set flag for whether to do reference model checking of archetypes
-		do
-			set_resource_value ("default", "rm_checking_on", flag.out)
 		end
 
 feature {NONE} -- Implementation

@@ -63,8 +63,6 @@ feature -- Status Report
 			if precursor then
 				if item = Void then
 					invalid_reason.append ("simple type constraint not specified")
-				elseif occurrences = Void then
-					invalid_reason.append ("occurrences must not be Void")
 				else
 					Result := True
 				end

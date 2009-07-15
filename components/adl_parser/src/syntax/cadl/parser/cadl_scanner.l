@@ -4,8 +4,8 @@ note
 	description: "Scanner for CADL syntax items"
 	keywords:    "CADL, archetype"
 
-	author:      "Thomas Beale <thomas@deepthought.com.au>"
-	support:     "Deep Thought Informatics <support@deepthought.com.au>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues"
 	copyright:   "Copyright (c) 2003-2007 Ocean Informatics Pty Ltd"
 	license:     "Mozilla tri-license"
 

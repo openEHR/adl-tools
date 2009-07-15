@@ -77,23 +77,22 @@ feature -- Factory
 		end
 
 	create_c_attribute_single (a_parent: C_COMPLEX_OBJECT; an_attr_name: STRING): C_ATTRIBUTE
-			-- create a C_ATTRIBUTE node with a simple name like "text" or "description"
+			-- create a single-valued C_ATTRIBUTE node
 		require
 			parent_valid: a_parent /= Void
 			an_attr_name_valid: an_attr_name /= Void and then not an_attr_name.is_empty
 		do
-			create Result.make_single(an_attr_name)
+			create Result.make_single(an_attr_name, Void)
 			a_parent.put_attribute(Result)
 		end
 
-	create_c_attribute_multiple (a_parent: C_COMPLEX_OBJECT; an_attr_name: STRING; a_cardinality: CARDINALITY): C_ATTRIBUTE
-			-- create a C_ATTRIBUTE with a simple name like "text" or "description"
+	create_c_attribute_multiple (a_parent: C_COMPLEX_OBJECT; an_attr_name: STRING): C_ATTRIBUTE
+			-- create a container C_ATTRIBUTE node
 		require
 			parent_valid: a_parent /= Void
 			an_attr_name_valid: an_attr_name /= Void and then not an_attr_name.is_empty
-			Cardinality_valid: a_cardinality /= Void
 		do
-			create Result.make_multiple(an_attr_name, a_cardinality)
+			create Result.make_multiple(an_attr_name, Void, Void)
 			a_parent.put_attribute(Result)
 		end
 

@@ -7,7 +7,7 @@ note
 	keywords:    "intervals"
 
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
 	copyright:   "Copyright (c) 2000-2005 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
@@ -140,6 +140,23 @@ feature -- Operations
 				create Result.make_bounded (lower + other.lower, upper + other.upper)
 			end
 		end
+
+feature -- Comparison
+
+	equal_interval(an_ivl: INTERVAL [INTEGER]): BOOLEAN
+			-- True if current object's interval is same as `an_ivl'
+		require
+			an_ivl_attached: an_ivl /= Void
+		do
+			Result := lower = an_ivl.lower and
+				upper = an_ivl.upper and
+				lower_included = an_ivl.lower_included and
+				upper_included = an_ivl.upper_included and
+				lower_unbounded = an_ivl.lower_unbounded and
+				upper_unbounded = an_ivl.upper_unbounded
+		end
+
+feature -- Output
 
 	as_string: STRING
 		do

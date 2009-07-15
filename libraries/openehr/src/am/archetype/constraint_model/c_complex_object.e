@@ -11,8 +11,8 @@ note
 			     ]"
 	keywords:    "test, ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2003-2009 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -35,7 +35,6 @@ feature -- Initialisation
 	default_create
 			--
 		do
-			precursor
 			create attributes.make(0)
 		end
 
@@ -264,7 +263,10 @@ feature -- Output
 			--
 		do
 			create Result.make(0)
-			Result.append(rm_type_name + "[" + representation.node_id + "] " + occurrences.as_string)
+			Result.append(rm_type_name + "[" + representation.node_id + "] ")
+			if occurrences /= Void then
+				Result.append(occurrences.as_string)
+			end
 		end
 
 feature -- Representation

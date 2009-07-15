@@ -868,18 +868,12 @@ feature {NONE} -- Implementation
 			arch_flattener: ARCHETYPE_FLATTENER
 		do
 			if not differential_archetype.is_specialised then
-				create flat_archetype_cache.make_from_differential (differential_archetype)
-				-- the following treats a 'flat' top-level archetype as something that is fully flattened to the
-				-- reference model, which simply means incorporating existence and cardinality from the RM
---					if rm_checker.model_loaded then
---						create arch_flattener.make_non_specialised (differential_archetype)
---						arch_flattener.rm_flatten_archetype
---					end
+				create arch_flattener.make_non_specialised (differential_archetype)
 			else
 				create arch_flattener.make_specialised (specialisation_parent.flat_archetype, differential_archetype)
-				arch_flattener.flatten_specialised_archetype
-				flat_archetype_cache := arch_flattener.arch_output_flat
 			end
+			arch_flattener.flatten
+			flat_archetype_cache := arch_flattener.arch_output_flat
 			flat_text_cache := Void
 		end
 
