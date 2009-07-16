@@ -388,8 +388,8 @@ feature -- Commands
 	parse_archetype
 			-- Parse and validate `target', in differential form if available, else in flat form.
 		do
-			reset
 			if not exception_encountered then
+				reset
 				clear_billboard
 				set_parse_attempted
 

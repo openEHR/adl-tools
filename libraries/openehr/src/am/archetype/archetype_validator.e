@@ -458,7 +458,6 @@ feature {NONE} -- Implementation
 			if attached {C_ATTRIBUTE} a_c_node as ca_child_diff then
 				if attached {C_ATTRIBUTE} flat_parent.definition.c_attribute_at_path (apa.path_at_level (flat_parent.specialisation_depth)) as ca_parent_flat then
 					if not ca_child_diff.node_conforms_to(ca_parent_flat) then
-						passed := False
 						if ca_child_diff.is_single /= ca_parent_flat.is_single then
 							add_error("VSAM", <<ca_child_diff.path>>)
 						elseif not ca_child_diff.existence_conforms_to (ca_parent_flat) then
@@ -467,6 +466,8 @@ feature {NONE} -- Implementation
 						elseif not ca_child_diff.cardinality_conforms_to (ca_parent_flat) then
 							add_error("VSANCC", <<ca_child_diff.path, ca_child_diff.cardinality.as_string,
 										ca_parent_flat.path, ca_parent_flat.cardinality.as_string>>)
+						else
+							add_error("compiler_unexpected_error", <<"ARCHETYPE_VALIDATOR.specialised_node_validate location 1">>)
 						end
 					elseif ca_child_diff.node_congruent_to (ca_parent_flat) and ca_child_diff.parent.is_mergeable then
 						debug ("validate")
@@ -623,9 +624,11 @@ feature {NONE} -- Implementation
 								if cont_prop.type.cardinality.contains(ca.cardinality.interval) then
 									if cont_prop.type.cardinality.equal_interval(ca.cardinality.interval) then
 										add_warning("WCACA", <<ca.rm_attribute_name, ca.path, ca.cardinality.interval.as_string>>)
+										ca.clear_cardinality
 									end
 								else -- archetype has cardinality not contained by RM
-									add_error("VCACA", <<ca.rm_attribute_name, ca.path, ca.cardinality.interval.as_string, cont_prop.type.cardinality.as_string>>)
+									add_warning("VCACA", <<ca.rm_attribute_name, ca.path, ca.cardinality.interval.as_string, cont_prop.type.cardinality.as_string>>)
+									ca.clear_cardinality
 								end
 							end
 						else -- archetype has multiple attribute but RM does not

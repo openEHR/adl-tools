@@ -1597,7 +1597,7 @@ end
 					if bmm_prop_def.is_container then
 						if attached {BMM_CONTAINER_PROPERTY} bmm_prop_def as bmm_cont_prop and yyvs15.item (yyvsp15) /= Void then
 							if yyvs15.item (yyvsp15).interval.equal_interval(bmm_cont_prop.type.cardinality) then
-								yyvs15.item (yyvsp15) := Void -- throw out constraint that is same as RM
+								-- $3 := Void -- throw out constraint that is same as RM
 							end
 						end
 						create attr_node.make_multiple(rm_attribute_name, yyvs11.item (yyvsp11), yyvs15.item (yyvsp15))
@@ -1671,7 +1671,7 @@ end
 					if bmm_prop_def.is_container then
 						if attached {BMM_CONTAINER_PROPERTY} bmm_prop_def as bmm_cont_prop and yyvs15.item (yyvsp15) /= Void then
 							if yyvs15.item (yyvsp15).interval.equal_interval(bmm_cont_prop.type.cardinality) then
-								yyvs15.item (yyvsp15) := Void -- throw out constraint that is same as RM
+								-- $3 := Void -- throw out constraint that is same as RM
 							end
 						end
 						create attr_node.make_multiple(rm_attribute_name, yyvs11.item (yyvsp11), yyvs15.item (yyvsp15))

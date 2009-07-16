@@ -429,6 +429,13 @@ feature -- Modification
 			cardinality := a_cardinality
 		end
 
+	clear_cardinality
+		do
+			cardinality := Void
+		ensure
+			cardinality = Void
+		end
+
 	set_differential_path(a_path: STRING)
 			-- set `differential_path'
 		require
