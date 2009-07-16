@@ -321,14 +321,14 @@ feature {NONE} -- Implementation
 									ca_output := cco_output_flat_proximate.c_attribute (ca_child.rm_attribute_name)
 
 									-- graft the existence if that has been changed
-									if ca_child.existence /= Void and then not ca_child.existence.is_equal (ca_output.existence) then
+									if ca_child.existence /= Void and then not ca_child.existence.equal_interval (ca_output.existence) then
 										ca_output.set_existence (ca_child.existence.deep_twin)
 									end
 									if ca_child.is_multiple then
 										-- for container attributes in the source archetype, we graft in new elements; overrides will be
 										-- handled by being traversed by this routine later
 										-- graft the cardinality if that has been changed
-										if ca_child.cardinality /= Void and then not ca_child.cardinality.interval.is_equal (ca_output.cardinality.interval) then
+										if ca_child.cardinality /= Void and then not ca_child.cardinality.interval.equal_interval (ca_output.cardinality.interval) then
 											ca_output.set_cardinality (ca_child.cardinality.deep_twin)
 										end
 										debug ("flatten")
@@ -540,9 +540,7 @@ feature {NONE} -- Implementation
 	rm_node_flatten_enter (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 			-- copy existence, cardinality and occurrences from reference model to node if it doesn't have them set
 		local
-			arch_attr_type, attr_parent_path, model_attr_class: STRING
-			co_parent_flat: C_OBJECT
-			apa: ARCHETYPE_PATH_ANALYSER
+			arch_attr_type, attr_parent_path: STRING
 			prop_def: BMM_PROPERTY_DEFINITION
 		do
 			if attached {C_ATTRIBUTE} a_c_node as ca then

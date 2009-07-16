@@ -396,7 +396,7 @@ feature -- Comparison
 			other_is_flat: other.existence /= Void
 		do
 			Result := existence = Void or
-					existence.is_equal (other.existence) or
+					existence.equal_interval (other.existence) or
 					other.existence.contains (existence)
 		end
 
@@ -407,7 +407,7 @@ feature -- Comparison
 			other_is_flat: other.cardinality /= Void
 		do
 			Result := cardinality = Void or
-				cardinality.interval.is_equal (other.cardinality.interval) or
+				cardinality.interval.equal_interval (other.cardinality.interval) or
 				other.cardinality.contains (cardinality)
 		end
 

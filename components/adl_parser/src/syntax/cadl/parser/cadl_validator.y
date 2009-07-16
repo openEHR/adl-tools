@@ -492,7 +492,7 @@ c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality
 			if not object_nodes.item.has_attribute(rm_attribute_name) then
 				if rm_checker.has_property (object_nodes.item.rm_type_name, rm_attribute_name) then
 					bmm_prop_def := rm_checker.property_definition (object_nodes.item.rm_type_name, rm_attribute_name)
-					if $2 /= Void and then bmm_prop_def.existence.is_equal($2) then
+					if $2 /= Void and then bmm_prop_def.existence.equal_interval($2) then
 						$2 := Void -- throw out constraint that is same as RM
 					end
 					if bmm_prop_def.is_container then
@@ -538,7 +538,7 @@ c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality
 				-- check RM to see if path is valid, and if it is a container
 				if rm_checker.has_property_path (object_nodes.item.rm_type_name, path_str) then
 					bmm_prop_def := rm_checker.property_definition_at_path (object_nodes.item.rm_type_name, path_str)
-					if $2 /= Void and then bmm_prop_def.existence.is_equal($2) then
+					if $2 /= Void and then bmm_prop_def.existence.equal_interval($2) then
 						$2 := Void -- throw out constraint that is same as RM
 					end
 					if bmm_prop_def.is_container then

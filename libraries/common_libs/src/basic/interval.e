@@ -23,8 +23,7 @@ class INTERVAL [G -> PART_COMPARABLE]
 inherit
 	ANY
 		redefine
-			default_create,
-			is_equal
+			default_create
 		end
 
 create
@@ -188,8 +187,10 @@ feature -- Status report
 			end
 		end
 
-	is_equal (other: like Current): BOOLEAN
-			-- compare two intervals
+	equal_interval (other: like Current): BOOLEAN
+			-- compare two intervals, allows subtypes like MULTIPLICITY_INTERVAL to be compared
+		require
+			other_attached: other /= Void
 		do
 			if lower_unbounded then
 				Result := other.lower_unbounded

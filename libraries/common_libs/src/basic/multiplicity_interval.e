@@ -22,7 +22,7 @@ inherit INTERVAL [INTEGER]
 		make_bounded as make_bounded_interval,
 		make_upper_unbounded as make_upper_unbounded_interval
 	redefine
-		as_string
+		as_string, equal_interval
 	end
 
 create
@@ -143,17 +143,15 @@ feature -- Operations
 
 feature -- Comparison
 
-	equal_interval(an_ivl: INTERVAL [INTEGER]): BOOLEAN
-			-- True if current object's interval is same as `an_ivl'
-		require
-			an_ivl_attached: an_ivl /= Void
+	equal_interval(other: INTERVAL [INTEGER]): BOOLEAN
+			-- True if current object's interval is same as `other'
 		do
-			Result := lower = an_ivl.lower and
-				upper = an_ivl.upper and
-				lower_included = an_ivl.lower_included and
-				upper_included = an_ivl.upper_included and
-				lower_unbounded = an_ivl.lower_unbounded and
-				upper_unbounded = an_ivl.upper_unbounded
+			Result := lower = other.lower and
+				upper = other.upper and
+				lower_included = other.lower_included and
+				upper_included = other.upper_included and
+				lower_unbounded = other.lower_unbounded and
+				upper_unbounded = other.upper_unbounded
 		end
 
 feature -- Output

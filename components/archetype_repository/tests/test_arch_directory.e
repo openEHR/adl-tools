@@ -44,17 +44,15 @@ feature -- Test routines
 			archetype_directory.populate_directory
 
 			expected := "ERROR - No parent matching /specialisation_parent_term found for archetype " +
-						repository +
-						"\adl-test-ENTRY.specialisation_parent_term-missing.v1.adl      (ARCH_DIRECTORY.merge_enter)%N" +
+						repository + "\adl-test-ENTRY.specialisation_parent_term-missing.v1.adl      (ARCH_DIRECTORY.merge_enter)%N" +
 						"ERROR - No parent matching /specialisation_parent found for archetype " +
-						repository +
-						"\adl-test-ENTRY.specialisation_parent-missing.v1.adl      (ARCH_DIRECTORY.merge_enter)%N"
+						repository + "\adl-test-ENTRY.specialisation_parent-missing.v1.adl      (ARCH_DIRECTORY.merge_enter)%N"
 
 			assert_equal (expected, billboard_content)
 			archetype_compiler.build_all
 			print (billboard_content)
 		end
-
+		
 end
 
 

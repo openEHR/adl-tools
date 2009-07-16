@@ -610,7 +610,7 @@ feature {NONE} -- Implementation
 					rm_prop_def := rm_checker.property_definition(arch_parent_attr_type, ca.rm_attribute_name)
 					if ca.existence /= Void then
 						if rm_prop_def.existence.contains(ca.existence) then
-							if rm_prop_def.existence.is_equal(ca.existence) then
+							if rm_prop_def.existence.equal_interval(ca.existence) then
 								add_warning("WCAEX", <<ca.rm_attribute_name, ca.path, ca.existence.as_string>>)
 							end
 						else
@@ -621,7 +621,7 @@ feature {NONE} -- Implementation
 						if attached {BMM_CONTAINER_PROPERTY} rm_prop_def as cont_prop then
 							if ca.cardinality /= Void then
 								if cont_prop.type.cardinality.contains(ca.cardinality.interval) then
-									if cont_prop.type.cardinality.is_equal(ca.cardinality.interval) then
+									if cont_prop.type.cardinality.equal_interval(ca.cardinality.interval) then
 										add_warning("WCACA", <<ca.rm_attribute_name, ca.path, ca.cardinality.interval.as_string>>)
 									end
 								else -- archetype has cardinality not contained by RM

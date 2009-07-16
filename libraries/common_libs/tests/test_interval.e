@@ -21,18 +21,18 @@ inherit
 
 feature -- Test routines
 
-	test_is_equal
+	test_equal_interval
 			-- Two intervals are equal if they are of the same type and their bounds are the same.
 		note
-			testing:  "covers/{INTERVAL}.is_equal"
+			testing:  "covers/{INTERVAL}.equal_interval"
 		local
 			target: INTERVAL [INTEGER]
 		do
 			create target.make_upper_unbounded (1, True)
-			assert_equal (True, target.is_equal (target))
-			assert_equal (True, target.is_equal (target.twin))
-			assert_equal (True, target.is_equal (create {INTERVAL [INTEGER]}.make_upper_unbounded (1, True)))
-			assert_equal (False, target.is_equal (create {MULTIPLICITY_INTERVAL}.make_from_interval (target)))
+			assert_equal (True, target.equal_interval (target))
+			assert_equal (True, target.equal_interval (target.twin))
+			assert_equal (True, target.equal_interval (create {INTERVAL [INTEGER]}.make_upper_unbounded (1, True)))
+			assert_equal (True, target.equal_interval (create {MULTIPLICITY_INTERVAL}.make_from_interval (target)))
 		end
 
 end

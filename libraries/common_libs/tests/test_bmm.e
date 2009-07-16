@@ -52,6 +52,7 @@ feature -- Test routines
 			assert ("OBSERVATION has /data/events[at0002]/data/items[at0.76]/items", rm_checker.has_property_path ("OBSERVATION", "/data/events[at0002]/data/items[at0.76]/items"))
 			assert ("OBSERVATION not has /data/events[at0002]/data/itemsXX[at0.76]/items", not rm_checker.has_property_path ("OBSERVATION", "/data/events[at0002]/data/itemsXX[at0.76]/items"))
 			assert ("COMPOSITION not has /xxxx", not rm_checker.has_property_path ("COMPOSITION", "/xxxx"))
+			assert ("CLUSTER has /items/items/items", rm_checker.has_property_path ("CLUSTER", "/items/items/items"))
 		end
 
 	test_property_definition_at_path
@@ -66,6 +67,7 @@ feature -- Test routines
 			assert ("OBSERVATION found property at /data/events[at0003]/math_function", rm_checker.property_definition_at_path ("OBSERVATION", "/data/events[at0003]/math_function").name.is_equal("math_function"))
 			assert ("OBSERVATION found property at /protocol", rm_checker.property_definition_at_path ("OBSERVATION", "/protocol").name.is_equal("protocol"))
 			assert ("OBSERVATION found property at /data/events[at0002]/data/items[at0.76]/items", rm_checker.property_definition_at_path ("OBSERVATION", "/data/events[at0002]/data/items[at0.76]/items").name.is_equal("items"))
+			assert ("CLUSTER found proerty at /items/items/items", rm_checker.property_definition_at_path ("CLUSTER", "/items/items/items").name.is_equal("items"))
 		end
 
 end

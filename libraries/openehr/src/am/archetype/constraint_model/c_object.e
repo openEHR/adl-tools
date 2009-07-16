@@ -113,7 +113,7 @@ feature -- Comparison
 			-- 	sibling order
 			-- The node_id may be redefined however.
 		do
-			Result := rm_type_name.is_equal (other.rm_type_name) and (occurrences = Void or occurrences.is_equal(other.occurrences)) and node_id_conforms_to (other)
+			Result := rm_type_name.is_equal (other.rm_type_name) and (occurrences = Void or occurrences.equal_interval(other.occurrences)) and node_id_conforms_to (other)
 		end
 
 	node_conforms_to (other: like Current): BOOLEAN
@@ -126,7 +126,7 @@ feature -- Comparison
 		do
 			if is_addressable and other.is_addressable then
 				if node_id.is_equal (other.node_id) then
-					Result := rm_type_name.is_equal (other.rm_type_name) and (occurrences = Void or else occurrences.is_equal(other.occurrences))
+					Result := rm_type_name.is_equal (other.rm_type_name) and (occurrences = Void or else occurrences.equal_interval(other.occurrences))
 				else
 					Result := (rm_type_conforms_to(other) and occurrences_conforms_to (other) and node_id_conforms_to (other))
 				end
@@ -150,7 +150,7 @@ feature -- Comparison
 			other_is_flat: other.occurrences /= Void
 		do
 			Result := occurrences = Void or
-					occurrences.is_equal (other.occurrences) or
+					occurrences.equal_interval (other.occurrences) or
 					other.occurrences.contains (occurrences)
 		end
 
@@ -239,7 +239,7 @@ feature -- Modification
 			if not other.rm_type_name.is_equal(rm_type_name) then
 				rm_type_name := other.rm_type_name.twin
 			end
-			if other.occurrences /= Void and then not other.occurrences.is_equal (occurrences) then
+			if other.occurrences /= Void and then not other.occurrences.equal_interval (occurrences) then
 				set_occurrences (other.occurrences.deep_twin)
 			end
 		end

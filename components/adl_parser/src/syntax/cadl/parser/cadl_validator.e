@@ -1591,7 +1591,7 @@ end
 			if not object_nodes.item.has_attribute(rm_attribute_name) then
 				if rm_checker.has_property (object_nodes.item.rm_type_name, rm_attribute_name) then
 					bmm_prop_def := rm_checker.property_definition (object_nodes.item.rm_type_name, rm_attribute_name)
-					if yyvs11.item (yyvsp11) /= Void and then bmm_prop_def.existence.is_equal(yyvs11.item (yyvsp11)) then
+					if yyvs11.item (yyvsp11) /= Void and then bmm_prop_def.existence.equal_interval(yyvs11.item (yyvsp11)) then
 						yyvs11.item (yyvsp11) := Void -- throw out constraint that is same as RM
 					end
 					if bmm_prop_def.is_container then
@@ -1665,7 +1665,7 @@ end
 				-- check RM to see if path is valid, and if it is a container
 				if rm_checker.has_property_path (object_nodes.item.rm_type_name, path_str) then
 					bmm_prop_def := rm_checker.property_definition_at_path (object_nodes.item.rm_type_name, path_str)
-					if yyvs11.item (yyvsp11) /= Void and then bmm_prop_def.existence.is_equal(yyvs11.item (yyvsp11)) then
+					if yyvs11.item (yyvsp11) /= Void and then bmm_prop_def.existence.equal_interval(yyvs11.item (yyvsp11)) then
 						yyvs11.item (yyvsp11) := Void -- throw out constraint that is same as RM
 					end
 					if bmm_prop_def.is_container then
