@@ -22,7 +22,7 @@ inherit
 feature -- Test routines
 
 	test_equal_interval
-			-- Two intervals are equal if they are of the same type and their bounds are the same.
+			-- Two intervals are equal if their bounds are the same, regardless of whether they are of the same type.
 		note
 			testing:  "covers/{INTERVAL}.equal_interval"
 		local
