@@ -121,24 +121,26 @@ feature -- Status Report
 
 feature -- Operations
 
-	union (other: like Current): like Current
+	union (other: like Current)
 			-- generate the outer interval of Current and other
 		do
 			if upper_unbounded or other.upper_unbounded then
-				create Result.make_upper_unbounded (lower.min(other.lower))
+				upper_unbounded := True
 			else
-				create Result.make_bounded (lower.min(other.lower), upper.max(other.upper))
+				upper := upper.max(other.upper)
 			end
+			lower := lower.min(other.lower)
 		end
 
-	add (other: like Current): like Current
+	add (other: like Current)
 			-- generate the interval resulting from sum(lower, other.lower)..sum(upper, other.upper)
 		do
 			if upper_unbounded or other.upper_unbounded then
-				create Result.make_upper_unbounded (lower + other.lower)
+				upper_unbounded := True
 			else
-				create Result.make_bounded (lower + other.lower, upper + other.upper)
+				upper := upper + other.upper
 			end
+			lower := lower + other.lower
 		end
 
 feature -- Comparison

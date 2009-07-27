@@ -16,7 +16,7 @@ class ARCHETYPE_INTERNAL_REF
 inherit
 	C_REFERENCE_OBJECT
 		redefine
-			representation, is_valid, set_occurrences, enter_subtree, exit_subtree
+			representation, set_occurrences, enter_subtree, exit_subtree
 		end
 
 create
@@ -48,18 +48,6 @@ feature -- Status Report
 	use_target_occurrences: BOOLEAN
 			-- True if target occurrences are to be used as the value of occurrences in this object;
 			-- by the time of runtime use, the target occurrences value has to be set into this object
-
-	is_valid: BOOLEAN
-			-- report on validity
-		do
-			if precursor then
-				if target_path = Void or else target_path.is_empty then
-					invalid_reason.append ("'use' reference path not specified")
-				else
-					Result := True
-				end
-			end
-		end
 
 feature -- Comparison
 

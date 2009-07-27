@@ -261,6 +261,13 @@ feature -- Status setting
 				post_warning (Current, "show", "adl_version_warning", <<adl_version_for_flat_output>>)
 			end
 
+			if validation_strict then
+				set_strict_validation(True)
+				post_warning (Current, "show", "validation_strict", Void)
+			else
+				post_warning (Current, "show", "validation_non_strict", Void)
+			end
+
 			append_status_area (billboard_content)
 		end
 

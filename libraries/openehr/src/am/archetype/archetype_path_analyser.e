@@ -89,14 +89,14 @@ feature -- Status Report
 
 	 is_phantom_path_at_level (a_level: INTEGER): BOOLEAN
 	 		-- True if this path corresponds to a node that does not exist in the specified level, i.e.
-	 		-- if it contains any object code whose parent ends in a '0', e.g. .../items[at0001.0.9]/...
+	 		-- if it contains any object id whose parent ends in a '0', e.g. .../items[at0001.0.9]
 	 		-- would return True for a_level = 1, because at0001.0.9 is a new node, only introduced at
 	 		-- level 2
 	 	require
 	 		Level_valid: a_level >= 0
 	 	do
 			from target.start until target.off or Result loop
-				if is_valid_code (target.item.object_id) then
+				if is_valid_code (target.item.object_id) and a_level <= specialisation_depth_from_code(target.item.object_id) then
 					Result := index_from_code_at_level (target.item.object_id, a_level).is_equal ("0")
 				end
 				target.forth

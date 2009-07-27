@@ -24,8 +24,6 @@ inherit
 
 feature -- Access
 
-	invalid_reason: STRING
-
 	parent: ARCHETYPE_CONSTRAINT
 
 	path: STRING
@@ -43,6 +41,9 @@ feature -- Access
 			-- its parent counterpart. Here, 'merging' means the piece-wise process of taking
 			-- elements of this node, including its children and overlaying them on the flat
 			-- parent node.
+
+	rm_descriptor: ANY
+			-- descriptor from RM representation; used for various validation and flattening operations
 
 feature -- Source Control
 
@@ -86,13 +87,6 @@ feature -- Status Report
 			Result := representation.is_addressable
 		end
 
-	is_valid: BOOLEAN
-			-- True if node valid; if False, reason in `invalid_reason'
-		deferred
-		ensure
-			not Result implies invalid_reason /= Void and then not invalid_reason.is_empty
-		end
-
 feature -- Comparison
 
 	node_congruent_to (other: like Current): BOOLEAN
@@ -128,6 +122,16 @@ feature {ARCHETYPE_CONSTRAINT} -- Modification
 			parent := a_node
 		end
 
+feature {ARCHETYPE_CONSTRAINT, ARCHETYPE_VALIDATOR} -- Modification
+
+	set_rm_descriptor (a_desc: like rm_descriptor)
+			-- set `rm_descriptor'
+		require
+			Descriptor_attached: a_desc /= Void
+		do
+			rm_descriptor := a_desc
+		end
+
 feature -- Representation
 
 	representation: attached OG_ITEM
@@ -149,9 +153,13 @@ feature -- Duplication
 		local
 			p: like parent
 			og_p: OG_NODE
+			rmd: like rm_descriptor
 		do
 			p := parent
 			parent := Void
+
+			rmd := rm_descriptor
+			rm_descriptor := Void
 
 			og_p := representation.parent
 			representation.set_root
@@ -159,6 +167,8 @@ feature -- Duplication
 
 			parent := p
 			representation.set_parent (og_p)
+
+			Result.set_rm_descriptor(rmd)
 		ensure
 			Result.parent = Void
 		end

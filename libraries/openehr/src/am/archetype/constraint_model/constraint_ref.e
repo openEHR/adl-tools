@@ -20,7 +20,7 @@ class CONSTRAINT_REF
 inherit
 	C_REFERENCE_OBJECT
 		redefine
-			default_create, representation, is_valid, enter_subtree, exit_subtree
+			default_create, representation, enter_subtree, exit_subtree
 		end
 
 create
@@ -53,14 +53,6 @@ feature -- Access
 			-- constraints for this object, defined outside the archetype,
 			-- usually in the ontology section of an ADL archetype
 			-- [called 'reference' in AOM, but that is a keyword in Eiffel]
-
-feature -- Status Report
-
-	is_valid: BOOLEAN
-			-- report on validity
-		do
-			Result := precursor
-		end
 
 feature -- Comparison
 

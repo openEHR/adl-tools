@@ -31,6 +31,13 @@ inherit
 			copy, default_create
 		end
 
+	SHARED_APPLICATION_CONTEXT
+		export
+			{NONE} all
+		undefine
+			copy, default_create
+		end
+
 feature {NONE} -- Initialization
 
 	user_initialization
@@ -86,12 +93,20 @@ feature {NONE} -- Implementation
 
 			populate_ev_combo_from_hash_keys (parser_error_reporting_level_combo_box, message_type_ids)
 
-			parser_error_reporting_level_combo_box.do_all (agent (li: EV_LIST_ITEM)
-				do
-					if li.text.same_string (message_type_names.item (status_reporting_level)) then
-						li.enable_select
+			parser_error_reporting_level_combo_box.do_all (
+				agent (li: EV_LIST_ITEM)
+					do
+						if li.text.same_string (message_type_names.item (status_reporting_level)) then
+							li.enable_select
+						end
 					end
-				end)
+			)
+
+			if validation_strict then
+				validation_strict_check_button.enable_select
+			else
+				validation_strict_check_button.disable_select
+			end
 
 			export_html_text.set_text (html_export_directory)
 		end
@@ -112,6 +127,8 @@ feature {NONE} -- Implementation
 			set_expand_node_tree (show_definition_tree_expanded_check_button.is_selected)
 			set_show_line_numbers (show_line_numbers_check_button.is_selected)
 			set_display_archetype_source (display_archetype_source_check_button.is_selected)
+			set_validation_strict(validation_strict_check_button.is_selected)
+			set_strict_validation(validation_strict_check_button.is_selected)
 			set_status_reporting_level (message_type_ids.item (parser_error_reporting_level_combo_box.text))
 			set_html_export_directory (export_html_text.text)
 

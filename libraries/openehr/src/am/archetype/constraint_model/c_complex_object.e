@@ -24,7 +24,7 @@ class C_COMPLEX_OBJECT
 inherit
 	C_DEFINED_OBJECT
 		redefine
-			default_create, representation, out, is_valid
+			default_create, representation, out
 		end
 
 create
@@ -196,30 +196,6 @@ feature -- Status Report
 			an_attr_name_valid: an_attr_name /= Void and then not an_attr_name.is_empty
 		do
 			Result := representation.has_child_with_id(an_attr_name)
-		end
-
-	is_valid: BOOLEAN
-			-- report on validity
-		do
-			if precursor then
-				if any_allowed and representation.has_children then
-					invalid_reason.append("cannot have both 'any_allowed' and have children")
-				else
-					Result := True
-					from
-						attributes.start
-					until
-						not Result or else attributes.off
-					loop
-						Result := attributes.item.is_valid
-						if Result then
-							attributes.forth
-						else
-							invalid_reason.append("(invalid child node) " + attributes.item.invalid_reason)
-						end
-					end
-				end
-			end
 		end
 
 	valid_value (a_value: like prototype_value): BOOLEAN

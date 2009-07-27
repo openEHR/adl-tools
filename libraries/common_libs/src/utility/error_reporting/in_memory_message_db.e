@@ -104,6 +104,8 @@ feature -- Access
 			["validate_e1"] = <"Error: specialisation parent is missing">
 			["validate_e2"] = <"Error: specialisation parent failed to validate">
 			["validate_e3"] = <"Error: archetype id in filename $1 does not match id at top of file $2%N">
+			["validation_strict"] = <"Validation level STRICT">
+			["validation_non_strict"] = <"Validation level NON-STRICT; non-coforming existence, occurrences & cardinality will be removed">
 			
 			-- MODEL_ACCESS (RM model checker)
 			["model_access_e1"] = <"Reference Model DADL file $1 does not exist or not readable">
@@ -192,7 +194,6 @@ feature -- Access
 			["VARDT"] = <"Error (VARDT): archetype id type $1 does not match type $2 in definition section">
 			["VACSD"] = <"Error (VACSD): specialisation depth of concept code $1 does not match specialisation depth of archetype id $2">
 			["VACCD"] = <"Error (VACCD): archetype concept code $1 not used in definition">			
-			["VONSD"] = <"Error (VONSD): archetype code $1 in ontology more specialised than archetype">
 			["VOTM"] = <"Error (VOTM): translations for $1 defined in the description / translations section but missing in the term_definition and constraint_definition sections">
 			["VATCD"] = <"Error (VATCD): at-code $1 used in archetype more specialised than archetype">
 			["VATDF"] = <"Error (VATDF): node id at-code $1 not defined in ontology">
@@ -236,11 +237,19 @@ feature -- Access
 			["VACSI"] = <"Error (VACSI): cannot add $1 object with $2 to singly-valued attribute $3 because attribute already has child with same node id">
 			["VACSIT"] = <"Error (VACSIT): cannot add $1 object with $2 to singly-valued attribute $3 because attribute already has child with same RM type">
 
-			["VACMC"] = <"Error (VACMC): cannot add $1 object with $2 to multiply-valued attribute $3 because cardinality $4 does not contain occurrences $5 of object">
+			["VACMC1"] = <"Error (VACMC): cannot add $1 object with $2 to multiply-valued attribute $3 because cardinality $4 does not contain occurrences $5 of object">
+			["VACMC2"] = <"Error (VACMC): occurrences of children of multiply-valued attribute $1 exceed its cardinality $2">
 			["VACMI"] = <"Error (VACMI): cannot add $1 object with $2 to multiply-valued attribute $3 because object has no node id">
 			["VACMM"] = <"Error (VACMM): cannot add $1 object with $2 to multiply-valued attribute $3 because attribute already has child with same node id">
 
 			["VARCN"] = <"Error (VARCN): concept code $1 is invalid">
+
+			-- ontology-related validity
+			["VONSD"] = <"Error (VONSD): archetype code $1 in ontology more specialised than archetype">
+			["VONLC"] = <"Error (VONLC): archetype code $1 in ontology not present in language $2">
+
+			-- description-related validity
+			["VDEOL"] = <"Error (VDEOL): original_language section missing">
 
 			-- reference model-related validation
 			["VCORM"] = <"Error (VCORM): type name '$1' at object node at $2 not known in reference model">

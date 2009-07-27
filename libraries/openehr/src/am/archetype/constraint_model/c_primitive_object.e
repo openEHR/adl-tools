@@ -20,7 +20,7 @@ class C_PRIMITIVE_OBJECT
 inherit
 	C_LEAF_OBJECT
 		redefine
-			representation, out, is_valid, enter_subtree, exit_subtree, node_conforms_to
+			representation, out, enter_subtree, exit_subtree, node_conforms_to
 		end
 
 create
@@ -55,18 +55,6 @@ feature -- Status Report
 			-- i.e. no item
 		do
 			Result := item = Void
-		end
-
-	is_valid: BOOLEAN
-			-- report on validity
-		do
-			if precursor then
-				if item = Void then
-					invalid_reason.append ("simple type constraint not specified")
-				else
-					Result := True
-				end
-			end
 		end
 
 	valid_value (a_value: like prototype_value): BOOLEAN

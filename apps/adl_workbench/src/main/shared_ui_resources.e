@@ -544,6 +544,17 @@ feature -- Application Switches
 			end
 		end
 
+	validation_strict: BOOLEAN
+			-- Set strict validation on?
+		local
+			str: STRING
+		do
+			str := resource_value ("default", "validation_strict")
+			if str.is_boolean then
+				Result := str.to_boolean
+			end
+		end
+
 	display_archetype_source: BOOLEAN
 			-- Display "(f)" marker on archetypes created in flat form
 		local
@@ -750,6 +761,12 @@ feature -- Application Switch Setting
 			-- Set flag for whether to show line numbers in the ADL source text box.
 		do
 			set_resource_value ("default", "show_line_numbers", flag.out)
+		end
+
+	set_validation_strict (flag: BOOLEAN)
+			-- Set flag for strict parser validation
+		do
+			set_resource_value ("default", "validation_strict", flag.out)
 		end
 
 	set_display_archetype_source (flag: BOOLEAN)

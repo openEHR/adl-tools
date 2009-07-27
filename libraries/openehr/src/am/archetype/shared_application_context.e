@@ -37,6 +37,12 @@ feature -- Access
 			Result_exists: Result /= Void
 		end
 
+	strict_validation: BOOLEAN
+			-- True if strict validation should be used
+		do
+			Result:= cell_strict_validation.item
+		end
+
 	use_flat_adl_version_numeric: INTEGER
 			-- generate a numeric equivalent of the ADL version in use, e.g.
 			-- '1.5' -> 150
@@ -74,6 +80,12 @@ feature -- Modification
 			cell_use_flat_adl_version.put(a_ver)
 		end
 
+	set_strict_validation (flag: BOOLEAN)
+			-- set `strict_validation'
+		do
+			cell_strict_validation.put(flag)
+		end
+
 feature {NONE} -- Implementation
 
 	cell_language: CELL[STRING]
@@ -86,6 +98,12 @@ feature {NONE} -- Implementation
 			-- ADL version to serialise archetypes in
 		once
 			create Result.put(latest_adl_version)
+		end
+
+	cell_strict_validation: CELL[BOOLEAN]
+			-- ADL version to serialise archetypes in
+		once
+			create Result.put(False)
 		end
 
 end

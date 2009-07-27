@@ -1,6 +1,7 @@
 note
 	component:   "openEHR Archetype Project"
 	description: "[
+			     This class is OBSOLETE. See C_ATTRIBUTE validity routines.
 				 Archetype visitor to look for attributes that are either multiple or have multiple alternatives, whose
 				 child objects are not identified, but only if the children are not C_PRIMITIVEs or
 				 C_C_Os whose values are C_PRMITIVEs. Record any such nodes as warnings
@@ -47,51 +48,36 @@ feature -- Visitor
 
 	start_c_attribute(a_node: C_ATTRIBUTE; depth: INTEGER)
 			-- FIXME: this can probably be done in a smarter way by an analysis of paths?
+		obsolete
+			"This routine is replaced by C_ATTRIBUTE validity routines that ensure only valid child can be added to an attribute"
 		local
-			a_c_c_o, a_c_c_o_2: C_COMPLEX_OBJECT
-			a_c_attr2: C_ATTRIBUTE
+			ca: C_ATTRIBUTE
 			found: BOOLEAN
 		do
-			-- only check nodes that are either multiple or are single but have multiple alternate children					
+			-- only check nodes that are either multiple or are single but have multiple alternative children					
 			if a_node /= Void and (a_node.is_multiple or else a_node.child_count > 1) then
-				from
-					a_node.children.start
-				until
-					a_node.children.off
-				loop
-					a_c_c_o ?= a_node.children.item
-
-					if a_c_c_o /= Void and not a_c_c_o.is_addressable then
-						-- see if it has children other than C_LEAF_OBJECTs
+				from a_node.children.start until a_node.children.off loop
+					if attached {C_COMPLEX_OBJECT} a_node.children.item as cco and not cco.is_addressable then
+						-- see if it has any C_COMPLEX_OBJECT children
 						from
 							found := False
-							a_c_c_o.attributes.start
+							cco.attributes.start
 						until
-							a_c_c_o.attributes.off or found
+							cco.attributes.off or found
 						loop
-							a_c_attr2 := a_c_c_o.attributes.item
-
-							from
-								a_c_attr2.children.start
-							until
-								a_c_attr2.children.off or found
-							loop
-								a_c_c_o_2 ?= a_c_attr2.children.item
-								if a_c_c_o_2 /= Void then
-									warnings.append("Warning: child node of type " + a_c_c_o.rm_type_name + " at path " +
-										a_node.path + " has no id.%N")
+							ca := cco.attributes.item
+							from ca.children.start until ca.children.off or found loop
+								if attached {C_COMPLEX_OBJECT} ca.children.item as cco2 then
+									warnings.append("Warning: child node of type " + cco.rm_type_name + " at path " + a_node.path + " has no id.%N")
 									found := True
 								end
-								a_c_attr2.children.forth
+								ca.children.forth
 							end
-
-							a_c_c_o.attributes.forth
+							cco.attributes.forth
 						end
 					end
 					a_node.children.forth
 				end
-			else
-
 			end
 		end
 

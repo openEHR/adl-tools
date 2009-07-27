@@ -2318,7 +2318,7 @@ feature {NONE} -- Implementation
 								an_attr.cardinality.interval.upper < an_obj.occurrences.upper)) then
 					ar.extend(an_attr.cardinality.interval.as_string)
 					ar.extend(an_obj.occurrences.as_string)
-					err_code := "VACMC"
+					err_code := "VACMC1"
 				elseif not an_obj.is_addressable then
 					err_code := "VACMI"
 				elseif an_attr.has_child_with_id(an_obj.node_id) then

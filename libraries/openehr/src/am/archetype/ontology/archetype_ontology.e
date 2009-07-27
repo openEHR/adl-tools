@@ -220,55 +220,6 @@ feature -- Access
 
 feature -- Status Report
 
-	is_valid: BOOLEAN
-			-- Are all `term_codes' and `constraint_codes' found in all `languages_available'?
-		local
-			language: STRING
-		do
-			from
-				languages_available.start
-			until
-				languages_available.off
-			loop
-				language := languages_available.item
-				languages_available.forth
-
-				if attached {HASH_TABLE [ARCHETYPE_TERM, STRING]} term_definitions.item (language) as terms then
-					from
-						term_codes.start
-					until
-						term_codes.off
-					loop
-						if not terms.has (term_codes.item) then
-							errors.append ("Term code " + term_codes.item + " not defined for language " + language + "%N")
-						end
-
-						term_codes.forth
-					end
-				elseif not term_codes.is_empty then
-					errors.append ("Term codes not defined for language " + language + "%N")
-				end
-
-				if attached {HASH_TABLE [ARCHETYPE_TERM, STRING]} constraint_definitions.item (language) as constraints then
-					from
-						constraint_codes.start
-					until
-						constraint_codes.off
-					loop
-						if not constraints.has (constraint_codes.item) then
-							errors.append ("Constraint code " + constraint_codes.item + " not defined for language " + language + "%N")
-						end
-
-						constraint_codes.forth
-					end
-				elseif not constraint_codes.is_empty then
-					errors.append ("Constraint codes not defined for language " + language + "%N")
-				end
-			end
-
-			Result := errors.is_empty
-		end
-
 	has_language (a_language: STRING): BOOLEAN
 			-- check that `a_language' supported
 		require
@@ -468,11 +419,7 @@ feature -- Modification
 		do
 			create langs_to_remove.make(0)
 
-			from
-				term_definitions.start
-			until
-				term_definitions.off
-			loop
+			from term_definitions.start until term_definitions.off loop
 				term_definitions.item_for_iteration.remove(a_code)
 				if term_definitions.item_for_iteration.count = 0 then
 					langs_to_remove.extend (term_definitions.key_for_iteration)
@@ -480,11 +427,7 @@ feature -- Modification
 				term_definitions.forth
 			end
 
-			from
-				langs_to_remove.start
-			until
-				langs_to_remove.off
-			loop
+			from langs_to_remove.start until langs_to_remove.off loop
 				term_definitions.remove(langs_to_remove.item)
 				langs_to_remove.forth
 			end
@@ -492,11 +435,7 @@ feature -- Modification
 			-- make a copy of terminologies list, since the next action might modify it...
 			ta := terminologies_available.deep_twin
 			if has_any_term_binding(a_code) then
-				from
-					ta.start
-				until
-					ta.off
-				loop
+				from ta.start until ta.off loop
 					if term_bindings.has(ta.item) and then
 						term_bindings.item(ta.item).has(a_code) then
 						remove_term_binding(a_code, ta.item)
@@ -519,11 +458,7 @@ feature -- Modification
 		do
 			create langs_to_remove.make(0)
 
-			from
-				constraint_definitions.start
-			until
-				constraint_definitions.off
-			loop
+			from constraint_definitions.start until constraint_definitions.off loop
 				constraint_definitions.item_for_iteration.remove(a_code)
 				if constraint_definitions.item_for_iteration.count = 0 then
 					langs_to_remove.extend (constraint_definitions.key_for_iteration)
@@ -531,11 +466,7 @@ feature -- Modification
 				constraint_definitions.forth
 			end
 
-			from
-				langs_to_remove.start
-			until
-				langs_to_remove.off
-			loop
+			from langs_to_remove.start until langs_to_remove.off loop
 				constraint_definitions.remove(langs_to_remove.item)
 				langs_to_remove.forth
 			end
@@ -543,11 +474,7 @@ feature -- Modification
 			-- make a copy of terminologies list, since the next action might modify it...
 			ta := terminologies_available.deep_twin
 			if has_any_constraint_binding(a_code) then
-				from
-					ta.start
-				until
-					ta.off
-				loop
+				from ta.start until ta.off loop
 					if constraint_bindings.has(ta.item) and then
 						constraint_bindings.item(ta.item).has(a_code) then
 						remove_constraint_binding(a_code, ta.item)
@@ -651,32 +578,20 @@ feature {ARCHETYPE} -- Synchronisation
 			-- term_definitions
 			create attr_node_term_definitions.make_multiple(Sym_term_definitions)
 			representation.put_attribute (attr_node_term_definitions)
-			from
-				term_definitions.start
-			until
-				term_definitions.off
-			loop
+			from term_definitions.start until term_definitions.off loop
 				create an_obj_node.make_identified (term_definitions.key_for_iteration)
 				attr_node_term_definitions.put_child (an_obj_node)
 				create attr_node_items.make_multiple("items")
 				attr_node_items.use_children_sorted
 				an_obj_node.put_attribute(attr_node_items)
 
-				from
-					term_definitions.item_for_iteration.start
-				until
-					term_definitions.item_for_iteration.off
-				loop
+				from term_definitions.item_for_iteration.start until term_definitions.item_for_iteration.off loop
 					a_term := term_definitions.item_for_iteration.item_for_iteration
 					create an_obj_node.make_identified (a_term.code)
 					attr_node_items.put_child (an_obj_node)
 
 					keys := a_term.keys
-					from
-						keys.start
-					until
-						keys.off
-					loop
+					from keys.start until keys.off loop
 						create an_attr_node.make_single(keys.item)
 						an_obj_node.put_attribute(an_attr_node)
 						an_attr_node.put_child (create {DT_PRIMITIVE_OBJECT}.make_anonymous(a_term.item(keys.item)))
@@ -692,32 +607,20 @@ feature {ARCHETYPE} -- Synchronisation
 			if not constraint_definitions.is_empty then
 				create attr_node_term_definitions.make_multiple(Sym_constraint_definitions)
 				representation.put_attribute (attr_node_term_definitions)
-				from
-					constraint_definitions.start
-				until
-					constraint_definitions.off
-				loop
+				from constraint_definitions.start until constraint_definitions.off loop
 					create an_obj_node.make_identified (constraint_definitions.key_for_iteration)
 					attr_node_term_definitions.put_child (an_obj_node)
 					create attr_node_items.make_multiple("items")
 					attr_node_items.use_children_sorted
 					an_obj_node.put_attribute(attr_node_items)
 
-					from
-						constraint_definitions.item_for_iteration.start
-					until
-						constraint_definitions.item_for_iteration.off
-					loop
+					from constraint_definitions.item_for_iteration.start until constraint_definitions.item_for_iteration.off loop
 						a_term := constraint_definitions.item_for_iteration.item_for_iteration
 						create an_obj_node.make_identified (a_term.code)
 						attr_node_items.put_child (an_obj_node)
 
 						keys := a_term.keys
-						from
-							keys.start
-						until
-							keys.off
-						loop
+						from keys.start until keys.off loop
 							create an_attr_node.make_single(keys.item)
 							an_obj_node.put_attribute(an_attr_node)
 							an_attr_node.put_child (create {DT_PRIMITIVE_OBJECT}.make_anonymous(a_term.item(keys.item)))
@@ -734,22 +637,14 @@ feature {ARCHETYPE} -- Synchronisation
 			if not term_bindings.is_empty then
 				create attr_node_term_binding.make_multiple(sym_term_bindings)
 				representation.put_attribute (attr_node_term_binding)
-				from
-					term_bindings.start
-				until
-					term_bindings.off
-				loop
+				from term_bindings.start until term_bindings.off loop
 					create an_obj_node.make_identified (term_bindings.key_for_iteration)
 					attr_node_term_binding.put_child (an_obj_node)
 					create an_attr_node.make_multiple("items")
 					an_attr_node.use_children_sorted
 					an_obj_node.put_attribute(an_attr_node)
 
-					from
-						term_bindings.item_for_iteration.start
-					until
-						term_bindings.item_for_iteration.off
-					loop
+					from term_bindings.item_for_iteration.start until term_bindings.item_for_iteration.off loop
 						a_coord_term := term_bindings.item_for_iteration.item_for_iteration
 						an_attr_node.put_child (create {DT_PRIMITIVE_OBJECT}.make_identified (a_coord_term,
 							term_bindings.item_for_iteration.key_for_iteration))
@@ -763,22 +658,14 @@ feature {ARCHETYPE} -- Synchronisation
 			if not constraint_bindings.is_empty then
 				create attr_node_term_binding.make_multiple(Sym_constraint_bindings)
 				representation.put_attribute (attr_node_term_binding)
-				from
-					constraint_bindings.start
-				until
-					constraint_bindings.off
-				loop
+				from constraint_bindings.start until constraint_bindings.off loop
 					create an_obj_node.make_identified (constraint_bindings.key_for_iteration)
 					attr_node_term_binding.put_child (an_obj_node)
 					create an_attr_node.make_multiple("items")
 					an_attr_node.use_children_sorted
 					an_obj_node.put_attribute(an_attr_node)
 
-					from
-						constraint_bindings.item_for_iteration.start
-					until
-						constraint_bindings.item_for_iteration.off
-					loop
+					from constraint_bindings.item_for_iteration.start until constraint_bindings.item_for_iteration.off loop
 						a_uri := constraint_bindings.item_for_iteration.item_for_iteration
 						an_attr_node.put_child (create {DT_PRIMITIVE_OBJECT}.make_identified (a_uri,
 							constraint_bindings.item_for_iteration.key_for_iteration))
@@ -836,11 +723,7 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 		do
 			term_definitions.item(a_lang).force(a_term, a_term.code)
 			trans_term := a_term.create_translated_term(primary_language)
-			from
-				term_definitions.start
-			until
-				term_definitions.off
-			loop
+			from term_definitions.start until term_definitions.off loop
 				if not term_definitions.key_for_iteration.is_equal(a_lang) then
 					term_definitions.item_for_iteration.force(trans_term.deep_twin, trans_term.code)
 				end
@@ -863,11 +746,7 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 			trans_term := a_term.create_translated_term(a_lang)
 
 			-- in the following, iterate over term_definitions to get definitive list of languages
-			from
-				term_definitions.start
-			until
-				term_definitions.off
-			loop
+			from term_definitions.start until term_definitions.off loop
 				if not term_definitions.key_for_iteration.is_equal(a_lang) then
 					if not constraint_definitions.has(term_definitions.key_for_iteration) then
 						constraint_definitions.put(create {HASH_TABLE[ARCHETYPE_TERM, STRING]}.make(0), term_definitions.key_for_iteration)
@@ -899,11 +778,7 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 			-- have a proper language section
 			an_attr_node := representation.attribute_node_at_path("/" + Sym_term_definitions)
 			if an_attr_node.is_multiple then
-				from
-					an_attr_node.start
-				until
-					an_attr_node.off
-				loop
+				from an_attr_node.start until an_attr_node.off loop
 					a_lang := an_attr_node.item.node_id
 					if has_path("/" + Sym_term_definitions + "[" + a_lang + "]/items") then
 						create term_defs_one_lang.make(0)
@@ -922,11 +797,7 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 			if has_path("/" + Sym_constraint_definitions) then
 				an_attr_node := representation.attribute_node_at_path("/" + Sym_constraint_definitions)
 				if an_attr_node.is_multiple then
-					from
-						an_attr_node.start
-					until
-						an_attr_node.off
-					loop
+					from an_attr_node.start until an_attr_node.off loop
 						a_lang := an_attr_node.item.node_id
 						if has_path("/" + Sym_constraint_definitions + "[" + a_lang + "]/items") then
 							create term_defs_one_lang.make(0)
@@ -940,11 +811,7 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 
 			-- populate term code list
 			if has_language (primary_language) then
-				from
-					term_definitions.item (primary_language).start
-				until
-					term_definitions.item (primary_language).off
-				loop
+				from term_definitions.item (primary_language).start until term_definitions.item (primary_language).off loop
 					code := term_definitions.item (primary_language).key_for_iteration
 					term_codes.extend (code)
 					update_highest_specialised_code_index (code)
@@ -955,11 +822,7 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 
 			-- populate constraint code list
 			if not constraint_definitions.is_empty then
-				from
-					constraint_definitions.item(primary_language).start
-				until
-					constraint_definitions.item(primary_language).off
-				loop
+				from constraint_definitions.item(primary_language).start until constraint_definitions.item(primary_language).off loop
 					code := constraint_definitions.item(primary_language).key_for_iteration
 					constraint_codes.extend (code)
 					update_highest_specialised_code_index (code)
@@ -974,11 +837,7 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 			end
 
 			-- populate term and constraint bindings
-			from
-				terminologies_available.start
-			until
-				terminologies_available.off
-			loop
+			from terminologies_available.start until terminologies_available.off loop
 				terminology_path := "/" + sym_term_bindings + "[" + terminologies_available.item + "]/items"
 
 				if has_path (terminology_path) then
@@ -1016,19 +875,11 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 				an_attr_node := representation.attribute_node_at_path(t_path)
 
 				if an_attr_node.is_multiple then
-					from
-						an_attr_node.start
-					until
-						an_attr_node.off
-					loop
+					from an_attr_node.start until an_attr_node.off loop
 						a_code := an_attr_node.item.node_id
 						create adl_term.make (a_code)
 						object_node ?= an_attr_node.child_with_id (a_code)
-						from
-							object_node.start
-						until
-							object_node.off
-						loop
+						from object_node.start until object_node.off loop
 							term_attr_name := object_node.item.rm_attr_name
 							object_simple_node ?= object_node.item.first_child
 							t_val ?= object_simple_node.value
@@ -1055,17 +906,16 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 			an_attr_node := representation.attribute_node_at_path (terminology_path)
 
 			if an_attr_node.is_multiple then
-				from
-					an_attr_node.start
-				until
-					an_attr_node.off
-				loop
+				from an_attr_node.start until an_attr_node.off loop
 					if attached {DT_PRIMITIVE_OBJECT} an_attr_node.item as a_simple_node then
 						if attached {CODE_PHRASE} a_simple_node.value as a_term then
 							term_bindings_one_terminology.force (a_term, a_simple_node.node_id)
+						else
+							errors.append ("Expecting CODE_PHRASE, e.g. <[terminology_id::code]>%N")
 						end
+					else
+						errors.append ("Expecting primitive node containing CODE_PHRASE%N")
 					end
-
 					an_attr_node.forth
 				end
 			end
@@ -1075,28 +925,20 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 			--
 		local
 			an_attr_node: DT_ATTRIBUTE_NODE
-			a_leaf_node: DT_PRIMITIVE_OBJECT
-			a_uri: URI
 		do
 			an_attr_node := representation.attribute_node_at_path("/" + Sym_constraint_bindings + "[" + a_terminology + "]/items")
 			if an_attr_node.is_multiple then
-				from
-					an_attr_node.start
-				until
-					an_attr_node.off
-				loop
-					a_leaf_node ?= an_attr_node.item
-					if a_leaf_node /= Void then
-						a_uri ?= a_leaf_node.value
-						if a_uri /= Void then
+				from an_attr_node.start until an_attr_node.off loop
+					if attached {DT_PRIMITIVE_OBJECT} an_attr_node.item as a_leaf_node then
+						if attached {URI} a_leaf_node.value as a_uri then
 							constraint_bindings_one_terminology.force(a_uri, a_leaf_node.node_id)
-							an_attr_node.forth
 						else
 							errors.append ("Expecting URI, e.g. <xxx://some.authority/x/y/z?query#fragment>%N")
 						end
 					else
 						errors.append ("Expecting primitive node containing URI%N")
 					end
+					an_attr_node.forth
 				end
 			end
 		end
@@ -1112,7 +954,6 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 			if is_specialised_code (a_code) then
 				parent_code := specialisation_parent_from_code (a_code)
 				idx := specialised_code_tail (a_code).to_integer
-
 				if idx > highest_specialised_code_indexes [parent_code] then
 					highest_specialised_code_indexes [parent_code] := idx
 				end
@@ -1131,10 +972,8 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 		do
 			if not is_specialised_code (a_code) and then specialisation_depth_from_code (a_code) = specialisation_depth then
 				idx_string := index_from_code_at_level (a_code, specialisation_depth)
-
 				if idx_string.is_integer then
 					idx := idx_string.to_integer
-
 					if idx > highest_term_code_index then
 						highest_term_code_index := idx
 					end
@@ -1153,10 +992,8 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 		do
 			if not is_specialised_code (a_code) and then specialisation_depth_from_code (a_code) = specialisation_depth then
 				idx_string := index_from_code_at_level (a_code, specialisation_depth)
-
 				if idx_string.is_integer then
 					idx := idx_string.to_integer
-
 					if idx > highest_constraint_code_index then
 						highest_constraint_code_index := idx
 					end

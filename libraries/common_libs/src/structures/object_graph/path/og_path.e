@@ -175,7 +175,7 @@ feature -- Access
 	parent_path: OG_PATH
 			-- the parent path of the current path, i.e. same path minus the last segment
 		require
-			not is_final
+			not is_root
 		do
 			create Result.make_from_other(Current)
 			Result.remove_last

@@ -63,6 +63,15 @@ feature -- Initialisation
 
 feature -- Access
 
+	class_definition (a_type_name: STRING): BMM_CLASS_DEFINITION
+			-- definition of  `a_type' has a property named `a_property'
+		require
+			Model_loaded: model_loaded
+			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
+		do
+			Result := model.class_definition (a_type_name)
+		end
+
 	ancestor_classes_of (a_class_name: STRING): ARRAYED_LIST [STRING]
 			-- return all ancestor types of `a_class_name' up to root class (usually 'ANY', 'Object' or something similar)
 			-- does  not include current class. Returns empty list if none.

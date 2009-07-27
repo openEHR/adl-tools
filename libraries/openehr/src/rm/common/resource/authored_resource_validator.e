@@ -19,6 +19,11 @@ inherit
 			make as make_any_validator
 		end
 
+	SHARED_APPLICATION_CONTEXT
+		export
+			{NONE} all
+		end
+
 feature {NONE} -- Initialisation
 
 	make (a_target: like target)
@@ -41,45 +46,35 @@ feature -- Access
 	validate
 			-- True if all structures obey their invariants
 		do
-			passed := True
 			if target.original_language = Void then
-				errors.append ("No original language%N")
-				passed := False
+				add_error("VDEOL", Void)
 			end
-			validate_description
-			validate_translations
-		end
 
-feature -- Status Report
+			-- check that AUTHORED_RESOURCE.translations items match their Hash keys
+			if target.has_translations then
+				from
+					target.translations.start
+				until
+					target.translations.off or not target.translations.key_for_iteration.is_equal (target.translations.item_for_iteration.language.code_string)
+				loop
+					target.translations.forth
+				end
+				if not target.translations.off then
+					add_error("VTRLA", <<target.translations.key_for_iteration, target.translations.item_for_iteration.language.code_string>>)
+				end
+			end
 
-	strict: BOOLEAN
-			-- True if strict validation is to be applied. When strict is on, the following things cause errors:
-			-- - paths at the wrong specialisation level
-
-feature -- Status Setting
-
-	set_strict
-			-- set `strict' to True
-		do
-			strict := True
-		end
-
-	unset_strict
-			-- set `strict' to False
-		do
-			strict := False
-		end
-
-feature {NONE} -- Implementation
-
-	validate_description
-			-- TODO
-		do
-		end
-
-	validate_translations
-			-- TODO
-		do
+			-- check that RESOURCE_DESCRIPTION.details items match their Hash keys
+			from
+				target.description.details.start
+			until
+				target.description.details.off or not target.description.details.key_for_iteration.is_equal (target.description.details.item_for_iteration.language.code_string)
+			loop
+				target.description.details.forth
+			end
+			if not target.description.details.off then
+				add_error("VRDLA", <<target.description.details.key_for_iteration, target.description.details.item_for_iteration.language.code_string>>)
+			end
 		end
 
 invariant

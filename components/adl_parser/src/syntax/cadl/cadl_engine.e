@@ -116,7 +116,6 @@ feature -- Commands
 			-- Serialise current artifact into `a_format'.
 		require
 			Format_valid: has_c_serialiser_format (a_format)
-			Archetype_valid: tree.is_valid
 		local
 			a_c_serialiser: C_SERIALISER
 			a_c_iterator: C_VISITOR_ITERATOR

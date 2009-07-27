@@ -77,6 +77,7 @@ feature {NONE} -- Initialisation
 					add_error("validate_e2", Void)
 				else
 					flat_parent := target_descriptor.specialisation_parent.flat_archetype
+	 				target.set_parent_archetype (target_descriptor.specialisation_parent.differential_archetype)
 				end
 			end
 		ensure
@@ -105,49 +106,59 @@ feature -- Access
 			Result := target.ontology
 		end
 
+	target_flat: FLAT_ARCHETYPE
+			-- reference to the flat form of this archetype, once flattened
+
 feature -- Validation
 
 	validate
 		do
+			-- validate description section
+			if passed then
+				Precursor
+				validate_languages
+			end
+
+			-- reference model validation; validates as well as sets up link between each node and its RM descriptor
+			if passed and rm_checker.model_loaded then
+				validate_reference_model
+			end
+
+			-- basic validation of definition and ontology
 			if passed then
 				validate_basics
+				validate_ontology_languages
 				validate_ontology_code_spec_levels
 			end
 
+			-- validation requiring the archetype xref tables
 			if passed then
 				target.build_xrefs
 				report_unused_ontology_codes
-
+				validate_definition_codes
 				if target.has_slots then
 					build_slot_id_index
 				end
-
-				Precursor
-				validate_languages
-				check_unidentified_nodes
 			end
 
 			-- validation requiring valid specialisation parent
-			if passed and target.is_specialised then
-	 			target.set_parent_archetype (target_descriptor.specialisation_parent.differential_archetype)
-			end
-
-			-- validation requiring parent links in place for specialised archetype
 			if passed then
-				validate_definition_codes
-
 				if target.is_specialised then
 					target.build_rolled_up_status
 					validate_specialised_definition
 				end
-
 				validate_internal_references
 				validate_invariants
 			end
+		end
 
-			if passed and rm_checker.model_loaded then
-				validate_reference_model
-			end
+	validate_flat
+			-- validate flat form (some things are too hard to do on the diff form!)
+		require
+			Flat_exists: target_descriptor.flat_archetype /= Void
+		do
+			target_flat := target_descriptor.flat_archetype
+			validate_occurrences
 		end
 
 feature {NONE} -- Implementation
@@ -156,8 +167,6 @@ feature {NONE} -- Implementation
 			-- are basic features of archetype structurally intact and correct?
 			-- into account validity with respect to parent archetypes.
 		do
-			passed := False
-
 			if not target_descriptor.id.as_string.is_equal (target.archetype_id.as_string) then
 				add_error("validate_e3", <<target_descriptor.id.as_string, target.archetype_id.as_string>>)
 			elseif not target.definition.rm_type_name.is_equal (target.archetype_id.rm_entity) then
@@ -166,26 +175,15 @@ feature {NONE} -- Implementation
 				add_error("VACSD", <<specialisation_depth_from_code (target.concept).out, target.specialisation_depth.out>>)
 			elseif not target.definition.node_id.is_equal (target.concept) then
 				add_error("VACCD", <<target.concept>>)
-			elseif not target.definition.is_valid then
-				-- FIXME - need to check definition validation; possibly this should be
-				-- done using another visitor pattern?
-				add_error("general_error", <<target.definition.invalid_reason>>)
-			elseif not target.ontology.is_valid then
-				add_error("general_error", <<target.ontology.errors>>)
-			else
-				passed := True
 			end
 		end
 
 	validate_languages
-			-- check to see that all linguistic items in ontology, description, etc
-			-- are all coherent
+			-- check to see that all linguistic items in ontology, description, etc are all coherent
 		local
 			langs: ARRAYED_SET [STRING]
 			err_str: STRING
 		do
-			passed := True
-
 			-- check that languages defined in translations section are in the archetype ontology
 			langs := target.languages_available
 			if not langs.is_subset (target.ontology.languages_available) then
@@ -201,56 +199,46 @@ feature {NONE} -- Implementation
 				end
 				add_error("VOTM", <<err_str>>)
 			end
+		end
 
-			-- check that AUTHORED_RESOURCE.translations items match their Hash keys
-			if target.has_translations then
-				from
-					target.translations.start
-				until
-					target.translations.off or not target.translations.key_for_iteration.is_equal (target.translations.item_for_iteration.language.code_string)
-				loop
-					target.translations.forth
+	validate_ontology_languages
+			-- Are all `term_codes' and `constraint_codes' found in all languages?
+		local
+			lang: STRING
+		do
+			from ontology.languages_available.start until ontology.languages_available.off loop
+				lang := ontology.languages_available.item
+				from ontology.term_codes.start until ontology.term_codes.off loop
+					if ontology.term_definition (lang, ontology.term_codes.item) = Void then
+						add_error("VONLC", <<ontology.term_codes.item, lang>>)
+					end
+					ontology.term_codes.forth
 				end
-				if not target.translations.off then
-					add_error("VTRLA", <<target.translations.key_for_iteration, target.translations.item_for_iteration.language.code_string>>)
+				from ontology.constraint_codes.start until ontology.constraint_codes.off loop
+					if ontology.constraint_definition (lang, ontology.constraint_codes.item) = Void then
+						add_error("VONLC", <<ontology.constraint_codes.item, lang>>)
+					end
+					ontology.constraint_codes.forth
 				end
-			end
-
-			-- check that RESOURCE_DESCRIPTION.details items match their Hash keys
-			from
-				target.description.details.start
-			until
-				target.description.details.off or not target.description.details.key_for_iteration.is_equal (target.description.details.item_for_iteration.language.code_string)
-			loop
-				target.description.details.forth
-			end
-			if not target.description.details.off then
-				add_error("VRDLA", <<target.description.details.key_for_iteration, target.description.details.item_for_iteration.language.code_string>>)
+				ontology.languages_available.forth
 			end
 		end
 
 	validate_ontology_code_spec_levels
 			-- See if there are any codes in the ontology that should not be there - either or lower or higher
 			-- level of specialisation.
-		local
-			code_list: TWO_WAY_SORTED_SET [STRING]
 		do
-			code_list := ontology.term_codes
-
-			from code_list.start until code_list.off loop
-				if specialisation_depth_from_code (code_list.item) > ontology.specialisation_depth then
-					add_error("VONSD", <<code_list.item>>)
+			from ontology.term_codes.start until ontology.term_codes.off loop
+				if specialisation_depth_from_code (ontology.term_codes.item) > ontology.specialisation_depth then
+					add_error("VONSD", <<ontology.term_codes.item>>)
 				end
-				code_list.forth
+				ontology.term_codes.forth
 			end
-
-			code_list := ontology.constraint_codes
-
-			from code_list.start until code_list.off loop
-				if specialisation_depth_from_code (code_list.item) > ontology.specialisation_depth then
-					add_error("VONSD", <<code_list.item>>)
+			from ontology.constraint_codes.start until ontology.constraint_codes.off loop
+				if specialisation_depth_from_code (ontology.constraint_codes.item) > ontology.specialisation_depth then
+					add_error("VONSD", <<ontology.constraint_codes.item>>)
 				end
-				code_list.forth
+				ontology.constraint_codes.forth
 			end
 		end
 
@@ -282,7 +270,6 @@ feature {NONE} -- Implementation
 				elseif not ontology.has_term_code (a_codes.key_for_iteration) then
 					add_error("VATDF", <<a_codes.key_for_iteration>>)
 				end
-
 				a_codes.forth
 			end
 
@@ -320,7 +307,8 @@ feature {NONE} -- Implementation
 
 	validate_invariants
 			-- validate the invariants if any, which entails checking that all path references are valid against
-			-- the flat archetype
+			-- the flat archetype if specialised
+			-- FIXME: do the actual validation
 		do
 			if target.has_invariants then
 				from target.invariants_index.start until target.invariants_index.off loop
@@ -343,20 +331,6 @@ feature {NONE} -- Implementation
 				add_warning("WOUC", <<target.ontology_unused_constraint_codes.item>>)
 				target.ontology_unused_constraint_codes.forth
 			end
-		end
-
-	check_unidentified_nodes
-			-- look for attributes that are either multiple or have multiple alternatives, whose
-			-- child objects are not identified, but only if the children are not C_PRIMITIVEs or
-			-- C_C_Os whose values are C_PRMITIVEs. Record any such nodes as warnings
-		local
-			a_c_iterator: C_VISITOR_ITERATOR
-			unidentified_node_finder: C_UNIDENTIFIED_NODE_CHECKER
-		do
-			create unidentified_node_finder.initialise(ontology)
-			create a_c_iterator.make(target.definition, unidentified_node_finder)
-			a_c_iterator.do_all
-			warnings.append(unidentified_node_finder.warnings)
 		end
 
 	build_slot_id_index
@@ -506,7 +480,12 @@ feature {NONE} -- Implementation
 						if not co_child_diff.rm_type_conforms_to (co_parent_flat) then
 							add_error("VSONCT", <<co_child_diff.path, co_child_diff.rm_type_name, co_parent_flat.path, co_parent_flat.rm_type_name>>)
 						elseif not co_child_diff.occurrences_conforms_to (co_parent_flat) then
-							add_error("VSONCO", <<co_child_diff.path, co_child_diff.occurrences_as_string, co_parent_flat.path, co_parent_flat.occurrences.as_string>>)
+							if strict_validation then
+								add_error("VSONCO", <<co_child_diff.path, co_child_diff.occurrences_as_string, co_parent_flat.path, co_parent_flat.occurrences.as_string>>)
+							else
+								add_warning("VSONCO", <<co_child_diff.path, co_child_diff.occurrences_as_string, co_parent_flat.path, co_parent_flat.occurrences.as_string>>)
+								co_child_diff.remove_occurrences
+							end
 						elseif co_child_diff.is_addressable then
 							if not co_child_diff.node_id_conforms_to (co_parent_flat) then
 								add_error("VSONCI", <<co_child_diff.path, co_child_diff.node_id, co_parent_flat.path, co_parent_flat.node_id>>)
@@ -550,6 +529,21 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	specialised_node_validate_test (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN
+			-- return True if a conformant path of a_c_node within the differential archetype is
+			-- found within the flat parent archetype - i.e. a_c_node is inherited or redefined from parent (but not new)
+			-- and no previous errors encountered
+		local
+			apa: ARCHETYPE_PATH_ANALYSER
+		do
+			create apa.make_from_string(a_c_node.path)
+			-- if the 'phantom' check below is True, it means the path is to an object that is new in the
+			-- current archetype, and therefore there is nothing in the parent to validate it against
+			if not apa.is_phantom_path_at_level (flat_parent.specialisation_depth) then
+				Result := passed and flat_parent.has_path (apa.path_at_level (flat_parent.specialisation_depth))
+			end
+		end
+
 	validate_reference_model
 			-- validate definition of archetype against reference model
 		require
@@ -567,7 +561,8 @@ feature {NONE} -- Implementation
 			-- perform validation of node against reference model
 		local
 			arch_parent_attr_type, model_attr_class: STRING
-			co_parent_flat: C_OBJECT
+			co_parent_flat, co_flat_child: C_OBJECT
+			ca_flat: C_ATTRIBUTE
 			apa: ARCHETYPE_PATH_ANALYSER
 			rm_prop_def: BMM_PROPERTY_DEFINITION
 		do
@@ -594,6 +589,7 @@ feature {NONE} -- Implementation
 								add_error("VCORMT", <<co.rm_type_name, co.path, model_attr_class, arch_parent_attr_type, co.parent.rm_attribute_name>>)
 								invalid_types.extend (co.rm_type_name)
 							end
+							co.set_rm_descriptor (rm_checker.class_definition(model_attr_class))
 						end
 					end
 				end
@@ -613,9 +609,17 @@ feature {NONE} -- Implementation
 						if rm_prop_def.existence.contains(ca.existence) then
 							if rm_prop_def.existence.equal_interval(ca.existence) then
 								add_warning("WCAEX", <<ca.rm_attribute_name, ca.path, ca.existence.as_string>>)
+								if not strict_validation then
+									ca.remove_existence
+								end
 							end
 						else
-							add_error("VCAEX", <<ca.rm_attribute_name, ca.path, ca.existence.as_string, rm_prop_def.existence.as_string>>)
+							if strict_validation then
+								add_error("VCAEX", <<ca.rm_attribute_name, ca.path, ca.existence.as_string, rm_prop_def.existence.as_string>>)
+							else
+								add_warning("VCAEX", <<ca.rm_attribute_name, ca.path, ca.existence.as_string, rm_prop_def.existence.as_string>>)
+								ca.remove_existence
+							end
 						end
 					end
 					if ca.is_multiple then
@@ -624,11 +628,17 @@ feature {NONE} -- Implementation
 								if cont_prop.type.cardinality.contains(ca.cardinality.interval) then
 									if cont_prop.type.cardinality.equal_interval(ca.cardinality.interval) then
 										add_warning("WCACA", <<ca.rm_attribute_name, ca.path, ca.cardinality.interval.as_string>>)
-										ca.clear_cardinality
+										if not strict_validation then
+											ca.remove_cardinality
+										end
 									end
 								else -- archetype has cardinality not contained by RM
-									add_warning("VCACA", <<ca.rm_attribute_name, ca.path, ca.cardinality.interval.as_string, cont_prop.type.cardinality.as_string>>)
-									ca.clear_cardinality
+									if strict_validation then
+										add_error("VCACA", <<ca.rm_attribute_name, ca.path, ca.cardinality.interval.as_string, cont_prop.type.cardinality.as_string>>)
+									else
+										add_warning("VCACA", <<ca.rm_attribute_name, ca.path, ca.cardinality.interval.as_string, cont_prop.type.cardinality.as_string>>)
+										ca.remove_cardinality
+									end
 								end
 							end
 						else -- archetype has multiple attribute but RM does not
@@ -637,28 +647,16 @@ feature {NONE} -- Implementation
 					elseif attached {BMM_CONTAINER_PROPERTY} rm_prop_def as cont_prop_2 then
 						add_error("VCAM", <<ca.rm_attribute_name, ca.path, "(single-valued)", cont_prop_2.type.cardinality.as_string>>)
 					end
-					if rm_checker.property_definition(arch_parent_attr_type, ca.rm_attribute_name).is_computed then
-						-- flag if constraint is equal to reference model; FUTURE: remove if equal
+					if rm_prop_def.is_computed then
+						-- flag if this is a computed property constraint (i.e. a constraint on a function from the RM)
 						add_warning("ICARMC", <<ca.rm_attribute_name, ca.path, arch_parent_attr_type>>)
 					end
+					ca.set_rm_descriptor(rm_prop_def)
 				end
 			end
 		end
 
 	invalid_types: ARRAYED_LIST [STRING]
-
-	specialised_node_validate_test (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN
-			-- return True if a conformant path of a_c_node within the differential archetype is
-			-- found within the flat parent archetype - i.e. a_c_node is inherited or redefined from parent (but not new)
-			-- and no previous errors encountered
-		local
-			apa: ARCHETYPE_PATH_ANALYSER
-		do
-			create apa.make_from_string(a_c_node.path)
-			if not apa.is_phantom_path_at_level (flat_parent.specialisation_depth) then
-				Result := passed and flat_parent.has_path (apa.path_at_level (flat_parent.specialisation_depth))
-			end
-		end
 
 	rm_node_validate_test (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN
 			-- return True if node is a C_OBJECT and class is known in RM, or if it is a C_ATTRIBUTE
@@ -671,6 +669,27 @@ feature {NONE} -- Implementation
 						invalid_types.extend (co.rm_type_name)
 					end
 					Result := False
+				end
+			end
+		end
+
+	validate_occurrences
+			-- validate occurrences under container attributes, in flat definition
+		require
+			target_flat /= Void
+		local
+			def_it: C_ITERATOR
+		do
+			create def_it.make(target_flat.definition)
+			def_it.do_until_surface(agent flat_node_validate, agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER):BOOLEAN do Result := True end)
+		end
+
+	flat_node_validate (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
+			-- basic validation of any node
+		do
+			if attached {C_ATTRIBUTE} a_c_node as ca then
+				if ca.is_multiple and then not ca.cardinality.interval.contains (ca.occurrences_total_range) then
+					add_error("VACMC2", <<ca.path, ca.cardinality.as_string>>)
 				end
 			end
 		end

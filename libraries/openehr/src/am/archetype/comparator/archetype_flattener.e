@@ -84,9 +84,10 @@ feature -- Commands
 				arch_output_flat.set_is_valid (True)
 			else
 				create arch_output_flat.make_from_differential (arch_child_diff)
-				create def_it.make(arch_output_flat.definition)
-				def_it.do_all(agent rm_node_flatten_enter, agent rm_node_flatten_exit)
 			end
+
+			create def_it.make(arch_output_flat.definition)
+			def_it.do_all(agent rm_node_flatten_enter, agent rm_node_flatten_exit)
 		ensure
 			arch_output_flat /= Void
 		end
@@ -190,27 +191,6 @@ feature {NONE} -- Implementation
 			create def_it.make(arch_child_diff.definition)
 			def_it.do_until_surface(agent node_graft, agent node_test)
 			arch_output_flat.rebuild
-		end
-
-	flatten_invariants
-			-- build the flat archetype invariants as the sum of parent and source invariants
-		do
-			if arch_parent_flat.has_invariants then
-				from
-					arch_parent_flat.invariants.start
-				until
-					arch_parent_flat.invariants.off
-				loop
-					arch_output_flat.add_invariant (arch_parent_flat.invariants.item.deep_twin)
-					arch_parent_flat.invariants.forth
-				end
-			end
-		end
-
-	flatten_ontology
-			-- build the flat archetype ontology as the sum of parent and source ontologies
-		do
-			arch_output_flat.ontology.merge(arch_parent_flat.ontology)
 		end
 
 	node_graft (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
@@ -537,23 +517,36 @@ feature {NONE} -- Implementation
 			-- list of root paths of child sub-trees in the child that have been completely grafted from child to parent
 			-- don't descend into paths lower than any path in this list
 
+	flatten_invariants
+			-- build the flat archetype invariants as the sum of parent and source invariants
+		do
+			if arch_parent_flat.has_invariants then
+				from
+					arch_parent_flat.invariants.start
+				until
+					arch_parent_flat.invariants.off
+				loop
+					arch_output_flat.add_invariant (arch_parent_flat.invariants.item.deep_twin)
+					arch_parent_flat.invariants.forth
+				end
+			end
+		end
+
+	flatten_ontology
+			-- build the flat archetype ontology as the sum of parent and source ontologies
+		do
+			arch_output_flat.ontology.merge(arch_parent_flat.ontology)
+		end
+
 	rm_node_flatten_enter (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 			-- copy existence, cardinality and occurrences from reference model to node if it doesn't have them set
-		local
-			arch_attr_type, attr_parent_path: STRING
-			prop_def: BMM_PROPERTY_DEFINITION
 		do
 			if attached {C_ATTRIBUTE} a_c_node as ca then
-				if ca.existence = Void or ca.cardinality = Void then
-					arch_attr_type := ca.parent.rm_type_name -- can be a generic type like DV_INTERVAL <DV_QUANTITY>
-					attr_parent_path := ca.parent.path
-					prop_def := rm_checker.property_definition(arch_attr_type, ca.rm_attribute_name)
-				end
 				if ca.existence = Void then
-					ca.set_existence(prop_def.existence.deep_twin)
+					ca.set_existence(ca.rm_descriptor.existence.deep_twin)
 				end
 				if ca.is_multiple and ca.cardinality = Void then
-					if attached {BMM_CONTAINER_PROPERTY} prop_def as cont_prop then
+					if attached {BMM_CONTAINER_PROPERTY} ca.rm_descriptor as cont_prop then
 						ca.set_cardinality (create {CARDINALITY}.make(cont_prop.type.cardinality))
 					end
 				end
@@ -564,11 +557,10 @@ feature {NONE} -- Implementation
 					if co.is_root then -- assume 0..1
 						co.set_occurrences (create {MULTIPLICITY_INTERVAL}.make_bounded(0,1))
 					else
-						prop_def := rm_checker.property_definition(co.parent.parent.rm_type_name, co.parent.rm_attribute_name)
-						if attached {BMM_CONTAINER_PROPERTY} prop_def as cont_prop then
-							co.set_occurrences (cont_prop.type.cardinality)
+						if attached {BMM_CONTAINER_PROPERTY} co.parent.rm_descriptor as cont_prop then
+							co.set_occurrences (cont_prop.type.cardinality.deep_twin)
 						else
-							co.set_occurrences (prop_def.existence)
+							co.set_occurrences (co.parent.rm_descriptor.existence.deep_twin)
 						end
 					end
 				end

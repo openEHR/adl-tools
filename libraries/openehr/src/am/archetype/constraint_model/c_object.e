@@ -20,7 +20,7 @@ deferred class C_OBJECT
 inherit
 	ARCHETYPE_CONSTRAINT
 		redefine
-			parent, representation
+			parent, representation, rm_descriptor
 		end
 
 	ARCHETYPE_TERM_CODE_TOOLS
@@ -38,6 +38,9 @@ feature -- Access
 
 	rm_type_name: STRING
 			-- type name from reference model, of object to instantiate
+
+	rm_descriptor: BMM_TYPE_SPECIFIER
+			-- descriptor from RM representation; used for various validation and flattening operations
 
 	node_id: STRING
 			--
@@ -74,31 +77,6 @@ feature -- Source Control
 				else
 					Result := specialisation_status_from_code (node_id, spec_level)
 				end
-			end
-		end
-
-feature -- Status Report
-
-	is_valid: BOOLEAN
-			-- report on validity
-		local
-			s: STRING
-		do
-			create invalid_reason.make(0)
-			s := rm_type_name + "{" + generating_type + "} "
-			if is_addressable then
-				s.append ("[" + node_id + "]")
-			end
-			s.append (": ")
-
-			if parent /= Void and occurrences /= Void then
-				if parent.is_single and occurrences.upper > 1 then	-- FIXME: Delete this check! It's guaranteed by the invariant, so why are we checking it here?
-					invalid_reason.append (s + "occurrences max can only be 1 for single parent attribute")
-				else
-					Result := True
-				end
-			else
-				Result := True
 			end
 		end
 
@@ -178,6 +156,13 @@ feature -- Modification
 			occurrences := occ
 		ensure
 			occurrences = occ
+		end
+
+	remove_occurrences
+		do
+			occurrences := Void
+		ensure
+			occurrences = Void
 		end
 
 	set_sibling_order (a_sibling_order: SIBLING_ORDER)

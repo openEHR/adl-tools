@@ -166,7 +166,7 @@ feature -- Access
 	archetype_lineage: attached ARRAYED_LIST [ARCH_REP_ARCHETYPE]
 			-- lineage of archetypes from parent to this one, inclusive of the current one.
 			-- For non-specialised archetypes, contains just the top-level archetype.
-			-- NOTE: in theory this could be precomputed from ARCH_DIRECTORY, but modifications to
+			-- FIXME: in theory this could be precomputed from ARCH_DIRECTORY, but modifications to
 			-- the directory structure would mean always recomputing parts of it. This computation
 			-- is not particularly expensive anyway...however, the result could be cached on a per-
 			-- instance basis to be more efficient
@@ -174,12 +174,7 @@ feature -- Access
 			csr: ARCH_REP_ARCHETYPE
 		do
 			create Result.make (1)
-
-			from
-				csr := Current
-			until
-				csr = Void
-			loop
+			from csr := Current until csr = Void loop
 				Result.put_front (csr)
 				csr := csr.specialisation_parent
 			end
@@ -485,20 +480,14 @@ feature {ARCHETYPE_VALIDATOR} -- Modification
 			if slot_id_index = Void then
 				create slot_id_index.make (0)
 			end
-
 			if not slot_id_index.has (a_slot_path) then
 				slot_id_index.put (a_list, a_slot_path)
 				a_list.compare_objects
 			else
-				from
-					a_list.start
-				until
-					a_list.off
-				loop
+				from a_list.start until a_list.off loop
 					if not slot_id_index.item (a_slot_path).has (a_list.item) then
 						slot_id_index.item (a_slot_path).extend (a_list.item)
 					end
-
 					a_list.forth
 				end
 			end
@@ -511,7 +500,6 @@ feature {ARCHETYPE_VALIDATOR} -- Modification
 				create used_by_index.make (0)
 				used_by_index.compare_objects
 			end
-
 			used_by_index.extend (an_archetype_id)
 		end
 

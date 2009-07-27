@@ -16,7 +16,7 @@ class C_ATTRIBUTE
 inherit
 	ARCHETYPE_CONSTRAINT
 		redefine
-			default_create, parent, representation, path
+			default_create, parent, representation, path, rm_descriptor
 		end
 
 	ARCHETYPE_TERM_CODE_TOOLS
@@ -92,6 +92,9 @@ feature -- Access
 		do
 			Result := representation.node_key
 		end
+
+	rm_descriptor: BMM_PROPERTY_DEFINITION
+			-- descriptor from RM representation; used for various validation and flattening operations
 
 	children: ARRAYED_LIST [C_OBJECT]
 
@@ -298,40 +301,6 @@ feature -- Status Report
 			Result := differential_path /= Void
 		end
 
-	is_valid: BOOLEAN
-			-- report on validity
-		local
-			s: STRING
-		do
-			create invalid_reason.make (0)
-			s := rm_attribute_name + ": "
-
-			if not (any_allowed xor representation.has_children) then
-				invalid_reason.append (s + "must be either 'any' node or have child nodes")
-			else
-				from
-					Result := True
-					children.start
-				until
-					not Result or children.off
-				loop
-					-- check occurrences consistent with attribute cardinality
-					if is_single and children.item.occurrences /= Void and children.item.occurrences.upper > 1 then
-						Result := False
-						s.append ("occurrences on child node " + children.item.node_id.out +
-							" must be singular for non-container attribute")
-					elseif not children.item.is_valid then
-						Result := False
-						s.append ("(invalid child node) " + children.item.invalid_reason + "%N")
-					end
-					children.forth
-				end
-				if not Result then
-					invalid_reason.append (s)
-				end
-			end
-		end
-
 	has_child_with_id (a_node_id: STRING): BOOLEAN
 			-- has a child node with id a_node_id
 		require
@@ -429,11 +398,18 @@ feature -- Modification
 			cardinality := a_cardinality
 		end
 
-	clear_cardinality
+	remove_cardinality
 		do
 			cardinality := Void
 		ensure
 			cardinality = Void
+		end
+
+	remove_existence
+		do
+			existence := Void
+		ensure
+			existence = Void
 		end
 
 	set_differential_path(a_path: STRING)
