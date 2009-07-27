@@ -20,7 +20,7 @@ deferred class C_OBJECT
 inherit
 	ARCHETYPE_CONSTRAINT
 		redefine
-			parent, representation, rm_descriptor
+			parent, representation
 		end
 
 	ARCHETYPE_TERM_CODE_TOOLS
@@ -38,9 +38,6 @@ feature -- Access
 
 	rm_type_name: STRING
 			-- type name from reference model, of object to instantiate
-
-	rm_descriptor: BMM_TYPE_SPECIFIER
-			-- descriptor from RM representation; used for various validation and flattening operations
 
 	node_id: STRING
 			--

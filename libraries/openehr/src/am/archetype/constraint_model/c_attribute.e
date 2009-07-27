@@ -16,7 +16,7 @@ class C_ATTRIBUTE
 inherit
 	ARCHETYPE_CONSTRAINT
 		redefine
-			default_create, parent, representation, path, rm_descriptor
+			default_create, parent, representation, path
 		end
 
 	ARCHETYPE_TERM_CODE_TOOLS
@@ -92,9 +92,6 @@ feature -- Access
 		do
 			Result := representation.node_key
 		end
-
-	rm_descriptor: BMM_PROPERTY_DEFINITION
-			-- descriptor from RM representation; used for various validation and flattening operations
 
 	children: ARRAYED_LIST [C_OBJECT]
 

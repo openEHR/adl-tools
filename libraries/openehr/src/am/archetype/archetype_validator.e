@@ -589,7 +589,6 @@ feature {NONE} -- Implementation
 								add_error("VCORMT", <<co.rm_type_name, co.path, model_attr_class, arch_parent_attr_type, co.parent.rm_attribute_name>>)
 								invalid_types.extend (co.rm_type_name)
 							end
-							co.set_rm_descriptor (rm_checker.class_definition(model_attr_class))
 						end
 					end
 				end
@@ -651,7 +650,6 @@ feature {NONE} -- Implementation
 						-- flag if this is a computed property constraint (i.e. a constraint on a function from the RM)
 						add_warning("ICARMC", <<ca.rm_attribute_name, ca.path, arch_parent_attr_type>>)
 					end
-					ca.set_rm_descriptor(rm_prop_def)
 				end
 			end
 		end

@@ -86,6 +86,8 @@ feature -- Commands
 				create arch_output_flat.make_from_differential (arch_child_diff)
 			end
 
+			-- must do this at the end, since otherwise the existence etc set due to this would look like duplicates during the
+			-- flattening process
 			create def_it.make(arch_output_flat.definition)
 			def_it.do_all(agent rm_node_flatten_enter, agent rm_node_flatten_exit)
 		ensure
@@ -540,13 +542,16 @@ feature {NONE} -- Implementation
 
 	rm_node_flatten_enter (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 			-- copy existence, cardinality and occurrences from reference model to node if it doesn't have them set
+		local
+			rm_attr_desc: BMM_PROPERTY_DEFINITION
 		do
 			if attached {C_ATTRIBUTE} a_c_node as ca then
+				rm_attr_desc := rm_checker.property_definition (ca.parent.rm_type_name, ca.rm_attribute_name)
 				if ca.existence = Void then
-					ca.set_existence(ca.rm_descriptor.existence.deep_twin)
+					ca.set_existence(rm_attr_desc.existence)
 				end
 				if ca.is_multiple and ca.cardinality = Void then
-					if attached {BMM_CONTAINER_PROPERTY} ca.rm_descriptor as cont_prop then
+					if attached {BMM_CONTAINER_PROPERTY} rm_attr_desc as cont_prop then
 						ca.set_cardinality (create {CARDINALITY}.make(cont_prop.type.cardinality))
 					end
 				end
@@ -557,10 +562,11 @@ feature {NONE} -- Implementation
 					if co.is_root then -- assume 0..1
 						co.set_occurrences (create {MULTIPLICITY_INTERVAL}.make_bounded(0,1))
 					else
-						if attached {BMM_CONTAINER_PROPERTY} co.parent.rm_descriptor as cont_prop then
+						rm_attr_desc := rm_checker.property_definition (co.parent.parent.rm_type_name, co.parent.rm_attribute_name)
+						if attached {BMM_CONTAINER_PROPERTY} rm_attr_desc as cont_prop then
 							co.set_occurrences (cont_prop.type.cardinality.deep_twin)
 						else
-							co.set_occurrences (co.parent.rm_descriptor.existence.deep_twin)
+							co.set_occurrences (rm_attr_desc.existence.deep_twin)
 						end
 					end
 				end
