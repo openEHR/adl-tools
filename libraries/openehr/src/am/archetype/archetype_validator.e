@@ -248,16 +248,21 @@ feature {NONE} -- Implementation
 			-- and term_definitions contains no extras.
 		local
 			a_codes: HASH_TABLE [ARRAYED_LIST [ARCHETYPE_CONSTRAINT], STRING]
-			depth: INTEGER
+			depth, code_depth: INTEGER
 		do
 			depth := ontology.specialisation_depth
 
 			a_codes := target.id_atcodes_index
 			from a_codes.start until a_codes.off loop
-				if specialisation_depth_from_code (a_codes.key_for_iteration) > depth then
+				code_depth := specialisation_depth_from_code (a_codes.key_for_iteration)
+				if code_depth > depth then
 					add_error("VATCD", <<a_codes.key_for_iteration>>)
+				elseif code_depth < depth then
+					if not flat_parent.ontology.has_term_code (a_codes.key_for_iteration) then
+						add_error("VATDF1", <<a_codes.key_for_iteration>>)
+					end
 				elseif not ontology.has_term_code (a_codes.key_for_iteration) then
-					add_error("VATDF", <<a_codes.key_for_iteration>>)
+					add_error("VATDF2", <<a_codes.key_for_iteration>>)
 				end
 				a_codes.forth
 			end
@@ -265,10 +270,15 @@ feature {NONE} -- Implementation
 			-- see if every found leaf term code (in an ORDINAL or a CODED_TERM) is in ontology
 			a_codes := target.data_atcodes_index
 			from a_codes.start until a_codes.off loop
-				if specialisation_depth_from_code (a_codes.key_for_iteration) > depth then
+				code_depth := specialisation_depth_from_code (a_codes.key_for_iteration)
+				if code_depth > depth then
 					add_error("VATCD", <<a_codes.key_for_iteration>>)
+				elseif code_depth < depth then
+					if not flat_parent.ontology.has_term_code (a_codes.key_for_iteration) then
+						add_error("VATDF1", <<a_codes.key_for_iteration>>)
+					end
 				elseif not ontology.has_term_code (a_codes.key_for_iteration) then
-					add_error("VATDF", <<a_codes.key_for_iteration>>)
+					add_error("VATDF2", <<a_codes.key_for_iteration>>)
 				end
 				a_codes.forth
 			end
@@ -276,10 +286,15 @@ feature {NONE} -- Implementation
 			-- check if all found constraint_codes are defined in constraint_definitions,
 			a_codes := target.accodes_index
 			from a_codes.start until a_codes.off loop
-				if specialisation_depth_from_code (a_codes.key_for_iteration) > depth then
+				code_depth := specialisation_depth_from_code (a_codes.key_for_iteration)
+				if code_depth > depth then
 					add_error("VATCD", <<a_codes.key_for_iteration>>)
+				elseif code_depth < depth then
+					if not flat_parent.ontology.has_constraint_code (a_codes.key_for_iteration) then
+						add_error("VACDF1", <<a_codes.key_for_iteration>>)
+					end
 				elseif not ontology.has_constraint_code (a_codes.key_for_iteration) then
-					add_error("VATDF", <<a_codes.key_for_iteration>>)
+					add_error("VACDF2", <<a_codes.key_for_iteration>>)
 				end
 				a_codes.forth
 			end
@@ -366,11 +381,7 @@ feature {NONE} -- Implementation
 						id_list := archetype_directory.matching_ids (a_regex, target.slot_index.item.rm_type_name)
 
 						-- go through existing id list and remove any matched by the exclusion list
-						from
-							id_list.start
-						until
-							id_list.off
-						loop
+						from id_list.start until id_list.off loop
 							target_descriptor.slot_id_index.item (target.slot_index.item.path).prune (id_list.item)
 							id_list.forth
 						end
@@ -561,8 +572,7 @@ feature {NONE} -- Implementation
 			-- perform validation of node against reference model
 		local
 			arch_parent_attr_type, model_attr_class: STRING
-			co_parent_flat, co_flat_child: C_OBJECT
-			ca_flat: C_ATTRIBUTE
+			co_parent_flat: C_OBJECT
 			apa: ARCHETYPE_PATH_ANALYSER
 			rm_prop_def: BMM_PROPERTY_DEFINITION
 		do

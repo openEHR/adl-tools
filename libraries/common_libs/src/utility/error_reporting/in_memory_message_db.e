@@ -196,7 +196,10 @@ feature -- Access
 			["VACCD"] = <"Error (VACCD): archetype concept code $1 not used in definition">			
 			["VOTM"] = <"Error (VOTM): translations for $1 defined in the description / translations section but missing in the term_definition and constraint_definition sections">
 			["VATCD"] = <"Error (VATCD): at-code $1 used in archetype more specialised than archetype">
-			["VATDF"] = <"Error (VATDF): node id at-code $1 not defined in ontology">
+			["VATDF1"] = <"Error (VATDF): node id at-code $1 from specialisation parent not defined in ontology of any parent archetype">
+			["VATDF2"] = <"Error (VATDF): node id at-code $1 not defined in ontology of current archetype">
+			["VACDF1"] = <"Error (VACDF): constraint code $1 from specialisation parent not defined in ontology of any parent archetype">
+			["VACDF2"] = <"Error (VACDF): constraint code $1 not defined in ontology of current archetype">
 			["VUNP"] = <"Error (VUNP): use_node path $1 not found in archetype">
 
 			["VTRLA"] = <"Error (VTRLA): translations key '$1' does not match translation item language '$2'">

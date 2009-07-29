@@ -67,11 +67,7 @@ feature -- Status Report
 			p: ARRAYED_LIST_CURSOR
 		do
 			p := terminologies_available.cursor
-			from
-				terminologies_available.start
-			until
-				terminologies_available.off or Result
-			loop
+			from terminologies_available.start until terminologies_available.off or Result loop
 				Result := term_bindings.has(terminologies_available.item) and then
 					term_bindings.item(terminologies_available.item).has(a_term_code)
 				terminologies_available.forth
@@ -91,11 +87,7 @@ feature -- Status Report
 			p: ARRAYED_LIST_CURSOR
 		do
 			p := terminologies_available.cursor
-			from
-				terminologies_available.start
-			until
-				terminologies_available.off or Result
-			loop
+			from terminologies_available.start until terminologies_available.off or Result loop
 				Result := constraint_bindings.has(terminologies_available.item) and then
 					constraint_bindings.item(terminologies_available.item).has(a_term_code)
 				terminologies_available.forth
@@ -149,22 +141,14 @@ feature -- Modification
 			a_lang, a_terminology: STRING
 		do
 			-- term definitions
-			from
-				other.term_definitions.start
-			until
-				other.term_definitions.off
-			loop
+			from other.term_definitions.start until other.term_definitions.off loop
 				a_lang := other.term_definitions.key_for_iteration
 				if has_language (a_lang) then
 					if not term_definitions.has (a_lang) then
 						term_definitions.put(create {HASH_TABLE[ARCHETYPE_TERM, STRING]}.make(0), a_lang)
 					end
 					lang_terms := other.term_definitions.item_for_iteration
-					from
-						lang_terms.start
-					until
-						lang_terms.off
-					loop
+					from lang_terms.start until lang_terms.off loop
 						if has_term_code (lang_terms.key_for_iteration) then
 							replace_term_definition (a_lang, lang_terms.item_for_iteration.deep_twin, False)
 						else
@@ -177,22 +161,14 @@ feature -- Modification
 			end
 
 			-- constraint definitions
-			from
-				other.constraint_definitions.start
-			until
-				other.constraint_definitions.off
-			loop
+			from other.constraint_definitions.start until other.constraint_definitions.off loop
 				a_lang := other.constraint_definitions.key_for_iteration
 				if has_language (a_lang) then
 					if not constraint_definitions.has (a_lang) then
 						constraint_definitions.put(create {HASH_TABLE[ARCHETYPE_TERM, STRING]}.make(0), a_lang)
 					end
 					lang_terms := other.constraint_definitions.item_for_iteration
-					from
-						lang_terms.start
-					until
-						lang_terms.off
-					loop
+					from lang_terms.start until lang_terms.off loop
 						if has_constraint_code (lang_terms.item_for_iteration.code) then
 							replace_constraint_definition (a_lang, lang_terms.item_for_iteration.deep_twin, False)
 						else
@@ -205,19 +181,11 @@ feature -- Modification
 			end
 
 			-- terminology bindings; first add the bindings to terminologies that are not there at all
-			from
-				other.terminologies_available.start
-			until
-				other.terminologies_available.off
-			loop
+			from other.terminologies_available.start until other.terminologies_available.off loop
 				a_terminology := other.terminologies_available.item
 				if other.has_term_bindings (a_terminology) then
 					term_bindings_1 := other.term_bindings_for_terminology (a_terminology)
-					from
-						term_bindings_1.start
-					until
-						term_bindings_1.off
-					loop
+					from term_bindings_1.start until term_bindings_1.off loop
 						add_term_binding (term_bindings_1.item_for_iteration.deep_twin, term_bindings_1.key_for_iteration)
 						debug ("flatten")
 							io.put_string ("%TONTOLOGY: adding term_binding for " + term_bindings_1.key_for_iteration + "%N")
@@ -229,19 +197,11 @@ feature -- Modification
 			end
 
 			-- constraint bindings; first add the bindings to terminologies that are not there at all
-			from
-				other.terminologies_available.start
-			until
-				other.terminologies_available.off
-			loop
+			from other.terminologies_available.start until other.terminologies_available.off loop
 				a_terminology := other.terminologies_available.item
 				if other.has_constraint_bindings (a_terminology) then
 					cons_bindings_1 := other.constraint_bindings_for_terminology (a_terminology)
-					from
-						cons_bindings_1.start
-					until
-						cons_bindings_1.off
-					loop
+					from cons_bindings_1.start until cons_bindings_1.off loop
 						add_constraint_binding (cons_bindings_1.item_for_iteration.deep_twin, a_terminology, cons_bindings_1.key_for_iteration)
 						cons_bindings_1.forth
 					end
@@ -268,40 +228,24 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 		do
 			create rm_term_codes.make(0)
 			create rm_constraint_codes.make(0)
-			from
-				term_codes.start
-			until
-				term_codes.off
-			loop
+			from term_codes.start until term_codes.off loop
 				if specialisation_depth_from_code (term_codes.item) /= specialisation_depth then
 					rm_term_codes.extend(term_codes.item)
 				end
 				term_codes.forth
 			end
-			from
-				constraint_codes.start
-			until
-				constraint_codes.off
-			loop
+			from constraint_codes.start until constraint_codes.off loop
 				if specialisation_depth_from_code (constraint_codes.item) /= specialisation_depth then
 					rm_constraint_codes.extend (constraint_codes.item)
 				end
 				constraint_codes.forth
 			end
 
-			from
-				rm_term_codes.start
-			until
-				rm_term_codes.off
-			loop
+			from rm_term_codes.start until rm_term_codes.off loop
 				remove_term_definition (rm_term_codes.item)
 				rm_term_codes.forth
 			end
-			from
-				rm_constraint_codes.start
-			until
-				rm_constraint_codes.off
-			loop
+			from rm_constraint_codes.start until rm_constraint_codes.off loop
 				remove_constraint_definition (rm_constraint_codes.item)
 				rm_constraint_codes.forth
 			end
