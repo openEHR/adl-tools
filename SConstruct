@@ -203,7 +203,7 @@ else:
 
 		def backup_filename(filename):
 			split = os.path.split(filename)
-			return os.path.join(split[0], '.' + split[1] + '.bak')
+			return os.path.join(split[0], '.' + split[1] + '.bak.' + revision)
 
 		def set_revision_from_subversion(target, source, env):
 			global backed_up_files
