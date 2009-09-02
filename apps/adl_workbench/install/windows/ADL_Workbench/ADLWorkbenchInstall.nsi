@@ -74,9 +74,9 @@ Section -Main SEC0000
     !endif
 
     File ..\..\..\app\news.txt
-    File ..\..\..\app\rm_schema.dadl
     File ..\..\..\app\ArchetypeRepositoryReport.xsl
     File ..\..\..\app\ArchetypeRepositoryReport.css
+    File ..\..\..\app\rm_schemas\openehr\*
 
     SetOutPath $INSTDIR\vim
     File ..\..\..\etc\vim\*
