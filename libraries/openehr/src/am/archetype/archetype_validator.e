@@ -468,6 +468,7 @@ feature {NONE} -- Implementation
 				check co_parent_flat_detachable /= Void end
 				co_parent_flat := co_parent_flat_detachable
 
+				-- meta-type (i.e. AOM type) checking...
 				-- C_CODE_PHRASE conforms to CONSTRAINT_REF, but is not testable in any way; sole exception in ADL/AOM; just warn
 				if attached {CONSTRAINT_REF} co_parent_flat as ccr and then not attached {CONSTRAINT_REF} co_child_diff as ccr2 then
 					if attached {C_CODE_PHRASE} co_child_diff as ccp then
@@ -482,9 +483,12 @@ feature {NONE} -- Implementation
 						co_parent_flat_detachable := flat_parent.c_object_at_path (air_p.path)
 						check co_parent_flat_detachable /= Void end
 						co_parent_flat := co_parent_flat_detachable
+						if dynamic_type (co_child_diff) /= dynamic_type (co_parent_flat) then
+							add_error("VSUNT", <<co_child_diff.path, co_child_diff.generating_type, co_parent_flat.path, co_parent_flat.generating_type>>)
+						end
 					end
 
-					-- now determine if child object is same as or a specialisation of flat object
+					-- by here the meta-types must be the same
 					if dynamic_type (co_child_diff) /= dynamic_type (co_parent_flat) then
 						add_error("VSONT", <<co_child_diff.path, co_child_diff.generating_type, co_parent_flat.path, co_parent_flat.generating_type>>)
 					elseif not co_child_diff.node_conforms_to(co_parent_flat) then
@@ -504,7 +508,7 @@ feature {NONE} -- Implementation
 								add_error("VSONIR", <<co_child_diff.path, co_child_diff.rm_type_name, co_parent_flat.rm_type_name, co_child_diff.node_id>>)
 							end
 						else
-							add_error("VSONNC", <<co_child_diff.rm_type_name, co_child_diff.path, co_parent_flat.rm_type_name, co_parent_flat.path>>)
+							add_error("VSONI", <<co_child_diff.rm_type_name, co_child_diff.path, co_parent_flat.rm_type_name, co_parent_flat.path>>)
 						end
 					else
 						-- nodes are at least conformant; check for congruence for specalisation path replacement
@@ -689,17 +693,27 @@ feature {NONE} -- Implementation
 			def_it: C_ITERATOR
 		do
 			create def_it.make(target_flat.definition)
-			def_it.do_until_surface(agent flat_node_validate, agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER):BOOLEAN do Result := True end)
+			def_it.do_all(agent flat_node_enter, agent flat_node_exit)
 		end
 
-	flat_node_validate (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
+	flat_node_enter (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 			-- basic validation of any node
+		local
+			occ_range: MULTIPLICITY_INTERVAL
 		do
 			if attached {C_ATTRIBUTE} a_c_node as ca then
-				if ca.is_multiple and then not ca.cardinality.interval.contains (ca.occurrences_total_range) then
-					add_error("VACMC2", <<ca.path, ca.cardinality.as_string>>)
+				if ca.is_multiple then
+					occ_range := ca.occurrences_total_range
+					if occ_range.upper_unbounded and not ca.cardinality.interval.upper_unbounded or else
+						not occ_range.upper_unbounded and not ca.cardinality.interval.upper_unbounded and ca.cardinality.interval.has (occ_range.upper) then
+						add_error("VACMC2", <<ca.path, ca.cardinality.as_string>>)
+					end
 				end
 			end
+		end
+
+	flat_node_exit (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
+		do
 		end
 
 invariant

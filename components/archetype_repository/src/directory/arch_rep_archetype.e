@@ -388,45 +388,49 @@ feature -- Commands
 				clear_billboard
 				set_parse_attempted
 
-				if has_differential_file and not is_flat_out_of_date then
-					post_info (Current, "parse_archetype", "parse_archetype_i3", Void)
-					read_differential
-					differential_archetype := adl_engine.parse_differential (differential_text)
-					if differential_archetype = Void then
-						post_error (Current, "parse_archetype", "parse_archetype_e1", <<adl_engine.parse_error_text>>)
-						is_valid := False
+				if has_rm_checker (id.rm_originator) then
+					if has_differential_file and not is_flat_out_of_date then
+						post_info (Current, "parse_archetype", "parse_archetype_i3", Void)
+						read_differential
+						differential_archetype := adl_engine.parse_differential (differential_text)
+						if differential_archetype = Void then
+							post_error (Current, "parse_archetype", "parse_archetype_e1", <<adl_engine.parse_error_text>>)
+							is_valid := False
+						else
+							post_info (Current, "parse_archetype", "parse_archetype_i1", <<id.as_string>>)
+							validate
+						end
 					else
-						post_info (Current, "parse_archetype", "parse_archetype_i1", <<id.as_string>>)
-						validate
+						read_flat
+						flat_archetype_cache := adl_engine.parse_flat (flat_text_cache)
+						if flat_archetype_cache = Void then
+							post_error (Current, "parse_archetype", "parse_archetype_e1", <<adl_engine.parse_error_text>>)
+							is_valid := False
+						else
+							post_info (Current, "parse_archetype", "parse_archetype_i1", <<id.as_string>>)
+							differential_archetype := flat_archetype.to_differential
+							validate
+							-- if differential archetype was generated from an old-style flat, perform path compression
+							if is_valid then
+								if differential_archetype.is_generated and differential_archetype.is_specialised then
+									differential_archetype.convert_to_differential_paths
+								end
+							end
+							flat_archetype.set_is_valid (is_valid)
+						end
+					end
+
+					if is_valid then
+						flat_archetype_cache := Void
+						flat_text_cache := Void
+
+						-- Make sure that the language is set, and that it is one of the languages in the archetype.
+						if (current_language = Void or not differential_archetype.has_language (current_language)) then
+							set_current_language (differential_archetype.original_language.code_string)
+						end
 					end
 				else
-					read_flat
-					flat_archetype_cache := adl_engine.parse_flat (flat_text_cache)
-					if flat_archetype_cache = Void then
-						post_error (Current, "parse_archetype", "parse_archetype_e1", <<adl_engine.parse_error_text>>)
-						is_valid := False
-					else
-						post_info (Current, "parse_archetype", "parse_archetype_i1", <<id.as_string>>)
-						differential_archetype := flat_archetype.to_differential
-						validate
-						-- if differential archetype was generated from an old-style flat, perform path compression
-						if is_valid then
-							if differential_archetype.is_generated and differential_archetype.is_specialised then
-								differential_archetype.convert_to_differential_paths
-							end
-						end
-						flat_archetype.set_is_valid (is_valid)
-					end
-				end
-
-				if is_valid then
-					flat_archetype_cache := Void
-					flat_text_cache := Void
-
-					-- Make sure that the language is set, and that it is one of the languages in the archetype.
-					if (current_language = Void or not differential_archetype.has_language (current_language)) then
-						set_current_language (differential_archetype.original_language.code_string)
-					end
+					post_error (Current, "parse_archetype", "model_access_e7", <<id.rm_originator>>)
 				end
 			else
 				post_error (Current, "parse_archetype", "parse_archetype_e3", Void)
@@ -735,22 +739,38 @@ feature {NONE} -- Implementation
 			if validator.passed then
 				validator.validate
 				if validator.passed then
-					post_info (Current, "set_archetype_differential", "parse_archetype_i2", <<id.as_string>>)
+					post_info (Current, "validate (differential)", "parse_archetype_i2", <<id.as_string>>)
 				else
-					post_error (Current, "set_archetype_differential", "parse_archetype_e2", <<id.as_string, validator.errors>>)
+					post_error (Current, "validate (differential)", "parse_archetype_e2", <<id.as_string, validator.errors>>)
 				end
 
 				if validator.has_warnings then
-					post_warning (Current, "set_archetype_differential", "parse_archetype_w2", <<id.as_string, validator.warnings>>)
+					post_warning (Current, "validate (differential)", "parse_archetype_w2", <<id.as_string, validator.warnings>>)
 				end
 			else
 				post_error (Current, "set_archetype_differential", "parse_archetype_e2", <<id.as_string, validator.errors>>)
 			end
 
-			differential_archetype.set_is_valid (validator.passed)
 			validate_attempted := True
-			archetype_directory.update_slot_statistics (Current)
 			is_valid := validator.passed
+			differential_archetype.set_is_valid (is_valid)
+			archetype_directory.update_slot_statistics (Current)
+
+			-- now perform validation which requires flat form
+			if is_valid then
+				validator.validate_flat
+				if validator.passed then
+					post_info (Current, "validate (flat)", "parse_archetype_i2", <<id.as_string>>)
+				else
+					post_error (Current, "validate (flat)", "parse_archetype_e2", <<id.as_string, validator.errors>>)
+				end
+
+				if validator.has_warnings then
+					post_warning (Current, "validate (flat)", "parse_archetype_w2", <<id.as_string, validator.warnings>>)
+				end
+
+				is_valid := validator.passed
+			end
 		ensure
 			validate_attempted
 		end

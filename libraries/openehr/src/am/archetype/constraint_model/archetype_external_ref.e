@@ -1,71 +1,65 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Item representing a 'use' reference in an ADL parse tree. The referenced node must be an object node."
-	keywords:    "test, ADL"
+	description: "Item representing a reference to another archetype."
+	keywords:    "reference, ADL"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2009 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class ARCHETYPE_INTERNAL_REF
+class ARCHETYPE_EXTERNAL_REF
 
 inherit
 	C_REFERENCE_OBJECT
 		redefine
-			representation, set_occurrences, enter_subtree, exit_subtree
+			representation, enter_subtree, exit_subtree
 		end
 
 create
-	make
+	make_identified, make_anonymous
 
 feature -- Initialisation
 
-	make (a_rm_type_name: STRING; a_path: STRING)
-			-- set reference model type name
+	make_identified (a_rm_type_name, an_object_id: STRING; an_archetype_id: ARCHETYPE_ID)
+			-- set type name, object_id
 		require
-			a_rm_type_name_valid: a_rm_type_name /= Void and then not a_rm_type_name.is_empty
-			a_path_exists: a_path /= Void and then not a_path.is_empty
+			Rm_type_name_valid: a_rm_type_name /= Void and then not a_rm_type_name.is_empty
+			Object_id_valid: an_object_id /= Void and then not an_object_id.is_empty
+			archetype_id_attached: an_archetype_id /= Void
+		do
+			create representation.make(an_object_id, Current)
+			rm_type_name := a_rm_type_name
+			set_target_ref(an_archetype_id)
+		end
+
+	make_anonymous (an_rm_type_name: STRING; an_archetype_id: ARCHETYPE_ID)
+			-- set reference model type name and external reference
+		require
+			an_rm_type_name_valid: an_rm_type_name /= Void and then not an_rm_type_name.is_empty
+			archetype_id_attached: an_archetype_id /= Void
 		do
 			create representation.make_anonymous(Current)
-			rm_type_name := a_rm_type_name
-			set_target_path(a_path)
-			use_target_occurrences := True
-		ensure
-			Use_target_occurrences: use_target_occurrences
+			rm_type_name := an_rm_type_name
+			set_target_ref(an_archetype_id)
 		end
 
 feature -- Access
 
-	target_path: STRING
-			-- path to the referenced node
-
-feature -- Status Report
-
-	use_target_occurrences: BOOLEAN
-			-- True if target occurrences are to be used as the value of occurrences in this object;
-			-- by the time of runtime use, the target occurrences value has to be set into this object
+	target_ref: ARCHETYPE_ID
+			-- id of referenced archetype
 
 feature -- Modification
 
-	set_target_path(a_path: STRING)
-			-- set reference path with a valid ADL path string
+	set_target_ref(an_id: ARCHETYPE_ID)
+			-- set `reference'
 		require
-			a_path /= Void
+			an_id /= Void
 		do
-			target_path := a_path
-		end
-
-	set_occurrences(ivl: MULTIPLICITY_INTERVAL)
-			--
-		do
-			precursor(ivl)
-			use_target_occurrences := False
-		ensure then
-			Dont_use_target_occurrences: not use_target_occurrences
+			target_ref := an_id
 		end
 
 feature -- Representation
@@ -78,14 +72,14 @@ feature -- Visitor
 			-- perform action at start of block for this node
 		do
 			precursor(visitor, depth)
-			visitor.start_archetype_internal_ref(Current, depth)
+			visitor.start_archetype_external_ref(Current, depth)
 		end
 
 	exit_subtree(visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at end of block for this node
 		do
 			precursor(visitor, depth)
-			visitor.end_archetype_internal_ref(Current, depth)
+			visitor.end_archetype_external_ref(Current, depth)
 		end
 
 end

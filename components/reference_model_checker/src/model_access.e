@@ -1,6 +1,10 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Service interface to an object model access for types and attributes mentioned in archetypes"
+	description: "[
+	             Service interface to an object model access for types and attributes defined in a schema representing an 
+	             object model, or 'reference model'. One instance of this class corresponds to one model; multiple intances
+	             might be created in a system, one for each reference model.
+	             ]"
 	keywords:    "ADL, archetype, reference model"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
@@ -20,24 +24,21 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_RESOURCES
-		export
-			{NONE} all
-		end
-
 create
 	make
 
 feature -- Initialisation
 
-	make
-			-- set up model
+	make(a_schema_full_path: STRING)
+			-- set up model from full path to model file
+		require
+			schema_full_path_attached: a_schema_full_path /= Void
 		local
 			model_file: PLAIN_TEXT_FILE
 			dt_tree: DT_COMPLEX_OBJECT_NODE
 			parser: DADL2_VALIDATOR
 		do
-			create model_file.make (default_rm_schema_file_full_path)
+			create model_file.make (a_schema_full_path)
 			if not model_file.exists or else not model_file.is_readable then
 				status := create_message ("model_access_e1", <<model_file.name>>)
 			else

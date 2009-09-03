@@ -14,11 +14,85 @@ note
 
 class SHARED_REFERENCE_MODEL_ACCESS
 
+inherit
+	MESSAGE_BILLBOARD
+		export
+			{NONE} all
+		end
+
+feature -- Definitions
+
+	schema_file_extension: STRING is ".dadl"
+
 feature -- Access
 
+	has_rm_checker (a_rm_name: STRING): BOOLEAN
+			-- True if there is a model for given RM name; side-effect: sets rm_checker to point to this item
+		require
+			rm_name_attached: a_rm_name /= Void
+		do
+			Result := rm_checkers.has_key(a_rm_name.as_lower)
+		end
+
 	rm_checker: MODEL_ACCESS
+			-- currently chosen reference model
+		do
+			if rm_checkers.found then
+				Result := rm_checkers.found_item
+			else
+				rm_checkers.start
+				Result := rm_checkers.item_for_iteration
+			end
+		end
+
+feature {NONE} -- Implementation
+
+	rm_checkers: HASH_TABLE [MODEL_ACCESS, STRING]
+		local
+			dir, rm_dir: DIRECTORY
+			a_rm_name: STRING
+			ma: MODEL_ACCESS
 		once
-			create Result.make
+			create Result.make(0)
+			create dir.make_open_read (default_rm_schema_directory)
+			if not (dir.exists and dir.is_readable) then
+				post_error (Current, "rm_checkers", "model_access_e5", <<default_rm_schema_directory>>)
+			elseif dir.is_empty then
+				post_error (Current, "rm_checkers", "model_access_e6", <<default_rm_schema_directory>>)
+			else
+				from
+					dir.start
+					dir.readentry
+				until
+					dir.lastentry = Void
+				loop
+					if dir.lastentry.item (1) /= '.' then
+						create rm_dir.make_open_read (default_rm_schema_directory + os_directory_separator.out + dir.lastentry)
+						if rm_dir.exists then
+							from
+								rm_dir.start
+								rm_dir.readentry
+							until
+								rm_dir.lastentry = Void
+							loop
+								if rm_dir.lastentry.has_substring (schema_file_extension) then
+									create ma.make(default_rm_schema_directory + os_directory_separator.out + dir.lastentry + os_directory_separator.out + rm_dir.lastentry)
+									if ma.model_loaded then
+										Result.put (ma, dir.lastentry.as_lower)
+									else
+										post_error (Current, "rm_checkers", "general", <<ma.status>>)
+									end
+								end
+								rm_dir.readentry
+							end
+						end
+					end
+					dir.readentry
+				end
+			end
+			if rm_checkers.is_empty then
+				post_error (Current, "rm_checkers", "model_access_e6", <<default_rm_schema_directory>>)
+			end
 		end
 
 end

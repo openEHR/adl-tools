@@ -42,7 +42,7 @@ create
 
 feature -- Status report
 
-	valid_start_condition (sc: INTEGER): BOOLEAN
+	valid_start_condition (sc: INTEGER): BOOLEAN is
 			-- Is `sc' a valid start condition?
 		do
 			Result := (INITIAL <= sc and sc <= IN_ASSERTION_SECTION)
@@ -50,7 +50,7 @@ feature -- Status report
 
 feature {NONE} -- Implementation
 
-	yy_build_tables
+	yy_build_tables is
 			-- Build scanner tables.
 		do
 			yy_nxt := yy_nxt_template
@@ -62,7 +62,7 @@ feature {NONE} -- Implementation
 			yy_accept := yy_accept_template
 		end
 
-	yy_execute_action (yy_act: INTEGER)
+	yy_execute_action (yy_act: INTEGER) is
 			-- Execute semantic action.
 		do
 if yy_act <= 24 then
@@ -561,7 +561,7 @@ end
 			yy_set_beginning_of_line
 		end
 
-	yy_execute_eof_action (yy_sc: INTEGER)
+	yy_execute_eof_action (yy_sc: INTEGER) is
 			-- Execute EOF semantic action.
 		do
 			inspect yy_sc
@@ -592,7 +592,7 @@ end
 
 feature {NONE} -- Table templates
 
-	yy_nxt_template: SPECIAL [INTEGER]
+	yy_nxt_template: SPECIAL [INTEGER] is
 		once
 			Result := yy_fixed_array (<<
 			    0,   10,   11,   12,   11,   13,   14,   15,   16,   17,
@@ -653,7 +653,7 @@ feature {NONE} -- Table templates
 			  213,  213,  213,  213,  213,  213,  213,  213,  213,  213, yy_Dummy>>)
 		end
 
-	yy_chk_template: SPECIAL [INTEGER]
+	yy_chk_template: SPECIAL [INTEGER] is
 		once
 			Result := yy_fixed_array (<<
 			    0,    1,    1,    1,    1,    1,    1,    1,    1,    1,
@@ -714,7 +714,7 @@ feature {NONE} -- Table templates
 			  213,  213,  213,  213,  213,  213,  213,  213,  213,  213, yy_Dummy>>)
 		end
 
-	yy_base_template: SPECIAL [INTEGER]
+	yy_base_template: SPECIAL [INTEGER] is
 		once
 			Result := yy_fixed_array (<<
 			    0,    0,   25,  460,   44,  459,   48,    0,  459,  460,
@@ -745,7 +745,7 @@ feature {NONE} -- Table templates
 			  413,  417, yy_Dummy>>)
 		end
 
-	yy_def_template: SPECIAL [INTEGER]
+	yy_def_template: SPECIAL [INTEGER] is
 		once
 			Result := yy_fixed_array (<<
 			    0,  213,    1,  214,  214,  215,  216,  215,  217,  213,
@@ -776,7 +776,7 @@ feature {NONE} -- Table templates
 			  213,  213, yy_Dummy>>)
 		end
 
-	yy_ec_template: SPECIAL [INTEGER]
+	yy_ec_template: SPECIAL [INTEGER] is
 		once
 			Result := yy_fixed_array (<<
 			    0,    1,    1,    1,    1,    1,    1,    1,    1,    2,
@@ -809,7 +809,7 @@ feature {NONE} -- Table templates
 			    1,    1,    1,    1,    1,    1,    1, yy_Dummy>>)
 		end
 
-	yy_meta_template: SPECIAL [INTEGER]
+	yy_meta_template: SPECIAL [INTEGER] is
 		once
 			Result := yy_fixed_array (<<
 			    0,    1,    1,    2,    1,    1,    1,    1,    1,    1,
@@ -819,7 +819,7 @@ feature {NONE} -- Table templates
 			    6,    1,    1,    1,    7,    5, yy_Dummy>>)
 		end
 
-	yy_accept_template: SPECIAL [INTEGER]
+	yy_accept_template: SPECIAL [INTEGER] is
 		once
 			Result := yy_fixed_array (<<
 			    0,    0,    0,    0,    0,    0,    0,    0,    0,   49,
@@ -850,48 +850,48 @@ feature {NONE} -- Table templates
 
 feature {NONE} -- Constants
 
-	yyJam_base: INTEGER = 464
+	yyJam_base: INTEGER is 464
 			-- Position in `yy_nxt'/`yy_chk' tables
 			-- where default jam table starts
 
-	yyJam_state: INTEGER = 213
+	yyJam_state: INTEGER is 213
 			-- State id corresponding to jam state
 
-	yyTemplate_mark: INTEGER = 214
+	yyTemplate_mark: INTEGER is 214
 			-- Mark between normal states and templates
 
-	yyNull_equiv_class: INTEGER = 1
+	yyNull_equiv_class: INTEGER is 1
 			-- Equivalence code for NULL character
 
-	yyReject_used: BOOLEAN = false
+	yyReject_used: BOOLEAN is false
 			-- Is `reject' called?
 
-	yyVariable_trail_context: BOOLEAN = false
+	yyVariable_trail_context: BOOLEAN is false
 			-- Is there a regular expression with
 			-- both leading and trailing parts having
 			-- variable length?
 
-	yyReject_or_variable_trail_context: BOOLEAN = false
+	yyReject_or_variable_trail_context: BOOLEAN is false
 			-- Is `reject' called or is there a
 			-- regular expression with both leading
 			-- and trailing parts having variable length?
 
-	yyNb_rules: INTEGER = 48
+	yyNb_rules: INTEGER is 48
 			-- Number of rules
 
-	yyEnd_of_buffer: INTEGER = 49
+	yyEnd_of_buffer: INTEGER is 49
 			-- End of buffer rule code
 
-	yyLine_used: BOOLEAN = false
+	yyLine_used: BOOLEAN is false
 			-- Are line and column numbers used?
 
-	yyPosition_used: BOOLEAN = false
+	yyPosition_used: BOOLEAN is false
 			-- Is `position' used?
 
-	INITIAL: INTEGER = 0
-	IN_DADL_SECTION: INTEGER = 1
-	IN_CADL_SECTION: INTEGER = 2
-	IN_ASSERTION_SECTION: INTEGER = 3
+	INITIAL: INTEGER is 0
+	IN_DADL_SECTION: INTEGER is 1
+	IN_CADL_SECTION: INTEGER is 2
+	IN_ASSERTION_SECTION: INTEGER is 3
 			-- Start condition codes
 
 feature -- User-defined features
@@ -957,7 +957,6 @@ feature {NONE} -- Constants
 				-- Initial size for `in_buffer'
 
 invariant
-
 	in_buffer_not_void: in_buffer /= Void
 
 end

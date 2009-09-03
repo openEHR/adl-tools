@@ -72,6 +72,17 @@ feature -- Access
 			["general_error"] = <"Error: $1">
 			["general"] = <"$1">
 			
+			-- MODEL_ACCESS (RM model checker)
+			["model_access_e1"] = <"Reference Model DADL file $1 does not exist or not readable">
+			["model_access_e2"] = <"Reference Model DADL parse failure; reason: $1">
+			["model_access_e3"] = <"Reference Model DADL containes unknown type $1 (object add failed)">
+			["model_access_e4"] = <"Reference Model load failure due to exception during processing">
+			["model_access_e5"] = <"Reference Model schema directory $1 does not exist or not readable">
+			["model_access_e6"] = <"Reference Model schema directory $1 does not contain any schemas (expecting structure $1/model_name/schema_file.dadl)">
+			["model_access_e7"] = <"No Reference Model schema found for model '$1'">
+			["model_access_i1"] = <"Reference Model $1 $2 loaded: $3 primitive types, $4 class definitions">
+			["model_access_w1"] = <"Reference Model checking is OFF">
+			
 			-- MAIN_WINDOW
 			["adl_version_warning"] = <"Using ADL version $1 for output serialisation">
 			["clean_generated_file"] = <"Removing generated file $1">
@@ -106,14 +117,6 @@ feature -- Access
 			["validate_e3"] = <"Error: archetype id in filename $1 does not match id at top of file $2%N">
 			["validation_strict"] = <"Validation level STRICT">
 			["validation_non_strict"] = <"Validation level NON-STRICT; non-coforming existence, occurrences & cardinality will be removed">
-			
-			-- MODEL_ACCESS (RM model checker)
-			["model_access_e1"] = <"Reference Model DADL file $1 does not exist or not readable">
-			["model_access_e2"] = <"Reference Model DADL parse failure; reason: $1">
-			["model_access_e3"] = <"Reference Model DADL containes unknown type $1 (object add failed)">
-			["model_access_e4"] = <"Reference Model load failure due to exception during processing">
-			["model_access_i1"] = <"Reference Model $1 $2 loaded: $3 primitive types, $4 class definitions">
-			["model_access_w1"] = <"Reference Model checking is OFF">
 			
 			-- DT_OBJECT_CONVERTER.dt_to_object
 			["container_type_mismatch"] = 
@@ -200,7 +203,8 @@ feature -- Access
 			["VATDF2"] = <"Error (VATDF): node id at-code $1 not defined in ontology of current archetype">
 			["VACDF1"] = <"Error (VACDF): constraint code $1 from specialisation parent not defined in ontology of any parent archetype">
 			["VACDF2"] = <"Error (VACDF): constraint code $1 not defined in ontology of current archetype">
-			["VUNP"] = <"Error (VUNP): use_node path $1 not found in archetype">
+			["VUNP"] = <"Error (VUNP): ARCHETYPE_INTERNAL_REF path $1 not found in archetype">
+			["VSUNT"] = <"Error (VSUNT): node at path $1 AOM type $2 does not conform to node at parent path $3 AOM type $4">
 
 			["VTRLA"] = <"Error (VTRLA): translations key '$1' does not match translation item language '$2'">
 			["VRDLA"] = <"Error (VRDLA): resource detail key '$1' does not match resource detail item language '$2'">
@@ -215,7 +219,7 @@ feature -- Access
 			["VSANCC"] = <"Error (VSANCC): attribute at path $1 cardinality $2 does not conform to parent $3 cardinality $4">
 			["VDIFP"] = <"Error (VDIFP): differential path $1 does not exist in reference model">
 			["VSAM"] = <"Error (VSAM): attribute at path $1 multiplicity does not correspond to that of attribute in parent or reference model">
-			["VSONNC"] = <"Error (VSONNC): $1 object node at path $2 does not conform to $3 node at parent path $4">
+			["VSONI"] = <"Error (VSONI): $1 object node at path $2 use of node identifier not conform to $3 node at parent path $4">
 			["VSONIR"] = <"Error (VSONIR): object node at path $1 (RM type $2) redefines parent node (RM type = $3) but node_id $4 not redefined">
 			["VSCNR"] = <"Error (VSCNR): illegal redefinition of $1 node at $2 in parent into $3 node at $4 in child">
 

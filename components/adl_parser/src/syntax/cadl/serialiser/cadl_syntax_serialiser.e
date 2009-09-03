@@ -25,6 +25,7 @@ inherit
 			start_c_attribute, end_c_attribute,
 			start_archetype_slot, end_archetype_slot,
 			start_archetype_internal_ref, start_constraint_ref,
+			start_archetype_external_ref,
 			start_c_code_phrase, start_c_ordinal, start_c_quantity,
 			start_c_primitive_object
 		end
@@ -211,6 +212,32 @@ feature -- Visitor
 			last_result.append (format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
 						safe_comment(ontology.physical_to_logical_path (a_node.target_path, current_language) ), STYLE_COMMENT))
 			last_result.append (format_item(FMT_NEWLINE))
+		end
+
+	start_archetype_external_ref(a_node: ARCHETYPE_EXTERNAL_REF; depth: INTEGER)
+			-- enter an ARCHETYPE_EXTERNAL_REF
+		do
+			last_result.append (create_indent(depth) + apply_style(symbol(SYM_USE_ARCHETYPE), STYLE_KEYWORD) + format_item(FMT_SPACE))
+			last_result.append (a_node.rm_type_name + format_item(FMT_SPACE))
+			serialise_type_node_id (a_node, depth)
+			serialise_occurrences(a_node, depth)
+			last_result.append (a_node.target_ref.as_string)
+			last_result.append (format_item(FMT_NEWLINE))
+		end
+
+	start_c_reference_object(a_node: C_REFERENCE_OBJECT; depth: INTEGER)
+			-- enter a C_REFERENCE_OBJECT
+		do
+		end
+
+	start_c_domain_type(a_node: C_DOMAIN_TYPE; depth: INTEGER)
+			-- enter an C_DOMAIN_TYPE
+		do
+		end
+
+	start_c_leaf_object(a_node: C_LEAF_OBJECT; depth: INTEGER)
+			-- enter a C_LEAF_OBJECT
+		do
 		end
 
 	start_constraint_ref(a_node: CONSTRAINT_REF; depth: INTEGER)

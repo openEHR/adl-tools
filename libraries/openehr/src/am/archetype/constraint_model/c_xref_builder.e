@@ -23,9 +23,6 @@ inherit
 	C_VISITOR
 		rename
 			initialise as initialise_visitor
-		redefine
-			start_c_complex_object, start_archetype_slot, start_archetype_internal_ref,
-			start_constraint_ref, start_c_code_phrase, start_c_ordinal, start_c_attribute
 		end
 
 feature -- Initialisation
@@ -64,6 +61,21 @@ feature -- Visitor
 				archetype.id_atcodes_index.item(a_node.node_id).extend (a_node)
 			end
 			archetype.slot_index.extend (a_node)
+		end
+
+	start_archetype_external_ref(a_node: ARCHETYPE_EXTERNAL_REF; depth: INTEGER)
+			-- enter an ARCHETYPE_EXTERNAL_REF
+		do
+			if a_node.is_addressable then
+				if not archetype.id_atcodes_index.has(a_node.node_id) then
+					archetype.id_atcodes_index.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.node_id)
+				end
+				archetype.id_atcodes_index.item(a_node.node_id).extend (a_node)
+			end
+			if not archetype.use_archetype_index.has(a_node.target_ref.as_string) then
+				archetype.use_archetype_index.put(create {ARRAYED_LIST[ARCHETYPE_EXTERNAL_REF]}.make(0), a_node.target_ref.as_string)
+			end
+			archetype.use_archetype_index.item(a_node.target_ref.as_string).extend (a_node)
 		end
 
 	start_archetype_internal_ref(a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER)
@@ -140,6 +152,31 @@ feature -- Visitor
 				end
 
 			end
+		end
+
+	start_c_leaf_object(a_node: C_LEAF_OBJECT; depth: INTEGER)
+			-- enter a C_LEAF_OBJECT
+		do
+		end
+
+	start_c_reference_object(a_node: C_REFERENCE_OBJECT; depth: INTEGER)
+			-- enter a C_REFERENCE_OBJECT
+		do
+		end
+
+	start_c_primitive_object(a_node: C_PRIMITIVE_OBJECT; depth: INTEGER)
+			-- enter an C_PRIMITIVE_OBJECT
+		do
+		end
+
+	start_c_domain_type(a_node: C_DOMAIN_TYPE; depth: INTEGER)
+			-- enter an C_DOMAIN_TYPE
+		do
+		end
+
+	start_c_quantity(a_node: C_DV_QUANTITY; depth: INTEGER)
+			-- enter a C_DV_QUANTITY
+		do
 		end
 
 feature {NONE} -- Implementation

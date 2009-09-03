@@ -113,6 +113,8 @@
 <div class="rhs">
 &nbsp; <span class="rhs_variable"><a href="#c_complex_object">c_complex_object</a> </span></div>
 <div class="rhs">
+| <span class="rhs_variable"><a href="#archetype_external_ref">archetype_external_ref</a> </span></div>
+<div class="rhs">
 | <span class="rhs_variable"><a href="#archetype_internal_ref">archetype_internal_ref</a> </span></div>
 <div class="rhs">
 | <span class="rhs_variable"><a href="#archetype_slot">archetype_slot</a> </span></div>
@@ -130,6 +132,15 @@
 | <span class="token">ERR_C_DOMAIN_TYPE </span></div>
 <div class="rhs">
 | <span class="token">error </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="archetype_external_ref">archetype_external_ref</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">SYM_USE_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="rhs_variable"><a href="#c_occurrences">c_occurrences</a> </span><span class="token">V_ARCHETYPE_ID </span></div>
+<div class="rhs">
+| <span class="token">SYM_USE_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">V_LOCAL_TERM_CODE_REF </span><span class="rhs_variable"><a href="#c_occurrences">c_occurrences</a> </span><span class="token">V_ARCHETYPE_ID </span></div>
 </div>
 
 <div class="rule">

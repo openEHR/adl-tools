@@ -64,6 +64,7 @@ IDCHAR [a-zA-Z0-9_]
 NAMECHAR [a-zA-Z0-9._\-]
 NAMECHAR_SPACE [a-zA-Z0-9._\- ]
 NAMECHAR_PAREN [a-zA-Z0-9._\-()]
+NAMESTR ([a-zA-Z][a-zA-Z0-9_]+)
 
 UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x80-\xBF][\x80-\xBF])|(\xF0[\x90-\xBF][\x80-\xBF][\x80-\xBF])|([\xF1-\xF7][\x80-\xBF][\x80-\xBF][\x80-\xBF]))
 
@@ -173,7 +174,7 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 
 [Uu][Ss][Ee][_][Nn][Oo][Dd][Ee]				last_token := SYM_USE_NODE
 
-[Uu][Ss][Ee][_][Aa][Rr][Cc][Hh][Ee][Tt][Yy][Pp][Ee] 	last_token := SYM_ALLOW_ARCHETYPE
+[Uu][Ss][Ee][_][Aa][Rr][Cc][Hh][Ee][Tt][Yy][Pp][Ee] 	last_token := SYM_USE_ARCHETYPE
 
 [Aa][Ll][Ll][Oo][Ww][_][Aa][Rr][Cc][Hh][Ee][Tt][Yy][Pp][Ee] 	last_token := SYM_ALLOW_ARCHETYPE
 
@@ -271,6 +272,12 @@ a[ct][0-9.]+ {
 				last_token := V_LOCAL_CODE
 				last_string_value := text
 		}
+
+----------/* archetype id */ -------------------------------------------------
+{NAMESTR}(-{NAMESTR}){2}\.{NAMESTR}(-{NAMESTR})*\.v[1-9][0-9]* {
+					last_token := V_ARCHETYPE_ID
+					last_string_value := text
+			}
 
 ----------/* V_ISO8601_EXTENDED_DATE_TIME YYYY-MM-DDThh:mm:ss[,sss][Z|+/-nnnn] */ -------------------------------------------------
 

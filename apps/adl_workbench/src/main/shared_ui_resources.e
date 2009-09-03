@@ -203,6 +203,12 @@ feature -- Access
 			Result.force (["node_normal/c_complex_object_multiple_optional.ico", "Complex ref model object (optional, multiple occurrences)"], "C_COMPLEX_OBJECT.multiple.optional")
 
 			Result.force (["node_normal/archetype_internal_ref.ico", "Archetype internal reference to previously defined node"], "ARCHETYPE_INTERNAL_REF")
+
+			Result.force (["node_normal/archetype_external_ref.ico", "Archetype reference to other archetype (mandatory, single occurrence)"], "ARCHETYPE_EXTERNAL_REF")
+			Result.force (["node_normal/archetype_external_ref_multiple.ico", "Archetype reference to other archetype (mandatory, multiple occurrences)"], "ARCHETYPE_EXTERNAL_REF.multiple")
+			Result.force (["node_normal/archetype_external_ref_optional.ico", "Archetype reference to other archetype (optional, single occurrence)"], "ARCHETYPE_EXTERNAL_REF.optional")
+			Result.force (["node_normal/archetype_external_ref_multiple_optional.ico", "Archetype reference to other archetype (optional, multiple occurrences)"], "ARCHETYPE_EXTERNAL_REF.multiple.optional")
+
 			Result.force (["node_normal/archetype_code_ref.ico", "Constraint reference (openEHR AOM)"], "CONSTRAINT_REF")
 
 			Result.force (["node_normal/term.ico", Void], "TERM")
@@ -224,11 +230,19 @@ feature -- Access
 			Result.force (["node_inherited/archetype_code_ref.ico", Void], "CONSTRAINT_REF.inherited")
 			Result.force (["node_inherited/archetype_slot_optional.ico", Void], "ARCHETYPE_SLOT.optional.inherited")
 			Result.force (["node_inherited/archetype_slot.ico", Void], "ARCHETYPE_SLOT.inherited")
+
 			Result.force (["node_inherited/c_complex_object.ico", Void], "C_COMPLEX_OBJECT.inherited")
 			Result.force (["node_inherited/c_complex_object_multiple.ico", Void], "C_COMPLEX_OBJECT.multiple.inherited")
 			Result.force (["node_inherited/c_complex_object_optional.ico", Void], "C_COMPLEX_OBJECT.optional.inherited")
 			Result.force (["node_inherited/c_complex_object_multiple_optional.ico", Void], "C_COMPLEX_OBJECT.multiple.optional.inherited")
+
+			Result.force (["node_inherited/archetype_external_ref.ico", Void], "ARCHETYPE_EXTERNAL_REF.inherited")
+			Result.force (["node_inherited/archetype_external_ref_multiple.ico", Void], "ARCHETYPE_EXTERNAL_REF.multiple.inherited")
+			Result.force (["node_inherited/archetype_external_ref_optional.ico", Void], "ARCHETYPE_EXTERNAL_REF.optional.inherited")
+			Result.force (["node_inherited/archetype_external_ref_multiple_optional.ico", Void], "ARCHETYPE_EXTERNAL_REF.multiple.optional.inherited")
+
 			Result.force (["node_inherited/archetype_internal_ref.ico", Void], "ARCHETYPE_INTERNAL_REF.inherited")
+			Result.force (["node_inherited/archetype_external_ref.ico", Void], "ARCHETYPE_EXTERNAL_REF.inherited")
 			Result.force (["node_inherited/term.ico", Void], "TERM.inherited")
 			Result.force (["node_inherited/ordinal.ico", Void], "ORDINAL.inherited")
 			Result.force (["node_normal/archetype_slot_optional.ico", Void], "ARCHETYPE_SLOT.optional.inherited")
@@ -249,7 +263,14 @@ feature -- Access
 			Result.force (["node_redefined/c_complex_object_multiple.ico", Void], "C_COMPLEX_OBJECT.multiple.redefined")
 			Result.force (["node_redefined/c_complex_object_optional.ico", Void], "C_COMPLEX_OBJECT.optional.redefined")
 			Result.force (["node_redefined/c_complex_object_multiple_optional.ico", Void], "C_COMPLEX_OBJECT.multiple.optional.redefined")
+
+			Result.force (["node_redefined/archetype_external_ref.ico", Void], "ARCHETYPE_EXTERNAL_REF.redefined")
+			Result.force (["node_redefined/archetype_external_ref_multiple.ico", Void], "ARCHETYPE_EXTERNAL_REF.multiple.redefined")
+			Result.force (["node_redefined/archetype_external_ref_optional.ico", Void], "ARCHETYPE_EXTERNAL_REF.optional.redefined")
+			Result.force (["node_redefined/archetype_external_ref_multiple_optional.ico", Void], "ARCHETYPE_EXTERNAL_REF.multiple.optional.redefined")
+
 			Result.force (["node_redefined/archetype_internal_ref.ico", Void], "ARCHETYPE_INTERNAL_REF.redefined")
+			Result.force (["node_redefined/archetype_external_ref.ico", Void], "ARCHETYPE_EXTERNAL_REF.redefined")
 			Result.force (["node_redefined/term.ico", Void], "TERM.redefined")
 			Result.force (["node_redefined/ordinal.ico", Void], "ORDINAL.redefined")
 			Result.force (["node_normal/archetype_slot_optional.ico", Void], "ARCHETYPE_SLOT.optional.redefined")

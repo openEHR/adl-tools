@@ -297,6 +297,7 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER, EXPR_XREF_BUI
 			create id_atcodes_index.make(0)
 			create data_atcodes_index.make(0)
 			create use_node_index.make(0)
+			create use_archetype_index.make(0)
 			create accodes_index.make(0)
 			create slot_index.make(0)
 
@@ -351,6 +352,10 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER, EXPR_XREF_BUI
 	use_node_index: HASH_TABLE[ARRAYED_LIST[ARCHETYPE_INTERNAL_REF], STRING]
 			-- table of {list<ARCHETYPE_INTERNAL_REF>, target_path}
 			-- i.e. <list of use_nodes> keyed by path they point to
+
+	use_archetype_index: HASH_TABLE[ARRAYED_LIST[ARCHETYPE_EXTERNAL_REF], STRING]
+			-- table of {list<ARCHETYPE_EXTERNAL_REF>, target_ref}
+			-- i.e. <list of use_archetype nodes> keyed by archetype id they refer to
 
 	invariants_index: HASH_TABLE[ARRAYED_LIST[EXPR_LEAF], STRING]
 			-- table of {list<EXPR_LEAF>, target_path}

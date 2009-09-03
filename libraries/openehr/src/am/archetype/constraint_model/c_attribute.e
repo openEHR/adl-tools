@@ -128,11 +128,7 @@ feature -- Access
 			a_lower, an_upper: INTEGER
 			an_upper_unbounded: BOOLEAN
 		do
-			from
-				children.start
-			until
-				children.off
-			loop
+			from children.start until children.off loop
 				a_lower := a_lower + children.item.occurrences.lower
 				an_upper_unbounded := children.item.occurrences.upper_unbounded
 				if not an_upper_unbounded then
@@ -210,11 +206,7 @@ feature -- Access
 			-- nodes with ids 'at0013.1', 'at0013.2', 'at0013.1.5' and so on
 		do
 			create Result.make(0)
-			from
-				children.start
-			until
-				children.off
-			loop
+			from children.start until children.off loop
  				if children.item.node_id.has_substring (a_node_id) then
  					Result.extend (children.item)
  				end
@@ -627,11 +619,7 @@ feature {NONE} -- Implementation
 				io.put_string("%T%Tabout to REPARENT attribute Current (" + rm_attribute_path + ") from parent object " + p.rm_type_name + "[" + p.node_id + "]%N")
 			end
 			p.remove_attribute (Current)
-			from
-				csr := p
-			until
-				csr.parent = Void
-			loop
+			from csr := p until csr.parent = Void loop
 				if attached {C_COMPLEX_OBJECT} csr.parent as cco and attached {C_ATTRIBUTE} csr as ca then
 					if not ca.has_children then
 						debug("compress")

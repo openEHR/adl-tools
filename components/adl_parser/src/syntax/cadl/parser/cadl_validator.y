@@ -56,6 +56,7 @@ inherit
 create
 	make
 %}
+%token <STRING> V_ARCHETYPE_ID
 %token <INTEGER> V_INTEGER 
 %token <REAL> V_REAL 
 %token <STRING> V_TYPE_IDENTIFIER V_GENERIC_TYPE_IDENTIFIER V_ATTRIBUTE_IDENTIFIER V_FEATURE_CALL_IDENTIFIER V_STRING
@@ -81,7 +82,7 @@ create
 
 %token SYM_EXISTENCE SYM_OCCURRENCES SYM_CARDINALITY 
 %token SYM_UNORDERED SYM_ORDERED SYM_UNIQUE SYM_ELLIPSIS SYM_INFINITY SYM_LIST_CONTINUE
-%token SYM_INVARIANT SYM_MATCHES SYM_ALLOW_ARCHETYPE SYM_USE_NODE 
+%token SYM_INVARIANT SYM_MATCHES SYM_USE_ARCHETYPE SYM_ALLOW_ARCHETYPE SYM_USE_NODE 
 %token SYM_INCLUDE SYM_EXCLUDE
 %token SYM_AFTER SYM_BEFORE
 %token SYM_DT_UNKNOWN
@@ -98,6 +99,9 @@ create
 %right SYM_NOT
 
 %type <ARRAYED_LIST [ASSERTION]> assertions c_includes c_excludes
+
+%type <ARCHETYPE_EXTERNAL_REF> archetype_external_ref
+%type <ARCHETYPE_INTERNAL_REF> archetype_internal_ref
 
 %type <STRING> type_identifier
 %type <SIBLING_ORDER> sibling_order
@@ -188,26 +192,30 @@ c_complex_object_head: c_complex_object_id c_occurrences
 				complex_obj.set_occurrences($2)
 			end
 
-			debug("ADL_parse")
-				io.put_string(indent + "PUSH create OBJECT_NODE " + complex_obj.rm_type_name + " [id=" + complex_obj.node_id + "] ")
-				if $2 /= Void then
-					io.put_string("; occurrences=(" + $2.as_string + ")") 
+			if rm_checker.has_class_definition (complex_obj.rm_type_name) then
+				object_nodes.extend(complex_obj)
+				debug("ADL_parse")
+					io.put_string(indent + "PUSH create OBJECT_NODE " + complex_obj.rm_type_name + " [id=" + complex_obj.node_id + "] ")
+					if $2 /= Void then
+						io.put_string("; occurrences=(" + $2.as_string + ")") 
+					end
+					io.new_line
+					indent.append("%T")
 				end
-				io.new_line
-				indent.append("%T")
-			end
-			
-			object_nodes.extend(complex_obj)
+				
 
-			-- put it under current attribute, unless it is the root object, in which case it will be returned
-			-- via the 'output' attribute of this parser
-			if not c_attrs.is_empty then
-				safe_put_c_attribute_child(c_attrs.item, complex_obj)
-			end
+				-- put it under current attribute, unless it is the root object, in which case it will be returned
+				-- via the 'output' attribute of this parser
+				if not c_attrs.is_empty then
+					safe_put_c_attribute_child(c_attrs.item, complex_obj)
+				end
 
-			-- set root node to current node if not already set - guarantees it is set to outermost block
-			if output = Void then
-				output := object_nodes.item
+				-- set root node to current node if not already set - guarantees it is set to outermost block
+				if output = Void then
+					output := object_nodes.item
+				end
+			else
+				abort_with_error("VCORM", <<complex_obj.rm_type_name, complex_obj.path>>)
 			end
 		}
 	;
@@ -260,9 +268,13 @@ c_complex_object_body: c_any -- used to indicate that any value of a type is ok
 c_object: c_complex_object 
 		{
 		}
+	| archetype_external_ref 
+		{
+			safe_put_c_attribute_child(c_attrs.item, $1)
+		}
 	| archetype_internal_ref 
 		{
-			safe_put_c_attribute_child(c_attrs.item, archetype_internal_ref)
+			safe_put_c_attribute_child(c_attrs.item, $1)
 		}
 	| archetype_slot
 		{
@@ -299,26 +311,46 @@ c_object: c_complex_object
 		}
 	;
 
+archetype_external_ref: SYM_USE_ARCHETYPE type_identifier c_occurrences V_ARCHETYPE_ID
+		{
+			if (create {ARCHETYPE_ID}.default_create).valid_id($4) then
+				create $$.make_anonymous($2, create {ARCHETYPE_ID}.make_from_string($4))
+				if $3 /= Void then
+					$$.set_occurrences($3)
+				end
+			end
+		}
+	| SYM_USE_ARCHETYPE type_identifier V_LOCAL_TERM_CODE_REF c_occurrences V_ARCHETYPE_ID
+		{
+			if (create {ARCHETYPE_ID}.default_create).valid_id($5) then
+				create $$.make_identified($2, $3, create {ARCHETYPE_ID}.make_from_string($5))
+				if $4 /= Void then
+					$$.set_occurrences($4)
+				end
+			end
+		}
+	;
+
 archetype_internal_ref: SYM_USE_NODE type_identifier c_occurrences absolute_path 
 		{
-			create archetype_internal_ref.make($2, $4.as_string)
+			create $$.make($2, $4.as_string)
 			if $3 /= Void then
-				archetype_internal_ref.set_occurrences($3)
+				$$.set_occurrences($3)
 			end
 
 			debug("ADL_parse")
 				io.put_string(indent + "create ARCHETYPE_INTERNAL_REF ")
-				if archetype_internal_ref.use_target_occurrences then
+				if $$.use_target_occurrences then
 					io.put_string("occurrences=(use target) ")
 				elseif $3 /= Void then
-					io.put_string("occurrences=" + archetype_internal_ref.occurrences.as_string + " ")
+					io.put_string("occurrences=" + $$.occurrences.as_string + " ")
 				end
-				io.put_string(archetype_internal_ref.rm_type_name + " path=" + archetype_internal_ref.target_path + "%N") 
+				io.put_string($$.rm_type_name + " path=" + $$.target_path + "%N") 
 				io.put_string(indent + "C_ATTR " + c_attrs.item.rm_attribute_name + " put_child(ARCHETYPE_INTERNAL_REF)%N") 
 			end
 
-			if (c_attrs.item.is_multiple or c_attrs.item.child_count > 1) and not archetype_internal_ref.is_addressable and not $4.last.object_id.is_empty then
-				archetype_internal_ref.set_node_id($4.last.object_id)
+			if (c_attrs.item.is_multiple or c_attrs.item.child_count > 1) and not $$.is_addressable and not $4.last.object_id.is_empty then
+				$$.set_node_id($4.last.object_id)
 			end
 		}
 	| SYM_USE_NODE type_identifier error 
@@ -2277,8 +2309,12 @@ feature {NONE} -- Implementation
 						an_obj.generating_type + ": " + an_obj.rm_type_name + " [id=" + an_obj.node_id + "])%N") 
 				
 			end
-			if check_c_attribute_child(an_attr, an_obj) then
-				c_attrs.item.put_child(an_obj)
+			if rm_checker.has_class_definition (an_obj.rm_type_name) then
+				if check_c_attribute_child(an_attr, an_obj) then
+					c_attrs.item.put_child(an_obj)
+				end
+			else
+				abort_with_error("VCORM", <<an_obj.rm_type_name, an_obj.path>>)
 			end
 		end
 
@@ -2349,7 +2385,6 @@ feature {NONE} -- Parse Tree
 	c_prim_obj: C_PRIMITIVE_OBJECT
 	c_code_phrase_obj: C_CODE_PHRASE
 	constraint_ref: CONSTRAINT_REF
-	archetype_internal_ref: ARCHETYPE_INTERNAL_REF
 	archetype_slot: ARCHETYPE_SLOT
 
 	ordinal_node: C_DV_ORDINAL

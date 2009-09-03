@@ -247,13 +247,11 @@ feature -- Status setting
 				set_html_export_directory (file_system.pathname (file_system.absolute_parent_directory (reference_repository_path), "html"))
 			end
 
-			if not rm_checker.model_loaded then
-				create quit_dialog.make_with_text (create_message ("general_error", <<rm_checker.status>>))
+			if rm_checker = Void then
+				create quit_dialog.make_with_text (create_message ("general", <<"Reference Model schema load failure">>))
 				quit_dialog.set_title ("Reference Model schema load failure")
 				quit_dialog.show_modal_to_window (Current)
 				ev_application.destroy
-			else
-				post_info (Current, "show", "general", <<rm_checker.status>>)
 			end
 
 			if not adl_version_for_flat_output.is_empty then
