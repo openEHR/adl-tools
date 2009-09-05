@@ -16,7 +16,7 @@ note
 	last_change: "$LastChangedDate$"
 
 
-class MODEL_ACCESS
+class SCHEMA_ACCESS
 
 inherit
 	SHARED_MESSAGE_DB
@@ -48,12 +48,12 @@ feature -- Initialisation
 				parser.execute(model_file.last_string, 1)
 				if not parser.syntax_error then
 					dt_tree := parser.output
-					model ?= dt_tree.as_object_from_string("BMM_MODEL")
-					if model = Void then
+					schema ?= dt_tree.as_object_from_string("BMM_SCHEMA")
+					if schema = Void then
 						status := create_message ("model_access_e4", Void)
 					else
-						model.dt_finalise
-						status := model.status
+						schema.dt_finalise
+						status := schema.status
 					end
 				else
 					status := create_message ("model_access_e2", <<parser.error_text>>)
@@ -70,7 +70,7 @@ feature -- Access
 			Model_loaded: model_loaded
 			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
 		do
-			Result := model.class_definition (a_type_name)
+			Result := schema.class_definition (a_type_name)
 		end
 
 	ancestor_classes_of (a_class_name: STRING): ARRAYED_LIST [STRING]
@@ -80,7 +80,7 @@ feature -- Access
 			Model_loaded: model_loaded
 			Type_valid: a_class_name /= Void and then has_class_definition (a_class_name)
 		do
-			Result := model.ancestor_classes_of(a_class_name)
+			Result := schema.ancestor_classes_of(a_class_name)
 		ensure
 			Result_exists: Result /= Void
 		end
@@ -91,7 +91,7 @@ feature -- Access
 			Model_loaded: model_loaded
 			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
 		do
-			Result := model.class_definition (a_type_name).properties
+			Result := schema.class_definition (a_type_name).properties
 		ensure
 			Result_exists: Result /= Void
 		end
@@ -102,7 +102,7 @@ feature -- Access
 			Model_loaded: model_loaded
 			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
 		do
-			Result := model.class_definition (a_type_name).flat_properties
+			Result := schema.class_definition (a_type_name).flat_properties
 		ensure
 			Result_exists: Result /= Void
 		end
@@ -114,7 +114,7 @@ feature -- Access
 			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
 			Property_valid: a_property /= Void and then has_property(a_type_name, a_property)
 		do
-			Result := model.property_definition (a_type_name, a_property).type.as_flattened_type_string
+			Result := schema.property_definition (a_type_name, a_property).type.as_flattened_type_string
 		ensure
 			Result_exists: Result /= Void
 		end
@@ -126,7 +126,7 @@ feature -- Access
 			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
 			Property_valid: a_property /= Void and then has_property(a_type_name, a_property)
 		do
-			Result := model.property_definition(a_type_name, a_property)
+			Result := schema.property_definition(a_type_name, a_property)
 		end
 
 	property_definition_at_path (a_type_name, a_property_path: STRING): BMM_PROPERTY_DEFINITION
@@ -136,10 +136,10 @@ feature -- Access
 			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
 			Property_path_valid: a_property_path /= Void and then has_property_path(a_type_name, a_property_path)
 		do
-			Result := model.property_definition_at_path (a_type_name, a_property_path)
+			Result := schema.property_definition_at_path (a_type_name, a_property_path)
 		end
 
-	model: BMM_MODEL
+	schema: BMM_SCHEMA
 			-- computable form of model
 
 	substitutions: HASH_TABLE [STRING, STRING]
@@ -158,7 +158,7 @@ feature -- Status Report
 	model_loaded: BOOLEAN
 			-- True if a model is available to interrogate
 		do
-			Result := model /= Void
+			Result := schema /= Void
 		end
 
 	status: STRING
@@ -171,7 +171,7 @@ feature -- Status Report
 			Sub_type_valid: a_sub_type /= Void and then not a_sub_type.is_empty
 			Parent_type_valid: a_parent_type /= Void and then not a_parent_type.is_empty
 		do
-			Result := model.has_class_definition (a_parent_type) and then model.is_sub_class_of (a_sub_type, a_parent_type)
+			Result := schema.has_class_definition (a_parent_type) and then schema.is_sub_class_of (a_sub_type, a_parent_type)
 		end
 
 	has_property (a_type_name, a_property: STRING): BOOLEAN
@@ -181,7 +181,7 @@ feature -- Status Report
 			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
 			Property_valid: a_property /= Void and then not a_property.is_empty
 		do
-			Result := model.has_property(a_type_name, a_property)
+			Result := schema.has_property(a_type_name, a_property)
 		end
 
 	has_class_definition (a_type_name: STRING): BOOLEAN
@@ -191,7 +191,7 @@ feature -- Status Report
 			Model_loaded: model_loaded
 			Type_valid: a_type_name /= Void and then not a_type_name.is_empty
 		do
-			Result := model.has_class_definition (a_type_name)
+			Result := schema.has_class_definition (a_type_name)
 		end
 
 	valid_property_type (a_type_name, a_property_name, a_property_type_name: STRING): BOOLEAN
@@ -202,8 +202,8 @@ feature -- Status Report
 			Property_valid: a_property_name /= Void and then has_property(a_type_name, a_property_name)
 			Property_type_name_valid: a_property_type_name /= Void and then has_class_definition (a_property_type_name)
 		do
-			if model.valid_type_for_class (a_type_name, a_type_name) and model.valid_type_for_class(a_property_type_name, a_property_type_name) then
-				Result := type_conforms_to (model.class_definition (a_property_type_name), model.property_definition (a_type_name, a_property_name).type)
+			if schema.valid_type_for_class (a_type_name, a_type_name) and schema.valid_type_for_class(a_property_type_name, a_property_type_name) then
+				Result := type_conforms_to (schema.class_definition (a_property_type_name), schema.property_definition (a_type_name, a_property_name).type)
 			end
 		end
 
@@ -228,7 +228,7 @@ feature -- Status Report
 				loop
 					Result := Result and
 						(tlist1.item.is_equal (tlist2.item) or else
-						model.class_definition (tlist1.item).has_ancestor(tlist2.item))
+						schema.class_definition (tlist1.item).has_ancestor(tlist2.item))
 					tlist1.forth
 					tlist2.forth
 				end
@@ -243,7 +243,7 @@ feature -- Status Report
 			object_type_attached: an_obj_type /= Void
 			path_attached: a_path /= Void
 		do
-			Result := model.has_property_path (an_obj_type, a_path)
+			Result := schema.has_property_path (an_obj_type, a_path)
 		end
 
 end

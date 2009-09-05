@@ -388,7 +388,7 @@ feature -- Commands
 				clear_billboard
 				set_parse_attempted
 
-				if has_rm_checker (id.rm_originator) then
+				if has_rm_checker (id.qualified_rm_name) then
 					if has_differential_file and not is_flat_out_of_date then
 						post_info (Current, "parse_archetype", "parse_archetype_i3", Void)
 						read_differential
@@ -430,7 +430,7 @@ feature -- Commands
 						end
 					end
 				else
-					post_error (Current, "parse_archetype", "model_access_e7", <<id.rm_originator>>)
+					post_error (Current, "parse_archetype", "model_access_e7", <<id.qualified_rm_name>>)
 				end
 			else
 				post_error (Current, "parse_archetype", "parse_archetype_e3", Void)

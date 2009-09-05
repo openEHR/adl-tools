@@ -12,7 +12,7 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class BMM_MODEL
+class BMM_SCHEMA
 
 inherit
 	BMM_DEFINITIONS
@@ -42,11 +42,15 @@ feature -- Initialisation
 
 feature -- Access
 
-	model_name: STRING
-			-- name of the model
+	name: STRING
+			-- name of schema
 
-	model_release: STRING
-			-- release identifier of the model
+	release: STRING
+			-- release of schema
+
+	model_names: ARRAYED_LIST [STRING]
+			-- list of models included in schema - these are models on which archteypes are based, and their names
+			-- correspond to the first 2 sectoins of the 3-part archetype RM entity identifer, e.g. "openEHR-EHR"
 
 	primitive_types: HASH_TABLE [BMM_CLASS_DEFINITION, STRING]
 			-- types like Integer, Boolean etc
@@ -107,7 +111,7 @@ feature -- Access
 			-- status report on model
 		do
 			create Result.make(0)
-			Result.append (create_message ("model_access_i1", << model_name, model_release, primitive_types.count.out, class_definitions.count.out >>))
+			Result.append (create_message ("model_access_i1", << name, release, primitive_types.count.out, class_definitions.count.out >>))
 		end
 
 	ancestor_classes_of (a_class_name: STRING): ARRAYED_LIST [STRING]

@@ -73,10 +73,10 @@ feature -- Access
 			["general"] = <"$1">
 			
 			-- MODEL_ACCESS (RM model checker)
-			["model_access_e1"] = <"Reference Model DADL file $1 does not exist or not readable">
-			["model_access_e2"] = <"Reference Model DADL parse failure; reason: $1">
-			["model_access_e3"] = <"Reference Model DADL containes unknown type $1 (object add failed)">
-			["model_access_e4"] = <"Reference Model load failure due to exception during processing">
+			["model_access_e1"] = <"Reference Model schema file $1 does not exist or not readable">
+			["model_access_e2"] = <"Reference Model schema parse failure; reason: $1">
+			["model_access_e3"] = <"Reference Model schema containes unknown type $1 (object add failed)">
+			["model_access_e4"] = <"Reference Model schema load failure due to exception during processing">
 			["model_access_e5"] = <"Reference Model schema directory $1 does not exist or not readable">
 			["model_access_e6"] = <"Reference Model schema directory $1 does not contain any schemas (expecting structure $1/model_name/schema_file.dadl)">
 			["model_access_e7"] = <"No Reference Model schema found for model '$1'">

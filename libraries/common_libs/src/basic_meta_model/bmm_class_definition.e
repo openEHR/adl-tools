@@ -183,7 +183,7 @@ feature -- Status Report
 
 feature -- Commands
 
-	dt_finalise (a_bmmm: BMM_MODEL) is
+	dt_finalise (a_bmmm: BMM_SCHEMA) is
 			-- synchronise structures after creation by DT deserialiser
 		do
 			bmm_model := a_bmmm
@@ -239,7 +239,7 @@ feature -- Output
 			Result := as_type_string
 		end
 
-feature {BMM_MODEL} -- Implementation
+feature {BMM_SCHEMA} -- Implementation
 
 	add_immediate_descendant(a_bmm_class: BMM_CLASS_DEFINITION)
 			-- add a class def to the descendants list
@@ -252,7 +252,7 @@ feature {BMM_CLASS_DEFINITION} -- Implementation
 	flat_properties_cache: HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
 			-- reference list of all attributes due to inheritance flattening of this type
 
-	bmm_model: BMM_MODEL
+	bmm_model: BMM_SCHEMA
 			-- reverse reference, set after initialisation from input schema
 
 feature {DT_OBJECT_CONVERTER} -- Conversion

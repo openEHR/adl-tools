@@ -86,12 +86,27 @@ feature -- Access
 
 	qualified_rm_entity: attached STRING
 			-- identification of Reference Model entity being archetyped
-			-- e.g. openehr-ehr_rm-entry, hl7-cda-section, hl7-rim-act_relationship
+			-- e.g. openEHR-EHR-entry, HL7-CDA-SECTION
 		local
 			p: INTEGER
 		do
 			p := value.index_of (axis_separator, 1) - 1
 			Result := value.substring (1, p)
+		ensure
+			not_empty: not Result.is_empty
+		end
+
+	qualified_rm_name: attached STRING
+			-- identification of Reference Model name
+			-- e.g. openEHR-EHR, HL7-CDA
+		local
+			s: STRING
+			p, q: INTEGER
+		do
+			s := qualified_rm_entity
+			p := s.index_of(section_separator, 1) + 1
+			q := s.index_of(section_separator, p) - 1
+			Result := s.substring(1, q)
 		ensure
 			not_empty: not Result.is_empty
 		end

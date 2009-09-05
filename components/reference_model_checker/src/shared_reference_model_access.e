@@ -34,7 +34,7 @@ feature -- Access
 			Result := rm_checkers.has_key(a_rm_name.as_lower)
 		end
 
-	rm_checker: MODEL_ACCESS
+	rm_checker: SCHEMA_ACCESS
 			-- currently chosen reference model
 		do
 			if rm_checkers.found then
@@ -47,11 +47,11 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	rm_checkers: HASH_TABLE [MODEL_ACCESS, STRING]
+	rm_checkers: HASH_TABLE [SCHEMA_ACCESS, STRING]
 		local
 			dir, rm_dir: DIRECTORY
 			a_rm_name: STRING
-			ma: MODEL_ACCESS
+			ma: SCHEMA_ACCESS
 		once
 			create Result.make(0)
 			create dir.make_open_read (default_rm_schema_directory)
@@ -78,7 +78,10 @@ feature {NONE} -- Implementation
 								if rm_dir.lastentry.has_substring (schema_file_extension) then
 									create ma.make(default_rm_schema_directory + os_directory_separator.out + dir.lastentry + os_directory_separator.out + rm_dir.lastentry)
 									if ma.model_loaded then
-										Result.put (ma, dir.lastentry.as_lower)
+										from ma.schema.model_names.start until  ma.schema.model_names.off loop
+											Result.put (ma, ma.schema.model_names.item.as_lower)
+											ma.schema.model_names.forth
+										end
 									else
 										post_error (Current, "rm_checkers", "general", <<ma.status>>)
 									end
