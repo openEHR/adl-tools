@@ -193,8 +193,8 @@ feature -- Environment
 
 	default_rm_schema_directory: STRING
 			-- directory of Reference Model schema files; same as full path to app + "/rm_schemas";
-			-- following this, the structure is "model_name/schema_file.dadl" e.g.
-			-- .../rm_schemas/openehr/openehr_102.dadl
+			-- contains schema files in .dadl format e.g.
+			-- .../rm_schemas/openehr_rm_102.dadl
 		once
 			Result := application_startup_directory.twin
 			Result.append(os_directory_separator.out + "rm_schemas")

@@ -66,28 +66,15 @@ feature {NONE} -- Implementation
 				until
 					dir.lastentry = Void
 				loop
-					if dir.lastentry.item (1) /= '.' then
-						create rm_dir.make_open_read (default_rm_schema_directory + os_directory_separator.out + dir.lastentry)
-						if rm_dir.exists then
-							from
-								rm_dir.start
-								rm_dir.readentry
-							until
-								rm_dir.lastentry = Void
-							loop
-								if rm_dir.lastentry.has_substring (schema_file_extension) then
-									create ma.make(default_rm_schema_directory + os_directory_separator.out + dir.lastentry + os_directory_separator.out + rm_dir.lastentry)
-									if ma.model_loaded then
-										from ma.schema.model_names.start until  ma.schema.model_names.off loop
-											Result.put (ma, ma.schema.model_names.item.as_lower)
-											ma.schema.model_names.forth
-										end
-									else
-										post_error (Current, "rm_checkers", "general", <<ma.status>>)
-									end
-								end
-								rm_dir.readentry
+					if dir.lastentry.has_substring (schema_file_extension) then
+						create ma.make(default_rm_schema_directory + os_directory_separator.out + dir.lastentry)
+						if ma.model_loaded then
+							from ma.schema.model_names.start until  ma.schema.model_names.off loop
+								Result.put (ma, ma.schema.model_names.item.as_lower)
+								ma.schema.model_names.forth
 							end
+						else
+							post_error (Current, "rm_checkers", "general", <<ma.status>>)
 						end
 					end
 					dir.readentry
