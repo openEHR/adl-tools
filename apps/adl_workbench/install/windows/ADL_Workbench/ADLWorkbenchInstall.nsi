@@ -76,13 +76,15 @@ Section -Main SEC0000
     File ..\..\..\app\news.txt
     File ..\..\..\app\ArchetypeRepositoryReport.xsl
     File ..\..\..\app\ArchetypeRepositoryReport.css
-    File ..\..\..\app\rm_schemas\openehr\*
-
-    SetOutPath $INSTDIR\vim
-    File ..\..\..\etc\vim\*
 
     SetOutPath $INSTDIR\icons
     File /r /x .svn ..\..\..\app\icons\*
+
+    SetOutPath $INSTDIR\rm_schemas
+    File ..\..\..\app\rm_schemas\*
+
+    SetOutPath $INSTDIR\vim
+    File ..\..\..\etc\vim\*
 
     WriteRegStr HKLM "${REGKEY}\Components" Main 1
 SectionEnd
@@ -125,11 +127,11 @@ Section /o un.Main UNSEC0000
 
     Delete /REBOOTOK $INSTDIR\adl_workbench.exe
     Delete /REBOOTOK $INSTDIR\news.txt
-    Delete /REBOOTOK $INSTDIR\rm_schema.dadl
     Delete /REBOOTOK $INSTDIR\ArchetypeRepositoryReport.xsl
     Delete /REBOOTOK $INSTDIR\ArchetypeRepositoryReport.css
-    RMDir /r /REBOOTOK $INSTDIR\vim
     RMDir /r /REBOOTOK $INSTDIR\icons
+    RMDir /r /REBOOTOK $INSTDIR\rm_schemas
+    RMDir /r /REBOOTOK $INSTDIR\vim
     DeleteRegValue HKLM "${REGKEY}\Components" Main
 SectionEnd
 
