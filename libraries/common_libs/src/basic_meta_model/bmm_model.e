@@ -42,10 +42,10 @@ feature -- Initialisation
 
 feature -- Access
 
-	name: STRING
+	schema_name: STRING
 			-- name of schema
 
-	release: STRING
+	schema_release: STRING
 			-- release of schema
 
 	model_names: ARRAYED_LIST [STRING]
@@ -111,7 +111,7 @@ feature -- Access
 			-- status report on model
 		do
 			create Result.make(0)
-			Result.append (create_message ("model_access_i1", << name, release, primitive_types.count.out, class_definitions.count.out >>))
+			Result.append (create_message ("model_access_i1", << schema_name, schema_release, primitive_types.count.out, class_definitions.count.out >>))
 		end
 
 	ancestor_classes_of (a_class_name: STRING): ARRAYED_LIST [STRING]

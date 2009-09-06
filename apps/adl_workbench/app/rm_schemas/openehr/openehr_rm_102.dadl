@@ -14,8 +14,8 @@
 -- 	last_change: $LastChangedDate$
 -- 
 
-name = <"openehr">
-release = <"1.0.2">
+schema_name = <"openehr_rm">
+schema_release = <"1.0.2">
 model_names = <"openEHR-EHR", "openEHR-DEMOGRAPHIC">
 
 ------------------------------------------------------
