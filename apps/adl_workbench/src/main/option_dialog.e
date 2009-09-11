@@ -92,11 +92,20 @@ feature {NONE} -- Implementation
 			end
 
 			populate_ev_combo_from_hash_keys (parser_error_reporting_level_combo_box, message_type_ids)
-
 			parser_error_reporting_level_combo_box.do_all (
 				agent (li: EV_LIST_ITEM)
 					do
 						if li.text.same_string (message_type_names.item (status_reporting_level)) then
+							li.enable_select
+						end
+					end
+			)
+
+			adl_save_version_combo_box.set_strings(Adl_versions)
+			adl_save_version_combo_box.do_all (
+				agent (li: EV_LIST_ITEM)
+					do
+						if li.text.same_string (use_flat_adl_version) then
 							li.enable_select
 						end
 					end
@@ -131,6 +140,7 @@ feature {NONE} -- Implementation
 			set_strict_validation(validation_strict_check_button.is_selected)
 			set_status_reporting_level (message_type_ids.item (parser_error_reporting_level_combo_box.text))
 			set_html_export_directory (export_html_text.text)
+			set_use_flat_adl_version(adl_save_version_combo_box.text)
 
 			has_changed_options := True
 		end

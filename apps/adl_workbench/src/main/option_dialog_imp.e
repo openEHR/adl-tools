@@ -56,9 +56,11 @@ feature {NONE}-- Initialization
 			create validation_strict_check_button
 			create l_ev_horizontal_box_7
 			create l_ev_label_3
+			create adl_save_version_combo_box
+			create l_ev_horizontal_box_8
+			create l_ev_label_4
 			create export_html_text
 			create export_html_browse_button
-			create l_ev_horizontal_box_8
 			create l_ev_horizontal_box_9
 			create l_ev_cell_1
 			create ok_button
@@ -86,9 +88,11 @@ feature {NONE}-- Initialization
 			l_ev_horizontal_box_6.extend (validation_strict_check_button)
 			l_ev_vertical_box_1.extend (l_ev_horizontal_box_7)
 			l_ev_horizontal_box_7.extend (l_ev_label_3)
-			l_ev_horizontal_box_7.extend (export_html_text)
-			l_ev_horizontal_box_7.extend (export_html_browse_button)
+			l_ev_horizontal_box_7.extend (adl_save_version_combo_box)
 			l_ev_vertical_box_1.extend (l_ev_horizontal_box_8)
+			l_ev_horizontal_box_8.extend (l_ev_label_4)
+			l_ev_horizontal_box_8.extend (export_html_text)
+			l_ev_horizontal_box_8.extend (export_html_browse_button)
 			l_ev_vertical_box_1.extend (l_ev_horizontal_box_9)
 			l_ev_horizontal_box_9.extend (l_ev_cell_1)
 			l_ev_horizontal_box_9.extend (ok_button)
@@ -112,7 +116,6 @@ feature {NONE}-- Initialization
 			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_3)
 			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_4)
 			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_5)
-			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_7)
 			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_8)
 			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_9)
 			l_ev_frame_1.set_text ("Editors")
@@ -155,8 +158,15 @@ feature {NONE}-- Initialization
 			l_ev_horizontal_box_7.set_padding (10)
 			l_ev_horizontal_box_7.set_border_width (10)
 			l_ev_horizontal_box_7.disable_item_expand (l_ev_label_3)
-			l_ev_horizontal_box_7.disable_item_expand (export_html_browse_button)
-			l_ev_label_3.set_text ("Export HTML to:")
+			l_ev_horizontal_box_7.disable_item_expand (adl_save_version_combo_box)
+			l_ev_label_3.set_text ("ADL version for serialisation")
+			l_ev_label_3.set_tooltip ("which version of the ADL syntax to use when saving archetypes")
+			l_ev_horizontal_box_8.set_padding (10)
+			l_ev_horizontal_box_8.set_border_width (10)
+			l_ev_horizontal_box_8.disable_item_expand (l_ev_label_4)
+			l_ev_horizontal_box_8.disable_item_expand (export_html_text)
+			l_ev_horizontal_box_8.disable_item_expand (export_html_browse_button)
+			l_ev_label_4.set_text ("Export HTML to:")
 			color_constant_set_procedures.extend (agent export_html_text.set_background_color (?))
 			color_constant_retrieval_functions.extend (agent editable_colour)
 			export_html_text.set_minimum_width (300)
@@ -195,10 +205,10 @@ feature {NONE}-- Initialization
 
 feature -- Access
 
-	parser_error_reporting_level_combo_box: EV_COMBO_BOX
+	parser_error_reporting_level_combo_box, adl_save_version_combo_box: EV_COMBO_BOX
 	l_ev_cell_1: EV_CELL
-	editor_command_add_button, editor_command_browse_button,
-	export_html_browse_button, ok_button, cancel_button: EV_BUTTON
+	editor_command_add_button,
+	editor_command_browse_button, export_html_browse_button, ok_button, cancel_button: EV_BUTTON
 	editor_command_text: EV_TEXT
 	l_ev_horizontal_box_1,
 	l_ev_horizontal_box_2, l_ev_horizontal_box_3, l_ev_horizontal_box_4, l_ev_horizontal_box_5,
@@ -208,7 +218,7 @@ feature -- Access
 	show_definition_tree_expanded_check_button, show_line_numbers_check_button,
 	display_archetype_source_check_button, validation_strict_check_button: EV_CHECK_BUTTON
 	l_ev_label_1,
-	l_ev_label_2, l_ev_label_3: EV_LABEL
+	l_ev_label_2, l_ev_label_3, l_ev_label_4: EV_LABEL
 	export_html_text: EV_TEXT_FIELD
 	l_ev_frame_1: EV_FRAME
 

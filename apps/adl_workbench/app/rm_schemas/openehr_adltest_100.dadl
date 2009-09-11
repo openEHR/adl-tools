@@ -190,6 +190,459 @@ primitive_types = <
 
 class_definitions = <
 
+	["WHOLE"] = <
+		name = <"WHOLE">
+		ancestors = </primitive_types["Any"], ...>
+		properties = <
+			["string_attr1"] = (BMM_SINGLE_PROPERTY) <
+				name = <"string_attr1">
+				type = </primitive_types["String"]>
+			>
+			["string_attr2"] = (BMM_SINGLE_PROPERTY) <
+				name = <"string_attr2">
+				type = </primitive_types["String"]>
+			>
+			["string_attr3"] = (BMM_SINGLE_PROPERTY) <
+				name = <"string_attr3">
+				type = </primitive_types["String"]>
+			>
+			["string_attr4"] = (BMM_SINGLE_PROPERTY) <
+				name = <"string_attr4">
+				type = </primitive_types["String"]>
+			>
+			["string_attr5"] = (BMM_SINGLE_PROPERTY) <
+				name = <"string_attr5">
+				type = </primitive_types["String"]>
+			>
+
+			["boolean_attr1"] = (BMM_SINGLE_PROPERTY) <
+				name = <"boolean_attr1">
+				type = </primitive_types["Boolean"]>
+			>
+			["boolean_attr2"] = (BMM_SINGLE_PROPERTY) <
+				name = <"boolean_attr2">
+				type = </primitive_types["Boolean"]>
+			>
+			["boolean_attr3"] = (BMM_SINGLE_PROPERTY) <
+				name = <"boolean_attr3">
+				type = </primitive_types["Boolean"]>
+			>
+			["boolean_attr4"] = (BMM_SINGLE_PROPERTY) <
+				name = <"boolean_attr4">
+				type = </primitive_types["Boolean"]>
+			>
+
+			["integer_attr1"] = (BMM_SINGLE_PROPERTY) <
+				name = <"integer_attr1">
+				type = </primitive_types["Integer"]>
+			>
+			["integer_attr2"] = (BMM_SINGLE_PROPERTY) <
+				name = <"integer_attr2">
+				type = </primitive_types["Integer"]>
+			>
+			["integer_attr3"] = (BMM_SINGLE_PROPERTY) <
+				name = <"integer_attr3">
+				type = </primitive_types["Integer"]>
+			>
+			["integer_attr4"] = (BMM_SINGLE_PROPERTY) <
+				name = <"integer_attr4">
+				type = </primitive_types["Integer"]>
+			>
+			["integer_attr5"] = (BMM_SINGLE_PROPERTY) <
+				name = <"integer_attr5">
+				type = </primitive_types["Integer"]>
+			>
+			["integer_attr6"] = (BMM_SINGLE_PROPERTY) <
+				name = <"integer_attr6">
+				type = </primitive_types["Integer"]>
+			>
+			["integer_attr7"] = (BMM_SINGLE_PROPERTY) <
+				name = <"integer_attr7">
+				type = </primitive_types["Integer"]>
+			>
+			["integer_attr8"] = (BMM_SINGLE_PROPERTY) <
+				name = <"integer_attr8">
+				type = </primitive_types["Integer"]>
+			>
+			["integer_attr9"] = (BMM_SINGLE_PROPERTY) <
+				name = <"integer_attr9">
+				type = </primitive_types["Integer"]>
+			>
+			["integer_attr10"] = (BMM_SINGLE_PROPERTY) <
+				name = <"integer_attr10">
+				type = </primitive_types["Integer"]>
+			>
+			["integer_attr11"] = (BMM_SINGLE_PROPERTY) <
+				name = <"integer_attr11">
+				type = </primitive_types["Integer"]>
+			>
+			["integer_attr12"] = (BMM_SINGLE_PROPERTY) <
+				name = <"integer_attr12">
+				type = </primitive_types["Integer"]>
+			>
+			["integer_attr13"] = (BMM_SINGLE_PROPERTY) <
+				name = <"integer_attr13">
+				type = </primitive_types["Integer"]>
+			>
+
+			["real_attr1"] = (BMM_SINGLE_PROPERTY) <
+				name = <"real_attr1">
+				type = </primitive_types["Real"]>
+			>
+			["real_attr2"] = (BMM_SINGLE_PROPERTY) <
+				name = <"real_attr2">
+				type = </primitive_types["Real"]>
+			>
+			["real_attr3"] = (BMM_SINGLE_PROPERTY) <
+				name = <"real_attr3">
+				type = </primitive_types["Real"]>
+			>
+			["real_attr4"] = (BMM_SINGLE_PROPERTY) <
+				name = <"real_attr4">
+				type = </primitive_types["Real"]>
+			>
+			["real_attr5"] = (BMM_SINGLE_PROPERTY) <
+				name = <"real_attr5">
+				type = </primitive_types["Real"]>
+			>
+			["real_attr6"] = (BMM_SINGLE_PROPERTY) <
+				name = <"real_attr6">
+				type = </primitive_types["Real"]>
+			>
+			["real_attr7"] = (BMM_SINGLE_PROPERTY) <
+				name = <"real_attr7">
+				type = </primitive_types["Real"]>
+			>
+			["real_attr8"] = (BMM_SINGLE_PROPERTY) <
+				name = <"real_attr8">
+				type = </primitive_types["Real"]>
+			>
+			["real_attr9"] = (BMM_SINGLE_PROPERTY) <
+				name = <"real_attr9">
+				type = </primitive_types["Real"]>
+			>
+			["real_attr10"] = (BMM_SINGLE_PROPERTY) <
+				name = <"real_attr10">
+				type = </primitive_types["Real"]>
+			>
+			["real_attr11"] = (BMM_SINGLE_PROPERTY) <
+				name = <"real_attr11">
+				type = </primitive_types["Real"]>
+			>
+			["real_attr12"] = (BMM_SINGLE_PROPERTY) <
+				name = <"real_attr12">
+				type = </primitive_types["Real"]>
+			>
+			["real_attr13"] = (BMM_SINGLE_PROPERTY) <
+				name = <"real_attr13">
+				type = </primitive_types["Real"]>
+			>
+
+			["date_attr1"] = (BMM_SINGLE_PROPERTY) <
+				name = <"date_attr1">
+				type = </primitive_types["ISO8601_DATE"]>
+			>
+			["date_attr2"] = (BMM_SINGLE_PROPERTY) <
+				name = <"date_attr2">
+				type = </primitive_types["ISO8601_DATE"]>
+			>
+			["date_attr3"] = (BMM_SINGLE_PROPERTY) <
+				name = <"date_attr3">
+				type = </primitive_types["ISO8601_DATE"]>
+			>
+			["date_attr4"] = (BMM_SINGLE_PROPERTY) <
+				name = <"date_attr4">
+				type = </primitive_types["ISO8601_DATE"]>
+			>
+			["date_attr5"] = (BMM_SINGLE_PROPERTY) <
+				name = <"date_attr5">
+				type = </primitive_types["ISO8601_DATE"]>
+			>
+			["date_attr6"] = (BMM_SINGLE_PROPERTY) <
+				name = <"date_attr6">
+				type = </primitive_types["ISO8601_DATE"]>
+			>
+			["date_attr7"] = (BMM_SINGLE_PROPERTY) <
+				name = <"date_attr7">
+				type = </primitive_types["ISO8601_DATE"]>
+			>
+			["date_attr8"] = (BMM_SINGLE_PROPERTY) <
+				name = <"date_attr8">
+				type = </primitive_types["ISO8601_DATE"]>
+			>
+			["date_attr9"] = (BMM_SINGLE_PROPERTY) <
+				name = <"date_attr9">
+				type = </primitive_types["ISO8601_DATE"]>
+			>
+			["date_attr10"] = (BMM_SINGLE_PROPERTY) <
+				name = <"date_attr10">
+				type = </primitive_types["ISO8601_DATE"]>
+			>
+			["date_attr11"] = (BMM_SINGLE_PROPERTY) <
+				name = <"date_attr11">
+				type = </primitive_types["ISO8601_DATE"]>
+			>
+			["date_attr12"] = (BMM_SINGLE_PROPERTY) <
+				name = <"date_attr12">
+				type = </primitive_types["ISO8601_DATE"]>
+			>
+
+			["time_attr1"] = (BMM_SINGLE_PROPERTY) <
+				name = <"time_attr1">
+				type = </primitive_types["ISO8601_TIME"]>
+			>
+			["time_attr2"] = (BMM_SINGLE_PROPERTY) <
+				name = <"time_attr2">
+				type = </primitive_types["ISO8601_TIME"]>
+			>
+			["time_attr3"] = (BMM_SINGLE_PROPERTY) <
+				name = <"time_attr3">
+				type = </primitive_types["ISO8601_TIME"]>
+			>
+			["time_attr4"] = (BMM_SINGLE_PROPERTY) <
+				name = <"time_attr4">
+				type = </primitive_types["ISO8601_TIME"]>
+			>
+			["time_attr5"] = (BMM_SINGLE_PROPERTY) <
+				name = <"time_attr5">
+				type = </primitive_types["ISO8601_TIME"]>
+			>
+			["time_attr6"] = (BMM_SINGLE_PROPERTY) <
+				name = <"time_attr6">
+				type = </primitive_types["ISO8601_TIME"]>
+			>
+			["time_attr7"] = (BMM_SINGLE_PROPERTY) <
+				name = <"time_attr7">
+				type = </primitive_types["ISO8601_TIME"]>
+			>
+			["time_attr8"] = (BMM_SINGLE_PROPERTY) <
+				name = <"time_attr8">
+				type = </primitive_types["ISO8601_TIME"]>
+			>
+			["time_attr9"] = (BMM_SINGLE_PROPERTY) <
+				name = <"time_attr9">
+				type = </primitive_types["ISO8601_TIME"]>
+			>
+			["time_attr10"] = (BMM_SINGLE_PROPERTY) <
+				name = <"time_attr10">
+				type = </primitive_types["ISO8601_TIME"]>
+			>
+			["time_attr11"] = (BMM_SINGLE_PROPERTY) <
+				name = <"time_attr11">
+				type = </primitive_types["ISO8601_TIME"]>
+			>
+			["time_attr12"] = (BMM_SINGLE_PROPERTY) <
+				name = <"time_attr12">
+				type = </primitive_types["ISO8601_TIME"]>
+			>
+			["time_attr13"] = (BMM_SINGLE_PROPERTY) <
+				name = <"time_attr13">
+				type = </primitive_types["ISO8601_TIME"]>
+			>
+
+			["date_time_attr1"] = (BMM_SINGLE_PROPERTY) <
+				name = <"date_time_attr1">
+				type = </primitive_types["ISO8601_DATE_TIME"]>
+			>
+			["date_time_attr2"] = (BMM_SINGLE_PROPERTY) <
+				name = <"date_time_attr2">
+				type = </primitive_types["ISO8601_DATE_TIME"]>
+			>
+			["date_time_attr3"] = (BMM_SINGLE_PROPERTY) <
+				name = <"date_time_attr3">
+				type = </primitive_types["ISO8601_DATE_TIME"]>
+			>
+			["date_time_attr4"] = (BMM_SINGLE_PROPERTY) <
+				name = <"date_time_attr4">
+				type = </primitive_types["ISO8601_DATE_TIME"]>
+			>
+			["date_time_attr5"] = (BMM_SINGLE_PROPERTY) <
+				name = <"date_time_attr5">
+				type = </primitive_types["ISO8601_DATE_TIME"]>
+			>
+			["date_time_attr6"] = (BMM_SINGLE_PROPERTY) <
+				name = <"date_time_attr6">
+				type = </primitive_types["ISO8601_DATE_TIME"]>
+			>
+			["date_time_attr7"] = (BMM_SINGLE_PROPERTY) <
+				name = <"date_time_attr7">
+				type = </primitive_types["ISO8601_DATE_TIME"]>
+			>
+			["date_time_attr8"] = (BMM_SINGLE_PROPERTY) <
+				name = <"date_time_attr8">
+				type = </primitive_types["ISO8601_DATE_TIME"]>
+			>
+			["date_time_attr9"] = (BMM_SINGLE_PROPERTY) <
+				name = <"date_time_attr9">
+				type = </primitive_types["ISO8601_DATE_TIME"]>
+			>
+			["date_time_attr10"] = (BMM_SINGLE_PROPERTY) <
+				name = <"date_time_attr10">
+				type = </primitive_types["ISO8601_DATE_TIME"]>
+			>
+			["date_time_attr11"] = (BMM_SINGLE_PROPERTY) <
+				name = <"date_time_attr11">
+				type = </primitive_types["ISO8601_DATE_TIME"]>
+			>
+			["date_time_attr12"] = (BMM_SINGLE_PROPERTY) <
+				name = <"date_time_attr12">
+				type = </primitive_types["ISO8601_DATE_TIME"]>
+			>
+			["date_time_attr13"] = (BMM_SINGLE_PROPERTY) <
+				name = <"date_time_attr13">
+				type = </primitive_types["ISO8601_DATE_TIME"]>
+			>
+			["date_time_attr14"] = (BMM_SINGLE_PROPERTY) <
+				name = <"date_time_attr14">
+				type = </primitive_types["ISO8601_DATE_TIME"]>
+			>
+
+			["duration_attr1"] = (BMM_SINGLE_PROPERTY) <
+				name = <"duration_attr1">
+				type = </primitive_types["ISO8601_DURATION"]>
+			>
+			["duration_attr2"] = (BMM_SINGLE_PROPERTY) <
+				name = <"duration_attr2">
+				type = </primitive_types["ISO8601_DURATION"]>
+			>
+			["duration_attr3"] = (BMM_SINGLE_PROPERTY) <
+				name = <"duration_attr3">
+				type = </primitive_types["ISO8601_DURATION"]>
+			>
+			["duration_attr4"] = (BMM_SINGLE_PROPERTY) <
+				name = <"duration_attr4">
+				type = </primitive_types["ISO8601_DURATION"]>
+			>
+			["duration_attr5"] = (BMM_SINGLE_PROPERTY) <
+				name = <"duration_attr5">
+				type = </primitive_types["ISO8601_DURATION"]>
+			>
+			["duration_attr6"] = (BMM_SINGLE_PROPERTY) <
+				name = <"duration_attr6">
+				type = </primitive_types["ISO8601_DURATION"]>
+			>
+			["duration_attr7"] = (BMM_SINGLE_PROPERTY) <
+				name = <"duration_attr7">
+				type = </primitive_types["ISO8601_DURATION"]>
+			>
+			["duration_attr8"] = (BMM_SINGLE_PROPERTY) <
+				name = <"duration_attr8">
+				type = </primitive_types["ISO8601_DURATION"]>
+			>
+			["duration_attr9"] = (BMM_SINGLE_PROPERTY) <
+				name = <"duration_attr9">
+				type = </primitive_types["ISO8601_DURATION"]>
+			>
+			["duration_attr10"] = (BMM_SINGLE_PROPERTY) <
+				name = <"duration_attr10">
+				type = </primitive_types["ISO8601_DURATION"]>
+			>
+			["duration_attr11"] = (BMM_SINGLE_PROPERTY) <
+				name = <"duration_attr11">
+				type = </primitive_types["ISO8601_DURATION"]>
+			>
+			["duration_attr12"] = (BMM_SINGLE_PROPERTY) <
+				name = <"duration_attr12">
+				type = </primitive_types["ISO8601_DURATION"]>
+			>
+			["duration_attr13"] = (BMM_SINGLE_PROPERTY) <
+				name = <"duration_attr13">
+				type = </primitive_types["ISO8601_DURATION"]>
+			>
+			["duration_attr14"] = (BMM_SINGLE_PROPERTY) <
+				name = <"duration_attr14">
+				type = </primitive_types["ISO8601_DURATION"]>
+			>
+			["duration_attr15"] = (BMM_SINGLE_PROPERTY) <
+				name = <"duration_attr15">
+				type = </primitive_types["ISO8601_DURATION"]>
+			>
+			["duration_attr16"] = (BMM_SINGLE_PROPERTY) <
+				name = <"duration_attr16">
+				type = </primitive_types["ISO8601_DURATION"]>
+			>
+			["duration_attr17"] = (BMM_SINGLE_PROPERTY) <
+				name = <"duration_attr17">
+				type = </primitive_types["ISO8601_DURATION"]>
+			>
+			["duration_attr18"] = (BMM_SINGLE_PROPERTY) <
+				name = <"duration_attr18">
+				type = </primitive_types["ISO8601_DURATION"]>
+			>
+			["duration_attr19"] = (BMM_SINGLE_PROPERTY) <
+				name = <"duration_attr19">
+				type = </primitive_types["ISO8601_DURATION"]>
+			>
+			["duration_attr20"] = (BMM_SINGLE_PROPERTY) <
+				name = <"duration_attr20">
+				type = </primitive_types["ISO8601_DURATION"]>
+			>
+			["duration_attr21"] = (BMM_SINGLE_PROPERTY) <
+				name = <"duration_attr21">
+				type = </primitive_types["ISO8601_DURATION"]>
+			>
+			["duration_attr22"] = (BMM_SINGLE_PROPERTY) <
+				name = <"duration_attr22">
+				type = </primitive_types["ISO8601_DURATION"]>
+			>
+			["duration_attr23"] = (BMM_SINGLE_PROPERTY) <
+				name = <"duration_attr23">
+				type = </primitive_types["ISO8601_DURATION"]>
+			>
+			["duration_attr24"] = (BMM_SINGLE_PROPERTY) <
+				name = <"duration_attr24">
+				type = </primitive_types["ISO8601_DURATION"]>
+			>
+			["duration_attr25"] = (BMM_SINGLE_PROPERTY) <
+				name = <"duration_attr25">
+				type = </primitive_types["ISO8601_DURATION"]>
+			>
+			["duration_attr26"] = (BMM_SINGLE_PROPERTY) <
+				name = <"duration_attr26">
+				type = </primitive_types["ISO8601_DURATION"]>
+			>
+			["duration_attr27"] = (BMM_SINGLE_PROPERTY) <
+				name = <"duration_attr27">
+				type = </primitive_types["ISO8601_DURATION"]>
+			>
+			["duration_attr28"] = (BMM_SINGLE_PROPERTY) <
+				name = <"duration_attr28">
+				type = </primitive_types["ISO8601_DURATION"]>
+			>
+			["duration_attr29"] = (BMM_SINGLE_PROPERTY) <
+				name = <"duration_attr29">
+				type = </primitive_types["ISO8601_DURATION"]>
+			>
+			["duration_attr30"] = (BMM_SINGLE_PROPERTY) <
+				name = <"duration_attr30">
+				type = </primitive_types["ISO8601_DURATION"]>
+			>
+			["duration_attr31"] = (BMM_SINGLE_PROPERTY) <
+				name = <"duration_attr31">
+				type = </primitive_types["ISO8601_DURATION"]>
+			>
+			["duration_attr32"] = (BMM_SINGLE_PROPERTY) <
+				name = <"duration_attr32">
+				type = </primitive_types["ISO8601_DURATION"]>
+			>
+			["duration_attr33"] = (BMM_SINGLE_PROPERTY) <
+				name = <"duration_attr33">
+				type = </primitive_types["ISO8601_DURATION"]>
+			>
+			["duration_attr34"] = (BMM_SINGLE_PROPERTY) <
+				name = <"duration_attr34">
+				type = </primitive_types["ISO8601_DURATION"]>
+			>
+			["duration_attr35"] = (BMM_SINGLE_PROPERTY) <
+				name = <"duration_attr35">
+				type = </primitive_types["ISO8601_DURATION"]>
+			>
+			["duration_attr36"] = (BMM_SINGLE_PROPERTY) <
+				name = <"duration_attr36">
+				type = </primitive_types["ISO8601_DURATION"]>
+			>
+		>
+	>
 
 >
 

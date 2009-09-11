@@ -95,6 +95,8 @@ feature {NONE} -- Initialization
 			add_menu_shortcut (history_menu_back, key_left, False, True, False)
 			add_menu_shortcut (history_menu_forward, key_right, False, True, False)
 
+			add_menu_shortcut (repository_menu_refresh, key_r, True, False, False)
+
 			archetype_file_tree.set_default_key_processing_handler (
 				agent (key: EV_KEY): BOOLEAN
 						-- Workaround to prevent Alt+Left and Alt+Right being inappropriately handled by the tree view.
@@ -566,6 +568,12 @@ feature {NONE} -- Repository events
 				populate_archetype_directory
 				save_resources_and_show_status
 			end
+		end
+
+	refresh_repository
+			-- refresh the current repository from source.
+		do
+			populate_archetype_directory
 		end
 
 	build_all

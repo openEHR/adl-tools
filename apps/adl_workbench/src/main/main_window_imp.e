@@ -62,19 +62,21 @@ feature {NONE}-- Initialization
 			create repository_menu_export_repository_report
 			create l_ev_menu_separator_7
 			create repository_menu_interrupt_build
+			create l_ev_menu_separator_8
+			create repository_menu_refresh
 			create history_menu
 			create history_menu_back
 			create history_menu_forward
 			create history_menu_separator
 			create tools_menu
 			create tools_menu_clean_generated_files
-			create l_ev_menu_separator_8
+			create l_ev_menu_separator_9
 			create tools_menu_options
 			create help_menu
 			create help_menu_icons
 			create help_menu_news
 			create help_menu_online
-			create l_ev_menu_separator_9
+			create l_ev_menu_separator_10
 			create help_menu_about
 			create main_notebook
 			create viewer_vbox
@@ -255,19 +257,21 @@ feature {NONE}-- Initialization
 			repository_menu.extend (repository_menu_export_repository_report)
 			repository_menu.extend (l_ev_menu_separator_7)
 			repository_menu.extend (repository_menu_interrupt_build)
+			repository_menu.extend (l_ev_menu_separator_8)
+			repository_menu.extend (repository_menu_refresh)
 			menu.extend (history_menu)
 			history_menu.extend (history_menu_back)
 			history_menu.extend (history_menu_forward)
 			history_menu.extend (history_menu_separator)
 			menu.extend (tools_menu)
 			tools_menu.extend (tools_menu_clean_generated_files)
-			tools_menu.extend (l_ev_menu_separator_8)
+			tools_menu.extend (l_ev_menu_separator_9)
 			tools_menu.extend (tools_menu_options)
 			menu.extend (help_menu)
 			help_menu.extend (help_menu_icons)
 			help_menu.extend (help_menu_news)
 			help_menu.extend (help_menu_online)
-			help_menu.extend (l_ev_menu_separator_9)
+			help_menu.extend (l_ev_menu_separator_10)
 			help_menu.extend (help_menu_about)
 			extend (main_notebook)
 			main_notebook.extend (viewer_vbox)
@@ -453,6 +457,7 @@ feature {NONE}-- Initialization
 			repository_menu_export_repository_report.set_text ("&Export Repository Report...")
 			repository_menu_interrupt_build.disable_sensitive
 			repository_menu_interrupt_build.set_text ("&Interrupt Build")
+			repository_menu_refresh.set_text ("Refresh Repository")
 			history_menu.set_text ("Hi&story")
 			history_menu_back.set_text ("&Back")
 			history_menu_forward.set_text ("&Forward")
@@ -992,6 +997,7 @@ feature {NONE}-- Initialization
 			repository_menu_export_html.select_actions.extend (agent export_html)
 			repository_menu_export_repository_report.select_actions.extend (agent export_repository_report)
 			repository_menu_interrupt_build.select_actions.extend (agent interrupt_build)
+			repository_menu_refresh.select_actions.extend (agent refresh_repository)
 			history_menu.select_actions.extend (agent on_history)
 			history_menu_back.select_actions.extend (agent on_back)
 			history_menu_forward.select_actions.extend (agent on_forward)
@@ -1096,8 +1102,8 @@ feature -- Access
 	edit_menu_select_all, edit_menu_clipboard, repository_menu_set_repository, repository_menu_build_all,
 	repository_menu_rebuild_all, repository_menu_build_subtree, repository_menu_rebuild_subtree,
 	repository_menu_export_html, repository_menu_export_repository_report, repository_menu_interrupt_build,
-	history_menu_back, history_menu_forward, tools_menu_clean_generated_files, tools_menu_options,
-	help_menu_icons, help_menu_news, help_menu_online, help_menu_about: EV_MENU_ITEM
+	repository_menu_refresh, history_menu_back, history_menu_forward, tools_menu_clean_generated_files,
+	tools_menu_options, help_menu_icons, help_menu_news, help_menu_online, help_menu_about: EV_MENU_ITEM
 	adl_version_label,
 	language_label, arch_desc_auth_orig_auth_label, arch_desc_status_label, arch_desc_original_language_label,
 	arch_desc_auth_contrib_label, arch_translations_languages_label, l_ev_label_1, l_ev_label_2,
@@ -1117,8 +1123,8 @@ feature -- Access
 	archetype_notebook, definition_notebook, ontology_notebook, status_notebook: EV_NOTEBOOK
 	l_ev_menu_separator_1,
 	l_ev_menu_separator_2, l_ev_menu_separator_3, l_ev_menu_separator_4, l_ev_menu_separator_5,
-	l_ev_menu_separator_6, l_ev_menu_separator_7, history_menu_separator, l_ev_menu_separator_8,
-	l_ev_menu_separator_9: EV_MENU_SEPARATOR
+	l_ev_menu_separator_6, l_ev_menu_separator_7, l_ev_menu_separator_8, history_menu_separator,
+	l_ev_menu_separator_9, l_ev_menu_separator_10: EV_MENU_SEPARATOR
 
 feature {NONE} -- Implementation
 
@@ -1212,6 +1218,11 @@ feature {NONE} -- Implementation
 	
 	interrupt_build is
 			-- Called by `select_actions' of `repository_menu_interrupt_build'.
+		deferred
+		end
+	
+	refresh_repository is
+			-- Called by `select_actions' of `repository_menu_refresh'.
 		deferred
 		end
 	

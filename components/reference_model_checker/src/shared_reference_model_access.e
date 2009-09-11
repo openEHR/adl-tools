@@ -66,7 +66,7 @@ feature {NONE} -- Implementation
 				until
 					dir.lastentry = Void
 				loop
-					if dir.lastentry.has_substring (schema_file_extension) then
+					if dir.lastentry.ends_with (schema_file_extension) then
 						create ma.make(default_rm_schema_directory + os_directory_separator.out + dir.lastentry)
 						if ma.model_loaded then
 							from ma.schema.model_names.start until  ma.schema.model_names.off loop
