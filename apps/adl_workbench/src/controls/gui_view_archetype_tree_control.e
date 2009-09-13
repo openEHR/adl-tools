@@ -95,7 +95,7 @@ feature -- Commands
 				tooltip := utf8 (item.full_path)
 
 				if attached {ARCH_REP_ARCHETYPE} item as ara then
-					if ara.flat_is_primary and display_archetype_source then
+					if ara.legacy_is_primary and display_archetype_source then
 						text.prepend (utf8("(f) "))
 					end
 

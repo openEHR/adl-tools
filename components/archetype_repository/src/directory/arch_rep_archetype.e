@@ -102,18 +102,11 @@ feature {NONE} -- Initialisation
 			if file_system.has_extension (full_path, archetype_source_file_extension) then
 				differential_path := full_path
 				flat_path := extension_replaced (full_path, archetype_flat_file_extension)
+				legacy_flat_path := extension_replaced (full_path, archetype_legacy_file_extension)
 			else
 				differential_path := extension_replaced (full_path, archetype_source_file_extension)
-				flat_path := full_path
-			end
-
-			-- set status of flat archetype by reading its file for now; can't do this with .adls files
-			-- yet because there are versions of the AWB out there that have created .adls files, but
-			-- don't put the 'generated' marker in
-			if file_repository.is_valid_path (flat_path) then
-				flat_generated := has_adl_generated_status(file_repository.first_line (flat_path))
-			else
-				flat_generated := True
+				flat_path := extension_replaced (full_path, archetype_flat_file_extension)
+				legacy_flat_path := full_path
 			end
 		ensure
 			root_path_set: root_path = a_root_path
@@ -132,7 +125,10 @@ feature -- Access
 			-- Path of differential source file of archetype.
 
 	flat_path: STRING
-			-- Path of flat file of archetype.
+			-- Path of generated flat file of archetype.
+
+	legacy_flat_path: STRING
+			-- Path of legacy flat file of archetype.
 
 	differential_text: STRING
 			-- The text of the archetype source file, i.e. the differential form.
@@ -151,7 +147,10 @@ feature -- Access
 			Result := flat_text_cache
 		end
 
-	flat_text_timestamp: INTEGER
+	legacy_flat_text: STRING
+			-- The text of the legacy archetype, if it exists
+
+	legacy_flat_text_timestamp: INTEGER
 			-- Date and time at which the archetype flat file was last modified.
 
 	differential_text_timestamp: INTEGER
@@ -252,9 +251,9 @@ feature -- Access
 feature -- Status Report - Compilation
 
 	is_at_path (path: STRING): BOOLEAN
-			-- Is `path' the same as either `differential_path' or `flat_path'?
+			-- Is `path' the same as either `differential_path' or `legacy_flat_path'?
 		do
-			Result := differential_path.same_string (path) or flat_path.same_string (path)
+			Result := differential_path.same_string (path) or legacy_flat_path.same_string (path)
 		end
 
 	has_differential_file: BOOLEAN
@@ -263,17 +262,17 @@ feature -- Status Report - Compilation
 			Result := file_repository.is_valid_path (differential_path)
 		end
 
-	has_flat_file: BOOLEAN
-			-- Does the repository have a flat-form file for this archetype?
+	has_legacy_flat_file: BOOLEAN
+			-- Does the repository have a legacy flat-form file for this archetype?
 		do
-			Result := file_repository.is_valid_path (flat_path)
+			Result := file_repository.is_valid_path (legacy_flat_path)
 		end
 
 	is_out_of_date: BOOLEAN
 			-- Should this archetype be reparsed due to changes on the file system?
 		do
 			Result := not parse_attempted or
-				is_differential_out_of_date or is_flat_out_of_date or
+				is_differential_out_of_date or is_legacy_flat_out_of_date or
 				(specialisation_parent /= Void and then specialisation_parent.last_compile_attempt_timestamp > last_compile_attempt_timestamp)
 		end
 
@@ -283,10 +282,10 @@ feature -- Status Report - Compilation
 			Result := differential_text_timestamp > 0 and file_repository.has_file_changed_on_disk (full_path, differential_text_timestamp)
 		end
 
-	is_flat_out_of_date: BOOLEAN
+	is_legacy_flat_out_of_date: BOOLEAN
 			-- Is flat_archetype out of date with respect to changes on the file system?
 		do
-			Result := flat_text_timestamp > 0 and then file_repository.has_file_changed_on_disk (full_path, flat_text_timestamp)
+			Result := legacy_flat_text_timestamp > 0 and then file_repository.has_file_changed_on_disk (full_path, legacy_flat_text_timestamp)
 		end
 
 	parse_attempted: BOOLEAN
@@ -345,13 +344,10 @@ feature -- Status Report - Semantic
 			Result := differential_archetype /= Void and then differential_archetype.is_generated
 		end
 
-	flat_generated: BOOLEAN
-			-- Set to True if ADL file contains 'is_generated' marker
-
-	flat_is_primary: BOOLEAN
+	legacy_is_primary: BOOLEAN
 			-- True if the flat legacy file is the primary source
 		do
-			Result := (differential_archetype /= Void and differential_generated) or not flat_generated
+			Result := differential_archetype /= Void and differential_generated
 		end
 
 feature -- Status Setting
@@ -382,14 +378,17 @@ feature -- Commands
 
 	parse_archetype
 			-- Parse and validate `target', in differential form if available, else in flat form.
+		local
+			legacy_flat_archetype: FLAT_ARCHETYPE
 		do
+
 			if not exception_encountered then
 				reset
 				clear_billboard
 				set_parse_attempted
 
 				if has_rm_checker (id.qualified_rm_name) then
-					if has_differential_file and not is_flat_out_of_date then
+					if has_differential_file and not is_legacy_flat_out_of_date then
 						post_info (Current, "parse_archetype", "parse_archetype_i3", Void)
 						read_differential
 						differential_archetype := adl_engine.parse_differential (differential_text)
@@ -401,14 +400,14 @@ feature -- Commands
 							validate
 						end
 					else
-						read_flat
-						flat_archetype_cache := adl_engine.parse_flat (flat_text_cache)
-						if flat_archetype_cache = Void then
+						read_legacy_flat
+						legacy_flat_archetype := adl_engine.parse_flat (legacy_flat_text)
+						if legacy_flat_archetype = Void then
 							post_error (Current, "parse_archetype", "parse_archetype_e1", <<adl_engine.parse_error_text>>)
 							is_valid := False
 						else
 							post_info (Current, "parse_archetype", "parse_archetype_i1", <<id.as_string>>)
-							differential_archetype := flat_archetype.to_differential
+							differential_archetype := legacy_flat_archetype.to_differential
 							validate
 							-- if differential archetype was generated from an old-style flat, perform path compression
 							if is_valid then
@@ -416,14 +415,11 @@ feature -- Commands
 									differential_archetype.convert_to_differential_paths
 								end
 							end
-							flat_archetype.set_is_valid (is_valid)
+							legacy_flat_archetype.set_is_valid (is_valid)
 						end
 					end
 
 					if is_valid then
-						flat_archetype_cache := Void
-						flat_text_cache := Void
-
 						-- Make sure that the language is set, and that it is one of the languages in the archetype.
 						if (current_language = Void or not differential_archetype.has_language (current_language)) then
 							set_current_language (differential_archetype.original_language.code_string)
@@ -448,10 +444,18 @@ feature -- Commands
 			-- delete generated file and compiler products; forces next compilation to start from primary expression
 		do
 			if differential_generated then
-				clean_differential
-			elseif flat_generated then
-				clean_flat
+				if has_differential_file then
+					file_system.delete_file (differential_path)
+					status := create_message ("clean_generated_file", <<differential_path>>)
+				end
+				differential_text := Void
+				differential_text_timestamp := 0
 			end
+
+			if file_repository.is_valid_path (flat_path) then
+				file_system.delete_file (flat_path)
+			end
+			flat_text_cache := Void
 		end
 
 feature -- Comparison
@@ -538,15 +542,13 @@ feature -- Modification
 		end
 
 	save_flat
-			-- Save current target archetype to its file in its flat form
+			-- Save current target archetype to a flat form (.adlf) file
 		require
 			is_valid
 		do
 			save_succeeded := False
 			if not exception_encountered then
 				file_repository.save_text_to_file (flat_path, flat_text)
-				full_path := flat_path
-				flat_text_timestamp := file_repository.text_timestamp
 				save_succeeded := True
 			else
 				post_error(Current, "save_archetype_flat", "save_archetype_e3", Void)
@@ -607,7 +609,7 @@ feature -- Modification
 			save_succeeded := False
 			if not exception_encountered then
 				if serialise_format.same_string (Archetype_native_syntax) then
-					file_repository.save_text_to_file (extension_replaced (a_full_path, archetype_flat_file_extension), flat_text)
+					file_repository.save_text_to_file (extension_replaced (a_full_path, archetype_legacy_file_extension), flat_text)
 				else
 					file_repository.save_text_to_file (a_full_path, adl_engine.serialise(flat_archetype, serialise_format))
 				end
@@ -703,28 +705,6 @@ feature -- Modification
 			retry
 		end
 
-	clean_differential
-			-- delete differential file and compilation products
-		do
-			if has_differential_file then
-				file_system.delete_file (differential_path)
-				status := create_message ("clean_generated_file", <<differential_path>>)
-			end
-			differential_text := Void
-			differential_text_timestamp := 0
-		end
-
-	clean_flat
-			-- delete flat file and compilation products
-		do
-			if has_flat_file then
-				file_system.delete_file (flat_path)
-				status := create_message ("clean_generated_file", <<flat_path>>)
-			end
-			flat_text_cache := Void
-			flat_text_timestamp := 0
-		end
-
 feature {NONE} -- Implementation
 
 	validate
@@ -788,15 +768,15 @@ feature {NONE} -- Implementation
 			differential_text_set: differential_text /= old differential_text
 		end
 
-	read_flat
-			-- Read `flat_text' and `text_timestamp' from `flat_path'.
+	read_legacy_flat
+			-- Read `legacy_flat_text' and `text_timestamp' from `legacy_flat_path'.
 		require
-			flat_file_available: has_flat_file
+			flat_file_available: has_legacy_flat_file
 		do
-			file_repository.read_text_from_file (flat_path)
-			flat_text_cache := file_repository.text
-			full_path := flat_path
-			flat_text_timestamp := file_repository.text_timestamp
+			file_repository.read_text_from_file (legacy_flat_path)
+			legacy_flat_text := file_repository.text
+			full_path := legacy_flat_path
+			legacy_flat_text_timestamp := file_repository.text_timestamp
 		end
 
 	make_ontological_paths
@@ -886,18 +866,18 @@ feature {NONE} -- Implementation
 		end
 
 	flat_text_cache: STRING
-			-- may contain either read in legacy .adl file, or generated output from flattening process
+			-- generated output from flattening process
 
 	flat_archetype_cache: FLAT_ARCHETYPE
-			-- archetype generated by reading in legacy .adl file, or flattening process
+			-- archetype generated by flattening process
 
 invariant
 	compiler_status_attached: compiler_status /= Void
-	flat_text_timestamp_natural: flat_text_timestamp >= 0
+	flat_text_timestamp_natural: legacy_flat_text_timestamp >= 0
 	differential_text_timestamp_natural: differential_text_timestamp >= 0
 	differential_path_attached: differential_path /= Void
-	flat_path_attached: flat_path /= Void
-	full_is_flat_or_differential: full_path = flat_path xor full_path = differential_path
+	flat_path_attached: legacy_flat_path /= Void
+	full_is_flat_or_differential: full_path = legacy_flat_path xor full_path = differential_path
 	differential_attached_if_valid: is_valid implies differential_archetype /= Void
 	parent_existence: specialisation_parent /= Void implies is_specialised
 	parent_validity: specialisation_parent /= Void implies specialisation_parent.id.semantic_id.is_equal (id.semantic_parent_id)

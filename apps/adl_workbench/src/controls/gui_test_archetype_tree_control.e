@@ -168,12 +168,12 @@ feature -- Commands
 			else
 				test_stop_requested := False
 
-				if gui.save_adl_check_button.is_selected and gui.save_adls_check_button.is_selected then
-					message := "ADL and ADLS"
-				elseif gui.save_adl_check_button.is_selected then
-					message := "ADL"
+				if gui.save_adlf_check_button.is_selected and gui.save_adls_check_button.is_selected then
+					message := ".adlf and .adls"
+				elseif gui.save_adlf_check_button.is_selected then
+					message := ".adlf"
 				elseif gui.save_adls_check_button.is_selected then
-					message := "ADLS"
+					message := ".adls"
 				end
 
 				if message /= Void then
@@ -377,7 +377,7 @@ feature {NONE} -- Tests
 			-- parse archetype, save in flat form and return result
 		do
 			Result := test_failed
-			if gui.save_adl_check_button.is_selected and target.is_valid then
+			if gui.save_adlf_check_button.is_selected and target.is_valid then
 				target.save_flat
 				if target.save_succeeded then
 					Result := test_passed

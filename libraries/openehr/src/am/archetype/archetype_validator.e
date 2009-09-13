@@ -113,6 +113,8 @@ feature -- Validation
 
 	validate
 		do
+			reset
+
 			-- validate description section
 			if passed then
 				Precursor
@@ -157,8 +159,9 @@ feature -- Validation
 		require
 			Flat_exists: target_descriptor.flat_archetype /= Void
 		do
+			reset
 			target_flat := target_descriptor.flat_archetype
-			validate_occurrences
+--			validate_occurrences
 		end
 
 feature {NONE} -- Implementation
@@ -685,36 +688,37 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	validate_occurrences
-			-- validate occurrences under container attributes, in flat definition
-		require
-			target_flat /= Void
-		local
-			def_it: C_ITERATOR
-		do
-			create def_it.make(target_flat.definition)
-			def_it.do_all(agent flat_node_enter, agent flat_node_exit)
-		end
 
-	flat_node_enter (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
-			-- basic validation of any node
-		local
-			occ_range: MULTIPLICITY_INTERVAL
-		do
-			if attached {C_ATTRIBUTE} a_c_node as ca then
-				if ca.is_multiple then
-					occ_range := ca.occurrences_total_range
-					if occ_range.upper_unbounded and not ca.cardinality.interval.upper_unbounded or else
-						not occ_range.upper_unbounded and not ca.cardinality.interval.upper_unbounded and ca.cardinality.interval.has (occ_range.upper) then
-						add_error("VACMC2", <<ca.path, ca.cardinality.as_string>>)
-					end
-				end
-			end
-		end
+--
+-- It doesn't really make sense to do this strict occurrences / cardinality evaluation because it prevents
+-- easy redefinition of cardinality in specialised archetypes
+--
+--	validate_occurrences
+--			-- validate occurrences under container attributes, in flat definition
+--		require
+--			target_flat /= Void
+--		local
+--			def_it: C_ITERATOR
+--		do
+--			create def_it.make(target_flat.definition)
+--			def_it.do_all(agent flat_node_enter, agent flat_node_exit)
+--		end
 
-	flat_node_exit (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
-		do
-		end
+--	flat_node_enter (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
+--			-- basic validation of any node
+--		do
+--			if attached {C_ATTRIBUTE} a_c_node as ca then
+--				if ca.is_multiple then
+--					if not ca.occurrences_total_range.intersects (ca.cardinality.interval) then
+--						add_error("VACMC2", <<ca.path, ca.cardinality.as_string>>)
+--					end
+--				end
+--			end
+--		end
+
+--	flat_node_exit (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
+--		do
+--		end
 
 invariant
 	target_descriptor_attached: target_descriptor /= Void

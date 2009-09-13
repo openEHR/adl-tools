@@ -236,8 +236,10 @@ feature {NONE} -- Implementation
 							debug ("flatten")
 								io.put_string ("%T** parent matches ANY - doing complete clone of child **%N")
 							end
-							cco_output_flat.parent.replace_node_id (cco_output_flat.node_id, cco_child_diff.node_id)
-							cco_output_flat.parent.replace_child_by_id (cco_child_diff.safe_deep_twin, cco_child_diff.node_id)
+							if not cco_output_flat.is_root then
+								cco_output_flat.parent.replace_node_id (cco_output_flat.node_id, cco_child_diff.node_id)
+								cco_output_flat.parent.replace_child_by_id (cco_child_diff.safe_deep_twin, cco_child_diff.node_id)
+							end
 							child_grafted_path_list.extend (cco_child_diff.path)
 						else
 							-- firstly, add overrides from immediate child node to corresponding flat node

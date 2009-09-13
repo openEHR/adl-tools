@@ -15,9 +15,6 @@ class AUTHORED_RESOURCE_VALIDATOR
 
 inherit
 	ANY_VALIDATOR
-		rename
-			make as make_any_validator
-		end
 
 	SHARED_APPLICATION_CONTEXT
 		export
@@ -32,7 +29,7 @@ feature {NONE} -- Initialisation
 			target_valid: a_target /= Void
 		do
 			target := a_target
-			make_any_validator
+			reset
 		ensure
 			target_set: target = a_target
 			Passed: passed

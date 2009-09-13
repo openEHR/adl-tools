@@ -110,7 +110,7 @@ feature -- Initialization
 
 	make_unbounded
 			-- make an interval from -infinity to +infinity, usually
-			-- only sensible as the result of to half-intervals
+			-- only sensible as the result of two half-intervals
 		do
 			lower_unbounded := True
 			upper_unbounded := True
@@ -157,10 +157,18 @@ feature -- Status report
 				lower_included and upper_included and lower.is_equal (upper))
 		end
 
+	unbounded: BOOLEAN
+			-- True if interval is completely open
+		do
+			Result := lower_unbounded and upper_unbounded
+		end
+
+feature -- Comparison
+
 	has (v: G): BOOLEAN
 			-- Does current interval have `v' between its bounds?
 		require
-			exists: v /= void
+			exists: v /= Void
 		do
 			Result := (lower_unbounded or ((lower_included and v >= lower) or v > lower)) and
 			(upper_unbounded or ((upper_included and v <= upper or v < upper)))
@@ -168,6 +176,17 @@ feature -- Status report
 		-- ensure
 		--	result_definition: Result = (lower_unbounded or ((lower_included and v >= lower) or v > lower)) and
 		--	(upper_unbounded or ((upper_included and v <= upper or v < upper)))
+		end
+
+	intersects (other: like Current): BOOLEAN
+			-- True if there is any overlap between intervals represented by Current and other
+		require
+			exists: other /= Void
+		do
+			Result := unbounded or other.unbounded or
+				(lower_unbounded and (other.lower_unbounded or upper >= other.lower)) or
+				(upper_unbounded and (other.upper_unbounded or lower <= other.upper)) or
+				(upper >= other.lower or lower <= other.upper)
 		end
 
 	contains (other: like Current): BOOLEAN

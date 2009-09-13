@@ -24,7 +24,7 @@ inherit
 
 feature -- Initialisation
 
-	make
+	reset
 			-- initialise reporting variables
 		do
 			create errors.make (0)

@@ -282,7 +282,7 @@ feature -- File events
 			create dialog
 			dialog.set_start_directory (current_work_directory)
 			dialog.filters.extend (["*" + archetype_source_file_extension, "ADL source files"])
-			dialog.filters.extend (["*" + archetype_flat_file_extension, "ADL flat files"])
+			dialog.filters.extend (["*" + archetype_legacy_file_extension, "ADL flat files"])
 			dialog.show_modal_to_window (Current)
 			name := dialog.file_name
 
@@ -328,22 +328,22 @@ feature -- File events
 
 			if ara /= Void then
 				path := ara.differential_path
-				flat := file_system.basename (ara.flat_path)
+				flat := file_system.basename (ara.legacy_flat_path)
 
-				if ara.has_differential_file and ara.has_flat_file then
-					create question_dialog.make_with_text ("Edit which file?%N%NDifferential: " + file_system.basename (path) + "%N%N    Flat: " + flat + "%N")
+				if ara.has_differential_file and ara.has_legacy_flat_file then
+					create question_dialog.make_with_text ("Edit which file?%N%NDifferential: " + file_system.basename (path) + "%N%NFlat (legacy): " + flat + "%N")
 					question_dialog.set_title ("Edit " + ara.id.as_string)
-					question_dialog.set_buttons (<<"Differential", "Flat">>)
+					question_dialog.set_buttons (<<"Differential", "Flat (legacy)">>)
 					question_dialog.show_modal_to_window (Current)
 
 					if question_dialog.selected_button.starts_with ("F") then
-						path := ara.flat_path
+						path := ara.legacy_flat_path
 					end
-				elseif ara.has_flat_file then
-					create info_dialog.make_with_text ("The Differential (.adls) file is not available.%N%NOpening the Flat file: " + flat + "%N")
+				elseif ara.has_legacy_flat_file then
+					create info_dialog.make_with_text ("The Differential (.adls) file is not available.%N%NOpening the legacy flat file: " + flat + "%N")
 					info_dialog.set_title ("Edit " + ara.id.as_string)
 					info_dialog.show_modal_to_window (Current)
-					path := ara.flat_path
+					path := ara.legacy_flat_path
 				end
 
 				command := editor_command
@@ -1125,14 +1125,14 @@ feature {NONE} -- Implementation
 				if flat then
 					text := ara.flat_text
 					if text = Void then
-						source_rich_text.set_text ("===================== No flat (.adl) text available =======================")
+						source_rich_text.set_text (create_message ("compiler_no_flat_text", <<>>))
 					else
 						populate_source_text_with_line_numbers (text)
 					end
 				else
 					text := ara.differential_text
 					if text = Void then
-						source_rich_text.set_text ("==================== No source (.adls) text available ======================")
+						source_rich_text.set_text (create_message ("compiler_no_source_text", <<>>))
 					else
 						populate_source_text_with_line_numbers (text)
 					end

@@ -190,7 +190,9 @@ feature -- Comparison
 					Result := True
 				elseif not any_allowed then
 					if terminology_id.is_equal (other.terminology_id) then
-						if code_list /= Void then
+						if other.code_list = Void then
+							Result := True
+						elseif code_list /= Void then
 							from
 								code_list.start
 							until
@@ -199,8 +201,6 @@ feature -- Comparison
 								code_list.forth
 							end
 							Result := code_list.off
-						else
-							Result := True
 						end
 					end
 				end

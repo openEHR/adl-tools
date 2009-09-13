@@ -110,6 +110,8 @@ feature -- Access
 			["compiler_compiling_archetype"] = <"------------- compiling $1 -------------">
 			["compiler_already_attempted"] = <"(already attempted; status = $1">
 			["compiler_unexpected_error"] = <"Location: $1">
+			["compiler_no_flat_text"] = <"===================== No flat (.adl) text available =======================">
+			["compiler_no_source_text"] = <"===================== No source (.adls) text available =======================">
 			
 			-- ARCHETYPE_VALIDATOR
 			["validate_e1"] = <"Error: specialisation parent is missing">

@@ -24,8 +24,11 @@ feature -- Definitions
 	Archetype_web_syntax: STRING = "html"
 			-- Name of web publishing syntax type.
 
-	Archetype_flat_file_extension: STRING = ".adl"
-			-- Extension for flat form archetype files.
+	archetype_legacy_file_extension: STRING = ".adl"
+			-- Extension for legacy flat form archetype files.
+
+	archetype_flat_file_extension: STRING = ".adlf"
+			-- Extension for legacy flat form archetype files.
 
 	Archetype_source_file_extension: STRING = ".adls"
 			-- Extension for source form (differential) archetype files.
