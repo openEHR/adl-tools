@@ -204,7 +204,7 @@ feature -- Access
 			["VATDF1"] = <"Error (VATDF): node id at-code $1 from specialisation parent not defined in ontology of any parent archetype">
 			["VATDF2"] = <"Error (VATDF): node id at-code $1 not defined in ontology of current archetype">
 			["VACDF1"] = <"Error (VACDF): constraint code $1 from specialisation parent not defined in ontology of any parent archetype">
-			["VACDF2"] = <"Error (VACDF): constraint code $1 not defined in ontology of current archetype">
+			["VACDF2"] = <"Error (VACDF): constraint code $1 not found in ontology of current archetype">
 			["VUNP"] = <"Error (VUNP): ARCHETYPE_INTERNAL_REF path $1 not found in archetype">
 			["VSUNT"] = <"Error (VSUNT): node at path $1 AOM type $2 does not conform to node at parent path $3 AOM type $4">
 
@@ -240,7 +240,7 @@ feature -- Access
 			["VIDUV"] = <"Error (VIDUV): invalid ISO8601 duration: $1"> -- dADL validity; additional to spec
 
 			["VDATU"] = <"Error (VDATU): dADL object duplicate attribute: $1">
-			["VDOBU"] = <"Error (VDOBU): object key must be unique; key [$1] already exists under attribute '$1'">
+			["VDOBU"] = <"Error (VDOBU): object key must be unique; key [$1] already exists under attribute '$2'">
 
 			["VACSO"] = <"Error (VACSO): cannot add $1 object with $2 to singly-valued attribute $3 because object occurrences > 1">
 			["VACSI"] = <"Error (VACSI): cannot add $1 object with $2 to singly-valued attribute $3 because attribute already has child with same node id">

@@ -5,8 +5,8 @@ note
 				 ]"
 	keywords:    "ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2006-2009 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"

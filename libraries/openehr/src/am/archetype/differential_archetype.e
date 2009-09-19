@@ -66,7 +66,7 @@ feature -- Initialisation
 			a_flat_copy: FLAT_ARCHETYPE
 		do
 			a_flat_copy := a_flat.deep_twin
-			make_all(a_flat_copy.adl_version, a_flat_copy.archetype_id, a_flat_copy.parent_archetype_id, a_flat_copy.is_controlled,
+			make_all(Latest_adl_version, a_flat_copy.archetype_id, a_flat_copy.parent_archetype_id, a_flat_copy.is_controlled,
 					a_flat_copy.concept, a_flat_copy.original_language.code_string, a_flat_copy.translations,
 					a_flat_copy.description, a_flat_copy.definition, a_flat_copy.invariants,
 					a_flat_copy.ontology.to_differential)
