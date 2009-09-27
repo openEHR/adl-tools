@@ -842,10 +842,10 @@ feature {NONE} -- Implementation
 					Result := init_value
 				else
 					if not dialog.file_name.is_empty then
-						create a_file.make (dialog.file_name)
+						create a_file.make (dialog.file_name.as_string_8)
 
 						if a_file.exists then
-							Result := dialog.file_name
+							Result := a_file.name
 						else
 							create error_dialog.make_with_text ("File " + dialog.file_name + " does not exist")
 							error_dialog.show_modal_to_window (a_parent_window)
@@ -883,10 +883,10 @@ feature {NONE} -- Implementation
 					Result := init_value
 				else
 					if not dialog.directory.is_empty then
-						create a_dir.make(dialog.directory)
+						create a_dir.make (dialog.directory.as_string_8)
 
 						if a_dir.exists then
-							Result := dialog.directory
+							Result := a_dir.name
 						else
 							create error_dialog.make_with_text ("Directory " + dialog.directory + " does not exist")
 							error_dialog.show_modal_to_window (a_parent_window)

@@ -74,7 +74,7 @@ feature {NONE} -- Implementation
 			paths_invalid: BOOLEAN
 			s: STRING
 		do
-			s := repository_dialog_reference_path_cb.text
+			s := repository_dialog_reference_path_cb.text.as_string_8
 			if not s.is_equal (reference_repository_path) then
 				if directory_exists (s) then
 					set_reference_repository_path (s)
@@ -87,7 +87,7 @@ feature {NONE} -- Implementation
 			end
 			set_reference_repository_paths (repository_dialog_reference_path_cb.strings_8)
 
-			s := repository_dialog_work_path_text.text
+			s := repository_dialog_work_path_text.text.as_string_8
 			if not s.is_equal (work_repository_path) then
 				if s.is_empty or else archetype_directory.valid_repository_path (s) then
 					set_work_repository_path (s)

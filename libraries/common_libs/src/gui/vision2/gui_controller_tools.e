@@ -90,7 +90,7 @@ feature {NONE} -- Implementation
 	populate_ev_combo_from_hash_keys(ev_combo: EV_COMBO_BOX; ht: DS_HASH_TABLE [INTEGER, STRING])
 			-- populate combo from hash table items
 		local
-			strs: ARRAYED_LIST[STRING]
+			strs: ARRAYED_LIST [STRING_32]
 		do
 			create strs.make (0)
 			if ht /= Void then

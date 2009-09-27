@@ -177,7 +177,7 @@ feature -- Commands
 		local
 			ev_rows: DYNAMIC_LIST[EV_MULTI_COLUMN_LIST_ROW]
 			ev_col: EV_MULTI_COLUMN_LIST_ROW
-			copy_text: STRING
+			copy_text: STRING_32
 		do
 			ev_rows := path_list.selected_items
 			create copy_text.make (0)
