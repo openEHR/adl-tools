@@ -157,6 +157,16 @@ feature -- Visitor
 		do
 		end
 
+	start_t_complex_object(a_node: T_COMPLEX_OBJECT; depth: INTEGER)
+			-- enter an T_COMPLEX_OBJECT
+		do
+		end
+
+	start_t_slot_spec(a_node: T_SLOT_SPEC; depth: INTEGER)
+			-- enter an T_SLOT_SPEC
+		do
+		end
+
 feature {NONE} -- Implementation
 
 	archetype_specialisation_level: INTEGER

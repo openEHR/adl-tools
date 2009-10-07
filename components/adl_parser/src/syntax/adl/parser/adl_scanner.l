@@ -3,9 +3,9 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Scanner for ADL syntax items"
 	keywords:    "ADL"
-	author:      "Thomas Beale <thomas@deepthought.com.au>"
-	support:     "Deep Thought Informatics <support@deepthought.com.au>"
-	copyright:   "Copyright (c) 2003-2005 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <support@oceaninformatics.com>"
+	support:     "Ocean Informatics <support@oceaninformatics.com>"
+	copyright:   "Copyright (c) 2005-2009 Ocean Informatics Pty Ltd"
 	license:     "Mozilla tri-license"
 
 	file:        "$URL$"
@@ -88,6 +88,10 @@ NAMESTR ([a-zA-Z][a-zA-Z0-9_]+)
 "]"			last_token := Right_bracket_code
 
 ----------/* keywords */ -------------------------------------------------
+
+^[Tt][Ee][Mm][Pp][Ll][Aa][Tt][Ee][ \t\r]* 		{
+				last_token := SYM_TEMPLATE
+			}
 
 ^[Aa][Rr][Cc][Hh][Ee][Tt][Yy][Pp][Ee][ \t\r]* 		{
 				last_token := SYM_ARCHETYPE

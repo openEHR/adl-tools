@@ -204,7 +204,7 @@ feature -- Commands
 
 			if obj_node /= Void then
 				if obj_node.is_addressable then
-					gui.ontology_controls.select_term(obj_node.node_id)
+					gui.ontology_controls.select_term(obj_node.archetype_node_id)
 				end
 			else
 				constraint_ref_node ?= node_data
@@ -912,11 +912,11 @@ feature {NONE} -- Implementation
 				end
 
 				if in_technical_mode then
-					Result.append (a_node.rm_type_name + "[" + a_node.node_id + "]")
+					Result.append (a_node.rm_type_name + "[" + a_node.archetype_node_id + "]")
 				end
 
-				if archetype_directory.has_valid_selected_archetype and ontology.has_term_code (a_node.node_id) then
-					Result.append (" " + ontology.term_definition (current_language, a_node.node_id).item ("text"))
+				if archetype_directory.has_valid_selected_archetype and ontology.has_term_code (a_node.archetype_node_id) then
+					Result.append (" " + ontology.term_definition (current_language, a_node.archetype_node_id).item ("text"))
 				end
 			else -- put type even when not in technical mode
 				Result.append (a_node.rm_type_name)
@@ -962,13 +962,13 @@ feature {NONE} -- Implementation
 			--end
 			if in_technical_mode then
 				if a_node.is_addressable then
-					Result.append ("[" + a_node.node_id + "]")
+					Result.append ("[" + a_node.archetype_node_id + "]")
 				end
 			end
 
 			if a_node.is_addressable then
-				if archetype_directory.has_valid_selected_archetype and ontology.has_term_code (a_node.node_id) then
-					Result.append (" " + ontology.term_definition (current_language, a_node.node_id).item ("text"))
+				if archetype_directory.has_valid_selected_archetype and ontology.has_term_code (a_node.archetype_node_id) then
+					Result.append (" " + ontology.term_definition (current_language, a_node.archetype_node_id).item ("text"))
 				end
 			end
 
@@ -1002,7 +1002,7 @@ feature {NONE} -- Implementation
 			if in_technical_mode then
 				Result.append ("use " + a_node.rm_type_name)
 				if a_node.is_addressable then
-					Result.append ("[" + a_node.node_id + "]")
+					Result.append ("[" + a_node.archetype_node_id + "]")
 				end
 				Result.append (" " + a_node.target_path)
 			elseif archetype_directory.has_valid_selected_archetype then
@@ -1019,7 +1019,7 @@ feature {NONE} -- Implementation
 			end
 			if in_technical_mode then
 				if a_node.is_addressable then
-					Result.append ("use " + a_node.rm_type_name + "[" + a_node.node_id + "] ")
+					Result.append ("use " + a_node.rm_type_name + "[" + a_node.archetype_node_id + "] ")
 				end
 			end
 			Result.append (a_node.target_ref.as_string)

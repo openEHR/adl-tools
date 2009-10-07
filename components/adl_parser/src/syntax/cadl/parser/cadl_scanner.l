@@ -61,6 +61,7 @@ create
 --------------- Definitions --------------
 ALPHANUM [a-zA-Z0-9]
 IDCHAR [a-zA-Z0-9_]
+CODECHAR [0-9.]
 NAMECHAR [a-zA-Z0-9._\-]
 NAMECHAR_SPACE [a-zA-Z0-9._\- ]
 NAMECHAR_PAREN [a-zA-Z0-9._\-()]
@@ -186,6 +187,12 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 
 [Bb][Ee][Ff][Oo][Rr][Ee]						last_token := SYM_BEFORE
 
+----------/* template tokens */ -------------------------------------------------
+
+[Ee][Xx][Hh][Aa][Uu][Ss][Tt][Ii][Vv][Ee]	last_token := SYM_EXHAUSTIVE
+
+[Ss][Ll][Oo][Tt]							last_token := SYM_SLOT
+
 ----------/* V_URI */ -------------------------------------------------
 [a-z]+:\/\/[^<>|\\{}^~"\[\] ]*	{
 	last_token := V_URI
@@ -204,7 +211,7 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 			}
 
 ----------/* V_LOCAL_TERM_CODE_REF: term code of form [at0000], [ac0000] */ ---------------
-\[{ALPHANUM}{NAMECHAR}*\]	{
+\[a[tc]{CODECHAR}*\]	{
 					last_token := V_LOCAL_TERM_CODE_REF
 					last_string_value := text_substring (2, text_count - 1)
 			}
@@ -277,6 +284,12 @@ a[ct][0-9.]+ {
 {NAMESTR}(-{NAMESTR}){2}\.{NAMESTR}(-{NAMESTR})*\.v[1-9][0-9]* {
 					last_token := V_ARCHETYPE_ID
 					last_string_value := text
+			}
+
+----------/* archetype id as a node code */ -------------------------------------------------
+\[{NAMESTR}(-{NAMESTR}){2}\.{NAMESTR}(-{NAMESTR})*\.v[1-9][0-9]*\] {
+					last_token := V_ARCHETYPE_ID_CODE
+					last_string_value := text_substring (2, text_count - 1)
 			}
 
 ----------/* V_ISO8601_EXTENDED_DATE_TIME YYYY-MM-DDThh:mm:ss[,sss][Z|+/-nnnn] */ -------------------------------------------------

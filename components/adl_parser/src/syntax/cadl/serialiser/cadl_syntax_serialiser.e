@@ -27,7 +27,8 @@ inherit
 			start_archetype_internal_ref, start_constraint_ref,
 			start_archetype_external_ref,
 			start_c_code_phrase, start_c_ordinal, start_c_quantity,
-			start_c_primitive_object
+			start_c_primitive_object,
+			end_t_slot_spec
 		end
 
 	CADL_TOKENS
@@ -65,7 +66,7 @@ feature -- Visitor
 			if a_node.any_allowed then
 				last_result.append (apply_style(symbol(SYM_ANY), STYLE_VALUE))
 			elseif a_node.is_addressable then
-				s := a_node.node_id
+				s := a_node.archetype_node_id
 				if ontology.has_term_code(s) then
 					last_result.append (format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
 						safe_comment(ontology.term_definition(current_language, s).item("text")), STYLE_COMMENT))
@@ -101,7 +102,7 @@ feature -- Visitor
 			if a_node.any_allowed then
 				last_result.append (apply_style(symbol(SYM_ANY), STYLE_VALUE))
 			elseif a_node.is_addressable then
-				s := a_node.node_id
+				s := a_node.archetype_node_id
 				if ontology.has_term_code(s) then
 					last_result.append (format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
 						safe_comment(ontology.term_definition(current_language, s).item("text")), STYLE_COMMENT))
@@ -436,6 +437,21 @@ feature -- Visitor
 			end
 		end
 
+	start_t_complex_object(a_node: T_COMPLEX_OBJECT; depth: INTEGER)
+			-- enter an T_COMPLEX_OBJECT
+		do
+		end
+
+	start_t_slot_spec(a_node: T_SLOT_SPEC; depth: INTEGER)
+			-- enter an T_SLOT_SPEC
+		do
+		end
+
+	end_t_slot_spec(a_node: T_SLOT_SPEC; depth: INTEGER)
+			-- exit an T_SLOT_SPEC
+		do
+		end
+
 feature {NONE} -- Implementation
 
 	serialise_sibling_order(a_node: C_OBJECT; depth: INTEGER)
@@ -459,7 +475,7 @@ feature {NONE} -- Implementation
 			last_result.append (apply_style (a_node.rm_type_name, identifier_style (a_node)))
 
 			if a_node.is_addressable then
-				last_result.append (apply_style("[" + a_node.node_id + "]", STYLE_TERM_REF))
+				last_result.append (apply_style("[" + a_node.archetype_node_id + "]", STYLE_TERM_REF))
 			end
 
 			last_result.append (format_item(FMT_SPACE))

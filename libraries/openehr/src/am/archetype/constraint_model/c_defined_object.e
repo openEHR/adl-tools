@@ -21,6 +21,12 @@ inherit
 
 feature -- Access
 
+	template_node_id: STRING
+			--
+		do
+			Result := representation.node_id
+		end
+
 	prototype_value: ANY
 			-- 	generate a default value from this constraint object
 		deferred

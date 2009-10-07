@@ -176,7 +176,7 @@ feature {NONE} -- Implementation
 				add_error("VARDT", <<target.archetype_id.rm_entity, target.definition.rm_type_name>>)
 			elseif specialisation_depth_from_code (target.concept) /= target.specialisation_depth then
 				add_error("VACSD", <<specialisation_depth_from_code (target.concept).out, target.specialisation_depth.out>>)
-			elseif not target.definition.node_id.is_equal (target.concept) then
+			elseif not target.definition.archetype_node_id.is_equal (target.concept) then
 				add_error("VACCD", <<target.concept>>)
 			end
 		end
@@ -506,9 +506,9 @@ feature {NONE} -- Implementation
 							end
 						elseif co_child_diff.is_addressable then
 							if not co_child_diff.node_id_conforms_to (co_parent_flat) then
-								add_error("VSONCI", <<co_child_diff.path, co_child_diff.node_id, co_parent_flat.path, co_parent_flat.node_id>>)
-							elseif co_child_diff.node_id.is_equal(co_parent_flat.node_id) then -- id same, something else must be different
-								add_error("VSONIR", <<co_child_diff.path, co_child_diff.rm_type_name, co_parent_flat.rm_type_name, co_child_diff.node_id>>)
+								add_error("VSONCI", <<co_child_diff.path, co_child_diff.archetype_node_id, co_parent_flat.path, co_parent_flat.archetype_node_id>>)
+							elseif co_child_diff.archetype_node_id.is_equal(co_parent_flat.archetype_node_id) then -- id same, something else must be different
+								add_error("VSONIR", <<co_child_diff.path, co_child_diff.rm_type_name, co_parent_flat.rm_type_name, co_child_diff.archetype_node_id>>)
 							end
 						else
 							add_error("VSONI", <<co_child_diff.rm_type_name, co_child_diff.path, co_parent_flat.rm_type_name, co_parent_flat.path>>)

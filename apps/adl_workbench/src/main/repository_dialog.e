@@ -55,7 +55,7 @@ feature {NONE} -- Implementation
 	populate_controls
 			-- Initialise the dialog's widgets from shared settings.
 		local
-			ref_rep_paths: ARRAYED_LIST [STRING]
+			ref_rep_paths, tpl_rep_paths: ARRAYED_LIST [STRING]
 		do
 			ref_rep_paths := reference_repository_paths
 			if ref_rep_paths.is_empty or not ref_rep_paths.has (reference_repository_path) then
@@ -64,7 +64,16 @@ feature {NONE} -- Implementation
 			end
 			repository_dialog_reference_path_cb.set_strings (ref_rep_paths)
 			repository_dialog_reference_path_cb.i_th (ref_rep_paths.index_of (reference_repository_path, 1)).enable_select
+
 			repository_dialog_work_path_text.set_text (work_repository_path)
+
+			tpl_rep_paths := template_repository_paths
+			if tpl_rep_paths.is_empty or not tpl_rep_paths.has (template_repository_path) then
+				tpl_rep_paths.put_front (template_repository_path)
+				set_template_repository_paths (tpl_rep_paths)
+			end
+			repository_dialog_template_path_cb.set_strings (tpl_rep_paths)
+			repository_dialog_template_path_cb.i_th (tpl_rep_paths.index_of (template_repository_path, 1)).enable_select
 		end
 
 	repository_dialog_ok
@@ -74,7 +83,7 @@ feature {NONE} -- Implementation
 			paths_invalid: BOOLEAN
 			s: STRING
 		do
-			s := repository_dialog_reference_path_cb.text
+			s := repository_dialog_reference_path_cb.text.as_string_8
 			if not s.is_equal (reference_repository_path) then
 				if directory_exists (s) then
 					set_reference_repository_path (s)
@@ -87,7 +96,7 @@ feature {NONE} -- Implementation
 			end
 			set_reference_repository_paths (repository_dialog_reference_path_cb.strings_8)
 
-			s := repository_dialog_work_path_text.text
+			s := repository_dialog_work_path_text.text.as_string_8
 			if not s.is_equal (work_repository_path) then
 				if s.is_empty or else archetype_directory.valid_repository_path (s) then
 					set_work_repository_path (s)
@@ -99,6 +108,19 @@ feature {NONE} -- Implementation
 					paths_invalid := True
 				end
 			end
+
+			s := repository_dialog_template_path_cb.text
+			if not s.is_equal (template_repository_path) then
+				if directory_exists (s) then
+					set_template_repository_path (s)
+					has_changed_paths := True
+				else
+					create error_dialog.make_with_text ("Template Repository %"" + s + "%" does not exist.")
+					error_dialog.show_modal_to_window (Current)
+					paths_invalid := True
+				end
+			end
+			set_template_repository_paths (repository_dialog_template_path_cb.strings_8)
 
 			if not paths_invalid then
 				hide
@@ -124,6 +146,18 @@ feature {NONE} -- Implementation
 				set_work_repository_path (reference_repository_path.twin)
 			end
 			repository_dialog_work_path_text.set_text (get_directory (work_repository_path, Current))
+		end
+
+	get_template_repository_path
+			-- Display a dialog for the user to select a new Template Repository.
+		local
+			rep_path: STRING
+		do
+			rep_path := get_directory (template_repository_path, Current)
+			if not template_repository_paths.has (rep_path) then
+				repository_dialog_template_path_cb.put_front (create {EV_LIST_ITEM}.make_with_text (rep_path))
+				repository_dialog_template_path_cb.first.enable_select
+			end
 		end
 
 	on_select_all (text: EV_TEXT_FIELD)

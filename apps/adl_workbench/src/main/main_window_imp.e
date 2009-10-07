@@ -96,7 +96,7 @@ feature {NONE}-- Initialization
 			create language_label
 			create language_combo
 			create explorer_split_area
-			create archetype_file_tree
+			create directory_tree
 			create total_split_area
 			create archetype_notebook
 			create description_box
@@ -291,7 +291,7 @@ feature {NONE}-- Initialization
 			action_bar.extend (language_label)
 			action_bar.extend (language_combo)
 			viewer_vbox.extend (explorer_split_area)
-			explorer_split_area.extend (archetype_file_tree)
+			explorer_split_area.extend (directory_tree)
 			explorer_split_area.extend (total_split_area)
 			total_split_area.extend (archetype_notebook)
 			archetype_notebook.extend (description_box)
@@ -525,8 +525,8 @@ feature {NONE}-- Initialization
 			integer_constant_set_procedures.extend (agent explorer_split_area.set_minimum_height (?))
 			integer_constant_retrieval_functions.extend (agent main_hbox_min_height)
 			explorer_split_area.enable_item_expand (total_split_area)
-			explorer_split_area.disable_item_expand (archetype_file_tree)
-			color_constant_set_procedures.extend (agent archetype_file_tree.set_background_color (?))
+			explorer_split_area.disable_item_expand (directory_tree)
+			color_constant_set_procedures.extend (agent directory_tree.set_background_color (?))
 			color_constant_retrieval_functions.extend (agent editable_colour)
 			integer_constant_set_procedures.extend (agent total_split_area.set_minimum_width (?))
 			integer_constant_retrieval_functions.extend (agent app_min_width)
@@ -1015,7 +1015,7 @@ feature {NONE}-- Initialization
 			archetype_id.focus_in_actions.extend (agent on_select_all)
 			adl_version_text.focus_in_actions.extend (agent on_select_all)
 			language_combo.select_actions.extend (agent select_language)
-			archetype_file_tree.select_actions.extend (agent archetype_view_tree_item_select)
+			directory_tree.select_actions.extend (agent archetype_view_tree_item_select)
 			archetype_notebook.selection_actions.extend (agent on_archetype_notebook_select)
 			arch_desc_status_text.focus_in_actions.extend (agent on_select_all)
 			arch_desc_original_language_text.focus_in_actions.extend (agent on_select_all)
@@ -1061,7 +1061,7 @@ feature -- Access
 	arch_desc_use_text, arch_desc_misuse_text, arch_desc_copyright_text, parser_status_area,
 	test_status_area: EV_TEXT
 	total_split_area, node_map_and_ontology_split_area, test_split_area: EV_VERTICAL_SPLIT_AREA
-	archetype_file_tree,
+	directory_tree,
 	node_map_tree, slots_tree, used_by_tree: EV_TREE
 	arch_desc_auth_orig_auth_mlist, arch_translations_author_mlist,
 	arch_translations_other_details_mlist, arch_desc_resource_orig_res_mlist, ontology_term_definitions_multi_column_list,
@@ -1277,7 +1277,7 @@ feature {NONE} -- Implementation
 		end
 	
 	archetype_view_tree_item_select is
-			-- Called by `select_actions' of `archetype_file_tree'.
+			-- Called by `select_actions' of `directory_tree'.
 		deferred
 		end
 	

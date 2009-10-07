@@ -44,10 +44,10 @@ feature -- Visitor
 			-- enter a C_COMPLEX_OBJECT
 		do
 			if a_node.is_addressable then
-				if not archetype.id_atcodes_index.has(a_node.node_id) then
-					archetype.id_atcodes_index.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.node_id)
+				if not archetype.id_atcodes_index.has(a_node.archetype_node_id) then
+					archetype.id_atcodes_index.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.archetype_node_id)
 				end
-				archetype.id_atcodes_index.item(a_node.node_id).extend (a_node)
+				archetype.id_atcodes_index.item(a_node.archetype_node_id).extend (a_node)
 			end
 		end
 
@@ -55,10 +55,10 @@ feature -- Visitor
 			-- enter an ARCHETYPE_SLOT
 		do
 			if a_node.is_addressable then
-				if not archetype.id_atcodes_index.has(a_node.node_id) then
-					archetype.id_atcodes_index.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.node_id)
+				if not archetype.id_atcodes_index.has(a_node.archetype_node_id) then
+					archetype.id_atcodes_index.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.archetype_node_id)
 				end
-				archetype.id_atcodes_index.item(a_node.node_id).extend (a_node)
+				archetype.id_atcodes_index.item(a_node.archetype_node_id).extend (a_node)
 			end
 			archetype.slot_index.extend (a_node)
 		end
@@ -67,10 +67,10 @@ feature -- Visitor
 			-- enter an ARCHETYPE_EXTERNAL_REF
 		do
 			if a_node.is_addressable then
-				if not archetype.id_atcodes_index.has(a_node.node_id) then
-					archetype.id_atcodes_index.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.node_id)
+				if not archetype.id_atcodes_index.has(a_node.archetype_node_id) then
+					archetype.id_atcodes_index.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.archetype_node_id)
 				end
-				archetype.id_atcodes_index.item(a_node.node_id).extend (a_node)
+				archetype.id_atcodes_index.item(a_node.archetype_node_id).extend (a_node)
 			end
 			if not archetype.use_archetype_index.has(a_node.target_ref.as_string) then
 				archetype.use_archetype_index.put(create {ARRAYED_LIST[ARCHETYPE_EXTERNAL_REF]}.make(0), a_node.target_ref.as_string)
@@ -176,6 +176,16 @@ feature -- Visitor
 
 	start_c_quantity(a_node: C_DV_QUANTITY; depth: INTEGER)
 			-- enter a C_DV_QUANTITY
+		do
+		end
+
+	start_t_complex_object(a_node: T_COMPLEX_OBJECT; depth: INTEGER)
+			-- enter an T_COMPLEX_OBJECT
+		do
+		end
+
+	start_t_slot_spec(a_node: T_SLOT_SPEC; depth: INTEGER)
+			-- enter an T_SLOT_SPEC
 		do
 		end
 

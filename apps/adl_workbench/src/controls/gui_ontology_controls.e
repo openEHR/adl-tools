@@ -125,7 +125,7 @@ feature {NONE} -- Implementation
 		require
 			archetype_selected: archetype_directory.has_selected_archetype
 		local
-			col_titles: ARRAYED_LIST[STRING]
+			col_titles: ARRAYED_LIST [STRING_32]
 			pl: EV_MULTI_COLUMN_LIST
 			list_row: EV_MULTI_COLUMN_LIST_ROW
 			a_term: ARCHETYPE_TERM
@@ -217,7 +217,7 @@ feature {NONE} -- Implementation
 		require
 			archetype_selected: archetype_directory.has_selected_archetype
 		local
-			col_titles: ARRAYED_LIST[STRING]
+			col_titles: ARRAYED_LIST [STRING_32]
 			pl: EV_MULTI_COLUMN_LIST
 			list_row: EV_MULTI_COLUMN_LIST_ROW
 			a_term: ARCHETYPE_TERM

@@ -39,7 +39,7 @@ feature -- Access
 	rm_type_name: STRING
 			-- type name from reference model, of object to instantiate
 
-	node_id: STRING
+	archetype_node_id: STRING
 			--
 		do
 			Result := representation.node_id
@@ -66,13 +66,13 @@ feature -- Source Control
 			-- specialisation hierarchy. Values are defined in SPECIALISATION_STATUSES
 			-- detects specialisation status for identified nodes
 		do
-			if not is_valid_code(node_id) then
+			if not is_valid_code(archetype_node_id) then
 				create Result.make(ss_propagated)
 			else
 				if specialisation_depth < spec_level then
 					create Result.make(ss_inherited)
 				else
-					Result := specialisation_status_from_code (node_id, spec_level)
+					Result := specialisation_status_from_code (archetype_node_id, spec_level)
 				end
 			end
 		end
@@ -100,7 +100,7 @@ feature -- Comparison
 			--	node_id (& specialisation depth)
 		do
 			if is_addressable and other.is_addressable then
-				if node_id.is_equal (other.node_id) then
+				if archetype_node_id.is_equal (other.archetype_node_id) then
 					Result := rm_type_name.is_equal (other.rm_type_name) and (occurrences = Void or else occurrences.equal_interval(other.occurrences))
 				else
 					Result := (rm_type_conforms_to(other) and occurrences_conforms_to (other) and node_id_conforms_to (other))
@@ -132,7 +132,7 @@ feature -- Comparison
 	node_id_conforms_to (other: like Current): BOOLEAN
 			-- True if this node id conforms to other.node_id; `other' is assumed to be in a flat archetype
 		do
-			Result := codes_conformant (node_id, other.node_id)
+			Result := codes_conformant (archetype_node_id, other.archetype_node_id)
 		end
 
 	valid_occurrences(occ: MULTIPLICITY_INTERVAL): BOOLEAN
@@ -198,11 +198,11 @@ feature -- Modification
 			sibling_order := Void
 		end
 
-	set_node_id (an_object_id: STRING)
+	set_archetype_node_id (an_archetype_node_id: STRING)
 		require
-			Object_id_valid: an_object_id /= Void and then not an_object_id.is_empty
+			Archetype_node_id_valid: an_archetype_node_id /= Void and then not an_archetype_node_id.is_empty
 		do
-			representation.set_node_id (an_object_id)
+			representation.set_node_id (an_archetype_node_id)
 		end
 
 	overlay_differential (other: like Current)
@@ -215,8 +215,8 @@ feature -- Modification
 			Other_valid: other /= Void and then other.node_conforms_to (Current)
 			Flat_archetype: occurrences /= Void
 		do
-			if not other.node_id.is_equal(node_id) then
-				set_node_id (other.node_id.twin)
+			if not other.archetype_node_id.is_equal(archetype_node_id) then
+				set_archetype_node_id (other.archetype_node_id.twin)
 			end
 			if not other.rm_type_name.is_equal(rm_type_name) then
 				rm_type_name := other.rm_type_name.twin

@@ -101,6 +101,9 @@
 		</override>
 	</target>
 	<target name="adl_workbench" extends="adl_workbench_no_precompile">
+		<option debug="false">
+			<debug name="adl_parse" enabled="false"/>
+		</option>
 		<precompile name="precompile" location="$ISE_PRECOMP\vision2.ecf"/>
 		<tests name="archetype_repository_tests" location="..\..\..\components\archetype_repository\tests\"/>
 		<tests name="common_libs_tests" location="..\..\..\libraries\common_libs\tests\"/>

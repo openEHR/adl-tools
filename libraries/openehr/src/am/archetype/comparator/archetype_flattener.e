@@ -162,7 +162,7 @@ feature {NONE} -- Implementation
 											int_refs.item.path + "%N")
 								end
 								c_obj := arch_output_flat.c_object_at_path (arch_output_flat.use_node_index.key_for_iteration).safe_deep_twin
-								int_refs.item.parent.replace_child_by_id (c_obj, int_refs.item.node_id)
+								int_refs.item.parent.replace_child_by_id (c_obj, int_refs.item.archetype_node_id)
 								clone_performed := True
 							end
 							child_paths_at_parent_level.forth
@@ -237,14 +237,14 @@ feature {NONE} -- Implementation
 								io.put_string ("%T** parent matches ANY - doing complete clone of child **%N")
 							end
 							if not cco_output_flat.is_root then
-								cco_output_flat.parent.replace_node_id (cco_output_flat.node_id, cco_child_diff.node_id)
-								cco_output_flat.parent.replace_child_by_id (cco_child_diff.safe_deep_twin, cco_child_diff.node_id)
+								cco_output_flat.parent.replace_node_id (cco_output_flat.archetype_node_id, cco_child_diff.archetype_node_id)
+								cco_output_flat.parent.replace_child_by_id (cco_child_diff.safe_deep_twin, cco_child_diff.archetype_node_id)
 							end
 							child_grafted_path_list.extend (cco_child_diff.path)
 						else
 							-- firstly, add overrides from immediate child node to corresponding flat node
 							debug ("flatten")
-								io.put_string ("%Toverlay immediate node " + cco_child_diff.node_id + " on flat parent " + cco_output_flat.node_id + "%N")
+								io.put_string ("%Toverlay immediate node " + cco_child_diff.archetype_node_id + " on flat parent " + cco_output_flat.archetype_node_id + "%N")
 							end
 							if cco_output_flat.parent /= Void then
 								cco_output_flat.parent.overlay_differential(cco_output_flat, cco_child_diff)
@@ -278,12 +278,12 @@ feature {NONE} -- Implementation
 									create c_path_in_diff.make_from_string (ca_child.differential_path)
 									c_path_in_diff.finish
 									from cco_csr := cco_output_flat_proximate until cco_csr = cco_output_flat loop
-										if c_path_in_diff.item.is_addressable and then c_path_in_diff.item.object_id.count > cco_csr.node_id.count and then
-												c_path_in_diff.item.object_id.starts_with (cco_csr.node_id) then
+										if c_path_in_diff.item.is_addressable and then c_path_in_diff.item.object_id.count > cco_csr.archetype_node_id.count and then
+												c_path_in_diff.item.object_id.starts_with (cco_csr.archetype_node_id) then
 											debug ("flatten")
-												io.put_string ("%T%T%Treplacing node id " + cco_csr.node_id + " in flat structure with " + c_path_in_diff.item.object_id + "%N")
+												io.put_string ("%T%T%Treplacing node id " + cco_csr.archetype_node_id + " in flat structure with " + c_path_in_diff.item.object_id + "%N")
 											end
-											cco_csr.parent.replace_node_id (cco_csr.node_id, c_path_in_diff.item.object_id)
+											cco_csr.parent.replace_node_id (cco_csr.archetype_node_id, c_path_in_diff.item.object_id)
 										end
 										cco_csr := cco_csr.parent.parent
 										c_path_in_diff.back
@@ -414,8 +414,8 @@ feature {NONE} -- Implementation
 			from merge_list.start until merge_list.off loop
 				insert_obj ?= merge_list.item.reference_item (3)
 				from i := merge_list.item.integer_item (1) until i > merge_list.item.integer_item (2) loop
-					if is_valid_code (ca_child.children.i_th (i).node_id) and
-						specialisation_status_from_code (ca_child.children.i_th (i).node_id, arch_child_diff.specialisation_depth).value = ss_added then
+					if is_valid_code (ca_child.children.i_th (i).archetype_node_id) and
+						specialisation_status_from_code (ca_child.children.i_th (i).archetype_node_id, arch_child_diff.specialisation_depth).value = ss_added then
 
 						child_grafted_path_list.extend (ca_child.children.i_th (i).path)
 						c_obj := ca_child.children.i_th (i).safe_deep_twin
@@ -444,7 +444,7 @@ feature {NONE} -- Implementation
 				if not attached {C_COMPLEX_OBJECT} ca_child.children.item as cco then
 					if ca_child.children.item.is_addressable then -- if identified, find corresponding node in parent & replace completely
 						ca_output.replace_child_by_id (ca_child.children.item.safe_deep_twin,
-							specialisation_parent_from_code_at_level (ca_child.children.item.node_id, arch_parent_flat.specialisation_depth))
+							specialisation_parent_from_code_at_level (ca_child.children.item.archetype_node_id, arch_parent_flat.specialisation_depth))
 					elseif ca_output.has_child_with_rm_type_name(ca_child.children.item.rm_type_name) then -- find a node of same type, then replace completely
 						ca_output.replace_child_by_rm_type_name (ca_child.children.item.safe_deep_twin)
 					else -- or a RM parent type, then add
@@ -483,7 +483,7 @@ feature {NONE} -- Implementation
 			merge_desc.put_boolean (before_flag, 4)
 			merge_list.extend (merge_desc)
 			debug ("flatten")
-				io.put_string ("%T%T%T=== added MERGE DESC " + src_start_pos.out + ", " + src_end_pos.out + ", " + tgt_insert_obj.node_id + ", " + before_flag.out + "%N")
+				io.put_string ("%T%T%T=== added MERGE DESC " + src_start_pos.out + ", " + src_end_pos.out + ", " + tgt_insert_obj.archetype_node_id + ", " + before_flag.out + "%N")
 			end
 		end
 

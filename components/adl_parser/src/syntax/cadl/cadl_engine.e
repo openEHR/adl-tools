@@ -67,6 +67,9 @@ feature -- Status Report
 	is_differential: BOOLEAN
 			-- True if archetype is differential
 
+	is_template: BOOLEAN
+			-- True if a template is being parsed
+
 feature -- Commands
 
 	reset
@@ -77,7 +80,7 @@ feature -- Commands
 			serialised := Void
 		end
 
-	set_source (in_text: STRING; a_source_start_line: INTEGER; differential_flag: BOOLEAN)
+	set_source (in_text: STRING; a_source_start_line: INTEGER; differential_flag, template_flag: BOOLEAN)
 			-- Set `in_text' as working artifact.
 		require
 			text_attached: in_text /= Void
@@ -87,11 +90,13 @@ feature -- Commands
 			source_start_line := a_source_start_line
 			in_parse_mode := True
 			is_differential := differential_flag
+			is_template := template_flag
 		ensure
 			source_set: source = in_text
 			source_start_line_set: source_start_line = a_source_start_line
 			parsing: in_parse_mode
 			is_differential_set: is_differential = differential_flag
+			Is_template_set: is_template = template_flag
 		end
 
 	parse
@@ -103,7 +108,7 @@ feature -- Commands
 			tree := Void
 			serialised := Void
 			create parser.make
-			parser.execute (source, source_start_line, is_differential)
+			parser.execute (source, source_start_line, is_differential, is_template)
 
 			if not parser.syntax_error then
 				tree := parser.output

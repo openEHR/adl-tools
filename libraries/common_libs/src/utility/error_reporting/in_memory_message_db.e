@@ -275,6 +275,10 @@ feature -- Access
 			-- validation warnings: in addition to spec, used to help archetype authors
 			["WOUC"] = <"Warning (WOUC): code $1 in ontology not used in archetype definition">
 			["WCRC"] = <"Warning (WCRC): redefinition of CONSTRAINT_REF (ac_code node) by C_CODE_PHRASE node at path $1 in child - not checked">
+			
+			-- Template related validation
+			["VTSLT"] = <"Error (VTSLT): illegal template slot construct found at $1">
+			["VTTCO"] = <"Error (VTTCO): illegal template object construct found at $1">
 		>
 		>
 		]"

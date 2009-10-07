@@ -127,7 +127,7 @@ feature {NONE} -- Implementation
 		do
 			hide
 
-			s := editor_command_text.text
+			s := editor_command_text.text.as_string_8
 			s.left_adjust
 			s.right_adjust
 			s.replace_substring_all ("%N", ",")
@@ -138,9 +138,9 @@ feature {NONE} -- Implementation
 			set_display_archetype_source (display_archetype_source_check_button.is_selected)
 			set_validation_strict(validation_strict_check_button.is_selected)
 			set_strict_validation(validation_strict_check_button.is_selected)
-			set_status_reporting_level (message_type_ids.item (parser_error_reporting_level_combo_box.text))
-			set_html_export_directory (export_html_text.text)
-			set_use_flat_adl_version(adl_save_version_combo_box.text)
+			set_status_reporting_level (message_type_ids.item (parser_error_reporting_level_combo_box.text.as_string_8))
+			set_html_export_directory (export_html_text.text.as_string_8)
+			set_use_flat_adl_version(adl_save_version_combo_box.text.as_string_8)
 
 			has_changed_options := True
 		end
@@ -159,7 +159,7 @@ feature {NONE} -- Implementation
 			s: STRING
 		do
 			editor_command_text.select_lines (editor_command_text.current_line_number, editor_command_text.current_line_number)
-			s := get_file (editor_command_text.selected_text, Current)
+			s := get_file (editor_command_text.selected_text.as_string_8, Current)
 
 			if editor_command_text.has_selection then
 				editor_command_text.delete_selection
@@ -173,7 +173,7 @@ feature {NONE} -- Implementation
 	on_export_html_browse
 			-- Let the user browse for the directory to which HTML will be exported.
 		do
-			export_html_text.set_text (get_directory (export_html_text.text, Current))
+			export_html_text.set_text (get_directory (export_html_text.text.as_string_8, Current))
 		end
 
 	on_select_all (text: EV_TEXT_COMPONENT)

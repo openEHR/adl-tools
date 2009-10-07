@@ -77,30 +77,30 @@ feature {NONE} -- Implementation
 		require
 			valid_key: valid_key_code (key)
 		do
-			Result := key_strings [key]
+			Result := key_strings [key].as_string_8
 
 			if Result.count = 1 then
 				Result.to_upper
 			end
 
 			if alt then
-				Result := key_strings [key_alt] + "+" + Result
+				Result := key_strings [key_alt].as_string_8 + "+" + Result
 			end
 
 			if shift then
-				Result := key_strings [key_shift] + "+" + Result
+				Result := key_strings [key_shift].as_string_8 + "+" + Result
 			end
 
 			if ctrl then
-				Result := key_strings [key_ctrl] + "+" + Result
+				Result := key_strings [key_ctrl].as_string_8 + "+" + Result
 			end
 		ensure
 			not_void: attached Result
 			not_empty: not Result.is_empty
-			has_key: Result.as_upper.ends_with ((key_strings [key]).as_upper)
-			has_ctrl: ctrl implies Result.has_substring (key_strings [key_ctrl])
-			has_alt: alt implies Result.has_substring (key_strings [key_alt])
-			has_shift: shift implies Result.has_substring (key_strings [key_shift])
+			has_key: Result.as_upper.ends_with ((key_strings [key]).as_string_8.as_upper)
+			has_ctrl: ctrl implies Result.has_substring (key_strings [key_ctrl].as_string_8)
+			has_alt: alt implies Result.has_substring (key_strings [key_alt].as_string_8)
+			has_shift: shift implies Result.has_substring (key_strings [key_shift].as_string_8)
 		end
 
 end

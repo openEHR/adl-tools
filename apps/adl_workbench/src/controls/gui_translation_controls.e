@@ -78,9 +78,9 @@ feature -- Commands
 
 			-- determine selected language
 			if gui.arch_translations_languages_list.selected_item = Void then
-				translation_language := gui.arch_translations_languages_list.first.text
+				translation_language := gui.arch_translations_languages_list.first.text.as_string_8
 			else
-				translation_language := gui.arch_translations_languages_list.selected_item.text
+				translation_language := gui.arch_translations_languages_list.selected_item.text.as_string_8
 			end
 
 			if archetype_directory.has_valid_selected_archetype then

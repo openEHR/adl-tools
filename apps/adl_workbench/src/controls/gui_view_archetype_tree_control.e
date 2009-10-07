@@ -47,7 +47,7 @@ feature {NONE} -- Initialisation
 			a_main_window /= Void
 		do
 			gui := a_main_window
-   			gui_file_tree := gui.archetype_file_tree
+   			gui_file_tree := gui.directory_tree
    			gui_file_tree.set_minimum_width (gui.max_arch_explorer_width)
 		end
 
@@ -55,10 +55,25 @@ feature -- Commands
 
 	populate
 			-- Populate `gui_file_tree' from `archetype_directory'.
+		local
+			node: EV_TREE_ITEM
 		do
 			gui_file_tree.wipe_out
- 			create gui_tree_item_stack.make (0)
- 			archetype_directory.do_subtree (archetype_directory.directory, agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
+
+			create node
+			node.set_pixmap (pixmaps ["archetype_repository"])
+			gui_file_tree.extend (node)
+
+			create node
+			node.set_pixmap (pixmaps ["template_repository"])
+			gui_file_tree.extend (node)
+
+ 			create gui_tree_archetype_stack.make (0)
+ 			archetype_directory.do_subtree (archetype_directory.directory, agent populate_gui_archetype_tree_node_enter, agent populate_gui_archetype_tree_node_exit)
+
+ 			create gui_tree_template_stack.make (0)
+ 			template_directory.do_subtree (template_directory.directory, agent populate_gui_template_tree_node_enter, agent populate_gui_template_tree_node_exit)
+
 			gui.select_node_in_archetype_tree_view
 		end
 
@@ -124,15 +139,18 @@ feature {NONE} -- Implementation
 			-- Main window of system.
 
 	gui_file_tree: EV_TREE
-			-- reference to MAIN_WINDOW.archetype_file_tree
+			-- reference to MAIN_WINDOW.directory_tree
 
-	gui_tree_item_stack: ARRAYED_STACK [EV_TREE_ITEM]
-			-- Stack used during `populate_gui_tree_node_enter'.
+	gui_tree_archetype_stack: ARRAYED_STACK [EV_TREE_ITEM]
+			-- Stack used during `populate_gui_archetype_tree_node_enter'.
+
+	gui_tree_template_stack: ARRAYED_STACK [EV_TREE_ITEM]
+			-- Stack used during `populate_gui_template_tree_node_enter'.
 
 	delay_to_make_keyboard_navigation_practical: EV_TIMEOUT
 			-- Timer to delay a moment before calling `display_details_of_selected_item'.
 
-   	populate_gui_tree_node_enter (an_item: ARCH_REP_ITEM)
+   	populate_gui_archetype_tree_node_enter (an_item: ARCH_REP_ITEM)
    			-- Add a node representing `an_item' to `gui_file_tree'.
 		require
 			item_attached: an_item /= Void
@@ -143,18 +161,43 @@ feature {NONE} -- Implementation
  			node.set_data (an_item)
  			update_tree_node (node)
 
-			if gui_tree_item_stack.is_empty then
-				gui_file_tree.extend (node)
+			if gui_tree_archetype_stack.is_empty then
+				gui_file_tree.i_th (1).extend (node)
 			else
-				gui_tree_item_stack.item.extend (node)
+				gui_tree_archetype_stack.item.extend (node)
 			end
 
-			gui_tree_item_stack.extend (node)
+			gui_tree_archetype_stack.extend (node)
 		end
 
-   	populate_gui_tree_node_exit (an_item: ARCH_REP_ITEM)
+   	populate_gui_archetype_tree_node_exit (an_item: ARCH_REP_ITEM)
    		do
-			gui_tree_item_stack.remove
+			gui_tree_archetype_stack.remove
+		end
+
+   	populate_gui_template_tree_node_enter (an_item: ARCH_REP_ITEM)
+   			-- Add a node representing `an_item' to `gui_file_tree'.
+		require
+			item_attached: an_item /= Void
+   		local
+			node: EV_TREE_ITEM
+		do
+			create node
+ 			node.set_data (an_item)
+ 			update_tree_node (node)
+
+			if gui_tree_template_stack.is_empty then
+				gui_file_tree.i_th (2).extend (node)
+			else
+				gui_tree_template_stack.item.extend (node)
+			end
+
+			gui_tree_template_stack.extend (node)
+		end
+
+   	populate_gui_template_tree_node_exit (an_item: ARCH_REP_ITEM)
+   		do
+			gui_tree_template_stack.remove
 		end
 
 invariant

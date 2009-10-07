@@ -192,7 +192,7 @@ feature -- Access
 			from
 				children.start
 			until
-				children.off or children.item.node_id.is_equal (a_node_id)
+				children.off or children.item.archetype_node_id.is_equal (a_node_id)
 			loop
 				children.forth
 			end
@@ -207,7 +207,7 @@ feature -- Access
 		do
 			create Result.make(0)
 			from children.start until children.off loop
- 				if children.item.node_id.has_substring (a_node_id) then
+ 				if children.item.archetype_node_id.has_substring (a_node_id) then
  					Result.extend (children.item)
  				end
 				children.forth
@@ -473,7 +473,7 @@ feature -- Modification
 			parent_id: STRING
 			siblings: ARRAYED_LIST [C_OBJECT]
 		do
-			parent_id := specialisation_parent_from_code (an_obj.node_id)
+			parent_id := specialisation_parent_from_code (an_obj.archetype_node_id)
 			siblings := children_matching_id (parent_id)
 			if not siblings.is_empty then
 				put_child_right(an_obj, siblings.last)
@@ -511,7 +511,7 @@ feature -- Modification
 		require
 			Object_valid: an_obj /= Void and then has_child (an_obj)
 		do
-			representation.remove_child_by_id (an_obj.node_id)
+			representation.remove_child_by_id (an_obj.archetype_node_id)
 			children.prune_all(an_obj)
 		end
 
@@ -533,8 +533,8 @@ feature -- Modification
 			Flat_obj_valid: has_child (a_flat_obj)
 			Diff_obj_valid: diff_obj /= Void and then diff_obj.node_conforms_to (a_flat_obj)
 		do
-			if not a_flat_obj.node_id.is_equal(diff_obj.node_id) then
-				representation.replace_node_id (a_flat_obj.node_id, diff_obj.node_id)
+			if not a_flat_obj.archetype_node_id.is_equal(diff_obj.archetype_node_id) then
+				representation.replace_node_id (a_flat_obj.archetype_node_id, diff_obj.archetype_node_id)
 			end
 			a_flat_obj.overlay_differential (diff_obj)
 		end
@@ -549,10 +549,10 @@ feature -- Validation
 			Result := valid_child (an_obj)
 			if Result then
 				if is_single then
-					Result := (an_obj.is_addressable and not has_child_with_id (an_obj.node_id))
+					Result := (an_obj.is_addressable and not has_child_with_id (an_obj.archetype_node_id))
 						or not has_child_with_rm_type_name(an_obj.rm_type_name)
 				else
-					Result := not has_child_with_id (an_obj.node_id)
+					Result := not has_child_with_id (an_obj.archetype_node_id)
 				end
 			end
 		end
@@ -565,9 +565,9 @@ feature -- Validation
 			Result := valid_child (an_obj)
 			if Result then
 				if is_single then
-					Result := not an_obj.is_addressable or has_child_with_id (an_obj.node_id)
+					Result := not an_obj.is_addressable or has_child_with_id (an_obj.archetype_node_id)
 				else
-					Result := has_child_with_id (an_obj.node_id)
+					Result := has_child_with_id (an_obj.archetype_node_id)
 				end
 			end
 		end
@@ -616,21 +616,21 @@ feature {NONE} -- Implementation
 		do
 			p := parent
 			debug("compress")
-				io.put_string("%T%Tabout to REPARENT attribute Current (" + rm_attribute_path + ") from parent object " + p.rm_type_name + "[" + p.node_id + "]%N")
+				io.put_string("%T%Tabout to REPARENT attribute Current (" + rm_attribute_path + ") from parent object " + p.rm_type_name + "[" + p.archetype_node_id + "]%N")
 			end
 			p.remove_attribute (Current)
 			from csr := p until csr.parent = Void loop
 				if attached {C_COMPLEX_OBJECT} csr.parent as cco and attached {C_ATTRIBUTE} csr as ca then
 					if not ca.has_children then
 						debug("compress")
-							io.put_string("%T%Tabout to remove ORPHAN attribute " + ca.rm_attribute_name + " from object " + cco.rm_type_name + "[" + cco.node_id + "]%N")
+							io.put_string("%T%Tabout to remove ORPHAN attribute " + ca.rm_attribute_name + " from object " + cco.rm_type_name + "[" + cco.archetype_node_id + "]%N")
 						end
 						cco.remove_attribute (ca)
 					end
 				elseif attached {C_ATTRIBUTE} csr.parent as ca2 and attached {C_COMPLEX_OBJECT} csr as cco2 then
 					if not cco2.has_attributes then
 						debug("compress")
-							io.put_string("%T%Tabout to remove ORPHAN object " + cco2.rm_type_name + "[" + cco2.node_id + "] from attribute " + ca2.rm_attribute_name + "%N")
+							io.put_string("%T%Tabout to remove ORPHAN object " + cco2.rm_type_name + "[" + cco2.archetype_node_id + "] from attribute " + ca2.rm_attribute_name + "%N")
 						end
 						ca2.remove_child (cco2)
 					end
@@ -639,7 +639,7 @@ feature {NONE} -- Implementation
 			end
 			if attached {C_COMPLEX_OBJECT} csr as cco3 then
 				debug("compress")
-					io.put_string("%T%Tabout to put REPARENTED attribute Current (" + rm_attribute_path + ") on ROOT object " + cco3.rm_type_name + "[" + cco3.node_id + "]%N")
+					io.put_string("%T%Tabout to put REPARENTED attribute Current (" + rm_attribute_path + ") on ROOT object " + cco3.rm_type_name + "[" + cco3.archetype_node_id + "]%N")
 				end
 				cco3.put_attribute (Current)
 			end

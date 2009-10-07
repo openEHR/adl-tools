@@ -97,7 +97,7 @@ feature {NONE} -- Initialization
 
 			add_menu_shortcut (repository_menu_refresh, key_r, True, False, False)
 
-			archetype_file_tree.set_default_key_processing_handler (
+			directory_tree.set_default_key_processing_handler (
 				agent (key: EV_KEY): BOOLEAN
 						-- Workaround to prevent Alt+Left and Alt+Right being inappropriately handled by the tree view.
 					do
@@ -111,7 +111,7 @@ feature {NONE} -- Initialization
 			cur_title: STRING
 		do
 			set_icon_pixmap (adl_workbench_ico)
-			cur_title := title.twin
+			cur_title := title.twin.as_string_8
 			cur_title.replace_substring_all ("VER", latest_adl_version)
 			set_title (cur_title)
 
@@ -185,7 +185,7 @@ feature {NONE} -- Initialization
 				until
 					path_analysis_column_view_checkable_list.off
 				loop
-					if strs.has (path_analysis_column_view_checkable_list.item.text) then
+					if strs.has (path_analysis_column_view_checkable_list.item.text.as_string_8) then
 						path_analysis_column_view_checkable_list.check_item (path_analysis_column_view_checkable_list.item)
 					end
 
@@ -212,7 +212,7 @@ feature -- Status setting
 		local
 			quit_dialog: EV_INFORMATION_DIALOG
 		do
-			populate_archetype_directory
+			populate_directory
 			archetype_compiler.set_visual_update_action (agent build_gui_update)
 			initialise_overall_appearance
 			initialise_path_control
@@ -240,8 +240,8 @@ feature -- Status setting
 				set_reference_repository_path (application_startup_directory)
 				set_repository
 
-				if archetype_file_tree.is_empty then
-					populate_archetype_directory
+				if directory_tree.is_empty then
+					populate_directory
 				end
 			end
 
@@ -284,7 +284,7 @@ feature -- File events
 			dialog.filters.extend (["*" + archetype_source_file_extension, "ADL source files"])
 			dialog.filters.extend (["*" + archetype_legacy_file_extension, "ADL flat files"])
 			dialog.show_modal_to_window (Current)
-			name := dialog.file_name
+			name := dialog.file_name.as_string_8
 
 			if not name.is_empty then
 				set_current_work_directory (file_system.dirname (name))
@@ -374,7 +374,7 @@ feature -- File events
 
 					list.first.enable_select
 					editors_dialog.show_modal_to_window (Current)
-					command := list.selected_item.text
+					command := list.selected_item.text.as_string_8
 				end
 
 				execution_environment.launch (command + " %"" + path + "%"")
@@ -410,7 +410,7 @@ feature -- File events
 				end
 
 				save_dialog.show_modal_to_window (Current)
-				name := save_dialog.file_name
+				name := save_dialog.file_name.as_string_8
 
 				if not name.is_empty then
 					set_current_work_directory (file_system.dirname (name))
@@ -459,7 +459,7 @@ feature -- File events
 			set_app_maximised (is_maximized)
 			set_main_notebook_tab_pos (main_notebook.selected_item_index)
 
-			set_path_filter_combo_selection (path_analysis_row_filter_combo_box.selected_item.text)
+			set_path_filter_combo_selection (path_analysis_row_filter_combo_box.selected_item.text.as_string_8)
 
 			ev_items := path_analysis_column_view_checkable_list.checked_items
 			create strs.make (0)
@@ -469,7 +469,7 @@ feature -- File events
 			until
 				ev_items.off
 			loop
-				strs.extend (ev_items.item.text)
+				strs.extend (ev_items.item.text.as_string_8)
 				ev_items.forth
 			end
 
@@ -565,7 +565,7 @@ feature {NONE} -- Repository events
 			dialog.show_modal_to_window (Current)
 
 			if dialog.has_changed_paths then
-				populate_archetype_directory
+				populate_directory
 				save_resources_and_show_status
 			end
 		end
@@ -573,7 +573,7 @@ feature {NONE} -- Repository events
 	refresh_repository
 			-- refresh the current repository from source.
 		do
-			populate_archetype_directory
+			populate_directory
 		end
 
 	build_all
@@ -634,7 +634,7 @@ feature {NONE} -- Repository events
 			save_dialog.set_start_directory (current_work_directory)
 			save_dialog.filters.extend (["*.xml", "Save as XML"])
 			save_dialog.show_modal_to_window (Current)
-			xml_name := save_dialog.file_name
+			xml_name := save_dialog.file_name.as_string_8
 
 			if not xml_name.is_empty then
 				set_current_work_directory (file_system.dirname (xml_name))
@@ -811,8 +811,8 @@ feature -- Archetype commands
 	select_node_in_archetype_tree_view
 			-- Select and display the node of `archetype_file_tree' corresponding to the selection in `archetype_directory'.
 		do
-			if attached {EV_TREE_NODE} archetype_file_tree.retrieve_item_recursively_by_data (archetype_directory.selected_item, True) as node then
-				archetype_file_tree.ensure_item_visible (node)
+			if attached {EV_TREE_NODE} directory_tree.retrieve_item_recursively_by_data (archetype_directory.selected_item, True) as node then
+				directory_tree.ensure_item_visible (node)
 				node.enable_select
 			end
 		end
@@ -1022,14 +1022,14 @@ feature {NONE} -- Implementation
 			if language_combo.text.is_empty then
 				set_current_language (default_language)
 			else
-				set_current_language (language_combo.text)
+				set_current_language (language_combo.text.as_string_8)
 				if archetype_directory.has_valid_selected_archetype then
 					populate_view_controls
 				end
 			end
 		end
 
-	populate_archetype_directory
+	populate_directory
 			-- Rebuild archetype directory & repopulate relevant GUI parts.
 		do
 			do_with_wait_cursor (agent
@@ -1040,10 +1040,11 @@ feature {NONE} -- Implementation
 
 					set_title (reference_repository_path + " - " + title)
 					archetype_directory.make
+					template_directory.make
 					clear_billboard
 					clear_all_controls
 					compiler_error_control.clear
-					set_status_area ("Populating repository ...")
+					set_status_area ("Populating directory ...")
 					select_node_in_archetype_tree_view
 
 					if archetype_directory.valid_repository_path (reference_repository_path) then
@@ -1054,7 +1055,12 @@ feature {NONE} -- Implementation
 						archetype_directory.put_repository (work_repository_path, 3)
 					end
 
+					if template_directory.valid_repository_path (template_repository_path) then
+						template_directory.put_repository (template_repository_path, 2)
+					end
+
 					archetype_directory.populate_directory
+					template_directory.populate_directory
 					set_status_area (billboard_content)
 					clear_billboard
 					archetype_view_tree_control.populate
@@ -1303,7 +1309,7 @@ feature {NONE} -- Build commands
 			append_status_area (archetype_compiler.status)
 
 			if ara /= Void then
-				if attached {EV_TREE_NODE} archetype_file_tree.retrieve_item_recursively_by_data (ara, True) as node then
+				if attached {EV_TREE_NODE} directory_tree.retrieve_item_recursively_by_data (ara, True) as node then
 					archetype_view_tree_control.update_tree_node (node)
 				end
 

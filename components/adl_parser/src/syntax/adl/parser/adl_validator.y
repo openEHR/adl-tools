@@ -43,7 +43,7 @@ create
 %token <STRING> V_DADL_TEXT V_CADL_TEXT V_ASSERTION_TEXT
 %token <STRING> V_VERSION_STRING
 
-%token SYM_ARCHETYPE SYM_CONCEPT SYM_SPECIALIZE
+%token SYM_ARCHETYPE SYM_TEMPLATE SYM_CONCEPT SYM_SPECIALIZE
 %token SYM_DEFINITION SYM_LANGUAGE
 %token SYM_DESCRIPTION SYM_ONTOLOGY SYM_INVARIANT
 %token SYM_ADL_VERSION SYM_IS_CONTROLLED SYM_IS_GENERATED
@@ -52,6 +52,11 @@ create
 
 input: archetype	
 		{
+			accept
+		}
+	| template
+		{
+			is_template := True
 			accept
 		}
 	| error
@@ -88,6 +93,34 @@ arch_identification: arch_head V_ARCHETYPE_ID
 
 arch_head: SYM_ARCHETYPE 
 	| SYM_ARCHETYPE arch_meta_data
+	;
+
+template: tpl_identification 
+	   	arch_specialisation 
+		arch_concept 
+		arch_language 
+		arch_description 
+		arch_definition 
+		arch_invariant
+		arch_ontology
+	;
+
+tpl_identification: tpl_head V_ARCHETYPE_ID 
+		{
+			if arch_id.valid_id($2) then
+				create archetype_id.make_from_string($2)
+			end
+		}
+	| SYM_TEMPLATE error
+		{
+			raise_error
+			report_error(create_message("SARID", Void))
+			abort
+		}
+	;
+
+tpl_head: SYM_TEMPLATE 
+	| SYM_TEMPLATE arch_meta_data
 	;
 
 arch_meta_data: '(' arch_meta_data_items ')'
@@ -277,6 +310,8 @@ feature -- Parse Output
 	invariant_text: STRING
 	
 	ontology_text: STRING
+
+	is_template: BOOLEAN
 
 feature -- Access
 

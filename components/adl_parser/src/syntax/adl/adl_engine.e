@@ -192,7 +192,7 @@ feature {NONE} -- Implementation
 						end
 
 						------------------- definition section ---------------
-						definition_context.set_source(adl_parser.definition_text, adl_parser.definition_text_start_line, differential_source_flag)
+						definition_context.set_source(adl_parser.definition_text, adl_parser.definition_text_start_line, differential_source_flag, adl_parser.is_template)
 						definition_context.parse
 						if not definition_context.parse_succeeded then
 							parse_error_text := definition_context.parse_error_text

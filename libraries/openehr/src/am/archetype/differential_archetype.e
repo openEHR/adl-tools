@@ -42,7 +42,7 @@ feature -- Initialisation
 			Id_set: archetype_id = an_id
 			Original_language_set: original_language.as_string.is_equal(an_original_language)
 			Specialisation_depth_set: specialisation_depth = a_specialisation_depth
-			Definition_root_node_id: definition.node_id.is_equal (concept)
+			Definition_root_node_id: definition.archetype_node_id.is_equal (concept)
 			Is_dirty: is_dirty
 		end
 
@@ -92,11 +92,11 @@ feature -- Initialisation
 						if cco_1.parent /= Void and (cco_1.parent.cardinality = Void or cco_1.parent.is_ordered) then
 							cco_next := cco_1.parent.child_after (cco_1)
 							if cco_next /= Void and cco_next.specialisation_status (specialisation_depth).value = ss_added then
-								cco_next.set_sibling_order_after (cco_1.node_id)
+								cco_next.set_sibling_order_after (cco_1.archetype_node_id)
 							end
 							cco_prev := cco_1.parent.child_before (cco_1)
 							if cco_prev /= Void and cco_prev.specialisation_status (specialisation_depth).value = ss_added then
-								cco_prev.set_sibling_order_before (cco_1.node_id)
+								cco_prev.set_sibling_order_before (cco_1.archetype_node_id)
 							end
 						end
 					end
@@ -253,7 +253,7 @@ feature -- Modification
 		require
 			Valid_term_code: ontology.has_term_code(a_term_code)
 		do
-			definition.set_node_id(a_term_code)
+			definition.set_archetype_node_id(a_term_code)
 		end
 
 	reset_definition

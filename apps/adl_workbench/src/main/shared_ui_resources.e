@@ -152,6 +152,9 @@ feature -- Access
 		once
 			create Result.make (0)
 
+			Result.force (["archetype_repository.ico", "Archetype repository"], "archetype_repository")
+			Result.force (["template_repository.ico", "Template repository"], "template_repository")
+
 			Result.force (["archetype_1.ico", "Ad hoc archetype (not parsed yet)"], "archetype_1")
 			Result.force (["archetype_parsed_1.ico", "Ad hoc archetype (parsed but not compiled)"], "archetype_parsed_1")
 			Result.force (["archetype_parse_failed_1.ico", "Ad hoc archetype (parse failed)"], "archetype_parse_failed_1")
@@ -402,6 +405,28 @@ feature -- Application Switches
 			Result /= Void
 		end
 
+	template_repository_paths: ARRAYED_LIST[STRING]
+			-- path of root of template file tree
+		do
+			Result := resource_value_list("default", "template_repositories")
+			from Result.start until Result.off loop
+				Result.replace(substitute_env_vars(Result.item))
+				Result.forth
+			end
+			Result.compare_objects
+		ensure
+			Result_attached: Result /= Void
+			Value_comparison: Result.object_comparison
+		end
+
+	template_repository_path: STRING
+			-- path of root of ADL file tree
+		do
+			Result := substitute_env_vars(resource_value("default", "template_repository"))
+		ensure
+			Result /= Void
+		end
+
 	current_work_directory: attached STRING
 			-- Directory where archetypes are currently being opened and saved
 			-- from GUI open and save buttons; automatic opens (due to clicking
@@ -647,6 +672,22 @@ feature -- Application Switch Setting
 			end
 		end
 
+	set_template_repository_path(a_path: STRING)
+			-- set template_repository_path
+		require
+			a_path_valid: a_path /= Void and then not a_path.is_empty
+		do
+			set_resource_value("default", "template_repository", a_path)
+		end
+
+	set_template_repository_paths(a_path_list: ARRAYED_LIST[STRING])
+			-- set template_repository_path(s)
+		require
+			a_path_list_valid: a_path_list /= Void and then not a_path_list.is_empty
+		do
+			set_resource_value_list("default", "template_repositories", a_path_list)
+		end
+
 	set_current_work_directory (a_path: STRING)
 			-- set the directory where archetypes are currently being opened and saved.
 		require
@@ -842,10 +883,10 @@ feature {NONE} -- Implementation
 					Result := init_value
 				else
 					if not dialog.file_name.is_empty then
-						create a_file.make (dialog.file_name)
+						create a_file.make (dialog.file_name.as_string_8)
 
 						if a_file.exists then
-							Result := dialog.file_name
+							Result := a_file.name
 						else
 							create error_dialog.make_with_text ("File " + dialog.file_name + " does not exist")
 							error_dialog.show_modal_to_window (a_parent_window)
@@ -883,10 +924,10 @@ feature {NONE} -- Implementation
 					Result := init_value
 				else
 					if not dialog.directory.is_empty then
-						create a_dir.make(dialog.directory)
+						create a_dir.make (dialog.directory.as_string_8)
 
 						if a_dir.exists then
-							Result := dialog.directory
+							Result := a_dir.name
 						else
 							create error_dialog.make_with_text ("Directory " + dialog.directory + " does not exist")
 							error_dialog.show_modal_to_window (a_parent_window)

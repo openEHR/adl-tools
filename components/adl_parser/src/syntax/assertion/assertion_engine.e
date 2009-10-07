@@ -97,7 +97,7 @@ feature -- Commands
 			tree := Void
 			serialised := Void
 			create parser.make
-			parser.execute(source, source_start_line, is_differential)
+			parser.execute(source, source_start_line, is_differential, False)
 			if not parser.syntax_error then
 				tree := parser.assertion_list
 			end

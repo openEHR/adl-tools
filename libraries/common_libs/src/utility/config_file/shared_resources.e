@@ -300,7 +300,7 @@ feature -- Environment
 			i18n: I18N_LOCALE_MANAGER
 		do
 			create i18n.make (application_startup_directory)
-			Result := i18n.system_locale.info.id.language
+			Result := i18n.system_locale.info.id.language.as_string_8
 		ensure
 			Result_attached: Result /= Void
 		end
