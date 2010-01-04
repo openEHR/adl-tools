@@ -125,6 +125,42 @@ feature -- Access
 			not_empty: not Result.is_empty
 		end
 
+	domain_concept_base: attached STRING
+			-- The part of the domain concept excluding the last specialisation.
+			-- I.e. "problem"                        -> "" (no specialisation)
+			--      "problem-diagnosis"              -> "problem"
+			--      "problem-diagnosis-histological" -> "problem-diagnosis"
+		local
+			p: INTEGER
+		do
+			Result := domain_concept
+			p := Result.last_index_of (section_separator, Result.count) - 1
+			Result := Result.substring (1, p)
+		ensure
+			empty_unless_specialised: not is_specialised implies Result.is_empty
+			excludes_last_specialisation: is_specialised implies domain_concept.is_equal (Result + section_separator.out + domain_concept_tail)
+		end
+
+	domain_concept_tail: attached STRING
+			-- The last part of the domain concept.
+			-- I.e. "problem"                        -> "problem"
+			--      "problem-diagnosis"              -> "diagnosis"
+			--      "problem-diagnosis-histological" -> "histological"
+		local
+			p: INTEGER
+		do
+			Result := domain_concept
+			p := Result.last_index_of (section_separator, Result.count)
+
+			if p > 0 then
+				Result := Result.substring (p + 1, Result.count)
+			end
+		ensure
+			not_empty: not Result.is_empty
+			domain_concept_unless_specialised: not is_specialised implies domain_concept.is_equal (Result)
+			last_specialisation: is_specialised implies domain_concept.is_equal (domain_concept_base + section_separator.out + Result)
+		end
+
 	version_id: STRING
 		local
 			p: INTEGER
@@ -208,6 +244,9 @@ feature -- Access
 		end
 
 feature -- Status Report
+
+	is_specialised: BOOLEAN
+			-- Is this id a specialisation?
 
 	valid_id (an_id: STRING): BOOLEAN
 			-- Does `an_id' have the correct form for an archetype id?

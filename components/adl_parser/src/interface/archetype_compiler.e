@@ -187,7 +187,7 @@ feature {NONE} -- Implementation
 				if from_scratch or ara.is_out_of_date then
 					status := create_message("compiler_compiling_archetype", <<ara.id.value>>)
 					call_visual_update_action (ara)
-					ara.parse_archetype
+					ara.parse_differential
 					status := ara.compiler_status.twin
 					if ara.is_valid and not ara.has_differential_file then
 						ara.save_differential

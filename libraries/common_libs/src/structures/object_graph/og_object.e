@@ -25,6 +25,18 @@ inherit
 
 feature -- Initialisation
 
+	make_clone (a_node_id, a_clone_id: STRING; a_content_item: VISITABLE)
+			-- create with node id and optional content_item
+		require
+			Node_id_valid: a_node_id /= Void and then not a_node_id.is_empty
+			Clone_id_valid: a_clone_id /= Void and then not a_clone_id.is_empty
+		do
+			make(a_node_id, a_content_item)
+			clone_id := a_clone_id
+		ensure then
+			Clone_id_set: clone_id = a_clone_id
+		end
+
 	make_anonymous(a_content_item: VISITABLE)
 			-- make an anonymous node with optional content item
 		do
@@ -34,6 +46,9 @@ feature -- Initialisation
 feature -- Access
 
 	parent: OG_ATTRIBUTE_NODE
+
+	clone_id: STRING
+				-- id of this node
 
 feature -- Status Report
 
@@ -45,6 +60,9 @@ feature -- Status Report
 		do
 			Result := not node_id.has_substring(Anonymous_node_id)
 		end
+
+invariant
+	Clone_id_valid: clone_id /= Void implies node_id /= Void
 
 end
 

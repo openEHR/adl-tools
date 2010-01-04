@@ -270,7 +270,6 @@ feature {NONE} -- Implementation
 
 invariant
 	attributes_valid: attributes /= Void
-	Any_allowed_validity: any_allowed xor not attributes.is_empty
 
 end
 

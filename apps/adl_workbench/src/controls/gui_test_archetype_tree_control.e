@@ -413,7 +413,7 @@ feature {NONE} -- Tests
 			-- parse archetype and return result
 		do
 			Result := test_failed
-			target.parse_archetype
+			target.parse_differential
 			if target.is_valid then
 				target.serialise_differential
 				Result := test_passed

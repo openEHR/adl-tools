@@ -1,69 +1,30 @@
-note
+indexing
 	component:   "openEHR Archetype Project"
-	description: "[
-				 ADL object nodes that are defined in line, rather than being
-				 defined as references to exterior resources.
-				 ]"
-	keywords:    "ADL"
+	description: "Template abstraction"
+	keywords:    "template, archetype"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2006-2009 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2009 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-deferred class C_DEFINED_OBJECT
+class TEMPLATE
 
 inherit
-	C_OBJECT
+	DIFFERENTIAL_ARCHETYPE
+		redefine
+			definition
+		end
+
+create
+	make
 
 feature -- Access
 
-	prototype_value: ANY
-			-- 	generate a default value from this constraint object
-		deferred
-		ensure
-			Result /= Void
-		end
-
-    assumed_value: like prototype_value
-            -- value to be assumed if none sent in data
-
-feature -- Status Report
-
-	any_allowed: BOOLEAN
-			-- True if any value allowed ('*' received in parsed input)
-		deferred
-		end
-
-	valid_value (a_value: like prototype_value): BOOLEAN
-		require
-			a_value /= Void
-		deferred
-		end
-
-	has_assumed_value: BOOLEAN
-			-- True if there is an assumed value
-		do
-			Result := assumed_value /= Void
-		end
-
-feature -- Modification
-
-	set_assumed_value(a_value: like assumed_value)
-			-- set `assumed_value'
-		require
-			a_value /= Void and then valid_value(a_value)
-		do
-			assumed_value := a_value
-		ensure
-			assumed_value_set: assumed_value = a_value
-		end
-
-invariant
-	Assumed_value_valid: assumed_value /= Void implies valid_value(assumed_value)
+	definition: T_COMPLEX_OBJECT
 
 end
 
@@ -82,10 +43,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is c_defined_object.e.
+--| The Original Code is template.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2006
+--| Portions created by the Initial Developer are Copyright (C) 2009
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):
