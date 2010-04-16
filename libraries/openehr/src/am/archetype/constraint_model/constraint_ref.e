@@ -54,6 +54,21 @@ feature -- Access
 			-- usually in the ontology section of an ADL archetype
 			-- [called 'reference' in AOM, but that is a keyword in Eiffel]
 
+	external_reference: DV_PARSABLE
+			-- direct reference to external resource in the form of a String, typically a URI;
+			-- the `formalism' attribute can be used to record the exact syntax model of the
+			-- parsable value, enabling it to be processed within archetype tools
+
+feature -- Status Report
+
+	is_resolved: BOOLEAN
+			-- True if `external_reference' is assigned
+		do
+			Result := external_reference /= Void
+		ensure
+			Result = (external_reference /= Void)
+		end
+
 feature -- Comparison
 
 	is_subset_of (other: like Current): BOOLEAN
@@ -70,6 +85,18 @@ feature -- Conversion
 		do
 			create Result.make (0)
 			Result.append ("[" + target + "]")
+		end
+
+feature -- Modification
+
+	set_external_reference (an_ext_ref, a_syntax: STRING)
+			-- set `external_reference' from two parameters - the actual reference (e.g. a URI string)
+			-- and a syntax model, used to help interpret the reference structure
+		require
+			Ref_valid: an_ext_ref /= Void and then not an_ext_ref.is_empty
+			Syntax_valid: a_syntax /= Void and then not a_syntax.is_empty
+		do
+			create external_reference.make (an_ext_ref, a_syntax)
 		end
 
 feature -- Representation

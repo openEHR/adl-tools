@@ -25,7 +25,7 @@ inherit
 			start_c_attribute, end_c_attribute,
 			start_archetype_slot, end_archetype_slot,
 			start_archetype_internal_ref, start_constraint_ref,
-			start_archetype_external_ref,
+			start_c_archetype_root,
 			start_c_code_phrase, start_c_ordinal, start_c_quantity,
 			start_c_primitive_object
 		end
@@ -214,14 +214,25 @@ feature -- Visitor
 			last_result.append (format_item(FMT_NEWLINE))
 		end
 
-	start_archetype_external_ref(a_node: ARCHETYPE_EXTERNAL_REF; depth: INTEGER)
-			-- enter an ARCHETYPE_EXTERNAL_REF
+	start_c_archetype_root(a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
+			-- enter a C_ARCHETYPE_ROOT
+		local
+			id: STRING
 		do
 			last_result.append (create_indent(depth) + apply_style(symbol(SYM_USE_ARCHETYPE), STYLE_KEYWORD) + format_item(FMT_SPACE))
 			last_result.append (a_node.rm_type_name + format_item(FMT_SPACE))
-			serialise_type_node_id (a_node, depth)
+
+			last_result.append (apply_style (a_node.rm_type_name, identifier_style (a_node)))
+			id := "["
+			if a_node.slot_node_id /= Void then
+				id.append (a_node.slot_node_id + ", ")
+			end
+			id.append (a_node.node_id + "]")
+			last_result.append (apply_style(id, STYLE_TERM_REF))
+
+			last_result.append (format_item(FMT_SPACE))
+
 			serialise_occurrences(a_node, depth)
-			last_result.append (a_node.target_ref.as_string)
 			last_result.append (format_item(FMT_NEWLINE))
 		end
 

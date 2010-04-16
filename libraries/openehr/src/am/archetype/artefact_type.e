@@ -1,87 +1,88 @@
 note
-	component:   "openEHR Data Types"
-	description: "[
-			 Encapsulated data expressed as a parsable STRING. The internal model of the data item 
-			 is not described in the openEHR model in common with other encapsulated types, but in 
-			 this case, the form of the data is assumed to be plaintext, rather than compressed or 
-			 other types of large binary data.
-			 ]"
-	keywords:    "encapsulated, data, parsed"
-
-	requirements:"ISO 18308 TS V1.0 STR ??"
-	design:      "openEHR Data Types Reference Model 1.7"
-
+	component:   "openEHR Archetype Project"
+	description: "Enumeration of archetype-based artefact types"
+	keywords:    "archetype"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class DV_PARSABLE
-
-inherit
-	DV_ENCAPSULATED
+class ARTEFACT_TYPE
 
 create
-	make
+	default_create, make, make_from_string
 
-feature -- Initialization
+feature -- Defnition
 
-	make(a_value, a_formalism:STRING)
+	archetype: INTEGER is 0
+			-- Constant to indicate that the artefact is designed as an archetype.
+
+	template: INTEGER is 1
+			-- Constant to indicate that the artefact is designed as a template.
+
+	template_component: INTEGER is 2
+			-- Constant to indicate that the artefact is designed as a template_component.
+
+	operational_template: INTEGER is 3
+			-- Constant to indicate that the artefact is an operational template.
+
+feature -- Initialisation
+
+	make (i: INTEGER)
 		require
-			Value_valid: a_value /= Void and then not a_value.is_empty
-			Formalism_valid: a_formalism /= Void and then not a_formalism.is_empty
+			valid_artefact_type(i)
 		do
-			value := a_value
-			formalism := a_formalism
+			value := i
 		end
 
-	make_from_string(str:STRING)
+	make_from_string (s: STRING)
+		require
+			s /= Void and then valid_artefact_type_name (s)
 		do
-		end
-
-	make_from_canonical_string(str:STRING)
-		do
-		end
-
-feature -- Status Report
-
-	valid_canonical_string(str: STRING): BOOLEAN
-			-- True if str contains required tags
-		do
+			value := values.item (s)
 		end
 
 feature -- Access
 
-	value: STRING
-			-- the string, which may validly be empty in some syntaxes
-
-	formalism: STRING
-			-- name of the formalism, e.g. “GLIF 1.0”, “proforma” etc.
-
-feature -- Output
-
-	as_string: STRING
-			-- string form displayable for humans
-		do
+	values: HASH_TABLE [INTEGER, STRING]
+		once
+			create Result.make(0)
+			Result.extend(archetype, "archetype")
+			Result.extend(template, "template")
+			Result.extend(template_component, "template_component")
+			Result.extend(operational_template, "operational_template")
 		end
 
-	as_canonical_string: STRING
-			-- standardised form of string guaranteed to contain all information
-			-- in data item
+feature -- Validation
+
+	valid_artefact_type (n: INTEGER): BOOLEAN
+			-- Function to test value validity.
+		require
+			n >= 0
 		do
+			Result := values.has_item (n)
 		end
+
+	valid_artefact_type_name (s: STRING): BOOLEAN
+			-- Function to test validity of string name of value
+		require
+			s /= Void and then not s.is_empty
+		do
+			Result := values.has_key(s)
+		end
+
+feature {NONE} -- Implementation
+
+	value: INTEGER
 
 invariant
-
-	value_exists: value /= Void
-	formalism_exists: formalism /= Void and then not formalism.is_empty
+	valid_artefact_type(value)
 
 end
-
 
 
 --|
@@ -98,13 +99,14 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is dv_parsable.e.
+--| The Original Code is adl_archetype.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):
+--|	Sam Heard
 --|
 --| Alternatively, the contents of this file may be used under the terms of
 --| either the GNU General Public License Version 2 or later (the 'GPL'), or

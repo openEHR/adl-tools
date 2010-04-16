@@ -47,6 +47,12 @@ feature -- Access
 			Result := constraint_bindings.item(a_terminology).item(a_term_code)
 		end
 
+	terminology_extract_term (a_terminology, a_code: STRING): ARCHETYPE_TERM
+			-- true if there is an extract from terminology `a_terminology'
+		do
+			Result := terminology_extracts.item(a_terminology).item(a_code)
+		end
+
 feature -- Status Report
 
 	has_term_code(a_term_code: STRING): BOOLEAN
@@ -99,6 +105,18 @@ feature -- Status Report
 			-- true if there is a term binding for code `a_term_code' in `a_terminology'
 		do
 			Result := constraint_bindings.has(a_terminology) and then constraint_bindings.item(a_terminology).has(a_term_code)
+		end
+
+	has_terminology_extract (a_terminology: STRING): BOOLEAN
+			-- true if there is an extract from terminology `a_terminology'
+		do
+			Result := terminology_extracts.has(a_terminology)
+		end
+
+	has_terminology_extract_code (a_terminology, a_code: STRING): BOOLEAN
+			-- true if there is a term binding for code `a_code' in `a_terminology'
+		do
+			Result := terminology_extracts.item(a_terminology).has(a_code)
 		end
 
 	semantically_conforms_to(other: FLAT_ARCHETYPE_ONTOLOGY): BOOLEAN

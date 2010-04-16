@@ -453,8 +453,8 @@ feature {NONE} -- Implementation
 			elseif attached {C_COMPLEX_OBJECT} an_og_node.content_item as c_c_o then
 				a_ti := attach_node(c_complex_object_string(c_c_o), pixmaps.item(c_c_o.generating_type + occurrences_pixmap_string(c_c_o) + pixmap_ext), an_og_node)
 
-			elseif attached {ARCHETYPE_EXTERNAL_REF} an_og_node.content_item as ex_ref then
-				a_ti := attach_node(archetype_external_ref_string(ex_ref), pixmaps.item(ex_ref.generating_type + occurrences_pixmap_string(ex_ref) + pixmap_ext), an_og_node)
+			elseif attached {C_ARCHETYPE_ROOT} an_og_node.content_item as ex_ref then
+				a_ti := attach_node(c_archetype_root_string(ex_ref), pixmaps.item(ex_ref.generating_type + occurrences_pixmap_string(ex_ref) + pixmap_ext), an_og_node)
 
 			elseif attached {ARCHETYPE_SLOT} an_og_node.content_item as a_slot then
 				if a_slot.occurrences /= Void and then a_slot.occurrences.lower = 1 then
@@ -649,9 +649,9 @@ feature {NONE} -- Implementation
 						a_ti.set_text (utf8 (c_complex_object_string (c_c_o)))
 						a_ti.set_pixmap(pixmaps.item(c_c_o.generating_type + occurrences_pixmap_string(c_c_o) + pixmap_ext))
 
-					elseif attached {ARCHETYPE_EXTERNAL_REF} a_node as ex_ref then
-						a_ti.set_text (utf8 (archetype_external_ref_string (ex_ref)))
-						a_ti.set_pixmap(pixmaps.item(ex_ref.generating_type + occurrences_pixmap_string(ex_ref) + pixmap_ext))
+					elseif attached {C_ARCHETYPE_ROOT} a_node as c_a_r then
+						a_ti.set_text (utf8 (c_archetype_root_string (c_a_r)))
+						a_ti.set_pixmap(pixmaps.item(c_a_r.generating_type + occurrences_pixmap_string(c_a_r) + pixmap_ext))
 
 					elseif attached {ARCHETYPE_INTERNAL_REF} a_node as a_node_ref then
 						a_ti.set_text (utf8 (archetype_internal_ref_string (a_node_ref)))
@@ -1010,7 +1010,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	archetype_external_ref_string(a_node: ARCHETYPE_EXTERNAL_REF): STRING
+	c_archetype_root_string(a_node: C_ARCHETYPE_ROOT): STRING
 			-- generate string form of node or object for use in tree node
 		do
 			create Result.make_empty
@@ -1018,11 +1018,12 @@ feature {NONE} -- Implementation
 				Result.append (" [" + a_node.occurrences.as_string + "] ")
 			end
 			if in_technical_mode then
-				if a_node.is_addressable then
-					Result.append ("use " + a_node.rm_type_name + "[" + a_node.node_id + "] ")
+				Result.append ("use_archetype " + a_node.rm_type_name + "[")
+				if a_node.slot_node_id /= Void then
+					Result.append(a_node.slot_node_id + ", ")
 				end
+				Result.append(a_node.node_id + "] ")
 			end
-			Result.append (a_node.target_ref.as_string)
 		end
 
 	object_term_item_string(code: STRING; assumed_flag, local_flag: BOOLEAN): STRING

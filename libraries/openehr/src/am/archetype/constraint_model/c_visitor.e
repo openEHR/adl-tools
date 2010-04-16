@@ -76,13 +76,13 @@ feature -- Visitor
 		do
 		end
 
-	start_archetype_external_ref(a_node: ARCHETYPE_EXTERNAL_REF; depth: INTEGER)
-			-- enter an ARCHETYPE_EXTERNAL_REF
+	start_c_archetype_root(a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
+			-- enter a C_ARCHETYPE_ROOT
 		deferred
 		end
 
-	end_archetype_external_ref(a_node: ARCHETYPE_EXTERNAL_REF; depth: INTEGER)
-			-- exit an ARCHETYPE_EXTERNAL_REF
+	end_c_archetype_root(a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
+			-- exit a C_ARCHETYPE_ROOT
 		do
 		end
 

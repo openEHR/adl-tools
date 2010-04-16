@@ -100,7 +100,7 @@ create
 
 %type <ARRAYED_LIST [ASSERTION]> assertions c_includes c_excludes
 
-%type <ARCHETYPE_EXTERNAL_REF> archetype_external_ref
+%type <C_ARCHETYPE_ROOT> c_archetype_root
 %type <ARCHETYPE_INTERNAL_REF> archetype_internal_ref
 
 %type <STRING> type_identifier
@@ -268,7 +268,7 @@ c_complex_object_body: c_any -- used to indicate that any value of a type is ok
 c_object: c_complex_object 
 		{
 		}
-	| archetype_external_ref 
+	| c_archetype_root 
 		{
 			safe_put_c_attribute_child(c_attrs.item, $1)
 		}
@@ -311,21 +311,21 @@ c_object: c_complex_object
 		}
 	;
 
-archetype_external_ref: SYM_USE_ARCHETYPE type_identifier c_occurrences V_ARCHETYPE_ID
+c_archetype_root: SYM_USE_ARCHETYPE type_identifier '[' V_ARCHETYPE_ID ']' c_occurrences 
 		{
-			if (create {ARCHETYPE_ID}.default_create).valid_id($4) then
-				create $$.make_anonymous($2, create {ARCHETYPE_ID}.make_from_string($4))
-				if $3 /= Void then
-					$$.set_occurrences($3)
+			if (create {ARCHETYPE_ID}).valid_id($4) then
+				create $$.make($2, $4)
+				if $6 /= Void then
+					$$.set_occurrences($6)
 				end
 			end
 		}
-	| SYM_USE_ARCHETYPE type_identifier V_LOCAL_TERM_CODE_REF c_occurrences V_ARCHETYPE_ID
+	| SYM_USE_ARCHETYPE type_identifier '[' V_LOCAL_CODE V_ARCHETYPE_ID ']' c_occurrences
 		{
-			if (create {ARCHETYPE_ID}.default_create).valid_id($5) then
-				create $$.make_identified($2, $3, create {ARCHETYPE_ID}.make_from_string($5))
-				if $4 /= Void then
-					$$.set_occurrences($4)
+			if (create {ARCHETYPE_ID}).valid_id($5) then
+				create $$.make_slot_id($2, $5, $4)
+				if $7 /= Void then
+					$$.set_occurrences($7)
 				end
 			end
 		}

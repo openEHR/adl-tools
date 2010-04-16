@@ -114,6 +114,9 @@ feature -- Access
 	adl_version: STRING
 			-- ADL version of this archetype
 
+	artefact_type: ARTEFACT_TYPE
+			-- design type of artefact, archetype, template, template-component, etc
+
 	version: STRING
 			-- version of this archetype, according to its id
 		do
@@ -297,7 +300,7 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER, EXPR_XREF_BUI
 			create id_atcodes_index.make(0)
 			create data_atcodes_index.make(0)
 			create use_node_index.make(0)
-			create use_archetype_index.make(0)
+			create c_archetype_root_index.make(0)
 			create accodes_index.make(0)
 			create slot_index.make(0)
 
@@ -353,8 +356,8 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER, EXPR_XREF_BUI
 			-- table of {list<ARCHETYPE_INTERNAL_REF>, target_path}
 			-- i.e. <list of use_nodes> keyed by path they point to
 
-	use_archetype_index: HASH_TABLE[ARRAYED_LIST[ARCHETYPE_EXTERNAL_REF], STRING]
-			-- table of {list<ARCHETYPE_EXTERNAL_REF>, target_ref}
+	c_archetype_root_index: HASH_TABLE[ARRAYED_LIST[C_ARCHETYPE_ROOT], STRING]
+			-- table of {list<C_ARCHETYPE_ROOT>, archetype_id}
 			-- i.e. <list of use_archetype nodes> keyed by archetype id they refer to
 
 	invariants_index: HASH_TABLE[ARRAYED_LIST[EXPR_LEAF], STRING]
@@ -378,6 +381,13 @@ feature -- Modification
 	set_archetype_id (an_id: like archetype_id)
 		do
 			archetype_id := an_id
+		end
+
+	set_artefact_type_from_string (s: STRING)
+		require
+			s /= Void and then (create {ARTEFACT_TYPE}).valid_artefact_type_name(s)
+		do
+			create artefact_type.make_from_string(s)
 		end
 
 	set_concept(str: STRING)

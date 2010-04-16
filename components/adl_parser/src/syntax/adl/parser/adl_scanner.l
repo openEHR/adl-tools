@@ -93,6 +93,18 @@ NAMESTR ([a-zA-Z][a-zA-Z0-9_]+)
 				last_token := SYM_ARCHETYPE
 			}
 
+^[Tt][Ee][Mm][Pp][Ll][Aa][Tt][Ee][ \t\r]* 		{
+				last_token := SYM_TEMPLATE
+			}
+
+^[Tt][Ee][Mm][Pp][Ll][Aa][Tt][Ee]_[Cc][Oo][Mm][Pp][Oo][Nn]Ee][Nn][Tt][ \t\r]* 		{
+				last_token := SYM_TEMPLATE_COMPONENT
+			}
+
+^[Oo][Pp][Ee][Rr][Aa][Tt][Ii][Oo][Nn][Aa][Ll]_[Tt][Ee][Mm][Pp][Ll][Aa][Tt][Ee][ \t\r]* 		{
+				last_token := SYM_OPERATIONAL_TEMPLATE
+			}
+
 [Aa][Dd][Ll]_[Vv][Ee][Rr][Ss][Ii][Oo][Nn] 		{
 				last_token := SYM_ADL_VERSION
 			}

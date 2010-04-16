@@ -4,8 +4,8 @@
 #	keywords:    "ADL, scanner"
 #
 #	author:      "Thomas Beale <thomas@deepthought.com.au>"
-#	copyright:   "Copyright (c) 2002 Deep Thought Informatics Pty Ltd"
-#	licence:     "The Eiffel Forum License, version 1"
+#	copyright:   "Copyright (c) 2002-2010 Ocean Informatics"
+#	licence:     "The Mozilla tri-license"
 #
 #	file:        "$URL$"
 #	revision:    "$LastChangedRevision$"

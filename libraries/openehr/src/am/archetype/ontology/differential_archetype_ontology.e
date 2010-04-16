@@ -119,6 +119,16 @@ feature -- Access
 			end
 		end
 
+	terminology_extract_term (a_terminology, a_code: STRING): ARCHETYPE_TERM
+			-- true if there is an extract from terminology `a_terminology'
+		do
+			if terminology_extracts.item(a_terminology).has(a_code) then
+				Result := terminology_extracts.item(a_terminology).item(a_code)
+			else
+				Result := parent_ontology.terminology_extracts.item(a_terminology).item(a_code)
+			end
+		end
+
 feature -- Status Report
 
 	has_term_code (a_term_code: STRING): BOOLEAN
@@ -204,6 +214,24 @@ feature -- Status Report
 						constraint_bindings.item(a_terminology).has(a_term_code)
 			else
 				Result := parent_ontology.has_constraint_binding(a_terminology, a_term_code)
+			end
+		end
+
+	has_terminology_extract (a_terminology: STRING): BOOLEAN
+			-- true if there is an extract from terminology `a_terminology'
+		do
+			if not terminology_extracts.has(a_terminology) then
+				Result := parent_ontology.has_terminology_extract(a_terminology)
+			end
+		end
+
+	has_terminology_extract_code (a_terminology, a_code: STRING): BOOLEAN
+			-- true if there is a term binding for code `a_code' in `a_terminology'
+		do
+			if specialisation_depth_from_code (a_code) = specialisation_depth then
+				Result := terminology_extracts.item(a_terminology).has(a_code)
+			else
+				Result := parent_ontology.has_terminology_extract_code(a_terminology, a_code)
 			end
 		end
 

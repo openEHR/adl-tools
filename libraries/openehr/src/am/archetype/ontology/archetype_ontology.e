@@ -170,6 +170,14 @@ feature -- Access
 			Result_exists: Result /= Void
 		end
 
+	terminology_extract_term (a_terminology, a_code: STRING): ARCHETYPE_TERM
+			-- true if there is an extract from terminology `a_terminology'
+		require
+			Terminology_valid: a_terminology /= Void and then has_terminology_extract(a_terminology)
+			Term_code_valid: a_code /= Void and then has_terminology_extract_code(a_terminology, a_code)
+		deferred
+		end
+
 	concept_code: STRING
 			-- term code of the concept of the ontology as a whole
 
@@ -293,6 +301,21 @@ feature -- Status Report
 		require
 			Terminology_valid: a_terminology /= Void and then not terminologies_available.is_empty
 			Term_code_valid: a_term_code /= Void and then is_valid_code(a_term_code)
+		deferred
+		end
+
+	has_terminology_extract (a_terminology: STRING): BOOLEAN
+			-- true if there is an extract from terminology `a_terminology'
+		require
+			Terminology_valid: a_terminology /= Void and then not a_terminology.is_empty
+		deferred
+		end
+
+	has_terminology_extract_code (a_terminology, a_code: STRING): BOOLEAN
+			-- true if there is a term binding for code `a_code' in `a_terminology'
+		require
+			Terminology_valid: a_terminology /= Void and then not has_terminology_extract(a_terminology)
+			Term_code_valid: a_code /= Void and then not a_code.is_empty
 		deferred
 		end
 
@@ -702,6 +725,9 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 
 	constraint_bindings: HASH_TABLE[HASH_TABLE[URI, STRING], STRING]
 			-- table of constraint bindings in the form of strings "service::query", keyed by terminology
+
+	terminology_extracts: HASH_TABLE[HASH_TABLE[ARCHETYPE_TERM, STRING], STRING]
+			-- table of {code, description} keyed by terminology_id containing extracted concepts from external terminologies
 
 	highest_specialised_code_indexes: attached HASH_TABLE [INTEGER, STRING]
 			-- Table of child code tails keyed by immediate parent code.

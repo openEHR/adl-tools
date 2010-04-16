@@ -63,19 +63,13 @@ feature -- Visitor
 			archetype.slot_index.extend (a_node)
 		end
 
-	start_archetype_external_ref(a_node: ARCHETYPE_EXTERNAL_REF; depth: INTEGER)
-			-- enter an ARCHETYPE_EXTERNAL_REF
+	start_c_archetype_root(a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
+			-- enter a C_ARCHETYPE_ROOT
 		do
-			if a_node.is_addressable then
-				if not archetype.id_atcodes_index.has(a_node.node_id) then
-					archetype.id_atcodes_index.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.node_id)
-				end
-				archetype.id_atcodes_index.item(a_node.node_id).extend (a_node)
+			if not archetype.c_archetype_root_index.has(a_node.node_id) then
+				archetype.c_archetype_root_index.put(create {ARRAYED_LIST[C_ARCHETYPE_ROOT]}.make(0), a_node.node_id)
 			end
-			if not archetype.use_archetype_index.has(a_node.target_ref.as_string) then
-				archetype.use_archetype_index.put(create {ARRAYED_LIST[ARCHETYPE_EXTERNAL_REF]}.make(0), a_node.target_ref.as_string)
-			end
-			archetype.use_archetype_index.item(a_node.target_ref.as_string).extend (a_node)
+			archetype.c_archetype_root_index.item(a_node.node_id).extend (a_node)
 		end
 
 	start_archetype_internal_ref(a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER)

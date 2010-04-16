@@ -43,7 +43,8 @@ create
 %token <STRING> V_DADL_TEXT V_CADL_TEXT V_ASSERTION_TEXT
 %token <STRING> V_VERSION_STRING
 
-%token SYM_ARCHETYPE SYM_CONCEPT SYM_SPECIALIZE
+%token SYM_ARCHETYPE SYM_TEMPLATE SYM_TEMPLATE_COMPONENT SYM_OPERATIONAL_TEMPLATE
+%token SYM_CONCEPT SYM_SPECIALIZE
 %token SYM_DEFINITION SYM_LANGUAGE
 %token SYM_DESCRIPTION SYM_ONTOLOGY SYM_INVARIANT
 %token SYM_ADL_VERSION SYM_IS_CONTROLLED SYM_IS_GENERATED
@@ -70,15 +71,15 @@ archetype: arch_identification
 		arch_ontology
 	;
 
-arch_identification: arch_head V_ARCHETYPE_ID 
+arch_identification: arch_head arch_meta_data V_ARCHETYPE_ID 
 		{
-			if arch_id.valid_id($2) then
-				create archetype_id.make_from_string($2)
-			elseif arch_id.old_valid_id($2) then
-				create archetype_id.old_make_from_string($2)
+			if arch_id.valid_id($3) then
+				create archetype_id.make_from_string($3)
+			elseif arch_id.old_valid_id($3) then
+				create archetype_id.old_make_from_string($3)
 			end
 		}
-	| SYM_ARCHETYPE error
+	| arch_head error
 		{
 			raise_error
 			report_error(create_message("SARID", Void))
@@ -87,10 +88,33 @@ arch_identification: arch_head V_ARCHETYPE_ID
 	;
 
 arch_head: SYM_ARCHETYPE 
-	| SYM_ARCHETYPE arch_meta_data
+		{
+			str := text
+			str.right_adjust
+			create artefact_type.make_from_string(str)
+		}
+	| SYM_TEMPLATE
+		{
+			str := text
+			str.right_adjust
+			create artefact_type.make_from_string(str)
+		}
+	| SYM_TEMPLATE_COMPONENT
+		{
+			str := text
+			str.right_adjust
+			create artefact_type.make_from_string(str)
+		}
+	| SYM_OPERATIONAL_TEMPLATE
+		{
+			str := text
+			str.right_adjust
+			create artefact_type.make_from_string(str)
+		}
 	;
 
-arch_meta_data: '(' arch_meta_data_items ')'
+arch_meta_data: -- empty ok
+	| '(' arch_meta_data_items ')'
 	;
 
 arch_meta_data_items: arch_meta_data_item
@@ -263,6 +287,8 @@ feature -- Parse Output
 	is_controlled: BOOLEAN
 
 	is_generated: BOOLEAN
+
+	artefact_type: ARTEFACT_TYPE
 
 	parent_archetype_id: ARCHETYPE_ID
 

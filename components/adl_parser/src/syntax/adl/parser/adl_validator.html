@@ -73,9 +73,9 @@
 <div class="lhs">
 <span class="lhs_variable" id="arch_identification">arch_identification</span>: </div>
 <div class="rhs">
-&nbsp; <span class="rhs_variable"><a href="#arch_head">arch_head</a> </span><span class="token">V_ARCHETYPE_ID </span></div>
+&nbsp; <span class="rhs_variable"><a href="#arch_head">arch_head</a> </span><span class="rhs_variable"><a href="#arch_meta_data">arch_meta_data</a> </span><span class="token">V_ARCHETYPE_ID </span></div>
 <div class="rhs">
-| <span class="token">SYM_ARCHETYPE </span><span class="token">error </span></div>
+| <span class="rhs_variable"><a href="#arch_head">arch_head</a> </span><span class="token">error </span></div>
 </div>
 
 <div class="rule">
@@ -84,14 +84,20 @@
 <div class="rhs">
 &nbsp; <span class="token">SYM_ARCHETYPE </span></div>
 <div class="rhs">
-| <span class="token">SYM_ARCHETYPE </span><span class="rhs_variable"><a href="#arch_meta_data">arch_meta_data</a> </span></div>
+| <span class="token">SYM_TEMPLATE </span></div>
+<div class="rhs">
+| <span class="token">SYM_TEMPLATE_COMPONENT </span></div>
+<div class="rhs">
+| <span class="token">SYM_OPERATIONAL_TEMPLATE </span></div>
 </div>
 
 <div class="rule">
 <div class="lhs">
 <span class="lhs_variable" id="arch_meta_data">arch_meta_data</span>: </div>
 <div class="rhs">
-&nbsp; <span class="literal_token">&#40; </span><span class="rhs_variable"><a href="#arch_meta_data_items">arch_meta_data_items</a> </span><span class="literal_token">&#41; </span></div>
+&nbsp; <span class="empty">-/-</span></div>
+<div class="rhs">
+| <span class="literal_token">&#40; </span><span class="rhs_variable"><a href="#arch_meta_data_items">arch_meta_data_items</a> </span><span class="literal_token">&#41; </span></div>
 </div>
 
 <div class="rule">
