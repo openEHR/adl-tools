@@ -57,7 +57,6 @@ create
 	make
 %}
 %token <STRING> V_ARCHETYPE_ID
-%token <STRING> V_ARCHETYPE_ID_CODE
 %token <INTEGER> V_INTEGER 
 %token <REAL> V_REAL 
 %token <STRING> V_TYPE_IDENTIFIER V_GENERIC_TYPE_IDENTIFIER V_ATTRIBUTE_IDENTIFIER V_FEATURE_CALL_IDENTIFIER V_STRING
@@ -101,7 +100,7 @@ create
 
 %type <ARRAYED_LIST [ASSERTION]> assertions c_includes c_excludes
 
-%type <ARCHETYPE_EXTERNAL_REF> archetype_external_ref
+%type <C_ARCHETYPE_ROOT> c_archetype_root
 %type <ARCHETYPE_INTERNAL_REF> archetype_internal_ref
 
 %type <STRING> type_identifier
@@ -157,7 +156,7 @@ input: c_complex_object
 		{
 			accept
 		}
-	| t_complex_object
+	| c_archetype_root
 		{
 			accept
 		}
@@ -171,71 +170,80 @@ input: c_complex_object
 		}
 	;
 
-t_complex_object: t_complex_object_head
+c_archetype_root: c_archetype_root_head
 		{ 
 			debug("ADL_parse")
-				io.put_string(indent + "POP OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.archetype_node_id + "]%N") 
+				io.put_string(indent + "POP OBJECT_NODE " + object_nodes.item.rm_type_name + " [" + object_nodes.item.archetype_node_id + "]%N") 
 				indent.remove_tail(1)
 			end
 			object_nodes.remove
 		}
-	| t_complex_object_head SYM_MATCHES SYM_START_CBLOCK c_attributes SYM_END_CBLOCK
+	| c_archetype_root_head SYM_MATCHES SYM_START_CBLOCK c_attributes SYM_END_CBLOCK
 		{ 
-			debug("ADL_parse")
-				io.put_string(indent + "POP OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.archetype_node_id + "]%N") 
-				indent.remove_tail(1)
+			if template_syntax then
+				debug("ADL_parse")
+					io.put_string(indent + "POP OBJECT_NODE " + object_nodes.item.rm_type_name + " [" + object_nodes.item.archetype_node_id + "]%N") 
+					indent.remove_tail(1)
+				end
+				object_nodes.remove
+			else
+				abort_with_error("XXXX", <<c_arch_root.rm_type_name, c_arch_root.path>>)
 			end
-			object_nodes.remove
 		}
 	;
 
-t_complex_object_head: type_identifier V_ARCHETYPE_ID_CODE c_occurrences 
+c_archetype_root_head: c_archetype_root_id c_occurrences 
 		{
-			if template_syntax then
-				create t_complex_obj.make_identified($1, $2)
+			if $2 /= Void then
+				c_arch_root.set_occurrences($2)
+			end
 
-				if $3 /= Void then
-					t_complex_obj.set_occurrences($3)
+			if rm_checker.has_class_definition (c_arch_root.rm_type_name) then
+				object_nodes.extend(c_arch_root)
+				debug("ADL_parse")
+					io.put_string(indent + "PUSH create OBJECT_NODE (C_ARCHETYPE_ROOT) " + c_arch_root.rm_type_name + " [")
+					if c_arch_root.slot_node_id /= Void then
+						io.put_string(c_arch_root.slot_node_id + " = ")
+					end
+					io.put_string(c_arch_root.archetype_node_id)
+					io.put_string("] ")
+					if $2 /= Void then
+						io.put_string("; occurrences=(" + $2.as_string + ")") 
+					end
+					io.new_line
+					indent.append("%T")
 				end
 
-				if rm_checker.has_class_definition (t_complex_obj.rm_type_name) then
-					object_nodes.extend(t_complex_obj)
-					debug("ADL_parse")
-						io.put_string(indent + "PUSH create OBJECT_NODE (T_COMPLEX_OBJECT) " + t_complex_obj.rm_type_name + " [id=" + t_complex_obj.archetype_node_id + "] ")
-						if $3 /= Void then
-							io.put_string("; occurrences=(" + $3.as_string + ")") 
-						end
-						io.new_line
-						indent.append("%T")
-					end
+				-- put it under current attribute, unless it is the root object, in which case it will be returned
+				-- via the 'output' attribute of this parser. 
+				if not c_attrs.is_empty then
+					safe_put_c_attribute_child(c_attrs.item, c_arch_root)
+				end
 
-					-- put it under current attribute, unless it is the root object, in which case it will be returned
-					-- via the 'output' attribute of this parser. Note that T_COMPLEX_OBJECTs get put as _siblings_ to the 
-					-- owning T_SLOT_SPEC object, because the C_OBJECT/C_ATTRIBUTE data structure is a strict alternating
-					-- object/attribute tree
-					if not c_attrs.is_empty then
-						safe_put_c_attribute_child(c_attrs.item, t_complex_obj)
-						t_slot_specs.item.add_filler(t_complex_obj)
-					end
-
-					-- set root node to current node if not already set - guarantees it is set to outermost block
-					if output = Void then
-						output := object_nodes.item
-					end
-				else
-					abort_with_error("VCORM", <<t_complex_obj.rm_type_name, t_complex_obj.path>>)
+				-- set root node to current node if not already set - guarantees it is set to outermost block
+				if output = Void then
+					output := object_nodes.item
 				end
 			else
-				abort_with_error("VTTCO", <<c_attrs.item.path>>)
+				abort_with_error("VCORM", <<c_arch_root.rm_type_name, c_arch_root.path>>)
 			end
 		}
 	;
 
-t_complex_objects: t_complex_object
+c_archetype_root_id: type_identifier Left_bracket V_ARCHETYPE_ID Right_bracket
 		{
+			create c_arch_root.make_identified($1, $3)
 		}
-	| t_complex_objects t_complex_object
+	| type_identifier Left_bracket V_LOCAL_CODE Equal_code V_ARCHETYPE_ID Right_bracket
 		{
+			create c_arch_root.make_identified($1, $5)
+			c_arch_root.set_slot_node_id($3)
+		}
+	| sibling_order type_identifier Left_bracket V_LOCAL_CODE Equal_code V_ARCHETYPE_ID Right_bracket
+		{
+			create c_arch_root.make_identified($2, $6)
+			c_arch_root.set_slot_node_id($4)
+			c_arch_root.set_sibling_order($1)
 		}
 	;
 
@@ -265,7 +273,6 @@ c_complex_object_head: c_complex_object_id c_occurrences
 					io.new_line
 					indent.append("%T")
 				end
-				
 
 				-- put it under current attribute, unless it is the root object, in which case it will be returned
 				-- via the 'output' attribute of this parser
@@ -331,7 +338,7 @@ c_complex_object_body: c_any -- used to indicate that any value of a type is ok
 c_object: c_complex_object 
 		{
 		}
-	| archetype_external_ref 
+	| c_archetype_root 
 		{
 			safe_put_c_attribute_child(c_attrs.item, $1)
 		}
@@ -359,9 +366,6 @@ c_object: c_complex_object
 	| c_primitive_object
 		{
 			safe_put_c_attribute_child(c_attrs.item, c_prim_obj)
-		}
-	| t_slot_spec
-		{
 		}
 	| V_C_DOMAIN_TYPE
 		{
@@ -487,50 +491,6 @@ c_archetype_slot_id: SYM_ALLOW_ARCHETYPE type_identifier
 	| SYM_ALLOW_ARCHETYPE error
 		{
 			abort_with_error("SUAS", Void)
-		}
-	;
-
-t_slot_spec: SYM_SLOT t_slot_spec_head SYM_MATCHES SYM_START_CBLOCK t_complex_objects SYM_END_CBLOCK
-		{
-			t_slot_specs.remove
-			debug("ADL_parse")
-				io.put_string(indent + "POP OBJECT_NODE (T_SLOT_SPEC)" + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.archetype_node_id + "]%N") 
-				indent.remove_tail(1)
-			end
-		}
-	;
-
-t_slot_spec_head: type_identifier V_LOCAL_TERM_CODE_REF c_occurrences c_exhaustive
-		{
-			if template_syntax then
-				create t_slot_spec.make_identified($1, $2)
-
-				if $3 /= Void then
-					t_slot_spec.set_occurrences($3)
-				end
-
-				if $4 then
-					t_slot_spec.set_exhaustive
-				end
-
-				debug("ADL_parse")
-					io.put_string(indent + "PUSH create OBJECT_NODE (T_SLOT_SPEC) " + t_slot_spec.rm_type_name + " [id=" + t_slot_spec.archetype_node_id + "] ")
-					if $3 /= Void then
-						io.put_string("; occurrences=(" + $3.as_string + ")") 
-					end
-					io.new_line
-					indent.append("%T")
-				end
-
-				if rm_checker.has_class_definition (t_slot_spec.rm_type_name) then
-					t_slot_specs.extend(t_slot_spec)
-					safe_put_c_attribute_child(c_attrs.item, t_slot_spec)
-				else
-					abort_with_error("VCORM", <<t_slot_spec.rm_type_name, t_slot_spec.path>>)
-				end
-			else
-				abort_with_error("VTSLT", <<c_attrs.item.path>>)
-			end
 		}
 	;
 
@@ -2396,7 +2356,6 @@ feature -- Initialization
 			create object_nodes.make(0)
 			assertion_list := Void
 			create c_attrs.make(0)
-			create t_slot_specs.make(0)
 
 			create time_vc
 			create date_vc
@@ -2520,12 +2479,7 @@ feature {NONE} -- Parse Tree
 
 	object_nodes: ARRAYED_STACK [C_COMPLEX_OBJECT]
 	c_complex_obj: C_COMPLEX_OBJECT
-	t_complex_obj: T_COMPLEX_OBJECT
-
-	t_slot_spec: T_SLOT_SPEC
-
-	t_slot_specs: ARRAYED_STACK [T_SLOT_SPEC]
-			-- stack for T_SLOT_SPEC objects
+	c_arch_root: C_ARCHETYPE_ROOT
 
 	c_attrs: ARRAYED_STACK [C_ATTRIBUTE]
 			-- main stack of attributes during construction

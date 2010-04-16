@@ -275,7 +275,7 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 
 ----------/* V_LOCAL_CODE */ ----------------------------------------
 
-a[ct][0-9.]+ {
+a[ct]{CODECHAR}+ {
 				last_token := V_LOCAL_CODE
 				last_string_value := text
 		}
@@ -284,12 +284,6 @@ a[ct][0-9.]+ {
 {NAMESTR}(-{NAMESTR}){2}\.{NAMESTR}(-{NAMESTR})*\.v[1-9][0-9]* {
 					last_token := V_ARCHETYPE_ID
 					last_string_value := text
-			}
-
-----------/* archetype id as a node code */ -------------------------------------------------
-\[{NAMESTR}(-{NAMESTR}){2}\.{NAMESTR}(-{NAMESTR})*\.v[1-9][0-9]*\] {
-					last_token := V_ARCHETYPE_ID_CODE
-					last_string_value := text_substring (2, text_count - 1)
 			}
 
 ----------/* V_ISO8601_EXTENDED_DATE_TIME YYYY-MM-DDThh:mm:ss[,sss][Z|+/-nnnn] */ -------------------------------------------------

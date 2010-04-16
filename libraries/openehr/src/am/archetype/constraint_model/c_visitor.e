@@ -156,23 +156,13 @@ feature -- Visitor
 		do
 		end
 
-	start_t_complex_object(a_node: T_COMPLEX_OBJECT; depth: INTEGER)
-			-- enter an T_COMPLEX_OBJECT
+	start_c_archetype_root(a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
+			-- enter an C_ARCHETYPE_ROOT
 		deferred
 		end
 
-	end_t_complex_object(a_node: T_COMPLEX_OBJECT; depth: INTEGER)
-			-- exit an T_COMPLEX_OBJECT
-		do
-		end
-
-	start_t_slot_spec(a_node: T_SLOT_SPEC; depth: INTEGER)
-			-- enter an T_SLOT_SPEC
-		deferred
-		end
-
-	end_t_slot_spec(a_node: T_SLOT_SPEC; depth: INTEGER)
-			-- exit an T_SLOT_SPEC
+	end_c_archetype_root(a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
+			-- exit an C_ARCHETYPE_ROOT
 		do
 		end
 

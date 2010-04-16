@@ -179,13 +179,8 @@ feature -- Visitor
 		do
 		end
 
-	start_t_complex_object(a_node: T_COMPLEX_OBJECT; depth: INTEGER)
-			-- enter an T_COMPLEX_OBJECT
-		do
-		end
-
-	start_t_slot_spec(a_node: T_SLOT_SPEC; depth: INTEGER)
-			-- enter an T_SLOT_SPEC
+	start_c_archetype_root(a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
+			-- enter an C_ARCHETYPE_ROOT
 		do
 		end
 
