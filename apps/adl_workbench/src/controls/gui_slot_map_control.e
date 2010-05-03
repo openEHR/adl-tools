@@ -34,9 +34,20 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_MESSAGE_DB
+		export
+			{NONE} all
+		end
+
 	EV_KEY_CONSTANTS
+		export
+			{NONE} all
+		end
 
 	EV_SHARED_APPLICATION
+		export
+			{NONE} all
+		end
 
 create
 	make
@@ -100,7 +111,7 @@ feature -- Commands
 				end
 
 				if archetype_directory.parse_attempted_archetype_count < archetype_directory.total_archetype_count then
-					gui.used_by_tree.extend (create {EV_TREE_ITEM}.make_with_text ("WARNING: This list may be incomplete. To be sure, run Build All under the Repository menu."))
+					gui.used_by_tree.extend (create {EV_TREE_ITEM}.make_with_text (create_message ("slots_incomplete_w1", <<>>)))
 				end
 
 				if ara.is_used then
@@ -132,6 +143,7 @@ feature {NONE} -- Implementation
 			ids_attached: ids /= Void
 		local
 			eti: EV_TREE_ITEM
+			ara: ARCH_REP_ARCHETYPE
 		do
 			from
 				ids.start
@@ -139,8 +151,9 @@ feature {NONE} -- Implementation
 				ids.off
 			loop
 				create eti.make_with_text (utf8 (ids.item))
-				eti.set_pixmap (pixmaps [archetype_directory.archetype_id_index.item (ids.item).group_name])
-				eti.set_data (archetype_directory.archetype_id_index.item (ids.item))
+				ara := archetype_directory.archetype_index.item (ids.item)
+				eti.set_pixmap (pixmaps [ara.group_name])
+				eti.set_data (ara)
 				eti.pointer_double_press_actions.force_extend (agent gui.select_archetype_from_gui_data (eti))
 				subtree.extend (eti)
 				ids.forth

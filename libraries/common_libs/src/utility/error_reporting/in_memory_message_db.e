@@ -73,6 +73,7 @@ feature -- Access
 			["general"] = <"$1">
 			
 			-- MODEL_ACCESS (RM model checker)
+			["model_access_e0"] = <"No reference model schema files found in $1">
 			["model_access_e1"] = <"Reference Model schema file $1 does not exist or not readable">
 			["model_access_e2"] = <"Reference Model schema $1 parse failure; reason: $2">
 			["model_access_e3"] = <"Reference Model schema containes unknown type $1 (object add failed)">
@@ -104,6 +105,9 @@ feature -- Access
 			["parse_archetype_w2"] = <"Archetype $1 semantic validation Warnings:%N$2">
 			["parse_archetype_e3"] = <"PARSE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
 			["parse_archetype_e4"] = <"Archetype $1 semantic validation of differential form FAILED; reasons:%N$2">
+			["parse_archetype_e5"] = <"Archetype $1 basic error in 'archetype' clause">
+			["parse_archetype_e6"] = <"Archetype $1 basic error in 'specialise' clause">
+			["parse_archetype_e7"] = <"Archetype $1 invalid: old-style 'draft' identifier">
 			["arch_context_make_flat_i1"] = <"Generated differential archetype from specialised flat archetype">
 			["compiler_status"] = <"=============== $1 ===============">
 			["compiler_finished_status"] = <"=============== finished $1 ===============">
@@ -120,6 +124,9 @@ feature -- Access
 			["validation_strict"] = <"Validation level STRICT">
 			["validation_non_strict"] = <"Validation level NON-STRICT; non-coforming existence, occurrences & cardinality will be removed">
 			
+			-- GUI controls, MAIN_WINDOW
+			["slots_incomplete_w1"] = <"Warning: this list may be incomplete. To be sure, run Build All under the Repository menu.">
+			
 			-- DT_OBJECT_CONVERTER.dt_to_object
 			["container_type_mismatch"] = 
 				<"Mismatch error in data and model for field $1 in type $2. Parsed data implies container type but is not in model">
@@ -135,7 +142,9 @@ feature -- Access
 				
 			-- ARCHETYPE_DIRECTORY
 			["arch_dir_orphan_archetype"] = <"No parent matching $1 found for archetype $2">
+			["arch_dir_orphan_archetype_e2"] = <"No ontology node matching $1 found for archetype $2; incorrect id?">
 			["arch_dir_dup_archetype"] = <"Duplicate archetype $1">
+			["regex_e1"] = <"Error: Invalid regular expression $1">
 
 			-- ADL_SYNTAX_CONTERTER
 			["syntax_upgraded_i1"] = <"Syntax element upgraded: --$1-- changed to --$2--">

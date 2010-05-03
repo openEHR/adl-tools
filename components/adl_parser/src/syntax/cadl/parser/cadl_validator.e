@@ -699,7 +699,7 @@ end
 				complex_obj.set_occurrences(yyvs13.item (yyvsp13))
 			end
 
-			if rm_checker.has_class_definition (complex_obj.rm_type_name) then
+			if rm_schema.has_class_definition (complex_obj.rm_type_name) then
 				object_nodes.extend(complex_obj)
 				debug("ADL_parse")
 					io.put_string(indent + "PUSH create OBJECT_NODE " + complex_obj.rm_type_name + " [id=" + complex_obj.node_id + "] ")
@@ -1766,8 +1766,8 @@ end
 
 			rm_attribute_name := yyvs2.item (yyvsp2)
 			if not object_nodes.item.has_attribute(rm_attribute_name) then
-				if rm_checker.has_property (object_nodes.item.rm_type_name, rm_attribute_name) then
-					bmm_prop_def := rm_checker.property_definition (object_nodes.item.rm_type_name, rm_attribute_name)
+				if rm_schema.has_property (object_nodes.item.rm_type_name, rm_attribute_name) then
+					bmm_prop_def := rm_schema.property_definition (object_nodes.item.rm_type_name, rm_attribute_name)
 					if yyvs13.item (yyvsp13) /= Void and then bmm_prop_def.existence.equal_interval(yyvs13.item (yyvsp13)) then
 						yyvs13.item (yyvsp13) := Void -- throw out constraint that is same as RM
 					end
@@ -1840,8 +1840,8 @@ end
 
 			if not object_nodes.item.has_attribute(rm_attribute_name) then
 				-- check RM to see if path is valid, and if it is a container
-				if rm_checker.has_property_path (object_nodes.item.rm_type_name, path_str) then
-					bmm_prop_def := rm_checker.property_definition_at_path (object_nodes.item.rm_type_name, path_str)
+				if rm_schema.has_property_path (object_nodes.item.rm_type_name, path_str) then
+					bmm_prop_def := rm_schema.property_definition_at_path (object_nodes.item.rm_type_name, path_str)
 					if yyvs13.item (yyvsp13) /= Void and then bmm_prop_def.existence.equal_interval(yyvs13.item (yyvsp13)) then
 						yyvs13.item (yyvsp13) := Void -- throw out constraint that is same as RM
 					end
@@ -8339,7 +8339,7 @@ feature {NONE} -- Implementation
 						an_obj.generating_type + ": " + an_obj.rm_type_name + " [id=" + an_obj.node_id + "])%N") 
 				
 			end
-			if rm_checker.has_class_definition (an_obj.rm_type_name) then
+			if rm_schema.has_class_definition (an_obj.rm_type_name) then
 				if check_c_attribute_child(an_attr, an_obj) then
 					c_attrs.item.put_child(an_obj)
 				end

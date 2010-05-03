@@ -66,7 +66,7 @@ feature -- Commands
 			-- flatten archetype to `arch_output_flat'; if non-specialised, then flatten against reference model
 			-- (just pick up existence and cardinality); if specialised, flatten against a flat parent archetype
 		require
-			Rm_available: rm_checker.model_loaded
+			Rm_available: rm_schema.model_loaded
 		local
 			def_it: C_ITERATOR
 		do
@@ -448,7 +448,7 @@ feature {NONE} -- Implementation
 					elseif ca_output.has_child_with_rm_type_name(ca_child.children.item.rm_type_name) then -- find a node of same type, then replace completely
 						ca_output.replace_child_by_rm_type_name (ca_child.children.item.safe_deep_twin)
 					else -- or a RM parent type, then add
-						rm_ancestors := rm_checker.ancestor_classes_of(ca_child.children.item.rm_type_name)
+						rm_ancestors := rm_schema.all_ancestor_classes_of(ca_child.children.item.rm_type_name)
 						from rm_ancestors.start until rm_ancestors.off or ca_output.has_child_with_rm_type_name(rm_ancestors.item) loop
 							rm_ancestors.forth
 						end
@@ -548,7 +548,7 @@ feature {NONE} -- Implementation
 			rm_attr_desc: BMM_PROPERTY_DEFINITION
 		do
 			if attached {C_ATTRIBUTE} a_c_node as ca then
-				rm_attr_desc := rm_checker.property_definition (ca.parent.rm_type_name, ca.rm_attribute_name)
+				rm_attr_desc := rm_schema.property_definition (ca.parent.rm_type_name, ca.rm_attribute_name)
 				if ca.existence = Void then
 					ca.set_existence(rm_attr_desc.existence)
 				end
@@ -564,7 +564,7 @@ feature {NONE} -- Implementation
 					if co.is_root then -- assume 0..1
 						co.set_occurrences (create {MULTIPLICITY_INTERVAL}.make_bounded(0,1))
 					else
-						rm_attr_desc := rm_checker.property_definition (co.parent.parent.rm_type_name, co.parent.rm_attribute_name)
+						rm_attr_desc := rm_schema.property_definition (co.parent.parent.rm_type_name, co.parent.rm_attribute_name)
 						if attached {BMM_CONTAINER_PROPERTY} rm_attr_desc as cont_prop then
 							co.set_occurrences (cont_prop.type.cardinality.deep_twin)
 						else

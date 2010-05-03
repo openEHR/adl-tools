@@ -10,7 +10,7 @@
 			<debug name="adl_invariant" enabled="false"/>
 			<debug name="adl_parse" enabled="false"/>
 			<debug name="adl_tree" enabled="false"/>
-			<debug name="arch_dir" enabled="false"/>
+			<debug name="arch_dir" enabled="true"/>
 			<debug name="bb" enabled="false"/>
 			<debug name="compress" enabled="false"/>
 			<debug name="dadl_parse" enabled="false"/>

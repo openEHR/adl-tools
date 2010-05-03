@@ -48,9 +48,10 @@ feature -- Access
 	schema_release: STRING
 			-- release of schema
 
-	model_names: ARRAYED_LIST [STRING]
-			-- list of models included in schema - these are models on which archteypes are based, and their names
-			-- correspond to the first 2 sectoins of the 3-part archetype RM entity identifer, e.g. "openEHR-EHR"
+	packages: HASH_TABLE [BMM_PACKAGE_DEFINITION, STRING]
+			-- hierarchical package structure; equivalent to a list of models included in schema
+			-- these are models on which archteypes are based, and their names correspond to the
+			-- second section of the 3-part archetype RM entity identifer, e.g. "EHR" in "openEHR-EHR"
 
 	primitive_types: HASH_TABLE [BMM_CLASS_DEFINITION, STRING]
 			-- types like Integer, Boolean etc
@@ -114,20 +115,13 @@ feature -- Access
 			Result.append (create_message ("model_access_i1", << schema_name, schema_release, primitive_types.count.out, class_definitions.count.out >>))
 		end
 
-	ancestor_classes_of (a_class_name: STRING): ARRAYED_LIST [STRING]
+	all_ancestor_classes_of (a_class_name: STRING): ARRAYED_LIST [STRING]
 			-- return all ancestor types of `a_class_name' up to root class (usually 'ANY', 'Object' or something similar)
 			-- does  not include current class. Returns empty list if none.
 		require
 			Type_valid: a_class_name /= Void and then has_class_definition (a_class_name)
-		local
-			anc: ARRAYED_LIST[BMM_CLASS_DEFINITION]
 		do
-			create Result.make(0)
-			anc := class_definition (a_class_name).ancestors
-			from anc.start until anc.off loop
-				Result.extend(anc.item.name)
-				anc.forth
-			end
+			Result := class_definition (a_class_name).all_ancestors
 		ensure
 			Result_exists: Result /= Void
 		end
@@ -135,7 +129,7 @@ feature -- Access
 feature -- Status Report
 
 	has_class_definition (a_type_name: STRING): BOOLEAN
-			-- True if `a_type_name' has a class definition in the model. Note that a_type_name
+			-- True if `a_type_name' has a class definition or is a primitive type in the model. Note that a_type_name
 			-- could be a generic type string; only the root class is considered
 		require
 			Type_valid: a_type_name /= Void and then not a_type_name.is_empty
@@ -155,13 +149,13 @@ feature -- Status Report
 			Result := class_definition (a_type_name).has_property(a_prop_name)
 		end
 
-	is_sub_class_of (a_class, a_parent_class: STRING): BOOLEAN
-			-- True if `a_class' is a sub-class in the model of `a_parent_class'
+	is_descendant_of (a_class, a_parent_class: STRING): BOOLEAN
+			-- True if `a_class' is a descendant in the model of `a_parent_class'
 		require
 			Sub_class_valid: a_class /= Void not a_class.is_empty
 			Parent_class_valid: a_parent_class /= Void and then has_class_definition (a_parent_class)
 		do
-			Result := True
+			Result := class_definition (a_class).all_ancestors.has (a_parent_class)
 		end
 
 	has_property_path (an_obj_type, a_property_path: STRING): BOOLEAN
@@ -223,7 +217,6 @@ feature -- Commands
 		local
 			keys: ARRAY [STRING]
 			i: INTEGER
-			anc_list: ARRAYED_LIST [BMM_CLASS_DEFINITION]
 		do
 			-- convert primitive type names of the form 'Integer' to all uppercase; has to be done in
 			-- two gos, because changing keys messs with the table structure if done in one pass
@@ -238,28 +231,8 @@ feature -- Commands
 			end
 
 			-- now finalise all classes
-			from primitive_types.start until primitive_types.off loop
-				primitive_types.item_for_iteration.dt_finalise(Current)
-				anc_list := primitive_types.item_for_iteration.ancestors
-
-				-- set all class def descendants property
-				from anc_list.start until anc_list.off loop
-					anc_list.item.add_immediate_descendant (primitive_types.item_for_iteration)
-					anc_list.forth
-				end
-				primitive_types.forth
-			end
-			from class_definitions.start until class_definitions.off loop
-				class_definitions.item_for_iteration.dt_finalise(Current)
-
-				-- set all class def descendants property
-				anc_list := class_definitions.item_for_iteration.ancestors
-				from anc_list.start until anc_list.off loop
-					anc_list.item.add_immediate_descendant (class_definitions.item_for_iteration)
-					anc_list.forth
-				end
-				class_definitions.forth
-			end
+			finalise_classes(primitive_types)
+			finalise_classes(class_definitions)
 		end
 
 feature {DT_OBJECT_CONVERTER} -- Conversion
@@ -285,6 +258,33 @@ feature {NONE} -- Implementation
 				Result.right_adjust
 			else
 				Result := a_type_name
+			end
+		end
+
+	finalise_classes (class_list: HASH_TABLE [BMM_CLASS_DEFINITION, STRING])
+		local
+			anc_list: ARRAYED_LIST [BMM_CLASS_DEFINITION]
+		do
+			from class_list.start until class_list.off loop
+				class_list.item_for_iteration.dt_finalise(Current)
+				anc_list := class_list.item_for_iteration.ancestors
+
+				-- set all class def immediate_descendants property; also build all_ancestors property
+				from anc_list.start until anc_list.off loop
+					anc_list.item.add_immediate_descendant (class_list.item_for_iteration)
+
+					if not class_list.item_for_iteration.all_ancestors.has(anc_list.item.name) then
+						class_list.item_for_iteration.all_ancestors.extend(anc_list.item.name)
+					end
+					from anc_list.item.ancestors.start until anc_list.item.ancestors.off loop
+						if not class_list.item_for_iteration.all_ancestors.has(anc_list.item.ancestors.item.name) then
+							class_list.item_for_iteration.all_ancestors.extend(anc_list.item.ancestors.item.name)
+						end
+						anc_list.item.ancestors.forth
+					end
+					anc_list.forth
+				end
+				class_list.forth
 			end
 		end
 

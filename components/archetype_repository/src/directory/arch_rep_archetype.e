@@ -50,8 +50,6 @@ inherit
 		end
 
 	ARCH_REP_ITEM
-		rename
-			make as make_adi
 		undefine
 			is_equal
 		end
@@ -80,24 +78,25 @@ inherit
 	COMPARABLE
 
 create
-	make
+	make, make_specialised
 
 feature {NONE} -- Initialisation
 
-	make (a_root_path, a_full_path: STRING; an_id: attached ARCHETYPE_ID; a_repository: ARCHETYPE_REPOSITORY_I)
-			-- Create for the archetype with `an_id', stored at `a_full_path', belonging to `a_repository' at `a_root_path'.
+	make (a_full_path: STRING; an_id: attached ARCHETYPE_ID; a_repository: ARCHETYPE_REPOSITORY_I)
+			-- Create for the archetype with `an_id', stored at `a_full_path', belonging to `a_repository'.
 			-- Can be created with a .adl or .adls file name extension
 		require
 			repository_attached: a_repository /= Void
-			root_path_valid: a_repository.is_valid_directory (a_root_path)
 			full_path_attached: a_full_path /= Void
-			full_path_under_root_path: a_full_path.starts_with (a_root_path)
 		do
 			create status.make_empty
 			create compiler_status.make_empty
 
 			id := an_id
-			make_adi (a_root_path, a_full_path, a_repository)
+			ontological_name := id.as_string
+			display_name := id.domain_concept
+			full_path := a_full_path
+			file_repository := a_repository
 
 			if file_system.has_extension (full_path, archetype_source_file_extension) then
 				differential_path := full_path
@@ -109,17 +108,55 @@ feature {NONE} -- Initialisation
 				legacy_flat_path := full_path
 			end
 		ensure
-			root_path_set: root_path = a_root_path
 			full_path_set: full_path = a_full_path
 			file_repository_set: file_repository = a_repository
 			id_set: id = an_id
 			no_compiler_status: compiler_status.is_empty
 		end
 
-feature -- Access
+	make_specialised (a_full_path: STRING; an_id, a_parent_id: attached ARCHETYPE_ID; a_repository: ARCHETYPE_REPOSITORY_I)
+			-- Create for the archetype with `an_id', stored at `a_full_path', belonging to `a_repository' at `a_root_path'.
+			-- Can be created with a .adl or .adls file name extension
+		require
+			repository_attached: a_repository /= Void
+			full_path_attached: a_full_path /= Void
+		do
+			make (a_full_path, an_id, a_repository)
+			is_specialised := True
+			parent_id := a_parent_id
+		ensure
+			full_path_set: full_path = a_full_path
+			file_repository_set: file_repository = a_repository
+			id_set: id = an_id
+			no_compiler_status: compiler_status.is_empty
+			Specialised: is_specialised
+			parent_id_set: parent_id = a_parent_id
+		end
 
-	id: attached ARCHETYPE_ID
-			-- Archetype identifier.
+feature -- Access (file system)
+
+	full_path: STRING
+			-- Full path to the item on the storage medium.
+
+	relative_path: STRING
+			-- a path derived from the ontological path of the folder structure + the id of the archetype
+		local
+			csr: ARCH_REP_ITEM
+		do
+			create Result.make(0)
+			from csr := parent until csr = Void or Result /= Void loop
+				if attached {ARCH_REP_FOLDER} csr as arf then
+					Result := arf.ontological_path + Ontological_path_separator
+				end
+				csr := csr.parent
+			end
+			Result.append(id.as_string)
+		ensure
+			Result_exists: Result /= Void
+		end
+
+	file_repository: ARCHETYPE_REPOSITORY_I
+			-- The repository on which this item is found.
 
 	differential_path: STRING
 			-- Path of differential source file of archetype.
@@ -129,6 +166,26 @@ feature -- Access
 
 	legacy_flat_path: STRING
 			-- Path of legacy flat file of archetype.
+
+feature -- Access (semantic)
+
+	ontological_parent_name: STRING
+			-- semantic name of parent node in ontology tree
+			-- For top-level archetypes e.g. openEHR-EHR-OBSERVATION.thing.v1, it will be the name of teh folder, e.g. EHR-OBSERVATION
+			-- for specialised archetypes, e.g. openEHR-EHR-OBSERVATION.specialised_thing.v1, it will be the id of the parent, e.g. openEHR-EHR-OBSERVATION.thing.v1
+		do
+			if is_specialised then
+				Result := parent_id.as_string
+			else
+				Result := id.package_class_name
+			end
+		end
+
+	id: attached ARCHETYPE_ID
+			-- Archetype identifier.
+
+	parent_id: attached ARCHETYPE_ID
+			-- Archetype identifier of specialisation parent
 
 	differential_text: STRING
 			-- The text of the archetype source file, i.e. the differential form.
@@ -250,6 +307,30 @@ feature -- Access
 
 feature -- Status Report - Compilation
 
+	is_valid_path (path: STRING): BOOLEAN
+			-- Is `path' a valid, existing directory or file on `file_repository'?
+		do
+			Result := file_repository.is_valid_path (path)
+		ensure
+			false_if_void: Result implies path /= Void
+		end
+
+	is_valid_directory (path: STRING): BOOLEAN
+			-- Is `path' a valid, existing directory on `file_repository'?
+		do
+			Result := file_repository.is_valid_directory (path)
+		ensure
+			false_if_void: Result implies path /= Void
+		end
+
+	is_valid_directory_part (path: STRING): BOOLEAN
+			-- Is the directory part of `path', whose last section is a file name, valid on `file_repository'?
+		do
+			Result := file_repository.is_valid_directory_part (path)
+		ensure
+			false_if_void: Result implies path /= Void
+		end
+
 	is_at_path (path: STRING): BOOLEAN
 			-- Is `path' the same as either `differential_path' or `legacy_flat_path'?
 		do
@@ -311,9 +392,6 @@ feature -- Status Report - Semantic
 
 	is_specialised: BOOLEAN
 			-- True if this archetype is a specialisation of another archetype
-		do
-			Result := id.is_specialised
-		end
 
 	is_valid: BOOLEAN
 			-- True if archetype object created and 'is_valid' True. This can be used to check if the archetype has
@@ -387,7 +465,7 @@ feature -- Commands
 				clear_billboard
 				set_parse_attempted
 
-				if has_rm_checker (id.qualified_rm_name) then
+				if has_rm_schema (id.rm_originator) then
 					if has_differential_file and not is_legacy_flat_out_of_date then
 						post_info (Current, "parse_archetype", "parse_archetype_i3", Void)
 						read_differential
@@ -779,39 +857,6 @@ feature {NONE} -- Implementation
 			legacy_flat_text_timestamp := file_repository.text_timestamp
 		end
 
-	make_ontological_paths
-			-- Make `base_name', `ontological_path' and `ontological_parent_path'.
-		local
-			pos: INTEGER
-			arch_ont_path: STRING
-		do
-			pos := full_path.last_index_of (os_directory_separator, full_path.count)
-			ontological_path := full_path.substring (root_path.count + 1, pos - 1)
-			ontological_path.replace_substring_all (os_directory_separator.out, ontological_path_separator)
-			ontological_parent_path := ontological_path.twin
-
-			-- generate a semantic path that corresponds to this archetype:
-			-- constructed from the relative folder path + the semantic part of the archetype id, with '-' separators
-			-- changed to '/' so that the entire path is '/'-separated
-			arch_ont_path := id.domain_concept
-			arch_ont_path.replace_substring_all (id.section_separator.out, ontological_path_separator)
---		arch_ont_path.append_character (id.axis_separator)
---		arch_ont_path.append (id.version_id)
-			ontological_path.append (ontological_path_separator + arch_ont_path)
-
-			-- generate parent ontological path if appropriate
-			arch_ont_path := id.domain_concept_base
-
-			if not arch_ont_path.is_empty then
-				arch_ont_path.replace_substring_all (id.section_separator.out, ontological_path_separator)
---		arch_ont_path.append_character (id.axis_separator)
---		arch_ont_path.append (id.version_id)
-				ontological_parent_path.append (ontological_path_separator + arch_ont_path)
-			end
-
-			base_name := id.domain_concept_tail + "(" + id.version_id + ")"
-		end
-
 	build_ontology_lineage
 		local
 			arch_lin: ARRAYED_LIST [ARCH_REP_ARCHETYPE]
@@ -872,6 +917,9 @@ feature {NONE} -- Implementation
 			-- archetype generated by flattening process
 
 invariant
+	repository_attached: file_repository /= Void
+	full_path_attached: full_path /= Void
+	full_path_not_empty: not full_path.is_empty
 	compiler_status_attached: compiler_status /= Void
 	flat_text_timestamp_natural: legacy_flat_text_timestamp >= 0
 	differential_text_timestamp_natural: differential_text_timestamp >= 0

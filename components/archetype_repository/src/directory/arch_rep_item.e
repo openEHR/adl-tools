@@ -25,61 +25,7 @@ inherit
 			{NONE} all
 		end
 
-feature {NONE} -- initialisation
-
-	make (a_root_path, a_full_path: STRING; a_repository: ARCHETYPE_REPOSITORY_I)
-			-- Make to represent the directory or archetype file at `a_full_path',
-			-- belonging to `a_repository' at `a_root_path'.
-		require
-			repository_attached: a_repository /= Void
-			root_path_valid: a_repository.is_valid_directory (a_root_path)
-			full_path_attached: a_full_path /= Void
-			full_path_under_root_path: a_full_path.starts_with (a_root_path)
-		do
-			root_path := a_root_path
-			full_path := a_full_path
-			file_repository := a_repository
-			make_ontological_paths
-		ensure
-			root_path_set: root_path = a_root_path
-			full_path_set: full_path = a_full_path
-			file_repository_set: file_repository = a_repository
-		end
-
 feature -- Access
-
-	root_path: STRING
-			-- Root path of repository on storage medium containing this item.
-
-	full_path: STRING
-			-- Full path to the item on the storage medium.
-
-	relative_path: attached STRING
-			-- Path to the item on the storage medium, excluding `root_path'.
-		do
-			Result := full_path.substring (root_path.count + 1, full_path.count)
-			Result.prune_all_leading (os_directory_separator)
-		ensure
-			relative: file_system.is_relative_pathname (Result)
-			under_full_path: full_path.ends_with (Result)
-			same_basename: file_system.basename (Result).same_string (file_system.basename (full_path))
-		end
-
-	base_name: STRING
-			-- Name of last segment of `ontological_path'.
-
-	ontological_path: STRING
-			-- Logical ontological path of item with respect to `root_path'; for folder nodes,
-			-- this will look like the directory path; for archetype nodes, this will be
-			-- the concatenation of the directory path and a path pseudo-path constructed
-			-- by replacing the '-'s in an archetype concept with '/', enabling specialised
-			-- archetypes to be treated as subnodes of their parent.
-
-	ontological_parent_path: STRING
-			-- Logical path of parent node (empty if `ontological_path' is already the root).
-
-	file_repository: ARCHETYPE_REPOSITORY_I
-			-- The repository on which this item is found.
 
 	group_name: attached STRING
 			-- Name distinguishing the type of item and the group to which its `repository' belongs.
@@ -89,49 +35,43 @@ feature -- Access
 			not_empty: not Result.is_empty
 		end
 
-feature -- Status Report
+	ontological_name: STRING
+			-- semantic name of this node, relative to parent concept, which is either class or package name, or else as concept name of archetype
+			-- used to generate ontological path
+			-- For Classes, will be the name of the top-level package & class e.g. EHR-OBSERVATION
+			-- For archetypes will be the id
 
-	is_valid_path (path: STRING): BOOLEAN
-			-- Is `path' a valid, existing directory or file on `file_repository'?
+	display_name: STRING
+			-- semantic name of this node to use in display context
+
+	ontological_path: STRING
+			-- path from root of ontology structure down to this point
+			-- for classes in the RM, it will look lie 			/content_item/care_entry/observation
+			-- for archetypes, it will look like 				/content_item/care_entry/observation/lab_result
+			-- for specialised archetypes, it will look like 	/content_item/care_entry/observation/lab_result/microbiology
 		do
-			Result := file_repository.is_valid_path (path)
-		ensure
-			false_if_void: Result implies path /= Void
+			create Result.make (0)
+			if parent /= Void then
+				Result.append(parent.ontological_path + Ontological_path_separator)
+			end
+			Result.append (ontological_name)
 		end
 
-	is_valid_directory (path: STRING): BOOLEAN
-			-- Is `path' a valid, existing directory on `file_repository'?
+feature -- Modification
+
+	set_parent (a_parent: ARCH_REP_ITEM)
+		require
+			a_parent /= Void
 		do
-			Result := file_repository.is_valid_directory (path)
-		ensure
-			false_if_void: Result implies path /= Void
+			parent := a_parent
 		end
 
-	is_valid_directory_part (path: STRING): BOOLEAN
-			-- Is the directory part of `path', whose last section is a file name, valid on `file_repository'?
-		do
-			Result := file_repository.is_valid_directory_part (path)
-		ensure
-			false_if_void: Result implies path /= Void
-		end
+feature {ARCH_REP_ITEM} -- Implementation
 
-feature {NONE} -- Implementation
-
-	make_ontological_paths
-			-- Make `base_name', `ontological_path' and `ontological_parent_path'.
-		deferred
-		end
+	parent: ARCH_REP_ITEM
 
 invariant
-	repository_attached: file_repository /= Void
-	root_path_valid: is_valid_directory (root_path)
-	full_path_attached: full_path /= Void
-	full_path_not_empty: not full_path.is_empty
-	ontological_path_attached: ontological_path /= Void
-	ontological_parent_path_attached: ontological_parent_path /= Void
-	ontological_path_absolute: ontological_path.starts_with (ontological_path_separator)
-	ontological_parent_path_valid: ontological_path.starts_with (ontological_parent_path)
-	base_name_attached: base_name /= Void
+	ontological_name_attached: ontological_name /= Void
 
 end
 

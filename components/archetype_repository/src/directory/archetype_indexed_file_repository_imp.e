@@ -24,33 +24,29 @@ create
 
 feature {NONE} -- Implementation
 
-	build_directory (tree: like directory)
-			-- Add archetype and folder meta-data to `tree'.
+	get_archetypes_in_folder (a_path: STRING)
+			-- Add archetype and folder meta-data nodes to `archetypes' list, and call recursively to folders below
 		local
-			fn, full_path, dir_full_path: STRING
+			fn, full_path: STRING
 			a_dir: DIRECTORY
 			fs_node_names: ARRAYED_LIST [STRING]
 			dir_name_index: SORTED_TWO_WAY_LIST [STRING]
-			arch_index: HASH_TABLE [ARCH_REP_ARCHETYPE, STRING]
-			sorted_arch_index: SORTED_TWO_WAY_LIST[ARCH_REP_ARCHETYPE]
 			ara: ARCH_REP_ARCHETYPE
-			arch_id_str: STRING
-			node: like directory
-			arch_id: attached ARCHETYPE_ID
+			arch_id, parent_arch_id: attached ARCHETYPE_ID
+			a_file: RAW_FILE
    		do
    			-- generate lists of immediate child directory and archetype file names
-   			-- in the current directory 'tree.item.full_path'
+   			-- in the current directory 'a_parent_node.item.full_path'
    			debug("arch_dir")
-   				io.put_string(shifter + "---> " + tree.item.full_path + "%N")
+   				io.put_string(shifter + "---> " + a_path + "%N")
    				shifter.extend ('%T')
    			end
 
-			create a_dir.make (tree.item.full_path)
+			create a_dir.make (a_path)
 
 			if a_dir.exists then
 				a_dir.open_read
 				fs_node_names := a_dir.linear_representation
-				create arch_index.make(0)
 				create dir_name_index.make
 
 				from
@@ -61,73 +57,49 @@ feature {NONE} -- Implementation
 					fn := fs_node_names.item
 
 					if fn.item (1) /= '.' then
-						full_path := file_system.pathname (tree.item.full_path, fn)
+						full_path := file_system.pathname (a_path, fn)
 
-						if (create {RAW_FILE}.make (full_path)).is_directory then
+						create a_file.make (full_path)
+						if a_file.is_directory then
 							dir_name_index.extend (fn)
 						elseif adl_flat_filename_pattern_regex.matches (fn) or adl_differential_filename_pattern_regex.matches (fn) then
-							arch_id_str := archteype_id_from_path(full_path)
-							if arch_id_str /= Void then
-								create arch_id.make_from_string(arch_id_str)
+							-- perform a mini-parse of the file, getting the archetype id, the specialisation status and the specialisation parent
+							mini_parse_archetype (full_path)
+							if last_miniparse_valid then
+								if not last_archetype_id_old_style then
+									create arch_id.make_from_string(last_archetype_id)
 
-								-- the following check ensures only one of a .adl/.adls pair goes into the repository
-								if not arch_index.has (arch_id.semantic_id) then
-									create ara.make (root_path, full_path, arch_id, Current)
-									arch_index.force (ara, arch_id.semantic_id)
-								-- look to see if more recent version of an existing archetype; if so, use it
-								elseif arch_id.version_number > arch_index.item (arch_id.semantic_id).id.version_number then
-									create ara.make (root_path, full_path, arch_id, Current)
-									arch_index.replace (ara, arch_id.semantic_id)
+									-- create the descriptor znd put it into a local Hash for this node
+									if last_archetype_specialised then
+										create parent_arch_id.make_from_string(last_parent_archetype_id)
+										create ara.make_specialised (full_path, arch_id, parent_arch_id, Current)
+									else
+										create ara.make (full_path, arch_id, Current)
+									end
+
+									-- the following check ensures only one of a .adl/.adls pair goes into the repository
+									if not archetypes.has (arch_id.semantic_id) then
+										archetypes.force (ara, arch_id.semantic_id)
+									-- look to see if more recent version of an existing archetype; if so, use it
+									elseif arch_id.version_number > archetypes.item (arch_id.semantic_id).id.version_number then
+										archetypes.replace (ara, arch_id.semantic_id)
+									end
+								else
+									post_warning (Current, "build_directory", "parse_archetype_e7", <<fn>>)
 								end
 							else
-	-- FIXME: to support old-style archetype ids with 'draft' in the name; remove when appropriate
-	arch_id_str := old_archteype_id_from_path(full_path)
-	if arch_id_str /= Void then
-		create arch_id.old_make_from_string(arch_id_str)
-		if not arch_index.has (arch_id.semantic_id) then
-			create ara.make (root_path, full_path, arch_id, Current)
-			arch_index.force (ara, arch_id.semantic_id)
-			post_warning (Current, "build_directory", "invalid_filename_e1", <<fn>>)
-		end
-	else
-								post_error (Current, "build_directory", "invalid_filename_e1", <<fn>>)
-	end
+								post_error (Current, "build_directory", "parse_archetype_e5", <<fn>>)
 							end
 						end
 					end
-
 					fs_node_names.forth
 				end
 			end
 
-			-- process the directories list first:
 			-- for all directories below this one, call this routine recursively
-			from
-				dir_name_index.start
-			until
-				dir_name_index.off
-			loop
-				dir_full_path := file_system.pathname (tree.item.full_path, dir_name_index.item)
-				node := new_folder_node (dir_full_path)
-				build_directory (node)
-				tree.put_child_right (node)
-				tree.child_forth
+			from dir_name_index.start until dir_name_index.off loop
+				get_archetypes_in_folder (file_system.pathname (a_path, dir_name_index.item))
 				dir_name_index.forth
-			end
-
-			-- now create nodes representing all the files for this point
-			create sorted_arch_index.make
-			sorted_arch_index.append (arch_index.linear_representation)
-			sorted_arch_index.sort
-			from
-				sorted_arch_index.start
-			until
-				sorted_arch_index.off
-			loop
-				create node.make (sorted_arch_index.item)
-				tree.put_child_right (node)
-				tree.child_forth
-				sorted_arch_index.forth
 			end
 
    			debug("arch_dir")

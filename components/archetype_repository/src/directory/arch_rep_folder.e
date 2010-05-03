@@ -18,35 +18,57 @@ inherit
 	ARCH_REP_ITEM
 
 create
-	make
+	make_class, make_package
 
-feature {NONE} -- Implementation
+feature -- Initialisation
 
-	make_ontological_paths
-			-- Make `base_name', `ontological_path' and `ontological_parent_path'.
-		local
-			pos: INTEGER
+	make_class (a_package: STRING; a_class_desc: BMM_CLASS_DEFINITION)
+			-- create with ontological name
+		require
+			a_package_valid: a_package /= Void and then not a_package.is_empty
+			a_name_valid: a_class_desc /= Void
 		do
-			ontological_path := full_path.substring (root_path.count + 1, full_path.count)
-			ontological_path.replace_substring_all (os_directory_separator.out, ontological_path_separator)
-
-			if ontological_path.is_empty then
-				ontological_path := ontological_path_separator.twin
+			ontological_name := a_package + {ARCHETYPE_ID}.section_separator.out +  a_class_desc.name
+			display_name := a_class_desc.name
+			if a_class_desc.is_abstract then
+				group_name := "class_abstract"
+				is_abstract := True
+			else
+				group_name := "class_concrete"
 			end
-
-			pos := ontological_path.last_index_of (ontological_path_separator.item (1), ontological_path.count)
-			ontological_parent_path := ontological_path.substring (1, pos - 1)
-			base_name := ontological_path.substring (pos + ontological_path_separator.count, ontological_path.count)
+		ensure
+			ontological_name_set: ontological_name.is_equal (a_package + {ARCHETYPE_ID}.section_separator.out +  a_class_desc.name)
+			display_name_set: display_name = a_class_desc.name
 		end
+
+	make_package (a_name: STRING)
+			-- create with ontological name
+		require
+			a_name_valid: a_name /= Void and then not a_name.is_empty
+		do
+			ontological_name := a_name
+			display_name := a_name
+			group_name := "file_folder_2"
+			is_package := True
+		ensure
+			ontological_name_set: ontological_name.is_equal (a_name)
+			display_name_set: display_name = ontological_name
+		end
+
+feature -- Status Report
+
+	is_abstract: BOOLEAN
+
+	is_package: BOOLEAN
 
 feature -- Access
 
 	group_name: STRING
 			-- Name distinguishing the type of item and the group to which its `repository' belongs.
 			-- Useful as a logical key to pixmap icons, etc.
-		do
-			Result := "file_folder_" + file_repository.group_id.out
-		end
+
+invariant
+	not is_package and is_abstract
 
 end
 

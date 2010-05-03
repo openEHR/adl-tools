@@ -212,6 +212,13 @@ feature -- Status setting
 		local
 			quit_dialog: EV_INFORMATION_DIALOG
 		do
+			if not found_rm_schemas then
+				create quit_dialog.make_with_text (create_message ("model_access_e0", <<default_rm_schema_directory>>))
+				quit_dialog.set_title ("Error")
+				quit_dialog.show_modal_to_window (Current)
+				ev_application.destroy
+			end
+
 			populate_archetype_directory
 			archetype_compiler.set_visual_update_action (agent build_gui_update)
 			initialise_overall_appearance
@@ -249,13 +256,6 @@ feature -- Status setting
 				set_html_export_directory (file_system.pathname (file_system.absolute_parent_directory (reference_repository_path), "html"))
 			end
 
-			if rm_checker = Void then
-				create quit_dialog.make_with_text (create_message ("general", <<"Reference Model schema load failure">>))
-				quit_dialog.set_title ("Reference Model schema load failure")
-				quit_dialog.show_modal_to_window (Current)
-				ev_application.destroy
-			end
-
 			if not adl_version_for_flat_output.is_empty then
 				set_use_flat_adl_version (adl_version_for_flat_output)
 				post_warning (Current, "show", "adl_version_warning", <<adl_version_for_flat_output>>)
@@ -277,28 +277,22 @@ feature -- File events
 			-- Let the user select an ADL file, and then load and parse it.
 		local
 			dialog: EV_FILE_OPEN_DIALOG
-			name: STRING
+			fname: STRING
 		do
 			create dialog
 			dialog.set_start_directory (current_work_directory)
 			dialog.filters.extend (["*" + archetype_source_file_extension, "ADL source files"])
-			dialog.filters.extend (["*" + archetype_legacy_file_extension, "ADL flat files"])
+			dialog.filters.extend (["*" + archetype_legacy_file_extension, "ADL legacy flat files"])
 			dialog.show_modal_to_window (Current)
-			name := dialog.file_name.as_string_8
+			fname := dialog.file_name.as_string_8
 
-			if not name.is_empty then
-				set_current_work_directory (file_system.dirname (name))
-
-				if not file_system.file_exists (name) then
-					(create {EV_INFORMATION_DIALOG}.make_with_text ("%"" + name + "%" does not exist.")).show_modal_to_window (Current)
+			if not fname.is_empty then
+				set_current_work_directory (file_system.dirname (fname))
+				if not file_system.file_exists (fname) then
+					(create {EV_INFORMATION_DIALOG}.make_with_text ("%"" + fname + "%" does not exist.")).show_modal_to_window (Current)
 				else
-					archetype_directory.add_adhoc_item (name)
-
-					if attached {ARCH_REP_ARCHETYPE} archetype_directory.archetype_descriptor_at_path (name) as ara then
-						archetype_directory.set_selected_item (ara)
-						archetype_view_tree_control.populate
-					end
-
+					archetype_directory.add_adhoc_item (fname)
+					archetype_view_tree_control.populate
 					set_status_area (billboard_content)
 				end
 			end
@@ -801,8 +795,8 @@ feature -- Archetype commands
 			-- Select and display the node of `archetype_file_tree' corresponding to the folder or archetype attached to `gui_item'.
 		do
 			if gui_item /= Void then
-				if attached {ARCH_REP_ITEM} gui_item.data as a then
-					archetype_directory.set_selected_item (a)
+				if attached {ARCH_REP_ITEM} gui_item.data as ari then
+					archetype_directory.set_selected_item (ari)
 					select_node_in_archetype_tree_view
 				end
 			end

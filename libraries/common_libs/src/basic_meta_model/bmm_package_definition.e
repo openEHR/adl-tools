@@ -1,81 +1,50 @@
 note
 	component:   "openEHR re-usable library"
-	description: "Concept of a constraint on a type"
+	description: "Abstraction of a package as a tree structure whose nodes can contain "
 	keywords:    "model, UML"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2009 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2010 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class BMM_GENERIC_TYPE_REFERENCE
+class BMM_PACKAGE_DEFINITION
 
 inherit
-	BMM_TYPE_REFERENCE
+	DT_CONVERTIBLE
 
 feature -- Initialisation
 
+	make_dt
+			-- make in a safe way for DT building purposes
+		do
+			create name.make (0)
+		end
+
 feature -- Access
 
-	root_type: BMM_CLASS_DEFINITION
-			-- optional type to which this paramter conforms
+	name: STRING
 
-	generic_parameters: ARRAYED_LIST [BMM_TYPE_SPECIFIER]
-			-- generic parameters of the root_type in this type specifier
+	packages: HASH_TABLE [BMM_PACKAGE_DEFINITION, STRING]
+		-- child packages
 
-	flattened_type_list: ARRAYED_LIST [STRING]
-			-- completely flattened list of type names, flattening out all generic parameters
-			-- Note: can include repeats, e.g. HASH_TABLE [STRING, STRING] => HASH_TABLE, STRING, STRING
+	classes: ARRAYED_LIST [STRING]
+		-- list of classes in this package
+
+feature {DT_OBJECT_CONVERTER} -- Conversion
+
+	persistent_attributes: ARRAYED_LIST[STRING]
+			-- list of attribute names to persist as DT structure
+			-- empty structure means all attributes
 		do
-			create Result.make(0)
-			Result.extend (root_type.name)
-			from
-				generic_parameters.start
-			until
-				generic_parameters.off
-			loop
-				Result.append(generic_parameters.item.flattened_type_list)
-				generic_parameters.forth
-			end
-		end
-
-feature -- Status Report
-
-feature -- Output
-
-	as_type_string: STRING
-			-- name of the type
-		do
-			create Result.make (0)
-			Result.append (root_type.name)
-			Result.append_character (Generic_left_delim)
-			from
-				generic_parameters.start
-			until
-				generic_parameters.off
-			loop
-				Result.append(generic_parameters.item.as_type_string)
-				if not generic_parameters.islast then
-					Result.append_character(generic_separator)
-				end
-				generic_parameters.forth
-			end
-			Result.append_character (Generic_right_delim)
-		end
-
-	as_flattened_type_string: STRING
-			-- string form of the type for matching in archetypes - i.e. ignoring container type names
-		do
-			Result := as_type_string
 		end
 
 invariant
-	Root_type_exists: root_type /= Void
-	Generic_parameters_valid: generic_parameters /= Void
+	Name_attached: name /= Void
 
 end
 
@@ -94,10 +63,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is bmm_model.e.
+--| The Original Code is bmm_package_definition.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2010
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

@@ -68,8 +68,8 @@ feature -- Access
 	file_content: STRING
 			-- Text from current file as a string.
 
-	file_first_line: STRING
-			-- First line from current file as a string.
+	file_lines: ARRAYED_LIST [STRING]
+			-- file split into liines from `read_n_lines'
 
 	file_timestamp: INTEGER
 			-- Last marked change timestamp of file, for file changes to be compared to.
@@ -114,26 +114,34 @@ feature -- Commands
 			end
 		end
 
-	read_first_line
+	read_n_lines (n: INTEGER)
 			-- Read first line from current file as a string.
+		require
+			n > 0
 		local
 			in_file: PLAIN_TEXT_FILE
+			i: INTEGER
    		do
    			last_op_failed := False
 			create in_file.make(current_full_path)
-			create file_first_line.make_empty
+			create file_lines.make(0)
 
 			if in_file.exists then
 				in_file.open_read
-				in_file.read_line
-				file_first_line.append (in_file.last_string)
+				from i := 1 until i > n loop
+					in_file.read_line
+					file_lines.extend (in_file.last_string.twin)
+					file_lines[i].prune_all('%R')
+					i := i + 1
+				end
 				in_file.close
+				clean_utf(file_lines[1])
 			else
 				last_op_failed := True
 				last_op_fail_reason := "Read failed; file " + current_full_path + " does not exist"
 			end
 		ensure
-			file_first_line_empty_on_failure: last_op_failed implies file_first_line.is_empty
+			file_content_empty_on_failure: last_op_failed implies file_content.is_empty
 		end
 
 	read_file
@@ -152,30 +160,9 @@ feature -- Commands
 				in_file.read_stream (in_file.count)
 				file_content := in_file.last_string
 				in_file.close
+
 				file_content.prune_all ('%R')
-
---				from
---					in_file.start
---				until
---					in_file.off
---				loop
---					in_file.read_line
---					file_content.append(in_file.last_string)
---					if file_content.item (file_content.count) = '%R' then
---						file_content.put ('%N', file_content.count)
---					else
---						file_content.append_character('%N')
---					end
---				end
---				in_file.close
-
-				if file_content.count >= 3 then
-					if utf8.is_endian_detection_character (file_content.item (1), file_content.item (2), file_content.item (3)) then
-						file_content.remove_head (3)
-						has_byte_order_marker := True
-					end
-				end
-
+				clean_utf(file_content)
 				if not utf8.valid_utf8 (file_content) then
 					if has_byte_order_marker then
 						create file_content.make_empty
@@ -192,6 +179,7 @@ feature -- Commands
 		ensure
 			file_content_empty_on_failure: last_op_failed implies file_content.is_empty
 		end
+
 
 	save_file (a_file_name, content: STRING)
 			-- Write `content' out to file `a_file_name' in `current_directory'.
@@ -254,6 +242,19 @@ feature -- Commands
 			a_dir_valid: a_dir /= Void and then not a_dir.is_empty
 		do
 			current_directory := a_dir
+		end
+
+feature {NONE} -- Implementation
+
+	clean_utf(s: STRING) is
+			-- remove UTF BOM
+		do
+			if s.count >= 3 then
+				if utf8.is_endian_detection_character (s.item (1), s.item (2), s.item (3)) then
+					s.remove_head (3)
+					has_byte_order_marker := True
+				end
+			end
 		end
 
 invariant

@@ -38,14 +38,6 @@ feature -- Access
 	text_timestamp: INTEGER
 			-- Modification time of last opened archetype file as an integer, for comparison purposes.
 
-	first_line (full_path: STRING): STRING
-			-- return the first line of the file at `full_path'.
-		do
-			file_context.set_target (full_path)
-			file_context.read_first_line
-			Result := file_context.file_first_line
-		end
-
 feature -- Status Report
 
 	is_valid_directory_part (path: STRING): BOOLEAN
@@ -95,38 +87,78 @@ feature {NONE} -- Implementation
 			create Result.make
 		end
 
-	archteype_id_from_path (full_path: STRING): STRING
-			-- Create the id of the archetype designated by `full_path' to this repository
-			-- or else Void if not possible
-		require
-			full_path_valid: is_valid_path (full_path)
+	mini_parse_archetype (full_path: STRING)
+			-- perform quick parse of lines down to 'concept' line or EOF, and obtain archetype_id,
+			-- specialisation status and if specialised, specialisation parent
 		local
-			base_name: STRING
-			id: attached ARCHETYPE_ID
+			stop: BOOLEAN
+			lines: LIST [STRING]
+			artefact_types: ARTEFACT_TYPE
+			id_bad: BOOLEAN
 		do
-			base_name := file_system.basename (full_path)
-			base_name.remove_tail (file_system.extension (base_name).count)
-			create id
-			if id.valid_id (base_name) then
-				Result := base_name
+			last_miniparse_valid := False
+			last_archetype_specialised := False
+			create artefact_types.default_create
+
+			file_context.set_target (full_path)
+			file_context.read_n_lines(5)
+			lines := file_context.file_lines
+
+			-- first line
+			if lines[1].has ('(') then
+				lines[1].remove_substring (lines[1].index_of ('(', 1), lines[1].count)
+			end
+			lines[1].right_adjust
+			if artefact_types.valid_artefact_type_name (lines[1]) then
+				-- get line 2
+				lines[2].left_adjust
+				lines[2].right_adjust
+				if not lines[2].is_empty then
+					if (create {ARCHETYPE_ID}).valid_id(lines[2]) then
+						last_archetype_id_old_style := False
+					elseif (create {ARCHETYPE_ID}).old_valid_id(lines[2]) then
+						last_archetype_id_old_style := True
+					else
+						-- something wrong with the id
+						id_bad := True
+					end
+				else
+					id_bad := True
+				end
+
+				if not id_bad then
+					last_archetype_id := lines[2]
+
+					-- get line 3 - should be either 'specialise' / 'specialize' or 'concept'
+					lines[3].right_adjust
+					if lines[3].is_equal ("specialise") or lines[3].is_equal("specialize") then
+						lines[4].left_adjust
+						lines[4].right_adjust
+						last_parent_archetype_id := lines[4]
+						last_archetype_specialised := True
+					end
+					last_miniparse_valid := True
+				end
 			end
 		end
 
-	old_archteype_id_from_path (full_path: STRING): STRING
-			-- FIXME: to support old-style archetype ids with 'draft' in the name; remove when appropriate		
-		require
-			full_path_valid: is_valid_path (full_path)
-		local
-			base_name: STRING
-			id: attached ARCHETYPE_ID
-		do
-			base_name := file_system.basename (full_path)
-			base_name.remove_tail (file_system.extension (base_name).count)
-			create id
-			if id.old_valid_id (base_name) then
-				Result := base_name
-			end
-		end
+	last_miniparse_valid: BOOLEAN
+			-- True if last miniparse was ok
+
+	last_archetype_id: STRING
+			-- archetype id read by last invocation of mini_parse_archetype
+
+	last_archetype_id_old_style: BOOLEAN
+			-- true if last archetype id
+
+	last_parent_archetype_id: STRING
+			-- parent archetype id read by last invocation of mini_parse_archetype if
+			-- `last_archetype_specialised' is True
+
+	last_archetype_specialised: BOOLEAN
+			-- true if archetype id read by last invocation of mini_parse_archetype
+
+	last_miniparse_fail_reason: STRING
 
 end
 

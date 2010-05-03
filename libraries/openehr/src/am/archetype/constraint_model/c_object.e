@@ -115,7 +115,7 @@ feature -- Comparison
 			-- according to the underlying reference model
 			-- `other' is assumed to be in a flat archetype
 		do
-			Result := rm_type_name.is_equal (other.rm_type_name) or rm_checker.is_sub_type_of(rm_type_name, other.rm_type_name)
+			Result := rm_type_name.is_equal (other.rm_type_name) or rm_schema.is_descendant_of (rm_type_name, other.rm_type_name)
 		end
 
 	occurrences_conforms_to (other: like Current): BOOLEAN

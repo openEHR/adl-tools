@@ -122,7 +122,7 @@ feature -- Validation
 			end
 
 			-- reference model validation; validates as well as sets up link between each node and its RM descriptor
-			if passed and rm_checker.model_loaded then
+			if passed and rm_schema.model_loaded then
 				validate_reference_model
 			end
 
@@ -359,6 +359,7 @@ feature {NONE} -- Implementation
 			assn_list: ARRAYED_LIST[ASSERTION]
 			a_regex: STRING
 			id_list: ARRAYED_LIST[STRING]
+			ara: ARCH_REP_ARCHETYPE
 		do
 			from target.slot_index.start until target.slot_index.off loop
 				-- process the includes
@@ -395,9 +396,9 @@ feature {NONE} -- Implementation
 				-- now post the results in the reverse indexes
 				id_list := target_descriptor.slot_id_index.item (target.slot_index.item.path)
 				from id_list.start until id_list.off loop
-					if not archetype_directory.archetype_id_index.item (id_list.item).is_used or else not
-						archetype_directory.archetype_id_index.item (id_list.item).used_by_index.has (target.archetype_id.as_string) then
-						archetype_directory.archetype_id_index.item (id_list.item).add_used_by_item (target.archetype_id.as_string)
+					ara := archetype_directory.archetype_index.item (id_list.item)
+					if not ara.is_used or else not ara.used_by_index.has (target.archetype_id.as_string) then
+						ara.add_used_by_item (target.archetype_id.as_string)
 					end
 					id_list.forth
 				end
@@ -565,7 +566,7 @@ feature {NONE} -- Implementation
 	validate_reference_model
 			-- validate definition of archetype against reference model
 		require
-			rm_checker.model_loaded
+			rm_schema.model_loaded
 		local
 			def_it: C_ITERATOR
 		do
@@ -594,12 +595,12 @@ feature {NONE} -- Implementation
 					end
 
 					if not invalid_types.has (arch_parent_attr_type) then
-						if rm_checker.has_property (arch_parent_attr_type, co.parent.rm_attribute_name) and not
-											rm_checker.valid_property_type (arch_parent_attr_type, co.parent.rm_attribute_name, co.rm_type_name) then
-							model_attr_class := rm_checker.property_type (arch_parent_attr_type, co.parent.rm_attribute_name)
+						if rm_schema.has_property (arch_parent_attr_type, co.parent.rm_attribute_name) and not
+											rm_schema.valid_property_type (arch_parent_attr_type, co.parent.rm_attribute_name, co.rm_type_name) then
+							model_attr_class := rm_schema.property_type (arch_parent_attr_type, co.parent.rm_attribute_name)
 
 							-- flag if constraint is equal to reference model; FUTURE: remove if equal
-							if rm_checker.substitutions.has (co.rm_type_name) and then rm_checker.substitutions.item (co.rm_type_name).is_equal (model_attr_class) then
+							if rm_schema.substitutions.has (co.rm_type_name) and then rm_schema.substitutions.item (co.rm_type_name).is_equal (model_attr_class) then
 								add_info("ICORMTS", <<co.rm_type_name, co.path, model_attr_class,
 									arch_parent_attr_type, co.parent.rm_attribute_name>>)
 							else
@@ -617,10 +618,10 @@ feature {NONE} -- Implementation
 				else
 					arch_parent_attr_type := ca.parent.rm_type_name -- can be a generic type like DV_INTERVAL <DV_QUANTITY>
 				end
-				if not rm_checker.has_property(arch_parent_attr_type, ca.rm_attribute_name) then
+				if not rm_schema.has_property(arch_parent_attr_type, ca.rm_attribute_name) then
 					add_error("VCARM", <<ca.rm_attribute_name, ca.path, arch_parent_attr_type>>)
 				else
-					rm_prop_def := rm_checker.property_definition(arch_parent_attr_type, ca.rm_attribute_name)
+					rm_prop_def := rm_schema.property_definition(arch_parent_attr_type, ca.rm_attribute_name)
 					if ca.existence /= Void then
 						if rm_prop_def.existence.contains(ca.existence) then
 							if rm_prop_def.existence.equal_interval(ca.existence) then
@@ -678,7 +679,7 @@ feature {NONE} -- Implementation
 		do
 			Result := True
 			if attached {C_OBJECT} a_c_node as co then
-				if not rm_checker.has_class_definition(co.rm_type_name) then
+				if not rm_schema.has_class_definition(co.rm_type_name) then
 					if not invalid_types.has(co.rm_type_name) then
 						add_error("VCORM", <<co.rm_type_name, co.path>>)
 						invalid_types.extend (co.rm_type_name)

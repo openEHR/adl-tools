@@ -152,6 +152,9 @@ feature -- Access
 		once
 			create Result.make (0)
 
+			Result.force (["class_concrete.ico", "concrete class from RM"], "class_concrete")
+			Result.force (["class_abstract.ico", "abstract class from RM"], "class_abstract")
+
 			Result.force (["archetype_1.ico", "Ad hoc archetype (not parsed yet)"], "archetype_1")
 			Result.force (["archetype_parsed_1.ico", "Ad hoc archetype (parsed but not compiled)"], "archetype_parsed_1")
 			Result.force (["archetype_parse_failed_1.ico", "Ad hoc archetype (parse failed)"], "archetype_parse_failed_1")
@@ -336,7 +339,7 @@ feature -- Access
 			create Result.make_empty
 			Result.append ("ADL Workbench%N")
 			Result.append ("%TVersion " + version.out + "%N")
-			Result.append ("%T(c) 2003-2009 Ocean Informatics%N")
+			Result.append ("%T(c) 2003-2010 Ocean Informatics%N")
 			Result.append ("%TADL version: " + Latest_adl_version + "%N")
 			Result.append ("%TSource SVN - http://www.openehr.org/svn/ref_impl_eiffel%N%T" + version.last_changed + "%N")
 			Result.append ("%TSource license: Mozilla tri-license (http://www.mozilla.org/MPL/boilerplate-1.1/mpl-tri-license-txt)%N")

@@ -42,15 +42,16 @@ feature -- Access
 
 feature {ARCH_DIRECTORY} -- Access
 
-	directory: TWO_WAY_TREE [ARCH_REP_ITEM]
-			-- Tree-structured directory of folders and archetypes.
+	archetypes_index: ARRAYED_LIST [ARCH_REP_ARCHETYPE]
+			-- linear index list for efficient processing
 
 feature -- Commands
 
 	clear
-			-- Reinitialise `directory' to empty.
+			-- Reinitialise `archetypes' and `archetype_index' to empty.
 		do
-			directory := new_folder_node (root_path)
+			create archetypes.make (0)
+			create archetypes_index.make(0)
 		end
 
 	repopulate
@@ -63,37 +64,26 @@ feature -- Commands
 	populate
 			-- Make based on `root_path'.
 		do
-			build_directory (directory)
+			get_archetypes_in_folder (root_path)
+			from archetypes.start until archetypes.off loop
+				archetypes_index.extend(archetypes.item_for_iteration)
+				archetypes.forth
+			end
 		end
 
 feature {NONE} -- Implementation
 
-	build_directory (tree: like directory)
+	get_archetypes_in_folder (a_path: STRING)
 			-- Build a literal representation of the archetype and folder structure
 			-- in the repository path, as a tree; each node carries some meta-data.
 		require
-			tree_attached: tree /= Void
+			Path_valid: a_path /= Void and then not a_path.is_empty
    		deferred
-		end
-
-	new_folder_node (path: STRING): attached like directory
-			-- A newly-created folder for `path', ready to be added to `directory'.
-		require
-			path_valid: path /= Void and then path.substring_index (root_path, 1) = 1
-   		do
-			create Result.make (create {ARCH_REP_FOLDER}.make (root_path, path, Current))
-		ensure
-			root_path_set: Result.item.root_path = root_path
-			full_path_set: Result.item.full_path = path
-			repository_set: Result.item.file_repository = Current
 		end
 
 invariant
 	repository_path_valid: is_valid_directory (root_path)
-	directory_attached: directory /= Void
-	directory_root_path: directory.item.root_path = root_path
-	directory_full_path: directory.item.full_path = root_path
-	directory_repository: directory.item.file_repository = Current
+	archetypes_attached: archetypes /= Void
 
 end
 

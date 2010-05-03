@@ -37,8 +37,6 @@ feature -- Definitions
 	section_separator: CHARACTER = '-'
 			-- separator between sections in an axis
 
-feature -- Definitions
-
 	Default_id: STRING
 		deferred
 		end
@@ -86,7 +84,7 @@ feature -- Access
 
 	qualified_rm_entity: attached STRING
 			-- identification of Reference Model entity being archetyped
-			-- e.g. openEHR-EHR-entry, HL7-CDA-SECTION
+			-- e.g. openEHR-EHR-OBSERVATION, HL7-CDA-SECTION
 		local
 			p: INTEGER
 		do
@@ -107,6 +105,35 @@ feature -- Access
 			p := s.index_of(section_separator, 1) + 1
 			q := s.index_of(section_separator, p) - 1
 			Result := s.substring(1, q)
+		ensure
+			not_empty: not Result.is_empty
+		end
+
+	package_name: attached STRING
+			-- identification of Reference Model (package) name
+			-- e.g. EHR, DEMOGRAPHIC
+		local
+			s: STRING
+			p, q: INTEGER
+		do
+			s := qualified_rm_entity
+			p := s.index_of(section_separator, 1) + 1
+			q := s.index_of(section_separator, p) - 1
+			Result := s.substring(p, q)
+		ensure
+			not_empty: not Result.is_empty
+		end
+
+	package_class_name: attached STRING
+			-- identification of Reference Model (package) + class name
+			-- e.g. EHR-OBSERVATION, DEMOGRAPHIC-PARTY
+		local
+			s: STRING
+			p: INTEGER
+		do
+			s := qualified_rm_entity
+			p := s.index_of(section_separator, 1) + 1
+			Result := s.substring(p, s.count)
 		ensure
 			not_empty: not Result.is_empty
 		end

@@ -14,9 +14,19 @@
 -- 	last_change: $LastChangedDate$
 -- 
 
-schema_name = <"openehr_rm">
+schema_name = <"openehr">
 schema_release = <"1.0.2">
-model_names = <"openEHR-EHR", "openEHR-DEMOGRAPHIC">
+packages = <
+	["ehr"] = <
+		name = <"ehr">
+		classes = <"COMPOSITION", ...> 
+	>
+	["demographic"] = <
+		name = <"demographic">
+		classes = <"PARTY", "PARTY_RELATIONSHIP">
+	>
+>
+
 
 ------------------------------------------------------
 -- primitive types
@@ -1854,7 +1864,6 @@ class_definitions = <
 			>
 		>
 	>
-
 >
 
 --|

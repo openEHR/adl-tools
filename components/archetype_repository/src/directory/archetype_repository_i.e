@@ -41,15 +41,10 @@ feature -- Access
 	group_id: INTEGER
 			-- Id of the group to which this repository belongs.
 
-	first_line (full_path: STRING): STRING
-			-- return the first line of the file at `full_path' (up to LF or end of file)
-			-- or Void if the file is empty
-		require
-			path_valid: is_valid_path (full_path)
-		deferred
-		ensure
-			Result_exists: Result /= Void
-		end
+feature {ARCH_DIRECTORY} -- Access
+
+	archetypes: DS_HASH_TABLE [ARCH_REP_ARCHETYPE, STRING]
+			-- list of all archetypes found in this directory tree
 
 feature -- Status Report
 
@@ -101,6 +96,7 @@ feature -- Commands
 		end
 
 invariant
+	archetypes_attached: archetypes /= Void
 	timestamp_natural: text_timestamp >= 0
 	group_id_valid: group_id > 0
 

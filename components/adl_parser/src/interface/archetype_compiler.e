@@ -97,13 +97,13 @@ feature -- Commands
 	build_subtree
 			-- Build the sub-system at and below `archetype_directory.selected_node', but not artefacts that seem to be built already.
 		do
-			do_subtree (archetype_directory.selected_node, agent build_archetype (False, ?), "building sub-system")
+			do_subtree (archetype_directory.selected_node, agent build_archetype (False, ?), "building sub-tree")
 		end
 
 	rebuild_subtree
 			-- Rebuild the sub-system at and below `archetype_directory.selected_node' from scratch, regardless of previous attempts.
 		do
-			do_subtree (archetype_directory.selected_node, agent build_archetype (True, ?), "rebuilding sub-system from scratch")
+			do_subtree (archetype_directory.selected_node, agent build_archetype (True, ?), "rebuilding sub-tree from scratch")
 		end
 
 	build_lineage (ara: ARCH_REP_ARCHETYPE)

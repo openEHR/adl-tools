@@ -471,7 +471,6 @@ feature {NONE} -- Implementation
 		local
 			gli: EV_GRID_LABEL_ITEM
 			row: EV_GRID_ROW
-			ada: ARCH_REP_ARCHETYPE
 			col_csr: INTEGER
 		do
 			row := grid_row_stack.item
@@ -480,13 +479,12 @@ feature {NONE} -- Implementation
 			row := row.subrow (row.subrow_count)
 			row.set_data (an_item)
 			add_checkbox (row)
-			create gli.make_with_text (utf8 (an_item.base_name))
-			gli.set_tooltip (utf8 (an_item.full_path))
+			create gli.make_with_text (utf8 (an_item.ontological_name))
 			row.set_item (1, gli)
 			set_row_pixmap (row)
-			ada ?= an_item
 
-			if ada /= Void then
+			if attached {ARCH_REP_ARCHETYPE} an_item as ara then
+				gli.set_tooltip (utf8 (ara.full_path))
 				from
 					tests.start
 					col_csr := first_test_col

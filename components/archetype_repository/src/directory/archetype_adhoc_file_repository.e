@@ -33,7 +33,7 @@ feature {NONE} -- Initialisation
 		do
 			group_id := a_group_id
 			work_path := system_temp_file_directory.twin
-			create directory.make (0)
+			create archetypes.make (0)
 		ensure
 			group_id_set: group_id = a_group_id
 		end
@@ -44,12 +44,12 @@ feature -- Access
 			-- The current work path on the file system, normally used to tell GUI or other
 			-- file searching method where to start looking.
 
-	item alias "[]" (full_path: STRING): ARCH_REP_ARCHETYPE
+	item (full_path: STRING): ARCH_REP_ARCHETYPE
 			-- The archetype at `full_path'.
 		require
 			has_full_path: has (full_path)
 		do
-			Result := directory [full_path]
+			Result := archetypes.item (full_path)
 		end
 
 feature -- Status Report
@@ -57,7 +57,7 @@ feature -- Status Report
 	has (full_path: STRING): BOOLEAN
 			-- Has `full_path' been added to this repository?
 		do
-			Result := directory [full_path] /= Void
+			Result := archetypes.has (full_path)
 		end
 
 feature -- Modification
@@ -81,45 +81,36 @@ feature -- Modification
 			hasnt_path: not has (full_path)
 		local
 			ara: ARCH_REP_ARCHETYPE
-			arch_id_str: STRING
+			arch_id, parent_arch_id: ARCHETYPE_ID
 		do
-			arch_id_str := archteype_id_from_path(full_path)
-			if arch_id_str /= Void then
-				if not archetype_directory.archetype_id_index.has (arch_id_str) then
-					create ara.make (file_system.dirname (full_path), full_path, create {attached ARCHETYPE_ID}.make_from_string(arch_id_str), Current)
-					directory [full_path] := ara
+			mini_parse_archetype (full_path)
+			if last_miniparse_valid then
+				if not last_archetype_id_old_style then
+					create arch_id.make_from_string(last_archetype_id)
+					if not archetype_directory.archetype_index.has (last_archetype_id) then
+						if last_archetype_specialised then
+							create parent_arch_id.make_from_string(last_parent_archetype_id)
+							create ara.make_specialised (full_path, arch_id, parent_arch_id, Current)
+						else
+							create ara.make (full_path, arch_id, Current)
+						end
+						archetypes.force (ara, full_path)
+					else
+						post_info (Current, "build_directory", "pair_filename_i1", <<full_path>>)
+					end
 				else
-					post_info (Current, "build_directory", "pair_filename_i1", <<full_path>>)
+					post_warning (Current, "build_directory", "parse_archetype_e7", <<full_path>>)
 				end
 			else
-	-- FIXME: to support old-style archetype ids with 'draft' in the name; remove when appropriate
-	arch_id_str := old_archteype_id_from_path(full_path)
-	if arch_id_str /= Void then
-		if not archetype_directory.archetype_id_index.has (arch_id_str) then
-			create ara.make (file_system.dirname (full_path), full_path, create {attached ARCHETYPE_ID}.old_make_from_string(arch_id_str), Current)
-			directory [full_path] := ara
-			post_warning (Current, "build_directory", "invalid_filename_e1", <<full_path>>)
-		else
-			post_warning (Current, "build_directory", "pair_filename_i1", <<full_path>>)
-		end
-	else
-				post_error (Current, "build_directory", "invalid_filename_e1", <<full_path>>)
-	end
+				post_error (Current, "build_directory", "parse_archetype_e5", <<full_path>>)
 			end
 		ensure
-			added_1_or_none: (0 |..| 1).has (directory.count - old directory.count)
-			has_path: directory.count > old directory.count implies has (full_path)
+			added_1_or_none: (0 |..| 1).has (archetypes.count - old archetypes.count)
+			has_path: archetypes.count > old archetypes.count implies has (full_path)
 		end
-
-feature {NONE} -- Implementation
-
-	directory: HASH_TABLE [ARCH_REP_ARCHETYPE, STRING]
-			-- The directory of archetypes added to this ad hoc repository
-			-- as a list of descriptors keyed by full path.
 
 invariant
 	work_path_valid: is_valid_directory (work_path)
-	directory_attached: directory /= Void
 
 end
 

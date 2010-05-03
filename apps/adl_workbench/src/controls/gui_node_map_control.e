@@ -682,11 +682,11 @@ feature {NONE} -- Implementation
 			if attached {EV_TREE_ITEM} a_tree_node as a_ti then
 				a_node := a_ti.data
 				if a_node /= Void and attached {C_COMPLEX_OBJECT} a_node as c_c_o then
-					if rm_checker.has_class_definition (c_c_o.rm_type_name) then
+					if rm_schema.has_class_definition (c_c_o.rm_type_name) then
 						if in_differential_mode then
-							props := rm_checker.properties_of(c_c_o.rm_type_name)
+							props := rm_schema.properties_of(c_c_o.rm_type_name)
 						else
-							props := rm_checker.flat_properties_of(c_c_o.rm_type_name)
+							props := rm_schema.flat_properties_of(c_c_o.rm_type_name)
 						end
 						from props.start until props.off loop
 							if not c_c_o.has_attribute(props.key_for_iteration) then

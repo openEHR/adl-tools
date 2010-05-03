@@ -26,39 +26,43 @@ feature -- Definitions
 
 feature -- Access
 
-	has_rm_checker (a_rm_name: STRING): BOOLEAN
-			-- True if there is a model for given RM name; side-effect: sets rm_checker to point to this item
-		require
-			rm_name_attached: a_rm_name /= Void
-		do
-			Result := rm_checkers.has_key(a_rm_name.as_lower)
-		end
-
-	rm_checker: SCHEMA_ACCESS
+	rm_schema: SCHEMA_ACCESS
 			-- currently chosen reference model
 		do
-			if rm_checkers.found then
-				Result := rm_checkers.found_item
-			else
-				rm_checkers.start
-				Result := rm_checkers.item_for_iteration
+			if rm_schemas.found then
+				Result := rm_schemas.found_item
 			end
+		end
+
+feature -- Status Report
+
+	has_rm_schema (a_schema_name: STRING): BOOLEAN
+			-- True if there is a schema for given pacakge name; side-effect: sets rm_checker to point to this item
+		require
+			schema_name_attached: a_schema_name /= Void
+		do
+			Result := rm_schemas.has_key(a_schema_name.as_lower)
+		end
+
+	found_rm_schemas: BOOLEAN
+			-- True if any Reference Model schemas were found
+		do
+			Result := not rm_schemas.is_empty
 		end
 
 feature {NONE} -- Implementation
 
-	rm_checkers: HASH_TABLE [SCHEMA_ACCESS, STRING]
+	rm_schemas: HASH_TABLE [SCHEMA_ACCESS, STRING]
 		local
-			dir, rm_dir: DIRECTORY
-			a_rm_name: STRING
+			dir: DIRECTORY
 			ma: SCHEMA_ACCESS
 		once
 			create Result.make(0)
 			create dir.make_open_read (default_rm_schema_directory)
 			if not (dir.exists and dir.is_readable) then
-				post_error (Current, "rm_checkers", "model_access_e5", <<default_rm_schema_directory>>)
+				post_error (Current, "rm_schemas", "model_access_e5", <<default_rm_schema_directory>>)
 			elseif dir.is_empty then
-				post_error (Current, "rm_checkers", "model_access_e6", <<default_rm_schema_directory>>)
+				post_error (Current, "rm_schemas", "model_access_e6", <<default_rm_schema_directory>>)
 			else
 				from
 					dir.start
@@ -69,19 +73,19 @@ feature {NONE} -- Implementation
 					if dir.lastentry.ends_with (schema_file_extension) then
 						create ma.make(default_rm_schema_directory + os_directory_separator.out + dir.lastentry)
 						if ma.model_loaded then
-							from ma.schema.model_names.start until  ma.schema.model_names.off loop
-								Result.put (ma, ma.schema.model_names.item.as_lower)
-								ma.schema.model_names.forth
+							from ma.schema.packages.start until  ma.schema.packages.off loop
+								Result.put (ma, ma.schema.schema_name.as_lower)
+								ma.schema.packages.forth
 							end
 						else
-							post_error (Current, "rm_checkers", "general", <<ma.status>>)
+							post_error (Current, "rm_schemas", "general", <<ma.status>>)
 						end
 					end
 					dir.readentry
 				end
 			end
-			if rm_checkers.is_empty then
-				post_error (Current, "rm_checkers", "model_access_e6", <<default_rm_schema_directory>>)
+			if rm_schemas.is_empty then
+				post_error (Current, "rm_schemas", "model_access_e6", <<default_rm_schema_directory>>)
 			end
 		end
 

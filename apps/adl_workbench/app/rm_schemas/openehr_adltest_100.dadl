@@ -16,7 +16,12 @@
 
 schema_name = <"openEHR_adltest">
 schema_release = <"1.0.0">
-model_names = <"openEHR-adltest">
+packages = <
+	["adltest"] = <
+		name = <"adltest">
+		classes = <"WHOLE", ...> 
+	>
+>
 
 ------------------------------------------------------
 -- primitive types

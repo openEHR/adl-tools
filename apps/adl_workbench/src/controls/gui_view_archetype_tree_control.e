@@ -47,8 +47,8 @@ feature {NONE} -- Initialisation
 			a_main_window /= Void
 		do
 			gui := a_main_window
-   			gui_file_tree := gui.archetype_file_tree
-   			gui_file_tree.set_minimum_width (gui.max_arch_explorer_width)
+   			gui_tree := gui.archetype_file_tree
+   			gui_tree.set_minimum_width (gui.max_arch_explorer_width)
 		end
 
 feature -- Commands
@@ -56,9 +56,10 @@ feature -- Commands
 	populate
 			-- Populate `gui_file_tree' from `archetype_directory'.
 		do
-			gui_file_tree.wipe_out
+			gui_tree.wipe_out
  			create gui_tree_item_stack.make (0)
  			archetype_directory.do_subtree (archetype_directory.directory, agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
+			gui_tree.recursive_do_all (agent ev_tree_expand)
 			gui.select_node_in_archetype_tree_view
 		end
 
@@ -72,7 +73,7 @@ feature -- Commands
 					do
 						delay_to_make_keyboard_navigation_practical.set_interval (0)
 
-						if attached {EV_TREE_NODE} gui_file_tree.selected_item as node and then attached {ARCH_REP_ITEM} node.data as a then
+						if attached {EV_TREE_NODE} gui_tree.selected_item as node and then attached {ARCH_REP_ITEM} node.data as a then
 							archetype_directory.set_selected_item (a)
 							gui.parse_archetype
 						end
@@ -90,11 +91,11 @@ feature -- Commands
 			text, tooltip: STRING_32
 			pixmap: EV_PIXMAP
 		do
-			if attached {ARCH_REP_ITEM} node.data as item then
-				text := utf8 (item.base_name)
-				tooltip := utf8 (item.full_path)
+			if attached {ARCH_REP_ITEM} node.data as ari then
+				text := utf8 (ari.display_name)
 
-				if attached {ARCH_REP_ARCHETYPE} item as ara then
+				if attached {ARCH_REP_ARCHETYPE} ari as ara then
+					tooltip := utf8 (ara.full_path)
 					if ara.legacy_is_primary and display_archetype_source then
 						text.prepend (utf8("(f) "))
 					end
@@ -106,11 +107,11 @@ feature -- Commands
 					if ara.has_compiler_status then
 						tooltip.append (utf8 ("%N%N" + ara.compiler_status))
 					end
+	 				node.set_tooltip (tooltip)
 				end
 
 				node.set_text (text)
-	 			node.set_tooltip (tooltip)
-				pixmap := pixmaps [item.group_name]
+				pixmap := pixmaps [ari.group_name]
 
 				if pixmap /= Void then
 					node.set_pixmap (pixmap)
@@ -123,7 +124,7 @@ feature {NONE} -- Implementation
 	gui: MAIN_WINDOW
 			-- Main window of system.
 
-	gui_file_tree: EV_TREE
+	gui_tree: EV_TREE
 			-- reference to MAIN_WINDOW.archetype_file_tree
 
 	gui_tree_item_stack: ARRAYED_STACK [EV_TREE_ITEM]
@@ -144,7 +145,7 @@ feature {NONE} -- Implementation
  			update_tree_node (node)
 
 			if gui_tree_item_stack.is_empty then
-				gui_file_tree.extend (node)
+				gui_tree.extend (node)
 			else
 				gui_tree_item_stack.item.extend (node)
 			end
@@ -157,9 +158,19 @@ feature {NONE} -- Implementation
 			gui_tree_item_stack.remove
 		end
 
+	ev_tree_expand(node: EV_TREE_NODE)
+			--
+		do
+	 		if attached {ARCH_REP_FOLDER} node.data as arf then
+	 			if (arf.is_abstract or arf.is_package) and node.is_expandable then
+					node.expand
+	 			end
+	 		end
+		end
+
 invariant
 	gui_attached: gui /= Void
-	tree_attached: gui_file_tree /= Void
+	tree_attached: gui_tree /= Void
 
 end
 

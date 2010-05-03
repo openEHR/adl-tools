@@ -73,14 +73,14 @@ feature -- Access
 			Result := schema.class_definition (a_type_name)
 		end
 
-	ancestor_classes_of (a_class_name: STRING): ARRAYED_LIST [STRING]
+	all_ancestor_classes_of (a_class_name: STRING): ARRAYED_LIST [STRING]
 			-- return all ancestor types of `a_class_name' up to root class (usually 'ANY', 'Object' or something similar)
 			-- does  not include current class. Returns empty list if none.
 		require
 			Model_loaded: model_loaded
 			Type_valid: a_class_name /= Void and then has_class_definition (a_class_name)
 		do
-			Result := schema.ancestor_classes_of(a_class_name)
+			Result := schema.all_ancestor_classes_of(a_class_name)
 		ensure
 			Result_exists: Result /= Void
 		end
@@ -165,14 +165,14 @@ feature -- Status Report
 	status: STRING
 			-- status of model loading operation; if successful, includes model details
 
-	is_sub_type_of (a_sub_type, a_parent_type: STRING): BOOLEAN
+	is_descendant_of (a_sub_type, a_parent_type: STRING): BOOLEAN
 			-- True if `a_subclass' is a sub-class in the model of `a_parent_type'
 		require
 			Model_loaded: model_loaded
 			Sub_type_valid: a_sub_type /= Void and then not a_sub_type.is_empty
 			Parent_type_valid: a_parent_type /= Void and then not a_parent_type.is_empty
 		do
-			Result := schema.has_class_definition (a_parent_type) and then schema.is_sub_class_of (a_sub_type, a_parent_type)
+			Result := schema.has_class_definition (a_parent_type) and then schema.is_descendant_of (a_sub_type, a_parent_type)
 		end
 
 	has_property (a_type_name, a_property: STRING): BOOLEAN

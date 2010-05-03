@@ -3,15 +3,13 @@ note
 	description: "[
 				 Archteype directory - a data structure containing archetypes found in one or more
 				 physical repositories, each of which is on some medium, such as the file system or
-				 a web-accessible repository. The structure of the directory is ontological, meaning
-				 that it expresses the classification structure of items in it. Each item has an 
-				 ontological path therefore, such as /openehr/ehr/entry/observation/lab_result. The 
-				 concept part of the archetype id becomes part of the path. Specialised archetypes are 
-				 thus subordinates of their parent archetypes, if the latter are known, else they are 
-				 on the level of the parent; e.g. the archetype openEHR-EHR-OBSERVATION.lab_result-lipids.v1
-				 will have a path such as /openehr/ehr/entry/observation/lab_result/lipids. Note that start
-				 of the path may vary due to the user having chosen a different root point for the
-				 source repositories that are merged into the directory.
+				 a web-accessible repository. 
+				 
+				 The structure of the directory is a list of top-level packages, each containing
+				 an inheritance tree of first degree descendants of the LOCATABLE class.
+				 The contents of the structure consist of archetypes found in the reference and
+				 working repositories, and are subsequently attached into the structure.
+				 Archetypes opened adhoc are also grafted here.
 				 
 				 The directory is populated at startup, using the source repository paths stored in a
 				 configuration file or elsewhere.
@@ -28,7 +26,7 @@ note
 	keywords:    "ADL"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2006-2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL: http://www.openehr.org/svn/ref_impl_eiffel/TRUNK/components/archetype_repository/src/directory/arch_directory.e $"
@@ -40,6 +38,11 @@ class ARCH_DIRECTORY
 
 inherit
 	SHARED_RESOURCES
+		export
+			{NONE} all
+		end
+
+	SHARED_REFERENCE_MODEL_ACCESS
 		export
 			{NONE} all
 		end
@@ -56,6 +59,11 @@ inherit
 
 create
 	make
+
+feature -- Definitions
+
+	Max_passes: INTEGER = 6
+			-- maxium number of passes for processing archetypes from source repositories to directory
 
 feature -- Initialisation
 
@@ -81,19 +89,15 @@ feature -- Access
 			-- but 'grafted' - a simpler operation.
 
 	directory: TWO_WAY_TREE [ARCH_REP_ITEM]
-			-- The logical directory of archetypes, in an ontology-based structure.
-			-- Result of merging all source repositories in ontology structure (where specialised
-			-- archetypes now appear as child nodes, rather than sibling nodes, as they do
-			-- in the file system), as well as grafting on adhoc archetypes.
+			-- The logical directory of archetypes, whose structure is derived directly from the
+			-- reference model. The structure is a list of top-level packages, each containing
+			-- an inheritance tree of first degree descendants of the LOCATABLE class.
+			-- The contents of the structure consist of archetypes found in the reference and
+			-- working repositories, and are subsequently attached into the structure.
+			-- Archetypes opened adhoc are also grafted here.
 
-	ontology_index: attached DS_HASH_TABLE [like directory, STRING]
-			-- Index of archetypes, keyed by ontology path.
-			-- Relative ontology path of item with respect to root; for folder nodes,
-			-- this will look like the relative directory path; for archetype nodes, this will be
-			-- the concatenation of the directory path and archetype specialisation parent path.
-
-	archetype_id_index: attached DS_HASH_TABLE [ARCH_REP_ARCHETYPE, STRING]
-			-- Index of archetype nodes keyed by archetype id.
+	archetype_index: attached HASH_TABLE [ARCH_REP_ARCHETYPE, STRING]
+			-- index of archetype descriptors. Used in rest of application
 
 	selected_item: ARCH_REP_ITEM
 			-- The folder or archetype at `selected_node'.
@@ -121,32 +125,31 @@ feature -- Access
 			consistent_with_history: Result /= Void implies Result.item = selected_item
 		end
 
-	archetype_descriptor_at_path (full_path: STRING): ARCH_REP_ARCHETYPE
-			-- The archetype descriptor in the directory that is designated by `full_path'; else Void.
-		require
-			path_valid: adhoc_source_repository.is_valid_path (full_path)
-		do
-			from
-				archetype_id_index.start
-			until
-				archetype_id_index.off or Result /= Void
-			loop
-				Result := archetype_id_index.item_for_iteration
-
-				if not Result.is_at_path (full_path) then
-					Result := Void
-					archetype_id_index.forth
-				end
-			end
-		ensure
-			has_path_if_attached: Result /= Void implies Result.is_at_path (full_path)
-		end
+--	archetype_descriptor_at_path (full_path: STRING): ARCH_REP_ARCHETYPE
+--			-- The archetype descriptor in the directory that is designated by `full_path'; else Void.
+--		require
+--			path_valid: adhoc_source_repository.is_valid_path (full_path)
+--		do
+--			from
+--				directory_index.start
+--			until
+--				directory_index.off or Result /= Void
+--			loop
+--				Result ?= directory_index.item_for_iteration
+--				if Result /= Void and then not Result.is_at_path (full_path) then
+--					Result := Void
+--				end
+--				directory_index.forth
+--			end
+--		ensure
+--			has_path_if_attached: Result /= Void implies Result.is_at_path (full_path)
+--		end
 
 	node_from_item (item: ARCH_REP_ITEM): like directory
 			-- The node in `directory', if any, containing the archetype or folder `item'.
 		do
-			if item /= Void and then ontology_index.has (item.ontological_path) then
-				Result := ontology_index.item (item.ontological_path)
+			if item /= Void and then directory_index.has (item.ontological_name) then
+				Result := directory_index.item (item.ontological_name)
 			end
 		end
 
@@ -159,7 +162,6 @@ feature -- Access
 		local
 			regex_matcher: LX_DFA_REGULAR_EXPRESSION
 			arch_rm_type, slot_rm_type: STRING
-			an_arch_id: ARCHETYPE_ID
 		do
 			create Result.make (0)
 			if an_rm_type /= Void then
@@ -168,32 +170,25 @@ feature -- Access
 			create regex_matcher.compile_case_insensitive (a_regex)
 			if regex_matcher.is_compiled then
 				from
-					archetype_id_index.start
+					archetype_index.start
 				until
-					archetype_id_index.off
+					archetype_index.off
 				loop
-					if regex_matcher.matches (archetype_id_index.key_for_iteration) then
+					if regex_matcher.matches (archetype_index.key_for_iteration) then
 						if slot_rm_type /= Void then
-	-- FIXME: remove when support for old-style archetype ids no longer needed
-	create an_arch_id
-	if an_arch_id.valid_id (archetype_id_index.key_for_iteration) then
-							arch_rm_type := (create {ARCHETYPE_ID}.make_from_string (archetype_id_index.key_for_iteration)).rm_entity
-	else
-							arch_rm_type := (create {ARCHETYPE_ID}.old_make_from_string (archetype_id_index.key_for_iteration)).rm_entity
-	end
+							arch_rm_type := (create {ARCHETYPE_ID}.make_from_string (archetype_index.key_for_iteration)).rm_entity
 							arch_rm_type.to_lower
 							if slot_rm_type.is_equal (arch_rm_type) then
-								Result.extend(archetype_id_index.key_for_iteration)
+								Result.extend(archetype_index.key_for_iteration)
 							end
 						else
-							Result.extend(archetype_id_index.key_for_iteration)
+							Result.extend(archetype_index.key_for_iteration)
 						end
 					end
-					archetype_id_index.forth
+					archetype_index.forth
 				end
 			else
-				-- broken regex
-				Result.extend("ERROR: Invalid regular expression " + a_regex)
+				Result.extend(create_message("regex_e1", <<a_regex>>))
 			end
 		end
 
@@ -217,7 +212,6 @@ feature -- Access
 						Result.extend (ara)
 					end
 				end
-
 				selection_history.back
 			end
 
@@ -289,11 +283,7 @@ feature -- Comparison
 					s1.append_character (os_directory_separator)
 				end
 
-				from
-					source_repositories.start
-				until
-					source_repositories.off or not Result
-				loop
+				from source_repositories.start until source_repositories.off or not Result loop
 					s2 := source_repositories.item_for_iteration.root_path.twin
 
 					if s2.item (s2.count) /= os_directory_separator then
@@ -314,11 +304,8 @@ feature -- Commands
 			-- Clear `directory' and its index tables.
 		do
 			create selection_history.make
-			create ontology_index.make (0)
-			create archetype_id_index.make (0)
-			create directory.make (Void)
-			ontology_index.force (directory, ontological_path_separator.twin)
-
+			create directory_index.make (0)
+			create archetype_index.make(0)
 			reset_statistics
 		end
 
@@ -338,8 +325,16 @@ feature -- Commands
 
 	populate_directory
 			-- Rebuild `directory' from source repositories.
+		local
+			archs: ARRAYED_LIST [ARCH_REP_ARCHETYPE]
+			parent_key, child_key: STRING
+			tree_node: like directory
+			i: INTEGER
+			added_during_pass: INTEGER
+			status_list: ARRAY[INTEGER]
 		do
 			clear
+			create_directory_structure
 
 			from
 				source_repositories.start
@@ -347,7 +342,63 @@ feature -- Commands
 				source_repositories.off
 			loop
 				source_repositories.item_for_iteration.repopulate
-				do_subtree (source_repositories.item_for_iteration.directory, agent merge_enter, Void)
+				archs := source_repositories.item_for_iteration.archetypes_index
+
+				-- maintain a status list indicatig status of each attempted archetype; values:
+				-- -1 = succeeded
+				-- -2 = failed (duplicate)
+				-- 0 not yet tried
+				-- +ve number: number of passes attempted with no success
+				create status_list.make (1, archs.count)
+
+				from
+					i := 0
+				until
+					i > 0 and added_during_pass = 0
+				loop
+					added_during_pass := 0
+					from archs.start until archs.off loop
+						if status_list[archs.index] >= 0 then
+							parent_key := archs.item.ontological_parent_name
+							if directory_index.has (parent_key) then
+								child_key := archs.item.ontological_name
+								if not directory_index.has (child_key) then
+									create tree_node.make (archs.item)
+									tree_node.item.set_parent(directory_index.item (parent_key).item)
+									directory_index.item (parent_key).put_child_left (tree_node)
+									directory_index.put (tree_node, child_key)
+									archetype_index.put(archs.item, child_key)
+									if archs.item.is_specialised then
+										archs.item.set_specialisation_parent (archetype_index.item (parent_key))
+									end
+									update_statistics(archs.item)
+									added_during_pass := added_during_pass + 1
+									status_list[archs.index] := -1
+								else
+									post_error (Current, "populate_directory", "arch_dir_dup_archetype", <<archs.item.full_path>>)
+									status_list[archs.index] := -2
+								end
+							else
+								status_list[archs.index] := status_list[archs.index] + 1
+							end
+						end
+						archs.forth
+					end
+					i := i + 1
+				end
+
+				-- now report on all the archetypes which could not be atazched into the hierarchy
+				from archs.start until archs.off loop
+					if status_list[archs.index] > 0 then
+						if archs.item.is_specialised then
+							post_error (Current, "populate_directory", "arch_dir_orphan_archetype", <<archs.item.ontological_parent_name, archs.item.ontological_name>>)
+						else
+							post_error (Current, "populate_directory", "arch_dir_orphan_archetype_e2", <<archs.item.ontological_parent_name, archs.item.ontological_name>>)
+						end
+					end
+					archs.forth
+				end
+
 				source_repositories.forth
 			end
 		end
@@ -404,7 +455,6 @@ feature -- Modification
 				if selection_history.is_empty or else selection_history.last /= value then
 					selection_history.extend (value)
 				end
-
 				selection_history.finish
 			end
 		ensure
@@ -438,16 +488,39 @@ feature -- Modification
 			-- Add the archetype designated by `full_path' to the ad hoc repository, and graft it into `directory'.
 		require
 			path_valid: adhoc_source_repository.is_valid_path (full_path)
+		local
+			parent_key, child_key: STRING
+			tree_node: like directory
+			ara: ARCH_REP_ARCHETYPE
 		do
-			if archetype_descriptor_at_path (full_path) = Void then
-				adhoc_source_repository.add_item (full_path)
-
-				if adhoc_source_repository.has (full_path) then
-					graft_adhoc_item (adhoc_source_repository [full_path])
+			adhoc_source_repository.add_item (full_path)
+			ara := adhoc_source_repository.item(full_path)
+			if adhoc_source_repository.has (full_path) then
+				parent_key := ara.ontological_parent_name
+				if directory_index.has (parent_key) then
+					child_key := ara.id.as_string
+					if not directory_index.has(child_key) then
+						create tree_node.make (ara)
+						tree_node.item.set_parent(directory_index.item (parent_key).item)
+						directory_index.item (parent_key).put_child_right (tree_node)
+						directory_index.put (tree_node, child_key)
+						archetype_index.put(ara, child_key)
+						if ara.is_specialised then
+							ara.set_specialisation_parent (archetype_index.item (parent_key))
+						end
+						update_statistics(ara)
+					else
+						post_error (Current, "add_adhoc_item", "arch_dir_dup_archetype", <<full_path>>)
+					end
+				elseif ara.is_specialised then
+					post_error (Current, "add_adhoc_item", "arch_dir_orphan_archetype", <<parent_key, child_key>>)
 				else
-					post_error (Current, "add_adhoc_item", "invalid_filename_e1", <<full_path>>)
+					post_error (Current, "add_adhoc_item", "arch_dir_orphan_archetype2", <<parent_key, child_key>>)
 				end
+			else
+				post_error (Current, "add_adhoc_item", "invalid_filename_e1", <<full_path>>)
 			end
+			set_selected_item (adhoc_source_repository.item (full_path))
 		end
 
 feature -- Traversal
@@ -457,30 +530,26 @@ feature -- Traversal
 		require
 			enter_action_attached: enter_action /= Void
 		local
-			item: attached ARCH_REP_ITEM
+			ari: attached ARCH_REP_ITEM
 		do
 			if node /= Void then
 	 			debug("arch_dir")
 					shifter.extend ('%T')
 				end
 
-				item := node.item
+				ari := node.item
 
-				if item /= Void then
-					enter_action.call ([item])
+				if ari /= Void then
+					enter_action.call ([ari])
 				end
 
-				from
-					node.child_start
-				until
-					node.child_off
-				loop
+				from node.child_start until node.child_off loop
 					do_subtree (node.child, enter_action, exit_action)
 					node.child_forth
 				end
 
-				if item /= Void and exit_action /= Void then
-					exit_action.call ([item])
+				if ari /= Void and exit_action /= Void then
+					exit_action.call ([ari])
 				end
 
 				debug("arch_dir")
@@ -491,142 +560,111 @@ feature -- Traversal
 
 feature {NONE} -- Implementation
 
+	directory_index: attached HASH_TABLE [like directory, STRING]
+			-- Index of archetype & class nodes, keyed by ontology concept. Used during
+			-- construction of `directory'
+			-- For class nodes, this will be package_name-class_name, e.g. DEMOGRAPHIC-PARTY.
+			-- For archetype nodes, this will be the archetype id.
+
 	selection_history: attached LINKED_LIST [attached ARCH_REP_ITEM]
 			-- The history in which archetypes and folders have been selected, from earliest to most recent.
 
-	graft_adhoc_item (ara: ARCH_REP_ARCHETYPE)
-			-- Graft ad hoc archetype `ara' into `directory'. Use its archetype id to figure out
-			-- its ontological path, by finding archetypes in the same semantic category.
-			-- If `ara' specialises an archetype already in `directory', graft it there.
-		require
-			ara_attached: ara /= Void
+	create_directory_structure
+			-- create empty directory structure based on reference model
 		local
-			semantic_category, key: STRING
-			archetype_in_same_semantic_category: ARCH_REP_ARCHETYPE
-			node, parent_node: like directory
+			pkgs: HASH_TABLE [BMM_PACKAGE_DEFINITION, STRING]
+			parent_node, tree_node: like directory
+			pkg_name: STRING
+			supp_list, supp_list_copy: ARRAYED_SET[STRING]
+			supp_class_list: ARRAYED_LIST [BMM_CLASS_DEFINITION]
+			removed: BOOLEAN
 		do
-			from
-				semantic_category := ara.id.qualified_rm_entity
-				semantic_category.append_character ({ARCHETYPE_ID}.axis_separator)
-				archetype_id_index.start
-			until
-				archetype_id_index.off or parent_node /= Void
-			loop
-				key := archetype_id_index.key_for_iteration
+			create directory.make (Void)
+			directory_index.force (directory, ontological_path_separator.twin)
+			parent_node := directory
+			from rm_schemas.start until rm_schemas.off loop
+				if rm_schemas.item_for_iteration.has_class_definition ("LOCATABLE") then
+					pkgs := rm_schemas.item_for_iteration.schema.packages
+					from pkgs.start until pkgs.off loop
+						pkg_name := pkgs.item_for_iteration.name.as_upper
+						create tree_node.make (create {ARCH_REP_FOLDER}.make_package(pkg_name))
+						parent_node.put_child_right (tree_node)
+						directory_index.put (tree_node, pkg_name)
 
-				if key.starts_with (semantic_category) then
-					archetype_in_same_semantic_category := archetype_id_index.item_for_iteration
-
-					if archetype_in_same_semantic_category.id.semantic_id.is_equal (ara.id.semantic_parent_id) then
-						parent_node := node_from_item (archetype_in_same_semantic_category)
-					end
-				end
-
-				archetype_id_index.forth
-			end
-
-			from
-				node := node_from_item (archetype_in_same_semantic_category)
-			until
-				parent_node /= Void
-			loop
-				if node = Void then
-					parent_node := directory
-				elseif attached {ARCH_REP_FOLDER} node.item as arf then
-					parent_node := node
-				else
-					node := node.parent
-				end
-			end
-
-			-- FIXME: Need to check that this doesn't duplicate another archetype:
---			if ontology_index.has (ara.ontological_path) then
---				post_error (Current, "graft_adhoc_item", "arch_dir_dup_archetype", <<ara.full_path>>)
---			else
-
-			if ara.is_specialised and attached {ARCH_REP_ARCHETYPE} parent_node.item as parent_ara then
-				ara.set_specialisation_parent (parent_ara)
-			end
-
-			create node.make (ara)
-			parent_node.child_start
-			parent_node.put_child_left (node)
-			ontology_index.force (node, ara.ontological_path)
-			archetype_id_index.force (ara, ara.id.as_string)
-			update_statistics(ara)
-		end
-
-	merge_enter (item: attached ARCH_REP_ITEM)
-			-- Merge `item' into `directory' either as an archetype or as a folder.
-		local
-			arch_node, parent_node: like directory
-		do
-			debug("arch_dir")
-				io.put_string(shifter + "===> " + item.ontological_path)
-			end
-
-			if attached {ARCH_REP_FOLDER} item as arf then
-				if not ontology_index.has (arf.ontological_path) then
-					if ontology_index.has (arf.ontological_parent_path) then
-						parent_node := ontology_index.item (arf.ontological_parent_path)
-					else
-						parent_node := directory
-					end
-
-					create arch_node.make (arf)
-					parent_node.put_child_right (arch_node)
-					parent_node.child_forth
-					ontology_index.force (arch_node, arf.ontological_path)
-				end
-
-				debug("arch_dir")
-					io.put_string(shifter + " (folder)%N")
-				end
-			end
-
-			if attached {ARCH_REP_ARCHETYPE} item as ara then
-				debug("arch_dir")
-					io.put_string(shifter + ara.id.as_string + " (archetype)")
-				end
-
-				if ontology_index.has (ara.ontological_path) then
-					-- this is an error: it means there are archetypes from two different
-					-- file repositories claiming to be the same archetype
-					post_error (Current, "merge_enter", "arch_dir_dup_archetype", <<ara.full_path>>)
-					bad_archetype_count := bad_archetype_count + 1
-
-					debug("arch_dir")
-						io.put_string(shifter + "DUPLICATE!%N")
-					end
-				else
-					if not ontology_index.has (ara.ontological_parent_path) and ara.is_specialised then
-						-- NOTE: this test only works because the list of archetypes driving this loop is
-						-- sorted on name, and therefore parent archetypes come before specialisation children!
-						post_error (Current, "merge_enter", "arch_dir_orphan_archetype", <<ara.ontological_parent_path, ara.full_path>>)
-						bad_archetype_count := bad_archetype_count + 1
-					else
-						if ontology_index.has (ara.ontological_parent_path) then
-							parent_node := ontology_index.item (ara.ontological_parent_path)
-
-							if ara.is_specialised and attached {ARCH_REP_ARCHETYPE} parent_node.item as parent_ara then
-								ara.set_specialisation_parent (parent_ara)
-							end
-						else
-							parent_node := directory
+						-- now create a list of classes inheriting from LOCATABLE that are among the suppliers of
+						-- the top-level class of the package; this gives the classes that could be archetyped in
+						-- that package
+						create supp_list.make (0)
+						supp_list.compare_objects
+						from pkgs.item_for_iteration.classes.start until pkgs.item_for_iteration.classes.off loop
+							supp_list.merge (rm_schemas.item_for_iteration.class_definition (pkgs.item_for_iteration.classes.item).all_suppliers)
+							supp_list.extend (pkgs.item_for_iteration.classes.item)
+							pkgs.item_for_iteration.classes.forth
 						end
 
-						create arch_node.make (ara)
-						parent_node.put_child_right (arch_node)
-						parent_node.child_forth
-						ontology_index.force (arch_node, ara.ontological_path)
-						archetype_id_index.force (ara, ara.id.as_string)
+						-- clean suppliers list so that only LOCATABLEs remain
+						from supp_list.start until supp_list.off loop
+							if not rm_schemas.item_for_iteration.is_descendant_of (supp_list.item, "LOCATABLE") then
+								supp_list.remove
+							else
+								supp_list.forth
+							end
+						end
+
+						-- clean suppliers list so that only highest class in any inheritance subtree remains
+						supp_list.start
+						supp_list_copy := supp_list.duplicate (supp_list.count)
+						from supp_list.start until supp_list.off loop
+							removed := False
+							from supp_list_copy.start until supp_list_copy.off or removed loop
+								if rm_schemas.item_for_iteration.is_descendant_of (supp_list.item, supp_list_copy.item) then
+									supp_list.remove
+									removed := True
+								end
+								supp_list_copy.forth
+							end
+
+							if not removed then
+								supp_list.forth
+							end
+						end
+
+						-- convert to BMM_CLASS_DESCRIPTORs
+						create supp_class_list.make(0)
+						from supp_list.start until supp_list.off loop
+							supp_class_list.extend (rm_schemas.item_for_iteration.class_definition (supp_list.item))
+							supp_list.forth
+						end
+						add_child_nodes (pkg_name, supp_class_list, tree_node)
+						pkgs.forth
 					end
 				end
-				update_statistics (ara)
+				rm_schemas.forth
 			end
+		end
 
-			debug("arch_dir")
-				io.put_string(shifter + "<===%N")
+	add_child_nodes (a_package: STRING; class_list: ARRAYED_LIST [BMM_CLASS_DEFINITION]; a_parent_node: like directory)
+			-- populate child nodes of a node in directory with immediate descendants of `a_class'
+			-- put each node into `ontology_index', keyed by a_package + '-' + `a_class',
+			-- which will match with corresponding part of archetype identifier
+		local
+			children: ARRAYED_LIST [BMM_CLASS_DEFINITION]
+			tree_node: like directory
+			arf: ARCH_REP_FOLDER
+		do
+			from class_list.start until class_list.off loop
+				create arf.make_class(a_package, class_list.item)
+				create tree_node.make (arf)
+				tree_node.item.set_parent(a_parent_node.item)
+
+				-- store it with a key like 'DEMOGRAPHIC-CLUSTER'
+				directory_index.put (tree_node, arf.ontological_name)
+				a_parent_node.put_child_right (tree_node)
+
+				-- get children and process
+				children := class_list.item.immediate_descendants
+				add_child_nodes(a_package, children, tree_node)
+				class_list.forth
 			end
 		end
 
@@ -644,16 +682,11 @@ invariant
 			Result := repository.group_id > 1
 		end)
 	total_archetype_count_non_negative: total_archetype_count >= 0
-	specialised_archetype_count_non_negative: specialised_archetype_count >= 0
-	specialised_archetype_count_not_too_big: specialised_archetype_count <= total_archetype_count
-	slotted_archetype_count_non_negative: slotted_archetype_count >= 0
-	slotted_archetype_count_not_too_big: slotted_archetype_count <= total_archetype_count
-	used_by_archetype_count_non_negative: used_by_archetype_count >= 0
-	used_by_archetype_count_not_too_big: used_by_archetype_count <= total_archetype_count
-	bad_archetype_count_count_non_negative: bad_archetype_count >= 0
-	bad_archetype_count_not_too_big: bad_archetype_count <= total_archetype_count
-	parse_attempted_archetype_count_non_negative: parse_attempted_archetype_count >= 0
-	parse_attempted_archetype_count_not_too_big: parse_attempted_archetype_count <= total_archetype_count
+	specialised_archetype_count_valid: specialised_archetype_count >= 0 and specialised_archetype_count <= total_archetype_count
+	slotted_archetype_count_valid: slotted_archetype_count >= 0 and slotted_archetype_count <= total_archetype_count
+	used_by_archetype_count_valid: used_by_archetype_count >= 0 and used_by_archetype_count <= total_archetype_count
+	bad_archetype_count_count_valid: bad_archetype_count >= 0 and bad_archetype_count <= total_archetype_count
+	parse_attempted_archetype_count_valid: parse_attempted_archetype_count >= 0 and parse_attempted_archetype_count <= total_archetype_count
 
 end
 

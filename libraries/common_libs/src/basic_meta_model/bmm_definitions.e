@@ -25,7 +25,7 @@ feature -- Definitions
 	Generic_constraint_delimiter: CHARACTER = ':'
 			-- appears between 'T' and constraining type if there is one
 
-	Any_type: STRING = "ANY"
+	Any_type: STRING = "Any"
 
 feature -- Comparison
 

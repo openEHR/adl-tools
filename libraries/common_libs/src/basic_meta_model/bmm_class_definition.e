@@ -29,6 +29,8 @@ feature -- Initialisation
 		do
 			create properties.make (0)
 			create ancestors.make (0)
+			create all_ancestors.make (0)
+			all_ancestors.compare_objects
 			create immediate_descendants.make (0)
 		end
 
@@ -48,12 +50,86 @@ feature -- Access
 			-- list of immediate inheritance parents FROM SCHEMA
 			-- DON'T RENAME THIS ATTRIBUTE
 
+	all_ancestors: ARRAYED_LIST [STRING]
+			-- list of all inheritance parent class names; derived in port-schema processing
+
 	immediate_descendants: ARRAYED_LIST [BMM_CLASS_DEFINITION]
-			-- list of immediate inheritance descendants
+			-- list of immediate inheritance descendants; set during post processing
+			-- by BMM_SCHEMA
 
 	properties: HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
 			-- list of attributes defined in this class FROM SCHEMA
 			-- DON'T RENAME THIS ATTRIBUTE
+
+	immediate_suppliers: ARRAYED_SET [STRING]
+			-- list of names of immediate supplier classes, including concrete generic parameters and
+			-- concrete descendants of abstract statically defined types.
+			-- (where generics are unconstrained, no class name is added, since logically it would be
+			-- 'ANY' and this can always be assumed anyway)
+			-- This list includes primitive types
+		local
+			ftl: ARRAYED_LIST [STRING]
+			imm_descs: ARRAYED_LIST [BMM_CLASS_DEFINITION]
+		do
+			if immediate_suppliers_cache = Void then
+				create immediate_suppliers_cache.make(0)
+				if is_generic then
+					ftl := flattened_type_list
+					ftl.go_i_th (1)
+					ftl.remove
+					immediate_suppliers_cache.merge (ftl)
+				end
+				from properties.start until properties.off loop
+					-- get the statically defined type(s) of the property (could be >1 due to generics)
+					ftl := properties.item_for_iteration.type.flattened_type_list
+					immediate_suppliers_cache.merge (ftl)
+
+					-- now get the descendant types
+					from ftl.start until ftl.off loop
+						imm_descs := bmm_model.class_definition (ftl.item).immediate_descendants
+						from imm_descs.start until imm_descs.off loop
+							immediate_suppliers_cache.extend(imm_descs.item.name)
+							imm_descs.forth
+						end
+						ftl.forth
+					end
+					properties.forth
+				end
+			end
+			Result := immediate_suppliers_cache
+		end
+
+	immediate_suppliers_non_primitive: ARRAYED_SET [STRING]
+			-- same as `suppliers' minus primitive types, as defined in input schema
+		local
+			prim_types: ARRAYED_SET [STRING]
+		do
+			if immediate_suppliers_non_primitive_cache = Void then
+				create prim_types.make (0)
+				prim_types.merge (bmm_model.primitive_types.current_keys)
+				create immediate_suppliers_non_primitive_cache.make(0)
+				immediate_suppliers_non_primitive_cache.merge(immediate_suppliers)
+				immediate_suppliers_non_primitive_cache.subtract (prim_types)
+			end
+			Result := immediate_suppliers_non_primitive_cache
+		end
+
+	all_suppliers: ARRAYED_SET [STRING]
+			-- list of names of all classes in supplier closure, including concrete generic parameters;
+			-- (where generics are unconstrained, no class name is added, since logically it would be
+			-- 'ANY' and this can always be assumed anyway)
+			-- This list includes primitive types
+		do
+			if all_suppliers_cache = Void then
+				create all_suppliers_cache.make(0)
+				all_suppliers_cache.merge (immediate_suppliers)
+				from immediate_suppliers.start until immediate_suppliers.off loop
+					all_suppliers_cache.merge (bmm_model.class_definition (immediate_suppliers.item).all_suppliers)
+					immediate_suppliers.forth
+				end
+			end
+			Result := all_suppliers_cache
+		end
 
 	flat_properties: HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
 			-- list of all attributes due to current and ancestor classes, keyed by property name
@@ -149,6 +225,17 @@ feature -- Status Report
 			from ancestors.start until ancestors.off or Result loop
 				Result := ancestors.item.name.is_equal(a_class_name) or else ancestors.item.has_ancestor (a_class_name)
 				ancestors.forth
+			end
+		end
+
+	has_immediate_descendant (a_class_name: STRING): BOOLEAN
+			-- True if a_class_name is among the immediate descendant classes
+		require
+			Class_name_valid: a_class_name /= Void and then not a_class_name.is_empty
+		do
+			from immediate_descendants.start until immediate_descendants.off or Result loop
+				Result := immediate_descendants.item.name.is_equal(a_class_name)
+				immediate_descendants.forth
 			end
 		end
 
@@ -251,6 +338,15 @@ feature {BMM_CLASS_DEFINITION} -- Implementation
 
 	flat_properties_cache: HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
 			-- reference list of all attributes due to inheritance flattening of this type
+
+	immediate_suppliers_cache: ARRAYED_SET [STRING]
+			-- cache for `suppliers'
+
+	immediate_suppliers_non_primitive_cache: ARRAYED_SET [STRING]
+			-- cache for `suppliers_non_primitive'
+
+	all_suppliers_cache: ARRAYED_SET [STRING]
+			-- cache for `suppliers'
 
 	bmm_model: BMM_SCHEMA
 			-- reverse reference, set after initialisation from input schema
