@@ -1655,6 +1655,7 @@ class_definitions = <
    
 	["PARTY"] = <
 		name = <"PARTY">
+		is_abstract = <True>
 		ancestors = </class_definitions["LOCATABLE"], ...>
 		properties = <
 			["details"] = (BMM_SINGLE_PROPERTY) <
@@ -1746,6 +1747,7 @@ class_definitions = <
 	
 	["ACTOR"] = <
 		name = <"ACTOR">
+		is_abstract = <True>
 		ancestors = </class_definitions["PARTY"], ...>
 		properties = <
 			["roles"] = (BMM_CONTAINER_PROPERTY) <

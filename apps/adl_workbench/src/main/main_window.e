@@ -287,13 +287,17 @@ feature -- File events
 			fname := dialog.file_name.as_string_8
 
 			if not fname.is_empty then
-				set_current_work_directory (file_system.dirname (fname))
-				if not file_system.file_exists (fname) then
-					(create {EV_INFORMATION_DIALOG}.make_with_text ("%"" + fname + "%" does not exist.")).show_modal_to_window (Current)
+				if not archetype_directory.adhoc_source_repository.has (fname) then
+					set_current_work_directory (file_system.dirname (fname))
+					if not file_system.file_exists (fname) then
+						(create {EV_INFORMATION_DIALOG}.make_with_text ("%"" + fname + "%" not found.")).show_modal_to_window (Current)
+					else
+						archetype_directory.add_adhoc_item (fname)
+						archetype_view_tree_control.populate
+						set_status_area (billboard_content)
+					end
 				else
-					archetype_directory.add_adhoc_item (fname)
-					archetype_view_tree_control.populate
-					set_status_area (billboard_content)
+					(create {EV_INFORMATION_DIALOG}.make_with_text ("%"" + fname + "%" already added.")).show_modal_to_window (Current)
 				end
 			end
 		end
