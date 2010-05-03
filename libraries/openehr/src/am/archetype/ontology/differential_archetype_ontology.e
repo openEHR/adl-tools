@@ -492,6 +492,8 @@ feature -- Conversion
 				synchronise_to_tree
 			end
 			create Result.make_from_tree (primary_language.deep_twin, representation.deep_twin, concept_code.deep_twin)
+		ensure
+			languages_available: Result.languages_available.is_equal (languages_available)
 		end
 
 feature {ARCHETYPE_ONTOLOGY} -- Implementation

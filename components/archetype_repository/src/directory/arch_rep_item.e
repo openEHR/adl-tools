@@ -54,7 +54,7 @@ feature -- Access
 			if parent /= Void then
 				Result.append(parent.ontological_path + Ontological_path_separator)
 			end
-			Result.append (ontological_name)
+			Result.append (display_name)
 		end
 
 feature -- Modification

@@ -125,14 +125,7 @@ feature -- Status Report
 		require
 			other /= Void
 		do
-			from
-				languages_available.start
-			until
-				languages_available.off or not other.languages_available.has (languages_available.item)
-			loop
-				languages_available.forth
-			end
-			Result := languages_available.off
+			Result := languages_available.is_subset (other.languages_available)
 
 			if Result then
 				from
@@ -226,6 +219,9 @@ feature -- Modification
 				end
 				other.terminologies_available.forth
 			end
+		ensure
+			Languages_merged: languages_available.is_superset (other.languages_available)
+			-- Terminologies_merged: terminologies_available.is_superset (other.terminologies_available)
 		end
 
 feature -- Factory

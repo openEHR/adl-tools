@@ -67,7 +67,8 @@ feature -- Access
 			["message_code_error"] = <"Error code $1 does not exist">
 			
 			-- ANY
-			["report_exception"] = <"Software Exception $1 caught; stack:%N$2">
+			["report_exception"] = <"Software Exception $1 caught; Stack:%N$2">
+			["report_exception_with_context"] = <"Software Exception caught; Context: $1; Type: $2; Stack:%N$3">
 			["unhandled_exception"] = <"Exception caught but not handled: $1">
 			["general_error"] = <"Error: $1">
 			["general"] = <"$1">

@@ -85,9 +85,7 @@ feature -- Initialisation
 			default_create
 			representation := a_dadl_tree
 			concept_code := a_concept_code
-
 			set_primary_language (a_primary_lang)
-
 			synchronise_from_tree
 		ensure
 			concept_code_set: concept_code.is_equal (a_concept_code)

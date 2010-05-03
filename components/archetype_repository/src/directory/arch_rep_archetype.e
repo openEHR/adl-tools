@@ -139,18 +139,17 @@ feature -- Access (file system)
 			-- Full path to the item on the storage medium.
 
 	relative_path: STRING
-			-- a path derived from the ontological path of the folder structure + the id of the archetype
+			-- a path derived from the ontological path of the nearest folder node + archetype_id
 		local
 			csr: ARCH_REP_ITEM
+			arf: ARCH_REP_FOLDER
 		do
 			create Result.make(0)
-			from csr := parent until csr = Void or Result /= Void loop
-				if attached {ARCH_REP_FOLDER} csr as arf then
-					Result := arf.ontological_path + Ontological_path_separator
-				end
+			from csr := parent until csr = Void or arf /= Void loop
+				arf ?= csr
 				csr := csr.parent
 			end
-			Result.append(id.as_string)
+			Result := arf.ontological_path + Ontological_path_separator + id.as_string
 		ensure
 			Result_exists: Result /= Void
 		end
@@ -703,7 +702,7 @@ feature -- Modification
 		ensure
 			save_succeeded or else not status.is_empty
 		rescue
-			post_error(Current, "save_flat_as", "report_exception", <<exception.out, exception_trace>>)
+			post_error(Current, "save_flat_as", "report_exception_with_context", <<"Saving archetype " + id.as_string, exception.out, exception_trace>>)
 			exception_encountered := True
 			retry
 		end
@@ -725,7 +724,7 @@ feature -- Modification
 		ensure
 			(differential_text /= old differential_text) or else not status.is_empty
 		rescue
-			post_error(Current, "serialise_differential", "report_exception", <<exception.out, exception_trace>>)
+			post_error(Current, "serialise_differential", "report_exception_with_context", <<"Saving archetype " + id.as_string, exception.out, exception_trace>>)
 			exception_encountered := True
 			retry
 		end
@@ -737,9 +736,12 @@ feature -- Modification
 			Info_model_name_valid: a_im_name /= void and then not a_im_name.is_empty
 			Info_model_entity_valid: a_im_entity /= void and then not a_im_entity.is_empty
 			Primary_language_valid: a_primary_language /= void and then not a_primary_language.is_empty
+		local
+			arch_id: attached ARCHETYPE_ID
 		do
 			if not exception_encountered then
-				create differential_archetype.make_minimal (create {attached ARCHETYPE_ID}.make (a_im_originator, a_im_name, a_im_entity, "UNKNOWN", "draft"), a_primary_language, 0)
+				create arch_id.make (a_im_originator, a_im_name, a_im_entity, "UNKNOWN", "v0")
+				create differential_archetype.make_minimal (arch_id, a_primary_language, 0)
 				set_current_language (a_primary_language)
 
 				-- FIXME: now add this archetype into the ARCHETYPE_DIRECTORY
@@ -756,7 +758,7 @@ feature -- Modification
 		ensure
 			-- FIXME: make the new archetype the target??
 		rescue
-			post_error(Current, "create_new_archetype", "report_exception", <<exception.out, exception_trace>>)
+			post_error(Current, "create_new_archetype", "report_exception_with_context", <<"attempted to create new archteype " + arch_id.as_string, exception.out, exception_trace>>)
 			exception_encountered := True
 			retry
 		end
