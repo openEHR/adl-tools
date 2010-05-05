@@ -142,7 +142,7 @@ feature -- Access (file system)
 			-- a path derived from the ontological path of the nearest folder node + archetype_id
 		local
 			csr: ARCH_REP_ITEM
-			arf: ARCH_REP_FOLDER
+			arf: ARCH_REP_MODEL_NODE
 		do
 			create Result.make(0)
 			from csr := parent until csr = Void or arf /= Void loop

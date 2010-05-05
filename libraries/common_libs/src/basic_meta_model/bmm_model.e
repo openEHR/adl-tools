@@ -256,8 +256,9 @@ feature {NONE} -- Implementation
 			if gen_pos > 0 then
 				Result := a_type_name.substring (1, gen_pos-1)
 				Result.right_adjust
+				Result.to_upper
 			else
-				Result := a_type_name
+				Result := a_type_name.as_upper
 			end
 		end
 

@@ -1,10 +1,10 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Descriptor of a folder in a directory of archetypes"
+	description: "Descriptor of a model node in a directory of archetypes"
 	keywords:    "ADL, archetype"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2006-2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL: http://www.openehr.org/svn/ref_impl_eiffel/TRUNK/components/archetype_repository/src/directory/arch_rep_folder.e $"
@@ -12,7 +12,7 @@ note
 	last_change: "$LastChangedDate: 2008-03-12 00:23:45 +0000 (Wed, 12 Mar 2008) $"
 
 
-class ARCH_REP_FOLDER
+class ARCH_REP_MODEL_NODE
 
 inherit
 	ARCH_REP_ITEM
@@ -55,17 +55,53 @@ feature -- Initialisation
 			display_name_set: display_name = ontological_name
 		end
 
+feature -- Access
+
+	child_model_node_count: INTEGER
+			-- number of child model nodes
+
+	child_archetype_count: INTEGER
+			-- number of archetypes attached to this node
+
+	group_name: STRING
+			-- Name distinguishing the type of item and the group to which its `repository' belongs.
+			-- Useful as a logical key to pixmap icons, etc.
+
 feature -- Status Report
 
 	is_abstract: BOOLEAN
 
 	is_package: BOOLEAN
 
-feature -- Access
+feature -- Modification
 
-	group_name: STRING
-			-- Name distinguishing the type of item and the group to which its `repository' belongs.
-			-- Useful as a logical key to pixmap icons, etc.
+	set_child_model_node_count (n: INTEGER)
+			-- update child_model_node_count
+		require
+			n > 0
+		do
+			child_model_node_count := n
+		ensure
+			child_model_node_count = n
+		end
+
+	set_child_archetype_count (n: INTEGER)
+			-- update child_archetype_count
+		require
+			n > 0
+		do
+			child_archetype_count := n
+		ensure
+			child_archetype_count = n
+		end
+
+	increment_child_archetype_count
+			-- update child_model_node_count
+		do
+			child_archetype_count := child_archetype_count + 1
+		ensure
+			child_archetype_count = old child_archetype_count + 1
+		end
 
 invariant
 	not is_package and is_abstract

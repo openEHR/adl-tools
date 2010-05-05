@@ -365,6 +365,10 @@ feature -- Commands
 								if not directory_index.has (child_key) then
 									create tree_node.make (archs.item)
 									tree_node.item.set_parent(directory_index.item (parent_key).item)
+-- TODO - accumulative counters for archetypes and model nodes
+--									if attached {ARCH_REP_MODEL_NODE} directory_index.item (parent_key).item as arm then
+--										arm.increment_child_archetype_count
+--									end
 									directory_index.item (parent_key).put_child_left (tree_node)
 									directory_index.put (tree_node, child_key)
 									archetype_index.put(archs.item, child_key)
@@ -502,6 +506,10 @@ feature -- Modification
 					if not directory_index.has(child_key) then
 						create tree_node.make (ara)
 						tree_node.item.set_parent(directory_index.item (parent_key).item)
+-- TODO - accumulative counters for archetypes and model nodes
+--						if attached {ARCH_REP_MODEL_NODE} directory_index.item (parent_key).item as arm then
+--							arm.increment_child_archetype_count
+--						end
 						directory_index.item (parent_key).put_child_right (tree_node)
 						directory_index.put (tree_node, child_key)
 						archetype_index.put(ara, child_key)
@@ -587,7 +595,7 @@ feature {NONE} -- Implementation
 					pkgs := rm_schemas.item_for_iteration.schema.packages
 					from pkgs.start until pkgs.off loop
 						pkg_name := pkgs.item_for_iteration.name.as_upper
-						create tree_node.make (create {ARCH_REP_FOLDER}.make_package(pkg_name))
+						create tree_node.make (create {ARCH_REP_MODEL_NODE}.make_package(pkg_name))
 						parent_node.put_child_right (tree_node)
 						directory_index.put (tree_node, pkg_name)
 
@@ -650,15 +658,15 @@ feature {NONE} -- Implementation
 		local
 			children: ARRAYED_LIST [BMM_CLASS_DEFINITION]
 			tree_node: like directory
-			arf: ARCH_REP_FOLDER
+			arm: ARCH_REP_MODEL_NODE
 		do
 			from class_list.start until class_list.off loop
-				create arf.make_class(a_package, class_list.item)
-				create tree_node.make (arf)
+				create arm.make_class(a_package, class_list.item)
+				create tree_node.make (arm)
 				tree_node.item.set_parent(a_parent_node.item)
 
 				-- store it with a key like 'DEMOGRAPHIC-CLUSTER'
-				directory_index.put (tree_node, arf.ontological_name)
+				directory_index.put (tree_node, arm.ontological_name)
 				a_parent_node.put_child_right (tree_node)
 
 				-- get children and process
@@ -666,6 +674,10 @@ feature {NONE} -- Implementation
 				add_child_nodes(a_package, children, tree_node)
 				class_list.forth
 			end
+-- TODO - accumulative counters for archetypes and model nodes
+--			if attached {ARCH_REP_MODEL_NODE} a_parent_node.item as arm then
+--				arm.set_child_model_node_count(class_list.count)
+--			end
 		end
 
 	shifter: STRING

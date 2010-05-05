@@ -161,7 +161,7 @@ feature {NONE} -- Implementation
 	ev_tree_expand(node: EV_TREE_NODE)
 			--
 		do
-	 		if attached {ARCH_REP_FOLDER} node.data as arf then
+	 		if attached {ARCH_REP_MODEL_NODE} node.data as arf then
 	 			if (arf.is_abstract or arf.is_package) and node.is_expandable then
 					node.expand
 	 			end
