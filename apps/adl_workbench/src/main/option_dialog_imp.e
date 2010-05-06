@@ -111,6 +111,7 @@ feature {NONE}-- Initialization
 			create pixmap_constant_retrieval_functions.make (10)
 			create color_constant_set_procedures.make (10)
 			create color_constant_retrieval_functions.make (10)
+			l_ev_vertical_box_1.set_minimum_height (415)
 			l_ev_vertical_box_1.set_border_width (20)
 			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_1)
 			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_3)
@@ -172,6 +173,7 @@ feature {NONE}-- Initialization
 			export_html_text.set_minimum_width (300)
 			export_html_browse_button.set_text ("Browse...")
 			export_html_browse_button.set_minimum_width (65)
+			l_ev_horizontal_box_9.set_minimum_height (34)
 			l_ev_horizontal_box_9.set_padding (15)
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_9.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
@@ -185,9 +187,9 @@ feature {NONE}-- Initialization
 			cancel_button.set_minimum_width (100)
 			cancel_button.set_minimum_height (26)
 			set_minimum_width (700)
-			set_minimum_height (400)
+			set_minimum_height (450)
 			set_maximum_width (2000)
-			set_maximum_height (800)
+			set_maximum_height (900)
 			set_title ("ADL Workbench Options")
 			
 			set_all_attributes_using_constants

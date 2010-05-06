@@ -40,7 +40,7 @@ feature {NONE} -- Initialisation
 			a_main_window /= Void
 		do
 			gui := a_main_window
-   			gui.ontology_notebook.set_minimum_height(gui.Status_area_min_height)
+   			gui.terminology_area.set_minimum_height(gui.Status_area_min_height)
 			in_differential_mode := True
 		end
 
@@ -135,15 +135,12 @@ feature {NONE} -- Implementation
 			pl := gui.ontology_term_definitions_multi_column_list
 			create col_titles.make(0)
 			col_titles.extend ("code")
---			col_titles.extend ("text")
 			from
 				ontology.term_attribute_names.start
 			until
 				ontology.term_attribute_names.off
 			loop
---				if not ontology.term_attribute_names.item.is_equal("text") then
-					col_titles.extend (ontology.term_attribute_names.item)
---				end
+				col_titles.extend (ontology.term_attribute_names.item)
 				ontology.term_attribute_names.forth
 			end
 
@@ -166,14 +163,12 @@ feature {NONE} -- Implementation
 				create list_row
 				list_row.extend (utf8 (ontology.term_codes.item))
 				a_term := ontology.term_definition(current_language, ontology.term_codes.item)
---				list_row.extend (a_term.item ("text"))
 
 				from
 					ontology.term_attribute_names.start
 				until
 					ontology.term_attribute_names.off
 				loop
---					if not ontology.term_attribute_names.item.is_equal("text") and a_term.has_key (ontology.term_attribute_names.item) then					
 					if a_term.has_key (ontology.term_attribute_names.item) then
 						list_row.extend (utf8 (a_term.item(ontology.term_attribute_names.item)))
 					else
@@ -227,15 +222,12 @@ feature {NONE} -- Implementation
 			pl := gui.ontology_constraint_definitions_multi_column_list
 			create col_titles.make(0)
 			col_titles.extend ("code")
---			col_titles.extend ("text")
 			from
 				ontology.term_attribute_names.start
 			until
 				ontology.term_attribute_names.off
 			loop
---				if not ontology.term_attribute_names.item.is_equal("text") then
-					col_titles.extend (ontology.term_attribute_names.item)
---				end
+				col_titles.extend (ontology.term_attribute_names.item)
 				ontology.term_attribute_names.forth
 			end
 
@@ -259,13 +251,11 @@ feature {NONE} -- Implementation
 				-- populate constraint codes
 				list_row.extend (utf8 (ontology.constraint_codes.item))
 				a_term := ontology.constraint_definition(current_language, ontology.constraint_codes.item)
---				list_row.extend (utf8 (a_term.item ("text")))
 				from
 					ontology.term_attribute_names.start
 				until
 					ontology.term_attribute_names.off
 				loop
---					if not ontology.term_attribute_names.item.is_equal("text")  and a_term.has_key (ontology.term_attribute_names.item) then
 					if a_term.has_key (ontology.term_attribute_names.item) then
 						list_row.extend (utf8 (a_term.item (ontology.term_attribute_names.item)))
 					else

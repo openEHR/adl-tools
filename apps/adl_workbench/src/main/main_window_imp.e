@@ -172,9 +172,6 @@ feature {NONE}-- Initialization
 			create node_map_domain_radio_button
 			create node_map_technical_radio_button
 			create node_map_reference_model_check_button
-			create ontology_notebook
-			create ontology_term_definitions_multi_column_list
-			create ontology_constraint_definitions_multi_column_list
 			create l_ev_horizontal_box_10
 			create path_analysis_multi_column_list
 			create l_ev_vertical_box_9
@@ -193,6 +190,11 @@ feature {NONE}-- Initialization
 			create l_ev_frame_5
 			create l_ev_vertical_box_13
 			create used_by_tree
+			create terminology_area
+			create term_definitions_frame
+			create ontology_term_definitions_multi_column_list
+			create constraint_definitions_frame
+			create ontology_constraint_definitions_multi_column_list
 			create statistics_box
 			create l_ev_vertical_box_14
 			create l_ev_horizontal_box_11
@@ -367,9 +369,6 @@ feature {NONE}-- Initialization
 			l_ev_vertical_box_8.extend (node_map_domain_radio_button)
 			l_ev_vertical_box_8.extend (node_map_technical_radio_button)
 			l_ev_vertical_box_7.extend (node_map_reference_model_check_button)
-			node_map_and_ontology_split_area.extend (ontology_notebook)
-			ontology_notebook.extend (ontology_term_definitions_multi_column_list)
-			ontology_notebook.extend (ontology_constraint_definitions_multi_column_list)
 			definition_notebook.extend (l_ev_horizontal_box_10)
 			l_ev_horizontal_box_10.extend (path_analysis_multi_column_list)
 			l_ev_horizontal_box_10.extend (l_ev_vertical_box_9)
@@ -388,6 +387,11 @@ feature {NONE}-- Initialization
 			slots_box.extend (l_ev_frame_5)
 			l_ev_frame_5.extend (l_ev_vertical_box_13)
 			l_ev_vertical_box_13.extend (used_by_tree)
+			archetype_notebook.extend (terminology_area)
+			terminology_area.extend (term_definitions_frame)
+			term_definitions_frame.extend (ontology_term_definitions_multi_column_list)
+			terminology_area.extend (constraint_definitions_frame)
+			constraint_definitions_frame.extend (ontology_constraint_definitions_multi_column_list)
 			archetype_notebook.extend (statistics_box)
 			statistics_box.extend (l_ev_vertical_box_14)
 			l_ev_vertical_box_14.extend (l_ev_horizontal_box_11)
@@ -542,6 +546,7 @@ feature {NONE}-- Initialization
 			archetype_notebook.set_item_text (differential_view_box, "Differential View")
 			archetype_notebook.set_item_text (flat_view_box, "Flat View")
 			archetype_notebook.set_item_text (slots_box, "Slots")
+			archetype_notebook.set_item_text (terminology_area, "Terminology")
 			archetype_notebook.set_item_text (statistics_box, "Statistics")
 			description_box.disable_item_expand (arch_desc_details_frame)
 			description_box.disable_item_expand (arch_desc_resource_frame)
@@ -766,8 +771,6 @@ feature {NONE}-- Initialization
 			node_map_and_ontology_split_area.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
 			node_map_and_ontology_split_area.set_minimum_width (1)
 			node_map_and_ontology_split_area.set_minimum_height (1)
-			node_map_and_ontology_split_area.enable_item_expand (l_ev_horizontal_box_9)
-			node_map_and_ontology_split_area.disable_item_expand (ontology_notebook)
 			l_ev_horizontal_box_9.set_minimum_width (1)
 			l_ev_horizontal_box_9.set_minimum_height (160)
 			l_ev_horizontal_box_9.disable_item_expand (l_ev_vertical_box_7)
@@ -809,22 +812,6 @@ feature {NONE}-- Initialization
 			node_map_technical_radio_button.set_tooltip ("Display technical details of the Node Map")
 			node_map_reference_model_check_button.set_text ("RM visible")
 			node_map_reference_model_check_button.set_tooltip ("Make non-archetyped reference model attrbutes visible in node tree")
-			ontology_notebook.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
-			ontology_notebook.set_minimum_width (1)
-			integer_constant_set_procedures.extend (agent ontology_notebook.set_minimum_height (?))
-			integer_constant_retrieval_functions.extend (agent min_terms_height)
-			ontology_notebook.set_item_text (ontology_term_definitions_multi_column_list, "Term Definitions")
-			ontology_notebook.set_item_text (ontology_constraint_definitions_multi_column_list, "Constraint Definitions")
-			color_constant_set_procedures.extend (agent ontology_term_definitions_multi_column_list.set_background_color (?))
-			color_constant_retrieval_functions.extend (agent editable_colour)
-			ontology_term_definitions_multi_column_list.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
-			ontology_term_definitions_multi_column_list.set_minimum_width (1)
-			ontology_term_definitions_multi_column_list.set_minimum_height (1)
-			color_constant_set_procedures.extend (agent ontology_constraint_definitions_multi_column_list.set_background_color (?))
-			color_constant_retrieval_functions.extend (agent editable_colour)
-			ontology_constraint_definitions_multi_column_list.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
-			ontology_constraint_definitions_multi_column_list.set_minimum_width (1)
-			ontology_constraint_definitions_multi_column_list.set_minimum_height (1)
 			l_ev_horizontal_box_10.set_minimum_width (140)
 			l_ev_horizontal_box_10.set_minimum_height (93)
 			l_ev_horizontal_box_10.disable_item_expand (l_ev_vertical_box_9)
@@ -866,6 +853,18 @@ feature {NONE}-- Initialization
 			l_ev_frame_5.set_text ("Archetypes that have slots matching the current archetype ID")
 			integer_constant_set_procedures.extend (agent l_ev_vertical_box_13.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
+			term_definitions_frame.set_text ("Term definitions & bindings")
+			color_constant_set_procedures.extend (agent ontology_term_definitions_multi_column_list.set_background_color (?))
+			color_constant_retrieval_functions.extend (agent editable_colour)
+			ontology_term_definitions_multi_column_list.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
+			ontology_term_definitions_multi_column_list.set_minimum_width (1)
+			ontology_term_definitions_multi_column_list.set_minimum_height (1)
+			constraint_definitions_frame.set_text ("Constraint definitions & bindings")
+			color_constant_set_procedures.extend (agent ontology_constraint_definitions_multi_column_list.set_background_color (?))
+			color_constant_retrieval_functions.extend (agent editable_colour)
+			ontology_constraint_definitions_multi_column_list.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
+			ontology_constraint_definitions_multi_column_list.set_minimum_width (1)
+			ontology_constraint_definitions_multi_column_list.set_minimum_height (1)
 			statistics_box.set_border_width (15)
 			statistics_box.disable_item_expand (l_ev_vertical_box_14)
 			l_ev_vertical_box_14.set_minimum_width (250)
@@ -1064,8 +1063,8 @@ feature -- Access
 	archetype_file_tree,
 	node_map_tree, slots_tree, used_by_tree: EV_TREE
 	arch_desc_auth_orig_auth_mlist, arch_translations_author_mlist,
-	arch_translations_other_details_mlist, arch_desc_resource_orig_res_mlist, ontology_term_definitions_multi_column_list,
-	ontology_constraint_definitions_multi_column_list, path_analysis_multi_column_list: EV_MULTI_COLUMN_LIST
+	arch_translations_other_details_mlist, arch_desc_resource_orig_res_mlist, path_analysis_multi_column_list,
+	ontology_term_definitions_multi_column_list, ontology_constraint_definitions_multi_column_list: EV_MULTI_COLUMN_LIST
 	l_ev_tool_bar_separator_1,
 	l_ev_tool_bar_separator_2, l_ev_tool_bar_separator_3: EV_TOOL_BAR_SEPARATOR
 	viewer_vbox, description_box,
@@ -1073,23 +1072,23 @@ feature -- Access
 	lang_vbox, l_ev_vertical_box_2, l_ev_vertical_box_3, l_ev_vertical_box_4, l_ev_vertical_box_5,
 	l_ev_vertical_box_6, differential_view_box, l_ev_vertical_box_7, l_ev_vertical_box_8,
 	l_ev_vertical_box_9, l_ev_vertical_box_10, l_ev_vertical_box_11, flat_view_box, slots_box,
-	l_ev_vertical_box_12, l_ev_vertical_box_13, l_ev_vertical_box_14, l_ev_vertical_box_15: EV_VERTICAL_BOX
+	l_ev_vertical_box_12, l_ev_vertical_box_13, terminology_area, l_ev_vertical_box_14,
+	l_ev_vertical_box_15: EV_VERTICAL_BOX
 	explorer_split_area: EV_HORIZONTAL_SPLIT_AREA
-	file_menu,
-	edit_menu, repository_menu, history_menu, tools_menu, help_menu: EV_MENU
-	action_bar, author_lang_term_hbox,
-	l_ev_horizontal_box_1, arch_desc_status_hbox, l_ev_horizontal_box_2, l_ev_horizontal_box_3,
-	arch_desc_details_hbox, l_ev_horizontal_box_4, l_ev_horizontal_box_5, l_ev_horizontal_box_6,
-	l_ev_horizontal_box_7, l_ev_horizontal_box_8, arch_desc_copyright_hbox, l_ev_horizontal_box_9,
-	l_ev_horizontal_box_10, statistics_box, l_ev_horizontal_box_11, l_ev_horizontal_box_12,
-	l_ev_horizontal_box_13, l_ev_horizontal_box_14, l_ev_horizontal_box_15, l_ev_horizontal_box_16,
-	l_ev_horizontal_box_17: EV_HORIZONTAL_BOX
-	node_map_reference_model_check_button, remove_unused_codes_rb,
-	save_adlf_check_button, save_adls_check_button: EV_CHECK_BUTTON
-	archetype_id, adl_version_text, arch_desc_status_text,
-	arch_desc_original_language_text, arch_desc_resource_package_text, arch_total_count_tf,
-	arch_spec_count_tf, arch_slotted_count_tf, arch_used_by_count_tf, arch_bad_count_tf,
-	arch_test_processed_count: EV_TEXT_FIELD
+	file_menu, edit_menu, repository_menu,
+	history_menu, tools_menu, help_menu: EV_MENU
+	action_bar, author_lang_term_hbox, l_ev_horizontal_box_1,
+	arch_desc_status_hbox, l_ev_horizontal_box_2, l_ev_horizontal_box_3, arch_desc_details_hbox,
+	l_ev_horizontal_box_4, l_ev_horizontal_box_5, l_ev_horizontal_box_6, l_ev_horizontal_box_7,
+	l_ev_horizontal_box_8, arch_desc_copyright_hbox, l_ev_horizontal_box_9, l_ev_horizontal_box_10,
+	statistics_box, l_ev_horizontal_box_11, l_ev_horizontal_box_12, l_ev_horizontal_box_13,
+	l_ev_horizontal_box_14, l_ev_horizontal_box_15, l_ev_horizontal_box_16, l_ev_horizontal_box_17: EV_HORIZONTAL_BOX
+	node_map_reference_model_check_button,
+	remove_unused_codes_rb, save_adlf_check_button, save_adls_check_button: EV_CHECK_BUTTON
+	archetype_id,
+	adl_version_text, arch_desc_status_text, arch_desc_original_language_text, arch_desc_resource_package_text,
+	arch_total_count_tf, arch_spec_count_tf, arch_slotted_count_tf, arch_used_by_count_tf,
+	arch_bad_count_tf, arch_test_processed_count: EV_TEXT_FIELD
 	compiler_output_grid, archetype_test_tree_grid: EV_GRID
 	node_map_expand_button,
 	node_map_expand_one_button, node_map_collapse_one_button, arch_test_tree_toggle_expand_bn,
@@ -1118,13 +1117,13 @@ feature -- Access
 	l_ev_horizontal_separator_1: EV_HORIZONTAL_SEPARATOR
 	arch_desc_auth_frame,
 	term_frame, arch_translations_frame, arch_desc_details_frame, arch_desc_resource_frame,
-	l_ev_frame_1, l_ev_frame_2, l_ev_frame_3, l_ev_frame_4, l_ev_frame_5: EV_FRAME
-	main_notebook,
-	archetype_notebook, definition_notebook, ontology_notebook, status_notebook: EV_NOTEBOOK
-	l_ev_menu_separator_1,
-	l_ev_menu_separator_2, l_ev_menu_separator_3, l_ev_menu_separator_4, l_ev_menu_separator_5,
-	l_ev_menu_separator_6, l_ev_menu_separator_7, l_ev_menu_separator_8, history_menu_separator,
-	l_ev_menu_separator_9, l_ev_menu_separator_10: EV_MENU_SEPARATOR
+	l_ev_frame_1, l_ev_frame_2, l_ev_frame_3, l_ev_frame_4, l_ev_frame_5, term_definitions_frame,
+	constraint_definitions_frame: EV_FRAME
+	main_notebook, archetype_notebook, definition_notebook,
+	status_notebook: EV_NOTEBOOK
+	l_ev_menu_separator_1, l_ev_menu_separator_2, l_ev_menu_separator_3,
+	l_ev_menu_separator_4, l_ev_menu_separator_5, l_ev_menu_separator_6, l_ev_menu_separator_7,
+	l_ev_menu_separator_8, history_menu_separator, l_ev_menu_separator_9, l_ev_menu_separator_10: EV_MENU_SEPARATOR
 
 feature {NONE} -- Implementation
 
