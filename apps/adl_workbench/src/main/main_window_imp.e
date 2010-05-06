@@ -191,6 +191,7 @@ feature {NONE}-- Initialization
 			create l_ev_vertical_box_13
 			create used_by_tree
 			create terminology_area
+			create l_ev_vertical_split_area_1
 			create term_definitions_frame
 			create ontology_term_definitions_multi_column_list
 			create constraint_definitions_frame
@@ -388,9 +389,10 @@ feature {NONE}-- Initialization
 			l_ev_frame_5.extend (l_ev_vertical_box_13)
 			l_ev_vertical_box_13.extend (used_by_tree)
 			archetype_notebook.extend (terminology_area)
-			terminology_area.extend (term_definitions_frame)
+			terminology_area.extend (l_ev_vertical_split_area_1)
+			l_ev_vertical_split_area_1.extend (term_definitions_frame)
 			term_definitions_frame.extend (ontology_term_definitions_multi_column_list)
-			terminology_area.extend (constraint_definitions_frame)
+			l_ev_vertical_split_area_1.extend (constraint_definitions_frame)
 			constraint_definitions_frame.extend (ontology_constraint_definitions_multi_column_list)
 			archetype_notebook.extend (statistics_box)
 			statistics_box.extend (l_ev_vertical_box_14)
@@ -853,6 +855,8 @@ feature {NONE}-- Initialization
 			l_ev_frame_5.set_text ("Archetypes that have slots matching the current archetype ID")
 			integer_constant_set_procedures.extend (agent l_ev_vertical_box_13.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
+			l_ev_vertical_split_area_1.enable_item_expand (term_definitions_frame)
+			l_ev_vertical_split_area_1.disable_item_expand (constraint_definitions_frame)
 			term_definitions_frame.set_text ("Term definitions and bindings")
 			color_constant_set_procedures.extend (agent ontology_term_definitions_multi_column_list.set_background_color (?))
 			color_constant_retrieval_functions.extend (agent editable_colour)
@@ -1059,12 +1063,12 @@ feature -- Access
 	arch_translations_accreditation_text, arch_desc_purpose_text,
 	arch_desc_use_text, arch_desc_misuse_text, arch_desc_copyright_text, parser_status_area,
 	test_status_area: EV_TEXT
-	total_split_area, node_map_and_ontology_split_area, test_split_area: EV_VERTICAL_SPLIT_AREA
-	archetype_file_tree,
-	node_map_tree, slots_tree, used_by_tree: EV_TREE
-	arch_desc_auth_orig_auth_mlist, arch_translations_author_mlist,
-	arch_translations_other_details_mlist, arch_desc_resource_orig_res_mlist, path_analysis_multi_column_list,
-	ontology_term_definitions_multi_column_list, ontology_constraint_definitions_multi_column_list: EV_MULTI_COLUMN_LIST
+	total_split_area, node_map_and_ontology_split_area, l_ev_vertical_split_area_1,
+	test_split_area: EV_VERTICAL_SPLIT_AREA
+	archetype_file_tree, node_map_tree, slots_tree, used_by_tree: EV_TREE
+	arch_desc_auth_orig_auth_mlist,
+	arch_translations_author_mlist, arch_translations_other_details_mlist, arch_desc_resource_orig_res_mlist,
+	path_analysis_multi_column_list, ontology_term_definitions_multi_column_list, ontology_constraint_definitions_multi_column_list: EV_MULTI_COLUMN_LIST
 	l_ev_tool_bar_separator_1,
 	l_ev_tool_bar_separator_2, l_ev_tool_bar_separator_3: EV_TOOL_BAR_SEPARATOR
 	viewer_vbox, description_box,
