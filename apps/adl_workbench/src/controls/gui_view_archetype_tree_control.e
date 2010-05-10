@@ -141,7 +141,7 @@ feature {NONE} -- Implementation
    		local
 			node: EV_TREE_ITEM
 		do
-			if (an_item.has_archetypes or else show_entire_ontology) and then not an_item.is_root then
+			if an_item.has_archetypes or else show_entire_ontology then
 				create node
 	 			node.set_data (an_item)
 	 			update_tree_node (node)
@@ -158,7 +158,7 @@ feature {NONE} -- Implementation
 
    	populate_gui_tree_node_exit (an_item: ARCH_REP_ITEM)
    		do
-			if (an_item.has_archetypes or else show_entire_ontology) and then not an_item.is_root then
+			if an_item.has_archetypes or else show_entire_ontology then
 				gui_tree_item_stack.remove
 			end
 		end

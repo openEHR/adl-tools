@@ -152,6 +152,8 @@ feature -- Access
 		once
 			create Result.make (0)
 
+			Result.force (["ontology_category.ico", "ontology category"], "ontology_category")
+
 			Result.force (["class_concrete.ico", "concrete class from RM"], "class_concrete")
 			Result.force (["class_abstract.ico", "abstract class from RM"], "class_abstract")
 			Result.force (["class_empty.ico", "class from RM with no archetypes in current repository"], "class_empty")

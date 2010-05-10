@@ -21,9 +21,39 @@ inherit
 		end
 
 create
-	make_class, make_package
+	make_class, make_package, make_category
 
 feature -- Initialisation
+
+	make_category (a_name: STRING)
+			-- create with ontological name of artefact category
+		require
+			a_name_valid: a_name /= Void and then not a_name.is_empty
+		do
+			make
+			ontological_name := a_name
+			display_name := a_name
+			group_name := "ontology_category"
+			is_package := True
+		ensure
+			ontological_name_set: ontological_name.is_equal (a_name)
+			display_name_set: display_name = ontological_name
+		end
+
+	make_package (a_name: STRING)
+			-- create with ontological name
+		require
+			a_name_valid: a_name /= Void and then not a_name.is_empty
+		do
+			make
+			ontological_name := a_name
+			display_name := a_name
+			group_name := "file_folder_2"
+			is_package := True
+		ensure
+			ontological_name_set: ontological_name.is_equal (a_name)
+			display_name_set: display_name = ontological_name
+		end
 
 	make_class (a_package: STRING; a_class_desc: BMM_CLASS_DEFINITION)
 			-- create with ontological name
@@ -43,21 +73,6 @@ feature -- Initialisation
 		ensure
 			ontological_name_set: ontological_name.is_equal (a_package + {ARCHETYPE_ID}.section_separator.out +  a_class_desc.name)
 			display_name_set: display_name = a_class_desc.name
-		end
-
-	make_package (a_name: STRING)
-			-- create with ontological name
-		require
-			a_name_valid: a_name /= Void and then not a_name.is_empty
-		do
-			make
-			ontological_name := a_name
-			display_name := a_name
-			group_name := "file_folder_2"
-			is_package := True
-		ensure
-			ontological_name_set: ontological_name.is_equal (a_name)
-			display_name_set: display_name = ontological_name
 		end
 
 feature -- Access

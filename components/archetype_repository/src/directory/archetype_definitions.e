@@ -35,6 +35,10 @@ feature -- Definitions
 
 	Ontological_path_separator: STRING = "/"
 
+	Archetype_category: STRING is "archetypes"
+
+	Template_category: STRING is "templates"
+
 	Adl_versions: ARRAYED_LIST [STRING]
 			-- list of ADL versions known in this tool
 		once

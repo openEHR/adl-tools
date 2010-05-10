@@ -62,9 +62,6 @@ create
 
 feature -- Definitions
 
-	Max_passes: INTEGER = 6
-			-- maxium number of passes for processing archetypes from source repositories to directory
-
 	Group_id_adhoc: INTEGER is 1
 
 	Group_id_reference: INTEGER is 2
@@ -318,10 +315,9 @@ feature -- Commands
 		local
 			archs: ARRAYED_LIST [ARCH_REP_ARCHETYPE]
 			parent_key, child_key: STRING
-			ara: ARCH_REP_ARCHETYPE
-			i: INTEGER
 			added_during_pass: INTEGER
 			status_list: ARRAY[INTEGER]
+			i: INTEGER
 		do
 			clear
 			create_directory_structure
@@ -561,7 +557,7 @@ feature {NONE} -- Implementation
 			supp_class_list: ARRAYED_LIST [BMM_CLASS_DEFINITION]
 			removed: BOOLEAN
 		do
-			create {ARCH_REP_MODEL_NODE} directory.make_package (ontological_path_separator.twin)
+			create {ARCH_REP_MODEL_NODE} directory.make_category (Archetype_category.twin)
 			directory_index.force (directory, directory.ontological_name)
 			parent_node := directory
 			from rm_schemas.start until rm_schemas.off loop
