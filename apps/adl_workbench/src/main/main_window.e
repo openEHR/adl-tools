@@ -219,7 +219,13 @@ feature -- Status setting
 				ev_application.destroy
 			end
 
-			populate_archetype_directory
+			if reference_repository_path.is_empty then
+				set_reference_repository_path (application_startup_directory)
+				set_repository
+			else
+				populate_archetype_directory
+			end
+
 			archetype_compiler.set_visual_update_action (agent build_gui_update)
 			initialise_overall_appearance
 			initialise_path_control
@@ -241,15 +247,6 @@ feature -- Status setting
 			if new_news then
 				display_news
 				update_status_file
-			end
-
-			if reference_repository_path.is_empty then
-				set_reference_repository_path (application_startup_directory)
-				set_repository
-
-				if archetype_file_tree.is_empty then
-					populate_archetype_directory
-				end
 			end
 
 			if html_export_directory.is_empty then
@@ -287,7 +284,7 @@ feature -- File events
 			fname := dialog.file_name.as_string_8
 
 			if not fname.is_empty then
-				if not archetype_directory.adhoc_source_repository.has (fname) then
+				if not archetype_directory.adhoc_source_repository.has_path (fname) then
 					set_current_work_directory (file_system.dirname (fname))
 					if not file_system.file_exists (fname) then
 						(create {EV_INFORMATION_DIALOG}.make_with_text ("%"" + fname + "%" not found.")).show_modal_to_window (Current)
@@ -571,7 +568,11 @@ feature {NONE} -- Repository events
 	refresh_repository
 			-- refresh the current repository from source.
 		do
-			populate_archetype_directory
+			set_status_area ("Populating repository ...")
+			archetype_directory.refresh
+			archetype_view_tree_control.populate
+			archetype_test_tree_control.populate
+			populate_statistics
 		end
 
 	build_all
@@ -743,9 +744,13 @@ feature {NONE} -- Tools events
 			create dialog
 			dialog.show_modal_to_window (Current)
 
-			if dialog.has_changed_options then
+			if dialog.has_changed_archetype_options then
 				save_resources_and_show_status
-				populate_view_controls
+				populate_archetype_view_controls
+			end
+			if dialog.has_changed_navigator_options then
+				archetype_view_tree_control.populate
+				archetype_test_tree_control.populate
 			end
 		end
 
@@ -917,7 +922,7 @@ feature -- Archetype commands
 						other.prune (definition_notebook)
 						tab.extend (definition_notebook)
 						ev_application.process_graphical_events
-						populate_view_controls
+						populate_archetype_view_controls
 					end
 				end
 			end
@@ -1022,7 +1027,7 @@ feature {NONE} -- Implementation
 			else
 				set_current_language (language_combo.text.as_string_8)
 				if archetype_directory.has_valid_selected_archetype then
-					populate_view_controls
+					populate_archetype_view_controls
 				end
 			end
 		end
@@ -1045,11 +1050,11 @@ feature {NONE} -- Implementation
 					select_node_in_archetype_tree_view
 
 					if archetype_directory.valid_repository_path (reference_repository_path) then
-						archetype_directory.put_repository (reference_repository_path, 2)
+						archetype_directory.set_reference_repository (reference_repository_path)
 					end
 
 					if archetype_directory.valid_repository_path (work_repository_path) then
-						archetype_directory.put_repository (work_repository_path, 3)
+						archetype_directory.set_work_repository (work_repository_path)
 					end
 
 					archetype_directory.populate_directory
@@ -1094,7 +1099,7 @@ feature {NONE} -- Implementation
 			slot_map_control.clear
 		end
 
-	populate_view_controls
+	populate_archetype_view_controls
 			-- Populate content from visual controls.
 		do
 			description_controls.populate
@@ -1315,7 +1320,7 @@ feature {NONE} -- Build commands
 						populate_archetype_id
 						populate_adl_version
 						populate_languages
-						populate_view_controls
+						populate_archetype_view_controls
 					end
 				end
 			end

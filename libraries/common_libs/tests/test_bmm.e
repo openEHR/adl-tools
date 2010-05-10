@@ -70,13 +70,13 @@ feature -- Test routines
 			assert ("CLUSTER found proerty at /items/items/items", rm_schema.property_definition_at_path ("CLUSTER", "/items/items/items").name.is_equal("items"))
 		end
 
-	test_is_sub_class_of
+	test_is_descendant_of
 			-- New test routine
 		note
-			testing:  "is_sub_class_of", "bmm", "covers/{BMM_SCHEMA}.is_sub_class_of"
+			testing:  "is_sub_class_of", "bmm", "covers/{BMM_SCHEMA}.is_descendant_of"
 		do
-			assert ("COMPOSITION is a subclass of LOCATABLE", rm_schema.is_sub_class_of ("COMPOSITION", "LOCATABLE"))
-			assert ("LOCATABLE is not subclass of COMPOSITION", not rm_schema.is_sub_class_of ("LOCATABLE", "COMPOSITION"))
+			assert ("COMPOSITION is a subclass of LOCATABLE", rm_schema.is_descendant_of ("COMPOSITION", "LOCATABLE"))
+			assert ("LOCATABLE is not subclass of COMPOSITION", not rm_schema.is_descendant_of ("LOCATABLE", "COMPOSITION"))
 		end
 
 	test_immediate_suppliers

@@ -16,6 +16,9 @@ class ARCH_REP_MODEL_NODE
 
 inherit
 	ARCH_REP_ITEM
+		redefine
+			parent
+		end
 
 create
 	make_class, make_package
@@ -28,6 +31,7 @@ feature -- Initialisation
 			a_package_valid: a_package /= Void and then not a_package.is_empty
 			a_name_valid: a_class_desc /= Void
 		do
+			make
 			ontological_name := a_package + {ARCHETYPE_ID}.section_separator.out +  a_class_desc.name
 			display_name := a_class_desc.name
 			if a_class_desc.is_abstract then
@@ -46,6 +50,7 @@ feature -- Initialisation
 		require
 			a_name_valid: a_name /= Void and then not a_name.is_empty
 		do
+			make
 			ontological_name := a_name
 			display_name := a_name
 			group_name := "file_folder_2"
@@ -57,12 +62,6 @@ feature -- Initialisation
 
 feature -- Access
 
-	child_model_node_count: INTEGER
-			-- number of child model nodes
-
-	child_archetype_count: INTEGER
-			-- number of archetypes attached to this node
-
 	group_name: STRING
 			-- Name distinguishing the type of item and the group to which its `repository' belongs.
 			-- Useful as a logical key to pixmap icons, etc.
@@ -73,35 +72,16 @@ feature -- Status Report
 
 	is_package: BOOLEAN
 
-feature -- Modification
-
-	set_child_model_node_count (n: INTEGER)
-			-- update child_model_node_count
-		require
-			n > 0
+	has_archetypes: BOOLEAN
+			-- True if there are any archetypes at or below this point
 		do
-			child_model_node_count := n
-		ensure
-			child_model_node_count = n
+			Result := subtree_archetype_count > 0
 		end
 
-	set_child_archetype_count (n: INTEGER)
-			-- update child_archetype_count
-		require
-			n > 0
-		do
-			child_archetype_count := n
-		ensure
-			child_archetype_count = n
-		end
+feature {ARCH_REP_ITEM} -- Implementation
 
-	increment_child_archetype_count
-			-- update child_model_node_count
-		do
-			child_archetype_count := child_archetype_count + 1
-		ensure
-			child_archetype_count = old child_archetype_count + 1
-		end
+	parent: ARCH_REP_MODEL_NODE
+			-- parent node
 
 invariant
 	not is_package and is_abstract

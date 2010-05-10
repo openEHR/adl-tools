@@ -154,6 +154,7 @@ feature -- Access
 
 			Result.force (["class_concrete.ico", "concrete class from RM"], "class_concrete")
 			Result.force (["class_abstract.ico", "abstract class from RM"], "class_abstract")
+			Result.force (["class_empty.ico", "class from RM with no archetypes in current repository"], "class_empty")
 
 			Result.force (["archetype_1.ico", "Ad hoc archetype (not parsed yet)"], "archetype_1")
 			Result.force (["archetype_parsed_1.ico", "Ad hoc archetype (parsed but not compiled)"], "archetype_parsed_1")
@@ -568,6 +569,17 @@ feature -- Application Switches
 			end
 		end
 
+	show_entire_ontology: BOOLEAN
+			-- Display the entire ontology class tree, even when classes have no archetypes
+		local
+			str: STRING
+		do
+			str := resource_value ("default", "show_entire_ontology")
+			if str.is_boolean then
+				Result := str.to_boolean
+			end
+		end
+
 	validation_strict: BOOLEAN
 			-- Set strict validation on?
 		local
@@ -786,6 +798,13 @@ feature -- Application Switch Setting
 		do
 			set_resource_value ("default", "show_line_numbers", flag.out)
 		end
+
+	set_show_entire_ontology (flag: BOOLEAN)
+			-- Set flag for show_entire_ontology.
+		do
+			set_resource_value ("default", "show_entire_ontology", flag.out)
+		end
+
 
 	set_validation_strict (flag: BOOLEAN)
 			-- Set flag for strict parser validation

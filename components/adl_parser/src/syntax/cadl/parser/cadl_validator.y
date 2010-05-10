@@ -202,7 +202,6 @@ c_complex_object_head: c_complex_object_id c_occurrences
 					io.new_line
 					indent.append("%T")
 				end
-				
 
 				-- put it under current attribute, unless it is the root object, in which case it will be returned
 				-- via the 'output' attribute of this parser
@@ -311,6 +310,11 @@ c_object: c_complex_object
 		}
 	;
 
+
+--
+-- The first two forms below correspond to source archetypes, which have no body under a C_ARCHETYPE_ROOT
+-- A c_complex_object-like variant would be needed to parse fully flattened templates.
+--
 c_archetype_root: SYM_USE_ARCHETYPE type_identifier '[' V_ARCHETYPE_ID ']' c_occurrences 
 		{
 			if (create {ARCHETYPE_ID}).valid_id($4) then
@@ -320,12 +324,12 @@ c_archetype_root: SYM_USE_ARCHETYPE type_identifier '[' V_ARCHETYPE_ID ']' c_occ
 				end
 			end
 		}
-	| SYM_USE_ARCHETYPE type_identifier '[' V_LOCAL_CODE V_ARCHETYPE_ID ']' c_occurrences
+	| SYM_USE_ARCHETYPE type_identifier '[' V_LOCAL_CODE ',' V_ARCHETYPE_ID ']' c_occurrences
 		{
-			if (create {ARCHETYPE_ID}).valid_id($5) then
-				create $$.make_slot_id($2, $5, $4)
-				if $7 /= Void then
-					$$.set_occurrences($7)
+			if (create {ARCHETYPE_ID}).valid_id($6) then
+				create $$.make_slot_id($2, $6, $4)
+				if $8 /= Void then
+					$$.set_occurrences($8)
 				end
 			end
 		}
@@ -346,7 +350,7 @@ archetype_internal_ref: SYM_USE_NODE type_identifier c_occurrences absolute_path
 					io.put_string("occurrences=" + $$.occurrences.as_string + " ")
 				end
 				io.put_string($$.rm_type_name + " path=" + $$.target_path + "%N") 
-				io.put_string(indent + "C_ATTR " + c_attrs.item.rm_attribute_name + " put_child(ARCHETYPE_INTERNAL_REF)%N") 
+				io.put_string(indent + "C_ATTR " + c_attrs.item.rm_attribute_name + " safe_put_c_attribute_child(ARCHETYPE_INTERNAL_REF)%N") 
 			end
 
 			if (c_attrs.item.is_multiple or c_attrs.item.child_count > 1) and not $$.is_addressable and not $4.last.object_id.is_empty then
@@ -369,7 +373,6 @@ archetype_slot: c_archetype_slot_head SYM_MATCHES SYM_START_CBLOCK c_includes c_
 			end
 
 			debug("ADL_parse")
-				io.put_string(indent + "POP ARCHETYPE_SLOT " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "]%N") 
 				indent.remove_tail(1)
 			end
 		}
@@ -382,7 +385,7 @@ c_archetype_slot_head: c_archetype_slot_id c_occurrences
 			end
 
 			debug("ADL_parse")
-				io.put_string(indent + "PUSH create ARCHETYPE_SLOT " + archetype_slot.rm_type_name + " [id=" + archetype_slot.node_id + "]")
+				io.put_string(indent + "create ARCHETYPE_SLOT " + archetype_slot.rm_type_name + " [id=" + archetype_slot.node_id + "]")
 				if $2 /= Void then
 					io.put_string("; occurrences=(" + $2.as_string + ")") 
 				end
@@ -537,7 +540,7 @@ c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality
 						c_attrs.put(attr_node)
 						debug("ADL_parse")
 							io.put_string(indent + "PUSH create ATTR_NODE " + rm_attribute_name + "; container = " + attr_node.is_multiple.out + " existence=(" + $2.as_string + "); cardinality=(" + $3.as_string + ")%N") 
-							io.put_string(indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_child(REL)%N") 
+							io.put_string(indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_attribute(REL)%N") 
 							indent.append("%T")
 						end
 						object_nodes.item.put_attribute(attr_node)
@@ -546,7 +549,7 @@ c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality
 						c_attrs.put(attr_node)
 						debug("ADL_parse")
 							io.put_string(indent + "PUSH create ATTR_NODE " + rm_attribute_name + "; container = " + attr_node.is_multiple.out + " existence=(" + $2.as_string + "); cardinality=(" + $3.as_string + ")%N") 
-							io.put_string(indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_child(REL)%N") 
+							io.put_string(indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_attribute(REL)%N") 
 							indent.append("%T")
 						end
 						object_nodes.item.put_attribute(attr_node)
@@ -584,7 +587,7 @@ c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality
 						c_attrs.put(attr_node)
 						debug("ADL_parse")
 							io.put_string(indent + "PUSH create ATTR_NODE " + path_str + "; container = " + attr_node.is_multiple.out + " existence=(" + $2.as_string + ")%N") 
-							io.put_string(indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_child(REL)%N") 
+							io.put_string(indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_attribute(REL)%N") 
 							indent.append("%T")
 						end
 						object_nodes.item.put_attribute(attr_node)
@@ -594,7 +597,7 @@ c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality
 						c_attrs.put(attr_node)
 						debug("ADL_parse")
 							io.put_string(indent + "PUSH create ATTR_NODE " + path_str + "; container = " + attr_node.is_multiple.out + " existence=(" + $2.as_string + ")%N") 
-							io.put_string(indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_child(REL)%N") 
+							io.put_string(indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_attribute(REL)%N") 
 							indent.append("%T")
 						end
 						object_nodes.item.put_attribute(attr_node)

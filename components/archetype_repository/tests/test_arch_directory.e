@@ -40,7 +40,7 @@ feature -- Test routines
 			repository := resource_value ("tests", "validation_repository")
 
 			archetype_directory.make
-			archetype_directory.put_repository (repository, 2)
+			archetype_directory.set_reference_repository (repository)
 			archetype_directory.populate_directory
 
 			expected := "ERROR - No parent matching /specialisation_parent_term found for archetype " +

@@ -108,11 +108,12 @@ feature -- Commands
 						tooltip.append (utf8 ("%N%N" + ara.compiler_status))
 					end
 	 				node.set_tooltip (tooltip)
+	 			else -- it is a model node
+	 				text.append (utf8(" (" + ari.subtree_archetype_count.out + ")"))
 				end
 
 				node.set_text (text)
 				pixmap := pixmaps [ari.group_name]
-
 				if pixmap /= Void then
 					node.set_pixmap (pixmap)
 				end
@@ -140,22 +141,26 @@ feature {NONE} -- Implementation
    		local
 			node: EV_TREE_ITEM
 		do
-			create node
- 			node.set_data (an_item)
- 			update_tree_node (node)
+			if (an_item.has_archetypes or else show_entire_ontology) and then not an_item.is_root then
+				create node
+	 			node.set_data (an_item)
+	 			update_tree_node (node)
 
-			if gui_tree_item_stack.is_empty then
-				gui_tree.extend (node)
-			else
-				gui_tree_item_stack.item.extend (node)
+				if gui_tree_item_stack.is_empty then
+					gui_tree.extend (node)
+				else
+					gui_tree_item_stack.item.extend (node)
+				end
+
+				gui_tree_item_stack.extend (node)
 			end
-
-			gui_tree_item_stack.extend (node)
 		end
 
    	populate_gui_tree_node_exit (an_item: ARCH_REP_ITEM)
    		do
-			gui_tree_item_stack.remove
+			if (an_item.has_archetypes or else show_entire_ontology) and then not an_item.is_root then
+				gui_tree_item_stack.remove
+			end
 		end
 
 	ev_tree_expand(node: EV_TREE_NODE)

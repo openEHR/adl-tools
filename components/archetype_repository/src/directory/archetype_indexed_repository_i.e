@@ -42,7 +42,7 @@ feature -- Access
 
 feature {ARCH_DIRECTORY} -- Access
 
-	archetypes_index: ARRAYED_LIST [ARCH_REP_ARCHETYPE]
+	archetype_list: ARRAYED_LIST [ARCH_REP_ARCHETYPE]
 			-- linear index list for efficient processing
 
 feature -- Commands
@@ -50,8 +50,8 @@ feature -- Commands
 	clear
 			-- Reinitialise `archetypes' and `archetype_index' to empty.
 		do
-			create archetypes.make (0)
-			create archetypes_index.make(0)
+			create archetype_id_index.make (0)
+			create archetype_list.make(0)
 		end
 
 	repopulate
@@ -65,9 +65,9 @@ feature -- Commands
 			-- Make based on `root_path'.
 		do
 			get_archetypes_in_folder (root_path)
-			from archetypes.start until archetypes.off loop
-				archetypes_index.extend(archetypes.item_for_iteration)
-				archetypes.forth
+			from archetype_id_index.start until archetype_id_index.off loop
+				archetype_list.extend(archetype_id_index.item_for_iteration)
+				archetype_id_index.forth
 			end
 		end
 
@@ -83,7 +83,7 @@ feature {NONE} -- Implementation
 
 invariant
 	repository_path_valid: is_valid_directory (root_path)
-	archetypes_attached: archetypes /= Void
+	archetypes_attached: archetype_id_index /= Void
 
 end
 

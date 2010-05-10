@@ -43,8 +43,8 @@ feature -- Access
 
 feature {ARCH_DIRECTORY} -- Access
 
-	archetypes: DS_HASH_TABLE [ARCH_REP_ARCHETYPE, STRING]
-			-- list of all archetypes found in this directory tree
+	archetype_id_index: DS_HASH_TABLE [ARCH_REP_ARCHETYPE, STRING]
+			-- list of all archetypes found in this directory tree, plus adhoc additions, keyed by id
 
 feature -- Status Report
 
@@ -96,7 +96,7 @@ feature -- Commands
 		end
 
 invariant
-	archetypes_attached: archetypes /= Void
+	archetypes_attached: archetype_id_index /= Void
 	timestamp_natural: text_timestamp >= 0
 	group_id_valid: group_id > 0
 

@@ -18,11 +18,28 @@ inherit
 	SHARED_RESOURCES
 		export
 			{NONE} all
+		undefine
+			is_equal
 		end
 
 	ARCHETYPE_DEFINITIONS
 		export
 			{NONE} all
+		undefine
+			is_equal
+		end
+
+	COMPARABLE
+
+feature -- Definitions
+
+	Counter_never_evaluated: INTEGER is -1
+
+feature -- Initialisation
+
+	make
+		do
+			subtree_archetype_count_cache := Counter_never_evaluated
 		end
 
 feature -- Access
@@ -57,7 +74,90 @@ feature -- Access
 			Result.append (display_name)
 		end
 
-feature -- Modification
+	subtree_archetype_count: INTEGER
+			-- number of archetypes attached to this node
+		do
+			if subtree_archetype_count_cache = Counter_never_evaluated then
+				subtree_archetype_count_cache := 0
+				if has_children then
+					from children.start until children.off loop
+						-- the following is technically naughty, since it creates a dependency on a descendant type, but
+						-- the code reduction seems worth it
+						if attached {ARCH_REP_ARCHETYPE} children.item as ara then
+							subtree_archetype_count_cache := subtree_archetype_count_cache + 1
+						end
+						subtree_archetype_count_cache := subtree_archetype_count_cache + children.item.subtree_archetype_count
+						children.forth
+					end
+				end
+			end
+			Result := subtree_archetype_count_cache
+		end
+
+feature -- Status Report
+
+	has_archetypes: BOOLEAN
+			-- True if there are any archetypes at or below this point
+		deferred
+		end
+
+	has_children: BOOLEAN
+			-- True if there are any child nodes
+		do
+			Result := children /= Void
+		end
+
+	is_root: BOOLEAN
+			-- True if this node is the root of the tree
+		do
+			Result := parent = Void
+		end
+
+feature -- Iteration
+
+	child_start
+			-- iterate through child nodes
+		require
+			has_chidlren: has_children
+		do
+			children.start
+		end
+
+	child_off: BOOLEAN
+		require
+			has_chidlren: has_children
+		do
+			Result := children.off
+		end
+
+	child_forth
+		require
+			has_chidlren: has_children
+		do
+			children.forth
+		end
+
+	child_item: like child_type
+		require
+			has_chidlren: has_children
+		do
+			Result := children.item
+		end
+
+feature {ARCH_DIRECTORY} -- Modification
+
+	put_child (a_child: like child_type)
+		require
+			a_child /= Void
+		do
+			if children = Void then
+				create children.make
+			end
+			children.extend (a_child)
+			a_child.set_parent(Current)
+		end
+
+feature {ARCH_REP_ITEM} -- Modification
 
 	set_parent (a_parent: ARCH_REP_ITEM)
 		require
@@ -66,9 +166,27 @@ feature -- Modification
 			parent := a_parent
 		end
 
+feature -- Comparison
+
+	is_less alias "<" (other: like Current): BOOLEAN
+			-- Is current object less than `other'?
+		do
+			Result := ontological_name < other.ontological_name
+		end
+
 feature {ARCH_REP_ITEM} -- Implementation
 
+	children: SORTED_TWO_WAY_LIST [like child_type]
+			-- list of child nodes
+
+	child_type: ARCH_REP_ITEM
+			-- type of allowable child node
+
 	parent: ARCH_REP_ITEM
+			-- parent node
+
+	subtree_archetype_count_cache: INTEGER
+			-- stored counter of archetype child objects
 
 invariant
 	ontological_name_attached: ontological_name /= Void

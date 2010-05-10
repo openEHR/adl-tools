@@ -32,53 +32,36 @@ feature {NONE} -- Initialisation
 			group_id_valid: a_group_id > 0
 		do
 			group_id := a_group_id
-			work_path := system_temp_file_directory.twin
-			create archetypes.make (0)
+			create archetype_id_index.make (0)
 		ensure
 			group_id_set: group_id = a_group_id
 		end
 
 feature -- Access
 
-	work_path: attached STRING assign set_work_path
-			-- The current work path on the file system, normally used to tell GUI or other
-			-- file searching method where to start looking.
-
 	item (full_path: STRING): ARCH_REP_ARCHETYPE
 			-- The archetype at `full_path'.
 		require
-			has_full_path: has (full_path)
+			has_full_path: has_path (full_path)
 		do
-			Result := archetypes.item (full_path)
+			Result := archetype_id_index.item (full_path)
 		end
 
 feature -- Status Report
 
-	has (full_path: STRING): BOOLEAN
+	has_path (full_path: STRING): BOOLEAN
 			-- Has `full_path' been added to this repository?
 		do
-			Result := archetypes.has (full_path)
+			Result := archetype_id_index.has (full_path)
 		end
 
 feature -- Modification
-
-	set_work_path (path: STRING)
-			-- Set `work_path'.
-		require
-			path_attached: path /= Void
-			path_not_empty: is_valid_directory (path)
-		do
-			work_path := path.twin
-		ensure
-			work_path_set: work_path.is_equal (path)
-			work_path_not_same: work_path /= path
-		end
 
 	add_item (full_path: STRING)
 			-- Add the archetype designated by `full_path' to this repository.
 		require
 			path_valid: is_valid_path (full_path)
-			hasnt_path: not has (full_path)
+			hasnt_path: not has_path (full_path)
 		local
 			ara: ARCH_REP_ARCHETYPE
 			arch_id, parent_arch_id: ARCHETYPE_ID
@@ -94,7 +77,7 @@ feature -- Modification
 						else
 							create ara.make (full_path, arch_id, Current)
 						end
-						archetypes.force (ara, full_path)
+						archetype_id_index.force (ara, full_path)
 					else
 						post_info (Current, "build_directory", "pair_filename_i1", <<full_path>>)
 					end
@@ -105,12 +88,9 @@ feature -- Modification
 				post_error (Current, "build_directory", "parse_archetype_e5", <<full_path>>)
 			end
 		ensure
-			added_1_or_none: (0 |..| 1).has (archetypes.count - old archetypes.count)
-			has_path: archetypes.count > old archetypes.count implies has (full_path)
+			added_1_or_none: (0 |..| 1).has (archetype_id_index.count - old archetype_id_index.count)
+			has_path: archetype_id_index.count > old archetype_id_index.count implies has_path (full_path)
 		end
-
-invariant
-	work_path_valid: is_valid_directory (work_path)
 
 end
 

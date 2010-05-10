@@ -78,11 +78,11 @@ feature {NONE} -- Implementation
 									end
 
 									-- the following check ensures only one of a .adl/.adls pair goes into the repository
-									if not archetypes.has (arch_id.semantic_id) then
-										archetypes.force (ara, arch_id.semantic_id)
+									if not archetype_id_index.has (arch_id.semantic_id) then
+										archetype_id_index.force (ara, arch_id.semantic_id)
 									-- look to see if more recent version of an existing archetype; if so, use it
-									elseif arch_id.version_number > archetypes.item (arch_id.semantic_id).id.version_number then
-										archetypes.replace (ara, arch_id.semantic_id)
+									elseif arch_id.version_number > archetype_id_index.item (arch_id.semantic_id).id.version_number then
+										archetype_id_index.replace (ara, arch_id.semantic_id)
 									end
 								else
 									post_warning (Current, "build_directory", "parse_archetype_e7", <<fn>>)

@@ -48,6 +48,7 @@ feature {NONE}-- Initialization
 			create show_line_numbers_check_button
 			create l_ev_horizontal_box_4
 			create display_archetype_source_check_button
+			create show_entire_ontology_check_button
 			create l_ev_horizontal_box_5
 			create l_ev_label_1
 			create parser_error_reporting_level_combo_box
@@ -80,6 +81,7 @@ feature {NONE}-- Initialization
 			l_ev_horizontal_box_3.extend (show_line_numbers_check_button)
 			l_ev_vertical_box_1.extend (l_ev_horizontal_box_4)
 			l_ev_horizontal_box_4.extend (display_archetype_source_check_button)
+			l_ev_horizontal_box_4.extend (show_entire_ontology_check_button)
 			l_ev_vertical_box_1.extend (l_ev_horizontal_box_5)
 			l_ev_horizontal_box_5.extend (l_ev_label_1)
 			l_ev_horizontal_box_5.extend (parser_error_reporting_level_combo_box)
@@ -143,6 +145,8 @@ feature {NONE}-- Initialization
 			l_ev_horizontal_box_4.set_padding (10)
 			l_ev_horizontal_box_4.set_border_width (10)
 			display_archetype_source_check_button.set_text ("Indicate original creation form?")
+			show_entire_ontology_check_button.set_text ("Show entire ontology in explorer?")
+			show_entire_ontology_check_button.set_tooltip ("Show all classes in ontology even if there are no archetypes based on them in the current repository")
 			l_ev_horizontal_box_5.set_padding (10)
 			l_ev_horizontal_box_5.set_border_width (10)
 			l_ev_horizontal_box_5.disable_item_expand (l_ev_label_1)
@@ -218,7 +222,7 @@ feature -- Access
 	l_ev_vertical_box_1,
 	l_ev_vertical_box_2: EV_VERTICAL_BOX
 	show_definition_tree_expanded_check_button, show_line_numbers_check_button,
-	display_archetype_source_check_button, validation_strict_check_button: EV_CHECK_BUTTON
+	display_archetype_source_check_button, show_entire_ontology_check_button, validation_strict_check_button: EV_CHECK_BUTTON
 	l_ev_label_1,
 	l_ev_label_2, l_ev_label_3, l_ev_label_4: EV_LABEL
 	export_html_text: EV_TEXT_FIELD

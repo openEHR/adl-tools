@@ -59,8 +59,11 @@ feature {NONE} -- Initialization
 
 feature -- Status
 
-	has_changed_options: BOOLEAN
+	has_changed_archetype_options: BOOLEAN
 			-- Has the user OK'ed changes?
+
+	has_changed_navigator_options: BOOLEAN
+			-- True if some option has changed that would require the navigator to be redrawn
 
 feature {NONE} -- Implementation
 
@@ -118,6 +121,13 @@ feature {NONE} -- Implementation
 			end
 
 			export_html_text.set_text (html_export_directory)
+
+			if show_entire_ontology then
+				show_entire_ontology_check_button.enable_select
+			else
+				show_entire_ontology_check_button.disable_select
+			end
+			old_show_entire_ontology := show_entire_ontology
 		end
 
 	on_ok
@@ -135,6 +145,7 @@ feature {NONE} -- Implementation
 
 			set_expand_node_tree (show_definition_tree_expanded_check_button.is_selected)
 			set_show_line_numbers (show_line_numbers_check_button.is_selected)
+			set_show_entire_ontology (show_entire_ontology_check_button.is_selected)
 			set_display_archetype_source (display_archetype_source_check_button.is_selected)
 			set_validation_strict(validation_strict_check_button.is_selected)
 			set_strict_validation(validation_strict_check_button.is_selected)
@@ -142,7 +153,10 @@ feature {NONE} -- Implementation
 			set_html_export_directory (export_html_text.text.as_string_8)
 			set_use_flat_adl_version(adl_save_version_combo_box.text.as_string_8)
 
-			has_changed_options := True
+			has_changed_archetype_options := True
+			if show_entire_ontology /= old_show_entire_ontology then
+				has_changed_navigator_options := True
+			end
 		end
 
 	on_editor_command_add
@@ -184,6 +198,11 @@ feature {NONE} -- Implementation
 			end
 		end
 
+feature {NONE} -- Implementation
+
+	old_show_entire_ontology: BOOLEAN
+			-- value of show_entire_ontology prior to setting by optin dialog
+			
 end
 
 
