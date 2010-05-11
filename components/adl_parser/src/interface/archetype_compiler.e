@@ -17,7 +17,7 @@ note
 class ARCHETYPE_COMPILER
 
 inherit
-	SHARED_ARCHETYPE_DIRECTORY
+	SHARED_KNOWLEDGE_REPOSITORY
 
 	SHARED_RESOURCES
 		export
@@ -85,25 +85,25 @@ feature -- Commands
 	build_all
 			-- Build the whole system, but not artefacts that seem to be built already.
 		do
-			do_subtree (archetype_directory.directory, agent build_archetype (False, ?), "building system")
+			do_subtree (kr.archetype_directory, agent build_archetype (False, ?), "building system")
 		end
 
 	rebuild_all
 			-- Rebuild the whole system from scratch, regardless of previous attempts.
 		do
-			do_subtree (archetype_directory.directory, agent build_archetype (True, ?), "rebuilding system from scratch")
+			do_subtree (kr.archetype_directory, agent build_archetype (True, ?), "rebuilding system from scratch")
 		end
 
 	build_subtree
 			-- Build the sub-system at and below `archetype_directory.selected_node', but not artefacts that seem to be built already.
 		do
-			do_subtree (archetype_directory.selected_item, agent build_archetype (False, ?), "building sub-tree")
+			do_subtree (kr.selected_item, agent build_archetype (False, ?), "building sub-tree")
 		end
 
 	rebuild_subtree
 			-- Rebuild the sub-system at and below `archetype_directory.selected_node' from scratch, regardless of previous attempts.
 		do
-			do_subtree (archetype_directory.selected_item, agent build_archetype (True, ?), "rebuilding sub-tree from scratch")
+			do_subtree (kr.selected_item, agent build_archetype (True, ?), "rebuilding sub-tree from scratch")
 		end
 
 	build_lineage (ara: ARCH_REP_ARCHETYPE)
@@ -129,7 +129,7 @@ feature -- Commands
 		require
 			directory_attached: html_export_directory /= Void
 		do
-			do_subtree (archetype_directory.directory, agent export_archetype_html (html_export_directory, False, ?), "exporting built system as html")
+			do_subtree (kr.archetype_directory, agent export_archetype_html (html_export_directory, False, ?), "exporting built system as html")
 		end
 
 	build_and_export_all_html (html_export_directory: STRING)
@@ -137,7 +137,7 @@ feature -- Commands
 		require
 			directory_attached: html_export_directory /= Void
 		do
-			do_subtree (archetype_directory.directory, agent export_archetype_html (html_export_directory, True, ?), "building system and exporting as html")
+			do_subtree (kr.archetype_directory, agent export_archetype_html (html_export_directory, True, ?), "building system and exporting as html")
 		end
 
 feature {NONE} -- Implementation
@@ -152,7 +152,7 @@ feature {NONE} -- Implementation
 			call_visual_update_action (Void)
 			is_interrupted := False
 			build_completed := False
-			archetype_directory.do_subtree (subtree, agent do_if_archetype (?, action), Void)
+			kr.do_subtree (subtree, agent do_if_archetype (?, action), Void)
 			status := create_message ("compiler_finished_status", <<message>>)
 			call_visual_update_action (Void)
 			if not is_interrupted then

@@ -19,7 +19,7 @@ class
 inherit
 	OPENEHR_TEST_SET
 
-	SHARED_ARCHETYPE_DIRECTORY
+	SHARED_KNOWLEDGE_REPOSITORY
 
 	SHARED_ARCHETYPE_COMPILER
 
@@ -39,9 +39,9 @@ feature -- Test routines
 			set_status_reporting_level (message_type_error)
 			repository := resource_value ("tests", "validation_repository")
 
-			archetype_directory.make
-			archetype_directory.set_reference_repository (repository)
-			archetype_directory.populate_directory
+			kr.make
+			kr.set_reference_repository (repository)
+			kr.populate_directory
 
 			expected := "ERROR - No parent matching /specialisation_parent_term found for archetype " +
 						repository + "\adl-test-ENTRY.specialisation_parent_term-missing.v1.adl      (ARCH_DIRECTORY.merge_enter)%N" +

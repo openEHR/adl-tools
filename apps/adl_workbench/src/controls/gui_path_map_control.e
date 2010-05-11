@@ -20,7 +20,7 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_ARCHETYPE_DIRECTORY
+	SHARED_KNOWLEDGE_REPOSITORY
 		export
 			{NONE} all
 		end
@@ -92,7 +92,7 @@ feature -- Commands
 			-- Add am empty column at the end so the width of the true last column can be set to zero on all platforms.
 			path_list.set_column_title ("", path_control_column_names.count + 1)
 
-			if archetype_directory.has_valid_selected_archetype then
+			if kr.has_valid_selected_archetype then
 				if filter_combo.text.is_equal ("All") then
 					p_paths := target_archetype.physical_paths
 					l_paths := target_archetype.logical_paths (current_language, False)
@@ -214,12 +214,12 @@ feature {NONE} -- Implementation
 	target_archetype: ARCHETYPE
 			-- differential or flat version of archetype, depending on setting of `in_differential_mode'
 		require
-			archetype_directory.has_selected_archetype
+			kr.has_selected_archetype
 		do
 			if in_differential_mode then
-				Result := archetype_directory.selected_archetype.differential_archetype
+				Result := kr.selected_archetype.differential_archetype
 			else
-				Result := archetype_directory.selected_archetype.flat_archetype
+				Result := kr.selected_archetype.flat_archetype
 			end
 		end
 

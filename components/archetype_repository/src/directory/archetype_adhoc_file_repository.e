@@ -70,7 +70,7 @@ feature -- Modification
 			if last_miniparse_valid then
 				if not last_archetype_id_old_style then
 					create arch_id.make_from_string(last_archetype_id)
-					if not archetype_directory.archetype_index.has (last_archetype_id) then
+					if not kr.archetype_index.has (last_archetype_id) then
 						if last_archetype_specialised then
 							create parent_arch_id.make_from_string(last_parent_archetype_id)
 							create ara.make_specialised (full_path, arch_id, parent_arch_id, Current)

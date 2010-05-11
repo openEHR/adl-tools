@@ -144,7 +144,7 @@ feature -- Iteration
 			Result := children.item
 		end
 
-feature {ARCH_DIRECTORY} -- Modification
+feature {KNOWLEDGE_REPOSITORY} -- Modification
 
 	put_child (a_child: like child_type)
 		require

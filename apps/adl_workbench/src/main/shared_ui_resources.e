@@ -156,7 +156,7 @@ feature -- Access
 
 			Result.force (["class_concrete.ico", "concrete class from RM"], "class_concrete")
 			Result.force (["class_abstract.ico", "abstract class from RM"], "class_abstract")
-			Result.force (["class_empty.ico", "class from RM with no archetypes in current repository"], "class_empty")
+		--	Result.force (["class_empty.ico", "class from RM with no archetypes in current repository"], "class_empty")
 
 			Result.force (["archetype_1.ico", "Ad hoc archetype (not parsed yet)"], "archetype_1")
 			Result.force (["archetype_parsed_1.ico", "Ad hoc archetype (parsed but not compiled)"], "archetype_parsed_1")

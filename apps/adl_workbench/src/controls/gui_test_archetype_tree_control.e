@@ -20,7 +20,7 @@ inherit
 			on_grid_key_press
 		end
 
-	SHARED_ARCHETYPE_DIRECTORY
+	SHARED_KNOWLEDGE_REPOSITORY
 		export
 			{NONE} all
 		end
@@ -131,7 +131,7 @@ feature -- Commands
 			gli.enable_select
 			grid_row_stack.extend (gli.row)
 
- 			archetype_directory.do_subtree (archetype_directory.directory, agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
+ 			kr.do_subtree (kr.archetype_directory, agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
 			grid.column (1).set_title ("Archetype")
 
 			-- put names on columns

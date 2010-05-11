@@ -40,7 +40,7 @@ feature -- Access
 	root_path: STRING
 			-- Path of file-system repository of archetypes.
 
-feature {ARCH_DIRECTORY} -- Access
+feature {KNOWLEDGE_REPOSITORY} -- Access
 
 	archetype_list: ARRAYED_LIST [ARCH_REP_ARCHETYPE]
 			-- linear index list for efficient processing

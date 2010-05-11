@@ -17,7 +17,7 @@ deferred class
 inherit
 	ARCHETYPE_REPOSITORY_I
 
-	SHARED_ARCHETYPE_DIRECTORY
+	SHARED_KNOWLEDGE_REPOSITORY
 		export
 			{NONE} all
 		end

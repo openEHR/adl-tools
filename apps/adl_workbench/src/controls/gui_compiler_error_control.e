@@ -27,7 +27,7 @@ inherit
 			on_grid_key_press
 		end
 
-	SHARED_ARCHETYPE_DIRECTORY
+	SHARED_KNOWLEDGE_REPOSITORY
 		export
 			{NONE} all
 		end
@@ -207,11 +207,11 @@ feature -- Commands
 				end
 
 			create statistics_element.make_last (root, "statistics", ns)
-			create_category_element.call ([statistics_element, "Total Archetypes", archetype_directory.total_archetype_count])
-			create_category_element.call ([statistics_element, "Specialised Archetypes", archetype_directory.specialised_archetype_count])
-			create_category_element.call ([statistics_element, "Archetypes with slots", archetype_directory.slotted_archetype_count])
-			create_category_element.call ([statistics_element, "Archetypes used by others", archetype_directory.used_by_archetype_count])
-			create_category_element.call ([statistics_element, "Bad Archetypes", archetype_directory.bad_archetype_count])
+			create_category_element.call ([statistics_element, "Total Archetypes", kr.total_archetype_count])
+			create_category_element.call ([statistics_element, "Specialised Archetypes", kr.specialised_archetype_count])
+			create_category_element.call ([statistics_element, "Archetypes with slots", kr.slotted_archetype_count])
+			create_category_element.call ([statistics_element, "Archetypes used by others", kr.used_by_archetype_count])
+			create_category_element.call ([statistics_element, "Bad Archetypes", kr.bad_archetype_count])
 
 			from
 				err_type := categories.lower

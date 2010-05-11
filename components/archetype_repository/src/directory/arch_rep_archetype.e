@@ -15,7 +15,7 @@ note
 class ARCH_REP_ARCHETYPE
 
 inherit
-	SHARED_ARCHETYPE_DIRECTORY
+	SHARED_KNOWLEDGE_REPOSITORY
 		undefine
 			is_equal
 		end
@@ -310,36 +310,6 @@ feature -- Access (semantic)
 
 feature -- Status Report - Compilation
 
-	is_valid_path (path: STRING): BOOLEAN
-			-- Is `path' a valid, existing directory or file on `file_repository'?
-		do
-			Result := file_repository.is_valid_path (path)
-		ensure
-			false_if_void: Result implies path /= Void
-		end
-
-	is_valid_directory (path: STRING): BOOLEAN
-			-- Is `path' a valid, existing directory on `file_repository'?
-		do
-			Result := file_repository.is_valid_directory (path)
-		ensure
-			false_if_void: Result implies path /= Void
-		end
-
-	is_valid_directory_part (path: STRING): BOOLEAN
-			-- Is the directory part of `path', whose last section is a file name, valid on `file_repository'?
-		do
-			Result := file_repository.is_valid_directory_part (path)
-		ensure
-			false_if_void: Result implies path /= Void
-		end
-
-	is_at_path (path: STRING): BOOLEAN
-			-- Is `path' the same as either `differential_path' or `legacy_flat_path'?
-		do
-			Result := differential_path.same_string (path) or legacy_flat_path.same_string (path)
-		end
-
 	has_differential_file: BOOLEAN
 			-- Does the repository have a source-form file for this archetype?
 		do
@@ -441,7 +411,7 @@ feature -- Status Setting
 		do
 			if not parse_attempted then
 				parse_attempted := True
-				archetype_directory.increment_parse_attempted_archetype_count
+				kr.increment_parse_attempted_archetype_count
 			end
 			create last_compile_attempt_timestamp.make_now
 		end
@@ -461,11 +431,10 @@ feature -- Status Setting
 feature -- Commands
 
 	parse_archetype
-			-- Parse and validate `target', in differential form if available, else in flat form.
+			-- Parse and validate `target', in differential form if available, else in legacy flat form.
 		local
 			legacy_flat_archetype: FLAT_ARCHETYPE
 		do
-
 			if not exception_encountered then
 				reset
 				clear_billboard
@@ -799,7 +768,7 @@ feature {NONE} -- Implementation
 			validate_attempted := True
 			is_valid := validator.passed
 			differential_archetype.set_is_valid (is_valid)
-			archetype_directory.update_slot_statistics (Current)
+			kr.update_slot_statistics (Current)
 
 			-- now perform validation which requires flat form
 			if is_valid then

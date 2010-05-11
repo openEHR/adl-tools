@@ -29,7 +29,7 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_ARCHETYPE_DIRECTORY
+	SHARED_KNOWLEDGE_REPOSITORY
 
 	SHARED_APPLICATION_CONTEXT
 		export
@@ -158,7 +158,7 @@ feature -- Commands
 			archetype_tree_root_set := False
 			create tree_item_stack.make (0)
 
-			if archetype_directory.has_valid_selected_archetype then
+			if kr.has_valid_selected_archetype then
 				create tree_iterator.make (target_archetype.definition.representation)
 				tree_iterator.do_all (agent node_build_enter_action (?, ?), agent node_build_exit_action (?, ?))
 
@@ -222,7 +222,7 @@ feature -- Commands
 						s ?= node_data
 
 						if s /= Void and then is_valid_code (s) then
-							if archetype_directory.has_valid_selected_archetype then
+							if kr.has_valid_selected_archetype then
 								if ontology.has_term_code (s) then
 									gui.ontology_controls.select_term (s)
 								end
@@ -289,7 +289,7 @@ feature -- Commands
 			-- roll the tree up so that nodes whose rolled_up_specialisation_status is
 			-- ss_inherited are closed, but nodes with
 		require
-			archetype_selected: archetype_directory.has_valid_selected_archetype
+			archetype_selected: kr.has_valid_selected_archetype
 		do
 			if target_archetype.is_specialised then
 				create node_list.make(0)
@@ -311,19 +311,19 @@ feature {NONE} -- Implementation
 	target_archetype: attached ARCHETYPE
 			-- Differential or flat version of archetype, depending on setting of `in_differential_mode'.
 		require
-			archetype_selected: archetype_directory.has_valid_selected_archetype
+			archetype_selected: kr.has_valid_selected_archetype
 		do
 			if in_differential_mode then
-				Result := archetype_directory.selected_archetype.differential_archetype
+				Result := kr.selected_archetype.differential_archetype
 			else
-				Result := archetype_directory.selected_archetype.flat_archetype
+				Result := kr.selected_archetype.flat_archetype
 			end
 		end
 
 	ontology: attached ARCHETYPE_ONTOLOGY
 			-- The ontology for `target_archetype'.
 		require
-			archetype_selected: archetype_directory.has_valid_selected_archetype
+			archetype_selected: kr.has_valid_selected_archetype
 		do
 			Result := target_archetype.ontology
 		end
@@ -358,7 +358,7 @@ feature {NONE} -- Implementation
 
 			-- Always colourise inherited & overidden nodes. If we want a switch for this, implement a new flag.
 			-- if in_differential_mode then
-				if archetype_directory.has_valid_selected_archetype then
+				if kr.has_valid_selected_archetype then
 					arch_const ?= an_og_node.content_item
 					spec_sts := arch_const.specialisation_status (target_archetype.specialisation_depth).value
 
@@ -536,7 +536,7 @@ feature {NONE} -- Implementation
 					if c_o /= Void then
 						if in_technical_mode then
 							a_ti.set_tooltip (utf8 (c_o.representation.path.as_string))
-						elseif archetype_directory.has_valid_selected_archetype then
+						elseif kr.has_valid_selected_archetype then
 							a_ti.set_tooltip (utf8 (ontology.physical_to_logical_path (c_o.representation.path.as_string, current_language)))
 						end
 					end
@@ -548,7 +548,7 @@ feature {NONE} -- Implementation
 						arch_const ?= a_node
 
 						if arch_const /= Void then
-							if archetype_directory.has_valid_selected_archetype then
+							if kr.has_valid_selected_archetype then
 								spec_sts := arch_const.specialisation_status (target_archetype.specialisation_depth).value
 
 								if spec_sts = ss_inherited or spec_sts = ss_redefined then
@@ -574,7 +574,7 @@ feature {NONE} -- Implementation
 								create pixmap_ext.make (0)
 
 								if in_differential_mode then
-									if archetype_directory.has_valid_selected_archetype then
+									if kr.has_valid_selected_archetype then
 										spec_sts := c_c_p.specialisation_status (target_archetype.specialisation_depth).value
 										if spec_sts = ss_inherited or spec_sts = ss_redefined then
 											pixmap_ext.append ("." + specialisation_status_names.item (spec_sts))
@@ -605,7 +605,7 @@ feature {NONE} -- Implementation
 						create pixmap_ext.make(0)
 
 						if in_differential_mode then
-							if archetype_directory.has_valid_selected_archetype then
+							if kr.has_valid_selected_archetype then
 								spec_sts := c_dv_ordinal.specialisation_status (target_archetype.specialisation_depth).value
 
 								if spec_sts = ss_inherited or spec_sts = ss_redefined then
@@ -631,7 +631,7 @@ feature {NONE} -- Implementation
 						if attached {EV_TREE_NODE} a_ti.parent as parent_ti then
 							if attached {C_DV_QUANTITY} parent_ti.data as c_q2 then
 								create pixmap_ext.make(0)
-								if in_differential_mode and archetype_directory.has_valid_selected_archetype then
+								if in_differential_mode and kr.has_valid_selected_archetype then
 									spec_sts := c_q2.specialisation_status (target_archetype.specialisation_depth).value
 									if spec_sts = ss_inherited or spec_sts = ss_redefined then
 										pixmap_ext.append ("." + specialisation_status_names.item(spec_sts))
@@ -727,7 +727,7 @@ feature {NONE} -- Implementation
 
 			if in_technical_mode then
 				Result.set_tooltip (utf8 (an_og_node.path.as_string))
-			elseif archetype_directory.has_valid_selected_archetype then
+			elseif kr.has_valid_selected_archetype then
 				Result.set_tooltip (utf8 (ontology.physical_to_logical_path (an_og_node.path.as_string, current_language)))
 			end
 
@@ -915,7 +915,7 @@ feature {NONE} -- Implementation
 					Result.append (a_node.rm_type_name + "[" + a_node.node_id + "]")
 				end
 
-				if archetype_directory.has_valid_selected_archetype and ontology.has_term_code (a_node.node_id) then
+				if kr.has_valid_selected_archetype and ontology.has_term_code (a_node.node_id) then
 					Result.append (" " + ontology.term_definition (current_language, a_node.node_id).item ("text"))
 				end
 			else -- put type even when not in technical mode
@@ -967,7 +967,7 @@ feature {NONE} -- Implementation
 			end
 
 			if a_node.is_addressable then
-				if archetype_directory.has_valid_selected_archetype and ontology.has_term_code (a_node.node_id) then
+				if kr.has_valid_selected_archetype and ontology.has_term_code (a_node.node_id) then
 					Result.append (" " + ontology.term_definition (current_language, a_node.node_id).item ("text"))
 				end
 			end
@@ -1005,7 +1005,7 @@ feature {NONE} -- Implementation
 					Result.append ("[" + a_node.node_id + "]")
 				end
 				Result.append (" " + a_node.target_path)
-			elseif archetype_directory.has_valid_selected_archetype then
+			elseif kr.has_valid_selected_archetype then
 				Result.append ("use " + ontology.physical_to_logical_path (a_node.target_path, current_language))
 			end
 		end
@@ -1033,7 +1033,7 @@ feature {NONE} -- Implementation
 		do
 			create Result.make_empty
 
-			if archetype_directory.has_valid_selected_archetype then
+			if kr.has_valid_selected_archetype then
 				if local_flag then
 					if ontology.has_term_code (code) then
 						Result.append (" " + ontology.term_definition (current_language, code).item ("text"))
@@ -1058,7 +1058,7 @@ feature {NONE} -- Implementation
 		do
 			create Result.make_empty
 
-			if archetype_directory.has_valid_selected_archetype then
+			if kr.has_valid_selected_archetype then
 				Result.append (" " + ontology.constraint_definition (current_language, a_constraint_ref.target).item ("text"))
 			end
 
@@ -1076,7 +1076,7 @@ feature {NONE} -- Implementation
 			code := an_ordinal.symbol.code_string
 			Result.append (an_ordinal.value.out + an_ordinal.separator.out)
 
-			if archetype_directory.has_valid_selected_archetype then
+			if kr.has_valid_selected_archetype then
 				if ontology.has_term_code (code) then
 					Result.append (" " + ontology.term_definition (current_language, code).item ("text"))
 				end
@@ -1118,7 +1118,7 @@ feature {NONE} -- Implementation
 		do
 			Result := an_inv.as_string
 
-			if archetype_directory.has_valid_selected_archetype then
+			if kr.has_valid_selected_archetype then
 				if not in_technical_mode then
 					Result := ontology.substitute_codes (Result, current_language)
 				end
@@ -1132,7 +1132,7 @@ feature {NONE} -- Implementation
 			invariants: ARRAYED_LIST[ASSERTION]
 			s: STRING
 		do
-			if archetype_directory.has_valid_selected_archetype then
+			if kr.has_valid_selected_archetype then
 				if target_archetype.has_invariants then
 					invariants := target_archetype.invariants
 					create a_ti_sub.make_with_text ("invariants:")
@@ -1165,7 +1165,7 @@ feature {NONE} -- Implementation
 
 invariant
 	gui_attached: gui /= Void
-	ontology_has_language: archetype_directory.has_valid_selected_archetype implies ontology.has_language (current_language)
+	ontology_has_language: kr.has_valid_selected_archetype implies ontology.has_language (current_language)
 
 end
 

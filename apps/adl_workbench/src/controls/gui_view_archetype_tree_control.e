@@ -20,7 +20,7 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_ARCHETYPE_DIRECTORY
+	SHARED_KNOWLEDGE_REPOSITORY
 		export
 			{NONE} all
 		end
@@ -58,7 +58,7 @@ feature -- Commands
 		do
 			gui_tree.wipe_out
  			create gui_tree_item_stack.make (0)
- 			archetype_directory.do_subtree (archetype_directory.directory, agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
+ 			kr.do_subtree (kr.archetype_directory, agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
 			gui_tree.recursive_do_all (agent ev_tree_expand)
 			gui.select_node_in_archetype_tree_view
 		end
@@ -74,7 +74,7 @@ feature -- Commands
 						delay_to_make_keyboard_navigation_practical.set_interval (0)
 
 						if attached {EV_TREE_NODE} gui_tree.selected_item as node and then attached {ARCH_REP_ITEM} node.data as a then
-							archetype_directory.set_selected_item (a)
+							kr.set_selected_item (a)
 							gui.parse_archetype
 						end
 					end)
@@ -141,7 +141,7 @@ feature {NONE} -- Implementation
    		local
 			node: EV_TREE_ITEM
 		do
-			if an_item.has_archetypes or else show_entire_ontology then
+			if (an_item.has_archetypes or else show_entire_ontology) and not an_item.is_root then
 				create node
 	 			node.set_data (an_item)
 	 			update_tree_node (node)
@@ -158,7 +158,7 @@ feature {NONE} -- Implementation
 
    	populate_gui_tree_node_exit (an_item: ARCH_REP_ITEM)
    		do
-			if an_item.has_archetypes or else show_entire_ontology then
+			if (an_item.has_archetypes or else show_entire_ontology) and not an_item.is_root then
 				gui_tree_item_stack.remove
 			end
 		end

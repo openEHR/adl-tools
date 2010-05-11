@@ -41,7 +41,7 @@ feature -- Access
 	group_id: INTEGER
 			-- Id of the group to which this repository belongs.
 
-feature {ARCH_DIRECTORY} -- Access
+feature {KNOWLEDGE_REPOSITORY} -- Access
 
 	archetype_id_index: DS_HASH_TABLE [ARCH_REP_ARCHETYPE, STRING]
 			-- list of all archetypes found in this directory tree, plus adhoc additions, keyed by id

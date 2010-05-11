@@ -14,11 +14,11 @@ note
 	last_change: "$LastChangedDate$"
 
 
-class SHARED_ARCHETYPE_DIRECTORY 
+class SHARED_KNOWLEDGE_REPOSITORY 
 
 feature -- Access
 
-	archetype_directory: ARCH_DIRECTORY
+	kr: KNOWLEDGE_REPOSITORY
 			-- application-wide archetype directory access
 		once
 			create Result.make

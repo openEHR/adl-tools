@@ -1,9 +1,9 @@
 note
 	component:   "openEHR Archetype Project"
 	description: "[
-				 Archteype directory - a data structure containing archetypes found in one or more
-				 physical repositories, each of which is on some medium, such as the file system or
-				 a web-accessible repository. 
+				 Knowledge repository - a data structure containing archetypes and templates found
+				 in one or more physical locations, each of which is on some medium, such as the 
+				 file system or a web-accessible repository. 
 				 
 				 The structure of the directory is a list of top-level packages, each containing
 				 an inheritance tree of first degree descendants of the LOCATABLE class.
@@ -34,7 +34,7 @@ note
 	last_change: "$LastChangedDate: 2008-04-07 06:22:44 +0100 (Mon, 07 Apr 2008) $"
 
 
-class ARCH_DIRECTORY
+class KNOWLEDGE_REPOSITORY
 
 inherit
 	SHARED_RESOURCES
@@ -73,7 +73,6 @@ feature -- Initialisation
 	make
 		do
 			create source_repositories.make (0)
-			create source_repositories.make (0)
 			create adhoc_source_repository.make (Group_id_adhoc)
 
 		-- FIXME: probably add adhoc repo to list and treat it as a normal source, although it is missing some features
@@ -96,7 +95,7 @@ feature -- Access
 			-- archetypes keyed by path on the file system. They are not merged onto the directory
 			-- but 'grafted' - a simpler operation.
 
-	directory: ARCH_REP_MODEL_NODE
+	archetype_directory: ARCH_REP_MODEL_NODE
 			-- The logical directory of archetypes, whose structure is derived directly from the
 			-- reference model. The structure is a list of top-level packages, each containing
 			-- an inheritance tree of first degree descendants of the LOCATABLE class.
@@ -106,6 +105,12 @@ feature -- Access
 
 	archetype_index: attached HASH_TABLE [ARCH_REP_ARCHETYPE, STRING]
 			-- index of archetype descriptors. Used in rest of application
+
+	template_directory: ARCH_REP_MODEL_NODE
+			-- The logical directory of templates.
+
+	template_index: attached HASH_TABLE [ARCH_REP_ARCHETYPE, STRING]
+			-- index of template descriptors. Used in rest of application
 
 	selected_item: ARCH_REP_ITEM
 			-- The folder or archetype at `selected_node'.
@@ -276,7 +281,7 @@ feature -- Commands
 			-- Clear `directory' and its index tables.
 		do
 			create selection_history.make
-			create directory_index.make (0)
+			create archetype_directory_index.make (0)
 			create archetype_index.make(0)
 			reset_statistics
 		end
@@ -346,11 +351,11 @@ feature -- Commands
 					from archs.start until archs.off loop
 						if status_list[archs.index] >= 0 then
 							parent_key := archs.item.ontological_parent_name
-							if directory_index.has (parent_key) then
+							if archetype_directory_index.has (parent_key) then
 								child_key := archs.item.ontological_name
-								if not directory_index.has (child_key) then
-									directory_index.item (parent_key).put_child (archs.item)
-									directory_index.put (archs.item, child_key)
+								if not archetype_directory_index.has (child_key) then
+									archetype_directory_index.item (parent_key).put_child (archs.item)
+									archetype_directory_index.put (archs.item, child_key)
 									archetype_index.put(archs.item, child_key)
 									update_statistics(archs.item)
 									added_during_pass := added_during_pass + 1
@@ -477,11 +482,11 @@ feature -- Modification
 			ara := adhoc_source_repository.item(full_path)
 			if adhoc_source_repository.has_path (full_path) then
 				parent_key := ara.ontological_parent_name
-				if directory_index.has (parent_key) then
+				if archetype_directory_index.has (parent_key) then
 					child_key := ara.id.as_string
-					if not directory_index.has(child_key) then
-						directory_index.item (parent_key).put_child(ara)
-						directory_index.put (ara, child_key)
+					if not archetype_directory_index.has(child_key) then
+						archetype_directory_index.item (parent_key).put_child(ara)
+						archetype_directory_index.put (ara, child_key)
 						archetype_index.put(ara, child_key)
 						update_statistics(ara)
 					else
@@ -538,7 +543,7 @@ feature {NONE} -- Implementation
 			-- Each such repository consists of archetypes arranged in a directory structure
 			-- mimicking an ontological structure, e.g. ehr/entry/observation, etc.
 
-	directory_index: attached HASH_TABLE [ARCH_REP_ITEM, STRING]
+	archetype_directory_index: attached HASH_TABLE [ARCH_REP_ITEM, STRING]
 			-- Index of archetype & class nodes, keyed by ontology concept. Used during
 			-- construction of `directory'
 			-- For class nodes, this will be package_name-class_name, e.g. DEMOGRAPHIC-PARTY.
@@ -557,9 +562,9 @@ feature {NONE} -- Implementation
 			supp_class_list: ARRAYED_LIST [BMM_CLASS_DEFINITION]
 			removed: BOOLEAN
 		do
-			create {ARCH_REP_MODEL_NODE} directory.make_category (Archetype_category.twin)
-			directory_index.force (directory, directory.ontological_name)
-			parent_node := directory
+			create {ARCH_REP_MODEL_NODE} archetype_directory.make_category (Archetype_category.twin)
+			archetype_directory_index.force (archetype_directory, archetype_directory.ontological_name)
+			parent_node := archetype_directory
 			from rm_schemas.start until rm_schemas.off loop
 				if rm_schemas.item_for_iteration.has_class_definition ("LOCATABLE") then
 					pkgs := rm_schemas.item_for_iteration.schema.packages
@@ -567,7 +572,7 @@ feature {NONE} -- Implementation
 						pkg_name := pkgs.item_for_iteration.name.as_upper
 						create arm.make_package(pkg_name)
 						parent_node.put_child (arm)
-						directory_index.put (arm, pkg_name)
+						archetype_directory_index.put (arm, pkg_name)
 
 						-- now create a list of classes inheriting from LOCATABLE that are among the suppliers of
 						-- the top-level class of the package; this gives the classes that could be archetyped in
@@ -633,7 +638,7 @@ feature {NONE} -- Implementation
 				create arm.make_class(a_package, class_list.item)
 
 				-- store it with a key like 'DEMOGRAPHIC-CLUSTER'
-				directory_index.put (arm, arm.ontological_name)
+				archetype_directory_index.put (arm, arm.ontological_name)
 				a_parent_node.put_child (arm)
 
 				-- get children and process
@@ -650,7 +655,7 @@ feature {NONE} -- Implementation
 		end
 
 invariant
-	directory_attached: directory /= Void
+	directory_attached: archetype_directory /= Void
 	adhoc_source_repository_group_id: adhoc_source_repository.group_id = 1
 	repositories_group_ids: source_repositories.for_all (agent (repository: attached ARCHETYPE_INDEXED_REPOSITORY_I): BOOLEAN
 		do

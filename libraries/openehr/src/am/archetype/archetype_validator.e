@@ -41,7 +41,7 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_ARCHETYPE_DIRECTORY
+	SHARED_KNOWLEDGE_REPOSITORY
 		export
 			{NONE} all
 		end
@@ -367,14 +367,14 @@ feature {NONE} -- Implementation
 				from assn_list.start until assn_list.off loop
 					a_regex := extract_regex(assn_list.item)
 					if a_regex /= Void then
-						target_descriptor.add_slot_ids(archetype_directory.matching_ids (a_regex, target.slot_index.item.rm_type_name), target.slot_index.item.path)
+						target_descriptor.add_slot_ids(kr.matching_ids (a_regex, target.slot_index.item.rm_type_name), target.slot_index.item.path)
 					end
 					assn_list.forth
 				end
 
 				-- if there are still no ids at all for this path, the implication is that all ids match, and that exclusions will remove some
 				if not target_descriptor.has_slots or else not target_descriptor.slot_id_index.has (target.slot_index.item.path) then
-					target_descriptor.add_slot_ids (archetype_directory.matching_ids (".*", target.slot_index.item.rm_type_name), target.slot_index.item.path)
+					target_descriptor.add_slot_ids (kr.matching_ids (".*", target.slot_index.item.rm_type_name), target.slot_index.item.path)
 				end
 
 				-- process the excludes
@@ -382,7 +382,7 @@ feature {NONE} -- Implementation
 				from assn_list.start until assn_list.off loop
 					a_regex := extract_regex(assn_list.item)
 					if a_regex /= Void then
-						id_list := archetype_directory.matching_ids (a_regex, target.slot_index.item.rm_type_name)
+						id_list := kr.matching_ids (a_regex, target.slot_index.item.rm_type_name)
 
 						-- go through existing id list and remove any matched by the exclusion list
 						from id_list.start until id_list.off loop
@@ -396,7 +396,7 @@ feature {NONE} -- Implementation
 				-- now post the results in the reverse indexes
 				id_list := target_descriptor.slot_id_index.item (target.slot_index.item.path)
 				from id_list.start until id_list.off loop
-					ara := archetype_directory.archetype_index.item (id_list.item)
+					ara := kr.archetype_index.item (id_list.item)
 					if not ara.is_used or else not ara.used_by_index.has (target.archetype_id.as_string) then
 						ara.add_used_by_item (target.archetype_id.as_string)
 					end
@@ -492,9 +492,10 @@ feature {NONE} -- Implementation
 						end
 					end
 
-					-- by here the meta-types must be the same
+					-- by here the AOM meta-types must be the same; if not, it is an error
 					if dynamic_type (co_child_diff) /= dynamic_type (co_parent_flat) then
 						add_error("VSONT", <<co_child_diff.path, co_child_diff.generating_type, co_parent_flat.path, co_parent_flat.generating_type>>)
+					-- they should also be conformant as defined by the node_conforms_to() function
 					elseif not co_child_diff.node_conforms_to(co_parent_flat) then
 						if not co_child_diff.rm_type_conforms_to (co_parent_flat) then
 							add_error("VSONCT", <<co_child_diff.path, co_child_diff.rm_type_name, co_parent_flat.path, co_parent_flat.rm_type_name>>)
