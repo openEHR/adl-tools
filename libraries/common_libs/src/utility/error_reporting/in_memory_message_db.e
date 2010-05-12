@@ -153,7 +153,7 @@ feature -- Access
 			-- ARCHETYPE_FILE_REPOSITORY_IMP
 			["invalid_filename_e1"] = <"Invalid archetype filename $1">
 			["pair_filename_i1"] = <"(Differential/flat pair archetype filename found $1)">
-			["save_as_i1"] = <"Archetype saved in language $1 to $2">
+			["save_as_i1"] = <"Archetype saved to $2">
 			["save_as_e1"] = <"Save-as failed; could not write to file $1">
 			["duplicate_filename"] = <"Duplicate file name or alternate version $1">
 			

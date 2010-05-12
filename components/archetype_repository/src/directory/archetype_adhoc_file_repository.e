@@ -65,17 +65,19 @@ feature -- Modification
 		local
 			ara: ARCH_REP_ARCHETYPE
 			arch_id, parent_arch_id: ARCHETYPE_ID
+			amp: ARCHETYPE_MINI_PARSER
 		do
-			mini_parse_archetype (full_path)
-			if last_miniparse_valid then
-				if not last_archetype_id_old_style then
-					create arch_id.make_from_string(last_archetype_id)
-					if not kr.archetype_index.has (last_archetype_id) then
-						if last_archetype_specialised then
-							create parent_arch_id.make_from_string(last_parent_archetype_id)
-							create ara.make_specialised (full_path, arch_id, parent_arch_id, Current)
+			create amp
+			amp.parse (full_path)
+			if amp.last_parse_valid then
+				if not amp.last_archetype_id_old_style then
+					create arch_id.make_from_string(amp.last_archetype_id)
+					if not archetype_id_index.has (amp.last_archetype_id) then
+						if amp.last_archetype_specialised then
+							create parent_arch_id.make_from_string(amp.last_parent_archetype_id)
+							create ara.make_specialised (full_path, arch_id, parent_arch_id, Current, amp.last_archetype_artefact_type)
 						else
-							create ara.make (full_path, arch_id, Current)
+							create ara.make (full_path, arch_id, Current, amp.last_archetype_artefact_type)
 						end
 						archetype_id_index.force (ara, full_path)
 					else

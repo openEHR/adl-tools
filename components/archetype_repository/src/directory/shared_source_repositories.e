@@ -1,82 +1,28 @@
-note
+note	
 	component:   "openEHR Archetype Project"
 	description: "[
-				 Directory representation of a file-system archetype repository.
+				 Shared access to archteype source repositories.
 				 ]"
 	keywords:    "ADL"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL: $"
+	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate: $"
+	last_change: "$LastChangedDate$"
 
 
-deferred class ARCHETYPE_INDEXED_REPOSITORY_I
-
-inherit
-	ARCHETYPE_REPOSITORY_I
-
-feature {NONE} -- Initialisation
-
-	make (dir_name: STRING; a_group_id: INTEGER)
-			-- Create as part of `a_group_id', based on valid directory path.
-		require
-			dir_name_valid: is_valid_directory (dir_name)
-			group_id_valid: a_group_id > 0
-		do
-			group_id := a_group_id
-			root_path := dir_name
-		ensure
-			root_path_set: root_path = dir_name
-			group_id_set: group_id = a_group_id
-		end
+class SHARED_SOURCE_REPOSITORIES
 
 feature -- Access
 
-	root_path: STRING
-			-- Path of file-system repository of archetypes.
-
-feature {ARCHETYPE_DIRECTORY} -- Access
-
-	fast_archetype_list: ARRAYED_LIST [ARCH_REP_ARCHETYPE]
-			-- linear index list for efficient processing
-
-feature -- Commands
-
-	repopulate
-			-- Rebuild `directory' based on existing paths.
-		do
-			populate
+	source_repos: SOURCE_REPOSITORIES
+			-- application-wide archetype source access
+		once
+			create Result.make
 		end
-
-	populate
-			-- Make based on `root_path'.
-		do
-			create archetype_id_index.make (0)
-			create fast_archetype_list.make(0)
-			get_archetypes_in_folder (root_path)
-			from archetype_id_index.start until archetype_id_index.off loop
-				fast_archetype_list.extend(archetype_id_index.item_for_iteration)
-				archetype_id_index.forth
-			end
-		end
-
-feature {NONE} -- Implementation
-
-	get_archetypes_in_folder (a_path: STRING)
-			-- Build a literal representation of the archetype and folder structure
-			-- in the repository path, as a tree; each node carries some meta-data.
-		require
-			Path_valid: a_path /= Void and then not a_path.is_empty
-   		deferred
-		end
-
-invariant
-	repository_path_valid: is_valid_directory (root_path)
-	archetypes_attached: archetype_id_index /= Void
 
 end
 
@@ -95,7 +41,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is adl_node_control.e.
+--| The Original Code is shared_archetype_directory.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

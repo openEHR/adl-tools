@@ -86,8 +86,8 @@ feature -- Commands
 		do
 			clear
 
-			if kr.has_selected_archetype then
-				ara := kr.selected_archetype
+			if arch_dir.has_selected_archetype then
+				ara := arch_dir.selected_archetype
 
 				if ara.has_slots then
 					from
@@ -110,7 +110,7 @@ feature -- Commands
 					end
 				end
 
-				if kr.parse_attempted_archetype_count < kr.total_archetype_count then
+				if arch_dir.parse_attempted_archetype_count < arch_dir.total_archetype_count then
 					gui.used_by_tree.extend (create {EV_TREE_ITEM}.make_with_text (create_message ("slots_incomplete_w1", <<>>)))
 				end
 
@@ -151,7 +151,7 @@ feature {NONE} -- Implementation
 				ids.off
 			loop
 				create eti.make_with_text (utf8 (ids.item))
-				ara := kr.archetype_index.item (ids.item)
+				ara := arch_dir.archetype_index.item (ids.item)
 				eti.set_pixmap (pixmaps [ara.group_name])
 				eti.set_data (ara)
 				eti.pointer_double_press_actions.force_extend (agent gui.select_archetype_from_gui_data (eti))

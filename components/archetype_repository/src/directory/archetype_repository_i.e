@@ -15,12 +15,6 @@ deferred class
 	ARCHETYPE_REPOSITORY_I
 
 inherit
-	SHARED_APPLICATION_CONTEXT
-		export
-			{NONE} all
-			{ANY} current_language, set_current_language
-		end
-
 	ARCHETYPE_DEFINITIONS
 		export
 			{NONE} all
@@ -41,10 +35,10 @@ feature -- Access
 	group_id: INTEGER
 			-- Id of the group to which this repository belongs.
 
-feature {KNOWLEDGE_REPOSITORY} -- Access
+feature {ARCHETYPE_DIRECTORY} -- Access
 
 	archetype_id_index: DS_HASH_TABLE [ARCH_REP_ARCHETYPE, STRING]
-			-- list of all archetypes found in this directory tree, plus adhoc additions, keyed by id
+			-- list of all archetypes found in this directory tree, keyed by id
 
 feature -- Status Report
 

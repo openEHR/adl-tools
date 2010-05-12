@@ -73,7 +73,7 @@ feature -- Commands
 			if file_context.file_writable (full_path) then
 				file_context.save_file (full_path, a_text)
 				text_timestamp := file_context.file_timestamp
-				post_info (Current, "save_as", "save_as_i1", <<current_language, full_path>>)
+				post_info (Current, "save_as", "save_as_i1", <<full_path>>)
 			else
 				post_error (Current, "save_as", "save_as_e1", <<full_path>>)
 			end
@@ -86,79 +86,6 @@ feature {NONE} -- Implementation
 		once
 			create Result.make
 		end
-
-	mini_parse_archetype (full_path: STRING)
-			-- perform quick parse of lines down to 'concept' line or EOF, and obtain archetype_id,
-			-- specialisation status and if specialised, specialisation parent
-		local
-			stop: BOOLEAN
-			lines: LIST [STRING]
-			artefact_types: ARTEFACT_TYPE
-			id_bad: BOOLEAN
-		do
-			last_miniparse_valid := False
-			last_archetype_specialised := False
-			create artefact_types.default_create
-
-			file_context.set_target (full_path)
-			file_context.read_n_lines(5)
-			lines := file_context.file_lines
-
-			-- first line
-			if lines[1].has ('(') then
-				lines[1].remove_substring (lines[1].index_of ('(', 1), lines[1].count)
-			end
-			lines[1].right_adjust
-			if artefact_types.valid_artefact_type_name (lines[1]) then
-				-- get line 2
-				lines[2].left_adjust
-				lines[2].right_adjust
-				if not lines[2].is_empty then
-					if (create {ARCHETYPE_ID}).valid_id(lines[2]) then
-						last_archetype_id_old_style := False
-					elseif (create {ARCHETYPE_ID}).old_valid_id(lines[2]) then
-						last_archetype_id_old_style := True
-					else
-						-- something wrong with the id
-						id_bad := True
-					end
-				else
-					id_bad := True
-				end
-
-				if not id_bad then
-					last_archetype_id := lines[2]
-
-					-- get line 3 - should be either 'specialise' / 'specialize' or 'concept'
-					lines[3].right_adjust
-					if lines[3].is_equal ("specialise") or lines[3].is_equal("specialize") then
-						lines[4].left_adjust
-						lines[4].right_adjust
-						last_parent_archetype_id := lines[4]
-						last_archetype_specialised := True
-					end
-					last_miniparse_valid := True
-				end
-			end
-		end
-
-	last_miniparse_valid: BOOLEAN
-			-- True if last miniparse was ok
-
-	last_archetype_id: STRING
-			-- archetype id read by last invocation of mini_parse_archetype
-
-	last_archetype_id_old_style: BOOLEAN
-			-- true if last archetype id
-
-	last_parent_archetype_id: STRING
-			-- parent archetype id read by last invocation of mini_parse_archetype if
-			-- `last_archetype_specialised' is True
-
-	last_archetype_specialised: BOOLEAN
-			-- true if archetype id read by last invocation of mini_parse_archetype
-
-	last_miniparse_fail_reason: STRING
 
 end
 

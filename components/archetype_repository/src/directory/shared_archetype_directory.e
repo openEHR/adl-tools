@@ -1,4 +1,4 @@
-note	
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Shared access to archteype directory.
@@ -14,11 +14,11 @@ note
 	last_change: "$LastChangedDate$"
 
 
-class SHARED_KNOWLEDGE_REPOSITORY 
+class SHARED_KNOWLEDGE_REPOSITORY
 
 feature -- Access
 
-	kr: KNOWLEDGE_REPOSITORY
+	arch_dir: ARCHETYPE_DIRECTORY
 			-- application-wide archetype directory access
 		once
 			create Result.make

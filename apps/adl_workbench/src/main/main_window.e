@@ -37,6 +37,11 @@ inherit
 			copy, default_create
 		end
 
+	SHARED_SOURCE_REPOSITORIES
+		undefine
+			copy, default_create
+		end
+
 	SHARED_KNOWLEDGE_REPOSITORY
 		undefine
 			copy, default_create
@@ -284,12 +289,12 @@ feature -- File events
 			fname := dialog.file_name.as_string_8
 
 			if not fname.is_empty then
-				if not kr.adhoc_source_repository.has_path (fname) then
+				if not source_repos.adhoc_source_repository.has_path (fname) then
 					set_current_work_directory (file_system.dirname (fname))
 					if not file_system.file_exists (fname) then
 						(create {EV_INFORMATION_DIALOG}.make_with_text ("%"" + fname + "%" not found.")).show_modal_to_window (Current)
 					else
-						kr.add_adhoc_item (fname)
+						arch_dir.add_adhoc_item (fname)
 						archetype_view_tree_control.populate
 						set_status_area (billboard_content)
 					end
@@ -302,7 +307,7 @@ feature -- File events
 	parse_archetype
 			-- Load and parse the archetype currently selected in `archetype_directory'.
 		do
-			if attached {ARCH_REP_ARCHETYPE} kr.selected_archetype as ara then
+			if attached {ARCH_REP_ARCHETYPE} arch_dir.selected_archetype as ara then
 				clear_all_controls
 				do_with_wait_cursor (agent archetype_compiler.build_lineage (ara))
 			end
@@ -319,7 +324,7 @@ feature -- File events
 			editors: LIST [STRING]
 			list: EV_LIST
 		do
-			ara := kr.selected_archetype
+			ara := arch_dir.selected_archetype
 
 			if ara /= Void then
 				path := ara.differential_path
@@ -386,8 +391,8 @@ feature -- File events
 			save_dialog: EV_FILE_SAVE_DIALOG
 			name, format: STRING
 		do
-			if kr.has_valid_selected_archetype then
-				name := extension_replaced (kr.selected_archetype.full_path, "")
+			if arch_dir.has_valid_selected_archetype then
+				name := extension_replaced (arch_dir.selected_archetype.full_path, "")
 
 				create save_dialog
 				save_dialog.set_title ("Save Archetype")
@@ -427,8 +432,8 @@ feature -- File events
 					end
 
 					if ok_to_write then
-						kr.selected_archetype.save_differential_as (name, format)
-						append_status_area (kr.selected_archetype.status)
+						arch_dir.selected_archetype.save_differential_as (name, format)
+						append_status_area (arch_dir.selected_archetype.status)
 					end
 				end
 			else
@@ -569,7 +574,7 @@ feature {NONE} -- Repository events
 			-- refresh the current repository from source.
 		do
 			set_status_area ("Populating repository ...")
-			kr.refresh
+			arch_dir.refresh
 			archetype_view_tree_control.populate
 			archetype_test_tree_control.populate
 			populate_statistics
@@ -682,7 +687,7 @@ feature {NONE} -- History events
 			history_menu.extend (history_menu_forward)
 			history_menu.extend (history_menu_separator)
 
-			kr.recently_selected_archetypes (20).do_all (agent (ara: attached ARCH_REP_ARCHETYPE)
+			arch_dir.recently_selected_archetypes (20).do_all (agent (ara: attached ARCH_REP_ARCHETYPE)
 				local
 					mi: EV_MENU_ITEM
 				do
@@ -696,8 +701,8 @@ feature {NONE} -- History events
 	on_back
 			-- Go back to the last archetype previously selected.
 		do
-			if kr.selection_history_has_previous then
-				kr.selection_history_back
+			if arch_dir.selection_history_has_previous then
+				arch_dir.selection_history_back
 				select_node_in_archetype_tree_view
 			end
 		end
@@ -705,8 +710,8 @@ feature {NONE} -- History events
 	on_forward
 			-- Go forth to the next archetype previously selected.
 		do
-			if kr.selection_history_has_next then
-				kr.selection_history_forth
+			if arch_dir.selection_history_has_next then
+				arch_dir.selection_history_forth
 				select_node_in_archetype_tree_view
 			end
 		end
@@ -723,7 +728,7 @@ feature {NONE} -- Tools events
 				info_dialog.set_title ("Information")
 				info_dialog.show_modal_to_window (Current)
 			else
-				do_with_wait_cursor (agent kr.do_subtree (kr.archetype_directory, agent delete_generated_files, Void))
+				do_with_wait_cursor (agent arch_dir.do_all (agent delete_generated_files, Void))
 			end
 		end
 
@@ -805,7 +810,7 @@ feature -- Archetype commands
 		do
 			if gui_item /= Void then
 				if attached {ARCH_REP_ITEM} gui_item.data as ari then
-					kr.set_selected_item (ari)
+					arch_dir.set_selected_item (ari)
 					select_node_in_archetype_tree_view
 				end
 			end
@@ -814,7 +819,7 @@ feature -- Archetype commands
 	select_node_in_archetype_tree_view
 			-- Select and display the node of `archetype_file_tree' corresponding to the selection in `archetype_directory'.
 		do
-			if attached {EV_TREE_NODE} archetype_file_tree.retrieve_item_recursively_by_data (kr.selected_item, True) as node then
+			if attached {EV_TREE_NODE} archetype_file_tree.retrieve_item_recursively_by_data (arch_dir.selected_item, True) as node then
 				archetype_file_tree.ensure_item_visible (node)
 				node.enable_select
 			end
@@ -822,21 +827,21 @@ feature -- Archetype commands
 
 	on_node_map_shrink_tree_one_level
 		do
-			if kr.has_valid_selected_archetype then
+			if arch_dir.has_valid_selected_archetype then
 				node_map_control.shrink_one_level
 			end
 		end
 
 	on_node_map_expand_tree_one_level
 		do
-			if kr.has_valid_selected_archetype then
+			if arch_dir.has_valid_selected_archetype then
 				node_map_control.expand_one_level
 			end
 		end
 
 	on_node_map_toggle_expand_tree
 		do
-			if kr.has_valid_selected_archetype then
+			if arch_dir.has_valid_selected_archetype then
 				node_map_control.toggle_expand_tree
 			end
 		end
@@ -850,7 +855,7 @@ feature -- Archetype commands
 	on_node_map_domain_selected
 			-- Hide technical details in `node_map_tree'.
 		do
-			if kr.has_valid_selected_archetype then
+			if arch_dir.has_valid_selected_archetype then
 				node_map_control.set_domain_mode
 			end
 		end
@@ -858,7 +863,7 @@ feature -- Archetype commands
 	on_node_map_technical_selected
 			-- Display technical details in `node_map_tree'.
 		do
-			if kr.has_valid_selected_archetype then
+			if arch_dir.has_valid_selected_archetype then
 				node_map_control.set_technical_mode
 			end
 		end
@@ -866,7 +871,7 @@ feature -- Archetype commands
 	on_node_map_reference_model_selected
 			-- turn on or off the display of reference model details in `node_map_tree'.
 		do
-			if kr.has_valid_selected_archetype then
+			if arch_dir.has_valid_selected_archetype then
 				if node_map_reference_model_check_button.is_selected then
 					node_map_control.set_reference_model_mode
 				else
@@ -1026,7 +1031,7 @@ feature {NONE} -- Implementation
 				set_current_language (default_language)
 			else
 				set_current_language (language_combo.text.as_string_8)
-				if kr.has_valid_selected_archetype then
+				if arch_dir.has_valid_selected_archetype then
 					populate_archetype_view_controls
 				end
 			end
@@ -1042,22 +1047,22 @@ feature {NONE} -- Implementation
 					end
 
 					set_title (reference_repository_path + " - " + title)
-					kr.make
+					arch_dir.make
 					clear_billboard
 					clear_all_controls
 					compiler_error_control.clear
 					set_status_area ("Populating repository ...")
 					select_node_in_archetype_tree_view
 
-					if kr.valid_repository_path (reference_repository_path) then
-						kr.set_reference_repository (reference_repository_path)
+					if source_repos.valid_repository_path (reference_repository_path) then
+						source_repos.set_reference_repository (reference_repository_path)
 					end
 
-					if kr.valid_repository_path (work_repository_path) then
-						kr.set_work_repository (work_repository_path)
+					if source_repos.valid_repository_path (work_repository_path) then
+						source_repos.set_work_repository (work_repository_path)
 					end
 
-					kr.populate_directory
+					arch_dir.populate
 					set_status_area (billboard_content)
 					clear_billboard
 					archetype_view_tree_control.populate
@@ -1069,7 +1074,7 @@ feature {NONE} -- Implementation
 	clear_all_controls
 			-- Wipe out content from visual controls.
 		do
-			if kr.selection_history_has_previous then
+			if arch_dir.selection_history_has_previous then
 				history_menu_back.enable_sensitive
 				history_back_button.enable_sensitive
 			else
@@ -1077,7 +1082,7 @@ feature {NONE} -- Implementation
 				history_back_button.disable_sensitive
 			end
 
-			if kr.selection_history_has_next then
+			if arch_dir.selection_history_has_next then
 				history_menu_forward.enable_sensitive
 				history_forward_button.enable_sensitive
 			else
@@ -1124,7 +1129,7 @@ feature {NONE} -- Implementation
 		local
 			text: STRING
 		do
-			if attached {ARCH_REP_ARCHETYPE} kr.selected_archetype as ara then
+			if attached {ARCH_REP_ARCHETYPE} arch_dir.selected_archetype as ara then
 				if flat then
 					text := ara.flat_text
 					if text = Void then
@@ -1193,8 +1198,8 @@ feature {NONE} -- Implementation
 		local
 			selected: ARCHETYPE_ID
 		do
-			if kr.has_selected_archetype then
-				selected := kr.selected_archetype.id
+			if arch_dir.has_selected_archetype then
+				selected := arch_dir.selected_archetype.id
 			end
 
 			if selected /= Void then
@@ -1207,8 +1212,8 @@ feature {NONE} -- Implementation
 	populate_adl_version
 			-- Populate ADL version.
 		do
-			if kr.has_valid_selected_archetype then
-				adl_version_text.set_text (utf8 (kr.selected_archetype.differential_archetype.adl_version))
+			if arch_dir.has_valid_selected_archetype then
+				adl_version_text.set_text (utf8 (arch_dir.selected_archetype.differential_archetype.adl_version))
 			else
 				adl_version_text.remove_text
 			end
@@ -1221,8 +1226,8 @@ feature {NONE} -- Implementation
 		do
 			language_combo.select_actions.block
 
-			if kr.has_valid_selected_archetype then
-				archetype := kr.selected_archetype.differential_archetype
+			if arch_dir.has_valid_selected_archetype then
+				archetype := arch_dir.selected_archetype.differential_archetype
 
 				if not archetype.has_language (current_language) then
 					set_current_language (archetype.original_language.code_string)
@@ -1264,11 +1269,11 @@ feature {GUI_TEST_ARCHETYPE_TREE_CONTROL} -- Statistics
 	populate_statistics
 			-- Populate the statistics tab.
 		do
-			arch_total_count_tf.set_text (kr.total_archetype_count.out)
-			arch_spec_count_tf.set_text (kr.specialised_archetype_count.out)
-			arch_slotted_count_tf.set_text (kr.slotted_archetype_count.out)
-			arch_used_by_count_tf.set_text (kr.used_by_archetype_count.out)
-			arch_bad_count_tf.set_text (kr.bad_archetype_count.out)
+			arch_total_count_tf.set_text (arch_dir.total_archetype_count.out)
+			arch_spec_count_tf.set_text (arch_dir.specialised_archetype_count.out)
+			arch_slotted_count_tf.set_text (arch_dir.slotted_archetype_count.out)
+			arch_used_by_count_tf.set_text (arch_dir.used_by_archetype_count.out)
+			arch_bad_count_tf.set_text (arch_dir.bad_archetype_count.out)
 		end
 
 feature {NONE} -- Build commands
@@ -1316,7 +1321,7 @@ feature {NONE} -- Build commands
 					compiler_error_control.extend_and_select (ara)
 					populate_statistics
 
-					if ara = kr.selected_archetype then
+					if ara = arch_dir.selected_archetype then
 						populate_archetype_id
 						populate_adl_version
 						populate_languages

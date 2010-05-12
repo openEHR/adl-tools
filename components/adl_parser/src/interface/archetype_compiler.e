@@ -85,25 +85,25 @@ feature -- Commands
 	build_all
 			-- Build the whole system, but not artefacts that seem to be built already.
 		do
-			do_subtree (kr.archetype_directory, agent build_archetype (False, ?), "building system")
+			do_all (agent build_archetype (False, ?), "building system")
 		end
 
 	rebuild_all
 			-- Rebuild the whole system from scratch, regardless of previous attempts.
 		do
-			do_subtree (kr.archetype_directory, agent build_archetype (True, ?), "rebuilding system from scratch")
+			do_all (agent build_archetype (True, ?), "rebuilding system from scratch")
 		end
 
 	build_subtree
 			-- Build the sub-system at and below `archetype_directory.selected_node', but not artefacts that seem to be built already.
 		do
-			do_subtree (kr.selected_item, agent build_archetype (False, ?), "building sub-tree")
+			do_subtree (arch_dir.selected_item, agent build_archetype (False, ?), "building sub-tree")
 		end
 
 	rebuild_subtree
 			-- Rebuild the sub-system at and below `archetype_directory.selected_node' from scratch, regardless of previous attempts.
 		do
-			do_subtree (kr.selected_item, agent build_archetype (True, ?), "rebuilding sub-tree from scratch")
+			do_subtree (arch_dir.selected_item, agent build_archetype (True, ?), "rebuilding sub-tree from scratch")
 		end
 
 	build_lineage (ara: ARCH_REP_ARCHETYPE)
@@ -129,7 +129,7 @@ feature -- Commands
 		require
 			directory_attached: html_export_directory /= Void
 		do
-			do_subtree (kr.archetype_directory, agent export_archetype_html (html_export_directory, False, ?), "exporting built system as html")
+			do_all (agent export_archetype_html (html_export_directory, False, ?), "exporting built system as html")
 		end
 
 	build_and_export_all_html (html_export_directory: STRING)
@@ -137,10 +137,28 @@ feature -- Commands
 		require
 			directory_attached: html_export_directory /= Void
 		do
-			do_subtree (kr.archetype_directory, agent export_archetype_html (html_export_directory, True, ?), "building system and exporting as html")
+			do_all (agent export_archetype_html (html_export_directory, True, ?), "building system and exporting as html")
 		end
 
 feature {NONE} -- Implementation
+
+	do_all (action: PROCEDURE [ANY, TUPLE [attached ARCH_REP_ARCHETYPE]]; message: STRING)
+			-- Display `message' and perform `action' on the sub-system at and below `subtree'.
+		require
+			action_attached: action /= Void
+			message_attached: message /= Void
+		do
+			status := create_message ("compiler_status", <<message>>)
+			call_visual_update_action (Void)
+			is_interrupted := False
+			build_completed := False
+			arch_dir.do_all_archetypes (action)
+			status := create_message ("compiler_finished_status", <<message>>)
+			call_visual_update_action (Void)
+			if not is_interrupted then
+				build_completed := True
+			end
+		end
 
 	do_subtree (subtree: ARCH_REP_ITEM; action: PROCEDURE [ANY, TUPLE [attached ARCH_REP_ARCHETYPE]]; message: STRING)
 			-- Display `message' and perform `action' on the sub-system at and below `subtree'.
@@ -152,7 +170,7 @@ feature {NONE} -- Implementation
 			call_visual_update_action (Void)
 			is_interrupted := False
 			build_completed := False
-			kr.do_subtree (subtree, agent do_if_archetype (?, action), Void)
+			arch_dir.do_archetypes (subtree, action)
 			status := create_message ("compiler_finished_status", <<message>>)
 			call_visual_update_action (Void)
 			if not is_interrupted then
@@ -170,14 +188,6 @@ feature {NONE} -- Implementation
 			status.wipe_out
 			is_interrupted := False
 			ara.archetype_lineage.do_all (action)
-		end
-
-	do_if_archetype (item: ARCH_REP_ITEM; action: PROCEDURE [ANY, TUPLE [attached ARCH_REP_ARCHETYPE]])
-			-- If `item' is an archetype, perform `action' on it.
-		do
-			if attached {ARCH_REP_ARCHETYPE} item as ara then
-				action.call ([ara])
-			end
 		end
 
 	build_archetype (from_scratch: BOOLEAN; ara: attached ARCH_REP_ARCHETYPE)

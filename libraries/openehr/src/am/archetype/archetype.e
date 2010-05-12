@@ -385,9 +385,9 @@ feature -- Modification
 
 	set_artefact_type_from_string (s: STRING)
 		require
-			s /= Void and then (create {ARTEFACT_TYPE}).valid_artefact_type_name(s)
+			s /= Void and then (create {ARTEFACT_TYPE}).valid_type_name(s)
 		do
-			create artefact_type.make_from_string(s)
+			create artefact_type.make_from_type_name(s)
 		end
 
 	set_concept(str: STRING)

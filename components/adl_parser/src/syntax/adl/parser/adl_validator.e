@@ -195,7 +195,7 @@ debug ("GEYACC")
 end
 
 			accept
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
@@ -207,7 +207,7 @@ debug ("GEYACC")
 end
 
 			abort
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
@@ -235,7 +235,7 @@ end
 			elseif arch_id.old_valid_id(yyvs2.item (yyvsp2)) then
 				create archetype_id.old_make_from_string(yyvs2.item (yyvsp2))
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -251,7 +251,7 @@ end
 			raise_error
 			report_error(create_message("SARID", Void))
 			abort
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
@@ -265,8 +265,8 @@ end
 
 			str := text
 			str.right_adjust
-			create artefact_type.make_from_string(str)
-		
+			create artefact_type.make_from_type_name(str)
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
@@ -279,8 +279,8 @@ end
 
 			str := text
 			str.right_adjust
-			create artefact_type.make_from_string(str)
-		
+			create artefact_type.make_from_type_name(str)
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
@@ -293,8 +293,8 @@ end
 
 			str := text
 			str.right_adjust
-			create artefact_type.make_from_string(str)
-		
+			create artefact_type.make_from_type_name(str)
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
@@ -307,8 +307,8 @@ end
 
 			str := text
 			str.right_adjust
-			create artefact_type.make_from_string(str)
-		
+			create artefact_type.make_from_type_name(str)
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
@@ -383,7 +383,7 @@ debug ("GEYACC")
 end
 
 			adl_version := yyvs2.item (yyvsp2)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -397,7 +397,7 @@ debug ("GEYACC")
 end
 
 			is_controlled := True
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
@@ -409,7 +409,7 @@ debug ("GEYACC")
 end
 
 			is_generated := True
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
@@ -458,7 +458,7 @@ end
 				report_error(create_message("VASID", Void))
 				abort
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp2 := yyvsp2 -1
@@ -473,7 +473,7 @@ end
 			raise_error
 			report_error(create_message("SASID", Void))
 			abort
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
@@ -489,7 +489,7 @@ end
 			debug("ADL_parse")
 				io.put_string("concept = " + concept + "%N")
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp2 := yyvsp2 -1
@@ -504,7 +504,7 @@ end
 			raise_error
 			report_error(create_message("SACO", Void))
 			abort
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
@@ -519,7 +519,7 @@ end
 			raise_error
 			report_error(create_message("SALAN", Void))
 			abort
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 0
 	yyvsp1 := yyvsp1 + 1
@@ -549,7 +549,7 @@ end
 
 			convert_dadl_language(yyvs2.item (yyvsp2))
 			language_text := yyvs2.item (yyvsp2)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp2 := yyvsp2 -1
@@ -564,7 +564,7 @@ end
 			raise_error
 			report_error(create_message("SALA", Void))
 			abort
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
@@ -606,7 +606,7 @@ end
 
 			convert_dadl_language(yyvs2.item (yyvsp2))
 			description_text := yyvs2.item (yyvsp2)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp2 := yyvsp2 -1
@@ -621,7 +621,7 @@ end
 			raise_error
 			report_error(create_message("SADS", Void))
 			abort
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
@@ -634,7 +634,7 @@ debug ("GEYACC")
 end
 
 			definition_text := yyvs2.item (yyvsp2)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp2 := yyvsp2 -1
@@ -649,7 +649,7 @@ end
 			raise_error
 			report_error(create_message("SADF", Void))
 			abort
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
@@ -690,7 +690,7 @@ debug ("GEYACC")
 end
 
 			invariant_text := yyvs2.item (yyvsp2)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp2 := yyvsp2 -1
@@ -705,7 +705,7 @@ end
 			raise_error
 			report_error(create_message("SAIV", Void))
 			abort
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
@@ -718,7 +718,7 @@ debug ("GEYACC")
 end
 
 			ontology_text := yyvs2.item (yyvsp2)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp2 := yyvsp2 -1
@@ -733,7 +733,7 @@ end
 			raise_error
 			report_error(create_message("SAON", Void))
 			abort
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
@@ -1001,14 +1001,14 @@ feature -- Parse Output
 	definition_text: STRING
 
 	invariant_text: STRING
-	
+
 	ontology_text: STRING
 
 feature -- Access
 
 	error_text: STRING
 
-feature {NONE} -- Implementation 
+feature {NONE} -- Implementation
 
 	str: STRING
 

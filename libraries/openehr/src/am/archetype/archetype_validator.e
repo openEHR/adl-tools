@@ -367,14 +367,14 @@ feature {NONE} -- Implementation
 				from assn_list.start until assn_list.off loop
 					a_regex := extract_regex(assn_list.item)
 					if a_regex /= Void then
-						target_descriptor.add_slot_ids(kr.matching_ids (a_regex, target.slot_index.item.rm_type_name), target.slot_index.item.path)
+						target_descriptor.add_slot_ids(arch_dir.matching_ids (a_regex, target.slot_index.item.rm_type_name), target.slot_index.item.path)
 					end
 					assn_list.forth
 				end
 
 				-- if there are still no ids at all for this path, the implication is that all ids match, and that exclusions will remove some
 				if not target_descriptor.has_slots or else not target_descriptor.slot_id_index.has (target.slot_index.item.path) then
-					target_descriptor.add_slot_ids (kr.matching_ids (".*", target.slot_index.item.rm_type_name), target.slot_index.item.path)
+					target_descriptor.add_slot_ids (arch_dir.matching_ids (".*", target.slot_index.item.rm_type_name), target.slot_index.item.path)
 				end
 
 				-- process the excludes
@@ -382,7 +382,7 @@ feature {NONE} -- Implementation
 				from assn_list.start until assn_list.off loop
 					a_regex := extract_regex(assn_list.item)
 					if a_regex /= Void then
-						id_list := kr.matching_ids (a_regex, target.slot_index.item.rm_type_name)
+						id_list := arch_dir.matching_ids (a_regex, target.slot_index.item.rm_type_name)
 
 						-- go through existing id list and remove any matched by the exclusion list
 						from id_list.start until id_list.off loop
@@ -396,7 +396,7 @@ feature {NONE} -- Implementation
 				-- now post the results in the reverse indexes
 				id_list := target_descriptor.slot_id_index.item (target.slot_index.item.path)
 				from id_list.start until id_list.off loop
-					ara := kr.archetype_index.item (id_list.item)
+					ara := arch_dir.archetype_index.item (id_list.item)
 					if not ara.is_used or else not ara.used_by_index.has (target.archetype_id.as_string) then
 						ara.add_used_by_item (target.archetype_id.as_string)
 					end

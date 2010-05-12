@@ -82,12 +82,13 @@ create
 
 feature {NONE} -- Initialisation
 
-	make (a_full_path: STRING; an_id: attached ARCHETYPE_ID; a_repository: ARCHETYPE_REPOSITORY_I)
+	make (a_full_path: STRING; an_id: attached ARCHETYPE_ID; a_repository: ARCHETYPE_REPOSITORY_I; an_artefact_type: INTEGER)
 			-- Create for the archetype with `an_id', stored at `a_full_path', belonging to `a_repository'.
 			-- Can be created with a .adl or .adls file name extension
 		require
 			repository_attached: a_repository /= Void
 			full_path_attached: a_full_path /= Void
+			valid_artefact_type: (create {ARTEFACT_TYPE}.default_create).valid_type(an_artefact_type)
 		do
 			make_item
 			create status.make_empty
@@ -98,6 +99,7 @@ feature {NONE} -- Initialisation
 			display_name := id.domain_concept
 			full_path := a_full_path
 			file_repository := a_repository
+			artefact_type := an_artefact_type
 
 			if file_system.has_extension (full_path, archetype_source_file_extension) then
 				differential_path := full_path
@@ -115,14 +117,15 @@ feature {NONE} -- Initialisation
 			no_compiler_status: compiler_status.is_empty
 		end
 
-	make_specialised (a_full_path: STRING; an_id, a_parent_id: attached ARCHETYPE_ID; a_repository: ARCHETYPE_REPOSITORY_I)
+	make_specialised (a_full_path: STRING; an_id, a_parent_id: attached ARCHETYPE_ID; a_repository: ARCHETYPE_REPOSITORY_I; an_artefact_type: INTEGER)
 			-- Create for the archetype with `an_id', stored at `a_full_path', belonging to `a_repository' at `a_root_path'.
 			-- Can be created with a .adl or .adls file name extension
 		require
 			repository_attached: a_repository /= Void
 			full_path_attached: a_full_path /= Void
+			valid_artefact_type: (create {ARTEFACT_TYPE}.default_create).valid_type(an_artefact_type)
 		do
-			make (a_full_path, an_id, a_repository)
+			make (a_full_path, an_id, a_repository, an_artefact_type)
 			is_specialised := True
 			parent_id := a_parent_id
 		ensure
@@ -169,17 +172,9 @@ feature -- Access (file system)
 
 feature -- Access (semantic)
 
-	ontological_parent_name: STRING
-			-- semantic name of parent node in ontology tree
-			-- For top-level archetypes e.g. openEHR-EHR-OBSERVATION.thing.v1, it will be the name of teh folder, e.g. EHR-OBSERVATION
-			-- for specialised archetypes, e.g. openEHR-EHR-OBSERVATION.specialised_thing.v1, it will be the id of the parent, e.g. openEHR-EHR-OBSERVATION.thing.v1
-		do
-			if is_specialised then
-				Result := parent_id.as_string
-			else
-				Result := id.package_class_name
-			end
-		end
+	artefact_type: INTEGER
+			-- type of artefact i.e. archetype, template, template_component, operational_template
+			-- see ARTEFACT_TYPE class
 
 	id: attached ARCHETYPE_ID
 			-- Archetype identifier.
@@ -308,6 +303,18 @@ feature -- Access (semantic)
 			end
 		end
 
+	ontological_parent_name: STRING
+			-- semantic name of parent node in ontology tree
+			-- For top-level archetypes e.g. openEHR-EHR-OBSERVATION.thing.v1, it will be the name of teh folder, e.g. EHR-OBSERVATION
+			-- for specialised archetypes, e.g. openEHR-EHR-OBSERVATION.specialised_thing.v1, it will be the id of the parent, e.g. openEHR-EHR-OBSERVATION.thing.v1
+		do
+			if is_specialised then
+				Result := parent_id.as_string
+			else
+				Result := id.package_class_name
+			end
+		end
+
 feature -- Status Report - Compilation
 
 	has_differential_file: BOOLEAN
@@ -411,7 +418,7 @@ feature -- Status Setting
 		do
 			if not parse_attempted then
 				parse_attempted := True
-				kr.increment_parse_attempted_archetype_count
+				arch_dir.increment_parse_attempted_archetype_count
 			end
 			create last_compile_attempt_timestamp.make_now
 		end
@@ -768,7 +775,7 @@ feature {NONE} -- Implementation
 			validate_attempted := True
 			is_valid := validator.passed
 			differential_archetype.set_is_valid (is_valid)
-			kr.update_slot_statistics (Current)
+			arch_dir.update_slot_statistics (Current)
 
 			-- now perform validation which requires flat form
 			if is_valid then

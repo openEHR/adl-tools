@@ -55,6 +55,12 @@ feature -- Definitions
 			Result := Adl_versions.last
 		end
 
+	Group_id_adhoc: INTEGER is 1
+
+	Group_id_reference: INTEGER is 2
+
+	Group_id_work: INTEGER is 3
+
 end
 
 

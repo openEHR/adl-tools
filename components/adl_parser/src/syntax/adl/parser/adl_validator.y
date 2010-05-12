@@ -91,25 +91,25 @@ arch_head: SYM_ARCHETYPE
 		{
 			str := text
 			str.right_adjust
-			create artefact_type.make_from_string(str)
+			create artefact_type.make_from_type_name(str)
 		}
 	| SYM_TEMPLATE
 		{
 			str := text
 			str.right_adjust
-			create artefact_type.make_from_string(str)
+			create artefact_type.make_from_type_name(str)
 		}
 	| SYM_TEMPLATE_COMPONENT
 		{
 			str := text
 			str.right_adjust
-			create artefact_type.make_from_string(str)
+			create artefact_type.make_from_type_name(str)
 		}
 	| SYM_OPERATIONAL_TEMPLATE
 		{
 			str := text
 			str.right_adjust
-			create artefact_type.make_from_string(str)
+			create artefact_type.make_from_type_name(str)
 		}
 	;
 

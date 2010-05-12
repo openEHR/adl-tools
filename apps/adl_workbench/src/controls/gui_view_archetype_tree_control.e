@@ -58,7 +58,7 @@ feature -- Commands
 		do
 			gui_tree.wipe_out
  			create gui_tree_item_stack.make (0)
- 			kr.do_subtree (kr.archetype_directory, agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
+ 			arch_dir.do_all (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
 			gui_tree.recursive_do_all (agent ev_tree_expand)
 			gui.select_node_in_archetype_tree_view
 		end
@@ -74,7 +74,7 @@ feature -- Commands
 						delay_to_make_keyboard_navigation_practical.set_interval (0)
 
 						if attached {EV_TREE_NODE} gui_tree.selected_item as node and then attached {ARCH_REP_ITEM} node.data as a then
-							kr.set_selected_item (a)
+							arch_dir.set_selected_item (a)
 							gui.parse_archetype
 						end
 					end)

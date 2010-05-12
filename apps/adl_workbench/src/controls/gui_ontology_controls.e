@@ -63,7 +63,7 @@ feature -- Commands
 		do
 			clear
 
-			if kr.has_valid_selected_archetype then
+			if arch_dir.has_valid_selected_archetype then
 				populate_term_definitions
 				populate_constraint_definitions
 			end
@@ -100,12 +100,12 @@ feature {NONE} -- Implementation
 	target_archetype: ARCHETYPE
 			-- differential or flat version of archetype, depending on setting of `in_differential_mode'
 		require
-			kr.has_selected_archetype
+			arch_dir.has_selected_archetype
 		do
 			if in_differential_mode then
-				Result := kr.selected_archetype.differential_archetype
+				Result := arch_dir.selected_archetype.differential_archetype
 			else
-				Result := kr.selected_archetype.flat_archetype
+				Result := arch_dir.selected_archetype.flat_archetype
 			end
 		end
 
@@ -115,7 +115,7 @@ feature {NONE} -- Implementation
 	ontology: attached ARCHETYPE_ONTOLOGY
 			-- access to ontology of selected archetype
 		require
-			archetype_selected: kr.has_selected_archetype
+			archetype_selected: arch_dir.has_selected_archetype
 		do
 			Result := target_archetype.ontology
 		end
@@ -123,7 +123,7 @@ feature {NONE} -- Implementation
 	populate_term_definitions
 			-- Populate the Term Definitions list.
 		require
-			archetype_selected: kr.has_selected_archetype
+			archetype_selected: arch_dir.has_selected_archetype
 		local
 			col_titles: ARRAYED_LIST [STRING_32]
 			pl: EV_MULTI_COLUMN_LIST
@@ -210,7 +210,7 @@ feature {NONE} -- Implementation
 	populate_constraint_definitions
 			-- Populate the Constraint Definitions list
 		require
-			archetype_selected: kr.has_selected_archetype
+			archetype_selected: arch_dir.has_selected_archetype
 		local
 			col_titles: ARRAYED_LIST [STRING_32]
 			pl: EV_MULTI_COLUMN_LIST

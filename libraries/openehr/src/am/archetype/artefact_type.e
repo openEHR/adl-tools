@@ -14,7 +14,7 @@ note
 class ARTEFACT_TYPE
 
 create
-	default_create, make, make_from_string
+	default_create, make, make_from_type_name
 
 feature -- Defnition
 
@@ -34,21 +34,21 @@ feature -- Initialisation
 
 	make (i: INTEGER)
 		require
-			valid_artefact_type(i)
+			valid_type(i)
 		do
 			value := i
 		end
 
-	make_from_string (s: STRING)
+	make_from_type_name (s: STRING)
 		require
-			s /= Void and then valid_artefact_type_name (s)
+			s /= Void and then valid_type_name (s)
 		do
-			value := values.item (s)
+			value := types.item (s)
 		end
 
 feature -- Access
 
-	values: HASH_TABLE [INTEGER, STRING]
+	types: HASH_TABLE [INTEGER, STRING]
 		once
 			create Result.make(0)
 			Result.extend(archetype, "archetype")
@@ -57,22 +57,29 @@ feature -- Access
 			Result.extend(operational_template, "operational_template")
 		end
 
+	type_name_to_type (a_name: STRING): INTEGER
+		require
+			a_name /= Void and then valid_type_name(a_name)
+		do
+			Result := types.item (a_name)
+		end
+
 feature -- Validation
 
-	valid_artefact_type (n: INTEGER): BOOLEAN
+	valid_type (n: INTEGER): BOOLEAN
 			-- Function to test value validity.
 		require
 			n >= 0
 		do
-			Result := values.has_item (n)
+			Result := types.has_item (n)
 		end
 
-	valid_artefact_type_name (s: STRING): BOOLEAN
+	valid_type_name (s: STRING): BOOLEAN
 			-- Function to test validity of string name of value
 		require
 			s /= Void and then not s.is_empty
 		do
-			Result := values.has_key(s)
+			Result := types.has_key(s)
 		end
 
 feature {NONE} -- Implementation
@@ -80,7 +87,7 @@ feature {NONE} -- Implementation
 	value: INTEGER
 
 invariant
-	valid_artefact_type(value)
+	Valid_value: valid_type(value)
 
 end
 

@@ -21,6 +21,8 @@ inherit
 
 	SHARED_KNOWLEDGE_REPOSITORY
 
+	SHARED_SOURCE_REPOSITORIES
+
 	SHARED_ARCHETYPE_COMPILER
 
 	MESSAGE_BILLBOARD
@@ -39,9 +41,8 @@ feature -- Test routines
 			set_status_reporting_level (message_type_error)
 			repository := resource_value ("tests", "validation_repository")
 
-			kr.make
-			kr.set_reference_repository (repository)
-			kr.populate_directory
+			source_repos.set_reference_repository (repository)
+			arch_dir.populate
 
 			expected := "ERROR - No parent matching /specialisation_parent_term found for archetype " +
 						repository + "\adl-test-ENTRY.specialisation_parent_term-missing.v1.adl      (ARCH_DIRECTORY.merge_enter)%N" +

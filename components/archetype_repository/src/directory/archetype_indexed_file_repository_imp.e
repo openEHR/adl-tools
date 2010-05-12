@@ -34,6 +34,7 @@ feature {NONE} -- Implementation
 			ara: ARCH_REP_ARCHETYPE
 			arch_id, parent_arch_id: attached ARCHETYPE_ID
 			a_file: RAW_FILE
+			amp: ARCHETYPE_MINI_PARSER
    		do
    			-- generate lists of immediate child directory and archetype file names
    			-- in the current directory 'a_parent_node.item.full_path'
@@ -42,6 +43,7 @@ feature {NONE} -- Implementation
    				shifter.extend ('%T')
    			end
 
+			create amp
 			create a_dir.make (a_path)
 
 			if a_dir.exists then
@@ -64,17 +66,17 @@ feature {NONE} -- Implementation
 							dir_name_index.extend (fn)
 						elseif adl_flat_filename_pattern_regex.matches (fn) or adl_differential_filename_pattern_regex.matches (fn) then
 							-- perform a mini-parse of the file, getting the archetype id, the specialisation status and the specialisation parent
-							mini_parse_archetype (full_path)
-							if last_miniparse_valid then
-								if not last_archetype_id_old_style then
-									create arch_id.make_from_string(last_archetype_id)
+							amp.parse (full_path)
+							if amp.last_parse_valid then
+								if not amp.last_archetype_id_old_style then
+									create arch_id.make_from_string(amp.last_archetype_id)
 
 									-- create the descriptor znd put it into a local Hash for this node
-									if last_archetype_specialised then
-										create parent_arch_id.make_from_string(last_parent_archetype_id)
-										create ara.make_specialised (full_path, arch_id, parent_arch_id, Current)
+									if amp.last_archetype_specialised then
+										create parent_arch_id.make_from_string(amp.last_parent_archetype_id)
+										create ara.make_specialised (full_path, arch_id, parent_arch_id, Current, amp.last_archetype_artefact_type)
 									else
-										create ara.make (full_path, arch_id, Current)
+										create ara.make (full_path, arch_id, Current, amp.last_archetype_artefact_type)
 									end
 
 									-- the following check ensures only one of a .adl/.adls pair goes into the repository
