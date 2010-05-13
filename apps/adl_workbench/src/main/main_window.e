@@ -391,7 +391,7 @@ feature -- File events
 			save_dialog: EV_FILE_SAVE_DIALOG
 			name, format: STRING
 		do
-			if arch_dir.has_valid_selected_archetype then
+			if arch_dir.has_validated_selected_archetype then
 				name := extension_replaced (arch_dir.selected_archetype.full_path, "")
 
 				create save_dialog
@@ -439,6 +439,18 @@ feature -- File events
 			else
 				create error_dialog.make_with_text ("Must parse before serialising.")
 				error_dialog.show_modal_to_window (Current)
+			end
+		end
+
+	display_class
+			-- display the class currently selected in `archetype_directory'.
+		do
+			if arch_dir.has_selected_class then
+				if definition_notebook.parent = differential_view_box then
+					class_map_control.set_differential_view
+				else
+					class_map_control.set_flat_view
+				end
 			end
 		end
 
@@ -827,21 +839,21 @@ feature -- Archetype commands
 
 	on_node_map_shrink_tree_one_level
 		do
-			if arch_dir.has_valid_selected_archetype then
+			if arch_dir.has_validated_selected_archetype then
 				node_map_control.shrink_one_level
 			end
 		end
 
 	on_node_map_expand_tree_one_level
 		do
-			if arch_dir.has_valid_selected_archetype then
+			if arch_dir.has_validated_selected_archetype then
 				node_map_control.expand_one_level
 			end
 		end
 
 	on_node_map_toggle_expand_tree
 		do
-			if arch_dir.has_valid_selected_archetype then
+			if arch_dir.has_validated_selected_archetype then
 				node_map_control.toggle_expand_tree
 			end
 		end
@@ -855,7 +867,7 @@ feature -- Archetype commands
 	on_node_map_domain_selected
 			-- Hide technical details in `node_map_tree'.
 		do
-			if arch_dir.has_valid_selected_archetype then
+			if arch_dir.has_validated_selected_archetype then
 				node_map_control.set_domain_mode
 			end
 		end
@@ -863,7 +875,7 @@ feature -- Archetype commands
 	on_node_map_technical_selected
 			-- Display technical details in `node_map_tree'.
 		do
-			if arch_dir.has_valid_selected_archetype then
+			if arch_dir.has_validated_selected_archetype then
 				node_map_control.set_technical_mode
 			end
 		end
@@ -871,7 +883,7 @@ feature -- Archetype commands
 	on_node_map_reference_model_selected
 			-- turn on or off the display of reference model details in `node_map_tree'.
 		do
-			if arch_dir.has_valid_selected_archetype then
+			if arch_dir.has_validated_selected_archetype then
 				if node_map_reference_model_check_button.is_selected then
 					node_map_control.set_reference_model_mode
 				else
@@ -927,7 +939,11 @@ feature -- Archetype commands
 						other.prune (definition_notebook)
 						tab.extend (definition_notebook)
 						ev_application.process_graphical_events
-						populate_archetype_view_controls
+						if arch_dir.has_selected_archetype then
+							populate_archetype_view_controls
+						elseif arch_dir.has_selected_class then
+							display_class
+						end
 					end
 				end
 			end
@@ -957,6 +973,11 @@ feature -- Controls
 		end
 
 	node_map_control: GUI_NODE_MAP_CONTROL
+		once
+			create Result.make (Current)
+		end
+
+	class_map_control: GUI_CLASS_MAP_CONTROL
 		once
 			create Result.make (Current)
 		end
@@ -1031,7 +1052,7 @@ feature {NONE} -- Implementation
 				set_current_language (default_language)
 			else
 				set_current_language (language_combo.text.as_string_8)
-				if arch_dir.has_valid_selected_archetype then
+				if arch_dir.has_validated_selected_archetype then
 					populate_archetype_view_controls
 				end
 			end
@@ -1212,7 +1233,7 @@ feature {NONE} -- Implementation
 	populate_adl_version
 			-- Populate ADL version.
 		do
-			if arch_dir.has_valid_selected_archetype then
+			if arch_dir.has_validated_selected_archetype then
 				adl_version_text.set_text (utf8 (arch_dir.selected_archetype.differential_archetype.adl_version))
 			else
 				adl_version_text.remove_text
@@ -1226,7 +1247,7 @@ feature {NONE} -- Implementation
 		do
 			language_combo.select_actions.block
 
-			if arch_dir.has_valid_selected_archetype then
+			if arch_dir.has_validated_selected_archetype then
 				archetype := arch_dir.selected_archetype.differential_archetype
 
 				if not archetype.has_language (current_language) then

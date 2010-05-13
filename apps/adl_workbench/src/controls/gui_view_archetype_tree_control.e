@@ -31,6 +31,9 @@ inherit
 		end
 
 	STRING_UTILITIES
+		export
+			{NONE} all
+		end
 
 create
 	make
@@ -73,9 +76,13 @@ feature -- Commands
 					do
 						delay_to_make_keyboard_navigation_practical.set_interval (0)
 
-						if attached {EV_TREE_NODE} gui_tree.selected_item as node and then attached {ARCH_REP_ITEM} node.data as a then
-							arch_dir.set_selected_item (a)
-							gui.parse_archetype
+						if attached {EV_TREE_NODE} gui_tree.selected_item as node and then attached {ARCH_REP_ITEM} node.data as ari then
+							arch_dir.set_selected_item (ari)
+							if attached {ARCH_REP_ARCHETYPE} ari as ara then
+								gui.parse_archetype
+							else
+								gui.display_class
+							end
 						end
 					end)
 			end
@@ -167,7 +174,7 @@ feature {NONE} -- Implementation
 			--
 		do
 	 		if attached {ARCH_REP_MODEL_NODE} node.data as arf then
-	 			if (arf.is_abstract or arf.is_package) and node.is_expandable then
+	 			if (arf.is_abstract_class or arf.is_package) and node.is_expandable then
 					node.expand
 	 			end
 	 		end

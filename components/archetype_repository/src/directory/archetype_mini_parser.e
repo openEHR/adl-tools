@@ -16,6 +16,15 @@ note
 
 class ARCHETYPE_MINI_PARSER
 
+inherit
+	SHARED_RESOURCES
+		rename
+			file_exists as is_valid_path
+		export
+			{NONE} all;
+			{ANY} is_valid_path
+		end
+
 feature -- Access
 
 	last_archetype_id: STRING
@@ -40,18 +49,13 @@ feature -- Status Report
 	last_archetype_specialised: BOOLEAN
 			-- true if archetype id read by last invocation of mini_parse_archetype
 
-	valid_file_path (a_full_path: STRING): BOOLEAN
-		do
-			Result := a_full_path /= Void and then file_context.has_file (a_full_path)
-		end
-
 feature -- Commands
 
 	parse (a_full_path: STRING)
 			-- perform quick parse of lines down to 'concept' line or EOF, and obtain archetype_id,
 			-- specialisation status and if specialised, specialisation parent
 		require
-			path_valid: a_full_path /= Void and then valid_file_path (a_full_path)
+			path_valid: a_full_path /= Void and then is_valid_path (a_full_path)
 		local
 			lines: LIST [STRING]
 			artefact_types: ARTEFACT_TYPE

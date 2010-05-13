@@ -92,7 +92,7 @@ feature -- Commands
 			-- Add am empty column at the end so the width of the true last column can be set to zero on all platforms.
 			path_list.set_column_title ("", path_control_column_names.count + 1)
 
-			if arch_dir.has_valid_selected_archetype then
+			if arch_dir.has_validated_selected_archetype then
 				if filter_combo.text.is_equal ("All") then
 					p_paths := target_archetype.physical_paths
 					l_paths := target_archetype.logical_paths (current_language, False)

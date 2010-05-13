@@ -14,8 +14,6 @@ note
 
 deferred class BMM_PROPERTY_DEFINITION
 
-feature -- Initialisation
-
 feature -- Access
 
 	name: STRING

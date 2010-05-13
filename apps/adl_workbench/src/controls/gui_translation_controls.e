@@ -61,7 +61,7 @@ feature -- Commands
 		do
 			clear
 
-			if arch_dir.has_valid_selected_archetype then
+			if arch_dir.has_validated_selected_archetype then
 				if arch_dir.selected_archetype.differential_archetype.translations /= Void then
 					populate_ev_list_from_hash_keys (gui.arch_translations_languages_list, arch_dir.selected_archetype.differential_archetype.translations)
 					populate_items
@@ -83,7 +83,7 @@ feature -- Commands
 				translation_language := gui.arch_translations_languages_list.selected_item.text.as_string_8
 			end
 
-			if arch_dir.has_valid_selected_archetype then
+			if arch_dir.has_validated_selected_archetype then
 				trans_item := arch_dir.selected_archetype.differential_archetype.translations.item(translation_language)
 
 				-- populate author hash

@@ -82,7 +82,7 @@ feature -- Commands
 		do
 			clear
 
-			if arch_dir.has_valid_selected_archetype then
+			if arch_dir.has_validated_selected_archetype then
 				archetype := arch_dir.selected_archetype.differential_archetype
 				gui.terminologies_list.set_strings (archetype.ontology.terminologies_available)
 

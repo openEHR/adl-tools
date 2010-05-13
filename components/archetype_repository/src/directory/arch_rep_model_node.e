@@ -59,20 +59,20 @@ feature -- Initialisation
 			-- create with ontological name
 		require
 			a_package_valid: a_package /= Void and then not a_package.is_empty
-			a_name_valid: a_class_desc /= Void
+			a_desc_valid: a_class_desc.name /= Void
 		do
 			make
-			ontological_name := a_package + {ARCHETYPE_ID}.section_separator.out +  a_class_desc.name
-			display_name := a_class_desc.name
-			if a_class_desc.is_abstract then
+			class_definition := a_class_desc
+			ontological_name := a_package + {ARCHETYPE_ID}.section_separator.out +  class_definition.name
+			display_name := class_definition.name
+			if class_definition.is_abstract then
 				group_name := "class_abstract"
-				is_abstract := True
 			else
 				group_name := "class_concrete"
 			end
 		ensure
-			ontological_name_set: ontological_name.is_equal (a_package + {ARCHETYPE_ID}.section_separator.out +  a_class_desc.name)
-			display_name_set: display_name = a_class_desc.name
+			ontological_name_set: ontological_name.is_equal (a_package + {ARCHETYPE_ID}.section_separator.out +  class_definition.name)
+			display_name_set: display_name = class_definition.name
 		end
 
 feature -- Access
@@ -81,11 +81,21 @@ feature -- Access
 			-- Name distinguishing the type of item and the group to which its `repository' belongs.
 			-- Useful as a logical key to pixmap icons, etc.
 
+	class_definition: BMM_CLASS_DEFINITION
+
 feature -- Status Report
 
-	is_abstract: BOOLEAN
+	is_abstract_class: BOOLEAN
+		do
+			Result := class_definition /= Void and then class_definition.is_abstract
+		end
 
 	is_package: BOOLEAN
+
+	is_class: BOOLEAN
+		do
+			Result := class_definition /= Void
+		end
 
 	has_archetypes: BOOLEAN
 			-- True if there are any archetypes at or below this point
@@ -99,7 +109,7 @@ feature {ARCH_REP_ITEM} -- Implementation
 			-- parent node
 
 invariant
-	not is_package and is_abstract
+	Class_definition_validity: not is_package and is_class
 
 end
 

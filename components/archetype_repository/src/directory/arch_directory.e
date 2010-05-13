@@ -95,6 +95,17 @@ feature -- Access
 			consistent_with_history: Result /= Void implies Result = selected_item
 		end
 
+	selected_class: ARCH_REP_MODEL_NODE
+			-- The model node at `selected_node'.
+		do
+			Result ?= selected_item
+			if attached Result and not Result.is_class then
+				Result := Void
+			end
+		ensure
+			consistent_with_history: Result /= Void implies Result = selected_item
+		end
+
 	matching_ids (a_regex, an_rm_type: STRING): attached ARRAYED_LIST[STRING]
 			-- generate list of archetype ids that match the pattern and optional rm_type. If rm_type is supplied,
 			-- we assume that the regex itself does not contain an rm type
@@ -190,10 +201,16 @@ feature -- Status Report
 			Result := selected_archetype /= Void
 		end
 
-	has_valid_selected_archetype: BOOLEAN
+	has_validated_selected_archetype: BOOLEAN
 			-- Has a valid archetype been selected?
 		do
 			Result := selected_archetype /= Void and then selected_archetype.is_valid
+		end
+
+	has_selected_class: BOOLEAN
+			-- Has a class been selected?
+		do
+			Result := selected_class /= Void
 		end
 
 	selection_history_has_previous: BOOLEAN
@@ -415,6 +432,8 @@ feature -- Traversal
 
 	do_all (enter_action, exit_action: PROCEDURE [ANY, TUPLE [ARCH_REP_ITEM]])
 			-- On all nodes in tree, execute `enter_action', then recurse into its subnodes, then execute `exit_action'.
+		require
+			enter_action_attached: enter_action /= Void
 		do
 			do_subtree (ontology, enter_action, exit_action)
 		end
@@ -428,22 +447,16 @@ feature -- Traversal
 	 			debug("arch_dir")
 					shifter.extend ('%T')
 				end
-
-				if node /= Void then
-					enter_action.call ([node])
-				end
-
+				enter_action.call ([node])
 				if node.has_children then
 					from node.child_start until node.child_off loop
 						do_subtree (node.child_item, enter_action, exit_action)
 						node.child_forth
 					end
 				end
-
 				if exit_action /= Void then
 					exit_action.call ([node])
 				end
-
 				debug("arch_dir")
 					shifter.remove_tail (1)
 				end

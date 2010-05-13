@@ -61,7 +61,7 @@ feature -- Access
 			-- list of attributes defined in this class FROM SCHEMA
 			-- DON'T RENAME THIS ATTRIBUTE
 
-	immediate_suppliers: ARRAYED_SET [STRING]
+	immediate_suppliers: attached ARRAYED_SET [STRING]
 			-- list of names of immediate supplier classes, including concrete generic parameters and
 			-- concrete descendants of abstract statically defined types.
 			-- (where generics are unconstrained, no class name is added, since logically it would be
@@ -99,7 +99,7 @@ feature -- Access
 			Result := immediate_suppliers_cache
 		end
 
-	immediate_suppliers_non_primitive: ARRAYED_SET [STRING]
+	immediate_suppliers_non_primitive: attached ARRAYED_SET [STRING]
 			-- same as `suppliers' minus primitive types, as defined in input schema
 		local
 			prim_types: ARRAYED_SET [STRING]
@@ -114,7 +114,7 @@ feature -- Access
 			Result := immediate_suppliers_non_primitive_cache
 		end
 
-	all_suppliers: ARRAYED_SET [STRING]
+	all_suppliers: attached ARRAYED_SET [STRING]
 			-- list of names of all classes in supplier closure, including concrete generic parameters;
 			-- (where generics are unconstrained, no class name is added, since logically it would be
 			-- 'ANY' and this can always be assumed anyway)
@@ -131,7 +131,7 @@ feature -- Access
 			Result := all_suppliers_cache
 		end
 
-	flat_properties: HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
+	flat_properties: attached HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
 			-- list of all attributes due to current and ancestor classes, keyed by property name
 		do
 			if flat_properties_cache = Void then
@@ -147,11 +147,9 @@ feature -- Access
 				flat_properties_cache.merge (properties)
 			end
 			Result := flat_properties_cache
-		ensure
-			Result_exists: Result /= Void
 		end
 
-	flattened_type_list: ARRAYED_LIST [STRING]
+	flattened_type_list: attached ARRAYED_LIST [STRING]
 			-- completely flattened list of type names, flattening out all generic parameters
 			-- e.g. "HASH_TABLE [LINKED_LIST[STRING], STRING]" => <<"HASH_TABLE", "LINKED_LIST", "STRING", "STRING">>
 		do
@@ -169,7 +167,7 @@ feature -- Access
 			end
 		end
 
-	property_definition_at_path (a_prop_path: OG_PATH): BMM_PROPERTY_DEFINITION
+	property_definition_at_path (a_prop_path: OG_PATH): attached BMM_PROPERTY_DEFINITION
 			-- retrieve the property definition for `a_prop_path' in flattened class corresponding to `a_type_name'
 			-- note that the internal cursor of the path is used to know how much to read - from cursor to end (this allows
 			-- recursive evaluation)
@@ -197,8 +195,6 @@ feature -- Access
 				end
 			end
 			a_prop_path.go_i_th (a_path_pos)
-		ensure
-			Result_exists: Result /= Void
 		end
 
 feature -- Status Report
@@ -294,6 +290,36 @@ feature -- Commands
 			end
 		end
 
+feature -- Traversal
+
+	do_supplier_closure (flat_flag: BOOLEAN; enter_action, exit_action: PROCEDURE [ANY, TUPLE [BMM_PROPERTY_DEFINITION]])
+			-- On all nodes in supplier closure of this class, execute `enter_action', then recurse into its subnodes, then execute `exit_action'.
+			-- If `flat_flag' = True, use the inheritance-flattened closure
+		require
+			enter_action_attached: enter_action /= Void
+		local
+			props: attached HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
+		do
+			create supplier_closure_stack.make(0)
+			supplier_closure_stack.compare_objects
+			supplier_closure_stack.extend(name)
+
+			create supplier_closure_class_record.make(0)
+			supplier_closure_class_record.compare_objects
+			supplier_closure_class_record.extend(name)
+
+			if flat_flag then
+				props := flat_properties
+			else
+				props := properties
+			end
+
+			from props.start until props.off loop
+				do_property_supplier_closure (props.item_for_iteration, flat_flag, enter_action, exit_action)
+				props.forth
+			end
+		end
+
 feature -- Output
 
 	as_type_string: STRING
@@ -359,6 +385,49 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 		do
 			-- FIXME: not in use, since no serialisatoin back out at this stage
 		end
+
+feature {NONE} -- Implementation
+
+	do_property_supplier_closure (a_prop: BMM_PROPERTY_DEFINITION; flat_flag: BOOLEAN; enter_action, exit_action: PROCEDURE [ANY, TUPLE [BMM_PROPERTY_DEFINITION]])
+			-- On all nodes in supplier closure of `a_prop', execute `enter_action', then recurse into its subnodes, then execute `exit_action'.
+			-- If `flat_flag' = True, use the inheritance-flattened closure
+		require
+			propert_attached: a_prop /= Void
+			enter_action_attached: enter_action /= Void
+		local
+			props: attached HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
+		do
+			if not supplier_closure_stack.has(a_prop.type.root_class) then
+				supplier_closure_stack.extend(a_prop.type.root_class)
+
+				enter_action.call ([a_prop])
+
+				if not supplier_closure_class_record.has(a_prop.type.root_class) then
+					supplier_closure_class_record.extend(a_prop.type.root_class)
+					if flat_flag then
+						props := bmm_model.class_definition(a_prop.type.root_class).flat_properties
+					else
+						props := bmm_model.class_definition(a_prop.type.root_class).properties
+					end
+
+					from props.start until props.off loop
+						do_property_supplier_closure (props.item_for_iteration, flat_flag, enter_action, exit_action)
+						props.forth
+					end
+				end
+
+				if exit_action /= Void then
+					exit_action.call ([a_prop])
+				end
+				supplier_closure_stack.remove
+			end
+		end
+
+	supplier_closure_stack: ARRAYED_STACK [STRING]
+			-- list of classes on this tree branch, to prevent cycling
+
+	supplier_closure_class_record: ARRAYED_LIST [STRING]
+			-- list of classes already done, to prevent fully expanded form being generated after first instance
 
 invariant
 	Properties_exists: properties /= Void

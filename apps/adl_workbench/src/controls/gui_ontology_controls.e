@@ -63,7 +63,7 @@ feature -- Commands
 		do
 			clear
 
-			if arch_dir.has_valid_selected_archetype then
+			if arch_dir.has_validated_selected_archetype then
 				populate_term_definitions
 				populate_constraint_definitions
 			end
