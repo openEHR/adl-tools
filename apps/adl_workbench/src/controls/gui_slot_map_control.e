@@ -111,7 +111,7 @@ feature -- Commands
 				end
 
 				if arch_dir.parse_attempted_archetype_count < arch_dir.total_archetype_count then
-					gui.used_by_tree.extend (create {EV_TREE_ITEM}.make_with_text (create_message ("slots_incomplete_w1", <<>>)))
+					gui.used_by_tree.extend (create {EV_TREE_ITEM}.make_with_text (create_message_line ("slots_incomplete_w1", <<>>)))
 				end
 
 				if ara.is_used then

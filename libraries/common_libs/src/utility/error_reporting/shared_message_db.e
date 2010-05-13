@@ -21,11 +21,18 @@ feature -- Access
 			create {IN_MEMORY_MESSAGE_DB} Result.make
 		end
 
-	create_message(an_id: STRING; args: ARRAY[STRING]): STRING
+	create_message_line(an_id: STRING; args: ARRAY[STRING]): STRING
 		require
 			an_id /= Void
 		do
-			Result := message_db.create_message (an_id, args)
+			Result := message_db.create_message_line (an_id, args)
+		end
+
+	create_message_content(an_id: STRING; args: ARRAY[STRING]): STRING
+		require
+			an_id /= Void
+		do
+			Result := message_db.create_message_content (an_id, args)
 		end
 
 end

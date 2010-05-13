@@ -51,20 +51,20 @@ feature -- Modification
 	add_error(a_key: STRING; args: ARRAY [STRING])
 			-- append an error with key `a_key' and `args' array to the `errors' string
 		do
-			errors.append(create_message(a_key, args))
+			errors.append(create_message_line(a_key, args))
 			passed := False
 		end
 
 	add_warning(a_key: STRING; args: ARRAY [STRING])
 			-- append a warning with key `a_key' and `args' array to the `warnings' string
 		do
-			warnings.append(create_message(a_key, args))
+			warnings.append(create_message_line(a_key, args))
 		end
 
 	add_info(a_key: STRING; args: ARRAY [STRING])
 			-- append an information message with key `a_key' and `args' array to the `information' string
 		do
-			info.append(create_message(a_key, args))
+			info.append(create_message_line(a_key, args))
 		end
 
 feature -- Status Report

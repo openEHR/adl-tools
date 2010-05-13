@@ -711,7 +711,7 @@ end
 				complex_object_nodes.item.put_attribute(attr_node)
 			else
 				raise_error
-				report_error(create_message("VDATU", <<attr_node.rm_attr_name>>))
+				report_error(create_message_line("VDATU", <<attr_node.rm_attr_name>>))
 				abort
 			end
 
@@ -751,7 +751,7 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error(create_message("SDAT", Void))
+			report_error(create_message_line("SDAT", Void))
 			abort
 		
 if yy_parsing_status >= yyContinue then
@@ -960,7 +960,7 @@ end
 					attr_nodes.item.put_child(complex_object_node)
 				else
 					raise_error
-					report_error(create_message("VDOBU", <<complex_object_node.node_id, attr_nodes.item.rm_attr_name >>))
+					report_error(create_message_line("VDOBU", <<complex_object_node.node_id, attr_nodes.item.rm_attr_name >>))
 					abort
 				end
 
@@ -985,7 +985,7 @@ end
 					complex_object_node.put_attribute(attr_node)
 				else
 					raise_error
-					report_error(create_message("VDATU", <<attr_node.rm_attr_name>>))
+					report_error(create_message_line("VDATU", <<attr_node.rm_attr_name>>))
 					abort
 				end
 
@@ -1060,7 +1060,7 @@ end
 				attr_nodes.item.set_multiple
 			else
 				raise_error
-				report_error(create_message("SGEE", <<attr_node.rm_attr_name>>))
+				report_error(create_message_line("SGEE", <<attr_node.rm_attr_name>>))
 				abort
 			end
 		
@@ -1204,7 +1204,7 @@ end
 					attr_nodes.item.put_child(complex_object_node)
 				else
 					raise_error
-					report_error(create_message("VDOBU", <<complex_object_node.node_id, attr_nodes.item.rm_attr_name >>))
+					report_error(create_message_line("VDOBU", <<complex_object_node.node_id, attr_nodes.item.rm_attr_name >>))
 					abort
 				end
 			end
@@ -1268,7 +1268,7 @@ end
 				yyval14 := yyvs14.item (yyvsp14)
 			else
 				raise_error
-				report_error(create_message("VDOBU", <<yyvs14.item (yyvsp14).node_id, attr_nodes.item.rm_attr_name >>))
+				report_error(create_message_line("VDOBU", <<yyvs14.item (yyvsp14).node_id, attr_nodes.item.rm_attr_name >>))
 				abort
 			end
 		
@@ -5280,7 +5280,7 @@ end
 				yyval14 := yyvs14.item (yyvsp14)
 			else
 				raise_error
-				report_error(create_message("VDOBU", <<yyvs14.item (yyvsp14).node_id, attr_nodes.item.rm_attr_name >>))
+				report_error(create_message_line("VDOBU", <<yyvs14.item (yyvsp14).node_id, attr_nodes.item.rm_attr_name >>))
 				abort
 			end
 		
@@ -6525,7 +6525,7 @@ feature {YY_PARSER_ACTION} -- Basic Operations
 	abort_with_error (err_code: STRING; params: ARRAY [STRING])
 		do
 			raise_error
-			report_error(create_message(err_code, params))
+			report_error(create_message_line(err_code, params))
 			abort
 		end
 

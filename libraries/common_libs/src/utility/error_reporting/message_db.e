@@ -59,7 +59,7 @@ feature -- Access
 			end
 		end
 
-	create_message(an_id: STRING; args: ARRAY[STRING]): STRING
+	create_message_line(an_id: STRING; args: ARRAY[STRING]): STRING
 			-- create message as a full line
 		require
 			an_id /= Void

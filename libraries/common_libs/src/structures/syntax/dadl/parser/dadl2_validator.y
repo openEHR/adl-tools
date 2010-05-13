@@ -198,7 +198,7 @@ attr_id: V_ATTRIBUTE_IDENTIFIER
 				complex_object_nodes.item.put_attribute(attr_node)
 			else
 				raise_error
-				report_error(create_message("VDATU", <<attr_node.rm_attr_name>>))
+				report_error(create_message_line("VDATU", <<attr_node.rm_attr_name>>))
 				abort
 			end
 
@@ -212,7 +212,7 @@ attr_id: V_ATTRIBUTE_IDENTIFIER
 	| V_ATTRIBUTE_IDENTIFIER error
 		{
 			raise_error
-			report_error(create_message("SDAT", Void))
+			report_error(create_message_line("SDAT", Void))
 			abort
 		}
 	;
@@ -293,7 +293,7 @@ multiple_attr_object_block_head: SYM_START_DBLOCK
 					attr_nodes.item.put_child(complex_object_node)
 				else
 					raise_error
-					report_error(create_message("VDOBU", <<complex_object_node.node_id, attr_nodes.item.rm_attr_name >>))
+					report_error(create_message_line("VDOBU", <<complex_object_node.node_id, attr_nodes.item.rm_attr_name >>))
 					abort
 				end
 
@@ -318,7 +318,7 @@ multiple_attr_object_block_head: SYM_START_DBLOCK
 					complex_object_node.put_attribute(attr_node)
 				else
 					raise_error
-					report_error(create_message("VDATU", <<attr_node.rm_attr_name>>))
+					report_error(create_message_line("VDATU", <<attr_node.rm_attr_name>>))
 					abort
 				end
 
@@ -365,7 +365,7 @@ object_key: '[' simple_value ']'
 				attr_nodes.item.set_multiple
 			else
 				raise_error
-				report_error(create_message("SGEE", <<attr_node.rm_attr_name>>))
+				report_error(create_message_line("SGEE", <<attr_node.rm_attr_name>>))
 				abort
 			end
 		}
@@ -449,7 +449,7 @@ single_attr_object_complex_head: SYM_START_DBLOCK
 					attr_nodes.item.put_child(complex_object_node)
 				else
 					raise_error
-					report_error(create_message("VDOBU", <<complex_object_node.node_id, attr_nodes.item.rm_attr_name >>))
+					report_error(create_message_line("VDOBU", <<complex_object_node.node_id, attr_nodes.item.rm_attr_name >>))
 					abort
 				end
 			end
@@ -495,7 +495,7 @@ untyped_primitive_object_block: SYM_START_DBLOCK primitive_object_value SYM_END_
 				$$ := $2
 			else
 				raise_error
-				report_error(create_message("VDOBU", <<$2.node_id, attr_nodes.item.rm_attr_name >>))
+				report_error(create_message_line("VDOBU", <<$2.node_id, attr_nodes.item.rm_attr_name >>))
 				abort
 			end
 		}
@@ -1353,7 +1353,7 @@ object_reference_block: SYM_START_DBLOCK absolute_path_object_value SYM_END_DBLO
 				$$ := $2
 			else
 				raise_error
-				report_error(create_message("VDOBU", <<$2.node_id, attr_nodes.item.rm_attr_name >>))
+				report_error(create_message_line("VDOBU", <<$2.node_id, attr_nodes.item.rm_attr_name >>))
 				abort
 			end
 		}
@@ -1512,7 +1512,7 @@ feature {YY_PARSER_ACTION} -- Basic Operations
 	abort_with_error (err_code: STRING; params: ARRAY [STRING])
 		do
 			raise_error
-			report_error(create_message(err_code, params))
+			report_error(create_message_line(err_code, params))
 			abort
 		end
 

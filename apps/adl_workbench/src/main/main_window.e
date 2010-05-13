@@ -218,10 +218,13 @@ feature -- Status setting
 			quit_dialog: EV_INFORMATION_DIALOG
 		do
 			if not found_rm_schemas then
-				create quit_dialog.make_with_text (create_message ("model_access_e0", <<default_rm_schema_directory>>))
+				create quit_dialog.make_with_text (create_message_line ("model_access_e0", <<default_rm_schema_directory>>))
 				quit_dialog.set_title ("Error")
 				quit_dialog.show_modal_to_window (Current)
 				ev_application.destroy
+			else
+				append_status_area (billboard_content)
+				clear_billboard
 			end
 
 			if reference_repository_path.is_empty then
@@ -296,7 +299,7 @@ feature -- File events
 					else
 						arch_dir.add_adhoc_item (fname)
 						archetype_view_tree_control.populate
-						set_status_area (billboard_content)
+						append_status_area (billboard_content)
 					end
 				else
 					(create {EV_INFORMATION_DIALOG}.make_with_text ("%"" + fname + "%" already added.")).show_modal_to_window (Current)
@@ -1014,7 +1017,7 @@ feature {NONE} -- Implementation
 		require
 			text_attached: text /= Void
 		do
-			parser_status_area.append_text (utf8 (text))
+			parser_status_area.append_text (text)
 			parser_status_area.set_background_color (status_area_background_color)
 			ev_application.process_graphical_events
 		end
@@ -1069,10 +1072,9 @@ feature {NONE} -- Implementation
 
 					set_title (reference_repository_path + " - " + title)
 					arch_dir.make
-					clear_billboard
 					clear_all_controls
 					compiler_error_control.clear
-					set_status_area ("Populating repository ...")
+					append_status_area ("Populating repository ...%N")
 					select_node_in_archetype_tree_view
 
 					if source_repos.valid_repository_path (reference_repository_path) then
@@ -1084,7 +1086,7 @@ feature {NONE} -- Implementation
 					end
 
 					arch_dir.populate
-					set_status_area (billboard_content)
+					append_status_area (billboard_content)
 					clear_billboard
 					archetype_view_tree_control.populate
 					archetype_test_tree_control.populate
@@ -1115,7 +1117,6 @@ feature {NONE} -- Implementation
 			populate_adl_version
 			populate_languages
 
-			parser_status_area.remove_text
 			source_rich_text.remove_text
 			description_controls.clear
 			translation_controls.clear
@@ -1154,14 +1155,14 @@ feature {NONE} -- Implementation
 				if flat then
 					text := ara.flat_text
 					if text = Void then
-						source_rich_text.set_text (create_message ("compiler_no_flat_text", <<>>))
+						source_rich_text.set_text (create_message_line ("compiler_no_flat_text", <<>>))
 					else
 						populate_source_text_with_line_numbers (text)
 					end
 				else
 					text := ara.differential_text
 					if text = Void then
-						source_rich_text.set_text (create_message ("compiler_no_source_text", <<>>))
+						source_rich_text.set_text (create_message_line ("compiler_no_source_text", <<>>))
 					else
 						populate_source_text_with_line_numbers (text)
 					end

@@ -37,20 +37,6 @@ feature -- Access
 			Result := filtered_billboard_content(status_reporting_level)
 		end
 
-	billboard_most_recent: STRING
-			-- text of the message in locale current language
-		do
-			Result := billboard_item_formatted(billboard.first)
-		end
-
-	billboard_ith (i: INTEGER): STRING
-			-- text of the i-th message in language lang
-		require
-			Index_valid: i > 0 and i < billboard_count
-		do
-			Result := billboard_item_formatted(billboard.i_th(i))
-		end
-
 	billboard_count: INTEGER
 			-- return number of messages currently posted
 		do
@@ -151,20 +137,24 @@ feature {NONE} -- Implementation
 			loop
 				bb_item := billboard.item
 				if bb_item.message_type >= at_level then
-					Result.append(billboard_item_formatted(bb_item))
+					Result.append(billboard_item_formatted(bb_item, at_level))
 				end
 				billboard.forth
 			end
 		end
 
-	billboard_item_formatted(bb_item: MESSAGE_BILLBOARD_ITEM): STRING
+	billboard_item_formatted(bb_item: MESSAGE_BILLBOARD_ITEM; at_level: INTEGER): STRING
 			-- format one item
 		local
 			err_str, leader, trailer: STRING
 		do
 			create Result.make(0)
 			leader := Message_type_names.item(bb_item.message_type) + " - "
-			trailer := "      (" + bb_item.type_name + "." + bb_item.routine_name + ")"
+			if at_level = Message_type_debug then
+				trailer := "      (" + bb_item.type_name + "." + bb_item.routine_name + ")"
+			else
+				trailer := ""
+			end
 			if message_db.has_message(bb_item.message_id) then
 				err_str := message_db.create_message_content(bb_item.message_id, bb_item.args)
 			else

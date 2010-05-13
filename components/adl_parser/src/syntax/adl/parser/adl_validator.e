@@ -249,7 +249,7 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error(create_message("SARID", Void))
+			report_error(create_message_line("SARID", Void))
 			abort
 
 if yy_parsing_status >= yyContinue then
@@ -455,7 +455,7 @@ end
 			end
 			if not parent_archetype_id.semantic_id.is_equal(archetype_id.semantic_parent_id) then
 				raise_error
-				report_error(create_message("VASID", Void))
+				report_error(create_message_line("VASID", Void))
 				abort
 			end
 
@@ -471,7 +471,7 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error(create_message("SASID", Void))
+			report_error(create_message_line("SASID", Void))
 			abort
 
 if yy_parsing_status >= yyContinue then
@@ -502,7 +502,7 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error(create_message("SACO", Void))
+			report_error(create_message_line("SACO", Void))
 			abort
 
 if yy_parsing_status >= yyContinue then
@@ -517,7 +517,7 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error(create_message("SALAN", Void))
+			report_error(create_message_line("SALAN", Void))
 			abort
 
 if yy_parsing_status >= yyContinue then
@@ -562,7 +562,7 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error(create_message("SALA", Void))
+			report_error(create_message_line("SALA", Void))
 			abort
 
 if yy_parsing_status >= yyContinue then
@@ -619,7 +619,7 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error(create_message("SADS", Void))
+			report_error(create_message_line("SADS", Void))
 			abort
 
 if yy_parsing_status >= yyContinue then
@@ -647,7 +647,7 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error(create_message("SADF", Void))
+			report_error(create_message_line("SADF", Void))
 			abort
 
 if yy_parsing_status >= yyContinue then
@@ -703,7 +703,7 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error(create_message("SAIV", Void))
+			report_error(create_message_line("SAIV", Void))
 			abort
 
 if yy_parsing_status >= yyContinue then
@@ -731,7 +731,7 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error(create_message("SAON", Void))
+			report_error(create_message_line("SAON", Void))
 			abort
 
 if yy_parsing_status >= yyContinue then

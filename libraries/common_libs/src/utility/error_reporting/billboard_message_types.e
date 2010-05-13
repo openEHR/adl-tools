@@ -18,6 +18,7 @@ deferred class BILLBOARD_MESSAGE_TYPES
 
 feature -- Definitions
 
+	Message_type_debug: INTEGER = 9000
 	Message_type_info: INTEGER = 9001
 	Message_type_warning: INTEGER = 9002
 	Message_type_error: INTEGER = 9003
@@ -31,6 +32,7 @@ feature -- Access
 			Result.force("ERROR", Message_type_error)
 			Result.force("WARNING", Message_type_warning)
 			Result.force("INFO", Message_type_info)
+			Result.force("DEBUG", Message_type_debug)
 		end
 
 	message_type_ids: DS_HASH_TABLE [INTEGER, STRING]
@@ -40,13 +42,14 @@ feature -- Access
 			Result.force(Message_type_error, "ERROR")
 			Result.force(Message_type_warning, "WARNING")
 			Result.force(Message_type_info, "INFO")
+			Result.force(Message_type_debug, "DEBUG")
 		end
 
 feature -- Status Report
 
 	is_valid_message_type(i: INTEGER): BOOLEAN
 		do
-			Result := i >= Message_type_info and i <= Message_type_error
+			Result := i >= Message_type_debug and i <= Message_type_error
 		end
 
 end

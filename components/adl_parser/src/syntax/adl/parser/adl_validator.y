@@ -82,7 +82,7 @@ arch_identification: arch_head arch_meta_data V_ARCHETYPE_ID
 	| arch_head error
 		{
 			raise_error
-			report_error(create_message("SARID", Void))
+			report_error(create_message_line("SARID", Void))
 			abort
 		}
 	;
@@ -145,14 +145,14 @@ arch_specialisation: -- empty is ok
 			end
 			if not parent_archetype_id.semantic_id.is_equal(archetype_id.semantic_parent_id) then
 				raise_error
-				report_error(create_message("VASID", Void))
+				report_error(create_message_line("VASID", Void))
 				abort
 			end
 		}
 	| SYM_SPECIALIZE error
 		{
 			raise_error
-			report_error(create_message("SASID", Void))
+			report_error(create_message_line("SASID", Void))
 			abort
 		}
 	;
@@ -167,7 +167,7 @@ arch_concept: SYM_CONCEPT V_LOCAL_TERM_CODE_REF
 	| SYM_CONCEPT error
 		{
 			raise_error
-			report_error(create_message("SACO", Void))
+			report_error(create_message_line("SACO", Void))
 			abort
 		}
 	;
@@ -175,7 +175,7 @@ arch_concept: SYM_CONCEPT V_LOCAL_TERM_CODE_REF
 arch_language: 
 		{
 			raise_error
-			report_error(create_message("SALAN", Void))
+			report_error(create_message_line("SALAN", Void))
 			abort
 		}
 	| SYM_LANGUAGE V_DADL_TEXT
@@ -186,7 +186,7 @@ arch_language:
 	| SYM_LANGUAGE error
 		{
 			raise_error
-			report_error(create_message("SALA", Void))
+			report_error(create_message_line("SALA", Void))
 			abort
 		}
 	;
@@ -200,7 +200,7 @@ arch_description: -- no meta-data ok
 	| SYM_DESCRIPTION error
 		{
 			raise_error
-			report_error(create_message("SADS", Void))
+			report_error(create_message_line("SADS", Void))
 			abort
 		}
 	;
@@ -213,7 +213,7 @@ arch_definition:	SYM_DEFINITION V_CADL_TEXT
 	| SYM_DEFINITION error
 		{
 			raise_error
-			report_error(create_message("SADF", Void))
+			report_error(create_message_line("SADF", Void))
 			abort
 		}
 	;
@@ -226,7 +226,7 @@ arch_invariant: -- no invariant ok
 	| SYM_INVARIANT error
 		{
 			raise_error
-			report_error(create_message("SAIV", Void))
+			report_error(create_message_line("SAIV", Void))
 			abort
 		}
 	;
@@ -238,7 +238,7 @@ arch_ontology: SYM_ONTOLOGY V_DADL_TEXT
 	| SYM_ONTOLOGY error
 		{
 			raise_error
-			report_error(create_message("SAON", Void))
+			report_error(create_message_line("SAON", Void))
 			abort
 		}
 	;

@@ -8309,7 +8309,7 @@ feature {YY_PARSER_ACTION} -- Basic Operations
 	abort_with_error (err_code: STRING; params: ARRAY [STRING])
 		do
 			raise_error
-			report_error(create_message(err_code, params))
+			report_error(create_message_line(err_code, params))
 			abort
 		end
 

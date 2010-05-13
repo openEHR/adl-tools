@@ -73,7 +73,7 @@ feature -- Access
 			["general_error"] = <"Error: $1">
 			["general"] = <"$1">
 			
-			-- MODEL_ACCESS (RM model checker)
+			-- SCHEMA_ACCESS (RM model checker)
 			["model_access_e0"] = <"No reference model schema files found in $1">
 			["model_access_e1"] = <"Reference Model schema file $1 does not exist or not readable">
 			["model_access_e2"] = <"Reference Model schema $1 parse failure; reason: $2">

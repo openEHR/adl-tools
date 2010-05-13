@@ -155,7 +155,7 @@ feature {NONE} -- Implementation
 			if adl_parser.syntax_error then
 				parse_error_text := adl_parser.error_text
 			elseif not valid_concept_code (adl_parser.concept) then
-				parse_error_text := create_message("VARCN", <<adl_parser.concept>>)
+				parse_error_text := create_message_line("VARCN", <<adl_parser.concept>>)
 			else
 				------------------- language section ---------------
 --				if adl_parser.language_text /= Void and then not adl_parser.language_text.is_empty then

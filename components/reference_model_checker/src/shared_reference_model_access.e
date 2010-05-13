@@ -56,6 +56,7 @@ feature {NONE} -- Implementation
 		local
 			dir: DIRECTORY
 			ma: SCHEMA_ACCESS
+			schema_path: STRING
 		once
 			create Result.make(0)
 			create dir.make_open_read (default_rm_schema_directory)
@@ -71,12 +72,11 @@ feature {NONE} -- Implementation
 					dir.lastentry = Void
 				loop
 					if dir.lastentry.ends_with (schema_file_extension) then
-						create ma.make(default_rm_schema_directory + os_directory_separator.out + dir.lastentry)
+						schema_path := default_rm_schema_directory + os_directory_separator.out + dir.lastentry
+						create ma.make(schema_path)
 						if ma.model_loaded then
-							from ma.schema.packages.start until  ma.schema.packages.off loop
-								Result.put (ma, ma.schema.schema_name.as_lower)
-								ma.schema.packages.forth
-							end
+							post_info (Current, "rm_schemas", "general", <<ma.status>>)
+							Result.put (ma, ma.schema.schema_name.as_lower)
 						else
 							post_error (Current, "rm_schemas", "general", <<ma.status>>)
 						end

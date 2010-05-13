@@ -112,7 +112,7 @@ feature -- Access
 			-- status report on model
 		do
 			create Result.make(0)
-			Result.append (create_message ("model_access_i1", << schema_name, schema_release, primitive_types.count.out, class_definitions.count.out >>))
+			Result.append (create_message_content ("model_access_i1", << schema_name, schema_release, primitive_types.count.out, class_definitions.count.out >>))
 		end
 
 	all_ancestor_classes_of (a_class_name: STRING): ARRAYED_LIST [STRING]

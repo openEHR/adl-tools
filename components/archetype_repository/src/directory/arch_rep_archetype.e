@@ -506,7 +506,7 @@ feature -- Commands
 			if differential_generated then
 				if has_differential_file then
 					file_system.delete_file (differential_path)
-					status := create_message ("clean_generated_file", <<differential_path>>)
+					status := create_message_line ("clean_generated_file", <<differential_path>>)
 				end
 				differential_text := Void
 				differential_text_timestamp := 0

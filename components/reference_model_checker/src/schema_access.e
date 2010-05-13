@@ -40,7 +40,7 @@ feature -- Initialisation
 		do
 			create model_file.make (a_schema_full_path)
 			if not model_file.exists or else not model_file.is_readable then
-				status := create_message ("model_access_e1", <<a_schema_full_path>>)
+				status := create_message_content ("model_access_e1", <<a_schema_full_path>>)
 			else
 				model_file.open_read
 				model_file.read_stream (model_file.count)
@@ -50,13 +50,13 @@ feature -- Initialisation
 					dt_tree := parser.output
 					schema ?= dt_tree.as_object_from_string("BMM_SCHEMA")
 					if schema = Void then
-						status := create_message ("model_access_e4", <<a_schema_full_path>>)
+						status := create_message_content ("model_access_e4", <<a_schema_full_path>>)
 					else
 						schema.dt_finalise
 						status := schema.status
 					end
 				else
-					status := create_message ("model_access_e2", <<a_schema_full_path, parser.error_text>>)
+					status := create_message_content ("model_access_e2", <<a_schema_full_path, parser.error_text>>)
 				end
 				model_file.close
 			end
