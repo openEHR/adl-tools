@@ -69,7 +69,7 @@ feature -- Access
 			-- Text from current file as a string.
 
 	file_lines: ARRAYED_LIST [STRING]
-			-- file split into liines from `read_n_lines'
+			-- file split into liines from `read_n_lines', `read_to_line'
 
 	file_timestamp: INTEGER
 			-- Last marked change timestamp of file, for file changes to be compared to.
@@ -128,10 +128,10 @@ feature -- Commands
 
 			if in_file.exists then
 				in_file.open_read
-				from i := 1 until i > n loop
+				from i := 1 until i > n or in_file.end_of_file loop
 					in_file.read_line
 					file_lines.extend (in_file.last_string.twin)
-					file_lines[i].prune_all('%R')
+					file_lines.last.prune_all('%R')
 					i := i + 1
 				end
 				in_file.close
@@ -141,7 +141,50 @@ feature -- Commands
 				last_op_fail_reason := "Read failed; file " + current_full_path + " does not exist"
 			end
 		ensure
-			file_content_empty_on_failure: last_op_failed implies file_content.is_empty
+			file_lines_empty_on_failure: last_op_failed implies file_lines.is_empty
+		end
+
+	read_matching_lines (start_patterns: attached ARRAY[STRING]; ignore_pattern: STRING; max_lines: INTEGER)
+			-- Read lines starting with `start_patterns', ignoring lines starting with `ignore_pattern',
+			-- up to a maximum of `max_lines' non-ignored lines. Output line, if any, in `file_lines'
+		require
+			Start_patterns_valid: not start_patterns.is_empty
+			Ignore_pattern_valid: attached ignore_pattern implies not ignore_pattern.is_empty
+			Valid_max_lines: max_lines > 0
+		local
+			in_file: PLAIN_TEXT_FILE
+			i, j: INTEGER
+			items_found: ARRAY[BOOLEAN]
+   		do
+   			last_op_failed := False
+			create in_file.make(current_full_path)
+			create file_lines.make(0)
+
+			if in_file.exists then
+				in_file.open_read
+				create items_found.make (start_patterns.lower, start_patterns.upper)
+				from i := 1 until i > max_lines or file_lines.count = start_patterns.count or in_file.end_of_file loop
+					in_file.read_line
+					if not in_file.last_string.starts_with (ignore_pattern) then
+						from j := start_patterns.lower until j > start_patterns.upper loop
+							if not items_found[j] and in_file.last_string.starts_with (start_patterns[j]) then
+								file_lines.extend (in_file.last_string.twin)
+								file_lines.last.prune_all('%R')
+								items_found[j] := True
+							end
+							j := j + 1
+						end
+						i := i + 1
+					end
+				end
+				in_file.close
+				clean_utf(file_lines[1])
+			else
+				last_op_failed := True
+				last_op_fail_reason := "Read failed; file " + current_full_path + " does not exist"
+			end
+		ensure
+			file_lines_empty_on_failure: last_op_failed implies file_lines.is_empty
 		end
 
 	read_file
@@ -179,7 +222,6 @@ feature -- Commands
 		ensure
 			file_content_empty_on_failure: last_op_failed implies file_content.is_empty
 		end
-
 
 	save_file (a_file_name, content: STRING)
 			-- Write `content' out to file `a_file_name' in `current_directory'.

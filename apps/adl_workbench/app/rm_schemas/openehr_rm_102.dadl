@@ -6,7 +6,7 @@
 -- 	keywords:    reference model, meta-model, archetypes
 -- 	author:      Thomas Beale
 -- 	support:     Ocean Informatics <support@OceanInformatics.com>
--- 	copyright:   Copyright (c) 2009 openEHR Foundation
+-- 	copyright:   Copyright (c) 2009-2010 openEHR Foundation
 -- 	license:     See end of file
 -- 
 -- 	file:        $URL$
@@ -16,6 +16,10 @@
 
 schema_name = <"openehr">
 schema_release = <"1.0.2">
+schema_lifecycle_status = <"stable">
+schema_description = <"openEHR Release 1.0.2 reference model, expressed in 'basic meta-model' format
+					 described at http://www.openehr.org/svn/ref_impl_eiffel/BRANCHES/specialisation/libraries/common_libs/src/basic_meta_model">
+
 packages = <
 	["ehr"] = <
 		name = <"ehr">

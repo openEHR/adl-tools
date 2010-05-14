@@ -48,6 +48,12 @@ feature -- Access
 	schema_release: STRING
 			-- release of schema
 
+	schema_lifecycle_state: STRING
+			-- lifecycle state of schema
+
+	schema_description: STRING
+			-- description of schema
+
 	packages: HASH_TABLE [BMM_PACKAGE_DEFINITION, STRING]
 			-- hierarchical package structure; equivalent to a list of models included in schema
 			-- these are models on which archteypes are based, and their names correspond to the

@@ -151,57 +151,6 @@ feature {NONE} -- Initialization
 			end
 		end
 
-	initialise_path_control
-			-- Initialise widgets associated with the Node Map and the Path Analysis.
-		local
-			filter_combo_index: INTEGER
-			strs: ARRAYED_LIST [STRING]
-		do
-			path_analysis_multi_column_list.enable_multiple_selection
-			path_analysis_row_filter_combo_box.set_strings (path_control_filter_names)
-
-			if not path_analysis_row_filter_combo_box.is_empty then
-				from
-					filter_combo_index := 1
-				until
-					filter_combo_index > path_control_filter_names.count or
-					path_control_filter_names [filter_combo_index].is_equal (path_filter_combo_selection)
-				loop
-					filter_combo_index := filter_combo_index + 1
-				end
-
-				if filter_combo_index > path_control_filter_names.count then -- non-existent string in session file
-					filter_combo_index := 1
-				end
-			else
-				filter_combo_index := 1
-			end
-
-			path_analysis_row_filter_combo_box [filter_combo_index].enable_select
-
-			path_analysis_column_view_checkable_list.set_strings (path_control_column_names)
-			strs := path_view_check_list_settings
-
-			if not strs.is_empty then
-				strs.compare_objects
-
-				from
-					path_analysis_column_view_checkable_list.start
-				until
-					path_analysis_column_view_checkable_list.off
-				loop
-					if strs.has (path_analysis_column_view_checkable_list.item.text.as_string_8) then
-						path_analysis_column_view_checkable_list.check_item (path_analysis_column_view_checkable_list.item)
-					end
-
-					path_analysis_column_view_checkable_list.forth
-				end
-			else -- default to physical paths
-				path_analysis_column_view_checkable_list.check_item (path_analysis_column_view_checkable_list [2])
-				path_analysis_column_view_checkable_list.check_item (path_analysis_column_view_checkable_list [3])
-			end
-		end
-
 	initialise_splitter (split: EV_SPLIT_AREA; position: INTEGER)
 			-- Make `position' the position for `split'; but do nothing if `position' is outside the allowed bounds.
 		do
@@ -236,11 +185,10 @@ feature -- Status setting
 
 			archetype_compiler.set_visual_update_action (agent build_gui_update)
 			initialise_overall_appearance
-			initialise_path_control
+			path_map_control.initialise_controls
 			Precursor
 			initialise_splitter (test_split_area, test_split_position)
 			initialise_splitter (explorer_split_area, explorer_split_position)
-			initialise_splitter (node_map_and_ontology_split_area, node_map_and_ontology_split_position)
 			initialise_splitter (total_split_area, total_split_position)
 			focus_first_widget (main_notebook.selected_item)
 
@@ -464,7 +412,6 @@ feature -- File events
 			ev_items: DYNAMIC_LIST [EV_LIST_ITEM]
 		do
 			set_total_split_position (total_split_area.split_position)
-			set_node_map_and_ontology_split_position (node_map_and_ontology_split_area.split_position)
 			set_test_split_position (test_split_area.split_position)
 			set_explorer_split_position (explorer_split_area.split_position)
 			set_app_width (width)

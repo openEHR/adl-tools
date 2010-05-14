@@ -15,6 +15,11 @@ note
 class SHARED_REFERENCE_MODEL_ACCESS
 
 inherit
+	BMM_DEFINITIONS
+		export
+			{NONE} all
+		end
+
 	MESSAGE_BILLBOARD
 		export
 			{NONE} all
@@ -57,6 +62,8 @@ feature {NONE} -- Implementation
 			dir: DIRECTORY
 			ma: SCHEMA_ACCESS
 			schema_path: STRING
+			dmp: DADL_MINI_PARSER
+			schema_list: HASH_TABLE [HASH_TABLE [STRING, STRING], STRING]
 		once
 			create Result.make(0)
 			create dir.make_open_read (default_rm_schema_directory)
@@ -65,6 +72,10 @@ feature {NONE} -- Implementation
 			elseif dir.is_empty then
 				post_error (Current, "rm_schemas", "model_access_e6", <<default_rm_schema_directory>>)
 			else
+				create dmp
+				create schema_list.make (0)
+
+				-- first scan all RM files and extract basic meta-data
 				from
 					dir.start
 					dir.readentry
@@ -73,15 +84,25 @@ feature {NONE} -- Implementation
 				loop
 					if dir.lastentry.ends_with (schema_file_extension) then
 						schema_path := default_rm_schema_directory + os_directory_separator.out + dir.lastentry
-						create ma.make(schema_path)
-						if ma.model_loaded then
-							post_info (Current, "rm_schemas", "general", <<ma.status>>)
-							Result.put (ma, ma.schema.schema_name.as_lower)
-						else
-							post_error (Current, "rm_schemas", "general", <<ma.status>>)
+						dmp.extract_attr_values (schema_path, Schema_fast_parse_attrs)
+						if dmp.last_parse_valid then
+							schema_list.put (dmp.last_parse_content, schema_path)
 						end
 					end
 					dir.readentry
+				end
+
+				-- now parse those we will use
+				from schema_list.start until schema_list.off loop
+					schema_path := schema_list.key_for_iteration
+					create ma.make(schema_path)
+					if ma.model_loaded then
+						post_info (Current, "rm_schemas", "general", <<ma.status>>)
+						Result.force (ma, ma.schema.schema_name.as_lower)
+					else
+						post_error (Current, "rm_schemas", "general", <<ma.status>>)
+					end
+					schema_list.forth
 				end
 			end
 			if rm_schemas.is_empty then

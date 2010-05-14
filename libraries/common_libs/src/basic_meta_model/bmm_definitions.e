@@ -27,6 +27,28 @@ feature -- Definitions
 
 	Any_type: STRING = "Any"
 
+	Metadata_schema_name: STRING = "schema_name"
+			-- dADL attribute name of logical attribute 'schema_name' in schema file;
+			-- MUST correspond to attribute of same name in BMM_SCHEMA class
+
+	Metadata_schema_release: STRING = "schema_release"
+			-- dADL attribute name of logical attribute 'schema_release' in schema file;
+			-- MUST correspond to attribute of same name in BMM_SCHEMA class
+
+	Metadata_schema_lifecycle_state: STRING = "schema_lifecycle_state"
+			-- dADL attribute name of logical attribute 'schema_lifecycle_state' in schema file;
+			-- MUST correspond to attribute of same name in BMM_SCHEMA class
+
+	Metadata_schema_description: STRING = "schema_description"
+			-- dADL attribute name of logical attribute 'schema_description' in schema file;
+			-- MUST correspond to attribute of same name in BMM_SCHEMA class
+
+	Schema_fast_parse_attrs: ARRAY [STRING]
+			-- attributes to retrieve for initial fast parse on schemas
+		once
+			Result := <<Metadata_schema_name, Metadata_schema_release, Metadata_schema_lifecycle_state>>
+		end
+
 feature -- Comparison
 
 	is_well_formed_type_name (a_type_name: STRING): BOOLEAN

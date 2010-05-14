@@ -66,18 +66,6 @@ feature -- Definitions
 			end
 		end
 
-	path_control_filter_names: ARRAY [STRING]
-			-- names of row filters of path control
-		once
-			Result := <<"All", "Leaf">>
-		end
-
-	path_control_column_names: ARRAY [STRING]
-			-- names of columns of path view control
-		once
-			Result := <<"Machine", "Nat lang", "RM Type", "AOM Type">>
-		end
-
 feature -- Commands
 
 	show_in_system_browser (url: STRING)
@@ -345,7 +333,8 @@ feature -- Access
 			Result.append ("%T(c) 2003-2010 Ocean Informatics%N")
 			Result.append ("%TADL version: " + Latest_adl_version + "%N")
 			Result.append ("%TSource SVN - http://www.openehr.org/svn/ref_impl_eiffel%N%T" + version.last_changed + "%N")
-			Result.append ("%TSource license: Mozilla tri-license (http://www.mozilla.org/MPL/boilerplate-1.1/mpl-tri-license-txt)%N")
+			Result.append ("%TSource license: Mozilla tri-license%N")
+			Result.append ("%T%T(http://www.mozilla.org/MPL/boilerplate-1.1/mpl-tri-license-txt)%N")
 			Result.append ("Support: support@OceanInformatics.com%N")
 			Result.append ("Funded by: OceanInformatics.com%N")
 			Result.append ("Author: Thomas Beale%N")
@@ -477,17 +466,6 @@ feature -- Application Switches
 			str: STRING
 		do
 			str := resource_value ("default", "total_split_position")
-			if str.is_integer then
-				Result := str.to_integer
-			end
-		end
-
-	node_map_and_ontology_split_position: INTEGER
-			-- Split position of inner vertical split control.
-		local
-			str: STRING
-		do
-			str := resource_value ("default", "node_map_and_ontology_split_position")
 			if str.is_integer then
 				Result := str.to_integer
 			end
@@ -717,14 +695,6 @@ feature -- Application Switch Setting
 			v > 0
 		do
 			set_resource_value ("default", "total_split_position", v.out)
-		end
-
-	set_node_map_and_ontology_split_position (v: INTEGER)
-			-- Set split position of inner vertical split control.
-		require
-			v > 0
-		do
-			set_resource_value ("default", "node_map_and_ontology_split_position", v.out)
 		end
 
 	set_test_split_position (v: INTEGER)

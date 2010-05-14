@@ -160,7 +160,6 @@ feature {NONE}-- Initialization
 			create arch_desc_copyright_text
 			create differential_view_box
 			create definition_notebook
-			create node_map_and_ontology_split_area
 			create l_ev_horizontal_box_9
 			create node_map_tree
 			create l_ev_vertical_box_7
@@ -358,8 +357,7 @@ feature {NONE}-- Initialization
 			arch_desc_copyright_hbox.extend (arch_desc_copyright_text)
 			archetype_notebook.extend (differential_view_box)
 			differential_view_box.extend (definition_notebook)
-			definition_notebook.extend (node_map_and_ontology_split_area)
-			node_map_and_ontology_split_area.extend (l_ev_horizontal_box_9)
+			definition_notebook.extend (l_ev_horizontal_box_9)
 			l_ev_horizontal_box_9.extend (node_map_tree)
 			l_ev_horizontal_box_9.extend (l_ev_vertical_box_7)
 			l_ev_vertical_box_7.extend (node_map_expand_button)
@@ -767,12 +765,9 @@ feature {NONE}-- Initialization
 			integer_constant_retrieval_functions.extend (agent source_notebook_min_width)
 			integer_constant_set_procedures.extend (agent definition_notebook.set_minimum_height (?))
 			integer_constant_retrieval_functions.extend (agent source_notebook_min_height)
-			definition_notebook.set_item_text (node_map_and_ontology_split_area, "Node Map")
-			definition_notebook.set_item_text (l_ev_horizontal_box_10, "Path Analysis")
+			definition_notebook.set_item_text (l_ev_horizontal_box_9, "Node map")
+			definition_notebook.set_item_text (l_ev_horizontal_box_10, "Path analysis")
 			definition_notebook.set_item_text (source_rich_text, "Source")
-			node_map_and_ontology_split_area.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
-			node_map_and_ontology_split_area.set_minimum_width (1)
-			node_map_and_ontology_split_area.set_minimum_height (1)
 			l_ev_horizontal_box_9.set_minimum_width (1)
 			l_ev_horizontal_box_9.set_minimum_height (160)
 			l_ev_horizontal_box_9.disable_item_expand (l_ev_vertical_box_7)
@@ -1063,12 +1058,12 @@ feature -- Access
 	arch_translations_accreditation_text, arch_desc_purpose_text,
 	arch_desc_use_text, arch_desc_misuse_text, arch_desc_copyright_text, parser_status_area,
 	test_status_area: EV_TEXT
-	total_split_area, node_map_and_ontology_split_area, l_ev_vertical_split_area_1,
-	test_split_area: EV_VERTICAL_SPLIT_AREA
-	archetype_file_tree, node_map_tree, slots_tree, used_by_tree: EV_TREE
-	arch_desc_auth_orig_auth_mlist,
-	arch_translations_author_mlist, arch_translations_other_details_mlist, arch_desc_resource_orig_res_mlist,
-	path_analysis_multi_column_list, ontology_term_definitions_multi_column_list, ontology_constraint_definitions_multi_column_list: EV_MULTI_COLUMN_LIST
+	total_split_area, l_ev_vertical_split_area_1, test_split_area: EV_VERTICAL_SPLIT_AREA
+	archetype_file_tree,
+	node_map_tree, slots_tree, used_by_tree: EV_TREE
+	arch_desc_auth_orig_auth_mlist, arch_translations_author_mlist,
+	arch_translations_other_details_mlist, arch_desc_resource_orig_res_mlist, path_analysis_multi_column_list,
+	ontology_term_definitions_multi_column_list, ontology_constraint_definitions_multi_column_list: EV_MULTI_COLUMN_LIST
 	l_ev_tool_bar_separator_1,
 	l_ev_tool_bar_separator_2, l_ev_tool_bar_separator_3: EV_TOOL_BAR_SEPARATOR
 	viewer_vbox, description_box,

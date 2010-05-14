@@ -43,6 +43,20 @@ inherit
 create
 	make
 
+feature -- Definitions
+
+	path_control_filter_names: ARRAY [STRING]
+			-- names of row filters of path control
+		once
+			Result := <<"All", "Leaf">>
+		end
+
+	path_control_column_names: ARRAY [STRING]
+			-- names of columns of path view control
+		once
+			Result := <<"Machine", "Nat lang", "RM Type", "AOM Type">>
+		end
+
 feature {NONE} -- Initialisation
 
 	make (a_main_window: MAIN_WINDOW)
@@ -52,7 +66,6 @@ feature {NONE} -- Initialisation
 		do
 			gui := a_main_window
 			path_list := gui.path_analysis_multi_column_list
-			path_list.enable_multiple_selection
 			filter_combo := gui.path_analysis_row_filter_combo_box
 			column_check_list := gui.path_analysis_column_view_checkable_list
 			in_differential_mode := True
@@ -72,6 +85,53 @@ feature -- Status
 			-- True if visualisation should show contents of differential archetype, else flat archetype
 
 feature -- Commands
+
+	initialise_controls
+			-- Initialise widgets associated with the Path Analysis.
+		local
+			filter_combo_index: INTEGER
+			strs: ARRAYED_LIST [STRING]
+		do
+			path_list.enable_multiple_selection
+			filter_combo.set_strings (path_control_filter_names)
+
+			if not filter_combo.is_empty then
+				from
+					filter_combo_index := 1
+				until
+					filter_combo_index > path_control_filter_names.count or
+					path_control_filter_names [filter_combo_index].is_equal (path_filter_combo_selection)
+				loop
+					filter_combo_index := filter_combo_index + 1
+				end
+
+				if filter_combo_index > path_control_filter_names.count then -- non-existent string in session file
+					filter_combo_index := 1
+				end
+			else
+				filter_combo_index := 1
+			end
+
+			filter_combo [filter_combo_index].enable_select
+
+			column_check_list.set_strings (path_control_column_names)
+			strs := path_view_check_list_settings
+
+			if not strs.is_empty then
+				strs.compare_objects
+
+				from column_check_list.start until column_check_list.off loop
+					if strs.has (column_check_list.item.text.as_string_8) then
+						column_check_list.check_item (column_check_list.item)
+					end
+
+					column_check_list.forth
+				end
+			else -- default to physical paths
+				column_check_list.check_item (column_check_list [2])
+				column_check_list.check_item (column_check_list [3])
+			end
+		end
 
 	clear
 			-- wipe out content from controls
@@ -145,16 +205,11 @@ feature -- Commands
 		local
 			i: INTEGER
 		do
-			from
-				i := 1
-			until
-				i > path_list.column_count
-			loop
+			from i := 1 until i > path_list.column_count loop
 				if i > column_check_list.count or else not column_check_list.is_item_checked (column_check_list [i]) then
 					path_list.set_column_width (0, i)
 				else
 					path_list.resize_column_to_content (i)
-
 					if path_list.column_width (i) < 100 then
 						path_list.set_column_width (100, i)
 					end
@@ -183,22 +238,12 @@ feature -- Commands
 			create copy_text.make (0)
 
 			if not ev_rows.is_empty then
-				from
-					ev_rows.start
-				until
-					ev_rows.off
-				loop
+				from ev_rows.start until ev_rows.off loop
 					ev_col := ev_rows.item
-
-					from
-						ev_col.start
-					until
-						ev_col.off
-					loop
+					from ev_col.start until ev_col.off loop
 						copy_text.append (ev_col.item.string + "%N")
 						ev_col.forth
 					end
-
 					ev_rows.forth
 				end
 			end

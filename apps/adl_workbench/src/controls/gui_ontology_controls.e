@@ -135,40 +135,24 @@ feature {NONE} -- Implementation
 			pl := gui.ontology_term_definitions_multi_column_list
 			create col_titles.make(0)
 			col_titles.extend ("code")
-			from
-				ontology.term_attribute_names.start
-			until
-				ontology.term_attribute_names.off
-			loop
+			from ontology.term_attribute_names.start until ontology.term_attribute_names.off loop
 				col_titles.extend (ontology.term_attribute_names.item)
 				ontology.term_attribute_names.forth
 			end
 
-			from
-				ontology.terminologies_available.start
-			until
-				ontology.terminologies_available.off
-			loop
+			from ontology.terminologies_available.start until ontology.terminologies_available.off loop
 				col_titles.extend (utf8 (ontology.terminologies_available.item))
 				ontology.terminologies_available.forth
 			end
 			pl.set_column_titles(col_titles)
 
 			-- populate data
-			from
-				ontology.term_codes.start
-			until
-				ontology.term_codes.off
-			loop
+			from ontology.term_codes.start until ontology.term_codes.off loop
 				create list_row
 				list_row.extend (utf8 (ontology.term_codes.item))
 				a_term := ontology.term_definition(current_language, ontology.term_codes.item)
 
-				from
-					ontology.term_attribute_names.start
-				until
-					ontology.term_attribute_names.off
-				loop
+				from ontology.term_attribute_names.start until ontology.term_attribute_names.off loop
 					if a_term.has_key (ontology.term_attribute_names.item) then
 						list_row.extend (utf8 (a_term.item(ontology.term_attribute_names.item)))
 					else
@@ -178,11 +162,7 @@ feature {NONE} -- Implementation
 				end
 
 				-- populate bindings
-				from
-					ontology.terminologies_available.start
-				until
-					ontology.terminologies_available.off
-				loop
+				from ontology.terminologies_available.start until ontology.terminologies_available.off loop
 					if ontology.has_term_binding (ontology.terminologies_available.item, a_term.code) then
 						list_row.extend (utf8 (ontology.term_binding (
 							ontology.terminologies_available.item, a_term.code
@@ -197,11 +177,7 @@ feature {NONE} -- Implementation
 				ontology.term_codes.forth
 			end
 
-			from
-				i := 1
-			until
-				i > pl.column_count
-			loop
+			from i := 1 until i > pl.column_count loop
 				pl.resize_column_to_content(i)
 				i := i + 1
 			end
@@ -222,40 +198,24 @@ feature {NONE} -- Implementation
 			pl := gui.ontology_constraint_definitions_multi_column_list
 			create col_titles.make(0)
 			col_titles.extend ("code")
-			from
-				ontology.term_attribute_names.start
-			until
-				ontology.term_attribute_names.off
-			loop
+			from ontology.term_attribute_names.start until ontology.term_attribute_names.off loop
 				col_titles.extend (ontology.term_attribute_names.item)
 				ontology.term_attribute_names.forth
 			end
 
-			from
-				ontology.terminologies_available.start
-			until
-				ontology.terminologies_available.off
-			loop
+			from ontology.terminologies_available.start until ontology.terminologies_available.off loop
 				col_titles.extend (utf8 (ontology.terminologies_available.item))
 				ontology.terminologies_available.forth
 			end
 
 			pl.set_column_titles(col_titles)
-			from
-				ontology.constraint_codes.start
-			until
-				ontology.constraint_codes.off
-			loop
+			from ontology.constraint_codes.start until ontology.constraint_codes.off loop
 				create list_row
 
 				-- populate constraint codes
 				list_row.extend (utf8 (ontology.constraint_codes.item))
 				a_term := ontology.constraint_definition(current_language, ontology.constraint_codes.item)
-				from
-					ontology.term_attribute_names.start
-				until
-					ontology.term_attribute_names.off
-				loop
+				from ontology.term_attribute_names.start until ontology.term_attribute_names.off loop
 					if a_term.has_key (ontology.term_attribute_names.item) then
 						list_row.extend (utf8 (a_term.item (ontology.term_attribute_names.item)))
 					else
@@ -265,11 +225,7 @@ feature {NONE} -- Implementation
 				end
 
 				-- populate bindings
-				from
-					ontology.terminologies_available.start
-				until
-					ontology.terminologies_available.off
-				loop
+				from ontology.terminologies_available.start until ontology.terminologies_available.off loop
 					if ontology.has_constraint_binding (ontology.terminologies_available.item, a_term.code) then
 						list_row.extend (utf8 (ontology.constraint_binding(
 							ontology.terminologies_available.item, a_term.code).as_string))
@@ -283,12 +239,21 @@ feature {NONE} -- Implementation
 				ontology.constraint_codes.forth
 			end
 
-			from i := 1
-			until i > pl.column_count
-			loop pl.resize_column_to_content(i)
-				i := i + 1
+			-- resize the columns; if there is data, use that to determine the widths;
+			-- if not, use the column titles
+			if pl.count > 0 then
+				from i := 1 until i > pl.column_count loop
+					pl.resize_column_to_content(i)
+		 			i := i + 1
+				end
+			else
+				from i := 1 until i > pl.column_count loop
+					-- This is a hack - it assumes that 10 px is a letter width in the current font.
+					-- There appears to be no way to resize the columns based on the titles...
+					pl.set_column_width (col_titles.i_th(i).count * 10, i)
+		 			i := i + 1
+				end
 			end
-
 		end
 
 	select_coded_term_row (a_term_code: STRING; list_control: EV_MULTI_COLUMN_LIST)
