@@ -77,11 +77,7 @@ feature -- Conversion
 				if dt_conv /= Void then
 					fld_lst := dt_conv.persistent_attributes
 				end
-				from
-					i := 1
-				until
-					i > field_count(an_obj)
-				loop
+				from i := 1 until i > field_count(an_obj) loop
 					fld_val := field(i, an_obj)
 					if fld_val /= Void then
 						fld_name := field_name(i, an_obj)
@@ -212,11 +208,7 @@ feature -- Conversion
 
 				-- if there were object references in the DT structure, process them now
 				if a_dt_obj.is_root and not object_ref_list.is_empty then
-					from
-						object_ref_list.start
-					until
-						object_ref_list.off
-					loop
+					from object_ref_list.start until object_ref_list.off loop
 						src_obj := object_ref_list.item.source_object_ref
 						src_obj_fld := object_ref_list.item.source_object_field_index
 						if attached {DT_OBJECT_REFERENCE} object_ref_list.item as a_dt_obj_ref then
@@ -242,11 +234,7 @@ feature -- Conversion
 								end
 
 								path_list := a_dt_obj_ref_list.value
-								from
-									path_list.start
-								until
-									path_list.off
-								loop
+								from path_list.start until path_list.off loop
 									if a_dt_obj.has_path (path_list.item.as_string) then
 										a_sequence2.extend(a_dt_obj.node_at_path (path_list.item.as_string).as_object_ref)
 									else
@@ -349,11 +337,7 @@ feature -- Conversion
 					end
 				else
 					-- for each field in the object
-					from
-						i := 1
-					until
-						i > field_count(Result)
-					loop
+					from i := 1 until i > field_count(Result) loop
 						fld_name := field_name(i, Result)
 
 						if a_dt_obj.has_attribute(fld_name) then
@@ -644,11 +628,7 @@ feature {NONE} -- Implementation
 			-- determine dynamic type of generic type
 			if attached {HASH_TABLE [ANY, HASHABLE]} a_gen_obj as a_hash_table then
 				a_hash_table.make(0)
-				from
-					a_dt_attr.start
-				until
-					a_dt_attr.off
-				loop
+				from a_dt_attr.start until a_dt_attr.off loop
 					if attached {DT_REFERENCE} a_dt_attr.item as a_dt_ref then
 						debug ("DT")
 							io.put_string ("%TDT_REFERENCE (inside HASH_TABLE DT_ATTRIBUTE)" + a_dt_ref.as_string + "%N")
@@ -676,11 +656,7 @@ feature {NONE} -- Implementation
 					if attached {ARRAYED_LIST[ANY]} a_sequence as an_arrayed_list then
 						an_arrayed_list.make(0)
 					end
-					from
-						a_dt_attr.start
-					until
-						a_dt_attr.off
-					loop
+					from a_dt_attr.start until a_dt_attr.off loop
 						if attached {DT_REFERENCE} a_dt_attr.item as a_dt_ref2 then
 							debug ("DT")
 								io.put_string ("%TDT_REFERENCE (inside SEQUENCE DT_ATTRIBUTE)" + a_dt_ref2.as_string + "%N")
@@ -740,11 +716,7 @@ feature {NONE} -- Implementation
 			generic_param_type := generic_dynamic_type(an_obj, 1)
 			-- FIXME: only deal with the 1st generic param at the moment
 			if attached {HASH_TABLE [ANY, HASHABLE]} an_obj as a_hash_table then
-				from
-					a_hash_table.start
-				until
-					a_hash_table.off
-				loop
+				from a_hash_table.start until a_hash_table.off loop
 					if is_any_primitive_conforming_type(generic_param_type) then
 						debug ("DT")
 							io.put_string("DT_OBJECT_CONVERTER.create_dt_from_generic_obj: from_obj_proc.call([DT_ATTRIBUTE_NODE(" +
@@ -763,11 +735,7 @@ feature {NONE} -- Implementation
 					a_hash_table.forth
 				end
 			elseif attached {SEQUENCE[ANY]} an_obj as a_sequence then
-				from
-					a_sequence.start
-				until
-					a_sequence.off
-				loop
+				from a_sequence.start until a_sequence.off loop
 					if is_any_primitive_conforming_type(generic_param_type) then
 						debug ("DT")
 							io.put_string("DT_OBJECT_CONVERTER.create_dt_from_generic_obj(2): from_obj_proc.call([DT_ATTRIBUTE_NODE(" +

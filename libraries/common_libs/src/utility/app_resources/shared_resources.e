@@ -191,15 +191,6 @@ feature -- Environment
 			end
 		end
 
-	default_rm_schema_directory: STRING
-			-- directory of Reference Model schema files; same as full path to app + "/rm_schemas";
-			-- contains schema files in .dadl format e.g.
-			-- .../rm_schemas/openehr_rm_102.dadl
-		once
-			Result := application_startup_directory.twin
-			Result.append(os_directory_separator.out + "rm_schemas")
-		end
-
 	execution_environment: EXECUTION_ENVIRONMENT
 	    once
 	        create Result
@@ -211,11 +202,9 @@ feature -- Environment
 	    end
 
 	application_full_path: attached STRING
-			-- The full path to the application;
-			-- else, if the application is in an Eiffel project's W_code
-			-- or F_code directory, a path within the Eiffel project directory.
-			-- This must be called before any change_dir calls are made
-			-- since there is no easy way to get the startup directory.
+			-- The full path to the application; else, if the application is in an Eiffel project's W_code
+			-- or F_code directory, a path within the Eiffel project directory. This must be called before
+			-- any change_dir calls are made since there is no easy way to get the startup directory.
 		local
 			path: KI_PATHNAME
 			dir: STRING
@@ -226,7 +215,6 @@ feature -- Environment
 
 			if path.count > 3 then
 				dir := path.item (path.count - 1)
-
 				if dir.is_equal ("W_code") or dir.is_equal ("F_code") then
 					if path.item (path.count - 3).is_equal ("EIFGENs") then
 						dir := file_system.dirname (file_system.dirname (file_system.dirname (file_system.dirname (Result))))
@@ -239,10 +227,8 @@ feature -- Environment
 	    end
 
 	application_startup_directory: attached STRING
-			-- The directory in which the application is installed;
-			-- else, if the application is in an Eiffel project's W_code
-			-- or F_code directory, the Eiffel project directory.
-			-- This must be called before any change_dir calls are made
+			-- The directory in which the application is installed; else, if the application is in an Eiffel project's W_code
+			-- or F_code directory, the Eiffel project directory. This must be called before any change_dir calls are made
 			-- since there is no easy way to get the startup directory.
 		once
 			Result := file_system.dirname (application_full_path)
@@ -313,6 +299,18 @@ feature -- Environment
 		ensure
 			Result_attached: Result /= Void
 		end
+
+	Default_editor_command: STRING
+			-- A reasonable name of an editor based on operating system.
+		once
+   			if is_windows then
+   				Result := "Notepad.exe,cmd /q /d /c start %"%" /b"
+			elseif is_mac_os_x then
+				Result := "open -t"
+			else
+   				Result := "vi"
+   			end
+   		end
 
 feature -- Element Change
 

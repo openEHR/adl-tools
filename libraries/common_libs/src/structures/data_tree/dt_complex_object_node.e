@@ -188,25 +188,21 @@ feature -- Access
 feature -- Iteration
 
 	start
-			--
 		do
 			attributes.start
 		end
 
 	forth
-			--
 		do
 			attributes.forth
 		end
 
 	off: BOOLEAN
-			--
 		do
 			Result := attributes.off
 		end
 
 	item: DT_ATTRIBUTE_NODE
-			--
 		do
 			Result := attributes.item
 		end

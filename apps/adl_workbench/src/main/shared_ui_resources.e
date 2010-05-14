@@ -42,18 +42,6 @@ feature -- Definitions
 			Result := application_startup_directory + os_directory_separator.out + ".status"
 		end
 
-	Default_editor_command: STRING
-			-- A reasonable name of an editor based on operating system.
-		once
-   			if is_windows then
-   				Result := "Notepad.exe,cmd /q /d /c start %"%" /b"
-			elseif is_mac_os_x then
-				Result := "open -t"
-			else
-   				Result := "vi"
-   			end
-   		end
-
 	ADL_help_page_url: STRING
 		local
 			version: OPENEHR_VERSION

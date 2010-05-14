@@ -49,8 +49,6 @@ feature -- Modification
 feature -- Conversion
 
 	as_string: STRING
-		local
-			a_dur: DATE_TIME_DURATION
 		do
 			if is_string then
 				Result := "%"" + value.out + "%""
@@ -58,15 +56,14 @@ feature -- Conversion
 				Result := "%'" + value.out + "%'"
 			else
 				-- FIXME: duration.out does not exist in Eiffel, and in any case would not be ISO8601-compliant
-				a_dur ?= value
-				if a_dur = Void then
+				if attached {DATE_TIME_DURATION} value as a_dur then
+					Result := duration_to_iso8601_string(a_dur)
+				else
 					Result := value.out
 					-- FIXME: REAL.out is broken
 					if value.generating_type.substring(1,4).is_equal("REAL") and then Result.index_of('.', 1) = 0 then
 						Result.append(".0")
 					end
-				else
-					Result := duration_to_iso8601_string(a_dur)
 				end
 			end
 		end
