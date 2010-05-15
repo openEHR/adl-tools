@@ -22,7 +22,7 @@ inherit
 			{NONE} all
 		end
 
-	MESSAGE_BILLBOARD
+	SHARED_APP_RESOURCES
 		rename
 			file_exists as is_valid_path,
 			directory_exists as is_valid_directory

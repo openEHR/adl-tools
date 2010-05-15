@@ -19,7 +19,7 @@ inherit
 			initialize
 		end
 
-	SHARED_UI_RESOURCES
+	SHARED_APP_UI_RESOURCES
 		export
 			{NONE} all
 		undefine

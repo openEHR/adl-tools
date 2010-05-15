@@ -21,16 +21,18 @@ inherit
 			on_prepare
 		end
 
+	SHARED_ADL_APPLICATION
+
 	SHARED_REFERENCE_MODEL_ACCESS
 
-	SHARED_UI_RESOURCES
+	SHARED_APP_RESOURCES
 
 feature {NONE} -- Events
 
 	on_prepare
 			-- <Precursor>
 		do
-			initialise_default_resource_config_file_name
+			adl_application.initialise
 			if not rm_schema.model_loaded then
 				io.put_string ("Error - RM checker status: " + rm_schema.status)
 			end
@@ -73,7 +75,7 @@ feature -- Test routines
 	test_is_descendant_of
 			-- New test routine
 		note
-			testing:  "is_sub_class_of", "bmm", "covers/{BMM_SCHEMA}.is_descendant_of"
+			testing:  "is_descendant_of", "bmm", "covers/{BMM_SCHEMA}.is_descendant_of"
 		do
 			assert ("COMPOSITION is a subclass of LOCATABLE", rm_schema.is_descendant_of ("COMPOSITION", "LOCATABLE"))
 			assert ("LOCATABLE is not subclass of COMPOSITION", not rm_schema.is_descendant_of ("LOCATABLE", "COMPOSITION"))

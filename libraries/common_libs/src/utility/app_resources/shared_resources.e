@@ -41,7 +41,7 @@ feature -- Initialisation
 
 	initialise_default_resource_config_file_name
 			-- initialise resources from default resource file location
-		do
+		once
 			resource_config_file_name.append(default_resource_config_file_full_path)
 		end
 

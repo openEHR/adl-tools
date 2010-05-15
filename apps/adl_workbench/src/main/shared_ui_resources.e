@@ -11,15 +11,10 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class SHARED_UI_RESOURCES
+class SHARED_APP_UI_RESOURCES
 
 inherit
-	SHARED_RESOURCES
-
-	ARCHETYPE_DEFINITIONS
-		export
-			{NONE} all
-		end
+	SHARED_APP_RESOURCES
 
 	EV_STOCK_PIXMAPS
 		rename
@@ -132,7 +127,6 @@ feature -- Access
 
 			Result.force (["class_concrete.ico", "concrete class from RM"], "class_concrete")
 			Result.force (["class_abstract.ico", "abstract class from RM"], "class_abstract")
-		--	Result.force (["class_empty.ico", "class from RM with no archetypes in current repository"], "class_empty")
 
 			Result.force (["archetype_1.ico", "Ad hoc archetype (not parsed yet)"], "archetype_1")
 			Result.force (["archetype_parsed_1.ico", "Ad hoc archetype (parsed but not compiled)"], "archetype_parsed_1")
@@ -322,7 +316,7 @@ feature -- Access
 			Result.append ("%TADL version: " + Latest_adl_version + "%N")
 			Result.append ("%TSource SVN - http://www.openehr.org/svn/ref_impl_eiffel%N%T" + version.last_changed + "%N")
 			Result.append ("%TSource license: Mozilla tri-license%N")
-			Result.append ("%T%T(http://www.mozilla.org/MPL/boilerplate-1.1/mpl-tri-license-txt)%N")
+			Result.append ("%T(http://www.mozilla.org/MPL/boilerplate-1.1/mpl-tri-license-txt)%N")
 			Result.append ("Support: support@OceanInformatics.com%N")
 			Result.append ("Funded by: OceanInformatics.com%N")
 			Result.append ("Author: Thomas Beale%N")
@@ -354,36 +348,6 @@ feature -- Access
 		end
 
 feature -- Application Switches
-
-	reference_repository_paths: ARRAYED_LIST[STRING]
-			-- path of root of ADL file tree
-		do
-			Result := resource_value_list("default", "reference_repositories")
-			from Result.start until Result.off loop
-				Result.replace(substitute_env_vars(Result.item))
-				Result.forth
-			end
-			Result.compare_objects
-		ensure
-			Result_attached: Result /= Void
-			Value_comparison: Result.object_comparison
-		end
-
-	reference_repository_path: STRING
-			-- path of root of ADL file tree
-		do
-			Result := substitute_env_vars(resource_value("default", "reference_repository"))
-		ensure
-			Result /= Void
-		end
-
-	work_repository_path: STRING
-			-- path of root of ADL file tree
-		do
-			Result := substitute_env_vars(resource_value("default", "work_repository"))
-		ensure
-			Result /= Void
-		end
 
 	current_work_directory: attached STRING
 			-- Directory where archetypes are currently being opened and saved
@@ -548,17 +512,6 @@ feature -- Application Switches
 			end
 		end
 
-	validation_strict: BOOLEAN
-			-- Set strict validation on?
-		local
-			str: STRING
-		do
-			str := resource_value ("default", "validation_strict")
-			if str.is_boolean then
-				Result := str.to_boolean
-			end
-		end
-
 	display_archetype_source: BOOLEAN
 			-- Display "(f)" marker on archetypes created in flat form
 		local
@@ -588,47 +541,7 @@ feature -- Application Switches
 			Result := substitute_env_vars (resource_value ("default", "editor"))
 		end
 
-	html_export_directory: attached STRING
-			-- Path of directory to which HTML is exported.
-		do
-			Result := substitute_env_vars (resource_value ("default", "html_export_directory"))
-		end
-
-	adl_version_for_flat_output: attached STRING
-			-- version of ADL syntax to use for outputting flat archetypes
-		do
-			Result := substitute_env_vars (resource_value ("default", "adl_version_for_flat_output"))
-		end
-
 feature -- Application Switch Setting
-
-	set_reference_repository_path(a_path: STRING)
-			-- set reference_repository_path
-		require
-			a_path_valid: a_path /= Void and then not a_path.is_empty
-		do
-			set_resource_value("default", "reference_repository", a_path)
-		end
-
-	set_reference_repository_paths(a_path_list: ARRAYED_LIST[STRING])
-			-- set reference_repository_path(s)
-		require
-			a_path_list_valid: a_path_list /= Void and then not a_path_list.is_empty
-		do
-			set_resource_value_list("default", "reference_repositories", a_path_list)
-		end
-
-	set_work_repository_path(a_path: STRING)
-			-- set work repository_path
-		require
-			a_path_valid: a_path /= Void
-		do
-			if not a_path.is_empty then
-				set_resource_value("default", "work_repository", a_path)
-			else
-				remove_resource ("default", "work_repository")
-			end
-		end
 
 	set_current_work_directory (a_path: STRING)
 			-- set the directory where archetypes are currently being opened and saved.
@@ -649,24 +562,6 @@ feature -- Application Switch Setting
 			value_not_empty: not value.is_empty
 		do
 			set_resource_value("default", "editor", value)
-		end
-
-	set_html_export_directory (value: STRING)
-			-- Set the path of directory to which HTML is exported.
-		require
-			value_attached: value /= Void
-			value_not_empty: not value.is_empty
-		do
-			set_resource_value("default", "html_export_directory", value)
-		end
-
-	set_adl_version_for_flat_output (value: STRING)
-			-- Set version of ADL syntax to use for outputting flat archetypes.
-		require
-			value_attached: value /= Void
-			value_not_empty: not value.is_empty
-		do
-			set_resource_value("default", "adl_version_for_flat_output", value)
 		end
 
 	set_main_notebook_tab_pos(a_tab_pos: INTEGER)
@@ -763,13 +658,6 @@ feature -- Application Switch Setting
 			-- Set flag for show_entire_ontology.
 		do
 			set_resource_value ("default", "show_entire_ontology", flag.out)
-		end
-
-
-	set_validation_strict (flag: BOOLEAN)
-			-- Set flag for strict parser validation
-		do
-			set_resource_value ("default", "validation_strict", flag.out)
 		end
 
 	set_display_archetype_source (flag: BOOLEAN)

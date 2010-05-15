@@ -3,36 +3,58 @@ note
 	description: "Shared access to error and information messages."
 	keywords:    "logging"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2008 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class SHARED_MESSAGE_DB
+class SHARED_MESSAGE_BILLBOARD
+
+inherit
+	BILLBOARD_MESSAGE_TYPES
+		export
+			{NONE} all
+		end
 
 feature -- Access
 
-	message_db: IN_MEMORY_MESSAGE_DB
-			-- error database keyed by id
+	billboard: MESSAGE_BILLBOARD
+			-- text of the billboard in locale current language
 		once
 			create Result.make
 		end
 
-	create_message_line(an_id: STRING; args: ARRAY[STRING]): STRING
+	post_error(poster_object: ANY; poster_routine: STRING; id: STRING; args: ARRAY[STRING])
+			-- append to the  current contents of billboard an error message corresponding to id,
+			-- with positional parameters replaced by contents of optional args
 		require
-			an_id /= Void
+			Poster_valid: poster_object /= Void and poster_routine /= Void and
+						  not poster_routine.is_empty
 		do
-			Result := message_db.create_message_line (an_id, args)
+			billboard.post_error(poster_object.generator, poster_routine, id, args)
 		end
 
-	create_message_content(an_id: STRING; args: ARRAY[STRING]): STRING
+	post_warning(poster_object: ANY; poster_routine: STRING; id: STRING; args: ARRAY[STRING])
+			-- append to the  current contents of billboard a warning message corresponding to id,
+			-- with positional parameters replaced by contents of optional args
 		require
-			an_id /= Void
+			Poster_valid: poster_object /= Void and poster_routine /= Void and
+						  not poster_routine.is_empty
 		do
-			Result := message_db.create_message_content (an_id, args)
+			billboard.post_warning(poster_object.generator, poster_routine, id, args)
+		end
+
+	post_info(poster_object: ANY; poster_routine: STRING; id: STRING; args: ARRAY[STRING])
+			-- append to the  current contents of billboard an info message corresponding to id,
+			-- with positional parameters replaced by contents of optional args
+		require
+			Poster_valid: poster_object /= Void and poster_routine /= Void and
+						  not poster_routine.is_empty
+		do
+			billboard.post_info(poster_object.generator, poster_routine, id, args)
 		end
 
 end
@@ -51,10 +73,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is shared_message_db.e
+--| The Original Code is shared_message_billboard.e
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2008
+--| Portions created by the Initial Developer are Copyright (C) 2010
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

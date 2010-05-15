@@ -1,41 +1,28 @@
 note
-	component:   "openEHR Reusable Libraries"
-	description: "Shared access to error and information messages."
-	keywords:    "logging"
+	component:   "openEHR Archetype Project"
+	description: "Shared access to application root object"
+	keywords:    "test, ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2008 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	file:        "$URL"
+	revision:    "$LastChangedRevision"
+	last_change: "$LastChangedDate"
 
-class SHARED_MESSAGE_DB
+class SHARED_ADL_APPLICATION
 
 feature -- Access
 
-	message_db: IN_MEMORY_MESSAGE_DB
-			-- error database keyed by id
+	adl_application: ADL_APPLICATION
 		once
-			create Result.make
-		end
-
-	create_message_line(an_id: STRING; args: ARRAY[STRING]): STRING
-		require
-			an_id /= Void
-		do
-			Result := message_db.create_message_line (an_id, args)
-		end
-
-	create_message_content(an_id: STRING; args: ARRAY[STRING]): STRING
-		require
-			an_id /= Void
-		do
-			Result := message_db.create_message_content (an_id, args)
+			create Result
 		end
 
 end
+
+
 
 --|
 --| ***** BEGIN LICENSE BLOCK *****
@@ -51,10 +38,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is shared_message_db.e
+--| The Original Code is shared_ui_resources.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2008
+--| Portions created by the Initial Developer are Copyright (C) 2003-2004
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

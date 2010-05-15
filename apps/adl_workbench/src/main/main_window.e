@@ -3,8 +3,8 @@ note
 	description: "Main window"
 	keywords:    "test, ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003-2005 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2003-2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -32,6 +32,16 @@ inherit
 			copy, default_create
 		end
 
+	SHARED_ADL_APPLICATION
+		undefine
+			copy, default_create
+		end
+
+	SHARED_APP_UI_RESOURCES
+		undefine
+			copy, default_create
+		end
+
 	SHARED_REFERENCE_MODEL_ACCESS
 		undefine
 			copy, default_create
@@ -55,13 +65,6 @@ inherit
 			copy, default_create
 		end
 
-	MESSAGE_BILLBOARD
-		export
-			{NONE} all
-		undefine
-			copy, default_create
-		end
-
 	STRING_UTILITIES
 		export
 			{NONE} all
@@ -76,7 +79,7 @@ feature {NONE} -- Initialization
 			-- Any custom user initialization that could not be performed in `initialize',
 			-- (due to regeneration of implementation class) can be added here.
 		do
-			initialise_default_resource_config_file_name
+			adl_application.initialise
 			initialise_accelerators
 		end
 
@@ -172,8 +175,8 @@ feature -- Status setting
 				quit_dialog.show_modal_to_window (Current)
 				ev_application.destroy
 			else
-				append_status_area (billboard_content)
-				clear_billboard
+				append_status_area (billboard.content)
+				billboard.clear
 			end
 
 			if reference_repository_path.is_empty then
@@ -186,7 +189,9 @@ feature -- Status setting
 			archetype_compiler.set_visual_update_action (agent build_gui_update)
 			initialise_overall_appearance
 			path_map_control.initialise_controls
+
 			Precursor
+
 			initialise_splitter (test_split_area, test_split_position)
 			initialise_splitter (explorer_split_area, explorer_split_position)
 			initialise_splitter (total_split_area, total_split_position)
@@ -205,23 +210,7 @@ feature -- Status setting
 				update_status_file
 			end
 
-			if html_export_directory.is_empty then
-				set_html_export_directory (file_system.pathname (file_system.absolute_parent_directory (reference_repository_path), "html"))
-			end
-
-			if not adl_version_for_flat_output.is_empty then
-				set_use_flat_adl_version (adl_version_for_flat_output)
-				post_warning (Current, "show", "adl_version_warning", <<adl_version_for_flat_output>>)
-			end
-
-			if validation_strict then
-				set_strict_validation(True)
-				post_warning (Current, "show", "validation_strict", Void)
-			else
-				post_warning (Current, "show", "validation_non_strict", Void)
-			end
-
-			append_status_area (billboard_content)
+			append_status_area (billboard.content)
 		end
 
 feature -- File events
@@ -247,7 +236,7 @@ feature -- File events
 					else
 						arch_dir.add_adhoc_item (fname)
 						archetype_view_tree_control.populate
-						append_status_area (billboard_content)
+						append_status_area (billboard.content)
 					end
 				else
 					(create {EV_INFORMATION_DIALOG}.make_with_text ("%"" + fname + "%" already added.")).show_modal_to_window (Current)
@@ -306,11 +295,7 @@ feature -- File events
 					list := editors_dialog.icon_help_list
 					list.wipe_out
 
-					from
-						editors.start
-					until
-						editors.off
-					loop
+					from editors.start until editors.off loop
 						command := editors.item
 						command.left_adjust
 						command.right_adjust
@@ -350,11 +335,7 @@ feature -- File events
 				save_dialog.set_file_name (name)
 				save_dialog.set_start_directory (current_work_directory)
 
-				from
-					archetype_serialiser_formats.start
-				until
-					archetype_serialiser_formats.off
-				loop
+				from archetype_serialiser_formats.start until archetype_serialiser_formats.off loop
 					format := archetype_serialiser_formats.item
 					save_dialog.filters.extend (["*" + archetype_file_extensions [format], "Save as " + format.as_upper])
 					archetype_serialiser_formats.forth
@@ -426,11 +407,7 @@ feature -- File events
 			ev_items := path_analysis_column_view_checkable_list.checked_items
 			create strs.make (0)
 
-			from
-				ev_items.start
-			until
-				ev_items.off
-			loop
+			from ev_items.start until ev_items.off loop
 				strs.extend (ev_items.item.text.as_string_8)
 				ev_items.forth
 			end
@@ -988,7 +965,7 @@ feature {NONE} -- Implementation
 	status_area_background_color: EV_COLOR
 			-- The colour for the background of `parser_status_area'.
 		do
-			if billboard_has_errors then
+			if billboard.has_errors then
 				create Result.make_with_8_bit_rgb (255, 224, 224)
 			else
 				create Result.make_with_8_bit_rgb (240, 255, 255)
@@ -1033,8 +1010,8 @@ feature {NONE} -- Implementation
 					end
 
 					arch_dir.populate
-					append_status_area (billboard_content)
-					clear_billboard
+					append_status_area (billboard.content)
+					billboard.clear
 					archetype_view_tree_control.populate
 					archetype_test_tree_control.populate
 					populate_statistics
@@ -1097,10 +1074,15 @@ feature {NONE} -- Implementation
 			-- Display the selected archetype's differential or flat text in `source_rich_text', optionally with line numbers.
 		local
 			text: STRING
+			ara: ARCH_REP_ARCHETYPE
 		do
-			if attached {ARCH_REP_ARCHETYPE} arch_dir.selected_archetype as ara then
+			ara := arch_dir.selected_archetype
+			if attached ara then
 				if flat then
 					text := ara.flat_text
+					if text = Void then
+						text := ara.legacy_flat_text
+					end
 					if text = Void then
 						source_rich_text.set_text (create_message_line ("compiler_no_flat_text", <<>>))
 					else

@@ -19,13 +19,15 @@ class
 inherit
 	OPENEHR_TEST_SET
 
+	SHARED_ADL_APPLICATION
+
 	SHARED_KNOWLEDGE_REPOSITORY
 
 	SHARED_SOURCE_REPOSITORIES
 
 	SHARED_ARCHETYPE_COMPILER
 
-	MESSAGE_BILLBOARD
+	SHARED_APP_RESOURCES
 
 feature -- Test routines
 
@@ -37,7 +39,7 @@ feature -- Test routines
 			repository: STRING
 			expected: STRING
 		do
-			initialise_default_resource_config_file_name
+			adl_application.initialise
 			set_status_reporting_level (message_type_error)
 			repository := resource_value ("tests", "validation_repository")
 
@@ -49,9 +51,9 @@ feature -- Test routines
 						"ERROR - No parent matching /specialisation_parent found for archetype " +
 						repository + "\adl-test-ENTRY.specialisation_parent-missing.v1.adl      (ARCH_DIRECTORY.merge_enter)%N"
 
-			assert_equal (expected, billboard_content)
+			assert_equal (expected, billboard.content)
 			archetype_compiler.build_all
-			print (billboard_content)
+			print (billboard.content)
 		end
 
 end

@@ -17,17 +17,22 @@ note
 
 deferred class MESSAGE_DB
 
+feature -- Definitions
+
+	Default_message_language: STRING = "en"
+			-- default language of messages in this database
+
 feature -- Initialisation
 
 	make
-		deferred
+		do
+			create templates.make (0)
 		end
 
 feature -- Access
 
 	templates: HASH_TABLE [STRING, STRING]
-			-- error templates in the form of a table of templates
-			-- keyed by id
+			-- error templates in the form of a table of templates keyed by id
 
 	has_message(an_id: STRING): BOOLEAN
 		require
@@ -46,11 +51,7 @@ feature -- Access
 			Result := templates.item(an_id).twin
 			Result.replace_substring_all("%%N", "%N")
 			if args /= Void then
-				from
-					i := args.lower
-				until
-					i > args.upper
-				loop
+				from i := args.lower until i > args.upper loop
 					idx_str := i.out
 					idx_str.left_adjust
 					Result.replace_substring_all("$" + idx_str, args.item(i))

@@ -129,8 +129,6 @@ feature -- Validation
 			-- basic validation of definition and ontology
 			if passed then
 				validate_basics
-				validate_ontology_languages
-				validate_ontology_code_spec_levels
 			end
 
 			-- validation requiring the archetype xref tables
@@ -141,6 +139,12 @@ feature -- Validation
 				if target.has_slots then
 					build_slot_id_index
 				end
+			end
+
+			-- basic validation of definition and ontology
+			if passed then
+				validate_ontology_languages
+				validate_ontology_code_spec_levels
 			end
 
 			-- validation requiring valid specialisation parent
@@ -436,7 +440,7 @@ feature {NONE} -- Implementation
 
 	specialised_node_validate (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 			-- validate nodes in differential specialised archetype
-			-- SIDE-EFFECT: sets is_congruent markers on child archetype nodes
+			-- SIDE-EFFECT: sets is_mergeable markers on child archetype nodes
 		local
 			co_parent_flat: attached C_OBJECT
 			co_parent_flat_detachable: detachable C_OBJECT
@@ -460,9 +464,9 @@ feature {NONE} -- Implementation
 						end
 					elseif ca_child_diff.node_congruent_to (ca_parent_flat) and ca_child_diff.parent.is_mergeable then
 						debug ("validate")
-							io.put_string (">>>>> validate: C_ATTRIBUTE in child at " + ca_child_diff.path + " CONGRUENT to parent node " + ca_parent_flat.path + " %N")
+							io.put_string (">>>>> validate: C_ATTRIBUTE in child at " + ca_child_diff.path + " CONGRUENT to parent node " + ca_parent_flat.path + " (setting is_mergeable) %N")
 						end
-						ca_child_diff.set_is_congruent
+						ca_child_diff.set_is_mergeable
 					end
 				else
 					check ca_parent_flat_void: False end
@@ -524,14 +528,14 @@ feature {NONE} -- Implementation
 							-- if the parent C_ATTRIBUTE node of the object node in the flat parent has no children, this object can be assumed to be a total
 							-- replacement, so don't mark it as an overlay
 							if attached {C_COMPLEX_OBJECT} co_parent_flat as cco_pf then
-								if  co_child_diff.is_root or cco_pf.has_attributes then
-									co_child_diff.set_is_congruent
+								if co_child_diff.is_root or cco_pf.has_attributes then
+									co_child_diff.set_is_mergeable
 									debug ("validate")
-										io.put_string ("%N")
+										io.put_string (" (setting is_mergeable) %N")
 									end
 								else
 									debug ("validate")
-										io.put_string ("(TURNED OFF due to being replacement)")
+										io.put_string ("(not setting is_mergeable, due to being replacement)%N")
 									end
 								end
 							end
@@ -555,12 +559,39 @@ feature {NONE} -- Implementation
 			-- and no previous errors encountered
 		local
 			apa: ARCHETYPE_PATH_ANALYSER
+			path_at_level: STRING
+			accept: BOOLEAN
+			ca_parent_flat: attached C_ATTRIBUTE
 		do
-			create apa.make_from_string(a_c_node.path)
-			-- if the 'phantom' check below is True, it means the path is to an object that is new in the
-			-- current archetype, and therefore there is nothing in the parent to validate it against
-			if not apa.is_phantom_path_at_level (flat_parent.specialisation_depth) then
+			-- if check below is True, it means the path is to an object that is new in the current archetype,
+			-- and therefore there is nothing in the parent to validate it against. Invalid codes, i.e. the 'unknown' code
+			-- (used on non-coded nodes) or else codes that are either the same as the corresponding node in the parent flat,
+			-- or else a refinement of that, but not a new code, e.g. at0001.0.2
+			if attached {C_OBJECT} a_c_node as a_c_obj then
+				accept := not is_valid_code (a_c_obj.node_id) or else
+							(specialisation_depth_from_code (a_c_obj.node_id) = 0 or else is_refined_code(a_c_obj.node_id))
+
+				-- special check: if it is a non-overlay node, but it has a sibling order, then we need to check that the
+				-- sibling order refers to a valid node in the parent flat. Arguably this should be done in the main
+				-- specialised_node_validate routine, but... I will re-engineer the code before contemplating that
+				if not accept and a_c_obj.sibling_order /= Void then
+					create apa.make_from_string(a_c_node.parent.path)
+					ca_parent_flat := flat_parent.definition.c_attribute_at_path (apa.path_at_level (flat_parent.specialisation_depth))
+					if not ca_parent_flat.has_child_with_id (a_c_obj.sibling_order.sibling_node_id) then
+						add_error("VSSM", <<a_c_obj.path, a_c_obj.sibling_order.sibling_node_id>>)
+					end
+				end
+			else
+				accept := True
+			end
+
+			if accept then
+				create apa.make_from_string(a_c_node.path)
 				Result := passed and flat_parent.has_path (apa.path_at_level (flat_parent.specialisation_depth))
+			else
+				debug ("validate")
+					io.put_string ("????? specialised_node_validate_test: a_c_node at " + a_c_node.path + " ignored %N")
+				end
 			end
 		end
 

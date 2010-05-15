@@ -15,6 +15,13 @@ note
 			 The factory routines in this class are smart - they don't just make new specialised
 			 codes by adding '.1', but by looking at the current hash of codes known in the 
 			 archetype ontology into which this class is inherited.
+			 
+			 NOTE: there is a logical anomaly in how we use codes: 'at0000' is a legitimate code in 
+			 an archetype; 'at0000.1' is a specialisation of this, but 'at0.1' is a newly 
+			 introduced node at level 1. This means that cods have to be lexically processed 
+			 sometimes to detect the 'at0000' pattern, to get correct results. Fixing this 
+			 is probably impossible now, but potentially all at0000 should move to being at0001.
+			 The same problem is true with the code 'ac0000'.
 			 ]"
 	keywords:    "archetype, ontology, coded term"
 	author:      "Thomas Beale"
@@ -33,22 +40,42 @@ inherit
 
 feature -- Definitions
 
-	Default_concept_code: STRING = "at0000"
+	Default_code_number_string: STRING = "0000"
+
+	Default_concept_code: STRING
 			-- FIXME: the 0000 code should not be allowed to be used in an archetype
 			-- definition secton, since it violates the rule that a '0' code means
 			-- "not defined here" (i.e. it is normally a filler for lower down codes)
 			-- THIS SHOULD BE CHANGED to at0001
+		once
+			Result := Term_code_leader + Default_code_number_string
+		end
+
+	Default_constraint_code: STRING
+			-- FIXME: the 0000 code should not be allowed to be used in an archetype
+			-- definition secton, since it violates the rule that a '0' code means
+			-- "not defined here" (i.e. it is normally a filler for lower down codes)
+			-- THIS SHOULD BE CHANGED to ac0001
+		once
+			Result := Constraint_code_leader + Default_code_number_string
+		end
 
 	Specialisation_separator: CHARACTER = '.'
 
-	Term_code_length: INTEGER = 6
+	Term_code_length: INTEGER
 			-- length of top-level term codes, e.g. "at0001"
+		once
+			Result := Default_concept_code.count
+		end
 
 	Term_code_leader: STRING = "at"
 			-- leader of all internal term codes
 
-	Constraint_code_length: INTEGER = 6
+	Constraint_code_length: INTEGER
 			-- length of top-level constraint codes, e.g. "ac0001"
+		once
+			Result := Default_constraint_code.count
+		end
 
 	Constraint_code_leader: STRING = "ac"
 
@@ -185,7 +212,7 @@ feature -- Access
 			-- "at0004.3", the result is "3"
 		require
 			code_valid: a_code /= Void and then is_valid_code (a_code)
-			not_root_code: is_specialised_code (a_code)
+			not_root_code: is_refined_code (a_code)
 		do
 			Result := a_code.substring (a_code.last_index_of (Specialisation_separator, a_code.count) + 1, a_code.count)
 		end
@@ -193,7 +220,12 @@ feature -- Access
 feature -- Comparison
 
 	is_valid_code (a_code: STRING): BOOLEAN
-			-- Is `a_code' an "at" or "ac" code?
+			-- Is `a_code' a valid "at" or "ac" code? It can be any of:
+			-- at0000
+			-- at000n
+			-- at0.n, at0.1.n, at0.0.n etc
+			-- where n is non-0
+			-- It can't have a final 0-value numeric segment except in the at0000 case.
 		require
 			code_attached: a_code /= Void
 		local
@@ -209,16 +241,26 @@ feature -- Comparison
 
 				if i > 0 then
 					str := a_code.substring (i + 1, a_code.count)
-					str.prune_all (specialisation_separator)
-					Result := str.is_integer
+					if str.is_equal (default_code_number_string) then
+						Result := True
+					else
+						if str.has (specialisation_separator) then
+							str.remove_head (str.last_index_of(Specialisation_separator, str.count))
+						end
+						if str.is_integer then
+							Result := str.to_integer > 0
+						end
+					end
 				end
 			end
 		end
 
-	is_specialised_code(a_code: STRING): BOOLEAN
+	is_refined_code(a_code: STRING): BOOLEAN
 			-- a code has been specialised if there is a non-zero code index anywhere above the last index
-			-- e.g. at0.0.1, level=3 -> False
-			--      at0001.0.1, level=3 -> True
+			-- e.g. at0.0.1 -> False
+			--      at0001.0.1 -> True
+			-- OR: if the code is a specialisation of the at0000 code, e.g. at0000.1, it will also return true, even
+			-- though it breaks the above rule. This occurs because we allowed at0000 to be a real code!
 		require
 			Code_valid: a_code /= Void and then is_valid_code (a_code)
 		local
@@ -229,8 +271,9 @@ feature -- Comparison
 				idx_str.prune_all (Specialisation_separator)
 				Result := idx_str.to_integer > 0
 
+				-- this deals with the exception
 				if not Result then
-					Result := specialisation_parent_from_code_at_level (a_code, 0).same_string (default_concept_code)
+					Result := a_code.starts_with (default_concept_code)
 				end
 			end
 		end

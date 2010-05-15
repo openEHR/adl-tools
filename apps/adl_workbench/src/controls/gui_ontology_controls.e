@@ -247,7 +247,7 @@ feature {NONE} -- Implementation
 		 			i := i + 1
 				end
 			else
-				from i := 1 until i > pl.column_count loop
+				from i := 1 until i > col_titles.count loop
 					-- This is a hack - it assumes that 10 px is a letter width in the current font.
 					-- There appears to be no way to resize the columns based on the titles...
 					pl.set_column_width (col_titles.i_th(i).count * 10, i)

@@ -84,11 +84,7 @@ feature -- Initialisation
 				if a_dt.has_path(items_path) then
 					dt_list_attr ?= a_dt.node_at_path (items_path)
 					if dt_list_attr.is_multiple then
-						from
-							dt_list_attr.start
-						until
-							dt_list_attr.off
-						loop
+						from dt_list_attr.start until dt_list_attr.off loop
 							create path_list_item.make(0)
 							l_key := dt_list_attr.item.node_id
 							path_list_item.append ("/items[" + l_key + "]/")
@@ -114,11 +110,7 @@ feature -- Access
 			-- return all attribute keys for this term
 		do
 			create Result.make(0)
-			from
-				items.start
-			until
-				items.off
-			loop
+			from items.start until items.off loop
 				Result.extend (items.key_for_iteration)
 				items.forth
 			end

@@ -1,7 +1,7 @@
 note
 	component:   "openEHR Reusable Libraries"
 	description: "[
-			     In-memory implementation of message database abstraction
+			     In-memory implementation of message database abstraction.
 				 ]"
 	keywords:    "error status reporting"
 
@@ -19,275 +19,43 @@ class IN_MEMORY_MESSAGE_DB
 inherit
 	MESSAGE_DB
 
-	SHARED_RESOURCES
-		export
-			{NONE} all
-		end
-
 create
 	make
 
-feature -- Definitions
+feature -- Modification
 
-	Default_message_language: STRING = "en"
-			-- default language of messages in this database
-
-feature -- Initialisation
-
-	make
+	populate (a_dadl_str, a_locale_lang: STRING)
+			-- populate message database using messages in `a_dadl_str' in language `a_locale_lang'.
+			-- The latter should be a 2-digit ISO 639 language code, e.g. "en", "de" etc
+			-- The format of `a_dadl_str' (dADL):
+			--	templates = <
+			--		["en"] = <
+			--			["key1"] = <"Message string with $1 argument $2 argument etc">
+			--			["key2"] = <"Message string with $1 argument $2 argument etc">
+			--		>
+			--	>
+		require
+			Valid_message_string: attached a_dadl_str
+			Valid_local_lang: attached a_locale_lang and then not a_locale_lang.is_empty
 		local
 			parser: DADL2_VALIDATOR
 			dt_tree: DT_COMPLEX_OBJECT_NODE
 			init_helper: IN_MEMORY_MESSAGE_DB_INITIALISER
 		do
 			create parser.make
-			parser.execute(message_templates_text, 1)
+			parser.execute(a_dadl_str, 1)
 			if not parser.syntax_error then
 				dt_tree := parser.output
 				init_helper ?= dt_tree.as_object_from_string("IN_MEMORY_MESSAGE_DB_INITIALISER")
-				if init_helper.templates.has (locale_language_short) then
-					templates := init_helper.templates.item (locale_language_short)
+				if init_helper.templates.has (a_locale_lang) then
+					templates.merge (init_helper.templates.item (a_locale_lang))
 				else
-					templates := init_helper.templates.item (Default_message_language)
+					templates.merge (init_helper.templates.item (Default_message_language))
 				end
 			else
 				io.put_string ("Message database failure: " + parser.error_text + "%N")
 			end
 		end
-
-feature -- Access
-
-	message_templates_text: STRING =
-			-- string form of message template tables in one language
-		"[
-		templates = <
-		["en"] = <
-			-- MESSAGE_BILLBOARD
-			["none"] = <"No error">
-			["message_code_error"] = <"Error code $1 does not exist">
-			
-			-- ANY
-			["report_exception"] = <"Software Exception $1 caught; Stack:%N$2">
-			["report_exception_with_context"] = <"Software Exception caught; Context: $1; Type: $2; Stack:%N$3">
-			["unhandled_exception"] = <"Exception caught but not handled: $1">
-			["general_error"] = <"Error: $1">
-			["general"] = <"$1">
-			
-			-- SCHEMA_ACCESS (RM model checker)
-			["model_access_e0"] = <"No reference model schema files found in $1">
-			["model_access_e1"] = <"Reference Model schema file $1 does not exist or not readable">
-			["model_access_e2"] = <"Reference Model schema $1 parse failure; reason: $2">
-			["model_access_e3"] = <"Reference Model schema containes unknown type $1 (object add failed)">
-			["model_access_e4"] = <"Reference Model schema $1 load failure due to exception during processing">
-			["model_access_e5"] = <"Reference Model schema directory $1 does not exist or not readable">
-			["model_access_e6"] = <"Reference Model schema directory $1 does not contain any schemas (expecting structure $1/model_name/schema_file.dadl)">
-			["model_access_e7"] = <"No Reference Model schema found for model '$1'">
-			["model_access_i1"] = <"Reference Model $1 $2 loaded: $3 primitive types, $4 class definitions">
-			["model_access_w1"] = <"Reference Model checking is OFF">
-			
-			-- MAIN_WINDOW
-			["adl_version_warning"] = <"Using ADL version $1 for output serialisation">
-			["clean_generated_file"] = <"Removing generated file $1">
-
-			-- ARCHETYPE compilation
-			["create_new_archetype_1"] = <"CREATE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
-			["specialise_archetype_1"] = <"SPECIALISE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
-			["open_adl_file_1"] = <"%NOPEN FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
-			["save_archetype_i1"] = <"Serialised: $1 to file $2">
-			["save_archetype_e2"] = <"Serialisation failed (archetype not valid)">
-			["save_archetype_e3"] = <"%NSAVE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
-			["serialise_archetype_e1"] = <"Serialisation failed; archetype not valid: $1">
-			["serialise_archetype_e2"] = <"%NSERIALISE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
-			["parse_archetype_i1"] = <"Archetype $1 syntax VALIDATED">
-			["parse_archetype_i2"] = <"Archetype $1 semantics VALIDATED">
-			["parse_archetype_i3"] = <"Archetype differential form file found; parsing that">
-			["parse_archetype_e1"] = <"$1 (Parse failed)">
-			["parse_archetype_e2"] = <"Archetype $1 semantic validation FAILED; reasons:%N$2">
-			["parse_archetype_w2"] = <"Archetype $1 semantic validation Warnings:%N$2">
-			["parse_archetype_e3"] = <"PARSE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
-			["parse_archetype_e4"] = <"Archetype $1 semantic validation of differential form FAILED; reasons:%N$2">
-			["parse_archetype_e5"] = <"Archetype $1 basic error in 'archetype' clause">
-			["parse_archetype_e6"] = <"Archetype $1 basic error in 'specialise' clause">
-			["parse_archetype_e7"] = <"Archetype $1 invalid: old-style 'draft' identifier">
-			["arch_context_make_flat_i1"] = <"Generated differential archetype from specialised flat archetype">
-			["compiler_status"] = <"=============== $1 ===============">
-			["compiler_finished_status"] = <"=============== finished $1 ===============">
-			["compiler_compiling_archetype"] = <"------------- compiling $1 -------------">
-			["compiler_already_attempted"] = <"(already attempted; status = $1">
-			["compiler_unexpected_error"] = <"Location: $1">
-			["compiler_no_flat_text"] = <"===================== No flat (.adl) text available =======================">
-			["compiler_no_source_text"] = <"===================== No source (.adls) text available =======================">
-			
-			-- ARCHETYPE_VALIDATOR
-			["validate_e1"] = <"Error: specialisation parent is missing">
-			["validate_e2"] = <"Error: specialisation parent failed to validate">
-			["validate_e3"] = <"Error: archetype id in filename $1 does not match id at top of file $2%N">
-			["validation_strict"] = <"Validation level STRICT">
-			["validation_non_strict"] = <"Validation level NON-STRICT; non-coforming existence, occurrences & cardinality will be removed">
-			
-			-- GUI controls, MAIN_WINDOW
-			["slots_incomplete_w1"] = <"Warning: this list may be incomplete. To be sure, run Build All under the Repository menu.">
-			
-			-- DT_OBJECT_CONVERTER.dt_to_object
-			["container_type_mismatch"] = 
-				<"Mismatch error in data and model for field $1 in type $2. Parsed data implies container type but is not in model">
-			["primitive_type_mismatch"] = 
-				<"Mismatch error in data and model for field $1 in type $2. Parsed data implies primitive, sequence<primitive> or interval<primitive> type but model does not">
-			["dt_proc_arg_type_mismatch"] = 
-				<"[Exception caught]: Mismatch between data and model for $1.$2. Expecting $3, read a $4">
-			["populate_dt_proc_arg_type_mismatch"] = 
-				<"[Exception caught]: $1.$2 - writing primitive object of type $3 into argument of type $4">
-			["non_existent_path"] = <"Error: non-existent path $1 in data tree structure">
-			["non_existent_path_in_list"] = <"Error: non-existent path (in list) $1 in data tree structure">
-			["dt_to_object_type_mismatch"] = <"[Exception caught]: Mismatch error - original recipient = $1">
-				
-			-- ARCHETYPE_DIRECTORY
-			["arch_dir_orphan_archetype"] = <"No parent matching $1 found for archetype $2">
-			["arch_dir_orphan_archetype_e2"] = <"No ontology node matching $1 found for archetype $2; incorrect id?">
-			["arch_dir_dup_archetype"] = <"Duplicate archetype $1">
-			["regex_e1"] = <"Error: Invalid regular expression $1">
-
-			-- ADL_SYNTAX_CONTERTER
-			["syntax_upgraded_i1"] = <"Syntax element upgraded: --$1-- changed to --$2--">
-							
-			-- ARCHETYPE_FILE_REPOSITORY_IMP
-			["invalid_filename_e1"] = <"Invalid archetype filename $1">
-			["pair_filename_i1"] = <"(Differential/flat pair archetype filename found $1)">
-			["save_as_i1"] = <"Archetype saved to $2">
-			["save_as_e1"] = <"Save-as failed; could not write to file $1">
-			["duplicate_filename"] = <"Duplicate file name or alternate version $1">
-			
-			------------------------- syntax errors: see the cADL, dADL and ADL syntax validators ---------------------
-			["SARID"] = <"in 'archetype' clause; expecting archetype id (model_issuer-ref_model-model_class.concept.version)">
-			["SASID"] = <"in 'specialise' clause; expecting parent archetype id (model_issuer-ref_model-model_class.concept.version)">
-			["SACO"] = <"in 'concept' clause; expecting TERM_CODE reference">
-			["SALA"] = <"error in language section">
-			["SALAN"] = <"no language section found">
-			["SADS"] = <"error in description section">
-			["SADF"] = <"error in definition section">
-			["SAIV"] = <"error in invariant section">
-			["SAON"] = <"error in ontology section">
-
-			["SDSF"] = <"differential syntax not allowed in flat archetype">
-			["SDINV"] = <"invalid dADL section; error: $1">
-			["SCCOG"] = <"expecting a new node definition, primitive node definition, 'use' path, or 'archetype' reference">
-			["SOCCF"] = <"expecting an 'occurrences expression', e.g. 'occurrences matches {n..m}'">
-			["SUNPA"] = <"expecting absolute path in use_node statement">
-			["SUAS"] = <"error after 'use_archetype' keyword; expecting Object node definition">
-			["SCAS"] = <"expecting a 'any' node, 'leaf' node, or new node definition">
-			["SINVS"] = <"illegal invariant expression at identifier $1">
-			["SEXPT"] = <"expecting absolute path after exists keyword">
-			["SEXLSG"] = <"existence single value must be 0 or 1">
-			["SEXLU1"] = <"existence upper limit must be 0 or 1 when lower limit is 0">
-			["SEXLU2"] = <"existence upper limit must be 1 when lower limit is 1">
-			["SEXLMG"] = <"existence must be one of 0..0, 0..1, or 1..1">
-
-			["SCIAV"] = <"invalid assumed value; must be an integer">
-			["SCRAV"] = <"invalid assumed value; must be a real number">
-			["SCDAV"] = <"invalid assumed value; must be an ISO8601 date">
-			["SCTAV"] = <"invalid assumed value; must be an ISO8601 time">
-			["SCDTAV"] = <"invalid assumed value; must be an ISO8601 date/time">
-			["SCDUAV"] = <"invalid assumed value; must be an ISO8601 duration">
-			["SCSAV"] = <"invalid assumed value; must be a string">
-			["SCBAV"] = <"invalid assumed value; must be a 'True' or 'False'">
-			["SCOAV"] = <"invalid assumed value; must be an ordinal integer value">
-
-			["SCDPT"] = <"invalid date constraint pattern; allowed patterns: $1">
-			["SCTPT"] = <"invalid time constraint pattern; allowed patterns: $1">
-			["SCDTPT"] = <"invalid date/time constraint pattern; allowed patterns: $1">
-			["SCDUPT"] = <"invalid duration constraint pattern; legal pattern: P[Y|y][M|m][W|w][D|d][T[H|h][M|m][S|s]] or P[W|w]">
-			["SCSRE"] = <"regular expression compile error '$1' is not a valid regular expression">
-			["SCPCV"] = <"invalid term code constraint pattern: $1">
-			["STCV"] = <"Invalid term code reference: '$1'; code string can only contain digits, letters and '.', '_' and '-' and must commence with a letter or digit">
-
-			["SDAT"] = <"invalid attribute value">
-			["SGEE"] = <"generic object not enclosed by normal object not allowed">
-
-			-------------- validity errors: unless otherwise notes, these codes are defined in the AOM 1.5 or later spec ------------------
-			["VASID"] = <"Error (VASID): specialised archetype id not based on specialisation parent archetype id">
-
-			["VARDT"] = <"Error (VARDT): archetype id type $1 does not match type $2 in definition section">
-			["VACSD"] = <"Error (VACSD): specialisation depth of concept code $1 does not match specialisation depth of archetype id $2">
-			["VACCD"] = <"Error (VACCD): archetype concept code $1 not used in definition">			
-			["VOTM"] = <"Error (VOTM): translations for $1 defined in the description / translations section but missing in the term_definition and constraint_definition sections">
-			["VATCD"] = <"Error (VATCD): at-code $1 used in archetype more specialised than archetype">
-			["VATDF1"] = <"Error (VATDF): node id at-code $1 from specialisation parent not defined in ontology of any parent archetype">
-			["VATDF2"] = <"Error (VATDF): node id at-code $1 not defined in ontology of current archetype">
-			["VACDF1"] = <"Error (VACDF): constraint code $1 from specialisation parent not defined in ontology of any parent archetype">
-			["VACDF2"] = <"Error (VACDF): constraint code $1 not found in ontology of current archetype">
-			["VUNP"] = <"Error (VUNP): ARCHETYPE_INTERNAL_REF path $1 not found in archetype">
-			["VSUNT"] = <"Error (VSUNT): node at path $1 AOM type $2 does not conform to node at parent path $3 AOM type $4">
-
-			["VTRLA"] = <"Error (VTRLA): translations key '$1' does not match translation item language '$2'">
-			["VRDLA"] = <"Error (VRDLA): resource detail key '$1' does not match resource detail item language '$2'">
-
-			["VSONT"] = <"Error (VSONT): object node at path $1 (AOM type $2) does not conform to node at parent path $3 AOM type $4">
-			["VSONCT"] = <"Error (VSONCT): object node at path $1 (RM type $2) does not conform to node at parent path $3 RM type $4">
-			["VSONCO"] = <"Error (VSONCO): object node at path $1 occurrences $2 does not conform to node at parent path $3 occurrences $4">
-			["VSONCI"] = <"Error (VSONCI): object node at path $1 node_id $2 does not conform to node at parent path $3 node_id $4">
-			["VCATU"] = <"Error (VCATU) cADL object duplicate attribute $1">
-			
-			["VSANCE"] = <"Error (VSANCE): attribute at path $1 existence $2 does not conform to parent $3 existence $4">
-			["VSANCC"] = <"Error (VSANCC): attribute at path $1 cardinality $2 does not conform to parent $3 cardinality $4">
-			["VDIFP"] = <"Error (VDIFP): differential path $1 does not exist in reference model">
-			["VSAM"] = <"Error (VSAM): attribute at path $1 multiplicity does not correspond to that of attribute in parent or reference model">
-			["VSONI"] = <"Error (VSONI): $1 object node at path $2 use of node identifier not conform to $3 node at parent path $4">
-			["VSONIR"] = <"Error (VSONIR): object node at path $1 (RM type $2) redefines parent node (RM type = $3) but node_id $4 not redefined">
-			["VSCNR"] = <"Error (VSCNR): illegal redefinition of $1 node at $2 in parent into $3 node at $4 in child">
-
-			["VSSM"] = <"Error (VSSM): node at path $1 has order marker referring to non-existant sibling node $2">
-
-			["VOBAV"] = <"Error (VOBAV): assumed value $1 not within constraint range">
-			["VOBAVL"] = <"Error (VOBAVL): assumed value $1 not found in constraint list"> -- additional to ADL spec
-			["VCPCV"] = <"Error (VCPCV): invalid term code constraint: $1">
-			["VCOV"] = <"Error (VCOV): invalid ordinal constraint: duplicated value $1">
-			["VCOC"] = <"Error (VCOC): invalid ordinal constraint: duplicated code $1">
-
-			["VIVLO"] = <"Error (VIVLO): invalid interval: $1 must be <= $2"> -- dADL validity; additional to spec
-			["VIDV"] = <"Error (VIDV): invalid ISO8601 date: $1"> -- dADL validity; additional to spec
-			["VITV"] = <"Error (VITV): invalid ISO8601 time: $1"> -- dADL validity; additional to spec
-			["VIDTV"] = <"Error (VIDTV): invalid ISO8601 date/time: $1"> -- dADL validity; additional to spec
-			["VIDUV"] = <"Error (VIDUV): invalid ISO8601 duration: $1"> -- dADL validity; additional to spec
-
-			["VDATU"] = <"Error (VDATU): dADL object duplicate attribute: $1">
-			["VDOBU"] = <"Error (VDOBU): object key must be unique; key [$1] already exists under attribute '$2'">
-
-			["VACSO"] = <"Error (VACSO): cannot add $1 object with $2 to singly-valued attribute $3 because object occurrences > 1">
-			["VACSI"] = <"Error (VACSI): cannot add $1 object with $2 to singly-valued attribute $3 because attribute already has child with same node id">
-			["VACSIT"] = <"Error (VACSIT): cannot add $1 object with $2 to singly-valued attribute $3 because attribute already has child with same RM type">
-
-			["VACMC1"] = <"Error (VACMC): cannot add $1 object with $2 to multiply-valued attribute $3 because cardinality $4 does not contain occurrences $5 of object">
-			["VACMC2"] = <"Error (VACMC): occurrences of children of multiply-valued attribute $1 exceed its cardinality $2">
-			["VACMI"] = <"Error (VACMI): cannot add $1 object with $2 to multiply-valued attribute $3 because object has no node id">
-			["VACMM"] = <"Error (VACMM): cannot add $1 object with $2 to multiply-valued attribute $3 because attribute already has child with same node id">
-
-			["VARCN"] = <"Error (VARCN): concept code $1 is invalid">
-
-			-- ontology-related validity
-			["VONSD"] = <"Error (VONSD): archetype code $1 in ontology more specialised than archetype">
-			["VONLC"] = <"Error (VONLC): archetype code $1 in ontology not present in language $2">
-
-			-- description-related validity
-			["VDEOL"] = <"Error (VDEOL): original_language section missing">
-
-			-- reference model-related validation
-			["VCORM"] = <"Error (VCORM): type name '$1' at object node at $2 not known in reference model">
-			["VCORMT"] = <"Error (VCORMT): type '$1' of object node at $2 not does not conform to type '$3' of $4.$5 in reference model">
-			["VCARM"] = <"Error (VCARM): attribute name '$1' in object node at $2 (type=$3) not among flat set of properties in reference model">
-			["VCAEX"] = <"Error (VCAEX): attribute $1 in object node at $2 existence $3 does not conform to existence $4 in reference model">
-			["VCACA"] = <"Error (VCACA): attribute $1 in object node at $2 cardinality $3 does not conform to cardinality $4 in reference model">
-			["WCACA"] = <"Warning (WCACA): attribute $1 in object node at $2 cardinality $3 same as in reference model">
-			["VCAM"] = <"Error (VCAM): attribute $1 at path $2 multiplicity $3 does not correspond to multiplicity $4 of attribute in reference model">
-			["WCAEX"] = <"Warning (WCAEX): attribute $1 in object node at $2 existence $3 same as in reference model">
-			["ICARMC"] = <"(info) attribute name '$1' in object node at $2 (type=$3) is a computed property in reference model">
-			["ICORMTS"] = <"(info) type '$1' of object node at $2 not does not conform to type $3 of $4.$5 in reference model but substitution allowed">
-					
-			-- validation warnings: in addition to spec, used to help archetype authors
-			["WOUC"] = <"Warning (WOUC): code $1 in ontology not used in archetype definition">
-			["WCRC"] = <"Warning (WCRC): redefinition of CONSTRAINT_REF (ac_code node) by C_CODE_PHRASE node at path $1 in child - not checked">
-		>
-		>
-		]"
 
 end
 

@@ -103,7 +103,7 @@ feature -- Comparison
 
 feature -- Modification
 
-	set_is_congruent
+	set_is_mergeable
 			-- set `is_mergeable'
 		do
 			is_mergeable := True

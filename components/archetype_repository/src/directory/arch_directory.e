@@ -57,11 +57,6 @@ inherit
 			{NONE} all
 		end
 
-	MESSAGE_BILLBOARD
-		export
-			{NONE} all
-		end
-
 create
 	make
 

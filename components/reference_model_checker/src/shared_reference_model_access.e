@@ -20,7 +20,7 @@ inherit
 			{NONE} all
 		end
 
-	MESSAGE_BILLBOARD
+	SHARED_APP_RESOURCES
 		export
 			{NONE} all
 		end

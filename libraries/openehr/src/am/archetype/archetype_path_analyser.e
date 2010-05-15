@@ -95,11 +95,13 @@ feature -- Status Report
 	 	require
 	 		Level_valid: a_level >= 0
 	 	do
-			from target.start until target.off or Result loop
+	 		-- this should only ever return True if the last node is a phantom node; so we go backwards. If I was more sure
+	 		-- of this fact mathematically, I would replace the loop with a single test on the last item
+			from target.finish until target.off or Result loop
 				if is_valid_code (target.item.object_id) and a_level <= specialisation_depth_from_code(target.item.object_id) then
 					Result := index_from_code_at_level (target.item.object_id, a_level).is_equal ("0")
 				end
-				target.forth
+				target.back
 			end
 	 	end
 

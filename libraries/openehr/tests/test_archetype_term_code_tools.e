@@ -40,19 +40,52 @@ feature -- Test routines
 			assert_equal ("at0.1", specialisation_parent_from_code_at_level ("at0.1.1", 1))
 		end
 
-	test_is_specialised_code
+	test_is_refined_code
 			-- A code is specialised if there is a non-zero code index before the last index.
 		note
-			testing:  "covers/{ARCHETYPE_TERM_CODE_TOOLS}.is_specialised_code"
+			testing:  "covers/{ARCHETYPE_TERM_CODE_TOOLS}.is_refined_code"
 		do
-			assert_equal (False, is_specialised_code ("at0000"))
-			assert_equal (False, is_specialised_code ("at0001"))
-			assert_equal (False, is_specialised_code ("at0.1"))
-			assert_equal (False, is_specialised_code ("at0.0.1"))
-			assert_equal (True, is_specialised_code ("at0000.1"))
-			assert_equal (True, is_specialised_code ("at0001.1"))
-			assert_equal (True, is_specialised_code ("at0000.0.1"))
-			assert_equal (True, is_specialised_code ("at0.1.1"))
+			assert_equal (False, is_refined_code ("at0000"))
+			assert_equal (False, is_refined_code ("at0001"))
+			assert_equal (False, is_refined_code ("at0.1"))
+			assert_equal (False, is_refined_code ("at0.0.1"))
+			assert_equal (True, is_refined_code ("at0000.1"))
+			assert_equal (True, is_refined_code ("at0001.1"))
+			assert_equal (True, is_refined_code ("at0000.0.1"))
+			assert_equal (True, is_refined_code ("at0.1.1"))
+		end
+
+	test_is_valid_code
+			-- A code is specialised if there is a non-zero code index before the last index.
+		note
+			testing:  "covers/{ARCHETYPE_TERM_CODE_TOOLS}.is_valid_code"
+		do
+			assert_equal (True, is_valid_code ("at0000"))
+			assert_equal (True, is_valid_code ("at0001"))
+			assert_equal (True, is_valid_code ("at0.1"))
+			assert_equal (True, is_valid_code ("at0.0.1"))
+			assert_equal (True, is_valid_code ("at0000.1"))
+			assert_equal (True, is_valid_code ("at0001.1"))
+			assert_equal (True, is_valid_code ("at0000.0.1"))
+			assert_equal (True, is_valid_code ("at0.1.1"))
+			assert_equal (False, is_valid_code ("at0"))
+			assert_equal (False, is_valid_code ("at0.0"))
+			assert_equal (False, is_valid_code ("at0.1.0"))
+			assert_equal (False, is_valid_code ("at0003.0"))
+			assert_equal (False, is_valid_code ("at000.0"))
+			assert_equal (True, is_valid_code ("ac0000"))
+			assert_equal (True, is_valid_code ("ac0001"))
+			assert_equal (True, is_valid_code ("ac0.1"))
+			assert_equal (True, is_valid_code ("ac0.0.1"))
+			assert_equal (True, is_valid_code ("ac0000.1"))
+			assert_equal (True, is_valid_code ("ac0001.1"))
+			assert_equal (True, is_valid_code ("ac0000.0.1"))
+			assert_equal (True, is_valid_code ("ac0.1.1"))
+			assert_equal (False, is_valid_code ("ac0"))
+			assert_equal (False, is_valid_code ("ac0.0"))
+			assert_equal (False, is_valid_code ("ac0.1.0"))
+			assert_equal (False, is_valid_code ("at0003.0"))
+			assert_equal (False, is_valid_code ("at0000.0"))
 		end
 
 end

@@ -17,7 +17,7 @@ note
 deferred class ANY_VALIDATOR
 
 inherit
-	MESSAGE_BILLBOARD
+	SHARED_MESSAGE_DB
 		export
 			{NONE} all
 		end

@@ -50,6 +50,11 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_MESSAGE_DB
+		export
+			{NONE} all
+		end
+
 	KL_SHARED_EXCEPTIONS
 	KL_SHARED_ARGUMENTS
 

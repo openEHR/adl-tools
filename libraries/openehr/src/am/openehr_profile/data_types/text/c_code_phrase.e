@@ -158,12 +158,9 @@ feature -- Status Report
 			-- True if an immediate parent of 'a_code' found in code list, assuming a_code is sepcialised
 		require
 			Code_valid: a_code /= Void and then not a_code.is_empty
-		local
-			s_code: STRING
 		do
-			if code_list /= Void and is_specialised_code (a_code) then
-				s_code := specialisation_parent_from_code (a_code)
-				Result := code_list.has (a_code)
+			if code_list /= Void and is_refined_code (a_code) then
+				Result := code_list.has (specialisation_parent_from_code (a_code))
 			end
 		end
 

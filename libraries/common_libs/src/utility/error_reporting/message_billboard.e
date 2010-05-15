@@ -19,7 +19,7 @@ note
 class MESSAGE_BILLBOARD
 
 inherit
-	SHARED_RESOURCES
+	BILLBOARD_MESSAGE_TYPES
 		export
 			{NONE} all
 		end
@@ -29,45 +29,48 @@ inherit
 			{NONE} all
 		end
 
-feature -- Access
+create
+	make
 
-	billboard_content: STRING
-			-- text of the billboard in locale current language
+feature -- Initialisation
+
+	make
 		do
-			Result := filtered_billboard_content(status_reporting_level)
+			create billboard.make (0)
+			status_reporting_level := message_type_info
 		end
 
-	billboard_count: INTEGER
-			-- return number of messages currently posted
+feature -- Access
+
+	content: STRING
+			-- text of the billboard in locale current language
 		do
-			Result := billboard.count
+			Result := filtered_content(status_reporting_level)
 		end
 
 feature -- Status Report
 
-	billboard_empty: BOOLEAN
-			-- True if there are messages posted at the moment
-		do
-			Result := billboard.is_empty
-		end
-
-	billboard_has_errors: BOOLEAN
+	has_errors: BOOLEAN
 			-- True if billboard has any error messages (note: it may be non-empty
 			-- and still have no error messages, just info messages)
 		do
-			from
-				billboard.start
-			until
-				Result or billboard.off
-			loop
+			from billboard.start until Result or billboard.off loop
 				Result := billboard.item.message_type = Message_type_error
 				billboard.forth
 			end
 		end
 
+feature -- Status Setting
+
+	set_status_reporting_level (a_level: INTEGER)
+		do
+			status_reporting_level := a_level
+			create billboard.make (0)
+		end
+
 feature -- Modify
 
-	clear_billboard
+	clear
 			-- wipe out error billboard and set is_error_posted False
 		do
 			billboard.wipe_out
@@ -83,8 +86,6 @@ feature -- Modify
 		do
 			billboard.put_front(
 				create {MESSAGE_BILLBOARD_ITEM}.make(poster_object.generator, poster_routine, id, args, Message_type_error))
-		ensure
-			Error_posted: billboard_has_errors
 		end
 
 	post_warning(poster_object: ANY; poster_routine: STRING; id: STRING; args: ARRAY[STRING])
@@ -97,8 +98,6 @@ feature -- Modify
 		do
 			billboard.put_front(
 				create {MESSAGE_BILLBOARD_ITEM}.make(poster_object.generator, poster_routine, id, args, Message_type_warning))
-		ensure
-			Warning_posted: not billboard_empty
 		end
 
 	post_info(poster_object: ANY; poster_routine: STRING; id: STRING; args: ARRAY[STRING])
@@ -111,18 +110,15 @@ feature -- Modify
 		do
 			billboard.put_front(
 				create {MESSAGE_BILLBOARD_ITEM}.make(poster_object.generator, poster_routine, id, args, Message_type_info))
-		ensure
-			Info_posted: not billboard_empty
 		end
 
 feature {NONE} -- Implementation
 
-	billboard: ARRAYED_LIST [MESSAGE_BILLBOARD_ITEM]
-		once
-			create Result.make(0)
-		end
+	status_reporting_level: INTEGER
 
-	filtered_billboard_content(at_level: INTEGER): STRING
+	billboard: ARRAYED_LIST [MESSAGE_BILLBOARD_ITEM]
+
+	filtered_content(at_level: INTEGER): STRING
 			-- text of the billboard in locale current language, filtered according to include_types
 		require
 			at_level_valid: is_valid_message_type (at_level)
@@ -130,20 +126,16 @@ feature {NONE} -- Implementation
 			bb_item: MESSAGE_BILLBOARD_ITEM
 		do
 			create Result.make(0)
-			from
-				billboard.start
-			until
-				billboard.off
-			loop
+			from billboard.start until billboard.off loop
 				bb_item := billboard.item
 				if bb_item.message_type >= at_level then
-					Result.append(billboard_item_formatted(bb_item, at_level))
+					Result.append(item_formatted(bb_item, at_level))
 				end
 				billboard.forth
 			end
 		end
 
-	billboard_item_formatted(bb_item: MESSAGE_BILLBOARD_ITEM; at_level: INTEGER): STRING
+	item_formatted(bb_item: MESSAGE_BILLBOARD_ITEM; at_level: INTEGER): STRING
 			-- format one item
 		local
 			err_str, leader, trailer: STRING

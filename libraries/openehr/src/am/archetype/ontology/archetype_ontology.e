@@ -856,8 +856,8 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 			end
 
 			-- populate term attribute names (assumed to be the same for terms and constraints)
-			if not term_codes.is_empty and term_attribute_names = Void then
-				term_attribute_names := term_definition(primary_language, term_codes.first).keys
+			if term_attribute_names = Void then
+				term_attribute_names := (create {ARCHETYPE_TERM}.make_default).keys
 			end
 
 			-- populate term and constraint bindings
@@ -975,7 +975,7 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 			parent_code: STRING
 			idx: INTEGER
 		do
-			if is_specialised_code (a_code) then
+			if is_refined_code (a_code) then
 				parent_code := specialisation_parent_from_code (a_code)
 				idx := specialised_code_tail (a_code).to_integer
 				if idx > highest_specialised_code_indexes [parent_code] then
@@ -994,7 +994,7 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 			idx: INTEGER
 			idx_string: STRING
 		do
-			if not is_specialised_code (a_code) and then specialisation_depth_from_code (a_code) = specialisation_depth then
+			if not is_refined_code (a_code) and then specialisation_depth_from_code (a_code) = specialisation_depth then
 				idx_string := index_from_code_at_level (a_code, specialisation_depth)
 				if idx_string.is_integer then
 					idx := idx_string.to_integer
@@ -1014,7 +1014,7 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 			idx: INTEGER
 			idx_string: STRING
 		do
-			if not is_specialised_code (a_code) and then specialisation_depth_from_code (a_code) = specialisation_depth then
+			if not is_refined_code (a_code) and then specialisation_depth_from_code (a_code) = specialisation_depth then
 				idx_string := index_from_code_at_level (a_code, specialisation_depth)
 				if idx_string.is_integer then
 					idx := idx_string.to_integer

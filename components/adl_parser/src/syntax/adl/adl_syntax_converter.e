@@ -22,7 +22,7 @@ inherit
 			{NONE} all
 		end
 
-	MESSAGE_BILLBOARD
+	SHARED_MESSAGE_BILLBOARD
 		export
 			{NONE} all
 		end

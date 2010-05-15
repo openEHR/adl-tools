@@ -15,7 +15,7 @@ note
 class GUI_PATH_MAP_CONTROL
 
 inherit
-	SHARED_UI_RESOURCES
+	SHARED_APP_UI_RESOURCES
 		export
 			{NONE} all
 		end

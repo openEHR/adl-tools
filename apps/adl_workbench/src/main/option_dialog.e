@@ -149,7 +149,10 @@ feature {NONE} -- Implementation
 			set_display_archetype_source (display_archetype_source_check_button.is_selected)
 			set_validation_strict(validation_strict_check_button.is_selected)
 			set_strict_validation(validation_strict_check_button.is_selected)
+
 			set_status_reporting_level (message_type_ids.item (parser_error_reporting_level_combo_box.text.as_string_8))
+			billboard.set_status_reporting_level(status_reporting_level)
+
 			set_html_export_directory (export_html_text.text.as_string_8)
 			set_use_flat_adl_version(adl_save_version_combo_box.text.as_string_8)
 
@@ -202,7 +205,7 @@ feature {NONE} -- Implementation
 
 	old_show_entire_ontology: BOOLEAN
 			-- value of show_entire_ontology prior to setting by optin dialog
-			
+
 end
 
 

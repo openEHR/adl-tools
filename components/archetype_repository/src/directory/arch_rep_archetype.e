@@ -27,6 +27,13 @@ inherit
 			is_equal
 		end
 
+	SHARED_MESSAGE_DB
+		export
+			{NONE} all
+		undefine
+			is_equal
+		end
+
 	SHARED_ADL_ENGINE
 		export
 			{NONE} all
@@ -54,13 +61,6 @@ inherit
 			make as make_item
 		redefine
 			child_type
-		end
-
-	MESSAGE_BILLBOARD
-		export
-			{NONE} all
-		undefine
-			is_equal
 		end
 
 	COMPILER_ERROR_TYPES
@@ -444,7 +444,7 @@ feature -- Commands
 		do
 			if not exception_encountered then
 				reset
-				clear_billboard
+				billboard.clear
 				set_parse_attempted
 
 				if has_rm_schema (id.rm_originator) then
@@ -492,8 +492,8 @@ feature -- Commands
 				post_error (Current, "parse_archetype", "parse_archetype_e3", Void)
 			end
 
-			compiler_status := billboard_content
-			clear_billboard
+			compiler_status := billboard.content
+			billboard.clear
 		rescue
 			post_error (Current, "parse_archetype", "report_exception", <<exception.out, exception_trace>>)
 			exception_encountered := True
@@ -568,8 +568,8 @@ feature -- Modification
 				post_error(Current, "save_differential", "save_archetype_e3", Void)
 			end
 			status.wipe_out
-			status.append(billboard_content)
-			clear_billboard
+			status.append(billboard.content)
+			billboard.clear
 			exception_encountered := False
 		ensure
 			save_succeeded or else not status.is_empty
@@ -592,8 +592,8 @@ feature -- Modification
 				post_error(Current, "save_archetype_flat", "save_archetype_e3", Void)
 			end
 			status.wipe_out
-			status.append(billboard_content)
-			clear_billboard
+			status.append(billboard.content)
+			billboard.clear
 			exception_encountered := False
 		ensure
 			save_succeeded or else not status.is_empty
@@ -626,8 +626,8 @@ feature -- Modification
 			end
 
 			status.wipe_out
-			status.append(billboard_content)
-			clear_billboard
+			status.append(billboard.content)
+			billboard.clear
 			exception_encountered := False
 		ensure
 			save_succeeded or else not status.is_empty
@@ -657,8 +657,8 @@ feature -- Modification
 			end
 
 			status.wipe_out
-			status.append(billboard_content)
-			clear_billboard
+			status.append(billboard.content)
+			billboard.clear
 			exception_encountered := False
 		ensure
 			save_succeeded or else not status.is_empty
@@ -679,8 +679,8 @@ feature -- Modification
 				post_error(Current, "serialise_differential", "serialise_archetype_e2", Void)
 			end
 			status.wipe_out
-			status.append(billboard_content)
-			clear_billboard
+			status.append(billboard.content)
+			billboard.clear
 			exception_encountered := False
 		ensure
 			(differential_text /= old differential_text) or else not status.is_empty
@@ -713,8 +713,8 @@ feature -- Modification
 			end
 
 			status.wipe_out
-			status.append(billboard_content)
-			clear_billboard
+			status.append(billboard.content)
+			billboard.clear
 			exception_encountered := False
 		ensure
 			-- FIXME: make the new archetype the target??
@@ -737,8 +737,8 @@ feature -- Modification
 				post_error(Current, "create_new_specialised_archetype", "create_new_specialised_archetype_e1", Void)
 			end
 			status.wipe_out
-			status.append(billboard_content)
-			clear_billboard
+			status.append(billboard.content)
+			billboard.clear
 			exception_encountered := False
 		rescue
 			post_error(Current, "create_new_specialised_archetype", "report_exception", <<exception.out, exception_trace>>)
