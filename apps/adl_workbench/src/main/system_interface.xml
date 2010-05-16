@@ -2521,8 +2521,7 @@ One application per line.</Tooltip>
          <Item_text2>Differential View</Item_text2>
          <Item_text3>Flat View</Item_text3>
          <Item_text4>Slots</Item_text4>
-         <Item_text5>Terminology</Item_text5>
-         <Item_text6>Statistics</Item_text6>
+         <Item_text5>Statistics</Item_text5>
         </Item_texts>
         <Item_pixmaps>
         </Item_pixmaps>
@@ -4042,6 +4041,7 @@ Resources</Text>
            <Item_text1>Node map</Item_text1>
            <Item_text2>Path analysis</Item_text2>
            <Item_text3>Source</Item_text3>
+           <Item_text4>Terminology</Item_text4>
           </Item_texts>
           <Item_pixmaps>
           </Item_pixmaps>
@@ -4053,7 +4053,8 @@ Resources</Text>
          <item type="EV_HORIZONTAL_BOX">
           <Internal_properties>
            <id>57</id>
-           <Expanded>1</Expanded>
+           <name>node_map</name>
+           <Expanded>0</Expanded>
           </Internal_properties>
           <EV_COLORIZABLE>
           </EV_COLORIZABLE>
@@ -4099,7 +4100,8 @@ Resources</Text>
           <item type="EV_VERTICAL_BOX">
            <Internal_properties>
             <id>59</id>
-            <Expanded>1</Expanded>
+            <name>node_map_contols</name>
+            <Expanded>0</Expanded>
            </Internal_properties>
            <EV_COLORIZABLE>
            </EV_COLORIZABLE>
@@ -4351,7 +4353,8 @@ Resources</Text>
          <item type="EV_HORIZONTAL_BOX">
           <Internal_properties>
            <id>126</id>
-           <Expanded>1</Expanded>
+           <name>path_analysis</name>
+           <Expanded>0</Expanded>
           </Internal_properties>
           <EV_COLORIZABLE>
           </EV_COLORIZABLE>
@@ -4580,6 +4583,139 @@ Resources</Text>
            <Is_editable>False</Is_editable>
           </EV_TEXT_COMPONENT>
          </item>
+         <item type="EV_VERTICAL_BOX">
+          <Internal_properties>
+           <id>250</id>
+           <name>terminology_area</name>
+           <Expanded>1</Expanded>
+          </Internal_properties>
+          <EV_COLORIZABLE>
+          </EV_COLORIZABLE>
+          <EV_SENSITIVE>
+          </EV_SENSITIVE>
+          <EV_WIDGET>
+          </EV_WIDGET>
+          <EV_BOX>
+           <Is_item_expanded>1</Is_item_expanded>
+          </EV_BOX>
+          <EV_PIXMAPABLE>
+          </EV_PIXMAPABLE>
+          <EV_CONTAINER>
+          </EV_CONTAINER>
+          <item type="EV_VERTICAL_SPLIT_AREA">
+           <Internal_properties>
+            <id>253</id>
+            <Expanded>1</Expanded>
+           </Internal_properties>
+           <EV_COLORIZABLE>
+           </EV_COLORIZABLE>
+           <EV_SENSITIVE>
+           </EV_SENSITIVE>
+           <EV_WIDGET>
+           </EV_WIDGET>
+           <EV_SPLIT_AREA>
+            <Is_item_expanded>1</Is_item_expanded>
+           </EV_SPLIT_AREA>
+           <EV_PIXMAPABLE>
+           </EV_PIXMAPABLE>
+           <EV_CONTAINER>
+           </EV_CONTAINER>
+           <item type="EV_FRAME">
+            <Internal_properties>
+             <id>251</id>
+             <name>term_definitions_frame</name>
+             <Expanded>1</Expanded>
+            </Internal_properties>
+            <EV_COLORIZABLE>
+            </EV_COLORIZABLE>
+            <EV_FONTABLE>
+            </EV_FONTABLE>
+            <EV_SENSITIVE>
+            </EV_SENSITIVE>
+            <EV_TEXTABLE>
+             <Text>Term definitions and bindings</Text>
+            </EV_TEXTABLE>
+            <EV_WIDGET>
+            </EV_WIDGET>
+            <EV_FRAME>
+            </EV_FRAME>
+            <EV_TEXT_ALIGNABLE>
+            </EV_TEXT_ALIGNABLE>
+            <EV_PIXMAPABLE>
+            </EV_PIXMAPABLE>
+            <EV_CONTAINER>
+            </EV_CONTAINER>
+            <item type="EV_MULTI_COLUMN_LIST">
+             <Internal_properties>
+              <id>63</id>
+              <name>ontology_term_definitions_multi_column_list</name>
+              <Expanded>0</Expanded>
+             </Internal_properties>
+             <EV_COLORIZABLE>
+              <Background_color>
+               <Constant>editable_colour</Constant>
+              </Background_color>
+              <Foreground_color>064000000</Foreground_color>
+             </EV_COLORIZABLE>
+             <EV_SENSITIVE>
+             </EV_SENSITIVE>
+             <EV_TOOLTIPABLE>
+             </EV_TOOLTIPABLE>
+             <EV_WIDGET>
+              <Minimum_width>1</Minimum_width>
+              <Minimum_height>1</Minimum_height>
+             </EV_WIDGET>
+            </item>
+           </item>
+           <item type="EV_FRAME">
+            <Internal_properties>
+             <id>252</id>
+             <name>constraint_definitions_frame</name>
+             <Expanded>1</Expanded>
+            </Internal_properties>
+            <EV_COLORIZABLE>
+            </EV_COLORIZABLE>
+            <EV_FONTABLE>
+            </EV_FONTABLE>
+            <EV_SENSITIVE>
+            </EV_SENSITIVE>
+            <EV_TEXTABLE>
+             <Text>Constraint definitions and bindings</Text>
+            </EV_TEXTABLE>
+            <EV_WIDGET>
+            </EV_WIDGET>
+            <EV_FRAME>
+            </EV_FRAME>
+            <EV_TEXT_ALIGNABLE>
+            </EV_TEXT_ALIGNABLE>
+            <EV_PIXMAPABLE>
+            </EV_PIXMAPABLE>
+            <EV_CONTAINER>
+            </EV_CONTAINER>
+            <item type="EV_MULTI_COLUMN_LIST">
+             <Internal_properties>
+              <id>64</id>
+              <name>ontology_constraint_definitions_multi_column_list</name>
+              <Expanded>0</Expanded>
+             </Internal_properties>
+             <EV_COLORIZABLE>
+              <Background_color>
+               <Constant>editable_colour</Constant>
+              </Background_color>
+              <Foreground_color>064000000</Foreground_color>
+             </EV_COLORIZABLE>
+             <EV_SENSITIVE>
+             </EV_SENSITIVE>
+             <EV_TOOLTIPABLE>
+             </EV_TOOLTIPABLE>
+             <EV_WIDGET>
+              <Minimum_width>1</Minimum_width>
+              <Minimum_height>1</Minimum_height>
+             </EV_WIDGET>
+            </item>
+           </item>
+          </item>
+         </item>
         </item>
        </item>
        <item type="EV_VERTICAL_BOX">
@@ -4752,139 +4888,6 @@ Resources</Text>
            <EV_TOOLTIPABLE>
            </EV_TOOLTIPABLE>
            <EV_WIDGET>
-           </EV_WIDGET>
-          </item>
-         </item>
-        </item>
-       </item>
-       <item type="EV_VERTICAL_BOX">
-        <Internal_properties>
-         <id>250</id>
-         <name>terminology_area</name>
-         <Expanded>1</Expanded>
-        </Internal_properties>
-        <EV_COLORIZABLE>
-        </EV_COLORIZABLE>
-        <EV_SENSITIVE>
-        </EV_SENSITIVE>
-        <EV_WIDGET>
-        </EV_WIDGET>
-        <EV_BOX>
-         <Is_item_expanded>1</Is_item_expanded>
-        </EV_BOX>
-        <EV_PIXMAPABLE>
-        </EV_PIXMAPABLE>
-        <EV_CONTAINER>
-        </EV_CONTAINER>
-        <item type="EV_VERTICAL_SPLIT_AREA">
-         <Internal_properties>
-          <id>253</id>
-          <Expanded>1</Expanded>
-         </Internal_properties>
-         <EV_COLORIZABLE>
-         </EV_COLORIZABLE>
-         <EV_SENSITIVE>
-         </EV_SENSITIVE>
-         <EV_WIDGET>
-         </EV_WIDGET>
-         <EV_SPLIT_AREA>
-          <Is_item_expanded>1</Is_item_expanded>
-         </EV_SPLIT_AREA>
-         <EV_PIXMAPABLE>
-         </EV_PIXMAPABLE>
-         <EV_CONTAINER>
-         </EV_CONTAINER>
-         <item type="EV_FRAME">
-          <Internal_properties>
-           <id>251</id>
-           <name>term_definitions_frame</name>
-           <Expanded>1</Expanded>
-          </Internal_properties>
-          <EV_COLORIZABLE>
-          </EV_COLORIZABLE>
-          <EV_FONTABLE>
-          </EV_FONTABLE>
-          <EV_SENSITIVE>
-          </EV_SENSITIVE>
-          <EV_TEXTABLE>
-           <Text>Term definitions and bindings</Text>
-          </EV_TEXTABLE>
-          <EV_WIDGET>
-          </EV_WIDGET>
-          <EV_FRAME>
-          </EV_FRAME>
-          <EV_TEXT_ALIGNABLE>
-          </EV_TEXT_ALIGNABLE>
-          <EV_PIXMAPABLE>
-          </EV_PIXMAPABLE>
-          <EV_CONTAINER>
-          </EV_CONTAINER>
-          <item type="EV_MULTI_COLUMN_LIST">
-           <Internal_properties>
-            <id>63</id>
-            <name>ontology_term_definitions_multi_column_list</name>
-            <Expanded>0</Expanded>
-           </Internal_properties>
-           <EV_COLORIZABLE>
-            <Background_color>
-             <Constant>editable_colour</Constant>
-            </Background_color>
-            <Foreground_color>064000000</Foreground_color>
-           </EV_COLORIZABLE>
-           <EV_SENSITIVE>
-           </EV_SENSITIVE>
-           <EV_TOOLTIPABLE>
-           </EV_TOOLTIPABLE>
-           <EV_WIDGET>
-            <Minimum_width>1</Minimum_width>
-            <Minimum_height>1</Minimum_height>
-           </EV_WIDGET>
-          </item>
-         </item>
-         <item type="EV_FRAME">
-          <Internal_properties>
-           <id>252</id>
-           <name>constraint_definitions_frame</name>
-           <Expanded>1</Expanded>
-          </Internal_properties>
-          <EV_COLORIZABLE>
-          </EV_COLORIZABLE>
-          <EV_FONTABLE>
-          </EV_FONTABLE>
-          <EV_SENSITIVE>
-          </EV_SENSITIVE>
-          <EV_TEXTABLE>
-           <Text>Constraint definitions and bindings</Text>
-          </EV_TEXTABLE>
-          <EV_WIDGET>
-          </EV_WIDGET>
-          <EV_FRAME>
-          </EV_FRAME>
-          <EV_TEXT_ALIGNABLE>
-          </EV_TEXT_ALIGNABLE>
-          <EV_PIXMAPABLE>
-          </EV_PIXMAPABLE>
-          <EV_CONTAINER>
-          </EV_CONTAINER>
-          <item type="EV_MULTI_COLUMN_LIST">
-           <Internal_properties>
-            <id>64</id>
-            <name>ontology_constraint_definitions_multi_column_list</name>
-            <Expanded>0</Expanded>
-           </Internal_properties>
-           <EV_COLORIZABLE>
-            <Background_color>
-             <Constant>editable_colour</Constant>
-            </Background_color>
-            <Foreground_color>064000000</Foreground_color>
-           </EV_COLORIZABLE>
-           <EV_SENSITIVE>
-           </EV_SENSITIVE>
-           <EV_TOOLTIPABLE>
-           </EV_TOOLTIPABLE>
-           <EV_WIDGET>
-            <Minimum_width>1</Minimum_width>
-            <Minimum_height>1</Minimum_height>
            </EV_WIDGET>
           </item>
          </item>

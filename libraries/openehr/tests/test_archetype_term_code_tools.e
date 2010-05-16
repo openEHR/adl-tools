@@ -5,7 +5,7 @@ note
 
 	author:      "Peter Gummer"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2009 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2009-2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -108,7 +108,7 @@ end
 --| The Original Code is test_archetype_term_code_tools.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2009
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):
