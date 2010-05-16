@@ -60,17 +60,13 @@ feature -- Initialisation
 			in_differential_mode := True
 
 			in_technical_mode := show_technical_view
-			if in_technical_mode then
+			in_reference_model_mode := show_reference_model_view
+			if in_reference_model_mode then
+				gui.node_map_reference_model_radio_button.enable_select
+			elseif in_technical_mode then
 				gui.node_map_technical_radio_button.enable_select
 			else
 				gui.node_map_domain_radio_button.enable_select
-			end
-
-			in_reference_model_mode := show_reference_model_view
-			if in_reference_model_mode then
-				gui.node_map_reference_model_check_button.enable_select
-			else
-				gui.node_map_reference_model_check_button.disable_select
 			end
 		ensure
 			gui_set: gui = a_main_window
@@ -96,37 +92,42 @@ feature -- Status Report
 
 feature -- Commands
 
-	set_technical_mode
-			-- Set `in_technical_mode' on.
-		do
-			in_technical_mode := True
-			set_show_technical_view (True)
-			repopulate
-		end
-
 	set_domain_mode
-			-- Set `in_technical_mode' off.
+			-- View only domain names; Set `in_technical_mode' off.
 		do
 			in_technical_mode := False
 			set_show_technical_view (False)
+
+			in_reference_model_mode_changed := in_reference_model_mode
+			in_reference_model_mode := False
+			set_show_reference_model_view (False)
+
+			repopulate
+		end
+
+	set_technical_mode
+			-- View domain names + RM classes; Set `in_technical_mode' on.
+		do
+			in_technical_mode := True
+			set_show_technical_view (True)
+
+			in_reference_model_mode_changed := in_reference_model_mode
+			in_reference_model_mode := False
+			set_show_reference_model_view (False)
+
 			repopulate
 		end
 
 	set_reference_model_mode
-			-- Set `in_reference_model_mode' on.
+			-- View domain names + RM classes + other RM attributes; Set `in_technical_mode' on, `in_reference_model_mode' on.
 		do
+			in_technical_mode := True
+			set_show_technical_view (True)
+
 			in_reference_model_mode_changed := not in_reference_model_mode
 			in_reference_model_mode := True
 			set_show_reference_model_view (True)
-			repopulate
-		end
 
-	set_no_reference_model_mode
-			-- Set `in_reference_model_mode' off.
-		do
-			in_reference_model_mode_changed := in_reference_model_mode
-			in_reference_model_mode := False
-			set_show_reference_model_view (False)
 			repopulate
 		end
 
@@ -1164,6 +1165,7 @@ feature {NONE} -- Implementation
 invariant
 	gui_attached: gui /= Void
 	ontology_has_language: arch_dir.has_validated_selected_archetype implies ontology.has_language (current_language)
+	Three_value_logic: in_reference_model_mode implies in_technical_mode
 
 end
 

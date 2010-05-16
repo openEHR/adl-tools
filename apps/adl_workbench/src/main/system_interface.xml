@@ -4054,7 +4054,7 @@ Resources</Text>
           <Internal_properties>
            <id>57</id>
            <name>node_map</name>
-           <Expanded>0</Expanded>
+           <Expanded>1</Expanded>
           </Internal_properties>
           <EV_COLORIZABLE>
           </EV_COLORIZABLE>
@@ -4101,7 +4101,7 @@ Resources</Text>
            <Internal_properties>
             <id>59</id>
             <name>node_map_contols</name>
-            <Expanded>0</Expanded>
+            <Expanded>1</Expanded>
            </Internal_properties>
            <EV_COLORIZABLE>
            </EV_COLORIZABLE>
@@ -4109,11 +4109,15 @@ Resources</Text>
            </EV_SENSITIVE>
            <EV_WIDGET>
             <Minimum_width>140</Minimum_width>
-            <Minimum_height>120</Minimum_height>
+            <Minimum_height>170</Minimum_height>
            </EV_WIDGET>
            <EV_BOX>
-            <Padding>4</Padding>
-            <Border>10</Border>
+            <Padding>
+             <Constant>padding_width</Constant>
+            </Padding>
+            <Border>
+             <Constant>border_width</Constant>
+            </Border>
             <Is_item_expanded>00000</Is_item_expanded>
            </EV_BOX>
            <EV_PIXMAPABLE>
@@ -4213,9 +4217,27 @@ Resources</Text>
              <Event>select_actions EV_BUTTON_ACTION_SEQUENCES on_node_map_shrink_tree_one_level</Event>
             </Events>
            </item>
+           <item type="EV_CELL">
+            <Internal_properties>
+             <id>325</id>
+             <Expanded>0</Expanded>
+            </Internal_properties>
+            <EV_COLORIZABLE>
+            </EV_COLORIZABLE>
+            <EV_SENSITIVE>
+            </EV_SENSITIVE>
+            <EV_WIDGET>
+             <Minimum_height>20</Minimum_height>
+            </EV_WIDGET>
+            <EV_PIXMAPABLE>
+            </EV_PIXMAPABLE>
+            <EV_CONTAINER>
+            </EV_CONTAINER>
+           </item>
            <item type="EV_FRAME">
             <Internal_properties>
              <id>163</id>
+             <name>rm_visibility_controls</name>
              <Expanded>1</Expanded>
             </Internal_properties>
             <EV_COLORIZABLE>
@@ -4225,10 +4247,11 @@ Resources</Text>
             <EV_SENSITIVE>
             </EV_SENSITIVE>
             <EV_TEXTABLE>
+             <Text>RM visibility</Text>
             </EV_TEXTABLE>
             <EV_WIDGET>
              <Minimum_width>100</Minimum_width>
-             <Minimum_height>64</Minimum_height>
+             <Minimum_height>95</Minimum_height>
             </EV_WIDGET>
             <EV_FRAME>
             </EV_FRAME>
@@ -4248,13 +4271,13 @@ Resources</Text>
              <EV_SENSITIVE>
              </EV_SENSITIVE>
              <EV_WIDGET>
-              <Minimum_height>60</Minimum_height>
+              <Minimum_height>70</Minimum_height>
              </EV_WIDGET>
              <EV_BOX>
               <Border>
                <Constant>border_width</Constant>
               </Border>
-              <Is_item_expanded>11</Is_item_expanded>
+              <Is_item_expanded>111</Is_item_expanded>
              </EV_BOX>
              <EV_PIXMAPABLE>
              </EV_PIXMAPABLE>
@@ -4273,10 +4296,10 @@ Resources</Text>
               <EV_SENSITIVE>
               </EV_SENSITIVE>
               <EV_TEXTABLE>
-               <Text>Domain</Text>
+               <Text>Hide</Text>
               </EV_TEXTABLE>
               <EV_TOOLTIPABLE>
-               <Tooltip>Hide technical details of the Node Map</Tooltip>
+               <Tooltip>Hide RM details of the archetyped nodes</Tooltip>
               </EV_TOOLTIPABLE>
               <EV_WIDGET>
               </EV_WIDGET>
@@ -4301,10 +4324,10 @@ Resources</Text>
               <EV_SENSITIVE>
               </EV_SENSITIVE>
               <EV_TEXTABLE>
-               <Text>Technical</Text>
+               <Text>+ class names</Text>
               </EV_TEXTABLE>
               <EV_TOOLTIPABLE>
-               <Tooltip>Display technical details of the Node Map</Tooltip>
+               <Tooltip>Display RM classe names of archetyped nodes</Tooltip>
               </EV_TOOLTIPABLE>
               <EV_WIDGET>
               </EV_WIDGET>
@@ -4316,37 +4339,37 @@ Resources</Text>
                <Event>select_actions EV_BUTTON_ACTION_SEQUENCES on_node_map_technical_selected</Event>
               </Events>
              </item>
+             <item type="EV_RADIO_BUTTON">
+              <Internal_properties>
+               <id>323</id>
+               <name>node_map_reference_model_radio_button</name>
+               <Expanded>0</Expanded>
+              </Internal_properties>
+              <EV_COLORIZABLE>
+              </EV_COLORIZABLE>
+              <EV_FONTABLE>
+              </EV_FONTABLE>
+              <EV_SENSITIVE>
+              </EV_SENSITIVE>
+              <EV_TEXTABLE>
+               <Text>+ class properties</Text>
+              </EV_TEXTABLE>
+              <EV_TOOLTIPABLE>
+               <Tooltip>Show non-archetyped RM properties</Tooltip>
+              </EV_TOOLTIPABLE>
+              <EV_WIDGET>
+               <Minimum_width>60</Minimum_width>
+               <Minimum_height>23</Minimum_height>
+              </EV_WIDGET>
+              <EV_TEXT_ALIGNABLE>
+              </EV_TEXT_ALIGNABLE>
+              <EV_PIXMAPABLE>
+              </EV_PIXMAPABLE>
+              <Events>
+               <Event>select_actions EV_BUTTON_ACTION_SEQUENCES on_node_map_reference_model_selected</Event>
+              </Events>
+             </item>
             </item>
-           </item>
-           <item type="EV_CHECK_BUTTON">
-            <Internal_properties>
-             <id>238</id>
-             <name>node_map_reference_model_check_button</name>
-             <Expanded>0</Expanded>
-            </Internal_properties>
-            <EV_COLORIZABLE>
-            </EV_COLORIZABLE>
-            <EV_FONTABLE>
-            </EV_FONTABLE>
-            <EV_DESELECTABLE>
-            </EV_DESELECTABLE>
-            <EV_SENSITIVE>
-            </EV_SENSITIVE>
-            <EV_TEXTABLE>
-             <Text>RM visible</Text>
-            </EV_TEXTABLE>
-            <EV_TOOLTIPABLE>
-             <Tooltip>Make non-archetyped reference model attrbutes visible in node tree</Tooltip>
-            </EV_TOOLTIPABLE>
-            <EV_WIDGET>
-            </EV_WIDGET>
-            <EV_TEXT_ALIGNABLE>
-            </EV_TEXT_ALIGNABLE>
-            <EV_PIXMAPABLE>
-            </EV_PIXMAPABLE>
-            <Events>
-             <Event>select_actions EV_BUTTON_ACTION_SEQUENCES on_node_map_reference_model_selected</Event>
-            </Events>
            </item>
           </item>
          </item>

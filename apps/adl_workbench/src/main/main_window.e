@@ -811,11 +811,7 @@ feature -- Archetype commands
 			-- turn on or off the display of reference model details in `node_map_tree'.
 		do
 			if arch_dir.has_validated_selected_archetype then
-				if node_map_reference_model_check_button.is_selected then
-					node_map_control.set_reference_model_mode
-				else
-					node_map_control.set_no_reference_model_mode
-				end
+				node_map_control.set_reference_model_mode
 			end
 		end
 
@@ -1079,14 +1075,14 @@ feature {NONE} -- Implementation
 			ara := arch_dir.selected_archetype
 			if attached ara then
 				if flat then
-					text := ara.flat_text
-					if text = Void then
-						text := ara.legacy_flat_text
-					end
-					if text = Void then
-						source_rich_text.set_text (create_message_line ("compiler_no_flat_text", <<>>))
-					else
+					if ara.is_valid then
+						text := ara.flat_text
 						populate_source_text_with_line_numbers (text)
+					elseif ara.has_legacy_flat_file then
+						text := ara.legacy_flat_text
+						populate_source_text_with_line_numbers (text)
+					else -- not valid, but derived from differential source
+						source_rich_text.set_text (create_message_line ("compiler_no_flat_text", <<>>))
 					end
 				else
 					text := ara.differential_text

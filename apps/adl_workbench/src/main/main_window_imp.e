@@ -166,18 +166,19 @@ feature {NONE}-- Initialization
 			create node_map_expand_button
 			create node_map_expand_one_button
 			create node_map_collapse_one_button
-			create l_ev_frame_1
+			create l_ev_cell_1
+			create rm_visibility_controls
 			create l_ev_vertical_box_7
 			create node_map_domain_radio_button
 			create node_map_technical_radio_button
-			create node_map_reference_model_check_button
+			create node_map_reference_model_radio_button
 			create path_analysis
 			create path_analysis_multi_column_list
 			create l_ev_vertical_box_8
-			create l_ev_frame_2
+			create l_ev_frame_1
 			create l_ev_vertical_box_9
 			create path_analysis_row_filter_combo_box
-			create l_ev_frame_3
+			create l_ev_frame_2
 			create l_ev_vertical_box_10
 			create path_analysis_column_view_checkable_list
 			create source_rich_text
@@ -189,10 +190,10 @@ feature {NONE}-- Initialization
 			create ontology_constraint_definitions_multi_column_list
 			create flat_view_box
 			create slots_box
-			create l_ev_frame_4
+			create l_ev_frame_3
 			create l_ev_vertical_box_11
 			create slots_tree
-			create l_ev_frame_5
+			create l_ev_frame_4
 			create l_ev_vertical_box_12
 			create used_by_tree
 			create statistics_box
@@ -363,19 +364,20 @@ feature {NONE}-- Initialization
 			node_map_contols.extend (node_map_expand_button)
 			node_map_contols.extend (node_map_expand_one_button)
 			node_map_contols.extend (node_map_collapse_one_button)
-			node_map_contols.extend (l_ev_frame_1)
-			l_ev_frame_1.extend (l_ev_vertical_box_7)
+			node_map_contols.extend (l_ev_cell_1)
+			node_map_contols.extend (rm_visibility_controls)
+			rm_visibility_controls.extend (l_ev_vertical_box_7)
 			l_ev_vertical_box_7.extend (node_map_domain_radio_button)
 			l_ev_vertical_box_7.extend (node_map_technical_radio_button)
-			node_map_contols.extend (node_map_reference_model_check_button)
+			l_ev_vertical_box_7.extend (node_map_reference_model_radio_button)
 			definition_notebook.extend (path_analysis)
 			path_analysis.extend (path_analysis_multi_column_list)
 			path_analysis.extend (l_ev_vertical_box_8)
-			l_ev_vertical_box_8.extend (l_ev_frame_2)
-			l_ev_frame_2.extend (l_ev_vertical_box_9)
+			l_ev_vertical_box_8.extend (l_ev_frame_1)
+			l_ev_frame_1.extend (l_ev_vertical_box_9)
 			l_ev_vertical_box_9.extend (path_analysis_row_filter_combo_box)
-			l_ev_vertical_box_8.extend (l_ev_frame_3)
-			l_ev_frame_3.extend (l_ev_vertical_box_10)
+			l_ev_vertical_box_8.extend (l_ev_frame_2)
+			l_ev_frame_2.extend (l_ev_vertical_box_10)
 			l_ev_vertical_box_10.extend (path_analysis_column_view_checkable_list)
 			definition_notebook.extend (source_rich_text)
 			definition_notebook.extend (terminology_area)
@@ -386,11 +388,11 @@ feature {NONE}-- Initialization
 			constraint_definitions_frame.extend (ontology_constraint_definitions_multi_column_list)
 			archetype_notebook.extend (flat_view_box)
 			archetype_notebook.extend (slots_box)
-			slots_box.extend (l_ev_frame_4)
-			l_ev_frame_4.extend (l_ev_vertical_box_11)
+			slots_box.extend (l_ev_frame_3)
+			l_ev_frame_3.extend (l_ev_vertical_box_11)
 			l_ev_vertical_box_11.extend (slots_tree)
-			slots_box.extend (l_ev_frame_5)
-			l_ev_frame_5.extend (l_ev_vertical_box_12)
+			slots_box.extend (l_ev_frame_4)
+			l_ev_frame_4.extend (l_ev_vertical_box_12)
 			l_ev_vertical_box_12.extend (used_by_tree)
 			archetype_notebook.extend (statistics_box)
 			statistics_box.extend (l_ev_vertical_box_13)
@@ -778,14 +780,16 @@ feature {NONE}-- Initialization
 			integer_constant_retrieval_functions.extend (agent arch_tree_min_width)
 			node_map_tree.set_minimum_height (60)
 			node_map_contols.set_minimum_width (140)
-			node_map_contols.set_minimum_height (120)
-			node_map_contols.set_padding (4)
-			node_map_contols.set_border_width (10)
+			node_map_contols.set_minimum_height (170)
+			integer_constant_set_procedures.extend (agent node_map_contols.set_padding (?))
+			integer_constant_retrieval_functions.extend (agent padding_width)
+			integer_constant_set_procedures.extend (agent node_map_contols.set_border_width (?))
+			integer_constant_retrieval_functions.extend (agent border_width)
 			node_map_contols.disable_item_expand (node_map_expand_button)
 			node_map_contols.disable_item_expand (node_map_expand_one_button)
 			node_map_contols.disable_item_expand (node_map_collapse_one_button)
-			node_map_contols.disable_item_expand (l_ev_frame_1)
-			node_map_contols.disable_item_expand (node_map_reference_model_check_button)
+			node_map_contols.disable_item_expand (l_ev_cell_1)
+			node_map_contols.disable_item_expand (rm_visibility_controls)
 			node_map_expand_button.set_text ("Expand All")
 			node_map_expand_button.set_tooltip ("Completely expand or collapse the Node Map")
 			integer_constant_set_procedures.extend (agent node_map_expand_button.set_minimum_width (?))
@@ -798,17 +802,21 @@ feature {NONE}-- Initialization
 			node_map_collapse_one_button.set_tooltip ("Collapse one level of the Node Map")
 			integer_constant_set_procedures.extend (agent node_map_collapse_one_button.set_minimum_width (?))
 			integer_constant_retrieval_functions.extend (agent tree_control_panel_width)
-			l_ev_frame_1.set_minimum_width (100)
-			l_ev_frame_1.set_minimum_height (64)
-			l_ev_vertical_box_7.set_minimum_height (60)
+			l_ev_cell_1.set_minimum_height (20)
+			rm_visibility_controls.set_text ("RM visibility")
+			rm_visibility_controls.set_minimum_width (100)
+			rm_visibility_controls.set_minimum_height (95)
+			l_ev_vertical_box_7.set_minimum_height (70)
 			integer_constant_set_procedures.extend (agent l_ev_vertical_box_7.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
-			node_map_domain_radio_button.set_text ("Domain")
-			node_map_domain_radio_button.set_tooltip ("Hide technical details of the Node Map")
-			node_map_technical_radio_button.set_text ("Technical")
-			node_map_technical_radio_button.set_tooltip ("Display technical details of the Node Map")
-			node_map_reference_model_check_button.set_text ("RM visible")
-			node_map_reference_model_check_button.set_tooltip ("Make non-archetyped reference model attrbutes visible in node tree")
+			node_map_domain_radio_button.set_text ("Hide")
+			node_map_domain_radio_button.set_tooltip ("Hide RM details of the archetyped nodes")
+			node_map_technical_radio_button.set_text ("+ class names")
+			node_map_technical_radio_button.set_tooltip ("Display RM classe names of archetyped nodes")
+			node_map_reference_model_radio_button.set_text ("+ class properties")
+			node_map_reference_model_radio_button.set_tooltip ("Show non-archetyped RM properties")
+			node_map_reference_model_radio_button.set_minimum_width (60)
+			node_map_reference_model_radio_button.set_minimum_height (23)
 			path_analysis.set_minimum_width (140)
 			path_analysis.set_minimum_height (93)
 			path_analysis.disable_item_expand (l_ev_vertical_box_8)
@@ -820,16 +828,16 @@ feature {NONE}-- Initialization
 			l_ev_vertical_box_8.set_minimum_height (93)
 			l_ev_vertical_box_8.set_padding (3)
 			l_ev_vertical_box_8.set_border_width (4)
+			l_ev_vertical_box_8.disable_item_expand (l_ev_frame_1)
 			l_ev_vertical_box_8.disable_item_expand (l_ev_frame_2)
-			l_ev_vertical_box_8.disable_item_expand (l_ev_frame_3)
-			l_ev_frame_2.set_text ("Row Filter")
+			l_ev_frame_1.set_text ("Row Filter")
 			integer_constant_set_procedures.extend (agent l_ev_vertical_box_9.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
 			path_analysis_row_filter_combo_box.set_tooltip ("Filter which rows are shown in the Path Analysis")
 			path_analysis_row_filter_combo_box.set_minimum_width (80)
 			path_analysis_row_filter_combo_box.disable_edit
-			l_ev_frame_3.set_text ("Column View")
-			l_ev_frame_3.set_minimum_height (150)
+			l_ev_frame_2.set_text ("Column View")
+			l_ev_frame_2.set_minimum_height (150)
 			integer_constant_set_procedures.extend (agent l_ev_vertical_box_10.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
 			path_analysis_column_view_checkable_list.set_tooltip ("Choose view of columns in the Path Analysis")
@@ -858,10 +866,10 @@ feature {NONE}-- Initialization
 			integer_constant_retrieval_functions.extend (agent padding_width)
 			integer_constant_set_procedures.extend (agent slots_box.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
-			l_ev_frame_4.set_text ("Archetype IDs that match slots in the current archetype")
+			l_ev_frame_3.set_text ("Archetype IDs that match slots in the current archetype")
 			integer_constant_set_procedures.extend (agent l_ev_vertical_box_11.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
-			l_ev_frame_5.set_text ("Archetypes that have slots matching the current archetype ID")
+			l_ev_frame_4.set_text ("Archetypes that have slots matching the current archetype ID")
 			integer_constant_set_procedures.extend (agent l_ev_vertical_box_12.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
 			statistics_box.set_border_width (15)
@@ -1029,7 +1037,7 @@ feature {NONE}-- Initialization
 			node_map_collapse_one_button.select_actions.extend (agent on_node_map_shrink_tree_one_level)
 			node_map_domain_radio_button.select_actions.extend (agent on_node_map_domain_selected)
 			node_map_technical_radio_button.select_actions.extend (agent on_node_map_technical_selected)
-			node_map_reference_model_check_button.select_actions.extend (agent on_node_map_reference_model_selected)
+			node_map_reference_model_radio_button.select_actions.extend (agent on_node_map_reference_model_selected)
 			path_analysis_row_filter_combo_box.select_actions.extend (agent path_row_set_filter)
 			path_analysis_column_view_checkable_list.check_actions.extend (agent path_column_select (?))
 			path_analysis_column_view_checkable_list.uncheck_actions.extend (agent path_column_unselect (?))
@@ -1053,17 +1061,18 @@ feature -- Access
 
 	language_combo, path_analysis_row_filter_combo_box: EV_COMBO_BOX
 	menu: EV_MENU_BAR
+	l_ev_cell_1: EV_CELL
 	node_map_domain_radio_button,
-	node_map_technical_radio_button: EV_RADIO_BUTTON
-	arch_translations_accreditation_text, arch_desc_purpose_text,
-	arch_desc_use_text, arch_desc_misuse_text, arch_desc_copyright_text, parser_status_area,
-	test_status_area: EV_TEXT
-	total_split_area, l_ev_vertical_split_area_1, test_split_area: EV_VERTICAL_SPLIT_AREA
-	archetype_file_tree,
-	node_map_tree, slots_tree, used_by_tree: EV_TREE
-	arch_desc_auth_orig_auth_mlist, arch_translations_author_mlist,
-	arch_translations_other_details_mlist, arch_desc_resource_orig_res_mlist, path_analysis_multi_column_list,
-	ontology_term_definitions_multi_column_list, ontology_constraint_definitions_multi_column_list: EV_MULTI_COLUMN_LIST
+	node_map_technical_radio_button, node_map_reference_model_radio_button: EV_RADIO_BUTTON
+	arch_translations_accreditation_text,
+	arch_desc_purpose_text, arch_desc_use_text, arch_desc_misuse_text, arch_desc_copyright_text,
+	parser_status_area, test_status_area: EV_TEXT
+	total_split_area, l_ev_vertical_split_area_1,
+	test_split_area: EV_VERTICAL_SPLIT_AREA
+	archetype_file_tree, node_map_tree, slots_tree, used_by_tree: EV_TREE
+	arch_desc_auth_orig_auth_mlist,
+	arch_translations_author_mlist, arch_translations_other_details_mlist, arch_desc_resource_orig_res_mlist,
+	path_analysis_multi_column_list, ontology_term_definitions_multi_column_list, ontology_constraint_definitions_multi_column_list: EV_MULTI_COLUMN_LIST
 	l_ev_tool_bar_separator_1,
 	l_ev_tool_bar_separator_2, l_ev_tool_bar_separator_3: EV_TOOL_BAR_SEPARATOR
 	viewer_vbox, description_box,
@@ -1082,12 +1091,12 @@ feature -- Access
 	l_ev_horizontal_box_8, arch_desc_copyright_hbox, node_map, path_analysis, statistics_box,
 	l_ev_horizontal_box_9, l_ev_horizontal_box_10, l_ev_horizontal_box_11, l_ev_horizontal_box_12,
 	l_ev_horizontal_box_13, l_ev_horizontal_box_14, l_ev_horizontal_box_15: EV_HORIZONTAL_BOX
-	node_map_reference_model_check_button,
-	remove_unused_codes_rb, save_adlf_check_button, save_adls_check_button: EV_CHECK_BUTTON
-	archetype_id,
-	adl_version_text, arch_desc_status_text, arch_desc_original_language_text, arch_desc_resource_package_text,
-	arch_total_count_tf, arch_spec_count_tf, arch_slotted_count_tf, arch_used_by_count_tf,
-	arch_bad_count_tf, arch_test_processed_count: EV_TEXT_FIELD
+	remove_unused_codes_rb,
+	save_adlf_check_button, save_adls_check_button: EV_CHECK_BUTTON
+	archetype_id, adl_version_text, arch_desc_status_text,
+	arch_desc_original_language_text, arch_desc_resource_package_text, arch_total_count_tf,
+	arch_spec_count_tf, arch_slotted_count_tf, arch_used_by_count_tf, arch_bad_count_tf,
+	arch_test_processed_count: EV_TEXT_FIELD
 	compiler_output_grid, archetype_test_tree_grid: EV_GRID
 	node_map_expand_button,
 	node_map_expand_one_button, node_map_collapse_one_button, arch_test_tree_toggle_expand_bn,
@@ -1116,8 +1125,8 @@ feature -- Access
 	l_ev_horizontal_separator_1: EV_HORIZONTAL_SEPARATOR
 	arch_desc_auth_frame,
 	term_frame, arch_translations_frame, arch_desc_details_frame, arch_desc_resource_frame,
-	l_ev_frame_1, l_ev_frame_2, l_ev_frame_3, term_definitions_frame, constraint_definitions_frame,
-	l_ev_frame_4, l_ev_frame_5: EV_FRAME
+	rm_visibility_controls, l_ev_frame_1, l_ev_frame_2, term_definitions_frame, constraint_definitions_frame,
+	l_ev_frame_3, l_ev_frame_4: EV_FRAME
 	main_notebook, archetype_notebook, definition_notebook,
 	status_notebook: EV_NOTEBOOK
 	l_ev_menu_separator_1, l_ev_menu_separator_2, l_ev_menu_separator_3,
@@ -1320,7 +1329,7 @@ feature {NONE} -- Implementation
 		end
 	
 	on_node_map_reference_model_selected is
-			-- Called by `select_actions' of `node_map_reference_model_check_button'.
+			-- Called by `select_actions' of `node_map_reference_model_radio_button'.
 		deferred
 		end
 	

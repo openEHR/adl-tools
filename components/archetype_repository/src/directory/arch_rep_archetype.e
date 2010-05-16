@@ -884,15 +884,20 @@ feature {NONE} -- Implementation
 
 invariant
 	repository_attached: file_repository /= Void
-	full_path_attached: full_path /= Void
-	full_path_not_empty: not full_path.is_empty
 	compiler_status_attached: compiler_status /= Void
+
+	full_path_attached: full_path /= Void and not full_path.is_empty
 	flat_text_timestamp_natural: legacy_flat_text_timestamp >= 0
 	differential_text_timestamp_natural: differential_text_timestamp >= 0
 	differential_path_attached: differential_path /= Void
 	flat_path_attached: legacy_flat_path /= Void
 	full_is_flat_or_differential: full_path = legacy_flat_path xor full_path = differential_path
-	differential_attached_if_valid: is_valid implies differential_archetype /= Void
+
+	differential_text_attached_if_valid: is_valid implies differential_text /= Void
+	differential_archetype_attached_if_valid: is_valid implies differential_archetype /= Void
+	flat_text_attached_if_valid: is_valid implies flat_text /= Void
+	flat_archetype_attached_if_valid: is_valid implies flat_archetype /= Void
+
 	parent_existence: specialisation_parent /= Void implies is_specialised
 	parent_validity: specialisation_parent /= Void implies specialisation_parent.id.semantic_id.is_equal (id.semantic_parent_id)
 	slot_id_index_valid: slot_id_index /= Void implies not slot_id_index.is_empty
