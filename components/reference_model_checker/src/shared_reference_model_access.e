@@ -101,6 +101,8 @@ feature {NONE} -- Implementation
 							else
 								Result.put (dmp.last_parse_content, schema_name)
 							end
+						else
+							post_warning (Current, "rm_schemas", "model_access_w4", <<schema_path, dmp.last_parse_fail_reason>>)
 						end
 					end
 					dir.readentry

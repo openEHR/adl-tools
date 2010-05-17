@@ -68,37 +68,48 @@ feature -- Commands
 			path_valid: a_full_path /= Void and then is_valid_path (a_full_path)
 		local
 			line, val, key: STRING
-			lpos, rpos: INTEGER
+			lpos, rpos, i: INTEGER
 		do
 			last_parse_valid := False
 			file_context.set_target (a_full_path)
 			file_context.read_matching_lines (attr_names, Comment_leader, Max_lines)
 			create last_parse_content.make (0)
 
-			from file_context.file_lines.start until file_context.file_lines.off loop
-				line := file_context.file_lines.item
-				lpos := line.index_of ('<', 1)+1
-				if lpos > 1 then
-					rpos := line.index_of ('>', lpos)-1
-					if rpos >= lpos then
-						-- check for quoted "" or '' and remove
-						if line.item (lpos) = '%"' or line.item (lpos) = '%'' then
-							lpos := lpos + 1
-						end
-						if line.item (rpos) = '%"' or line.item (rpos) = '%'' then
-							rpos := rpos - 1
-						end
+			if file_context.file_lines.count > 0 then
+				from file_context.file_lines.start until file_context.file_lines.off loop
+					line := file_context.file_lines.item
+					lpos := line.index_of ('<', 1)+1
+					if lpos > 1 then
+						rpos := line.index_of ('>', lpos)-1
+						if rpos >= lpos then
+							-- check for quoted "" or '' and remove
+							if line.item (lpos) = '%"' or line.item (lpos) = '%'' then
+								lpos := lpos + 1
+							end
+							if line.item (rpos) = '%"' or line.item (rpos) = '%'' then
+								rpos := rpos - 1
+							end
 
-						val := line.substring (lpos, rpos)
-						key := line.substring (1, line.index_of (' ', 1)-1)
-						last_parse_content.put (val, key)
+							val := line.substring (lpos, rpos)
+							key := line.substring (1, line.index_of (' ', 1)-1)
+							last_parse_content.put (val, key)
+						else
+							last_parse_fail_reason := "right delimiter ('>') not found for key " + key
+						end
 					else
-						last_parse_fail_reason := "right delimiter ('>') not found for key " + key
+						last_parse_fail_reason := "left delimiter ('<') not found for key " + key
 					end
-				else
-					last_parse_fail_reason := "left delimiter ('<') not found for key " + key
+					file_context.file_lines.forth
 				end
-				file_context.file_lines.forth
+			else
+				last_parse_fail_reason := "no attributes found; was expecting "
+				from i := attr_names.lower until i > attr_names.upper loop
+					last_parse_fail_reason.append (attr_names[i])
+					if i /= attr_names.upper then
+						last_parse_fail_reason.append(", ")
+					end
+					i := i + 1
+				end
 			end
 			last_parse_valid := not last_parse_content.is_empty
 		ensure

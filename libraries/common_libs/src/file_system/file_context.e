@@ -135,7 +135,9 @@ feature -- Commands
 					i := i + 1
 				end
 				in_file.close
-				clean_utf(file_lines[1])
+				if file_lines.count >= 1 then
+					clean_utf(file_lines[1])
+				end
 			else
 				last_op_failed := True
 				last_op_fail_reason := "Read failed; file " + current_full_path + " does not exist"
@@ -178,7 +180,9 @@ feature -- Commands
 					end
 				end
 				in_file.close
-				clean_utf(file_lines[1])
+				if file_lines.count >= 1 then
+					clean_utf(file_lines[1])
+				end
 			else
 				last_op_failed := True
 				last_op_fail_reason := "Read failed; file " + current_full_path + " does not exist"

@@ -92,6 +92,7 @@ feature -- Message database
 			["model_access_w1"] = <"Reference Model checking is OFF">
 			["model_access_w2"] = <"Duplicate Reference Model schema found for model '$1' in file $2">
 			["model_access_w3"] = <"Duplicate instance of Reference Model package $1 found; ignoring instance from schema $2">
+			["model_access_w4"] = <"Reference Model for $1 meta-data missing/invalid: $2">
 			
 			-- MAIN_WINDOW
 			["adl_version_warning"] = <"Using ADL version $1 for output serialisation">
