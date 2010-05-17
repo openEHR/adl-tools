@@ -27,7 +27,7 @@ inherit
 
 feature -- Definitions
 
-	Max_lines: INTEGER = 5
+	Max_lines: INTEGER = 15
 			-- maximum number of non-comment lines to process
 
 	Comment_leader: STRING = "--"
@@ -40,6 +40,17 @@ feature -- Access
 	last_parse_fail_reason: STRING
 
 	last_parse_status: STRING
+
+	last_parse_content_item(a_key: STRING): attached STRING
+			-- more forgiving form of access to items in parse table; if nothing available
+			-- return an empty string
+		do
+			if last_parse_content.has (a_key) then
+				Result := last_parse_content.item (a_key)
+			else
+				create Result.make_empty
+			end
+		end
 
 feature -- Status Report
 
@@ -66,12 +77,20 @@ feature -- Commands
 
 			from file_context.file_lines.start until file_context.file_lines.off loop
 				line := file_context.file_lines.item
-				lpos := line.index_of ('<', 1)
+				lpos := line.index_of ('<', 1)+1
 				if lpos > 1 then
-					rpos := line.index_of ('>', lpos)
-					if rpos > lpos+1 then
-						val := line.substring (lpos+1, rpos-1)
-						key := line.substring (1, line.index_of (' ', 1))
+					rpos := line.index_of ('>', lpos)-1
+					if rpos >= lpos then
+						-- check for quoted "" or '' and remove
+						if line.item (lpos) = '%"' or line.item (lpos) = '%'' then
+							lpos := lpos + 1
+						end
+						if line.item (rpos) = '%"' or line.item (rpos) = '%'' then
+							rpos := rpos - 1
+						end
+
+						val := line.substring (lpos, rpos)
+						key := line.substring (1, line.index_of (' ', 1)-1)
 						last_parse_content.put (val, key)
 					else
 						last_parse_fail_reason := "right delimiter ('>') not found for key " + key

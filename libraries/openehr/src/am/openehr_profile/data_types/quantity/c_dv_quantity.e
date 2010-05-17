@@ -160,7 +160,7 @@ feature -- Status Report
 
 feature -- Comparison
 
-	node_conforms_to (other: like Current): BOOLEAN
+	node_conforms_to (other: like Current; an_rm_schema: SCHEMA_ACCESS): BOOLEAN
 			-- True if this node is a subset, i.e. a redefinition of, `other' in the ADL constraint sense, i.e. that all
 			-- aspects of the definition of this node and all child nodes define a narrower, wholly
 			-- contained instance space of `other'.
@@ -169,7 +169,7 @@ feature -- Comparison
 			other_item: C_QUANTITY_ITEM
 			fail: BOOLEAN
 		do
-			if precursor(other) then
+			if precursor(other, an_rm_schema) then
 				if other.any_allowed then
 					Result := True
 				elseif not any_allowed then

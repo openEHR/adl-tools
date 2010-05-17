@@ -101,6 +101,8 @@ feature {NONE} -- Initialisation
 			file_repository := a_repository
 			artefact_type := an_artefact_type
 
+			-- FIXME: the following should be changed one day so that legacy archetypes are
+			-- kept completely separate from source archetypes
 			if file_system.has_extension (full_path, archetype_source_file_extension) then
 				differential_path := full_path
 				flat_path := extension_replaced (full_path, archetype_flat_file_extension)
@@ -109,6 +111,11 @@ feature {NONE} -- Initialisation
 				differential_path := extension_replaced (full_path, archetype_source_file_extension)
 				flat_path := extension_replaced (full_path, archetype_flat_file_extension)
 				legacy_flat_path := full_path
+			end
+
+			-- set reference to RM schema
+			if has_rm_schema_for_package (id.qualified_package_name) then
+				rm_schema := rm_schema_for_package (id.qualified_package_name)
 			end
 		ensure
 			full_path_set: full_path = a_full_path
@@ -171,6 +178,9 @@ feature -- Access (file system)
 			-- Path of legacy flat file of archetype.
 
 feature -- Access (semantic)
+
+	rm_schema: SCHEMA_ACCESS
+			-- set if this archetype has a valid package-class_name
 
 	artefact_type: INTEGER
 			-- type of artefact i.e. archetype, template, template_component, operational_template
@@ -447,11 +457,11 @@ feature -- Commands
 				billboard.clear
 				set_parse_attempted
 
-				if has_rm_schema (id.rm_originator) then
+				if rm_schema /= Void then
 					if has_differential_file and not is_legacy_flat_out_of_date then
 						post_info (Current, "parse_archetype", "parse_archetype_i3", Void)
 						read_differential
-						differential_archetype := adl_engine.parse_differential (differential_text)
+						differential_archetype := adl_engine.parse_differential (differential_text, rm_schema)
 						if differential_archetype = Void then
 							post_error (Current, "parse_archetype", "parse_archetype_e1", <<adl_engine.parse_error_text>>)
 							is_valid := False
@@ -461,7 +471,7 @@ feature -- Commands
 						end
 					else
 						read_legacy_flat
-						legacy_flat_archetype := adl_engine.parse_flat (legacy_flat_text)
+						legacy_flat_archetype := adl_engine.parse_flat (legacy_flat_text, rm_schema)
 						if legacy_flat_archetype = Void then
 							post_error (Current, "parse_archetype", "parse_archetype_e1", <<adl_engine.parse_error_text>>)
 							is_valid := False
@@ -756,7 +766,7 @@ feature {NONE} -- Implementation
 			validator: ARCHETYPE_VALIDATOR
 		do
 			is_valid := False
-			create validator.make (Current)
+			create validator.make (Current, rm_schema)
 			if validator.passed then
 				validator.validate
 				if validator.passed then
@@ -864,9 +874,9 @@ feature {NONE} -- Implementation
 			arch_flattener: ARCHETYPE_FLATTENER
 		do
 			if not differential_archetype.is_specialised then
-				create arch_flattener.make_non_specialised (differential_archetype)
+				create arch_flattener.make_non_specialised (differential_archetype, rm_schema)
 			else
-				create arch_flattener.make_specialised (specialisation_parent.flat_archetype, differential_archetype)
+				create arch_flattener.make_specialised (specialisation_parent.flat_archetype, differential_archetype, rm_schema)
 			end
 			arch_flattener.flatten
 			flat_archetype_cache := arch_flattener.arch_output_flat

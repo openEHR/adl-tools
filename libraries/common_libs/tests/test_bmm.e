@@ -33,10 +33,17 @@ feature {NONE} -- Events
 			-- <Precursor>
 		do
 			adl_application.initialise
-			if not rm_schema.model_loaded then
-				io.put_string ("Error - RM checker status: " + rm_schema.status)
+			if not found_rm_schemas then
+				io.put_string ("Error - RM schema status: " + rm_schema.status)
+			else
+				rm_schema := rm_schema_for_package ("openehr-ehr")
 			end
 		end
+
+feature -- Access
+
+	rm_schema: SCHEMA_ACCESS
+			-- set if this archetype has a valid package-class_name
 
 feature -- Test routines
 

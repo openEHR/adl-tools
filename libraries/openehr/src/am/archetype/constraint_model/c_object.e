@@ -29,11 +29,6 @@ inherit
 			{ANY} specialisation_depth_from_code;
 		end
 
-	SHARED_REFERENCE_MODEL_ACCESS
-		export
-			{NONE} all
-		end
-
 feature -- Access
 
 	rm_type_name: STRING
@@ -79,7 +74,7 @@ feature -- Source Control
 
 feature -- Comparison
 
-	node_congruent_to (other: like Current): BOOLEAN
+	node_congruent_to (other: like Current; an_rm_schema: SCHEMA_ACCESS): BOOLEAN
 			-- True if this node on its own (ignoring any subparts) expresses the same constraints as `other'.
 			-- `other' is assumed to be in a flat archetype
 			-- Returns False if any of the following is different:
@@ -91,7 +86,7 @@ feature -- Comparison
 			Result := rm_type_name.is_equal (other.rm_type_name) and (occurrences = Void or occurrences.equal_interval(other.occurrences)) and node_id_conforms_to (other)
 		end
 
-	node_conforms_to (other: like Current): BOOLEAN
+	node_conforms_to (other: like Current; an_rm_schema: SCHEMA_ACCESS): BOOLEAN
 			-- True if this node on its own (ignoring any subparts) expresses the same or narrower constraints as `other'.
 			-- `other' is assumed to be in a flat archetype
 			-- Returns False if any of the following is incompatible:
@@ -103,19 +98,19 @@ feature -- Comparison
 				if node_id.is_equal (other.node_id) then
 					Result := rm_type_name.is_equal (other.rm_type_name) and (occurrences = Void or else occurrences.equal_interval(other.occurrences))
 				else
-					Result := (rm_type_conforms_to(other) and occurrences_conforms_to (other) and node_id_conforms_to (other))
+					Result := (rm_type_conforms_to(other, an_rm_schema) and occurrences_conforms_to (other) and node_id_conforms_to (other))
 				end
 			elseif not is_addressable and not other.is_addressable then
-				Result := rm_type_conforms_to(other) and occurrences_conforms_to (other)
+				Result := rm_type_conforms_to (other, an_rm_schema) and occurrences_conforms_to (other)
 			end
 		end
 
-	rm_type_conforms_to (other: like Current): BOOLEAN
+	rm_type_conforms_to (other: like Current; an_rm_schema: SCHEMA_ACCESS): BOOLEAN
 			-- True if this node rm_type_name conforms to other.rm_type_name by either being equal, or being a subtype
-			-- according to the underlying reference model
+			-- according to the underlying reference model.
 			-- `other' is assumed to be in a flat archetype
 		do
-			Result := rm_type_name.is_equal (other.rm_type_name) or rm_schema.is_descendant_of (rm_type_name, other.rm_type_name)
+			Result := rm_type_name.is_equal (other.rm_type_name) or an_rm_schema.is_descendant_of (rm_type_name, other.rm_type_name)
 		end
 
 	occurrences_conforms_to (other: like Current): BOOLEAN
@@ -205,14 +200,14 @@ feature -- Modification
 			representation.set_node_id (an_object_id)
 		end
 
-	overlay_differential (other: like Current)
+	overlay_differential (other: like Current; an_rm_schema: SCHEMA_ACCESS)
 			-- apply any differences from `other' to this object node including:
 			-- 	node_id
 			-- 	overridden rm_type_name
 			-- 	occurrences
 			-- Current is assumed to be in a flat archetype
 		require
-			Other_valid: other /= Void and then other.node_conforms_to (Current)
+			Other_valid: other /= Void and then other.node_conforms_to (Current, an_rm_schema)
 			Flat_archetype: occurrences /= Void
 		do
 			if not other.node_id.is_equal(node_id) then

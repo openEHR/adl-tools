@@ -3,8 +3,8 @@ note
 	description: "Node map control - Visualise an archetype structure as a node map"
 	keywords:    "archetype, cadl, gui"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003-2007 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2003-2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -37,11 +37,6 @@ inherit
 		end
 
 	ARCHETYPE_TERM_CODE_TOOLS
-		export
-			{NONE} all
-		end
-
-	SHARED_REFERENCE_MODEL_ACCESS
 		export
 			{NONE} all
 		end
@@ -308,6 +303,11 @@ feature -- Commands
 		end
 
 feature {NONE} -- Implementation
+
+	rm_schema: SCHEMA_ACCESS
+		do
+			Result := arch_dir.selected_archetype.rm_schema
+		end
 
 	target_archetype: attached ARCHETYPE
 			-- Differential or flat version of archetype, depending on setting of `in_differential_mode'.

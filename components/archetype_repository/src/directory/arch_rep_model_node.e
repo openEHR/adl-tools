@@ -63,7 +63,7 @@ feature -- Initialisation
 		do
 			make
 			class_definition := a_class_desc
-			ontological_name := a_package + {ARCHETYPE_ID}.section_separator.out +  class_definition.name
+			ontological_name := package_class_name (a_package, class_definition.name)
 			display_name := class_definition.name
 			if class_definition.is_abstract then
 				group_name := "class_abstract"

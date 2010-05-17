@@ -332,13 +332,13 @@ feature -- Status Report
 
 feature -- Comparison
 
-	node_congruent_to (other: like Current): BOOLEAN
+	node_congruent_to (other: like Current; an_rm_schema: SCHEMA_ACCESS): BOOLEAN
 			-- True if this node on its own (ignoring any subparts) expresses the same constraints as `other'.
 		do
-			Result := node_conforms_to(other)
+			Result := node_conforms_to(other, an_rm_schema)
 		end
 
-	node_conforms_to (other: like Current): BOOLEAN
+	node_conforms_to (other: like Current; an_rm_schema: SCHEMA_ACCESS): BOOLEAN
 			-- True if this node on its own (ignoring any subparts) expresses the same or narrower constraints as `other'.
 			-- Returns False if any of the following is incompatible:
 			--	cardinality
@@ -527,16 +527,16 @@ feature -- Modification
 			has_child_with_id (new_id)
 		end
 
-	overlay_differential(a_flat_obj, diff_obj: C_OBJECT)
+	overlay_differential(a_flat_obj, diff_obj: C_OBJECT; an_rm_schema: SCHEMA_ACCESS)
 			-- apply any differences from `diff_obj' to `an_obj' node including node_id
 		require
 			Flat_obj_valid: has_child (a_flat_obj)
-			Diff_obj_valid: diff_obj /= Void and then diff_obj.node_conforms_to (a_flat_obj)
+			Diff_obj_valid: diff_obj /= Void and then diff_obj.node_conforms_to (a_flat_obj, an_rm_schema)
 		do
 			if not a_flat_obj.node_id.is_equal(diff_obj.node_id) then
 				representation.replace_node_id (a_flat_obj.node_id, diff_obj.node_id)
 			end
-			a_flat_obj.overlay_differential (diff_obj)
+			a_flat_obj.overlay_differential (diff_obj, an_rm_schema)
 		end
 
 feature -- Validation

@@ -14,11 +14,15 @@
 -- 	last_change: $LastChangedDate$
 -- 
 
-schema_name = <"openehr">
-schema_release = <"1.0.2">
-schema_lifecycle_status = <"stable">
+schema_revision = <"$LastChangedRevision$">
+schema_lifecycle_state = <"stable">
+
+model_publisher = <"openehr">
+model_name = <"rm">
+model_release = <"1.0.2">
+
 schema_description = <"openEHR Release 1.0.2 reference model, expressed in 'basic meta-model' format
-					 described at http://www.openehr.org/svn/ref_impl_eiffel/BRANCHES/specialisation/libraries/common_libs/src/basic_meta_model">
+					 described at http://www.openehr.org/svn/ref_impl_eiffel/BRANCHES/specialisation/libraries/common_libs/src/basic_meta_model"> 
 
 packages = <
 	["ehr"] = <

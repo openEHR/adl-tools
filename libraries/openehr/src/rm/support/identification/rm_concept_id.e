@@ -94,7 +94,7 @@ feature -- Access
 			not_empty: not Result.is_empty
 		end
 
-	qualified_rm_name: attached STRING
+	qualified_package_name, qualified_rm_name: attached STRING
 			-- identification of Reference Model name
 			-- e.g. openEHR-EHR, HL7-CDA
 		local

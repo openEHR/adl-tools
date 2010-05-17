@@ -46,11 +46,6 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_REFERENCE_MODEL_ACCESS
-		export
-			{NONE} all
-		end
-
 	INTERNAL
 		export
 			{NONE} all
@@ -61,13 +56,15 @@ create
 
 feature {NONE} -- Initialisation
 
-	make (a_target_desc: like target_descriptor)
+	make (a_target_desc: like target_descriptor; an_rm_schema: SCHEMA_ACCESS)
 			-- set target_descriptor
 			-- initialise reporting variables
 		require
 			target_desc_attached: a_target_desc /= Void
 			target_desc_valid: a_target_desc.differential_archetype /= Void
+			Rm_schema_available: an_rm_schema /= Void
 		do
+			rm_schema := an_rm_schema
 			target_descriptor := a_target_desc
 			make_authored_resource(target_descriptor.differential_archetype)
 			if target_descriptor.is_specialised then
@@ -169,6 +166,8 @@ feature -- Validation
 		end
 
 feature {NONE} -- Implementation
+
+	rm_schema: SCHEMA_ACCESS
 
 	validate_basics
 			-- are basic features of archetype structurally intact and correct?
@@ -450,7 +449,7 @@ feature {NONE} -- Implementation
 
 			if attached {C_ATTRIBUTE} a_c_node as ca_child_diff then
 				if attached {C_ATTRIBUTE} flat_parent.definition.c_attribute_at_path (apa.path_at_level (flat_parent.specialisation_depth)) as ca_parent_flat then
-					if not ca_child_diff.node_conforms_to(ca_parent_flat) then
+					if not ca_child_diff.node_conforms_to(ca_parent_flat, rm_schema) then
 						if ca_child_diff.is_single /= ca_parent_flat.is_single then
 							add_error("VSAM", <<ca_child_diff.path>>)
 						elseif not ca_child_diff.existence_conforms_to (ca_parent_flat) then
@@ -462,7 +461,7 @@ feature {NONE} -- Implementation
 						else
 							add_error("compiler_unexpected_error", <<"ARCHETYPE_VALIDATOR.specialised_node_validate location 1">>)
 						end
-					elseif ca_child_diff.node_congruent_to (ca_parent_flat) and ca_child_diff.parent.is_mergeable then
+					elseif ca_child_diff.node_congruent_to (ca_parent_flat, rm_schema) and ca_child_diff.parent.is_mergeable then
 						debug ("validate")
 							io.put_string (">>>>> validate: C_ATTRIBUTE in child at " + ca_child_diff.path + " CONGRUENT to parent node " + ca_parent_flat.path + " (setting is_mergeable) %N")
 						end
@@ -500,8 +499,8 @@ feature {NONE} -- Implementation
 					if dynamic_type (co_child_diff) /= dynamic_type (co_parent_flat) then
 						add_error("VSONT", <<co_child_diff.path, co_child_diff.generating_type, co_parent_flat.path, co_parent_flat.generating_type>>)
 					-- they should also be conformant as defined by the node_conforms_to() function
-					elseif not co_child_diff.node_conforms_to(co_parent_flat) then
-						if not co_child_diff.rm_type_conforms_to (co_parent_flat) then
+					elseif not co_child_diff.node_conforms_to(co_parent_flat, rm_schema) then
+						if not co_child_diff.rm_type_conforms_to (co_parent_flat, rm_schema) then
 							add_error("VSONCT", <<co_child_diff.path, co_child_diff.rm_type_name, co_parent_flat.path, co_parent_flat.rm_type_name>>)
 						elseif not co_child_diff.occurrences_conforms_to (co_parent_flat) then
 							if strict_validation then
@@ -521,7 +520,7 @@ feature {NONE} -- Implementation
 						end
 					else
 						-- nodes are at least conformant; check for congruence for specalisation path replacement
-						if attached {C_COMPLEX_OBJECT} co_child_diff as cco and co_child_diff.node_congruent_to (co_parent_flat) and (co_child_diff.is_root or else co_child_diff.parent.is_mergeable) then
+						if attached {C_COMPLEX_OBJECT} co_child_diff as cco and co_child_diff.node_congruent_to (co_parent_flat, rm_schema) and (co_child_diff.is_root or else co_child_diff.parent.is_mergeable) then
 							debug ("validate")
 								io.put_string (">>>>> validate: C_OBJECT in child at " + co_child_diff.path + " CONGRUENT to parent node " + co_parent_flat.path)
 							end
@@ -559,7 +558,6 @@ feature {NONE} -- Implementation
 			-- and no previous errors encountered
 		local
 			apa: ARCHETYPE_PATH_ANALYSER
-			path_at_level: STRING
 			accept: BOOLEAN
 			ca_parent_flat: attached C_ATTRIBUTE
 		do

@@ -44,11 +44,6 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_REFERENCE_MODEL_ACCESS
-		export
-			{NONE} all
-		end
-
 	SHARED_MESSAGE_DB
 		export
 			{NONE} all
@@ -613,9 +608,9 @@ feature {NONE} -- Semantic actions
 		do
 			inspect yy_act
 when 1 then
---|#line 159 "cadl_validator.y"
+--|#line 154 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 159")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 154")
 end
 
 			debug("ADL_parse")
@@ -629,9 +624,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 2 then
---|#line 167 "cadl_validator.y"
+--|#line 162 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 167")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 162")
 end
 
 			debug("ADL_parse")
@@ -663,9 +658,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 3 then
---|#line 175 "cadl_validator.y"
+--|#line 170 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 175")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 170")
 end
 
 			debug("ADL_parse")
@@ -678,9 +673,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 4 then
---|#line 184 "cadl_validator.y"
+--|#line 179 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 184")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 179")
 end
 
 			debug("ADL_parse")
@@ -695,9 +690,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 5 then
---|#line 194 "cadl_validator.y"
+--|#line 189 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 194")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 189")
 end
 
 			if yyvs13.item (yyvsp13) /= Void then
@@ -735,9 +730,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 6 then
---|#line 227 "cadl_validator.y"
+--|#line 222 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 227")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 222")
 end
 
 			create complex_obj.make_anonymous(yyvs2.item (yyvsp2))
@@ -765,9 +760,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 7 then
---|#line 231 "cadl_validator.y"
+--|#line 226 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 231")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 226")
 end
 
 			create complex_obj.make_identified(yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2))
@@ -795,9 +790,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 8 then
---|#line 235 "cadl_validator.y"
+--|#line 230 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 235")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 230")
 end
 
 			if differential_syntax then
@@ -831,9 +826,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 9 then
---|#line 246 "cadl_validator.y"
+--|#line 241 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 246")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 241")
 end
 
 			yyval11 := create {SIBLING_ORDER}.make_after(yyvs2.item (yyvsp2))
@@ -862,9 +857,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs11.put (yyval11, yyvsp11)
 end
 when 10 then
---|#line 250 "cadl_validator.y"
+--|#line 245 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 250")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 245")
 end
 
 			yyval11 := create {SIBLING_ORDER}.make_before(yyvs2.item (yyvsp2))
@@ -893,9 +888,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs11.put (yyval11, yyvsp11)
 end
 when 11 then
---|#line 256 "cadl_validator.y"
+--|#line 251 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 256")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 251")
 end
 
 			debug("ADL_parse")
@@ -908,9 +903,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 12 then
---|#line 263 "cadl_validator.y"
+--|#line 258 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 263")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 258")
 end
 
 		
@@ -919,9 +914,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 13 then
---|#line 272 "cadl_validator.y"
+--|#line 267 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 272")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 267")
 end
 
 		
@@ -930,9 +925,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 14 then
---|#line 275 "cadl_validator.y"
+--|#line 270 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 275")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 270")
 end
 
 			safe_put_c_attribute_child(c_attrs.item, yyvs9.item (yyvsp9))
@@ -960,9 +955,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 15 then
---|#line 279 "cadl_validator.y"
+--|#line 274 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 279")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 274")
 end
 
 			safe_put_c_attribute_child(c_attrs.item, yyvs10.item (yyvsp10))
@@ -990,9 +985,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 16 then
---|#line 283 "cadl_validator.y"
+--|#line 278 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 283")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 278")
 end
 
 			safe_put_c_attribute_child(c_attrs.item, archetype_slot)
@@ -1002,9 +997,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 17 then
---|#line 287 "cadl_validator.y"
+--|#line 282 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 287")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 282")
 end
 
 			safe_put_c_attribute_child(c_attrs.item, constraint_ref)
@@ -1014,9 +1009,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 18 then
---|#line 291 "cadl_validator.y"
+--|#line 286 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 291")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 286")
 end
 
 			safe_put_c_attribute_child(c_attrs.item, c_code_phrase_obj)
@@ -1026,9 +1021,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 19 then
---|#line 295 "cadl_validator.y"
+--|#line 290 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 295")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 290")
 end
 
 			safe_put_c_attribute_child(c_attrs.item, ordinal_node)
@@ -1039,9 +1034,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 20 then
---|#line 300 "cadl_validator.y"
+--|#line 295 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 300")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 295")
 end
 
 			safe_put_c_attribute_child(c_attrs.item, c_prim_obj)
@@ -1069,9 +1064,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 21 then
---|#line 304 "cadl_validator.y"
+--|#line 299 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 304")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 299")
 end
 
 			safe_put_c_attribute_child(c_attrs.item, c_domain_type)
@@ -1099,9 +1094,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 22 then
---|#line 308 "cadl_validator.y"
+--|#line 303 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 308")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 303")
 end
 
 			abort_with_error("SDINV", <<dadl_parser_error>>)
@@ -1111,9 +1106,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 23 then
---|#line 312 "cadl_validator.y"
+--|#line 307 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 312")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 307")
 end
 
 			abort_with_error("SCCOG", Void)
@@ -1123,9 +1118,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 24 then
---|#line 323 "cadl_validator.y"
+--|#line 318 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 323")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 318")
 end
 
 			if (create {ARCHETYPE_ID}).valid_id(yyvs2.item (yyvsp2)) then
@@ -1160,9 +1155,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs9.put (yyval9, yyvsp9)
 end
 when 25 then
---|#line 332 "cadl_validator.y"
+--|#line 327 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 332")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 327")
 end
 
 			if (create {ARCHETYPE_ID}).valid_id(yyvs2.item (yyvsp2)) then
@@ -1197,9 +1192,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs9.put (yyval9, yyvsp9)
 end
 when 26 then
---|#line 343 "cadl_validator.y"
+--|#line 338 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 343")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 338")
 end
 
 			create yyval10.make(yyvs2.item (yyvsp2), yyvs12.item (yyvsp12).as_string)
@@ -1248,9 +1243,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs10.put (yyval10, yyvsp10)
 end
 when 27 then
---|#line 365 "cadl_validator.y"
+--|#line 360 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 365")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 360")
 end
 
 			abort_with_error("SUNPA", Void)
@@ -1279,9 +1274,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs10.put (yyval10, yyvsp10)
 end
 when 28 then
---|#line 371 "cadl_validator.y"
+--|#line 366 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 371")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 366")
 end
 
 			if yyvs8.item (yyvsp8 - 1) /= Void then
@@ -1302,9 +1297,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 29 then
---|#line 386 "cadl_validator.y"
+--|#line 381 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 386")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 381")
 end
 
 			if yyvs13.item (yyvsp13) /= Void then
@@ -1326,9 +1321,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 30 then
---|#line 403 "cadl_validator.y"
+--|#line 398 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 403")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 398")
 end
 
 			create archetype_slot.make_anonymous(yyvs2.item (yyvsp2))
@@ -1339,9 +1334,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 31 then
---|#line 407 "cadl_validator.y"
+--|#line 402 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 407")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 402")
 end
 
 			if differential_syntax then
@@ -1358,9 +1353,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 32 then
---|#line 416 "cadl_validator.y"
+--|#line 411 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 416")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 411")
 end
 
 			create archetype_slot.make_identified(yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2))
@@ -1371,9 +1366,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 33 then
---|#line 420 "cadl_validator.y"
+--|#line 415 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 420")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 415")
 end
 
 			if differential_syntax then
@@ -1390,9 +1385,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 34 then
---|#line 429 "cadl_validator.y"
+--|#line 424 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 429")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 424")
 end
 
 			abort_with_error("SUAS", Void)
@@ -1403,9 +1398,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 35 then
---|#line 435 "cadl_validator.y"
+--|#line 430 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 435")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 430")
 end
 
 			create c_prim_obj.make(yyvs15.item (yyvsp15))
@@ -1434,9 +1429,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs14.put (yyval14, yyvsp14)
 end
 when 36 then
---|#line 442 "cadl_validator.y"
+--|#line 437 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 442")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 437")
 end
 
 			debug("ADL_parse")
@@ -1467,9 +1462,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs15.put (yyval15, yyvsp15)
 end
 when 37 then
---|#line 449 "cadl_validator.y"
+--|#line 444 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 449")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 444")
 end
 
 			debug("ADL_parse")
@@ -1500,9 +1495,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs15.put (yyval15, yyvsp15)
 end
 when 38 then
---|#line 456 "cadl_validator.y"
+--|#line 451 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 456")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 451")
 end
 
 			debug("ADL_parse")
@@ -1533,9 +1528,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs15.put (yyval15, yyvsp15)
 end
 when 39 then
---|#line 463 "cadl_validator.y"
+--|#line 458 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 463")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 458")
 end
 
 			debug("ADL_parse")
@@ -1566,9 +1561,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs15.put (yyval15, yyvsp15)
 end
 when 40 then
---|#line 470 "cadl_validator.y"
+--|#line 465 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 470")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 465")
 end
 
 			debug("ADL_parse")
@@ -1599,9 +1594,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs15.put (yyval15, yyvsp15)
 end
 when 41 then
---|#line 477 "cadl_validator.y"
+--|#line 472 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 477")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 472")
 end
 
 			debug("ADL_parse")
@@ -1632,9 +1627,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs15.put (yyval15, yyvsp15)
 end
 when 42 then
---|#line 484 "cadl_validator.y"
+--|#line 479 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 484")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 479")
 end
 
 			debug("ADL_parse")
@@ -1665,9 +1660,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs15.put (yyval15, yyvsp15)
 end
 when 43 then
---|#line 491 "cadl_validator.y"
+--|#line 486 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 491")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 486")
 end
 
 			debug("ADL_parse")
@@ -1698,9 +1693,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs15.put (yyval15, yyvsp15)
 end
 when 44 then
---|#line 500 "cadl_validator.y"
+--|#line 495 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 500")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 495")
 end
 
 		
@@ -1709,9 +1704,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 45 then
---|#line 507 "cadl_validator.y"
+--|#line 502 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 507")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 502")
 end
 
 		
@@ -1720,9 +1715,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 46 then
---|#line 510 "cadl_validator.y"
+--|#line 505 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 510")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 505")
 end
 
 		
@@ -1732,9 +1727,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 47 then
---|#line 515 "cadl_validator.y"
+--|#line 510 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 515")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 510")
 end
 
 			debug("ADL_parse")
@@ -1749,9 +1744,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 48 then
---|#line 523 "cadl_validator.y"
+--|#line 518 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 523")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 518")
 end
 
 			abort_with_error("SCAS", Void)
@@ -1762,9 +1757,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 49 then
---|#line 529 "cadl_validator.y"
+--|#line 524 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 529")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 524")
 end
 
 			rm_attribute_name := yyvs2.item (yyvsp2)
@@ -1832,9 +1827,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 50 then
---|#line 571 "cadl_validator.y"
+--|#line 566 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 571")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 566")
 end
 
 			rm_attribute_name := yyvs12.item (yyvsp12).last.attr_name
@@ -1908,9 +1903,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 51 then
---|#line 621 "cadl_validator.y"
+--|#line 616 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 621")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 616")
 end
 
 		
@@ -1919,9 +1914,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 52 then
---|#line 624 "cadl_validator.y"
+--|#line 619 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 624")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 619")
 end
 
 		
@@ -1931,9 +1926,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 53 then
---|#line 627 "cadl_validator.y"
+--|#line 622 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 627")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 622")
 end
 
 			debug("ADL_parse")
@@ -1945,9 +1940,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 54 then
---|#line 636 "cadl_validator.y"
+--|#line 631 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 636")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 631")
 end
 
 
@@ -1973,9 +1968,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs8.put (yyval8, yyvsp8)
 end
 when 55 then
---|#line 637 "cadl_validator.y"
+--|#line 632 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 637")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 632")
 end
 
 			debug("include list")
@@ -1990,9 +1985,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs8.put (yyval8, yyvsp8)
 end
 when 56 then
---|#line 647 "cadl_validator.y"
+--|#line 642 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 647")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 642")
 end
 
 
@@ -2018,9 +2013,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs8.put (yyval8, yyvsp8)
 end
 when 57 then
---|#line 648 "cadl_validator.y"
+--|#line 643 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 648")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 643")
 end
 
 			debug("exclude list")
@@ -2035,9 +2030,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs8.put (yyval8, yyvsp8)
 end
 when 58 then
---|#line 662 "cadl_validator.y"
+--|#line 657 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 662")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 657")
 end
 
 			if assertion_list = Void then 
@@ -2068,9 +2063,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs8.put (yyval8, yyvsp8)
 end
 when 59 then
---|#line 669 "cadl_validator.y"
+--|#line 664 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 669")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 664")
 end
 
 			assertion_list.extend(assertion)
@@ -2081,9 +2076,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs8.put (yyval8, yyvsp8)
 end
 when 60 then
---|#line 675 "cadl_validator.y"
+--|#line 670 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 675")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 670")
 end
 
 			create assertion.make(yyvs16.item (yyvsp16), yyvs2.item (yyvsp2))
@@ -2095,9 +2090,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 61 then
---|#line 679 "cadl_validator.y"
+--|#line 674 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 679")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 674")
 end
 
 			create assertion.make(yyvs16.item (yyvsp16), Void)
@@ -2125,9 +2120,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 62 then
---|#line 683 "cadl_validator.y"
+--|#line 678 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 683")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 678")
 end
 
 			abort_with_error("SINVS", <<yyvs2.item (yyvsp2)>>)
@@ -2139,9 +2134,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 63 then
---|#line 691 "cadl_validator.y"
+--|#line 686 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 691")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 686")
 end
 
 			yyval16 := yyvs16.item (yyvsp16)
@@ -2151,9 +2146,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs16.put (yyval16, yyvsp16)
 end
 when 64 then
---|#line 695 "cadl_validator.y"
+--|#line 690 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 695")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 690")
 end
 
 			yyval16 := yyvs16.item (yyvsp16)
@@ -2163,9 +2158,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs16.put (yyval16, yyvsp16)
 end
 when 65 then
---|#line 701 "cadl_validator.y"
+--|#line 696 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 701")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 696")
 end
 
 			debug("ADL_invariant")
@@ -2200,9 +2195,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs16.put (yyval16, yyvsp16)
 end
 when 66 then
---|#line 711 "cadl_validator.y"
+--|#line 706 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 711")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 706")
 end
 
 			abort_with_error("SEXPT", Void)
@@ -2230,9 +2225,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs16.put (yyval16, yyvsp16)
 end
 when 67 then
---|#line 715 "cadl_validator.y"
+--|#line 710 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 715")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 710")
 end
 
 			debug("ADL_invariant")
@@ -2268,9 +2263,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs16.put (yyval16, yyvsp16)
 end
 when 68 then
---|#line 725 "cadl_validator.y"
+--|#line 720 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 725")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 720")
 end
 
 			debug("ADL_invariant")
@@ -2286,9 +2281,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs16.put (yyval16, yyvsp16)
 end
 when 69 then
---|#line 734 "cadl_validator.y"
+--|#line 729 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 734")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 729")
 end
 
 			debug("ADL_invariant")
@@ -2306,9 +2301,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs16.put (yyval16, yyvsp16)
 end
 when 70 then
---|#line 744 "cadl_validator.y"
+--|#line 739 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 744")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 739")
 end
 
 			debug("ADL_invariant")
@@ -2326,9 +2321,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs16.put (yyval16, yyvsp16)
 end
 when 71 then
---|#line 754 "cadl_validator.y"
+--|#line 749 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 754")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 749")
 end
 
 			debug("ADL_invariant")
@@ -2346,9 +2341,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs16.put (yyval16, yyvsp16)
 end
 when 72 then
---|#line 764 "cadl_validator.y"
+--|#line 759 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 764")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 759")
 end
 
 			debug("ADL_invariant")
@@ -2366,9 +2361,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs16.put (yyval16, yyvsp16)
 end
 when 73 then
---|#line 774 "cadl_validator.y"
+--|#line 769 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 774")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 769")
 end
 
 			debug("ADL_invariant")
@@ -2386,9 +2381,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs16.put (yyval16, yyvsp16)
 end
 when 74 then
---|#line 784 "cadl_validator.y"
+--|#line 779 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 784")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 779")
 end
 
 			debug("ADL_invariant")
@@ -2406,9 +2401,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs16.put (yyval16, yyvsp16)
 end
 when 75 then
---|#line 794 "cadl_validator.y"
+--|#line 789 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 794")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 789")
 end
 
 			debug("ADL_invariant")
@@ -2426,9 +2421,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs16.put (yyval16, yyvsp16)
 end
 when 76 then
---|#line 804 "cadl_validator.y"
+--|#line 799 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 804")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 799")
 end
 
 			debug("ADL_invariant")
@@ -2446,9 +2441,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs16.put (yyval16, yyvsp16)
 end
 when 77 then
---|#line 814 "cadl_validator.y"
+--|#line 809 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 814")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 809")
 end
 
 			debug("ADL_invariant")
@@ -2466,9 +2461,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs16.put (yyval16, yyvsp16)
 end
 when 78 then
---|#line 824 "cadl_validator.y"
+--|#line 819 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 824")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 819")
 end
 
 			debug("ADL_invariant")
@@ -2486,9 +2481,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs16.put (yyval16, yyvsp16)
 end
 when 79 then
---|#line 836 "cadl_validator.y"
+--|#line 831 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 836")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 831")
 end
 
 			yyval16 := yyvs16.item (yyvsp16)
@@ -2499,9 +2494,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs16.put (yyval16, yyvsp16)
 end
 when 80 then
---|#line 840 "cadl_validator.y"
+--|#line 835 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 840")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 835")
 end
 
 			create expr_leaf.make_boolean(True)
@@ -2530,9 +2525,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs16.put (yyval16, yyvsp16)
 end
 when 81 then
---|#line 845 "cadl_validator.y"
+--|#line 840 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 845")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 840")
 end
 
 			create expr_leaf.make_boolean(False)
@@ -2561,9 +2556,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs16.put (yyval16, yyvsp16)
 end
 when 82 then
---|#line 852 "cadl_validator.y"
+--|#line 847 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 852")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 847")
 end
 
 			yyval16 := yyvs16.item (yyvsp16)
@@ -2573,9 +2568,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs16.put (yyval16, yyvsp16)
 end
 when 83 then
---|#line 856 "cadl_validator.y"
+--|#line 851 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 856")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 851")
 end
 
 			yyval16 := yyvs16.item (yyvsp16)
@@ -2585,9 +2580,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs16.put (yyval16, yyvsp16)
 end
 when 84 then
---|#line 862 "cadl_validator.y"
+--|#line 857 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 862")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 857")
 end
 
 			debug("ADL_invariant")
@@ -2605,9 +2600,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs16.put (yyval16, yyvsp16)
 end
 when 85 then
---|#line 872 "cadl_validator.y"
+--|#line 867 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 872")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 867")
 end
 
 			debug("ADL_invariant")
@@ -2625,9 +2620,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs16.put (yyval16, yyvsp16)
 end
 when 86 then
---|#line 882 "cadl_validator.y"
+--|#line 877 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 882")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 877")
 end
 
 			debug("ADL_invariant")
@@ -2645,9 +2640,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs16.put (yyval16, yyvsp16)
 end
 when 87 then
---|#line 892 "cadl_validator.y"
+--|#line 887 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 892")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 887")
 end
 
 			debug("ADL_invariant")
@@ -2665,9 +2660,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs16.put (yyval16, yyvsp16)
 end
 when 88 then
---|#line 902 "cadl_validator.y"
+--|#line 897 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 902")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 897")
 end
 
 			debug("ADL_invariant")
@@ -2685,9 +2680,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs16.put (yyval16, yyvsp16)
 end
 when 89 then
---|#line 914 "cadl_validator.y"
+--|#line 909 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 914")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 909")
 end
 
 			debug("ADL_invariant")
@@ -2701,9 +2696,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs16.put (yyval16, yyvsp16)
 end
 when 90 then
---|#line 921 "cadl_validator.y"
+--|#line 916 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 921")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 916")
 end
 
 			debug("ADL_invariant")
@@ -2735,9 +2730,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs16.put (yyval16, yyvsp16)
 end
 when 91 then
---|#line 929 "cadl_validator.y"
+--|#line 924 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 929")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 924")
 end
 
 			debug("ADL_invariant")
@@ -2769,9 +2764,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs16.put (yyval16, yyvsp16)
 end
 when 92 then
---|#line 937 "cadl_validator.y"
+--|#line 932 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 937")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 932")
 end
 
 			debug("ADL_invariant")
@@ -2803,9 +2798,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs16.put (yyval16, yyvsp16)
 end
 when 93 then
---|#line 952 "cadl_validator.y"
+--|#line 947 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 952")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 947")
 end
 
 			create yyval12.make_root
@@ -2836,9 +2831,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs12.put (yyval12, yyvsp12)
 end
 when 94 then
---|#line 959 "cadl_validator.y"
+--|#line 954 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 959")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 954")
 end
 
 			yyval12 := yyvs12.item (yyvsp12)
@@ -2853,9 +2848,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs12.put (yyval12, yyvsp12)
 end
 when 95 then
---|#line 967 "cadl_validator.y"
+--|#line 962 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 967")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 962")
 end
 
 			yyval12 := yyvs12.item (yyvsp12 - 1)
@@ -2871,9 +2866,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs12.put (yyval12, yyvsp12)
 end
 when 96 then
---|#line 977 "cadl_validator.y"
+--|#line 972 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 977")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 972")
 end
 
 			create yyval12.make_relative(yyvs26.item (yyvsp26))
@@ -2901,9 +2896,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs12.put (yyval12, yyvsp12)
 end
 when 97 then
---|#line 981 "cadl_validator.y"
+--|#line 976 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 981")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 976")
 end
 
 			yyval12 := yyvs12.item (yyvsp12)
@@ -2916,9 +2911,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs12.put (yyval12, yyvsp12)
 end
 when 98 then
---|#line 988 "cadl_validator.y"
+--|#line 983 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 988")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 983")
 end
 
 			create yyval26.make_with_object_id(yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2))
@@ -2949,9 +2944,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs26.put (yyval26, yyvsp26)
 end
 when 99 then
---|#line 995 "cadl_validator.y"
+--|#line 990 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 995")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 990")
 end
 
 			create yyval26.make(yyvs2.item (yyvsp2))
@@ -2982,9 +2977,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs26.put (yyval26, yyvsp26)
 end
 when 100 then
---|#line 1011 "cadl_validator.y"
+--|#line 1006 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1011")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1006")
 end
 
 
@@ -3010,9 +3005,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs13.put (yyval13, yyvsp13)
 end
 when 101 then
---|#line 1012 "cadl_validator.y"
+--|#line 1007 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1012")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1007")
 end
 
 			yyval13 := multiplicity_interval
@@ -3040,9 +3035,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs13.put (yyval13, yyvsp13)
 end
 when 102 then
---|#line 1018 "cadl_validator.y"
+--|#line 1013 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1018")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1013")
 end
 
 			if yyvs3.item (yyvsp3) = 0 then
@@ -3076,9 +3071,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 103 then
---|#line 1028 "cadl_validator.y"
+--|#line 1023 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1028")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1023")
 end
 
 			if yyvs3.item (yyvsp3 - 1) = 0 then
@@ -3105,9 +3100,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 104 then
---|#line 1050 "cadl_validator.y"
+--|#line 1045 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1050")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1045")
 end
 
 
@@ -3133,9 +3128,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs17.put (yyval17, yyvsp17)
 end
 when 105 then
---|#line 1051 "cadl_validator.y"
+--|#line 1046 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1051")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1046")
 end
 
 			yyval17 := a_cardinality
@@ -3163,9 +3158,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs17.put (yyval17, yyvsp17)
 end
 when 106 then
---|#line 1057 "cadl_validator.y"
+--|#line 1052 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1057")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1052")
 end
 
 			create a_cardinality.make(multiplicity_interval)
@@ -3193,9 +3188,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 107 then
---|#line 1061 "cadl_validator.y"
+--|#line 1056 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1061")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1056")
 end
 
 			create a_cardinality.make(multiplicity_interval)
@@ -3207,9 +3202,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 108 then
---|#line 1065 "cadl_validator.y"
+--|#line 1060 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1065")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1060")
 end
 
 			create a_cardinality.make(multiplicity_interval)
@@ -3222,9 +3217,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 109 then
---|#line 1070 "cadl_validator.y"
+--|#line 1065 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1070")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1065")
 end
 
 			create a_cardinality.make(multiplicity_interval)
@@ -3237,9 +3232,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 110 then
---|#line 1075 "cadl_validator.y"
+--|#line 1070 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1075")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1070")
 end
 
 			create a_cardinality.make(multiplicity_interval)
@@ -3252,9 +3247,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 111 then
---|#line 1080 "cadl_validator.y"
+--|#line 1075 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1080")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1075")
 end
 
 			create a_cardinality.make(multiplicity_interval)
@@ -3268,9 +3263,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 112 then
---|#line 1086 "cadl_validator.y"
+--|#line 1081 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1086")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1081")
 end
 
 			create a_cardinality.make(multiplicity_interval)
@@ -3283,9 +3278,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 113 then
---|#line 1091 "cadl_validator.y"
+--|#line 1086 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1091")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1086")
 end
 
 			create a_cardinality.make(multiplicity_interval)
@@ -3299,9 +3294,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 114 then
---|#line 1099 "cadl_validator.y"
+--|#line 1094 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1099")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1094")
 end
 
 			yyval3 := yyvs3.item (yyvsp3)
@@ -3311,9 +3306,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs3.put (yyval3, yyvsp3)
 end
 when 115 then
---|#line 1103 "cadl_validator.y"
+--|#line 1098 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1103")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1098")
 end
 
 			cardinality_limit_pos_infinity := True
@@ -3341,9 +3336,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs3.put (yyval3, yyvsp3)
 end
 when 116 then
---|#line 1109 "cadl_validator.y"
+--|#line 1104 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1109")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1104")
 end
 
 
@@ -3369,9 +3364,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs13.put (yyval13, yyvsp13)
 end
 when 117 then
---|#line 1110 "cadl_validator.y"
+--|#line 1105 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1110")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1105")
 end
 
 			yyval13 := yyvs13.item (yyvsp13)
@@ -3382,9 +3377,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs13.put (yyval13, yyvsp13)
 end
 when 118 then
---|#line 1114 "cadl_validator.y"
+--|#line 1109 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1114")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1109")
 end
 
 			abort_with_error("SOCCF", Void)
@@ -3412,9 +3407,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs13.put (yyval13, yyvsp13)
 end
 when 119 then
---|#line 1120 "cadl_validator.y"
+--|#line 1115 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1120")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1115")
 end
 
 			if not cardinality_limit_pos_infinity then
@@ -3448,9 +3443,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs13.put (yyval13, yyvsp13)
 end
 when 120 then
---|#line 1130 "cadl_validator.y"
+--|#line 1125 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1130")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1125")
 end
 
 			if cardinality_limit_pos_infinity then
@@ -3485,9 +3480,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs13.put (yyval13, yyvsp13)
 end
 when 121 then
---|#line 1144 "cadl_validator.y"
+--|#line 1139 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1144")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1139")
 end
 
 			create int_list.make(0)
@@ -3517,9 +3512,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 122 then
---|#line 1150 "cadl_validator.y"
+--|#line 1145 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1150")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1145")
 end
 
 			create c_integer.make_list(yyvs28.item (yyvsp28))
@@ -3547,9 +3542,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 123 then
---|#line 1154 "cadl_validator.y"
+--|#line 1149 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1154")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1149")
 end
 
 			if integer_interval.lower_unbounded then
@@ -3587,9 +3582,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 124 then
---|#line 1170 "cadl_validator.y"
+--|#line 1165 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1170")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1165")
 end
 
 
@@ -3598,9 +3593,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 125 then
---|#line 1171 "cadl_validator.y"
+--|#line 1166 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1171")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1166")
 end
 
 			if c_integer.valid_value(yyvs3.item (yyvsp3)) then
@@ -3616,9 +3611,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 126 then
---|#line 1179 "cadl_validator.y"
+--|#line 1174 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1179")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1174")
 end
 
 			abort_with_error("SCIAV", Void)
@@ -3629,9 +3624,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 127 then
---|#line 1185 "cadl_validator.y"
+--|#line 1180 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1185")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1180")
 end
 
 			create real_list.make(0)
@@ -3661,9 +3656,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 128 then
---|#line 1191 "cadl_validator.y"
+--|#line 1186 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1191")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1186")
 end
 
 			create c_real.make_list(yyvs29.item (yyvsp29))
@@ -3691,9 +3686,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 129 then
---|#line 1195 "cadl_validator.y"
+--|#line 1190 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1195")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1190")
 end
 
 			if real_interval.lower_unbounded then
@@ -3731,9 +3726,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 130 then
---|#line 1211 "cadl_validator.y"
+--|#line 1206 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1211")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1206")
 end
 
 
@@ -3742,9 +3737,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 131 then
---|#line 1212 "cadl_validator.y"
+--|#line 1207 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1212")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1207")
 end
 
 			if c_real.valid_value(yyvs4.item (yyvsp4)) then
@@ -3760,9 +3755,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 132 then
---|#line 1220 "cadl_validator.y"
+--|#line 1215 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1220")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1215")
 end
 
 			abort_with_error("SCRAV", Void)
@@ -3773,9 +3768,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 133 then
---|#line 1226 "cadl_validator.y"
+--|#line 1221 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1226")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1221")
 end
 
 			if valid_iso8601_date_constraint_pattern(yyvs2.item (yyvsp2)) then
@@ -3816,9 +3811,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs18.put (yyval18, yyvsp18)
 end
 when 134 then
---|#line 1243 "cadl_validator.y"
+--|#line 1238 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1243")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1238")
 end
 
 			create date_interval.make_point(yyvs20.item (yyvsp20))
@@ -3847,9 +3842,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs18.put (yyval18, yyvsp18)
 end
 when 135 then
---|#line 1248 "cadl_validator.y"
+--|#line 1243 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1248")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1243")
 end
 
 			create yyval18.make_range(date_interval)
@@ -3877,9 +3872,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs18.put (yyval18, yyvsp18)
 end
 when 136 then
---|#line 1254 "cadl_validator.y"
+--|#line 1249 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1254")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1249")
 end
 
 			yyval18 := yyvs18.item (yyvsp18)
@@ -3889,9 +3884,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs18.put (yyval18, yyvsp18)
 end
 when 137 then
---|#line 1258 "cadl_validator.y"
+--|#line 1253 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1258")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1253")
 end
 
 			if yyvs18.item (yyvsp18).valid_value(yyvs20.item (yyvsp20)) then
@@ -3908,9 +3903,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs18.put (yyval18, yyvsp18)
 end
 when 138 then
---|#line 1267 "cadl_validator.y"
+--|#line 1262 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1267")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1262")
 end
 
 			abort_with_error("SCDAV", Void)
@@ -3921,9 +3916,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs18.put (yyval18, yyvsp18)
 end
 when 139 then
---|#line 1273 "cadl_validator.y"
+--|#line 1268 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1273")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1268")
 end
 
 			if valid_iso8601_time_constraint_pattern(yyvs2.item (yyvsp2)) then
@@ -3968,9 +3963,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 140 then
---|#line 1294 "cadl_validator.y"
+--|#line 1289 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1294")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1289")
 end
 
 			create time_interval.make_point(yyvs22.item (yyvsp22))
@@ -3999,9 +3994,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 141 then
---|#line 1299 "cadl_validator.y"
+--|#line 1294 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1299")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1294")
 end
 
 			create c_time.make_range(time_interval)
@@ -4029,9 +4024,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 142 then
---|#line 1305 "cadl_validator.y"
+--|#line 1300 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1305")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1300")
 end
 
 
@@ -4040,9 +4035,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 143 then
---|#line 1306 "cadl_validator.y"
+--|#line 1301 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1306")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1301")
 end
 
 			if c_time.valid_value(yyvs22.item (yyvsp22)) then
@@ -4058,9 +4053,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 144 then
---|#line 1314 "cadl_validator.y"
+--|#line 1309 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1314")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1309")
 end
 
 			abort_with_error("SCTAV", Void)
@@ -4071,9 +4066,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 145 then
---|#line 1320 "cadl_validator.y"
+--|#line 1315 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1320")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1315")
 end
 
 			if valid_iso8601_date_time_constraint_pattern(yyvs2.item (yyvsp2)) then
@@ -4118,9 +4113,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 146 then
---|#line 1341 "cadl_validator.y"
+--|#line 1336 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1341")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1336")
 end
 
 			create date_time_interval.make_point(yyvs21.item (yyvsp21))
@@ -4149,9 +4144,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 147 then
---|#line 1346 "cadl_validator.y"
+--|#line 1341 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1346")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1341")
 end
 
 			create c_date_time.make_range(date_time_interval)
@@ -4179,9 +4174,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 148 then
---|#line 1352 "cadl_validator.y"
+--|#line 1347 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1352")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1347")
 end
 
 
@@ -4190,9 +4185,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 149 then
---|#line 1353 "cadl_validator.y"
+--|#line 1348 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1353")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1348")
 end
 
 			if c_date_time.valid_value(yyvs21.item (yyvsp21)) then
@@ -4208,9 +4203,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 150 then
---|#line 1361 "cadl_validator.y"
+--|#line 1356 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1361")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1356")
 end
 
 			abort_with_error("SCDTAV", Void)
@@ -4221,9 +4216,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 151 then
---|#line 1367 "cadl_validator.y"
+--|#line 1362 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1367")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1362")
 end
 
 
@@ -4232,9 +4227,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 152 then
---|#line 1368 "cadl_validator.y"
+--|#line 1363 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1368")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1363")
 end
 
 			create c_duration.make_pattern_with_range (c_duration.pattern, duration_interval)
@@ -4246,9 +4241,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 153 then
---|#line 1372 "cadl_validator.y"
+--|#line 1367 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1372")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1367")
 end
 
 			create duration_interval.make_point(yyvs23.item (yyvsp23))
@@ -4277,9 +4272,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 154 then
---|#line 1377 "cadl_validator.y"
+--|#line 1372 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1377")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1372")
 end
 
 			create c_duration.make_range(duration_interval)
@@ -4307,9 +4302,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 155 then
---|#line 1383 "cadl_validator.y"
+--|#line 1378 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1383")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1378")
 end
 
 			if valid_iso8601_duration_constraint_pattern (yyvs2.item (yyvsp2)) then
@@ -4341,9 +4336,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 156 then
---|#line 1393 "cadl_validator.y"
+--|#line 1388 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1393")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1388")
 end
 
 
@@ -4352,9 +4347,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 157 then
---|#line 1394 "cadl_validator.y"
+--|#line 1389 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1394")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1389")
 end
 
 			if c_duration.valid_value(yyvs23.item (yyvsp23)) then
@@ -4370,9 +4365,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 158 then
---|#line 1402 "cadl_validator.y"
+--|#line 1397 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1402")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1397")
 end
 
 			abort_with_error("SCDUAV", Void)
@@ -4383,9 +4378,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 159 then
---|#line 1408 "cadl_validator.y"
+--|#line 1403 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1408")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1403")
 end
 
 			create string_list.make(0)
@@ -4416,9 +4411,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 160 then
---|#line 1415 "cadl_validator.y"
+--|#line 1410 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1415")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1410")
 end
 
 			create c_string.make_from_string_list(yyvs27.item (yyvsp27))
@@ -4446,9 +4441,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 161 then
---|#line 1419 "cadl_validator.y"
+--|#line 1414 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1419")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1414")
 end
 
 			create c_string.make_from_string_list(yyvs27.item (yyvsp27))
@@ -4461,9 +4456,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 162 then
---|#line 1424 "cadl_validator.y"
+--|#line 1419 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1424")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1419")
 end
 
 			create c_string.make_from_regexp(yyvs2.item (yyvsp2).substring (2, yyvs2.item (yyvsp2).count - 1), yyvs2.item (yyvsp2).item(1) = '/')
@@ -4494,9 +4489,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 163 then
---|#line 1433 "cadl_validator.y"
+--|#line 1428 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1433")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1428")
 end
 
 
@@ -4505,9 +4500,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 164 then
---|#line 1434 "cadl_validator.y"
+--|#line 1429 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1434")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1429")
 end
 
 			if c_string.valid_value(yyvs2.item (yyvsp2)) then
@@ -4523,9 +4518,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 165 then
---|#line 1442 "cadl_validator.y"
+--|#line 1437 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1442")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1437")
 end
 
 			abort_with_error("SCSAV", Void)
@@ -4536,9 +4531,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 166 then
---|#line 1448 "cadl_validator.y"
+--|#line 1443 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1448")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1443")
 end
 
 			create c_boolean.make_true
@@ -4548,9 +4543,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 167 then
---|#line 1452 "cadl_validator.y"
+--|#line 1447 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1452")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1447")
 end
 
 			create c_boolean.make_false
@@ -4560,9 +4555,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 168 then
---|#line 1456 "cadl_validator.y"
+--|#line 1451 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1456")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1451")
 end
 
 			create c_boolean.make_true_false
@@ -4573,9 +4568,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 169 then
---|#line 1460 "cadl_validator.y"
+--|#line 1455 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1460")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1455")
 end
 
 			create c_boolean.make_true_false
@@ -4586,9 +4581,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 170 then
---|#line 1466 "cadl_validator.y"
+--|#line 1461 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1466")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1461")
 end
 
 
@@ -4597,9 +4592,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 171 then
---|#line 1467 "cadl_validator.y"
+--|#line 1462 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1467")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1462")
 end
 
 			if c_boolean.valid_value(yyvs19.item (yyvsp19)) then
@@ -4615,9 +4610,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 172 then
---|#line 1475 "cadl_validator.y"
+--|#line 1470 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1475")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1470")
 end
 
 			abort_with_error("SCBAV", Void)
@@ -4628,9 +4623,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 173 then
---|#line 1481 "cadl_validator.y"
+--|#line 1476 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1481")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1476")
 end
 
 
@@ -4639,9 +4634,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 174 then
---|#line 1482 "cadl_validator.y"
+--|#line 1477 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1482")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1477")
 end
 
 			if ordinal_node.has_item (yyvs3.item (yyvsp3)) then
@@ -4657,9 +4652,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 175 then
---|#line 1490 "cadl_validator.y"
+--|#line 1485 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1490")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1485")
 end
 
 			abort_with_error("SCOAV", Void)
@@ -4670,9 +4665,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 176 then
---|#line 1496 "cadl_validator.y"
+--|#line 1491 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1496")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1491")
 end
 
 
@@ -4681,9 +4676,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 177 then
---|#line 1497 "cadl_validator.y"
+--|#line 1492 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1497")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1492")
 end
 
 
@@ -4693,9 +4688,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 178 then
---|#line 1500 "cadl_validator.y"
+--|#line 1495 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1500")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1495")
 end
 
 			if ordinal_node = Void then
@@ -4720,9 +4715,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 179 then
---|#line 1519 "cadl_validator.y"
+--|#line 1514 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1519")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1514")
 end
 
 			create c_code_phrase_obj
@@ -4756,9 +4751,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 180 then
---|#line 1529 "cadl_validator.y"
+--|#line 1524 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1529")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1524")
 end
 
 			create c_code_phrase_obj.make_from_pattern(yyvs2.item (yyvsp2))
@@ -4786,9 +4781,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 181 then
---|#line 1535 "cadl_validator.y"
+--|#line 1530 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1535")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1530")
 end
 
 			create constraint_ref.make(yyvs2.item (yyvsp2))
@@ -4816,9 +4811,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 182 then
---|#line 1541 "cadl_validator.y"
+--|#line 1536 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1541")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1536")
 end
 
 			yyval2 := yyvs2.item (yyvsp2)
@@ -4828,9 +4823,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 183 then
---|#line 1545 "cadl_validator.y"
+--|#line 1540 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1545")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1540")
 end
 
 			yyval2 := yyvs2.item (yyvsp2)
@@ -4840,9 +4835,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 184 then
---|#line 1557 "cadl_validator.y"
+--|#line 1552 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1557")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1552")
 end
 
 			yyval2 := yyvs2.item (yyvsp2)
@@ -4853,9 +4848,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 185 then
---|#line 1561 "cadl_validator.y"
+--|#line 1556 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1561")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1556")
 end
 
 			yyval2 := yyvs2.item (yyvsp2)
@@ -4866,9 +4861,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 186 then
---|#line 1565 "cadl_validator.y"
+--|#line 1560 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1565")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1560")
 end
 
 			yyval2 := yyvs2.item (yyvsp2)
@@ -4878,9 +4873,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 187 then
---|#line 1569 "cadl_validator.y"
+--|#line 1564 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1569")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1564")
 end
 
 			yyval2 := yyvs2.item (yyvsp2)
@@ -4890,9 +4885,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 188 then
---|#line 1575 "cadl_validator.y"
+--|#line 1570 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1575")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1570")
 end
 
 			yyval2 := yyvs2.item (yyvsp2)
@@ -4902,9 +4897,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 189 then
---|#line 1581 "cadl_validator.y"
+--|#line 1576 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1581")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1576")
 end
 
 			create yyval27.make(0)
@@ -4935,9 +4930,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs27.put (yyval27, yyvsp27)
 end
 when 190 then
---|#line 1587 "cadl_validator.y"
+--|#line 1582 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1587")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1582")
 end
 
 			yyvs27.item (yyvsp27).extend(yyvs2.item (yyvsp2))
@@ -4950,9 +4945,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs27.put (yyval27, yyvsp27)
 end
 when 191 then
---|#line 1592 "cadl_validator.y"
+--|#line 1587 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1592")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1587")
 end
 
 			create yyval27.make(0)
@@ -4982,9 +4977,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs27.put (yyval27, yyvsp27)
 end
 when 192 then
---|#line 1599 "cadl_validator.y"
+--|#line 1594 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1599")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1594")
 end
 
 			yyval3 := yyvs3.item (yyvsp3)
@@ -4994,9 +4989,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs3.put (yyval3, yyvsp3)
 end
 when 193 then
---|#line 1602 "cadl_validator.y"
+--|#line 1597 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1602")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1597")
 end
 
 			yyval3 := yyvs3.item (yyvsp3)
@@ -5007,9 +5002,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs3.put (yyval3, yyvsp3)
 end
 when 194 then
---|#line 1605 "cadl_validator.y"
+--|#line 1600 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1605")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1600")
 end
 
 			yyval3 := - yyvs3.item (yyvsp3)
@@ -5020,9 +5015,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs3.put (yyval3, yyvsp3)
 end
 when 195 then
---|#line 1610 "cadl_validator.y"
+--|#line 1605 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1610")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1605")
 end
 
 			create yyval28.make(0)
@@ -5053,9 +5048,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs28.put (yyval28, yyvsp28)
 end
 when 196 then
---|#line 1616 "cadl_validator.y"
+--|#line 1611 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1616")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1611")
 end
 
 			yyvs28.item (yyvsp28).extend(yyvs3.item (yyvsp3))
@@ -5068,9 +5063,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs28.put (yyval28, yyvsp28)
 end
 when 197 then
---|#line 1621 "cadl_validator.y"
+--|#line 1616 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1621")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1616")
 end
 
 			create yyval28.make(0)
@@ -5100,9 +5095,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs28.put (yyval28, yyvsp28)
 end
 when 198 then
---|#line 1628 "cadl_validator.y"
+--|#line 1623 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1628")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1623")
 end
 
 			if yyvs3.item (yyvsp3 - 1) <= yyvs3.item (yyvsp3) then
@@ -5136,9 +5131,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs39.put (yyval39, yyvsp39)
 end
 when 199 then
---|#line 1637 "cadl_validator.y"
+--|#line 1632 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1637")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1632")
 end
 
 			if yyvs3.item (yyvsp3 - 1) <= yyvs3.item (yyvsp3) then
@@ -5172,9 +5167,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs39.put (yyval39, yyvsp39)
 end
 when 200 then
---|#line 1646 "cadl_validator.y"
+--|#line 1641 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1646")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1641")
 end
 
 			if yyvs3.item (yyvsp3 - 1) <= yyvs3.item (yyvsp3) then
@@ -5208,9 +5203,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs39.put (yyval39, yyvsp39)
 end
 when 201 then
---|#line 1655 "cadl_validator.y"
+--|#line 1650 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1655")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1650")
 end
 
 			if yyvs3.item (yyvsp3 - 1) <= yyvs3.item (yyvsp3) then
@@ -5244,9 +5239,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs39.put (yyval39, yyvsp39)
 end
 when 202 then
---|#line 1664 "cadl_validator.y"
+--|#line 1659 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1664")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1659")
 end
 
 			create integer_interval.make_lower_unbounded(yyvs3.item (yyvsp3), False)
@@ -5276,9 +5271,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs39.put (yyval39, yyvsp39)
 end
 when 203 then
---|#line 1669 "cadl_validator.y"
+--|#line 1664 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1669")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1664")
 end
 
 			create integer_interval.make_lower_unbounded(yyvs3.item (yyvsp3), True)
@@ -5308,9 +5303,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs39.put (yyval39, yyvsp39)
 end
 when 204 then
---|#line 1674 "cadl_validator.y"
+--|#line 1669 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1674")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1669")
 end
 
 			create integer_interval.make_upper_unbounded(yyvs3.item (yyvsp3), False)
@@ -5340,9 +5335,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs39.put (yyval39, yyvsp39)
 end
 when 205 then
---|#line 1679 "cadl_validator.y"
+--|#line 1674 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1679")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1674")
 end
 
 			create integer_interval.make_upper_unbounded(yyvs3.item (yyvsp3), True)
@@ -5372,9 +5367,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs39.put (yyval39, yyvsp39)
 end
 when 206 then
---|#line 1684 "cadl_validator.y"
+--|#line 1679 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1684")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1679")
 end
 
 			create integer_interval.make_point(yyvs3.item (yyvsp3))
@@ -5404,9 +5399,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs39.put (yyval39, yyvsp39)
 end
 when 207 then
---|#line 1691 "cadl_validator.y"
+--|#line 1686 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1691")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1686")
 end
 
 			yyval4 := yyvs4.item (yyvsp4)
@@ -5416,9 +5411,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs4.put (yyval4, yyvsp4)
 end
 when 208 then
---|#line 1695 "cadl_validator.y"
+--|#line 1690 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1695")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1690")
 end
 
 			yyval4 := yyvs4.item (yyvsp4)
@@ -5429,9 +5424,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs4.put (yyval4, yyvsp4)
 end
 when 209 then
---|#line 1699 "cadl_validator.y"
+--|#line 1694 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1699")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1694")
 end
 
 			yyval4 := - yyvs4.item (yyvsp4)
@@ -5442,9 +5437,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs4.put (yyval4, yyvsp4)
 end
 when 210 then
---|#line 1705 "cadl_validator.y"
+--|#line 1700 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1705")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1700")
 end
 
 			create yyval29.make(0)
@@ -5475,9 +5470,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs29.put (yyval29, yyvsp29)
 end
 when 211 then
---|#line 1711 "cadl_validator.y"
+--|#line 1706 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1711")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1706")
 end
 
 			yyvs29.item (yyvsp29).extend(yyvs4.item (yyvsp4))
@@ -5490,9 +5485,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs29.put (yyval29, yyvsp29)
 end
 when 212 then
---|#line 1716 "cadl_validator.y"
+--|#line 1711 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1716")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1711")
 end
 
 			create yyval29.make(0)
@@ -5522,9 +5517,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs29.put (yyval29, yyvsp29)
 end
 when 213 then
---|#line 1723 "cadl_validator.y"
+--|#line 1718 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1723")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1718")
 end
 
 			if yyvs4.item (yyvsp4 - 1) <= yyvs4.item (yyvsp4) then
@@ -5558,9 +5553,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs40.put (yyval40, yyvsp40)
 end
 when 214 then
---|#line 1732 "cadl_validator.y"
+--|#line 1727 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1732")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1727")
 end
 
 			if yyvs4.item (yyvsp4 - 1) <= yyvs4.item (yyvsp4) then
@@ -5594,9 +5589,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs40.put (yyval40, yyvsp40)
 end
 when 215 then
---|#line 1741 "cadl_validator.y"
+--|#line 1736 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1741")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1736")
 end
 
 			if yyvs4.item (yyvsp4 - 1) <= yyvs4.item (yyvsp4) then
@@ -5630,9 +5625,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs40.put (yyval40, yyvsp40)
 end
 when 216 then
---|#line 1750 "cadl_validator.y"
+--|#line 1745 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1750")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1745")
 end
 
 			if yyvs4.item (yyvsp4 - 1) <= yyvs4.item (yyvsp4) then
@@ -5666,9 +5661,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs40.put (yyval40, yyvsp40)
 end
 when 217 then
---|#line 1759 "cadl_validator.y"
+--|#line 1754 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1759")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1754")
 end
 
 			create real_interval.make_lower_unbounded(yyvs4.item (yyvsp4), False)
@@ -5698,9 +5693,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs40.put (yyval40, yyvsp40)
 end
 when 218 then
---|#line 1764 "cadl_validator.y"
+--|#line 1759 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1764")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1759")
 end
 
 			create real_interval.make_lower_unbounded(yyvs4.item (yyvsp4), True)
@@ -5730,9 +5725,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs40.put (yyval40, yyvsp40)
 end
 when 219 then
---|#line 1769 "cadl_validator.y"
+--|#line 1764 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1769")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1764")
 end
 
 			create real_interval.make_upper_unbounded(yyvs4.item (yyvsp4), False)
@@ -5762,9 +5757,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs40.put (yyval40, yyvsp40)
 end
 when 220 then
---|#line 1774 "cadl_validator.y"
+--|#line 1769 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1774")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1769")
 end
 
 			create real_interval.make_upper_unbounded(yyvs4.item (yyvsp4), True)
@@ -5794,9 +5789,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs40.put (yyval40, yyvsp40)
 end
 when 221 then
---|#line 1779 "cadl_validator.y"
+--|#line 1774 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1779")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1774")
 end
 
 			create real_interval.make_point(yyvs4.item (yyvsp4))
@@ -5826,9 +5821,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs40.put (yyval40, yyvsp40)
 end
 when 222 then
---|#line 1786 "cadl_validator.y"
+--|#line 1781 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1786")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1781")
 end
 
 			yyval19 := True
@@ -5856,9 +5851,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs19.put (yyval19, yyvsp19)
 end
 when 223 then
---|#line 1790 "cadl_validator.y"
+--|#line 1785 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1790")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1785")
 end
 
 			yyval19 := False
@@ -5886,9 +5881,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs19.put (yyval19, yyvsp19)
 end
 when 224 then
---|#line 1838 "cadl_validator.y"
+--|#line 1833 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1838")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1833")
 end
 
 			if valid_iso8601_date(yyvs2.item (yyvsp2)) then
@@ -5920,9 +5915,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs20.put (yyval20, yyvsp20)
 end
 when 225 then
---|#line 1866 "cadl_validator.y"
+--|#line 1861 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1866")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1861")
 end
 
 			if yyvs20.item (yyvsp20 - 1) <= yyvs20.item (yyvsp20) then
@@ -5956,9 +5951,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs42.put (yyval42, yyvsp42)
 end
 when 226 then
---|#line 1875 "cadl_validator.y"
+--|#line 1870 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1875")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1870")
 end
 
 			if yyvs20.item (yyvsp20 - 1) <= yyvs20.item (yyvsp20) then
@@ -5992,9 +5987,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs42.put (yyval42, yyvsp42)
 end
 when 227 then
---|#line 1884 "cadl_validator.y"
+--|#line 1879 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1884")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1879")
 end
 
 			if yyvs20.item (yyvsp20 - 1) <= yyvs20.item (yyvsp20) then
@@ -6028,9 +6023,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs42.put (yyval42, yyvsp42)
 end
 when 228 then
---|#line 1893 "cadl_validator.y"
+--|#line 1888 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1893")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1888")
 end
 
 			if yyvs20.item (yyvsp20 - 1) <= yyvs20.item (yyvsp20) then
@@ -6064,9 +6059,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs42.put (yyval42, yyvsp42)
 end
 when 229 then
---|#line 1902 "cadl_validator.y"
+--|#line 1897 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1902")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1897")
 end
 
 			create date_interval.make_lower_unbounded(yyvs20.item (yyvsp20), False)
@@ -6096,9 +6091,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs42.put (yyval42, yyvsp42)
 end
 when 230 then
---|#line 1907 "cadl_validator.y"
+--|#line 1902 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1907")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1902")
 end
 
 			create date_interval.make_lower_unbounded(yyvs20.item (yyvsp20), True)
@@ -6128,9 +6123,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs42.put (yyval42, yyvsp42)
 end
 when 231 then
---|#line 1912 "cadl_validator.y"
+--|#line 1907 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1912")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1907")
 end
 
 			create date_interval.make_upper_unbounded(yyvs20.item (yyvsp20), False)
@@ -6160,9 +6155,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs42.put (yyval42, yyvsp42)
 end
 when 232 then
---|#line 1917 "cadl_validator.y"
+--|#line 1912 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1917")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1912")
 end
 
 			create date_interval.make_upper_unbounded(yyvs20.item (yyvsp20), True)
@@ -6192,9 +6187,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs42.put (yyval42, yyvsp42)
 end
 when 233 then
---|#line 1922 "cadl_validator.y"
+--|#line 1917 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1922")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1917")
 end
 
 			create date_interval.make_point(yyvs20.item (yyvsp20))
@@ -6224,9 +6219,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs42.put (yyval42, yyvsp42)
 end
 when 234 then
---|#line 1929 "cadl_validator.y"
+--|#line 1924 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1929")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1924")
 end
 
 			if valid_iso8601_time(yyvs2.item (yyvsp2)) then
@@ -6258,9 +6253,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs22.put (yyval22, yyvsp22)
 end
 when 235 then
---|#line 1957 "cadl_validator.y"
+--|#line 1952 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1957")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1952")
 end
 
 			if yyvs22.item (yyvsp22 - 1) <= yyvs22.item (yyvsp22) then
@@ -6294,9 +6289,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs41.put (yyval41, yyvsp41)
 end
 when 236 then
---|#line 1966 "cadl_validator.y"
+--|#line 1961 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1966")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1961")
 end
 
 			if yyvs22.item (yyvsp22 - 1) <= yyvs22.item (yyvsp22) then
@@ -6330,9 +6325,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs41.put (yyval41, yyvsp41)
 end
 when 237 then
---|#line 1975 "cadl_validator.y"
+--|#line 1970 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1975")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1970")
 end
 
 			if yyvs22.item (yyvsp22 - 1) <= yyvs22.item (yyvsp22) then
@@ -6366,9 +6361,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs41.put (yyval41, yyvsp41)
 end
 when 238 then
---|#line 1984 "cadl_validator.y"
+--|#line 1979 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1984")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1979")
 end
 
 			if yyvs22.item (yyvsp22 - 1) <= yyvs22.item (yyvsp22) then
@@ -6402,9 +6397,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs41.put (yyval41, yyvsp41)
 end
 when 239 then
---|#line 1993 "cadl_validator.y"
+--|#line 1988 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1993")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1988")
 end
 
 			create time_interval.make_lower_unbounded(yyvs22.item (yyvsp22), False)
@@ -6434,9 +6429,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs41.put (yyval41, yyvsp41)
 end
 when 240 then
---|#line 1998 "cadl_validator.y"
+--|#line 1993 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1998")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1993")
 end
 
 			create time_interval.make_lower_unbounded(yyvs22.item (yyvsp22), True)
@@ -6466,9 +6461,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs41.put (yyval41, yyvsp41)
 end
 when 241 then
---|#line 2003 "cadl_validator.y"
+--|#line 1998 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2003")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1998")
 end
 
 			create time_interval.make_upper_unbounded(yyvs22.item (yyvsp22), False)
@@ -6498,9 +6493,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs41.put (yyval41, yyvsp41)
 end
 when 242 then
---|#line 2008 "cadl_validator.y"
+--|#line 2003 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2008")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2003")
 end
 
 			create time_interval.make_upper_unbounded(yyvs22.item (yyvsp22), True)
@@ -6530,9 +6525,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs41.put (yyval41, yyvsp41)
 end
 when 243 then
---|#line 2013 "cadl_validator.y"
+--|#line 2008 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2013")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2008")
 end
 
 			create time_interval.make_point(yyvs22.item (yyvsp22))
@@ -6562,9 +6557,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs41.put (yyval41, yyvsp41)
 end
 when 244 then
---|#line 2020 "cadl_validator.y"
+--|#line 2015 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2020")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2015")
 end
 
 			if valid_iso8601_date_time(yyvs2.item (yyvsp2)) then
@@ -6596,9 +6591,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs21.put (yyval21, yyvsp21)
 end
 when 245 then
---|#line 2048 "cadl_validator.y"
+--|#line 2043 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2048")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2043")
 end
 
 			if yyvs21.item (yyvsp21 - 1) <= yyvs21.item (yyvsp21) then
@@ -6632,9 +6627,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs43.put (yyval43, yyvsp43)
 end
 when 246 then
---|#line 2057 "cadl_validator.y"
+--|#line 2052 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2057")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2052")
 end
 
 			if yyvs21.item (yyvsp21 - 1) <= yyvs21.item (yyvsp21) then
@@ -6668,9 +6663,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs43.put (yyval43, yyvsp43)
 end
 when 247 then
---|#line 2066 "cadl_validator.y"
+--|#line 2061 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2066")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2061")
 end
 
 			if yyvs21.item (yyvsp21 - 1) <= yyvs21.item (yyvsp21) then
@@ -6704,9 +6699,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs43.put (yyval43, yyvsp43)
 end
 when 248 then
---|#line 2075 "cadl_validator.y"
+--|#line 2070 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2075")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2070")
 end
 
 			if yyvs21.item (yyvsp21 - 1) <= yyvs21.item (yyvsp21) then
@@ -6740,9 +6735,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs43.put (yyval43, yyvsp43)
 end
 when 249 then
---|#line 2084 "cadl_validator.y"
+--|#line 2079 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2084")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2079")
 end
 
 			create date_time_interval.make_lower_unbounded(yyvs21.item (yyvsp21), False)
@@ -6772,9 +6767,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs43.put (yyval43, yyvsp43)
 end
 when 250 then
---|#line 2089 "cadl_validator.y"
+--|#line 2084 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2089")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2084")
 end
 
 			create date_time_interval.make_lower_unbounded(yyvs21.item (yyvsp21), True)
@@ -6804,9 +6799,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs43.put (yyval43, yyvsp43)
 end
 when 251 then
---|#line 2094 "cadl_validator.y"
+--|#line 2089 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2094")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2089")
 end
 
 			create date_time_interval.make_upper_unbounded(yyvs21.item (yyvsp21), False)
@@ -6836,9 +6831,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs43.put (yyval43, yyvsp43)
 end
 when 252 then
---|#line 2099 "cadl_validator.y"
+--|#line 2094 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2099")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2094")
 end
 
 			create date_time_interval.make_upper_unbounded(yyvs21.item (yyvsp21), True)
@@ -6868,9 +6863,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs43.put (yyval43, yyvsp43)
 end
 when 253 then
---|#line 2104 "cadl_validator.y"
+--|#line 2099 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2104")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2099")
 end
 
 			create date_time_interval.make_point(yyvs21.item (yyvsp21))
@@ -6900,9 +6895,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs43.put (yyval43, yyvsp43)
 end
 when 254 then
---|#line 2111 "cadl_validator.y"
+--|#line 2106 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2111")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2106")
 end
 
 			if valid_iso8601_duration(yyvs2.item (yyvsp2)) then
@@ -6934,9 +6929,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs23.put (yyval23, yyvsp23)
 end
 when 255 then
---|#line 2139 "cadl_validator.y"
+--|#line 2134 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2139")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2134")
 end
 
 			if yyvs23.item (yyvsp23 - 1) <= yyvs23.item (yyvsp23) then
@@ -6970,9 +6965,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs44.put (yyval44, yyvsp44)
 end
 when 256 then
---|#line 2148 "cadl_validator.y"
+--|#line 2143 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2148")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2143")
 end
 
 			if yyvs23.item (yyvsp23 - 1) <= yyvs23.item (yyvsp23) then
@@ -7006,9 +7001,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs44.put (yyval44, yyvsp44)
 end
 when 257 then
---|#line 2157 "cadl_validator.y"
+--|#line 2152 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2157")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2152")
 end
 
 			if yyvs23.item (yyvsp23 - 1) <= yyvs23.item (yyvsp23) then
@@ -7042,9 +7037,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs44.put (yyval44, yyvsp44)
 end
 when 258 then
---|#line 2166 "cadl_validator.y"
+--|#line 2161 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2166")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2161")
 end
 
 			if yyvs23.item (yyvsp23 - 1) <= yyvs23.item (yyvsp23) then
@@ -7078,9 +7073,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs44.put (yyval44, yyvsp44)
 end
 when 259 then
---|#line 2175 "cadl_validator.y"
+--|#line 2170 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2175")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2170")
 end
 
 			create duration_interval.make_lower_unbounded(yyvs23.item (yyvsp23), False)
@@ -7110,9 +7105,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs44.put (yyval44, yyvsp44)
 end
 when 260 then
---|#line 2180 "cadl_validator.y"
+--|#line 2175 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2180")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2175")
 end
 
 			create duration_interval.make_lower_unbounded(yyvs23.item (yyvsp23), True)
@@ -7142,9 +7137,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs44.put (yyval44, yyvsp44)
 end
 when 261 then
---|#line 2185 "cadl_validator.y"
+--|#line 2180 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2185")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2180")
 end
 
 			create duration_interval.make_upper_unbounded(yyvs23.item (yyvsp23), False)
@@ -7174,9 +7169,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs44.put (yyval44, yyvsp44)
 end
 when 262 then
---|#line 2190 "cadl_validator.y"
+--|#line 2185 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2190")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2185")
 end
 
 			create duration_interval.make_upper_unbounded(yyvs23.item (yyvsp23), True)
@@ -7206,9 +7201,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs44.put (yyval44, yyvsp44)
 end
 when 263 then
---|#line 2195 "cadl_validator.y"
+--|#line 2190 "cadl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2195")
+	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2190")
 end
 
 			create duration_interval.make_point(yyvs23.item (yyvsp23))
@@ -8275,9 +8270,12 @@ feature -- Initialization
 			make_parser_skeleton
 		end
 
-	execute (in_text:STRING; a_source_start_line: INTEGER; differential_flag: BOOLEAN)
+	execute (in_text:STRING; a_source_start_line: INTEGER; differential_flag: BOOLEAN; an_rm_schema: SCHEMA_ACCESS)
+		require
+			Rm_schema_available: an_rm_schema /= Void
 		do
 			reset
+			rm_schema := an_rm_schema
 			source_start_line := a_source_start_line
 			differential_syntax := differential_flag
 
@@ -8331,6 +8329,8 @@ feature -- Access
 			-- differential syntax variants, i.e. ordering markers and specialisation paths
 
 feature {NONE} -- Implementation
+
+	rm_schema: SCHEMA_ACCESS
 
 	safe_put_c_attribute_child (an_attr: C_ATTRIBUTE; an_obj: C_OBJECT)
 			-- check child object for validity and then put as new child

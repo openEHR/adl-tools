@@ -22,30 +22,32 @@ inherit
 			all
 		end
 
-	SHARED_REFERENCE_MODEL_ACCESS
-
 create
 	make_specialised, make_non_specialised
 
 feature -- Initialisation
 
-	make_specialised (a_flat_archetype: FLAT_ARCHETYPE; a_src_archetype: DIFFERENTIAL_ARCHETYPE)
+	make_specialised (a_flat_archetype: FLAT_ARCHETYPE; a_src_archetype: DIFFERENTIAL_ARCHETYPE; an_rm_schema: SCHEMA_ACCESS)
 			-- create with flat archetype of parent and source (differential) archetype of
 			-- archetype for which we wish to generate a flat archetype
 		require
 			Flat_archetype_attached: a_flat_archetype /= Void
 			Src_archetype_attached: a_src_archetype /= Void
 			Comparability: comparable_archetypes(a_flat_archetype, a_src_archetype)
+			Rm_schema_available: an_rm_schema /= Void
 		do
+			rm_schema := an_rm_schema
 			arch_parent_flat := a_flat_archetype
 			arch_child_diff := a_src_archetype
 		end
 
-	make_non_specialised (a_src_archetype: DIFFERENTIAL_ARCHETYPE)
+	make_non_specialised (a_src_archetype: DIFFERENTIAL_ARCHETYPE; an_rm_schema: SCHEMA_ACCESS)
 			-- create with source (differential) archetype
 		require
 			Src_archetype_attached: a_src_archetype /= Void
+			Rm_schema_available: an_rm_schema /= Void
 		do
+			rm_schema := an_rm_schema
 			arch_child_diff := a_src_archetype
 		end
 
@@ -65,8 +67,6 @@ feature -- Commands
 	flatten
 			-- flatten archetype to `arch_output_flat'; if non-specialised, then flatten against reference model
 			-- (just pick up existence and cardinality); if specialised, flatten against a flat parent archetype
-		require
-			Rm_available: rm_schema.model_loaded
 		local
 			def_it: C_ITERATOR
 		do
@@ -113,6 +113,8 @@ feature -- Comparison
 		end
 
 feature {NONE} -- Implementation
+
+	rm_schema: SCHEMA_ACCESS
 
 	expand_definition_use_nodes
 			-- if there are overrides in the specialised child that are located at use_node positions, we
@@ -247,9 +249,9 @@ feature {NONE} -- Implementation
 								io.put_string ("%Toverlay immediate node " + cco_child_diff.node_id + " on flat parent " + cco_output_flat.node_id + "%N")
 							end
 							if cco_output_flat.parent /= Void then
-								cco_output_flat.parent.overlay_differential(cco_output_flat, cco_child_diff)
+								cco_output_flat.parent.overlay_differential(cco_output_flat, cco_child_diff, rm_schema)
 							else
-								cco_output_flat.overlay_differential(cco_child_diff)
+								cco_output_flat.overlay_differential(cco_child_diff, rm_schema)
 							end
 
 							-- iterate through child attributes and overlay a) new nodes in existing container attributes, and b) new attributes from child

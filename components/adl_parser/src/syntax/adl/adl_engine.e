@@ -92,19 +92,23 @@ feature -- Access
 
 feature -- Commands
 
-	parse_differential (text: STRING): DIFFERENTIAL_ARCHETYPE
+	parse_differential (text: STRING; an_rm_schema: SCHEMA_ACCESS): DIFFERENTIAL_ARCHETYPE
 			-- parse text as differential archetype. If successful, `archetype' contains the parse structure.
 		require
 			Text_exists: text /= Void
+			Rm_schema_available: an_rm_schema /= Void
 		do
+			rm_schema := an_rm_schema
 			Result ?= parse(text, True)
 		end
 
-	parse_flat (text: STRING): FLAT_ARCHETYPE
+	parse_flat (text: STRING; an_rm_schema: SCHEMA_ACCESS): FLAT_ARCHETYPE
 			-- parse text as flat archetype. If successful, `archetype' contains the parse structure.
 		require
 			Text_exists: text /= Void
+			Rm_schema_available: an_rm_schema /= Void
 		do
+			rm_schema := an_rm_schema
 			Result ?= parse(text, False)
 		end
 
@@ -192,14 +196,14 @@ feature {NONE} -- Implementation
 						end
 
 						------------------- definition section ---------------
-						definition_context.set_source(adl_parser.definition_text, adl_parser.definition_text_start_line, differential_source_flag)
+						definition_context.set_source(adl_parser.definition_text, adl_parser.definition_text_start_line, differential_source_flag, rm_schema)
 						definition_context.parse
 						if not definition_context.parse_succeeded then
 							parse_error_text := definition_context.parse_error_text
 						else
 							------------------- invariant section ---------------
 							if adl_parser.invariant_text /= Void and then not adl_parser.invariant_text.is_empty then
-								invariant_context.set_source(adl_parser.invariant_text, adl_parser.invariant_text_start_line, differential_source_flag)
+								invariant_context.set_source(adl_parser.invariant_text, adl_parser.invariant_text_start_line, differential_source_flag, rm_schema)
 								invariant_context.parse
 								if not invariant_context.parse_succeeded then
 									parse_error_text := invariant_context.parse_error_text
@@ -302,6 +306,8 @@ feature {NONE} -- Implementation
 	invariant_context: ASSERTION_ENGINE
 
 	ontology_context: DADL_ENGINE
+
+	rm_schema: SCHEMA_ACCESS
 
 	res_desc_id: INTEGER
 			-- dynamic type id of RESOURCE_DESCRIPTION type

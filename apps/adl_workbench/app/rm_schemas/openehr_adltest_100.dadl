@@ -14,8 +14,13 @@
 -- 	last_change: $LastChangedDate$
 -- 
 
-schema_name = <"openEHR_adltest">
-schema_release = <"1.0.0">
+schema_revision = <"$LastChangedRevision$">
+schema_lifecycle_state = <"experimental">
+schema_description = <"openEHR test schema to support test archetypes">
+
+model_publisher = <"openehr">
+model_name = <"test">
+model_release = <"1.0.0">
 packages = <
 	["adltest"] = <
 		name = <"adltest">

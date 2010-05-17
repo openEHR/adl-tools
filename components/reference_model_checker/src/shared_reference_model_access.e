@@ -40,22 +40,20 @@ feature -- Definitions
 
 feature -- Access
 
-	rm_schema: SCHEMA_ACCESS
-			-- currently chosen reference model
+	rm_schema_for_package (a_qualified_package_name: STRING): SCHEMA_ACCESS
+			-- Return schema containing the package-class key `a_qualified_package_name', e.g. "openEHR-EHR"
+		require
+			has_rm_schema_for_package (a_qualified_package_name.as_lower)
 		do
-			if rm_schemas.found then
-				Result := rm_schemas.found_item
-			end
+			Result := rm_schemas_by_package.item (a_qualified_package_name.as_lower)
 		end
 
 feature -- Status Report
 
-	has_rm_schema (a_schema_name: STRING): BOOLEAN
-			-- True if there is a schema for given pacakge name; side-effect: sets rm_checker to point to this item
-		require
-			schema_name_attached: a_schema_name /= Void
+	has_rm_schema_for_package (a_qualified_package_name: STRING): BOOLEAN
+			-- True if there is a schema containing the qualified package key `a_qualified_package_name', e.g. "openEHR-EHR"
 		do
-			Result := rm_schemas.has_key(a_schema_name.as_lower)
+			Result := rm_schemas_by_package.has (a_qualified_package_name.as_lower)
 		end
 
 	found_rm_schemas: BOOLEAN
@@ -66,13 +64,15 @@ feature -- Status Report
 
 feature {NONE} -- Implementation
 
-	rm_schemas: HASH_TABLE [SCHEMA_ACCESS, STRING]
+	rm_schema_metadata_table: HASH_TABLE [HASH_TABLE [STRING, STRING], STRING]
+			-- table of schema meta-data + path, keyed by schema name
+			-- note that schema_name is created from
+			-- 	model_publisher '_' model_name '_' model_release
+			-- e.g. openehr_rm_1.0.3, openehr_test_1.0.1, iso_13606-1_2008
 		local
 			dir: DIRECTORY
-			ma: SCHEMA_ACCESS
-			schema_path: STRING
 			dmp: DADL_MINI_PARSER
-			schema_list: HASH_TABLE [HASH_TABLE [STRING, STRING], STRING]
+			schema_name, schema_path: STRING
 		once
 			create Result.make(0)
 			create dir.make_open_read (default_rm_schema_directory)
@@ -82,9 +82,6 @@ feature {NONE} -- Implementation
 				post_error (Current, "rm_schemas", "model_access_e6", <<default_rm_schema_directory>>)
 			else
 				create dmp
-				create schema_list.make (0)
-
-				-- first scan all RM files and extract basic meta-data
 				from
 					dir.start
 					dir.readentry
@@ -95,27 +92,81 @@ feature {NONE} -- Implementation
 						schema_path := default_rm_schema_directory + os_directory_separator.out + dir.lastentry
 						dmp.extract_attr_values (schema_path, Schema_fast_parse_attrs)
 						if dmp.last_parse_valid then
-							schema_list.put (dmp.last_parse_content, schema_path)
+							dmp.last_parse_content.put (schema_path, Metadata_schema_path)
+							schema_name := create_schema_name (dmp.last_parse_content_item (Metadata_model_publisher), dmp.last_parse_content_item (Metadata_model_name), dmp.last_parse_content_item (Metadata_model_release))
+
+							-- check for two schema files purporting to be the exact same schema (including release)
+							if Result.has(schema_name) then
+								post_warning (Current, "rm_schemas", "model_access_w2", <<schema_name, schema_path>>)
+							else
+								Result.put (dmp.last_parse_content, schema_name)
+							end
 						end
 					end
 					dir.readentry
 				end
-
-				-- now parse those we will use
-				from schema_list.start until schema_list.off loop
-					schema_path := schema_list.key_for_iteration
-					create ma.make(schema_path)
-					if ma.model_loaded then
-						post_info (Current, "rm_schemas", "general", <<ma.status>>)
-						Result.force (ma, ma.schema.schema_name.as_lower)
-					else
-						post_error (Current, "rm_schemas", "general", <<ma.status>>)
-					end
-					schema_list.forth
+				if Result.is_empty then
+					post_error (Current, "rm_schemas", "model_access_e6", <<default_rm_schema_directory>>)
 				end
 			end
-			if rm_schemas.is_empty then
-				post_error (Current, "rm_schemas", "model_access_e6", <<default_rm_schema_directory>>)
+		end
+
+	rm_schemas: HASH_TABLE [SCHEMA_ACCESS, STRING]
+			-- schemas keyed by logical schema_name, i.e. model_publisher '_' model_name, e.g. "openehr_rm"
+		local
+			ma: SCHEMA_ACCESS
+			schema_path, model_publisher, model_name, logical_schema_name: STRING
+		once
+			create Result.make(0)
+			if not rm_schema_metadata_table.is_empty then
+				-- parse available schemas, ignoring duplicates
+				from rm_schema_metadata_table.start until rm_schema_metadata_table.off loop
+					schema_path := rm_schema_metadata_table.item_for_iteration.item (Metadata_schema_path)
+					model_publisher := rm_schema_metadata_table.item_for_iteration.item (Metadata_model_publisher)
+					model_name := rm_schema_metadata_table.item_for_iteration.item (Metadata_model_name)
+					logical_schema_name := (model_publisher + "_" + model_name).as_lower
+
+					if not rm_schemas.has (logical_schema_name) then
+						create ma.make(schema_path)
+						if ma.model_loaded then
+							Result.put (ma, logical_schema_name)
+							post_info (Current, "rm_schemas", "general", <<ma.status>>)
+						else
+							post_error (Current, "rm_schemas", "general", <<ma.status>>)
+						end
+					else
+						post_warning (Current, "rm_schemas", "model_access_w2", <<logical_schema_name, schema_path>>)
+					end
+					rm_schema_metadata_table.forth
+				end
+			end
+		end
+
+	rm_schemas_by_package: HASH_TABLE [SCHEMA_ACCESS, STRING]
+			-- schemas keyed by qualified package name, i.e. model_publisher '-' package_name, e.g. "openehr-ehr";
+			-- this matches the qualifide package name part of an ARCHETYPE_ID
+		local
+			qualified_pkg_name, model_publisher: STRING
+			pkgs: HASH_TABLE [BMM_PACKAGE_DEFINITION, STRING]
+		once
+			create Result.make(0)
+			-- parse available schemas, ignoring duplicates
+			from rm_schemas.start until rm_schemas.off loop
+				model_publisher := rm_schemas.item_for_iteration.schema.model_publisher
+				pkgs := rm_schemas.item_for_iteration.schema.packages
+
+				-- put a ref to schema, keyed by the model_publisher-package_name key (lower-case) for later lookup by compiler
+				from pkgs.start until pkgs.off loop
+					qualified_pkg_name := (model_publisher + {ARCHETYPE_ID}.section_separator.out + pkgs.item_for_iteration.name).as_lower
+					if not Result.has (qualified_pkg_name) then
+						Result.put (rm_schemas.item_for_iteration, qualified_pkg_name)
+					else
+						post_warning (Current, "rm_schemas", "model_access_w3", <<qualified_pkg_name, rm_schemas.item_for_iteration.schema.schema_name>>)
+					end
+					pkgs.forth
+				end
+
+				rm_schemas.forth
 			end
 		end
 

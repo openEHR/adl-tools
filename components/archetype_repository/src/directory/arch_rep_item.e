@@ -29,6 +29,13 @@ inherit
 			is_equal
 		end
 
+	BMM_DEFINITIONS
+		export
+			{NONE} all
+		undefine
+			is_equal
+		end
+
 	COMPARABLE
 
 feature -- Definitions

@@ -252,7 +252,7 @@ feature -- Commands
 			until
 				source_repos.source_repositories.off
 			loop
-				source_repos.source_repositories.item_for_iteration.repopulate
+				source_repos.source_repositories.item_for_iteration.populate
 				archs := source_repos.source_repositories.item_for_iteration.fast_archetype_list
 
 				-- maintain a status list indicatig status of each attempted archetype; values:
@@ -492,8 +492,7 @@ feature {NONE} -- Implementation
 			-- Archetypes opened adhoc are also grafted here.
 
 	ontology_index: attached HASH_TABLE [ARCH_REP_ITEM, STRING]
-			-- Index of archetype & class nodes, keyed by ontology concept. Used during
-			-- construction of `directory'
+			-- Index of archetype & class nodes, keyed by ontology concept. Used during construction of `directory'
 			-- For class nodes, this will be package_name-class_name, e.g. DEMOGRAPHIC-PARTY.
 			-- For archetype nodes, this will be the archetype id.
 
@@ -510,25 +509,24 @@ feature {NONE} -- Implementation
 			create {ARCH_REP_MODEL_NODE} Result.make_category (Archetype_category.twin)
 			parent_node := Result
 			from rm_schemas.start until rm_schemas.off loop
-				if rm_schemas.item_for_iteration.has_class_definition ("LOCATABLE") then
-					pkgs := rm_schemas.item_for_iteration.schema.packages
-					from pkgs.start until pkgs.off loop
-						pkg_name := pkgs.item_for_iteration.name.as_upper
-						create arm.make_package(pkg_name)
-						parent_node.put_child (arm)
+				pkgs := rm_schemas.item_for_iteration.schema.packages
+				from pkgs.start until pkgs.off loop
+					pkg_name := pkgs.item_for_iteration.name.as_upper
+					create arm.make_package(pkg_name)
+					parent_node.put_child (arm)
 
-						-- now create a list of classes inheriting from LOCATABLE that are among the suppliers of
-						-- the top-level class of the package; this gives the classes that could be archetyped in
-						-- that package
-						create supp_list.make (0)
-						supp_list.compare_objects
-						from pkgs.item_for_iteration.classes.start until pkgs.item_for_iteration.classes.off loop
-							supp_list.merge (rm_schemas.item_for_iteration.class_definition (pkgs.item_for_iteration.classes.item).all_suppliers)
-							supp_list.extend (pkgs.item_for_iteration.classes.item)
-							pkgs.item_for_iteration.classes.forth
-						end
+					create supp_list.make (0)
+					supp_list.compare_objects
+					from pkgs.item_for_iteration.classes.start until pkgs.item_for_iteration.classes.off loop
+						supp_list.merge (rm_schemas.item_for_iteration.class_definition (pkgs.item_for_iteration.classes.item).all_suppliers)
+						supp_list.extend (pkgs.item_for_iteration.classes.item)
+						pkgs.item_for_iteration.classes.forth
+					end
 
-						-- clean suppliers list so that only LOCATABLEs remain
+					-- now create a list of classes inheriting from LOCATABLE that are among the suppliers of
+					-- the top-level class of the package; this gives the classes that could be archetyped in
+					-- that package
+					if rm_schemas.item_for_iteration.has_class_definition ("LOCATABLE") then
 						from supp_list.start until supp_list.off loop
 							if not rm_schemas.item_for_iteration.is_descendant_of (supp_list.item, "LOCATABLE") then
 								supp_list.remove
@@ -536,34 +534,34 @@ feature {NONE} -- Implementation
 								supp_list.forth
 							end
 						end
+					end
 
-						-- clean suppliers list so that only highest class in any inheritance subtree remains
-						supp_list.start
-						supp_list_copy := supp_list.duplicate (supp_list.count)
-						from supp_list.start until supp_list.off loop
-							removed := False
-							from supp_list_copy.start until supp_list_copy.off or removed loop
-								if rm_schemas.item_for_iteration.is_descendant_of (supp_list.item, supp_list_copy.item) then
-									supp_list.remove
-									removed := True
-								end
-								supp_list_copy.forth
+					-- clean suppliers list so that only highest class in any inheritance subtree remains
+					supp_list.start
+					supp_list_copy := supp_list.duplicate (supp_list.count)
+					from supp_list.start until supp_list.off loop
+						removed := False
+						from supp_list_copy.start until supp_list_copy.off or removed loop
+							if rm_schemas.item_for_iteration.is_descendant_of (supp_list.item, supp_list_copy.item) then
+								supp_list.remove
+								removed := True
 							end
-
-							if not removed then
-								supp_list.forth
-							end
+							supp_list_copy.forth
 						end
 
-						-- convert to BMM_CLASS_DESCRIPTORs
-						create supp_class_list.make(0)
-						from supp_list.start until supp_list.off loop
-							supp_class_list.extend (rm_schemas.item_for_iteration.class_definition (supp_list.item))
+						if not removed then
 							supp_list.forth
 						end
-						add_child_nodes (pkg_name, supp_class_list, arm)
-						pkgs.forth
 					end
+
+					-- convert to BMM_CLASS_DESCRIPTORs
+					create supp_class_list.make(0)
+					from supp_list.start until supp_list.off loop
+						supp_class_list.extend (rm_schemas.item_for_iteration.class_definition (supp_list.item))
+						supp_list.forth
+					end
+					add_child_nodes (pkg_name, supp_class_list, arm)
+					pkgs.forth
 				end
 				rm_schemas.forth
 			end

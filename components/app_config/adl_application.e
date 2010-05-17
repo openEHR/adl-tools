@@ -64,6 +64,7 @@ feature -- Message database
 			["unhandled_exception"] = <"Exception caught but not handled: $1">
 			["general_error"] = <"Error: $1">
 			["general"] = <"$1">
+			["cfg_file_i1"] = <"Wrote config file $1">
 			
 			-- DT_OBJECT_CONVERTER.dt_to_object
 			["container_type_mismatch"] = 
@@ -82,13 +83,15 @@ feature -- Message database
 			["model_access_e0"] = <"No reference model schema files found in $1">
 			["model_access_e1"] = <"Reference Model schema file $1 does not exist or not readable">
 			["model_access_e2"] = <"Reference Model schema $1 parse failure; reason: $2">
-			["model_access_e3"] = <"Reference Model schema containes unknown type $1 (object add failed)">
+			["model_access_e3"] = <"Reference Model schema contains unknown type $1 (object add failed)">
 			["model_access_e4"] = <"Reference Model schema $1 load failure due to exception during processing">
 			["model_access_e5"] = <"Reference Model schema directory $1 does not exist or not readable">
 			["model_access_e6"] = <"Reference Model schema directory $1 does not contain any schemas (expecting structure $1/model_name/schema_file.dadl)">
 			["model_access_e7"] = <"No Reference Model schema found for model '$1'">
-			["model_access_i1"] = <"Reference Model $1 $2 loaded: $3 primitive types, $4 class definitions">
+			["model_access_i1"] = <"Reference Model $1 loaded: $2 primitive types, $3 class definitions">
 			["model_access_w1"] = <"Reference Model checking is OFF">
+			["model_access_w2"] = <"Duplicate Reference Model schema found for model '$1' in file $2">
+			["model_access_w3"] = <"Duplicate instance of Reference Model package $1 found; ignoring instance from schema $2">
 			
 			-- MAIN_WINDOW
 			["adl_version_warning"] = <"Using ADL version $1 for output serialisation">

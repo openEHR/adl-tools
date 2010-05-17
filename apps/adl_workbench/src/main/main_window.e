@@ -175,42 +175,41 @@ feature -- Status setting
 				quit_dialog.show_modal_to_window (Current)
 				ev_application.destroy
 			else
+				-- post any info from actions called in `user_initialization'			
 				append_status_area (billboard.content)
 				billboard.clear
+
+				if reference_repository_path.is_empty then
+					set_reference_repository_path (application_startup_directory)
+					set_repository
+				else
+					populate_archetype_directory
+				end
+
+				archetype_compiler.set_visual_update_action (agent build_gui_update)
+				initialise_overall_appearance
+				path_map_control.initialise_controls
+
+				Precursor
+
+				initialise_splitter (test_split_area, test_split_position)
+				initialise_splitter (explorer_split_area, explorer_split_position)
+				initialise_splitter (total_split_area, total_split_position)
+				focus_first_widget (main_notebook.selected_item)
+
+				if app_maximised then
+					maximize
+				end
+
+				if editor_command.is_empty then
+					set_editor_command (default_editor_command)
+				end
+
+				if new_news then
+					display_news
+					update_status_file
+				end
 			end
-
-			if reference_repository_path.is_empty then
-				set_reference_repository_path (application_startup_directory)
-				set_repository
-			else
-				populate_archetype_directory
-			end
-
-			archetype_compiler.set_visual_update_action (agent build_gui_update)
-			initialise_overall_appearance
-			path_map_control.initialise_controls
-
-			Precursor
-
-			initialise_splitter (test_split_area, test_split_position)
-			initialise_splitter (explorer_split_area, explorer_split_position)
-			initialise_splitter (total_split_area, total_split_position)
-			focus_first_widget (main_notebook.selected_item)
-
-			if app_maximised then
-				maximize
-			end
-
-			if editor_command.is_empty then
-				set_editor_command (default_editor_command)
-			end
-
-			if new_news then
-				display_news
-				update_status_file
-			end
-
-			append_status_area (billboard.content)
 		end
 
 feature -- File events
@@ -512,11 +511,12 @@ feature {NONE} -- Repository events
 	refresh_repository
 			-- refresh the current repository from source.
 		do
-			set_status_area ("Populating repository ...")
+			append_status_area ("Populating repository ...")
 			arch_dir.refresh
 			archetype_view_tree_control.populate
 			archetype_test_tree_control.populate
 			populate_statistics
+			append_status_area ("complete%N")
 		end
 
 	build_all
@@ -955,7 +955,7 @@ feature {NONE} -- Implementation
 			-- Save the application configuration file and update the status area.
 		do
 			save_resources
-			append_status_area ("Wrote config file %"" + resource_config_file_name + "%".%N")
+			post_info (Current, "save_resources_and_show_status", "cfg_file_i1", <<resource_config_file_name>>)
 		end
 
 	status_area_background_color: EV_COLOR
@@ -994,7 +994,7 @@ feature {NONE} -- Implementation
 					arch_dir.make
 					clear_all_controls
 					compiler_error_control.clear
-					append_status_area ("Populating repository ...%N")
+					append_status_area ("Populating repository ... ")
 					select_node_in_archetype_tree_view
 
 					if source_repos.valid_repository_path (reference_repository_path) then
@@ -1006,6 +1006,8 @@ feature {NONE} -- Implementation
 					end
 
 					arch_dir.populate
+					append_status_area ("complete%N")
+
 					append_status_area (billboard.content)
 					billboard.clear
 					archetype_view_tree_control.populate

@@ -77,12 +77,14 @@ feature -- Commands
 			serialised := Void
 		end
 
-	set_source (in_text: STRING; a_source_start_line: INTEGER; differential_flag: BOOLEAN)
+	set_source (in_text: STRING; a_source_start_line: INTEGER; differential_flag: BOOLEAN; an_rm_schema: SCHEMA_ACCESS)
 			-- Set `in_text' as working artifact.
 		require
 			text_attached: in_text /= Void
 			start_line_positive: a_source_start_line > 0
+			Rm_schema_available: an_rm_schema /= Void
 		do
+			rm_schema := an_rm_schema
 			source := in_text
 			source_start_line := a_source_start_line
 			in_parse_mode := True
@@ -103,7 +105,7 @@ feature -- Commands
 			tree := Void
 			serialised := Void
 			create parser.make
-			parser.execute (source, source_start_line, is_differential)
+			parser.execute (source, source_start_line, is_differential, rm_schema)
 
 			if not parser.syntax_error then
 				tree := parser.output
@@ -145,6 +147,8 @@ feature -- Commands
 feature {NONE} -- Implementation
 
 	parser: CADL_VALIDATOR
+
+	rm_schema: SCHEMA_ACCESS
 
 end
 

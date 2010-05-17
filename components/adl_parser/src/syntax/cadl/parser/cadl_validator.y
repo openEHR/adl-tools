@@ -45,11 +45,6 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_REFERENCE_MODEL_ACCESS
-		export
-			{NONE} all
-		end
-
 	SHARED_MESSAGE_DB
 		export
 			{NONE} all
@@ -2250,9 +2245,12 @@ feature -- Initialization
 			make_parser_skeleton
 		end
 
-	execute (in_text:STRING; a_source_start_line: INTEGER; differential_flag: BOOLEAN)
+	execute (in_text:STRING; a_source_start_line: INTEGER; differential_flag: BOOLEAN; an_rm_schema: SCHEMA_ACCESS)
+		require
+			Rm_schema_available: an_rm_schema /= Void
 		do
 			reset
+			rm_schema := an_rm_schema
 			source_start_line := a_source_start_line
 			differential_syntax := differential_flag
 
@@ -2306,6 +2304,8 @@ feature -- Access
 			-- differential syntax variants, i.e. ordering markers and specialisation paths
 
 feature {NONE} -- Implementation
+
+	rm_schema: SCHEMA_ACCESS
 
 	safe_put_c_attribute_child (an_attr: C_ATTRIBUTE; an_obj: C_OBJECT)
 			-- check child object for validity and then put as new child

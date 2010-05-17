@@ -46,12 +46,6 @@ feature {ARCHETYPE_DIRECTORY} -- Access
 
 feature -- Commands
 
-	repopulate
-			-- Rebuild `directory' based on existing paths.
-		do
-			populate
-		end
-
 	populate
 			-- Make based on `root_path'.
 		do

@@ -43,10 +43,13 @@ feature -- Initialisation
 feature -- Access
 
 	schema_name: STRING
-			-- name of schema
+			-- derived name of schema, based on model publisher, model name, model release
+		do
+			Result := create_schema_name (model_publisher, model_name, model_release)
+		end
 
-	schema_release: STRING
-			-- release of schema
+	schema_revision: STRING
+			-- revision of schema
 
 	schema_lifecycle_state: STRING
 			-- lifecycle state of schema
@@ -54,9 +57,19 @@ feature -- Access
 	schema_description: STRING
 			-- description of schema
 
+	model_publisher: STRING
+			-- publisher of model expressed in the schema
+
+	model_name: STRING
+			-- name of model expressed in schema; a 'schema' usually contains all of the packages of one 'model' of a publisher.
+			-- A publisher with more than one model can have multiple schemas.
+
+	model_release: STRING
+			-- release of model expressed in the schema
+
 	packages: HASH_TABLE [BMM_PACKAGE_DEFINITION, STRING]
 			-- hierarchical package structure; equivalent to a list of models included in schema
-			-- these are models on which archteypes are based, and their names correspond to the
+			-- top-level packages are models on which archteypes are based, and their names correspond to the
 			-- second section of the 3-part archetype RM entity identifer, e.g. "EHR" in "openEHR-EHR"
 
 	primitive_types: HASH_TABLE [BMM_CLASS_DEFINITION, STRING]
@@ -118,7 +131,7 @@ feature -- Access
 			-- status report on model
 		do
 			create Result.make(0)
-			Result.append (create_message_content ("model_access_i1", << schema_name, schema_release, primitive_types.count.out, class_definitions.count.out >>))
+			Result.append (create_message_content ("model_access_i1", << schema_name, primitive_types.count.out, class_definitions.count.out >>))
 		end
 
 	all_ancestor_classes_of (a_class_name: STRING): ARRAYED_LIST [STRING]
