@@ -75,11 +75,7 @@ feature {NONE} -- Implementation
 			ev_list_item: EV_LIST_ITEM
 		do
 			if ht /= Void then
-				from
-					ht.start
-				until
-					ht.off
-				loop
+				from ht.start until ht.off loop
 					create ev_list_item.make_with_text (utf8 (ht.key_for_iteration))
 					ev_list.extend(ev_list_item)
 					ht.forth
@@ -94,11 +90,7 @@ feature {NONE} -- Implementation
 		do
 			create strs.make (0)
 			if ht /= Void then
-				from
-					ht.start
-				until
-					ht.off
-				loop
+				from ht.start until ht.off loop
 					strs.extend (utf8 (ht.key_for_iteration))
 					ht.forth
 				end

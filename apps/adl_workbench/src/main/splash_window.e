@@ -63,7 +63,7 @@ feature {NONE} -- Initialization
 			border.extend (hb)
 
 			if has_icon_directory then
-				hb.extend (pixmaps ["openEHR and Ocean"])
+				hb.extend (pixmaps ["openEHR_logo"])
 			end
 
 			create label

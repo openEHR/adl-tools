@@ -513,12 +513,12 @@ feature {NONE} -- Repository events
 			end
 		end
 
-	refresh_repository
-			-- refresh the current repository from source.
+	repopulate_repository
+			-- repopulate the current repository using existing RM schemas
 		do
 			append_status_area ("Populating repository ...")
-			arch_dir.refresh
-			tpl_dir.refresh
+			arch_dir.repopulate
+			tpl_dir.repopulate
 			archetype_view_tree_control.populate
 			archetype_test_tree_control.populate
 			populate_statistics
@@ -702,6 +702,11 @@ feature {NONE} -- Tools events
 				archetype_view_tree_control.populate
 				template_view_tree_control.populate
 				archetype_test_tree_control.populate
+			end
+			if dialog.has_changed_schema_load_list then
+				clear_status_area
+				load_rm_schemas
+				repopulate_repository
 			end
 		end
 
@@ -967,6 +972,12 @@ feature {NONE} -- Implementation
 		do
 			parser_status_area.remove_text
 			append_status_area (text)
+		end
+
+	clear_status_area
+			-- clear `parser_status_area'
+		do
+			parser_status_area.remove_text
 		end
 
 	save_resources_and_show_status

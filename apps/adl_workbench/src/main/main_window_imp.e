@@ -1061,7 +1061,7 @@ feature {NONE}-- Initialization
 			repository_menu_export_html.select_actions.extend (agent export_html)
 			repository_menu_export_repository_report.select_actions.extend (agent export_repository_report)
 			repository_menu_interrupt_build.select_actions.extend (agent interrupt_build)
-			repository_menu_refresh.select_actions.extend (agent refresh_repository)
+			repository_menu_refresh.select_actions.extend (agent repopulate_repository)
 			history_menu.select_actions.extend (agent on_history)
 			history_menu_back.select_actions.extend (agent on_back)
 			history_menu_forward.select_actions.extend (agent on_forward)
@@ -1291,7 +1291,7 @@ feature {NONE} -- Implementation
 		deferred
 		end
 	
-	refresh_repository is
+	repopulate_repository is
 			-- Called by `select_actions' of `repository_menu_refresh'.
 		deferred
 		end

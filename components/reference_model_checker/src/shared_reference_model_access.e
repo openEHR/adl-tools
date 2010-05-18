@@ -65,8 +65,9 @@ feature -- Status Report
 feature {NONE} -- Implementation
 
 	rm_schema_metadata_table: HASH_TABLE [HASH_TABLE [STRING, STRING], STRING]
-			-- table of schema meta-data + path, keyed by schema name
-			-- note that schema_name is created from
+			-- table of all schemas found in schema directory; format:
+			-- table of {schema meta-data items + path}, keyed by schema name
+			-- schema_name is created from
 			-- 	model_publisher '_' model_name '_' model_release
 			-- e.g. openehr_rm_1.0.3, openehr_test_1.0.1, iso_13606-1_2008
 		local
@@ -114,45 +115,76 @@ feature {NONE} -- Implementation
 		end
 
 	rm_schemas: HASH_TABLE [SCHEMA_ACCESS, STRING]
-			-- schemas keyed by logical schema_name, i.e. model_publisher '_' model_name, e.g. "openehr_rm"
-		local
-			ma: SCHEMA_ACCESS
-			schema_path, model_publisher, model_name, logical_schema_name: STRING
+			-- schemas in use; schemas containing different variants of same model (i.e. model_publisher + model_name)
+			-- are considered duplicates. Table is keyed by logical schema_name, i.e. model_publisher '_' model_name, e.g. "openehr_rm"
 		once
 			create Result.make(0)
-			if not rm_schema_metadata_table.is_empty then
-				-- parse available schemas, ignoring duplicates
-				from rm_schema_metadata_table.start until rm_schema_metadata_table.off loop
-					schema_path := rm_schema_metadata_table.item_for_iteration.item (Metadata_schema_path)
-					model_publisher := rm_schema_metadata_table.item_for_iteration.item (Metadata_model_publisher)
-					model_name := rm_schema_metadata_table.item_for_iteration.item (Metadata_model_name)
-					logical_schema_name := (model_publisher + "_" + model_name).as_lower
-
-					if not rm_schemas.has (logical_schema_name) then
-						create ma.make(schema_path)
-						if ma.model_loaded then
-							Result.put (ma, logical_schema_name)
-							post_info (Current, "rm_schemas", "general", <<ma.status>>)
-						else
-							post_error (Current, "rm_schemas", "general", <<ma.status>>)
-						end
-					else
-						post_warning (Current, "rm_schemas", "model_access_w2", <<logical_schema_name, schema_path>>)
-					end
-					rm_schema_metadata_table.forth
-				end
-			end
 		end
 
 	rm_schemas_by_package: HASH_TABLE [SCHEMA_ACCESS, STRING]
 			-- schemas keyed by qualified package name, i.e. model_publisher '-' package_name, e.g. "openehr-ehr";
 			-- this matches the qualifide package name part of an ARCHETYPE_ID
-		local
-			qualified_pkg_name, model_publisher: STRING
-			pkgs: HASH_TABLE [BMM_PACKAGE_DEFINITION, STRING]
 		once
 			create Result.make(0)
-			-- parse available schemas, ignoring duplicates
+		end
+
+	rm_schemas_load_count: CELL [INTEGER]
+			-- load counter so other parts of the application can see if anything has changed
+		once
+			create Result.put (0)
+		end
+
+	load_rm_schemas
+			-- populate the rm_schemas table by reading in schemas either specified in the 'rm_schemas_load_list'
+			-- config variable, or by reading all schemas found in the schema directory
+		local
+			ma: SCHEMA_ACCESS
+			schema_path, model_publisher, model_name, logical_schema_name: STRING
+			load_list: ARRAYED_LIST [STRING]
+			metadata_list: HASH_TABLE [STRING, STRING]
+			qualified_pkg_name: STRING
+			pkgs: HASH_TABLE [BMM_PACKAGE_DEFINITION, STRING]
+		do
+			-- populate the rm_schemas table first
+			rm_schemas.wipe_out
+			if not rm_schema_metadata_table.is_empty then
+				-- list of schemas to load
+				if not rm_schemas_load_list.is_empty then
+					load_list := rm_schemas_load_list
+				else
+					create load_list.make_from_array (rm_schema_metadata_table.current_keys)
+					post_warning (Current, "rm_schemas", "model_access_w6", Void)
+				end
+
+				-- parse available schemas, ignoring duplicates
+				from load_list.start until load_list.off loop
+					if not rm_schema_metadata_table.has(load_list.item) then
+						post_warning (Current, "rm_schemas", "model_access_w5", <<load_list.item>>)
+					else
+						metadata_list := rm_schema_metadata_table.item(load_list.item)
+						schema_path := metadata_list.item (Metadata_schema_path)
+						model_publisher := metadata_list.item (Metadata_model_publisher)
+						model_name := metadata_list.item (Metadata_model_name)
+						logical_schema_name := (model_publisher + "_" + model_name).as_lower
+
+						if not rm_schemas.has (logical_schema_name) then
+							create ma.make(schema_path)
+							if ma.model_loaded then
+								rm_schemas.put (ma, logical_schema_name)
+								post_info (Current, "rm_schemas", "general", <<ma.status>>)
+							else
+								post_error (Current, "rm_schemas", "general", <<ma.status>>)
+							end
+						else
+							post_warning (Current, "rm_schemas", "model_access_w2", <<logical_schema_name, schema_path>>)
+						end
+					end
+					load_list.forth
+				end
+			end
+
+			-- now populate the rm_schemas_by_package table
+			rm_schemas_by_package.wipe_out
 			from rm_schemas.start until rm_schemas.off loop
 				model_publisher := rm_schemas.item_for_iteration.schema.model_publisher
 				pkgs := rm_schemas.item_for_iteration.schema.packages
@@ -160,8 +192,8 @@ feature {NONE} -- Implementation
 				-- put a ref to schema, keyed by the model_publisher-package_name key (lower-case) for later lookup by compiler
 				from pkgs.start until pkgs.off loop
 					qualified_pkg_name := (model_publisher + {ARCHETYPE_ID}.section_separator.out + pkgs.item_for_iteration.name).as_lower
-					if not Result.has (qualified_pkg_name) then
-						Result.put (rm_schemas.item_for_iteration, qualified_pkg_name)
+					if not rm_schemas_by_package.has (qualified_pkg_name) then
+						rm_schemas_by_package.put (rm_schemas.item_for_iteration, qualified_pkg_name)
 					else
 						post_warning (Current, "rm_schemas", "model_access_w3", <<qualified_pkg_name, rm_schemas.item_for_iteration.schema.schema_name>>)
 					end
@@ -170,6 +202,7 @@ feature {NONE} -- Implementation
 
 				rm_schemas.forth
 			end
+			rm_schemas_load_count.put (rm_schemas_load_count.item + 1)
 		end
 
 end

@@ -20,6 +20,8 @@ inherit
 
 	SHARED_APPLICATION_CONTEXT
 
+	SHARED_REFERENCE_MODEL_ACCESS
+
 feature -- Initialisation
 
 	initialise
@@ -43,6 +45,8 @@ feature -- Initialisation
 			else
 				post_warning (Current, "initialise", "validation_non_strict", Void)
 			end
+
+			load_rm_schemas
 		end
 
 feature -- Message database
@@ -93,6 +97,8 @@ feature -- Message database
 			["model_access_w2"] = <"Duplicate Reference Model schema found for model '$1' in file $2">
 			["model_access_w3"] = <"Duplicate instance of Reference Model package $1 found; ignoring instance from schema $2">
 			["model_access_w4"] = <"Reference Model for $1 meta-data missing/invalid: $2">
+			["model_access_w5"] = <"Unknown Reference Model '$1' mentioned in 'rm_schemas_load_list' config setting (ignored)">
+			["model_access_w6"] = <"No 'rm_schemas_load_list' config setting found; attempting to load all schemas (change via Tools>Options)">
 			
 			-- MAIN_WINDOW
 			["adl_version_warning"] = <"Using ADL version $1 for output serialisation">

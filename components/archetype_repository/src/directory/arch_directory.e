@@ -68,6 +68,10 @@ feature -- Initialisation
 		do
 			create selection_history.make
 			artefact_types := artefact_types_list
+			if ontology_prototype.item = Void then
+				initialise_ontology_prototype
+				schema_load_counter := rm_schemas_load_count.item
+			end
 		end
 
 feature -- Access
@@ -239,9 +243,12 @@ feature -- Status Report
 
 feature -- Commands
 
-	refresh
+	repopulate
 			-- rebuild the directory using the current repository settings
 		do
+			if schema_load_counter < rm_schemas_load_count.item then
+				initialise_ontology_prototype
+			end
 			create selection_history.make
 			reset_statistics
 			populate
@@ -511,8 +518,15 @@ feature {NONE} -- Implementation
 			-- For class nodes, this will be package_name-class_name, e.g. DEMOGRAPHIC-PARTY.
 			-- For archetype nodes, this will be the archetype id.
 
-	ontology_prototype: ARCH_REP_MODEL_NODE
-			-- pure ontology structure created from RM schema; to be used to create a copy for each refresh of the repository
+	ontology_prototype: CELL [ARCH_REP_MODEL_NODE]
+			-- pure ontology structure created from RM schemas; to be used to create a copy for each refresh of the repository
+			-- We use a CELL here because we only want one of these shared between all instances
+		once
+			create Result.put (Void)
+		end
+
+	initialise_ontology_prototype
+			-- rebuild `initialise_ontology_prototype'
 		local
 			pkgs: HASH_TABLE [BMM_PACKAGE_DEFINITION, STRING]
 			parent_node, arm: ARCH_REP_MODEL_NODE
@@ -520,9 +534,9 @@ feature {NONE} -- Implementation
 			supp_list, supp_list_copy: ARRAYED_SET[STRING]
 			supp_class_list: ARRAYED_LIST [BMM_CLASS_DEFINITION]
 			removed: BOOLEAN
-		once
-			create {ARCH_REP_MODEL_NODE} Result.make_category (Archetype_category.twin)
-			parent_node := Result
+		do
+			create parent_node.make_category (Archetype_category.twin)
+			ontology_prototype.put (parent_node)
 			from rm_schemas.start until rm_schemas.off loop
 				pkgs := rm_schemas.item_for_iteration.schema.packages
 				from pkgs.start until pkgs.off loop
@@ -602,10 +616,13 @@ feature {NONE} -- Implementation
 	clone_ontology_prototype
 			-- clone `ontology_prototype' and `ontology_index_prototype'
 		do
-			ontology := ontology_prototype.deep_twin
+			ontology := ontology_prototype.item.deep_twin
 			create ontology_index.make (0)
 			do_all (agent (ari: attached ARCH_REP_ITEM) do ontology_index.put (ari, ari.ontological_name) end, Void)
 		end
+
+	schema_load_counter: INTEGER
+			-- track loads of schemas; when changed, re-intialise the ontology prototype
 
 	shifter: STRING
 			-- debug indenter

@@ -65,6 +65,9 @@ feature -- Status
 	has_changed_navigator_options: BOOLEAN
 			-- True if some option has changed that would require the navigator to be redrawn
 
+	has_changed_schema_load_list: BOOLEAN
+			-- Schema load list has changed; should refresh
+
 feature {NONE} -- Implementation
 
 	populate_controls
@@ -76,6 +79,7 @@ feature {NONE} -- Implementation
 			s.replace_substring_all (",", "%N")
 			editor_command_text.set_text (s + "%N")
 
+			-- archetype viewing settings
 			if expand_node_tree then
 				show_definition_tree_expanded_check_button.enable_select
 			else
@@ -94,6 +98,14 @@ feature {NONE} -- Implementation
 				display_archetype_source_check_button.disable_select
 			end
 
+			if show_entire_ontology then
+				show_entire_ontology_check_button.enable_select
+			else
+				show_entire_ontology_check_button.disable_select
+			end
+			old_show_entire_ontology := show_entire_ontology
+
+			-- compiler settings
 			populate_ev_combo_from_hash_keys (parser_error_reporting_level_combo_box, message_type_ids)
 			parser_error_reporting_level_combo_box.do_all (
 				agent (li: EV_LIST_ITEM)
@@ -120,14 +132,19 @@ feature {NONE} -- Implementation
 				validation_strict_check_button.disable_select
 			end
 
+			-- resource / directory settings
 			export_html_text.set_text (html_export_directory)
-
-			if show_entire_ontology then
-				show_entire_ontology_check_button.enable_select
-			else
-				show_entire_ontology_check_button.disable_select
-			end
-			old_show_entire_ontology := show_entire_ontology
+			populate_ev_list_from_hash_keys (rm_schemas_checkable_list, rm_schema_metadata_table)
+			rm_schemas_checkable_list.do_all (
+				agent (li: EV_LIST_ITEM)
+					do
+						if rm_schemas_load_list.has (li.text) or else rm_schemas_load_list.is_empty then
+							rm_schemas_checkable_list.check_item (li)
+						else
+							rm_schemas_checkable_list.uncheck_item (li)
+						end
+					end
+			)
 		end
 
 	on_ok
@@ -153,12 +170,27 @@ feature {NONE} -- Implementation
 			set_status_reporting_level (message_type_ids.item (parser_error_reporting_level_combo_box.text.as_string_8))
 			billboard.set_status_reporting_level(status_reporting_level)
 
-			set_html_export_directory (export_html_text.text.as_string_8)
-			set_use_flat_adl_version(adl_save_version_combo_box.text.as_string_8)
-
 			has_changed_archetype_options := True
 			if show_entire_ontology /= old_show_entire_ontology then
 				has_changed_navigator_options := True
+			end
+
+			set_html_export_directory (export_html_text.text.as_string_8)
+			set_use_flat_adl_version(adl_save_version_combo_box.text.as_string_8)
+
+			create rm_schemas_ll.make(0)
+			rm_schemas_ll.compare_objects
+			rm_schemas_checkable_list.checked_items.do_all (
+				agent (li: EV_LIST_ITEM)
+					do
+						rm_schemas_ll.extend(li.text)
+					end
+			)
+			if rm_schemas_ll.is_equal (rm_schemas_load_list) then
+				has_changed_schema_load_list := False
+			else
+				set_rm_schemas_load_list (rm_schemas_ll)
+				has_changed_schema_load_list := True
 			end
 		end
 
@@ -205,6 +237,9 @@ feature {NONE} -- Implementation
 
 	old_show_entire_ontology: BOOLEAN
 			-- value of show_entire_ontology prior to setting by optin dialog
+
+	rm_schemas_ll: ARRAYED_LIST [STRING]
+			-- FIXME: should be local variable in on_ok, but compiler complains that it is not visible to agent
 
 end
 

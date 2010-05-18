@@ -77,6 +77,16 @@ feature -- Access
 			Result := substitute_env_vars (resource_value ("default", "adl_version_for_flat_output"))
 		end
 
+	rm_schemas_load_list: ARRAYED_LIST[STRING]
+			-- list of RM schemas to use
+		do
+			Result := resource_value_list("default", "rm_schemas_load_list")
+			Result.compare_objects
+		ensure
+			Result_attached: Result /= Void
+			Value_comparison: Result.object_comparison
+		end
+
 feature -- Application Switch Setting
 
 	set_reference_repository_path(a_path: STRING)
@@ -93,6 +103,14 @@ feature -- Application Switch Setting
 			a_path_list_valid: a_path_list /= Void and then not a_path_list.is_empty
 		do
 			set_resource_value_list("default", "reference_repositories", a_path_list)
+		end
+
+	set_rm_schemas_load_list(a_schema_list: ARRAYED_LIST[STRING])
+			-- set rm_schemas(s)
+		require
+			a_schema_list_valid: a_schema_list /= Void and then not a_schema_list.is_empty
+		do
+			set_resource_value_list("default", "rm_schemas_load_list", a_schema_list)
 		end
 
 	set_work_repository_path(a_path: STRING)

@@ -267,7 +267,7 @@ feature -- Access
 			Result.force (["history_back.ico", Void], "history_back")
 			Result.force (["history_forward.ico", Void], "history_forward")
 
-			Result.force (["openEHR_and_Ocean.png", Void], "openEHR and Ocean")
+			Result.force (["openEHR.png", Void], "openEHR_logo")
 		ensure
 			not_empty: not Result.is_empty
 		end
