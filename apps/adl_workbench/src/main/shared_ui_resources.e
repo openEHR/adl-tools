@@ -123,7 +123,8 @@ feature -- Access
 		once
 			create Result.make (0)
 
-			Result.force (["ontology_category.ico", "ontology category"], "ontology_category")
+			Result.force (["archetype_category.ico", "archetype category"], "archetype_category")
+			Result.force (["template_category.ico", "template category"], "template_category")
 
 			Result.force (["class_concrete.ico", "concrete class from RM"], "class_concrete")
 			Result.force (["class_abstract.ico", "abstract class from RM"], "class_abstract")
@@ -445,6 +446,17 @@ feature -- Application Switches
 			end
 		end
 
+	archetype_template_split_position: INTEGER
+			-- Split position of explorer horizontal split control.
+		local
+			str: STRING
+		do
+			str := resource_value ("default", "archetype_template_split_position")
+			if str.is_integer then
+				Result := str.to_integer
+			end
+		end
+
 	main_notebook_tab_pos: INTEGER
 			-- which tab of the main notebook was visible at the end of the last session
 		local
@@ -594,6 +606,14 @@ feature -- Application Switch Setting
 			v > 0
 		do
 			set_resource_value ("default", "explorer_split_position", v.out)
+		end
+
+	set_archetype_template_split_position (v: INTEGER)
+			-- Set split position of explorer vertical split control.
+		require
+			v > 0
+		do
+			set_resource_value ("default", "archetype_template_split_position", v.out)
 		end
 
 	set_app_width (v: INTEGER)

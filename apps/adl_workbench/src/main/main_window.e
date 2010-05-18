@@ -135,6 +135,9 @@ feature {NONE} -- Initialization
 			history_back_button.set_pixmap (pixmaps ["history_back"])
 			history_forward_button.set_pixmap (pixmaps ["history_forward"])
 
+			archetype_explorer_pixmap.copy (pixmaps.item("archetype_category"))
+			template_explorer_pixmap.copy (pixmaps.item("template_category"))
+
 			set_position (app_x_position, app_y_position)
 
 			if app_width > 0 then
@@ -183,7 +186,7 @@ feature -- Status setting
 					set_reference_repository_path (application_startup_directory)
 					set_repository
 				else
-					populate_archetype_directory
+					populate_artefact_directory
 				end
 
 				archetype_compiler.set_visual_update_action (agent build_gui_update)
@@ -195,6 +198,7 @@ feature -- Status setting
 				initialise_splitter (test_split_area, test_split_position)
 				initialise_splitter (explorer_split_area, explorer_split_position)
 				initialise_splitter (total_split_area, total_split_position)
+				initialise_splitter (archetype_template_split_area, archetype_template_split_position)
 				focus_first_widget (main_notebook.selected_item)
 
 				if app_maximised then
@@ -394,6 +398,7 @@ feature -- File events
 			set_total_split_position (total_split_area.split_position)
 			set_test_split_position (test_split_area.split_position)
 			set_explorer_split_position (explorer_split_area.split_position)
+			set_archetype_template_split_position (archetype_template_split_area.split_position)
 			set_app_width (width)
 			set_app_height (height)
 			set_app_x_position (x_position)
@@ -503,7 +508,7 @@ feature {NONE} -- Repository events
 			dialog.show_modal_to_window (Current)
 
 			if dialog.has_changed_paths then
-				populate_archetype_directory
+				populate_artefact_directory
 				save_resources_and_show_status
 			end
 		end
@@ -513,6 +518,7 @@ feature {NONE} -- Repository events
 		do
 			append_status_area ("Populating repository ...")
 			arch_dir.refresh
+			tpl_dir.refresh
 			archetype_view_tree_control.populate
 			archetype_test_tree_control.populate
 			populate_statistics
@@ -694,6 +700,7 @@ feature {NONE} -- Tools events
 			end
 			if dialog.has_changed_navigator_options then
 				archetype_view_tree_control.populate
+				template_view_tree_control.populate
 				archetype_test_tree_control.populate
 			end
 		end
@@ -742,6 +749,12 @@ feature -- Archetype commands
 			-- Display details of `archetype_file_tree' when the user selects it.
 		do
 			archetype_view_tree_control.display_details_of_selected_item_after_delay
+		end
+
+	template_view_tree_item_select
+			-- Display details of `template_file_tree' when the user selects it.
+		do
+			template_view_tree_control.display_details_of_selected_item_after_delay
 		end
 
 	select_archetype_from_gui_data (gui_item: EV_ANY)
@@ -917,7 +930,12 @@ feature -- Controls
 
 	archetype_view_tree_control: GUI_VIEW_ARCHETYPE_TREE_CONTROL
 		once
-			create Result.make (Current)
+			create Result.make (Current, arch_dir, archetype_file_tree)
+		end
+
+	template_view_tree_control: GUI_VIEW_ARCHETYPE_TREE_CONTROL
+		once
+			create Result.make (Current, tpl_dir, template_file_tree)
 		end
 
 	archetype_test_tree_control: GUI_TEST_ARCHETYPE_TREE_CONTROL
@@ -981,7 +999,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	populate_archetype_directory
+	populate_artefact_directory
 			-- Rebuild archetype directory & repopulate relevant GUI parts.
 		do
 			do_with_wait_cursor (agent
@@ -991,10 +1009,8 @@ feature {NONE} -- Implementation
 					end
 
 					set_title (reference_repository_path + " - " + title)
-					arch_dir.make
 					clear_all_controls
 					compiler_error_control.clear
-					append_status_area ("Populating repository ... ")
 					select_node_in_archetype_tree_view
 
 					if source_repos.valid_repository_path (reference_repository_path) then
@@ -1005,12 +1021,15 @@ feature {NONE} -- Implementation
 						source_repos.set_work_repository (work_repository_path)
 					end
 
+					append_status_area ("Populating repository ... ")
 					arch_dir.populate
+					tpl_dir.populate
 					append_status_area ("complete%N")
 
 					append_status_area (billboard.content)
 					billboard.clear
 					archetype_view_tree_control.populate
+					template_view_tree_control.populate
 					archetype_test_tree_control.populate
 					populate_statistics
 				end)

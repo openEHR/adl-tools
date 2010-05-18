@@ -20,8 +20,20 @@ feature -- Access
 
 	arch_dir: ARCHETYPE_DIRECTORY
 			-- application-wide archetype directory access
+		local
+			at: ARTEFACT_TYPE
 		once
-			create Result.make
+			create at
+			create Result.make (<<at.archetype>>)
+		end
+
+	tpl_dir: ARCHETYPE_DIRECTORY
+			-- application-wide template directory access
+		local
+			at: ARTEFACT_TYPE
+		once
+			create at
+			create Result.make (<<at.template, at.template_component>>)
 		end
 
 end

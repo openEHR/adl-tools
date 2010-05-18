@@ -20,11 +20,6 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_KNOWLEDGE_REPOSITORY
-		export
-			{NONE} all
-		end
-
 	SHARED_APP_UI_RESOURCES
 		export
 			{NONE} all
@@ -44,13 +39,16 @@ feature -- Definitions
 
 feature {NONE} -- Initialisation
 
-	make (a_main_window: MAIN_WINDOW)
+	make (a_main_window: MAIN_WINDOW; a_repo: ARCHETYPE_DIRECTORY; a_tree_control: EV_TREE)
 			-- Create controller for the tree representing archetype files found in `archetype_directory'.
 		require
 			a_main_window /= Void
+			a_repo /= Void
+			a_tree_control /= Void
 		do
+			repo := a_repo
 			gui := a_main_window
-   			gui_tree := gui.archetype_file_tree
+   			gui_tree := a_tree_control
    			gui_tree.set_minimum_width (gui.max_arch_explorer_width)
 		end
 
@@ -61,7 +59,7 @@ feature -- Commands
 		do
 			gui_tree.wipe_out
  			create gui_tree_item_stack.make (0)
- 			arch_dir.do_all (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
+ 			repo.do_all (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
 			gui_tree.recursive_do_all (agent ev_tree_expand)
 			gui.select_node_in_archetype_tree_view
 		end
@@ -77,7 +75,7 @@ feature -- Commands
 						delay_to_make_keyboard_navigation_practical.set_interval (0)
 
 						if attached {EV_TREE_NODE} gui_tree.selected_item as node and then attached {ARCH_REP_ITEM} node.data as ari then
-							arch_dir.set_selected_item (ari)
+							repo.set_selected_item (ari)
 							if attached {ARCH_REP_ARCHETYPE} ari as ara then
 								gui.parse_archetype
 							else
@@ -128,6 +126,9 @@ feature -- Commands
 		end
 
 feature {NONE} -- Implementation
+
+	repo: ARCHETYPE_DIRECTORY
+			-- knowledge repository
 
 	gui: MAIN_WINDOW
 			-- Main window of system.

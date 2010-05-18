@@ -33,7 +33,7 @@ feature -- Initialisation
 			make
 			ontological_name := a_name
 			display_name := a_name
-			group_name := "ontology_category"
+			group_name := "archetype_category"
 			is_package := True
 		ensure
 			ontological_name_set: ontological_name.is_equal (a_name)
