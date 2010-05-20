@@ -158,7 +158,7 @@ feature -- Status Report
 			-- True if any value allowed ('*' received in parsed input)
 			-- i.e. no attributes
 		do
-			Result := attributes.is_empty
+			Result := attributes.is_empty and not occurrences_prohibited
 		end
 
 	has_attributes: BOOLEAN

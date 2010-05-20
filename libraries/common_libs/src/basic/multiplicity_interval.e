@@ -95,7 +95,7 @@ feature -- Initialisation
 		end
 
 	make_mandatory
-			-- make an interval representing mandatoryness, i.e. 1..1
+			-- make an interval representing mandatoriness, i.e. 1..1
 		do
 			make_point(1)
 		ensure
@@ -105,7 +105,18 @@ feature -- Initialisation
 			Upper_bounded: not upper_unbounded
 		end
 
-feature -- Status Report
+	make_prohibited
+			-- make an interval representing prohibition, i.e. 0..0
+		do
+			make_point(0)
+		ensure
+			Lower_set: lower = 0
+			Upper_set: upper = 0
+			Lower_bounded: not lower_unbounded
+			Upper_bounded: not upper_unbounded
+		end
+
+feature -- Status report
 
 	is_open: BOOLEAN
 			-- True if this interval imposes no constraints, i.e. is set to 0..*
@@ -117,6 +128,12 @@ feature -- Status Report
 			-- True if this interval expresses optionality, i.e. 0..1
 		do
 			Result := lower = 0 and upper = 1
+		end
+
+	is_prohibited: BOOLEAN
+			-- True if this interval is set to 0..0
+		do
+			Result := lower = 0 and upper = 0 and not lower_unbounded and not upper_unbounded
 		end
 
 feature -- Operations

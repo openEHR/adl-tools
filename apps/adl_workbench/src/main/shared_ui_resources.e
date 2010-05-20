@@ -149,7 +149,28 @@ feature -- Access
 			Result.force (["archetype_warning_3.ico", "Archetype in the work repository (parsed and compiled with warnings)"], "archetype_warning_3")
 			Result.force (["archetype_valid_3.ico", "Archetype in the work repository (parsed and compiled)"], "archetype_valid_3")
 
+			Result.force ([Void, ""], "Gap 0 in the help")
+
+			Result.force (["template_1.ico", "Ad hoc template (not parsed yet)"], "template_1")
+			Result.force (["template_parsed_1.ico", "Ad hoc template (parsed but not compiled)"], "template_parsed_1")
+			Result.force (["template_parse_failed_1.ico", "Ad hoc template (parse failed)"], "template_parse_failed_1")
+			Result.force (["template_warning_1.ico", "Ad hoc template (parsed and compiled with warnings)"], "template_warning_1")
+			Result.force (["template_valid_1.ico", "Ad hoc template (parsed and compiled)"], "template_valid_1")
+
+			Result.force (["template_2.ico", "Template in the reference repository (not parsed yet)"], "template_2")
+			Result.force (["template_parsed_2.ico", "Template in the reference repository (parsed but not compiled)"], "template_parsed_2")
+			Result.force (["template_parse_failed_2.ico", "Template in the reference repository (parse failed)"], "template_parse_failed_2")
+			Result.force (["template_warning_2.ico", "Template in the reference repository (parsed and compiled with warnings)"], "template_warning_2")
+			Result.force (["template_valid_2.ico", "Template in the reference repository (parsed and compiled)"], "template_valid_2")
+
+			Result.force (["template_3.ico", "Template in the work repository (not parsed yet)"], "template_3")
+			Result.force (["template_parsed_3.ico", "Template in the work repository (parsed but not compiled)"], "template_parsed_3")
+			Result.force (["template_parse_failed_3.ico", "Template in the work repository (parse failed)"], "template_parse_failed_3")
+			Result.force (["template_warning_3.ico", "Template in the work repository (parsed and compiled with warnings)"], "template_warning_3")
+			Result.force (["template_valid_3.ico", "Template in the work repository (parsed and compiled)"], "template_valid_3")
+
 			Result.force ([Void, ""], "Gap 1 in the help")
+
 
 			Result.force (["node_normal/c_attribute.ico", "Single-valued attribute (mandatory)"], "C_ATTRIBUTE")
 			Result.force (["node_normal/c_attribute_optional.ico", "Single-valued attribute (optional)"], "C_ATTRIBUTE.optional")
@@ -312,12 +333,12 @@ feature -- Access
 			create version
 			create Result.make_empty
 			Result.append ("ADL Workbench%N")
-			Result.append ("%TVersion " + version.out + "%N")
-			Result.append ("%T(c) 2003-2010 Ocean Informatics%N")
-			Result.append ("%TADL version: " + Latest_adl_version + "%N")
-			Result.append ("%TSource SVN - http://www.openehr.org/svn/ref_impl_eiffel%N%T" + version.last_changed + "%N")
-			Result.append ("%TSource license: Mozilla tri-license%N")
-			Result.append ("%T(http://www.mozilla.org/MPL/boilerplate-1.1/mpl-tri-license-txt)%N")
+			Result.append ("Version " + version.out + "%N")
+			Result.append ("(c) 2003-2010 Ocean Informatics%N")
+			Result.append ("ADL version: " + Latest_adl_version + "%N")
+			Result.append ("Source SVN - http://www.openehr.org/svn/ref_impl_eiffel%N%T" + version.last_changed + "%N")
+			Result.append ("Source license: Mozilla tri-license%N")
+			Result.append ("(http://www.mozilla.org/MPL/boilerplate-1.1/mpl-tri-license-txt)%N")
 			Result.append ("Support: support@OceanInformatics.com%N")
 			Result.append ("Funded by: OceanInformatics.com%N")
 			Result.append ("Author: Thomas Beale%N")

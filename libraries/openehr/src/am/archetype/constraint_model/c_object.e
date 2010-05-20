@@ -54,7 +54,11 @@ feature -- Access
 			Result := representation.specialisation_depth
 		end
 
-feature -- Source Control
+	occurrences_prohibited: BOOLEAN
+			-- True if occurrences set to {0} i.e. prohibited
+		do
+			Result := attached occurrences and occurrences.is_prohibited
+		end
 
 	specialisation_status (spec_level: INTEGER): SPECIALISATION_STATUS
 			-- status of this node in the source text of this archetype with respect to the
@@ -83,7 +87,8 @@ feature -- Comparison
 			-- 	sibling order
 			-- The node_id may be redefined however.
 		do
-			Result := rm_type_name.is_equal (other.rm_type_name) and (occurrences = Void or occurrences.equal_interval(other.occurrences)) and node_id_conforms_to (other)
+			Result := rm_type_name.is_equal (other.rm_type_name) and (occurrences = Void or
+						occurrences.equal_interval(other.occurrences)) and node_id_conforms_to (other)
 		end
 
 	node_conforms_to (other: like Current; an_rm_schema: SCHEMA_ACCESS): BOOLEAN
@@ -95,14 +100,23 @@ feature -- Comparison
 			--	node_id (& specialisation depth)
 		do
 			if is_addressable and other.is_addressable then
-				if node_id.is_equal (other.node_id) then
-					Result := rm_type_name.is_equal (other.rm_type_name) and (occurrences = Void or else occurrences.equal_interval(other.occurrences))
-				else
-					Result := (rm_type_conforms_to(other, an_rm_schema) and occurrences_conforms_to (other) and node_id_conforms_to (other))
-				end
-			elseif not is_addressable and not other.is_addressable then
-				Result := rm_type_conforms_to (other, an_rm_schema) and occurrences_conforms_to (other)
+				Result := node_id_conforms_to (other)
+			else
+				Result := True
 			end
+
+			Result := Result and rm_type_conforms_to(other, an_rm_schema) and occurrences_conforms_to (other)
+
+-- Existing specification in which VSONIR is included
+--			if is_addressable and other.is_addressable then
+--				if node_id.is_equal (other.node_id) then
+--					Result := rm_type_name.is_equal (other.rm_type_name) and (occurrences = Void or else occurrences.equal_interval(other.occurrences))
+--				else
+--					Result := (rm_type_conforms_to(other, an_rm_schema) and occurrences_conforms_to (other) and node_id_conforms_to (other))
+--				end
+--			elseif not is_addressable and not other.is_addressable then
+--				Result := rm_type_conforms_to (other, an_rm_schema) and occurrences_conforms_to (other)
+--			end
 		end
 
 	rm_type_conforms_to (other: like Current; an_rm_schema: SCHEMA_ACCESS): BOOLEAN

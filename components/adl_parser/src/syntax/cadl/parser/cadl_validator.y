@@ -184,6 +184,19 @@ c_complex_object: c_complex_object_head SYM_MATCHES SYM_START_CBLOCK c_complex_o
 			end
 			object_nodes.remove
 		}
+	| c_complex_object_head
+		{
+			-- ok in case where occurrences is {0}, i.e. an exclusion
+			if complex_obj.occurrences_prohibited then
+				debug("ADL_parse")
+					io.put_string(indent + "POP OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "]%N") 
+					indent.remove_tail(1)
+				end
+				object_nodes.remove
+			else
+				abort_with_error("VCOCDocc", <<complex_obj.rm_type_name, complex_obj.path>>)
+			end
+		}
 	;
 
 c_complex_object_head: c_complex_object_id c_occurrences 
@@ -374,6 +387,12 @@ archetype_slot: c_archetype_slot_head SYM_MATCHES SYM_START_CBLOCK c_includes c_
 
 			debug("ADL_parse")
 				indent.remove_tail(1)
+			end
+		}
+	| c_archetype_slot_head -- if occurrences = 0
+		{
+			if not archetype_slot.occurrences_prohibited then
+				abort_with_error("VCOCDocc", <<archetype_slot.rm_type_name, archetype_slot.path>>)
 			end
 		}
 	;

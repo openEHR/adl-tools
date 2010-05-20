@@ -25,6 +25,16 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_KNOWLEDGE_REPOSITORY
+		export
+			{NONE} all
+		end
+
+	SHARED_REFERENCE_MODEL_ACCESS
+		export
+			{NONE} all
+		end
+
 	STRING_UTILITIES
 		export
 			{NONE} all
@@ -39,30 +49,22 @@ feature -- Definitions
 
 feature {NONE} -- Initialisation
 
-	make (a_main_window: MAIN_WINDOW; a_repo: ARCHETYPE_DIRECTORY; a_tree_control: EV_TREE)
+	make (a_main_window: MAIN_WINDOW; a_tree_control: EV_TREE; a_label: EV_LABEL; artefact_types_list: ARRAY [INTEGER])
 			-- Create controller for the tree representing archetype files found in `archetype_directory'.
 		require
 			a_main_window /= Void
-			a_repo /= Void
 			a_tree_control /= Void
+			a_label /= Void
+			valid_artefact_type: (create {ARTEFACT_TYPE}).valid_artefact_types(artefact_types_list)
 		do
-			repo := a_repo
 			gui := a_main_window
    			gui_tree := a_tree_control
+   			explorer_label := a_label
    			gui_tree.set_minimum_width (gui.max_arch_explorer_width)
+   			artefact_types := artefact_types_list
 		end
 
 feature -- Commands
-
-	populate
-			-- Populate `gui_file_tree' from `archetype_directory'.
-		do
-			gui_tree.wipe_out
- 			create gui_tree_item_stack.make (0)
- 			repo.do_all (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
-			gui_tree.recursive_do_all (agent ev_tree_expand)
-			gui.select_node_in_archetype_tree_view
-		end
 
 	display_details_of_selected_item_after_delay
 			-- When the user selects an item in `gui_file_tree', delay before displaying it.
@@ -75,7 +77,7 @@ feature -- Commands
 						delay_to_make_keyboard_navigation_practical.set_interval (0)
 
 						if attached {EV_TREE_NODE} gui_tree.selected_item as node and then attached {ARCH_REP_ITEM} node.data as ari then
-							repo.set_selected_item (ari)
+							arch_dir.set_selected_item (ari)
 							if attached {ARCH_REP_ARCHETYPE} ari as ara then
 								gui.parse_archetype
 							else
@@ -86,6 +88,112 @@ feature -- Commands
 			end
 
 			delay_to_make_keyboard_navigation_practical.set_interval (300)
+		end
+
+	populate
+			-- Populate `gui_file_tree' from `archetype_directory'.
+		local
+			lpos: INTEGER
+			s: STRING
+		do
+			-- update explorer label with RM name
+			s := explorer_label.text
+			lpos := s.index_of ('-', 1)
+			if lpos = 0 then
+				s.append (" -")
+				lpos := s.count
+			else
+				s.remove_substring (lpos+1, s.count)
+			end
+			from rm_schemas.start until rm_schemas.off loop
+				s.append_character (' ')
+				s.append (rm_schemas.item_for_iteration.schema.schema_name)
+				s.append_character (',')
+				rm_schemas.forth
+			end
+			s.remove_tail (1)
+			explorer_label.set_text (s)
+
+			-- update tree
+			create gui_node_descriptor_map.make(0)
+			gui_tree.wipe_out
+ 			create gui_tree_item_stack.make (0)
+ 			arch_dir.do_all (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
+			gui_tree.recursive_do_all (agent ev_tree_expand)
+			gui.select_node_in_archetype_tree_view
+		end
+
+	update_tree_node_for_archetype (ara: ARCH_REP_ARCHETYPE)
+			-- update Explorer tree node with changes in compilation status
+		require
+			Descriptor_valid: ara /= Void
+		local
+			an_id: STRING
+		do
+			an_id := ara.id.as_string
+			if gui_node_descriptor_map.has (an_id) then
+				update_tree_node (gui_node_descriptor_map.item (an_id))
+			end
+		end
+
+feature {NONE} -- Implementation
+
+	gui_node_descriptor_map: HASH_TABLE [EV_TREE_ITEM, STRING]
+			-- list of GUI explorer nodes, keyed by artefact id
+
+	artefact_types: ARRAY [INTEGER]
+			-- types of artefact in this view
+
+	explorer_label: EV_LABEL
+			-- label of explorer control in GUI
+
+	gui: MAIN_WINDOW
+			-- Main window of system.
+
+	gui_tree: EV_TREE
+			-- reference to MAIN_WINDOW.archetype_file_tree
+
+	gui_tree_item_stack: ARRAYED_STACK [EV_TREE_ITEM]
+			-- Stack used during `populate_gui_tree_node_enter'.
+
+	delay_to_make_keyboard_navigation_practical: EV_TIMEOUT
+			-- Timer to delay a moment before calling `display_details_of_selected_item'.
+
+   	populate_gui_tree_node_enter (ari: ARCH_REP_ITEM)
+   			-- Add a node representing `an_item' to `gui_file_tree'.
+		require
+			item_attached: ari /= Void
+   		local
+			node: EV_TREE_ITEM
+		do
+			if not ari.is_root and (ari.sub_tree_artefact_count (artefact_types) > 0 or else show_entire_ontology or else
+								(attached {ARCH_REP_ARCHETYPE} ari as ara and then artefact_types.has(ara.artefact_type))) then
+				create node
+	 			node.set_data (ari)
+
+	 			if attached {ARCH_REP_ARCHETYPE} ari as ara then
+	 				gui_node_descriptor_map.put (node, ara.id.as_string)
+	 			end
+
+	 			update_tree_node (node)
+
+				if gui_tree_item_stack.is_empty then
+					gui_tree.extend (node)
+				else
+					gui_tree_item_stack.item.extend (node)
+				end
+
+				gui_tree_item_stack.extend (node)
+			end
+		end
+
+   	populate_gui_tree_node_exit (ari: ARCH_REP_ITEM)
+   		do
+			if not ari.is_root and (ari.sub_tree_artefact_count (artefact_types) > 0 or else show_entire_ontology or else
+								(attached {ARCH_REP_ARCHETYPE} ari as ara and then artefact_types.has(ara.artefact_type))) then
+
+				gui_tree_item_stack.remove
+			end
 		end
 
    	update_tree_node (node: EV_TREE_NODE)
@@ -114,7 +222,7 @@ feature -- Commands
 					end
 	 				node.set_tooltip (tooltip)
 	 			else -- it is a model node
-	 				text.append (utf8(" (" + ari.subtree_archetype_count.out + ")"))
+	 				text.append (utf8(" (" + ari.sub_tree_artefact_count (artefact_types).out + ")"))
 				end
 
 				node.set_text (text)
@@ -122,52 +230,6 @@ feature -- Commands
 				if pixmap /= Void then
 					node.set_pixmap (pixmap)
 				end
-			end
-		end
-
-feature {NONE} -- Implementation
-
-	repo: ARCHETYPE_DIRECTORY
-			-- knowledge repository
-
-	gui: MAIN_WINDOW
-			-- Main window of system.
-
-	gui_tree: EV_TREE
-			-- reference to MAIN_WINDOW.archetype_file_tree
-
-	gui_tree_item_stack: ARRAYED_STACK [EV_TREE_ITEM]
-			-- Stack used during `populate_gui_tree_node_enter'.
-
-	delay_to_make_keyboard_navigation_practical: EV_TIMEOUT
-			-- Timer to delay a moment before calling `display_details_of_selected_item'.
-
-   	populate_gui_tree_node_enter (an_item: ARCH_REP_ITEM)
-   			-- Add a node representing `an_item' to `gui_file_tree'.
-		require
-			item_attached: an_item /= Void
-   		local
-			node: EV_TREE_ITEM
-		do
-			if (an_item.has_archetypes or else show_entire_ontology) and not an_item.is_root then
-				create node
-	 			node.set_data (an_item)
-	 			update_tree_node (node)
-
-				if gui_tree_item_stack.is_empty then
-					gui_tree.extend (node)
-				else
-					gui_tree_item_stack.item.extend (node)
-				end
-
-				gui_tree_item_stack.extend (node)
-			end
-		end
-
-   	populate_gui_tree_node_exit (an_item: ARCH_REP_ITEM)
-   		do
-			if (an_item.has_archetypes or else show_entire_ontology) and not an_item.is_root then
-				gui_tree_item_stack.remove
 			end
 		end
 
@@ -184,6 +246,7 @@ feature {NONE} -- Implementation
 invariant
 	gui_attached: gui /= Void
 	tree_attached: gui_tree /= Void
+	valid_artefact_types: artefact_types /= Void and then (create {ARTEFACT_TYPE}).valid_artefact_types(artefact_types)
 
 end
 

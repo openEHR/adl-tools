@@ -97,10 +97,13 @@ feature -- Status Report
 			Result := class_definition /= Void
 		end
 
-	has_archetypes: BOOLEAN
+	has_artefacts: BOOLEAN
 			-- True if there are any archetypes at or below this point
 		do
-			Result := subtree_archetype_count > 0
+			from subtree_artefact_counts.start until subtree_artefact_counts.off or subtree_artefact_counts.item_for_iteration > 0 loop
+				subtree_artefact_counts.forth
+			end
+			Result := not subtree_artefact_counts.off
 		end
 
 feature {ARCH_REP_ITEM} -- Implementation

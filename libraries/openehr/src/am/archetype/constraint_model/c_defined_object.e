@@ -64,6 +64,7 @@ feature -- Modification
 
 invariant
 	Assumed_value_valid: assumed_value /= Void implies valid_value(assumed_value)
+	Any_allowed_validity: not (any_allowed and occurrences_prohibited)
 
 end
 

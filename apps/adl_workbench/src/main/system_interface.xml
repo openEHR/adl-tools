@@ -1188,7 +1188,7 @@
      <EV_PIXMAPABLE>
      </EV_PIXMAPABLE>
      <Events>
-      <Event>select_actions EV_MENU_ITEM_ACTION_SEQUENCES repopulate_repository</Event>
+      <Event>select_actions EV_MENU_ITEM_ACTION_SEQUENCES refresh_directory</Event>
      </Events>
     </item>
    </item>
@@ -1196,7 +1196,7 @@
     <Internal_properties>
      <id>213</id>
      <name>history_menu</name>
-     <Expanded>1</Expanded>
+     <Expanded>0</Expanded>
     </Internal_properties>
     <EV_SENSITIVE>
     </EV_SENSITIVE>
@@ -1880,6 +1880,7 @@
         <item type="EV_LABEL">
          <Internal_properties>
           <id>276</id>
+          <name>archetype_explorer_label</name>
           <Expanded>0</Expanded>
          </Internal_properties>
          <EV_COLORIZABLE>
@@ -1993,6 +1994,7 @@
         <item type="EV_LABEL">
          <Internal_properties>
           <id>280</id>
+          <name>template_explorer_label</name>
           <Expanded>0</Expanded>
          </Internal_properties>
          <EV_COLORIZABLE>
@@ -6260,7 +6262,7 @@ One application per line.</Tooltip>
        <EV_SENSITIVE>
        </EV_SENSITIVE>
        <EV_TEXTABLE>
-        <Text>RM schemas:</Text>
+        <Text>RM schemas loaded:</Text>
        </EV_TEXTABLE>
        <EV_TOOLTIPABLE>
        </EV_TOOLTIPABLE>

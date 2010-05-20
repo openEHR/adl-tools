@@ -100,12 +100,12 @@ feature {NONE}-- Initialization
 			create l_ev_vertical_box_1
 			create l_ev_horizontal_box_1
 			create archetype_explorer_pixmap
-			create l_ev_label_1
+			create archetype_explorer_label
 			create archetype_file_tree
 			create l_ev_vertical_box_2
 			create l_ev_horizontal_box_2
 			create template_explorer_pixmap
-			create l_ev_label_2
+			create template_explorer_label
 			create template_file_tree
 			create total_split_area
 			create archetype_notebook
@@ -135,12 +135,12 @@ feature {NONE}-- Initialization
 			create arch_translations_languages_label
 			create arch_translations_languages_list
 			create l_ev_vertical_box_4
-			create l_ev_label_3
+			create l_ev_label_1
 			create arch_translations_author_mlist
-			create l_ev_label_4
+			create l_ev_label_2
 			create arch_translations_accreditation_text
 			create l_ev_vertical_box_5
-			create l_ev_label_5
+			create l_ev_label_3
 			create arch_translations_other_details_mlist
 			create arch_desc_details_frame
 			create arch_desc_details_hbox
@@ -209,19 +209,19 @@ feature {NONE}-- Initialization
 			create statistics_box
 			create l_ev_vertical_box_15
 			create l_ev_horizontal_box_11
-			create l_ev_label_6
+			create l_ev_label_4
 			create arch_total_count_tf
 			create l_ev_horizontal_box_12
-			create l_ev_label_7
+			create l_ev_label_5
 			create arch_spec_count_tf
 			create l_ev_horizontal_box_13
-			create l_ev_label_8
+			create l_ev_label_6
 			create arch_slotted_count_tf
 			create l_ev_horizontal_box_14
-			create l_ev_label_9
+			create l_ev_label_7
 			create arch_used_by_count_tf
 			create l_ev_horizontal_box_15
-			create l_ev_label_10
+			create l_ev_label_8
 			create arch_bad_count_tf
 			create status_notebook
 			create parser_status_area
@@ -234,7 +234,7 @@ feature {NONE}-- Initialization
 			create arch_test_tree_toggle_expand_bn
 			create arch_test_refresh_bn
 			create l_ev_horizontal_box_17
-			create l_ev_label_11
+			create l_ev_label_9
 			create arch_test_processed_count
 			create l_ev_horizontal_separator_1
 			create save_adlf_check_button
@@ -308,12 +308,12 @@ feature {NONE}-- Initialization
 			archetype_template_split_area.extend (l_ev_vertical_box_1)
 			l_ev_vertical_box_1.extend (l_ev_horizontal_box_1)
 			l_ev_horizontal_box_1.extend (archetype_explorer_pixmap)
-			l_ev_horizontal_box_1.extend (l_ev_label_1)
+			l_ev_horizontal_box_1.extend (archetype_explorer_label)
 			l_ev_vertical_box_1.extend (archetype_file_tree)
 			archetype_template_split_area.extend (l_ev_vertical_box_2)
 			l_ev_vertical_box_2.extend (l_ev_horizontal_box_2)
 			l_ev_horizontal_box_2.extend (template_explorer_pixmap)
-			l_ev_horizontal_box_2.extend (l_ev_label_2)
+			l_ev_horizontal_box_2.extend (template_explorer_label)
 			l_ev_vertical_box_2.extend (template_file_tree)
 			explorer_split_area.extend (total_split_area)
 			total_split_area.extend (archetype_notebook)
@@ -343,12 +343,12 @@ feature {NONE}-- Initialization
 			lang_vbox.extend (arch_translations_languages_label)
 			lang_vbox.extend (arch_translations_languages_list)
 			l_ev_horizontal_box_5.extend (l_ev_vertical_box_4)
-			l_ev_vertical_box_4.extend (l_ev_label_3)
+			l_ev_vertical_box_4.extend (l_ev_label_1)
 			l_ev_vertical_box_4.extend (arch_translations_author_mlist)
-			l_ev_vertical_box_4.extend (l_ev_label_4)
+			l_ev_vertical_box_4.extend (l_ev_label_2)
 			l_ev_vertical_box_4.extend (arch_translations_accreditation_text)
 			l_ev_horizontal_box_5.extend (l_ev_vertical_box_5)
-			l_ev_vertical_box_5.extend (l_ev_label_5)
+			l_ev_vertical_box_5.extend (l_ev_label_3)
 			l_ev_vertical_box_5.extend (arch_translations_other_details_mlist)
 			description_box.extend (arch_desc_details_frame)
 			arch_desc_details_frame.extend (arch_desc_details_hbox)
@@ -417,19 +417,19 @@ feature {NONE}-- Initialization
 			archetype_notebook.extend (statistics_box)
 			statistics_box.extend (l_ev_vertical_box_15)
 			l_ev_vertical_box_15.extend (l_ev_horizontal_box_11)
-			l_ev_horizontal_box_11.extend (l_ev_label_6)
+			l_ev_horizontal_box_11.extend (l_ev_label_4)
 			l_ev_horizontal_box_11.extend (arch_total_count_tf)
 			l_ev_vertical_box_15.extend (l_ev_horizontal_box_12)
-			l_ev_horizontal_box_12.extend (l_ev_label_7)
+			l_ev_horizontal_box_12.extend (l_ev_label_5)
 			l_ev_horizontal_box_12.extend (arch_spec_count_tf)
 			l_ev_vertical_box_15.extend (l_ev_horizontal_box_13)
-			l_ev_horizontal_box_13.extend (l_ev_label_8)
+			l_ev_horizontal_box_13.extend (l_ev_label_6)
 			l_ev_horizontal_box_13.extend (arch_slotted_count_tf)
 			l_ev_vertical_box_15.extend (l_ev_horizontal_box_14)
-			l_ev_horizontal_box_14.extend (l_ev_label_9)
+			l_ev_horizontal_box_14.extend (l_ev_label_7)
 			l_ev_horizontal_box_14.extend (arch_used_by_count_tf)
 			l_ev_vertical_box_15.extend (l_ev_horizontal_box_15)
-			l_ev_horizontal_box_15.extend (l_ev_label_10)
+			l_ev_horizontal_box_15.extend (l_ev_label_8)
 			l_ev_horizontal_box_15.extend (arch_bad_count_tf)
 			total_split_area.extend (status_notebook)
 			status_notebook.extend (parser_status_area)
@@ -442,7 +442,7 @@ feature {NONE}-- Initialization
 			l_ev_vertical_box_16.extend (arch_test_tree_toggle_expand_bn)
 			l_ev_vertical_box_16.extend (arch_test_refresh_bn)
 			l_ev_vertical_box_16.extend (l_ev_horizontal_box_17)
-			l_ev_horizontal_box_17.extend (l_ev_label_11)
+			l_ev_horizontal_box_17.extend (l_ev_label_9)
 			l_ev_horizontal_box_17.extend (arch_test_processed_count)
 			l_ev_vertical_box_16.extend (l_ev_horizontal_separator_1)
 			l_ev_vertical_box_16.extend (save_adlf_check_button)
@@ -567,9 +567,9 @@ feature {NONE}-- Initialization
 			internal_font.set_weight ({EV_FONT_CONSTANTS}.Weight_regular)
 			internal_font.set_shape ({EV_FONT_CONSTANTS}.Shape_regular)
 			internal_font.set_height_in_points (10)
-			l_ev_label_1.set_font (internal_font)
-			l_ev_label_1.set_text ("Archetypes")
-			l_ev_label_1.align_text_left
+			archetype_explorer_label.set_font (internal_font)
+			archetype_explorer_label.set_text ("Archetypes")
+			archetype_explorer_label.align_text_left
 			color_constant_set_procedures.extend (agent archetype_file_tree.set_background_color (?))
 			color_constant_retrieval_functions.extend (agent editable_colour)
 			archetype_file_tree.set_minimum_width (60)
@@ -586,9 +586,9 @@ feature {NONE}-- Initialization
 			internal_font.set_weight ({EV_FONT_CONSTANTS}.Weight_regular)
 			internal_font.set_shape ({EV_FONT_CONSTANTS}.Shape_regular)
 			internal_font.set_height_in_points (10)
-			l_ev_label_2.set_font (internal_font)
-			l_ev_label_2.set_text ("Templates")
-			l_ev_label_2.align_text_left
+			template_explorer_label.set_font (internal_font)
+			template_explorer_label.set_text ("Templates")
+			template_explorer_label.align_text_left
 			color_constant_set_procedures.extend (agent template_file_tree.set_background_color (?))
 			color_constant_retrieval_functions.extend (agent editable_colour)
 			template_file_tree.set_minimum_width (60)
@@ -699,10 +699,10 @@ feature {NONE}-- Initialization
 			integer_constant_retrieval_functions.extend (agent padding_width)
 			integer_constant_set_procedures.extend (agent l_ev_vertical_box_4.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
-			l_ev_vertical_box_4.disable_item_expand (l_ev_label_3)
-			l_ev_vertical_box_4.disable_item_expand (l_ev_label_4)
-			l_ev_label_3.set_text ("Author")
-			l_ev_label_4.set_text ("Accreditation")
+			l_ev_vertical_box_4.disable_item_expand (l_ev_label_1)
+			l_ev_vertical_box_4.disable_item_expand (l_ev_label_2)
+			l_ev_label_1.set_text ("Author")
+			l_ev_label_2.set_text ("Accreditation")
 			color_constant_set_procedures.extend (agent arch_translations_accreditation_text.set_background_color (?))
 			color_constant_retrieval_functions.extend (agent editable_colour)
 			integer_constant_set_procedures.extend (agent arch_translations_accreditation_text.set_minimum_width (?))
@@ -714,8 +714,8 @@ feature {NONE}-- Initialization
 			integer_constant_retrieval_functions.extend (agent padding_width)
 			integer_constant_set_procedures.extend (agent l_ev_vertical_box_5.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
-			l_ev_vertical_box_5.disable_item_expand (l_ev_label_5)
-			l_ev_label_5.set_text ("Other Details")
+			l_ev_vertical_box_5.disable_item_expand (l_ev_label_3)
+			l_ev_label_3.set_text ("Other Details")
 			arch_translations_other_details_mlist.set_minimum_height (40)
 			font_constant_set_procedures.extend (agent arch_desc_details_frame.set_font (?))
 			font_constant_retrieval_functions.extend (agent label_font)
@@ -946,45 +946,45 @@ feature {NONE}-- Initialization
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_11.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
 			l_ev_horizontal_box_11.disable_item_expand (arch_total_count_tf)
-			l_ev_label_6.set_text ("Total Archetypes:")
-			l_ev_label_6.set_minimum_width (140)
-			l_ev_label_6.align_text_right
+			l_ev_label_4.set_text ("Total Archetypes:")
+			l_ev_label_4.set_minimum_width (140)
+			l_ev_label_4.align_text_right
 			arch_total_count_tf.disable_edit
 			arch_total_count_tf.align_text_right
 			l_ev_horizontal_box_12.set_padding (10)
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_12.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
 			l_ev_horizontal_box_12.disable_item_expand (arch_spec_count_tf)
-			l_ev_label_7.set_text ("Specialised Archetypes:")
-			l_ev_label_7.set_minimum_width (140)
-			l_ev_label_7.align_text_right
+			l_ev_label_5.set_text ("Specialised Archetypes:")
+			l_ev_label_5.set_minimum_width (140)
+			l_ev_label_5.align_text_right
 			arch_spec_count_tf.disable_edit
 			arch_spec_count_tf.align_text_right
 			l_ev_horizontal_box_13.set_padding (10)
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_13.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
 			l_ev_horizontal_box_13.disable_item_expand (arch_slotted_count_tf)
-			l_ev_label_8.set_text ("Archetypes Containing Slots:")
-			l_ev_label_8.set_minimum_width (140)
-			l_ev_label_8.align_text_right
+			l_ev_label_6.set_text ("Archetypes Containing Slots:")
+			l_ev_label_6.set_minimum_width (140)
+			l_ev_label_6.align_text_right
 			arch_slotted_count_tf.disable_edit
 			arch_slotted_count_tf.align_text_right
 			l_ev_horizontal_box_14.set_padding (10)
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_14.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
 			l_ev_horizontal_box_14.disable_item_expand (arch_used_by_count_tf)
-			l_ev_label_9.set_text ("Archetypes Used In Slots:")
-			l_ev_label_9.set_minimum_width (140)
-			l_ev_label_9.align_text_right
+			l_ev_label_7.set_text ("Archetypes Used In Slots:")
+			l_ev_label_7.set_minimum_width (140)
+			l_ev_label_7.align_text_right
 			arch_used_by_count_tf.disable_edit
 			arch_used_by_count_tf.align_text_right
 			l_ev_horizontal_box_15.set_padding (10)
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_15.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
 			l_ev_horizontal_box_15.disable_item_expand (arch_bad_count_tf)
-			l_ev_label_10.set_text ("Invalid Archetype Files:")
-			l_ev_label_10.set_minimum_width (140)
-			l_ev_label_10.align_text_right
+			l_ev_label_8.set_text ("Invalid Archetype Files:")
+			l_ev_label_8.set_minimum_width (140)
+			l_ev_label_8.align_text_right
 			arch_bad_count_tf.disable_edit
 			arch_bad_count_tf.align_text_right
 			status_notebook.set_item_text (parser_status_area, "Status")
@@ -1020,10 +1020,10 @@ feature {NONE}-- Initialization
 			l_ev_horizontal_box_17.set_minimum_width (110)
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_17.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
-			l_ev_horizontal_box_17.disable_item_expand (l_ev_label_11)
-			l_ev_label_11.set_text ("Processed:")
-			l_ev_label_11.set_minimum_width (80)
-			l_ev_label_11.align_text_right
+			l_ev_horizontal_box_17.disable_item_expand (l_ev_label_9)
+			l_ev_label_9.set_text ("Processed:")
+			l_ev_label_9.set_minimum_width (80)
+			l_ev_label_9.align_text_right
 			arch_test_processed_count.disable_edit
 			l_ev_horizontal_separator_1.set_minimum_height (15)
 			save_adlf_check_button.set_text ("Save flat")
@@ -1061,7 +1061,7 @@ feature {NONE}-- Initialization
 			repository_menu_export_html.select_actions.extend (agent export_html)
 			repository_menu_export_repository_report.select_actions.extend (agent export_repository_report)
 			repository_menu_interrupt_build.select_actions.extend (agent interrupt_build)
-			repository_menu_refresh.select_actions.extend (agent repopulate_repository)
+			repository_menu_refresh.select_actions.extend (agent refresh_directory)
 			history_menu.select_actions.extend (agent on_history)
 			history_menu_back.select_actions.extend (agent on_back)
 			history_menu_forward.select_actions.extend (agent on_forward)
@@ -1173,12 +1173,12 @@ feature -- Access
 	history_menu_back, history_menu_forward, tools_menu_clean_generated_files, tools_menu_options,
 	help_menu_icons, help_menu_news, help_menu_online, help_menu_about: EV_MENU_ITEM
 	adl_version_label,
-	language_label, l_ev_label_1, l_ev_label_2, arch_desc_auth_orig_auth_label, arch_desc_status_label,
-	arch_desc_original_language_label, arch_desc_auth_contrib_label, arch_translations_languages_label,
-	l_ev_label_3, l_ev_label_4, l_ev_label_5, arch_desc_purpose_label, arch_desc_use_label,
-	arch_desc_misuse_label, arch_desc_keywords_label, arch_desc_resource_package_label,
-	arch_desc_resource_orig_res_label, arch_desc_copyright_label, l_ev_label_6, l_ev_label_7,
-	l_ev_label_8, l_ev_label_9, l_ev_label_10, l_ev_label_11: EV_LABEL
+	language_label, archetype_explorer_label, template_explorer_label, arch_desc_auth_orig_auth_label,
+	arch_desc_status_label, arch_desc_original_language_label, arch_desc_auth_contrib_label,
+	arch_translations_languages_label, l_ev_label_1, l_ev_label_2, l_ev_label_3, arch_desc_purpose_label,
+	arch_desc_use_label, arch_desc_misuse_label, arch_desc_keywords_label, arch_desc_resource_package_label,
+	arch_desc_resource_orig_res_label, arch_desc_copyright_label, l_ev_label_4, l_ev_label_5,
+	l_ev_label_6, l_ev_label_7, l_ev_label_8, l_ev_label_9: EV_LABEL
 	path_analysis_column_view_checkable_list: EV_CHECKABLE_LIST
 	remove_unused_codes_rb,
 	save_adlf_check_button, save_adls_check_button: EV_CHECK_BUTTON
@@ -1291,7 +1291,7 @@ feature {NONE} -- Implementation
 		deferred
 		end
 	
-	repopulate_repository is
+	refresh_directory is
 			-- Called by `select_actions' of `repository_menu_refresh'.
 		deferred
 		end

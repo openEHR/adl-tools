@@ -186,7 +186,7 @@ feature -- Status setting
 					set_reference_repository_path (application_startup_directory)
 					set_repository
 				else
-					populate_artefact_directory
+					populate_directory
 				end
 
 				archetype_compiler.set_visual_update_action (agent build_gui_update)
@@ -508,18 +508,18 @@ feature {NONE} -- Repository events
 			dialog.show_modal_to_window (Current)
 
 			if dialog.has_changed_paths then
-				populate_artefact_directory
+				populate_directory
 				save_resources_and_show_status
 			end
 		end
 
-	repopulate_repository
-			-- repopulate the current repository using existing RM schemas
+	refresh_directory
+			-- repopulate the current repository using existing RM schemas and source repositories
 		do
-			append_status_area ("Populating repository ...")
-			arch_dir.repopulate
-			tpl_dir.repopulate
+			append_status_area ("Populating directory ...")
+			arch_dir.refresh
 			archetype_view_tree_control.populate
+			template_view_tree_control.populate
 			archetype_test_tree_control.populate
 			populate_statistics
 			append_status_area ("complete%N")
@@ -673,17 +673,15 @@ feature {NONE} -- Tools events
 				info_dialog.set_title ("Information")
 				info_dialog.show_modal_to_window (Current)
 			else
-				do_with_wait_cursor (agent arch_dir.do_all (agent delete_generated_files, Void))
+				do_with_wait_cursor (agent arch_dir.do_all_archetypes (agent delete_generated_files))
 			end
 		end
 
-	delete_generated_files (a: ARCH_REP_ITEM)
-			-- delete a generated file associated with `a'
+	delete_generated_files (ara: ARCH_REP_ARCHETYPE)
+			-- delete a generated file associated with `ara'
 		do
-			if attached {ARCH_REP_ARCHETYPE} a as ara then
-				ara.clean_generated
-				append_status_area (ara.status)
-			end
+			ara.clean_generated
+			append_status_area (ara.status)
 		end
 
 	set_options
@@ -706,7 +704,7 @@ feature {NONE} -- Tools events
 			if dialog.has_changed_schema_load_list then
 				clear_status_area
 				load_rm_schemas
-				repopulate_repository
+				populate_directory
 			end
 		end
 
@@ -935,12 +933,12 @@ feature -- Controls
 
 	archetype_view_tree_control: GUI_VIEW_ARCHETYPE_TREE_CONTROL
 		once
-			create Result.make (Current, arch_dir, archetype_file_tree)
+			create Result.make (Current, archetype_file_tree, archetype_explorer_label, <<{ARTEFACT_TYPE}.archetype>>)
 		end
 
 	template_view_tree_control: GUI_VIEW_ARCHETYPE_TREE_CONTROL
 		once
-			create Result.make (Current, tpl_dir, template_file_tree)
+			create Result.make (Current, template_file_tree, template_explorer_label, <<{ARTEFACT_TYPE}.template, {ARTEFACT_TYPE}.template_component>>)
 		end
 
 	archetype_test_tree_control: GUI_TEST_ARCHETYPE_TREE_CONTROL
@@ -1010,7 +1008,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	populate_artefact_directory
+	populate_directory
 			-- Rebuild archetype directory & repopulate relevant GUI parts.
 		do
 			do_with_wait_cursor (agent
@@ -1021,7 +1019,9 @@ feature {NONE} -- Implementation
 
 					set_title (reference_repository_path + " - " + title)
 					clear_all_controls
+					clear_status_area
 					compiler_error_control.clear
+
 					select_node_in_archetype_tree_view
 
 					if source_repos.valid_repository_path (reference_repository_path) then
@@ -1032,9 +1032,8 @@ feature {NONE} -- Implementation
 						source_repos.set_work_repository (work_repository_path)
 					end
 
-					append_status_area ("Populating repository ... ")
+					append_status_area ("Populating directory ... ")
 					arch_dir.populate
-					tpl_dir.populate
 					append_status_area ("complete%N")
 
 					append_status_area (billboard.content)
@@ -1111,6 +1110,7 @@ feature {NONE} -- Implementation
 						text := ara.flat_text
 						populate_source_text_with_line_numbers (text)
 					elseif ara.has_legacy_flat_file then
+						ara.read_legacy_flat
 						text := ara.legacy_flat_text
 						populate_source_text_with_line_numbers (text)
 					else -- not valid, but derived from differential source
@@ -1290,8 +1290,9 @@ feature {NONE} -- Build commands
 			append_status_area (archetype_compiler.status)
 
 			if ara /= Void then
-				if attached {EV_TREE_NODE} archetype_file_tree.retrieve_item_recursively_by_data (ara, True) as node then
-					archetype_view_tree_control.update_tree_node (node)
+				if ara.artefact_type = {ARTEFACT_TYPE}.archetype then
+					archetype_view_tree_control.update_tree_node_for_archetype (ara)
+					template_view_tree_control.update_tree_node_for_archetype (ara)
 				end
 
 				archetype_test_tree_control.do_row_for_item (ara, agent archetype_test_tree_control.set_row_pixmap)

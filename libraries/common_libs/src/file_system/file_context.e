@@ -115,12 +115,13 @@ feature -- Commands
 		end
 
 	read_n_lines (n: INTEGER)
-			-- Read first line from current file as a string.
+			-- Read first n non-empty lines from current file as a string, removing leading and trailing whitespace, including %R%N.
 		require
 			n > 0
 		local
 			in_file: PLAIN_TEXT_FILE
 			i: INTEGER
+			a_line: STRING
    		do
    			last_op_failed := False
 			create in_file.make(current_full_path)
@@ -130,9 +131,13 @@ feature -- Commands
 				in_file.open_read
 				from i := 1 until i > n or in_file.end_of_file loop
 					in_file.read_line
-					file_lines.extend (in_file.last_string.twin)
-					file_lines.last.prune_all('%R')
-					i := i + 1
+					a_line := in_file.last_string.twin
+					a_line.right_adjust
+					a_line.left_adjust
+					if not a_line.is_empty then
+						file_lines.extend (a_line)
+						i := i + 1
+					end
 				end
 				in_file.close
 				if file_lines.count >= 1 then

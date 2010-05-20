@@ -90,7 +90,7 @@ feature {NONE} -- Implementation
 									post_warning (Current, "build_directory", "parse_archetype_e7", <<fn>>)
 								end
 							else
-								post_error (Current, "build_directory", "parse_archetype_e5", <<fn>>)
+								post_error (Current, "build_directory", "general", <<amp.last_parse_fail_reason>>)
 							end
 						end
 					end

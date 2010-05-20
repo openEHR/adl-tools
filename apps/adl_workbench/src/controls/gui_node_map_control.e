@@ -897,28 +897,24 @@ feature {NONE} -- Implementation
 			-- generate string form of node or object for use in tree node
 		do
 			create Result.make_empty
-			-- if not a_node.is_occurrences_default then
-			-- 	Result.append (" [" + a_node.occurrences.as_occurrences_string + "] ")
-			-- end
-
-			-- if a_node.is_congruent then
-			-- 	Result.append ("^ ")
-			-- end
-
 			if a_node.is_addressable then
 				if a_node.sibling_order /= Void then
 					Result.append (a_node.sibling_order.as_string + " ")
 				end
 
-				if in_technical_mode then
-					Result.append (a_node.rm_type_name + "[" + a_node.node_id + "]")
-				end
-
 				if arch_dir.has_validated_selected_archetype and ontology.has_term_code (a_node.node_id) then
 					Result.append (" " + ontology.term_definition (current_language, a_node.node_id).item ("text"))
 				end
+
+				if in_technical_mode then
+					Result.append (": " + a_node.rm_type_name + "[" + a_node.node_id + "]")
+				end
 			else -- put type even when not in technical mode
 				Result.append (a_node.rm_type_name)
+			end
+
+			if in_technical_mode and a_node.occurrences /= Void then
+				Result.append (" occ {" + a_node.occurrences_as_string + "} ")
 			end
 
 			if a_node.any_allowed then
@@ -949,26 +945,23 @@ feature {NONE} -- Implementation
 			-- generate string form of node or object for use in tree node
 		do
 			create Result.make_empty
-			-- if not a_node.is_occurrences_default then
-				-- Result.append (" [" + a_node.occurrences.as_occurrences_string + "] ")
-			-- end
-			if a_node.sibling_order /= Void then
-				Result.append (a_node.sibling_order.as_string + " ")
-			end
-
-			--if in_technical_mode then
-				Result.append (a_node.rm_type_name)
-			--end
-			if in_technical_mode then
-				if a_node.is_addressable then
-					Result.append ("[" + a_node.node_id + "]")
-				end
-			end
-
 			if a_node.is_addressable then
+				if a_node.sibling_order /= Void then
+					Result.append (a_node.sibling_order.as_string + " ")
+				end
+
 				if arch_dir.has_validated_selected_archetype and ontology.has_term_code (a_node.node_id) then
 					Result.append (" " + ontology.term_definition (current_language, a_node.node_id).item ("text"))
 				end
+				if in_technical_mode then
+					Result.append (": " + a_node.rm_type_name + "[" + a_node.node_id + "]")
+				end
+			else
+				Result.append (a_node.rm_type_name)
+			end
+
+			if in_technical_mode and a_node.occurrences /= Void then
+				Result.append (" occ {" + a_node.occurrences_as_string + "} ")
 			end
 
 			if a_node.any_allowed then
@@ -982,9 +975,9 @@ feature {NONE} -- Implementation
 			create Result.make(0)
 			if in_technical_mode then
 				Result.append (c_p_o.rm_type_name)
-			end
-			if c_p_o.occurrences /= Void and then not (c_p_o.occurrences.lower = 1 and c_p_o.occurrences.upper = 1) then
-				Result.append (" [" + c_p_o.occurrences.as_string + "]")
+				if c_p_o.occurrences /= Void then
+					Result.append (" occ {" + c_p_o.occurrences_as_string + "}")
+				end
 			end
 			Result.append (" " + c_p_o.item.as_string)
 		end
@@ -994,14 +987,13 @@ feature {NONE} -- Implementation
 		do
 			create Result.make_empty
 
-			if not a_node.use_target_occurrences and a_node.occurrences /= Void then
-				Result.append (" [" + a_node.occurrences.as_string + "] ")
-			end
-
 			if in_technical_mode then
 				Result.append ("use " + a_node.rm_type_name)
 				if a_node.is_addressable then
 					Result.append ("[" + a_node.node_id + "]")
+				end
+				if not a_node.use_target_occurrences and a_node.occurrences /= Void then
+					Result.append (" occ {" + a_node.occurrences_as_string + "} ")
 				end
 				Result.append (" " + a_node.target_path)
 			elseif arch_dir.has_validated_selected_archetype then
@@ -1013,15 +1005,15 @@ feature {NONE} -- Implementation
 			-- generate string form of node or object for use in tree node
 		do
 			create Result.make_empty
-			if a_node.occurrences /= Void then
-				Result.append (" [" + a_node.occurrences.as_string + "] ")
-			end
 			if in_technical_mode then
 				Result.append ("use_archetype " + a_node.rm_type_name + "[")
 				if a_node.slot_node_id /= Void then
 					Result.append(a_node.slot_node_id + ", ")
 				end
-				Result.append(a_node.node_id + "] ")
+				Result.append(a_node.node_id + "]")
+				if in_technical_mode and a_node.occurrences /= Void then
+					Result.append (" occ {" + a_node.occurrences_as_string + "} ")
+				end
 			end
 		end
 

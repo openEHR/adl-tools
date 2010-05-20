@@ -4,7 +4,7 @@ note
 	keywords:    "ADL, archetype"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2006-2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL: http://www.openehr.org/svn/ref_impl_eiffel/TRUNK/components/archetype_repository/src/directory/arch_rep_archetype.e $"
@@ -221,7 +221,6 @@ feature -- Access (semantic)
 	last_compile_attempt_timestamp: DATE_TIME
 			-- time last compile attempt made, set by set_parse_attempted
 
-
 	specialisation_parent: ARCH_REP_ARCHETYPE
 		do
 			Result ?= parent
@@ -298,18 +297,20 @@ feature -- Access (semantic)
 			-- Name distinguishing the type of item and the group to which its `repository' belongs.
 			-- Useful as a logical key to pixmap icons, etc.
 		do
+			create Result.make_empty
+			Result.append(artefact_name)
 			if is_valid then
 				if compiler_status.is_empty then
-					Result := "archetype_valid_" + file_repository.group_id.out
+					Result.append("_valid_" + file_repository.group_id.out)
 				else
-					Result := "archetype_warning_" + file_repository.group_id.out
+					Result.append("_warning_" + file_repository.group_id.out)
 				end
 			elseif is_parsed then
-				Result := "archetype_parsed_" + file_repository.group_id.out
+				Result.append("_parsed_" + file_repository.group_id.out)
 			elseif parse_attempted then
-				Result := "archetype_parse_failed_" + file_repository.group_id.out
+				Result.append("_parse_failed_" + file_repository.group_id.out)
 			else
-				Result := "archetype_" + file_repository.group_id.out
+				Result.append("_" + file_repository.group_id.out)
 			end
 		end
 
@@ -418,7 +419,7 @@ feature -- Status Report - Semantic
 			Result := differential_archetype /= Void and differential_generated
 		end
 
-	has_archetypes: BOOLEAN is True
+	has_artefacts: BOOLEAN is True
 			-- True if there are any archetypes at or below this point
 
 feature -- Status Setting
@@ -466,8 +467,16 @@ feature -- Commands
 							post_error (Current, "parse_archetype", "parse_archetype_e1", <<adl_engine.parse_error_text>>)
 							is_valid := False
 						else
-							post_info (Current, "parse_archetype", "parse_archetype_i1", <<id.as_string>>)
-							validate
+							id := differential_archetype.archetype_id -- in case id has changed
+							-- FIXME: we should also deal with the case of parent id being changed, but this is more
+							-- complicated since it requires a move in the ARCHETYPE_DIRECTORY tree as well as the explorer controls
+							-- At the moment it requires a full refresh.... which seems ok, since this is very rare
+							if differential_archetype.is_specialised and not parent_id.is_equal(differential_archetype.parent_archetype_id) then
+								post_warning (Current, "parse_archetype", "parse_archetype_w3", <<id.as_string, parent_id.as_string, differential_archetype.parent_archetype_id.as_string>>)
+							else
+								post_info (Current, "parse_archetype", "parse_archetype_i1", <<id.as_string>>)
+								validate
+							end
 						end
 					else
 						read_legacy_flat
@@ -521,7 +530,6 @@ feature -- Commands
 				differential_text := Void
 				differential_text_timestamp := 0
 			end
-
 			if file_repository.is_valid_path (flat_path) then
 				file_system.delete_file (flat_path)
 			end
@@ -700,6 +708,19 @@ feature -- Modification
 			retry
 		end
 
+	read_legacy_flat
+			-- Read `legacy_flat_text' and `text_timestamp' from `legacy_flat_path'.
+		require
+			flat_file_available: has_legacy_flat_file
+		do
+			file_repository.read_text_from_file (legacy_flat_path)
+			legacy_flat_text := file_repository.text
+			full_path := legacy_flat_path
+			legacy_flat_text_timestamp := file_repository.text_timestamp
+		end
+
+feature -- Factory
+
 	create_new_archetype(a_im_originator, a_im_name, a_im_entity, a_primary_language: STRING)
 			-- create a new top-level differential archetype and install it into the directory according to its id
 		require
@@ -819,17 +840,6 @@ feature {NONE} -- Implementation
 			differential_text_set: differential_text /= old differential_text
 		end
 
-	read_legacy_flat
-			-- Read `legacy_flat_text' and `text_timestamp' from `legacy_flat_path'.
-		require
-			flat_file_available: has_legacy_flat_file
-		do
-			file_repository.read_text_from_file (legacy_flat_path)
-			legacy_flat_text := file_repository.text
-			full_path := legacy_flat_path
-			legacy_flat_text_timestamp := file_repository.text_timestamp
-		end
-
 	build_ontology_lineage
 		local
 			arch_lin: ARRAYED_LIST [ARCH_REP_ARCHETYPE]
@@ -891,6 +901,11 @@ feature {NONE} -- Implementation
 
 	child_type: ARCH_REP_ARCHETYPE
 			-- child node type
+
+	artefact_name: STRING
+		once
+			Result := (create {ARTEFACT_TYPE}).simplified_type_names.item(artefact_type)
+		end
 
 invariant
 	repository_attached: file_repository /= Void

@@ -48,6 +48,16 @@ feature -- Initialisation
 
 feature -- Access
 
+	simplified_type_names: HASH_TABLE [STRING, INTEGER]
+			-- type names to use for visual classification; treat all template variants as 'templates'
+		once
+			create Result.make(0)
+			Result.extend("archetype", archetype)
+			Result.extend("template", template)
+			Result.extend("template", template_component)
+			Result.extend("template", operational_template)
+		end
+
 	types: HASH_TABLE [INTEGER, STRING]
 		once
 			create Result.make(0)
@@ -80,6 +90,11 @@ feature -- Validation
 			s /= Void and then not s.is_empty
 		do
 			Result := types.has_key(s)
+		end
+
+	valid_artefact_types (a_list: ARRAY [INTEGER]):BOOLEAN
+		do
+			Result := a_list.for_all (agent (i: INTEGER): BOOLEAN do Result := valid_type(i) end)
 		end
 
 feature {NONE} -- Implementation

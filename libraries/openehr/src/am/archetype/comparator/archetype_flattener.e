@@ -214,13 +214,15 @@ feature {NONE} -- Implementation
 					io.put_string ("---------- at child differential object node " + cco_child_diff.path + " ---------%N")
 					io.put_string ("%Tsee if output object node at " + a_path + " exists in flat parent ... ")
 				end
+
 				-- check that path exists in nodes defined by value in flat parent
 				if arch_output_flat.has_path (a_path) then
 					debug ("flatten")
 						io.put_string ("YES%N")
 					end
 
-					if parent_path_list.has(a_path) then -- check for path that has been overlaid by a redefined node; have to graft in entire object as a sibling
+					-- check for path that has been overlaid by a redefined node; have to graft in entire object as a sibling
+					if parent_path_list.has(a_path) then
 						debug ("flatten")
 							io.put_string ("%TObject in flat parent ALREADY REPLACED - grafting sibling object " + cco_child_diff.path + "%N")
 						end
@@ -228,25 +230,39 @@ feature {NONE} -- Implementation
 						ca_output.put_sibling_child (cco_child_diff.safe_deep_twin)
 						child_grafted_path_list.extend (cco_child_diff.path)
 					else
+						-- obtain the node in the flat output to start working at
 						cco_output_flat ?= arch_output_flat.c_object_at_path (a_path)
 						debug ("flatten")
 							io.put_string ("%TFirst replacement in flat parent " + cco_child_diff.path + "%N")
 						end
 
-						-- if output_flat node has matches any, then just do a complete clone of the current child tree
+						-- if output_flat node matches any, and it is addressable (which means the differential child node must also be,
+						-- and must therefore be intended as an override; if it wasn't, it will be treated as an alternative)
+						-- then replace it with a complete clone of the current child tree
 						if cco_output_flat.any_allowed and cco_output_flat.is_addressable then
 							debug ("flatten")
-								io.put_string ("%T** parent matches ANY - doing complete clone of child **%N")
+								io.put_string ("%T** parent matches ANY - REPLACING node [" + cco_output_flat.node_id + "] with complete clone of child node [" + cco_child_diff.node_id + "]**%N")
 							end
 							if not cco_output_flat.is_root then
+								-- have to change the node id to the target node id, so that the replace will work
 								cco_output_flat.parent.replace_node_id (cco_output_flat.node_id, cco_child_diff.node_id)
 								cco_output_flat.parent.replace_child_by_id (cco_child_diff.safe_deep_twin, cco_child_diff.node_id)
 							end
 							child_grafted_path_list.extend (cco_child_diff.path)
+
+						-- if it is a node on which occurrences was set to 0, remove it from the flat.
+						elseif cco_child_diff.occurrences_prohibited then
+							debug ("flatten")
+								io.put_string ("%T** child occurrences is {0} - REMOVING parent node [" + cco_output_flat.node_id + "]**%N")
+							end
+							if not cco_output_flat.is_root then
+								cco_output_flat.parent.remove_child_by_id (cco_output_flat.node_id)
+							end
+
 						else
 							-- firstly, add overrides from immediate child node to corresponding flat node
 							debug ("flatten")
-								io.put_string ("%Toverlay immediate node " + cco_child_diff.node_id + " on flat parent " + cco_output_flat.node_id + "%N")
+								io.put_string ("%TOVERLAY immediate node " + cco_child_diff.node_id + " on flat parent " + cco_output_flat.node_id + "%N")
 							end
 							if cco_output_flat.parent /= Void then
 								cco_output_flat.parent.overlay_differential(cco_output_flat, cco_child_diff, rm_schema)

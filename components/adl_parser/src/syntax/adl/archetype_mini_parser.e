@@ -17,7 +17,7 @@ note
 class ARCHETYPE_MINI_PARSER
 
 inherit
-	SHARED_RESOURCES
+	SHARED_APP_RESOURCES
 		rename
 			file_exists as is_valid_path
 		export
@@ -65,6 +65,7 @@ feature -- Commands
 			last_archetype_specialised := False
 			create artefact_types.default_create
 
+			-- read first 5 non-blank lines, returned left- and right-adjusted (whitespace-stripped)
 			file_context.set_target (a_full_path)
 			file_context.read_n_lines(5)
 			lines := file_context.file_lines
@@ -72,40 +73,34 @@ feature -- Commands
 			-- first line
 			if lines[1].has ('(') then
 				lines[1].remove_substring (lines[1].index_of ('(', 1), lines[1].count)
+				lines[1].right_adjust
 			end
-			lines[1].right_adjust
 			if artefact_types.valid_type_name (lines[1]) then
 				last_archetype_artefact_type := artefact_types.type_name_to_type(lines[1])
 
 				-- get line 2
-				lines[2].left_adjust
-				lines[2].right_adjust
-				if not lines[2].is_empty then
-					if (create {ARCHETYPE_ID}).valid_id(lines[2]) then
-						last_archetype_id_old_style := False
-					elseif (create {ARCHETYPE_ID}).old_valid_id(lines[2]) then
-						last_archetype_id_old_style := True
-					else
-						-- something wrong with the id
-						id_bad := True
-					end
+				if (create {ARCHETYPE_ID}).valid_id(lines[2]) then
+					last_archetype_id_old_style := False
+				elseif (create {ARCHETYPE_ID}).old_valid_id(lines[2]) then
+					last_archetype_id_old_style := True
 				else
+					-- something wrong with the id
 					id_bad := True
+					last_parse_fail_reason := create_message_content("parse_archetype_e8", <<a_full_path, lines[2]>>)
 				end
 
 				if not id_bad then
 					last_archetype_id := lines[2]
 
 					-- get line 3 - should be either 'specialise' / 'specialize' or 'concept'
-					lines[3].right_adjust
 					if lines[3].is_equal ("specialise") or lines[3].is_equal("specialize") then
-						lines[4].left_adjust
-						lines[4].right_adjust
 						last_parent_archetype_id := lines[4]
 						last_archetype_specialised := True
 					end
 					last_parse_valid := True
 				end
+			else
+				last_parse_fail_reason := create_message_content("parse_archetype_e9", <<a_full_path, lines[2]>>)
 			end
 		end
 

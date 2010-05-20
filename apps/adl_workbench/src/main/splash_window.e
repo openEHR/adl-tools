@@ -58,11 +58,12 @@ feature {NONE} -- Initialization
 			extend (border)
 
 			create hb
-			hb.set_padding (50)
-			hb.set_border_width (30)
+			hb.set_padding (10)
+			hb.set_border_width (15)
 			border.extend (hb)
 
 			if has_icon_directory then
+			--	pixmaps.item ("openEHR_logo").stretch (233, 77)
 				hb.extend (pixmaps ["openEHR_logo"])
 			end
 

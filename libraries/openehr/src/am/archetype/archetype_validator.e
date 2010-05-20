@@ -468,7 +468,7 @@ feature {NONE} -- Implementation
 						ca_child_diff.set_is_mergeable
 					end
 				else
-					check ca_parent_flat_void: False end
+					add_error("compiler_unexpected_error", <<"ARCHETYPE_VALIDATOR.specialised_node_validate location 2">>)
 				end
 			elseif attached {C_OBJECT} a_c_node as co_child_diff then
 				co_parent_flat_detachable := flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth))
@@ -512,14 +512,14 @@ feature {NONE} -- Implementation
 						elseif co_child_diff.is_addressable then
 							if not co_child_diff.node_id_conforms_to (co_parent_flat) then
 								add_error("VSONCI", <<co_child_diff.path, co_child_diff.node_id, co_parent_flat.path, co_parent_flat.node_id>>)
-							elseif co_child_diff.node_id.is_equal(co_parent_flat.node_id) then -- id same, something else must be different
-								add_error("VSONIR", <<co_child_diff.path, co_child_diff.rm_type_name, co_parent_flat.rm_type_name, co_child_diff.node_id>>)
+--							elseif co_child_diff.node_id.is_equal(co_parent_flat.node_id) then -- id same, something else must be different
+--								add_error("VSONIR", <<co_child_diff.path, co_child_diff.rm_type_name, co_parent_flat.rm_type_name, co_child_diff.node_id>>)
 							end
 						else
 							add_error("VSONI", <<co_child_diff.rm_type_name, co_child_diff.path, co_parent_flat.rm_type_name, co_parent_flat.path>>)
 						end
 					else
-						-- nodes are at least conformant; check for congruence for specalisation path replacement
+						-- nodes are at least conformant; check for congruence for specialisation path replacement
 						if attached {C_COMPLEX_OBJECT} co_child_diff as cco and co_child_diff.node_congruent_to (co_parent_flat, rm_schema) and (co_child_diff.is_root or else co_child_diff.parent.is_mergeable) then
 							debug ("validate")
 								io.put_string (">>>>> validate: C_OBJECT in child at " + co_child_diff.path + " CONGRUENT to parent node " + co_parent_flat.path)
@@ -537,6 +537,8 @@ feature {NONE} -- Implementation
 										io.put_string ("(not setting is_mergeable, due to being replacement)%N")
 									end
 								end
+							else
+								add_error("compiler_unexpected_error", <<"ARCHETYPE_VALIDATOR.specialised_node_validate location 3">>)
 							end
 						else
 							debug ("validate")

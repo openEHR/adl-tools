@@ -64,10 +64,6 @@ feature -- Access
 			create Result.make_from_string(node_id)
 		end
 
-feature -- Status Report
-
-feature -- Modification
-
 feature -- Output
 
 	out: STRING

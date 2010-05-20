@@ -5,14 +5,14 @@
 		<file_rule>
 			<exclude>/\.svn$</exclude>
 		</file_rule>
-		<option trace="false" profile="false" debug="false" warning="true" full_class_checking="false" syntax="standard" namespace="openehr">
+		<option trace="false" profile="false" debug="true" warning="true" full_class_checking="false" syntax="standard" namespace="openehr">
 			<debug name="__unnamed_debug__" enabled="false"/>
 			<debug name="adl_invariant" enabled="false"/>
 			<debug name="adl_parse" enabled="false"/>
 			<debug name="adl_tree" enabled="false"/>
 			<debug name="arch_dir" enabled="false"/>
 			<debug name="bb" enabled="false"/>
-			<debug name="compress" enabled="true"/>
+			<debug name="compress" enabled="false"/>
 			<debug name="dadl_parse" enabled="false"/>
 			<debug name="dlg_dispatcher" enabled="false"/>
 			<debug name="dt" enabled="false"/>
@@ -23,7 +23,7 @@
 			<debug name="include list" enabled="false"/>
 			<debug name="og_path_parse" enabled="false"/>
 			<debug name="refactor_fixme" enabled="false"/>
-			<debug name="validate" enabled="true"/>
+			<debug name="validate" enabled="false"/>
 			<debug name="vision2_windows" enabled="false"/>
 			<debug name="vision2_windows_gdi" enabled="false"/>
 			<debug name="wel" enabled="false"/>

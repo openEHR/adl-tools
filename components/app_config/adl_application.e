@@ -116,14 +116,20 @@ feature -- Message database
 			["parse_archetype_i1"] = <"Archetype $1 syntax VALIDATED">
 			["parse_archetype_i2"] = <"Archetype $1 semantics VALIDATED">
 			["parse_archetype_i3"] = <"Archetype differential form file found; parsing that">
+
+			["parse_archetype_w2"] = <"Archetype $1 semantic validation Warnings:%N$2">
+			["parse_archetype_w3"] = <"Archetype $1 parent has changed from $2 to $3; refresh required (^R)">
+
 			["parse_archetype_e1"] = <"$1 (Parse failed)">
 			["parse_archetype_e2"] = <"Archetype $1 semantic validation FAILED; reasons:%N$2">
-			["parse_archetype_w2"] = <"Archetype $1 semantic validation Warnings:%N$2">
 			["parse_archetype_e3"] = <"PARSE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
 			["parse_archetype_e4"] = <"Archetype $1 semantic validation of differential form FAILED; reasons:%N$2">
 			["parse_archetype_e5"] = <"Archetype $1 basic error in 'archetype' clause">
 			["parse_archetype_e6"] = <"Archetype $1 basic error in 'specialise' clause">
 			["parse_archetype_e7"] = <"Archetype $1 invalid: old-style 'draft' identifier">
+			["parse_archetype_e8"] = <"Archetype at $1 invalid identifier $2">
+			["parse_archetype_e9"] = <"Archetype at $1 invalid artefact type $2 (should be 'archetype', 'template', etc)">
+
 			["arch_context_make_flat_i1"] = <"Generated differential archetype from specialised flat archetype">
 			["compiler_status"] = <"=============== $1 ===============">
 			["compiler_finished_status"] = <"=============== finished $1 ===============">
@@ -205,7 +211,7 @@ feature -- Message database
 			["SDAT"] = <"invalid attribute value">
 			["SGEE"] = <"generic object not enclosed by normal object not allowed">
 
-			-------------- validity errors: unless otherwise notes, these codes are defined in the AOM 1.5 or later spec ------------------
+			-------------- validity errors: unless otherwise noted, these codes are defined in the AOM 1.5 or later spec ------------------
 			["VASID"] = <"Error (VASID): specialised archetype id not based on specialisation parent archetype id">
 
 			["VARDT"] = <"Error (VARDT): archetype id type $1 does not match type $2 in definition section">
@@ -223,6 +229,7 @@ feature -- Message database
 			["VTRLA"] = <"Error (VTRLA): translations key '$1' does not match translation item language '$2'">
 			["VRDLA"] = <"Error (VRDLA): resource detail key '$1' does not match resource detail item language '$2'">
 
+			["VCOCDocc"] = <"Error (VCOCD): object node of RM type $1 at path $2 definition missing (empty definition only allowed when occurrences matches {0})">
 			["VSONT"] = <"Error (VSONT): object node at path $1 (AOM type $2) does not conform to node at parent path $3 AOM type $4">
 			["VSONCT"] = <"Error (VSONCT): object node at path $1 (RM type $2) does not conform to node at parent path $3 RM type $4">
 			["VSONCO"] = <"Error (VSONCO): object node at path $1 occurrences $2 does not conform to node at parent path $3 occurrences $4">

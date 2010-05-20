@@ -59,30 +59,35 @@ feature -- Visitor
 			last_result.append (create_indent (depth))
 			serialise_type_node_id (a_node, depth)
 			serialise_occurrences(a_node, depth)
-			last_result.append (apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
-			last_result.append (symbol(SYM_START_CBLOCK))
+			if not a_node.occurrences_prohibited then
+				last_result.append (apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
+				last_result.append (symbol(SYM_START_CBLOCK))
 
-			if a_node.any_allowed then
-				last_result.append (apply_style(symbol(SYM_ANY), STYLE_VALUE))
-			elseif a_node.is_addressable then
-				s := a_node.node_id
-				if ontology.has_term_code(s) then
-					last_result.append (format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
-						safe_comment(ontology.term_definition(current_language, s).item("text")), STYLE_COMMENT))
+				if a_node.any_allowed then
+					last_result.append (apply_style(symbol(SYM_ANY), STYLE_VALUE))
+				elseif a_node.is_addressable then
+					s := a_node.node_id
+					if ontology.has_term_code(s) then
+						last_result.append (format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
+							safe_comment(ontology.term_definition(current_language, s).item("text")), STYLE_COMMENT))
+					end
+					last_result.append (format_item(FMT_NEWLINE))
+				else
+					last_result.append (format_item(FMT_NEWLINE))
 				end
-				last_result.append (format_item(FMT_NEWLINE))
-			else
-				last_result.append (format_item(FMT_NEWLINE))
 			end
 		end
 
 	end_c_complex_object(a_node: C_COMPLEX_OBJECT; depth: INTEGER)
 			-- end serialising an C_COMPLEX_OBJECT
 		do
-			if not a_node.any_allowed then
-				last_result.append (create_indent(depth))
+			if not a_node.occurrences_prohibited then
+				if not a_node.any_allowed then
+					last_result.append (create_indent(depth))
+				end
+				last_result.append (symbol(SYM_END_CBLOCK))
 			end
-			last_result.append (symbol(SYM_END_CBLOCK) + format_item(FMT_NEWLINE))
+			last_result.append (format_item(FMT_NEWLINE))
 		end
 
 	start_archetype_slot(a_node: ARCHETYPE_SLOT; depth: INTEGER)

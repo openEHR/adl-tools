@@ -62,12 +62,9 @@ create
 
 feature -- Initialisation
 
-	make (artefact_types_list: ARRAY [INTEGER])
-		require
-			valid_artefact_type: valid_artefact_types(artefact_types_list)
+	make
 		do
 			create selection_history.make
-			artefact_types := artefact_types_list
 			if ontology_prototype.item = Void then
 				initialise_ontology_prototype
 				schema_load_counter := rm_schemas_load_count.item
@@ -75,9 +72,6 @@ feature -- Initialisation
 		end
 
 feature -- Access
-
-	artefact_types: ARRAY [INTEGER]
-			-- types of artefact in this repository - archetype or template
 
 	archetype_index: attached HASH_TABLE [ARCH_REP_ARCHETYPE, STRING]
 			-- index of archetype descriptors. Used in rest of application
@@ -236,14 +230,9 @@ feature -- Status Report
 			Result := source_repos.adhoc_source_repository.is_valid_path (a_full_path)
 		end
 
-	valid_artefact_types (a_list: ARRAY [INTEGER]):BOOLEAN
-		do
-			Result := a_list.for_all (agent (i: INTEGER): BOOLEAN do Result := (create {ARTEFACT_TYPE}).valid_type(i) end)
-		end
-
 feature -- Commands
 
-	repopulate
+	refresh
 			-- rebuild the directory using the current repository settings
 		do
 			if schema_load_counter < rm_schemas_load_count.item then
@@ -287,28 +276,24 @@ feature -- Commands
 				loop
 					added_during_pass := 0
 					from archs.start until archs.off loop
-						if artefact_types.has(archs.item.artefact_type) then
-							if status_list[archs.index] >= 0 then
-								parent_key := archs.item.ontological_parent_name
-								if ontology_index.has (parent_key) then
-									child_key := archs.item.ontological_name
-									if not ontology_index.has (child_key) then
-										ontology_index.item (parent_key).put_child (archs.item)
-										ontology_index.put (archs.item, child_key)
-										archetype_index.put(archs.item, child_key)
-										update_statistics(archs.item)
-										added_during_pass := added_during_pass + 1
-										status_list[archs.index] := -1
-									else
-										post_error (Current, "populate_directory", "arch_dir_dup_archetype", <<archs.item.full_path>>)
-										status_list[archs.index] := -2
-									end
+						if status_list[archs.index] >= 0 then
+							parent_key := archs.item.ontological_parent_name
+							if ontology_index.has (parent_key) then
+								child_key := archs.item.ontological_name
+								if not ontology_index.has (child_key) then
+									ontology_index.item (parent_key).put_child (archs.item)
+									ontology_index.put (archs.item, child_key)
+									archetype_index.put(archs.item, child_key)
+									update_statistics(archs.item)
+									added_during_pass := added_during_pass + 1
+									status_list[archs.index] := -1
 								else
-									status_list[archs.index] := status_list[archs.index] + 1
+									post_error (Current, "populate_directory", "arch_dir_dup_archetype", <<archs.item.full_path>>)
+									status_list[archs.index] := -2
 								end
+							else
+								status_list[archs.index] := status_list[archs.index] + 1
 							end
-						else
-							status_list[archs.index] := -1
 						end
 						archs.forth
 					end
@@ -638,7 +623,6 @@ invariant
 	used_by_archetype_count_valid: used_by_archetype_count >= 0 and used_by_archetype_count <= total_archetype_count
 	bad_archetype_count_count_valid: bad_archetype_count >= 0 and bad_archetype_count <= total_archetype_count
 	parse_attempted_archetype_count_valid: parse_attempted_archetype_count >= 0 and parse_attempted_archetype_count <= total_archetype_count
-	valid_artefact_type: valid_artefact_types(artefact_types)
 
 end
 

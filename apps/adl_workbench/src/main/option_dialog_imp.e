@@ -276,7 +276,7 @@ feature {NONE}-- Initialization
 			integer_constant_retrieval_functions.extend (agent border_width)
 			l_ev_horizontal_box_9.disable_item_expand (l_ev_label_5)
 			l_ev_horizontal_box_9.disable_item_expand (rm_schemas_checkable_list)
-			l_ev_label_5.set_text ("RM schemas:")
+			l_ev_label_5.set_text ("RM schemas loaded:")
 			rm_schemas_checkable_list.set_minimum_width (150)
 			rm_schemas_checkable_list.set_minimum_height (50)
 			l_ev_horizontal_box_10.set_minimum_height (34)

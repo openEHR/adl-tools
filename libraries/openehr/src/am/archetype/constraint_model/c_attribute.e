@@ -335,7 +335,7 @@ feature -- Comparison
 	node_congruent_to (other: like Current; an_rm_schema: SCHEMA_ACCESS): BOOLEAN
 			-- True if this node on its own (ignoring any subparts) expresses the same constraints as `other'.
 		do
-			Result := node_conforms_to(other, an_rm_schema)
+			Result := existence = Void and ((is_single and other.is_single) or (is_multiple and other.is_multiple and cardinality = Void))
 		end
 
 	node_conforms_to (other: like Current; an_rm_schema: SCHEMA_ACCESS): BOOLEAN
@@ -512,6 +512,18 @@ feature -- Modification
 			Object_valid: an_obj /= Void and then has_child (an_obj)
 		do
 			representation.remove_child_by_id (an_obj.node_id)
+			children.prune_all(an_obj)
+		end
+
+	remove_child_by_id (an_id: STRING)
+			-- remove an existing child node
+		require
+			Id_valid: an_id /= Void and then has_child_with_id (an_id)
+		local
+			an_obj: C_OBJECT
+		do
+			an_obj := child_with_id (an_id)
+			representation.remove_child_by_id (an_id)
 			children.prune_all(an_obj)
 		end
 
