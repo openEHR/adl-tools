@@ -211,8 +211,12 @@ feature -- Access
 			loop
 				if og_phys_path.item.is_addressable then
 					term_code := og_phys_path.item.object_id
-					if has_term_code(term_code) then
-						og_log_path.item.set_object_id (term_definition(a_lang, term_code).item("text"))
+					if is_valid_code (term_code) then
+						if has_term_code(term_code) then
+							og_log_path.item.set_object_id (term_definition(a_lang, term_code).item("text"))
+						end
+					else
+						og_log_path.item.set_object_id (term_code)
 					end
 				end
 				og_phys_path.forth

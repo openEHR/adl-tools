@@ -100,6 +100,7 @@ feature {NONE} -- Initialisation
 			full_path := a_full_path
 			file_repository := a_repository
 			artefact_type := an_artefact_type
+			artefact_name := (create {ARTEFACT_TYPE}).simplified_type_names.item(artefact_type)
 
 			-- FIXME: the following should be changed one day so that legacy archetypes are
 			-- kept completely separate from source archetypes
@@ -903,9 +904,6 @@ feature {NONE} -- Implementation
 			-- child node type
 
 	artefact_name: STRING
-		once
-			Result := (create {ARTEFACT_TYPE}).simplified_type_names.item(artefact_type)
-		end
 
 invariant
 	repository_attached: file_repository /= Void

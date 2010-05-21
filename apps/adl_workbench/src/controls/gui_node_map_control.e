@@ -449,11 +449,11 @@ feature {NONE} -- Implementation
 			elseif attached {C_PRIMITIVE_OBJECT} an_og_node.content_item as c_p_o then
 				a_ti := attach_node(c_primitive_object_string(c_p_o), pixmaps.item(c_p_o.generating_type + pixmap_ext), an_og_node)
 
-			elseif attached {C_COMPLEX_OBJECT} an_og_node.content_item as c_c_o then
-				a_ti := attach_node(c_complex_object_string(c_c_o), pixmaps.item(c_c_o.generating_type + occurrences_pixmap_string(c_c_o) + pixmap_ext), an_og_node)
-
 			elseif attached {C_ARCHETYPE_ROOT} an_og_node.content_item as ex_ref then
 				a_ti := attach_node(c_archetype_root_string(ex_ref), pixmaps.item(ex_ref.generating_type + occurrences_pixmap_string(ex_ref) + pixmap_ext), an_og_node)
+
+			elseif attached {C_COMPLEX_OBJECT} an_og_node.content_item as c_c_o then
+				a_ti := attach_node(c_complex_object_string(c_c_o), pixmaps.item(c_c_o.generating_type + occurrences_pixmap_string(c_c_o) + pixmap_ext), an_og_node)
 
 			elseif attached {ARCHETYPE_SLOT} an_og_node.content_item as a_slot then
 				if a_slot.occurrences /= Void and then a_slot.occurrences.lower = 1 then
@@ -644,13 +644,13 @@ feature {NONE} -- Implementation
 						a_ti.set_text (utf8 (c_primitive_object_string (c_p_o)))
 						a_ti.set_pixmap(pixmaps.item(c_p_o.generating_type + pixmap_ext))
 
-					elseif attached {C_COMPLEX_OBJECT} a_node as c_c_o then
-						a_ti.set_text (utf8 (c_complex_object_string (c_c_o)))
-						a_ti.set_pixmap(pixmaps.item(c_c_o.generating_type + occurrences_pixmap_string(c_c_o) + pixmap_ext))
-
 					elseif attached {C_ARCHETYPE_ROOT} a_node as c_a_r then
 						a_ti.set_text (utf8 (c_archetype_root_string (c_a_r)))
 						a_ti.set_pixmap(pixmaps.item(c_a_r.generating_type + occurrences_pixmap_string(c_a_r) + pixmap_ext))
+
+					elseif attached {C_COMPLEX_OBJECT} a_node as c_c_o then
+						a_ti.set_text (utf8 (c_complex_object_string (c_c_o)))
+						a_ti.set_pixmap(pixmaps.item(c_c_o.generating_type + occurrences_pixmap_string(c_c_o) + pixmap_ext))
 
 					elseif attached {ARCHETYPE_INTERNAL_REF} a_node as a_node_ref then
 						a_ti.set_text (utf8 (archetype_internal_ref_string (a_node_ref)))
@@ -1011,9 +1011,12 @@ feature {NONE} -- Implementation
 					Result.append(a_node.slot_node_id + ", ")
 				end
 				Result.append(a_node.node_id + "]")
-				if in_technical_mode and a_node.occurrences /= Void then
+				if a_node.occurrences /= Void then
 					Result.append (" occ {" + a_node.occurrences_as_string + "} ")
 				end
+			else
+				Result.append ("use_archetype " + a_node.rm_type_name + "[")
+				Result.append(a_node.node_id + "]")
 			end
 		end
 

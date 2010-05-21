@@ -1290,10 +1290,8 @@ feature {NONE} -- Build commands
 			append_status_area (archetype_compiler.status)
 
 			if ara /= Void then
-				if ara.artefact_type = {ARTEFACT_TYPE}.archetype then
-					archetype_view_tree_control.update_tree_node_for_archetype (ara)
-					template_view_tree_control.update_tree_node_for_archetype (ara)
-				end
+				archetype_view_tree_control.update_tree_node_for_archetype (ara)
+				template_view_tree_control.update_tree_node_for_archetype (ara)
 
 				archetype_test_tree_control.do_row_for_item (ara, agent archetype_test_tree_control.set_row_pixmap)
 
