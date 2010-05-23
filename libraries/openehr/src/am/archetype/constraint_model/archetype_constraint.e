@@ -33,15 +33,6 @@ feature -- Access
 			Result := representation.path.as_string
 		end
 
-	is_mergeable: BOOLEAN
-			-- flag to indicate this node is in a specialised archetype can be merged with the
-			-- corresponding node in the parent archetype. If False, it means that there is
-			-- either no corresponding parent (this is a node introduced new in this archetype)
-			-- or that this node should just completely replace rather than be merged with
-			-- its parent counterpart. Here, 'merging' means the piece-wise process of taking
-			-- elements of this node, including its children and overlaying them on the flat
-			-- parent node.
-
 feature -- Source Control
 
 	specialisation_status (archetype_specialisation_level: INTEGER): SPECIALISATION_STATUS
@@ -64,7 +55,12 @@ feature -- Source Control
 			rolled_up_specialisation_status := a_status
 		end
 
-feature -- Status Report
+feature -- Status report
+
+	is_path_compressible: BOOLEAN
+			-- flag to indicate this node is in a specialised archetype and makes no changes
+			-- to the corresponding node in the flat parent, and therefore, this node can be
+			-- compressed .
 
 	is_leaf: BOOLEAN
 			-- True if this node is a terminal node
@@ -105,10 +101,10 @@ feature -- Comparison
 
 feature -- Modification
 
-	set_is_mergeable
-			-- set `is_mergeable'
+	set_is_path_compressible
+			-- set `is_path_compressible'
 		do
-			is_mergeable := True
+			is_path_compressible := True
 		end
 
 feature {ARCHETYPE_CONSTRAINT} -- Modification

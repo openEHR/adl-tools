@@ -105,7 +105,7 @@ feature -- Access
 			consistent_with_history: Result /= Void implies Result = selected_item
 		end
 
-	matching_ids (a_regex, an_rm_type: STRING): attached ARRAYED_LIST[STRING]
+	matching_ids (a_regex, an_rm_type: STRING): attached ARRAYED_SET[STRING]
 			-- generate list of archetype ids that match the pattern and optional rm_type. If rm_type is supplied,
 			-- we assume that the regex itself does not contain an rm type
 		require

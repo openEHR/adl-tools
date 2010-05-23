@@ -271,6 +271,10 @@ feature -- Message database
 			["VACMM"] = <"Error (VACMM): cannot add $1 object with $2 to multiply-valued attribute $3 because attribute already has child with same node id">
 
 			["VARCN"] = <"Error (VARCN): concept code $1 is invalid">
+			
+			-- C_ARCHETYPE_ROOT
+			["VARXE"] = <"Error (VARXE): slot filler (C_ARCHETYPE_ROOT) at $1 does not specify known archetype id $2">
+			["VARXV"] = <"Error (VARXV): slot filler (C_ARCHETYPE_ROOT) at $1 does not correspond to any ARCHETYPE slot in flat parent (i.e. in any specialisation parent)">
 
 			-- ontology-related validity
 			["VONSD"] = <"Error (VONSD): archetype code $1 in ontology more specialised than archetype">

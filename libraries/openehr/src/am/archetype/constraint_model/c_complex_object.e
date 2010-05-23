@@ -239,7 +239,7 @@ feature -- Output
 			--
 		do
 			create Result.make(0)
-			Result.append(rm_type_name + "[" + representation.node_id + "] ")
+			Result.append(rm_type_name + "[" + node_id + "] ")
 			if occurrences /= Void then
 				Result.append(occurrences.as_string)
 			end
@@ -269,7 +269,7 @@ feature {NONE} -- Implementation
 			-- child parse nodes
 
 invariant
-	attributes_valid: attributes /= Void
+	Attributes_valid: attributes /= Void
 	Any_allowed_validity: any_allowed xor not attributes.is_empty
 
 end

@@ -118,8 +118,10 @@ feature -- Validation
 				validate_languages
 			end
 
-			-- reference model validation; validates as well as sets up link between each node and its RM descriptor
-			if passed and rm_schema.model_loaded then
+			-- reference model validation - needed for all archetypes, top-level and
+			-- specialised, since specialised archetypes can contain new nodes that need to be
+			-- validated all the way through to the RM
+			if passed and rm_schema.model_loaded and not target.is_specialised then
 				validate_reference_model
 			end
 
@@ -411,17 +413,12 @@ feature {NONE} -- Implementation
 
 	extract_regex(an_assertion: ASSERTION): STRING
 			-- extract regex from id matches {/regex/} style assertion used in slots
-		local
-			bin_op: EXPR_BINARY_OPERATOR
-			a_leaf: EXPR_LEAF
-			c_str: C_STRING
 		do
-			bin_op ?= an_assertion.expression
-			if bin_op /= Void and then bin_op.operator.value = op_matches then
-				a_leaf ?= bin_op.right_operand
-				if a_leaf /= Void then
-					c_str ?= a_leaf.item
-					Result := c_str.regexp
+			if attached {EXPR_BINARY_OPERATOR} an_assertion.expression as bin_op and then bin_op.operator.value = op_matches then
+				if attached {EXPR_LEAF} bin_op.right_operand as a_leaf then
+					if attached {C_STRING} a_leaf.item as c_str then
+						Result := c_str.regexp
+					end
 				end
 			end
 		end
@@ -444,10 +441,10 @@ feature {NONE} -- Implementation
 			co_parent_flat: attached C_OBJECT
 			co_parent_flat_detachable: detachable C_OBJECT
 			apa: ARCHETYPE_PATH_ANALYSER
+			slot_id_index: HASH_TABLE [ARRAYED_SET[STRING], STRING]
 		do
-			create apa.make_from_string (a_c_node.path)
-
 			if attached {C_ATTRIBUTE} a_c_node as ca_child_diff then
+				create apa.make_from_string (a_c_node.path)
 				if attached {C_ATTRIBUTE} flat_parent.definition.c_attribute_at_path (apa.path_at_level (flat_parent.specialisation_depth)) as ca_parent_flat then
 					if not ca_child_diff.node_conforms_to(ca_parent_flat, rm_schema) then
 						if ca_child_diff.is_single /= ca_parent_flat.is_single then
@@ -461,30 +458,57 @@ feature {NONE} -- Implementation
 						else
 							add_error("compiler_unexpected_error", <<"ARCHETYPE_VALIDATOR.specialised_node_validate location 1">>)
 						end
-					elseif ca_child_diff.node_congruent_to (ca_parent_flat, rm_schema) and ca_child_diff.parent.is_mergeable then
+					elseif ca_child_diff.node_congruent_to (ca_parent_flat, rm_schema) and ca_child_diff.parent.is_path_compressible then
 						debug ("validate")
 							io.put_string (">>>>> validate: C_ATTRIBUTE in child at " + ca_child_diff.path + " CONGRUENT to parent node " + ca_parent_flat.path + " (setting is_mergeable) %N")
 						end
-						ca_child_diff.set_is_mergeable
+						ca_child_diff.set_is_path_compressible
 					end
 				else
 					add_error("compiler_unexpected_error", <<"ARCHETYPE_VALIDATOR.specialised_node_validate location 2">>)
 				end
+
+			-- deal with C_ARCHETYPE_ROOT (slot filler) inheriting from ARCHETYPE_SLOT
+			elseif attached {C_ARCHETYPE_ROOT} a_c_node as car then
+				create apa.make_from_string (car.slot_path)
+				co_parent_flat_detachable := flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth))
+				check co_parent_flat_detachable /= Void end
+				co_parent_flat := co_parent_flat_detachable
+
+				if attached {ARCHETYPE_SLOT} co_parent_flat as a_slot then
+					slot_id_index := target_descriptor.specialisation_parent.slot_id_index
+					if slot_id_index /= Void and then slot_id_index.has (a_slot.path) then
+						if not slot_id_index.item (a_slot.path).has (car.archetype_id) then
+							add_error("VARXE", <<car.path, car.archetype_id>>)
+						else -- if we got to here, it means that the mentioned archetype does exist in the set of archetype ids that match the slot
+							check True end
+						end
+					else
+						add_error("compiler_unexpected_error", <<"ARCHETYPE_VALIDATOR.specialised_node_validate location 3; descriptor does not have slot match list">>)
+					end
+				else
+					add_error("VARXV", <<car.path>>)
+				end
+
 			elseif attached {C_OBJECT} a_c_node as co_child_diff then
+				create apa.make_from_string (a_c_node.path)
 				co_parent_flat_detachable := flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth))
 				check co_parent_flat_detachable /= Void end
 				co_parent_flat := co_parent_flat_detachable
 
 				-- meta-type (i.e. AOM type) checking...
-				-- C_CODE_PHRASE conforms to CONSTRAINT_REF, but is not testable in any way; sole exception in ADL/AOM; just warn
+
+				-- this check sees if the node is a C_CODE_PHRASE redefinition of a CONSTRAINT_REF node, which is legal, since we say that
+				-- C_CODE_PHRASE conforms to CONSTRAINT_REF. Its validity is not testable in any way (sole exception in AOM) - just warn
 				if attached {CONSTRAINT_REF} co_parent_flat as ccr and then not attached {CONSTRAINT_REF} co_child_diff as ccr2 then
 					if attached {C_CODE_PHRASE} co_child_diff as ccp then
 						add_warning("WCRC", <<co_child_diff.path>>)
 					else
 						add_error("VSCNR", <<co_parent_flat.generating_type, co_parent_flat.path, co_child_diff.generating_type, co_child_diff.path>>)
 					end
+
 				else
-					-- if the child is a redefine of a parent use_node, then we have to do the comparison to the use_node target,
+					-- if the child is a redefine of a use_node (internal ref), then we have to do the comparison to the use_node target,
 					-- unless they both are use_nodes, in which case leave them as is
 					if attached {ARCHETYPE_INTERNAL_REF} co_parent_flat as air_p and not attached {ARCHETYPE_INTERNAL_REF} co_child_diff as air_c then
 						co_parent_flat_detachable := flat_parent.c_object_at_path (air_p.path)
@@ -512,15 +536,18 @@ feature {NONE} -- Implementation
 						elseif co_child_diff.is_addressable then
 							if not co_child_diff.node_id_conforms_to (co_parent_flat) then
 								add_error("VSONCI", <<co_child_diff.path, co_child_diff.node_id, co_parent_flat.path, co_parent_flat.node_id>>)
---							elseif co_child_diff.node_id.is_equal(co_parent_flat.node_id) then -- id same, something else must be different
---								add_error("VSONIR", <<co_child_diff.path, co_child_diff.rm_type_name, co_parent_flat.rm_type_name, co_child_diff.node_id>>)
+							elseif co_child_diff.node_id.is_equal(co_parent_flat.node_id) then -- id same, something else must be different
+								add_error("VSONIR", <<co_child_diff.path, co_child_diff.rm_type_name, co_parent_flat.rm_type_name, co_child_diff.node_id>>)
 							end
 						else
 							add_error("VSONI", <<co_child_diff.rm_type_name, co_child_diff.path, co_parent_flat.rm_type_name, co_parent_flat.path>>)
 						end
 					else
-						-- nodes are at least conformant; check for congruence for specialisation path replacement
-						if attached {C_COMPLEX_OBJECT} co_child_diff as cco and co_child_diff.node_congruent_to (co_parent_flat, rm_schema) and (co_child_diff.is_root or else co_child_diff.parent.is_mergeable) then
+						-- nodes are at conformant; Now check for congruence for C_COMPLEX_OBJECTs, i.e. if no changes at all, other than possible node_id redefinition,
+						-- occurred on this node. This enables the node to be skipped and a compressed path created instead in the final archetype.
+						-- FIXME: NOTE that this only applies while uncompressed format differential archetypes are being created by e.g.
+						-- diff-tools taking legacy archetypes as input.
+						if attached {C_COMPLEX_OBJECT} co_child_diff as cco and co_child_diff.node_congruent_to (co_parent_flat, rm_schema) and (co_child_diff.is_root or else co_child_diff.parent.is_path_compressible) then
 							debug ("validate")
 								io.put_string (">>>>> validate: C_OBJECT in child at " + co_child_diff.path + " CONGRUENT to parent node " + co_parent_flat.path)
 							end
@@ -528,7 +555,7 @@ feature {NONE} -- Implementation
 							-- replacement, so don't mark it as an overlay
 							if attached {C_COMPLEX_OBJECT} co_parent_flat as cco_pf then
 								if co_child_diff.is_root or cco_pf.has_attributes then
-									co_child_diff.set_is_mergeable
+									co_child_diff.set_is_path_compressible
 									debug ("validate")
 										io.put_string (" (setting is_mergeable) %N")
 									end
@@ -538,7 +565,7 @@ feature {NONE} -- Implementation
 									end
 								end
 							else
-								add_error("compiler_unexpected_error", <<"ARCHETYPE_VALIDATOR.specialised_node_validate location 3">>)
+								add_error("compiler_unexpected_error", <<"ARCHETYPE_VALIDATOR.specialised_node_validate location 4">>)
 							end
 						else
 							debug ("validate")
@@ -563,34 +590,44 @@ feature {NONE} -- Implementation
 			accept: BOOLEAN
 			ca_parent_flat: attached C_ATTRIBUTE
 		do
-			-- if check below is True, it means the path is to an object that is new in the current archetype,
-			-- and therefore there is nothing in the parent to validate it against. Invalid codes, i.e. the 'unknown' code
-			-- (used on non-coded nodes) or else codes that are either the same as the corresponding node in the parent flat,
-			-- or else a refinement of that, but not a new code, e.g. at0001.0.2
-			if attached {C_OBJECT} a_c_node as a_c_obj then
-				accept := not is_valid_code (a_c_obj.node_id) or else
-							(specialisation_depth_from_code (a_c_obj.node_id) = 0 or else is_refined_code(a_c_obj.node_id))
+			-- if it is a C_ARCHETYPE_ROOT, it s either a slot filler or an external reference. If the former, it is
+			-- redefining an ARCHETYPE_SLOT node, and needs to be validated; if the latter it is a new node, and will
+			-- only have been RM-validated. Either way, we need to use the slot path it replaces rather than its literal path,
+			-- to determine if it has a corresponding node in the flat parent.
+			if attached {C_ARCHETYPE_ROOT} a_c_node as car then
+				create apa.make_from_string(car.slot_path)
+				Result := flat_parent.has_path (apa.path_at_level (flat_parent.specialisation_depth))
+			else
+				-- if check below is False, it means the path is to a node that is new in the current archetype,
+				-- and therefore there is nothing in the parent to validate it against. Invalid codes, i.e. the 'unknown' code
+				-- (used on non-coded nodes) or else codes that are either the same as the corresponding node in the parent flat,
+				-- or else a refinement of that (e.g. at0001.0.2), but not a new code (e.g. at0.0.1)
+				if attached {C_OBJECT} a_c_node as a_c_obj then
+					accept := not is_valid_code (a_c_obj.node_id) or else	-- node with no node_id
+								(specialisation_depth_from_code (a_c_obj.node_id) = 0 or else -- node with node_id unchanged from top-level archetype
+								is_refined_code(a_c_obj.node_id))	-- node id refined (i.e. not new)
 
-				-- special check: if it is a non-overlay node, but it has a sibling order, then we need to check that the
-				-- sibling order refers to a valid node in the parent flat. Arguably this should be done in the main
-				-- specialised_node_validate routine, but... I will re-engineer the code before contemplating that
-				if not accept and a_c_obj.sibling_order /= Void then
-					create apa.make_from_string(a_c_node.parent.path)
-					ca_parent_flat := flat_parent.definition.c_attribute_at_path (apa.path_at_level (flat_parent.specialisation_depth))
-					if not ca_parent_flat.has_child_with_id (a_c_obj.sibling_order.sibling_node_id) then
-						add_error("VSSM", <<a_c_obj.path, a_c_obj.sibling_order.sibling_node_id>>)
+					-- special check: if it is a non-overlay node, but it has a sibling order, then we need to check that the
+					-- sibling order refers to a valid node in the parent flat. Arguably this should be done in the main
+					-- specialised_node_validate routine, but... I will re-engineer the code before contemplating that
+					if not accept and a_c_obj.sibling_order /= Void then
+						create apa.make_from_string(a_c_node.parent.path)
+						ca_parent_flat := flat_parent.definition.c_attribute_at_path (apa.path_at_level (flat_parent.specialisation_depth))
+						if not ca_parent_flat.has_child_with_id (a_c_obj.sibling_order.sibling_node_id) then
+							add_error("VSSM", <<a_c_obj.path, a_c_obj.sibling_order.sibling_node_id>>)
+						end
 					end
+				else -- must be a C_ATTRIBUTE
+					accept := True
 				end
-			else
-				accept := True
-			end
 
-			if accept then
-				create apa.make_from_string(a_c_node.path)
-				Result := passed and flat_parent.has_path (apa.path_at_level (flat_parent.specialisation_depth))
-			else
-				debug ("validate")
-					io.put_string ("????? specialised_node_validate_test: a_c_node at " + a_c_node.path + " ignored %N")
+				if accept then
+					create apa.make_from_string(a_c_node.path)
+					Result := passed and flat_parent.has_path (apa.path_at_level (flat_parent.specialisation_depth))
+				else
+					debug ("validate")
+						io.put_string ("????? specialised_node_validate_test: a_c_node at " + a_c_node.path + " ignored %N")
+					end
 				end
 			end
 		end
@@ -609,7 +646,7 @@ feature {NONE} -- Implementation
 		end
 
 	rm_node_validate (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
-			-- perform validation of node against reference model
+			-- perform validation of node against reference model.
 		local
 			arch_parent_attr_type, model_attr_class: STRING
 			co_parent_flat: C_OBJECT
@@ -627,6 +664,7 @@ feature {NONE} -- Implementation
 					end
 
 					if not invalid_types.has (arch_parent_attr_type) then
+						-- check for type substitutions such as ISO8601_DATE which appear in the archetype as a String
 						if rm_schema.has_property (arch_parent_attr_type, co.parent.rm_attribute_name) and not
 											rm_schema.valid_property_type (arch_parent_attr_type, co.parent.rm_attribute_name, co.rm_type_name) then
 							model_attr_class := rm_schema.property_type (arch_parent_attr_type, co.parent.rm_attribute_name)
@@ -707,7 +745,7 @@ feature {NONE} -- Implementation
 	invalid_types: ARRAYED_LIST [STRING]
 
 	rm_node_validate_test (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN
-			-- return True if node is a C_OBJECT and class is known in RM, or if it is a C_ATTRIBUTE
+			-- Return True if node is a C_OBJECT and class is known in RM, or if it is a C_ATTRIBUTE
 		do
 			Result := True
 			if attached {C_OBJECT} a_c_node as co then

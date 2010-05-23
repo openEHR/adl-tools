@@ -229,10 +229,10 @@ feature -- Visitor
 
 			last_result.append (apply_style (a_node.rm_type_name, identifier_style (a_node)))
 			id := "["
-			if a_node.slot_node_id /= Void then
-				id.append (a_node.slot_node_id + ", ")
+			if a_node.is_addressable then
+				id.append (a_node.node_id + ", ")
 			end
-			id.append (a_node.node_id + "]")
+			id.append (a_node.archetype_id + "]")
 			last_result.append (apply_style(id, STYLE_TERM_REF))
 
 			last_result.append (format_item(FMT_SPACE))

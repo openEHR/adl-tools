@@ -1006,7 +1006,7 @@ feature {NONE} -- Implementation
 		do
 			create Result.make_empty
 			if in_technical_mode then
-				Result.append ("use_archetype " + a_node.rm_type_name + "[")
+				Result.append ("use_archetype [")
 				if a_node.slot_node_id /= Void then
 					Result.append(a_node.slot_node_id + ", ")
 				end
@@ -1015,8 +1015,7 @@ feature {NONE} -- Implementation
 					Result.append (" occ {" + a_node.occurrences_as_string + "} ")
 				end
 			else
-				Result.append ("use_archetype " + a_node.rm_type_name + "[")
-				Result.append(a_node.node_id + "]")
+				Result.append ("use_archetype [" + a_node.node_id + "]")
 			end
 		end
 

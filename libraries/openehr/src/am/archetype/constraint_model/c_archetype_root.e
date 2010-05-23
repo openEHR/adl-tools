@@ -2,7 +2,11 @@ note
 	component:   "openEHR Archetype Project"
 	description: "[
 			     Object node representing a root point of an archetype included within another archetype, either as a 
-				 direct reference or as a slot filler.
+				 direct reference or as a slot filler. The possible configurations of this object are:
+				 	- ARCHETYPE_SLOT specialisation: archetype_id, node_id of slot object ==> node_id is from an ancestor level
+				 	- ARCHETYPE_SLOT specialisation: archetype_id, no node_id (slot object with no node_id); path can be found in flat parent
+				 	- New object in any level of archetype: archetype_id, node_id (if required by usual rules) ==> node_id is from current level
+				 	- New object in any level of archetype: archetype_id, no node_id (if not required); path cannot be found in flat parent
 			     ]"
 	keywords:    "test, ADL"
 	author:      "Thomas Beale"
@@ -18,14 +22,15 @@ class C_ARCHETYPE_ROOT
 
 inherit
 	C_COMPLEX_OBJECT
-		export
-			{NONE} make_identified, make_anonymous
+		rename
+			make_anonymous as cco_make_anonymous,
+			make_identified as cco_make_identified
 		redefine
 			out, enter_subtree, exit_subtree
 		end
 
 create
-	make, make_slot_id
+	make, make_with_slot_id
 
 feature -- Initialisation
 
@@ -35,46 +40,57 @@ feature -- Initialisation
 			Rm_type_name_valid: a_rm_type_name /= Void and then not a_rm_type_name.is_empty
 			Archetype_id_valid: an_archetype_id /= Void and then (create {ARCHETYPE_ID}).valid_id(an_archetype_id)
 		do
-			default_create
-			create representation.make(an_archetype_id, Current)
-			rm_type_name := a_rm_type_name
+			cco_make_identified(a_rm_type_name, an_archetype_id)
 		end
 
-	make_slot_id (a_rm_type_name, an_archetype_id, a_slot_node_id: STRING)
+	make_with_slot_id (a_rm_type_name, a_slot_node_id, an_archetype_id: STRING)
 			-- make as a slot filler, specialising a slot
 		require
 			Rm_type_name_valid: a_rm_type_name /= Void and then not a_rm_type_name.is_empty
 			Archetype_id_valid: an_archetype_id /= Void and then (create {ARCHETYPE_ID}).valid_id(an_archetype_id)
 			Slot_id_valid: a_slot_node_id /= Void and then not a_slot_node_id.is_empty
 		do
-			default_create
-			create representation.make(an_archetype_id, Current)
-			rm_type_name := a_rm_type_name
+			cco_make_identified (a_rm_type_name, an_archetype_id)
 			slot_node_id := a_slot_node_id
 		end
 
 feature -- Access
 
 	slot_node_id: STRING
-			-- node id of slot in parent archetype that this object fills, in the case a slot exists.
+			-- record node id of slot in parent archetype that this object fills, in the case a slot exists;
+			-- only set in flat form of archetype
 
-	archetype_id: ARCHETYPE_ID
+	archetype_id: STRING
 			-- id of filler archetype
 		do
-			create Result.make_from_string(node_id)
+			Result := node_id
+		end
+
+	slot_path: STRING
+			-- generate path of slot that this node would replace, by using slot_node_id
+		local
+			og_path: OG_PATH
+		do
+			if slot_node_id /= Void then
+				og_path := representation.path
+				og_path.last.set_object_id (slot_node_id)
+				Result := og_path.as_string
+			else
+				Result := path
+			end
 		end
 
 feature -- Output
 
 	out: STRING
-			--
+			-- stringify for GUI use
 		do
 			create Result.make(0)
 			Result.append(rm_type_name + "[")
-			if slot_node_id /= Void then
-				Result.append(slot_node_id + ", ")
+			if is_addressable then
+				Result.append(node_id + ", ")
 			end
-			Result.append(representation.node_id + "] ")
+			Result.append(archetype_id + "] ")
 			if occurrences /= Void then
 				Result.append(occurrences.as_string)
 			end
@@ -93,10 +109,6 @@ feature -- Visitor
 		do
 			visitor.end_c_archetype_root(Current, depth)
 		end
-
-invariant
-	attributes_valid: attributes /= Void
-	Any_allowed_validity: any_allowed xor not attributes.is_empty
 
 end
 

@@ -178,8 +178,8 @@ feature {ARCH_REP_ARCHETYPE} -- Structure
 			-- FIXME: only needed while differential archetype source is being created in uncompressed form
 			-- compress paths of congruent nodes in specialised archetype so that equivalent paths
 			-- are recorded in the `differential_path' attribute of terminal C_ATTRIBUTE nodes of congruent sections
-			-- This routine only works is validation has successfully completed because the latter process sets
-			-- is_conrgruent markers in the structure.
+			-- This routine only works if validation has successfully completed because the latter process sets
+			-- is_mergeable markers in the structure.
 		require
 			Target_specialised: is_specialised
 			Is_generated: is_generated
@@ -189,19 +189,12 @@ feature {ARCH_REP_ARCHETYPE} -- Structure
 		do
 			converted_def := definition.deep_twin
 			create def_it.make(definition)
-			def_it.do_at_surface(agent node_set_differential_path, agent congruent_node_test)
+			def_it.do_at_surface(agent node_set_differential_path, agent (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN do Result := not a_c_node.is_path_compressible end)
 			definition := converted_def
 			rebuild
 		end
 
 	converted_def: attached C_COMPLEX_OBJECT
-
-	congruent_node_test (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN
-			-- FIXME: only needed while differential archetype source is being created in uncompressed form
-			-- return True if node.is_congruent is True
-		do
-			Result := not a_c_node.is_mergeable
-		end
 
 	node_set_differential_path (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 			-- FIXME: only needed while differential archetype source is being created in uncompressed form

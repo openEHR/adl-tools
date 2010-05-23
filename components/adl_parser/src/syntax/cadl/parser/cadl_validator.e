@@ -1182,7 +1182,7 @@ debug ("GEYACC")
 end
 
 			if (create {ARCHETYPE_ID}).valid_id(yyvs2.item (yyvsp2)) then
-				create yyval9.make_slot_id(yyvs2.item (yyvsp2 - 2), yyvs2.item (yyvsp2), yyvs2.item (yyvsp2 - 1))
+				create yyval9.make_with_slot_id(yyvs2.item (yyvsp2 - 2), yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2))
 				if yyvs13.item (yyvsp13) /= Void then
 					yyval9.set_occurrences(yyvs13.item (yyvsp13))
 				end

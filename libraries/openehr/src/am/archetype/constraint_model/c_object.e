@@ -79,50 +79,41 @@ feature -- Access
 feature -- Comparison
 
 	node_congruent_to (other: like Current; an_rm_schema: SCHEMA_ACCESS): BOOLEAN
-			-- True if this node on its own (ignoring any subparts) expresses the same constraints as `other'.
+			-- True if this node on its own (ignoring any subparts) expresses the same constraints as `other', other than
+			-- possible redefinition of the node id, which doesn't matter, since this won't get lost in a compressed path.
 			-- `other' is assumed to be in a flat archetype
+			-- Used to determine if path segments can be compressed;
 			-- Returns False if any of the following is different:
 			--	rm_type_name
 			--	occurrences
 			-- 	sibling order
-			-- The node_id may be redefined however.
 		do
-			Result := rm_type_name.is_equal (other.rm_type_name) and (occurrences = Void or
-						occurrences.equal_interval(other.occurrences)) and node_id_conforms_to (other)
+			Result := rm_type_name.is_equal (other.rm_type_name) and occurrences = Void and node_id_conforms_to (other) and sibling_order = Void
 		end
 
 	node_conforms_to (other: like Current; an_rm_schema: SCHEMA_ACCESS): BOOLEAN
 			-- True if this node on its own (ignoring any subparts) expresses the same or narrower constraints as `other'.
-			-- `other' is assumed to be in a flat archetype
-			-- Returns False if any of the following is incompatible:
-			--	rm_type_name
-			--	occurrences
-			--	node_id (& specialisation depth)
+			-- `other' is assumed to be in a flat archetype.
+			-- Returns True only when the following is True:
+			--	rm_type_name is the same or a subtype of RM type of flat parent node;
+			--	occurrences is same (= Void) or a sub-interval
+			--	node_id is the same, or if either rm_type or occurrences changed, then it is specialised UNLESS
+			--  			occurrences was redefined to {0}
 		do
 			if is_addressable and other.is_addressable then
-				Result := node_id_conforms_to (other)
-			else
-				Result := True
+				if node_id.is_equal (other.node_id) then
+					Result := rm_type_name.is_equal (other.rm_type_name) and (occurrences = Void or else occurrences.is_prohibited)
+				else
+					Result := rm_type_conforms_to(other, an_rm_schema) and occurrences_conforms_to (other) and node_id_conforms_to (other)
+				end
+			elseif not is_addressable and not other.is_addressable then
+				Result := rm_type_conforms_to (other, an_rm_schema) and occurrences_conforms_to (other)
 			end
-
-			Result := Result and rm_type_conforms_to(other, an_rm_schema) and occurrences_conforms_to (other)
-
--- Existing specification in which VSONIR is included
---			if is_addressable and other.is_addressable then
---				if node_id.is_equal (other.node_id) then
---					Result := rm_type_name.is_equal (other.rm_type_name) and (occurrences = Void or else occurrences.equal_interval(other.occurrences))
---				else
---					Result := (rm_type_conforms_to(other, an_rm_schema) and occurrences_conforms_to (other) and node_id_conforms_to (other))
---				end
---			elseif not is_addressable and not other.is_addressable then
---				Result := rm_type_conforms_to (other, an_rm_schema) and occurrences_conforms_to (other)
---			end
 		end
 
 	rm_type_conforms_to (other: like Current; an_rm_schema: SCHEMA_ACCESS): BOOLEAN
 			-- True if this node rm_type_name conforms to other.rm_type_name by either being equal, or being a subtype
-			-- according to the underlying reference model.
-			-- `other' is assumed to be in a flat archetype
+			-- according to the underlying reference model; `other' is assumed to be in a flat archetype
 		do
 			Result := rm_type_name.is_equal (other.rm_type_name) or an_rm_schema.is_descendant_of (rm_type_name, other.rm_type_name)
 		end
@@ -133,13 +124,12 @@ feature -- Comparison
 			other_exists: other /= Void
 			other_is_flat: other.occurrences /= Void
 		do
-			Result := occurrences = Void or
-					occurrences.equal_interval (other.occurrences) or
-					other.occurrences.contains (occurrences)
+			Result := occurrences = Void or else other.occurrences.contains (occurrences)
 		end
 
 	node_id_conforms_to (other: like Current): BOOLEAN
-			-- True if this node id conforms to other.node_id; `other' is assumed to be in a flat archetype
+			-- True if this node id conforms to other.node_id, which includes the ids being identical
+			-- `other' is assumed to be in a flat archetype
 		do
 			Result := codes_conformant (node_id, other.node_id)
 		end
@@ -241,7 +231,7 @@ feature -- Output
 			-- output string representing `occurrences', even if occurrences is Void
 		do
 			if occurrences = Void then
-				Result := "(none)"
+				Result := "(unchanged)"
 			else
 				Result := occurrences.as_string
 			end
