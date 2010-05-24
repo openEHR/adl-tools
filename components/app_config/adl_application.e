@@ -229,7 +229,7 @@ feature -- Message database
 			["VTRLA"] = <"Error (VTRLA): translations key '$1' does not match translation item language '$2'">
 			["VRDLA"] = <"Error (VRDLA): resource detail key '$1' does not match resource detail item language '$2'">
 
-			["VCOCDocc"] = <"Error (VCOCD): object node of RM type $1 at path $2 definition missing (empty definition only allowed when occurrences matches {0})">
+			["VCOCDocc"] = <"Error (VCOCD): object node of RM type $1 at path $2 definition missing (empty definition only allowed when occurrences redefined in specialised child)">
 			["VSONT"] = <"Error (VSONT): object node at path $1 (AOM type $2) does not conform to node at parent path $3 AOM type $4">
 			["VSONCT"] = <"Error (VSONCT): object node at path $1 (RM type $2) does not conform to node at parent path $3 RM type $4">
 			["VSONCO"] = <"Error (VSONCO): object node at path $1 occurrences $2 does not conform to node at parent path $3 occurrences $4">

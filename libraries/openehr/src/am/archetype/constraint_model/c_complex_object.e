@@ -208,7 +208,7 @@ feature -- Modification
 	put_attribute(an_attr: C_ATTRIBUTE)
 			-- put a new attribute
 		require
-			Attribute_exists: an_attr /= Void
+			Attribute_exists: an_attr /= Void and not has_attribute (an_attr.rm_attribute_path)
 		do
 			representation.put_child(an_attr.representation)
 			attributes.extend(an_attr)

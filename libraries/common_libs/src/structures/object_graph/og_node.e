@@ -120,7 +120,7 @@ feature -- Status Report
 
 	valid_child_for_insertion(a_node: like child_type): BOOLEAN
 		do
-			Result := not has_child(a_node)
+			Result := not has_child(a_node) and not has_child_with_id(a_node.node_key)
 		end
 
 	using_children_sorted: BOOLEAN

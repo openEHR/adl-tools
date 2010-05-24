@@ -186,8 +186,8 @@ c_complex_object: c_complex_object_head SYM_MATCHES SYM_START_CBLOCK c_complex_o
 		}
 	| c_complex_object_head
 		{
-			-- ok in case where occurrences is {0}, i.e. an exclusion
-			if complex_obj.occurrences_prohibited then
+			-- ok in case where occurrences is being redefined in a specialised archetype or template
+			if differential_syntax then
 				debug("ADL_parse")
 					io.put_string(indent + "POP OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "]%N") 
 					indent.remove_tail(1)
@@ -558,7 +558,10 @@ c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality
 						create attr_node.make_multiple(rm_attribute_name, $2, $3)
 						c_attrs.put(attr_node)
 						debug("ADL_parse")
-							io.put_string(indent + "PUSH create ATTR_NODE " + rm_attribute_name + "; container = " + attr_node.is_multiple.out + " existence=(" + $2.as_string + "); cardinality=(" + $3.as_string + ")%N") 
+							io.put_string(indent + "PUSH create ATTR_NODE " + rm_attribute_name + "; container = " + attr_node.is_multiple.out)
+							if $2 /= Void then io.put_string(" existence={" + $2.as_string + "}") end
+							if $3 /= Void then io.put_string("; cardinality=(" + $3.as_string + ")") end
+							io.new_line
 							io.put_string(indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_attribute(REL)%N") 
 							indent.append("%T")
 						end
@@ -567,7 +570,10 @@ c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality
 						create attr_node.make_single(rm_attribute_name, $2)
 						c_attrs.put(attr_node)
 						debug("ADL_parse")
-							io.put_string(indent + "PUSH create ATTR_NODE " + rm_attribute_name + "; container = " + attr_node.is_multiple.out + " existence=(" + $2.as_string + "); cardinality=(" + $3.as_string + ")%N") 
+							io.put_string(indent + "PUSH create ATTR_NODE " + rm_attribute_name + "; container = " + attr_node.is_multiple.out) 
+							if $2 /= Void then io.put_string(" existence={" + $2.as_string + "}") end
+							if $3 /= Void then io.put_string("; cardinality=(" + $3.as_string + ")") end
+							io.new_line
 							io.put_string(indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_attribute(REL)%N") 
 							indent.append("%T")
 						end
@@ -588,7 +594,7 @@ c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality
 			parent_path_str := $1.parent_path.as_string
 			path_str := $1.as_string
 
-			if not object_nodes.item.has_attribute(rm_attribute_name) then
+			if not object_nodes.item.has_attribute(path_str) then
 				-- check RM to see if path is valid, and if it is a container
 				if rm_schema.has_property_path (object_nodes.item.rm_type_name, path_str) then
 					bmm_prop_def := rm_schema.property_definition_at_path (object_nodes.item.rm_type_name, path_str)
@@ -605,7 +611,9 @@ c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality
 						attr_node.set_differential_path(parent_path_str)
 						c_attrs.put(attr_node)
 						debug("ADL_parse")
-							io.put_string(indent + "PUSH create ATTR_NODE " + path_str + "; container = " + attr_node.is_multiple.out + " existence=(" + $2.as_string + ")%N") 
+							io.put_string(indent + "PUSH create ATTR_NODE " + path_str + "; container = " + attr_node.is_multiple.out) 
+							if $2 /= Void then io.put_string(" existence={" + $2.as_string + "}") end
+							io.new_line
 							io.put_string(indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_attribute(REL)%N") 
 							indent.append("%T")
 						end
@@ -615,7 +623,9 @@ c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality
 						attr_node.set_differential_path(parent_path_str)
 						c_attrs.put(attr_node)
 						debug("ADL_parse")
-							io.put_string(indent + "PUSH create ATTR_NODE " + path_str + "; container = " + attr_node.is_multiple.out + " existence=(" + $2.as_string + ")%N") 
+							io.put_string(indent + "PUSH create ATTR_NODE " + path_str + "; container = " + attr_node.is_multiple.out) 
+							if $2 /= Void then io.put_string(" existence={" + $2.as_string + "}") end
+							io.new_line
 							io.put_string(indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_attribute(REL)%N") 
 							indent.append("%T")
 						end
