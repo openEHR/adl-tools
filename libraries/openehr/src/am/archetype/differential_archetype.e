@@ -24,12 +24,14 @@ create
 
 feature -- Initialisation
 
-	make_minimal (an_id: like archetype_id; an_original_language: STRING; a_specialisation_depth: INTEGER)
+	make_minimal (an_artefact_type: ARTEFACT_TYPE; an_id: like archetype_id; an_original_language: STRING; a_specialisation_depth: INTEGER)
 			-- make a new differential form archetype
 		require
+			Artefact_type_attached: an_artefact_type /= Void
 			Language_valid: an_original_language /= Void and then not an_original_language.is_empty
 			Specialisation_depth_valid: a_specialisation_depth >= 0
 		do
+			artefact_type := an_artefact_type
 			archetype_id := an_id
 			adl_version := 	Latest_adl_version
 			create ontology.make_empty(an_original_language, a_specialisation_depth)
@@ -39,6 +41,8 @@ feature -- Initialisation
 			create definition.make_identified(an_id.rm_entity, concept)
 			is_dirty := True
 		ensure
+			Artefact_type_set: artefact_type = an_artefact_type
+			Adl_version_set: adl_version = Latest_adl_version
 			Id_set: archetype_id = an_id
 			Original_language_set: original_language.as_string.is_equal(an_original_language)
 			Specialisation_depth_set: specialisation_depth = a_specialisation_depth
@@ -46,13 +50,14 @@ feature -- Initialisation
 			Is_dirty: is_dirty
 		end
 
-	make_specialised_child(a_parent: ARCHETYPE; a_spec_concept: STRING)
+	make_specialised_child(an_artefact_type: ARTEFACT_TYPE; a_parent: ARCHETYPE; a_spec_concept: STRING)
 			-- make this archetype as a specialisation 1 level below the 'other'
 		require
+			Artefact_type_attached: an_artefact_type /= Void
 			Other_valid: a_parent /= Void and then a_parent.is_valid
 			Concept_valid: a_spec_concept /= Void and then not a_spec_concept.is_empty
 		do
-			make_minimal (a_parent.archetype_id.create_specialised_id (a_spec_concept), a_parent.original_language.as_string, a_parent.specialisation_depth+1)
+			make_minimal (an_artefact_type, a_parent.archetype_id.create_specialised_id (a_spec_concept), a_parent.original_language.as_string, a_parent.specialisation_depth+1)
 			create parent_archetype_id.make_from_string(a_parent.archetype_id.value)
 		end
 
@@ -66,7 +71,7 @@ feature -- Initialisation
 			a_flat_copy: FLAT_ARCHETYPE
 		do
 			a_flat_copy := a_flat.deep_twin
-			make_all(Latest_adl_version, a_flat_copy.archetype_id, a_flat_copy.parent_archetype_id, a_flat_copy.is_controlled,
+			make_all(a_flat.artefact_type, Latest_adl_version, a_flat_copy.archetype_id, a_flat_copy.parent_archetype_id, a_flat_copy.is_controlled,
 					a_flat_copy.concept, a_flat_copy.original_language.code_string, a_flat_copy.translations,
 					a_flat_copy.description, a_flat_copy.definition, a_flat_copy.invariants,
 					a_flat_copy.ontology.to_differential)

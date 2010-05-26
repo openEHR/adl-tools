@@ -74,6 +74,14 @@ feature -- Access
 			Result := types.item (a_name)
 		end
 
+feature -- Status report
+
+	is_template: BOOLEAN
+			-- True if any type other than `archetype'
+		do
+			Result := value /= archetype
+		end
+
 feature -- Validation
 
 	valid_type (n: INTEGER): BOOLEAN

@@ -231,6 +231,7 @@ feature {NONE} -- Implementation
 										end
 
 										create {DIFFERENTIAL_ARCHETYPE} Result.make (
+											adl_parser.artefact_type,
 											id,
 											adl_parser.concept,
 											orig_lang_trans.original_language.code_string,
@@ -247,6 +248,7 @@ feature {NONE} -- Implementation
 										end
 
 										create {FLAT_ARCHETYPE} Result.make (
+											adl_parser.artefact_type,
 											id,
 											adl_parser.concept,
 											orig_lang_trans.original_language.code_string,

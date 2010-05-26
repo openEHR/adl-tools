@@ -33,7 +33,8 @@ inherit
 
 feature -- Initialisation
 
-	make (an_id: like archetype_id;
+	make (an_artefact_type: ARTEFACT_TYPE;
+			an_id: like archetype_id;
 			a_concept_code: STRING;
 			an_original_language: STRING;
 			a_description: RESOURCE_DESCRIPTION;
@@ -41,9 +42,11 @@ feature -- Initialisation
 			an_ontology: like ontology)
 				-- make from pieces obtained by parsing
 		require
+			Artefact_type_attached: an_artefact_type /= Void
 			Concept_exists: a_concept_code /= Void and then valid_concept_code(a_concept_code)
 			Language_valid: an_original_language /= Void and then not an_original_language.is_empty
 		do
+			artefact_type := an_artefact_type
 			adl_version := 	Latest_adl_version
 			archetype_id := an_id
 			concept := a_concept_code
@@ -59,6 +62,8 @@ feature -- Initialisation
 			ontology := an_ontology
 			is_dirty := True
 		ensure
+			Artefact_type_set: artefact_type = an_artefact_type
+			Adl_version_set: adl_version = Latest_adl_version
 			Id_set: archetype_id = an_id
 			Concept_set: concept = a_concept_code
 			Original_language_set: original_language.code_string.is_equal (an_original_language)
@@ -67,7 +72,8 @@ feature -- Initialisation
 			Is_dirty: is_dirty
 		end
 
-	make_all(an_adl_version: STRING;
+	make_all(an_artefact_type: ARTEFACT_TYPE;
+			an_adl_version: STRING;
 			an_id: like archetype_id;
 			a_parent_archetype_id: ARCHETYPE_ID;
 			is_controlled_flag: BOOLEAN;
@@ -80,12 +86,13 @@ feature -- Initialisation
 			an_ontology: like ontology)
 				-- make from all possible items
 		require
+			Artefact_type_attached: an_artefact_type /= Void
 			Concept_exists: a_concept_code /= Void and then valid_concept_code(a_concept_code)
 			Language_valid: an_original_language /= Void and then not an_original_language.is_empty
 			Translations_valid: a_translations /= Void implies not a_translations.is_empty
 			Invariants_valid: an_invariants /= Void implies not an_invariants.is_empty
 		do
-			make (an_id, a_concept_code,
+			make (an_artefact_type, an_id, a_concept_code,
 					an_original_language, a_description,
 					a_definition, an_ontology)
 			parent_archetype_id := a_parent_archetype_id
@@ -94,7 +101,8 @@ feature -- Initialisation
 			is_controlled := is_controlled_flag
 			invariants := an_invariants
 		ensure
-			Adl_version_set: adl_version = adl_version
+			Artefact_type_set: artefact_type = an_artefact_type
+			Adl_version_set: adl_version = an_adl_version
 			Is_controlled_set: is_controlled = is_controlled_flag
 			Id_set: archetype_id = an_id
 			Parent_id_set: parent_archetype_id = a_parent_archetype_id
@@ -233,6 +241,12 @@ feature -- Status Report
 			Result := slot_index /= Void and then slot_index.count > 0
 		end
 
+	has_external_references: BOOLEAN
+			-- true if there are any external references / fillers, i.e. any C_ARCHETYPE_ROOTs
+		do
+			Result := external_references_index /= Void and then external_references_index.count > 0
+		end
+
 	has_invariants: BOOLEAN
 			-- true if there are invariants
 		do
@@ -271,6 +285,12 @@ feature -- Status Report
 	is_generated: BOOLEAN
 			-- True if this archetype was generated from another one, rather than being an original authored archetype
 
+	is_template: BOOLEAN
+			-- True if `artefact_type' is any type other than archetype
+		do
+			Result := artefact_type.is_template
+		end
+
 feature -- Status Setting
 
 	set_is_valid(a_validity: BOOLEAN)
@@ -286,7 +306,7 @@ feature -- Status Setting
 			is_generated := True
 		end
 
-feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER, EXPR_XREF_BUILDER} -- Validation
+feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER, EXPR_XREF_BUILDER, ARCH_REP_ARCHETYPE} -- Validation
 
 	build_xrefs
 			-- build definition / ontology cross reference tables used for validation and
@@ -300,7 +320,7 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER, EXPR_XREF_BUI
 			create id_atcodes_index.make(0)
 			create data_atcodes_index.make(0)
 			create use_node_index.make(0)
-			create c_archetype_root_index.make(0)
+			create external_references_index.make(0)
 			create accodes_index.make(0)
 			create slot_index.make(0)
 
@@ -356,7 +376,7 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER, EXPR_XREF_BUI
 			-- table of {list<ARCHETYPE_INTERNAL_REF>, target_path}
 			-- i.e. <list of use_nodes> keyed by path they point to
 
-	c_archetype_root_index: HASH_TABLE[ARRAYED_LIST[C_ARCHETYPE_ROOT], STRING]
+	external_references_index: HASH_TABLE[ARRAYED_LIST[C_ARCHETYPE_ROOT], STRING]
 			-- table of {list<C_ARCHETYPE_ROOT>, archetype_id}
 			-- i.e. <list of use_archetype nodes> keyed by archetype id they refer to
 
@@ -442,42 +462,6 @@ feature -- Modification
 		end
 
 feature -- Output
-
--- FIXME: this is probably used in some test app; if so, a simple display_hash_table_keys
--- routine should be implemented to generate the keys of each of the archetype_validator.xref tables
---
---	found_terms: STRING is
---		local
---			str_lst: ARRAYED_LIST[STRING]
---   		do
---   			create Result.make(0)
---
---			Result.append("%N--------------- found node term codes -------------%N")
---			Result.append(display_arrayed_list(found_id_node_codes))
---			Result.append("%N")
---
---			Result.append("%N--------------- found leaf term codes -------------%N")
---			Result.append(display_arrayed_list(found_code_node_codes))
---			Result.append("%N")
---
---			Result.append("%N--------------- found constraint codes -----------%N")
---			str_lst := found_constraint_codes
---			Result.append(display_arrayed_list(str_lst))
---			Result.append("%N")
---
---			Result.append("%N--------------- found use refs -----------%N")
---			create str_lst.make(0)
---			from
---				found_internal_references.start
---			until
---				found_internal_references.off
---			loop
---				str_lst.extend(found_internal_references.item)
---				found_internal_references.forth
---			end
---			Result.append(display_arrayed_list(str_lst))
---			Result.append("%N")
---		end
 
 	as_string: STRING
    		do
@@ -634,6 +618,7 @@ feature {NONE} -- Implementation
 		end
 
 invariant
+	Artefact_type_set: artefact_type /= Void
 	Concept_valid: concept /= Void and then concept.is_equal (ontology.concept_code)
 	Description_exists: description /= Void
 	Invariants_valid: invariants /= Void implies not invariants.is_empty

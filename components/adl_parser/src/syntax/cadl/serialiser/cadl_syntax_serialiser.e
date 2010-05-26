@@ -25,7 +25,7 @@ inherit
 			start_c_attribute, end_c_attribute,
 			start_archetype_slot, end_archetype_slot,
 			start_archetype_internal_ref, start_constraint_ref,
-			start_c_archetype_root,
+			start_c_archetype_root, end_c_archetype_root,
 			start_c_code_phrase, start_c_ordinal, start_c_quantity,
 			start_c_primitive_object
 		end
@@ -36,6 +36,11 @@ inherit
 		end
 
 	SHARED_APPLICATION_CONTEXT
+		export
+			{NONE} all
+		end
+
+	SHARED_KNOWLEDGE_REPOSITORY
 		export
 			{NONE} all
 		end
@@ -224,9 +229,9 @@ feature -- Visitor
 		local
 			id: STRING
 		do
-			last_result.append (create_indent(depth) + apply_style(symbol(SYM_USE_ARCHETYPE), STYLE_KEYWORD) + format_item(FMT_SPACE))
-			last_result.append (a_node.rm_type_name + format_item(FMT_SPACE))
+			ontologies.extend (arch_dir.archetype_index.item (a_node.archetype_id).flat_archetype.ontology)
 
+			last_result.append (create_indent(depth) + apply_style(symbol(SYM_USE_ARCHETYPE), STYLE_KEYWORD) + format_item(FMT_SPACE))
 			last_result.append (apply_style (a_node.rm_type_name, identifier_style (a_node)))
 			id := "["
 			if a_node.is_addressable then
@@ -239,6 +244,12 @@ feature -- Visitor
 
 			serialise_occurrences(a_node, depth)
 			last_result.append (format_item(FMT_NEWLINE))
+		end
+
+	end_c_archetype_root(a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
+			-- exit a C_ARCHETYPE_ROOT
+		do
+			ontologies.remove
 		end
 
 	start_c_reference_object(a_node: C_REFERENCE_OBJECT; depth: INTEGER)

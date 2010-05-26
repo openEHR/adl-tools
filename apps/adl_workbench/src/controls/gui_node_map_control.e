@@ -155,6 +155,14 @@ feature -- Commands
 			create tree_item_stack.make (0)
 
 			if arch_dir.has_validated_selected_archetype then
+				if in_differential_mode then
+					target_archetype := arch_dir.selected_archetype.differential_archetype
+				else
+					target_archetype := arch_dir.selected_archetype.flat_archetype
+				end
+				create ontologies.make(0)
+				ontologies.extend(target_archetype.ontology)
+
 				create tree_iterator.make (target_archetype.definition.representation)
 				tree_iterator.do_all (agent node_build_enter_action (?, ?), agent node_build_exit_action (?, ?))
 
@@ -173,9 +181,9 @@ feature -- Commands
 		end
 
 	repopulate
-			-- populate the ADL tree control by traversing the tree and modifying it
+			-- update the ADL tree control by traversing the tree and modifying it
 		do
-			gui_tree.recursive_do_all (agent node_rebuild_enter_action (?))
+			ev_tree_do_all (agent node_rebuild_enter_action (?), agent node_rebuild_exit_action (?))
 			if in_reference_model_mode_changed then
 				if in_reference_model_mode then
 					gui_tree.recursive_do_all (agent node_add_rm_attributes (?))
@@ -311,22 +319,14 @@ feature {NONE} -- Implementation
 
 	target_archetype: attached ARCHETYPE
 			-- Differential or flat version of archetype, depending on setting of `in_differential_mode'.
-		require
-			archetype_selected: arch_dir.has_validated_selected_archetype
-		do
-			if in_differential_mode then
-				Result := arch_dir.selected_archetype.differential_archetype
-			else
-				Result := arch_dir.selected_archetype.flat_archetype
-			end
-		end
+
+	ontologies: ARRAYED_STACK [ARCHETYPE_ONTOLOGY]
+			-- we use a stack here to handle ontologies inside operational templates
 
 	ontology: attached ARCHETYPE_ONTOLOGY
 			-- The ontology for `target_archetype'.
-		require
-			archetype_selected: arch_dir.has_validated_selected_archetype
 		do
-			Result := target_archetype.ontology
+			Result := ontologies.item
 		end
 
 	gui: MAIN_WINDOW
@@ -374,26 +374,25 @@ feature {NONE} -- Implementation
 			elseif attached {CONSTRAINT_REF} an_og_node.content_item as a_constraint_ref then
 				a_ti := attach_node(constraint_ref_string(a_constraint_ref), pixmaps.item("CONSTRAINT_REF" + pixmap_ext), an_og_node)
 
-			elseif attached {C_CODE_PHRASE} an_og_node.content_item as a_object_term then
-				if not a_object_term.any_allowed then
-					s.append (a_object_term.terminology_id.value)
+			elseif attached {C_CODE_PHRASE} an_og_node.content_item as ccp then
+				if not ccp.any_allowed then
+					s.append (ccp.terminology_id.value)
 				end
 
-				a_ti := attach_node(s, pixmaps.item(a_object_term.generating_type + pixmap_ext), an_og_node)
+				a_ti := attach_node(s, pixmaps.item(ccp.generating_type + pixmap_ext), an_og_node)
 
-				if a_object_term.code_count > 0 then
+				if ccp.code_count > 0 then
 					from
-						a_object_term.code_list.start
+						ccp.code_list.start
 					until
-						a_object_term.code_list.off
+						ccp.code_list.off
 					loop
-						assumed_flag := a_object_term.assumed_value /= Void and then
-							a_object_term.assumed_value.code_string.is_equal(a_object_term.code_list.item)
-						create a_ti_sub.make_with_text (utf8 (object_term_item_string (a_object_term.code_list.item, assumed_flag, a_object_term.is_local)))
-						a_ti_sub.set_data (a_object_term.code_list.item) -- type STRING
+						assumed_flag := ccp.assumed_value /= Void and then ccp.assumed_value.code_string.is_equal(ccp.code_list.item)
+						create a_ti_sub.make_with_text (utf8 (object_term_item_string (ccp.code_list.item, assumed_flag, ccp.is_local)))
+						a_ti_sub.set_data (ccp.code_list.item) -- type STRING
 						a_ti_sub.set_pixmap(pixmaps.item("TERM" + pixmap_ext))
 						a_ti.extend (a_ti_sub)
-						a_object_term.code_list.forth
+						ccp.code_list.forth
 					end
 				end
 
@@ -449,8 +448,9 @@ feature {NONE} -- Implementation
 			elseif attached {C_PRIMITIVE_OBJECT} an_og_node.content_item as c_p_o then
 				a_ti := attach_node(c_primitive_object_string(c_p_o), pixmaps.item(c_p_o.generating_type + pixmap_ext), an_og_node)
 
-			elseif attached {C_ARCHETYPE_ROOT} an_og_node.content_item as ex_ref then
-				a_ti := attach_node(c_archetype_root_string(ex_ref), pixmaps.item(ex_ref.generating_type + occurrences_pixmap_string(ex_ref) + pixmap_ext), an_og_node)
+			elseif attached {C_ARCHETYPE_ROOT} an_og_node.content_item as car then
+				a_ti := attach_node(c_archetype_root_string(car), pixmaps.item(car.generating_type + occurrences_pixmap_string(car) + pixmap_ext), an_og_node)
+				ontologies.extend (arch_dir.archetype_index.item (car.archetype_id).flat_archetype.ontology)
 
 			elseif attached {C_COMPLEX_OBJECT} an_og_node.content_item as c_c_o then
 				a_ti := attach_node(c_complex_object_string(c_c_o), pixmaps.item(c_c_o.generating_type + occurrences_pixmap_string(c_c_o) + pixmap_ext), an_og_node)
@@ -506,6 +506,9 @@ feature {NONE} -- Implementation
 			Node_exists: an_og_node /= Void
 		do
 			tree_item_stack.remove
+			if attached {C_ARCHETYPE_ROOT} an_og_node.content_item as ex_ref then
+				ontologies.remove
+			end
 		end
 
 	node_rebuild_enter_action(a_tree_node: EV_TREE_NODE)
@@ -589,8 +592,8 @@ feature {NONE} -- Implementation
 						a_ti.set_text (utf8 (constraint_ref_string (a_constraint_ref)))
 						a_ti.set_pixmap(pixmaps.item(a_constraint_ref.generating_type + pixmap_ext))
 
-					elseif attached {C_CODE_PHRASE} a_node as a_c_p then
-						a_ti.set_pixmap(pixmaps.item(a_c_p.generating_type + pixmap_ext))
+					elseif attached {C_CODE_PHRASE} a_node as ccp then
+						a_ti.set_pixmap(pixmaps.item(ccp.generating_type + pixmap_ext))
 
 					elseif attached {C_DV_ORDINAL} a_node as c_d_o then
 						a_ti.set_pixmap(pixmaps.item(c_d_o.generating_type + pixmap_ext))
@@ -644,9 +647,10 @@ feature {NONE} -- Implementation
 						a_ti.set_text (utf8 (c_primitive_object_string (c_p_o)))
 						a_ti.set_pixmap(pixmaps.item(c_p_o.generating_type + pixmap_ext))
 
-					elseif attached {C_ARCHETYPE_ROOT} a_node as c_a_r then
-						a_ti.set_text (utf8 (c_archetype_root_string (c_a_r)))
-						a_ti.set_pixmap(pixmaps.item(c_a_r.generating_type + occurrences_pixmap_string(c_a_r) + pixmap_ext))
+					elseif attached {C_ARCHETYPE_ROOT} a_node as car then
+						a_ti.set_text (utf8 (c_archetype_root_string (car)))
+						a_ti.set_pixmap(pixmaps.item(car.generating_type + occurrences_pixmap_string(car) + pixmap_ext))
+						ontologies.extend (arch_dir.archetype_index.item (car.archetype_id).flat_archetype.ontology)
 
 					elseif attached {C_COMPLEX_OBJECT} a_node as c_c_o then
 						a_ti.set_text (utf8 (c_complex_object_string (c_c_o)))
@@ -666,6 +670,15 @@ feature {NONE} -- Implementation
 				end
 			else
 				-- must be an invariant node: FIXME
+			end
+		end
+
+	node_rebuild_exit_action(a_tree_node: EV_TREE_NODE)
+		require
+			Node_exists: a_tree_node /= Void
+		do
+			if attached {C_ARCHETYPE_ROOT} a_tree_node.data as ex_ref then
+				ontologies.remove
 			end
 		end
 
@@ -1154,6 +1167,34 @@ feature {NONE} -- Implementation
 					-- FIXME: TO BE IMPLEM - need to add sub nodes for each assertion
 				end
 			end
+		end
+
+	ev_tree_do_all(node_enter_action, node_exit_action: PROCEDURE[ANY, TUPLE [EV_TREE_NODE]])
+			-- do enter_action and exit_action to all nodes in the structure
+		require
+			Enter_action_valid: node_enter_action /= Void
+			Exit_action_valid: node_exit_action /= Void
+		do
+			from gui_tree.start until gui_tree.off loop
+				ev_tree_do_all_nodes(gui_tree.item, node_enter_action, node_exit_action)
+				gui_tree.forth
+			end
+		end
+
+	ev_tree_do_all_nodes(a_target: EV_TREE_NODE; node_enter_action, node_exit_action: PROCEDURE[ANY, TUPLE [EV_TREE_NODE]])
+		require
+			Target_exists: a_target /= Void
+		do
+			node_enter_action.call([a_target])
+			from
+				a_target.start
+			until
+				a_target.off
+			loop
+				ev_tree_do_all_nodes(a_target.item, node_enter_action, node_exit_action)
+				a_target.forth
+			end
+			node_exit_action.call([a_target])
 		end
 
 invariant

@@ -135,9 +135,6 @@ feature -- Validation
 				target.build_xrefs
 				report_unused_ontology_codes
 				validate_definition_codes
-				if target.has_slots then
-					build_slot_id_index
-				end
 			end
 
 			-- basic validation of definition and ontology
@@ -148,6 +145,9 @@ feature -- Validation
 
 			-- validation requiring valid specialisation parent
 			if passed then
+				if target.has_slots then
+					build_slot_id_index
+				end
 				if target.is_specialised then
 					target.build_rolled_up_status
 					validate_specialised_definition

@@ -247,6 +247,10 @@ feature -- Access (semantic)
 			current_last: Result.last = Current
 		end
 
+	referenced_archetypes_index: HASH_TABLE [ARCH_REP_ARCHETYPE, STRING]
+			-- list of descriptors of slot fillers or other external references, keyed by archetype id
+			-- currently generated only from C_ARCHETYPE_ROOT index in archetype
+
 	ontology_lineage: HASH_TABLE [DIFFERENTIAL_ARCHETYPE_ONTOLOGY, INTEGER]
 			-- lineage of ontologies of archetypes from top to this one
 
@@ -717,9 +721,10 @@ feature -- Modification
 
 feature -- Factory
 
-	create_new_archetype(a_im_originator, a_im_name, a_im_entity, a_primary_language: STRING)
+	create_new_archetype(an_artefact_type: ARTEFACT_TYPE; a_im_originator, a_im_name, a_im_entity, a_primary_language: STRING)
 			-- create a new top-level differential archetype and install it into the directory according to its id
 		require
+			Artefact_type_attached: an_artefact_type /= Void
 			Info_model_originator_valid: a_im_originator /= void and then not a_im_originator.is_empty
 			Info_model_name_valid: a_im_name /= void and then not a_im_name.is_empty
 			Info_model_entity_valid: a_im_entity /= void and then not a_im_entity.is_empty
@@ -729,7 +734,7 @@ feature -- Factory
 		do
 			if not exception_encountered then
 				create arch_id.make (a_im_originator, a_im_name, a_im_entity, "UNKNOWN", "v0")
-				create differential_archetype.make_minimal (arch_id, a_primary_language, 0)
+				create differential_archetype.make_minimal (an_artefact_type, arch_id, a_primary_language, 0)
 				set_current_language (a_primary_language)
 
 				-- FIXME: now add this archetype into the ARCHETYPE_DIRECTORY
@@ -751,14 +756,15 @@ feature -- Factory
 			retry
 		end
 
-	create_new_specialised_archetype(specialised_domain_concept: STRING)
+	create_new_specialised_archetype(an_artefact_type: ARTEFACT_TYPE; specialised_domain_concept: STRING)
 			-- create a new specialised archetype as a child of the target archetype and install it in
 			-- the directory
 		require
+			Artefact_type_attached: an_artefact_type /= Void
 			Concept_valid: specialised_domain_concept /= Void and then not specialised_domain_concept.is_empty
 		do
 			if not exception_encountered then
-				create differential_archetype.make_specialised_child(differential_archetype, specialised_domain_concept)
+				create differential_archetype.make_specialised_child(an_artefact_type, differential_archetype, specialised_domain_concept)
 				-- FIXME: now add this archetype into the ARCHETYPE_DIRECTORY
 			else
 				post_error(Current, "create_new_specialised_archetype", "create_new_specialised_archetype_e1", Void)
@@ -806,6 +812,7 @@ feature {NONE} -- Implementation
 
 			-- now perform validation which requires flat form
 			if is_valid then
+				build_referenced_archetypes_index
 				validator.validate_flat
 				if validator.passed then
 					post_info (Current, "validate (flat)", "parse_archetype_i2", <<id.as_string>>)
@@ -853,6 +860,23 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	build_referenced_archetypes_index
+			-- build `referenced_archetypes_index'
+		require
+			is_valid
+		local
+			ext_ref_idx: HASH_TABLE[ARRAYED_LIST[C_ARCHETYPE_ROOT], STRING]
+		do
+			create referenced_archetypes_index.make (0)
+			if differential_archetype.has_external_references then
+				ext_ref_idx := differential_archetype.external_references_index
+				from ext_ref_idx.start until ext_ref_idx.off loop
+					referenced_archetypes_index.put (arch_dir.archetype_index.item (ext_ref_idx.key_for_iteration), ext_ref_idx.key_for_iteration)
+					ext_ref_idx.forth
+				end
+			end
+		end
+
 	has_adl_generated_status (str: STRING): BOOLEAN
 			-- True if str is in ADL syntax of the first line of an archetype file and contains the
 			-- 'generated' flag in the meta-data part. The form of this string should be:
@@ -880,9 +904,9 @@ feature {NONE} -- Implementation
 			arch_flattener: ARCHETYPE_FLATTENER
 		do
 			if not differential_archetype.is_specialised then
-				create arch_flattener.make_non_specialised (differential_archetype, rm_schema)
+				create arch_flattener.make_non_specialised (Current, rm_schema)
 			else
-				create arch_flattener.make_specialised (specialisation_parent.flat_archetype, differential_archetype, rm_schema)
+				create arch_flattener.make_specialised (specialisation_parent, Current, rm_schema)
 			end
 			arch_flattener.flatten
 			flat_archetype_cache := arch_flattener.arch_output_flat

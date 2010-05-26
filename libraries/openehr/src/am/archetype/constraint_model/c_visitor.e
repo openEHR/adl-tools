@@ -20,7 +20,8 @@ feature -- Initialisation
 		require
 			Ontology_valid: an_ontology /= Void
 		do
-			ontology := an_ontology
+			create ontologies.make(0)
+			ontologies.extend(an_ontology)
 			is_differential := attached {DIFFERENTIAL_ARCHETYPE_ONTOLOGY} an_ontology as an_ont
 		end
 
@@ -166,7 +167,14 @@ feature -- Finalisation
 
 feature {NONE} -- Implementation
 
-	ontology: ARCHETYPE_ONTOLOGY
+	ontologies: ARRAYED_STACK [ARCHETYPE_ONTOLOGY]
+			-- we use a stack here to handle ontologies inside operational templates
+
+	ontology: attached ARCHETYPE_ONTOLOGY
+			-- The ontology for `target_archetype'.
+		do
+			Result := ontologies.item
+		end
 
 	is_differential: BOOLEAN
 			-- True if archetype is differential form

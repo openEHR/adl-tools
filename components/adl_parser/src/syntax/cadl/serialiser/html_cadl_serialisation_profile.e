@@ -36,6 +36,7 @@ feature {NONE} -- Implementation
 			Result.put("cardinality",		SYM_CARDINALITY)
 			Result.put("use_node",			SYM_USE_NODE)
 			Result.put("allow_archetype",		SYM_ALLOW_ARCHETYPE)
+			Result.put("use_archetype",		SYM_USE_ARCHETYPE)
 
 			Result.put("include",			SYM_INCLUDE)
 			Result.put("exclude",			SYM_EXCLUDE)
