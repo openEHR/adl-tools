@@ -424,7 +424,7 @@ feature -- Status Report - Semantic
 			Result := differential_archetype /= Void and differential_generated
 		end
 
-	has_artefacts: BOOLEAN is True
+	has_artefacts: BOOLEAN = True
 			-- True if there are any archetypes at or below this point
 
 feature -- Status Setting

@@ -266,7 +266,7 @@ feature -- Status Report
 
 feature -- Commands
 
-	dt_finalise (a_bmmm: BMM_SCHEMA) is
+	dt_finalise (a_bmmm: BMM_SCHEMA)
 			-- synchronise structures after creation by DT deserialiser
 		do
 			bmm_model := a_bmmm

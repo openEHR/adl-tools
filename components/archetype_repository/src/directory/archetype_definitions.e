@@ -35,9 +35,9 @@ feature -- Definitions
 
 	Ontological_path_separator: STRING = "/"
 
-	Archetype_category: STRING is "archetypes"
+	Archetype_category: STRING = "archetypes"
 
-	Template_category: STRING is "templates"
+	Template_category: STRING = "templates"
 
 	Adl_versions: ARRAYED_LIST [STRING]
 			-- list of ADL versions known in this tool
@@ -55,11 +55,11 @@ feature -- Definitions
 			Result := Adl_versions.last
 		end
 
-	Group_id_adhoc: INTEGER is 1
+	Group_id_adhoc: INTEGER = 1
 
-	Group_id_reference: INTEGER is 2
+	Group_id_reference: INTEGER = 2
 
-	Group_id_work: INTEGER is 3
+	Group_id_work: INTEGER = 3
 
 end
 

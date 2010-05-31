@@ -27,7 +27,7 @@ inherit
 
 feature -- Definitions
 
-	Schema_file_extension: STRING is ".dadl"
+	Schema_file_extension: STRING = ".dadl"
 
 	Default_rm_schema_directory: STRING
 			-- directory of Reference Model schema files; same as full path to app + "/rm_schemas";

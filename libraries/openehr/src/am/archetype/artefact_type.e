@@ -18,16 +18,16 @@ create
 
 feature -- Defnition
 
-	archetype: INTEGER is 0
+	archetype: INTEGER = 0
 			-- Constant to indicate that the artefact is designed as an archetype.
 
-	template: INTEGER is 1
+	template: INTEGER = 1
 			-- Constant to indicate that the artefact is designed as a template.
 
-	template_component: INTEGER is 2
+	template_component: INTEGER = 2
 			-- Constant to indicate that the artefact is designed as a template_component.
 
-	operational_template: INTEGER is 3
+	operational_template: INTEGER = 3
 			-- Constant to indicate that the artefact is an operational template.
 
 feature -- Initialisation
