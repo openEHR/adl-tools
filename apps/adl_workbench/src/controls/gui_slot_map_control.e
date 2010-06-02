@@ -82,7 +82,7 @@ feature -- Commands
 		local
 			eti: EV_TREE_ITEM
 			ara: ARCH_REP_ARCHETYPE
-			slots: HASH_TABLE [ARRAYED_LIST [STRING], STRING]
+			slot_index: DS_HASH_TABLE [ARRAYED_LIST [STRING], STRING]
 		do
 			clear
 
@@ -90,23 +90,19 @@ feature -- Commands
 				ara := arch_dir.selected_archetype
 
 				if ara.has_slots then
-					from
-						slots := ara.slot_id_index
-						slots.start
-					until
-						slots.off
-					loop
-						create eti.make_with_text (utf8 (ara.differential_archetype.ontology.physical_to_logical_path (slots.key_for_iteration, current_language)))
+					slot_index := ara.slot_id_index
+					from slot_index.start until slot_index.off loop
+						create eti.make_with_text (utf8 (ara.differential_archetype.ontology.physical_to_logical_path (slot_index.key_for_iteration, current_language)))
 						eti.set_pixmap (pixmaps ["ARCHETYPE_SLOT"])
 						gui.slots_tree.extend (eti)
-						append_tree (eti, slots.item_for_iteration)
+						append_tree (eti, slot_index.item_for_iteration)
 						slots_count := slots_count + eti.count
 
 						if eti.is_expandable then
 							eti.expand
 						end
 
-						slots.forth
+						slot_index.forth
 					end
 				end
 
@@ -145,11 +141,7 @@ feature {NONE} -- Implementation
 			eti: EV_TREE_ITEM
 			ara: ARCH_REP_ARCHETYPE
 		do
-			from
-				ids.start
-			until
-				ids.off
-			loop
+			from ids.start until ids.off loop
 				create eti.make_with_text (utf8 (ids.item))
 				ara := arch_dir.archetype_index.item (ids.item)
 				eti.set_pixmap (pixmaps [ara.group_name])

@@ -154,7 +154,7 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 					last_string_value := text_substring (2, text_count - 1)
 			}
 
-\[{ALPHANUM}{NAMECHAR}*\]	{
+\[a[ct][0-9.]+\] {
 					last_token := V_LOCAL_TERM_CODE_REF
 					last_string_value := text_substring (2, text_count - 1)
 			}

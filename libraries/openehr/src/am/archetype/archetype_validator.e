@@ -54,6 +54,10 @@ inherit
 create
 	make
 
+feature -- Definitions
+
+	Regex_any_pattern: STRING = ".*"
+
 feature {NONE} -- Initialisation
 
 	make (a_target_desc: like target_descriptor; an_rm_schema: SCHEMA_ACCESS)
@@ -133,6 +137,7 @@ feature -- Validation
 			-- validation requiring the archetype xref tables
 			if passed then
 				target.build_xrefs
+				validate_slots
 				report_unused_ontology_codes
 				validate_definition_codes
 			end
@@ -206,6 +211,47 @@ feature {NONE} -- Implementation
 					langs.forth
 				end
 				add_error("VOTM", <<err_str>>)
+			end
+		end
+
+	validate_slots
+			-- check that all slot definitions are valid, according to logic:
+			-- 	IF includes not empty and = 'any' THEN
+			--		not (excludes empty or /= 'any') ==> Error
+			-- 	ELSEIF includes not empty and /= 'any' THEN
+			--		not (excludes empty or = 'any') ==> Error
+			-- 	ELSEIF excludes not empty and = 'any' THEN
+			-- 		not (includes empty or /= 'any') ==> Error
+			--	ELSEIF excludes not empty and /= 'any' THEN
+			-- 		not (includes empty or = 'any') ==> Error
+			--	END
+		local
+			includes, excludes: ARRAYED_LIST[ASSERTION]
+		do
+			from target.slot_index.start until target.slot_index.off loop
+				-- process the includes
+				includes := target.slot_index.item.includes
+				excludes := target.slot_index.item.excludes
+
+				if not includes.is_empty and assertion_matches_any (includes.first) then
+					if not (excludes.is_empty or not assertion_matches_any (excludes.first)) then
+						add_error("VDSEV1", <<target.slot_index.item.rm_type_name, target.slot_index.item.path>>)
+					end
+				elseif not includes.is_empty and not assertion_matches_any (includes.first) then
+					if not (excludes.is_empty or assertion_matches_any (excludes.first)) then
+						add_error("VDSEV2", <<target.slot_index.item.rm_type_name, target.slot_index.item.path>>)
+					end
+				elseif not excludes.is_empty and assertion_matches_any (excludes.first) then
+					if not (includes.is_empty or not assertion_matches_any (includes.first)) then
+						add_error("VDSIV1", <<target.slot_index.item.rm_type_name, target.slot_index.item.path>>)
+					end
+				elseif not includes.is_empty and not assertion_matches_any (includes.first) then
+					if not (excludes.is_empty or assertion_matches_any (excludes.first)) then
+						add_error("VDSIV2", <<target.slot_index.item.rm_type_name, target.slot_index.item.path>>)
+					end
+				end
+
+				target.slot_index.forth
 			end
 		end
 
@@ -357,45 +403,62 @@ feature {NONE} -- Implementation
 		end
 
 	build_slot_id_index
-			-- build slot_id_index in ARCH_REP_ARCHETYPE
+			-- build slot_id_index in ARCH_REP_ARCHETYPE.
+			-- Current slot logic of include/exclude lists:
+			-- 	IF includes not empty and /= 'any' THEN
+			-- 		IF not excludes empty THEN -- excludes must = any; means not a recommendation
+			--			create match list = includes constraint
+			--		ELSE -- it is just a recommendation;formally it means match all
+			--			create match list = all archetypes of compatible RM type
+			--		END
+			--	ELSEIF excludes not empty and /= 'any' THEN
+			-- 		IF not includes empty THEN -- includes must = any; means not a recommendation
+			--			create match list = all achetypes - excludes constraint matchlist
+			--		ELSE -- just a recommendation; formally it means match all
+			--			create match list = all archetypes of compatible RM type
+			--		END
+			--	END
 		require
 			target.has_slots
 		local
-			assn_list: ARRAYED_LIST[ASSERTION]
+			includes, excludes: ARRAYED_LIST[ASSERTION]
 			a_regex: STRING
 			id_list: ARRAYED_LIST[STRING]
 			ara: ARCH_REP_ARCHETYPE
 		do
 			from target.slot_index.start until target.slot_index.off loop
 				-- process the includes
-				assn_list := target.slot_index.item.includes
-				from assn_list.start until assn_list.off loop
-					a_regex := extract_regex(assn_list.item)
-					if a_regex /= Void then
-						target_descriptor.add_slot_ids(arch_dir.matching_ids (a_regex, target.slot_index.item.rm_type_name), target.slot_index.item.path)
+				includes := target.slot_index.item.includes
+				excludes := target.slot_index.item.excludes
+				if not includes.is_empty and not assertion_matches_any (includes.first) then
+					if not excludes.is_empty then -- create specific match list from includes constraint
+						from includes.start until includes.off loop
+							a_regex := extract_regex(includes.item)
+							if a_regex /= Void then
+								target_descriptor.add_slot_ids(arch_dir.matching_ids (a_regex, target.slot_index.item.rm_type_name), target.slot_index.item.path)
+							end
+							includes.forth
+						end
+					else -- excludes = empty ==> includes is just a recommendation => match all archetype ids of RM type
+						target_descriptor.add_slot_ids (arch_dir.matching_ids (Regex_any_pattern, target.slot_index.item.rm_type_name), target.slot_index.item.path)
 					end
-					assn_list.forth
-				end
-
-				-- if there are still no ids at all for this path, the implication is that all ids match, and that exclusions will remove some
-				if not target_descriptor.has_slots or else not target_descriptor.slot_id_index.has (target.slot_index.item.path) then
-					target_descriptor.add_slot_ids (arch_dir.matching_ids (".*", target.slot_index.item.rm_type_name), target.slot_index.item.path)
-				end
-
-				-- process the excludes
-				assn_list := target.slot_index.item.excludes
-				from assn_list.start until assn_list.off loop
-					a_regex := extract_regex(assn_list.item)
-					if a_regex /= Void then
-						id_list := arch_dir.matching_ids (a_regex, target.slot_index.item.rm_type_name)
-
-						-- go through existing id list and remove any matched by the exclusion list
-						from id_list.start until id_list.off loop
-							target_descriptor.slot_id_index.item (target.slot_index.item.path).prune (id_list.item)
-							id_list.forth
+				elseif not excludes.is_empty and not assertion_matches_any (excludes.first) then
+					target_descriptor.add_slot_ids (arch_dir.matching_ids (Regex_any_pattern, target.slot_index.item.rm_type_name), target.slot_index.item.path)
+					if not includes.is_empty then -- means excludes is not a recommendation; need to actually process it
+						from excludes.start until excludes.off loop
+							a_regex := extract_regex(excludes.item)
+							if a_regex /= Void then
+								id_list := arch_dir.matching_ids (a_regex, target.slot_index.item.rm_type_name)
+								from id_list.start until id_list.off loop
+									target_descriptor.slot_id_index.item (target.slot_index.item.path).prune (id_list.item)
+									id_list.forth
+								end
+							end
+							excludes.forth
 						end
 					end
-					assn_list.forth
+				else
+					target_descriptor.add_slot_ids (arch_dir.matching_ids (Regex_any_pattern, target.slot_index.item.rm_type_name), target.slot_index.item.path)
 				end
 
 				-- now post the results in the reverse indexes
@@ -411,6 +474,46 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	archetype_id_matches_slot (an_id: STRING; a_slot: ARCHETYPE_SLOT): BOOLEAN
+			-- test an archetype id against slot spec (it might pass, even if no archetypes matching the slot were found)
+		require
+			Archetype_id_valid: an_id /= Void and then not an_id.is_empty
+			Slot_attached: a_slot /= Void
+		local
+			includes, excludes: ARRAYED_LIST[ASSERTION]
+			a_regex: STRING
+			regex_matcher: LX_DFA_REGULAR_EXPRESSION
+		do
+			-- process the includes
+			includes := a_slot.includes
+			excludes := a_slot.excludes
+			if not includes.is_empty and not assertion_matches_any (includes.first) and assertion_matches_any (excludes.first) then
+				from includes.start until includes.off or Result loop
+					a_regex := extract_regex(includes.item)
+					if a_regex /= Void then
+						create regex_matcher.compile_case_insensitive (a_regex)
+						if regex_matcher.is_compiled then
+							Result := regex_matcher.matches (an_id)
+						end
+					end
+					includes.forth
+				end
+			elseif not excludes.is_empty and not assertion_matches_any (excludes.first) and assertion_matches_any (includes.first) then
+				from excludes.start until excludes.off or not Result loop
+					a_regex := extract_regex(excludes.item)
+					if a_regex /= Void then
+						create regex_matcher.compile_case_insensitive (a_regex)
+						if regex_matcher.is_compiled then
+							Result := not regex_matcher.matches (an_id)
+						end
+					end
+					excludes.forth
+				end
+			else
+				Result := True
+			end
+		end
+
 	extract_regex(an_assertion: ASSERTION): STRING
 			-- extract regex from id matches {/regex/} style assertion used in slots
 		do
@@ -421,6 +524,12 @@ feature {NONE} -- Implementation
 					end
 				end
 			end
+		end
+
+	assertion_matches_any(an_assertion: ASSERTION): BOOLEAN
+			-- True if the regex = {/.*/} i.e. matches anything
+		do
+			Result := extract_regex(an_assertion).is_equal (Regex_any_pattern)
 		end
 
 	validate_specialised_definition
@@ -441,7 +550,7 @@ feature {NONE} -- Implementation
 			co_parent_flat: attached C_OBJECT
 			co_parent_flat_detachable: detachable C_OBJECT
 			apa: ARCHETYPE_PATH_ANALYSER
-			slot_id_index: HASH_TABLE [ARRAYED_SET[STRING], STRING]
+			slot_id_index: DS_HASH_TABLE [ARRAYED_SET[STRING], STRING]
 		do
 			if attached {C_ATTRIBUTE} a_c_node as ca_child_diff then
 				create apa.make_from_string (a_c_node.path)
@@ -478,8 +587,10 @@ feature {NONE} -- Implementation
 				if attached {ARCHETYPE_SLOT} co_parent_flat as a_slot then
 					slot_id_index := target_descriptor.specialisation_parent.slot_id_index
 					if slot_id_index /= Void and then slot_id_index.has (a_slot.path) then
-						if not slot_id_index.item (a_slot.path).has (car.archetype_id) then
-							add_error("VARXE", <<car.path, car.archetype_id>>)
+						if not archetype_id_matches_slot (car.archetype_id, a_slot) then
+							add_error("VARXS", <<car.path, car.archetype_id>>)
+						elseif not slot_id_index.item (a_slot.path).has (car.archetype_id) then
+							add_warning("VARXSnf", <<car.path, car.archetype_id>>)
 						else -- if we got to here, it means that the mentioned archetype does exist in the set of archetype ids that match the slot
 							check True end
 						end

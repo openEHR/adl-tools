@@ -244,7 +244,7 @@ NAMESTR ([a-zA-Z][a-zA-Z0-9_]+)
 			}
 
 ----------/* term code reference */ -------------------------------------------------
-\[[a-zA-Z0-9][a-zA-Z0-9._\-]*\]	{
+\[a[ct][0-9.]+\] {
 					last_token := V_LOCAL_TERM_CODE_REF
 					last_string_value := text_substring (2, text_count - 1)
 			}

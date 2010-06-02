@@ -268,7 +268,7 @@ feature -- Access (semantic)
 			Result := flat_archetype_cache
 		end
 
-	slot_id_index: HASH_TABLE [ARRAYED_SET[STRING], STRING]
+	slot_id_index: DS_HASH_TABLE [ARRAYED_SET[STRING], STRING]
 			-- list of Archetype ids matching slot, keyed by slot path
 
 	used_by_index: ARRAYED_LIST [STRING]
@@ -550,7 +550,7 @@ feature {ARCHETYPE_VALIDATOR} -- Modification
 				create slot_id_index.make (0)
 			end
 			if not slot_id_index.has (a_slot_path) then
-				slot_id_index.put (a_list, a_slot_path)
+				slot_id_index.force (a_list, a_slot_path)
 				a_list.compare_objects
 			else
 				slot_id_index.item (a_slot_path).merge (a_list)

@@ -910,6 +910,10 @@ feature {NONE} -- Implementation
 			-- generate string form of node or object for use in tree node
 		do
 			create Result.make_empty
+			if in_technical_mode and a_node.occurrences /= Void then
+				Result.append (" {" + a_node.occurrences_as_string + "} ")
+			end
+
 			if a_node.is_addressable then
 				if a_node.sibling_order /= Void then
 					Result.append (a_node.sibling_order.as_string + " ")
@@ -924,10 +928,6 @@ feature {NONE} -- Implementation
 				end
 			else -- put type even when not in technical mode
 				Result.append (a_node.rm_type_name)
-			end
-
-			if in_technical_mode and a_node.occurrences /= Void then
-				Result.append (" occ {" + a_node.occurrences_as_string + "} ")
 			end
 
 			if a_node.any_allowed then
@@ -958,6 +958,10 @@ feature {NONE} -- Implementation
 			-- generate string form of node or object for use in tree node
 		do
 			create Result.make_empty
+			if in_technical_mode and a_node.occurrences /= Void then
+				Result.append (" {" + a_node.occurrences_as_string + "} ")
+			end
+
 			if a_node.is_addressable then
 				if a_node.sibling_order /= Void then
 					Result.append (a_node.sibling_order.as_string + " ")
@@ -973,10 +977,6 @@ feature {NONE} -- Implementation
 				Result.append (a_node.rm_type_name)
 			end
 
-			if in_technical_mode and a_node.occurrences /= Void then
-				Result.append (" occ {" + a_node.occurrences_as_string + "} ")
-			end
-
 			if a_node.any_allowed then
 				Result.append (" = *")
 			end
@@ -987,10 +987,10 @@ feature {NONE} -- Implementation
 		do
 			create Result.make(0)
 			if in_technical_mode then
-				Result.append (c_p_o.rm_type_name)
 				if c_p_o.occurrences /= Void then
-					Result.append (" occ {" + c_p_o.occurrences_as_string + "}")
+					Result.append (" {" + c_p_o.occurrences_as_string + "}")
 				end
+				Result.append (c_p_o.rm_type_name)
 			end
 			Result.append (" " + c_p_o.item.as_string)
 		end
@@ -1001,12 +1001,12 @@ feature {NONE} -- Implementation
 			create Result.make_empty
 
 			if in_technical_mode then
+				if not a_node.use_target_occurrences and a_node.occurrences /= Void then
+					Result.append (" {" + a_node.occurrences_as_string + "} ")
+				end
 				Result.append ("use " + a_node.rm_type_name)
 				if a_node.is_addressable then
 					Result.append ("[" + a_node.node_id + "]")
-				end
-				if not a_node.use_target_occurrences and a_node.occurrences /= Void then
-					Result.append (" occ {" + a_node.occurrences_as_string + "} ")
 				end
 				Result.append (" " + a_node.target_path)
 			elseif arch_dir.has_validated_selected_archetype then
@@ -1019,14 +1019,14 @@ feature {NONE} -- Implementation
 		do
 			create Result.make_empty
 			if in_technical_mode then
+				if a_node.occurrences /= Void then
+					Result.append (" {" + a_node.occurrences_as_string + "} ")
+				end
 				Result.append ("use_archetype [")
 				if a_node.slot_node_id /= Void then
 					Result.append(a_node.slot_node_id + ", ")
 				end
 				Result.append(a_node.node_id + "]")
-				if a_node.occurrences /= Void then
-					Result.append (" occ {" + a_node.occurrences_as_string + "} ")
-				end
 			else
 				Result.append ("use_archetype [" + a_node.node_id + "]")
 			end

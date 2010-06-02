@@ -221,7 +221,8 @@ feature {NONE} -- Implementation
 
 	node_graft (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 			-- perform grafts of node from differential archetype on corresponding node in flat parent
-			-- only interested in C_COMPLEX_OBJECTs
+			-- only interested in C_COMPLEX_OBJECTs; we deal with all the other node types by iterating the
+			-- children of C_COMPLEX_OBJECTs
 		local
 			cco_output_flat, cco_output_flat_proximate, cco_csr: C_COMPLEX_OBJECT
 			apa: ARCHETYPE_PATH_ANALYSER
@@ -229,7 +230,7 @@ feature {NONE} -- Implementation
 			c_path_in_diff: OG_PATH
 			ca_child, ca_child_copy, ca_output: C_ATTRIBUTE
 		do
-			if attached {C_COMPLEX_OBJECT} a_c_node as cco_child_diff then
+			if attached {C_COMPLEX_OBJECT} a_c_node as cco_child_diff and not attached {C_ARCHETYPE_ROOT} a_c_node as car then
 				create apa.make_from_string (cco_child_diff.path)
 				a_path := apa.path_at_level (arch_parent_flat.specialisation_depth)
 				debug ("flatten")
@@ -292,14 +293,16 @@ feature {NONE} -- Implementation
 								cco_output_flat.overlay_differential(cco_child_diff, rm_schema)
 							end
 
-							-- now iterate through child attributes and overlay a) new object nodes in existing container attributes, and b) new attribute nodes from child
+							-- now iterate through child attributes and overlay a) new object nodes in existing container attributes,
+							-- and b) new attribute nodes from child. Note that these attributes are in general specified by paths,
+							-- so they can overlay arbitrarily deep points in the flat output structure.
 							debug ("flatten")
 								io.put_string ("%T%T~~~~~~~~ iterating cco_child_diff attributes ~~~~~~~~~%N")
 							end
 							from cco_child_diff.attributes.start until cco_child_diff.attributes.off loop
 								ca_child := cco_child_diff.attributes.item
 								debug ("flatten")
-									io.put_string ("%T%T~~~~ attribute = " + ca_child.rm_attribute_name + "%N")
+									io.put_string ("%T%T~~~~ attribute = " + ca_child.rm_attribute_path + "%N")
 								end
 
 								-- now we have to figure out the 'proximate' C_COMPLEX_OBJECT in the flat parent - it is either the cco_output_flat that
@@ -394,23 +397,29 @@ feature {NONE} -- Implementation
 		end
 
 	merge_container_attribute(ca_output, ca_child: C_ATTRIBUTE)
-			-- merge new objects in container attribute `a_src_attr' into `an_output_attr', using ordering
-			-- information in source attribute objects, and replacing or inserting as appropriate
+			-- merge objects in container attribute `a_src_attr' into the equivalent container attribute
+			-- `an_output_attr' in the output structure, using ordering information in source attribute
+			-- objects, and replacing or inserting as appropriate. Essentially, we can think of both the
+			-- source and output structures as two linear lists of objects; the challenge is to figure out
+			-- how to merge those from the source structure that are NEW only. Overrides are ignored here,
+			-- because they are dealt with by the normal traversal.
+			-- The work is done in two parts:
+			-- 	* work out a set of 'merge descriptors' containing sub-lists of the source list to be
+			--	  merged into a particular location in the target list, either before or after
+			--	* do the actual merging work, taking only 'new' (added) items from the source list.
 		local
-			insert_obj, c_obj: C_OBJECT
+			insert_obj, merge_obj: C_OBJECT
 			i: INTEGER
 			after_pending: BOOLEAN
 			start_pos, end_pos: INTEGER
-			car: C_ARCHETYPE_ROOT
 		do
+			--
+			-- Phase 1: figure out the merge records
+			--
 			create merge_list.make (0)
-			from
-				ca_child.children.start
-				start_pos := 1
-				insert_obj := ca_output.children.first
-			until
-				ca_child.children.off
-			loop
+			start_pos := 1
+			insert_obj := ca_output.children.first
+			from ca_child.children.start until ca_child.children.off loop
 				-- find the next ordering marker, or end of list
 				from until ca_child.children.off or ca_child.children.item.sibling_order /= Void loop
 					ca_child.children.forth
@@ -418,19 +427,29 @@ feature {NONE} -- Implementation
 
 				if not ca_child.children.off then
 					if after_pending then
-						-- grab the series from start_pos to here -1 and make a desc for it
+						-- grab the series from start_pos to here -1 and make a merge record for it
 						end_pos := ca_child.children.index - 1
 						add_merge_desc (start_pos, end_pos, insert_obj, False)
 						after_pending := False
 						start_pos := end_pos + 1
 					end
 
+					-- if the order marker is 'before', it means that the merge list is from the last
+					-- point already taken care of + 1, until the current object, and the merge target in the
+					-- output structure is the object with the same id as the last object just found, carrying
+					-- the 'before' marker
 					if ca_child.children.item.sibling_order.is_before then
 						end_pos := ca_child.children.index
 						insert_obj := ca_output.child_with_id (ca_child.children.item.sibling_order.sibling_node_id)
 						add_merge_desc (start_pos, end_pos, insert_obj, True)
 						start_pos := end_pos + 1
-					else -- marker is 'after' - obtain any preceding series and make a descriptor for that
+
+					-- marker is 'after' - this means that all the objects from the last position dealt with,
+					-- up until the one with the marker on it (but not including it); so we need to merge
+					-- that list before the csr position object in the output list; then we need to reset the
+					-- source list start_pos to the item with the 'after' marker, and the output list cursor object
+					-- to the object with the same id as the object holding the 'after' marker
+					else
 						if not ca_child.children.isfirst and ca_child.children.index > start_pos then -- create a descriptor for the preceding section
 							add_merge_desc (start_pos, ca_child.children.index - 1, insert_obj, True)
 						end
@@ -450,36 +469,43 @@ feature {NONE} -- Implementation
 				add_merge_desc (start_pos, ca_child.children.count, insert_obj, False)
 			end
 
-			-- now use the merge descriptors to clone objects of the (differential) source list onto the target (flat) output list,
-			-- ignoring any redefined nodes - only merge new ones
+			--
+			-- Phase 2: do the merging, using the merge descriptors to clone objects of the (differential) source list onto
+			-- the target (flat) output list, ignoring any redefined nodes - only merge new ones
+			--
 			from merge_list.start until merge_list.off loop
-				insert_obj ?= merge_list.item.reference_item (3)
+				insert_obj ?= merge_list.item.reference_item(Md_tgt_list_merge_pos)
 				-- this loop corresponds to the sublist of objects in the source container (i.e. child archetype container node) that are
 				-- to be merged either before or after the insert_obj in the flattened output.
-				from i := merge_list.item.integer_item (1) until i > merge_list.item.integer_item (2) loop
+				from i := merge_list.item.integer_item(Md_src_list_start_pos) until i > merge_list.item.integer_item(Md_src_list_end_pos) loop
+					if is_valid_code (ca_child.children.i_th(i).node_id) and -- not valid_code means a node with no node_id or else a C_ARCHETYPE_ROOT
+							specialisation_status_from_code (ca_child.children.i_th(i).node_id, arch_child_diff.specialisation_depth).value = ss_added or
+							attached {C_ARCHETYPE_ROOT} ca_child.children.i_th(i) as car then
+						child_grafted_path_list.extend (ca_child.children.i_th(i).path) -- remember the path, so we don't try to do it again later on
 
-					car ?= ca_child.children.i_th (i) -- find out if it is a C_ARCHETYPE_ROOT
-					if is_valid_code (ca_child.children.i_th (i).node_id) and
-							specialisation_status_from_code (ca_child.children.i_th (i).node_id, arch_child_diff.specialisation_depth).value = ss_added or
-							car /= Void then
-						child_grafted_path_list.extend (ca_child.children.i_th (i).path)
-						c_obj := ca_child.children.i_th (i).safe_deep_twin
-						c_obj.clear_sibling_order
-						if merge_list.item.boolean_item (4) then -- True = insert before
-							ca_output.put_child_left(c_obj, insert_obj)
+						-- now we either merge the object, or deal with the special case of occurrences = 0,
+						-- in which case, remove the target object
+						if ca_child.children.i_th(i).occurrences_prohibited then
+							ca_output.remove_child (insert_obj)
 						else
-							ca_output.put_child_right(c_obj, insert_obj)
-							insert_obj := ca_output.child_after (insert_obj)
-						end
+							merge_obj := ca_child.children.i_th(i).safe_deep_twin
+							merge_obj.clear_sibling_order -- no sibling_order markers in flat archetypes!
+							if merge_list.item.boolean_item(Md_insert_dir_flag) then -- True = insert before
+								ca_output.put_child_left(merge_obj, insert_obj)
+							else
+								ca_output.put_child_right(merge_obj, insert_obj)
+								insert_obj := ca_output.child_after (insert_obj) -- move 1 to the right, so adding occurs after
+							end
 
-						-- For C_ARCHETYPE_ROOTs - graft in a complete copy of the whole archetype definition of the referenced archetype
-						if attached {C_ARCHETYPE_ROOT} c_obj as car2 then
-							template_definition_overlay_list.extend(car2)
+							-- For C_ARCHETYPE_ROOTs - graft in a complete copy of the whole archetype definition of the referenced archetype
+							if attached {C_ARCHETYPE_ROOT} merge_obj as car2 then
+								template_definition_overlay_list.extend(car2)
+							end
 						end
 					else
 						debug("flatten")
 							io.put_string ("ARCHETYPE_FLATTENER.merge_container_attribute location 1" +
-								" " + ca_child.children.i_th (i).path + " (" + i.out + "-th child)")
+								" IGNORING " + ca_child.children.i_th(i).path + " (" + i.out + "-th child)")
 						end
 					end
 					i := i + 1
@@ -494,9 +520,18 @@ feature {NONE} -- Implementation
 			-- normally by node_graft())
 		local
 			rm_ancestors: ARRAYED_LIST [STRING]
+			merge_obj: C_OBJECT
 		do
 			from ca_child.children.start until ca_child.children.off loop
-				if not attached {C_COMPLEX_OBJECT} ca_child.children.item as cco then
+				if attached {C_ARCHETYPE_ROOT} ca_child.children.item as car then
+					merge_obj := ca_child.children.item.safe_deep_twin
+					ca_output.put_child (merge_obj)
+					if attached {C_ARCHETYPE_ROOT} merge_obj as car2 then
+						template_definition_overlay_list.extend(car2)
+					end
+					child_grafted_path_list.extend (ca_child.children.item.path)
+
+				elseif not attached {C_COMPLEX_OBJECT} ca_child.children.item as cco then
 					if ca_child.children.item.is_addressable then -- if identified, find corresponding node in parent & replace completely
 						ca_output.replace_child_by_id (ca_child.children.item.safe_deep_twin,
 							specialisation_parent_from_code_at_level (ca_child.children.item.node_id, arch_parent_flat.specialisation_depth))
@@ -512,12 +547,15 @@ feature {NONE} -- Implementation
 						end
 					end
 					child_grafted_path_list.extend (ca_child.children.item.path)
-				elseif attached {C_ARCHETYPE_ROOT} ca_child.children.item as car then
-					-- FIXME: to be implemented
 				end
 				ca_child.children.forth
 			end
 		end
+
+	Md_src_list_start_pos: INTEGER = 1
+	Md_src_list_end_pos: INTEGER = 2
+	Md_tgt_list_merge_pos: INTEGER = 3
+	Md_insert_dir_flag: INTEGER = 4
 
 	merge_list: ARRAYED_LIST [TUPLE [INTEGER, INTEGER, C_OBJECT, BOOLEAN]]
 			-- merge descriptor list of TUPLEs of the following structure:
@@ -534,10 +572,10 @@ feature {NONE} -- Implementation
 			merge_desc: TUPLE [INTEGER, INTEGER, C_OBJECT, BOOLEAN]
 		do
 			create merge_desc
-			merge_desc.put_integer (src_start_pos, 1) -- start position in source list
-			merge_desc.put_integer (src_end_pos, 2) -- end position in source list
-			merge_desc.put_reference (tgt_insert_obj, 3)
-			merge_desc.put_boolean (before_flag, 4)
+			merge_desc.put_integer (src_start_pos, Md_src_list_start_pos) -- start position in source list
+			merge_desc.put_integer (src_end_pos, Md_src_list_end_pos) -- end position in source list
+			merge_desc.put_reference (tgt_insert_obj, Md_tgt_list_merge_pos)
+			merge_desc.put_boolean (before_flag, Md_insert_dir_flag)
 			merge_list.extend (merge_desc)
 			debug ("flatten")
 				io.put_string ("%T%T%T=== added MERGE DESC " + src_start_pos.out + ", " + src_end_pos.out + ", " + tgt_insert_obj.node_id + ", " + before_flag.out + "%N")
@@ -672,7 +710,6 @@ feature {NONE} -- Implementation
 	template_overlay_target_ontologies
 			-- process `template_ontology_overlay_list' to overlay target ontologies.
 		local
-			ext_arch_root_cco:  attached C_COMPLEX_OBJECT
 			ont: FLAT_ARCHETYPE_ONTOLOGY
 		do
 			debug ("flatten")

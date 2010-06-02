@@ -91,6 +91,12 @@ feature -- Status Report
 			Result := excludes /= Void and then excludes.count > 0
 		end
 
+	is_closed: BOOLEAN
+			-- True if this slot specification in this template exhaustively mentions all fillers,
+			-- in which case, the slot will not be available for further filling in either
+			-- specialised archetypes or at runtime.
+			-- Default value False, i.e. unless explicitly set, slots remain open.
+
 feature -- Comparison
 
 	is_subset_of (other: like Current): BOOLEAN
@@ -146,6 +152,12 @@ feature -- Modification
 			assn_list /= Void
 		do
 			excludes := assn_list
+		end
+
+	set_closed
+			-- set `is_closed'
+		do
+			is_closed := True
 		end
 
 feature -- Output

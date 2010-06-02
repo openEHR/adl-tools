@@ -176,9 +176,10 @@ feature -- Message database
 			["SAIV"] = <"error in invariant section">
 			["SAON"] = <"error in ontology section">
 
-			["SDSF"] = <"differential syntax not allowed in flat archetype">
+			["SDSF"] = <"differential syntax not allowed in top-level archetype">
 			["SDINV"] = <"invalid dADL section; error: $1">
 			["SCCOG"] = <"expecting a new node definition, primitive node definition, 'use' path, or 'archetype' reference">
+			["SUAID"] = <"expecting [archetype_id], or [at-code ',' archetype_id] in use_archetype statement">
 			["SOCCF"] = <"expecting an 'occurrences expression', e.g. 'occurrences matches {n..m}'">
 			["SUNPA"] = <"expecting absolute path in use_node statement">
 			["SUAS"] = <"error after 'use_archetype' keyword; expecting Object node definition">
@@ -244,8 +245,7 @@ feature -- Message database
 			["VSONIR"] = <"Error (VSONIR): object node at path $1 (RM type $2) redefines parent node (RM type = $3) but node_id $4 not redefined">
 			["VSCNR"] = <"Error (VSCNR): illegal redefinition of $1 node at $2 in parent into $3 node at $4 in child">
 
-			["VSSM"] = <"Error (VSSM): node at path $1 has order marker referring to non-existant sibling node $2">
-
+			-- dADL
 			["VOBAV"] = <"Error (VOBAV): assumed value $1 not within constraint range">
 			["VOBAVL"] = <"Error (VOBAVL): assumed value $1 not found in constraint list"> -- additional to ADL spec
 			["VCPCV"] = <"Error (VCPCV): invalid term code constraint: $1">
@@ -261,6 +261,7 @@ feature -- Message database
 			["VDATU"] = <"Error (VDATU): dADL object duplicate attribute: $1">
 			["VDOBU"] = <"Error (VDOBU): object key must be unique; key [$1] already exists under attribute '$2'">
 
+			-- C_OBJECT
 			["VACSO"] = <"Error (VACSO): cannot add $1 object with $2 to singly-valued attribute $3 because object occurrences > 1">
 			["VACSI"] = <"Error (VACSI): cannot add $1 object with $2 to singly-valued attribute $3 because attribute already has child with same node id">
 			["VACSIT"] = <"Error (VACSIT): cannot add $1 object with $2 to singly-valued attribute $3 because attribute already has child with same RM type">
@@ -271,9 +272,18 @@ feature -- Message database
 			["VACMM"] = <"Error (VACMM): cannot add $1 object with $2 to multiply-valued attribute $3 because attribute already has child with same node id">
 
 			["VARCN"] = <"Error (VARCN): concept code $1 is invalid">
+			["VSSM"] = <"Error (VSSM): node at path $1 has order marker referring to non-existant sibling node $2">
 			
+			-- C_ARCHETYPE_SLOT
+			["VASMD"] = <"Error (VASMD): definition of slot of RM type $1 at path $2 missing; only allowed if slot is 'closed'">
+			["VDSEV1"] = <"Error (VDSEV): 'exclude' constraint of slot of RM type $1 at path $2 invalid; exclude must be either empty or not match 'any' when 'include' matches 'any'">
+			["VDSEV2"] = <"Error (VDSEV): 'exclude' constraint of slot of RM type $1 at path $2 invalid; exclude must be either empty or match 'any' when 'include' matches non-'any'">
+			["VDSIV1"] = <"Error (VDSIV): 'include' constraint of slot of RM type $1 at path $2 invalid; include must be either empty or not match 'any' when 'exclude' matches 'any'">
+			["VDSIV2"] = <"Error (VDSIV): 'include' constraint of slot of RM type $1 at path $2 invalid; include must be either empty or match 'any' when 'exclude' matches non-'any'">
+
 			-- C_ARCHETYPE_ROOT
-			["VARXE"] = <"Error (VARXE): slot filler (C_ARCHETYPE_ROOT) at $1 does not specify known archetype id $2">
+			["VARXSnf"] = <"Warning (VARXS): slot filler (C_ARCHETYPE_ROOT) at $1 does specifies archetype $2 that matches slot but doesn't exist in current archetype repository">
+			["VARXS"] = <"Error (VARXS): slot filler (C_ARCHETYPE_ROOT) at $1 specifies archetype id $2 that does not conform to flat parent slot constraint">
 			["VARXV"] = <"Error (VARXV): slot filler (C_ARCHETYPE_ROOT) at $1 does not correspond to any ARCHETYPE slot in flat parent (i.e. in any specialisation parent)">
 
 			-- ontology-related validity

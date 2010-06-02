@@ -73,7 +73,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	archetype_index: attached HASH_TABLE [ARCH_REP_ARCHETYPE, STRING]
+	archetype_index: attached DS_HASH_TABLE [ARCH_REP_ARCHETYPE, STRING]
 			-- index of archetype descriptors. Used in rest of application
 
 	selected_item: ARCH_REP_ITEM
@@ -121,11 +121,7 @@ feature -- Access
 			end
 			create regex_matcher.compile_case_insensitive (a_regex)
 			if regex_matcher.is_compiled then
-				from
-					archetype_index.start
-				until
-					archetype_index.off
-				loop
+				from archetype_index.start until archetype_index.off loop
 					if regex_matcher.matches (archetype_index.key_for_iteration) then
 						if slot_rm_type /= Void then
 							arch_rm_type := (create {ARCHETYPE_ID}.make_from_string (archetype_index.key_for_iteration)).rm_entity
@@ -262,18 +258,14 @@ feature -- Commands
 				source_repos.source_repositories.item_for_iteration.populate
 				archs := source_repos.source_repositories.item_for_iteration.fast_archetype_list
 
-				-- maintain a status list indicatig status of each attempted archetype; values:
+				-- maintain a status list indicating status of each attempted archetype; values:
 				-- -1 = succeeded
 				-- -2 = failed (duplicate)
-				-- 0 not yet tried
-				-- +ve number: number of passes attempted with no success
+				--  0 = not yet tried
+				-- +ve number = number of passes attempted with no success
 				create status_list.make (1, archs.count)
 
-				from
-					i := 0
-				until
-					i > 0 and added_during_pass = 0
-				loop
+				from i := 0 until i > 0 and added_during_pass = 0 loop
 					added_during_pass := 0
 					from archs.start until archs.off loop
 						if status_list[archs.index] >= 0 then
@@ -282,8 +274,8 @@ feature -- Commands
 								child_key := archs.item.ontological_name
 								if not ontology_index.has (child_key) then
 									ontology_index.item (parent_key).put_child (archs.item)
-									ontology_index.put (archs.item, child_key)
-									archetype_index.put(archs.item, child_key)
+									ontology_index.force (archs.item, child_key)
+									archetype_index.force(archs.item, child_key)
 									update_statistics(archs.item)
 									added_during_pass := added_during_pass + 1
 									status_list[archs.index] := -1
@@ -300,7 +292,7 @@ feature -- Commands
 					i := i + 1
 				end
 
-				-- now report on all the archetypes which could not be atazched into the hierarchy
+				-- now report on all the archetypes which could not be attached into the hierarchy
 				from archs.start until archs.off loop
 					if status_list[archs.index] > 0 then
 						if archs.item.is_specialised then
@@ -498,7 +490,7 @@ feature {NONE} -- Implementation
 			-- working repositories, and are subsequently attached into the structure.
 			-- Archetypes opened adhoc are also grafted here.
 
-	ontology_index: attached HASH_TABLE [ARCH_REP_ITEM, STRING]
+	ontology_index: attached DS_HASH_TABLE [ARCH_REP_ITEM, STRING]
 			-- Index of archetype & class nodes, keyed by ontology concept. Used during construction of `directory'
 			-- For class nodes, this will be package_name-class_name, e.g. DEMOGRAPHIC-PARTY.
 			-- For archetype nodes, this will be the archetype id.
@@ -603,7 +595,7 @@ feature {NONE} -- Implementation
 		do
 			ontology := ontology_prototype.item.deep_twin
 			create ontology_index.make (0)
-			do_all (agent (ari: attached ARCH_REP_ITEM) do ontology_index.put (ari, ari.ontological_name) end, Void)
+			do_all (agent (ari: attached ARCH_REP_ITEM) do ontology_index.force (ari, ari.ontological_name) end, Void)
 		end
 
 	schema_load_counter: INTEGER
