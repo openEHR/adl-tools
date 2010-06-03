@@ -59,7 +59,7 @@ feature -- Conversion
 			-- only applicable if the path can actually exist at the level indicated, which
 			-- cannot be the case if there are any '0's in any path node id at the requested level
 		require
-			valid_level: a_level >= 0 and not is_phantom_path_at_level(a_level)
+			valid_level: a_level >= 0 and not is_phantom_path_at_level (a_level)
 		local
 			a_path: OG_PATH
 		do
@@ -74,7 +74,7 @@ feature -- Conversion
 					target.off
 				loop
 					if is_valid_code (target.item.object_id) and then specialisation_depth_from_code (target.item.object_id) > a_level then
-						a_path.item.set_object_id (specialisation_parent_from_code_at_level(target.item.object_id, a_level))
+						a_path.item.set_object_id (code_at_level(target.item.object_id, a_level))
 					end
 					target.forth
 					a_path.forth
@@ -89,8 +89,8 @@ feature -- Status Report
 
 	 is_phantom_path_at_level (a_level: INTEGER): BOOLEAN
 	 		-- True if this path corresponds to a node that does not exist in the specified level, i.e.
-	 		-- if it contains any object id whose parent ends in a '0', e.g. .../items[at0001.0.9]
-	 		-- would return True for a_level = 1, because at0001.0.9 is a new node, only introduced at
+	 		-- if it contains any object id whose parent ends in a '0', e.g. .../items[at0.0.9]
+	 		-- would return True for a_level = 1, because at0.0.9 is a new node, only introduced at
 	 		-- level 2
 	 	require
 	 		Level_valid: a_level >= 0
@@ -99,7 +99,7 @@ feature -- Status Report
 	 		-- of this fact mathematically, I would replace the loop with a single test on the last item
 			from target.finish until target.off or Result loop
 				if is_valid_code (target.item.object_id) and a_level <= specialisation_depth_from_code(target.item.object_id) then
-					Result := index_from_code_at_level (target.item.object_id, a_level).is_equal ("0")
+					Result := not code_exists_at_level(target.item.object_id, a_level)
 				end
 				target.back
 			end

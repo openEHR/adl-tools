@@ -510,10 +510,10 @@ feature {NONE} -- Implementation
 					elseif attached {ARCHETYPE_SLOT} ca_child.children.i_th(i) as arch_slot then	-- ARCHETYPE_SLOT override
 						child_grafted_path_list.extend (ca_child.children.i_th(i).path) -- remember the path, so we don't try to do it again later on
 						if arch_slot.is_closed then
-							ca_output.remove_child_by_id (specialisation_parent_from_code_at_level (ca_child.children.i_th(i).node_id, arch_parent_flat.specialisation_depth))
+							ca_output.remove_child_by_id (code_at_level (ca_child.children.i_th(i).node_id, arch_parent_flat.specialisation_depth))
 						else
 							ca_output.replace_child_by_id (ca_child.children.item.safe_deep_twin,
-									specialisation_parent_from_code_at_level (ca_child.children.i_th(i).node_id, arch_parent_flat.specialisation_depth))
+									code_at_level (ca_child.children.i_th(i).node_id, arch_parent_flat.specialisation_depth))
 						end
 					else
 						debug("flatten")
@@ -538,12 +538,12 @@ feature {NONE} -- Implementation
 			from ca_child.children.start until ca_child.children.off loop
 				if attached {ARCHETYPE_SLOT} ca_child.children.item as arch_slot then
 					if arch_slot.is_closed then
-						ca_output.remove_child_by_id (specialisation_parent_from_code_at_level (ca_child.children.item.node_id, arch_parent_flat.specialisation_depth))
+						ca_output.remove_child_by_id (code_at_level (ca_child.children.item.node_id, arch_parent_flat.specialisation_depth))
 					elseif specialisation_status_from_code (ca_child.children.item.node_id, arch_child_diff.specialisation_depth).value = ss_added then
 						ca_output.put_child(ca_child.children.item.safe_deep_twin)
 					else
 						ca_output.replace_child_by_id (ca_child.children.item.safe_deep_twin,
-								specialisation_parent_from_code_at_level (ca_child.children.item.node_id, arch_parent_flat.specialisation_depth))
+								code_at_level (ca_child.children.item.node_id, arch_parent_flat.specialisation_depth))
 					end
 
 				elseif attached {C_ARCHETYPE_ROOT} ca_child.children.item as car then
@@ -557,7 +557,7 @@ feature {NONE} -- Implementation
 				elseif not attached {C_COMPLEX_OBJECT} ca_child.children.item as cco then
 					if ca_child.children.item.is_addressable then -- if identified, find corresponding node in parent & replace completely
 						ca_output.replace_child_by_id (ca_child.children.item.safe_deep_twin,
-							specialisation_parent_from_code_at_level (ca_child.children.item.node_id, arch_parent_flat.specialisation_depth))
+							code_at_level (ca_child.children.item.node_id, arch_parent_flat.specialisation_depth))
 					elseif ca_output.has_child_with_rm_type_name(ca_child.children.item.rm_type_name) then -- find a node of same type, then replace completely
 						ca_output.replace_child_by_rm_type_name (ca_child.children.item.safe_deep_twin)
 					else -- or a RM parent type, then add

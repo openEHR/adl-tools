@@ -656,7 +656,7 @@ c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality
 						abort_with_error("VSAM", <<path_str>>)
 					end
 				else
-					abort_with_error("VDIFP", <<path_str>>)
+					abort_with_error("VDIFP2", <<path_str>>)
 				end
 			else
 				abort_with_error("VCATU", <<path_str>>)

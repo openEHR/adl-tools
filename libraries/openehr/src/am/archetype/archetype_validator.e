@@ -705,6 +705,7 @@ feature {NONE} -- Implementation
 			apa: ARCHETYPE_PATH_ANALYSER
 			accept: BOOLEAN
 			ca_parent_flat: attached C_ATTRIBUTE
+			flat_parent_path: STRING
 		do
 			-- if it is a C_ARCHETYPE_ROOT, it s either a slot filler or an external reference. If the former, it is
 			-- redefining an ARCHETYPE_SLOT node, and needs to be validated; if the latter it is a new node, and will
@@ -713,7 +714,8 @@ feature {NONE} -- Implementation
 			if passed then
 				if attached {C_ARCHETYPE_ROOT} a_c_node as car then
 					create apa.make_from_string(car.slot_path)
-					Result := flat_parent.has_path (apa.path_at_level (flat_parent.specialisation_depth))
+					flat_parent_path := apa.path_at_level (flat_parent.specialisation_depth)
+					Result := flat_parent.has_path (flat_parent_path)
 				else
 					-- if check below is False, it means the path is to a node that is new in the current archetype,
 					-- and therefore there is nothing in the parent to validate it against. Invalid codes, i.e. the 'unknown' code
@@ -725,9 +727,10 @@ feature {NONE} -- Implementation
 									is_refined_code(a_c_obj.node_id)) then							-- node id refined (i.e. not new)
 
 							create apa.make_from_string(a_c_node.path)
-							Result := flat_parent.has_path (apa.path_at_level (flat_parent.specialisation_depth))
+							flat_parent_path := apa.path_at_level (flat_parent.specialisation_depth)
+							Result := flat_parent.has_path (flat_parent_path)
 							if not Result and a_c_obj.is_addressable then -- if it is an addressable node it should have a matching node in flat parent
-								add_error("VSONIN", <<a_c_obj.node_id, a_c_obj.path, a_c_obj.rm_type_name>>)
+								add_error("VSONIN", <<a_c_obj.node_id, a_c_obj.rm_type_name, a_c_obj.path, flat_parent_path>>)
 							end
 
 						-- special check: if it is a non-overlay node, but it has a sibling order, then we need to check that the
@@ -745,10 +748,11 @@ feature {NONE} -- Implementation
 							end
 						end
 					elseif attached {C_ATTRIBUTE} a_c_node as ca then
-						create apa.make_from_string(ca.path)
-						Result := flat_parent.has_path (apa.path_at_level (flat_parent.specialisation_depth))
+						create apa.make_from_string(a_c_node.path)
+						flat_parent_path := apa.path_at_level (flat_parent.specialisation_depth)
+						Result := flat_parent.has_path (flat_parent_path)
 						if not Result and ca.has_differential_path then
-							add_error("VDIFP", <<ca.path>>)
+							add_error("VDIFP", <<ca.path, flat_parent_path>>)
 						end
 					end
 				end

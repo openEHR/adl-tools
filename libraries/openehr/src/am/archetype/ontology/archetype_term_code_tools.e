@@ -79,6 +79,8 @@ feature -- Definitions
 
 	Constraint_code_leader: STRING = "ac"
 
+	Zero_filler: STRING = ".0"
+
 feature -- Access
 
 	specialisation_parent_from_code(a_code: STRING): STRING
@@ -91,14 +93,16 @@ feature -- Access
 			Valid_result: specialisation_depth_from_code(Result) = specialisation_depth_from_code(a_code) - 1
 		end
 
-	specialisation_parent_from_code_at_level(a_code: STRING; a_level: INTEGER): STRING
-			-- get parent of this specialised code at `a_level'
+	code_at_level(a_code: STRING; a_level: INTEGER): STRING
+			-- get valid form of this code at `a_level'
 		require
-			Code_valid: a_code /= Void and then is_valid_code(a_code)
+			Code_valid: a_code /= Void and then code_exists_at_level(a_code, a_level)
 			Level_valid: a_level >= 0 and a_level <= specialisation_depth_from_code(a_code)
 		local
 			i, idx: INTEGER
+			finished: BOOLEAN
 		do
+			-- this loop finds the index in a code string of the character just before a_level-1'th '.'
 			from
 				i := specialisation_depth_from_code (a_code)
 				idx := a_code.count
@@ -109,9 +113,21 @@ feature -- Access
 				i := i - 1
 			end
 
+			-- if there are trailing 0s, get rid of them
+			from
+			until
+				finished
+			loop
+				if a_code.substring (idx-1, idx).is_equal (Zero_filler) then
+					idx := idx - 2
+				else
+					finished := True
+				end
+			end
+
 			Result := a_code.substring (1, idx)
 		ensure
-			Valid_result: specialisation_depth_from_code (Result) = a_level
+			Valid_result: is_valid_code (Result)
 		end
 
 	specialisation_status_from_code(a_code: STRING; a_depth: INTEGER): SPECIALISATION_STATUS
@@ -274,6 +290,41 @@ feature -- Comparison
 				-- this deals with the exception
 				if not Result then
 					Result := a_code.starts_with (default_concept_code)
+				end
+			end
+		end
+
+	code_exists_at_level(a_code: STRING; a_level: INTEGER): BOOLEAN
+			-- is `a_code' valid at level `a_level' or less, i.e. if we remove its
+			-- trailing specialised part corresponding to specialisation below `a_level',
+			-- and then any trailing '.0' pieces, do we end up with a valid code? If so
+			-- it means that the code corresponds to a real node from `a_level' or higher
+		require
+			Code_valid: a_code /= Void and then is_valid_code(a_code)
+			Level_valid: a_level >= 0
+		local
+			s: STRING
+			idx, i: INTEGER
+		do
+			if a_level >= specialisation_depth_from_code(a_code) then
+				Result := True
+			else
+				-- this loop finds the index in a code string of the character just before a_level-1'th '.'
+				from
+					i := specialisation_depth_from_code (a_code)
+					idx := a_code.count
+				until
+					i = a_level
+				loop
+					idx := a_code.last_index_of (Specialisation_separator, idx) - 1
+					i := i - 1
+				end
+				s := a_code.substring(Term_code_leader.count+1, idx)
+				if s.starts_with (Default_code_number_string) then
+					Result := True
+				else
+					s.prune_all (Specialisation_separator)
+					Result := s.to_integer > 0
 				end
 			end
 		end

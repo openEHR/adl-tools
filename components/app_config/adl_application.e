@@ -233,7 +233,8 @@ feature -- Message database
 			-- C_ATTRIBUTE
 			["VSANCE"] = <"Error (VSANCE): attribute at path $1 existence $2 does not conform to parent $3 existence $4">
 			["VSANCC"] = <"Error (VSANCC): attribute at path $1 cardinality $2 does not conform to parent $3 cardinality $4">
-			["VDIFP"] = <"Error (VDIFP): differential path $1 does not correspond to any node in flat parent">
+			["VDIFP1"] = <"Error (VDIFP): differential path $1 should have corresponding node in flat parent at $2 but doesn't">
+			["VDIFP2"] = <"Error (VDIFP): differential path $1 not legal with respect to RM">
 			["VSAM"] = <"Error (VSAM): attribute at path $1 multiplicity does not correspond to that of attribute in parent or reference model">
 			
 			-- C_OBJECT
@@ -250,7 +251,7 @@ feature -- Message database
 			["VSSM"] = <"Error (VSSM): node at path $1 has order marker referring to non-existant sibling node $2">
 			
 			["VSONI"] = <"Error (VSONI): $1 object node at path $2 use of node identifier does not conform to $3 node at parent path $4">
-			["VSONIN"] = <"Error (VSONIN): object node identifier $1 at path $2 (RM type $3) denotes non-existent parent node">
+			["VSONIN"] = <"Error (VSONIN): object node identifier $1 (RM type $2) at path $3 should have corresponding node in flat parent at $4 but doesn't">
 			["VSONIR"] = <"Error (VSONIR): object node at path $1 (RM type $2) redefines parent node (RM type = $3) but node_id $4 not redefined">
 			["VSCNR"] = <"Error (VSCNR): illegal redefinition of $1 node at $2 in parent into $3 node at $4 in child">
 			["VCOCDocc"] = <"Error (VCOCD): object node of RM type $1 at path $2 definition missing (empty definition only allowed when occurrences redefined in specialised child)">

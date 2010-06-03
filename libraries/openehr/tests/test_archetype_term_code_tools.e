@@ -23,21 +23,51 @@ inherit
 
 feature -- Test routines
 
-	test_specialisation_parent_from_code_at_level
+	test_code_exists_at_level
+			-- True if code has a valid part at or above specialisation level
+		note
+			testing:  "covers/{ARCHETYPE_TERM_CODE_TOOLS}.code_exists_at_level"
+		do
+			assert_equal (True, code_exists_at_level ("at0000", 0))
+			assert_equal (True, code_exists_at_level ("at0000", 1))
+			assert_equal (True, code_exists_at_level ("at0000", 2))
+			assert_equal (True, code_exists_at_level ("at0000.1", 0))
+			assert_equal (True, code_exists_at_level ("at0000.0.1", 0))
+			assert_equal (True, code_exists_at_level ("at0000.1", 1))
+			assert_equal (True, code_exists_at_level ("at0000.0.1", 1))
+			assert_equal (False, code_exists_at_level ("at0.1", 0))
+			assert_equal (False, code_exists_at_level ("at0.0.1", 0))
+			assert_equal (True, code_exists_at_level ("at0.1", 1))
+			assert_equal (False, code_exists_at_level ("at0.0.1", 1))
+			assert_equal (True, code_exists_at_level ("at0.1.1", 1))
+			assert_equal (True, code_exists_at_level ("at0.1.1", 2))
+		end
+
+	test_code_at_level
 			-- A code's specialisation parent may be itself if the given level is the same as the code's specialisation depth.
 		note
-			testing:  "covers/{ARCHETYPE_TERM_CODE_TOOLS}.specialisation_parent_from_code_at_level"
+			testing:  "covers/{ARCHETYPE_TERM_CODE_TOOLS}.code_at_level"
 		do
-			assert_equal ("at0000", specialisation_parent_from_code_at_level ("at0000", 0))
-			assert_equal ("at0000", specialisation_parent_from_code_at_level ("at0000.1", 0))
-			assert_equal ("at0000", specialisation_parent_from_code_at_level ("at0000.0.1", 0))
-			assert_equal ("at0000.1", specialisation_parent_from_code_at_level ("at0000.1", 1))
-			assert_equal ("at0000.0", specialisation_parent_from_code_at_level ("at0000.0.1", 1))
-			assert_equal ("at0", specialisation_parent_from_code_at_level ("at0.1", 0))
-			assert_equal ("at0", specialisation_parent_from_code_at_level ("at0.0.1", 0))
-			assert_equal ("at0.1", specialisation_parent_from_code_at_level ("at0.1", 1))
-			assert_equal ("at0.0", specialisation_parent_from_code_at_level ("at0.0.1", 1))
-			assert_equal ("at0.1", specialisation_parent_from_code_at_level ("at0.1.1", 1))
+			assert_equal ("at0000", code_at_level ("at0000", 0))
+			assert_equal ("at0000", code_at_level ("at0000.1", 0))
+			assert_equal ("at0000", code_at_level ("at0000.0.1", 0))
+			assert_equal ("at0000.1", code_at_level ("at0000.1", 1))
+			assert_equal ("at0000", code_at_level ("at0000.0.1", 1))
+			assert_equal ("at0.1", code_at_level ("at0.1", 1))
+			assert_equal ("at0.1", code_at_level ("at0.1.1", 1))
+			assert_equal ("at0.1.1", code_at_level ("at0.1.1", 2))
+			assert_equal ("at0009", code_at_level ("at0009.0.1", 0))
+			assert_equal ("at0009", code_at_level ("at0009.0.1", 1))
+			assert_equal ("at0009.0.1", code_at_level ("at0009.0.1", 2))
+			assert_equal ("at0009", code_at_level ("at0009.0.0.1", 0))
+			assert_equal ("at0009", code_at_level ("at0009.0.0.1", 1))
+			assert_equal ("at0009", code_at_level ("at0009.0.0.1", 2))
+			assert_equal ("at0009.0.0.1", code_at_level ("at0009.0.0.1", 3))
+
+		-- the following would be legal if we relaxed the second precondition on the routine,
+		-- which could be done, but at the moment nothing in the system expects it
+		--	assert_equal ("at0009.0.0.1", code_at_level ("at0009.0.0.1", 4))
+		--	assert_equal ("at0009.0.0.1", code_at_level ("at0009.0.0.1", 5))
 		end
 
 	test_is_refined_code
