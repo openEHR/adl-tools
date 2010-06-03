@@ -64,7 +64,7 @@ feature -- Visitor
 			last_result.append (create_indent (depth))
 			serialise_type_node_id (a_node, depth)
 			serialise_occurrences(a_node, depth)
-			if not a_node.occurrences_prohibited then
+			if not a_node.is_prohibited then
 				last_result.append (apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
 				last_result.append (symbol(SYM_START_CBLOCK))
 
@@ -86,7 +86,7 @@ feature -- Visitor
 	end_c_complex_object(a_node: C_COMPLEX_OBJECT; depth: INTEGER)
 			-- end serialising an C_COMPLEX_OBJECT
 		do
-			if not a_node.occurrences_prohibited then
+			if not a_node.is_prohibited then
 				if not a_node.any_allowed then
 					last_result.append (create_indent(depth))
 				end

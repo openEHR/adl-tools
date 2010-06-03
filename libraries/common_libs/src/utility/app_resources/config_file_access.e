@@ -88,11 +88,7 @@ feature -- Access
 
 			if str /= Void and then not str.is_empty then
 				create token_str.make(resource_value(category, resource_name))
-				from
-					token_str.token_start
-				until
-					token_str.token_off
-				loop
+				from token_str.token_start until token_str.token_off loop
 					str := token_str.token_item
 					Result.extend(str)
 					token_str.token_forth
@@ -142,11 +138,7 @@ feature -- Modification
 				tstr: TOKEN_STRING
            do
            		create tstr.make("")
-	           	from
-	           		values.start
-	           	until
-	           		values.off
-	           	loop
+	           	from values.start until values.off loop
 	           		tstr.append_token(values.item)
 	           		values.forth
 	           	end
@@ -202,11 +194,7 @@ feature -- template routines
 			candidate_string: STRING
 			pos_pair: DS_PAIR [INTEGER, INTEGER]
 		do
-			from
-				read_line
-			until
-				file.end_of_file
-			loop
+			from read_line until file.end_of_file loop
 
 				-- try to read either [XXXXXXXXXX] or YYYYYYYYYY=ZZZZZZZZZZZ
 				if linebuf.item(1) = '[' then
@@ -288,22 +276,14 @@ feature -- template routines
 			category_name, s: STRING
 		do
 			file.create_read_write
-			from
-				  resources.start
-			until
-				  resources.off
-			loop
+			from resources.start until resources.off loop
 				  category_name := resources.key_for_iteration
 				  if not category_name.is_equal(default_category) then
 					  file.put_string("[" + category_name + "]")
 					  file.new_line
 				  end
 				  resource_list:= resources.item_for_iteration
-				  from
-					    resource_list.start
-				  until
-					    resource_list.off
-				  loop
+				  from resource_list.start until resource_list.off loop
 				  		s := resource_list.key_for_iteration + "=" + resource_list.item_for_iteration
 					    file.putstring(s)
 					    file.new_line

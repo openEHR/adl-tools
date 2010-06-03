@@ -214,7 +214,12 @@ feature -- Message database
 
 			-------------- validity errors: unless otherwise noted, these codes are defined in the AOM 1.5 or later spec ------------------
 			["VASID"] = <"Error (VASID): specialised archetype id not based on specialisation parent archetype id">
+			
+			-- description
+			["VTRLA"] = <"Error (VTRLA): translations key '$1' does not match translation item language '$2'">
+			["VRDLA"] = <"Error (VRDLA): resource detail key '$1' does not match resource detail item language '$2'">
 
+			-- ontology
 			["VARDT"] = <"Error (VARDT): archetype id type $1 does not match type $2 in definition section">
 			["VACSD"] = <"Error (VACSD): specialisation depth of concept code $1 does not match specialisation depth of archetype id $2">
 			["VACCD"] = <"Error (VACCD): archetype concept code $1 not used in definition">			
@@ -224,12 +229,30 @@ feature -- Message database
 			["VATDF2"] = <"Error (VATDF): node id at-code $1 not defined in ontology of current archetype">
 			["VACDF1"] = <"Error (VACDF): constraint code $1 from specialisation parent not defined in ontology of any parent archetype">
 			["VACDF2"] = <"Error (VACDF): constraint code $1 not found in ontology of current archetype">
-			["VUNP"] = <"Error (VUNP): ARCHETYPE_INTERNAL_REF path $1 not found in archetype">
-			["VSUNT"] = <"Error (VSUNT): node at path $1 AOM type $2 does not conform to node at parent path $3 AOM type $4">
+			
+			-- C_ATTRIBUTE
+			["VSANCE"] = <"Error (VSANCE): attribute at path $1 existence $2 does not conform to parent $3 existence $4">
+			["VSANCC"] = <"Error (VSANCC): attribute at path $1 cardinality $2 does not conform to parent $3 cardinality $4">
+			["VDIFP"] = <"Error (VDIFP): differential path $1 does not correspond to any node in flat parent">
+			["VSAM"] = <"Error (VSAM): attribute at path $1 multiplicity does not correspond to that of attribute in parent or reference model">
+			
+			-- C_OBJECT
+			["VACSO"] = <"Error (VACSO): cannot add $1 object with $2 to singly-valued attribute $3 because object occurrences > 1">
+			["VACSI"] = <"Error (VACSI): cannot add $1 object with $2 to singly-valued attribute $3 because attribute already has child with same node id">
+			["VACSIT"] = <"Error (VACSIT): cannot add $1 object with $2 to singly-valued attribute $3 because attribute already has child with same RM type">
 
-			["VTRLA"] = <"Error (VTRLA): translations key '$1' does not match translation item language '$2'">
-			["VRDLA"] = <"Error (VRDLA): resource detail key '$1' does not match resource detail item language '$2'">
+			["VACMC1"] = <"Error (VACMC): cannot add $1 object with $2 to multiply-valued attribute $3 because cardinality $4 does not contain occurrences $5 of object">
+			["VACMC2"] = <"Error (VACMC): occurrences of children of multiply-valued attribute $1 exceed its cardinality $2">
+			["VACMI"] = <"Error (VACMI): cannot add $1 object with $2 to multiply-valued attribute $3 because object has no node id">
+			["VACMM"] = <"Error (VACMM): cannot add $1 object with $2 to multiply-valued attribute $3 because attribute already has child with same node id">
 
+			["VARCN"] = <"Error (VARCN): concept code $1 is invalid">
+			["VSSM"] = <"Error (VSSM): node at path $1 has order marker referring to non-existant sibling node $2">
+			
+			["VSONI"] = <"Error (VSONI): $1 object node at path $2 use of node identifier does not conform to $3 node at parent path $4">
+			["VSONIN"] = <"Error (VSONIN): object node identifier $1 at path $2 (RM type $3) denotes non-existent parent node">
+			["VSONIR"] = <"Error (VSONIR): object node at path $1 (RM type $2) redefines parent node (RM type = $3) but node_id $4 not redefined">
+			["VSCNR"] = <"Error (VSCNR): illegal redefinition of $1 node at $2 in parent into $3 node at $4 in child">
 			["VCOCDocc"] = <"Error (VCOCD): object node of RM type $1 at path $2 definition missing (empty definition only allowed when occurrences redefined in specialised child)">
 			["VSONT"] = <"Error (VSONT): object node at path $1 (AOM type $2) does not conform to node at parent path $3 AOM type $4">
 			["VSONCT"] = <"Error (VSONCT): object node at path $1 (RM type $2) does not conform to node at parent path $3 RM type $4">
@@ -237,13 +260,9 @@ feature -- Message database
 			["VSONCI"] = <"Error (VSONCI): object node at path $1 node_id $2 does not conform to node at parent path $3 node_id $4">
 			["VCATU"] = <"Error (VCATU) cADL object duplicate attribute $1">
 			
-			["VSANCE"] = <"Error (VSANCE): attribute at path $1 existence $2 does not conform to parent $3 existence $4">
-			["VSANCC"] = <"Error (VSANCC): attribute at path $1 cardinality $2 does not conform to parent $3 cardinality $4">
-			["VDIFP"] = <"Error (VDIFP): differential path $1 does not exist in reference model">
-			["VSAM"] = <"Error (VSAM): attribute at path $1 multiplicity does not correspond to that of attribute in parent or reference model">
-			["VSONI"] = <"Error (VSONI): $1 object node at path $2 use of node identifier does not conform to $3 node at parent path $4">
-			["VSONIR"] = <"Error (VSONIR): object node at path $1 (RM type $2) redefines parent node (RM type = $3) but node_id $4 not redefined">
-			["VSCNR"] = <"Error (VSCNR): illegal redefinition of $1 node at $2 in parent into $3 node at $4 in child">
+			-- ARCHETYPE_INTERNAL_REF
+			["VUNP"] = <"Error (VUNP): ARCHETYPE_INTERNAL_REF path $1 not found in archetype">
+			["VSUNT"] = <"Error (VSUNT): node at path $1 AOM type $2 does not conform to node at parent path $3 AOM type $4">
 
 			-- dADL
 			["VOBAV"] = <"Error (VOBAV): assumed value $1 not within constraint range">
@@ -261,19 +280,6 @@ feature -- Message database
 			["VDATU"] = <"Error (VDATU): dADL object duplicate attribute: $1">
 			["VDOBU"] = <"Error (VDOBU): object key must be unique; key [$1] already exists under attribute '$2'">
 
-			-- C_OBJECT
-			["VACSO"] = <"Error (VACSO): cannot add $1 object with $2 to singly-valued attribute $3 because object occurrences > 1">
-			["VACSI"] = <"Error (VACSI): cannot add $1 object with $2 to singly-valued attribute $3 because attribute already has child with same node id">
-			["VACSIT"] = <"Error (VACSIT): cannot add $1 object with $2 to singly-valued attribute $3 because attribute already has child with same RM type">
-
-			["VACMC1"] = <"Error (VACMC): cannot add $1 object with $2 to multiply-valued attribute $3 because cardinality $4 does not contain occurrences $5 of object">
-			["VACMC2"] = <"Error (VACMC): occurrences of children of multiply-valued attribute $1 exceed its cardinality $2">
-			["VACMI"] = <"Error (VACMI): cannot add $1 object with $2 to multiply-valued attribute $3 because object has no node id">
-			["VACMM"] = <"Error (VACMM): cannot add $1 object with $2 to multiply-valued attribute $3 because attribute already has child with same node id">
-
-			["VARCN"] = <"Error (VARCN): concept code $1 is invalid">
-			["VSSM"] = <"Error (VSSM): node at path $1 has order marker referring to non-existant sibling node $2">
-			
 			-- C_ARCHETYPE_SLOT
 			["VASMD"] = <"Error (VASMD): definition of slot of RM type $1 at path $2 missing; only allowed if slot is 'closed'">
 			["VDSEV1"] = <"Error (VDSEV): 'exclude' constraint of slot of RM type $1 at path $2 invalid; exclude must be either empty or not match 'any' when 'include' matches 'any'">

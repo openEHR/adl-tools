@@ -487,7 +487,7 @@ feature {NONE} -- Implementation
 			-- process the includes
 			includes := a_slot.includes
 			excludes := a_slot.excludes
-			if not includes.is_empty and not assertion_matches_any (includes.first) and assertion_matches_any (excludes.first) then
+			if not includes.is_empty and not assertion_matches_any (includes.first) and not excludes.is_empty then
 				from includes.start until includes.off or Result loop
 					a_regex := extract_regex(includes.item)
 					if a_regex /= Void then
@@ -498,7 +498,7 @@ feature {NONE} -- Implementation
 					end
 					includes.forth
 				end
-			elseif not excludes.is_empty and not assertion_matches_any (excludes.first) and assertion_matches_any (includes.first) then
+			elseif not excludes.is_empty and not assertion_matches_any (excludes.first) and includes.is_empty then
 				from excludes.start until excludes.off or not Result loop
 					a_regex := extract_regex(excludes.item)
 					if a_regex /= Void then
@@ -587,12 +587,17 @@ feature {NONE} -- Implementation
 				if attached {ARCHETYPE_SLOT} co_parent_flat as a_slot then
 					slot_id_index := target_descriptor.specialisation_parent.slot_id_index
 					if slot_id_index /= Void and then slot_id_index.has (a_slot.path) then
-						if not archetype_id_matches_slot (car.archetype_id, a_slot) then
+						if not archetype_id_matches_slot (car.archetype_id, a_slot) then -- doesn't even match the slot definition
 							add_error("VARXS", <<car.path, car.archetype_id>>)
-						elseif not slot_id_index.item (a_slot.path).has (car.archetype_id) then
+						elseif not slot_id_index.item (a_slot.path).has (car.archetype_id) then -- matches def, but not found in actual list from current repo
 							add_warning("VARXSnf", <<car.path, car.archetype_id>>)
-						else -- if we got to here, it means that the mentioned archetype does exist in the set of archetype ids that match the slot
-							check True end
+						elseif not (car.occurrences = Void or else a_slot.occurrences.contains (car.occurrences)) then
+							if strict_validation then
+								add_error("VSONCO", <<car.path, car.occurrences_as_string, a_slot.path, a_slot.occurrences.as_string>>)
+							else
+								add_warning("VSONCO", <<car.path, car.occurrences_as_string, a_slot.path, a_slot.occurrences.as_string>>)
+								car.remove_occurrences
+							end
 						end
 					else
 						add_error("compiler_unexpected_error", <<"ARCHETYPE_VALIDATOR.specialised_node_validate location 3; descriptor does not have slot match list">>)
@@ -705,39 +710,46 @@ feature {NONE} -- Implementation
 			-- redefining an ARCHETYPE_SLOT node, and needs to be validated; if the latter it is a new node, and will
 			-- only have been RM-validated. Either way, we need to use the slot path it replaces rather than its literal path,
 			-- to determine if it has a corresponding node in the flat parent.
-			if attached {C_ARCHETYPE_ROOT} a_c_node as car then
-				create apa.make_from_string(car.slot_path)
-				Result := flat_parent.has_path (apa.path_at_level (flat_parent.specialisation_depth))
-			else
-				-- if check below is False, it means the path is to a node that is new in the current archetype,
-				-- and therefore there is nothing in the parent to validate it against. Invalid codes, i.e. the 'unknown' code
-				-- (used on non-coded nodes) or else codes that are either the same as the corresponding node in the parent flat,
-				-- or else a refinement of that (e.g. at0001.0.2), but not a new code (e.g. at0.0.1)
-				if attached {C_OBJECT} a_c_node as a_c_obj then
-					accept := not is_valid_code (a_c_obj.node_id) or else	-- node with no node_id
-								(specialisation_depth_from_code (a_c_obj.node_id) = 0 or else -- node with node_id unchanged from top-level archetype
-								is_refined_code(a_c_obj.node_id))	-- node id refined (i.e. not new)
-
-					-- special check: if it is a non-overlay node, but it has a sibling order, then we need to check that the
-					-- sibling order refers to a valid node in the parent flat. Arguably this should be done in the main
-					-- specialised_node_validate routine, but... I will re-engineer the code before contemplating that
-					if not accept and a_c_obj.sibling_order /= Void then
-						create apa.make_from_string(a_c_node.parent.path)
-						ca_parent_flat := flat_parent.definition.c_attribute_at_path (apa.path_at_level (flat_parent.specialisation_depth))
-						if not ca_parent_flat.has_child_with_id (a_c_obj.sibling_order.sibling_node_id) then
-							add_error("VSSM", <<a_c_obj.path, a_c_obj.sibling_order.sibling_node_id>>)
-						end
-					end
-				else -- must be a C_ATTRIBUTE
-					accept := True
-				end
-
-				if accept then
-					create apa.make_from_string(a_c_node.path)
-					Result := passed and flat_parent.has_path (apa.path_at_level (flat_parent.specialisation_depth))
+			if passed then
+				if attached {C_ARCHETYPE_ROOT} a_c_node as car then
+					create apa.make_from_string(car.slot_path)
+					Result := flat_parent.has_path (apa.path_at_level (flat_parent.specialisation_depth))
 				else
-					debug ("validate")
-						io.put_string ("????? specialised_node_validate_test: a_c_node at " + a_c_node.path + " ignored %N")
+					-- if check below is False, it means the path is to a node that is new in the current archetype,
+					-- and therefore there is nothing in the parent to validate it against. Invalid codes, i.e. the 'unknown' code
+					-- (used on non-coded nodes) or else codes that are either the same as the corresponding node in the parent flat,
+					-- or else a refinement of that (e.g. at0001.0.2), but not a new code (e.g. at0.0.1)
+					if attached {C_OBJECT} a_c_node as a_c_obj then
+						if not is_valid_code (a_c_obj.node_id) or else								-- node with no node_id
+									(specialisation_depth_from_code (a_c_obj.node_id) = 0 or else 	-- node with node_id unchanged from top-level archetype
+									is_refined_code(a_c_obj.node_id)) then							-- node id refined (i.e. not new)
+
+							create apa.make_from_string(a_c_node.path)
+							Result := flat_parent.has_path (apa.path_at_level (flat_parent.specialisation_depth))
+							if not Result and a_c_obj.is_addressable then -- if it is an addressable node it should have a matching node in flat parent
+								add_error("VSONIN", <<a_c_obj.node_id, a_c_obj.path, a_c_obj.rm_type_name>>)
+							end
+
+						-- special check: if it is a non-overlay node, but it has a sibling order, then we need to check that the
+						-- sibling order refers to a valid node in the parent flat. Arguably this should be done in the main
+						-- specialised_node_validate routine, but... I will re-engineer the code before contemplating that
+						elseif a_c_obj.sibling_order /= Void then
+							create apa.make_from_string(a_c_node.parent.path)
+							ca_parent_flat := flat_parent.definition.c_attribute_at_path (apa.path_at_level (flat_parent.specialisation_depth))
+							if not ca_parent_flat.has_child_with_id (a_c_obj.sibling_order.sibling_node_id) then
+								add_error("VSSM", <<a_c_obj.path, a_c_obj.sibling_order.sibling_node_id>>)
+							end
+						else
+							debug ("validate")
+								io.put_string ("????? specialised_node_validate_test: C_OBJECT at " + a_c_node.path + " ignored %N")
+							end
+						end
+					elseif attached {C_ATTRIBUTE} a_c_node as ca then
+						create apa.make_from_string(ca.path)
+						Result := flat_parent.has_path (apa.path_at_level (flat_parent.specialisation_depth))
+						if not Result and ca.has_differential_path then
+							add_error("VDIFP", <<ca.path>>)
+						end
 					end
 				end
 			end

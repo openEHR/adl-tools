@@ -274,7 +274,9 @@ feature {OG_OBJECT_NODE} -- Implementation
 					loop
 						child_obj ?= child_objs.item_for_iteration
 						obj_predicate_required := is_unique or
-												(attr_node.is_single and attr_node.child_count > 1 and child_obj.is_addressable) or
+												(attr_node.is_single and child_obj.is_addressable) or
+											-- use this line of code te get rid of node ids on single nodes	
+											--	(attr_node.is_single and attr_node.child_count > 1 and child_obj.is_addressable) or
 												attr_node.is_multiple
 						child_obj_node ?= child_obj
 						if child_obj_node /= Void then
@@ -328,8 +330,9 @@ feature {OG_OBJECT_NODE} -- Implementation
 		end
 
 	compress_path(a_path: OG_PATH): OG_PATH
-			-- if there is an attriute with a compressed path matching `a_path', generate a new path whose
-			-- first attribute contains the compressed section in it; else return the original `a_path'
+			-- if there is an attribute under this object node with a differential path matching `a_path',
+			-- generate a new path whose first attribute contains the differential section in it;
+			-- else return the original `a_path'
 		require
 			Path_valid: a_path /= Void and not a_path.is_compressed
 		local
@@ -338,12 +341,8 @@ feature {OG_OBJECT_NODE} -- Implementation
 			if is_root then
 				a_path_str := a_path.as_string
 				create cand_path.make (0)
-				from
-					children.start
-				until
-					children.off
-				loop
-					-- if there is a compressed path and it fits inside the search path, the search path could be off that attribute
+				from children.start until children.off loop
+					-- if there is a differential path and it fits inside the search path, the search path could be off that attribute
 					if children.item_for_iteration.has_differential_path and then a_path_str.substring_index (children.key_for_iteration, 1) = 1 then
 						if children.key_for_iteration.count > cand_path.count then
 							cand_path := children.key_for_iteration

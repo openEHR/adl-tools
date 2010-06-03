@@ -80,6 +80,11 @@ feature -- Status report
 			Result := representation.is_addressable
 		end
 
+	is_prohibited: BOOLEAN
+			-- True if node is prohibited, i.e. excluded
+		deferred
+		end
+
 feature -- Comparison
 
 	node_congruent_to (other: like Current; an_rm_schema: SCHEMA_ACCESS): BOOLEAN

@@ -84,7 +84,7 @@ create
 %token SYM_UNORDERED SYM_ORDERED SYM_UNIQUE SYM_ELLIPSIS SYM_INFINITY SYM_LIST_CONTINUE
 %token SYM_INVARIANT SYM_MATCHES SYM_USE_ARCHETYPE SYM_ALLOW_ARCHETYPE SYM_USE_NODE 
 %token SYM_INCLUDE SYM_EXCLUDE
-%token SYM_AFTER SYM_BEFORE
+%token SYM_AFTER SYM_BEFORE SYM_CLOSED
 %token SYM_DT_UNKNOWN
 
 %token ERR_CHARACTER ERR_STRING ERR_C_DOMAIN_TYPE ERR_TERM_CODE_CONSTRAINT ERR_V_QUALIFIED_TERM_CODE_REF ERR_V_ISO8601_DURATION
@@ -107,7 +107,7 @@ create
 %type <SIBLING_ORDER> sibling_order
 %type <OG_PATH> absolute_path relative_path
 %type <INTEGER> cardinality_limit_value
-%type <MULTIPLICITY_INTERVAL> c_occurrences c_existence occurrence_spec
+%type <MULTIPLICITY_INTERVAL> c_occurrences c_existence occurrence_spec existence_spec
 %type <C_PRIMITIVE_OBJECT> c_primitive_object
 %type <C_PRIMITIVE> c_primitive
 %type <EXPR_ITEM> boolean_expression boolean_node boolean_leaf
@@ -186,7 +186,7 @@ c_complex_object: c_complex_object_head SYM_MATCHES SYM_START_CBLOCK c_complex_o
 		}
 	| c_complex_object_head
 		{
-			-- ok in case where occurrences is being redefined in a specialised archetype or template
+			-- ok in case where occurrences or node_id is being redefined in a specialised archetype or template
 			if differential_syntax then
 				debug("ADL_parse")
 					io.put_string(indent + "POP OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "]%N") 
@@ -346,6 +346,10 @@ c_archetype_root: SYM_USE_ARCHETYPE type_identifier '[' V_ARCHETYPE_ID ']' c_occ
 				end
 			end
 		}
+	| SYM_USE_ARCHETYPE type_identifier error
+		{
+			abort_with_error("SUAID", Void)
+		}
 	;
 
 archetype_internal_ref: SYM_USE_NODE type_identifier c_occurrences absolute_path 
@@ -389,10 +393,10 @@ archetype_slot: c_archetype_slot_head SYM_MATCHES SYM_START_CBLOCK c_includes c_
 				indent.remove_tail(1)
 			end
 		}
-	| c_archetype_slot_head -- if occurrences = 0
+	| c_archetype_slot_head -- if closed
 		{
-			if not archetype_slot.occurrences_prohibited then
-				abort_with_error("VCOCDocc", <<archetype_slot.rm_type_name, archetype_slot.path>>)
+			if not archetype_slot.is_closed then
+				abort_with_error("VASMD", <<archetype_slot.rm_type_name, archetype_slot.path>>)
 			end
 		}
 	;
@@ -439,6 +443,16 @@ c_archetype_slot_id: SYM_ALLOW_ARCHETYPE type_identifier
 			else
 				abort_with_error("SDSF", Void)
 			end
+		}
+	| SYM_ALLOW_ARCHETYPE type_identifier SYM_CLOSED
+		{
+			create archetype_slot.make_anonymous($2)
+			archetype_slot.set_closed
+		}
+	| SYM_ALLOW_ARCHETYPE type_identifier V_LOCAL_TERM_CODE_REF SYM_CLOSED
+		{
+			create archetype_slot.make_identified($2, $3)
+			archetype_slot.set_closed
 		}
 	| SYM_ALLOW_ARCHETYPE error
 		{
@@ -533,6 +547,14 @@ c_attribute: c_attr_head SYM_MATCHES SYM_START_CBLOCK c_attr_values SYM_END_CBLO
 				indent.remove_tail(1)
 			end
 			c_attrs.remove
+		}
+	| c_attr_head -- ok if existence = 0
+		{
+			if c_attrs.item.is_prohibited then
+				c_attrs.remove
+			else
+				abort_with_error("SCAS", Void)
+			end
 		}
 	| c_attr_head SYM_MATCHES SYM_START_CBLOCK error SYM_END_CBLOCK	
 		{
@@ -1035,16 +1057,16 @@ path_segment: V_ATTRIBUTE_IDENTIFIER V_LOCAL_TERM_CODE_REF
 c_existence:  	-- empty is ok
 	| SYM_EXISTENCE SYM_MATCHES SYM_START_CBLOCK existence_spec SYM_END_CBLOCK	
 		{
-			$$ := multiplicity_interval
+			$$ := $4
 		}
 	;
 
 existence_spec:  V_INTEGER -- can only be 0 or 1
 		{
 			if $1 = 0 then
-				create multiplicity_interval.make_point(0)
+				create $$.make_prohibited
 			elseif $1 = 1 then
-				create multiplicity_interval.make_point(1)
+				create $$.make_mandatory
 			else
 				abort_with_error("SEXLSG", Void)
 			end
@@ -1053,15 +1075,15 @@ existence_spec:  V_INTEGER -- can only be 0 or 1
 		{
 			if $1 = 0 then
 				if $3 = 0 then
-					create multiplicity_interval.make_point(0)
+					create $$.make_point(0)
 				elseif $3 = 1 then
-					create multiplicity_interval.make_bounded(0, 1)
+					create $$.make_bounded(0, 1)
 				else
 					abort_with_error("SEXLU1", Void)
 				end
 			elseif $1 = 1 then
 				if $3 = 1 then
-					create multiplicity_interval.make_point(1)
+					create $$.make_point(1)
 				else
 					abort_with_error("SEXLU2", Void)
 				end

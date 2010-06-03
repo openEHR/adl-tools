@@ -143,6 +143,8 @@
 &nbsp; <span class="token">SYM_USE_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="literal_token">&#91; </span><span class="token">V_ARCHETYPE_ID </span><span class="literal_token">&#93; </span><span class="rhs_variable"><a href="#c_occurrences">c_occurrences</a> </span></div>
 <div class="rhs">
 | <span class="token">SYM_USE_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="literal_token">&#91; </span><span class="token">V_LOCAL_CODE </span><span class="literal_token">&#44; </span><span class="token">V_ARCHETYPE_ID </span><span class="literal_token">&#93; </span><span class="rhs_variable"><a href="#c_occurrences">c_occurrences</a> </span></div>
+<div class="rhs">
+| <span class="token">SYM_USE_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">error </span></div>
 </div>
 
 <div class="rule">
@@ -181,6 +183,10 @@
 | <span class="token">SYM_ALLOW_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">V_LOCAL_TERM_CODE_REF </span></div>
 <div class="rhs">
 | <span class="rhs_variable"><a href="#sibling_order">sibling_order</a> </span><span class="token">SYM_ALLOW_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">V_LOCAL_TERM_CODE_REF </span></div>
+<div class="rhs">
+| <span class="token">SYM_ALLOW_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">SYM_CLOSED </span></div>
+<div class="rhs">
+| <span class="token">SYM_ALLOW_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">V_LOCAL_TERM_CODE_REF </span><span class="token">SYM_CLOSED </span></div>
 <div class="rhs">
 | <span class="token">SYM_ALLOW_ARCHETYPE </span><span class="token">error </span></div>
 </div>
@@ -234,6 +240,8 @@
 <span class="lhs_variable" id="c_attribute">c_attribute</span>: </div>
 <div class="rhs">
 &nbsp; <span class="rhs_variable"><a href="#c_attr_head">c_attr_head</a> </span><span class="token">SYM_MATCHES </span><span class="token">SYM_START_CBLOCK </span><span class="rhs_variable"><a href="#c_attr_values">c_attr_values</a> </span><span class="token">SYM_END_CBLOCK </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_attr_head">c_attr_head</a> </span></div>
 <div class="rhs">
 | <span class="rhs_variable"><a href="#c_attr_head">c_attr_head</a> </span><span class="token">SYM_MATCHES </span><span class="token">SYM_START_CBLOCK </span><span class="token">error </span><span class="token">SYM_END_CBLOCK </span></div>
 </div>

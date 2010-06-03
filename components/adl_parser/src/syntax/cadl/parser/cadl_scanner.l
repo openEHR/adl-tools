@@ -186,6 +186,8 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 
 [Bb][Ee][Ff][Oo][Rr][Ee]						last_token := SYM_BEFORE
 
+[Cc][Ll][Oo][Ss][Ee][Dd]						last_token := SYM_CLOSED
+
 ----------/* V_URI */ -------------------------------------------------
 [a-z]+:\/\/[^<>|\\{}^~"\[\] ]*	{
 	last_token := V_URI
@@ -204,7 +206,8 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 			}
 
 ----------/* V_LOCAL_TERM_CODE_REF: term code of form [at0000], [ac0000] */ ---------------
-\[{ALPHANUM}{NAMECHAR}*\]	{
+
+\[a[ct][0-9.]+\] {
 					last_token := V_LOCAL_TERM_CODE_REF
 					last_string_value := text_substring (2, text_count - 1)
 			}

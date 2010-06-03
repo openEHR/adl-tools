@@ -284,6 +284,12 @@ feature -- Status Report
 			Result := is_multiple and then cardinality.is_ordered
 		end
 
+	is_prohibited: BOOLEAN
+			-- True if occurrences set to {0} i.e. prohibited
+		do
+			Result := attached existence and existence.is_prohibited
+		end
+
 	has_differential_path: BOOLEAN
 			-- True if this node has a contracted path
 		do

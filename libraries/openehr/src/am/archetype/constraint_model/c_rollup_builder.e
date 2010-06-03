@@ -122,8 +122,7 @@ feature -- Visitor
 		local
 			spec_sts: SPECIALISATION_STATUS
 		do
-			spec_sts := a_node.specialisation_status (archetype_specialisation_level)
-			a_node.set_rolled_up_specialisation_status(spec_sts)
+			a_node.set_rolled_up_specialisation_status(create {SPECIALISATION_STATUS}.make (ss_added))
 		end
 
 	start_archetype_internal_ref(a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER)

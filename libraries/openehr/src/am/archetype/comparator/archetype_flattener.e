@@ -274,7 +274,7 @@ feature {NONE} -- Implementation
 							child_grafted_path_list.extend (cco_child_diff.path)
 
 						-- if it is a node on which occurrences was set to 0, remove it from the flat.
-						elseif cco_child_diff.occurrences_prohibited then
+						elseif cco_child_diff.is_prohibited then
 							debug ("flatten")
 								io.put_string ("%T** child occurrences is {0} - REMOVING parent node [" + cco_output_flat.node_id + "]**%N")
 							end
@@ -348,25 +348,29 @@ feature {NONE} -- Implementation
 
 									ca_output := cco_output_flat_proximate.c_attribute (ca_child.rm_attribute_name)
 
-									-- graft the existence if that has been changed
-									if ca_child.existence /= Void and then not ca_child.existence.equal_interval (ca_output.existence) then
-										ca_output.set_existence (ca_child.existence.deep_twin)
-									end
-									if ca_child.is_multiple then
-										-- for container attributes in the source archetype, we graft in new elements; overrides will be
-										-- handled by being traversed by this routine later; also graft the cardinality if that was changed
-										if ca_child.cardinality /= Void and then not ca_child.cardinality.interval.equal_interval (ca_output.cardinality.interval) then
-											ca_output.set_cardinality (ca_child.cardinality.deep_twin)
+									if ca_child.is_prohibited then -- existence = {0}; remove the attribute completely
+										ca_output.parent.remove_attribute_by_name (ca_child.rm_attribute_name)
+									else
+										-- graft the existence if that has been changed
+										if ca_child.existence /= Void and then not ca_child.existence.equal_interval (ca_output.existence) then
+											ca_output.set_existence (ca_child.existence.deep_twin)
 										end
-										debug ("flatten")
-											io.put_string ("%T%T%Tmerge container attribute at " + ca_child.path + " into output%N")
+										if ca_child.is_multiple then
+											-- for container attributes in the source archetype, we graft in new elements; overrides will be
+											-- handled by being traversed by this routine later; also graft the cardinality if that was changed
+											if ca_child.cardinality /= Void and then not ca_child.cardinality.interval.equal_interval (ca_output.cardinality.interval) then
+												ca_output.set_cardinality (ca_child.cardinality.deep_twin)
+											end
+											debug ("flatten")
+												io.put_string ("%T%T%Tmerge container attribute at " + ca_child.path + " into output%N")
+											end
+											merge_container_attribute(ca_output, ca_child)
+										else -- for single-valued attributes, have to merge any non-CCO children
+											debug ("flatten")
+												io.put_string ("%T%T%Tmerge single attribute at " + ca_child.path + " into output%N")
+											end
+											merge_single_attribute(ca_output, ca_child)
 										end
-										merge_container_attribute(ca_output, ca_child)
-									else -- for single-valued attributes, have to merge any non-CCO children
-										debug ("flatten")
-											io.put_string ("%T%T%Tmerge single attribute at " + ca_child.path + " into output%N")
-										end
-										merge_single_attribute(ca_output, ca_child)
 									end
 								else  -- otherwise just do a deep clone of the whole attribute from the child to the output
 									ca_child_copy := ca_child.safe_deep_twin
@@ -478,14 +482,14 @@ feature {NONE} -- Implementation
 				-- this loop corresponds to the sublist of objects in the source container (i.e. child archetype container node) that are
 				-- to be merged either before or after the insert_obj in the flattened output.
 				from i := merge_list.item.integer_item(Md_src_list_start_pos) until i > merge_list.item.integer_item(Md_src_list_end_pos) loop
-					if is_valid_code (ca_child.children.i_th(i).node_id) and -- not valid_code means a node with no node_id or else a C_ARCHETYPE_ROOT
-							specialisation_status_from_code (ca_child.children.i_th(i).node_id, arch_child_diff.specialisation_depth).value = ss_added or
-							attached {C_ARCHETYPE_ROOT} ca_child.children.i_th(i) as car then
-						child_grafted_path_list.extend (ca_child.children.i_th(i).path) -- remember the path, so we don't try to do it again later on
+					if is_valid_code (ca_child.children.i_th(i).node_id) 																						-- identified nodes only
+								and specialisation_status_from_code (ca_child.children.i_th(i).node_id, arch_child_diff.specialisation_depth).value = ss_added 	-- that have been added
+								or attached {C_ARCHETYPE_ROOT} ca_child.children.i_th(i) as car then 															-- or else C_ARCHETYPE_ROOTs
+							child_grafted_path_list.extend (ca_child.children.i_th(i).path) -- remember the path, so we don't try to do it again later on
 
 						-- now we either merge the object, or deal with the special case of occurrences = 0,
 						-- in which case, remove the target object
-						if ca_child.children.i_th(i).occurrences_prohibited then
+						if ca_child.children.i_th(i).is_prohibited then
 							ca_output.remove_child (insert_obj)
 						else
 							merge_obj := ca_child.children.i_th(i).safe_deep_twin
@@ -501,6 +505,15 @@ feature {NONE} -- Implementation
 							if attached {C_ARCHETYPE_ROOT} merge_obj as car2 then
 								template_definition_overlay_list.extend(car2)
 							end
+						end
+
+					elseif attached {ARCHETYPE_SLOT} ca_child.children.i_th(i) as arch_slot then	-- ARCHETYPE_SLOT override
+						child_grafted_path_list.extend (ca_child.children.i_th(i).path) -- remember the path, so we don't try to do it again later on
+						if arch_slot.is_closed then
+							ca_output.remove_child_by_id (specialisation_parent_from_code_at_level (ca_child.children.i_th(i).node_id, arch_parent_flat.specialisation_depth))
+						else
+							ca_output.replace_child_by_id (ca_child.children.item.safe_deep_twin,
+									specialisation_parent_from_code_at_level (ca_child.children.i_th(i).node_id, arch_parent_flat.specialisation_depth))
 						end
 					else
 						debug("flatten")
@@ -523,7 +536,17 @@ feature {NONE} -- Implementation
 			merge_obj: C_OBJECT
 		do
 			from ca_child.children.start until ca_child.children.off loop
-				if attached {C_ARCHETYPE_ROOT} ca_child.children.item as car then
+				if attached {ARCHETYPE_SLOT} ca_child.children.item as arch_slot then
+					if arch_slot.is_closed then
+						ca_output.remove_child_by_id (specialisation_parent_from_code_at_level (ca_child.children.item.node_id, arch_parent_flat.specialisation_depth))
+					elseif specialisation_status_from_code (ca_child.children.item.node_id, arch_child_diff.specialisation_depth).value = ss_added then
+						ca_output.put_child(ca_child.children.item.safe_deep_twin)
+					else
+						ca_output.replace_child_by_id (ca_child.children.item.safe_deep_twin,
+								specialisation_parent_from_code_at_level (ca_child.children.item.node_id, arch_parent_flat.specialisation_depth))
+					end
+
+				elseif attached {C_ARCHETYPE_ROOT} ca_child.children.item as car then
 					merge_obj := ca_child.children.item.safe_deep_twin
 					ca_output.put_child (merge_obj)
 					if attached {C_ARCHETYPE_ROOT} merge_obj as car2 then

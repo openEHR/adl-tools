@@ -220,11 +220,7 @@ feature {NONE} -- Implementation
 			create og_nodes.make(0)
 			if parent /= Void then
 				og_nodes.extend(Current)
-				from
-					csr := parent
-				until
-					csr.parent = Void
-				loop
+				from csr := parent until csr.parent = Void loop
 					og_nodes.put_front(csr)
 					csr := csr.parent
 				end
@@ -254,7 +250,9 @@ feature {NONE} -- Implementation
 					og_nodes.forth
 					if not og_nodes.off then -- now on an OG_OBJECT_NODE
 						if unique_flag or og_attr.is_multiple or
-								(og_attr.is_single and og_attr.child_count > 1 and og_nodes.item.is_addressable) then
+								(og_attr.is_single and og_nodes.item.is_addressable) then
+							-- use this line of code to get rid of codes on single attributes
+							--	(og_attr.is_single and og_attr.child_count > 1 and og_nodes.item.is_addressable) then
 							a_path_item.set_object_id(og_nodes.item.node_id)
 						end
 						og_nodes.forth

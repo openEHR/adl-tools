@@ -158,7 +158,7 @@ feature -- Status Report
 			-- True if any value allowed ('*' received in parsed input)
 			-- i.e. no attributes
 		do
-			Result := attributes.is_empty and not occurrences_prohibited
+			Result := attributes.is_empty and not is_prohibited
 		end
 
 	has_attributes: BOOLEAN
@@ -224,6 +224,20 @@ feature -- Modification
 			representation.remove_child (an_attr.representation)
 		ensure
 			not has_attribute (an_attr.rm_attribute_path)
+		end
+
+	remove_attribute_by_name (an_attr_name: STRING)
+			-- remove an existing attribute
+		require
+			Attribute_name_valid: an_attr_name /= Void and has_attribute (an_attr_name)
+		local
+			ca: C_ATTRIBUTE
+		do
+			ca := c_attribute (an_attr_name)
+			attributes.prune_all(ca)
+			representation.remove_child (ca.representation)
+		ensure
+			not has_attribute (an_attr_name)
 		end
 
 	remove_all_attributes

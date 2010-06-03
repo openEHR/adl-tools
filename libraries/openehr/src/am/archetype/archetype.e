@@ -503,11 +503,7 @@ feature {NONE} -- Implementation
 
 			-- Add full paths of internal references thus giving full set of actual paths
 			use_refs_csr := use_node_index.cursor
-			from
-				use_node_index.start
-			until
-				use_node_index.off
-			loop
+			from use_node_index.start until use_node_index.off loop
 				-- Hash table with arrayed list of ARCHETYPE_INTERNAL_REFs and Key of target
 				-- (ie the ref path of the internal reference)
 				src_nodes := use_node_index.item_for_iteration

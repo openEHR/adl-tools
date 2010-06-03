@@ -391,7 +391,7 @@ feature -- Modification
 
 	compress_path(a_path: STRING)
 			-- set attr_name of first item to a path ending in an attribute rather than the usual single attribute name;
-			-- used for compressed path processing
+			-- used for differential path processing
 		require
 			Path_valid: a_path /= Void and then not a_path.is_empty
 		do

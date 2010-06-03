@@ -33,7 +33,8 @@ create
 	make_from_interval,
 	make_open,
 	make_mandatory,
-	make_optional
+	make_optional,
+	make_prohibited
 
 convert
 	make_from_interval({INTERVAL[INTEGER]})

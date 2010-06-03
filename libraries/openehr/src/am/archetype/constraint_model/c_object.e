@@ -54,12 +54,6 @@ feature -- Access
 			Result := representation.specialisation_depth
 		end
 
-	occurrences_prohibited: BOOLEAN
-			-- True if occurrences set to {0} i.e. prohibited
-		do
-			Result := attached occurrences and occurrences.is_prohibited
-		end
-
 	specialisation_status (spec_level: INTEGER): SPECIALISATION_STATUS
 			-- status of this node in the source text of this archetype with respect to the
 			-- specialisation hierarchy. Values are defined in SPECIALISATION_STATUSES
@@ -74,6 +68,14 @@ feature -- Access
 					Result := specialisation_status_from_code (node_id, spec_level)
 				end
 			end
+		end
+
+feature -- Status report
+
+	is_prohibited: BOOLEAN
+			-- True if occurrences set to {0} i.e. prohibited
+		do
+			Result := attached occurrences and occurrences.is_prohibited
 		end
 
 feature -- Comparison
