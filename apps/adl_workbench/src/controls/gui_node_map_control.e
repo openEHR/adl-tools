@@ -295,7 +295,7 @@ feature -- Commands
 		require
 			archetype_selected: arch_dir.has_validated_selected_archetype
 		do
-			if target_archetype.is_specialised then
+			if target_archetype.is_specialised and not target_archetype.is_template then
 				create node_list.make(0)
 				gui_tree.recursive_do_all(agent ev_tree_item_roll_up(?))
 
@@ -841,15 +841,14 @@ feature {NONE} -- Implementation
 
 	ev_tree_item_roll_up(an_ev_tree_node: EV_TREE_NODE)
 			-- close nodes that have rolled_up_specialisation_status = ss_inherited; open others
-		local
-			arch_cons: ARCHETYPE_CONSTRAINT
 		do
 			if an_ev_tree_node.is_expandable then
-				arch_cons ?= an_ev_tree_node.data
-				if arch_cons /= Void and arch_cons.rolled_up_specialisation_status.value = ss_inherited then
-					an_ev_tree_node.collapse
-				else
-					an_ev_tree_node.expand
+				if attached {ARCHETYPE_CONSTRAINT} an_ev_tree_node.data as ac then
+					if ac.rolled_up_specialisation_status.value = ss_inherited then
+						an_ev_tree_node.collapse
+					else
+						an_ev_tree_node.expand
+					end
 				end
 			end
 		end
