@@ -47,14 +47,21 @@ feature -- Access
 		local
 			i: INTEGER
 			idx_str: STRING
+			args_list: ARRAY[STRING]
 		do
-			Result := templates.item(an_id).twin
+			if templates.has (an_id) then
+				Result := templates.item(an_id).twin
+				args_list := args
+			else
+				Result := templates.item ("message_code_error").twin
+				args_list := <<an_id>>
+			end
 			Result.replace_substring_all("%%N", "%N")
-			if args /= Void then
-				from i := args.lower until i > args.upper loop
+			if args_list /= Void then
+				from i := args_list.lower until i > args_list.upper loop
 					idx_str := i.out
 					idx_str.left_adjust
-					Result.replace_substring_all("$" + idx_str, args.item(i))
+					Result.replace_substring_all("$" + idx_str, args_list.item(i))
 					i := i + 1
 				end
 			end

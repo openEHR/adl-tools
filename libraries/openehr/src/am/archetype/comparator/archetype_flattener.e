@@ -17,6 +17,11 @@ note
 class ARCHETYPE_FLATTENER
 
 inherit
+	SHARED_KNOWLEDGE_REPOSITORY
+		export {NONE}
+			all
+		end
+
 	ARCHETYPE_TERM_CODE_TOOLS
 		export {NONE}
 			all
@@ -85,7 +90,6 @@ feature -- Commands
 		local
 			def_it: C_ITERATOR
 		do
-			create template_definition_overlay_list.make(0)
 			if arch_child_diff.is_specialised then
 				debug ("flatten")
 					io.put_string ("============== flattening specialised archetype " + arch_child_diff.archetype_id.as_string + " with " +
@@ -109,6 +113,7 @@ feature -- Commands
 
 			-- now finalise template flattening
 			if arch_child_diff.is_template then
+				arch_output_flat.build_xrefs
 				template_overlay_target_definitions
 				template_overlay_target_ontologies
 			end
@@ -270,6 +275,20 @@ feature {NONE} -- Implementation
 								-- have to change the node id to the target node id, so that the replace will work
 								cco_output_flat.parent.replace_node_id (cco_output_flat.node_id, cco_child_diff.node_id)
 								cco_output_flat.parent.replace_child_by_id (cco_child_diff.safe_deep_twin, cco_child_diff.node_id)
+							else -- the child archetype object is the root object; copy all of its attributes into the target
+								from cco_child_diff.attributes.start until cco_child_diff.attributes.off loop
+									ca_child := cco_child_diff.attributes.item
+									debug ("flatten")
+										io.put_string ("%T%T~~~~ attribute = " + ca_child.rm_attribute_path + "%N")
+									end
+									ca_child_copy := ca_child.safe_deep_twin
+									debug ("flatten")
+										io.put_string ("%T%Tin child only; deep_clone attribute " + ca_child.rm_attribute_name + " at " + ca_child.path +
+											" from diff child and graft to " + cco_output_flat.path + " in output%N")
+									end
+									cco_output_flat.put_attribute (ca_child_copy)
+									cco_child_diff.attributes.forth
+								end
 							end
 							child_grafted_path_list.extend (cco_child_diff.path)
 
@@ -500,11 +519,6 @@ feature {NONE} -- Implementation
 								ca_output.put_child_right(merge_obj, insert_obj)
 								insert_obj := ca_output.child_after (insert_obj) -- move 1 to the right, so adding occurs after
 							end
-
-							-- For C_ARCHETYPE_ROOTs - graft in a complete copy of the whole archetype definition of the referenced archetype
-							if attached {C_ARCHETYPE_ROOT} merge_obj as car2 then
-								template_definition_overlay_list.extend(car2)
-							end
 						end
 
 					elseif attached {ARCHETYPE_SLOT} ca_child.children.i_th(i) as arch_slot then	-- ARCHETYPE_SLOT override
@@ -549,9 +563,6 @@ feature {NONE} -- Implementation
 				elseif attached {C_ARCHETYPE_ROOT} ca_child.children.item as car then
 					merge_obj := ca_child.children.item.safe_deep_twin
 					ca_output.put_child (merge_obj)
-					if attached {C_ARCHETYPE_ROOT} merge_obj as car2 then
-						template_definition_overlay_list.extend(car2)
-					end
 					child_grafted_path_list.extend (ca_child.children.item.path)
 
 				elseif not attached {C_COMPLEX_OBJECT} ca_child.children.item as cco then
@@ -697,36 +708,38 @@ feature {NONE} -- Implementation
 		do
 		end
 
-	template_definition_overlay_list: ARRAYED_LIST [C_ARCHETYPE_ROOT]
-			-- List of archetype root points found in the current child archetype, that were grafted into flat output;
-			-- each of these need to have the target archetype definitions overlaid;
-			-- Note that this list can contain root points that have to be overlaid from the same target archetype, but it
-			-- doesn't contain root points from any of the target archetypes - by the time they are flattened, their own
-			-- root points have been taken care of.
-
 	template_overlay_target_definitions
 			-- process `template_arch_root_list' to overlay target definitions.
 		local
 			ext_arch_root_cco:  attached C_COMPLEX_OBJECT
 			ca_clone: C_ATTRIBUTE
+			xref_idx: HASH_TABLE[ARRAYED_LIST[C_ARCHETYPE_ROOT], STRING]
+			xref_list: ARRAYED_LIST[C_ARCHETYPE_ROOT]
 		do
 			debug ("flatten")
 				io.put_string ("&&&&&& flattening template root nodes &&&&&&%N")
 			end
-			from template_definition_overlay_list.start until template_definition_overlay_list.off loop
-				ext_arch_root_cco := child_desc.referenced_archetypes_index.item (template_definition_overlay_list.item.archetype_id).flat_archetype.definition
-				debug ("flatten")
-					io.put_string ("%T node at " + template_definition_overlay_list.item.path + " with " + template_definition_overlay_list.item.archetype_id + "%N")
-				end
-				from ext_arch_root_cco.attributes.start until ext_arch_root_cco.attributes.off loop
-					ca_clone := ext_arch_root_cco.attributes.item.safe_deep_twin
-					template_definition_overlay_list.item.put_attribute (ca_clone)
-					debug ("flatten")
-						io.put_string ("%T%T cloning attribute " + ca_clone.rm_attribute_path + "%N")
+			xref_idx := arch_output_flat.external_references_index
+			from xref_idx.start until xref_idx.off loop
+				ext_arch_root_cco := arch_dir.archetype_index.item (xref_idx.key_for_iteration).flat_archetype.definition
+				xref_list := xref_idx.item_for_iteration
+				from xref_list.start until xref_list.off loop
+					if not xref_list.item.has_attributes then -- it is empty and needs to be filled
+						debug ("flatten")
+							io.put_string ("%T node at " + xref_list.item.path + " with " + xref_idx.key_for_iteration + "%N")
+						end
+						from ext_arch_root_cco.attributes.start until ext_arch_root_cco.attributes.off loop
+							ca_clone := ext_arch_root_cco.attributes.item.safe_deep_twin
+							xref_list.item.put_attribute (ca_clone)
+							debug ("flatten")
+								io.put_string ("%T%T cloning attribute " + ca_clone.rm_attribute_path + "%N")
+							end
+							ext_arch_root_cco.attributes.forth
+						end
 					end
-					ext_arch_root_cco.attributes.forth
+					xref_list.forth
 				end
-				template_definition_overlay_list.forth
+				xref_idx.forth
 			end
 		end
 

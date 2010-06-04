@@ -138,6 +138,7 @@ feature -- Validation
 			if passed then
 				target.build_xrefs
 				validate_slots
+				validate_external_refs
 				report_unused_ontology_codes
 				validate_definition_codes
 			end
@@ -252,6 +253,17 @@ feature {NONE} -- Implementation
 				end
 
 				target.slot_index.forth
+			end
+		end
+
+	validate_external_refs is
+			-- validate all C_ARCHETYPE_ROOT objects in a basic way
+		do
+			from target.external_references_index.start until target.external_references_index.off loop
+				if not arch_dir.archetype_index.has (target.external_references_index.key_for_iteration) then
+					add_error("WARNF", <<target.external_references_index.key_for_iteration>>)
+				end
+				target.external_references_index.forth
 			end
 		end
 
@@ -752,7 +764,7 @@ feature {NONE} -- Implementation
 						flat_parent_path := apa.path_at_level (flat_parent.specialisation_depth)
 						Result := flat_parent.has_path (flat_parent_path)
 						if not Result and ca.has_differential_path then
-							add_error("VDIFP", <<ca.path, flat_parent_path>>)
+							add_error("VDIFP1", <<ca.path, flat_parent_path>>)
 						end
 					end
 				end

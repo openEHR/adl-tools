@@ -292,6 +292,7 @@ feature -- Message database
 			["VARXSnf"] = <"Warning (VARXS): slot filler (C_ARCHETYPE_ROOT) at $1 does specifies archetype $2 that matches slot but doesn't exist in current archetype repository">
 			["VARXS"] = <"Error (VARXS): slot filler (C_ARCHETYPE_ROOT) at $1 specifies archetype id $2 that does not conform to flat parent slot constraint">
 			["VARXV"] = <"Error (VARXV): slot filler (C_ARCHETYPE_ROOT) at $1 does not correspond to any ARCHETYPE slot in flat parent (i.e. in any specialisation parent)">
+			["WARNF"] = <"Error (WARNF): C_ARCHETYPE_ROOT at $1 not found in archetype/template repository">
 
 			-- ontology-related validity
 			["VONSD"] = <"Error (VONSD): archetype code $1 in ontology more specialised than archetype">
