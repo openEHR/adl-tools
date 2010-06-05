@@ -1845,7 +1845,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 551")
 end
 
-			if c_attrs.item.is_prohibited then
+			if differential_syntax then
 				c_attrs.remove
 			else
 				abort_with_error("SCAS", Void)
@@ -1994,7 +1994,7 @@ end
 						abort_with_error("VSAM", <<path_str>>)
 					end
 				else
-					abort_with_error("VDIFP", <<path_str>>)
+					abort_with_error("VDIFP2", <<path_str>>)
 				end
 			else
 				abort_with_error("VCATU", <<path_str>>)

@@ -110,10 +110,18 @@ feature {NONE} -- Implementation
    		local
 			a_ti: EV_TREE_ITEM
 			pixmap: EV_PIXMAP
+			str: STRING
 		do
 			create a_ti
 			a_ti.set_data (a_prop_def)
-			a_ti.set_text (utf8 (a_prop_def.name + ": " + a_prop_def.type.as_type_string))
+			str := a_prop_def.name + ": " + a_prop_def.type.as_type_string
+			if a_prop_def.is_mandatory then
+				str.append (" [1]")
+			else
+				str.append (" [0..1]")
+			end
+			a_ti.set_text (utf8 (str))
+
 			pixmap := pixmaps.item(rm_attribute_pixmap_string(a_prop_def))
 			a_ti.set_pixmap (pixmap)
 			gui_tree_item_stack.item.extend (a_ti)

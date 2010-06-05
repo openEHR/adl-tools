@@ -548,9 +548,9 @@ c_attribute: c_attr_head SYM_MATCHES SYM_START_CBLOCK c_attr_values SYM_END_CBLO
 			end
 			c_attrs.remove
 		}
-	| c_attr_head -- ok if existence = 0
+	| c_attr_head -- ok if existence is being changed in specialised archetype
 		{
-			if c_attrs.item.is_prohibited then
+			if differential_syntax then
 				c_attrs.remove
 			else
 				abort_with_error("SCAS", Void)

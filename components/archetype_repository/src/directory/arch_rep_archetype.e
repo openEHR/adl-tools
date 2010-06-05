@@ -468,6 +468,7 @@ feature -- Commands
 						post_info (Current, "parse_archetype", "parse_archetype_i3", Void)
 						read_differential
 						differential_archetype := adl_engine.parse_differential (differential_text, rm_schema)
+						flat_archetype_cache := Void
 						if differential_archetype = Void then
 							post_error (Current, "parse_archetype", "parse_archetype_e1", <<adl_engine.parse_error_text>>)
 							is_valid := False
