@@ -859,13 +859,17 @@ feature {NONE} -- Implementation
 			-- generate string form of node or object for use in tree node
 		do
 			create Result.make(0)
-		--	Result.append (" [" + c_attr.existence.as_occurrences_string + "] ")
-		--	if c_attr.is_multiple then
-		--	 	Result.append (" [" + c_attr.cardinality.as_string + "] ")
-		--	end
-		--	if c_attr.is_congruent then
-		--		Result.append ("^ ")
-		--	end
+			if in_technical_mode then
+				Result.append (" {")
+				if c_attr.existence /= Void then
+					Result.append (c_attr.existence.as_string)
+				end
+			 	Result.append ("; ")
+				if c_attr.is_multiple and c_attr.cardinality /= Void then
+				 	Result.append (c_attr.cardinality.as_string)
+				end
+				Result.append ("} ")
+			end
 
 			Result.append (c_attr.rm_attribute_path)
 			if c_attr.any_allowed then
@@ -1021,13 +1025,17 @@ feature {NONE} -- Implementation
 				if a_node.occurrences /= Void then
 					Result.append (" {" + a_node.occurrences_as_string + "} ")
 				end
-				Result.append ("use_archetype [")
-				if a_node.slot_node_id /= Void then
-					Result.append(a_node.slot_node_id + ", ")
-				end
+			end
+			if arch_dir.has_validated_selected_archetype and ontology.has_term_code (a_node.slot_node_id) then
+				Result.append (" " + ontology.term_definition (current_language, a_node.slot_node_id).item ("text"))
+			end
+			if in_technical_mode then
+				Result.append (": " + a_node.rm_type_name)
+				Result.append (" [")
+--				if a_node.slot_node_id /= Void then
+--					Result.append(a_node.slot_node_id + ", ")
+--				end
 				Result.append(a_node.node_id + "]")
-			else
-				Result.append ("use_archetype [" + a_node.node_id + "]")
 			end
 		end
 
