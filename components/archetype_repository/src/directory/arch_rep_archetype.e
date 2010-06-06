@@ -95,8 +95,6 @@ feature {NONE} -- Initialisation
 			create compiler_status.make_empty
 
 			id := an_id
-			ontological_name := id.as_string
-			display_name := id.domain_concept
 			full_path := a_full_path
 			file_repository := a_repository
 			artefact_type := an_artefact_type
@@ -190,8 +188,21 @@ feature -- Access (semantic)
 	id: attached ARCHETYPE_ID
 			-- Archetype identifier.
 
+	old_id: ARCHETYPE_ID
+			-- previous archetype identifier of this archetype, if changes occurred due to editing.
+
 	parent_id: attached ARCHETYPE_ID
 			-- Archetype identifier of specialisation parent
+
+	ontological_name: STRING
+		do
+			Result := id.as_string
+		end
+
+	display_name: STRING
+		do
+			Result := id.domain_concept
+		end
 
 	differential_text: STRING
 			-- The text of the archetype source file, i.e. the differential form.
@@ -473,14 +484,19 @@ feature -- Commands
 							post_error (Current, "parse_archetype", "parse_archetype_e1", <<adl_engine.parse_error_text>>)
 							is_valid := False
 						else
-							id := differential_archetype.archetype_id -- in case id has changed
-							-- FIXME: we should also deal with the case of parent id being changed, but this is more
-							-- complicated since it requires a move in the ARCHETYPE_DIRECTORY tree as well as the explorer controls
-							-- At the moment it requires a full refresh.... which seems ok, since this is very rare
 							if differential_archetype.is_specialised and not parent_id.is_equal(differential_archetype.parent_archetype_id) then
 								post_warning (Current, "parse_archetype", "parse_archetype_w3", <<id.as_string, parent_id.as_string, differential_archetype.parent_archetype_id.as_string>>)
 							else
 								post_info (Current, "parse_archetype", "parse_archetype_i1", <<id.as_string>>)
+								-- reset id, since this could have changed due to editing
+								-- FIXME: we should also deal with the case of parent id being changed, but this is more
+								-- complicated since it requires a move in the ARCHETYPE_DIRECTORY tree as well as the explorer controls
+								-- At the moment it requires a full refresh.... which seems ok, since this is very rare
+								if not differential_archetype.archetype_id.as_string.is_equal(id.as_string) then
+									old_id := id
+									create id.make_from_string (differential_archetype.archetype_id.as_string)
+									arch_dir.update_archetype_id(old_id.as_string, id.as_string)
+								end
 								validate
 							end
 						end
@@ -493,6 +509,16 @@ feature -- Commands
 						else
 							post_info (Current, "parse_archetype", "parse_archetype_i1", <<id.as_string>>)
 							differential_archetype := legacy_flat_archetype.to_differential
+
+							-- reset id, since this could have changed due to editing
+							-- FIXME: we should also deal with the case of parent id being changed, but this is more
+							-- complicated since it requires a move in the ARCHETYPE_DIRECTORY tree as well as the explorer controls
+							-- At the moment it requires a full refresh.... which seems ok, since this is very rare
+							if not differential_archetype.archetype_id.as_string.is_equal(id.as_string) then
+								old_id := id
+								create id.make_from_string (differential_archetype.archetype_id.as_string)
+								arch_dir.update_archetype_id(old_id.as_string, id.as_string)
+							end
 							validate
 							-- if differential archetype was generated from an old-style flat, perform path compression
 							if is_valid then
@@ -503,6 +529,7 @@ feature -- Commands
 							legacy_flat_archetype.set_is_valid (is_valid)
 						end
 					end
+
 
 					if is_valid then
 						-- Make sure that the language is set, and that it is one of the languages in the archetype.

@@ -264,10 +264,19 @@ feature {NONE} -- Implementation
 							io.put_string ("%TFirst replacement in flat parent " + cco_child_diff.path + "%N")
 						end
 
+						-- if it is a node on which occurrences was set to 0, remove it from the flat.
+						if cco_child_diff.is_prohibited then
+							debug ("flatten")
+								io.put_string ("%T** child occurrences is {0} - REMOVING parent node [" + cco_output_flat.node_id + "]**%N")
+							end
+							if not cco_output_flat.is_root then
+								cco_output_flat.parent.remove_child_by_id (cco_output_flat.node_id)
+							end
+
 						-- if output_flat node matches any, and it is addressable (which means the differential child node must also be,
 						-- and must therefore be intended as an override; if it wasn't, it will be treated as an alternative)
 						-- then replace it with a complete clone of the current child tree
-						if cco_output_flat.any_allowed and cco_output_flat.is_addressable then
+						elseif cco_output_flat.any_allowed and cco_output_flat.is_addressable then
 							debug ("flatten")
 								io.put_string ("%T** parent matches ANY - REPLACING node [" + cco_output_flat.node_id + "] with complete clone of child node [" + cco_child_diff.node_id + "]**%N")
 							end
@@ -291,15 +300,6 @@ feature {NONE} -- Implementation
 								end
 							end
 							child_grafted_path_list.extend (cco_child_diff.path)
-
-						-- if it is a node on which occurrences was set to 0, remove it from the flat.
-						elseif cco_child_diff.is_prohibited then
-							debug ("flatten")
-								io.put_string ("%T** child occurrences is {0} - REMOVING parent node [" + cco_output_flat.node_id + "]**%N")
-							end
-							if not cco_output_flat.is_root then
-								cco_output_flat.parent.remove_child_by_id (cco_output_flat.node_id)
-							end
 
 						else
 							-- firstly, add overrides from immediate child node to corresponding flat node
@@ -531,8 +531,8 @@ feature {NONE} -- Implementation
 						end
 					else
 						debug("flatten")
-							io.put_string ("ARCHETYPE_FLATTENER.merge_container_attribute location 1" +
-								" IGNORING " + ca_child.children.i_th(i).path + " (" + i.out + "-th child)")
+							io.put_string ("%T%T%TARCHETYPE_FLATTENER.merge_container_attribute location 1; IGNORING " +
+								ca_child.children.i_th(i).path + " (" + i.out + "-th child)%N")
 						end
 					end
 					i := i + 1
@@ -627,18 +627,18 @@ feature {NONE} -- Implementation
 		do
 			np := a_c_node.path
 			create apa.make_from_string(np)
-			if not apa.is_phantom_path_at_level (arch_parent_flat.specialisation_depth) then
+--			if not apa.is_phantom_path_at_level (arch_parent_flat.specialisation_depth) then
 				from child_grafted_path_list.start until found_child or child_grafted_path_list.off loop
 					if np.starts_with(child_grafted_path_list.item) then
 						found_child := True
 						debug ("flatten")
-							io.put_string ("%T%Tchild path " + np + " found in child_grafted_path_list - not descending%N")
+							io.put_string ("%T%Tchild path " + np + " matches path " + child_grafted_path_list.item + " in child_grafted_path_list - not descending%N")
 						end
 					end
 					child_grafted_path_list.forth
 				end
 				Result := not found_child and arch_parent_flat.has_path (apa.path_at_level (arch_parent_flat.specialisation_depth))
-			end
+--			end
 		end
 
 	parent_path_list: ARRAYED_LIST [STRING]
@@ -654,11 +654,7 @@ feature {NONE} -- Implementation
 			-- build the flat archetype invariants as the sum of parent and source invariants
 		do
 			if arch_parent_flat.has_invariants then
-				from
-					arch_parent_flat.invariants.start
-				until
-					arch_parent_flat.invariants.off
-				loop
+				from arch_parent_flat.invariants.start until arch_parent_flat.invariants.off loop
 					arch_output_flat.add_invariant (arch_parent_flat.invariants.item.deep_twin)
 					arch_parent_flat.invariants.forth
 				end

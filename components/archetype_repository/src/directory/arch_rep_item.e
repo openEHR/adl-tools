@@ -59,9 +59,13 @@ feature -- Access
 			-- used to generate ontological path
 			-- For Classes, will be the name of the top-level package & class e.g. EHR-OBSERVATION
 			-- For archetypes will be the id
+		deferred
+		end
 
 	display_name: STRING
 			-- semantic name of this node to use in display context
+		deferred
+		end
 
 	ontological_path: STRING
 			-- path from root of ontology structure down to this point

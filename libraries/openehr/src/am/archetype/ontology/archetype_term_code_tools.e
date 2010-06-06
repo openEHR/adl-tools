@@ -133,16 +133,26 @@ feature -- Access
 	specialisation_status_from_code(a_code: STRING; a_depth: INTEGER): SPECIALISATION_STATUS
 			-- get the specialisation status (added, inherited, redefined) from this code, at a_depth
 			-- for example:
-			-- 		status of at0001 is added at depth 0
-			--		status of at0001.1 is added at depth 0, redefined at depth 1
-			--		status of at0.1 is undefined at depth 0, added at depth 1
-			--		status of at0.1.1 is undefined at depth 0, added at depth 1, redefined at depth 2
-			--		status of any code at a lower level than the code is inherited
+			-- 		at0001 at depth 0 ==> ss_added
+			--		at0001.1 at depth 0 ==> ss_added
+			--		at0001.1 at depth 1 ==> ss_redefined
+			--		at0.1 at depth 0 ==> ss_undefined
+			--		at0.1 at depth 1 ==> ss_added
+			--		at0.1.1 at depth 0 ==> ss_undefined
+			--		at0.1.1 at depth 1 ==> ss_added
+			--		at0.1.1 at depth 2 ==> ss_redefined
+			--		at0009.0.0.1 at depth 0 ==> ss_added
+			--		at0009.0.0.1 at depth 1 ==> ss_inherited
+			--		at0009.0.0.1 at depth 2 ==> ss_inherited
+			--		at0009.0.0.1 at depth 3 ==> ss_redefined
+			--		any code at a lower level than the code is inherited, e.g.
+			--		at0.1.1 at depth 4 ==> ss_inherited
+			--		at0009.0.0.1 at depth 5 ==> ss_inherited
 		require
 			Code_valid: a_code /= Void and then is_valid_code(a_code)
 			Depth_valid: a_depth >= 0
 		local
-			code_defined_in_this_level, parent_code_defined_in_level_above: BOOLEAN
+			code_defined_in_this_level, has_parent_code: BOOLEAN
 			code_at_this_level, code_at_parent_level: STRING
 		do
 			if a_depth > specialisation_depth_from_code(a_code) then
@@ -150,18 +160,13 @@ feature -- Access
 			else
 				code_at_this_level := index_from_code_at_level(a_code, a_depth)
 				code_defined_in_this_level := code_at_this_level.to_integer > 0 or else code_at_this_level.count = 4 -- takes account of anomalous "0000" code
-				if a_depth > 0 then
-					code_at_parent_level := index_from_code_at_level(a_code, a_depth - 1)
-					parent_code_defined_in_level_above := code_at_parent_level.to_integer > 0 or else code_at_parent_level.count = 4 -- takes account of anomalous "0000" code
-				end
-
 				if code_defined_in_this_level then
-					if parent_code_defined_in_level_above then
+					if a_depth > 0 and code_exists_at_level(a_code, a_depth - 1) then -- parent is valid
 						create Result.make (ss_redefined)
 					else
 						create Result.make (ss_added)
 					end
-				elseif parent_code_defined_in_level_above then
+				elseif a_depth > 0 and code_exists_at_level(a_code, a_depth - 1) then
 					create Result.make (ss_inherited)
 				else
 					create Result.make (ss_undefined)

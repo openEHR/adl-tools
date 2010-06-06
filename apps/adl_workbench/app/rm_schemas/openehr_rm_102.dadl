@@ -1464,7 +1464,6 @@ class_definitions = <
 			["workflow_id"] = (BMM_SINGLE_PROPERTY) <
 				name = <"workflow_id">
 				type = </class_definitions["OBJECT_REF"]>
-				is_mandatory = <True>
 			>
 		>
 	>

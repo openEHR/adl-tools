@@ -422,6 +422,20 @@ feature -- Modification
 			end
 		end
 
+	update_archetype_id(old_id, new_id: STRING)
+		require
+			old_id_valid: old_id /= Void and then archetype_index.has (old_id)
+			new_id_valid: new_id /= Void and then not archetype_index.has(new_id)
+		local
+			ara: ARCH_REP_ARCHETYPE
+		do
+			ara := archetype_index.item (old_id)
+			archetype_index.remove (old_id)
+			archetype_index.force (ara, new_id)
+			ontology_index.remove (old_id)
+			ontology_index.force (ara, new_id)
+		end
+
 feature -- Traversal
 
 	do_all (enter_action, exit_action: PROCEDURE [ANY, TUPLE [ARCH_REP_ITEM]])

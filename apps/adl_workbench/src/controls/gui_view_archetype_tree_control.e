@@ -133,6 +133,11 @@ feature -- Commands
 			an_id := ara.id.as_string
 			if gui_node_descriptor_map.has (an_id) then
 				update_tree_node (gui_node_descriptor_map.item (an_id))
+			elseif attached ara.old_id then
+				if gui_node_descriptor_map.has (ara.old_id.as_string) then
+					gui_node_descriptor_map.replace_key (ara.id.as_string, ara.old_id.as_string)
+					update_tree_node (gui_node_descriptor_map.item (ara.id.as_string))
+				end
 			end
 		end
 

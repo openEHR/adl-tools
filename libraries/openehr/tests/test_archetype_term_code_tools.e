@@ -118,6 +118,27 @@ feature -- Test routines
 			assert_equal (False, is_valid_code ("at0000.0"))
 		end
 
+	test_specialisation_status_from_code
+		note
+			testing:  "covers/{ARCHETYPE_TERM_CODE_TOOLS}.specialisation_status_from_code"
+		do
+	 		assert_equal (ss_added, specialisation_status_from_code("at0001", 0).value)
+			assert_equal (ss_added, specialisation_status_from_code("at0001.1", 0).value)
+			assert_equal (ss_redefined, specialisation_status_from_code("at0001.1", 1).value)
+			assert_equal (ss_undefined, specialisation_status_from_code("at0.1", 0).value)
+			assert_equal (ss_added, specialisation_status_from_code("at0.1", 1).value)
+			assert_equal (ss_undefined, specialisation_status_from_code("at0.1.1", 0).value)
+			assert_equal (ss_added, specialisation_status_from_code("at0.1.1", 1).value)
+			assert_equal (ss_redefined, specialisation_status_from_code("at0.1.1", 2).value)
+			assert_equal (ss_inherited, specialisation_status_from_code("at0.1.1", 4).value)
+			assert_equal (ss_added, specialisation_status_from_code("at0009.0.0.1", 0).value)
+			assert_equal (ss_inherited, specialisation_status_from_code("at0009.0.0.1", 1).value)
+			assert_equal (ss_inherited, specialisation_status_from_code("at0009.0.0.1", 2).value)
+			assert_equal (ss_redefined, specialisation_status_from_code("at0009.0.0.1", 3).value)
+			assert_equal (ss_inherited, specialisation_status_from_code("at0009.0.0.1", 4).value)
+			assert_equal (ss_inherited, specialisation_status_from_code("at0009.0.0.1", 5).value)
+		end
+
 end
 
 

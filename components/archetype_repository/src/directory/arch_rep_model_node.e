@@ -83,6 +83,10 @@ feature -- Access
 
 	class_definition: BMM_CLASS_DEFINITION
 
+	ontological_name: STRING
+
+	display_name: STRING
+
 feature -- Status Report
 
 	is_abstract_class: BOOLEAN

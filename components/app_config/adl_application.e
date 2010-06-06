@@ -142,7 +142,7 @@ feature -- Message database
 			-- ARCHETYPE_VALIDATOR
 			["validate_e1"] = <"Error: specialisation parent is missing">
 			["validate_e2"] = <"Error: specialisation parent failed to validate">
-			["validate_e3"] = <"Error: archetype id in filename $1 does not match id at top of file $2%N">
+			["validate_e3"] = <"Error: archetype id in descriptor $1 does not match id at top of file $2">
 			["validation_strict"] = <"Validation level STRICT">
 			["validation_non_strict"] = <"Validation level NON-STRICT; non-coforming existence, occurrences & cardinality will be removed">
 			

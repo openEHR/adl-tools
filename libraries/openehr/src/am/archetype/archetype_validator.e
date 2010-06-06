@@ -182,7 +182,7 @@ feature {NONE} -- Implementation
 			-- into account validity with respect to parent archetypes.
 		do
 			if not target_descriptor.id.as_string.is_equal (target.archetype_id.as_string) then
-				add_error("validate_e3", <<target_descriptor.id.as_string, target.archetype_id.as_string>>)
+				add_warning("validate_e3", <<target_descriptor.id.as_string, target.archetype_id.as_string>>)
 			elseif not target.definition.rm_type_name.is_equal (target.archetype_id.rm_entity) then
 				add_error("VARDT", <<target.archetype_id.rm_entity, target.definition.rm_type_name>>)
 			elseif specialisation_depth_from_code (target.concept) /= target.specialisation_depth then
