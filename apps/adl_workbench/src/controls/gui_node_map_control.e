@@ -1026,17 +1026,20 @@ feature {NONE} -- Implementation
 					Result.append (" {" + a_node.occurrences_as_string + "} ")
 				end
 			end
-			if arch_dir.has_validated_selected_archetype and ontology.has_term_code (a_node.slot_node_id) then
-				Result.append (" " + ontology.term_definition (current_language, a_node.slot_node_id).item ("text"))
+			if arch_dir.has_validated_selected_archetype and a_node.slot_node_id /= Void then
+				if ontology.has_term_code (a_node.slot_node_id) then
+					Result.append (ontology.term_definition (current_language, a_node.slot_node_id).item ("text"))
+				else
+					Result.append ("(unknown)")
+				end
+				if in_technical_mode then
+					Result.append (": ")
+				end
 			end
 			if in_technical_mode then
-				Result.append (": " + a_node.rm_type_name)
-				Result.append (" [")
---				if a_node.slot_node_id /= Void then
---					Result.append(a_node.slot_node_id + ", ")
---				end
-				Result.append(a_node.node_id + "]")
+				Result.append (a_node.rm_type_name)
 			end
+			Result.append (" [" + a_node.node_id + "]")
 		end
 
 	object_term_item_string(code: STRING; assumed_flag, local_flag: BOOLEAN): STRING

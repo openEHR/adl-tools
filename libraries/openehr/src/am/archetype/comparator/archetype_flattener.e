@@ -691,7 +691,11 @@ feature {NONE} -- Implementation
 					else
 						rm_attr_desc := rm_schema.property_definition (co.parent.parent.rm_type_name, co.parent.rm_attribute_name)
 						if attached {BMM_CONTAINER_PROPERTY} rm_attr_desc as cont_prop then
-							co.set_occurrences (cont_prop.type.cardinality.deep_twin)
+							if cont_prop.type.cardinality.upper_unbounded then
+								co.set_occurrences (create {MULTIPLICITY_INTERVAL}.make_upper_unbounded (0))
+							else
+								co.set_occurrences (create {MULTIPLICITY_INTERVAL}.make_bounded(0, cont_prop.type.cardinality.upper))
+							end
 						else
 							co.set_occurrences (rm_attr_desc.existence.deep_twin)
 						end
