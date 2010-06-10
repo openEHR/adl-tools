@@ -864,9 +864,8 @@ feature {NONE} -- Implementation
 				if c_attr.existence /= Void then
 					Result.append (c_attr.existence.as_string)
 				end
-			 	Result.append ("; ")
 				if c_attr.is_multiple and c_attr.cardinality /= Void then
-				 	Result.append (c_attr.cardinality.as_string)
+				 	Result.append ("; " + c_attr.cardinality.as_string)
 				end
 				Result.append ("} ")
 			end
