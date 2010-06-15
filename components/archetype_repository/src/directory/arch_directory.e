@@ -105,31 +105,33 @@ feature -- Access
 			consistent_with_history: Result /= Void implies Result = selected_item
 		end
 
-	matching_ids (a_regex, an_rm_type: STRING): attached ARRAYED_SET[STRING]
+	matching_ids (a_regex, an_rm_type, an_rm_package: STRING): attached ARRAYED_SET[STRING]
 			-- generate list of archetype ids that match the pattern and optional rm_type. If rm_type is supplied,
 			-- we assume that the regex itself does not contain an rm type
 		require
 			Regex_valid: a_regex /= Void and then not a_regex.is_empty
 			Rm_type_valid: an_rm_type /= Void implies not an_rm_type.is_empty
+			Rm_package_valid: an_rm_package /= Void implies not an_rm_package.is_empty
 		local
 			regex_matcher: LX_DFA_REGULAR_EXPRESSION
-			arch_rm_type, slot_rm_type: STRING
+			arch_id: ARCHETYPE_ID
+			is_candidate: BOOLEAN
 		do
 			create Result.make (0)
-			if an_rm_type /= Void then
-				slot_rm_type := an_rm_type.as_lower
-			end
 			create regex_matcher.compile_case_insensitive (a_regex)
 			if regex_matcher.is_compiled then
 				from archetype_index.start until archetype_index.off loop
 					if regex_matcher.matches (archetype_index.key_for_iteration) then
-						if slot_rm_type /= Void then
-							arch_rm_type := (create {ARCHETYPE_ID}.make_from_string (archetype_index.key_for_iteration)).rm_entity
-							arch_rm_type.to_lower
-							if slot_rm_type.is_equal (arch_rm_type) then
-								Result.extend(archetype_index.key_for_iteration)
+						if an_rm_type /= Void then
+							create arch_id.make_from_string (archetype_index.key_for_iteration)
+							is_candidate := an_rm_type.as_lower.is_equal (arch_id.rm_entity.as_lower)
+							if is_candidate and an_rm_package /= Void then
+								is_candidate := an_rm_package.as_lower.is_equal (arch_id.rm_name.as_lower)
 							end
 						else
+							is_candidate := True
+						end
+						if is_candidate then
 							Result.extend(archetype_index.key_for_iteration)
 						end
 					end

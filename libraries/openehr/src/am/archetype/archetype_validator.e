@@ -447,20 +447,20 @@ feature {NONE} -- Implementation
 						from includes.start until includes.off loop
 							a_regex := extract_regex(includes.item)
 							if a_regex /= Void then
-								target_descriptor.add_slot_ids(arch_dir.matching_ids (a_regex, target.slot_index.item.rm_type_name), target.slot_index.item.path)
+								target_descriptor.add_slot_ids(arch_dir.matching_ids (a_regex, target.slot_index.item.rm_type_name, target.archetype_id.rm_name), target.slot_index.item.path)
 							end
 							includes.forth
 						end
 					else -- excludes = empty ==> includes is just a recommendation => match all archetype ids of RM type
-						target_descriptor.add_slot_ids (arch_dir.matching_ids (Regex_any_pattern, target.slot_index.item.rm_type_name), target.slot_index.item.path)
+						target_descriptor.add_slot_ids (arch_dir.matching_ids (Regex_any_pattern, target.slot_index.item.rm_type_name, target.archetype_id.rm_name), target.slot_index.item.path)
 					end
 				elseif not excludes.is_empty and not assertion_matches_any (excludes.first) then
-					target_descriptor.add_slot_ids (arch_dir.matching_ids (Regex_any_pattern, target.slot_index.item.rm_type_name), target.slot_index.item.path)
+					target_descriptor.add_slot_ids (arch_dir.matching_ids (Regex_any_pattern, target.slot_index.item.rm_type_name, target.archetype_id.rm_name), target.slot_index.item.path)
 					if not includes.is_empty then -- means excludes is not a recommendation; need to actually process it
 						from excludes.start until excludes.off loop
 							a_regex := extract_regex(excludes.item)
 							if a_regex /= Void then
-								id_list := arch_dir.matching_ids (a_regex, target.slot_index.item.rm_type_name)
+								id_list := arch_dir.matching_ids (a_regex, target.slot_index.item.rm_type_name, target.archetype_id.rm_name)
 								from id_list.start until id_list.off loop
 									target_descriptor.slot_id_index.item (target.slot_index.item.path).prune (id_list.item)
 									id_list.forth
@@ -470,7 +470,7 @@ feature {NONE} -- Implementation
 						end
 					end
 				else
-					target_descriptor.add_slot_ids (arch_dir.matching_ids (Regex_any_pattern, target.slot_index.item.rm_type_name), target.slot_index.item.path)
+					target_descriptor.add_slot_ids (arch_dir.matching_ids (Regex_any_pattern, target.slot_index.item.rm_type_name, target.archetype_id.rm_name), target.slot_index.item.path)
 				end
 
 				-- now post the results in the reverse indexes
