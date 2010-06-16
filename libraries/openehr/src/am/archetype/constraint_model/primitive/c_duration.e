@@ -140,7 +140,7 @@ feature -- Access
 	rm_type_name: STRING
 		once
 			Result := Iso_class_name_leader.twin
-			Result.append(generating_type.substring (3, generating_type.count))
+			Result.append (generating_type.out.substring (3, generating_type.out.count))
 		end
 
 feature -- Status Report

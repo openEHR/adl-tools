@@ -61,7 +61,7 @@ feature -- Conversion
 				else
 					Result := value.out
 					-- FIXME: REAL.out is broken
-					if value.generating_type.substring(1,4).is_equal("REAL") and then Result.index_of('.', 1) = 0 then
+					if value.generating_type.out.substring (1, 4).is_equal ("REAL") and then Result.index_of ('.', 1) = 0 then
 						Result.append(".0")
 					end
 				end
