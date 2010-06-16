@@ -857,17 +857,21 @@ feature {NONE} -- Implementation
 
 	c_attribute_string(c_attr: C_ATTRIBUTE): STRING
 			-- generate string form of node or object for use in tree node
+		local
+			s: STRING
 		do
-			create Result.make(0)
+			create Result.make_empty
 			if in_technical_mode then
-				Result.append (" {")
+				create s.make_empty
 				if c_attr.existence /= Void then
-					Result.append (c_attr.existence.as_string)
+					s.append (c_attr.existence.as_string)
 				end
 				if c_attr.is_multiple and c_attr.cardinality /= Void then
-				 	Result.append ("; " + c_attr.cardinality.as_string)
+				 	s.append ("; " + c_attr.cardinality.as_string)
 				end
-				Result.append ("} ")
+				if not s.is_empty then
+					Result.append ("{" + s + "} ")
+				end
 			end
 
 			Result.append (c_attr.rm_attribute_path)
