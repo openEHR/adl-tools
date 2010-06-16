@@ -297,7 +297,7 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
-	clean_utf(s: STRING) is
+	clean_utf (s: STRING)
 			-- remove UTF BOM
 		do
 			if s.count >= 3 then

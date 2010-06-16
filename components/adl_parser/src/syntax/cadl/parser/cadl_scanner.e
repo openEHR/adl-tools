@@ -49,7 +49,7 @@ inherit
 	KL_SHARED_ARGUMENTS
 
 	ADL_SYNTAX_CONVERTER
-		export 
+		export
 			{NONE} all
 		end
 
@@ -58,7 +58,7 @@ create
 
 feature -- Status report
 
-	valid_start_condition (sc: INTEGER): BOOLEAN is
+	valid_start_condition (sc: INTEGER): BOOLEAN
 			-- Is `sc' a valid start condition?
 		do
 			Result := (INITIAL <= sc and sc <= IN_C_DOMAIN_TYPE)
@@ -66,7 +66,7 @@ feature -- Status report
 
 feature {NONE} -- Implementation
 
-	yy_build_tables is
+	yy_build_tables
 			-- Build scanner tables.
 		do
 			yy_nxt := yy_nxt_template
@@ -78,7 +78,7 @@ feature {NONE} -- Implementation
 			yy_accept := yy_accept_template
 		end
 
-	yy_execute_action (yy_act: INTEGER) is
+	yy_execute_action (yy_act: INTEGER)
 			-- Execute semantic action.
 		do
 if yy_act <= 66 then
@@ -592,7 +592,7 @@ end
 
 					last_token := V_QUALIFIED_TERM_CODE_REF
 					last_string_value := text_substring (2, text_count - 1)
-			
+
 end
 else
 if yy_act = 65 then
@@ -603,7 +603,7 @@ end
 
 					last_token := ERR_V_QUALIFIED_TERM_CODE_REF
 					last_string_value := text_substring (2, text_count - 1)
-			
+
 else
 --|#line 210 "cadl_scanner.l"
 debug ("GELEX")
@@ -612,7 +612,7 @@ end
 
 					last_token := V_LOCAL_TERM_CODE_REF
 					last_string_value := text_substring (2, text_count - 1)
-			
+
 end
 end
 end
@@ -636,7 +636,7 @@ end
 				set_start_condition (IN_TERM_CONSTRAINT)
 				term_code_count := 0
 				assumed_term_code_index := 0
-			
+
 else
 --|#line 234 "cadl_scanner.l"
 debug ("GELEX")
@@ -647,7 +647,7 @@ end
 				in_buffer.append(text)
 				term_code_count := term_code_count + 1
 				assumed_term_code_index := term_code_count
-			
+
 end
 else
 --|#line 241 "cadl_scanner.l"
@@ -658,7 +658,7 @@ end
 				str_ := text
 				in_buffer.append(text)
 				term_code_count := term_code_count + 1
-			
+
 end
 else
 if yy_act = 70 then
@@ -697,7 +697,7 @@ end
 					last_token := V_TERM_CODE_CONSTRAINT
 				end
 				set_start_condition (INITIAL)
-			
+
 else
 --|#line 274 "cadl_scanner.l"
 debug ("GELEX")
@@ -706,7 +706,7 @@ end
 
 				last_token := V_LOCAL_CODE
 				last_string_value := text
-		
+
 end
 else
 if yy_act = 74 then
@@ -717,7 +717,7 @@ end
 
 					last_token := V_ARCHETYPE_ID
 					last_string_value := text
-			
+
 else
 --|#line 287 "cadl_scanner.l"
 debug ("GELEX")
@@ -726,7 +726,7 @@ end
 
 				last_token := V_ISO8601_EXTENDED_DATE_TIME
 				last_string_value := text
-		
+
 end
 end
 end
@@ -741,7 +741,7 @@ end
 
 				last_token := V_ISO8601_EXTENDED_DATE_TIME
 				last_string_value := text
-		
+
 else
 --|#line 289 "cadl_scanner.l"
 debug ("GELEX")
@@ -750,7 +750,7 @@ end
 
 				last_token := V_ISO8601_EXTENDED_DATE_TIME
 				last_string_value := text
-		
+
 end
 else
 if yy_act = 78 then
@@ -761,7 +761,7 @@ end
 
 				last_token := V_ISO8601_EXTENDED_TIME
 				last_string_value := text
-		
+
 else
 --|#line 297 "cadl_scanner.l"
 debug ("GELEX")
@@ -770,7 +770,7 @@ end
 
 				last_token := V_ISO8601_EXTENDED_TIME
 				last_string_value := text
-		
+
 end
 end
 else
@@ -783,7 +783,7 @@ end
 
 				last_token := V_ISO8601_EXTENDED_DATE
 				last_string_value := text
-		
+
 else
 --|#line 305 "cadl_scanner.l"
 debug ("GELEX")
@@ -792,7 +792,7 @@ end
 
 				last_token := V_ISO8601_EXTENDED_DATE
 				last_string_value := text
-		
+
 end
 else
 if yy_act = 82 then
@@ -803,7 +803,7 @@ end
 
 				last_token := V_ISO8601_DURATION
 				last_string_value := text
-			
+
 else
 --|#line 313 "cadl_scanner.l"
 debug ("GELEX")
@@ -812,7 +812,7 @@ end
 
 				last_token := V_ISO8601_DURATION
 				last_string_value := text
-			
+
 end
 end
 end
@@ -829,7 +829,7 @@ end
 
 				last_token := V_ISO8601_DURATION
 				last_string_value := convert_non_conforming_duration(text)
-			
+
 else
 --|#line 332 "cadl_scanner.l"
 debug ("GELEX")
@@ -838,7 +838,7 @@ end
 
 				last_token := V_ISO8601_DATE_CONSTRAINT_PATTERN
 				last_string_value := text
-			
+
 end
 else
 if yy_act = 86 then
@@ -849,7 +849,7 @@ end
 
 				last_token := V_ISO8601_TIME_CONSTRAINT_PATTERN
 				last_string_value := text_substring(2, text_count)
-			
+
 else
 --|#line 347 "cadl_scanner.l"
 debug ("GELEX")
@@ -858,7 +858,7 @@ end
 
 				last_token := V_ISO8601_TIME_CONSTRAINT_PATTERN
 				last_string_value := text
-			
+
 end
 end
 else
@@ -872,7 +872,7 @@ end
 				last_token := V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN
 				last_string_value := text
 				last_string_value.put('T', last_string_value.index_of(' ', 1))
-			
+
 else
 --|#line 363 "cadl_scanner.l"
 debug ("GELEX")
@@ -881,7 +881,7 @@ end
 
 				last_token := V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN
 				last_string_value := text
-			
+
 end
 else
 if yy_act = 90 then
@@ -892,7 +892,7 @@ end
 
 				last_token := V_ISO8601_DURATION_CONSTRAINT_PATTERN
 				last_string_value := text
-			
+
 else
 --|#line 374 "cadl_scanner.l"
 debug ("GELEX")
@@ -901,7 +901,7 @@ end
 
 				last_token := V_ISO8601_DURATION_CONSTRAINT_PATTERN
 				last_string_value := text
-			
+
 end
 end
 end
@@ -916,7 +916,7 @@ end
 	-- match a pattern like 'Type_Identifier whitespace <'
 				set_start_condition (IN_C_DOMAIN_TYPE)
 				in_buffer.append_string (text)
-			
+
 else
 --|#line 394 "cadl_scanner.l"
 debug ("GELEX")
@@ -925,7 +925,7 @@ end
 	-- match a pattern like '(Type_Identifier) whitespace <'
 				set_start_condition (IN_C_DOMAIN_TYPE)
 				in_buffer.append_string (text)
-			
+
 end
 else
 if yy_act = 94 then
@@ -933,9 +933,9 @@ if yy_act = 94 then
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 400")
 end
- -- match up to next > not followed by a '}' or '>' 
+ -- match up to next > not followed by a '}' or '>'
  				in_buffer.append_string (text)
- 			
+
 else
 --|#line 404 "cadl_scanner.l"
 debug ("GELEX")
@@ -944,7 +944,7 @@ end
  -- final section - '...> whitespace } or beginning of a type identifier'
 				-- get the entire section of dADL
 				in_buffer.append_string (text)
-				unread_character(in_buffer.item(in_buffer.count)) -- put back the last character 
+				unread_character(in_buffer.item(in_buffer.count)) -- put back the last character
 				in_buffer.remove_tail(1) -- get rid of the "}" from the buffer
 				create str_.make (in_buffer.count)
 				str_.append_string (in_buffer)
@@ -980,7 +980,7 @@ end
 
 				in_buffer.wipe_out
 				set_start_condition (INITIAL)
- 			
+
 end
 end
 else
@@ -992,7 +992,7 @@ debug ("GELEX")
 end
  -- match up to next '}' not preceded by a '>'
  				in_buffer.append_string (text)
-  			
+
 else
 --|#line 451 "cadl_scanner.l"
 debug ("GELEX")
@@ -1001,7 +1001,7 @@ end
 
 					last_token := V_TYPE_IDENTIFIER
 					last_string_value := text
-			
+
 end
 else
 if yy_act = 98 then
@@ -1012,7 +1012,7 @@ end
 
 					last_token := V_GENERIC_TYPE_IDENTIFIER
 					last_string_value := text
-			
+
 else
 --|#line 463 "cadl_scanner.l"
 debug ("GELEX")
@@ -1022,7 +1022,7 @@ end
 					last_token := V_FEATURE_CALL_IDENTIFIER
 					last_string_value := text_substring(1, text_count - 2)
 					last_string_value.right_adjust
-			
+
 end
 end
 end
@@ -1041,7 +1041,7 @@ end
 
 					last_token := V_ATTRIBUTE_IDENTIFIER
 					last_string_value := text
-			
+
 else
 --|#line 476 "cadl_scanner.l"
 debug ("GELEX")
@@ -1051,7 +1051,7 @@ end
 				last_token := SYM_START_CBLOCK
 				set_start_condition (IN_REGEXP1)
 				in_buffer.append_character ('/')
-			
+
 end
 else
 if yy_act = 102 then
@@ -1061,7 +1061,7 @@ debug ("GELEX")
 end
  		-- match any segments with quoted slashes
 				in_buffer.append_string (text)
-			
+
 else
 --|#line 487 "cadl_scanner.l"
 debug ("GELEX")
@@ -1075,7 +1075,7 @@ end
  				last_string_value := str_
  				last_token := V_REGEXP
 				set_start_condition (INITIAL)
- 			
+
 end
 end
 else
@@ -1088,7 +1088,7 @@ end
 	-- regexp formed using '^' delimiters
  				last_token := V_REGEXP
  				last_string_value := text
-			
+
 else
 --|#line 505 "cadl_scanner.l"
 debug ("GELEX")
@@ -1097,7 +1097,7 @@ end
 
 					last_token := V_INTEGER
 					last_integer_value := text.to_integer
-			
+
 end
 else
 if yy_act = 106 then
@@ -1116,7 +1116,7 @@ end
 					end
 					last_integer_value := in_buffer.to_integer
 					in_buffer.wipe_out
-			
+
 else
 	yy_end := yy_end - 1
 --|#line 525 "cadl_scanner.l"
@@ -1126,7 +1126,7 @@ end
 
 						last_token := V_REAL
 						last_real_value := text.to_real
-					
+
 end
 end
 end
@@ -1141,7 +1141,7 @@ end
 
 						last_token := V_REAL
 						last_real_value := text.to_real
-					
+
 else
 --|#line 527 "cadl_scanner.l"
 debug ("GELEX")
@@ -1150,7 +1150,7 @@ end
 
 						last_token := V_REAL
 						last_real_value := text.to_real
-					
+
 end
 else
 if yy_act = 110 then
@@ -1172,7 +1172,7 @@ end
 						end
 						last_real_value := in_buffer.to_real
 						in_buffer.wipe_out
-					
+
 else
 --|#line 532 "cadl_scanner.l"
 debug ("GELEX")
@@ -1191,7 +1191,7 @@ end
 						end
 						last_real_value := in_buffer.to_real
 						in_buffer.wipe_out
-					
+
 end
 end
 else
@@ -1214,7 +1214,7 @@ end
 						end
 						last_real_value := in_buffer.to_real
 						in_buffer.wipe_out
-					
+
 else
 --|#line 553 "cadl_scanner.l"
 debug ("GELEX")
@@ -1223,7 +1223,7 @@ end
 
 				last_token := V_STRING
 				last_string_value := text_substring (2, text_count - 1)
-			
+
 end
 else
 if yy_act = 114 then
@@ -1236,7 +1236,7 @@ end
 					in_buffer.append_string (text_substring (2, text_count))
 				end
 				set_start_condition (IN_STR)
-			
+
 else
 --|#line 566 "cadl_scanner.l"
 debug ("GELEX")
@@ -1264,7 +1264,7 @@ debug ("GELEX")
 end
 
 				in_buffer.append_string (text)
-	
+
 end
 else
 if yy_act = 118 then
@@ -1281,7 +1281,7 @@ end
 
 				in_lineno := in_lineno + 1	-- match LF in line
 				in_buffer.append_character ('%N')
-			
+
 end
 end
 else
@@ -1301,7 +1301,7 @@ end
 				in_buffer.wipe_out
 				last_string_value := str_
 				set_start_condition (INITIAL)
-			
+
 else
 --|#line 592 "cadl_scanner.l"
 debug ("GELEX")
@@ -1310,7 +1310,7 @@ end
 	-- Catch-all rules (no backing up)
 				last_token := ERR_STRING
 				set_start_condition (INITIAL)
-			
+
 end
 else
 if yy_act = 122 then
@@ -1396,7 +1396,7 @@ end
 end
 		end
 
-	yy_execute_eof_action (yy_sc: INTEGER) is
+	yy_execute_eof_action (yy_sc: INTEGER)
 			-- Execute EOF semantic action.
 		do
 			inspect yy_sc
@@ -1414,7 +1414,7 @@ end
 	-- Catch-all rules (no backing up)
 				last_token := ERR_STRING
 				set_start_condition (INITIAL)
-			
+
 			else
 				terminate
 			end
@@ -1422,7 +1422,7 @@ end
 
 feature {NONE} -- Table templates
 
-	yy_nxt_template: SPECIAL [INTEGER] is
+	yy_nxt_template: SPECIAL [INTEGER]
 		local
 			an_array: ARRAY [INTEGER]
 		once
@@ -1437,7 +1437,7 @@ feature {NONE} -- Table templates
 			Result := yy_fixed_array (an_array)
 		end
 
-	yy_nxt_template_1 (an_array: ARRAY [INTEGER]) is
+	yy_nxt_template_1 (an_array: ARRAY [INTEGER])
 		do
 			yy_array_subcopy (an_array, <<
 			    0,   14,   15,   16,   15,   15,   17,   18,   19,   20,
@@ -1552,7 +1552,7 @@ feature {NONE} -- Table templates
 			1, 1000, 0)
 		end
 
-	yy_nxt_template_2 (an_array: ARRAY [INTEGER]) is
+	yy_nxt_template_2 (an_array: ARRAY [INTEGER])
 		do
 			yy_array_subcopy (an_array, <<
 			  278,  284,  120,  279,  118,  118,  276,  118,  283,  282,
@@ -1667,7 +1667,7 @@ feature {NONE} -- Table templates
 			1, 1000, 1000)
 		end
 
-	yy_nxt_template_3 (an_array: ARRAY [INTEGER]) is
+	yy_nxt_template_3 (an_array: ARRAY [INTEGER])
 		do
 			yy_array_subcopy (an_array, <<
 			  120,  311,  432,  311,  311,  311,  311,  311,  311,  263,
@@ -1782,7 +1782,7 @@ feature {NONE} -- Table templates
 			1, 1000, 2000)
 		end
 
-	yy_nxt_template_4 (an_array: ARRAY [INTEGER]) is
+	yy_nxt_template_4 (an_array: ARRAY [INTEGER])
 		do
 			yy_array_subcopy (an_array, <<
 			  263,  878,  878,  878,  878,  596,  705,  878,  878,  878,
@@ -1897,7 +1897,7 @@ feature {NONE} -- Table templates
 			1, 1000, 3000)
 		end
 
-	yy_nxt_template_5 (an_array: ARRAY [INTEGER]) is
+	yy_nxt_template_5 (an_array: ARRAY [INTEGER])
 		do
 			yy_array_subcopy (an_array, <<
 			  784,  784,  714,  714,  714,  714,  714,  714,  790,  574,
@@ -2012,7 +2012,7 @@ feature {NONE} -- Table templates
 			1, 1000, 4000)
 		end
 
-	yy_nxt_template_6 (an_array: ARRAY [INTEGER]) is
+	yy_nxt_template_6 (an_array: ARRAY [INTEGER])
 		do
 			yy_array_subcopy (an_array, <<
 			  210,  210,  210,  210,  210,  210,  210,  210,  210,  210,
@@ -2127,7 +2127,7 @@ feature {NONE} -- Table templates
 			1, 1000, 5000)
 		end
 
-	yy_nxt_template_7 (an_array: ARRAY [INTEGER]) is
+	yy_nxt_template_7 (an_array: ARRAY [INTEGER])
 		do
 			yy_array_subcopy (an_array, <<
 			  785,  785,  785,  785,  785,  785,  785,  785,  785,  785,
@@ -2158,7 +2158,7 @@ feature {NONE} -- Table templates
 			1, 226, 6000)
 		end
 
-	yy_chk_template: SPECIAL [INTEGER] is
+	yy_chk_template: SPECIAL [INTEGER]
 		local
 			an_array: ARRAY [INTEGER]
 		once
@@ -2173,7 +2173,7 @@ feature {NONE} -- Table templates
 			Result := yy_fixed_array (an_array)
 		end
 
-	yy_chk_template_1 (an_array: ARRAY [INTEGER]) is
+	yy_chk_template_1 (an_array: ARRAY [INTEGER])
 		do
 			yy_array_subcopy (an_array, <<
 			    0,    1,    1,    1,    1,    1,    1,    1,    1,    1,
@@ -2288,7 +2288,7 @@ feature {NONE} -- Table templates
 			1, 1000, 0)
 		end
 
-	yy_chk_template_2 (an_array: ARRAY [INTEGER]) is
+	yy_chk_template_2 (an_array: ARRAY [INTEGER])
 		do
 			yy_array_subcopy (an_array, <<
 			  133,  138,  137,  133,  140,  140,  181,  140,  137,  136,
@@ -2403,7 +2403,7 @@ feature {NONE} -- Table templates
 			1, 1000, 1000)
 		end
 
-	yy_chk_template_3 (an_array: ARRAY [INTEGER]) is
+	yy_chk_template_3 (an_array: ARRAY [INTEGER])
 		do
 			yy_array_subcopy (an_array, <<
 			  303,  311,  299,  311,  311,  311,  311,  311,  311,  317,
@@ -2518,7 +2518,7 @@ feature {NONE} -- Table templates
 			1, 1000, 2000)
 		end
 
-	yy_chk_template_4 (an_array: ARRAY [INTEGER]) is
+	yy_chk_template_4 (an_array: ARRAY [INTEGER])
 		do
 			yy_array_subcopy (an_array, <<
 			  515,    0,    0,    0,    0,  511,  642,    0,    0,    0,
@@ -2633,7 +2633,7 @@ feature {NONE} -- Table templates
 			1, 1000, 3000)
 		end
 
-	yy_chk_template_5 (an_array: ARRAY [INTEGER]) is
+	yy_chk_template_5 (an_array: ARRAY [INTEGER])
 		do
 			yy_array_subcopy (an_array, <<
 			  756,  756,  758,  758,  758,  758,  758,  758,  767,  752,
@@ -2748,7 +2748,7 @@ feature {NONE} -- Table templates
 			1, 1000, 4000)
 		end
 
-	yy_chk_template_6 (an_array: ARRAY [INTEGER]) is
+	yy_chk_template_6 (an_array: ARRAY [INTEGER])
 		do
 			yy_array_subcopy (an_array, <<
 			  889,  889,  889,  889,  889,  889,  889,  889,  889,  889,
@@ -2863,7 +2863,7 @@ feature {NONE} -- Table templates
 			1, 1000, 5000)
 		end
 
-	yy_chk_template_7 (an_array: ARRAY [INTEGER]) is
+	yy_chk_template_7 (an_array: ARRAY [INTEGER])
 		do
 			yy_array_subcopy (an_array, <<
 			  910,  910,  910,  910,  910,  910,  910,  910,  910,  910,
@@ -2894,7 +2894,7 @@ feature {NONE} -- Table templates
 			1, 226, 6000)
 		end
 
-	yy_base_template: SPECIAL [INTEGER] is
+	yy_base_template: SPECIAL [INTEGER]
 		once
 			Result := yy_fixed_array (<<
 			    0,    0,    0,   90,   95,   77,   78,    0,    0,  187,
@@ -3000,7 +3000,7 @@ feature {NONE} -- Table templates
 			 5970, 6009, 6043, 6082, yy_Dummy>>)
 		end
 
-	yy_def_template: SPECIAL [INTEGER] is
+	yy_def_template: SPECIAL [INTEGER]
 		once
 			Result := yy_fixed_array (<<
 			    0,  878,    1,  879,  879,  880,  880,  881,  881,  878,
@@ -3106,7 +3106,7 @@ feature {NONE} -- Table templates
 			  878,  878,  878,  878, yy_Dummy>>)
 		end
 
-	yy_ec_template: SPECIAL [INTEGER] is
+	yy_ec_template: SPECIAL [INTEGER]
 		once
 			Result := yy_fixed_array (<<
 			    0,    1,    1,    1,    1,    1,    1,    1,    1,    2,
@@ -3139,7 +3139,7 @@ feature {NONE} -- Table templates
 			    1,    1,    1,    1,    1,    1,    1, yy_Dummy>>)
 		end
 
-	yy_meta_template: SPECIAL [INTEGER] is
+	yy_meta_template: SPECIAL [INTEGER]
 		once
 			Result := yy_fixed_array (<<
 			    0,    1,    2,    3,    1,    4,    1,    5,    1,    1,
@@ -3154,7 +3154,7 @@ feature {NONE} -- Table templates
 			    1,    1,    1, yy_Dummy>>)
 		end
 
-	yy_accept_template: SPECIAL [INTEGER] is
+	yy_accept_template: SPECIAL [INTEGER]
 		once
 			Result := yy_fixed_array (<<
 			    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
@@ -3257,50 +3257,50 @@ feature {NONE} -- Table templates
 
 feature {NONE} -- Constants
 
-	yyJam_base: INTEGER is 6133
+	yyJam_base: INTEGER = 6133
 			-- Position in `yy_nxt'/`yy_chk' tables
 			-- where default jam table starts
 
-	yyJam_state: INTEGER is 878
+	yyJam_state: INTEGER = 878
 			-- State id corresponding to jam state
 
-	yyTemplate_mark: INTEGER is 879
+	yyTemplate_mark: INTEGER = 879
 			-- Mark between normal states and templates
 
-	yyNull_equiv_class: INTEGER is 1
+	yyNull_equiv_class: INTEGER = 1
 			-- Equivalence code for NULL character
 
-	yyReject_used: BOOLEAN is false
+	yyReject_used: BOOLEAN = false
 			-- Is `reject' called?
 
-	yyVariable_trail_context: BOOLEAN is false
+	yyVariable_trail_context: BOOLEAN = false
 			-- Is there a regular expression with
 			-- both leading and trailing parts having
 			-- variable length?
 
-	yyReject_or_variable_trail_context: BOOLEAN is false
+	yyReject_or_variable_trail_context: BOOLEAN = false
 			-- Is `reject' called or is there a
 			-- regular expression with both leading
 			-- and trailing parts having variable length?
 
-	yyNb_rules: INTEGER is 131
+	yyNb_rules: INTEGER = 131
 			-- Number of rules
 
-	yyEnd_of_buffer: INTEGER is 132
+	yyEnd_of_buffer: INTEGER = 132
 			-- End of buffer rule code
 
-	yyLine_used: BOOLEAN is false
+	yyLine_used: BOOLEAN = false
 			-- Are line and column numbers used?
 
-	yyPosition_used: BOOLEAN is false
+	yyPosition_used: BOOLEAN = false
 			-- Is `position' used?
 
-	INITIAL: INTEGER is 0
-	IN_STR: INTEGER is 1
-	IN_REGEXP1: INTEGER is 2
-	IN_REGEXP2: INTEGER is 3
-	IN_TERM_CONSTRAINT: INTEGER is 4
-	IN_C_DOMAIN_TYPE: INTEGER is 5
+	INITIAL: INTEGER = 0
+	IN_STR: INTEGER = 1
+	IN_REGEXP1: INTEGER = 2
+	IN_REGEXP2: INTEGER = 3
+	IN_TERM_CONSTRAINT: INTEGER = 4
+	IN_C_DOMAIN_TYPE: INTEGER = 5
 			-- Start condition codes
 
 feature -- User-defined features

@@ -2,7 +2,7 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Scanner for dADL syntax items"
 	keywords:    "ADL, dADL"
-	
+
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
 	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
@@ -43,7 +43,7 @@ create
 
 feature -- Status report
 
-	valid_start_condition (sc: INTEGER): BOOLEAN is
+	valid_start_condition (sc: INTEGER): BOOLEAN
 			-- Is `sc' a valid start condition?
 		do
 			Result := (INITIAL <= sc and sc <= IN_CADL_BLOCK)
@@ -51,7 +51,7 @@ feature -- Status report
 
 feature {NONE} -- Implementation
 
-	yy_build_tables is
+	yy_build_tables
 			-- Build scanner tables.
 		do
 			yy_nxt := yy_nxt_template
@@ -63,7 +63,7 @@ feature {NONE} -- Implementation
 			yy_accept := yy_accept_template
 		end
 
-	yy_execute_action (yy_act: INTEGER) is
+	yy_execute_action (yy_act: INTEGER)
 			-- Execute semantic action.
 		do
 if yy_act <= 39 then
@@ -248,7 +248,7 @@ end
 				start_block_received := False
 			end
 			last_token := SYM_INTERVAL_DELIM
-		
+
 end
 end
 end
@@ -315,7 +315,7 @@ end
 				last_token := SYM_START_DBLOCK
 				start_block_received := True
 			end
-		
+
 else
 	yy_position := yy_position + 1
 --|#line 118 "dadl_scanner.l"
@@ -328,7 +328,7 @@ end
 			else
 				last_token := SYM_END_DBLOCK
 			end
-		
+
 end
 else
 	yy_position := yy_position + 2
@@ -403,7 +403,7 @@ end
 
 					last_token := V_QUALIFIED_TERM_CODE_REF
 					last_string_value := text_substring (2, text_count - 1)
-			
+
 end
 end
 else
@@ -417,7 +417,7 @@ end
 
 					last_token := ERR_V_QUALIFIED_TERM_CODE_REF
 					last_string_value := text_substring (2, text_count - 1)
-			
+
 else
 	yy_position := yy_position + yy_end - yy_start - yy_more_len
 --|#line 157 "dadl_scanner.l"
@@ -427,7 +427,7 @@ end
 
 					last_token := V_LOCAL_TERM_CODE_REF
 					last_string_value := text_substring (2, text_count - 1)
-			
+
 end
 else
 if yy_act = 38 then
@@ -439,7 +439,7 @@ end
 
 					last_token := ERR_V_LOCAL_TERM_CODE_REF
 					last_string_value := text_substring (2, text_count - 1)
-			
+
 else
 	yy_position := yy_position + yy_end - yy_start - yy_more_len
 --|#line 168 "dadl_scanner.l"
@@ -449,7 +449,7 @@ end
 
 					last_token := V_LOCAL_CODE
 					last_string_value := text
-			
+
 end
 end
 end
@@ -470,7 +470,7 @@ end
 
 				last_token := V_ISO8601_EXTENDED_DATE_TIME
 				last_string_value := text
-		
+
 else
 	yy_position := yy_position + yy_end - yy_start - yy_more_len
 --|#line 176 "dadl_scanner.l"
@@ -480,7 +480,7 @@ end
 
 				last_token := V_ISO8601_EXTENDED_DATE_TIME
 				last_string_value := text
-		
+
 end
 else
 	yy_position := yy_position + yy_end - yy_start - yy_more_len
@@ -491,7 +491,7 @@ end
 
 				last_token := V_ISO8601_EXTENDED_DATE_TIME
 				last_string_value := text
-		
+
 end
 else
 if yy_act = 43 then
@@ -503,7 +503,7 @@ end
 
 				last_token := V_ISO8601_EXTENDED_TIME
 				last_string_value := text
-		
+
 else
 	yy_position := yy_position + yy_end - yy_start - yy_more_len
 --|#line 185 "dadl_scanner.l"
@@ -513,7 +513,7 @@ end
 
 				last_token := V_ISO8601_EXTENDED_TIME
 				last_string_value := text
-		
+
 end
 end
 else
@@ -528,7 +528,7 @@ end
 
 				last_token := V_ISO8601_EXTENDED_DATE
 				last_string_value := text
-		
+
 else
 	yy_position := yy_position + 7
 --|#line 193 "dadl_scanner.l"
@@ -538,7 +538,7 @@ end
 
 				last_token := V_ISO8601_EXTENDED_DATE
 				last_string_value := text
-		
+
 end
 else
 	yy_position := yy_position + yy_end - yy_start - yy_more_len
@@ -549,7 +549,7 @@ end
 
 				last_token := V_ISO8601_DURATION
 				last_string_value := text
-			
+
 end
 else
 if yy_act = 48 then
@@ -561,7 +561,7 @@ end
 
 				last_token := V_ISO8601_DURATION
 				last_string_value := text
-			
+
 else
 	yy_position := yy_position + yy_end - yy_start - yy_more_len
 --|#line 210 "dadl_scanner.l"
@@ -571,7 +571,7 @@ end
 
 					last_token := V_TYPE_IDENTIFIER
 					last_string_value := text
-			
+
 end
 end
 end
@@ -588,7 +588,7 @@ end
 
 					last_token := V_GENERIC_TYPE_IDENTIFIER
 					last_string_value := text
-			
+
 else
 	yy_position := yy_position + yy_end - yy_start - yy_more_len
 --|#line 220 "dadl_scanner.l"
@@ -598,7 +598,7 @@ end
 
 					last_token := V_ATTRIBUTE_IDENTIFIER
 					last_string_value := text
-			
+
 end
 else
 	yy_position := yy_position + yy_end - yy_start - yy_more_len
@@ -610,7 +610,7 @@ end
 				in_buffer.append_string (text)
 				set_start_condition (IN_CADL_BLOCK)
 				cadl_depth := 1
-			
+
 end
 else
 if yy_act = 53 then
@@ -622,7 +622,7 @@ end
 		-- got an open brace
 				in_buffer.append_string (text)
 				cadl_depth := cadl_depth + 1
-			
+
 else
 	yy_position := yy_position + yy_end - yy_start - yy_more_len
 --|#line 238 "dadl_scanner.l"
@@ -640,7 +640,7 @@ end
 					in_lineno := in_lineno + in_buffer.occurrences('%N')
 					in_buffer.wipe_out
 				end
-			
+
 end
 end
 else
@@ -654,7 +654,7 @@ end
 
 					last_token := V_INTEGER
 					last_integer_value := text.to_integer
-			
+
 else
 	yy_position := yy_position + yy_end - yy_start - yy_more_len
 --|#line 256 "dadl_scanner.l"
@@ -664,7 +664,7 @@ end
 
 					last_token := V_INTEGER
 					last_integer_value := text.to_integer
-			
+
 end
 else
 if yy_act = 57 then
@@ -676,7 +676,7 @@ end
 
 						last_token := V_REAL
 						last_real_value := text.to_real
-					
+
 else
 	yy_position := yy_position + yy_end - yy_start - yy_more_len
 --|#line 264 "dadl_scanner.l"
@@ -686,7 +686,7 @@ end
 
 						last_token := V_REAL
 						last_real_value := text.to_real
-					
+
 end
 end
 end
@@ -705,7 +705,7 @@ end
 
 				last_token := V_STRING
 				last_string_value := text_substring (2, text_count - 1)
-			
+
 else
 	yy_position := yy_position + yy_end - yy_start - yy_more_len
 --|#line 276 "dadl_scanner.l"
@@ -717,7 +717,7 @@ end
 					in_buffer.append_string (text_substring (2, text_count))
 				end
 				set_start_condition (IN_STR)
-			
+
 end
 else
 	yy_position := yy_position + 2
@@ -743,7 +743,7 @@ debug ("GELEX")
 end
 
 				in_buffer.append_string (text)
-	
+
 end
 end
 else
@@ -765,7 +765,7 @@ end
 
 				in_lineno := in_lineno + 1	-- match LF in line
 				in_buffer.append_character ('%N')
-			
+
 end
 else
 	yy_position := yy_position + yy_end - yy_start - yy_more_len
@@ -785,7 +785,7 @@ end
 				in_buffer.wipe_out
 				last_string_value := str_
 				set_start_condition (INITIAL)
-			
+
 end
 else
 if yy_act = 67 then
@@ -797,7 +797,7 @@ end
 	-- Catch-all rules (no backing up)
 				last_token := ERR_STRING
 				set_start_condition (INITIAL)
-			
+
 else
 	yy_position := yy_position + 3
 --|#line 322 "dadl_scanner.l"
@@ -892,7 +892,7 @@ end
 end
 		end
 
-	yy_execute_eof_action (yy_sc: INTEGER) is
+	yy_execute_eof_action (yy_sc: INTEGER)
 			-- Execute EOF semantic action.
 		do
 			inspect yy_sc
@@ -910,7 +910,7 @@ end
 	-- Catch-all rules (no backing up)
 				last_token := ERR_STRING
 				set_start_condition (INITIAL)
-			
+
 			else
 				terminate
 			end
@@ -918,7 +918,7 @@ end
 
 feature {NONE} -- Table templates
 
-	yy_nxt_template: SPECIAL [INTEGER] is
+	yy_nxt_template: SPECIAL [INTEGER]
 		local
 			an_array: ARRAY [INTEGER]
 		once
@@ -928,7 +928,7 @@ feature {NONE} -- Table templates
 			Result := yy_fixed_array (an_array)
 		end
 
-	yy_nxt_template_1 (an_array: ARRAY [INTEGER]) is
+	yy_nxt_template_1 (an_array: ARRAY [INTEGER])
 		do
 			yy_array_subcopy (an_array, <<
 			    0,    8,    9,   10,    9,   11,   12,   13,   14,   15,
@@ -1043,7 +1043,7 @@ feature {NONE} -- Table templates
 			1, 1000, 0)
 		end
 
-	yy_nxt_template_2 (an_array: ARRAY [INTEGER]) is
+	yy_nxt_template_2 (an_array: ARRAY [INTEGER])
 		do
 			yy_array_subcopy (an_array, <<
 			  204,  204,  277,  277,  277,   89,  243,  244,  243,  244,
@@ -1130,7 +1130,7 @@ feature {NONE} -- Table templates
 			1, 733, 1000)
 		end
 
-	yy_chk_template: SPECIAL [INTEGER] is
+	yy_chk_template: SPECIAL [INTEGER]
 		local
 			an_array: ARRAY [INTEGER]
 		once
@@ -1140,7 +1140,7 @@ feature {NONE} -- Table templates
 			Result := yy_fixed_array (an_array)
 		end
 
-	yy_chk_template_1 (an_array: ARRAY [INTEGER]) is
+	yy_chk_template_1 (an_array: ARRAY [INTEGER])
 		do
 			yy_array_subcopy (an_array, <<
 			    0,    1,    1,    1,    1,    1,    1,    1,    1,    1,
@@ -1255,7 +1255,7 @@ feature {NONE} -- Table templates
 			1, 1000, 0)
 		end
 
-	yy_chk_template_2 (an_array: ARRAY [INTEGER]) is
+	yy_chk_template_2 (an_array: ARRAY [INTEGER])
 		do
 			yy_array_subcopy (an_array, <<
 			  204,  204,    0,    0,    0,  214,  237,  237,  237,  237,
@@ -1342,7 +1342,7 @@ feature {NONE} -- Table templates
 			1, 733, 1000)
 		end
 
-	yy_base_template: SPECIAL [INTEGER] is
+	yy_base_template: SPECIAL [INTEGER]
 		once
 			Result := yy_fixed_array (<<
 			    0,    0,    0,   79,   84,   14,   19,  965, 1651,   90,
@@ -1379,7 +1379,7 @@ feature {NONE} -- Table templates
 			 1509, 1529, 1552, 1577, 1600, 1625, yy_Dummy>>)
 		end
 
-	yy_def_template: SPECIAL [INTEGER] is
+	yy_def_template: SPECIAL [INTEGER]
 		once
 			Result := yy_fixed_array (<<
 			    0,  277,    1,  278,  278,  279,  279,  277,  277,  277,
@@ -1416,7 +1416,7 @@ feature {NONE} -- Table templates
 			  277,  277,  277,  277,  277,  277, yy_Dummy>>)
 		end
 
-	yy_ec_template: SPECIAL [INTEGER] is
+	yy_ec_template: SPECIAL [INTEGER]
 		once
 			Result := yy_fixed_array (<<
 			    0,    1,    1,    1,    1,    1,    1,    1,    1,    2,
@@ -1449,7 +1449,7 @@ feature {NONE} -- Table templates
 			    1,    1,    1,    1,    1,    1,    1, yy_Dummy>>)
 		end
 
-	yy_meta_template: SPECIAL [INTEGER] is
+	yy_meta_template: SPECIAL [INTEGER]
 		once
 			Result := yy_fixed_array (<<
 			    0,    1,    1,    2,    3,    1,    3,    1,    1,    4,
@@ -1463,7 +1463,7 @@ feature {NONE} -- Table templates
 			    1,    1, yy_Dummy>>)
 		end
 
-	yy_accept_template: SPECIAL [INTEGER] is
+	yy_accept_template: SPECIAL [INTEGER]
 		once
 			Result := yy_fixed_array (<<
 			    0,    0,    0,    0,    0,    0,    0,   78,   76,    1,
@@ -1500,47 +1500,47 @@ feature {NONE} -- Table templates
 
 feature {NONE} -- Constants
 
-	yyJam_base: INTEGER is 1651
+	yyJam_base: INTEGER = 1651
 			-- Position in `yy_nxt'/`yy_chk' tables
 			-- where default jam table starts
 
-	yyJam_state: INTEGER is 277
+	yyJam_state: INTEGER = 277
 			-- State id corresponding to jam state
 
-	yyTemplate_mark: INTEGER is 278
+	yyTemplate_mark: INTEGER = 278
 			-- Mark between normal states and templates
 
-	yyNull_equiv_class: INTEGER is 1
+	yyNull_equiv_class: INTEGER = 1
 			-- Equivalence code for NULL character
 
-	yyReject_used: BOOLEAN is false
+	yyReject_used: BOOLEAN = false
 			-- Is `reject' called?
 
-	yyVariable_trail_context: BOOLEAN is false
+	yyVariable_trail_context: BOOLEAN = false
 			-- Is there a regular expression with
 			-- both leading and trailing parts having
 			-- variable length?
 
-	yyReject_or_variable_trail_context: BOOLEAN is false
+	yyReject_or_variable_trail_context: BOOLEAN = false
 			-- Is `reject' called or is there a
 			-- regular expression with both leading
 			-- and trailing parts having variable length?
 
-	yyNb_rules: INTEGER is 77
+	yyNb_rules: INTEGER = 77
 			-- Number of rules
 
-	yyEnd_of_buffer: INTEGER is 78
+	yyEnd_of_buffer: INTEGER = 78
 			-- End of buffer rule code
 
-	yyLine_used: BOOLEAN is false
+	yyLine_used: BOOLEAN = false
 			-- Are line and column numbers used?
 
-	yyPosition_used: BOOLEAN is true
+	yyPosition_used: BOOLEAN = true
 			-- Is `position' used?
 
-	INITIAL: INTEGER is 0
-	IN_STR: INTEGER is 1
-	IN_CADL_BLOCK: INTEGER is 2
+	INITIAL: INTEGER = 0
+	IN_STR: INTEGER = 1
+	IN_CADL_BLOCK: INTEGER = 2
 			-- Start condition codes
 
 feature -- User-defined features

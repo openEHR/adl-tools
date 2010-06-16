@@ -137,7 +137,7 @@ feature -- Status Report
 	is_open: BOOLEAN
 			-- values other than those in 'items' are allowed
 
-	is_regexp: BOOLEAN is
+	is_regexp: BOOLEAN
 			-- True if this constraint is a regular expression
 		do
 			Result := regexp /= Void

@@ -256,7 +256,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	validate_external_refs is
+	validate_external_refs
 			-- validate all C_ARCHETYPE_ROOT objects in a basic way
 		do
 			from target.external_references_index.start until target.external_references_index.off loop

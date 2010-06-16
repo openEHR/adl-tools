@@ -229,7 +229,7 @@ feature -- Modification
 
 feature -- Output
 
-	occurrences_as_string: STRING is
+	occurrences_as_string: STRING
 			-- output string representing `occurrences', even if occurrences is Void
 		do
 			if occurrences = Void then

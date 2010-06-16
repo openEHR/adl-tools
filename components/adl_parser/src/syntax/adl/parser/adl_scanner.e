@@ -42,7 +42,7 @@ create
 
 feature -- Status report
 
-	valid_start_condition (sc: INTEGER): BOOLEAN is
+	valid_start_condition (sc: INTEGER): BOOLEAN
 			-- Is `sc' a valid start condition?
 		do
 			Result := (INITIAL <= sc and sc <= IN_ASSERTION_SECTION)
@@ -50,7 +50,7 @@ feature -- Status report
 
 feature {NONE} -- Implementation
 
-	yy_build_tables is
+	yy_build_tables
 			-- Build scanner tables.
 		do
 			yy_nxt := yy_nxt_template
@@ -62,7 +62,7 @@ feature {NONE} -- Implementation
 			yy_accept := yy_accept_template
 		end
 
-	yy_execute_action (yy_act: INTEGER) is
+	yy_execute_action (yy_act: INTEGER)
 			-- Execute semantic action.
 		do
 if yy_act <= 26 then
@@ -239,7 +239,7 @@ debug ("GELEX")
 end
 
 				last_token := SYM_ARCHETYPE
-			
+
 end
 else
 --|#line 96 "adl_scanner.l"
@@ -248,7 +248,7 @@ debug ("GELEX")
 end
 
 				last_token := SYM_TEMPLATE
-			
+
 end
 else
 if yy_act <= 25 then
@@ -259,7 +259,7 @@ debug ("GELEX")
 end
 
 				last_token := SYM_TEMPLATE_COMPONENT
-			
+
 else
 --|#line 104 "adl_scanner.l"
 debug ("GELEX")
@@ -267,7 +267,7 @@ debug ("GELEX")
 end
 
 				last_token := SYM_OPERATIONAL_TEMPLATE
-			
+
 end
 else
 --|#line 108 "adl_scanner.l"
@@ -276,7 +276,7 @@ debug ("GELEX")
 end
 
 				last_token := SYM_ADL_VERSION
-			
+
 end
 end
 end
@@ -293,7 +293,7 @@ debug ("GELEX")
 end
 
 				last_token := SYM_IS_CONTROLLED
-			
+
 else
 --|#line 116 "adl_scanner.l"
 debug ("GELEX")
@@ -301,7 +301,7 @@ debug ("GELEX")
 end
 
 				last_token := SYM_IS_GENERATED
-			
+
 end
 else
 if yy_act = 29 then
@@ -312,7 +312,7 @@ end
 
 				last_token := SYM_SPECIALIZE
 				in_lineno := in_lineno + 1
-			
+
 else
 --|#line 126 "adl_scanner.l"
 debug ("GELEX")
@@ -321,7 +321,7 @@ end
 
 				last_token := SYM_CONCEPT
 				in_lineno := in_lineno + 1
-			
+
 end
 end
 else
@@ -336,7 +336,7 @@ end
 				set_start_condition(IN_DADL_SECTION)
 				in_lineno := in_lineno + 1
 				language_text_start_line := in_lineno
-			
+
 else
 --|#line 138 "adl_scanner.l"
 debug ("GELEX")
@@ -347,7 +347,7 @@ end
 				set_start_condition(IN_DADL_SECTION)
 				in_lineno := in_lineno + 1
 				description_text_start_line := in_lineno
-			
+
 end
 else
 --|#line 145 "adl_scanner.l"
@@ -359,7 +359,7 @@ end
 				set_start_condition(IN_CADL_SECTION)
 				in_lineno := in_lineno + 1
 				definition_text_start_line := in_lineno
-			
+
 end
 end
 else
@@ -375,7 +375,7 @@ end
 				set_start_condition(IN_ASSERTION_SECTION)
 				in_lineno := in_lineno + 1
 				invariant_text_start_line := in_lineno
-			
+
 else
 --|#line 159 "adl_scanner.l"
 debug ("GELEX")
@@ -386,7 +386,7 @@ end
 				set_start_condition(IN_DADL_SECTION)
 				in_lineno := in_lineno + 1
 				ontology_text_start_line := in_lineno
-			
+
 end
 else
 --|#line 167 "adl_scanner.l"
@@ -409,7 +409,7 @@ end
 				last_string_value := str_
 
 				set_start_condition(INITIAL)
-			
+
 end
 else
 if yy_act <= 38 then
@@ -434,7 +434,7 @@ end
 				last_string_value := str_
 
 				set_start_condition(INITIAL)
-			
+
 else
 --|#line 185 "adl_scanner.l"
 debug ("GELEX")
@@ -443,7 +443,7 @@ end
  -- LF
 				in_buffer.append_character('%N')
 				in_lineno := in_lineno + 1
-			
+
 end
 else
 --|#line 189 "adl_scanner.l"
@@ -452,7 +452,7 @@ debug ("GELEX")
 end
  -- any text on line with no LF
 				in_buffer.append_string(text)
-			
+
 end
 end
 end
@@ -467,7 +467,7 @@ debug ("GELEX")
 end
 
 		-- ignore unmatched chars
-	
+
 else
 --|#line 207 "adl_scanner.l"
 debug ("GELEX")
@@ -476,7 +476,7 @@ end
 
 				in_buffer.append_string(text)
 				in_lineno := in_lineno + 1
-	
+
 end
 else
 --|#line 211 "adl_scanner.l"
@@ -500,7 +500,7 @@ end
 				in_buffer.wipe_out
 				last_string_value := str_
 				set_start_condition(INITIAL)
-	
+
 else
 --|#line 225 "adl_scanner.l"
 debug ("GELEX")
@@ -509,7 +509,7 @@ end
 
 				in_buffer.append_string(text)
 				in_lineno := in_lineno + 1
-	
+
 end
 else
 --|#line 229 "adl_scanner.l"
@@ -524,7 +524,7 @@ end
 				in_buffer.wipe_out
 				last_string_value := str_
 				set_start_condition(INITIAL)
-	
+
 end
 end
 else
@@ -538,7 +538,7 @@ end
 
 					last_token := V_VERSION_STRING
 					last_string_value := text_substring (1, text_count)
-			
+
 else
 --|#line 247 "adl_scanner.l"
 debug ("GELEX")
@@ -547,7 +547,7 @@ end
 
 					last_token := V_LOCAL_TERM_CODE_REF
 					last_string_value := text_substring (2, text_count - 1)
-			
+
 end
 else
 --|#line 253 "adl_scanner.l"
@@ -557,7 +557,7 @@ end
 
 					last_token := V_ARCHETYPE_ID
 					last_string_value := text
-			
+
 end
 else
 if yy_act <= 50 then
@@ -569,7 +569,7 @@ end
 
 					last_token := V_IDENTIFIER
 					last_string_value := text
-			
+
 else
 --|#line 266 "adl_scanner.l"
 debug ("GELEX")
@@ -591,7 +591,7 @@ end
 			yy_set_beginning_of_line
 		end
 
-	yy_execute_eof_action (yy_sc: INTEGER) is
+	yy_execute_eof_action (yy_sc: INTEGER)
 			-- Execute EOF semantic action.
 		do
 			inspect yy_sc
@@ -614,7 +614,7 @@ end
 				in_buffer.wipe_out
 				last_string_value := str_
 				set_start_condition(INITIAL)
-			
+
 			else
 				terminate
 			end
@@ -622,7 +622,7 @@ end
 
 feature {NONE} -- Table templates
 
-	yy_nxt_template: SPECIAL [INTEGER] is
+	yy_nxt_template: SPECIAL [INTEGER]
 		once
 			Result := yy_fixed_array (<<
 			    0,   10,   11,   12,   11,   13,   14,   15,   16,   17,
@@ -700,7 +700,7 @@ feature {NONE} -- Table templates
 			  256,  256, yy_Dummy>>)
 		end
 
-	yy_chk_template: SPECIAL [INTEGER] is
+	yy_chk_template: SPECIAL [INTEGER]
 		once
 			Result := yy_fixed_array (<<
 			    0,    1,    1,    1,    1,    1,    1,    1,    1,    1,
@@ -778,7 +778,7 @@ feature {NONE} -- Table templates
 			  256,  256, yy_Dummy>>)
 		end
 
-	yy_base_template: SPECIAL [INTEGER] is
+	yy_base_template: SPECIAL [INTEGER]
 		once
 			Result := yy_fixed_array (<<
 			    0,    0,   30,  607,   49,  606,   53,    0,  606,  607,
@@ -813,7 +813,7 @@ feature {NONE} -- Table templates
 			  566,  571,  574,  579, yy_Dummy>>)
 		end
 
-	yy_def_template: SPECIAL [INTEGER] is
+	yy_def_template: SPECIAL [INTEGER]
 		once
 			Result := yy_fixed_array (<<
 			    0,  256,    1,  257,  257,  258,  259,  258,  260,  256,
@@ -848,7 +848,7 @@ feature {NONE} -- Table templates
 			  256,  256,  256,  256, yy_Dummy>>)
 		end
 
-	yy_ec_template: SPECIAL [INTEGER] is
+	yy_ec_template: SPECIAL [INTEGER]
 		once
 			Result := yy_fixed_array (<<
 			    0,    1,    1,    1,    1,    1,    1,    1,    1,    2,
@@ -881,7 +881,7 @@ feature {NONE} -- Table templates
 			    1,    1,    1,    1,    1,    1,    1, yy_Dummy>>)
 		end
 
-	yy_meta_template: SPECIAL [INTEGER] is
+	yy_meta_template: SPECIAL [INTEGER]
 		once
 			Result := yy_fixed_array (<<
 			    0,    1,    1,    2,    1,    1,    1,    1,    1,    1,
@@ -892,7 +892,7 @@ feature {NONE} -- Table templates
 			    5, yy_Dummy>>)
 		end
 
-	yy_accept_template: SPECIAL [INTEGER] is
+	yy_accept_template: SPECIAL [INTEGER]
 		once
 			Result := yy_fixed_array (<<
 			    0,    0,    0,    0,    0,    0,    0,    0,    0,   52,
@@ -927,48 +927,48 @@ feature {NONE} -- Table templates
 
 feature {NONE} -- Constants
 
-	yyJam_base: INTEGER is 611
+	yyJam_base: INTEGER = 611
 			-- Position in `yy_nxt'/`yy_chk' tables
 			-- where default jam table starts
 
-	yyJam_state: INTEGER is 256
+	yyJam_state: INTEGER = 256
 			-- State id corresponding to jam state
 
-	yyTemplate_mark: INTEGER is 257
+	yyTemplate_mark: INTEGER = 257
 			-- Mark between normal states and templates
 
-	yyNull_equiv_class: INTEGER is 1
+	yyNull_equiv_class: INTEGER = 1
 			-- Equivalence code for NULL character
 
-	yyReject_used: BOOLEAN is false
+	yyReject_used: BOOLEAN = false
 			-- Is `reject' called?
 
-	yyVariable_trail_context: BOOLEAN is false
+	yyVariable_trail_context: BOOLEAN = false
 			-- Is there a regular expression with
 			-- both leading and trailing parts having
 			-- variable length?
 
-	yyReject_or_variable_trail_context: BOOLEAN is false
+	yyReject_or_variable_trail_context: BOOLEAN = false
 			-- Is `reject' called or is there a
 			-- regular expression with both leading
 			-- and trailing parts having variable length?
 
-	yyNb_rules: INTEGER is 51
+	yyNb_rules: INTEGER = 51
 			-- Number of rules
 
-	yyEnd_of_buffer: INTEGER is 52
+	yyEnd_of_buffer: INTEGER = 52
 			-- End of buffer rule code
 
-	yyLine_used: BOOLEAN is false
+	yyLine_used: BOOLEAN = false
 			-- Are line and column numbers used?
 
-	yyPosition_used: BOOLEAN is false
+	yyPosition_used: BOOLEAN = false
 			-- Is `position' used?
 
-	INITIAL: INTEGER is 0
-	IN_DADL_SECTION: INTEGER is 1
-	IN_CADL_SECTION: INTEGER is 2
-	IN_ASSERTION_SECTION: INTEGER is 3
+	INITIAL: INTEGER = 0
+	IN_DADL_SECTION: INTEGER = 1
+	IN_CADL_SECTION: INTEGER = 2
+	IN_ASSERTION_SECTION: INTEGER = 3
 			-- Start condition codes
 
 feature -- User-defined features
