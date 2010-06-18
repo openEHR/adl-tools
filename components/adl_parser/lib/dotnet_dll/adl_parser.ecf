@@ -52,6 +52,10 @@
 			<option namespace="adl_parser">
 			</option>
 		</cluster>
+		<cluster name="app_config" location="..\..\..\app_config\" recursive="true">
+			<option namespace="app_config">
+			</option>
+		</cluster>
 		<cluster name="archetype_repository" location="..\..\..\archetype_repository\src\" recursive="true">
 			<option namespace="archetype_repository">
 			</option>
