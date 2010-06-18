@@ -30,16 +30,6 @@ inherit
 			{ANY} current_language, set_current_language
 		end
 
-	SHARED_RESOURCES
-		export
-			{NONE} all
-		end
-
-	MESSAGE_BILLBOARD
-		export
-			{NONE} all
-		end
-
 	EXCEPTIONS
 		export
 			{NONE} all
