@@ -51,9 +51,7 @@ feature -- Initialisation
 		do
 			default_create
 			create representation.make_single (a_name, Current)
-			if an_existence /= Void then
-				existence := an_existence
-			end
+			existence := an_existence
 		ensure
 			Is_single: not is_multiple
 			Existence_set: an_existence /= Void implies existence = an_existence
@@ -66,12 +64,8 @@ feature -- Initialisation
 		do
 			default_create
 			create representation.make_multiple (a_name, Current)
-			if an_existence /= Void then
-				existence := an_existence
-			end
-			if a_cardinality /= Void then
-				set_cardinality(a_cardinality)
-			end
+			existence := an_existence
+			set_cardinality(a_cardinality)
 		ensure
 			Is_multiple: is_multiple
 			Existence_set: an_existence /= Void implies existence = an_existence
