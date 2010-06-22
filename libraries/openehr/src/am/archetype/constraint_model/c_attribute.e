@@ -65,7 +65,7 @@ feature -- Initialisation
 			default_create
 			create representation.make_multiple (a_name, Current)
 			existence := an_existence
-			set_cardinality(a_cardinality)
+			cardinality := a_cardinality
 		ensure
 			Is_multiple: is_multiple
 			Existence_set: an_existence /= Void implies existence = an_existence

@@ -136,7 +136,7 @@ feature -- Validation
 
 			-- validation requiring the archetype xref tables
 			if passed then
-				target.build_xrefs
+--				target.build_xrefs
 				validate_slots
 				validate_external_refs
 				report_unused_ontology_codes
@@ -258,10 +258,21 @@ feature {NONE} -- Implementation
 
 	validate_external_refs
 			-- validate all C_ARCHETYPE_ROOT objects in a basic way
+		local
+			c_ar_list: ARRAYED_LIST [C_ARCHETYPE_ROOT]
+			filler_id: ARCHETYPE_ID
 		do
 			from target.external_references_index.start until target.external_references_index.off loop
 				if not arch_dir.archetype_index.has (target.external_references_index.key_for_iteration) then
-					add_error("WARNF", <<target.external_references_index.key_for_iteration>>)
+					add_warning("WARNF", <<target.external_references_index.key_for_iteration>>)
+				end
+				c_ar_list := target.external_references_index.item_for_iteration
+				from c_ar_list.start until c_ar_list.off loop
+					create filler_id.make_from_string (c_ar_list.item.archetype_id)
+					if not c_ar_list.item.rm_type_name.is_equal (filler_id.rm_entity) then
+						add_error("VARXTV", <<c_ar_list.item.archetype_id, c_ar_list.item.rm_type_name>>)
+					end
+					c_ar_list.forth
 				end
 				target.external_references_index.forth
 			end
@@ -429,6 +440,8 @@ feature {NONE} -- Implementation
 			--		ELSE -- just a recommendation; formally it means match all
 			--			create match list = all archetypes of compatible RM type
 			--		END
+			--  ELSE
+			--		create match list = all archetypes of compatible RM type
 			--	END
 		require
 			target.has_slots
@@ -447,7 +460,7 @@ feature {NONE} -- Implementation
 						from includes.start until includes.off loop
 							a_regex := extract_regex(includes.item)
 							if a_regex /= Void then
-								target_descriptor.add_slot_ids(arch_dir.matching_ids (a_regex, target.slot_index.item.rm_type_name, target.archetype_id.rm_name), target.slot_index.item.path)
+								target_descriptor.add_slot_ids(arch_dir.matching_ids (a_regex, target.slot_index.item.rm_type_name, Void), target.slot_index.item.path)
 							end
 							includes.forth
 						end
@@ -455,7 +468,7 @@ feature {NONE} -- Implementation
 						target_descriptor.add_slot_ids (arch_dir.matching_ids (Regex_any_pattern, target.slot_index.item.rm_type_name, target.archetype_id.rm_name), target.slot_index.item.path)
 					end
 				elseif not excludes.is_empty and not assertion_matches_any (excludes.first) then
-					target_descriptor.add_slot_ids (arch_dir.matching_ids (Regex_any_pattern, target.slot_index.item.rm_type_name, target.archetype_id.rm_name), target.slot_index.item.path)
+					target_descriptor.add_slot_ids (arch_dir.matching_ids (Regex_any_pattern, target.slot_index.item.rm_type_name, Void), target.slot_index.item.path)
 					if not includes.is_empty then -- means excludes is not a recommendation; need to actually process it
 						from excludes.start until excludes.off loop
 							a_regex := extract_regex(excludes.item)
@@ -602,7 +615,7 @@ feature {NONE} -- Implementation
 						if not archetype_id_matches_slot (car.archetype_id, a_slot) then -- doesn't even match the slot definition
 							add_error("VARXS", <<car.path, car.archetype_id>>)
 						elseif not slot_id_index.item (a_slot.path).has (car.archetype_id) then -- matches def, but not found in actual list from current repo
-							add_warning("VARXSnf", <<car.path, car.archetype_id>>)
+							add_warning("WARXS", <<car.path, car.archetype_id>>)
 						elseif not (car.occurrences = Void or else a_slot.occurrences.contains (car.occurrences)) then
 							if strict_validation then
 								add_error("VSONCO", <<car.path, car.occurrences_as_string, a_slot.path, a_slot.occurrences.as_string>>)

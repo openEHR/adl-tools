@@ -289,10 +289,11 @@ feature -- Message database
 			["VDSIV2"] = <"Error (VDSIV): 'include' constraint of slot of RM type $1 at path $2 invalid; include must be either empty or match 'any' when 'exclude' matches non-'any'">
 
 			-- C_ARCHETYPE_ROOT
-			["VARXSnf"] = <"Warning (VARXS): slot filler (C_ARCHETYPE_ROOT) at $1 does specifies archetype $2 that matches slot but doesn't exist in current archetype repository">
-			["VARXS"] = <"Error (VARXS): slot filler (C_ARCHETYPE_ROOT) at $1 specifies archetype id $2 that does not conform to flat parent slot constraint">
-			["VARXV"] = <"Error (VARXV): slot filler (C_ARCHETYPE_ROOT) at $1 does not correspond to any ARCHETYPE slot in flat parent (i.e. in any specialisation parent)">
-			["WARNF"] = <"Error (WARNF): C_ARCHETYPE_ROOT at $1 not found in archetype/template repository">
+			["WARXS"] = <"Warning (VARXS): slot filler at $1 specifies archetype $2 that matches slot but doesn't exist in current archetype repository">
+			["VARXS"] = <"Error (VARXS): slot filler at $1 specifies archetype id $2 that does not conform to flat parent slot constraint">
+			["VARXNC"] = <"Error (VARXNC): slot node id of slot filler at $1 does not correspond to any ARCHETYPE slot in flat parent">
+			["VARXTV"] = <"Error (VARXTV): RM type of slot filler $1 does not conform to RM type $2 of slot or attribute in flat parent">
+			["WARNF"] = <"Warning (WARNF): archetype reference at $1 not found in archetype/template repository">
 
 			-- ontology-related validity
 			["VONSD"] = <"Error (VONSD): archetype code $1 in ontology more specialised than archetype">

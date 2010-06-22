@@ -9,10 +9,10 @@ note
 				 	- save (serialise back to ADL), 
 				 	- save-as (serialise to another format).
 				 ]"
-	keywords:    "test, ADL"
+	keywords:    "parser, ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003-2007 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2003-2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
