@@ -493,7 +493,7 @@ feature -- Conversion
 			end
 			create Result.make_from_tree (primary_language.deep_twin, representation.deep_twin, concept_code.deep_twin)
 		ensure
-			languages_available: Result.languages_available.is_equal (languages_available)
+			same_languages_available: Result.languages_available.is_subset (languages_available) and languages_available.is_subset (Result.languages_available)
 		end
 
 feature {ARCHETYPE_ONTOLOGY} -- Implementation
