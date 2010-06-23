@@ -73,23 +73,16 @@ feature {NONE} -- Implementation
 
 									-- create the descriptor and put it into a local Hash for this node
 									if amp.last_archetype_specialised then
-										if arch_id.valid_id (amp.last_parent_archetype_id) then
+										if not amp.last_parent_archetype_id_old_style then
 											create parent_arch_id.make_from_string(amp.last_parent_archetype_id)
-										elseif arch_id.old_valid_id (amp.last_parent_archetype_id) then
-											create parent_arch_id.old_make_from_string (amp.last_parent_archetype_id)
+											create ara.make_specialised (full_path, arch_id, parent_arch_id, Current, amp.last_archetype_artefact_type)
+											insert_descriptor_into_directory (ara)
+										else
+											post_error (Current, "build_directory", "general", <<amp.last_parse_fail_reason>>)
 										end
-
-										create ara.make_specialised (full_path, arch_id, parent_arch_id, Current, amp.last_archetype_artefact_type)
 									else
 										create ara.make (full_path, arch_id, Current, amp.last_archetype_artefact_type)
-									end
-
-									-- the following check ensures only one of a .adl/.adls pair goes into the repository
-									if not archetype_id_index.has (arch_id.semantic_id) then
-										archetype_id_index.force (ara, arch_id.semantic_id)
-									-- look to see if more recent version of an existing archetype; if so, use it
-									elseif arch_id.version_number > archetype_id_index.item (arch_id.semantic_id).id.version_number then
-										archetype_id_index.replace (ara, arch_id.semantic_id)
+										insert_descriptor_into_directory (ara)
 									end
 								else
 									post_warning (Current, "build_directory", "parse_archetype_e7", <<fn>>)
@@ -113,6 +106,17 @@ feature {NONE} -- Implementation
    				shifter.remove_tail (1)
    				io.put_string(shifter + "<---%N")
    			end
+		end
+
+	insert_descriptor_into_directory (ara: ARCH_REP_ARCHETYPE)
+			-- the following check ensures only one of a .adl/.adls pair goes into the repository
+			-- look to see if more recent version of an existing archetype; if so, use it
+		do
+			if not archetype_id_index.has (ara.id.semantic_id) then
+				archetype_id_index.force (ara, ara.id.semantic_id)
+			elseif ara.id.version_number > archetype_id_index.item (ara.id.semantic_id).id.version_number then
+				archetype_id_index.replace (ara, ara.id.semantic_id)
+			end
 		end
 
 	adl_flat_filename_pattern_regex: attached LX_DFA_REGULAR_EXPRESSION

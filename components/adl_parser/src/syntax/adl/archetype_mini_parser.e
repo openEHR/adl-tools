@@ -44,10 +44,13 @@ feature -- Status Report
 			-- True if last parse was ok
 
 	last_archetype_id_old_style: BOOLEAN
-			-- true if last archetype id
+			-- true if last archetype id is an old one containing 'draft'
 
 	last_archetype_specialised: BOOLEAN
 			-- true if archetype id read by last invocation of mini_parse_archetype
+
+	last_parent_archetype_id_old_style: BOOLEAN
+			-- true if last parent archetype id is an old one containing 'draft'
 
 feature -- Commands
 
@@ -78,7 +81,7 @@ feature -- Commands
 			if artefact_types.valid_type_name (lines[1]) then
 				last_archetype_artefact_type := artefact_types.type_name_to_type(lines[1])
 
-				-- get line 2
+				-- get line 2 - should be archetype id
 				if (create {ARCHETYPE_ID}).valid_id(lines[2]) then
 					last_archetype_id_old_style := False
 				elseif (create {ARCHETYPE_ID}).old_valid_id(lines[2]) then
@@ -95,6 +98,14 @@ feature -- Commands
 					-- get line 3 - should be either 'specialise' / 'specialize' or 'concept'
 					if lines[3].is_equal ("specialise") or lines[3].is_equal("specialize") then
 						last_parent_archetype_id := lines[4]
+						if (create {ARCHETYPE_ID}).valid_id(lines[4]) then
+							last_parent_archetype_id_old_style := False
+						elseif (create {ARCHETYPE_ID}).old_valid_id(lines[4]) then
+							last_parent_archetype_id_old_style := True
+						else
+							-- something wrong with the parent id
+							last_parse_fail_reason := create_message_content("parse_archetype_e10", <<a_full_path, lines[4]>>)
+						end
 						last_archetype_specialised := True
 					end
 					last_parse_valid := True
