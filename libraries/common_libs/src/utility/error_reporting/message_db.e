@@ -48,6 +48,7 @@ feature -- Access
 			i: INTEGER
 			idx_str: STRING
 			args_list: ARRAY[STRING]
+			replacement: STRING
 		do
 			if templates.has (an_id) then
 				Result := templates.item(an_id).twin
@@ -59,9 +60,15 @@ feature -- Access
 			Result.replace_substring_all("%%N", "%N")
 			if args_list /= Void then
 				from i := args_list.lower until i > args_list.upper loop
+					replacement := args_list.item(i)
+
+					if not attached replacement then
+						create replacement.make_empty
+					end
+
 					idx_str := i.out
 					idx_str.left_adjust
-					Result.replace_substring_all("$" + idx_str, args_list.item(i))
+					Result.replace_substring_all("$" + idx_str, replacement)
 					i := i + 1
 				end
 			end
