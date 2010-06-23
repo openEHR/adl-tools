@@ -91,7 +91,7 @@ feature -- Message database
 			["model_access_e4"] = <"Reference Model schema $1 load failure due to exception during processing">
 			["model_access_e5"] = <"Reference Model schema directory $1 does not exist or not readable">
 			["model_access_e6"] = <"Reference Model schema directory $1 does not contain any schemas (expecting structure $1/model_name/schema_file.dadl)">
-			["model_access_e7"] = <"No Reference Model schema found for model '$1'">
+			["model_access_e7"] = <"No Reference Model schema found for package '$1'">
 			["model_access_i1"] = <"Reference Model $1 loaded: $2 primitive types, $3 class definitions">
 			["model_access_w1"] = <"Reference Model checking is OFF">
 			["model_access_w2"] = <"Duplicate Reference Model schema found for model '$1' in file $2">
@@ -113,16 +113,20 @@ feature -- Message database
 			["save_archetype_e3"] = <"%NSAVE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
 			["serialise_archetype_e1"] = <"Serialisation failed; archetype not valid: $1">
 			["serialise_archetype_e2"] = <"%NSERIALISE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
-			["parse_archetype_i1"] = <"Archetype $1 syntax VALIDATED">
+
 			["parse_archetype_i2"] = <"Archetype $1 semantics VALIDATED">
-			["parse_archetype_i3"] = <"Archetype differential form file found; parsing that">
-
 			["parse_archetype_w2"] = <"Archetype $1 semantic validation Warnings:%N$2">
-			["parse_archetype_w3"] = <"Archetype $1 parent has changed from $2 to $3; refresh required (^R)">
 
-			["parse_archetype_e1"] = <"$1 (Parse failed)">
+			["parse_legacy_e1"] = <"Parse LEGACY Archetype FAILED DUE TO EXCEPTION">
+			["parse_legacy_i1"] = <"LEGACY Archetype $1 --> Parsed ok">
+
+			["parse_i1"] = <"Archetype $1 --> parsed ok">
+			["parse_i2"] = <"Parsing Archetype differential file">
+			["parse_w1"] = <"Archetype $1 parent has changed from $2 to $3; refresh required (^R)">
+			["parse_e1"] = <"$1 (Parse failed)">
+			["parse_e3"] = <"PARSE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
+
 			["parse_archetype_e2"] = <"Archetype $1 semantic validation FAILED; reasons:%N$2">
-			["parse_archetype_e3"] = <"PARSE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
 			["parse_archetype_e4"] = <"Archetype $1 semantic validation of differential form FAILED; reasons:%N$2">
 			["parse_archetype_e5"] = <"Archetype $1 basic error in 'archetype' clause">
 			["parse_archetype_e6"] = <"Archetype $1 basic error in 'specialise' clause">

@@ -71,7 +71,7 @@ feature {NONE} -- Implementation
 								if not amp.last_archetype_id_old_style then
 									create arch_id.make_from_string(amp.last_archetype_id)
 
-									-- create the descriptor znd put it into a local Hash for this node
+									-- create the descriptor and put it into a local Hash for this node
 									if amp.last_archetype_specialised then
 										create parent_arch_id.make_from_string(amp.last_parent_archetype_id)
 										create ara.make_specialised (full_path, arch_id, parent_arch_id, Current, amp.last_archetype_artefact_type)

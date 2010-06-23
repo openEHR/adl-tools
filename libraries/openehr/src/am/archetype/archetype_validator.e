@@ -113,12 +113,17 @@ feature -- Access
 feature -- Validation
 
 	validate
+			-- validate description section
 		do
 			reset
 
-			-- validate description section
+			-- basic validation of definition and ontology
 			if passed then
-				Precursor
+				validate_basics
+			end
+
+			if passed then
+				precursor
 				validate_languages
 			end
 
@@ -129,16 +134,10 @@ feature -- Validation
 				validate_reference_model
 			end
 
-			-- basic validation of definition and ontology
-			if passed then
-				validate_basics
-			end
-
 			-- validation requiring the archetype xref tables
 			if passed then
---				target.build_xrefs
 				validate_slots
-				validate_external_refs
+				validate_suppliers
 				report_unused_ontology_codes
 				validate_definition_codes
 			end
@@ -161,16 +160,6 @@ feature -- Validation
 				validate_internal_references
 				validate_invariants
 			end
-		end
-
-	validate_flat
-			-- validate flat form (some things are too hard to do on the diff form!)
-		require
-			Flat_exists: target_descriptor.flat_archetype /= Void
-		do
-			reset
-			target_flat := target_descriptor.flat_archetype
---			validate_occurrences
 		end
 
 feature {NONE} -- Implementation
@@ -256,17 +245,17 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	validate_external_refs
+	validate_suppliers
 			-- validate all C_ARCHETYPE_ROOT objects in a basic way
 		local
 			c_ar_list: ARRAYED_LIST [C_ARCHETYPE_ROOT]
 			filler_id: ARCHETYPE_ID
 		do
-			from target.external_references_index.start until target.external_references_index.off loop
-				if not arch_dir.archetype_index.has (target.external_references_index.key_for_iteration) then
-					add_warning("WARNF", <<target.external_references_index.key_for_iteration>>)
+			from target.suppliers_index.start until target.suppliers_index.off loop
+				if not arch_dir.archetype_index.has (target.suppliers_index.key_for_iteration) then
+					add_warning("WARNF", <<target.suppliers_index.key_for_iteration>>)
 				end
-				c_ar_list := target.external_references_index.item_for_iteration
+				c_ar_list := target.suppliers_index.item_for_iteration
 				from c_ar_list.start until c_ar_list.off loop
 					create filler_id.make_from_string (c_ar_list.item.archetype_id)
 					if not c_ar_list.item.rm_type_name.is_equal (filler_id.rm_entity) then
@@ -274,7 +263,7 @@ feature {NONE} -- Implementation
 					end
 					c_ar_list.forth
 				end
-				target.external_references_index.forth
+				target.suppliers_index.forth
 			end
 		end
 
@@ -490,8 +479,8 @@ feature {NONE} -- Implementation
 				id_list := target_descriptor.slot_id_index.item (target.slot_index.item.path)
 				from id_list.start until id_list.off loop
 					ara := arch_dir.archetype_index.item (id_list.item)
-					if not ara.is_used or else not ara.used_by_index.has (target.archetype_id.as_string) then
-						ara.add_used_by_item (target.archetype_id.as_string)
+					if not ara.is_supplier or else not ara.clients_index.has (target.archetype_id.as_string) then
+						ara.add_client (target.archetype_id.as_string)
 					end
 					id_list.forth
 				end
@@ -728,7 +717,6 @@ feature {NONE} -- Implementation
 			-- and no previous errors encountered
 		local
 			apa: ARCHETYPE_PATH_ANALYSER
-			accept: BOOLEAN
 			ca_parent_flat: attached C_ATTRIBUTE
 			flat_parent_path: STRING
 		do

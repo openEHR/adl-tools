@@ -348,7 +348,7 @@ feature {NONE} -- Tests
 
 			if target.is_valid then
 				Result := test_passed
-				test_status.append (" parse succeeded%N" + target.compiler_status)
+				test_status.append (" parse succeeded%N" + target.compilation_result)
 
 				if remove_unused_codes then
 					unused_at_codes := target.differential_archetype.ontology_unused_term_codes
@@ -369,7 +369,7 @@ feature {NONE} -- Tests
 					end
 				end
 			else
-				test_status.append (" parse failed%N" + target.compiler_status)
+				test_status.append (" parse failed%N" + target.compilation_result)
 			end
 		end
 
@@ -413,13 +413,13 @@ feature {NONE} -- Tests
 			-- parse archetype and return result
 		do
 			Result := test_failed
-			target.parse_archetype
+			target.parse
 			if target.is_valid then
 				target.serialise_differential
 				Result := test_passed
-				test_status.append ("Parse succeeded%N" + target.compiler_status)
+				test_status.append ("Parse succeeded%N" + target.compilation_result)
 			else
-				test_status.append ("Parse failed; reason: " + target.compiler_status + "%N")
+				test_status.append ("Parse failed; reason: " + target.compilation_result + "%N")
 			end
 		end
 

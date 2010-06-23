@@ -123,14 +123,10 @@ feature -- Initialisation
 				end
 			end
 
-			-- now go and remove any existences that are the same as the reference model
---			create c_it.make(definition)
---			c_it.do_all(agent node_remove_defaults)
-
-			-- now rebuild all internal references, path cache etc
-			rebuild
-
 			is_generated := True
+
+			-- rebuild all internal references, path cache etc
+			rebuild
 		end
 
 feature -- Access

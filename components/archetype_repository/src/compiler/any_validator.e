@@ -81,6 +81,8 @@ feature -- Status Report
 feature -- Validation
 
 	validate
+		require
+			passed
 		deferred
 		end
 

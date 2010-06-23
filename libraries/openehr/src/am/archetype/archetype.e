@@ -187,11 +187,7 @@ feature -- Access
 				phys_paths := physical_paths
 			end
 
-			from
-				phys_paths.start
-			until
-				phys_paths.off
-			loop
+			from phys_paths.start until phys_paths.off loop
 				Result.extend (ontology.physical_to_logical_path (phys_paths.item, a_lang))
 				phys_paths.forth
 			end
@@ -241,10 +237,10 @@ feature -- Status Report
 			Result := slot_index /= Void and then slot_index.count > 0
 		end
 
-	has_external_references: BOOLEAN
+	has_suppliers: BOOLEAN
 			-- true if there are any external references / fillers, i.e. any C_ARCHETYPE_ROOTs
 		do
-			Result := external_references_index /= Void and then external_references_index.count > 0
+			Result := suppliers_index /= Void and then suppliers_index.count > 0
 		end
 
 	has_invariants: BOOLEAN
@@ -320,7 +316,7 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER, EXPR_XREF_BUI
 			create id_atcodes_index.make(0)
 			create data_atcodes_index.make(0)
 			create use_node_index.make(0)
-			create external_references_index.make(0)
+			create suppliers_index.make(0)
 			create accodes_index.make(0)
 			create slot_index.make(0)
 
@@ -332,11 +328,7 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER, EXPR_XREF_BUI
 			if has_invariants then
 				create invariants_index.make(0)
 				create invariants_xref_builder
-				from
-					invariants.start
-				until
-					invariants.off
-				loop
+				from invariants.start until invariants.off loop
 					invariants_xref_builder.initialise(Current, invariants.item)
 					create expr_iterator.make (invariants.item, invariants_xref_builder)
 					expr_iterator.do_all
@@ -376,7 +368,7 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER, EXPR_XREF_BUI
 			-- table of {list<ARCHETYPE_INTERNAL_REF>, target_path}
 			-- i.e. <list of use_nodes> keyed by path they point to
 
-	external_references_index: HASH_TABLE[ARRAYED_LIST[C_ARCHETYPE_ROOT], STRING]
+	suppliers_index: HASH_TABLE[ARRAYED_LIST[C_ARCHETYPE_ROOT], STRING]
 			-- table of {list<C_ARCHETYPE_ROOT>, archetype_id}
 			-- i.e. <list of use_archetype nodes> keyed by archetype id they refer to
 
@@ -459,6 +451,7 @@ feature -- Modification
 			if is_specialised then
 				build_rolled_up_status
 			end
+			is_dirty := False
 		end
 
 feature -- Output
@@ -517,11 +510,7 @@ feature {NONE} -- Implementation
 					c_o ?= definition.c_object_at_path (tgt_path_str)
 
 					-- now add the paths below it
-					from
-						src_nodes.start
-					until
-						src_nodes.off
-					loop
+					from src_nodes.start until src_nodes.off loop
 						src_node_path := src_nodes.item.representation.path
 						src_node_path.last.set_object_id(tgt_path.last.object_id)
 						src_node_path_str := src_node_path.as_string
@@ -546,11 +535,7 @@ feature {NONE} -- Implementation
 
 			create sorted_physical_paths.make
 			create sorted_physical_leaf_paths.make
-			from
-				path_map.start
-			until
-				path_map.off
-			loop
+			from path_map.start until path_map.off loop
 				sorted_physical_paths.extend(path_map.key_for_iteration)
 				if path_map.item_for_iteration /= Void and path_map.item_for_iteration.is_leaf then
 					sorted_physical_leaf_paths.extend(path_map.key_for_iteration)
@@ -600,11 +585,7 @@ feature {NONE} -- Implementation
 			path_list /= Void
 		do
 			create Result.make(0)
-			from
-				path_list.start
-			until
-				path_list.off
-			loop
+			from path_list.start until path_list.off loop
 				if path_list.islast then
 					Result.append(path_list.item)
 					Result.append("%N")

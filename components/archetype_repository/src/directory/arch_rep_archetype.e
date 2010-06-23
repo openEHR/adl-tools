@@ -70,6 +70,11 @@ inherit
 			is_equal
 		end
 
+	COMPILATION_STATES
+		undefine
+			is_equal
+		end
+
 	EXCEPTIONS
 		export
 			{NONE} all
@@ -92,7 +97,7 @@ feature {NONE} -- Initialisation
 		do
 			make_item
 			create status.make_empty
-			create compiler_status.make_empty
+			create compilation_result.make_empty
 
 			id := an_id
 			full_path := a_full_path
@@ -106,21 +111,31 @@ feature {NONE} -- Initialisation
 				differential_path := full_path
 				flat_path := extension_replaced (full_path, archetype_flat_file_extension)
 				legacy_flat_path := extension_replaced (full_path, archetype_legacy_file_extension)
+				compilation_state := Cs_ready_to_parse
 			else
 				differential_path := extension_replaced (full_path, archetype_source_file_extension)
 				flat_path := extension_replaced (full_path, archetype_flat_file_extension)
 				legacy_flat_path := full_path
+				if has_differential_file then
+					compilation_state := Cs_ready_to_parse
+				else
+					compilation_state := cs_ready_to_parse_legacy
+				end
 			end
 
 			-- set reference to RM schema
 			if has_rm_schema_for_package (id.qualified_package_name) then
 				rm_schema := rm_schema_for_package (id.qualified_package_name)
+			else
+				compilation_state := Cs_rm_class_unknown
+				post_error (Current, "make", "model_access_e7", <<id.qualified_rm_name>>)
 			end
 		ensure
 			full_path_set: full_path = a_full_path
 			file_repository_set: file_repository = a_repository
 			id_set: id = an_id
-			no_compiler_status: compiler_status.is_empty
+			compilation_result_empty: compilation_result.is_empty
+			compilation_state_set: compilation_state = Cs_ready_to_parse or compilation_state = cs_ready_to_parse_legacy or compilation_state = Cs_rm_class_unknown
 		end
 
 	make_specialised (a_full_path: STRING; an_id, a_parent_id: attached ARCHETYPE_ID; a_repository: ARCHETYPE_REPOSITORY_I; an_artefact_type: INTEGER)
@@ -134,16 +149,29 @@ feature {NONE} -- Initialisation
 			make (a_full_path, an_id, a_repository, an_artefact_type)
 			is_specialised := True
 			parent_id := a_parent_id
+			if compilation_state = Cs_ready_to_parse then
+				compilation_state := Cs_lineage_known
+			end
 		ensure
 			full_path_set: full_path = a_full_path
 			file_repository_set: file_repository = a_repository
 			id_set: id = an_id
-			no_compiler_status: compiler_status.is_empty
+			compilation_result_empty: compilation_result.is_empty
 			Specialised: is_specialised
 			parent_id_set: parent_id = a_parent_id
+			compilation_state_set: compilation_state = Cs_lineage_known or compilation_state = cs_ready_to_parse_legacy or compilation_state = Cs_rm_class_unknown
 		end
 
-feature -- Access (file system)
+feature -- Access
+
+	compilation_state: INTEGER
+			-- current compilation state, obeying the state machine described above
+
+	compilation_result: STRING
+			-- errors from last compile attempt; allows redisplay if this archetype is reselected
+
+	status: STRING
+			-- status of last operation
 
 	full_path: STRING
 			-- Full path to the item on the storage medium.
@@ -176,8 +204,6 @@ feature -- Access (file system)
 	legacy_flat_path: STRING
 			-- Path of legacy flat file of archetype.
 
-feature -- Access (semantic)
-
 	rm_schema: SCHEMA_ACCESS
 			-- set if this archetype has a valid package-class_name
 
@@ -194,9 +220,28 @@ feature -- Access (semantic)
 	parent_id: attached ARCHETYPE_ID
 			-- Archetype identifier of specialisation parent
 
+	suppliers_index: HASH_TABLE [ARCH_REP_ARCHETYPE, STRING]
+			-- list of descriptors of slot fillers or other external references, keyed by archetype id
+			-- currently generated only from C_ARCHETYPE_ROOT index in archetype
+
+	clients_index: ARRAYED_LIST [STRING]
+			-- list of archetype_ids of archetypes that use this archetype
+
 	ontological_name: STRING
 		do
 			Result := id.as_string
+		end
+
+	ontological_parent_name: STRING
+			-- semantic name of parent node in ontology tree
+			-- For top-level archetypes e.g. openEHR-EHR-OBSERVATION.thing.v1, it will be the name of teh folder, e.g. EHR-OBSERVATION
+			-- for specialised archetypes, e.g. openEHR-EHR-OBSERVATION.specialised_thing.v1, it will be the id of the parent, e.g. openEHR-EHR-OBSERVATION.thing.v1
+		do
+			if is_specialised then
+				Result := parent_id.as_string
+			else
+				Result := id.package_class_name
+			end
 		end
 
 	display_name: STRING
@@ -258,10 +303,6 @@ feature -- Access (semantic)
 			current_last: Result.last = Current
 		end
 
-	referenced_archetypes_index: HASH_TABLE [ARCH_REP_ARCHETYPE, STRING]
-			-- list of descriptors of slot fillers or other external references, keyed by archetype id
-			-- currently generated only from C_ARCHETYPE_ROOT index in archetype
-
 	ontology_lineage: HASH_TABLE [DIFFERENTIAL_ARCHETYPE_ONTOLOGY, INTEGER]
 			-- lineage of ontologies of archetypes from top to this one
 
@@ -282,64 +323,46 @@ feature -- Access (semantic)
 	slot_id_index: DS_HASH_TABLE [ARRAYED_SET[STRING], STRING]
 			-- list of Archetype ids matching slot, keyed by slot path
 
-	used_by_index: ARRAYED_LIST [STRING]
-			-- list of archetype_ids corresponding to archetypes that use this archetype
-
-	compiler_status: STRING
-			-- errors from last compile attempt; allows redisplay if this archetype is reselected
-
-	status: STRING
-			-- status of last operation
-
-	compiler_error_type: INTEGER
-			-- generate value from COMPILER_ERROR_TYPES as index for error classification elsewhere
-		do
-			if is_valid then
-				if compiler_status.is_empty then
-					Result := Err_type_valid
-				else
-					Result := Err_type_warning
-				end
-			elseif is_parsed then
-				Result := Err_type_validity_error
-			else
-				Result := Err_type_parse_error
-			end
-		ensure
-			valid: valid_err_type (Result)
-		end
-
 	group_name: STRING
 			-- Name distinguishing the type of item and the group to which its `repository' belongs.
 			-- Useful as a logical key to pixmap icons, etc.
 		do
 			create Result.make_empty
 			Result.append(artefact_name)
-			if is_valid then
-				if compiler_status.is_empty then
+
+			inspect compilation_state
+			when Cs_validated then
+				if compilation_result.is_empty then
 					Result.append("_valid_" + file_repository.group_id.out)
 				else
 					Result.append("_warning_" + file_repository.group_id.out)
 				end
-			elseif is_parsed then
+			when Cs_validate_failed then
 				Result.append("_parsed_" + file_repository.group_id.out)
-			elseif parse_attempted then
+			when Cs_parse_failed, cs_convert_legacy_failed then
 				Result.append("_parse_failed_" + file_repository.group_id.out)
 			else
 				Result.append("_" + file_repository.group_id.out)
 			end
 		end
 
-	ontological_parent_name: STRING
-			-- semantic name of parent node in ontology tree
-			-- For top-level archetypes e.g. openEHR-EHR-OBSERVATION.thing.v1, it will be the name of teh folder, e.g. EHR-OBSERVATION
-			-- for specialised archetypes, e.g. openEHR-EHR-OBSERVATION.specialised_thing.v1, it will be the id of the parent, e.g. openEHR-EHR-OBSERVATION.thing.v1
+	compiler_error_type: INTEGER
+			-- generate value from COMPILER_ERROR_TYPES as index for error classification elsewhere
 		do
-			if is_specialised then
-				Result := parent_id.as_string
+			inspect compilation_state
+			when Cs_validated then
+				if compilation_result.is_empty then
+					Result := Err_type_valid
+				else
+					Result := Err_type_warning
+				end
+			when Cs_validate_failed then
+				Result := Err_type_validity_error
 			else
-				Result := id.package_class_name
+				Result := Err_type_parse_error
 			end
+		ensure
+			valid: valid_err_type (Result)
 		end
 
 feature -- Status Report - Compilation
@@ -359,7 +382,7 @@ feature -- Status Report - Compilation
 	is_out_of_date: BOOLEAN
 			-- Should this archetype be reparsed due to changes on the file system?
 		do
-			Result := not parse_attempted or
+			Result := last_compile_attempt_timestamp = Void or
 				is_differential_out_of_date or is_legacy_flat_out_of_date or
 				(specialisation_parent /= Void and then specialisation_parent.last_compile_attempt_timestamp > last_compile_attempt_timestamp)
 		end
@@ -376,24 +399,16 @@ feature -- Status Report - Compilation
 			Result := legacy_flat_text_timestamp > 0 and then file_repository.has_file_changed_on_disk (full_path, legacy_flat_text_timestamp)
 		end
 
-	parse_attempted: BOOLEAN
-			-- True if a parse has been attempted on the currently available copy of this archetype
-			-- (should be cleared if file is touched in any way)
-
-	validate_attempted: BOOLEAN
-			-- True if semantic validation has been attempted using ARCHETYPE_VALIDATOR
-
-	is_parsed: BOOLEAN
-			-- True if archetype has been parsed and loaded in at least differential form
-		do
-			Result := differential_archetype /= Void
-		end
-
 	save_succeeded: BOOLEAN
 			-- True if last save operation was successful
 
 	exception_encountered: BOOLEAN
 			-- True if last operation caused an exception
+
+	is_in_terminal_compilation_state: BOOLEAN
+		do
+			Result := Cs_terminal_states.has(compilation_state)
+		end
 
 feature -- Status Report - Semantic
 
@@ -404,11 +419,14 @@ feature -- Status Report - Semantic
 			-- True if archetype object created and 'is_valid' True. This can be used to check if the archetype has
 			-- actually been compiled and is available in memory. This is useful for specialised archetypes because
 			-- you want to know if the parent has been compiled (up the lineage) before you can compile the current one
+		do
+			Result := compilation_state = Cs_validated
+		end
 
 	has_compiler_status: BOOLEAN
 			-- Does this archetype have any compiler errors or warnings?
 		do
-			Result := not compiler_status.is_empty
+			Result := not compilation_result.is_empty
 		end
 
 	has_slots: BOOLEAN
@@ -417,10 +435,10 @@ feature -- Status Report - Semantic
 			Result := slot_id_index /= Void
 		end
 
-	is_used: BOOLEAN
+	is_supplier: BOOLEAN
 			-- Is this archetype used by any other archetypes (i.e. matches any of their slots)?
 		do
-			Result := used_by_index /= Void
+			Result := clients_index /= Void
 		end
 
 	differential_generated: BOOLEAN
@@ -440,116 +458,231 @@ feature -- Status Report - Semantic
 
 feature -- Status Setting
 
-	set_parse_attempted
-			-- Set `parse_attempted' true.
-		do
-			if not parse_attempted then
-				parse_attempted := True
-				arch_dir.increment_parse_attempted_archetype_count
-			end
-			create last_compile_attempt_timestamp.make_now
-		end
-
 	reset
 			-- reset after exception encountered
 		do
 			exception_encountered := False
 			status.wipe_out
-			compiler_status.wipe_out
+			compilation_result.wipe_out
+			billboard.clear
 		ensure
 			Exception_cleared: not exception_encountered
 			Status_cleared: status.is_empty
-			Compiler_status_cleared: compiler_status.is_empty
+			Compiler_status_cleared: compilation_result.is_empty
 		end
 
 feature -- Commands
 
-	parse_archetype
-			-- Parse and validate `target', in differential form if available, else in legacy flat form.
+	compile
+			-- perform as many steps of the compilation process as possible; may be called repeatedly by ARCHETYPE_COMPILER as it
+			-- does initial parsing here, finds dependencies, compiles them, comes back here, etc etc
+			-- For the moment just a simplistic implementation; we might do a proper state machine one later
+		require
+			not is_in_terminal_compilation_state
+		local
+			finished: BOOLEAN
+		do
+			from
+			until
+				finished
+			loop
+				inspect compilation_state
+				when cs_ready_to_parse_legacy then
+					compile_legacy
+				when Cs_lineage_known then
+					if specialisation_parent.is_valid then
+						compilation_state := Cs_ready_to_parse
+						parse
+					else
+						compilation_state := Cs_lineage_compile_failed
+					end
+				when Cs_ready_to_parse then
+					parse
+				when Cs_ready_to_validate then
+					validate
+				else
+					finished := True
+				end
+			end
+		end
+
+	signal_lineage_compilation
+		require
+			compilation_state = Cs_lineage_known
+		do
+			if specialisation_parent.is_valid then
+				compilation_state := Cs_ready_to_parse
+			else
+				compilation_state := Cs_lineage_compile_failed
+			end
+		end
+
+	signal_suppliers_compilation
+		require
+			compilation_state = Cs_suppliers_known
+		do
+			from suppliers_index.start until suppliers_index.off or not suppliers_index.item_for_iteration.is_valid loop
+				suppliers_index.forth
+			end
+			if suppliers_index.off then
+				compilation_state := Cs_ready_to_validate
+			else
+				compilation_state := cs_suppliers_compile_failed
+			end
+		ensure
+			Compilation_state: compilation_state = Cs_ready_to_validate or compilation_state = cs_suppliers_compile_failed
+		end
+
+	compile_legacy
+			-- Parse and validate `target', legacy flat form; save differential file if there was none.
+			-- Assume that legacy archetypes have no suppliers, i.e. don't include slot-fillers.
+			-- This is safe, since this is an ADL 1.5 only construct
+		require
+			Compilation_state_valid: compilation_state = cs_ready_to_parse_legacy
+			No_differential_file: not has_differential_file
 		local
 			legacy_flat_archetype: FLAT_ARCHETYPE
 		do
 			if not exception_encountered then
 				reset
-				billboard.clear
-				set_parse_attempted
+				set_compile_attempt_timestamp
 
-				if rm_schema /= Void then
-					if has_differential_file and not is_legacy_flat_out_of_date then
-						post_info (Current, "parse_archetype", "parse_archetype_i3", Void)
-						read_differential
-						differential_archetype := adl_engine.parse_differential (differential_text, rm_schema)
-						flat_archetype_cache := Void
-						if differential_archetype = Void then
-							post_error (Current, "parse_archetype", "parse_archetype_e1", <<adl_engine.parse_error_text>>)
-							is_valid := False
-						else
-							if differential_archetype.is_specialised and not parent_id.is_equal(differential_archetype.parent_archetype_id) then
-								post_warning (Current, "parse_archetype", "parse_archetype_w3", <<id.as_string, parent_id.as_string, differential_archetype.parent_archetype_id.as_string>>)
-							else
-								post_info (Current, "parse_archetype", "parse_archetype_i1", <<id.as_string>>)
-								-- reset id, since this could have changed due to editing
-								-- FIXME: we should also deal with the case of parent id being changed, but this is more
-								-- complicated since it requires a move in the ARCHETYPE_DIRECTORY tree as well as the explorer controls
-								-- At the moment it requires a full refresh.... which seems ok, since this is very rare
-								if not differential_archetype.archetype_id.as_string.is_equal(id.as_string) then
-									old_id := id
-									create id.make_from_string (differential_archetype.archetype_id.as_string)
-									arch_dir.update_archetype_id(old_id.as_string, id.as_string)
-								end
-								validate
-							end
-						end
-					else
-						read_legacy_flat
-						legacy_flat_archetype := adl_engine.parse_flat (legacy_flat_text, rm_schema)
-						if legacy_flat_archetype = Void then
-							post_error (Current, "parse_archetype", "parse_archetype_e1", <<adl_engine.parse_error_text>>)
-							is_valid := False
-						else
-							post_info (Current, "parse_archetype", "parse_archetype_i1", <<id.as_string>>)
-							differential_archetype := legacy_flat_archetype.to_differential
-
-							-- reset id, since this could have changed due to editing
-							-- FIXME: we should also deal with the case of parent id being changed, but this is more
-							-- complicated since it requires a move in the ARCHETYPE_DIRECTORY tree as well as the explorer controls
-							-- At the moment it requires a full refresh.... which seems ok, since this is very rare
-							if not differential_archetype.archetype_id.as_string.is_equal(id.as_string) then
-								old_id := id
-								create id.make_from_string (differential_archetype.archetype_id.as_string)
-								arch_dir.update_archetype_id(old_id.as_string, id.as_string)
-							end
-							validate
-							-- if differential archetype was generated from an old-style flat, perform path compression
-							if is_valid then
-								if differential_archetype.is_generated and differential_archetype.is_specialised then
-									differential_archetype.convert_to_differential_paths
-								end
-							end
-							legacy_flat_archetype.set_is_valid (is_valid)
-						end
-					end
-
-
-					if is_valid then
-						-- Make sure that the language is set, and that it is one of the languages in the archetype.
-						if (current_language = Void or not differential_archetype.has_language (current_language)) then
-							set_current_language (differential_archetype.original_language.code_string)
-						end
-					end
+				read_legacy_flat
+				legacy_flat_archetype := adl_engine.parse_flat (legacy_flat_text, rm_schema)
+				if legacy_flat_archetype = Void then
+					post_error (Current, "parse_legacy", "parse_legacy_e1", <<adl_engine.parse_error_text>>)
+				 	compilation_state := Cs_convert_legacy_failed
 				else
-					post_error (Current, "parse_archetype", "model_access_e7", <<id.qualified_rm_name>>)
+					post_info (Current, "parse_legacy", "parse_legacy_i1", <<id.as_string>>)
+					differential_archetype := legacy_flat_archetype.to_differential
+				 	compilation_state := Cs_ready_to_validate
+					validate
+					-- if differential archetype was generated from an old-style flat, perform path compression
+					if differential_archetype.is_valid then
+						if differential_archetype.is_specialised then
+							differential_archetype.convert_to_differential_paths
+						end
+				 		save_differential
+					end
 				end
 			else
-				post_error (Current, "parse_archetype", "parse_archetype_e3", Void)
+				post_error (Current, "parse_legacy", "parse_legacy_e1", Void)
 			end
 
-			compiler_status := billboard.content
+			compilation_result := billboard.content
 			billboard.clear
+		ensure
+			Compilation_state: compilation_state = Cs_validated or compilation_state = Cs_validate_failed or compilation_state = Cs_convert_legacy_failed
+			Differential_file: compilation_state = Cs_validated implies has_differential_file
 		rescue
-			post_error (Current, "parse_archetype", "report_exception", <<exception.out, exception_trace>>)
+			post_error (Current, "parse_legacy", "report_exception", <<exception.out, exception_trace>>)
 			exception_encountered := True
 			retry
+		end
+
+	parse
+			-- Parse `target', in differential form if available, else in legacy flat form.
+			-- Comilation state changes:
+			-- parse succeeded: Cs_ready_to_parse --> Cs_suppliers_known
+			-- parse failed: Cs_ready_to_parse --> Cs_parse_failed
+		require
+			Initial_state: compilation_state = Cs_ready_to_parse
+			Has_differential_file: has_differential_file
+		local
+			supp_idx: HASH_TABLE[ARRAYED_LIST[C_ARCHETYPE_ROOT], STRING]
+		do
+			if not exception_encountered then
+				reset
+				set_compile_attempt_timestamp
+
+				post_info (Current, "parse", "parse_i2", Void)
+				read_differential
+				differential_archetype := adl_engine.parse_differential (differential_text, rm_schema)
+				flat_archetype_cache := Void
+				if differential_archetype = Void then
+					post_error (Current, "parse", "parse_e1", <<adl_engine.parse_error_text>>)
+					compilation_state := Cs_parse_failed
+				else
+					if differential_archetype.is_specialised and not parent_id.is_equal(differential_archetype.parent_archetype_id) then
+						post_warning (Current, "parse", "parse_w1", <<id.as_string, parent_id.as_string, differential_archetype.parent_archetype_id.as_string>>)
+					else
+						post_info (Current, "parse", "parse_i1", <<id.as_string>>)
+						-- reset id, since this could have changed due to editing
+						if not differential_archetype.archetype_id.as_string.is_equal(id.as_string) then
+							old_id := id
+							create id.make_from_string (differential_archetype.archetype_id.as_string)
+							arch_dir.update_archetype_id(old_id.as_string, id.as_string)
+						end
+					end
+					create suppliers_index.make (0)
+					if differential_archetype.has_suppliers then
+						supp_idx := differential_archetype.suppliers_index
+						from supp_idx.start until supp_idx.off loop
+							suppliers_index.put (arch_dir.archetype_index.item (supp_idx.key_for_iteration), supp_idx.key_for_iteration)
+							supp_idx.forth
+						end
+						compilation_state := Cs_suppliers_known
+					else
+						compilation_state := Cs_ready_to_validate
+					end
+				end
+			else
+				post_error (Current, "parse", "parse_e3", Void)
+			end
+
+			compilation_result := billboard.content
+			billboard.clear
+		ensure
+			Compilation_state: compilation_state = Cs_suppliers_known or compilation_state = Cs_ready_to_validate or compilation_state = Cs_parse_failed
+		rescue
+			post_error (Current, "parse", "report_exception", <<exception.out, exception_trace>>)
+			exception_encountered := True
+			retry
+		end
+
+	validate
+			-- Perform validation on `differential_archetype'.
+			-- Compilation state change:
+			--	validated succeeded: Cs_ready_to_validate --> Cs_validated
+			--	validate failed: Cs_ready_to_validate --> Cs_validate_failed
+		require
+			Initial_state: compilation_state = Cs_ready_to_validate
+		local
+			validator: ARCHETYPE_VALIDATOR
+		do
+			create validator.make (Current, rm_schema)
+			if validator.passed then
+				validator.validate
+				if validator.passed then
+					post_info (Current, "validate", "parse_archetype_i2", <<id.as_string>>)
+					compilation_state := Cs_validated
+				else
+					post_error (Current, "validate", "parse_archetype_e2", <<id.as_string, validator.errors>>)
+					compilation_state := Cs_validate_failed
+				end
+
+				if validator.has_warnings then
+					post_warning (Current, "validate", "parse_archetype_w2", <<id.as_string, validator.warnings>>)
+				end
+			else
+				post_error (Current, "validate", "parse_archetype_e2", <<id.as_string, validator.errors>>)
+				compilation_state := Cs_validate_failed
+			end
+
+			differential_archetype.set_is_valid (validator.passed)
+			arch_dir.update_slot_statistics (Current)
+
+			if compilation_state = Cs_validated then
+				-- Make sure that the language is set, and that it is one of the languages in the archetype.
+				if (current_language = Void or not differential_archetype.has_language (current_language)) then
+					set_current_language (differential_archetype.original_language.code_string)
+				end
+			end
+
+			compilation_result := billboard.content
+			billboard.clear
+		ensure
+			Compilation_state: compilation_state = Cs_validated or compilation_state = Cs_validate_failed
 		end
 
 	clean_generated
@@ -585,14 +718,14 @@ feature {ARCHETYPE_VALIDATOR} -- Modification
 			end
 		end
 
-	add_used_by_item (an_archetype_id: STRING)
+	add_client (an_archetype_id: STRING)
 			-- add the id of an archetype that has a slot that matches this archetype, i.e. that 'uses' this archetype
 		do
-			if used_by_index = Void then
-				create used_by_index.make (0)
-				used_by_index.compare_objects
+			if clients_index = Void then
+				create clients_index.make (0)
+				clients_index.compare_objects
 			end
-			used_by_index.extend (an_archetype_id)
+			clients_index.extend (an_archetype_id)
 		end
 
 feature -- Modification
@@ -613,8 +746,7 @@ feature -- Modification
 			else
 				post_error(Current, "save_differential", "save_archetype_e3", Void)
 			end
-			status.wipe_out
-			status.append(billboard.content)
+			status.copy(billboard.content)
 			billboard.clear
 			exception_encountered := False
 		ensure
@@ -637,8 +769,7 @@ feature -- Modification
 			else
 				post_error(Current, "save_archetype_flat", "save_archetype_e3", Void)
 			end
-			status.wipe_out
-			status.append(billboard.content)
+			status.copy(billboard.content)
 			billboard.clear
 			exception_encountered := False
 		ensure
@@ -671,8 +802,7 @@ feature -- Modification
 				post_error (Current, "save_differential_as", "save_archetype_e3", Void)
 			end
 
-			status.wipe_out
-			status.append(billboard.content)
+			status.copy(billboard.content)
 			billboard.clear
 			exception_encountered := False
 		ensure
@@ -702,8 +832,7 @@ feature -- Modification
 				post_error (Current, "save_flat_as", "save_archetype_e3", Void)
 			end
 
-			status.wipe_out
-			status.append(billboard.content)
+			status.copy(billboard.content)
 			billboard.clear
 			exception_encountered := False
 		ensure
@@ -724,8 +853,7 @@ feature -- Modification
 			else
 				post_error(Current, "serialise_differential", "serialise_archetype_e2", Void)
 			end
-			status.wipe_out
-			status.append(billboard.content)
+			status.copy(billboard.content)
 			billboard.clear
 			exception_encountered := False
 		ensure
@@ -772,8 +900,7 @@ feature -- Factory
 				post_error(Current, "create_new_archetype", "create_new_archetype_e1", Void)
 			end
 
-			status.wipe_out
-			status.append(billboard.content)
+			status.copy(billboard.content)
 			billboard.clear
 			exception_encountered := False
 		ensure
@@ -797,8 +924,7 @@ feature -- Factory
 			else
 				post_error(Current, "create_new_specialised_archetype", "create_new_specialised_archetype_e1", Void)
 			end
-			status.wipe_out
-			status.append(billboard.content)
+			status.copy(billboard.content)
 			billboard.clear
 			exception_encountered := False
 		rescue
@@ -809,53 +935,13 @@ feature -- Factory
 
 feature {NONE} -- Implementation
 
-	validate
-			-- Perform various levels of validation on `differential_archetype'.
-		require
-			differential_attached: differential_archetype /= Void
-		local
-			validator: ARCHETYPE_VALIDATOR
+	set_compile_attempt_timestamp
+			-- Set `compile_attempt_timestamp'
 		do
-			is_valid := False
-			create validator.make (Current, rm_schema)
-			if validator.passed then
-				validator.validate
-				if validator.passed then
-					post_info (Current, "validate (differential)", "parse_archetype_i2", <<id.as_string>>)
-				else
-					post_error (Current, "validate (differential)", "parse_archetype_e2", <<id.as_string, validator.errors>>)
-				end
-
-				if validator.has_warnings then
-					post_warning (Current, "validate (differential)", "parse_archetype_w2", <<id.as_string, validator.warnings>>)
-				end
-			else
-				post_error (Current, "set_archetype_differential", "parse_archetype_e2", <<id.as_string, validator.errors>>)
+			if last_compile_attempt_timestamp = Void then
+				arch_dir.increment_compile_attempted_archetype_count
 			end
-
-			validate_attempted := True
-			is_valid := validator.passed
-			differential_archetype.set_is_valid (is_valid)
-			arch_dir.update_slot_statistics (Current)
-
-			-- now perform validation which requires flat form
-			if is_valid then
-				build_referenced_archetypes_index
-				validator.validate_flat
-				if validator.passed then
-					post_info (Current, "validate (flat)", "parse_archetype_i2", <<id.as_string>>)
-				else
-					post_error (Current, "validate (flat)", "parse_archetype_e2", <<id.as_string, validator.errors>>)
-				end
-
-				if validator.has_warnings then
-					post_warning (Current, "validate (flat)", "parse_archetype_w2", <<id.as_string, validator.warnings>>)
-				end
-
-				is_valid := validator.passed
-			end
-		ensure
-			validate_attempted
+			create last_compile_attempt_timestamp.make_now
 		end
 
 	read_differential
@@ -888,41 +974,24 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	build_referenced_archetypes_index
-			-- build `referenced_archetypes_index'
-		require
-			is_valid
-		local
-			ext_ref_idx: HASH_TABLE[ARRAYED_LIST[C_ARCHETYPE_ROOT], STRING]
-		do
-			create referenced_archetypes_index.make (0)
-			if differential_archetype.has_external_references then
-				ext_ref_idx := differential_archetype.external_references_index
-				from ext_ref_idx.start until ext_ref_idx.off loop
-					referenced_archetypes_index.put (arch_dir.archetype_index.item (ext_ref_idx.key_for_iteration), ext_ref_idx.key_for_iteration)
-					ext_ref_idx.forth
-				end
-			end
-		end
-
-	has_adl_generated_status (str: STRING): BOOLEAN
-			-- True if str is in ADL syntax of the first line of an archetype file and contains the
-			-- 'generated' flag in the meta-data part. The form of this string should be:
-			-- archetype_id (flag; flag; flag...)
-			-- FIXME: WARNING this is a hack because we are hard-coding for the 'generated' keyword here,
-			-- but currently it is too complicated to extract it from the serialisation objects.
-			-- This will be resolved in a few releases when all .adl archetypes are generated from.adls
-		require
-			str_exists: str /= Void
-		local
-			lpos, rpos: INTEGER
-		do
-			lpos := str.index_of('(', 1)
-			rpos := str.index_of(')', 1)
-			if lpos > 0 and rpos > lpos+1 then
-				Result := str.substring (lpos+1, rpos-1).has_substring("generated")
-			end
-		end
+--	has_adl_generated_status (str: STRING): BOOLEAN
+--			-- True if str is in ADL syntax of the first line of an archetype file and contains the
+--			-- 'generated' flag in the meta-data part. The form of this string should be:
+--			-- archetype_id (flag; flag; flag...)
+--			-- FIXME: WARNING this is a hack because we are hard-coding for the 'generated' keyword here,
+--			-- but currently it is too complicated to extract it from the serialisation objects.
+--			-- This will be resolved in a few releases when all .adl archetypes are generated from.adls
+--		require
+--			str_exists: str /= Void
+--		local
+--			lpos, rpos: INTEGER
+--		do
+--			lpos := str.index_of('(', 1)
+--			rpos := str.index_of(')', 1)
+--			if lpos > 0 and rpos > lpos+1 then
+--				Result := str.substring (lpos+1, rpos-1).has_substring("generated")
+--			end
+--		end
 
 	flatten
 			-- (re)generate flat-form of this archetype
@@ -953,8 +1022,9 @@ feature {NONE} -- Implementation
 	artefact_name: STRING
 
 invariant
+	compilation_state_valid: valid_compilation_state (compilation_state)
 	repository_attached: file_repository /= Void
-	compiler_status_attached: compiler_status /= Void
+	compiler_status_attached: compilation_result /= Void
 
 	full_path_attached: full_path /= Void and not full_path.is_empty
 	flat_text_timestamp_natural: legacy_flat_text_timestamp >= 0
@@ -971,7 +1041,7 @@ invariant
 	parent_existence: specialisation_parent /= Void implies is_specialised
 	parent_validity: specialisation_parent /= Void implies specialisation_parent.id.semantic_id.is_equal (id.semantic_parent_id)
 	slot_id_index_valid: slot_id_index /= Void implies not slot_id_index.is_empty
-	used_by_index_valid: used_by_index /= Void implies not used_by_index.is_empty
+	clients_index_valid: clients_index /= Void implies not clients_index.is_empty
 
 end
 

@@ -223,7 +223,7 @@ feature {NONE} -- Implementation
 					end
 
 					if ara.has_compiler_status then
-						tooltip.append (utf8 ("%N%N" + ara.compiler_status))
+						tooltip.append (utf8 ("%N%N" + ara.compilation_result))
 					end
 	 				node.set_tooltip (tooltip)
 	 			else -- it is a model node

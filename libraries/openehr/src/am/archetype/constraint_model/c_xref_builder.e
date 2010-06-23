@@ -66,10 +66,10 @@ feature -- Visitor
 	start_c_archetype_root(a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
 			-- enter a C_ARCHETYPE_ROOT
 		do
-			if not archetype.external_references_index.has(a_node.archetype_id) then
-				archetype.external_references_index.put(create {ARRAYED_LIST[C_ARCHETYPE_ROOT]}.make(0), a_node.archetype_id)
+			if not archetype.suppliers_index.has(a_node.archetype_id) then
+				archetype.suppliers_index.put(create {ARRAYED_LIST[C_ARCHETYPE_ROOT]}.make(0), a_node.archetype_id)
 			end
-			archetype.external_references_index.item(a_node.archetype_id).extend (a_node)
+			archetype.suppliers_index.item(a_node.archetype_id).extend (a_node)
 		end
 
 	start_archetype_internal_ref(a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER)

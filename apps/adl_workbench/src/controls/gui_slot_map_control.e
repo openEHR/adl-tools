@@ -110,8 +110,8 @@ feature -- Commands
 					gui.used_by_tree.extend (create {EV_TREE_ITEM}.make_with_text (create_message_line ("slots_incomplete_w1", <<>>)))
 				end
 
-				if ara.is_used then
-					append_tree (gui.used_by_tree, ara.used_by_index)
+				if ara.is_supplier then
+					append_tree (gui.used_by_tree, ara.clients_index)
 					used_by_count := used_by_count + gui.used_by_tree.count
 				end
 

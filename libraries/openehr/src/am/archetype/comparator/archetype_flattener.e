@@ -102,6 +102,7 @@ feature -- Commands
 				flatten_ontology
 				arch_output_flat.set_parent_archetype_id (arch_parent_flat.archetype_id)
 				arch_output_flat.set_is_valid (True)
+				arch_output_flat.rebuild
 			else
 				create arch_output_flat.make_from_differential (arch_child_diff)
 			end
@@ -221,7 +222,6 @@ feature {NONE} -- Implementation
 
 			create def_it.make(arch_child_diff.definition)
 			def_it.do_until_surface(agent node_graft, agent node_test)
-			arch_output_flat.rebuild
 		end
 
 	node_graft (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
@@ -719,7 +719,7 @@ feature {NONE} -- Implementation
 			debug ("flatten")
 				io.put_string ("&&&&&& flattening template root nodes &&&&&&%N")
 			end
-			xref_idx := arch_output_flat.external_references_index
+			xref_idx := arch_output_flat.suppliers_index
 			from xref_idx.start until xref_idx.off loop
 				ext_arch_root_cco := arch_dir.archetype_index.item (xref_idx.key_for_iteration).flat_archetype.definition
 				xref_list := xref_idx.item_for_iteration
@@ -751,13 +751,13 @@ feature {NONE} -- Implementation
 			debug ("flatten")
 				io.put_string ("&&&&&& flattening template ontologies &&&&&&%N")
 			end
-			from child_desc.referenced_archetypes_index.start until child_desc.referenced_archetypes_index.off loop
-				ont := child_desc.referenced_archetypes_index.item_for_iteration.flat_archetype.ontology
-				arch_output_flat.add_component_ontology (ont, child_desc.referenced_archetypes_index.key_for_iteration)
+			from child_desc.suppliers_index.start until child_desc.suppliers_index.off loop
+				ont := child_desc.suppliers_index.item_for_iteration.flat_archetype.ontology
+				arch_output_flat.add_component_ontology (ont, child_desc.suppliers_index.key_for_iteration)
 				debug ("flatten")
-					io.put_string ("%T adding ontology from " + child_desc.referenced_archetypes_index.key_for_iteration + "%N")
+					io.put_string ("%T adding ontology from " + child_desc.suppliers_index.key_for_iteration + "%N")
 				end
-				child_desc.referenced_archetypes_index.forth
+				child_desc.suppliers_index.forth
 			end
 		end
 

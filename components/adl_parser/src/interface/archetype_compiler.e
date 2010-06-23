@@ -4,10 +4,10 @@ note
 				 Archetype compiler interface. This object knows how to compile a system of archetypes
 				 found in the ARCHETYPE_DIRECTORY.
 				 ]"
-	keywords:    "test, ADL"
+	keywords:    "compiler, archetype, ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL: http://svn.openehr.org/ref_impl_eiffel/BRANCHES/specialisation/components/adl_parser/src/interface/archetype_parser.e $"
@@ -29,6 +29,11 @@ inherit
 			{NONE} all
 		end
 
+	COMPILATION_STATES
+		export
+			{NONE} all
+		end
+
 	EXCEPTIONS
 		export
 			{NONE} all
@@ -42,6 +47,7 @@ feature {NONE} -- Initialisation
 	make
 		do
 			create status.make_empty
+			create task_stack.make(0)
 		end
 
 feature -- Access
@@ -197,15 +203,30 @@ feature {NONE} -- Implementation
 				if from_scratch or ara.is_out_of_date then
 					status := create_message_line("compiler_compiling_archetype", <<ara.id.value>>)
 					call_visual_update_action (ara)
-					ara.parse_archetype
-					status := ara.compiler_status.twin
-					if ara.is_valid and not ara.has_differential_file then
-						ara.save_differential
-						status.append (ara.status)
+
+					-- first phase
+					if ara.compilation_state = Cs_lineage_known then
+						ara.signal_lineage_compilation
 					end
+					ara.compile
+
+					-- second phase if needed
+					if ara.compilation_state = Cs_suppliers_known then
+						from ara.suppliers_index.start until ara.suppliers_index.off loop
+							build_lineage (ara.suppliers_index.item_for_iteration)
+							ara.suppliers_index.forth
+						end
+
+						-- continue compilation
+						ara.signal_suppliers_compilation
+						ara.compile
+					end
+					status := ara.compilation_result.twin
+
 				elseif ara.has_compiler_status then
-					status := create_message_line ("compiler_already_attempted", <<ara.compiler_status>>)
+					status := create_message_line ("compiler_already_attempted", <<ara.compilation_result>>)
 				end
+
 				call_visual_update_action (ara)
 			end
 		end
@@ -239,6 +260,9 @@ feature {NONE} -- Implementation
 				visual_update_action.call ([ara])
 			end
 		end
+
+	task_stack: ARRAYED_STACK [ARCH_REP_ARCHETYPE]
+			-- stack of task items to do or underway
 
 invariant
 	status_attached: status /= Void

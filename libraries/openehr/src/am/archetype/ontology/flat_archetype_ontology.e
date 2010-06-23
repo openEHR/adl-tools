@@ -143,6 +143,7 @@ feature -- Modification
 
 	merge(other: FLAT_ARCHETYPE_ONTOLOGY)
 			-- append all the codes from the other ontology to this one; used to create the ontology for flat-form archetypes
+			-- only languages that exist in the current ontology are merged from `other'
 		require
 			Other_valid: other /= Void and then semantically_conforms_to(other)
 		local
@@ -220,7 +221,6 @@ feature -- Modification
 				other.terminologies_available.forth
 			end
 		ensure
-			Languages_merged: languages_available.is_superset (other.languages_available)
 			-- Terminologies_merged: terminologies_available.is_superset (other.terminologies_available)
 		end
 

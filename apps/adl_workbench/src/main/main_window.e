@@ -1295,7 +1295,7 @@ feature {NONE} -- Build commands
 
 				archetype_test_tree_control.do_row_for_item (ara, agent archetype_test_tree_control.set_row_pixmap)
 
-				if ara.parse_attempted then
+				if ara.last_compile_attempt_timestamp /= Void then
 					compiler_error_control.extend_and_select (ara)
 					populate_statistics
 

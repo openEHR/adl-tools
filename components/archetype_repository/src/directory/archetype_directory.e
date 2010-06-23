@@ -327,12 +327,12 @@ feature -- Commands
 				slotted_archetype_count := slotted_archetype_count + 1
 			end
 
-			if ara.is_used then
+			if ara.is_supplier then
 				used_by_archetype_count := used_by_archetype_count + 1
 			end
 		end
 
-	increment_parse_attempted_archetype_count
+	increment_compile_attempted_archetype_count
 			-- Increment the count of archetypes for which parsing has been attempted.
 		require
 			can_increment: parse_attempted_archetype_count < total_archetype_count
