@@ -37,11 +37,7 @@ else:
 # Define how to build the Eiffel projects.
 
 def eiffel(target, ecf):
-	if platform == 'linux' or platform == 'mac_osx':
-		result = env.Eiffel(target + '_no_precompile', ecf)
-	else:
-		result = env.Eiffel(target, ecf)
-
+	result = env.Eiffel(target, ecf)
 	Alias(target, result)
 	return result
 
