@@ -41,13 +41,6 @@ inherit
 			is_equal
 		end
 
-	SHARED_APPLICATION_CONTEXT
-		export
-			{NONE} all
-		undefine
-			is_equal
-		end
-
 	SHARED_ARCHETYPE_SERIALISERS
 		export
 			{NONE} all
@@ -489,13 +482,6 @@ feature -- Commands
 				inspect compilation_state
 				when cs_ready_to_parse_legacy then
 					compile_legacy
-				when Cs_lineage_known then
-					if specialisation_parent.is_valid then
-						compilation_state := Cs_ready_to_parse
-						parse
-					else
-						compilation_state := Cs_lineage_compile_failed
-					end
 				when Cs_ready_to_parse then
 					parse
 				when Cs_ready_to_validate then
@@ -515,6 +501,8 @@ feature -- Commands
 			else
 				compilation_state := Cs_lineage_compile_failed
 			end
+		ensure
+			Compilation_state: compilation_state = Cs_ready_to_parse or compilation_state = Cs_lineage_compile_failed
 		end
 
 	signal_suppliers_compilation
@@ -668,16 +656,7 @@ feature -- Commands
 				post_error (Current, "validate", "parse_archetype_e2", <<id.as_string, validator.errors>>)
 				compilation_state := Cs_validate_failed
 			end
-
 			differential_archetype.set_is_valid (validator.passed)
-			arch_dir.update_slot_statistics (Current)
-
-			if compilation_state = Cs_validated then
-				-- Make sure that the language is set, and that it is one of the languages in the archetype.
-				if (current_language = Void or not differential_archetype.has_language (current_language)) then
-					set_current_language (differential_archetype.original_language.code_string)
-				end
-			end
 
 			compilation_result := billboard.content
 			billboard.clear
@@ -891,7 +870,7 @@ feature -- Factory
 			if not exception_encountered then
 				create arch_id.make (a_im_originator, a_im_name, a_im_entity, "UNKNOWN", "v0")
 				create differential_archetype.make_minimal (an_artefact_type, arch_id, a_primary_language, 0)
-				set_current_language (a_primary_language)
+				-- set_current_language (a_primary_language)
 
 				-- FIXME: now add this archetype into the ARCHETYPE_DIRECTORY
 

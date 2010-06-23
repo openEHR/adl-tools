@@ -29,6 +29,13 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_APPLICATION_CONTEXT
+		export
+			{NONE} all
+		undefine
+			is_equal
+		end
+
 	COMPILATION_STATES
 		export
 			{NONE} all
@@ -227,7 +234,16 @@ feature {NONE} -- Implementation
 					status := create_message_line ("compiler_already_attempted", <<ara.compilation_result>>)
 				end
 
+				-- Make sure that the language is set, and that it is one of the languages in the archetype.
+				if ara.compilation_state = Cs_validated then
+					if (current_language = Void or not ara.differential_archetype.has_language (current_language)) then
+						set_current_language (ara.differential_archetype.original_language.code_string)
+					end
+				end
+
 				call_visual_update_action (ara)
+
+				arch_dir.update_slot_statistics (ara)
 			end
 		end
 
