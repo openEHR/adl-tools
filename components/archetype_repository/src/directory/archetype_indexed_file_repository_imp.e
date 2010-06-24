@@ -78,14 +78,14 @@ feature {NONE} -- Implementation
 											create ara.make_specialised (full_path, arch_id, parent_arch_id, Current, amp.last_archetype_artefact_type)
 											insert_descriptor_into_directory (ara)
 										else
-											post_error (Current, "build_directory", "general", <<amp.last_parse_fail_reason>>)
+											post_error (Current, "build_directory", "parse_archetype_e11", <<fn, amp.last_parent_archetype_id>>)
 										end
 									else
 										create ara.make (full_path, arch_id, Current, amp.last_archetype_artefact_type)
 										insert_descriptor_into_directory (ara)
 									end
 								else
-									post_warning (Current, "build_directory", "parse_archetype_e7", <<fn>>)
+									post_warning (Current, "build_directory", "parse_archetype_e7", <<fn, amp.last_archetype_id>>)
 								end
 							else
 								post_error (Current, "build_directory", "general", <<amp.last_parse_fail_reason>>)

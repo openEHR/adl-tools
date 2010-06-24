@@ -131,10 +131,11 @@ feature -- Message database
 			["parse_archetype_e4"] = <"Archetype $1 semantic validation of differential form FAILED; reasons:%N$2">
 			["parse_archetype_e5"] = <"Archetype $1 basic error in 'archetype' clause">
 			["parse_archetype_e6"] = <"Archetype $1 basic error in 'specialise' clause">
-			["parse_archetype_e7"] = <"Archetype $1 invalid: old-style 'draft' identifier">
+			["parse_archetype_e7"] = <"Archetype $1 invalid: old-style 'draft' identifier $2">
 			["parse_archetype_e8"] = <"Archetype at $1 invalid identifier $2">
 			["parse_archetype_e9"] = <"Archetype at $1 invalid artefact type $2 (should be 'archetype', 'template', etc)">
 			["parse_archetype_e10"] = <"Archetype at $1 invalid parent identifier $2">
+			["parse_archetype_e11"] = <"Archetype at $1 invalid: old-style 'draft' parent identifier $2">
 
 			["arch_context_make_flat_i1"] = <"Generated differential archetype from specialised flat archetype">
 			["compiler_status"] = <"=============== $1 ===============">
