@@ -804,19 +804,22 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 
 			-- populate term definitions & languages_available (temporarily, until all archetypes
 			-- have a proper language section
-			an_attr_node := representation.attribute_node_at_path("/" + Sym_term_definitions)
-			if an_attr_node.is_multiple then
-				from an_attr_node.start until an_attr_node.off loop
-					a_lang := an_attr_node.item.node_id
-					if has_path("/" + Sym_term_definitions + "[" + a_lang + "]/items") then
-						create term_defs_one_lang.make(0)
-						populate_term_defs(Sym_term_definitions, a_lang, term_defs_one_lang)
-						term_definitions.force(term_defs_one_lang , a_lang)
+			if has_path ("/" + Sym_term_definitions) then
+				an_attr_node := representation.attribute_node_at_path("/" + Sym_term_definitions)
+				if an_attr_node.is_multiple then
+					from an_attr_node.start until an_attr_node.off loop
+						a_lang := an_attr_node.item.node_id
+						if has_path("/" + Sym_term_definitions + "[" + a_lang + "]/items") then
+							create term_defs_one_lang.make(0)
+							populate_term_defs(Sym_term_definitions, a_lang, term_defs_one_lang)
+							term_definitions.force(term_defs_one_lang , a_lang)
+						end
+						languages_available.extend (a_lang)
+						an_attr_node.forth
 					end
-					languages_available.extend (a_lang)
-					an_attr_node.forth
 				end
 			end
+
 			if has_path("/" + Sym_primary_language) then
 				set_primary_language(string_at_path("/" + Sym_primary_language))
 			end

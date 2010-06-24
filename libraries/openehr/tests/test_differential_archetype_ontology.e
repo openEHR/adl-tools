@@ -40,6 +40,15 @@ feature {NONE} -- Events
 
 feature -- Test routines
 
+	test_make_from_tree_anonymous
+			-- The ontology can be made from an anonymous tree node.
+		note
+			testing: "covers/{DIFFERENTIAL_ARCHETYPE_ONTOLOGY}.make_from_tree"
+		do
+			create target.make_from_tree ("en", create {DT_COMPLEX_OBJECT_NODE}.make_anonymous, default_concept_code)
+			assert_equal (default_concept_code, target.concept_code)
+		end
+
 	test_new_non_specialised_term_code
 			-- Each new non-specialised term code tail keeps increasing by 1, including double-digit tails.
 		note
