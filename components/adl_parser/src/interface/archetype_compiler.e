@@ -211,20 +211,24 @@ feature {NONE} -- Implementation
 					status := create_message_line("compiler_compiling_archetype", <<ara.id.value>>)
 					call_visual_update_action (ara)
 
-					-- first phase
+					-- first phase; initially signal that any parents are compiled already
+					-- (this happens because this routine is being driven by `build_lineage', which
+					-- always comes down the specialisation lineage from the top. However... other
+					-- approaches might replace this one day.
 					if ara.compilation_state = Cs_lineage_known then
 						ara.signal_lineage_compilation
 					end
 					ara.compile
 
-					-- second phase if needed
+					-- second phase - needed if there are suppliers (i.e. slot-fillers or plain
+					-- external references to compile first
 					if ara.compilation_state = Cs_suppliers_known then
 						from ara.suppliers_index.start until ara.suppliers_index.off loop
 							build_lineage (ara.suppliers_index.item_for_iteration)
 							ara.suppliers_index.forth
 						end
 
-						-- continue compilation
+						-- continue compilation - remaining steps after suppliers compilation
 						ara.signal_suppliers_compilation
 						ara.compile
 					end
@@ -234,16 +238,16 @@ feature {NONE} -- Implementation
 					status := create_message_line ("compiler_already_attempted", <<ara.compilation_result>>)
 				end
 
+				call_visual_update_action (ara)
+
+				arch_dir.update_slot_statistics (ara)
+
 				-- Make sure that the language is set, and that it is one of the languages in the archetype.
 				if ara.compilation_state = Cs_validated then
 					if (current_language = Void or not ara.differential_archetype.has_language (current_language)) then
 						set_current_language (ara.differential_archetype.original_language.code_string)
 					end
 				end
-
-				call_visual_update_action (ara)
-
-				arch_dir.update_slot_statistics (ara)
 			end
 		end
 

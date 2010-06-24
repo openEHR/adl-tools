@@ -774,9 +774,8 @@ feature -- Archetype commands
 	select_node_in_archetype_tree_view
 			-- Select and display the node of `archetype_file_tree' corresponding to the selection in `archetype_directory'.
 		do
-			if attached {EV_TREE_NODE} archetype_file_tree.retrieve_item_recursively_by_data (arch_dir.selected_item, True) as node then
-				archetype_file_tree.ensure_item_visible (node)
-				node.enable_select
+			if arch_dir.has_selected_item then
+				archetype_view_tree_control.ensure_item_visible(arch_dir.selected_item.ontological_name)
 			end
 		end
 

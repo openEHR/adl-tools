@@ -71,11 +71,9 @@ feature -- Commands
 		do
 			if delay_to_make_keyboard_navigation_practical = Void then
 				create delay_to_make_keyboard_navigation_practical
-
 				delay_to_make_keyboard_navigation_practical.actions.extend (agent
 					do
 						delay_to_make_keyboard_navigation_practical.set_interval (0)
-
 						if attached {EV_TREE_NODE} gui_tree.selected_item as node and then attached {ARCH_REP_ITEM} node.data as ari then
 							arch_dir.set_selected_item (ari)
 							if attached {ARCH_REP_ARCHETYPE} ari as ara then
@@ -86,7 +84,6 @@ feature -- Commands
 						end
 					end)
 			end
-
 			delay_to_make_keyboard_navigation_practical.set_interval (300)
 		end
 
@@ -138,6 +135,17 @@ feature -- Commands
 					gui_node_descriptor_map.replace_key (ara.id.as_string, ara.old_id.as_string)
 					update_tree_node (gui_node_descriptor_map.item (ara.id.as_string))
 				end
+			end
+		end
+
+	ensure_item_visible (ari_ont_id: STRING)
+			-- ensure node with ontological node id `ari_ont_id' is visible in the tree
+		require
+			ari_ont_id /= Void
+		do
+			if gui_node_descriptor_map.has(ari_ont_id) then
+				gui_tree.ensure_item_visible (gui_node_descriptor_map.item(ari_ont_id))
+				gui_node_descriptor_map.item(ari_ont_id).enable_select
 			end
 		end
 

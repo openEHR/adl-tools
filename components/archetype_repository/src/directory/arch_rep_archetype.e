@@ -538,10 +538,10 @@ feature -- Commands
 				read_legacy_flat
 				legacy_flat_archetype := adl_engine.parse_flat (legacy_flat_text, rm_schema)
 				if legacy_flat_archetype = Void then
-					post_error (Current, "parse_legacy", "parse_legacy_e1", <<adl_engine.parse_error_text>>)
+					post_error (Current, "compile_legacy", "compile_legacy_e1", <<adl_engine.parse_error_text>>)
 				 	compilation_state := Cs_convert_legacy_failed
 				else
-					post_info (Current, "parse_legacy", "parse_legacy_i1", <<id.as_string>>)
+					post_info (Current, "compile_legacy", "compile_legacy_i1", <<id.as_string>>)
 					differential_archetype := legacy_flat_archetype.to_differential
 				 	compilation_state := Cs_ready_to_validate
 					validate
@@ -554,16 +554,16 @@ feature -- Commands
 					end
 				end
 			else
-				post_error (Current, "parse_legacy", "parse_legacy_e1", Void)
+				post_error (Current, "compile_legacy", "compile_legacy_e2", Void)
 			end
 
-			compilation_result := billboard.content
+			compilation_result.append (billboard.content)
 			billboard.clear
 		ensure
 			Compilation_state: compilation_state = Cs_validated or compilation_state = Cs_validate_failed or compilation_state = Cs_convert_legacy_failed
 			Differential_file: compilation_state = Cs_validated implies has_differential_file
 		rescue
-			post_error (Current, "parse_legacy", "report_exception", <<exception.out, exception_trace>>)
+			post_error (Current, "compile_legacy", "report_exception", <<exception.out, exception_trace>>)
 			exception_encountered := True
 			retry
 		end
@@ -658,7 +658,7 @@ feature -- Commands
 			end
 			differential_archetype.set_is_valid (validator.passed)
 
-			compilation_result := billboard.content
+			compilation_result.append (billboard.content)
 			billboard.clear
 		ensure
 			Compilation_state: compilation_state = Cs_validated or compilation_state = Cs_validate_failed

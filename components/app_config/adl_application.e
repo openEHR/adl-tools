@@ -114,17 +114,18 @@ feature -- Message database
 			["serialise_archetype_e1"] = <"Serialisation failed; archetype not valid: $1">
 			["serialise_archetype_e2"] = <"%NSERIALISE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
 
-			["parse_archetype_i2"] = <"Archetype $1 semantics VALIDATED">
-			["parse_archetype_w2"] = <"Archetype $1 semantic validation Warnings:%N$2">
-
-			["parse_legacy_e1"] = <"Parse LEGACY Archetype FAILED DUE TO EXCEPTION">
-			["parse_legacy_i1"] = <"LEGACY Archetype $1 --> Parsed ok">
+			["compile_legacy_e1"] = <"$1 (Parse failed)">
+			["compile_legacy_e2"] = <"Parse LEGACY Archetype FAILED DUE TO EXCEPTION">
+			["compile_legacy_i1"] = <"LEGACY Archetype $1 --> Parsed ok">
 
 			["parse_i1"] = <"Archetype $1 --> parsed ok">
 			["parse_i2"] = <"Parsing Archetype differential file">
 			["parse_w1"] = <"Archetype $1 parent has changed from $2 to $3; refresh required (^R)">
 			["parse_e1"] = <"$1 (Parse failed)">
 			["parse_e3"] = <"PARSE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
+
+			["parse_archetype_i2"] = <"Archetype $1 semantics VALIDATED">
+			["parse_archetype_w2"] = <"Archetype $1 semantic validation Warnings:%N$2">
 
 			["parse_archetype_e2"] = <"Archetype $1 semantic validation FAILED; reasons:%N$2">
 			["parse_archetype_e4"] = <"Archetype $1 semantic validation of differential form FAILED; reasons:%N$2">

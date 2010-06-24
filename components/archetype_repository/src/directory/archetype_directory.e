@@ -192,6 +192,12 @@ feature -- Statistics
 
 feature -- Status Report
 
+	has_selected_item: BOOLEAN
+			-- Has an item been selected?
+		do
+			Result := selected_item /= Void
+		end
+
 	has_selected_archetype: BOOLEAN
 			-- Has an archetype been selected?
 		do
