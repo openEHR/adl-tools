@@ -73,10 +73,10 @@ feature -- Access
 feature -- Status Report
 
 	any_allowed: BOOLEAN
-			-- True if any value allowed
-			-- i.e. no terminology_id or code_list
+			-- True if any value allowed i.e. no includes or excludes defined, and
+			-- slot is not closed
 		do
-			Result := not (has_includes or has_excludes)
+			Result := not (has_includes or has_excludes) and not is_closed
 		end
 
 	has_includes: BOOLEAN

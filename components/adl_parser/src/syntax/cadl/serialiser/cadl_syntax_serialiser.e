@@ -127,7 +127,7 @@ feature -- Visitor
 		local
 			invs: ARRAYED_LIST[ASSERTION]
 		do
-			-- output includes & excludes, indent then end block, since must be on new line
+			-- output includes & excludes, indent the end block, since must be on new line
 			if not a_node.any_allowed then
 				if a_node.has_includes then
 					last_result.append (create_indent(depth+1) + apply_style(symbol(SYM_INCLUDE), STYLE_KEYWORD) +

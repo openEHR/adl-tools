@@ -443,7 +443,7 @@ feature -- Status Report - Semantic
 	legacy_is_primary: BOOLEAN
 			-- True if the flat legacy file is the primary source
 		do
-			Result := differential_archetype /= Void and differential_generated
+			Result := differential_generated
 		end
 
 	has_artefacts: BOOLEAN = True

@@ -109,7 +109,7 @@ feature {NONE} -- Implementation
 		end
 
 	insert_descriptor_into_directory (ara: ARCH_REP_ARCHETYPE)
-			-- the following check ensures only one of a .adl/.adls pair goes into the repository
+			-- this function ensures only one of a .adl/.adls pair goes into the repository
 			-- look to see if more recent version of an existing archetype; if so, use it
 		do
 			if not archetype_id_index.has (ara.id.semantic_id) then
