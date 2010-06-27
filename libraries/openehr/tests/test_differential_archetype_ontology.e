@@ -1,6 +1,6 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Tests for ADL differential terminology class"
+	description: "Tests for ADL differential ontology class"
 	keywords:    "archetype, ontology, terminology"
 
 	author:      "Peter Gummer"

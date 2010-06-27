@@ -44,7 +44,7 @@ feature -- Initialisation
 			Artefact_type_set: artefact_type = an_artefact_type
 			Adl_version_set: adl_version = Latest_adl_version
 			Id_set: archetype_id = an_id
-			Original_language_set: original_language.as_string.is_equal(an_original_language)
+			Original_language_set: original_language.code_string.is_equal (an_original_language)
 			Specialisation_depth_set: specialisation_depth = a_specialisation_depth
 			Definition_root_node_id: definition.node_id.is_equal (concept)
 			Is_dirty: is_dirty
