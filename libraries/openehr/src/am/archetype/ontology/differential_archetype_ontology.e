@@ -488,6 +488,7 @@ feature -- Factory
 			end
 		ensure
 			valid: valid_concept_code (Result)
+			level_set: specialisation_depth_from_code (Result) = at_level
 		end
 
 feature -- Conversion
