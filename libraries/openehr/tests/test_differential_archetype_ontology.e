@@ -49,6 +49,18 @@ feature -- Test routines
 			assert_equal (default_concept_code, target.concept_code)
 		end
 
+	test_make_from_tree_identified
+			-- The ontology can be made from an identified tree node.
+		note
+			testing: "covers/{DIFFERENTIAL_ARCHETYPE_ONTOLOGY}.make_from_tree"
+		local
+			tree: DT_COMPLEX_OBJECT_NODE
+		do
+			create tree.make_identified (default_concept_code)
+			create target.make_from_tree ("en", tree, default_concept_code)
+			assert_equal (default_concept_code, target.concept_code)
+		end
+
 	test_new_non_specialised_term_code
 			-- Each new non-specialised term code tail keeps increasing by 1, including double-digit tails.
 		note

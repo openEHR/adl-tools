@@ -33,10 +33,15 @@ feature -- Test routines
 			testing: "covers/{DIFFERENTIAL_ARCHETYPE}.make_minimal"
 		local
 			id: ARCHETYPE_ID
+			term: ARCHETYPE_TERM
 		do
 			create id.make_from_string ("openEHR-EHR-CLUSTER.test.v1")
 			create target.make_minimal (create {ARTEFACT_TYPE}, id, "en", 0)
 			assert_equal (default_concept_code, target.ontology.concept_code)
+
+			term := target.ontology.term_definition ("en", default_concept_code)
+			assert ("text", term.has_key ("text"))
+			assert ("description", term.has_key ("description"))
 		end
 
 end

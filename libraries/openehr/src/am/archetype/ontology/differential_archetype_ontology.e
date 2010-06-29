@@ -35,15 +35,22 @@ feature -- Initialisation
 		require
 			Primary_language_valid: a_primary_lang /= Void and then not a_primary_lang.is_empty
 			Valid_specialisation_depth: at_specialisation_depth >= 0
+		local
+			term: ARCHETYPE_TERM
 		do
 			default_create
 			add_language(a_primary_lang)
 			set_primary_language(a_primary_lang)
 			concept_code := new_concept_code_at_level (at_specialisation_depth)
-			initialise_term_definitions(create {ARCHETYPE_TERM}.make (concept_code))
+			create term.make (concept_code)
+			term.set_items ((create {ARCHETYPE_TERM}.make_default).items)
+			initialise_term_definitions(term)
 		ensure
+			Primary_language_set: primary_language.same_string (a_primary_lang)
 			Specialisation_level_set: specialisation_depth = at_specialisation_depth
 			Concept_code_set: valid_concept_code(concept_code) and specialisation_depth_from_code (concept_code) = at_specialisation_depth
+			Concept_code_in_terms: has_term_code (concept_code)
+			Concept_items_not_empty: not term_definition (primary_language, concept_code).items.is_empty
 		end
 
 	make_from_flat(a_flat: FLAT_ARCHETYPE_ONTOLOGY)

@@ -39,6 +39,9 @@ feature -- Initialisation
 			code.append (Default_concept_code)
 			add_item("text", "unknown")
 			add_item("description", "unknown")
+		ensure
+			code_set: code.same_string (default_concept_code)
+			items_not_empty: not items.is_empty
 		end
 
 	make (a_code: STRING)
@@ -47,6 +50,9 @@ feature -- Initialisation
 		do
 			default_create
 			code := a_code
+		ensure
+			code_set: code.same_string (a_code)
+			items_empty: items.is_empty
 		end
 
 	make_from_string (a_str: STRING)
@@ -201,6 +207,7 @@ feature -- Factory
 		do
 			-- make a new term from the old term, with every item wrapped using "*xxx(lang)"
 			create Result.make (code)
+
 			from
 				items.start
 			until
@@ -209,6 +216,18 @@ feature -- Factory
 				Result.add_item (items.key_for_iteration, "*" + items.item_for_iteration + "(" + a_lang + ")")
 				items.forth
 			end
+		ensure
+			same_code: Result.code.same_string (code)
+			same_keys: Result.keys.is_deep_equal (keys)
+			different_items: keys.for_all (
+								agent (key: STRING; original_items, new_items: like items): BOOLEAN
+									local
+										original, new: STRING
+									do
+										original := original_items.item (key)
+										new := new_items.item (key)
+										Result := new.has_substring (original) and not new.is_equal (original)
+									end (?, items, Result.items))
 		end
 
 	create_derived_term (a_code: STRING): ARCHETYPE_TERM
@@ -219,6 +238,7 @@ feature -- Factory
 			Code_valid: a_code /= Void and then not a_code.is_empty
 		do
 			create Result.make (a_code)
+
 			from
 				items.start
 			until
@@ -227,6 +247,18 @@ feature -- Factory
 				Result.add_item (items.key_for_iteration, items.item_for_iteration + "!")
 				items.forth
 			end
+		ensure
+			code_set: Result.code.same_string (a_code)
+			same_keys: Result.keys.is_deep_equal (keys)
+			different_items: keys.for_all (
+								agent (key: STRING; original_items, new_items: like items): BOOLEAN
+									local
+										original, new: STRING
+									do
+										original := original_items.item (key)
+										new := new_items.item (key)
+										Result := new.has_substring (original) and not new.is_equal (original)
+									end (?, items, Result.items))
 		end
 
 feature {NONE} -- Implementation
