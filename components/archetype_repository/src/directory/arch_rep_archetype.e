@@ -76,17 +76,16 @@ inherit
 		end
 
 create
-	make, make_specialised
+	make, make_specialised, make_new
 
 feature {NONE} -- Initialisation
 
-	make (a_full_path: STRING; an_id: attached ARCHETYPE_ID; a_repository: ARCHETYPE_REPOSITORY_I; an_artefact_type: INTEGER)
+	make (a_full_path: attached STRING; an_id: attached ARCHETYPE_ID; a_repository: attached ARCHETYPE_REPOSITORY_I; an_artefact_type: INTEGER)
 			-- Create for the archetype with `an_id', stored at `a_full_path', belonging to `a_repository'.
 			-- Can be created with a .adl or .adls file name extension
 		require
-			repository_attached: a_repository /= Void
-			full_path_attached: a_full_path /= Void
-			valid_artefact_type: (create {ARTEFACT_TYPE}.default_create).valid_type(an_artefact_type)
+			full_path_not_empty: not a_full_path.is_empty
+			valid_artefact_type: (create {ARTEFACT_TYPE}).valid_type(an_artefact_type)
 		do
 			make_item
 			create status.make_empty
@@ -131,13 +130,12 @@ feature {NONE} -- Initialisation
 			compilation_state_set: compilation_state = Cs_ready_to_parse or compilation_state = cs_ready_to_parse_legacy or compilation_state = Cs_rm_class_unknown
 		end
 
-	make_specialised (a_full_path: STRING; an_id, a_parent_id: attached ARCHETYPE_ID; a_repository: ARCHETYPE_REPOSITORY_I; an_artefact_type: INTEGER)
+	make_specialised (a_full_path: attached STRING; an_id, a_parent_id: attached ARCHETYPE_ID; a_repository: attached ARCHETYPE_REPOSITORY_I; an_artefact_type: INTEGER)
 			-- Create for the archetype with `an_id', stored at `a_full_path', belonging to `a_repository' at `a_root_path'.
 			-- Can be created with a .adl or .adls file name extension
 		require
-			repository_attached: a_repository /= Void
-			full_path_attached: a_full_path /= Void
-			valid_artefact_type: (create {ARTEFACT_TYPE}.default_create).valid_type(an_artefact_type)
+			full_path_not_empty: not a_full_path.is_empty
+			valid_artefact_type: (create {ARTEFACT_TYPE}).valid_type(an_artefact_type)
 		do
 			make (a_full_path, an_id, a_repository, an_artefact_type)
 			is_specialised := True
@@ -153,6 +151,48 @@ feature {NONE} -- Initialisation
 			Specialised: is_specialised
 			parent_id_set: parent_id = a_parent_id
 			compilation_state_set: compilation_state = Cs_lineage_known or compilation_state = cs_ready_to_parse_legacy or compilation_state = Cs_rm_class_unknown
+		end
+
+	make_new (an_id: attached ARCHETYPE_ID; a_repository: attached ARCHETYPE_REPOSITORY_I; an_artefact_type: INTEGER; a_primary_language: attached STRING)
+			-- Create a new archetype with `an_id', belonging to `a_repository'.
+		require
+			valid_artefact_type: (create {ARTEFACT_TYPE}).valid_type (an_artefact_type)
+			primary_language_not_empty: not a_primary_language.is_empty
+		local
+			at: ARTEFACT_TYPE
+		do
+			make_item
+			create status.make_empty
+			create compilation_result.make_empty
+
+			id := an_id
+			full_path := id.as_string + archetype_source_file_extension
+			file_repository := a_repository
+
+			create at.make (an_artefact_type)
+			artefact_type := an_artefact_type
+			artefact_name := at.simplified_type_names.item (artefact_type)
+
+			create differential_archetype.make_minimal (at, an_id, a_primary_language, 0)
+			differential_path := full_path
+			flat_path := extension_replaced (full_path, archetype_flat_file_extension)
+			legacy_flat_path := extension_replaced (full_path, archetype_legacy_file_extension)
+			compilation_state := cs_validated
+
+			-- set reference to RM schema
+			if has_rm_schema_for_package (id.qualified_package_name) then
+				rm_schema := rm_schema_for_package (id.qualified_package_name)
+			else
+				compilation_state := cs_rm_class_unknown
+				post_error (Current, "make_new", "model_access_e7", <<id.qualified_rm_name>>)
+			end
+		ensure
+			full_path_set: full_path.has_substring (id.as_string)
+			file_repository_set: file_repository = a_repository
+			id_set: id = an_id
+			compilation_result_empty: compilation_result.is_empty
+			compilation_state_set: compilation_state = cs_validated or compilation_state = cs_rm_class_unknown
+			valid: is_valid
 		end
 
 feature -- Access

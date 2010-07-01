@@ -22,18 +22,21 @@ note
 class ARCHETYPE_PARSER
 
 inherit
+	SHARED_ADL_APPLICATION
+
 	SHARED_KNOWLEDGE_REPOSITORY
 
-	SHARED_APPLICATION_CONTEXT
-		export
-			{NONE} all
-			{ANY} current_language, set_current_language
-		end
+	SHARED_SOURCE_REPOSITORIES
 
-	EXCEPTIONS
-		export
-			{NONE} all
-		end
+	SHARED_ARCHETYPE_SERIALISERS
+
+	SHARED_ARCHETYPE_COMPILER
+
+	SHARED_ADL_ENGINE
+
+	SHARED_C_FACTORY
+
+	SHARED_MESSAGE_BILLBOARD
 
 create
 	make
@@ -42,6 +45,11 @@ feature -- Initialisation
 
 	make
 		do
+			adl_application.initialise
+
+			if attached {ANY} adl_engine as hack_to_initialise_adl_engine then
+				hack_to_initialise_adl_engine.do_nothing
+			end
 		end
 
 feature -- Definitions
@@ -55,8 +63,48 @@ feature -- Definitions
 
 feature -- Access
 
-feature -- Commands
+	selected_archetype: ARCH_REP_ARCHETYPE
+			-- The archetype currently selected in the archetype directory.
+		do
+			Result := arch_dir.selected_archetype
+		end
 
+	flat_archetype: FLAT_ARCHETYPE
+			-- The flattened form the archetype currently selected in the archetype directory.
+		do
+			if attached selected_archetype then
+				Result := selected_archetype.flat_archetype
+			end
+		end
+
+	serialised_archetype (format: attached STRING): attached STRING
+			-- Serialisation of the current archetype into `format'.
+		do
+			if attached flat_archetype then
+				Result := adl_engine.serialise (flat_archetype, format)
+			else
+				Result.make_empty
+			end
+		end
+
+feature -- Factory
+
+	create_new_archetype (id: attached ARCHETYPE_ID; primary_language: attached STRING)
+			-- Create a new top-level archetype and install it into the directory.
+		require
+			primary_language_not_empty: not primary_language.is_empty
+		local
+			arch: ARCH_REP_ARCHETYPE
+		do
+			set_current_language (primary_language)
+			create arch.make_new (id, source_repositories.adhoc_source_repository, {ARTEFACT_TYPE}.archetype, primary_language)
+			arch_dir.set_selected_item (arch)
+		ensure
+			language_set: current_language.same_string (primary_language)
+			flat_archetype_attached: attached flat_archetype
+			flat_archetype_changed: flat_archetype /= old flat_archetype
+			id_set: flat_archetype.archetype_id.is_equal (id)
+		end
 
 end
 
@@ -76,7 +124,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is adl_interface.e.
+--| The Original Code is archetype_parser.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004
