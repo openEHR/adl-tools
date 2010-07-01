@@ -496,8 +496,10 @@ feature -- Commands
 		do
 			if is_specialised then
 				compilation_state := Cs_lineage_known
-			else
+			elseif has_differential_file then
 				compilation_state := Cs_ready_to_parse
+			else
+				compilation_state := Cs_ready_to_parse_legacy
 			end
 		end
 

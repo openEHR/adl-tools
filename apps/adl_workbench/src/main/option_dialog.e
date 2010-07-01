@@ -68,6 +68,11 @@ feature -- Status
 	has_changed_schema_load_list: BOOLEAN
 			-- Schema load list has changed; should refresh
 
+feature -- Access
+
+	old_rm_schemas_load_list: ARRAYED_LIST [STRING]
+			-- previous state of schemas load list
+
 feature {NONE} -- Implementation
 
 	populate_controls
@@ -189,6 +194,7 @@ feature {NONE} -- Implementation
 			if rm_schemas_ll.is_equal (rm_schemas_load_list) then
 				has_changed_schema_load_list := False
 			else
+				old_rm_schemas_load_list := rm_schemas_load_list
 				set_rm_schemas_load_list (rm_schemas_ll)
 				has_changed_schema_load_list := True
 			end
@@ -239,7 +245,8 @@ feature {NONE} -- Implementation
 			-- value of show_entire_ontology prior to setting by optin dialog
 
 	rm_schemas_ll: ARRAYED_LIST [STRING]
-			-- FIXME: should be local variable in on_ok, but compiler complains that it is not visible to agent
+			-- list of checked schemas in options dialog
+
 
 end
 
