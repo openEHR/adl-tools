@@ -25,6 +25,8 @@ inherit
 			{NONE} all
 		end
 
+	ANY_VALIDATOR
+
 	DT_CONVERTIBLE
 
 feature -- Initialisation
@@ -37,7 +39,7 @@ feature -- Initialisation
 			c: BMM_SINGLE_PROPERTY_OPEN
 			d: BMM_GENERIC_PROPERTY
 		do
-
+			reset
 		end
 
 feature -- Access
@@ -125,13 +127,6 @@ feature -- Access
 			Result := class_def.property_definition_at_path(an_og_path)
 		ensure
 			Result_exists: Result /= Void
-		end
-
-	status: STRING
-			-- status report on model
-		do
-			create Result.make(0)
-			Result.append (create_message_content ("model_access_i1", << schema_name, primitive_types.count.out, class_definitions.count.out >>))
 		end
 
 	all_ancestor_classes_of (a_class_name: STRING): ARRAYED_LIST [STRING]
@@ -230,6 +225,40 @@ feature -- Status Report
 		end
 
 feature -- Commands
+
+	validate
+		local
+			class_def: BMM_CLASS_DEFINITION
+		do
+			-- check that all properties in every class have a type set, i.e. this checks that the schema is completely specified
+			-- FIXME: no do_all on HASH_TABLEs! Have to repeat this code...
+			from primitive_types.start until primitive_types.off loop
+				class_def := primitive_types.item_for_iteration
+				from class_def.properties.start until class_def.properties.off loop
+					if class_def.properties.item_for_iteration.type = Void then
+						passed := False
+						add_error("RMPTV", <<class_def.name, class_def.properties.item_for_iteration.name>>)
+					end
+					class_def.properties.forth
+				end
+				primitive_types.forth
+			end
+			from class_definitions.start until class_definitions.off loop
+				class_def := class_definitions.item_for_iteration
+				from class_def.properties.start until class_def.properties.off loop
+					if class_def.properties.item_for_iteration.type = Void then
+						passed := False
+						add_error("RMPTV", <<class_def.name, class_def.properties.item_for_iteration.name>>)
+					end
+					class_def.properties.forth
+				end
+				class_definitions.forth
+			end
+
+			if passed then
+				add_info ("model_access_i1", << schema_name, primitive_types.count.out, class_definitions.count.out >>)
+			end
+		end
 
 	dt_finalise
 			-- clean up after build of model

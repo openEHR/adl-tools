@@ -207,7 +207,10 @@ feature {NONE} -- Implementation
 			-- Build `ara' only if `from_scratch' is true, or if it is has changed since it was last validly built.
 		do
 			if not is_interrupted then
-				if from_scratch or ara.is_out_of_date then
+				if ara.is_out_of_date then
+					ara.signal_source_edited
+				end
+				if from_scratch or not ara.is_in_terminal_compilation_state then
 					status := create_message_line("compiler_compiling_archetype", <<ara.id.value>>)
 					call_visual_update_action (ara)
 

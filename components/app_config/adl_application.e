@@ -84,7 +84,7 @@ feature -- Message database
 			["dt_to_object_type_mismatch"] = <"[Exception caught]: Mismatch error - original recipient = $1">
 				
 			-- SCHEMA_ACCESS (RM model checker)
-			["model_access_e0"] = <"No reference model schema files found in $1">
+			["model_access_e0"] = <"Reference model schema(s) $1 specified in options not valid or not found in directory $2">
 			["model_access_e1"] = <"Reference Model schema file $1 does not exist or not readable">
 			["model_access_e2"] = <"Reference Model schema $1 parse failure; reason: $2">
 			["model_access_e3"] = <"Reference Model schema contains unknown type $1 (object add failed)">
@@ -99,6 +99,7 @@ feature -- Message database
 			["model_access_w4"] = <"Reference Model for $1 meta-data missing/invalid: $2">
 			["model_access_w5"] = <"Unknown Reference Model '$1' mentioned in 'rm_schemas_load_list' config setting (ignored)">
 			["model_access_w6"] = <"No 'rm_schemas_load_list' config setting found; attempting to load all schemas (change via Tools>Options)">
+			["RMPTV"] = <"Error (RMPTV): class definition $1 property $2 type not defined in schema">
 			
 			-- MAIN_WINDOW
 			["adl_version_warning"] = <"Using ADL version $1 for output serialisation">

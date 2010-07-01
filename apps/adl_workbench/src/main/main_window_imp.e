@@ -18,7 +18,7 @@ inherit
 		redefine
 			initialize, is_in_default_state
 		end
-
+			
 	CONSTANTS
 		undefine
 			is_equal, default_create, copy
@@ -33,7 +33,7 @@ feature {NONE}-- Initialization
 		do
 			Precursor {EV_TITLED_WINDOW}
 			initialize_constants
-
+			
 				-- Create all widgets.
 			create menu
 			create file_menu
@@ -241,7 +241,7 @@ feature {NONE}-- Initialization
 			create save_adls_check_button
 			create archetype_test_go_bn
 			create test_status_area
-
+			
 				-- Build widget structure.
 			set_menu_bar (menu)
 			menu.extend (file_menu)
@@ -449,7 +449,7 @@ feature {NONE}-- Initialization
 			l_ev_vertical_box_16.extend (save_adls_check_button)
 			l_ev_vertical_box_16.extend (archetype_test_go_bn)
 			test_split_area.extend (test_status_area)
-
+			
 			create string_constant_set_procedures.make (10)
 			create string_constant_retrieval_functions.make (10)
 			create integer_constant_set_procedures.make (10)
@@ -1041,9 +1041,9 @@ feature {NONE}-- Initialization
 			set_maximum_width (2000)
 			set_maximum_height (2000)
 			set_title ("Archetype Definition Language VER Workbench")
-
+			
 			set_all_attributes_using_constants
-
+			
 				-- Connect events.
 			file_menu_open.select_actions.extend (agent open_archetype)
 			file_menu_parse.select_actions.extend (agent parse_archetype)
@@ -1061,7 +1061,7 @@ feature {NONE}-- Initialization
 			repository_menu_export_html.select_actions.extend (agent export_html)
 			repository_menu_export_repository_report.select_actions.extend (agent export_repository_report)
 			repository_menu_interrupt_build.select_actions.extend (agent interrupt_build)
-			repository_menu_refresh.select_actions.extend (agent refresh_directory)
+			repository_menu_refresh.select_actions.extend (agent populate_directory)
 			history_menu.select_actions.extend (agent on_history)
 			history_menu_back.select_actions.extend (agent on_back)
 			history_menu_forward.select_actions.extend (agent on_forward)
@@ -1205,233 +1205,233 @@ feature {NONE} -- Implementation
 			-- for `Current'.
 			Result := True
 		end
-
+	
 	user_initialization
 			-- Feature for custom initialization, called at end of `initialize'.
 		deferred
 		end
-
-	open_archetype
+	
+	open_archetype is
 			-- Called by `select_actions' of `file_menu_open'.
 		deferred
 		end
-
-	parse_archetype
+	
+	parse_archetype is
 			-- Called by `select_actions' of `file_menu_parse'.
 		deferred
 		end
-
-	edit_archetype
+	
+	edit_archetype is
 			-- Called by `select_actions' of `file_menu_edit'.
 		deferred
 		end
-
-	save_archetype_as
+	
+	save_archetype_as is
 			-- Called by `select_actions' of `file_menu_save_as'.
 		deferred
 		end
-
-	exit_app
+	
+	exit_app is
 			-- Called by `select_actions' of `file_menu_exit'.
 		deferred
 		end
-
-	on_copy
+	
+	on_copy is
 			-- Called by `select_actions' of `edit_menu_copy'.
 		deferred
 		end
-
-	on_select_all
+	
+	on_select_all is
 			-- Called by `select_actions' of `edit_menu_select_all'.
 		deferred
 		end
-
-	show_clipboard
+	
+	show_clipboard is
 			-- Called by `select_actions' of `edit_menu_clipboard'.
 		deferred
 		end
-
-	set_repository
+	
+	set_repository is
 			-- Called by `select_actions' of `repository_menu_set_repository'.
 		deferred
 		end
-
-	build_all
+	
+	build_all is
 			-- Called by `select_actions' of `repository_menu_build_all'.
 		deferred
 		end
-
-	rebuild_all
+	
+	rebuild_all is
 			-- Called by `select_actions' of `repository_menu_rebuild_all'.
 		deferred
 		end
-
-	build_subtree
+	
+	build_subtree is
 			-- Called by `select_actions' of `repository_menu_build_subtree'.
 		deferred
 		end
-
-	rebuild_subtree
+	
+	rebuild_subtree is
 			-- Called by `select_actions' of `repository_menu_rebuild_subtree'.
 		deferred
 		end
-
-	export_html
+	
+	export_html is
 			-- Called by `select_actions' of `repository_menu_export_html'.
 		deferred
 		end
-
-	export_repository_report
+	
+	export_repository_report is
 			-- Called by `select_actions' of `repository_menu_export_repository_report'.
 		deferred
 		end
-
-	interrupt_build
+	
+	interrupt_build is
 			-- Called by `select_actions' of `repository_menu_interrupt_build'.
 		deferred
 		end
-
-	refresh_directory
+	
+	populate_directory is
 			-- Called by `select_actions' of `repository_menu_refresh'.
 		deferred
 		end
-
-	on_history
+	
+	on_history is
 			-- Called by `select_actions' of `history_menu'.
 		deferred
 		end
-
-	on_back
+	
+	on_back is
 			-- Called by `select_actions' of `history_menu_back'.
 		deferred
 		end
-
-	on_forward
+	
+	on_forward is
 			-- Called by `select_actions' of `history_menu_forward'.
 		deferred
 		end
-
-	clean_generated_files
+	
+	clean_generated_files is
 			-- Called by `select_actions' of `tools_menu_clean_generated_files'.
 		deferred
 		end
-
-	set_options
+	
+	set_options is
 			-- Called by `select_actions' of `tools_menu_options'.
 		deferred
 		end
-
-	display_icon_help
+	
+	display_icon_help is
 			-- Called by `select_actions' of `help_menu_icons'.
 		deferred
 		end
-
-	display_news
+	
+	display_news is
 			-- Called by `select_actions' of `help_menu_news'.
 		deferred
 		end
-
-	show_online_help
+	
+	show_online_help is
 			-- Called by `select_actions' of `help_menu_online'.
 		deferred
 		end
-
-	display_about
+	
+	display_about is
 			-- Called by `select_actions' of `help_menu_about'.
 		deferred
 		end
-
-	select_language
+	
+	select_language is
 			-- Called by `select_actions' of `language_combo'.
 		deferred
 		end
-
-	archetype_view_tree_item_select
+	
+	archetype_view_tree_item_select is
 			-- Called by `select_actions' of `archetype_file_tree'.
 		deferred
 		end
-
-	template_view_tree_item_select
+	
+	template_view_tree_item_select is
 			-- Called by `select_actions' of `template_file_tree'.
 		deferred
 		end
-
-	on_archetype_notebook_select
+	
+	on_archetype_notebook_select is
 			-- Called by `selection_actions' of `archetype_notebook'.
 		deferred
 		end
-
-	translations_select_language
+	
+	translations_select_language is
 			-- Called by `select_actions' of `arch_translations_languages_list'.
 		deferred
 		end
-
-	on_node_map_item_select
+	
+	on_node_map_item_select is
 			-- Called by `select_actions' of `node_map_tree'.
 		deferred
 		end
-
-	on_node_map_toggle_expand_tree
+	
+	on_node_map_toggle_expand_tree is
 			-- Called by `select_actions' of `node_map_expand_button'.
 		deferred
 		end
-
-	on_node_map_expand_tree_one_level
+	
+	on_node_map_expand_tree_one_level is
 			-- Called by `select_actions' of `node_map_expand_one_button'.
 		deferred
 		end
-
-	on_node_map_shrink_tree_one_level
+	
+	on_node_map_shrink_tree_one_level is
 			-- Called by `select_actions' of `node_map_collapse_one_button'.
 		deferred
 		end
-
-	on_node_map_domain_selected
+	
+	on_node_map_domain_selected is
 			-- Called by `select_actions' of `node_map_domain_radio_button'.
 		deferred
 		end
-
-	on_node_map_technical_selected
+	
+	on_node_map_technical_selected is
 			-- Called by `select_actions' of `node_map_technical_radio_button'.
 		deferred
 		end
-
-	on_node_map_reference_model_selected
+	
+	on_node_map_reference_model_selected is
 			-- Called by `select_actions' of `node_map_reference_model_radio_button'.
 		deferred
 		end
-
-	path_row_set_filter
+	
+	path_row_set_filter is
 			-- Called by `select_actions' of `path_analysis_row_filter_combo_box'.
 		deferred
 		end
-
-	path_column_select (a_list_item: EV_LIST_ITEM)
+	
+	path_column_select (a_list_item: EV_LIST_ITEM) is
 			-- Called by `check_actions' of `path_analysis_column_view_checkable_list'.
 		deferred
 		end
-
-	path_column_unselect (a_list_item: EV_LIST_ITEM)
+	
+	path_column_unselect (a_list_item: EV_LIST_ITEM) is
 			-- Called by `uncheck_actions' of `path_analysis_column_view_checkable_list'.
 		deferred
 		end
-
-	archetype_test_tree_expand_toggle
+	
+	archetype_test_tree_expand_toggle is
 			-- Called by `select_actions' of `arch_test_tree_toggle_expand_bn'.
 		deferred
 		end
-
-	archetype_test_refresh
+	
+	archetype_test_refresh is
 			-- Called by `select_actions' of `arch_test_refresh_bn'.
 		deferred
 		end
-
-	archetype_test_go_stop
+	
+	archetype_test_go_stop is
 			-- Called by `select_actions' of `archetype_test_go_bn'.
 		deferred
 		end
-
-
+	
+	
 feature {NONE} -- Constant setting
 
 	set_attributes_using_string_constants
@@ -1451,7 +1451,7 @@ feature {NONE} -- Constant setting
 				string_constant_set_procedures.forth
 			end
 		end
-
+		
 	set_attributes_using_integer_constants
 			-- Set all attributes relying on integer constants to the current
 			-- value of the associated constant.
@@ -1487,7 +1487,7 @@ feature {NONE} -- Constant setting
 				integer_interval_constant_set_procedures.forth
 			end
 		end
-
+		
 	set_attributes_using_pixmap_constants
 			-- Set all attributes relying on pixmap constants to the current
 			-- value of the associated constant.
@@ -1505,7 +1505,7 @@ feature {NONE} -- Constant setting
 				pixmap_constant_set_procedures.forth
 			end
 		end
-
+		
 	set_attributes_using_font_constants
 			-- Set all attributes relying on font constants to the current
 			-- value of the associated constant.
@@ -1521,9 +1521,9 @@ feature {NONE} -- Constant setting
 				f := font_constant_retrieval_functions.i_th (font_constant_set_procedures.index).last_result
 				font_constant_set_procedures.item.call ([f])
 				font_constant_set_procedures.forth
-			end
+			end	
 		end
-
+		
 	set_attributes_using_color_constants
 			-- Set all attributes relying on color constants to the current
 			-- value of the associated constant.
@@ -1541,7 +1541,7 @@ feature {NONE} -- Constant setting
 				color_constant_set_procedures.forth
 			end
 		end
-
+		
 	set_all_attributes_using_constants
 			-- Set all attributes relying on constants to the current
 			-- calue of the associated constant.
@@ -1552,7 +1552,7 @@ feature {NONE} -- Constant setting
 			set_attributes_using_font_constants
 			set_attributes_using_color_constants
 		end
-
+					
 	string_constant_set_procedures: ARRAYED_LIST [PROCEDURE [ANY, TUPLE [STRING_GENERAL]]]
 	string_constant_retrieval_functions: ARRAYED_LIST [FUNCTION [ANY, TUPLE [], STRING_GENERAL]]
 	integer_constant_set_procedures: ARRAYED_LIST [PROCEDURE [ANY, TUPLE [INTEGER]]]
@@ -1565,7 +1565,7 @@ feature {NONE} -- Constant setting
 	font_constant_retrieval_functions: ARRAYED_LIST [FUNCTION [ANY, TUPLE [], EV_FONT]]
 	color_constant_set_procedures: ARRAYED_LIST [PROCEDURE [ANY, TUPLE [EV_COLOR]]]
 	color_constant_retrieval_functions: ARRAYED_LIST [FUNCTION [ANY, TUPLE [], EV_COLOR]]
-
+	
 	integer_from_integer (an_integer: INTEGER): INTEGER
 			-- Return `an_integer', used for creation of
 			-- an agent that returns a fixed integer value.

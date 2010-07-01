@@ -492,6 +492,15 @@ feature -- Commands
 			end
 		end
 
+	signal_source_edited
+		do
+			if is_specialised then
+				compilation_state := Cs_lineage_known
+			else
+				compilation_state := Cs_ready_to_parse
+			end
+		end
+
 	signal_lineage_compilation
 		require
 			compilation_state = Cs_lineage_known

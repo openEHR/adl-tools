@@ -94,7 +94,6 @@ feature -- Test routines
 			testing:  "covers/{ARCHETYPE_PATH_ANALYSER}.is_phantom_path_at_level"
 		local
 			apa: ARCHETYPE_PATH_ANALYSER
-			a_path: STRING
 		do
 			create apa.make_from_string("/items[at0004.0.0.1]")
 			assert_equal (False, apa.is_phantom_path_at_level(0))

@@ -46,8 +46,8 @@ feature -- Access
 	reference_repository: attached ARCHETYPE_INDEXED_REPOSITORY_I
 			-- physical reference repository
 
-	work_repository: attached ARCHETYPE_INDEXED_REPOSITORY_I
-			-- physical work repository
+	work_repository: ARCHETYPE_INDEXED_REPOSITORY_I
+			-- physical work repository (optional)
 
 	adhoc_source_repository: attached ARCHETYPE_ADHOC_FILE_REPOSITORY
 			-- An additional 'repository' where archetypes may be found, but not necessarily classified
@@ -115,6 +115,15 @@ feature -- Modification
 			source_repositories.force(work_repository, work_repository.group_id)
 		ensure
 			work_repository /= Void
+		end
+
+	remove_work_repository
+			-- remove work repository from the surce repositories
+		do
+			if source_repositories.has(Group_id_work) then
+				source_repositories.remove(Group_id_work)
+				work_repository := Void
+			end
 		end
 
 invariant

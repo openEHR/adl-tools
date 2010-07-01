@@ -118,14 +118,14 @@ feature -- Conversion
 			Result_not_empty: not Result.is_empty
 		end
 
-		package_class_name (a_package_name, a_class_name: attached STRING): STRING
-				-- generate a standard package-class name string, e.g. "ehr-observation" for use in finding RM schemas
-			require
-				Package_name_valid: not a_package_name.is_empty
-				Class_name_valid: not a_class_name.is_empty
-			do
-				Result := a_package_name + {ARCHETYPE_ID}.section_separator.out + a_class_name
-			end
+	package_class_name (a_package_name, a_class_name: attached STRING): STRING
+			-- generate a standard package-class name string, e.g. "ehr-observation" for use in finding RM schemas
+		require
+			Package_name_valid: not a_package_name.is_empty
+			Class_name_valid: not a_class_name.is_empty
+		do
+			Result := a_package_name + {ARCHETYPE_ID}.section_separator.out + a_class_name
+		end
 
 	type_name_as_flattened_type_list(a_type_name: STRING): ARRAYED_LIST [STRING]
 			-- convert a type name to a flat set of strings

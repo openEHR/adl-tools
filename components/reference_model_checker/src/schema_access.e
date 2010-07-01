@@ -38,6 +38,7 @@ feature -- Initialisation
 			dt_tree: DT_COMPLEX_OBJECT_NODE
 			parser: DADL2_VALIDATOR
 		do
+			create status.make_empty
 			create model_file.make (a_schema_full_path)
 			if not model_file.exists or else not model_file.is_readable then
 				status := create_message_content ("model_access_e1", <<a_schema_full_path>>)
@@ -53,7 +54,15 @@ feature -- Initialisation
 						status := create_message_content ("model_access_e4", <<a_schema_full_path>>)
 					else
 						schema.dt_finalise
-						status := schema.status
+						schema.validate
+						if schema.passed then
+							status.copy (schema.info)
+							status.append (schema.warnings)
+							is_valid := True
+						else
+							status.copy (schema.errors)
+							status.append (schema.warnings)
+						end
 					end
 				else
 					status := create_message_content ("model_access_e2", <<a_schema_full_path, parser.error_text>>)
@@ -67,7 +76,7 @@ feature -- Access
 	class_definition (a_type_name: STRING): BMM_CLASS_DEFINITION
 			-- definition of  `a_type' has a property named `a_property'
 		require
-			Model_loaded: model_loaded
+			Model_loaded: is_valid
 			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
 		do
 			Result := schema.class_definition (a_type_name)
@@ -77,7 +86,7 @@ feature -- Access
 			-- return all ancestor types of `a_class_name' up to root class (usually 'ANY', 'Object' or something similar)
 			-- does  not include current class. Returns empty list if none.
 		require
-			Model_loaded: model_loaded
+			Model_loaded: is_valid
 			Type_valid: a_class_name /= Void and then has_class_definition (a_class_name)
 		do
 			Result := schema.all_ancestor_classes_of(a_class_name)
@@ -88,7 +97,7 @@ feature -- Access
 	properties_of (a_type_name: STRING): HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
 			-- return properties defined directly on class.
 		require
-			Model_loaded: model_loaded
+			Model_loaded: is_valid
 			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
 		do
 			Result := schema.class_definition (a_type_name).properties
@@ -99,7 +108,7 @@ feature -- Access
 	flat_properties_of (a_type_name: STRING): HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
 			-- return all properties of inheritance-flattened class.
 		require
-			Model_loaded: model_loaded
+			Model_loaded: is_valid
 			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
 		do
 			Result := schema.class_definition (a_type_name).flat_properties
@@ -110,7 +119,7 @@ feature -- Access
 	property_type (a_type_name, a_property: STRING): STRING
 			-- Type of `an a_property' in class corresponding to `a_type_name'
 		require
-			Model_loaded: model_loaded
+			Model_loaded: is_valid
 			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
 			Property_valid: a_property /= Void and then has_property(a_type_name, a_property)
 		do
@@ -122,7 +131,7 @@ feature -- Access
 	property_definition (a_type_name, a_property: STRING): BMM_PROPERTY_DEFINITION
 			-- definition of  `a_type' has a property named `a_property'
 		require
-			Model_loaded: model_loaded
+			Model_loaded: is_valid
 			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
 			Property_valid: a_property /= Void and then has_property(a_type_name, a_property)
 		do
@@ -132,7 +141,7 @@ feature -- Access
 	property_definition_at_path (a_type_name, a_property_path: STRING): BMM_PROPERTY_DEFINITION
 			-- retrieve the property definition for `a_property_path' in flattened class corresponding to `a_type_name'
 		require
-			Model_loaded: model_loaded
+			Model_loaded: is_valid
 			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
 			Property_path_valid: a_property_path /= Void and then has_property_path(a_type_name, a_property_path)
 		do
@@ -156,11 +165,8 @@ feature -- Access
 
 feature -- Status Report
 
-	model_loaded: BOOLEAN
+	is_valid: BOOLEAN
 			-- True if a model is available to interrogate
-		do
-			Result := schema /= Void
-		end
 
 	status: STRING
 			-- status of model loading operation; if successful, includes model details
@@ -168,7 +174,7 @@ feature -- Status Report
 	is_descendant_of (a_sub_type, a_parent_type: STRING): BOOLEAN
 			-- True if `a_subclass' is a sub-class in the model of `a_parent_type'
 		require
-			Model_loaded: model_loaded
+			Model_loaded: is_valid
 			Sub_type_valid: a_sub_type /= Void and then not a_sub_type.is_empty
 			Parent_type_valid: a_parent_type /= Void and then not a_parent_type.is_empty
 		do
@@ -178,7 +184,7 @@ feature -- Status Report
 	has_property (a_type_name, a_property: STRING): BOOLEAN
 			-- True if `a_type_name' has a property named `a_property'
 		require
-			Model_loaded: model_loaded
+			Model_loaded: is_valid
 			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
 			Property_valid: a_property /= Void and then not a_property.is_empty
 		do
@@ -189,7 +195,7 @@ feature -- Status Report
 			-- True if `a_type_name' has a class definition in the model. Note that a_type_name
 			-- could be a generic type string; only the root class is considered
 		require
-			Model_loaded: model_loaded
+			Model_loaded: is_valid
 			Type_valid: a_type_name /= Void and then not a_type_name.is_empty
 		do
 			Result := schema.has_class_definition (a_type_name)
@@ -198,7 +204,7 @@ feature -- Status Report
 	valid_property_type (a_type_name, a_property_name, a_property_type_name: STRING): BOOLEAN
 			-- True if `a_property_type_name' is a valid dynamic type for `a_property' in class `a_type_name'
 		require
-			Model_loaded: model_loaded
+			Model_loaded: is_valid
 			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
 			Property_valid: a_property_name /= Void and then has_property(a_type_name, a_property_name)
 			Property_type_name_valid: a_property_type_name /= Void and then has_class_definition (a_property_type_name)
@@ -211,7 +217,7 @@ feature -- Status Report
 	type_conforms_to (type_spec_1, type_spec_2: BMM_TYPE_SPECIFIER): BOOLEAN
 			-- check conformance of type 1 to type 2
 		require
-			Model_loaded: model_loaded
+			Model_loaded: is_valid
 			Type_spec_1_exists: type_spec_1 /= Void
 			Type_spec_2_exists: type_spec_2 /= Void
 		local
@@ -240,7 +246,7 @@ feature -- Status Report
 			-- is `a_path' possible based on this reference model? Path format must be standard forward-slash
 			-- delimited path, or Xpath. Any predicates (i.e. [] sections) in an Xpath will be ignored.
 		require
-			Model_loaded: model_loaded
+			Model_loaded: is_valid
 			object_type_attached: an_obj_type /= Void
 			path_attached: a_path /= Void
 		do

@@ -330,6 +330,7 @@ class_definitions = <
 
 	["DATA_VALUE"] = <
 		name = <"DATA_VALUE">
+		ancestors = </primitive_types["Any"], ...>
 		is_abstract = <True>
 	>
 

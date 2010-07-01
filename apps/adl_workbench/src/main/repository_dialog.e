@@ -89,7 +89,7 @@ feature {NONE} -- Implementation
 
 			s := repository_dialog_work_path_text.text.as_string_8
 			if not s.is_equal (work_repository_path) then
-				if s.is_empty or else source_repos.valid_repository_path (s) then
+				if s.is_empty or else source_repositories.valid_repository_path (s) then
 					set_work_repository_path (s)
 					has_changed_paths := True
 				else

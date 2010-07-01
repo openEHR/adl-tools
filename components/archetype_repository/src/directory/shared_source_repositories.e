@@ -18,7 +18,7 @@ class SHARED_SOURCE_REPOSITORIES
 
 feature -- Access
 
-	source_repos: SOURCE_REPOSITORIES
+	source_repositories: SOURCE_REPOSITORIES
 			-- application-wide archetype source access
 		once
 			create Result.make

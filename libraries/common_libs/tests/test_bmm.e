@@ -33,7 +33,7 @@ feature {NONE} -- Events
 			-- <Precursor>
 		do
 			adl_application.initialise
-			if not found_rm_schemas then
+			if not found_valid_rm_schemas then
 				io.put_string ("Error - RM schema status: " + rm_schema.status)
 			else
 				rm_schema := rm_schema_for_package ("openehr-ehr")

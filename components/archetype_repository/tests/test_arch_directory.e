@@ -43,7 +43,7 @@ feature -- Test routines
 			set_status_reporting_level (message_type_error)
 			repository := resource_value ("tests", "validation_repository")
 
-			source_repos.set_reference_repository (repository)
+			source_repositories.set_reference_repository (repository)
 			arch_dir.populate
 
 			expected := "ERROR - No parent matching /specialisation_parent_term found for archetype " +

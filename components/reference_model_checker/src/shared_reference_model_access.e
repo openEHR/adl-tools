@@ -56,7 +56,7 @@ feature -- Status Report
 			Result := rm_schemas_by_package.has (a_qualified_package_name.as_lower)
 		end
 
-	found_rm_schemas: BOOLEAN
+	found_valid_rm_schemas: BOOLEAN
 			-- True if any Reference Model schemas were found
 		do
 			Result := not rm_schemas.is_empty
@@ -169,7 +169,7 @@ feature {NONE} -- Implementation
 
 						if not rm_schemas.has (logical_schema_name) then
 							create ma.make(schema_path)
-							if ma.model_loaded then
+							if ma.is_valid then
 								rm_schemas.put (ma, logical_schema_name)
 								post_info (Current, "rm_schemas", "general", <<ma.status>>)
 							else

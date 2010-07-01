@@ -231,20 +231,18 @@ feature -- Status Report
 	adhoc_path_valid (a_full_path: STRING): BOOLEAN
 			-- True if path is valid in adhoc repository
 		do
-			Result := source_repos.adhoc_source_repository.is_valid_path (a_full_path)
+			Result := source_repositories.adhoc_source_repository.is_valid_path (a_full_path)
 		end
 
 feature -- Commands
 
-	refresh
-			-- rebuild the directory using the current repository settings
+	clear
+			-- reduce to initial state
 		do
-			if schema_load_counter < rm_schemas_load_count.item then
-				initialise_ontology_prototype
-			end
+			create archetype_index.make(0)
+			ontology := Void
 			create selection_history.make
 			reset_statistics
-			populate
 		end
 
 	populate
@@ -256,15 +254,21 @@ feature -- Commands
 			status_list: ARRAY[INTEGER]
 			i: INTEGER
 		do
+			if schema_load_counter < rm_schemas_load_count.item then
+				initialise_ontology_prototype
+			end
 			clone_ontology_prototype
+			create selection_history.make
+			reset_statistics
+
 			create archetype_index.make(0)
 			from
-				source_repos.source_repositories.start
+				source_repositories.source_repositories.start
 			until
-				source_repos.source_repositories.off
+				source_repositories.source_repositories.off
 			loop
-				source_repos.source_repositories.item_for_iteration.populate
-				archs := source_repos.source_repositories.item_for_iteration.fast_archetype_list
+				source_repositories.source_repositories.item_for_iteration.populate
+				archs := source_repositories.source_repositories.item_for_iteration.fast_archetype_list
 
 				-- maintain a status list indicating status of each attempted archetype; values:
 				-- -1 = succeeded
@@ -312,7 +316,7 @@ feature -- Commands
 					archs.forth
 				end
 
-				source_repos.source_repositories.forth
+				source_repositories.source_repositories.forth
 			end
 		end
 
@@ -405,9 +409,9 @@ feature -- Modification
 			parent_key, child_key: STRING
 			ara: ARCH_REP_ARCHETYPE
 		do
-			source_repos.adhoc_source_repository.add_item (full_path)
-			ara := source_repos.adhoc_source_repository.item(full_path)
-			if source_repos.adhoc_source_repository.has_path (full_path) then
+			source_repositories.adhoc_source_repository.add_item (full_path)
+			ara := source_repositories.adhoc_source_repository.item(full_path)
+			if source_repositories.adhoc_source_repository.has_path (full_path) then
 				parent_key := ara.ontological_parent_name
 				if ontology_index.has (parent_key) then
 					child_key := ara.id.as_string
@@ -416,7 +420,7 @@ feature -- Modification
 						ontology_index.put (ara, child_key)
 						archetype_index.put(ara, child_key)
 						update_statistics(ara)
-						set_selected_item (source_repos.adhoc_source_repository.item (full_path))
+						set_selected_item (source_repositories.adhoc_source_repository.item (full_path))
 					else
 						post_error (Current, "add_adhoc_item", "arch_dir_dup_archetype", <<full_path>>)
 					end
@@ -621,7 +625,7 @@ feature {NONE} -- Implementation
 		end
 
 	schema_load_counter: INTEGER
-			-- track loads of schemas; when changed, re-intialise the ontology prototype
+			-- track loading of schemas; when changed, re-intialise the ontology prototype
 
 	shifter: STRING
 			-- debug indenter

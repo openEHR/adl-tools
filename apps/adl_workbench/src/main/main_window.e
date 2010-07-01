@@ -169,14 +169,13 @@ feature -- Status setting
 
 	show
 			-- Do a few adjustments and load the repository before displaying the window.
-		local
-			quit_dialog: EV_INFORMATION_DIALOG
 		do
-			if not found_rm_schemas then
-				create quit_dialog.make_with_text (create_message_line ("model_access_e0", <<default_rm_schema_directory>>))
-				quit_dialog.set_title ("Error")
-				quit_dialog.show_modal_to_window (Current)
-				ev_application.destroy
+			if not found_valid_rm_schemas then
+				create strx.make_empty
+				rm_schemas_load_list.do_all(agent (s: STRING) do strx.append(s + ", ") end)
+				strx.remove_tail (2) -- remove final ", "
+				append_status_area(create_message_line ("model_access_e0", <<strx, default_rm_schema_directory>>))
+				append_status_area (billboard.content)
 			else
 				-- post any info from actions called in `user_initialization'			
 				append_status_area (billboard.content)
@@ -186,33 +185,39 @@ feature -- Status setting
 					set_reference_repository_path (application_startup_directory)
 					set_repository
 				else
+					if source_repositories.valid_repository_path (reference_repository_path) then
+						source_repositories.set_reference_repository (reference_repository_path)
+					end
+					if source_repositories.valid_repository_path (work_repository_path) then
+						source_repositories.set_work_repository (work_repository_path)
+					end
 					populate_directory
 				end
+			end
 
-				archetype_compiler.set_visual_update_action (agent build_gui_update)
-				initialise_overall_appearance
-				path_map_control.initialise_controls
+			archetype_compiler.set_visual_update_action (agent build_gui_update)
+			initialise_overall_appearance
+			path_map_control.initialise_controls
 
-				Precursor
+			Precursor
 
-				initialise_splitter (test_split_area, test_split_position)
-				initialise_splitter (explorer_split_area, explorer_split_position)
-				initialise_splitter (total_split_area, total_split_position)
-				initialise_splitter (archetype_template_split_area, archetype_template_split_position)
-				focus_first_widget (main_notebook.selected_item)
+			initialise_splitter (test_split_area, test_split_position)
+			initialise_splitter (explorer_split_area, explorer_split_position)
+			initialise_splitter (total_split_area, total_split_position)
+			initialise_splitter (archetype_template_split_area, archetype_template_split_position)
+			focus_first_widget (main_notebook.selected_item)
 
-				if app_maximised then
-					maximize
-				end
+			if app_maximised then
+				maximize
+			end
 
-				if editor_command.is_empty then
-					set_editor_command (default_editor_command)
-				end
+			if editor_command.is_empty then
+				set_editor_command (default_editor_command)
+			end
 
-				if new_news then
-					display_news
-					update_status_file
-				end
+			if new_news then
+				display_news
+				update_status_file
 			end
 		end
 
@@ -232,7 +237,7 @@ feature -- File events
 			fname := dialog.file_name.as_string_8
 
 			if not fname.is_empty then
-				if not source_repos.adhoc_source_repository.has_path (fname) then
+				if not source_repositories.adhoc_source_repository.has_path (fname) then
 					set_current_work_directory (file_system.dirname (fname))
 					if not file_system.file_exists (fname) then
 						(create {EV_INFORMATION_DIALOG}.make_with_text ("%"" + fname + "%" not found.")).show_modal_to_window (Current)
@@ -508,21 +513,15 @@ feature {NONE} -- Repository events
 			dialog.show_modal_to_window (Current)
 
 			if dialog.has_changed_paths then
+				source_repositories.set_reference_repository (reference_repository_path)
+				if not work_repository_path.is_empty then
+					source_repositories.set_work_repository (work_repository_path)
+				else
+					source_repositories.remove_work_repository
+				end
 				populate_directory
 				save_resources_and_show_status
 			end
-		end
-
-	refresh_directory
-			-- repopulate the current repository using existing RM schemas and source repositories
-		do
-			append_status_area ("Populating directory ...")
-			arch_dir.refresh
-			archetype_view_tree_control.populate
-			template_view_tree_control.populate
-			archetype_test_tree_control.populate
-			populate_statistics
-			append_status_area ("complete%N")
 		end
 
 	build_all
@@ -704,7 +703,14 @@ feature {NONE} -- Tools events
 			if dialog.has_changed_schema_load_list then
 				clear_status_area
 				load_rm_schemas
-				populate_directory
+				if not found_valid_rm_schemas then
+					append_status_area (billboard.content)
+					billboard.clear
+
+					-- FIXME: reset rm schema load list back?
+				else
+					populate_directory
+				end
 			end
 		end
 
@@ -1022,14 +1028,6 @@ feature {NONE} -- Implementation
 					compiler_error_control.clear
 
 					select_node_in_archetype_tree_view
-
-					if source_repos.valid_repository_path (reference_repository_path) then
-						source_repos.set_reference_repository (reference_repository_path)
-					end
-
-					if source_repos.valid_repository_path (work_repository_path) then
-						source_repos.set_work_repository (work_repository_path)
-					end
 
 					append_status_area ("Populating directory ... ")
 					arch_dir.populate
@@ -1382,6 +1380,8 @@ feature {NONE} -- Standard Windows behaviour that EiffelVision ought to be manag
 			focused: Result /= Void implies Result.has_focus
 			in_this_window: Result /= Void implies has_recursive (Result)
 		end
+
+	strx: STRING
 
 end
 
