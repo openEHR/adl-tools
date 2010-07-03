@@ -49,7 +49,9 @@ feature -- Initialization
 			strings.extend(str)
 			strings.compare_objects
 		ensure
-			not is_open
+			strings_attached: strings /= Void
+			not_open: not is_open
+			str_valid: valid_value (str)
 		end
 
 	make_from_regexp(str: STRING; using_default_delimiter: BOOLEAN)
@@ -66,7 +68,8 @@ feature -- Initialization
 				regexp := Regexp_compile_error.twin
 			end
 		ensure
-			strings = Void
+			strings_void: strings = Void
+			not_open: not is_open
 			regexp.is_equal(str) xor regexp.is_equal(Regexp_compile_error)
 		end
 
@@ -78,8 +81,8 @@ feature -- Initialization
 			strings.fill(lst)
 			strings.compare_objects
 		ensure
-			strings /= Void
-			not is_open
+			strings_attached: strings /= Void
+			not_open: not is_open
 		end
 
 feature -- Modification
@@ -91,9 +94,13 @@ feature -- Modification
 
 	add_string(str: STRING)
 		require
-			str /= Void
+			str_attached: str /= Void
+			strings_attached: strings /= Void
 		do
 			strings.extend(str)
+		ensure
+			extended: strings.count = old strings.count + 1
+			str_valid: valid_value (str)
 		end
 
 feature -- Access
