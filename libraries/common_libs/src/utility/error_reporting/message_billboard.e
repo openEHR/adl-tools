@@ -48,6 +48,12 @@ feature -- Access
 			Result := filtered_content(status_reporting_level)
 		end
 
+	most_recent: STRING
+			-- text of most recent addition
+		do
+			Result := item_formatted(billboard.first, status_reporting_level)
+		end
+
 feature -- Status Report
 
 	has_errors: BOOLEAN

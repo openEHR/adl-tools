@@ -92,7 +92,9 @@ feature -- Message database
 			["model_access_e5"] = <"Reference Model schema directory $1 does not exist or not readable">
 			["model_access_e6"] = <"Reference Model schema directory $1 does not contain any schemas (expecting structure $1/model_name/schema_file.dadl)">
 			["model_access_e7"] = <"No Reference Model schema found for package '$1'">
+
 			["model_access_i1"] = <"Reference Model $1 loaded: $2 primitive types, $3 class definitions">
+
 			["model_access_w1"] = <"Reference Model checking is OFF">
 			["model_access_w2"] = <"Duplicate Reference Model schema found for model '$1' in file $2">
 			["model_access_w3"] = <"Duplicate instance of Reference Model package $1 found; ignoring instance from schema $2">
@@ -174,51 +176,51 @@ feature -- Message database
 			["duplicate_filename"] = <"Duplicate file name or alternate version $1">
 			
 			------------------------- syntax errors: see the cADL, dADL and ADL syntax validators ---------------------
-			["SARID"] = <"in 'archetype' clause; expecting archetype id (model_issuer-ref_model-model_class.concept.version)">
-			["SASID"] = <"in 'specialise' clause; expecting parent archetype id (model_issuer-ref_model-model_class.concept.version)">
-			["SACO"] = <"in 'concept' clause; expecting TERM_CODE reference">
-			["SALA"] = <"error in language section">
-			["SALAN"] = <"no language section found">
-			["SADS"] = <"error in description section">
-			["SADF"] = <"error in definition section">
-			["SAIV"] = <"error in invariant section">
-			["SAON"] = <"error in ontology section">
+			["SARID"] = <"Syntax error (SARID): in artefact identification clause; expecting archetype id (format = model_issuer-package-class.concept.version)">
+			["SASID"] = <"Syntax error (SASID): in 'specialise' clause; expecting parent archetype id (model_issuer-ref_model-model_class.concept.version)">
+			["SACO"] = <"Syntax error (SACO): in 'concept' clause; expecting TERM_CODE reference">
+			["SALA"] = <"Syntax error (SALA): error in language section">
+			["SALAN"] = <"Syntax error (SALAN): no language section found">
+			["SADS"] = <"Syntax error (SADS): error in description section">
+			["SADF"] = <"Syntax error (SADF): error in definition section">
+			["SAIV"] = <"Syntax error (SAIV): error in invariant section">
+			["SAON"] = <"Syntax error (SAON): error in ontology section">
 
-			["SDSF"] = <"differential syntax not allowed in top-level archetype">
-			["SDINV"] = <"invalid dADL section; error: $1">
-			["SCCOG"] = <"expecting a new node definition, primitive node definition, 'use' path, or 'archetype' reference">
-			["SUAID"] = <"expecting [archetype_id], or [at-code ',' archetype_id] in use_archetype statement">
-			["SOCCF"] = <"expecting an 'occurrences expression', e.g. 'occurrences matches {n..m}'">
-			["SUNPA"] = <"expecting absolute path in use_node statement">
-			["SUAS"] = <"error after 'use_archetype' keyword; expecting Object node definition">
-			["SCAS"] = <"expecting a 'any' node, 'leaf' node, or new node definition">
-			["SINVS"] = <"illegal invariant expression at identifier $1">
-			["SEXPT"] = <"expecting absolute path after exists keyword">
-			["SEXLSG"] = <"existence single value must be 0 or 1">
-			["SEXLU1"] = <"existence upper limit must be 0 or 1 when lower limit is 0">
-			["SEXLU2"] = <"existence upper limit must be 1 when lower limit is 1">
-			["SEXLMG"] = <"existence must be one of 0..0, 0..1, or 1..1">
+			["SDSF"] = <"Syntax error (SDSF): differential syntax not allowed in top-level archetype">
+			["SDINV"] = <"Syntax error (SDINV): invalid dADL section; error: $1">
+			["SCCOG"] = <"Syntax error (SCCOG): expecting a new node definition, primitive node definition, 'use' path, or 'archetype' reference">
+			["SUAID"] = <"Syntax error (SUAID): expecting [archetype_id], or [at-code ',' archetype_id] in use_archetype statement">
+			["SOCCF"] = <"Syntax error (SOCCF): expecting an 'occurrences expression', e.g. 'occurrences matches {n..m}'">
+			["SUNPA"] = <"Syntax error (SUNPA): expecting absolute path in use_node statement">
+			["SUAS"] = <"Syntax error (SUAS): error after 'use_archetype' keyword; expecting Object node definition">
+			["SCAS"] = <"Syntax error (SCAS): expecting a 'any' node, 'leaf' node, or new node definition">
+			["SINVS"] = <"Syntax error (SINVS): illegal invariant expression at identifier $1">
+			["SEXPT"] = <"Syntax error (SEXPT): expecting absolute path after exists keyword">
+			["SEXLSG"] = <"Syntax error (SEXLSG): existence single value must be 0 or 1">
+			["SEXLU1"] = <"Syntax error (SEXLU1): existence upper limit must be 0 or 1 when lower limit is 0">
+			["SEXLU2"] = <"Syntax error (SEXLU2): existence upper limit must be 1 when lower limit is 1">
+			["SEXLMG"] = <"Syntax error (SEXLMG): existence must be one of 0..0, 0..1, or 1..1">
 
-			["SCIAV"] = <"invalid assumed value; must be an integer">
-			["SCRAV"] = <"invalid assumed value; must be a real number">
-			["SCDAV"] = <"invalid assumed value; must be an ISO8601 date">
-			["SCTAV"] = <"invalid assumed value; must be an ISO8601 time">
-			["SCDTAV"] = <"invalid assumed value; must be an ISO8601 date/time">
-			["SCDUAV"] = <"invalid assumed value; must be an ISO8601 duration">
-			["SCSAV"] = <"invalid assumed value; must be a string">
-			["SCBAV"] = <"invalid assumed value; must be a 'True' or 'False'">
-			["SCOAV"] = <"invalid assumed value; must be an ordinal integer value">
+			["SCIAV"] = <"Syntax error (SCIAV): invalid assumed value; must be an integer">
+			["SCRAV"] = <"Syntax error (SCRAV): invalid assumed value; must be a real number">
+			["SCDAV"] = <"Syntax error (SCDAV): invalid assumed value; must be an ISO8601 date">
+			["SCTAV"] = <"Syntax error (SCTAV): invalid assumed value; must be an ISO8601 time">
+			["SCDTAV"] = <"Syntax error (SCDTAV): invalid assumed value; must be an ISO8601 date/time">
+			["SCDUAV"] = <"Syntax error (SCDUAV): invalid assumed value; must be an ISO8601 duration">
+			["SCSAV"] = <"Syntax error (SCSAV): invalid assumed value; must be a string">
+			["SCBAV"] = <"Syntax error (SCBAV): invalid assumed value; must be a 'True' or 'False'">
+			["SCOAV"] = <"Syntax error (SCOAV): invalid assumed value; must be an ordinal integer value">
 
-			["SCDPT"] = <"invalid date constraint pattern; allowed patterns: $1">
-			["SCTPT"] = <"invalid time constraint pattern; allowed patterns: $1">
-			["SCDTPT"] = <"invalid date/time constraint pattern; allowed patterns: $1">
-			["SCDUPT"] = <"invalid duration constraint pattern; legal pattern: P[Y|y][M|m][W|w][D|d][T[H|h][M|m][S|s]] or P[W|w]">
-			["SCSRE"] = <"regular expression compile error '$1' is not a valid regular expression">
-			["SCPCV"] = <"invalid term code constraint pattern: $1">
-			["STCV"] = <"Invalid term code reference: '$1'; code string can only contain digits, letters and '.', '_' and '-' and must commence with a letter or digit">
+			["SCDPT"] = <"Syntax error (SCDPT): invalid date constraint pattern; allowed patterns: $1">
+			["SCTPT"] = <"Syntax error (SCTPT): invalid time constraint pattern; allowed patterns: $1">
+			["SCDTPT"] = <"Syntax error (SCDTPT): invalid date/time constraint pattern; allowed patterns: $1">
+			["SCDUPT"] = <"Syntax error (SCDUPT): invalid duration constraint pattern; legal pattern: P[Y|y][M|m][W|w][D|d][T[H|h][M|m][S|s]] or P[W|w]">
+			["SCSRE"] = <"Syntax error (SCSRE): regular expression compile error '$1' is not a valid regular expression">
+			["SCPCV"] = <"Syntax error (SCPCV): invalid term code constraint pattern: $1">
+			["STCV"] = <"Syntax error (STCV)Invalid term code reference: '$1'; code string can only contain digits, letters and '.', '_' and '-' and must commence with a letter or digit">
 
-			["SDAT"] = <"invalid attribute value">
-			["SGEE"] = <"generic object not enclosed by normal object not allowed">
+			["SDAT"] = <"Syntax error (SDAT)invalid attribute value">
+			["SGEE"] = <"Syntax error (SGEE)generic object not enclosed by normal object not allowed">
 
 			-------------- validity errors: unless otherwise noted, these codes are defined in the AOM 1.5 or later spec ------------------
 			["VASID"] = <"Error (VASID): specialised archetype id not based on specialisation parent archetype id">
@@ -274,8 +276,7 @@ feature -- Message database
 			["VSUNT"] = <"Error (VSUNT): node at path $1 AOM type $2 does not conform to node at parent path $3 AOM type $4">
 
 			-- dADL
-			["VOBAV"] = <"Error (VOBAV): assumed value $1 not within constraint range">
-			["VOBAVL"] = <"Error (VOBAVL): assumed value $1 not found in constraint list"> -- additional to ADL spec
+			["VOBAV"] = <"Error (VOBAV): assumed value $1 not within constraint value space">
 			["VCPCV"] = <"Error (VCPCV): invalid term code constraint: $1">
 			["VCOV"] = <"Error (VCOV): invalid ordinal constraint: duplicated value $1">
 			["VCOC"] = <"Error (VCOC): invalid ordinal constraint: duplicated code $1">
@@ -287,7 +288,7 @@ feature -- Message database
 			["VIDUV"] = <"Error (VIDUV): invalid ISO8601 duration: $1"> -- dADL validity; additional to spec
 
 			["VDATU"] = <"Error (VDATU): dADL object duplicate attribute: $1">
-			["VDOBU"] = <"Error (VDOBU): object key must be unique; key [$1] already exists under attribute '$2'">
+			["VOKU"] = <"Error (VOKU): dADL object key must be unique; key [$1] already exists under attribute '$2'">
 
 			-- C_ARCHETYPE_SLOT
 			["VASMD"] = <"Error (VASMD): definition of slot of RM type $1 at path $2 missing; only allowed if slot is 'closed'">

@@ -1530,7 +1530,7 @@ c_ordinal: c_ordinal_spec
 			if ordinal_node.has_item ($3) then
 				ordinal_node.set_assumed_value_from_integer ($3)
 			else
-				abort_with_error("VOBAVL", <<$3.out>>)
+				abort_with_error("VOBAV", <<$3.out>>)
 			end
  		}
  	| c_ordinal_spec ';' error
@@ -1569,7 +1569,7 @@ c_code_phrase: V_TERM_CODE_CONSTRAINT	-- e.g. "[local::at0040, at0041; at0040]"
 			if c_code_phrase_obj.valid_pattern ($1) then
 				c_code_phrase_obj.make_from_pattern ($1)
 			else
-				abort_with_error("SCPCV", <<c_code_phrase_obj.fail_reason>>)
+				abort_with_error("VOBAV", <<c_code_phrase_obj.fail_reason>>)
 			end
 		}
 	| V_QUALIFIED_TERM_CODE_REF

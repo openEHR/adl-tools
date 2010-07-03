@@ -293,7 +293,7 @@ multiple_attr_object_block_head: SYM_START_DBLOCK
 					attr_nodes.item.put_child(complex_object_node)
 				else
 					raise_error
-					report_error(create_message_line("VDOBU", <<complex_object_node.node_id, attr_nodes.item.rm_attr_name >>))
+					report_error(create_message_line("VOKU", <<complex_object_node.node_id, attr_nodes.item.rm_attr_name >>))
 					abort
 				end
 
@@ -449,7 +449,7 @@ single_attr_object_complex_head: SYM_START_DBLOCK
 					attr_nodes.item.put_child(complex_object_node)
 				else
 					raise_error
-					report_error(create_message_line("VDOBU", <<complex_object_node.node_id, attr_nodes.item.rm_attr_name >>))
+					report_error(create_message_line("VOKU", <<complex_object_node.node_id, attr_nodes.item.rm_attr_name >>))
 					abort
 				end
 			end
@@ -495,7 +495,7 @@ untyped_primitive_object_block: SYM_START_DBLOCK primitive_object_value SYM_END_
 				$$ := $2
 			else
 				raise_error
-				report_error(create_message_line("VDOBU", <<$2.node_id, attr_nodes.item.rm_attr_name >>))
+				report_error(create_message_line("VOKU", <<$2.node_id, attr_nodes.item.rm_attr_name >>))
 				abort
 			end
 		}
@@ -1353,7 +1353,7 @@ object_reference_block: SYM_START_DBLOCK absolute_path_object_value SYM_END_DBLO
 				$$ := $2
 			else
 				raise_error
-				report_error(create_message_line("VDOBU", <<$2.node_id, attr_nodes.item.rm_attr_name >>))
+				report_error(create_message_line("VOKU", <<$2.node_id, attr_nodes.item.rm_attr_name >>))
 				abort
 			end
 		}

@@ -22,29 +22,29 @@ create
 
 feature -- Access
 
-	term_definition(a_lang, a_term_code: STRING): ARCHETYPE_TERM
-			-- retrieve the term definition in language `a_lang' for code `a_term_code'
+	term_definition(a_language, a_code: STRING): attached ARCHETYPE_TERM
+			-- retrieve the term definition in language `a_language' for code `a_code'
 		do
-			Result := term_definitions.item(a_lang).item(a_term_code)
+			Result := term_definitions.item(a_language).item(a_code)
 		end
 
-	constraint_definition(a_lang, a_term_code: STRING): ARCHETYPE_TERM
-			-- retrieve the constraint definition in language `a_lang' for code `a_term_code'
+	constraint_definition(a_language, a_code: STRING): attached ARCHETYPE_TERM
+			-- retrieve the constraint definition in language `a_language' for code `a_code'
 		do
-			Result := constraint_definitions.item(a_lang).item(a_term_code)
+			Result := constraint_definitions.item(a_language).item(a_code)
 		end
 
-	term_binding(a_terminology, a_term_code: STRING): CODE_PHRASE
-			-- retrieve the term definition in language `a_lang' for code `a_term_code'
+	term_binding(a_terminology, a_code: STRING): attached CODE_PHRASE
+			-- retrieve the term binding from terminology `a_terminology' for code `a_code'
 		do
-			Result := term_bindings.item(a_terminology).item(a_term_code)
+			Result := term_bindings.item(a_terminology).item(a_code)
 		end
 
-	constraint_binding(a_terminology, a_term_code: STRING): URI
-			-- retrieve the constraint definition in language `a_lang' for code `a_term_code'
+	constraint_binding(a_terminology, a_code: STRING): attached URI
+			-- retrieve the constraint binding from terminology `a_terminology' for code `a_code'
 			-- in form of a string: "service::query"
 		do
-			Result := constraint_bindings.item(a_terminology).item(a_term_code)
+			Result := constraint_bindings.item(a_terminology).item(a_code)
 		end
 
 	terminology_extract_term (a_terminology, a_code: STRING): ARCHETYPE_TERM
@@ -55,56 +55,68 @@ feature -- Access
 
 feature -- Status Report
 
-	has_term_code(a_term_code: STRING): BOOLEAN
-			-- is `a_term_code' known in this ontology
+	has_term_code(a_code: STRING): BOOLEAN
+			-- is `a_code' known in this ontology
 		do
-			Result := term_codes.has(a_term_code)
+			Result := term_codes.has(a_code)
 		end
 
-	has_constraint_code(a_constraint_code: STRING): BOOLEAN
+	has_constraint_code(a_code: STRING): BOOLEAN
 			--
 		do
-			Result := constraint_codes.has(a_constraint_code)
+			Result := constraint_codes.has(a_code)
 		end
 
-	has_any_term_binding(a_term_code: STRING): BOOLEAN
-			-- true if there is any term binding for code `a_term_code'
+	has_term_definition (a_language, a_code: STRING): BOOLEAN
+			-- is `a_code' defined in `a_language' in this ontology?
+		do
+			Result := term_definitions.has (a_language) and then term_definitions.item(a_language).has(a_code)
+		end
+
+	has_constraint_definition (a_language, a_code: STRING): BOOLEAN
+			-- is `a_code' defined in `a_language' in this ontology?
+		do
+			Result := constraint_definitions.has (a_language) and then constraint_definitions.item(a_language).has(a_code)
+		end
+
+	has_any_term_binding(a_code: STRING): BOOLEAN
+			-- true if there is any term binding for code `a_code'
 		local
 			p: ARRAYED_LIST_CURSOR
 		do
 			p := terminologies_available.cursor
 			from terminologies_available.start until terminologies_available.off or Result loop
 				Result := term_bindings.has(terminologies_available.item) and then
-					term_bindings.item(terminologies_available.item).has(a_term_code)
+					term_bindings.item(terminologies_available.item).has(a_code)
 				terminologies_available.forth
 			end
 			terminologies_available.go_to (p)
 		end
 
-	has_term_binding(a_terminology, a_term_code: STRING): BOOLEAN
-			-- true if there is a term binding for code `a_term_code' in `a_terminology'
+	has_term_binding(a_terminology, a_code: STRING): BOOLEAN
+			-- true if there is a term binding for code `a_code' in `a_terminology'
 		do
-			Result := term_bindings.has(a_terminology) and then term_bindings.item(a_terminology).has(a_term_code)
+			Result := term_bindings.has(a_terminology) and then term_bindings.item(a_terminology).has(a_code)
 		end
 
-	has_any_constraint_binding(a_term_code: STRING): BOOLEAN
-			-- true if there is any constraint binding for code `a_term_code'
+	has_any_constraint_binding(a_code: STRING): BOOLEAN
+			-- true if there is any constraint binding for code `a_code'
 		local
 			p: ARRAYED_LIST_CURSOR
 		do
 			p := terminologies_available.cursor
 			from terminologies_available.start until terminologies_available.off or Result loop
 				Result := constraint_bindings.has(terminologies_available.item) and then
-					constraint_bindings.item(terminologies_available.item).has(a_term_code)
+					constraint_bindings.item(terminologies_available.item).has(a_code)
 				terminologies_available.forth
 			end
 			terminologies_available.go_to (p)
 		end
 
-	has_constraint_binding(a_terminology, a_term_code: STRING): BOOLEAN
-			-- true if there is a term binding for code `a_term_code' in `a_terminology'
+	has_constraint_binding(a_terminology, a_code: STRING): BOOLEAN
+			-- true if there is a term binding for code `a_code' in `a_terminology'
 		do
-			Result := constraint_bindings.has(a_terminology) and then constraint_bindings.item(a_terminology).has(a_term_code)
+			Result := constraint_bindings.has(a_terminology) and then constraint_bindings.item(a_terminology).has(a_code)
 		end
 
 	has_terminology_extract (a_terminology: STRING): BOOLEAN

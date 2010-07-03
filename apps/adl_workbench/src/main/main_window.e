@@ -99,11 +99,12 @@ feature {NONE} -- Initialization
 			add_menu_shortcut (repository_menu_build_subtree, key_f7, True, False, False)
 			add_menu_shortcut (repository_menu_rebuild_subtree, key_f7, True, False, True)
 			add_menu_shortcut (repository_menu_interrupt_build, key_escape, False, False, True)
+			add_menu_shortcut (repository_menu_refresh, key_r, True, False, False)
+
+			add_menu_shortcut (tools_menu_reload_schemas, key_l, True, False, False)
 
 			add_menu_shortcut (history_menu_back, key_left, False, True, False)
 			add_menu_shortcut (history_menu_forward, key_right, False, True, False)
-
-			add_menu_shortcut (repository_menu_refresh, key_r, True, False, False)
 
 			archetype_file_tree.set_default_key_processing_handler (
 				agent (key: EV_KEY): BOOLEAN
@@ -712,6 +713,13 @@ feature {NONE} -- Tools events
 					populate_directory
 				end
 			end
+		end
+
+	reload_schemas
+			-- user-initiated reload
+		do
+			load_rm_schemas
+			populate_directory
 		end
 
 feature {NONE} -- Help events

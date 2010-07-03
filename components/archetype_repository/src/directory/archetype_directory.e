@@ -76,6 +76,11 @@ feature -- Access
 	archetype_index: attached DS_HASH_TABLE [ARCH_REP_ARCHETYPE, STRING]
 			-- index of archetype descriptors. Used in rest of application
 
+	ontology_index: attached DS_HASH_TABLE [ARCH_REP_ITEM, STRING]
+			-- Index of archetype & class nodes, keyed by ontology concept. Used during construction of `directory'
+			-- For class nodes, this will be package_name-class_name, e.g. DEMOGRAPHIC-PARTY.
+			-- For archetype nodes, this will be the archetype id.
+
 	selected_item: ARCH_REP_ITEM
 			-- The folder or archetype at `selected_node'.
 		do
@@ -263,14 +268,14 @@ feature -- Commands
 
 			create archetype_index.make(0)
 			from
-				source_repositories.source_repositories.start
+				source_repositories.repositories.start
 			until
-				source_repositories.source_repositories.off
+				source_repositories.repositories.off
 			loop
-				source_repositories.source_repositories.item_for_iteration.populate
-				archs := source_repositories.source_repositories.item_for_iteration.fast_archetype_list
+				source_repositories.repositories.item_for_iteration.populate
+				archs := source_repositories.repositories.item_for_iteration.fast_archetype_list
 
-				-- maintain a status list indicating status of each attempted archetype; values:
+				-- maintain a list indicating status of each attempted archetype; values:
 				-- -1 = succeeded
 				-- -2 = failed (duplicate)
 				--  0 = not yet tried
@@ -316,7 +321,7 @@ feature -- Commands
 					archs.forth
 				end
 
-				source_repositories.source_repositories.forth
+				source_repositories.repositories.forth
 			end
 		end
 
@@ -434,18 +439,19 @@ feature -- Modification
 			end
 		end
 
-	update_archetype_id(old_id, new_id: STRING)
+	update_archetype_id(ara: ARCH_REP_ARCHETYPE)
 		require
-			old_id_valid: old_id /= Void and then archetype_index.has (old_id)
-			new_id_valid: new_id /= Void and then not archetype_index.has(new_id)
-		local
-			ara: ARCH_REP_ARCHETYPE
+			ara_attached: ara /= Void
+			old_id_valid: ara.old_id /= Void and then archetype_index.has (ara.old_id.as_string) and then archetype_index.item (ara.old_id.as_string) = ara
+			new_id_valid: not archetype_index.has(ara.id.as_string)
+			ontological_parent_exists: ontology_index.has(ara.ontological_parent_name)
 		do
-			ara := archetype_index.item (old_id)
-			archetype_index.remove (old_id)
-			archetype_index.force (ara, new_id)
-			ontology_index.remove (old_id)
-			ontology_index.force (ara, new_id)
+			archetype_index.remove (ara.old_id.as_string)
+			archetype_index.force (ara, ara.id.as_string)
+			ontology_index.remove (ara.old_id.as_string)
+			ontology_index.force (ara, ara.id.as_string)
+			ontology_index.item (ara.ontological_parent_name).put_child (ara)
+			ara.clear_old_ontological_parent_name
 		end
 
 feature -- Traversal
@@ -515,11 +521,6 @@ feature {NONE} -- Implementation
 			-- The contents of the structure consist of archetypes found in the reference and
 			-- working repositories, and are subsequently attached into the structure.
 			-- Archetypes opened adhoc are also grafted here.
-
-	ontology_index: attached DS_HASH_TABLE [ARCH_REP_ITEM, STRING]
-			-- Index of archetype & class nodes, keyed by ontology concept. Used during construction of `directory'
-			-- For class nodes, this will be package_name-class_name, e.g. DEMOGRAPHIC-PARTY.
-			-- For archetype nodes, this will be the archetype id.
 
 	ontology_prototype: CELL [ARCH_REP_MODEL_NODE]
 			-- pure ontology structure created from RM schemas; to be used to create a copy for each refresh of the repository

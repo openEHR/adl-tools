@@ -25,14 +25,13 @@ feature -- Definitions
 	Cs_suppliers_known: INTEGER = 30
 	Cs_ready_to_validate: INTEGER = 40
 	Cs_validated: INTEGER = 50
---	Cs_compiled: INTEGER = 60
-	Cs_rm_class_unknown: INTEGER = 5
-	Cs_lineage_compile_failed: INTEGER = 15
-	Cs_parse_failed: INTEGER = 25
-	Cs_convert_legacy_failed: INTEGER = 26
-	Cs_suppliers_compile_failed: INTEGER = 35
-	Cs_validate_failed: INTEGER = 45
---	Cs_compile_failed: INTEGER = 55
+	Cs_invalid: INTEGER = -1
+	Cs_rm_class_unknown: INTEGER = -2
+	Cs_lineage_compile_failed: INTEGER = -10
+	Cs_parse_failed: INTEGER = -20
+	Cs_convert_legacy_failed: INTEGER = -21
+	Cs_suppliers_compile_failed: INTEGER = -30
+	Cs_validate_failed: INTEGER = -40
 
 feature -- Access
 
@@ -47,14 +46,13 @@ feature -- Access
 			Result.put("Suppliers known", Cs_suppliers_known)
 			Result.put("Ready to validate", Cs_ready_to_validate)
 			Result.put("Validated", Cs_validated)
---			Result.put("Compiled", Cs_compiled)
+			Result.put("Invalid", Cs_invalid)
 			Result.put("RM class unknown", Cs_rm_class_unknown)
 			Result.put("Lineage compile failed", Cs_lineage_compile_failed)
 			Result.put("Parse failed", Cs_parse_failed)
 			Result.put("Convert legacy .adl failed", Cs_convert_legacy_failed)
 			Result.put("Suppliers compile failed", Cs_suppliers_compile_failed)
 			Result.put("Validate failed", Cs_validate_failed)
---			Result.put("Compile failed", Cs_compile_failed)
 		end
 
 	Cs_terminal_states: ARRAYED_LIST [INTEGER]
@@ -62,14 +60,24 @@ feature -- Access
 			-- (external events e.g. editing the source file can revert the target to another state)
 		once
 			create Result.make(0)
---			Result.extend(Cs_compiled)
+			Result.extend(Cs_invalid)
 			Result.extend(Cs_rm_class_unknown)
 			Result.extend(Cs_lineage_compile_failed)
 			Result.extend(Cs_parse_failed)
 			Result.extend(Cs_convert_legacy_failed)
 			Result.extend(Cs_suppliers_compile_failed)
 			Result.extend(Cs_validate_failed)
---			Result.extend(Cs_compile_failed)
+		end
+
+	Cs_initial_states: ARRAYED_LIST [INTEGER]
+			-- states in which an archetype descriptor can be post-creation or editing
+		once
+			create Result.make(0)
+			Result.extend(Cs_lineage_known)
+			Result.extend(Cs_rm_class_unknown)
+			Result.extend(Cs_ready_to_parse)
+			Result.extend(Cs_ready_to_parse_legacy)
+			Result.extend(Cs_validated) -- possible due to new in-memory creation
 		end
 
 feature -- Status Report

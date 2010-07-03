@@ -960,7 +960,7 @@ end
 					attr_nodes.item.put_child(complex_object_node)
 				else
 					raise_error
-					report_error(create_message_line("VDOBU", <<complex_object_node.node_id, attr_nodes.item.rm_attr_name >>))
+					report_error(create_message_line("VOKU", <<complex_object_node.node_id, attr_nodes.item.rm_attr_name >>))
 					abort
 				end
 
@@ -1204,7 +1204,7 @@ end
 					attr_nodes.item.put_child(complex_object_node)
 				else
 					raise_error
-					report_error(create_message_line("VDOBU", <<complex_object_node.node_id, attr_nodes.item.rm_attr_name >>))
+					report_error(create_message_line("VOKU", <<complex_object_node.node_id, attr_nodes.item.rm_attr_name >>))
 					abort
 				end
 			end
@@ -1268,7 +1268,7 @@ end
 				yyval14 := yyvs14.item (yyvsp14)
 			else
 				raise_error
-				report_error(create_message_line("VDOBU", <<yyvs14.item (yyvsp14).node_id, attr_nodes.item.rm_attr_name >>))
+				report_error(create_message_line("VOKU", <<yyvs14.item (yyvsp14).node_id, attr_nodes.item.rm_attr_name >>))
 				abort
 			end
 
@@ -5280,7 +5280,7 @@ end
 				yyval14 := yyvs14.item (yyvsp14)
 			else
 				raise_error
-				report_error(create_message_line("VDOBU", <<yyvs14.item (yyvsp14).node_id, attr_nodes.item.rm_attr_name >>))
+				report_error(create_message_line("VOKU", <<yyvs14.item (yyvsp14).node_id, attr_nodes.item.rm_attr_name >>))
 				abort
 			end
 

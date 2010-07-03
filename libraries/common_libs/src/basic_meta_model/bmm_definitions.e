@@ -52,7 +52,7 @@ feature -- Definitions
 			-- MUST correspond to attribute of same name in BMM_SCHEMA class
 
 	Metadata_schema_path: STRING = "schema_path"
-			-- pseudo meta-data attribute to be used with schemas during initialisation
+			-- path of schema file
 
 	Schema_fast_parse_attrs: ARRAY [STRING]
 			-- attributes to retrieve for initial fast parse on schemas

@@ -34,7 +34,7 @@ feature -- Initialisation
 
 	make
 		do
-			create source_repositories.make (0)
+			create repositories.make (0)
 			create adhoc_source_repository.make (Group_id_adhoc)
 
 		-- FIXME: probably add adhoc repo to list and treat it as a normal source, although it is missing some features
@@ -56,7 +56,7 @@ feature -- Access
 			-- archetypes keyed by path on the file system. They are not merged onto the directory
 			-- but 'grafted' - a simpler operation.
 
-	source_repositories: attached DS_HASH_TABLE [attached ARCHETYPE_INDEXED_REPOSITORY_I, INTEGER]
+	repositories: attached DS_HASH_TABLE [attached ARCHETYPE_INDEXED_REPOSITORY_I, INTEGER]
 			-- Physical repositories of archetypes, keyed by logical id.
 			-- Each such repository consists of archetypes arranged in a directory structure
 			-- mimicking an ontological structure, e.g. ehr/entry/observation, etc.
@@ -78,15 +78,15 @@ feature -- Comparison
 					s1.append_character (os_directory_separator)
 				end
 
-				from source_repositories.start until source_repositories.off or not Result loop
-					s2 := source_repositories.item_for_iteration.root_path.twin
+				from repositories.start until repositories.off or not Result loop
+					s2 := repositories.item_for_iteration.root_path.twin
 
 					if s2.item (s2.count) /= os_directory_separator then
 						s2.append_character (os_directory_separator)
 					end
 
 					Result := not s1.starts_with (s2) and not s2.starts_with (s1)
-					source_repositories.forth
+					repositories.forth
 				end
 			end
 		ensure
@@ -101,7 +101,7 @@ feature -- Modification
 			dir_name_valid: valid_repository_path (dir_name)
 		do
 			create {ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP} reference_repository.make (file_system.canonical_pathname (dir_name), Group_id_reference)
-			source_repositories.force(reference_repository, reference_repository.group_id)
+			repositories.force(reference_repository, reference_repository.group_id)
 		ensure
 			reference_repository /= Void
 		end
@@ -112,7 +112,7 @@ feature -- Modification
 			dir_name_valid: valid_repository_path (dir_name)
 		do
 			create {ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP} work_repository.make (file_system.canonical_pathname (dir_name), Group_id_work)
-			source_repositories.force(work_repository, work_repository.group_id)
+			repositories.force(work_repository, work_repository.group_id)
 		ensure
 			work_repository /= Void
 		end
@@ -120,15 +120,15 @@ feature -- Modification
 	remove_work_repository
 			-- remove work repository from the surce repositories
 		do
-			if source_repositories.has(Group_id_work) then
-				source_repositories.remove(Group_id_work)
+			if repositories.has(Group_id_work) then
+				repositories.remove(Group_id_work)
 				work_repository := Void
 			end
 		end
 
 invariant
 	adhoc_source_repository_group_id: adhoc_source_repository.group_id = 1
-	repositories_group_ids: source_repositories.for_all (agent (repository: attached ARCHETYPE_INDEXED_REPOSITORY_I): BOOLEAN
+	repositories_group_ids: repositories.for_all (agent (repository: attached ARCHETYPE_INDEXED_REPOSITORY_I): BOOLEAN
 		do
 			Result := repository.group_id > 1
 		end)

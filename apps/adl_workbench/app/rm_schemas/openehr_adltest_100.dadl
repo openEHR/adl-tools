@@ -25,7 +25,7 @@ model_release = <"1.0.0">
 packages = <
 	["test_pkg"] = <
 		name = <"test_pkg">
-		classes = <"WHOLE", "SOME_TYPE", "BOOK"> 
+		classes = <"WHOLE", "SOME_TYPE", "BOOK", "ENTRY"> 
 	>
 >
 
@@ -200,6 +200,10 @@ primitive_types = <
 ------------------------------------------------------
 
 class_definitions = <
+
+	--
+	-- -------------------- selected classes from openEHR data types ---------------------
+	--
 
 	["DATA_VALUE"] = <
 		name = <"DATA_VALUE">
@@ -452,6 +456,91 @@ class_definitions = <
 			>
 		>
 	>
+
+	--
+	-- -------------------- classes for validity tests ---------------------
+	--
+
+	["ITEM"] = <
+		name = <"ITEM">
+		ancestors = </primitive_types["Any"], ...>
+		is_abstract = <True>
+	>
+
+	["CLUSTER"] = <
+		name = <"CLUSTER">
+		ancestors = </class_definitions["ITEM"], ...>
+		properties = <
+			["items"] = (BMM_CONTAINER_PROPERTY) <
+				name = <"items">
+				type = <
+					type = </class_definitions["ITEM"]>
+					container_type = </primitive_types["List"]>
+					cardinality = <|>=1|>
+				>
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	["ELEMENT"] = <
+		name = <"ELEMENT">
+		ancestors = </class_definitions["ITEM"], ...>
+		properties = <
+			["null_flavour"] = (BMM_SINGLE_PROPERTY) <
+				name = <"null_flavour">
+				type = </class_definitions["DV_CODED_TEXT"]>
+				is_mandatory = <True>
+			>
+			["value"] = (BMM_SINGLE_PROPERTY) <
+				name = <"value">
+				type = </class_definitions["DATA_VALUE"]>
+			>
+		>
+	>
+
+	["ENTRY"] = <
+		name = <"ENTRY">
+		ancestors = </primitive_types["Any"], ...>
+		properties = <
+			["value"] = (BMM_SINGLE_PROPERTY) <
+				name = <"value">
+				type = </class_definitions["CODE_PHRASE"]>
+			>
+			["coded_text_value"] = (BMM_SINGLE_PROPERTY) <
+				name = <"coded_text_value">
+				type = </class_definitions["DV_CODED_TEXT"]>
+			>
+			["ordinal_attr_1"] = (BMM_SINGLE_PROPERTY) <
+				name = <"ordinal_attr_1">
+				type = </class_definitions["DV_ORDINAL"]>
+			>
+			["element_attr"] = (BMM_CONTAINER_PROPERTY) <
+				name = <"element_attr">
+				type = <
+					type = </class_definitions["ELEMENT"]>
+					container_type = </primitive_types["List"]>
+					cardinality = <|>=0|>
+				>
+			>
+			["element_attr_2"] = (BMM_CONTAINER_PROPERTY) <
+				name = <"element_attr_2">
+				type = <
+					type = </class_definitions["ELEMENT"]>
+					container_type = </primitive_types["List"]>
+					cardinality = <|>=0|>
+				>
+			>
+			["item"] = (BMM_SINGLE_PROPERTY) <
+				name = <"item">
+				type = </class_definitions["DATA_VALUE"]>
+			>
+		>
+	>
+
+	--
+	-- -------------------- classes for basic tests ---------------------
+	--
 
 	["BOOK"] = <
 		name = <"BOOK">

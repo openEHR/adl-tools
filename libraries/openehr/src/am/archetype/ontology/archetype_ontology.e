@@ -107,65 +107,55 @@ feature -- Access
 			non_negative: Result >= 0
 		end
 
-	term_definition(a_lang, a_term_code: STRING): ARCHETYPE_TERM
-			-- retrieve the term definition in language `a_lang' for code `a_term_code'
+	term_definition(a_language, a_code: STRING): attached ARCHETYPE_TERM
+			-- retrieve the term definition in language `a_language' for code `a_code'
 		require
-			Language_valid: a_lang /= Void and then has_language(a_lang)
-			Term_code_valid: a_term_code /= Void and then has_term_code (a_term_code)
+			Language_valid: a_language /= Void
+			Term_code_valid: a_code /= Void
+			Term_definition_exists: has_term_definition (a_language, a_code)
 		deferred
-		ensure
-			Result_exists: Result /= Void
 		end
 
-	constraint_definition(a_lang, a_term_code: STRING): ARCHETYPE_TERM
-			-- retrieve the constraint definition in language `a_lang' for code `a_term_code'
+	constraint_definition(a_language, a_code: STRING): attached ARCHETYPE_TERM
+			-- retrieve the constraint definition in language `a_language' for code `a_code'
 		require
-			Language_valid: a_lang /= Void and then has_language(a_lang)
-			Term_code_valid: a_term_code /= Void and then has_constraint_code(a_term_code)
+			Language_valid: a_language /= Void
+			Term_code_valid: a_code /= Void
+			Term_definition_exists: has_constraint_definition (a_language, a_code)
 		deferred
-		ensure
-			Result_exists: Result /= Void
 		end
 
-	term_binding(a_terminology, a_term_code: STRING): CODE_PHRASE
-			-- retrieve the term definition in language `a_lang' for code `a_term_code'
+	term_binding(a_terminology, a_code: STRING): attached CODE_PHRASE
+			-- retrieve the term definition in language `a_language' for code `a_code'
 		require
 			Terminology_valid: a_terminology /= Void and then terminologies_available.has(a_terminology)
-			Term_code_valid: a_term_code /= Void and then has_term_binding(a_terminology, a_term_code)
+			Term_code_valid: a_code /= Void and then has_term_binding(a_terminology, a_code)
 		deferred
-		ensure
-			Result_exists: Result /= Void
 		end
 
-	term_bindings_for_terminology(a_terminology: STRING): HASH_TABLE [CODE_PHRASE, STRING]
+	term_bindings_for_terminology(a_terminology: STRING): attached HASH_TABLE [CODE_PHRASE, STRING]
 			-- retrieve the term bindings for a particular terminology
 		require
 			Terminology_valid: a_terminology /= Void and then terminologies_available.has(a_terminology)
 		do
 			Result := term_bindings.item(a_terminology)
-		ensure
-			Result_exists: Result /= Void
 		end
 
-	constraint_binding(a_terminology, a_term_code: STRING): URI
-			-- retrieve the constraint definition in language `a_lang' for code `a_term_code'
+	constraint_binding(a_terminology, a_code: STRING): attached URI
+			-- retrieve the constraint definition in language `a_language' for code `a_code'
 			-- in form of a string: "service::query"
 		require
 			Terminology_valid: a_terminology /= Void and then terminologies_available.has(a_terminology)
-			Term_code_valid: a_term_code /= Void and then has_constraint_binding(a_terminology, a_term_code)
+			Term_code_valid: a_code /= Void and then has_constraint_binding(a_terminology, a_code)
 		deferred
-		ensure
-			Result_exists: Result /= Void
 		end
 
-	constraint_bindings_for_terminology(a_terminology: STRING): HASH_TABLE [URI, STRING]
+	constraint_bindings_for_terminology(a_terminology: STRING): attached HASH_TABLE [URI, STRING]
 			-- retrieve the term bindings for a particular terminology
 		require
 			Terminology_valid: a_terminology /= Void and then terminologies_available.has(a_terminology)
 		do
 			Result := constraint_bindings.item(a_terminology)
-		ensure
-			Result_exists: Result /= Void
 		end
 
 	terminology_extract_term (a_terminology, a_code: STRING): ARCHETYPE_TERM
@@ -192,11 +182,11 @@ feature -- Access
 
 	warnings: STRING
 
-	physical_to_logical_path(a_phys_path: STRING; a_lang: STRING): STRING
-			-- generate a logical path in 'a_lang' from a physical path
+	physical_to_logical_path(a_phys_path: STRING; a_language: STRING): STRING
+			-- generate a logical path in 'a_language' from a physical path
 		require
 			a_path_valid: a_phys_path /= Void
-			a_lang_valid: a_lang /= Void not a_lang.is_empty
+			a_lang_valid: a_language /= Void not a_language.is_empty
 		local
 			term_code: STRING
 			og_phys_path, og_log_path: OG_PATH
@@ -213,7 +203,7 @@ feature -- Access
 					term_code := og_phys_path.item.object_id
 					if is_valid_code (term_code) then
 						if has_term_code(term_code) then
-							og_log_path.item.set_object_id (term_definition(a_lang, term_code).item("text"))
+							og_log_path.item.set_object_id (term_definition(a_language, term_code).item("text"))
 						end
 					else
 						og_log_path.item.set_object_id (term_code)
@@ -239,24 +229,40 @@ feature -- Status Report
 		end
 
 	has_terminology (a_terminology: STRING): BOOLEAN
-			-- is `a_terminology' known in this ontology
+			-- is `a_terminology' known in this ontology?
 		require
 			Terminology_valid: a_terminology /= Void and then not a_terminology.is_empty
 		do
 			Result := terminologies_available.has(a_terminology)
 		end
 
-	has_term_code (a_term_code: STRING): BOOLEAN
-			-- is `a_term_code' known in this ontology
+	has_term_code (a_code: STRING): BOOLEAN
+			-- is `a_code' known in this ontology?
 		require
-			Term_code_valid: a_term_code /= Void and then is_valid_code(a_term_code)
+			Term_code_valid: a_code /= Void and then is_valid_code(a_code)
 		deferred
 		end
 
-	has_constraint_code (a_constraint_code: STRING): BOOLEAN
+	has_term_definition (a_language, a_code: STRING): BOOLEAN
+			-- is `a_code' defined in `a_language' in this ontology?
+		require
+			Term_code_valid: a_code /= Void and then is_valid_code(a_code)
+			Language_valid: a_language /= Void and then not a_language.is_empty
+		deferred
+		end
+
+	has_constraint_code (a_code: STRING): BOOLEAN
 			--
 		require
-			Constraint_code_valid: a_constraint_code /= Void and then is_valid_code(a_constraint_code)
+			Code_valid: a_code /= Void and then is_valid_code(a_code)
+		deferred
+		end
+
+	has_constraint_definition (a_language, a_code: STRING): BOOLEAN
+			-- is `a_code' defined in `a_language' in this ontology?
+		require
+			Constraint_code_valid: a_code /= Void and then is_valid_code(a_code)
+			Language_valid: a_language /= Void and then not a_language.is_empty
 		deferred
 		end
 
@@ -276,33 +282,33 @@ feature -- Status Report
 			Result := constraint_bindings.has(a_terminology)
 		end
 
-	has_any_term_binding (a_term_code: STRING): BOOLEAN
-			-- true if there is any term binding for code `a_term_code'
+	has_any_term_binding (a_code: STRING): BOOLEAN
+			-- true if there is any term binding for code `a_code'
 		require
-			Term_code_valid: a_term_code /= Void and then is_valid_code(a_term_code)
+			Term_code_valid: a_code /= Void and then is_valid_code(a_code)
 		deferred
 		end
 
-	has_term_binding (a_terminology, a_term_code: STRING): BOOLEAN
-			-- true if there is a term binding for code `a_term_code' in `a_terminology'
+	has_term_binding (a_terminology, a_code: STRING): BOOLEAN
+			-- true if there is a term binding for code `a_code' in `a_terminology'
 		require
 			Terminology_valid: a_terminology /= Void and then not terminologies_available.is_empty
-			Term_code_valid: a_term_code /= Void and then is_valid_code(a_term_code)
+			Term_code_valid: a_code /= Void and then is_valid_code(a_code)
 		deferred
 		end
 
-	has_any_constraint_binding (a_term_code: STRING): BOOLEAN
-			-- true if there is any constraint binding for code `a_term_code'
+	has_any_constraint_binding (a_code: STRING): BOOLEAN
+			-- true if there is any constraint binding for code `a_code'
 		require
-			Term_code_valid: a_term_code /= Void and then is_valid_code(a_term_code)
+			Term_code_valid: a_code /= Void and then is_valid_code(a_code)
 		deferred
 		end
 
-	has_constraint_binding (a_terminology, a_term_code: STRING): BOOLEAN
-			-- true if there is a term binding for code `a_term_code' in `a_terminology'
+	has_constraint_binding (a_terminology, a_code: STRING): BOOLEAN
+			-- true if there is a term binding for code `a_code' in `a_terminology'
 		require
 			Terminology_valid: a_terminology /= Void and then not terminologies_available.is_empty
-			Term_code_valid: a_term_code /= Void and then is_valid_code(a_term_code)
+			Term_code_valid: a_code /= Void and then is_valid_code(a_code)
 		deferred
 		end
 
@@ -323,24 +329,24 @@ feature -- Status Report
 
 feature -- Modification
 
-	set_primary_language (a_lang: STRING)
+	set_primary_language (a_language: STRING)
 			-- set the primary language of the ontology
 		require
-			A_lang_valid: a_lang /= Void -- and then languages_available.has(a_lang)
+			A_lang_valid: a_language /= Void -- and then languages_available.has(a_language)
 		do
-			primary_language := a_lang
+			primary_language := a_language
 		ensure
-			Language_set: primary_language.is_equal(a_lang)
+			Language_set: primary_language.is_equal(a_language)
 		end
 
-	add_term_definition(a_lang: STRING; a_term: ARCHETYPE_TERM)
-			-- add a new term definition for language `a_lang' and
+	add_term_definition(a_language: STRING; a_term: ARCHETYPE_TERM)
+			-- add a new term definition for language `a_language' and
 			-- automatically add translation placeholders in all other languages
 		require
-			Language_valid: a_lang /= Void and then has_language(a_lang)
+			Language_valid: a_language /= Void and then has_language(a_language)
 			Term_valid: a_term /= Void and not has_term_code(a_term.code) and specialisation_depth_from_code (a_term.code) <= specialisation_depth
 		do
-			put_term_definition (a_lang, a_term)
+			put_term_definition (a_language, a_term)
 			term_codes.extend (a_term.code)
 			update_highest_specialised_code_index (a_term.code)
 			update_highest_term_code_index (a_term.code)
@@ -348,28 +354,28 @@ feature -- Modification
 			Code_valid: has_term_code(a_term.code)
 		end
 
-	replace_term_definition(a_lang: STRING; a_term: ARCHETYPE_TERM; replace_translations: BOOLEAN)
+	replace_term_definition(a_language: STRING; a_term: ARCHETYPE_TERM; replace_translations: BOOLEAN)
 			-- replace the definition of an existing term code; replace all translations
-			-- if flag set and `a_lang' is the primary language
+			-- if flag set and `a_language' is the primary language
 		require
-			Language_valid: a_lang /= Void and then has_language(a_lang)
+			Language_valid: a_language /= Void and then has_language(a_language)
 			Term_valid: a_term /= Void and then has_term_code(a_term.code)
 		do
-			if a_lang.is_equal(primary_language) and replace_translations then
-				put_term_definition(a_lang, a_term) -- replace all translations as well
+			if a_language.is_equal(primary_language) and replace_translations then
+				put_term_definition(a_language, a_term) -- replace all translations as well
 			else
-				term_definitions.item(a_lang).replace(a_term, a_term.code) -- just do this translation
+				term_definitions.item(a_language).replace(a_term, a_term.code) -- just do this translation
 			end
 		end
 
-	add_constraint_definition(a_lang: STRING; a_term: ARCHETYPE_TERM)
-			-- add a new constraint definition for language `a_lang' and
+	add_constraint_definition(a_language: STRING; a_term: ARCHETYPE_TERM)
+			-- add a new constraint definition for language `a_language' and
 			-- automatically add translation placeholders
 		require
-			Language_valid: a_lang /= Void and then has_language(a_lang)
+			Language_valid: a_language /= Void and then has_language(a_language)
 			Term_valid: a_term /= Void and then not has_constraint_code(a_term.code) and specialisation_depth_from_code (a_term.code) <= specialisation_depth
 		do
-			put_constraint_definition (a_lang, a_term)
+			put_constraint_definition (a_language, a_term)
 			constraint_codes.extend (a_term.code)
 			update_highest_specialised_code_index (a_term.code)
 			update_highest_constraint_code_index (a_term.code)
@@ -377,27 +383,27 @@ feature -- Modification
 			has_constraint_code(a_term.code)
 		end
 
-	replace_constraint_definition(a_lang: STRING; a_term: ARCHETYPE_TERM; replace_translations: BOOLEAN)
+	replace_constraint_definition(a_language: STRING; a_term: ARCHETYPE_TERM; replace_translations: BOOLEAN)
 			-- replace the definition of an existing constraint code; replace all translations
-			-- if flag set and `a_lang' is the primary language
+			-- if flag set and `a_language' is the primary language
 		require
-			Language_valid: a_lang /= Void and then has_language(a_lang)
+			Language_valid: a_language /= Void and then has_language(a_language)
 			Term_valid: a_term /= Void and then has_constraint_code(a_term.code)
 		do
-			if a_lang.is_equal(primary_language) and replace_translations then
-				put_constraint_definition(a_lang, a_term) -- replace all translations as well
+			if a_language.is_equal(primary_language) and replace_translations then
+				put_constraint_definition(a_language, a_term) -- replace all translations as well
 			else
-				constraint_definitions.item(a_lang).replace(a_term, a_term.code) -- just do this translation
+				constraint_definitions.item(a_language).replace(a_term, a_term.code) -- just do this translation
 			end
 		end
 
-	add_term_binding(a_code_phrase: CODE_PHRASE; a_term_code: STRING)
-			-- add a new term binding to local code a_term_code, in the terminology
+	add_term_binding(a_code_phrase: CODE_PHRASE; a_code: STRING)
+			-- add a new term binding to local code a_code, in the terminology
 			-- group corresponding to the a_code_phrase.terminology
 		require
 			Code_phrase_exists: a_code_phrase /= Void
-			Local_code_valid: a_term_code /= Void and then has_term_code(a_term_code)
-			Not_already_added: not has_term_binding(a_code_phrase.terminology_id.name, a_term_code)
+			Local_code_valid: a_code /= Void and then has_term_code(a_code)
+			Not_already_added: not has_term_binding(a_code_phrase.terminology_id.name, a_code)
 		local
 			a_terminology: STRING
 		do
@@ -410,18 +416,18 @@ feature -- Modification
 				term_bindings.put(create {HASH_TABLE[CODE_PHRASE, STRING]}.make(0), a_terminology)
 			end
 
-			term_bindings.item(a_terminology).put(a_code_phrase, a_term_code)
+			term_bindings.item(a_terminology).put(a_code_phrase, a_code)
 		ensure
-			Binding_added: has_term_binding(a_code_phrase.terminology_id.name, a_term_code)
+			Binding_added: has_term_binding(a_code_phrase.terminology_id.name, a_code)
 		end
 
-	add_constraint_binding(a_uri: URI; a_terminology, a_constraint_code: STRING)
-			-- add a new constraint binding to local code a_term_code, in the terminology
+	add_constraint_binding(a_uri: URI; a_terminology, a_code: STRING)
+			-- add a new constraint binding to local code a_code, in the terminology
 			-- group corresponding to the a_code_phrase.terminology
 		require
 			Uri_exists: a_uri /= Void
-			Local_code_valid: a_constraint_code /= Void and then has_constraint_code(a_constraint_code)
-			Not_already_added: not has_constraint_binding(a_terminology, a_constraint_code)
+			Local_code_valid: a_code /= Void and then has_constraint_code(a_code)
+			Not_already_added: not has_constraint_binding(a_terminology, a_code)
 		do
 			if not terminologies_available.has(a_terminology) then
 				terminologies_available.extend (a_terminology)
@@ -429,9 +435,9 @@ feature -- Modification
 			if not has_constraint_bindings(a_terminology) then
 				constraint_bindings.put(create {HASH_TABLE[URI, STRING]}.make(0), a_terminology)
 			end
-			constraint_bindings.item(a_terminology).put(a_uri, a_constraint_code)
+			constraint_bindings.item(a_terminology).put(a_uri, a_code)
 		ensure
-			Binding_added: has_constraint_binding(a_terminology, a_constraint_code)
+			Binding_added: has_constraint_binding(a_terminology, a_code)
 		end
 
 	remove_term_definition(a_code: STRING)
@@ -513,14 +519,14 @@ feature -- Modification
 			not has_constraint_code(a_code)
 		end
 
-	remove_term_binding(a_term_code, a_terminology: STRING)
+	remove_term_binding(a_code, a_terminology: STRING)
 			-- remove term binding to local code in group a_terminology
 		require
-			Local_code_valid: a_term_code /= Void and then has_term_code(a_term_code)
+			Local_code_valid: a_code /= Void and then has_term_code(a_code)
 			Terminology_valid: terminologies_available.has(a_terminology)
-			Has_binding: has_term_binding(a_terminology, a_term_code)
+			Has_binding: has_term_binding(a_terminology, a_code)
 		do
-			term_bindings.item(a_terminology).remove(a_term_code)
+			term_bindings.item(a_terminology).remove(a_code)
 			if term_bindings.item(a_terminology).count = 0 then
 				term_bindings.remove (a_terminology)
 				if not constraint_bindings.has (a_terminology) then
@@ -528,17 +534,17 @@ feature -- Modification
 				end
 			end
 		ensure
-			Binding_removed: not has_term_binding(a_terminology, a_term_code)
+			Binding_removed: not has_term_binding(a_terminology, a_code)
 		end
 
-	remove_constraint_binding(a_constraint_code, a_terminology: STRING)
+	remove_constraint_binding(a_code, a_terminology: STRING)
 			-- remove constraint binding to local code in group a_terminology
 		require
-			Local_code_valid: a_constraint_code /= Void and then has_constraint_code(a_constraint_code)
+			Local_code_valid: a_code /= Void and then has_constraint_code(a_code)
 			Terminology_valid: terminologies_available.has(a_terminology)
-			Has_binding: has_constraint_binding(a_terminology, a_constraint_code)
+			Has_binding: has_constraint_binding(a_terminology, a_code)
 		do
-			constraint_bindings.item(a_terminology).remove(a_constraint_code)
+			constraint_bindings.item(a_terminology).remove(a_code)
 			if constraint_bindings.item(a_terminology).count = 0 then
 				constraint_bindings.remove (a_terminology)
 				if not term_bindings.has (a_terminology) then
@@ -546,7 +552,7 @@ feature -- Modification
 				end
 			end
 		ensure
-			Binding_removed: not has_constraint_binding(a_terminology, a_constraint_code)
+			Binding_removed: not has_constraint_binding(a_terminology, a_code)
 		end
 
 feature -- Conversion
@@ -743,39 +749,39 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 	highest_code_specialisation_level: INTEGER
 			-- level of most specialised code in this ontology; used for detecting codes from a lower level than the archetype itself
 
-	put_term_definition(a_lang: STRING; a_term: ARCHETYPE_TERM)
-			-- put a new term definition for language `a_lang' and
+	put_term_definition(a_language: STRING; a_term: ARCHETYPE_TERM)
+			-- put a new term definition for language `a_language' and
 			-- automatically add translation placeholders in all other languages
 		local
 			trans_term: ARCHETYPE_TERM
 		do
-			term_definitions.item(a_lang).force(a_term, a_term.code)
+			term_definitions.item(a_language).force(a_term, a_term.code)
 			trans_term := a_term.create_translated_term(primary_language)
 			from term_definitions.start until term_definitions.off loop
-				if not term_definitions.key_for_iteration.is_equal(a_lang) then
+				if not term_definitions.key_for_iteration.is_equal(a_language) then
 					term_definitions.item_for_iteration.force(trans_term.deep_twin, trans_term.code)
 				end
 				term_definitions.forth
 			end
 		ensure
-			term_definitions.item(a_lang).has(a_term.code)
+			term_definitions.item(a_language).has(a_term.code)
 		end
 
-	put_constraint_definition(a_lang: STRING; a_term: ARCHETYPE_TERM)
-			-- add a new constraint definition for language `a_lang' and
+	put_constraint_definition(a_language: STRING; a_term: ARCHETYPE_TERM)
+			-- add a new constraint definition for language `a_language' and
 			-- automatically add translation placeholders
 		local
 			trans_term: ARCHETYPE_TERM
 		do
-			if not constraint_definitions.has(a_lang) then
-				constraint_definitions.put(create {HASH_TABLE[ARCHETYPE_TERM, STRING]}.make(0), a_lang)
+			if not constraint_definitions.has(a_language) then
+				constraint_definitions.put(create {HASH_TABLE[ARCHETYPE_TERM, STRING]}.make(0), a_language)
 			end
-			constraint_definitions.item(a_lang).force(a_term, a_term.code)
-			trans_term := a_term.create_translated_term(a_lang)
+			constraint_definitions.item(a_language).force(a_term, a_term.code)
+			trans_term := a_term.create_translated_term(a_language)
 
 			-- in the following, iterate over term_definitions to get definitive list of languages
 			from term_definitions.start until term_definitions.off loop
-				if not term_definitions.key_for_iteration.is_equal(a_lang) then
+				if not term_definitions.key_for_iteration.is_equal(a_language) then
 					if not constraint_definitions.has(term_definitions.key_for_iteration) then
 						constraint_definitions.put(create {HASH_TABLE[ARCHETYPE_TERM, STRING]}.make(0), term_definitions.key_for_iteration)
 					end
@@ -784,7 +790,7 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 				term_definitions.forth
 			end
 		ensure
-			constraint_definitions.item(a_lang).has(a_term.code)
+			constraint_definitions.item(a_language).has(a_term.code)
 		end
 
 	synchronise_from_tree
@@ -793,7 +799,7 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 			term_defs_one_lang: HASH_TABLE[ARCHETYPE_TERM, STRING]
 			term_bindings_one_terminology: HASH_TABLE[CODE_PHRASE, STRING]
 			constraint_bindings_one_terminology: HASH_TABLE[URI, STRING]
-			code, a_lang, terminology_path: STRING
+			code, a_language, terminology_path: STRING
 			an_attr_node: DT_ATTRIBUTE_NODE
 		do
 			if representation.has_path("/" + Sym_terminologies_available) then
@@ -808,13 +814,13 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 				an_attr_node := representation.attribute_node_at_path("/" + Sym_term_definitions)
 				if an_attr_node.is_multiple then
 					from an_attr_node.start until an_attr_node.off loop
-						a_lang := an_attr_node.item.node_id
-						if has_path("/" + Sym_term_definitions + "[" + a_lang + "]/items") then
+						a_language := an_attr_node.item.node_id
+						if has_path("/" + Sym_term_definitions + "[" + a_language + "]/items") then
 							create term_defs_one_lang.make(0)
-							populate_term_defs(Sym_term_definitions, a_lang, term_defs_one_lang)
-							term_definitions.force(term_defs_one_lang , a_lang)
+							populate_term_defs(Sym_term_definitions, a_language, term_defs_one_lang)
+							term_definitions.force(term_defs_one_lang , a_language)
 						end
-						languages_available.extend (a_lang)
+						languages_available.extend (a_language)
 						an_attr_node.forth
 					end
 				end
@@ -829,11 +835,11 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 				an_attr_node := representation.attribute_node_at_path("/" + Sym_constraint_definitions)
 				if an_attr_node.is_multiple then
 					from an_attr_node.start until an_attr_node.off loop
-						a_lang := an_attr_node.item.node_id
-						if has_path("/" + Sym_constraint_definitions + "[" + a_lang + "]/items") then
+						a_language := an_attr_node.item.node_id
+						if has_path("/" + Sym_constraint_definitions + "[" + a_language + "]/items") then
 							create term_defs_one_lang.make(0)
-							populate_term_defs(Sym_constraint_definitions, a_lang, term_defs_one_lang)
-							constraint_definitions.force(term_defs_one_lang , a_lang)
+							populate_term_defs(Sym_constraint_definitions, a_language, term_defs_one_lang)
+							constraint_definitions.force(term_defs_one_lang , a_language)
 						end
 						an_attr_node.forth
 					end
@@ -1077,10 +1083,10 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 			not Result implies errors /= Void
 		end
 
-	valid_term_code(a_term_code: STRING): BOOLEAN
-			-- True if `a_term_code' is found in all languages
+	valid_term_code(a_code: STRING): BOOLEAN
+			-- True if `a_code' is found in all languages
 		require
-			Term_code_valid: a_term_code /= Void and then not a_term_code.is_empty
+			Code_valid: a_code /= Void and then not a_code.is_empty
 		local
 			t_path: STRING
 		do
@@ -1091,16 +1097,16 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 				term_definitions.off or not Result
 			loop
 				create t_path.make(0)
-				t_path.append ("/" + Sym_term_definitions + "[" + term_definitions.key_for_iteration + "]/items[" + a_term_code + "]")
+				t_path.append ("/" + Sym_term_definitions + "[" + term_definitions.key_for_iteration + "]/items[" + a_code + "]")
 				Result := Result and has_path(t_path)
 				term_definitions.forth
 			end
 		end
 
-	valid_constraint_code(a_term_code: STRING): BOOLEAN
-			-- True if `a_term_code' is found in all languages
+	valid_constraint_code(a_code: STRING): BOOLEAN
+			-- True if `a_code' is found in all languages
 		require
-			Term_code_valid: a_term_code /= Void and then not a_term_code.is_empty
+			Code_valid: a_code /= Void and then not a_code.is_empty
 		local
 			t_path: STRING
 		do
@@ -1111,7 +1117,7 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 				constraint_definitions.off or not Result
 			loop
 				create t_path.make(0)
-				t_path.append ("/" + Sym_constraint_definitions + "[" + constraint_definitions.key_for_iteration + "]/items[" + a_term_code + "]")
+				t_path.append ("/" + Sym_constraint_definitions + "[" + constraint_definitions.key_for_iteration + "]/items[" + a_code + "]")
 				Result := Result and has_path(t_path)
 				constraint_definitions.forth
 			end

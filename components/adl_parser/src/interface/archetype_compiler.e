@@ -168,9 +168,7 @@ feature {NONE} -- Implementation
 			arch_dir.do_all_archetypes (action)
 			status := create_message_line ("compiler_finished_status", <<message>>)
 			call_visual_update_action (Void)
-			if not is_interrupted then
-				build_completed := True
-			end
+			build_completed := not is_interrupted
 		end
 
 	do_subtree (subtree: ARCH_REP_ITEM; action: PROCEDURE [ANY, TUPLE [attached ARCH_REP_ARCHETYPE]]; message: STRING)
@@ -186,9 +184,7 @@ feature {NONE} -- Implementation
 			arch_dir.do_archetypes (subtree, action)
 			status := create_message_line ("compiler_finished_status", <<message>>)
 			call_visual_update_action (Void)
-			if not is_interrupted then
-				build_completed := True
-			end
+			build_completed := not is_interrupted
 		end
 
 	do_lineage (ara: ARCH_REP_ARCHETYPE; action: PROCEDURE [ANY, TUPLE [attached ARCH_REP_ARCHETYPE]])
@@ -207,8 +203,13 @@ feature {NONE} -- Implementation
 			-- Build `ara' only if `from_scratch' is true, or if it is has changed since it was last validly built.
 		do
 			if not is_interrupted then
-				if ara.is_out_of_date then
+				if ara.compile_attempted and ara.is_out_of_date then
 					ara.signal_source_edited
+					if ara.ontology_location_changed then
+						arch_dir.update_archetype_id(ara)
+						-- FIXME - the directory data structure on which we are now traversing has changed;
+						-- could cause problems...
+					end
 				end
 				if from_scratch or not ara.is_in_terminal_compilation_state then
 					status := create_message_line("compiler_compiling_archetype", <<ara.id.value>>)

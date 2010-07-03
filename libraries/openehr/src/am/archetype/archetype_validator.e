@@ -275,13 +275,13 @@ feature {NONE} -- Implementation
 			from ontology.languages_available.start until ontology.languages_available.off loop
 				lang := ontology.languages_available.item
 				from ontology.term_codes.start until ontology.term_codes.off loop
-					if ontology.term_definition (lang, ontology.term_codes.item) = Void then
+					if not ontology.has_term_definition (lang, ontology.term_codes.item) then
 						add_error("VONLC", <<ontology.term_codes.item, lang>>)
 					end
 					ontology.term_codes.forth
 				end
 				from ontology.constraint_codes.start until ontology.constraint_codes.off loop
-					if ontology.constraint_definition (lang, ontology.constraint_codes.item) = Void then
+					if not ontology.has_constraint_definition (lang, ontology.constraint_codes.item) then
 						add_error("VONLC", <<ontology.constraint_codes.item, lang>>)
 					end
 					ontology.constraint_codes.forth

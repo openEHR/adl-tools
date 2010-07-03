@@ -103,31 +103,17 @@ feature {NONE} -- Initialisation
 				differential_path := full_path
 				flat_path := extension_replaced (full_path, archetype_flat_file_extension)
 				legacy_flat_path := extension_replaced (full_path, archetype_legacy_file_extension)
-				compilation_state := Cs_ready_to_parse
 			else
 				differential_path := extension_replaced (full_path, archetype_source_file_extension)
 				flat_path := extension_replaced (full_path, archetype_flat_file_extension)
 				legacy_flat_path := full_path
-				if has_differential_file then
-					compilation_state := Cs_ready_to_parse
-				else
-					compilation_state := cs_ready_to_parse_legacy
-				end
 			end
 
-			-- set reference to RM schema
-			if has_rm_schema_for_package (id.qualified_package_name) then
-				rm_schema := rm_schema_for_package (id.qualified_package_name)
-			else
-				compilation_state := Cs_rm_class_unknown
-				post_error (Current, "make", "model_access_e7", <<id.qualified_rm_name>>)
-			end
+			initialise_compilation_state
 		ensure
 			full_path_set: full_path = a_full_path
 			file_repository_set: file_repository = a_repository
 			id_set: id = an_id
-			compilation_result_empty: compilation_result.is_empty
-			compilation_state_set: compilation_state = Cs_ready_to_parse or compilation_state = cs_ready_to_parse_legacy or compilation_state = Cs_rm_class_unknown
 		end
 
 	make_specialised (a_full_path: attached STRING; an_id, a_parent_id: attached ARCHETYPE_ID; a_repository: attached ARCHETYPE_REPOSITORY_I; an_artefact_type: INTEGER)
@@ -137,20 +123,15 @@ feature {NONE} -- Initialisation
 			full_path_not_empty: not a_full_path.is_empty
 			valid_artefact_type: (create {ARTEFACT_TYPE}).valid_type(an_artefact_type)
 		do
-			make (a_full_path, an_id, a_repository, an_artefact_type)
 			is_specialised := True
 			parent_id := a_parent_id
-			if compilation_state = Cs_ready_to_parse then
-				compilation_state := Cs_lineage_known
-			end
+			make (a_full_path, an_id, a_repository, an_artefact_type)
 		ensure
 			full_path_set: full_path = a_full_path
 			file_repository_set: file_repository = a_repository
 			id_set: id = an_id
-			compilation_result_empty: compilation_result.is_empty
 			Specialised: is_specialised
 			parent_id_set: parent_id = a_parent_id
-			compilation_state_set: compilation_state = Cs_lineage_known or compilation_state = cs_ready_to_parse_legacy or compilation_state = Cs_rm_class_unknown
 		end
 
 	make_new (an_id: attached ARCHETYPE_ID; a_repository: attached ARCHETYPE_REPOSITORY_I; an_artefact_type: INTEGER; a_primary_language: attached STRING)
@@ -177,22 +158,13 @@ feature {NONE} -- Initialisation
 			differential_path := full_path
 			flat_path := extension_replaced (full_path, archetype_flat_file_extension)
 			legacy_flat_path := extension_replaced (full_path, archetype_legacy_file_extension)
-			compilation_state := cs_validated
 
-			-- set reference to RM schema
-			if has_rm_schema_for_package (id.qualified_package_name) then
-				rm_schema := rm_schema_for_package (id.qualified_package_name)
-			else
-				compilation_state := cs_rm_class_unknown
-				post_error (Current, "make_new", "model_access_e7", <<id.qualified_rm_name>>)
-			end
+			initialise_compilation_state
 		ensure
 			full_path_set: full_path.has_substring (id.as_string)
 			file_repository_set: file_repository = a_repository
 			id_set: id = an_id
-			compilation_result_empty: compilation_result.is_empty
-			compilation_state_set: compilation_state = cs_validated or compilation_state = cs_rm_class_unknown
-			valid: is_valid
+			validated: is_valid
 		end
 
 feature -- Access
@@ -248,7 +220,7 @@ feature -- Access
 			-- Archetype identifier.
 
 	old_id: ARCHETYPE_ID
-			-- previous archetype identifier of this archetype, if changes occurred due to editing.
+			-- previous Archetype identifier, due to change by editing
 
 	parent_id: attached ARCHETYPE_ID
 			-- Archetype identifier of specialisation parent
@@ -276,6 +248,9 @@ feature -- Access
 				Result := id.package_class_name
 			end
 		end
+
+	old_ontological_parent_name: STRING
+			-- old vaue of `old_ontological_parent_name', to facilitate handling changes due to external editing of archetypes
 
 	display_name: STRING
 		do
@@ -412,6 +387,12 @@ feature -- Status Report - Compilation
 			Result := file_repository.is_valid_path (legacy_flat_path)
 		end
 
+	compile_attempted: BOOLEAN
+			-- has a compile been attempted in this session?
+		do
+			Result := last_compile_attempt_timestamp /= Void
+		end
+
 	is_out_of_date: BOOLEAN
 			-- Should this archetype be reparsed due to changes on the file system?
 		do
@@ -443,6 +424,19 @@ feature -- Status Report - Compilation
 			Result := Cs_terminal_states.has(compilation_state)
 		end
 
+	has_compiler_status: BOOLEAN
+			-- Does this archetype have any compiler errors or warnings?
+		do
+			Result := not compilation_result.is_empty
+		end
+
+	ontology_location_changed: BOOLEAN
+			-- True if changed due to external editing require a move of this archetype in ontology
+			-- cleared by calling `clear_old_ontological_parent_name'
+		do
+			Result := old_ontological_parent_name /= Void
+		end
+
 feature -- Status Report - Semantic
 
 	is_specialised: BOOLEAN
@@ -454,12 +448,6 @@ feature -- Status Report - Semantic
 			-- you want to know if the parent has been compiled (up the lineage) before you can compile the current one
 		do
 			Result := compilation_state = Cs_validated
-		end
-
-	has_compiler_status: BOOLEAN
-			-- Does this archetype have any compiler errors or warnings?
-		do
-			Result := not compilation_result.is_empty
 		end
 
 	has_slots: BOOLEAN
@@ -533,13 +521,38 @@ feature -- Commands
 		end
 
 	signal_source_edited
+		local
+			amp: ARCHETYPE_MINI_PARSER
+			arch_id, parent_arch_id: attached ARCHETYPE_ID
+			old_ont_parent: STRING
 		do
-			if is_specialised then
-				compilation_state := Cs_lineage_known
-			elseif has_differential_file then
-				compilation_state := Cs_ready_to_parse
+			create amp
+			amp.parse (full_path)
+			if amp.last_parse_valid then
+				if not artefact_type.is_equal (amp.last_archetype_artefact_type) then
+					artefact_type := amp.last_archetype_artefact_type
+				end
+
+				-- check for changes in id or parent id that might mean this node has to be moved in ARCHETYPE_DIRECTORY
+				-- possible changes:
+				-- 	* parent_id changed
+				-- 	* changed from specialised to non-specialised
+				old_ont_parent := ontological_parent_name
+				create arch_id.make_from_string(amp.last_archetype_id)
+				if not arch_id.is_equal (id) then
+					old_id := id
+					id := arch_id
+				end
+				if amp.last_archetype_specialised then
+					create parent_arch_id.make_from_string(amp.last_parent_archetype_id)
+					if not parent_arch_id.is_equal (parent_id) then
+						parent_id := parent_arch_id
+					end
+				end
+				initialise_compilation_state
 			else
-				compilation_state := Cs_ready_to_parse_legacy
+				post_error (Current, "signal_source_edited", "general", <<amp.last_parse_fail_reason>>)
+				compilation_state := Cs_invalid
 			end
 		end
 
@@ -646,12 +659,6 @@ feature -- Commands
 						post_warning (Current, "parse", "parse_w1", <<id.as_string, parent_id.as_string, differential_archetype.parent_archetype_id.as_string>>)
 					else
 						post_info (Current, "parse", "parse_i1", <<id.as_string>>)
-						-- reset id, since this could have changed due to editing
-						if not differential_archetype.archetype_id.as_string.is_equal(id.as_string) then
-							old_id := id
-							create id.make_from_string (differential_archetype.archetype_id.as_string)
-							arch_dir.update_archetype_id(old_id.as_string, id.as_string)
-						end
 					end
 					create suppliers_index.make (0)
 					if differential_archetype.has_suppliers then
@@ -732,6 +739,35 @@ feature -- Commands
 			flat_text_cache := Void
 		end
 
+	initialise_compilation_state
+			-- set compilation state at creation, or if editing occurs
+			-- also sets rm_schema reference
+		do
+			if has_rm_schema_for_package (id.qualified_package_name) then
+				rm_schema := rm_schema_for_package (id.qualified_package_name)
+				if has_differential_file then -- either authored in ADL 1.5, or compiled successfully from legacy .adl file
+					if is_specialised then
+						compilation_state := Cs_lineage_known
+					else
+						compilation_state := Cs_ready_to_parse
+					end
+
+				elseif has_legacy_flat_file then -- only has legacy file, never compiled successfully
+					compilation_state := Cs_ready_to_parse_legacy
+
+				elseif differential_archetype /= Void then -- must have been newly created
+					compilation_state := Cs_validated
+				end
+			else
+				compilation_state := Cs_rm_class_unknown
+				post_error (Current, "make", "model_access_e7", <<id.qualified_rm_name>>)
+				compilation_result := billboard.most_recent
+			end
+		ensure
+			compilation_state_set: Cs_initial_states.has(compilation_state)
+			no_rm_schema_compilation_state: rm_schema = Void implies compilation_state = Cs_rm_class_unknown
+		end
+
 feature {ARCHETYPE_VALIDATOR} -- Modification
 
 	add_slot_ids (a_list: ARRAYED_SET[STRING]; a_slot_path: STRING)
@@ -759,6 +795,11 @@ feature {ARCHETYPE_VALIDATOR} -- Modification
 		end
 
 feature -- Modification
+
+	clear_old_ontological_parent_name
+		do
+			old_ontological_parent_name := Void
+		end
 
 	save_differential
 			-- Save archetype to its file in its source form
