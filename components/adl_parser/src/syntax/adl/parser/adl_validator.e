@@ -42,7 +42,7 @@ create
 
 feature {NONE} -- Implementation
 
-	yy_build_parser_tables
+	yy_build_parser_tables is
 			-- Build parser tables.
 		do
 			yytranslate := yytranslate_template
@@ -57,19 +57,19 @@ feature {NONE} -- Implementation
 			yycheck := yycheck_template
 		end
 
-	yy_create_value_stacks
+	yy_create_value_stacks is
 			-- Create value stacks.
 		do
 		end
 
-	yy_init_value_stacks
+	yy_init_value_stacks is
 			-- Initialize value stacks.
 		do
 			yyvsp1 := -1
 			yyvsp2 := -1
 		end
 
-	yy_clear_value_stacks
+	yy_clear_value_stacks is
 			-- Clear objects in semantic value stacks so that
 			-- they can be collected by the garbage collector.
 		local
@@ -84,7 +84,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	yy_push_last_value (yychar1: INTEGER)
+	yy_push_last_value (yychar1: INTEGER) is
 			-- Push semantic value associated with token `last_token'
 			-- (with internal id `yychar1') on top of corresponding
 			-- value stack.
@@ -138,7 +138,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	yy_push_error_value
+	yy_push_error_value is
 			-- Push semantic value associated with token 'error'
 			-- on top of corresponding value stack.
 		local
@@ -164,7 +164,7 @@ feature {NONE} -- Implementation
 			yyvs1.put (yyval1, yyvsp1)
 		end
 
-	yy_pop_last_value (yystate: INTEGER)
+	yy_pop_last_value (yystate: INTEGER) is
 			-- Pop semantic value from stack when in state `yystate'.
 		local
 			yy_type_id: INTEGER
@@ -187,7 +187,7 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Semantic actions
 
-	yy_do_action (yy_act: INTEGER)
+	yy_do_action (yy_act: INTEGER) is
 			-- Execute semantic action.
 		local
 			yyval1: ANY
@@ -200,7 +200,7 @@ debug ("GEYACC")
 end
 
 			accept
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
@@ -212,7 +212,7 @@ debug ("GEYACC")
 end
 
 			abort
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
@@ -240,7 +240,7 @@ end
 			elseif arch_id.old_valid_id(yyvs2.item (yyvsp2)) then
 				create archetype_id.old_make_from_string(yyvs2.item (yyvsp2))
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -256,7 +256,7 @@ end
 			raise_error
 			report_error(create_message_line("SARID", Void))
 			abort
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
@@ -271,7 +271,7 @@ end
 			str := text
 			str.right_adjust
 			create artefact_type.make_from_type_name(str)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
@@ -285,7 +285,7 @@ end
 			str := text
 			str.right_adjust
 			create artefact_type.make_from_type_name(str)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
@@ -299,7 +299,7 @@ end
 			str := text
 			str.right_adjust
 			create artefact_type.make_from_type_name(str)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
@@ -313,7 +313,7 @@ end
 			str := text
 			str.right_adjust
 			create artefact_type.make_from_type_name(str)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
@@ -388,7 +388,7 @@ debug ("GEYACC")
 end
 
 			adl_version := yyvs2.item (yyvsp2)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -402,7 +402,7 @@ debug ("GEYACC")
 end
 
 			is_controlled := True
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
@@ -414,7 +414,7 @@ debug ("GEYACC")
 end
 
 			is_generated := True
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
@@ -463,7 +463,7 @@ end
 				report_error(create_message_line("VASID", Void))
 				abort
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp2 := yyvsp2 -1
@@ -478,7 +478,7 @@ end
 			raise_error
 			report_error(create_message_line("SASID", Void))
 			abort
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
@@ -494,7 +494,7 @@ end
 			debug("ADL_parse")
 				io.put_string("concept = " + concept + "%N")
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp2 := yyvsp2 -1
@@ -509,7 +509,7 @@ end
 			raise_error
 			report_error(create_message_line("SACO", Void))
 			abort
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
@@ -524,7 +524,7 @@ end
 			raise_error
 			report_error(create_message_line("SALAN", Void))
 			abort
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 0
 	yyvsp1 := yyvsp1 + 1
@@ -554,7 +554,7 @@ end
 
 			convert_dadl_language(yyvs2.item (yyvsp2))
 			language_text := yyvs2.item (yyvsp2)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp2 := yyvsp2 -1
@@ -569,7 +569,7 @@ end
 			raise_error
 			report_error(create_message_line("SALA", Void))
 			abort
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
@@ -611,7 +611,7 @@ end
 
 			convert_dadl_language(yyvs2.item (yyvsp2))
 			description_text := yyvs2.item (yyvsp2)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp2 := yyvsp2 -1
@@ -626,7 +626,7 @@ end
 			raise_error
 			report_error(create_message_line("SADS", Void))
 			abort
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
@@ -639,7 +639,7 @@ debug ("GEYACC")
 end
 
 			definition_text := yyvs2.item (yyvsp2)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp2 := yyvsp2 -1
@@ -654,7 +654,7 @@ end
 			raise_error
 			report_error(create_message_line("SADF", Void))
 			abort
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
@@ -695,7 +695,7 @@ debug ("GEYACC")
 end
 
 			invariant_text := yyvs2.item (yyvsp2)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp2 := yyvsp2 -1
@@ -710,7 +710,7 @@ end
 			raise_error
 			report_error(create_message_line("SAIV", Void))
 			abort
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
@@ -723,7 +723,7 @@ debug ("GEYACC")
 end
 
 			ontology_text := yyvs2.item (yyvsp2)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp2 := yyvsp2 -1
@@ -738,7 +738,7 @@ end
 			raise_error
 			report_error(create_message_line("SAON", Void))
 			abort
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
@@ -754,7 +754,7 @@ end
 			end
 		end
 
-	yy_do_error_action (yy_act: INTEGER)
+	yy_do_error_action (yy_act: INTEGER) is
 			-- Execute error action.
 		do
 			inspect yy_act
@@ -769,7 +769,7 @@ end
 
 feature {NONE} -- Table templates
 
-	yytranslate_template: SPECIAL [INTEGER]
+	yytranslate_template: SPECIAL [INTEGER] is
 			-- Template for `yytranslate'
 		once
 			Result := yyfixed_array (<<
@@ -805,7 +805,7 @@ feature {NONE} -- Table templates
 			   15,   16,   17,   18,   19,   20,   21,   22,   23, yyDummy>>)
 		end
 
-	yyr1_template: SPECIAL [INTEGER]
+	yyr1_template: SPECIAL [INTEGER] is
 			-- Template for `yyr1'
 		once
 			Result := yyfixed_array (<<
@@ -815,7 +815,7 @@ feature {NONE} -- Table templates
 			   36,   36,   36,   37,   37, yyDummy>>)
 		end
 
-	yytypes1_template: SPECIAL [INTEGER]
+	yytypes1_template: SPECIAL [INTEGER] is
 			-- Template for `yytypes1'
 		once
 			Result := yyfixed_array (<<
@@ -827,7 +827,7 @@ feature {NONE} -- Table templates
 			    1,    1,    1,    1, yyDummy>>)
 		end
 
-	yytypes2_template: SPECIAL [INTEGER]
+	yytypes2_template: SPECIAL [INTEGER] is
 			-- Template for `yytypes2'
 		once
 			Result := yyfixed_array (<<
@@ -836,7 +836,7 @@ feature {NONE} -- Table templates
 			    1,    1,    1,    1,    1,    1,    1,    1, yyDummy>>)
 		end
 
-	yydefact_template: SPECIAL [INTEGER]
+	yydefact_template: SPECIAL [INTEGER] is
 			-- Template for `yydefact'
 		once
 			Result := yyfixed_array (<<
@@ -848,7 +848,7 @@ feature {NONE} -- Table templates
 			   34,    0,    0,    0, yyDummy>>)
 		end
 
-	yydefgoto_template: SPECIAL [INTEGER]
+	yydefgoto_template: SPECIAL [INTEGER] is
 			-- Template for `yydefgoto'
 		once
 			Result := yyfixed_array (<<
@@ -856,7 +856,7 @@ feature {NONE} -- Table templates
 			    8,   13,   21,   22, yyDummy>>)
 		end
 
-	yypact_template: SPECIAL [INTEGER]
+	yypact_template: SPECIAL [INTEGER] is
 			-- Template for `yypact'
 		once
 			Result := yyfixed_array (<<
@@ -868,7 +868,7 @@ feature {NONE} -- Table templates
 			 -32768,   19,   18, -32768, yyDummy>>)
 		end
 
-	yypgoto_template: SPECIAL [INTEGER]
+	yypgoto_template: SPECIAL [INTEGER] is
 			-- Template for `yypgoto'
 		once
 			Result := yyfixed_array (<<
@@ -876,7 +876,7 @@ feature {NONE} -- Table templates
 			 -32768, -32768, -32768,    6, yyDummy>>)
 		end
 
-	yytable_template: SPECIAL [INTEGER]
+	yytable_template: SPECIAL [INTEGER] is
 			-- Template for `yytable'
 		once
 			Result := yyfixed_array (<<
@@ -887,7 +887,7 @@ feature {NONE} -- Table templates
 			   16,    0,    9, yyDummy>>)
 		end
 
-	yycheck_template: SPECIAL [INTEGER]
+	yycheck_template: SPECIAL [INTEGER] is
 			-- Template for `yycheck'
 		once
 			Result := yyfixed_array (<<
@@ -926,23 +926,23 @@ feature {NONE} -- Semantic value stacks
 
 feature {NONE} -- Constants
 
-	yyFinal: INTEGER = 53
+	yyFinal: INTEGER is 53
 			-- Termination state id
 
-	yyFlag: INTEGER = -32768
+	yyFlag: INTEGER is -32768
 			-- Most negative INTEGER
 
-	yyNtbase: INTEGER = 28
+	yyNtbase: INTEGER is 28
 			-- Number of tokens
 
-	yyLast: INTEGER = 42
+	yyLast: INTEGER is 42
 			-- Upper bound of `yytable' and `yycheck'
 
-	yyMax_token: INTEGER = 278
+	yyMax_token: INTEGER is 278
 			-- Maximum token id
 			-- (upper bound of `yytranslate'.)
 
-	yyNsyms: INTEGER = 42
+	yyNsyms: INTEGER is 42
 			-- Number of symbols
 			-- (terminal and nonterminal)
 
@@ -1006,14 +1006,14 @@ feature -- Parse Output
 	definition_text: STRING
 
 	invariant_text: STRING
-
+	
 	ontology_text: STRING
 
 feature -- Access
 
 	error_text: STRING
 
-feature {NONE} -- Implementation
+feature {NONE} -- Implementation 
 
 	str: STRING
 

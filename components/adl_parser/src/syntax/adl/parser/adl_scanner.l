@@ -89,19 +89,19 @@ NAMESTR ([a-zA-Z][a-zA-Z0-9_]+)
 
 ----------/* keywords */ -------------------------------------------------
 
-^[Aa][Rr][Cc][Hh][Ee][Tt][Yy][Pp][Ee][ \t\r]* 		{
+^[Aa][Rr][Cc][Hh][Ee][Tt][Yy][Pp][Ee][ \t\r\n]+ 		{
 				last_token := SYM_ARCHETYPE
 			}
 
-^[Tt][Ee][Mm][Pp][Ll][Aa][Tt][Ee][ \t\r]* 		{
-				last_token := SYM_TEMPLATE
-			}
-
-^[Tt][Ee][Mm][Pp][Ll][Aa][Tt][Ee]_[Cc][Oo][Mm][Pp][Oo][Nn]Ee][Nn][Tt][ \t\r]* 		{
+^[Tt][Ee][Mm][Pp][Ll][Aa][Tt][Ee]_[Cc][Oo][Mm][Pp][Oo][Nn][Ee][Nn][Tt][ \t\r\n]+ 		{
 				last_token := SYM_TEMPLATE_COMPONENT
 			}
 
-^[Oo][Pp][Ee][Rr][Aa][Tt][Ii][Oo][Nn][Aa][Ll]_[Tt][Ee][Mm][Pp][Ll][Aa][Tt][Ee][ \t\r]* 		{
+^[Tt][Ee][Mm][Pp][Ll][Aa][Tt][Ee][ \t\r\n]+ 		{
+				last_token := SYM_TEMPLATE
+			}
+
+^[Oo][Pp][Ee][Rr][Aa][Tt][Ii][Oo][Nn][Aa][Ll]_[Tt][Ee][Mm][Pp][Ll][Aa][Tt][Ee][ \t\r\n]+ 		{
 				last_token := SYM_OPERATIONAL_TEMPLATE
 			}
 

@@ -123,7 +123,7 @@ feature -- Access
    		local
 			i: INTEGER
 		do
- 			from i := artefact_types.lower until i > artefact_types.lower loop
+ 			from i := artefact_types.lower until i > artefact_types.upper loop
  				Result := Result + subtree_artefact_counts.item(artefact_types[i])
  				i := i + 1
  			end
