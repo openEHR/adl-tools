@@ -200,14 +200,28 @@ feature {NONE} -- Implementation
 			Node_exists: an_og_node /= Void
 		local
 			ara: ARCH_REP_ARCHETYPE
+			ca_path: STRING
+			csr: ARCHETYPE_CONSTRAINT
 		do
 			if attached {ARCHETYPE_CONSTRAINT} an_og_node.content_item as ca then
 				if attached {C_ATTRIBUTE} ca as c_attr then
+					-- first see if it is an atribute containing any ext ref nodes
 					from c_attr.children.start until c_attr.children.off or attached {C_ARCHETYPE_ROOT} c_attr.children.item as car loop
 						c_attr.children.forth
 					end
+
+					-- now compute the path from this attr node back to the nearest C_ARCHETYPE_ROOT
+					from csr := c_attr until csr.parent = Void loop
+						if attached {C_ARCHETYPE_ROOT} csr as car then
+							ca_path := c_attr.path_to_node(car)
+						end
+						csr := csr.parent
+					end
+					if not attached ca_path then
+						ca_path := c_attr.path
+					end
 					if not c_attr.children.off then
-						attach_node(c_attr.path, pixmaps[c_attribute_pixmap_string(c_attr)], Void)
+						attach_node(ca_path, pixmaps[c_attribute_pixmap_string(c_attr)], Void)
 					end
 				elseif attached {C_ARCHETYPE_ROOT} ca as car then
 					ara := arch_dir.archetype_index.item (car.archetype_id)

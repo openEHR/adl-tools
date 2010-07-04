@@ -29,8 +29,13 @@ feature -- Access
 	path: STRING
 			-- path to this object in the tree with respect to root
 		do
-			create Result.make(0)
 			Result := representation.path.as_string
+		end
+
+	path_to_node (a_node: ARCHETYPE_CONSTRAINT): STRING
+			-- path from this node to `a_node'
+		do
+			Result := representation.path_to_node(a_node.representation).as_string
 		end
 
 feature -- Source Control

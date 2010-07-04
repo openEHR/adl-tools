@@ -67,13 +67,21 @@ feature -- Access
 	path: OG_PATH
 			-- absolute path of this node relative to the root; may produce non-unique paths
 		do
-			Result := generate_path(False)
+			Result := generate_path(False, Void)
+		end
+
+	path_to_node (a_node: OG_ITEM): OG_PATH
+			-- absolute path of this node relative to the root; may produce non-unique paths
+		require
+			a_node_attachde: attached a_node
+		do
+			Result := generate_path(False, a_node)
 		end
 
 	unique_path: OG_PATH
 			-- absolute unique path of this node relative to the root
 		do
-			Result := generate_path(True)
+			Result := generate_path(True, Void)
 		end
 
 	parent: OG_NODE
@@ -206,7 +214,7 @@ feature -- Serialisation
 
 feature {NONE} -- Implementation
 
-	generate_path(unique_flag: BOOLEAN): OG_PATH
+	generate_path(unique_flag: BOOLEAN; stop_node: OG_ITEM): OG_PATH
 			-- absolute path of this node relative to the root; if unique_flag set then
 			-- generate a completely unique path by including the "unknown" ids that are
 			-- automatically set at node-creation time on nodes that otherwise would have no id
@@ -220,7 +228,7 @@ feature {NONE} -- Implementation
 			create og_nodes.make(0)
 			if parent /= Void then
 				og_nodes.extend(Current)
-				from csr := parent until csr.parent = Void loop
+				from csr := parent until csr.parent = Void or csr ~ stop_node loop
 					og_nodes.put_front(csr)
 					csr := csr.parent
 				end
