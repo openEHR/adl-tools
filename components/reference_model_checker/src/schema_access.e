@@ -210,36 +210,18 @@ feature -- Status Report
 			Property_type_name_valid: a_property_type_name /= Void and then has_class_definition (a_property_type_name)
 		do
 			if schema.valid_type_for_class (a_type_name, a_type_name) and schema.valid_type_for_class(a_property_type_name, a_property_type_name) then
-				Result := type_conforms_to (schema.class_definition (a_property_type_name), schema.property_definition (a_type_name, a_property_name).type)
+				Result := type_conforms_to (a_property_type_name, schema.property_definition (a_type_name, a_property_name).type.as_flattened_type_string)
 			end
 		end
 
-	type_conforms_to (type_spec_1, type_spec_2: BMM_TYPE_SPECIFIER): BOOLEAN
+	type_conforms_to (type_1, type_2: STRING): BOOLEAN
 			-- check conformance of type 1 to type 2
 		require
 			Model_loaded: is_valid
-			Type_spec_1_exists: type_spec_1 /= Void
-			Type_spec_2_exists: type_spec_2 /= Void
-		local
-			tlist1, tlist2: ARRAYED_LIST[STRING]
+			Type_1_exists: type_1 /= Void
+			Type_2_exists: type_2 /= Void
 		do
-			tlist1 := type_spec_1.flattened_type_list
-			tlist2 := type_spec_2.flattened_type_list
-			if tlist1.count >= tlist2.count then
-				Result := True
-				from
-					tlist1.start
-					tlist2.start
-				until
-					tlist2.off or not Result or not has_class_definition (tlist1.item) or not has_class_definition (tlist2.item)
-				loop
-					Result := Result and
-						(tlist1.item.is_equal (tlist2.item) or else
-						schema.class_definition (tlist1.item).has_ancestor(tlist2.item))
-					tlist1.forth
-					tlist2.forth
-				end
-			end
+			Result := schema.type_conforms_to (type_1, type_2)
 		end
 
 	has_property_path (an_obj_type, a_path: STRING): BOOLEAN

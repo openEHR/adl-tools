@@ -98,7 +98,7 @@ feature -- Access
 			Result_exists: Result /= Void
 		end
 
-	property_definition (a_type_name, a_prop_name: STRING): BMM_PROPERTY_DEFINITION
+	property_definition (a_type_name, a_prop_name: STRING): attached BMM_PROPERTY_DEFINITION
 			-- retrieve the property definition for `a_prop_name' in flattened class corresponding to `a_type_name'
 		require
 			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
@@ -108,8 +108,19 @@ feature -- Access
 		do
 			class_def := class_definition(type_to_class(a_type_name))
 			Result := class_def.flat_properties.item(a_prop_name)
-		ensure
-			Result_exists: Result /= Void
+		end
+
+	property_type (a_type_name, a_prop_name: STRING): attached STRING
+			-- retrieve the property type for `a_prop_name' in flattened class corresponding to `a_type_name'
+			-- same as property_definition.type, except if a_type_name is generic
+		require
+			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
+			Property_valid: a_prop_name /= Void and then has_property(a_type_name, a_prop_name)
+		local
+			class_def: BMM_CLASS_DEFINITION
+		do
+			class_def := class_definition(type_to_class(a_type_name))
+			Result := class_def.property_type(a_type_name, a_prop_name)
 		end
 
 	property_definition_at_path (a_type_name, a_property_path: STRING): BMM_PROPERTY_DEFINITION
@@ -221,6 +232,31 @@ feature -- Status Report
 				end
 			elseif not a_class_def.is_generic and not is_gen_type then
 				Result := a_type_name.is_equal (a_class_def.name)
+			end
+		end
+
+	type_conforms_to (type_1, type_2: STRING): BOOLEAN
+			-- check conformance of type 1 to type 2
+		require
+			Type_1_exists: type_1 /= Void
+			Type_2_exists: type_2 /= Void
+		local
+			tlist1, tlist2: ARRAYED_LIST[STRING]
+		do
+			tlist1 := type_name_as_flattened_type_list (type_1)
+			tlist2 := type_name_as_flattened_type_list (type_2)
+			Result := True
+			from
+				tlist1.start
+				tlist2.start
+			until
+				tlist1.off or tlist2.off or not Result or not has_class_definition (tlist1.item) or not has_class_definition (tlist2.item)
+			loop
+				Result := Result and
+					(tlist1.item.is_equal (tlist2.item) or else
+					class_definition (tlist1.item).has_ancestor(tlist2.item))
+				tlist1.forth
+				tlist2.forth
 			end
 		end
 

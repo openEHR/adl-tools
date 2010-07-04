@@ -876,7 +876,7 @@ feature {NONE} -- Implementation
 					end
 					if rm_prop_def.is_computed then
 						-- flag if this is a computed property constraint (i.e. a constraint on a function from the RM)
-						add_warning("ICARMC", <<ca.rm_attribute_name, ca.path, arch_parent_attr_type>>)
+						add_warning("WCARMC", <<ca.rm_attribute_name, ca.path, arch_parent_attr_type>>)
 					end
 				end
 			end

@@ -132,15 +132,11 @@ feature -- Access
 		end
 
 	flat_properties: attached HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
-			-- list of all attributes due to current and ancestor classes, keyed by property name
+			-- list of all propertoes due to current and ancestor classes, keyed by property name
 		do
 			if flat_properties_cache = Void then
 				create flat_properties_cache.make(0)
-				from
-					ancestors.start
-				until
-					ancestors.off
-				loop
+				from ancestors.start until ancestors.off loop
 					flat_properties_cache.merge (ancestors.item.flat_properties)
 					ancestors.forth
 				end
@@ -156,11 +152,7 @@ feature -- Access
 			create Result.make(0)
 			Result.extend (name)
 			if is_generic then
-				from
-					generic_parameters.start
-				until
-					generic_parameters.off
-				loop
+				from generic_parameters.start until generic_parameters.off loop
 					Result.append(generic_parameters.item_for_iteration.flattened_type_list)
 					generic_parameters.forth
 				end
@@ -195,6 +187,31 @@ feature -- Access
 				end
 			end
 			a_prop_path.go_i_th (a_path_pos)
+		end
+
+	property_type (a_class_type_name, a_prop_name: STRING): attached STRING
+			-- retrieve the property type for `a_prop_name' in class corresponding to `a_type_name'
+			-- same as property_definition.type, except if a_type_name is generic
+		require
+			Type_name_valid: a_class_type_name /= Void and then is_well_formed_type_name (a_class_type_name)
+			Property_valid: a_prop_name /= Void and then has_property(a_prop_name)
+		local
+			prop_def: BMM_PROPERTY_DEFINITION
+			prop_type: BMM_TYPE_SPECIFIER
+			gen_param_count: INTEGER
+		do
+			prop_def := flat_properties.item(a_prop_name)
+			prop_type := prop_def.type
+			if attached {BMM_GENERIC_PARAMETER_DEFINITION} prop_type as gen_prop_type then
+				gen_param_count := 1
+				from generic_parameters.start until generic_parameters.off or generic_parameters.item_for_iteration.name.is_equal(gen_prop_type.name) loop
+					gen_param_count := gen_param_count + 1
+					generic_parameters.forth
+				end
+				Result := type_name_as_flattened_type_list (a_class_type_name).i_th (gen_param_count)
+			else
+				Result := prop_type.as_type_string
+			end
 		end
 
 feature -- Status Report
