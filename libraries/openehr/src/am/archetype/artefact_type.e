@@ -67,11 +67,25 @@ feature -- Access
 			Result.extend(operational_template, "operational_template")
 		end
 
+	type_names: HASH_TABLE [STRING, INTEGER]
+		once
+			create Result.make(0)
+			Result.extend("archetype", archetype)
+			Result.extend("template", template)
+			Result.extend("template_component", template_component)
+			Result.extend("operational_template", operational_template)
+		end
+
 	type_name_to_type (a_name: STRING): INTEGER
 		require
 			a_name /= Void and then valid_type_name(a_name)
 		do
 			Result := types.item (a_name)
+		end
+
+	type_name: STRING
+		do
+			Result := type_names.item(value)
 		end
 
 feature -- Status report

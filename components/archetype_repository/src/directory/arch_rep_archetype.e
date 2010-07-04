@@ -1046,25 +1046,6 @@ feature {NONE} -- Implementation
 			end
 		end
 
---	has_adl_generated_status (str: STRING): BOOLEAN
---			-- True if str is in ADL syntax of the first line of an archetype file and contains the
---			-- 'generated' flag in the meta-data part. The form of this string should be:
---			-- archetype_id (flag; flag; flag...)
---			-- FIXME: WARNING this is a hack because we are hard-coding for the 'generated' keyword here,
---			-- but currently it is too complicated to extract it from the serialisation objects.
---			-- This will be resolved in a few releases when all .adl archetypes are generated from.adls
---		require
---			str_exists: str /= Void
---		local
---			lpos, rpos: INTEGER
---		do
---			lpos := str.index_of('(', 1)
---			rpos := str.index_of(')', 1)
---			if lpos > 0 and rpos > lpos+1 then
---				Result := str.substring (lpos+1, rpos-1).has_substring("generated")
---			end
---		end
-
 	flatten
 			-- (re)generate flat-form of this archetype
 		require

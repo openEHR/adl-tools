@@ -50,6 +50,11 @@ inherit
 			{NONE} all
 		end
 
+	ARCHETYPE_TERM_CODE_TOOLS
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -72,7 +77,7 @@ feature -- Visitor
 					last_result.append (apply_style(symbol(SYM_ANY), STYLE_VALUE))
 				elseif a_node.is_addressable then
 					s := a_node.node_id
-					if ontology.has_term_code(s) then
+					if valid_concept_code (s) and then ontology.has_term_code(s) then
 						last_result.append (format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
 							safe_comment(ontology.term_definition(current_language, s).item("text")), STYLE_COMMENT))
 					end
@@ -226,29 +231,37 @@ feature -- Visitor
 
 	start_c_archetype_root(a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
 			-- enter a C_ARCHETYPE_ROOT
+			-- if there are no children, it must be in differential mode, else it is in flat mode
 		local
 			id: STRING
 		do
 			ontologies.extend (arch_dir.archetype_index.item (a_node.archetype_id).flat_archetype.ontology)
 
-			last_result.append (create_indent(depth) + apply_style(symbol(SYM_USE_ARCHETYPE), STYLE_KEYWORD) + format_item(FMT_SPACE))
-			last_result.append (apply_style (a_node.rm_type_name, identifier_style (a_node)))
-			id := "["
-			if a_node.is_addressable then
-				id.append (a_node.node_id + ", ")
+			if a_node.has_attributes then
+				start_c_complex_object (a_node, depth)
+			else
+				last_result.append (create_indent(depth) + apply_style(symbol(SYM_USE_ARCHETYPE), STYLE_KEYWORD) + format_item(FMT_SPACE))
+				last_result.append (apply_style (a_node.rm_type_name, identifier_style (a_node)))
+				id := "["
+				if a_node.is_addressable then
+					id.append (a_node.node_id + ", ")
+				end
+				id.append (a_node.archetype_id + "]")
+				last_result.append (apply_style(id, STYLE_TERM_REF))
+
+				last_result.append (format_item(FMT_SPACE))
+
+				serialise_occurrences(a_node, depth)
+				last_result.append (format_item(FMT_NEWLINE))
 			end
-			id.append (a_node.archetype_id + "]")
-			last_result.append (apply_style(id, STYLE_TERM_REF))
-
-			last_result.append (format_item(FMT_SPACE))
-
-			serialise_occurrences(a_node, depth)
-			last_result.append (format_item(FMT_NEWLINE))
 		end
 
 	end_c_archetype_root(a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
 			-- exit a C_ARCHETYPE_ROOT
 		do
+			if a_node.has_attributes then
+				end_c_complex_object (a_node, depth)
+			end
 			ontologies.remove
 		end
 
