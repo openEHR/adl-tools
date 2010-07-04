@@ -495,7 +495,7 @@ feature -- Traversal
 			do_subtree (node, agent do_if_archetype (?, action), Void)
 		end
 
-	do_all_archetypes (action: PROCEDURE [ANY, TUPLE [ARCH_REP_ARCHETYPE]])
+	do_all_archetypes (action: PROCEDURE [ANY, TUPLE [attached ARCH_REP_ARCHETYPE]])
 			-- On all archetype nodes in tree, execute `enter_action', then recurse into its subnodes, then execute `exit_action'.
 		do
 			do_subtree (ontology, agent do_if_archetype (?, action), Void)

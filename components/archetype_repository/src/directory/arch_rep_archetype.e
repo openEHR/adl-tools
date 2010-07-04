@@ -334,6 +334,7 @@ feature -- Access
 	group_name: STRING
 			-- Name distinguishing the type of item and the group to which its `repository' belongs.
 			-- Useful as a logical key to pixmap icons, etc.
+			-- Typical examples: 'archetype_valid_2'
 		do
 			create Result.make_empty
 			Result.append(artefact_name)

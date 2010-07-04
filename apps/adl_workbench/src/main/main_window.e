@@ -949,9 +949,9 @@ feature -- Controls
 			create Result.make (Current, archetype_file_tree, archetype_explorer_label, <<{ARTEFACT_TYPE}.archetype>>)
 		end
 
-	template_view_tree_control: GUI_VIEW_ARCHETYPE_TREE_CONTROL
+	template_view_tree_control: GUI_VIEW_TEMPLATE_TREE_CONTROL
 		once
-			create Result.make (Current, template_file_tree, template_explorer_label, <<{ARTEFACT_TYPE}.template, {ARTEFACT_TYPE}.template_component>>)
+			create Result.make (Current, template_file_tree, template_explorer_label, <<{ARTEFACT_TYPE}.template>>)
 		end
 
 	archetype_test_tree_control: GUI_TEST_ARCHETYPE_TREE_CONTROL

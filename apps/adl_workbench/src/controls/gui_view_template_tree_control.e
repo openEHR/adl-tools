@@ -1,10 +1,10 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Populate ontology controls in ADL editor"
+	description: "Composite control for viewing templates"
 	keywords:    "ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -12,7 +12,7 @@ note
 	last_change: "$LastChangedDate$"
 
 
-class GUI_VIEW_ARCHETYPE_TREE_CONTROL
+class GUI_VIEW_TEMPLATE_TREE_CONTROL
 
 inherit
 	SHARED_APPLICATION_CONTEXT
@@ -74,13 +74,10 @@ feature -- Commands
 				delay_to_make_keyboard_navigation_practical.actions.extend (agent
 					do
 						delay_to_make_keyboard_navigation_practical.set_interval (0)
-						if attached {EV_TREE_NODE} gui_tree.selected_item as node and then attached {ARCH_REP_ITEM} node.data as ari then
-							arch_dir.set_selected_item (ari)
-							if attached {ARCH_REP_ARCHETYPE} ari as ara then
-								gui.parse_archetype
-							else
-								gui.display_class
-							end
+						if attached {EV_TREE_NODE} gui_tree.selected_item as node and then attached {ARCH_REP_ARCHETYPE} node.data as ara then
+							arch_dir.set_selected_item (ara)
+							gui.parse_archetype
+							populate_template_nodes (ara)
 						end
 					end)
 			end
@@ -115,8 +112,7 @@ feature -- Commands
 			create gui_node_descriptor_map.make(0)
 			gui_tree.wipe_out
  			create gui_tree_item_stack.make (0)
- 			arch_dir.do_all (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
-			gui_tree.recursive_do_all (agent ev_tree_expand)
+ 			arch_dir.do_all_archetypes (agent populate_template_nodes)
 			gui.select_node_in_archetype_tree_view
 		end
 
@@ -128,14 +124,14 @@ feature -- Commands
 			an_id: STRING
 		do
 			an_id := ara.id.as_string
-			if gui_node_descriptor_map.has (an_id) then
-				update_tree_node (gui_node_descriptor_map.item (ara.ontological_name))
-			elseif attached ara.old_id then
-				if gui_node_descriptor_map.has (ara.old_id.as_string) then
-					gui_node_descriptor_map.replace_key (ara.ontological_name, ara.old_id.as_string)
-					update_tree_node (gui_node_descriptor_map.item (ara.ontological_name))
-				end
-			end
+--			if gui_node_descriptor_map.has (an_id) then
+				populate_template_nodes (ara)
+--			elseif attached ara.old_id then
+--				if gui_node_descriptor_map.has (ara.old_id.as_string) then
+--					gui_node_descriptor_map.replace_key (ara.id.as_string, ara.old_id.as_string)
+--					populate_template_nodes (gui_node_descriptor_map.item (ara.id.as_string))
+--				end
+--			end
 		end
 
 	ensure_item_visible (ari_ont_id: STRING)
@@ -172,88 +168,106 @@ feature {NONE} -- Implementation
 	delay_to_make_keyboard_navigation_practical: EV_TIMEOUT
 			-- Timer to delay a moment before calling `display_details_of_selected_item'.
 
-   	populate_gui_tree_node_enter (ari: ARCH_REP_ITEM)
+   	populate_template_nodes (ara: ARCH_REP_ARCHETYPE)
    			-- Add a node representing `an_item' to `gui_file_tree'.
 		require
-			item_attached: ari /= Void
+			item_attached: ara /= Void
    		local
 			node: EV_TREE_ITEM
+			tree_iterator: OG_ITERATOR
 		do
-			if not ari.is_root and (ari.sub_tree_artefact_count (artefact_types) > 0 or else show_entire_ontology or else
-								(attached {ARCH_REP_ARCHETYPE} ari as ara and then artefact_types.has(ara.artefact_type))) then
-				create node
-	 			node.set_data (ari)
-
-	 			if attached {ARCH_REP_ARCHETYPE} ari as ara then
-	 				gui_node_descriptor_map.put (node, ara.ontological_name)
-	 			end
-
-	 			update_tree_node (node)
-
-				if gui_tree_item_stack.is_empty then
-					gui_tree.extend (node)
-				else
-					gui_tree_item_stack.item.extend (node)
+			-- make sure it is a template of some kind
+			if artefact_types.has(ara.artefact_type) then
+				-- if it is compiled & valid, display its flat filler structure
+				if ara.is_valid then
+					gui_tree_item_stack.extend (gui_node_descriptor_map.item (ara.ontological_name))
+					gui_tree_item_stack.item.wipe_out
+					gui_tree_item_stack.item.set_pixmap (pixmaps[ara.group_name])
+					create tree_iterator.make (ara.flat_archetype.definition.representation)
+					tree_iterator.do_all (agent node_build_enter_action (?, ?), agent node_build_exit_action (?, ?))
+					gui_tree_item_stack.remove
+				elseif not gui_node_descriptor_map.has (ara.ontological_name) then
+					 -- otherwise just display the template root
+					attach_node(ara.id.rm_entity + "." + ara.display_name, pixmaps[ara.group_name], ara)
+					gui_node_descriptor_map.force (gui_tree_item_stack.item, ara.ontological_name)
+					gui_tree_item_stack.remove
 				end
-
-				gui_tree_item_stack.extend (node)
 			end
 		end
 
-   	populate_gui_tree_node_exit (ari: ARCH_REP_ITEM)
-   		do
-			if not ari.is_root and (ari.sub_tree_artefact_count (artefact_types) > 0 or else show_entire_ontology or else
-								(attached {ARCH_REP_ARCHETYPE} ari as ara and then artefact_types.has(ara.artefact_type))) then
+	node_build_enter_action (an_og_node: OG_ITEM; indent_level: INTEGER)
+		require
+			Node_exists: an_og_node /= Void
+		local
+			ara: ARCH_REP_ARCHETYPE
+		do
+			if attached {ARCHETYPE_CONSTRAINT} an_og_node.content_item as ca then
+				if attached {C_ATTRIBUTE} ca as c_attr then
+					from c_attr.children.start until c_attr.children.off or attached {C_ARCHETYPE_ROOT} c_attr.children.item as car loop
+						c_attr.children.forth
+					end
+					if not c_attr.children.off then
+						attach_node(c_attr.path, pixmaps[c_attribute_pixmap_string(c_attr)], Void)
+					end
+				elseif attached {C_ARCHETYPE_ROOT} ca as car then
+					ara := arch_dir.archetype_index.item (car.archetype_id)
+					attach_node(ara.id.rm_entity + "." + ara.display_name, pixmaps[ara.group_name], ara)
+				end
+			end
+		end
 
+	node_build_exit_action(an_og_node: OG_ITEM; indent_level: INTEGER)
+		require
+			Node_exists: an_og_node /= Void
+		do
+			if attached {C_ATTRIBUTE} an_og_node.content_item as c_attr then
+				from c_attr.children.start until c_attr.children.off or attached {C_ARCHETYPE_ROOT} c_attr.children.item as car loop
+					c_attr.children.forth
+				end
+				if not c_attr.children.off then
+					gui_tree_item_stack.remove
+				end
+			elseif attached {C_ARCHETYPE_ROOT} an_og_node.content_item as car then
 				gui_tree_item_stack.remove
 			end
 		end
 
-   	update_tree_node (node: EV_TREE_NODE)
-   			-- Set the text, tooltip and icon appropriate to the item attached to `node'.
-		require
-			node_attached: node /= Void
-   		local
-			text, tooltip: STRING_32
-			pixmap: EV_PIXMAP
+	c_attribute_pixmap_string(c_attr: C_ATTRIBUTE): STRING
+			-- string name of pixmap for attribute c_attr
+			-- FIXME: this is a straight copy from GUI_NODE_MAP_CONTROL and should be consolidated at some point
 		do
-			if attached {ARCH_REP_ITEM} node.data as ari then
-				text := utf8 (ari.display_name)
-
-				if attached {ARCH_REP_ARCHETYPE} ari as ara then
-					tooltip := utf8 (ara.full_path)
-					if ara.legacy_is_primary and display_archetype_source then
-						text.prepend (utf8("(f) "))
-					end
-
-					if ara.has_slots then
-						text.append_code (Right_arrow_char)	-- Unicode character: an arrow pointing right
-					end
-
-					if ara.has_compiler_status then
-						tooltip.append (utf8 ("%N%N" + ara.compilation_result))
-					end
-	 				node.set_tooltip (tooltip)
-	 			else -- it is a model node
-	 				text.append (utf8(" (" + ari.sub_tree_artefact_count (artefact_types).out + ")"))
+			create Result.make(0)
+			Result.append ("C_ATTRIBUTE")
+			if c_attr.is_multiple then
+				if c_attr.cardinality = Void or else c_attr.cardinality.interval.lower = 0 then
+					Result.append (".multiple.optional")
+				else
+					Result.append (".multiple")
 				end
-
-				node.set_text (text)
-				pixmap := pixmaps [ari.group_name]
-				if pixmap /= Void then
-					node.set_pixmap (pixmap)
+			else
+				if c_attr.existence = Void or else c_attr.existence.lower = 0 then
+					Result.append (".optional")
 				end
 			end
 		end
 
-	ev_tree_expand(node: EV_TREE_NODE)
-			--
+	attach_node(str: STRING; pixmap: EV_PIXMAP; ara: ARCH_REP_ARCHETYPE)
+			-- attach a node into the tree
+		local
+			a_ti: EV_TREE_ITEM
 		do
-	 		if attached {ARCH_REP_MODEL_NODE} node.data as arf then
-	 			if (arf.is_abstract_class or arf.is_package) and node.is_expandable then
-					node.expand
-	 			end
-	 		end
+			create a_ti.make_with_text (utf8 (str))
+			if attached ara then
+				a_ti.set_data (ara)
+				gui_node_descriptor_map.force (a_ti, ara.ontological_name)
+			end
+			a_ti.set_pixmap (pixmap)
+			if gui_tree_item_stack.is_empty then
+				gui_tree.extend (a_ti)
+			else
+				gui_tree_item_stack.item.extend (a_ti)
+			end
+			gui_tree_item_stack.extend (a_ti)
 		end
 
 invariant
