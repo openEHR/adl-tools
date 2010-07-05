@@ -656,7 +656,7 @@ feature {NONE} -- Implementation
 					elseif not co_child_diff.node_conforms_to(co_parent_flat, rm_schema) then
 						if not co_child_diff.rm_type_conforms_to (co_parent_flat, rm_schema) then
 							add_error("VSONCT", <<co_child_diff.path, co_child_diff.rm_type_name, co_parent_flat.path, co_parent_flat.rm_type_name>>)
-						elseif not co_child_diff.occurrences_conforms_to (co_parent_flat) then
+						elseif (co_child_diff.node_id.is_equal(co_parent_flat.node_id) and co_child_diff.occurrences /= Void) or else not co_child_diff.occurrences_conforms_to (co_parent_flat) then
 							if strict_validation then
 								add_error("VSONCO", <<co_child_diff.path, co_child_diff.occurrences_as_string, co_parent_flat.path, co_parent_flat.occurrences.as_string>>)
 							else
