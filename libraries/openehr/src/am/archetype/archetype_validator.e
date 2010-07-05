@@ -656,6 +656,7 @@ feature {NONE} -- Implementation
 					elseif not co_child_diff.node_conforms_to(co_parent_flat, rm_schema) then
 						if not co_child_diff.rm_type_conforms_to (co_parent_flat, rm_schema) then
 							add_error("VSONCT", <<co_child_diff.path, co_child_diff.rm_type_name, co_parent_flat.path, co_parent_flat.rm_type_name>>)
+						-- FIXME: the following check is complicated by redundant occurrences constraints due to legacy archetypes
 						elseif (co_child_diff.node_id.is_equal(co_parent_flat.node_id) and co_child_diff.occurrences /= Void) or else not co_child_diff.occurrences_conforms_to (co_parent_flat) then
 							if strict_validation then
 								add_error("VSONCO", <<co_child_diff.path, co_child_diff.occurrences_as_string, co_parent_flat.path, co_parent_flat.occurrences.as_string>>)
@@ -673,7 +674,7 @@ feature {NONE} -- Implementation
 							add_error("VSONI", <<co_child_diff.rm_type_name, co_child_diff.path, co_parent_flat.rm_type_name, co_parent_flat.path>>)
 						end
 					else
-						-- nodes are at conformant; Now check for congruence for C_COMPLEX_OBJECTs, i.e. if no changes at all, other than possible node_id redefinition,
+						-- nodes are at least conformant; Now check for congruence for C_COMPLEX_OBJECTs, i.e. if no changes at all, other than possible node_id redefinition,
 						-- occurred on this node. This enables the node to be skipped and a compressed path created instead in the final archetype.
 						-- FIXME: NOTE that this only applies while uncompressed format differential archetypes are being created by e.g.
 						-- diff-tools taking legacy archetypes as input.

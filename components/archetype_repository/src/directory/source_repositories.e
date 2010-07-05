@@ -63,7 +63,7 @@ feature -- Access
 
 feature -- Comparison
 
-	valid_repository_path (dir_name: STRING): BOOLEAN
+	valid_working_repository_path (dir_name: STRING): BOOLEAN
 			-- Does `dir_name' correspond to a real directory, which is not the same as, or a
 			-- parent or child of, any directory already used to populate the tree?
 		local
@@ -98,7 +98,7 @@ feature -- Modification
 	set_reference_repository (dir_name: STRING)
 			-- Scan the reference repository at path `dir_name'.
 		require
-			dir_name_valid: valid_repository_path (dir_name)
+			dir_name_valid: valid_working_repository_path (dir_name)
 		do
 			create {ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP} reference_repository.make (file_system.canonical_pathname (dir_name), Group_id_reference)
 			repositories.force(reference_repository, reference_repository.group_id)
@@ -109,7 +109,7 @@ feature -- Modification
 	set_work_repository (dir_name: STRING)
 			-- Scan the work repository at path `dir_name'.
 		require
-			dir_name_valid: valid_repository_path (dir_name)
+			dir_name_valid: valid_working_repository_path (dir_name)
 		do
 			create {ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP} work_repository.make (file_system.canonical_pathname (dir_name), Group_id_work)
 			repositories.force(work_repository, work_repository.group_id)
