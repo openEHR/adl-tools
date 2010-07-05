@@ -425,7 +425,7 @@ feature -- Status Report - Compilation
 			Result := Cs_terminal_states.has(compilation_state)
 		end
 
-	has_compiler_status: BOOLEAN
+	has_compilation_result: BOOLEAN
 			-- Does this archetype have any compiler errors or warnings?
 		do
 			Result := not compilation_result.is_empty

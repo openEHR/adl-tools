@@ -67,6 +67,7 @@ feature -- Access
 			Result.extend(Cs_convert_legacy_failed)
 			Result.extend(Cs_suppliers_compile_failed)
 			Result.extend(Cs_validate_failed)
+			Result.extend(Cs_validated)
 		end
 
 	Cs_initial_states: ARRAYED_LIST [INTEGER]

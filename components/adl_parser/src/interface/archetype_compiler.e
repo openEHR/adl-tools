@@ -238,8 +238,10 @@ feature {NONE} -- Implementation
 					end
 					status := ara.compilation_result.twin
 
-				elseif ara.has_compiler_status then
+				elseif ara.has_compilation_result then
 					status := create_message_line ("compiler_already_attempted", <<ara.compilation_result>>)
+				else
+					status := create_message_line ("compiler_already_attempted_validated", Void)
 				end
 
 				call_visual_update_action (ara)

@@ -230,7 +230,7 @@ feature {NONE} -- Implementation
 						text.append_code (Right_arrow_char)	-- Unicode character: an arrow pointing right
 					end
 
-					if ara.has_compiler_status then
+					if ara.has_compilation_result then
 						tooltip.append (utf8 ("%N%N" + ara.compilation_result))
 					end
 	 				node.set_tooltip (tooltip)

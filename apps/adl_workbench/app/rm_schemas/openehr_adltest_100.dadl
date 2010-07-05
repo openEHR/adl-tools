@@ -1097,6 +1097,10 @@ class_definitions = <
 				name = <"standard_coded_text_attr">
 				type = </class_definitions["DV_CODED_TEXT"]>
 			>
+			["standard_coded_text_attr_2"] = (BMM_SINGLE_PROPERTY) <
+				name = <"standard_coded_text_attr_2">
+				type = </class_definitions["DV_CODED_TEXT"]>
+			>
 			["clinical_coded_text_attr_1"] = (BMM_SINGLE_PROPERTY) <
 				name = <"clinical_coded_text_attr_1">
 				type = </class_definitions["DV_CODED_TEXT"]>
