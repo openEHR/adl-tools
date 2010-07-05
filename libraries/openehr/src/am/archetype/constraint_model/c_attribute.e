@@ -54,7 +54,7 @@ feature -- Initialisation
 			existence := an_existence
 		ensure
 			Is_single: not is_multiple
-			Existence_set: an_existence /= Void implies existence = an_existence
+			Existence_set: existence = an_existence
 		end
 
 	make_multiple(a_name: STRING; an_existence: MULTIPLICITY_INTERVAL; a_cardinality: CARDINALITY)
@@ -68,8 +68,8 @@ feature -- Initialisation
 			cardinality := a_cardinality
 		ensure
 			Is_multiple: is_multiple
-			Existence_set: an_existence /= Void implies existence = an_existence
-			Cardinality_set: a_cardinality /= Void implies cardinality = a_cardinality
+			Existence_set: existence = an_existence
+			Cardinality_set: cardinality = a_cardinality
 		end
 
 feature -- Access
