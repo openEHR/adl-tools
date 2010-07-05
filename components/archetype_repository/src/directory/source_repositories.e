@@ -19,7 +19,8 @@ class SOURCE_REPOSITORIES
 inherit
 	SHARED_RESOURCES
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} directory_exists
 		end
 
 	ARCHETYPE_DEFINITIONS
@@ -98,7 +99,7 @@ feature -- Modification
 	set_reference_repository (dir_name: STRING)
 			-- Scan the reference repository at path `dir_name'.
 		require
-			dir_name_valid: valid_working_repository_path (dir_name)
+			dir_name_valid: directory_exists (dir_name)
 		do
 			create {ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP} reference_repository.make (file_system.canonical_pathname (dir_name), Group_id_reference)
 			repositories.force(reference_repository, reference_repository.group_id)
