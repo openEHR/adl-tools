@@ -47,7 +47,6 @@ feature -- Initialisation
 			create original_language.make(default_language_code_set, default_language)
 		ensure then
 			lifecycle_state_set: lifecycle_state.is_equal(Default_lifecycle_state)
-			details_exists: details /= Void
 		end
 
 	make_dt
@@ -202,13 +201,10 @@ feature -- Modification
 		end
 
 	add_detail(a_detail: RESOURCE_DESCRIPTION_ITEM)
-			-- add the a_language, value pair to other_details
+			-- Add a language, value pair to `details'.
 		require
 			Detail_valid: a_detail /= Void and then valid_detail(a_detail)
 		do
-			if details = Void then
-				create details.make(0)
-			end
 			details.force(a_detail, a_detail.language.code_string)
 		ensure
 			Details_set: details.has(a_detail.language.code_string)
