@@ -64,7 +64,8 @@ feature -- Initialisation
 
 	make
 		do
-			create selection_history.make
+			clear
+
 			if ontology_prototype.item = Void then
 				initialise_ontology_prototype
 				schema_load_counter := rm_schemas_load_count.item
@@ -244,9 +245,10 @@ feature -- Commands
 	clear
 			-- reduce to initial state
 		do
-			create archetype_index.make(0)
-			ontology := Void
 			create selection_history.make
+			create archetype_index.make (0)
+			create ontology_index.make (0)
+			ontology := Void
 			reset_statistics
 		end
 
@@ -259,14 +261,14 @@ feature -- Commands
 			status_list: ARRAY[INTEGER]
 			i: INTEGER
 		do
+			clear
+
 			if schema_load_counter < rm_schemas_load_count.item then
 				initialise_ontology_prototype
 			end
-			clone_ontology_prototype
-			create selection_history.make
-			reset_statistics
 
-			create archetype_index.make(0)
+			clone_ontology_prototype
+
 			from
 				source_repositories.repositories.start
 			until
@@ -414,6 +416,10 @@ feature -- Modification
 			parent_key, child_key: STRING
 			ara: ARCH_REP_ARCHETYPE
 		do
+			if ontology_index.is_empty then
+				clone_ontology_prototype
+			end
+
 			source_repositories.adhoc_source_repository.add_item (full_path)
 			ara := source_repositories.adhoc_source_repository.item(full_path)
 			if source_repositories.adhoc_source_repository.has_path (full_path) then
@@ -422,8 +428,8 @@ feature -- Modification
 					child_key := ara.id.as_string
 					if not ontology_index.has(child_key) then
 						ontology_index.item (parent_key).put_child(ara)
-						ontology_index.put (ara, child_key)
-						archetype_index.put(ara, child_key)
+						ontology_index.force (ara, child_key)
+						archetype_index.force (ara, child_key)
 						update_statistics(ara)
 						set_selected_item (source_repositories.adhoc_source_repository.item (full_path))
 					else

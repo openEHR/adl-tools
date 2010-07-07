@@ -29,20 +29,43 @@ inherit
 
 	SHARED_APP_RESOURCES
 
+feature {NONE} -- Implementation
+
+	repository: STRING
+		once
+			Result := resource_value ("tests", "validation_repository")
+			assert ("Resource value is missing from cfg file:%N" + example_of_required_setting, not Result.is_empty)
+		end
+
+	example_of_required_setting: STRING = "[
+		[tests]
+		validation_repository=C:\Ocean\adl\test
+		]"
+
 feature -- Test routines
+
+	test_add_adhoc_item
+			-- Check that an ad-hoc archetype can be added.
+		note
+			testing:  "covers/{ARCH_DIRECTORY}.add_adhoc_item"
+		local
+			expected: STRING
+		do
+			adl_application.initialise
+			assert_equal (False, arch_dir.has_selected_archetype)
+			arch_dir.add_adhoc_item (repository + "\basics\openehr-test_pkg-BOOK.structure_test1.v1.adls")
+			assert_equal (True, arch_dir.has_selected_archetype)
+		end
 
 	test_validation
 			-- Check that the expected errors occur when building the validation test archetypes.
 		note
-			testing:  "covers/{ARCH_DIRECTORY}.populate_directory"
+			testing:  "covers/{ARCH_DIRECTORY}.populate"
 		local
-			repository: STRING
 			expected: STRING
 		do
 			adl_application.initialise
 			set_status_reporting_level (message_type_error)
-			repository := resource_value ("tests", "validation_repository")
-
 			source_repositories.set_reference_repository (repository)
 			arch_dir.populate
 
