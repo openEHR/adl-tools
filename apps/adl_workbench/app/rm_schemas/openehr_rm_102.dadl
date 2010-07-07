@@ -949,7 +949,6 @@ class_definitions = <
 			["null_flavour"] = (BMM_SINGLE_PROPERTY) <
 				name = <"null_flavour">
 				type = </class_definitions["DV_CODED_TEXT"]>
-				is_mandatory = <True>
 			>
 			["value"] = (BMM_SINGLE_PROPERTY) <
 				name = <"value">
