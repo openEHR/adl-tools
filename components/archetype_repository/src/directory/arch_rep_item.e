@@ -148,6 +148,15 @@ feature -- Status Report
 			Result := parent = Void
 		end
 
+	has_child (a_child: like child_type): BOOLEAN
+		require
+			a_child /= Void
+		do
+			if children /= Void then
+				Result := children.has(a_child)
+			end
+		end
+
 feature -- Iteration
 
 	child_start
@@ -192,6 +201,13 @@ feature {ARCHETYPE_DIRECTORY} -- Modification
 			a_child.set_parent(Current)
 		end
 
+	remove_child (a_child: like child_type)
+		require
+			a_child /= Void and then has_child(a_child)
+		do
+			children.prune (a_child)
+		end
+
 feature {ARCH_REP_ITEM} -- Modification
 
 	set_parent (a_parent: ARCH_REP_ITEM)
@@ -209,7 +225,7 @@ feature -- Comparison
 			Result := ontological_name < other.ontological_name
 		end
 
-feature {ARCH_REP_ITEM} -- Implementation
+feature {ARCH_REP_ITEM, ARCHETYPE_DIRECTORY} -- Implementation
 
 	children: SORTED_TWO_WAY_LIST [like child_type]
 			-- list of child nodes

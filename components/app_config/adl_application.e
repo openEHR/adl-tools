@@ -263,7 +263,8 @@ feature -- Message database
 			
 			["VSONI"] = <"Error (VSONI): $1 object node at path $2 use of node identifier does not conform to $3 node at parent path $4">
 			["VSONIN"] = <"Error (VSONIN): object node identifier $1 (RM type $2) at path $3 should have corresponding node in flat parent at $4 but doesn't">
-			["VSONIR"] = <"Error (VSONIR): object node at path $1 (RM type $2) redefines parent node (RM type = $3) but node_id $4 not redefined">
+			["VSONIRocc"] = <"Error (VSONIR): object node at path $1 (RM type $2) redefines parent node (RM type = $3) occurrences but node_id $4 not redefined">
+			["VSONIRrm"] = <"Error (VSONIR): object node at path $1 (RM type $2) redefines parent node (RM type = $3) RM type but node_id $4 not redefined">
 			["VSCNR"] = <"Error (VSCNR): illegal redefinition of $1 node at $2 in parent into $3 node at $4 in child">
 			["VCOCDocc"] = <"Error (VCOCD): object node of RM type $1 at path $2 definition missing (empty definition only allowed when occurrences redefined in specialised child)">
 			["VSONT"] = <"Error (VSONT): object node at path $1 (AOM type $2) does not conform to node at parent path $3 AOM type $4">
@@ -299,7 +300,7 @@ feature -- Message database
 			["VDSIV2"] = <"Error (VDSIV): 'include' constraint of slot of RM type $1 at path $2 invalid; include must be either empty or match 'any' when 'exclude' matches non-'any'">
 
 			-- C_ARCHETYPE_ROOT
-			["WARXS"] = <"Warning (VARXS): slot filler at $1 specifies archetype $2 that matches slot but doesn't exist in current archetype repository">
+			["VARXR"] = <"Warning (VARXR): slot filler at $1 specifies archetype $2 that matches slot but doesn't exist in current archetype repository">
 			["VARXS"] = <"Error (VARXS): slot filler at $1 specifies archetype id $2 that does not conform to flat parent slot constraint">
 			["VARXNC"] = <"Error (VARXNC): slot node id of slot filler at $1 does not correspond to any ARCHETYPE slot in flat parent">
 			["VARXTV"] = <"Error (VARXTV): RM type of slot filler $1 does not conform to RM type $2 of slot or attribute in flat parent">

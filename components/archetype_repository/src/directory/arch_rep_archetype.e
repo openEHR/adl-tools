@@ -263,10 +263,7 @@ feature -- Access
 	flat_text: STRING
 			-- The text of the flat form of the archetype
 		do
-			if is_valid then
-				if flat_archetype = Void then
-					flatten
-				end
+			if is_valid and flat_archetype /= Void then
 				if flat_text_cache = Void then
 					flat_text_cache := adl_engine.serialise(flat_archetype, Archetype_native_syntax)
 				end
@@ -547,6 +544,7 @@ feature -- Commands
 				if amp.last_archetype_specialised then
 					create parent_arch_id.make_from_string(amp.last_parent_archetype_id)
 					if not parent_arch_id.is_equal (parent_id) then
+						old_ontological_parent_name := old_ont_parent
 						parent_id := parent_arch_id
 					end
 				end
@@ -665,7 +663,9 @@ feature -- Commands
 					if differential_archetype.has_suppliers then
 						supp_idx := differential_archetype.suppliers_index
 						from supp_idx.start until supp_idx.off loop
-							suppliers_index.put (arch_dir.archetype_index.item (supp_idx.key_for_iteration), supp_idx.key_for_iteration)
+							if arch_dir.archetype_index.has (supp_idx.key_for_iteration) then
+								suppliers_index.put (arch_dir.archetype_index.item (supp_idx.key_for_iteration), supp_idx.key_for_iteration)
+							end
 							supp_idx.forth
 						end
 						compilation_state := Cs_suppliers_known
@@ -685,6 +685,12 @@ feature -- Commands
 			post_error (Current, "parse", "report_exception", <<exception.out, exception_trace>>)
 			exception_encountered := True
 			retry
+		end
+
+	signal_differential_edited
+			-- signal event of differential in-memory being changed by editing at UI
+		do
+			flat_archetype_cache := Void
 		end
 
 	validate

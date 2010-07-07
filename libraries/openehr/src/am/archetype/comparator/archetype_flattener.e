@@ -41,9 +41,9 @@ feature -- Initialisation
 			-- create with flat archetype of parent and source (differential) archetype of
 			-- archetype for which we wish to generate a flat archetype
 		require
-			Flat_desc_attached: a_flat_parent_desc /= Void
-			Child_desc_attached: a_child_desc /= Void
-			Archetypes_compatible: comparable_archetypes(a_flat_parent_desc.flat_archetype, a_child_desc.differential_archetype)
+			Flat_desc_valid: a_flat_parent_desc /= Void and a_flat_parent_desc.is_valid
+			Child_desc_valid: a_child_desc /= Void and a_child_desc.is_valid
+			Child_parent_relation_valid: a_child_desc.differential_archetype.parent_archetype_id.as_string.is_equal (a_flat_parent_desc.flat_archetype.archetype_id.as_string)
 			Rm_schema_available: an_rm_schema /= Void
 		do
 			rm_schema := an_rm_schema
@@ -54,7 +54,7 @@ feature -- Initialisation
 	make_non_specialised (a_child_desc: ARCH_REP_ARCHETYPE; an_rm_schema: SCHEMA_ACCESS)
 			-- create with source (differential) archetype
 		require
-			Child_desc_attached: a_child_desc /= Void
+			Child_desc_attached: a_child_desc /= Void and a_child_desc.is_valid
 			Rm_schema_available: an_rm_schema /= Void
 		do
 			rm_schema := an_rm_schema
@@ -65,7 +65,7 @@ feature -- Access
 
 	flat_parent_desc: ARCH_REP_ARCHETYPE
 
-	child_desc: ARCH_REP_ARCHETYPE
+	child_desc: attached ARCH_REP_ARCHETYPE
 
 	arch_parent_flat: FLAT_ARCHETYPE
 			-- flat archetype of parent, if applicable
@@ -120,24 +120,6 @@ feature -- Commands
 			end
 		ensure
 			arch_output_flat /= Void
-		end
-
-feature -- Comparison
-
-	comparable_archetypes(a_flat_archetype: FLAT_ARCHETYPE; a_src_archetype: DIFFERENTIAL_ARCHETYPE): BOOLEAN
-		require
-			Valid_flat_archetype: a_flat_archetype /= Void
-			Valid_src_archetype: a_src_archetype /= Void
-		do
-			if a_src_archetype.is_valid then
-				if a_src_archetype.is_specialised then
-					if a_flat_archetype.is_valid then
-						Result := a_src_archetype.parent_archetype_id.as_string.is_equal (a_flat_archetype.archetype_id.as_string)
-					end
-				else
-					Result := True
-				end
-			end
 		end
 
 feature {NONE} -- Implementation
@@ -760,9 +742,6 @@ feature {NONE} -- Implementation
 				child_desc.suppliers_index.forth
 			end
 		end
-
-invariant
-	Source_archetype_exists: arch_child_diff /= Void
 
 end
 

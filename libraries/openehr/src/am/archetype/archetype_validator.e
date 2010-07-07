@@ -604,7 +604,7 @@ feature {NONE} -- Implementation
 						if not archetype_id_matches_slot (car.archetype_id, a_slot) then -- doesn't even match the slot definition
 							add_error("VARXS", <<car.path, car.archetype_id>>)
 						elseif not slot_id_index.item (a_slot.path).has (car.archetype_id) then -- matches def, but not found in actual list from current repo
-							add_warning("WARXS", <<car.path, car.archetype_id>>)
+							add_error("VARXR", <<car.path, car.archetype_id>>)
 						elseif not (car.occurrences = Void or else a_slot.occurrences.contains (car.occurrences)) then
 							if strict_validation then
 								add_error("VSONCO", <<car.path, car.occurrences_as_string, a_slot.path, a_slot.occurrences.as_string>>)
@@ -657,7 +657,9 @@ feature {NONE} -- Implementation
 						if not co_child_diff.rm_type_conforms_to (co_parent_flat, rm_schema) then
 							add_error("VSONCT", <<co_child_diff.path, co_child_diff.rm_type_name, co_parent_flat.path, co_parent_flat.rm_type_name>>)
 						-- FIXME: the following check is complicated by redundant occurrences constraints due to legacy archetypes
-						elseif (co_child_diff.node_id.is_equal(co_parent_flat.node_id) and co_child_diff.occurrences /= Void) or else not co_child_diff.occurrences_conforms_to (co_parent_flat) then
+						elseif co_child_diff.node_id.is_equal(co_parent_flat.node_id) and co_child_diff.occurrences /= Void then
+							add_error("VSONIRocc", <<co_child_diff.path, co_child_diff.rm_type_name, co_parent_flat.rm_type_name, co_child_diff.node_id>>)
+						elseif not co_child_diff.occurrences_conforms_to (co_parent_flat) then
 							if strict_validation then
 								add_error("VSONCO", <<co_child_diff.path, co_child_diff.occurrences_as_string, co_parent_flat.path, co_parent_flat.occurrences.as_string>>)
 							else
@@ -668,7 +670,7 @@ feature {NONE} -- Implementation
 							if not co_child_diff.node_id_conforms_to (co_parent_flat) then
 								add_error("VSONCI", <<co_child_diff.path, co_child_diff.node_id, co_parent_flat.path, co_parent_flat.node_id>>)
 							elseif co_child_diff.node_id.is_equal(co_parent_flat.node_id) then -- id same, something else must be different
-								add_error("VSONIR", <<co_child_diff.path, co_child_diff.rm_type_name, co_parent_flat.rm_type_name, co_child_diff.node_id>>)
+								add_error("VSONIRrm", <<co_child_diff.path, co_child_diff.rm_type_name, co_parent_flat.rm_type_name, co_child_diff.node_id>>)
 							end
 						else
 							add_error("VSONI", <<co_child_diff.rm_type_name, co_child_diff.path, co_parent_flat.rm_type_name, co_parent_flat.path>>)

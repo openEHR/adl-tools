@@ -456,6 +456,7 @@ feature -- Modification
 			archetype_index.force (ara, ara.id.as_string)
 			ontology_index.remove (ara.old_id.as_string)
 			ontology_index.force (ara, ara.id.as_string)
+			ara.parent.remove_child(ara)
 			ontology_index.item (ara.ontological_parent_name).put_child (ara)
 			ara.clear_old_ontological_parent_name
 		end
