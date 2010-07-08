@@ -325,8 +325,13 @@ feature {NONE} -- Implementation
 
 	ontology: attached ARCHETYPE_ONTOLOGY
 			-- The ontology for `target_archetype'.
+		require
+			ontologies_attached: attached ontologies
+			ontologies_has_item: not ontologies.off
 		do
 			Result := ontologies.item
+		ensure
+			has_language: arch_dir.has_validated_selected_archetype implies Result.has_language (current_language)
 		end
 
 	gui: MAIN_WINDOW
@@ -1212,7 +1217,6 @@ feature {NONE} -- Implementation
 
 invariant
 	gui_attached: gui /= Void
-	ontology_has_language: arch_dir.has_validated_selected_archetype implies ontology.has_language (current_language)
 	Three_value_logic: in_reference_model_mode implies in_technical_mode
 
 end
