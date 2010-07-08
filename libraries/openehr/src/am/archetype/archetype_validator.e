@@ -209,10 +209,6 @@ feature {NONE} -- Implementation
 			--		not (excludes empty or /= 'any') ==> Error
 			-- 	ELSEIF includes not empty and /= 'any' THEN
 			--		not (excludes empty or = 'any') ==> Error
-			-- 	ELSEIF excludes not empty and = 'any' THEN
-			-- 		not (includes empty or /= 'any') ==> Error
-			--	ELSEIF excludes not empty and /= 'any' THEN
-			-- 		not (includes empty or = 'any') ==> Error
 			--	END
 		local
 			includes, excludes: ARRAYED_LIST[ASSERTION]
@@ -230,14 +226,6 @@ feature {NONE} -- Implementation
 					if not (excludes.is_empty or assertion_matches_any (excludes.first)) then
 						add_error("VDSEV2", <<target.slot_index.item.rm_type_name, target.slot_index.item.path>>)
 					end
-				elseif not excludes.is_empty and assertion_matches_any (excludes.first) then
-					if not (includes.is_empty or not assertion_matches_any (includes.first)) then
-						add_error("VDSIV1", <<target.slot_index.item.rm_type_name, target.slot_index.item.path>>)
-					end
-				elseif not includes.is_empty and not assertion_matches_any (includes.first) then
-					if not (excludes.is_empty or assertion_matches_any (excludes.first)) then
-						add_error("VDSIV2", <<target.slot_index.item.rm_type_name, target.slot_index.item.path>>)
-					end
 				end
 
 				target.slot_index.forth
@@ -252,12 +240,15 @@ feature {NONE} -- Implementation
 		do
 			from target.suppliers_index.start until target.suppliers_index.off loop
 				if not arch_dir.archetype_index.has (target.suppliers_index.key_for_iteration) then
-					add_warning("WARNF", <<target.suppliers_index.key_for_iteration>>)
+					add_error("VARXR", <<target.suppliers_index.key_for_iteration, target.suppliers_index.key_for_iteration>>)
 				end
+
+				-- check that the RM type in the archetype references is compatible with the RM type of the C_ARCHETYPE_ROOT node
 				c_ar_list := target.suppliers_index.item_for_iteration
 				from c_ar_list.start until c_ar_list.off loop
 					create filler_id.make_from_string (c_ar_list.item.archetype_id)
-					if not c_ar_list.item.rm_type_name.is_equal (filler_id.rm_entity) then
+					if not (c_ar_list.item.rm_type_name.is_equal (filler_id.rm_entity) or else
+						rm_schema.type_conforms_to (c_ar_list.item.rm_type_name, filler_id.rm_entity)) then
 						add_error("VARXTV", <<c_ar_list.item.archetype_id, c_ar_list.item.rm_type_name>>)
 					end
 					c_ar_list.forth
@@ -294,13 +285,13 @@ feature {NONE} -- Implementation
 			-- level of specialisation.
 		do
 			from ontology.term_codes.start until ontology.term_codes.off loop
-				if specialisation_depth_from_code (ontology.term_codes.item) > ontology.specialisation_depth then
+				if specialisation_depth_from_code (ontology.term_codes.item) /= ontology.specialisation_depth then
 					add_error("VONSD", <<ontology.term_codes.item>>)
 				end
 				ontology.term_codes.forth
 			end
 			from ontology.constraint_codes.start until ontology.constraint_codes.off loop
-				if specialisation_depth_from_code (ontology.constraint_codes.item) > ontology.specialisation_depth then
+				if specialisation_depth_from_code (ontology.constraint_codes.item) /= ontology.specialisation_depth then
 					add_error("VONSD", <<ontology.constraint_codes.item>>)
 				end
 				ontology.constraint_codes.forth
@@ -570,6 +561,7 @@ feature {NONE} -- Implementation
 				if attached {C_ATTRIBUTE} flat_parent.definition.c_attribute_at_path (apa.path_at_level (flat_parent.specialisation_depth)) as ca_parent_flat then
 					if not ca_child_diff.node_conforms_to(ca_parent_flat, rm_schema) then
 						if ca_child_diff.is_single /= ca_parent_flat.is_single then
+							-- FIXME: should never get here now, since cardinality of same-named attributes under same object type is now read from RM schema
 							add_error("VSAM", <<ca_child_diff.path>>)
 						elseif not ca_child_diff.existence_conforms_to (ca_parent_flat) then
 							add_error("VSANCE", <<ca_child_diff.path, ca_child_diff.existence.as_string,
@@ -736,8 +728,8 @@ feature {NONE} -- Implementation
 					-- (used on non-coded nodes) or else codes that are either the same as the corresponding node in the parent flat,
 					-- or else a refinement of that (e.g. at0001.0.2), but not a new code (e.g. at0.0.1)
 					if attached {C_OBJECT} a_c_node as a_c_obj then
-						if not is_valid_code (a_c_obj.node_id) or else								-- node with no node_id
-									(specialisation_depth_from_code (a_c_obj.node_id) = 0 or else 	-- node with node_id unchanged from top-level archetype
+						if not is_valid_code (a_c_obj.node_id) or else								-- node with no node_id OR
+									(specialisation_depth_from_code (a_c_obj.node_id) = 0 or else 	-- node with node_id unchanged from top-level archetype OR
 									is_refined_code(a_c_obj.node_id)) then							-- node id refined (i.e. not new)
 
 							create apa.make_from_string(a_c_node.path)

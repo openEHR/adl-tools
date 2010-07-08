@@ -186,11 +186,15 @@ feature {NONE} -- Implementation
 					create tree_iterator.make (ara.flat_archetype.definition.representation)
 					tree_iterator.do_all (agent node_build_enter_action (?, ?), agent node_build_exit_action (?, ?))
 					gui_tree_item_stack.remove
-				elseif not gui_node_descriptor_map.has (ara.ontological_name) then
-					 -- otherwise just display the template root
-					attach_node(ara.id.rm_entity + "." + ara.display_name, pixmaps[ara.group_name], ara)
-					gui_node_descriptor_map.force (gui_tree_item_stack.item, ara.ontological_name)
-					gui_tree_item_stack.remove
+				-- otherwise just display the template root
+				else
+					if not gui_node_descriptor_map.has (ara.ontological_name) then
+						attach_node(ara.id.rm_entity + "." + ara.display_name, pixmaps[ara.group_name], ara)
+						gui_node_descriptor_map.force (gui_tree_item_stack.item, ara.ontological_name)
+						gui_tree_item_stack.remove
+					else
+						gui_node_descriptor_map.item (ara.ontological_name).set_pixmap (pixmaps[ara.group_name])
+					end
 				end
 			end
 		end

@@ -515,13 +515,9 @@ class_definitions = <
 				name = <"ordinal_attr_1">
 				type = </class_definitions["DV_ORDINAL"]>
 			>
-			["element_attr"] = (BMM_CONTAINER_PROPERTY) <
+			["element_attr"] = (BMM_SINGLE_PROPERTY) <
 				name = <"element_attr">
-				type = <
-					type = </class_definitions["ELEMENT"]>
-					container_type = </primitive_types["List"]>
-					cardinality = <|>=0|>
-				>
+				type = </class_definitions["ELEMENT"]>
 			>
 			["element_attr_2"] = (BMM_CONTAINER_PROPERTY) <
 				name = <"element_attr_2">

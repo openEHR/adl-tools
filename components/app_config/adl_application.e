@@ -198,8 +198,8 @@ feature -- Message database
 			["SINVS"] = <"Syntax error (SINVS): illegal invariant expression at identifier $1">
 			["SEXPT"] = <"Syntax error (SEXPT): expecting absolute path after exists keyword">
 			["SEXLSG"] = <"Syntax error (SEXLSG): existence single value must be 0 or 1">
-			["SEXLU1"] = <"Syntax error (SEXLU1): existence upper limit must be 0 or 1 when lower limit is 0">
-			["SEXLU2"] = <"Syntax error (SEXLU2): existence upper limit must be 1 when lower limit is 1">
+			["SEXLU1"] = <"Syntax error (SEXLU): existence upper limit must be 0 or 1 when lower limit is 0">
+			["SEXLU2"] = <"Syntax error (SEXLU): existence upper limit must be 1 when lower limit is 1">
 			["SEXLMG"] = <"Syntax error (SEXLMG): existence must be one of 0..0, 0..1, or 1..1">
 
 			["SCIAV"] = <"Syntax error (SCIAV): invalid assumed value; must be an integer">
@@ -301,11 +301,10 @@ feature -- Message database
 			["VDSIV2"] = <"Error (VDSIV): 'include' constraint of slot of RM type $1 at path $2 invalid; include must be either empty or match 'any' when 'exclude' matches non-'any'">
 
 			-- C_ARCHETYPE_ROOT
-			["VARXR"] = <"Warning (VARXR): slot filler at $1 specifies archetype $2 that matches slot but doesn't exist in current archetype repository">
+			["VARXR"] = <"Warning (VARXR): slot filler at $1 specifies archetype $2 that matches slot but doesn't exist in current repository">
 			["VARXS"] = <"Error (VARXS): slot filler at $1 specifies archetype id $2 that does not conform to flat parent slot constraint">
 			["VARXNC"] = <"Error (VARXNC): slot node id of slot filler at $1 does not correspond to any ARCHETYPE slot in flat parent">
 			["VARXTV"] = <"Error (VARXTV): RM type of slot filler $1 does not conform to RM type $2 of slot or attribute in flat parent">
-			["WARNF"] = <"Warning (WARNF): archetype reference at $1 not found in archetype/template repository">
 
 			-- ontology-related validity
 			["VONSD"] = <"Error (VONSD): archetype code $1 in ontology more specialised than archetype">
