@@ -124,6 +124,7 @@ feature -- Access
 			is_candidate: BOOLEAN
 		do
 			create Result.make (0)
+			Result.compare_objects
 			create regex_matcher.compile_case_insensitive (a_regex)
 			if regex_matcher.is_compiled then
 				from archetype_index.start until archetype_index.off loop

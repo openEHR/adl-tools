@@ -794,7 +794,6 @@ feature {ARCHETYPE_VALIDATOR} -- Modification
 			end
 			if not slot_id_index.has (a_slot_path) then
 				slot_id_index.force (a_list, a_slot_path)
-				a_list.compare_objects
 			else
 				slot_id_index.item (a_slot_path).merge (a_list)
 			end
