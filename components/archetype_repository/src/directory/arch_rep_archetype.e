@@ -272,7 +272,7 @@ feature -- Access
 	flat_text: STRING
 			-- The text of the flat form of the archetype
 		do
-			if is_valid and flat_archetype /= Void then
+			if flat_archetype /= Void then
 				if flat_text_cache = Void then
 					flat_text_cache := adl_engine.serialise(flat_archetype, Archetype_native_syntax)
 				end
@@ -1076,6 +1076,8 @@ feature {NONE} -- Implementation
 			arch_flattener.flatten
 			flat_archetype_cache := arch_flattener.arch_output_flat
 			flat_text_cache := Void
+		ensure
+			flat_archetype_cache_attached: flat_archetype_cache /= Void
 		end
 
 	flat_text_cache: STRING
