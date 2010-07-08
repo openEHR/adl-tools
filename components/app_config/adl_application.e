@@ -232,7 +232,8 @@ feature -- Message database
 
 			-- ontology
 			["VARDT"] = <"Error (VARDT): archetype id type $1 does not match type $2 in definition section">
-			["VACSD"] = <"Error (VACSD): specialisation depth of concept code $1 does not match specialisation depth of archetype id $2">
+			["VACSD"] = <"Error (VACSD): specialisation depth of concept code $1 not consistent with specialisation depth of parent archetype $2">
+			["VACSDtop"] = <"Error (VACSD): specialisation depth of concept code $1 not consistent with specialisation depth 0 of archetype">
 			["VACCD"] = <"Error (VACCD): archetype concept code $1 not used in definition">			
 			["VOTM"] = <"Error (VOTM): translations for $1 defined in the description / translations section but missing in the term_definition and constraint_definition sections">
 			["VATCD"] = <"Error (VATCD): at-code $1 used in archetype more specialised than archetype">
@@ -258,7 +259,7 @@ feature -- Message database
 			["VACMI"] = <"Error (VACMI): cannot add $1 object with $2 to multiply-valued attribute $3 because object has no node id">
 			["VACMM"] = <"Error (VACMM): cannot add $1 object with $2 to multiply-valued attribute $3 because attribute already has child with same node id">
 
-			["VARCN"] = <"Error (VARCN): concept code $1 is invalid">
+			["VARCN"] = <"Error (VARCN): root object node_id (concept code) $1 is invalid; should follow pattern at0000{.1}*">
 			["VSSM"] = <"Error (VSSM): node at path $1 has order marker referring to non-existant sibling node $2">
 			
 			["VSONI"] = <"Error (VSONI): $1 object node at path $2 use of node identifier does not conform to $3 node at parent path $4">

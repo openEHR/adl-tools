@@ -35,7 +35,6 @@ feature -- Initialisation
 
 	make (an_artefact_type: ARTEFACT_TYPE;
 			an_id: like archetype_id;
-			a_concept_code: STRING;
 			an_original_language: STRING;
 			a_description: RESOURCE_DESCRIPTION;
 			a_definition: like definition;
@@ -43,13 +42,11 @@ feature -- Initialisation
 				-- make from pieces obtained by parsing
 		require
 			Artefact_type_attached: an_artefact_type /= Void
-			Concept_exists: a_concept_code /= Void and then valid_concept_code(a_concept_code)
 			Language_valid: an_original_language /= Void and then not an_original_language.is_empty
 		do
 			artefact_type := an_artefact_type
 			adl_version := 	Latest_adl_version
 			archetype_id := an_id
-			concept := a_concept_code
 			create original_language.make (Default_language_code_set, an_original_language)
 
 			if a_description = Void then
@@ -65,7 +62,6 @@ feature -- Initialisation
 			Artefact_type_set: artefact_type = an_artefact_type
 			Adl_version_set: adl_version = Latest_adl_version
 			Id_set: archetype_id = an_id
-			Concept_set: concept = a_concept_code
 			Original_language_set: original_language.code_string.is_equal (an_original_language)
 			Definition_set: definition = a_definition
 			Ontology_set: ontology = an_ontology
@@ -77,7 +73,6 @@ feature -- Initialisation
 			an_id: like archetype_id;
 			a_parent_archetype_id: ARCHETYPE_ID;
 			is_controlled_flag: BOOLEAN;
-			a_concept_code: STRING;
 			an_original_language: STRING;
 			a_translations: HASH_TABLE [TRANSLATION_DETAILS, STRING];
 			a_description: RESOURCE_DESCRIPTION;
@@ -87,12 +82,11 @@ feature -- Initialisation
 				-- make from all possible items
 		require
 			Artefact_type_attached: an_artefact_type /= Void
-			Concept_exists: a_concept_code /= Void and then valid_concept_code(a_concept_code)
 			Language_valid: an_original_language /= Void and then not an_original_language.is_empty
 			Translations_valid: a_translations /= Void implies not a_translations.is_empty
 			Invariants_valid: an_invariants /= Void implies not an_invariants.is_empty
 		do
-			make (an_artefact_type, an_id, a_concept_code,
+			make (an_artefact_type, an_id,
 					an_original_language, a_description,
 					a_definition, an_ontology)
 			parent_archetype_id := a_parent_archetype_id
@@ -106,7 +100,6 @@ feature -- Initialisation
 			Is_controlled_set: is_controlled = is_controlled_flag
 			Id_set: archetype_id = an_id
 			Parent_id_set: parent_archetype_id = a_parent_archetype_id
-			Concept_set: concept = a_concept_code
 			Original_language_set: original_language.code_string.is_equal (an_original_language)
 			Translations_set: translations = a_translations
 			Definition_set: definition = a_definition
@@ -137,13 +130,16 @@ feature -- Access
 	specialisation_depth: INTEGER
 			-- infer number of levels of specialisation from concept code
 		do
-			Result := archetype_id.specialisation_depth
+			Result := specialisation_depth_from_code (concept)
 		ensure
 			non_negative: Result >= 0
 		end
 
-	concept: STRING
+	concept: STRING is
 			-- at-code of concept of the archetype as a whole and the code of its root node
+		do
+			Result := definition.node_id
+		end
 
 	definition: attached C_COMPLEX_OBJECT
 
@@ -402,12 +398,12 @@ feature -- Modification
 			create artefact_type.make_from_type_name(s)
 		end
 
-	set_concept(str: STRING)
-		require
-			str_valid: str /= Void and then not str.is_empty
-		do
-			concept := str
-		end
+--	set_concept(str: STRING)
+--		require
+--			str_valid: str /= Void and then not str.is_empty
+--		do
+--			concept := str
+--		end
 
 	set_parent_archetype_id (an_id: attached ARCHETYPE_ID)
 		do

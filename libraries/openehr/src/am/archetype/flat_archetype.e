@@ -30,7 +30,7 @@ feature -- Initialisation
 	make_from_differential (a_diff: DIFFERENTIAL_ARCHETYPE)
 			-- initialise from a differential archetype
 		do
-			make(a_diff.artefact_type.deep_twin, a_diff.archetype_id.deep_twin, a_diff.concept.deep_twin,
+			make(a_diff.artefact_type.deep_twin, a_diff.archetype_id.deep_twin,
 					a_diff.original_language.code_string,
 					a_diff.description.deep_twin,
 					a_diff.definition.deep_twin, a_diff.ontology.to_flat)
@@ -56,7 +56,7 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 			-- except for the definition, which is the flat parent version, so that the
 			-- differential definition can be overlaid on it by a merging process.
 		do
-			make (a_diff.artefact_type.deep_twin, a_diff.archetype_id.deep_twin, a_diff.concept.deep_twin,
+			make (a_diff.artefact_type.deep_twin, a_diff.archetype_id.deep_twin,
 					a_diff.original_language.code_string,
 					a_diff.description.deep_twin,
 					a_flat_parent.definition.deep_twin,
@@ -103,7 +103,7 @@ feature -- Modification
 			end
 			component_ontologies.put(an_ontology, an_archetype_id)
 		end
-		
+
 end
 
 

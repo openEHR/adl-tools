@@ -30,6 +30,11 @@ inherit
 
 	C_COMMON
 
+	ARCHETYPE_TERM_CODE_TOOLS
+		export
+			{NONE} all
+		end
+
 	OPERATOR_TYPES
 		export
 			{NONE} all
@@ -154,15 +159,19 @@ create
 input: c_complex_object
 		{
 			debug("ADL_parse")
-				io.put_string("CADL definition validated%N")
+				io.put_string("CADL definition parsed%N")
 			end
 
-			accept
+			if valid_concept_code(complex_obj.node_id) then
+				accept
+			else
+				abort_with_error("VARCN", <<complex_obj.node_id>>)
+			end
 		}
 	| assertions
 		{
 			debug("ADL_parse")
-				io.put_string("assertion definition validated%N")
+				io.put_string("assertion definition parsed%N")
 			end
 
 			accept
@@ -170,7 +179,7 @@ input: c_complex_object
 	| error
 		{
 			debug("ADL_parse")
-				io.put_string("CADL definition NOT validated%N")
+				io.put_string("CADL definition NOT parsed%N")
 			end
 			abort
 		}

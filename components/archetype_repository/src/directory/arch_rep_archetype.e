@@ -253,8 +253,17 @@ feature -- Access
 			-- old vaue of `old_ontological_parent_name', to facilitate handling changes due to external editing of archetypes
 
 	display_name: STRING
+			-- domain concept part of archetype id; if there are any '-' characters due to ADL 1.4 style ids,
+			-- return only the final section
+		local
+			str: STRING
 		do
-			Result := id.domain_concept
+			str := id.domain_concept
+			if is_specialised and str.has ({ARCHETYPE_ID}.section_separator) then
+				Result := str.substring (str.last_index_of ({ARCHETYPE_ID}.section_separator, str.count)+1, str.count)
+			else
+				Result := str
+			end
 		end
 
 	differential_text: STRING
@@ -654,7 +663,7 @@ feature -- Commands
 					post_error (Current, "parse", "parse_e1", <<adl_engine.parse_error_text>>)
 					compilation_state := Cs_parse_failed
 				else
-					if differential_archetype.is_specialised and not parent_id.is_equal(differential_archetype.parent_archetype_id) then
+					if is_specialised and not parent_id.is_equal(differential_archetype.parent_archetype_id) then
 						post_warning (Current, "parse", "parse_w1", <<id.as_string, parent_id.as_string, differential_archetype.parent_archetype_id.as_string>>)
 					else
 						post_info (Current, "parse", "parse_i1", <<id.as_string>>)

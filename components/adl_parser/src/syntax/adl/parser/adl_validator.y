@@ -145,8 +145,6 @@ arch_specialisation: -- empty is ok
 		{
 			if arch_id.valid_id($2) then
 				create parent_archetype_id.make_from_string($2)
-			elseif arch_id.old_valid_id($2) then
-				create parent_archetype_id.old_make_from_string($2)
 			end
 			if not parent_archetype_id.semantic_id.is_equal(archetype_id.semantic_parent_id) then
 				raise_error
@@ -162,7 +160,8 @@ arch_specialisation: -- empty is ok
 		}
 	;
 
-arch_concept: SYM_CONCEPT V_LOCAL_TERM_CODE_REF 
+arch_concept: -- empty is ADL 1.5 
+	| SYM_CONCEPT V_LOCAL_TERM_CODE_REF 
 		{
 			concept := $2
 			debug("ADL_parse")

@@ -158,8 +158,8 @@ feature {NONE} -- Implementation
 
 			if adl_parser.syntax_error then
 				parse_error_text := adl_parser.error_text
-			elseif not valid_concept_code (adl_parser.concept) then
-				parse_error_text := create_message_line("VARCN", <<adl_parser.concept>>)
+--			elseif not valid_concept_code (adl_parser.concept) then
+--				parse_error_text := create_message_line("VARCN", <<adl_parser.concept>>)
 			else
 				------------------- language section ---------------
 --				if adl_parser.language_text /= Void and then not adl_parser.language_text.is_empty then
@@ -224,16 +224,15 @@ feature {NONE} -- Implementation
 									convert_ontology_syntax(ontology_context.tree)  -- perform any version upgrade conversions
 									if differential_source_flag then
 										if orig_lang_trans /= Void then
-											create differential_ontology.make_from_tree (orig_lang_trans.original_language.code_string, ontology_context.tree, adl_parser.concept)
+											create differential_ontology.make_from_tree (orig_lang_trans.original_language.code_string, ontology_context.tree, definition.node_id)
 										else
-											create differential_ontology.make_from_tree (Void, ontology_context.tree, adl_parser.concept)
+											create differential_ontology.make_from_tree (Void, ontology_context.tree, definition.node_id)
 											orig_lang_trans := original_language_and_translations_from_ontology (differential_ontology)
 										end
 
 										create {DIFFERENTIAL_ARCHETYPE} Result.make (
 											adl_parser.artefact_type,
 											id,
-											adl_parser.concept,
 											orig_lang_trans.original_language.code_string,
 											res_desc,	-- may be Void
 											definition,
@@ -241,16 +240,15 @@ feature {NONE} -- Implementation
 										)
 									else
 										if orig_lang_trans /= Void then
-											create flat_ontology.make_from_tree (orig_lang_trans.original_language.code_string, ontology_context.tree, adl_parser.concept)
+											create flat_ontology.make_from_tree (orig_lang_trans.original_language.code_string, ontology_context.tree, definition.node_id)
 										else
-											create flat_ontology.make_from_tree (Void, ontology_context.tree, adl_parser.concept)
+											create flat_ontology.make_from_tree (Void, ontology_context.tree, definition.node_id)
 											orig_lang_trans := original_language_and_translations_from_ontology (flat_ontology)
 										end
 
 										create {FLAT_ARCHETYPE} Result.make (
 											adl_parser.artefact_type,
 											id,
-											adl_parser.concept,
 											orig_lang_trans.original_language.code_string,
 											res_desc,	-- may be Void
 											definition,

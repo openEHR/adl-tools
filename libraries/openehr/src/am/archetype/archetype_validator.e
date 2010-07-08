@@ -71,20 +71,9 @@ feature {NONE} -- Initialisation
 			rm_schema := an_rm_schema
 			target_descriptor := a_target_desc
 			make_authored_resource(target_descriptor.differential_archetype)
-			if target_descriptor.is_specialised then
-				if target_descriptor.specialisation_parent = Void then
-					add_error("validate_e1", Void)
-				elseif not target_descriptor.specialisation_parent.is_valid then
-					add_error("validate_e2", Void)
-				else
-					flat_parent := target_descriptor.specialisation_parent.flat_archetype
-	 				target.set_parent_archetype (target_descriptor.specialisation_parent.differential_archetype)
-				end
-			end
 		ensure
 			target_descriptor_set: target_descriptor = a_target_desc
 			target_set: target = a_target_desc.differential_archetype
-			Parent_set: (passed and target_descriptor.is_specialised) implies flat_parent /= Void
 		end
 
 feature -- Access
@@ -116,6 +105,18 @@ feature -- Validation
 			-- validate description section
 		do
 			reset
+
+			-- FIXME: the following will probably be made redundant when the ontology chain is reviewed
+			if target_descriptor.is_specialised then
+				if target.specialisation_depth /= target_descriptor.specialisation_parent.flat_archetype.specialisation_depth + 1 then
+					add_error("VACSD", <<specialisation_depth_from_code (target.concept).out, target.specialisation_depth.out>>)
+				else
+					flat_parent := target_descriptor.specialisation_parent.flat_archetype
+ 					target.set_parent_archetype (target_descriptor.specialisation_parent.differential_archetype)
+ 				end
+ 			elseif specialisation_depth_from_code (target.concept) /= 0 then
+ 				add_error("VACSDtop", <<specialisation_depth_from_code (target.concept).out>>)
+			end
 
 			-- basic validation of definition and ontology
 			if passed then
@@ -174,8 +175,6 @@ feature {NONE} -- Implementation
 				add_warning("validate_e3", <<target_descriptor.id.as_string, target.archetype_id.as_string>>)
 			elseif not target.definition.rm_type_name.is_equal (target.archetype_id.rm_entity) then
 				add_error("VARDT", <<target.archetype_id.rm_entity, target.definition.rm_type_name>>)
-			elseif specialisation_depth_from_code (target.concept) /= target.specialisation_depth then
-				add_error("VACSD", <<specialisation_depth_from_code (target.concept).out, target.specialisation_depth.out>>)
 			elseif not target.definition.node_id.is_equal (target.concept) then
 				add_error("VACCD", <<target.concept>>)
 			end
@@ -656,14 +655,13 @@ feature {NONE} -- Implementation
 					elseif not co_child_diff.node_conforms_to(co_parent_flat, rm_schema) then
 						if not co_child_diff.rm_type_conforms_to (co_parent_flat, rm_schema) then
 							add_error("VSONCT", <<co_child_diff.path, co_child_diff.rm_type_name, co_parent_flat.path, co_parent_flat.rm_type_name>>)
-						-- FIXME: the following check is complicated by redundant occurrences constraints due to legacy archetypes
-						elseif co_child_diff.node_id.is_equal(co_parent_flat.node_id) and co_child_diff.occurrences /= Void then
-							add_error("VSONIRocc", <<co_child_diff.path, co_child_diff.rm_type_name, co_parent_flat.rm_type_name, co_child_diff.node_id>>)
 						elseif not co_child_diff.occurrences_conforms_to (co_parent_flat) then
+							add_error("VSONCO", <<co_child_diff.path, co_child_diff.occurrences_as_string, co_parent_flat.path, co_parent_flat.occurrences.as_string>>)
+						elseif co_child_diff.node_id.is_equal(co_parent_flat.node_id) and co_child_diff.occurrences /= Void then
 							if strict_validation then
-								add_error("VSONCO", <<co_child_diff.path, co_child_diff.occurrences_as_string, co_parent_flat.path, co_parent_flat.occurrences.as_string>>)
+								add_error("VSONIRocc", <<co_child_diff.path, co_child_diff.rm_type_name, co_parent_flat.rm_type_name, co_child_diff.node_id>>)
 							else
-								add_warning("VSONCO", <<co_child_diff.path, co_child_diff.occurrences_as_string, co_parent_flat.path, co_parent_flat.occurrences.as_string>>)
+								add_warning("VSONIRocc", <<co_child_diff.path, co_child_diff.rm_type_name, co_parent_flat.rm_type_name, co_child_diff.node_id>>)
 								co_child_diff.remove_occurrences
 							end
 						elseif co_child_diff.is_addressable then

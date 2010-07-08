@@ -343,14 +343,9 @@ feature -- Comparison
 			csr: INTEGER
 		do
 			Result := a_code.starts_with (default_concept_code)
-
 			if Result then
-				from
-					csr := Default_concept_code.count + 1
-				until
-					csr > a_code.count or not Result
-				loop
-					Result := a_code.count >= csr+1 and (a_code.item (csr) = Specialisation_separator and a_code.item (csr+1) = '1')
+				from csr := Default_concept_code.count + 1 until csr > a_code.count or not Result loop
+					Result := a_code.count >= csr + 1 and (a_code.item (csr) = Specialisation_separator and a_code.item (csr + 1) = '1')
 					csr := csr + 2
 				end
 			end

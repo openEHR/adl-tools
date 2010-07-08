@@ -21,6 +21,11 @@ inherit
 			{NONE} all
 		end
 
+	ADL_SYNTAX_CONVERTER
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -105,7 +110,7 @@ feature -- Serialisation
 					arch_kw_str.append (symbol(SYM_IS_CONTROLLED))
 				end
 				-- FIXME: the following version check is a hack; to do this kind of thing properly would require
-				-- something like a table of small functions, and the lowest ALD version each one should be used at
+				-- something like a table of small functions, and the lowest ADL version each one should be used at
 				-- but this appears to be the sole non-1.4 syntax item that is not handled by ADL_SYNTAX_CONVERTER
 				-- so for now we will just do this and hope not too many people see the horror.....
 				if attached {DIFFERENTIAL_ARCHETYPE} target as diff_arch2 or (target.is_generated and use_flat_adl_version_numeric > 141) then
@@ -126,14 +131,16 @@ feature -- Serialisation
 		local
 			s: STRING
 		do
-			last_result.append (apply_style(symbol(SYM_CONCEPT), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
-			last_result.append (create_indent(1) + apply_style("[" + target.concept + "]", STYLE_TERM_REF))
+			if use_flat_adl_version_numeric < 150 and attached {FLAT_ARCHETYPE} target as fa then
+				last_result.append (apply_style(symbol(SYM_CONCEPT), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
+				last_result.append (create_indent(1) + apply_style("[" + target.concept + "]", STYLE_TERM_REF))
 
-			s := target.concept
-			last_result.append (format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
-				 safe_comment(ontology.term_definition(current_language, s).item("text")), STYLE_COMMENT))
+				s := target.concept
+				last_result.append (format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
+					 safe_comment(ontology.term_definition(current_language, s).item("text")), STYLE_COMMENT))
 
-			last_result.append (format_item(FMT_NEWLINE))
+				last_result.append (format_item(FMT_NEWLINE))
+			end
 		end
 
 	serialise_archetype_specialise

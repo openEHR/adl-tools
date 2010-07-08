@@ -125,6 +125,7 @@ feature -- Commands
 		require
 			ara_attached: ara /= Void
 		do
+			do_lineage (ara, agent check_archetype_for_changes (False, ?))
 			do_lineage (ara, agent build_archetype (False, ?))
 		end
 
@@ -134,6 +135,7 @@ feature -- Commands
 		require
 			ara_attached: ara /= Void
 		do
+			do_lineage (ara, agent check_archetype_for_changes (True, ?))
 			do_lineage (ara, agent build_archetype (True, ?))
 		end
 
@@ -199,18 +201,23 @@ feature {NONE} -- Implementation
 			ara.archetype_lineage.do_all (action)
 		end
 
+	check_archetype_for_changes (from_scratch: BOOLEAN; ara: attached ARCH_REP_ARCHETYPE)
+			-- check archetype for editing changes, including anything that might cause reparenting
+		do
+			if not is_interrupted and ara.compile_attempted and ara.is_out_of_date then
+				ara.signal_source_edited
+				if ara.ontology_location_changed then
+					arch_dir.update_archetype_id(ara)
+					-- FIXME - the directory data structure on which we are now traversing has changed;
+					-- could cause problems...
+				end
+			end
+		end
+
 	build_archetype (from_scratch: BOOLEAN; ara: attached ARCH_REP_ARCHETYPE)
 			-- Build `ara' only if `from_scratch' is true, or if it is has changed since it was last validly built.
 		do
 			if not is_interrupted then
-				if ara.compile_attempted and ara.is_out_of_date then
-					ara.signal_source_edited
-					if ara.ontology_location_changed then
-						arch_dir.update_archetype_id(ara)
-						-- FIXME - the directory data structure on which we are now traversing has changed;
-						-- could cause problems...
-					end
-				end
 				if from_scratch or not ara.is_in_terminal_compilation_state then
 					status := create_message_line("compiler_compiling_archetype", <<ara.id.value>>)
 					call_visual_update_action (ara)
@@ -222,19 +229,23 @@ feature {NONE} -- Implementation
 					if ara.compilation_state = Cs_lineage_known then
 						ara.signal_lineage_compilation
 					end
-					ara.compile
-
-					-- second phase - needed if there are suppliers (i.e. slot-fillers or plain
-					-- external references to compile first
-					if ara.compilation_state = Cs_suppliers_known then
-						from ara.suppliers_index.start until ara.suppliers_index.off loop
-							build_lineage (ara.suppliers_index.item_for_iteration)
-							ara.suppliers_index.forth
-						end
-
-						-- continue compilation - remaining steps after suppliers compilation
-						ara.signal_suppliers_compilation
+					if not ara.is_in_terminal_compilation_state then
 						ara.compile
+
+						-- second phase - needed if there are suppliers (i.e. slot-fillers or plain
+						-- external references to compile first
+						if ara.compilation_state = Cs_suppliers_known then
+							from ara.suppliers_index.start until ara.suppliers_index.off loop
+								build_lineage (ara.suppliers_index.item_for_iteration)
+								ara.suppliers_index.forth
+							end
+
+							-- continue compilation - remaining steps after suppliers compilation
+							ara.signal_suppliers_compilation
+							if not ara.is_in_terminal_compilation_state then
+								ara.compile
+							end
+						end
 					end
 					status := ara.compilation_result.twin
 
