@@ -37,6 +37,7 @@ feature -- Access
 			-- the type of an object as being a valid member of the container, e.g. ELEMENT in List<ELEMENT>
 		do
 			create Result.make(0)
+			Result.compare_objects
 			Result.append (type.flattened_type_list)
 		end
 

@@ -42,6 +42,7 @@ feature -- Access
 			-- note that for this type, we output "ANY" if there is no constraint
 		do
 			create Result.make(0)
+			Result.compare_objects
 			if not is_constrained then
 				Result.extend (Any_type)
 			else

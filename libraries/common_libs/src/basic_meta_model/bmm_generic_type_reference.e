@@ -32,6 +32,7 @@ feature -- Access
 			-- Note: can include repeats, e.g. HASH_TABLE [STRING, STRING] => HASH_TABLE, STRING, STRING
 		do
 			create Result.make(0)
+			Result.compare_objects
 			Result.extend (root_type.name)
 			from
 				generic_parameters.start

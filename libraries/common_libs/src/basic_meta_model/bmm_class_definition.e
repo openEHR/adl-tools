@@ -73,6 +73,7 @@ feature -- Access
 		do
 			if immediate_suppliers_cache = Void then
 				create immediate_suppliers_cache.make(0)
+				immediate_suppliers_cache.compare_objects
 				if is_generic then
 					ftl := flattened_type_list
 					ftl.go_i_th (1)
@@ -106,8 +107,10 @@ feature -- Access
 		do
 			if immediate_suppliers_non_primitive_cache = Void then
 				create prim_types.make (0)
+				prim_types.compare_objects
 				prim_types.merge (bmm_model.primitive_types.current_keys)
 				create immediate_suppliers_non_primitive_cache.make(0)
+				immediate_suppliers_non_primitive_cache.compare_objects
 				immediate_suppliers_non_primitive_cache.merge(immediate_suppliers)
 				immediate_suppliers_non_primitive_cache.subtract (prim_types)
 			end
@@ -122,6 +125,7 @@ feature -- Access
 		do
 			if all_suppliers_cache = Void then
 				create all_suppliers_cache.make(0)
+				all_suppliers_cache.compare_objects
 				all_suppliers_cache.merge (immediate_suppliers)
 				from immediate_suppliers.start until immediate_suppliers.off loop
 					all_suppliers_cache.merge (bmm_model.class_definition (immediate_suppliers.item).all_suppliers)
@@ -136,6 +140,7 @@ feature -- Access
 		do
 			if flat_properties_cache = Void then
 				create flat_properties_cache.make(0)
+				flat_properties_cache.compare_objects
 				from ancestors.start until ancestors.off loop
 					flat_properties_cache.merge (ancestors.item.flat_properties)
 					ancestors.forth
@@ -150,6 +155,7 @@ feature -- Access
 			-- e.g. "HASH_TABLE [LINKED_LIST[STRING], STRING]" => <<"HASH_TABLE", "LINKED_LIST", "STRING", "STRING">>
 		do
 			create Result.make(0)
+			Result.compare_objects
 			Result.extend (name)
 			if is_generic then
 				from generic_parameters.start until generic_parameters.off loop
