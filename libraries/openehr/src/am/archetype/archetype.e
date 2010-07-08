@@ -135,7 +135,7 @@ feature -- Access
 			non_negative: Result >= 0
 		end
 
-	concept: STRING is
+	concept: STRING
 			-- at-code of concept of the archetype as a whole and the code of its root node
 		do
 			Result := definition.node_id
