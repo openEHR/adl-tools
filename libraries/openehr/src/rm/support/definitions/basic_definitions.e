@@ -1,6 +1,6 @@
 note
 	component:   "openEHR common definitions"
-	
+
 	description: "Definitions of some basic constant values for the openEHR models"
 	keywords:    "definitions"
 
@@ -20,6 +20,8 @@ feature -- Definitions
 	CR: CHARACTER = '%/015/'
 
 	LF: CHARACTER = '%/012/'
+
+	Default_language: STRING = "en"
 
 end
 

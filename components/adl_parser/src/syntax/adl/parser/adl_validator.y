@@ -80,8 +80,6 @@ arch_identification: arch_head arch_meta_data V_ARCHETYPE_ID
 		{
 			if arch_id.valid_id($3) then
 				create archetype_id.make_from_string($3)
-			elseif arch_id.old_valid_id($3) then
-				create archetype_id.old_make_from_string($3)
 			end
 		}
 	| arch_head error
@@ -145,11 +143,6 @@ arch_specialisation: -- empty is ok
 		{
 			if arch_id.valid_id($2) then
 				create parent_archetype_id.make_from_string($2)
-			end
-			if not parent_archetype_id.semantic_id.is_equal(archetype_id.semantic_parent_id) then
-				raise_error
-				report_error(create_message_line("VASID", Void))
-				abort
 			end
 		}
 	| SYM_SPECIALIZE error

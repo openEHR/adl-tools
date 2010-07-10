@@ -27,13 +27,6 @@ inherit
 			is_equal
 		end
 
-	SHARED_MESSAGE_DB
-		export
-			{NONE} all
-		undefine
-			is_equal
-		end
-
 	SHARED_ADL_ENGINE
 		export
 			{NONE} all
@@ -134,11 +127,12 @@ feature {NONE} -- Initialisation
 			parent_id_set: parent_id = a_parent_id
 		end
 
-	make_new (an_id: attached ARCHETYPE_ID; a_repository: attached ARCHETYPE_REPOSITORY_I; an_artefact_type: INTEGER; a_primary_language: attached STRING)
+	make_new (an_id: attached ARCHETYPE_ID; a_repository: attached ARCHETYPE_REPOSITORY_I; an_artefact_type: INTEGER; a_primary_language: attached STRING; a_spec_depth: INTEGER)
 			-- Create a new archetype with `an_id', belonging to `a_repository'.
 		require
 			valid_artefact_type: (create {ARTEFACT_TYPE}).valid_type (an_artefact_type)
 			primary_language_not_empty: not a_primary_language.is_empty
+			Specialisation_depth_valid: a_spec_depth >= 0
 		local
 			at: ARTEFACT_TYPE
 		do
@@ -154,7 +148,7 @@ feature {NONE} -- Initialisation
 			artefact_type := an_artefact_type
 			artefact_name := at.simplified_type_names.item (artefact_type)
 
-			create differential_archetype.make_minimal (at, an_id, a_primary_language, 0)
+			create differential_archetype.make_minimal (at, an_id, a_primary_language, a_spec_depth)
 			differential_path := full_path
 			flat_path := extension_replaced (full_path, archetype_flat_file_extension)
 			legacy_flat_path := extension_replaced (full_path, archetype_legacy_file_extension)
@@ -615,14 +609,21 @@ feature -- Commands
 				else
 					post_info (Current, "compile_legacy", "compile_legacy_i1", <<id.as_string>>)
 					differential_archetype := legacy_flat_archetype.to_differential
-				 	compilation_state := Cs_ready_to_validate
-					validate
-					-- if differential archetype was generated from an old-style flat, perform path compression
-					if differential_archetype.is_valid then
-						if differential_archetype.is_specialised then
-							differential_archetype.convert_to_differential_paths
+					if is_specialised and not specialisation_parent.is_valid then
+						compilation_state := cs_lineage_compile_failed
+					else
+					 	compilation_state := Cs_ready_to_validate
+						if (current_language = Void or not differential_archetype.has_language (current_language)) then
+							set_current_language (differential_archetype.original_language.code_string)
 						end
-				 		save_differential
+						validate
+						-- if differential archetype was generated from an old-style flat, perform path compression
+						if differential_archetype.is_valid then
+							if differential_archetype.is_specialised then
+								differential_archetype.convert_to_differential_paths
+							end
+					 		save_differential
+						end
 					end
 				end
 			else
@@ -632,7 +633,7 @@ feature -- Commands
 			compilation_result.append (billboard.content)
 			billboard.clear
 		ensure
-			Compilation_state: compilation_state = Cs_validated or compilation_state = Cs_validate_failed or compilation_state = Cs_convert_legacy_failed
+			Compilation_state: compilation_state = Cs_validated or compilation_state = Cs_validate_failed or compilation_state = Cs_convert_legacy_failed or compilation_state = cs_lineage_compile_failed
 			Differential_file: compilation_state = Cs_validated implies has_differential_file
 		rescue
 			post_error (Current, "compile_legacy", "report_exception", <<exception.out, exception_trace>>)
@@ -680,6 +681,9 @@ feature -- Commands
 						compilation_state := Cs_suppliers_known
 					else
 						compilation_state := Cs_ready_to_validate
+					end
+					if (current_language = Void or not differential_archetype.has_language (current_language)) then
+						set_current_language (differential_archetype.original_language.code_string)
 					end
 				end
 			else
@@ -961,64 +965,6 @@ feature -- Modification
 			legacy_flat_text_timestamp := file_repository.text_timestamp
 		end
 
-feature -- Factory
-
-	create_new_archetype(an_artefact_type: ARTEFACT_TYPE; a_im_originator, a_im_name, a_im_entity, a_primary_language: STRING)
-			-- create a new top-level differential archetype and install it into the directory according to its id
-		require
-			Artefact_type_attached: an_artefact_type /= Void
-			Info_model_originator_valid: a_im_originator /= void and then not a_im_originator.is_empty
-			Info_model_name_valid: a_im_name /= void and then not a_im_name.is_empty
-			Info_model_entity_valid: a_im_entity /= void and then not a_im_entity.is_empty
-			Primary_language_valid: a_primary_language /= void and then not a_primary_language.is_empty
-		local
-			arch_id: attached ARCHETYPE_ID
-		do
-			if not exception_encountered then
-				create arch_id.make (a_im_originator, a_im_name, a_im_entity, "UNKNOWN", "v0")
-				create differential_archetype.make_minimal (an_artefact_type, arch_id, a_primary_language, 0)
-				-- set_current_language (a_primary_language)
-
-				-- FIXME: now add this archetype into the ARCHETYPE_DIRECTORY
-
-				-- set it as the target
-			else
-				post_error(Current, "create_new_archetype", "create_new_archetype_e1", Void)
-			end
-
-			status.copy(billboard.content)
-			billboard.clear
-			exception_encountered := False
-		ensure
-			-- FIXME: make the new archetype the target??
-		rescue
-			post_error(Current, "create_new_archetype", "report_exception_with_context", <<"attempted to create new archteype " + arch_id.as_string, exception.out, exception_trace>>)
-			exception_encountered := True
-			retry
-		end
-
-	create_new_specialised_archetype(an_artefact_type: ARTEFACT_TYPE; specialised_domain_concept: STRING)
-			-- create a new specialised archetype as a child of the target archetype and install it in
-			-- the directory
-		require
-			Artefact_type_attached: an_artefact_type /= Void
-			Concept_valid: specialised_domain_concept /= Void and then not specialised_domain_concept.is_empty
-		do
-			if not exception_encountered then
-				create differential_archetype.make_specialised_child(an_artefact_type, differential_archetype, specialised_domain_concept)
-				-- FIXME: now add this archetype into the ARCHETYPE_DIRECTORY
-			else
-				post_error(Current, "create_new_specialised_archetype", "create_new_specialised_archetype_e1", Void)
-			end
-			status.copy(billboard.content)
-			billboard.clear
-			exception_encountered := False
-		rescue
-			post_error(Current, "create_new_specialised_archetype", "report_exception", <<exception.out, exception_trace>>)
-			exception_encountered := True
-			retry
-		end
-
 feature {NONE} -- Implementation
 
 	set_compile_attempt_timestamp
@@ -1108,7 +1054,7 @@ invariant
 	flat_archetype_attached_if_valid: is_valid implies flat_archetype /= Void
 
 	parent_existence: specialisation_parent /= Void implies is_specialised
-	parent_validity: specialisation_parent /= Void implies specialisation_parent.id.semantic_id.is_equal (id.semantic_parent_id)
+	parent_validity: (specialisation_parent /= Void and not ontology_location_changed) implies parent_id.is_equal (specialisation_parent.id)
 	slot_id_index_valid: slot_id_index /= Void implies not slot_id_index.is_empty
 	clients_index_valid: clients_index /= Void implies not clients_index.is_empty
 

@@ -45,11 +45,6 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_APPLICATION_CONTEXT
-		export
-			{NONE} all
-		end
-
 	SHARED_C_FACTORY
 		export
 			{NONE} all

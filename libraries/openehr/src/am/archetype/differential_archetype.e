@@ -20,7 +20,7 @@ inherit
 		end
 
 create
-	make, make_minimal, make_specialised_child, make_from_flat, make_all
+	make, make_minimal, make_from_flat, make_all
 
 feature -- Initialisation
 
@@ -48,17 +48,6 @@ feature -- Initialisation
 			Specialisation_depth_set: specialisation_depth = a_specialisation_depth
 			Definition_root_node_id: definition.node_id.is_equal (concept)
 			Is_dirty: is_dirty
-		end
-
-	make_specialised_child(an_artefact_type: ARTEFACT_TYPE; a_parent: ARCHETYPE; a_spec_concept: STRING)
-			-- make this archetype as a specialisation 1 level below the 'other'
-		require
-			Artefact_type_attached: an_artefact_type /= Void
-			Other_valid: a_parent /= Void and then a_parent.is_valid
-			Concept_valid: a_spec_concept /= Void and then not a_spec_concept.is_empty
-		do
-			make_minimal (an_artefact_type, a_parent.archetype_id.create_specialised_id (a_spec_concept), a_parent.original_language.as_string, a_parent.specialisation_depth+1)
-			create parent_archetype_id.make_from_string(a_parent.archetype_id.value)
 		end
 
 	make_from_flat (a_flat: FLAT_ARCHETYPE)

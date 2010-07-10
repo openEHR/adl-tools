@@ -31,11 +31,6 @@ inherit
 
 	SHARED_KNOWLEDGE_REPOSITORY
 
-	SHARED_APPLICATION_CONTEXT
-		export
-			{NONE} all
-		end
-
 	ARCHETYPE_TERM_CODE_TOOLS
 		export
 			{NONE} all

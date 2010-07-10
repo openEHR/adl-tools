@@ -19,11 +19,6 @@ inherit
 			initialise as initialise_any_serialiser
 		end
 
-	SHARED_APPLICATION_CONTEXT
-		export
-			{NONE} all
-		end
-
 feature -- Initialisation
 
 	initialise(an_ontology: ARCHETYPE_ONTOLOGY)

@@ -22,12 +22,7 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_MESSAGE_BILLBOARD
-		export
-			{NONE} all
-		end
-
-	SHARED_APPLICATION_CONTEXT
+	SHARED_APP_RESOURCES
 		export
 			{NONE} all
 		end
@@ -176,7 +171,7 @@ feature -- ADL 1.5 conversions
 		require
 			type_name_valid: a_type_name /= Void and then not a_type_name.is_empty
 		do
-			if use_flat_adl_version_numeric >= 150 then
+			if adl_version_for_flat_output_numeric >= 150 then
 				Result := "("
 				Result.append (a_type_name)
 				Result.append_character (')')

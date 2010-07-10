@@ -15,11 +15,6 @@ note
 class GUI_VIEW_TEMPLATE_TREE_CONTROL
 
 inherit
-	SHARED_APPLICATION_CONTEXT
-		export
-			{NONE} all
-		end
-
 	SHARED_APP_UI_RESOURCES
 		export
 			{NONE} all
@@ -173,7 +168,6 @@ feature {NONE} -- Implementation
 		require
 			item_attached: ara /= Void
    		local
-			node: EV_TREE_ITEM
 			tree_iterator: OG_ITERATOR
 		do
 			-- make sure it is a template of some kind

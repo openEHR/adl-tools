@@ -25,7 +25,7 @@ model_release = <"1.0.0">
 packages = <
 	["test_pkg"] = <
 		name = <"test_pkg">
-		classes = <"WHOLE", "SOME_TYPE", "BOOK", "ENTRY"> 
+		classes = <"WHOLE", "SOME_TYPE", "BOOK", "ENTRY", "CAR"> 
 	>
 >
 
@@ -1122,6 +1122,125 @@ class_definitions = <
 						["T"] = </class_definitions["DV_QUANTITY"]>
 					>
 				>
+			>
+		>
+	>
+
+	["CAR"] = <
+		name = <"CAR">
+		ancestors = </primitive_types["Any"], ...>
+		properties = <
+			["body"] = (BMM_SINGLE_PROPERTY) <
+				name = <"body">
+				type = </class_definitions["CAR_BODY"]>
+			>
+			["engine_parts"] = (BMM_CONTAINER_PROPERTY) <
+				name = <"engine_parts">
+				type = <
+					type = </class_definitions["ENGINE_PART"]>
+					container_type = </primitive_types["List"]>
+					cardinality = <|>=0|>
+				>
+			>
+			["wheels"] = (BMM_CONTAINER_PROPERTY) <
+				name = <"wheels">
+				type = <
+					type = </class_definitions["WHEEL"]>
+					container_type = </primitive_types["List"]>
+					cardinality = <|>=0|>
+				>
+			>
+		>
+	>
+
+	["CAR_BODY"] = <
+		name = <"CAR_BODY">
+		ancestors = </primitive_types["Any"], ...>
+		properties = <
+			["model"] = (BMM_SINGLE_PROPERTY) <
+				name = <"model">
+				type = </primitive_types["String"]>
+			>
+			["description"] = (BMM_SINGLE_PROPERTY) <
+				name = <"description">
+				type = </primitive_types["String"]>
+			>
+			["parts"] = (BMM_CONTAINER_PROPERTY) <
+				name = <"parts">
+				type = <
+					type = </class_definitions["CAR_BODY_PART"]>
+					container_type = </primitive_types["List"]>
+					cardinality = <|>=0|>
+				>
+			>
+		>
+	>
+
+	["CAR_BODY_PART"] = <
+		name = <"CAR_BODY_PART">
+		ancestors = </primitive_types["Any"], ...>
+	>
+
+	["ENGINE_PART"] = <
+		name = <"ENGINE_PART">
+		ancestors = </primitive_types["Any"], ...>
+		properties = <
+			["items"] = (BMM_CONTAINER_PROPERTY) <
+				name = <"items">
+				type = <
+					type = </class_definitions["ENGINE_PART_ITEM"]>
+					container_type = </primitive_types["List"]>
+					cardinality = <|>=0|>
+				>
+			>
+		>
+	>
+
+	["ENGINE_PART_ITEM"] = <
+		name = <"ENGINE_PART_ITEM">
+		ancestors = </primitive_types["Any"], ...>
+		properties = <
+			["model"] = (BMM_SINGLE_PROPERTY) <
+				name = <"model">
+				type = </primitive_types["String"]>
+			>
+			["type"] = (BMM_SINGLE_PROPERTY) <
+				name = <"type">
+				type = </primitive_types["String"]>
+			>
+		>
+	>
+
+	["WHEEL"] = <
+		name = <"WHEEL">
+		ancestors = </primitive_types["Any"], ...>
+		properties = <
+			["description"] = (BMM_SINGLE_PROPERTY) <
+				name = <"description">
+				type = </primitive_types["String"]>
+			>
+			["parts"] = (BMM_CONTAINER_PROPERTY) <
+				name = <"parts">
+				type = <
+					type = </class_definitions["RIM"]>
+					container_type = </primitive_types["List"]>
+					cardinality = <|>=0|>
+				>
+			>
+		>
+	>
+
+	["RIM"] = <
+		name = <"RIM">
+		ancestors = </primitive_types["Any"], ...>
+		properties = <
+			["nuts"] = (BMM_SINGLE_PROPERTY) <
+				name = <"nuts">
+				type = </primitive_types["Integer"]>
+			>
+			["hubcap"] = (BMM_SINGLE_PROPERTY) <
+				name = <"hubcap">
+				type = </primitive_types["String"]>
 			>
 		>
 	>

@@ -17,7 +17,7 @@ note
 class ARCHETYPE_MINI_PARSER
 
 inherit
-	SHARED_APP_RESOURCES
+	ADL_SYNTAX_CONVERTER
 		rename
 			file_exists as is_valid_path
 		export
@@ -84,7 +84,7 @@ feature -- Commands
 				-- get line 2 - should be archetype id
 				if (create {ARCHETYPE_ID}).valid_id(lines[2]) then
 					last_archetype_id_old_style := False
-				elseif (create {ARCHETYPE_ID}).old_valid_id(lines[2]) then
+				elseif old_archetype_id_pattern_regex.matches (lines[2]) then
 					last_archetype_id_old_style := True
 				else
 					-- something wrong with the id
@@ -100,7 +100,7 @@ feature -- Commands
 						last_parent_archetype_id := lines[4]
 						if (create {ARCHETYPE_ID}).valid_id(lines[4]) then
 							last_parent_archetype_id_old_style := False
-						elseif (create {ARCHETYPE_ID}).old_valid_id(lines[4]) then
+						elseif old_archetype_id_pattern_regex.matches(lines[4]) then
 							last_parent_archetype_id_old_style := True
 						else
 							-- something wrong with the parent id

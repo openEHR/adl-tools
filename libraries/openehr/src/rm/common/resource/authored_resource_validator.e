@@ -16,11 +16,6 @@ class AUTHORED_RESOURCE_VALIDATOR
 inherit
 	ANY_VALIDATOR
 
-	SHARED_APPLICATION_CONTEXT
-		export
-			{NONE} all
-		end
-
 feature {NONE} -- Initialisation
 
 	make (a_target: like target)

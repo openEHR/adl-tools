@@ -11,7 +11,7 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class SHARED_APPLICATION_CONTEXT
+class SHARED_APPLICATION_CONTEXT_XX
 
 inherit
 	OPENEHR_DEFINITIONS
@@ -30,37 +30,37 @@ feature -- Access
 			Result_exists: Result /= Void
 		end
 
-	use_flat_adl_version: STRING
-		do
-			Result := cell_use_flat_adl_version.item
-		ensure
-			Result_exists: Result /= Void
-		end
+--	use_flat_adl_version: STRING
+--		do
+--			Result := cell_use_flat_adl_version.item
+--		ensure
+--			Result_exists: Result /= Void
+--		end
 
-	strict_validation: BOOLEAN
-			-- True if strict validation should be used
-		do
-			Result:= cell_strict_validation.item
-		end
+--	strict_validation: BOOLEAN
+--			-- True if strict validation should be used
+--		do
+--			Result:= cell_strict_validation.item
+--		end
 
-	use_flat_adl_version_numeric: INTEGER
-			-- generate a numeric equivalent of the ADL version in use, e.g.
-			-- '1.5' -> 150
-			-- '1.4.1' -> 141
-		local
-			s: STRING
-		once
-			s := use_flat_adl_version.twin
-			s.prune_all ('.')
-			if s.count < 3 then
-				s.append (create {STRING}.make_filled ('0', 3 - s.count))
-			end
-			if s.is_integer then
-				Result := s.to_integer
-			end
-		ensure
-			Result > 100 and Result <= 999
-		end
+--	use_flat_adl_version_numeric: INTEGER
+--			-- generate a numeric equivalent of the ADL version in use, e.g.
+--			-- '1.5' -> 150
+--			-- '1.4.1' -> 141
+--		local
+--			s: STRING
+--		once
+--			s := use_flat_adl_version.twin
+--			s.prune_all ('.')
+--			if s.count < 3 then
+--				s.append (create {STRING}.make_filled ('0', 3 - s.count))
+--			end
+--			if s.is_integer then
+--				Result := s.to_integer
+--			end
+--		ensure
+--			Result > 100 and Result <= 999
+--		end
 
 feature -- Modification
 
@@ -72,19 +72,19 @@ feature -- Modification
 			cell_language.put(a_lang)
 		end
 
-	set_use_flat_adl_version(a_ver: STRING)
-			-- set `use_flat_adl_version'
-		require
-			a_ver /= Void and then adl_versions.has (a_ver)
-		do
-			cell_use_flat_adl_version.put(a_ver)
-		end
+--	set_use_flat_adl_version(a_ver: STRING)
+--			-- set `use_flat_adl_version'
+--		require
+--			a_ver /= Void and then adl_versions.has (a_ver)
+--		do
+--			cell_use_flat_adl_version.put(a_ver)
+--		end
 
-	set_strict_validation (flag: BOOLEAN)
-			-- set `strict_validation'
-		do
-			cell_strict_validation.put(flag)
-		end
+--	set_strict_validation (flag: BOOLEAN)
+--			-- set `strict_validation'
+--		do
+--			cell_strict_validation.put(flag)
+--		end
 
 feature {NONE} -- Implementation
 
@@ -94,17 +94,17 @@ feature {NONE} -- Implementation
 			create Result.put(Default_language)
 		end
 
-	cell_use_flat_adl_version: CELL[STRING]
-			-- ADL version to serialise archetypes in
-		once
-			create Result.put(latest_adl_version)
-		end
+--	cell_use_flat_adl_version: CELL[STRING]
+--			-- ADL version to serialise archetypes in
+--		once
+--			create Result.put(latest_adl_version)
+--		end
 
-	cell_strict_validation: CELL[BOOLEAN]
-			-- ADL version to serialise archetypes in
-		once
-			create Result.put(False)
-		end
+--	cell_strict_validation: CELL[BOOLEAN]
+--			-- ADL version to serialise archetypes in
+--		once
+--			create Result.put(False)
+--		end
 
 end
 

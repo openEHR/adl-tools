@@ -1,6 +1,6 @@
 note
 	component:   "openEHR common definitions"
-	
+
 	description: "Definitions of constant values for the openEHR models"
 	keywords:    "definitions"
 
@@ -13,15 +13,12 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class OPENEHR_DEFINITIONS
+class OPENEHR_DEFINITIONS_XX
 
 inherit
 	BASIC_DEFINITIONS
 
-feature -- Definitions
-	
-	Default_language: STRING = "en"
-	
+
 end
 
 

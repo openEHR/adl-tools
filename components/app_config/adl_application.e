@@ -18,8 +18,6 @@ class ADL_APPLICATION
 inherit
 	SHARED_APP_RESOURCES
 
-	SHARED_APPLICATION_CONTEXT
-
 	SHARED_REFERENCE_MODEL_ACCESS
 
 feature -- Initialisation
@@ -35,12 +33,10 @@ feature -- Initialisation
 			end
 
 			if not adl_version_for_flat_output.is_empty then
-				set_use_flat_adl_version (adl_version_for_flat_output)
 				post_warning (Current, "initialise", "adl_version_warning", <<adl_version_for_flat_output>>)
 			end
 
 			if validation_strict then
-				set_strict_validation(True)
 				post_warning (Current, "initialise", "validation_strict", Void)
 			else
 				post_warning (Current, "initialise", "validation_non_strict", Void)

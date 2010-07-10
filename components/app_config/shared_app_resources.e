@@ -16,6 +16,8 @@ class SHARED_APP_RESOURCES
 inherit
 	SHARED_RESOURCES
 
+	BASIC_DEFINITIONS
+
 	ARCHETYPE_DEFINITIONS
 
 	SHARED_MESSAGE_DB
@@ -23,6 +25,11 @@ inherit
 	SHARED_MESSAGE_BILLBOARD
 
 feature -- Access
+
+	current_language: STRING
+		do
+			Result := resource_value ("default", "current_language")
+		end
 
 	reference_repository_paths: ARRAYED_LIST[STRING]
 			-- path of root of ADL file tree
@@ -77,6 +84,29 @@ feature -- Access
 			Result := substitute_env_vars (resource_value ("default", "adl_version_for_flat_output"))
 		end
 
+	adl_version_for_flat_output_numeric: INTEGER
+			-- generate a numeric equivalent of the ADL version in use, e.g.
+			-- '1.5' -> 150
+			-- '1.4.1' -> 141
+		local
+			s: STRING
+		once
+			if Adl_versions.has (adl_version_for_flat_output) then
+				s := adl_version_for_flat_output.twin
+			else
+				s := Latest_adl_version.twin
+			end
+			s.prune_all ('.')
+			if s.count < 3 then
+				s.append (create {STRING}.make_filled ('0', 3 - s.count))
+			end
+			if s.is_integer then
+				Result := s.to_integer
+			end
+		ensure
+			Result > 100 and Result <= 999
+		end
+
 	rm_schemas_load_list: ARRAYED_LIST[STRING]
 			-- list of RM schemas to use
 		do
@@ -88,6 +118,14 @@ feature -- Access
 		end
 
 feature -- Application Switch Setting
+
+	set_current_language (a_lang: STRING)
+			-- set the language that should be used to display archetypes in the UI.
+		require
+			a_lang_attached: a_lang /= Void and then not a_lang.is_empty
+		do
+			set_resource_value ("default", "current_language", a_lang)
+		end
 
 	set_reference_repository_path(a_path: STRING)
 			-- set reference_repository_path

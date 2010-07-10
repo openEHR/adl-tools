@@ -31,13 +31,6 @@ inherit
 			copy, default_create
 		end
 
-	SHARED_APPLICATION_CONTEXT
-		export
-			{NONE} all
-		undefine
-			copy, default_create
-		end
-
 feature {NONE} -- Initialization
 
 	user_initialization
@@ -125,7 +118,7 @@ feature {NONE} -- Implementation
 			adl_save_version_combo_box.do_all (
 				agent (li: EV_LIST_ITEM)
 					do
-						if li.text.same_string (use_flat_adl_version) then
+						if li.text.same_string (adl_version_for_flat_output) then
 							li.enable_select
 						end
 					end
@@ -170,7 +163,6 @@ feature {NONE} -- Implementation
 			set_show_entire_ontology (show_entire_ontology_check_button.is_selected)
 			set_display_archetype_source (display_archetype_source_check_button.is_selected)
 			set_validation_strict(validation_strict_check_button.is_selected)
-			set_strict_validation(validation_strict_check_button.is_selected)
 
 			set_status_reporting_level (message_type_ids.item (parser_error_reporting_level_combo_box.text.as_string_8))
 			billboard.set_status_reporting_level(status_reporting_level)
@@ -181,7 +173,7 @@ feature {NONE} -- Implementation
 			end
 
 			set_html_export_directory (export_html_text.text.as_string_8)
-			set_use_flat_adl_version(adl_save_version_combo_box.text.as_string_8)
+			set_adl_version_for_flat_output(adl_save_version_combo_box.text.as_string_8)
 
 			create rm_schemas_ll.make(0)
 			rm_schemas_ll.compare_objects

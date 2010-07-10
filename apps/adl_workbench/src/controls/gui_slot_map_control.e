@@ -19,22 +19,12 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_APPLICATION_CONTEXT
-		export
-			{NONE} all
-		end
-
 	SHARED_APP_UI_RESOURCES
 		export
 			{NONE} all
 		end
 
 	STRING_UTILITIES
-		export
-			{NONE} all
-		end
-
-	SHARED_MESSAGE_DB
 		export
 			{NONE} all
 		end
@@ -143,9 +133,11 @@ feature {NONE} -- Implementation
 		do
 			from ids.start until ids.off loop
 				create eti.make_with_text (utf8 (ids.item))
-				ara := arch_dir.archetype_index.item (ids.item)
-				eti.set_pixmap (pixmaps [ara.group_name])
-				eti.set_data (ara)
+				if arch_dir.archetype_index.has(ids.item) then
+					ara := arch_dir.archetype_index.item (ids.item)
+					eti.set_pixmap (pixmaps [ara.group_name])
+					eti.set_data (ara)
+				end
 				eti.pointer_double_press_actions.force_extend (agent gui.select_archetype_from_gui_data (eti))
 				subtree.extend (eti)
 				ids.forth

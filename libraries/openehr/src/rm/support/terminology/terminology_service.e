@@ -1,6 +1,6 @@
 note
 	component:   "openEHR common definitions"
-	
+
 	description: "Simple terminology service interface definition"
 	keywords:    "terminology, vocabulary, identifiers"
 
@@ -16,23 +16,23 @@ note
 class TERMINOLOGY_SERVICE
 
 inherit
-	OPENEHR_DEFINITIONS
-	
+	BASIC_DEFINITIONS
+
 	OPENEHR_TERMINOLOGY_GROUP_IDENTIFIERS
 
 	OPENEHR_CODE_SET_IDENTIFIERS
 
 feature -- Definitions
-	
+
 	Default_language_code_set: STRING = "ISO_639-1"
 			-- FIXME - replace by call to code_sets for 'language'; need
 			-- a dADL config file
-	
-	Default_language_code: CODE_PHRASE 
+
+	Default_language_code: CODE_PHRASE
 		do
 			create Result.make("ISO_639-1", Default_language)
 		end
-		
+
 feature -- Access
 
 	terminology(name: STRING): TERMINOLOGY_ACCESS
@@ -73,7 +73,7 @@ feature -- Status Report
 			name_valid: name /= Void and then not name.is_empty
 		do
 		end
-	
+
 	has_code_set(name: STRING): BOOLEAN
 			-- True if code set with name is known by this service
 			-- Allowable names are taken from OPENEHR_CODE_SET_IDENTIFIERS class
@@ -81,7 +81,7 @@ feature -- Status Report
 			name_valid: name /= Void and then not name.is_empty
 		do
 		end
-	
+
 end
 
 

@@ -41,6 +41,11 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_APP_RESOURCES
+		export
+			{NONE} all
+		end
+
 	SHARED_KNOWLEDGE_REPOSITORY
 		export
 			{NONE} all
@@ -597,7 +602,7 @@ feature {NONE} -- Implementation
 						elseif not slot_id_index.item (a_slot.path).has (car.archetype_id) then -- matches def, but not found in actual list from current repo
 							add_error("VARXR", <<car.path, car.archetype_id>>)
 						elseif not (car.occurrences = Void or else a_slot.occurrences.contains (car.occurrences)) then
-							if strict_validation then
+							if validation_strict then
 								add_error("VSONCO", <<car.path, car.occurrences_as_string, a_slot.path, a_slot.occurrences.as_string>>)
 							else
 								add_warning("VSONCO", <<car.path, car.occurrences_as_string, a_slot.path, a_slot.occurrences.as_string>>)
@@ -629,8 +634,8 @@ feature {NONE} -- Implementation
 					end
 
 				else
-					-- if the child is a redefine of a use_node (internal ref), then we have to do the comparison to the use_node target,
-					-- unless they both are use_nodes, in which case leave them as is
+					-- if the child is a redefine of a use_node (internal ref), then we have to do the comparison to the use_node target - so
+					-- we re-assign co_parent_flat to point to the target structure; unless they both are use_nodes, in which case leave them as is
 					if attached {ARCHETYPE_INTERNAL_REF} co_parent_flat as air_p and not attached {ARCHETYPE_INTERNAL_REF} co_child_diff as air_c then
 						co_parent_flat_detachable := flat_parent.c_object_at_path (air_p.path)
 						check co_parent_flat_detachable /= Void end
@@ -650,7 +655,7 @@ feature {NONE} -- Implementation
 						elseif not co_child_diff.occurrences_conforms_to (co_parent_flat) then
 							add_error("VSONCO", <<co_child_diff.path, co_child_diff.occurrences_as_string, co_parent_flat.path, co_parent_flat.occurrences.as_string>>)
 						elseif co_child_diff.node_id.is_equal(co_parent_flat.node_id) and co_child_diff.occurrences /= Void then
-							if strict_validation then
+							if validation_strict then
 								add_error("VSONIRocc", <<co_child_diff.path, co_child_diff.rm_type_name, co_parent_flat.rm_type_name, co_child_diff.node_id>>)
 							else
 								add_warning("VSONIRocc", <<co_child_diff.path, co_child_diff.rm_type_name, co_parent_flat.rm_type_name, co_child_diff.node_id>>)
@@ -829,12 +834,12 @@ feature {NONE} -- Implementation
 						if rm_prop_def.existence.contains(ca.existence) then
 							if rm_prop_def.existence.equal_interval(ca.existence) then
 								add_warning("WCAEX", <<ca.rm_attribute_name, ca.path, ca.existence.as_string>>)
-								if not strict_validation then
+								if not validation_strict then
 									ca.remove_existence
 								end
 							end
 						else
-							if strict_validation then
+							if validation_strict then
 								add_error("VCAEX", <<ca.rm_attribute_name, ca.path, ca.existence.as_string, rm_prop_def.existence.as_string>>)
 							else
 								add_warning("VCAEX", <<ca.rm_attribute_name, ca.path, ca.existence.as_string, rm_prop_def.existence.as_string>>)
@@ -848,12 +853,12 @@ feature {NONE} -- Implementation
 								if cont_prop.type.cardinality.contains(ca.cardinality.interval) then
 									if cont_prop.type.cardinality.equal_interval(ca.cardinality.interval) then
 										add_warning("WCACA", <<ca.rm_attribute_name, ca.path, ca.cardinality.interval.as_string>>)
-										if not strict_validation then
+										if not validation_strict then
 											ca.remove_cardinality
 										end
 									end
 								else -- archetype has cardinality not contained by RM
-									if strict_validation then
+									if validation_strict then
 										add_error("VCACA", <<ca.rm_attribute_name, ca.path, ca.cardinality.interval.as_string, cont_prop.type.cardinality.as_string>>)
 									else
 										add_warning("VCACA", <<ca.rm_attribute_name, ca.path, ca.cardinality.interval.as_string, cont_prop.type.cardinality.as_string>>)

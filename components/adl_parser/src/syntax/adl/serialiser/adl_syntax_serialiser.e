@@ -100,7 +100,7 @@ feature -- Serialisation
 					if attached {DIFFERENTIAL_ARCHETYPE} target as diff_arch1 then
 						arch_kw_str.append (symbol(SYM_ADL_VERSION) + "=" + target.adl_version)
 					else
-						arch_kw_str.append (symbol(SYM_ADL_VERSION) + "=" + use_flat_adl_version)
+						arch_kw_str.append (symbol(SYM_ADL_VERSION) + "=" + adl_version_for_flat_output)
 					end
 				end
 				if target.is_controlled then
@@ -113,7 +113,7 @@ feature -- Serialisation
 				-- something like a table of small functions, and the lowest ADL version each one should be used at
 				-- but this appears to be the sole non-1.4 syntax item that is not handled by ADL_SYNTAX_CONVERTER
 				-- so for now we will just do this and hope not too many people see the horror.....
-				if attached {DIFFERENTIAL_ARCHETYPE} target as diff_arch2 or (target.is_generated and use_flat_adl_version_numeric > 141) then
+				if attached {DIFFERENTIAL_ARCHETYPE} target as diff_arch2 or (target.is_generated and adl_version_for_flat_output_numeric > 141) then
 					if target.has_adl_version or target.is_controlled then
 						arch_kw_str.append ("; ")
 					end
@@ -131,7 +131,7 @@ feature -- Serialisation
 		local
 			s: STRING
 		do
-			if use_flat_adl_version_numeric < 150 and attached {FLAT_ARCHETYPE} target as fa then
+			if adl_version_for_flat_output_numeric < 150 and attached {FLAT_ARCHETYPE} target as fa then
 				last_result.append (apply_style(symbol(SYM_CONCEPT), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
 				last_result.append (create_indent(1) + apply_style("[" + target.concept + "]", STYLE_TERM_REF))
 

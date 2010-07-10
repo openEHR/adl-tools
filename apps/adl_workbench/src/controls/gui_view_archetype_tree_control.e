@@ -15,11 +15,6 @@ note
 class GUI_VIEW_ARCHETYPE_TREE_CONTROL
 
 inherit
-	SHARED_APPLICATION_CONTEXT
-		export
-			{NONE} all
-		end
-
 	SHARED_APP_UI_RESOURCES
 		export
 			{NONE} all

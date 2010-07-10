@@ -19,17 +19,7 @@ class ARCHETYPE_COMPILER
 inherit
 	SHARED_KNOWLEDGE_REPOSITORY
 
-	SHARED_MESSAGE_DB
-		export
-			{NONE} all
-		end
-
-	SHARED_RESOURCES
-		export
-			{NONE} all
-		end
-
-	SHARED_APPLICATION_CONTEXT
+	SHARED_APP_RESOURCES
 		export
 			{NONE} all
 		undefine
@@ -139,20 +129,20 @@ feature -- Commands
 			do_lineage (ara, agent build_archetype (True, ?))
 		end
 
-	export_all_html (html_export_directory: STRING)
+	export_all_html (a_html_export_directory: STRING)
 			-- Generate HTML under `html_export_directory' from all archetypes that have already been built.
 		require
-			directory_attached: html_export_directory /= Void
+			directory_attached: a_html_export_directory /= Void
 		do
-			do_all (agent export_archetype_html (html_export_directory, False, ?), "exporting built system as html")
+			do_all (agent export_archetype_html (a_html_export_directory, False, ?), "exporting built system as html")
 		end
 
-	build_and_export_all_html (html_export_directory: STRING)
+	build_and_export_all_html (a_html_export_directory: STRING)
 			-- Generate HTML under `html_export_directory' from the whole system, building each archetype as necessary.
 		require
-			directory_attached: html_export_directory /= Void
+			directory_attached: a_html_export_directory /= Void
 		do
-			do_all (agent export_archetype_html (html_export_directory, True, ?), "building system and exporting as html")
+			do_all (agent export_archetype_html (a_html_export_directory, True, ?), "building system and exporting as html")
 		end
 
 feature {NONE} -- Implementation
@@ -258,20 +248,13 @@ feature {NONE} -- Implementation
 				call_visual_update_action (ara)
 
 				arch_dir.update_slot_statistics (ara)
-
-				-- Make sure that the language is set, and that it is one of the languages in the archetype.
-				if ara.compilation_state = Cs_validated then
-					if (current_language = Void or not ara.differential_archetype.has_language (current_language)) then
-						set_current_language (ara.differential_archetype.original_language.code_string)
-					end
-				end
 			end
 		end
 
-	export_archetype_html (html_export_directory: STRING; build_too: BOOLEAN; ara: attached ARCH_REP_ARCHETYPE)
+	export_archetype_html (a_html_export_directory: STRING; build_too: BOOLEAN; ara: attached ARCH_REP_ARCHETYPE)
 			-- Generate HTML under `html_export_directory' from `ara', optionally building it first if necessary.
 		require
-			directory_attached: html_export_directory /= Void
+			directory_attached: a_html_export_directory /= Void
 		local
 			filename: STRING
 		do
@@ -281,7 +264,7 @@ feature {NONE} -- Implementation
 				end
 
 				if ara.is_valid then
-					filename := file_system.pathname (html_export_directory, ara.relative_path) + ".html"
+					filename := file_system.pathname (a_html_export_directory, ara.relative_path) + ".html"
 					file_system.recursive_create_directory (file_system.dirname (filename))
 					ara.save_flat_as (filename, "html")
 					status := ara.status

@@ -15,9 +15,6 @@ note
 
 class SHARED_ARCHETYPE_COMPILER
 
-inherit
-	SHARED_APPLICATION_CONTEXT
-
 feature {NONE} -- Implementation
 
 	archetype_compiler: ARCHETYPE_COMPILER

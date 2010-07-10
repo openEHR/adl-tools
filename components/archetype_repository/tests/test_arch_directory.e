@@ -48,8 +48,6 @@ feature -- Test routines
 			-- Check that an ad-hoc archetype can be added.
 		note
 			testing:  "covers/{ARCH_DIRECTORY}.add_adhoc_item"
-		local
-			expected: STRING
 		do
 			adl_application.initialise
 			assert_equal (False, arch_dir.has_selected_archetype)

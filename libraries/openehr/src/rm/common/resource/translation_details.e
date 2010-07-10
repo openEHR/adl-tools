@@ -28,13 +28,6 @@ inherit
 			default_create
 		end
 
-	OPENEHR_DEFINITIONS
-		export
-			{NONE} all
-		undefine
-			default_create
-		end
-
 create
 	make_from_language, make_dt
 

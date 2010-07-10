@@ -20,7 +20,7 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_APPLICATION_CONTEXT
+	SHARED_APP_UI_RESOURCES
 		export
 			{NONE} all
 		end

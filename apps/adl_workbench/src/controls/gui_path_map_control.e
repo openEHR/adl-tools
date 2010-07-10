@@ -25,11 +25,6 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_APPLICATION_CONTEXT
-		export
-			{NONE} all
-		end
-
 	EV_SHARED_APPLICATION
 		export
 			{NONE} all

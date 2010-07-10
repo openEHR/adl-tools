@@ -40,7 +40,7 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_APPLICATION_CONTEXT
+	SHARED_APP_RESOURCES
 		export
 			{NONE} all
 		end
@@ -51,11 +51,6 @@ inherit
 		end
 
 	DATE_TIME_ROUTINES
-		export
-			{NONE} all
-		end
-
-	SHARED_MESSAGE_DB
 		export
 			{NONE} all
 		end
@@ -582,12 +577,12 @@ c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality
 			if not object_nodes.item.has_attribute(rm_attribute_name) then
 				if rm_schema.has_property (object_nodes.item.rm_type_name, rm_attribute_name) then
 					bmm_prop_def := rm_schema.property_definition (object_nodes.item.rm_type_name, rm_attribute_name)
-					if $2 /= Void and then bmm_prop_def.existence.equal_interval($2) and not strict_validation then
+					if $2 /= Void and then bmm_prop_def.existence.equal_interval($2) and not validation_strict then
 						$2 := Void -- throw out constraint that is same as RM
 					end
 					if bmm_prop_def.is_container then
 						if attached {BMM_CONTAINER_PROPERTY} bmm_prop_def as bmm_cont_prop and $3 /= Void then
-							if $3.interval.equal_interval(bmm_cont_prop.type.cardinality) and not strict_validation then
+							if $3.interval.equal_interval(bmm_cont_prop.type.cardinality) and not validation_strict then
 								-- $3 := Void -- throw out constraint that is same as RM
 							end
 						end
@@ -634,12 +629,12 @@ c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality
 				-- check RM to see if path is valid, and if it is a container
 				if rm_schema.has_property_path (object_nodes.item.rm_type_name, path_str) then
 					bmm_prop_def := rm_schema.property_definition_at_path (object_nodes.item.rm_type_name, path_str)
-					if $2 /= Void and then bmm_prop_def.existence.equal_interval($2) and not strict_validation then
+					if $2 /= Void and then bmm_prop_def.existence.equal_interval($2) and not validation_strict then
 						$2 := Void -- throw out constraint that is same as RM
 					end
 					if bmm_prop_def.is_container then
 						if attached {BMM_CONTAINER_PROPERTY} bmm_prop_def as bmm_cont_prop and $3 /= Void then
-							if $3.interval.equal_interval(bmm_cont_prop.type.cardinality) and not strict_validation then
+							if $3.interval.equal_interval(bmm_cont_prop.type.cardinality) and not validation_strict then
 								-- $3 := Void -- throw out constraint that is same as RM
 							end
 						end
