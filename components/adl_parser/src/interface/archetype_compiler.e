@@ -211,7 +211,6 @@ feature {NONE} -- Implementation
 				if from_scratch or not ara.is_in_terminal_compilation_state then
 					status := create_message_line("compiler_compiling_archetype", <<ara.id.value>>)
 					call_visual_update_action (ara)
-
 					-- first phase; initially signal that any parents are compiled already
 					-- (this happens because this routine is being driven by `build_lineage', which
 					-- always comes down the specialisation lineage from the top. However... other
@@ -239,10 +238,10 @@ feature {NONE} -- Implementation
 					end
 					status := ara.compilation_result.twin
 
-				elseif ara.has_compilation_result then
-					status := create_message_line ("compiler_already_attempted", <<ara.compilation_result>>)
+				elseif ara.is_valid then
+					status := create_message_line ("compiler_already_attempted_validated", <<ara.id.value, ara.compilation_result>>)
 				else
-					status := create_message_line ("compiler_already_attempted_validated", Void)
+					status := create_message_line ("compiler_already_attempted_failed", <<ara.id.value, ara.compilation_result>>)
 				end
 
 				call_visual_update_action (ara)

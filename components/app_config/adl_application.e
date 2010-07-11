@@ -139,9 +139,9 @@ feature -- Message database
 			["arch_context_make_flat_i1"] = <"Generated differential archetype from specialised flat archetype">
 			["compiler_status"] = <"=============== $1 ===============">
 			["compiler_finished_status"] = <"=============== finished $1 ===============">
-			["compiler_compiling_archetype"] = <"------------- compiling $1 -------------">
-			["compiler_already_attempted"] = <"(already attempted; status = $1)">
-			["compiler_already_attempted_validated"] = <"(already attempted; status = PASSED)">
+			["compiler_compiling_archetype"] = <"------------- $1: COMPILING -------------">
+			["compiler_already_attempted_failed"] = <"------------- $1 (already attempted - FAILED) -------------%N$2">
+			["compiler_already_attempted_validated"] = <"------------- $1 (already attempted - PASSED) -------------%N$2">
 			["compiler_unexpected_error"] = <"Location: $1">
 			["compiler_no_flat_text"] = <"===================== No flat (.adlf) text available =======================">
 			["compiler_no_source_text"] = <"===================== No source (.adls) text available =======================">
