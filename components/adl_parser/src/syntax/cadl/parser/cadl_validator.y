@@ -474,17 +474,8 @@ c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence
 
 			if not object_nodes.item.has_attribute(rm_attribute_name) then
 				create attr_node.make_single(rm_attribute_name)
-
-				if $2 /= Void then
-					attr_node.set_existence ($2)
-				elseif rm_attribute_name.is_equal (rm_attribute_name_careflow_step) then
-					attr_node.set_existence (create {INTERVAL [INTEGER]}.make_bounded (0, 1, True, True))
-				else
-					attr_node.set_existence (default_existence)
-				end
-
+				attr_node.set_existence($2)
 				c_attrs.put(attr_node)
-
 				debug("ADL_parse")
 					io.put_string(indent + "PUSH create ATTR_NODE " + attr_node.rm_attribute_name + " existence=(" + $2.as_string + ")%N") 
 				
@@ -506,17 +497,8 @@ c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence
 
 			if not object_nodes.item.has_attribute(rm_attribute_name) then
 				create attr_node.make_multiple(rm_attribute_name, $3)
-
-				if $2 /= Void then
-					attr_node.set_existence ($2)
-				elseif rm_attribute_name.is_equal (rm_attribute_name_careflow_step) then
-					attr_node.set_existence (create {INTERVAL [INTEGER]}.make_bounded (0, 1, True, True))
-				else
-					attr_node.set_existence (default_existence)
-				end
-
+				attr_node.set_existence($2)
 				c_attrs.put(attr_node)
-
 				debug("ADL_parse")
 					io.put_string(indent + "PUSH create ATTR_NODE " + attr_node.rm_attribute_name + " existence=(" + $2.as_string + "); cardinality=(" + $3.as_string + ")%N") 
 				
@@ -930,7 +912,7 @@ path_segment: V_ATTRIBUTE_IDENTIFIER V_LOCAL_TERM_CODE_REF
 
 c_existence:  	-- default to 1..1
 		{
-			int_interval := Void
+			int_interval := default_existence
 			$$ := int_interval
 		}
 	| SYM_EXISTENCE SYM_MATCHES SYM_START_CBLOCK existence_spec SYM_END_CBLOCK	
@@ -2432,10 +2414,5 @@ feature {NONE} -- Implementation
 
 	indent: STRING
 	str: STRING
-
-	rm_attribute_name_careflow_step: STRING
-		once
-			Result := "careflow_step"
-		end
 
 end
