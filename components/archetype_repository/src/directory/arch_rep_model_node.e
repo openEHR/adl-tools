@@ -116,7 +116,7 @@ feature {ARCH_REP_ITEM} -- Implementation
 			-- parent node
 
 invariant
-	Class_definition_validity: not is_package and is_class
+	Class_definition_validity: not (is_package and is_class)
 
 end
 

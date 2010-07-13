@@ -1573,7 +1573,7 @@ ordinal: integer_value SYM_INTERVAL_DELIM V_QUALIFIED_TERM_CODE_REF
 
 c_code_phrase: V_TERM_CODE_CONSTRAINT	-- e.g. "[local::at0040, at0041; at0040]"
 		{
-			create c_code_phrase_obj
+			create c_code_phrase_obj.default_create
 
 			if c_code_phrase_obj.valid_pattern ($1) then
 				c_code_phrase_obj.make_from_pattern ($1)

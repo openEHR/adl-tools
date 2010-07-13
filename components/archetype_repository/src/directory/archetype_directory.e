@@ -643,7 +643,6 @@ feature {NONE} -- Implementation
 		end
 
 invariant
-	directory_attached: ontology /= Void
 	total_archetype_count_non_negative: total_archetype_count >= 0
 	specialised_archetype_count_valid: specialised_archetype_count >= 0 and specialised_archetype_count <= total_archetype_count
 	slotted_archetype_count_valid: slotted_archetype_count >= 0 and slotted_archetype_count <= total_archetype_count

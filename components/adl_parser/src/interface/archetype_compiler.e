@@ -239,7 +239,11 @@ feature {NONE} -- Implementation
 					status := ara.compilation_result.twin
 
 				elseif ara.is_valid then
-					status := create_message_line ("compiler_already_attempted_validated", <<ara.id.value, ara.compilation_result>>)
+					if ara.has_compilation_result then
+						status := create_message_line ("compiler_already_attempted_validated_with_warnings", <<ara.id.value, ara.compilation_result>>)
+					else
+						status := create_message_line ("compiler_already_attempted_validated", <<ara.id.value>>)
+					end
 				else
 					status := create_message_line ("compiler_already_attempted_failed", <<ara.id.value, ara.compilation_result>>)
 				end

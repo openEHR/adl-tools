@@ -374,6 +374,17 @@ feature -- Access
 			valid: valid_err_type (Result)
 		end
 
+	display_language: STRING
+			-- generate a valid language to display this archetype in, either the current_language
+			-- or the primary language of this archetype, if it doesn't support the current language
+		do
+			if differential_archetype.has_language (current_language) then
+				Result := current_language
+			else
+				Result := differential_archetype.original_language.code_string
+			end
+		end
+
 feature -- Status Report - Compilation
 
 	has_differential_file: BOOLEAN
@@ -398,7 +409,7 @@ feature -- Status Report - Compilation
 			-- Should this archetype be reparsed due to changes on the file system?
 		do
 			Result := last_compile_attempt_timestamp = Void or
-				is_differential_out_of_date or is_legacy_flat_out_of_date or
+				is_differential_out_of_date or is_legacy_out_of_date or
 				(specialisation_parent /= Void and then specialisation_parent.last_compile_attempt_timestamp > last_compile_attempt_timestamp)
 		end
 
@@ -408,7 +419,7 @@ feature -- Status Report - Compilation
 			Result := differential_text_timestamp > 0 and file_repository.has_file_changed_on_disk (full_path, differential_text_timestamp)
 		end
 
-	is_legacy_flat_out_of_date: BOOLEAN
+	is_legacy_out_of_date: BOOLEAN
 			-- Is flat_archetype out of date with respect to changes on the file system?
 		do
 			Result := legacy_flat_text_timestamp > 0 and then file_repository.has_file_changed_on_disk (full_path, legacy_flat_text_timestamp)
@@ -565,10 +576,10 @@ feature -- Commands
 			if specialisation_parent.is_valid then
 				compilation_state := Cs_ready_to_parse
 			else
-				compilation_state := Cs_lineage_compile_failed
+				compilation_state := cs_lineage_invalid
 			end
 		ensure
-			Compilation_state: compilation_state = Cs_ready_to_parse or compilation_state = Cs_lineage_compile_failed
+			Compilation_state: compilation_state = Cs_ready_to_parse or compilation_state = cs_lineage_invalid
 		end
 
 	signal_suppliers_compilation
@@ -581,10 +592,10 @@ feature -- Commands
 			if suppliers_index.off then
 				compilation_state := Cs_ready_to_validate
 			else
-				compilation_state := cs_suppliers_compile_failed
+				compilation_state := cs_suppliers_invalid
 			end
 		ensure
-			Compilation_state: compilation_state = Cs_ready_to_validate or compilation_state = cs_suppliers_compile_failed
+			Compilation_state: compilation_state = Cs_ready_to_validate or compilation_state = cs_suppliers_invalid
 		end
 
 	compile_legacy
@@ -610,7 +621,7 @@ feature -- Commands
 					post_info (Current, "compile_legacy", "compile_legacy_i1", <<id.as_string>>)
 					differential_archetype := legacy_flat_archetype.to_differential
 					if is_specialised and not specialisation_parent.is_valid then
-						compilation_state := cs_lineage_compile_failed
+						compilation_state := cs_lineage_invalid
 					else
 					 	compilation_state := Cs_ready_to_validate
 						if (current_language = Void or not differential_archetype.has_language (current_language)) then
@@ -633,7 +644,7 @@ feature -- Commands
 			compilation_result.append (billboard.content)
 			billboard.clear
 		ensure
-			Compilation_state: compilation_state = Cs_validated or compilation_state = Cs_validate_failed or compilation_state = Cs_convert_legacy_failed or compilation_state = cs_lineage_compile_failed
+			Compilation_state: compilation_state = Cs_validated or compilation_state = Cs_validate_failed or compilation_state = Cs_convert_legacy_failed or compilation_state = cs_lineage_invalid
 			Differential_file: compilation_state = Cs_validated implies has_differential_file
 		rescue
 			post_error (Current, "compile_legacy", "report_exception", <<exception.out, exception_trace>>)
@@ -765,15 +776,14 @@ feature -- Commands
 		do
 			if has_rm_schema_for_package (id.qualified_package_name) then
 				rm_schema := rm_schema_for_package (id.qualified_package_name)
-				if has_differential_file then -- either authored in ADL 1.5, or compiled successfully from legacy .adl file
+				if legacy_is_primary and is_legacy_out_of_date or else not has_differential_file then
+					compilation_state := Cs_ready_to_parse_legacy
+				elseif has_differential_file then -- either authored in ADL 1.5, or compiled successfully from legacy .adl file
 					if is_specialised then
 						compilation_state := Cs_lineage_known
 					else
 						compilation_state := Cs_ready_to_parse
 					end
-
-				elseif has_legacy_flat_file then -- only has legacy file, never compiled successfully
-					compilation_state := Cs_ready_to_parse_legacy
 
 				elseif differential_archetype /= Void then -- must have been newly created
 					compilation_state := Cs_validated

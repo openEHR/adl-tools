@@ -17,7 +17,7 @@ class C_DV_ORDINAL
 inherit
 	C_DOMAIN_TYPE
 		redefine
-			default_create, enter_subtree, exit_subtree, synchronise_to_tree, specialisation_status, node_conforms_to
+			enter_subtree, exit_subtree, synchronise_to_tree, specialisation_status, node_conforms_to
 		end
 
 create
@@ -25,20 +25,10 @@ create
 
 feature -- Initialisation
 
-	default_create
-			--
-		do
-			rm_type_name := generator
-			rm_type_name.remove_head(2) -- remove "C_"
-		ensure then
-			any_allowed
-		end
-
 	make
 			-- make empty, add members with add_item
 		do
 			default_create
-			create representation.make_anonymous(Current)
 		ensure
 			any_allowed
 		end

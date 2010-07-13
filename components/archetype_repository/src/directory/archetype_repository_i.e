@@ -90,7 +90,6 @@ feature -- Commands
 		end
 
 invariant
-	archetypes_attached: archetype_id_index /= Void
 	timestamp_natural: text_timestamp >= 0
 	group_id_valid: group_id > 0
 

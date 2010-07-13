@@ -1,86 +1,45 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "[
-			 Abstract parent type of domain specific constraint types. This
-			 type guarantees that any descendant can be converted to a standard
-			 ADL object form, consisting of a network of C_COMPLEX_OBJECT and 
-			 C_ATTRIBUTE instances.
-			 ]"
-	keywords:    "test, ADL"
+	description: "Tests for C_CODE_PHRASE"
+	keywords:    "archetype, adl, aom"
 
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
+	testing:     "type/manual"
 
-deferred class C_DOMAIN_TYPE
+class
+	TEST_C_CODE_PHRASE
 
 inherit
-	C_LEAF_OBJECT
-		redefine
-			default_create, representation, enter_subtree, exit_subtree, node_id
-		end
+	OPENEHR_TEST_SET
 
-	DT_CONVERTIBLE
-		undefine
-			default_create
-		redefine
-			synchronise_to_tree
-		end
+feature -- Test routines
 
-feature -- Initialisation
-
-	default_create
-			-- set `rm_type_name' from typename of this object
+	test_valid_pattern
+			-- True if code has a valid part at or above specialisation level
+		note
+			testing:  "covers/{C_CODE_PHRASE}.valid_pattern"
+		local
+			a_ccp: C_CODE_PHRASE
 		do
-			rm_type_name := generator.substring (3, generator.count)
-			create representation.make_anonymous(Current)
-			node_id := representation.node_id
-		end
+			create a_ccp.default_create
 
-feature -- Access
-
-	node_id: STRING
-
-feature -- Conversion
-
-	standard_equivalent: C_COMPLEX_OBJECT
-			-- standard equivalent constraint form for this subtype
-		deferred
-		end
-
-feature -- Representation
-
-	representation: attached OG_OBJECT_LEAF
-
-feature -- Synchronisation
-
-	synchronise_to_tree
-			-- synchronise to parse tree representation
-		do
-			precursor
-			dt_representation.set_type_visible
-		end
-
-feature -- Visitor
-
-	enter_subtree(visitor: C_VISITOR; depth: INTEGER)
-			-- perform action at start of block for this node
-		do
-			synchronise_to_tree
-			precursor(visitor, depth)
-			visitor.start_c_domain_type(Current, depth)
-		end
-
-	exit_subtree(visitor: C_VISITOR; depth: INTEGER)
-			-- perform action at end of block for this node
-		do
-			precursor(visitor, depth)
-			visitor.end_c_domain_type(Current, depth)
+			assert_equal (True, a_ccp.valid_pattern ("local::"))
+			assert_equal (True, a_ccp.valid_pattern ("local::at0001"))
+			assert_equal (True, a_ccp.valid_pattern ("local::at0001,at0002"))
+			assert_equal (True, a_ccp.valid_pattern ("local::at0001,at0002,at0003"))
+			assert_equal (True, a_ccp.valid_pattern ("local::at0001;at0001"))
+			assert_equal (False, a_ccp.valid_pattern ("local::at0001;at0002"))
+			assert_equal (True, a_ccp.valid_pattern ("local::at0001,at0002;at0002"))
+			assert_equal (False, a_ccp.valid_pattern ("local::at0001,at0002;at0003"))
+			assert_equal (True, a_ccp.valid_pattern ("local::at0001, at0002, at0003"))
+			assert_equal (True, a_ccp.valid_pattern ("local::at0001,	at0002;	at0002"))
 		end
 
 end
@@ -100,10 +59,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is cadl_object_term.e.
+--| The Original Code is test_archetype_term_code_tools.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2009
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

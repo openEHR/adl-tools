@@ -17,7 +17,7 @@ class C_DV_QUANTITY
 inherit
 	C_DOMAIN_TYPE
 		redefine
-			default_create, enter_subtree, exit_subtree, node_conforms_to
+			enter_subtree, exit_subtree, node_conforms_to
 		end
 
 	EXTERNAL_ENVIRONMENT_ACCESS
@@ -31,16 +31,6 @@ create
 	make, make_dt
 
 feature -- Initialisation
-
-	default_create
-			--
-		do
-			rm_type_name := generator
-			rm_type_name.remove_head (2) -- remove "C_"
-			create representation.make_anonymous(Current)
-		ensure then
-			Any_allowed: any_allowed
-		end
 
 	make
 		do
@@ -231,6 +221,7 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 			-- empty structure means all attributes
 		once
 			create Result.make (0)
+			Result.extend ("node_id")
 			Result.extend ("property")
 			Result.extend ("list")
 			Result.extend ("assumed_value")
@@ -240,7 +231,7 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 feature -- Implementation
 
 	default_units: STRING
-			-- record default units if proerty is set; used to generate a default value
+			-- record default units if property is set; used to generate a default value
 
 	list_item_by_units (a_units: STRING): C_QUANTITY_ITEM
 			-- return item from `list' whose units match a_units' or else Void

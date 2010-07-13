@@ -27,10 +27,10 @@ feature -- Definitions
 	Cs_validated: INTEGER = 50
 	Cs_invalid: INTEGER = -1
 	Cs_rm_class_unknown: INTEGER = -2
-	Cs_lineage_compile_failed: INTEGER = -10
+	cs_lineage_invalid: INTEGER = -10
 	Cs_parse_failed: INTEGER = -20
 	Cs_convert_legacy_failed: INTEGER = -21
-	Cs_suppliers_compile_failed: INTEGER = -30
+	cs_suppliers_invalid: INTEGER = -30
 	Cs_validate_failed: INTEGER = -40
 
 feature -- Access
@@ -48,10 +48,10 @@ feature -- Access
 			Result.put("Validated", Cs_validated)
 			Result.put("Invalid", Cs_invalid)
 			Result.put("RM class unknown", Cs_rm_class_unknown)
-			Result.put("Lineage compile failed", Cs_lineage_compile_failed)
+			Result.put("Lineage invalid", Cs_lineage_invalid)
 			Result.put("Parse failed", Cs_parse_failed)
 			Result.put("Convert legacy .adl failed", Cs_convert_legacy_failed)
-			Result.put("Suppliers compile failed", Cs_suppliers_compile_failed)
+			Result.put("Suppliers invalid", cs_suppliers_invalid)
 			Result.put("Validate failed", Cs_validate_failed)
 		end
 
@@ -62,10 +62,10 @@ feature -- Access
 			create Result.make(0)
 			Result.extend(Cs_invalid)
 			Result.extend(Cs_rm_class_unknown)
-			Result.extend(Cs_lineage_compile_failed)
+			Result.extend(Cs_lineage_invalid)
 			Result.extend(Cs_parse_failed)
 			Result.extend(Cs_convert_legacy_failed)
-			Result.extend(Cs_suppliers_compile_failed)
+			Result.extend(cs_suppliers_invalid)
 			Result.extend(Cs_validate_failed)
 			Result.extend(Cs_validated)
 		end

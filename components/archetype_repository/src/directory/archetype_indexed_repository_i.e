@@ -70,7 +70,6 @@ feature {NONE} -- Implementation
 
 invariant
 	repository_path_valid: is_valid_directory (root_path)
-	archetypes_attached: archetype_id_index /= Void
 
 end
 

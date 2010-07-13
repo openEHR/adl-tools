@@ -82,7 +82,7 @@ feature -- Commands
 				if ara.has_slots then
 					slot_index := ara.slot_id_index
 					from slot_index.start until slot_index.off loop
-						create eti.make_with_text (utf8 (ara.differential_archetype.ontology.physical_to_logical_path (slot_index.key_for_iteration, current_language)))
+						create eti.make_with_text (utf8 (ara.differential_archetype.ontology.physical_to_logical_path (slot_index.key_for_iteration, ara.display_language)))
 						eti.set_pixmap (pixmaps ["ARCHETYPE_SLOT"])
 						gui.slots_tree.extend (eti)
 						append_tree (eti, slot_index.item_for_iteration)

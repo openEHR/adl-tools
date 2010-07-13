@@ -141,7 +141,8 @@ feature -- Message database
 			["compiler_finished_status"] = <"=============== finished $1 ===============">
 			["compiler_compiling_archetype"] = <"------------- $1: COMPILING -------------">
 			["compiler_already_attempted_failed"] = <"------------- $1 (already attempted - FAILED) -------------%N$2">
-			["compiler_already_attempted_validated"] = <"------------- $1 (already attempted - PASSED) -------------%N$2">
+			["compiler_already_attempted_validated"] = <"------------- $1 (already attempted - PASSED) -------------">
+			["compiler_already_attempted_validated_with_warnings"] = <"------------- $1 (already attempted - PASSED with warnings) -------------%N$2">
 			["compiler_unexpected_error"] = <"Location: $1">
 			["compiler_no_flat_text"] = <"===================== No flat (.adlf) text available =======================">
 			["compiler_no_source_text"] = <"===================== No source (.adls) text available =======================">

@@ -1,11 +1,11 @@
 note
 	component:   "openEHR Archetype Project"
 	description: "Object node type representing constraint on text or term"
-	keywords:    "test, ADL"
+	keywords:    "codephrase, ADL"
 
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2003-2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -17,7 +17,7 @@ class C_CODE_PHRASE
 inherit
 	C_DOMAIN_TYPE
 		redefine
-			default_create, enter_subtree, exit_subtree, synchronise_to_tree, specialisation_status, node_conforms_to
+			enter_subtree, exit_subtree, synchronise_to_tree, specialisation_status, node_conforms_to
 		end
 
 create
@@ -31,18 +31,6 @@ feature -- Definitions
 	separator: STRING = "::"
 
 feature -- Initialisation
-
-	default_create
-			-- Create in default state.
-		do
-			rm_type_name := (create {CODE_PHRASE}).generator
-			create representation.make_anonymous (Current)
-			fail_reason := Void
-			terminology_id := Void
-			code_list := Void
-		ensure then
-			Any_allowed: any_allowed
-		end
 
 	make_dt
 			--
@@ -68,11 +56,8 @@ feature -- Initialisation
 		require
 			a_pattern /= Void and then valid_pattern (a_pattern)
 		do
-			if terminology_id /= Void then
-				-- `parse_pattern' has already been run and generated the results.
-			else
-				parse_pattern (a_pattern)
-			end
+			default_create
+			initialise_from_pattern (a_pattern)
 		ensure
 			Not_any_allowed: not any_allowed
 			Terminology_id_exists: terminology_id /= Void
@@ -165,14 +150,49 @@ feature -- Status Report
 		end
 
 	valid_pattern (a_pattern: STRING): BOOLEAN
-			-- Verify that the pattern of form "terminology_id::code, code, ... [; code]"
-			-- is valid, i.e. that there are no repeats.
-			-- FIXME: This has a nasty side-effect: it reinitialises `Current'!
+			-- Verify that the pattern of form "terminology_id::[code, code, ... [; code]]" is valid
 		require
 			Pattern_valid: a_pattern /= Void and then not a_pattern.is_empty
+		local
+			sep_pos, end_pos: INTEGER
+			str, code_str, assumed_code: STRING
+			codes: LIST[STRING]
+			code_set: ARRAYED_SET[STRING]
 		do
-			parse_pattern (a_pattern)
+			fail_reason := Void
+			str := a_pattern.twin
+			str.prune_all (' ')
+			str.prune_all ('%T')
+			sep_pos := str.substring_index (separator, 1)
+			if sep_pos > 1 then
+				-- get the part after the terminology_id
+				end_pos := str.index_of (';', sep_pos)-1
+				if end_pos < 0 then
+					end_pos := str.count
+				else
+					assumed_code := str.substring (end_pos+2, str.count)
+				end
+				if end_pos > sep_pos + separator.count then
+					code_str := str.substring (sep_pos + separator.count, end_pos)
+					codes := code_str.split (',')
+					create code_set.make (0)
+					code_set.compare_objects
+					from codes.start until codes.off loop
+						code_set.extend (codes.item)
+						codes.forth
+					end
+					if code_set.count /= codes.count then
+						fail_reason := "duplicate code(s) found in code list"
+					elseif assumed_code /= Void and not code_set.has (assumed_code) then
+						fail_reason := "assumed value code " + assumed_code + " not found in code list"
+					end
+				end
+			else
+				fail_reason := "no terminology_id specified"
+			end
 			Result := fail_reason = Void
+		ensure
+			not Result implies not fail_reason.is_empty
 		end
 
 feature -- Comparison
@@ -257,11 +277,7 @@ feature -- Conversion
 				Result.append ("[" + terminology_id.value + separator)
 
 				if code_list /= Void then
-					from
-						code_list.start
-					until
-						code_list.off
-					loop
+					from code_list.start until code_list.off loop
 						if not code_list.isfirst then
 							Result.append (", ")
 						end
@@ -324,79 +340,29 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 
 feature {NONE} -- Implementation
 
-	parse_pattern (a_pattern: STRING)
+	initialise_from_pattern (a_pattern: STRING)
 			-- parse pattern of form "terminology_id::code, code, ... [; code]"
 			-- Pattern "terminology_id::" is legal
 		require
-			a_pattern /= Void and then not a_pattern.is_empty
+			a_pattern /= Void and then valid_pattern(a_pattern)
 		local
-			pos1, pos2, sep_pos: INTEGER
-			code_str: STRING
-			a_code, assumed_code: STRING
-			found_assumed_value: BOOLEAN
+			sep_pos, end_pos: INTEGER
+			str: STRING
 		do
-			default_create
-
-			sep_pos := a_pattern.substring_index (separator, 1)
-			create terminology_id.make (a_pattern.substring (1, sep_pos - 1))
-
-			-- get the part after the terminology_id
-			code_str := a_pattern.substring (sep_pos + separator.count, a_pattern.count)
-
-			from
-				pos1 := 1
-				pos2 := code_str.index_of (',', pos1) - 1
-				if pos2 < 1 then
-					pos2 := code_str.index_of (';', pos1) - 1 -- look for assumed value
-					if pos2 < 1 then
-						pos2 := code_str.count
-					else -- found assumed value
-						found_assumed_value := True
-					end
-				end
-			until
-				pos1 > code_str.count
-			loop
-				if pos2 >= pos1 then
-					a_code := code_str.substring (pos1, pos2)
-					a_code.left_adjust
-					a_code.right_adjust
-					if not has_code (a_code) then
-						add_code (a_code)
-					else
-						fail_reason := " duplicate code " + a_code + " found in code list"
-					end
-				end
-
-				pos1 := pos2 + 2
-
-				if found_assumed_value then
-					pos2 := code_str.count
-					assumed_code := code_str.substring (pos1, pos2)
-					assumed_code.left_adjust
-					assumed_code.right_adjust
-					pos1 := pos2 + 2
-				end
-
-				if pos1 <= code_str.count then
-					pos2 := code_str.index_of (',', pos1) - 1
-					if pos2 < 1 then
-						pos2 := code_str.index_of (';', pos1) - 1 -- look for assumed value
-						if pos2 < 1 then
-							pos2 := code_str.count
-						else -- found assumed value
-							found_assumed_value := True
-						end
-					end
-				end
+			str := a_pattern.twin
+			str.prune_all (' ')
+			str.prune_all ('%T')
+			sep_pos := str.substring_index (separator, 1)
+			create terminology_id.make (str.substring (1, sep_pos-1))
+			end_pos := str.index_of (';', sep_pos)-1
+			if end_pos < 0 then
+				end_pos := str.count
+			else
+				set_assumed_value (create {CODE_PHRASE}.make_from_string (terminology_id.value + separator + str.substring (end_pos+2, str.count)))
 			end
-
-			if found_assumed_value then
-				if has_code (assumed_code) then
-					set_assumed_value (create {CODE_PHRASE}.make_from_string (terminology_id.value + separator + assumed_code))
-				else
-					fail_reason := "assumed value code " + assumed_code + " not found in code list"
-				end
+			if end_pos > sep_pos + separator.count then
+				create code_list.make(0)
+				code_list.append (str.substring (sep_pos + separator.count, end_pos).split (','))
 			end
 		ensure
 			not any_allowed
