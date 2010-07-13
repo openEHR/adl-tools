@@ -36,8 +36,6 @@ inherit
 
 	SHARED_C_FACTORY
 
-	SHARED_MESSAGE_BILLBOARD
-
 create
 	make
 
@@ -69,6 +67,14 @@ feature -- Access
 			Result := arch_dir.selected_archetype
 		end
 
+	differential_archetype: DIFFERENTIAL_ARCHETYPE
+			-- The differential form the archetype currently selected in the archetype directory.
+		do
+			if attached selected_archetype then
+				Result := selected_archetype.differential_archetype
+			end
+		end
+
 	flat_archetype: FLAT_ARCHETYPE
 			-- The flattened form the archetype currently selected in the archetype directory.
 		do
@@ -96,14 +102,14 @@ feature -- Factory
 		local
 			arch: ARCH_REP_ARCHETYPE
 		do
-			set_current_language (primary_language)
-			create arch.make_new (id, source_repositories.adhoc_source_repository, {ARTEFACT_TYPE}.archetype, primary_language)
+			adl_application.set_current_language (primary_language)
+			create arch.make_new (id, source_repositories.adhoc_source_repository, {ARTEFACT_TYPE}.archetype, primary_language, 0)
 			arch_dir.set_selected_item (arch)
 		ensure
-			language_set: current_language.same_string (primary_language)
-			flat_archetype_attached: attached flat_archetype
-			flat_archetype_changed: flat_archetype /= old flat_archetype
-			id_set: flat_archetype.archetype_id.is_equal (id)
+			language_set: adl_application.current_language.same_string (primary_language)
+			archetype_attached: attached selected_archetype
+			archetype_changed: selected_archetype /= old selected_archetype
+			id_set: selected_archetype.id.is_equal (id)
 		end
 
 end
