@@ -82,10 +82,13 @@ feature -- Access
 			-- version of ADL syntax to use for outputting flat archetypes
 		do
 			Result := substitute_env_vars (resource_value ("default", "adl_version_for_flat_output"))
+			if Result.is_empty then
+				Result := Latest_adl_version.twin
+			end
 		end
 
 	adl_version_for_flat_output_numeric: INTEGER
-			-- generate a numeric equivalent of the ADL version in use, e.g.
+			-- generate a 3-digit numeric equivalent of the ADL version in use for serialisation, e.g.
 			-- '1.5' -> 150
 			-- '1.4.1' -> 141
 		local

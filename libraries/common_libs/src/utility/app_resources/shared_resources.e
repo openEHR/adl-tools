@@ -370,7 +370,7 @@ feature -- Element Removal
 
 feature -- Conversion
 
-	substitute_env_vars (s: STRING): STRING
+	substitute_env_vars (s: attached STRING): attached STRING
 			-- expand the environment variables, delimited by a '$' and any
 			-- non alphanumeric character except underscore, or end of string,
 			-- in the string s
