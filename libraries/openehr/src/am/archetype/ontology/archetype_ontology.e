@@ -32,9 +32,9 @@ inherit
 
 feature -- Definitions
 
-	Sym_primary_language: STRING = "primary_language"
+--	Sym_primary_language: STRING = "primary_language"
 
-	Sym_languages_available: STRING = "languages_available"
+--	Sym_languages_available: STRING = "languages_available"
 
 	Sym_terminologies_available: STRING = "terminologies_available"
 
@@ -54,8 +54,6 @@ feature -- Initialisation
 			create errors.make (0)
 			create warnings.make (0)
 
-			create languages_available.make (0)
-			languages_available.compare_objects
 			create terminologies_available.make (0)
 			terminologies_available.compare_objects
 
@@ -95,7 +93,15 @@ feature -- Access
 
 	primary_language: STRING
 
-	languages_available: ARRAYED_SET [STRING]
+	languages_available: attached ARRAYED_SET [STRING]
+		do
+			create Result.make(0)
+			Result.compare_objects
+			from term_definitions.start until term_definitions.off loop
+				Result.extend(term_definitions.key_for_iteration)
+				term_definitions.forth
+			end
+		end
 
 	terminologies_available: ARRAYED_LIST [STRING]
 
@@ -806,8 +812,6 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 				terminologies_available := string_list_at_path("/" + Sym_terminologies_available)
 			end
 
-			languages_available.wipe_out
-
 			-- populate term definitions & languages_available (temporarily, until all archetypes
 			-- have a proper language section
 			if has_path ("/" + Sym_term_definitions) then
@@ -820,14 +824,9 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 							populate_term_defs(Sym_term_definitions, a_language, term_defs_one_lang)
 							term_definitions.force(term_defs_one_lang , a_language)
 						end
-						languages_available.extend (a_language)
 						an_attr_node.forth
 					end
 				end
-			end
-
-			if has_path("/" + Sym_primary_language) then
-				set_primary_language(string_at_path("/" + Sym_primary_language))
 			end
 
 			-- populate constraint definitions
@@ -1067,22 +1066,6 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 			Result_exists: Result /= Void
 		end
 
-	is_tree_valid: BOOLEAN
-			--
-		do
-			create errors.make(0)
-			if not has_path("/" + Sym_primary_language) then
-				errors.append (Sym_primary_language + " not set in ontology")
-			elseif not has_path("/" + Sym_languages_available) then
-				errors.append (Sym_languages_available + " not set in ontology")
-			elseif not has_path("/" + Sym_terminologies_available) then
-				errors.append (Sym_terminologies_available + " not set in ontology")
-			end
-			Result := errors.is_empty
-		ensure
-			not Result implies errors /= Void
-		end
-
 	valid_term_code(a_code: STRING): BOOLEAN
 			-- True if `a_code' is found in all languages
 		require
@@ -1125,7 +1108,6 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 
 invariant
 	Primary_language_valid: primary_language /= Void and then not primary_language.is_empty
-	Languages_available_valid: languages_available /= Void and then not languages_available.is_empty
 	Terminologies_available_exists: terminologies_available /= Void
 
 	Term_definitions_exists: term_definitions /= Void

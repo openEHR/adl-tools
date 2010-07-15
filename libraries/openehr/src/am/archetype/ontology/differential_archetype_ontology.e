@@ -68,9 +68,6 @@ feature -- Initialisation
 
 			concept_code := a_flat_copy.concept_code
 
-			languages_available := a_flat_copy.languages_available
-			languages_available.start
-			set_primary_language(languages_available.item)
 			terminologies_available := a_flat_copy.terminologies_available
 
 			term_definitions := a_flat_copy.term_definitions
@@ -83,6 +80,8 @@ feature -- Initialisation
 			term_bindings := a_flat_copy.term_bindings
 			constraint_bindings := a_flat_copy.constraint_bindings
 			highest_specialised_code_indexes := a_flat_copy.highest_specialised_code_indexes
+
+			set_primary_language(a_flat.primary_language)
 		end
 
 feature -- Access
@@ -520,8 +519,6 @@ feature -- Conversion
 				synchronise_to_tree
 			end
 			create Result.make_from_tree (primary_language.deep_twin, representation.deep_twin, concept_code.deep_twin)
-		ensure
-			same_languages_available: Result.languages_available.is_subset (languages_available) and languages_available.is_subset (Result.languages_available)
 		end
 
 feature {ARCHETYPE_ONTOLOGY} -- Implementation

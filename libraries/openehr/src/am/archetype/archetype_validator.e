@@ -180,8 +180,6 @@ feature {NONE} -- Implementation
 				add_warning("validate_e3", <<target_descriptor.id.as_string, target.archetype_id.as_string>>)
 			elseif not target.definition.rm_type_name.is_equal (target.archetype_id.rm_entity) then
 				add_error("VARDT", <<target.archetype_id.rm_entity, target.definition.rm_type_name>>)
-			elseif not target.definition.node_id.is_equal (target.concept) then
-				add_error("VACCD", <<target.concept>>)
 			end
 		end
 
@@ -265,23 +263,23 @@ feature {NONE} -- Implementation
 	validate_ontology_languages
 			-- Are all `term_codes' and `constraint_codes' found in all languages?
 		local
-			lang: STRING
+			langs: ARRAYED_SET [STRING]
 		do
-			from ontology.languages_available.start until ontology.languages_available.off loop
-				lang := ontology.languages_available.item
+			langs := ontology.languages_available
+			from langs.start until langs.off loop
 				from ontology.term_codes.start until ontology.term_codes.off loop
-					if not ontology.has_term_definition (lang, ontology.term_codes.item) then
-						add_error("VONLC", <<ontology.term_codes.item, lang>>)
+					if not ontology.has_term_definition (langs.item, ontology.term_codes.item) then
+						add_error("VONLC", <<ontology.term_codes.item, langs.item>>)
 					end
 					ontology.term_codes.forth
 				end
 				from ontology.constraint_codes.start until ontology.constraint_codes.off loop
-					if not ontology.has_constraint_definition (lang, ontology.constraint_codes.item) then
-						add_error("VONLC", <<ontology.constraint_codes.item, lang>>)
+					if not ontology.has_constraint_definition (langs.item, ontology.constraint_codes.item) then
+						add_error("VONLC", <<ontology.constraint_codes.item, langs.item>>)
 					end
 					ontology.constraint_codes.forth
 				end
-				ontology.languages_available.forth
+				langs.forth
 			end
 		end
 

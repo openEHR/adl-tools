@@ -171,7 +171,7 @@ feature -- Access
 			-- paths with human readable terms substituted
 		require
 			language_attached: a_lang /= Void
-			has_language: ontology.languages_available.has (a_lang)
+			has_language: ontology.has_language(a_lang)
 		local
 			phys_paths: ARRAYED_LIST [STRING]
 		do
