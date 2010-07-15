@@ -32,10 +32,6 @@ inherit
 
 feature -- Definitions
 
---	Sym_primary_language: STRING = "primary_language"
-
---	Sym_languages_available: STRING = "languages_available"
-
 	Sym_terminologies_available: STRING = "terminologies_available"
 
 	Sym_term_definitions: STRING = "term_definitions"
@@ -70,12 +66,12 @@ feature -- Initialisation
 			create highest_specialised_code_indexes.make (0)
 		end
 
-	make_from_tree(a_primary_lang: STRING; a_dadl_tree: DT_COMPLEX_OBJECT_NODE; a_concept_code: STRING)
+	make_from_tree(an_original_lang: STRING; a_dadl_tree: DT_COMPLEX_OBJECT_NODE; a_concept_code: STRING)
 			-- make ontology from parse tree and concept code, usually something
 			-- like 'at0000' or 'at0000.1'. The specialisation depth of the
 			-- ontology is determined from this code
 		require
-			Primary_language_valid: a_primary_lang /= Void and then not a_primary_lang.is_empty
+			Original_language_valid: an_original_lang /= Void and then not an_original_lang.is_empty
 			Tree_exists: a_dadl_tree /= Void
 			root_code_attached: a_concept_code /= Void
 			root_code_valid: valid_concept_code (a_concept_code)
@@ -83,7 +79,7 @@ feature -- Initialisation
 			default_create
 			representation := a_dadl_tree
 			concept_code := a_concept_code
-			set_primary_language (a_primary_lang)
+			original_language := an_original_lang
 			synchronise_from_tree
 		ensure
 			concept_code_set: concept_code.is_equal (a_concept_code)
@@ -91,7 +87,8 @@ feature -- Initialisation
 
 feature -- Access
 
-	primary_language: STRING
+	original_language: STRING
+			-- original language of the ontology, as set at archetype creation or parsing time
 
 	languages_available: attached ARRAYED_SET [STRING]
 		do
@@ -335,14 +332,14 @@ feature -- Status Report
 
 feature -- Modification
 
-	set_primary_language (a_language: STRING)
+	set_original_language (a_language: STRING)
 			-- set the primary language of the ontology
 		require
-			A_lang_valid: a_language /= Void -- and then languages_available.has(a_language)
+			A_lang_valid: a_language /= Void
 		do
-			primary_language := a_language
+			original_language := a_language
 		ensure
-			Language_set: primary_language.is_equal(a_language)
+			Language_set: original_language.is_equal(a_language)
 		end
 
 	add_term_definition(a_language: STRING; a_term: ARCHETYPE_TERM)
@@ -367,7 +364,7 @@ feature -- Modification
 			Language_valid: a_language /= Void and then has_language(a_language)
 			Term_valid: a_term /= Void and then has_term_code(a_term.code)
 		do
-			if a_language.is_equal(primary_language) and replace_translations then
+			if a_language.is_equal(original_language) and replace_translations then
 				put_term_definition(a_language, a_term) -- replace all translations as well
 			else
 				term_definitions.item(a_language).replace(a_term, a_term.code) -- just do this translation
@@ -396,7 +393,7 @@ feature -- Modification
 			Language_valid: a_language /= Void and then has_language(a_language)
 			Term_valid: a_term /= Void and then has_constraint_code(a_term.code)
 		do
-			if a_language.is_equal(primary_language) and replace_translations then
+			if a_language.is_equal(original_language) and replace_translations then
 				put_constraint_definition(a_language, a_term) -- replace all translations as well
 			else
 				constraint_definitions.item(a_language).replace(a_term, a_term.code) -- just do this translation
@@ -762,7 +759,7 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 			trans_term: ARCHETYPE_TERM
 		do
 			term_definitions.item(a_language).force(a_term, a_term.code)
-			trans_term := a_term.create_translated_term(primary_language)
+			trans_term := a_term.create_translated_term(original_language)
 			from term_definitions.start until term_definitions.off loop
 				if not term_definitions.key_for_iteration.is_equal(a_language) then
 					term_definitions.item_for_iteration.force(trans_term.deep_twin, trans_term.code)
@@ -846,24 +843,24 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 			end
 
 			-- populate term code list
-			if has_language (primary_language) then
-				from term_definitions.item (primary_language).start until term_definitions.item (primary_language).off loop
-					code := term_definitions.item (primary_language).key_for_iteration
+			if has_language (original_language) then
+				from term_definitions.item (original_language).start until term_definitions.item (original_language).off loop
+					code := term_definitions.item (original_language).key_for_iteration
 					term_codes.extend (code)
 					update_highest_specialised_code_index (code)
 					update_highest_term_code_index (code)
-					term_definitions.item (primary_language).forth
+					term_definitions.item (original_language).forth
 				end
 			end
 
 			-- populate constraint code list
 			if not constraint_definitions.is_empty then
-				from constraint_definitions.item(primary_language).start until constraint_definitions.item(primary_language).off loop
-					code := constraint_definitions.item(primary_language).key_for_iteration
+				from constraint_definitions.item(original_language).start until constraint_definitions.item(original_language).off loop
+					code := constraint_definitions.item(original_language).key_for_iteration
 					constraint_codes.extend (code)
 					update_highest_specialised_code_index (code)
 					update_highest_constraint_code_index(code)
-					constraint_definitions.item(primary_language).forth
+					constraint_definitions.item(original_language).forth
 				end
 			end
 
@@ -1107,7 +1104,7 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 		end
 
 invariant
-	Primary_language_valid: primary_language /= Void and then not primary_language.is_empty
+	Original_language_valid: original_language /= Void and then not original_language.is_empty
 	Terminologies_available_exists: terminologies_available /= Void
 
 	Term_definitions_exists: term_definitions /= Void

@@ -340,7 +340,7 @@ feature {NONE} -- Implementation
 			languages: SEQUENCE [STRING]
 		do
 			create Result.make
-			Result.set_original_language_from_string (ontology.primary_language)
+			Result.set_original_language_from_string (ontology.original_language)
 
 			from
 				languages := ontology.languages_available
@@ -348,7 +348,7 @@ feature {NONE} -- Implementation
 			until
 				languages.off
 			loop
-				if not languages.item.is_equal (ontology.primary_language) then
+				if not languages.item.is_equal (ontology.original_language) then
 					Result.add_new_translation (languages.item)
 				end
 

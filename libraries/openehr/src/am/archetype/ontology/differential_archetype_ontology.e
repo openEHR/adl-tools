@@ -30,27 +30,27 @@ create
 
 feature -- Initialisation
 
-	make_empty(a_primary_lang: STRING; at_specialisation_depth: INTEGER)
+	make_empty(an_original_lang: STRING; at_specialisation_depth: INTEGER)
 			-- make an empty ontology at specified specialisation depth
 		require
-			Primary_language_valid: a_primary_lang /= Void and then not a_primary_lang.is_empty
+			Original_language_valid: an_original_lang /= Void and then not an_original_lang.is_empty
 			Valid_specialisation_depth: at_specialisation_depth >= 0
 		local
 			term: ARCHETYPE_TERM
 		do
 			default_create
-			add_language(a_primary_lang)
-			set_primary_language(a_primary_lang)
+			add_language(an_original_lang)
+			original_language := an_original_lang
 			concept_code := new_concept_code_at_level (at_specialisation_depth)
 			create term.make (concept_code)
 			term.set_items ((create {ARCHETYPE_TERM}.make_default).items)
 			initialise_term_definitions(term)
 		ensure
-			Primary_language_set: primary_language.same_string (a_primary_lang)
+			Primary_language_set: original_language = an_original_lang
 			Specialisation_level_set: specialisation_depth = at_specialisation_depth
 			Concept_code_set: valid_concept_code(concept_code) and specialisation_depth_from_code (concept_code) = at_specialisation_depth
 			Concept_code_in_terms: has_term_code (concept_code)
-			Concept_items_not_empty: not term_definition (primary_language, concept_code).items.is_empty
+			Concept_items_not_empty: not term_definition (original_language, concept_code).items.is_empty
 		end
 
 	make_from_flat(a_flat: FLAT_ARCHETYPE_ONTOLOGY)
@@ -81,7 +81,7 @@ feature -- Initialisation
 			constraint_bindings := a_flat_copy.constraint_bindings
 			highest_specialised_code_indexes := a_flat_copy.highest_specialised_code_indexes
 
-			set_primary_language(a_flat.primary_language)
+			original_language := a_flat.original_language.twin
 		end
 
 feature -- Access
@@ -269,7 +269,7 @@ feature -- Modification
 		require
 			Language_valid: a_language /= Void and then not a_language.is_empty
 		local
-			term_defs_one_lang, constraint_defs_one_lang, term_defs_prim_lang, constraint_defs_prim_lang: HASH_TABLE[ARCHETYPE_TERM, STRING]
+			term_defs_one_lang, constraint_defs_one_lang, term_defs_orig_lang, constraint_defs_orig_lang: HASH_TABLE[ARCHETYPE_TERM, STRING]
 		do
 			if not term_definitions.has(a_language) then
 				create term_defs_one_lang.make(0)
@@ -281,30 +281,30 @@ feature -- Modification
 				end
 
 				-- if not the primary language, add set of translation place-holder terms in this language
-				if primary_language /= Void and then not a_language.is_equal(primary_language) then
+				if original_language /= Void and then not a_language.is_equal(original_language) then
 					-- term definitions
-					term_defs_prim_lang := term_definitions.item(primary_language)
+					term_defs_orig_lang := term_definitions.item(original_language)
 					from
-						term_defs_prim_lang.start
+						term_defs_orig_lang.start
 					until
-						term_defs_prim_lang.off
+						term_defs_orig_lang.off
 					loop
-						term_defs_one_lang.put(term_defs_prim_lang.item_for_iteration.create_translated_term(primary_language),
-							term_defs_prim_lang.item_for_iteration.code)
-						term_defs_prim_lang.forth
+						term_defs_one_lang.put(term_defs_orig_lang.item_for_iteration.create_translated_term(original_language),
+							term_defs_orig_lang.item_for_iteration.code)
+						term_defs_orig_lang.forth
 					end
 
 					-- do constraint definitions as well
 					if not constraint_definitions.is_empty then
-						constraint_defs_prim_lang := constraint_definitions.item(primary_language)
+						constraint_defs_orig_lang := constraint_definitions.item(original_language)
 						from
-							constraint_defs_prim_lang.start
+							constraint_defs_orig_lang.start
 						until
-							constraint_defs_prim_lang.off
+							constraint_defs_orig_lang.off
 						loop
-							constraint_defs_one_lang.put(constraint_defs_prim_lang.item_for_iteration.create_translated_term(primary_language),
-								constraint_defs_prim_lang.item_for_iteration.code)
-							constraint_defs_prim_lang.forth
+							constraint_defs_one_lang.put(constraint_defs_orig_lang.item_for_iteration.create_translated_term(original_language),
+								constraint_defs_orig_lang.item_for_iteration.code)
+							constraint_defs_orig_lang.forth
 						end
 					end
 				end
@@ -319,10 +319,10 @@ feature -- Modification
 			Term_exists: a_term /= Void
 		do
 			term_codes.extend (a_term.code)
-			term_definitions.put(create {HASH_TABLE[ARCHETYPE_TERM, STRING]}.make(0), primary_language)
-			term_definitions.item(primary_language).put(a_term, a_term.code)
+			term_definitions.put(create {HASH_TABLE[ARCHETYPE_TERM, STRING]}.make(0), original_language)
+			term_definitions.item(original_language).put(a_term, a_term.code)
 		ensure
-			Term_definitions_populated: term_definitions.item(primary_language).item(concept_code) = a_term
+			Term_definitions_populated: term_definitions.item(original_language).item(concept_code) = a_term
 		end
 
 	replace_term_binding(a_code_phrase: CODE_PHRASE; a_code: STRING)
@@ -518,7 +518,7 @@ feature -- Conversion
 			if representation = Void then
 				synchronise_to_tree
 			end
-			create Result.make_from_tree (primary_language.deep_twin, representation.deep_twin, concept_code.deep_twin)
+			create Result.make_from_tree (original_language.deep_twin, representation.deep_twin, concept_code.deep_twin)
 		end
 
 feature {ARCHETYPE_ONTOLOGY} -- Implementation
