@@ -66,6 +66,11 @@ feature -- Message database
 			["general"] = <"$1">
 			["cfg_file_i1"] = <"Wrote config file $1">
 			
+			-- Archetype reppsitory
+			["ref_repo_not_found"] = <"Error: reference Repository $1 does not exist or not readable (check Repository settings)">
+			["work_repo_not_found"] = <"Error; work Repository $1 does not exist or not readable (check Repository settings)">
+			["work_repo_not_invalid"] = <"Error; work Repository $1 does not exist or is the same as or a child of the reference repository (check Repository settings)">
+			
 			-- DT_OBJECT_CONVERTER.dt_to_object
 			["container_type_mismatch"] = 
 				<"Mismatch error in data and model for field $1 in type $2. Parsed data implies container type but is not in model">
@@ -298,7 +303,7 @@ feature -- Message database
 			["VDSIV2"] = <"Error (VDSIV): 'include' constraint of slot of RM type $1 at path $2 invalid; include must be either empty or match 'any' when 'exclude' matches non-'any'">
 
 			-- C_ARCHETYPE_ROOT
-			["VARXR"] = <"Warning (VARXR): slot filler at $1 specifies archetype $2 that matches slot but doesn't exist in current repository">
+			["VARXR"] = <"Warning (VARXR): slot filler at $1 specifies archetype $2 that matches slot but doesn't exist in current repository, or has non-existent ancestor">
 			["VARXS"] = <"Error (VARXS): slot filler at $1 specifies archetype id $2 that does not conform to flat parent slot constraint">
 			["VARXNC"] = <"Error (VARXNC): slot node id of slot filler at $1 does not correspond to any ARCHETYPE slot in flat parent">
 			["VARXTV"] = <"Error (VARXTV): RM type of slot filler $1 does not conform to RM type $2 of slot or attribute in flat parent">

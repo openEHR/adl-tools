@@ -243,7 +243,7 @@ feature {NONE} -- Implementation
 		do
 			from target.suppliers_index.start until target.suppliers_index.off loop
 				if not arch_dir.archetype_index.has (target.suppliers_index.key_for_iteration) then
-					add_error("VARXR", <<target.suppliers_index.key_for_iteration, target.suppliers_index.key_for_iteration>>)
+					add_error("VARXR", <<target.suppliers_index.item_for_iteration.first.parent.path, target.suppliers_index.key_for_iteration>>)
 				end
 
 				-- check that the RM type in the archetype references is compatible with the RM type of the C_ARCHETYPE_ROOT node

@@ -80,7 +80,7 @@ feature {NONE} -- Implementation
 					set_reference_repository_path (s)
 					has_changed_paths := True
 				else
-					create error_dialog.make_with_text ("Reference Repository %"" + s + "%" does not exist.")
+					create error_dialog.make_with_text (create_message_line ("ref_repo_not_found", <<s>>))
 					error_dialog.show_modal_to_window (Current)
 					paths_invalid := True
 				end
@@ -93,8 +93,7 @@ feature {NONE} -- Implementation
 					set_work_repository_path (s)
 					has_changed_paths := True
 				else
-					create error_dialog.make_with_text ("Work Repository %"" + s +
-						"%" does not exist, or is the same as or a parent or a child of the Reference Repository.")
+					create error_dialog.make_with_text (create_message_line ("work_repo_not_invalid", <<s>>))
 					error_dialog.show_modal_to_window (Current)
 					paths_invalid := True
 				end

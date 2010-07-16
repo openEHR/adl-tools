@@ -190,11 +190,15 @@ feature -- Status setting
 				else
 					if directory_exists(reference_repository_path) then
 						source_repositories.set_reference_repository (reference_repository_path)
+						if source_repositories.valid_working_repository_path (work_repository_path) then
+							source_repositories.set_work_repository (work_repository_path)
+							populate_directory
+						else
+							append_status_area(create_message_line ("work_repo_not_found", <<work_repository_path>>))
+						end
+					else
+						append_status_area(create_message_line ("ref_repo_not_found", <<reference_repository_path>>))
 					end
-					if source_repositories.valid_working_repository_path (work_repository_path) then
-						source_repositories.set_work_repository (work_repository_path)
-					end
-					populate_directory
 				end
 			end
 
