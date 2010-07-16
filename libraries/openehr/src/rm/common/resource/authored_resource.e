@@ -53,28 +53,28 @@ feature -- Access
 			end
 		end
 
-	languages_available: ARRAYED_SET [STRING]
+	languages_available: attached ARRAYED_SET [STRING]
 			-- Total list of languages available in this resource, derived from
 			-- original_language and translations. Guaranteed to at least include original_language
 		do
-			if stored_languages_available = Void then
-				create stored_languages_available.make(0)
-				stored_languages_available.compare_objects
-				stored_languages_available.extend(original_language.code_string)
+			if languages_available_cache = Void then
+				create languages_available_cache.make(0)
+				languages_available_cache.compare_objects
+				languages_available_cache.extend(original_language.code_string)
 				if translations /= Void then
 					from
 						translations.start
 					until
 						translations.off
 					loop
-						stored_languages_available.extend(translations.key_for_iteration)
+						languages_available_cache.extend(translations.key_for_iteration)
 						translations.forth
 					end
 				end
 			end
-			Result := stored_languages_available
+			Result := languages_available_cache
 		ensure
-			Result /= Void and then not Result.is_empty
+			not Result.is_empty
 		end
 
 	translation_for_language(a_lang: STRING): TRANSLATION_DETAILS
@@ -106,19 +106,6 @@ feature -- Status Report
 			Result := translations /= Void
 		end
 
--- FIXME: we may re-instate this, but needs something like a list
--- of XX_VALIDATOR objects that can be added to down the inheritance chain (e.g. by ARCHETYPE as well)
---	is_valid_resource: BOOLEAN is
---			-- True if all structures obey their invariants
---		do
---			-- check original_language
---			if original_language = Void then
---				errors.append("No original language%N")
---			end
---
---			Result := errors.is_empty and is_valid_description and is_valid_translations
---		end
-
 feature -- Modification
 
 	set_description(a_desc: RESOURCE_DESCRIPTION)
@@ -149,7 +136,7 @@ feature -- Modification
 				create translations.make(0)
 			end
 			translations.put (a_trans, a_trans.language.code_string)
-			stored_languages_available := Void
+			languages_available_cache := Void
 		end
 
 	add_language(a_lang: STRING)
@@ -159,7 +146,7 @@ feature -- Modification
 		do
 			add_default_translation(a_lang)
 			description.add_language(a_lang)
-			stored_languages_available := Void
+			languages_available_cache := Void
 		end
 
 feature {ADL_ENGINE} -- Construction
@@ -170,7 +157,7 @@ feature {ADL_ENGINE} -- Construction
 			a_trans /= Void
 		do
 			translations := a_trans
-			stored_languages_available := Void
+			languages_available_cache := Void
 		end
 
 feature -- Status setting
@@ -201,12 +188,11 @@ feature -- Serialisation
 feature {ADL_ENGINE} -- Implementation
 
 	orig_lang_translations: LANGUAGE_TRANSLATIONS
-			-- holds a copy of translations for purposes of DT object/dADL
-			-- reading and writing
+			-- holds a copy of translations for purposes of DT object/dADL reading and writing
 
 feature {NONE} -- Implementation
 
-	stored_languages_available: ARRAYED_SET [STRING]
+	languages_available_cache: ARRAYED_SET [STRING]
 			-- Total list of languages available in this resource, derived from
 			-- original_language and translations. Guaranteed to at least include original_language
 
@@ -214,15 +200,13 @@ invariant
 	Description_exists: description /= Void
 	Original_language_valid: original_language /= void and then
 		code_set(Code_set_id_languages).has(original_language)
-	Languages_available_valid: languages_available /= Void and then
-		languages_available.has(original_language.as_string)
 	Revision_history_valid: is_controlled xor revision_history = Void
 	Current_revision_valid: current_revision /= Void and not is_controlled
 		implies current_revision.is_equal(Uncontrolled_revision_name)
 	Translations_valid: translations /= Void implies (not translations.is_empty and
 		not translations.has(original_language.code_string))
 --	Description_valid: translations /= Void implies (description.details.for_all
---		(d | translations.has_key(d.language.code_string)))
+--		(agent (d:RESOURCE_DESCRIPTION_ITEM):BOOLEAN do translations.has_key(d.language.code_string) end))
 
 end
 
