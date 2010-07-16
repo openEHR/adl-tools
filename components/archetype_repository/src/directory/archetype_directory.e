@@ -373,20 +373,20 @@ feature -- Commands
 
 feature -- Modification
 
-	set_selected_item (value: attached ARCH_REP_ITEM)
-			-- Append `value' to `selection_history' and select it.
+	set_selected_item (an_item: attached ARCH_REP_ITEM)
+			-- Append `an_item' to `selection_history' and select it.
 		do
-			if selected_item /= value then
-				if selection_history.is_empty or else selection_history.last /= value then
-					selection_history.extend (value)
+			if selected_item /= an_item then
+				if selection_history.is_empty or else selection_history.last /= an_item then
+					selection_history.extend (an_item)
 				end
 				selection_history.finish
 			end
 		ensure
-			selected_item_set: selected_item = value
-			history_is_last_if_value_different: old selected_item /= value implies selection_history.islast
+			selected_item_set: selected_item = an_item
+			history_is_last_if_value_different: old selected_item /= an_item implies selection_history.islast
 			history_extended_if_value_different_and_wasnt_last: selection_history.count = old
-				(selection_history.count + (selected_item /= value and (selection_history.is_empty or else selection_history.last /= value)).to_integer)
+				(selection_history.count + (selected_item /= an_item and (selection_history.is_empty or else selection_history.last /= an_item)).to_integer)
 		end
 
 	selection_history_back
@@ -447,6 +447,7 @@ feature -- Modification
 		end
 
 	update_archetype_id(ara: ARCH_REP_ARCHETYPE)
+			-- move `ara' in tree according to its current and old ids
 		require
 			ara_attached: ara /= Void
 			old_id_valid: ara.old_id /= Void and then archetype_index.has (ara.old_id.as_string) and then archetype_index.item (ara.old_id.as_string) = ara
@@ -460,6 +461,10 @@ feature -- Modification
 			ara.parent.remove_child(ara)
 			ontology_index.item (ara.ontological_parent_name).put_child (ara)
 			ara.clear_old_ontological_parent_name
+		ensure
+			Node_added_to_archetype_index: archetype_index.has (ara.id.as_string)
+			Node_added_to_ontology_index: ontology_index.has (ara.id.as_string)
+			Node_parent_set: ara.parent.ontological_name.is_equal (ara.ontological_parent_name)
 		end
 
 feature -- Traversal

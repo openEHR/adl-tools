@@ -782,6 +782,9 @@ feature -- Archetype commands
 	template_view_tree_item_select
 			-- Display details of `template_file_tree' when the user selects it.
 		do
+			if attached {EV_TREE_NODE} template_file_tree.selected_item as node and then attached {ARCH_REP_ARCHETYPE} node.data as ara then
+				archetype_view_tree_control.ensure_item_visible(ara.ontological_name)
+			end
 			template_view_tree_control.display_details_of_selected_item_after_delay
 		end
 
@@ -957,7 +960,7 @@ feature -- Controls
 
 	archetype_view_tree_control: GUI_VIEW_ARCHETYPE_TREE_CONTROL
 		once
-			create Result.make (Current, archetype_file_tree, archetype_explorer_label, <<{ARTEFACT_TYPE}.archetype, {ARTEFACT_TYPE}.template_component>>)
+			create Result.make (Current, archetype_file_tree, archetype_explorer_label, <<{ARTEFACT_TYPE}.archetype, {ARTEFACT_TYPE}.template_component, {ARTEFACT_TYPE}.template>>)
 		end
 
 	template_view_tree_control: GUI_VIEW_TEMPLATE_TREE_CONTROL
