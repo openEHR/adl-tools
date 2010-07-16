@@ -75,7 +75,7 @@ feature {NONE} -- Implementation
 			s: STRING
 		do
 			s := repository_dialog_reference_path_cb.text.as_string_8
-			if not s.is_equal (reference_repository_path) then
+--			if not s.is_equal (reference_repository_path) then
 				if directory_exists (s) then
 					set_reference_repository_path (s)
 					has_changed_paths := True
@@ -84,12 +84,13 @@ feature {NONE} -- Implementation
 					error_dialog.show_modal_to_window (Current)
 					paths_invalid := True
 				end
-			end
+--			end
 			set_reference_repository_paths (repository_dialog_reference_path_cb.strings_8)
 
 			s := repository_dialog_work_path_text.text.as_string_8
-			if not s.is_equal (work_repository_path) then
-				if s.is_empty or else source_repositories.valid_working_repository_path (s) then
+--			if not s.is_equal (work_repository_path) then
+				if s.is_empty or else not (s.starts_with (reference_repository_path) or reference_repository_path.starts_with (s))
+				and then source_repositories.valid_working_repository_path (s) then
 					set_work_repository_path (s)
 					has_changed_paths := True
 				else
@@ -97,7 +98,7 @@ feature {NONE} -- Implementation
 					error_dialog.show_modal_to_window (Current)
 					paths_invalid := True
 				end
-			end
+--			end
 
 			if not paths_invalid then
 				hide

@@ -79,7 +79,6 @@ feature {NONE} -- Initialization
 			-- Any custom user initialization that could not be performed in `initialize',
 			-- (due to regeneration of implementation class) can be added here.
 		do
-			adl_application.initialise
 			initialise_accelerators
 		end
 
@@ -173,35 +172,6 @@ feature -- Status setting
 	show
 			-- Do a few adjustments and load the repository before displaying the window.
 		do
-			if not found_valid_rm_schemas then
-				create strx.make_empty
-				rm_schemas_load_list.do_all(agent (s: STRING) do strx.append(s + ", ") end)
-				strx.remove_tail (2) -- remove final ", "
-				append_status_area(create_message_line ("model_access_e0", <<strx, default_rm_schema_directory>>))
-				append_status_area (billboard.content)
-			else
-				-- post any info from actions called in `user_initialization'			
-				append_status_area (billboard.content)
-				billboard.clear
-
-				if reference_repository_path.is_empty then
-					set_reference_repository_path (application_startup_directory)
-					set_repository
-				else
-					if directory_exists(reference_repository_path) then
-						source_repositories.set_reference_repository (reference_repository_path)
-						if source_repositories.valid_working_repository_path (work_repository_path) then
-							source_repositories.set_work_repository (work_repository_path)
-							populate_directory
-						else
-							append_status_area(create_message_line ("work_repo_not_found", <<work_repository_path>>))
-						end
-					else
-						append_status_area(create_message_line ("ref_repo_not_found", <<reference_repository_path>>))
-					end
-				end
-			end
-
 			archetype_compiler.set_visual_update_action (agent build_gui_update)
 			initialise_overall_appearance
 			path_map_control.initialise_controls
@@ -226,6 +196,16 @@ feature -- Status setting
 				display_news
 				update_status_file
 			end
+
+			if reference_repository_path.is_empty then
+				set_reference_repository_path (application_startup_directory)
+				set_repository
+			else
+				populate_directory
+			end
+
+			append_status_area (billboard.content)
+			billboard.clear
 		end
 
 feature -- File events
@@ -1402,8 +1382,6 @@ feature {NONE} -- Standard Windows behaviour that EiffelVision ought to be manag
 			focused: Result /= Void implies Result.has_focus
 			in_this_window: Result /= Void implies has_recursive (Result)
 		end
-
-	strx: STRING
 
 end
 

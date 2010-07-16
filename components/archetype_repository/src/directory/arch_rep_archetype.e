@@ -509,7 +509,7 @@ feature -- Commands
 	compile
 			-- perform as many steps of the compilation process as possible; may be called repeatedly by ARCHETYPE_COMPILER as it
 			-- does initial parsing here, finds dependencies, compiles them, comes back here, etc etc
-			-- For the moment just a simplistic implementation; we might do a proper state machine one later
+			-- For the moment just a simplistic implementation; we might do a proper generic state machine one later
 		require
 			not is_in_terminal_compilation_state
 		local

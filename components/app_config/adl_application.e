@@ -20,6 +20,8 @@ inherit
 
 	SHARED_REFERENCE_MODEL_ACCESS
 
+	SHARED_SOURCE_REPOSITORIES
+
 feature -- Initialisation
 
 	initialise
@@ -43,6 +45,26 @@ feature -- Initialisation
 			end
 
 			load_rm_schemas
+
+			if not found_valid_rm_schemas then
+				create strx.make_empty
+				rm_schemas_load_list.do_all(agent (s: STRING) do strx.append(s + ", ") end)
+				strx.remove_tail (2) -- remove final ", "
+				post_warning (Current, "initialise", "model_access_e0", <<strx, default_rm_schema_directory>>)
+			else
+				if not reference_repository_path.is_empty then
+					if directory_exists(reference_repository_path) then
+						source_repositories.set_reference_repository (reference_repository_path)
+						if source_repositories.valid_working_repository_path (work_repository_path) then
+							source_repositories.set_work_repository (work_repository_path)
+						else
+							post_error (Current, "initialise", "work_repo_not_found", <<work_repository_path>>)
+						end
+					else
+						post_error (Current, "initialise", "ref_repo_not_found", <<reference_repository_path>>)
+					end
+				end
+			end
 		end
 
 feature -- Message database
@@ -333,6 +355,8 @@ feature -- Message database
 		>
 		>
 		]"
+
+	strx: STRING
 
 end
 

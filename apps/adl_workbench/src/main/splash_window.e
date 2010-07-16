@@ -39,7 +39,7 @@ feature {NONE} -- Initialization
 			make_with_shadow
 
 			create screen
-			set_position ((screen.width - width) // 2, (screen.height - height) // 2)
+			set_position (app_x_position + (screen.width - width) // 2, app_y_position + (screen.height - height) // 2)
 
 			create timer.make_with_interval (5000)
 			timer.actions.extend (agent close)

@@ -17,6 +17,11 @@ class
 inherit
 	EV_APPLICATION
 
+	SHARED_ADL_APPLICATION
+		undefine
+			copy, default_create
+		end
+
 	SHARED_APP_UI_RESOURCES
 		export
 			{NONE} all
@@ -33,6 +38,7 @@ feature {NONE} -- Initialization
 			-- Create and launch the application, showing a splash window followed by the main window.
 		do
 			default_create
+			adl_application.initialise
 			show_splash_window
 
 			if not is_destroyed then
