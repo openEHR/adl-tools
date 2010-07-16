@@ -18,25 +18,34 @@ class
 
 inherit
 	OPENEHR_TEST_SET
-		redefine
-			on_prepare
+		undefine
+			default_create
 		end
 
 	DIFFERENTIAL_ARCHETYPE
+		redefine
+			default_create
+		end
 
-feature {NONE} -- Targets
+feature {NONE} -- Initialisation
 
-	target, parent: DIFFERENTIAL_ARCHETYPE_ONTOLOGY
+	default_create
+			-- Satisfy the invariant of `DIFFERENTIAL_ARCHETYPE'.
+		do
+			make_minimal (create {ARTEFACT_TYPE}, create {ARCHETYPE_ID}, "en", 0)
+		end
 
-feature {NONE} -- Events
-
-	on_prepare
-			-- <Precursor>
+	create_parented_target
+			-- Create `target' with `parent'.
 		do
 			create target.make_empty ("en", 1)
 			create parent.make_empty ("en", 0)
 			target.set_parent_ontology (parent)
 		end
+
+feature {NONE} -- Targets
+
+	target, parent: DIFFERENTIAL_ARCHETYPE_ONTOLOGY
 
 feature -- Test routines
 
@@ -69,6 +78,8 @@ feature -- Test routines
 			code: STRING
 			i: INTEGER
 		do
+			create_parented_target
+
 			from i := 1 until i = 12 loop
 				code := target.new_non_specialised_term_code
 				assert_equal ("at0." + i.out, code)
@@ -85,6 +96,7 @@ feature -- Test routines
 			code: STRING
 			i: INTEGER
 		do
+			create_parented_target
 			parent.add_term_definition ("en", create {ARCHETYPE_TERM}.make ("at0001"))
 
 			from i := 1 until i = 12 loop
@@ -103,6 +115,8 @@ feature -- Test routines
 			code: STRING
 			i: INTEGER
 		do
+			create_parented_target
+
 			from i := 1 until i = 12 loop
 				code := target.new_non_specialised_constraint_code
 				assert_equal ("ac0." + i.out, code)
@@ -119,6 +133,7 @@ feature -- Test routines
 			code: STRING
 			i: INTEGER
 		do
+			create_parented_target
 			parent.add_constraint_definition ("en", create {ARCHETYPE_TERM}.make ("ac0001"))
 
 			from i := 1 until i = 12 loop

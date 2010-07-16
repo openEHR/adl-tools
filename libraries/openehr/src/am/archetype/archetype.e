@@ -593,7 +593,6 @@ feature {NONE} -- Implementation
 invariant
 	Artefact_type_set: artefact_type /= Void
 	Concept_valid: concept /= Void and then concept.is_equal (ontology.concept_code)
-	Description_exists: description /= Void
 	Invariants_valid: invariants /= Void implies not invariants.is_empty
 	RM_type_validity: definition.rm_type_name.as_lower.is_equal (archetype_id.rm_entity.as_lower)
 	Specialisation_validity: is_specialised implies (specialisation_depth > 0 and parent_archetype_id /= Void)

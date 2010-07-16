@@ -195,9 +195,7 @@ feature -- Serialisation
 				orig_lang_translations.set_translations(translations)
 			end
 			orig_lang_translations.synchronise_to_tree
-			if description /= Void then
-				description.synchronise_to_tree
-			end
+			description.synchronise_to_tree
 		end
 
 feature {ADL_ENGINE} -- Implementation
