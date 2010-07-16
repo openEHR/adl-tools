@@ -96,7 +96,6 @@ feature -- Test routines
 			supps: ARRAYED_SET [STRING]
 		do
 			supps := rm_schema.class_definition ("COMPOSITION").immediate_suppliers
-			supps.compare_objects
 			assert ("COMPOSITION immediate suppliers includes CODE_PHRASE", supps.has ("CODE_PHRASE"))
 			assert ("COMPOSITION immediate suppliers includes DV_CODED_TEXT", supps.has ("DV_CODED_TEXT"))
 			assert ("COMPOSITION immediate suppliers includes PARTY_PROXY", supps.has ("PARTY_PROXY"))
@@ -112,7 +111,6 @@ feature -- Test routines
 			supps: ARRAYED_SET [STRING]
 		do
 			supps := rm_schema.class_definition ("COMPOSITION").all_suppliers
-			supps.compare_objects
 			assert ("COMPOSITION immediate suppliers includes CODE_PHRASE", supps.has ("CODE_PHRASE"))
 			assert ("COMPOSITION immediate suppliers includes DV_CODED_TEXT", supps.has ("DV_CODED_TEXT"))
 			assert ("COMPOSITION immediate suppliers includes PARTY_PROXY", supps.has ("PARTY_PROXY"))
