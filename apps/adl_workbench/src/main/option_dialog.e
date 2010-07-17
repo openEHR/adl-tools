@@ -44,7 +44,7 @@ feature {NONE} -- Initialization
 			cancel_button.select_actions.extend (agent hide)
 			set_default_cancel_button (cancel_button)
 			set_default_push_button (ok_button)
-			show_actions.extend (agent editor_command_text.set_focus)
+			show_actions.extend (agent rm_schemas_checkable_list.set_focus)
 			editor_command_text.disable_word_wrapping
 			export_html_text.focus_in_actions.extend (agent on_select_all (export_html_text))
 			populate_controls
