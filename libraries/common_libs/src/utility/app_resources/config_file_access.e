@@ -34,6 +34,8 @@ feature -- Definitions
 
 	default_category: STRING = "default"
 
+	resource_list_item_delimiter: CHARACTER = ','
+
 feature -- Initialisation
 
 	make (a_file_name: STRING)
@@ -49,72 +51,86 @@ feature -- Access
 
 	requested_resources: HASH_TABLE[HASH_TABLE[STRING,STRING],STRING]
 
-	resource_value (category, resource_name: STRING): STRING
+	resource_value (category, resource_name: STRING): attached STRING
 			-- get the value for resource_name, in 'category'
 		require
-                Valid_category: category /= Void and then not category.is_empty
-                Valid_resource_name: resource_name /= Void and then not resource_name.is_empty
+            Valid_category: category /= Void and then not category.is_empty
+            Valid_resource_name: resource_name /= Void and then not resource_name.is_empty
 		local
-                resource_list: HASH_TABLE[STRING,STRING]
+            resource_list: HASH_TABLE[STRING,STRING]
 		do
-                create Result.make(0)
+            create Result.make(0)
 
-                -- find the category
-                resource_list := resources.item(category)
-                if resource_list = Void then
-               		resource_list := resources.item(default_category)
-               	end
-                if resource_list /= Void then
-	                if resource_list.has(resource_name) then
-						Result.copy(resource_list.item(resource_name))
-        	        end
-				end
-		ensure
-                Result_not_void: Result /= Void
+            -- find the category
+            resource_list := resources.item(category)
+            if resource_list = Void then
+           		resource_list := resources.item(default_category)
+           	end
+            if resource_list /= Void then
+     			if resource_list.has(resource_name) then
+					Result.copy(resource_list.item(resource_name))
+        	    end
+			end
 		end
 
-	resource_value_list (category, resource_name: STRING): ARRAYED_LIST [STRING]
+	resource_value_list (category, resource_name: STRING): attached ARRAYED_LIST [STRING]
 			-- List of items specified in file setting
 			-- of the form of a comma-separated list.
 		require
 			Valid_category: category /= Void and then not category.is_empty
 			Valid_resource_name: resource_name /= Void and then not resource_name.is_empty
-		local
-            token_str: TOKEN_STRING
-            str:STRING
 		do
-			create Result.make(0)
-			str := resource_value(category,resource_name)
-
-			if str /= Void and then not str.is_empty then
-				create token_str.make(resource_value(category, resource_name))
-				from token_str.token_start until token_str.token_off loop
-					str := token_str.token_item
-					Result.extend(str)
-					token_str.token_forth
-				end
-			end
+			create Result.make (0)
+			Result.append(resource_value(category, resource_name).split (resource_list_item_delimiter))
 		end
 
-	resource_category_values (category: STRING): HASH_TABLE [STRING, STRING]
+	resource_category_values (category: STRING): attached HASH_TABLE [STRING, STRING]
 			-- get all name/value pairs in 'category'
 		require
                 Valid_category: category /= Void and then not category.is_empty
 		do
-			Result := resources.item(category)
-			if Result = Void then
+			if resources.has(category) then
+				Result := resources.item(category)
+			else
 				create Result.make(0)
 			end
-		ensure
-			Result_not_void: Result /= Void
+		end
+
+	resource_category_lists (category: STRING): attached HASH_TABLE [ARRAYED_LIST [STRING], STRING]
+			-- get all name/value list pairs in 'category', in a hash, keyed by the resource names
+			--
+			-- [category]
+			-- resource_1=aaa,bbb,ccc
+			-- resource_2=ddd,eee,fff
+			-- ..
+			-- resource_n=ggg,hhh,iii
+			--
+		require
+            Valid_category: category /= Void and then not category.is_empty
+        local
+        	res_list: HASH_TABLE [STRING, STRING]
+        	sub_item: STRING
+        	al: ARRAYED_LIST [STRING]
+		do
+			create Result.make(0)
+			if resources.has(category) then
+				res_list := resources.item(category)
+				from res_list.start until res_list.off loop
+					sub_item := res_list.item_for_iteration
+					create al.make (0)
+					al.append(sub_item.split (resource_list_item_delimiter))
+					Result.put(al, res_list.key_for_iteration)
+					res_list.forth
+				end
+			end
 		end
 
 feature -- Modification
 
-	set_resource_value (category_name: STRING; resource_name: STRING; value:STRING)
+	set_resource_value (category_name, resource_name, value: attached STRING)
            require
-                Valid_category: category_name /= Void and then not category_name.is_empty
-                Valid_resource_name: resource_name /= Void and then not resource_name.is_empty
+                Valid_category: not category_name.is_empty
+                Valid_resource_name: not resource_name.is_empty
            local
 				resource_list: HASH_TABLE[STRING,STRING]
            do
@@ -128,30 +144,59 @@ feature -- Modification
                 end
            end
 
-	set_resource_value_list (category_name: STRING; resource_name: STRING; values: LIST [STRING])
-           require
-                Valid_category: category_name /= Void and then not category_name.is_empty
-                Valid_resource_name: resource_name /= Void and then not resource_name.is_empty
-                Values_valid: values /= Void
-           local
+	set_resource_value_list (category_name, resource_name: attached STRING; values: attached LIST [STRING])
+			require
+                Valid_category: not category_name.is_empty
+                Valid_resource_name: not resource_name.is_empty
+			local
 				resource_list: HASH_TABLE[STRING,STRING]
-				tstr: TOKEN_STRING
-           do
-           		create tstr.make("")
+				s: STRING
+			do
+				create s.make(0)
 	           	from values.start until values.off loop
-	           		tstr.append_token(values.item)
+	           		if not values.isfirst then
+	           			s.append_character (resource_list_item_delimiter)
+	           		end
+	           		s.append(values.item)
 	           		values.forth
 	           	end
 
                 if resources.has(category_name) then
 					resource_list := resources.item(category_name)
-					resource_list.force(tstr.out, resource_name)
+					resource_list.force(s, resource_name)
                 else
 					create resource_list.make(0)
-					resource_list.put(tstr.out, resource_name)
+					resource_list.put(s, resource_name)
 					resources.put(resource_list, category_name)
                 end
            end
+
+	set_resource_category_lists (category: attached STRING; res_lists: attached HASH_TABLE [ARRAYED_LIST [STRING], STRING])
+			-- set all name/value list pairs in 'category', in a hash, keyed by the resource names
+			-- completely replaces existing set of resources for this category
+		require
+            Valid_category: category /= Void and then not category.is_empty
+        local
+        	res_hash: HASH_TABLE [STRING, STRING]
+        	s: STRING
+        	values: ARRAYED_LIST [STRING]
+		do
+			create res_hash.make(0)
+			from res_lists.start until res_lists.off loop
+				create s.make(0)
+				values := res_lists.item_for_iteration
+	           	from values.start until values.off loop
+	           		if not values.isfirst then
+	           			s.append_character (resource_list_item_delimiter)
+	           		end
+	           		s.append(values.item)
+	           		values.forth
+	           	end
+				res_hash.put (s, res_lists.key_for_iteration)
+				res_lists.forth
+			end
+			resources.force(res_hash, category)
+		end
 
 feature -- Element Removal
 

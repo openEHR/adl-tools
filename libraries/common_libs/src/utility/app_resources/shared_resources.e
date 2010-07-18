@@ -47,7 +47,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	resource_value (a_category, a_resource_name: STRING): STRING
+	resource_value (a_category, a_resource_name: STRING): attached STRING
 			-- The value for `a_resource_name', in `a_category', preferably from a command-line option.
 		require
 			Valid_category: a_category /= Void and then not a_category.is_empty
@@ -57,8 +57,6 @@ feature -- Access
 			if Result = Void then
 				Result := resource_config_file.resource_value(a_category, a_resource_name)
 			end
-		ensure
-			Result_not_void: Result /= Void
 		end
 
 	resource_value_list (a_category, a_resource_name: STRING): ARRAYED_LIST [STRING]
@@ -71,15 +69,28 @@ feature -- Access
 			Result := resource_config_file.resource_value_list(a_category, a_resource_name)
 		end
 
-	resource_category_values (a_category: STRING): HASH_TABLE [STRING, STRING]
+	resource_category_values (a_category: attached STRING): attached HASH_TABLE [STRING, STRING]
 			-- get all name/value pairs in 'a_category'
 		require
-			Valid_category: a_category /= Void and then not a_category.is_empty
+			Valid_category: not a_category.is_empty
 		do
 			Result := resource_config_file.resource_category_values(a_category)
-		ensure
-			Result_not_void: Result /= Void
 		end
+
+	resource_category_lists (a_category: attached STRING): attached HASH_TABLE [ARRAYED_LIST [STRING], STRING]
+			-- get all name/value list pairs in 'category', in a hash, keyed by the resource names
+			--
+			-- [category]
+			-- resource_1=aaa,bbb,ccc
+			-- resource_2=ddd,eee,fff
+			-- ..
+			-- resource_n=ggg,hhh,iii
+			--
+		require
+            Valid_category: not a_category.is_empty
+        do
+			Result := resource_config_file.resource_category_lists(a_category)
+        end
 
 	status_reporting_level: INTEGER
 			-- Level of error reporting required; see BILLBOARD_MESSAGE_TYPES for levels
@@ -333,23 +344,31 @@ feature -- Element Change
 			end
 		end
 
-	set_resource_value (a_category, a_resource_name, a_value: STRING)
+	set_resource_value (a_category, a_resource_name, a_value: attached STRING)
 		require
-			Valid_category: a_category /= Void and then not a_category.is_empty
-			Valid_resource_name: a_resource_name /= Void and then not a_resource_name.is_empty
-			Valid_value: a_value /= Void and then not a_value.is_empty
+			Valid_category: not a_category.is_empty
+			Valid_resource_name: not a_resource_name.is_empty
+			Valid_value: not a_value.is_empty
 		do
 			resource_config_file.set_resource_value(a_category, a_resource_name, a_value)
 		end
 
-	set_resource_value_list(a_category, a_resource_name: STRING; a_value: LIST[STRING])
+	set_resource_value_list(a_category, a_resource_name: attached STRING; a_value: attached LIST[STRING])
 		require
-			Valid_category: a_category /= Void and then not a_category.is_empty
-			Valid_resource_name: a_resource_name /= Void and then not a_resource_name.is_empty
-			Valid_value: a_value /= Void
+			Valid_category: not a_category.is_empty
+			Valid_resource_name: not a_resource_name.is_empty
 		do
 			resource_config_file.set_resource_value_list(a_category, a_resource_name, a_value)
 		end
+
+	set_resource_category_lists (a_category: attached STRING; res_lists: attached HASH_TABLE [ARRAYED_LIST [STRING], STRING])
+			-- set all name/value list pairs in 'category', in a hash, keyed by the resource names
+			-- replaces all resources in this category
+		require
+            Valid_category: not a_category.is_empty
+        do
+			resource_config_file.set_resource_category_lists(a_category, res_lists)
+        end
 
 	set_status_reporting_level (v: INTEGER)
 			-- Set `status_reporting_level'.
@@ -359,11 +378,11 @@ feature -- Element Change
 
 feature -- Element Removal
 
-	remove_resource (a_category, a_resource_name: STRING)
+	remove_resource (a_category, a_resource_name: attached STRING)
 			-- remove the resource a_resource_name
 		require
-			Valid_category: a_category /= Void and then not a_category.is_empty
-			Valid_resource_name: a_resource_name /= Void and then not a_resource_name.is_empty
+			Valid_category: not a_category.is_empty
+			Valid_resource_name: not a_resource_name.is_empty
 		do
 			resource_config_file.remove_resource(a_category, a_resource_name)
 		end
@@ -418,22 +437,18 @@ feature -- Conversion
 
 feature -- Output
 
-	resources_as_list: ARRAYED_LIST[STRING]
+	resources_as_list: attached ARRAYED_LIST[STRING]
 			-- list of resources configured for application, in format:
 			--         category        res_name                res_val
 		do
 			Result := res_to_list(resources)
-		ensure
-			Result_exists: Result /= Void
 		end
 
-	resources_requested_as_list: ARRAYED_LIST[STRING]
+	resources_requested_as_list: attached ARRAYED_LIST[STRING]
 			-- list of resources requested by application, in format:
 			--         category        res_name                res_val
 		do
 			Result := res_to_list(requested_resources)
-		ensure
-			Result_exists: Result /= Void
 		end
 
 feature -- Persistence
@@ -466,22 +481,14 @@ feature {NONE} -- Implementation
 		do
 			create Result.make(0)
 
-			from
-				res.start
-			until
-				res.off
-			loop
+			from res.start until res.off loop
 				resource_list := res.item_for_iteration.twin
 				str := res.key_for_iteration.twin
 				str.prepend_string("CATEGORY: -------- ")
 				str.append(" --------")
 				Result.extend(str)
 
-				from
-					resource_list.start
-				until
-					resource_list.off
-				loop
+				from resource_list.start until resource_list.off loop
 					str := "    "
 					str.append(resource_list.key_for_iteration)
 					str.append(" = ")

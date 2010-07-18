@@ -198,7 +198,6 @@ feature -- Status setting
 			end
 
 			if reference_repository_path.is_empty then
-				set_reference_repository_path (application_startup_directory)
 				set_repository
 			else
 				populate_directory
@@ -504,7 +503,7 @@ feature {NONE} -- Repository events
 			create dialog
 			dialog.show_modal_to_window (Current)
 
-			if dialog.has_changed_paths then
+			if dialog.has_changed_profile then
 				source_repositories.set_reference_repository (reference_repository_path)
 				if not work_repository_path.is_empty then
 					source_repositories.set_work_repository (work_repository_path)
@@ -1031,7 +1030,7 @@ feature {NONE} -- Implementation
 
 					select_node_in_archetype_tree_view
 
-					append_status_area ("Populating directory ... ")
+					append_status_area (create_message_line ("populating_directory", <<current_repository_profile>>))
 					arch_dir.populate
 					append_status_area ("complete%N")
 

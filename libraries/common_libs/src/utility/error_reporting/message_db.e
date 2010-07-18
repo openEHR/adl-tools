@@ -83,6 +83,13 @@ feature -- Access
 			Result.append_character ('%N')
 		end
 
+feature -- Status Report
+
+	database_loaded: BOOLEAN
+		do
+			Result := not templates.is_empty
+		end
+
 invariant
 	templates /= Void
 

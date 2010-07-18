@@ -10,6 +10,13 @@ class
 inherit
 	REPOSITORY_DIALOG_IMP
 
+	GUI_CONTROLLER_TOOLS
+		export
+			{NONE} all
+		undefine
+			copy, default_create
+		end
+
 	EV_STOCK_PIXMAPS
 		rename
 			implementation as pixmaps_implementation
@@ -25,6 +32,10 @@ inherit
 		undefine
 			copy, default_create
 		end
+
+feature -- Definition
+
+	new_profile_dummy: STRING is "new_profile"
 
 feature {NONE} -- Initialization
 
@@ -47,7 +58,7 @@ feature {NONE} -- Initialization
 
 feature -- Status
 
-	has_changed_paths: BOOLEAN
+	has_changed_profile: BOOLEAN
 			-- Has the user OK'ed valid changes to one or more of the paths?
 
 feature {NONE} -- Implementation
@@ -55,16 +66,27 @@ feature {NONE} -- Implementation
 	populate_controls
 			-- Initialise the dialog's widgets from shared settings.
 		local
-			ref_rep_paths: ARRAYED_LIST [STRING]
+			ref_profiles: attached HASH_TABLE [ARRAYED_LIST[STRING], STRING]
 		do
-			ref_rep_paths := reference_repository_paths
-			if ref_rep_paths.is_empty or not ref_rep_paths.has (reference_repository_path) then
-				ref_rep_paths.put_front (reference_repository_path)
-				set_reference_repository_paths (ref_rep_paths)
+			ref_profiles := repository_profiles
+			from ref_profiles.start until ref_profiles.off loop
+				populate_ev_combo_from_hash_keys (profile_combo_box, ref_profiles)
+				if not current_repository_profile.is_empty then
+					profile_combo_box.do_all (
+						agent (li: EV_LIST_ITEM)
+							do
+								if li.text.same_string (current_repository_profile) then
+									li.enable_select
+								end
+							end
+					)
+					repository_dialog_reference_path_text.set_text (ref_profiles.item (current_repository_profile).i_th(1))
+					if ref_profiles.item (current_repository_profile).count > 1 then
+						repository_dialog_work_path_text.set_text (ref_profiles.item (current_repository_profile).i_th(2))
+					end
+				end
+				ref_profiles.forth
 			end
-			repository_dialog_reference_path_cb.set_strings (ref_rep_paths)
-			repository_dialog_reference_path_cb.i_th (ref_rep_paths.index_of (reference_repository_path, 1)).enable_select
-			repository_dialog_work_path_text.set_text (work_repository_path)
 		end
 
 	repository_dialog_ok
@@ -72,58 +94,151 @@ feature {NONE} -- Implementation
 		local
 			error_dialog: EV_INFORMATION_DIALOG
 			paths_invalid: BOOLEAN
-			s: STRING
+			ref_dir, work_dir, prof: STRING
+			prof_paths: ARRAYED_LIST[STRING]
+			rep_profs: attached HASH_TABLE [ARRAYED_LIST[STRING], STRING]
+			has_changed_profile_paths: BOOLEAN
 		do
-			s := repository_dialog_reference_path_cb.text.as_string_8
---			if not s.is_equal (reference_repository_path) then
-				if directory_exists (s) then
-					set_reference_repository_path (s)
-					has_changed_paths := True
-				else
-					create error_dialog.make_with_text (create_message_line ("ref_repo_not_found", <<s>>))
-					error_dialog.show_modal_to_window (Current)
-					paths_invalid := True
-				end
---			end
-			set_reference_repository_paths (repository_dialog_reference_path_cb.strings_8)
+			prof := profile_combo_box.text.as_string_8
+			has_changed_profile := not prof.same_string (current_repository_profile)
+			set_current_repository_profile(prof)
 
-			s := repository_dialog_work_path_text.text.as_string_8
---			if not s.is_equal (work_repository_path) then
-				if s.is_empty or else not (s.starts_with (reference_repository_path) or reference_repository_path.starts_with (s))
-				and then source_repositories.valid_working_repository_path (s) then
-					set_work_repository_path (s)
-					has_changed_paths := True
-				else
-					create error_dialog.make_with_text (create_message_line ("work_repo_not_invalid", <<s>>))
-					error_dialog.show_modal_to_window (Current)
-					paths_invalid := True
-				end
---			end
+			create prof_paths.make (0)
+			ref_dir := repository_dialog_reference_path_text.text.as_string_8
+			if directory_exists (ref_dir) then
+				prof_paths.extend (ref_dir)
+				has_changed_profile_paths := not ref_dir.same_string(reference_repository_path)
+			else
+				create error_dialog.make_with_text (create_message_line ("ref_repo_not_found", <<ref_dir>>))
+				error_dialog.show_modal_to_window (Current)
+				paths_invalid := True
+			end
+
+			work_dir := repository_dialog_work_path_text.text.as_string_8
+			if work_dir.is_empty or else not (work_dir.starts_with (ref_dir) or ref_dir.starts_with (work_dir))
+			and then source_repositories.valid_working_repository_path (work_dir) then
+				prof_paths.extend (work_dir)
+				has_changed_profile_paths := has_changed_profile_paths or not work_dir.same_string(work_repository_path)
+			else
+				create error_dialog.make_with_text (create_message_line ("work_repo_not_invalid", <<work_dir>>))
+				error_dialog.show_modal_to_window (Current)
+				paths_invalid := True
+			end
 
 			if not paths_invalid then
+				if has_changed_profile_paths then
+					rep_profs := repository_profiles
+					rep_profs.force (prof_paths, prof)
+					set_repository_profiles (rep_profs)
+				end
 				hide
+			end
+		end
+
+	select_profile
+			-- Called by `select_actions' of `profile_combo_box'.
+		local
+			ref_profiles: attached HASH_TABLE [ARRAYED_LIST[STRING], STRING]
+		do
+			ref_profiles := repository_profiles
+			if not profile_combo_box.text.is_empty then
+				if not profile_combo_box.text.as_string_8.same_string (current_repository_profile) then
+					repository_dialog_reference_path_text.set_text (ref_profiles.item (profile_combo_box.text.as_string_8).i_th(1))
+					if ref_profiles.item (profile_combo_box.text.as_string_8).count > 1 then
+						repository_dialog_work_path_text.set_text (ref_profiles.item (profile_combo_box.text.as_string_8).i_th(2))
+					end
+					has_changed_profile := True
+				end
+			end
+		end
+
+	add_new_profile
+			-- Called by `select_actions' of `profile_add_button'.
+		local
+			profs: ARRAYED_LIST[STRING]
+		do
+			create profs.make (0)
+			profs.append (profile_combo_box.strings_8)
+			profs.extend (new_profile_dummy)
+			profile_combo_box.set_strings (profs)
+			profile_combo_box.last.enable_select
+			profile_combo_box.set_focus
+			repository_dialog_reference_path_text.set_text ("")
+			repository_dialog_work_path_text.set_text ("")
+		end
+
+	remove_current_profile
+			-- Called by `select_actions' of `profile_remove_button'.
+		local
+			question_dialog: EV_QUESTION_DIALOG
+			error_dialog: EV_INFORMATION_DIALOG
+			profs: ARRAYED_LIST[STRING]
+			prof: STRING
+			ref_profiles: attached HASH_TABLE [ARRAYED_LIST[STRING], STRING]
+		do
+			prof := profile_combo_box.text.as_string_8
+			if not prof.is_empty then
+				create question_dialog.make_with_text (create_message_line ("remove_profile_question", <<prof>>))
+			--	question_dialog.set_title ("Save as " + format.as_upper)
+				question_dialog.set_buttons (<<"Yes", "No">>)
+				question_dialog.show_modal_to_window (Current)
+				if question_dialog.selected_button.same_string ("Yes") then
+					ref_profiles := repository_profiles
+					create profs.make (0)
+					profs.compare_objects
+					profs.append (profile_combo_box.strings_8)
+					profs.prune (prof)
+					profile_combo_box.set_strings (profs)
+					profile_combo_box.last.enable_select
+					repository_dialog_reference_path_text.set_text (ref_profiles.item (current_repository_profile).i_th(1))
+					if ref_profiles.item (current_repository_profile).count > 1 then
+						repository_dialog_work_path_text.set_text (ref_profiles.item (current_repository_profile).i_th(2))
+					end
+					repository_profiles.remove (prof)
+					set_current_repository_profile (profs.last)
+				end
+			else
+				create error_dialog.make_with_text (create_message_line ("no_profile_to_remove", Void))
+				error_dialog.show_modal_to_window (Current)
 			end
 		end
 
 	get_reference_repository_path
 			-- Display a dialog for the user to select a new Reference Repository.
 		local
-			rep_path: STRING
+			def_path: STRING
+			error_dialog: EV_INFORMATION_DIALOG
 		do
-			rep_path := get_directory (reference_repository_path, Current)
-			if not reference_repository_paths.has (rep_path) then
-				repository_dialog_reference_path_cb.put_front (create {EV_LIST_ITEM}.make_with_text (rep_path))
-				repository_dialog_reference_path_cb.first.enable_select
+			if not profile_combo_box.text.as_string_8.is_empty then
+				if reference_repository_path.is_empty then
+					def_path := application_startup_directory
+				else
+					def_path := reference_repository_path
+				end
+				repository_dialog_reference_path_text.set_text (get_directory (def_path, Current))
+			else
+				create error_dialog.make_with_text (create_message_line ("profile_not_yet_defined", Void))
+				error_dialog.show_modal_to_window (Current)
 			end
 		end
 
 	get_work_repository_path
 			-- Display a dialog for the user select the Work Repository.
+		local
+			def_path: STRING
+			error_dialog: EV_INFORMATION_DIALOG
 		do
-			if work_repository_path.is_empty then
-				set_work_repository_path (reference_repository_path.twin)
+			if not profile_combo_box.text.as_string_8.is_empty then
+				if work_repository_path.is_empty then
+					def_path := repository_dialog_reference_path_text.text
+				else
+					def_path := work_repository_path
+				end
+				repository_dialog_work_path_text.set_text (get_directory (def_path, Current))
+			else
+				create error_dialog.make_with_text (create_message_line ("profile_not_yet_defined", Void))
+				error_dialog.show_modal_to_window (Current)
 			end
-			repository_dialog_work_path_text.set_text (get_directory (work_repository_path, Current))
 		end
 
 	on_select_all (text: EV_TEXT_FIELD)

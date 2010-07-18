@@ -104,7 +104,7 @@ feature {NONE} -- Implementation
 			old_show_entire_ontology := show_entire_ontology
 
 			-- compiler settings
-			populate_ev_combo_from_hash_keys (parser_error_reporting_level_combo_box, message_type_ids)
+			populate_ev_combo_from_ds_hash_keys (parser_error_reporting_level_combo_box, message_type_ids)
 			parser_error_reporting_level_combo_box.do_all (
 				agent (li: EV_LIST_ITEM)
 					do

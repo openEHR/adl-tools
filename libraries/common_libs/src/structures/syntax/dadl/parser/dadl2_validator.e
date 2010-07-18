@@ -2,7 +2,7 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Validating parser for Archetype Description Language (ADL)"
 	keywords:    "ADL, dADL"
-
+	
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
 	copyright:   "Copyright (c) 2004-2009 Ocean Informatics Pty Ltd"
@@ -34,7 +34,7 @@ inherit
 
 	DADL_SCANNER
 		rename
-			make as make_scanner,
+			make as make_scanner, 
 			reset as reset_scanner
 		end
 
@@ -47,7 +47,7 @@ create
 
 feature {NONE} -- Implementation
 
-	yy_build_parser_tables
+	yy_build_parser_tables is
 			-- Build parser tables.
 		do
 			yytranslate := yytranslate_template
@@ -62,12 +62,12 @@ feature {NONE} -- Implementation
 			yycheck := yycheck_template
 		end
 
-	yy_create_value_stacks
+	yy_create_value_stacks is
 			-- Create value stacks.
 		do
 		end
 
-	yy_init_value_stacks
+	yy_init_value_stacks is
 			-- Initialize value stacks.
 		do
 			yyvsp1 := -1
@@ -112,7 +112,7 @@ feature {NONE} -- Implementation
 			yyvsp40 := -1
 		end
 
-	yy_clear_value_stacks
+	yy_clear_value_stacks is
 			-- Clear objects in semantic value stacks so that
 			-- they can be collected by the garbage collector.
 		local
@@ -279,7 +279,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	yy_push_last_value (yychar1: INTEGER)
+	yy_push_last_value (yychar1: INTEGER) is
 			-- Push semantic value associated with token `last_token'
 			-- (with internal id `yychar1') on top of corresponding
 			-- value stack.
@@ -390,7 +390,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	yy_push_error_value
+	yy_push_error_value is
 			-- Push semantic value associated with token 'error'
 			-- on top of corresponding value stack.
 		local
@@ -416,7 +416,7 @@ feature {NONE} -- Implementation
 			yyvs1.put (yyval1, yyvsp1)
 		end
 
-	yy_pop_last_value (yystate: INTEGER)
+	yy_pop_last_value (yystate: INTEGER) is
 			-- Pop semantic value from stack when in state `yystate'.
 		local
 			yy_type_id: INTEGER
@@ -515,7 +515,7 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Semantic actions
 
-	yy_do_action (yy_act: INTEGER)
+	yy_do_action (yy_act: INTEGER) is
 			-- Execute semantic action.
 		local
 			yyval1: ANY
@@ -566,7 +566,7 @@ end
 				io.put_string("Object data definition validated (non-delimited)%N")
 			end
 			accept
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
@@ -582,7 +582,7 @@ end
 				io.put_string("Object data definition validated%N")
 			end
 			accept
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
@@ -615,7 +615,7 @@ end
 				io.put_string("dADL text NOT validated%N")
 			end
 			abort
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
@@ -629,7 +629,7 @@ end
 			debug("dADL_parse")
 				io.put_string(indent + "attr_val complete%N")
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
@@ -643,7 +643,7 @@ end
 			debug("dADL_parse")
 				io.put_string(indent + "attr_val complete%N")
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
@@ -658,7 +658,7 @@ end
 			debug("dADL_parse")
 				io.put_string(indent + "attr_val complete%N")
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
@@ -675,7 +675,7 @@ end
 				indent.remove_tail(1)
 			end
 			attr_nodes.remove
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
@@ -704,7 +704,7 @@ end
 			create attr_node.make_single(yyvs4.item (yyvsp4))
 
 			debug("dADL_parse")
-				io.put_string(indent + "attr_id: complex_object_nodes.item(" + complex_object_nodes.item.node_id +
+				io.put_string(indent + "attr_id: complex_object_nodes.item(" + complex_object_nodes.item.node_id + 
 						").put_attribute(<<" + attr_node.rm_attr_name + ">>)%N")
 			end
 			if not complex_object_nodes.item.has_attribute(attr_node.rm_attr_name) then
@@ -721,7 +721,7 @@ end
 			end
 			attr_nodes.extend(attr_node)
 			obj_id := Void
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
@@ -753,7 +753,7 @@ end
 			raise_error
 			report_error(create_message_line("SDAT", Void))
 			abort
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp4 := yyvsp4 -1
@@ -853,7 +853,7 @@ debug ("GEYACC")
 end
 
 			yyval13 := yyvs13.item (yyvsp13)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs13.put (yyval13, yyvsp13)
@@ -865,7 +865,7 @@ debug ("GEYACC")
 end
 
 			yyval13 := yyvs13.item (yyvsp13)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs13.put (yyval13, yyvsp13)
@@ -877,7 +877,7 @@ debug ("GEYACC")
 end
 
 			yyval13 := yyvs13.item (yyvsp13)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs13.put (yyval13, yyvsp13)
@@ -888,10 +888,10 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 245")
 end
 
-			-- probably should set type name on owning attribute - it doesn't belong on each
+			-- probably should set type name on owning attribute - it doesn't belong on each 
 			-- object, since it is essentially a constraint
 			yyval13 := yyvs13.item (yyvsp13)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp4 := yyvsp4 -1
@@ -918,7 +918,7 @@ end
 				yyval13 := complex_object_nodes.item
 				complex_object_nodes.remove
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp13 := yyvsp13 + 1
@@ -953,8 +953,8 @@ end
 				create complex_object_node.make_identified(obj_id)
 				if not attr_nodes.item.has_child_with_id(complex_object_node.node_id) then
 					debug("dADL_parse")
-						io.put_string(indent + "multiple_attr_object_block_head; attr_nodes(<<" +
-							attr_nodes.item.rm_attr_name + ">>).item.put_child(complex_object_node(" +
+						io.put_string(indent + "multiple_attr_object_block_head; attr_nodes(<<" + 
+							attr_nodes.item.rm_attr_name + ">>).item.put_child(complex_object_node(" + 
 							complex_object_node.node_id + "))%N")
 					end
 					attr_nodes.item.put_child(complex_object_node)
@@ -970,7 +970,7 @@ end
 				end
 				complex_object_nodes.extend(complex_object_node)
 
-				-- now create a generic attribute node to stand for the hidden attribute of the
+				-- now create a generic attribute node to stand for the hidden attribute of the 
 				-- generic object, e.g. it might be List<T>.items or whatever
 				debug("dADL_parse")
 					io.put_string(indent + "multiple_attr_object_block_head: create_attr_node.make_multiple_generic%N")
@@ -978,7 +978,7 @@ end
 				create attr_node.make_multiple_generic
 
 				debug("dADL_parse")
-					io.put_string(indent + "multiple_attr_object_block_head: complex_object_node(" +
+					io.put_string(indent + "multiple_attr_object_block_head: complex_object_node(" + 
 							complex_object_node.node_id + ").put_attribute(" + attr_node.rm_attr_name + ")%N")
 				end
 				if not complex_object_node.has_attribute(attr_node.rm_attr_name) then
@@ -995,7 +995,7 @@ end
 				end
 				attr_nodes.extend(attr_node)
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
@@ -1009,7 +1009,7 @@ end
 			debug("dADL_parse")
 				io.put_string(indent + "one keyed object%N")
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
@@ -1023,7 +1023,7 @@ end
 			debug("dADL_parse")
 				io.put_string(indent + "multiple keyed objects%N")
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
@@ -1038,7 +1038,7 @@ end
 			debug("dADL_parse")
 				io.put_string(indent + "(keyed object)%N")
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
@@ -1053,7 +1053,7 @@ end
 			obj_id := yyvs1.item (yyvsp1 - 1).out
 
 			debug("dADL_parse")
-				io.put_string(indent + "object_key: " + obj_id +
+				io.put_string(indent + "object_key: " + obj_id + 
 					" (setting " + attr_nodes.item.rm_attr_name + " to Multiple)%N")
 			end
 			if not attr_nodes.is_empty then
@@ -1063,7 +1063,7 @@ end
 				report_error(create_message_line("SGEE", <<attr_node.rm_attr_name>>))
 				abort
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
@@ -1079,7 +1079,7 @@ end
 				io.put_string(indent + "untyped single_attr_object_block%N")
 			end
 			yyval13 := yyvs13.item (yyvsp13)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs13.put (yyval13, yyvsp13)
@@ -1095,7 +1095,7 @@ end
 			end
 			yyvs13.item (yyvsp13).set_visible_type_name(yyvs4.item (yyvsp4))
 			yyval13 := yyvs13.item (yyvsp13)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp4 := yyvsp4 -1
@@ -1108,13 +1108,13 @@ debug ("GEYACC")
 end
 
 			debug("dADL_parse")
-				io.put_string(indent + "empty_object_complex_body: POP Object node(" +
+				io.put_string(indent + "empty_object_complex_body: POP Object node(" + 
 					complex_object_nodes.item.node_id + ")%N")
 				indent.remove_tail(1)
 			end
 			yyval13 := complex_object_nodes.item
 			complex_object_nodes.remove
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp13 := yyvsp13 + 1
@@ -1144,13 +1144,13 @@ debug ("GEYACC")
 end
 
 			debug("dADL_parse")
-				io.put_string(indent + "single_attr_object_complex_body: POP Object node(" +
+				io.put_string(indent + "single_attr_object_complex_body: POP Object node(" + 
 					complex_object_nodes.item.node_id + ")%N")
 				indent.remove_tail(1)
 			end
 			yyval13 := complex_object_nodes.item
 			complex_object_nodes.remove
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp13 := yyvsp13 + 1
@@ -1197,8 +1197,8 @@ end
 			if not attr_nodes.is_empty then
 				if not attr_nodes.item.has_child_with_id(complex_object_node.node_id) then
 					debug("dADL_parse")
-						io.put_string(indent + "single_attr_object_complex_head: attr_nodes(<<" +
-							attr_nodes.item.rm_attr_name + ">>).item.put_child(complex_object_node(" +
+						io.put_string(indent + "single_attr_object_complex_head: attr_nodes(<<" + 
+							attr_nodes.item.rm_attr_name + ">>).item.put_child(complex_object_node(" + 
 							complex_object_node.node_id + "))%N")
 					end
 					attr_nodes.item.put_child(complex_object_node)
@@ -1215,7 +1215,7 @@ end
 				indent.append("%T")
 			end
 			complex_object_nodes.extend(complex_object_node)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
@@ -1230,7 +1230,7 @@ end
 				io.put_string(indent + "untyped primitive_object_block%N")
 			end
 			yyval14 := yyvs14.item (yyvsp14)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs14.put (yyval14, yyvsp14)
@@ -1246,7 +1246,7 @@ end
 			end
 			yyvs14.item (yyvsp14).set_visible_type_name(yyvs4.item (yyvsp4))
 			yyval14 := yyvs14.item (yyvsp14)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp4 := yyvsp4 -1
@@ -1259,8 +1259,8 @@ debug ("GEYACC")
 end
 
 			debug("dADL_parse")
-				io.put_string(indent + "untyped_primitive_object_block; attr_nodes(<<" +
-						attr_nodes.item.rm_attr_name + ">>).item.put_child(<<" +
+				io.put_string(indent + "untyped_primitive_object_block; attr_nodes(<<" + 
+						attr_nodes.item.rm_attr_name + ">>).item.put_child(<<" + 
 						yyvs14.item (yyvsp14).as_string + ">>)%N")
 			end
 			if not attr_nodes.item.has_child_with_id(yyvs14.item (yyvsp14).node_id) then
@@ -1271,7 +1271,7 @@ end
 				report_error(create_message_line("VOKU", <<yyvs14.item (yyvsp14).node_id, attr_nodes.item.rm_attr_name >>))
 				abort
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
@@ -1289,7 +1289,7 @@ end
 			else
 				create {DT_PRIMITIVE_OBJECT} yyval14.make_anonymous(yyvs1.item (yyvsp1))
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp14 := yyvsp14 + 1
@@ -1324,7 +1324,7 @@ end
 			else
 				create {DT_PRIMITIVE_OBJECT_LIST} yyval14.make_anonymous(yyvs32.item (yyvsp32))
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp14 := yyvsp14 + 1
@@ -1359,7 +1359,7 @@ end
 			else
 				create {DT_PRIMITIVE_OBJECT_INTERVAL} yyval14.make_anonymous(yyvs40.item (yyvsp40))
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp14 := yyvsp14 + 1
@@ -1394,7 +1394,7 @@ end
 			else
 				create {DT_PRIMITIVE_OBJECT} yyval14.make_anonymous(yyvs11.item (yyvsp11))
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp14 := yyvsp14 + 1
@@ -1429,7 +1429,7 @@ end
 			else
 				create {DT_PRIMITIVE_OBJECT_LIST} yyval14.make_anonymous(yyvs31.item (yyvsp31))
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp14 := yyvsp14 + 1
@@ -1459,7 +1459,7 @@ debug ("GEYACC")
 end
 
 			yyval1 := yyvs1.item (yyvsp1)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
@@ -1471,7 +1471,7 @@ debug ("GEYACC")
 end
 
 			yyval1 := yyvs2.item (yyvsp2)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
@@ -1501,7 +1501,7 @@ debug ("GEYACC")
 end
 
 			yyval1 := yyvs3.item (yyvsp3)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
@@ -1531,7 +1531,7 @@ debug ("GEYACC")
 end
 
 			yyval1 := yyvs6.item (yyvsp6)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
@@ -1561,7 +1561,7 @@ debug ("GEYACC")
 end
 
 			yyval1 := yyvs5.item (yyvsp5)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
@@ -1591,7 +1591,7 @@ debug ("GEYACC")
 end
 
 			yyval1 := yyvs7.item (yyvsp7)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
@@ -1621,7 +1621,7 @@ debug ("GEYACC")
 end
 
 			yyval1 := yyvs9.item (yyvsp9)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
@@ -1651,7 +1651,7 @@ debug ("GEYACC")
 end
 
 			yyval1 := yyvs8.item (yyvsp8)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
@@ -1681,7 +1681,7 @@ debug ("GEYACC")
 end
 
 			yyval1 := yyvs10.item (yyvsp10)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
@@ -1711,7 +1711,7 @@ debug ("GEYACC")
 end
 
 			yyval1 := yyvs12.item (yyvsp12)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
@@ -1741,7 +1741,7 @@ debug ("GEYACC")
 end
 
 			yyval32 := yyvs18.item (yyvsp18)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp32 := yyvsp32 + 1
@@ -1771,7 +1771,7 @@ debug ("GEYACC")
 end
 
 			yyval32 := yyvs20.item (yyvsp20)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp32 := yyvsp32 + 1
@@ -1801,7 +1801,7 @@ debug ("GEYACC")
 end
 
 			yyval32 := yyvs22.item (yyvsp22)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp32 := yyvsp32 + 1
@@ -1831,7 +1831,7 @@ debug ("GEYACC")
 end
 
 			yyval32 := yyvs26.item (yyvsp26)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp32 := yyvsp32 + 1
@@ -1861,7 +1861,7 @@ debug ("GEYACC")
 end
 
 			yyval32 := yyvs24.item (yyvsp24)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp32 := yyvsp32 + 1
@@ -1891,7 +1891,7 @@ debug ("GEYACC")
 end
 
 			yyval32 := yyvs27.item (yyvsp27)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp32 := yyvsp32 + 1
@@ -1921,7 +1921,7 @@ debug ("GEYACC")
 end
 
 			yyval32 := yyvs28.item (yyvsp28)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp32 := yyvsp32 + 1
@@ -1951,7 +1951,7 @@ debug ("GEYACC")
 end
 
 			yyval32 := yyvs29.item (yyvsp29)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp32 := yyvsp32 + 1
@@ -1981,7 +1981,7 @@ debug ("GEYACC")
 end
 
 			yyval32 := yyvs30.item (yyvsp30)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp32 := yyvsp32 + 1
@@ -2011,7 +2011,7 @@ debug ("GEYACC")
 end
 
 			yyval40 := yyvs33.item (yyvsp33)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp40 := yyvsp40 + 1
@@ -2041,7 +2041,7 @@ debug ("GEYACC")
 end
 
 			yyval40 := yyvs34.item (yyvsp34)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp40 := yyvsp40 + 1
@@ -2071,7 +2071,7 @@ debug ("GEYACC")
 end
 
 			yyval40 := yyvs36.item (yyvsp36)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp40 := yyvsp40 + 1
@@ -2101,7 +2101,7 @@ debug ("GEYACC")
 end
 
 			yyval40 := yyvs35.item (yyvsp35)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp40 := yyvsp40 + 1
@@ -2131,7 +2131,7 @@ debug ("GEYACC")
 end
 
 			yyval40 := yyvs37.item (yyvsp37)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp40 := yyvsp40 + 1
@@ -2161,7 +2161,7 @@ debug ("GEYACC")
 end
 
 			yyval40 := yyvs38.item (yyvsp38)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp40 := yyvsp40 + 1
@@ -2191,7 +2191,7 @@ debug ("GEYACC")
 end
 
 			yyval4 := yyvs4.item (yyvsp4)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
@@ -2204,7 +2204,7 @@ debug ("GEYACC")
 end
 
 			yyval4 := yyvs4.item (yyvsp4)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
@@ -2217,7 +2217,7 @@ debug ("GEYACC")
 end
 
 			yyval4 := yyvs4.item (yyvsp4)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs4.put (yyval4, yyvsp4)
@@ -2229,7 +2229,7 @@ debug ("GEYACC")
 end
 
 			yyval4 := yyvs4.item (yyvsp4)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs4.put (yyval4, yyvsp4)
@@ -2241,7 +2241,7 @@ debug ("GEYACC")
 end
 
 			yyval1 := yyvs4.item (yyvsp4)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
@@ -2273,7 +2273,7 @@ end
 			create yyval18.make(0)
 			yyval18.extend(yyvs4.item (yyvsp4 - 1))
 			yyval18.extend(yyvs4.item (yyvsp4))
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp18 := yyvsp18 + 1
@@ -2305,7 +2305,7 @@ end
 
 			yyvs18.item (yyvsp18).extend(yyvs4.item (yyvsp4))
 			yyval18 := yyvs18.item (yyvsp18)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -2320,7 +2320,7 @@ end
 
 			create yyval18.make(0)
 			yyval18.extend(yyvs4.item (yyvsp4))
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp18 := yyvsp18 + 1
@@ -2351,7 +2351,7 @@ debug ("GEYACC")
 end
 
 			yyval2 := yyvs2.item (yyvsp2)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs2.put (yyval2, yyvsp2)
@@ -2363,7 +2363,7 @@ debug ("GEYACC")
 end
 
 			yyval2 := yyvs2.item (yyvsp2)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
@@ -2376,7 +2376,7 @@ debug ("GEYACC")
 end
 
 			yyval2 := - yyvs2.item (yyvsp2)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
@@ -2391,7 +2391,7 @@ end
 			create yyval20.make(0)
 			yyval20.extend(yyvs2.item (yyvsp2 - 1))
 			yyval20.extend(yyvs2.item (yyvsp2))
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp20 := yyvsp20 + 1
@@ -2423,7 +2423,7 @@ end
 
 			yyvs20.item (yyvsp20).extend(yyvs2.item (yyvsp2))
 			yyval20 := yyvs20.item (yyvsp20)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -2438,7 +2438,7 @@ end
 
 			create yyval20.make(0)
 			yyval20.extend(yyvs2.item (yyvsp2))
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp20 := yyvsp20 + 1
@@ -2474,7 +2474,7 @@ end
 			else
 				abort_with_error("VIVLO", <<yyvs2.item (yyvsp2 - 1).out, yyvs2.item (yyvsp2).out>>)
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
 	yyvsp33 := yyvsp33 + 1
@@ -2510,7 +2510,7 @@ end
 			else
 				abort_with_error("VIVLO", <<yyvs2.item (yyvsp2 - 1).out, yyvs2.item (yyvsp2).out>>)
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 6
 	yyvsp33 := yyvsp33 + 1
@@ -2546,7 +2546,7 @@ end
 			else
 				abort_with_error("VIVLO", <<yyvs2.item (yyvsp2 - 1).out, yyvs2.item (yyvsp2).out>>)
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 6
 	yyvsp33 := yyvsp33 + 1
@@ -2582,7 +2582,7 @@ end
 			else
 				abort_with_error("VIVLO", <<yyvs2.item (yyvsp2 - 1).out, yyvs2.item (yyvsp2).out>>)
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 7
 	yyvsp33 := yyvsp33 + 1
@@ -2614,7 +2614,7 @@ end
 
 			create integer_interval.make_lower_unbounded(yyvs2.item (yyvsp2), False)
 			yyval33 := integer_interval
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp33 := yyvsp33 + 1
@@ -2646,7 +2646,7 @@ end
 
 			create integer_interval.make_lower_unbounded(yyvs2.item (yyvsp2), True)
 			yyval33 := integer_interval
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp33 := yyvsp33 + 1
@@ -2678,7 +2678,7 @@ end
 
 			create integer_interval.make_upper_unbounded(yyvs2.item (yyvsp2), False)
 			yyval33 := integer_interval
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp33 := yyvsp33 + 1
@@ -2710,7 +2710,7 @@ end
 
 			create integer_interval.make_upper_unbounded(yyvs2.item (yyvsp2), True)
 			yyval33 := integer_interval
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp33 := yyvsp33 + 1
@@ -2742,7 +2742,7 @@ end
 
 			create integer_interval.make_point(yyvs2.item (yyvsp2))
 			yyval33 := integer_interval
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp33 := yyvsp33 + 1
@@ -2773,7 +2773,7 @@ debug ("GEYACC")
 end
 
 			yyval3 := yyvs3.item (yyvsp3)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs3.put (yyval3, yyvsp3)
@@ -2785,7 +2785,7 @@ debug ("GEYACC")
 end
 
 			yyval3 := yyvs3.item (yyvsp3)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
@@ -2798,7 +2798,7 @@ debug ("GEYACC")
 end
 
 			yyval3 := - yyvs3.item (yyvsp3)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
@@ -2813,7 +2813,7 @@ end
 			create yyval22.make(0)
 			yyval22.extend(yyvs3.item (yyvsp3 - 1))
 			yyval22.extend(yyvs3.item (yyvsp3))
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp22 := yyvsp22 + 1
@@ -2845,7 +2845,7 @@ end
 
 			yyvs22.item (yyvsp22).extend(yyvs3.item (yyvsp3))
 			yyval22 := yyvs22.item (yyvsp22)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -2860,7 +2860,7 @@ end
 
 			create yyval22.make(0)
 			yyval22.extend(yyvs3.item (yyvsp3))
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp22 := yyvsp22 + 1
@@ -2896,7 +2896,7 @@ end
 			else
 				abort_with_error("VIVLO", <<yyvs3.item (yyvsp3 - 1).out, yyvs3.item (yyvsp3).out>>)
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
 	yyvsp34 := yyvsp34 + 1
@@ -2932,7 +2932,7 @@ end
 			else
 				abort_with_error("VIVLO", <<yyvs3.item (yyvsp3 - 1).out, yyvs3.item (yyvsp3).out>>)
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 6
 	yyvsp34 := yyvsp34 + 1
@@ -2968,7 +2968,7 @@ end
 			else
 				abort_with_error("VIVLO", <<yyvs3.item (yyvsp3 - 1).out, yyvs3.item (yyvsp3).out>>)
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 6
 	yyvsp34 := yyvsp34 + 1
@@ -3004,7 +3004,7 @@ end
 			else
 				abort_with_error("VIVLO", <<yyvs3.item (yyvsp3 - 1).out, yyvs3.item (yyvsp3).out>>)
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 7
 	yyvsp34 := yyvsp34 + 1
@@ -3036,7 +3036,7 @@ end
 
 			create real_interval.make_lower_unbounded(yyvs3.item (yyvsp3), False)
 			yyval34 := real_interval
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp34 := yyvsp34 + 1
@@ -3068,7 +3068,7 @@ end
 
 			create real_interval.make_lower_unbounded(yyvs3.item (yyvsp3), True)
 			yyval34 := real_interval
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp34 := yyvsp34 + 1
@@ -3100,7 +3100,7 @@ end
 
 			create real_interval.make_upper_unbounded(yyvs3.item (yyvsp3), False)
 			yyval34 := real_interval
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp34 := yyvsp34 + 1
@@ -3132,7 +3132,7 @@ end
 
 			create real_interval.make_upper_unbounded(yyvs3.item (yyvsp3), True)
 			yyval34 := real_interval
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp34 := yyvsp34 + 1
@@ -3164,7 +3164,7 @@ end
 
 			create real_interval.make_point(yyvs3.item (yyvsp3))
 			yyval34 := real_interval
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp34 := yyvsp34 + 1
@@ -3195,7 +3195,7 @@ debug ("GEYACC")
 end
 
 			yyval6 := True
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp6 := yyvsp6 + 1
@@ -3225,7 +3225,7 @@ debug ("GEYACC")
 end
 
 			yyval6 := False
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp6 := yyvsp6 + 1
@@ -3257,7 +3257,7 @@ end
 			create yyval26.make(0)
 			yyval26.extend(yyvs6.item (yyvsp6 - 1))
 			yyval26.extend(yyvs6.item (yyvsp6))
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp26 := yyvsp26 + 1
@@ -3289,7 +3289,7 @@ end
 
 			yyvs26.item (yyvsp26).extend(yyvs6.item (yyvsp6))
 			yyval26 := yyvs26.item (yyvsp26)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -3304,7 +3304,7 @@ end
 
 			create yyval26.make(0)
 			yyval26.extend(yyvs6.item (yyvsp6))
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp26 := yyvsp26 + 1
@@ -3335,7 +3335,7 @@ debug ("GEYACC")
 end
 
 			yyval5 := yyvs5.item (yyvsp5)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs5.put (yyval5, yyvsp5)
@@ -3349,7 +3349,7 @@ end
 			create yyval24.make(0)
 			yyval24.extend(yyvs5.item (yyvsp5 - 1))
 			yyval24.extend(yyvs5.item (yyvsp5))
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp24 := yyvsp24 + 1
@@ -3381,7 +3381,7 @@ end
 
 			yyvs24.item (yyvsp24).extend(yyvs5.item (yyvsp5))
 			yyval24 := yyvs24.item (yyvsp24)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -3396,7 +3396,7 @@ end
 
 			create yyval24.make(0)
 			yyval24.extend(yyvs5.item (yyvsp5))
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp24 := yyvsp24 + 1
@@ -3431,7 +3431,7 @@ end
 			else
 				abort_with_error("VIDV", <<yyvs4.item (yyvsp4)>>)
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp7 := yyvsp7 + 1
@@ -3463,7 +3463,7 @@ end
 			create yyval27.make(0)
 			yyval27.extend(yyvs7.item (yyvsp7 - 1))
 			yyval27.extend(yyvs7.item (yyvsp7))
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp27 := yyvsp27 + 1
@@ -3495,7 +3495,7 @@ end
 
 			yyvs27.item (yyvsp27).extend(yyvs7.item (yyvsp7))
 			yyval27 := yyvs27.item (yyvsp27)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -3510,7 +3510,7 @@ end
 
 			create yyval27.make(0)
 			yyval27.extend(yyvs7.item (yyvsp7))
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp27 := yyvsp27 + 1
@@ -3546,7 +3546,7 @@ end
 			else
 				abort_with_error("VIVLO", <<yyvs7.item (yyvsp7 - 1).out, yyvs7.item (yyvsp7).out>>)
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
 	yyvsp36 := yyvsp36 + 1
@@ -3582,7 +3582,7 @@ end
 			else
 				abort_with_error("VIVLO", <<yyvs7.item (yyvsp7 - 1).out, yyvs7.item (yyvsp7).out>>)
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 6
 	yyvsp36 := yyvsp36 + 1
@@ -3618,7 +3618,7 @@ end
 			else
 				abort_with_error("VIVLO", <<yyvs7.item (yyvsp7 - 1).out, yyvs7.item (yyvsp7).out>>)
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 6
 	yyvsp36 := yyvsp36 + 1
@@ -3654,7 +3654,7 @@ end
 			else
 				abort_with_error("VIVLO", <<yyvs7.item (yyvsp7 - 1).out, yyvs7.item (yyvsp7).out>>)
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 7
 	yyvsp36 := yyvsp36 + 1
@@ -3686,7 +3686,7 @@ end
 
 			create date_interval.make_lower_unbounded(yyvs7.item (yyvsp7), False)
 			yyval36 := date_interval
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp36 := yyvsp36 + 1
@@ -3718,7 +3718,7 @@ end
 
 			create date_interval.make_lower_unbounded(yyvs7.item (yyvsp7), True)
 			yyval36 := date_interval
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp36 := yyvsp36 + 1
@@ -3750,7 +3750,7 @@ end
 
 			create date_interval.make_upper_unbounded(yyvs7.item (yyvsp7), False)
 			yyval36 := date_interval
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp36 := yyvsp36 + 1
@@ -3782,7 +3782,7 @@ end
 
 			create date_interval.make_upper_unbounded(yyvs7.item (yyvsp7), True)
 			yyval36 := date_interval
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp36 := yyvsp36 + 1
@@ -3814,7 +3814,7 @@ end
 
 			create date_interval.make_point(yyvs7.item (yyvsp7))
 			yyval36 := date_interval
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp36 := yyvsp36 + 1
@@ -3849,7 +3849,7 @@ end
 			else
 				abort_with_error("VITV", <<yyvs4.item (yyvsp4)>>)
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp9 := yyvsp9 + 1
@@ -3881,7 +3881,7 @@ end
 			create yyval28.make(0)
 			yyval28.extend(yyvs9.item (yyvsp9 - 1))
 			yyval28.extend(yyvs9.item (yyvsp9))
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp28 := yyvsp28 + 1
@@ -3913,7 +3913,7 @@ end
 
 			yyvs28.item (yyvsp28).extend(yyvs9.item (yyvsp9))
 			yyval28 := yyvs28.item (yyvsp28)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -3928,7 +3928,7 @@ end
 
 			create yyval28.make(0)
 			yyval28.extend(yyvs9.item (yyvsp9))
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp28 := yyvsp28 + 1
@@ -3964,7 +3964,7 @@ end
 			else
 				abort_with_error("VIVLO", <<yyvs9.item (yyvsp9 - 1).out, yyvs9.item (yyvsp9).out>>)
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
 	yyvsp35 := yyvsp35 + 1
@@ -4000,7 +4000,7 @@ end
 			else
 				abort_with_error("VIVLO", <<yyvs9.item (yyvsp9 - 1).out, yyvs9.item (yyvsp9).out>>)
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 6
 	yyvsp35 := yyvsp35 + 1
@@ -4036,7 +4036,7 @@ end
 			else
 				abort_with_error("VIVLO", <<yyvs9.item (yyvsp9 - 1).out, yyvs9.item (yyvsp9).out>>)
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 6
 	yyvsp35 := yyvsp35 + 1
@@ -4072,7 +4072,7 @@ end
 			else
 				abort_with_error("VIVLO", <<yyvs9.item (yyvsp9 - 1).out, yyvs9.item (yyvsp9).out>>)
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 7
 	yyvsp35 := yyvsp35 + 1
@@ -4104,7 +4104,7 @@ end
 
 			create time_interval.make_lower_unbounded(yyvs9.item (yyvsp9), False)
 			yyval35 := time_interval
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp35 := yyvsp35 + 1
@@ -4136,7 +4136,7 @@ end
 
 			create time_interval.make_lower_unbounded(yyvs9.item (yyvsp9), True)
 			yyval35 := time_interval
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp35 := yyvsp35 + 1
@@ -4168,7 +4168,7 @@ end
 
 			create time_interval.make_upper_unbounded(yyvs9.item (yyvsp9), False)
 			yyval35 := time_interval
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp35 := yyvsp35 + 1
@@ -4200,7 +4200,7 @@ end
 
 			create time_interval.make_upper_unbounded(yyvs9.item (yyvsp9), True)
 			yyval35 := time_interval
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp35 := yyvsp35 + 1
@@ -4232,7 +4232,7 @@ end
 
 			create time_interval.make_point(yyvs9.item (yyvsp9))
 			yyval35 := time_interval
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp35 := yyvsp35 + 1
@@ -4267,7 +4267,7 @@ end
 			else
 				abort_with_error("VIDTV", <<yyvs4.item (yyvsp4)>>)
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp8 := yyvsp8 + 1
@@ -4299,7 +4299,7 @@ end
 			create yyval29.make(0)
 			yyval29.extend(yyvs8.item (yyvsp8 - 1))
 			yyval29.extend(yyvs8.item (yyvsp8))
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp29 := yyvsp29 + 1
@@ -4331,7 +4331,7 @@ end
 
 			yyvs29.item (yyvsp29).extend(yyvs8.item (yyvsp8))
 			yyval29 := yyvs29.item (yyvsp29)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -4346,7 +4346,7 @@ end
 
 			create yyval29.make(0)
 			yyval29.extend(yyvs8.item (yyvsp8))
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp29 := yyvsp29 + 1
@@ -4382,7 +4382,7 @@ end
 			else
 				abort_with_error("VIVLO", <<yyvs8.item (yyvsp8 - 1).out, yyvs8.item (yyvsp8).out>>)
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
 	yyvsp37 := yyvsp37 + 1
@@ -4418,7 +4418,7 @@ end
 			else
 				abort_with_error("VIVLO", <<yyvs8.item (yyvsp8 - 1).out, yyvs8.item (yyvsp8).out>>)
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 6
 	yyvsp37 := yyvsp37 + 1
@@ -4454,7 +4454,7 @@ end
 			else
 				abort_with_error("VIVLO", <<yyvs8.item (yyvsp8 - 1).out, yyvs8.item (yyvsp8).out>>)
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 6
 	yyvsp37 := yyvsp37 + 1
@@ -4490,7 +4490,7 @@ end
 			else
 				abort_with_error("VIVLO", <<yyvs8.item (yyvsp8 - 1).out, yyvs8.item (yyvsp8).out>>)
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 7
 	yyvsp37 := yyvsp37 + 1
@@ -4522,7 +4522,7 @@ end
 
 			create date_time_interval.make_lower_unbounded(yyvs8.item (yyvsp8), False)
 			yyval37 := date_time_interval
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp37 := yyvsp37 + 1
@@ -4554,7 +4554,7 @@ end
 
 			create date_time_interval.make_lower_unbounded(yyvs8.item (yyvsp8), True)
 			yyval37 := date_time_interval
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp37 := yyvsp37 + 1
@@ -4586,7 +4586,7 @@ end
 
 			create date_time_interval.make_upper_unbounded(yyvs8.item (yyvsp8), False)
 			yyval37 := date_time_interval
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp37 := yyvsp37 + 1
@@ -4618,7 +4618,7 @@ end
 
 			create date_time_interval.make_upper_unbounded(yyvs8.item (yyvsp8), True)
 			yyval37 := date_time_interval
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp37 := yyvsp37 + 1
@@ -4650,7 +4650,7 @@ end
 
 			create date_time_interval.make_point(yyvs8.item (yyvsp8))
 			yyval37 := date_time_interval
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp37 := yyvsp37 + 1
@@ -4685,7 +4685,7 @@ end
 			else
 				abort_with_error("VIDUV", <<yyvs4.item (yyvsp4)>>)
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp10 := yyvsp10 + 1
@@ -4717,7 +4717,7 @@ end
 			create yyval30.make(0)
 			yyval30.extend(yyvs10.item (yyvsp10 - 1))
 			yyval30.extend(yyvs10.item (yyvsp10))
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp30 := yyvsp30 + 1
@@ -4749,7 +4749,7 @@ end
 
 			yyvs30.item (yyvsp30).extend(yyvs10.item (yyvsp10))
 			yyval30 := yyvs30.item (yyvsp30)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -4764,7 +4764,7 @@ end
 
 			create yyval30.make(0)
 			yyval30.extend(yyvs10.item (yyvsp10))
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp30 := yyvsp30 + 1
@@ -4800,7 +4800,7 @@ end
 			else
 				abort_with_error("VIVLO", <<yyvs10.item (yyvsp10 - 1).out, yyvs10.item (yyvsp10).out>>)
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
 	yyvsp38 := yyvsp38 + 1
@@ -4836,7 +4836,7 @@ end
 			else
 				abort_with_error("VIVLO", <<yyvs10.item (yyvsp10 - 1).out, yyvs10.item (yyvsp10).out>>)
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 6
 	yyvsp38 := yyvsp38 + 1
@@ -4872,7 +4872,7 @@ end
 			else
 				abort_with_error("VIVLO", <<yyvs10.item (yyvsp10 - 1).out, yyvs10.item (yyvsp10).out>>)
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 6
 	yyvsp38 := yyvsp38 + 1
@@ -4908,7 +4908,7 @@ end
 			else
 				abort_with_error("VIVLO", <<yyvs10.item (yyvsp10 - 1).out, yyvs10.item (yyvsp10).out>>)
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 7
 	yyvsp38 := yyvsp38 + 1
@@ -4940,7 +4940,7 @@ end
 
 			create duration_interval.make_lower_unbounded(yyvs10.item (yyvsp10), False)
 			yyval38 := duration_interval
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp38 := yyvsp38 + 1
@@ -4972,7 +4972,7 @@ end
 
 			create duration_interval.make_lower_unbounded(yyvs10.item (yyvsp10), True)
 			yyval38 := duration_interval
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp38 := yyvsp38 + 1
@@ -5004,7 +5004,7 @@ end
 
 			create duration_interval.make_upper_unbounded(yyvs10.item (yyvsp10), False)
 			yyval38 := duration_interval
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp38 := yyvsp38 + 1
@@ -5036,7 +5036,7 @@ end
 
 			create duration_interval.make_upper_unbounded(yyvs10.item (yyvsp10), True)
 			yyval38 := duration_interval
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp38 := yyvsp38 + 1
@@ -5068,7 +5068,7 @@ end
 
 			create duration_interval.make_point(yyvs10.item (yyvsp10))
 			yyval38 := duration_interval
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp38 := yyvsp38 + 1
@@ -5100,7 +5100,7 @@ end
 
 			create term.make_from_string(yyvs4.item (yyvsp4))
 			yyval11 := term
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp11 := yyvsp11 + 1
@@ -5130,7 +5130,7 @@ debug ("GEYACC")
 end
 
 			abort_with_error("STCV", <<yyvs4.item (yyvsp4)>>)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp11 := yyvsp11 + 1
@@ -5162,7 +5162,7 @@ end
 			create yyval31.make(0)
 			yyval31.extend(yyvs11.item (yyvsp11 - 1))
 			yyval31.extend(yyvs11.item (yyvsp11))
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp31 := yyvsp31 + 1
@@ -5194,7 +5194,7 @@ end
 
 			yyvs31.item (yyvsp31).extend(yyvs11.item (yyvsp11))
 			yyval31 := yyvs31.item (yyvsp31)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -5209,7 +5209,7 @@ end
 
 			create yyval31.make(0)
 			yyval31.extend(yyvs11.item (yyvsp11))
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp31 := yyvsp31 + 1
@@ -5241,7 +5241,7 @@ end
 
 			create a_uri.make_from_string(yyvs4.item (yyvsp4))
 			yyval12 := a_uri
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp12 := yyvsp12 + 1
@@ -5271,8 +5271,8 @@ debug ("GEYACC")
 end
 
 			debug("dADL_parse")
-				io.put_string(indent + "object_reference_block; attr_nodes(<<" +
-						attr_nodes.item.rm_attr_name + ">>).item.put_child(<<" +
+				io.put_string(indent + "object_reference_block; attr_nodes(<<" + 
+						attr_nodes.item.rm_attr_name + ">>).item.put_child(<<" + 
 						yyvs14.item (yyvsp14).as_string + ">>)%N")
 			end
 			if not attr_nodes.item.has_child_with_id(yyvs14.item (yyvsp14).node_id) then
@@ -5283,7 +5283,7 @@ end
 				report_error(create_message_line("VOKU", <<yyvs14.item (yyvsp14).node_id, attr_nodes.item.rm_attr_name >>))
 				abort
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
@@ -5301,7 +5301,7 @@ end
 			else
 				create {DT_OBJECT_REFERENCE} yyval14.make_anonymous(yyvs15.item (yyvsp15))
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp14 := yyvsp14 + 1
@@ -5336,7 +5336,7 @@ end
 			else
 				create {DT_OBJECT_REFERENCE_LIST} yyval14.make_anonymous(yyvs17.item (yyvsp17))
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp14 := yyvsp14 + 1
@@ -5368,7 +5368,7 @@ end
 			create yyval17.make(0)
 			yyval17.extend(yyvs15.item (yyvsp15 - 1))
 			yyval17.extend(yyvs15.item (yyvsp15))
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp17 := yyvsp17 + 1
@@ -5400,7 +5400,7 @@ end
 
 			yyvs17.item (yyvsp17).extend(yyvs15.item (yyvsp15))
 			yyval17 := yyvs17.item (yyvsp17)
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -5415,7 +5415,7 @@ end
 
 			create yyval17.make(0)
 			yyval17.extend(yyvs15.item (yyvsp15))
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp17 := yyvsp17 + 1
@@ -5449,7 +5449,7 @@ end
 			debug("OG_PATH_parse")
 				io.put_string("....absolute_path (root); %N")
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp15 := yyvsp15 + 1
@@ -5483,7 +5483,7 @@ end
 			debug("OG_PATH_parse")
 				io.put_string("....absolute_path; %N")
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
@@ -5500,7 +5500,7 @@ end
 			debug("OG_PATH_parse")
 				io.put_string("....absolute_path (appended relative path); %N")
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp15 := yyvsp15 -1
@@ -5514,7 +5514,7 @@ debug ("GEYACC")
 end
 
 			create yyval15.make_relative(yyvs16.item (yyvsp16))
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp15 := yyvsp15 + 1
@@ -5545,7 +5545,7 @@ end
 
 			yyval15 := yyvs15.item (yyvsp15)
 			yyval15.append_segment(yyvs16.item (yyvsp16))
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -5562,7 +5562,7 @@ end
 			debug("OG_PATH_parse")
 				io.put_string("...path_segment: " + yyvs4.item (yyvsp4 - 1) + "[" + yyvs4.item (yyvsp4) + "]%N")
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp16 := yyvsp16 + 1
@@ -5596,7 +5596,7 @@ end
 			debug("OG_PATH_parse")
 				io.put_string("...path_segment: " + yyvs4.item (yyvsp4) + "%N")
 			end
-
+		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp16 := yyvsp16 + 1
@@ -5629,7 +5629,7 @@ end
 			end
 		end
 
-	yy_do_error_action (yy_act: INTEGER)
+	yy_do_error_action (yy_act: INTEGER) is
 			-- Execute error action.
 		do
 			inspect yy_act
@@ -5644,7 +5644,7 @@ end
 
 feature {NONE} -- Table templates
 
-	yytranslate_template: SPECIAL [INTEGER]
+	yytranslate_template: SPECIAL [INTEGER] is
 			-- Template for `yytranslate'
 		once
 			Result := yyfixed_array (<<
@@ -5652,12 +5652,12 @@ feature {NONE} -- Table templates
 			    2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
 			    2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
 			    2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
-			   41,   42,    2,   44,   43,   45,    2,   46,    2,    2,
-			    2,    2,    2,    2,    2,    2,    2,    2,    2,   38,
+			   42,   43,    2,   45,   44,   46,    2,   47,    2,    2,
+			    2,    2,    2,    2,    2,    2,    2,    2,    2,   39,
 			    2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
 			    2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
 			    2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
-			    2,   39,    2,   40,    2,    2,    2,    2,    2,    2,
+			    2,   40,    2,   41,    2,    2,    2,    2,    2,    2,
 
 			    2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
 			    2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
@@ -5679,35 +5679,35 @@ feature {NONE} -- Table templates
 			    5,    6,    7,    8,    9,   10,   11,   12,   13,   14,
 			   15,   16,   17,   18,   19,   20,   21,   22,   23,   24,
 			   25,   26,   27,   28,   29,   30,   31,   32,   33,   34,
-			   35,   36,   37, yyDummy>>)
+			   35,   36,   37,   38, yyDummy>>)
 		end
 
-	yyr1_template: SPECIAL [INTEGER]
+	yyr1_template: SPECIAL [INTEGER] is
 			-- Template for `yyr1'
 		once
 			Result := yyfixed_array (<<
-			    0,   90,   90,   90,   91,   91,   91,   92,   93,   93,
-			   94,   94,   94,   62,   62,   60,   60,   61,   95,   96,
-			   96,   97,   98,   58,   58,   59,   59,  100,   64,   64,
-			   63,   66,   66,   66,   66,   66,   99,   99,   99,   99,
-			   99,   99,   99,   99,   99,   99,   82,   82,   82,   82,
-			   82,   82,   82,   82,   82,   89,   89,   89,   89,   89,
-			   89,   47,   47,   47,   47,  101,   72,   72,   72,   48,
-			   48,   48,   73,   73,   73,   83,   83,   83,   83,   83,
-			   83,   83,   83,   83,   49,   49,   49,   74,   74,   74,
-			   84,   84,   84,   84,   84,   84,   84,   84,   84,   50,
+			    0,   91,   91,   91,   92,   92,   92,   93,   94,   94,
+			   95,   95,   95,   63,   63,   61,   61,   62,   96,   97,
+			   97,   98,   99,   59,   59,   60,   60,  101,   65,   65,
+			   64,   67,   67,   67,   67,   67,  100,  100,  100,  100,
+			  100,  100,  100,  100,  100,  100,   83,   83,   83,   83,
+			   83,   83,   83,   83,   83,   90,   90,   90,   90,   90,
+			   90,   48,   48,   48,   48,  102,   73,   73,   73,   49,
+			   49,   49,   74,   74,   74,   84,   84,   84,   84,   84,
+			   84,   84,   84,   84,   50,   50,   50,   75,   75,   75,
+			   85,   85,   85,   85,   85,   85,   85,   85,   85,   51,
 
-			   50,   76,   76,   76,   51,   75,   75,   75,   52,   77,
-			   77,   77,   86,   86,   86,   86,   86,   86,   86,   86,
-			   86,   54,   78,   78,   78,   85,   85,   85,   85,   85,
-			   85,   85,   85,   85,   53,   79,   79,   79,   87,   87,
-			   87,   87,   87,   87,   87,   87,   87,   55,   80,   80,
-			   80,   88,   88,   88,   88,   88,   88,   88,   88,   88,
-			   56,   56,   81,   81,   81,   57,   65,   67,   67,   71,
-			   71,   71,   68,   68,   68,   69,   69,   70,   70, yyDummy>>)
+			   51,   77,   77,   77,   52,   76,   76,   76,   53,   78,
+			   78,   78,   87,   87,   87,   87,   87,   87,   87,   87,
+			   87,   55,   79,   79,   79,   86,   86,   86,   86,   86,
+			   86,   86,   86,   86,   54,   80,   80,   80,   88,   88,
+			   88,   88,   88,   88,   88,   88,   88,   56,   81,   81,
+			   81,   89,   89,   89,   89,   89,   89,   89,   89,   89,
+			   57,   57,   82,   82,   82,   58,   66,   68,   68,   72,
+			   72,   72,   69,   69,   69,   70,   70,   71,   71, yyDummy>>)
 		end
 
-	yytypes1_template: SPECIAL [INTEGER]
+	yytypes1_template: SPECIAL [INTEGER] is
 			-- Template for `yytypes1'
 		once
 			Result := yyfixed_array (<<
@@ -5749,18 +5749,18 @@ feature {NONE} -- Table templates
 			    1,    1,    1,    1,    1, yyDummy>>)
 		end
 
-	yytypes2_template: SPECIAL [INTEGER]
+	yytypes2_template: SPECIAL [INTEGER] is
 			-- Template for `yytypes2'
 		once
 			Result := yyfixed_array (<<
 			    1,    1,    1,    2,    3,    4,    4,    4,    4,    4,
 			    4,    4,    4,    4,    4,    4,    4,    4,    5,    1,
 			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-			    1,    1,    1,    1,    1,    1,    4,    4,    1,    1,
-			    1,    1,    1,    1,    1,    1,    1, yyDummy>>)
+			    1,    1,    1,    1,    1,    1,    1,    4,    4,    1,
+			    1,    1,    1,    1,    1,    1,    1,    1, yyDummy>>)
 		end
 
-	yydefact_template: SPECIAL [INTEGER]
+	yydefact_template: SPECIAL [INTEGER] is
 			-- Template for `yydefact'
 		once
 			Result := yyfixed_array (<<
@@ -5802,7 +5802,7 @@ feature {NONE} -- Table templates
 			  128,  154,    0,    0,    0, yyDummy>>)
 		end
 
-	yydefgoto_template: SPECIAL [INTEGER]
+	yydefgoto_template: SPECIAL [INTEGER] is
 			-- Template for `yydefgoto'
 		once
 			Result := yyfixed_array (<<
@@ -5814,156 +5814,156 @@ feature {NONE} -- Table templates
 			   28,   29,  106,   17,   65, yyDummy>>)
 		end
 
-	yypact_template: SPECIAL [INTEGER]
+	yypact_template: SPECIAL [INTEGER] is
 			-- Template for `yypact'
 		once
 			Result := yyfixed_array (<<
-			  282,  297,  353,  146, -32768, -32768, -32768,  355, -32768, -32768,
-			 -32768, -32768, -32768,   30, -32768,  352,  348,  184,  346,  344,
-			 -32768, -32768, -32768,  342, -32768,   34,  208,  130, -32768,  351,
-			 -32768,   71, -32768, -32768, -32768,   16,  350, -32768, -32768, -32768,
-			 -32768, -32768,  296,  268, -32768, -32768, -32768, -32768, -32768, -32768,
+			  234,  290,  351,  146, -32768, -32768, -32768,  357, -32768, -32768,
+			 -32768, -32768, -32768,    0, -32768,  354,  349,  186,  347,  345,
+			 -32768, -32768, -32768,  343, -32768,   69,  209,  125, -32768,  353,
+			 -32768,  132, -32768, -32768, -32768,   16,  352, -32768, -32768, -32768,
+			 -32768, -32768,  289,   82, -32768, -32768, -32768, -32768, -32768, -32768,
 			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
-			 -32768, -32768, -32768, -32768,  345, -32768, -32768, -32768,   34, -32768,
-			  326, -32768,  265, -32768,  341,  340,  339,  338,  337,  336,
-			  335,  334,  333,  332,  331,  330,  247,  327,  325,  324,
-			  323,  322,  321,  320,  319,  318,  317,  298, -32768, -32768,
+			 -32768, -32768, -32768, -32768,  346, -32768, -32768, -32768,   69, -32768,
+			  327, -32768,  111, -32768,  342,  341,  340,  339,  338,  337,
+			  336,  335,  334,  333,  332,  331,  158,  328,  326,  325,
+			  324,  323,  322,  321,  320,  319,  318,  316, -32768, -32768,
 
 			 -32768, -32768, -32768, -32768, -32768, -32768, -32768,  170, -32768, -32768,
-			 -32768, -32768, -32768, -32768, -32768,  283,  262, -32768,   76,   76,
-			   76,   76,  259,  257,  245,  241,  232,  219,   58,  139,
-			   28,  -12,  133,  177,  182,   -5,  148,  -13, -32768, -32768,
-			  326,   44,  275,  329,   26,    3,  316,  173,  250,   73,
-			  235,  221,  108,  328,  326,  315,  314,  313,  310,  307,
-			  306,  305,  304,  303,  302,  301,  300,  218,  217,  213,
-			  199,  185,   89,  299,  295,  294,  293,  292,  291, -32768,
-			   19, -32768,  145, -32768,  109, -32768,  111, -32768,  135, -32768,
-			  147, -32768, -32768,  312,  311, -32768, -32768,  309,  308, -32768,
+			 -32768, -32768, -32768, -32768, -32768,  315,  265, -32768,    6,    6,
+			    6,    6,  263,  259,  257,  255,  249,  247,  140,   32,
+			   34,  180,  206,  191,  173,   50,  199,   44, -32768, -32768,
+			  327,  -10,  272,  330,   26,   72,  317,  261,  294,  291,
+			  220,  275,   54,  329,  327,  314,  311,  308,  307,  306,
+			  305,  304,  303,  302,  301,  300,  299,  245,  243,  241,
+			  221,  211,  137,  298,  297,  296,  295,  293,  292, -32768,
+			   19, -32768,  145, -32768,   57, -32768,  147, -32768,  123, -32768,
+			  171, -32768, -32768,  313,  312, -32768, -32768,  310,  309, -32768,
 
 			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
-			 -32768, -32768, -32768, -32768, -32768,  262, -32768,  261,  261, -32768,
-			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,  271,
+			 -32768, -32768, -32768, -32768, -32768,  265, -32768,  253,  253, -32768,
+			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,  218,
 			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
-			 -32768, -32768, -32768, -32768,   12, -32768,  113, -32768,    5, -32768,
-			   54, -32768,  123, -32768,  142, -32768, -32768, -32768, -32768, -32768,
-			 -32768,   26,  281,    3,  280,  250,  279,  235,  269,   73,
-			  267,  221,  260, -32768,   26,  255,    3,  240,  250,  230,
-			  235,  225,   73,  223,  221,  206,  204, -32768,  202, -32768,
-			  188, -32768,  183, -32768,  178, -32768,  171, -32768,  169, -32768,
+			 -32768, -32768, -32768, -32768,    2, -32768,   38, -32768,   -7, -32768,
+			  139, -32768,   60, -32768,  142, -32768, -32768, -32768, -32768, -32768,
+			 -32768,   26,  286,   72,  285,  294,  284,  220,  283,  291,
+			  282,  275,  281, -32768,   26,  280,   72,  279,  294,  277,
+			  220,  274,  291,  269,  275,  258,  250, -32768,  232, -32768,
+			  227, -32768,  225, -32768,  223, -32768,  219, -32768,  217, -32768,
 
-			  151, -32768,  127, -32768,   90, -32768,   51, -32768,   49, -32768,
+			  200, -32768,  198, -32768,  135, -32768,  126, -32768,   84, -32768,
 			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
-			 -32768, -32768,   21,   13, -32768, yyDummy>>)
+			 -32768, -32768,   21,   14, -32768, yyDummy>>)
 		end
 
-	yypgoto_template: SPECIAL [INTEGER]
+	yypgoto_template: SPECIAL [INTEGER] is
 			-- Template for `yypgoto'
 		once
 			Result := yyfixed_array (<<
-			  356,   17,   10,  -23,  -20,  -14,  -18,  -22,  -26,   11,
-			 -32768, -32768,    2, -32768,   -6,  347,  357, -32768, -32768, -32768,
-			 -32768,   81,  205,  189, -32768, -32768, -32768, -32768, -32768, -32768,
+			  356,   17,   10,  -23,  -20,  -14,  -18,  -22,  -26,   52,
+			 -32768, -32768,    4, -32768,   -6,  348,  359, -32768, -32768, -32768,
+			 -32768,  156,  203,  188, -32768, -32768, -32768, -32768, -32768, -32768,
 			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
-			 -32768, -32768, -32768, -32768,  354,   46, -32768,  274, -32768, -32768,
-			  364, -32768,  363, -32768, -32768, yyDummy>>)
+			 -32768, -32768, -32768, -32768,  344,  163, -32768,  273, -32768, -32768,
+			  367, -32768,  366, -32768, -32768, yyDummy>>)
 		end
 
-	yytable_template: SPECIAL [INTEGER]
+	yytable_template: SPECIAL [INTEGER] is
 			-- Template for `yytable'
 		once
 			Result := yyfixed_array (<<
-			   62,   22,   73,   57,   61,   50,   58,   53,   60,   21,
-			  213,  201,   59,  324,   51,   54,   45,   44,  209,   54,
-			   53,  323,   54,   71,   74,   51,   50,   49,   48,   54,
-			   22,   73,   53,   47,   46,  278,   56,    3,   21,    5,
-			    4,   72,  274,   55,   45,   44,  127,  198,  197,  261,
-			  126,  199,   71,   35,  125,  -18,  194,  193,  124,   24,
-			   43,   42,   70,  194,  193,   49,  192,  216,   23,   34,
-			  194,  193,  198,  197,  321,    1,  320,   24,    3,   54,
-			   53,  191,  123,   50,  280,   51,   50,   49,   48,  122,
-			   70,   69,  160,  166,  172,  178,  159,  165,  171,  177,
+			   62,   22,   51,   57,   61,   54,   58,    3,   60,   54,
+			   53,   21,   59,  216,  324,   51,   50,   49,   48,   54,
+			   53,  323,   54,  278,   74,   51,   50,   49,   48,   54,
+			   22,   73,  274,   47,   46,   54,   56,   70,   53,   23,
+			   21,   72,   53,   55,   45,   44,  127,  194,  193,  261,
+			  126,   43,   42,   71,  125,  195,  -18,  199,  124,   73,
+			   50,   43,   42,   70,  194,  193,   51,  213,  276,   73,
+			   50,  194,  193,  209,    5,    4,   53,  194,  193,  198,
+			  197,   71,  123,  198,  197,  112,  111,  265,   35,  122,
+			  282,   71,  160,  166,  172,  178,  159,  165,  171,  177,
 
-			  158,  164,  170,  176,  157,  163,  169,  175,  202,   23,
-			  212,  254,  204,  210,  253,  319,  208,   53,   51,  206,
-			   43,   42,   49,   73,  223,  227,  222,  225,  156,  162,
-			  168,  174,  226,   50,  224,  155,  161,  167,  173,  265,
-			  200,  267,   54,  276,   71,   50,  196,   20,  214,   53,
-			   66,   46,  318,  282,   48,  221,  203,  198,  197,   48,
-			   48,  220,  195,  228,  272,  269,  270,   -8,  268,   26,
-			  266,  211,  284,   54,   53,  263,  317,  271,   74,   51,
-			   50,   49,   48,  194,  193,   73,   51,   47,   46,  198,
-			  197,    3,  264,   49,  316,   72,  315,  262,   45,   44,
+			  158,  164,  170,  176,  157,  163,  169,  175,  202,  321,
+			  212,    1,  204,  210,   54,   53,  208,  198,  197,  206,
+			   51,   50,   49,   48,  223,  227,  222,  225,  156,  162,
+			  168,  174,  226,   50,  224,  155,  161,  167,  173,    3,
+			  200,  121,  120,  119,  118,   66,  196,   20,  192,   53,
+			   49,  320,   69,  269,   48,  221,   43,   42,   49,  254,
+			  319,  220,  253,  191,  272,   26,  270,   -8,  268,  280,
+			  266,   23,  284,   54,   53,  263,   24,  267,   74,   51,
+			   50,   49,   48,   48,   49,   73,   34,   47,   46,  214,
+			  198,  197,  264,    3,   24,   72,  207,  262,   45,   44,
 
-			  205,   45,   44,  314,   30,  207,   71,  252,  313,  -18,
-			  251,   54,   53,  312,   43,   42,   52,   51,   50,   49,
-			   48,  250,  217,  218,  249,   47,   46,  311,  285,  310,
-			  283,  309,  281,   48,  279,  248,   45,   44,  247,  246,
-			  244,  190,  245,  243,  189,  296,   49,  294,  307,  292,
-			  305,  290,   43,   42,  188,  303,  277,  187,  308,   51,
-			  306,  275,  304,  186,  302,  301,  185,  184,   54,   53,
-			  183,  112,  111,  288,   51,   50,   49,   48,  286,  182,
-			  299,  180,  181,    6,  179,  297,  300,    5,    4,    3,
-			  141,  298,  295,  140,  293,  121,  120,  119,  118,  110,
+			   51,  271,  141,  201,  228,  140,   30,   71,   45,   44,
+			  -18,   48,   54,   53,  205,   43,   42,   52,   51,   50,
+			   49,   48,  211,  318,   46,  317,   47,   46,  285,  203,
+			  283,   49,  281,  252,  279,    6,  251,   45,   44,    5,
+			    4,    3,  316,  250,  315,  296,  249,  294,  314,  292,
+			  313,  290,  312,    2,   43,   42,  277,  311,  308,  273,
+			  306,  275,  304,  248,  302,  246,  247,  244,  245,  190,
+			  243,  188,  189,  288,  187,  310,    1,  186,  286,  184,
+			  185,  182,  183,  309,  181,  180,  300,   48,  179,   45,
+			   44,  298,  110,  109,  307,   19,   18,  217,  218,  305,
 
-			  109,    2,   19,   18,  291,  289,  287,  140,  154,   43,
-			   42,  273,  111,  109,  112,  110,  260,  259,  258,  257,
-			  256,   70,  153,    1,  255,  242,  241,  240,  239,  238,
-			  237,  236,  235,  115,   46,  234,  229,  219,  233,  232,
-			  231,  152,  114,  230,    0,  215,    0,   12,    0,    3,
-			  139,  138,    0,    0,    0,    0,    7,    0,    0,    0,
-			  151,  150,  149,  148,  147,  146,  145,  144,  143,  107,
-			  142,   31,   68,   25,    2,  137,  136,  135,  134,  133,
-			  132,  131,  130,  129,  128,  113,   33,   26,   32,   64,
-			    0,   67,  -18,  108, yyDummy>>)
+			  140,   50,  303,   51,  301,  299,  297,  295,  293,  291,
+			  289,  287,  154,  111,  109,  112,  110,  260,  259,   70,
+			  258,  257,  256,  255,  242,  241,  240,  239,  238,  237,
+			  236,  235,  234,  233,  115,   46,  232,  229,  219,  231,
+			    0,  114,  230,  215,    0,    0,    0,    0,   12,    0,
+			    3,  139,  138,    0,    0,  153,    7,    0,    0,    0,
+			  152,   31,  151,  150,  149,  148,  147,  146,  145,  144,
+			  143,  107,  142,    0,   68,   25,    2,  137,  136,  135,
+			  134,  133,  132,  131,  130,  129,  128,  113,   33,   26,
+			   32,  -18,   64,    0,   67,  108, yyDummy>>)
 		end
 
-	yycheck_template: SPECIAL [INTEGER]
+	yycheck_template: SPECIAL [INTEGER] is
 			-- Template for `yycheck'
 		once
 			Result := yyfixed_array (<<
-			   26,    7,   15,   26,   26,   10,   26,    4,   26,    7,
-			   23,   23,   26,    0,    9,    3,   28,   29,   23,    3,
-			    4,    0,    3,   36,    8,    9,   10,   11,   12,    3,
-			   36,   15,    4,   17,   18,   30,   26,    7,   36,    5,
-			    6,   25,   30,   26,   28,   29,   72,   44,   45,   30,
-			   72,   23,   36,   19,   72,   39,   44,   45,   72,   13,
-			   44,   45,   46,   44,   45,   11,    8,   23,   38,   23,
-			   44,   45,   44,   45,   25,   41,   25,   31,    7,    3,
-			    4,   23,   72,   10,   30,    9,   10,   11,   12,   72,
-			   46,   20,  118,  119,  120,  121,  118,  119,  120,  121,
+			   26,    7,    9,   26,   26,    3,   26,    7,   26,    3,
+			    4,    7,   26,   23,    0,    9,   10,   11,   12,    3,
+			    4,    0,    3,   30,    8,    9,   10,   11,   12,    3,
+			   36,   15,   30,   17,   18,    3,   26,   47,    4,   39,
+			   36,   25,    4,   26,   28,   29,   72,   45,   46,   30,
+			   72,   45,   46,   37,   72,   23,   40,   23,   72,   15,
+			   10,   45,   46,   47,   45,   46,    9,   23,   30,   15,
+			   10,   45,   46,   23,    5,    6,    4,   45,   46,   45,
+			   46,   37,   72,   45,   46,    3,    4,   30,   19,   72,
+			   30,   37,  118,  119,  120,  121,  118,  119,  120,  121,
 
-			  118,  119,  120,  121,  118,  119,  120,  121,  131,   38,
-			  136,   22,  132,  135,   25,   25,  134,    4,    9,  133,
-			   44,   45,   11,   15,  147,  151,  146,  149,  118,  119,
-			  120,  121,  150,   10,  148,  118,  119,  120,  121,   30,
-			  130,   30,    3,   30,   36,   10,  129,    1,  137,    4,
-			   20,   18,   25,   30,   12,  145,   23,   44,   45,   12,
-			   12,  144,   23,  152,  190,   30,  188,   21,  186,   39,
-			  184,   23,   30,    3,    4,   30,   25,   30,    8,    9,
-			   10,   11,   12,   44,   45,   15,    9,   17,   18,   44,
-			   45,    7,  182,   11,   25,   25,   25,  180,   28,   29,
+			  118,  119,  120,  121,  118,  119,  120,  121,  131,   25,
+			  136,   42,  132,  135,    3,    4,  134,   45,   46,  133,
+			    9,   10,   11,   12,  147,  151,  146,  149,  118,  119,
+			  120,  121,  150,   10,  148,  118,  119,  120,  121,    7,
+			  130,   30,   31,   32,   33,   20,  129,    1,    8,    4,
+			   11,   25,   20,   30,   12,  145,   45,   46,   11,   22,
+			   25,  144,   25,   23,  190,   40,  188,   21,  186,   30,
+			  184,   39,   30,    3,    4,   30,   13,   30,    8,    9,
+			   10,   11,   12,   12,   11,   15,   23,   17,   18,  137,
+			   45,   46,  182,    7,   31,   25,   23,  180,   28,   29,
 
-			   23,   28,   29,   25,   20,   23,   36,   22,   25,   39,
-			   25,    3,    4,   25,   44,   45,    8,    9,   10,   11,
-			   12,   22,  141,  142,   25,   17,   18,   25,  254,   25,
-			  252,   25,  250,   12,  248,   22,   28,   29,   25,   22,
-			   22,   22,   25,   25,   25,  271,   11,  269,   25,  267,
-			   25,  265,   44,   45,   22,   25,  246,   25,  284,    9,
-			  282,  244,  280,   22,  278,   25,   25,   22,    3,    4,
-			   25,    3,    4,  263,    9,   10,   11,   12,  261,   22,
-			   25,   22,   25,    1,   25,   25,  276,    5,    6,    7,
-			   43,  274,   25,   46,   25,   30,   31,   32,   33,    3,
+			    9,   30,   44,   23,  152,   47,   20,   37,   28,   29,
+			   40,   12,    3,    4,   23,   45,   46,    8,    9,   10,
+			   11,   12,   23,   25,   18,   25,   17,   18,  254,   23,
+			  252,   11,  250,   22,  248,    1,   25,   28,   29,    5,
+			    6,    7,   25,   22,   25,  271,   25,  269,   25,  267,
+			   25,  265,   25,   19,   45,   46,  246,   25,  284,   41,
+			  282,  244,  280,   22,  278,   22,   25,   22,   25,   22,
+			   25,   22,   25,  263,   25,   25,   42,   22,  261,   22,
+			   25,   22,   25,   25,   25,   22,  276,   12,   25,   28,
+			   29,  274,    3,    4,   25,    5,    6,  141,  142,   25,
 
-			    4,   19,    5,    6,   25,   25,   25,   46,   46,   44,
-			   45,   40,    4,    4,    3,    3,   25,   25,   25,   25,
-			   25,   46,   39,   41,   25,   25,   25,   25,   25,   25,
-			   25,   25,   25,    7,   18,   25,    8,    8,   25,   25,
-			   25,   43,   68,  154,   -1,  140,   -1,    0,   -1,    7,
-			   20,   20,   -1,   -1,   -1,   -1,    0,   -1,   -1,   -1,
-			   43,   43,   43,   43,   43,   43,   43,   43,   43,   19,
-			   43,   17,   21,   21,   19,   43,   43,   43,   43,   43,
-			   43,   43,   43,   43,   43,   40,   42,   39,   42,   26,
-			   -1,   27,   39,   36, yyDummy>>)
+			   47,   10,   25,    9,   25,   25,   25,   25,   25,   25,
+			   25,   25,   47,    4,    4,    3,    3,   25,   25,   47,
+			   25,   25,   25,   25,   25,   25,   25,   25,   25,   25,
+			   25,   25,   25,   25,    7,   18,   25,    8,    8,   25,
+			   -1,   68,  154,  140,   -1,   -1,   -1,   -1,    0,   -1,
+			    7,   20,   20,   -1,   -1,   40,    0,   -1,   -1,   -1,
+			   44,   17,   44,   44,   44,   44,   44,   44,   44,   44,
+			   44,   19,   44,   -1,   21,   21,   19,   44,   44,   44,
+			   44,   44,   44,   44,   44,   44,   44,   41,   43,   40,
+			   43,   40,   26,   -1,   27,   36, yyDummy>>)
 		end
 
 feature {NONE} -- Semantic value stacks
@@ -6450,23 +6450,23 @@ feature {NONE} -- Semantic value stacks
 
 feature {NONE} -- Constants
 
-	yyFinal: INTEGER = 324
+	yyFinal: INTEGER is 324
 			-- Termination state id
 
-	yyFlag: INTEGER = -32768
+	yyFlag: INTEGER is -32768
 			-- Most negative INTEGER
 
-	yyNtbase: INTEGER = 47
+	yyNtbase: INTEGER is 48
 			-- Number of tokens
 
-	yyLast: INTEGER = 393
+	yyLast: INTEGER is 395
 			-- Upper bound of `yytable' and `yycheck'
 
-	yyMax_token: INTEGER = 292
+	yyMax_token: INTEGER is 293
 			-- Maximum token id
 			-- (upper bound of `yytranslate'.)
 
-	yyNsyms: INTEGER = 102
+	yyNsyms: INTEGER is 103
 			-- Number of symbols
 			-- (terminal and nonterminal)
 
@@ -6499,7 +6499,7 @@ feature -- Initialization
 
 			create time_vc
 			create date_vc
-
+	
 			set_input_buffer (new_string_buffer (in_text))
 			parse
 		end
@@ -6562,8 +6562,8 @@ feature {NONE} -- Parse Tree
 	time_vc: TIME_VALIDITY_CHECKER
 	date_vc: DATE_VALIDITY_CHECKER
 
-feature {NONE} -- Implementation
-
+feature {NONE} -- Implementation 
+	
 	term: CODE_PHRASE
 	a_uri: URI
 

@@ -39,11 +39,12 @@ feature {NONE} -- Initialization
 		do
 			default_create
 			adl_application.initialise
-			show_splash_window
-
-			if not is_destroyed then
-				post_launch_actions.extend_kamikaze (agent show_main_window)
-				launch
+			if adl_application.initialised then
+				show_splash_window
+				if not is_destroyed then
+					post_launch_actions.extend_kamikaze (agent show_main_window)
+					launch
+				end
 			end
 		end
 

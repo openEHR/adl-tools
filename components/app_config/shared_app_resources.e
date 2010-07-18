@@ -31,34 +31,44 @@ feature -- Access
 			Result := resource_value ("default", "current_language")
 		end
 
-	reference_repository_paths: ARRAYED_LIST[STRING]
+	repository_profiles: attached HASH_TABLE [ARRAYED_LIST[STRING], STRING]
+			-- hash of profiles each of which is a list of {ref_repo_path, working_repo_path} or maybe just
+			-- {ref_repo_path}, keyed by profile name. The data are stored for the moment in the old-style
+			-- resource .cfg file, in the following way:
+			--
+			-- [repository]
+			-- profile_1=a_ref_path,a_working_path
+			-- profile_2=a_ref_path,a_working_path
+			-- ..
+			-- profile_n=a_ref_path,a_working_path
+			--
+		do
+			Result := resource_category_lists("profiles")
+		end
+
+	current_repository_profile: attached STRING
+		do
+			Result := resource_value("default", "current_repository_profile")
+		end
+
+	reference_repository_path: attached STRING
 			-- path of root of ADL file tree
 		do
-			Result := resource_value_list("default", "reference_repositories")
-			from Result.start until Result.off loop
-				Result.replace(substitute_env_vars(Result.item))
-				Result.forth
+			if repository_profiles.has (current_repository_profile) then
+				Result := repository_profiles.item (current_repository_profile).i_th (1)
+			else
+				create Result.make(0)
 			end
-			Result.compare_objects
-		ensure
-			Result_attached: Result /= Void
-			Value_comparison: Result.object_comparison
 		end
 
-	reference_repository_path: STRING
+	work_repository_path: attached STRING
 			-- path of root of ADL file tree
 		do
-			Result := substitute_env_vars(resource_value("default", "reference_repository"))
-		ensure
-			Result /= Void
-		end
-
-	work_repository_path: STRING
-			-- path of root of ADL file tree
-		do
-			Result := substitute_env_vars(resource_value("default", "work_repository"))
-		ensure
-			Result /= Void
+			if repository_profiles.has (current_repository_profile) and repository_profiles.item (current_repository_profile).count > 1 then
+				Result := repository_profiles.item (current_repository_profile).i_th (2)
+			else
+				create Result.make(0)
+			end
 		end
 
 	validation_strict: BOOLEAN
@@ -122,63 +132,55 @@ feature -- Access
 
 feature -- Application Switch Setting
 
-	set_current_language (a_lang: STRING)
+	set_current_language (a_lang: attached STRING)
 			-- set the language that should be used to display archetypes in the UI.
 		require
-			a_lang_attached: a_lang /= Void and then not a_lang.is_empty
+			a_lang_attached: not a_lang.is_empty
 		do
 			set_resource_value ("default", "current_language", a_lang)
 		end
 
-	set_reference_repository_path(a_path: STRING)
-			-- set reference_repository_path
-		require
-			a_path_valid: a_path /= Void and then not a_path.is_empty
+	set_repository_profiles (profiles: attached HASH_TABLE [ARRAYED_LIST[STRING], STRING])
+			-- hash of profiles each of which is a list of {ref_repo_path, working_repo_path} or maybe just
+			-- {ref_repo_path}, keyed by profile name. The data are stored for the moment in the old-style
+			-- resource .cfg file, in the following way:
+			--
+			-- [repository]
+			-- profile_1=a_ref_path,a_working_path
+			-- profile_2=a_ref_path,a_working_path
+			-- ..
+			-- profile_n=a_ref_path,a_working_path
+			--
 		do
-			set_resource_value("default", "reference_repository", a_path)
+			set_resource_category_lists("profiles", profiles)
 		end
 
-	set_reference_repository_paths(a_path_list: ARRAYED_LIST[STRING])
-			-- set reference_repository_path(s)
+	set_current_repository_profile(a_profile_name: STRING)
 		require
-			a_path_list_valid: a_path_list /= Void and then not a_path_list.is_empty
+			profile_name_valid: not a_profile_name.is_empty
 		do
-			set_resource_value_list("default", "reference_repositories", a_path_list)
+			set_resource_value("default", "current_repository_profile", a_profile_name)
 		end
 
-	set_rm_schemas_load_list(a_schema_list: ARRAYED_LIST[STRING])
+	set_rm_schemas_load_list(a_schema_list: attached ARRAYED_LIST[STRING])
 			-- set rm_schemas(s)
 		require
-			a_schema_list_valid: a_schema_list /= Void and then not a_schema_list.is_empty
+			a_schema_list_valid: not a_schema_list.is_empty
 		do
 			set_resource_value_list("default", "rm_schemas_load_list", a_schema_list)
 		end
 
-	set_work_repository_path(a_path: STRING)
-			-- set work repository_path
-		require
-			a_path_valid: a_path /= Void
-		do
-			if not a_path.is_empty then
-				set_resource_value("default", "work_repository", a_path)
-			else
-				remove_resource ("default", "work_repository")
-			end
-		end
-
-	set_html_export_directory (value: STRING)
+	set_html_export_directory (value: attached STRING)
 			-- Set the path of directory to which HTML is exported.
 		require
-			value_attached: value /= Void
 			value_not_empty: not value.is_empty
 		do
 			set_resource_value("default", "html_export_directory", value)
 		end
 
-	set_adl_version_for_flat_output (value: STRING)
+	set_adl_version_for_flat_output (value: attached STRING)
 			-- Set version of ADL syntax to use for outputting flat archetypes.
 		require
-			value_attached: value /= Void
 			value_not_empty: not value.is_empty
 		do
 			set_resource_value("default", "adl_version_for_flat_output", value)

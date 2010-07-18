@@ -97,13 +97,8 @@ feature -- Commands
 			else
 				s.remove_substring (lpos+1, s.count)
 			end
-			from rm_schemas.start until rm_schemas.off loop
-				s.append_character (' ')
-				s.append (rm_schemas.item_for_iteration.schema.schema_name)
-				s.append_character (',')
-				rm_schemas.forth
-			end
-			s.remove_tail (1)
+			s.append_character (' ')
+			s.append (current_repository_profile)
 			explorer_label.set_text (s)
 
 			-- update tree

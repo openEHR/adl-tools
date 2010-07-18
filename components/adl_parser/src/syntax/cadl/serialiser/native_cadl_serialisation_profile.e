@@ -38,6 +38,7 @@ feature {NONE} -- Implementation
 			Result.put("allow_archetype",		SYM_ALLOW_ARCHETYPE)
 			Result.put("use_archetype",		SYM_USE_ARCHETYPE)
 
+			Result.put("closed",			SYM_CLOSED)
 			Result.put("include",			SYM_INCLUDE)
 			Result.put("exclude",			SYM_EXCLUDE)
 

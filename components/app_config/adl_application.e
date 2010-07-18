@@ -28,46 +28,54 @@ feature -- Initialisation
 		once
 			initialise_default_resource_config_file_name
 			message_db.populate(message_templates_text, locale_language_short)
-			billboard.set_status_reporting_level(status_reporting_level)
+			if message_db.database_loaded then
+				billboard.set_status_reporting_level(status_reporting_level)
 
-			if html_export_directory.is_empty then
-				set_html_export_directory (file_system.pathname (file_system.absolute_parent_directory (reference_repository_path), "html"))
-			end
+				if html_export_directory.is_empty then
+					set_html_export_directory (file_system.pathname (file_system.absolute_parent_directory (reference_repository_path), "html"))
+				end
 
-			if not adl_version_for_flat_output.is_empty then
-				post_warning (Current, "initialise", "adl_version_warning", <<adl_version_for_flat_output>>)
-			end
+				if not adl_version_for_flat_output.is_empty then
+					post_warning (Current, "initialise", "adl_version_warning", <<adl_version_for_flat_output>>)
+				end
 
-			if validation_strict then
-				post_warning (Current, "initialise", "validation_strict", Void)
-			else
-				post_warning (Current, "initialise", "validation_non_strict", Void)
-			end
+				if validation_strict then
+					post_warning (Current, "initialise", "validation_strict", Void)
+				else
+					post_warning (Current, "initialise", "validation_non_strict", Void)
+				end
 
-			load_rm_schemas
+				load_rm_schemas
 
-			if not found_valid_rm_schemas then
-				create strx.make_empty
-				rm_schemas_load_list.do_all(agent (s: STRING) do strx.append(s + ", ") end)
-				strx.remove_tail (2) -- remove final ", "
-				post_warning (Current, "initialise", "model_access_e0", <<strx, default_rm_schema_directory>>)
-			else
-				if not reference_repository_path.is_empty then
-					if directory_exists(reference_repository_path) then
-						source_repositories.set_reference_repository (reference_repository_path)
-						if source_repositories.valid_working_repository_path (work_repository_path) then
-							source_repositories.set_work_repository (work_repository_path)
+				if not found_valid_rm_schemas then
+					create strx.make_empty
+					rm_schemas_load_list.do_all(agent (s: STRING) do strx.append(s + ", ") end)
+					strx.remove_tail (2) -- remove final ", "
+					post_warning (Current, "initialise", "model_access_e0", <<strx, default_rm_schema_directory>>)
+				else
+					if not reference_repository_path.is_empty then
+						if directory_exists(reference_repository_path) then
+							source_repositories.set_reference_repository (reference_repository_path)
+							if source_repositories.valid_working_repository_path (work_repository_path) then
+								source_repositories.set_work_repository (work_repository_path)
+							else
+								post_error (Current, "initialise", "work_repo_not_found", <<work_repository_path>>)
+							end
 						else
-							post_error (Current, "initialise", "work_repo_not_found", <<work_repository_path>>)
+							post_error (Current, "initialise", "ref_repo_not_found", <<reference_repository_path>>)
 						end
-					else
-						post_error (Current, "initialise", "ref_repo_not_found", <<reference_repository_path>>)
 					end
 				end
+				initialised := True
 			end
 		end
 
-feature -- Message database
+feature -- Status Report
+
+	initialised: BOOLEAN
+			-- True after successful initialisation
+
+feature {NONE} -- Implementation
 
 	message_templates_text: STRING =
 			-- string form of message template tables in one language. Logically these should be broken up into different chunks
@@ -92,6 +100,10 @@ feature -- Message database
 			["ref_repo_not_found"] = <"Error: reference Repository $1 does not exist or not readable (check Repository settings)">
 			["work_repo_not_found"] = <"Error; work Repository $1 does not exist or not readable (check Repository settings)">
 			["work_repo_not_invalid"] = <"Error; work Repository $1 does not exist or is the same as or a child of the reference repository (check Repository settings)">
+			["profile_not_yet_defined"] = <"Create a profile name before choosing directories">
+			["no_profile_to_remove"] = <"No profile available to remove">
+			["remove_profile_question"] = <"Remove profile $1?">
+			["populating_directory"] = <"Populating from directories in $1 profile...">
 			
 			-- DT_OBJECT_CONVERTER.dt_to_object
 			["container_type_mismatch"] = 

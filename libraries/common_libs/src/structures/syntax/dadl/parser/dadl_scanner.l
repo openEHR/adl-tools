@@ -112,6 +112,7 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 			else
 				last_token := SYM_START_DBLOCK
 				start_block_received := True
+				block_depth := block_depth + 1
 			end
 		}
 
@@ -120,6 +121,7 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 				last_token := SYM_GT
 			else
 				last_token := SYM_END_DBLOCK
+				block_depth := block_depth - 1
 			end
 		}
 
@@ -225,9 +227,13 @@ P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])? {
 
 ----------/* CADL Blocks */ -------------------------------------------------
 \{[^{}]*		{				-- beginning of CADL block
-				in_buffer.append_string (text)
-				set_start_condition (IN_CADL_BLOCK)
-				cadl_depth := 1
+				if block_depth = 1 then
+					in_buffer.append_string (text)
+					set_start_condition (IN_CADL_BLOCK)
+					cadl_depth := 1
+				else
+					last_token := ERR_CADL_MISPLACED
+				end
 			}
 
 <IN_CADL_BLOCK> {
@@ -349,6 +355,8 @@ feature {NONE} -- Local variables
 	in_interval: BOOLEAN
 
 	start_block_received: BOOLEAN
+
+	block_depth: INTEGER
 
 feature {NONE} -- Initialization
 

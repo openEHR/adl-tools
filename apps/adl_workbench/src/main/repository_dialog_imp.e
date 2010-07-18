@@ -18,7 +18,7 @@ inherit
 		redefine
 			initialize, is_in_default_state
 		end
-			
+
 	CONSTANTS
 		undefine
 			is_equal, default_create, copy
@@ -28,48 +28,60 @@ feature {NONE}-- Initialization
 
 	initialize
 			-- Initialize `Current'.
+		local
+			internal_font: EV_FONT
 		do
 			Precursor {EV_DIALOG}
 			initialize_constants
-			
+
 				-- Create all widgets.
 			create l_ev_vertical_box_1
-			create l_ev_label_1
 			create top_horizontal_box_for_cross_platform_cosmetic_padding
-			create l_ev_frame_1
+			create profile_frame
 			create l_ev_horizontal_box_1
-			create repository_dialog_reference_path_cb
+			create profile_combo_box
+			create profile_add_button
+			create profile_remove_button
+			create top_horizontal_box_for_cross_platform_cosmetic_padding_2
+			create ref_path_frame
+			create l_ev_horizontal_box_2
+			create repository_dialog_reference_path_text
 			create repository_dialog_reference_path_browse_button
 			create middle_horizontal_box_for_cross_platform_cosmetic_padding
-			create l_ev_frame_2
-			create l_ev_horizontal_box_2
+			create work_path_frame
+			create l_ev_horizontal_box_3
 			create repository_dialog_work_path_text
 			create repository_dialog_work_path_button
 			create bottom_horizontal_box_for_cross_platform_cosmetic_padding
-			create l_ev_horizontal_box_3
+			create l_ev_horizontal_box_4
 			create l_ev_cell_1
 			create repository_dialog_ok_button
 			create repository_dialog_cancel_button
-			
+
 				-- Build widget structure.
 			extend (l_ev_vertical_box_1)
-			l_ev_vertical_box_1.extend (l_ev_label_1)
 			l_ev_vertical_box_1.extend (top_horizontal_box_for_cross_platform_cosmetic_padding)
-			l_ev_vertical_box_1.extend (l_ev_frame_1)
-			l_ev_frame_1.extend (l_ev_horizontal_box_1)
-			l_ev_horizontal_box_1.extend (repository_dialog_reference_path_cb)
-			l_ev_horizontal_box_1.extend (repository_dialog_reference_path_browse_button)
+			l_ev_vertical_box_1.extend (profile_frame)
+			profile_frame.extend (l_ev_horizontal_box_1)
+			l_ev_horizontal_box_1.extend (profile_combo_box)
+			l_ev_horizontal_box_1.extend (profile_add_button)
+			l_ev_horizontal_box_1.extend (profile_remove_button)
+			l_ev_vertical_box_1.extend (top_horizontal_box_for_cross_platform_cosmetic_padding_2)
+			l_ev_vertical_box_1.extend (ref_path_frame)
+			ref_path_frame.extend (l_ev_horizontal_box_2)
+			l_ev_horizontal_box_2.extend (repository_dialog_reference_path_text)
+			l_ev_horizontal_box_2.extend (repository_dialog_reference_path_browse_button)
 			l_ev_vertical_box_1.extend (middle_horizontal_box_for_cross_platform_cosmetic_padding)
-			l_ev_vertical_box_1.extend (l_ev_frame_2)
-			l_ev_frame_2.extend (l_ev_horizontal_box_2)
-			l_ev_horizontal_box_2.extend (repository_dialog_work_path_text)
-			l_ev_horizontal_box_2.extend (repository_dialog_work_path_button)
+			l_ev_vertical_box_1.extend (work_path_frame)
+			work_path_frame.extend (l_ev_horizontal_box_3)
+			l_ev_horizontal_box_3.extend (repository_dialog_work_path_text)
+			l_ev_horizontal_box_3.extend (repository_dialog_work_path_button)
 			l_ev_vertical_box_1.extend (bottom_horizontal_box_for_cross_platform_cosmetic_padding)
-			l_ev_vertical_box_1.extend (l_ev_horizontal_box_3)
-			l_ev_horizontal_box_3.extend (l_ev_cell_1)
-			l_ev_horizontal_box_3.extend (repository_dialog_ok_button)
-			l_ev_horizontal_box_3.extend (repository_dialog_cancel_button)
-			
+			l_ev_vertical_box_1.extend (l_ev_horizontal_box_4)
+			l_ev_horizontal_box_4.extend (l_ev_cell_1)
+			l_ev_horizontal_box_4.extend (repository_dialog_ok_button)
+			l_ev_horizontal_box_4.extend (repository_dialog_cancel_button)
+
 			create string_constant_set_procedures.make (10)
 			create string_constant_retrieval_functions.make (10)
 			create integer_constant_set_procedures.make (10)
@@ -85,44 +97,72 @@ feature {NONE}-- Initialization
 			create color_constant_retrieval_functions.make (10)
 			l_ev_vertical_box_1.set_padding (3)
 			l_ev_vertical_box_1.set_border_width (20)
-			l_ev_vertical_box_1.disable_item_expand (l_ev_label_1)
-			l_ev_vertical_box_1.disable_item_expand (l_ev_frame_1)
-			l_ev_vertical_box_1.disable_item_expand (l_ev_frame_2)
-			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_3)
-			l_ev_label_1.set_text ("Choose directories above where the archetypes are:")
-			l_ev_frame_1.set_text ("Reference Repository Path")
-			l_ev_frame_1.set_minimum_width (600)
-			l_ev_horizontal_box_1.set_padding (10)
-			l_ev_horizontal_box_1.set_border_width (8)
-			l_ev_horizontal_box_1.disable_item_expand (repository_dialog_reference_path_browse_button)
-			repository_dialog_reference_path_browse_button.set_text ("Browse...")
-			repository_dialog_reference_path_browse_button.set_minimum_width (65)
-			l_ev_frame_2.set_text ("Work Repository Path (Optional)")
-			l_ev_frame_2.set_minimum_width (600)
+			l_ev_vertical_box_1.disable_item_expand (profile_frame)
+			l_ev_vertical_box_1.disable_item_expand (ref_path_frame)
+			l_ev_vertical_box_1.disable_item_expand (work_path_frame)
+			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_4)
+			profile_frame.set_text ("Profiles")
+			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_1.set_padding (?))
+			integer_constant_retrieval_functions.extend (agent padding_width)
+			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_1.set_border_width (?))
+			integer_constant_retrieval_functions.extend (agent border_width)
+			l_ev_horizontal_box_1.disable_item_expand (profile_add_button)
+			l_ev_horizontal_box_1.disable_item_expand (profile_remove_button)
+			profile_combo_box.set_minimum_width (60)
+			create internal_font
+			internal_font.set_family ({EV_FONT_CONSTANTS}.Family_screen)
+			internal_font.set_weight ({EV_FONT_CONSTANTS}.Weight_regular)
+			internal_font.set_shape ({EV_FONT_CONSTANTS}.Shape_regular)
+			internal_font.set_height_in_points (12)
+			profile_add_button.set_font (internal_font)
+			profile_add_button.set_text ("+")
+			profile_add_button.set_tooltip ("Add a new profile")
+			create internal_font
+			internal_font.set_family ({EV_FONT_CONSTANTS}.Family_screen)
+			internal_font.set_weight ({EV_FONT_CONSTANTS}.Weight_regular)
+			internal_font.set_shape ({EV_FONT_CONSTANTS}.Shape_regular)
+			internal_font.set_height_in_points (12)
+			profile_remove_button.set_font (internal_font)
+			profile_remove_button.set_text ("-")
+			profile_remove_button.set_tooltip ("Remove a profile")
+			ref_path_frame.set_text ("Reference Repository Path")
+			ref_path_frame.set_minimum_width (600)
 			l_ev_horizontal_box_2.set_padding (10)
 			l_ev_horizontal_box_2.set_border_width (8)
-			l_ev_horizontal_box_2.disable_item_expand (repository_dialog_work_path_button)
+			l_ev_horizontal_box_2.disable_item_expand (repository_dialog_reference_path_browse_button)
+			repository_dialog_reference_path_browse_button.set_text ("Browse...")
+			repository_dialog_reference_path_browse_button.set_tooltip ("Choose directory above where the archetypes are")
+			repository_dialog_reference_path_browse_button.set_minimum_width (65)
+			work_path_frame.set_text ("Work Repository Path (Optional)")
+			work_path_frame.set_minimum_width (600)
+			l_ev_horizontal_box_3.set_padding (10)
+			l_ev_horizontal_box_3.set_border_width (8)
+			l_ev_horizontal_box_3.disable_item_expand (repository_dialog_work_path_button)
 			repository_dialog_work_path_button.set_text ("Browse...")
+			repository_dialog_work_path_button.set_tooltip ("Choose directory above where the archetypes are")
 			repository_dialog_work_path_button.set_minimum_width (65)
-			l_ev_horizontal_box_3.set_padding (15)
-			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_3.set_border_width (?))
+			l_ev_horizontal_box_4.set_padding (15)
+			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_4.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
-			l_ev_horizontal_box_3.disable_item_expand (repository_dialog_ok_button)
-			l_ev_horizontal_box_3.disable_item_expand (repository_dialog_cancel_button)
+			l_ev_horizontal_box_4.disable_item_expand (repository_dialog_ok_button)
+			l_ev_horizontal_box_4.disable_item_expand (repository_dialog_cancel_button)
 			repository_dialog_ok_button.set_text ("OK")
 			repository_dialog_ok_button.set_minimum_width (100)
 			repository_dialog_ok_button.set_minimum_height (26)
 			repository_dialog_cancel_button.set_text ("Cancel")
 			repository_dialog_cancel_button.set_minimum_width (100)
 			repository_dialog_cancel_button.set_minimum_height (26)
-			set_minimum_height (260)
+			set_minimum_height (300)
 			set_maximum_width (2000)
-			set_maximum_height (260)
-			set_title ("ADL Workbench Repository Settings")
-			
+			set_maximum_height (300)
+			set_title ("ADL Workbench Repository Profile Configuration")
+
 			set_all_attributes_using_constants
-			
+
 				-- Connect events.
+			profile_combo_box.select_actions.extend (agent select_profile)
+			profile_add_button.select_actions.extend (agent add_new_profile)
+			profile_remove_button.select_actions.extend (agent remove_current_profile)
 			repository_dialog_reference_path_browse_button.select_actions.extend (agent get_reference_repository_path)
 			repository_dialog_work_path_button.select_actions.extend (agent get_work_repository_path)
 			repository_dialog_ok_button.select_actions.extend (agent repository_dialog_ok)
@@ -134,19 +174,19 @@ feature {NONE}-- Initialization
 
 feature -- Access
 
-	repository_dialog_reference_path_cb: EV_COMBO_BOX
+	profile_combo_box: EV_COMBO_BOX
 	l_ev_cell_1: EV_CELL
-	repository_dialog_reference_path_browse_button,
+	profile_add_button, profile_remove_button, repository_dialog_reference_path_browse_button,
 	repository_dialog_work_path_button, repository_dialog_ok_button, repository_dialog_cancel_button: EV_BUTTON
 	top_horizontal_box_for_cross_platform_cosmetic_padding,
-	l_ev_horizontal_box_1, middle_horizontal_box_for_cross_platform_cosmetic_padding,
-	l_ev_horizontal_box_2, bottom_horizontal_box_for_cross_platform_cosmetic_padding,
-	l_ev_horizontal_box_3: EV_HORIZONTAL_BOX
+	l_ev_horizontal_box_1, top_horizontal_box_for_cross_platform_cosmetic_padding_2,
+	l_ev_horizontal_box_2, middle_horizontal_box_for_cross_platform_cosmetic_padding,
+	l_ev_horizontal_box_3, bottom_horizontal_box_for_cross_platform_cosmetic_padding,
+	l_ev_horizontal_box_4: EV_HORIZONTAL_BOX
 	l_ev_vertical_box_1: EV_VERTICAL_BOX
-	l_ev_label_1: EV_LABEL
+	repository_dialog_reference_path_text,
 	repository_dialog_work_path_text: EV_TEXT_FIELD
-	l_ev_frame_1,
-	l_ev_frame_2: EV_FRAME
+	profile_frame, ref_path_frame, work_path_frame: EV_FRAME
 
 feature {NONE} -- Implementation
 
@@ -157,28 +197,43 @@ feature {NONE} -- Implementation
 			-- for `Current'.
 			Result := True
 		end
-	
+
 	user_initialization
 			-- Feature for custom initialization, called at end of `initialize'.
 		deferred
 		end
-	
-	get_reference_repository_path is
+
+	select_profile
+			-- Called by `select_actions' of `profile_combo_box'.
+		deferred
+		end
+
+	add_new_profile
+			-- Called by `select_actions' of `profile_add_button'.
+		deferred
+		end
+
+	remove_current_profile
+			-- Called by `select_actions' of `profile_remove_button'.
+		deferred
+		end
+
+	get_reference_repository_path
 			-- Called by `select_actions' of `repository_dialog_reference_path_browse_button'.
 		deferred
 		end
-	
-	get_work_repository_path is
+
+	get_work_repository_path
 			-- Called by `select_actions' of `repository_dialog_work_path_button'.
 		deferred
 		end
-	
-	repository_dialog_ok is
+
+	repository_dialog_ok
 			-- Called by `select_actions' of `repository_dialog_ok_button'.
 		deferred
 		end
-	
-	
+
+
 feature {NONE} -- Constant setting
 
 	set_attributes_using_string_constants
@@ -198,7 +253,7 @@ feature {NONE} -- Constant setting
 				string_constant_set_procedures.forth
 			end
 		end
-		
+
 	set_attributes_using_integer_constants
 			-- Set all attributes relying on integer constants to the current
 			-- value of the associated constant.
@@ -234,7 +289,7 @@ feature {NONE} -- Constant setting
 				integer_interval_constant_set_procedures.forth
 			end
 		end
-		
+
 	set_attributes_using_pixmap_constants
 			-- Set all attributes relying on pixmap constants to the current
 			-- value of the associated constant.
@@ -252,7 +307,7 @@ feature {NONE} -- Constant setting
 				pixmap_constant_set_procedures.forth
 			end
 		end
-		
+
 	set_attributes_using_font_constants
 			-- Set all attributes relying on font constants to the current
 			-- value of the associated constant.
@@ -268,9 +323,9 @@ feature {NONE} -- Constant setting
 				f := font_constant_retrieval_functions.i_th (font_constant_set_procedures.index).last_result
 				font_constant_set_procedures.item.call ([f])
 				font_constant_set_procedures.forth
-			end	
+			end
 		end
-		
+
 	set_attributes_using_color_constants
 			-- Set all attributes relying on color constants to the current
 			-- value of the associated constant.
@@ -288,7 +343,7 @@ feature {NONE} -- Constant setting
 				color_constant_set_procedures.forth
 			end
 		end
-		
+
 	set_all_attributes_using_constants
 			-- Set all attributes relying on constants to the current
 			-- calue of the associated constant.
@@ -299,7 +354,7 @@ feature {NONE} -- Constant setting
 			set_attributes_using_font_constants
 			set_attributes_using_color_constants
 		end
-					
+
 	string_constant_set_procedures: ARRAYED_LIST [PROCEDURE [ANY, TUPLE [STRING_GENERAL]]]
 	string_constant_retrieval_functions: ARRAYED_LIST [FUNCTION [ANY, TUPLE [], STRING_GENERAL]]
 	integer_constant_set_procedures: ARRAYED_LIST [PROCEDURE [ANY, TUPLE [INTEGER]]]
@@ -312,7 +367,7 @@ feature {NONE} -- Constant setting
 	font_constant_retrieval_functions: ARRAYED_LIST [FUNCTION [ANY, TUPLE [], EV_FONT]]
 	color_constant_set_procedures: ARRAYED_LIST [PROCEDURE [ANY, TUPLE [EV_COLOR]]]
 	color_constant_retrieval_functions: ARRAYED_LIST [FUNCTION [ANY, TUPLE [], EV_COLOR]]
-	
+
 	integer_from_integer (an_integer: INTEGER): INTEGER
 			-- Return `an_integer', used for creation of
 			-- an agent that returns a fixed integer value.

@@ -110,6 +110,11 @@ feature -- Visitor
 			last_result.append (apply_style(symbol(SYM_ALLOW_ARCHETYPE), STYLE_KEYWORD) + format_item(FMT_SPACE))
 			serialise_type_node_id (a_node, depth)
 			serialise_occurrences(a_node, depth)
+
+			if a_node.is_closed then
+				last_result.append (apply_style(symbol(SYM_CLOSED), STYLE_KEYWORD) + format_item(FMT_SPACE))
+			end
+
 			last_result.append (apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
 			last_result.append (symbol(SYM_START_CBLOCK))
 
@@ -134,32 +139,26 @@ feature -- Visitor
 		do
 			-- output includes & excludes, indent the end block, since must be on new line
 			if not a_node.any_allowed then
+				-- includes section
 				if a_node.has_includes then
 					last_result.append (create_indent(depth+1) + apply_style(symbol(SYM_INCLUDE), STYLE_KEYWORD) +
 						format_item(FMT_NEWLINE))
 
 					invs := a_node.includes
-					from
-						invs.start
-					until
-						invs.off
-					loop
+					from invs.start until invs.off loop
 						last_result.append (create_indent(depth+2) +
 							invs.item.expression.as_string + format_item(FMT_NEWLINE))
 						invs.forth
 					end
 				end
 
+				-- excludes section
 				if a_node.has_excludes then
 					last_result.append (create_indent(depth+1) + apply_style(symbol(SYM_EXCLUDE), STYLE_KEYWORD) +
 						format_item(FMT_NEWLINE))
 
 					invs := a_node.excludes
-					from
-						invs.start
-					until
-						invs.off
-					loop
+					from invs.start until invs.off loop
 						last_result.append (create_indent(depth+2) +
 							invs.item.expression.as_string + format_item(FMT_NEWLINE))
 						invs.forth

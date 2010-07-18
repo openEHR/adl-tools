@@ -34,6 +34,7 @@ feature -- Modification
 			--			["key2"] = <"Message string with $1 argument $2 argument etc">
 			--		>
 			--	>
+			-- caller should check database_loaded after call.
 		require
 			Valid_message_string: attached a_dadl_str
 			Valid_local_lang: attached a_locale_lang and then not a_locale_lang.is_empty
@@ -53,7 +54,7 @@ feature -- Modification
 					templates.merge (init_helper.templates.item (Default_message_language))
 				end
 			else
-				io.put_string ("Message database failure: " + parser.error_text + "%N")
+				io.put_string ("Message database failure: " + parser.error_text + " (check ADL_APPLICATION)%N")
 			end
 		end
 

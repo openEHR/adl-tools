@@ -344,8 +344,8 @@ feature -- Access
 			Result.append ("Author: Thomas Beale%N")
 			Result.append ("Contributors: Peter Gummer%N")
 			Result.append ("Built using%N")
-			Result.append ("%TEiffel Software Eiffel (http://www.eiffel.com)%N")
-			Result.append ("%TGobo parsing libraries & tools (http://www.gobosoft.com)%N")
+			Result.append ("- Eiffel Software Eiffel (http://www.eiffel.com)%N")
+			Result.append ("- Gobo parsing libraries & tools (http://www.gobosoft.com)%N")
 		ensure
 			not_empty: not Result.is_empty
 		end
@@ -784,14 +784,11 @@ feature {NONE} -- Implementation
 				dialog.set_start_directory (init_value)
 			end
 
-			from
-			until
-				Result /= Void
-			loop
+			from until Result /= Void loop
 				dialog.show_modal_to_window (a_parent_window)
 
 				if dialog.selected_button = Void or else dialog.selected_button.is_equal ("Cancel") then
-					Result := init_value
+					Result := ""
 				else
 					if not dialog.directory.is_empty then
 						create a_dir.make (dialog.directory.as_string_8)
