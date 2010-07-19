@@ -604,7 +604,6 @@ feature -- Commands
 			-- This is safe, since this is an ADL 1.5 only construct
 		require
 			Compilation_state_valid: compilation_state = cs_ready_to_parse_legacy
-			No_differential_file: not has_differential_file
 		local
 			legacy_flat_archetype: FLAT_ARCHETYPE
 		do
