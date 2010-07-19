@@ -56,10 +56,13 @@ feature -- Initialisation
 					if not reference_repository_path.is_empty then
 						if directory_exists(reference_repository_path) then
 							source_repositories.set_reference_repository (reference_repository_path)
-							if source_repositories.valid_working_repository_path (work_repository_path) then
-								source_repositories.set_work_repository (work_repository_path)
-							else
-								post_error (Current, "initialise", "work_repo_not_found", <<work_repository_path>>)
+
+							if not work_repository_path.is_empty then
+								if source_repositories.valid_working_repository_path (work_repository_path) then
+									source_repositories.set_work_repository (work_repository_path)
+								else
+									post_error (Current, "initialise", "work_repo_not_found", <<work_repository_path>>)
+								end
 							end
 						else
 							post_error (Current, "initialise", "ref_repo_not_found", <<reference_repository_path>>)
