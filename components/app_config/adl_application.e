@@ -107,6 +107,9 @@ feature {NONE} -- Implementation
 			["no_profile_to_remove"] = <"No profile available to remove">
 			["remove_profile_question"] = <"Remove profile $1?">
 			["populating_directory"] = <"Populating from directories in $1 profile...">
+			["add_one_profile_only"] = <"Can only add one profile at a time; hit Ok or Cancel">
+			["cant_remove_with_add_pending"] = <"Previous add needs to be committed; hit Ok or Cancel">
+			["existing_profile_changes_pending"] = <"Changes to current profile need to be committed; hit Ok or Cancel">
 			
 			-- DT_OBJECT_CONVERTER.dt_to_object
 			["container_type_mismatch"] = 

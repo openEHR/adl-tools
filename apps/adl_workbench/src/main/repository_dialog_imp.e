@@ -161,6 +161,7 @@ feature {NONE}-- Initialization
 
 				-- Connect events.
 			profile_combo_box.select_actions.extend (agent select_profile)
+			profile_combo_box.change_actions.extend (agent rename_profile)
 			profile_add_button.select_actions.extend (agent add_new_profile)
 			profile_remove_button.select_actions.extend (agent remove_current_profile)
 			repository_dialog_reference_path_browse_button.select_actions.extend (agent get_reference_repository_path)
@@ -205,6 +206,11 @@ feature {NONE} -- Implementation
 
 	select_profile
 			-- Called by `select_actions' of `profile_combo_box'.
+		deferred
+		end
+
+	rename_profile
+			-- Called by `change_actions' of `profile_combo_box'.
 		deferred
 		end
 
