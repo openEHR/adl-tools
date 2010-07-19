@@ -162,6 +162,11 @@ feature -- Application Switch Setting
 			set_resource_value("default", "current_repository_profile", a_profile_name)
 		end
 
+	remove_current_repository_profile
+		do
+			remove_resource("default", "current_repository_profile")
+		end
+
 	set_rm_schemas_load_list(a_schema_list: attached ARRAYED_LIST[STRING])
 			-- set rm_schemas(s)
 		require

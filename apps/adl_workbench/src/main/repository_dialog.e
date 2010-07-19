@@ -54,6 +54,7 @@ feature {NONE} -- Initialization
 --			repository_dialog_reference_path_cb.focus_in_actions.extend (agent on_select_all (repository_dialog_reference_path_cb))
 			repository_dialog_work_path_text.focus_in_actions.extend (agent on_select_all (repository_dialog_work_path_text))
 			populate_controls
+			create removal_pending_list.make(0)
 		end
 
 feature -- Status
@@ -101,37 +102,48 @@ feature {NONE} -- Implementation
 		do
 			prof := profile_combo_box.text.as_string_8
 			has_changed_profile := not prof.same_string (current_repository_profile)
-			set_current_repository_profile(prof)
-
-			create prof_paths.make (0)
-			ref_dir := repository_dialog_reference_path_text.text.as_string_8
-			if directory_exists (ref_dir) then
-				prof_paths.extend (ref_dir)
-				has_changed_profile_paths := not ref_dir.same_string(reference_repository_path)
-			else
-				create error_dialog.make_with_text (create_message_line ("ref_repo_not_found", <<ref_dir>>))
-				error_dialog.show_modal_to_window (Current)
-				paths_invalid := True
+			rep_profs := repository_profiles
+			from removal_pending_list.start until removal_pending_list.off loop
+				rep_profs.remove (removal_pending_list.item)
+				removal_pending_list.forth
 			end
-
-			work_dir := repository_dialog_work_path_text.text.as_string_8
-			if work_dir.is_empty or else not (work_dir.starts_with (ref_dir) or ref_dir.starts_with (work_dir))
-			and then source_repositories.valid_working_repository_path (work_dir) then
-				prof_paths.extend (work_dir)
-				has_changed_profile_paths := has_changed_profile_paths or not work_dir.same_string(work_repository_path)
-			else
-				create error_dialog.make_with_text (create_message_line ("work_repo_not_invalid", <<work_dir>>))
-				error_dialog.show_modal_to_window (Current)
-				paths_invalid := True
-			end
-
-			if not paths_invalid then
-				if has_changed_profile_paths then
-					rep_profs := repository_profiles
-					rep_profs.force (prof_paths, prof)
-					set_repository_profiles (rep_profs)
-				end
+			set_repository_profiles (rep_profs)
+			removal_pending_list.wipe_out
+			if has_changed_profile and repository_profiles.is_empty then
+				remove_current_repository_profile
 				hide
+			else
+				set_current_repository_profile(prof)
+				create prof_paths.make (0)
+				ref_dir := repository_dialog_reference_path_text.text.as_string_8
+				if directory_exists (ref_dir) then
+					prof_paths.extend (ref_dir)
+					has_changed_profile_paths := not ref_dir.same_string(reference_repository_path)
+				else
+					create error_dialog.make_with_text (create_message_line ("ref_repo_not_found", <<ref_dir>>))
+					error_dialog.show_modal_to_window (Current)
+					paths_invalid := True
+				end
+
+				work_dir := repository_dialog_work_path_text.text.as_string_8
+				if work_dir.is_empty or else not (work_dir.starts_with (ref_dir) or ref_dir.starts_with (work_dir))
+				and then source_repositories.valid_working_repository_path (work_dir) then
+					prof_paths.extend (work_dir)
+					has_changed_profile_paths := has_changed_profile_paths or not work_dir.same_string(work_repository_path)
+				else
+					create error_dialog.make_with_text (create_message_line ("work_repo_not_invalid", <<work_dir>>))
+					error_dialog.show_modal_to_window (Current)
+					paths_invalid := True
+				end
+
+				if not paths_invalid then
+					if has_changed_profile_paths then
+						rep_profs := repository_profiles
+						rep_profs.force (prof_paths, prof)
+						set_repository_profiles (rep_profs)
+					end
+					hide
+				end
 			end
 		end
 
@@ -187,18 +199,23 @@ feature {NONE} -- Implementation
 				question_dialog.show_modal_to_window (Current)
 				if question_dialog.selected_button.same_string ("Yes") then
 					ref_profiles := repository_profiles
-					create profs.make (0)
-					profs.compare_objects
-					profs.append (profile_combo_box.strings_8)
-					profs.prune (prof)
-					profile_combo_box.set_strings (profs)
-					profile_combo_box.last.enable_select
-					repository_dialog_reference_path_text.set_text (ref_profiles.item (current_repository_profile).i_th(1))
-					if ref_profiles.item (current_repository_profile).count > 1 then
-						repository_dialog_work_path_text.set_text (ref_profiles.item (current_repository_profile).i_th(2))
+					if profile_combo_box.count > 1 then
+						create profs.make (0)
+						profs.compare_objects
+						profs.append (profile_combo_box.strings_8)
+						profs.prune (prof)
+						profile_combo_box.set_strings (profs)
+						profile_combo_box.last.enable_select
+						repository_dialog_reference_path_text.set_text (ref_profiles.item (profs.last).i_th(1))
+						if ref_profiles.item (profs.last).count > 1 then
+							repository_dialog_work_path_text.set_text (ref_profiles.item (profs.last).i_th(2))
+						end
+					else
+						profile_combo_box.wipe_out
+						repository_dialog_reference_path_text.set_text("")
+						repository_dialog_work_path_text.set_text("")
 					end
-					repository_profiles.remove (prof)
-					set_current_repository_profile (profs.last)
+					removal_pending_list.extend(prof)
 				end
 			else
 				create error_dialog.make_with_text (create_message_line ("no_profile_to_remove", Void))
@@ -252,6 +269,8 @@ feature {NONE} -- Implementation
 				text.select_all
 			end
 		end
+
+	removal_pending_list: ARRAYED_SET[STRING]
 
 end
 
