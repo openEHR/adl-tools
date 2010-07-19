@@ -157,6 +157,7 @@ feature {NONE} -- Implementation
 		local
 			profs: ARRAYED_LIST[STRING]
 		do
+			profile_combo_box.select_actions.block
 			create profs.make (0)
 			profs.append (profile_combo_box.strings_8)
 			profs.extend (new_profile_dummy)
@@ -165,6 +166,7 @@ feature {NONE} -- Implementation
 			profile_combo_box.set_focus
 			repository_dialog_reference_path_text.set_text ("")
 			repository_dialog_work_path_text.set_text ("")
+			profile_combo_box.select_actions.resume
 		end
 
 	remove_current_profile
@@ -176,6 +178,7 @@ feature {NONE} -- Implementation
 			prof: STRING
 			ref_profiles: attached HASH_TABLE [ARRAYED_LIST[STRING], STRING]
 		do
+			profile_combo_box.select_actions.block
 			prof := profile_combo_box.text.as_string_8
 			if not prof.is_empty then
 				create question_dialog.make_with_text (create_message_line ("remove_profile_question", <<prof>>))
@@ -201,6 +204,7 @@ feature {NONE} -- Implementation
 				create error_dialog.make_with_text (create_message_line ("no_profile_to_remove", Void))
 				error_dialog.show_modal_to_window (Current)
 			end
+			profile_combo_box.select_actions.resume
 		end
 
 	get_reference_repository_path
