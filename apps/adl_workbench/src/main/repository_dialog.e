@@ -50,11 +50,10 @@ feature {NONE} -- Initialization
 			repository_dialog_cancel_button.select_actions.extend (agent hide)
 			set_default_cancel_button (repository_dialog_cancel_button)
 			set_default_push_button (repository_dialog_ok_button)
---			show_actions.extend (agent repository_dialog_reference_path_cb.set_focus)
---			repository_dialog_reference_path_cb.focus_in_actions.extend (agent on_select_all (repository_dialog_reference_path_cb))
 			repository_dialog_work_path_text.focus_in_actions.extend (agent on_select_all (repository_dialog_work_path_text))
+			rep_profiles := repository_profiles
 			populate_controls
-			create removal_pending_list.make(0)
+			selected_profile := profile_combo_box.text.as_string_8
 		end
 
 feature -- Status
@@ -65,16 +64,19 @@ feature -- Status
 	has_changed_profile_paths: BOOLEAN
 			-- Has the user changed the paths for the existing profile?
 
+	no_profiles_available: BOOLEAN
+		do
+			Result := rep_profiles.is_empty
+		end
+
 feature {NONE} -- Implementation
 
 	populate_controls
 			-- Initialise the dialog's widgets from shared settings.
-		local
-			ref_profiles: attached HASH_TABLE [ARRAYED_LIST[STRING], STRING]
 		do
-			ref_profiles := repository_profiles
-			from ref_profiles.start until ref_profiles.off loop
-				populate_ev_combo_from_hash_keys (profile_combo_box, ref_profiles)
+			profile_combo_box.select_actions.block
+			from rep_profiles.start until rep_profiles.off loop
+				populate_ev_combo_from_hash_keys (profile_combo_box, rep_profiles)
 				if not current_repository_profile.is_empty then
 					profile_combo_box.do_all (
 						agent (li: EV_LIST_ITEM)
@@ -84,112 +86,104 @@ feature {NONE} -- Implementation
 								end
 							end
 					)
-					repository_dialog_reference_path_text.set_text (ref_profiles.item (current_repository_profile).i_th(1))
-					if ref_profiles.item (current_repository_profile).count > 1 then
-						repository_dialog_work_path_text.set_text (ref_profiles.item (current_repository_profile).i_th(2))
+					repository_dialog_reference_path_text.set_text (rep_profiles.item (current_repository_profile).i_th(1))
+					if rep_profiles.item (current_repository_profile).count > 1 then
+						repository_dialog_work_path_text.set_text (rep_profiles.item (current_repository_profile).i_th(2))
 					end
 				end
-				ref_profiles.forth
+				rep_profiles.forth
 			end
+			profile_combo_box.select_actions.resume
 		end
 
 	repository_dialog_ok
 			-- When the user clicks the OK button, save the changes and rebuild `archetype_directory'.
 		local
 			error_dialog: EV_INFORMATION_DIALOG
-			paths_invalid: BOOLEAN
+			paths_invalid, error_outstanding: BOOLEAN
 			ref_dir, work_dir, current_prof: STRING
 			new_prof_paths: ARRAYED_LIST[STRING]
-			rep_profs: attached HASH_TABLE [ARRAYED_LIST[STRING], STRING]
 		do
 			current_prof := profile_combo_box.text.as_string_8
 			has_changed_profile := not current_prof.same_string (current_repository_profile)
 
-			-- get the path info from the ref & work path controls
-			create new_prof_paths.make (0)
-			ref_dir := repository_dialog_reference_path_text.text.as_string_8
-			if directory_exists (ref_dir) then
-				new_prof_paths.extend (ref_dir)
-			else
-				create error_dialog.make_with_text (create_message_line ("ref_repo_not_found", <<ref_dir>>))
-				error_dialog.show_modal_to_window (Current)
-				paths_invalid := True
+			-- phase 1: get the path info from the ref & work path controls; only bother if we are adding,
+			-- or else there is a remaining profile(s) after deletion
+			if add_pending or not rep_profiles.is_empty then
+				create new_prof_paths.make (0)
+				ref_dir := repository_dialog_reference_path_text.text.as_string_8
+				if directory_exists (ref_dir) then
+					new_prof_paths.extend (ref_dir)
+				else
+					create error_dialog.make_with_text (create_message_line ("ref_repo_not_found", <<ref_dir>>))
+					error_dialog.show_modal_to_window (Current)
+					paths_invalid := True
+				end
+
+				work_dir := repository_dialog_work_path_text.text.as_string_8
+				if work_dir.is_empty or else directory_exists (work_dir) and then
+					not (work_dir.starts_with (ref_dir) or ref_dir.starts_with (work_dir))
+				then
+					new_prof_paths.extend (work_dir)
+				else
+					create error_dialog.make_with_text (create_message_line ("work_repo_not_invalid", <<work_dir>>))
+					error_dialog.show_modal_to_window (Current)
+					paths_invalid := True
+				end
 			end
 
-			work_dir := repository_dialog_work_path_text.text.as_string_8
-			if work_dir.is_empty or else not (work_dir.starts_with (ref_dir) or ref_dir.starts_with (work_dir))
-			and then source_repositories.valid_working_repository_path (work_dir) then
-				new_prof_paths.extend (work_dir)
-			else
-				create error_dialog.make_with_text (create_message_line ("work_repo_not_invalid", <<work_dir>>))
-				error_dialog.show_modal_to_window (Current)
-				paths_invalid := True
-			end
-
-			-- now process actions
+			-- phase 2: process pending actions
 			if add_pending then
 				if not paths_invalid then
-					set_current_repository_profile(current_prof)
-					rep_profs := repository_profiles
-					rep_profs.force (new_prof_paths, current_prof)
-					set_repository_profiles (rep_profs)
-					add_pending := False
-					hide
+					rep_profiles.force (new_prof_paths, current_prof)
+				else
+					error_outstanding := True
 				end
-
 			else -- otherwise, process removals and/or potential new selection and/or change to new or existing selection paths
-				rep_profs := repository_profiles
 				if removal_pending then
-					from removal_pending_list.start until removal_pending_list.off loop
-						rep_profs.remove (removal_pending_list.item)
-						removal_pending_list.forth
-					end
-					set_repository_profiles (rep_profs)
-					removal_pending_list.wipe_out
-					if repository_profiles.is_empty then
-						remove_current_repository_profile
+					if rep_profiles.is_empty then
+						selected_profile.wipe_out
 					end
 				end
-
-				if not rep_profs.is_empty then
-					if has_changed_profile then
-						if rename_pending then
-							rep_profs.replace_key (current_prof, current_repository_profile)
-							rename_pending := False
-						end
-						set_current_repository_profile(current_prof)
+				if not rep_profiles.is_empty then
+					if has_changed_profile and rename_pending then
+						rep_profiles.replace_key (current_prof, selected_profile)
 					end
 					has_changed_profile_paths := not ref_dir.same_string(reference_repository_path) or not work_dir.same_string(work_repository_path)
 					if has_changed_profile_paths then
 						if not paths_invalid then
-							rep_profs := repository_profiles
-							rep_profs.force (new_prof_paths, current_prof)
-							set_repository_profiles (rep_profs)
-							path_change_pending := False
-							hide
+							rep_profiles.force (new_prof_paths, current_prof)
+						else
+							error_outstanding := True
 						end
-					else
-						hide
 					end
-				else
-					hide
 				end
+			end
+
+			-- phase 3: commit the changes
+			if not error_outstanding then
+				if current_prof.is_empty then
+					remove_current_repository_profile
+				else
+					set_current_repository_profile(current_prof)
+				end
+				set_repository_profiles (rep_profiles)
+				hide
 			end
 		end
 
 	select_profile
 			-- Called by `select_actions' of `profile_combo_box'.
 		local
-			ref_profiles: attached HASH_TABLE [ARRAYED_LIST[STRING], STRING]
 			error_dialog: EV_INFORMATION_DIALOG
 		do
 			if not path_change_pending and not add_pending and not rename_pending then
-				ref_profiles := repository_profiles
 				if not profile_combo_box.text.is_empty then
-					if not profile_combo_box.text.as_string_8.same_string (current_repository_profile) then
-						repository_dialog_reference_path_text.set_text (ref_profiles.item (profile_combo_box.text.as_string_8).i_th(1))
-						if ref_profiles.item (profile_combo_box.text.as_string_8).count > 1 then
-							repository_dialog_work_path_text.set_text (ref_profiles.item (profile_combo_box.text.as_string_8).i_th(2))
+					selected_profile := profile_combo_box.text.as_string_8
+					if not selected_profile.same_string (current_repository_profile) then
+						repository_dialog_reference_path_text.set_text (rep_profiles.item (selected_profile).i_th(1))
+						if rep_profiles.item (selected_profile).count > 1 then
+							repository_dialog_work_path_text.set_text (rep_profiles.item (selected_profile).i_th(2))
 						end
 					end
 				end
@@ -199,7 +193,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	rename_profile
+	rename_profile (a_keystring: STRING_32) is
 			-- Called by `change_actions' of `profile_combo_box'.
 			-- rename the existing profile
 		do
@@ -216,15 +210,15 @@ feature {NONE} -- Implementation
 			error_dialog: EV_INFORMATION_DIALOG
 		do
 			profile_combo_box.select_actions.block
-			if not add_pending and not removal_pending then
+			if not add_pending and not removal_pending and not rename_pending then
 				create profs.make (0)
 				profs.append (profile_combo_box.strings_8)
 				profs.extend (new_profile_dummy)
 				profile_combo_box.set_strings (profs)
 				profile_combo_box.last.enable_select
 				profile_combo_box.set_focus
-				repository_dialog_reference_path_text.set_text ("")
-				repository_dialog_work_path_text.set_text ("")
+				repository_dialog_reference_path_text.remove_text
+				repository_dialog_work_path_text.remove_text
 				add_pending := True
 			else
 				create error_dialog.make_with_text (create_message_line ("add_one_profile_only", Void))
@@ -239,28 +233,27 @@ feature {NONE} -- Implementation
 			question_dialog: EV_QUESTION_DIALOG
 			error_dialog: EV_INFORMATION_DIALOG
 			profs: ARRAYED_LIST[STRING]
-			prof: STRING
-			ref_profiles: attached HASH_TABLE [ARRAYED_LIST[STRING], STRING]
+			current_prof: STRING
 		do
 			profile_combo_box.select_actions.block
 			if not add_pending then
-				prof := profile_combo_box.text.as_string_8
-				if not prof.is_empty then
-					create question_dialog.make_with_text (create_message_line ("remove_profile_question", <<prof>>))
+				current_prof := profile_combo_box.text.as_string_8
+				if not current_prof.is_empty then
+					create question_dialog.make_with_text (create_message_line ("remove_profile_question", <<current_prof>>))
 					question_dialog.set_buttons (<<"Yes", "No">>)
 					question_dialog.show_modal_to_window (Current)
 					if question_dialog.selected_button.same_string ("Yes") then
-						ref_profiles := repository_profiles
+						rep_profiles.remove (current_prof)
 						if profile_combo_box.count > 1 then
 							create profs.make (0)
 							profs.compare_objects
 							profs.append (profile_combo_box.strings_8)
-							profs.prune (prof)
+							profs.prune (current_prof)
 							profile_combo_box.set_strings (profs)
 							profile_combo_box.last.enable_select
-							repository_dialog_reference_path_text.set_text (ref_profiles.item (profs.last).i_th(1))
-							if ref_profiles.item (profs.last).count > 1 then
-								repository_dialog_work_path_text.set_text (ref_profiles.item (profs.last).i_th(2))
+							repository_dialog_reference_path_text.set_text (rep_profiles.item (profs.last).i_th(1))
+							if rep_profiles.item (profs.last).count > 1 then
+								repository_dialog_work_path_text.set_text (rep_profiles.item (profs.last).i_th(2))
 							end
 						else
 							profile_combo_box.wipe_out
@@ -268,7 +261,7 @@ feature {NONE} -- Implementation
 							repository_dialog_reference_path_text.remove_text
 							repository_dialog_work_path_text.remove_text
 						end
-						removal_pending_list.extend(prof)
+						removal_pending := True
 					end
 				else
 					create error_dialog.make_with_text (create_message_line ("no_profile_to_remove", Void))
@@ -336,15 +329,17 @@ feature {NONE} -- Implementation
 	add_pending: BOOLEAN
 
 	removal_pending: BOOLEAN
-		do
-			Result := not removal_pending_list.is_empty
-		end
-
-	removal_pending_list: ARRAYED_SET[STRING]
 
 	path_change_pending: BOOLEAN
 
 	rename_pending: BOOLEAN
+
+	rep_profiles: attached HASH_TABLE [ARRAYED_LIST[STRING], STRING]
+			-- state of profiles at dialog launch, as a table of
+			-- {{ref_path, working path}, prof_name}
+
+	selected_profile: STRING
+			-- name of current profile as chosen in dialog
 
 end
 

@@ -6602,7 +6602,7 @@ Resources</Text>
       </EV_TEXT_ALIGNABLE>
       <Events>
        <Event>select_actions EV_LIST_ITEM_LIST_ACTION_SEQUENCES select_profile</Event>
-       <Event>change_actions EV_TEXT_COMPONENT_ACTION_SEQUENCES rename_profile</Event>
+       <Event>key_press_string_actions EV_WIDGET_ACTION_SEQUENCES rename_profile</Event>
       </Events>
      </item>
      <item type="EV_BUTTON">

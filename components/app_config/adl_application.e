@@ -25,6 +25,8 @@ inherit
 feature -- Initialisation
 
 	initialise
+		local
+			rep_profiles: attached HASH_TABLE [ARRAYED_LIST[STRING], STRING]
 		once
 			initialise_default_resource_config_file_name
 			message_db.populate(message_templates_text, locale_language_short)
@@ -43,6 +45,14 @@ feature -- Initialisation
 					post_warning (Current, "initialise", "validation_strict", Void)
 				else
 					post_warning (Current, "initialise", "validation_non_strict", Void)
+				end
+
+				-- adjust for repository profiles being out of sync with current profile setting (e.g. due to
+				-- manual editing of .cfg file
+				rep_profiles := repository_profiles
+				if not rep_profiles.is_empty and not rep_profiles.has (current_repository_profile) then
+					rep_profiles.start
+					set_current_repository_profile (rep_profiles.key_for_iteration)
 				end
 
 				load_rm_schemas

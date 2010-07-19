@@ -28,15 +28,15 @@ feature {NONE} -- Initialisation
 			group_id_valid: a_group_id > 0
 		do
 			group_id := a_group_id
-			root_path := dir_name
+			full_path := dir_name
 		ensure
-			root_path_set: root_path = dir_name
+			root_path_set: full_path = dir_name
 			group_id_set: group_id = a_group_id
 		end
 
 feature -- Access
 
-	root_path: STRING
+	full_path: STRING
 			-- Path of file-system repository of archetypes.
 
 feature {ARCHETYPE_DIRECTORY} -- Access
@@ -51,7 +51,7 @@ feature -- Commands
 		do
 			create archetype_id_index.make (0)
 			create fast_archetype_list.make(0)
-			get_archetypes_in_folder (root_path)
+			get_archetypes_in_folder (full_path)
 			from archetype_id_index.start until archetype_id_index.off loop
 				fast_archetype_list.extend(archetype_id_index.item_for_iteration)
 				archetype_id_index.forth
@@ -69,7 +69,7 @@ feature {NONE} -- Implementation
 		end
 
 invariant
-	repository_path_valid: is_valid_directory (root_path)
+	repository_path_valid: is_valid_directory (full_path)
 
 end
 

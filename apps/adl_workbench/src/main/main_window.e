@@ -503,7 +503,9 @@ feature {NONE} -- Repository events
 			create dialog
 			dialog.show_modal_to_window (Current)
 
-			if dialog.has_changed_profile or dialog.has_changed_profile_paths then
+			if dialog.no_profiles_available then
+				save_resources_and_show_status
+			elseif dialog.has_changed_profile or dialog.has_changed_profile_paths then
 				if directory_exists (reference_repository_path) then
 					source_repositories.set_reference_repository (reference_repository_path)
 				end

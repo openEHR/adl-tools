@@ -27,7 +27,7 @@ feature {NONE} -- Implementation
 	get_archetypes_in_folder (a_path: STRING)
 			-- Add archetype and folder meta-data nodes to `archetypes' list, and call recursively to folders below
 		local
-			fn, full_path: STRING
+			fn, l_full_path: STRING
 			a_dir: DIRECTORY
 			fs_node_names: ARRAYED_LIST [STRING]
 			dir_name_index: SORTED_TWO_WAY_LIST [STRING]
@@ -59,14 +59,14 @@ feature {NONE} -- Implementation
 					fn := fs_node_names.item
 
 					if fn.item (1) /= '.' then
-						full_path := file_system.pathname (a_path, fn)
+						l_full_path := file_system.pathname (a_path, fn)
 
-						create a_file.make (full_path)
+						create a_file.make (l_full_path)
 						if a_file.is_directory then
 							dir_name_index.extend (fn)
 						elseif adl_flat_filename_pattern_regex.matches (fn) or adl_differential_filename_pattern_regex.matches (fn) then
 							-- perform a mini-parse of the file, getting the archetype id, the specialisation status and the specialisation parent
-							amp.parse (full_path)
+							amp.parse (l_full_path)
 							if amp.last_parse_valid then
 								if not amp.last_archetype_id_old_style then
 									create arch_id.make_from_string(amp.last_archetype_id)
@@ -75,13 +75,13 @@ feature {NONE} -- Implementation
 									if amp.last_archetype_specialised then
 										if not amp.last_parent_archetype_id_old_style then
 											create parent_arch_id.make_from_string(amp.last_parent_archetype_id)
-											create ara.make_specialised (full_path, arch_id, parent_arch_id, Current, amp.last_archetype_artefact_type)
+											create ara.make_specialised (l_full_path, arch_id, parent_arch_id, Current, amp.last_archetype_artefact_type)
 											insert_descriptor_into_directory (ara)
 										else
 											post_error (Current, "build_directory", "parse_archetype_e11", <<fn, amp.last_parent_archetype_id>>)
 										end
 									else
-										create ara.make (full_path, arch_id, Current, amp.last_archetype_artefact_type)
+										create ara.make (l_full_path, arch_id, Current, amp.last_archetype_artefact_type)
 										insert_descriptor_into_directory (ara)
 									end
 								else

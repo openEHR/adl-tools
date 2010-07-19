@@ -71,21 +71,16 @@ feature -- Comparison
 			s1, s2: STRING
 		do
 			Result := directory_exists (dir_name)
-
 			if Result then
 				s1 := file_system.canonical_pathname (dir_name)
-
 				if s1.item (s1.count) /= os_directory_separator then
 					s1.append_character (os_directory_separator)
 				end
-
 				from repositories.start until repositories.off or not Result loop
-					s2 := repositories.item_for_iteration.root_path.twin
-
+					s2 := repositories.item_for_iteration.full_path.twin
 					if s2.item (s2.count) /= os_directory_separator then
 						s2.append_character (os_directory_separator)
 					end
-
 					Result := not s1.starts_with (s2) and not s2.starts_with (s1)
 					repositories.forth
 				end

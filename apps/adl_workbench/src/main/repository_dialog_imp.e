@@ -18,7 +18,7 @@ inherit
 		redefine
 			initialize, is_in_default_state
 		end
-
+			
 	CONSTANTS
 		undefine
 			is_equal, default_create, copy
@@ -33,7 +33,7 @@ feature {NONE}-- Initialization
 		do
 			Precursor {EV_DIALOG}
 			initialize_constants
-
+			
 				-- Create all widgets.
 			create l_ev_vertical_box_1
 			create top_horizontal_box_for_cross_platform_cosmetic_padding
@@ -57,7 +57,7 @@ feature {NONE}-- Initialization
 			create l_ev_cell_1
 			create repository_dialog_ok_button
 			create repository_dialog_cancel_button
-
+			
 				-- Build widget structure.
 			extend (l_ev_vertical_box_1)
 			l_ev_vertical_box_1.extend (top_horizontal_box_for_cross_platform_cosmetic_padding)
@@ -81,7 +81,7 @@ feature {NONE}-- Initialization
 			l_ev_horizontal_box_4.extend (l_ev_cell_1)
 			l_ev_horizontal_box_4.extend (repository_dialog_ok_button)
 			l_ev_horizontal_box_4.extend (repository_dialog_cancel_button)
-
+			
 			create string_constant_set_procedures.make (10)
 			create string_constant_retrieval_functions.make (10)
 			create integer_constant_set_procedures.make (10)
@@ -156,12 +156,12 @@ feature {NONE}-- Initialization
 			set_maximum_width (2000)
 			set_maximum_height (300)
 			set_title ("ADL Workbench Repository Profile Configuration")
-
+			
 			set_all_attributes_using_constants
-
+			
 				-- Connect events.
 			profile_combo_box.select_actions.extend (agent select_profile)
-			profile_combo_box.change_actions.extend (agent rename_profile)
+			profile_combo_box.key_press_string_actions.extend (agent rename_profile (?))
 			profile_add_button.select_actions.extend (agent add_new_profile)
 			profile_remove_button.select_actions.extend (agent remove_current_profile)
 			repository_dialog_reference_path_browse_button.select_actions.extend (agent get_reference_repository_path)
@@ -198,48 +198,48 @@ feature {NONE} -- Implementation
 			-- for `Current'.
 			Result := True
 		end
-
+	
 	user_initialization
 			-- Feature for custom initialization, called at end of `initialize'.
 		deferred
 		end
-
-	select_profile
+	
+	select_profile is
 			-- Called by `select_actions' of `profile_combo_box'.
 		deferred
 		end
-
-	rename_profile
-			-- Called by `change_actions' of `profile_combo_box'.
+	
+	rename_profile (a_keystring: STRING_32) is
+			-- Called by `key_press_string_actions' of `profile_combo_box'.
 		deferred
 		end
-
-	add_new_profile
+	
+	add_new_profile is
 			-- Called by `select_actions' of `profile_add_button'.
 		deferred
 		end
-
-	remove_current_profile
+	
+	remove_current_profile is
 			-- Called by `select_actions' of `profile_remove_button'.
 		deferred
 		end
-
-	get_reference_repository_path
+	
+	get_reference_repository_path is
 			-- Called by `select_actions' of `repository_dialog_reference_path_browse_button'.
 		deferred
 		end
-
-	get_work_repository_path
+	
+	get_work_repository_path is
 			-- Called by `select_actions' of `repository_dialog_work_path_button'.
 		deferred
 		end
-
-	repository_dialog_ok
+	
+	repository_dialog_ok is
 			-- Called by `select_actions' of `repository_dialog_ok_button'.
 		deferred
 		end
-
-
+	
+	
 feature {NONE} -- Constant setting
 
 	set_attributes_using_string_constants
@@ -259,7 +259,7 @@ feature {NONE} -- Constant setting
 				string_constant_set_procedures.forth
 			end
 		end
-
+		
 	set_attributes_using_integer_constants
 			-- Set all attributes relying on integer constants to the current
 			-- value of the associated constant.
@@ -295,7 +295,7 @@ feature {NONE} -- Constant setting
 				integer_interval_constant_set_procedures.forth
 			end
 		end
-
+		
 	set_attributes_using_pixmap_constants
 			-- Set all attributes relying on pixmap constants to the current
 			-- value of the associated constant.
@@ -313,7 +313,7 @@ feature {NONE} -- Constant setting
 				pixmap_constant_set_procedures.forth
 			end
 		end
-
+		
 	set_attributes_using_font_constants
 			-- Set all attributes relying on font constants to the current
 			-- value of the associated constant.
@@ -329,9 +329,9 @@ feature {NONE} -- Constant setting
 				f := font_constant_retrieval_functions.i_th (font_constant_set_procedures.index).last_result
 				font_constant_set_procedures.item.call ([f])
 				font_constant_set_procedures.forth
-			end
+			end	
 		end
-
+		
 	set_attributes_using_color_constants
 			-- Set all attributes relying on color constants to the current
 			-- value of the associated constant.
@@ -349,7 +349,7 @@ feature {NONE} -- Constant setting
 				color_constant_set_procedures.forth
 			end
 		end
-
+		
 	set_all_attributes_using_constants
 			-- Set all attributes relying on constants to the current
 			-- calue of the associated constant.
@@ -360,7 +360,7 @@ feature {NONE} -- Constant setting
 			set_attributes_using_font_constants
 			set_attributes_using_color_constants
 		end
-
+					
 	string_constant_set_procedures: ARRAYED_LIST [PROCEDURE [ANY, TUPLE [STRING_GENERAL]]]
 	string_constant_retrieval_functions: ARRAYED_LIST [FUNCTION [ANY, TUPLE [], STRING_GENERAL]]
 	integer_constant_set_procedures: ARRAYED_LIST [PROCEDURE [ANY, TUPLE [INTEGER]]]
@@ -373,7 +373,7 @@ feature {NONE} -- Constant setting
 	font_constant_retrieval_functions: ARRAYED_LIST [FUNCTION [ANY, TUPLE [], EV_FONT]]
 	color_constant_set_procedures: ARRAYED_LIST [PROCEDURE [ANY, TUPLE [EV_COLOR]]]
 	color_constant_retrieval_functions: ARRAYED_LIST [FUNCTION [ANY, TUPLE [], EV_COLOR]]
-
+	
 	integer_from_integer (an_integer: INTEGER): INTEGER
 			-- Return `an_integer', used for creation of
 			-- an agent that returns a fixed integer value.
