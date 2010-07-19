@@ -504,12 +504,16 @@ feature {NONE} -- Repository events
 			dialog.show_modal_to_window (Current)
 
 			if dialog.has_changed_profile then
-				source_repositories.set_reference_repository (reference_repository_path)
+				if directory_exists (reference_repository_path) then
+					source_repositories.set_reference_repository (reference_repository_path)
+				end
+
 				if not work_repository_path.is_empty then
 					source_repositories.set_work_repository (work_repository_path)
 				else
 					source_repositories.remove_work_repository
 				end
+
 				populate_directory
 				save_resources_and_show_status
 			end

@@ -212,8 +212,9 @@ feature {NONE} -- Implementation
 						end
 					else
 						profile_combo_box.wipe_out
-						repository_dialog_reference_path_text.set_text("")
-						repository_dialog_work_path_text.set_text("")
+						profile_combo_box.remove_text
+						repository_dialog_reference_path_text.remove_text
+						repository_dialog_work_path_text.remove_text
 					end
 					removal_pending_list.extend(prof)
 				end
@@ -230,7 +231,7 @@ feature {NONE} -- Implementation
 			def_path: STRING
 			error_dialog: EV_INFORMATION_DIALOG
 		do
-			if not profile_combo_box.text.as_string_8.is_empty then
+			if not profile_combo_box.text.is_empty then
 				if reference_repository_path.is_empty then
 					def_path := application_startup_directory
 				else
@@ -249,7 +250,7 @@ feature {NONE} -- Implementation
 			def_path: STRING
 			error_dialog: EV_INFORMATION_DIALOG
 		do
-			if not profile_combo_box.text.as_string_8.is_empty then
+			if not profile_combo_box.text.is_empty then
 				if work_repository_path.is_empty then
 					def_path := repository_dialog_reference_path_text.text
 				else
