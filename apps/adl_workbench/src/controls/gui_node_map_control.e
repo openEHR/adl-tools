@@ -916,8 +916,12 @@ feature {NONE} -- Implementation
 			-- generate string form of node or object for use in tree node
 		do
 			create Result.make_empty
-			if in_technical_mode and a_node.occurrences /= Void then
-				Result.append (" {" + a_node.occurrences_as_string + "} ")
+			if a_node.occurrences /= Void then
+				if in_technical_mode then
+					Result.append (" {" + a_node.occurrences_as_string + "} ")
+				elseif a_node.occurrences.is_prohibited then
+					Result.append (" (REMOVED) ")
+				end
 			end
 
 			if a_node.is_addressable then
@@ -992,10 +996,14 @@ feature {NONE} -- Implementation
 			-- generate string form of node or object for use in tree node
 		do
 			create Result.make(0)
-			if in_technical_mode then
-				if c_p_o.occurrences /= Void then
+			if c_p_o.occurrences /= Void then
+				if in_technical_mode then
 					Result.append (" {" + c_p_o.occurrences_as_string + "}")
+				elseif c_p_o.occurrences.is_prohibited then
+					Result.append (" (REMOVED) ")
 				end
+			end
+			if in_technical_mode then
 				Result.append (c_p_o.rm_type_name)
 			end
 			Result.append (" " + c_p_o.item.as_string)
