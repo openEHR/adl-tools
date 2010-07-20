@@ -50,10 +50,21 @@ feature {NONE} -- Initialization
 			repository_dialog_cancel_button.select_actions.extend (agent hide)
 			set_default_cancel_button (repository_dialog_cancel_button)
 			set_default_push_button (repository_dialog_ok_button)
+			repository_dialog_reference_path_text.focus_in_actions.extend (agent on_select_all (repository_dialog_reference_path_text))
 			repository_dialog_work_path_text.focus_in_actions.extend (agent on_select_all (repository_dialog_work_path_text))
 			rep_profiles := repository_profiles
 			populate_controls
 			selected_profile := profile_combo_box.text.as_string_8
+		end
+
+	on_show
+			-- On showing the dialog, set focus to the profile combo box, adding a new one if there are none yet.
+		do
+			if no_profiles_available then
+				add_new_profile
+			else
+				profile_combo_box.set_focus
+			end
 		end
 
 feature -- Status
@@ -75,6 +86,8 @@ feature {NONE} -- Implementation
 			-- Initialise the dialog's widgets from shared settings.
 		do
 			profile_combo_box.select_actions.block
+			profile_combo_box.change_actions.block
+
 			from rep_profiles.start until rep_profiles.off loop
 				populate_ev_combo_from_hash_keys (profile_combo_box, rep_profiles)
 				if not current_repository_profile.is_empty then
@@ -93,7 +106,9 @@ feature {NONE} -- Implementation
 				end
 				rep_profiles.forth
 			end
+
 			profile_combo_box.select_actions.resume
+			profile_combo_box.change_actions.resume
 		end
 
 	repository_dialog_ok
@@ -177,15 +192,16 @@ feature {NONE} -- Implementation
 			-- Called by `select_actions' of `profile_combo_box'.
 		local
 			error_dialog: EV_INFORMATION_DIALOG
+			profile: ARRAYED_LIST [STRING]
 		do
 			if not path_change_pending and not add_pending and not rename_pending then
 				if not profile_combo_box.text.is_empty then
 					selected_profile := profile_combo_box.text.as_string_8
-					if not selected_profile.same_string (current_repository_profile) then
-						repository_dialog_reference_path_text.set_text (rep_profiles.item (selected_profile).i_th(1))
-						if rep_profiles.item (selected_profile).count > 1 then
-							repository_dialog_work_path_text.set_text (rep_profiles.item (selected_profile).i_th(2))
-						end
+					profile := rep_profiles.item (selected_profile)
+					repository_dialog_reference_path_text.set_text (profile.i_th(1))
+
+					if profile.count > 1 then
+						repository_dialog_work_path_text.set_text (profile.i_th(2))
 					end
 				end
 			else
@@ -194,13 +210,13 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	rename_profile (a_keystring: STRING_32) is
+	rename_profile
 			-- Called by `change_actions' of `profile_combo_box'.
 			-- rename the existing profile
 		do
 			-- if new addition, profile is not yet known, so nothing special to do
 			if not add_pending then
-				rename_pending := True
+				rename_pending := not rep_profiles.has (profile_combo_box.text)
 			end
 		end
 
