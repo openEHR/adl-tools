@@ -105,6 +105,7 @@ feature {NONE} -- Implementation
 			new_prof_paths: ARRAYED_LIST[STRING]
 		do
 			current_prof := profile_combo_box.text.as_string_8
+			current_prof.replace_substring_all (" ", "_")
 			has_changed_profile := not current_prof.same_string (current_repository_profile)
 
 			-- phase 1: get the path info from the ref & work path controls; only bother if we are adding,
