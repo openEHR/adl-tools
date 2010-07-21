@@ -65,7 +65,6 @@ feature -- Initialisation
 	make
 		do
 			clear
-
 			if ontology_prototype.item = Void then
 				initialise_ontology_prototype
 				schema_load_counter := rm_schemas_load_count.item
@@ -185,17 +184,21 @@ feature -- Statistics
 	specialised_archetype_count: INTEGER
 			-- Count of specialised archetype descriptors in directory.
 
-	slotted_archetype_count: INTEGER
+	client_archetype_count: INTEGER
 			-- Count of slot-containing archetype descriptors in directory.
 
-	used_by_archetype_count: INTEGER
+	supplier_archetype_count: INTEGER
 			-- Count of archetype descriptors for archetypes used in slots in directory.
 
 	bad_archetype_count: INTEGER
 			-- Count of invalid archetype files found in repositories.
 
-	parse_attempted_archetype_count: INTEGER
+	compile_attempt_count: INTEGER
 			-- Count of archetypes for which parsing has been attempted.
+
+	terminology_bindings_info: HASH_TABLE [ARRAYED_LIST[STRING], STRING]
+			-- table of archetypes containing terminology bindings, keyed by terminology;
+			-- some archetypes have more than one binding, so could appear in more than one list
 
 feature -- Status Report
 
@@ -296,7 +299,7 @@ feature -- Commands
 									ontology_index.item (parent_key).put_child (archs.item)
 									ontology_index.force (archs.item, child_key)
 									archetype_index.force(archs.item, child_key)
-									update_statistics(archs.item)
+									update_basic_statistics(archs.item)
 									added_during_pass := added_during_pass + 1
 									status_list[archs.index] := -1
 								else
@@ -328,11 +331,10 @@ feature -- Commands
 			end
 		end
 
-	update_statistics (ara: ARCH_REP_ARCHETYPE)
+	update_basic_statistics (ara: ARCH_REP_ARCHETYPE)
 			-- Update statistics counters.
 		do
 			total_archetype_count := total_archetype_count + 1
-
 			if ara.is_specialised then
 				specialised_archetype_count := specialised_archetype_count + 1
 			end
@@ -342,22 +344,37 @@ feature -- Commands
 			-- Update slot-related statistics counters.
 		do
 			if ara.has_slots then
-				slotted_archetype_count := slotted_archetype_count + 1
+				client_archetype_count := client_archetype_count + 1
 			end
 
 			if ara.is_supplier then
-				used_by_archetype_count := used_by_archetype_count + 1
+				supplier_archetype_count := supplier_archetype_count + 1
 			end
 		end
 
-	increment_compile_attempted_archetype_count
+	update_terminology_bindings_info (ara: ARCH_REP_ARCHETYPE)
+			-- Update term binding info
+		local
+			terminologies: ARRAYED_LIST [STRING]
+		do
+			terminologies := ara.differential_archetype.ontology.terminologies_available
+			from terminologies.start until terminologies.off loop
+				if not terminology_bindings_info.has(terminologies.item) then
+					terminology_bindings_info.put(create {ARRAYED_LIST[STRING]}.make(0), terminologies.item)
+				end
+				terminology_bindings_info.item(terminologies.item).extend(ara.ontological_name)
+				terminologies.forth
+			end
+		end
+
+	update_compile_attempt_count
 			-- Increment the count of archetypes for which parsing has been attempted.
 		require
-			can_increment: parse_attempted_archetype_count < total_archetype_count
+			can_increment: compile_attempt_count < total_archetype_count
 		do
-			parse_attempted_archetype_count := parse_attempted_archetype_count + 1
+			compile_attempt_count := compile_attempt_count + 1
 		ensure
-			incremented: parse_attempted_archetype_count = old parse_attempted_archetype_count + 1
+			incremented: compile_attempt_count = old compile_attempt_count + 1
 		end
 
 	reset_statistics
@@ -365,10 +382,11 @@ feature -- Commands
 		do
 			total_archetype_count := 0
 			specialised_archetype_count := 0
-			slotted_archetype_count := 0
-			used_by_archetype_count := 0
+			client_archetype_count := 0
+			supplier_archetype_count := 0
 			bad_archetype_count := 0
-			parse_attempted_archetype_count := 0
+			compile_attempt_count := 0
+			create terminology_bindings_info.make(0)
 		end
 
 feature -- Modification
@@ -431,7 +449,7 @@ feature -- Modification
 						ontology_index.item (parent_key).put_child(ara)
 						ontology_index.force (ara, child_key)
 						archetype_index.force (ara, child_key)
-						update_statistics(ara)
+						update_basic_statistics(ara)
 						set_selected_item (source_repositories.adhoc_source_repository.item (full_path))
 					else
 						post_error (Current, "add_adhoc_item", "arch_dir_dup_archetype", <<full_path>>)
@@ -650,10 +668,10 @@ feature {NONE} -- Implementation
 invariant
 	total_archetype_count_non_negative: total_archetype_count >= 0
 	specialised_archetype_count_valid: specialised_archetype_count >= 0 and specialised_archetype_count <= total_archetype_count
-	slotted_archetype_count_valid: slotted_archetype_count >= 0 and slotted_archetype_count <= total_archetype_count
-	used_by_archetype_count_valid: used_by_archetype_count >= 0 and used_by_archetype_count <= total_archetype_count
+	slotted_archetype_count_valid: client_archetype_count >= 0 and client_archetype_count <= total_archetype_count
+	used_by_archetype_count_valid: supplier_archetype_count >= 0 and supplier_archetype_count <= total_archetype_count
 	bad_archetype_count_count_valid: bad_archetype_count >= 0 and bad_archetype_count <= total_archetype_count
-	parse_attempted_archetype_count_valid: parse_attempted_archetype_count >= 0 and parse_attempted_archetype_count <= total_archetype_count
+	parse_attempted_archetype_count_valid: compile_attempt_count >= 0 and compile_attempt_count <= total_archetype_count
 
 end
 

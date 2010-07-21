@@ -249,8 +249,6 @@ feature {NONE} -- Implementation
 				end
 
 				call_visual_update_action (ara)
-
-				arch_dir.update_slot_statistics (ara)
 			end
 		end
 

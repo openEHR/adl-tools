@@ -732,6 +732,8 @@ feature -- Commands
 				if validator.passed then
 					post_info (Current, "validate", "parse_archetype_i2", <<id.as_string>>)
 					compilation_state := Cs_validated
+					arch_dir.update_slot_statistics (Current)
+					arch_dir.update_terminology_bindings_info (Current)
 				else
 					post_error (Current, "validate", "parse_archetype_e2", <<id.as_string, validator.errors>>)
 					compilation_state := Cs_validate_failed
@@ -980,7 +982,7 @@ feature {NONE} -- Implementation
 			-- Set `compile_attempt_timestamp'
 		do
 			if last_compile_attempt_timestamp = Void then
-				arch_dir.increment_compile_attempted_archetype_count
+				arch_dir.update_compile_attempt_count
 			end
 			create last_compile_attempt_timestamp.make_now
 		end

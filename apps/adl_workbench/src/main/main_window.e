@@ -1251,12 +1251,33 @@ feature {GUI_TEST_ARCHETYPE_TREE_CONTROL} -- Statistics
 
 	populate_statistics
 			-- Populate the statistics tab.
+		local
+			list_row: EV_MULTI_COLUMN_LIST_ROW
+			i: INTEGER
 		do
 			arch_total_count_tf.set_text (arch_dir.total_archetype_count.out)
 			arch_spec_count_tf.set_text (arch_dir.specialised_archetype_count.out)
-			arch_slotted_count_tf.set_text (arch_dir.slotted_archetype_count.out)
-			arch_used_by_count_tf.set_text (arch_dir.used_by_archetype_count.out)
+			arch_slotted_count_tf.set_text (arch_dir.client_archetype_count.out)
+			arch_used_by_count_tf.set_text (arch_dir.supplier_archetype_count.out)
 			arch_bad_count_tf.set_text (arch_dir.bad_archetype_count.out)
+
+			-- do terminology bindings statistics
+			terminology_bindings_info_list.wipe_out
+			terminology_bindings_info_list.set_column_titles (<<"terminology", "archetypes">>)
+			from arch_dir.terminology_bindings_info.start until arch_dir.terminology_bindings_info.off loop
+				create list_row
+				list_row.extend (utf8 (arch_dir.terminology_bindings_info.key_for_iteration))
+				list_row.extend (utf8 (arch_dir.terminology_bindings_info.item_for_iteration.count.out))
+				terminology_bindings_info_list.extend (list_row)
+				arch_dir.terminology_bindings_info.forth
+			end
+			from i := 1 until i > terminology_bindings_info_list.column_count loop
+				terminology_bindings_info_list.resize_column_to_content (i)
+				if terminology_bindings_info_list.column_width (i) < 100 then
+					terminology_bindings_info_list.set_column_width (100, i)
+				end
+				i := i + 1
+			end
 		end
 
 feature {NONE} -- Build commands

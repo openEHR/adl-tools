@@ -209,8 +209,8 @@ feature -- Commands
 			create statistics_element.make_last (root, "statistics", ns)
 			create_category_element.call ([statistics_element, "Total Archetypes", arch_dir.total_archetype_count])
 			create_category_element.call ([statistics_element, "Specialised Archetypes", arch_dir.specialised_archetype_count])
-			create_category_element.call ([statistics_element, "Archetypes with slots", arch_dir.slotted_archetype_count])
-			create_category_element.call ([statistics_element, "Archetypes used by others", arch_dir.used_by_archetype_count])
+			create_category_element.call ([statistics_element, "Archetypes with slots", arch_dir.client_archetype_count])
+			create_category_element.call ([statistics_element, "Archetypes used by others", arch_dir.supplier_archetype_count])
 			create_category_element.call ([statistics_element, "Bad Archetypes", arch_dir.bad_archetype_count])
 
 			from

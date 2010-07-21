@@ -1,6 +1,5 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html lang="en">
-<head>
+<html lang="en"><head>
 
 
 
@@ -280,8 +279,8 @@
   
   
   
-  <title>ADL Workbench help</title>
-  <link rel="stylesheet" href="http://www.openehr.org/styles/oe.css" type="text/css" />
+  
+  <title>ADL Workbench help</title><link rel="stylesheet" href="http://www.openehr.org/styles/oe.css" type="text/css" />
 
 
 
@@ -334,9 +333,7 @@
   
   
   
-  <meta content="Thomas Beale, Ocean Informatics" name="author" />
-</head>
-
+  <meta content="Thomas Beale, Ocean Informatics" name="author" /></head>
 
 <body>
 
@@ -456,7 +453,7 @@ Download and Help Page
 
 
 <hr style="width: 100%; height: 2px;" />
-<h2>Download</h2>
+<h2>Status</h2>
 
 
 
@@ -472,6 +469,7 @@ Download and Help Page
 
 
 
+This ADL 1.5 preview build contains improved validation and flattening functionality:<br />
 
 
 
@@ -479,22 +477,7 @@ Download and Help Page
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-The ADL Workbench is available for the following platforms:<br />
+<ul><li>Vastly improved validation, with code-based error messages matching ADL and AOM 1.5 <a href="http://www.openehr.org/svn/specification/TRUNK/publishing/roadmap.html">drafts</a> (see bottom of page).</li><li>Support for ADL 1.5 templates</li><li>Various other ADL 1.5 features documented <a href="http://www.openehr.org/wiki/display/spec/openEHR+Templates+and+Specialised+Archetypes">here</a>.</li><li>Reference model based validation and visualisation</li></ul><h2>Download</h2><h3>Executable</h3>The ADL Workbench is available for the following platforms:<br />
 
 
 
@@ -539,7 +522,7 @@ The ADL Workbench is available for the following platforms:<br />
       
 
 
-      <td style="font-weight: bold; background-color: rgb(204, 204, 255);">specialisation build 1.5.0.851 (22 Mar 2009)</td>
+      <td style="font-weight: bold; background-color: rgb(204, 204, 255);">specialisation build 1.5.0.1000 (22 July 2010)</td>
       <td style="background-color: rgb(204, 204, 255);"><span style="font-weight: bold;">Detailed Installation</span></td>
 
 
@@ -669,80 +652,16 @@ The ADL Workbench is available for the following platforms:<br />
 
 
 
-<br />
-
-The <span style="font-style: italic;">open</span>EHR archetypes are available from the Clinical Knowledge Manager (CKM) at <a href="http://www.openEHR.org/knowledge">http://www.openEHR.org/knowledge</a>.
-Obtain a login in order to download all the archetypes. This repository
-is gradually being populated with archetypes from various sources,
-including the&nbsp;<span style="font-style: italic;">open</span>EHR Subversion repository at <a href="http://www.openehr.org/svn/knowledge">http://www.openehr.org/svn/knowledge</a>,
-which is no longer being maintained. However, you may wish to access it
-to see archetypes that have not yet been inducted into the CKM. Note
-that such archetypes are not recommended for clinical use.
-
-<h2>Status</h2>
-
-
-
-
-
-
-
-<h3>Release 1.5.0 specialisation build</h3>
-
-
-
-
-
-
-
-This ADL 1.5 preview build contains improved validation and flattening functionality:<br />
-
-
-
-
-
-
-
-<ul>
-
-
-
-  <li>Vastly improved validation, with code-based error messages matching <a href="http://www.openehr.org/wiki/display/spec/openEHR+Templates+and+Specialised+Archetypes">ADL 1.5 draft</a></li>
-
-
-
-
-
-
-
-  <li>Improved flattening logic</li>
-
-
-
-
-
-
-
-  <li>Ordering of children of multiply-valued attributes over inheritance using ADL 1.5 <span style="font-family: monospace;">before</span> and <span style="font-family: monospace;">after</span> keywords</li>
-
-
-
-
-  <li>Reference model based validation and visualisation</li>
-
-
-
-
-
-
-
-</ul>
-
-
-
-
-
-<span style="font-weight: bold; color: rgb(255, 0, 0);"></span>
+<br /><h3>What else do I need?</h3>You need archetypes and optionally templates. Where you can get them:<br /><ul><li>You can write them yourself, or you have have some in your organisation</li><li>You can get test archetypes&nbsp;from this Subversion repository:&nbsp; <a href="http://www.openehr.org/svn/knowledge2/TRUNK">http://www.openehr.org/svn/knowledge2/TRUNK</a> , which includes:</li><ul><li>ADL 1.5 validation archetypes and templates</li><li>openEHR example archetypes and templates</li><li>CEN EN13606 example archetypes</li></ul><li>The <span style="font-style: italic;">open</span>EHR archetypes are available from the Clinical Knowledge Manager (CKM) at <a href="http://www.openEHR.org/knowledge">http://www.openEHR.org/knowledge</a>.
+Obtain a login in order to download all the archetypes.
+This repository has over 250 archetypes, in various stages of
+development by a large number of international experts, and includes:</li><ul><li>clinical archetypes</li><li>administrative archetypes</li><li>demographic archetypes</li></ul></ul>Archetypes
+and templates can be put anywhere on your file system. If you are
+working on some archetypes/templates of your own that are based on
+existing archetypes, it is useful to put the latter in a 'reference'
+location, and the former in a 'work' location. You can configure the
+tool to know about reference and work locations, and it will visually
+indicate which archetypes are yours, which are the reference ones. <span style="font-weight: bold; color: rgb(255, 0, 0);"></span>
 
 
 
@@ -1636,5 +1555,4 @@ $LastChangedRevision$</p>
 
 
 
-</body>
-</html>
+</body></html>
