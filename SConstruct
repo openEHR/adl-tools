@@ -94,7 +94,7 @@ if distrib and len(adl_workbench) > 0:
 				install + '/ADL_Workbench/ADLWorkbenchInstall.nsi'
 			]
 
-			installer = env.Command(distrib + '/tools/ADLWorkbenchInstall.exe', adl_workbench_installer_sources, [command])
+			installer = env.Command(distrib + '/tools/ADLWorkbenchInstall.exe', adl_workbench_installer_sources + env.Files(install + '/ADL_Workbench/*'), [command])
 
 	if platform == 'linux':
 		def create_linux_installer(target, source, env):

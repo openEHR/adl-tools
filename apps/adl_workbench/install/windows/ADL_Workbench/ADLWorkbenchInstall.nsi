@@ -5,9 +5,9 @@ Name "ADL Workbench"
 
 # Defines
 !define REGKEY "SOFTWARE\$(^Name)"
-!define VERSION "1.4"
-!define COMPANY "Ocean Informatics Pty Ltd"
-!define URL www.oceaninformatics.com
+!define VERSION "1.5"
+!define COMPANY "openEHR Foundation"
+!define URL www.openehr.org
 
 # MUI defines
 !define MUI_ICON "..\..\..\app\icons\openEHR.ico"
@@ -17,11 +17,11 @@ Name "ADL Workbench"
 !define MUI_STARTMENUPAGE_NODISABLE
 !define MUI_STARTMENUPAGE_REGISTRY_KEY ${REGKEY}
 !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME StartMenuGroup
-!define MUI_STARTMENUPAGE_DEFAULTFOLDER "Ocean Informatics\ADL Workbench"
+!define MUI_STARTMENUPAGE_DEFAULTFOLDER "openEHR\ADL Workbench"
 !define MUI_UNICON "..\..\..\app\icons\openEHR.ico"
-!define MUI_WELCOMEFINISHPAGE_BITMAP "ocean.bmp"
+!define MUI_WELCOMEFINISHPAGE_BITMAP "birds_vertical.bmp"
 !define MUI_HEADERIMAGE
-!define MUI_HEADERIMAGE_BITMAP "oceanheader.bmp"
+!define MUI_HEADERIMAGE_BITMAP "openEHR.bmp"
 !define MUI_UNFINISHPAGE_NOAUTOCLOSE
 !define MUI_FINISHPAGE_RUN "$INSTDIR\adl_workbench.exe"
 
@@ -46,18 +46,18 @@ Var StartMenuGroup
 !insertmacro MUI_LANGUAGE English
 
 # Installer attributes
-InstallDir "$PROGRAMFILES\Ocean Informatics\ADL Workbench"
+InstallDir "$PROGRAMFILES\openEHR\ADL Workbench"
 CRCCheck on
 XPStyle on
 ShowInstDetails show
-VIProductVersion 1.4.2.0
-VIAddVersionKey ProductName "Ocean ADL Workbench"
+VIProductVersion 1.5.0.0
+VIAddVersionKey ProductName "openEHR ADL Workbench"
 VIAddVersionKey ProductVersion "${VERSION}"
 VIAddVersionKey CompanyName "${COMPANY}"
 VIAddVersionKey CompanyWebsite "${URL}"
 VIAddVersionKey FileVersion "${VERSION}"
 VIAddVersionKey FileDescription "ADL Workbench Installer"
-VIAddVersionKey LegalCopyright "Copyright 2003-2008 Ocean Informatics Pty Ltd"
+VIAddVersionKey LegalCopyright "Copyright 2003-2010 openEHR Foundation"
 InstallDirRegKey HKLM "${REGKEY}" Path
 ShowUninstDetails show
 

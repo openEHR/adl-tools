@@ -46,7 +46,7 @@ feature {NONE} -- Initialization
 		end
 
 	initialize
-			-- Add the openEHR and Ocean logos with the text label to their right.
+			-- Add the openEHR logo with the text label to its right.
 		local
 			hb, border: EV_HORIZONTAL_BOX
 			label: EV_LABEL
