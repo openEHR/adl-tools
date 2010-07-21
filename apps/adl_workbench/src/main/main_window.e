@@ -155,6 +155,8 @@ feature {NONE} -- Initialization
 			if main_notebook_tab_pos > 1 then
 				main_notebook.select_item (main_notebook [main_notebook_tab_pos])
 			end
+
+			terminology_bindings_info_list.set_column_titles (<<"terminology", "archetypes">>)
 		end
 
 	initialise_splitter (split: EV_SPLIT_AREA; position: INTEGER)
@@ -897,6 +899,8 @@ feature -- Archetype commands
 						end
 					end
 				end
+			elseif archetype_notebook.selected_item = statistics_box then
+
 			end
 		end
 
@@ -1262,21 +1266,30 @@ feature {GUI_TEST_ARCHETYPE_TREE_CONTROL} -- Statistics
 			arch_bad_count_tf.set_text (arch_dir.bad_archetype_count.out)
 
 			-- do terminology bindings statistics
-			terminology_bindings_info_list.wipe_out
-			terminology_bindings_info_list.set_column_titles (<<"terminology", "archetypes">>)
 			from arch_dir.terminology_bindings_info.start until arch_dir.terminology_bindings_info.off loop
-				create list_row
-				list_row.extend (utf8 (arch_dir.terminology_bindings_info.key_for_iteration))
-				list_row.extend (utf8 (arch_dir.terminology_bindings_info.item_for_iteration.count.out))
-				terminology_bindings_info_list.extend (list_row)
-				arch_dir.terminology_bindings_info.forth
-			end
-			from i := 1 until i > terminology_bindings_info_list.column_count loop
-				terminology_bindings_info_list.resize_column_to_content (i)
-				if terminology_bindings_info_list.column_width (i) < 100 then
-					terminology_bindings_info_list.set_column_width (100, i)
+				from terminology_bindings_info_list.start until terminology_bindings_info_list.off or
+					terminology_bindings_info_list.item.first.is_equal (arch_dir.terminology_bindings_info.key_for_iteration)
+				loop
+					terminology_bindings_info_list.forth
 				end
-				i := i + 1
+				if not terminology_bindings_info_list.off then
+					terminology_bindings_info_list.item.finish
+					terminology_bindings_info_list.item.remove
+					terminology_bindings_info_list.item.extend (utf8 (arch_dir.terminology_bindings_info.item_for_iteration.count.out))
+				else
+					create list_row
+					list_row.extend (utf8 (arch_dir.terminology_bindings_info.key_for_iteration))
+					list_row.extend (utf8 (arch_dir.terminology_bindings_info.item_for_iteration.count.out))
+					terminology_bindings_info_list.extend (list_row)
+					from i := 1 until i > terminology_bindings_info_list.column_count loop
+						terminology_bindings_info_list.resize_column_to_content (i)
+						if terminology_bindings_info_list.column_width (i) < 100 then
+							terminology_bindings_info_list.set_column_width (100, i)
+						end
+						i := i + 1
+					end
+				end
+				arch_dir.terminology_bindings_info.forth
 			end
 		end
 
