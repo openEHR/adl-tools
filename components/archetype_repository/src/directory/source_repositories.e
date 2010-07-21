@@ -65,8 +65,8 @@ feature -- Access
 feature -- Comparison
 
 	valid_working_repository_path (dir_name: STRING): BOOLEAN
-			-- Does `dir_name' correspond to a real directory, which is not the same as, or a
-			-- parent or child of, any directory already used to populate the tree?
+			-- Does `dir_name' correspond to a real directory, which is not the same as, or a parent or child of,
+			-- any directory (except the working repository) already used to populate the tree?
 		local
 			s1, s2: STRING
 		do
@@ -77,11 +77,13 @@ feature -- Comparison
 					s1.append_character (os_directory_separator)
 				end
 				from repositories.start until repositories.off or not Result loop
-					s2 := repositories.item_for_iteration.full_path.twin
-					if s2.item (s2.count) /= os_directory_separator then
-						s2.append_character (os_directory_separator)
+					if not repositories.key_for_iteration.is_equal (group_id_work) then
+						s2 := repositories.item_for_iteration.full_path.twin
+						if s2.item (s2.count) /= os_directory_separator then
+							s2.append_character (os_directory_separator)
+						end
+						Result := not s1.starts_with (s2) and not s2.starts_with (s1)
 					end
-					Result := not s1.starts_with (s2) and not s2.starts_with (s1)
 					repositories.forth
 				end
 			end
