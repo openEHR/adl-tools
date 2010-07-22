@@ -6,9 +6,8 @@ VERSION
 	Last Change: $Date$
 
 AUTHORS
-	Thomas Beale, Peter Gummer
-
-	Ocean Informatics <www.OceanInformatics.com>
+	thomas.beale@oceaninformatics.com,
+	peter.gummer@oceaninformatics.com
 
 CONTENTS
 	ADL viewer, parser & tester application
@@ -28,12 +27,6 @@ DIRECTORIES
 
 		- The file filetype.vim.example should be used to update (not
 		  replace) the file $VIM/filetype.vim.
-
-	$OPENEHR/archetype:
-		The directory where you should install the openEHR archetype
-		library, which you can do using Subversion. Repository URL
-		is http://www.openehr.org/knowledge . Log in and then go to
-		archetypes > Export.
 
 PURPOSE
 	At the moment, you can hand-write new ADL files, or use one of the
