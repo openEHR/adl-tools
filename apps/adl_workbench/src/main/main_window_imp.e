@@ -18,7 +18,7 @@ inherit
 		redefine
 			initialize, is_in_default_state
 		end
-			
+
 	CONSTANTS
 		undefine
 			is_equal, default_create, copy
@@ -33,7 +33,7 @@ feature {NONE}-- Initialization
 		do
 			Precursor {EV_TITLED_WINDOW}
 			initialize_constants
-			
+
 				-- Create all widgets.
 			create menu
 			create file_menu
@@ -207,6 +207,9 @@ feature {NONE}-- Initialization
 			create l_ev_frame_4
 			create l_ev_vertical_box_14
 			create used_by_tree
+			create status_notebook
+			create parser_status_area
+			create compiler_output_grid
 			create statistics_box
 			create l_ev_vertical_box_15
 			create l_ev_horizontal_box_11
@@ -224,28 +227,24 @@ feature {NONE}-- Initialization
 			create l_ev_horizontal_box_15
 			create l_ev_label_8
 			create arch_bad_count_tf
-			create l_ev_horizontal_box_16
-			create l_ev_label_9
+			create l_ev_frame_5
 			create terminology_bindings_info_list
-			create status_notebook
-			create parser_status_area
-			create compiler_output_grid
 			create test_split_area
-			create l_ev_horizontal_box_17
+			create l_ev_horizontal_box_16
 			create archetype_test_tree_grid
 			create l_ev_vertical_box_16
 			create remove_unused_codes_rb
 			create arch_test_tree_toggle_expand_bn
 			create arch_test_refresh_bn
-			create l_ev_horizontal_box_18
-			create l_ev_label_10
+			create l_ev_horizontal_box_17
+			create l_ev_label_9
 			create arch_test_processed_count
 			create l_ev_horizontal_separator_1
 			create save_adlf_check_button
 			create save_adls_check_button
 			create archetype_test_go_bn
 			create test_status_area
-			
+
 				-- Build widget structure.
 			set_menu_bar (menu)
 			menu.extend (file_menu)
@@ -419,7 +418,10 @@ feature {NONE}-- Initialization
 			slots_box.extend (l_ev_frame_4)
 			l_ev_frame_4.extend (l_ev_vertical_box_14)
 			l_ev_vertical_box_14.extend (used_by_tree)
-			archetype_notebook.extend (statistics_box)
+			total_split_area.extend (status_notebook)
+			status_notebook.extend (parser_status_area)
+			status_notebook.extend (compiler_output_grid)
+			status_notebook.extend (statistics_box)
 			statistics_box.extend (l_ev_vertical_box_15)
 			l_ev_vertical_box_15.extend (l_ev_horizontal_box_11)
 			l_ev_horizontal_box_11.extend (l_ev_label_4)
@@ -436,28 +438,24 @@ feature {NONE}-- Initialization
 			l_ev_vertical_box_15.extend (l_ev_horizontal_box_15)
 			l_ev_horizontal_box_15.extend (l_ev_label_8)
 			l_ev_horizontal_box_15.extend (arch_bad_count_tf)
-			l_ev_vertical_box_15.extend (l_ev_horizontal_box_16)
-			l_ev_horizontal_box_16.extend (l_ev_label_9)
-			l_ev_horizontal_box_16.extend (terminology_bindings_info_list)
-			total_split_area.extend (status_notebook)
-			status_notebook.extend (parser_status_area)
-			status_notebook.extend (compiler_output_grid)
+			statistics_box.extend (l_ev_frame_5)
+			l_ev_frame_5.extend (terminology_bindings_info_list)
 			main_notebook.extend (test_split_area)
-			test_split_area.extend (l_ev_horizontal_box_17)
-			l_ev_horizontal_box_17.extend (archetype_test_tree_grid)
-			l_ev_horizontal_box_17.extend (l_ev_vertical_box_16)
+			test_split_area.extend (l_ev_horizontal_box_16)
+			l_ev_horizontal_box_16.extend (archetype_test_tree_grid)
+			l_ev_horizontal_box_16.extend (l_ev_vertical_box_16)
 			l_ev_vertical_box_16.extend (remove_unused_codes_rb)
 			l_ev_vertical_box_16.extend (arch_test_tree_toggle_expand_bn)
 			l_ev_vertical_box_16.extend (arch_test_refresh_bn)
-			l_ev_vertical_box_16.extend (l_ev_horizontal_box_18)
-			l_ev_horizontal_box_18.extend (l_ev_label_10)
-			l_ev_horizontal_box_18.extend (arch_test_processed_count)
+			l_ev_vertical_box_16.extend (l_ev_horizontal_box_17)
+			l_ev_horizontal_box_17.extend (l_ev_label_9)
+			l_ev_horizontal_box_17.extend (arch_test_processed_count)
 			l_ev_vertical_box_16.extend (l_ev_horizontal_separator_1)
 			l_ev_vertical_box_16.extend (save_adlf_check_button)
 			l_ev_vertical_box_16.extend (save_adls_check_button)
 			l_ev_vertical_box_16.extend (archetype_test_go_bn)
 			test_split_area.extend (test_status_area)
-			
+
 			create string_constant_set_procedures.make (10)
 			create string_constant_retrieval_functions.make (10)
 			create integer_constant_set_procedures.make (10)
@@ -615,7 +613,6 @@ feature {NONE}-- Initialization
 			archetype_notebook.set_item_text (differential_view_box, "Differential View")
 			archetype_notebook.set_item_text (flat_view_box, "Flat View")
 			archetype_notebook.set_item_text (slots_box, "Slots")
-			archetype_notebook.set_item_text (statistics_box, "Statistics")
 			description_box.disable_item_expand (arch_desc_details_frame)
 			description_box.disable_item_expand (arch_desc_resource_frame)
 			description_box.disable_item_expand (arch_desc_copyright_hbox)
@@ -939,11 +936,20 @@ feature {NONE}-- Initialization
 			l_ev_frame_4.set_text ("Archetypes that have slots matching the current archetype ID")
 			integer_constant_set_procedures.extend (agent l_ev_vertical_box_14.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
+			status_notebook.set_item_text (parser_status_area, "Status")
+			status_notebook.set_item_text (compiler_output_grid, "Errors")
+			status_notebook.set_item_text (statistics_box, "Statistics")
+			parser_status_area.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
+			parser_status_area.set_minimum_width (1)
+			integer_constant_set_procedures.extend (agent parser_status_area.set_minimum_height (?))
+			integer_constant_retrieval_functions.extend (agent status_area_min_height)
+			parser_status_area.disable_edit
+			statistics_box.set_minimum_height (200)
 			integer_constant_set_procedures.extend (agent statistics_box.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
 			statistics_box.set_border_width (15)
 			statistics_box.disable_item_expand (l_ev_vertical_box_15)
-			l_ev_vertical_box_15.set_minimum_width (400)
+			l_ev_vertical_box_15.set_minimum_width (250)
 			integer_constant_set_procedures.extend (agent l_ev_vertical_box_15.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
 			integer_constant_set_procedures.extend (agent l_ev_vertical_box_15.set_border_width (?))
@@ -953,7 +959,6 @@ feature {NONE}-- Initialization
 			l_ev_vertical_box_15.disable_item_expand (l_ev_horizontal_box_13)
 			l_ev_vertical_box_15.disable_item_expand (l_ev_horizontal_box_14)
 			l_ev_vertical_box_15.disable_item_expand (l_ev_horizontal_box_15)
-			l_ev_vertical_box_15.disable_item_expand (l_ev_horizontal_box_16)
 			l_ev_horizontal_box_11.set_padding (10)
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_11.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
@@ -1000,25 +1005,14 @@ feature {NONE}-- Initialization
 			l_ev_label_8.align_text_right
 			arch_bad_count_tf.disable_edit
 			arch_bad_count_tf.align_text_right
-			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_16.set_padding (?))
-			integer_constant_retrieval_functions.extend (agent padding_width)
-			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_16.set_border_width (?))
-			integer_constant_retrieval_functions.extend (agent border_width)
-			l_ev_label_9.set_text ("Terminology bindings")
+			l_ev_frame_5.set_text ("Terminology Bindings")
 			terminology_bindings_info_list.set_minimum_width (200)
-			terminology_bindings_info_list.set_minimum_height (200)
-			status_notebook.set_item_text (parser_status_area, "Status")
-			status_notebook.set_item_text (compiler_output_grid, "Errors")
-			parser_status_area.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
-			parser_status_area.set_minimum_width (1)
-			integer_constant_set_procedures.extend (agent parser_status_area.set_minimum_height (?))
-			integer_constant_retrieval_functions.extend (agent status_area_min_height)
-			parser_status_area.disable_edit
+			terminology_bindings_info_list.set_minimum_height (100)
 			integer_constant_set_procedures.extend (agent test_split_area.set_minimum_width (?))
 			integer_constant_retrieval_functions.extend (agent app_min_width)
-			test_split_area.enable_item_expand (l_ev_horizontal_box_17)
+			test_split_area.enable_item_expand (l_ev_horizontal_box_16)
 			test_split_area.disable_item_expand (test_status_area)
-			l_ev_horizontal_box_17.disable_item_expand (l_ev_vertical_box_16)
+			l_ev_horizontal_box_16.disable_item_expand (l_ev_vertical_box_16)
 			integer_constant_set_procedures.extend (agent l_ev_vertical_box_16.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
 			integer_constant_set_procedures.extend (agent l_ev_vertical_box_16.set_border_width (?))
@@ -1026,7 +1020,7 @@ feature {NONE}-- Initialization
 			l_ev_vertical_box_16.disable_item_expand (remove_unused_codes_rb)
 			l_ev_vertical_box_16.disable_item_expand (arch_test_tree_toggle_expand_bn)
 			l_ev_vertical_box_16.disable_item_expand (arch_test_refresh_bn)
-			l_ev_vertical_box_16.disable_item_expand (l_ev_horizontal_box_18)
+			l_ev_vertical_box_16.disable_item_expand (l_ev_horizontal_box_17)
 			l_ev_vertical_box_16.disable_item_expand (l_ev_horizontal_separator_1)
 			l_ev_vertical_box_16.disable_item_expand (save_adlf_check_button)
 			l_ev_vertical_box_16.disable_item_expand (save_adls_check_button)
@@ -1037,13 +1031,13 @@ feature {NONE}-- Initialization
 			arch_test_tree_toggle_expand_bn.set_tooltip ("Expand or collapse directory tree")
 			arch_test_refresh_bn.set_text ("Refresh")
 			arch_test_refresh_bn.set_tooltip ("Resync to file system and reset statuses")
-			l_ev_horizontal_box_18.set_minimum_width (110)
-			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_18.set_padding (?))
+			l_ev_horizontal_box_17.set_minimum_width (110)
+			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_17.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
-			l_ev_horizontal_box_18.disable_item_expand (l_ev_label_10)
-			l_ev_label_10.set_text ("Processed:")
-			l_ev_label_10.set_minimum_width (80)
-			l_ev_label_10.align_text_right
+			l_ev_horizontal_box_17.disable_item_expand (l_ev_label_9)
+			l_ev_label_9.set_text ("Processed:")
+			l_ev_label_9.set_minimum_width (80)
+			l_ev_label_9.align_text_right
 			arch_test_processed_count.disable_edit
 			l_ev_horizontal_separator_1.set_minimum_height (15)
 			save_adlf_check_button.set_text ("Save flat")
@@ -1061,9 +1055,9 @@ feature {NONE}-- Initialization
 			set_maximum_width (2000)
 			set_maximum_height (2000)
 			set_title ("Archetype Definition Language VER Workbench")
-			
+
 			set_all_attributes_using_constants
-			
+
 				-- Connect events.
 			file_menu_open.select_actions.extend (agent open_archetype)
 			file_menu_parse.select_actions.extend (agent parse_archetype)
@@ -1166,7 +1160,7 @@ feature -- Access
 	l_ev_horizontal_box_6, l_ev_horizontal_box_7, l_ev_horizontal_box_8, l_ev_horizontal_box_9,
 	l_ev_horizontal_box_10, arch_desc_copyright_hbox, node_map, path_analysis, statistics_box,
 	l_ev_horizontal_box_11, l_ev_horizontal_box_12, l_ev_horizontal_box_13, l_ev_horizontal_box_14,
-	l_ev_horizontal_box_15, l_ev_horizontal_box_16, l_ev_horizontal_box_17, l_ev_horizontal_box_18: EV_HORIZONTAL_BOX
+	l_ev_horizontal_box_15, l_ev_horizontal_box_16, l_ev_horizontal_box_17: EV_HORIZONTAL_BOX
 	node_map_domain_radio_button,
 	node_map_technical_radio_button, node_map_reference_model_radio_button: EV_RADIO_BUTTON
 	archetype_id,
@@ -1199,7 +1193,7 @@ feature -- Access
 	arch_translations_languages_label, l_ev_label_1, l_ev_label_2, l_ev_label_3, arch_desc_purpose_label,
 	arch_desc_use_label, arch_desc_misuse_label, arch_desc_keywords_label, arch_desc_resource_package_label,
 	arch_desc_resource_orig_res_label, arch_desc_copyright_label, l_ev_label_4, l_ev_label_5,
-	l_ev_label_6, l_ev_label_7, l_ev_label_8, l_ev_label_9, l_ev_label_10: EV_LABEL
+	l_ev_label_6, l_ev_label_7, l_ev_label_8, l_ev_label_9: EV_LABEL
 	path_analysis_column_view_checkable_list: EV_CHECKABLE_LIST
 	remove_unused_codes_rb,
 	save_adlf_check_button, save_adls_check_button: EV_CHECK_BUTTON
@@ -1210,7 +1204,7 @@ feature -- Access
 	arch_desc_auth_frame,
 	term_frame, arch_translations_frame, arch_desc_details_frame, arch_desc_resource_frame,
 	rm_visibility_controls, l_ev_frame_1, l_ev_frame_2, term_definitions_frame, constraint_definitions_frame,
-	l_ev_frame_3, l_ev_frame_4: EV_FRAME
+	l_ev_frame_3, l_ev_frame_4, l_ev_frame_5: EV_FRAME
 	main_notebook, archetype_notebook, definition_notebook,
 	status_notebook: EV_NOTEBOOK
 	l_ev_menu_separator_1, l_ev_menu_separator_2, l_ev_menu_separator_3,
@@ -1226,238 +1220,238 @@ feature {NONE} -- Implementation
 			-- for `Current'.
 			Result := True
 		end
-	
+
 	user_initialization
 			-- Feature for custom initialization, called at end of `initialize'.
 		deferred
 		end
-	
-	open_archetype is
+
+	open_archetype
 			-- Called by `select_actions' of `file_menu_open'.
 		deferred
 		end
-	
-	parse_archetype is
+
+	parse_archetype
 			-- Called by `select_actions' of `file_menu_parse'.
 		deferred
 		end
-	
+
 	edit_archetype is
 			-- Called by `select_actions' of `file_menu_edit'.
 		deferred
 		end
-	
+
 	save_archetype_as is
 			-- Called by `select_actions' of `file_menu_save_as'.
 		deferred
 		end
-	
-	exit_app is
+
+	exit_app
 			-- Called by `select_actions' of `file_menu_exit'.
 		deferred
 		end
-	
-	on_copy is
+
+	on_copy
 			-- Called by `select_actions' of `edit_menu_copy'.
 		deferred
 		end
-	
-	on_select_all is
+
+	on_select_all
 			-- Called by `select_actions' of `edit_menu_select_all'.
 		deferred
 		end
-	
-	show_clipboard is
+
+	show_clipboard
 			-- Called by `select_actions' of `edit_menu_clipboard'.
 		deferred
 		end
-	
-	set_repository is
+
+	set_repository
 			-- Called by `select_actions' of `repository_menu_set_repository'.
 		deferred
 		end
-	
-	build_all is
+
+	build_all
 			-- Called by `select_actions' of `repository_menu_build_all'.
 		deferred
 		end
-	
-	rebuild_all is
+
+	rebuild_all
 			-- Called by `select_actions' of `repository_menu_rebuild_all'.
 		deferred
 		end
-	
-	build_subtree is
+
+	build_subtree
 			-- Called by `select_actions' of `repository_menu_build_subtree'.
 		deferred
 		end
-	
-	rebuild_subtree is
+
+	rebuild_subtree
 			-- Called by `select_actions' of `repository_menu_rebuild_subtree'.
 		deferred
 		end
-	
-	export_html is
+
+	export_html
 			-- Called by `select_actions' of `repository_menu_export_html'.
 		deferred
 		end
-	
-	export_repository_report is
+
+	export_repository_report
 			-- Called by `select_actions' of `repository_menu_export_repository_report'.
 		deferred
 		end
-	
-	interrupt_build is
+
+	interrupt_build
 			-- Called by `select_actions' of `repository_menu_interrupt_build'.
 		deferred
 		end
-	
-	populate_directory is
+
+	populate_directory
 			-- Called by `select_actions' of `repository_menu_refresh'.
 		deferred
 		end
-	
-	on_history is
+
+	on_history
 			-- Called by `select_actions' of `history_menu'.
 		deferred
 		end
-	
-	on_back is
+
+	on_back
 			-- Called by `select_actions' of `history_menu_back'.
 		deferred
 		end
-	
-	on_forward is
+
+	on_forward
 			-- Called by `select_actions' of `history_menu_forward'.
 		deferred
 		end
-	
-	clean_generated_files is
+
+	clean_generated_files
 			-- Called by `select_actions' of `tools_menu_clean_generated_files'.
 		deferred
 		end
-	
-	reload_schemas is
+
+	reload_schemas
 			-- Called by `select_actions' of `tools_menu_reload_schemas'.
 		deferred
 		end
-	
-	set_options is
+
+	set_options
 			-- Called by `select_actions' of `tools_menu_options'.
 		deferred
 		end
-	
-	display_icon_help is
+
+	display_icon_help
 			-- Called by `select_actions' of `help_menu_icons'.
 		deferred
 		end
-	
-	display_news is
+
+	display_news
 			-- Called by `select_actions' of `help_menu_news'.
 		deferred
 		end
-	
-	show_online_help is
+
+	show_online_help
 			-- Called by `select_actions' of `help_menu_online'.
 		deferred
 		end
-	
-	display_about is
+
+	display_about
 			-- Called by `select_actions' of `help_menu_about'.
 		deferred
 		end
-	
-	select_language is
+
+	select_language
 			-- Called by `select_actions' of `language_combo'.
 		deferred
 		end
-	
+
 	archetype_view_tree_item_select is
 			-- Called by `select_actions' of `archetype_file_tree'.
 		deferred
 		end
-	
-	template_view_tree_item_select is
+
+	template_view_tree_item_select
 			-- Called by `select_actions' of `template_file_tree'.
 		deferred
 		end
-	
-	on_archetype_notebook_select is
+
+	on_archetype_notebook_select
 			-- Called by `selection_actions' of `archetype_notebook'.
 		deferred
 		end
-	
-	translations_select_language is
+
+	translations_select_language
 			-- Called by `select_actions' of `arch_translations_languages_list'.
 		deferred
 		end
-	
-	on_node_map_item_select is
+
+	on_node_map_item_select
 			-- Called by `select_actions' of `node_map_tree'.
 		deferred
 		end
-	
-	on_node_map_toggle_expand_tree is
+
+	on_node_map_toggle_expand_tree
 			-- Called by `select_actions' of `node_map_expand_button'.
 		deferred
 		end
-	
-	on_node_map_expand_tree_one_level is
+
+	on_node_map_expand_tree_one_level
 			-- Called by `select_actions' of `node_map_expand_one_button'.
 		deferred
 		end
-	
-	on_node_map_shrink_tree_one_level is
+
+	on_node_map_shrink_tree_one_level
 			-- Called by `select_actions' of `node_map_collapse_one_button'.
 		deferred
 		end
-	
-	on_node_map_domain_selected is
+
+	on_node_map_domain_selected
 			-- Called by `select_actions' of `node_map_domain_radio_button'.
 		deferred
 		end
-	
-	on_node_map_technical_selected is
+
+	on_node_map_technical_selected
 			-- Called by `select_actions' of `node_map_technical_radio_button'.
 		deferred
 		end
-	
-	on_node_map_reference_model_selected is
+
+	on_node_map_reference_model_selected
 			-- Called by `select_actions' of `node_map_reference_model_radio_button'.
 		deferred
 		end
-	
-	path_row_set_filter is
+
+	path_row_set_filter
 			-- Called by `select_actions' of `path_analysis_row_filter_combo_box'.
 		deferred
 		end
-	
-	path_column_select (a_list_item: EV_LIST_ITEM) is
+
+	path_column_select (a_list_item: EV_LIST_ITEM)
 			-- Called by `check_actions' of `path_analysis_column_view_checkable_list'.
 		deferred
 		end
-	
-	path_column_unselect (a_list_item: EV_LIST_ITEM) is
+
+	path_column_unselect (a_list_item: EV_LIST_ITEM)
 			-- Called by `uncheck_actions' of `path_analysis_column_view_checkable_list'.
 		deferred
 		end
-	
-	archetype_test_tree_expand_toggle is
+
+	archetype_test_tree_expand_toggle
 			-- Called by `select_actions' of `arch_test_tree_toggle_expand_bn'.
 		deferred
 		end
-	
-	archetype_test_refresh is
+
+	archetype_test_refresh
 			-- Called by `select_actions' of `arch_test_refresh_bn'.
 		deferred
 		end
-	
-	archetype_test_go_stop is
+
+	archetype_test_go_stop
 			-- Called by `select_actions' of `archetype_test_go_bn'.
 		deferred
 		end
-	
-	
+
+
 feature {NONE} -- Constant setting
 
 	set_attributes_using_string_constants
@@ -1477,7 +1471,7 @@ feature {NONE} -- Constant setting
 				string_constant_set_procedures.forth
 			end
 		end
-		
+
 	set_attributes_using_integer_constants
 			-- Set all attributes relying on integer constants to the current
 			-- value of the associated constant.
@@ -1513,7 +1507,7 @@ feature {NONE} -- Constant setting
 				integer_interval_constant_set_procedures.forth
 			end
 		end
-		
+
 	set_attributes_using_pixmap_constants
 			-- Set all attributes relying on pixmap constants to the current
 			-- value of the associated constant.
@@ -1531,7 +1525,7 @@ feature {NONE} -- Constant setting
 				pixmap_constant_set_procedures.forth
 			end
 		end
-		
+
 	set_attributes_using_font_constants
 			-- Set all attributes relying on font constants to the current
 			-- value of the associated constant.
@@ -1547,9 +1541,9 @@ feature {NONE} -- Constant setting
 				f := font_constant_retrieval_functions.i_th (font_constant_set_procedures.index).last_result
 				font_constant_set_procedures.item.call ([f])
 				font_constant_set_procedures.forth
-			end	
+			end
 		end
-		
+
 	set_attributes_using_color_constants
 			-- Set all attributes relying on color constants to the current
 			-- value of the associated constant.
@@ -1567,7 +1561,7 @@ feature {NONE} -- Constant setting
 				color_constant_set_procedures.forth
 			end
 		end
-		
+
 	set_all_attributes_using_constants
 			-- Set all attributes relying on constants to the current
 			-- calue of the associated constant.
@@ -1578,7 +1572,7 @@ feature {NONE} -- Constant setting
 			set_attributes_using_font_constants
 			set_attributes_using_color_constants
 		end
-					
+
 	string_constant_set_procedures: ARRAYED_LIST [PROCEDURE [ANY, TUPLE [STRING_GENERAL]]]
 	string_constant_retrieval_functions: ARRAYED_LIST [FUNCTION [ANY, TUPLE [], STRING_GENERAL]]
 	integer_constant_set_procedures: ARRAYED_LIST [PROCEDURE [ANY, TUPLE [INTEGER]]]
@@ -1591,7 +1585,7 @@ feature {NONE} -- Constant setting
 	font_constant_retrieval_functions: ARRAYED_LIST [FUNCTION [ANY, TUPLE [], EV_FONT]]
 	color_constant_set_procedures: ARRAYED_LIST [PROCEDURE [ANY, TUPLE [EV_COLOR]]]
 	color_constant_retrieval_functions: ARRAYED_LIST [FUNCTION [ANY, TUPLE [], EV_COLOR]]
-	
+
 	integer_from_integer (an_integer: INTEGER): INTEGER
 			-- Return `an_integer', used for creation of
 			-- an agent that returns a fixed integer value.
