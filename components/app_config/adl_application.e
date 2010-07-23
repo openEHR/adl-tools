@@ -110,9 +110,9 @@ feature {NONE} -- Implementation
 			["cfg_file_i1"] = <"Wrote config file $1">
 			
 			-- Archetype reppsitory
-			["ref_repo_not_found"] = <"Error: reference Repository $1 does not exist or not readable (check Repository settings)">
-			["work_repo_not_found"] = <"Error; work Repository $1 does not exist or not readable (check Repository settings)">
-			["work_repo_not_invalid"] = <"Error; work Repository $1 does not exist or is the same as or a child of the reference repository (check Repository settings)">
+			["ref_repo_not_found"] = <"Error: Reference Repository $1 does not exist or not readable (check Repository Settings)">
+			["work_repo_not_found"] = <"Error; Work Repository $1 does not exist or not readable (check Repository Settings)">
+			["work_repo_not_invalid"] = <"Error; Work Repository $1 does not exist or is the same as or a child of the reference repository (check Repository Settings)">
 			["profile_not_yet_defined"] = <"Create a profile name before choosing directories">
 			["no_profile_to_remove"] = <"No profile available to remove">
 			["remove_profile_question"] = <"Remove profile $1?">

@@ -562,10 +562,14 @@ feature -- Application Switches
 			Result := resource_value ("default", "path_filter_combo_selection")
 		end
 
-	path_view_check_list_settings: ARRAYED_LIST[STRING]
+	path_view_check_list_settings: LIST [STRING]
 			-- path view column settings
 		do
 			Result := resource_value_list ("default", "path_view_check_list_settings")
+		ensure
+			result_attached: attached Result
+			value_comparison: Result.object_comparison
+			no_empty_items: Result.for_all (agent (s: STRING): BOOLEAN do Result := attached s and then not s.is_empty end)
 		end
 
 	editor_command: attached STRING
@@ -713,11 +717,10 @@ feature -- Application Switch Setting
 			set_resource_value("default", "path_filter_combo_selection", str)
 		end
 
-	set_path_view_check_list_settings (strs: ARRAYED_LIST[STRING])
+	set_path_view_check_list_settings (strs: LIST [STRING])
 			-- save path view column settings
 		do
 			set_resource_value_list("default", "path_view_check_list_settings", strs)
-
 		end
 
 feature {NONE} -- Implementation

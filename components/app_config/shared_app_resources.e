@@ -120,14 +120,14 @@ feature -- Access
 			Result > 100 and Result <= 999
 		end
 
-	rm_schemas_load_list: ARRAYED_LIST[STRING]
+	rm_schemas_load_list: LIST [STRING]
 			-- list of RM schemas to use
 		do
-			Result := resource_value_list("default", "rm_schemas_load_list")
-			Result.compare_objects
+			Result := resource_value_list ("default", "rm_schemas_load_list")
 		ensure
-			Result_attached: Result /= Void
-			Value_comparison: Result.object_comparison
+			result_attached: attached Result
+			value_comparison: Result.object_comparison
+			no_empty_items: Result.for_all (agent (s: STRING): BOOLEAN do Result := attached s and then not s.is_empty end)
 		end
 
 feature -- Application Switch Setting
@@ -167,7 +167,7 @@ feature -- Application Switch Setting
 			remove_resource("default", "current_repository_profile")
 		end
 
-	set_rm_schemas_load_list(a_schema_list: attached ARRAYED_LIST[STRING])
+	set_rm_schemas_load_list (a_schema_list: attached LIST [STRING])
 			-- set rm_schemas(s)
 		require
 			a_schema_list_valid: not a_schema_list.is_empty

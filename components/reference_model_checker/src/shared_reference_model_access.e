@@ -140,7 +140,7 @@ feature {NONE} -- Implementation
 		local
 			ma: SCHEMA_ACCESS
 			schema_path, model_publisher, model_name, logical_schema_name: STRING
-			load_list: ARRAYED_LIST [STRING]
+			load_list: LINEAR [STRING]
 			metadata_list: HASH_TABLE [STRING, STRING]
 			qualified_pkg_name: STRING
 			pkgs: HASH_TABLE [BMM_PACKAGE_DEFINITION, STRING]
@@ -152,7 +152,7 @@ feature {NONE} -- Implementation
 				if not rm_schemas_load_list.is_empty then
 					load_list := rm_schemas_load_list
 				else
-					create load_list.make_from_array (rm_schema_metadata_table.current_keys)
+					load_list := rm_schema_metadata_table.current_keys.linear_representation
 					post_warning (Current, "rm_schemas", "model_access_w6", Void)
 				end
 

@@ -85,7 +85,7 @@ feature -- Commands
 			-- Initialise widgets associated with the Path Analysis.
 		local
 			filter_combo_index: INTEGER
-			strs: ARRAYED_LIST [STRING]
+			strs: LIST [STRING]
 		do
 			path_list.enable_multiple_selection
 			filter_combo.set_strings (path_control_filter_names)
@@ -113,8 +113,6 @@ feature -- Commands
 			strs := path_view_check_list_settings
 
 			if not strs.is_empty then
-				strs.compare_objects
-
 				from column_check_list.start until column_check_list.off loop
 					if strs.has (column_check_list.item.text.as_string_8) then
 						column_check_list.check_item (column_check_list.item)

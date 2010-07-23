@@ -73,15 +73,20 @@ feature -- Access
 			end
 		end
 
-	resource_value_list (category, resource_name: STRING): attached ARRAYED_LIST [STRING]
+	resource_value_list (category, resource_name: STRING): LIST [STRING]
 			-- List of items specified in file setting
 			-- of the form of a comma-separated list.
 		require
 			Valid_category: category /= Void and then not category.is_empty
 			Valid_resource_name: resource_name /= Void and then not resource_name.is_empty
 		do
-			create Result.make (0)
-			Result.append(resource_value(category, resource_name).split (resource_list_item_delimiter))
+			Result := resource_value (category, resource_name).split (resource_list_item_delimiter)
+			Result.compare_objects
+			Result.prune_all ("")
+		ensure
+			result_attached: attached Result
+			value_comparison: Result.object_comparison
+			no_empty_items: Result.for_all (agent (s: STRING): BOOLEAN do Result := attached s and then not s.is_empty end)
 		end
 
 	resource_category_values (category: STRING): attached HASH_TABLE [STRING, STRING]
@@ -128,70 +133,70 @@ feature -- Access
 feature -- Modification
 
 	set_resource_value (category_name, resource_name, value: attached STRING)
-           require
-                Valid_category: not category_name.is_empty
-                Valid_resource_name: not resource_name.is_empty
-           local
-				resource_list: HASH_TABLE[STRING,STRING]
-           do
-                if resources.has(category_name) then
-					resource_list := resources.item(category_name)
-					resource_list.force(value, resource_name)
-                else
-					create resource_list.make(0)
-					resource_list.put(value, resource_name)
-					resources.put(resource_list, category_name)
-                end
-           end
+		require
+			Valid_category: not category_name.is_empty
+			Valid_resource_name: not resource_name.is_empty
+		local
+			resource_list: HASH_TABLE[STRING,STRING]
+		do
+			if resources.has(category_name) then
+				resource_list := resources.item(category_name)
+				resource_list.force(value, resource_name)
+			else
+				create resource_list.make(0)
+				resource_list.put(value, resource_name)
+				resources.put(resource_list, category_name)
+			end
+		end
 
 	set_resource_value_list (category_name, resource_name: attached STRING; values: attached LIST [STRING])
-			require
-                Valid_category: not category_name.is_empty
-                Valid_resource_name: not resource_name.is_empty
-			local
-				resource_list: HASH_TABLE[STRING,STRING]
-				s: STRING
-			do
-				create s.make(0)
-	           	from values.start until values.off loop
-	           		if not values.isfirst then
-	           			s.append_character (resource_list_item_delimiter)
-	           		end
-	           		s.append(values.item)
-	           		values.forth
-	           	end
+		require
+			Valid_category: not category_name.is_empty
+			Valid_resource_name: not resource_name.is_empty
+		local
+			resource_list: HASH_TABLE[STRING,STRING]
+			s: STRING
+		do
+			create s.make(0)
+			from values.start until values.off loop
+				if not values.isfirst then
+					s.append_character (resource_list_item_delimiter)
+				end
+				s.append(values.item)
+				values.forth
+			end
 
-                if resources.has(category_name) then
-					resource_list := resources.item(category_name)
-					resource_list.force(s, resource_name)
-                else
-					create resource_list.make(0)
-					resource_list.put(s, resource_name)
-					resources.put(resource_list, category_name)
-                end
-           end
+			if resources.has(category_name) then
+				resource_list := resources.item(category_name)
+				resource_list.force(s, resource_name)
+			else
+				create resource_list.make(0)
+				resource_list.put(s, resource_name)
+				resources.put(resource_list, category_name)
+			end
+		end
 
 	set_resource_category_lists (category: attached STRING; res_lists: attached HASH_TABLE [ARRAYED_LIST [STRING], STRING])
 			-- set all name/value list pairs in 'category', in a hash, keyed by the resource names
 			-- completely replaces existing set of resources for this category
 		require
-            Valid_category: category /= Void and then not category.is_empty
-        local
-        	res_hash: HASH_TABLE [STRING, STRING]
-        	s: STRING
-        	values: ARRAYED_LIST [STRING]
+			Valid_category: category /= Void and then not category.is_empty
+		local
+			res_hash: HASH_TABLE [STRING, STRING]
+			s: STRING
+			values: ARRAYED_LIST [STRING]
 		do
 			create res_hash.make(0)
 			from res_lists.start until res_lists.off loop
 				create s.make(0)
 				values := res_lists.item_for_iteration
-	           	from values.start until values.off loop
-	           		if not values.isfirst then
-	           			s.append_character (resource_list_item_delimiter)
-	           		end
-	           		s.append(values.item)
-	           		values.forth
-	           	end
+				from values.start until values.off loop
+					if not values.isfirst then
+						s.append_character (resource_list_item_delimiter)
+					end
+					s.append(values.item)
+					values.forth
+				end
 				res_hash.put (s, res_lists.key_for_iteration)
 				res_lists.forth
 			end

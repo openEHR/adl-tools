@@ -59,7 +59,7 @@ feature -- Access
 			end
 		end
 
-	resource_value_list (a_category, a_resource_name: STRING): ARRAYED_LIST [STRING]
+	resource_value_list (a_category, a_resource_name: STRING): LIST [STRING]
 			-- List of items specified in file setting
 			-- of the form of a comma-separated list.
 		require
@@ -67,6 +67,10 @@ feature -- Access
 			Valid_resource_name: a_resource_name /= Void and then not a_resource_name.is_empty
 		do
 			Result := resource_config_file.resource_value_list(a_category, a_resource_name)
+		ensure
+			result_attached: attached Result
+			value_comparison: Result.object_comparison
+			no_empty_items: Result.for_all (agent (s: STRING): BOOLEAN do Result := attached s and then not s.is_empty end)
 		end
 
 	resource_category_values (a_category: attached STRING): attached HASH_TABLE [STRING, STRING]

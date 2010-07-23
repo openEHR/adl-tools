@@ -61,11 +61,6 @@ feature -- Status
 	has_changed_schema_load_list: BOOLEAN
 			-- Schema load list has changed; should refresh
 
-feature -- Access
-
-	old_rm_schemas_load_list: ARRAYED_LIST [STRING]
-			-- previous state of schemas load list
-
 feature {NONE} -- Implementation
 
 	populate_controls
@@ -175,7 +170,7 @@ feature {NONE} -- Implementation
 			set_html_export_directory (export_html_text.text.as_string_8)
 			set_adl_version_for_flat_output(adl_save_version_combo_box.text.as_string_8)
 
-			create rm_schemas_ll.make(0)
+			create {ARRAYED_LIST [STRING]} rm_schemas_ll.make (0)
 			rm_schemas_ll.compare_objects
 			rm_schemas_checkable_list.checked_items.do_all (
 				agent (li: EV_LIST_ITEM)
@@ -183,10 +178,10 @@ feature {NONE} -- Implementation
 						rm_schemas_ll.extend(li.text)
 					end
 			)
+
 			if rm_schemas_ll.is_equal (rm_schemas_load_list) then
 				has_changed_schema_load_list := False
 			else
-				old_rm_schemas_load_list := rm_schemas_load_list
 				set_rm_schemas_load_list (rm_schemas_ll)
 				has_changed_schema_load_list := True
 			end
@@ -236,7 +231,7 @@ feature {NONE} -- Implementation
 	old_show_entire_ontology: BOOLEAN
 			-- value of show_entire_ontology prior to setting by optin dialog
 
-	rm_schemas_ll: ARRAYED_LIST [STRING]
+	rm_schemas_ll: LIST [STRING]
 			-- list of checked schemas in options dialog
 
 
