@@ -998,7 +998,7 @@ feature {NONE} -- Implementation
 			-- Save the application configuration file and update the status area.
 		do
 			save_resources
-			post_info (Current, "save_resources_and_show_status", "cfg_file_i1", <<resource_config_file_name>>)
+			post_info (Current, "save_resources_and_show_status", "cfg_file_i1", <<user_config_file_path>>)
 		end
 
 	status_area_background_color: EV_COLOR

@@ -398,13 +398,6 @@ feature -- Modification
 			create artefact_type.make_from_type_name(s)
 		end
 
---	set_concept(str: STRING)
---		require
---			str_valid: str /= Void and then not str.is_empty
---		do
---			concept := str
---		end
-
 	set_parent_archetype_id (an_id: attached ARCHETYPE_ID)
 		do
 			parent_archetype_id := an_id
@@ -415,12 +408,12 @@ feature -- Modification
 			definition := a_node
 		end
 
-	set_invariants(assn_list: ARRAYED_LIST[ASSERTION])
+	set_invariants(an_assertion_list: ARRAYED_LIST[ASSERTION])
 			-- set invariants
 		require
-			assn_list /= Void
+			an_assertion_list /= Void
 		do
-			invariants := assn_list
+			invariants := an_assertion_list
 		end
 
 	set_ontology (a_node: like ontology)

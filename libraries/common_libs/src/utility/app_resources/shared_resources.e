@@ -28,22 +28,7 @@ feature -- Definitions
 
 	Default_unix_temp_dir: STRING = "/tmp"
 
-feature -- Initialisation
-
-	initialise_resource_config_file_name (str: STRING)
-		require
-			File_name_exists: str /= Void and then not str.is_empty
-		do
-			resource_config_file_name.append(str)
-		ensure
-			resource_config_file_name.is_equal(str)
-		end
-
-	initialise_default_resource_config_file_name
-			-- initialise resources from default resource file location
-		once
-			resource_config_file_name.append(default_resource_config_file_full_path)
-		end
+	User_config_file_extension: STRING = ".cfg"
 
 feature -- Access
 
@@ -134,18 +119,45 @@ feature -- Environment
 			end
 		end
 
-	Global_config_directory: STRING
-			-- location of global configuration files - /etc
-		once
-			create Result.make(0)
-			Result.append(os_directory_separator.out + "etc")
-		end
+--	Global_config_directory: STRING
+--			-- location of global configuration files - /etc
+--			-- UNIX only
+--		once
+--			create Result.make(0)
+--			Result.append(os_directory_separator.out + "etc")
+--		end
 
 	system_config_file_directory: STRING
 			-- place for config files common to multiple applications
+			-- UNIX only
 		once
 			create Result.make(0)
 			Result.append(execution_environment.root_directory_name + "etc")
+		end
+
+	user_config_file_directory: STRING
+			-- get OS-specific place for user config file(s) for this application
+			-- on Windows, follows the model home_path/app_vendor/app_name
+		once
+			Result := (create {EXECUTION_ENVIRONMENT}).home_directory_name
+			Result.append(os_directory_separator.out + application_developer_name)
+			Result.append(os_directory_separator.out + extension_removed(application_name))
+		end
+
+	user_config_file_path: STRING
+			-- full path to resource configuration file; same as
+			-- full path to app, but config file has .cfg istead of .exe extension
+		local
+			dir: KL_DIRECTORY
+			cfg_file: PLAIN_TEXT_FILE
+		once
+			Result := user_config_file_directory.twin
+			Result.append(os_directory_separator.out + extension_replaced(application_name, User_config_file_extension))
+
+			create dir.make (user_config_file_directory)
+			if not dir.exists then
+				dir.recursive_create_directory
+			end
 		end
 
 	system_temp_file_directory: attached STRING
@@ -176,40 +188,28 @@ feature -- Environment
 			ends_with_directory_separator: Result @ Result.count = os_directory_separator
 		end
 
-	resource_config_file_name: STRING
-			-- name of configuration file from which settings are read
-		once
-			create Result.make_empty
-		end
-
-	default_global_resource_config_file_full_path: STRING
-			-- full path to default global resource configuration file area
-		once
-			Result := Global_config_directory.twin
-			Result.append(os_directory_separator.out + application_name)
-			if Result.has_substring (".exe") then
-				Result.replace_substring_all(".exe", ".cfg")
-			else
-				Result.append(".cfg")
-			end
-		end
-
-	default_resource_config_file_full_path: STRING
-			-- default full path to resource configuration file; same as
-			-- full path to app, but config file has .cfg istead of .exe extension
-		once
-			Result := application_full_path
-			if Result.has_substring (".exe") then
-				Result.replace_substring_all(".exe", ".cfg")
-			else
-				Result.append(".cfg")
-			end
-		end
+--	default_global_resource_config_file_full_path: STRING
+--			-- full path to default global resource configuration file area
+--			-- unlikely to be used except possibly on Unix
+--		once
+--			Result := Global_config_directory.twin
+--			Result.append(os_directory_separator.out + application_name)
+--			if Result.has_substring (".exe") then
+--				Result.replace_substring_all(".exe", ".cfg")
+--			else
+--				Result.append(".cfg")
+--			end
+--		end
 
 	execution_environment: EXECUTION_ENVIRONMENT
 	    once
 	        create Result
 	    end
+
+	current_working_directory: STRING
+		do
+			Result := execution_environment.current_working_directory
+		end
 
 	os_directory_separator: CHARACTER
 	    once
@@ -251,15 +251,26 @@ feature -- Environment
 			not_empty: not Result.is_empty
 		end
 
-	application_name: STRING
+	application_name: attached STRING
 			-- The name of the application executable, with any leading directory components removed.
 	    once
 			Result := file_system.basename (application_full_path)
 	    end
 
-	current_working_directory: STRING
-		do
-			Result := execution_environment.current_working_directory
+	application_developer_name: attached STRING
+			-- usually the company or organisation name of the application vendor; almost always
+			-- the penultimate piece of the application install path on any operating system,
+			-- following the model where application_startup_directory = root_path/vendor_name/app_name
+			-- If some shorter path structure is used, just return an empty string
+		local
+			path: KI_PATHNAME
+		once
+			path := file_system.string_to_pathname (application_full_path)
+			if path.count >= 2 then
+				Result := file_system.basename (file_system.dirname(application_startup_directory))
+			else
+				create Result.make (0)
+			end
 		end
 
 	file_exists (path: STRING): BOOLEAN
@@ -293,6 +304,17 @@ feature -- Environment
 		ensure
 			cloned: Result /= path
 			ends_with_new_extension: Result.ends_with (new_extension)
+		end
+
+	extension_removed (path: STRING): attached STRING
+			-- Copy of `path', with its extension (final segment preceded by '.'), if any, removed
+		require
+			path_attached: path /= Void
+		do
+			Result := path.substring (1, path.count - file_system.extension (path).count)
+		ensure
+			cloned: Result /= path
+			extension_removed: path.has ('.') implies path.count > Result.count
 		end
 
 	locale_language_short: STRING
@@ -511,7 +533,7 @@ feature {NONE} -- Implementation
 
 	resource_config_file: CONFIG_FILE_ACCESS
 		once
-			create Result.make(resource_config_file_name)
+			create Result.make(user_config_file_path)
 		end
 
 end

@@ -299,7 +299,7 @@ feature {NONE} -- Implementation
 		do
 			if not profile_combo_box.text.is_empty then
 				if reference_repository_path.is_empty then
-					def_path := application_startup_directory
+					def_path := user_config_file_directory
 				else
 					def_path := reference_repository_path
 				end

@@ -124,9 +124,8 @@ feature -- Comparison
 			-- True if this node occurrences conforms to other.occurrences; `other' is assumed to be in a flat archetype
 		require
 			other_exists: other /= Void
-			other_is_flat: other.occurrences /= Void
 		do
-			Result := occurrences = Void or else other.occurrences.contains (occurrences)
+			Result := other.occurrences = Void or else occurrences = Void or else other.occurrences.contains (occurrences)
 		end
 
 	node_id_conforms_to (other: like Current): BOOLEAN
@@ -214,7 +213,6 @@ feature -- Modification
 			-- Current is assumed to be in a flat archetype
 		require
 			Other_valid: other /= Void and then other.node_conforms_to (Current, an_rm_schema)
-			Flat_archetype: occurrences /= Void
 		do
 			if not other.node_id.is_equal(node_id) then
 				set_node_id (other.node_id.twin)

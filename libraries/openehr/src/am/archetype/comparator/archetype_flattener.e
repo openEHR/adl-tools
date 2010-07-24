@@ -650,7 +650,7 @@ feature {NONE} -- Implementation
 		end
 
 	rm_node_flatten_enter (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
-			-- copy existence, cardinality and occurrences from reference model to node if it doesn't have them set
+			-- copy existenc and cardinality from reference model to node if it doesn't have them set; infer occurrences
 		local
 			rm_attr_desc: BMM_PROPERTY_DEFINITION
 		do
@@ -667,19 +667,13 @@ feature {NONE} -- Implementation
 			elseif attached {C_OBJECT} a_c_node as co then
 				-- here the logic is a bit trickier: there is no such thing as 'occurrences' in the reference model
 				-- so it is set from the enclosing attribute cardinality if a container, or existence if not.
-				if co.occurrences = Void then
-					if co.is_root then -- assume 0..1
-						co.set_occurrences (create {MULTIPLICITY_INTERVAL}.make_bounded(0,1))
-					else
-						rm_attr_desc := rm_schema.property_definition (co.parent.parent.rm_type_name, co.parent.rm_attribute_name)
-						if attached {BMM_CONTAINER_PROPERTY} rm_attr_desc as cont_prop then
-							if cont_prop.type.cardinality.upper_unbounded then
-								co.set_occurrences (create {MULTIPLICITY_INTERVAL}.make_upper_unbounded (0))
-							else
-								co.set_occurrences (create {MULTIPLICITY_INTERVAL}.make_bounded(0, cont_prop.type.cardinality.upper))
-							end
+				if co.occurrences = Void and not co.is_root then
+					rm_attr_desc := rm_schema.property_definition (co.parent.parent.rm_type_name, co.parent.rm_attribute_name)
+					if attached {BMM_CONTAINER_PROPERTY} rm_attr_desc as cont_prop then
+						if cont_prop.type.cardinality.upper_unbounded then
+							co.set_occurrences (create {MULTIPLICITY_INTERVAL}.make_upper_unbounded (0))
 						else
-							co.set_occurrences (rm_attr_desc.existence.deep_twin)
+							co.set_occurrences (create {MULTIPLICITY_INTERVAL}.make_bounded(0, cont_prop.type.cardinality.upper))
 						end
 					end
 				end
@@ -693,7 +687,7 @@ feature {NONE} -- Implementation
 	template_overlay_target_definitions
 			-- process `template_arch_root_list' to overlay target definitions.
 		local
-			ext_arch_root_cco:  attached C_COMPLEX_OBJECT
+			arch_root_cco: attached C_COMPLEX_OBJECT
 			ca_clone: C_ATTRIBUTE
 			xref_idx: HASH_TABLE[ARRAYED_LIST[C_ARCHETYPE_ROOT], STRING]
 			xref_list: ARRAYED_LIST[C_ARCHETYPE_ROOT]
@@ -703,20 +697,20 @@ feature {NONE} -- Implementation
 			end
 			xref_idx := arch_output_flat.suppliers_index
 			from xref_idx.start until xref_idx.off loop
-				ext_arch_root_cco := arch_dir.archetype_index.item (xref_idx.key_for_iteration).flat_archetype.definition
+				arch_root_cco := arch_dir.archetype_index.item (xref_idx.key_for_iteration).flat_archetype.definition
 				xref_list := xref_idx.item_for_iteration
 				from xref_list.start until xref_list.off loop
 					if not xref_list.item.has_attributes then -- it is empty and needs to be filled
 						debug ("flatten")
 							io.put_string ("%T node at " + xref_list.item.path + " with " + xref_idx.key_for_iteration + "%N")
 						end
-						from ext_arch_root_cco.attributes.start until ext_arch_root_cco.attributes.off loop
-							ca_clone := ext_arch_root_cco.attributes.item.safe_deep_twin
+						from arch_root_cco.attributes.start until arch_root_cco.attributes.off loop
+							ca_clone := arch_root_cco.attributes.item.safe_deep_twin
 							xref_list.item.put_attribute (ca_clone)
 							debug ("flatten")
 								io.put_string ("%T%T cloning attribute " + ca_clone.rm_attribute_path + "%N")
 							end
-							ext_arch_root_cco.attributes.forth
+							arch_root_cco.attributes.forth
 						end
 					end
 					xref_list.forth

@@ -28,7 +28,6 @@ feature -- Initialisation
 		local
 			rep_profiles: attached HASH_TABLE [ARRAYED_LIST[STRING], STRING]
 		once
-			initialise_default_resource_config_file_name
 			message_db.populate(message_templates_text, locale_language_short)
 			if message_db.database_loaded then
 				billboard.set_status_reporting_level(status_reporting_level)
@@ -147,7 +146,7 @@ feature {NONE} -- Implementation
 			["model_access_i1"] = <"Reference Model $1 loaded: $2 primitive types, $3 class definitions">
 
 			["model_access_w1"] = <"Reference Model checking is OFF">
-			["model_access_w2"] = <"Duplicate Reference Model schema found for model '$1' in file $2">
+			["model_access_w2"] = <"Duplicate Reference Model schema found for model '$1' in file $2, ignoring latter">
 			["model_access_w3"] = <"Duplicate instance of Reference Model package $1 found; ignoring instance from schema $2">
 			["model_access_w4"] = <"Reference Model for $1 meta-data missing/invalid: $2">
 			["model_access_w5"] = <"Unknown Reference Model '$1' mentioned in 'rm_schemas_load_list' config setting (ignored)">
