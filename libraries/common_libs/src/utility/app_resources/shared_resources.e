@@ -139,7 +139,7 @@ feature -- Environment
 			-- get OS-specific place for user config file(s) for this application
 			-- on Windows, follows the model home_path/app_vendor/app_name
 		once
-			Result := (create {EXECUTION_ENVIRONMENT}).home_directory_name
+			Result := execution_environment.home_directory_name
 			Result.append(os_directory_separator.out + application_developer_name)
 			Result.append(os_directory_separator.out + extension_removed(application_name))
 		end
@@ -202,6 +202,7 @@ feature -- Environment
 --		end
 
 	execution_environment: EXECUTION_ENVIRONMENT
+			-- Shared instance of the execution environment.
 	    once
 	        create Result
 	    end
