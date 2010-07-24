@@ -38,6 +38,7 @@ feature {NONE} -- Initialization
 			-- Create and launch the application, showing a splash window followed by the main window.
 		do
 			default_create
+			application_developer_name.append ("openEHR")
 			adl_application.initialise
 			if adl_application.initialised then
 				show_splash_window

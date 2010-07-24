@@ -135,29 +135,30 @@ feature -- Environment
 			Result.append(execution_environment.root_directory_name + "etc")
 		end
 
-	user_config_file_directory: STRING
-			-- get OS-specific place for user config file(s) for this application
-			-- on Windows, follows the model home_path/app_vendor/app_name
+	user_config_file_directory: attached STRING
+			-- OS-specific place for user config file(s) for this application.
+			-- Follows the model home_path/app_vendor/app_name.
 		once
-			Result := execution_environment.home_directory_name
-			Result.append(os_directory_separator.out + application_developer_name)
-			Result.append(os_directory_separator.out + extension_removed(application_name))
+			Result := file_system.pathname (execution_environment.home_directory_name, application_developer_name)
+			Result := file_system.pathname (Result, extension_removed (application_name))
+		ensure
+			not_empty: not Result.is_empty
 		end
 
-	user_config_file_path: STRING
-			-- full path to resource configuration file; same as
-			-- full path to app, but config file has .cfg istead of .exe extension
+	user_config_file_path: attached STRING
+			-- Full path to resource configuration file.
 		local
 			dir: KL_DIRECTORY
 			cfg_file: PLAIN_TEXT_FILE
 		once
-			Result := user_config_file_directory.twin
-			Result.append(os_directory_separator.out + extension_replaced(application_name, User_config_file_extension))
+			Result := file_system.pathname (user_config_file_directory, extension_replaced(application_name, User_config_file_extension))
 
 			create dir.make (user_config_file_directory)
 			if not dir.exists then
 				dir.recursive_create_directory
 			end
+		ensure
+			not_empty: not Result.is_empty
 		end
 
 	system_temp_file_directory: attached STRING
@@ -259,19 +260,9 @@ feature -- Environment
 	    end
 
 	application_developer_name: attached STRING
-			-- usually the company or organisation name of the application vendor; almost always
-			-- the penultimate piece of the application install path on any operating system,
-			-- following the model where application_startup_directory = root_path/vendor_name/app_name
-			-- If some shorter path structure is used, just return an empty string
-		local
-			path: KI_PATHNAME
+			-- usually the company or organisation name of the application vendor.
 		once
-			path := file_system.string_to_pathname (application_full_path)
-			if path.count >= 2 then
-				Result := file_system.basename (file_system.dirname(application_startup_directory))
-			else
-				create Result.make (0)
-			end
+			create Result.make (0)
 		end
 
 	file_exists (path: STRING): BOOLEAN
