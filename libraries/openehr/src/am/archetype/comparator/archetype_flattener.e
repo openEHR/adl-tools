@@ -650,7 +650,7 @@ feature {NONE} -- Implementation
 		end
 
 	rm_node_flatten_enter (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
-			-- copy existenc and cardinality from reference model to node if it doesn't have them set; infer occurrences
+			-- copy existence and cardinality from reference model to node if it doesn't have them set; infer occurrences
 		local
 			rm_attr_desc: BMM_PROPERTY_DEFINITION
 		do
@@ -666,7 +666,7 @@ feature {NONE} -- Implementation
 				end
 			elseif attached {C_OBJECT} a_c_node as co then
 				-- here the logic is a bit trickier: there is no such thing as 'occurrences' in the reference model
-				-- so it is set from the enclosing attribute cardinality if a container, or existence if not.
+				-- so it is set from the enclosing attribute cardinality if a container, or left Void if not.
 				if co.occurrences = Void and not co.is_root then
 					rm_attr_desc := rm_schema.property_definition (co.parent.parent.rm_type_name, co.parent.rm_attribute_name)
 					if attached {BMM_CONTAINER_PROPERTY} rm_attr_desc as cont_prop then
