@@ -33,7 +33,7 @@ feature -- Initialisation
 				billboard.set_status_reporting_level(status_reporting_level)
 
 				if html_export_directory.is_empty then
-					set_html_export_directory (file_system.pathname (file_system.absolute_parent_directory (reference_repository_path), "html"))
+					set_html_export_directory (file_system.pathname (user_config_file_directory, "html"))
 				end
 
 				post_warning (Current, "initialise", "adl_version_warning", <<adl_version_for_flat_output>>)
