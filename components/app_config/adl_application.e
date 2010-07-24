@@ -36,9 +36,7 @@ feature -- Initialisation
 					set_html_export_directory (file_system.pathname (file_system.absolute_parent_directory (reference_repository_path), "html"))
 				end
 
-				if not adl_version_for_flat_output.is_empty then
-					post_warning (Current, "initialise", "adl_version_warning", <<adl_version_for_flat_output>>)
-				end
+				post_warning (Current, "initialise", "adl_version_warning", <<adl_version_for_flat_output>>)
 
 				if validation_strict then
 					post_warning (Current, "initialise", "validation_strict", Void)
@@ -107,6 +105,7 @@ feature {NONE} -- Implementation
 			["general_error"] = <"Error: $1">
 			["general"] = <"$1">
 			["cfg_file_i1"] = <"Wrote config file $1">
+			["file_exists_replace_question"] = <"File $1 already exists. Replace it?">			
 			
 			-- Archetype reppsitory
 			["ref_repo_not_found"] = <"Error: Reference Repository $1 does not exist or not readable (check Repository Settings)">
@@ -115,10 +114,15 @@ feature {NONE} -- Implementation
 			["profile_not_yet_defined"] = <"Create a profile name before choosing directories">
 			["no_profile_to_remove"] = <"No profile available to remove">
 			["remove_profile_question"] = <"Remove profile $1?">
-			["populating_directory"] = <"Populating from directories in $1 profile...">
+			["populating_directory_start"] = <"Populating from directories in $1 profile...">
+			["populating_directory_complete"] = <"...complete; compile with F7 or other options under Repository menu">
 			["add_one_profile_only"] = <"Can only add one profile at a time; hit OK or Cancel">
 			["cant_remove_with_add_pending"] = <"Previous add needs to be committed; hit OK or Cancel">
 			["existing_profile_changes_pending"] = <"Changes to current profile need to be committed; hit OK or Cancel">
+			["clean_generated_files_info"] = <"System needs to be compiled before generated files can be deleted">
+			["export_repository_report_replace_info"] = <"Exported report to $1">
+			["export_repository_report_replace_err"] = <"Error: Failed to export report to $1">
+			["export_html_question"] = <"Only successfully built archetypes can be exported to HTML.%N%NDo you want to build each archetype before exporting it?">
 			
 			-- DT_OBJECT_CONVERTER.dt_to_object
 			["container_type_mismatch"] = 
@@ -156,6 +160,8 @@ feature {NONE} -- Implementation
 			-- MAIN_WINDOW
 			["adl_version_warning"] = <"Using ADL version $1 for output serialisation">
 			["clean_generated_file"] = <"Removing generated file $1">
+			["edit_which_file_question"] = <"Edit which file?%N%NDifferential: $1%N%NFlat (legacy): $2">
+			["edit_legacy_file_info"] = <"The Differential (.adls) file is not available.%N%NOpening the legacy flat file: $1%N">
 
 			-- ARCHETYPE compilation
 			["create_new_archetype_1"] = <"CREATE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">

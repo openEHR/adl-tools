@@ -95,6 +95,8 @@ feature -- Access
 			if Result.is_empty then
 				Result := Latest_adl_version.twin
 			end
+		ensure
+			not Result.is_empty
 		end
 
 	adl_version_for_flat_output_numeric: INTEGER

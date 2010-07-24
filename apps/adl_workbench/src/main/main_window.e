@@ -205,8 +205,7 @@ feature -- Status setting
 				populate_directory
 			end
 
-			append_status_area (billboard.content)
-			billboard.clear
+			append_billboard_to_status_area
 		end
 
 feature -- File events
@@ -267,7 +266,7 @@ feature -- File events
 				flat := file_system.basename (ara.legacy_flat_path)
 
 				if ara.has_differential_file and ara.has_legacy_flat_file then
-					create question_dialog.make_with_text ("Edit which file?%N%NDifferential: " + file_system.basename (path) + "%N%NFlat (legacy): " + flat + "%N")
+					create question_dialog.make_with_text (create_message_line("edit_which_file_question", <<file_system.basename (path), flat>>))
 					question_dialog.set_title ("Edit " + ara.id.as_string)
 					question_dialog.set_buttons (<<"Differential", "Flat (legacy)">>)
 					question_dialog.show_modal_to_window (Current)
@@ -276,7 +275,7 @@ feature -- File events
 						path := ara.legacy_flat_path
 					end
 				elseif ara.has_legacy_flat_file then
-					create info_dialog.make_with_text ("The Differential (.adls) file is not available.%N%NOpening the legacy flat file: " + flat + "%N")
+					create info_dialog.make_with_text (create_message_line("edit_legacy_file_info", <<flat>>))
 					info_dialog.set_title ("Edit " + ara.id.as_string)
 					info_dialog.show_modal_to_window (Current)
 					path := ara.legacy_flat_path
@@ -352,7 +351,7 @@ feature -- File events
 					create file.make (name)
 
 					if file.exists then
-						create question_dialog.make_with_text ("File " + file_system.basename (name) + " already exists. Replace it?")
+						create question_dialog.make_with_text (create_message_line ("file_exists_replace_question", <<file_system.basename (name)>>))
 						question_dialog.set_title ("Save as " + format.as_upper)
 						question_dialog.set_buttons (<<"Yes", "No">>)
 						question_dialog.show_modal_to_window (Current)
@@ -553,7 +552,7 @@ feature {NONE} -- Repository events
 		local
 			dialog: EV_QUESTION_DIALOG
 		do
-			create dialog.make_with_text ("Only successfully built archetypes can be exported to HTML.%N%NDo you want to build each archetype before exporting it?%N")
+			create dialog.make_with_text (create_message_line ("export_html_question", Void))
 			dialog.set_title ("Export HTML")
 			dialog.set_buttons (<<"Yes, Build and Export All", "No, Export only the built ones", "Cancel">>)
 			dialog.set_default_cancel_button (dialog.button ("Cancel"))
@@ -594,7 +593,7 @@ feature {NONE} -- Repository events
 				create file.make (xml_name)
 
 				if file.exists then
-					create question_dialog.make_with_text ("File " + file_system.basename (xml_name) + " already exists. Replace it?")
+					create question_dialog.make_with_text (create_message_line ("file_exists_replace_question", <<xml_name>>))
 					question_dialog.set_title ("Export Repository Report")
 					question_dialog.set_buttons (<<"Yes", "No">>)
 					question_dialog.show_modal_to_window (Current)
@@ -605,10 +604,10 @@ feature {NONE} -- Repository events
 					do_with_wait_cursor (agent compiler_error_control.export_repository_report (xml_name))
 
 					if file.exists then
-						append_status_area ("Exported report to %"" + xml_name + "%"%N")
+						append_status_area (create_message_line ("export_repository_report_replace_info", <<xml_name>>))
 						show_in_system_browser (xml_name)
 					else
-						append_status_area ("ERROR: Failed to export report to %"" + xml_name + "%"%N")
+						append_status_area (create_message_line ("export_repository_report_replace_err", <<xml_name>>))
 					end
 				end
 			end
@@ -667,7 +666,7 @@ feature {NONE} -- Tools events
 			info_dialog: EV_INFORMATION_DIALOG
 		do
 			if not archetype_compiler.build_completed then
-				create info_dialog.make_with_text ("System needs to be compiled before generated files can be deleted")
+				create info_dialog.make_with_text (create_message_line ("clean_generated_files_info", Void))
 				info_dialog.set_title ("Information")
 				info_dialog.show_modal_to_window (Current)
 			else
@@ -703,8 +702,7 @@ feature {NONE} -- Tools events
 				clear_status_area
 				load_rm_schemas
 				if not found_valid_rm_schemas then
-					append_status_area (billboard.content)
-					billboard.clear
+					append_billboard_to_status_area
 
 					-- FIXME: reset rm schema load list back?
 				else
@@ -979,6 +977,14 @@ feature {NONE} -- Implementation
 			ev_application.process_graphical_events
 		end
 
+	append_billboard_to_status_area
+			-- Append bilboard contents to `parser_status_area' and clear billboard.
+		do
+			parser_status_area.append_text (billboard.content)
+			billboard.clear
+			ev_application.process_graphical_events
+		end
+
 	set_status_area (text: STRING)
 			-- Set `parser_status_area' to `text'.
 		require
@@ -1040,12 +1046,11 @@ feature {NONE} -- Implementation
 
 					select_node_in_archetype_tree_view
 
-					append_status_area (create_message_line ("populating_directory", <<current_repository_profile>>))
+					append_status_area (create_message_line ("populating_directory_start", <<current_repository_profile>>))
 					arch_dir.populate
-					append_status_area ("complete%N")
+					append_status_area (create_message_line ("populating_directory_complete", Void))
 
-					append_status_area (billboard.content)
-					billboard.clear
+					append_billboard_to_status_area
 					archetype_view_tree_control.populate
 					template_view_tree_control.populate
 					archetype_test_tree_control.populate
