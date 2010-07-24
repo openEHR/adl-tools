@@ -6,8 +6,9 @@ fi
 
 open -a Console
 
+LAUNCH="$HOME/Library/Application Support/ADL Workbench"
 echo -----------------------------------------
-echo Launching ADL Workbench
+echo Launching $LAUNCH
 
 if [ `uname -r | sed 's/\..*//'` == 8 ]; then
 	if [ -z "$DISPLAY" ]; then
@@ -23,4 +24,15 @@ if [ `uname -r | sed 's/\..*//'` == 8 ]; then
 	fi
 fi
 
-"`dirname \"\`dirname \"$0\"\`\"`"/Resources/adl_workbench &
+mkdir -p "$LAUNCH"
+cd "$LAUNCH"
+
+for f in *; do
+	if [ -L "$f" ]; then rm "$f"; fi
+done
+
+for f in "`dirname \"\`dirname \"$0\"\`\"`"/Resources/*; do
+	ln -fsv "$f";
+done
+
+./adl_workbench &
