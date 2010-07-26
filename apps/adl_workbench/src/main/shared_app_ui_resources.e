@@ -29,12 +29,12 @@ feature -- Definitions
 
 	News_file_path: STRING
 		once
-			Result := application_startup_directory + os_directory_separator.out + "news.txt"
+			Result := file_system.pathname (application_startup_directory, "news.txt")
 		end
 
 	Status_file_path: STRING
 		once
-			Result := application_startup_directory + os_directory_separator.out + ".status"
+			Result := file_system.pathname (user_config_file_directory, ".status")
 		end
 
 	ADL_help_page_url: STRING
@@ -71,7 +71,7 @@ feature -- Access
 
 	icon_directory: attached STRING
 		once
-			Result := application_startup_directory + os_directory_separator.out + "icons"
+			Result := file_system.pathname (application_startup_directory, "icons")
 		ensure
 			not_empty: not Result.is_empty
 		end
