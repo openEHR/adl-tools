@@ -47,6 +47,7 @@ feature {NONE} -- Initialization
 			show_actions.extend (agent rm_schemas_checkable_list.set_focus)
 			editor_command_text.disable_word_wrapping
 			export_html_text.focus_in_actions.extend (agent on_select_all (export_html_text))
+			save_diff_path_text.focus_in_actions.extend (agent on_select_all (save_diff_path_text))
 			populate_controls
 		end
 
@@ -127,6 +128,8 @@ feature {NONE} -- Implementation
 
 			-- resource / directory settings
 			export_html_text.set_text (html_export_directory)
+			save_diff_path_text.set_text (test_diff_directory)
+
 			populate_ev_list_from_hash_keys (rm_schemas_checkable_list, rm_schema_metadata_table)
 			rm_schemas_checkable_list.do_all (
 				agent (li: EV_LIST_ITEM)
@@ -168,6 +171,8 @@ feature {NONE} -- Implementation
 			end
 
 			set_html_export_directory (export_html_text.text.as_string_8)
+			set_test_diff_directory (save_diff_path_text.text.as_string_8)
+
 			set_adl_version_for_flat_output(adl_save_version_combo_box.text.as_string_8)
 
 			create {ARRAYED_LIST [STRING]} rm_schemas_ll.make (0)
@@ -216,6 +221,12 @@ feature {NONE} -- Implementation
 			-- Let the user browse for the directory to which HTML will be exported.
 		do
 			export_html_text.set_text (get_directory (export_html_text.text.as_string_8, Current))
+		end
+
+	on_test_diff_path_browse is
+			-- Called by `select_actions' of `save_diff_path_button'.
+		do
+			save_diff_path_text.set_text (get_directory (save_diff_path_text.text.as_string_8, Current))
 		end
 
 	on_select_all (text: EV_TEXT_COMPONENT)

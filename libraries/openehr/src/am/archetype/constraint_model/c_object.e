@@ -220,7 +220,7 @@ feature -- Modification
 			if not other.rm_type_name.is_equal(rm_type_name) then
 				rm_type_name := other.rm_type_name.twin
 			end
-			if other.occurrences /= Void and then not other.occurrences.equal_interval (occurrences) then
+			if other.occurrences /= Void then
 				set_occurrences (other.occurrences.deep_twin)
 			end
 		end

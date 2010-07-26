@@ -74,6 +74,22 @@ feature {NONE} -- Initialisation
 			make_for_grid (gui.archetype_test_tree_grid)
 			grid.enable_tree
 			gui.archetype_test_go_bn.set_pixmap (pixmaps ["go"])
+
+			diff_orig_dir := file_system.pathname (test_diff_directory, "orig")
+			if not file_system.directory_exists (diff_orig_dir) then
+				file_system.recursive_create_directory (diff_orig_dir)
+			end
+			if file_system.directory_exists (diff_orig_dir) then
+				diff_new_dir := file_system.pathname (test_diff_directory, "new")
+				if not file_system.directory_exists (diff_new_dir) then
+					file_system.recursive_create_directory (diff_new_dir)
+				end
+				if not file_system.directory_exists (diff_new_dir) then
+					diff_dirs_not_available := True
+				end
+			else
+				diff_dirs_not_available := True
+			end
 		end
 
 feature -- Access
@@ -83,10 +99,10 @@ feature -- Access
 		once
 			create Result.make (0)
 			Result.force (agent test_parse, "Parse")
-			Result.force (agent test_save_flat, "Save ADL")
-			Result.force (agent test_save_differential, "Save ADLS")
-			Result.force (agent test_reparse_differential, "Reparse")
-			Result.force (agent test_diff, "Diff")
+			Result.force (agent test_save_flat, "Save flat")
+			Result.force (agent test_save_differential, "Save diff")
+--			Result.force (agent test_reparse_differential, "Reparse")
+--			Result.force (agent test_diff, "Diff")
 		end
 
 	last_tested_archetypes_count: INTEGER
@@ -168,22 +184,22 @@ feature -- Commands
 			else
 				test_stop_requested := False
 
-				if gui.save_adlf_check_button.is_selected and gui.save_adls_check_button.is_selected then
-					message := ".adlf and .adls"
-				elseif gui.save_adlf_check_button.is_selected then
-					message := ".adlf"
-				elseif gui.save_adls_check_button.is_selected then
-					message := ".adls"
-				end
+--				if gui.save_adlf_check_button.is_selected and gui.save_adls_check_button.is_selected then
+--					message := ".adlf and .adls"
+--				elseif gui.save_adlf_check_button.is_selected then
+--					message := ".adlf"
+--				elseif gui.save_adls_check_button.is_selected then
+--					message := ".adls"
+--				end
 
-				if message /= Void then
-					message := "This will overwrite all selected " + message + " files.%N%NDo you want to continue?";
-					create dialog.make_with_text (message)
-					dialog.set_title ("Overwriting Archetypes")
-					dialog.set_buttons (<<"Stop", "Go">>)
-					dialog.show_modal_to_window (gui)
-					test_stop_requested := dialog.selected_button.is_equal ("Stop")
-				end
+--				if message /= Void then
+--					message := "This will overwrite all selected " + message + " files.%N%NDo you want to continue?";
+--					create dialog.make_with_text (message)
+--					dialog.set_title ("Overwriting Archetypes")
+--					dialog.set_buttons (<<"Stop", "Go">>)
+--					dialog.show_modal_to_window (gui)
+--					test_stop_requested := dialog.selected_button.is_equal ("Stop")
+--				end
 
 				test_execution_underway := True
 				gui.archetype_test_go_bn.set_pixmap (pixmaps ["stop"])
@@ -202,12 +218,8 @@ feature -- Commands
 		do
 			remove_unused_codes := gui.remove_unused_codes_rb.is_selected
 
-			from
-				row_csr := 1
-				last_tested_archetypes_count := 0
-			until
-				row_csr > grid.row_count or test_stop_requested
-			loop
+			last_tested_archetypes_count := 0
+			from row_csr := 1 until row_csr > grid.row_count or test_stop_requested loop
 				run_tests_on_row (grid.row (row_csr))
 				row_csr := row_csr + 1
 			end
@@ -319,11 +331,7 @@ feature -- Commands
 			row: EV_GRID_ROW
    		do
 			if an_item /= Void then
-				from
-					i := grid.row_count
-				until
-					i = 0
-				loop
+				from i := grid.row_count until i = 0 loop
 					row := grid.row (i)
 
 					if row.data /= Void and then row.data.is_equal (an_item) then
@@ -342,6 +350,7 @@ feature {NONE} -- Tests
 			-- parse archetype and return result
 		local
 			unused_at_codes, unused_ac_codes: ARRAYED_LIST [STRING]
+			orig_fn: STRING
 		do
 			Result := test_failed
 			archetype_compiler.rebuild_lineage (target)
@@ -349,7 +358,7 @@ feature {NONE} -- Tests
 			if target.is_valid then
 				Result := test_passed
 				test_status.append (" parse succeeded%N" + target.compilation_result)
-
+				
 				if remove_unused_codes then
 					unused_at_codes := target.differential_archetype.ontology_unused_term_codes
 					unused_ac_codes := target.differential_archetype.ontology_unused_constraint_codes
@@ -368,6 +377,9 @@ feature {NONE} -- Tests
 						target.differential_archetype.remove_ontology_unused_codes
 					end
 				end
+
+				orig_fn := file_system.pathname (diff_orig_dir, target.ontological_name + Archetype_source_file_extension)
+				target.save_differential_as (orig_fn, Archetype_native_syntax)
 			else
 				test_status.append (" parse failed%N" + target.compilation_result)
 			end
@@ -377,7 +389,7 @@ feature {NONE} -- Tests
 			-- parse archetype, save in flat form and return result
 		do
 			Result := test_failed
-			if gui.save_adlf_check_button.is_selected and target.is_valid then
+			if target.is_valid then
 				target.save_flat
 				if target.save_succeeded then
 					Result := test_passed
@@ -391,66 +403,69 @@ feature {NONE} -- Tests
 
 	test_save_differential: INTEGER
 			-- parse archetype, save in source form and return result
+		local
+			new_fn: STRING
 		do
 			Result := test_failed
-			create test_orig_differential_source.make_empty
-			if gui.save_adls_check_button.is_selected and target.is_valid then
-				target.save_differential
-				if target.save_succeeded then
+			if target.is_valid then
+				target.serialise_differential
+				new_fn := file_system.pathname (diff_new_dir, target.ontological_name + Archetype_source_file_extension)
+				target.save_differential_as (new_fn, Archetype_native_syntax)
+				if target.status.is_empty then
 					Result := test_passed
-					test_orig_differential_source := target.differential_text
 				else
 					test_status.append (target.status + "%N")
 				end
 			else
 				Result := test_not_applicable
 			end
-		ensure
-			test_orig_differential_source_attached: test_orig_differential_source /= Void
 		end
 
-	test_reparse_differential: INTEGER
-			-- parse archetype and return result
-		do
-			Result := test_failed
-			target.parse
-			if target.is_valid then
-				target.serialise_differential
-				Result := test_passed
-				test_status.append ("Parse succeeded%N" + target.compilation_result)
-			else
-				test_status.append ("Parse failed; reason: " + target.compilation_result + "%N")
-			end
-		end
+--	test_reparse_differential: INTEGER
+--			-- parse archetype and return result
+--		do
+--			Result := test_failed
+--			target.parse
+--			if target.is_valid then
+--				target.serialise_differential
+--				Result := test_passed
+--				test_status.append ("Parse succeeded%N" + target.compilation_result)
+--			else
+--				test_status.append ("Parse failed; reason: " + target.compilation_result + "%N")
+--			end
+--		end
 
-	test_diff: INTEGER
-			-- parse archetype and return result
-		require
-			test_orig_differential_source_attached: test_orig_differential_source /= Void
-		local
-			new_source: STRING
-		do
-			Result := Test_failed
-			if target.is_valid and not test_orig_differential_source.is_empty then
-				new_source := target.differential_text
-				if test_orig_differential_source.count = new_source.count then
-					if test_orig_differential_source.same_string (new_source) then
-						Result := Test_passed
-					else
-						test_status.append ("Archetype source lengths same but texts differ%N")
-					end
-				else
-					test_status.append ("Archetype source lengths differ: original =  " + test_orig_differential_source.count.out + "; new = " + new_source.count.out + "%N")
-				end
-			else
-				Result := test_not_applicable
-			end
-		end
+--	test_diff: INTEGER
+--			-- parse archetype and return result
+--		local
+--			new_source: STRING
+--		do
+--			Result := Test_failed
+--			if target.is_valid and target.test_differential_text /= Void then
+--				if target.differential_text.count = target.test_differential_text.count then
+--					if target.differential_text.same_string (target.test_differential_text) then
+--						Result := Test_passed
+--					else
+--						test_status.append ("Archetype source lengths same but texts differ%N")
+--					end
+--				else
+--					test_status.append ("Archetype source lengths differ: original =  " + target.test_differential_text.count.out + "; new = " + target.test_differential_text.count.out + "%N")
+--				end
+--			else
+--				Result := test_not_applicable
+--			end
+--		end
 
 feature {NONE} -- Implementation
 
-	test_orig_differential_source: STRING
-			-- original differential source before parse and save
+	diff_dirs_not_available: BOOLEAN
+			-- flag to indicate whether output directories for diff files are available and writable
+
+	diff_orig_dir: STRING
+			-- directory where copies of original .adls files go
+
+	diff_new_dir: STRING
+			-- directory where first generation serialised .adls files go
 
 	gui: MAIN_WINDOW
 			-- main window of system
@@ -473,36 +488,36 @@ feature {NONE} -- Implementation
 			row: EV_GRID_ROW
 			col_csr: INTEGER
 		do
-			row := grid_row_stack.item
-			row.collapse_actions.extend (agent step_to_viewable_parent_of_selected_row)
-			row.insert_subrow (row.subrow_count + 1)
-			row := row.subrow (row.subrow_count)
-			row.set_data (an_item)
-			add_checkbox (row)
-			create gli.make_with_text (utf8 (an_item.ontological_name))
-			row.set_item (1, gli)
-			set_row_pixmap (row)
+			if an_item.has_artefacts then
+				row := grid_row_stack.item
+				row.collapse_actions.extend (agent step_to_viewable_parent_of_selected_row)
+				row.insert_subrow (row.subrow_count + 1)
+				row := row.subrow (row.subrow_count)
+				row.set_data (an_item)
+				add_checkbox (row)
+				create gli.make_with_text (utf8 (an_item.display_name))
+				row.set_item (1, gli)
+				set_row_pixmap (row)
 
-			if attached {ARCH_REP_ARCHETYPE} an_item as ara then
-				gli.set_tooltip (utf8 (ara.full_path))
-				from
-					tests.start
+				if attached {ARCH_REP_ARCHETYPE} an_item as ara then
+					gli.set_tooltip (utf8 (ara.full_path))
 					col_csr := first_test_col
-				until
-					tests.off
-				loop
-					row.set_item (col_csr, create {EV_GRID_LABEL_ITEM}.make_with_text ("?"))
-					tests.forth
-					col_csr := col_csr + 1
+					from tests.start until tests.off loop
+						row.set_item (col_csr, create {EV_GRID_LABEL_ITEM}.make_with_text ("?"))
+						tests.forth
+						col_csr := col_csr + 1
+					end
 				end
-			end
 
-			grid_row_stack.extend (row)
+				grid_row_stack.extend (row)
+			end
 		end
 
 	populate_gui_tree_node_exit (an_item: ARCH_REP_ITEM)
 		do
-			grid_row_stack.remove
+			if an_item.has_artefacts then
+				grid_row_stack.remove
+			end
 		end
 
 	add_checkbox (row: EV_GRID_ROW)
@@ -528,14 +543,9 @@ feature {NONE} -- Implementation
 			i: INTEGER
 			sub_item: EV_GRID_CHECKABLE_LABEL_ITEM
 		do
-			from
-				i := item.row.subrow_count
-			until
-				i = 0
-			loop
+			from i := item.row.subrow_count until i = 0 loop
 				sub_item ?= item.row.subrow (i).item (item.column.index)
 				i := i - 1
-
 				if sub_item /= Void then
 					sub_item.set_is_checked (item.is_checked)
 					set_checkboxes_recursively (sub_item)
@@ -553,7 +563,6 @@ feature {NONE} -- Implementation
 			if not (ev_application.shift_pressed or ev_application.alt_pressed or ev_application.ctrl_pressed) then
 				if key /= Void and then key.code = key_space then
 					checkbox ?= selected_cell
-
 					if checkbox /= Void then
 						checkbox.toggle_is_checked
 						set_checkboxes_recursively (checkbox)
@@ -569,11 +578,7 @@ feature {NONE} -- Implementation
 		do
 			create Result.make_empty
 
-			from
-				str_lst.start
-			until
-				str_lst.off
-			loop
+			from str_lst.start until str_lst.off loop
 				if not str_lst.isfirst then
 					Result.append (", ")
 				end

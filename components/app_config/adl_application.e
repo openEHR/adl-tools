@@ -36,6 +36,10 @@ feature -- Initialisation
 					set_html_export_directory (file_system.pathname (user_config_file_directory, "html"))
 				end
 
+				if test_diff_directory.is_empty then
+					set_test_diff_directory (file_system.pathname (user_config_file_directory, "diff_test"))
+				end
+
 				post_warning (Current, "initialise", "adl_version_warning", <<adl_version_for_flat_output>>)
 
 				if validation_strict then

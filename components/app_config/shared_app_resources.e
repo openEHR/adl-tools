@@ -88,6 +88,12 @@ feature -- Access
 			Result := substitute_env_vars (resource_value ("default", "html_export_directory"))
 		end
 
+	test_diff_directory: attached STRING
+			-- Path of directory where .adls files are saved by GUI_TEST_ARCHETYPE_TREE_CONTROL for diff testing.
+		do
+			Result := substitute_env_vars (resource_value ("default", "test_diff_directory"))
+		end
+
 	adl_version_for_flat_output: attached STRING
 			-- version of ADL syntax to use for outputting flat archetypes
 		do
@@ -183,6 +189,14 @@ feature -- Application Switch Setting
 			value_not_empty: not value.is_empty
 		do
 			set_resource_value("default", "html_export_directory", value)
+		end
+
+	set_test_diff_directory (value: attached STRING)
+			-- Set the path of directory to which .adls source files are written for diffing
+		require
+			value_not_empty: not value.is_empty
+		do
+			set_resource_value("default", "test_diff_directory", value)
 		end
 
 	set_adl_version_for_flat_output (value: attached STRING)

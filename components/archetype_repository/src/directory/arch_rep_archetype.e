@@ -608,11 +608,12 @@ feature -- Commands
 			legacy_flat_archetype: FLAT_ARCHETYPE
 		do
 			if not exception_encountered then
+				read_legacy_flat
+
 				reset
 				set_compile_attempt_timestamp
-
-				read_legacy_flat
 				legacy_flat_archetype := adl_engine.parse_flat (legacy_flat_text, rm_schema)
+				flat_archetype_cache := Void
 				if legacy_flat_archetype = Void then
 					post_error (Current, "compile_legacy", "compile_legacy_e1", <<adl_engine.parse_error_text>>)
 				 	compilation_state := Cs_convert_legacy_failed
@@ -663,11 +664,11 @@ feature -- Commands
 			supp_idx: HASH_TABLE[ARRAYED_LIST[C_ARCHETYPE_ROOT], STRING]
 		do
 			if not exception_encountered then
+				read_differential
+
 				reset
 				set_compile_attempt_timestamp
-
 				post_info (Current, "parse", "parse_i2", Void)
-				read_differential
 				differential_archetype := adl_engine.parse_differential (differential_text, rm_schema)
 				flat_archetype_cache := Void
 				if differential_archetype = Void then
@@ -945,7 +946,7 @@ feature -- Modification
 		end
 
 	serialise_differential
-			-- Force serialisation of differential_archetype into differential_text
+			-- Force serialisation of differential_archetype into `differential_text'
 		require
 			Is_valid: is_valid
 		do
@@ -960,7 +961,7 @@ feature -- Modification
 		ensure
 			(differential_text /= old differential_text) or else not status.is_empty
 		rescue
-			post_error(Current, "serialise_differential", "report_exception_with_context", <<"Saving archetype " + id.as_string, exception.out, exception_trace>>)
+			post_error(Current, "serialise_differential", "report_exception_with_context", <<"Serialising archetype " + id.as_string, exception.out, exception_trace>>)
 			exception_encountered := True
 			retry
 		end
