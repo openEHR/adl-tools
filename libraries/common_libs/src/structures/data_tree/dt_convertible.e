@@ -8,7 +8,7 @@ note
 			     
 			     The `persistent_attributes' attribute defines a list of names of attributes that should be persisted, since often 
 			     there are other extraneous attributes. If empty, the DT_OBJECT_CONVERTER
-			     routines will assume all. 
+			     routines will assume all.
 			     ]"
 	keywords:    "Data Tree"
 	author:      "Thomas Beale"
@@ -40,6 +40,13 @@ feature -- Synchronisation
 			-- synchronise to parse tree representation
 		do
 			create dt_representation.make_from_object(Current)
+		end
+
+feature -- Finalisation
+
+	finalise_dt
+			-- finalisation routine to guarantee validity on creation
+		do
 		end
 
 feature {DT_OBJECT_CONVERTER} -- Conversion

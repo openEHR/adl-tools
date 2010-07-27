@@ -114,7 +114,7 @@ feature -- Access
 	attributes: ARRAYED_LIST [DT_ATTRIBUTE_NODE]
 			-- next nodes, keyed by node id or attribute name
 
-	attribute_ (an_attr_name: STRING): DT_ATTRIBUTE_NODE
+	attribute_node (an_attr_name: STRING): DT_ATTRIBUTE_NODE
 			-- return attribute node at an_attr_name
 		require
 			An_attr_name_valid: an_attr_name /= Void and then has_attribute(an_attr_name)
@@ -289,6 +289,18 @@ feature -- Modification
 			New_name_valid: new_name /= Void and then not new_name.is_empty
 		do
 			representation.replace_attribute_name(old_name, new_name)
+		end
+
+	remove_attribute (attr_name: STRING)
+			-- remove attribute node at `attr_name'
+		require
+			Attr_name_valid: attr_name /= Void and then has_attribute(attr_name)
+		local
+			attr_node: DT_ATTRIBUTE_NODE
+		do
+			attr_node := attribute_node(attr_name)
+			representation.remove_child (attr_node.representation)
+			attributes.prune (attr_node)
 		end
 
 feature -- Conversion

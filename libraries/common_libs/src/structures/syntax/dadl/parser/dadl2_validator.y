@@ -60,9 +60,6 @@ create
 %token SYM_EQ SYM_ELLIPSIS SYM_LIST_CONTINUE SYM_INFINITY SYM_INTERVAL_DELIM
 %token SYM_DT_UNKNOWN
 
--- FIXME: query syntax is obsolete from 01/jun/2005; remove when backward compatibility no longer needed
-%token SYM_QUERY_FUNC
-
 %token SYM_TRUE SYM_FALSE
 %left SYM_LT SYM_GT SYM_LE SYM_GE
 

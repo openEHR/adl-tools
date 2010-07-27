@@ -32,14 +32,6 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make_dt
-			--
-		do
-			default_create
-		ensure then
-			Any_allowed: any_allowed
-		end
-
 	make_from_terminology_id (a_terminology_id: STRING)
 			-- Make from `terminology_id'.
 		do

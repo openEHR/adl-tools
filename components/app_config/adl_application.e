@@ -286,7 +286,8 @@ feature {NONE} -- Implementation
 
 			-------------- validity errors: unless otherwise noted, these codes are defined in the AOM 1.5 or later spec ------------------
 			["VASID"] = <"Error (VASID): specialised archetype id not based on specialisation parent archetype id">
-			
+			["VALC"] = <"Error (VALC): specialised archetype languages ($1) invalid - should be same as or a subset of those in flat parent ($2)">
+						
 			-- description
 			["VTRLA"] = <"Error (VTRLA): translations key '$1' does not match translation item language '$2'">
 			["VRDLA"] = <"Error (VRDLA): resource detail key '$1' does not match resource detail item language '$2'">

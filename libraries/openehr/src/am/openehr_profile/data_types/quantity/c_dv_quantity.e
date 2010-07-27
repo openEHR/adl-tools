@@ -30,23 +30,6 @@ inherit
 create
 	make, make_dt
 
-feature -- Initialisation
-
-	make
-		do
-			default_create
-		ensure
-			Any_allowed: any_allowed
-		end
-
-	make_dt
-			-- make used by DT_OBJECT_CONVERTER
-		do
-			make
-		ensure then
-			Any_allowed: any_allowed
-		end
-
 feature -- Access
 
 	property: CODE_PHRASE
@@ -238,11 +221,7 @@ feature -- Implementation
 		require
 			a_units_valid: a_units /= Void and then not a_units.is_empty
 		do
-			from
-				list.start
-			until
-				list.off or list.item.units.is_equal (a_units)
-			loop
+			from list.start until list.off or list.item.units.is_equal (a_units) loop
 				list.forth
 			end
 

@@ -40,8 +40,8 @@ feature -- Initialisation
 
 feature -- Visitor
 
-	start_c_complex_object(a_node: C_COMPLEX_OBJECT; depth: INTEGER)
-			-- enter a C_COMPLEX_OBJECT
+	start_c_object(a_node: C_OBJECT; depth: INTEGER)
+			-- enter a C_OBJECT
 		do
 			if a_node.is_addressable then
 				if not archetype.id_atcodes_index.has(a_node.node_id) then
@@ -51,15 +51,16 @@ feature -- Visitor
 			end
 		end
 
+	start_c_complex_object(a_node: C_COMPLEX_OBJECT; depth: INTEGER)
+			-- enter a C_COMPLEX_OBJECT
+		do
+			start_c_object(a_node, depth)
+		end
+
 	start_archetype_slot(a_node: ARCHETYPE_SLOT; depth: INTEGER)
 			-- enter an ARCHETYPE_SLOT
 		do
-			if a_node.is_addressable then
-				if not archetype.id_atcodes_index.has(a_node.node_id) then
-					archetype.id_atcodes_index.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.node_id)
-				end
-				archetype.id_atcodes_index.item(a_node.node_id).extend (a_node)
-			end
+			start_c_object(a_node, depth)
 			archetype.slot_index.extend (a_node)
 		end
 
@@ -93,6 +94,7 @@ feature -- Visitor
 	start_c_code_phrase(a_node: C_CODE_PHRASE; depth: INTEGER)
 			-- enter an C_CODE_PHRASE
 		do
+			start_c_domain_type(a_node, depth)
 			if not a_node.any_allowed and then (a_node.is_local and a_node.code_count > 0) then
 				from
 					a_node.code_list.start
@@ -111,6 +113,7 @@ feature -- Visitor
 	start_c_ordinal(a_node: C_DV_ORDINAL; depth: INTEGER)
 			-- enter an C_DV_ORDINAL
 		do
+			start_c_domain_type(a_node, depth)
 			if not a_node.any_allowed and then a_node.is_local then
 				from
 					a_node.items.start
@@ -166,11 +169,13 @@ feature -- Visitor
 	start_c_domain_type(a_node: C_DOMAIN_TYPE; depth: INTEGER)
 			-- enter an C_DOMAIN_TYPE
 		do
+			start_c_object(a_node, depth)
 		end
 
 	start_c_quantity(a_node: C_DV_QUANTITY; depth: INTEGER)
 			-- enter a C_DV_QUANTITY
 		do
+			start_c_domain_type(a_node, depth)
 		end
 
 feature {NONE} -- Implementation

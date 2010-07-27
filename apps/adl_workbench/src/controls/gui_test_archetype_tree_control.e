@@ -4,7 +4,7 @@ note
 	keywords:    "ADL"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2008 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL:  $"
@@ -358,7 +358,7 @@ feature {NONE} -- Tests
 			if target.is_valid then
 				Result := test_passed
 				test_status.append (" parse succeeded%N" + target.compilation_result)
-				
+
 				if remove_unused_codes then
 					unused_at_codes := target.differential_archetype.ontology_unused_term_codes
 					unused_ac_codes := target.differential_archetype.ontology_unused_constraint_codes

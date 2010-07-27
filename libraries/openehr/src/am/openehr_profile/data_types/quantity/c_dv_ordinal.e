@@ -23,24 +23,6 @@ inherit
 create
 	make, make_dt
 
-feature -- Initialisation
-
-	make
-			-- make empty, add members with add_item
-		do
-			default_create
-		ensure
-			any_allowed
-		end
-
-	make_dt
-			-- make used by DT_OBJECT_CONVERTER
-		do
-			make
-		ensure then
-			any_allowed
-		end
-
 feature -- Access
 
 	items: LINKED_SET [ORDINAL]

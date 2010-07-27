@@ -136,9 +136,6 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 
 [Ii][Nn][Ff][Ii][Nn][Ii][Tt][Yy]			last_token := SYM_INFINITY
 
--- FIXME: query syntax is obsolete from 01/jun/2005; remove when backward compatibility no longer needed
-[Qq][Uu][Ee][Rr][Yy]					 	last_token := SYM_QUERY_FUNC
-
 ----------/* URI */ -------------------------------------------------
 [a-z]+:\/\/[^<>|\\{}^~"\[\] ]*	{
 	last_token := V_URI

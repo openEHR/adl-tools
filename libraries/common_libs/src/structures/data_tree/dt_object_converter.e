@@ -90,8 +90,6 @@ feature -- Conversion
 							if equiv_prim_type_id /= 0 then
 								create a_dt_attr.make_single(fld_name)
 								cvt_tbl.item(equiv_prim_type_id).from_obj_proc.call([a_dt_attr, fld_val, Void])
-								-- following line can be removed after testing;
---								populate_prim_type_attribute(an_obj, a_dt_attr, fld_val, equiv_prim_type_id)
 								a_dt_obj.put_attribute(a_dt_attr)
 							else -- its a complex object, or else a SEQUENCE or HASH_TABLE of a complex object
 								debug ("DT")
@@ -122,60 +120,6 @@ feature -- Conversion
 					end
 					i := i + 1
 				end
-			end
-		end
-
-	populate_prim_type_attribute (an_obj: ANY; a_dt_attr: DT_ATTRIBUTE_NODE; fld_val: ANY; equiv_prim_type_id: INTEGER)
-			-- FIXME: this routine exists because of the Eiffel expanded
-			-- non-conformance problem. It has been made a separate
-			-- routine to allow exception handling to function properly
-			-- as of 6.2, this should be able to removed
-		local
-			exception_caught: BOOLEAN
-		do
-			if not exception_caught then
-				debug ("DT")
-					io.put_string("DT_OBJECT_CONVERTER.populate_dt_from_object: (primitive type)%N")
-					io.put_string("%T from_obj_proc.call([DT_ATTRIBUTE_NODE(" +
-						a_dt_attr.rm_attr_name + "), " + fld_val.generating_type + ", Void)%N")
-				end
-				cvt_tbl.item(equiv_prim_type_id).from_obj_proc.call([a_dt_attr, fld_val, Void])
-				debug ("DT")
-					io.put_string("%T(return)%N")
-				end
-			else
-				-- FIXME: all this code just to handle expanded nonconformance of INTERVAL[INTEGER] -> INTERVAL[PART_COMPARABLE]
-				-- REMOVE when this problem fixed
-				if attached {INTERVAL[INTEGER]} fld_val as oe_ivl_integer then
-					debug ("DT")
-						io.put_string("Using INTERVAL[INTEGER_REF] conversion%N")
-					end
-					cvt_tbl.item(equiv_prim_type_id).from_obj_proc.call([a_dt_attr, fld_val, Void])
---					cvt_tbl.item(equiv_prim_type_id).from_obj_proc.call([a_dt_attr,
---						interval_integer_to_interval_integer_ref(oe_ivl_integer), Void])
-				elseif attached {INTERVAL[REAL]} fld_val as oe_ivl_real then
-					debug ("DT")
-						io.put_string("Using INTERVAL[REAL_REF] conversion%N")
-					end
-					cvt_tbl.item(equiv_prim_type_id).from_obj_proc.call([a_dt_attr, fld_val, Void])
-					cvt_tbl.item(equiv_prim_type_id).from_obj_proc.call([a_dt_attr,
-						interval_real_to_interval_real_ref(oe_ivl_real), Void])
-				else
-					debug ("DT")
-						io.put_string("No conversion available%N")
-					end
-				end
-			end
-		rescue
-			if not exception_caught then
-				if equiv_prim_type_id /= 0 then -- this must have been an argument type mismatch which killed the from_obj_proc.call[]
-					post_error(Current, "populate_prim_type_attribute", "populate_dt_proc_arg_type_mismatch",
-						<<type_name(an_obj), a_dt_attr.rm_attr_name, fld_val.generating_type, type_name_of_type(equiv_prim_type_id)>>)
-				end
-				exception_caught := True
-				retry
-			else
-				post_error(Current, "populate_prim_type_attribute", "unhandled_exception", <<"Failed to convert type">>)
 			end
 		end
 
@@ -284,7 +228,6 @@ feature -- Conversion
 			fld_name: STRING
 			fld_type_id, equiv_prim_type_id, i: INTEGER
 			a_gen_field: ANY
-			a_dt_conv: DT_CONVERTIBLE
 			exception_caught: BOOLEAN
 		do
 			if is_special_any_type(a_type_id) then
@@ -310,8 +253,7 @@ feature -- Conversion
 				-- FIXME: the following is a hacker's attempt to
 				-- reliably call a reasonable make function? Should call at least 'default_create'
 				-- Eiffel does not allow this at the moment.
-				a_dt_conv ?= Result
-				if a_dt_conv /= Void then
+				if attached {DT_CONVERTIBLE} Result as a_dt_conv then
 					a_dt_conv.make_dt
 				end
 			end
@@ -341,7 +283,7 @@ feature -- Conversion
 						fld_name := field_name(i, Result)
 
 						if a_dt_obj.has_attribute(fld_name) then
-							a_dt_attr := a_dt_obj.attribute_ (fld_name)
+							a_dt_attr := a_dt_obj.attribute_node (fld_name)
 
 							fld_type_id := field_static_type_of_type(i, a_type_id)
 							if a_dt_attr.is_multiple and not a_dt_attr.is_empty then
@@ -408,6 +350,9 @@ feature -- Conversion
 						end
 						i := i + 1
 					end
+				end
+				if attached {DT_CONVERTIBLE} Result as a_dt_conv then
+					a_dt_conv.finalise_dt
 				end
 			end
 		rescue

@@ -168,6 +168,21 @@ feature -- Status setting
 			is_controlled := True
 		end
 
+feature -- Output
+
+	languages_available_out: STRING
+			-- generate readable comma-separated list of languages available
+		do
+			create Result.make_empty
+				from languages_available.start until languages_available.off loop
+					if not Result.is_empty then
+						Result.append (", ")
+					end
+					Result.append (languages_available.item)
+					languages_available.forth
+				end
+			end
+
 feature -- Serialisation
 
 	synchronise

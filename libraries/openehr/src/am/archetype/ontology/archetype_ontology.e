@@ -330,6 +330,25 @@ feature -- Status Report
 		deferred
 		end
 
+	semantically_conforms_to(other: FLAT_ARCHETYPE_ONTOLOGY): BOOLEAN
+			-- True if this ontology conforms to `other' by having the same or subset of languages
+		require
+			other /= Void
+		do
+			Result := languages_available.is_subset (other.languages_available)
+
+--			if Result then
+--				from
+--					terminologies_available.start
+--				until
+--					terminologies_available.off or not other.terminologies_available.has(terminologies_available.item)
+--				loop
+--					terminologies_available.forth
+--				end
+--				Result := terminologies_available.off
+--			end
+		end
+
 feature -- Modification
 
 	set_original_language (a_language: STRING)

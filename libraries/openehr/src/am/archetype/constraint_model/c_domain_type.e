@@ -29,7 +29,7 @@ inherit
 		undefine
 			default_create
 		redefine
-			synchronise_to_tree
+			synchronise_to_tree, finalise_dt
 		end
 
 feature -- Initialisation
@@ -39,7 +39,36 @@ feature -- Initialisation
 		do
 			rm_type_name := generator.substring (3, generator.count)
 			create representation.make_anonymous(Current)
-			node_id := representation.node_id
+			create node_id.make_empty
+		end
+
+feature -- Initialisation
+
+	make
+		do
+			default_create
+		ensure
+			Any_allowed: any_allowed
+		end
+
+	make_dt
+			-- make used by DT_OBJECT_CONVERTER
+		do
+			make
+		ensure then
+			Any_allowed: any_allowed
+		end
+
+feature -- Finalisation
+
+	finalise_dt
+			-- used by DT_OBJECT_CONVERTER
+		do
+			if node_id /= Void and not node_id.is_empty then
+				create representation.make(node_id, Current)
+			else
+				create representation.make_anonymous (Current)
+			end
 		end
 
 feature -- Access
@@ -64,6 +93,9 @@ feature -- Synchronisation
 		do
 			precursor
 			dt_representation.set_type_visible
+			if node_id = Void or node_id.is_empty then
+				dt_representation.remove_attribute ("node_id")
+			end
 		end
 
 feature -- Visitor

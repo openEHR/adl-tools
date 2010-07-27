@@ -161,6 +161,7 @@ feature -- Validation
 				end
 				if target.is_specialised then
 					target.build_rolled_up_status
+					validate_specialised_basics
 					validate_specialised_definition
 				end
 				validate_internal_references
@@ -537,6 +538,16 @@ feature {NONE} -- Implementation
 			-- True if the regex = {/.*/} i.e. matches anything
 		do
 			Result := extract_regex(an_assertion).is_equal (Regex_any_pattern)
+		end
+
+	validate_specialised_basics
+			-- make sure specialised archetype basic relationship to flat parent is valid
+		require
+			Target_specialised: target.is_specialised
+		do
+			if not target.languages_available.is_subset (flat_parent.languages_available) then
+				add_error("VALC", <<target.languages_available_out, flat_parent.languages_available_out>>)
+			end
 		end
 
 	validate_specialised_definition

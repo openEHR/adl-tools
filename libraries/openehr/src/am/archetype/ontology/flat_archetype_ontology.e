@@ -131,26 +131,6 @@ feature -- Status Report
 			Result := terminology_extracts.item(a_terminology).has(a_code)
 		end
 
-	semantically_conforms_to(other: FLAT_ARCHETYPE_ONTOLOGY): BOOLEAN
-			-- True if this ontology conforms to `other' in the sense of being a specialisation child of it
-			-- - must have the same or subset of languages, and the same or a superset of terminologies
-		require
-			other /= Void
-		do
-			Result := languages_available.is_subset (other.languages_available)
-
-			if Result then
-				from
-					terminologies_available.start
-				until
-					terminologies_available.off or not other.terminologies_available.has(terminologies_available.item)
-				loop
-					terminologies_available.forth
-				end
-				Result := terminologies_available.off
-			end
-		end
-
 feature -- Modification
 
 	merge(other: FLAT_ARCHETYPE_ONTOLOGY)
