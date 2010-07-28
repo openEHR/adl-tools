@@ -74,22 +74,6 @@ feature {NONE} -- Initialisation
 			make_for_grid (gui.archetype_test_tree_grid)
 			grid.enable_tree
 			gui.archetype_test_go_bn.set_pixmap (pixmaps ["go"])
-
-			diff_orig_dir := file_system.pathname (test_diff_directory, "orig")
-			if not file_system.directory_exists (diff_orig_dir) then
-				file_system.recursive_create_directory (diff_orig_dir)
-			end
-			if file_system.directory_exists (diff_orig_dir) then
-				diff_new_dir := file_system.pathname (test_diff_directory, "new")
-				if not file_system.directory_exists (diff_new_dir) then
-					file_system.recursive_create_directory (diff_new_dir)
-				end
-				if not file_system.directory_exists (diff_new_dir) then
-					diff_dirs_not_available := True
-				end
-			else
-				diff_dirs_not_available := True
-			end
 		end
 
 feature -- Access
@@ -129,6 +113,31 @@ feature -- Commands
 		do
 			grid.wipe_out
 			gui.test_status_area.remove_text
+			create grid_row_stack.make(0)
+			reset_output_directories
+		end
+
+	reset_output_directories
+			-- set output directories, currently just the test diff output location.
+			-- this is test_diff_directory/$current_profile/orig and test_diff_directory/$current_profile/new
+		do
+			diff_dir_root := file_system.pathname (test_diff_directory, current_repository_profile)
+			diff_dirs_not_available := False
+			diff_orig_dir := file_system.pathname (diff_dir_root, "orig")
+			if not file_system.directory_exists (diff_orig_dir) then
+				file_system.recursive_create_directory (diff_orig_dir)
+			end
+			if file_system.directory_exists (diff_orig_dir) then
+				diff_new_dir := file_system.pathname (diff_dir_root, "new")
+				if not file_system.directory_exists (diff_new_dir) then
+					file_system.recursive_create_directory (diff_new_dir)
+				end
+				if not file_system.directory_exists (diff_new_dir) then
+					diff_dirs_not_available := True
+				end
+			else
+				diff_dirs_not_available := True
+			end
 		end
 
 	populate
@@ -138,19 +147,10 @@ feature -- Commands
 			col_csr: INTEGER
 		do
 			clear
- 			create grid_row_stack.make (0)
-
- 			-- Populate first column with archetype tree.
-			create gli.make_with_text ("Root")
-			grid.set_item (1, 1, gli)
-			add_checkbox (gli.row)
-			gli.enable_select
-			grid_row_stack.extend (gli.row)
-
  			arch_dir.do_all (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
-			grid.column (1).set_title ("Archetype")
 
 			-- put names on columns
+			grid.column (1).set_title ("Archetype")
 			if grid.column_count >= first_test_col then
 				from
 					tests.start
@@ -306,16 +306,10 @@ feature -- Commands
 		require
 			row_attached: row /= Void
    		local
-			gli: EV_GRID_LABEL_ITEM
-   			arch_item1: ARCH_REP_ITEM
 			pixmap: EV_PIXMAP
    		do
-   			gli ?= row.item (1)
-   			arch_item1 ?= row.data
-
-			if gli /= Void and arch_item1 /= Void then
-				pixmap := pixmaps [arch_item1.group_name]
-
+			if attached {EV_GRID_LABEL_ITEM} row.item (1) as gli and attached {ARCH_REP_ITEM} row.data as ari then
+				pixmap := pixmaps [ari.group_name]
 				if pixmap /= Void then
 					gli.set_pixmap (pixmap)
 				end
@@ -461,6 +455,9 @@ feature {NONE} -- Implementation
 	diff_dirs_not_available: BOOLEAN
 			-- flag to indicate whether output directories for diff files are available and writable
 
+	diff_dir_root: STRING
+			-- directory root to diff file output, at test_diff_directory/$current_profile
+
 	diff_orig_dir: STRING
 			-- directory where copies of original .adls files go
 
@@ -479,27 +476,38 @@ feature {NONE} -- Implementation
 	target: ARCH_REP_ARCHETYPE
 			-- current target of compilation operation
 
-	populate_gui_tree_node_enter (an_item: ARCH_REP_ITEM)
+	populate_gui_tree_node_enter (ari: ARCH_REP_ITEM)
 			-- Add a node representing `an_item' to `gui_file_tree'.
 		require
-			an_item /= Void
+			ari /= Void
 		local
 			gli: EV_GRID_LABEL_ITEM
 			row: EV_GRID_ROW
 			col_csr: INTEGER
 		do
-			if an_item.has_artefacts then
-				row := grid_row_stack.item
-				row.collapse_actions.extend (agent step_to_viewable_parent_of_selected_row)
-				row.insert_subrow (row.subrow_count + 1)
-				row := row.subrow (row.subrow_count)
-				row.set_data (an_item)
-				add_checkbox (row)
-				create gli.make_with_text (utf8 (an_item.display_name))
-				row.set_item (1, gli)
-				set_row_pixmap (row)
+			if ari.has_artefacts or ari.is_root then
+				create gli.make_with_text (utf8 (ari.display_name))
+				if grid_row_stack.is_empty then
+					grid.set_item (1, 1, gli)
+					row := gli.row
+					gli.enable_select
+				else
+					row := grid_row_stack.item
+					row.collapse_actions.extend (agent step_to_viewable_parent_of_selected_row)
 
-				if attached {ARCH_REP_ARCHETYPE} an_item as ara then
+					-- create a new sub row
+					row.insert_subrow (row.subrow_count + 1)
+
+					-- get the sub row
+					row := row.subrow (row.subrow_count)
+					row.set_item (1, gli)
+				end
+				add_checkbox (row)
+				row.set_data (ari)
+				set_row_pixmap (row)
+				grid_row_stack.extend (row)
+
+				if attached {ARCH_REP_ARCHETYPE} ari as ara then
 					gli.set_tooltip (utf8 (ara.full_path))
 					col_csr := first_test_col
 					from tests.start until tests.off loop
@@ -508,8 +516,6 @@ feature {NONE} -- Implementation
 						col_csr := col_csr + 1
 					end
 				end
-
-				grid_row_stack.extend (row)
 			end
 		end
 
