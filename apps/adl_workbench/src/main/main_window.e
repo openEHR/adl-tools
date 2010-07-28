@@ -500,13 +500,20 @@ feature {NONE} -- Repository events
 			-- Display the Repository Settings dialog.
 		local
 			dialog: REPOSITORY_DIALOG
+			use_changes_after_destroying_dialog: BOOLEAN
 		do
 			create dialog
 			dialog.show_modal_to_window (Current)
 
 			if dialog.no_profiles_available then
 				save_resources_and_show_status
-			elseif dialog.has_changed_profile or dialog.has_changed_profile_paths then
+			else
+				use_changes_after_destroying_dialog := dialog.has_changed_profile or dialog.has_changed_profile_paths
+			end
+
+			dialog.destroy
+
+			if use_changes_after_destroying_dialog then
 				if directory_exists (reference_repository_path) then
 					source_repositories.set_reference_repository (reference_repository_path)
 				end
