@@ -940,7 +940,8 @@ feature {NONE}-- Initialization
 			integer_constant_set_procedures.extend (agent parser_status_area.set_minimum_height (?))
 			integer_constant_retrieval_functions.extend (agent status_area_min_height)
 			parser_status_area.disable_edit
-			statistics_box.set_minimum_height (200)
+			integer_constant_set_procedures.extend (agent statistics_box.set_minimum_height (?))
+			integer_constant_retrieval_functions.extend (agent status_area_min_height)
 			integer_constant_set_procedures.extend (agent statistics_box.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
 			statistics_box.set_border_width (15)

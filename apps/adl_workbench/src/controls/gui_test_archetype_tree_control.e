@@ -149,7 +149,7 @@ feature -- Commands
  			arch_dir.do_all (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
 
 			-- put names on columns
-			grid.column (1).set_title ("Archetype")
+			grid.column (1).set_title ("Archetypes - " + current_repository_profile)
 			if grid.column_count >= first_test_col then
 				from
 					tests.start
@@ -182,24 +182,6 @@ feature -- Commands
 				test_stop_requested := True
 			else
 				test_stop_requested := False
-
---				if gui.save_adlf_check_button.is_selected and gui.save_adls_check_button.is_selected then
---					message := ".adlf and .adls"
---				elseif gui.save_adlf_check_button.is_selected then
---					message := ".adlf"
---				elseif gui.save_adls_check_button.is_selected then
---					message := ".adls"
---				end
-
---				if message /= Void then
---					message := "This will overwrite all selected " + message + " files.%N%NDo you want to continue?";
---					create dialog.make_with_text (message)
---					dialog.set_title ("Overwriting Archetypes")
---					dialog.set_buttons (<<"Stop", "Go">>)
---					dialog.show_modal_to_window (gui)
---					test_stop_requested := dialog.selected_button.is_equal ("Stop")
---				end
-
 				test_execution_underway := True
 				gui.archetype_test_go_bn.set_pixmap (pixmaps ["stop"])
 				gui.archetype_test_go_bn.set_text ("Stop")
