@@ -108,6 +108,7 @@ feature -- Access
 		local
 			status_file: PLAIN_TEXT_FILE
 		once
+			file_system.recursive_create_directory (user_config_file_directory)
 			create status_file.make (Status_file_path)
 
 			if status_file.exists then

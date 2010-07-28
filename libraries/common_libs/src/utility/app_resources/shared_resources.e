@@ -147,16 +147,8 @@ feature -- Environment
 
 	user_config_file_path: attached STRING
 			-- Full path to resource configuration file.
-		local
-			dir: KL_DIRECTORY
-			cfg_file: PLAIN_TEXT_FILE
 		once
 			Result := file_system.pathname (user_config_file_directory, extension_replaced(application_name, User_config_file_extension))
-
-			create dir.make (user_config_file_directory)
-			if not dir.exists then
-				dir.recursive_create_directory
-			end
 		ensure
 			not_empty: not Result.is_empty
 		end
@@ -475,6 +467,7 @@ feature -- Persistence
 			-- save current resource settings in file
 			-- of same name as application, with extnsion '.cfg'
 		do
+			file_system.recursive_create_directory (user_config_file_directory)
 			resource_config_file.write_file
 		end
 
