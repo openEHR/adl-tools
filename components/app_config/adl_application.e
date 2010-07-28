@@ -111,7 +111,7 @@ feature {NONE} -- Implementation
 			["cfg_file_i1"] = <"Wrote config file $1">
 			["file_exists_replace_question"] = <"File $1 already exists. Replace it?">			
 			
-			-- Archetype reppsitory
+			-- Archetype repository
 			["ref_repo_not_found"] = <"Error: Reference Repository $1 does not exist or not readable (check Repository Settings)">
 			["work_repo_not_found"] = <"Error; Work Repository $1 does not exist or not readable (check Repository Settings)">
 			["work_repo_not_invalid"] = <"Error; Work Repository $1 does not exist or is the same as or a child of the reference repository (check Repository Settings)">
@@ -210,6 +210,10 @@ feature {NONE} -- Implementation
 			["compiler_unexpected_error"] = <"Location: $1">
 			["compiler_no_flat_text"] = <"===================== No flat (.adlf) text available =======================">
 			["compiler_no_source_text"] = <"===================== No source (.adls) text available =======================">
+			
+			-- GUI_TEST_ARCHETYPE_TREE_CONTROL
+			["Test_arch_compare_i1"] = <"Archetype source lengths same but texts differ">
+			["Test_arch_compare_i2"] = <"Archetype source lengths differ: original =  $1; new = $2">
 			
 			-- ARCHETYPE_VALIDATOR
 			["validate_e1"] = <"Error: specialisation parent is missing">

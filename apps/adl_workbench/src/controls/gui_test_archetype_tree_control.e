@@ -85,8 +85,7 @@ feature -- Access
 			Result.force (agent test_parse, "Parse")
 			Result.force (agent test_save_flat, "Save flat")
 			Result.force (agent test_save_differential, "Save diff")
---			Result.force (agent test_reparse_differential, "Reparse")
---			Result.force (agent test_diff, "Diff")
+			Result.force (agent test_compare, "Compare")
 		end
 
 	last_tested_archetypes_count: INTEGER
@@ -374,6 +373,7 @@ feature {NONE} -- Tests
 
 				orig_fn := file_system.pathname (diff_orig_dir, target.ontological_name + Archetype_source_file_extension)
 				target.save_differential_as (orig_fn, Archetype_native_syntax)
+				original_differential_text := target.differential_text
 			else
 				test_status.append (" parse failed%N" + target.compilation_result)
 			end
@@ -415,40 +415,26 @@ feature {NONE} -- Tests
 			end
 		end
 
---	test_reparse_differential: INTEGER
---			-- parse archetype and return result
---		do
---			Result := test_failed
---			target.parse
---			if target.is_valid then
---				target.serialise_differential
---				Result := test_passed
---				test_status.append ("Parse succeeded%N" + target.compilation_result)
---			else
---				test_status.append ("Parse failed; reason: " + target.compilation_result + "%N")
---			end
---		end
-
---	test_diff: INTEGER
---			-- parse archetype and return result
---		local
---			new_source: STRING
---		do
---			Result := Test_failed
---			if target.is_valid and target.test_differential_text /= Void then
---				if target.differential_text.count = target.test_differential_text.count then
---					if target.differential_text.same_string (target.test_differential_text) then
---						Result := Test_passed
---					else
---						test_status.append ("Archetype source lengths same but texts differ%N")
---					end
---				else
---					test_status.append ("Archetype source lengths differ: original =  " + target.test_differential_text.count.out + "; new = " + target.test_differential_text.count.out + "%N")
---				end
---			else
---				Result := test_not_applicable
---			end
---		end
+	test_compare: INTEGER
+			-- parse archetype and return result
+		local
+			new_source: STRING
+		do
+			Result := Test_failed
+			if target.is_valid and target.differential_text /= Void then
+				if original_differential_text.count = target.differential_text.count then
+					if original_differential_text.same_string (target.differential_text) then
+						Result := Test_passed
+					else
+						test_status.append (create_message_line ("Test_arch_compare_i1", <<>>))
+					end
+				else
+					test_status.append (create_message_line ("Test_arch_compare_i2", <<original_differential_text.count.out, target.differential_text.count.out>>))
+				end
+			else
+				Result := test_not_applicable
+			end
+		end
 
 feature {NONE} -- Implementation
 
@@ -475,6 +461,9 @@ feature {NONE} -- Implementation
 
 	target: ARCH_REP_ARCHETYPE
 			-- current target of compilation operation
+
+	original_differential_text: STRING
+			-- copy of archetype text after successful parse; = what was on file
 
 	populate_gui_tree_node_enter (ari: ARCH_REP_ITEM)
 			-- Add a node representing `an_item' to `gui_file_tree'.
