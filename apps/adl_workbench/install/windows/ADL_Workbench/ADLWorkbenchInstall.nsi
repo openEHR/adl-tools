@@ -11,7 +11,7 @@ Name "ADL Workbench"
 
 # MUI defines
 !define MUI_ICON "..\..\..\app\icons\openEHR.ico"
-!define MUI_FINISHPAGE_NOAUTOCLOSE
+!define MUI_WELCOMEPAGE_TEXT "This wizard will guide you through the installation of the openEHR Foundation's $(^Name).\r\n\r\nClick Next to continue."
 !define MUI_LICENSEPAGE_RADIOBUTTONS
 !define MUI_STARTMENUPAGE_REGISTRY_ROOT HKLM
 !define MUI_STARTMENUPAGE_NODISABLE
@@ -22,8 +22,11 @@ Name "ADL Workbench"
 !define MUI_WELCOMEFINISHPAGE_BITMAP "birds_vertical.bmp"
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_BITMAP "openEHR.bmp"
-!define MUI_UNFINISHPAGE_NOAUTOCLOSE
 !define MUI_FINISHPAGE_RUN "$INSTDIR\adl_workbench.exe"
+!define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\release_notes.txt"
+!define MUI_FINISHPAGE_SHOWREADME_TEXT "Show Release Notes"
+!define MUI_FINISHPAGE_NOAUTOCLOSE
+!define MUI_UNFINISHPAGE_NOAUTOCLOSE
 
 # Included files
 !include Sections.nsh
@@ -73,7 +76,7 @@ Section -Main SEC0000
         File ..\..\..\app\EIFGENs\adl_workbench\F_code\adl_workbench.exe
     !endif
 
-    File ..\..\..\app\news.txt
+    File ..\..\..\app\release_notes.txt
     File ..\..\..\app\ArchetypeRepositoryReport.xsl
     File ..\..\..\app\ArchetypeRepositoryReport.css
 
@@ -126,7 +129,7 @@ done${UNSECTION_ID}:
 Section /o un.Main UNSEC0000
 
     Delete /REBOOTOK $INSTDIR\adl_workbench.exe
-    Delete /REBOOTOK $INSTDIR\news.txt
+    Delete /REBOOTOK $INSTDIR\release_notes.txt
     Delete /REBOOTOK $INSTDIR\ArchetypeRepositoryReport.xsl
     Delete /REBOOTOK $INSTDIR\ArchetypeRepositoryReport.css
     RMDir /r /REBOOTOK $INSTDIR\icons
@@ -152,7 +155,6 @@ SectionEnd
 Function .onInit
     InitPluginsDir
 FunctionEnd
-
 
 # Uninstaller functions
 Function un.onInit
