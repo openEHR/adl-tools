@@ -19,5 +19,9 @@ See
 http://www.openehr.org/svn/ref_impl_eiffel/BRANCHES/specialisation/apps/doc/adl_workbench_help.htm 
 for help.
 
+For archetypes see:
+* CKM - http://www.openehr.org/knowledge ; login and choose Export archive option
+* ADL 1.5 test archetypes - http://www.openehr.org/svn/knowledge2/TRUNK
+
 
 
