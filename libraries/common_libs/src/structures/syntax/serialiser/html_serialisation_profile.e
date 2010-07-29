@@ -35,7 +35,7 @@ feature {ANY_SERIALISER} -- Access
 			Result.put("</span>",			FMT_END_SPAN)
 			Result.put("%N<title>$title",	FMT_START_TITLE)
 			Result.put("</title>%N",		FMT_END_TITLE)
-			Result.put("<meta name=%"$name%" content=%"$content%">%N",			FMT_META_ITEM)
+			Result.put(html_meta,			FMT_META_ITEM)
 			Result.put(", ",				FMT_LIST_ITEM_SEPARATOR)
 			Result.put("; ",				FMT_ASSUMED_VALUE_SEPARATOR)
 		end
@@ -165,6 +165,11 @@ feature {NONE} -- Implementation
 	%}%N%
 %</style>"
 
+	html_meta: STRING = "[
+		<meta name="$name" content="$content">
+		<meta http-equiv="Content-Language" content="en">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		]"
 
 end
 
