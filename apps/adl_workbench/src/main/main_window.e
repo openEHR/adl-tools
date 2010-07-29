@@ -194,11 +194,6 @@ feature -- Status setting
 				set_editor_command (default_editor_command)
 			end
 
-			if new_news then
-				display_news
-				update_status_file
-			end
-
 			if reference_repository_path.is_empty then
 				set_repository
 			else
@@ -733,12 +728,12 @@ feature {NONE} -- Help events
 			(create {ICON_DIALOG}).show_modal_to_window (Current)
 		end
 
-	display_news
+	display_release_notes
 			-- Display news about the latest release.
 		local
 			dialog: EV_INFORMATION_DIALOG
 		do
-			create dialog.make_with_text (news_text)
+			create dialog.make_with_text (Release_notes_text)
 			dialog.set_x_position (20)
 			dialog.set_y_position (10)
 			dialog.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 248))

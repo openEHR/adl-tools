@@ -1,0 +1,23 @@
+ADL WORKBENCH Release Notes
+---------------------------
+
+01 August 2010
+
+NEW in this release
+* Support for 90% of ADL 1.5 specification, including validity codes
+* Support for ADL 1.5 templates including visualisation
+* strict and non-strict ADL 1.5 modes; non-strict warns and removes duplicate existence and cardinality
+* specialised archetype/template identifiers no longer have to include parent identifier
+* Support for multiple reference model schemas (Tools > Options)
+* availability of a draft EN13606 schema
+* support for multiple repository profiles (Repository > Set Repository)
+* test page now generates archetypes pre- and post- compiling to show differences
+* user preferences file now in correct operating system location (e.g. Users/<user>/appdata on Windows 7)
+
+
+See 
+http://www.openehr.org/svn/ref_impl_eiffel/BRANCHES/specialisation/apps/doc/adl_workbench_help.htm 
+for help.
+
+
+

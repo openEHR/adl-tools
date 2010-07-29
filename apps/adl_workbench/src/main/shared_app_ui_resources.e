@@ -27,14 +27,9 @@ inherit
 
 feature -- Definitions
 
-	News_file_path: STRING
+	Release_notes_file_path: STRING
 		once
-			Result := file_system.pathname (application_startup_directory, "news.txt")
-		end
-
-	Status_file_path: STRING
-		once
-			Result := file_system.pathname (user_config_file_directory, ".status")
+			Result := file_system.pathname (application_startup_directory, "release_notes.txt")
 		end
 
 	ADL_help_page_url: STRING
@@ -83,40 +78,6 @@ feature -- Access
 		do
 			create a_dir.make(icon_directory)
 			Result := a_dir.exists
-		end
-
-	new_news: BOOLEAN
-			-- is there new news due to last installation?
-			-- work this out by seeing if there is a file called ".status" which is
-			-- older than the news file
-		local
-			news_file, status_file: PLAIN_TEXT_FILE
-		once
-			create news_file.make (news_file_path)
-			create status_file.make (status_file_path)
-
-			if status_file.exists and news_file.exists then
-				Result := news_file.date > status_file.date
-			else
-				Result := news_file.exists
-			end
-		end
-
-	update_status_file
-			-- renew the status file, currently only used to indicate that
-			-- news has been shown at startup
-		local
-			status_file: PLAIN_TEXT_FILE
-		once
-			file_system.recursive_create_directory (user_config_file_directory)
-			create status_file.make (Status_file_path)
-
-			if status_file.exists then
-				status_file.touch
-			else
-				status_file.create_read_write
-				status_file.close
-			end
 		end
 
 	pixmap_table: attached DS_HASH_TABLE [TUPLE [file, help: STRING], STRING]
@@ -351,12 +312,12 @@ feature -- Access
 			not_empty: not Result.is_empty
 		end
 
-	News_text: attached STRING
+	Release_notes_text: attached STRING
 			-- News dialog.
 		local
 			news_file: PLAIN_TEXT_FILE
 		once
-			create news_file.make (news_file_path)
+			create news_file.make (Release_notes_file_path)
 
 			if news_file.exists and then news_file.is_readable then
 				news_file.open_read
@@ -364,7 +325,7 @@ feature -- Access
 				Result := news_file.last_string
 				news_file.close
 			else
-				Result := "(%"" + news_file_path + "%" file is missing)"
+				Result := "(%"" + Release_notes_file_path + "%" file is missing)"
 			end
 		ensure
 			not_empty: not Result.is_empty

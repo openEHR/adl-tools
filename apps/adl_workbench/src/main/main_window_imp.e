@@ -75,7 +75,7 @@ feature {NONE}-- Initialization
 			create tools_menu_options
 			create help_menu
 			create help_menu_icons
-			create help_menu_news
+			create help_menu_release_notes
 			create help_menu_online
 			create l_ev_menu_separator_10
 			create help_menu_about
@@ -284,7 +284,7 @@ feature {NONE}-- Initialization
 			tools_menu.extend (tools_menu_options)
 			menu.extend (help_menu)
 			help_menu.extend (help_menu_icons)
-			help_menu.extend (help_menu_news)
+			help_menu.extend (help_menu_release_notes)
 			help_menu.extend (help_menu_online)
 			help_menu.extend (l_ev_menu_separator_10)
 			help_menu.extend (help_menu_about)
@@ -495,7 +495,7 @@ feature {NONE}-- Initialization
 			tools_menu_options.set_text ("&Options...")
 			help_menu.set_text ("&Help")
 			help_menu_icons.set_text ("&Icons ")
-			help_menu_news.set_text ("&News")
+			help_menu_release_notes.set_text ("&Release Notes")
 			help_menu_online.set_text ("&Online...")
 			help_menu_about.set_text ("&About ADL Workbench")
 			create internal_font
@@ -1074,7 +1074,7 @@ feature {NONE}-- Initialization
 			tools_menu_reload_schemas.select_actions.extend (agent reload_schemas)
 			tools_menu_options.select_actions.extend (agent set_options)
 			help_menu_icons.select_actions.extend (agent display_icon_help)
-			help_menu_news.select_actions.extend (agent display_news)
+			help_menu_release_notes.select_actions.extend (agent display_release_notes)
 			help_menu_online.select_actions.extend (agent show_online_help)
 			help_menu_about.select_actions.extend (agent display_about)
 			open_button.select_actions.extend (agent open_archetype)
@@ -1177,7 +1177,7 @@ feature -- Access
 	repository_menu_build_subtree, repository_menu_rebuild_subtree, repository_menu_export_html,
 	repository_menu_export_repository_report, repository_menu_interrupt_build, repository_menu_refresh,
 	history_menu_back, history_menu_forward, tools_menu_clean_generated_files, tools_menu_reload_schemas,
-	tools_menu_options, help_menu_icons, help_menu_news, help_menu_online, help_menu_about: EV_MENU_ITEM
+	tools_menu_options, help_menu_icons, help_menu_release_notes, help_menu_online, help_menu_about: EV_MENU_ITEM
 	adl_version_label,
 	language_label, archetype_explorer_label, template_explorer_label, arch_desc_auth_orig_auth_label,
 	arch_desc_status_label, arch_desc_original_language_label, arch_desc_auth_contrib_label,
@@ -1336,8 +1336,8 @@ feature {NONE} -- Implementation
 		deferred
 		end
 	
-	display_news is
-			-- Called by `select_actions' of `help_menu_news'.
+	display_release_notes is
+			-- Called by `select_actions' of `help_menu_release_notes'.
 		deferred
 		end
 	
