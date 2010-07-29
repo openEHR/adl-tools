@@ -7,7 +7,7 @@ IMPROVED FUNCTIONALITY
 * Various errors in the inheritance flattening functionality have been fixed
 
 NEW FUNCTIONALITY
-* Reference Model checking - turn on via the Tools > Options dialog
+* Reference Model checking
 * Reference Model visualisation - turn on via the 'RM visible' checkbox in the Node Map tab
 * Ability to save out flattened ADL archetypes. The ADL version of the output format can be 
   controlled via a setting in the .cfg file, called adl_version_for_flat_output. This could be 
