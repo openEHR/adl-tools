@@ -104,13 +104,6 @@ feature {NONE} -- Initialization
 
 			add_menu_shortcut (history_menu_back, key_left, False, True, False)
 			add_menu_shortcut (history_menu_forward, key_right, False, True, False)
-
-			archetype_file_tree.set_default_key_processing_handler (
-				agent (key: EV_KEY): BOOLEAN
-						-- Workaround to prevent Alt+Left and Alt+Right being inappropriately handled by the tree view.
-					do
-						Result := (key.code /= key_left and key.code /= key_right) or not ev_application.alt_pressed
-					end)
 		end
 
 	initialise_overall_appearance
