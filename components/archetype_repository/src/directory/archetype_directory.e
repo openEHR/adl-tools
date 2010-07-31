@@ -265,8 +265,6 @@ feature -- Commands
 			status_list: ARRAY[INTEGER]
 			i: INTEGER
 		do
-			clear
-
 			if schema_load_counter < rm_schemas_load_count.item then
 				initialise_ontology_prototype
 			end

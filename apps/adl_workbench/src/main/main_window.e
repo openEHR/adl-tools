@@ -1037,6 +1037,8 @@ feature {NONE} -- Implementation
 		do
 			do_with_wait_cursor (agent
 				do
+					arch_dir.clear
+
 					if title.has_substring (" - ") then
 						set_title (title.substring (title.substring_index (" - ", 1) + 3, title.count))
 					end
