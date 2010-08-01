@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+  <title>ADL Workbench index page</title>
+  <meta content="text/html; charset=us-ascii" http-equiv="Content-Type" />
+  <link rel="stylesheet" type="text/css" href="awb.css" media="screen" />
+  <meta name="generator" content="CoffeeCup HTML Editor (www.coffeecup.com)" />
+</head>
+
+<body>
+  <div id="container">
+    <table style="BACKGROUND-COLOR: #9cd2f8" border="0" cellspacing="0" cellpadding="0" width="100%">
+      <tbody>
+        <tr valign="top">
+          <td valign="middle" width="152"><img border="0" alt="openEHR logo" src="images/openehr_logo_trans_bg.png"
+          width="150" height="50" /></td>
+
+          <td>
+            <div id="header">
+              <h1>ADL Workbench (AWB) - getting started</h1>
+
+              <p class="description">Download and Help pages</p>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div id="wrapper">
+      <div id="content">
+        <h2>Setting and changing repository profiles</h2>
+
+        <p>The first time you start the tool if you are a new user, you will be asked for a repository. The screen will
+        look like this:<br /></p><a href="images/startup_repository.png"><img border="0" alt=
+        "Repository dialog at startup" src="images/tn_startup_repository.jpg" width="200" height="151" /></a>
+
+        <p>The repository dialog is used to define the location of a repository of archetypes/templates. The
+        &#39;profile&#39; is a logical name for a &#39;reference&#39; repository, and optionally, a &#39;work&#39;
+        repository. You can create as many profiles as you like. The &#39;reference&#39; repository is a directory
+        containing archetypes that you will use, but not modify, such as the CKM archetypes, or a national library.
+        These archetypes will be shown with blue icons. The optional &#39;work&#39; repository is to indicate the
+        directory under which you have archetypes/templates you are working on. The latter can include specialisations
+        of the archetypes found in the reference location. These archetypes will be shown with green icons.</p>
+
+        <p>The files in each repository area can be arranged in any manner - e.g. the traditional &#39;openEHR&#39;
+        structure, or even a single directory. When the files are read by the AWB, they are classified under the class
+        structure of the reference model on which each archetype is based.</p>
+
+        <h2>Setting RM Schemas</h2>
+
+        <p>You may want to check which Reference Model schemas are enabled initially. Choose Tools &gt; Options to do
+        this. The options dialog looks as follows.</p><a href="images/options.png"><img border="0" alt="Options dialog"
+        src="images/tn_options.jpg" width="200" height="187" /></a>
+
+        <p>You can check all RM schemas that apply to archetypes in any repository you might define. The only time you
+        would leave a schema unchecked is if you have more than one version of the same schema and you want to choose a
+        specific one.</p>
+
+        <h2>Tool overview</h2>
+
+        <p>The AWB has two tools, the archetype viewer and the &#39;tester&#39;. These are available via the tabs on
+        the right top side of the tool. The Viewer looks as follows.</p><a href="images/overview.png"><img border="0"
+        alt="Overview" src="images/tn_overview.jpg" width="200" height="159" /></a>
+		<h3>Archetype and template explorers</h3>
+		<p>On the left side of the tool are two explorers. The upper one is used to navigate all archetypes and templates, within the class hierarchy of the reference model on which the archetypes are based. Reference and working repository artefacts are merged in this view, and colourised so that the origin remains visible. The 'show entire ontology' option on the options panel can be used to force all classes in the hierarchy to be shown rather than just those which have archetypes in the current repository. Archetypes that appear below other archetypes are either specialisations, templates or template components (remember that the latter artefact types are technically just specialised archetypes.</p>
+		<p>The lower explorer is used exclusively for templates and template components, and shows compositional relationships due to slot-filling, rather than specialisation in its hierarchy. The two explorers are linked, so that choosing an artefact node in the lower one automatically chooses the same artefact in the upper one, allowing its lineage to be visible.</p>
+		<h3>Archetype view area and controls</h3>
+        <p>The middle area of the screen is dedicated to a view of a single archetype or template. The 'aspect view' controls across the top control whether the archetype is seen in 'differential' or 'flat' mode, and under these, which physical view is shown - the node map (structure view), paths, ontology etc. A second set of controls on the right hand side determines the visibility of the node map, and the level of detail shown for each node.</p>
+      </div>
+    </div>
+
+    <div id="navigation">
+      <h2>Contents</h2>
+
+      <ul>
+        <li value="0"><a href="">Getting started</a></li>
+
+        <li value="0"><a href="">Learning about ADL 1.5</a></li>
+
+        <li value="0"><a href="">Browsing archetypes</a></li>
+
+        <li value="0"><a href="">Creating templates</a></li>
+
+        <li value="0"><a href="">The test tool</a></li>
+
+        <li value="0"><a href="">Reference</a></li>
+      </ul>
+    </div>
+
+    <div id="extra">
+      <h2>XXXXXX</h2>
+
+      <p>xxxxx.</p>
+
+      <p><small>xxxxxx.</small></p>
+    </div>
+
+    <div id="footer">
+      <ul>
+        <li value="0"><a href="">Getting started</a></li>
+
+        <li value="0"><a href="">Learning about ADL 1.5</a></li>
+
+        <li value="0"><a href="">Browsing archetypes</a></li>
+
+        <li value="0"><a href="">Creating templates</a></li>
+
+        <li value="0"><a href="">The test tool</a></li>
+
+        <li value="0"><a href="">Reference</a></li>
+      </ul>
+
+      <p>Copyright 2010 openEHR Foundation - $LastChangedDate$ $LastChangedRevision$</p>
+    </div>
+  </div>
+</body>
+</html>

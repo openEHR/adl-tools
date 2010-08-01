@@ -5,8 +5,8 @@
 <head>
   <title>AWB browsing help</title>
   <meta content="text/html; charset=us-ascii" http-equiv="Content-Type" />
-  <link rel="stylesheet" type="text/css" href="awb.css" media="screen" />
   <meta name="generator" content="CoffeeCup HTML Editor (www.coffeecup.com)" />
+  <link rel="stylesheet" type="text/css" href="awb.css" media="screen" />
 </head>
 
 <body>
@@ -30,7 +30,7 @@
 
     <div id="wrapper">
       <div id="content">
-        <h2>Browsing</h2>
+        <h2>The explorer</h2>
 
         <p>As soon as you have specified a profile (Repository &gt; Set repository), the left-side explorer controls
         will populate and you will initially see the explorer with the reference model (RM) class hierarchy. If you
@@ -38,42 +38,59 @@
         all loaded RM schemas. This can be useful for understanding the reference models. In normal use, you will
         probably not use this option. At any time, you can select a class node in the explorer, and if you have the
         node map selected in the archetype view area, you will see the RM definition of the selected class, either in
-        differential form (just attributes introduced by that class, or in flat form, i.e. compressed through
-        inheritance.</p>
+        differential form (just attributes introduced by that class), or in flat form, i.e. compressed through
+        inheritance. These various views are shown below.</p>
+		
+		<p></p>
 
         <div style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;">
           <table width="70%" border="1" cellpadding="2" cellspacing="2" style="background-color: #ffffff;">
             <tr valign="top">
-              <td style="border-width : 0px;"><a href="images/explorer_initial_view.png"><img src="images/tn_explorer_initial_view.jpg" width="110" height="200" alt="Initial view in explorer" title="" border="0" /></a></td>
+              <td style="border-width : 0px;"><a href="images/explorer_initial_view.png"><img src="images/tn_explorer_initial_view.jpg" width="110" height="200" alt="Initial view in explorer" title="" border="0" /></a><p>Initial view</p></td>
 
-              <td style="border-width : 0px;"><a href="images/explorer_expanded.png"><img src="images/tn_explorer_expanded.jpg" width="104" height="200" alt="Expanded view in explorer" title="" border="0" /></a></td>
+              <td style="border-width : 0px;"><a href="images/explorer_expanded.png"><img src="images/tn_explorer_expanded.jpg" width="104" height="200" alt="Expanded view in explorer" title="" border="0" /></a><p>Expanded view</p></td>
 
-              <td style="border-width : 0px;"><a href="images/explorer_spec.png"><img src="images/tn_explorer_spec.jpg" width="107" height="200" alt="Explorer showing specialisation" title="" border="0" /></a></td>
+              <td style="border-width : 0px;"><a href="images/explorer_spec.png"><img src="images/tn_explorer_spec.jpg" width="107" height="200" alt="Explorer showing specialisation" title="" border="0" /></a><p>Specialisation view</p></td>
 
-              <td style="border-width : 0px;"><a href="images/explorer_f7.png"><img src="images/tn_explorer_f7.jpg" width="107" height="200" alt="Explorer after hitting F7" title="" border="0" /></a></td>
+              <td style="border-width : 0px;"><a href="images/explorer_f7.png"><img src="images/tn_explorer_f7.jpg" width="107" height="200" alt="Explorer after hitting F7" title="" border="0" /></a><p>After hitting F7</p></td>
 
             </tr>
           </table>
         </div>
+		<h2>Compiling archetypes</h2>
+        <p>When you start the ADL Workbench, archetypes are not compiled. The easiest way to compile them is to hit F7, which will compile all of the archetypes in the currently selected repository in one go. This can be interrupted with Shift-ESC. 'Compiling' means parsing, validating and flattening. Archetypes can also be compiled individually by selecting them in the explorer. Other options under the repository menu allow you to compile archetypes in selected subtrees. Note that if you select a specialised archetype, its specialisation parents will automatically compile.</p>
 
-        <p>xx</p>
+		<p>If your repository has templates in it, you can compile a template in the same ways. If you select a template (lower explorer), you will see that all its dependencies compile, i.e. all archetypes implicated in its slot-filling and specialisation statements.</p>
 
-        <p>xx.</p>
+		<p>If your repository contains legacy '.adl' archetypes, they will initially be converted into differential (.adls) source form archetypes, containing the 'generated' marker at the top. In this case, when you hit F7 or compile by another means, you will see the '(f)' marker in the archetype explorer, indicating those archetypes whose primary form is a legacy .adl file. If you subsequently change either the .adl file or the .adls file with an editor, the AWB will recompile from whichever one was changed. The archetype icons in the explorer change according to their current compilation status, as shown below.</p>
+		<a href="images/compiler_statuses.png"><img src="images/tn_compiler_statuses.jpg" width="157" height="200" alt="Compiler statuses" title="" border="0" /></a>
+		<p>The compilation process performs validation on every archetype and reports errors. Errors fall into two categories: syntactic, denoted with codes starting with 'S', and validity errors, denoted with 'V' codes. The errors are shown both in the status tab and the errors tab at the bottom. The status window is shown below.</p>
+		
+        <div style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;">
+          <table width="70%" border="1" cellpadding="2" cellspacing="2" style="background-color: #ffffff;">
+            <tr valign="top">
+              <td style="border-width : 0px;"><a href="images/compile_1.png"><img src="images/tn_compile_1.jpg" width="200" height="60" alt="Status window" title="" border="0" /></a><p>Compilation feedback</p></td>
 
-        <h2>Setting RM Schemas</h2>
+              <td style="border-width : 0px;"><a href="images/compile_2.png"><img src="images/tn_compile_2.jpg" width="200" height="61" alt="Status window" title="" border="0" /></a><p>Compilation errors</p></td>
 
-        <p>xx.</p><a href="images/options.png"><img border="0" alt="Options dialog" src="images/tn_options.jpg" width=
-        "200" height="187" /></a>
-
-        <p>You can check all RM schemas that apply to archetypes in any repository you might define. The only time you
-        would leave a schema unchecked is if you have more than one version of the same schema and you want to choose a
-        specific one.</p>
-
-        <h2>Tool overview</h2>
-
-        <p>The AWB has two tools, the archetype viewer and the &#39;tester&#39;. These are available via the tabs on
-        the right top side of the tool. The Viewer looks as follows.</p><a href="images/overview.png"><img border="0"
-        alt="Overview" src="images/tn_overview.jpg" width="200" height="159" /></a>
+            </tr>
+          </table>
+        </div>
+		<p>The compilation errors can also be seen in the Errors tab at the bottom, classified according to type.</p>
+		<h2>Viewing an archetype</h2>
+		<p>This section describes the various ways of viewing a successfully compiled archetype.</p>
+		<h3>Descriptive meta-data</h3>
+		<p>All archetypes have a number of header sections containing descriptive meta-data about the archetype. The Description tab shows all of these sections, including author details, translation information, keywords, purpose, use, misuse and so on.</p>
+		<h3>Source (differential) and flat forms</h3>
+		<p>A key point to understand is that in most views, the archetype is visible in either source (differential) or flat form. For non-specialised archetypes, the two forms are structurally the same. For specialised archetypes and templates, the source form is the same idea as for object-oriented class files (e.g. in Java, .Net, etc), i.e. it contains only differences with respect to the immediate specialisation parent. For both, the source form is the 'authored' form. The flat form is the result of 'compressing' an archetype through its specialisation lineage, i.e. the 'operational' form of the archetype at runtime. This 'flattening' is the same thing that happens in all object-oriented programming technologies.</p>
+		<p>From the point of view of the AWB, you can see both the differential and flat forms of an archetype visualised. Most of the views below can be seen in differential and flat form. Use the Differential and Flat View tabs at the top to switch.</p>
+		<h3>Node map</h3>
+		<p>The node map is a way of viewing the definition part of the archetype structurally. The definition section contains the main definitional statements of the archetype, and can be thought of as a visualisation of an AOM structure, that is to say, each node corresponds to an AOM node type. In the differential form, the node map shows only those constraints introduced by the archetype on its own. If it is a non-specialised archetype, these constraints are in addition to constraints implied by the reference model (cardinality, types etc). For a specialised archetype, the constraints are in addition to the 'flat parent', i.e. the notional sum of constraints so far in the specialisation lineage. You  will notice in particular that specialised archetypes have constraints whose parent attributes are not just a single attribute name like 'items', but are a path, like '/protocol', '/data/events[at0010]/items[at0023]' and so on.</p>
+		<p>You can use the radio button controls on the right to show each node in more or less detail. The last radio button control adds in the reference model attributes that have not been archetyped, but will/can be in the runtime data.</p>
+		<h3>Path map</h3>
+		<h3>Slot map</h3>
+		<h3>Terminology</h3>
+		<h3>Source view</h3>
       </div>
     </div>
 
