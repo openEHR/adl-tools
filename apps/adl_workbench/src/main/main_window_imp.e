@@ -872,7 +872,7 @@ feature {NONE}-- Initialization
 			node_map_domain_radio_button.set_text ("Hide")
 			node_map_domain_radio_button.set_tooltip ("Hide RM details of the archetyped nodes")
 			node_map_technical_radio_button.set_text ("+ class names")
-			node_map_technical_radio_button.set_tooltip ("Display RM classe names of archetyped nodes")
+			node_map_technical_radio_button.set_tooltip ("Display RM class names of archetyped nodes")
 			node_map_reference_model_radio_button.set_text ("+ class properties")
 			node_map_reference_model_radio_button.set_tooltip ("Show non-archetyped RM properties")
 			node_map_reference_model_radio_button.set_minimum_width (60)

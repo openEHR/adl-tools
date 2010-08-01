@@ -4979,7 +4979,7 @@ Resources</Text>
                <Text>+ class names</Text>
               </EV_TEXTABLE>
               <EV_TOOLTIPABLE>
-               <Tooltip>Display RM classe names of archetyped nodes</Tooltip>
+               <Tooltip>Display RM class names of archetyped nodes</Tooltip>
               </EV_TOOLTIPABLE>
               <EV_WIDGET>
               </EV_WIDGET>
