@@ -119,14 +119,6 @@ feature -- Environment
 			end
 		end
 
---	Global_config_directory: STRING
---			-- location of global configuration files - /etc
---			-- UNIX only
---		once
---			create Result.make(0)
---			Result.append(os_directory_separator.out + "etc")
---		end
-
 	system_config_file_directory: STRING
 			-- place for config files common to multiple applications
 			-- UNIX only
@@ -180,19 +172,6 @@ feature -- Environment
 			not_empty: not Result.is_empty
 			ends_with_directory_separator: Result @ Result.count = os_directory_separator
 		end
-
---	default_global_resource_config_file_full_path: STRING
---			-- full path to default global resource configuration file area
---			-- unlikely to be used except possibly on Unix
---		once
---			Result := Global_config_directory.twin
---			Result.append(os_directory_separator.out + application_name)
---			if Result.has_substring (".exe") then
---				Result.replace_substring_all(".exe", ".cfg")
---			else
---				Result.append(".cfg")
---			end
---		end
 
 	execution_environment: EXECUTION_ENVIRONMENT
 			-- Shared instance of the execution environment.
@@ -415,11 +394,7 @@ feature -- Conversion
 			until
 				p = 0
 			loop
-				from
-					i := q
-				until
-					i = 0
-				loop
+				from i := q until i = 0 loop
 					c := s.item(i)
 					if (c >= 'a' and c <= 'z') or else
 						(c >= 'A' and c <= 'Z') or else

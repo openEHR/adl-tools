@@ -113,7 +113,6 @@ feature -- Commands
 			grid.wipe_out
 			gui.test_status_area.remove_text
 			create grid_row_stack.make(0)
-			reset_output_directories
 		end
 
 	reset_output_directories
@@ -121,7 +120,6 @@ feature -- Commands
 			-- this is test_diff_directory/$current_profile/orig and test_diff_directory/$current_profile/new
 		do
 			diff_dir_root := file_system.pathname (test_diff_directory, current_repository_profile)
-			diff_dirs_not_available := False
 			diff_orig_dir := file_system.pathname (diff_dir_root, "orig")
 			if not file_system.directory_exists (diff_orig_dir) then
 				file_system.recursive_create_directory (diff_orig_dir)
@@ -132,17 +130,18 @@ feature -- Commands
 					file_system.recursive_create_directory (diff_new_dir)
 				end
 				if not file_system.directory_exists (diff_new_dir) then
-					diff_dirs_not_available := True
+					diff_dirs_available := False
+				else
+					diff_dirs_available := True
 				end
 			else
-				diff_dirs_not_available := True
+				diff_dirs_available := False
 			end
 		end
 
 	populate
 			-- populate the ADL tree control by creating it from scratch
 		local
-			gli: EV_GRID_LABEL_ITEM
 			col_csr: INTEGER
 		do
 			clear
@@ -174,10 +173,8 @@ feature -- Commands
 
 	archetype_test_go_stop
 			-- Start or stop a test run.
-		local
-			dialog: EV_WARNING_DIALOG
-			message: STRING
 		do
+			reset_output_directories
 			if test_execution_underway then
 				test_stop_requested := True
 			else
@@ -353,8 +350,10 @@ feature {NONE} -- Tests
 					end
 				end
 
-				orig_fn := file_system.pathname (diff_orig_dir, target.ontological_name + Archetype_source_file_extension)
-				target.save_differential_as (orig_fn, Archetype_native_syntax)
+				if diff_dirs_available then
+					orig_fn := file_system.pathname (diff_orig_dir, target.ontological_name + Archetype_source_file_extension)
+					target.save_differential_as (orig_fn, Archetype_native_syntax)
+				end
 				original_differential_text := target.differential_text
 			else
 				test_status.append (" parse failed%N" + target.compilation_result)
@@ -385,8 +384,10 @@ feature {NONE} -- Tests
 			Result := test_failed
 			if target.is_valid then
 				target.serialise_differential
-				new_fn := file_system.pathname (diff_new_dir, target.ontological_name + Archetype_source_file_extension)
-				target.save_differential_as (new_fn, Archetype_native_syntax)
+				if diff_dirs_available then
+					new_fn := file_system.pathname (diff_new_dir, target.ontological_name + Archetype_source_file_extension)
+					target.save_differential_as (new_fn, Archetype_native_syntax)
+				end
 				if target.status.is_empty then
 					Result := test_passed
 				else
@@ -399,8 +400,6 @@ feature {NONE} -- Tests
 
 	test_compare: INTEGER
 			-- parse archetype and return result
-		local
-			new_source: STRING
 		do
 			Result := Test_failed
 			if target.is_valid and target.differential_text /= Void then
@@ -420,7 +419,7 @@ feature {NONE} -- Tests
 
 feature {NONE} -- Implementation
 
-	diff_dirs_not_available: BOOLEAN
+	diff_dirs_available: BOOLEAN
 			-- flag to indicate whether output directories for diff files are available and writable
 
 	diff_dir_root: STRING

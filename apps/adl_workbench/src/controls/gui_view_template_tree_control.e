@@ -168,22 +168,21 @@ feature {NONE} -- Implementation
 			-- make sure it is a template of some kind
 			if artefact_types.has(ara.artefact_type) then
 				-- if it is compiled & valid, display its flat filler structure
-				if ara.is_valid then
-					gui_tree_item_stack.extend (gui_node_descriptor_map.item (ara.ontological_name))
-					gui_tree_item_stack.item.wipe_out
-					gui_tree_item_stack.item.set_pixmap (pixmaps[ara.group_name])
-					create tree_iterator.make (ara.flat_archetype.definition.representation)
-					tree_iterator.do_all (agent node_build_enter_action (?, ?), agent node_build_exit_action (?, ?))
-					gui_tree_item_stack.remove
-				-- otherwise just display the template root
-				else
-					if not gui_node_descriptor_map.has (ara.ontological_name) then
-						attach_node(ara.id.rm_entity + "." + ara.display_name, pixmaps[ara.group_name], ara)
-						gui_node_descriptor_map.force (gui_tree_item_stack.item, ara.ontological_name)
+				if gui_node_descriptor_map.has (ara.ontological_name) then
+					if ara.is_valid then
+						gui_tree_item_stack.extend (gui_node_descriptor_map.item (ara.ontological_name))
+						gui_tree_item_stack.item.wipe_out
+						gui_tree_item_stack.item.set_pixmap (pixmaps[ara.group_name])
+						create tree_iterator.make (ara.flat_archetype.definition.representation)
+						tree_iterator.do_all (agent node_build_enter_action (?, ?), agent node_build_exit_action (?, ?))
 						gui_tree_item_stack.remove
 					else
 						gui_node_descriptor_map.item (ara.ontological_name).set_pixmap (pixmaps[ara.group_name])
 					end
+				else -- otherwise just display the template root
+					attach_node(ara.id.rm_entity + "." + ara.display_name, pixmaps[ara.group_name], ara)
+					gui_node_descriptor_map.force (gui_tree_item_stack.item, ara.ontological_name)
+					gui_tree_item_stack.remove
 				end
 			end
 		end

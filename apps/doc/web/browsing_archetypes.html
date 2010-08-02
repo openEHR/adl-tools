@@ -44,7 +44,7 @@
 		<p></p>
 
         <div style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;">
-          <table width="70%" border="1" cellpadding="2" cellspacing="2" style="background-color: #ffffff;">
+          <table width="70%" border="0" cellpadding="2" cellspacing="2" style="background-color: #ffffff;">
             <tr valign="top">
               <td style="border-width : 0px;"><a href="images/explorer_initial_view.png"><img src="images/tn_explorer_initial_view.jpg" width="110" height="200" alt="Initial view in explorer" title="" border="0" /></a><p>Initial view</p></td>
 
@@ -67,7 +67,7 @@
 		<p>The compilation process performs validation on every archetype and reports errors. Errors fall into two categories: syntactic, denoted with codes starting with 'S', and validity errors, denoted with 'V' codes. The errors are shown both in the status tab and the errors tab at the bottom. The status window is shown below.</p>
 		
         <div style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;">
-          <table width="70%" border="1" cellpadding="2" cellspacing="2" style="background-color: #ffffff;">
+          <table width="70%" border="0" cellpadding="2" cellspacing="2" style="background-color: #ffffff;">
             <tr valign="top">
               <td style="border-width : 0px;"><a href="images/compile_1.png"><img src="images/tn_compile_1.jpg" width="200" height="60" alt="Status window" title="" border="0" /></a><p>Compilation feedback</p></td>
 
@@ -76,18 +76,61 @@
             </tr>
           </table>
         </div>
-		<p>The compilation errors can also be seen in the Errors tab at the bottom, classified according to type.</p>
+		<p>The compilation errors can also be seen in the Errors tab at the bottom, classified according to type, as shown below.</p>
+		<a href="images/errors_2.png"><img src="images/tn_errors_2.jpg" width="200" height="43" alt="Error tree" title="" border="0" /></a>
 		<h2>Viewing an archetype</h2>
 		<p>This section describes the various ways of viewing a successfully compiled archetype.</p>
 		<h3>Descriptive meta-data</h3>
 		<p>All archetypes have a number of header sections containing descriptive meta-data about the archetype. The Description tab shows all of these sections, including author details, translation information, keywords, purpose, use, misuse and so on.</p>
+        <div style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;">
+          <table width="70%" border="0" cellpadding="0" cellspacing="2" style="background-color: #ffffff;">
+            <tr valign="top">
+              <td style="border-width : 0px;"><a href="images/description_1.png"><img src="images/tn_description_1.jpg" width="200" height="157" alt="Archetype description" title="" border="0" /></a><p>Description sections</p></td>
+
+              <td style="border-width : 0px;"><a href="images/description_unicode.png"><img src="images/tn_description_unicode.jpg" width="200" height="158" alt="Description unicode" title="" border="0" /></a><p>Unicode description</p></td>
+
+            </tr>
+          </table>
+        </div>
 		<h3>Source (differential) and flat forms</h3>
-		<p>A key point to understand is that in most views, the archetype is visible in either source (differential) or flat form. For non-specialised archetypes, the two forms are structurally the same. For specialised archetypes and templates, the source form is the same idea as for object-oriented class files (e.g. in Java, .Net, etc), i.e. it contains only differences with respect to the immediate specialisation parent. For both, the source form is the 'authored' form. The flat form is the result of 'compressing' an archetype through its specialisation lineage, i.e. the 'operational' form of the archetype at runtime. This 'flattening' is the same thing that happens in all object-oriented programming technologies.</p>
+		<p>A key point to understand is that in most views, the archetype is visible in either source (differential) or flat form. For non-specialised archetypes, the two forms are structurally the same. For specialised archetypes and templates, the source form is the same idea as for object-oriented class files (e.g. in Java, .Net, etc), i.e. it contains only differences with respect to the immediate specialisation parent. For both, the source form is the 'authored' form. The flat form is the result of 'compressing' an archetype through its specialisation lineage, i.e. the 'operational' form of the archetype at runtime. This 'flattening' is the same thing that happens in all object-oriented programming technologies. Due to flattening, we often speak of the 'flat parent' with respect to a differential archetype, which denotes all constraints so far in the lineage.</p>
 		<p>From the point of view of the AWB, you can see both the differential and flat forms of an archetype visualised. Most of the views below can be seen in differential and flat form. Use the Differential and Flat View tabs at the top to switch.</p>
 		<h3>Node map</h3>
 		<p>The node map is a way of viewing the definition part of the archetype structurally. The definition section contains the main definitional statements of the archetype, and can be thought of as a visualisation of an AOM structure, that is to say, each node corresponds to an AOM node type. In the differential form, the node map shows only those constraints introduced by the archetype on its own. If it is a non-specialised archetype, these constraints are in addition to constraints implied by the reference model (cardinality, types etc). For a specialised archetype, the constraints are in addition to the 'flat parent', i.e. the notional sum of constraints so far in the specialisation lineage. You  will notice in particular that specialised archetypes have constraints whose parent attributes are not just a single attribute name like 'items', but are a path, like '/protocol', '/data/events[at0010]/items[at0023]' and so on.</p>
 		<p>You can use the radio button controls on the right to show each node in more or less detail. The last radio button control adds in the reference model attributes that have not been archetyped, but will/can be in the runtime data.</p>
+        <div style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;">
+          <table width="70%" border="0" cellpadding="0" cellspacing="2" style="background-color: #ffffff;">
+            <tr valign="top">
+              <td style="border-width : 0px;"><a href="images/node_map_diff_spec_no_RM.png"><img src="images/tn_node_map_diff_spec_no_RM.jpg" width="200" height="123" alt="Differential, specialised, no RM classes" title="" border="0" /></a><p>Differential, specialised, no RM classes</p></td>
+
+              <td style="border-width : 0px;"><a href="images/node_map_diff_spec_RM_classes.png"><img src="images/tn_node_map_diff_spec_RM_classes.jpg" width="200" height="121" alt="Node map, differential, specialised, RM classes" title="" border="0" /></a><p>Node map, differential, specialised, RM classes</p></td>
+
+            </tr>
+            <tr valign="top">
+              <td style="border-width : 0px;"><a href="images/node_map_flat_spec_no_RM.png"><img src="images/tn_node_map_flat_spec_no_RM.jpg" width="186" height="200" alt="Flat, specialised, no RM" title="" border="0" /></a><p>Flat, specialised, no RM</p></td>
+
+              <td style="border-width : 0px;"><a href="images/node_map_unicode.png"><img src="images/tn_node_map_unicode.jpg" width="180" height="200" alt="Node map, unicode" title="" border="0" /></a><p>Node map, unicode</p></td>
+
+            </tr>
+          </table>
+        </div>
+		<p>Each node map node is shown in three possible forms. If the node is coloured, it is defined new within the current archetype. If it is coloured, with a yellow border, it redefines an existing node from the flat parent. If it is solid yellow/grey, it is purely inherited.</p>
 		<h3>Path map</h3>
+		<p>Archetype definitions are inherently hierarchical structures, and as a consequence a set of paths can be extracted from any archetype. This 'path map' is the basis for all queries written in AQL or a-path. Every node in an archetype is guaranteed to have a unique path. If you select the path map in the differential and flat forms, you will see the larger number of paths being extracted from the latter.</p>
+        <div style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;">
+          <table width="70%" border="0" cellpadding="0" cellspacing="2" style="background-color: #ffffff;">
+            <tr valign="top">
+              <td style="border-width : 0px;"><a href="images/paths_body_temp_diff_nat_lang.png"><img src="images/tn_paths_body_temp_diff_nat_lang.jpg" width="200" height="106" alt="Paths, natural language" title="" border="0" /></a><p>Path map, natural language paths</p></td>
+
+              <td style="border-width : 0px;"><a href="images/paths_body_temp_diff_machine.png"><img src="images/tn_paths_body_temp_diff_machine.jpg" width="200" height="111" alt="Path map, machine codes" title="" border="0" /></a><p>Path map, machine paths</p></td>
+			</tr>
+            <tr valign="top">
+              <td style="border-width : 0px;"><a href="images/paths_diff_heart_rate_machine.png"><img src="images/tn_paths_diff_heart_rate_machine.jpg" width="200" height="137" alt="Path map diff parent" title="" border="0" /></a><p>Path map, parent archetype</p></td>
+
+              <td style="border-width : 0px;"><a href="images/paths_heart_rate-pulse_flat_machine.png"><img src="images/tn_paths_heart_rate-pulse_flat_machine.jpg" width="200" height="134" alt="Path map, flat child" title="" border="0" /></a><p>Path map, flat child archetype</p></td>
+			</tr>
+          </table>
+        </div>
 		<h3>Slot map</h3>
 		<h3>Terminology</h3>
 		<h3>Source view</h3>
