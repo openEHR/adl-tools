@@ -14,10 +14,13 @@ note
 	testing:     "type/manual"
 
 class
-	TEST_ARCH_DIRECTORY
+	TEST_ARCHETYPE_DIRECTORY
 
 inherit
 	OPENEHR_TEST_SET
+		redefine
+			on_prepare
+		end
 
 	SHARED_ADL_APPLICATION
 
@@ -29,52 +32,57 @@ inherit
 
 	SHARED_APP_RESOURCES
 
-feature {NONE} -- Implementation
+feature {NONE} -- Events
 
-	repository: STRING
-		once
-			Result := resource_value ("tests", "validation_repository")
-			assert ("Resource value is missing from cfg file:%N" + example_of_required_setting, not Result.is_empty)
+	on_prepare
+			-- <Precursor>
+		do
+			Precursor
+			application_developer_name.make_from_string ("openEHR")
+			resource_config_file.make (user_config_file_path)
+			adl_application.initialise
+
+			if repository_profiles.has ("Test") then
+				test_repository := repository_profiles ["Test"].first
+			elseif repository_profiles.has ("test") then
+				test_repository := repository_profiles ["test"].first
+			else
+				assert ("Please define the %"Test%" repository profile in " + resource_config_file.file_name, False)
+			end
 		end
 
-	example_of_required_setting: STRING = "[
-		[tests]
-		validation_repository=C:\Ocean\adl\test
-		]"
+feature -- Access
+
+	test_repository: STRING
+			-- Repository of test archetypes. Its path must be defined in the cfg file, otherwise these unit tests fail.
 
 feature -- Test routines
 
 	test_add_adhoc_item
 			-- Check that an ad-hoc archetype can be added.
 		note
-			testing:  "covers/{ARCH_DIRECTORY}.add_adhoc_item"
+			testing: "covers/{ARCHETYPE_DIRECTORY}.add_adhoc_item"
 		do
-			adl_application.initialise
 			assert_equal (False, arch_dir.has_selected_archetype)
-			arch_dir.add_adhoc_item (repository + "\basics\openehr-test_pkg-BOOK.structure_test1.v1.adls")
+			arch_dir.add_adhoc_item (test_repository + "\basics\openehr-test_pkg-BOOK.structure_test1.v1.adls")
 			assert_equal (True, arch_dir.has_selected_archetype)
 		end
 
 	test_validation
 			-- Check that the expected errors occur when building the validation test archetypes.
 		note
-			testing:  "covers/{ARCH_DIRECTORY}.populate"
+			testing: "covers/{ARCHETYPE_DIRECTORY}.populate"
 		local
 			expected: STRING
 		do
-			adl_application.initialise
 			set_status_reporting_level (message_type_error)
-			source_repositories.set_reference_repository (repository)
+			source_repositories.set_reference_repository (test_repository)
 			arch_dir.populate
-
-			expected := "ERROR - No parent matching /specialisation_parent_term found for archetype " +
-						repository + "\adl-test-ENTRY.specialisation_parent_term-missing.v1.adl      (ARCH_DIRECTORY.merge_enter)%N" +
-						"ERROR - No parent matching /specialisation_parent found for archetype " +
-						repository + "\adl-test-ENTRY.specialisation_parent-missing.v1.adl      (ARCH_DIRECTORY.merge_enter)%N"
-
-			assert_equal (expected, billboard.content)
+			assert ("Expected warning about ADL version", billboard.content.has_substring ("WARNING - Using ADL version"))
 			archetype_compiler.build_all
-			print (billboard.content)
+			assert_equal (False, archetype_compiler.is_interrupted)
+			assert_equal (True, archetype_compiler.build_completed)
+			assert ("Expected status message", archetype_compiler.status.has_substring ("finished building system"))
 		end
 
 end
@@ -94,7 +102,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is test_arch_directory.e.
+--| The Original Code is test_archetype_directory.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

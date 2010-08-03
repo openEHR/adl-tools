@@ -130,7 +130,7 @@ feature -- Environment
 	user_config_file_directory: attached STRING
 			-- OS-specific place for user config file(s) for this application.
 			-- Follows the model home_path/app_vendor/app_name.
-		once
+		do
 			Result := file_system.pathname (execution_environment.home_directory_name, application_developer_name)
 			Result := file_system.pathname (Result, extension_removed (application_name))
 		ensure
@@ -139,7 +139,7 @@ feature -- Environment
 
 	user_config_file_path: attached STRING
 			-- Full path to resource configuration file.
-		once
+		do
 			Result := file_system.pathname (user_config_file_directory, extension_replaced(application_name, User_config_file_extension))
 		ensure
 			not_empty: not Result.is_empty
