@@ -723,14 +723,8 @@ feature {NONE} -- Help events
 
 	display_release_notes
 			-- Display news about the latest release.
-		local
-			dialog: EV_INFORMATION_DIALOG
 		do
-			create dialog.make_with_text (Release_notes_text)
-			dialog.set_x_position (20)
-			dialog.set_y_position (10)
-			dialog.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 248))
-			dialog.show_modal_to_window (Current)
+			(create {RELEASE_NOTES}).show_modal_to_window (Current)
 		end
 
 	show_online_help
@@ -748,6 +742,7 @@ feature {NONE} -- Help events
 			dialog.set_title ("About ADL Workbench")
 			dialog.set_pixmap (pixmaps ["openEHR_logo"])
 			dialog.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 248))
+			dialog.set_position (app_x_position + (app_width - dialog.width) // 2, app_y_position + (app_height - dialog.height) // 2)
 			dialog.show_modal_to_window (Current)
 		end
 

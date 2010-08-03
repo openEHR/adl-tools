@@ -83,9 +83,11 @@ feature -- Access
 		once
 			create Result.make (0)
 			Result.force (agent test_parse, "Parse")
+			Result.force (agent test_save_source_orig, "Save src (orig)")
+			Result.force (agent test_save_source_new, "Save src (gen)")
+			Result.force (agent test_save_legacy, "Save legacy")
 			Result.force (agent test_save_flat, "Save flat")
-			Result.force (agent test_save_differential, "Save diff")
-			Result.force (agent test_compare, "Compare")
+			Result.force (agent test_source_compare, "Compare src")
 		end
 
 	last_tested_archetypes_count: INTEGER
@@ -118,24 +120,53 @@ feature -- Commands
 	reset_output_directories
 			-- set output directories, currently just the test diff output location.
 			-- this is test_diff_directory/$current_profile/orig and test_diff_directory/$current_profile/new
+		local
+			diff_dir_root: STRING
+			diff_dir_source_root: STRING
+			diff_dir_flat_root: STRING
 		do
 			diff_dir_root := file_system.pathname (test_diff_directory, current_repository_profile)
-			diff_orig_dir := file_system.pathname (diff_dir_root, "orig")
-			if not file_system.directory_exists (diff_orig_dir) then
-				file_system.recursive_create_directory (diff_orig_dir)
+
+			-- source dif dirs
+			diff_dir_source_root := file_system.pathname (diff_dir_root, "source")
+			diff_dir_source_orig := file_system.pathname (diff_dir_source_root, "orig")
+			diff_dir_source_new := file_system.pathname (diff_dir_source_root, "new")
+			if not file_system.directory_exists (diff_dir_source_orig) then
+				file_system.recursive_create_directory (diff_dir_source_orig)
 			end
-			if file_system.directory_exists (diff_orig_dir) then
-				diff_new_dir := file_system.pathname (diff_dir_root, "new")
-				if not file_system.directory_exists (diff_new_dir) then
-					file_system.recursive_create_directory (diff_new_dir)
+			if file_system.directory_exists (diff_dir_source_orig) then
+				if not file_system.directory_exists (diff_dir_source_new) then
+					file_system.recursive_create_directory (diff_dir_source_new)
 				end
-				if not file_system.directory_exists (diff_new_dir) then
+				if not file_system.directory_exists (diff_dir_source_new) then
 					diff_dirs_available := False
 				else
 					diff_dirs_available := True
 				end
 			else
 				diff_dirs_available := False
+			end
+
+			-- legacy / flat diff dirs
+			if diff_dirs_available then
+				diff_dir_flat_root := file_system.pathname (diff_dir_root, "flat")
+				diff_dir_flat_orig := file_system.pathname (diff_dir_flat_root, "orig")
+				diff_dir_flat_new := file_system.pathname (diff_dir_flat_root, "new")
+				if not file_system.directory_exists (diff_dir_flat_orig) then
+					file_system.recursive_create_directory (diff_dir_flat_orig)
+				end
+				if file_system.directory_exists (diff_dir_flat_orig) then
+					if not file_system.directory_exists (diff_dir_flat_new) then
+						file_system.recursive_create_directory (diff_dir_flat_new)
+					end
+					if not file_system.directory_exists (diff_dir_flat_new) then
+						diff_dirs_available := False
+					else
+						diff_dirs_available := True
+					end
+				else
+					diff_dirs_available := False
+				end
 			end
 		end
 
@@ -322,7 +353,6 @@ feature {NONE} -- Tests
 			-- parse archetype and return result
 		local
 			unused_at_codes, unused_ac_codes: ARRAYED_LIST [STRING]
-			orig_fn: STRING
 		do
 			Result := test_failed
 			archetype_compiler.rebuild_lineage (target)
@@ -351,8 +381,7 @@ feature {NONE} -- Tests
 				end
 
 				if diff_dirs_available then
-					orig_fn := file_system.pathname (diff_orig_dir, target.ontological_name + Archetype_source_file_extension)
-					target.save_differential_as (orig_fn, Archetype_native_syntax)
+					target.save_differential_as (file_system.pathname (diff_dir_source_orig, target.ontological_name + Archetype_source_file_extension), Archetype_native_syntax)
 				end
 				original_differential_text := target.differential_text
 			else
@@ -360,33 +389,13 @@ feature {NONE} -- Tests
 			end
 		end
 
-	test_save_flat: INTEGER
-			-- parse archetype, save in flat form and return result
-		do
-			Result := test_failed
-			if target.is_valid then
-				target.save_flat
-				if target.save_succeeded then
-					Result := test_passed
-				else
-					test_status.append (target.status + "%N")
-				end
-			else
-				Result := test_not_applicable
-			end
-		end
-
-	test_save_differential: INTEGER
+	test_save_source_orig: INTEGER
 			-- parse archetype, save in source form and return result
-		local
-			new_fn: STRING
 		do
 			Result := test_failed
 			if target.is_valid then
-				target.serialise_differential
 				if diff_dirs_available then
-					new_fn := file_system.pathname (diff_new_dir, target.ontological_name + Archetype_source_file_extension)
-					target.save_differential_as (new_fn, Archetype_native_syntax)
+					target.save_differential_as (file_system.pathname (diff_dir_source_orig, target.ontological_name + Archetype_source_file_extension), Archetype_native_syntax)
 				end
 				if target.status.is_empty then
 					Result := test_passed
@@ -398,7 +407,62 @@ feature {NONE} -- Tests
 			end
 		end
 
-	test_compare: INTEGER
+	test_save_source_new: INTEGER
+			-- parse archetype, save in source form and return result
+		do
+			Result := test_failed
+			if target.is_valid then
+				target.serialise_differential
+				if diff_dirs_available then
+					target.save_differential_as (file_system.pathname (diff_dir_source_new, target.ontological_name + Archetype_source_file_extension), Archetype_native_syntax)
+				end
+				if target.status.is_empty then
+					Result := test_passed
+				else
+					test_status.append (target.status + "%N")
+				end
+			else
+				Result := test_not_applicable
+			end
+		end
+
+	test_save_legacy: INTEGER
+			-- parse archetype, save in source form and return result
+		do
+			Result := test_failed
+			if target.is_valid and target.has_legacy_flat_file then
+				if diff_dirs_available then
+					target.save_legacy_as (file_system.pathname (diff_dir_flat_orig, target.ontological_name + Archetype_flat_file_extension), Archetype_native_syntax)
+				end
+				if target.status.is_empty then
+					Result := test_passed
+				else
+					test_status.append (target.status + "%N")
+				end
+			else
+				Result := test_not_applicable
+			end
+		end
+
+	test_save_flat: INTEGER
+			-- parse archetype, save in source form and return result
+		do
+			Result := test_failed
+			if target.is_valid then
+				if diff_dirs_available then
+					target.save_flat_as (file_system.pathname (diff_dir_flat_new, target.ontological_name + Archetype_flat_file_extension), Archetype_native_syntax)
+				end
+				if target.status.is_empty then
+					Result := test_passed
+				else
+					test_status.append (target.status + "%N")
+				end
+			else
+				Result := test_not_applicable
+			end
+		end
+
+	test_source_compare: INTEGER
 			-- parse archetype and return result
 		do
 			Result := Test_failed
@@ -422,14 +486,17 @@ feature {NONE} -- Implementation
 	diff_dirs_available: BOOLEAN
 			-- flag to indicate whether output directories for diff files are available and writable
 
-	diff_dir_root: STRING
-			-- directory root to diff file output, at test_diff_directory/$current_profile
-
-	diff_orig_dir: STRING
+	diff_dir_source_orig: STRING
 			-- directory where copies of original .adls files go
 
-	diff_new_dir: STRING
+	diff_dir_source_new: STRING
 			-- directory where first generation serialised .adls files go
+
+	diff_dir_flat_orig: STRING
+			-- directory where copies of original legacy .adl files go
+
+	diff_dir_flat_new: STRING
+			-- directory where first generation serialised .adlf files go
 
 	gui: MAIN_WINDOW
 			-- main window of system
