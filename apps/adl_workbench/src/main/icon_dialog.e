@@ -23,6 +23,7 @@ feature {NONE} -- Initialization
 			set_default_cancel_button (ok_button)
 			set_default_push_button (ok_button)
 			add_help_items
+			show_actions.extend (agent icon_help_list.set_focus)
 		end
 
 feature {NONE} -- Implementation

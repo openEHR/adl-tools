@@ -77,7 +77,7 @@ feature {NONE}-- Initialization
 			integer_constant_set_procedures.extend (agent set_maximum_width (?))
 			integer_constant_retrieval_functions.extend (agent app_initial_width)
 			integer_constant_set_procedures.extend (agent set_maximum_height (?))
-			integer_constant_retrieval_functions.extend (agent source_notebook_min_height)
+			integer_constant_retrieval_functions.extend (agent app_max_height)
 			set_title ("Display window")
 			
 			set_all_attributes_using_constants
