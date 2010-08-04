@@ -74,9 +74,9 @@ feature {NONE}-- Initialization
 			create l_ev_menu_separator_9
 			create tools_menu_options
 			create help_menu
-			create help_menu_icons
+			create help_menu_contents
 			create help_menu_release_notes
-			create help_menu_online
+			create help_menu_icons
 			create l_ev_menu_separator_10
 			create help_menu_about
 			create main_notebook
@@ -283,9 +283,9 @@ feature {NONE}-- Initialization
 			tools_menu.extend (l_ev_menu_separator_9)
 			tools_menu.extend (tools_menu_options)
 			menu.extend (help_menu)
-			help_menu.extend (help_menu_icons)
+			help_menu.extend (help_menu_contents)
 			help_menu.extend (help_menu_release_notes)
-			help_menu.extend (help_menu_online)
+			help_menu.extend (help_menu_icons)
 			help_menu.extend (l_ev_menu_separator_10)
 			help_menu.extend (help_menu_about)
 			extend (main_notebook)
@@ -494,9 +494,9 @@ feature {NONE}-- Initialization
 			tools_menu_reload_schemas.set_text ("&Reload Schemas")
 			tools_menu_options.set_text ("&Options...")
 			help_menu.set_text ("&Help")
-			help_menu_icons.set_text ("&Icons ")
+			help_menu_contents.set_text ("&Contents")
 			help_menu_release_notes.set_text ("&Release Notes")
-			help_menu_online.set_text ("&Online...")
+			help_menu_icons.set_text ("&Icons ")
 			help_menu_about.set_text ("&About ADL Workbench")
 			create internal_font
 			internal_font.set_family ({EV_FONT_CONSTANTS}.Family_sans)
@@ -1073,9 +1073,9 @@ feature {NONE}-- Initialization
 			tools_menu_clean_generated_files.select_actions.extend (agent clean_generated_files)
 			tools_menu_reload_schemas.select_actions.extend (agent reload_schemas)
 			tools_menu_options.select_actions.extend (agent set_options)
-			help_menu_icons.select_actions.extend (agent display_icon_help)
+			help_menu_contents.select_actions.extend (agent show_online_help)
 			help_menu_release_notes.select_actions.extend (agent display_release_notes)
-			help_menu_online.select_actions.extend (agent show_online_help)
+			help_menu_icons.select_actions.extend (agent display_icon_help)
 			help_menu_about.select_actions.extend (agent display_about)
 			open_button.select_actions.extend (agent open_archetype)
 			parse_button.select_actions.extend (agent parse_archetype)
@@ -1177,14 +1177,15 @@ feature -- Access
 	repository_menu_build_subtree, repository_menu_rebuild_subtree, repository_menu_export_html,
 	repository_menu_export_repository_report, repository_menu_interrupt_build, repository_menu_refresh,
 	history_menu_back, history_menu_forward, tools_menu_clean_generated_files, tools_menu_reload_schemas,
-	tools_menu_options, help_menu_icons, help_menu_release_notes, help_menu_online, help_menu_about: EV_MENU_ITEM
-	adl_version_label,
-	language_label, archetype_explorer_label, template_explorer_label, arch_desc_auth_orig_auth_label,
-	arch_desc_status_label, arch_desc_original_language_label, arch_desc_auth_contrib_label,
-	arch_translations_languages_label, l_ev_label_1, l_ev_label_2, l_ev_label_3, arch_desc_purpose_label,
-	arch_desc_use_label, arch_desc_misuse_label, arch_desc_keywords_label, arch_desc_resource_package_label,
-	arch_desc_resource_orig_res_label, arch_desc_copyright_label, l_ev_label_4, l_ev_label_5,
-	l_ev_label_6, l_ev_label_7, l_ev_label_8, l_ev_label_9: EV_LABEL
+	tools_menu_options, help_menu_contents, help_menu_release_notes, help_menu_icons,
+	help_menu_about: EV_MENU_ITEM
+	adl_version_label, language_label, archetype_explorer_label, template_explorer_label,
+	arch_desc_auth_orig_auth_label, arch_desc_status_label, arch_desc_original_language_label,
+	arch_desc_auth_contrib_label, arch_translations_languages_label, l_ev_label_1, l_ev_label_2,
+	l_ev_label_3, arch_desc_purpose_label, arch_desc_use_label, arch_desc_misuse_label,
+	arch_desc_keywords_label, arch_desc_resource_package_label, arch_desc_resource_orig_res_label,
+	arch_desc_copyright_label, l_ev_label_4, l_ev_label_5, l_ev_label_6, l_ev_label_7,
+	l_ev_label_8, l_ev_label_9: EV_LABEL
 	path_analysis_column_view_checkable_list: EV_CHECKABLE_LIST
 	remove_unused_codes_rb: EV_CHECK_BUTTON
 	l_ev_tool_bar_1: EV_TOOL_BAR
@@ -1331,8 +1332,8 @@ feature {NONE} -- Implementation
 		deferred
 		end
 	
-	display_icon_help is
-			-- Called by `select_actions' of `help_menu_icons'.
+	show_online_help is
+			-- Called by `select_actions' of `help_menu_contents'.
 		deferred
 		end
 	
@@ -1341,8 +1342,8 @@ feature {NONE} -- Implementation
 		deferred
 		end
 	
-	show_online_help is
-			-- Called by `select_actions' of `help_menu_online'.
+	display_icon_help is
+			-- Called by `select_actions' of `help_menu_icons'.
 		deferred
 		end
 	
