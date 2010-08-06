@@ -11,7 +11,7 @@ note
 	revision: "$Revision$"
 
 deferred class
-	RELEASE_NOTES_IMP
+	RELEASE_NOTES_DIALOG_IMP
 
 inherit
 	EV_DIALOG
@@ -78,7 +78,7 @@ feature {NONE}-- Initialization
 			integer_constant_retrieval_functions.extend (agent app_initial_width)
 			integer_constant_set_procedures.extend (agent set_maximum_height (?))
 			integer_constant_retrieval_functions.extend (agent app_max_height)
-			set_title ("Display window")
+			set_title ("ADL Workbench Release Notes")
 			
 			set_all_attributes_using_constants
 

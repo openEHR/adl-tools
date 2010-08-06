@@ -715,25 +715,37 @@ feature {NONE} -- Tools events
 
 feature {NONE} -- Help events
 
-	display_icon_help
-			-- Display the icons help dialog.
-		do
-			(create {ICON_DIALOG}).show_modal_to_window (Current)
-		end
-
-	display_release_notes
-			-- Display news about the latest release.
-		do
-			(create {RELEASE_NOTES}).show_modal_to_window (Current)
-		end
-
 	show_online_help
 			-- Display the application's online help in an external browser.
 		do
 			show_in_system_browser (adl_help_page_url)
 		end
 
-	display_about
+	show_icon_help
+			-- Display the icons help dialog.
+		do
+			(create {ICON_DIALOG}).show_modal_to_window (Current)
+		end
+
+	show_release_notes
+			-- Display news about the latest release.
+		do
+			(create {RELEASE_NOTES_DIALOG}).show_modal_to_window (Current)
+		end
+
+	show_clinical_knowledge_manager is
+			-- Display CKM in an external browser.
+		do
+			show_in_system_browser (clinical_knowledge_manager_url)
+		end
+
+	show_bug_reporter is
+			-- Display the problem reporter in an external browser.
+		do
+			show_in_system_browser (bug_reporter_url)
+		end
+
+	show_about
 			-- Display the application's About box.
 		local
 			dialog: EV_INFORMATION_DIALOG

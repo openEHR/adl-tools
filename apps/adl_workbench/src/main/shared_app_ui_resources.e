@@ -27,12 +27,8 @@ inherit
 
 feature -- Definitions
 
-	Release_notes_file_path: STRING
-		once
-			Result := file_system.pathname (application_startup_directory, "release_notes.txt")
-		end
-
 	ADL_help_page_url: STRING
+			-- The URL to ADL Workbench's online help.
 		local
 			version: OPENEHR_VERSION
 		once
@@ -43,6 +39,18 @@ feature -- Definitions
 				Result := "http://www.openehr.org/svn/ref_impl_eiffel/TRUNK/apps/doc/adl_workbench_help.htm"
 			end
 		end
+
+	Release_notes_file_path: STRING
+			-- The path to ADL Workbench's release notes.
+		once
+			Result := file_system.pathname (application_startup_directory, "release_notes.txt")
+		end
+
+	clinical_knowledge_manager_url: STRING = "http://www.openehr.org/knowledge/"
+			-- The URL to CKM.
+
+	bug_reporter_url: STRING = "http://www.openehr.org/issues/browse/AWBPR/"
+			-- The URL to ADL Workbench's problem reporter.
 
 feature -- Commands
 
@@ -301,7 +309,7 @@ feature -- Access
 			Result.append ("Source SVN - http://www.openehr.org/svn/ref_impl_eiffel%N%T" + version.last_changed + "%N")
 			Result.append ("Source license: Mozilla tri-license%N")
 			Result.append ("(http://www.mozilla.org/MPL/boilerplate-1.1/mpl-tri-license-txt)%N")
-			Result.append ("Support: support@OceanInformatics.com%N")
+			Result.append ("Support: http://www.openehr.org/issues/browse/AWBPR%N")
 			Result.append ("Funded by: OceanInformatics.com%N")
 			Result.append ("Author: Thomas Beale%N")
 			Result.append ("Contributors: Peter Gummer%N")

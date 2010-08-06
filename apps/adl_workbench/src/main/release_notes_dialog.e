@@ -5,10 +5,10 @@ note
 	revision: "$Revision$"
 
 class
-	RELEASE_NOTES
+	RELEASE_NOTES_DIALOG
 
 inherit
-	RELEASE_NOTES_IMP
+	RELEASE_NOTES_DIALOG_IMP
 
 	SHARED_APP_UI_RESOURCES
 		export
