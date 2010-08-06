@@ -58,16 +58,24 @@ feature -- Commands
 			-- Launch the operating system's default browser to display the contents of `url'.
 		local
 			command: STRING
+			process: PROCESS
 		do
    			if is_windows then
    				command := "cmd /q /d /c start %"%" /b"
 			elseif is_mac_os_x then
 				command := "open"
 			else
-   				command := "firefox"
+   				command := "xdg-open"
    			end
 
-			execution_environment.launch (command + " %"" + url + "%"")
+   			if is_windows and {PLATFORM}.is_thread_capable then
+	   			process := (create {PROCESS_FACTORY}).process_launcher (command + " %"" + url + "%"", Void, Void)
+	   			process.set_hidden (True)
+	   			process.set_separate_console (False)
+	   			process.launch
+   			else
+				execution_environment.launch (command + " %"" + url + "%"")
+   			end
 		end
 
 feature -- Access
