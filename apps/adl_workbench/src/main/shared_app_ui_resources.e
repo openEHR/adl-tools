@@ -147,6 +147,23 @@ feature -- Access
 			Result.force (["template_warning_3.ico", "Template in the work repository (parsed and compiled with warnings)"], "template_warning_3")
 			Result.force (["template_valid_3.ico", "Template in the work repository (parsed and compiled)"], "template_valid_3")
 
+			Result.force (["template_component_1.ico", Void], "template_component_1")
+			Result.force (["template_component_parsed_1.ico", Void], "template_component_parsed_1")
+			Result.force (["template_component_parse_failed_1.ico", Void], "template_component_parse_failed_1")
+			Result.force (["template_component_warning_1.ico", Void], "template_component_warning_1")
+			Result.force (["template_component_valid_1.ico", Void], "template_component_valid_1")
+
+			Result.force (["template_component_2.ico", Void], "template_component_2")
+			Result.force (["template_component_parsed_2.ico", Void], "template_component_parsed_2")
+			Result.force (["template_component_parse_failed_2.ico", Void], "template_component_parse_failed_2")
+			Result.force (["template_component_warning_2.ico", Void], "template_component_warning_2")
+			Result.force (["template_component_valid_2.ico", Void], "template_component_valid_2")
+
+			Result.force (["template_component_3.ico", Void], "template_component_3")
+			Result.force (["template_component_parsed_3.ico", Void], "template_component_parsed_3")
+			Result.force (["template_component_parse_failed_3.ico", Void], "template_component_parse_failed_3")
+			Result.force (["template_component_warning_3.ico", Void], "template_component_warning_3")
+			Result.force (["template_component_valid_3.ico", Void], "template_component_valid_3")
 			Result.force ([Void, ""], "Gap 1 in the help")
 
 
