@@ -872,6 +872,8 @@ feature {NONE} -- Implementation
 				if not s.is_empty then
 					Result.append ("{" + s + "} ")
 				end
+			elseif c_attr.is_prohibited then
+				Result.append (" (REMOVED) ")
 			end
 
 			Result.append (c_attr.rm_attribute_path)

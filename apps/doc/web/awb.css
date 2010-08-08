@@ -6,7 +6,7 @@
 		h2				{ color: #333; }
 		a				{ color: #99; }
 		p				{ margin: 0 0 18px; }
-		#wrapper		{ float: left; width: 100%; }
+        #container		{ width: 760px; margin: 0 auto; }
 		
 		/* Header */
 		#header			{ background: #9cd2f8; border-bottom: 2px solid #ddd; }
@@ -16,17 +16,19 @@
 		/* Content Style */
 		#navigation		{ border-bottom: 1px solid #ccc; padding-left: 18px; }
 		#navigation ul	{ padding: 0 18px 9px; }
-		#extra			{ border-bottom: 1px solid #ccc; }
+		#content		{ border-bottom: 1px solid #ccc; margin-bottom: 18px; }
+		#extra			{ }
 		#extra small	{ font-size: 11px; line-height: 18px; }
 		#content p, #extra p { padding-right: 18px; }
 		
 		/* Content Positioning and Size */
-		#navigation		{ float: left; width: 21%; margin-left: -100%; }
-		#content		{ margin: 0 25% 36px; }
-		#extra			{ float: left; margin-left: -25%; width: 25%; }		/* Footer */
-		#footer			{ background: #9cd2f8; border-bottom: 2px solid #999; clear: left; width: 100%; }
+		#navigation		{ float: left; width: 175px; }
+		#content		{ float: right; width: 540px; }
+		#extra			{ float: right; width: 540px; }		/* Footer */
+		#footer			{ background: #9cd2f8; border-bottom: 2px solid #999; clear: both; }
 		#footer a		{ color: #004b6f; }
 		#footer	p		{ color: #666; margin: 0; padding: 0 18px 10px; }
 		#footer ul		{ border-bottom: 1px solid #666; list-style: none; margin: 0 18px 6px; padding: 10px 0 6px; }
 		#footer li		{ display: inline; font-size: 11px; font-weight: bold; padding-right: 5px; }
 
+	
