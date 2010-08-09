@@ -760,6 +760,57 @@ feature {NONE} -- Help events
 
 feature -- Archetype commands
 
+	find_archetype_by_key is
+			-- Called by `return_actions' of `archetype_id'.
+		local
+			key: STRING
+			arch_id: ARCHETYPE_ID
+			matching_ids: attached ARRAYED_SET[STRING]
+		do
+			archetype_id.select_actions.block
+			key := archetype_id.text
+			if key.count > 0 then
+				-- check if it is a full archetype id, e.g. created by slightly modifying current archetype id
+				create arch_id.default_create
+				if arch_id.valid_id (key) then
+					select_archetype_by_id
+				elseif key.count > 3 then
+					 -- it is a partial id, get a list of candidates
+					matching_ids := arch_dir.matching_ids (regex_from_string(key), Void, Void)
+					if matching_ids.count > 0 then
+						archetype_id.set_strings (matching_ids)
+					else
+						-- discrete visual feedback for no match?
+					end
+				else -- key too short
+					-- visual feedback?
+				end
+			end
+			archetype_id.select_actions.resume
+		end
+
+	select_archetype_by_id is
+			-- Called by `select_actions' of `archetype_id'.
+			-- archetype_id.text is guaranteed to be a valid archetype id, and one that is in the current repository
+		do
+			if not arch_dir.has_selected_archetype or else not archetype_id.text.is_equal (arch_dir.selected_archetype.ontological_name) then
+				if arch_dir.archetype_index.has (archetype_id.text) then
+					arch_dir.set_selected_item_from_id (archetype_id.text)
+					select_node_in_archetype_tree_view
+				end
+			else
+				-- discrete visual feedback for selecting same archetype as already selected?
+			end
+		end
+
+	start_search_by_id (a_x, a_y, a_button: INTEGER; a_x_tilt, a_y_tilt, a_pressure: DOUBLE; a_screen_x, a_screen_y: INTEGER) is
+			-- Called by `pointer_button_press_actions' of `search_icon'.
+		do
+			archetype_id.wipe_out
+			archetype_id.set_text ("enter search string")
+			archetype_id.set_focus
+		end
+
 	archetype_view_tree_item_select
 			-- Display details of `archetype_file_tree' when the user selects it.
 		do
@@ -1198,6 +1249,7 @@ feature {NONE} -- Implementation
 				selected := arch_dir.selected_archetype.id
 			end
 
+			archetype_id.wipe_out
 			if selected /= Void then
 				archetype_id.set_text (utf8 (selected.as_string))
 			else

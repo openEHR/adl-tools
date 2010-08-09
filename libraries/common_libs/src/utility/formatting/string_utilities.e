@@ -159,6 +159,13 @@ feature -- Unicode
 
 feature -- Matching
 
+	regex_from_string (a_str: attached STRING): attached STRING
+			-- turn an ordinary string like "abc" into a regex that can be used with standard regex matching
+			-- libs like gobo
+		do
+			Result := ".*" + a_str + ".*"
+		end
+
 	soundex (a_str: STRING): STRING
 			-- generate the soundex equivalent of 'a_str'
 		require
