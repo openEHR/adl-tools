@@ -3,7 +3,7 @@
 <html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title>AWB browsing help</title>
-    <meta content="text/html; charset=us-ascii" http-equiv="Content-Type"/>
+    <meta content="text/html; charset=unicode" http-equiv="Content-Type"/>
     <meta name="generator" content="CoffeeCup HTML Editor (www.coffeecup.com)"/>
     <link rel="stylesheet" type="text/css" href="awb.css" media="screen"/>
   </head>
@@ -175,6 +175,17 @@
               </tbody>
             </table>
           </div>
+		  <p>Paths are crucial to manipulating archetypes at runtime, and also to building queries. The path syntax is a slightly reduced form of XPath syntax, and can be converted to standard XPath for XML-based processing.</p>
+<p>For specialised archetypes, the Path Map under the differential view shows only paths in structures introduced in the specialised archetype, while the path map in the flat view shows paths due to all inherited nodes as well.</p>
+
+<p>The columns of the display can be controlled using the check boxes on the right, and are as follows:</p>
+<ul>
+<li>physical paths: paths containing [atnnnn] codes, used by the software</li>
+<li>logical paths: paths with [atnnnn] codes replaced by the human-readable values from the ontology</li>
+<li>RM Type: the Reference Model type constrained by the node corresponding to the displayed path</li>
+<li>AOM Type: Archetype Object Model type - this is the type of the archetype node, usually only of interest to implementers</li>
+</ul>
+<p>Paths can be selected and saved to the clipboard for use in other tools, by selecting rows (including multiple rows, by using the Ctrl key) and then using Ctrl+C (copy) to copy to the clipboard. The clipboard contents can be viewed from the Edit menu.</p>
           <h3>Slot map</h3>
           <p>Some archetypes contain slots, which are joining points to other archetypes. A slot is defined as a constraint that specifies the <i>possible</i> archetypes that may be used at this point. We can think of the archetypes that could fill the slot as 'suppliers', i.e. archetypes that this archetype uses, and archetypes having slots which the current archetype matches as 'clients'. The ADL Workbench evaluates the slots and displays both of these lists, as shown below.</p>
           <a href="images/slots_1.png">
