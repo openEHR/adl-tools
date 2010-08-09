@@ -405,7 +405,7 @@ feature -- Modification
 				(selection_history.count + (selected_item /= an_item and (selection_history.is_empty or else selection_history.last /= an_item)).to_integer)
 		end
 
-	set_selected_item_from_id (an_item_id: attached STRING)
+	set_selected_item_from_id (an_item_id: STRING)
 			-- Append `an_item' to `selection_history' and select it.
 		require
 			Id_valid: archetype_index.has (an_item_id)
