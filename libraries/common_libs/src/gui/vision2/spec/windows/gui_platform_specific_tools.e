@@ -26,6 +26,12 @@ feature -- Modification
 			combo_box_imp.show_list
 		end
 
+	hide_combo_box_list (combo_box_imp: attached EV_COMBO_BOX_IMP)
+			-- Make the drop-down list of `combo_box_imp' disappear.
+		do
+			combo_box_imp.hide_list
+		end
+
 end
 
 --|

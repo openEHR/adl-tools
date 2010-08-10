@@ -768,13 +768,22 @@ feature -- Archetype commands
 			arch_id: ARCHETYPE_ID
 			matching_ids: attached ARRAYED_SET[STRING]
 		do
-			archetype_id.select_actions.block
 			key := archetype_id.text
-			if key.count > 0 then
+
+			if is_windows and archetype_id.is_list_shown then
+				if attached {EV_COMBO_BOX_IMP} archetype_id.implementation as imp then
+					(create {GUI_PLATFORM_SPECIFIC_TOOLS}).hide_combo_box_list (imp)
+				end
+
+				select_archetype (key)
+			elseif key.count > 0 then
+				archetype_id.select_actions.block
+
 				-- check if it is a full archetype id, e.g. created by slightly modifying current archetype id
 				create arch_id.default_create
+
 				if arch_id.valid_id (key) then
-					select_archetype_by_id
+					select_archetype (key)
 				elseif key.count >= 3 then
 					 -- it is a partial id, get a list of candidates
 					matching_ids := arch_dir.matching_ids (regex_from_string(key), Void, Void)
@@ -788,22 +797,31 @@ feature -- Archetype commands
 						-- discrete visual feedback for no match?
 					end
 					if archetype_id.count = 1 then
-						select_archetype_by_id
+						select_archetype (key)
 					end
 				else -- key too short
 					-- visual feedback?
 				end
+
+				archetype_id.select_actions.resume
 			end
-			archetype_id.select_actions.resume
 		end
 
 	select_archetype_by_id
 			-- Called by `select_actions' of `archetype_id'.
 			-- archetype_id.text is guaranteed to be a valid archetype id, and one that is in the current repository
 		do
-			if not arch_dir.has_selected_archetype or else not archetype_id.text.is_equal (arch_dir.selected_archetype.ontological_name) then
-				if arch_dir.archetype_index.has (archetype_id.text) then
-					arch_dir.set_selected_item_from_id (archetype_id.text)
+			if not (is_windows and archetype_id.is_list_shown) then
+				select_archetype (archetype_id.text)
+			end
+		end
+
+	select_archetype (id: attached STRING)
+			-- Select `id' in the archetype directory.
+		do
+			if not arch_dir.has_selected_archetype or else not id.is_equal (arch_dir.selected_archetype.ontological_name) then
+				if arch_dir.archetype_index.has (id) then
+					arch_dir.set_selected_item_from_id (id)
 					select_node_in_archetype_tree_view
 				end
 			else

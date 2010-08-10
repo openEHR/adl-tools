@@ -29,6 +29,12 @@ feature -- Modification
 			{EV_GTK_EXTERNALS}.gtk_combo_box_popup (combo_box_imp.container_widget)
 		end
 
+	hide_combo_box_list (combo_box_imp: attached EV_COMBO_BOX_IMP)
+			-- Make the drop-down list of `combo_box_imp' disappear.
+		do
+			{EV_GTK_EXTERNALS}.gtk_combo_box_popdown (combo_box_imp.container_widget)
+		end
+
 end
 
 --|
