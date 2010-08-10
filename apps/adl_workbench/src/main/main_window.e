@@ -127,9 +127,10 @@ feature {NONE} -- Initialization
 			edit_button.set_pixmap (pixmaps ["edit"])
 			history_back_button.set_pixmap (pixmaps ["history_back"])
 			history_forward_button.set_pixmap (pixmaps ["history_forward"])
+			search_button.set_pixmap (pixmaps ["magnifier"])
 
-			archetype_explorer_pixmap.copy (pixmaps.item("archetype_category"))
-			template_explorer_pixmap.copy (pixmaps.item("template_category"))
+			archetype_explorer_pixmap.copy (pixmaps ["archetype_category"])
+			template_explorer_pixmap.copy (pixmaps ["template_category"])
 
 			set_position (app_x_position, app_y_position)
 
@@ -733,13 +734,13 @@ feature {NONE} -- Help events
 			(create {RELEASE_NOTES_DIALOG}).show_modal_to_window (Current)
 		end
 
-	show_clinical_knowledge_manager is
+	show_clinical_knowledge_manager
 			-- Display CKM in an external browser.
 		do
 			show_in_system_browser (clinical_knowledge_manager_url)
 		end
 
-	show_bug_reporter is
+	show_bug_reporter
 			-- Display the problem reporter in an external browser.
 		do
 			show_in_system_browser (bug_reporter_url)
@@ -760,7 +761,7 @@ feature {NONE} -- Help events
 
 feature -- Archetype commands
 
-	find_archetype_by_key is
+	find_archetype_by_key
 			-- Called by `return_actions' of `archetype_id'.
 		local
 			key: STRING
@@ -792,7 +793,7 @@ feature -- Archetype commands
 			archetype_id.select_actions.resume
 		end
 
-	select_archetype_by_id is
+	select_archetype_by_id
 			-- Called by `select_actions' of `archetype_id'.
 			-- archetype_id.text is guaranteed to be a valid archetype id, and one that is in the current repository
 		do
@@ -806,8 +807,8 @@ feature -- Archetype commands
 			end
 		end
 
-	start_search_by_id (a_x, a_y, a_button: INTEGER; a_x_tilt, a_y_tilt, a_pressure: DOUBLE; a_screen_x, a_screen_y: INTEGER) is
-			-- Called by `pointer_button_press_actions' of `search_icon'.
+	start_search_by_id
+			-- Called by `select_actions' of `search_button'.
 		do
 			archetype_id.wipe_out
 			archetype_id.set_text ("enter search string")

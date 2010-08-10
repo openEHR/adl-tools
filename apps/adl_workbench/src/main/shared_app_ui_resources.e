@@ -159,7 +159,6 @@ feature -- Access
 			Result.force (["template_component_valid_3.ico", Void], "template_component_valid_3")
 			Result.force ([Void, ""], "Gap 1 in the help")
 
-
 			Result.force (["node_normal/c_attribute.ico", "Single-valued attribute (mandatory)"], "C_ATTRIBUTE")
 			Result.force (["node_normal/c_attribute_optional.ico", "Single-valued attribute (optional)"], "C_ATTRIBUTE.optional")
 			Result.force (["node_normal/c_attribute_multiple.ico", "Container attribute (mandatory)"], "C_ATTRIBUTE.multiple")
@@ -275,6 +274,7 @@ feature -- Access
 			Result.force (["edit.ico", Void], "edit")
 			Result.force (["history_back.ico", Void], "history_back")
 			Result.force (["history_forward.ico", Void], "history_forward")
+			Result.force (["magnifier.ico", Void], "magnifier")
 
 			Result.force (["openEHR.png", Void], "openEHR_logo")
 		ensure
