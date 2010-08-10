@@ -382,27 +382,27 @@ feature {NONE} -- Implementation
 		deferred
 		end
 	
-	on_export_html_browse is
+	on_export_html_browse
 			-- Called by `select_actions' of `export_html_browse_button'.
 		deferred
 		end
 	
-	on_test_diff_path_browse is
+	on_test_diff_path_browse
 			-- Called by `select_actions' of `save_diff_path_button'.
 		deferred
 		end
 	
-	on_editor_command_add is
+	on_editor_command_add
 			-- Called by `select_actions' of `editor_command_add_button'.
 		deferred
 		end
 	
-	on_editor_command_browse is
+	on_editor_command_browse
 			-- Called by `select_actions' of `editor_command_browse_button'.
 		deferred
 		end
 	
-	on_ok is
+	on_ok
 			-- Called by `select_actions' of `ok_button'.
 		deferred
 		end

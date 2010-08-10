@@ -82,18 +82,6 @@ feature -- Access
 			create Result.put (350)
 		end
 
-	dialog_padding_width: INTEGER
-			-- `Result' is INTEGER constant named `dialog_padding_width'.
-		do
-			Result := dialog_padding_width_cell.item
-		end
-
-	dialog_padding_width_cell: CELL [INTEGER]
-			--`Result' is once access to a cell holding vale of `dialog_padding_width'.
-		once
-			create Result.put (15)
-		end
-
 	min_combo_box_width: INTEGER
 			-- `Result' is INTEGER constant named `min_combo_box_width'.
 		do
@@ -121,6 +109,23 @@ feature -- Access
 			create a_file_name.make_from_string (icons)
 			a_file_name.set_file_name ("openEHR.ico")
 			set_with_named_file (Result.item, a_file_name)
+		end
+
+	label_font: EV_FONT
+			-- `Result' is EV_FONT constant named `label_font'.
+		do
+			Result := label_font_cell.item
+		end
+
+	label_font_cell: CELL [EV_FONT]
+			--`Result' is once access to a cell holding vale of `label_font'.
+		once
+			create Result.put (create {EV_FONT})
+			Result.item.set_family ({EV_FONT_CONSTANTS}.Family_sans)
+			Result.item.set_weight ({EV_FONT_CONSTANTS}.Weight_bold)
+			Result.item.set_shape ({EV_FONT_CONSTANTS}.Shape_regular)
+			Result.item.set_height_in_points (8)
+			Result.item.preferred_families.extend ("System")
 		end
 
 	status_area_min_height: INTEGER
@@ -207,18 +212,6 @@ feature -- Access
 			create Result.put (600)
 		end
 
-	app_initial_width: INTEGER
-			-- `Result' is INTEGER constant named `app_initial_width'.
-		do
-			Result := app_initial_width_cell.item
-		end
-
-	app_initial_width_cell: CELL [INTEGER]
-			--`Result' is once access to a cell holding vale of `app_initial_width'.
-		once
-			create Result.put (1024)
-		end
-
 	max_arch_explorer_width: INTEGER
 			-- `Result' is INTEGER constant named `max_arch_explorer_width'.
 		do
@@ -277,6 +270,18 @@ feature -- Access
 			--`Result' is once access to a cell holding vale of `tree_control_panel_width'.
 		once
 			create Result.put (100)
+		end
+
+	desc_label_width: INTEGER
+			-- `Result' is INTEGER constant named `desc_label_width'.
+		do
+			Result := desc_label_width_cell.item
+		end
+
+	desc_label_width_cell: CELL [INTEGER]
+			--`Result' is once access to a cell holding vale of `desc_label_width'.
+		once
+			create Result.put (70)
 		end
 
 	app_initial_height: INTEGER
@@ -363,16 +368,16 @@ feature -- Access
 			create Result.put (100)
 		end
 
-	desc_label_width: INTEGER
-			-- `Result' is INTEGER constant named `desc_label_width'.
+	dialog_padding_width: INTEGER
+			-- `Result' is INTEGER constant named `dialog_padding_width'.
 		do
-			Result := desc_label_width_cell.item
+			Result := dialog_padding_width_cell.item
 		end
 
-	desc_label_width_cell: CELL [INTEGER]
-			--`Result' is once access to a cell holding vale of `desc_label_width'.
+	dialog_padding_width_cell: CELL [INTEGER]
+			--`Result' is once access to a cell holding vale of `dialog_padding_width'.
 		once
-			create Result.put (70)
+			create Result.put (15)
 		end
 
 	min_list_height: INTEGER
@@ -476,21 +481,16 @@ feature -- Access
 			create Result.put (4)
 		end
 
-	label_font: EV_FONT
-			-- `Result' is EV_FONT constant named `label_font'.
+	app_initial_width: INTEGER
+			-- `Result' is INTEGER constant named `app_initial_width'.
 		do
-			Result := label_font_cell.item
+			Result := app_initial_width_cell.item
 		end
 
-	label_font_cell: CELL [EV_FONT]
-			--`Result' is once access to a cell holding vale of `label_font'.
+	app_initial_width_cell: CELL [INTEGER]
+			--`Result' is once access to a cell holding vale of `app_initial_width'.
 		once
-			create Result.put (create {EV_FONT})
-			Result.item.set_family ({EV_FONT_CONSTANTS}.Family_sans)
-			Result.item.set_weight ({EV_FONT_CONSTANTS}.Weight_bold)
-			Result.item.set_shape ({EV_FONT_CONSTANTS}.Shape_regular)
-			Result.item.set_height_in_points (8)
-			Result.item.preferred_families.extend ("System")
+			create Result.put (1024)
 		end
 
 feature -- Access

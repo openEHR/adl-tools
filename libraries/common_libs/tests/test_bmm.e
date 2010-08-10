@@ -22,10 +22,19 @@ inherit
 		end
 
 	SHARED_ADL_APPLICATION
+		undefine
+			default_create
+		end
 
 	SHARED_REFERENCE_MODEL_ACCESS
+		undefine
+			default_create
+		end
 
 	SHARED_APP_RESOURCES
+		undefine
+			default_create
+		end
 
 feature {NONE} -- Events
 

@@ -205,42 +205,42 @@ feature {NONE} -- Implementation
 		deferred
 		end
 	
-	select_profile is
+	select_profile
 			-- Called by `select_actions' of `profile_combo_box'.
 		deferred
 		end
 	
-	rename_profile is
+	rename_profile
 			-- Called by `change_actions' of `profile_combo_box'.
 		deferred
 		end
 	
-	add_new_profile is
+	add_new_profile
 			-- Called by `select_actions' of `profile_add_button'.
 		deferred
 		end
 	
-	remove_current_profile is
+	remove_current_profile
 			-- Called by `select_actions' of `profile_remove_button'.
 		deferred
 		end
 	
-	get_reference_repository_path is
+	get_reference_repository_path
 			-- Called by `select_actions' of `repository_dialog_reference_path_browse_button'.
 		deferred
 		end
 	
-	get_work_repository_path is
+	get_work_repository_path
 			-- Called by `select_actions' of `repository_dialog_work_path_button'.
 		deferred
 		end
 	
-	repository_dialog_ok is
+	repository_dialog_ok
 			-- Called by `select_actions' of `repository_dialog_ok_button'.
 		deferred
 		end
 	
-	on_show is
+	on_show
 			-- Called by `show_actions' of `repository_dialog'.
 		deferred
 		end

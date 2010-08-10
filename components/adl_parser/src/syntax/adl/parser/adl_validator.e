@@ -42,7 +42,7 @@ create
 
 feature {NONE} -- Implementation
 
-	yy_build_parser_tables is
+	yy_build_parser_tables
 			-- Build parser tables.
 		do
 			yytranslate := yytranslate_template
@@ -57,19 +57,19 @@ feature {NONE} -- Implementation
 			yycheck := yycheck_template
 		end
 
-	yy_create_value_stacks is
+	yy_create_value_stacks
 			-- Create value stacks.
 		do
 		end
 
-	yy_init_value_stacks is
+	yy_init_value_stacks
 			-- Initialize value stacks.
 		do
 			yyvsp1 := -1
 			yyvsp2 := -1
 		end
 
-	yy_clear_value_stacks is
+	yy_clear_value_stacks
 			-- Clear objects in semantic value stacks so that
 			-- they can be collected by the garbage collector.
 		local
@@ -84,7 +84,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	yy_push_last_value (yychar1: INTEGER) is
+	yy_push_last_value (yychar1: INTEGER)
 			-- Push semantic value associated with token `last_token'
 			-- (with internal id `yychar1') on top of corresponding
 			-- value stack.
@@ -138,7 +138,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	yy_push_error_value is
+	yy_push_error_value
 			-- Push semantic value associated with token 'error'
 			-- on top of corresponding value stack.
 		local
@@ -164,7 +164,7 @@ feature {NONE} -- Implementation
 			yyvs1.put (yyval1, yyvsp1)
 		end
 
-	yy_pop_last_value (yystate: INTEGER) is
+	yy_pop_last_value (yystate: INTEGER)
 			-- Pop semantic value from stack when in state `yystate'.
 		local
 			yy_type_id: INTEGER
@@ -187,7 +187,7 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Semantic actions
 
-	yy_do_action (yy_act: INTEGER) is
+	yy_do_action (yy_act: INTEGER)
 			-- Execute semantic action.
 		local
 			yyval1: ANY
@@ -773,7 +773,7 @@ end
 			end
 		end
 
-	yy_do_error_action (yy_act: INTEGER) is
+	yy_do_error_action (yy_act: INTEGER)
 			-- Execute error action.
 		do
 			inspect yy_act
@@ -788,7 +788,7 @@ end
 
 feature {NONE} -- Table templates
 
-	yytranslate_template: SPECIAL [INTEGER] is
+	yytranslate_template: SPECIAL [INTEGER]
 			-- Template for `yytranslate'
 		once
 			Result := yyfixed_array (<<
@@ -824,7 +824,7 @@ feature {NONE} -- Table templates
 			   15,   16,   17,   18,   19,   20,   21,   22,   23, yyDummy>>)
 		end
 
-	yyr1_template: SPECIAL [INTEGER] is
+	yyr1_template: SPECIAL [INTEGER]
 			-- Template for `yyr1'
 		once
 			Result := yyfixed_array (<<
@@ -834,7 +834,7 @@ feature {NONE} -- Table templates
 			   35,   36,   36,   36,   37,   37, yyDummy>>)
 		end
 
-	yytypes1_template: SPECIAL [INTEGER] is
+	yytypes1_template: SPECIAL [INTEGER]
 			-- Template for `yytypes1'
 		once
 			Result := yyfixed_array (<<
@@ -846,7 +846,7 @@ feature {NONE} -- Table templates
 			    1,    1,    1,    1, yyDummy>>)
 		end
 
-	yytypes2_template: SPECIAL [INTEGER] is
+	yytypes2_template: SPECIAL [INTEGER]
 			-- Template for `yytypes2'
 		once
 			Result := yyfixed_array (<<
@@ -855,7 +855,7 @@ feature {NONE} -- Table templates
 			    1,    1,    1,    1,    1,    1,    1,    1, yyDummy>>)
 		end
 
-	yydefact_template: SPECIAL [INTEGER] is
+	yydefact_template: SPECIAL [INTEGER]
 			-- Template for `yydefact'
 		once
 			Result := yyfixed_array (<<
@@ -867,7 +867,7 @@ feature {NONE} -- Table templates
 			   35,    0,    0,    0, yyDummy>>)
 		end
 
-	yydefgoto_template: SPECIAL [INTEGER] is
+	yydefgoto_template: SPECIAL [INTEGER]
 			-- Template for `yydefgoto'
 		once
 			Result := yyfixed_array (<<
@@ -875,7 +875,7 @@ feature {NONE} -- Table templates
 			    8,   13,   21,   22, yyDummy>>)
 		end
 
-	yypact_template: SPECIAL [INTEGER] is
+	yypact_template: SPECIAL [INTEGER]
 			-- Template for `yypact'
 		once
 			Result := yyfixed_array (<<
@@ -887,7 +887,7 @@ feature {NONE} -- Table templates
 			 -32768,   19,   18, -32768, yyDummy>>)
 		end
 
-	yypgoto_template: SPECIAL [INTEGER] is
+	yypgoto_template: SPECIAL [INTEGER]
 			-- Template for `yypgoto'
 		once
 			Result := yyfixed_array (<<
@@ -895,7 +895,7 @@ feature {NONE} -- Table templates
 			 -32768, -32768, -32768,    6, yyDummy>>)
 		end
 
-	yytable_template: SPECIAL [INTEGER] is
+	yytable_template: SPECIAL [INTEGER]
 			-- Template for `yytable'
 		once
 			Result := yyfixed_array (<<
@@ -906,7 +906,7 @@ feature {NONE} -- Table templates
 			   16,    0,    9, yyDummy>>)
 		end
 
-	yycheck_template: SPECIAL [INTEGER] is
+	yycheck_template: SPECIAL [INTEGER]
 			-- Template for `yycheck'
 		once
 			Result := yyfixed_array (<<
@@ -945,23 +945,23 @@ feature {NONE} -- Semantic value stacks
 
 feature {NONE} -- Constants
 
-	yyFinal: INTEGER is 53
+	yyFinal: INTEGER = 53
 			-- Termination state id
 
-	yyFlag: INTEGER is -32768
+	yyFlag: INTEGER = -32768
 			-- Most negative INTEGER
 
-	yyNtbase: INTEGER is 28
+	yyNtbase: INTEGER = 28
 			-- Number of tokens
 
-	yyLast: INTEGER is 42
+	yyLast: INTEGER = 42
 			-- Upper bound of `yytable' and `yycheck'
 
-	yyMax_token: INTEGER is 278
+	yyMax_token: INTEGER = 278
 			-- Maximum token id
 			-- (upper bound of `yytranslate'.)
 
-	yyNsyms: INTEGER is 42
+	yyNsyms: INTEGER = 42
 			-- Number of symbols
 			-- (terminal and nonterminal)
 

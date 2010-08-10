@@ -35,7 +35,7 @@ inherit
 
 feature -- Definition
 
-	new_profile_dummy: STRING is "new_profile"
+	new_profile_dummy: STRING = "new_profile"
 
 feature {NONE} -- Initialization
 

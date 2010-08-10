@@ -227,7 +227,7 @@ feature -- template routines
 
 	read_initialise
 		do
-            resources.clear_all
+            resources.wipe_out
 		end
 
 	read_finalise

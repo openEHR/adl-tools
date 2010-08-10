@@ -20,6 +20,9 @@ inherit
 	OPENEHR_TEST_SET
 
 	ARCHETYPE_TERM_CODE_TOOLS
+		undefine
+			default_create
+		end
 
 feature {NONE} -- Targets
 

@@ -144,7 +144,8 @@ feature {NONE} -- Implementation
 				col_titles.extend (utf8 (ontology.terminologies_available.item))
 				ontology.terminologies_available.forth
 			end
-			pl.set_column_titles(col_titles)
+
+			pl.set_column_titles (col_titles.to_array)
 
 			-- populate data
 			from ontology.term_codes.start until ontology.term_codes.off loop
@@ -208,7 +209,8 @@ feature {NONE} -- Implementation
 				ontology.terminologies_available.forth
 			end
 
-			pl.set_column_titles(col_titles)
+			pl.set_column_titles (col_titles.to_array)
+
 			from ontology.constraint_codes.start until ontology.constraint_codes.off loop
 				create list_row
 

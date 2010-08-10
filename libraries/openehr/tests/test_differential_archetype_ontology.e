@@ -18,18 +18,18 @@ class
 
 inherit
 	OPENEHR_TEST_SET
-		undefine
-			default_create
+		redefine
+			on_prepare
 		end
 
 	DIFFERENTIAL_ARCHETYPE
-		redefine
+		undefine
 			default_create
 		end
 
 feature {NONE} -- Initialisation
 
-	default_create
+	on_prepare
 			-- Satisfy the invariant of `DIFFERENTIAL_ARCHETYPE'.
 		do
 			make_minimal (create {ARTEFACT_TYPE}, create {ARCHETYPE_ID}, "en", 0)

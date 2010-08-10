@@ -2433,7 +2433,7 @@ feature {NONE} -- Implementation
 			end
 
 			if not Result then
-				abort_with_error(err_code, ar)
+				abort_with_error (err_code, ar.to_array)
 			end
 		end
 

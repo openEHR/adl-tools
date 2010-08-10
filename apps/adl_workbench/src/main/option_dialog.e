@@ -223,7 +223,7 @@ feature {NONE} -- Implementation
 			export_html_text.set_text (get_directory (export_html_text.text.as_string_8, Current))
 		end
 
-	on_test_diff_path_browse is
+	on_test_diff_path_browse
 			-- Called by `select_actions' of `save_diff_path_button'.
 		do
 			save_diff_path_text.set_text (get_directory (save_diff_path_text.text.as_string_8, Current))

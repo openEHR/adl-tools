@@ -23,14 +23,29 @@ inherit
 		end
 
 	SHARED_ADL_APPLICATION
+		undefine
+			default_create
+		end
 
 	SHARED_KNOWLEDGE_REPOSITORY
+		undefine
+			default_create
+		end
 
 	SHARED_SOURCE_REPOSITORIES
+		undefine
+			default_create
+		end
 
 	SHARED_ARCHETYPE_COMPILER
+		undefine
+			default_create
+		end
 
 	SHARED_APP_RESOURCES
+		undefine
+			default_create
+		end
 
 feature {NONE} -- Events
 
@@ -72,8 +87,6 @@ feature -- Test routines
 			-- Check that the expected errors occur when building the validation test archetypes.
 		note
 			testing: "covers/{ARCHETYPE_DIRECTORY}.populate"
-		local
-			expected: STRING
 		do
 			set_status_reporting_level (message_type_error)
 			source_repositories.set_reference_repository (test_repository)
