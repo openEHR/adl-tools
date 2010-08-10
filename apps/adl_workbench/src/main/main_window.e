@@ -780,6 +780,10 @@ feature -- Archetype commands
 					matching_ids := arch_dir.matching_ids (regex_from_string(key), Void, Void)
 					if matching_ids.count > 0 then
 						archetype_id.set_strings (matching_ids)
+
+						if attached {EV_COMBO_BOX_IMP} archetype_id.implementation as imp then
+							(create {GUI_PLATFORM_SPECIFIC_TOOLS}).show_combo_box_list (imp)
+						end
 					else
 						-- discrete visual feedback for no match?
 					end
