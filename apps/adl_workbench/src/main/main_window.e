@@ -813,6 +813,7 @@ feature -- Archetype commands
 			archetype_id.wipe_out
 			archetype_id.set_text ("enter search string")
 			archetype_id.set_focus
+			archetype_id.select_all
 		end
 
 	archetype_view_tree_item_select
