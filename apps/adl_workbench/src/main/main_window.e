@@ -782,6 +782,9 @@ feature -- Archetype commands
 					else
 						-- discrete visual feedback for no match?
 					end
+					if archetype_id.count = 1 then
+						select_archetype_by_id
+					end
 				else -- key too short
 					-- visual feedback?
 				end
