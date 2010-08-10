@@ -775,7 +775,7 @@ feature -- Archetype commands
 				create arch_id.default_create
 				if arch_id.valid_id (key) then
 					select_archetype_by_id
-				elseif key.count > 3 then
+				elseif key.count >= 3 then
 					 -- it is a partial id, get a list of candidates
 					matching_ids := arch_dir.matching_ids (regex_from_string(key), Void, Void)
 					if matching_ids.count > 0 then
