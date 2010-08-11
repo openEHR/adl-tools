@@ -12,11 +12,17 @@ AUTHORS
 CONTENTS
 	ADL viewer, parser & tester application
 
-DIRECTORIES
-	$INSTALL/adl_workbench/bin:
-		adl_workbench.exe - GUI ADL viewer
+DIRECTORIES AND FILES
+	adl_workbench executable:
+		GUI ADL viewer.
 
-	$INSTALL/adl_workbench/etc/vim:
+	icons:
+		icons used by the the adl_workbench executable.
+
+	rm_schemas:
+		Reference Model schema definitions.
+
+	vim:
 		(for vi fans only...) files for adding ADL to the vim/gvim editor.
 
 		- The adl.vim file goes in the $VIM/syntax directory;
@@ -30,14 +36,14 @@ DIRECTORIES
 
 PURPOSE
 	At the moment, you can hand-write new ADL files, or use one of the
-	open source editors available (Ocean .Net Archetype Editor, Linköping
+	open source editors available (Ocean .NET Archetype Editor, Linköping
 	Java Editor; the same Eiffel parser is used in the first of these as
-	is used in the Archetype Workbench).
+	is used in the ADL Workbench).
 
-	The parser provides a syntax checking and semantic validation on 
+	The parser provides syntax checking and semantic validation on 
 	ADL archetypes according to the draft ADL 1.5 specification. All errors
 	are coded, and can be looked up in the specification. See 
-	http://www.openehr.org/svn/specification/TRUNK/publishing/architecture/am/adl.pdf.
+	http://www.openehr.org/svn/specification/TRUNK/publishing/architecture/am/adl1.5.pdf.
 
 	The workbench can serialise into ADL and HTML.
 
@@ -47,14 +53,13 @@ PURPOSE
 	users.
 
 SETUP
-	Make sure you have the openEHR Archetype library installed first (see
-	link above for Knowledge repository)
+	Make sure you have an archetype repository installed.
 
-	Double-click the adl_workbench.exe file.  The GUI ADL workbench
-	tool should appear. See
-	http://www.openehr.org/svn/ref_impl_eiffel/BRANCHES/specialisation/apps/doc/adl_workbench_help.htm 
-	for instructions on using the tool
+	Double-click the adl_workbench executable file.  The GUI ADL workbench
+	tool should appear.
+
+	For instructions on using the tool, see
+	http://www.openehr.org/svn/ref_impl_eiffel/BRANCHES/specialisation/apps/doc/web/index.html 
 
 FEEDBACK
-	Software support: currently via the openEHR-technical list, until we
-	transfer the Ocean AWB Jira project to Jira on openEHR.org.
+	Software support: In the Help menu, click "Report a Bug".

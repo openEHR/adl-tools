@@ -1,8 +1,8 @@
 ADL WORKBENCH Release Notes
 ===========================
 
----------- 01 August 2010 ADL/AOM 1.5 beta release ----------
-SVN http://www.openehr.org/svn/ref_impl_eiffel/BRANCHES/specialisation - rev 1040
+---------- 11 August 2010 ADL/AOM 1.5 beta release ----------
+SVN http://www.openehr.org/svn/ref_impl_eiffel/BRANCHES/specialisation - rev 1104
 
 NEW in this release
 	o Support for 90% of ADL 1.5 specification, including validity codes
@@ -18,8 +18,7 @@ NEW in this release
 	o user preferences file now in correct operating system location (e.g. Users/<user>/appdata on Windows 7)
 
 
-See http://www.openehr.org/svn/ref_impl_eiffel/BRANCHES/specialisation/apps/doc/adl_workbench_help.htm 
-for help.
+See http://www.openehr.org/svn/ref_impl_eiffel/BRANCHES/specialisation/apps/doc/web/index.html for help.
 
 For archetypes see:
 	o CKM - http://www.openehr.org/knowledge ; login and choose Export archive option

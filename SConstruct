@@ -68,13 +68,15 @@ for target in COMMAND_LINE_TARGETS:
 
 if distrib and len(adl_workbench) > 0:
 	release_notes = 'apps/adl_workbench/app/release_notes.txt'
+	readme = 'apps/doc/README-adl_workbench.txt'
+	license = 'apps/doc/LICENSE.txt'
 	xsl = 'apps/adl_workbench/app/ArchetypeRepositoryReport.xsl'
 	css = 'apps/adl_workbench/app/ArchetypeRepositoryReport.css'
 	icons = 'apps/adl_workbench/app/icons'
 	rm_schemas = 'apps/adl_workbench/app/rm_schemas'
 	vim = 'apps/adl_workbench/etc/vim'
 	install = 'apps/adl_workbench/install/' + platform
-	adl_workbench_installer_sources = [adl_workbench[0], release_notes, xsl, css]
+	adl_workbench_installer_sources = [adl_workbench[0], release_notes, readme, license, xsl, css]
 
 	for dir in [icons, rm_schemas, vim, install]:
 		for source, dirnames, filenames in os.walk(dir):
@@ -101,7 +103,7 @@ if distrib and len(adl_workbench) > 0:
 			import tarfile
 			tar = tarfile.open(str(target[0]), 'w:bz2')
 
-			for src in [str(adl_workbench[0]), release_notes, xsl, css]:
+			for src in [str(adl_workbench[0]), release_notes, readme, license, xsl, css]:
 				tar.add(src, os.path.basename(src))
 
 			for root in [icons, rm_schemas, vim]:
@@ -141,12 +143,12 @@ if distrib and len(adl_workbench) > 0:
 				copy_tree(install, distrib)
 				copy_tree(vim, pkg_contents)
 
-				for src in [str(adl_workbench[0]), release_notes, xsl, css, icons, rm_schemas]:
+				for src in [str(adl_workbench[0]), release_notes, readme, license, xsl, css, icons, rm_schemas]:
 					copy_tree(src, pkg_contents + '/ADL Workbench.app/Contents/Resources/')
 
 				shutil.copy2(release_notes, pkg_resources + '/Welcome.txt')
 
-				for html, txt in [['ReadMe.html', 'README-adl_workbench.txt'], ['License.html', 'LICENSE.txt']]:
+				for html, txt in [['ReadMe.html', readme], ['License.html', license]]:
 					substitutions = 's|\&|\&amp;|;'
 					substitutions += 's|\<|\&lt;|;'
 					substitutions += 's|\>|\&gt;|;'
@@ -155,7 +157,7 @@ if distrib and len(adl_workbench) > 0:
 					substitutions += 's|^$|<br><br>|;'
 					substitutions += 's|^-+$||'
 					f = open(pkg_resources + '/' + html, 'w')
-					f.write(os.popen('sed -E \'' + substitutions + '\' apps/doc/' + txt).read())
+					f.write(os.popen('sed -E \'' + substitutions + '\' ' + txt).read())
 					f.close()
 
 			pkg_name = ''
