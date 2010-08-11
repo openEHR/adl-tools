@@ -2,7 +2,7 @@ ADL WORKBENCH Release Notes
 ===========================
 
 ---------- 11 August 2010 ADL/AOM 1.5 beta release ----------
-SVN http://www.openehr.org/svn/ref_impl_eiffel/BRANCHES/specialisation - rev 1104
+SVN http://www.openehr.org/svn/ref_impl_eiffel/BRANCHES/specialisation - rev 1105
 
 NEW in this release
 	o Support for 90% of ADL 1.5 specification, including validity codes

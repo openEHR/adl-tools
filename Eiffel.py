@@ -225,6 +225,8 @@ def ecf_scanner(node, env, path):
 				else:
 					print '****** WARNING!', str(node), 'uses undefined environment variable', token
 
+		result = result.replace('\\', '/')
+
 		if not os.path.isabs(result):
 			result = os.path.join(os.path.dirname(str(node)), result)
 
