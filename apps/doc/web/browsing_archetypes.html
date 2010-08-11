@@ -1,6 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
   <head>
     <title>AWB browsing help</title>
     <meta content="text/html; charset=unicode" http-equiv="Content-Type"/>
@@ -175,17 +175,16 @@
               </tbody>
             </table>
           </div>
-		  <p>Paths are crucial to manipulating archetypes at runtime, and also to building queries. The path syntax is a slightly reduced form of XPath syntax, and can be converted to standard XPath for XML-based processing.</p>
-<p>For specialised archetypes, the Path Map under the differential view shows only paths in structures introduced in the specialised archetype, while the path map in the flat view shows paths due to all inherited nodes as well.</p>
-
-<p>The columns of the display can be controlled using the check boxes on the right, and are as follows:</p>
-<ul>
-<li>physical paths: paths containing [atnnnn] codes, used by the software</li>
-<li>logical paths: paths with [atnnnn] codes replaced by the human-readable values from the ontology</li>
-<li>RM Type: the Reference Model type constrained by the node corresponding to the displayed path</li>
-<li>AOM Type: Archetype Object Model type - this is the type of the archetype node, usually only of interest to implementers</li>
-</ul>
-<p>Paths can be selected and saved to the clipboard for use in other tools, by selecting rows (including multiple rows, by using the Ctrl key) and then using Ctrl+C (copy) to copy to the clipboard. The clipboard contents can be viewed from the Edit menu.</p>
+          <p>Paths are crucial to manipulating archetypes at runtime, and also to building queries. The path syntax is a slightly reduced form of XPath syntax, and can be converted to standard XPath for XML-based processing.</p>
+          <p>For specialised archetypes, the Path Map under the differential view shows only paths in structures introduced in the specialised archetype, while the path map in the flat view shows paths due to all inherited nodes as well.</p>
+          <p>The columns of the display can be controlled using the check boxes on the right, and are as follows:</p>
+          <ul>
+            <li value="0">physical paths: paths containing [atnnnn] codes, used by the software </li>
+            <li value="0">logical paths: paths with [atnnnn] codes replaced by the human-readable values from the ontology </li>
+            <li value="0">RM Type: the Reference Model type constrained by the node corresponding to the displayed path </li>
+            <li value="0">AOM Type: Archetype Object Model type - this is the type of the archetype node, usually only of interest to implementers </li>
+          </ul>
+          <p>Paths can be selected and saved to the clipboard for use in other tools, by selecting rows (including multiple rows, by using the Ctrl key) and then using Ctrl+C (copy) to copy to the clipboard. The clipboard contents can be viewed from the Edit menu.</p>
           <h3>Slot map</h3>
           <p>Some archetypes contain slots, which are joining points to other archetypes. A slot is defined as a constraint that specifies the <i>possible</i> archetypes that may be used at this point. We can think of the archetypes that could fill the slot as 'suppliers', i.e. archetypes that this archetype uses, and archetypes having slots which the current archetype matches as 'clients'. The ADL Workbench evaluates the slots and displays both of these lists, as shown below.</p>
           <a href="images/slots_1.png">
@@ -199,6 +198,49 @@
           <a href="images/source_1.png">
             <img border="0" src="images/tn_source_1.jpg" width="200" height="173"/> </a>
         </div>
-      </div><!--#include FILE="nav_footer_contents.html" --></div>
+      </div>    <div id="navigation">
+      <h2>Contents</h2>
+      <ul>
+        <li value="0">
+          <a href="index.html">Home</a> </li>
+        <li value="0">
+          <a href="getting_started.html">Getting started</a> </li>
+        <li value="0">
+          <a href="browsing_archetypes.html">Browsing and compiling</a> </li>
+        <li value="0">
+          <a href="learning_adl_15.html">Learning about ADL 1.5</a> </li>
+        <li value="0">
+          <a href="templates.html">Working with templates</a> </li>
+        <li value="0">
+          <a href="test_tool.html">The test tool</a> </li>
+        <li value="0">
+          <a href="en13606.html">EN13606</a> </li>
+        <li value="0">
+          <a href="support.html">Support and contributing</a> </li>
+      </ul>
+    </div><!--       <div id="extra">
+	<h2>XXXXXX</h2>
+	<p>xxxxx.</p>
+</div> --><div id="footer">
+      <ul>
+        <li value="0">
+          <a href="index.html">Home</a> </li>
+        <li value="0">
+          <a href="getting_started.html">Getting started</a> </li>
+        <li value="0">
+          <a href="browsing_archetypes.html">Browsing and compiling</a> </li>
+        <li value="0">
+          <a href="learning_adl_15.html">Learning about ADL 1.5</a> </li>
+        <li value="0">
+          <a href="templates.html">Working with templates</a> </li>
+        <li value="0">
+          <a href="test_tool.html">The test tool</a> </li>
+        <li value="0">
+          <a href="en13606.html">EN13606</a> </li>
+        <li value="0">
+          <a href="support.html">Support and contributing</a> </li>
+      </ul>
+      <p>Copyright 2010 openEHR Foundation - $LastChangedDate$ $LastChangedRevision$</p>
+    </div></div>
   </body>
 </html>
