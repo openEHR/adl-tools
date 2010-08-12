@@ -899,6 +899,8 @@ feature -- Modification
 					if differential_text = Void then
 						differential_text := adl_engine.serialise(differential_archetype, serialise_format)
 					end
+					-- replace the extension because we want it to be clear that it is a source file; but maybe the caller should just
+					-- be trusted?
 					file_repository.save_text_to_file (extension_replaced (a_full_path, archetype_source_file_extension), differential_text)
 				else
 					file_repository.save_text_to_file (a_full_path, adl_engine.serialise(differential_archetype, serialise_format))
@@ -928,7 +930,11 @@ feature -- Modification
 		do
 			save_succeeded := False
 			if not exception_encountered then
-				file_repository.save_text_to_file (a_full_path, flat_text)
+				if serialise_format.same_string (Archetype_native_syntax) then
+					file_repository.save_text_to_file (a_full_path, flat_text)
+				else
+					file_repository.save_text_to_file (a_full_path, adl_engine.serialise(flat_archetype, serialise_format))
+				end
 				save_succeeded := True
 			else
 				post_error (Current, "save_flat_as", "save_archetype_e3", Void)
