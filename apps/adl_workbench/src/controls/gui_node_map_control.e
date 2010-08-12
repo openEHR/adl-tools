@@ -888,15 +888,11 @@ feature {NONE} -- Implementation
 			create Result.make(0)
 			Result.append ("C_ATTRIBUTE")
 			if c_attr.is_multiple then
-				if c_attr.cardinality = Void or else c_attr.cardinality.interval.lower = 0 then
-					Result.append (".multiple.optional")
-				else
-					Result.append (".multiple")
-				end
-			else
-				if c_attr.existence = Void or else c_attr.existence.lower = 0 then
-					Result.append (".optional")
-				end
+				Result.append (".multiple")
+			end
+
+			if c_attr.existence = Void or else c_attr.existence.lower = 0 then
+				Result.append (".optional")
 			end
 		end
 
