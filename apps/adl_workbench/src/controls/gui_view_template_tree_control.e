@@ -85,19 +85,6 @@ feature -- Commands
 			lpos: INTEGER
 			s: STRING
 		do
-			-- update explorer label with RM name
-			s := explorer_label.text
-			lpos := s.index_of ('-', 1)
-			if lpos = 0 then
-				s.append (" -")
-				lpos := s.count
-			else
-				s.remove_substring (lpos+1, s.count)
-			end
-			s.append_character (' ')
-			s.append (current_repository_profile)
-			explorer_label.set_text (s)
-
 			-- update tree
 			create gui_node_descriptor_map.make(0)
 			gui_tree.wipe_out

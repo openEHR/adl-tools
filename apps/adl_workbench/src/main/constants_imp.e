@@ -94,21 +94,21 @@ feature -- Access
 			create Result.put (60)
 		end
 
-	adl_workbench_ico: EV_PIXMAP
-			-- `Result' is EV_PIXMAP constant named `adl_workbench_ico'.
+	label_font: EV_FONT
+			-- `Result' is EV_FONT constant named `label_font'.
 		do
-			Result := adl_workbench_ico_cell.item
+			Result := label_font_cell.item
 		end
 
-	adl_workbench_ico_cell: CELL [EV_PIXMAP]
-			--`Result' is once access to a cell holding vale of `adl_workbench_ico'.
-		local
-			a_file_name: FILE_NAME
+	label_font_cell: CELL [EV_FONT]
+			--`Result' is once access to a cell holding vale of `label_font'.
 		once
-			create Result.put (create {EV_PIXMAP})
-			create a_file_name.make_from_string (icons)
-			a_file_name.set_file_name ("openEHR.ico")
-			set_with_named_file (Result.item, a_file_name)
+			create Result.put (create {EV_FONT})
+			Result.item.set_family ({EV_FONT_CONSTANTS}.Family_sans)
+			Result.item.set_weight ({EV_FONT_CONSTANTS}.Weight_bold)
+			Result.item.set_shape ({EV_FONT_CONSTANTS}.Shape_regular)
+			Result.item.set_height_in_points (8)
+			Result.item.preferred_families.extend ("System")
 		end
 
 	status_area_min_height: INTEGER
@@ -159,16 +159,16 @@ feature -- Access
 			create Result.put (2000)
 		end
 
-	dialog_padding_width: INTEGER
-			-- `Result' is INTEGER constant named `dialog_padding_width'.
+	max_terms_height: INTEGER
+			-- `Result' is INTEGER constant named `max_terms_height'.
 		do
-			Result := dialog_padding_width_cell.item
+			Result := max_terms_height_cell.item
 		end
 
-	dialog_padding_width_cell: CELL [INTEGER]
-			--`Result' is once access to a cell holding vale of `dialog_padding_width'.
+	max_terms_height_cell: CELL [INTEGER]
+			--`Result' is once access to a cell holding vale of `max_terms_height'.
 		once
-			create Result.put (15)
+			create Result.put (400)
 		end
 
 	min_terms_status_height: INTEGER
@@ -195,18 +195,6 @@ feature -- Access
 			create Result.put (600)
 		end
 
-	app_initial_width: INTEGER
-			-- `Result' is INTEGER constant named `app_initial_width'.
-		do
-			Result := app_initial_width_cell.item
-		end
-
-	app_initial_width_cell: CELL [INTEGER]
-			--`Result' is once access to a cell holding vale of `app_initial_width'.
-		once
-			create Result.put (1024)
-		end
-
 	max_arch_explorer_width: INTEGER
 			-- `Result' is INTEGER constant named `max_arch_explorer_width'.
 		do
@@ -217,18 +205,6 @@ feature -- Access
 			--`Result' is once access to a cell holding vale of `max_arch_explorer_width'.
 		once
 			create Result.put (180)
-		end
-
-	max_terms_height: INTEGER
-			-- `Result' is INTEGER constant named `max_terms_height'.
-		do
-			Result := max_terms_height_cell.item
-		end
-
-	max_terms_height_cell: CELL [INTEGER]
-			--`Result' is once access to a cell holding vale of `max_terms_height'.
-		once
-			create Result.put (400)
 		end
 
 	editable_colour: EV_COLOR
@@ -279,6 +255,18 @@ feature -- Access
 			create Result.put (100)
 		end
 
+	desc_label_width: INTEGER
+			-- `Result' is INTEGER constant named `desc_label_width'.
+		do
+			Result := desc_label_width_cell.item
+		end
+
+	desc_label_width_cell: CELL [INTEGER]
+			--`Result' is once access to a cell holding vale of `desc_label_width'.
+		once
+			create Result.put (70)
+		end
+
 	app_initial_height: INTEGER
 			-- `Result' is INTEGER constant named `app_initial_height'.
 		do
@@ -315,16 +303,16 @@ feature -- Access
 			create Result.put (35)
 		end
 
-	app_max_height: INTEGER
-			-- `Result' is INTEGER constant named `app_max_height'.
+	app_min_width: INTEGER
+			-- `Result' is INTEGER constant named `app_min_width'.
 		do
-			Result := app_max_height_cell.item
+			Result := app_min_width_cell.item
 		end
 
-	app_max_height_cell: CELL [INTEGER]
-			--`Result' is once access to a cell holding vale of `app_max_height'.
+	app_min_width_cell: CELL [INTEGER]
+			--`Result' is once access to a cell holding vale of `app_min_width'.
 		once
-			create Result.put (2000)
+			create Result.put (500)
 		end
 
 	main_vbox_min_height: INTEGER
@@ -363,16 +351,16 @@ feature -- Access
 			create Result.put (100)
 		end
 
-	desc_label_width: INTEGER
-			-- `Result' is INTEGER constant named `desc_label_width'.
+	dialog_padding_width: INTEGER
+			-- `Result' is INTEGER constant named `dialog_padding_width'.
 		do
-			Result := desc_label_width_cell.item
+			Result := dialog_padding_width_cell.item
 		end
 
-	desc_label_width_cell: CELL [INTEGER]
-			--`Result' is once access to a cell holding vale of `desc_label_width'.
+	dialog_padding_width_cell: CELL [INTEGER]
+			--`Result' is once access to a cell holding vale of `dialog_padding_width'.
 		once
-			create Result.put (70)
+			create Result.put (15)
 		end
 
 	min_list_height: INTEGER
@@ -387,16 +375,16 @@ feature -- Access
 			create Result.put (50)
 		end
 
-	app_min_width: INTEGER
-			-- `Result' is INTEGER constant named `app_min_width'.
+	app_max_height: INTEGER
+			-- `Result' is INTEGER constant named `app_max_height'.
 		do
-			Result := app_min_width_cell.item
+			Result := app_max_height_cell.item
 		end
 
-	app_min_width_cell: CELL [INTEGER]
-			--`Result' is once access to a cell holding vale of `app_min_width'.
+	app_max_height_cell: CELL [INTEGER]
+			--`Result' is once access to a cell holding vale of `app_max_height'.
 		once
-			create Result.put (500)
+			create Result.put (2000)
 		end
 
 	arch_tree_min_width: INTEGER
@@ -420,7 +408,7 @@ feature -- Access
 	min_entry_control_width_cell: CELL [INTEGER]
 			--`Result' is once access to a cell holding vale of `min_entry_control_width'.
 		once
-			create Result.put (200)
+			create Result.put (150)
 		end
 
 	list_row_height: INTEGER
@@ -447,6 +435,47 @@ feature -- Access
 			create Result.put (4)
 		end
 
+	border_width: INTEGER
+			-- `Result' is INTEGER constant named `border_width'.
+		do
+			Result := border_width_cell.item
+		end
+
+	border_width_cell: CELL [INTEGER]
+			--`Result' is once access to a cell holding vale of `border_width'.
+		once
+			create Result.put (4)
+		end
+
+	app_initial_width: INTEGER
+			-- `Result' is INTEGER constant named `app_initial_width'.
+		do
+			Result := app_initial_width_cell.item
+		end
+
+	app_initial_width_cell: CELL [INTEGER]
+			--`Result' is once access to a cell holding vale of `app_initial_width'.
+		once
+			create Result.put (1024)
+		end
+
+	adl_workbench_ico: EV_PIXMAP
+			-- `Result' is EV_PIXMAP constant named `adl_workbench_ico'.
+		do
+			Result := adl_workbench_ico_cell.item
+		end
+
+	adl_workbench_ico_cell: CELL [EV_PIXMAP]
+			--`Result' is once access to a cell holding vale of `adl_workbench_ico'.
+		local
+			a_file_name: FILE_NAME
+		once
+			create Result.put (create {EV_PIXMAP})
+			create a_file_name.make_from_string (icons)
+			a_file_name.set_file_name ("openEHR.ico")
+			set_with_named_file (Result.item, a_file_name)
+		end
+
 	ontology_category_ico: EV_PIXMAP
 			-- `Result' is EV_PIXMAP constant named `ontology_category_ico'.
 		do
@@ -462,35 +491,6 @@ feature -- Access
 			create a_file_name.make_from_string (icons)
 			a_file_name.set_file_name ("ontology_category.ico")
 			set_with_named_file (Result.item, a_file_name)
-		end
-
-	border_width: INTEGER
-			-- `Result' is INTEGER constant named `border_width'.
-		do
-			Result := border_width_cell.item
-		end
-
-	border_width_cell: CELL [INTEGER]
-			--`Result' is once access to a cell holding vale of `border_width'.
-		once
-			create Result.put (4)
-		end
-
-	label_font: EV_FONT
-			-- `Result' is EV_FONT constant named `label_font'.
-		do
-			Result := label_font_cell.item
-		end
-
-	label_font_cell: CELL [EV_FONT]
-			--`Result' is once access to a cell holding vale of `label_font'.
-		once
-			create Result.put (create {EV_FONT})
-			Result.item.set_family ({EV_FONT_CONSTANTS}.Family_sans)
-			Result.item.set_weight ({EV_FONT_CONSTANTS}.Weight_bold)
-			Result.item.set_shape ({EV_FONT_CONSTANTS}.Shape_regular)
-			Result.item.set_height_in_points (8)
-			Result.item.preferred_families.extend ("System")
 		end
 
 feature -- Access

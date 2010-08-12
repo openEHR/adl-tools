@@ -16,7 +16,7 @@ deferred class
 inherit
 	EV_TITLED_WINDOW
 		redefine
-			initialize, is_in_default_state
+			create_interface_objects, initialize, is_in_default_state
 		end
 			
 	CONSTANTS
@@ -33,219 +33,7 @@ feature {NONE}-- Initialization
 		do
 			Precursor {EV_TITLED_WINDOW}
 			initialize_constants
-			
-				-- Create all widgets.
-			create menu
-			create file_menu
-			create file_menu_open
-			create file_menu_parse
-			create file_menu_edit
-			create l_ev_menu_separator_1
-			create file_menu_save_as
-			create l_ev_menu_separator_2
-			create file_menu_exit
-			create edit_menu
-			create edit_menu_copy
-			create edit_menu_select_all
-			create l_ev_menu_separator_3
-			create edit_menu_clipboard
-			create repository_menu
-			create repository_menu_set_repository
-			create l_ev_menu_separator_4
-			create repository_menu_build_all
-			create repository_menu_rebuild_all
-			create l_ev_menu_separator_5
-			create repository_menu_build_subtree
-			create repository_menu_rebuild_subtree
-			create l_ev_menu_separator_6
-			create repository_menu_export_html
-			create repository_menu_export_repository_report
-			create l_ev_menu_separator_7
-			create repository_menu_interrupt_build
-			create l_ev_menu_separator_8
-			create repository_menu_refresh
-			create history_menu
-			create history_menu_back
-			create history_menu_forward
-			create history_menu_separator
-			create tools_menu
-			create tools_menu_clean_generated_files
-			create tools_menu_reload_schemas
-			create l_ev_menu_separator_9
-			create tools_menu_options
-			create help_menu
-			create help_menu_contents
-			create help_menu_release_notes
-			create help_menu_icons
-			create l_ev_menu_separator_10
-			create help_menu_clinical_knowledge_manager
-			create help_menu_report_bug
-			create help_menu_about
-			create main_notebook
-			create viewer_vbox
-			create action_bar
-			create l_ev_tool_bar_1
-			create open_button
-			create parse_button
-			create edit_button
-			create l_ev_tool_bar_separator_1
-			create history_back_button
-			create l_ev_tool_bar_separator_2
-			create history_forward_button
-			create l_ev_horizontal_box_1
-			create archetype_id
-			create l_ev_tool_bar_4
-			create search_button
-			create adl_version_label
-			create adl_version_text
-			create language_label
-			create language_combo
-			create explorer_split_area
-			create archetype_template_split_area
-			create l_ev_vertical_box_1
-			create l_ev_horizontal_box_2
-			create archetype_explorer_pixmap
-			create archetype_explorer_label
-			create archetype_file_tree
-			create l_ev_vertical_box_2
-			create l_ev_horizontal_box_3
-			create template_explorer_pixmap
-			create template_explorer_label
-			create template_file_tree
-			create total_split_area
-			create archetype_notebook
-			create description_box
-			create author_lang_term_hbox
-			create arch_desc_auth_frame
-			create l_ev_horizontal_box_4
-			create arch_desc_auth_hbox
-			create arch_desc_auth_orig_auth_label
-			create arch_desc_auth_orig_auth_mlist
-			create l_ev_vertical_box_3
-			create arch_desc_status_hbox
-			create arch_desc_status_label
-			create arch_desc_status_text
-			create arch_desc_original_language_label
-			create arch_desc_original_language_text
-			create arch_desc_contrib_hbox
-			create arch_desc_auth_contrib_label
-			create arch_desc_auth_contrib_list
-			create term_frame
-			create l_ev_horizontal_box_5
-			create terminology_vbox
-			create terminologies_list
-			create arch_translations_frame
-			create l_ev_horizontal_box_6
-			create lang_vbox
-			create arch_translations_languages_label
-			create arch_translations_languages_list
-			create l_ev_vertical_box_4
-			create l_ev_label_1
-			create arch_translations_author_mlist
-			create l_ev_label_2
-			create arch_translations_accreditation_text
-			create l_ev_vertical_box_5
-			create l_ev_label_3
-			create arch_translations_other_details_mlist
-			create arch_desc_details_frame
-			create arch_desc_details_hbox
-			create l_ev_vertical_box_6
-			create l_ev_horizontal_box_7
-			create arch_desc_purpose_label
-			create arch_desc_purpose_text
-			create l_ev_horizontal_box_8
-			create arch_desc_use_label
-			create arch_desc_use_text
-			create l_ev_horizontal_box_9
-			create arch_desc_misuse_label
-			create arch_desc_misuse_text
-			create l_ev_vertical_box_7
-			create arch_desc_keywords_label
-			create arch_desc_keywords_list
-			create arch_desc_resource_frame
-			create l_ev_vertical_box_8
-			create l_ev_horizontal_box_10
-			create arch_desc_resource_package_label
-			create arch_desc_resource_package_text
-			create l_ev_horizontal_box_11
-			create arch_desc_resource_orig_res_label
-			create arch_desc_resource_orig_res_mlist
-			create arch_desc_copyright_hbox
-			create arch_desc_copyright_label
-			create arch_desc_copyright_text
-			create differential_view_box
-			create definition_notebook
-			create node_map
-			create node_map_tree
-			create node_map_contols
-			create node_map_expand_button
-			create node_map_expand_one_button
-			create node_map_collapse_one_button
-			create l_ev_cell_1
-			create rm_visibility_controls
-			create l_ev_vertical_box_9
-			create node_map_domain_radio_button
-			create node_map_technical_radio_button
-			create node_map_reference_model_radio_button
-			create path_analysis
-			create path_analysis_multi_column_list
-			create l_ev_vertical_box_10
-			create l_ev_frame_1
-			create l_ev_vertical_box_11
-			create path_analysis_row_filter_combo_box
-			create l_ev_frame_2
-			create l_ev_vertical_box_12
-			create path_analysis_column_view_checkable_list
-			create source_rich_text
-			create terminology_area
-			create l_ev_vertical_split_area_1
-			create term_definitions_frame
-			create ontology_term_definitions_multi_column_list
-			create constraint_definitions_frame
-			create ontology_constraint_definitions_multi_column_list
-			create flat_view_box
-			create slots_box
-			create l_ev_frame_3
-			create l_ev_vertical_box_13
-			create slots_tree
-			create l_ev_frame_4
-			create l_ev_vertical_box_14
-			create used_by_tree
-			create status_notebook
-			create parser_status_area
-			create compiler_output_grid
-			create statistics_box
-			create l_ev_vertical_box_15
-			create l_ev_horizontal_box_12
-			create l_ev_label_4
-			create arch_total_count_tf
-			create l_ev_horizontal_box_13
-			create l_ev_label_5
-			create arch_spec_count_tf
-			create l_ev_horizontal_box_14
-			create l_ev_label_6
-			create arch_slotted_count_tf
-			create l_ev_horizontal_box_15
-			create l_ev_label_7
-			create arch_used_by_count_tf
-			create l_ev_horizontal_box_16
-			create l_ev_label_8
-			create arch_bad_count_tf
-			create l_ev_frame_5
-			create terminology_bindings_info_list
-			create test_split_area
-			create l_ev_horizontal_box_17
-			create archetype_test_tree_grid
-			create l_ev_vertical_box_16
-			create remove_unused_codes_rb
-			create arch_test_tree_toggle_expand_bn
-			create arch_test_refresh_bn
-			create l_ev_horizontal_box_18
-			create l_ev_label_9
-			create arch_test_processed_count
-			create l_ev_horizontal_separator_1
-			create archetype_test_go_bn
-			create test_status_area
+
 			
 				-- Build widget structure.
 			set_menu_bar (menu)
@@ -319,6 +107,7 @@ feature {NONE}-- Initialization
 			l_ev_vertical_box_1.extend (l_ev_horizontal_box_2)
 			l_ev_horizontal_box_2.extend (archetype_explorer_pixmap)
 			l_ev_horizontal_box_2.extend (archetype_explorer_label)
+			l_ev_horizontal_box_2.extend (archetype_profile_combo)
 			l_ev_vertical_box_1.extend (archetype_file_tree)
 			archetype_template_split_area.extend (l_ev_vertical_box_2)
 			l_ev_vertical_box_2.extend (l_ev_horizontal_box_3)
@@ -459,20 +248,7 @@ feature {NONE}-- Initialization
 			l_ev_vertical_box_16.extend (l_ev_horizontal_separator_1)
 			l_ev_vertical_box_16.extend (archetype_test_go_bn)
 			test_split_area.extend (test_status_area)
-			
-			create string_constant_set_procedures.make (10)
-			create string_constant_retrieval_functions.make (10)
-			create integer_constant_set_procedures.make (10)
-			create integer_constant_retrieval_functions.make (10)
-			create pixmap_constant_set_procedures.make (10)
-			create pixmap_constant_retrieval_functions.make (10)
-			create integer_interval_constant_retrieval_functions.make (10)
-			create integer_interval_constant_set_procedures.make (10)
-			create font_constant_set_procedures.make (10)
-			create font_constant_retrieval_functions.make (10)
-			create pixmap_constant_retrieval_functions.make (10)
-			create color_constant_set_procedures.make (10)
-			create color_constant_retrieval_functions.make (10)
+
 			file_menu.set_text ("&File")
 			file_menu_open.set_text ("&Open...")
 			file_menu_parse.set_text ("&Parse")
@@ -584,6 +360,8 @@ feature {NONE}-- Initialization
 			archetype_explorer_label.set_font (internal_font)
 			archetype_explorer_label.set_text ("Archetypes")
 			archetype_explorer_label.align_text_left
+			archetype_profile_combo.set_tooltip ("Change repository profile")
+			archetype_profile_combo.disable_edit
 			color_constant_set_procedures.extend (agent archetype_file_tree.set_background_color (?))
 			color_constant_retrieval_functions.extend (agent editable_colour)
 			archetype_file_tree.set_minimum_width (60)
@@ -620,7 +398,8 @@ feature {NONE}-- Initialization
 			archetype_notebook.set_item_text (differential_view_box, "Differential View")
 			archetype_notebook.set_item_text (flat_view_box, "Flat View")
 			archetype_notebook.set_item_text (slots_box, "Slots")
-			description_box.disable_item_expand (arch_desc_details_frame)
+			description_box.disable_item_expand (author_lang_term_hbox)
+			description_box.disable_item_expand (arch_translations_frame)
 			description_box.disable_item_expand (arch_desc_resource_frame)
 			description_box.disable_item_expand (arch_desc_copyright_hbox)
 			integer_constant_set_procedures.extend (agent author_lang_term_hbox.set_padding (?))
@@ -631,7 +410,13 @@ feature {NONE}-- Initialization
 			font_constant_set_procedures.extend (agent arch_desc_auth_frame.set_font (?))
 			font_constant_retrieval_functions.extend (agent label_font)
 			arch_desc_auth_frame.set_text ("Authorship")
+			arch_desc_auth_frame.set_minimum_height (100)
 			arch_desc_auth_frame.set_style (1)
+			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_4.set_padding (?))
+			integer_constant_retrieval_functions.extend (agent padding_width)
+			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_4.set_border_width (?))
+			integer_constant_retrieval_functions.extend (agent border_width)
+			arch_desc_auth_hbox.set_minimum_height (85)
 			integer_constant_set_procedures.extend (agent arch_desc_auth_hbox.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
 			integer_constant_set_procedures.extend (agent arch_desc_auth_hbox.set_border_width (?))
@@ -692,6 +477,7 @@ feature {NONE}-- Initialization
 			font_constant_set_procedures.extend (agent arch_translations_frame.set_font (?))
 			font_constant_retrieval_functions.extend (agent label_font)
 			arch_translations_frame.set_text ("Translations")
+			arch_translations_frame.set_minimum_height (130)
 			arch_translations_frame.set_style (1)
 			l_ev_horizontal_box_6.disable_item_expand (lang_vbox)
 			lang_vbox.set_minimum_height (40)
@@ -708,6 +494,7 @@ feature {NONE}-- Initialization
 			arch_translations_languages_list.set_minimum_width (100)
 			integer_constant_set_procedures.extend (agent arch_translations_languages_list.set_minimum_height (?))
 			integer_constant_retrieval_functions.extend (agent min_list_height)
+			l_ev_vertical_box_4.set_minimum_height (110)
 			integer_constant_set_procedures.extend (agent l_ev_vertical_box_4.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
 			integer_constant_set_procedures.extend (agent l_ev_vertical_box_4.set_border_width (?))
@@ -715,6 +502,8 @@ feature {NONE}-- Initialization
 			l_ev_vertical_box_4.disable_item_expand (l_ev_label_1)
 			l_ev_vertical_box_4.disable_item_expand (l_ev_label_2)
 			l_ev_label_1.set_text ("Author")
+			integer_constant_set_procedures.extend (agent arch_translations_author_mlist.set_minimum_height (?))
+			integer_constant_retrieval_functions.extend (agent min_text_height)
 			l_ev_label_2.set_text ("Accreditation")
 			color_constant_set_procedures.extend (agent arch_translations_accreditation_text.set_background_color (?))
 			color_constant_retrieval_functions.extend (agent editable_colour)
@@ -733,6 +522,7 @@ feature {NONE}-- Initialization
 			font_constant_set_procedures.extend (agent arch_desc_details_frame.set_font (?))
 			font_constant_retrieval_functions.extend (agent label_font)
 			arch_desc_details_frame.set_text ("Archetype Details")
+			arch_desc_details_frame.set_minimum_height (150)
 			arch_desc_details_frame.set_style (1)
 			arch_desc_details_hbox.disable_item_expand (l_ev_vertical_box_7)
 			integer_constant_set_procedures.extend (agent l_ev_vertical_box_6.set_padding (?))
@@ -1057,7 +847,7 @@ feature {NONE}-- Initialization
 			set_maximum_width (2000)
 			set_maximum_height (2000)
 			set_title ("Archetype Definition Language VER Workbench")
-			
+
 			set_all_attributes_using_constants
 			
 				-- Connect events.
@@ -1100,6 +890,7 @@ feature {NONE}-- Initialization
 			search_button.select_actions.extend (agent start_search_by_id)
 			adl_version_text.focus_in_actions.extend (agent on_select_all)
 			language_combo.select_actions.extend (agent select_language)
+			archetype_profile_combo.select_actions.extend (agent select_profile)
 			archetype_file_tree.select_actions.extend (agent archetype_view_tree_item_select)
 			template_file_tree.select_actions.extend (agent template_view_tree_item_select)
 			archetype_notebook.selection_actions.extend (agent on_archetype_notebook_select)
@@ -1135,50 +926,259 @@ feature {NONE}-- Initialization
 				-- Call `user_initialization'.
 			user_initialization
 		end
+		
+	create_interface_objects
+			-- Create objects
+		do
+			
+				-- Create all widgets.
+			create menu
+			create file_menu
+			create file_menu_open
+			create file_menu_parse
+			create file_menu_edit
+			create l_ev_menu_separator_1
+			create file_menu_save_as
+			create l_ev_menu_separator_2
+			create file_menu_exit
+			create edit_menu
+			create edit_menu_copy
+			create edit_menu_select_all
+			create l_ev_menu_separator_3
+			create edit_menu_clipboard
+			create repository_menu
+			create repository_menu_set_repository
+			create l_ev_menu_separator_4
+			create repository_menu_build_all
+			create repository_menu_rebuild_all
+			create l_ev_menu_separator_5
+			create repository_menu_build_subtree
+			create repository_menu_rebuild_subtree
+			create l_ev_menu_separator_6
+			create repository_menu_export_html
+			create repository_menu_export_repository_report
+			create l_ev_menu_separator_7
+			create repository_menu_interrupt_build
+			create l_ev_menu_separator_8
+			create repository_menu_refresh
+			create history_menu
+			create history_menu_back
+			create history_menu_forward
+			create history_menu_separator
+			create tools_menu
+			create tools_menu_clean_generated_files
+			create tools_menu_reload_schemas
+			create l_ev_menu_separator_9
+			create tools_menu_options
+			create help_menu
+			create help_menu_contents
+			create help_menu_release_notes
+			create help_menu_icons
+			create l_ev_menu_separator_10
+			create help_menu_clinical_knowledge_manager
+			create help_menu_report_bug
+			create help_menu_about
+			create main_notebook
+			create viewer_vbox
+			create action_bar
+			create l_ev_tool_bar_1
+			create open_button
+			create parse_button
+			create edit_button
+			create l_ev_tool_bar_separator_1
+			create history_back_button
+			create l_ev_tool_bar_separator_2
+			create history_forward_button
+			create l_ev_horizontal_box_1
+			create archetype_id
+			create l_ev_tool_bar_4
+			create search_button
+			create adl_version_label
+			create adl_version_text
+			create language_label
+			create language_combo
+			create explorer_split_area
+			create archetype_template_split_area
+			create l_ev_vertical_box_1
+			create l_ev_horizontal_box_2
+			create archetype_explorer_pixmap
+			create archetype_explorer_label
+			create archetype_profile_combo
+			create archetype_file_tree
+			create l_ev_vertical_box_2
+			create l_ev_horizontal_box_3
+			create template_explorer_pixmap
+			create template_explorer_label
+			create template_file_tree
+			create total_split_area
+			create archetype_notebook
+			create description_box
+			create author_lang_term_hbox
+			create arch_desc_auth_frame
+			create l_ev_horizontal_box_4
+			create arch_desc_auth_hbox
+			create arch_desc_auth_orig_auth_label
+			create arch_desc_auth_orig_auth_mlist
+			create l_ev_vertical_box_3
+			create arch_desc_status_hbox
+			create arch_desc_status_label
+			create arch_desc_status_text
+			create arch_desc_original_language_label
+			create arch_desc_original_language_text
+			create arch_desc_contrib_hbox
+			create arch_desc_auth_contrib_label
+			create arch_desc_auth_contrib_list
+			create term_frame
+			create l_ev_horizontal_box_5
+			create terminology_vbox
+			create terminologies_list
+			create arch_translations_frame
+			create l_ev_horizontal_box_6
+			create lang_vbox
+			create arch_translations_languages_label
+			create arch_translations_languages_list
+			create l_ev_vertical_box_4
+			create l_ev_label_1
+			create arch_translations_author_mlist
+			create l_ev_label_2
+			create arch_translations_accreditation_text
+			create l_ev_vertical_box_5
+			create l_ev_label_3
+			create arch_translations_other_details_mlist
+			create arch_desc_details_frame
+			create arch_desc_details_hbox
+			create l_ev_vertical_box_6
+			create l_ev_horizontal_box_7
+			create arch_desc_purpose_label
+			create arch_desc_purpose_text
+			create l_ev_horizontal_box_8
+			create arch_desc_use_label
+			create arch_desc_use_text
+			create l_ev_horizontal_box_9
+			create arch_desc_misuse_label
+			create arch_desc_misuse_text
+			create l_ev_vertical_box_7
+			create arch_desc_keywords_label
+			create arch_desc_keywords_list
+			create arch_desc_resource_frame
+			create l_ev_vertical_box_8
+			create l_ev_horizontal_box_10
+			create arch_desc_resource_package_label
+			create arch_desc_resource_package_text
+			create l_ev_horizontal_box_11
+			create arch_desc_resource_orig_res_label
+			create arch_desc_resource_orig_res_mlist
+			create arch_desc_copyright_hbox
+			create arch_desc_copyright_label
+			create arch_desc_copyright_text
+			create differential_view_box
+			create definition_notebook
+			create node_map
+			create node_map_tree
+			create node_map_contols
+			create node_map_expand_button
+			create node_map_expand_one_button
+			create node_map_collapse_one_button
+			create l_ev_cell_1
+			create rm_visibility_controls
+			create l_ev_vertical_box_9
+			create node_map_domain_radio_button
+			create node_map_technical_radio_button
+			create node_map_reference_model_radio_button
+			create path_analysis
+			create path_analysis_multi_column_list
+			create l_ev_vertical_box_10
+			create l_ev_frame_1
+			create l_ev_vertical_box_11
+			create path_analysis_row_filter_combo_box
+			create l_ev_frame_2
+			create l_ev_vertical_box_12
+			create path_analysis_column_view_checkable_list
+			create source_rich_text
+			create terminology_area
+			create l_ev_vertical_split_area_1
+			create term_definitions_frame
+			create ontology_term_definitions_multi_column_list
+			create constraint_definitions_frame
+			create ontology_constraint_definitions_multi_column_list
+			create flat_view_box
+			create slots_box
+			create l_ev_frame_3
+			create l_ev_vertical_box_13
+			create slots_tree
+			create l_ev_frame_4
+			create l_ev_vertical_box_14
+			create used_by_tree
+			create status_notebook
+			create parser_status_area
+			create compiler_output_grid
+			create statistics_box
+			create l_ev_vertical_box_15
+			create l_ev_horizontal_box_12
+			create l_ev_label_4
+			create arch_total_count_tf
+			create l_ev_horizontal_box_13
+			create l_ev_label_5
+			create arch_spec_count_tf
+			create l_ev_horizontal_box_14
+			create l_ev_label_6
+			create arch_slotted_count_tf
+			create l_ev_horizontal_box_15
+			create l_ev_label_7
+			create arch_used_by_count_tf
+			create l_ev_horizontal_box_16
+			create l_ev_label_8
+			create arch_bad_count_tf
+			create l_ev_frame_5
+			create terminology_bindings_info_list
+			create test_split_area
+			create l_ev_horizontal_box_17
+			create archetype_test_tree_grid
+			create l_ev_vertical_box_16
+			create remove_unused_codes_rb
+			create arch_test_tree_toggle_expand_bn
+			create arch_test_refresh_bn
+			create l_ev_horizontal_box_18
+			create l_ev_label_9
+			create arch_test_processed_count
+			create l_ev_horizontal_separator_1
+			create archetype_test_go_bn
+			create test_status_area
+
+			create string_constant_set_procedures.make (10)
+			create string_constant_retrieval_functions.make (10)
+			create integer_constant_set_procedures.make (10)
+			create integer_constant_retrieval_functions.make (10)
+			create pixmap_constant_set_procedures.make (10)
+			create pixmap_constant_retrieval_functions.make (10)
+			create integer_interval_constant_retrieval_functions.make (10)
+			create integer_interval_constant_set_procedures.make (10)
+			create font_constant_set_procedures.make (10)
+			create font_constant_retrieval_functions.make (10)
+			create pixmap_constant_retrieval_functions.make (10)
+			create color_constant_set_procedures.make (10)
+			create color_constant_retrieval_functions.make (10)
+		end
 
 
 feature -- Access
 
-	archetype_id, language_combo, path_analysis_row_filter_combo_box: EV_COMBO_BOX
 	menu: EV_MENU_BAR
-	l_ev_cell_1: EV_CELL
-	archetype_template_split_area,
-	total_split_area, l_ev_vertical_split_area_1, test_split_area: EV_VERTICAL_SPLIT_AREA
-	arch_translations_accreditation_text,
-	arch_desc_purpose_text, arch_desc_use_text, arch_desc_misuse_text, arch_desc_copyright_text,
-	parser_status_area, test_status_area: EV_TEXT
-	source_rich_text: EV_RICH_TEXT
-	archetype_file_tree, template_file_tree,
-	node_map_tree, slots_tree, used_by_tree: EV_TREE
-	arch_desc_auth_orig_auth_mlist, arch_translations_author_mlist,
-	arch_translations_other_details_mlist, arch_desc_resource_orig_res_mlist, path_analysis_multi_column_list,
-	ontology_term_definitions_multi_column_list, ontology_constraint_definitions_multi_column_list,
-	terminology_bindings_info_list: EV_MULTI_COLUMN_LIST
-	l_ev_tool_bar_separator_1, l_ev_tool_bar_separator_2: EV_TOOL_BAR_SEPARATOR
-	archetype_explorer_pixmap,
-	template_explorer_pixmap: EV_PIXMAP
-	explorer_split_area: EV_HORIZONTAL_SPLIT_AREA
-	arch_desc_auth_contrib_list, terminologies_list,
-	arch_translations_languages_list, arch_desc_keywords_list: EV_LIST
-	action_bar, l_ev_horizontal_box_1,
-	l_ev_horizontal_box_2, l_ev_horizontal_box_3, author_lang_term_hbox, l_ev_horizontal_box_4,
-	arch_desc_status_hbox, l_ev_horizontal_box_5, l_ev_horizontal_box_6, arch_desc_details_hbox,
-	l_ev_horizontal_box_7, l_ev_horizontal_box_8, l_ev_horizontal_box_9, l_ev_horizontal_box_10,
-	l_ev_horizontal_box_11, arch_desc_copyright_hbox, node_map, path_analysis, statistics_box,
-	l_ev_horizontal_box_12, l_ev_horizontal_box_13, l_ev_horizontal_box_14, l_ev_horizontal_box_15,
-	l_ev_horizontal_box_16, l_ev_horizontal_box_17, l_ev_horizontal_box_18: EV_HORIZONTAL_BOX
-	node_map_domain_radio_button,
-	node_map_technical_radio_button, node_map_reference_model_radio_button: EV_RADIO_BUTTON
-	adl_version_text,
-	arch_desc_status_text, arch_desc_original_language_text, arch_desc_resource_package_text,
-	arch_total_count_tf, arch_spec_count_tf, arch_slotted_count_tf, arch_used_by_count_tf,
-	arch_bad_count_tf, arch_test_processed_count: EV_TEXT_FIELD
-	compiler_output_grid, archetype_test_tree_grid: EV_GRID
-	file_menu,
-	edit_menu, repository_menu, history_menu, tools_menu, help_menu: EV_MENU
-	node_map_expand_button,
-	node_map_expand_one_button, node_map_collapse_one_button, arch_test_tree_toggle_expand_bn,
-	arch_test_refresh_bn, archetype_test_go_bn: EV_BUTTON
+	file_menu, edit_menu, repository_menu, history_menu, tools_menu, help_menu: EV_MENU
+	file_menu_open,
+	file_menu_parse, file_menu_edit, file_menu_save_as, file_menu_exit, edit_menu_copy,
+	edit_menu_select_all, edit_menu_clipboard, repository_menu_set_repository, repository_menu_build_all,
+	repository_menu_rebuild_all, repository_menu_build_subtree, repository_menu_rebuild_subtree,
+	repository_menu_export_html, repository_menu_export_repository_report, repository_menu_interrupt_build,
+	repository_menu_refresh, history_menu_back, history_menu_forward, tools_menu_clean_generated_files,
+	tools_menu_reload_schemas, tools_menu_options, help_menu_contents, help_menu_release_notes,
+	help_menu_icons, help_menu_clinical_knowledge_manager, help_menu_report_bug, help_menu_about: EV_MENU_ITEM
+	l_ev_menu_separator_1,
+	l_ev_menu_separator_2, l_ev_menu_separator_3, l_ev_menu_separator_4, l_ev_menu_separator_5,
+	l_ev_menu_separator_6, l_ev_menu_separator_7, l_ev_menu_separator_8, history_menu_separator,
+	l_ev_menu_separator_9, l_ev_menu_separator_10: EV_MENU_SEPARATOR
+	main_notebook, archetype_notebook,
+	definition_notebook, status_notebook: EV_NOTEBOOK
 	viewer_vbox, l_ev_vertical_box_1, l_ev_vertical_box_2,
 	description_box, arch_desc_auth_hbox, l_ev_vertical_box_3, arch_desc_contrib_hbox,
 	terminology_vbox, lang_vbox, l_ev_vertical_box_4, l_ev_vertical_box_5, l_ev_vertical_box_6,
@@ -1186,37 +1186,62 @@ feature -- Access
 	l_ev_vertical_box_9, l_ev_vertical_box_10, l_ev_vertical_box_11, l_ev_vertical_box_12,
 	terminology_area, flat_view_box, slots_box, l_ev_vertical_box_13, l_ev_vertical_box_14,
 	l_ev_vertical_box_15, l_ev_vertical_box_16: EV_VERTICAL_BOX
-	file_menu_open, file_menu_parse, file_menu_edit,
-	file_menu_save_as, file_menu_exit, edit_menu_copy, edit_menu_select_all, edit_menu_clipboard,
-	repository_menu_set_repository, repository_menu_build_all, repository_menu_rebuild_all,
-	repository_menu_build_subtree, repository_menu_rebuild_subtree, repository_menu_export_html,
-	repository_menu_export_repository_report, repository_menu_interrupt_build, repository_menu_refresh,
-	history_menu_back, history_menu_forward, tools_menu_clean_generated_files, tools_menu_reload_schemas,
-	tools_menu_options, help_menu_contents, help_menu_release_notes, help_menu_icons,
-	help_menu_clinical_knowledge_manager, help_menu_report_bug, help_menu_about: EV_MENU_ITEM
-	adl_version_label,
-	language_label, archetype_explorer_label, template_explorer_label, arch_desc_auth_orig_auth_label,
-	arch_desc_status_label, arch_desc_original_language_label, arch_desc_auth_contrib_label,
-	arch_translations_languages_label, l_ev_label_1, l_ev_label_2, l_ev_label_3, arch_desc_purpose_label,
-	arch_desc_use_label, arch_desc_misuse_label, arch_desc_keywords_label, arch_desc_resource_package_label,
+	action_bar, l_ev_horizontal_box_1, l_ev_horizontal_box_2,
+	l_ev_horizontal_box_3, author_lang_term_hbox, l_ev_horizontal_box_4, arch_desc_status_hbox,
+	l_ev_horizontal_box_5, l_ev_horizontal_box_6, arch_desc_details_hbox, l_ev_horizontal_box_7,
+	l_ev_horizontal_box_8, l_ev_horizontal_box_9, l_ev_horizontal_box_10, l_ev_horizontal_box_11,
+	arch_desc_copyright_hbox, node_map, path_analysis, statistics_box, l_ev_horizontal_box_12,
+	l_ev_horizontal_box_13, l_ev_horizontal_box_14, l_ev_horizontal_box_15, l_ev_horizontal_box_16,
+	l_ev_horizontal_box_17, l_ev_horizontal_box_18: EV_HORIZONTAL_BOX
+	l_ev_tool_bar_1, l_ev_tool_bar_4: EV_TOOL_BAR
+	open_button,
+	parse_button, edit_button, history_back_button, history_forward_button, search_button: EV_TOOL_BAR_BUTTON
+	l_ev_tool_bar_separator_1,
+	l_ev_tool_bar_separator_2: EV_TOOL_BAR_SEPARATOR
+	archetype_id, language_combo, archetype_profile_combo,
+	path_analysis_row_filter_combo_box: EV_COMBO_BOX
+	adl_version_label, language_label, archetype_explorer_label,
+	template_explorer_label, arch_desc_auth_orig_auth_label, arch_desc_status_label,
+	arch_desc_original_language_label, arch_desc_auth_contrib_label, arch_translations_languages_label,
+	l_ev_label_1, l_ev_label_2, l_ev_label_3, arch_desc_purpose_label, arch_desc_use_label,
+	arch_desc_misuse_label, arch_desc_keywords_label, arch_desc_resource_package_label,
 	arch_desc_resource_orig_res_label, arch_desc_copyright_label, l_ev_label_4, l_ev_label_5,
 	l_ev_label_6, l_ev_label_7, l_ev_label_8, l_ev_label_9: EV_LABEL
+	adl_version_text, arch_desc_status_text,
+	arch_desc_original_language_text, arch_desc_resource_package_text, arch_total_count_tf,
+	arch_spec_count_tf, arch_slotted_count_tf, arch_used_by_count_tf, arch_bad_count_tf,
+	arch_test_processed_count: EV_TEXT_FIELD
+	explorer_split_area: EV_HORIZONTAL_SPLIT_AREA
+	archetype_template_split_area, total_split_area,
+	l_ev_vertical_split_area_1, test_split_area: EV_VERTICAL_SPLIT_AREA
+	archetype_explorer_pixmap, template_explorer_pixmap: EV_PIXMAP
+	archetype_file_tree,
+	template_file_tree, node_map_tree, slots_tree, used_by_tree: EV_TREE
+	arch_desc_auth_frame,
+	term_frame, arch_translations_frame, arch_desc_details_frame, arch_desc_resource_frame,
+	rm_visibility_controls, l_ev_frame_1, l_ev_frame_2, term_definitions_frame, constraint_definitions_frame,
+	l_ev_frame_3, l_ev_frame_4, l_ev_frame_5: EV_FRAME
+	arch_desc_auth_orig_auth_mlist, arch_translations_author_mlist,
+	arch_translations_other_details_mlist, arch_desc_resource_orig_res_mlist, path_analysis_multi_column_list,
+	ontology_term_definitions_multi_column_list, ontology_constraint_definitions_multi_column_list,
+	terminology_bindings_info_list: EV_MULTI_COLUMN_LIST
+	arch_desc_auth_contrib_list, terminologies_list,
+	arch_translations_languages_list, arch_desc_keywords_list: EV_LIST
+	arch_translations_accreditation_text,
+	arch_desc_purpose_text, arch_desc_use_text, arch_desc_misuse_text, arch_desc_copyright_text,
+	parser_status_area, test_status_area: EV_TEXT
+	node_map_expand_button, node_map_expand_one_button,
+	node_map_collapse_one_button, arch_test_tree_toggle_expand_bn, arch_test_refresh_bn,
+	archetype_test_go_bn: EV_BUTTON
+	l_ev_cell_1: EV_CELL
+	node_map_domain_radio_button, node_map_technical_radio_button,
+	node_map_reference_model_radio_button: EV_RADIO_BUTTON
 	path_analysis_column_view_checkable_list: EV_CHECKABLE_LIST
+	source_rich_text: EV_RICH_TEXT
+	compiler_output_grid,
+	archetype_test_tree_grid: EV_GRID
 	remove_unused_codes_rb: EV_CHECK_BUTTON
-	l_ev_tool_bar_1,
-	l_ev_tool_bar_4: EV_TOOL_BAR
-	open_button, parse_button, edit_button, history_back_button, history_forward_button,
-	search_button: EV_TOOL_BAR_BUTTON
 	l_ev_horizontal_separator_1: EV_HORIZONTAL_SEPARATOR
-	arch_desc_auth_frame, term_frame, arch_translations_frame,
-	arch_desc_details_frame, arch_desc_resource_frame, rm_visibility_controls, l_ev_frame_1,
-	l_ev_frame_2, term_definitions_frame, constraint_definitions_frame, l_ev_frame_3,
-	l_ev_frame_4, l_ev_frame_5: EV_FRAME
-	main_notebook, archetype_notebook, definition_notebook,
-	status_notebook: EV_NOTEBOOK
-	l_ev_menu_separator_1, l_ev_menu_separator_2, l_ev_menu_separator_3,
-	l_ev_menu_separator_4, l_ev_menu_separator_5, l_ev_menu_separator_6, l_ev_menu_separator_7,
-	l_ev_menu_separator_8, history_menu_separator, l_ev_menu_separator_9, l_ev_menu_separator_10: EV_MENU_SEPARATOR
 
 feature {NONE} -- Implementation
 
@@ -1227,7 +1252,7 @@ feature {NONE} -- Implementation
 			-- for `Current'.
 			Result := True
 		end
-	
+
 	user_initialization
 			-- Feature for custom initialization, called at end of `initialize'.
 		deferred
@@ -1398,6 +1423,11 @@ feature {NONE} -- Implementation
 		deferred
 		end
 	
+	select_profile
+			-- Called by `select_actions' of `archetype_profile_combo'.
+		deferred
+		end
+	
 	archetype_view_tree_item_select
 			-- Called by `select_actions' of `archetype_file_tree'.
 		deferred
@@ -1483,14 +1513,14 @@ feature {NONE} -- Implementation
 		deferred
 		end
 	
-	
+
 feature {NONE} -- Constant setting
 
 	set_attributes_using_string_constants
 			-- Set all attributes relying on string constants to the current
 			-- value of the associated constant.
 		local
-			s: STRING_GENERAL
+			s: detachable STRING_32
 		do
 			from
 				string_constant_set_procedures.start
@@ -1499,11 +1529,13 @@ feature {NONE} -- Constant setting
 			loop
 				string_constant_retrieval_functions.i_th (string_constant_set_procedures.index).call (Void)
 				s := string_constant_retrieval_functions.i_th (string_constant_set_procedures.index).last_result
-				string_constant_set_procedures.item.call ([s])
+				if s /= Void then
+					string_constant_set_procedures.item.call ([s])
+				end
 				string_constant_set_procedures.forth
 			end
 		end
-		
+
 	set_attributes_using_integer_constants
 			-- Set all attributes relying on integer constants to the current
 			-- value of the associated constant.
@@ -1539,12 +1571,12 @@ feature {NONE} -- Constant setting
 				integer_interval_constant_set_procedures.forth
 			end
 		end
-		
+
 	set_attributes_using_pixmap_constants
 			-- Set all attributes relying on pixmap constants to the current
 			-- value of the associated constant.
 		local
-			p: EV_PIXMAP
+			p: detachable EV_PIXMAP
 		do
 			from
 				pixmap_constant_set_procedures.start
@@ -1553,16 +1585,18 @@ feature {NONE} -- Constant setting
 			loop
 				pixmap_constant_retrieval_functions.i_th (pixmap_constant_set_procedures.index).call (Void)
 				p := pixmap_constant_retrieval_functions.i_th (pixmap_constant_set_procedures.index).last_result
-				pixmap_constant_set_procedures.item.call ([p])
+				if p /= Void then
+					pixmap_constant_set_procedures.item.call ([p])
+				end
 				pixmap_constant_set_procedures.forth
 			end
 		end
-		
+
 	set_attributes_using_font_constants
 			-- Set all attributes relying on font constants to the current
 			-- value of the associated constant.
 		local
-			f: EV_FONT
+			f: detachable EV_FONT
 		do
 			from
 				font_constant_set_procedures.start
@@ -1571,16 +1605,18 @@ feature {NONE} -- Constant setting
 			loop
 				font_constant_retrieval_functions.i_th (font_constant_set_procedures.index).call (Void)
 				f := font_constant_retrieval_functions.i_th (font_constant_set_procedures.index).last_result
-				font_constant_set_procedures.item.call ([f])
+				if f /= Void then
+					font_constant_set_procedures.item.call ([f])
+				end
 				font_constant_set_procedures.forth
 			end	
 		end
-		
+
 	set_attributes_using_color_constants
 			-- Set all attributes relying on color constants to the current
 			-- value of the associated constant.
 		local
-			c: EV_COLOR
+			c: detachable EV_COLOR
 		do
 			from
 				color_constant_set_procedures.start
@@ -1589,11 +1625,13 @@ feature {NONE} -- Constant setting
 			loop
 				color_constant_retrieval_functions.i_th (color_constant_set_procedures.index).call (Void)
 				c := color_constant_retrieval_functions.i_th (color_constant_set_procedures.index).last_result
-				color_constant_set_procedures.item.call ([c])
+				if c /= Void then
+					color_constant_set_procedures.item.call ([c])
+				end
 				color_constant_set_procedures.forth
 			end
 		end
-		
+
 	set_all_attributes_using_constants
 			-- Set all attributes relying on constants to the current
 			-- calue of the associated constant.
@@ -1604,9 +1642,9 @@ feature {NONE} -- Constant setting
 			set_attributes_using_font_constants
 			set_attributes_using_color_constants
 		end
-					
+	
 	string_constant_set_procedures: ARRAYED_LIST [PROCEDURE [ANY, TUPLE [STRING_GENERAL]]]
-	string_constant_retrieval_functions: ARRAYED_LIST [FUNCTION [ANY, TUPLE [], STRING_GENERAL]]
+	string_constant_retrieval_functions: ARRAYED_LIST [FUNCTION [ANY, TUPLE [], STRING_32]]
 	integer_constant_set_procedures: ARRAYED_LIST [PROCEDURE [ANY, TUPLE [INTEGER]]]
 	integer_constant_retrieval_functions: ARRAYED_LIST [FUNCTION [ANY, TUPLE [], INTEGER]]
 	pixmap_constant_set_procedures: ARRAYED_LIST [PROCEDURE [ANY, TUPLE [EV_PIXMAP]]]
@@ -1617,7 +1655,7 @@ feature {NONE} -- Constant setting
 	font_constant_retrieval_functions: ARRAYED_LIST [FUNCTION [ANY, TUPLE [], EV_FONT]]
 	color_constant_set_procedures: ARRAYED_LIST [PROCEDURE [ANY, TUPLE [EV_COLOR]]]
 	color_constant_retrieval_functions: ARRAYED_LIST [FUNCTION [ANY, TUPLE [], EV_COLOR]]
-	
+
 	integer_from_integer (an_integer: INTEGER): INTEGER
 			-- Return `an_integer', used for creation of
 			-- an agent that returns a fixed integer value.

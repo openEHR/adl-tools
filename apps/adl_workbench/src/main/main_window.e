@@ -65,6 +65,13 @@ inherit
 			copy, default_create
 		end
 
+	GUI_CONTROLLER_TOOLS
+		export
+			{NONE} all
+		undefine
+			copy, default_create
+		end
+
 	STRING_UTILITIES
 		export
 			{NONE} all
@@ -132,6 +139,8 @@ feature {NONE} -- Initialization
 			archetype_explorer_pixmap.copy (pixmaps ["archetype_category"])
 			template_explorer_pixmap.copy (pixmaps ["template_category"])
 
+--			archetype_profile_combo.
+
 			set_position (app_x_position, app_y_position)
 
 			if app_width > 0 then
@@ -151,16 +160,6 @@ feature {NONE} -- Initialization
 			end
 
 			terminology_bindings_info_list.set_column_titles (<<"terminology", "archetypes">>)
-		end
-
-	initialise_splitter (split: EV_SPLIT_AREA; position: INTEGER)
-			-- Make `position' the position for `split'; but do nothing if `position' is outside the allowed bounds.
-		do
-			if position = 0 then
-				split.set_split_position (((split.minimum_split_position + split.maximum_split_position)/2).floor)
-			elseif split.minimum_split_position <= position and position <= split.maximum_split_position then
-				split.set_split_position (position)
-			end
 		end
 
 feature -- Status setting
@@ -191,6 +190,7 @@ feature -- Status setting
 			if reference_repository_path.is_empty then
 				set_repository
 			else
+				populate_archetype_profile_combo
 				populate_directory
 			end
 
@@ -502,20 +502,34 @@ feature {NONE} -- Repository events
 
 			dialog.destroy
 
+			populate_archetype_profile_combo
+
 			if use_changes_after_destroying_dialog then
-				if directory_exists (reference_repository_path) then
-					source_repositories.set_reference_repository (reference_repository_path)
-				end
-
-				if not work_repository_path.is_empty then
-					source_repositories.set_work_repository (work_repository_path)
-				else
-					source_repositories.remove_work_repository
-				end
-
-				populate_directory
-				save_resources_and_show_status
+				change_profile
 			end
+		end
+
+	select_profile
+			-- Called by `select_actions' of `archetype_profile_combo'.
+		do
+			if not archetype_profile_combo.text.same_string (current_repository_profile) then
+				set_current_repository_profile(archetype_profile_combo.text)
+				change_profile
+			end
+		end
+
+	change_profile
+			-- change to `current_repository_profile'
+		do
+			if directory_exists (reference_repository_path) then
+				source_repositories.set_reference_repository (reference_repository_path)
+			end
+			if not work_repository_path.is_empty then
+				source_repositories.set_work_repository (work_repository_path)
+			else
+				source_repositories.remove_work_repository
+			end
+			populate_directory
 		end
 
 	build_all
@@ -774,8 +788,8 @@ feature -- Archetype commands
 				if attached {EV_COMBO_BOX_IMP} archetype_id.implementation as imp then
 					(create {GUI_PLATFORM_SPECIFIC_TOOLS}).hide_combo_box_list (imp)
 				end
-
 				select_archetype (key)
+				
 			elseif key.count > 0 then
 				archetype_id.select_actions.block
 
@@ -1324,6 +1338,36 @@ feature {NONE} -- Implementation
 			language_combo.select_actions.resume
 		end
 
+	populate_archetype_profile_combo
+			-- Initialise the dialog's widgets from shared settings.
+		local
+			rep_profiles: attached HASH_TABLE [ARRAYED_LIST[STRING], STRING]
+		do
+			rep_profiles := repository_profiles
+			archetype_profile_combo.select_actions.block
+			archetype_profile_combo.change_actions.block
+			if not rep_profiles.is_empty then
+				from rep_profiles.start until rep_profiles.off loop
+					populate_ev_combo_from_hash_keys (archetype_profile_combo, rep_profiles)
+					if not current_repository_profile.is_empty then
+						archetype_profile_combo.do_all (
+							agent (li: EV_LIST_ITEM)
+								do
+									if li.text.same_string (current_repository_profile) then
+										li.enable_select
+									end
+								end
+						)
+					end
+					rep_profiles.forth
+				end
+			else
+				archetype_profile_combo.wipe_out
+			end
+			archetype_profile_combo.select_actions.resume
+			archetype_profile_combo.change_actions.resume
+		end
+
 	do_with_wait_cursor (action: PROCEDURE [ANY, TUPLE])
 			-- Perform `action' with an hourglass mouse cursor, restoring the cursor when done.
 		require
@@ -1438,6 +1482,16 @@ feature {NONE} -- Build commands
 		end
 
 feature {NONE} -- Standard Windows behaviour that EiffelVision ought to be managing automatically
+
+	initialise_splitter (split: EV_SPLIT_AREA; position: INTEGER)
+			-- Make `position' the position for `split'; but do nothing if `position' is outside the allowed bounds.
+		do
+			if position = 0 then
+				split.set_split_position (((split.minimum_split_position + split.maximum_split_position)/2).floor)
+			elseif split.minimum_split_position <= position and position <= split.maximum_split_position then
+				split.set_split_position (position)
+			end
+		end
 
 	step_focused_notebook_tab (step: INTEGER)
 			-- Switch forward or back from the current tab page of the currently focused notebook.
