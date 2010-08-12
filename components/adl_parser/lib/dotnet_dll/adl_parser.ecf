@@ -36,7 +36,11 @@
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf">
 			<renaming old_name="C_STRING" new_name="BASE_C_STRING"/>
 		</library>
-		<library name="gobo" location="$ISE_LIBRARY\library\gobo\gobo.ecf"/>
+		<library name="gobo_kernel" location="$ISE_LIBRARY\library\gobo\gobo_kernel.ecf"/>
+		<library name="gobo_lexical" location="$ISE_LIBRARY\library\gobo\gobo_lexical.ecf"/>
+		<library name="gobo_parse" location="$ISE_LIBRARY\library\gobo\gobo_parse.ecf"/>
+		<library name="gobo_structure" location="$ISE_LIBRARY\library\gobo\gobo_structure.ecf"/>
+		<library name="gobo_utility" location="$ISE_LIBRARY\library\gobo\gobo_utility.ecf"/>
 		<library name="i18n" location="$ISE_LIBRARY\library\i18n\i18n.ecf"/>
 		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf">
 			<renaming old_name="C_DATE" new_name="TIME_C_DATE"/>
