@@ -70,7 +70,7 @@ def ec_action(target, source, env):
 		rc = os.path.splitext(str(source[0]))[0] + '.rc'
 
 		if os.path.exists(rc):
-			project_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(str(target[0])))))
+			project_path = dirname(str(target[0]), 4)
 			rc_copied_to_target = os.path.join(project_path, os.path.basename(rc))
 
 			if rc == rc_copied_to_target:
@@ -277,7 +277,7 @@ def ecf_scanner(node, env, path):
 
 def ecf_target(target, source = None, env = None):
 	"""The ECF target corresponding to the given build target."""
-	return os.path.basename(os.path.dirname(os.path.dirname(str(target[0]))))
+	return os.path.basename(dirname(str(target[0]), 2))
 
 def generate(env):
 	"""Add a Builder and construction variables for Eiffel to the given Environment."""
@@ -290,6 +290,7 @@ def generate(env):
 
 	env['BUILDERS']['Eiffel'] = Builder(action = Action(ec_action, ecf_target), emitter = ec_emitter, target_factory = Entry)
 	env.Append(SCANNERS = Scanner(ecf_scanner, skeys = ['.ecf']))
+	env.AddMethod(environment_variable, "EiffelEnvironmentVariable")
 	env.AddMethod(files, "Files")
 	env.AddMethod(eiffel_classes_in_cluster, "EiffelClassesInCluster")
 
@@ -323,7 +324,7 @@ def environment_variable(env, var):
 			result = 'gcc'
 	elif var == 'ISE_EIFFEL':
 		result = env.WhereIs(env['EC'])
-		if result: result = os.path.abspath(result + '/../../../../..')
+		if result: result = os.path.abspath(dirname(result, 5))
 	elif var == 'ISE_LIBRARY':
 		result = environment_variable(env, 'ISE_EIFFEL')
 
@@ -341,4 +342,10 @@ def eiffel_classes_in_cluster(env, cluster):
 		if '.svn' in dirnames: dirnames.remove('.svn')
 		result += files(env, root + '/*.e')
 
+	return result
+
+def dirname(path, n):
+	"""The directory name of 'path', called recursively 'n' times."""
+	result = path
+	if n > 0: result = dirname(os.path.dirname(path), n - 1)
 	return result

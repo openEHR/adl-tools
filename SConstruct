@@ -9,30 +9,41 @@ if env['PLATFORM'] == 'win32': platform = 'windows'
 if env['PLATFORM'] == 'posix': platform = 'linux'
 if env['PLATFORM'] == 'darwin': platform = 'mac_osx'
 
-# Define how to build the parser classes.
+# Define how to build the parser classes, using the Gobo tools.
+# These are not performed unless explicitly requested on the command line in one of the following ways:
+# * The target 'gobo' builds all of the lex and parser targets.
+# * Listing specific lex or parser class names builds only the targets related to those names.
+# * Listing specific paths builds only the targets under those paths.
 
-def gelex(target, source):
-	return env.Command(target, source, [['gelex', '-o', '${TARGET.file}', '${SOURCE.file}']], chdir = 1)
+def is_subpath(subpath, whole):
+	s = os.path.abspath(subpath)
+	return os.path.commonprefix([os.path.abspath(whole), os.path.abspath(s)]) == s
 
-def geyacc(target, source):
-	return env.Command(target, source, [['geyacc', '--new_typing', '-v', '${TARGET.filebase}.txt', '-t', '${TARGETS[1].filebase}', '-o', '${TARGET.file}', '${SOURCE.file}']], chdir = 1)
+def gobo(alias, target, source, action):
+	if 'gobo' in COMMAND_LINE_TARGETS or alias in COMMAND_LINE_TARGETS or [t for t in target for c in COMMAND_LINE_TARGETS if is_subpath(c, t)]:
+		Alias('gobo', Alias(alias, env.Command(target, source, action)))
 
-def geyacc_html(target, source):
-	return env.Command(target, source, [['geyacc', '--doc=html', '-o', '${TARGET.file}', '${SOURCE.file}']], chdir = 1)
+gelex = Action([['gelex', '-o', '${TARGET.file}', '${SOURCE.file}']], chdir = 1)
 
-if not env.Detect('gelex') or not env.Detect('geyacc'):
-	print 'WARNING! The Gobo tools are missing from your path: cannot build the parsers.'
-else:
-	for scanner, parser, tokens, dir in [
-		['adl_scanner', 'adl_validator', 'adl_tokens', 'components/adl_parser/src/syntax/adl/parser/'],
-		['cadl_scanner', 'cadl_validator', 'cadl_tokens', 'components/adl_parser/src/syntax/cadl/parser/'],
-		['dadl_scanner', 'dadl2_validator', 'dadl_tokens', 'libraries/common_libs/src/structures/syntax/dadl/parser/'],
-		['units_scanner', 'units_parser', 'units_tokens', 'libraries/common_libs/src/unit_parser/parser/'],
-		['og_path_scanner', 'og_path_validator', 'og_path_tokens', 'libraries/common_libs/src/structures/object_graph/path/']
-	]:
-		Alias(scanner, gelex(dir + scanner + '.e', dir + scanner + '.l'))
-		Alias(parser, geyacc([dir + parser + '.e', dir + tokens + '.e'], dir + parser + '.y'))
-		Alias(parser, geyacc_html(dir + parser + '.html', dir + parser + '.y'))
+geyacc = Action([['geyacc', '--new_typing', '-v', '${TARGET.filebase}.txt', '-t', '${TARGETS[1].filebase}', '-o', '${TARGET.file}', '${SOURCE.file}']], chdir = 1)
+
+geyacc_html = Action([['geyacc', '--doc=html', '-o', '${TARGET.file}', '${SOURCE.file}']], chdir = 1)
+
+eiffel_syntax_updater = [
+	os.path.abspath(os.path.join(env.EiffelEnvironmentVariable('ISE_EIFFEL'), 'tools/spec/' + env.EiffelEnvironmentVariable('ISE_PLATFORM') + '/bin/syntax_updater')),
+	'${TARGET.dir}'
+	]
+
+for scanner, parser, tokens, dir in [
+	['adl_scanner', 'adl_validator', 'adl_tokens', 'components/adl_parser/src/syntax/adl/parser/'],
+	['cadl_scanner', 'cadl_validator', 'cadl_tokens', 'components/adl_parser/src/syntax/cadl/parser/'],
+	['dadl_scanner', 'dadl2_validator', 'dadl_tokens', 'libraries/common_libs/src/structures/syntax/dadl/parser/'],
+	['units_scanner', 'units_parser', 'units_tokens', 'libraries/common_libs/src/unit_parser/parser/'],
+	['og_path_scanner', 'og_path_validator', 'og_path_tokens', 'libraries/common_libs/src/structures/object_graph/path/']
+]:
+	gobo(scanner, [dir + scanner + '.e'], dir + scanner + '.l', [gelex, eiffel_syntax_updater])
+	gobo(parser, [dir + parser + '.e', dir + tokens + '.e'], dir + parser + '.y', [geyacc, eiffel_syntax_updater])
+	gobo(parser, [dir + parser + '.html'], dir + parser + '.y', [geyacc_html])
 
 # Define how to build the Eiffel projects.
 
@@ -53,6 +64,7 @@ if platform == 'windows':
 	versioned_targets += [adl_parser]
 
 # Define how to put installers, etc., into the distribution directory.
+# These are not performed unless a path containing 'oe_distrib' is explicitly requested on the command line.
 
 distrib = None
 installer = None
