@@ -11,11 +11,11 @@ note
 	revision:    "$LastChangedRevision"
 	last_change: "$LastChangedDate"
 
-class SHARED_ADL_APPLICATION
+class SHARED_AWB_APPLICATION
 
 feature -- Access
 
-	adl_application: ADL_APPLICATION
+	adl_application: AWB_APPLICATION
 		once
 			create Result
 		end

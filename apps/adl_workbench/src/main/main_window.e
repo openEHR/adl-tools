@@ -32,7 +32,7 @@ inherit
 			copy, default_create
 		end
 
-	SHARED_ADL_APPLICATION
+	SHARED_AWB_APPLICATION
 		undefine
 			copy, default_create
 		end

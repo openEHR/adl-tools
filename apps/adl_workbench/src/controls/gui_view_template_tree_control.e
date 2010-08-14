@@ -81,9 +81,6 @@ feature -- Commands
 
 	populate
 			-- Populate `gui_file_tree' from `archetype_directory'.
-		local
-			lpos: INTEGER
-			s: STRING
 		do
 			-- update tree
 			create gui_node_descriptor_map.make(0)

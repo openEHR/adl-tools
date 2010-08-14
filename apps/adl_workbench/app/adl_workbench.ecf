@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <system xmlns="http://www.eiffel.com/developers/xml/configuration-1-6-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-6-0 http://www.eiffel.com/developers/xml/configuration-1-6-0.xsd" name="adl_workbench" uuid="C99BD5CC-111C-4EE7-9BCF-337A924E2783">
 	<target name="adl_workbench">
-		<root class="ADL_WORKBENCH" feature="make_and_launch"/>
+		<root class="AWB_UI_APPLICATION" feature="make_and_launch"/>
 		<file_rule>
 			<exclude>/\.svn$</exclude>
 		</file_rule>

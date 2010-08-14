@@ -13,7 +13,7 @@ note
 	revision:    "$LastChangedRevision"
 	last_change: "$LastChangedDate"
 
-class ADL_APPLICATION
+class AWB_APPLICATION
 
 inherit
 	SHARED_APP_RESOURCES
@@ -160,7 +160,7 @@ feature {NONE} -- Implementation
 			["model_access_w5"] = <"Unknown Reference Model '$1' mentioned in 'rm_schemas_load_list' config setting (ignored)">
 			["model_access_w6"] = <"No 'rm_schemas_load_list' config setting found; attempting to load all schemas (change via Tools>Options)">
 			["RMPTV"] = <"Error (RMPTV): class definition $1 property $2 type not defined in schema">
-			
+
 			-- MAIN_WINDOW
 			["adl_version_warning"] = <"Using ADL version $1 for output serialisation">
 			["clean_generated_file"] = <"Removing generated file $1">
@@ -210,21 +210,21 @@ feature {NONE} -- Implementation
 			["compiler_unexpected_error"] = <"Location: $1">
 			["compiler_no_flat_text"] = <"===================== No flat (.adlf) text available =======================">
 			["compiler_no_source_text"] = <"===================== No source (.adls) text available =======================">
-			
+
 			-- GUI_TEST_ARCHETYPE_TREE_CONTROL
 			["Test_arch_compare_i1"] = <"Archetype source lengths same but texts differ">
 			["Test_arch_compare_i2"] = <"Archetype source lengths differ: original =  $1; new = $2">
-			
+
 			-- ARCHETYPE_VALIDATOR
 			["validate_e1"] = <"Error: specialisation parent is missing">
 			["validate_e2"] = <"Error: specialisation parent failed to validate">
 			["validate_e3"] = <"Error: archetype id in descriptor $1 does not match id at top of file $2">
 			["validation_strict"] = <"Validation level STRICT">
 			["validation_non_strict"] = <"Validation level NON-STRICT; non-coforming existence, occurrences & cardinality will be removed">
-			
+
 			-- GUI controls, MAIN_WINDOW
 			["slots_incomplete_w1"] = <"Warning: this list may be incomplete. To be sure, run Build All under the Repository menu.">
-			
+
 			-- ARCHETYPE_DIRECTORY
 			["arch_dir_orphan_archetype"] = <"No parent matching $1 found for archetype $2">
 			["arch_dir_orphan_archetype_e2"] = <"No ontology node matching $1 found for archetype $2; incorrect id?">
@@ -233,14 +233,14 @@ feature {NONE} -- Implementation
 
 			-- ADL_SYNTAX_CONTERTER
 			["syntax_upgraded_i1"] = <"Syntax element upgraded: --$1-- changed to --$2--">
-							
+
 			-- ARCHETYPE_FILE_REPOSITORY_IMP
 			["invalid_filename_e1"] = <"Invalid archetype filename $1">
 			["pair_filename_i1"] = <"(Differential/flat pair archetype filename found $1)">
 			["save_as_i1"] = <"Archetype saved to $2">
 			["save_as_e1"] = <"Save-as failed; could not write to file $1">
 			["duplicate_filename"] = <"Duplicate file name or alternate version $1">
-			
+
 			------------------------- syntax errors: see the cADL, dADL and ADL syntax validators ---------------------
 			["SARID"] = <"Syntax error (SARID): in artefact identification clause; expecting archetype id (format = model_issuer-package-class.concept.version)">
 			["SASID"] = <"Syntax error (SASID): in 'specialise' clause; expecting parent archetype id (model_issuer-ref_model-model_class.concept.version)">
@@ -291,7 +291,7 @@ feature {NONE} -- Implementation
 			-------------- validity errors: unless otherwise noted, these codes are defined in the AOM 1.5 or later spec ------------------
 			["VASID"] = <"Error (VASID): specialised archetype id not based on specialisation parent archetype id">
 			["VALC"] = <"Error (VALC): specialised archetype languages ($1) invalid - should be same as or a subset of those in flat parent ($2)">
-						
+
 			-- description
 			["VTRLA"] = <"Error (VTRLA): translations key '$1' does not match translation item language '$2'">
 			["VRDLA"] = <"Error (VRDLA): resource detail key '$1' does not match resource detail item language '$2'">
@@ -300,21 +300,21 @@ feature {NONE} -- Implementation
 			["VARDT"] = <"Error (VARDT): archetype id type $1 does not match type $2 in definition section">
 			["VACSD"] = <"Error (VACSD): specialisation depth of concept code $1 not consistent with specialisation depth of parent archetype $2">
 			["VACSDtop"] = <"Error (VACSD): specialisation depth of concept code $1 not consistent with specialisation depth 0 of archetype">
-			["VACCD"] = <"Error (VACCD): archetype concept code $1 not used in definition">			
+			["VACCD"] = <"Error (VACCD): archetype concept code $1 not used in definition">
 			["VOTM"] = <"Error (VOTM): translations for $1 defined in the description / translations section but missing in the term_definition and constraint_definition sections">
 			["VATCD"] = <"Error (VATCD): at-code $1 used in archetype more specialised than archetype">
 			["VATDF1"] = <"Error (VATDF): node id at-code $1 from specialisation parent not defined in ontology of any parent archetype">
 			["VATDF2"] = <"Error (VATDF): node id at-code $1 not defined in ontology of current archetype">
 			["VACDF1"] = <"Error (VACDF): constraint code $1 from specialisation parent not defined in ontology of any parent archetype">
 			["VACDF2"] = <"Error (VACDF): constraint code $1 not found in ontology of current archetype">
-			
+
 			-- C_ATTRIBUTE
 			["VSANCE"] = <"Error (VSANCE): attribute at path $1 existence $2 does not conform to parent $3 existence $4">
 			["VSANCC"] = <"Error (VSANCC): attribute at path $1 cardinality $2 does not conform to parent $3 cardinality $4">
 			["VDIFP1"] = <"Error (VDIFP): differential path $1 should have corresponding node in flat parent at $2 but doesn't">
 			["VDIFP2"] = <"Error (VDIFP): differential path $1 not legal with respect to RM">
 			["VSAM"] = <"Error (VSAM): attribute at path $1 cardinality does not correspond to that of attribute in parent or reference model">
-			
+
 			-- C_OBJECT
 			["VACSO"] = <"Error (VACSO): cannot add $1 object with $2 to singly-valued attribute $3 because object occurrences > 1">
 			["VACSI"] = <"Error (VACSI): cannot add $1 object with $2 to singly-valued attribute $3 because attribute already has child with same node id">
@@ -327,7 +327,7 @@ feature {NONE} -- Implementation
 
 			["VARCN"] = <"Error (VARCN): root object node_id (concept code) $1 is invalid; should follow pattern at0000{.1}*">
 			["VSSM"] = <"Error (VSSM): node at path $1 has order marker referring to non-existant sibling node $2">
-			
+
 			["VSONI"] = <"Error (VSONI): $1 object node at path $2 use of node identifier does not conform to $3 node at parent path $4">
 			["VSONIN"] = <"Error (VSONIN): object node identifier $1 (RM type $2) at path $3 should have corresponding node in flat parent at $4 but doesn't">
 			["VSONIRocc"] = <"Error (VSONIR): object node at path $1 (RM type $2) redefines parent node (RM type = $3) occurrences but node_id $4 not redefined">
@@ -339,7 +339,7 @@ feature {NONE} -- Implementation
 			["VSONCO"] = <"Error (VSONCO): object node at path $1 occurrences $2 does not conform to node at parent path $3 occurrences $4">
 			["VSONCI"] = <"Error (VSONCI): object node at path $1 node_id $2 does not conform to node at parent path $3 node_id $4">
 			["VCATU"] = <"Error (VCATU) cADL object duplicate attribute $1">
-			
+
 			-- ARCHETYPE_INTERNAL_REF
 			["VUNP"] = <"Error (VUNP): ARCHETYPE_INTERNAL_REF path $1 not found in archetype">
 			["VSUNT"] = <"Error (VSUNT): node at path $1 AOM type $2 does not conform to node at parent path $3 AOM type $4">
@@ -390,7 +390,7 @@ feature {NONE} -- Implementation
 			["WCAEX"] = <"Warning (WCAEX): attribute $1 in object node at $2 existence $3 same as in reference model">
 			["WCARMC"] = <"Warning (WCARMC): attribute name '$1' in object node at $2 (type=$3) is a computed property in reference model">
 			["ICORMTS"] = <"(info) type '$1' of object node at $2 not does not conform to type $3 of $4.$5 in reference model but substitution allowed">
-					
+
 			-- validation warnings: in addition to spec, used to help archetype authors
 			["WOUC"] = <"Warning (WOUC): code $1 in ontology not used in archetype definition">
 			["WCRC"] = <"Warning (WCRC): redefinition of CONSTRAINT_REF (ac_code node) by C_CODE_PHRASE node at path $1 in child - not checked">

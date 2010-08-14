@@ -12,12 +12,12 @@ note
 	last_change: "$LastChangedDate$"
 
 class
-	ADL_WORKBENCH
+	AWB_UI_APPLICATION
 
 inherit
 	EV_APPLICATION
 
-	SHARED_ADL_APPLICATION
+	SHARED_AWB_APPLICATION
 		undefine
 			copy, default_create
 		end

@@ -33,6 +33,13 @@ inherit
 			copy, default_create
 		end
 
+	SHARED_APP_UI_RESOURCES
+		export
+			{NONE} all
+		undefine
+			copy, default_create
+		end
+
 feature -- Definition
 
 	new_profile_dummy: STRING = "new_profile"

@@ -459,6 +459,30 @@ feature -- Access
 			create Result.put (1024)
 		end
 
+	app_initial_x_position: INTEGER
+			-- `Result' is INTEGER constant named `app_initial_x_position'.
+		do
+			Result := app_initial_x_position_cell.item
+		end
+
+	app_initial_x_position_cell: CELL [INTEGER]
+			--`Result' is once access to a cell holding vale of `app_initial_x_position'.
+		once
+			create Result.put (10)
+		end
+
+	app_initial_y_position: INTEGER
+			-- `Result' is INTEGER constant named `app_initial_y_position'.
+		do
+			Result := app_initial_y_position_cell.item
+		end
+
+	app_initial_y_position_cell: CELL [INTEGER]
+			--`Result' is once access to a cell holding vale of `app_initial_y_position'.
+		once
+			create Result.put (10)
+		end
+
 	adl_workbench_ico: EV_PIXMAP
 			-- `Result' is EV_PIXMAP constant named `adl_workbench_ico'.
 		do
@@ -491,30 +515,6 @@ feature -- Access
 			create a_file_name.make_from_string (icons)
 			a_file_name.set_file_name ("ontology_category.ico")
 			set_with_named_file (Result.item, a_file_name)
-		end
-
-	app_initial_x_position: INTEGER
-			-- `Result' is INTEGER constant named `app_initial_x_position'.
-		do
-			Result := app_initial_x_position_cell.item
-		end
-
-	app_initial_x_position_cell: CELL [INTEGER]
-			--`Result' is once access to a cell holding vale of `app_initial_x_position'.
-		once
-			create Result.put (10)
-		end
-
-	app_initial_y_position: INTEGER
-			-- `Result' is INTEGER constant named `app_initial_y_position'.
-		do
-			Result := app_initial_y_position_cell.item
-		end
-
-	app_initial_y_position_cell: CELL [INTEGER]
-			--`Result' is once access to a cell holding vale of `app_initial_y_position'.
-		once
-			create Result.put (10)
 		end
 
 feature -- Access

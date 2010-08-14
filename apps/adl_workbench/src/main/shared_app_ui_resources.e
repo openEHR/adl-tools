@@ -291,11 +291,7 @@ feature -- Access
 		once
 			create Result.make (0)
 
-			from
-				pixmap_table.start
-			until
-				pixmap_table.off
-			loop
+			from pixmap_table.start until pixmap_table.off loop
 				if pixmap_table.item_for_iteration.file /= Void then
 					create file.make (icon_directory + "/" + pixmap_table.item_for_iteration.file)
 					create pixmap
@@ -341,15 +337,15 @@ feature -- Access
 	Release_notes_text: attached STRING
 			-- News dialog.
 		local
-			news_file: PLAIN_TEXT_FILE
+			rn_file: PLAIN_TEXT_FILE
 		once
-			create news_file.make (Release_notes_file_path)
+			create rn_file.make (Release_notes_file_path)
 
-			if news_file.exists and then news_file.is_readable then
-				news_file.open_read
-				news_file.read_stream (news_file.count)
-				Result := news_file.last_string
-				news_file.close
+			if rn_file.exists and then rn_file.is_readable then
+				rn_file.open_read
+				rn_file.read_stream (rn_file.count)
+				Result := rn_file.last_string
+				rn_file.close
 			else
 				Result := "(%"" + Release_notes_file_path + "%" file is missing)"
 			end
