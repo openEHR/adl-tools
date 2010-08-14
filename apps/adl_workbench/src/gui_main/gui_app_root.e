@@ -12,12 +12,12 @@ note
 	last_change: "$LastChangedDate$"
 
 class
-	AWB_UI_APPLICATION
+	GUI_APP_ROOT
 
 inherit
 	EV_APPLICATION
 
-	SHARED_AWB_APPLICATION
+	SHARED_APP_ROOT
 		undefine
 			copy, default_create
 		end
@@ -39,8 +39,8 @@ feature {NONE} -- Initialization
 		do
 			default_create
 			application_developer_name.make_from_string ("openEHR")
-			adl_application.initialise
-			if adl_application.initialised then
+			app_root.initialise
+			if app_root.initialised then
 				show_splash_window
 				if not is_destroyed then
 					post_launch_actions.extend_kamikaze (agent show_main_window)

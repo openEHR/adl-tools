@@ -13,7 +13,7 @@ note
 	revision:    "$LastChangedRevision"
 	last_change: "$LastChangedDate"
 
-class AWB_APPLICATION
+class APP_ROOT
 
 inherit
 	SHARED_APP_RESOURCES
