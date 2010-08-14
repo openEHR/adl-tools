@@ -40,7 +40,7 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_AWB_RESOURCES
+	SHARED_APP_RESOURCES
 		export
 			{NONE} all
 		end
