@@ -493,6 +493,30 @@ feature -- Access
 			set_with_named_file (Result.item, a_file_name)
 		end
 
+	app_initial_x_position: INTEGER
+			-- `Result' is INTEGER constant named `app_initial_x_position'.
+		do
+			Result := app_initial_x_position_cell.item
+		end
+
+	app_initial_x_position_cell: CELL [INTEGER]
+			--`Result' is once access to a cell holding vale of `app_initial_x_position'.
+		once
+			create Result.put (10)
+		end
+
+	app_initial_y_position: INTEGER
+			-- `Result' is INTEGER constant named `app_initial_y_position'.
+		do
+			Result := app_initial_y_position_cell.item
+		end
+
+	app_initial_y_position_cell: CELL [INTEGER]
+			--`Result' is once access to a cell holding vale of `app_initial_y_position'.
+		once
+			create Result.put (10)
+		end
+
 feature -- Access
 
 --| FIXME `constant_by_name' and `has_constant' `constants_initialized' are only required until the complete change to

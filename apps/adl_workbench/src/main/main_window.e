@@ -139,20 +139,16 @@ feature {NONE} -- Initialization
 			archetype_explorer_pixmap.copy (pixmaps ["archetype_category"])
 			template_explorer_pixmap.copy (pixmaps ["template_category"])
 
---			archetype_profile_combo.
-
-			set_position (app_x_position, app_y_position)
-
-			if app_width > 0 then
-				set_width (app_width)
+			if app_x_position > 0 and app_y_position > 0 then
+				set_position (app_x_position, app_y_position)
 			else
-				set_width (app_initial_width)
+				set_position (app_initial_x_position, app_initial_y_position)
 			end
 
-			if app_height > 0 then
-				set_height (app_height)
+			if app_width > 0 and app_height > 0 then
+				set_size (app_width, app_height)
 			else
-				set_height (app_initial_height)
+				set_size (app_initial_width, app_initial_height)
 			end
 
 			if main_notebook_tab_pos > 1 then
@@ -789,7 +785,7 @@ feature -- Archetype commands
 					(create {GUI_PLATFORM_SPECIFIC_TOOLS}).hide_combo_box_list (imp)
 				end
 				select_archetype (key)
-				
+
 			elseif key.count > 0 then
 				archetype_id.select_actions.block
 

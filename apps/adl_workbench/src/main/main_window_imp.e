@@ -123,15 +123,14 @@ feature {NONE}-- Initialization
 			l_ev_horizontal_box_4.extend (arch_desc_auth_hbox)
 			arch_desc_auth_hbox.extend (arch_desc_auth_orig_auth_label)
 			arch_desc_auth_hbox.extend (arch_desc_auth_orig_auth_mlist)
-			l_ev_horizontal_box_4.extend (l_ev_vertical_box_3)
-			l_ev_vertical_box_3.extend (arch_desc_status_hbox)
-			arch_desc_status_hbox.extend (arch_desc_status_label)
-			arch_desc_status_hbox.extend (arch_desc_status_text)
-			arch_desc_status_hbox.extend (arch_desc_original_language_label)
-			arch_desc_status_hbox.extend (arch_desc_original_language_text)
-			l_ev_vertical_box_3.extend (arch_desc_contrib_hbox)
+			l_ev_horizontal_box_4.extend (arch_desc_contrib_hbox)
 			arch_desc_contrib_hbox.extend (arch_desc_auth_contrib_label)
 			arch_desc_contrib_hbox.extend (arch_desc_auth_contrib_list)
+			l_ev_horizontal_box_4.extend (l_ev_vertical_box_3)
+			l_ev_vertical_box_3.extend (arch_desc_status_label)
+			l_ev_vertical_box_3.extend (arch_desc_status_text)
+			l_ev_vertical_box_3.extend (arch_desc_original_language_label)
+			l_ev_vertical_box_3.extend (arch_desc_original_language_text)
 			author_lang_term_hbox.extend (term_frame)
 			term_frame.extend (l_ev_horizontal_box_5)
 			l_ev_horizontal_box_5.extend (terminology_vbox)
@@ -416,6 +415,7 @@ feature {NONE}-- Initialization
 			integer_constant_retrieval_functions.extend (agent padding_width)
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_4.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
+			l_ev_horizontal_box_4.disable_item_expand (l_ev_vertical_box_3)
 			arch_desc_auth_hbox.set_minimum_height (85)
 			integer_constant_set_procedures.extend (agent arch_desc_auth_hbox.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
@@ -431,22 +431,6 @@ feature {NONE}-- Initialization
 			integer_constant_retrieval_functions.extend (agent min_entry_control_width)
 			integer_constant_set_procedures.extend (agent arch_desc_auth_orig_auth_mlist.set_minimum_height (?))
 			integer_constant_retrieval_functions.extend (agent min_list_height)
-			l_ev_vertical_box_3.disable_item_expand (arch_desc_status_hbox)
-			integer_constant_set_procedures.extend (agent arch_desc_status_hbox.set_padding (?))
-			integer_constant_retrieval_functions.extend (agent padding_width)
-			integer_constant_set_procedures.extend (agent arch_desc_status_hbox.set_border_width (?))
-			integer_constant_retrieval_functions.extend (agent border_width)
-			arch_desc_status_hbox.disable_item_expand (arch_desc_status_label)
-			arch_desc_status_hbox.disable_item_expand (arch_desc_original_language_label)
-			arch_desc_status_label.set_text ("Status")
-			integer_constant_set_procedures.extend (agent arch_desc_status_label.set_minimum_width (?))
-			integer_constant_retrieval_functions.extend (agent desc_label_width)
-			color_constant_set_procedures.extend (agent arch_desc_status_text.set_background_color (?))
-			color_constant_retrieval_functions.extend (agent editable_colour)
-			arch_desc_status_text.set_minimum_width (100)
-			arch_desc_status_text.disable_edit
-			arch_desc_original_language_label.set_text ("Language")
-			arch_desc_original_language_text.disable_edit
 			integer_constant_set_procedures.extend (agent arch_desc_contrib_hbox.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
 			integer_constant_set_procedures.extend (agent arch_desc_contrib_hbox.set_border_width (?))
@@ -460,6 +444,20 @@ feature {NONE}-- Initialization
 			integer_constant_set_procedures.extend (agent arch_desc_auth_contrib_list.set_minimum_width (?))
 			integer_constant_retrieval_functions.extend (agent min_entry_control_width)
 			arch_desc_auth_contrib_list.set_minimum_height (30)
+			l_ev_vertical_box_3.disable_item_expand (arch_desc_status_label)
+			l_ev_vertical_box_3.disable_item_expand (arch_desc_status_text)
+			l_ev_vertical_box_3.disable_item_expand (arch_desc_original_language_label)
+			l_ev_vertical_box_3.disable_item_expand (arch_desc_original_language_text)
+			arch_desc_status_label.set_text ("Status")
+			integer_constant_set_procedures.extend (agent arch_desc_status_label.set_minimum_width (?))
+			integer_constant_retrieval_functions.extend (agent desc_label_width)
+			color_constant_set_procedures.extend (agent arch_desc_status_text.set_background_color (?))
+			color_constant_retrieval_functions.extend (agent editable_colour)
+			arch_desc_status_text.set_minimum_width (70)
+			arch_desc_status_text.disable_edit
+			arch_desc_original_language_label.set_text ("Language")
+			arch_desc_original_language_text.set_minimum_width (35)
+			arch_desc_original_language_text.disable_edit
 			font_constant_set_procedures.extend (agent term_frame.set_font (?))
 			font_constant_retrieval_functions.extend (agent label_font)
 			term_frame.set_text ("Terminologies")
@@ -1019,15 +1017,14 @@ feature {NONE}-- Initialization
 			create arch_desc_auth_hbox
 			create arch_desc_auth_orig_auth_label
 			create arch_desc_auth_orig_auth_mlist
+			create arch_desc_contrib_hbox
+			create arch_desc_auth_contrib_label
+			create arch_desc_auth_contrib_list
 			create l_ev_vertical_box_3
-			create arch_desc_status_hbox
 			create arch_desc_status_label
 			create arch_desc_status_text
 			create arch_desc_original_language_label
 			create arch_desc_original_language_text
-			create arch_desc_contrib_hbox
-			create arch_desc_auth_contrib_label
-			create arch_desc_auth_contrib_list
 			create term_frame
 			create l_ev_horizontal_box_5
 			create terminology_vbox
@@ -1180,29 +1177,29 @@ feature -- Access
 	main_notebook, archetype_notebook,
 	definition_notebook, status_notebook: EV_NOTEBOOK
 	viewer_vbox, l_ev_vertical_box_1, l_ev_vertical_box_2,
-	description_box, arch_desc_auth_hbox, l_ev_vertical_box_3, arch_desc_contrib_hbox,
+	description_box, arch_desc_auth_hbox, arch_desc_contrib_hbox, l_ev_vertical_box_3,
 	terminology_vbox, lang_vbox, l_ev_vertical_box_4, l_ev_vertical_box_5, l_ev_vertical_box_6,
 	l_ev_vertical_box_7, l_ev_vertical_box_8, differential_view_box, node_map_contols,
 	l_ev_vertical_box_9, l_ev_vertical_box_10, l_ev_vertical_box_11, l_ev_vertical_box_12,
 	terminology_area, flat_view_box, slots_box, l_ev_vertical_box_13, l_ev_vertical_box_14,
 	l_ev_vertical_box_15, l_ev_vertical_box_16: EV_VERTICAL_BOX
 	action_bar, l_ev_horizontal_box_1, l_ev_horizontal_box_2,
-	l_ev_horizontal_box_3, author_lang_term_hbox, l_ev_horizontal_box_4, arch_desc_status_hbox,
-	l_ev_horizontal_box_5, l_ev_horizontal_box_6, arch_desc_details_hbox, l_ev_horizontal_box_7,
-	l_ev_horizontal_box_8, l_ev_horizontal_box_9, l_ev_horizontal_box_10, l_ev_horizontal_box_11,
-	arch_desc_copyright_hbox, node_map, path_analysis, statistics_box, l_ev_horizontal_box_12,
-	l_ev_horizontal_box_13, l_ev_horizontal_box_14, l_ev_horizontal_box_15, l_ev_horizontal_box_16,
-	l_ev_horizontal_box_17, l_ev_horizontal_box_18: EV_HORIZONTAL_BOX
+	l_ev_horizontal_box_3, author_lang_term_hbox, l_ev_horizontal_box_4, l_ev_horizontal_box_5,
+	l_ev_horizontal_box_6, arch_desc_details_hbox, l_ev_horizontal_box_7, l_ev_horizontal_box_8,
+	l_ev_horizontal_box_9, l_ev_horizontal_box_10, l_ev_horizontal_box_11, arch_desc_copyright_hbox,
+	node_map, path_analysis, statistics_box, l_ev_horizontal_box_12, l_ev_horizontal_box_13,
+	l_ev_horizontal_box_14, l_ev_horizontal_box_15, l_ev_horizontal_box_16, l_ev_horizontal_box_17,
+	l_ev_horizontal_box_18: EV_HORIZONTAL_BOX
 	l_ev_tool_bar_1, l_ev_tool_bar_4: EV_TOOL_BAR
-	open_button,
-	parse_button, edit_button, history_back_button, history_forward_button, search_button: EV_TOOL_BAR_BUTTON
+	open_button, parse_button,
+	edit_button, history_back_button, history_forward_button, search_button: EV_TOOL_BAR_BUTTON
 	l_ev_tool_bar_separator_1,
 	l_ev_tool_bar_separator_2: EV_TOOL_BAR_SEPARATOR
 	archetype_id, language_combo, archetype_profile_combo,
 	path_analysis_row_filter_combo_box: EV_COMBO_BOX
 	adl_version_label, language_label, archetype_explorer_label,
-	template_explorer_label, arch_desc_auth_orig_auth_label, arch_desc_status_label,
-	arch_desc_original_language_label, arch_desc_auth_contrib_label, arch_translations_languages_label,
+	template_explorer_label, arch_desc_auth_orig_auth_label, arch_desc_auth_contrib_label,
+	arch_desc_status_label, arch_desc_original_language_label, arch_translations_languages_label,
 	l_ev_label_1, l_ev_label_2, l_ev_label_3, arch_desc_purpose_label, arch_desc_use_label,
 	arch_desc_misuse_label, arch_desc_keywords_label, arch_desc_resource_package_label,
 	arch_desc_resource_orig_res_label, arch_desc_copyright_label, l_ev_label_4, l_ev_label_5,
