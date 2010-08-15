@@ -22,7 +22,7 @@ note
 class ARCHETYPE_PARSER
 
 inherit
-	SHARED_ADL_APPLICATION
+	SHARED_APP_ROOT
 
 	SHARED_KNOWLEDGE_REPOSITORY
 
@@ -43,7 +43,7 @@ feature -- Initialisation
 
 	make
 		do
-			adl_application.initialise
+			app_root.initialise
 
 			if attached {ANY} adl_engine as hack_to_initialise_adl_engine then
 				hack_to_initialise_adl_engine.do_nothing
@@ -102,11 +102,11 @@ feature -- Factory
 		local
 			arch: ARCH_REP_ARCHETYPE
 		do
-			adl_application.set_current_language (primary_language)
+			app_root.set_current_language (primary_language)
 			create arch.make_new (id, source_repositories.adhoc_source_repository, {ARTEFACT_TYPE}.archetype, primary_language, 0)
 			arch_dir.set_selected_item (arch)
 		ensure
-			language_set: adl_application.current_language.same_string (primary_language)
+			language_set: app_root.current_language.same_string (primary_language)
 			archetype_attached: attached selected_archetype
 			archetype_changed: selected_archetype /= old selected_archetype
 			id_set: selected_archetype.id.is_equal (id)
