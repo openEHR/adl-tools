@@ -44,10 +44,6 @@ feature -- Initialisation
 	make
 		do
 			app_root.initialise
-
-			if attached {ANY} adl_engine as hack_to_initialise_adl_engine then
-				hack_to_initialise_adl_engine.do_nothing
-			end
 		end
 
 feature -- Definitions
