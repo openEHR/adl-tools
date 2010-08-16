@@ -24,27 +24,9 @@ class ARCHETYPE_PARSER
 inherit
 	SHARED_APP_ROOT
 
-	SHARED_KNOWLEDGE_REPOSITORY
-
-	SHARED_SOURCE_REPOSITORIES
-
-	SHARED_ARCHETYPE_SERIALISERS
-
-	SHARED_ARCHETYPE_COMPILER
-
 	SHARED_ADL_ENGINE
 
 	SHARED_C_FACTORY
-
-create
-	make
-
-feature -- Initialisation
-
-	make
-		do
-			app_root.initialise
-		end
 
 feature -- Definitions
 

@@ -20,7 +20,7 @@ inherit
 			{NONE} all
 		end
 
-	GUI_CONTROLLER_TOOLS
+	GUI_UTILITIES
 		export
 			{NONE} all
 		end

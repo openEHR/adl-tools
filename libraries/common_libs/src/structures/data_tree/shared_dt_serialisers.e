@@ -15,37 +15,28 @@ class SHARED_DT_SERIALISERS
 
 feature -- Access
 
-	dt_serialiser_formats: ARRAYED_LIST[STRING]
+	dt_serialiser_formats: attached ARRAYED_LIST[STRING]
 			-- list of format names
 		once
 			create Result.make(0)
-			from
-				dt_serialisers.start
-			until
-				dt_serialisers.off
-			loop
+			Result.compare_objects
+			from dt_serialisers.start until dt_serialisers.off loop
 				Result.extend(dt_serialisers.key_for_iteration)
 				dt_serialisers.forth
 			end
-			Result.compare_objects
 		end
 
-	dt_serialiser_for_format (a_format: STRING): DT_SERIALISER
+	dt_serialiser_for_format (a_format: attached STRING): attached DT_SERIALISER
 			-- get a specific ADL serialiser
 		require
-			Format_valid: a_format /= Void and then has_dt_serialiser_format(a_format)
+			Format_valid: has_dt_serialiser_format(a_format)
 		do
 			Result := dt_serialisers.item(a_format)
-		ensure
-			Result_exists: Result /= Void
 		end
 
 feature -- Status Report
 
-	has_dt_serialiser_format (a_format: STRING): BOOLEAN
-			--
-		require
-			a_format /= Void
+	has_dt_serialiser_format (a_format: attached STRING): BOOLEAN
 		do
 			Result := dt_serialisers.has(a_format)
 		end

@@ -15,37 +15,29 @@ class SHARED_C_SERIALISERS
 
 feature -- Access
 
-	c_serialiser_formats: ARRAYED_LIST[STRING]
+	c_serialiser_formats: attached ARRAYED_LIST[STRING]
 			-- list of format names
 		once
 			create Result.make(0)
-			from
-				c_serialisers.start
-			until
-				c_serialisers.off
-			loop
+			Result.compare_objects
+			from c_serialisers.start until c_serialisers.off loop
 				Result.extend(c_serialisers.key_for_iteration)
 				c_serialisers.forth
 			end
-			Result.compare_objects
 		end
 
-	c_serialiser_for_format (a_format: STRING): C_SERIALISER
+	c_serialiser_for_format (a_format: attached STRING): attached C_SERIALISER
 			-- get a specific ADL serialiser
 		require
-			Format_valid: a_format /= Void and then has_c_serialiser_format(a_format)
+			Format_valid: has_c_serialiser_format(a_format)
 		do
 			Result := c_serialisers.item(a_format)
-		ensure
-			Result_exists: Result /= Void
 		end
 
 feature -- Status Report
 
-	has_c_serialiser_format (a_format: STRING): BOOLEAN
+	has_c_serialiser_format (a_format: attached STRING): BOOLEAN
 			--
-		require
-			a_format /= Void
 		do
 			Result := c_serialisers.has(a_format)
 		end

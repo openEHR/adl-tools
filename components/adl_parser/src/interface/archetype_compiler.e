@@ -18,6 +18,9 @@ class ARCHETYPE_COMPILER
 
 inherit
 	SHARED_KNOWLEDGE_REPOSITORY
+		export
+			{NONE} all
+		end
 
 	SHARED_APP_RESOURCES
 		export

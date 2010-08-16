@@ -39,7 +39,6 @@ feature {NONE} -- Initialization
 		do
 			default_create
 			application_developer_name.make_from_string ("openEHR")
-			app_root.initialise
 			if app_root.initialised then
 				show_splash_window
 				if not is_destroyed then

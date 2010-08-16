@@ -25,13 +25,6 @@ inherit
 			copy, default_create
 		end
 
-	SHARED_ARCHETYPE_COMPILER
-		export
-			{NONE} all
-		undefine
-			copy, default_create
-		end
-
 	SHARED_APP_ROOT
 		undefine
 			copy, default_create
@@ -42,30 +35,7 @@ inherit
 			copy, default_create
 		end
 
-	SHARED_REFERENCE_MODEL_ACCESS
-		undefine
-			copy, default_create
-		end
-
-	SHARED_SOURCE_REPOSITORIES
-		undefine
-			copy, default_create
-		end
-
-	SHARED_KNOWLEDGE_REPOSITORY
-		undefine
-			copy, default_create
-		end
-
-	SHARED_ARCHETYPE_SERIALISERS
-		export
-			{NONE} all
-			{ANY} has_archetype_serialiser_format, archetype_serialiser_formats
-		undefine
-			copy, default_create
-		end
-
-	GUI_CONTROLLER_TOOLS
+	GUI_UTILITIES
 		export
 			{NONE} all
 		undefine
@@ -706,8 +676,8 @@ feature {NONE} -- Tools events
 			end
 			if dialog.has_changed_schema_load_list then
 				clear_status_area
-				load_rm_schemas
-				if not found_valid_rm_schemas then
+				rm_schemas_access.load_schemas
+				if not rm_schemas_access.found_valid_schemas then
 					append_billboard_to_status_area
 
 					-- FIXME: reset rm schema load list back?
@@ -720,7 +690,7 @@ feature {NONE} -- Tools events
 	reload_schemas
 			-- user-initiated reload
 		do
-			load_rm_schemas
+			rm_schemas_access.load_schemas
 			populate_directory
 		end
 

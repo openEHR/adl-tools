@@ -17,7 +17,7 @@ class
 inherit
 	OPTION_DIALOG_IMP
 
-	GUI_CONTROLLER_TOOLS
+	GUI_UTILITIES
 		export
 			{NONE} all
 		undefine
@@ -137,7 +137,7 @@ feature {NONE} -- Implementation
 			export_html_text.set_text (html_export_directory)
 			save_diff_path_text.set_text (test_diff_directory)
 
-			populate_ev_list_from_hash_keys (rm_schemas_checkable_list, rm_schema_metadata_table)
+			populate_ev_list_from_hash_keys (rm_schemas_checkable_list, rm_schemas_access.schema_metadata_table)
 			rm_schemas_checkable_list.do_all (
 				agent (li: EV_LIST_ITEM)
 					do

@@ -15,7 +15,7 @@ note
 class GUI_DESCRIPTION_CONTROLS
 
 inherit
-	GUI_CONTROLLER_TOOLS
+	GUI_UTILITIES
 		export
 			{NONE} all
 		end

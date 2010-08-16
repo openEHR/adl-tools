@@ -22,24 +22,6 @@ inherit
 			{ANY} archetype_serialiser_formats, has_archetype_serialiser_format
 		end
 
-	SHARED_DT_SERIALISERS
-		export
-			{NONE} all
-			{ANY} has_dt_serialiser_format
-		end
-
-	SHARED_C_SERIALISERS
-		export
-			{NONE} all
-			{ANY} has_c_serialiser_format
-		end
-
-	SHARED_ASSERTION_SERIALISERS
-		export
-			{NONE} all
-			{ANY} has_assertion_serialiser_format
-		end
-
 	ARCHETYPE_TERM_CODE_TOOLS
 		export
 			{NONE} all
@@ -72,7 +54,6 @@ feature {NONE} -- Initialisation
 
 	make
 		do
-			initialise_serialisers
 			create language_context.make
 			create description_context.make
 			create definition_context.make
@@ -354,21 +335,6 @@ feature {NONE} -- Implementation
 
 				languages.forth
 			end
-		end
-
-	initialise_serialisers
-		once
-			archetype_serialisers.put(create {ADL_SYNTAX_SERIALISER}.make(create {NATIVE_ADL_SERIALISATION_PROFILE}.make(Archetype_native_syntax)), Archetype_native_syntax)
-			archetype_serialisers.put(create {ADL_SYNTAX_SERIALISER}.make(create {HTML_ADL_SERIALISATION_PROFILE}.make(Archetype_web_syntax)), Archetype_web_syntax)
-
-			c_serialisers.put(create {CADL_SYNTAX_SERIALISER}.make(create {NATIVE_CADL_SERIALISATION_PROFILE}.make(Archetype_native_syntax)), Archetype_native_syntax)
-			c_serialisers.put(create {CADL_SYNTAX_SERIALISER}.make(create {HTML_CADL_SERIALISATION_PROFILE}.make(Archetype_web_syntax)), Archetype_web_syntax)
-
-			assertion_serialisers.put(create {ASSERTION_SYNTAX_SERIALISER}.make(create {NATIVE_CADL_SERIALISATION_PROFILE}.make(Archetype_native_syntax)), Archetype_native_syntax)
-			assertion_serialisers.put(create {ASSERTION_SYNTAX_SERIALISER}.make(create {HTML_CADL_SERIALISATION_PROFILE}.make(Archetype_web_syntax)), Archetype_web_syntax)
-
-			dt_serialisers.put(create {DADL_SYNTAX_SERIALISER}.make(create {NATIVE_DADL_SERIALISATION_PROFILE}.make(Archetype_native_syntax)), Archetype_native_syntax)
-			dt_serialisers.put(create {DADL_SYNTAX_SERIALISER}.make(create {HTML_DADL_SERIALISATION_PROFILE}.make(Archetype_web_syntax)), Archetype_web_syntax)
 		end
 
 end

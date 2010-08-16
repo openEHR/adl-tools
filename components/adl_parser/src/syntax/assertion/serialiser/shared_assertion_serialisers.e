@@ -15,37 +15,28 @@ class SHARED_ASSERTION_SERIALISERS
 
 feature -- Access
 
-	assertion_serialiser_formats: ARRAYED_LIST[STRING]
+	assertion_serialiser_formats: attached ARRAYED_LIST[STRING]
 			-- list of format names
 		once
 			create Result.make (0)
-			from
-				assertion_serialisers.start
-			until
-				assertion_serialisers.off
-			loop
+			Result.compare_objects
+			from assertion_serialisers.start until assertion_serialisers.off loop
 				Result.extend (assertion_serialisers.key_for_iteration)
 				assertion_serialisers.forth
 			end
-			Result.compare_objects
 		end
 
-	assertion_serialiser_for_format (a_format: STRING): ASSERTION_SERIALISER
+	assertion_serialiser_for_format (a_format: attached STRING): attached ASSERTION_SERIALISER
 			-- get a specific ADL serialiser
 		require
-			Format_valid: a_format /= Void and then has_assertion_serialiser_format(a_format)
+			Format_valid: has_assertion_serialiser_format(a_format)
 		do
 			Result := assertion_serialisers.item (a_format)
-		ensure
-			Result_exists: Result /= Void
 		end
 
 feature -- Status Report
 
-	has_assertion_serialiser_format (a_format: STRING): BOOLEAN
-			--
-		require
-			a_format /= Void
+	has_assertion_serialiser_format (a_format: attached STRING): BOOLEAN
 		do
 			Result := assertion_serialisers.has (a_format)
 		end

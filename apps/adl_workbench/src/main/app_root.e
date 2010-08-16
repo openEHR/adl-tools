@@ -22,9 +22,14 @@ inherit
 
 	SHARED_SOURCE_REPOSITORIES
 
+	SHARED_ARCHETYPE_SERIALISERS
+
+create
+	make
+	
 feature -- Initialisation
 
-	initialise
+	make
 		local
 			rep_profiles: attached HASH_TABLE [ARRAYED_LIST[STRING], STRING]
 		once
@@ -56,9 +61,11 @@ feature -- Initialisation
 					set_current_repository_profile (rep_profiles.key_for_iteration)
 				end
 
-				load_rm_schemas
+				-- set up the RM schemas
+				rm_schemas_access.initialise(default_rm_schema_directory, rm_schemas_load_list)
+				rm_schemas_access.load_schemas
 
-				if not found_valid_rm_schemas then
+				if not rm_schemas_access.found_valid_schemas then
 					create strx.make_empty
 					rm_schemas_load_list.do_all(agent (s: STRING) do strx.append(s + ", ") end)
 					strx.remove_tail (2) -- remove final ", "
@@ -80,6 +87,10 @@ feature -- Initialisation
 						end
 					end
 				end
+
+				-- initialise serialisers
+				initialise_serialisers
+
 				initialised := True
 			end
 		end

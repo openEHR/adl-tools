@@ -13,11 +13,26 @@ note
 
 class SHARED_APP_ROOT
 
+inherit
+	SHARED_REFERENCE_MODEL_ACCESS
+
+	SHARED_SOURCE_REPOSITORIES
+
+	SHARED_KNOWLEDGE_REPOSITORY
+
+	SHARED_ARCHETYPE_COMPILER
+
+	SHARED_ARCHETYPE_SERIALISERS
+		export
+			{NONE} all
+			{ANY} has_archetype_serialiser_format, archetype_serialiser_formats
+		end
+
 feature -- Access
 
 	app_root: APP_ROOT
 		once
-			create Result
+			create Result.make
 		end
 
 end

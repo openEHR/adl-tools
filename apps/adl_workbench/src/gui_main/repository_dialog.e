@@ -10,7 +10,7 @@ class
 inherit
 	REPOSITORY_DIALOG_IMP
 
-	GUI_CONTROLLER_TOOLS
+	GUI_UTILITIES
 		export
 			{NONE} all
 		undefine

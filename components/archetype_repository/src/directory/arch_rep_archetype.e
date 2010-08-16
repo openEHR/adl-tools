@@ -27,6 +27,13 @@ inherit
 			is_equal
 		end
 
+	SHARED_APP_RESOURCES
+		export
+			{NONE} all
+		undefine
+			is_equal
+		end
+
 	SHARED_ADL_ENGINE
 		export
 			{NONE} all
@@ -781,8 +788,8 @@ feature -- Commands
 			-- set compilation state at creation, or if editing occurs
 			-- also sets rm_schema reference
 		do
-			if has_rm_schema_for_package (id.qualified_package_name) then
-				rm_schema := rm_schema_for_package (id.qualified_package_name)
+			if rm_schemas_access.has_schema_for_package (id.qualified_package_name) then
+				rm_schema := rm_schemas_access.schema_for_package (id.qualified_package_name)
 				if legacy_is_primary and is_legacy_out_of_date or else not has_differential_file then
 					compilation_state := Cs_ready_to_parse_legacy
 				elseif has_differential_file then -- either authored in ADL 1.5, or compiled successfully from legacy .adl file

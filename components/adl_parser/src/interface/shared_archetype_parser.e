@@ -22,7 +22,7 @@ feature {NONE} -- Implementation
 
 	archetype_parser: ARCHETYPE_PARSER
 		once
-			create Result.make
+			create Result
 		end
 
 end
