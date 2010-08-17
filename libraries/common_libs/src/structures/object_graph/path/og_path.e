@@ -91,7 +91,6 @@ feature -- Initialisation
 		require
 			s /= Void and then valid_path_string(s)
 		do
-			create parser.make
 			parser.execute(s)
 			is_absolute := parser.output.is_absolute
 			is_terminal := parser.output.is_terminal
@@ -106,7 +105,6 @@ feature -- Initialisation
 			s1: STRING
 		do
 			s1 := strip_predicates(s)
-			create parser.make
 			parser.execute(s1)
 			is_absolute := parser.output.is_absolute
 			is_terminal := parser.output.is_terminal
@@ -317,9 +315,6 @@ feature -- Validation
 			a_path /= Void and then not a_path.is_empty
 		do
 			create invalid_path_string_reason.make(0)
-			if parser = Void then
-				create parser.make
-			end
 			parser.execute(a_path)
 
 			if parser.syntax_error then
@@ -427,9 +422,6 @@ feature -- Comparison
 			a_path /= Void and then valid_path_string(a_path)
 		do
 			if a_path.count <= count then
-				if parser = Void then
-					create parser.make
-				end
 				parser.execute(a_path)
 
 				from
@@ -484,6 +476,9 @@ feature -- Output
 feature {NONE} -- Implementation
 
 	parser: OG_PATH_VALIDATOR
+		once
+			create Result.make
+		end
 
 	strip_predicates (a_path: STRING): STRING
 			-- remove all [] enclosed sections of `a_path'

@@ -23,7 +23,7 @@ inherit
 
 	OG_PATH_SCANNER
 		rename
-			make as make_eiffel_scanner
+			make as make_scanner
 		end
 
 	KL_SHARED_EXCEPTIONS
@@ -67,18 +67,23 @@ feature {NONE} -- Implementation
 	yy_clear_value_stacks
 			-- Clear objects in semantic value stacks so that
 			-- they can be collected by the garbage collector.
+		local
+			l_yyvs1_default_item: ANY
+			l_yyvs2_default_item: STRING
+			l_yyvs3_default_item: OG_PATH_ITEM
+			l_yyvs4_default_item: OG_PATH
 		do
 			if yyvs1 /= Void then
-				yyvs1.clear_all
+				yyvs1.fill_with (l_yyvs1_default_item, 0, yyvs1.upper)
 			end
 			if yyvs2 /= Void then
-				yyvs2.clear_all
+				yyvs2.fill_with (l_yyvs2_default_item, 0, yyvs2.upper)
 			end
 			if yyvs3 /= Void then
-				yyvs3.clear_all
+				yyvs3.fill_with (l_yyvs3_default_item, 0, yyvs3.upper)
 			end
 			if yyvs4 /= Void then
-				yyvs4.clear_all
+				yyvs4.fill_with (l_yyvs4_default_item, 0, yyvs4.upper)
 			end
 		end
 
@@ -205,8 +210,8 @@ end
 
 			output := yyvs4.item (yyvsp4)
 			accept
-
-if yy_parsing_status = yyContinue then
+		
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
 	yyvsp4 := yyvsp4 -1
@@ -236,8 +241,8 @@ end
 
 			output := yyvs4.item (yyvsp4)
 			accept
-
-if yy_parsing_status = yyContinue then
+		
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
 	yyvsp4 := yyvsp4 -1
@@ -267,8 +272,8 @@ end
 
 			output := yyvs4.item (yyvsp4)
 			accept
-
-if yy_parsing_status = yyContinue then
+		
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
 	yyvsp4 := yyvsp4 -1
@@ -300,8 +305,8 @@ end
 				io.put_string("....OG_PATH NOT validated%N")
 			end
 			abort
-
-if yy_parsing_status = yyContinue then
+		
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
 end
@@ -313,8 +318,8 @@ end
 
 			yyval4 := yyvs4.item (yyvsp4)
 			yyval4.set_movable
-
-if yy_parsing_status = yyContinue then
+		
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
 	yyvs4.put (yyval4, yyvsp4)
@@ -329,8 +334,8 @@ end
 			debug("OG_PATH_parse")
 				io.put_string("....absolute_path (root); %N")
 			end
-
-if yy_parsing_status = yyContinue then
+		
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp4 := yyvsp4 + 1
 	yyvsp1 := yyvsp1 -1
@@ -363,8 +368,8 @@ end
 			debug("OG_PATH_parse")
 				io.put_string("....absolute_path; %N")
 			end
-
-if yy_parsing_status = yyContinue then
+		
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
 	yyvs4.put (yyval4, yyvsp4)
@@ -380,8 +385,8 @@ end
 			debug("OG_PATH_parse")
 				io.put_string("....absolute_path (appended relative path); %N")
 			end
-
-if yy_parsing_status = yyContinue then
+		
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp4 := yyvsp4 -1
 	yyvsp1 := yyvsp1 -1
@@ -394,8 +399,8 @@ debug ("GEYACC")
 end
 
 			create yyval4.make_relative(yyvs3.item (yyvsp3))
-
-if yy_parsing_status = yyContinue then
+		
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp4 := yyvsp4 + 1
 	yyvsp3 := yyvsp3 -1
@@ -425,8 +430,8 @@ end
 
 			yyval4 := yyvs4.item (yyvsp4)
 			yyval4.append_segment(yyvs3.item (yyvsp3))
-
-if yy_parsing_status = yyContinue then
+		
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
 	yyvsp3 := yyvsp3 -1
@@ -442,8 +447,8 @@ end
 			debug("OG_PATH_parse")
 				io.put_string("...path_segment: " + yyvs2.item (yyvsp2 - 1) + "[" + yyvs2.item (yyvsp2) + "]%N")
 			end
-
-if yy_parsing_status = yyContinue then
+		
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp3 := yyvsp3 + 1
 	yyvsp2 := yyvsp2 -2
@@ -475,8 +480,8 @@ end
 			debug("OG_PATH_parse")
 				io.put_string("...path_segment: " + yyvs2.item (yyvsp2) + "%N")
 			end
-
-if yy_parsing_status = yyContinue then
+		
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp3 := yyvsp3 + 1
 	yyvsp2 := yyvsp2 -1
@@ -708,7 +713,7 @@ feature -- Initialization
 	make
 			-- Create a new Eiffel parser.
 		do
-			make_eiffel_scanner
+			make_scanner
 			make_parser_skeleton
 			create indent.make(0)
 		end

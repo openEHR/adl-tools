@@ -109,11 +109,11 @@ feature {NONE} -- Initialization
 			archetype_explorer_pixmap.copy (pixmaps ["archetype_category"])
 			template_explorer_pixmap.copy (pixmaps ["template_category"])
 
-			if app_x_position > 0 and app_y_position > 0 then
+--			if app_x_position > 0 and app_y_position > 0 then
 				set_position (app_x_position, app_y_position)
-			else
-				set_position (app_initial_x_position, app_initial_y_position)
-			end
+--			else
+--				set_position (app_initial_x_position, app_initial_y_position)
+--			end
 
 			if app_width > 0 and app_height > 0 then
 				set_size (app_width, app_height)
@@ -324,18 +324,6 @@ feature -- File events
 			end
 		end
 
-	display_class
-			-- display the class currently selected in `archetype_directory'.
-		do
-			if arch_dir.has_selected_class then
-				if definition_notebook.parent = differential_view_box then
-					class_map_control.set_differential_view
-				else
-					class_map_control.set_flat_view
-				end
-			end
-		end
-
 	exit_app
 			-- Terminate the application, saving the window location.
 		local
@@ -348,8 +336,10 @@ feature -- File events
 			set_archetype_template_split_position (archetype_template_split_area.split_position)
 			set_app_width (width)
 			set_app_height (height)
-			set_app_x_position (x_position)
-			set_app_y_position (y_position)
+			if not is_minimized then
+				set_app_x_position (x_position)
+				set_app_y_position (y_position)
+			end
 			set_app_maximised (is_maximized)
 			set_main_notebook_tab_pos (main_notebook.selected_item_index)
 
@@ -966,6 +956,18 @@ feature -- Archetype commands
 			-- Called by `select_actions' of `arch_translations_languages_list'.
 		do
 			translation_controls.populate_items
+		end
+
+	display_class
+			-- display the class currently selected in `archetype_directory'.
+		do
+			if arch_dir.has_selected_class then
+				if definition_notebook.parent = differential_view_box then
+					class_map_control.set_differential_view
+				else
+					class_map_control.set_flat_view
+				end
+			end
 		end
 
 feature -- Controls

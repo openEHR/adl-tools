@@ -20,6 +20,24 @@ class
 
 inherit
 	CONSTANTS_IMP
+		redefine
+			icons
+		end
+
+	SHARED_APP_UI_RESOURCES
+		export
+			{NONE} all
+		undefine
+			copy, default_create
+		end
+
+feature -- Access
+
+	icons: STRING
+			-- The path to the directory containing icon files.
+		once
+			Result := application_startup_directory + os_directory_separator.out + "icons"
+		end
 
 end
 
