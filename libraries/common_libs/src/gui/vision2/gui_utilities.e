@@ -19,6 +19,36 @@ inherit
 
 feature {NONE} -- Implementation
 
+	show_in_system_browser (url: attached STRING)
+			-- Launch the operating system's default browser to display the contents of `url'.
+		require
+			url_not_empty: not url.is_empty
+		local
+			command: STRING
+			process: PROCESS
+		do
+   			if {PLATFORM}.is_windows then
+   				command := "cmd /q /d /c start %"%" /b"
+			elseif {PLATFORM}.is_mac then
+				command := "open"
+			elseif {PLATFORM}.is_unix then
+   				command := "xdg-open"
+			else
+   				command := "firefox"
+   			end
+
+			command := command + " %"" + url + "%""
+
+   			if {PLATFORM}.is_windows and {PLATFORM}.is_thread_capable then
+	   			process := (create {PROCESS_FACTORY}).process_launcher (command, Void, Void)
+	   			process.set_hidden (True)
+	   			process.set_separate_console (False)
+	   			process.launch
+   			else
+				(create {EXECUTION_ENVIRONMENT}).launch (command)
+   			end
+		end
+
 	get_file (init_value: STRING; a_parent_window: EV_WINDOW): STRING
 			-- get a file path from user
 		require
